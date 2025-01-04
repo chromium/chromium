@@ -588,13 +588,13 @@ bool DawnSharedContext::Initialize(
   }
 #endif  // BUILDFLAG(IS_WIN)
 
-  adapter_options.compatibilityMode = false;
+  adapter_options.featureLevel = wgpu::FeatureLevel::Core;
   std::vector<dawn::native::Adapter> adapters =
       instance_->EnumerateAdapters(&adapter_options);
 
   if (adapters.empty()) {
     LOG(ERROR) << "No adapters found for non compatibility mode.";
-    adapter_options.compatibilityMode = true;
+    adapter_options.featureLevel = wgpu::FeatureLevel::Compatibility;
     adapters = instance_->EnumerateAdapters(&adapter_options);
   }
 
