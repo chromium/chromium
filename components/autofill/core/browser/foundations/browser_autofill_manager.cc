@@ -840,9 +840,6 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
           return;
         }
 
-        MaybeImportFromSubmittedForm(*client, ukm_source_id, *submitted_form,
-                                     form, autofill_ai_shows_bubble);
-
         submitted_form->set_submission_source(source);
         if (submitted_form->IsAutofillable()) {
           // Associate the form signatures of recently submitted
@@ -861,6 +858,8 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
                                         form_submitted_timestamp);
         }
 
+        MaybeImportFromSubmittedForm(*client, ukm_source_id, *submitted_form,
+                                     form, autofill_ai_shows_bubble);
         MaybeAddAddressSuggestionStrikes(*client, *submitted_form);
         client->GetVotesUploader().MaybeStartVoteUploadProcess(
             std::move(submitted_form),

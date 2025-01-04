@@ -386,7 +386,9 @@ class FormStructure {
     form_associations_ = associations;
   }
 
-  FormAssociations form_associations() const { return form_associations_; }
+  const FormAssociations& form_associations() const {
+    return form_associations_;
+  }
 
   base::flat_map<FieldGlobalId, AutofillType::ServerPrediction>
   GetServerPredictions(const std::vector<FieldGlobalId>& field_ids) const;
