@@ -70,7 +70,7 @@ void SafeAreaInsetsHostImpl::DidFinishNavigation(
 
     blink::mojom::DisplayMode mode = web_contents_impl_->GetDisplayMode();
     if (mode == blink::mojom::DisplayMode::kFullscreen &&
-        active_rfh_.get() != current_rfh_.get()) {
+        active_render_frame_host() != current_rfh_.get()) {
       ClearSafeAreaInsetsForActiveFrame();
     }
 
@@ -79,7 +79,7 @@ void SafeAreaInsetsHostImpl::DidFinishNavigation(
 }
 
 void SafeAreaInsetsHostImpl::SetDisplayCutoutSafeArea(gfx::Insets insets) {
-  RenderFrameHostImpl* rfh = ActiveRenderFrameHost();
+  RenderFrameHostImpl* rfh = active_render_frame_host();
   if (rfh) {
     // Skip sending the safe area to frame if the values match the latest sent
     // values.
@@ -98,7 +98,7 @@ void SafeAreaInsetsHostImpl::ViewportFitChangedForFrame(
 
   // If we are the active `RenderFrameHost` frame then notify
   // WebContentsObservers about the new value.
-  if (rfh == ActiveRenderFrameHost()) {
+  if (rfh == active_render_frame_host()) {
     MaybeActiveRenderFrameHostChanged();
   }
 }
@@ -106,7 +106,7 @@ void SafeAreaInsetsHostImpl::ViewportFitChangedForFrame(
 void SafeAreaInsetsHostImpl::ComplexSafeAreaConstraintChangedForFrame(
     RenderFrameHost* rfh,
     bool has_constraint) {
-  if (rfh == ActiveRenderFrameHost()) {
+  if (rfh == active_render_frame_host()) {
     web_contents_impl_->NotifySafeAreaConstraintChanged(has_constraint);
   }
 }
@@ -117,7 +117,7 @@ void SafeAreaInsetsHostImpl::MaybeActiveRenderFrameHostChanged() {
   active_rfh_ = new_active_rfh;
 
   blink::mojom::ViewportFit new_value =
-      GetValueOrDefault(ActiveRenderFrameHost());
+      GetValueOrDefault(active_render_frame_host());
   if (new_value != active_value_) {
     active_value_ = new_value;
     web_contents_impl_->NotifyViewportFitChanged(new_value);
@@ -129,8 +129,8 @@ void SafeAreaInsetsHostImpl::MaybeActiveRenderFrameHostChanged() {
 }
 
 void SafeAreaInsetsHostImpl::ClearSafeAreaInsetsForActiveFrame() {
-  if (active_rfh_.get()) {
-    MaybeSendSafeAreaToFrame(active_rfh_.get(), gfx::Insets());
+  if (active_render_frame_host()) {
+    MaybeSendSafeAreaToFrame(active_render_frame_host(), gfx::Insets());
   }
 }
 
@@ -146,10 +146,6 @@ void SafeAreaInsetsHostImpl::MaybeSendSafeAreaToFrame(RenderFrameHost* rfh,
     has_sent_non_zero_insets_ = true;
   }
   SendSafeAreaToFrame(rfh, insets);
-}
-
-RenderFrameHostImpl* SafeAreaInsetsHostImpl::ActiveRenderFrameHost() {
-  return active_rfh_.get();
 }
 
 blink::mojom::ViewportFit SafeAreaInsetsHostImpl::GetValueOrDefault(

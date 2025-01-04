@@ -73,10 +73,6 @@ class CONTENT_EXPORT SafeAreaInsetsHostImpl : public SafeAreaInsetsHost {
   void SetViewportFitValue(RenderFrameHost* rfh,
                            blink::mojom::ViewportFit value);
 
-  // Whether or not non-zero insets have been sent to a frame over the course of
-  // this SafeAreaInsetsHost.
-  bool has_sent_non_zero_insets_;
-
  private:
   static constexpr gfx::Insets kZeroInsets = gfx::Insets();
 
@@ -96,7 +92,7 @@ class CONTENT_EXPORT SafeAreaInsetsHostImpl : public SafeAreaInsetsHost {
   // Returns the current active `RenderFrameHost`: the current RFH or the
   // fullscreen RFH when in Fullscreen mode. May return `nullptr` during
   // startup.
-  RenderFrameHostImpl* ActiveRenderFrameHost();
+  RenderFrameHostImpl* active_render_frame_host() { return active_rfh_.get(); }
 
   // Stores the current primary main `RenderFrameHost`. Never `nullptr` except
   // during startup.
@@ -111,7 +107,7 @@ class CONTENT_EXPORT SafeAreaInsetsHostImpl : public SafeAreaInsetsHost {
   // if in fullscreen mode. Caching this to keep track when the active
   // `RenderFrameHost` changes. Should only be accessed in
   // `MaybeActiveRenderFrameHostChanged()`; other code should use
-  // `ActiveRenderFrameHost()` instead.
+  // `active_render_frame_host()` instead.
   base::WeakPtr<RenderFrameHostImpl> active_rfh_;
 
   // Stores the viewport-fit value that's active for this WebContents.
@@ -119,6 +115,10 @@ class CONTENT_EXPORT SafeAreaInsetsHostImpl : public SafeAreaInsetsHost {
 
   // The current insets.
   gfx::Insets insets_;
+
+  // Whether or not non-zero insets have been sent to a frame over the course of
+  // this SafeAreaInsetsHost.
+  bool has_sent_non_zero_insets_;
 };
 
 }  // namespace content
