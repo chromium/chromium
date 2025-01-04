@@ -96,8 +96,11 @@ inline constexpr char kStudent[] = "student";
 inline constexpr char kGroupSource[] = "groupSource";
 inline constexpr char kTeacherClientDevice[] = "teacherClientDevice";
 inline constexpr char kHostDevice[] = "hostDevice";
-inline constexpr char kSpotlightConnectionCode[] = "spotlightConnectionCode";
-inline constexpr char kSpotlightConnectionParam[] = "spotlightConnectionParam";
+inline constexpr char kSpotlightConnectionCode[] = "connectionCode";
+inline constexpr char kSpotlightConnectionParam[] = "connectionParam";
+inline constexpr char kStudentGroupId[] = "studentGroupId";
+inline constexpr char kViewScreenConfig[] = "viewScreenConfig";
+inline constexpr char kViewScreenState[] = "viewScreenState";
 
 inline constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("boca_server_integration", R"(

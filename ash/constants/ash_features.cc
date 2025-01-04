@@ -227,6 +227,9 @@ BASE_FEATURE(kBocaExtensionConsumer,
              "BocaExtensionConsumer",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables or disables Spotlight for Boca on ChromeOS.
+BASE_FEATURE(kBocaSpotlight, "BocaSpotlight", base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kCrosSwitcher, "CrosSwitcher", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Make the text on PDFs saved from Camera app accessible.
@@ -3349,6 +3352,10 @@ bool IsBocaExtensionConsumerEnabled() {
 
 bool IsBocaCustomPollingEnabled() {
   return base::FeatureList::IsEnabled(kBocaCustomPolling);
+}
+
+bool IsBocaSpotlightEnabled() {
+  return base::FeatureList::IsEnabled(kBocaSpotlight);
 }
 
 bool IsBrightnessControlInSettingsEnabled() {

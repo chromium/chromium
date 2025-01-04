@@ -141,6 +141,8 @@ message ViewScreenConfig {
     AVAILABLE = 2;
 
     ACTIVE = 3;
+
+    INACTIVE = 4;
   }
 
   ViewScreenState view_screen_state = 1;

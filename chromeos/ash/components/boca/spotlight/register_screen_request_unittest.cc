@@ -127,9 +127,8 @@ TEST_F(RegisterScreenRequestTest, InitRegisterScreenRequestSucceed) {
             http_request.relative_url);
   EXPECT_EQ("application/json", http_request.headers["Content-Type"]);
   const char* contentData =
-      "{\"hostDevice\":{\"deviceInfo\":{\"deviceId\":\"d1\"},\"user\":{"
-      "\"gaiaId\":\"1\"}},\"spotlightConnectionParam\":{"
-      "\"spotlightConnectionCode\":\"123456\"}}";
+      "{\"connectionParam\":{\"connectionCode\":\"123456\"},\"hostDevice\":{"
+      "\"deviceInfo\":{\"deviceId\":\"d1\"},\"user\":{\"gaiaId\":\"1\"}}}";
   ASSERT_TRUE(http_request.has_content);
   EXPECT_EQ(contentData, http_request.content);
   EXPECT_EQ(true, result.value());
@@ -161,9 +160,8 @@ TEST_F(RegisterScreenRequestTest, InitRegisterScreenAndFail) {
             http_request.relative_url);
   EXPECT_EQ("application/json", http_request.headers["Content-Type"]);
   const char* contentData =
-      "{\"hostDevice\":{\"deviceInfo\":{\"deviceId\":\"d1\"},\"user\":{"
-      "\"gaiaId\":\"1\"}},\"spotlightConnectionParam\":{"
-      "\"spotlightConnectionCode\":\"123456\"}}";
+      "{\"connectionParam\":{\"connectionCode\":\"123456\"},\"hostDevice\":{"
+      "\"deviceInfo\":{\"deviceId\":\"d1\"},\"user\":{\"gaiaId\":\"1\"}}}";
   ASSERT_TRUE(http_request.has_content);
   EXPECT_EQ(contentData, http_request.content);
   EXPECT_EQ(google_apis::HTTP_INTERNAL_SERVER_ERROR, result.error());
