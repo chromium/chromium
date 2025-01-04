@@ -836,18 +836,37 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
          const std::u16string& last_unlocked_credit_card_cvc,
          std::unique_ptr<FormStructure> submitted_form,
          bool autofill_ai_shows_bubble) {
-        if (client) {
-          MaybeImportFromSubmittedForm(*client, ukm_source_id, *submitted_form,
-                                       form, autofill_ai_shows_bubble);
+        if (!client) {
+          return;
         }
-        // The manager may have been destroyed already.
-        // See crbug.com/373831707#comment5.
+
+        MaybeImportFromSubmittedForm(*client, ukm_source_id, *submitted_form,
+                                     form, autofill_ai_shows_bubble);
+
+        submitted_form->set_submission_source(source);
+        if (submitted_form->IsAutofillable()) {
+          // Associate the form signatures of recently submitted
+          // address/credit card forms to `submitted_form`, if it is an
+          // address/credit card form itself. This information is attached to
+          // the vote.
+          if (std::optional<FormStructure::FormAssociations> associations =
+                  client->GetFormDataImporter()->GetFormAssociations(
+                      submitted_form->form_signature())) {
+            submitted_form->set_form_associations(*associations);
+          }
+        }
+
         if (manager) {
-          manager->OnFormSubmittedAfterImport(
-              std::move(submitted_form), ukm_source_id, page_language, source,
-              initial_interaction_timestamp, form_submitted_timestamp,
-              last_unlocked_credit_card_cvc);
+          manager->LogSubmissionMetrics(submitted_form.get(),
+                                        form_submitted_timestamp);
         }
+
+        MaybeAddAddressSuggestionStrikes(*client, *submitted_form);
+        client->GetVotesUploader().MaybeStartVoteUploadProcess(
+            std::move(submitted_form),
+            /*observed_submission=*/true, page_language,
+            initial_interaction_timestamp, last_unlocked_credit_card_cvc,
+            ukm_source_id);
       };
 
   // Try to import the `form` into user annotations via the
@@ -903,36 +922,6 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
         last_unlocked_credit_card_cvc_, std::move(submitted_form),
         /*autofill_ai_shows_bubble=*/false);
   }
-}
-
-void BrowserAutofillManager::OnFormSubmittedAfterImport(
-    std::unique_ptr<FormStructure> submitted_form,
-    ukm::SourceId ukm_source_id,
-    LanguageCode page_language,
-    SubmissionSource source,
-    base::TimeTicks initial_interaction_timestamp,
-    base::TimeTicks form_submitted_timestamp,
-    const std::u16string& last_unlocked_credit_card_cvc) {
-  submitted_form->set_submission_source(source);
-  if (submitted_form->IsAutofillable()) {
-    // Associate the form signatures of recently submitted address/credit card
-    // forms to `submitted_form`, if it is an address/credit card form itself.
-    // This information is attached to the vote.
-    if (std::optional<FormStructure::FormAssociations> associations =
-            client().GetFormDataImporter()->GetFormAssociations(
-                submitted_form->form_signature())) {
-      submitted_form->set_form_associations(*associations);
-    }
-  }
-
-  LogSubmissionMetrics(submitted_form.get(), form_submitted_timestamp);
-
-  MaybeAddAddressSuggestionStrikes(client(), *submitted_form);
-  client().GetVotesUploader().MaybeStartVoteUploadProcess(
-      std::move(submitted_form),
-      /*observed_submission=*/true, page_language,
-      initial_interaction_timestamp, last_unlocked_credit_card_cvc,
-      ukm_source_id);
 }
 
 void BrowserAutofillManager::UpdatePendingForm(const FormData& form) {

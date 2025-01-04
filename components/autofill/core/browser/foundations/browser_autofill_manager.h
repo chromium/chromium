@@ -386,17 +386,6 @@ class BrowserAutofillManager : public AutofillManager {
     base::TimeTicks form_submitted_timestamp;
   };
 
-  // Method containing logic to be run in `OnFormSubmittedImpl()` after any
-  // import attempts of the submitted form occurred.
-  void OnFormSubmittedAfterImport(
-      std::unique_ptr<FormStructure> submitted_form,
-      ukm::SourceId ukm_source_id,
-      LanguageCode page_language,
-      mojom::SubmissionSource source,
-      base::TimeTicks initial_interaction_timestamp,
-      base::TimeTicks form_submitted_timestamp,
-      const std::u16string& last_unlocked_credit_card_cvc);
-
   // Emits all metrics that should be recorded at submission time.
   void LogSubmissionMetrics(const FormStructure* submitted_form,
                             const base::TimeTicks& form_submitted_timestamp);
