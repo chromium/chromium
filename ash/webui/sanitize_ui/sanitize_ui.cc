@@ -34,10 +34,9 @@ bool SanitizeDialogUIConfig::IsWebUIEnabled(
   bool is_managed_user = session_controller->IsActiveAccountManaged();
   bool is_child_user = session_controller->IsUserChild();
   bool is_guest_mode_active = session_controller->IsUserGuest();
-  bool is_managed_device =
-      !ash::InstallAttributes::Get()->IsEnterpriseManaged();
+  bool is_managed_device = ash::InstallAttributes::Get()->IsEnterpriseManaged();
   return ChromeOSWebUIConfig::IsWebUIEnabled(browser_context) &&
-         is_managed_device && !is_managed_user && !is_guest_mode_active &&
+         !is_managed_device && !is_managed_user && !is_guest_mode_active &&
          !is_child_user &&
          base::FeatureList::IsEnabled(ash::features::kSanitize);
 }

@@ -68,6 +68,10 @@ bool SanitizeSystemAppDelegate::ShouldShowInLauncher() const {
   return false;
 }
 
+bool SanitizeSystemAppDelegate::ShouldShowInSearchAndShelf() const {
+  return false;
+}
+
 gfx::Rect SanitizeSystemAppDelegate::GetDefaultBounds(Browser* browser) const {
   gfx::Rect bounds =
       display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
