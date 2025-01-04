@@ -204,6 +204,20 @@ inline constexpr char kValidMultiTargetings[] = R"([
     }
   ])";
 
+inline constexpr char kValidControlCampaign[] = R"(
+    {
+      "0": [
+        {
+          "id": 3,
+          %s
+          "studyId":1,
+          "targetings": [],
+          "payload": {}
+        }
+      ]
+    }
+)";
+
 inline constexpr char kCampaignsFileName[] = "campaigns.json";
 
 inline constexpr char kCampaignsExperimentTag[] = "exp_tag";
@@ -643,6 +657,11 @@ TEST_F(CampaignsManagerTest, LoadAndGetDemoModeCampaign) {
 
   EXPECT_CALL(mock_client_,
               RegisterSyntheticFieldTrial("CrOSGrowthStudy1", "CampaignId3"));
+  // Verify that record impression events are not triggered for regular
+  // campaign.
+  EXPECT_CALL(mock_client_, RecordImpressionEvents(/*campaign_id=*/_,
+                                                   /*group_id=*/_))
+      .Times(0);
   VerifyDemoModePayload(
       campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 
@@ -720,8 +739,29 @@ TEST_F(CampaignsManagerTest, GetCampaignNoTargetingNotInDemoMode) {
 // test to verify that campaign with user prefs related targeting is not
 // selected when user prefs are not available.
 
-// TODO(crbug.com/387356471): Add tests for verifying impression events are
-// recorded for counterfactual control campaigns.
+TEST_F(CampaignsManagerTest, GetControlCampaignNoGrouping) {
+  LoadComponentAndVerifyLoadComplete(
+      base::StringPrintf(kValidControlCampaign, ""));
+
+  EXPECT_CALL(mock_client_,
+              RegisterSyntheticFieldTrial("CrOSGrowthStudy1", "CampaignId3"));
+  EXPECT_CALL(mock_client_,
+              RecordImpressionEvents(/*campaign_id=*/testing::Eq(3),
+                                     testing::Eq(std::nullopt)));
+  campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp);
+}
+
+TEST_F(CampaignsManagerTest, GetControlCampaignWithGrouping) {
+  LoadComponentAndVerifyLoadComplete(
+      base::StringPrintf(kValidControlCampaign, R"("groupId": 0,)"));
+
+  EXPECT_CALL(mock_client_,
+              RegisterSyntheticFieldTrial("CrOSGrowthStudy1", "CampaignId3"));
+  EXPECT_CALL(mock_client_,
+              RecordImpressionEvents(/*campaign_id=*/testing::Eq(3),
+                                     /*group_id=*/testing::Eq(0)));
+  campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp);
+}
 
 TEST_F(CampaignsManagerTest, GetDemoModeCampaignNotInDemoMode) {
   base::HistogramTester histogram_tester;
