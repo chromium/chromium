@@ -963,7 +963,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
           "[1/1] blank -> a.test/title1.html (None) -> d.test/title1.html"));
 }
 
-// TODO(crrev/1448453): flaky test.
+// TODO(crbug.com/40269306): flaky test.
 IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                        DISABLED_DiscardPrerenderedPageCookieServerAccess) {
   std::vector<std::string> redirects;
@@ -2971,7 +2971,7 @@ IN_PROC_BROWSER_TEST_F(DIPSThrottlingBrowserTest,
                                               start_time + base::Seconds(1))));
 }
 
-// TODO(b/325196134): Re-enable the test.
+// TODO(crbug.com/325196134): Re-enable the test.
 IN_PROC_BROWSER_TEST_F(DIPSThrottlingBrowserTest,
                        DISABLED_StorageRecording_Throttled) {
   WebContents* web_contents = GetActiveWebContents();
@@ -3006,7 +3006,7 @@ IN_PROC_BROWSER_TEST_F(DIPSThrottlingBrowserTest,
                   start_time, start_time + kDIPSTimestampUpdateInterval)));
 }
 
-// TODO(b/325196134): Re-enable the test.
+// TODO(crbug.com/325196134): Re-enable the test.
 IN_PROC_BROWSER_TEST_F(DIPSThrottlingBrowserTest,
                        DISABLED_StorageRecording_NotThrottled_AfterRefresh) {
   WebContents* web_contents = GetActiveWebContents();
