@@ -3415,7 +3415,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3387023983419383865">,</translation>
 <translation id="3387261909427947069">Métodos de pago</translation>
 <translation id="3387588771342841525">Si esta opción está activada, las contraseñas se guardan en <ph name="EMAIL" />. Si está desactivada, las contraseñas solo se guardan en este dispositivo.</translation>
-<translation id="3387614642886316601">Usar la revisión ortográfica mejorada</translation>
+<translation id="3387614642886316601">Usar el corrector ortográfico mejorado</translation>
 <translation id="3387829698079331264">No permitir que sepan cuándo usas activamente tu dispositivo</translation>
 <translation id="3388094447051599208">La bandeja de salida está casi llena</translation>
 <translation id="3388788256054548012">Este archivo está cifrado. Pídele al propietario que lo descifre.</translation>
@@ -4448,7 +4448,7 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4077917118009885966">Los anuncios están bloqueados en este sitio web</translation>
 <translation id="4078738236287221428">Forzada</translation>
 <translation id="4078903002989614318">Opciones para ordenar y de lista</translation>
-<translation id="4079140982534148664">Usar la revisión ortográfica mejorada</translation>
+<translation id="4079140982534148664">Usar el corrector ortográfico mejorado</translation>
 <translation id="4084682180776658562">Añadir a marcadores</translation>
 <translation id="4084835346725913160">Cerrar <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">Se ha bloqueado JavaScript en esta página.</translation>
@@ -5454,7 +5454,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4827134188176577524">Chrome Root Store contiene certificados de autoridades de certificación consideradas de confianza por Chrome Root Program y se revisa continuamente.</translation>
 <translation id="4827283332383516812">Eliminar tarjeta</translation>
 <translation id="4827675678516992122">No se ha podido conectar</translation>
-<translation id="4827784381479890589">Revisión ortográfica mejorada en el navegador Chrome (el texto se envía a Google para que muestre sugerencias ortográficas)</translation>
+<translation id="4827784381479890589">Corrector ortográfico mejorado en el navegador Chrome (el texto se envía a Google para que muestre sugerencias ortográficas)</translation>
 <translation id="4827904420700932487">Crear código QR para esta imagen</translation>
 <translation id="4827970183019354123">Comprobador de URLs</translation>
 <translation id="4828567746430452681"><ph name="EXTENSION_NAME" /> ya no se admite.</translation>
@@ -6537,7 +6537,6 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5613074282491265467">Si has iniciado sesión en Chrome, las contraseñas que guardes se añadirán a tu cuenta de Google (<ph name="USER_EMAIL" />). Para desactivar este ajuste, ve a la configuración.</translation>
 <translation id="5614190747811328134">Aviso al usuario</translation>
 <translation id="5614553682702429503">¿Guardar la contraseña?</translation>
-<translation id="5614625640221885312">Inicia sesión para acceder a tus marcadores, contraseñas y más en todos tus dispositivos</translation>
 <translation id="5614947000616625327">Llavero de iCloud</translation>
 <translation id="561552177910095306">Lista de sitios que has visitado recientemente y que pueden sugerir anuncios a otros sitios cuando continúes navegando</translation>
 <translation id="5616571005307953937">Más antiguos</translation>
@@ -8435,7 +8434,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6988572888918530647">Gestionar tu cuenta de Google</translation>
 <translation id="6989274756151920076">Quedarme aquí</translation>
 <translation id="6991665348624301627">Seleccionar un destino</translation>
-<translation id="6992554835374084304">Activa la revisión ortográfica mejorada</translation>
+<translation id="6992554835374084304">Activa el corrector ortográfico mejorado</translation>
 <translation id="6993000214273684335">Pestaña quitada de grupo sin nombre (<ph name="GROUP_CONTENTS" />)</translation>
 <translation id="6993050154661569036">Actualizando el navegador Chrome</translation>
 <translation id="6995984090981858039">Leer la información y los datos de los dispositivos ChromeOS</translation>
@@ -9119,7 +9118,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7484645889979462775">Jamás para este sitio</translation>
 <translation id="7484943269191249363">Puedes usar todas tus llaves de acceso guardadas en el Gestor de contraseñas de Google en este dispositivo. Solo tendrás que hacerlo una vez.</translation>
 <translation id="7486587904541741388">Ahorro elevado</translation>
-<translation id="7487141338393529395">Activa la revisión ortográfica mejorada</translation>
+<translation id="7487141338393529395">Activa el corrector ortográfico mejorado</translation>
 <translation id="7487969577036436319">No hay componentes instalados</translation>
 <translation id="7488682689406685343">Es posible que este sitio web esté intentando engañarte para que permitas notificaciones invasivas.</translation>
 <translation id="7489761397368794366">Llamar desde tu dispositivo</translation>
