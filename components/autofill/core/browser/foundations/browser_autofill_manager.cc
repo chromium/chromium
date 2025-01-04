@@ -864,10 +864,12 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
         std::move(submitted_form),
         base::BindOnce(
             [](base::WeakPtr<AutofillClient> client,
-               ukm::SourceId ukm_source_id,
                base::WeakPtr<BrowserAutofillManager> manager,
+               ukm::SourceId ukm_source_id, LanguageCode page_language,
                const FormData& form, SubmissionSource source,
+               base::TimeTicks initial_interaction_timestamp,
                base::TimeTicks form_submitted_timestamp,
+               const std::u16string& last_unlocked_credit_card_cvc,
                std::unique_ptr<FormStructure> submitted_form,
                bool autofill_ai_shows_bubble) {
               if (client) {
@@ -878,14 +880,16 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
               // The manager may have been destroyed already.
               // See crbug.com/373831707#comment5.
               if (manager) {
-                manager->OnFormSubmittedAfterImport(std::move(submitted_form),
-                                                    source,
-                                                    form_submitted_timestamp);
+                manager->OnFormSubmittedAfterImport(
+                    std::move(submitted_form), ukm_source_id, page_language,
+                    source, initial_interaction_timestamp,
+                    form_submitted_timestamp, last_unlocked_credit_card_cvc);
               }
             },
-            client().GetWeakPtr(), driver().GetPageUkmSourceId(),
-            weak_ptr_factory_.GetWeakPtr(), form, source,
-            form_submitted_timestamp));
+            client().GetWeakPtr(), weak_ptr_factory_.GetWeakPtr(),
+            driver().GetPageUkmSourceId(), GetCurrentPageLanguage(), form,
+            source, metrics_->initial_interaction_timestamp,
+            form_submitted_timestamp, last_unlocked_credit_card_cvc_));
   } else {
     // TODO(crbug.com/376016569): Refactor this:
     // - MaybeImportFromSubmittedForm() and OnFormSubmittedAfterImport() should
@@ -897,15 +901,22 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
     MaybeImportFromSubmittedForm(client(), driver().GetPageUkmSourceId(),
                                  *submitted_form, form,
                                  /*autofill_ai_shows_bubble=*/false);
-    OnFormSubmittedAfterImport(std::move(submitted_form), source,
-                               form_submitted_timestamp);
+    OnFormSubmittedAfterImport(
+        std::move(submitted_form), driver().GetPageUkmSourceId(),
+        GetCurrentPageLanguage(), source,
+        metrics_->initial_interaction_timestamp, form_submitted_timestamp,
+        last_unlocked_credit_card_cvc_);
   }
 }
 
 void BrowserAutofillManager::OnFormSubmittedAfterImport(
     std::unique_ptr<FormStructure> submitted_form,
+    ukm::SourceId ukm_source_id,
+    LanguageCode page_language,
     SubmissionSource source,
-    base::TimeTicks form_submitted_timestamp) {
+    base::TimeTicks initial_interaction_timestamp,
+    base::TimeTicks form_submitted_timestamp,
+    const std::u16string& last_unlocked_credit_card_cvc) {
   submitted_form->set_submission_source(source);
   if (submitted_form->IsAutofillable()) {
     // Associate the form signatures of recently submitted address/credit card
@@ -923,9 +934,9 @@ void BrowserAutofillManager::OnFormSubmittedAfterImport(
   MaybeAddAddressSuggestionStrikes(client(), *submitted_form);
   client().GetVotesUploader().MaybeStartVoteUploadProcess(
       std::move(submitted_form),
-      /*observed_submission=*/true, GetCurrentPageLanguage(),
-      metrics_->initial_interaction_timestamp, last_unlocked_credit_card_cvc_,
-      driver().GetPageUkmSourceId());
+      /*observed_submission=*/true, page_language,
+      initial_interaction_timestamp, last_unlocked_credit_card_cvc,
+      ukm_source_id);
 }
 
 void BrowserAutofillManager::UpdatePendingForm(const FormData& form) {
