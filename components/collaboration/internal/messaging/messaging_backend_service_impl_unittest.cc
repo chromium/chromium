@@ -968,7 +968,7 @@ TEST_F(MessagingBackendServiceImplTest, TestActivityLogTabEvents) {
 
   collaboration_pb::Message message1 = CreateStoredMessage(
       collaboration_group_id, collaboration_pb::EventType::TAB_ADDED,
-      DirtyType::kDotAndChip, now);
+      DirtyType::kDotAndChip, now - base::Minutes(5));
   message1.set_triggering_user_gaia_id("gaia_1");
   message1.mutable_tab_data()->set_sync_tab_id(
       tab1->saved_tab_guid().AsLowercaseString());
@@ -978,7 +978,7 @@ TEST_F(MessagingBackendServiceImplTest, TestActivityLogTabEvents) {
 
   collaboration_pb::Message message2 = CreateStoredMessage(
       collaboration_group_id, collaboration_pb::EventType::TAB_UPDATED,
-      DirtyType::kDotAndChip, now);
+      DirtyType::kDotAndChip, now - base::Hours(10));
   message2.set_triggering_user_gaia_id("gaia_2");
   message2.mutable_tab_data()->set_sync_tab_id(
       tab2->saved_tab_guid().AsLowercaseString());
@@ -988,7 +988,7 @@ TEST_F(MessagingBackendServiceImplTest, TestActivityLogTabEvents) {
 
   collaboration_pb::Message message3 = CreateStoredMessage(
       collaboration_group_id, collaboration_pb::EventType::TAB_REMOVED,
-      DirtyType::kNone, now);
+      DirtyType::kNone, now - base::Days(20));
   message3.set_triggering_user_gaia_id("gaia_2");
   message3.mutable_tab_data()->set_sync_tab_id(
       tab3.saved_tab_guid().AsLowercaseString());
@@ -1028,6 +1028,7 @@ TEST_F(MessagingBackendServiceImplTest, TestActivityLogTabEvents) {
             *activity_log[0].activity_metadata.tab_metadata->last_known_url);
   EXPECT_EQ(u"example.com", activity_log[0].description_text);
   EXPECT_EQ(u"Given Name 1 added a tab", activity_log[0].title_text);
+  EXPECT_EQ(u"5m ago", activity_log[0].time_delta_text);
   EXPECT_EQ("gaia1@gmail.com",
             activity_log[0].activity_metadata.triggering_user->email);
 
@@ -1038,6 +1039,7 @@ TEST_F(MessagingBackendServiceImplTest, TestActivityLogTabEvents) {
             *activity_log[1].activity_metadata.tab_metadata->last_known_url);
   EXPECT_EQ(u"example2.com", activity_log[1].description_text);
   EXPECT_EQ(u"Given Name 2 changed a tab", activity_log[1].title_text);
+  EXPECT_EQ(u"10h ago", activity_log[1].time_delta_text);
   EXPECT_EQ("gaia2@gmail.com",
             activity_log[1].activity_metadata.triggering_user->email);
 
@@ -1048,6 +1050,7 @@ TEST_F(MessagingBackendServiceImplTest, TestActivityLogTabEvents) {
             *activity_log[2].activity_metadata.tab_metadata->last_known_url);
   EXPECT_EQ(u"example3.com", activity_log[2].description_text);
   EXPECT_EQ(u"Given Name 2 removed a tab", activity_log[2].title_text);
+  EXPECT_EQ(u"20d ago", activity_log[2].time_delta_text);
   EXPECT_EQ("gaia2@gmail.com",
             activity_log[2].activity_metadata.triggering_user->email);
 }

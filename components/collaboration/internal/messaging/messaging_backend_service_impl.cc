@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/message_formatter.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/collaboration/internal/messaging/data_sharing_change_notifier_impl.h"
 #include "components/collaboration/internal/messaging/storage/collaboration_message_util.h"
@@ -157,9 +158,34 @@ RecentActivityAction GetRecentActivityActionFromCollaborationEvent(
   }
 }
 
-std::u16string TimeDeltaToText(base::TimeDelta time_delta) {
-  // TODO(crbug.com/380962101): Implement recency string.
-  return u"";
+// Enum used to show the correct selector variant of the string template.
+enum class TimeDimension {
+  kMinutes = 0,
+  kHours = 1,
+  kDays = 2,
+  kMaxValue = kDays,
+};
+
+// Gets the string representation of the given time delta. Time is
+// binned into minutes, hours, or days.
+std::u16string GetElapsedTimeText(base::TimeDelta time_delta) {
+  TimeDimension dimension;
+  int number;
+  if (time_delta < base::Hours(1)) {
+    dimension = TimeDimension::kMinutes;
+    number = time_delta.InMinutes();
+  } else if (time_delta < base::Days(1)) {
+    dimension = TimeDimension::kHours;
+    number = time_delta.InHours();
+  } else {
+    dimension = TimeDimension::kDays;
+    number = time_delta.InDays();
+  }
+  return base::i18n::MessageFormatter::FormatWithNumberedArgs(
+      l10n_util::GetStringFUTF16(
+          IDS_DATA_SHARING_RECENT_ACTIVITY_TIME_DELTA,
+          base::UTF8ToUTF16(base::NumberToString(number))),
+      static_cast<int>(dimension));
 }
 
 std::optional<GaiaId> GetGaiaIdFromMessage(
@@ -935,7 +961,7 @@ MessagingBackendServiceImpl::ConvertMessageToActivityLogItem(
   item.description_text = u"";
   base::TimeDelta time_delta =
       base::Time::Now() - base::Time::FromTimeT(message.event_timestamp());
-  item.time_delta_text = TimeDeltaToText(time_delta);
+  item.time_delta_text = GetElapsedTimeText(time_delta);
   item.action =
       GetRecentActivityActionFromCollaborationEvent(item.collaboration_event);
 
