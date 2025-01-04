@@ -21,7 +21,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
@@ -154,10 +154,10 @@ public class SearchResumptionModuleUtilsUnitTest {
         long lastVisitedTimestampMs = 0;
         doReturn(lastVisitedTimestampMs).when(mTab).getTimestampMillis();
         int expirationTimeSeconds = 1;
-        FeatureList.setTestFeatureParam(
+        FeatureOverrides.overrideParam(
                 ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID,
                 SearchResumptionModuleUtils.TAB_EXPIRATION_TIME_PARAM,
-                String.valueOf(expirationTimeSeconds));
+                expirationTimeSeconds);
         Assert.assertFalse(SearchResumptionModuleUtils.isTabToTrackValid(mTabToTrack));
         Assert.assertEquals(
                 1,
@@ -170,10 +170,10 @@ public class SearchResumptionModuleUtilsUnitTest {
         doReturn(false).when(mGurl1).isEmpty();
         doReturn(true).when(mGurl1).isValid();
         expirationTimeSeconds = (int) (System.currentTimeMillis() / 1000) + 60; // one more minute
-        FeatureList.setTestFeatureParam(
+        FeatureOverrides.overrideParam(
                 ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID,
                 SearchResumptionModuleUtils.TAB_EXPIRATION_TIME_PARAM,
-                String.valueOf(expirationTimeSeconds));
+                expirationTimeSeconds);
         Assert.assertEquals(
                 expirationTimeSeconds,
                 ChromeFeatureList.getFieldTrialParamByFeatureAsInt(

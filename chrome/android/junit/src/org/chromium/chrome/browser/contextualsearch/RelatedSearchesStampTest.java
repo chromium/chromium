@@ -20,7 +20,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -87,12 +87,12 @@ public class RelatedSearchesStampTest {
      * Searches.
      */
     private void setSupportAllLanguage(boolean support) {
-        FeatureList.setTestFeature(ChromeFeatureList.RELATED_SEARCHES_ALL_LANGUAGE, support);
+        FeatureOverrides.overrideFlag(ChromeFeatureList.RELATED_SEARCHES_ALL_LANGUAGE, support);
     }
 
     /** Sets whether the Related Searches switch is enabled. */
     private void setRelatedSearchesSwitch(boolean enable) {
-        FeatureList.setTestFeature(ChromeFeatureList.RELATED_SEARCHES_SWITCH, enable);
+        FeatureOverrides.overrideFlag(ChromeFeatureList.RELATED_SEARCHES_SWITCH, enable);
     }
 
     /** Sets the standard config setup that we're using for Related Searches experiments. */

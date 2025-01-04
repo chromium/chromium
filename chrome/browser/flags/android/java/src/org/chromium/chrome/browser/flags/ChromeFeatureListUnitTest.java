@@ -14,7 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -60,21 +60,21 @@ public class ChromeFeatureListUnitTest {
 
     /**
      * In unit tests, flags may have their value specified by calling {@link
-     * FeatureList#setTestFeature(String, boolean)}.
+     * FeatureOverrides#enable(String)}.
      */
     @Test
-    public void testSetTestFeatureEnabled_returnsEnabled() {
-        FeatureList.setTestFeature(ChromeFeatureList.TEST_DEFAULT_DISABLED, true);
+    public void testFeatureOverridesEnable_returnsEnabled() {
+        FeatureOverrides.enable(ChromeFeatureList.TEST_DEFAULT_DISABLED);
         assertTrue(ChromeFeatureList.isEnabled(ChromeFeatureList.TEST_DEFAULT_DISABLED));
     }
 
     /**
      * In unit tests, flags may have their value specified by calling {@link
-     * FeatureList#setTestFeature(String, boolean)}.
+     * FeatureOverrides#disable(String)}.
      */
     @Test
     public void testSetTestFeaturesDisabled_returnsDisabled() {
-        FeatureList.setTestFeature(ChromeFeatureList.TEST_DEFAULT_ENABLED, false);
+        FeatureOverrides.disable(ChromeFeatureList.TEST_DEFAULT_ENABLED);
         assertFalse(ChromeFeatureList.isEnabled(ChromeFeatureList.TEST_DEFAULT_ENABLED));
     }
 

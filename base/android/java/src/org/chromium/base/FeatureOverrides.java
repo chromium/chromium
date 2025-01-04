@@ -137,37 +137,37 @@ public class FeatureOverrides {
 
     /** Enable a feature flag for testing. */
     public static void enable(String featureName) {
-        FeatureList.setTestFeature(featureName, true);
+        newBuilder().enable(featureName).apply();
     }
 
     /** Disable a feature flag for testing. */
     public static void disable(String featureName) {
-        FeatureList.setTestFeature(featureName, false);
+        newBuilder().disable(featureName).apply();
     }
 
     /** Override a feature flag for testing. */
     public static void overrideFlag(String featureName, boolean testValue) {
-        FeatureList.setTestFeature(featureName, testValue);
+        newBuilder().flag(featureName, testValue).apply();
     }
 
     /** Override a boolean feature param for testing. */
     public static void overrideParam(String featureName, String paramName, boolean testValue) {
-        FeatureList.setTestFeatureParam(featureName, paramName, String.valueOf(testValue));
+        newBuilder().param(featureName, paramName, testValue).apply();
     }
 
     /** Override an int feature param for testing. */
     public static void overrideParam(String featureName, String paramName, int testValue) {
-        FeatureList.setTestFeatureParam(featureName, paramName, String.valueOf(testValue));
+        newBuilder().param(featureName, paramName, testValue).apply();
     }
 
     /** Override a double feature param for testing. */
     public static void overrideParam(String featureName, String paramName, double testValue) {
-        FeatureList.setTestFeatureParam(featureName, paramName, String.valueOf(testValue));
+        newBuilder().param(featureName, paramName, testValue).apply();
     }
 
     /** Override a feature param for testing. */
     public static void overrideParam(String featureName, String paramName, String testValue) {
-        FeatureList.setTestFeatureParam(featureName, paramName, testValue);
+        newBuilder().param(featureName, paramName, testValue).apply();
     }
 
     /**
