@@ -532,10 +532,6 @@ void TrayBackgroundView::UpdateAfterLockStateChange(bool locked) {
   }
 }
 
-std::u16string TrayBackgroundView::GetAccessibleNameForTray() {
-  return std::u16string();
-}
-
 void TrayBackgroundView::OnVisibilityAnimationFinished(
     bool should_log_visible_pod_count,
     bool aborted) {
@@ -593,16 +589,6 @@ void TrayBackgroundView::AboutToRequestFocusFromTabTraversal(bool reverse) {
   }
 
   shelf_->shelf_focus_cycler()->FocusOut(reverse, SourceView::kStatusAreaView);
-}
-
-void TrayBackgroundView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  views::Button::GetAccessibleNodeData(node_data);
-  // Override the name set in `LabelButton::SetText`.
-  // TODO(crbug.com/325137417): Remove this once the accessible name is set in
-  // the cache as soon as the name is updated.
-  if (!GetAccessibleNameForTray().empty()) {
-    GetViewAccessibility().SetName(GetAccessibleNameForTray());
-  }
 }
 
 void TrayBackgroundView::ChildPreferredSizeChanged(views::View* child) {
