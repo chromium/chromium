@@ -65,17 +65,11 @@ GURL AppendUtmSource(const GURL& url, std::string_view utm_source_value) {
   return net::AppendQueryParameter(url, "utm_source", utm_source_value);
 }
 
-// TODO(csharrison,devlin): Migrate the following methods to return
-// GURLs.
-// TODO(devlin): Try to use GURL methods like Resolve instead of string
-// concatenation.
-std::string GetWebstoreExtensionsCategoryURL() {
-  // TODO(crbug.com/40073814): Refactor this check into
-  // extension_urls::GetWebstoreLaunchURL() and fix tests relying on it.
-  if (base::FeatureList::IsEnabled(extensions_features::kNewWebstoreURL)) {
-    return GetNewWebstoreLaunchURL().spec() + "category/extensions";
-  }
-  return GetWebstoreLaunchURL().spec() + "/category/extensions";
+GURL GetWebstoreExtensionsCategoryURL() {
+  GURL base_url = GetNewWebstoreLaunchURL();
+  CHECK_EQ(base_url.path_piece(), "/")
+      << "GURL::Resolve() won't work with a URL with a path.";
+  return base_url.Resolve("category/extensions");
 }
 
 std::string GetWebstoreItemDetailURLPrefix() {

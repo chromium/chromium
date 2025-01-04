@@ -437,7 +437,7 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
       base::ASCIIToUTF16(
           google_util::AppendGoogleLocaleParam(
               extension_urls::AppendUtmSource(
-                  GURL(extension_urls::GetWebstoreExtensionsCategoryURL()),
+                  extension_urls::GetWebstoreExtensionsCategoryURL(),
                   extension_urls::kExtensionsSidebarUtmSource),
               g_browser_process->GetApplicationLocale())
               .spec()));
