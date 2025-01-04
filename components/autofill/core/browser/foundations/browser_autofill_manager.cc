@@ -823,6 +823,33 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
     return;
   }
 
+  // Called synchronously or, if Autofill AI takes a shot, asynchronously.
+  // If called asynchronously, the manager or even the client may have been
+  // destroyed already, so they must be null-checked.
+  auto import_and_vote_and_log_metrics =
+      [](base::WeakPtr<AutofillClient> client,
+         base::WeakPtr<BrowserAutofillManager> manager,
+         ukm::SourceId ukm_source_id, LanguageCode page_language,
+         const FormData& form, SubmissionSource source,
+         base::TimeTicks initial_interaction_timestamp,
+         base::TimeTicks form_submitted_timestamp,
+         const std::u16string& last_unlocked_credit_card_cvc,
+         std::unique_ptr<FormStructure> submitted_form,
+         bool autofill_ai_shows_bubble) {
+        if (client) {
+          MaybeImportFromSubmittedForm(*client, ukm_source_id, *submitted_form,
+                                       form, autofill_ai_shows_bubble);
+        }
+        // The manager may have been destroyed already.
+        // See crbug.com/373831707#comment5.
+        if (manager) {
+          manager->OnFormSubmittedAfterImport(
+              std::move(submitted_form), ukm_source_id, page_language, source,
+              initial_interaction_timestamp, form_submitted_timestamp,
+              last_unlocked_credit_card_cvc);
+        }
+      };
+
   // Try to import the `form` into user annotations via the
   // `AutofillAiDelegate`. `MaybeImportFromSubmittedForm()` will be called if
   // the import was not successful.
@@ -862,50 +889,19 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
 
     delegate->MaybeImportForm(
         std::move(submitted_form),
-        base::BindOnce(
-            [](base::WeakPtr<AutofillClient> client,
-               base::WeakPtr<BrowserAutofillManager> manager,
-               ukm::SourceId ukm_source_id, LanguageCode page_language,
-               const FormData& form, SubmissionSource source,
-               base::TimeTicks initial_interaction_timestamp,
-               base::TimeTicks form_submitted_timestamp,
-               const std::u16string& last_unlocked_credit_card_cvc,
-               std::unique_ptr<FormStructure> submitted_form,
-               bool autofill_ai_shows_bubble) {
-              if (client) {
-                MaybeImportFromSubmittedForm(*client, ukm_source_id,
-                                             *submitted_form, form,
-                                             autofill_ai_shows_bubble);
-              }
-              // The manager may have been destroyed already.
-              // See crbug.com/373831707#comment5.
-              if (manager) {
-                manager->OnFormSubmittedAfterImport(
-                    std::move(submitted_form), ukm_source_id, page_language,
-                    source, initial_interaction_timestamp,
-                    form_submitted_timestamp, last_unlocked_credit_card_cvc);
-              }
-            },
-            client().GetWeakPtr(), weak_ptr_factory_.GetWeakPtr(),
-            driver().GetPageUkmSourceId(), GetCurrentPageLanguage(), form,
-            source, metrics_->initial_interaction_timestamp,
-            form_submitted_timestamp, last_unlocked_credit_card_cvc_));
+        base::BindOnce(import_and_vote_and_log_metrics, client().GetWeakPtr(),
+                       weak_ptr_factory_.GetWeakPtr(),
+                       driver().GetPageUkmSourceId(), GetCurrentPageLanguage(),
+                       form, source, metrics_->initial_interaction_timestamp,
+                       form_submitted_timestamp,
+                       last_unlocked_credit_card_cvc_));
   } else {
-    // TODO(crbug.com/376016569): Refactor this:
-    // - MaybeImportFromSubmittedForm() and OnFormSubmittedAfterImport() should
-    //   not be called in multiple parts of the codebase. Currently they're
-    //   called below and in the lambda above.
-    // - It should be guaranteed that they are always called. Currently, it is
-    //   hard to see that all codepaths in
-    //   AutofillAiDelegate::MaybeImportForm() calls it.
-    MaybeImportFromSubmittedForm(client(), driver().GetPageUkmSourceId(),
-                                 *submitted_form, form,
-                                 /*autofill_ai_shows_bubble=*/false);
-    OnFormSubmittedAfterImport(
-        std::move(submitted_form), driver().GetPageUkmSourceId(),
-        GetCurrentPageLanguage(), source,
+    import_and_vote_and_log_metrics(
+        client().GetWeakPtr(), weak_ptr_factory_.GetWeakPtr(),
+        driver().GetPageUkmSourceId(), GetCurrentPageLanguage(), form, source,
         metrics_->initial_interaction_timestamp, form_submitted_timestamp,
-        last_unlocked_credit_card_cvc_);
+        last_unlocked_credit_card_cvc_, std::move(submitted_form),
+        /*autofill_ai_shows_bubble=*/false);
   }
 }
 
