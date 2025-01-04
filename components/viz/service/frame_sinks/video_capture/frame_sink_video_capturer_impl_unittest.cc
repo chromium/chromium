@@ -365,30 +365,31 @@ class SolidColorI420Result : public CopyOutputResult {
                          false),
         color_(color) {}
 
-  bool ReadI420Planes(uint8_t* y_out,
+  bool ReadI420Planes(base::span<uint8_t> y_out,
                       int y_out_stride,
-                      uint8_t* u_out,
+                      base::span<uint8_t> u_out,
                       int u_out_stride,
-                      uint8_t* v_out,
+                      base::span<uint8_t> v_out,
                       int v_out_stride) const final {
-    CHECK(y_out);
-    CHECK(y_out_stride >= size().width());
-    CHECK(u_out);
+    CHECK_GE(y_out_stride, size().width());
+    // TODO(crbug.com/384959115): Add a helper to compute plane sizes in
+    // CopyOutputResult.
     const int chroma_width = (size().width() + 1) / 2;
-    CHECK(u_out_stride >= chroma_width);
-    CHECK(v_out);
-    CHECK(v_out_stride >= chroma_width);
-
-    for (int i = 0; i < size().height(); ++i, y_out += y_out_stride) {
-      memset(y_out, color_.y, size().width());
-    }
+    CHECK_GE(u_out_stride, chroma_width);
+    CHECK_GE(v_out_stride, chroma_width);
     const int chroma_height = (size().height() + 1) / 2;
-    for (int i = 0; i < chroma_height; ++i, u_out += u_out_stride) {
-      memset(u_out, color_.u, chroma_width);
-    }
-    for (int i = 0; i < chroma_height; ++i, v_out += v_out_stride) {
-      memset(v_out, color_.v, chroma_width);
-    }
+
+    auto fill_fn = [](base::span<uint8_t> buffer, size_t stride_bytes,
+                      size_t width_bytes, size_t height, uint8_t color) {
+      for (size_t i = 0; i < height; ++i) {
+        std::ranges::fill(buffer.subspan(i * stride_bytes, width_bytes), color);
+      }
+    };
+
+    fill_fn(y_out, y_out_stride, size().width(), size().height(), color_.y);
+    fill_fn(u_out, u_out_stride, chroma_width, chroma_height, color_.u);
+    fill_fn(v_out, v_out_stride, chroma_width, chroma_height, color_.v);
+
     return true;
   }
 

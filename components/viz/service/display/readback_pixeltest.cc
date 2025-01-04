@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <memory>
 #include <tuple>
 
@@ -57,6 +52,7 @@
 #include "ui/gfx/color_transform.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/skia_span_util.h"
 
 namespace viz {
 namespace {
@@ -91,11 +87,6 @@ SharedQuadState* CreateSharedQuadState(AggregatedRenderPass* render_pass,
                        /*sorting_context=*/0,
                        /*layer_id=*/0u, /*fast_rounded_corner=*/false);
   return shared_state;
-}
-
-base::span<const uint8_t> MakePixelSpan(const SkBitmap& bitmap) {
-  return base::span(static_cast<const uint8_t*>(bitmap.getPixels()),
-                    bitmap.computeByteSize());
 }
 
 void DeleteSharedImage(
@@ -470,8 +461,8 @@ class ReadbackPixelTest : public VizPixelTest {
         (bitmap.info().colorType() == kBGRA_8888_SkColorType)
             ? SinglePlaneFormat::kBGRA_8888
             : SinglePlaneFormat::kRGBA_8888;
-    ResourceId resource_id =
-        CreateSharedImageResource(source_size, format, MakePixelSpan(bitmap));
+    ResourceId resource_id = CreateSharedImageResource(
+        source_size, format, gfx::SkPixmapToSpan(bitmap.pixmap()));
 
     std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
         cc::SendResourceAndGetChildToParentMap(
@@ -870,9 +861,9 @@ TEST_P(ReadbackPixelTestNV12, ExecutesCopyRequest) {
     luma_plane = GLScalerTestUtil::AllocateRGBABitmap(luma_plane_size);
     chroma_planes = GLScalerTestUtil::AllocateRGBABitmap(chroma_planes_size);
 
-    result->ReadNV12Planes(static_cast<uint8_t*>(luma_plane.getAddr(0, 0)),
+    result->ReadNV12Planes(gfx::SkPixmapToWritableSpan(luma_plane.pixmap()),
                            result->size().width(),
-                           static_cast<uint8_t*>(chroma_planes.getAddr(0, 0)),
+                           gfx::SkPixmapToWritableSpan(chroma_planes.pixmap()),
                            result->size().width());
   } else {
     luma_plane = GLScalerTestUtil::AllocateRGBABitmap(luma_plane_size);
@@ -995,7 +986,7 @@ TEST_P(ReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
   auto* ri = child_context_provider_->RasterInterface();
 
   std::array<std::vector<uint8_t>, CopyOutputResult::kNV12MaxPlanes> pixels;
-  SkPixmap pixmaps[SkYUVAInfo::kMaxPlanes] = {};
+  std::array<SkPixmap, SkYUVAInfo::kMaxPlanes> pixmaps = {};
   for (size_t i = 0; i < CopyOutputResult::kNV12MaxPlanes; ++i) {
     const gfx::Size plane_size =
         i == 0 ? source_size
@@ -1027,7 +1018,8 @@ TEST_P(ReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
       SkYUVAInfo({source_size.width(), source_size.height()},
                  SkYUVAInfo::PlaneConfig::kY_UV, SkYUVAInfo::Subsampling::k420,
                  SkYUVColorSpace::kIdentity_SkYUVColorSpace);
-  SkYUVAPixmaps yuv_pixmap = SkYUVAPixmaps::FromExternalPixmaps(info, pixmaps);
+  SkYUVAPixmaps yuv_pixmap =
+      SkYUVAPixmaps::FromExternalPixmaps(info, pixmaps.data());
   ri->WritePixelsYUV(shared_image->mailbox(), yuv_pixmap);
 
   gpu::MailboxHolder mailbox_holder;

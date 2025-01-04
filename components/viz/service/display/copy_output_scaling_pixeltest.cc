@@ -255,9 +255,8 @@ class CopyOutputScalingPixelTest
     auto v_data = base::HeapArray<uint8_t>::Uninit(v_stride * chroma_height);
 
     // Do the read.
-    const bool success =
-        result.ReadI420Planes(y_data.data(), y_stride, u_data.data(), u_stride,
-                              v_data.data(), v_stride);
+    const bool success = result.ReadI420Planes(y_data, y_stride, u_data,
+                                               u_stride, v_data, v_stride);
     CHECK(success);
 
     // Convert to an SkBitmap.
