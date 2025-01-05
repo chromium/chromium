@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertDeepEquals, assertEquals, assertGE, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertGE, assertLE, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 
 import {assertFilenamesToBe, assertFilesLoaded, assertFilesToBe, assertMatch, assertSingleFileLaunch, createMockTestDirectory, FakeFileSystemFileHandle, fileToFileHandle, getFileErrors, getLoadedFiles, GuestDriver, launchWithFiles, launchWithFocusFile, launchWithHandles, loadFilesWithoutSendingToGuest, runTestInGuest, sendTestMessage, simulateLosingAccessToDirectory} from './driver.js';
 import {FileSnapshot} from './driver_api.js';
@@ -940,9 +940,14 @@ MediaAppUIBrowserTest['OpenAllowedFileIPC'] = async () => {
   let testResponse = await sendTestMessage({simple: 'getAllFiles'});
   let clientFiles: FileSnapshot[] = testResponse.testQueryResultData;
 
+  // Using a range instead of exact equality to avoid depending
+  // on the exact PNG encoder implementation.
+  const IMAGE_FILE_MIN_SIZE = 1000;
+  const IMAGE_FILE_MAX_SIZE = 3000;
+
   // Second file should be a placeholder with zero size.
-  const IMAGE_FILE_SIZE = 1605;
-  assertEquals(clientFiles[0]!.size, IMAGE_FILE_SIZE);
+  assertLE(IMAGE_FILE_MIN_SIZE, clientFiles[0]!.size);
+  assertLE(clientFiles[0]!.size, IMAGE_FILE_MAX_SIZE);
   assertEquals(clientFiles[1]!.size, 0);
 
   testResponse = await sendTestMessage(
@@ -953,8 +958,10 @@ MediaAppUIBrowserTest['OpenAllowedFileIPC'] = async () => {
   clientFiles = testResponse.testQueryResultData;
 
   // Second file should now be opened and have a valid size.
-  assertEquals(clientFiles[0]!.size, IMAGE_FILE_SIZE);
-  assertEquals(clientFiles[1]!.size, IMAGE_FILE_SIZE);
+  assertLE(IMAGE_FILE_MIN_SIZE, clientFiles[0]!.size);
+  assertLE(clientFiles[0]!.size, IMAGE_FILE_MAX_SIZE);
+  assertLE(IMAGE_FILE_MIN_SIZE, clientFiles[1]!.size);
+  assertLE(clientFiles[1]!.size, IMAGE_FILE_MAX_SIZE);
 };
 
 // Tests the IPC behind the loadNext and loadPrev functions on the received file
