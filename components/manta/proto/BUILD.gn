@@ -16,7 +16,6 @@ proto_library("proto") {
     "manta.proto",
     "rpc_status.proto",
     "scanner.proto",
-    "sparky.proto",
   ]
 
   if (allow_internal) {
