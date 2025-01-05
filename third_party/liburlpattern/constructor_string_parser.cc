@@ -272,38 +272,30 @@ void ConstructorStringParser::ChangeState(StringParseState new_state,
       break;
     case StringParseState::kProtocol:
       result_.protocol = MakeComponentString();
-      present_components_.protocol = true;
       break;
     case StringParseState::kAuthority:
       // No component to set when transitioning from this state.
       break;
     case StringParseState::kUsername:
       result_.username = MakeComponentString();
-      present_components_.username = true;
       break;
     case StringParseState::kPassword:
       result_.password = MakeComponentString();
-      present_components_.password = true;
       break;
     case StringParseState::kHostname:
       result_.hostname = MakeComponentString();
-      present_components_.hostname = true;
       break;
     case StringParseState::kPort:
       result_.port = MakeComponentString();
-      present_components_.port = true;
       break;
     case StringParseState::kPathname:
       result_.pathname = MakeComponentString();
-      present_components_.pathname = true;
       break;
     case StringParseState::kSearch:
       result_.search = MakeComponentString();
-      present_components_.search = true;
       break;
     case StringParseState::kHash:
       result_.hash = MakeComponentString();
-      present_components_.hash = true;
       break;
     case StringParseState::kDone:
       ABSL_ASSERT(false);
