@@ -33,6 +33,7 @@
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_list/app_list_client.h"
 #include "ash/public/cpp/app_list/app_list_controller_observer.h"
@@ -65,6 +66,7 @@
 #include "ash/wm/window_util.h"
 #include "base/barrier_closure.h"
 #include "base/callback_list.h"
+#include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -2102,6 +2104,11 @@ void AppListControllerImpl::SetSunfishNudgeDisabledForTest(bool is_disabled) {
 void AppListControllerImpl::MaybeShowSunfishLauncherNudge(
     views::View* launcher_button) {
   if (g_sunfish_nudge_disabled_for_test) {
+    return;
+  }
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kAshNoNudges)) {
     return;
   }
 
