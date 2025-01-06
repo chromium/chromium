@@ -392,10 +392,11 @@ public class DataSharingTabManager {
                                         .setSharedDataPreview(previewData.sharedDataPreview)
                                         .build()));
 
-        fetchFavicons(activity, joinFlowTracker.getSessionId(), preview.tabs);
+        fetchFavicons(activity, joinFlowTracker.getSessionId(), preview.tabs, preview.tabs.size());
     }
 
-    private void fetchFavicons(Activity activity, String sessionId, List<TabPreview> tabs) {
+    private void fetchFavicons(
+            Activity activity, String sessionId, List<TabPreview> tabs, int maxFaviconsToFetch) {
         // First fetch favicons for up to 4 tabs, then fetch favicons for the remaining tabs.
         int previewImageSize = 4;
         Runnable fetchAll =
@@ -404,7 +405,7 @@ public class DataSharingTabManager {
                             activity,
                             sessionId,
                             tabs,
-                            /* maxTabs= */ tabs.size(),
+                            /* maxTabs= */ maxFaviconsToFetch,
                             () -> {
                                 DataSharingMetrics.recordJoinActionFlowState(
                                         DataSharingMetrics.JoinActionStateAndroid
@@ -474,9 +475,8 @@ public class DataSharingTabManager {
         mDataSharingService.getUiDelegate().updateRuntimeData(sessionId, runtimeConfig);
     }
 
-    private List<TabPreview> convertToTabsPreviewList(
-            List<SavedTabGroupTab> savedTabs, int maxTabs) {
-        int tabsCount = Math.min(maxTabs, savedTabs.size());
+    private List<TabPreview> convertToTabsPreviewList(List<SavedTabGroupTab> savedTabs) {
+        int tabsCount = savedTabs.size();
         List<TabPreview> preview = new ArrayList<>();
         for (int i = 0; i < tabsCount; ++i) {
             // displayUrl field is not used in the create or manage UI where local tab group is
@@ -629,13 +629,17 @@ public class DataSharingTabManager {
 
         String sessionId =
                 uiDelegate.showCreateFlow(
-                    new DataSharingCreateUiConfig.Builder()
-                        .setCommonConfig(
-                                getCommonConfig(activity, tabGroupDisplayName, stringConfig))
-                        .setCreateCallback(createCallback)
-                        .build());
+                        new DataSharingCreateUiConfig.Builder()
+                                .setCommonConfig(
+                                        getCommonConfig(
+                                                activity, tabGroupDisplayName, stringConfig))
+                                .setCreateCallback(createCallback)
+                                .build());
         fetchFavicons(
-             activity, sessionId, convertToTabsPreviewList(existingGroup.savedTabs, 4));
+                activity,
+                sessionId,
+                convertToTabsPreviewList(existingGroup.savedTabs),
+                /* maxFaviconsToFetch= */ 4);
     }
 
     private void showShareSheet(GroupData groupData, Callback<Boolean> onShareSheetShown) {
