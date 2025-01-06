@@ -207,14 +207,10 @@ void HTMLOptGroupElement::AccessKeyAction(
 }
 
 void HTMLOptGroupElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
-  DEFINE_STATIC_LOCAL(AtomicString, label_padding, ("0 2px 1px 2px"));
-  DEFINE_STATIC_LOCAL(AtomicString, label_min_height, ("1.2em"));
-  auto* label = MakeGarbageCollected<HTMLDivElement>(GetDocument());
-  label->setAttribute(html_names::kAriaHiddenAttr, AtomicString("true"));
-  label->SetInlineStyleProperty(CSSPropertyID::kPadding, label_padding);
-  label->SetInlineStyleProperty(CSSPropertyID::kMinHeight, label_min_height);
-  label->SetIdAttribute(shadow_element_names::kIdOptGroupLabel);
-  root.AppendChild(label);
+  label_ = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  label_->setAttribute(html_names::kAriaHiddenAttr, AtomicString("true"));
+  label_->SetShadowPseudoId(shadow_element_names::kIdOptGroupLabel);
+  root.AppendChild(label_);
   opt_group_slot_ = MakeGarbageCollected<HTMLSlotElement>(GetDocument());
   root.AppendChild(opt_group_slot_);
 }
@@ -249,14 +245,12 @@ void HTMLOptGroupElement::UpdateGroupLabel() {
 }
 
 HTMLDivElement& HTMLOptGroupElement::OptGroupLabelElement() const {
-  auto* element = UserAgentShadowRoot()->getElementById(
-      shadow_element_names::kIdOptGroupLabel);
-  CHECK(!element || IsA<HTMLDivElement>(element));
-  return *To<HTMLDivElement>(element);
+  return *label_;
 }
 
 void HTMLOptGroupElement::Trace(Visitor* visitor) const {
   visitor->Trace(opt_group_slot_);
+  visitor->Trace(label_);
   HTMLElement::Trace(visitor);
 }
 

@@ -158,6 +158,12 @@ select:not(:-internal-list-box) optgroup option {
   font-weight: normal;
 }
 
+select:not(:-internal-list-box) optgroup::-internal-optgroup-label {
+  padding-inline: -internal-appearance-auto-base-select(2px, 0.5em);
+  padding-block: -internal-appearance-auto-base-select(0 1px, 0);
+  min-height: -internal-appearance-auto-base-select(1.2em, 0);
+}
+
 select:not(:-internal-list-box) optgroup legend {
   padding-inline: -internal-appearance-auto-base-select(2px, 0.5em);
   min-block-size: -internal-appearance-auto-base-select(initial, 1lh);
