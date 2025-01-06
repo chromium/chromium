@@ -198,6 +198,10 @@ void MaybeDismissNotification() {
 
 // Tests triggering and interacting with each of the Tips notifications.
 - (void)testTriggerNotifications {
+  if ([ChromeEarlGrey isIPhoneIdiom]) {
+    // TODO(crbug.com/387993700): Re-enable the test.
+    EARL_GREY_TEST_DISABLED(@"Flaky on iPad.");
+  }
   [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGreyUI waitForAppToIdle];
 
