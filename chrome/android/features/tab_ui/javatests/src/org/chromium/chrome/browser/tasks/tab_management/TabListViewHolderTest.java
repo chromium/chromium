@@ -640,7 +640,13 @@ public class TabListViewHolderTest {
         Assert.assertNull(gridActionButton.getContentDescription());
 
         String closeTabDescription = "Close tab";
-        mGridModel.set(TabProperties.ACTION_BUTTON_DESCRIPTION_STRING, closeTabDescription);
+        TextResolver actionButtonDescriptionTextResolver =
+                (context) -> {
+                    return closeTabDescription;
+                };
+        mGridModel.set(
+                TabProperties.ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER,
+                actionButtonDescriptionTextResolver);
 
         Assert.assertEquals(closeTabDescription, listActionButton.getContentDescription());
         Assert.assertEquals(closeTabDescription, gridActionButton.getContentDescription());

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.view.Gravity;
 import android.view.View;
@@ -74,6 +75,21 @@ class TabCardViewBinderUtils {
             layoutParams.gravity = Gravity.CENTER;
             containerView.addView(colorView, layoutParams);
         }
+    }
+
+    /**
+     * Checks that the text resolver is not null (unless the property is being unbound) in order to
+     * resolve the description string when requested by the respective view binders. If the text
+     * resolve is null return null.
+     *
+     * @param resolver The text resolver used for description string resolution.
+     * @param context The current context.
+     * @return The resolved content description string to be used in view binder updates.
+     */
+    static @Nullable CharSequence resolveNullSafe(
+            @Nullable TextResolver resolver, Context context) {
+        if (resolver == null) return null;
+        return resolver.resolve(context);
     }
 
     private TabCardViewBinderUtils() {}

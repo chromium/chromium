@@ -189,10 +189,13 @@ class TabListViewBinder {
                             view.getContext(),
                             model.get(TabProperties.IS_INCOGNITO),
                             /* isSelected= */ false));
-        } else if (TabProperties.ACTION_BUTTON_DESCRIPTION_STRING == propertyKey) {
-            view.findViewById(R.id.end_button)
-                    .setContentDescription(
-                            model.get(TabProperties.ACTION_BUTTON_DESCRIPTION_STRING));
+        } else if (TabProperties.ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER == propertyKey) {
+            TextResolver actionButtonDescriptionTextResolver =
+                    model.get(TabProperties.ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER);
+            CharSequence actionButtonDescriptionString =
+                    TabCardViewBinderUtils.resolveNullSafe(
+                            actionButtonDescriptionTextResolver, view.getContext());
+            view.findViewById(R.id.end_button).setContentDescription(actionButtonDescriptionString);
         } else if (TabProperties.TAB_CARD_LABEL_DATA == propertyKey) {
             updateTabCardLabel(view, model.get(TabProperties.TAB_CARD_LABEL_DATA));
         }
