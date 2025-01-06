@@ -19,9 +19,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_service.h"
 #include "chrome/browser/ash/apps/apk_web_app_service_factory.h"
-#include "chrome/browser/ash/crosapi/browser_manager.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -434,14 +431,6 @@ void ApkWebAppService::OnAppTypeInitialized(apps::AppType app_type) {
 void ApkWebAppService::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
   app_registry_cache_observer_.Reset();
-}
-
-void ApkWebAppService::OnWebAppProviderBridgeConnected() {
-  SyncArcAndWebApps();
-}
-
-void ApkWebAppService::OnWebAppServiceAshDestroyed() {
-  web_app_service_observer_.Reset();
 }
 
 void ApkWebAppService::MaybeRemoveArcPackageForWebApp(

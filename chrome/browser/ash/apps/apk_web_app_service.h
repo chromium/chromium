@@ -16,7 +16,6 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/apps/apk_web_app_installer.h"
-#include "chrome/browser/ash/crosapi/web_app_service_ash.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/webapps/browser/uninstall_result_code.h"
@@ -48,8 +47,7 @@ namespace ash {
 class ApkWebAppService : public KeyedService,
                          public ApkWebAppInstaller::Owner,
                          public ArcAppListPrefs::Observer,
-                         public apps::AppRegistryCache::Observer,
-                         public crosapi::WebAppServiceAsh::Observer {
+                         public apps::AppRegistryCache::Observer {
  public:
   // Handles app install/uninstall operations to external processes (ARC) to
   // stub out in tests.
@@ -158,10 +156,6 @@ class ApkWebAppService : public KeyedService,
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override;
 
-  // croapi::WebAppServiceAsh::Observer overrides:
-  void OnWebAppProviderBridgeConnected() override;
-  void OnWebAppServiceAshDestroyed() override;
-
   void MaybeRemoveArcPackageForWebApp(const webapps::AppId& web_app_id);
   void OnDidGetWebAppIcon(const std::string& package_name,
                           arc::mojom::WebAppInfoPtr web_app_info,
@@ -209,10 +203,6 @@ class ApkWebAppService : public KeyedService,
 
   base::ScopedObservation<ArcAppListPrefs, ArcAppListPrefs::Observer>
       arc_app_list_prefs_observer_{this};
-
-  base::ScopedObservation<crosapi::WebAppServiceAsh,
-                          crosapi::WebAppServiceAsh::Observer>
-      web_app_service_observer_{this};
 
   // Must go last.
   base::WeakPtrFactory<ApkWebAppService> weak_ptr_factory_{this};
