@@ -2866,8 +2866,7 @@ void TraverseDomForFourDigitCombinations(
     }
   }
 
-  std::move(potential_matches)
-      .Run(std::vector<std::string>(matches.begin(), matches.end()));
+  std::move(potential_matches).Run(std::move(matches).extract());
 }
 
 std::string ExtractFinalCheckoutAmountFromDom(
