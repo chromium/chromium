@@ -800,8 +800,6 @@ static_library("test_support") {
       "../browser/ui/views/performance_controls/test_support/discard_mock_navigation_handle.cc",
       "../browser/ui/views/performance_controls/test_support/discard_mock_navigation_handle.h",
       "../browser/ui/views/performance_controls/test_support/memory_saver_unit_test_mixin.h",
-      "../browser/ui/webui/identity_internals_ui_browsertest.cc",
-      "../browser/ui/webui/identity_internals_ui_browsertest.h",
       "../browser/ui/webui/net_internals/net_internals_ui_browsertest.cc",
       "../browser/ui/webui/net_internals/net_internals_ui_browsertest.h",
       "../browser/ui/webui/test_support/webui_interactive_test_mixin.cc",

@@ -341,7 +341,6 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://histograms",
     "chrome://history",
     "chrome://history-clusters-side-panel.top-chrome",
-    "chrome://identity-internals",
     "chrome://indexeddb-internals",
     "chrome://inspect",
     "chrome://internals/session-service",
