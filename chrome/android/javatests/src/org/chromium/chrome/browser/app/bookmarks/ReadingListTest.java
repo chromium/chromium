@@ -312,6 +312,11 @@ public class ReadingListTest {
                         mBookmarkManagerCoordinator
                                 .getTestingDelegate()
                                 .searchForTesting(TEST_PAGE_TITLE_GOOGLE));
+
+        // Blocking wait to go from 4 items to post-search 2 items (search row and 1 item result).
+        // Just waitForStableRecyclerView has not been sufficient, see https://crbug.com/369092966.
+        CriteriaHelper.pollUiThread(
+                () -> Criteria.checkThat(mItemsContainer.getChildCount(), Matchers.is(2)));
         RecyclerViewTestUtils.waitForStableRecyclerView(mItemsContainer);
 
         // Delete the reading list page in search state.
