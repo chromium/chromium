@@ -7,6 +7,10 @@ specific_include_rules = {
   "compositor_frame_fuzzer.cc": [
     "+mojo/core/embedder",
   ],
+  "compositor_frame_fuzzer_util.cc": [
+    "+gpu/command_buffer/client/test_shared_image_interface.h",
+    "+gpu/command_buffer/client/client_shared_image.h",
+  ],
   "fuzzer_browser_process.*": [
     "+mojo/public",
   ]

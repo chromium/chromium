@@ -64,11 +64,6 @@ void FuzzerBrowserProcess::EmbedFuzzedCompositorFrame(
       sink_client.BindInterfaceRemote(),
       /* render_input_router_config= */ nullptr);
 
-  for (auto& fuzzed_bitmap : allocated_bitmaps) {
-    sink_remote->DidAllocateSharedBitmap(
-        fuzzed_bitmap.shared_region.Duplicate(), fuzzed_bitmap.id);
-  }
-
   lsi_allocator_.GenerateId();
   SurfaceId embedded_surface_id(kEmbeddedFrameSinkId,
                                 lsi_allocator_.GetCurrentLocalSurfaceId());
@@ -86,9 +81,9 @@ void FuzzerBrowserProcess::EmbedFuzzedCompositorFrame(
   display_private_->ForceImmediateDrawAndSwapIfPossible();
 
   for (auto& fuzzed_bitmap : allocated_bitmaps) {
-    sink_remote->DidDeleteSharedBitmap(fuzzed_bitmap.id);
+    fuzzed_bitmap.shared_image->UpdateDestructionSyncToken(
+        fuzzed_bitmap.sync_token);
   }
-
   // run queued messages (memory deallocation)
   base::RunLoop().RunUntilIdle();
 

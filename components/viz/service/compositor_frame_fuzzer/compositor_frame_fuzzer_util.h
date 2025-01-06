@@ -15,17 +15,19 @@
 namespace viz {
 
 struct FuzzedBitmap {
-  FuzzedBitmap(const SharedBitmapId& id,
-               const gfx::Size& size,
-               base::ReadOnlySharedMemoryRegion shared_region);
+  FuzzedBitmap(const gfx::Size& size,
+               base::WritableSharedMemoryMapping mapping,
+               scoped_refptr<gpu::ClientSharedImage> shared_image,
+               gpu::SyncToken sync_token);
   ~FuzzedBitmap();
 
   FuzzedBitmap(FuzzedBitmap&& other) noexcept;
   FuzzedBitmap& operator=(FuzzedBitmap&& other) = default;
 
-  SharedBitmapId id;
   gfx::Size size;
-  base::ReadOnlySharedMemoryRegion shared_region;
+  base::WritableSharedMemoryMapping mapping;
+  scoped_refptr<gpu::ClientSharedImage> shared_image;
+  gpu::SyncToken sync_token;
 };
 
 struct FuzzedData {
