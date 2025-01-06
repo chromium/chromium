@@ -15,6 +15,7 @@
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/ipc/common/gpu_memory_buffer_impl_shared_memory.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
@@ -64,6 +65,9 @@ class ScopedMappingSharedMemoryMapping
       uint64_t tracing_process_id,
       int importance) override {
     NOTREACHED();
+  }
+  base::UnguessableToken GetSharedMemoryGuid() override {
+    return mapping_->guid();
   }
 
  private:
@@ -131,6 +135,12 @@ class ScopedMappingGpuMemoryBuffer : public ClientSharedImage::ScopedMapping {
       int importance) override {
     buffer_->OnMemoryDump(pmd, buffer_dump_guid, tracing_process_id,
                           importance);
+  }
+  base::UnguessableToken GetSharedMemoryGuid() override {
+    CHECK(buffer_);
+    CHECK(IsSharedMemory());
+    return static_cast<GpuMemoryBufferImplSharedMemory*>(buffer_)
+        ->GetSharedMemoryGUID();
   }
 
   bool Init(gfx::GpuMemoryBuffer* gpu_memory_buffer, bool is_already_mapped) {
