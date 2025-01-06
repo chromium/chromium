@@ -205,29 +205,23 @@ suite('ReadingListAppTest', () => {
   });
 
   test('Keyboard navigation abides by item list range boundaries', async () => {
-    const urls = [
-      'https://www.google.com',
-      'https://www.apple.com',
-      'https://www.bing.com',
-      'https://www.yahoo.com',
-    ];
-
-    // Select first item.
-    readingListApp.selected =
-        readingListApp.shadowRoot!.querySelector(
-                                      'reading-list-item')!.dataset['url']!;
+    // First item (after header) should be selected by default.
+    assertEquals(1, readingListApp.getFocusedIndexForTesting());
 
     keyDownOn(readingListApp.$.readingListList, 0, [], 'ArrowUp');
-    assertEquals(urls[3], readingListApp.selected);
+    assertEquals(5, readingListApp.getFocusedIndexForTesting());
 
     keyDownOn(readingListApp.$.readingListList, 0, [], 'ArrowDown');
-    assertEquals(urls[0], readingListApp.selected);
+    assertEquals(1, readingListApp.getFocusedIndexForTesting());
 
     keyDownOn(readingListApp.$.readingListList, 0, [], 'ArrowDown');
-    assertEquals(urls[1], readingListApp.selected);
+    assertEquals(2, readingListApp.getFocusedIndexForTesting());
+
+    keyDownOn(readingListApp.$.readingListList, 0, [], 'ArrowDown');
+    assertEquals(4, readingListApp.getFocusedIndexForTesting());
 
     keyDownOn(readingListApp.$.readingListList, 0, [], 'ArrowUp');
-    assertEquals(urls[0], readingListApp.selected);
+    assertEquals(2, readingListApp.getFocusedIndexForTesting());
   });
 
   test(
