@@ -9,8 +9,8 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "extensions/browser/event_router.h"
 
 namespace extensions {
@@ -42,7 +42,8 @@ class TestEventRouterObserver : public EventRouter::TestObserver {
 
   EventMap events_;
   EventMap dispatched_events_;
-  raw_ptr<EventRouter> event_router_;
+  base::ScopedObservation<EventRouter, EventRouter::TestObserver> observation_{
+      this};
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 

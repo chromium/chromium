@@ -10,16 +10,11 @@
 
 namespace extensions {
 
-TestEventRouterObserver::TestEventRouterObserver(EventRouter* event_router)
-    : event_router_(event_router) {
-  event_router_->AddObserverForTesting(this);
+TestEventRouterObserver::TestEventRouterObserver(EventRouter* event_router) {
+  observation_.Observe(event_router);
 }
 
-TestEventRouterObserver::~TestEventRouterObserver() {
-  // Note: can't use ScopedObserver<> here because the method is
-  // RemoveObserverForTesting() instead of RemoveObserver().
-  event_router_->RemoveObserverForTesting(this);
-}
+TestEventRouterObserver::~TestEventRouterObserver() = default;
 
 void TestEventRouterObserver::ClearEvents() {
   events_.clear();

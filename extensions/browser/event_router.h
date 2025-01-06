@@ -722,4 +722,21 @@ struct EventListenerInfo {
 
 }  // namespace extensions
 
+namespace base {
+
+template <>
+struct ScopedObservationTraits<extensions::EventRouter,
+                               extensions::EventRouter::TestObserver> {
+  static void AddObserver(extensions::EventRouter* source,
+                          extensions::EventRouter::TestObserver* observer) {
+    source->AddObserverForTesting(observer);
+  }
+  static void RemoveObserver(extensions::EventRouter* source,
+                             extensions::EventRouter::TestObserver* observer) {
+    source->RemoveObserverForTesting(observer);
+  }
+};
+
+}  // namespace base
+
 #endif  // EXTENSIONS_BROWSER_EVENT_ROUTER_H_
