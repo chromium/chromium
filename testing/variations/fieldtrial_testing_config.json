@@ -6336,6 +6336,18 @@
             ]
         }
     ],
+    "CrOSBluetoothLLPrivacy": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Preperiod_Enabled_NonDogfood"
+                }
+            ]
+        }
+    ],
     "CrOSEnforceSystemAec": [
         {
             "platforms": [
