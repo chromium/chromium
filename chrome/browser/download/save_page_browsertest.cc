@@ -99,13 +99,11 @@ std::string ReadFileAndCollapseWhitespace(const base::FilePath& file_path) {
   return base::CollapseWhitespaceASCII(file_contents, false);
 }
 
-// Takes a string with "url=(%04d)%s", and replaces that with the length and
-// contents of the path the response was saved from, |url|, to match output by
-// the SavePageAs logic.
-std::string WriteSavedFromPath(const std::string& file_contents,
-                               const GURL& url) {
-  return base::StringPrintfNonConstexpr(file_contents.c_str(),
-                                        url.spec().size(), url.spec().c_str());
+// Prepends a Mark Of The Web to `file_contents`.
+std::string PrependMotw(const std::string& file_contents, const GURL& url) {
+  return base::StringPrintf("<!-- saved from url=(%04d)%s --> ",
+                            url.spec().size(), url.spec().c_str()) +
+         file_contents;
 }
 
 // Waits for an item record in the downloads database to match |filter|. See
@@ -532,9 +530,9 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveHTMLWithLongTextContent) {
   // Besides checking that the renderer didn't crash, test also that the HTML
   // content saved is the expected one (i.e. the whole HTML, no truncation).
   EXPECT_EQ(ReadFileAndCollapseWhitespace(full_file_name),
-            WriteSavedFromPath(ReadFileAndCollapseWhitespace(GetTestDirFile(
-                                   "long-text-content.saved.html")),
-                               url));
+            PrependMotw(ReadFileAndCollapseWhitespace(
+                            GetTestDirFile("long-text-content.saved.html")),
+                        url));
 }
 
 class DelayingDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
@@ -627,8 +625,8 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveCompleteHTML) {
 
   EXPECT_EQ(
       ReadFileAndCollapseWhitespace(full_file_name),
-      WriteSavedFromPath(
-          ReadFileAndCollapseWhitespace(GetTestDirFile("b.saved1.htm")), url));
+      PrependMotw(ReadFileAndCollapseWhitespace(GetTestDirFile("b.saved1.htm")),
+                  url));
   EXPECT_TRUE(
       base::ContentsEqual(GetTestDirFile("1.png"), dir.AppendASCII("1.png")));
   EXPECT_EQ(ReadFileAndCollapseWhitespace(dir.AppendASCII("1.css")),
@@ -704,8 +702,8 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, FileNameFromPageTitle) {
 
   EXPECT_EQ(
       ReadFileAndCollapseWhitespace(full_file_name),
-      WriteSavedFromPath(
-          ReadFileAndCollapseWhitespace(GetTestDirFile("b.saved2.htm")), url));
+      PrependMotw(ReadFileAndCollapseWhitespace(GetTestDirFile("b.saved2.htm")),
+                  url));
   EXPECT_TRUE(
       base::ContentsEqual(GetTestDirFile("1.png"), dir.AppendASCII("1.png")));
   EXPECT_EQ(ReadFileAndCollapseWhitespace(dir.AppendASCII("1.css")),
