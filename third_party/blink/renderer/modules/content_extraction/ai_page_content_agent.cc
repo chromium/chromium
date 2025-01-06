@@ -145,6 +145,13 @@ bool IsGenericContainer(
 void AddAnnotatedRoles(
     const LayoutObject& object,
     Vector<mojom::blink::AIPageContentAnnotatedRole>& annotated_roles) {
+  const auto& style = object.StyleRef();
+  if (style.ContentVisibility() == EContentVisibility::kHidden) {
+    annotated_roles.push_back(
+        mojom::blink::AIPageContentAnnotatedRole::kContentHidden);
+  }
+
+  // Element specific roles below.
   const auto* element = DynamicTo<HTMLElement>(object.GetNode());
   if (!element) {
     return;

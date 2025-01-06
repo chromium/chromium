@@ -170,6 +170,16 @@ class AIPageContentAgentTest : public testing::Test {
     EXPECT_EQ(attributes.annotated_roles[0], expected_role);
   }
 
+  void CheckAnnotatedRoles(
+      const mojom::blink::AIPageContentNode& node,
+      const std::vector<mojom::blink::AIPageContentAnnotatedRole>&
+          expected_roles) {
+    const auto& attributes = *node.content_attributes;
+    ASSERT_EQ(attributes.annotated_roles.size(), expected_roles.size());
+    EXPECT_THAT(attributes.annotated_roles,
+                testing::UnorderedElementsAreArray(expected_roles));
+  }
+
   void CheckGeometry(const mojom::blink::AIPageContentNode& node,
                      const gfx::Rect& expected_outer_bounding_box,
                      const gfx::Rect& expected_visible_bounding_box) {
@@ -1342,7 +1352,13 @@ TEST_F(AIPageContentAgentTest, ContentVisibilityHidden) {
   ASSERT_TRUE(content->root_node);
 
   const auto& root = *content->root_node;
-  EXPECT_TRUE(root.children_nodes.empty());
+  EXPECT_EQ(root.children_nodes.size(), 1u);
+
+  const auto& hidden_container = *root.children_nodes[0];
+  CheckContainerNode(hidden_container);
+  CheckAnnotatedRole(hidden_container,
+                     mojom::blink::AIPageContentAnnotatedRole::kContentHidden);
+  EXPECT_TRUE(hidden_container.children_nodes.empty());
 }
 
 TEST_F(AIPageContentAgentTest, ContentVisibilityAuto) {
@@ -1409,8 +1425,10 @@ TEST_F(AIPageContentAgentTest, HiddenUntilFound) {
 
   const auto& hidden_container = *root.children_nodes[0];
   CheckContainerNode(hidden_container);
-  CheckAnnotatedRole(hidden_container,
-                     mojom::blink::AIPageContentAnnotatedRole::kHeader);
+  CheckAnnotatedRoles(
+      hidden_container,
+      {mojom::blink::AIPageContentAnnotatedRole::kHeader,
+       mojom::blink::AIPageContentAnnotatedRole::kContentHidden});
   EXPECT_EQ(hidden_container.children_nodes.size(), 1u);
 
   // The hidden container continues to have an empty layout size even when
@@ -1475,7 +1493,14 @@ TEST_F(AIPageContentAgentTest, HiddenUntilFoundInsideIframe) {
   EXPECT_EQ(iframe_node.children_nodes.size(), 1u);
   const auto& iframe_root = *iframe_node.children_nodes[0];
 
-  const auto& hidden_text_node = *iframe_root.children_nodes[0];
+  EXPECT_EQ(iframe_root.children_nodes.size(), 1u);
+  const auto& hidden_container = *iframe_root.children_nodes[0];
+  CheckContainerNode(hidden_container);
+  CheckAnnotatedRole(hidden_container,
+                     mojom::blink::AIPageContentAnnotatedRole::kContentHidden);
+  EXPECT_EQ(hidden_container.children_nodes.size(), 1u);
+
+  const auto& hidden_text_node = *hidden_container.children_nodes[0];
   CheckTextNode(hidden_text_node, "hidden text");
   ASSERT_TRUE(hidden_text_node.content_attributes->geometry);
   const auto& hidden_text_geometry =

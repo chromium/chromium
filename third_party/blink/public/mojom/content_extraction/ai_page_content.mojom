@@ -51,6 +51,7 @@ enum AIPageContentAnnotatedRole {
   kSection,
   kAside,
   kFooter,
+  kContentHidden,
 };
 
 struct AIPageContentGeometry {
