@@ -334,6 +334,7 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
            WebDXFeature::kBeforeUnload},
           {WebFeature::kLayoutShiftExplicitlyRequested,
            WebDXFeature::kLayoutInstability},
+          {WebFeature::kJSSelfProfiling, WebDXFeature::kProfiler},
       }};
 
   return *kMap;
