@@ -158,10 +158,8 @@ base::expected<TriggerRegistration, TriggerRegistrationError> ParseDict(
       registration.aggregatable_values,
       AggregatableValues::FromJSON(dict.Find(kAggregatableValues)));
 
-  if (base::FeatureList::IsEnabled(features::kAttributionScopes)) {
-    ASSIGN_OR_RETURN(registration.attribution_scopes,
-                     AttributionScopesSet::FromJSON(dict));
-  }
+  ASSIGN_OR_RETURN(registration.attribution_scopes,
+                   AttributionScopesSet::FromJSON(dict));
 
   registration.debug_key = ParseDebugKey(dict);
   registration.debug_reporting = ParseDebugReporting(dict);
@@ -260,9 +258,7 @@ base::Value::Dict TriggerRegistration::ToJson() const {
 
   aggregatable_debug_reporting_config.Serialize(dict);
 
-  if (base::FeatureList::IsEnabled(features::kAttributionScopes)) {
-    attribution_scopes.SerializeForTrigger(dict);
-  }
+  attribution_scopes.SerializeForTrigger(dict);
 
   SerializeListIfNotEmpty(dict, kAggregatableNamedBudgets,
                           aggregatable_named_budget_candidates);

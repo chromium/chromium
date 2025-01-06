@@ -39,7 +39,6 @@
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/event_trigger_data.h"
-#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/os_registration.h"
@@ -867,10 +866,6 @@ TEST_F(AttributionDataHostManagerImplTest,
 
 TEST_F(AttributionDataHostManagerImplTest,
        NavigationSourceUniqueScopesSet_NoScopes) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      attribution_reporting::features::kAttributionScopes);
-
   base::HistogramTester histograms;
 
   const auto page_origin = *SuitableOrigin::Deserialize("https://page.example");
@@ -1002,10 +997,6 @@ TEST_F(AttributionDataHostManagerImplTest,
 
 TEST_F(AttributionDataHostManagerImplTest,
        NavigationSourceUniqueScopesSet_WithScopes) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      attribution_reporting::features::kAttributionScopes);
-
   base::HistogramTester histograms;
 
   const auto page_origin = *SuitableOrigin::Deserialize("https://page.example");

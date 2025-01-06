@@ -215,17 +215,8 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["http/tests/inspector-protocol/attribution-reporting"],
     "exclusive_tests": "ALL",
-    "args": ["--enable-features=KeepAliveInBrowserMigration,AttributionReportingInBrowserMigration,AttributionScopes"],
+    "args": ["--enable-features=KeepAliveInBrowserMigration,AttributionReportingInBrowserMigration"],
     "owners": ["linnan@chromium.org"],
-    "expires": "Jul 2, 2025"
-  },
-  {
-    "prefix": "attribution-reporting-attribution-scopes",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["http/tests/inspector-protocol/attribution-reporting"],
-    "exclusive_tests": "ALL",
-    "args": ["--enable-features=AttributionScopes"],
-    "owners": ["tquintanilla@chromium.org"],
     "expires": "Jul 2, 2025"
   },
   {

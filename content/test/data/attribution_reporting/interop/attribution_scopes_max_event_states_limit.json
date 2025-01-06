@@ -1,8 +1,5 @@
 {
   "description": "Event source exceeding defined max event states",
-  "api_config": {
-    "needs_attribution_scopes": true
-  },
   "input": {
     "registrations": [
       {

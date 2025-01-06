@@ -579,9 +579,6 @@ TEST(TriggerRegistrationTest, ParseAttributionScopesConfig) {
       },
   };
 
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAttributionScopes);
-
   for (const auto& test_case : kTestCases) {
     base::HistogramTester histograms;
     SCOPED_TRACE(test_case.desc);

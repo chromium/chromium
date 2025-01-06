@@ -447,11 +447,6 @@ RunAttributionInteropSimulation(
     scoped_api_state.emplace(AttributionOsLevelManager::ApiState::kEnabled);
   }
 
-  if (run.config.needs_attribution_scopes) {
-    enabled_features.emplace_back(
-        attribution_reporting::features::kAttributionScopes);
-  }
-
   if (run.config.needs_aggregatable_named_budgets) {
     enabled_features.emplace_back(
         attribution_reporting::features::kAttributionAggregatableNamedBudgets);

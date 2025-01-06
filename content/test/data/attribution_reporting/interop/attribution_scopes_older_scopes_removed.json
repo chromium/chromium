@@ -1,8 +1,5 @@
 {
   "description": "Tests that sources with outdated scopes are deleted.",
-  "api_config": {
-    "needs_attribution_scopes": true
-  },
   "input": {
     "registrations": [
       // S1: attribution scopes-> ["1", "2", "3"]  destinations -> [D1].
