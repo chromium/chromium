@@ -2,29 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef DEVICE_FIDO_ENCLAVE_VERIFY_ATTESTATION_REPORT_H_
-#define DEVICE_FIDO_ENCLAVE_VERIFY_ATTESTATION_REPORT_H_
+#ifndef DEVICE_FIDO_ENCLAVE_ATTESTATION_REPORT_H_
+#define DEVICE_FIDO_ENCLAVE_ATTESTATION_REPORT_H_
 
 #include <array>
 #include <cstdint>
-#include <string>
 
-#include "base/component_export.h"
-
-// AMD SEV-SNP data structures for attestation reports.
+// AMD SEV-SNP data structures for attestation reports. Note that these
+// structures are "packed", i.e. they are laid out in memory exactly matching
+// the structure produced by the AMD CPU.
 
 namespace device::enclave {
 
 // The version of all the components in the Trusted Computing Base (TCB).
 //
 // See Table 3 in <https://www.amd.com/system/files/TechDocs/56860.pdf>.
-struct COMPONENT_EXPORT(DEVICE_FIDO) TcbVersion {
+struct __attribute__((packed)) TcbVersion {
   // The current security version number (SVN) of the secure processor (PSP)
   // bootloader.
   uint8_t boot_loader;
 
   // The current SVN of the PSP operating system.
   uint8_t tee;
+
+  uint32_t reserved;
 
   // The current SVN of the SNP firmware.
   uint8_t snp;
@@ -36,7 +37,7 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) TcbVersion {
 // The required policy for a guest to run.
 //
 // See Table 9 in <https://www.amd.com/system/files/TechDocs/56860.pdf>
-struct COMPONENT_EXPORT(DEVICE_FIDO) GuestPolicy {
+struct GuestPolicy {
   // The minimum ABI minor version required to launch the guest.
   uint8_t abi_minor;
 
@@ -48,6 +49,8 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) GuestPolicy {
   // Use `GuestPolicy::get_flags` to try to convert this to a `PolicyFlags`
   // enum.
   uint16_t flags;
+
+  uint32_t reserved;
 };
 
 // The number of bytes of custom data that can be included in the attestation
@@ -59,7 +62,7 @@ const size_t REPORT_DATA_SIZE = 64;
 // The data contained in an attestation report.
 //
 // See Table 22 in <https://www.amd.com/system/files/TechDocs/56860.pdf>.
-struct COMPONENT_EXPORT(DEVICE_FIDO) AttestationReportData {
+struct __attribute__((packed)) AttestationReportData {
   // The version of the attestation report format.
   //
   // This implementation is based on version 2.
@@ -104,7 +107,9 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) AttestationReportData {
   //
   // Use `AttestationReportData::get_author_key_en` to try to convert this to
   // an `AuthorKey` enum.
-  uint64_t author_key_en;
+  uint32_t author_key_en;
+
+  uint32_t reserved1;
 
   // Guest-provided data. The custom data provided in the attestation
   // request.
@@ -135,6 +140,8 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) AttestationReportData {
   // endorsement key (VCEK) used to sign this report.
   TcbVersion reported_tcb;
 
+  std::array<uint8_t, 24> reserved2;
+
   // Identifier unique to the chip, unless the ID has been masked in
   // configuration in which case it is all zeroes.
   std::array<uint8_t, 64> chip_id;
@@ -151,6 +158,8 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) AttestationReportData {
   // The major number of the current secure firmware ABI version.
   uint8_t current_major;
 
+  uint8_t reserved3;
+
   // The build number of the committed secure firmware ABI version.
   uint8_t committed_build;
 
@@ -160,15 +169,19 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) AttestationReportData {
   // The major number of the committed secure firmware ABI version.
   uint8_t committed_major;
 
+  uint8_t reserved4;
+
   // The value of the current TCB version when the guest was launched or
   // imported.
   TcbVersion launch_tcb;
+
+  std::array<uint8_t, 168> reserved5;
 };
 
 // An ECDSA signature.
 //
 // See Table 119 in <https://www.amd.com/system/files/TechDocs/56860.pdf>.
-struct COMPONENT_EXPORT(DEVICE_FIDO) EcdsaSignature {
+struct EcdsaSignature {
   // The R component of this signature. The value is zero-extended and
   // little-endian encoded.
   std::array<uint8_t, 72> r;
@@ -176,14 +189,11 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) EcdsaSignature {
   // The S component of this signature. The value is zero-extended and
   // little-endian encoded.
   std::array<uint8_t, 72> s;
+
+  std::array<uint8_t, 368> reserved;
 };
 
-struct COMPONENT_EXPORT(DEVICE_FIDO) AttestationReport {
-  explicit AttestationReport(std::array<uint8_t, REPORT_DATA_SIZE> report_data);
-  AttestationReport(const AttestationReport& attestation_report);
-  AttestationReport();
-  ~AttestationReport();
-
+struct AttestationReport {
   // The data contained in the report.
   AttestationReportData data;
 
@@ -193,4 +203,4 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) AttestationReport {
 
 }  // namespace device::enclave
 
-#endif  // DEVICE_FIDO_ENCLAVE_VERIFY_ATTESTATION_REPORT_H_
+#endif  // DEVICE_FIDO_ENCLAVE_ATTESTATION_REPORT_H_

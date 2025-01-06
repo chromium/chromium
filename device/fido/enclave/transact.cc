@@ -4,6 +4,7 @@
 
 #include "device/fido/enclave/transact.h"
 
+#include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -18,6 +19,7 @@
 #include "components/cbor/writer.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/cable/v2_handshake.h"
+#include "device/fido/enclave/attestation.h"
 #include "device/fido/enclave/enclave_protocol_utils.h"
 #include "device/fido/enclave/enclave_websocket_client.h"
 #include "device/fido/features.h"
@@ -198,14 +200,27 @@ struct Transaction : base::RefCounted<Transaction> {
       return false;
     }
 
-    // `response` may contain arbitrary extra data, which is ignored. In
-    // the future this will contain attestation information.
+    auto attestation =
+        response.subspan(cablev2::HandshakeInitiator::kResponseSize);
     response = response.first<cablev2::HandshakeInitiator::kResponseSize>();
 
     cablev2::HandshakeResult result = handshake_.ProcessResponse(response);
     if (!result) {
       FIDO_LOG(ERROR) << "Enclave handshake failed";
       return false;
+    }
+
+    if (base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAttestation)) {
+      auto attestation_result =
+          ProcessAttestation(attestation, /*handshake_hash=*/result->second);
+      if (!attestation_result.has_value()) {
+        FIDO_LOG(ERROR) << "Attestation checking failed: "
+                        << attestation_result.error();
+        return false;
+      }
+      // TODO: establish minimum firmware versions and enforce that
+      // `attestation_result` meets that bar. Likely want an UMA to measure
+      // attestation failure rates (which should be zero).
     }
 
     crypter_ = std::move(result->first);

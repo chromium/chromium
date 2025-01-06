@@ -5,15 +5,5 @@
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("proto") {
-  sources = [
-    "attachment.proto",
-    "dice.proto",
-    "digest.proto",
-    "endorsement.proto",
-    "evidence.proto",
-    "expected_value.proto",
-    "reference_value.proto",
-    "tcb_version.proto",
-    "verification.proto",
-  ]
+  sources = [ "evidence.proto" ]
 }

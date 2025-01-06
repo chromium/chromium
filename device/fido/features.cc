@@ -182,4 +182,9 @@ BASE_FEATURE(kWebAuthnNeverSkipTrustThisComputer,
              "WebAuthenticationNeverSkipTrustThisComputer",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Disabled by default.
+BASE_FEATURE(kWebAuthnEnclaveAttestation,
+             "WebAuthenticationEnclaveAttestation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace device

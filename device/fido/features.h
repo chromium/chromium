@@ -149,6 +149,10 @@ BASE_DECLARE_FEATURE(kWebAuthnPasskeyUpgrade);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnNeverSkipTrustThisComputer);
 
+// Checks attestation from the enclave service.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnEnclaveAttestation);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_
