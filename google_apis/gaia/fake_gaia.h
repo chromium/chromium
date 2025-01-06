@@ -46,7 +46,7 @@ class FakeGaia {
     std::string token;
     std::string issued_to;
     std::string audience;
-    std::string user_id;
+    GaiaId user_id;
     ScopeSet scopes;
     int expires_in = 3600;
     std::string email;

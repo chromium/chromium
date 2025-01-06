@@ -729,7 +729,7 @@ void FakeGaia::HandleTokenInfo(const HttpRequest& request,
         base::Value::Dict()
             .Set("issued_to", token_info->issued_to)
             .Set("audience", token_info->audience)
-            .Set("user_id", token_info->user_id)
+            .Set("user_id", token_info->user_id.ToString())
             .Set("scope", base::JoinString(std::vector<std::string_view>(
                                                token_info->scopes.begin(),
                                                token_info->scopes.end()),
