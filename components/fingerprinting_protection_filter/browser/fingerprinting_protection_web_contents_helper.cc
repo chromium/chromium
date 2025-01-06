@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_observer.h"
 #include "components/fingerprinting_protection_filter/browser/throttle_manager.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_breakage_exception.h"
@@ -20,6 +21,8 @@
 #include "components/subresource_filter/content/shared/browser/utils.h"
 #include "components/subresource_filter/core/browser/verified_ruleset_dealer.h"
 #include "components/subresource_filter/core/common/load_policy.h"
+#include "components/subresource_filter/core/common/scoped_timers.h"
+#include "components/subresource_filter/core/common/time_measurements.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom-shared.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_handle_user_data.h"
@@ -45,6 +48,7 @@ namespace {
 
 using ::subresource_filter::GetSubresourceFilterRootPage;
 using ::subresource_filter::IsInSubresourceFilterRoot;
+using ::subresource_filter::ScopedTimers;
 using ::subresource_filter::VerifiedRulesetDealer;
 using ::subresource_filter::mojom::ActivationLevel;
 
@@ -273,20 +277,48 @@ void FingerprintingProtectionWebContentsHelper::DidStartNavigation(
   // refresh even if the navigation is cancelled (e.g. due to tab closing).
   if (subresource_blocked_in_current_primary_page() &&
       navigation_handle->GetReloadType() != content::ReloadType::NONE) {
+    const GURL& url = navigation_handle->GetURL();
     // Collect metrics regardless of whether the heuristic exception is enabled.
     int refresh_count = GetRefreshMetricsManager().IncrementAndGetRefreshCount(
-        navigation_handle->GetURL(), *web_contents());
+        url, *web_contents());
 
-    if (features::IsFingerprintingProtectionRefreshHeuristicExceptionEnabled(
-            is_incognito_) &&
-        refresh_count >=
-            features::GetFingerprintingProtectionRefreshHeuristicThreshold(
-                is_incognito_)) {
-      // Heuristic: If we blocked a subresource and the user refreshes enough
-      // times on the same site within this WebContents, we suspect there's been
-      // breakage on this site and add an exception.
-      CHECK(pref_service_ != nullptr);
-      AddBreakageException(navigation_handle->GetURL(), *pref_service_);
+    TryAddRefreshBreakageException(url, refresh_count);
+  }
+}
+
+void FingerprintingProtectionWebContentsHelper::TryAddRefreshBreakageException(
+    const GURL& url,
+    int refresh_count) {
+  std::string etld_plus_one = GetEtldPlusOne(url);
+  if (etld_plus_one.empty()) {
+    // Invalid URL.
+    return;
+  }
+
+  bool was_exception_already_added =
+      exception_already_added_for_etld_plus_one_.contains(etld_plus_one);
+  if (!was_exception_already_added &&
+      features::IsFingerprintingProtectionRefreshHeuristicExceptionEnabled(
+          is_incognito_) &&
+      refresh_count >=
+          features::GetFingerprintingProtectionRefreshHeuristicThreshold(
+              is_incognito_)) {
+    // Heuristic: If we blocked a subresource and the user refreshes enough
+    // times on the same site within this WebContents, we suspect there's been
+    // breakage on this site and add an exception.
+    CHECK(pref_service_ != nullptr);
+    UMA_HISTOGRAM_BOOLEAN(AddRefreshCountExceptionHistogramName, true);
+    {
+      auto add_exception_timer = ScopedTimers::StartIf(
+          features::SampleEnablePerformanceMeasurements(is_incognito_),
+          [](base::TimeDelta latency_sample) {
+            UMA_HISTOGRAM_CUSTOM_MICRO_TIMES(
+                AddRefreshCountExceptionWallDurationHistogramName,
+                latency_sample, base::Microseconds(1), base::Seconds(10), 50);
+          });
+      if (AddBreakageException(url, *pref_service_)) {
+        exception_already_added_for_etld_plus_one_.insert(etld_plus_one);
+      }
     }
   }
 }

@@ -61,6 +61,8 @@ class FingerprintingProtectionPageActivationThrottle
  private:
   FRIEND_TEST_ALL_PREFIXES(FPFPageActivationThrottleTestGetActivationTest,
                            GetActivationComputesLevelAndDecision);
+  FRIEND_TEST_ALL_PREFIXES(FPFPageActivationThrottleTestRefreshHeuristicUmaTest,
+                           RefreshHeuristicUmasAreLoggedCorrectly);
 
   // Computes the ActivationLevel and ActivationDecision for the current URL
   // based on feature flags/params and prefs. This function is necessary because

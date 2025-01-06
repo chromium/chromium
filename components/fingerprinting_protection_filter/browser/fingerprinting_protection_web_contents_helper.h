@@ -60,6 +60,7 @@ class RefreshMetricsManager {
   // measuring breakage on valid URLs.
   int IncrementAndGetRefreshCount(const GURL& url,
                                   content::WebContents& web_contents);
+
   // Logs UMA and UKM metrics for each eTLD+1 that had at least one refresh in
   // the attached WebContents.
   void LogMetrics() const;
@@ -212,6 +213,14 @@ class FingerprintingProtectionWebContentsHelper
   // because classes mocking the RefreshCountMetricsManager need to be able to
   // hide this member.
   RefreshMetricsManager refresh_metrics_manager_;
+
+  // Keeps track of when a refresh count heuristic breakage exception has been
+  // added for an eTLD+1, so that we save on performance costs of adding it
+  // again.
+  base::flat_set<std::string> exception_already_added_for_etld_plus_one_;
+  // Adds an exception for the eTLD+1 of the given URL if the given refresh
+  // count exceeds the threshold and an exception was not already added.
+  void TryAddRefreshBreakageException(const GURL& url, int refresh_count);
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

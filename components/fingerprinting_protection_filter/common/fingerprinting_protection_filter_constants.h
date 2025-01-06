@@ -40,6 +40,21 @@ const char DocumentLoadRulesetIsAvailableHistogramName[] =
 const char RefreshCountHistogramName[] =
     "FingerprintingProtection.WebContentsObserver.RefreshCount";
 
+const char HasRefreshCountExceptionHistogramName[] =
+    "FingerprintingProtection.PageLoad.RefreshCount.SiteHasBreakageException";
+
+const char AddRefreshCountExceptionHistogramName[] =
+    "FingerprintingProtection.WebContentsObserver.RefreshCount."
+    "AddBreakageException";
+
+const char HasRefreshCountExceptionWallDurationHistogramName[] =
+    "FingerprintingProtection.PageLoad.RefreshCount."
+    "SiteHasBreakageExceptionWallDuration";
+
+const char AddRefreshCountExceptionWallDurationHistogramName[] =
+    "FingerprintingProtection.WebContentsObserver.RefreshCount."
+    "AddBreakageExceptionWallDuration";
+
 // Console messages
 // ----------------
 

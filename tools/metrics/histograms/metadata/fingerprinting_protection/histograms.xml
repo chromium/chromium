@@ -257,6 +257,39 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="FingerprintingProtection.PageLoad.RefreshCount.SiteHasBreakageException"
+    enum="BooleanAvailable" expires_after="2025-07-01">
+  <owner>aabeshouse@google.com</owner>
+  <owner>rizvis@google.com</owner>
+  <owner>trishalfonso@google.com</owner>
+  <owner>thesalsa@google.com</owner>
+  <owner>tanub@google.com</owner>
+  <summary>
+    When a document loads, records if the site has an exception created by the
+    refresh count breakage heuristic. In that case, fingerprinting protection
+    filtering is disabled due to the exception.
+  </summary>
+</histogram>
+
+<histogram
+    name="FingerprintingProtection.PageLoad.RefreshCount.SiteHasBreakageExceptionWallDuration"
+    units="microseconds" expires_after="2025-07-01">
+  <owner>aabeshouse@google.com</owner>
+  <owner>rizvis@google.com</owner>
+  <owner>trishalfonso@google.com</owner>
+  <owner>thesalsa@google.com</owner>
+  <owner>tanub@google.com</owner>
+  <summary>
+    See
+    `FingerprintingProtection.PageLoad.RefreshCount.SiteHasBreakageException`.
+    Measures the wall time taken to check for a breakage exception.
+
+    This metric uses UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES to acccount for
+    clients with low-resolution clocks.
+  </summary>
+</histogram>
+
+<histogram
     name="FingerprintingProtection.PageLoad.RootNavigation.ActivationState"
     enum="SubresourceFilterActivationState" expires_after="2025-07-01">
   <owner>rizvis@google.com</owner>
@@ -370,6 +403,38 @@ chromium-metrics-reviews@google.com.
     The count of refreshes on the first document after a Fingerprinting
     Protection throttling completes. This metric is experimental and for
     data-gathering.
+  </summary>
+</histogram>
+
+<histogram
+    name="FingerprintingProtection.WebContentsObserver.RefreshCount.AddBreakageException"
+    enum="BooleanAvailable" expires_after="2025-07-01">
+  <owner>aabeshouse@google.com</owner>
+  <owner>rizvis@google.com</owner>
+  <owner>trishalfonso@google.com</owner>
+  <owner>thesalsa@google.com</owner>
+  <owner>tanub@google.com</owner>
+  <summary>
+    Logs when a breakage exception is added based on the refresh count
+    heuristic.
+  </summary>
+</histogram>
+
+<histogram
+    name="FingerprintingProtection.WebContentsObserver.RefreshCount.AddBreakageExceptionWallDuration"
+    units="microseconds" expires_after="2025-07-01">
+  <owner>aabeshouse@google.com</owner>
+  <owner>rizvis@google.com</owner>
+  <owner>trishalfonso@google.com</owner>
+  <owner>thesalsa@google.com</owner>
+  <owner>tanub@google.com</owner>
+  <summary>
+    See
+    `FingerprintingProtection.WebContentsObserver.RefreshCount.AddBreakageException`.
+    Measures the wall time taken to add a breakage exception.
+
+    This metric uses UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES to acccount for
+    clients with low-resolution clocks.
   </summary>
 </histogram>
 

@@ -859,6 +859,9 @@ TEST_F(
       {{kGoogleUkmId, 2}, {kYoutubeUkmId, 4}, {kAppspotUkmId, 4}});
 }
 
+// Note: In these tests, when testing the latency UMA, we just check whether it
+// is logged at all, as the measurement is done by a subresource filter library
+// macro (UMA_HISTOGRAM_CUSTOM_MICRO_TIMES).
 class FingerprintingProtectionRefreshCountExceptionTest
     : public content::RenderViewHostTestHarness {
  public:
@@ -869,9 +872,11 @@ class FingerprintingProtectionRefreshCountExceptionTest
     // Enable feature param for adding exception in both regular and incognito.
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kEnableFingerprintingProtectionFilter,
-          {{features::kRefreshHeuristicExceptionThresholdParam, "3"}}},
+          {{features::kRefreshHeuristicExceptionThresholdParam, "3"},
+           {"performance_measurement_rate", "1.0"}}},
          {features::kEnableFingerprintingProtectionFilterInIncognito,
-          {{features::kRefreshHeuristicExceptionThresholdParam, "3"}}}},
+          {{features::kRefreshHeuristicExceptionThresholdParam, "3"},
+           {"performance_measurement_rate", "1.0"}}}},
         {});
   }
 
@@ -907,27 +912,36 @@ class FingerprintingProtectionRefreshCountExceptionTest
   base::test::ScopedFeatureList scoped_feature_list_;
   TestSupport test_support_;
 };
-
 TEST_F(FingerprintingProtectionRefreshCountExceptionTest,
        NotEnoughRefreshesOnOneSite_NoException_Incognito) {
+  base::HistogramTester histograms;
   InitializeWebContentsHelper(/*is_incognito=*/true);
 
   NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 0);
 
   EXPECT_FALSE(HasBreakageException(GURL(kGoogleUrl), *test_support_.prefs()));
+  histograms.ExpectTotalCount(AddRefreshCountExceptionHistogramName, 0);
+  histograms.ExpectTotalCount(AddRefreshCountExceptionWallDurationHistogramName,
+                              0);
 }
 
 TEST_F(FingerprintingProtectionRefreshCountExceptionTest,
        RefreshesOnOneSite_HasException_Incognito) {
+  base::HistogramTester histograms;
   InitializeWebContentsHelper(/*is_incognito=*/true);
 
   NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 3);
 
   EXPECT_TRUE(HasBreakageException(GURL(kGoogleUrl), *test_support_.prefs()));
+  histograms.ExpectTotalCount(AddRefreshCountExceptionHistogramName, 1);
+  histograms.ExpectUniqueSample(AddRefreshCountExceptionHistogramName, 1, 1);
+  histograms.ExpectTotalCount(AddRefreshCountExceptionWallDurationHistogramName,
+                              1);
 }
 
 TEST_F(FingerprintingProtectionRefreshCountExceptionTest,
        NonContiguousRefreshesOnOneSite_HasException_Incognito) {
+  base::HistogramTester histograms;
   InitializeWebContentsHelper(/*is_incognito=*/true);
 
   NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 1);
@@ -937,10 +951,16 @@ TEST_F(FingerprintingProtectionRefreshCountExceptionTest,
   EXPECT_TRUE(HasBreakageException(GURL(kGoogleUrl), *test_support_.prefs()));
   // No exception for the non-refreshed site.
   EXPECT_FALSE(HasBreakageException(GURL(kYoutubeUrl), *test_support_.prefs()));
+  // UMAs for one exception added.
+  histograms.ExpectTotalCount(AddRefreshCountExceptionHistogramName, 1);
+  histograms.ExpectUniqueSample(AddRefreshCountExceptionHistogramName, 1, 1);
+  histograms.ExpectTotalCount(AddRefreshCountExceptionWallDurationHistogramName,
+                              1);
 }
 
 TEST_F(FingerprintingProtectionRefreshCountExceptionTest,
        NotEnoughRefreshesOnMultipleSites_NoExceptions_Incognito) {
+  base::HistogramTester histograms;
   InitializeWebContentsHelper(/*is_incognito=*/true);
 
   NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 1);
@@ -951,10 +971,14 @@ TEST_F(FingerprintingProtectionRefreshCountExceptionTest,
   EXPECT_FALSE(HasBreakageException(GURL(kGoogleUrl), *test_support_.prefs()));
   EXPECT_FALSE(HasBreakageException(GURL(kYoutubeUrl), *test_support_.prefs()));
   EXPECT_FALSE(HasBreakageException(GURL(kAppspotUrl), *test_support_.prefs()));
+  histograms.ExpectTotalCount(AddRefreshCountExceptionHistogramName, 0);
+  histograms.ExpectTotalCount(AddRefreshCountExceptionWallDurationHistogramName,
+                              0);
 }
 
 TEST_F(FingerprintingProtectionRefreshCountExceptionTest,
        RefreshesOnMultipleSites_AllHaveExceptions_Incognito) {
+  base::HistogramTester histograms;
   InitializeWebContentsHelper(/*is_incognito=*/true);
 
   NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 3);
@@ -964,11 +988,17 @@ TEST_F(FingerprintingProtectionRefreshCountExceptionTest,
   EXPECT_TRUE(HasBreakageException(GURL(kGoogleUrl), *test_support_.prefs()));
   EXPECT_TRUE(HasBreakageException(GURL(kYoutubeUrl), *test_support_.prefs()));
   EXPECT_TRUE(HasBreakageException(GURL(kAppspotUrl), *test_support_.prefs()));
+  // UMAs for 3 exceptions added
+  histograms.ExpectTotalCount(AddRefreshCountExceptionHistogramName, 3);
+  histograms.ExpectUniqueSample(AddRefreshCountExceptionHistogramName, 1, 3);
+  histograms.ExpectTotalCount(AddRefreshCountExceptionWallDurationHistogramName,
+                              3);
 }
 
 TEST_F(
     FingerprintingProtectionRefreshCountExceptionTest,
     NonContiguousRefreshesOfDifferentAmountsOnMultipleSites_SomeHaveExceptions_Incognito) {
+  base::HistogramTester histograms;
   InitializeWebContentsHelper(/*is_incognito=*/true);
 
   // Navigate between different sites and reload multiple times each, but only
@@ -987,10 +1017,16 @@ TEST_F(
   EXPECT_FALSE(HasBreakageException(GURL(kAppspotUrl), *test_support_.prefs()));
   EXPECT_FALSE(
       HasBreakageException(GURL(kNonReloadedSiteUrl), *test_support_.prefs()));
+  // UMAs for 2 exceptions added
+  histograms.ExpectTotalCount(AddRefreshCountExceptionHistogramName, 2);
+  histograms.ExpectUniqueSample(AddRefreshCountExceptionHistogramName, 1, 2);
+  histograms.ExpectTotalCount(AddRefreshCountExceptionWallDurationHistogramName,
+                              2);
 }
 
 TEST_F(FingerprintingProtectionRefreshCountExceptionTest,
        RefreshHeuristicParamDisabled_NoException_Incognito) {
+  base::HistogramTester histograms;
   InitializeWebContentsHelper(/*is_incognito=*/true);
 
   // Disable feature param for exception.
@@ -1007,10 +1043,14 @@ TEST_F(FingerprintingProtectionRefreshCountExceptionTest,
   EXPECT_FALSE(HasBreakageException(GURL(kGoogleUrl), *test_support_.prefs()));
   EXPECT_FALSE(HasBreakageException(GURL(kYoutubeUrl), *test_support_.prefs()));
   EXPECT_FALSE(HasBreakageException(GURL(kAppspotUrl), *test_support_.prefs()));
+  histograms.ExpectTotalCount(AddRefreshCountExceptionHistogramName, 0);
+  histograms.ExpectTotalCount(AddRefreshCountExceptionWallDurationHistogramName,
+                              0);
 }
 
 TEST_F(FingerprintingProtectionRefreshCountExceptionTest,
        NoBlockedSubresource_NoException_Incognito) {
+  base::HistogramTester histograms;
   InitializeWebContentsHelper(/*is_incognito=*/true);
 
   // Navigate and reload multiple times each, but no blocked subresources.
@@ -1021,28 +1061,41 @@ TEST_F(FingerprintingProtectionRefreshCountExceptionTest,
   EXPECT_FALSE(HasBreakageException(GURL(kGoogleUrl), *test_support_.prefs()));
   EXPECT_FALSE(HasBreakageException(GURL(kYoutubeUrl), *test_support_.prefs()));
   EXPECT_FALSE(HasBreakageException(GURL(kAppspotUrl), *test_support_.prefs()));
+  histograms.ExpectTotalCount(AddRefreshCountExceptionHistogramName, 0);
+  histograms.ExpectTotalCount(AddRefreshCountExceptionWallDurationHistogramName,
+                              0);
 }
 
 TEST_F(FingerprintingProtectionRefreshCountExceptionTest,
        NotEnoughRefreshesOnOneSite_NoException_NonIncognito) {
+  base::HistogramTester histograms;
   InitializeWebContentsHelper(/*is_incognito=*/false);
 
   NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 0);
 
   EXPECT_FALSE(HasBreakageException(GURL(kGoogleUrl), *test_support_.prefs()));
+  histograms.ExpectTotalCount(AddRefreshCountExceptionHistogramName, 0);
+  histograms.ExpectTotalCount(AddRefreshCountExceptionWallDurationHistogramName,
+                              0);
 }
 
 TEST_F(FingerprintingProtectionRefreshCountExceptionTest,
        RefreshesOnOneSite_HasException_NonIncognito) {
+  base::HistogramTester histograms;
   InitializeWebContentsHelper(/*is_incognito=*/false);
 
   NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 3);
 
   EXPECT_TRUE(HasBreakageException(GURL(kGoogleUrl), *test_support_.prefs()));
+  histograms.ExpectTotalCount(AddRefreshCountExceptionHistogramName, 1);
+  histograms.ExpectUniqueSample(AddRefreshCountExceptionHistogramName, 1, 1);
+  histograms.ExpectTotalCount(AddRefreshCountExceptionWallDurationHistogramName,
+                              1);
 }
 
 TEST_F(FingerprintingProtectionRefreshCountExceptionTest,
        NonContiguousRefreshesOnOneSite_HasException_NonIncognito) {
+  base::HistogramTester histograms;
   InitializeWebContentsHelper(/*is_incognito=*/false);
 
   NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 1);
@@ -1052,10 +1105,16 @@ TEST_F(FingerprintingProtectionRefreshCountExceptionTest,
   EXPECT_TRUE(HasBreakageException(GURL(kGoogleUrl), *test_support_.prefs()));
   // No exception for the non-refreshed site.
   EXPECT_FALSE(HasBreakageException(GURL(kYoutubeUrl), *test_support_.prefs()));
+  // UMAs for one exception added.
+  histograms.ExpectTotalCount(AddRefreshCountExceptionHistogramName, 1);
+  histograms.ExpectUniqueSample(AddRefreshCountExceptionHistogramName, 1, 1);
+  histograms.ExpectTotalCount(AddRefreshCountExceptionWallDurationHistogramName,
+                              1);
 }
 
 TEST_F(FingerprintingProtectionRefreshCountExceptionTest,
        NotEnoughRefreshesOnMultipleSites_NoExceptions_NonIncognito) {
+  base::HistogramTester histograms;
   InitializeWebContentsHelper(/*is_incognito=*/false);
 
   NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 1);
@@ -1066,10 +1125,14 @@ TEST_F(FingerprintingProtectionRefreshCountExceptionTest,
   EXPECT_FALSE(HasBreakageException(GURL(kGoogleUrl), *test_support_.prefs()));
   EXPECT_FALSE(HasBreakageException(GURL(kYoutubeUrl), *test_support_.prefs()));
   EXPECT_FALSE(HasBreakageException(GURL(kAppspotUrl), *test_support_.prefs()));
+  histograms.ExpectTotalCount(AddRefreshCountExceptionHistogramName, 0);
+  histograms.ExpectTotalCount(AddRefreshCountExceptionWallDurationHistogramName,
+                              0);
 }
 
 TEST_F(FingerprintingProtectionRefreshCountExceptionTest,
        RefreshesOnMultipleSites_AllHaveExceptions_NonIncognito) {
+  base::HistogramTester histograms;
   InitializeWebContentsHelper(/*is_incognito=*/false);
 
   NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 3);
@@ -1079,11 +1142,17 @@ TEST_F(FingerprintingProtectionRefreshCountExceptionTest,
   EXPECT_TRUE(HasBreakageException(GURL(kGoogleUrl), *test_support_.prefs()));
   EXPECT_TRUE(HasBreakageException(GURL(kYoutubeUrl), *test_support_.prefs()));
   EXPECT_TRUE(HasBreakageException(GURL(kAppspotUrl), *test_support_.prefs()));
+  // UMAs for three exceptions added.
+  histograms.ExpectTotalCount(AddRefreshCountExceptionHistogramName, 3);
+  histograms.ExpectUniqueSample(AddRefreshCountExceptionHistogramName, 1, 3);
+  histograms.ExpectTotalCount(AddRefreshCountExceptionWallDurationHistogramName,
+                              3);
 }
 
 TEST_F(
     FingerprintingProtectionRefreshCountExceptionTest,
     NonContiguousRefreshesOfDifferentAmountsOnMultipleSites_SomeHaveExceptions_NonIncognito) {
+  base::HistogramTester histograms;
   InitializeWebContentsHelper(/*is_incognito=*/false);
 
   // Navigate between different sites and reload multiple times each, but only
@@ -1102,10 +1171,16 @@ TEST_F(
   EXPECT_FALSE(HasBreakageException(GURL(kAppspotUrl), *test_support_.prefs()));
   EXPECT_FALSE(
       HasBreakageException(GURL(kNonReloadedSiteUrl), *test_support_.prefs()));
+  // UMAs for two exceptions added.
+  histograms.ExpectTotalCount(AddRefreshCountExceptionHistogramName, 2);
+  histograms.ExpectUniqueSample(AddRefreshCountExceptionHistogramName, 1, 2);
+  histograms.ExpectTotalCount(AddRefreshCountExceptionWallDurationHistogramName,
+                              2);
 }
 
 TEST_F(FingerprintingProtectionRefreshCountExceptionTest,
        RefreshHeuristicParamDisabled_NoException_NonIncognito) {
+  base::HistogramTester histograms;
   InitializeWebContentsHelper(/*is_incognito=*/false);
 
   // Disable feature param for exception.
@@ -1122,10 +1197,14 @@ TEST_F(FingerprintingProtectionRefreshCountExceptionTest,
   EXPECT_FALSE(HasBreakageException(GURL(kGoogleUrl), *test_support_.prefs()));
   EXPECT_FALSE(HasBreakageException(GURL(kYoutubeUrl), *test_support_.prefs()));
   EXPECT_FALSE(HasBreakageException(GURL(kAppspotUrl), *test_support_.prefs()));
+  histograms.ExpectTotalCount(AddRefreshCountExceptionHistogramName, 0);
+  histograms.ExpectTotalCount(AddRefreshCountExceptionWallDurationHistogramName,
+                              0);
 }
 
 TEST_F(FingerprintingProtectionRefreshCountExceptionTest,
        NoBlockedSubresource_NoException_NonIncognito) {
+  base::HistogramTester histograms;
   InitializeWebContentsHelper(/*is_incognito=*/false);
 
   // Navigate and reload multiple times each, but no blocked subresources.
@@ -1136,6 +1215,9 @@ TEST_F(FingerprintingProtectionRefreshCountExceptionTest,
   EXPECT_FALSE(HasBreakageException(GURL(kGoogleUrl), *test_support_.prefs()));
   EXPECT_FALSE(HasBreakageException(GURL(kYoutubeUrl), *test_support_.prefs()));
   EXPECT_FALSE(HasBreakageException(GURL(kAppspotUrl), *test_support_.prefs()));
+  histograms.ExpectTotalCount(AddRefreshCountExceptionHistogramName, 0);
+  histograms.ExpectTotalCount(AddRefreshCountExceptionWallDurationHistogramName,
+                              0);
 }
 
 }  // namespace

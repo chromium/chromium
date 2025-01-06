@@ -53,6 +53,12 @@ bool IsFingerprintingProtectionRefreshHeuristicExceptionEnabled(
 COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
 int GetFingerprintingProtectionRefreshHeuristicThreshold(bool is_incognito);
 
+// Randomly determines whether performance measurements will be enabled,
+// using the rate specified by the regular or incognito feature flag parameter,
+// depending on the value of `is_incognito`.
+COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
+bool SampleEnablePerformanceMeasurements(bool is_incognito);
+
 COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
 extern const base::FeatureParam<subresource_filter::mojom::ActivationLevel>
     kActivationLevel;

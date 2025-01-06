@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/rand_util.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 
 namespace fingerprinting_protection_filter::features {
@@ -53,6 +54,23 @@ int GetFingerprintingProtectionRefreshHeuristicThreshold(bool is_incognito) {
   }
 
   return kRefreshHeuristicExceptionThresholdNonIncognito.Get();
+}
+
+bool SampleEnablePerformanceMeasurements(bool is_incognito) {
+  if (!base::ThreadTicks::IsSupported()) {
+    // Can't do accurate performance measurements if ThreadTicks not supported.
+    return false;
+  }
+
+  // Get sampling rate based on whether we're in incognito.
+  const base::Feature& feature =
+      is_incognito ? features::kEnableFingerprintingProtectionFilterInIncognito
+                   : features::kEnableFingerprintingProtectionFilter;
+  const double sampling_rate = GetFieldTrialParamByFeatureAsDouble(
+      feature, features::kPerformanceMeasurementRateParam, 0.0);
+
+  // Randomly sample.
+  return base::RandDouble() < sampling_rate;
 }
 
 constexpr base::FeatureParam<subresource_filter::mojom::ActivationLevel>::Option

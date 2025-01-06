@@ -16,6 +16,8 @@
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #include "components/subresource_filter/content/shared/browser/utils.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
+#include "components/subresource_filter/core/common/scoped_timers.h"
+#include "components/subresource_filter/core/common/time_measurements.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom-shared.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "content/public/browser/navigation_handle.h"
@@ -24,6 +26,7 @@
 namespace fingerprinting_protection_filter {
 
 using ::subresource_filter::ActivationDecision;
+using ::subresource_filter::ScopedTimers;
 using ::subresource_filter::mojom::ActivationLevel;
 using ::subresource_filter::mojom::ActivationState;
 
@@ -74,10 +77,21 @@ FingerprintingProtectionPageActivationThrottle::GetActivation() const {
     return {.level = ActivationLevel::kDisabled,
             .decision = ActivationDecision::ACTIVATION_DISABLED};
   }
-
+  bool has_breakage_exception = false;
   if (features::IsFingerprintingProtectionRefreshHeuristicExceptionEnabled(
-          is_incognito_) &&
-      HasBreakageException(navigation_handle()->GetURL(), *prefs_)) {
+          is_incognito_)) {
+    auto has_exception_timer = ScopedTimers::StartIf(
+        features::SampleEnablePerformanceMeasurements(is_incognito_),
+        [](base::TimeDelta latency_sample) {
+          UMA_HISTOGRAM_CUSTOM_MICRO_TIMES(
+              HasRefreshCountExceptionWallDurationHistogramName, latency_sample,
+              base::Microseconds(1), base::Seconds(10), 50);
+        });
+    has_breakage_exception =
+        HasBreakageException(navigation_handle()->GetURL(), *prefs_);
+  }
+  if (has_breakage_exception) {
+    UMA_HISTOGRAM_BOOLEAN(HasRefreshCountExceptionHistogramName, true);
     // Disabled by breakage exception.
     return {.level = ActivationLevel::kDisabled,
             .decision = ActivationDecision::URL_ALLOWLISTED};
@@ -149,7 +163,7 @@ void FingerprintingProtectionPageActivationThrottle::NotifyResult(
   ActivationState activation_state;
   activation_state.activation_level = activation_result.level;
   activation_state.measure_performance =
-      GetEnablePerformanceMeasurements(is_incognito_);
+      features::SampleEnablePerformanceMeasurements(is_incognito_);
   activation_state.enable_logging =
       features::IsFingerprintingProtectionConsoleLoggingEnabled();
 
@@ -164,27 +178,6 @@ void FingerprintingProtectionPageActivationThrottle::LogMetricsOnChecksComplete(
   UMA_HISTOGRAM_ENUMERATION(ActivationLevelHistogramName, level);
   UMA_HISTOGRAM_ENUMERATION(ActivationDecisionHistogramName, decision,
                             ActivationDecision::ACTIVATION_DECISION_MAX);
-}
-
-namespace {
-
-bool ShouldMeasurePerformance(double performance_measurement_rate) {
-  return base::ThreadTicks::IsSupported() &&
-         (performance_measurement_rate == 1 ||
-          base::RandDouble() < performance_measurement_rate);
-}
-
-}  // namespace
-
-bool FingerprintingProtectionPageActivationThrottle::
-    GetEnablePerformanceMeasurements(bool is_incognito) const {
-  // Performance measurement rate may differ between incognito and
-  // non-incognito modes.
-  double performance_measurement_rate = GetFieldTrialParamByFeatureAsDouble(
-      is_incognito ? features::kEnableFingerprintingProtectionFilterInIncognito
-                   : features::kEnableFingerprintingProtectionFilter,
-      features::kPerformanceMeasurementRateParam, 0.0);
-  return ShouldMeasurePerformance(performance_measurement_rate);
 }
 
 }  // namespace fingerprinting_protection_filter

@@ -350,67 +350,127 @@ TEST_F(
   mock_throttle.WillProcessResponse();
 }
 
-TEST_F(FPFPageActivationThrottleTest, FlagEnabled_MeasurePerformanceRate) {
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      features::kEnableFingerprintingProtectionFilter,
-      {{"performance_measurement_rate", "1.0"}});
+struct FPFRefreshHeuristicUmaTestCase {
+  std::string test_name;
 
-  auto mock_throttle = MockFingerprintingProtectionPageActivationThrottle(
-      mock_nav_handle_.get(), test_support_.tracking_protection_settings(),
-      test_support_.prefs());
+  // Configuration
+  bool is_refresh_heuristic_enabled;
+  bool has_refresh_heuristic_exception;
 
-  EXPECT_EQ(
-      mock_throttle.GetEnablePerformanceMeasurements(/*is_incognito=*/false),
-      true);
-}
+  // Expectations
+  bool expect_has_exception_uma;
+  bool expect_latency_uma;
+};
 
-TEST_F(FPFPageActivationThrottleTest,
-       IncognitoFlagEnabled_MeasurePerformanceRate) {
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      features::kEnableFingerprintingProtectionFilterInIncognito,
-      {{"performance_measurement_rate", "1.0"}});
+class FPFPageActivationThrottleTestRefreshHeuristicUmaTest
+    : public content::RenderViewHostTestHarness,
+      public testing::WithParamInterface<FPFRefreshHeuristicUmaTestCase> {
+ public:
+  FPFPageActivationThrottleTestRefreshHeuristicUmaTest() = default;
 
-  auto mock_throttle = MockFingerprintingProtectionPageActivationThrottle(
-      mock_nav_handle_.get(), test_support_.tracking_protection_settings(),
-      test_support_.prefs());
+  GURL GetTestUrl() { return GURL("http://cool.things.com"); }
 
-  EXPECT_EQ(
-      mock_throttle.GetEnablePerformanceMeasurements(/*is_incognito=*/true),
-      true);
-}
+  void SetUp() override {
+    content::RenderViewHostTestHarness::SetUp();
+    mock_nav_handle_ = std::make_unique<content::MockNavigationHandle>(
+        RenderViewHostTestHarness::web_contents());
+  }
 
-TEST_F(
-    FPFPageActivationThrottleTest,
-    PerformancemanceMeasurementRateNotSet_NonIncognito_DoNotMeasurePerformance) {
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      features::kEnableFingerprintingProtectionFilter,
-      /*params*/ {});
+  void TearDown() override {
+    mock_nav_handle_.reset();
+    RenderViewHostTestHarness::TearDown();
+  }
 
-  auto mock_throttle = MockFingerprintingProtectionPageActivationThrottle(
-      mock_nav_handle_.get(), test_support_.tracking_protection_settings(),
-      test_support_.prefs());
+  void InitializeFeatureFlag(const FPFRefreshHeuristicUmaTestCase& test_case) {
+    static constexpr std::string kRefreshHeuristicThreshold = "3";
+    static constexpr std::string kRefreshHeuristicThresholdDisabled = "0";
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kEnableFingerprintingProtectionFilter,
+          {{"activation_level", "enabled"},
+           {"performance_measurement_rate", "1.0"},
+           {features::kRefreshHeuristicExceptionThresholdParam,
+            test_case.is_refresh_heuristic_enabled
+                ? kRefreshHeuristicThreshold
+                : kRefreshHeuristicThresholdDisabled}}}},
+        {});
+  }
 
-  EXPECT_EQ(
-      mock_throttle.GetEnablePerformanceMeasurements(/*is_incognito=*/false),
-      false);
-}
+ protected:
+  TestSupport test_support_;
+  std::unique_ptr<content::MockNavigationHandle> mock_nav_handle_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
-TEST_F(
-    FPFPageActivationThrottleTest,
-    PerformancemanceMeasurementRateNotSet_Incognito_DoNotMeasurePerformance) {
+const FPFRefreshHeuristicUmaTestCase kRefreshHeuristicUmaTestCases[] = {
+    {.test_name = "RefreshHeuristicEnabled_HasException_LogsUmas",
+     .is_refresh_heuristic_enabled = true,
+     .has_refresh_heuristic_exception = true,
+     .expect_has_exception_uma = true,
+     .expect_latency_uma = true},
+    {.test_name = "RefreshHeuristicEnabled_NoException_LogsLatencyUma",
+     .is_refresh_heuristic_enabled = true,
+     .has_refresh_heuristic_exception = false,
+     .expect_has_exception_uma = false,
+     .expect_latency_uma = true},
+    {.test_name = "RefreshHeuristicDisabled_HasException_DoesntLogUmas",
+     .is_refresh_heuristic_enabled = false,
+     .has_refresh_heuristic_exception = true,
+     .expect_has_exception_uma = false,
+     .expect_latency_uma = false},
+    {.test_name = "RefreshHeuristicDisabled_NoException_DoesntLogUmas",
+     .is_refresh_heuristic_enabled = false,
+     .has_refresh_heuristic_exception = false,
+     .expect_has_exception_uma = false,
+     .expect_latency_uma = false}};
+
+INSTANTIATE_TEST_SUITE_P(
+    FPFPageActivationThrottleTestRefreshHeuristicUmaTestTestSuiteInstantiation,
+    FPFPageActivationThrottleTestRefreshHeuristicUmaTest,
+    testing::ValuesIn<FPFRefreshHeuristicUmaTestCase>(
+        kRefreshHeuristicUmaTestCases),
+    [](const testing::TestParamInfo<
+        FPFPageActivationThrottleTestRefreshHeuristicUmaTest::ParamType>&
+           info) { return info.param.test_name; });
+
+TEST_P(FPFPageActivationThrottleTestRefreshHeuristicUmaTest,
+       RefreshHeuristicUmasAreLoggedCorrectly) {
   base::HistogramTester histograms;
+  const FPFRefreshHeuristicUmaTestCase& test_case = GetParam();
 
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      features::kEnableFingerprintingProtectionFilterInIncognito,
-      /*params*/ {});
+  // Initialize feature flags and params.
+  InitializeFeatureFlag(test_case);
 
-  auto mock_throttle = MockFingerprintingProtectionPageActivationThrottle(
+  // Add exception
+  if (test_case.has_refresh_heuristic_exception) {
+    AddBreakageException(GURL(GetTestUrl()), *test_support_.prefs());
+  }
+
+  // Navigate to the test url.
+  mock_nav_handle_->set_url(GetTestUrl());
+
+  // Call `GetActivation` on throttle to trigger UMAs.
+  auto test_throttle = FingerprintingProtectionPageActivationThrottle(
       mock_nav_handle_.get(), test_support_.tracking_protection_settings(),
       test_support_.prefs());
+  test_throttle.GetActivation();
 
-  EXPECT_EQ(
-      mock_throttle.GetEnablePerformanceMeasurements(/*is_incognito=*/true),
-      false);
+  if (test_case.expect_has_exception_uma) {
+    histograms.ExpectTotalCount(HasRefreshCountExceptionHistogramName, 1);
+    histograms.ExpectUniqueSample(HasRefreshCountExceptionHistogramName, 1, 1);
+  } else {
+    histograms.ExpectTotalCount(HasRefreshCountExceptionHistogramName, 0);
+  }
+
+  if (test_case.expect_latency_uma) {
+    // Just test whether a latency has been logged at all - we don't need to
+    // test the latency measurement itself, since that's done entirely by the
+    // subresource filter library macro (UMA_HISTOGRAM_CUSTOM_MICRO_TIMES).
+    histograms.ExpectTotalCount(
+        HasRefreshCountExceptionWallDurationHistogramName, 1);
+  } else {
+    histograms.ExpectTotalCount(
+        HasRefreshCountExceptionWallDurationHistogramName, 0);
+  }
 }
 
 struct FPFGetActivationTestCase {
@@ -486,7 +546,7 @@ class FPFPageActivationThrottleTestGetActivationTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-const FPFGetActivationTestCase kTestCases[] = {
+const FPFGetActivationTestCase kGetActivationTestCases[] = {
     {.test_name = "FPFEnabled_ActivationEnabled_NoException_NotOnlyIf3pc",
      .is_fp_feature_enabled = true,
      .activation_level_param = ActivationLevel::kEnabled,
@@ -622,7 +682,7 @@ const FPFGetActivationTestCase kTestCases[] = {
 INSTANTIATE_TEST_SUITE_P(
     FPFPageActivationThrottleTestGetActivationTestTestSuiteInstantiation,
     FPFPageActivationThrottleTestGetActivationTest,
-    testing::ValuesIn<FPFGetActivationTestCase>(kTestCases),
+    testing::ValuesIn<FPFGetActivationTestCase>(kGetActivationTestCases),
     [](const testing::TestParamInfo<
         FPFPageActivationThrottleTestGetActivationTest::ParamType>& info) {
       return info.param.test_name;
