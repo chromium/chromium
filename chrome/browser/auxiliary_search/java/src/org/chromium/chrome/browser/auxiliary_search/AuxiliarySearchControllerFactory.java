@@ -22,6 +22,9 @@ public class AuxiliarySearchControllerFactory {
 
     @Nullable private AuxiliarySearchHooks mHooksForTesting;
 
+    /** It tracks whether the current device is a tablet. */
+    @Nullable private Boolean mIsTablet;
+
     /** Static class that implements the initialization-on-demand holder idiom. */
     private static class LazyHolder {
         static AuxiliarySearchControllerFactory sInstance = new AuxiliarySearchControllerFactory();
@@ -88,11 +91,13 @@ public class AuxiliarySearchControllerFactory {
      * Sets whether the device is a tablet. Note: this must be called before checking isEnabled().
      */
     public void setIsTablet(boolean isTablet) {
-        if (mHooksForTesting != null) {
-            mHooksForTesting.setIsTablet(isTablet);
-        } else if (mHooks != null) {
-            mHooks.setIsTablet(isTablet);
-        }
+        mIsTablet = isTablet || (mIsTablet != null && mIsTablet);
+    }
+
+    /** Gets whether the device is a tablet. */
+    public boolean isTablet() {
+        assert mIsTablet != null;
+        return mIsTablet;
     }
 
     private @Nullable AuxiliarySearchController createAuxiliarySearchControllerImp(

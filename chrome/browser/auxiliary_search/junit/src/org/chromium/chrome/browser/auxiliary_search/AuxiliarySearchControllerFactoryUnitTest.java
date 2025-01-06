@@ -140,13 +140,14 @@ public class AuxiliarySearchControllerFactoryUnitTest {
     @Test
     @SmallTest
     public void testSetIsTablet() {
-        AuxiliarySearchHooks hooksMock = Mockito.mock(AuxiliarySearchHooks.class);
-        mFactory.setHooksForTesting(hooksMock);
+        mFactory.setIsTablet(false);
+        assertFalse(mFactory.isTablet());
 
         mFactory.setIsTablet(true);
-        verify(hooksMock).setIsTablet(eq(true));
+        assertTrue(mFactory.isTablet());
 
+        // Verifies the isTablet() never goes from true to false.
         mFactory.setIsTablet(false);
-        verify(hooksMock).setIsTablet(eq(false));
+        assertTrue(mFactory.isTablet());
     }
 }

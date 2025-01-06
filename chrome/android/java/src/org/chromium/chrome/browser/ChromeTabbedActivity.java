@@ -1678,6 +1678,13 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                     .onAvailable(
                             (profileProvider) -> {
                                 if (isActivityFinishingOrDestroyed()) return;
+                                // The AuxiliarySearchControllerFactory#setIsTablet() must be called
+                                // before creating the controller which checks
+                                // AuxiliarySearchControllerFactory#isEnabled().
+                                AuxiliarySearchControllerFactory.getInstance()
+                                        .setIsTablet(
+                                                DeviceFormFactor.isWindowOnTablet(
+                                                        getWindowAndroid()));
                                 mAuxiliarySearchController =
                                         AuxiliarySearchControllerFactory.getInstance()
                                                 .createAuxiliarySearchController(
