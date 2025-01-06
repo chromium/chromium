@@ -2237,7 +2237,7 @@
     ],
     "exclusive_tests": "ALL",
     "args": ["--enable-features=CookieDeprecationFacilitatedTesting:label/label_test"],
-    "expires": "Dec 30, 2024",
+    "expires": "Jul 6, 2025",
     "owners": ["linnan@chromium.org", "johnidel@chromium.org"]
   },
   {
