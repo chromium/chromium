@@ -1594,7 +1594,7 @@ bool StyleCascade::ResolveEnvInto(CSSParserTokenStream& stream,
   AtomicString variable_name = ConsumeVariableName(stream);
 
   if (variable_name == "safe-area-inset-bottom") {
-    state_.StyleBuilder().SetReferencesSafeAreaInsetBottom(true);
+    state_.StyleBuilder().SetHasEnvSafeAreaInsetBottom();
     state_.GetDocument()
         .GetStyleEngine()
         .SetNeedsToUpdateComplexSafeAreaConstraints();
@@ -1819,7 +1819,8 @@ void StyleCascade::ApplyUnresolvedEnv() {
 }
 
 void StyleCascade::ApplyIsBottomRelativeToSafeAreaInset() {
-  if (!map_.NativeBitset().Has(CSSPropertyID::kBottom)) {
+  if (!state_.StyleBuilder().HasEnvSafeAreaInsetBottom() ||
+      !map_.NativeBitset().Has(CSSPropertyID::kBottom)) {
     return;
   }
 

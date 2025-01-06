@@ -156,6 +156,15 @@
       default_value: "false",
       custom_compare: true,
     },
+    // True when at least one env(safe-area-inset-bottom) was resolved
+    // when producing this ComputedStyle.
+    {
+      name: "HasEnvSafeAreaInsetBottom",
+      field_group: "*",
+      field_template: "monotonic_flag",
+      default_value: "false",
+      custom_compare: true,
+    },
     // Set on parent style when a child explicitly inherits a
     // non-inherited property
     {
@@ -1351,17 +1360,6 @@
       field_group: "*",
       default_value: "false",
       invalidate: ["layout"]
-    },
-    // Returns true if any property references the value of
-    // env(safe-area-inset-bottom). This is used by the Browser
-    // to decide if dynamic safe area insets should be used in the UX.
-    {
-      name: "ReferencesSafeAreaInsetBottom",
-      inherited: false,
-      field_template: "primitive",
-      type_name: "bool",
-      field_group: "*",
-      default_value: "false"
     }
   ],
 }
