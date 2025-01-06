@@ -155,4 +155,15 @@ TEST_F(LayoutThemeTest, SetSelectionColorsNoInvalidation) {
 }
 #endif  // !BUILDFLAG(IS_MAC)
 
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(LayoutThemeTest, AndroidSelectionColor) {
+  EXPECT_EQ(Color::FromRGBA32(0xFF000000),
+            LayoutTheme::GetTheme().ActiveSelectionForegroundColor(
+                mojom::blink::ColorScheme::kLight));
+  EXPECT_EQ(Color::FromRGBA32(0x6633b5e5),
+            LayoutTheme::GetTheme().ActiveSelectionBackgroundColor(
+                mojom::blink::ColorScheme::kLight));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace blink
