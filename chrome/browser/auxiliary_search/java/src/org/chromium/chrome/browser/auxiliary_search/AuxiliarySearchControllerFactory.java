@@ -112,4 +112,8 @@ public class AuxiliarySearchControllerFactory {
         mHooksForTesting = instanceForTesting;
         ResettersForTesting.register(() -> mHooksForTesting = null);
     }
+
+    public void resetIsTabletForTesting() {
+        mIsTablet = null;
+    }
 }
