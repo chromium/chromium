@@ -50,6 +50,7 @@ public class HubToolbarView extends LinearLayout {
     private EditText mSearchBoxTextView;
     private ImageView mSearchLoupeView;
 
+    public Callback<Integer> mToolbarOverviewColorSetter;
     private OnTabSelectedListener mOnTabSelectedListener;
     private boolean mBlockTabSelectionCallback;
     private final AnimationHandler mColorBlendAnimatorHandler;
@@ -60,6 +61,7 @@ public class HubToolbarView extends LinearLayout {
         super(context, attributeSet);
         mColorBlendAnimatorHandler = new AnimationHandler();
         mAnimatorSetBuilder = new HubColorBlendAnimatorSetHelper();
+        mToolbarOverviewColorSetter = (color) -> {};
     }
 
     @Override
@@ -200,6 +202,7 @@ public class HubToolbarView extends LinearLayout {
                                     ColorStateList.valueOf(interpolatedColor);
                             ImageViewCompat.setImageTintList(mMenuButton, menuButtonColor);
                         }));
+
         // TODO(crbug.com/40948541): Updating the app menu color here is more correct and
         // should be done for code health. Menu Button Color is also set by
         // HubToolbarCoordinator.
@@ -227,6 +230,14 @@ public class HubToolbarView extends LinearLayout {
                         PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
                         colorScheme -> HubColors.getIconColor(context, colorScheme),
                         this::updateSearchLoupeColor));
+
+        // We don't want to pass a method reference. Lambdas will ensure we run the most recent
+        // setter.
+        mAnimatorSetBuilder.registerBlend(
+                new SingleHubViewColorBlend(
+                        PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
+                        colorScheme -> HubColors.getBackgroundColor(context, colorScheme),
+                        color -> mToolbarOverviewColorSetter.onResult(color)));
     }
 
     private void updateTabIconTintInternal(
@@ -263,6 +274,10 @@ public class HubToolbarView extends LinearLayout {
         mSearchBoxLayout.setOnClickListener(v -> searchBarListener.run());
         mSearchBoxTextView.setOnClickListener(v -> searchBarListener.run());
         mSearchLoupeView.setOnClickListener(v -> searchBarListener.run());
+    }
+
+    void setToolbarColorOverviewListener(Callback<Integer> colorSetter) {
+        mToolbarOverviewColorSetter = colorSetter;
     }
 
     void updateIncognitoElements(boolean isIncognito) {

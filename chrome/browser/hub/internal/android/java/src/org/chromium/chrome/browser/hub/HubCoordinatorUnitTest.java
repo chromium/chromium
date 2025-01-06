@@ -68,6 +68,8 @@ public class HubCoordinatorUnitTest {
     @Mock private Tracker mTracker;
     @Mock private SearchActivityClient mSearchActivityClient;
 
+    private final ObservableSupplierImpl<Integer> mColorOverviewSupplier =
+            new ObservableSupplierImpl<>();
     private ObservableSupplierImpl<Boolean> mHubVisibilitySupplier = new ObservableSupplierImpl<>();
     private ObservableSupplierImpl<Boolean> mTabSwitcherBackPressSupplier =
             new ObservableSupplierImpl<>();
@@ -140,7 +142,8 @@ public class HubCoordinatorUnitTest {
                         mHubLayoutController,
                         mTabSupplier,
                         mMenuButtonCoordinator,
-                        mSearchActivityClient);
+                        mSearchActivityClient,
+                        mColorOverviewSupplier);
         ShadowLooper.runUiThreadTasks();
         mRootView.getChildCount();
         assertNotEquals(0, mRootView.getChildCount());

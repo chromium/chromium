@@ -61,6 +61,7 @@ public class TabbedSystemUiCoordinator {
      * @param accessorySheetVisualStateSupplier Supplies an {@link
      *     AccessorySheetVisualStateProvider} to watch for visual changes to the keyboard accessory
      *     sheet.
+     * @param overviewColorSupplier Notifies when the overview color changes.
      * @param insetObserver An {@link InsetObserver} to listen for changes to the window insets.
      * @param edgeToEdgeManager Manages core edge-to-edge state and logic.
      */
@@ -79,6 +80,7 @@ public class TabbedSystemUiCoordinator {
             @NonNull
                     ObservableSupplier<AccessorySheetVisualStateProvider>
                             accessorySheetVisualStateSupplier,
+            @NonNull ObservableSupplier<Integer> overviewColorSupplier,
             InsetObserver insetObserver,
             @NonNull EdgeToEdgeManager edgeToEdgeManager) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
@@ -97,6 +99,7 @@ public class TabbedSystemUiCoordinator {
                             bottomSheetController,
                             omniboxSuggestionsVisualState,
                             accessorySheetVisualStateSupplier,
+                            overviewColorSupplier,
                             insetObserver,
                             edgeToEdgeManager);
         }

@@ -99,6 +99,9 @@ class TabbedNavigationBarColorController
     private float mNavigationBarScrimFraction;
 
     private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
+    private final @NonNull ObservableSupplier<Integer> mOverviewColorSupplier;
+    private final @NonNull Callback<Integer> mOnOverviewColorChanged =
+            color -> updateNavigationBarColor();
     private final Callback<EdgeToEdgeController> mEdgeToEdgeRegisterChangeObserverCallback;
     private EdgeToEdgeController mEdgeToEdgeController;
     @Nullable private ChangeObserver mEdgeToEdgeChangeObserver;
@@ -108,6 +111,7 @@ class TabbedNavigationBarColorController
     private TabObserver mTabObserver;
     @Nullable private @ColorInt Integer mBottomAttachedUiColor;
     private boolean mForceShowDivider;
+    private boolean mOverviewMode;
 
     private ValueAnimator mNavbarColorTransitionAnimation;
     private ObserverList<Observer> mObservers = new ObserverList<>();
@@ -140,6 +144,7 @@ class TabbedNavigationBarColorController
      * @param accessorySheetVisualStateSupplier Supplies an {@link
      *     AccessorySheetVisualStateProvider} to watch for visual changes to the keyboard accessory
      *     sheet.
+     * @param overviewColorSupplier Notifies when the overview color changes.
      * @param insetObserver An {@link InsetObserver} to listen for changes to the window insets.
      * @param edgeToEdgeManager Manages core edge-to-edge state and logic.
      */
@@ -158,6 +163,7 @@ class TabbedNavigationBarColorController
             @NonNull
                     ObservableSupplier<AccessorySheetVisualStateProvider>
                             accessorySheetVisualStateSupplier,
+            @NonNull ObservableSupplier<Integer> overviewColorSupplier,
             InsetObserver insetObserver,
             @NonNull EdgeToEdgeManager edgeToEdgeManager) {
         this(
@@ -166,6 +172,7 @@ class TabbedNavigationBarColorController
                 layoutManagerSupplier,
                 fullscreenManager,
                 edgeToEdgeControllerSupplier,
+                overviewColorSupplier,
                 ChromeFeatureList.sNavBarColorMatchesTabBackground.isEnabled()
                         ? new BottomAttachedUiObserver(
                                 bottomControlsStacker,
@@ -186,6 +193,7 @@ class TabbedNavigationBarColorController
             ObservableSupplier<LayoutManager> layoutManagerSupplier,
             FullscreenManager fullscreenManager,
             ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            @NonNull ObservableSupplier<Integer> overviewColorSupplier,
             @Nullable BottomAttachedUiObserver bottomAttachedUiObserver) {
         assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1;
 
@@ -254,6 +262,10 @@ class TabbedNavigationBarColorController
                 };
         mEdgeToEdgeControllerSupplier.addObserver(mEdgeToEdgeRegisterChangeObserverCallback);
 
+        mOverviewColorSupplier = overviewColorSupplier;
+        mOverviewColorSupplier.addObserver(mOnOverviewColorChanged);
+        mOverviewMode = false;
+
         // TODO(crbug.com/40560014): Observe tab loads to restrict black bottom nav to
         // incognito NTP.
 
@@ -269,6 +281,7 @@ class TabbedNavigationBarColorController
         if (mActiveTab != null) mActiveTab.removeObserver(mTabObserver);
         if (mLayoutManager != null) {
             mLayoutManager.removeObserver(mLayoutStateObserver);
+            mOverviewColorSupplier.removeObserver(mOnOverviewColorChanged);
         }
         if (mCallbackController != null) {
             mCallbackController.destroy();
@@ -312,12 +325,14 @@ class TabbedNavigationBarColorController
                     public void onStartedShowing(@LayoutType int layoutType) {
                         if (layoutType != LayoutType.TAB_SWITCHER) return;
                         updateNavigationBarColor();
+                        enableOverviewMode();
                     }
 
                     @Override
                     public void onStartedHiding(@LayoutType int layoutType) {
                         if (layoutType != LayoutType.TAB_SWITCHER) return;
                         updateNavigationBarColor();
+                        disableOverviewMode();
                     }
 
                     @Override
@@ -514,33 +529,47 @@ class TabbedNavigationBarColorController
 
     @ColorInt
     private int getNavigationBarColor(boolean forceDarkNavigationBar) {
-        if (useBottomAttachedUiColor()) {
+        if (mOverviewMode && mOverviewColorSupplier.get() != null) {
+            return mOverviewColorSupplier.get();
+        } else if (useBottomAttachedUiColor()) {
             return mBottomAttachedUiColor;
-        }
-        if (useActiveTabColor()) {
+        } else if (useActiveTabColor()) {
             return mActiveTab.getBackgroundColor();
+        } else {
+            return forceDarkNavigationBar
+                    ? mContext.getColor(R.color.toolbar_background_primary_dark)
+                    : SemanticColorUtils.getBottomSystemNavColor(mWindow.getContext());
         }
-        return forceDarkNavigationBar
-                ? mContext.getColor(R.color.toolbar_background_primary_dark)
-                : SemanticColorUtils.getBottomSystemNavColor(mWindow.getContext());
     }
 
     @VisibleForTesting
     @ColorInt
     int getNavigationBarDividerColor(boolean forceDarkNavigationBar, boolean forceShowDivider) {
-        if (!forceShowDivider && useBottomAttachedUiColor()) {
+        if (mOverviewMode && mOverviewColorSupplier.get() != null) {
+            return mOverviewColorSupplier.get();
+        } else if (!forceShowDivider && useBottomAttachedUiColor()) {
             return mBottomAttachedUiColor;
-        }
-        if (!forceShowDivider && useActiveTabColor()) {
+        } else if (!forceShowDivider && useActiveTabColor()) {
             return mActiveTab.getBackgroundColor();
+        } else {
+            return forceDarkNavigationBar
+                    ? mContext.getColor(R.color.bottom_system_nav_divider_color_light)
+                    : SemanticColorUtils.getBottomSystemNavDividerColor(mWindow.getContext());
         }
-        return forceDarkNavigationBar
-                ? mContext.getColor(R.color.bottom_system_nav_divider_color_light)
-                : SemanticColorUtils.getBottomSystemNavDividerColor(mWindow.getContext());
     }
 
     private @ColorInt int applyCurrentScrimToColor(@ColorInt int color) {
         return ColorUtils.overlayColor(color, mDefaultScrimColor, mNavigationBarScrimFraction);
+    }
+
+    @VisibleForTesting
+    void enableOverviewMode() {
+        mOverviewMode = true;
+    }
+
+    @VisibleForTesting
+    void disableOverviewMode() {
+        mOverviewMode = false;
     }
 
     private boolean useBottomAttachedUiColor() {

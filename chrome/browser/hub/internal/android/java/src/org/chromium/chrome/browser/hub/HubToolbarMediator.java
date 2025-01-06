@@ -15,6 +15,7 @@ import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_VI
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_LISTENER;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_LOUPE_VISIBLE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SHOW_ACTION_BUTTON_TEXT;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.TOOLBAR_OVERVIEW_COLOR_SETTER;
 
 import android.content.ComponentCallbacks;
 import android.content.Context;
@@ -29,6 +30,7 @@ import androidx.core.util.Pair;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.TransitiveObservableSupplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
@@ -127,7 +129,8 @@ public class HubToolbarMediator {
             @NonNull PropertyModel propertyModel,
             @NonNull PaneManager paneManager,
             @NonNull Tracker tracker,
-            @NonNull SearchActivityClient searchActivityClient) {
+            @NonNull SearchActivityClient searchActivityClient,
+            @NonNull ObservableSupplierImpl<Integer> hubToolbarOverviewColorSupplier) {
         mContext = context;
         mPropertyModel = propertyModel;
         mPaneManager = paneManager;
@@ -168,6 +171,7 @@ public class HubToolbarMediator {
             mComponentCallbacks.onConfigurationChanged(mContext.getResources().getConfiguration());
             mContext.registerComponentCallbacks(mComponentCallbacks);
         }
+        mPropertyModel.set(TOOLBAR_OVERVIEW_COLOR_SETTER, hubToolbarOverviewColorSupplier::set);
     }
 
     /** Cleans up observers. */

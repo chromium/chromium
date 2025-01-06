@@ -50,6 +50,8 @@ public class HubManagerImpl implements HubManager, HubController {
     private final @NonNull MenuButtonCoordinator mMenuButtonCoordinator;
     private final @NonNull HubShowPaneHelper mHubShowPaneHelper;
     private final @NonNull SearchActivityClient mSearchActivityClient;
+    private final @NonNull ObservableSupplierImpl<Integer> mHubToolbarOverviewColorSupplier =
+            new ObservableSupplierImpl<>(null);
 
     // This is effectively NonNull and final once the HubLayout is initialized.
     private HubLayoutController mHubLayoutController;
@@ -139,6 +141,11 @@ public class HubManagerImpl implements HubManager, HubController {
     }
 
     @Override
+    public ObservableSupplier<Integer> getHubToolbarOverviewColorSupplier() {
+        return mHubToolbarOverviewColorSupplier;
+    }
+
+    @Override
     public void setHubLayoutController(@NonNull HubLayoutController hubLayoutController) {
         assert mHubLayoutController == null : "setHubLayoutController should only be called once.";
         mHubLayoutController = hubLayoutController;
@@ -206,7 +213,8 @@ public class HubManagerImpl implements HubManager, HubController {
                         mHubLayoutController,
                         mTabSupplier,
                         mMenuButtonCoordinator,
-                        mSearchActivityClient);
+                        mSearchActivityClient,
+                        mHubToolbarOverviewColorSupplier);
         mBackPressManager.addHandler(mHubCoordinator, BackPressHandler.Type.HUB);
         Pane pane = mPaneManager.getFocusedPaneSupplier().get();
         attachPaneDependencies(pane);
@@ -220,6 +228,8 @@ public class HubManagerImpl implements HubManager, HubController {
             mBackPressManager.removeHandler(mHubCoordinator);
             mHubCoordinator.destroy();
             mHubCoordinator = null;
+
+            mHubToolbarOverviewColorSupplier.set(null);
         }
     }
 

@@ -925,22 +925,44 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                 .onAvailable(manager -> mHubManagerSupplier.set(manager));
     }
 
-    private @Nullable ObservableSupplier<Integer> getHubOverviewColorSupplier() {
+    private @NonNull ObservableSupplier<Integer> getHubOverviewColorSupplier() {
         // Prior to Hub creation we don't know what color to use. Default to the background color
         // since this shouldn't be visible.
         ObservableSupplierImpl<Integer> overviewColorSupplier =
                 new ObservableSupplierImpl<>(SemanticColorUtils.getDefaultBgColor(this));
         mHubManagerSupplier.onAvailable(
                 (hubManager) -> {
-                    ObservableSupplier<Pane> paneSupplier =
-                            hubManager.getPaneManager().getFocusedPaneSupplier();
-                    Callback<Pane> paneObserver =
-                            pane ->
-                                    overviewColorSupplier.set(
-                                            hubManager.getHubController().getBackgroundColor(pane));
-                    paneSupplier.addObserver(paneObserver);
+                    ObservableSupplier<Integer> hubToolbarOverviewColorSupplier =
+                            hubManager.getHubToolbarOverviewColorSupplier();
+                    Callback<Integer> hubToolbarOverviewColorObserver = overviewColorSupplier::set;
+                    hubToolbarOverviewColorSupplier.addObserver(hubToolbarOverviewColorObserver);
+
+                    ObservableSupplier<Boolean> hubVisibilitySupplier =
+                            hubManager.getHubVisibilitySupplier();
+
+                    if (hubVisibilitySupplier.get() != null && hubVisibilitySupplier.get()) {
+                        hubToolbarOverviewColorSupplier.addObserver(
+                                hubToolbarOverviewColorObserver);
+                    }
+
+                    Callback<Boolean> hubVisibilityObserver =
+                            isVisible -> {
+                                if (isVisible) {
+                                    hubToolbarOverviewColorSupplier.addObserver(
+                                            hubToolbarOverviewColorObserver);
+                                } else {
+                                    hubToolbarOverviewColorSupplier.removeObserver(
+                                            hubToolbarOverviewColorObserver);
+                                }
+                            };
+                    hubVisibilitySupplier.addObserver(hubVisibilityObserver);
+
                     mCleanUpHubOverviewColorObserver =
-                            () -> paneSupplier.removeObserver(paneObserver);
+                            () -> {
+                                hubVisibilitySupplier.removeObserver(hubVisibilityObserver);
+                                hubToolbarOverviewColorSupplier.addObserver(
+                                        hubToolbarOverviewColorObserver);
+                            };
                 });
         return overviewColorSupplier;
     }

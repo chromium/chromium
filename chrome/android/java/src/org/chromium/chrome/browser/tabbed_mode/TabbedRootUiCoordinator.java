@@ -362,7 +362,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @NonNull BackPressManager backPressManager,
             @Nullable Bundle savedInstanceState,
             @Nullable MultiInstanceManager multiInstanceManager,
-            @Nullable ObservableSupplier<Integer> overviewColorSupplier,
+            @NonNull ObservableSupplier<Integer> overviewColorSupplier,
             @Nullable View baseChromeLayout,
             @NonNull ManualFillingComponentSupplier manualFillingComponentSupplier,
             @NonNull EdgeToEdgeManager edgeToEdgeManager) {
@@ -586,6 +586,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mManualFillingComponentSupplier
                                 .get()
                                 .getAccessorySheetVisualStateProvider(),
+                        mOverviewColorSupplier,
                         mInsetObserver,
                         mEdgeToEdgeManager);
     }

@@ -54,6 +54,9 @@ class HubToolbarProperties {
     public static final WritableObjectPropertyKey<Callback<PaneButtonLookup>>
             PANE_BUTTON_LOOKUP_CALLBACK = new WritableObjectPropertyKey();
 
+    public static final WritableObjectPropertyKey<Callback<Integer>> TOOLBAR_OVERVIEW_COLOR_SETTER =
+            new WritableObjectPropertyKey<>();
+
     static final PropertyKey[] ALL_KEYS = {
         ACTION_BUTTON_DATA,
         SHOW_ACTION_BUTTON_TEXT,
@@ -66,5 +69,6 @@ class HubToolbarProperties {
         SEARCH_LOUPE_VISIBLE,
         SEARCH_LISTENER,
         IS_INCOGNITO,
+        TOOLBAR_OVERVIEW_COLOR_SETTER,
     };
 }

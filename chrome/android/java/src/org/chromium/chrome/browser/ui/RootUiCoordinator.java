@@ -333,6 +333,7 @@ public class RootUiCoordinator
     private final boolean mIsIncognitoReauthPendingOnRestore;
     protected final ExpandedSheetHelper mExpandedBottomSheetHelper;
     protected final BottomControlsStacker mBottomControlsStacker;
+    @NonNull protected final ObservableSupplier<Integer> mOverviewColorSupplier;
     @Nullable private ContextualSearchObserver mReadAloudContextualSearchObserver;
     @Nullable private PageZoomCoordinator mPageZoomCoordinator;
     private AppMenuObserver mAppMenuObserver;
@@ -344,7 +345,6 @@ public class RootUiCoordinator
     private @Nullable EdgeToEdgeController mEdgeToEdgeController;
     private ComposedBrowserControlsVisibilityDelegate mAppBrowserControlsVisibilityDelegate;
     private @Nullable BoardingPassController mBoardingPassController;
-    private final @Nullable ObservableSupplier<Integer> mOverviewColorSupplier;
     private final @Nullable View mBaseChromeLayout;
     private final @NonNull EdgeToEdgeManager mEdgeToEdgeManager;
     private CommerceBottomSheetContentCoordinator mCommerceBottomSheetContentCoordinator;
@@ -434,7 +434,7 @@ public class RootUiCoordinator
             boolean initializeUiWithIncognitoColors,
             @Nullable BackPressManager backPressManager,
             @Nullable Bundle savedInstanceState,
-            @Nullable ObservableSupplier<Integer> overviewColorSupplier,
+            @NonNull ObservableSupplier<Integer> overviewColorSupplier,
             @Nullable View baseChromeLayout,
             @NonNull EdgeToEdgeManager edgeToEdgeManager) {
         mCallbackController = new CallbackController();

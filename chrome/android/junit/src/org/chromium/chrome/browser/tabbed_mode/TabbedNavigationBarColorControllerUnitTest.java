@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tabbed_mode;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -79,6 +80,7 @@ public class TabbedNavigationBarColorControllerUnitTest {
     @Mock private LayoutManager mLayoutManager;
     @Mock private FullscreenManager mFullscreenManager;
     private ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeControllerObservableSupplier;
+    private ObservableSupplierImpl<Integer> mOverviewColorSupplier;
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
     @Mock private BottomAttachedUiObserver mBottomAttachedUiObserver;
     @Mock private Tab mTab;
@@ -99,6 +101,7 @@ public class TabbedNavigationBarColorControllerUnitTest {
                         R.style.Theme_BrowserUI_DayNight);
         mLayoutManagerSupplier = new ObservableSupplierImpl<>();
         mEdgeToEdgeControllerObservableSupplier = new ObservableSupplierImpl<>();
+        mOverviewColorSupplier = new ObservableSupplierImpl<>();
 
         when(mWindow.getContext()).thenReturn(mContext);
         when(mWindow.getDecorView()).thenReturn(mDecorView);
@@ -114,6 +117,7 @@ public class TabbedNavigationBarColorControllerUnitTest {
                         mLayoutManagerSupplier,
                         mFullscreenManager,
                         mEdgeToEdgeControllerObservableSupplier,
+                        mOverviewColorSupplier,
                         mBottomAttachedUiObserver);
         mLayoutManagerSupplier.set(mLayoutManager);
         mEdgeToEdgeControllerObservableSupplier.set(mEdgeToEdgeController);
@@ -323,6 +327,27 @@ public class TabbedNavigationBarColorControllerUnitTest {
                 (mRootViewSystemVisibility.getValue() & View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR));
     }
 
+    @Test
+    public void testOverviewColorEnabled() {
+        mNavColorController.enableOverviewMode();
+
+        mOverviewColorSupplier.set(Color.BLUE);
+        assertWindowNavBarColor(Color.BLUE);
+
+        mNavColorController.disableOverviewMode();
+    }
+
+    @Test
+    public void testOverviewModeDisabled() {
+        mNavColorController.enableOverviewMode();
+        mOverviewColorSupplier.set(Color.BLUE);
+        assertWindowNavBarColor(Color.BLUE);
+
+        mNavColorController.disableOverviewMode();
+        mOverviewColorSupplier.set(Color.RED);
+        assertWindowNavBarColorNotEqual(Color.RED);
+    }
+
     private void runColorUpdateAnimation() {
         // Run the color  transition animation so color is applied to the window.
         ShadowLooper.idleMainLooper();
@@ -342,6 +367,13 @@ public class TabbedNavigationBarColorControllerUnitTest {
     private void assertWindowNavBarColor(int color) {
         assertEquals(
                 "The window (OS) nav bar color is different.",
+                color,
+                (int) mWindowColorCaptor.getValue());
+    }
+
+    private void assertWindowNavBarColorNotEqual(int color) {
+        assertNotEquals(
+                "The window (OS) nav bar color is equal.",
                 color,
                 (int) mWindowColorCaptor.getValue());
     }

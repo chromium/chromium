@@ -64,6 +64,8 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
      * @param hubLayoutController The controller of the {@link HubLayout}.
      * @param currentTabSupplier The supplier of the current {@link Tab}.
      * @param menuButtonCoordinator Root component for the app menu.
+     * @param hubToolbarOverviewColorSupplier Notifies when the hub's toolbar overview color
+     *     changes.
      * @param searchActivityClient A client for the search activity, used to launch search.
      */
     public HubCoordinator(
@@ -74,7 +76,8 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
             @NonNull HubLayoutController hubLayoutController,
             @NonNull ObservableSupplier<Tab> currentTabSupplier,
             @NonNull MenuButtonCoordinator menuButtonCoordinator,
-            @NonNull SearchActivityClient searchActivityClient) {
+            @NonNull SearchActivityClient searchActivityClient,
+            @NonNull ObservableSupplierImpl<Integer> hubToolbarOverviewColorSupplier) {
         Context context = containerView.getContext();
         mBackPressStateChangeCallback = (ignored) -> updateHandleBackPressSupplier();
         mPaneManager = paneManager;
@@ -100,7 +103,8 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
                         paneManager,
                         menuButtonCoordinator,
                         tracker,
-                        searchActivityClient);
+                        searchActivityClient,
+                        hubToolbarOverviewColorSupplier);
 
         HubPaneHostView hubPaneHostView = mContainerView.findViewById(R.id.hub_pane_host);
         mHubPaneHostCoordinator =
