@@ -306,10 +306,7 @@ try_.orchestrator_builder(
     contact_team_email = "bling-engprod@google.com",
     main_list_view = "try",
     tryjob = try_.job(
-        # TODO (crbug.com/338209817): move out of
-        # experimental CQ after confirming it's consistently
-        # green and fast.
-        experiment_percentage = 100,
+        experiment_percentage = 75,
     ),
 )
 

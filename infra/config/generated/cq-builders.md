@@ -832,7 +832,7 @@ as required builders.
   * Experiment percentage: 10.0
 
 * [mac14-arm64-rel](https://ci.chromium.org/p/chromium/builders/try/mac14-arm64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""mac14-arm64-rel""))
-  * Experiment percentage: 100.0
+  * Experiment percentage: 75.0
 
 
 ## Mega CQ builders
