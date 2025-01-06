@@ -8,39 +8,36 @@
  */
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
-import {Spannable} from '../../common/spannable.js';
+import {SerializedAnnotation, Spannable} from '../../common/spannable.js';
 
 import {LibLouis} from './liblouis.js';
 
 /** Attached to the value region of a braille spannable. */
 export class ValueSpan {
-  /** @param {number} offset The offset of the span into the value. */
-  constructor(offset) {
-    /**
-     * The offset of the span into the value.
-     * @type {number}
-     */
+  /** The offset of the span into the value. */
+  offset: number;
+
+  constructor(offset: number) {
     this.offset = offset;
   }
 
   /**
    * Creates a value span from a json serializable object.
-   * @param {!Object} obj The json serializable object to convert.
-   * @return {!ValueSpan} The value span.
+   * @param obj The json serializable object to convert.
+   * @return The value span.
    */
-  static fromJson(obj) {
+  static fromJson(obj: SerializedAnnotation): ValueSpan {
     return new ValueSpan(obj.offset);
   }
 
   /**
    * Converts this object to a json serializable object.
-   * @return {!Object} The JSON representation.
+   * @return The JSON representation.
    */
-  toJson() {
+  toJson(): SerializedAnnotation {
     return this;
   }
 }
-
 
 Spannable.registerSerializableSpan(
     ValueSpan, 'ValueSpan', ValueSpan.fromJson, ValueSpan.prototype.toJson);
@@ -60,8 +57,9 @@ Spannable.registerStatelessSerializableSpan(
  * class.
  */
 export class ExtraCellsSpan {
+  cells: ArrayBuffer;
+
   constructor() {
-    /** @type {ArrayBuffer} */
     this.cells = new Uint8Array(0).buffer;
   }
 }
@@ -69,9 +67,9 @@ export class ExtraCellsSpan {
 
 /** Indicates a text form during translation in Liblouis. */
 export class BrailleTextStyleSpan {
-  /** @param {LibLouis.FormType} formType */
-  constructor(formType) {
-    /** @type {LibLouis.FormType} */
+  formType: LibLouis.FormType;
+
+  constructor(formType: LibLouis.FormType) {
     this.formType = formType;
   }
 }
