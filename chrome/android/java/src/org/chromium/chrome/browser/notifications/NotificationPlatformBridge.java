@@ -244,7 +244,8 @@ public class NotificationPlatformBridge {
             onNotificationPreUnsubcribe(attributes);
             return false;
         } else if (NotificationConstants.ACTION_UNDO_UNSUBSCRIBE.equals(intent.getAction())) {
-            onNotificationUndoUnsubscribe(attributes);
+            restoreNotificationBackups(
+                    attributes, NotificationConstants.EXTRA_NOTIFICATION_BACKUP_OF_ORIGINAL);
             return false;
         } else if (NotificationConstants.ACTION_COMMIT_UNSUBSCRIBE.equals(intent.getAction())) {
             // Cancel notification immediately so that the user perceives the action to have been
@@ -256,6 +257,12 @@ public class NotificationPlatformBridge {
                     BaseNotificationManagerProxyFactory.create();
             notificationManager.cancel(attributes.notificationId, PLATFORM_ID);
             return true;
+        } else if (NotificationConstants.ACTION_SHOW_ORIGINAL_NOTIFICATION.equals(
+                intent.getAction())) {
+            restoreNotificationBackups(
+                    attributes,
+                    NotificationConstants.EXTRA_NOTIFICATION_BACKUP_FOR_SUSPICIOUS_VERDICT);
+            return false;
         }
 
         // All other intents handled from native.
@@ -1401,15 +1408,48 @@ public class NotificationPlatformBridge {
     }
 
     /**
-     * Called when the user clicks the `ACTION_UNDO_UNSUBSCRIBE` button on the "provisionally
-     * unsubscribed" service notification.
+     * Called when the user clicks the `ACTION_COMMIT_UNSUBSCRIBE` button, expressly dismisses the
+     * "provisionally unsubscribed" service notification, or if the service notification times out.
      *
-     * <p>Restores the clicked notification and all other notifications from that origin.
+     * <p>Handles "unsubscribing", which in practice means resetting the permission for the origin,
+     * which will delete the notification channel, issue an FCM unsubscribe request, and cancel all
+     * notification, including the "Provisionally unsubscribed" service notification.
      *
      * @param identifyingAttributes Common attributes identifying a notification and its source.
      */
-    private static void onNotificationUndoUnsubscribe(
+    private void onNotificationCommitUnsubscribe(
             NotificationIdentifyingAttributes identifyingAttributes) {
+        NotificationPlatformBridgeJni.get()
+                .onNotificationDisablePermission(
+                        mNativeNotificationPlatformBridge,
+                        NotificationPlatformBridge.this,
+                        identifyingAttributes.notificationId,
+                        identifyingAttributes.notificationType,
+                        identifyingAttributes.origin,
+                        identifyingAttributes.profileId,
+                        identifyingAttributes.incognito);
+        var backups =
+                sOriginsWithProvisionallyRevokedPermissions.remove(identifyingAttributes.origin);
+        NotificationUmaTracker.getInstance()
+                .recordWasGlobalStatePreserved(
+                        NotificationUmaTracker.GlobalStatePreservedActionSuffix.COMMIT,
+                        backups != null);
+    }
+
+    /**
+     * Called when the user clicks the `ACTION_UNDO_UNSUBSCRIBE` button on the "provisionally
+     * unsubscribed" service notification, or the `ACTION_SHOW_ORIGINAL_NOTIFICATION` button on the
+     * suspicious warning notification.
+     *
+     * <p>Restores the original notification. For undo subscribe only, also restores other
+     * notifications from that origin.
+     *
+     * @param identifyingAttributes Common attributes identifying a notification and its source.
+     * @param action The action that was clicked.
+     */
+    private static void restoreNotificationBackups(
+            NotificationIdentifyingAttributes identifyingAttributes,
+            String extraNotificationBackupType) {
         var otherNotificationsBackups =
                 sOriginsWithProvisionallyRevokedPermissions.remove(identifyingAttributes.origin);
         NotificationUmaTracker.getInstance()
@@ -1434,16 +1474,14 @@ public class NotificationPlatformBridge {
                     // If the tapped notification does not have a backup key in the metadata, it is
                     // not a provisionally unsubscribed notification. Likely, the user clicked
                     // "Undo" twice in quick succession, and we are already done. Bail out.
-                    if (!tappedNotificationExtras.containsKey(
-                            NotificationConstants.EXTRA_NOTIFICATION_BACKUP_OF_ORIGINAL)) {
+                    if (!tappedNotificationExtras.containsKey(extraNotificationBackupType)) {
                         return;
                     }
 
                     var originalNotificationBackup =
                             (Notification)
                                     tappedNotificationExtras.getParcelable(
-                                            NotificationConstants
-                                                    .EXTRA_NOTIFICATION_BACKUP_OF_ORIGINAL);
+                                            extraNotificationBackupType);
 
                     // No backup means the original notification was quickly dismissed after the
                     // user clicked "Unsubscribe". In this case we still want to cancel the
@@ -1477,7 +1515,11 @@ public class NotificationPlatformBridge {
                                                 /* notificationId= */ PLATFORM_ID)));
                     }
 
-                    if (otherNotificationsBackups == null) return;
+                    // Only restore other notifications from that origin for undo subscribe action.
+                    if (otherNotificationsBackups == null
+                            || !extraNotificationBackupType.equals(
+                                    NotificationConstants.EXTRA_NOTIFICATION_BACKUP_OF_ORIGINAL))
+                        return;
 
                     for (var entry : otherNotificationsBackups.entrySet()) {
                         Notification.Builder builder =
@@ -1501,35 +1543,6 @@ public class NotificationPlatformBridge {
                                                 /* notificationId= */ PLATFORM_ID)));
                     }
                 });
-    }
-
-    /**
-     * Called when the user clicks the `ACTION_COMMIT_UNSUBSCRIBE` button, expressly dismisses the
-     * "provisionally unsubscribed" service notification, or if the service notification times out.
-     *
-     * <p>Handles "unsubscribing", which in practice means resetting the permission for the origin,
-     * which will delete the notification channel, issue an FCM unsubscribe request, and cancel all
-     * notification, including the "Provisionally unsubscribed" service notification.
-     *
-     * @param identifyingAttributes Common attributes identifying a notification and its source.
-     */
-    private void onNotificationCommitUnsubscribe(
-            NotificationIdentifyingAttributes identifyingAttributes) {
-        NotificationPlatformBridgeJni.get()
-                .onNotificationDisablePermission(
-                        mNativeNotificationPlatformBridge,
-                        NotificationPlatformBridge.this,
-                        identifyingAttributes.notificationId,
-                        identifyingAttributes.notificationType,
-                        identifyingAttributes.origin,
-                        identifyingAttributes.profileId,
-                        identifyingAttributes.incognito);
-        var backups =
-                sOriginsWithProvisionallyRevokedPermissions.remove(identifyingAttributes.origin);
-        NotificationUmaTracker.getInstance()
-                .recordWasGlobalStatePreserved(
-                        NotificationUmaTracker.GlobalStatePreservedActionSuffix.COMMIT,
-                        backups != null);
     }
 
     /** Sets param value `isSuspicious` for displaying notification for testing. */

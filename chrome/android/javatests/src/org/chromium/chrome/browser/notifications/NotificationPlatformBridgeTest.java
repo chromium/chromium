@@ -1141,6 +1141,57 @@ public class NotificationPlatformBridgeTest {
     }
 
     /**
+     * Verifies that when `SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS` is enabled, suspicious
+     * notifications are replaced by a warning and tapping the "Show Notification" button performs
+     * the show notification behaviour.
+     */
+    @Test
+    @LargeTest
+    @Feature({"Browser", "Notifications"})
+    @Features.EnableFeatures({
+        ChromeFeatureList.NOTIFICATION_ONE_TAP_UNSUBSCRIBE,
+        ChromeFeatureList.SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS
+    })
+    @MinAndroidSdkLevel(Build.VERSION_CODES.P)
+    public void testNotificationShowWarningNotificationThenShowNotification() throws Exception {
+        mNotificationTestRule.setNotificationContentSettingForOrigin(
+                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+        Assert.assertEquals("\"granted\"", runJavaScript("Notification.permission"));
+
+        NotificationPlatformBridge notificationBridge =
+                NotificationPlatformBridge.getInstanceForTests();
+        Assert.assertNotNull(notificationBridge);
+        notificationBridge.setIsSuspiciousParameterForTesting(true);
+
+        showAndGetNotification("MyNotification", "{body: 'Hello'}");
+        mNotificationTestRule.waitForNotificationCount(1);
+
+        // Check notification contents were replaced by a warning.
+        Notification warningNotification =
+                mNotificationTestRule.getNotificationEntries().get(0).getNotification();
+        Assert.assertEquals(
+                "Possible spam", NotificationTestUtil.getExtraTitle(warningNotification));
+
+        // Click the "Show Notification" button.
+        Assert.assertEquals(2, warningNotification.actions.length);
+        PendingIntent showNotificationIntent = warningNotification.actions[1].actionIntent;
+        Assert.assertNotNull(showNotificationIntent);
+        showNotificationIntent.send();
+
+        // Wait for the original notification.
+        Notification restoredNotification =
+                mNotificationTestRule.waitForNotification().notification;
+
+        Assert.assertEquals(
+                "MyNotification", NotificationTestUtil.getExtraTitle(restoredNotification));
+        Assert.assertEquals("Hello", NotificationTestUtil.getExtraText(restoredNotification));
+
+        // Verify that the notification is silent once restored.
+        Assert.assertEquals(
+                Notification.GROUP_ALERT_SUMMARY, restoredNotification.getGroupAlertBehavior());
+    }
+
+    /**
      * Verifies that when `SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS` is enabled, non-suspicious
      * notifications stay the same and are not replaced by the warning.
      */
