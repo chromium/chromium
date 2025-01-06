@@ -193,6 +193,8 @@ test("blink_unittests") {
       "//build/config/fuchsia/test/mark_vmo_executable.shard.test-cml",
     ]
   }
+
+  fuzztests = [ "BlinkAttributeFuzzTestFixture.NoElementAttributeCrashes" ]
 }
 
 test("blink_perf_tests") {
@@ -302,6 +304,7 @@ source_set("blink_unittests_sources") {
     "//third_party/blink/renderer/platform:test_support",
     "//third_party/blink/renderer/platform:unit_tests",
     "//third_party/blink/renderer/platform/wtf",
+    "//third_party/fuzztest",
     "//third_party/libwebp",
     "//third_party/zlib",
     "//url",

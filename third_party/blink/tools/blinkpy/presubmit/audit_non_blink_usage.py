@@ -2540,7 +2540,8 @@ def check(path, contents):
             or basename.endswith('_test') or basename.endswith('_test_helpers')
             or basename.endswith('_test_utils')
             or basename.endswith('_unittest') or basename.endswith('_fuzzer')
-            or basename.endswith('_perftest')):
+            or basename.endswith('_perftest')
+            or basename.endswith('_fuzztest')):
         return results
     entries = _find_matching_entries(path)
     if not entries:
