@@ -748,10 +748,10 @@ scoped_refptr<StaticBitmapImage> DrawingBuffer::TransferToStaticBitmapImage() {
     return UnacceleratedStaticBitmapImage::Create(black_image);
   }
 
-  DCHECK(release_callback);
-  DCHECK_EQ(size_.width(), transferable_resource.size.width());
-  DCHECK_EQ(size_.height(), transferable_resource.size.height());
   CHECK(client_si);
+  DCHECK(release_callback);
+  DCHECK_EQ(size_.width(), client_si->size().width());
+  DCHECK_EQ(size_.height(), client_si->size().height());
 
   // Use the sync token generated after producing the mailbox. Waiting for this
   // before trying to use the mailbox with some other context will ensure it is
@@ -761,7 +761,7 @@ scoped_refptr<StaticBitmapImage> DrawingBuffer::TransferToStaticBitmapImage() {
   const auto& sk_image_sync_token = transferable_resource.sync_token();
 
   auto sk_color_type = viz::ToClosestSkColorType(
-      /*gpu_compositing=*/true, transferable_resource.format);
+      /*gpu_compositing=*/true, client_si->format());
 
   const SkImageInfo sk_image_info = SkImageInfo::Make(
       size_.width(), size_.height(), sk_color_type, kPremul_SkAlphaType);
@@ -769,14 +769,15 @@ scoped_refptr<StaticBitmapImage> DrawingBuffer::TransferToStaticBitmapImage() {
   // TODO(xidachen): Create a small pool of recycled textures from
   // ImageBitmapRenderingContext's transferFromImageBitmap, and try to use them
   // in DrawingBuffer.
+  bool is_overlay_candidate =
+      client_si->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
   return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
       std::move(client_si), sk_image_sync_token,
       /* shared_image_texture_id = */ 0, sk_image_info,
       context_provider_->GetWeakPtr(), base::PlatformThread::CurrentRef(),
       ThreadScheduler::Current()->CleanupTaskRunner(),
       std::move(release_callback),
-      /*supports_display_compositing=*/true,
-      transferable_resource.is_overlay_candidate);
+      /*supports_display_compositing=*/true, is_overlay_candidate);
 }
 
 scoped_refptr<DrawingBuffer::ColorBuffer>
