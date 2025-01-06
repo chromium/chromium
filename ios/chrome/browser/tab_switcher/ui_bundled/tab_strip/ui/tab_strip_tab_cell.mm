@@ -62,8 +62,12 @@ const CGFloat kContentViewBottomInset = 4;
 // Selected border background view constants.
 const CGFloat kSelectedBorderBackgroundViewWidth = 8;
 
-// Size of a blue dot on icon view.
-const CGFloat kBlueDotSize = 6;
+// The storke width around a blue dot view.
+constexpr CGFloat kBlueDotStrokeWidth = 2;
+
+// Size of a blue dot on icon view with considering the stroke width.
+constexpr CGFloat kBlueDotSize = 6 + kBlueDotStrokeWidth * 2;
+constexpr CGFloat kBlueDotInset = 1;
 
 // Returns the default favicon image.
 UIImage* DefaultFavicon() {
@@ -1201,6 +1205,8 @@ UIImage* DefaultFavicon() {
   _blueDotView = [[UIView alloc] init];
   _blueDotView.translatesAutoresizingMaskIntoConstraints = NO;
   _blueDotView.layer.cornerRadius = kBlueDotSize / 2;
+  _blueDotView.layer.borderWidth = kBlueDotStrokeWidth;
+  _blueDotView.layer.borderColor = TabStripHelper.cellBackgroundColor.CGColor;
   _blueDotView.backgroundColor = [UIColor colorNamed:kBlue600Color];
   [_accessibilityContainerView addSubview:_blueDotView];
 
@@ -1210,10 +1216,10 @@ UIImage* DefaultFavicon() {
     // Position the blue dot at right bottom corner of the favicon image.
     [_blueDotView.centerXAnchor
         constraintEqualToAnchor:_faviconView.centerXAnchor
-                       constant:kFaviconSize / 2],
+                       constant:kFaviconSize / 2 - kBlueDotInset],
     [_blueDotView.centerYAnchor
         constraintEqualToAnchor:_faviconView.centerYAnchor
-                       constant:kFaviconSize / 2],
+                       constant:kFaviconSize / 2 - kBlueDotInset],
   ]];
 }
 
