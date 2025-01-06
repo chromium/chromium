@@ -26818,20 +26818,18 @@ class InterestGroupTrustedSignalsKVv2BrowserTest
       public testing::WithParamInterface<bool> {
  public:
   InterestGroupTrustedSignalsKVv2BrowserTest() {
-    std::vector<base::test::FeatureRefAndParams> enabled_features{
-        {blink::features::kFledgeBiddingAndAuctionServer,
-         {{"FledgeBiddingAndAuctionKeyURL", kKeyUrl.spec()}}},
-        {blink::features::kFledgeTrustedSignalsKVv2Support, {}}};
+    std::vector<base::test::FeatureRef> enabled_features{
+        blink::features::kFledgeBiddingAndAuctionServer,
+        blink::features::kFledgeTrustedSignalsKVv2Support,
+        features::kFledgeStoreBandAKeysInDB};
     std::vector<base::test::FeatureRef> disabled_features;
     if (EnableSignalsCache()) {
-      enabled_features.emplace_back(features::kFledgeUseKVv2SignalsCache,
-                                    base::FieldTrialParams());
+      enabled_features.emplace_back(features::kFledgeUseKVv2SignalsCache);
     } else {
       disabled_features.emplace_back(features::kFledgeUseKVv2SignalsCache);
     }
 
-    feature_list_.InitWithFeaturesAndParameters(enabled_features,
-                                                disabled_features);
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   bool EnableSignalsCache() const { return GetParam(); }
@@ -26842,48 +26840,21 @@ class InterestGroupTrustedSignalsKVv2BrowserTest
         base::Unretained(this)));
 
     InterestGroupBrowserTest::SetUpOnMainThread();
-  }
 
-  void TearDownOnMainThread() override {
-    InterestGroupBrowserTest::TearDownOnMainThread();
-    url_loader_interceptor_.reset();
-  }
-
-  void ProvideKeys() {
-    // We use a URLLoaderInterceptor instead of the EmbeddedTestServer, since we
-    // need to set the URL for it in the constructor, before the
-    // EmbeddedTestServer starts. At that point we don't know the port the
-    // EmbeddedTestServer will be using.
-    url_loader_interceptor_ =
-        std::make_unique<URLLoaderInterceptor>(base::BindLambdaForTesting(
-            [&](URLLoaderInterceptor::RequestParams* params) -> bool {
-              if (params->url_request.url != kKeyUrl) {
-                return false;
-              }
-              std::string headers =
-                  "HTTP/1.1 200 OK\nContent-Type: application/json\n\n";
-              const uint8_t kTestPublicKey[] = {
-                  0xa1, 0x5f, 0x40, 0x65, 0x86, 0xfa, 0xc4, 0x7b,
-                  0x99, 0x59, 0x70, 0xf1, 0x85, 0xd9, 0xd8, 0x91,
-                  0xc7, 0x4d, 0xcf, 0x1e, 0xb9, 0x1a, 0x7d, 0x50,
-                  0xa5, 0x8b, 0x01, 0x68, 0x3e, 0x60, 0x05, 0x2d,
-              };
-
-              base::Value::Dict key;
-              key.Set("key", base::Base64Encode(kTestPublicKey));
-              key.Set("id", "AA");
-              base::Value::List keys;
-              keys.Append(std::move(key));
-              base::Value::Dict outer;
-              outer.Set("keys", std::move(keys));
-
-              std::string json_output;
-              JSONStringValueSerializer serializer(&json_output);
-              serializer.Serialize(outer);
-              URLLoaderInterceptor::WriteResponse(headers, json_output,
-                                                  params->client.get());
-              return true;
-            }));
+    // Insert the coordinator key in the database directly, to avoid having to
+    // inject a network response to a fetch from the coordinator.
+    const uint8_t kTestPublicKey[] = {
+        0xa1, 0x5f, 0x40, 0x65, 0x86, 0xfa, 0xc4, 0x7b, 0x99, 0x59, 0x70,
+        0xf1, 0x85, 0xd9, 0xd8, 0x91, 0xc7, 0x4d, 0xcf, 0x1e, 0xb9, 0x1a,
+        0x7d, 0x50, 0xa5, 0x8b, 0x01, 0x68, 0x3e, 0x60, 0x05, 0x2d,
+    };
+    manager_->SetBiddingAndAuctionServerKeys(
+        kCoordinatorOrigin,
+        {BiddingAndAuctionServerKey{
+            std::string(reinterpret_cast<const char*>(kTestPublicKey),
+                        sizeof(kTestPublicKey)),
+            kKeyId}},
+        /*expiration=*/base::Time::Now() + base::Days(1));
   }
 
   void TestTrustedKVv2BiddingSignalsCrossOrigin(bool expect_success,
@@ -26993,7 +26964,7 @@ class InterestGroupTrustedSignalsKVv2BrowserTest
 
     // Decrypt the request.
     auto response_key_config = quiche::ObliviousHttpHeaderKeyConfig::Create(
-        0xAA, EVP_HPKE_DHKEM_X25519_HKDF_SHA256, EVP_HPKE_HKDF_SHA256,
+        kKeyId, EVP_HPKE_DHKEM_X25519_HKDF_SHA256, EVP_HPKE_HKDF_SHA256,
         EVP_HPKE_AES_256_GCM);
     CHECK(response_key_config.ok()) << response_key_config.status();
 
@@ -27064,10 +27035,11 @@ class InterestGroupTrustedSignalsKVv2BrowserTest
     access_control_allow_origin_header_ = header;
   }
 
-  const GURL kKeyUrl =
-      GURL("https://example.test/interest_group/b_and_a_keys.json");
-  std::unique_ptr<URLLoaderInterceptor> url_loader_interceptor_;
+  static constexpr int kKeyId = 170;
   base::test::ScopedFeatureList feature_list_;
+
+  const url::Origin kCoordinatorOrigin = url::Origin::Create(
+      GURL("https://publickeyservice.gcp.privacysandboxservices.com"));
 
   base::Lock lock_;
   std::string access_control_allow_origin_header_ GUARDED_BY(lock_);
@@ -27096,7 +27068,6 @@ void InterestGroupTrustedSignalsKVv2BrowserTest::
 
   url::Origin bidder_origin = url::Origin::Create(bidder_script_url);
   url::Origin seller_origin = url::Origin::Create(seller_script_url);
-  ProvideKeys();
 
   if (add_cors_header) {
     SetAccessControlAllowOriginHeader(
@@ -27225,7 +27196,6 @@ void InterestGroupTrustedSignalsKVv2BrowserTest::
 
   url::Origin bidder_origin = url::Origin::Create(bidder_script_url);
   url::Origin seller_origin = url::Origin::Create(seller_script_url);
-  ProvideKeys();
 
   if (add_cors_header) {
     SetAccessControlAllowOriginHeader(
@@ -27371,7 +27341,6 @@ IN_PROC_BROWSER_TEST_P(InterestGroupTrustedSignalsKVv2BrowserTest,
 
   url::Origin bidder_origin = url::Origin::Create(bidder_script_url);
   url::Origin seller_origin = url::Origin::Create(seller_script_url);
-  ProvideKeys();
 
   // Navigate to bidder site, and add an interest group.
   ASSERT_TRUE(NavigateToURL(shell(), bidder_url));
@@ -27462,7 +27431,6 @@ IN_PROC_BROWSER_TEST_P(InterestGroupTrustedSignalsKVv2BrowserTest,
 
   url::Origin bidder_origin = url::Origin::Create(bidder_script_url);
   url::Origin seller_origin = url::Origin::Create(seller_script_url);
-  ProvideKeys();
 
   // Navigate to bidder site, and add an interest group.
   ASSERT_TRUE(NavigateToURL(shell(), bidder_url));
