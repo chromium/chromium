@@ -199,6 +199,11 @@ class CORE_EXPORT InspectorCSSAgent final
       std::optional<protocol::DOM::PseudoType> pseudo_type,
       std::optional<String> pseudo_identifier,
       std::unique_ptr<protocol::Array<String>>* results) override;
+  protocol::Response getLonghandProperties(
+      const String& shorthand_name,
+      const String& value,
+      std::unique_ptr<protocol::Array<protocol::CSS::CSSProperty>>*
+          longhand_properties) override;
   protocol::Response getPlatformFontsForNode(
       int node_id,
       std::unique_ptr<protocol::Array<protocol::CSS::PlatformFontUsage>>* fonts)

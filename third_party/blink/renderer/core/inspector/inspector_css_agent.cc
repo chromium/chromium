@@ -82,6 +82,7 @@
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/css/properties/longhands/custom_property.h"
+#include "third_party/blink/renderer/core/css/properties/shorthand.h"
 #include "third_party/blink/renderer/core/css/property_registry.h"
 #include "third_party/blink/renderer/core/css/resolver/scoped_style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
@@ -118,6 +119,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_resource_container.h"
 #include "third_party/blink/renderer/core/inspector/inspector_resource_content_loader.h"
 #include "third_party/blink/renderer/core/inspector/inspector_style_resolver.h"
+#include "third_party/blink/renderer/core/inspector/inspector_style_sheet.h"
 #include "third_party/blink/renderer/core/inspector/protocol/css.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
@@ -2059,6 +2061,56 @@ protocol::Response InspectorCSSAgent::resolveValues(
     }
 
     (*results)->emplace_back(computed_value->CssText());
+  }
+
+  return protocol::Response::Success();
+}
+
+protocol::Response InspectorCSSAgent::getLonghandProperties(
+    const String& shorthand_name,
+    const String& value,
+    std::unique_ptr<protocol::Array<protocol::CSS::CSSProperty>>*
+        longhand_properties) {
+  protocol::Response response = AssertEnabled();
+  if (!response.IsSuccess()) {
+    return response;
+  }
+
+  CSSPropertyID property_id =
+      CssPropertyID(/*execution_context=*/nullptr, shorthand_name);
+  if (!IsValidCSSPropertyID(property_id)) {
+    return protocol::Response::ServerError("Invalid shorthandName");
+  }
+  const CSSProperty& property = CSSProperty::Get(property_id);
+
+  CSSParserTokenStream stream(value);
+
+  const CSSParserContext* parser_context =
+      MakeGarbageCollected<CSSParserContext>(kHTMLStandardMode,
+                                             SecureContextMode::kSecureContext);
+  const auto local_context =
+      CSSParserLocalContext().WithCurrentShorthand(property.PropertyID());
+
+  HeapVector<CSSPropertyValue, 64> css_longhand_properties;
+  const auto* shorthand = DynamicTo<Shorthand>(property);
+  if (!shorthand) {
+    return protocol::Response::ServerError("Invalid shorthandName");
+  }
+  bool res = shorthand->ParseShorthand(false, stream, *parser_context,
+                                       local_context, css_longhand_properties);
+  if (!res) {
+    return protocol::Response::ServerError("Error parsing shorthand.");
+  }
+
+  *longhand_properties =
+      std::make_unique<protocol::Array<protocol::CSS::CSSProperty>>();
+  for (auto longhand_property : css_longhand_properties) {
+    std::unique_ptr<protocol::CSS::CSSProperty> protocol_longhand =
+        protocol::CSS::CSSProperty::create()
+            .setName(longhand_property.Name().ToAtomicString())
+            .setValue(longhand_property.Value().CssText())
+            .build();
+    (*longhand_properties)->emplace_back(std::move(protocol_longhand));
   }
 
   return protocol::Response::Success();
