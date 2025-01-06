@@ -2038,6 +2038,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Hub.ToolbarPresentOnAnimation" enum="Boolean"
+    expires_after="2025-01-06">
+  <owner>skym@chromium.org</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <summary>
+    The shrink/expand animation is supposed to change the color of the toolbar.
+    But there's currently a rare crash where the toolbar is not present. Either
+    it hasn't been created yet or has already been torn down. This metric
+    captures if the toolbar is present or not, which should help us measure the
+    effectiveness of future mitigations.
+  </summary>
+</histogram>
+
 <histogram name="Android.HubSearch.SearchBoxEntrypointV2"
     enum="HubSearchEntrypoint" expires_after="2025-06-08">
   <owner>bjfong@google.com</owner>

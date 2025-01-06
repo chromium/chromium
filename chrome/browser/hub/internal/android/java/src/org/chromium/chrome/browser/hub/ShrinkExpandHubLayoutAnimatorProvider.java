@@ -267,19 +267,27 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
 
         assert mAnimationDataSupplier.hasValue();
 
-        View toolbarView = mHubContainerView.findViewById(R.id.hub_toolbar);
+        @Nullable View toolbarView = mHubContainerView.findViewById(R.id.hub_toolbar);
+        RecordHistogram.recordBooleanHistogram(
+                "Android.Hub.ToolbarPresentOnAnimation", toolbarView != null);
+
         boolean isShrink = mAnimationType == HubLayoutAnimationType.SHRINK_TAB;
         float initialAlpha = isShrink ? 0.0f : 1.0f;
         float finalAlpha = isShrink ? 1.0f : 0.0f;
-        ObjectAnimator fadeAnimator =
-                ObjectAnimator.ofFloat(toolbarView, View.ALPHA, initialAlpha, finalAlpha);
-        fadeAnimator.setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR);
-        fadeAnimator.addUpdateListener(
-                animation -> {
-                    if (animation.getAnimatedValue() instanceof Float animationAlpha) {
-                        mOnAlphaChange.accept(animationAlpha);
-                    }
-                });
+        final @Nullable ObjectAnimator fadeAnimator;
+        if (toolbarView != null) {
+            fadeAnimator =
+                    ObjectAnimator.ofFloat(toolbarView, View.ALPHA, initialAlpha, finalAlpha);
+            fadeAnimator.setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR);
+            fadeAnimator.addUpdateListener(
+                    animation -> {
+                        if (animation.getAnimatedValue() instanceof Float animationAlpha) {
+                            mOnAlphaChange.accept(animationAlpha);
+                        }
+                    });
+        } else {
+            fadeAnimator = null;
+        }
 
         int searchBoxHeight =
                 OmniboxFeatures.sAndroidHubSearch.isEnabled()
@@ -332,14 +340,20 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
                 });
 
         AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.playTogether(shrinkExpandAnimator, fadeAnimator, cornerAnimator);
+        if (fadeAnimator == null) {
+            animatorSet.playTogether(shrinkExpandAnimator, cornerAnimator);
+        } else {
+            animatorSet.playTogether(shrinkExpandAnimator, fadeAnimator, cornerAnimator);
+        }
         animatorSet.setDuration(mDurationMs);
 
         HubLayoutAnimationListener listener =
                 new HubLayoutAnimationListener() {
                     @Override
                     public void beforeStart() {
-                        toolbarView.setAlpha(initialAlpha);
+                        if (toolbarView != null) {
+                            toolbarView.setAlpha(initialAlpha);
+                        }
                         mOnAlphaChange.accept(initialAlpha);
                         mHubContainerView.setVisibility(View.VISIBLE);
                         mShrinkExpandImageView.setVisibility(View.VISIBLE);
@@ -372,7 +386,9 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
                         // Reset the toolbar to the default alpha of 1. For future animations this
                         // will be updated again. At this point the Hub is either gone or visible
                         // so the correct alpha is 1 regardless of the animation direction.
-                        toolbarView.setAlpha(1.0f);
+                        if (toolbarView != null) {
+                            toolbarView.setAlpha(1.0f);
+                        }
                         mOnAlphaChange.accept(finalAlpha);
                     }
                 };

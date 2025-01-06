@@ -10,9 +10,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -35,7 +37,6 @@ import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -103,7 +104,6 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShrinkTab() {
         var watcher =
                 HistogramWatcher.newBuilder()
@@ -173,7 +173,6 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testExpandTab() {
         var watcher =
                 HistogramWatcher.newBuilder()
@@ -243,7 +242,6 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testNewTab() {
         HubLayoutAnimatorProvider animatorProvider =
                 ShrinkExpandHubLayoutAnimationFactory.createNewTabAnimatorProvider(
@@ -287,7 +285,6 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShrinkFallbackAnimationDueToTimeoutMissingData() {
         HubLayoutAnimatorProvider animatorProvider =
                 ShrinkExpandHubLayoutAnimationFactory.createShrinkTabAnimatorProvider(
@@ -314,7 +311,6 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShrinkFallbackAnimationDueToTimeoutMissingBitmap() {
         HubLayoutAnimatorProvider animatorProvider =
                 ShrinkExpandHubLayoutAnimationFactory.createShrinkTabAnimatorProvider(
@@ -353,7 +349,6 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShrinkFallbackAnimationViaSupplierData() {
         HubLayoutAnimatorProvider animatorProvider =
                 ShrinkExpandHubLayoutAnimationFactory.createShrinkTabAnimatorProvider(
@@ -392,7 +387,6 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testExpandFallbackAnimationViaForcedToFinish() {
         HubLayoutAnimatorProvider animatorProvider =
                 ShrinkExpandHubLayoutAnimationFactory.createExpandTabAnimatorProvider(
@@ -417,7 +411,6 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testNewTabFallbackAnimation() {
         HubLayoutAnimatorProvider animatorProvider =
                 ShrinkExpandHubLayoutAnimationFactory.createNewTabAnimatorProvider(
@@ -457,7 +450,6 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testImageViewWeakRefBitmapCallback() {
         ImageViewWeakRefBitmapCallback weakRefCallback =
                 new ImageViewWeakRefBitmapCallback(mImageViewMock, mRunnableMock);
@@ -469,7 +461,6 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testImageViewWeakRefBitmapCallbackGarbageCollection() {
         ImageView imageView = new ImageView(mActivity);
         WeakReference<ImageView> imageViewWeakRef = new WeakReference<>(imageView);
@@ -497,7 +488,6 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testImageViewWeakRefBitmapCallbackNoBitmapIfNoView() {
         ImageView imageView = new ImageView(mActivity);
         WeakReference<ImageView> imageViewWeakRef = new WeakReference<>(imageView);
@@ -513,6 +503,45 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
         // Verify this doesn't crash.
         weakRefCallback.onResult(mBitmap);
         verify(mRunnableMock, never()).run();
+    }
+
+    @Test
+    public void testAnimationAfterDestroy() {
+        HubLayoutAnimatorProvider animatorProvider =
+                ShrinkExpandHubLayoutAnimationFactory.createNewTabAnimatorProvider(
+                        mHubContainerView,
+                        mAnimationDataSupplier,
+                        Color.RED,
+                        HUB_LAYOUT_EXPAND_NEW_TAB_DURATION_MS,
+                        mOnAlphaChange);
+
+        // Remove all views like a tear down/destroy would.
+        mHubContainerView.removeAllViews();
+
+        ShrinkExpandAnimationData data =
+                new ShrinkExpandAnimationData(
+                        /* initialRect */ new Rect(100, 0, 101, 1),
+                        /* finalRect= */ new Rect(10, 15, WIDTH - 10, HEIGHT - 15),
+                        /* initialTopCornerRadius= */ 0,
+                        /* initialBottomCornerRadius= */ 0,
+                        /* finalTopCornerRadius= */ 0,
+                        /* finalBottomCornerRadius= */ 0,
+                        /* thumbnailSize= */ null,
+                        /* useFallbackAnimation= */ false);
+        mAnimationDataSupplier.set(data);
+
+        HubLayoutAnimationRunner runner =
+                HubLayoutAnimationRunnerFactory.createHubLayoutAnimationRunner(animatorProvider);
+
+        mListener = mock(HubLayoutAnimationListener.class);
+        runner.addListener(mListener);
+        runner.runWithWaitForAnimatorTimeout(HUB_LAYOUT_TIMEOUT_MS);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(mListener).beforeStart();
+        verify(mListener).onEnd(anyBoolean());
+        verify(mListener).afterEnd();
     }
 
     private void setUpShrinkExpandListener(
