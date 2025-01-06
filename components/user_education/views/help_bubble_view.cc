@@ -545,7 +545,7 @@ HelpBubbleView::HelpBubbleView(
 
     // Add the default button if there is one based on platform style.
     if (default_button) {
-      if (views::PlatformStyle::kIsOkButtonLeading) {
+      if constexpr (views::PlatformStyle::kIsOkButtonLeading) {
         default_button_ =
             button_container->AddChildViewAt(std::move(default_button), 0);
       } else {

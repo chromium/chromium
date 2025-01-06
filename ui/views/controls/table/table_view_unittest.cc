@@ -1028,7 +1028,7 @@ TEST_P(TableViewTest, ResizeViaGesture) {
 // Verifies resizing a column works with the keyboard.
 // The resize keyboard amount is 5 pixels.
 TEST_P(TableViewTest, ResizeViaKeyboard) {
-  if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
+  if constexpr (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
     GTEST_SKIP() << "platform doesn't support table keyboard navigation";
   }
 
@@ -1232,7 +1232,7 @@ TEST_P(TableViewTest, SortOnMouse) {
 // Verifies that pressing the space bar when a particular visible column is
 // active will sort by that column.
 TEST_P(TableViewTest, SortOnSpaceBar) {
-  if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
+  if constexpr (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
     GTEST_SKIP() << "platform doesn't support table keyboard navigation";
   }
 
@@ -1911,7 +1911,7 @@ TEST_P(TableViewTest, KeyUpDown) {
 
 // Verifies left/right correctly navigate through visible columns.
 TEST_P(TableViewTest, KeyLeftRight) {
-  if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
+  if constexpr (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
     GTEST_SKIP() << "platform doesn't support table keyboard navigation";
   }
 
@@ -2009,7 +2009,7 @@ TEST_P(TableViewTest, KeyLeftRight) {
 // Verify table view that the left/right navigation scrolls the visible rect
 // correctly.
 TEST_P(TableViewTest, KeyLeftRightScrollRectToVisibleInTableView) {
-  if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
+  if constexpr (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
     GTEST_SKIP() << "platform doesn't support table keyboard navigation";
   }
 
@@ -2051,7 +2051,7 @@ TEST_P(TableViewTest, KeyLeftRightScrollRectToVisibleInTableView) {
 // Verify table header that the left/right navigation scrolls the visible rect
 // correctly.
 TEST_P(TableViewTest, KeyLeftRightScrollRectToVisibleInTableHeader) {
-  if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
+  if constexpr (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
     GTEST_SKIP() << "platform doesn't support table keyboard navigation";
   }
 
@@ -2086,7 +2086,7 @@ TEST_P(TableViewTest, KeyLeftRightScrollRectToVisibleInTableHeader) {
 // switching between different rows when the layout is RTL or LTR. use_rtl()
 // returns true for testing the RTL layout and false for testing the LTR layout
 TEST_P(TableViewTest, KeyUpDownHorizontalScrollbarStability) {
-  if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
+  if constexpr (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
     GTEST_SKIP() << "platform doesn't support table keyboard navigation";
   }
   EXPECT_FALSE(base::i18n::IsRTL());
@@ -2447,7 +2447,7 @@ TEST_P(TableViewTest, TableHeaderRowAccessibleViewFocusable) {
 // Ensure that the TableView's header columns are keyboard accessible.
 // Tests for crbug.com/1189851.
 TEST_P(TableViewTest, TableHeaderColumnAccessibleViewsFocusable) {
-  if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
+  if constexpr (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
     GTEST_SKIP() << "platform doesn't support table keyboard navigation";
   }
 

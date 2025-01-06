@@ -110,7 +110,7 @@ void ConfirmInfoBar::Layout(PassKey) {
     order_of_buttons.push_back(cancel_button_);
   }
 
-  if (!views::PlatformStyle::kIsOkButtonLeading) {
+  if constexpr (!views::PlatformStyle::kIsOkButtonLeading) {
     base::ranges::reverse(order_of_buttons);
   }
 

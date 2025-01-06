@@ -942,11 +942,6 @@ class LabelButtonVisualStateTest : public test::WidgetTest {
     dummy_widget_ = CreateTopLevelPlatformWidget();
 
     MakeButtonAsContent(test_widget_)->SetID(1);
-
-    style_of_inactive_widget_ =
-        PlatformStyle::kInactiveWidgetControlsAppearDisabled
-            ? Button::STATE_DISABLED
-            : Button::STATE_NORMAL;
   }
 
   void TearDown() override {
@@ -979,7 +974,10 @@ class LabelButtonVisualStateTest : public test::WidgetTest {
 
   raw_ptr<Widget> test_widget_ = nullptr;
   raw_ptr<Widget> dummy_widget_ = nullptr;
-  Button::ButtonState style_of_inactive_widget_;
+  static constexpr Button::ButtonState style_of_inactive_widget_ =
+      PlatformStyle::kInactiveWidgetControlsAppearDisabled
+          ? Button::STATE_DISABLED
+          : Button::STATE_NORMAL;
 };
 
 TEST_F(LabelButtonVisualStateTest, IndependentWidget) {

@@ -3542,7 +3542,7 @@ class PaintAsActiveCallbackCounter {
 };
 
 TEST_F(WidgetTest, LockParentPaintAsActive) {
-  if (!PlatformStyle::kInactiveWidgetControlsAppearDisabled) {
+  if constexpr (!PlatformStyle::kInactiveWidgetControlsAppearDisabled) {
     return;
   }
 

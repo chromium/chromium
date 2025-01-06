@@ -624,17 +624,10 @@ TEST_F(MenuItemViewPaintUnitTest,
 
   // The selected bit and selection based state should both update for all menu
   // items while they and their anscestors remain part of the menu.
-  if (views::PlatformStyle::kAutoSelectFirstMenuItemFromKeyboard) {
-    // On Windows, we automatically select the first item when the menu is
-    // opened from the keyboard.
-    EXPECT_TRUE(submenu_item->IsSelected());
-    EXPECT_TRUE(submenu_item->last_paint_as_selected_for_testing());
-  } else {
-    // On other platforms, we don't automatically select the first item when the
-    // menu is opened from the keyboard.
-    EXPECT_FALSE(submenu_item->IsSelected());
-    EXPECT_FALSE(submenu_item->last_paint_as_selected_for_testing());
-  }
+  EXPECT_EQ(submenu_item->IsSelected(),
+            views::PlatformStyle::kAutoSelectFirstMenuItemFromKeyboard);
+  EXPECT_EQ(submenu_item->last_paint_as_selected_for_testing(),
+            views::PlatformStyle::kAutoSelectFirstMenuItemFromKeyboard);
 
   submenu_item->SetSelected(true);
   EXPECT_TRUE(submenu_item->IsSelected());
@@ -680,15 +673,8 @@ TEST_F(MenuItemViewPaintUnitTest, SelectionBasedStateUpdatedWhenIconChanges) {
                            MenuAnchorPosition::kTopLeft,
                            ui::mojom::MenuSourceType::kKeyboard);
 
-  if (views::PlatformStyle::kAutoSelectFirstMenuItemFromKeyboard) {
-    // On Windows, we automatically select the first item when the menu is
-    // opened from the keyboard.
-    EXPECT_TRUE(child_menu_item->last_paint_as_selected_for_testing());
-  } else {
-    // On other platforms, we don't automatically select the first item when the
-    // menu is opened from the keyboard.
-    EXPECT_FALSE(child_menu_item->last_paint_as_selected_for_testing());
-  }
+  EXPECT_EQ(child_menu_item->last_paint_as_selected_for_testing(),
+            views::PlatformStyle::kAutoSelectFirstMenuItemFromKeyboard);
 
   child_menu_item->SetSelected(true);
   EXPECT_TRUE(child_menu_item->IsSelected());

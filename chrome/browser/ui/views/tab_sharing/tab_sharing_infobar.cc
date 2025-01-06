@@ -229,7 +229,7 @@ void TabSharingInfoBar::Layout(PassKey) {
     order_of_buttons.push_back(csc_indicator_button_);
   }
 
-  if (!views::PlatformStyle::kIsOkButtonLeading) {
+  if constexpr (!views::PlatformStyle::kIsOkButtonLeading) {
     base::ranges::reverse(order_of_buttons);
   }
 

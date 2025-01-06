@@ -833,7 +833,7 @@ TEST_F(ComboboxTest, ConsumingPressKeyEvents) {
 
   ui::KeyEvent return_press(ui::EventType::kKeyPressed, ui::VKEY_RETURN,
                             ui::EF_NONE);
-  if (PlatformStyle::kReturnClicksFocusedControl) {
+  if constexpr (PlatformStyle::kReturnClicksFocusedControl) {
     EXPECT_TRUE(combobox()->OnKeyPressed(return_press));
     EXPECT_EQ(2, menu_show_count_);
   } else {

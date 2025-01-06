@@ -680,7 +680,7 @@ TEST_F(BookmarkBarViewInWidgetTest,
   ASSERT_TRUE(button);
   // The `LabelButton::AddedToWidget()` call only has an effect for bookmark
   // buttons on certain platforms, so gate the check.
-  if (views::PlatformStyle::kInactiveWidgetControlsAppearDisabled) {
+  if constexpr (views::PlatformStyle::kInactiveWidgetControlsAppearDisabled) {
     EXPECT_TRUE(button->has_paint_as_active_subscription_for_testing());
   }
 }

@@ -556,7 +556,7 @@ void DialogClientView::SetupLayout() {
 }
 
 void DialogClientView::UpdateButtonsFromModel() {
-  if (PlatformStyle::kIsOkButtonLeading) {
+  if constexpr (PlatformStyle::kIsOkButtonLeading) {
     UpdateDialogButton(&ok_button_, ui::mojom::DialogButton::kOk);
     UpdateDialogButton(&cancel_button_, ui::mojom::DialogButton::kCancel);
   } else {

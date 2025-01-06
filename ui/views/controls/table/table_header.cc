@@ -71,7 +71,7 @@ class TableHeader::HighlightPathGenerator
 
   // HighlightPathGenerator:
   SkPath GetHighlightPath(const View* view) override {
-    if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
+    if constexpr (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
       return SkPath();
     }
 

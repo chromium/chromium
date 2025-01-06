@@ -33,27 +33,6 @@ CFRange CFStringGetRangeOfCharacterClusterAtIndex(
 
 namespace views {
 
-const int PlatformStyle::kMinLabelButtonWidth = 32;
-const int PlatformStyle::kMinLabelButtonHeight = 30;
-const bool PlatformStyle::kDialogDefaultButtonCanBeCancel = false;
-const bool PlatformStyle::kSelectWordOnRightClick = true;
-const bool PlatformStyle::kSelectAllOnRightClickWhenUnfocused = true;
-const bool PlatformStyle::kTextfieldUsesDragCursorWhenDraggable = false;
-const bool PlatformStyle::kTableViewSupportsKeyboardNavigationByCell = false;
-const bool PlatformStyle::kTreeViewSelectionPaintsEntireRow = true;
-const bool PlatformStyle::kUseRipples = false;
-const bool PlatformStyle::kInactiveWidgetControlsAppearDisabled = true;
-const bool PlatformStyle::kAdjustBubbleIfOffscreen = true;
-const View::FocusBehavior PlatformStyle::kDefaultFocusBehavior =
-    View::FocusBehavior::ACCESSIBLE_ONLY;
-
-const Button::KeyClickAction PlatformStyle::kKeyClickActionOnSpace =
-    Button::KeyClickAction::kOnKeyPress;
-
-// On Mac, the Return key is used to perform the default action even when a
-// control is focused.
-const bool PlatformStyle::kReturnClicksFocusedControl = false;
-
 // static
 std::unique_ptr<ScrollBar> PlatformStyle::CreateScrollBar(
     ScrollBar::Orientation orientation) {

@@ -156,7 +156,7 @@ class TableView::HighlightPathGenerator : public views::HighlightPathGenerator {
 
   // HighlightPathGenerator:
   SkPath GetHighlightPath(const views::View* view) override {
-    if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
+    if constexpr (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
       return SkPath();
     }
 
@@ -607,6 +607,12 @@ bool TableView::OnKeyPressed(const ui::KeyEvent& event) {
     return false;
   }
 
+  if constexpr (PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
+    if (HandleKeyPressedForKeyboardNavigationByCell(event)) {
+      return true;
+    }
+  }
+
   switch (event.key_code()) {
     case ui::VKEY_A:
       // control-a selects all.
@@ -662,60 +668,67 @@ bool TableView::OnKeyPressed(const ui::KeyEvent& event) {
 #endif
       return true;
 
-    case ui::VKEY_LEFT:
-      if (PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
-        const AdvanceDirection direction = base::i18n::IsRTL()
-                                               ? AdvanceDirection::kIncrement
-                                               : AdvanceDirection::kDecrement;
-        if (IsCmdOrCtrl(event)) {
-          if (active_visible_column_index_.has_value() && header_) {
-            header_->ResizeColumnViaKeyboard(
-                active_visible_column_index_.value(), direction);
-            UpdateFocusRings();
-          }
-        } else {
-          AdvanceActiveVisibleColumn(direction);
-        }
-        return true;
-      }
+    default:
       break;
+  }
 
-    case ui::VKEY_RIGHT:
+  if (observer_) {
+    observer_->OnKeyDown(event.key_code());
+  }
+  return false;
+}
+
+bool TableView::HandleKeyPressedForKeyboardNavigationByCell(
+    const ui::KeyEvent& event) {
+  switch (event.key_code()) {
+    case ui::VKEY_LEFT: {
+      const AdvanceDirection direction = base::i18n::IsRTL()
+                                             ? AdvanceDirection::kIncrement
+                                             : AdvanceDirection::kDecrement;
+      if (IsCmdOrCtrl(event)) {
+        if (active_visible_column_index_.has_value() && header_) {
+          header_->ResizeColumnViaKeyboard(active_visible_column_index_.value(),
+                                           direction);
+          UpdateFocusRings();
+        }
+      } else {
+        AdvanceActiveVisibleColumn(direction);
+      }
+      return true;
+    }
+
+    case ui::VKEY_RIGHT: {
       // TODO(crbug.com/40773239): Update TableView to support keyboard
       // navigation to table cells on Mac when "Full keyboard access" is
       // specified.
-      if (PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
-        const AdvanceDirection direction = base::i18n::IsRTL()
-                                               ? AdvanceDirection::kDecrement
-                                               : AdvanceDirection::kIncrement;
-        if (IsCmdOrCtrl(event)) {
-          if (active_visible_column_index_.has_value() && header_) {
-            header_->ResizeColumnViaKeyboard(
-                active_visible_column_index_.value(), direction);
-            UpdateFocusRings();
-          }
-        } else {
-          AdvanceActiveVisibleColumn(direction);
+      const AdvanceDirection direction = base::i18n::IsRTL()
+                                             ? AdvanceDirection::kDecrement
+                                             : AdvanceDirection::kIncrement;
+      if (IsCmdOrCtrl(event)) {
+        if (active_visible_column_index_.has_value() && header_) {
+          header_->ResizeColumnViaKeyboard(active_visible_column_index_.value(),
+                                           direction);
+          UpdateFocusRings();
         }
-        return true;
+      } else {
+        AdvanceActiveVisibleColumn(direction);
       }
-      break;
+      return true;
+    }
 
     // Currently there are TableView clients that take an action when the return
     // key is pressed and there is an active selection in the body. To avoid
     // breaking these cases only allow toggling sort order with the return key
     // when the table header is active.
     case ui::VKEY_RETURN:
-      if (PlatformStyle::kTableViewSupportsKeyboardNavigationByCell &&
-          active_visible_column_index_.has_value() && header_row_is_active_) {
+      if (active_visible_column_index_.has_value() && header_row_is_active_) {
         ToggleSortOrder(active_visible_column_index_.value());
         return true;
       }
       break;
 
     case ui::VKEY_SPACE:
-      if (PlatformStyle::kTableViewSupportsKeyboardNavigationByCell &&
-          active_visible_column_index_.has_value()) {
+      if (active_visible_column_index_.has_value()) {
         ToggleSortOrder(active_visible_column_index_.value());
         return true;
       }
@@ -723,10 +736,6 @@ bool TableView::OnKeyPressed(const ui::KeyEvent& event) {
 
     default:
       break;
-  }
-
-  if (observer_) {
-    observer_->OnKeyDown(event.key_code());
   }
   return false;
 }
@@ -1675,10 +1684,11 @@ void TableView::UpdateAccessibleNameForIndex(size_t start_view_index,
     size_t model_index = ViewToModel(view_index);
 
     // We only need to update the name if the column is visible.
-    if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell &&
-        visible_columns_.size()) {
-      ax_row->GetCustomData().SetName(
-          model_->GetText(model_index, GetVisibleColumn(0).column.id));
+    if constexpr (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
+      if (visible_columns_.size()) {
+        ax_row->GetCustomData().SetName(
+            model_->GetText(model_index, GetVisibleColumn(0).column.id));
+      }
     }
 
     for (auto& ax_cell : ax_row->children()) {
@@ -1751,7 +1761,7 @@ void TableView::SetAccessibleSelectionForIndex(size_t view_index,
                                            selected);
 
   // Select/Unselect the cell.
-  if (PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
+  if constexpr (PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
     for (size_t cell = 0; cell < ax_row->children().size(); cell++) {
       if (cell == GetActiveVisibleColumnIndex()) {
         ax_row->children()[cell]->GetCustomData().AddBoolAttribute(
@@ -1780,8 +1790,10 @@ void TableView::ClearAccessibleSelection() const {
 
 void TableView::UpdateAccessibleSelectionForColumnIndex(
     size_t visible_column_index) const {
-  if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell ||
-      visible_column_index >= visible_columns_.size()) {
+  if constexpr (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
+    return;
+  }
+  if (visible_column_index >= visible_columns_.size()) {
     return;
   }
 
@@ -1804,7 +1816,7 @@ std::unique_ptr<AXVirtualView> TableView::CreateRowAccessibilityView(
   row_data.AddIntAttribute(ax::mojom::IntAttribute::kTableRowIndex,
                            static_cast<int32_t>(row_index));
 
-  if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
+  if constexpr (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
     row_data.AddState(ax::mojom::State::kFocusable);
     row_data.AddAction(ax::mojom::Action::kFocus);
     row_data.AddAction(ax::mojom::Action::kScrollToMakeVisible);
@@ -1838,7 +1850,7 @@ std::unique_ptr<AXVirtualView> TableView::CreateCellAccessibilityView(
   cell_data.AddIntAttribute(ax::mojom::IntAttribute::kTableCellRowIndex,
                             static_cast<int32_t>(row_index));
 
-  if (PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
+  if constexpr (PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
     cell_data.AddState(ax::mojom::State::kFocusable);
     cell_data.AddAction(ax::mojom::Action::kFocus);
     cell_data.AddAction(ax::mojom::Action::kScrollLeft);
@@ -2092,7 +2104,7 @@ void TableView::UpdateAccessibilityFocus(
 
   size_t active_row = ModelToView(selection_model_.active().value());
   AXVirtualView* ax_row = GetVirtualAccessibilityBodyRow(active_row);
-  if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
+  if constexpr (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
     if (ax_row) {
       ax_row->NotifyAccessibilityEvent(ax::mojom::Event::kSelection);
       GetViewAccessibility().OverrideFocus(ax_row);

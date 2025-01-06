@@ -182,7 +182,7 @@ TEST_F(SelectionControllerTest, RightClickWhenUnfocused) {
   SetText("abc def");
 
   RightMouseDown(CenterRight(BoundsOfChar(0)));
-  if (PlatformStyle::kSelectAllOnRightClickWhenUnfocused) {
+  if constexpr (PlatformStyle::kSelectAllOnRightClickWhenUnfocused) {
     EXPECT_EQ("abc def", GetSelectedText());
   } else {
     EXPECT_EQ("", GetSelectedText());
@@ -192,7 +192,7 @@ TEST_F(SelectionControllerTest, RightClickWhenUnfocused) {
 TEST_F(SelectionControllerTest, RightClickSelectsWord) {
   SetText("abc def");
   RightMouseDown(CenterRight(BoundsOfChar(5)), true);
-  if (PlatformStyle::kSelectWordOnRightClick) {
+  if constexpr (PlatformStyle::kSelectWordOnRightClick) {
     EXPECT_EQ("def", GetSelectedText());
   } else {
     EXPECT_EQ("", GetSelectedText());

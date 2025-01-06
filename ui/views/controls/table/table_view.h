@@ -501,6 +501,10 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
   // Updates the focus rings of the TableView and the TableHeader if necessary.
   void UpdateFocusRings();
 
+  // Handles key events for keyboard navigation by cell. Returns true if the
+  // event was handled.
+  bool HandleKeyPressedForKeyboardNavigationByCell(const ui::KeyEvent& event);
+
   // TODO(327473315): Only one of raw_ptr in this class is dangling. Find which
   // one.
   raw_ptr<ui::TableModel, LeakedDanglingUntriaged> model_ = nullptr;

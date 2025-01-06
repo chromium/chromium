@@ -702,7 +702,8 @@ void Textfield::SetBorder(std::unique_ptr<Border> b) {
 }
 
 ui::Cursor Textfield::GetCursor(const ui::MouseEvent& event) {
-  bool platform_arrow = PlatformStyle::kTextfieldUsesDragCursorWhenDraggable;
+  constexpr bool platform_arrow =
+      PlatformStyle::kTextfieldUsesDragCursorWhenDraggable;
   bool in_selection = GetRenderText()->IsPointInSelection(event.location());
   bool drag_event = event.type() == ui::EventType::kMouseDragged;
   bool text_cursor =

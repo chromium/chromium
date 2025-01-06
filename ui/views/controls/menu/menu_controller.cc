@@ -615,18 +615,20 @@ void MenuController::Run(Widget* parent,
         menu_start_mouse_press_loc_ = View::ConvertPointToScreen(
             static_cast<View*>(event->target()),
             static_cast<const ui::MouseEvent*>(event)->location());
-      } else if (views::PlatformStyle::kAutoSelectFirstMenuItemFromKeyboard &&
-                 !IsEditableCombobox() &&
-                 (source_type == ui::mojom::MenuSourceType::kKeyboard ||
-                  is_key_event)) {
-        // On Windows, we want to select the first menu item when the menu is
-        // opened via keyboard. This is because NVDA expects the focus to be on
-        // a menu item when the menu is opened via keyboard.
-        direction_is_down =
-            !(is_key_event && event->AsKeyEvent()->key_code() == ui::VKEY_UP);
-        to_select = FindInitialSelectableMenuItem(
-            root, direction_is_down ? INCREMENT_SELECTION_DOWN
-                                    : INCREMENT_SELECTION_UP);
+      } else if constexpr (views::PlatformStyle::
+                               kAutoSelectFirstMenuItemFromKeyboard) {
+        if (!IsEditableCombobox() &&
+            (source_type == ui::mojom::MenuSourceType::kKeyboard ||
+             is_key_event)) {
+          // On Windows, we want to select the first menu item when the menu is
+          // opened via keyboard. This is because NVDA expects the focus to be
+          // on a menu item when the menu is opened via keyboard.
+          direction_is_down =
+              !(is_key_event && event->AsKeyEvent()->key_code() == ui::VKEY_UP);
+          to_select = FindInitialSelectableMenuItem(
+              root, direction_is_down ? INCREMENT_SELECTION_DOWN
+                                      : INCREMENT_SELECTION_UP);
+        }
       }
     }
   }

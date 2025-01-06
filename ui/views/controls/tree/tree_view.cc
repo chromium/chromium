@@ -1182,9 +1182,10 @@ void TreeView::PaintRow(gfx::Canvas* canvas,
       drawing_provider()->GetBackgroundColorForNode(this, node->model_node());
 
   // Paint the row background.
-  if (PlatformStyle::kTreeViewSelectionPaintsEntireRow &&
-      selected_node_ == node) {
-    canvas->FillRect(GetBackgroundBoundsForNode(node), selected_row_bg_color);
+  if constexpr (PlatformStyle::kTreeViewSelectionPaintsEntireRow) {
+    if (selected_node_ == node) {
+      canvas->FillRect(GetBackgroundBoundsForNode(node), selected_row_bg_color);
+    }
   }
 
   if (!model_->GetChildren(node->model_node()).empty()) {
@@ -1207,9 +1208,10 @@ void TreeView::PaintRow(gfx::Canvas* canvas,
   }
 
   // Paint the background on the selected row.
-  if (!PlatformStyle::kTreeViewSelectionPaintsEntireRow &&
-      node == selected_node_) {
-    canvas->FillRect(text_bounds, selected_row_bg_color);
+  if constexpr (!PlatformStyle::kTreeViewSelectionPaintsEntireRow) {
+    if (node == selected_node_) {
+      canvas->FillRect(text_bounds, selected_row_bg_color);
+    }
   }
 
   // Paint the auxiliary text.
@@ -1423,7 +1425,7 @@ TreeView::InternalNode* TreeView::GetNodeAtPoint(const gfx::Point& point) {
 
   // If the entire row gets a selected background, clicking anywhere in the row
   // serves to hit this node.
-  if (PlatformStyle::kTreeViewSelectionPaintsEntireRow) {
+  if constexpr (PlatformStyle::kTreeViewSelectionPaintsEntireRow) {
     return node;
   }
   gfx::Rect bounds(GetForegroundBoundsForNodeImpl(node, row, depth));
