@@ -3086,6 +3086,9 @@ bool RenderProcessHostImpl::IsSpare() const {
 void RenderProcessHostImpl::SetProcessLock(
     const IsolationContext& isolation_context,
     const ProcessLock& process_lock) {
+  TRACE_EVENT_BEGIN("shutdown", "Lock process",
+                    perfetto::Track::FromPointer(this),
+                    ChromeTrackEvent::kRenderProcessHost, *this);
   ChildProcessSecurityPolicyImpl::GetInstance()->LockProcess(
       isolation_context, GetDeprecatedID(), !IsUnused(), process_lock);
 
@@ -3096,6 +3099,10 @@ void RenderProcessHostImpl::SetProcessLock(
   // handled by another call to NotifyRendererOfLockedStateUpdate from
   // OnProcessLaunched.
   NotifyRendererOfLockedStateUpdate();
+
+  // "Lock process"
+  TRACE_EVENT_END("shutdown", perfetto::Track::FromPointer(this),
+                  ChromeTrackEvent::kRenderProcessHost, *this);
 }
 
 bool RenderProcessHostImpl::IsProcessLockedToSiteForTesting() {
