@@ -3121,7 +3121,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.OverflowMenu.Customization.ActionAdded"
-    enum="IOSOverflowMenuAction" expires_after="2025-02-10">
+    enum="IOSOverflowMenuAction" expires_after="2025-06-29">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>The action added during an overflow menu customization.</summary>
@@ -3182,7 +3182,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.OverflowMenu.Customization.DestinationAdded"
-    enum="IOSOverflowMenuDestination" expires_after="2025-02-10">
+    enum="IOSOverflowMenuDestination" expires_after="2025-06-29">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
