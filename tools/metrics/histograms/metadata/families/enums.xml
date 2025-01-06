@@ -146,6 +146,8 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<!-- LINT.IfChange(FamilyLinkUserLocalWebApprovalResult) -->
+
 <enum name="FamilyLinkUserLocalWebApprovalResult">
   <summary>
     The result of local web approval request. Reported by the browser once
@@ -163,6 +165,8 @@ chromium-metrics-reviews@google.com.
   </int>
   <int value="3" label="Error">An error occured during the request flow.</int>
 </enum>
+
+<!-- LINT.ThenChange(//components/supervised_user/core/common/supervised_user_constants.h:LocalApprovalResult) -->
 
 <enum name="FamilyLinkUserLogSegment">
   <summary>
@@ -190,6 +194,8 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<!-- LINT.IfChange(FamilyLinkUserParentAccessWidgetError) -->
+
 <enum name="FamilyLinkUserParentAccessWidgetError">
   <summary>
     Error that occurs in the parent access widget. ChromeOS only.
@@ -213,6 +219,8 @@ chromium-metrics-reviews@google.com.
     ParentAccessHandler::OnParentAccessCallback.
   </int>
 </enum>
+
+<!-- LINT.ThenChange(//components/supervised_user/core/common/supervised_user_constants.h:ParentAccessWidgetError) -->
 
 <enum name="FamilyLinkUserParentAccessWidgetShowDialogError">
   <summary>

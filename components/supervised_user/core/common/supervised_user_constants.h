@@ -13,9 +13,7 @@ namespace supervised_user {
 // The result of local web approval flow.
 // Used for metrics. Those values are logged to UMA. Entries should not be
 // renumbered and numeric values should never be reused.
-// Matches the enum "FamilyLinkUserLocalWebApprovalResult" in
-// src/tools/metrics/histograms/enums.xml.
-// LINT.IfChange
+// LINT.IfChange(LocalApprovalResult)
 enum class LocalApprovalResult {
   kApproved = 0,
   kDeclined = 1,
@@ -23,9 +21,20 @@ enum class LocalApprovalResult {
   kError = 3,
   kMaxValue = kError
 };
-// LINT.ThenChange(
-//     //tools/metrics/histograms/enums.xml
-// )
+// LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:FamilyLinkUserLocalWebApprovalResult)
+
+// Used for metrics. These values are logged to UMA. Entries should not be
+// renumbered and numeric values should never be reused.
+// LINT.IfChange(ParentAccessWidgetError)
+enum class ParentAccessWidgetError {
+  kOAuthError = 0,
+  kDelegateNotAvailable = 1,
+  kDecodingError = 2,
+  kParsingError = 3,
+  kUnknownCallback = 4,
+  kMaxValue = kUnknownCallback
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:FamilyLinkUserParentAccessWidgetError)
 
 // This enum describes the filter types of Chrome, which is
 // set by Family Link App or at families.google.com/families. These values
