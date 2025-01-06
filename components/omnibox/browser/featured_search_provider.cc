@@ -45,7 +45,16 @@
 namespace {
 
 // Max number of featured enterprise suggestions to show when the user types '@'
-// or '@...'.
+// or '@...'. 4 is a good limit because:
+// - When the user types '@', the existing 4 starter packs, 1 trivial search,
+//   and 4 enterprise suggestions will all fit in the total limit of 9
+//   suggestions. This may change if more starter packs are launched.
+// - When the user types '@...', the at-most-1 matching starter pack (no
+//   starter packs share the same 1st character), 1 trivial search, at least 2
+//   non-trivial searches, and 4 enterprise suggestions will fit in the total
+//   limit of 8 suggestions.
+// This constant can be replaced with a function if we want to show a different
+// # of enterprise suggestions in these 2 cases.
 constexpr int kMaxEnterpriseSuggestions = 4;
 
 std::string GetIphDismissedPrefNameFor(IphType iph_type) {
