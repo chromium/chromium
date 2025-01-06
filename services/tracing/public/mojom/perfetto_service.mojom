@@ -158,6 +158,10 @@ interface ProducerHost {
   // datasource.
   RegisterDataSource(DataSourceRegistration registration_info);
 
+  // Similar to RegisterDataSource, but allows to update a specific datasource
+  // that was already registered.
+  UpdateDataSource(DataSourceRegistration registration_info);
+
   // Called by the ProducerClient to associate a TraceWriter with a target
   // buffer, which is required to support scraping of the SMB by the service.
   RegisterTraceWriter(uint32 writer_id, uint32 target_buffer);

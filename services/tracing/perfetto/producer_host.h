@@ -93,6 +93,8 @@ class ProducerHost : public tracing::mojom::ProducerHost,
   // provide a specific data source.
   void RegisterDataSource(
       const perfetto::DataSourceDescriptor& registration_info) override;
+  void UpdateDataSource(
+      const perfetto::DataSourceDescriptor& registration_info) override;
 
   // Called by the ProducerClient to associate a TraceWriter with a target
   // buffer, which is required to support scraping of the SMB by the service.

@@ -95,7 +95,7 @@ class ProducerEndpoint : public perfetto::ProducerEndpoint,
   void UpdateDataSource(
       const perfetto::DataSourceDescriptor& descriptor) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    NOTREACHED();
+    producer_host_->UpdateDataSource(descriptor);
   }
 
   void UnregisterDataSource(const std::string& name) override {

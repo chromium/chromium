@@ -159,6 +159,11 @@ void ProducerHost::RegisterDataSource(
   producer_endpoint_->RegisterDataSource(registration_info);
 }
 
+void ProducerHost::UpdateDataSource(
+    const perfetto::DataSourceDescriptor& registration_info) {
+  producer_endpoint_->UpdateDataSource(registration_info);
+}
+
 void ProducerHost::RegisterTraceWriter(uint32_t writer_id,
                                        uint32_t target_buffer) {
   producer_endpoint_->RegisterTraceWriter(writer_id, target_buffer);
