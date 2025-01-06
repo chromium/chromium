@@ -69,7 +69,7 @@ AutofillBubbleBase* TestAutofillBubbleHandler::ShowSaveAddressProfileBubble(
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 AutofillBubbleBase* TestAutofillBubbleHandler::ShowAddressSignInPromo(
     content::WebContents* web_contents,
-    base::OnceCallback<void(content::WebContents*)> move_address_callback) {
+    const AutofillProfile& autofill_profile) {
   if (!address_sign_in_promo_bubble_view_) {
     address_sign_in_promo_bubble_view_ = std::make_unique<TestAutofillBubble>();
   }

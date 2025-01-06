@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
@@ -23,7 +21,6 @@
 #include "chrome/browser/ui/views/promos/autofill_bubble_signin_promo_view.h"
 #include "chrome/browser/ui/views/promos/bubble_signin_promo_signin_button_view.h"
 #include "chrome/test/base/interactive_test_utils.h"
-#include "chrome/test/base/profile_waiter.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
@@ -40,8 +37,9 @@
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
-#include "components/sync/test/test_sync_service.h"
+#include "components/sync/test/mock_sync_service.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -53,33 +51,22 @@ using autofill::AddressDataManager;
 using autofill::AddressSignInPromoView;
 using autofill::AutofillProfile;
 using autofill::ContentAutofillClient;
-using autofill::PersonalDataManager;
 using autofill::SaveAddressProfileView;
-
-class MockAddressDataManagerObserver : public AddressDataManager::Observer {
- public:
-  MOCK_METHOD(void, OnAddressDataChanged, (), (override));
-};
 
 constexpr char kButton[] = "SignInButton";
 
-MATCHER_P(FormMatches, form, "") {
-  return form.signon_realm == arg.signon_realm && form.url == arg.url &&
-         form.action == arg.action &&
-         form.username_element == arg.username_element &&
-         form.password_element == arg.password_element;
-}
+using testing::_;
+using testing::Return;
 
-MATCHER_P(AddressMatches, address, "") {
-  return arg->Compare(address) == 0;
+std::unique_ptr<KeyedService> BuildMockSyncService(
+    content::BrowserContext* context) {
+  return std::make_unique<testing::NiceMock<syncer::MockSyncService>>();
 }
 
 }  // namespace
 
 class AutofillBubbleSignInPromoInteractiveUITest : public ManagePasswordsTest {
  public:
-  DECLARE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(kAddressDataChanged);
-
   void SetUpInProcessBrowserTestFixture() override {
     ManagePasswordsTest::SetUpInProcessBrowserTestFixture();
     url_loader_factory_helper_.SetUp();
@@ -96,16 +83,10 @@ class AutofillBubbleSignInPromoInteractiveUITest : public ManagePasswordsTest {
   }
 
   void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
-    // Create password stores.
+    // Create local password store and mock sync service.
     local_password_store_ = CreateAndUseTestPasswordStore(context);
-    account_password_store_ = CreateAndUseTestAccountPasswordStore(context);
-  }
-
-  void PreRunTestOnMainThread() override {
-    ManagePasswordsTest::PreRunTestOnMainThread();
-
-    // Set the sync service to be signed out by default.
-    ConfigurePasswordSync(SyncConfiguration::kNotSyncing);
+    SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+        context, base::BindRepeating(&BuildMockSyncService));
   }
 
   // Trigger the password save by simulating an "Accept" in the password bubble,
@@ -125,26 +106,15 @@ class AutofillBubbleSignInPromoInteractiveUITest : public ManagePasswordsTest {
   // persistent error state.
   bool IsSignedIn();
 
-  // This is needed because the TestSyncService will not automatically become
-  // available upon sign in.
-  void ActivateSyncService(AccountInfo& info) {
-    static_cast<syncer::TestSyncService*>(
-        SyncServiceFactory::GetForProfile(browser()->profile()))
-        ->SetSignedIn(signin::ConsentLevel::kSignin, info);
+  // Mock the activation of the sync service upon sign in.
+  void ActivateSyncService() {
+    ON_CALL(sync_service_mock(), GetTransportState())
+        .WillByDefault(Return(syncer::SyncService::TransportState::ACTIVE));
+    ON_CALL(sync_service_mock(), HasSyncConsent()).WillByDefault(Return(true));
   }
 
   // Add additional account info for pixel tests.
   void ExtendAccountInfo(AccountInfo& info);
-
-  std::vector<const AutofillProfile*> local_addresses() const {
-    return address_data_manager().GetProfilesByRecordType(
-        AutofillProfile::RecordType::kLocalOrSyncable);
-  }
-
-  std::vector<const AutofillProfile*> account_addresses() const {
-    return address_data_manager().GetProfilesByRecordType(
-        AutofillProfile::RecordType::kAccount);
-  }
 
   ContentAutofillClient& client() const {
     return *ContentAutofillClient::FromWebContents(
@@ -155,6 +125,11 @@ class AutofillBubbleSignInPromoInteractiveUITest : public ManagePasswordsTest {
     return client().GetPersonalDataManager().address_data_manager();
   }
 
+  syncer::MockSyncService& sync_service_mock() {
+    return *static_cast<syncer::MockSyncService*>(
+        SyncServiceFactory::GetForProfile(browser()->profile()));
+  }
+
   network::TestURLLoaderFactory* test_url_loader_factory() {
     return url_loader_factory_helper_.test_url_loader_factory();
   }
@@ -162,8 +137,6 @@ class AutofillBubbleSignInPromoInteractiveUITest : public ManagePasswordsTest {
   signin::IdentityManager* identity_manager() {
     return IdentityManagerFactory::GetForProfile(browser()->profile());
   }
-
-  void OnAddressDataChanged();
 
   void SaveAddress(autofill::AutofillClient::AddressPromptUserDecision decision,
                    base::optional_ref<const AutofillProfile> profile);
@@ -174,7 +147,6 @@ class AutofillBubbleSignInPromoInteractiveUITest : public ManagePasswordsTest {
   ChromeSigninClientWithURLLoaderHelper url_loader_factory_helper_;
   base::CallbackListSubscription create_services_subscription_;
   scoped_refptr<password_manager::TestPasswordStore> local_password_store_;
-  scoped_refptr<password_manager::TestPasswordStore> account_password_store_;
 };
 
 void AutofillBubbleSignInPromoInteractiveUITest::SavePassword() {
@@ -198,16 +170,14 @@ void AutofillBubbleSignInPromoInteractiveUITest::TriggerSaveAddressBubble(
 
 void AutofillBubbleSignInPromoInteractiveUITest::SignIn(
     signin_metrics::AccessPoint access_point) {
-  AccountInfo info = signin::MakeAccountAvailable(
+  ActivateSyncService();
+  signin::MakeAccountAvailable(
       identity_manager(),
       signin::AccountAvailabilityOptionsBuilder(test_url_loader_factory())
           .WithCookie()
           .WithAccessPoint(access_point)
+          .AsPrimary(signin::ConsentLevel::kSignin)
           .Build("test@email.com"));
-
-  ActivateSyncService(info);
-  identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
-      info.account_id, signin::ConsentLevel::kSignin, access_point);
 }
 
 bool AutofillBubbleSignInPromoInteractiveUITest::IsSignInURL() {
@@ -228,20 +198,11 @@ void AutofillBubbleSignInPromoInteractiveUITest::ExtendAccountInfo(
   signin::UpdateAccountInfoForAccount(identity_manager(), info);
 }
 
-void AutofillBubbleSignInPromoInteractiveUITest::OnAddressDataChanged() {
-  views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
-      kAddressDataChanged, BrowserView::GetBrowserViewForBrowser(browser()));
-}
-
 void AutofillBubbleSignInPromoInteractiveUITest::SaveAddress(
     autofill::AutofillClient::AddressPromptUserDecision decision,
     base::optional_ref<const AutofillProfile> profile) {
   address_data_manager().AddProfile(*profile);
 }
-
-DEFINE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(
-    AutofillBubbleSignInPromoInteractiveUITest,
-    kAddressDataChanged);
 
 /////////////////////////////////////////////////////////////////
 ///// Password Sign in Promo
@@ -249,14 +210,14 @@ DEFINE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(
 IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
                        PasswordSignInPromoNoAccountPresent) {
   base::HistogramTester histogram_tester;
-  // Set up password and password stores.
-  GetController()->OnPasswordSubmitted(CreateFormManager(
-      local_password_store_.get(), account_password_store_.get()));
+
+  // Set up password and the local password store.
+  GetController()->OnPasswordSubmitted(
+      CreateFormManager(local_password_store_.get(), nullptr));
 
   // Save the password and check that it was properly saved to profile store.
   SavePassword();
   EXPECT_EQ(1u, local_password_store_->stored_passwords().size());
-  EXPECT_EQ(0u, account_password_store_->stored_passwords().size());
 
   // Wait for the bubble to be replaced with the sign in promo and click the
   // sign in button.
@@ -283,24 +244,17 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
                   *browser()->tab_strip_model()->GetActiveWebContents())
                   ->IsInitializedForTesting());
 
-  // Simulate a sign in event with the correct access point, which will move the
-  // password. Wait for the password to show up in account store.
-  auto account_store_waiter =
-      password_manager::PasswordStoreWaiter(account_password_store_.get());
+  // This would move the password to account storage.
+  EXPECT_CALL(sync_service_mock(), SelectTypeAndMigrateLocalDataItemsWhenActive(
+                                       syncer::PASSWORDS, _))
+      .Times(1);
+
+  // Simulate a sign in event with the correct access point, which should call
+  // `SelectTypeAndMigrateLocalDataItemsWhenActive()`.
   SignIn(signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE);
-  account_store_waiter.WaitOrReturn();
 
   // Check that the sign in was successful.
   EXPECT_TRUE(IsSignedIn());
-
-  // Check that password was moved to account store.
-  EXPECT_EQ(0u, local_password_store_->stored_passwords().size());
-  EXPECT_EQ(1u, account_password_store_->stored_passwords().size());
-
-  auto found = account_password_store_->stored_passwords().find(
-      test_form()->signon_realm);
-  EXPECT_NE(account_password_store_->stored_passwords().end(), found);
-  EXPECT_THAT(found->second, testing::ElementsAre(FormMatches(*test_form())));
 
   // Signin metrics - Offered/Started/Completed are recorded, but no values for
   // WebSignin (WithDefault).
@@ -323,6 +277,7 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
 IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
                        PasswordSignInPromoWithWebSignedInAccount) {
   base::HistogramTester histogram_tester;
+
   // Sign in with an account, but only on the web. The primary account is not
   // set.
   AccountInfo info = signin::MakeAccountAvailable(
@@ -333,21 +288,23 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
           .Build("test@email.com"));
   ExtendAccountInfo(info);
 
-  // Set up password and password stores.
-  GetController()->OnPasswordSubmitted(CreateFormManager(
-      local_password_store_.get(), account_password_store_.get()));
+  // Set up password and the local password store.
+  GetController()->OnPasswordSubmitted(
+      CreateFormManager(local_password_store_.get(), nullptr));
 
   // Save the password and check that it was properly saved to profile store.
   SavePassword();
   EXPECT_EQ(1u, local_password_store_->stored_passwords().size());
-  EXPECT_EQ(0u, account_password_store_->stored_passwords().size());
+
+  // This would move the password to account storage.
+  EXPECT_CALL(sync_service_mock(), SelectTypeAndMigrateLocalDataItemsWhenActive(
+                                       syncer::PASSWORDS, _))
+      .Times(1);
 
   // Wait for the bubble to be replaced with the sign in promo and click the
-  // sign in button. This should directly sign the user in and move the
-  // password.
-  auto account_store_waiter =
-      password_manager::PasswordStoreWaiter(account_password_store_.get());
-  ActivateSyncService(info);
+  // sign in button. This should directly sign the user in and trigger the data
+  // migration.
+  ActivateSyncService();
   RunTestSequence(
       WaitForEvent(BubbleSignInPromoSignInButtonView::kPromoSignInButton,
                    kBubbleSignInPromoSignInButtonHasCallback),
@@ -361,7 +318,6 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
           BubbleSignInPromoSignInButtonView::kPromoSignInButton, kButton),
       PressButton(kButton).SetMustRemainVisible(false),
       EnsureNotPresent(PasswordSaveUpdateView::kPasswordBubble));
-  account_store_waiter.WaitOrReturn();
 
   // Check that there is no helper attached to the sign in tab, because the
   // password was already moved.
@@ -371,15 +327,6 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
 
   // Check that the sign in was successful.
   EXPECT_TRUE(IsSignedIn());
-
-  // Check that password was moved to account store.
-  EXPECT_EQ(0u, local_password_store_->stored_passwords().size());
-  EXPECT_EQ(1u, account_password_store_->stored_passwords().size());
-
-  auto found = account_password_store_->stored_passwords().find(
-      test_form()->signon_realm);
-  EXPECT_NE(account_password_store_->stored_passwords().end(), found);
-  EXPECT_THAT(found->second, testing::ElementsAre(FormMatches(*test_form())));
 
   // Signin metrics - WebSignin (WithDefault) metrics are also recorded.
   histogram_tester.ExpectBucketCount(
@@ -411,9 +358,9 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
   ExtendAccountInfo(info);
   signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager());
 
-  // Set up password and password stores.
-  GetController()->OnPasswordSubmitted(CreateFormManager(
-      local_password_store_.get(), account_password_store_.get()));
+  // Set up password and the local password store.
+  GetController()->OnPasswordSubmitted(
+      CreateFormManager(local_password_store_.get(), nullptr));
 
   // Start recording metrics after signing in.
   base::HistogramTester histogram_tester;
@@ -421,7 +368,6 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
   // Save the password and check that it was properly saved to profile store.
   SavePassword();
   EXPECT_EQ(1u, local_password_store_->stored_passwords().size());
-  EXPECT_EQ(0u, account_password_store_->stored_passwords().size());
 
   // Wait for the bubble to be replaced with the sign in promo and click
   // the sign in button.
@@ -449,31 +395,24 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
                   ->IsInitializedForTesting());
   EXPECT_FALSE(IsSignedIn());
 
+  // This would move the password to account storage.
+  EXPECT_CALL(sync_service_mock(), SelectTypeAndMigrateLocalDataItemsWhenActive(
+                                       syncer::PASSWORDS, _))
+      .Times(1);
+
   // Set a new refresh token for the primary account, which verifies the
-  // user's identity and signs them back in. The password will be moved to
-  // account store.
-  auto account_store_waiter =
-      password_manager::PasswordStoreWaiter(account_password_store_.get());
-  ActivateSyncService(info);
+  // user's identity and signs them back in. This triggers the local data
+  // migration.
+  ActivateSyncService();
   identity_manager()->GetAccountsMutator()->AddOrUpdateAccount(
       info.gaia, info.email, "dummy_refresh_token",
       /*is_under_advanced_protection=*/false,
       signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE,
       signin_metrics::SourceForRefreshTokenOperation::
           kDiceResponseHandler_Signin);
-  account_store_waiter.WaitOrReturn();
 
   // Check that the sign in was successful.
   EXPECT_TRUE(IsSignedIn());
-
-  // Check that password was moved to account store.
-  EXPECT_EQ(0u, local_password_store_->stored_passwords().size());
-  EXPECT_EQ(1u, account_password_store_->stored_passwords().size());
-
-  auto found = account_password_store_->stored_passwords().find(
-      test_form()->signon_realm);
-  EXPECT_NE(account_password_store_->stored_passwords().end(), found);
-  EXPECT_THAT(found->second, testing::ElementsAre(FormMatches(*test_form())));
 
   // Signin metrics - nothing should be recorded for reauth.
   histogram_tester.ExpectTotalCount("Signin.SignIn.Offered", 0);
@@ -494,28 +433,12 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
   AutofillProfile address = autofill::test::GetFullProfile();
   TriggerSaveAddressBubble(address);
 
-  // Set up observer in order to ensure that `OnAddressDataChanged` is called
-  // twice. Fire an event the first time it is called, as this is coming from
-  // when the first address save bubble was accepted. The second time it is
-  // called will be for the address migration.
-  testing::NiceMock<MockAddressDataManagerObserver> observer;
-  base::RunLoop run_loop;
-  EXPECT_CALL(observer, OnAddressDataChanged)
-      .Times(2)
-      .WillOnce([&] { OnAddressDataChanged(); })
-      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
-  base::ScopedObservation<AddressDataManager, AddressDataManager::Observer>
-      observation{&observer};
-  observation.Observe(&address_data_manager());
-
   // Accept the save bubble, wait for it to be replaced with the sign in promo
   // and click the sign in button.
   RunTestSequence(
       PressButton(views::DialogClientView::kOkButtonElementId),
-      InParallel(
-          WaitForEvent(kBrowserViewElementId, kAddressDataChanged),
-          WaitForEvent(BubbleSignInPromoSignInButtonView::kPromoSignInButton,
-                       kBubbleSignInPromoSignInButtonHasCallback)),
+      WaitForEvent(BubbleSignInPromoSignInButtonView::kPromoSignInButton,
+                   kBubbleSignInPromoSignInButtonHasCallback),
       EnsureNotPresent(SaveAddressProfileView::kTopViewId),
       EnsurePresent(AddressSignInPromoView::kBubbleFrameViewId),
       SetOnIncompatibleAction(
@@ -528,10 +451,6 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
       PressButton(kButton).SetMustRemainVisible(false),
       EnsureNotPresent(AddressSignInPromoView::kBubbleFrameViewId));
 
-  // Check that address was saved to local store.
-  EXPECT_EQ(1u, local_addresses().size());
-  EXPECT_EQ(0u, account_addresses().size());
-
   // Check that clicking the sign in button navigated to a sign in page.
   EXPECT_TRUE(IsSignInURL());
 
@@ -541,21 +460,18 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
                   *browser()->tab_strip_model()->GetActiveWebContents())
                   ->IsInitializedForTesting());
 
+  // This would move the address to account storage.
+  std::vector<syncer::LocalDataItemModel::DataId> items{address.guid()};
+  EXPECT_CALL(sync_service_mock(), SelectTypeAndMigrateLocalDataItemsWhenActive(
+                                       syncer::CONTACT_INFO, items))
+      .Times(1);
+
   // Simulate a sign in event with the correct access point, which will move the
   // address.
   SignIn(signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE);
 
-  // Wait for the address to be moved.
-  run_loop.Run();
-
   // Check that the sign in was successful.
   EXPECT_TRUE(IsSignedIn());
-
-  // Check that the address was moved to account store.
-  EXPECT_EQ(0u, local_addresses().size());
-  EXPECT_EQ(1u, account_addresses().size());
-  EXPECT_THAT(account_addresses(),
-              testing::ElementsAre(AddressMatches(address)));
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
@@ -574,30 +490,20 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
   AutofillProfile address = autofill::test::GetFullProfile();
   TriggerSaveAddressBubble(address);
 
-  // Set up observer in order to ensure that `OnAddressDataChanged` is called
-  // twice. Fire an event the first time it is called, as this is coming from
-  // when the first address save bubble was accepted. The second time it is
-  // called will be for the address migration.
-  testing::NiceMock<MockAddressDataManagerObserver> observer;
-  base::RunLoop run_loop;
-  EXPECT_CALL(observer, OnAddressDataChanged)
-      .Times(2)
-      .WillOnce([&] { OnAddressDataChanged(); })
-      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
-  base::ScopedObservation<AddressDataManager, AddressDataManager::Observer>
-      observation{&observer};
-  observation.Observe(&address_data_manager());
+  // This would move the address to account storage.
+  std::vector<syncer::LocalDataItemModel::DataId> items{address.guid()};
+  EXPECT_CALL(sync_service_mock(), SelectTypeAndMigrateLocalDataItemsWhenActive(
+                                       syncer::CONTACT_INFO, items))
+      .Times(1);
 
   // Accept the save bubble, wait for the save bubble to be replaced with the
   // sign in promo and click the sign in button. This should directly sign the
   // user in and move the address.
-  ActivateSyncService(info);
+  ActivateSyncService();
   RunTestSequence(
       PressButton(views::DialogClientView::kOkButtonElementId),
-      InParallel(
-          WaitForEvent(kBrowserViewElementId, kAddressDataChanged),
-          WaitForEvent(BubbleSignInPromoSignInButtonView::kPromoSignInButton,
-                       kBubbleSignInPromoSignInButtonHasCallback)),
+      WaitForEvent(BubbleSignInPromoSignInButtonView::kPromoSignInButton,
+                   kBubbleSignInPromoSignInButtonHasCallback),
       EnsureNotPresent(SaveAddressProfileView::kTopViewId),
       EnsurePresent(AddressSignInPromoView::kBubbleFrameViewId),
       SetOnIncompatibleAction(
@@ -610,9 +516,6 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
       PressButton(kButton).SetMustRemainVisible(false),
       EnsureNotPresent(AddressSignInPromoView::kBubbleFrameViewId));
 
-  // Wait for the address to be moved.
-  run_loop.Run();
-
   // Check that there is no helper attached to the sign in tab, because the
   // password was already moved.
   EXPECT_FALSE(autofill::AutofillSigninPromoTabHelper::GetForWebContents(
@@ -621,12 +524,6 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
 
   // Check that the sign in was successful.
   EXPECT_TRUE(IsSignedIn());
-
-  // Check that the address was moved to account store.
-  EXPECT_EQ(0u, local_addresses().size());
-  EXPECT_EQ(1u, account_addresses().size());
-  EXPECT_THAT(account_addresses(),
-              testing::ElementsAre(AddressMatches(address)));
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -650,28 +547,12 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
   AutofillProfile address = autofill::test::GetFullProfile();
   TriggerSaveAddressBubble(address);
 
-  // Set up observer in order to ensure that `OnAddressDataChanged` is called
-  // twice. Fire an event the first time it is called, as this is coming from
-  // when the first address save bubble was accepted. The second time it is
-  // called will be for the address migration.
-  testing::NiceMock<MockAddressDataManagerObserver> observer;
-  base::RunLoop run_loop;
-  EXPECT_CALL(observer, OnAddressDataChanged)
-      .Times(2)
-      .WillOnce([&] { OnAddressDataChanged(); })
-      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
-  base::ScopedObservation<AddressDataManager, AddressDataManager::Observer>
-      observation{&observer};
-  observation.Observe(&address_data_manager());
-
   // Accept the save bubble, wait for the save bubble to be replaced with the
   // sign in promo and click the sign in button.
   RunTestSequence(
       PressButton(views::DialogClientView::kOkButtonElementId),
-      InParallel(
-          WaitForEvent(kBrowserViewElementId, kAddressDataChanged),
-          WaitForEvent(BubbleSignInPromoSignInButtonView::kPromoSignInButton,
-                       kBubbleSignInPromoSignInButtonHasCallback)),
+      WaitForEvent(BubbleSignInPromoSignInButtonView::kPromoSignInButton,
+                   kBubbleSignInPromoSignInButtonHasCallback),
       EnsureNotPresent(SaveAddressProfileView::kTopViewId),
       EnsurePresent(AddressSignInPromoView::kBubbleFrameViewId),
       SetOnIncompatibleAction(
@@ -684,10 +565,6 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
       PressButton(kButton).SetMustRemainVisible(false),
       EnsureNotPresent(AddressSignInPromoView::kBubbleFrameViewId));
 
-  // Check that address was saved to local store.
-  EXPECT_EQ(1u, local_addresses().size());
-  EXPECT_EQ(0u, account_addresses().size());
-
   // Check that clicking the sign in button navigated to a sign in page.
   EXPECT_TRUE(IsSignInURL());
 
@@ -697,10 +574,16 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
                   *browser()->tab_strip_model()->GetActiveWebContents())
                   ->IsInitializedForTesting());
 
+  // This would move the address to account storage.
+  std::vector<syncer::LocalDataItemModel::DataId> items{address.guid()};
+  EXPECT_CALL(sync_service_mock(), SelectTypeAndMigrateLocalDataItemsWhenActive(
+                                       syncer::CONTACT_INFO, items))
+      .Times(1);
+
   // Set a new refresh token for the primary account, which verifies the
-  // user's identity and signs them back in. The address will be moved to
-  // account store.
-  ActivateSyncService(info);
+  // user's identity and signs them back in. This would trigger the data
+  // migration.
+  ActivateSyncService();
   identity_manager()->GetAccountsMutator()->AddOrUpdateAccount(
       info.gaia, info.email, "dummy_refresh_token",
       /*is_under_advanced_protection=*/false,
@@ -708,15 +591,6 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
       signin_metrics::SourceForRefreshTokenOperation::
           kDiceResponseHandler_Signin);
 
-  // Wait for the address to be moved.
-  run_loop.Run();
-
   // Check that the sign in was successful.
   EXPECT_TRUE(IsSignedIn());
-
-  // Check that the address was moved to account store.
-  EXPECT_EQ(0u, local_addresses().size());
-  EXPECT_EQ(1u, account_addresses().size());
-  EXPECT_THAT(account_addresses(),
-              testing::ElementsAre(AddressMatches(address)));
 }

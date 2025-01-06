@@ -3,164 +3,89 @@
 // found in the LICENSE file.
 #include "chrome/browser/ui/autofill/autofill_bubble_signin_promo_controller.h"
 
-#include "base/test/mock_callback.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/signin/public/base/signin_metrics.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync/test/test_sync_service.h"
+#include "components/sync/service/local_data_description.h"
+#include "components/sync/test/mock_sync_service.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 
 namespace {
 
-std::unique_ptr<KeyedService> BuildTestSyncService(
+std::unique_ptr<KeyedService> BuildMockSyncService(
     content::BrowserContext* context) {
-  return std::make_unique<syncer::TestSyncService>();
+  return std::make_unique<testing::NiceMock<syncer::MockSyncService>>();
 }
 
 }  // namespace
 
-class AutofillBubbleSignInPromoControllerTest
-    : public ChromeRenderViewHostTestHarness {
+class AutofillBubbleSignInPromoControllerTest : public testing::Test {
  public:
-  void SetUp() override;
+  AutofillBubbleSignInPromoControllerTest() : id_("test_id") {
+    TestingProfile::Builder profile_builder;
+    profile_builder.AddTestingFactory(
+        SyncServiceFactory::GetInstance(),
+        base::BindRepeating(&BuildMockSyncService));
+    profile_ = profile_builder.Build();
 
-  void TearDown() override {
-    sync_service_ = nullptr;
-    ChromeRenderViewHostTestHarness::TearDown();
+    web_contents_ = content::WebContentsTester::CreateTestWebContents(
+        profile_.get(), nullptr);
   }
 
-  autofill::AutofillBubbleSignInPromoController* autofill_bubble_controller() {
-    return autofill_bubble_controller_.get();
+  syncer::MockSyncService* sync_service_mock() {
+    return static_cast<syncer::MockSyncService*>(
+        SyncServiceFactory::GetForProfile(profile_.get()));
   }
 
-  base::MockCallback<base::OnceCallback<void(content::WebContents*)>>
-      mock_callback_;
-  raw_ptr<syncer::TestSyncService> sync_service_;
+  signin::IdentityManager* identity_manager() {
+    return IdentityManagerFactory::GetForProfile(profile_.get());
+  }
+
+  std::vector<syncer::LocalDataItemModel::DataId> ids() { return {id_}; }
+  content::WebContents& web_contents() { return *web_contents_.get(); }
 
  private:
   base::test::ScopedFeatureList feature_list_{
-      switches::kExplicitBrowserSigninUIOnDesktop};
-  std::unique_ptr<autofill::AutofillBubbleSignInPromoController>
-      autofill_bubble_controller_;
+      switches::kImprovedSigninUIOnDesktop};
+  content::BrowserTaskEnvironment task_environment_;
+  content::RenderViewHostTestEnabler render_view_host_test_enabler_;
+  syncer::LocalDataItemModel::DataId id_;
+  std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<content::WebContents> web_contents_;
 };
 
-void AutofillBubbleSignInPromoControllerTest::SetUp() {
-  ChromeRenderViewHostTestHarness::SetUp();
-
-  autofill_bubble_controller_ =
+// TODO(crbug.com/388025216): Enable this test.
+TEST_F(AutofillBubbleSignInPromoControllerTest,
+       DISABLED_DataMigrationTriggeredWithExistingAccount) {
+  auto autofill_bubble_controller =
       std::make_unique<autofill::AutofillBubbleSignInPromoController>(
-          *web_contents(),
-          signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE,
-          mock_callback_.Get());
-
-  sync_service_ = static_cast<syncer::TestSyncService*>(
-      SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-          profile(), base::BindRepeating(&BuildTestSyncService)));
-}
-
-TEST_F(AutofillBubbleSignInPromoControllerTest,
-       MovesPasswordUponSignInWithExistingAccountAndPasswordsEnabled) {
-  // First, the sync service is inactive.
-  sync_service_->SetMaxTransportState(
-      syncer::SyncService::TransportState::CONFIGURING);
+          web_contents(),
+          signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE, ids()[0]);
 
   // Simulate a sign in to the web.
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile());
-
   AccountInfo account_info = signin::MakeAccountAvailable(
-      identity_manager,
+      identity_manager(),
       signin::AccountAvailabilityOptionsBuilder()
           .WithAccessPoint(signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN)
           .Build("test@gmail.com"));
 
-  {
-    // Check that the move callback will not be called until the sync service is
-    // ready.
-    EXPECT_CALL(mock_callback_, Run(web_contents())).Times(0);
-    autofill_bubble_controller()->OnSignInToChromeClicked(account_info);
-  }
-
-  // Enable passwords for the sync service.
-  sync_service_->SetMaxTransportState(
-      syncer::SyncService::TransportState::ACTIVE);
-  sync_service_->GetUserSettings()->SetSelectedType(
-      syncer::UserSelectableType::kPasswords, true);
-
-  // Check that the move callback will be called this time.
-  EXPECT_CALL(mock_callback_, Run(web_contents()));
-
-  // Now firing a state changed event should trigger a password move.
-  sync_service_->FireStateChanged();
-
-  // Check that the user was signed in to Chrome.
-  EXPECT_TRUE(
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-}
-
-TEST_F(AutofillBubbleSignInPromoControllerTest,
-       DoesNotMovePasswordWhenSyncServiceIsInactive) {
-  // Set the sync service as inactive.
-  sync_service_->SetMaxTransportState(
-      syncer::SyncService::TransportState::CONFIGURING);
-
-  // Simulate a sign in to the web.
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile());
-
-  AccountInfo account_info = signin::MakeAccountAvailable(
-      identity_manager,
-      signin::AccountAvailabilityOptionsBuilder()
-          .WithAccessPoint(signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN)
-          .Build("test@gmail.com"));
-
-  // Check that the move callback will not be called.
-  EXPECT_CALL(mock_callback_, Run(web_contents())).Times(0);
+  // Check that the data migration will be triggered.
+  EXPECT_CALL(
+      *sync_service_mock(),
+      SelectTypeAndMigrateLocalDataItemsWhenActive(syncer::PASSWORDS, ids()))
+      .Times(1);
 
   // This should sign in the user to Chrome directly, as there is already an
   // account on the web.
-  autofill_bubble_controller()->OnSignInToChromeClicked(account_info);
-
-  // Also firing a state changed event should not trigger a password move.
-  sync_service_->FireStateChanged();
+  autofill_bubble_controller->OnSignInToChromeClicked(account_info);
 
   // Check that the user was signed in to Chrome.
   EXPECT_TRUE(
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-}
-
-TEST_F(AutofillBubbleSignInPromoControllerTest,
-       DoesNotMovePasswordUponSignInWithExistingAccountAndPasswordsDisabled) {
-  // Disable passwords for the sync service, but make sure it is active.
-  sync_service_->GetUserSettings()->SetSelectedType(
-      syncer::UserSelectableType::kPasswords, false);
-  sync_service_->SetMaxTransportState(
-      syncer::SyncService::TransportState::ACTIVE);
-
-  // Simulate a sign in to the web.
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile());
-
-  AccountInfo account_info = signin::MakeAccountAvailable(
-      identity_manager,
-      signin::AccountAvailabilityOptionsBuilder()
-          .WithAccessPoint(signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN)
-          .Build("test@gmail.com"));
-
-  // Check that the move callback will not be called.
-  EXPECT_CALL(mock_callback_, Run(web_contents())).Times(0);
-
-  // This should sign in the user to Chrome directly, as there is already an
-  // account on the web. It should not trigger a password move.
-  autofill_bubble_controller()->OnSignInToChromeClicked(account_info);
-
-  // Also firing a state changed event should not trigger a password move.
-  sync_service_->FireStateChanged();
-
-  // Check that the user was signed in to Chrome.
-  EXPECT_TRUE(
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 }

@@ -192,11 +192,11 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveAddressProfileBubble(
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowAddressSignInPromo(
     content::WebContents* web_contents,
-    base::OnceCallback<void(content::WebContents*)> move_address_callback) {
+    const AutofillProfile& autofill_profile) {
   views::View* anchor_view =
       toolbar_button_provider_->GetAnchorView(kActionShowAddressesBubbleOrPage);
-  AddressSignInPromoView* bubble = new AddressSignInPromoView(
-      anchor_view, web_contents, std::move(move_address_callback));
+  AddressSignInPromoView* bubble =
+      new AddressSignInPromoView(anchor_view, web_contents, autofill_profile);
   if (!views::Button::AsButton(anchor_view)) {
     PageActionIconView* icon_view =
         toolbar_button_provider_->GetPageActionIconView(

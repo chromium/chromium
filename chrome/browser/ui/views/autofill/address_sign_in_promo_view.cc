@@ -18,7 +18,7 @@ namespace autofill {
 AddressSignInPromoView::AddressSignInPromoView(
     views::View* anchor_view,
     content::WebContents* web_contents,
-    base::OnceCallback<void(content::WebContents*)> move_address_callback)
+    const AutofillProfile& autofill_profile)
     : AddressBubbleBaseView(anchor_view, web_contents) {
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetTitle(IDS_AUTOFILL_SIGNIN_PROMO_TITLE_ADDRESS);
@@ -34,7 +34,7 @@ AddressSignInPromoView::AddressSignInPromoView(
   // Show the sign in promo.
   AddChildView(std::make_unique<AutofillBubbleSignInPromoView>(
       web_contents, signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE,
-      std::move(move_address_callback)));
+      syncer::LocalDataItemModel::DataId(autofill_profile.guid())));
 }
 
 AddressSignInPromoView::~AddressSignInPromoView() = default;

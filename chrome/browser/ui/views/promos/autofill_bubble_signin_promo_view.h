@@ -35,7 +35,7 @@ class AutofillBubbleSignInPromoView : public views::View,
   explicit AutofillBubbleSignInPromoView(
       content::WebContents* web_contents,
       signin_metrics::AccessPoint access_point,
-      base::OnceCallback<void(content::WebContents*)> move_callback);
+      syncer::LocalDataItemModel::DataId data_id);
   AutofillBubbleSignInPromoView(const AutofillBubbleSignInPromoView&) = delete;
   AutofillBubbleSignInPromoView& operator=(
       const AutofillBubbleSignInPromoView&) = delete;

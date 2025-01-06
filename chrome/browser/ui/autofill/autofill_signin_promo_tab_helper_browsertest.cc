@@ -37,9 +37,10 @@ IN_PROC_BROWSER_TEST_F(AutofillSigninPromoTabHelperTest,
       signin_ui_util::GetSignInTabWithAccessPoint(
           browser(), signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE);
 
-  // Initialize the data move and expect a callback call.
-  base::MockOnceCallback<void(content::WebContents*)> move_callback;
-  EXPECT_CALL(move_callback, Run(sign_in_tab)).Times(1);
+  // Expect the callback for enabling account storage and moving the data to be
+  // called.
+  base::MockOnceClosure move_callback;
+  EXPECT_CALL(move_callback, Run()).Times(1);
 
   autofill::AutofillSigninPromoTabHelper* user_data =
       autofill::AutofillSigninPromoTabHelper::GetForWebContents(*sign_in_tab);
@@ -73,9 +74,10 @@ IN_PROC_BROWSER_TEST_F(AutofillSigninPromoTabHelperTest,
       signin_ui_util::GetSignInTabWithAccessPoint(
           browser(), signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE);
 
-  // Initialize the data move and expect a callback call.
-  base::MockOnceCallback<void(content::WebContents*)> move_callback;
-  EXPECT_CALL(move_callback, Run(reauth_tab)).Times(1);
+  // Expect the callback for enabling account storage and moving the data to be
+  // called.
+  base::MockOnceClosure move_callback;
+  EXPECT_CALL(move_callback, Run()).Times(1);
 
   autofill::AutofillSigninPromoTabHelper* user_data =
       autofill::AutofillSigninPromoTabHelper::GetForWebContents(*reauth_tab);

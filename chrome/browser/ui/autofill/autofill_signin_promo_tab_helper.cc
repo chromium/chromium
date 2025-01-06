@@ -56,7 +56,7 @@ void AutofillSigninPromoTabHelper::Reset() {
 }
 
 void AutofillSigninPromoTabHelper::InitializeDataMoveAfterSignIn(
-    base::OnceCallback<void(content::WebContents*)> move_callback,
+    base::OnceClosure move_callback,
     signin_metrics::AccessPoint access_point,
     base::TimeDelta time_limit) {
   signin::IdentityManager* identity_manager =
@@ -126,7 +126,7 @@ void AutofillSigninPromoTabHelper::OnErrorStateOfRefreshTokenUpdatedForAccount(
     return;
   }
   // Initiate data move if requirements are met.
-  std::move(state_->move_callback_).Run(web_contents_);
+  std::move(state_->move_callback_).Run();
   Reset();
 }
 
@@ -167,7 +167,7 @@ void AutofillSigninPromoTabHelper::OnPrimaryAccountChanged(
   }
 
   // Initiate data move if requirements are met.
-  std::move(state_->move_callback_).Run(web_contents_);
+  std::move(state_->move_callback_).Run();
   Reset();
 }
 

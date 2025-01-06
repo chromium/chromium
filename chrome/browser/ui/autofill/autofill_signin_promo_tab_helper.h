@@ -38,7 +38,7 @@ class AutofillSigninPromoTabHelper
   // |access_point| within the |time_limit|, the |move_callback| will be
   // executed.
   void InitializeDataMoveAfterSignIn(
-      base::OnceCallback<void(content::WebContents*)> move_callback,
+      base::OnceClosure move_callback,
       signin_metrics::AccessPoint access_point,
       base::TimeDelta time_limit = base::Minutes(50));
 
@@ -69,9 +69,7 @@ class AutofillSigninPromoTabHelper
     base::ScopedObservation<signin::IdentityManager,
                             signin::IdentityManager::Observer>
         identity_manager_observation_;
-    std::unique_ptr<password_manager::MovePasswordToAccountStoreHelper>
-        move_helper_;
-    base::OnceCallback<void(content::WebContents*)> move_callback_;
+    base::OnceClosure move_callback_;
     signin_metrics::AccessPoint access_point_ =
         signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN;
     base::Time initialization_time_;

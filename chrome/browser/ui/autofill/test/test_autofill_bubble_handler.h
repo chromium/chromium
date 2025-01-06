@@ -61,8 +61,7 @@ class TestAutofillBubbleHandler : public AutofillBubbleHandler {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   AutofillBubbleBase* ShowAddressSignInPromo(
       content::WebContents* web_contents,
-      base::OnceCallback<void(content::WebContents*)> move_address_callback)
-      override;
+      const AutofillProfile& autofill_profile) override;
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   AutofillBubbleBase* ShowFilledCardInformationBubble(
       content::WebContents* web_contents,

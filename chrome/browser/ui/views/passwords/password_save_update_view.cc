@@ -32,7 +32,6 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/storage_partition.h"
@@ -49,22 +48,6 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_class_properties.h"
-
-namespace {
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-// Initiates a `MovePasswordToAccountStoreHelper`, which takes care of moving
-// the `form` from profile to account store.
-void MovePasswordToAccount(
-    const password_manager::PasswordForm& form,
-    password_manager::metrics_util::MoveToAccountStoreTrigger trigger,
-    content::WebContents* web_contents) {
-  PasswordsModelDelegateFromWebContents(web_contents)
-      ->MovePendingPasswordToAccountStoreUsingHelper(form, trigger);
-}
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
-}  // namespace
 
 PasswordSaveUpdateView::PasswordSaveUpdateView(
     content::WebContents* web_contents,
@@ -225,16 +208,11 @@ bool PasswordSaveUpdateView::CloseOrReplaceWithPromo() {
   accessibility_view->SetVisible(false);
   accessibility_alert_ = AddChildView(std::move(accessibility_view));
 
-  auto move_callback =
-      base::BindOnce(&MovePasswordToAccount, controller_.pending_password(),
-                     password_manager::metrics_util::MoveToAccountStoreTrigger::
-                         kUserOptedInAfterSavingLocally);
-
   // Show the sign in promo.
   auto sign_in_promo = std::make_unique<AutofillBubbleSignInPromoView>(
       controller_.GetWebContents(),
       signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE,
-      std::move(move_callback));
+      PasswordFormUniqueKey(controller_.pending_password()));
   AddChildView(std::move(sign_in_promo));
 
   // Notify the screen reader that the bubble changed.

@@ -61,8 +61,8 @@ void AutofillBubbleSignInPromoView::DiceSigninPromoDelegate::OnSignIn(
 AutofillBubbleSignInPromoView::AutofillBubbleSignInPromoView(
     content::WebContents* web_contents,
     signin_metrics::AccessPoint access_point,
-    base::OnceCallback<void(content::WebContents*)> move_callback)
-    : controller_(*web_contents, access_point, std::move(move_callback)) {
+    syncer::LocalDataItemModel::DataId data_id)
+    : controller_(*web_contents, access_point, std::move(data_id)) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   Profile* profile =
