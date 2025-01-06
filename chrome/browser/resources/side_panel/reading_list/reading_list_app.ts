@@ -7,6 +7,7 @@ import 'chrome://read-later.top-chrome/shared/sp_footer.js';
 import 'chrome://read-later.top-chrome/shared/sp_heading.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_lazy_list/cr_lazy_list.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import './reading_list_item.js';
@@ -15,6 +16,7 @@ import '/strings.m.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 import type {CrLazyListElement} from 'chrome://resources/cr_elements/cr_lazy_list/cr_lazy_list.js';
+import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -67,6 +69,10 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
       loadingContent_: {type: Boolean},
       itemSize_: {type: Number},
       scrollTarget_: {type: Object},
+      unreadHeader_: {type: String},
+      readHeader_: {type: String},
+      unreadExpanded_: {type: Boolean},
+      readExpanded_: {type: Boolean},
     };
   }
 
@@ -80,6 +86,10 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
   protected loadingContent_: boolean = true;
   protected itemSize_: number = 48;
   protected scrollTarget_: HTMLElement|null = null;
+  private unreadHeader_: string = loadTimeData.getString('unreadHeader');
+  private readHeader_: string = loadTimeData.getString('readHeader');
+  private unreadExpanded_: boolean = true;
+  private readExpanded_: boolean = false;
   private apiProxy_: ReadingListApiProxy =
       ReadingListApiProxyImpl.getInstance();
   private listenerIds_: number[] = [];
@@ -181,6 +191,11 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
     return this.focusedIndex_;
   }
 
+  setExpandedForTesting() {
+    this.readExpanded_ = true;
+    this.unreadExpanded_ = true;
+  }
+
   protected updateFocusedItem_() {
     this.focusedItem_ = this.focusedIndex_ === -1 ?
         null :
@@ -191,14 +206,16 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
   protected getAllItems_(): ReadLaterEntry[] {
     const allItems: ReadLaterEntry[] = [];
     if (this.unreadItems_.length > 0) {
-      allItems.push(
-          this.createHeaderEntry_(loadTimeData.getString('unreadHeader')));
-      allItems.push(...this.unreadItems_);
+      allItems.push(this.createHeaderEntry_(this.unreadHeader_));
+      if (this.unreadExpanded_) {
+        allItems.push(...this.unreadItems_);
+      }
     }
     if (this.readItems_.length > 0) {
-      allItems.push(
-          this.createHeaderEntry_(loadTimeData.getString('readHeader')));
-      allItems.push(...this.readItems_);
+      allItems.push(this.createHeaderEntry_(this.readHeader_));
+      if (this.readExpanded_) {
+        allItems.push(...this.readItems_);
+      }
     }
     return allItems;
   }
@@ -212,6 +229,31 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
       read: false,
       displayTimeSinceUpdate: '',
     };
+  }
+
+  protected getExpandButtonIcon_(title: string): string {
+    switch (title) {
+      case this.unreadHeader_:
+        return this.unreadExpanded_ ? 'cr:expand-less' : 'cr:expand-more';
+      case this.readHeader_:
+        return this.readExpanded_ ? 'cr:expand-less' : 'cr:expand-more';
+      default:
+        assertNotReached();
+    }
+  }
+
+  protected onExpandButtonClick_(e: Event) {
+    const title: string = (e.target as HTMLElement).dataset['title']!;
+    switch (title) {
+      case this.unreadHeader_:
+        this.unreadExpanded_ = !this.unreadExpanded_;
+        break;
+      case this.readHeader_:
+        this.readExpanded_ = !this.readExpanded_;
+        break;
+      default:
+        assertNotReached();
+    }
   }
 
   /**
@@ -322,7 +364,11 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
     const indicesToSkip = [0];
     if (this.unreadItems_.length > 0 && this.readItems_.length > 0) {
       // If both sections are shown, skip the header of the second section too.
-      indicesToSkip.push(this.unreadItems_.length + 1);
+      if (this.unreadExpanded_) {
+        indicesToSkip.push(this.unreadItems_.length + 1);
+      } else {
+        indicesToSkip.push(1);
+      }
     }
     const listLength = this.getAllItems_().length;
 

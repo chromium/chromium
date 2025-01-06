@@ -89,6 +89,9 @@ suite('ReadingListAppTest', () => {
   });
 
   test('return all entries', async () => {
+    readingListApp.setExpandedForTesting();
+    await microtasksFinished();
+
     const urls = [
       'https://www.google.com',
       'https://www.apple.com',
@@ -154,6 +157,9 @@ suite('ReadingListAppTest', () => {
   });
 
   test('Click on item mark as unread button triggers actions', async () => {
+    readingListApp.setExpandedForTesting();
+    await microtasksFinished();
+
     const expectedUrl = 'https://www.bing.com';
 
     const readingListItem =
@@ -205,6 +211,9 @@ suite('ReadingListAppTest', () => {
   });
 
   test('Keyboard navigation abides by item list range boundaries', async () => {
+    readingListApp.setExpandedForTesting();
+    await microtasksFinished();
+
     // First item (after header) should be selected by default.
     assertEquals(1, readingListApp.getFocusedIndexForTesting());
 

@@ -30,6 +30,11 @@ export function getHtml(this: ReadingListAppElement) {
       (item: ReadLaterEntry, index: number) => !item.url.url ? html`
       <sp-heading compact hide-back-button>
         <h2 slot="heading">${item.title}</h2>
+        <cr-icon-button slot="buttons"
+            data-title="${item.title}"
+            iron-icon="${this.getExpandButtonIcon_(item.title)}"
+            @click="${this.onExpandButtonClick_}">
+        </cr-icon-button>
       </sp-heading>
     ` :
                                                                html`

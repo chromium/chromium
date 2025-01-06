@@ -21,8 +21,13 @@
   height: 100vh;
 }
 
+cr-icon-button {
+  cursor: pointer;
+}
+
 cr-lazy-list {
   flex: 1;
+  scrollbar-gutter: stable;
 }
 
 /* Transition required to ensure focus highlight after button press.
