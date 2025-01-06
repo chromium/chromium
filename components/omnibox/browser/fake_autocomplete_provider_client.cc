@@ -108,6 +108,10 @@ scoped_refptr<history::TopSites> FakeAutocompleteProviderClient::GetTopSites() {
   return top_sites_;
 }
 
+std::string FakeAutocompleteProviderClient::ProfileUserName() const {
+  return "goodEmail@gmail.com";
+}
+
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 OnDeviceTailModelService*
 FakeAutocompleteProviderClient::GetOnDeviceTailModelService() const {
@@ -117,10 +121,6 @@ FakeAutocompleteProviderClient::GetOnDeviceTailModelService() const {
 FakeAutocompleteScoringModelService*
 FakeAutocompleteProviderClient::GetAutocompleteScoringModelService() const {
   return scoring_model_service_.get();
-}
-
-std::string FakeAutocompleteProviderClient::ProfileUserName() const {
-  return "goodEmail@gmail.com";
 }
 
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)

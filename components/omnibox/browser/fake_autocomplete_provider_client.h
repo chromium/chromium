@@ -76,14 +76,14 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
   scoped_refptr<ShortcutsBackend> GetShortcutsBackendIfExists() override;
   const TabMatcher& GetTabMatcher() const override;
   scoped_refptr<history::TopSites> GetTopSites() override;
+  std::string ProfileUserName() const override;
+
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   OnDeviceTailModelService* GetOnDeviceTailModelService() const override;
   FakeAutocompleteScoringModelService* GetAutocompleteScoringModelService()
       const override;
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-
-  std::string ProfileUserName() const override;
 
   // Test-only setters
   void set_bookmark_model(std::unique_ptr<bookmarks::BookmarkModel> model) {
