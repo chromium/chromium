@@ -2214,7 +2214,7 @@ public class ToolbarPhone extends ToolbarLayout
     public void onIncognitoStateChanged() {
         // Set the correct branded color scheme tinting for the {@link TabSwitcherDrawable} whenever
         // the incognito state changes.
-        setTabSwitcherDrawableColorScheme(isIncognitoBranded());
+        setTabSwitcherDrawableColorScheme();
     }
 
     @Override
@@ -2225,6 +2225,10 @@ public class ToolbarPhone extends ToolbarLayout
 
     private void onTabCountChanged(int numberOfTabs) {
         mHomeButton.setEnabled(true);
+        setTabSwitcherDrawableColorScheme();
+    }
+
+    private void setTabSwitcherDrawableColorScheme() {
         if (getTabSwitcherButtonCoordinator() != null) {
             // In some use cases, isIncognitoBranded() will return a stale value for whether the
             // current view is in incognito. The mismatched value will result in the retrieval of
@@ -2237,16 +2241,13 @@ public class ToolbarPhone extends ToolbarLayout
             if (isIncognitoSupplier != null) {
                 isIncognito = isIncognitoSupplier.get();
             }
-            setTabSwitcherDrawableColorScheme(isIncognito);
-        }
-    }
 
-    private void setTabSwitcherDrawableColorScheme(boolean isIncognito) {
-        @BrandedColorScheme
-        int overlayTabStackDrawableScheme =
-                OmniboxResourceProvider.getBrandedColorScheme(
-                        getContext(), isIncognito, getTabThemeColor());
-        getTabSwitcherButtonCoordinator().setBrandedColorScheme(overlayTabStackDrawableScheme);
+            @BrandedColorScheme
+            int overlayTabStackDrawableScheme =
+                    OmniboxResourceProvider.getBrandedColorScheme(
+                            getContext(), isIncognito, getTabThemeColor());
+            getTabSwitcherButtonCoordinator().setBrandedColorScheme(overlayTabStackDrawableScheme);
+        }
     }
 
     /**
