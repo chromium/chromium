@@ -473,7 +473,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.ReorderDropTarget{ParentNode}"
-    enum="BookmarkReorderDropTarget" expires_after="2025-01-05">
+    enum="BookmarkReorderDropTarget" expires_after="2025-07-05">
   <owner>msalama@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
