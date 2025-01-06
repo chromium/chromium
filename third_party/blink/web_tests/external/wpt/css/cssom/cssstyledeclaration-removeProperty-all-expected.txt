@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] CSSStyleDeclaration.removeProperty("all")
+  assert_equals: all is a shorthand of all properties, so should remove the property expected 0 but got 1
+Harness: the test ran to completion.
