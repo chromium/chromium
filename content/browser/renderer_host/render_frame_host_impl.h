@@ -732,6 +732,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   bool AccessibilityIsRootFrame() const override;
   bool ShouldSuppressAXLoadComplete() override;
   WebContentsAccessibility* AccessibilityGetWebContentsAccessibility() override;
+  bool AccessibilityIsWebContentSource() override;
 
   // ui::AXNodeIdDelegate:
   ui::AXPlatformNodeId GetOrCreateAXNodeUniqueId(

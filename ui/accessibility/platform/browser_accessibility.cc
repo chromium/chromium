@@ -835,7 +835,13 @@ bool BrowserAccessibility::IsOffscreen() const {
 }
 
 bool BrowserAccessibility::IsWebContent() const {
-  return true;
+  AXPlatformTreeManagerDelegate* delegate =
+      manager_->GetDelegateFromRootManager();
+  if (!delegate) {
+    return false;
+  }
+
+  return delegate->AccessibilityIsWebContentSource();
 }
 
 bool BrowserAccessibility::HasVisibleCaretOrSelection() const {

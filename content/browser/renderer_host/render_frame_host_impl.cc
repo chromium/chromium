@@ -3542,6 +3542,10 @@ RenderFrameHostImpl::AccessibilityGetWebContentsAccessibility() {
   return view->GetWebContentsAccessibility();
 }
 
+bool RenderFrameHostImpl::AccessibilityIsWebContentSource() {
+  return true;
+}
+
 ui::AXPlatformNodeId RenderFrameHostImpl::GetOrCreateAXNodeUniqueId(
     ui::AXNodeID ax_node_id) {
   auto iter = ax_unique_ids_.lower_bound(ax_node_id);

@@ -71,4 +71,9 @@ TestAXPlatformTreeManagerDelegate::AccessibilityGetWebContentsAccessibility() {
   return nullptr;
 }
 
+bool TestAXPlatformTreeManagerDelegate::AccessibilityIsWebContentSource() {
+  // Currently only used in web content tests.
+  return true;
+}
+
 }  // namespace ui
