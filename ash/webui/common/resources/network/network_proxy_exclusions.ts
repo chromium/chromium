@@ -12,23 +12,17 @@ import '//resources/ash/common/cr_elements/cr_hidden_style.css.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import './network_shared.css.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from '//resources/ash/common/cr_elements/i18n_mixin.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './network_proxy_exclusions.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const NetworkProxyExclusionsElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+const NetworkProxyExclusionsElementBase = I18nMixin(PolymerElement);
 
-/** @polymer */
-class NetworkProxyExclusionsElement extends NetworkProxyExclusionsElementBase {
+export class NetworkProxyExclusionsElement extends
+    NetworkProxyExclusionsElementBase {
   static get is() {
-    return 'network-proxy-exclusions';
+    return 'network-proxy-exclusions' as const;
   }
   static get template() {
     return getTemplate();
@@ -44,7 +38,6 @@ class NetworkProxyExclusionsElement extends NetworkProxyExclusionsElementBase {
 
       /**
        * The list of exclusions.
-       * @type {!Array<string>}
        */
       exclusions: {
         type: Array,
@@ -56,16 +49,20 @@ class NetworkProxyExclusionsElement extends NetworkProxyExclusionsElementBase {
     };
   }
 
-  /**
-   * Event triggered when an item is removed.
-   * @param {!{model: !{index: number}}} event
-   * @private
-   */
-  onRemoveTap_(event) {
+  editable: boolean;
+  exclusions: string[];
+
+  private onRemoveTap_(event: {model: {index: number}}): void {
     const index = event.model.index;
     this.splice('exclusions', index, 1);
     this.dispatchEvent(new CustomEvent(
         'proxy-exclusions-change', {bubbles: true, composed: true}));
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [NetworkProxyExclusionsElement.is]: NetworkProxyExclusionsElement;
   }
 }
 

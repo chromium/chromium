@@ -234,7 +234,7 @@ build_webui_tests("build") {
     "network/network_nameservers_test.ts",
     "network/network_password_input_test.js",
     "network/network_property_list_mojo_test.js",
-    "network/network_proxy_exclusions_test.js",
+    "network/network_proxy_exclusions_test.ts",
     "network/network_proxy_input_test.ts",
     "network/network_proxy_test.ts",
     "network/network_select_test.ts",

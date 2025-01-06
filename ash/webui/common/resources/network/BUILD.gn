@@ -28,7 +28,6 @@ js_type_check("closure_compile_module") {
     ":network_listener_behavior",
     ":network_password_input",
     ":network_property_list_mojo",
-    ":network_proxy_exclusions",
     ":onc_mojo",
     ":sim_lock_dialogs",
   ]
@@ -194,14 +193,6 @@ js_library("network_property_list_mojo") {
   ]
   externs_list = [
     "//ash/webui/common/resources/cr_elements/cr_input/cr_input_externs.js",
-  ]
-}
-
-js_library("network_proxy_exclusions") {
-  deps = [
-    "//ash/webui/common/resources:i18n_behavior",
-    "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
 
