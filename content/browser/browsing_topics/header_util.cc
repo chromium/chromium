@@ -5,6 +5,7 @@
 #include "content/browser/browsing_topics/header_util.h"
 
 #include "base/strings/strcat.h"
+#include "components/browsing_topics/common/common_types.h"
 #include "components/browsing_topics/common/semantic_tree.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/content_browser_client.h"
@@ -148,7 +149,8 @@ void HandleTopicsEligibleResponse(
     RenderFrameHost& request_initiator_frame,
     browsing_topics::ApiCallerSource caller_source) {
   DCHECK(caller_source == browsing_topics::ApiCallerSource::kFetch ||
-         caller_source == browsing_topics::ApiCallerSource::kIframeAttribute);
+         caller_source == browsing_topics::ApiCallerSource::kIframeAttribute ||
+         caller_source == browsing_topics::ApiCallerSource::kImgAttribute);
 
   if (!parsed_headers || !parsed_headers->observe_browsing_topics) {
     return;

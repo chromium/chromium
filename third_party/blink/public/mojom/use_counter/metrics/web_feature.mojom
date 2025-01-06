@@ -4623,6 +4623,7 @@ enum WebFeature {
   kCanvasTextDirectionGetInherit = 5237,
   kCanvasTextDirectionSet = 5238,
   kCanvasTextDirectionSetInherit = 5239,
+  kTopicsAPIImg = 5240,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

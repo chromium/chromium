@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/browsing_topics/browsing_topics_service.h"
 #include "components/browsing_topics/browsing_topics_service_impl.h"
 #include "components/browsing_topics/epoch_topics.h"
 #include "components/browsing_topics/test_util.h"
@@ -623,6 +622,105 @@ class BrowsingTopicsBrowserTest : public BrowsingTopicsBrowserTestBase {
   base::CallbackListSubscription subscription_;
 };
 
+class BrowsingTopicsSubresourceRequestTest
+    : public BrowsingTopicsBrowserTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  // If true, test the fetch option. If false, test the img attribute.
+  bool TestFetch() { return GetParam(); }
+
+  std::string GetRelativePath() {
+    if (TestFetch()) {
+      return "/browsing_topics/page_with_custom_topics_header.html";
+    }
+
+    return "/browsing_topics/topics-writable-pixel.png";
+  }
+
+  std::string GetRedirectRelativePath() {
+    if (TestFetch()) {
+      return "/browsing_topics/page_with_custom_topics_header2.html";
+    }
+
+    return "/browsing_topics/topics-writable-pixel2.png";
+  }
+
+  bool ExecJsWithBrowsingTopicsTrue(GURL url) {
+    if (TestFetch()) {
+      return ExecJs(
+          web_contents()->GetPrimaryMainFrame(),
+          content::JsReplace("fetch($1, {browsingTopics: true})", url));
+    }
+
+    return ExecJs(web_contents()->GetPrimaryMainFrame(),
+                  content::JsReplace(R"(
+      let img = document.createElement('img');
+      img.src = $1;
+      img.browsingTopics = true;
+      img.decode()
+         .then(() => {
+            document.body.appendChild(img);
+          })
+      )",
+                                     url.spec()));
+  }
+
+  bool ExecJSWithBrowsingTopicsFalse(GURL url) {
+    if (TestFetch()) {
+      return ExecJs(
+          web_contents()->GetPrimaryMainFrame(),
+          content::JsReplace("fetch($1, {browsingTopics: false})", url));
+    }
+
+    return ExecJs(web_contents()->GetPrimaryMainFrame(),
+                  content::JsReplace(R"(
+      let img = document.createElement('img');
+      img.src = $1;
+      img.browsingTopics = false;
+      img.decode()
+         .then(() => {
+            document.body.appendChild(img);
+          })
+      )",
+                                     url.spec()));
+  }
+
+  bool ExecJsWithMissingBrowsingTopicsAttribute(GURL url) {
+    if (TestFetch()) {
+      return ExecJs(web_contents()->GetPrimaryMainFrame(),
+                    content::JsReplace("fetch($1)", url));
+    }
+
+    return ExecJs(web_contents()->GetPrimaryMainFrame(),
+                  content::JsReplace(R"(
+      let img = document.createElement('img');
+      img.src = $1;
+      img.decode()
+         .then(() => {
+            document.body.appendChild(img);
+          })
+      )",
+                                     url.spec()));
+  }
+
+  int GetBrowsingTopicsApiActionType(bool observe) {
+    if (TestFetch()) {
+      if (observe) {
+        return 3;  // kObserveViaFetchLikeApi
+      }
+      return 2;  // kGetViaFetchLikeApi;
+    }
+    if (observe) {
+      return 7;  // kObserveViaImgAttributeApi
+    }
+    return 6;  // kGetViaImgAttributeApi
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         BrowsingTopicsSubresourceRequestTest,
+                         ::testing::Bool());
+
 IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, HasBrowsingTopicsService) {
   EXPECT_TRUE(browsing_topics_service());
 }
@@ -1163,24 +1261,19 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), new_url));
 }
 
-IN_PROC_BROWSER_TEST_F(
-    BrowsingTopicsBrowserTest,
-    FetchSameOrigin_TopicsEligible_SendTopics_HasNoObserveResponse) {
+IN_PROC_BROWSER_TEST_P(
+    BrowsingTopicsSubresourceRequestTest,
+    SameOrigin_TopicsEligible_SendTopics_HasNoObserveResponse) {
   GURL main_frame_url =
       https_server_.GetURL("a.test", "/browsing_topics/empty_page.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
 
-  GURL fetch_url = https_server_.GetURL(
-      "a.test", "/browsing_topics/page_with_custom_topics_header.html");
+  GURL resource_url = https_server_.GetURL("a.test", GetRelativePath());
 
-  EXPECT_TRUE(ExecJs(
-      web_contents()->GetPrimaryMainFrame(),
-      content::JsReplace("fetch($1, {browsingTopics: true})", fetch_url)));
+  EXPECT_TRUE(ExecJsWithBrowsingTopicsTrue(resource_url));
 
   std::optional<std::string> topics_header_value =
-      GetTopicsHeaderForRequestPath(
-          "/browsing_topics/page_with_custom_topics_header.html");
-
+      GetTopicsHeaderForRequestPath(GetRelativePath());
   EXPECT_TRUE(topics_header_value);
   EXPECT_EQ(*topics_header_value, kExpectedHeaderValueForSiteA);
 
@@ -1191,23 +1284,22 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(api_usage_contexts.size(), 1u);
 }
 
-IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, FetchWithoutTopicsFlagSet) {
+IN_PROC_BROWSER_TEST_P(BrowsingTopicsSubresourceRequestTest,
+                       WithoutTopicsFlagSet) {
   GURL main_frame_url =
       https_server_.GetURL("b.test", "/browsing_topics/empty_page.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
 
-  GURL fetch_url = https_server_.GetURL(
-      "b.test", "/browsing_topics/page_with_custom_topics_header.html");
+  GURL resource_url = https_server_.GetURL("b.test", GetRelativePath());
 
   {
-    // Invoke fetch() without the `browsingTopics` flag. This request isn't
-    // eligible for topics.
-    EXPECT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
-                       content::JsReplace("fetch($1)", fetch_url)));
+    // Invoke fetch() or img without the `browsingTopics` flag. This request
+    // isn't eligible for topics.
+
+    EXPECT_TRUE(ExecJsWithMissingBrowsingTopicsAttribute(resource_url));
 
     std::optional<std::string> topics_header_value =
-        GetTopicsHeaderForRequestPath(
-            "/browsing_topics/page_with_custom_topics_header.html");
+        GetTopicsHeaderForRequestPath(GetRelativePath());
 
     // Expect no topics header as the request did not specify
     // {browsingTopics: true}.
@@ -1215,15 +1307,12 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, FetchWithoutTopicsFlagSet) {
   }
 
   {
-    // Invoke fetch() with the `browsingTopics` flag set to false. This request
-    // isn't eligible for topics.
-    EXPECT_TRUE(ExecJs(
-        web_contents()->GetPrimaryMainFrame(),
-        content::JsReplace("fetch($1, {browsingTopics: false})", fetch_url)));
+    // Invoke fetch() or img with the `browsingTopics` flag set to false. This
+    // request isn't eligible for topics.
+    EXPECT_TRUE(ExecJSWithBrowsingTopicsFalse(resource_url));
 
     std::optional<std::string> topics_header_value =
-        GetTopicsHeaderForRequestPath(
-            "/browsing_topics/page_with_custom_topics_header.html");
+        GetTopicsHeaderForRequestPath(GetRelativePath());
 
     // Expect no topics header as the request did not specify
     // {browsingTopics: true}.
@@ -1231,25 +1320,21 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, FetchWithoutTopicsFlagSet) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(
-    BrowsingTopicsBrowserTest,
-    FetchSameOrigin_TopicsEligible_SendNoTopic_HasNoObserveResponse) {
+IN_PROC_BROWSER_TEST_P(
+    BrowsingTopicsSubresourceRequestTest,
+    SameOrigin_TopicsEligible_SendNoTopic_HasNoObserveResponse) {
   base::HistogramTester histogram_tester;
 
   GURL main_frame_url =
       https_server_.GetURL("b.test", "/browsing_topics/empty_page.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
 
-  GURL fetch_url = https_server_.GetURL(
-      "b.test", "/browsing_topics/page_with_custom_topics_header.html");
+  GURL resource_url = https_server_.GetURL("b.test", GetRelativePath());
 
-  EXPECT_TRUE(ExecJs(
-      web_contents()->GetPrimaryMainFrame(),
-      content::JsReplace("fetch($1, {browsingTopics: true})", fetch_url)));
+  EXPECT_TRUE(ExecJsWithBrowsingTopicsTrue(resource_url));
 
   std::optional<std::string> topics_header_value =
-      GetTopicsHeaderForRequestPath(
-          "/browsing_topics/page_with_custom_topics_header.html");
+      GetTopicsHeaderForRequestPath(GetRelativePath());
 
   // Expect an empty header value as "b.test" did not observe the candidate
   // topics.
@@ -1262,14 +1347,15 @@ IN_PROC_BROWSER_TEST_F(
       content::GetBrowsingTopicsApiUsage(browsing_topics_site_data_manager());
   EXPECT_EQ(api_usage_contexts.size(), 1u);
 
-  histogram_tester.ExpectUniqueSample(kBrowsingTopicsApiActionTypeHistogramId,
-                                      2 /*kGetViaFetchLikeApi*/,
-                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      kBrowsingTopicsApiActionTypeHistogramId,
+      GetBrowsingTopicsApiActionType(/*observe=*/false),
+      /*expected_bucket_count=*/1);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    BrowsingTopicsBrowserTest,
-    FetchSameOrigin_TopicsEligible_SendNoTopic_HasObserveResponse) {
+IN_PROC_BROWSER_TEST_P(
+    BrowsingTopicsSubresourceRequestTest,
+    SameOrigin_TopicsEligible_SendNoTopic_HasObserveResponse) {
   base::HistogramTester histogram_tester;
 
   GURL main_frame_url =
@@ -1282,15 +1368,11 @@ IN_PROC_BROWSER_TEST_F(
                                           "Observe-Browsing-Topics: ?1"));
   replacement.emplace_back(std::make_pair("{{REDIRECT_HEADER}}", ""));
 
-  GURL fetch_url = https_server_.GetURL(
-      "b.test", net::test_server::GetFilePathWithReplacements(
-                    "/browsing_topics/"
-                    "page_with_custom_topics_header.html",
-                    replacement));
+  GURL resource_url = https_server_.GetURL(
+      "b.test", net::test_server::GetFilePathWithReplacements(GetRelativePath(),
+                                                              replacement));
 
-  EXPECT_TRUE(ExecJs(
-      web_contents()->GetPrimaryMainFrame(),
-      content::JsReplace("fetch($1, {browsingTopics: true})", fetch_url)));
+  EXPECT_TRUE(ExecJsWithBrowsingTopicsTrue(resource_url));
 
   // A new observation should have been recorded in addition to the pre-existing
   // one, as the response had the `Observe-Browsing-Topics: ?1` header and the
@@ -1310,17 +1392,19 @@ IN_PROC_BROWSER_TEST_F(
   // Expect a "get" event and an "observe" event respectively.
   histogram_tester.ExpectTotalCount(kBrowsingTopicsApiActionTypeHistogramId,
                                     /*expected_count=*/2);
-  histogram_tester.ExpectBucketCount(kBrowsingTopicsApiActionTypeHistogramId,
-                                     2 /*kGetViaFetchLikeApi*/,
-                                     /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(kBrowsingTopicsApiActionTypeHistogramId,
-                                     3 /*kObserveViaFetchLikeApi*/,
-                                     /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      kBrowsingTopicsApiActionTypeHistogramId,
+      GetBrowsingTopicsApiActionType(/*observe=*/false),
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      kBrowsingTopicsApiActionTypeHistogramId,
+      GetBrowsingTopicsApiActionType(/*observe=*/true),
+      /*expected_count=*/1);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    BrowsingTopicsBrowserTest,
-    FetchSameOrigin_TopicsNotEligibleDueToUserSettings_HasObserveResponse) {
+IN_PROC_BROWSER_TEST_P(
+    BrowsingTopicsSubresourceRequestTest,
+    SameOrigin_TopicsNotEligibleDueToUserSettings_HasObserveResponse) {
   GURL main_frame_url =
       https_server_.GetURL("a.test", "/browsing_topics/empty_page.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
@@ -1331,22 +1415,17 @@ IN_PROC_BROWSER_TEST_F(
                                           "Observe-Browsing-Topics: ?1"));
   replacement.emplace_back(std::make_pair("{{REDIRECT_HEADER}}", ""));
 
-  GURL fetch_url = https_server_.GetURL(
-      "a.test", net::test_server::GetFilePathWithReplacements(
-                    "/browsing_topics/"
-                    "page_with_custom_topics_header.html",
-                    replacement));
+  GURL resource_url = https_server_.GetURL(
+      "a.test", net::test_server::GetFilePathWithReplacements(GetRelativePath(),
+                                                              replacement));
 
   CookieSettingsFactory::GetForProfile(browser()->profile())
-      ->SetCookieSetting(fetch_url, CONTENT_SETTING_BLOCK);
+      ->SetCookieSetting(resource_url, CONTENT_SETTING_BLOCK);
 
-  EXPECT_TRUE(ExecJs(
-      web_contents()->GetPrimaryMainFrame(),
-      content::JsReplace("fetch($1, {browsingTopics: true})", fetch_url)));
+  EXPECT_TRUE(ExecJsWithBrowsingTopicsTrue(resource_url));
 
   std::optional<std::string> topics_header_value =
-      GetTopicsHeaderForRequestPath(
-          "/browsing_topics/page_with_custom_topics_header.html");
+      GetTopicsHeaderForRequestPath(GetRelativePath());
 
   // When the request is ineligible for topics due to user settings, an empty
   // list of topics will be sent in the header.
@@ -1360,9 +1439,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(api_usage_contexts.size(), 1u);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    BrowsingTopicsBrowserTest,
-    FetchCrossOrigin_TopicsEligible_SendTopics_HasObserveResponse) {
+IN_PROC_BROWSER_TEST_P(
+    BrowsingTopicsSubresourceRequestTest,
+    CrossOrigin_TopicsEligible_SendTopics_HasObserveResponse) {
   GURL main_frame_url =
       https_server_.GetURL("b.test", "/browsing_topics/empty_page.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
@@ -1373,19 +1452,14 @@ IN_PROC_BROWSER_TEST_F(
                                           "Observe-Browsing-Topics: ?1"));
   replacement.emplace_back(std::make_pair("{{REDIRECT_HEADER}}", ""));
 
-  GURL fetch_url = https_server_.GetURL(
-      "a.test", net::test_server::GetFilePathWithReplacements(
-                    "/browsing_topics/"
-                    "page_with_custom_topics_header.html",
-                    replacement));
+  GURL resource_url = https_server_.GetURL(
+      "a.test", net::test_server::GetFilePathWithReplacements(GetRelativePath(),
+                                                              replacement));
 
-  EXPECT_TRUE(ExecJs(
-      web_contents()->GetPrimaryMainFrame(),
-      content::JsReplace("fetch($1, {browsingTopics: true})", fetch_url)));
+  EXPECT_TRUE(ExecJsWithBrowsingTopicsTrue(resource_url));
 
   std::optional<std::string> topics_header_value =
-      GetTopicsHeaderForRequestPath(
-          "/browsing_topics/page_with_custom_topics_header.html");
+      GetTopicsHeaderForRequestPath(GetRelativePath());
 
   EXPECT_TRUE(topics_header_value);
   EXPECT_EQ(*topics_header_value, kExpectedHeaderValueForSiteB);
@@ -1406,28 +1480,31 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(api_usage_contexts[1].hashed_context_domain, HashedDomain(1));
 }
 
-// On an insecure site (i.e. URL with http scheme), test fetch request with
-// the `browsingTopics` set to true. Expect it to throw an exception.
-IN_PROC_BROWSER_TEST_F(
-    BrowsingTopicsBrowserTest,
-    FetchCrossOrigin_TopicsNotEligibleDueToInsecureInitiatorContext) {
+// On an insecure site (i.e. URL with http scheme), test a fetch or image
+// request with the `browsingTopics` set to true. Expect it to throw an
+// exception.
+IN_PROC_BROWSER_TEST_P(
+    BrowsingTopicsSubresourceRequestTest,
+    CrossOrigin_TopicsNotEligibleDueToInsecureInitiatorContext) {
   GURL main_frame_url = embedded_test_server()->GetURL(
       "b.test", "/browsing_topics/empty_page.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
 
-  GURL fetch_url =
-      https_server_.GetURL("a.test", "/browsing_topics/empty_page.html");
+  GURL resource_url = https_server_.GetURL("a.test", GetRelativePath());
 
-  content::EvalJsResult result = EvalJs(
-      web_contents()->GetPrimaryMainFrame(),
-      content::JsReplace("fetch($1, {browsingTopics: true})", fetch_url));
-
-  EXPECT_THAT(result.error,
-              testing::HasSubstr("browsingTopics: Topics operations are only "
-                                 "available in secure contexts."));
+  if (TestFetch()) {
+    content::EvalJsResult result = EvalJs(
+        web_contents()->GetPrimaryMainFrame(),
+        content::JsReplace("fetch($1, {browsingTopics: true})", resource_url));
+    EXPECT_THAT(result.error,
+                testing::HasSubstr("browsingTopics: Topics operations are only "
+                                   "available in secure contexts."));
+  } else {
+    EXPECT_TRUE(ExecJsWithBrowsingTopicsTrue(resource_url));
+  }
 
   std::optional<std::string> topics_header_value =
-      GetTopicsHeaderForRequestPath("/browsing_topics/empty_page.html");
+      GetTopicsHeaderForRequestPath(GetRelativePath());
 
   // Expect no topics header as the request was not eligible for topics due to
   // insecure initiator context.
@@ -1436,9 +1513,9 @@ IN_PROC_BROWSER_TEST_F(
 
 // Only allow topics from origin c.test, and test fetch requests to b.test and
 // c.test to verify that only c.test gets them.
-IN_PROC_BROWSER_TEST_F(
-    BrowsingTopicsBrowserTest,
-    FetchCrossOrigin_TopicsNotEligibleDueToPermissionsPolicyAgainstRequestOrigin) {
+IN_PROC_BROWSER_TEST_P(
+    BrowsingTopicsSubresourceRequestTest,
+    CrossOrigin_TopicsNotEligibleDueToPermissionsPolicyAgainstRequestOrigin) {
   base::StringPairs allowed_origin_replacement;
   allowed_origin_replacement.emplace_back(
       "{{ALLOWED_ORIGIN}}", https_server_.GetOrigin("c.test").Serialize());
@@ -1454,15 +1531,12 @@ IN_PROC_BROWSER_TEST_F(
   {
     base::HistogramTester histogram_tester;
 
-    GURL fetch_url =
-        https_server_.GetURL("a.test", "/browsing_topics/empty_page.html");
+    GURL resource_url = https_server_.GetURL("a.test", GetRelativePath());
 
-    EXPECT_TRUE(ExecJs(
-        web_contents()->GetPrimaryMainFrame(),
-        content::JsReplace("fetch($1, {browsingTopics: true})", fetch_url)));
+    EXPECT_TRUE(ExecJsWithBrowsingTopicsTrue(resource_url));
 
     std::optional<std::string> topics_header_value =
-        GetTopicsHeaderForRequestPath("/browsing_topics/empty_page.html");
+        GetTopicsHeaderForRequestPath(GetRelativePath());
 
     // No topics header was sent, as the permissions policy denied it.
     EXPECT_FALSE(topics_header_value);
@@ -1477,31 +1551,29 @@ IN_PROC_BROWSER_TEST_F(
   {
     base::HistogramTester histogram_tester;
 
-    GURL fetch_url =
-        https_server_.GetURL("c.test", "/browsing_topics/empty_page.html");
+    GURL resource_url = https_server_.GetURL("c.test", GetRelativePath());
 
-    EXPECT_TRUE(ExecJs(
-        web_contents()->GetPrimaryMainFrame(),
-        content::JsReplace("fetch($1, {browsingTopics: true})", fetch_url)));
+    EXPECT_TRUE(ExecJsWithBrowsingTopicsTrue(resource_url));
 
     std::optional<std::string> topics_header_value =
-        GetTopicsHeaderForRequestPath("/browsing_topics/empty_page.html");
+        GetTopicsHeaderForRequestPath(GetRelativePath());
 
     EXPECT_TRUE(topics_header_value);
 
-    histogram_tester.ExpectUniqueSample(kBrowsingTopicsApiActionTypeHistogramId,
-                                        2 /*kGetViaFetchLikeApi*/,
-                                        /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        kBrowsingTopicsApiActionTypeHistogramId,
+        GetBrowsingTopicsApiActionType(/*observe=*/false),
+        /*expected_bucket_count=*/1);
   }
 }
 
-// On site b.test, test fetch request to a.test that gets redirected to c.test.
-// The topics header should be calculated for them individually (i.e. given that
-// only a.test has observed the candidate topics for site b.test, the request to
-// a.test should have a non-empty topics header, while the redirected request to
-// c.test should have an empty topics header.)
-IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
-                       FetchCrossOriginWithRedirect) {
+// On site b.test, test a fetch or image request to a.test that gets redirected
+// to c.test. The topics header should be calculated for them individually (i.e.
+// given that only a.test has observed the candidate topics for site b.test, the
+// request to a.test should have a non-empty topics header, while the redirected
+// request to c.test should have an empty topics header.)
+IN_PROC_BROWSER_TEST_P(BrowsingTopicsSubresourceRequestTest,
+                       CrossOriginWithRedirect) {
   base::HistogramTester histogram_tester;
 
   GURL main_frame_url =
@@ -1517,9 +1589,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
 
   GURL redirect_url = https_server_.GetURL(
       "c.test", net::test_server::GetFilePathWithReplacements(
-                    "/browsing_topics/"
-                    "page_with_custom_topics_header2.html",
-                    redirect_replacement));
+                    GetRedirectRelativePath(), redirect_replacement));
 
   base::StringPairs replacement;
   replacement.emplace_back(
@@ -1529,27 +1599,21 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
   replacement.emplace_back(std::make_pair("{{REDIRECT_HEADER}}",
                                           "Location: " + redirect_url.spec()));
 
-  GURL fetch_url = https_server_.GetURL(
-      "a.test", net::test_server::GetFilePathWithReplacements(
-                    "/browsing_topics/"
-                    "page_with_custom_topics_header.html",
-                    replacement));
+  GURL resource_url = https_server_.GetURL(
+      "a.test", net::test_server::GetFilePathWithReplacements(GetRelativePath(),
+                                                              replacement));
 
-  EXPECT_TRUE(ExecJs(
-      web_contents()->GetPrimaryMainFrame(),
-      content::JsReplace("fetch($1, {browsingTopics: true})", fetch_url)));
+  EXPECT_TRUE(ExecJsWithBrowsingTopicsTrue(resource_url));
 
   {
     std::optional<std::string> topics_header_value =
-        GetTopicsHeaderForRequestPath(
-            "/browsing_topics/page_with_custom_topics_header.html");
+        GetTopicsHeaderForRequestPath(GetRelativePath());
     EXPECT_TRUE(topics_header_value);
     EXPECT_EQ(*topics_header_value, kExpectedHeaderValueForSiteB);
   }
   {
     std::optional<std::string> topics_header_value =
-        GetTopicsHeaderForRequestPath(
-            "/browsing_topics/page_with_custom_topics_header2.html");
+        GetTopicsHeaderForRequestPath(GetRedirectRelativePath());
     EXPECT_TRUE(topics_header_value);
 
     // An empty topics header value was sent, because "c.test" did not observe
@@ -1580,22 +1644,24 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
   // and the redirect respectively.
   histogram_tester.ExpectTotalCount(kBrowsingTopicsApiActionTypeHistogramId,
                                     /*expected_count=*/4);
-  histogram_tester.ExpectBucketCount(kBrowsingTopicsApiActionTypeHistogramId,
-                                     2 /*kGetViaFetchLikeApi*/,
-                                     /*expected_count=*/2);
-  histogram_tester.ExpectBucketCount(kBrowsingTopicsApiActionTypeHistogramId,
-                                     3 /*kObserveViaFetchLikeApi*/,
-                                     /*expected_count=*/2);
+  histogram_tester.ExpectBucketCount(
+      kBrowsingTopicsApiActionTypeHistogramId,
+      GetBrowsingTopicsApiActionType(/*observe=*/false),
+      /*expected_count=*/2);
+  histogram_tester.ExpectBucketCount(
+      kBrowsingTopicsApiActionTypeHistogramId,
+      GetBrowsingTopicsApiActionType(/*observe=*/true),
+      /*expected_count=*/2);
 }
 
-// On site b.test, test fetch request to a.test that gets redirected to c.test.
-// The topics header eligibility should be checked for them individually (i.e.
-// given that the declared policy on the page only allows origin c.test, the
-// request to a.test should not have the topics header, while the redirected
-// request to c.test should have the topics header.)
-IN_PROC_BROWSER_TEST_F(
-    BrowsingTopicsBrowserTest,
-    FetchCrossOriginWithRedirect_InitialRequestTopicsNotEligibleDueToPermissionsPolicy) {
+// On site b.test, test a fetch or image request to a.test that gets redirected
+// to c.test. The topics header eligibility should be checked for them
+// individually (i.e. given that the declared policy on the page only allows
+// origin c.test, the request to a.test should not have the topics header, while
+// the redirected request to c.test should have the topics header.)
+IN_PROC_BROWSER_TEST_P(
+    BrowsingTopicsSubresourceRequestTest,
+    CrossOriginWithRedirect_InitialRequestTopicsNotEligibleDueToPermissionsPolicy) {
   base::StringPairs allowed_origin_replacement;
   allowed_origin_replacement.emplace_back(
       "{{ALLOWED_ORIGIN}}", https_server_.GetOrigin("c.test").Serialize());
@@ -1616,9 +1682,7 @@ IN_PROC_BROWSER_TEST_F(
 
   GURL redirect_url = https_server_.GetURL(
       "c.test", net::test_server::GetFilePathWithReplacements(
-                    "/browsing_topics/"
-                    "page_with_custom_topics_header2.html",
-                    redirect_replacement));
+                    GetRedirectRelativePath(), redirect_replacement));
 
   base::StringPairs replacement;
   replacement.emplace_back(
@@ -1628,28 +1692,22 @@ IN_PROC_BROWSER_TEST_F(
   replacement.emplace_back(std::make_pair("{{REDIRECT_HEADER}}",
                                           "Location: " + redirect_url.spec()));
 
-  GURL fetch_url = https_server_.GetURL(
-      "a.test", net::test_server::GetFilePathWithReplacements(
-                    "/browsing_topics/"
-                    "page_with_custom_topics_header.html",
-                    replacement));
+  GURL resource_url = https_server_.GetURL(
+      "a.test", net::test_server::GetFilePathWithReplacements(GetRelativePath(),
+                                                              replacement));
 
-  EXPECT_TRUE(ExecJs(
-      web_contents()->GetPrimaryMainFrame(),
-      content::JsReplace("fetch($1, {browsingTopics: true})", fetch_url)));
+  EXPECT_TRUE(ExecJsWithBrowsingTopicsTrue(resource_url));
 
   {
     std::optional<std::string> topics_header_value =
-        GetTopicsHeaderForRequestPath(
-            "/browsing_topics/page_with_custom_topics_header.html");
+        GetTopicsHeaderForRequestPath(GetRelativePath());
 
     // No topics header was sent, as the permissions policy denied it.
     EXPECT_FALSE(topics_header_value);
   }
   {
     std::optional<std::string> topics_header_value =
-        GetTopicsHeaderForRequestPath(
-            "/browsing_topics/page_with_custom_topics_header2.html");
+        GetTopicsHeaderForRequestPath(GetRedirectRelativePath());
     EXPECT_TRUE(topics_header_value);
 
     // An empty topics header value was sent, as "c.test" did not observe the
@@ -1737,6 +1795,73 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, UseCounter_Fetch) {
                                     blink::mojom::WebFeature::kTopicsAPIAll,
                                     1);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, UseCounter_Img_Unused) {
+  base::HistogramTester histogram_tester;
+
+  GURL main_frame_url =
+      https_server_.GetURL("a.test", "/browsing_topics/empty_page.html");
+
+  GURL img_url = https_server_.GetURL(
+      "a.test", "/browsing_topics/topics-writable-pixel.png");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+
+  //  Request an image with `browsingTopics` set to false. Expect no
+  // `kTopicsAPIImg` use counter.
+  EXPECT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
+                     content::JsReplace(R"(
+      let img = document.createElement('img');
+      img.src = $1;
+      img.browsingTopics = false;
+      img.decode()
+         .then(() => {
+            document.body.appendChild(img);
+          })
+      )",
+                                        img_url.spec())));
+
+  // Navigate away to flush use counters.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features", blink::mojom::WebFeature::kTopicsAPIImg, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, UseCounter_Img_Used) {
+  base::HistogramTester histogram_tester;
+
+  GURL main_frame_url =
+      https_server_.GetURL("a.test", "/browsing_topics/empty_page.html");
+
+  GURL img_url = https_server_.GetURL(
+      "a.test", "/browsing_topics/topics-writable-pixel.png");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+
+  // Request an img with `browsingTopics` set to true. Expect one
+  // `kTopicsAPIImg` use counter.
+  EXPECT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
+                     content::JsReplace(R"(
+      let img = document.createElement('img');
+      img.src = $1;
+      img.browsingTopics = true;
+      img.decode()
+         .then(() => {
+            document.body.appendChild(img);
+          })
+      )",
+                                        img_url.spec())));
+
+  // Navigate away to flush use counters.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features", blink::mojom::WebFeature::kTopicsAPIImg, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features", blink::mojom::WebFeature::kTopicsAPIAll, 1);
 }
 
 // For a page that contains a static <iframe> with a "browsingtopics"
@@ -2463,6 +2588,24 @@ class AttestationBrowsingTopicsBrowserTest : public BrowsingTopicsBrowserTest {
   ~AttestationBrowsingTopicsBrowserTest() override = default;
 };
 
+class AttestationSubresourceRequestTest
+    : public BrowsingTopicsSubresourceRequestTest {
+ public:
+  void SetUpOnMainThread() override {
+    // This test suite tests Privacy Sandbox Attestations related behaviors,
+    // turn off the setting that makes all APIs considered attested.
+    BrowsingTopicsBrowserTest::SetUpOnMainThread();
+    privacy_sandbox::PrivacySandboxAttestations::GetInstance()
+        ->SetAllPrivacySandboxAttestedForTesting(false);
+  }
+
+  ~AttestationSubresourceRequestTest() override = default;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AttestationSubresourceRequestTest,
+                         ::testing::Bool());
+
 // Site a.test is attested for Topics, so it should receive a valid response.
 IN_PROC_BROWSER_TEST_F(AttestationBrowsingTopicsBrowserTest,
                        AttestedSiteCanGetBrowsingTopicsViaDocumentAPI) {
@@ -2542,8 +2685,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(console_observer.messages().empty());
 }
 
-IN_PROC_BROWSER_TEST_F(AttestationBrowsingTopicsBrowserTest,
-                       FetchSameOrigin_TopicsEligible_SendTopics_SiteAttested) {
+IN_PROC_BROWSER_TEST_P(AttestationSubresourceRequestTest,
+                       SameOrigin_TopicsEligible_SendTopics_SiteAttested) {
   privacy_sandbox::PrivacySandboxAttestationsMap map;
   map.insert_or_assign(
       net::SchemefulSite(GURL("https://a.test")),
@@ -2559,16 +2702,12 @@ IN_PROC_BROWSER_TEST_F(AttestationBrowsingTopicsBrowserTest,
       https_server_.GetURL("a.test", "/browsing_topics/empty_page.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
 
-  GURL fetch_url = https_server_.GetURL(
-      "a.test", "/browsing_topics/page_with_custom_topics_header.html");
+  GURL resource_url = https_server_.GetURL("a.test", GetRelativePath());
 
-  EXPECT_TRUE(ExecJs(
-      web_contents()->GetPrimaryMainFrame(),
-      content::JsReplace("fetch($1, {browsingTopics: true})", fetch_url)));
+  EXPECT_TRUE(ExecJsWithBrowsingTopicsTrue(resource_url));
 
   std::optional<std::string> topics_header_value =
-      GetTopicsHeaderForRequestPath(
-          "/browsing_topics/page_with_custom_topics_header.html");
+      GetTopicsHeaderForRequestPath(GetRelativePath());
 
   EXPECT_TRUE(topics_header_value);
   EXPECT_EQ(*topics_header_value, kExpectedHeaderValueForSiteA);
@@ -2576,8 +2715,8 @@ IN_PROC_BROWSER_TEST_F(AttestationBrowsingTopicsBrowserTest,
   EXPECT_TRUE(console_observer.messages().empty());
 }
 
-IN_PROC_BROWSER_TEST_F(AttestationBrowsingTopicsBrowserTest,
-                       FetchSameOrigin_TopicsEligible_SiteNotAttested) {
+IN_PROC_BROWSER_TEST_P(AttestationSubresourceRequestTest,
+                       SameOrigin_TopicsEligible_SiteNotAttested) {
   privacy_sandbox::PrivacySandboxAttestationsMap map;
   map.insert_or_assign(
       net::SchemefulSite(GURL("https://b.test")),
@@ -2593,16 +2732,12 @@ IN_PROC_BROWSER_TEST_F(AttestationBrowsingTopicsBrowserTest,
       https_server_.GetURL("a.test", "/browsing_topics/empty_page.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
 
-  GURL fetch_url = https_server_.GetURL(
-      "a.test", "/browsing_topics/page_with_custom_topics_header.html");
+  GURL resource_url = https_server_.GetURL("a.test", GetRelativePath());
 
-  EXPECT_TRUE(ExecJs(
-      web_contents()->GetPrimaryMainFrame(),
-      content::JsReplace("fetch($1, {browsingTopics: true})", fetch_url)));
+  EXPECT_TRUE(ExecJsWithBrowsingTopicsTrue(resource_url));
 
   std::optional<std::string> topics_header_value =
-      GetTopicsHeaderForRequestPath(
-          "/browsing_topics/page_with_custom_topics_header.html");
+      GetTopicsHeaderForRequestPath(GetRelativePath());
 
   EXPECT_EQ(topics_header_value, kExpectedHeaderValueForEmptyTopics);
 
@@ -2610,9 +2745,8 @@ IN_PROC_BROWSER_TEST_F(AttestationBrowsingTopicsBrowserTest,
   EXPECT_FALSE(console_observer.messages().empty());
 }
 
-IN_PROC_BROWSER_TEST_F(
-    AttestationBrowsingTopicsBrowserTest,
-    FetchSameOrigin_TopicsEligible_SiteAttested_MismatchedMap) {
+IN_PROC_BROWSER_TEST_P(AttestationSubresourceRequestTest,
+                       SameOrigin_TopicsEligible_SiteAttested_MismatchedMap) {
   privacy_sandbox::PrivacySandboxAttestationsMap map;
   map.insert_or_assign(net::SchemefulSite(GURL("https://a.test")),
                        privacy_sandbox::PrivacySandboxAttestationsGatedAPISet{
@@ -2628,16 +2762,12 @@ IN_PROC_BROWSER_TEST_F(
       https_server_.GetURL("a.test", "/browsing_topics/empty_page.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
 
-  GURL fetch_url = https_server_.GetURL(
-      "a.test", "/browsing_topics/page_with_custom_topics_header.html");
+  GURL resource_url = https_server_.GetURL("a.test", GetRelativePath());
 
-  EXPECT_TRUE(ExecJs(
-      web_contents()->GetPrimaryMainFrame(),
-      content::JsReplace("fetch($1, {browsingTopics: true})", fetch_url)));
+  EXPECT_TRUE(ExecJsWithBrowsingTopicsTrue(resource_url));
 
   std::optional<std::string> topics_header_value =
-      GetTopicsHeaderForRequestPath(
-          "/browsing_topics/page_with_custom_topics_header.html");
+      GetTopicsHeaderForRequestPath(GetRelativePath());
 
   EXPECT_EQ(topics_header_value, kExpectedHeaderValueForEmptyTopics);
 
@@ -2647,9 +2777,9 @@ IN_PROC_BROWSER_TEST_F(
 
 // Site a.test is attested, so when an x-origin request is made to it from
 // site b.test, a.test should still include a topics header.
-IN_PROC_BROWSER_TEST_F(
-    AttestationBrowsingTopicsBrowserTest,
-    FetchCrossOrigin_TopicsEligible_SendTopics_HasObserveResponse_SiteAttested) {
+IN_PROC_BROWSER_TEST_P(
+    AttestationSubresourceRequestTest,
+    CrossOrigin_TopicsEligible_SendTopics_HasObserveResponse_SiteAttested) {
   privacy_sandbox::PrivacySandboxAttestationsMap map;
   map.insert_or_assign(
       net::SchemefulSite(GURL("https://a.test")),
@@ -2671,19 +2801,14 @@ IN_PROC_BROWSER_TEST_F(
                                           "Observe-Browsing-Topics: ?1"));
   replacement.emplace_back(std::make_pair("{{REDIRECT_HEADER}}", ""));
 
-  GURL fetch_url = https_server_.GetURL(
-      "a.test", net::test_server::GetFilePathWithReplacements(
-                    "/browsing_topics/"
-                    "page_with_custom_topics_header.html",
-                    replacement));
+  GURL resource_url = https_server_.GetURL(
+      "a.test", net::test_server::GetFilePathWithReplacements(GetRelativePath(),
+                                                              replacement));
 
-  EXPECT_TRUE(ExecJs(
-      web_contents()->GetPrimaryMainFrame(),
-      content::JsReplace("fetch($1, {browsingTopics: true})", fetch_url)));
+  EXPECT_TRUE(ExecJsWithBrowsingTopicsTrue(resource_url));
 
   std::optional<std::string> topics_header_value =
-      GetTopicsHeaderForRequestPath(
-          "/browsing_topics/page_with_custom_topics_header.html");
+      GetTopicsHeaderForRequestPath(GetRelativePath());
 
   EXPECT_TRUE(topics_header_value);
   EXPECT_EQ(*topics_header_value, kExpectedHeaderValueForSiteB);
@@ -2708,8 +2833,8 @@ IN_PROC_BROWSER_TEST_F(
 
 // Site a.test is not attested, so this should not generate a Topics header in a
 // x-origin fetch to site a.test.
-IN_PROC_BROWSER_TEST_F(AttestationBrowsingTopicsBrowserTest,
-                       FetchCrossOrigin_TopicsEligible_SiteNotAttested) {
+IN_PROC_BROWSER_TEST_P(AttestationSubresourceRequestTest,
+                       CrossOrigin_TopicsEligible_SiteNotAttested) {
   privacy_sandbox::PrivacySandboxAttestationsMap map;
   map.insert_or_assign(
       net::SchemefulSite(GURL("https://b.test")),
@@ -2731,19 +2856,14 @@ IN_PROC_BROWSER_TEST_F(AttestationBrowsingTopicsBrowserTest,
                                           "Observe-Browsing-Topics: ?1"));
   replacement.emplace_back(std::make_pair("{{REDIRECT_HEADER}}", ""));
 
-  GURL fetch_url = https_server_.GetURL(
-      "a.test", net::test_server::GetFilePathWithReplacements(
-                    "/browsing_topics/"
-                    "page_with_custom_topics_header.html",
-                    replacement));
+  GURL resource_url = https_server_.GetURL(
+      "a.test", net::test_server::GetFilePathWithReplacements(GetRelativePath(),
+                                                              replacement));
 
-  EXPECT_TRUE(ExecJs(
-      web_contents()->GetPrimaryMainFrame(),
-      content::JsReplace("fetch($1, {browsingTopics: true})", fetch_url)));
+  EXPECT_TRUE(ExecJsWithBrowsingTopicsTrue(resource_url));
 
   std::optional<std::string> topics_header_value =
-      GetTopicsHeaderForRequestPath(
-          "/browsing_topics/page_with_custom_topics_header.html");
+      GetTopicsHeaderForRequestPath(GetRelativePath());
 
   EXPECT_EQ(topics_header_value, kExpectedHeaderValueForEmptyTopics);
 
@@ -2757,11 +2877,11 @@ IN_PROC_BROWSER_TEST_F(AttestationBrowsingTopicsBrowserTest,
   EXPECT_FALSE(console_observer.messages().empty());
 }
 
-// Site a.test is attested, but not for Topics, so the fetch request to a.test
-// should not get a header.
-IN_PROC_BROWSER_TEST_F(
-    AttestationBrowsingTopicsBrowserTest,
-    FetchCrossOrigin_TopicsEligible_SiteNotAttested_MismatchedMap) {
+// Site a.test is attested, but not for Topics, so the fetch/img request to
+// a.test should not get a header.
+IN_PROC_BROWSER_TEST_P(
+    AttestationSubresourceRequestTest,
+    CrossOrigin_TopicsEligible_SiteNotAttested_MismatchedMap) {
   privacy_sandbox::PrivacySandboxAttestationsMap map;
   map.insert_or_assign(net::SchemefulSite(GURL("https://a.test")),
                        privacy_sandbox::PrivacySandboxAttestationsGatedAPISet{
@@ -2783,19 +2903,14 @@ IN_PROC_BROWSER_TEST_F(
                                           "Observe-Browsing-Topics: ?1"));
   replacement.emplace_back(std::make_pair("{{REDIRECT_HEADER}}", ""));
 
-  GURL fetch_url = https_server_.GetURL(
-      "a.test", net::test_server::GetFilePathWithReplacements(
-                    "/browsing_topics/"
-                    "page_with_custom_topics_header.html",
-                    replacement));
+  GURL resource_url = https_server_.GetURL(
+      "a.test", net::test_server::GetFilePathWithReplacements(GetRelativePath(),
+                                                              replacement));
 
-  EXPECT_TRUE(ExecJs(
-      web_contents()->GetPrimaryMainFrame(),
-      content::JsReplace("fetch($1, {browsingTopics: true})", fetch_url)));
+  EXPECT_TRUE(ExecJsWithBrowsingTopicsTrue(resource_url));
 
   std::optional<std::string> topics_header_value =
-      GetTopicsHeaderForRequestPath(
-          "/browsing_topics/page_with_custom_topics_header.html");
+      GetTopicsHeaderForRequestPath(GetRelativePath());
 
   EXPECT_EQ(topics_header_value, kExpectedHeaderValueForEmptyTopics);
 

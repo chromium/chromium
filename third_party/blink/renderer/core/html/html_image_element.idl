@@ -63,6 +63,9 @@
     [MeasureAs=HTMLImageElementY] readonly attribute long y;
 
     [CallWith=ScriptState, RaisesException] Promise<undefined> decode();
+
+    // Topics API (https://github.com/patcg-individual-drafts/topics)
+    [RuntimeEnabled=TopicsImgAPI, SecureContext, CEReactions, Reflect] attribute boolean browsingTopics;
 };
 
 HTMLImageElement includes HTMLAttributionSrcElementUtils;

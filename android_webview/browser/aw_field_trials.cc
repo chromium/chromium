@@ -289,4 +289,7 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // WebView.
   aw_feature_overrides.DisableFeature(
       base::features::kPartitionAllocMemoryTagging);
+
+  // Disable Topics on WebView.
+  aw_feature_overrides.DisableFeature(blink::features::kBrowsingTopics);
 }

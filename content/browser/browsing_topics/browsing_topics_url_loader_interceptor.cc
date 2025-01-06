@@ -4,6 +4,7 @@
 
 #include "content/browser/browsing_topics/browsing_topics_url_loader_interceptor.h"
 
+#include "components/browsing_topics/common/common_types.h"
 #include "content/browser/browsing_topics/header_util.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/content_browser_client.h"
@@ -170,7 +171,9 @@ void BrowsingTopicsURLLoaderInterceptor::PopulateRequestOrRedirectHeaders(
   std::vector<blink::mojom::EpochTopicPtr> topics;
   topics_eligible_ = GetContentClient()->browser()->HandleTopicsWebApi(
       origin, request_initiator_frame->GetMainFrame(),
-      browsing_topics::ApiCallerSource::kFetch,
+      resource_request_->is_fetch_like_api
+          ? browsing_topics::ApiCallerSource::kFetch
+          : browsing_topics::ApiCallerSource::kImgAttribute,
       /*get_topics=*/true,
       /*observe=*/false, topics);
 
@@ -200,9 +203,11 @@ void BrowsingTopicsURLLoaderInterceptor::ProcessRedirectOrResponseHeaders(
       return;
     }
 
-    HandleTopicsEligibleResponse(head->parsed_headers,
-                                 url::Origin::Create(url_), *rfh,
-                                 browsing_topics::ApiCallerSource::kFetch);
+    HandleTopicsEligibleResponse(
+        head->parsed_headers, url::Origin::Create(url_), *rfh,
+        resource_request_->is_fetch_like_api
+            ? browsing_topics::ApiCallerSource::kFetch
+            : browsing_topics::ApiCallerSource::kImgAttribute);
 
     topics_eligible_ = false;
   }

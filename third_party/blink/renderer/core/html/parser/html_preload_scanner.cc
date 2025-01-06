@@ -369,6 +369,11 @@ class TokenPreloadScanner::StartTagScanner {
       request->SetSharedStorageWritableOptedIn(true);
     }
 
+    if (browsing_topics_attr_set_) {
+      DCHECK(is_img);
+      request->SetBrowsingTopicsEligible(true);
+    }
+
     return request;
   }
 
@@ -451,6 +456,8 @@ class TokenPreloadScanner::StartTagScanner {
       attributionsrc_attr_set_ = true;
     } else if (Match(attribute_name, html_names::kSharedstoragewritableAttr)) {
       shared_storage_writable_opted_in_ = true;
+    } else if (Match(attribute_name, html_names::kBrowsingtopicsAttr)) {
+      browsing_topics_attr_set_ = true;
     } else if (use_data_src_attr_match_for_image_ &&
                Match(attribute_name, html_names::kDataSrcAttr) &&
                img_src_url_.IsNull()) {
@@ -818,6 +825,7 @@ class TokenPreloadScanner::StartTagScanner {
   const HashSet<String>* disabled_image_types_;
   bool attributionsrc_attr_set_ = false;
   bool shared_storage_writable_opted_in_ = false;
+  bool browsing_topics_attr_set_ = false;
   std::optional<float> resource_width_;
   std::optional<float> resource_height_;
   features::LcppPreloadLazyLoadImageType preload_lazy_load_image_type_;
