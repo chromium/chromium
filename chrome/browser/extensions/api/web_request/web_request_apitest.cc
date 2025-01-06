@@ -6744,7 +6744,7 @@ IN_PROC_BROWSER_TEST_F(
   // it's active listeners should be removed.
   EventRouterInterceptorForStopListenerRemoval
       event_listener_removal_on_stop_interceptor(
-          profile(), previous_service_worker_id->render_process_id, );
+          profile(), previous_service_worker_id->render_process_id);
 
   // Stop the extension's service worker. The worker listener, due to the
   // interceptor, will stay registered as an active listener. However,
