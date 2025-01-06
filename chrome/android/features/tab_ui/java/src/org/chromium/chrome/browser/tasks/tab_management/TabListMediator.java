@@ -1346,23 +1346,25 @@ class TabListMediator implements TabListNotificationHandler {
     }
 
     private int getInsertionIndexOfTab(Tab tab, boolean onlyShowRelatedTabs) {
-        int index = TabList.INVALID_TAB_INDEX;
-        if (tab == null) return index;
+        if (tab == null) return TabList.INVALID_TAB_INDEX;
+
+        int tabIndex = TabList.INVALID_TAB_INDEX;
         if (onlyShowRelatedTabs) {
-            if (mModelList.size() == 0) return TabList.INVALID_TAB_INDEX;
-            List<Tab> related =
-                    getRelatedTabsForId(mModelList.get(0).model.get(TabProperties.TAB_ID));
-            index = related.indexOf(tab);
-            if (index == -1) return TabList.INVALID_TAB_INDEX;
+            // Compute the index of the tab within the tab's group.
+            @Nullable PropertyModel model = mModelList.getFirstTabPropertyModel();
+            if (model == null) return TabList.INVALID_TAB_INDEX;
+
+            List<Tab> related = getRelatedTabsForId(model.get(TabProperties.TAB_ID));
+            tabIndex = related.indexOf(tab);
         } else {
-            index =
-                    mModelList.indexOfNthTabCard(
-                            TabModelUtils.getTabIndexById(
-                                    mCurrentTabGroupModelFilterSupplier.get(), tab.getId()));
-            // TODO(wychen): the title (tab count in the group) is wrong when it's not the last
-            //  tab added in the group.
+            // Compute the index of the tab out of all tabs.
+            tabIndex =
+                    TabModelUtils.getTabIndexById(
+                            mCurrentTabGroupModelFilterSupplier.get(), tab.getId());
         }
-        return index;
+        // Get the position of the nth tab card ignoring any other CARD_TYPE entries present in the
+        // model list.
+        return mModelList.indexOfNthTabCard(tabIndex);
     }
 
     private int onTabAdded(Tab tab, boolean onlyShowRelatedTabs) {
