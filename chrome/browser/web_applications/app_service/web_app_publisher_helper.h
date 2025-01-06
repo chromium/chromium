@@ -31,7 +31,6 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/services/app_service/public/cpp/app.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
-#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
@@ -144,8 +143,6 @@ class WebAppPublisherHelper : public WebAppRegistrarObserver,
   WebAppPublisherHelper(const WebAppPublisherHelper&) = delete;
   WebAppPublisherHelper& operator=(const WebAppPublisherHelper&) = delete;
   ~WebAppPublisherHelper() override;
-
-  static apps::AppType GetWebAppType();
 
   // Indicates if |permission_type| is supported by Web Applications.
   static bool IsSupportedWebAppPermissionType(
@@ -277,8 +274,6 @@ class WebAppPublisherHelper : public WebAppRegistrarObserver,
       base::OnceCallback<void(std::vector<content::WebContents*>)> callback);
 
   Profile* profile() const { return profile_; }
-
-  apps::AppType app_type() const { return app_type_; }
 
   WebAppRegistrar& registrar() const;
   WebAppInstallManager& install_manager() const;
@@ -420,10 +415,6 @@ class WebAppPublisherHelper : public WebAppRegistrarObserver,
   const raw_ptr<Profile, DanglingUntriaged> profile_;
 
   const raw_ptr<WebAppProvider, DanglingUntriaged> provider_;
-
-  // The app type of the publisher. The app type is kSystemWeb if the web apps
-  // are serving from Lacros, and the app type is kWeb for all other cases.
-  const apps::AppType app_type_;
 
   const raw_ptr<Delegate, DanglingUntriaged> delegate_;
 

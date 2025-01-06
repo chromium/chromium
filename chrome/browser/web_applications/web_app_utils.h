@@ -149,12 +149,6 @@ bool IsInScope(const GURL& url, const GURL& scope);
 // Returns whether the `login_mode` should force a start at OS login.
 bool IsRunOnOsLoginModeEnabledForAutostart(RunOnOsLoginMode login_mode);
 
-#if BUILDFLAG(IS_CHROMEOS)
-// Web apps crosapi (used for Lacros web app management) will be enabled if
-// Lacros is the primary browser.
-bool IsWebAppsCrosapiEnabled();
-#endif
-
 constexpr char kAppSettingsPageEntryPointsHistogramName[] =
     "WebApp.AppSettingsPage.EntryPoints";
 

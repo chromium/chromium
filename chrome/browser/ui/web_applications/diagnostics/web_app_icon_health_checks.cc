@@ -21,8 +21,7 @@ namespace web_app {
 
 WebAppIconHealthChecks::WebAppIconHealthChecks(Profile* profile)
     : profile_(profile),
-      app_type_(WebAppPublisherHelper::GetWebAppType()),
-      web_apps_published_event_(profile, app_type_) {}
+      web_apps_published_event_(profile, apps::AppType::kWeb) {}
 
 WebAppIconHealthChecks::~WebAppIconHealthChecks() = default;
 

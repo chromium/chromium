@@ -607,7 +607,7 @@ const WebApp* WebAppRegistrar::GetAppByStartUrl(const GURL& start_url) const {
 
 std::vector<webapps::AppId>
 WebAppRegistrar::GetAppsFromSyncAndPendingInstallation() const {
-  AppSet apps_in_sync_install = AppSet(this, [](const WebApp& web_app) {
+  AppSet apps_in_sync_install(this, [](const WebApp& web_app) {
     return web_app.is_from_sync_and_pending_installation();
   });
 
@@ -619,7 +619,7 @@ WebAppRegistrar::GetAppsFromSyncAndPendingInstallation() const {
 }
 
 std::vector<webapps::AppId> WebAppRegistrar::GetAppsPendingUninstall() const {
-  AppSet apps_in_sync_uninstall = AppSet(this, [](const WebApp& web_app) {
+  AppSet apps_in_sync_uninstall(this, [](const WebApp& web_app) {
     return !web_app.is_from_sync_and_pending_installation() &&
            web_app.is_uninstalling();
   });

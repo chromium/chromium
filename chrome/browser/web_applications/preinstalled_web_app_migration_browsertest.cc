@@ -297,10 +297,6 @@ class PreinstalledWebAppMigrationBrowserTest
         kExtensionId, extensions::ExtensionRegistry::EVERYTHING);
   }
 
-  bool IsUninstallSilentlySupported() {
-    return true;
-  }
-
  protected:
   const char* uninstall_and_replace_ = kExtensionId;
   base::test::ScopedFeatureList features_;
@@ -316,9 +312,6 @@ class PreinstalledWebAppMigrationBrowserTest
 
 IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
                        MigrateRevertMigrate) {
-  if (!IsUninstallSilentlySupported())
-    GTEST_SKIP() << "Unsupported Ash version.";
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Grab handles to the app list to update shelf/list state for apps later on.
   app_list::AppListSyncableService* app_list_syncable_service =
@@ -452,9 +445,6 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
                        MigratePreferences) {
-  if (!IsUninstallSilentlySupported())
-    GTEST_SKIP() << "Unsupported Ash version.";
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   app_list::AppListSyncableService* app_list_syncable_service =
       app_list::AppListSyncableServiceFactory::GetForProfile(profile());
@@ -578,9 +568,6 @@ class PreinstalledWebAppMigratePlatformAppBrowserTest
 
 IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigratePlatformAppBrowserTest,
                        MigratePlatformAppPreferences) {
-  if (!IsUninstallSilentlySupported())
-    GTEST_SKIP() << "Unsupported Ash version.";
-
   // Install platform app to migrate.
   {
     apps::AppReadinessWaiter extension_app_registration_waiter(profile(),
@@ -728,9 +715,6 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
 // by the preinstalled apps (rather than an external config).
 IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
                        MigrateToPreinstalledWebApp) {
-  if (!IsUninstallSilentlySupported())
-    GTEST_SKIP() << "Unsupported Ash version.";
-
   ScopedTestingPreinstalledAppData preinstalled_apps;
   ExternalInstallOptions options(GetWebAppUrl(),
                                  mojom::UserDisplayMode::kBrowser,

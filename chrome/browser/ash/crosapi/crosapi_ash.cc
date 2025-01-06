@@ -335,18 +335,6 @@ void CrosapiAsh::BindAutomationFactory(
   automation_ash_->BindReceiver(std::move(receiver));
 }
 
-void CrosapiAsh::BindBrowserAppInstanceRegistry(
-    mojo::PendingReceiver<mojom::BrowserAppInstanceRegistry> receiver) {
-  if (!web_app::IsWebAppsCrosapiEnabled()) {
-    return;
-  }
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  auto* app_service_proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile);
-  app_service_proxy->BrowserAppInstanceRegistry()->BindReceiver(
-      receiver_set_.current_context(), std::move(receiver));
-}
-
 void CrosapiAsh::BindBrowserCdmFactory(mojo::GenericPendingReceiver receiver) {
   if (auto r = receiver.As<chromeos::cdm::mojom::BrowserCdmFactory>()) {
     chromeos::CdmFactoryDaemonProxyAsh::Create(std::move(r));

@@ -203,45 +203,6 @@ apps::IntentPtr ConvertLaunchIntent(
   return intent;
 }
 
-// Finds the best matching web app that can handle the |url|.
-std::optional<std::string> FindWebAppForURL(Profile* profile, const GURL& url) {
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile);
-  if (!proxy) {
-    return std::nullopt;
-  }
-
-  std::vector<std::string> app_ids = proxy->GetAppIdsForUrl(
-      url, /*exclude_browsers=*/true, /*exclude_browser_tab_apps=*/true);
-
-  std::string best_match;
-  size_t best_match_length = 0;
-  for (const std::string& app_id : app_ids) {
-    // Among all the matched apps, select a web app with the longest matching
-    // scope.
-    size_t match_length = 0;
-    proxy->AppRegistryCache().ForOneApp(
-        app_id, [&url, &match_length](const apps::AppUpdate& update) {
-          if (update.AppType() != apps::AppType::kWeb) {
-            return;
-          }
-          for (const auto& filter : update.IntentFilters()) {
-            match_length =
-                std::max(match_length,
-                         apps_util::IntentFilterUrlMatchLength(filter, url));
-          }
-        });
-    if (match_length > best_match_length) {
-      best_match_length = match_length;
-      best_match = app_id;
-    }
-  }
-  if (best_match.empty()) {
-    return std::nullopt;
-  }
-  return best_match;
-}
-
 }  // namespace
 
 ArcOpenUrlDelegateImpl::ArcOpenUrlDelegateImpl() {
@@ -291,10 +252,8 @@ void ArcOpenUrlDelegateImpl::OpenWebAppFromArc(const GURL& url) {
   }
 
   std::optional<webapps::AppId> app_id =
-      web_app::IsWebAppsCrosapiEnabled()
-          ? FindWebAppForURL(profile, url)
-          : web_app::FindInstalledAppWithUrlInScope(profile, url,
-                                                    /*window_only=*/true);
+      web_app::FindInstalledAppWithUrlInScope(profile, url,
+                                              /*window_only=*/true);
 
   if (!app_id) {
     OpenUrlFromArc(url);

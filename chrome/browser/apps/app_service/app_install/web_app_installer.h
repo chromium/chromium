@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_types.h"
-#include "chrome/browser/ash/crosapi/web_app_service_ash.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/common/web_app_id.h"
 
@@ -49,13 +48,13 @@ enum class WebAppInstallResult {
 using WebAppInstalledCallback = base::OnceCallback<void(bool success)>;
 
 // WebAppInstaller manages all communication with the web apps system
-// (including crosapi where needed) for the purpose of installing web apps.
+// for the purpose of installing web apps.
 // TODO(b/315077325): Detach from preloads as a generic way to install web apps
 // using Almanac install info.
-class WebAppInstaller : public crosapi::WebAppServiceAsh::Observer {
+class WebAppInstaller {
  public:
   explicit WebAppInstaller(Profile* profile);
-  ~WebAppInstaller() override;
+  ~WebAppInstaller();
   WebAppInstaller(const WebAppInstaller&) = delete;
   WebAppInstaller& operator=(const WebAppInstaller&) = delete;
 
@@ -65,40 +64,16 @@ class WebAppInstaller : public crosapi::WebAppServiceAsh::Observer {
                   WebAppInstalledCallback callback);
 
  private:
-  // croapi::WebAppServiceAsh::Observer overrides:
-  void OnWebAppProviderBridgeConnected() override;
-  void OnWebAppServiceAshDestroyed() override;
-
   void OnManifestRetrieved(AppInstallSurface surface,
                            AppInstallData data,
                            WebAppInstalledCallback callback,
                            std::unique_ptr<network::SimpleURLLoader> url_loader,
                            std::unique_ptr<std::string> response);
 
-  void MaybeSendPendingCrosapiRequests();
-
   void OnAppInstalled(AppInstallSurface surface,
                       WebAppInstalledCallback callback,
                       const webapps::AppId& app_id,
                       webapps::InstallResultCode code);
-
-  base::ScopedObservation<crosapi::WebAppServiceAsh,
-                          crosapi::WebAppServiceAsh::Observer>
-      web_app_service_observer_{this};
-
-  struct PendingCrosapiRequest {
-    PendingCrosapiRequest(
-        crosapi::mojom::WebAppVerifiedManifestInstallInfoPtr info,
-        crosapi::mojom::WebAppProviderBridge::
-            InstallWebAppFromVerifiedManifestCallback callback);
-    PendingCrosapiRequest(PendingCrosapiRequest&&);
-    ~PendingCrosapiRequest();
-
-    crosapi::mojom::WebAppVerifiedManifestInstallInfoPtr info;
-    crosapi::mojom::WebAppProviderBridge::
-        InstallWebAppFromVerifiedManifestCallback callback;
-  };
-  std::vector<PendingCrosapiRequest> pending_crosapi_requests_;
 
   raw_ptr<Profile> profile_;
 

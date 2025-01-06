@@ -511,7 +511,7 @@ void WebAppPublisherHelper::BadgeManagerDelegate::OnAppBadgeUpdated(
   }
   apps::AppPtr app =
       publisher_helper_->app_notifications_.CreateAppWithHasBadgeStatus(
-          publisher_helper_->app_type(), app_id);
+          apps::AppType::kWeb, app_id);
   DCHECK(app->has_badge.has_value());
   app->has_badge =
       publisher_helper_->ShouldShowBadge(app_id, app->has_badge.value());
@@ -524,7 +524,6 @@ WebAppPublisherHelper::WebAppPublisherHelper(Profile* profile,
                                              Delegate* delegate)
     : profile_(profile),
       provider_(provider),
-      app_type_(GetWebAppType()),
       delegate_(delegate) {
   DCHECK(profile_);
   DCHECK(delegate_);
@@ -532,11 +531,6 @@ WebAppPublisherHelper::WebAppPublisherHelper(Profile* profile,
 }
 
 WebAppPublisherHelper::~WebAppPublisherHelper() = default;
-
-// static
-apps::AppType WebAppPublisherHelper::GetWebAppType() {
-  return apps::AppType::kWeb;
-}
 
 // static
 bool WebAppPublisherHelper::IsSupportedWebAppPermissionType(
@@ -700,7 +694,7 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
 #endif
 
   auto app = apps::AppPublisher::MakeApp(
-      app_type(), web_app->app_id(), readiness,
+      apps::AppType::kWeb, web_app->app_id(), readiness,
       provider_->registrar_unsafe().GetAppShortName(web_app->app_id()),
       GetHighestPriorityInstallReason(web_app),
       GetInstallSource(provider_->registrar_unsafe().GetLatestAppInstallSource(
@@ -817,7 +811,7 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
 apps::AppPtr WebAppPublisherHelper::ConvertUninstalledWebApp(
     const webapps::AppId& app_id,
     webapps::WebappUninstallSource uninstall_source) {
-  auto app = std::make_unique<apps::App>(app_type(), app_id);
+  auto app = std::make_unique<apps::App>(apps::AppType::kWeb, app_id);
   app->readiness = ConvertWebappUninstallSourceToReadiness(uninstall_source);
 
   return app;
@@ -825,7 +819,8 @@ apps::AppPtr WebAppPublisherHelper::ConvertUninstalledWebApp(
 
 apps::AppPtr WebAppPublisherHelper::ConvertLaunchedWebApp(
     const WebApp* web_app) {
-  auto app = std::make_unique<apps::App>(app_type(), web_app->app_id());
+  auto app =
+      std::make_unique<apps::App>(apps::AppType::kWeb, web_app->app_id());
   app->last_launch_time = web_app->last_launch_time();
   return app;
 }
@@ -880,7 +875,7 @@ void WebAppPublisherHelper::SetIconEffect(const std::string& app_id) {
     return;
   }
 
-  auto app = std::make_unique<apps::App>(app_type(), app_id);
+  auto app = std::make_unique<apps::App>(apps::AppType::kWeb, app_id);
   app->icon_key = apps::IconKey(GetIconEffects(web_app));
   delegate_->PublishWebApp(std::move(app));
 }
@@ -898,7 +893,7 @@ void WebAppPublisherHelper::PauseApp(const std::string& app_id) {
   provider_->ui_manager().CloseAppWindows(app_id);
 
   delegate_->PublishWebApp(paused_apps_.CreateAppWithPauseStatus(
-      app_type(), app_id, /*paused=*/true));
+      apps::AppType::kWeb, app_id, /*paused=*/true));
 }
 
 void WebAppPublisherHelper::UnpauseApp(const std::string& app_id) {
@@ -911,7 +906,7 @@ void WebAppPublisherHelper::UnpauseApp(const std::string& app_id) {
   }
 
   delegate_->PublishWebApp(paused_apps_.CreateAppWithPauseStatus(
-      app_type(), app_id, /*paused=*/false));
+      apps::AppType::kWeb, app_id, /*paused=*/false));
 }
 
 bool WebAppPublisherHelper::IsPaused(const std::string& app_id) {
@@ -1249,7 +1244,7 @@ void WebAppPublisherHelper::PublishWindowModeUpdate(
     return;
   }
 
-  auto app = std::make_unique<apps::App>(app_type(), app_id);
+  auto app = std::make_unique<apps::App>(apps::AppType::kWeb, app_id);
   app->window_mode = ConvertDisplayModeToWindowMode(display_mode);
   delegate_->PublishWebApp(std::move(app));
 }
@@ -1262,7 +1257,7 @@ void WebAppPublisherHelper::PublishRunOnOsLoginModeUpdate(
     return;
   }
 
-  auto app = std::make_unique<apps::App>(app_type(), app_id);
+  auto app = std::make_unique<apps::App>(apps::AppType::kWeb, app_id);
   const auto login_mode = registrar().GetAppRunOnOsLoginMode(app_id);
   app->run_on_os_login = apps::RunOnOsLogin(
       ConvertOsLoginMode(run_on_os_login_mode), !login_mode.user_controllable);
@@ -1475,7 +1470,8 @@ void WebAppPublisherHelper::OnWebAppsDisabledModeChanged() {
       if (!web_app) {
         continue;
       }
-      auto app = std::make_unique<apps::App>(app_type(), web_app->app_id());
+      auto app =
+          std::make_unique<apps::App>(apps::AppType::kWeb, web_app->app_id());
       UpdateAppDisabledMode(*app);
       apps.push_back(std::move(app));
     }
@@ -1505,8 +1501,8 @@ void WebAppPublisherHelper::OnNotificationClosed(
   app_notifications_.RemoveNotification(notification_id);
 
   for (const auto& app_id : app_ids) {
-    auto app =
-        app_notifications_.CreateAppWithHasBadgeStatus(app_type(), app_id);
+    auto app = app_notifications_.CreateAppWithHasBadgeStatus(
+        apps::AppType::kWeb, app_id);
     DCHECK(app->has_badge.has_value());
     app->has_badge = ShouldShowBadge(app_id, app->has_badge.value());
     delegate_->PublishWebApp(std::move(app));
@@ -1559,7 +1555,8 @@ void WebAppPublisherHelper::OnContentSettingChanged(
 
   for (const WebApp& web_app : registrar().GetApps()) {
     if (primary_pattern.Matches(web_app.start_url())) {
-      auto app = std::make_unique<apps::App>(app_type(), web_app.app_id());
+      auto app =
+          std::make_unique<apps::App>(apps::AppType::kWeb, web_app.app_id());
       app->permissions = CreatePermissions(&web_app);
       delegate_->PublishWebApp(std::move(app));
     }
@@ -1801,7 +1798,8 @@ bool WebAppPublisherHelper::MaybeAddNotification(
   }
 
   app_notifications_.AddNotification(app_id, notification_id);
-  auto app = app_notifications_.CreateAppWithHasBadgeStatus(app_type(), app_id);
+  auto app = app_notifications_.CreateAppWithHasBadgeStatus(apps::AppType::kWeb,
+                                                            app_id);
   DCHECK(app->has_badge.has_value());
   app->has_badge = ShouldShowBadge(app_id, app->has_badge.value());
   delegate_->PublishWebApp(std::move(app));
@@ -1983,7 +1981,7 @@ void WebAppPublisherHelper::OnLaunchCompleted(
 void WebAppPublisherHelper::OnGetWebAppSize(
     webapps::AppId app_id,
     std::optional<ComputedAppSize> size) {
-  auto app = std::make_unique<apps::App>(app_type(), app_id);
+  auto app = std::make_unique<apps::App>(apps::AppType::kWeb, app_id);
   if (!size.has_value()) {
     return;
   }

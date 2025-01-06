@@ -155,9 +155,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::Automation> receiver) override;
   void BindAutomationFactory(
       mojo::PendingReceiver<mojom::AutomationFactory> receiver) override;
-  void BindBrowserAppInstanceRegistry(
-      mojo::PendingReceiver<mojom::BrowserAppInstanceRegistry> receiver)
-      override;
   void BindBrowserCdmFactory(mojo::GenericPendingReceiver receiver) override;
   void BindCecPrivate(
       mojo::PendingReceiver<mojom::CecPrivate> receiver) override;

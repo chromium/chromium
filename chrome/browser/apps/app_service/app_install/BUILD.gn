@@ -78,8 +78,9 @@ source_set("implementation") {
     "//chrome/browser",
 
     # For transition period, let crosapi allow to depend on this for
-    # allow_circular_includes_from. Crosapi will be gone along with
-    # lacros removal.
+    # allow_circular_includes_from. Both Lacros and crosapi removal
+    # are in progress. When both removals are done, the following
+    # lines can then be deleted.
     "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/system_web_apps/apps/help_app:browser_tests",
   ]

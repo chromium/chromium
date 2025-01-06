@@ -70,10 +70,6 @@ class WebApkInstallTask {
   void OnInstallComplete(const std::string& package_name,
                          arc::mojom::WebApkInstallResult result);
 
-  void FetchWebApkInfoFromCrosapi();
-  void OnWebApkInfoFetchedFromCrosapi(
-      crosapi::mojom::WebApkCreationParamsPtr webapk_creation_params);
-
   // Delivers a result to the callback. The callback can delete this task, so no
   // further work should be done after calling this method.
   void DeliverResult(WebApkInstallStatus status);

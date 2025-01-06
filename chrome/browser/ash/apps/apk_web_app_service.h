@@ -51,8 +51,8 @@ class ApkWebAppService : public KeyedService,
                          public apps::AppRegistryCache::Observer,
                          public crosapi::WebAppServiceAsh::Observer {
  public:
-  // Handles app install/uninstall operations to external processes (ARC and
-  // Lacros) to stub out in tests.
+  // Handles app install/uninstall operations to external processes (ARC) to
+  // stub out in tests.
   class Delegate {
    public:
     using WebAppInstallCallback = base::OnceCallback<void(
@@ -65,22 +65,6 @@ class ApkWebAppService : public KeyedService,
         base::OnceCallback<void(webapps::UninstallResultCode code)>;
 
     virtual ~Delegate();
-
-    // Kicks off installation of a web app in Lacros. It will first fetch the
-    // icon of a package identified by |package_name| from ARC, and then use
-    // |web_app_info| and the icon to perform the installation in Lacros. If
-    // either ARC or Lacros are not connected, the function does nothing.
-    virtual void MaybeInstallWebAppInLacros(
-        const std::string& package_name,
-        arc::mojom::WebAppInfoPtr web_app_info,
-        WebAppInstallCallback callback) = 0;
-
-    // Tells Lacros to remove a web app install source "ARC" for a web app
-    // with ID |web_app_id|. If no other sources left, the web app will be
-    // uninstalled. Does nothing if Lacros is not connected.
-    virtual void MaybeUninstallWebAppInLacros(
-        const webapps::AppId& web_app_id,
-        WebAppUninstallCallback callback) = 0;
 
     // Tells ARC to uninstall a package identified by |package_name|. Returns
     // true if the call to ARC was successful, false if ARC is not running.

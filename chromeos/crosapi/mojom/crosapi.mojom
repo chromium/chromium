@@ -163,12 +163,9 @@ interface Crosapi {
   [MinVersion=59]
   BindArc@63(pending_receiver<Arc> receiver);
 
-  // Added in M95.
-  [MinVersion=50] BindBrowserAppInstanceRegistry@54(
-      pending_receiver<BrowserAppInstanceRegistry> receiver);
-
   // BindBrowserServiceHost@20 was removed.
   // BindBrowserVersionService@50 was removed.
+  // BindBrowserAppInstanceRegistry@54 was removed.
   // BindBrowserShortcutPublisher@125 was removed.
 
   // Binds the BrowserCdmFactory interface for proxying communication to the

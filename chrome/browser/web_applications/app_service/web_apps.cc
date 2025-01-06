@@ -278,7 +278,7 @@ void WebApps::PublishWebApps(std::vector<apps::AppPtr> apps) {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  apps::AppPublisher::Publish(std::move(apps), app_type(),
+  apps::AppPublisher::Publish(std::move(apps), apps::AppType::kWeb,
                               /*should_notify_initialized=*/false);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -341,11 +341,11 @@ void WebApps::InitWebApps() {
   TRACE_EVENT0("ui", "WebApps::InitWebApps");
   is_ready_ = true;
 
-  RegisterPublisher(app_type());
+  RegisterPublisher(apps::AppType::kWeb);
 
   std::vector<apps::AppPtr> apps = CreateWebApps();
 
-  apps::AppPublisher::Publish(std::move(apps), app_type(),
+  apps::AppPublisher::Publish(std::move(apps), apps::AppType::kWeb,
                               /*should_notify_initialized=*/true);
 }
 
