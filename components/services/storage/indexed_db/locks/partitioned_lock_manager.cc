@@ -294,8 +294,9 @@ void PartitionedLockManager::LockRequestCancelled() {
   }
 }
 
-std::set<PartitionedLockHolder*> PartitionedLockManager::GetBlockedRequests(
-    const base::flat_set<PartitionedLockId>& held_locks) const {
+bool PartitionedLockManager::IsBlockingAnyRequest(
+    const base::flat_set<PartitionedLockId>& held_locks,
+    base::RepeatingCallback<bool(PartitionedLockHolder*)> filter) const {
   std::set<PartitionedLockHolder*> blocked_requests;
 
   // Rebuild the set of lock requests so we can apply
@@ -308,11 +309,12 @@ std::set<PartitionedLockHolder*> PartitionedLockManager::GetBlockedRequests(
   }
 
   for (const AcquisitionRequest& request : request_queue_) {
-    if (RequestsAreOverlapping(request.lock_requests, reconstructed_requests)) {
-      blocked_requests.insert(request.locks_holder.get());
+    if (request.locks_holder.get() && filter.Run(request.locks_holder.get()) &&
+        RequestsAreOverlapping(request.lock_requests, reconstructed_requests)) {
+      return true;
     }
   }
-  return blocked_requests;
+  return false;
 }
 
 bool operator<(const PartitionedLockManager::PartitionedLockRequest& x,

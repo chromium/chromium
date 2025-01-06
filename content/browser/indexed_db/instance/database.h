@@ -373,6 +373,13 @@ class CONTENT_EXPORT Database {
   std::vector<PartitionedLockManager::PartitionedLockRequest>
   BuildLockRequestsFromTransaction(Transaction* transaction) const;
 
+  // In rare cases there are a very large number of queued
+  // requests/transactions, so calculations related to blocking or blocked
+  // clients can be expensive. See crbug.com/384476946. This method is used for
+  // shortcutting such operations when there's only a single client. Also
+  // returns true for zero clients.
+  bool OnlyHasOneClient() const;
+
   // Find the transactions that block `current_transaction` from acquiring the
   // locks, and ensure that the clients with blocking transactions are active.
   void RequireBlockingTransactionClientsToBeActive(

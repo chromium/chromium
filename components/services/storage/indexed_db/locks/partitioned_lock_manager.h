@@ -99,9 +99,13 @@ class PartitionedLockManager {
   std::vector<PartitionedLockId> GetUnacquirableLocks(
       std::vector<PartitionedLockRequest>& lock_requests);
 
-  // Returns the lock requests that are blocked on the provided lock holder.
-  std::set<PartitionedLockHolder*> GetBlockedRequests(
-      const base::flat_set<PartitionedLockId>& held_locks) const;
+  // Returns true if `held_locks` are blocking any queued request. Only requests
+  // for which `filter` returns true are considered. It's possible for
+  // `blocked_requests` to be very large, so this is intended to be as efficient
+  // as possible.
+  bool IsBlockingAnyRequest(
+      const base::flat_set<PartitionedLockId>& held_locks,
+      base::RepeatingCallback<bool(PartitionedLockHolder*)> filter) const;
 
   // Outputs the lock state (held & requested locks) into a debug value,
   // suitable for printing an 'internals' or to print during debugging. The
