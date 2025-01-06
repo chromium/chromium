@@ -619,7 +619,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceInsights.BuyingOptionsClicked"
-    enum="PriceInsightsPriceBucket" expires_after="2025-02-06">
+    enum="PriceInsightsPriceBucket" expires_after="2025-06-22">
   <owner>mdjones@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>qib@google.com</owner>
@@ -835,7 +835,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.ShoppingService.ProductInfo.FallbackDataUsed"
-    enum="Boolean" expires_after="2025-02-01">
+    enum="Boolean" expires_after="2025-06-08">
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <summary>
