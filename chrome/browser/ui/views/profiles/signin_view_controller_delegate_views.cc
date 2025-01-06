@@ -575,7 +575,9 @@ SigninViewControllerDelegate::CreateManagedUserNoticeDelegate(
   // window.
   if (profile_creation_required_by_policy &&
       base::FeatureList::IsEnabled(
-          features::kManagedProfileRequiredInterstitial)) {
+          features::kManagedProfileRequiredInterstitial) &&
+      base::FeatureList::IsEnabled(
+          features::kEnterpriseUpdatedProfileCreationScreen)) {
     content::WebContents* active_contents =
         browser->tab_strip_model()->GetActiveWebContents();
     // Reload the active web contents so that the managed profile required
