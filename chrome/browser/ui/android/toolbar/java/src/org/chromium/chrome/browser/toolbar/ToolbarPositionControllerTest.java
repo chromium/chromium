@@ -171,6 +171,11 @@ public class ToolbarPositionControllerTest {
                 }
 
                 @Override
+                public boolean shouldUpdateOffsetsWhenConstraintsChange() {
+                    return false;
+                }
+
+                @Override
                 public int getBottomControlOffset() {
                     return 0;
                 }

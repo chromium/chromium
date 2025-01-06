@@ -131,6 +131,10 @@ float BrowserControlsOffsetManager::BottomControlsMinHeightOffset() const {
   return bottom_controls_min_height_offset_;
 }
 
+bool BrowserControlsOffsetManager::HasOffsetTag() const {
+  return ContentOffsetTag() || TopControlsOffsetTag();
+}
+
 std::pair<float, float>
 BrowserControlsOffsetManager::TopControlsShownRatioRange() {
   if (top_controls_animation_.IsInitialized())
