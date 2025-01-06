@@ -10,6 +10,11 @@ data/**
 -data/**/DIR_METADATA
 -data/**/README.md
 -data/android/**
+-data/dips/v1.sql
+-data/dips/v2.sql
+-data/dips/v3.sql
+-data/dips/v4.sql
+-data/dips/v5.sql
 -data/file_chooser/dir_with*symlink/**
 -data/gpu/gpu_reference/**
 -data/gpu/mediapipe/**
