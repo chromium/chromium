@@ -4,7 +4,9 @@
 
 #include "base/metrics/persistent_sample_map.h"
 
-#include "base/atomicops.h"
+#include <atomic>
+#include <type_traits>
+
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
@@ -46,7 +48,7 @@ class IteratorTemplate : public SampleCountIterator {
 
  private:
   void SkipEmptyBuckets() {
-    while (!Done() && subtle::NoBarrier_Load(iter_->second) == 0) {
+    while (!Done() && iter_->second->load(std::memory_order_relaxed) == 0) {
       ++iter_;
     }
   }
@@ -56,7 +58,7 @@ class IteratorTemplate : public SampleCountIterator {
 };
 
 typedef std::map<HistogramBase::Sample,
-                 raw_ptr<HistogramBase::Count, CtnExperimental>>
+                 raw_ptr<std::atomic<HistogramBase::Count>, CtnExperimental>>
     SampleToCountMap;
 typedef IteratorTemplate<const SampleToCountMap,
                          SampleToCountMap::const_iterator>
@@ -75,7 +77,7 @@ void PersistentSampleMapIterator::Get(Sample* min, int64_t* max, Count* count) {
   // a lock, a separate process (that is not aware of this lock) may
   // concurrently modify the value (note that iter_->second is a pointer to a
   // sample count, which may live in shared memory).
-  *count = subtle::NoBarrier_Load(iter_->second);
+  *count = iter_->second->load(std::memory_order_relaxed);
 }
 
 typedef IteratorTemplate<SampleToCountMap, SampleToCountMap::iterator>
@@ -100,7 +102,7 @@ void ExtractingPersistentSampleMapIterator::Get(Sample* min,
   // a lock, a separate process (that is not aware of this lock) may
   // concurrently modify the value (note that iter_->second is a pointer to a
   // sample count, which may live in shared memory).
-  *count = subtle::NoBarrier_AtomicExchange(iter_->second, 0);
+  *count = iter_->second->exchange(0, std::memory_order_relaxed);
 }
 
 // This structure holds an entry for a PersistentSampleMap within a persistent
@@ -113,9 +115,19 @@ struct SampleRecord {
   // Expected size for 32/64-bit check.
   static constexpr size_t kExpectedInstanceSize = 16;
 
-  uint64_t id;   // Unique identifier of owner.
-  Sample value;  // The value for which this record holds a count.
-  Count count;   // The count associated with the above value.
+  uint64_t id;               // Unique identifier of owner.
+  Sample value;              // The value for which this record holds a count.
+  std::atomic<Count> count;  // The count associated with the above value.
+
+  // `count` may operate inter-process and so must be lock-free.
+  static_assert(std::atomic<Count>::is_always_lock_free);
+
+  // For backwards compatibility, `std::atomic<Count>` and `Count` must have
+  // the same memory layouts. If this ever changes, make sure to increment
+  // `kPersistentTypeId` above.
+  static_assert(std::is_standard_layout_v<std::atomic<Count>>);
+  static_assert(sizeof(std::atomic<Count>) == sizeof(Count));
+  static_assert(alignof(std::atomic<Count>) == alignof(Count));
 };
 
 }  // namespace
@@ -132,17 +144,17 @@ void PersistentSampleMap::Accumulate(Sample value, Count count) {
   // We have to do the following atomically, because even if the caller is using
   // a lock, a separate process (that is not aware of this lock) may
   // concurrently modify the value.
-  subtle::NoBarrier_AtomicIncrement(GetOrCreateSampleCountStorage(value),
-                                    count);
+  GetOrCreateSampleCountStorage(value)->fetch_add(count,
+                                                  std::memory_order_relaxed);
   IncreaseSumAndCount(strict_cast<int64_t>(count) * value, count);
 }
 
 Count PersistentSampleMap::GetCount(Sample value) const {
   // Have to override "const" to make sure all samples have been loaded before
   // being able to know what value to return.
-  Count* count_pointer =
+  const std::atomic<Count>* const count_pointer =
       const_cast<PersistentSampleMap*>(this)->GetSampleCountStorage(value);
-  return count_pointer ? subtle::NoBarrier_Load(count_pointer) : 0;
+  return count_pointer ? count_pointer->load(std::memory_order_relaxed) : 0;
 }
 
 Count PersistentSampleMap::TotalCount() const {
@@ -153,7 +165,7 @@ Count PersistentSampleMap::TotalCount() const {
 
   Count count = 0;
   for (const auto& entry : sample_counts_) {
-    count += subtle::NoBarrier_Load(entry.second);
+    count += entry.second->load(std::memory_order_relaxed);
   }
   return count;
 }
@@ -241,14 +253,14 @@ bool PersistentSampleMap::AddSubtractImpl(SampleCountIterator* iter,
     // We have to do the following atomically, because even if the caller is
     // using a lock, a separate process (that is not aware of this lock) may
     // concurrently modify the value.
-    subtle::Barrier_AtomicIncrement(
-        GetOrCreateSampleCountStorage(min),
-        (op == HistogramSamples::ADD) ? count : -count);
+    GetOrCreateSampleCountStorage(min)->fetch_add(
+        (op == HistogramSamples::ADD) ? count : -count,
+        std::memory_order_seq_cst);
   }
   return true;
 }
 
-Count* PersistentSampleMap::GetSampleCountStorage(Sample value) {
+std::atomic<Count>* PersistentSampleMap::GetSampleCountStorage(Sample value) {
   // If |value| is already in the map, just return that.
   auto it = sample_counts_.find(value);
   if (it != sample_counts_.end()) {
@@ -259,9 +271,10 @@ Count* PersistentSampleMap::GetSampleCountStorage(Sample value) {
   return ImportSamples(/*until_value=*/value);
 }
 
-Count* PersistentSampleMap::GetOrCreateSampleCountStorage(Sample value) {
+std::atomic<Count>* PersistentSampleMap::GetOrCreateSampleCountStorage(
+    Sample value) {
   // Get any existing count storage.
-  Count* count_pointer = GetSampleCountStorage(value);
+  std::atomic<Count>* count_pointer = GetSampleCountStorage(value);
   if (count_pointer) {
     return count_pointer;
   }
@@ -275,7 +288,7 @@ Count* PersistentSampleMap::GetOrCreateSampleCountStorage(Sample value) {
     // full or corrupt. Instead, allocate the counter from the heap. This
     // sample will not be persistent, will not be shared, and will leak...
     // but it's better than crashing.
-    count_pointer = new Count(0);
+    count_pointer = new std::atomic<Count>(0);
     sample_counts_[value] = count_pointer;
     return count_pointer;
   }
@@ -306,7 +319,8 @@ PersistentSampleMapRecords* PersistentSampleMap::GetRecords() {
   return records_.get();
 }
 
-Count* PersistentSampleMap::ImportSamples(std::optional<Sample> until_value) {
+std::atomic<Count>* PersistentSampleMap::ImportSamples(
+    std::optional<Sample> until_value) {
   std::vector<PersistentMemoryAllocator::Reference> refs;
   PersistentSampleMapRecords* records = GetRecords();
   while (!(refs = records->GetNextRecords(until_value)).empty()) {

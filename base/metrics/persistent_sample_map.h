@@ -11,6 +11,7 @@
 
 #include <stdint.h>
 
+#include <atomic>
 #include <map>
 #include <memory>
 #include <optional>
@@ -73,11 +74,12 @@ class BASE_EXPORT PersistentSampleMap : public HistogramSamples {
 
   // Gets a pointer to a "count" corresponding to a given |value|. Returns NULL
   // if sample does not exist.
-  HistogramBase::Count* GetSampleCountStorage(HistogramBase::Sample value);
+  std::atomic<HistogramBase::Count>* GetSampleCountStorage(
+      HistogramBase::Sample value);
 
   // Gets a pointer to a "count" corresponding to a given |value|, creating
   // the sample (initialized to zero) if it does not already exists.
-  HistogramBase::Count* GetOrCreateSampleCountStorage(
+  std::atomic<HistogramBase::Count>* GetOrCreateSampleCountStorage(
       HistogramBase::Sample value);
 
  private:
@@ -92,14 +94,14 @@ class BASE_EXPORT PersistentSampleMap : public HistogramSamples {
   // currently available samples have been loaded. Pass a nullopt for
   // |until_value| to force the importing of all available samples (null will
   // always be returned in this case).
-  HistogramBase::Count* ImportSamples(
+  std::atomic<HistogramBase::Count>* ImportSamples(
       std::optional<HistogramBase::Sample> until_value);
 
   // All created/loaded sample values and their associated counts. The storage
   // for the actual Count numbers is owned by the |records_| object and its
   // underlying allocator.
   std::map<HistogramBase::Sample,
-           raw_ptr<HistogramBase::Count, CtnExperimental>>
+           raw_ptr<std::atomic<HistogramBase::Count>, CtnExperimental>>
       sample_counts_;
 
   // The allocator that manages histograms inside persistent memory. This is

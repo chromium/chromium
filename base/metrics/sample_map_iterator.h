@@ -7,18 +7,22 @@
 
 #include <stdint.h>
 
+#include <atomic>
 #include <type_traits>
 #include <utility>
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_samples.h"
+#include "base/types/to_address.h"
 
 namespace base {
 
 // An iterator for going through a SampleMap. `MapT` is the underlying map type
 // that stores the counts. `support_extraction` should be true iff the caller
-// wants this iterator to support extracting the values.
+// wants this iterator to support extracting the values. If the counts are
+// pointers, accesses to them will be atomic; see `kUseAtomicOps` below.
 // TODO(pkasting): Combine with that for PersistentSampleMap.
 template <typename MapT, bool support_extraction>
 class SampleMapIterator : public SampleCountIterator {
@@ -54,11 +58,6 @@ class SampleMapIterator : public SampleCountIterator {
     DCHECK(!Done());
     *min = iter_->first;
     *max = int64_t{iter_->first} + 1;
-    // We do not have to do the following atomically -- if the caller needs
-    // thread safety, they should use a lock. And since this is in local memory,
-    // if a lock is used, we know the value would not be concurrently modified
-    // by a different process (in contrast to PersistentSampleMap, where the
-    // value in shared memory may be modified concurrently by a subprocess).
     if constexpr (support_extraction) {
       *count = Exchange();
     } else {
@@ -71,18 +70,37 @@ class SampleMapIterator : public SampleCountIterator {
                                typename T::iterator,
                                typename T::const_iterator>;
 
+  // If the counts are pointers, assume they may live in shared memory, which
+  // means accesses to them must be atomic, since other processes may attempt to
+  // concurrently modify their values. (Note that a lock wouldn't help here,
+  // since said other processes would not be aware of our lock.) If they are
+  // values, we don't bother with atomic ops; callers who want thread-safety can
+  // use locking.
+  static constexpr bool kUseAtomicOps =
+      IsPointerOrRawPtr<typename T::mapped_type>;
+
   void SkipEmptyBuckets() {
     while (!Done() && Load() == 0) {
       ++iter_;
     }
   }
 
-  HistogramBase::Count Load() const { return iter_->second; }
+  HistogramBase::Count Load() const {
+    if constexpr (kUseAtomicOps) {
+      return iter_->second->load(std::memory_order_relaxed);
+    } else {
+      return iter_->second;
+    }
+  }
 
   HistogramBase::Count Exchange() const
     requires support_extraction
   {
-    return std::exchange(iter_->second, 0);
+    if constexpr (kUseAtomicOps) {
+      return iter_->second->exchange(0, std::memory_order_relaxed);
+    } else {
+      return std::exchange(iter_->second, 0);
+    }
   }
 
   I iter_;
