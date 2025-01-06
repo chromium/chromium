@@ -296,6 +296,9 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   }
 
   private getSyncAndGoogleServicesSubtext_(): string {
+    if (loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled')) {
+      return '';
+    }
     if (this.syncStatus && this.syncStatus.hasError &&
         this.syncStatus.statusText) {
       return this.syncStatus.statusText;

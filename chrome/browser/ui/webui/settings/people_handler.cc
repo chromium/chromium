@@ -1125,7 +1125,22 @@ base::Value::Dict PeopleHandler::GetSyncStatusDictionary() const {
           !service->GetUserSettings()->IsInitialSyncFeatureSetupComplete() &&
           identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
 
-  const SyncStatusLabels status_labels = GetSyncStatusLabels(profile_);
+  SyncStatusLabels status_labels;
+
+  // if flag enabled
+  if (switches::IsImprovedSettingsUIOnDesktopEnabled()) {
+    const std::optional<AvatarSyncErrorType> error =
+        GetAvatarSyncErrorType(profile_);
+    if (error.has_value()) {
+      status_labels = GetAvatarSyncErrorLabelsForSettings(error.value());
+    } else {
+      status_labels = GetSyncStatusLabelsForSettings(
+          SyncServiceFactory::GetForProfile(profile_));
+    }
+  } else {
+    status_labels = GetSyncStatusLabels(profile_);
+  }
+
   // TODO(crbug.com/40660240): Consider unifying some of the fields below to
   // avoid redundancy.
   sync_status.Set("statusText",

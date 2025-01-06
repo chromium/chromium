@@ -81,10 +81,12 @@ enum AvatarSyncErrorType {
 };
 
 struct SyncStatusLabels {
-  SyncStatusMessageType message_type;
-  int status_label_string_id;
-  int button_string_id;
-  SyncStatusActionType action_type;
+  SyncStatusMessageType message_type = SyncStatusMessageType::kPreSynced;
+  int status_label_string_id = 0;
+  int button_string_id = 0;
+  // This will be empty when switches::kImprovedSettingsUIOnDesktop is disabled.
+  int secondary_button_string_id = 0;
+  SyncStatusActionType action_type = SyncStatusActionType::kNoAction;
 };
 
 // Returns the high-level sync status by querying |sync_service| and
@@ -104,6 +106,11 @@ SyncStatusLabels GetSyncStatusLabels(Profile* profile);
 SyncStatusMessageType GetSyncStatusMessageType(Profile* profile);
 
 #if !BUILDFLAG(IS_ANDROID)
+SyncStatusLabels GetSyncStatusLabelsForSettings(
+    const syncer::SyncService* service);
+
+SyncStatusLabels GetAvatarSyncErrorLabelsForSettings(AvatarSyncErrorType error);
+
 // Gets the error in the sync machinery (if any) that should be exposed to the
 // user through the titlebar avatar button. If std::nullopt is returned, this
 // does NOT mean sync-the-feature/sync-the-transport is enabled, simply that

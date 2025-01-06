@@ -260,9 +260,40 @@ export class SettingsSyncAccountControlElement extends
   // not. This matters because showing account specific information needs to be
   // trimmed using ellipsis for potentially long texts, whereas fixed
   // information needs to be fully displayed regardless of the length.
-  private shouldShowSubtitleWithAccountInfoText_() {
-    return loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled') &&
-        this.syncStatus.signedInState === SignedInState.WEB_ONLY_SIGNED_IN;
+  private shouldHideSubtitleWithAccountInfoText_() {
+    if (!loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled')) {
+      return false;
+    }
+
+    if (this.syncStatus &&
+        this.syncStatus.signedInState === SignedInState.SIGNED_IN_PAUSED &&
+        this.syncStatus.hasError && this.syncStatus.statusText) {
+      return true;
+    }
+
+    if (this.syncStatus.signedInState === SignedInState.WEB_ONLY_SIGNED_IN) {
+      return true;
+    }
+
+    return false;
+  }
+
+
+  private getAvatarSubtitleLabel_(accountAwareRowSubtitle: string): string {
+    if (!loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled')) {
+      return '';
+    }
+
+    if (this.syncStatus.signedInState === SignedInState.WEB_ONLY_SIGNED_IN) {
+      return accountAwareRowSubtitle;
+    }
+
+    if (this.syncStatus &&
+        this.syncStatus.signedInState === SignedInState.SIGNED_IN_PAUSED &&
+        this.syncStatus.hasError && this.syncStatus.statusText) {
+      return this.syncStatus.statusText;
+    }
+    return '';
   }
 
   private getAccountAwareSigninButtonLabel_(
@@ -334,9 +365,14 @@ export class SettingsSyncAccountControlElement extends
       accountName: string, syncErrorLabel: string,
       syncPasswordsOnlyErrorLabel: string, authErrorLabel: string,
       disabledLabel: string, webOnlySignedInAccountRowTitle: string): string {
-    if (loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled') &&
-        this.syncStatus.signedInState === SignedInState.WEB_ONLY_SIGNED_IN) {
-      return webOnlySignedInAccountRowTitle;
+    if (loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled')) {
+      if (this.syncStatus.signedInState === SignedInState.WEB_ONLY_SIGNED_IN) {
+        return webOnlySignedInAccountRowTitle;
+      }
+      if (this.syncStatus.signedInState === SignedInState.SIGNED_IN_PAUSED &&
+          this.syncStatus.hasError) {
+        return accountName;
+      }
     }
 
     if (this.syncStatus.disabled) {
@@ -395,6 +431,11 @@ export class SettingsSyncAccountControlElement extends
   private shouldHideBanner_(): boolean {
     if (!loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled')) {
       return this.hideBanner || !!this.syncStatus && this.isSyncing_();
+    }
+
+    if (this.syncStatus && this.syncStatus.hasError &&
+        this.syncStatus.statusText) {
+      return true;
     }
 
     switch (this.syncStatus.signedInState) {

@@ -166,7 +166,7 @@
                 syncStatus.statusAction, syncStatus.disabled)]]
           </div>
           <div class="secondary text-elide"
-          hidden="[[shouldShowSubtitleWithAccountInfoText_()]]">
+          hidden="[[shouldHideSubtitleWithAccountInfoText_()]]">
             [[getAccountLabel_(
                 '$i18nPolymer{signedInTo}',
                 '$i18nPolymer{syncingTo}',
@@ -176,8 +176,9 @@
                 shownAccount_.isPrimaryAccount)]]
           </div>
           <div class="secondary"
-          hidden="[[!shouldShowSubtitleWithAccountInfoText_()]]">
-            $i18nPolymer{accountAwareRowSubtitle}
+          hidden="[[!shouldHideSubtitleWithAccountInfoText_()]]">
+          [[getAvatarSubtitleLabel_(
+            '$i18nPolymer{accountAwareRowSubtitle}')]]
           </div>
         </div>
         <cr-icon-button class="icon-arrow-dropdown cr-button-gap"
