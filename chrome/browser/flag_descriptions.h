@@ -1103,6 +1103,9 @@ extern const char kFedCmDelegationDescription[];
 extern const char kFedCmIdPRegistrationName[];
 extern const char kFedCmIdPRegistrationDescription[];
 
+extern const char kFedCmLightweightModeName[];
+extern const char kFedCmLightweightModeDescription[];
+
 extern const char kFedCmMetricsEndpointName[];
 extern const char kFedCmMetricsEndpointDescription[];
 

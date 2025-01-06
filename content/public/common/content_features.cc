@@ -476,6 +476,11 @@ BASE_FEATURE(kFedCmWithoutWellKnownEnforcement,
              "FedCmWithoutWellKnownEnforcement",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables Lightweight FedCM Mode
+BASE_FEATURE(kFedCmLightweightMode,
+             "FedCmLightweightMode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables browser-side focus verification when crossing fenced boundaries.
 BASE_FEATURE(kFencedFramesEnforceFocus,
              "FencedFramesEnforceFocus",

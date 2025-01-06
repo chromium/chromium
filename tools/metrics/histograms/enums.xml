@@ -23018,6 +23018,7 @@ from previous Chrome versions.
   <int value="1038264914" label="PerDeskShelf:enabled"/>
   <int value="1038408747"
       label="CrOSLateBootBluetoothAudioLEAudioOnly:disabled"/>
+  <int value="1038416445" label="FedCmLightweightMode:disabled"/>
   <int value="1038818497" label="WebAssemblyGarbageCollection:enabled"/>
   <int value="1038906720" label="SharedHighlightingManager:disabled"/>
   <int value="1039085120"
@@ -23794,6 +23795,7 @@ from previous Chrome versions.
   <int value="1327928774" label="ClipboardHistorySimpleRender:enabled"/>
   <int value="1328029475" label="TerminalAlternativeRenderer:disabled"/>
   <int value="1330264457" label="OmniboxUIExperimentVerticalLayout:disabled"/>
+  <int value="1330592192" label="FedCmLightweightMode:enabled"/>
   <int value="1331098784" label="ReducedReferrerGranularity:enabled"/>
   <int value="1332120969" label="ChromeDuet:disabled"/>
   <int value="1332891404"

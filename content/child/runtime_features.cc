@@ -220,6 +220,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {wf::EnableFedCmIdpSigninStatus,
            raw_ref(features::kFedCmIdpSigninStatusEnabled),
            kSetOnlyIfOverridden},
+          {wf::EnableFedCmLightweightMode,
+           raw_ref(features::kFedCmLightweightMode), kDefault},
           {wf::EnableGamepadMultitouch,
            raw_ref(features::kEnableGamepadMultitouch)},
           {wf::EnableSharedStorageAPI,

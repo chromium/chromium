@@ -1833,6 +1833,13 @@
       browser_process_read_access: true,
     },
     {
+      name: "FedCmLightweightMode",
+      depends_on: ["FedCmIdpSigninStatus"],
+      status: "test",
+      public: true,
+      base_feature: "none",
+    },
+    {
       name: "FedCmMultipleIdentityProviders",
       depends_on: ["FedCm"],
       base_feature: "none",

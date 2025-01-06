@@ -4495,6 +4495,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "fedcm-lightweight-mode",
+    "owners": ["ekovac@google.com", "web-identity-eng@google.com"],
+    "expiry_milestone": 135
+  },
+  {
     "name": "fedcm-metrics-endpoint",
     "owners": ["yigu@chromium.org", "web-identity-eng@google.com"],
     "expiry_milestone": 135
