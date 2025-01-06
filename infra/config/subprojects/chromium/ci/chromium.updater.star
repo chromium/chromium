@@ -1249,7 +1249,7 @@ ci.thin_tester(
             "updater_gtests_win",
         ],
         mixins = [
-            "win11",
+            "win11-any",
             "x86-64",
         ],
     ),
