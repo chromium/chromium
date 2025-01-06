@@ -11,6 +11,7 @@ component("core") {
   sources = [
     "background_file.cc",
     "background_file.h",
+    "constants.h",
     "features.cc",
     "features.h",
     "language_detection_model.cc",
@@ -26,10 +27,6 @@ component("core") {
     ":internals",
     "//base",
     "//components/optimization_guide/core:features",
-
-    # TODO(https://crbug.com/380786760): Remove this dep. It is for a constant
-    # that really belongs in langage_detection.
-    "//components/translate/core/common",
     "//third_party/tflite",
     "//third_party/tflite_support",
     "//third_party/tflite_support:tflite_support_proto",

@@ -19,9 +19,9 @@
 #include "base/task/thread_pool.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
+#include "components/language_detection/core/constants.h"
 #include "components/language_detection/core/language_detection_resolver.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/translate/core/common/translate_constants.h"
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h"
 
 namespace language_detection {
@@ -171,7 +171,7 @@ std::vector<Prediction> LanguageDetectionModel::Predict(
   base::UmaHistogramBoolean(
       "LanguageDetection.TFLiteModel.ClassifyText.Detected", detected);
   if (!detected) {
-    return {Prediction(translate::kUnknownLanguageCode, 0.0)};
+    return {Prediction(kUnknownLanguageCode, 0.0)};
   }
   std::vector<Prediction> predictions;
   predictions.reserve(status_or_categories.value().size());

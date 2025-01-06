@@ -5,11 +5,9 @@
 #ifndef COMPONENTS_TRANSLATE_CORE_COMMON_TRANSLATE_CONSTANTS_H_
 #define COMPONENTS_TRANSLATE_CORE_COMMON_TRANSLATE_CONSTANTS_H_
 
-namespace translate {
+#include "components/language_detection/core/constants.h"
 
-// The language code used when the language of a page could not be detected.
-// (Matches what the CLD -Compact Language Detection- library reports.)
-extern const char* const kUnknownLanguageCode;
+namespace translate {
 
 // The maximum number of characters allowed for a text selection in Partial
 // Translate. Longer selections will be truncated down to the first valid word
@@ -19,6 +17,10 @@ extern const int kDesktopPartialTranslateTextSelectionMaxCharacters;
 // bubble, even if no response has been received. In this case, a waiting view
 // is shown.
 extern const int kDesktopPartialTranslateBubbleShowDelayMs;
+
+// TODO(https://crbug.com/380786760): Delete this when all users have migrated
+// to the language_detection:: version.
+using language_detection::kUnknownLanguageCode;
 
 }  // namespace translate
 
