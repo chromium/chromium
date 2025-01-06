@@ -829,7 +829,7 @@ BASE_FEATURE(kFencedFramesLocalUnpartitionedDataAccess,
 
 BASE_FEATURE(kFencedFramesReportEventHeaderChanges,
              "FencedFramesReportEventHeaderChanges",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables a bug fix that allows a 'src' allowlist in the |allow| parameter of a
 // <fencedframe> or <iframe> loaded with a FencedFrameConfig to behave as
