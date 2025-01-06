@@ -279,37 +279,6 @@ public class IdentityDiscControllerTest {
     @Test
     @MediumTest
     @SuppressWarnings("CheckReturnValue")
-    public void testIdentityDiscWithSigninAndEnableSync() {
-        // Identity Disc should be shown on sign-in state change without NTP refresh.
-        mSigninTestRule.addAccountThenSigninAndEnableSync(TestAccounts.ACCOUNT1);
-        String expectedContentDescription =
-                mActivityTestRule
-                        .getActivity()
-                        .getString(
-                                R.string
-                                        .accessibility_toolbar_btn_identity_disc_with_name_and_email,
-                                TestAccounts.ACCOUNT1.getFullName(),
-                                TestAccounts.ACCOUNT1.getEmail());
-        // TODO(crbug.com/40277716): This is a no-op, replace with ViewUtils.waitForVisibleView().
-        ViewUtils.isEventuallyVisible(
-                allOf(
-                        withId(R.id.optional_toolbar_button),
-                        withContentDescription(expectedContentDescription),
-                        isDisplayed()));
-
-        mSigninTestRule.signOut();
-        // TODO(crbug.com/40277716): This is a no-op, replace with ViewUtils.waitForVisibleView().
-        ViewUtils.isEventuallyVisible(
-                allOf(
-                        withId(R.id.optional_toolbar_button),
-                        withContentDescription(
-                                R.string.accessibility_toolbar_btn_signed_out_identity_disc),
-                        isDisplayed()));
-    }
-
-    @Test
-    @MediumTest
-    @SuppressWarnings("CheckReturnValue")
     public void testIdentityDiscWithSwitchToIncognito() {
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         // TODO(crbug.com/40277716): This is a no-op, replace with ViewUtils.waitForVisibleView().

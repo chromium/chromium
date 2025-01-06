@@ -40,6 +40,7 @@ import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.protocol.AutofillWalletSpecifics;
 import org.chromium.components.sync.protocol.EntitySpecifics;
@@ -248,24 +249,23 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     }
 
     /**
-     * Set up a test account and sign in. Does not setup sync.
+     * Sets up an account and signs in and enables history sync.
      *
-     * @return the test accountInfo that is signed in.
+     * @return the test {@link CoreAccountInfo} that is signed in.
      */
-    public CoreAccountInfo setUpAccountAndSignInForTesting() {
-        return mSigninTestRule.addTestAccountThenSignin();
+    public CoreAccountInfo setUpAccountAndEnableHistorySync() {
+        mSigninTestRule.addAccountThenSigninAndEnableHistorySync(TestAccounts.ACCOUNT1);
+        return TestAccounts.ACCOUNT1;
     }
 
     /**
-     * Set up a test account, sign in but don't mark sync setup complete.
+     * Set up a test account and sign in. Does not setup sync.
      *
-     * @return the test account that is signed in.
+     * @return the test {@link CoreAccountInfo} that is signed in.
      */
-    public CoreAccountInfo setUpTestAccountAndSignInWithSyncSetupAsIncomplete() {
-        CoreAccountInfo accountInfo =
-                mSigninTestRule.addTestAccountThenSigninAndEnableSync(/* syncService= */ null);
-        SyncTestUtil.waitForSyncTransportActive();
-        return accountInfo;
+    public CoreAccountInfo setUpAccountAndSignInForTesting() {
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+        return TestAccounts.ACCOUNT1;
     }
 
     public void signOut() {

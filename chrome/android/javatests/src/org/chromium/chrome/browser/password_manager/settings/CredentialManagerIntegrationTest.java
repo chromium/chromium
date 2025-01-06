@@ -47,7 +47,8 @@ import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.GmsCoreVersionRestriction;
@@ -76,6 +77,8 @@ public class CredentialManagerIntegrationTest {
             new PayloadCallbackHelper<>();
     final PayloadCallbackHelper<Exception> mFailureCallbackHelper = new PayloadCallbackHelper<>();
 
+    private final AccountInfo mAccount = TestAccounts.ACCOUNT1;
+
     @Before
     public void setup() throws Exception {
         CredentialManagerLauncherFactory.setFactoryForTesting(mFakeLauncherFactory);
@@ -92,7 +95,7 @@ public class CredentialManagerIntegrationTest {
                         new Intent(context, MainSettings.class),
                         PendingIntent.FLAG_IMMUTABLE));
 
-        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+        mSyncTestRule.getSigninTestRule().addAccountThenSignin(mAccount);
     }
 
     @Test
@@ -144,11 +147,10 @@ public class CredentialManagerIntegrationTest {
         mSettingsActivityTestRule.startSettingsActivity();
         scrollToSetting(withText(R.string.prefs_safety_check));
         onView(withText(R.string.prefs_safety_check)).perform(click());
-        String testAccount = mSyncTestRule.getPrimaryAccount(ConsentLevel.SYNC).getEmail();
         String checkForAccountText =
                 ApplicationProvider.getApplicationContext()
                         .getString(R.string.safety_check_passwords_account_title)
-                        .replace("%1$s", testAccount);
+                        .replace("%1$s", mAccount.getEmail());
         onViewWaiting(withText(checkForAccountText)).perform(click());
 
         // Verify that success callback was called.

@@ -53,7 +53,7 @@ public class AutofillUpstreamTest {
 
     @Before
     public void setUp() {
-        mActivityTestRule.setUpAccountAndEnableSyncForTesting();
+        mActivityTestRule.setUpAccountAndSignInForTesting();
         mServer = new EmbeddedTestServer();
         mServer.initializeNative(
                 ApplicationProvider.getApplicationContext(),
