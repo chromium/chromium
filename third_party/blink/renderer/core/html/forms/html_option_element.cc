@@ -668,7 +668,7 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
       mouse_event->button() ==
           static_cast<int16_t>(WebPointerProperties::Button::kLeft)) {
     select->SelectOptionByPopup(this);
-    select->HidePopup();
+    select->HidePopup(SelectPopupHideBehavior::kNormal);
     event.SetDefaultHandled();
     return;
   }
@@ -684,7 +684,7 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
     if (!(keyboard_event->GetModifiers() & ignore_modifiers)) {
       if ((key == " " || key == keywords::kCapitalEnter)) {
         select->SelectOptionByPopup(this);
-        select->HidePopup();
+        select->HidePopup(SelectPopupHideBehavior::kNormal);
         event.SetDefaultHandled();
         return;
       }
@@ -738,7 +738,7 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
         !(keyboard_event->GetModifiers() & tab_ignore_modifiers)) {
       // TODO(http://crbug.com/1511354): Consider focusing something in this
       // case. https://github.com/openui/open-ui/issues/1016
-      select->HidePopup();
+      select->HidePopup(SelectPopupHideBehavior::kNormal);
       event.SetDefaultHandled();
       return;
     }
