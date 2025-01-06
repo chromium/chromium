@@ -326,8 +326,6 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
           IdentityManagerFactory::GetForProfile(profile),
           profile->GetURLLoaderFactory(),
           &nearby_share_http_notifier_)),
-      profile_info_provider_(
-          std::make_unique<NearbyShareProfileInfoProviderImpl>(profile_)),
       local_device_data_manager_(
           NearbyShareLocalDeviceDataManagerImpl::Factory::Create(
               user,

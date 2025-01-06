@@ -8197,7 +8197,6 @@ test("unit_tests") {
       "../browser/nearby_sharing/nearby_receive_manager_unittest.cc",
       "../browser/nearby_sharing/nearby_share_delegate_impl_unittest.cc",
       "../browser/nearby_sharing/nearby_share_feature_usage_metrics_unittest.cc",
-      "../browser/nearby_sharing/nearby_share_profile_info_provider_impl_unittest.cc",
       "../browser/nearby_sharing/nearby_share_settings_unittest.cc",
       "../browser/nearby_sharing/nearby_share_transfer_profiler_unittest.cc",
       "../browser/nearby_sharing/nearby_sharing_service_impl_unittest.cc",
