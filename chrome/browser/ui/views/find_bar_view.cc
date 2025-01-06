@@ -126,19 +126,8 @@ class FindBarMatchCountLabel : public views::Label {
     UpdateAccessibleName();
 
     if (last_result_->final_update()) {
-      ui::AXNodeData node_data;
-      // This is a temporary fix that mimics what's done in
-      // `ViewAccessibility::GetAccessibleNodeData`. We must set the cached role
-      // on the local AXNodeData to pass the check that ensures the role is set
-      // before the accessible name. This is now necessary because the role is
-      // now set in the cache directly instead of in `GetAccessibleNodeData`.
-      //
-      // TODO(crbug.com/325137417): Remove this once we get the name from the
-      // cache directly.
-      node_data.role = GetViewAccessibility().GetCachedRole();
-      GetAccessibleNodeData(&node_data);
       GetViewAccessibility().AnnouncePolitely(
-          node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+          GetViewAccessibility().GetCachedName());
     }
   }
 
