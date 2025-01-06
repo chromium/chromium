@@ -11,6 +11,7 @@
 #include <cmath>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -34,9 +35,9 @@
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/fixed_array.h"
@@ -123,11 +124,6 @@ bool g_is_preview_enabled = true;
 bool g_is_preview_enabled = false;
 #endif
 
-const char kPageLoadScriptFormat[] =
-    "document.open(); document.write(%s); document.close();";
-
-const char kPageSetupScriptFormat[] = "setupHeaderFooterTemplate(%s);";
-
 constexpr int kAllowedIpcDepthForPrint = 1;
 
 struct PageSizeMarginsWithOrientation {
@@ -179,14 +175,13 @@ void RecordDebugEvent(DebugEvent event) {
 }
 
 void ExecuteScript(blink::WebLocalFrame* frame,
-                   const char* script_format,
-                   const base::Value& parameters) {
+                   std::string_view prefix,
+                   const base::Value& parameters,
+                   std::string_view suffix) {
   std::string json;
   base::JSONWriter::Write(parameters, &json);
-  std::string script =
-      base::StringPrintfNonConstexpr(script_format, json.c_str());
-  frame->ExecuteScript(
-      blink::WebScriptSource(blink::WebString::FromUTF8(script)));
+  frame->ExecuteScript(blink::WebScriptSource(
+      blink::WebString::FromUTF8(base::StrCat({prefix, json, suffix}))));
 }
 
 int GetDPI(const mojom::PrintParams& print_params) {
@@ -579,7 +574,8 @@ void PrintHeaderAndFooter(cc::PaintCanvas* canvas,
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           IDR_PRINT_HEADER_FOOTER_TEMPLATE_PAGE));
   // Load page with script to avoid async operations.
-  ExecuteScript(&frame, kPageLoadScriptFormat, html);
+  ExecuteScript(&frame, "document.open(); document.write(", html,
+                "); document.close();");
 
   const gfx::SizeF page_size(
       page_layout.margin_left + page_layout.margin_right +
@@ -606,8 +602,8 @@ void PrintHeaderAndFooter(cc::PaintCanvas* canvas,
   options.Set("footerTemplate", params.footer_template);
   options.Set("isRtl", base::i18n::IsRTL());
 
-  ExecuteScript(&frame, kPageSetupScriptFormat,
-                base::Value(std::move(options)));
+  ExecuteScript(&frame, "setupHeaderFooterTemplate(",
+                base::Value(std::move(options)), ");");
 
   blink::WebPrintParams webkit_params(page_size);
   webkit_params.printer_dpi = GetDPI(params);
