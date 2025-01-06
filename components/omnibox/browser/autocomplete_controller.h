@@ -36,10 +36,6 @@
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "third_party/omnibox_proto/types.pb.h"
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-#include "components/omnibox/browser/autocomplete_scoring_model_service.h"
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-
 class ClipboardProvider;
 class DocumentProvider;
 class FeaturedSearchProvider;
