@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {EventGenerator} from '../../common/event_generator.js';
-import {EventHandler} from '../../common/event_handler.js';
-import {KeyCode} from '../../common/key_code.js';
+import {EventGenerator} from '/common/event_generator.js';
+import {EventHandler} from '/common/event_handler.js';
+import {KeyCode} from '/common/key_code.js';
+
 import {Navigator} from '../navigator.js';
 import {SwitchAccess} from '../switch_access.js';
 import {ActionResponse} from '../switch_access_constants.js';
@@ -12,27 +13,24 @@ import {SwitchAccessPredicate} from '../switch_access_predicate.js';
 import {TextNavigationManager} from '../text_navigation_manager.js';
 
 import {BasicNode} from './basic_node.js';
-import {SAChildNode, SARootNode} from './switch_access_node.js';
+import {SARootNode} from './switch_access_node.js';
 
-const AutomationNode = chrome.automation.AutomationNode;
-const MenuAction = chrome.accessibilityPrivate.SwitchAccessMenuAction;
+type AutomationNode = chrome.automation.AutomationNode;
+import EventType = chrome.automation.EventType;
+import MenuAction = chrome.accessibilityPrivate.SwitchAccessMenuAction;
+import StateType = chrome.automation.StateType;
 
 /**
  * This class handles interactions with editable text fields.
  */
 export class EditableTextNode extends BasicNode {
-  /**
-   * @param {!AutomationNode} baseNode
-   * @param {?SARootNode} parent
-   */
-  constructor(baseNode, parent) {
+  constructor(baseNode: AutomationNode, parent: SARootNode|null) {
     super(baseNode, parent);
   }
 
   // ================= Getters and setters =================
 
-  /** @override */
-  get actions() {
+  override get actions(): MenuAction[] {
     const actions = super.actions;
     // The SELECT action is used to press buttons, etc. For text inputs, the
     // equivalent action is KEYBOARD, which focuses the input and opens the
@@ -72,23 +70,23 @@ export class EditableTextNode extends BasicNode {
 
   // ================= General methods =================
 
-  /** @override */
-  doDefaultAction() {
+  override doDefaultAction(): void {
     this.performAction(MenuAction.KEYBOARD);
   }
 
-  /** @override */
-  performAction(action) {
+  override performAction(action: MenuAction): ActionResponse {
     switch (action) {
       case MenuAction.KEYBOARD:
         Navigator.byItem.enterKeyboard();
         return ActionResponse.CLOSE_MENU;
       case MenuAction.DICTATION:
-        if (this.automationNode.state[chrome.automation.StateType.FOCUSED]) {
+        // TODO(crbug.com/314203187): Not null asserted, check that this is
+        // correct.
+        if (this.automationNode.state![StateType.FOCUSED]) {
           chrome.accessibilityPrivate.toggleDictation();
         } else {
           new EventHandler(
-              this.automationNode, chrome.automation.EventType.FOCUS,
+              this.automationNode, EventType.FOCUS,
               () => chrome.accessibilityPrivate.toggleDictation(),
               {exactMatch: true, listenOnce: true})
               .start();
