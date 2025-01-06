@@ -23,7 +23,6 @@ namespace base {
 // that stores the counts. `support_extraction` should be true iff the caller
 // wants this iterator to support extracting the values. If the counts are
 // pointers, accesses to them will be atomic; see `kUseAtomicOps` below.
-// TODO(pkasting): Combine with that for PersistentSampleMap.
 template <typename MapT, bool support_extraction>
 class SampleMapIterator : public SampleCountIterator {
  private:

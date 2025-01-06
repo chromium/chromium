@@ -12,6 +12,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/persistent_histogram_allocator.h"
+#include "base/metrics/sample_map_iterator.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 
@@ -20,90 +21,11 @@ namespace base {
 typedef HistogramBase::Count Count;
 typedef HistogramBase::Sample Sample;
 
-namespace {
-
-// An iterator for going through a PersistentSampleMap. The logic here is
-// identical to that of the iterator for SampleMap but with different data
-// structures. Changes here likely need to be duplicated there.
-template <typename T, typename I>
-class IteratorTemplate : public SampleCountIterator {
- public:
-  explicit IteratorTemplate(T& sample_counts)
-      : iter_(sample_counts.begin()), end_(sample_counts.end()) {
-    SkipEmptyBuckets();
-  }
-
-  ~IteratorTemplate() override;
-
-  // SampleCountIterator:
-  bool Done() const override { return iter_ == end_; }
-  void Next() override {
-    DCHECK(!Done());
-    ++iter_;
-    SkipEmptyBuckets();
-  }
-  void Get(HistogramBase::Sample* min,
-           int64_t* max,
-           HistogramBase::Count* count) override;
-
- private:
-  void SkipEmptyBuckets() {
-    while (!Done() && iter_->second->load(std::memory_order_relaxed) == 0) {
-      ++iter_;
-    }
-  }
-
-  I iter_;
-  const I end_;
-};
-
 typedef std::map<HistogramBase::Sample,
                  raw_ptr<std::atomic<HistogramBase::Count>, CtnExperimental>>
     SampleToCountMap;
-typedef IteratorTemplate<const SampleToCountMap,
-                         SampleToCountMap::const_iterator>
-    PersistentSampleMapIterator;
 
-template <>
-PersistentSampleMapIterator::~IteratorTemplate() = default;
-
-// Get() for an iterator of a PersistentSampleMap.
-template <>
-void PersistentSampleMapIterator::Get(Sample* min, int64_t* max, Count* count) {
-  DCHECK(!Done());
-  *min = iter_->first;
-  *max = strict_cast<int64_t>(iter_->first) + 1;
-  // We have to do the following atomically, because even if the caller is using
-  // a lock, a separate process (that is not aware of this lock) may
-  // concurrently modify the value (note that iter_->second is a pointer to a
-  // sample count, which may live in shared memory).
-  *count = iter_->second->load(std::memory_order_relaxed);
-}
-
-typedef IteratorTemplate<SampleToCountMap, SampleToCountMap::iterator>
-    ExtractingPersistentSampleMapIterator;
-
-template <>
-ExtractingPersistentSampleMapIterator::~IteratorTemplate() {
-  // Ensure that the user has consumed all the samples in order to ensure no
-  // samples are lost.
-  DCHECK(Done());
-}
-
-// Get() for an extracting iterator of a PersistentSampleMap.
-template <>
-void ExtractingPersistentSampleMapIterator::Get(Sample* min,
-                                                int64_t* max,
-                                                Count* count) {
-  DCHECK(!Done());
-  *min = iter_->first;
-  *max = strict_cast<int64_t>(iter_->first) + 1;
-  // We have to do the following atomically, because even if the caller is using
-  // a lock, a separate process (that is not aware of this lock) may
-  // concurrently modify the value (note that iter_->second is a pointer to a
-  // sample count, which may live in shared memory).
-  *count = iter_->second->exchange(0, std::memory_order_relaxed);
-}
+namespace {
 
 // This structure holds an entry for a PersistentSampleMap within a persistent
 // memory allocator. The "id" must be unique across all maps held by an
@@ -175,14 +97,15 @@ std::unique_ptr<SampleCountIterator> PersistentSampleMap::Iterator() const {
   // loaded before trying to iterate over the map.
   const_cast<PersistentSampleMap*>(this)->ImportSamples(
       /*until_value=*/std::nullopt);
-  return std::make_unique<PersistentSampleMapIterator>(sample_counts_);
+  return std::make_unique<SampleMapIterator<SampleToCountMap, false>>(
+      sample_counts_);
 }
 
 std::unique_ptr<SampleCountIterator> PersistentSampleMap::ExtractingIterator() {
   // Make sure all samples have been loaded before trying to iterate over the
   // map.
   ImportSamples(/*until_value=*/std::nullopt);
-  return std::make_unique<ExtractingPersistentSampleMapIterator>(
+  return std::make_unique<SampleMapIterator<SampleToCountMap, true>>(
       sample_counts_);
 }
 
