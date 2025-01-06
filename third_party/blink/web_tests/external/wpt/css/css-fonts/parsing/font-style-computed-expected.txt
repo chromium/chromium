@@ -4,3 +4,4 @@ This is a testharness.js-based test.
 [FAIL] Property font-style value 'oblique 0deg'
   assert_equals: expected "oblique 0deg" but got "normal"
 Harness: the test ran to completion.
+
