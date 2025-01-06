@@ -56,7 +56,6 @@ class MockAudioFocusDelegate : public AudioFocusDelegate {
 
   AudioFocusResult RequestAudioFocus(AudioFocusType type) override {
     request_audio_focus_count_++;
-    last_requested_focus_type_ = type;
     return AudioFocusResult::kSuccess;
   }
 
@@ -80,13 +79,8 @@ class MockAudioFocusDelegate : public AudioFocusDelegate {
 
   int request_audio_focus_count() const { return request_audio_focus_count_; }
 
-  const std::optional<AudioFocusType>& GetLastRequestedFocusType() {
-    return last_requested_focus_type_;
-  }
-
  private:
   int request_audio_focus_count_ = 0;
-  std::optional<AudioFocusType> last_requested_focus_type_;
 
   MediaSessionInfoPtr session_info_;
 };
@@ -193,8 +187,8 @@ class MediaSessionImplTest : public RenderViewHostTestHarness {
   std::unique_ptr<MockMediaSessionPlayerObserver> player_observer_;
 
   void SetDelegateForTests(MediaSessionImpl* session,
-                           std::unique_ptr<AudioFocusDelegate> delegate) {
-    session->SetDelegateForTests(std::move(delegate));
+                           AudioFocusDelegate* delegate) {
+    session->SetDelegateForTests(base::WrapUnique(delegate));
   }
 
   MockMediaSessionServiceImpl& mock_media_session_service() const {
@@ -296,9 +290,8 @@ TEST_F(MediaSessionImplTest, SessionInfoState) {
 }
 
 TEST_F(MediaSessionImplTest, NotifyDelegateOnStateChange) {
-  auto delegate_unique = std::make_unique<MockAudioFocusDelegate>();
-  MockAudioFocusDelegate* delegate = delegate_unique.get();
-  SetDelegateForTests(GetMediaSession(), std::move(delegate_unique));
+  MockAudioFocusDelegate* delegate = new MockAudioFocusDelegate();
+  SetDelegateForTests(GetMediaSession(), delegate);
 
   RequestAudioFocus(GetMediaSession(), AudioFocusType::kGain);
   base::RunLoop().RunUntilIdle();
@@ -607,9 +600,8 @@ TEST_F(MediaSessionImplTest, WebContentsDestroyed_StopsDucking) {
 #if BUILDFLAG(IS_MAC)
 
 TEST_F(MediaSessionImplTest, TabFocusDoesNotCauseAudioFocus) {
-  auto delegate_unique = std::make_unique<MockAudioFocusDelegate>();
-  MockAudioFocusDelegate* delegate = delegate_unique.get();
-  SetDelegateForTests(GetMediaSession(), std::move(delegate_unique));
+  MockAudioFocusDelegate* delegate = new MockAudioFocusDelegate();
+  SetDelegateForTests(GetMediaSession(), delegate);
 
   {
     MockMediaSessionMojoObserver observer(*GetMediaSession());
@@ -626,9 +618,8 @@ TEST_F(MediaSessionImplTest, TabFocusDoesNotCauseAudioFocus) {
 #else  // BUILDFLAG(IS_MAC)
 
 TEST_F(MediaSessionImplTest, RequestAudioFocus_OnFocus_Active) {
-  auto delegate_unique = std::make_unique<MockAudioFocusDelegate>();
-  MockAudioFocusDelegate* delegate = delegate_unique.get();
-  SetDelegateForTests(GetMediaSession(), std::move(delegate_unique));
+  MockAudioFocusDelegate* delegate = new MockAudioFocusDelegate();
+  SetDelegateForTests(GetMediaSession(), delegate);
 
   {
     MockMediaSessionMojoObserver observer(*GetMediaSession());
@@ -643,9 +634,8 @@ TEST_F(MediaSessionImplTest, RequestAudioFocus_OnFocus_Active) {
 }
 
 TEST_F(MediaSessionImplTest, RequestAudioFocus_OnFocus_Inactive) {
-  auto delegate_unique = std::make_unique<MockAudioFocusDelegate>();
-  MockAudioFocusDelegate* delegate = delegate_unique.get();
-  SetDelegateForTests(GetMediaSession(), std::move(delegate_unique));
+  MockAudioFocusDelegate* delegate = new MockAudioFocusDelegate();
+  SetDelegateForTests(GetMediaSession(), delegate);
   EXPECT_EQ(MediaSessionInfo::SessionState::kInactive,
             GetState(GetMediaSession()));
 
@@ -655,9 +645,8 @@ TEST_F(MediaSessionImplTest, RequestAudioFocus_OnFocus_Inactive) {
 }
 
 TEST_F(MediaSessionImplTest, RequestAudioFocus_OnFocus_Suspended) {
-  auto delegate_unique = std::make_unique<MockAudioFocusDelegate>();
-  MockAudioFocusDelegate* delegate = delegate_unique.get();
-  SetDelegateForTests(GetMediaSession(), std::move(delegate_unique));
+  MockAudioFocusDelegate* delegate = new MockAudioFocusDelegate();
+  SetDelegateForTests(GetMediaSession(), delegate);
 
   {
     MockMediaSessionMojoObserver observer(*GetMediaSession());
@@ -887,9 +876,8 @@ TEST_F(MediaSessionImplTest, SessionInfoDontHideMetadataByDefault) {
 TEST_F(MediaSessionImplTest, PausedPlayersDoNotRequestFocus) {
   // If a player is paused when it's added, it should be controllable but should
   // not request audio focus.
-  auto delegate_unique = std::make_unique<MockAudioFocusDelegate>();
-  MockAudioFocusDelegate* delegate = delegate_unique.get();
-  SetDelegateForTests(GetMediaSession(), std::move(delegate_unique));
+  MockAudioFocusDelegate* delegate = new MockAudioFocusDelegate();
+  SetDelegateForTests(GetMediaSession(), delegate);
   int player_id = StartNewPlayer();
   EXPECT_TRUE(GetMediaSession()->IsActive());
   EXPECT_TRUE(GetMediaSession()->IsControllable());
@@ -951,63 +939,6 @@ TEST_F(MediaSessionImplTest, SeekingAndScrubbingNotAllowedWithMaxDuration) {
       base::Contains(observer.actions(), MediaSessionAction::kSeekForward));
   EXPECT_FALSE(
       base::Contains(observer.actions(), MediaSessionAction::kSeekBackward));
-}
-
-TEST_F(MediaSessionImplTest, AmbientPlayerFocusRequest) {
-  auto delegate_unique = std::make_unique<MockAudioFocusDelegate>();
-  MockAudioFocusDelegate* delegate = delegate_unique.get();
-  SetDelegateForTests(GetMediaSession(), std::move(delegate_unique));
-
-  int player_id = player_observer_->StartNewPlayer();
-
-  player_observer_->SetMediaContentType(media::MediaContentType::kAmbient);
-  MockMediaSessionMojoObserver observer(*GetMediaSession());
-  GetMediaSession()->AddPlayer(player_observer_.get(), player_id);
-
-#if BUILDFLAG(IS_ANDROID)
-  // On Android, ambient players should not request audio focus.
-  observer.WaitForState(MediaSessionInfo::SessionState::kInactive);
-  EXPECT_FALSE(delegate->GetLastRequestedFocusType().has_value());
-#else
-  // On other platforms, an ambient player should request ambient focus.
-  observer.WaitForState(MediaSessionInfo::SessionState::kActive);
-  EXPECT_TRUE(delegate->GetLastRequestedFocusType().has_value());
-  EXPECT_EQ(AudioFocusType::kAmbient, *delegate->GetLastRequestedFocusType());
-
-  // Ambient players should also receive volume multiplier updates.
-  constexpr float kDuckingMultiplier = 0.1;
-  EXPECT_EQ(player_observer_->GetVolumeMultiplier(player_id), 1.0);
-  GetMediaSession()->SetDuckingVolumeMultiplier(kDuckingMultiplier);
-  GetMediaSession()->StartDucking();
-  EXPECT_EQ(player_observer_->GetVolumeMultiplier(player_id),
-            kDuckingMultiplier);
-  GetMediaSession()->StopDucking();
-  EXPECT_EQ(player_observer_->GetVolumeMultiplier(player_id), 1.0);
-#endif  // BUILDFLAG(IS_ANDROID)
-}
-
-TEST_F(MediaSessionImplTest, AmbientPlayerDoesNotRequestFocusWhenSuspended) {
-  auto delegate_unique = std::make_unique<MockAudioFocusDelegate>();
-  SetDelegateForTests(GetMediaSession(), std::move(delegate_unique));
-
-  int persistent_player_id = player_observer_->StartNewPlayer();
-
-  MockMediaSessionPlayerObserver ambient_player_observer(
-      main_rfh(), media::MediaContentType::kAmbient);
-  int ambient_player_id = ambient_player_observer.StartNewPlayer();
-
-  // Add a persistent player to get audio focus.
-  MockMediaSessionMojoObserver observer(*GetMediaSession());
-  GetMediaSession()->AddPlayer(player_observer_.get(), persistent_player_id);
-  observer.WaitForState(MediaSessionInfo::SessionState::kActive);
-
-  // Suspend the persistent player.
-  GetMediaSession()->Suspend(MediaSession::SuspendType::kSystem);
-  observer.WaitForState(MediaSessionInfo::SessionState::kSuspended);
-
-  // Adding an ambient player should not change the audio focus state.
-  GetMediaSession()->AddPlayer(&ambient_player_observer, ambient_player_id);
-  observer.WaitForState(MediaSessionInfo::SessionState::kSuspended);
 }
 
 class MediaSessionImplWithMediaSessionClientTest : public MediaSessionImplTest {

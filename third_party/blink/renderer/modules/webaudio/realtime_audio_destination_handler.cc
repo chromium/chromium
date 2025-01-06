@@ -263,8 +263,6 @@ void RealtimeAudioDestinationHandler::Render(
 
   context->HandlePostRenderTasks();
 
-  context->HandleVolumeMultiplier(destination_bus);
-
   context->HandleAudibility(destination_bus);
 
   // Advances the current sample-frame.

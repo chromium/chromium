@@ -9,7 +9,6 @@
 #include "build/build_config.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
-#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
@@ -43,7 +42,6 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/media/player_id_generator.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -272,11 +270,7 @@ AudioContext::AudioContext(LocalDOMWindow& window,
           !GetExecutionContext()->IsFeatureEnabled(
               mojom::blink::PermissionsPolicyFeature::
                   kMediaPlaybackWhileNotVisible,
-              ReportOptions::kDoNotReport)),
-      player_id_(GetNextMediaPlayerId()),
-      media_player_host_(&window),
-      media_player_receiver_(this, &window),
-      media_player_observer_(&window) {
+              ReportOptions::kDoNotReport)) {
   RecordAudioContextOperation(AudioContextOperation::kCreate);
   SendLogMessage(__func__, GetAudioContextLogString(latency_hint, sample_rate));
 
@@ -392,9 +386,6 @@ void AudioContext::Trace(Visitor* visitor) const {
   visitor->Trace(media_device_service_);
   visitor->Trace(media_device_service_receiver_);
   visitor->Trace(v8_sink_id_);
-  visitor->Trace(media_player_host_);
-  visitor->Trace(media_player_receiver_);
-  visitor->Trace(media_player_observer_);
   BaseAudioContext::Trace(visitor);
   FrameVisibilityObserver::Trace(visitor);
 }
@@ -627,10 +618,6 @@ void AudioContext::SuspendRendering() {
     destination()->GetAudioDestinationHandler().StopRendering();
     SetContextState(V8AudioContextState::Enum::kSuspended);
   }
-}
-
-void AudioContext::SetVolumeMultiplier(double multiplier) {
-  volume_multiplier_ = multiplier;
 }
 
 double AudioContext::baseLatency() const {
@@ -931,14 +918,6 @@ void AudioContext::NotifyAudibleAudioStarted() {
   if (audio_context_manager_.is_bound()) {
     audio_context_manager_->AudioContextAudiblePlaybackStarted(context_id_);
   }
-
-  EnsureMediaPlayerConnection();
-  if (media_player_observer_.is_bound()) {
-    media_player_observer_->OnMediaMetadataChanged(
-        /*has_audio=*/true, /*has_video=*/false,
-        media::MediaContentType::kAmbient);
-    media_player_observer_->OnMediaPlaying();
-  }
 }
 
 void AudioContext::HandlePostRenderTasks() {
@@ -987,12 +966,6 @@ void AudioContext::HandleAudibility(AudioBus* destination_bus) {
   }
 }
 
-void AudioContext::HandleVolumeMultiplier(AudioBus* destination_bus) {
-  if (volume_multiplier_ != 1.0) {
-    destination_bus->Scale(volume_multiplier_);
-  }
-}
-
 void AudioContext::ResolvePromisesForUnpause() {
   // This runs inside the BaseAudioContext's lock when handling pre-render
   // tasks.
@@ -1018,13 +991,6 @@ void AudioContext::NotifyAudibleAudioStopped() {
   EnsureAudioContextManagerService();
   if (audio_context_manager_.is_bound()) {
     audio_context_manager_->AudioContextAudiblePlaybackStopped(context_id_);
-  }
-
-  EnsureMediaPlayerConnection();
-  if (media_player_observer_.is_bound()) {
-    media_player_observer_->OnMediaMetadataChanged(
-        /*has_audio=*/false, /*has_video=*/false,
-        media::MediaContentType::kAmbient);
   }
 }
 
@@ -1453,35 +1419,6 @@ LocalFrame* AudioContext::GetLocalFrame() const {
   }
 
   return window->GetFrame();
-}
-
-void AudioContext::EnsureMediaPlayerConnection() {
-  if (media_player_host_.is_bound() || !GetWindow()) {
-    return;
-  }
-
-  GetWindow()
-      ->GetFrame()
-      ->GetRemoteNavigationAssociatedInterfaces()
-      ->GetInterface(media_player_host_.BindNewEndpointAndPassReceiver(
-          GetWindow()->GetTaskRunner(TaskType::kInternalMedia)));
-  media_player_host_.set_disconnect_handler(WTF::BindOnce(
-      &AudioContext::OnMediaPlayerDisconnect, WrapWeakPersistent(this)));
-
-  media_player_host_->OnMediaPlayerAdded(
-      media_player_receiver_.BindNewEndpointAndPassRemote(
-          GetWindow()->GetTaskRunner(TaskType::kInternalMedia)),
-      media_player_observer_.BindNewEndpointAndPassReceiver(
-          GetWindow()->GetTaskRunner(TaskType::kInternalMedia)),
-      player_id_);
-  media_player_observer_.set_disconnect_handler(WTF::BindOnce(
-      &AudioContext::OnMediaPlayerDisconnect, WrapWeakPersistent(this)));
-}
-
-void AudioContext::OnMediaPlayerDisconnect() {
-  media_player_host_.reset();
-  media_player_observer_.reset();
-  volume_multiplier_ = 1.0;
 }
 
 }  // namespace blink

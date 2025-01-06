@@ -7,7 +7,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
-#include "media/mojo/mojom/media_player.mojom-blink.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/public/mojom/webaudio/audio_context_manager.mojom-blink.h"
@@ -25,8 +24,6 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
-#include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver.h"
-#include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -54,8 +51,7 @@ class MODULES_EXPORT AudioContext final
     : public BaseAudioContext,
       public mojom::blink::PermissionObserver,
       public mojom::blink::MediaDevicesListener,
-      public FrameVisibilityObserver,
-      public media::mojom::blink::MediaPlayer {
+      public FrameVisibilityObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -109,23 +105,6 @@ class MODULES_EXPORT AudioContext final
   void FrameVisibilityChanged(
       mojom::blink::FrameVisibility frame_visibility) override;
 
-  // media::mojom::MediaPlayer  implementation.
-  void RequestPlay() override {}
-  void RequestPause(bool triggered_by_user) override {}
-  void RequestSeekForward(base::TimeDelta seek_time) override {}
-  void RequestSeekBackward(base::TimeDelta seek_time) override {}
-  void RequestSeekTo(base::TimeDelta seek_time) override {}
-  void RequestEnterPictureInPicture() override {}
-  void RequestMute(bool mute) override {}
-  void SetVolumeMultiplier(double multiplier) override;
-  void SetPersistentState(bool persistent) override {}
-  void SetPowerExperimentState(bool enabled) override {}
-  void SetAudioSinkId(const String&) override {}
-  void SuspendForFrameClosed() override {}
-  void RequestMediaRemoting() override {}
-  void RequestVisibility(
-      RequestVisibilityCallback request_visibility_cb) override {}
-
   // https://webaudio.github.io/web-audio-api/#AudioContext
   double baseLatency() const;
   double outputLatency() const;
@@ -153,10 +132,6 @@ class MODULES_EXPORT AudioContext final
   RealtimeAudioDestinationNode* GetRealtimeAudioDestinationNode() const;
 
   void HandleAudibility(AudioBus* destination_bus);
-
-  // Adjusts the output volume of the rendered audio in case we are being
-  // ducked.
-  void HandleVolumeMultiplier(AudioBus* destination_bus);
 
   AudioCallbackMetric GetCallbackMetric() const;
 
@@ -311,12 +286,6 @@ class MODULES_EXPORT AudioContext final
 
   LocalFrame* GetLocalFrame() const;
 
-  // Connects to the MediaPlayerHost to register as a media player.
-  void EnsureMediaPlayerConnection();
-
-  // Handles a disconnection from the MediaPlayerHost.
-  void OnMediaPlayerDisconnect();
-
   // https://webaudio.github.io/web-audio-api/#dom-audiocontext-suspended-by-user-slot
   bool suspended_by_user_ = false;
 
@@ -441,20 +410,6 @@ class MODULES_EXPORT AudioContext final
   // are pending.
   int pending_device_list_updates_
       GUARDED_BY_CONTEXT(main_thread_sequence_checker_) = 0;
-
-  // ID used for mojo communication with the MediaPlayerHost.
-  const int player_id_;
-
-  // Volume multiplier applied to audio output. Used to duck audio when the
-  // MediaPlayerHost requests ducking.
-  double volume_multiplier_ = 1.0;
-
-  HeapMojoAssociatedRemote<media::mojom::blink::MediaPlayerHost>
-      media_player_host_;
-  HeapMojoAssociatedReceiver<media::mojom::blink::MediaPlayer, AudioContext>
-      media_player_receiver_;
-  HeapMojoAssociatedRemote<media::mojom::blink::MediaPlayerObserver>
-      media_player_observer_;
 
   SEQUENCE_CHECKER(main_thread_sequence_checker_);
 };
