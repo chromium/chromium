@@ -53,6 +53,10 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
@@ -349,6 +353,12 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
 // closes.
 IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
                        ToastDoesNotCloseWhileMenuIsOpen) {
+#if BUILDFLAG(IS_OZONE)
+  if (ui::OzonePlatform::GetPlatformNameForTest() == "wayland") {
+    GTEST_SKIP() << "Flaky in Wayland due to way events are routed and bounds "
+                    "are reported";
+  }
+#endif
   ToastParams params(ToastId::kPlusAddressOverride);
   params.menu_model = std::make_unique<TestMenuModel>(base::DoNothing());
   RunTestSequence(ShowToast(std::move(params)),
@@ -365,6 +375,12 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
 
 // Tests that clicking the menu button twice closes the menu, but not the toast.
 IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest, TwoClicksOnMenuButton) {
+#if BUILDFLAG(IS_OZONE)
+  if (ui::OzonePlatform::GetPlatformNameForTest() == "wayland") {
+    GTEST_SKIP() << "Flaky in Wayland due to way events are routed and bounds "
+                    "are reported";
+  }
+#endif
   RunTestSequence(
       ShowToast(ToastParams(ToastId::kLinkCopied)),
       WaitForShow(toasts::ToastView::kToastViewId),

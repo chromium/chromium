@@ -93,6 +93,10 @@ source_set("interactive_ui_tests") {
     "//ui/views",
     "//ui/views:test_support",
   ]
+
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
+  }
 }
 
 source_set("browser_tests") {
