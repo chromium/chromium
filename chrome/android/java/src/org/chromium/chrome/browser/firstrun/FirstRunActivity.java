@@ -383,7 +383,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
                         RecordHistogram.recordTimesHistogram(
                                 "MobileFre.FromLaunch.FirstFragmentInflatedV2",
                                 inflationCompletion - mIntentCreationElapsedRealtimeMs);
-                        getFirstRunAppRestrictionInfo()
+                        getAppRestrictionSupplier()
                                 .getCompletionElapsedRealtimeMs(
                                         restrictionsCompletion -> {
                                             if (restrictionsCompletion > inflationCompletion) {

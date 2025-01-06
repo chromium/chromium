@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.firstrun;
+package org.chromium.chrome.browser.signin;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -27,23 +27,24 @@ import java.util.Queue;
 import java.util.concurrent.RejectedExecutionException;
 
 /**
- * A helper class used to check if app restrictions are present during first run. Internally it
- * uses an asynchronous background task to fetch restrictions, then notifies registered callbacks
- * once complete.
+ * Checks if app restrictions are present during a fullscreen signin activity. Internally it uses an
+ * asynchronous background task to fetch restrictions, then notifies registered callbacks once
+ * complete.
  *
- * In order to get a result as soon as possible, this class provides a mechanism to kick off the
+ * <p>In order to get a result as soon as possible, this class provides a mechanism to kick off the
  * async via {@link #startInitializationHint()}. This instance will be stored in a private static
  * field, and will be returned by {@link #takeMaybeInitialized}, as well as nulling out the private
  * static. This mechanism doesn't strictly need to be used, and {@link #startInitializationHint()}
  * can be ignored at the cost of latency.
  *
- * This class is only used during first run flow, so its lifecycle ends when first run completes. At
- * which point {@link #destroy()} should be called.
+ * <p>This class is used during fullscreen signin flows, so its lifecycle ends when the flow
+ * completes. At which point {@link #destroy()} should be called.
  */
-class FirstRunAppRestrictionInfo {
-    private static final String TAG = "FRAppRestrictionInfo";
+// TODO(crbug.com/385693639): This class should implement ObservableSupplier<Boolean>.
+public class AppRestrictionSupplier {
+    private static final String TAG = "AppRestriction";
 
-    private static FirstRunAppRestrictionInfo sInitializedInstance;
+    private static AppRestrictionSupplier sInitializedInstance;
 
     private boolean mInitialized;
     private boolean mHasAppRestriction;
@@ -53,33 +54,34 @@ class FirstRunAppRestrictionInfo {
 
     private AsyncTask<Boolean> mFetchAppRestrictionAsyncTask;
 
-    private FirstRunAppRestrictionInfo() {
+    private AppRestrictionSupplier() {
         initialize();
     }
 
     /**
-     * Starts initialization and stores an instance of {@link FirstRunAppRestrictionInfo} in a
-     * static field. This will be waiting for the first caller of
-     * {@link FirstRunAppRestrictionInfo#takeMaybeInitialized()}.
+     * Starts initialization and stores an instance of {@link AppRestrictionSupplier} in a static
+     * field. This will be waiting for the first caller of {@link
+     * AppRestrictionSupplier#takeMaybeInitialized()}.
      */
+    // TODO(crbug.com/349787455): Delete this method and the corresponding static field.
     public static void startInitializationHint() {
         if (sInitializedInstance == null) {
-            sInitializedInstance = new FirstRunAppRestrictionInfo();
+            sInitializedInstance = new AppRestrictionSupplier();
         }
     }
 
     /**
      * Tries to transfer ownership of the previously instantiated static instance if possible. When
-     * there is no such instance, this will simply return a new {@link FirstRunAppRestrictionInfo}.
+     * there is no such instance, this will simply return a new {@link AppRestrictionSupplier}.
      * Either way, an async check for app restrictions will have been started before this method
      * returns. Call {@link #getHasAppRestriction(Callback)} to be notified when the check
      * completes.
      */
-    public static FirstRunAppRestrictionInfo takeMaybeInitialized() {
+    public static AppRestrictionSupplier takeMaybeInitialized() {
         ThreadUtils.assertOnUiThread();
-        FirstRunAppRestrictionInfo info;
+        AppRestrictionSupplier info;
         if (sInitializedInstance == null) {
-            info = new FirstRunAppRestrictionInfo();
+            info = new AppRestrictionSupplier();
         } else {
             info = sInitializedInstance;
             sInitializedInstance = null;
@@ -198,10 +200,10 @@ class FirstRunAppRestrictionInfo {
         }
     }
 
-    static void setInitializedInstanceForTest(
-            FirstRunAppRestrictionInfo firstRunAppRestrictionInfo) {
+    public static void setInitializedInstanceForTest(
+            AppRestrictionSupplier appRestrictionSupplier) {
         var oldValue = sInitializedInstance;
-        sInitializedInstance = firstRunAppRestrictionInfo;
+        sInitializedInstance = appRestrictionSupplier;
         ResettersForTesting.register(() -> sInitializedInstance = oldValue);
     }
 }

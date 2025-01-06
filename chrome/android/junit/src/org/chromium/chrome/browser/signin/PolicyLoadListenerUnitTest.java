@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.firstrun;
+package org.chromium.chrome.browser.signin;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -51,7 +51,7 @@ public class PolicyLoadListenerUnitTest {
 
     @Spy public Callback<Boolean> mListener;
     @Mock public PolicyService mPolicyService;
-    @Mock public FirstRunAppRestrictionInfo mTestAppRestrictionInfo;
+    @Mock public AppRestrictionSupplier mTestAppRestrictionInfo;
 
     private PolicyService.Observer mPolicyServiceObserver;
     private Callback<Boolean> mAppRestrictionsCallback;

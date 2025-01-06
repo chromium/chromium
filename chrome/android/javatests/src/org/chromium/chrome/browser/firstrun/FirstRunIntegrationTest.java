@@ -78,6 +78,7 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.search_engines.DefaultSearchEngineDialogHelperUtils;
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.signin.AppRestrictionSupplier;
 import org.chromium.chrome.browser.signin.SigninFirstRunFragment;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
@@ -117,7 +118,7 @@ public class FirstRunIntegrationTest {
     @Rule public SigninTestRule mSigninTestRule = new SigninTestRule();
 
     @Mock private ExternalAuthUtils mExternalAuthUtilsMock;
-    @Mock public FirstRunAppRestrictionInfo mMockAppRestrictionInfo;
+    @Mock public AppRestrictionSupplier mMockAppRestrictionInfo;
 
     private final Set<Class> mSupportedActivities =
             Set.of(
@@ -207,7 +208,7 @@ public class FirstRunIntegrationTest {
         doCallback((Callback<Boolean> callback) -> callback.onResult(true))
                 .when(mMockAppRestrictionInfo)
                 .getHasAppRestriction(any());
-        FirstRunAppRestrictionInfo.setInitializedInstanceForTest(mMockAppRestrictionInfo);
+        AppRestrictionSupplier.setInitializedInstanceForTest(mMockAppRestrictionInfo);
     }
 
     private void skipTosDialogViaPolicy() {

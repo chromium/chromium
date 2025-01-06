@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.firstrun;
+package org.chromium.chrome.browser.signin;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -20,14 +20,14 @@ import org.chromium.components.policy.PolicyService.Observer;
  * C++. The value it supplies will be ready when a decision about *whether reading policy value is
  * necessary*.
  *
- * The signals this class observes are policy service initialization and Android app restrictions.
- * If no app restrictions are found before the policy service is initialized, early out of the
- * loading process and inform the listeners.
+ * <p>The signals this class observes are policy service initialization and Android app
+ * restrictions. If no app restrictions are found before the policy service is initialized, early
+ * out of the loading process and inform the listeners.
  *
- * To be more specific:
+ * <p>To be more specific:
  *
- *  - Supplies [True] if policy service is initialized and policy might be applied;
- *  - Supplies [False] if no app restriction is found, thus no polices will be found on device.
+ * <p>- Supplies [True] if policy service is initialized and policy might be applied; - Supplies
+ * [False] if no app restriction is found, thus no polices will be found on device.
  */
 public class PolicyLoadListener implements OneshotSupplier<Boolean> {
     private static final String TAG = "PolicyLoadListener";
@@ -53,11 +53,12 @@ public class PolicyLoadListener implements OneshotSupplier<Boolean> {
 
     /**
      * Create the instance and start listening to signals from policy service and app restrictions.
+     *
      * @param appRestrictionInfo Class that provides whether app restriction is found on device.
      * @param policyServiceSupplier Supplier of PolicyService that this class listened to.
      */
     public PolicyLoadListener(
-            FirstRunAppRestrictionInfo appRestrictionInfo,
+            AppRestrictionSupplier appRestrictionInfo,
             OneshotSupplier<PolicyService> policyServiceSupplier) {
         mCallbackController = new CallbackController();
         mMightHavePoliciesSupplier = new OneshotSupplierImpl<>();

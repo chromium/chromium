@@ -33,6 +33,8 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.signin.AppRestrictionSupplier;
+import org.chromium.chrome.browser.signin.ChildAccountStatusSupplier;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
@@ -86,7 +88,7 @@ public class FirstRunFlowSequencerTest {
                     profileSupplier,
                     new ChildAccountStatusSupplier(
                             AccountManagerFacadeProvider.getInstance(),
-                            FirstRunAppRestrictionInfo.takeMaybeInitialized()));
+                            AppRestrictionSupplier.takeMaybeInitialized()));
         }
 
         @Override

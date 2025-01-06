@@ -61,9 +61,10 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
  * shown after sign-in completion.
  *
  * <p>The activity may also hold the re-FRE which consists of a fullscreen sign-in dialog followed
- * by the history sync opt-in. This is why the dependency on {@link FirstRunActivityBase} is needed.
+ * by the history sync opt-in. This is why the dependency on {@link
+ * FullscreenSigninAndHistorySyncActivityBase} is needed.
  */
-public class SigninAndHistorySyncActivity extends FirstRunActivityBase
+public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySyncActivityBase
         implements BottomSheetSigninAndHistorySyncCoordinator.Delegate,
                 FullscreenSigninAndHistorySyncCoordinator.Delegate {
     private static final String ARGUMENT_ACCESS_POINT = "SigninAndHistorySyncActivity.AccessPoint";

@@ -16,15 +16,16 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
+import org.chromium.chrome.browser.signin.AppRestrictionSupplier;
+import org.chromium.chrome.browser.signin.PolicyLoadListener;
 import org.chromium.components.policy.PolicyService;
 
 /**
  * Class that listens to signals related to ToSDialogBehavior. Supplies whether ToS dialog should be
  * skipped given policy settings.
  *
- * To be more specific:
- *  - Supplies [True] if the ToS dialog is not enabled by policy while device is fully managed;
- *  - Supplies [False] otherwise.
+ * <p>To be more specific: - Supplies [True] if the ToS dialog is not enabled by policy while device
+ * is fully managed; - Supplies [False] otherwise.
  */
 public class SkipTosDialogPolicyListener implements OneshotSupplier<Boolean> {
     private static final String TAG = "SkipTosPolicy";
@@ -69,8 +70,8 @@ public class SkipTosDialogPolicyListener implements OneshotSupplier<Boolean> {
 
     /**
      * The value of whether the ToS dialog is enabled on the device. If the value is false, it means
-     * TosDialogBehavior policy is found and set to SKIP. This can be null when this information
-     * is not ready yet.
+     * TosDialogBehavior policy is found and set to SKIP. This can be null when this information is
+     * not ready yet.
      */
     private @Nullable Boolean mTosDialogEnabled;
 
@@ -81,31 +82,30 @@ public class SkipTosDialogPolicyListener implements OneshotSupplier<Boolean> {
     private @Nullable Boolean mIsDeviceOwned;
 
     /**
-     * @param firstRunAppRestrictionInfo Source that providers app restriction information.
+     * @param appRestrictionSupplier Source that providers app restriction information.
      * @param policyServiceSupplier Supplier that providers PolicyService when native initialized.
      * @param enterpriseInfo Source that provides whether device is managed.
      * @param histogramNameProvider Provider that provides histogram names when signals are
-     *         available.
+     *     available.
      */
     public SkipTosDialogPolicyListener(
-            FirstRunAppRestrictionInfo firstRunAppRestrictionInfo,
+            AppRestrictionSupplier appRestrictionSupplier,
             OneshotSupplier<PolicyService> policyServiceSupplier,
             EnterpriseInfo enterpriseInfo,
             @Nullable HistogramNameProvider histogramNameProvider) {
         mObjectCreatedTimeMs = SystemClock.elapsedRealtime();
         mHistNameProvider = histogramNameProvider;
-        mPolicyLoadListener =
-                new PolicyLoadListener(firstRunAppRestrictionInfo, policyServiceSupplier);
+        mPolicyLoadListener = new PolicyLoadListener(appRestrictionSupplier, policyServiceSupplier);
 
         initInternally(enterpriseInfo, mPolicyLoadListener);
     }
 
     /**
      * @param policyLoadListener Supplier that provides a boolean value *whether reading policy from
-     *         policy service is necessary*. See {@link PolicyLoadListener} for more information.
+     *     policy service is necessary*. See {@link PolicyLoadListener} for more information.
      * @param enterpriseInfo Source that provides whether device is managed.
      * @param histogramNameProvider Provider that provides histogram names when signals are
-     *         available.
+     *     available.
      */
     public SkipTosDialogPolicyListener(
             OneshotSupplier<Boolean> policyLoadListener,

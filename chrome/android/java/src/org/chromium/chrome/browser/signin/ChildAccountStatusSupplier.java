@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.firstrun;
+package org.chromium.chrome.browser.signin;
 
 import android.os.SystemClock;
 
@@ -16,14 +16,14 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountUtils;
 
 /**
- * Fetches the child account status to be used by other FRE components.
+ * Fetches the child account status to be used by other fullscreen signin flows components.
  *
- * This class checks app restrictions for Chrome to obtain the child account status faster. This
+ * <p>This class checks app restrictions for Chrome to obtain the child account status faster. This
  * optimisation leverages the fact that FamilyLink always pushes some policies for Chrome on
- * supervised devices. So, if there are no app restrictions specified for Chrome -
- * {@link ChildAccountStatusSupplier} will consider that the child account status is false.
- * Note: this optimisation creates a potential conflict if there are no app restrictions on
- * a supervised device. However, this should never happen on real devices.
+ * supervised devices. So, if there are no app restrictions specified for Chrome - {@link
+ * ChildAccountStatusSupplier} will consider that the child account status is false. Note: this
+ * optimisation creates a potential conflict if there are no app restrictions on a supervised
+ * device. However, this should never happen on real devices.
  */
 public class ChildAccountStatusSupplier implements OneshotSupplier<Boolean> {
     private final OneshotSupplierImpl<Boolean> mValue = new OneshotSupplierImpl<>();
@@ -34,13 +34,13 @@ public class ChildAccountStatusSupplier implements OneshotSupplier<Boolean> {
 
     /**
      * Creates ChildAccountStatusSupplier and starts fetching the child account status.
+     *
      * @param accountManagerFacade {@link AccountManagerFacade} instance to use for getting accounts
-     * @param appRestrictionInfo instance of {@link FirstRunAppRestrictionInfo} that can
-     *         be used to check app restrictions (see class-level JavaDoc).
+     * @param appRestrictionInfo instance of {@link AppRestrictionSupplier} that can be used to
+     *     check app restrictions (see class-level JavaDoc).
      */
     public ChildAccountStatusSupplier(
-            AccountManagerFacade accountManagerFacade,
-            FirstRunAppRestrictionInfo appRestrictionInfo) {
+            AccountManagerFacade accountManagerFacade, AppRestrictionSupplier appRestrictionInfo) {
         mChildAccountStatusStartTime = SystemClock.elapsedRealtime();
 
         appRestrictionInfo.getHasAppRestriction(this::onAppRestrictionDetected);

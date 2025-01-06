@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.firstrun;
+package org.chromium.chrome.browser.signin;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -48,7 +48,7 @@ public class ChildAccountStatusSupplierTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Captor public ArgumentCaptor<Callback<Boolean>> mCallbackCaptor;
-    @Mock private FirstRunAppRestrictionInfo mFirstRunAppRestrictionInfoMock;
+    @Mock private AppRestrictionSupplier mAppRestrictionSupplierMock;
 
     @Test
     public void testNoAccounts() {
@@ -57,7 +57,7 @@ public class ChildAccountStatusSupplierTest {
                 mAccountManagerFacade.blockGetCoreAccountInfos(/* populateCache= */ false)) {
             supplier =
                     new ChildAccountStatusSupplier(
-                            mAccountManagerFacade, mFirstRunAppRestrictionInfoMock);
+                            mAccountManagerFacade, mAppRestrictionSupplierMock);
             shadowOf(Looper.getMainLooper()).idle();
             // Supplier shouldn't be set and should not record any histograms until it can obtain
             // the list of accounts from AccountManagerFacade.
@@ -81,8 +81,7 @@ public class ChildAccountStatusSupplierTest {
         mAccountManagerTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
 
         ChildAccountStatusSupplier supplier =
-                new ChildAccountStatusSupplier(
-                        mAccountManagerFacade, mFirstRunAppRestrictionInfoMock);
+                new ChildAccountStatusSupplier(mAccountManagerFacade, mAppRestrictionSupplierMock);
         shadowOf(Looper.getMainLooper()).idle();
 
         assertTrue(supplier.get());
@@ -97,8 +96,7 @@ public class ChildAccountStatusSupplierTest {
         mAccountManagerTestRule.addAccount(ADULT_ACCOUNT_EMAIL);
 
         ChildAccountStatusSupplier supplier =
-                new ChildAccountStatusSupplier(
-                        mAccountManagerFacade, mFirstRunAppRestrictionInfoMock);
+                new ChildAccountStatusSupplier(mAccountManagerFacade, mAppRestrictionSupplierMock);
         shadowOf(Looper.getMainLooper()).idle();
 
         assertFalse(supplier.get());
@@ -114,8 +112,7 @@ public class ChildAccountStatusSupplierTest {
         mAccountManagerTestRule.addAccount(ADULT_ACCOUNT_EMAIL);
 
         ChildAccountStatusSupplier supplier =
-                new ChildAccountStatusSupplier(
-                        mAccountManagerFacade, mFirstRunAppRestrictionInfoMock);
+                new ChildAccountStatusSupplier(mAccountManagerFacade, mAppRestrictionSupplierMock);
         shadowOf(Looper.getMainLooper()).idle();
 
         assertTrue(supplier.get());
@@ -132,11 +129,11 @@ public class ChildAccountStatusSupplierTest {
         try (var ignored =
                 mAccountManagerFacade.blockGetCoreAccountInfos(/* populateCache= */ false)) {
             doNothing()
-                    .when(mFirstRunAppRestrictionInfoMock)
+                    .when(mAppRestrictionSupplierMock)
                     .getHasAppRestriction(mCallbackCaptor.capture());
             ChildAccountStatusSupplier supplier =
                     new ChildAccountStatusSupplier(
-                            mAccountManagerFacade, mFirstRunAppRestrictionInfoMock);
+                            mAccountManagerFacade, mAppRestrictionSupplierMock);
             shadowOf(Looper.getMainLooper()).idle();
             assertNull(supplier.get());
 
@@ -161,11 +158,11 @@ public class ChildAccountStatusSupplierTest {
         try (var ignored =
                 mAccountManagerFacade.blockGetCoreAccountInfos(/* populateCache= */ false)) {
             doCallback((Callback<Boolean> callback) -> callback.onResult(true))
-                    .when(mFirstRunAppRestrictionInfoMock)
+                    .when(mAppRestrictionSupplierMock)
                     .getHasAppRestriction(any());
             supplier =
                     new ChildAccountStatusSupplier(
-                            mAccountManagerFacade, mFirstRunAppRestrictionInfoMock);
+                            mAccountManagerFacade, mAppRestrictionSupplierMock);
             shadowOf(Looper.getMainLooper()).idle();
             // Since app restrictions were found - ChildAccountSupplier should wait for status from
             // AccountManagerFacade, so the status shouldn't be available yet.

@@ -31,9 +31,10 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.PayloadCallbackHelper;
+import org.chromium.chrome.browser.signin.AppRestrictionSupplier;
 import org.chromium.components.policy.PolicySwitches;
 
-/** Unit test for {@link FirstRunAppRestrictionInfo}. */
+/** Unit test for {@link AppRestrictionSupplier}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         manifest = Config.NONE,
@@ -86,8 +87,7 @@ public class FirstRunAppRestrictionInfoTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    FirstRunAppRestrictionInfo info =
-                            FirstRunAppRestrictionInfo.takeMaybeInitialized();
+                    AppRestrictionSupplier info = AppRestrictionSupplier.takeMaybeInitialized();
                     info.getHasAppRestriction(appResCallbackHelper::notifyCalled);
                     info.getCompletionElapsedRealtimeMs(
                             (ignored) -> completionCallbackHelper.notifyCalled());
@@ -112,8 +112,7 @@ public class FirstRunAppRestrictionInfoTest {
         mPauseDuringPostTask = true;
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    FirstRunAppRestrictionInfo info =
-                            FirstRunAppRestrictionInfo.takeMaybeInitialized();
+                    AppRestrictionSupplier info = AppRestrictionSupplier.takeMaybeInitialized();
                     info.getHasAppRestriction(appResCallbackHelper1::notifyCalled);
                     info.getHasAppRestriction(appResCallbackHelper2::notifyCalled);
                     info.getHasAppRestriction(appResCallbackHelper3::notifyCalled);
@@ -171,8 +170,7 @@ public class FirstRunAppRestrictionInfoTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    FirstRunAppRestrictionInfo info =
-                            FirstRunAppRestrictionInfo.takeMaybeInitialized();
+                    AppRestrictionSupplier info = AppRestrictionSupplier.takeMaybeInitialized();
                     info.getHasAppRestriction(appResCallbackHelper::notifyCalled);
                     info.getCompletionElapsedRealtimeMs(
                             (ignored) -> completionCallbackHelper.notifyCalled());
@@ -198,7 +196,7 @@ public class FirstRunAppRestrictionInfoTest {
         final PayloadCallbackHelper<Boolean> appResCallbackHelper = new PayloadCallbackHelper<>();
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        FirstRunAppRestrictionInfo.takeMaybeInitialized()
+                        AppRestrictionSupplier.takeMaybeInitialized()
                                 .getHasAppRestriction(appResCallbackHelper::notifyCalled));
         Assert.assertTrue(appResCallbackHelper.getOnlyPayloadBlocking());
     }

@@ -88,8 +88,8 @@ public interface FirstRunPageDelegate {
     OneshotSupplier<ProfileProvider> getProfileProviderSupplier();
 
     /**
-     * The supplier that supplies whether reading policy value is necessary.
-     * See {@link PolicyLoadListener} for details.
+     * The supplier that supplies whether reading policy value is necessary. See {@link
+     * PolicyLoadListener} for details.
      */
     OneshotSupplier<Boolean> getPolicyLoadListener();
 
