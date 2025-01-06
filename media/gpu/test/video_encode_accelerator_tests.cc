@@ -337,29 +337,14 @@ class VideoEncoderTest : public ::testing::Test {
 };
 }  // namespace
 
-// Encode video from start to end. Wait for the kFlushDone event at the end of
-// the stream, that notifies us all frames have been encoded.
-TEST_F(VideoEncoderTest, FlushAtEndOfStream) {
-  if (g_env->SpatialLayers().size() > 1)
-    GTEST_SKIP() << "Skip SHMEM input test cases in spatial SVC encoding";
-
-  auto encoder = CreateVideoEncoder(g_env->Video(), GetDefaultConfig());
-
-  encoder->Encode();
-  EXPECT_TRUE(encoder->WaitForFlushDone());
-
-  EXPECT_EQ(encoder->GetFlushDoneCount(), 1u);
-  EXPECT_EQ(encoder->GetFrameReleasedCount(), g_env->Video()->NumFrames());
-  EXPECT_TRUE(encoder->WaitForBitstreamProcessors());
-}
-
 // Test initializing the video encoder. The test will be successful if the video
 // encoder is capable of setting up the encoder for the specified codec and
 // resolution. The test only verifies initialization and doesn't do any
 // encoding.
 TEST_F(VideoEncoderTest, Initialize) {
-  if (g_env->SpatialLayers().size() > 1)
+  if (g_env->SpatialLayers().size() > 1) {
     GTEST_SKIP() << "Skip SHMEM input test cases in spatial SVC encoding";
+  }
 
   auto encoder = CreateVideoEncoder(g_env->Video(), GetDefaultConfig());
 
@@ -377,6 +362,23 @@ TEST_F(VideoEncoderTest, DestroyBeforeInitialize) {
   auto video_encoder = VideoEncoder::Create(GetDefaultConfig());
 
   EXPECT_NE(video_encoder, nullptr);
+}
+
+// Encode video from start to end. Wait for the kFlushDone event at the end of
+// the stream, that notifies us all frames have been encoded.
+TEST_F(VideoEncoderTest, FlushAtEndOfStream) {
+  if (g_env->SpatialLayers().size() > 1) {
+    GTEST_SKIP() << "Skip SHMEM input test cases in spatial SVC encoding";
+  }
+
+  auto encoder = CreateVideoEncoder(g_env->Video(), GetDefaultConfig());
+
+  encoder->Encode();
+  EXPECT_TRUE(encoder->WaitForFlushDone());
+
+  EXPECT_EQ(encoder->GetFlushDoneCount(), 1u);
+  EXPECT_EQ(encoder->GetFrameReleasedCount(), g_env->Video()->NumFrames());
+  EXPECT_TRUE(encoder->WaitForBitstreamProcessors());
 }
 
 // Test forcing key frames while encoding a video.
