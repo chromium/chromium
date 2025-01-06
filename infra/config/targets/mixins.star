@@ -737,7 +737,7 @@ targets.mixin(
     name = "fuchsia-large-device-spec",
     generate_pyl_entry = False,
     args = [
-        "--device-spec=virtual_device_large",
+        "--device-spec=x64-emu-large",
     ],
 )
 
