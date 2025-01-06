@@ -1175,14 +1175,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "camera-super-res-override",
-    "owners": [
-      "julianachang@chromium.org",
-      "chromeos-camera-eng@google.com"
-    ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "campaigns-test-tag",
     "owners": [ "llin@google.com", "cros-growth@google.com" ],
     "expiry_milestone": 140

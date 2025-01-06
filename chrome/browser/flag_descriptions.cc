@@ -6177,12 +6177,6 @@ const char kCameraAngleBackendName[] = "Camera service ANGLE backend";
 const char kCameraAngleBackendDescription[] =
     "When enabled, uses ANGLE as the GL driver in the camera service.";
 
-const char kCameraSuperResOverrideName[] =
-    "Camera super resolution control override";
-const char kCameraSuperResOverrideDescription[] =
-    "Overrides the default to enable or disable the single frame super "
-    "resolution feature.";
-
 const char kChromeboxUsbPassthroughRestrictionsName[] =
     "Limit primary mice/keyboards from USB passthrough on chromeboxes";
 const char kChromeboxUsbPassthroughRestrictionsDescription[] =

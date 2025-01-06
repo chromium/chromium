@@ -2800,13 +2800,6 @@ const FeatureEntry::Choice kAutoFramingOverrideChoices[] = {
     {"Force disabled", media::switches::kAutoFramingOverride,
      media::switches::kAutoFramingForceDisabled}};
 
-const FeatureEntry::Choice kCameraSuperResOverrideChoices[] = {
-    {"Default", "", ""},
-    {"Enabled", media::switches::kCameraSuperResOverride,
-     media::switches::kCameraSuperResForceEnabled},
-    {"Disabled", media::switches::kCameraSuperResOverride,
-     media::switches::kCameraSuperResForceDisabled}};
-
 const FeatureEntry::Choice kFaceRetouchOverrideChoices[] = {
     {"Default", "", ""},
     {"Enabled with relighting", media::switches::kFaceRetouchOverride,
@@ -6180,10 +6173,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"auto-framing-override", flag_descriptions::kAutoFramingOverrideName,
      flag_descriptions::kAutoFramingOverrideDescription, kOsCrOS,
      MULTI_VALUE_TYPE(kAutoFramingOverrideChoices)},
-    {"camera-super-res-override",
-     flag_descriptions::kCameraSuperResOverrideName,
-     flag_descriptions::kCameraSuperResOverrideDescription, kOsCrOS,
-     MULTI_VALUE_TYPE(kCameraSuperResOverrideChoices)},
     {"face-retouch-override", flag_descriptions::kFaceRetouchOverrideName,
      flag_descriptions::kFaceRetouchOverrideDescription, kOsCrOS,
      MULTI_VALUE_TYPE(kFaceRetouchOverrideChoices)},
