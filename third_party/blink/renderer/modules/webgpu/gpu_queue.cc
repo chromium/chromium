@@ -259,15 +259,27 @@ ExternalSource GetExternalSourceFromExternalImage(
 
   // TODO(crbug.com/1471372): It would be better if GetSourceImageForCanvas()
   // would always return a StaticBitmapImage.
+  sk_sp<SkImage> sk_image = nullptr;
+  bool image_is_default_orientation = image_for_canvas->HasDefaultOrientation();
   if (auto* image = DynamicTo<StaticBitmapImage>(image_for_canvas.get())) {
-    external_source.image = image;
+    if (image_is_default_orientation) {
+      external_source.image = image;
+    } else {
+      // Handle non default orientation for StaticBitmapImage and ensure
+      // it is not texture backed.
+      sk_image = image->PaintImageForCurrentFrame().GetSwSkImage();
+
+      if (!sk_image) {
+        return external_source;
+      }
+    }
   } else {
     // HTMLImageElement input
     ImageExtractor image_extractor(image_for_canvas.get(),
                                    external_image_dst_info.premultiplied_alpha,
                                    PredefinedColorSpaceToSkColorSpace(
                                        external_image_dst_info.color_space));
-    auto sk_image = image_extractor.GetSkImage();
+    sk_image = image_extractor.GetSkImage();
 
     if (!sk_image) {
       return external_source;
@@ -283,10 +295,36 @@ ExternalSource GetExternalSourceFromExternalImage(
 
       sk_image = SkImages::RasterFromBitmap(bitmap);
     }
-
-    external_source.image = UnacceleratedStaticBitmapImage::Create(
-        std::move(sk_image), image_for_canvas->CurrentFrameOrientation());
   }
+
+  if (sk_image) {
+    CHECK(!external_source.image);
+
+    // Create UnacceleratedStaticBitmapImage to create a most suitable
+    // PaintImageBuilder. Use the builder to create PaintImage internally.
+    // Store the orientation metadata but no transforms apply to the content.
+    auto image = UnacceleratedStaticBitmapImage::Create(
+        std::move(sk_image), image_for_canvas->CurrentFrameOrientation());
+
+    // Recruit Image::ResizeAndOrientImage() to apply transformation based on
+    // orientation metadata. This API helps rotate contents based on orientation
+    // metadata. After the transformation, reading content in default
+    // orientation get the transformed results. Recreate unaccelerated static
+    // bitmap with the transformed content with default orientation for post
+    // processing.
+    if (!image_is_default_orientation) {
+      PaintImage paint_image = image->PaintImageForCurrentFrame();
+      paint_image = Image::ResizeAndOrientImage(
+          paint_image, image_for_canvas->CurrentFrameOrientation(),
+          gfx::Vector2dF(1, 1), 1, kInterpolationNone);
+
+      // Have default orientation now.
+      image = UnacceleratedStaticBitmapImage::Create(std::move(paint_image));
+    }
+
+    external_source.image = image;
+  }
+
   external_source.width = static_cast<uint32_t>(external_source.image->width());
   external_source.height =
       static_cast<uint32_t>(external_source.image->height());
