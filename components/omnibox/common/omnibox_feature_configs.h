@@ -9,8 +9,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 
-class EnterpriseSearchManagerProviderInjectionTest;
-
 namespace omnibox_feature_configs {
 
 /*
@@ -171,68 +169,44 @@ struct RealboxContextualAndTrendingSuggestions
 // If enabled, injects a mock search engine using the same format as policy
 // `EnterpriseSearchAggregatorSettings` to be applied. Ignored if feature
 // policy is set.
-class SearchAggregatorProvider : public Config<SearchAggregatorProvider> {
+struct SearchAggregatorProvider : Config<SearchAggregatorProvider> {
   DECLARE_FEATURE(kSearchAggregatorProvider);
-
- public:
   SearchAggregatorProvider();
   SearchAggregatorProvider(const SearchAggregatorProvider&);
   SearchAggregatorProvider& operator=(const SearchAggregatorProvider&);
   ~SearchAggregatorProvider();
 
-  bool enabled() const { return enabled_; }
-  bool valid_search_engine() const { return valid_search_engine_; }
-  std::vector<base::Value> GetSearchEngines() const;
-  bool trigger_omnibox_blending() const { return trigger_omnibox_blending_; }
-
- private:
-  friend ::EnterpriseSearchManagerProviderInjectionTest;
-
-  // Makes it easier for tests to set a config.
-  void Init(bool enabled,
-            const std::string& name,
-            const std::string& shortcut,
-            const std::string& search_url,
-            const std::string& suggest_url,
-            const std::string& icon_url,
-            bool trigger_omnibox_blending,
-            base::TimeDelta callback_delay,
-            int num_suggestions,
-            const std::string& response_type);
-  // Same as `Init(,,,,,,)` setting all string arguments as empty.
-  void Init(bool enabled, bool trigger_omnibox_blending);
-
-  // Returns a dictionary corresponding to the search engine
+  // Utility methods
+  bool AreMockEnginesValid() const;
+  std::vector<base::Value> CreateMockSearchEngines() const;
   base::Value::Dict CreateMockSearchAggregator(bool featured_by_policy) const;
 
-  // If true, injects mock search aggregator in the Omnibox.
-  bool enabled_ = false;
-  // If true, the data passes soft validation that prevents crashes downstream.
-  // Only set as true is `enabled_` is true.
-  bool valid_search_engine_ = false;
+  bool enabled;
+
   // The search engine name, shown in the Omnibox.
-  std::string name_;
+  std::string name;
   // The shortcut the user enters to trigger the search.
-  std::string shortcut_;
+  std::string shortcut;
   // The URL on which to perform a search.
-  std::string search_url_;
+  std::string search_url;
   // The URL that provides search suggestions.
-  std::string suggest_url_;
+  std::string suggest_url;
   // The URL to an imanage that will be used on search suggestions.
-  std::string icon_url_;
+  std::string icon_url;
   // If enabled, Chrome will blend search suggestions with other Omnibox
   // suggestions without requiring keyword mode.
-  bool trigger_omnibox_blending_ = false;
+  bool trigger_omnibox_blending;
   // The amount of time to wait before calling the callback function after
   // making a request to get enterprise suggestions.
-  base::TimeDelta callback_delay_;
+  base::TimeDelta callback_delay;
   // The number of suggestions to show users.
-  int num_suggestions_;
+  int num_suggestions;
   // Type of request response. Can be one of the following strings.
-  // "success" - Successful response.
-  // "success_no_suggestions" - Successful response but empty suggestions field.
-  // "backoff" - No response was sent or response took too long.
-  std::string response_type_;
+  // - "success" - Successful response.
+  // - "success_no_suggestions" - Successful response but empty suggestions
+  //   field.
+  // - "backoff" - No response was sent or response took too long.
+  std::string response_type;
 };
 
 // If enabled, uses RichAnswerTemplate instead of SuggestionAnswer to display

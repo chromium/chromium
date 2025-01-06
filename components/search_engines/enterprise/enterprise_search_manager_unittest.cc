@@ -289,13 +289,21 @@ class EnterpriseSearchManagerProviderInjectionTest
                         base::TimeDelta callback_delay,
                         int num_suggestions,
                         const std::string& response_type) {
-    scoped_config_.Get().Init(enabled, name, shortcut, search_url, suggest_url,
-                              icon_url, trigger_omnibox_blending,
-                              callback_delay, num_suggestions, response_type);
+    scoped_config_.Get().enabled = enabled;
+    scoped_config_.Get().name = name;
+    scoped_config_.Get().shortcut = shortcut;
+    scoped_config_.Get().search_url = search_url;
+    scoped_config_.Get().suggest_url = suggest_url;
+    scoped_config_.Get().icon_url = icon_url;
+    scoped_config_.Get().trigger_omnibox_blending = trigger_omnibox_blending;
+    scoped_config_.Get().callback_delay = callback_delay;
+    scoped_config_.Get().num_suggestions = num_suggestions;
+    scoped_config_.Get().response_type = response_type;
   }
 
   void InitScopedConfig(bool enabled, bool trigger_omnibox_blending) {
-    scoped_config_.Get().Init(enabled, trigger_omnibox_blending);
+    scoped_config_.Get().enabled = enabled;
+    scoped_config_.Get().trigger_omnibox_blending = trigger_omnibox_blending;
   }
 
   omnibox_feature_configs::ScopedConfigForTesting<
@@ -337,9 +345,9 @@ TEST_P(EnterpriseSearchManagerProviderInjectionTest, Verify) {
         /*enabled=*/false,
         /*trigger_omnibox_blending=*/true);
 
-    ASSERT_FALSE(scoped_config_.Get().enabled());
-    ASSERT_FALSE(scoped_config_.Get().valid_search_engine());
-    ASSERT_FALSE(scoped_config_.Get().trigger_omnibox_blending());
+    EXPECT_FALSE(scoped_config_.Get().enabled);
+    EXPECT_FALSE(scoped_config_.Get().AreMockEnginesValid());
+    EXPECT_TRUE(scoped_config_.Get().trigger_omnibox_blending);
   } else {
     // Use empty shortcut for invalid mock engine.
     InitScopedConfig(
@@ -357,11 +365,11 @@ TEST_P(EnterpriseSearchManagerProviderInjectionTest, Verify) {
         /*num_suggestions=*/4,
         /*response_type=*/"success");
 
-    ASSERT_TRUE(scoped_config_.Get().enabled());
-    ASSERT_EQ(
-        scoped_config_.Get().valid_search_engine(),
+    EXPECT_TRUE(scoped_config_.Get().enabled);
+    EXPECT_EQ(
+        scoped_config_.Get().AreMockEnginesValid(),
         test_case.mock_setting_status == MockSettingStatus::kEnabledValid);
-    ASSERT_TRUE(scoped_config_.Get().trigger_omnibox_blending());
+    EXPECT_TRUE(scoped_config_.Get().trigger_omnibox_blending);
   }
 
   base::MockRepeatingCallback<void(

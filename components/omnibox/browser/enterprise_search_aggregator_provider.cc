@@ -18,7 +18,7 @@ EnterpriseSearchAggregatorProvider::~EnterpriseSearchAggregatorProvider() =
 void EnterpriseSearchAggregatorProvider::Start(const AutocompleteInput& input,
                                                bool minimal_changes) {
   if (!omnibox_feature_configs::SearchAggregatorProvider::Get()
-           .valid_search_engine()) {
+           .AreMockEnginesValid()) {
     return;
   }
 

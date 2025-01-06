@@ -122,13 +122,12 @@ EnterpriseSearchManager::LoadSearchAggregator(
   // Use pref loading result (either empty or non-empty) if there are no mock
   // search engines available.
   if (!omnibox_feature_configs::SearchAggregatorProvider::Get()
-           .valid_search_engine()) {
+           .AreMockEnginesValid()) {
     return pref_loading_result;
   }
 
-  // In case the policy is not available or the policy value is empty,
   auto mock_engines = omnibox_feature_configs::SearchAggregatorProvider::Get()
-                          .GetSearchEngines();
+                          .CreateMockSearchEngines();
   CHECK(!mock_engines.empty());
   for (const base::Value& mock_engine : mock_engines) {
     search_engines->emplace_back(DictToTemplateURLData(mock_engine));
