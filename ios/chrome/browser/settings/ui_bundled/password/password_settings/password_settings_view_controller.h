@@ -18,6 +18,9 @@
 // Method invoked when the user requests an export of their saved passwords.
 - (void)startExportFlow;
 
+// Method invoked when the user starts the deletion of all saved credentials.
+- (void)startDeletionFlow;
+
 // Method invoked when more information about a managed setting was requested.
 // The `sourceView` button will be disabled and should be re-enabled once the
 // requested info is dismissed.
@@ -57,6 +60,9 @@
 // Returns a rect suitable for anchoring the bulk move passwords to account
 // alert.
 - (CGRect)sourceRectForBulkMovePasswordsToAccount;
+
+// Returns a rect suitable for anchoring alerts in the credential deletion flow.
+- (CGRect)sourceRectForCredentialDeletionAlerts;
 
 // Returns a rect suitable for anchoring alerts in the password export flow.
 - (CGRect)sourceRectForPasswordExportAlerts;

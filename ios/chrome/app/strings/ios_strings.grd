@@ -3801,6 +3801,23 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PASSWORD_SETTINGS_CREDENTIAL_DELETION_TEXT" desc="Section title in password settings, explaining to the user what data will be deleted. [iOS Only]">
         Passwords, passkeys, and other data will be permanently deleted from Google Password Manager
       </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_DELETE_ALL_CREDENTIALS_TITLE" desc="Title of the confirmation alert when the user tap delete all data button. [iOS only]">
+        You're about to delete your Google Password Manager data
+      </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_DELETE_ALL_CREDENTIALS_DESCRIPTION" desc="Description of the confirmation alert when the user tap delete all data button. [iOS only]">
+        {password, plural,
+               =0 {{passkey, plural,
+                        =1 {If you continue, your 1 passkey and other data will be permanently deleted from Google Password Manager. Any accounts you created for sites or apps won't be deleted.}
+                        other {If you continue, your {passkey} passkeys and other data will be permanently deleted from Google Password Manager. Any accounts you created for sites or apps won't be deleted.}}}
+               =1 {{passkey, plural,
+                        =0 {If you continue, your 1 password and other data will be permanently deleted from Google Password Manager. Any accounts you created for sites or apps won't be deleted.}
+                        =1 {If you continue, your 1 password, 1 passkey, and other data will be permanently deleted from Google Password Manager. Any accounts you created for sites or apps won't be deleted.}
+                        other {If you continue, your 1 password, {passkeys} passkeys, and other data will be permanently deleted from Google Password Manager. Any accounts you created for sites or apps won't be deleted.}}}
+               other {{passkey, plural,
+                           =0 {If you continue, your {password} passwords and other data will be permanently deleted from Google Password Manager. Any accounts you created for sites or apps won't be deleted.}
+                           =1 {If you continue, your {password} passwords, 1 passkey, and other data will be permanently deleted from Google Password Manager. Any accounts you created for sites or apps won't be deleted.}
+                           other {If you continue, your {password} passwords, {passkey} passkeys, and other data will be permanently deleted from Google Password Manager. Any accounts you created for sites or apps won't be deleted.}}}}
+      </message>
       <message name="IDS_IOS_PASSWORD_SETTINGS_PASSWORD_PLACEHOLDER_TEXT" desc="Placeholder text for the password field when adding a new credential manually via settings [Length: 10em]">
         password
       </message>
@@ -4963,7 +4980,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_SETTINGS_AUTOFILL_MIGRATE_ADDRESS_TO_ACCOUNT_CONFIRMATION_TEXT" desc="Text shown to the user after the migration of address from local to account was succesfull [iOS only]">
                 Address moved to your account <ph name="USER_EMAIL">$1<ex>janedoe@google.com</ex></ph>
-            </message>
+      </message>
       <message name="IDS_IOS_SETTINGS_DOWNLOADS_ACCOUNT_SELECTION_HEADER" desc="Header of Google Photos account selection section in Downloads settings. The section contains the list of accounts on the device among which the user can choose to save images to Google Photos. [iOS only]">
         Accounts on this device
       </message>

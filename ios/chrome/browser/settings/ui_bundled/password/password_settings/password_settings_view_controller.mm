@@ -228,7 +228,7 @@ bool IOSPasskeysM2Enabled() {
       .frame;
 }
 
-- (CGRect)sourceRectForCredentialDeleteAlerts {
+- (CGRect)sourceRectForCredentialDeletionAlerts {
   return [self.tableView
              cellForRowAtIndexPath:[self.tableViewModel
                                        indexPathForItem:_deleteCredentialsItem]]
@@ -375,8 +375,7 @@ bool IOSPasskeysM2Enabled() {
     }
     case ItemTypeDeleteCredentialsButton: {
       if (self.canDeleteAllCredentials) {
-        // TODO(crbug.com/383851476): Update this once the deletion function is
-        // implemented.
+        [self.presentationDelegate startDeletionFlow];
       }
       break;
     }

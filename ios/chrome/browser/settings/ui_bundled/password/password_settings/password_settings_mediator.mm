@@ -244,6 +244,27 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
   _syncObserver.reset();
 }
 
+- (CredentialCounts)passwordAndPasskeyCounts {
+  int passwordsCount = 0;
+  int passkeysCount = 0;
+  for (CredentialUIEntry entry :
+       _savedPasswordsPresenter->GetSavedCredentials()) {
+    if (entry.blocked_by_user) {
+      continue;
+    }
+    if (entry.passkey_credential_id.empty()) {
+      passwordsCount++;
+    } else {
+      passkeysCount++;
+    }
+  }
+  struct CredentialCounts credentialCounts;
+  credentialCounts.passwordCounts = passwordsCount;
+  credentialCounts.passkeyCounts = passkeysCount;
+
+  return credentialCounts;
+}
+
 #pragma mark - PasswordExporterDelegate
 
 - (void)showActivityViewWithActivityItems:(NSArray*)activityItems

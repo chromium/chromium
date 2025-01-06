@@ -315,6 +315,46 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
                                               completion:nil];
 }
 
+- (void)startDeletionFlow {
+  CredentialCounts counts = [_mediator passwordAndPasskeyCounts];
+  NSString* alertDescription = base::SysUTF16ToNSString(
+      base::i18n::MessageFormatter::FormatWithNamedArgs(
+          l10n_util::GetStringUTF16(
+              IDS_IOS_PASSWORD_SETTINGS_DELETE_ALL_CREDENTIALS_DESCRIPTION),
+          "password", counts.passwordCounts, "passkey", counts.passkeyCounts));
+  UIAlertController* deletionConfirmation = [UIAlertController
+      alertControllerWithTitle:
+          l10n_util::GetNSString(
+              IDS_IOS_PASSWORD_SETTINGS_DELETE_ALL_CREDENTIALS_TITLE)
+                       message:alertDescription
+                preferredStyle:UIAlertControllerStyleActionSheet];
+
+  UIAlertAction* cancelAction = [UIAlertAction
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_CANCEL_PASSWORD_DELETION)
+                style:UIAlertActionStyleCancel
+              handler:nil];
+  [deletionConfirmation addAction:cancelAction];
+
+  __weak __typeof(self) weakSelf = self;
+  UIAlertAction* deleteAction = [UIAlertAction
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_DELETE_ACTION_TITLE)
+                style:UIAlertActionStyleDestructive
+              handler:^(UIAlertAction* action) {
+                [weakSelf onStartDeletionFlowConfirmed];
+              }];
+
+  [deletionConfirmation addAction:deleteAction];
+
+  deletionConfirmation.popoverPresentationController.sourceView =
+      [_passwordSettingsViewController sourceViewForAlerts];
+  deletionConfirmation.popoverPresentationController.sourceRect =
+      [_passwordSettingsViewController sourceRectForCredentialDeletionAlerts];
+
+  [_passwordSettingsViewController presentViewController:deletionConfirmation
+                                                animated:YES
+                                              completion:nil];
+}
+
 - (void)showManagedPrefInfoForSourceView:(UIButton*)sourceView {
   // EnterpriseInfoPopoverViewController automatically handles reenabling the
   // `sourceView`, so we don't need to add any dismiss handlers or delegation,
@@ -758,6 +798,12 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
   [_settingsNavigationController.topViewController
       dismissViewControllerAnimated:YES
                          completion:nil];
+}
+
+// Starts the deletion all credentials flow after the user confirmed the
+// corresponding alerts.
+- (void)onStartDeletionFlowConfirmed {
+  // TODO(crbug.com/383851476): implement this.
 }
 
 // Starts the export passwords flow after the user confirmed the corresponding

@@ -24,6 +24,11 @@ class SyncService;
 class PrefService;
 class TrustedVaultClientBackend;
 
+struct CredentialCounts {
+  int passwordCounts;
+  int passkeyCounts;
+};
+
 @protocol ReauthenticationProtocol;
 @protocol SystemIdentity;
 
@@ -72,6 +77,9 @@ class TrustedVaultClientBackend;
 
 // Detaches observers.
 - (void)disconnect;
+
+// Get the numbers of saved passwords and passkeys.
+- (CredentialCounts)passwordAndPasskeyCounts;
 
 @end
 
