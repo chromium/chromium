@@ -82,6 +82,10 @@ found in the LICENSE file.
         <item android:id="@+id/page_zoom_id"
             android:title="@string/page_zoom_menu_title"
             android:icon="@drawable/ic_zoom" />
+        <!-- Placeholder menu items to utilize the string;
+             so that we could start the translation early. -->
+        <item android:id="@+id/open_with_id"
+            android:title="@string/menu_open_with" />
         <item android:id="@+id/share_row_menu_id"
             android:title="@null">
           <menu>

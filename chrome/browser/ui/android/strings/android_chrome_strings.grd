@@ -4416,6 +4416,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_MENU_SWITCH_OUT_OF_INCOGNITO" desc="Menu item for switching out of incognito.">
         Switch out of Incognito
       </message>
+      <message name="IDS_MENU_OPEN_WITH" desc="Menu item to open the content with another app.">
+        Open with…
+      </message>
 
       <!-- Bookmarks strings -->
       <message name="IDS_BOOKMARKS" desc="Title of the bookmarks page, which shows a list of the user's bookmarks. [CHAR_LIMIT=18]">
