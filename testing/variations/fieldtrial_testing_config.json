@@ -5248,21 +5248,6 @@
             ]
         }
     ],
-    "ClassifyUrlOnProcessResponseEventChromeOs": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ClassifyUrlOnProcessResponseEvent"
-                    ]
-                }
-            ]
-        }
-    ],
     "ClayBlocking": [
         {
             "platforms": [
