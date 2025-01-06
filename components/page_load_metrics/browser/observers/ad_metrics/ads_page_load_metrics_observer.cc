@@ -59,24 +59,6 @@
 
 namespace page_load_metrics {
 
-namespace features {
-
-// Enables or disables the restricted navigation ad tagging feature. When
-// enabled, the AdTagging heuristic is modified to additional information to
-// determine if a frame is an ad. If the frame's navigation url matches an allow
-// list rule, it is not an ad.
-//
-// If a frame's navigation url does not match a blocked rule, but was created by
-// ad script and is same domain to the top-level frame, it is not an ad.
-//
-// Currently this feature only changes AdTagging behavior for metrics recorded
-// in AdsPageLoadMetricsObserver, and for triggering the Heavy Ad Intervention.
-BASE_FEATURE(kRestrictedNavigationAdTagging,
-             "RestrictedNavigationAdTagging",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-}  // namespace features
-
 namespace {
 
 using RectId = PageAdDensityTracker::RectId;
@@ -261,8 +243,6 @@ AdsPageLoadMetricsObserver::AdsPageLoadMetricsObserver(
     base::TickClock* clock,
     heavy_ad_intervention::HeavyAdBlocklist* blocklist)
     : clock_(clock ? clock : base::DefaultTickClock::GetInstance()),
-      restricted_navigation_ad_tagging_enabled_(base::FeatureList::IsEnabled(
-          features::kRestrictedNavigationAdTagging)),
       heavy_ad_service_(heavy_ad_service),
       application_locale_getter_(application_locale_getter),
       heavy_ad_blocklist_(blocklist),
@@ -557,8 +537,7 @@ void AdsPageLoadMetricsObserver::OnDidFinishSubFrameNavigation(
   // Only un-tag frames as ads if the navigation has committed. This prevents
   // frames from being untagged that have an aborted navigation to allowlist
   // urls.
-  if (restricted_navigation_ad_tagging_enabled_ && load_policy &&
-      navigation_handle->GetNetErrorCode() == net::OK &&
+  if (load_policy && navigation_handle->GetNetErrorCode() == net::OK &&
       navigation_handle->HasCommitted()) {
     // If a filter list explicitly allows the rule, we should ignore a detected
     // ad.

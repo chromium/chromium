@@ -37,10 +37,6 @@ class HeavyAdService;
 
 namespace page_load_metrics {
 
-namespace features {
-BASE_DECLARE_FEATURE(kRestrictedNavigationAdTagging);
-}
-
 // This observer labels each sub-frame as an ad or not, and keeps track of
 // relevant per-frame and whole-page byte statistics.
 class AdsPageLoadMetricsObserver
@@ -298,10 +294,6 @@ class AdsPageLoadMetricsObserver
   // Whether the page load currently being observed is a reload of a previous
   // page.
   bool page_load_is_reload_ = false;
-
-  // Whether the restricted navigation ad tagging feature is enabled on this
-  // page load.
-  const bool restricted_navigation_ad_tagging_enabled_;
 
   // Stores whether the heavy ad intervention is blocklisted or not for the user
   // on the URL of this page. Incognito Profiles will cause this to be set to
