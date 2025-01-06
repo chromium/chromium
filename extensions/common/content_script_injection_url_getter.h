@@ -6,7 +6,7 @@
 #define EXTENSIONS_COMMON_CONTENT_SCRIPT_INJECTION_URL_GETTER_H_
 
 #include "extensions/common/frame_context_data.h"
-#include "extensions/common/script_constants.h"
+#include "extensions/common/mojom/match_origin_as_fallback.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace extensions {
@@ -26,7 +26,7 @@ class ContentScriptInjectionUrlGetter {
 
   static GURL Get(const FrameContextData& context_data,
                   const GURL& document_url,
-                  MatchOriginAsFallbackBehavior match_origin_as_fallback,
+                  mojom::MatchOriginAsFallbackBehavior match_origin_as_fallback,
                   bool allow_inaccessible_parents);
 };
 

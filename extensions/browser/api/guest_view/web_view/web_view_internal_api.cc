@@ -34,9 +34,9 @@
 #include "extensions/common/api/web_view_internal.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/mojom/match_origin_as_fallback.mojom-shared.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
-#include "extensions/common/script_constants.h"
 #include "extensions/common/user_script.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -214,9 +214,9 @@ std::unique_ptr<extensions::UserScript> ParseContentScript(
   if (script_value.match_about_blank) {
     script->set_match_origin_as_fallback(
         *script_value.match_about_blank
-            ? extensions::MatchOriginAsFallbackBehavior::
+            ? extensions::mojom::MatchOriginAsFallbackBehavior::
                   kMatchForAboutSchemeAndClimbTree
-            : extensions::MatchOriginAsFallbackBehavior::kNever);
+            : extensions::mojom::MatchOriginAsFallbackBehavior::kNever);
   }
 
   // css:

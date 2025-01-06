@@ -122,8 +122,9 @@ void ExecuteUserScript(content::WebContents& web_contents,
           blink::mojom::UserActivationOption::kDoNotActivate,
           blink::mojom::PromiseResultOption::kAwait)),
       ScriptExecutor::SPECIFIED_FRAMES, {ExtensionApiFrameIdMap::kTopFrameId},
-      ScriptExecutor::DONT_MATCH_ABOUT_BLANK, mojom::RunLocation::kDocumentIdle,
-      ScriptExecutor::DEFAULT_PROCESS, GURL() /* webview_src */,
+      mojom::MatchOriginAsFallbackBehavior::kNever,
+      mojom::RunLocation::kDocumentIdle, ScriptExecutor::DEFAULT_PROCESS,
+      GURL() /* webview_src */,
       base::IgnoreArgs<std::vector<ScriptExecutor::FrameResult>>(
           run_loop.QuitWhenIdleClosure()));
 

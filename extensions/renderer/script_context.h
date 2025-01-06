@@ -19,8 +19,8 @@
 #include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/mojom/context_type.mojom-forward.h"
 #include "extensions/common/mojom/host_id.mojom.h"
+#include "extensions/common/mojom/match_origin_as_fallback.mojom-forward.h"
 #include "extensions/common/permissions/api_permission_set.h"
-#include "extensions/common/script_constants.h"
 #include "extensions/common/stack_frame.h"
 #include "extensions/renderer/module_system.h"
 #include "extensions/renderer/safe_builtins.h"
@@ -252,7 +252,7 @@ class ScriptContext {
   static GURL GetEffectiveDocumentURLForInjection(
       blink::WebLocalFrame* frame,
       const GURL& document_url,
-      MatchOriginAsFallbackBehavior match_origin_as_fallback);
+      mojom::MatchOriginAsFallbackBehavior match_origin_as_fallback);
 
   // Grants a set of content capabilities to this context.
   void set_content_capabilities(APIPermissionSet capabilities) {

@@ -19,6 +19,7 @@
 #include "extensions/common/error_utils.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/permissions_parser.h"
+#include "extensions/common/mojom/match_origin_as_fallback.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/url_pattern.h"
 #include "extensions/common/url_pattern_set.h"
@@ -400,7 +401,7 @@ bool ValidateFileSources(const UserScriptList& scripts,
 }
 
 bool ValidateMatchOriginAsFallback(
-    MatchOriginAsFallbackBehavior match_origin_as_fallback,
+    mojom::MatchOriginAsFallbackBehavior match_origin_as_fallback,
     const URLPatternSet& url_patterns,
     std::u16string* error_out) {
   // If the extension is using `match_origin_as_fallback`, we require the
@@ -409,7 +410,8 @@ bool ValidateMatchOriginAsFallback(
   // a pattern of `"https://google.com/maps/*"`, this script would also run
   // on about:blank, data:, etc frames from https://google.com (because in
   // both cases, the precursor origin is https://google.com).
-  if (match_origin_as_fallback == MatchOriginAsFallbackBehavior::kAlways) {
+  if (match_origin_as_fallback ==
+      mojom::MatchOriginAsFallbackBehavior::kAlways) {
     for (const auto& pattern : url_patterns) {
       if (pattern.path() != "/*") {
         *error_out = errors::kMatchOriginAsFallbackCantHavePaths;

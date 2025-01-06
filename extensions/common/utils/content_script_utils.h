@@ -13,7 +13,7 @@
 #include "extensions/common/api/scripts_internal.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_resource.h"
-#include "extensions/common/script_constants.h"
+#include "extensions/common/mojom/match_origin_as_fallback.mojom-forward.h"
 #include "extensions/common/user_script.h"
 
 // Contains helper methods for parsing content script fields.
@@ -83,7 +83,7 @@ bool ValidateFileSources(const UserScriptList& scripts,
 // patterns specified in `url_patterns`. I.e. patterns in `url_patterns` must
 // specify a wildcard path or no path if `match_origin_as_fallback` is enabled.
 bool ValidateMatchOriginAsFallback(
-    MatchOriginAsFallbackBehavior match_origin_as_fallback,
+    mojom::MatchOriginAsFallbackBehavior match_origin_as_fallback,
     const URLPatternSet& url_patterns,
     std::u16string* error_out);
 

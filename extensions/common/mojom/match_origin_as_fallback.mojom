@@ -1,15 +1,12 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_COMMON_SCRIPT_CONSTANTS_H_
-#define EXTENSIONS_COMMON_SCRIPT_CONSTANTS_H_
-
-namespace extensions {
+module extensions.mojom;
 
 // Whether to fall back to matching the origin for frames where the URL
 // cannot be matched directly, such as those with about: or data: schemes.
-enum class MatchOriginAsFallbackBehavior {
+enum MatchOriginAsFallbackBehavior {
   // Never fall back on the origin; this means scripts will never match on
   // these frames.
   kNever,
@@ -24,7 +21,3 @@ enum class MatchOriginAsFallbackBehavior {
   // corresponding path.
   kAlways,
 };
-
-}  // namespace extensions
-
-#endif  // EXTENSIONS_COMMON_SCRIPT_CONSTANTS_H_

@@ -126,7 +126,7 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
             blink::mojom::UserActivationOption::kDoNotActivate,
             blink::mojom::PromiseResultOption::kAwait)),
         ScriptExecutor::SPECIFIED_FRAMES, {ExtensionApiFrameIdMap::kTopFrameId},
-        ScriptExecutor::DONT_MATCH_ABOUT_BLANK,
+        mojom::MatchOriginAsFallbackBehavior::kNever,
         mojom::RunLocation::kDocumentIdle, ScriptExecutor::DEFAULT_PROCESS,
         GURL() /* webview_src */,
         base::IgnoreArgs<std::vector<ScriptExecutor::FrameResult>>(

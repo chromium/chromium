@@ -30,6 +30,7 @@
 #include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/browser/script_injection_tracker.h"
 #include "extensions/common/mojom/host_id.mojom.h"
+#include "extensions/common/mojom/match_origin_as_fallback.mojom-shared.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_macros.h"
 #include "pdf/buildflags.h"
@@ -387,15 +388,16 @@ std::string ScriptExecutor::GenerateInjectionKey(const mojom::HostID& host_id,
                             host_id.id.c_str(), base::FastHash(source));
 }
 
-void ScriptExecutor::ExecuteScript(const mojom::HostID& host_id,
-                                   mojom::CodeInjectionPtr injection,
-                                   ScriptExecutor::FrameScope frame_scope,
-                                   const std::set<int>& frame_ids,
-                                   ScriptExecutor::MatchAboutBlank about_blank,
-                                   mojom::RunLocation run_at,
-                                   ScriptExecutor::ProcessType process_type,
-                                   const GURL& webview_src,
-                                   ScriptFinishedCallback callback) {
+void ScriptExecutor::ExecuteScript(
+    const mojom::HostID& host_id,
+    mojom::CodeInjectionPtr injection,
+    ScriptExecutor::FrameScope frame_scope,
+    const std::set<int>& frame_ids,
+    mojom::MatchOriginAsFallbackBehavior match_origin_as_fallback_behavior,
+    mojom::RunLocation run_at,
+    ScriptExecutor::ProcessType process_type,
+    const GURL& webview_src,
+    ScriptFinishedCallback callback) {
   if (host_id.type == mojom::HostID::HostType::kExtensions) {
     // Don't execute if the extension has been unloaded.
     const Extension* extension =
@@ -428,7 +430,7 @@ void ScriptExecutor::ExecuteScript(const mojom::HostID& host_id,
   auto params = mojom::ExecuteCodeParams::New();
   params->host_id = host_id.Clone();
   params->injection = std::move(injection);
-  params->match_about_blank = (about_blank == MATCH_ABOUT_BLANK);
+  params->match_origin_as_fallback_behavior = match_origin_as_fallback_behavior;
   params->run_at = run_at;
   params->is_web_view = (process_type == WEB_VIEW_PROCESS);
   params->webview_src = webview_src;
