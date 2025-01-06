@@ -3629,17 +3629,9 @@ const flags_ui::FeatureEntry::FeatureVariation
         // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
-const FeatureEntry::Choice kAccountBookmarksAndReadingListBehindOptInChoices[] =
-    {
-        {"Default", "", ""},
-        {"Enabled", switches::kEnableFeatures,
-         "SyncEnableBookmarksInTransportMode,"
-         "ReadingListEnableSyncTransportModeUponSignIn"},
-};
 
 const char kReplaceSyncPromosWithSignInPromosFeatures[] =
     "ReplaceSyncPromosWithSignInPromos,"
-    "ReadingListEnableSyncTransportModeUponSignIn,"
     "SyncEnableContactInfoDataTypeInTransportMode,"
     "SyncEnableContactInfoDataTypeForCustomPassphraseUsers,"
     "SyncEnableWalletMetadataInTransportMode,"
@@ -3649,7 +3641,6 @@ const char kReplaceSyncPromosWithSignInPromosFeatures[] =
 // The ones above + UnoPhase2FollowUp.
 const char kFastFollowFeatures[] =
     "ReplaceSyncPromosWithSignInPromos,"
-    "ReadingListEnableSyncTransportModeUponSignIn,"
     "SyncEnableContactInfoDataTypeInTransportMode,"
     "SyncEnableContactInfoDataTypeForCustomPassphraseUsers,"
     "SyncEnableWalletMetadataInTransportMode,"
@@ -10573,14 +10564,6 @@ const FeatureEntry kFeatureEntries[] = {
          send_tab_to_self::kSendTabToSelfIOSPushNotifications,
          kSendTabIOSPushNotificationsVariations,
          "SendTabToSelfIOSPushNotifications")},
-
-#if BUILDFLAG(IS_ANDROID)
-    {"bookmarks-and-reading-list-behind-opt-in",
-     flag_descriptions::kAccountBookmarksAndReadingListBehindOptInName,
-     flag_descriptions::kAccountBookmarksAndReadingListBehindOptInDescription,
-     kOsAndroid,
-     MULTI_VALUE_TYPE(kAccountBookmarksAndReadingListBehindOptInChoices)},
-#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
     {"desk-profiles", flag_descriptions::kDeskProfilesName,
