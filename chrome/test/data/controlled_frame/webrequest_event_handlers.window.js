@@ -24,9 +24,6 @@ promise_test(async (test) => {
   const controlledframe = await createControlledFrame('/simple.html');
   controlledframe.stop();
 
-  const targetUrl = new URL(controlledframe.src);
-  targetUrl.pathname = '/handbag.png';
-
   for (const singleEvent of WebRequestEvents) {
     const eventName = singleEvent.name;
     window['count' + eventName] = 0;
@@ -35,7 +32,7 @@ promise_test(async (test) => {
     };
 
     controlledframe.request[eventName].addListener(
-        eventCounter.bind({name: eventName}), {urls: [targetUrl.toString()]});
+        eventCounter.bind({name: eventName}), {urls: ['<all_urls>']});
   }
 
   // Temporarily add special case for onErrorOccurred here to monitor it being
@@ -44,22 +41,14 @@ promise_test(async (test) => {
   window['occurredErrors'] = [];
   controlledframe.request.onErrorOccurred.addListener(function(details) {
     window['occurredErrors'].push(details.error);
-  }, {urls: [targetUrl.toString()]});
+  }, {urls: ['<all_urls>']});
+
+  const targetUrl = new URL(controlledframe.src);
+  targetUrl.pathname = '/handbag.png';
 
   const script = `(async() => {await fetch('${
       targetUrl.toString()}', {method:'GET'});})();`;
   await executeAsyncScript(controlledframe, script);
-
-  // Temporarily add special case for onErrorOccurred here to monitor it being
-  // triggered in the CI.
-  // TODO(crbug.com/386380410): clean up.
-  assert_true(
-      window['occurredErrors'].length === 0,
-      `\nonErrorOccurred triggered ${
-          window['occurredErrors'].length} times, errors are:\n${
-          window['occurredErrors']
-              .map((item, index) => `${index + 1}. ${item}`)
-              .join('\n')}\n`);
 
   for (singleEvent of WebRequestEvents) {
     const eventName = singleEvent.name;
@@ -78,4 +67,15 @@ promise_test(async (test) => {
               window['count' + eventName]} time(s).`);
     }
   }
+
+  // Temporarily add special case for onErrorOccurred here to monitor it being
+  // triggered in the CI.
+  // TODO(crbug.com/386380410): clean up.
+  assert_true(
+      window['occurredErrors'].length === 0,
+      `\nonErrorOccurred triggered ${
+          window['occurredErrors'].length} times, errors are:\n${
+          window['occurredErrors']
+              .map((item, index) => `${index + 1}. ${item}`)
+              .join('\n')}\n`);
 }, 'WebRequest Event Handlers');
