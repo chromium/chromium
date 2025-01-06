@@ -2376,16 +2376,17 @@ Tip: add "-- --no-first-run" to bypass the first run prompts.
       '--apk',
       choices=apk_choices,
       dest='apk',
-      default='chromium',
+      # default='chromium', when using android archives
       metavar='{chromium,chrome_dev,android_webview...}',
-      help='Apk you want to bisect {%s}.' % ','.join(apk_choices),
+      help=(f'Apk you want to bisect {{{",".join(apk_choices)}}}. '
+            '(Default: chromium/chrome)'),
   )
   parser.add_argument(
       '--ipa',
       dest='ipa',
-      default='canary.ipa',
+      # default='canary.ipa', when using ios archives
       metavar='{canary,beta,stable...}',
-      help='ipa you want to bisect.',
+      help='ipa you want to bisect. (Default: canary)',
   )
   parser.add_argument(
       '--signed',
@@ -2417,8 +2418,14 @@ Tip: add "-- --no-first-run" to bypass the first run prompts.
   return parser
 
 
-def _DetectArchive():
+def _DetectArchive(opts=None):
   """Detect the buildbot archive to use based on local environment."""
+  if opts:
+    if opts.apk:
+      return 'android-arm64'
+    elif opts.ipa:
+      return 'ios-simulator'
+
   os_name = None
   plat = sys.platform
   if plat.startswith('linux'):
@@ -2446,7 +2453,7 @@ def ParseCommandLine(args=None):
   opts = parser.parse_args(args)
 
   if opts.archive is None:
-    archive = _DetectArchive()
+    archive = _DetectArchive(opts)
     if archive:
       print('The buildbot archive (-a/--archive) detected as:', archive)
       opts.archive = archive
@@ -2464,11 +2471,29 @@ def ParseCommandLine(args=None):
                  f'To bisect for {opts.archive}, please choose from '
                  f'{", ".join(supported_build_types)}')
 
-  if opts.signed and not (opts.archive.startswith('android-')
-                          or opts.archive.startswith('ios')):
-    parser.error('--signed is only supported for Android and iOS platform.')
+  all_archives = sorted(
+      set(arch for build in PATH_CONTEXT for arch in PATH_CONTEXT[build]))
+  android_archives = [x for x in all_archives if x.startswith('android-')]
+  ios_archives = [x for x in all_archives if x.startswith('ios')]
 
-  if opts.signed and not opts.build_type == 'release':
+  # Set default apk/ipa for mobile platforms.
+  if opts.archive in android_archives and not opts.apk:
+    opts.apk = 'chromium' if opts.build_type == 'snapshot' else 'chrome'
+  elif opts.archive in ios_archives and not opts.ipa:
+    opts.ipa = 'canary'
+  # Or raise error if apk/ipa is set for non-mobile platforms.
+  if opts.apk and opts.archive not in android_archives:
+    parser.error('--apk is only supported for Android platform (-a/--archive): '
+                 f'{{{",".join(android_archives)}}}')
+  elif opts.ipa and opts.archive not in ios_archives:
+    parser.error('--ipa is only supported for iOS platform (-a/--archive): '
+                 f'{{{",".join(ios_archives)}}}')
+
+  if opts.signed and opts.archive not in (android_archives + ios_archives):
+    parser.error('--signed is only supported for Android and iOS platform '
+                 '(-a/--archive): '
+                 f'{{{",".join(android_archives+ios_archives)}}}')
+  elif opts.signed and not opts.build_type == 'release':
     parser.error('--signed is only supported for release bisection.')
 
   if opts.build_type == 'official':

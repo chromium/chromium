@@ -1597,6 +1597,48 @@ class MethodTest(BisectTestCase):
     opts = bisect_builds.ParseCommandLine(['-o', '-g', '1'])
     self.assertEqual(opts.archive, 'linux64')
 
+  def test_ParseCommandLine_default_apk(self):
+    opts = bisect_builds.ParseCommandLine(
+        ['-o', '-a', 'android-arm', '-g', '1'])
+    self.assertEqual(opts.apk, 'chrome')
+
+    opts = bisect_builds.ParseCommandLine(['-a', 'android-arm64', '-g', '1'])
+    self.assertEqual(opts.apk, 'chromium')
+
+  def test_ParseCommandLine_default_ipa(self):
+    opts = bisect_builds.ParseCommandLine(
+        ['-r', '-a', 'ios', '-g', '127.0.6533.74', '-b', '127.0.6533.88'])
+    self.assertEqual(opts.ipa, 'canary')
+
+  def test_ParseCommandLine_DetectArchive_with_apk(self):
+    opts = bisect_builds.ParseCommandLine(['-o', '--apk', 'chrome', '-g', '1'])
+    self.assertEqual(opts.archive, 'android-arm64')
+
+  def test_ParseCommandLine_DetectArchive_with_ipa(self):
+    opts = bisect_builds.ParseCommandLine(
+        ['-r', '--ipa', 'stable', '-g', '127.0.6533.74', '-b', '127.0.6533.88'])
+    self.assertEqual(opts.archive, 'ios-simulator')
+
+  @patch('sys.stderr', new_callable=io.StringIO)
+  def test_ParseCommandLine_apk_error(self, mock_stderr):
+    with self.assertRaises(SystemExit):
+      bisect_builds.ParseCommandLine(
+          ['-a', 'linux64', '--apk', 'chrome', '-g', '1'])
+    self.assertIn('--apk is only supported', mock_stderr.getvalue())
+
+  @patch('sys.stderr', new_callable=io.StringIO)
+  def test_ParseCommandLine_ipa_error(self, mock_stderr):
+    with self.assertRaises(SystemExit):
+      bisect_builds.ParseCommandLine(
+          ['-a', 'linux64', '--ipa', 'stable', '-g', '1'])
+    self.assertIn('--ipa is only supported', mock_stderr.getvalue())
+
+  @patch('sys.stderr', new_callable=io.StringIO)
+  def test_ParseCommandLine_signed_error(self, mock_stderr):
+    with self.assertRaises(SystemExit):
+      bisect_builds.ParseCommandLine(['-a', 'linux64', '--signed', '-g', '1'])
+    self.assertIn('--signed is only supported', mock_stderr.getvalue())
+
   @patch('urllib.request.urlopen')
   @patch('builtins.open')
   @patch('sys.stdout', new_callable=io.StringIO)
