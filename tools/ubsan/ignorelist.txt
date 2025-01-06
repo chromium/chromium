@@ -51,7 +51,3 @@ fun:*VP8BitReaderSetBuffer*
 # has landed.
 [pointer-overflow]
 fun:*protozero*ScatteredStreamWriter*ReserveBytes*
-
-# Remove this once https://github.com/google/leveldb/pull/1222 has landed.
-[pointer-overflow]
-fun:*leveldb*Hash*
