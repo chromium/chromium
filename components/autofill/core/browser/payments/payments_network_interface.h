@@ -226,6 +226,17 @@ class PaymentsNetworkInterface : public PaymentsNetworkInterfaceBase {
                               std::u16string context_token,
                               std::unique_ptr<base::Value::Dict>)> callback);
 
+  // The user has indicated that they would like to create a BNPL payment
+  // instrument. This request will fail server side if a successful call to
+  // `GetDetailsForCreateBnplPaymentInstrument` has not already been made.
+  // `request_details` contains all necessary information to build a
+  // `CreateBnplPaymentInstrumentRequest`. `callback` is the callback function
+  // that is triggered when a response is received from the server.
+  virtual void CreateBnplPaymentInstrument(
+      const CreateBnplPaymentInstrumentRequestDetails& request_details,
+      base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult result,
+                              std::u16string instrument_id)> callback);
+
   // Get the BNPL VCN details.
   virtual void GetBnplPaymentInstrumentForFetchingVcn(
       GetBnplPaymentInstrumentForFetchingVcnRequestDetails request_details,

@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/payments/account_info_getter.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
+#include "components/autofill/core/browser/payments/payments_requests/create_bnpl_payment_instrument_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/get_card_upload_details_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/get_details_for_create_bnpl_payment_instrument_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/get_details_for_enrollment_request.h"
@@ -212,6 +213,17 @@ void PaymentsNetworkInterface::GetDetailsForCreateBnplPaymentInstrument(
           /*full_sync_enabled=*/
           account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),
           std::move(callback)));
+}
+
+void PaymentsNetworkInterface::CreateBnplPaymentInstrument(
+    const CreateBnplPaymentInstrumentRequestDetails& request_details,
+    base::OnceCallback<void(PaymentsRpcResult, std::u16string instrument_id)>
+        callback) {
+  IssueRequest(std::make_unique<CreateBnplPaymentInstrumentRequest>(
+      request_details,
+      /*full_sync_enabled=*/
+      account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),
+      std::move(callback)));
 }
 
 void PaymentsNetworkInterface::GetBnplPaymentInstrumentForFetchingVcn(

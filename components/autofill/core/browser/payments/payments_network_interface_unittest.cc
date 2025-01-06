@@ -233,6 +233,12 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
     legal_message_ = std::move(legal_message);
   }
 
+  void OnDidCreateBnplPaymentInstrument(PaymentsRpcResult result,
+                                        std::u16string instrument_id) {
+    result_ = result;
+    instrument_id_ = base::UTF16ToUTF8(instrument_id);
+  }
+
  protected:
   std::unique_ptr<PaymentsNetworkInterface> payments_network_interface_;
 
@@ -444,6 +450,9 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
   std::vector<std::pair<int, int>> supported_card_bin_ranges_;
   // The opaque token used to chain consecutive payments requests together.
   std::string context_token_;
+  // Server generated instrument ID through the creation of a BNPL payment
+  // instrument.
+  std::string instrument_id_;
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Credit cards to be upload saved during a local credit card migration call.
@@ -1882,5 +1891,75 @@ TEST_P(GetDetailsForCreateBnplPaymentInstrumentTest,
   }
 }
 
+class CreateBnplPaymentInstrumentTest
+    : public PaymentsNetworkInterfaceTest,
+      public ::testing::WithParamInterface<PaymentsRpcResult> {
+ public:
+  CreateBnplPaymentInstrumentTest() = default;
+  ~CreateBnplPaymentInstrumentTest() override = default;
+};
+
+// Initializes the parameterized test suite with all possible combinations of
+// PaymentsRpcResult.
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    CreateBnplPaymentInstrumentTest,
+    testing::Values(PaymentsRpcResult::kSuccess,
+                    PaymentsRpcResult::kTryAgainFailure,
+                    PaymentsRpcResult::kPermanentFailure,
+                    PaymentsRpcResult::kNetworkError,
+                    PaymentsRpcResult::kClientSideTimeout));
+
+// Parameterized test that tests all combinations of server PaymentsRpcResult.
+TEST_P(CreateBnplPaymentInstrumentTest,
+       CreateBnplPaymentInstrumentTest_TestAllFlows) {
+  CreateBnplPaymentInstrumentRequestDetails request_details;
+  request_details.app_locale = "en-US";
+  request_details.billing_customer_number = 555666777888;
+  request_details.context_token = u"context_token";
+  request_details.risk_data = "wjhJLg";
+  std::string instrument_id = "instrument_id";
+
+  payments_network_interface_->CreateBnplPaymentInstrument(
+      request_details,
+      base::BindOnce(
+          &PaymentsNetworkInterfaceTest::OnDidCreateBnplPaymentInstrument,
+          GetWeakPtr()));
+  IssueOAuthToken();
+
+  // Ensures the PaymentsRpcResult is set correctly.
+  PaymentsRpcResult result = GetParam();
+  switch (result) {
+    case PaymentsRpcResult::kSuccess:
+      ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
+                     "{ \"buy_now_pay_later_info\": { \"instrument_id\": \"" +
+                         instrument_id + "\" } }");
+      break;
+    case PaymentsRpcResult::kTryAgainFailure:
+      ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
+                     "{ \"error\": { \"code\": \"INTERNAL\", "
+                     "\"api_error_reason\": \"ANYTHING_ELSE\"} }");
+      break;
+    case PaymentsRpcResult::kPermanentFailure:
+      ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
+                     "{ \"error\": { \"code\": \"ANYTHING_ELSE\" } }");
+      break;
+    case PaymentsRpcResult::kNetworkError:
+      ReturnResponse(payments_network_interface_.get(),
+                     net::HTTP_REQUEST_TIMEOUT, "");
+      break;
+    case PaymentsRpcResult::kClientSideTimeout:
+      ReturnResponse(payments_network_interface_.get(), net::ERR_TIMED_OUT, "");
+      break;
+    case PaymentsRpcResult::kVcnRetrievalTryAgainFailure:
+    case PaymentsRpcResult::kVcnRetrievalPermanentFailure:
+    case PaymentsRpcResult::kNone:
+      NOTREACHED();
+  }
+  EXPECT_EQ(result, result_);
+  if (result == PaymentsRpcResult::kSuccess) {
+    EXPECT_EQ(instrument_id, instrument_id_);
+  }
+}
 }  // namespace
 }  // namespace autofill::payments

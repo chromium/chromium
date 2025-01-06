@@ -212,6 +212,23 @@ GetDetailsForCreateBnplPaymentInstrumentRequestDetails::operator=(
 GetDetailsForCreateBnplPaymentInstrumentRequestDetails::
     ~GetDetailsForCreateBnplPaymentInstrumentRequestDetails() = default;
 
+CreateBnplPaymentInstrumentRequestDetails::
+    CreateBnplPaymentInstrumentRequestDetails() = default;
+CreateBnplPaymentInstrumentRequestDetails::
+    CreateBnplPaymentInstrumentRequestDetails(
+        const CreateBnplPaymentInstrumentRequestDetails&) = default;
+CreateBnplPaymentInstrumentRequestDetails&
+CreateBnplPaymentInstrumentRequestDetails::operator=(
+    const CreateBnplPaymentInstrumentRequestDetails& other) = default;
+CreateBnplPaymentInstrumentRequestDetails::
+    CreateBnplPaymentInstrumentRequestDetails(
+        CreateBnplPaymentInstrumentRequestDetails&&) = default;
+CreateBnplPaymentInstrumentRequestDetails&
+CreateBnplPaymentInstrumentRequestDetails::operator=(
+    CreateBnplPaymentInstrumentRequestDetails&&) = default;
+CreateBnplPaymentInstrumentRequestDetails::
+    ~CreateBnplPaymentInstrumentRequestDetails() = default;
+
 GetBnplPaymentInstrumentForFetchingVcnRequestDetails::
     GetBnplPaymentInstrumentForFetchingVcnRequestDetails() = default;
 GetBnplPaymentInstrumentForFetchingVcnRequestDetails::

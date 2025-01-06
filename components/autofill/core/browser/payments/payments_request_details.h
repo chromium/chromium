@@ -392,8 +392,8 @@ struct UploadCardResponseDetails {
       get_details_for_enrollment_response_details;
 };
 
-// A collection of information required to create a payment instrument request
-// to link a BNPL partner.
+// A collection of information required to fetch details for creating a payment
+// instrument request to link a BNPL partner.
 struct GetDetailsForCreateBnplPaymentInstrumentRequestDetails {
   GetDetailsForCreateBnplPaymentInstrumentRequestDetails();
   GetDetailsForCreateBnplPaymentInstrumentRequestDetails(
@@ -412,6 +412,32 @@ struct GetDetailsForCreateBnplPaymentInstrumentRequestDetails {
   int64_t billing_customer_number;
   // The ID of the BNPL partner to be linked. i.e. Affirm
   std::string_view issuer_id;
+};
+
+// A collection of information required to create a payment instrument request
+// to link a BNPL partner.
+struct CreateBnplPaymentInstrumentRequestDetails {
+  CreateBnplPaymentInstrumentRequestDetails();
+  CreateBnplPaymentInstrumentRequestDetails(
+      const CreateBnplPaymentInstrumentRequestDetails& other);
+  CreateBnplPaymentInstrumentRequestDetails& operator=(
+      const CreateBnplPaymentInstrumentRequestDetails& other);
+  CreateBnplPaymentInstrumentRequestDetails(
+      CreateBnplPaymentInstrumentRequestDetails&&);
+  CreateBnplPaymentInstrumentRequestDetails& operator=(
+      CreateBnplPaymentInstrumentRequestDetails&&);
+  ~CreateBnplPaymentInstrumentRequestDetails();
+
+  // `app_locale` is the Chrome locale.
+  std::string_view app_locale;
+  // The billing customer number for the account this request is sent to.
+  int64_t billing_customer_number;
+  // The ID of the BNPL partner to be linked. i.e. Affirm
+  std::string_view issuer_id;
+  // An opaque token used to chain consecutive payments requests together.
+  std::u16string context_token;
+  // Client encoded risk data.
+  std::string risk_data;
 };
 
 // A collection of information required to fetch the BNPL VCN details.
