@@ -6687,6 +6687,12 @@ const char kExperimentalAccessibilityManifestV3Description[] =
     "Experimental migration of accessibility features from extension manifest "
     "v2 to v3. Likely to break accessibility access while experimental.";
 
+const char kAccessibilityManifestV3EnhancedNetworkTtsName[] =
+    "Changes accessibility extension Enhanced Network TTS manifest v2 to v3.";
+const char kAccessibilityManifestV3EnhancedNetworkTtsDescription[] =
+    "Experimental migration of Enhanced Network TTS from extension manifest "
+    "v2 to v3.";
+
 const char kExperimentalAccessibilitySwitchAccessTextName[] =
     "Enable enhanced Switch Access text input.";
 const char kExperimentalAccessibilitySwitchAccessTextDescription[] =

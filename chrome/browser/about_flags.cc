@@ -8003,6 +8003,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAccessibilityMagnifierFollowsChromeVox)},
 
+    {"enable-accessibility-manifest-v3-enhanced-network-tts",
+     flag_descriptions::kAccessibilityManifestV3EnhancedNetworkTtsName,
+     flag_descriptions::kAccessibilityManifestV3EnhancedNetworkTtsDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kAccessibilityManifestV3EnhancedNetworkTts)},
+
     {"enable-accessibility-mousekeys",
      flag_descriptions::kAccessibilityMouseKeysName,
      flag_descriptions::kAccessibilityMouseKeysDescription, kOsCrOS,

@@ -16554,6 +16554,8 @@ from previous Chrome versions.
   <int value="-1552898031" label="SingleTabMode:enabled"/>
   <int value="-1551839190"
       label="EarlyDocumentSwapForBackForwardTransitions:enabled"/>
+  <int value="-1551497821"
+      label="AccessibilityManifestV3EnhancedNetworkTts:disabled"/>
   <int value="-1551197844" label="AssistMultiWord:enabled"/>
   <int value="-1550675387" label="CriticalPersistedTabData:enabled"/>
   <int value="-1550541457" label="DisplayIdentification:disabled"/>
@@ -25273,6 +25275,8 @@ from previous Chrome versions.
   <int value="1898286738" label="EnableRFC8925:disabled"/>
   <int value="1899111954" label="WebRtcMetronomeTaskQueue:disabled"/>
   <int value="1899248188" label="MediaApp:disabled"/>
+  <int value="1899572583"
+      label="AccessibilityManifestV3EnhancedNetworkTts:enabled"/>
   <int value="1900508100" label="PasswordViewPageInSettings:enabled"/>
   <int value="1900529524" label="disable-touch-drag-drop"/>
   <int value="1901640438" label="EnableLauncherSearchNormalization:disabled"/>

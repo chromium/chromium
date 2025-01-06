@@ -3891,6 +3891,9 @@ extern const char
 extern const char kExperimentalAccessibilityManifestV3Name[];
 extern const char kExperimentalAccessibilityManifestV3Description[];
 
+extern const char kAccessibilityManifestV3EnhancedNetworkTtsName[];
+extern const char kAccessibilityManifestV3EnhancedNetworkTtsDescription[];
+
 extern const char kExperimentalAccessibilitySwitchAccessTextName[];
 extern const char kExperimentalAccessibilitySwitchAccessTextDescription[];
 

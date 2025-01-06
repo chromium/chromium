@@ -2281,7 +2281,8 @@ void AccessibilityManager::LoadEnhancedNetworkTts() {
 
   const bool enable_v3_manifest =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ::switches::kEnableExperimentalAccessibilityManifestV3);
+          ::switches::kEnableExperimentalAccessibilityManifestV3) ||
+      ::features::IsAccessibilityManifestV3EnabledForEnhancedNetworkTts();
   const base::FilePath::CharType* manifest_filename =
       enable_v3_manifest ? extension_misc::kEnhancedNetworkTtsManifestV3Filename
                          : extension_misc::kEnhancedNetworkTtsManifestFilename;

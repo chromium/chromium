@@ -250,6 +250,14 @@ bool IsAccessibilityShakeToLocateEnabled() {
   return base::FeatureList::IsEnabled(::features::kAccessibilityShakeToLocate);
 }
 
+BASE_FEATURE(kAccessibilityManifestV3EnhancedNetworkTts,
+             "AccessibilityManifestV3EnhancedNetworkTts",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsAccessibilityManifestV3EnabledForEnhancedNetworkTts() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilityManifestV3EnhancedNetworkTts);
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
