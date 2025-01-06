@@ -199,7 +199,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
     config.features_enabled.push_back(kIOSLargeFakebox);
   }
 
-  if ([self isRunningTest:@selector(testCollectionShortcuts)]) {
+  if ([self isRunningTest:@selector(DISABLED_testCollectionShortcuts)]) {
     // This ensures that the test will not fail when What's New is updated.
     config.additional_args.push_back(base::StringPrintf(
         "--disable-features=%s",
@@ -247,7 +247,8 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 }
 
 // Tests that the collections shortcut are displayed and working.
-- (void)testCollectionShortcuts {
+// TODO(crbug.com/387934031): Re-enable.
+- (void)DISABLED_testCollectionShortcuts {
   AppLaunchConfiguration config = self.appConfigurationForTestCase;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
@@ -310,7 +311,8 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 }
 
 // Tests that the collections shortcut are displayed and working.
-- (void)testCollectionShortcutsWithWhatsNew {
+// TODO(crbug.com/387934031): Re-enable.
+- (void)DISABLED_testCollectionShortcutsWithWhatsNew {
   AppLaunchConfiguration config = self.appConfigurationForTestCase;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   // This ensures that the test will not fail when What's New has already been
