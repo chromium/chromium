@@ -84,6 +84,11 @@ using message_center::NotifierId;
 
 namespace {
 
+constexpr char
+    kNotificationContentDetectionDisplayPersistentNotificationEventHistogram[] =
+        "SafeBrowsing.NotificationContentDetection."
+        "DisplayPersistentNotificationEvent";
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 constexpr char kNotificationResourceActionIconMemorySizeHistogram[] =
@@ -159,6 +164,18 @@ class RevokeDeleteCountRecorder
   }
 
   size_t total_deleted_count_;
+};
+
+// The type of event when displaying a persistent notification. These values
+// are persisted to logs. Entries should not be renumbered and numeric values
+// should never be reused.
+enum class DisplayPersistentNotificationEvents {
+  // The event logged when requesting to display a persistent notification.
+  kRequested = 0,
+  // The event logged when model checking and displaying the persistent
+  // notification have completed.
+  kFinished = 1,
+  kMaxValue = kFinished,
 };
 
 }  // namespace
@@ -305,6 +322,9 @@ void PlatformNotificationServiceImpl::DisplayPersistentNotification(
       // and the method should return without calling `Display`. Otherwise, the
       // notification should be displayed below.
       if (is_show_warnings_for_suspicious_notifications_enabled) {
+        base::UmaHistogramEnumeration(
+            kNotificationContentDetectionDisplayPersistentNotificationEventHistogram,
+            DisplayPersistentNotificationEvents::kRequested);
         LogPersistentNotificationShownMetrics(notification_data, origin,
                                               notification.origin_url());
         return;
@@ -728,6 +748,9 @@ void PlatformNotificationServiceImpl::UpdatePersistentMetadataThenDisplay(
     const message_center::Notification& notification,
     std::unique_ptr<PersistentNotificationMetadata> metadata,
     bool is_suspicious) {
+  base::UmaHistogramEnumeration(
+      kNotificationContentDetectionDisplayPersistentNotificationEventHistogram,
+      DisplayPersistentNotificationEvents::kFinished);
   metadata->is_suspicious = is_suspicious;
   NotificationDisplayServiceFactory::GetForProfile(profile_)->Display(
       NotificationHandler::Type::WEB_PERSISTENT, notification,

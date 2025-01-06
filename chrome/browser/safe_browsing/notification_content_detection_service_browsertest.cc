@@ -436,6 +436,18 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_FALSE(
         IsNotificationSuspicious(GetDisplayedPersistentNotifications()[0]));
   }
+  histogram_tester().ExpectTotalCount(
+      "SafeBrowsing.NotificationContentDetection."
+      "DisplayPersistentNotificationEvent",
+      2);
+  histogram_tester().ExpectBucketCount(
+      "SafeBrowsing.NotificationContentDetection."
+      "DisplayPersistentNotificationEvent",
+      /*kRequested=*/0, 1);
+  histogram_tester().ExpectBucketCount(
+      "SafeBrowsing.NotificationContentDetection."
+      "DisplayPersistentNotificationEvent",
+      /*kFinished=*/1, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -473,6 +485,18 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_FALSE(
         IsNotificationSuspicious(GetDisplayedPersistentNotifications()[0]));
   }
+  histogram_tester().ExpectTotalCount(
+      "SafeBrowsing.NotificationContentDetection."
+      "DisplayPersistentNotificationEvent",
+      2);
+  histogram_tester().ExpectBucketCount(
+      "SafeBrowsing.NotificationContentDetection."
+      "DisplayPersistentNotificationEvent",
+      /*kRequested=*/0, 1);
+  histogram_tester().ExpectBucketCount(
+      "SafeBrowsing.NotificationContentDetection."
+      "DisplayPersistentNotificationEvent",
+      /*kFinished=*/1, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -494,6 +518,18 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(GetDisplayedPersistentNotifications().size(), 1U);
   EXPECT_FALSE(
       IsNotificationSuspicious(GetDisplayedPersistentNotifications()[0]));
+  histogram_tester().ExpectTotalCount(
+      "SafeBrowsing.NotificationContentDetection."
+      "DisplayPersistentNotificationEvent",
+      2);
+  histogram_tester().ExpectBucketCount(
+      "SafeBrowsing.NotificationContentDetection."
+      "DisplayPersistentNotificationEvent",
+      /*kRequested=*/0, 1);
+  histogram_tester().ExpectBucketCount(
+      "SafeBrowsing.NotificationContentDetection."
+      "DisplayPersistentNotificationEvent",
+      /*kFinished=*/1, 1);
 }
 
 }  // namespace safe_browsing

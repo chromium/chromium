@@ -2060,6 +2060,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="SafeBrowsing.NotificationContentDetection.DisplayPersistentNotificationEvent"
+    enum="DisplayPersistentNotificationEvents" expires_after="2025-07-02">
+  <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records 2 events for displaying a persistent notification for the feature
+    that shows warnings for suspicious notifications. The first event is logged
+    when a request is made to check the model, where the notification would
+    otherwise be displayed immediately. The second event is logged when the
+    notification content detection code actually displays the notification. This
+    histogram is temporary for validating the correctness of the suspicious
+    notification warning feature and the two event counts should match.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.NotificationContentDetection.SuspiciousScore"
     units="score" expires_after="2025-10-22">
   <owner>skrakowi@chromium.org</owner>
