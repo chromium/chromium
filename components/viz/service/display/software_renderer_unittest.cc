@@ -99,22 +99,23 @@ class SoftwareRendererTest : public testing::Test {
 
   ResourceId AllocateAndFillSoftwareResource(const gfx::Size& size,
                                              const SkBitmap& source) {
-    auto shared_image_mapping = shared_image_interface()->CreateSharedImage(
-        {SinglePlaneFormat::kBGRA_8888, size, gfx::ColorSpace(),
-         gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
-         "SoftwareRendererTestSharedBitmap"});
+    auto shared_image =
+        shared_image_interface()->CreateSharedImageForSoftwareCompositor(
+            {SinglePlaneFormat::kBGRA_8888, size, gfx::ColorSpace(),
+             gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
+             "SoftwareRendererTestSharedBitmap"});
+    auto mapping = shared_image->Map();
 
     SkImageInfo info = SkImageInfo::MakeN32Premul(size.width(), size.height());
-    source.readPixels(info, shared_image_mapping.mapping.memory(),
+    source.readPixels(info, mapping->GetMemoryForPlane(0).data(),
                       info.minRowBytes(), 0, 0);
 
     auto transferable_resource = TransferableResource::MakeSoftwareSharedImage(
-        shared_image_mapping.shared_image,
-        shared_image_interface()->GenVerifiedSyncToken(), size,
+        shared_image, shared_image_interface()->GenVerifiedSyncToken(), size,
         SinglePlaneFormat::kBGRA_8888,
         TransferableResource::ResourceSource::kTileRasterTask);
-    auto release_callback = base::BindOnce(
-        &DeleteSharedImage, std::move(shared_image_mapping.shared_image));
+    auto release_callback =
+        base::BindOnce(&DeleteSharedImage, std::move(shared_image));
 
     return child_resource_provider_->ImportResource(
         std::move(transferable_resource), std::move(release_callback));
