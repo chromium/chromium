@@ -56,8 +56,11 @@ def CheckThirdPartyReadmesUpdated(input_api, output_api):
     local_path = f.LocalPath()
     if input_api.os_path.dirname(local_path) == 'third_party':
       continue
+    # TODO: Autorolled DEPS should be automatically excluded
     exclusions = [
       'third_party/android_deps/',
+      'third_party/androidx/',
+      'third_party/android_build_tools/',
       'third_party/blink/',
       'third_party/boringssl/',
       'third_party/closure_compiler/externs/',
