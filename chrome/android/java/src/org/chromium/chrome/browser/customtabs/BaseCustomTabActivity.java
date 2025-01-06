@@ -1334,7 +1334,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
     private DisclosureInfobar createDisclosureInfobar() {
         return new DisclosureInfobar(
                 getResources(),
-                getSnackbarManager(),
+                this::getSnackbarManager,
                 getTrustedWebActivityModel(),
                 getLifecycleDispatcher());
     }
@@ -1342,7 +1342,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
     private DisclosureSnackbar createDisclosureSnackbar() {
         return new DisclosureSnackbar(
                 getResources(),
-                getSnackbarManager(),
+                this::getSnackbarManager,
                 getTrustedWebActivityModel(),
                 getLifecycleDispatcher());
     }
