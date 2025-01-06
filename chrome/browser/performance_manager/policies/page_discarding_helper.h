@@ -115,7 +115,8 @@ class PageNodeSortProxy {
 // PageDiscardingHelper::GetFromGraph(graph()).
 class PageDiscardingHelper
     : public GraphOwnedAndRegistered<PageDiscardingHelper>,
-      public NodeDataDescriberDefaultImpl {
+      public NodeDataDescriberDefaultImpl,
+      public PageNodeObserver {
  public:
   // Export discard reason in the public interface.
   using DiscardReason = ::mojom::LifecycleUnitDiscardReason;
@@ -191,6 +192,9 @@ class PageDiscardingHelper
 
   bool IsPageOptedOutOfDiscarding(const std::string& browser_context_id,
                                   const GURL& url) const;
+
+  // PageNodeObserver:
+  void OnMainFrameDocumentChanged(const PageNode* page_node) override;
 
  protected:
   void OnPassedToGraph(Graph* graph) override;
