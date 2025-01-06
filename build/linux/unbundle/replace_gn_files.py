@@ -55,7 +55,6 @@ REPLACEMENTS = {
     'libaom': 'third_party/libaom/BUILD.gn',
     'libavif': 'third_party/libavif/BUILD.gn',
     'libdrm': 'third_party/libdrm/BUILD.gn',
-    'libevent': 'third_party/libevent/BUILD.gn',
     'libjpeg': 'third_party/libjpeg.gni',
     'libpng': 'third_party/libpng/BUILD.gn',
     'libsecret': 'third_party/libsecret/BUILD.gn',
