@@ -10,13 +10,16 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/ranges/algorithm.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
+#include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/navigation_handle.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/native_widget.h"
 #include "ui/views/widget/widget.h"
@@ -30,15 +33,43 @@ extern const void* kConstrainedWindowWidgetIdentifier;
 
 namespace tabs {
 
+class TabDialogWidgetObserver : public views::WidgetObserver {
+ public:
+  TabDialogWidgetObserver(TabDialogManager* tab_dialog_manager,
+                          views::Widget* widget);
+  TabDialogWidgetObserver(const TabDialogWidgetObserver&) = delete;
+  TabDialogWidgetObserver& operator=(const TabDialogWidgetObserver&) = delete;
+  ~TabDialogWidgetObserver() override = default;
+
+ private:
+  // Overridden from WidgetObserver:
+  void OnWidgetDestroyed(views::Widget* widget) override;
+
+  raw_ptr<TabDialogManager> tab_dialog_manager_ = nullptr;
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      tab_dialog_scoped_observation_{this};
+};
+
+TabDialogWidgetObserver::TabDialogWidgetObserver(
+    TabDialogManager* tab_dialog_manager,
+    views::Widget* widget)
+    : tab_dialog_manager_(tab_dialog_manager) {
+  tab_dialog_scoped_observation_.Observe(widget);
+}
+
+void TabDialogWidgetObserver::OnWidgetDestroyed(views::Widget* widget) {
+  tab_dialog_scoped_observation_.Reset();
+  tab_dialog_manager_->WidgetDestroyed(widget);
+}
+
 namespace {
 
 gfx::Rect GetModalDialogBounds(views::Widget* widget,
-                               views::Widget* host_widget,
+                               BrowserWindowInterface* host_browser_window,
                                const gfx::Size& size) {
-  gfx::Size host_widget_size = host_widget->GetWindowBoundsInScreen().size();
   gfx::Point position =
-      gfx::Point((host_widget_size.width() - size.width()) / 2,
-                 (host_widget_size.height() - size.height()) / 2);
+      host_browser_window->GetWebContentsModalDialogHostForWindow()
+          ->GetDialogPosition(size);
   // Align the first row of pixels inside the border. This is the apparent top
   // of the dialog.
   position.set_y(position.y() -
@@ -48,7 +79,7 @@ gfx::Rect GetModalDialogBounds(views::Widget* widget,
 }
 
 void UpdateModalDialogPosition(views::Widget* widget,
-                               views::Widget* host_widget,
+                               BrowserWindowInterface* host_browser_window,
                                const gfx::Size& size) {
   // Do not forcibly update the dialog widget position if it is being dragged.
   if (widget->HasCapture()) {
@@ -59,26 +90,29 @@ void UpdateModalDialogPosition(views::Widget* widget,
   // size. This can happen on MacViews under the Cocoa browser where the window
   // modal dialogs are displayed as sheets, and their position is managed by a
   // ConstrainedWindowSheetController instance.
-  if (!host_widget) {
+  if (!host_browser_window->TopContainer()->GetWidget()) {
     widget->SetSize(size);
     return;
   }
 
-  widget->SetBounds(GetModalDialogBounds(widget, host_widget, size));
+  widget->SetBounds(GetModalDialogBounds(widget, host_browser_window, size));
 }
 
-void ConfigureDesiredBoundsDelegate(views::Widget* widget,
-                                    views::Widget* host_widget) {
+void ConfigureDesiredBoundsDelegate(
+    views::Widget* widget,
+    BrowserWindowInterface* host_browser_window) {
   views::WidgetDelegate* delegate = widget->widget_delegate();
   // TODO(kylixrd): Audit other usages of this API and determine whether to make
   // it exclusive for use here. Currently used in BubbleDialogDelegate and
   // shouldn't ever be used for a tab-modal dialog.
   delegate->set_desired_bounds_delegate(base::BindRepeating(
-      [](views::Widget* widget, views::Widget* host_widget) -> gfx::Rect {
+      [](views::Widget* widget,
+         BrowserWindowInterface* host_browser_window) -> gfx::Rect {
         return GetModalDialogBounds(
-            widget, host_widget, widget->GetRootView()->GetPreferredSize({}));
+            widget, host_browser_window,
+            widget->GetRootView()->GetPreferredSize({}));
       },
-      widget, host_widget));
+      widget, host_browser_window));
 }
 
 }  // namespace
@@ -112,15 +146,19 @@ std::unique_ptr<views::Widget> TabDialogManager::CreateTabScopedDialog(
 void TabDialogManager::ShowDialogAndBlockTabInteraction(views::Widget* widget) {
   CHECK(tab_interface_->CanShowModalUI());
   widget_ = widget->GetWeakPtr();
-  ConfigureDesiredBoundsDelegate(
-      widget_.get(),
-      tab_interface_->GetBrowserWindowInterface()->TopContainer()->GetWidget());
+  ConfigureDesiredBoundsDelegate(widget_.get(),
+                                 tab_interface_->GetBrowserWindowInterface());
+  UpdateModalDialogPosition(widget_.get(),
+                            tab_interface_->GetBrowserWindowInterface(),
+                            widget_->GetRootView()->GetPreferredSize({}));
   widget_->SetNativeWindowProperty(
       views::kWidgetIdentifierKey,
       const_cast<void*>(
           constrained_window::kConstrainedWindowWidgetIdentifier));
   scoped_ignore_input_events_ =
       tab_interface_->GetContents()->IgnoreInputEvents(std::nullopt);
+  tab_dialog_widget_observer_ =
+      std::make_unique<TabDialogWidgetObserver>(this, widget_.get());
   if (tab_interface_->IsActivated()) {
     widget_->Show();
   }
@@ -133,12 +171,18 @@ TabDialogManager::CreateShowDialogAndBlockTabInteraction(
   ShowDialogAndBlockTabInteraction(widget.get());
   return widget;
 }
+
 void TabDialogManager::CloseDialog() {
   if (widget_) {
-    scoped_ignore_input_events_.reset();
     widget_->Close();
     widget_.reset();
   }
+}
+
+void TabDialogManager::WidgetDestroyed(views::Widget* widget) {
+  CHECK_EQ(widget, widget_.get());
+  tab_dialog_widget_observer_.reset();
+  scoped_ignore_input_events_.reset();
 }
 
 void TabDialogManager::DidFinishNavigation(
@@ -172,9 +216,7 @@ void TabDialogManager::DidFinishNavigation(
 void TabDialogManager::TabDidEnterForeground(TabInterface* tab_interface) {
   if (widget_) {
     UpdateModalDialogPosition(widget_.get(),
-                              tab_interface_->GetBrowserWindowInterface()
-                                  ->TopContainer()
-                                  ->GetWidget(),
+                              tab_interface_->GetBrowserWindowInterface(),
                               widget_->GetRootView()->GetPreferredSize({}));
     widget_->SetVisible(true);
   }

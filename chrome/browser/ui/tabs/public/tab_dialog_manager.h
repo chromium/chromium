@@ -19,10 +19,13 @@
 
 namespace views {
 class Widget;
+class WidgetObserver;
 class DialogDelegate;
 }  // namespace views
 
 namespace tabs {
+
+class TabDialogWidgetObserver;
 
 // Class provides a mechanism to show a tab-scoped dialog.
 class TabDialogManager : public content::WebContentsObserver {
@@ -57,12 +60,14 @@ class TabDialogManager : public content::WebContentsObserver {
 
   void CloseDialog();
 
+  // Invoked from an internal WidgetObserver when the Widget is has been
+  // destroyed.
+  void WidgetDestroyed(views::Widget* widget);
+
  private:
   // Overridden from content::WebContentObserver:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
-
-  void OnWidgetDestroyed(views::Widget* widget);
 
   void TabDidEnterForeground(TabInterface* tab_interface);
   void TabWillEnterBackground(TabInterface* tab_interface);
@@ -79,6 +84,8 @@ class TabDialogManager : public content::WebContentsObserver {
 
   std::optional<content::WebContents::ScopedIgnoreInputEvents>
       scoped_ignore_input_events_;
+
+  std::unique_ptr<TabDialogWidgetObserver> tab_dialog_widget_observer_;
 };
 
 }  // namespace tabs
