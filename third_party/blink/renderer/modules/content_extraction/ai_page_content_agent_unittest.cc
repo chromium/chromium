@@ -1525,5 +1525,51 @@ TEST_F(AIPageContentAgentTest, HiddenUntilFoundOnIframe) {
   EXPECT_TRUE(hidden_text_geometry.visible_bounding_box.IsEmpty());
 }
 
+TEST_F(AIPageContentAgentTest, LineBreak) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "<div style=\"width: 100px; height:100px\">"
+      "Lorem Ipsum is simply dummy text of the printing and "
+      "typesetting industry.<br>Lorem Ipsum has been the "
+      "industry's standard dummy text ever since the 1500s, "
+      "when an unknown printer took a galley of type and "
+      "scrambled it to make a type specimen book. It has "
+      "survived not only five centuries, but also the leap "
+      "into electronic typesetting, remaining essentially "
+      "unchanged. It was popularised in the 1960s with the "
+      "release of Letraset sheets containing Lorem Ipsum "
+      "passages, and more recently with desktop publishing "
+      "software like Aldus PageMaker including versions of "
+      "Lorem Ipsum."
+      "</div>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
+      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
+  ASSERT_TRUE(agent);
+
+  auto content = agent->GetAIPageContentSync();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& root = *content->root_node;
+  EXPECT_EQ(root.children_nodes.size(), 2u);
+  CheckTextNode(*root.children_nodes[0],
+                "Lorem Ipsum is simply dummy text of the printing and "
+                "typesetting industry.");
+  CheckTextNode(
+      *root.children_nodes[1],
+      "Lorem Ipsum has been the industry's standard dummy text ever since the "
+      "1500s, when an unknown printer took a galley of type and scrambled it "
+      "to make a type specimen book. It has survived not only five centuries, "
+      "but also the leap into electronic typesetting, remaining essentially "
+      "unchanged. It was popularised in the 1960s with the release of Letraset "
+      "sheets containing Lorem Ipsum passages, and more recently with desktop "
+      "publishing software like Aldus PageMaker including versions of Lorem "
+      "Ipsum.");
+}
+
 }  // namespace
 }  // namespace blink
