@@ -298,7 +298,7 @@ class LayerTreeTest : public testing::Test, public TestHooks {
   std::unique_ptr<TestTaskGraphRunner> task_graph_runner_;
   base::CancelableOnceClosure timeout_;
   base::OnceClosure quit_closure_;
-  scoped_refptr<viz::TestContextProvider> compositor_contexts_;
+  scoped_refptr<viz::TestContextProvider> context_provider_sw_;
   bool skip_allocate_initial_local_surface_id_ = false;
   viz::ParentLocalSurfaceIdAllocator allocator_;
   base::WeakPtr<LayerTreeTest> main_thread_weak_ptr_;

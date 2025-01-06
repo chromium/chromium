@@ -82,6 +82,7 @@ class SynchronousLayerTreeFrameSink : public TestLayerTreeFrameSink {
       bool use_software_renderer)
       : TestLayerTreeFrameSink(std::move(compositor_context_provider),
                                std::move(worker_context_provider),
+                               /*shared_image_interface=*/nullptr,
                                gpu_memory_buffer_manager,
                                renderer_settings,
                                debug_settings,
@@ -1257,11 +1258,17 @@ std::unique_ptr<TestLayerTreeFrameSink> LayerTreeTest::CreateLayerTreeFrameSink(
         use_software_renderer());
   }
 
+  gpu::SharedImageInterface* shared_image_interface = nullptr;
+  if (!compositor_context_provider) {
+    context_provider_sw_ = viz::TestContextProvider::CreateRaster();
+    shared_image_interface = context_provider_sw_->SharedImageInterface();
+  }
+
   return std::make_unique<TestLayerTreeFrameSink>(
       compositor_context_provider, std::move(worker_context_provider),
-      gpu_memory_buffer_manager(), renderer_settings, &debug_settings_,
-      task_runner_provider(), synchronous_composite, disable_display_vsync,
-      refresh_rate, begin_frame_source_);
+      shared_image_interface, gpu_memory_buffer_manager(), renderer_settings,
+      &debug_settings_, task_runner_provider(), synchronous_composite,
+      disable_display_vsync, refresh_rate, begin_frame_source_);
 }
 
 std::unique_ptr<viz::DisplayCompositorMemoryAndTaskController>

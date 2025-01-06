@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "cc/test/fake_layer_context.h"
+#include "cc/test/test_client_shared_image_interface.h"
 #include "cc/tiles/image_decode_cache_utils.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
 #include "cc/trees/raster_context_provider_wrapper.h"
@@ -19,6 +20,9 @@
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/test/begin_frame_args_test.h"
 #include "gpu/ipc/client/client_shared_image_interface.h"
+#include "gpu/ipc/client/gpu_channel_host.h"
+#include "gpu/ipc/common/gpu_channel.mojom.h"
+#include "gpu/ipc/common/mock_gpu_channel.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cc {
@@ -52,7 +56,8 @@ FakeLayerTreeFrameSink::FakeLayerTreeFrameSink(
               : nullptr,
           base::SingleThreadTaskRunner::GetCurrentDefault(),
           nullptr,
-          /*shared_image_interface=*/nullptr) {
+          base::MakeRefCounted<TestClientSharedImageInterface>(
+              base::MakeRefCounted<gpu::TestSharedImageInterface>())) {
   gpu_memory_buffer_manager_ =
       context_provider_ ? &test_gpu_memory_buffer_manager_ : nullptr;
 }

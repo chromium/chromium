@@ -12,19 +12,21 @@
 
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
+#include "cc/test/test_client_shared_image_interface.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
 #include "cc/trees/single_thread_proxy.h"
 #include "cc/trees/task_runner_provider.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
-#include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/service/display/direct_renderer.h"
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/overlay_processor_stub.h"
 #include "components/viz/service/display/skia_output_surface.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
+#include "components/viz/test/test_gpu_service_holder.h"
+#include "gpu/command_buffer/service/scheduler.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/ipc/client/client_shared_image_interface.h"
-#include "mojo/public/cpp/system/platform_handle.h"
 
 namespace cc {
 
@@ -33,6 +35,7 @@ static constexpr viz::FrameSinkId kLayerTreeFrameSinkId(1, 1);
 TestLayerTreeFrameSink::TestLayerTreeFrameSink(
     scoped_refptr<viz::RasterContextProvider> compositor_context_provider,
     scoped_refptr<viz::RasterContextProvider> worker_context_provider,
+    scoped_refptr<gpu::SharedImageInterface> shared_image_interface,
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
     const viz::RendererSettings& renderer_settings,
     const viz::DebugRendererSettings* const debug_settings,
@@ -54,23 +57,26 @@ TestLayerTreeFrameSink::TestLayerTreeFrameSink(
               ? task_runner_provider->ImplThreadTaskRunner()
               : task_runner_provider->MainThreadTaskRunner(),
           gpu_memory_buffer_manager,
-          /*shared_image_interface=*/nullptr),
+          shared_image_interface
+              ? base::MakeRefCounted<TestClientSharedImageInterface>(
+                    shared_image_interface)
+              : nullptr),
       synchronous_composite_(synchronous_composite),
       disable_display_vsync_(disable_display_vsync),
       renderer_settings_(renderer_settings),
       debug_settings_(debug_settings),
       refresh_rate_(refresh_rate),
       frame_sink_id_(kLayerTreeFrameSinkId),
-      shared_image_manager_(
-          std::make_unique<gpu::SharedImageManager>(/*thread_safe=*/true)),
-      sync_point_manager_(std::make_unique<gpu::SyncPointManager>()),
-      gpu_scheduler_(
-          std::make_unique<gpu::Scheduler>(sync_point_manager_.get())),
       parent_local_surface_id_allocator_(
           new viz::ParentLocalSurfaceIdAllocator),
       client_provided_begin_frame_source_(begin_frame_source),
       external_begin_frame_source_(this),
-      task_runner_provider_(task_runner_provider) {
+      task_runner_provider_(task_runner_provider),
+      shared_image_interface_provider_(
+          shared_image_interface
+              ? std::make_unique<viz::TestSharedImageInterfaceProvider>(
+                    shared_image_interface)
+              : std::make_unique<viz::TestSharedImageInterfaceProvider>()) {
   parent_local_surface_id_allocator_->GenerateId();
 }
 
@@ -88,11 +94,11 @@ bool TestLayerTreeFrameSink::BindToClient(LayerTreeFrameSinkClient* client) {
   if (!LayerTreeFrameSink::BindToClient(client))
     return false;
 
-  shared_bitmap_manager_ = std::make_unique<viz::TestSharedBitmapManager>();
   frame_sink_manager_ = std::make_unique<viz::FrameSinkManagerImpl>(
-      viz::FrameSinkManagerImpl::InitParams(shared_bitmap_manager_.get()));
+      viz::FrameSinkManagerImpl::InitParams(
+          /*shared_bitmap_manager_.get()*/ nullptr));
   frame_sink_manager_->SetSharedImageInterfaceProviderForTest(
-      &shared_image_interface_provider_);
+      shared_image_interface_provider_.get());
 
   std::unique_ptr<viz::DisplayCompositorMemoryAndTaskController>
       display_controller;
@@ -138,9 +144,19 @@ bool TestLayerTreeFrameSink::BindToClient(LayerTreeFrameSinkClient* client) {
   // gpu::GpuTaskSchedulerHelper alive for output surface to use, so there is no
   // need to pass in an gpu::GpuTaskSchedulerHelper here.
 
+  gpu::SharedImageManager* shared_image_manager = nullptr;
+  gpu::Scheduler* gpu_scheduler = nullptr;
+
+  if (!LayerTreeFrameSink::context_provider()) {
+    viz::GpuServiceImpl* gpu_service =
+        viz::TestGpuServiceHolder::GetInstance()->gpu_service();
+    shared_image_manager = gpu_service->shared_image_manager();
+    gpu_scheduler = gpu_service->gpu_scheduler();
+  }
+
   display_ = std::make_unique<viz::Display>(
-      shared_bitmap_manager_.get(), shared_image_manager_.get(),
-      gpu_scheduler_.get(), renderer_settings_, debug_settings_, frame_sink_id_,
+      /*shared_bitmap_manager_.get()*/ nullptr, shared_image_manager,
+      gpu_scheduler, renderer_settings_, debug_settings_, frame_sink_id_,
       std::move(display_controller), std::move(display_output_surface),
       std::move(overlay_processor), std::move(scheduler),
       compositor_task_runner_);
@@ -177,9 +193,6 @@ void TestLayerTreeFrameSink::DetachFromClient() {
   // SharedBitmapId that has been reported from the client. Since the client is
   // gone that memory can be freed. If we don't then it would leak.
   DebugScopedSetImplThread impl(task_runner_provider_);
-  for (const auto& id : owned_bitmaps_)
-    shared_bitmap_manager_->ChildDeletedSharedBitmap(id);
-  owned_bitmaps_.clear();
 
   if (display_begin_frame_source_) {
     frame_sink_manager_->UnregisterBeginFrameSource(
@@ -192,7 +205,6 @@ void TestLayerTreeFrameSink::DetachFromClient() {
   begin_frame_source_ = nullptr;
   parent_local_surface_id_allocator_ = nullptr;
   frame_sink_manager_ = nullptr;
-  shared_bitmap_manager_ = nullptr;
   test_client_ = nullptr;
   LayerTreeFrameSink::DetachFromClient();
 }
@@ -250,17 +262,10 @@ void TestLayerTreeFrameSink::DidNotProduceFrame(const viz::BeginFrameAck& ack,
 void TestLayerTreeFrameSink::DidAllocateSharedBitmap(
     base::ReadOnlySharedMemoryRegion region,
     const viz::SharedBitmapId& id) {
-  DebugScopedSetImplThread impl(task_runner_provider_);
-  bool ok =
-      shared_bitmap_manager_->ChildAllocatedSharedBitmap(region.Map(), id);
-  DCHECK(ok);
-  owned_bitmaps_.insert(id);
 }
 
 void TestLayerTreeFrameSink::DidDeleteSharedBitmap(
     const viz::SharedBitmapId& id) {
-  shared_bitmap_manager_->ChildDeletedSharedBitmap(id);
-  owned_bitmaps_.erase(id);
 }
 
 void TestLayerTreeFrameSink::DidReceiveCompositorFrameAck(

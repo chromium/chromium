@@ -79,6 +79,8 @@ LayerTreePixelTest::CreateLayerTreeFrameSink(
     scoped_refptr<viz::RasterContextProvider>) {
   scoped_refptr<viz::TestInProcessContextProvider> compositor_context_provider;
   scoped_refptr<viz::TestInProcessContextProvider> worker_context_provider;
+  gpu::SharedImageInterface* shared_image_interface = nullptr;
+
   if (!use_software_renderer()) {
     compositor_context_provider =
         base::MakeRefCounted<viz::TestInProcessContextProvider>(
@@ -98,6 +100,7 @@ LayerTreePixelTest::CreateLayerTreeFrameSink(
       case TestRasterType::kBitmap:
         NOTREACHED();
     }
+
     worker_context_provider =
         base::MakeRefCounted<viz::TestInProcessContextProvider>(
             worker_ri_type, /*support_locking=*/true);
@@ -114,9 +117,17 @@ LayerTreePixelTest::CreateLayerTreeFrameSink(
     }
     DCHECK_EQ(result, gpu::ContextResult::kSuccess);
   } else {
+    context_provider_sw_ =
+        base::MakeRefCounted<viz::TestInProcessContextProvider>(
+            viz::TestContextType::kSoftwareRaster, /*support_locking=*/false);
+    gpu::ContextResult result = context_provider_sw_->BindToCurrentSequence();
+    DCHECK_EQ(result, gpu::ContextResult::kSuccess);
+
+    shared_image_interface = context_provider_sw_->SharedImageInterface();
     max_texture_size_ =
         layer_tree_host()->GetSettings().max_render_buffer_bounds_for_sw;
   }
+
   static constexpr bool disable_display_vsync = false;
   bool synchronous_composite =
       !HasImplThread() &&
@@ -127,9 +138,9 @@ LayerTreePixelTest::CreateLayerTreeFrameSink(
   test_settings.dont_round_texture_sizes_for_pixel_tests = true;
   auto delegating_output_surface = std::make_unique<TestLayerTreeFrameSink>(
       compositor_context_provider, worker_context_provider,
-      gpu_memory_buffer_manager(), test_settings, &debug_settings_,
-      task_runner_provider(), synchronous_composite, disable_display_vsync,
-      refresh_rate);
+      shared_image_interface, gpu_memory_buffer_manager(), test_settings,
+      &debug_settings_, task_runner_provider(), synchronous_composite,
+      disable_display_vsync, refresh_rate);
   delegating_output_surface->SetEnlargePassTextureAmount(
       enlarge_texture_amount_);
   return delegating_output_surface;
