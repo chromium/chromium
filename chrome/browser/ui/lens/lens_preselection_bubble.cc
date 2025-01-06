@@ -98,8 +98,8 @@ void LensPreselectionBubble::Init() {
     views::HighlightPathGenerator::Install(
         button.get(),
         std::make_unique<views::CircleHighlightPathGenerator>(gfx::Insets()));
-    button->SetTooltipText(l10n_util::GetStringUTF16(
-        IDS_SIDE_PANEL_HEADER_MORE_INFO_BUTTON_TOOLTIP));
+    button->SetTooltipText(
+        l10n_util::GetStringUTF16(IDS_LENS_OVERLAY_MORE_OPTIONS_BUTTON_LABEL));
     more_info_button_ = AddChildView(std::move(button));
     more_info_button_->SetButtonController(
         std::make_unique<views::MenuButtonController>(
