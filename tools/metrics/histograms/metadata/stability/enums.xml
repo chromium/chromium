@@ -488,6 +488,7 @@ Called by update_bad_message_reasons.py.-->
       label="PSI_ADD_PAGE_EMBEDDED_PERMISSION_OBSERVER_WITHOUT_FEATURE"/>
   <int value="321" label="RFH_INITIATOR_BASE_URL_IS_EMPTY"/>
   <int value="322" label="MDDH_SELECT_AUDIO_OUTPUT_WITHOUT_FEATURE"/>
+  <int value="323" label="MDDH_SET_PREFERRED_SINK_ID_WITHOUT_FEATURE"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">

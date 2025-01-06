@@ -105,7 +105,7 @@ MediaDevicesDispatcherHost::MediaDevicesDispatcherHost(
       authorization_handler_factory_callback_(base::BindRepeating(
           &MediaDevicesDispatcherHost::CreateAuthorizationHandler,
           // The callback is bound to the current instance of the dispatcher
-          // host, so it is safe to pass a Unretained pointer to the callback.
+          // host, so it is safe to pass an Unretained pointer to the callback.
           base::Unretained(this))) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(media_stream_manager_);
@@ -349,10 +349,14 @@ void MediaDevicesDispatcherHost::SetPreferredSinkId(
     const std::string& hashed_sink_id,
     SetPreferredSinkIdCallback callback) {
   CHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (!media_stream_manager_->preferred_audio_output_device_manager()) {
-    std::move(callback).Run(media::OUTPUT_DEVICE_STATUS_ERROR_INTERNAL);
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kPreferredAudioOutputDevices)) {
+    ReceivedBadMessage(render_frame_host_id_.child_id,
+                       bad_message::MDDH_SET_PREFERRED_SINK_ID_WITHOUT_FEATURE);
     return;
   }
+
+  CHECK(media_stream_manager_->preferred_audio_output_device_manager());
 
   // The first thing is to validate whether the caller is permitted to set the
   // preferred sink id, which uses the same permission like
