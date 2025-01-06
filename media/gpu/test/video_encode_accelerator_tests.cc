@@ -475,6 +475,36 @@ TEST_F(VideoEncoderTest, ForceTheFirstAndSecondKeyFrames) {
   EXPECT_TRUE(encoder->WaitForBitstreamProcessors());
 }
 
+// Execute Flush() in the middle of encoding. Supporting this is required for
+// Flush() and ChabgeOptions() in media::VideoEncoder API.
+// See media/base/video_encoder.h for detail.
+TEST_F(VideoEncoderTest, FlushIntheMiddle) {
+  if (g_env->SpatialLayers().size() > 1) {
+    GTEST_SKIP() << "Skip SHMEM input test cases in spatial SVC encoding";
+  }
+
+  auto config = GetDefaultConfig();
+
+  auto encoder = CreateVideoEncoder(g_env->Video(), GetDefaultConfig());
+  const size_t middle_frame = config.num_frames_to_encode / 2;
+
+  // Encode until the middle of stream and request force_keyframe.
+  encoder->EncodeUntil(VideoEncoder::kFrameReleased, middle_frame);
+  EXPECT_TRUE(encoder->WaitUntilIdle());
+
+  // Flush in the middle.
+  encoder->Flush();
+  EXPECT_TRUE(encoder->WaitForFlushDone());
+
+  // Encode until the end of stream.
+  encoder->Encode();
+
+  EXPECT_TRUE(encoder->WaitForFlushDone());
+  EXPECT_EQ(encoder->GetFlushDoneCount(), 2u);
+  EXPECT_EQ(encoder->GetFrameReleasedCount(), config.num_frames_to_encode);
+  EXPECT_TRUE(encoder->WaitForBitstreamProcessors());
+}
+
 // Encode video from start to end. Multiple buffer encodes will be queued in the
 // encoder, without waiting for the result of the previous encode requests.
 TEST_F(VideoEncoderTest, FlushAtEndOfStream_MultipleOutstandingEncodes) {
