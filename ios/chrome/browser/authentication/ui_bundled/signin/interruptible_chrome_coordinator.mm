@@ -12,13 +12,21 @@ BASE_FEATURE(kIOSInterruptibleCoordinatorStoppedSynchronously,
              "IOSInterruptibleCoordinatorStoppedSynchronously",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BOOL IsInterruptibleCoordinatorStoppedSynchronouslyEnabled() {
+  return base::FeatureList::IsEnabled(
+      kIOSInterruptibleCoordinatorStoppedSynchronously);
+}
+
+BOOL IsInterruptibleCoordinatorAlwaysDismissedEnabled() {
+  return base::FeatureList::IsEnabled(
+      kIOSInterruptibleCoordinatorAlwaysDismissed);
+}
+
 SigninCoordinatorInterrupt SynchronousStopAction() {
-  if (base::FeatureList::IsEnabled(
-          kIOSInterruptibleCoordinatorAlwaysDismissed)) {
+  if (IsInterruptibleCoordinatorAlwaysDismissedEnabled()) {
     // If the interruption is not synchronous, we must continue to send
     // UIShutdownNoDismiss.
-    CHECK(base::FeatureList::IsEnabled(
-              kIOSInterruptibleCoordinatorStoppedSynchronously),
+    CHECK(IsInterruptibleCoordinatorStoppedSynchronouslyEnabled(),
           base::NotFatalUntil::M136);
     return SigninCoordinatorInterrupt::DismissWithoutAnimation;
   }

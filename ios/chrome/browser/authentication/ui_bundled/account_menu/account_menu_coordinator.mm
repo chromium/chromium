@@ -556,8 +556,7 @@
       completion();
     }
   };
-  if (base::FeatureList::IsEnabled(
-          kIOSInterruptibleCoordinatorStoppedSynchronously)) {
+  if (IsInterruptibleCoordinatorStoppedSynchronouslyEnabled()) {
     [self stopChildrenAndViewControllerWithAction:action completion:nil];
     childrenCompletion();
   } else {
@@ -709,8 +708,7 @@
   _viewController = nil;
   switch (action) {
     case SigninCoordinatorInterrupt::UIShutdownNoDismiss: {
-      CHECK(!base::FeatureList::IsEnabled(
-                kIOSInterruptibleCoordinatorAlwaysDismissed),
+      CHECK(!IsInterruptibleCoordinatorAlwaysDismissedEnabled(),
             base::NotFatalUntil::M136);
       if (completion) {
         completion();

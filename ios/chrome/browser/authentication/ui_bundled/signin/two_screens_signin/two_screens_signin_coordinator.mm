@@ -232,8 +232,7 @@ using base::UserMetricsAction;
   BOOL animated = NO;
   switch (action) {
     case SigninCoordinatorInterrupt::UIShutdownNoDismiss: {
-      CHECK(!base::FeatureList::IsEnabled(
-                kIOSInterruptibleCoordinatorAlwaysDismissed),
+      CHECK(!IsInterruptibleCoordinatorAlwaysDismissedEnabled(),
             base::NotFatalUntil::M136);
       [_childCoordinator
           interruptWithAction:SigninCoordinatorInterrupt::UIShutdownNoDismiss
@@ -259,8 +258,7 @@ using base::UserMetricsAction;
     UIViewController* presentingViewController =
         weakNavigationController.presentingViewController;
     if (presentingViewController) {
-      if (base::FeatureList::IsEnabled(
-              kIOSInterruptibleCoordinatorStoppedSynchronously)) {
+      if (IsInterruptibleCoordinatorStoppedSynchronouslyEnabled()) {
         [presentingViewController dismissViewControllerAnimated:animated
                                                      completion:nil];
         finishCompletion();

@@ -97,8 +97,7 @@
   self.signinInterrupted = YES;
   switch (action) {
     case SigninCoordinatorInterrupt::UIShutdownNoDismiss:
-      CHECK(!base::FeatureList::IsEnabled(
-                kIOSInterruptibleCoordinatorAlwaysDismissed),
+      CHECK(!IsInterruptibleCoordinatorAlwaysDismissedEnabled(),
             base::NotFatalUntil::M136);
       // IdentityInteractionManager doesn't support interrupt with no dismiss.
       // We need to stop with no animation to make sure dealloc are done with
@@ -131,8 +130,7 @@
           completion();
         }
       };
-      if (base::FeatureList::IsEnabled(
-              kIOSInterruptibleCoordinatorStoppedSynchronously)) {
+      if (IsInterruptibleCoordinatorStoppedSynchronouslyEnabled()) {
         [self.identityInteractionManager cancelAuthActivityAnimated:animated
                                                          completion:nil];
         cancelCompletion();

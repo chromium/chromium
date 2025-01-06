@@ -10,6 +10,12 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+// Whether InterruptibleChromeCoordinator’s should always always be dismissed.
+BOOL IsInterruptibleCoordinatorAlwaysDismissedEnabled();
+
+// Whether InterruptibleChromeCoordinator should always stop synchronously.
+BOOL IsInterruptibleCoordinatorStoppedSynchronouslyEnabled();
+
 // If `kInterruptibleChromeAlwaysDismissed` is is disabled,
 // `UIShutdownNoDismiss` is returned. Otherwise `DismissWithoutAnimation`.
 SigninCoordinatorInterrupt SynchronousStopAction();

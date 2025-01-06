@@ -124,8 +124,7 @@
     case SigninCoordinatorInterrupt::DismissWithoutAnimation: {
       BOOL animated =
           SigninCoordinatorInterrupt::DismissWithAnimation == action;
-      if (base::FeatureList::IsEnabled(
-              kIOSInterruptibleCoordinatorStoppedSynchronously)) {
+      if (IsInterruptibleCoordinatorStoppedSynchronouslyEnabled()) {
         [_navigationController dismissViewControllerAnimated:animated
                                                   completion:nil];
         dismissCompletion();
@@ -136,8 +135,7 @@
       break;
     }
     case SigninCoordinatorInterrupt::UIShutdownNoDismiss:
-      CHECK(!base::FeatureList::IsEnabled(
-                kIOSInterruptibleCoordinatorAlwaysDismissed),
+      CHECK(!IsInterruptibleCoordinatorAlwaysDismissedEnabled(),
             base::NotFatalUntil::M136);
       // The view should be ignored and leave it being presented.
       _navigationController.presentationController.delegate = nil;

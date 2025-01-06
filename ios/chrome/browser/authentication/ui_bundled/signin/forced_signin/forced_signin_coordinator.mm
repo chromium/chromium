@@ -167,8 +167,7 @@
   BOOL animated = NO;
   switch (action) {
     case SigninCoordinatorInterrupt::UIShutdownNoDismiss: {
-      CHECK(!base::FeatureList::IsEnabled(
-                kIOSInterruptibleCoordinatorAlwaysDismissed),
+      CHECK(!IsInterruptibleCoordinatorAlwaysDismissedEnabled(),
             base::NotFatalUntil::M136);
       [self.childCoordinator
           interruptWithAction:SigninCoordinatorInterrupt::UIShutdownNoDismiss
@@ -186,8 +185,7 @@
   }
 
   ProceduralBlock childCompletion = ^{
-    if (base::FeatureList::IsEnabled(
-            kIOSInterruptibleCoordinatorStoppedSynchronously)) {
+    if (IsInterruptibleCoordinatorStoppedSynchronouslyEnabled()) {
       [weakSelf.navigationController.presentingViewController
           dismissViewControllerAnimated:animated
                              completion:nil];

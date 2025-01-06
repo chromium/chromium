@@ -158,8 +158,7 @@
       completion();
     }
   } else if (action == SigninCoordinatorInterrupt::UIShutdownNoDismiss) {
-    CHECK(!base::FeatureList::IsEnabled(
-              kIOSInterruptibleCoordinatorAlwaysDismissed),
+    CHECK(!IsInterruptibleCoordinatorAlwaysDismissedEnabled(),
           base::NotFatalUntil::M136);
     // In case of `UIShutdownNoDismiss`, everything should be done
     // synchronously. So we should not wait for the mediator interruption to be
@@ -175,8 +174,7 @@
       completion();
     }
   } else {
-    if (base::FeatureList::IsEnabled(
-            kIOSInterruptibleCoordinatorStoppedSynchronously)) {
+    if (IsInterruptibleCoordinatorStoppedSynchronouslyEnabled()) {
       [_mediator interruptWithAction:action completion:nil];
       if (completion) {
         completion();

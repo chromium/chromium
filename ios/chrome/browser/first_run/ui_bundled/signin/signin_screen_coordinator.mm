@@ -148,8 +148,7 @@
 - (void)interruptWithAction:(SigninCoordinatorInterrupt)action
                  completion:(ProceduralBlock)completion {
   if (self.addAccountSigninCoordinator) {
-    if (base::FeatureList::IsEnabled(
-            kIOSInterruptibleCoordinatorStoppedSynchronously)) {
+    if (IsInterruptibleCoordinatorStoppedSynchronouslyEnabled()) {
       [self.addAccountSigninCoordinator interruptWithAction:action
                                                  completion:nil];
 

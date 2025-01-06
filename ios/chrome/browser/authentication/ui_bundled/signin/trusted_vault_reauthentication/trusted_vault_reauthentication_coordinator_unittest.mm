@@ -176,8 +176,7 @@ TEST_F(TrustedVaultReauthenticationCoordinatorTest, TestInterruptWithDismiss) {
                  EXPECT_TRUE(signin_completion_called);
                  interrupt_completion_called = true;
                }];
-  if (base::FeatureList::IsEnabled(
-          kIOSInterruptibleCoordinatorStoppedSynchronously)) {
+  if (IsInterruptibleCoordinatorStoppedSynchronouslyEnabled()) {
     // Sign-in and interrupt completion blocks should be called synchronously.
     EXPECT_TRUE(signin_completion_called);
     EXPECT_TRUE(interrupt_completion_called);
