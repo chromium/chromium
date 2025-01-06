@@ -5649,6 +5649,9 @@ void RenderFrameHostImpl::DidCommitProvisionalLoad(
 void RenderFrameHostImpl::DidCommitPageActivation(
     NavigationRequest* committing_navigation_request,
     mojom::DidCommitProvisionalLoadParamsPtr params) {
+  TRACE_EVENT("navigation", "RenderFrameHostImpl::DidCommitPageActivation",
+              ChromeTrackEvent::kRenderFrameHost, this,
+              "committing_navigation_request", committing_navigation_request);
   DCHECK(committing_navigation_request->IsPageActivation());
   DCHECK(is_main_frame());
 
