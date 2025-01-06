@@ -1901,7 +1901,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram
     name="PrivacySandbox.TrackingProtection.SilentOnboardingStartup.EligibleToOnboardedDuration"
-    units="ms" expires_after="2025-02-10">
+    units="ms" expires_after="2025-07-06">
   <owner>linnan@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
