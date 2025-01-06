@@ -388,26 +388,10 @@ BOOL IsIdentityInCoreAccountInfos(
       [self fetchCapabilities];
       return;
     case COMPLETE_WITH_SUCCESS:
-      [self completeSignInWithResult:SigninCoordinatorResult::
-                                         SigninCoordinatorResultSuccess];
+      [self completeWithSuccessStep];
       return;
     case COMPLETE_WITH_FAILURE:
-      if (_didSignIn) {
-        [_performer signOutImmediatelyFromProfile:profile];
-      }
-      SigninCoordinatorResult result;
-      switch (_cancelationReason) {
-        case CancelationReason::kFailed:
-          result = SigninCoordinatorResult::SigninCoordinatorResultInterrupted;
-          break;
-        case CancelationReason::kUserCanceled:
-          result =
-              SigninCoordinatorResult::SigninCoordinatorResultCanceledByUser;
-          break;
-        case CancelationReason::kNotCanceled:
-          NOTREACHED();
-      }
-      [self completeSignInWithResult:result];
+      [self completeWithFailureStep];
       return;
     case CLEANUP_BEFORE_DONE: {
       // Clean up asynchronously to ensure that `self` does not die while
@@ -503,27 +487,47 @@ BOOL IsIdentityInCoreAccountInfos(
       })];
 }
 
-// Runs `_signInCompletion` asynchronously with `result` argument.
-- (void)completeSignInWithResult:(SigninCoordinatorResult)result {
+// Runs `_signInCompletion` asynchronously when the flow is successful.
+- (void)completeWithSuccessStep {
   DCHECK(_signInCompletion)
       << "`completeSignInWithResult` should not be called twice.";
-  if (result == SigninCoordinatorResult::SigninCoordinatorResultSuccess) {
-    base::UmaHistogramEnumeration("Signin.AccountType.SigninConsent",
-                                  _identityToSignInHostedDomain.length > 0
-                                      ? SigninAccountType::kManaged
-                                      : SigninAccountType::kRegular);
-  }
-  if (_signInCompletion) {
-    SigninCompletionCallback signInCompletion = _signInCompletion;
-    _signInCompletion = nil;
-    signInCompletion(result);
-  }
-  if (self.postSignInActions.Has(PostSignInAction::kShowSnackbar) &&
-      result == SigninCoordinatorResult::SigninCoordinatorResultSuccess) {
+  base::UmaHistogramEnumeration("Signin.AccountType.SigninConsent",
+                                _identityToSignInHostedDomain.length > 0
+                                    ? SigninAccountType::kManaged
+                                    : SigninAccountType::kRegular);
+  SigninCompletionCallback signInCompletion = _signInCompletion;
+  _signInCompletion = nil;
+  signInCompletion(SigninCoordinatorResult::SigninCoordinatorResultSuccess);
+  if (self.postSignInActions.Has(PostSignInAction::kShowSnackbar)) {
     [_performer completePostSignInActions:_postSignInActions
                              withIdentity:_identityToSignIn
                                   browser:_browser];
   }
+  [self continueFlow];
+}
+
+// Runs `_signInCompletion` asynchronously when the flow failed.
+- (void)completeWithFailureStep {
+  DCHECK(_signInCompletion)
+      << "`completeSignInWithResult` should not be called twice.";
+  if (_didSignIn) {
+    ProfileIOS* profile = [self originalProfile];
+    [_performer signOutImmediatelyFromProfile:profile];
+  }
+  SigninCoordinatorResult result;
+  switch (_cancelationReason) {
+    case CancelationReason::kFailed:
+      result = SigninCoordinatorResult::SigninCoordinatorResultInterrupted;
+      break;
+    case CancelationReason::kUserCanceled:
+      result = SigninCoordinatorResult::SigninCoordinatorResultCanceledByUser;
+      break;
+    case CancelationReason::kNotCanceled:
+      NOTREACHED();
+  }
+  SigninCompletionCallback signInCompletion = _signInCompletion;
+  _signInCompletion = nil;
+  signInCompletion(result);
   [self continueFlow];
 }
 
