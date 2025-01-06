@@ -56,7 +56,7 @@ public class FullscreenManagerTestUtils {
             dragEndY = tempDragStartY;
         }
         long downTime = SystemClock.uptimeMillis();
-        TouchCommon.performDrag(
+        TouchCommon.performDragNoFling(
                 testRule.getActivity(), dragX, dragX, dragStartY, dragEndY, 100, downTime);
         waitForBrowserControlsPosition(testRule, expectedPosition);
     }
