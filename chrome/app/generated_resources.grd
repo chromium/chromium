@@ -18265,62 +18265,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
     </if>
 
-    <!-- Privacy Sandbox Dialog strings -->
-    <message name="IDS_PRIVACY_SANDBOX_DIALOG_CONSENT_TITLE" desc="CONTEXT: there are updates to the Chrome browser each month. Just after the user accepts the latest update, this message will appear. The user must make a choice, and this page can’t be dismissed until they do. The title of the page. * The title needs to be framed so that clicking the accept button makes sense * “Help us” is intended to convey a sense of collaboration. Privacy Sandbox is an ongoing multi-year effort. There are sites participating to help us and we also need users to agree to these trials so that we can measure the effectiveness of the features we're building. * “build” is intended to convey that this is a process. The user is agreeing to an effort rather than a stable set of features. Something like “make” doesn't have the same nuance.* “private web” is the promise of privacy sandbox.">
-      Help us build a more private web
-    </message>
-    <message name="IDS_PRIVACY_SANDBOX_BUBBLE_NOTICE_TITLE" desc="CONTEXT: there are updates to the Chrome browser each month. Just after the user accepts the latest update, this message will appear. The title of the page. * “Help us” is intended to convey a sense of collaboration. Privacy Sandbox is an ongoing multi-year effort. There are sites participating to help us and we also need users to agree to these trials so that we can measure the effectiveness of the features we're building. * “build” is intended to convey that this is a process. The user is agreeing to an effort rather than a stable set of features. Something like “make” doesn't have the same nuance. * See www.privacysandbox.com for more context">
-      Help us build a better web
-    </message>
-    <message name="IDS_PRIVACY_SANDBOX_DIALOG_CONSENT_BODY_HEADER_1"  desc="1 of 2 subtitles on the page. We want to write for users who skim the page. That means that the page title, the sub titles, and the button label all work well together as a mini story: 1) Help us build a more private web How? 2) Limit sharing between sites 3) More control over the ads you see 4) Yes, I’ll try it">
-      Limited sharing between sites
-    </message>
-    <message name="IDS_PRIVACY_SANDBOX_BUBBLE_NOTICE_DESCRIPTION" desc="The body text of the bubble.* “Chrome is finding new ways”: “finding” is meant to convey a work in progress, like “build” in the title. The features are live and functional, but still in beta. So we want a verb that’s stronger than “exploring” but weaker than “launching”. * “reduce tracking”: This used to read “reduce cross-site tracking”, but we’ve dropped “cross-site” because it makes the idea unnecessarily complicated. * “estimate your interests”: Topics of interest include things like “Live comedy” and “Rock music”. Chrome estimates these interests based on the sites users visit. It’s an “estimation”, and we don’t want to suggest that we know with certainty the user’s interests. Avoid words like “guess”, “establish”, “define”, etc. (in place of “estimate”). * “Then” is an important keyword. It suggests some amount of time later. The first step is that interests are generated. Later (minutes or weeks), a different site might request interests.">
-      Chrome is finding new ways to reduce tracking and keep you even safer as you browse. Chrome also <ph name="ESTIMATE_INTERESTS_LINK">$1<ex>estimates your interests</ex></ph> and enables you to manage them. Then, sites you visit can ask Chrome for your interests to show you ads.
-    </message>
-    <message name="IDS_PRIVACY_SANDBOX_BUBBLE_NOTICE_SETTINGS_LINK" desc="The user can choose “Go to settings” to visit chrome://settings/privacySandbox. If they do, they’ll find the toggle on for Sandbox trials, which include everything they’ve read above. They can leave trials on or turn them off on this page. Choosing “Go to settings”, the user will navigate away from this page and won’t be able to return here.">
-      Go to settings
-    </message>
-    <message name="IDS_PRIVACY_SANDBOX_BUBBLE_NOTICE_DESCRIPTION_ESTIMATES_INTERESTS_LINK" desc="This will be inserted as a link in IDS_PRIVACY_SANDBOX_BUBBLE_NOTICE_DESCRIPTION instead of ESTIMATE_INTERESTS_LINK placeholder. * “estimate your interests”: Topics of interest include things like “Live comedy” and “Rock music”. Chrome estimates these interests based on the sites users visit. It’s an “estimation”, and we don’t want to suggest that we know with certainty the user’s interests. Avoid words like “guess”, “establish”, “define”, etc. (in place of “estimate”). ">
-      estimates your interests
-    </message>
-    <message name="IDS_PRIVACY_SANDBOX_BUBBLE_NOTICE_DESCRIPTION_ESTIMATES_INTERESTS_LINK_A11Y_NAME" desc="The accessible text read for IDS_PRIVACY_SANDBOX_BUBBLE_NOTICE_DESCRIPTION_ESTIMATES_INTERESTS_LINK. * “estimate your interests”: Topics of interest include things like “Live comedy” and “Rock music”. Chrome estimates these interests based on the sites users visit. It’s an “estimation”, and we don’t want to suggest that we know with certainty the user’s interests. Avoid words like “guess”, “establish”, “define”, etc. (in place of “estimate”). ">
-      estimates your interests - Chrome can estimate your interests
-    </message>
-    <message name="IDS_PRIVACY_SANDBOX_DIALOG_CONSENT_BODY_DESCRIPTION_1" desc="The description beneath the “Limited sharing between sites” subtitle. * “exploring” conveys that this is a work in progress. * “restrict” means to lessen. We don’t want to suggest that we’re “eliminating” cross-site tracking. * “tracking”: An example: a user visits site A and then site B. Based on how third-party cookies work today, when that user later visits site C, site C can be aware that the user visited sites A and B, and can even have some sense for what they did on those sites. * “stop ad spam and fraud”:  This feature isn’t really related to restricting cross-site tracking but we combined these features in the same sentence / section for structural reasons.">
-      We’re exploring ways to restrict tracking while enabling sites to stop ad spam and fraud.
-    </message>
-    <message name="IDS_PRIVACY_SANDBOX_DIALOG_CONSENT_BODY_HEADER_2" desc="2 of 2 subtitles on the page.That means that the page title, the sub titles, and the button label all work well together as a mini story: 1) Help us build a more private web How? 2) Limit sharing between sites 3) More control over the ads you see 4) Yes, I’ll try it">
-      More control over the ads you see
-    </message>
-    <message name="IDS_PRIVACY_SANDBOX_DIALOG_CONSENT_LEARN_MORE_SECTION_2_HEADER" desc="FLEDGE API. A sub title that describes the second of 2 ways a site can get info from Chrome in order to target ads to the user.">
-      Sites you visit that define your interests
-    </message>
-    <message name="IDS_PRIVACY_SANDBOX_DIALOG_CONSENT_LEARN_MORE_SECTION_2_BULLET_POINT_3"  desc="FLEDGE API Bullet 3 of 3 that appear beneath the “Sites you visit that define your interests” subtitle. We break the description into the 3 pieces users most care about: 1) what data, 2) why this data, 3) what can I do about it? * “How you can manage your data:” is bold and serves as a label to help people skimming the page. * “To protect your privacy”: Today, most data is kept for long periods of time. This new Topics API doesn’t retain estimated topics for more than 3 weeks. The only reason for this feature is to protect the user’s privacy. * “auto”: isn’t strictly necessary, but it conveys that this feature is an ongoing part of the service. This isn’t describing, for example, a one-time deletion. * “older than 4 weeks”: We’re trying to convey a rolling delete. Imagine a user opens a browser for the very first time. As the user browses, sites can store info with Chrome for up to 4 weeks. So in week 1, the user visits site A. When week 5 starts, site A is removed from the list of sites. * “a site you visit…”: If a user visits site A every week for months on end, that site will remain on the user’s list of sites for months on end. * “Or you can…”: Say a user strongly dislikes www.siteB.com. But that user might visit siteB.com as part of their job, or just to see how bad it really is. The user can stop siteB from defining interests for them. This block lasts indefinitely.">
-      <ph name="BEGIN_BOLD">&lt;b&gt;</ph>How you can manage your data:<ph name="END_BOLD">&lt;/b&gt;</ph> To protect your privacy, we auto-delete sites from the list that are older than 4 weeks. A site you visit again might appear on the list again. Or you can remove a site if you don’t want that site to ever define interests for you.
-    </message>
-    <message name="IDS_PRIVACY_SANDBOX_DIALOG_CONSENT_ACCEPT_BUTTON" desc="A button that allows the user to accept joining the Privacy Sandbox trials. If the user chooses “Yes, I’m in”: 1)  this consent page disappears and the flow is complete 2) The Privacy Sandbox trials are turned on for this user. These features include everything described above. The page that hosts the settings will appear at chrome://settings/privacySandbox. Saying “Yes, I’m in” is like turning the toggle on. “No thanks” is like keeping the toggle off.">
-      Yes, I’m in
-    </message>
-    <message name="IDS_PRIVACY_SANDBOX_DIALOG_CONSENT_DECLINE_BUTTON" desc="A button that allows the user to decline joining the Privacy Sandbox trials. If the user chooses “No thanks” this consent page disappears and the flow is complete.">
-      No thanks
-    </message>
-    <message name="IDS_PRIVACY_SANDBOX_DIALOG_NOTICE_BODY_HEADER_1" desc="1 of 2 subtitles on the page. We want to write for users who skim the page. That means that the page title, the sub titles, and the button label all work well together as a mini story: 1) Help us build a more private web How? 2) Limit sharing between sites 3) Try more transparent ads 4) Yes, I’ll try it">
-      Limited sharing between sites
-    </message>
-    <message name="IDS_PRIVACY_SANDBOX_DIALOG_NOTICE_BODY_DESCRIPTION_1" desc="* “restrict” means to lessen. We don’t want to suggest that we’re “eliminating” cross-site tracking. * “cross-site tracking”: An example: a user visits site A and then site B. Based on how third-party cookies work today, when that user later visits site C, site C can be aware that the user visited sites A and B, and can even have some sense for what they did on those sites. * “stop ad spam and fraud”:  This feature isn’t really related to restricting cross-site tracking but we combined these features in the same sentence / section for structural reasons.">
-      We’re exploring ways to restrict cross-site tracking while enabling sites to stop ad spam and fraud.
-    </message>
-    <message name="IDS_PRIVACY_SANDBOX_DIALOG_NOTICE_BODY_HEADER_2" desc="2 of 2 subtitles on the page.That means that the page title, the sub titles, and the button label all work well together as a mini story: 1) Help us build a more private web How? 2) Limit sharing between sites 3) More control over the ads you see 4) Yes, I’ll try it">
-      More control over the ads you see
-    </message>
-    <message name="IDS_PRIVACY_SANDBOX_DIALOG_NOTICE_ACKNOWLEDGE_BUTTON" desc="The user can acknowledge the changes with “Got it”. This consent page disappears and the flow is complete.">
-      Got it
-    </message>
-    <message name="IDS_PRIVACY_SANDBOX_DIALOG_NOTICE_OPEN_SETTINGS_BUTTON" desc="The user can choose “Settings” to visit chrome://settings/privacySandbox. If they do, they’ll find the toggle on for Sandbox trials, which include everything they’ve read above. They can leave trials on or turn them off on this page. Choosing “Settings”, the user will navigate away from this page and won’t be able to return here.">
-      Settings
-    </message>
-
     <!-- Battery Saver Toolbar strings  -->
     <if expr="not is_android">
       <message name="IDS_BATTERY_SAVER_BUTTON_TOOLTIP" desc="The tooltip for the battery saver toolbar button">

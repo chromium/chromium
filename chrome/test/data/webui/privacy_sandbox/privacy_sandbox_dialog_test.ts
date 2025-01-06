@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://privacy-sandbox-dialog/privacy_sandbox_dialog_app.js';
 import 'chrome://privacy-sandbox-dialog/privacy_sandbox_notice_dialog_app.js';
 import 'chrome://privacy-sandbox-dialog/privacy_sandbox_notice_restricted_dialog_app.js';
 import 'chrome://privacy-sandbox-dialog/privacy_sandbox_combined_dialog_app.js';
 
 import type {PrivacySandboxCombinedDialogAppElement} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_combined_dialog_app.js';
 import {PrivacySandboxCombinedDialogStep} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_combined_dialog_app.js';
-import type {PrivacySandboxDialogAppElement} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_dialog_app.js';
 import {PrivacySandboxDialogBrowserProxy, PrivacySandboxPromptAction} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_dialog_browser_proxy.js';
 import type {PrivacySandboxDialogConsentStepElement} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_dialog_consent_step.js';
 import {PrivacySandboxDialogMixin} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_dialog_mixin.js';
@@ -19,7 +17,6 @@ import type {PrivacySandboxNoticeRestrictedDialogAppElement} from 'chrome://priv
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {pressAndReleaseKeyOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {isChildVisible, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -114,159 +111,6 @@ function testClickButton(buttonSelector: string, element: HTMLElement|null) {
       !!actionButton, `the button isn\'t found, selector: ${buttonSelector}`);
   actionButton.click();
 }
-
-suite('Consent', function() {
-  let page: PrivacySandboxDialogAppElement;
-  let browserProxy: TestPrivacySandboxDialogBrowserProxy;
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      isConsent: true,
-    });
-  });
-
-  setup(async function() {
-    browserProxy = new TestPrivacySandboxDialogBrowserProxy();
-    PrivacySandboxDialogBrowserProxy.setInstance(browserProxy);
-
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    page = document.createElement('privacy-sandbox-dialog-app');
-    document.body.appendChild(page);
-
-    await browserProxy.whenCalled('resizeDialog');
-    await browserProxy.whenCalled('showDialog');
-  });
-
-  test('dialogStructure', function() {
-    // Consent dialog has addditionally an expand button and H2 title. It also
-    // has a different set of buttons.
-    assertTrue(isChildVisible(page, '.header h2'));
-    assertTrue(isChildVisible(page, '.header h3'));
-
-    assertTrue(isChildVisible(page, '.section'));
-
-    assertTrue(isChildVisible(page, '#expandSection cr-expand-button'));
-
-    assertTrue(isChildVisible(page, '#declineButton'));
-    assertTrue(isChildVisible(page, '#confirmButton'));
-    assertFalse(isChildVisible(page, '#settingsButton'));
-    assertFalse(isChildVisible(page, '#ackButton'));
-  });
-
-  test('acceptClicked', async function() {
-    testClickButton('#confirmButton', page);
-    const [action] = await browserProxy.whenCalled('promptActionOccurred');
-    assertEquals(action, PrivacySandboxPromptAction.CONSENT_ACCEPTED);
-  });
-
-  test('declineClicked', async function() {
-    testClickButton('#declineButton', page);
-    const [action] = await browserProxy.whenCalled('promptActionOccurred');
-    assertEquals(action, PrivacySandboxPromptAction.CONSENT_DECLINED);
-  });
-
-  test('learnMoreClicked', async function() {
-    // In the initial state, the content area isn't scrollable and doesn't have
-    // a separator in the bottom (represented by 'can-scroll' class).
-    // The collapse section is closed.
-    const collapseElement = page.shadowRoot!.querySelector('cr-collapse');
-    const contentArea: HTMLElement|null =
-        page.shadowRoot!.querySelector('#contentArea');
-    let hasScrollbar = doesElemenHaveScrollbar(contentArea!);
-    assertFalse(collapseElement!.opened);
-    assertEquals(contentArea!.classList.contains('can-scroll'), hasScrollbar);
-
-    // After clicking on the collapse section, the content area expands and
-    // becomes scrollable with a separator in the bottom. The collapse section
-    // is opened and the native UI is notified about the action.
-    testClickButton('#expandSection cr-expand-button', page);
-    // TODO(crbug.com/40210776): Add testing for the scroll position.
-    const [openedAction] =
-        await browserProxy.whenCalled('promptActionOccurred');
-    assertEquals(
-        openedAction, PrivacySandboxPromptAction.CONSENT_MORE_INFO_OPENED);
-    assertTrue(collapseElement!.opened);
-    assertTrue(contentArea!.classList.contains('can-scroll'));
-
-    // Reset proxy in between button clicks.
-    browserProxy.reset();
-
-    // After clicking on the collapse section again, the content area collapses
-    // and returns to the initial state.
-    testClickButton('#expandSection cr-expand-button', page);
-    const [closedAction] =
-        await browserProxy.whenCalled('promptActionOccurred');
-    hasScrollbar = doesElemenHaveScrollbar(contentArea!);
-    assertEquals(
-        closedAction, PrivacySandboxPromptAction.CONSENT_MORE_INFO_CLOSED);
-    assertFalse(collapseElement!.opened);
-    assertEquals(contentArea!.classList.contains('can-scroll'), hasScrollbar);
-  });
-
-  test('escPressed', async function() {
-    browserProxy.reset();
-    pressAndReleaseKeyOn(page, 0, [], 'Escape');
-    // No user action is triggered by pressing Esc.
-    assertEquals(browserProxy.getCallCount('promptActionOccurred'), 0);
-  });
-});
-
-suite('Notice', function() {
-  let page: PrivacySandboxDialogAppElement;
-  let browserProxy: TestPrivacySandboxDialogBrowserProxy;
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      isConsent: false,
-    });
-  });
-
-  setup(async function() {
-    browserProxy = new TestPrivacySandboxDialogBrowserProxy();
-    PrivacySandboxDialogBrowserProxy.setInstance(browserProxy);
-
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    page = document.createElement('privacy-sandbox-dialog-app');
-    document.body.appendChild(page);
-
-    await browserProxy.whenCalled('resizeDialog');
-    await browserProxy.whenCalled('showDialog');
-  });
-
-  test('dialogStructure', function() {
-    // Notice dialog doesn't have an expand button and H2 title. It also has
-    // a different set of buttons.
-    assertFalse(isChildVisible(page, '.header h2'));
-    assertTrue(isChildVisible(page, '.header h3'));
-
-    assertTrue(isChildVisible(page, '.section'));
-
-    assertFalse(isChildVisible(page, '#expandSection cr-expand-button'));
-
-    assertFalse(isChildVisible(page, '#declineButton'));
-    assertFalse(isChildVisible(page, '#confirmButton'));
-    assertTrue(isChildVisible(page, '#settingsButton'));
-    assertTrue(isChildVisible(page, '#ackButton'));
-  });
-
-  test('ackClicked', async function() {
-    testClickButton('#ackButton', page);
-    const [action] = await browserProxy.whenCalled('promptActionOccurred');
-    assertEquals(action, PrivacySandboxPromptAction.NOTICE_ACKNOWLEDGE);
-  });
-
-  test('settingsClicked', async function() {
-    testClickButton('#settingsButton', page);
-    const [action] = await browserProxy.whenCalled('promptActionOccurred');
-    assertEquals(action, PrivacySandboxPromptAction.NOTICE_OPEN_SETTINGS);
-  });
-
-  test('escPressed', async function() {
-    pressAndReleaseKeyOn(page, 0, [], 'Escape');
-    const [action] = await browserProxy.whenCalled('promptActionOccurred');
-    assertEquals(action, PrivacySandboxPromptAction.NOTICE_DISMISS);
-  });
-});
 
 function getActiveStep(page: PrivacySandboxCombinedDialogAppElement):
     PrivacySandboxDialogConsentStepElement|
