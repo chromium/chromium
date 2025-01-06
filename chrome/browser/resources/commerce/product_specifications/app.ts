@@ -259,6 +259,7 @@ export class ProductSpecificationsElement extends PolymerElement {
   private callbackRouter_: PageCallbackRouter;
   private eventTracker_: EventTracker = new EventTracker();
   private id_: Uuid|null = null;
+  private isWindowFocused_: boolean = true;
   private listenerIds_: number[] = [];
   private minLoadingAnimationMs_: number = 500;
   private pendingSetUpdate_: (() => void)|null = null;
@@ -293,6 +294,8 @@ export class ProductSpecificationsElement extends PolymerElement {
     // TODO: b/358131415 - use listeners to update. Temporary workaround uses
     // window focus to update the feature state, to check signin.
     window.addEventListener('focus', async () => {
+      this.isWindowFocused_ = true;
+
       const previousState = this.productSpecificationsFeatureState_;
       const {state} =
           await this.shoppingApi_.getProductSpecificationsFeatureState();
@@ -313,6 +316,10 @@ export class ProductSpecificationsElement extends PolymerElement {
       // state will animate first.
       await this.loadTable_(state);
       this.productSpecificationsFeatureState_ = state;
+    });
+
+    window.addEventListener('blur', () => {
+      this.isWindowFocused_ = false;
     });
 
     this.eventTracker_.add(
@@ -350,6 +357,10 @@ export class ProductSpecificationsElement extends PolymerElement {
 
   disableMinLoadingAnimationMsForTesting() {
     this.minLoadingAnimationMs_ = 0;
+  }
+
+  focusWindowForTesting() {
+    this.isWindowFocused_ = true;
   }
 
   private async loadTable_(state: ProductSpecificationsFeatureState) {
@@ -782,6 +793,18 @@ export class ProductSpecificationsElement extends PolymerElement {
   }
 
   private async onSetUpdated_(set: ProductSpecificationsSet) {
+    // If the page does not have focus, schedule the update for later in case a
+    // newer update is received before the tab is focused. This prevents all
+    // updates from triggering at the same time, which may cause a flicker.
+    if (!this.isWindowFocused_) {
+      this.pendingSetUpdate_ = this.updateSet_.bind(this, set);
+      return;
+    }
+
+    this.updateSet_(set);
+  }
+
+  private async updateSet_(set: ProductSpecificationsSet) {
     if (this.showEmptyState_) {
       const tableIndex = this.comparisonTableDetails_.findIndex(
           table => table.uuid.value === set.uuid.value);
@@ -791,18 +814,6 @@ export class ProductSpecificationsElement extends PolymerElement {
       }
     }
 
-    // If the page does not have focus, schedule the update for later in case a
-    // newer update is received before the tab is focused. This prevents all
-    // updates from triggering at the same time, which may cause a flicker.
-    if (!document.hasFocus()) {
-      this.pendingSetUpdate_ = this.updateSet_.bind(this, set);
-      return;
-    }
-
-    this.updateSet_(set);
-  }
-
-  private updateSet_(set: ProductSpecificationsSet) {
     if (set.uuid.value !== this.id_?.value) {
       return;
     }

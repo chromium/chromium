@@ -195,6 +195,11 @@ suite('AppTest', () => {
     return eventToPromise(LOADING_END_EVENT_TYPE, appElement);
   }
 
+  function focusWindowAndTriggerSetUpdate(set: ProductSpecificationsSet) {
+    appElement.focusWindowForTesting();
+    callbackRouterRemote.onProductSpecificationsSetUpdated(set);
+  }
+
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
@@ -928,7 +933,7 @@ suite('AppTest', () => {
     // Trigger an update where the URLs haven't changed, they just change order.
     const orderSwitchedSpecsSetUrls =
         [{url: 'https://example.com/2'}, {url: 'https://example.com/1'}];
-    callbackRouterRemote.onProductSpecificationsSetUpdated(createSpecsSet(
+    focusWindowAndTriggerSetUpdate(createSpecsSet(
         {urls: orderSwitchedSpecsSetUrls, uuid: {value: testId}}));
     await waitAfterNextRender(appElement);
 
@@ -1024,7 +1029,7 @@ suite('AppTest', () => {
         shoppingServiceApi.getArgs('getProductSpecificationsForUrls')[0]);
 
     // Trigger an update where only the title has changed.
-    callbackRouterRemote.onProductSpecificationsSetUpdated(createSpecsSet(
+    focusWindowAndTriggerSetUpdate(createSpecsSet(
         {name: 'Diff title', urls: specsSetUrls, uuid: {value: testId}}));
     await waitAfterNextRender(appElement);
 
@@ -1076,7 +1081,7 @@ suite('AppTest', () => {
         shoppingServiceApi.getArgs('getProductSpecificationsForUrls')[0]);
 
     // Trigger an update where only the title has changed.
-    callbackRouterRemote.onProductSpecificationsSetUpdated(createSpecsSet(
+    focusWindowAndTriggerSetUpdate(createSpecsSet(
         {urls: [{url: 'https://example.com/new_url'}], uuid: {value: testId}}));
     await waitAfterNextRender(appElement);
 
@@ -1522,7 +1527,7 @@ suite('AppTest', () => {
     assertEquals('My products', document.title);
 
     // Simulate a name change from sync.
-    callbackRouterRemote.onProductSpecificationsSetUpdated(createSpecsSet(
+    focusWindowAndTriggerSetUpdate(createSpecsSet(
         {name: 'My specific products', urls: [], uuid: {value: testId}}));
     await flushTasks();
 
@@ -1697,7 +1702,7 @@ suite('AppTest', () => {
       },
     }));
     // Simulate an update from sync (as a result of the above change).
-    callbackRouterRemote.onProductSpecificationsSetUpdated(
+    focusWindowAndTriggerSetUpdate(
         createSpecsSet({urls: [], uuid: {value: testId}}));
     await waitAfterNextRender(appElement);
 
@@ -1912,7 +1917,7 @@ suite('AppTest', () => {
         },
       }));
       // Simulate an update from sync (as a result of the above change).
-      callbackRouterRemote.onProductSpecificationsSetUpdated(
+      focusWindowAndTriggerSetUpdate(
           createSpecsSet({urls: [], uuid: {value: testId}}));
       // There's no loading animation when transitioning to the empty state, so
       // we don't need to wait for loading to end.
@@ -2391,7 +2396,7 @@ suite('AppTest', () => {
       const appElement = await createAppElement();
       await flushTasks();
 
-      callbackRouterRemote.onProductSpecificationsSetUpdated({
+      focusWindowAndTriggerSetUpdate({
         name: 'def',
         uuid: {value: '123'},
         urls: [{url: 'http://example2.com'}],
