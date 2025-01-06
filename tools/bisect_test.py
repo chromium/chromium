@@ -1098,10 +1098,10 @@ class AndroidSnapshotBuildTest(AndroidBuildTest):
     super().setUp()
     self.set_sdk_level(bisect_builds.version_codes.PIE)
 
+  @patch('bisect-builds.UnzipFilenameToDir')
   @patch('bisect-builds.InstallOnAndroid')
-  @patch('bisect-builds.ArchiveBuild._install_revision',
-         return_value={'chrome': 'chrome.apk'})
-  def test_install_revision(self, mock_install_revision, mock_InstallOnAndroid):
+  @patch('glob.glob', return_value=['Monochrome.apk'])
+  def test_install_revision(self, mock_glob, mock_InstallOnAndroid, mock_unzip):
     options = bisect_builds.ParseCommandLine([
         '-a', 'android-arm64', '-g', '1313161', '-b', '1313210', '--apk',
         'chrome'
@@ -1109,9 +1109,48 @@ class AndroidSnapshotBuildTest(AndroidBuildTest):
     build = bisect_builds.create_archive_build(options)
     self.assertIsInstance(build, bisect_builds.AndroidSnapshotBuild)
     build._install_revision('chrome.zip', 'temp-dir')
-    mock_install_revision.assert_called_once_with('chrome.zip', 'temp-dir')
-    mock_InstallOnAndroid.assert_called_once_with(self.device, 'chrome.apk')
+    mock_glob.assert_called_once_with('temp-dir/*/apks/Monochrome.apk')
+    mock_InstallOnAndroid.assert_called_once_with(self.device, 'Monochrome.apk')
 
+  @patch('bisect-builds.UnzipFilenameToDir')
+  @patch('sys.stdout', new_callable=io.StringIO)
+  @patch('glob.glob',
+         side_effect=[[],
+                      [
+                          "temp-dir/full-build-linux/apks/MonochromeBeta.apk",
+                          "temp-dir/full-build-linux/apks/ChromePublic.apk"
+                      ]])
+  def test_install_revision_with_show_available_apks(self, mock_glob,
+                                                     mock_stdout, mock_unzip):
+    options = bisect_builds.ParseCommandLine([
+        '-a', 'android-arm64', '-g', '1313161', '-b', '1313210', '--apk',
+        'chrome'
+    ])
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.AndroidSnapshotBuild)
+    with self.assertRaises(bisect_builds.BisectException):
+      build._install_revision('chrome.zip', 'temp-dir')
+    self.assertIn("The list of available --apk:", mock_stdout.getvalue())
+    self.assertIn("chrome_beta", mock_stdout.getvalue())
+    self.assertIn("chromium", mock_stdout.getvalue())
+
+  @patch('bisect-builds.UnzipFilenameToDir')
+  @patch('sys.stdout', new_callable=io.StringIO)
+  @patch('glob.glob',
+         side_effect=[[], ["temp-dir/full-build-linux/apks/unknown.apks"]])
+  def test_install_revision_with_show_unknown_apks(self, mock_glob, mock_stdout,
+                                                   mock_unzip):
+    options = bisect_builds.ParseCommandLine([
+        '-a', 'android-arm64', '-g', '1313161', '-b', '1313210', '--apk',
+        'chrome'
+    ])
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.AndroidSnapshotBuild)
+    with self.assertRaises(bisect_builds.BisectException):
+      build._install_revision('chrome.zip', 'temp-dir')
+    self.assertIn("No supported apk found. But found following",
+                  mock_stdout.getvalue())
+    self.assertIn("unknown.apks", mock_stdout.getvalue())
 
 class AndroidTrichromeReleaseBuildTest(AndroidBuildTest):
 
@@ -1250,6 +1289,26 @@ class AndroidTrichromeOfficialBuildTest(AndroidBuildTest):
     mock_InstallOnAndroid.assert_any_call(
         self.device,
         'temp-dir/full-build-linux/apks/TrichromeChromeGoogle6432.apks')
+
+  @patch('sys.stdout', new_callable=io.StringIO)
+  @patch('glob.glob',
+         side_effect=[[],
+                      ['temp-dir/TrichromeChromeGoogle6432Canary.minimal.apks']
+                      ])
+  @patch('bisect-builds.UnzipFilenameToDir')
+  def test_install_revision_with_show_available_apks(self,
+                                                     mock_UnzipFilenameToDir,
+                                                     mock_glob, mock_stdout):
+    options = bisect_builds.ParseCommandLine([
+        '-o', '-a', 'android-arm64-high', '--apk', 'chrome', '-g', '1334338',
+        '-b', '1334380'
+    ])
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.AndroidTrichromeOfficialBuild)
+    with self.assertRaises(bisect_builds.BisectException):
+      build._install_revision('download.zip', 'tmp-dir')
+    self.assertIn("The list of available --apk:", mock_stdout.getvalue())
+    self.assertIn("chrome_canary", mock_stdout.getvalue())
 
   @unittest.skipUnless('NO_MOCK_SERVER' in os.environ,
                        'The test only valid when NO_MOCK_SERVER')

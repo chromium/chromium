@@ -1223,29 +1223,55 @@ class AndroidBuildMixin:
       raise BisectException('Failed to initialize device.')
     self.binary_name = self._get_apk_filename()
 
-  def _get_apk_filename(self, prefer_64bit=True):
+  def _get_apk_mapping(self):
     sdk = self.device.build_version_sdk
-    apk_mapping = None
     if 'webview' in self.apk.lower():
-      apk_mapping = WEBVIEW_APK_FILENAMES
+      return WEBVIEW_APK_FILENAMES
     # Need these logic to bisect very old build. Release binaries are stored
     # forever and occasionally there are requests to bisect issues introduced
     # in very old versions.
     elif sdk < version_codes.LOLLIPOP:
-      apk_mapping = CHROME_APK_FILENAMES
+      return CHROME_APK_FILENAMES
     elif sdk < version_codes.NOUGAT:
-      apk_mapping = CHROME_MODERN_APK_FILENAMES
+      return CHROME_MODERN_APK_FILENAMES
     else:
-      apk_mapping = MONOCHROME_APK_FILENAMES
+      return MONOCHROME_APK_FILENAMES
+
+  def _get_apk_filename(self):
+    apk_mapping = self._get_apk_mapping()
     if self.apk not in apk_mapping:
       raise BisectException(
           'Bisecting on Android only supported for these apks: [%s].' %
           '|'.join(apk_mapping))
     return apk_mapping[self.apk]
 
+  def _show_available_apks(self, tempdir):
+    """glob and show available apks for the path."""
+    available_apks = []
+    all_apks = []
+    reversed_apk_mapping = {v: k for k, v in self._get_apk_mapping().items()}
+    for apk_path in glob.glob(self._get_extract_binary_glob(tempdir, "*")):
+      apk_name = os.path.basename(apk_path)
+      if not re.search("\.apks?$", apk_name):
+        continue
+      all_apks.append(apk_name)
+      if apk_name in reversed_apk_mapping:
+        available_apks.append(reversed_apk_mapping[apk_name])
+    if available_apks:
+      print(f"The list of available --apk: {{{','.join(available_apks)}}}")
+    elif all_apks:
+      print("No supported apk found. But found following APK(s): "
+            f"{{{','.join(all_apks)}}}")
+    else:
+      print("No APK(s) found.")
+
   def _install_revision(self, download, tempdir):
-    apk_paths = super()._install_revision(download, tempdir)
-    InstallOnAndroid(self.device, apk_paths['chrome'])
+    UnzipFilenameToDir(download, tempdir)
+    apk_path = glob.glob(self._get_extract_binary_glob(tempdir))
+    if len(apk_path) == 0:
+      self._show_available_apks(tempdir)
+      raise BisectException(f'Can not find {self.binary_name} from {tempdir}')
+    InstallOnAndroid(self.device, apk_path[0])
 
   def _launch_revision(self, tempdir, executables, args=()):
     if args:
@@ -1259,8 +1285,10 @@ class AndroidBuildMixin:
     LaunchOnAndroid(self.device, self.apk)
     return (0, sys.stdout, sys.stderr)
 
-  def _get_extract_binary_glob(self, tempdir):
-    return '%s/*/apks/%s' % (tempdir, self.binary_name)
+  def _get_extract_binary_glob(self, tempdir, binary_name=None):
+    if binary_name is None:
+      binary_name = self.binary_name
+    return '%s/*/apks/%s' % (tempdir, binary_name)
 
 
 class AndroidTrichromeMixin(AndroidBuildMixin):
@@ -1273,11 +1301,14 @@ class AndroidTrichromeMixin(AndroidBuildMixin):
       raise BisectException("Trichrome is only supported after Android Q.")
     self.library_binary_name = self._get_library_filename()
 
-  def _get_apk_filename(self, prefer_64bit=True):
+  def _get_apk_mapping(self, prefer_64bit=True):
     if self.platform in self._64bit_platforms and prefer_64bit:
-      apk_mapping = TRICHROME64_APK_FILENAMES
+      return TRICHROME64_APK_FILENAMES
     else:
-      apk_mapping = TRICHROME_APK_FILENAMES
+      return TRICHROME_APK_FILENAMES
+
+  def _get_apk_filename(self, prefer_64bit=True):
+    apk_mapping = self._get_apk_mapping(prefer_64bit)
     if self.apk not in apk_mapping:
       raise BisectException(
           'Bisecting on Android only supported for these apks: [%s].' %
@@ -1295,6 +1326,23 @@ class AndroidTrichromeMixin(AndroidBuildMixin):
           'Bisecting for Android Trichrome only supported for these apks: [%s].'
           % '|'.join(apk_mapping))
     return apk_mapping[self.apk]
+
+  def _install_revision(self, download, tempdir):
+    UnzipFilenameToDir(download, tempdir)
+    trichrome_library_filename = self._get_library_filename()
+    trichrome_library_path = glob.glob(
+        f'{tempdir}/*/apks/{trichrome_library_filename}')
+    if len(trichrome_library_path) == 0:
+      self._show_available_apks(tempdir)
+      raise BisectException(
+          f'Can not find {trichrome_library_filename} from {tempdir}')
+    trichrome_filename = self._get_apk_filename()
+    trichrome_path = glob.glob(f'{tempdir}/*/apks/{trichrome_filename}')
+    if len(trichrome_path) == 0:
+      self._show_available_apks(tempdir)
+      raise BisectException(f'Can not find {trichrome_filename} from {tempdir}')
+    InstallOnAndroid(self.device, trichrome_library_path[0])
+    InstallOnAndroid(self.device, trichrome_path[0])
 
 
 class AndroidReleaseBuild(AndroidBuildMixin, ReleaseBuild):
@@ -1366,24 +1414,11 @@ class AndroidTrichromeReleaseBuild(AndroidTrichromeMixin, AndroidReleaseBuild):
 
 class AndroidTrichromeOfficialBuild(AndroidTrichromeMixin, OfficialBuild):
 
-  def _get_apk_filename(self, prefer_64bit=True):
-    filename = super()._get_apk_filename(prefer_64bit)
-    return filename.replace(".apks", ".minimal.apks")
-
-  def _install_revision(self, download, tempdir):
-    UnzipFilenameToDir(download, tempdir)
-    trichrome_library_filename = self._get_library_filename()
-    trichrome_library_path = glob.glob(
-        f'{tempdir}/*/apks/{trichrome_library_filename}')
-    if len(trichrome_library_path) == 0:
-      raise Exception(
-          f'Can not find {trichrome_library_filename} from {tempdir}')
-    trichrome_filename = self._get_apk_filename()
-    trichrome_path = glob.glob(f'{tempdir}/*/apks/{trichrome_filename}')
-    if len(trichrome_path) == 0:
-      raise Exception(f'Can not find {trichrome_filename} from {tempdir}')
-    InstallOnAndroid(self.device, trichrome_library_path[0])
-    InstallOnAndroid(self.device, trichrome_path[0])
+  def _get_apk_mapping(self, prefer_64bit=True):
+    return {
+        k: v.replace(".apks", ".minimal.apks")
+        for k, v in super()._get_apk_mapping(prefer_64bit).items()
+    }
 
 
 class LinuxReleaseBuild(ReleaseBuild):
@@ -2368,10 +2403,10 @@ Tip: add "-- --no-first-run" to bypass the first run prompts.
       help='Test the first and last revisions in the range before proceeding '
       'with the bisect.',
   )
-  apk_choices = sorted(set().union(CHROME_APK_FILENAMES,
-                                   CHROME_MODERN_APK_FILENAMES,
-                                   MONOCHROME_APK_FILENAMES,
-                                   WEBVIEW_APK_FILENAMES))
+  apk_choices = sorted(
+      set().union(CHROME_APK_FILENAMES, CHROME_MODERN_APK_FILENAMES,
+                  MONOCHROME_APK_FILENAMES, WEBVIEW_APK_FILENAMES,
+                  TRICHROME_APK_FILENAMES, TRICHROME64_APK_FILENAMES))
   parser.add_argument(
       '--apk',
       choices=apk_choices,
