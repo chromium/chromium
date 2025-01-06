@@ -1217,6 +1217,7 @@ void TableView::SortItemsAndUpdateMapping(bool schedule_paint) {
 
   if (schedule_paint) {
     SchedulePaint();
+    UpdateFocusRings();
   }
 }
 
