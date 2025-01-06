@@ -333,14 +333,26 @@ bool OSInfo::IsWowX86OnOther() const {
 
 std::string OSInfo::processor_model_name() {
   if (processor_model_name_.empty()) {
-    const wchar_t kProcessorNameString[] =
+    static constexpr wchar_t kProcessorNameString[] =
         L"HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0";
-    RegKey key(HKEY_LOCAL_MACHINE, kProcessorNameString, KEY_READ);
+    RegKey key(HKEY_LOCAL_MACHINE, kProcessorNameString, KEY_QUERY_VALUE);
     std::wstring value;
     key.ReadValue(L"ProcessorNameString", &value);
     processor_model_name_ = WideToUTF8(value);
   }
   return processor_model_name_;
+}
+
+std::string OSInfo::processor_vendor_name() {
+  if (processor_vendor_name_.empty()) {
+    static constexpr wchar_t kVendorNameString[] =
+        L"HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0";
+    RegKey key(HKEY_LOCAL_MACHINE, kVendorNameString, KEY_QUERY_VALUE);
+    std::wstring value;
+    key.ReadValue(L"VendorIdentifier", &value);
+    processor_vendor_name_ = WideToUTF8(value);
+  }
+  return processor_vendor_name_;
 }
 
 bool OSInfo::IsWindowsNSku() const {

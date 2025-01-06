@@ -104,6 +104,7 @@
 
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "base/win/hardware_check.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_version.h"
@@ -860,6 +861,11 @@ void RecordStartupMetrics() {
   base::UmaHistogramBoolean("Windows.ParallelDllLoadingEnabled",
                             IsParallelDllLoadingEnabled());
   RecordAppCompatMetrics();
+
+  if (base::win::OSInfo::Kernel32Version() < base::win::Version::WIN11) {
+    base::UmaHistogramBoolean("Windows.Win11UpgradeEligible",
+                              base::win::IsWin11UpgradeEligible());
+  }
   key_credential_manager_support::ReportKeyCredentialManagerSupport();
 #endif  // BUILDFLAG(IS_WIN)
 

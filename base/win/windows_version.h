@@ -165,8 +165,9 @@ class BASE_EXPORT OSInfo {
     return allocation_granularity_;
   }
 
-  // Processor name as read from registry.
+  // Processor info as read from registry.
   std::string processor_model_name();
+  std::string processor_vendor_name();
 
   // Returns the "ReleaseId" (Windows 10 release number) from the registry.
   const std::string& release_id() const LIFETIME_BOUND { return release_id_; }
@@ -246,6 +247,7 @@ class BASE_EXPORT OSInfo {
   WowProcessMachine wow_process_machine_;
   WowNativeMachine wow_native_machine_;
   std::string processor_model_name_;
+  std::string processor_vendor_name_;
   DWORD os_type_;
 };
 
