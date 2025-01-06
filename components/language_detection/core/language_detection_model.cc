@@ -134,19 +134,15 @@ LanguageDetectionModel::LanguageDetectionModel()
 LanguageDetectionModel::~LanguageDetectionModel() = default;
 
 std::vector<Prediction> LanguageDetectionModel::Predict(
-    std::u16string_view contents,
-    bool truncate) const {
+    std::u16string_view contents) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT("browser", "LanguageDetectionModel::DetectTopLanguage");
   base::ElapsedTimer timer;
 
   CHECK(IsAvailable());
 
+  size_t convert_length = std::min(kModelTruncationLength, contents.length());
   std::string utf8_contents;
-  size_t convert_length =
-      truncate ? std::min(kModelTruncationLength, contents.length())
-               : contents.length();
-
   base::UTF16ToUTF8(contents.data(), convert_length, &utf8_contents);
 
   // TFLite expects all strings to be aligned to 4 bytes.

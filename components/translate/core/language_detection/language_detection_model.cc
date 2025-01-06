@@ -18,12 +18,6 @@
 #include "components/translate/core/language_detection/language_detection_util.h"
 
 namespace translate {
-// If enabled, the string passed to the language detection model for the whole
-// page is truncated to `kTextSampleLength`
-BASE_FEATURE(kTruncateLanguageDetectionSample,
-             "TruncateLanguageDetectionSample",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 LanguageDetectionModel::LanguageDetectionModel(
     language_detection::LanguageDetectionModel& shared_tflite_model)
     : tflite_model_(shared_tflite_model) {}

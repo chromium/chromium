@@ -82,9 +82,7 @@ class COMPONENT_EXPORT(LANGUAGE_DETECTION) LanguageDetectionModel {
   // the string before passing to the TFLite model. Even though the model only
   // considers a prefix of the input, the runtime is proportional to the total
   // length of the input.
-  // TODO(https://crbug.com/352636753): Remove the option and always truncate.
-  std::vector<Prediction> Predict(std::u16string_view contents,
-                                  bool truncate = true) const;
+  std::vector<Prediction> Predict(std::u16string_view contents) const;
 
   // Runs the TFLIte language detection model on the whole string. This will
   // scan over the content with the 128 character window.
