@@ -185,7 +185,7 @@ BASE_FEATURE(kWebViewNewInvalidateHeuristic,
 // ignored. If there's no allowlist, the soc must be absent from the blocklist.
 BASE_FEATURE(kWebViewEnableADPF,
              "WebViewEnableADPF",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string> kWebViewADPFSocManufacturerAllowlist{
     &kWebViewEnableADPF, "webview_soc_manufacturer_allowlist", "Google"};
