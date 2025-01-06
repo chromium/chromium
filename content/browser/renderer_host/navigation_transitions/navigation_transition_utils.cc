@@ -141,6 +141,8 @@ void CacheScreenshotImpl(base::WeakPtr<NavigationControllerImpl> controller,
           is_copied_from_embedder
               ? CacheHitOrMissReason::kCapturedEmptyBitmapFromEmbedder
               : CacheHitOrMissReason::kCapturedEmptyBitmapFromWebPage);
+      entry->navigation_transition_data().set_is_copied_from_embedder(
+          is_copied_from_embedder);
     }
     return;
   }
