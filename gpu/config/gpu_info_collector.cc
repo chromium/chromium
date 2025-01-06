@@ -916,14 +916,21 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
   adapter_options_get_gl_proc.display = display;
   adapter_options_get_gl_proc.nextInChain = adapter_options.nextInChain;
   adapter_options.nextInChain = &adapter_options_get_gl_proc;
-  EGLSurface drawSurface = eglGetCurrentSurface(EGL_DRAW);
-  EGLSurface readSurface = eglGetCurrentSurface(EGL_READ);
-  EGLContext context = eglGetCurrentContext();
+  EGLSurface drawSurface = nullptr;
+  EGLSurface readSurface = nullptr;
+  EGLContext context = nullptr;
+  if (gl::GetGLImplementation() != gl::kGLImplementationDisabled) {
+    drawSurface = eglGetCurrentSurface(EGL_DRAW);
+    readSurface = eglGetCurrentSurface(EGL_READ);
+    context = eglGetCurrentContext();
+  }
 
   // Dawn WebGPU API calls, such as adapter.CreateDevice(), may change the
   // EGLContext. Restore the context on return from this function.
   absl::Cleanup on_return = [display, drawSurface, readSurface, context] {
-    eglMakeCurrent(display, drawSurface, readSurface, context);
+    if (gl::GetGLImplementation() != gl::kGLImplementationDisabled) {
+      eglMakeCurrent(display, drawSurface, readSurface, context);
+    }
   };
 #endif
 
