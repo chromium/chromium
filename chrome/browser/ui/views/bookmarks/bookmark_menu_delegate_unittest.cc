@@ -815,3 +815,65 @@ TEST_F(BookmarkMenuDelegateTest, MovingBookmarkBeforeStartIndexDoesNothing) {
                 0);
   EXPECT_EQ(2u, root_menu->GetSubmenu()->GetMenuItems().size());
 }
+
+TEST_F(BookmarkMenuDelegateTest, IncreaseStartIndex) {
+  const BookmarkNode* bookmark_bar_node = model()->bookmark_bar_node();
+  ASSERT_EQ(3u, bookmark_bar_node->children().size());
+
+  NewDelegate();
+  bookmark_menu_delegate_->SetActiveMenu(bookmark_bar_node, 0);
+  views::MenuItemView* root_menu = menu();
+  // The menu has items for nodes, a, F1 and F2.
+  EXPECT_EQ(3u, root_menu->GetSubmenu()->GetMenuItems().size());
+
+  // Increasing the start index should remove the first nodes.
+  bookmark_menu_delegate_->SetMenuStartIndex(bookmark_bar_node, 2);
+  ASSERT_TRUE(root_menu->HasSubmenu());
+  ASSERT_EQ(1u, root_menu->GetSubmenu()->GetMenuItems().size());
+  EXPECT_EQ(u"F2", root_menu->GetSubmenu()->GetMenuItemAt(0)->title());
+}
+
+TEST_F(BookmarkMenuDelegateTest, DecreaseStartIndex) {
+  const BookmarkNode* bookmark_bar_node = model()->bookmark_bar_node();
+  ASSERT_EQ(3u, bookmark_bar_node->children().size());
+
+  NewDelegate();
+  bookmark_menu_delegate_->SetActiveMenu(bookmark_bar_node, 2);
+  views::MenuItemView* root_menu = menu();
+  ASSERT_TRUE(root_menu->HasSubmenu());
+  EXPECT_EQ(1u, root_menu->GetSubmenu()->GetMenuItems().size());
+
+  // Decreasing the starting should add the missing nodes.
+  bookmark_menu_delegate_->SetMenuStartIndex(bookmark_bar_node, 1);
+  ASSERT_TRUE(root_menu->HasSubmenu());
+  ASSERT_EQ(2u, root_menu->GetSubmenu()->GetMenuItems().size());
+  EXPECT_EQ(u"F1", root_menu->GetSubmenu()->GetMenuItemAt(0)->title());
+  EXPECT_EQ(u"F2", root_menu->GetSubmenu()->GetMenuItemAt(1)->title());
+}
+
+TEST_F(BookmarkMenuDelegateTest, SetMenuStartIndexUnchanged) {
+  const BookmarkNode* bookmark_bar_node = model()->bookmark_bar_node();
+  ASSERT_EQ(3u, bookmark_bar_node->children().size());
+
+  NewDelegate();
+  bookmark_menu_delegate_->SetActiveMenu(bookmark_bar_node, 2);
+  views::MenuItemView* root_menu = menu();
+  ASSERT_TRUE(root_menu->HasSubmenu());
+  EXPECT_EQ(1u, root_menu->GetSubmenu()->GetMenuItems().size());
+
+  // Nothing should happen if the index is unchanged.
+  bookmark_menu_delegate_->SetMenuStartIndex(bookmark_bar_node, 2);
+  ASSERT_TRUE(root_menu->HasSubmenu());
+  EXPECT_EQ(1u, root_menu->GetSubmenu()->GetMenuItems().size());
+}
+
+TEST_F(BookmarkMenuDelegateTest, SetMenuStartIndexForMissingMenu) {
+  const BookmarkNode* bookmark_bar_node = model()->bookmark_bar_node();
+  ASSERT_EQ(3u, bookmark_bar_node->children().size());
+
+  NewDelegate();
+
+  // Nothing should happen if the menu wasn't built yet.
+  bookmark_menu_delegate_->SetMenuStartIndex(bookmark_bar_node, 2);
+  EXPECT_EQ(nullptr, menu());
+}

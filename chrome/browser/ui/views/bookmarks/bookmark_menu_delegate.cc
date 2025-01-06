@@ -288,6 +288,47 @@ void BookmarkMenuDelegate::SetActiveMenu(const BookmarkNode* node,
   menu_ = node_to_menu_map_[node];
 }
 
+void BookmarkMenuDelegate::SetMenuStartIndex(const BookmarkNode* node,
+                                             size_t start_index) {
+  CHECK(!parent_menu_item_);
+  auto node_to_start_idx = node_start_child_idx_map_.find(node);
+  const size_t prev_start_idx =
+      node_to_start_idx == node_start_child_idx_map_.end()
+          ? 0
+          : node_to_start_idx->second;
+
+  if (prev_start_idx == start_index) {
+    return;
+  }
+
+  // It's possible the menu hasn't been built yet, so no update is necessary.
+  auto node_to_menu = node_to_menu_map_.find(node);
+  if (node_to_menu == node_to_menu_map_.end()) {
+    return;
+  }
+
+  CHECK_LE(start_index, node->children().size());
+  node_start_child_idx_map_[node] = start_index;
+  MenuItemView* parent_menu = node_to_menu->second;
+
+  // Remove obsolete bookmark menus if the start index increased.
+  for (size_t idx = prev_start_idx; idx < start_index; ++idx) {
+    const BookmarkNode* child_node = node->children()[idx].get();
+    if (auto child_node_to_menu = node_to_menu_map_.find(child_node);
+        child_node_to_menu != node_to_menu_map_.end()) {
+      RemoveBookmarkNode(child_node, child_node_to_menu->second);
+    }
+  }
+
+  // Add missing bookmark menus if the start index decreased.
+  for (size_t idx = start_index; idx < prev_start_idx; ++idx) {
+    const BookmarkNode* child_node = node->children()[idx].get();
+    AddBookmarkNode(child_node, parent_menu, idx);
+  }
+
+  parent_menu->ChildrenChanged();
+}
+
 std::u16string BookmarkMenuDelegate::GetTooltipText(
     int id,
     const gfx::Point& screen_loc) const {
