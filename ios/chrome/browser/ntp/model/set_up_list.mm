@@ -6,6 +6,7 @@
 
 #import <vector>
 
+#import "base/feature_list.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
@@ -162,7 +163,9 @@ std::vector<SetUpListItemType> GetSetUpListItemTypeOrder(
       if (IsSigninEnabled(auth_service) &&
           !sync_service->HasDisableReason(
               syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY) &&
-          !HasManagedSyncDataType(sync_service)) {
+          !HasManagedSyncDataType(sync_service) &&
+          !base::FeatureList::IsEnabled(
+              set_up_list::kSetUpListWithoutSignInItem)) {
         items.push_back(SetUpListItemType::kSignInSync);
       }
 
@@ -300,7 +303,10 @@ std::vector<SetUpListItemType> GetSetUpListItemTypeOrder(
 
   switch (set_up_list::GetSetUpListInFirstRunVariation()) {
     case set_up_list::FirstRunVariationType::kDisabled:
-      [itemTypes addObject:@(int(SetUpListItemType::kSignInSync))];
+      if (!base::FeatureList::IsEnabled(
+              set_up_list::kSetUpListWithoutSignInItem)) {
+        [itemTypes addObject:@(int(SetUpListItemType::kSignInSync))];
+      }
       if (_shouldIncludeNotificationItem) {
         [itemTypes addObject:@(int(SetUpListItemType::kNotifications))];
       }

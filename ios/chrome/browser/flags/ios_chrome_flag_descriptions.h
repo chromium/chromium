@@ -994,6 +994,11 @@ extern const char kSetUpListInFirstRunNameDescription[];
 extern const char kSetUpListShortenedDurationName[];
 extern const char kSetUpListShortenedDurationDescription[];
 
+// Title and description for the flag to remove the sign-in item from the Set Up
+// List.
+extern const char kSetUpListWithoutSignInItemName[];
+extern const char kSetUpListWithoutSignInItemDescription[];
+
 // Title and description for the flag to enable the Share button
 // in the web context menu in iOS.
 extern const char kShareInWebContextMenuIOSName[];

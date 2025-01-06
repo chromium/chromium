@@ -24,6 +24,9 @@ BASE_DECLARE_FEATURE(kSetUpListInFirstRun);
 // Feature to adjust the Set Up List duration.
 BASE_DECLARE_FEATURE(kSetUpListShortenedDuration);
 
+// Feature to remove the sign-in item in the Set Up List.
+BASE_DECLARE_FEATURE(kSetUpListWithoutSignInItem);
+
 // Name of the param that indicates which variation of the kSetUpListInFirstRun
 // is enabled. The Set Up List items shown depend on the variation.
 extern const char kSetUpListInFirstRunParam[];

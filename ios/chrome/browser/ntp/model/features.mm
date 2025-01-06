@@ -16,6 +16,10 @@ BASE_FEATURE(kSetUpListShortenedDuration,
              "SetUpListShortenedDuration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSetUpListWithoutSignInItem,
+             "SetUpListWithoutSignInItem",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const char kSetUpListInFirstRunParam[] = "SetUpListInFirstRunParam";
 
 const char kSetUpListDurationParam[] = "SetUpListDurationParam";

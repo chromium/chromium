@@ -11962,6 +11962,21 @@
             ]
         }
     ],
+    "IOSSetUpListWithoutSignInItem": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SetUpListWithoutSignInItem"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSSharedHighlightingColorChange": [
         {
             "platforms": [

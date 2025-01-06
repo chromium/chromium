@@ -118,6 +118,8 @@ void TapSecondaryActionButton() {
     config.features_disabled.push_back(kContentPushNotifications);
     config.features_disabled.push_back(kIOSTipsNotifications);
     config.features_disabled.push_back(set_up_list::kSetUpListInFirstRun);
+    config.features_disabled.push_back(
+        set_up_list::kSetUpListWithoutSignInItem);
   }
   if ([self isRunningTest:@selector(testMVTInMagicStack)]) {
     std::string enable_mvt_arg = std::string(kMagicStack.name) + ":" +
@@ -131,6 +133,8 @@ void TapSecondaryActionButton() {
             (testMagicStackCompactedSetUpListCompleteAllItems_v2)]) {
     config.features_enabled.push_back(set_up_list::kSetUpListInFirstRun);
     config.additional_args.push_back("--SetUpListInFirstRunParam=1");
+    config.features_disabled.push_back(
+        set_up_list::kSetUpListWithoutSignInItem);
   }
   return config;
 }

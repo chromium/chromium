@@ -2286,6 +2286,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(first_run::kUpdatedFirstRunSequence,
                                     kUpdatedFirstRunSequenceVariations,
                                     "UpdatedFirstRunSequence")},
+    {"set-up-list-without-sign-in-item",
+     flag_descriptions::kSetUpListWithoutSignInItemName,
+     flag_descriptions::kSetUpListWithoutSignInItemDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(set_up_list::kSetUpListWithoutSignInItem)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
