@@ -663,7 +663,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.DirectComposition.IsUnderlay" enum="BooleanUnderlay"
-    expires_after="2025-01-14">
+    expires_after="2026-01-14">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
@@ -891,9 +891,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.GLImplementation" enum="GLImplementation"
-    expires_after="2025-02-10">
+    expires_after="2026-02-10">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Records the OpenGL implementation mode. Recorded during GPU process
     initilization.
@@ -1275,9 +1276,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Gpu.OutputSurface.ScheduleOverlaysUs" units="microseconds"
-    expires_after="2025-01-05">
+    expires_after="2026-01-05">
   <owner>magchen@chromium.org</owner>
   <owner>ccameron@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     The time that the GPU's main CPU thread spends producing pending CALayer
     tree on Mac. Recorded when Skia output surface schedules overlays at every
