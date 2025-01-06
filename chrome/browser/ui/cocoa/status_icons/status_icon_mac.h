@@ -69,8 +69,6 @@ class StatusIconMac : public StatusIcon, public StatusIconMenuModel::Observer {
   NSStatusItem* item();
   NSStatusItem* __strong item_;
 
-  StatusItemController* __strong controller_;
-
   // Notification balloon.
   DesktopNotificationBalloon notification_;
 
