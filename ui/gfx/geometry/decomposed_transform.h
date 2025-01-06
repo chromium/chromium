@@ -5,6 +5,8 @@
 #ifndef UI_GFX_GEOMETRY_DECOMPOSED_TRANSFORM_H_
 #define UI_GFX_GEOMETRY_DECOMPOSED_TRANSFORM_H_
 
+#include <array>
+
 #include "base/component_export.h"
 #include "base/dcheck_is_on.h"
 #include "ui/gfx/geometry/quaternion.h"
@@ -16,10 +18,10 @@ namespace gfx {
 struct COMPONENT_EXPORT(GEOMETRY) DecomposedTransform {
   // The default constructor initializes the components in such a way that
   // will compose the identity transform.
-  double translate[3] = {0, 0, 0};
-  double scale[3] = {1, 1, 1};
-  double skew[3] = {0, 0, 0};
-  double perspective[4] = {0, 0, 0, 1};
+  std::array<double, 3u> translate = {0, 0, 0};
+  std::array<double, 3u> scale = {1, 1, 1};
+  std::array<double, 3u> skew = {0, 0, 0};
+  std::array<double, 4u> perspective = {0, 0, 0, 1};
   Quaternion quaternion;
 
   std::string ToString() const;

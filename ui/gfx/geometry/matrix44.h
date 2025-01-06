@@ -14,6 +14,7 @@
 
 #include "base/check_op.h"
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "ui/gfx/geometry/double4.h"
 
 namespace gfx {
@@ -157,7 +158,7 @@ class COMPONENT_EXPORT(GEOMETRY_SKIA) Matrix44 {
   // this = this * |0    1    skew[2] 0|
   //               |0    0      1     0|
   //               |0    0      0     1|
-  void ApplyDecomposedSkews(const double skews[3]);
+  void ApplyDecomposedSkews(base::span<const double, 3> skews);
 
   // this = this * perspective.
   void ApplyPerspectiveDepth(double perspective);
