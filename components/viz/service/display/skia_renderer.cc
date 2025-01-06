@@ -4003,12 +4003,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(
   overlay->mailbox = dst_overlay_backing.mailbox;
   overlay->resource_size_in_pixels = dst_overlay_backing.size;
 
-  if (can_skip_render_pass) {
-    int pixel_size = quad->rect.width() * quad->rect.height();
-    UMA_HISTOGRAM_COUNTS_10M(
-        "Compositing.SkiaRenderer.SkippedOverlayRenderPassDrawQuadSize",
-        pixel_size);
-  } else {
+  if (!can_skip_render_pass) {
     current_canvas_ = skia_output_surface_->BeginPaintRenderPass(
         quad->render_pass_id, dst_overlay_backing.size,
         dst_overlay_backing.format, dst_overlay_backing.alpha_type,
