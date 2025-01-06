@@ -1262,4 +1262,7 @@ void MigrateObsoleteUserDefault() {
 
   // Added 11/2024.
   [defaults removeObjectForKey:@"DisplaySwitchProfile"];
+
+  // Added 01/2025.
+  [defaults removeObjectForKey:@"ChromeRecentTabsCollapsedSections"];
 }
