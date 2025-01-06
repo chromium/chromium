@@ -31,7 +31,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string_util.h"
+#include "base/strings/span_printf.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/dtoa.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -205,7 +205,7 @@ String String::Format(const char* format, ...) {
   Vector<char, kDefaultSize> buffer(kDefaultSize);
 
   va_start(args, format);
-  int length = base::vsnprintf(buffer.data(), buffer.size(), format, args);
+  int length = base::VSpanPrintf(buffer, format, args);
   va_end(args);
 
   // TODO(esprehn): This can only happen if there's an encoding error, what's
@@ -226,7 +226,7 @@ String String::Format(const char* format, ...) {
     // Not calling va_end/va_start here happens to work on lots of systems, but
     // fails e.g. on 64bit Linux.
     va_start(args, format);
-    length = base::vsnprintf(buffer.data(), buffer.size(), format, args);
+    length = base::VSpanPrintf(buffer, format, args);
     va_end(args);
   }
 

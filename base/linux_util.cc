@@ -22,6 +22,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/strings/safe_sprintf.h"
+#include "base/strings/span_printf.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
@@ -183,7 +184,7 @@ pid_t FindThreadIDWithSyscall(pid_t pid,
   std::vector<char> syscall_data(expected_data.size());
   for (pid_t tid : tids) {
     char buf[256];
-    snprintf(buf, sizeof(buf), "/proc/%d/task/%d/syscall", pid, tid);
+    base::SpanPrintf(buf, "/proc/%d/task/%d/syscall", pid, tid);
     ScopedFD fd(open(buf, O_RDONLY));
     if (!fd.is_valid()) {
       continue;
@@ -212,7 +213,7 @@ pid_t FindThreadID(pid_t pid, pid_t ns_tid, bool* ns_pid_supported) {
 
   for (pid_t tid : tids) {
     char buf[256];
-    snprintf(buf, sizeof(buf), "/proc/%d/task/%d/status", pid, tid);
+    base::SpanPrintf(buf, "/proc/%d/task/%d/status", pid, tid);
     std::string status;
     if (!ReadFileToString(FilePath(buf), &status)) {
       return -1;

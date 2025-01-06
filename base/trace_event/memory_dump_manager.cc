@@ -19,7 +19,7 @@
 #include "base/debug/stack_trace.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/strings/string_util.h"
+#include "base/strings/span_printf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
@@ -307,7 +307,7 @@ MemoryDumpManager::GetOrCreateBgTaskRunnerLocked() {
 void MemoryDumpManager::CreateProcessDump(const MemoryDumpRequestArgs& args,
                                           ProcessMemoryDumpCallback callback) {
   char guid_str[20];
-  snprintf(guid_str, std::size(guid_str), "0x%" PRIx64, args.dump_guid);
+  base::SpanPrintf(guid_str, "0x%" PRIx64, args.dump_guid);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(kTraceCategory, "ProcessMemoryDump",
                                     TRACE_ID_LOCAL(args.dump_guid), "dump_guid",
                                     TRACE_STR_COPY(guid_str));

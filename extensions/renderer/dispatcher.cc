@@ -25,7 +25,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/string_util.h"
+#include "base/strings/span_printf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -938,8 +938,8 @@ void Dispatcher::ActivateExtension(const ExtensionId& extension_id) {
     std::string& error = extension_load_errors_[extension_id];
     char minidump[256];
     base::debug::Alias(&minidump);
-    base::snprintf(minidump, std::size(minidump), "e::dispatcher:%s:%s",
-                   extension_id.c_str(), error.c_str());
+    base::SpanPrintf(minidump, "e::dispatcher:%s:%s", extension_id.c_str(),
+                     error.c_str());
     LOG(ERROR) << extension_id << " was never loaded: " << error;
     base::debug::DumpWithoutCrashing();
     return;

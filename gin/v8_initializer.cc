@@ -32,8 +32,8 @@
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
+#include "base/strings/span_printf.h"
 #include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -196,7 +196,7 @@ void SetV8FlagsFormatted(const char* format, ...) {
   char buffer[128];
   va_list args;
   va_start(args, format);
-  int length = base::vsnprintf(buffer, sizeof(buffer), format, args);
+  int length = base::VSpanPrintf(buffer, format, args);
   if (length <= 0 || sizeof(buffer) <= static_cast<unsigned>(length)) {
     PLOG(ERROR) << "Invalid formatted V8 flag: " << format;
     return;

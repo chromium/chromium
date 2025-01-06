@@ -16,7 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
-#include "base/strings/string_util.h"
+#include "base/strings/span_printf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -246,7 +246,7 @@ TEST_F(ProfileSigninConfirmationHelperTest,
   profile_->SetIsNewProfile(true);
   char buf[18];
   for (int i = 0; i < 10; i++) {
-    base::snprintf(buf, std::size(buf), "http://foo.com/%d", i);
+    base::SpanPrintf(buf, "http://foo.com/%d", i);
     history->AddPage(GURL(std::string(buf)), base::Time::Now(),
                      /*context_id=*/{}, 1, GURL(), history::RedirectList(),
                      ui::PAGE_TRANSITION_LINK, history::SOURCE_BROWSED, false);
