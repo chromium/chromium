@@ -586,6 +586,10 @@ bool IsUploadOfficeToCloudForEnterpriseEnabled() {
 #endif
 }
 
+bool IsUploadOfficeToCloudSyncEnabled() {
+  return base::FeatureList::IsEnabled(kUploadOfficeToCloudSync);
+}
+
 bool IsMicrosoft365ScopeExtensionsEnabled() {
   return base::FeatureList::IsEnabled(kMicrosoft365ScopeExtensions);
 }

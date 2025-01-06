@@ -690,6 +690,8 @@ chromium-metrics-reviews@google.com.
   <int value="100312" label="AccessibilitySlowKeysDelayMs"/>
   <int value="100313" label="AccessibilityFaceGazePrecisionClick"/>
   <int value="100314" label="AccessibilityFaceGazePrecisionClickSpeedFactor"/>
+  <int value="100315" label="OfficeFilesAlwaysMoveToDriveSyncable"/>
+  <int value="100316" label="OfficeFilesAlwaysMoveToOneDriveSyncable"/>
 <!-- LINT.ThenChange(/chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc:ChromeSyncablePref)-->
 
 <!-- LINT.IfChange(IosSyncablePref) -->

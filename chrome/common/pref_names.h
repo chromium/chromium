@@ -2207,11 +2207,15 @@ inline constexpr char kDefaultHandlersForFileExtensions[] =
 // the user first.
 inline constexpr char kOfficeFilesAlwaysMoveToDrive[] =
     "filebrowser.office.always_move_to_drive";
+inline constexpr char kOfficeFilesAlwaysMoveToDriveSyncable[] =
+    "filebrowser.office.always_move_to_drive_syncable";
 
 // Whether we should always move office files to OneDrive without prompting the
 // user first.
 inline constexpr char kOfficeFilesAlwaysMoveToOneDrive[] =
     "filebrowser.office.always_move_to_onedrive";
+inline constexpr char kOfficeFilesAlwaysMoveToOneDriveSyncable[] =
+    "filebrowser.office.always_move_to_onedrive_syncable";
 
 // Whether the move confirmation dialog has been shown before for Google Drive.
 inline constexpr char kOfficeMoveConfirmationShownForDrive[] =

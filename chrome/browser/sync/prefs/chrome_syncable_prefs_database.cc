@@ -373,6 +373,8 @@ enum {
   kAccessibilitySlowKeysDelayMs = 100312,
   kAccessibilityFaceGazePrecisionClick = 100313,
   kAccessibilityFaceGazePrecisionClickSpeedFactor = 100314,
+  kOfficeFilesAlwaysMoveToDriveSyncable = 100315,
+  kOfficeFilesAlwaysMoveToOneDriveSyncable = 100316,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -821,6 +823,14 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
     {ash::prefs::kNaturalScroll,
      {syncable_prefs_ids::kNaturalScroll, syncer::OS_PRIORITY_PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {prefs::kOfficeFilesAlwaysMoveToDriveSyncable,
+     {syncable_prefs_ids::kOfficeFilesAlwaysMoveToDriveSyncable,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {prefs::kOfficeFilesAlwaysMoveToOneDriveSyncable,
+     {syncable_prefs_ids::kOfficeFilesAlwaysMoveToOneDriveSyncable,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
     {ash::prefs::kOobeMarketingOptInChoice,
      {syncable_prefs_ids::kOobeMarketingOptInChoice, syncer::OS_PREFERENCES,

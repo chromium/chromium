@@ -195,6 +195,8 @@ bool IsUploadOfficeToCloudEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsUploadOfficeToCloudForEnterpriseEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+bool IsUploadOfficeToCloudSyncEnabled();
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsMicrosoft365ScopeExtensionsEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsMicrosoftOneDriveIntegrationForEnterpriseEnabled();
