@@ -32,8 +32,8 @@ class OrtModelBuilder final {
 
     ScopedOrtModelPtr model;
 
-    // TODO: Consider reusing constant operands instead of copying them to
-    // `external_data`.
+    // TODO(https://github.com/shiyi9801/chromium/issues/49): Consider reusing
+    // constant operands instead of copying them to `external_data`.
     //
     // Store the external data which should be alive for inference session.
     std::vector<base::HeapArray<uint8_t>> external_data;

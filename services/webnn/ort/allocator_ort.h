@@ -11,11 +11,13 @@
 
 namespace webnn::ort {
 
-// TODO: Figure out if allocator is really thread safe.
+// TODO(https://github.com/shiyi9801/chromium/issues/64): Figure out if
+// allocator is really thread safe.
 class COMPONENT_EXPORT(WEBNN_SERVICE) AllocatorOrt final
     : public base::RefCountedThreadSafe<AllocatorOrt> {
  public:
-  // TODO: Now it's for CPU only, need to support other devices.
+  // TODO(https://github.com/shiyi9801/chromium/issues/65): Now it's for CPU
+  // only, need to support other devices.
   static scoped_refptr<AllocatorOrt> GetInstance();
 
   const OrtEnv* env() const { return env_.get(); }

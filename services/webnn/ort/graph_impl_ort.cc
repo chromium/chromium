@@ -82,8 +82,8 @@ GraphImplOrt::Session::Session(
     : external_data(std::move(external_data)), session(session) {}
 
 GraphImplOrt::Session::~Session() {
-  // TODO: Can we call `ReleaseSession` from Dllmain (because session owns a
-  // thread pool) ?
+  // TODO(https://github.com/shiyi9801/chromium/issues/59): Ensure the session
+  // is not released from Dllmain.
   GetOrtApi()->ReleaseSession(GetSession());
 }
 
@@ -105,8 +105,8 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
   const OrtApi* ort_api = GetOrtApi();
   CHECK_STATUS(ort_api->CreateSessionOptions(&session_options));
 
-  // TODO: Investigate how to apply layout optimizations (ORT_ENABLE_ALL):
-  // https://onnxruntime.ai/docs/performance/model-optimizations/graph-optimizations.html#layout-optimizations
+  // TODO(https://github.com/shiyi9801/chromium/issues/58): Investigate what
+  // `GraphOptimizationLevel` should be set.
   CHECK_STATUS(ort_api->SetSessionGraphOptimizationLevel(
       session_options, GraphOptimizationLevel::ORT_ENABLE_BASIC));
 
@@ -126,7 +126,8 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
     // supports it.
   }
 
-  // TODO: Append OpenVINO EP for GPU and NPU devices.
+  // TODO(https://github.com/shiyi9801/chromium/issues/46): Append OpenVINO EP
+  // for GPU and NPU devices.
 
   OrtSession* session;
   const OrtEnv* env = allocator->env();
@@ -327,10 +328,9 @@ void GraphImplOrt::DispatchImpl(
                 GetSharedLockedInputTensors(input_buffer_states);
             std::vector<OrtValue*> output_tensors =
                 GetExclusivelyLockedOutputTensors(output_buffer_states);
-            // TODO: We should decide whether to use `OrtApi::RunAsync` or
-            // `OrtApi::Run` here.
-            // There are flacky issues when using `OrtApi::RunAsync`, suspecting
-            // it is due to the conflict with the thread pool.
+
+            // TODO(https://github.com/shiyi9801/chromium/issues/57): Decide
+            // whether to use `OrtApi::RunAsync` or `OrtApi::Run` here.
 
             // Compute tasks can take a significant amount of time, use the
             // thread pool to avoid blocking the main thread.
@@ -341,16 +341,6 @@ void GraphImplOrt::DispatchImpl(
                                std::move(input_tensors),
                                std::move(output_tensors)),
                 std::move(completion_closure));
-
-            // // The completion handler may run on another thread, so post a
-            // task
-            // // back to this sequence to run the closure.
-            // auto wrapped_completion_closure =
-            //     base::BindPostTaskToCurrentDefault(
-            //         std::move(completion_closure));
-            // raw_compute_resources->OrtRunAsync(
-            //     std::move(input_tensors), std::move(output_tensors),
-            //     std::move(wrapped_completion_closure));
           },
           compute_resources_state_, std::move(input_buffer_states),
           std::move(output_buffer_states)));

@@ -99,16 +99,16 @@ base::unexpected<mojom::ErrorPtr> NewUnknownError(std::string message) {
       mojom::Error::New(mojom::Error::Code::kUnknownError, std::move(message)));
 }
 
-// TODO: Make name generation more robust.
-// Inserted operands should also have a unique id, so here they're named by
-// their ids for now.
+// TODO(https://github.com/shiyi9801/chromium/issues/63): Make name generation
+// more robust. Inserted operands should also have a unique id, so here they're
+// named by their ids for now.
 std::string GetInsertedOperandName(uint64_t operand_id) {
   return base::NumberToString(operand_id);
 }
 
-// TODO: Make name generation more robust.
-// Add extra index to label to make it unique since ONNX doesn't allow duplicate
-// node names.
+// TODO(https://github.com/shiyi9801/chromium/issues/63): Make name generation
+// more robust. Add extra index to label to make it unique since ONNX doesn't
+// allow duplicate node names.
 std::string GetNodeName(std::string_view label) {
   static int64_t index = 0;
   return base::JoinString({label, base::NumberToString(index++)}, "_");
@@ -214,7 +214,8 @@ const mojom::Operand& GraphBuilderOrt::GetOperand(uint64_t operand_id) {
   return *graph_info_->id_to_operand_map.at(operand_id);
 }
 
-// TODO: Make name generation more robust.
+// TODO(https://github.com/shiyi9801/chromium/issues/63): Make name generation
+// more robust.
 std::string GraphBuilderOrt::GetOperandName(uint64_t operand_id) {
   const mojom::Operand& operand = GetOperand(operand_id);
   switch (operand.kind) {
@@ -501,8 +502,8 @@ void GraphBuilderOrt::AddClampOperation(const mojom::Clamp& clamp) {
           reinterpret_cast<const uint8_t*>(&fp16_max), sizeof(uint16_t)));
       break;
     }
-    // TODO: Add other data type support.
-    // https://onnx.ai/onnx/operators/onnx__Clip.html
+    // TODO(https://github.com/shiyi9801/chromium/issues/60): Add other data
+    // types support. https://onnx.ai/onnx/operators/onnx__Clip.html
     default:
       NOTREACHED()
           << "[WebNN] Clamp only supports float32 and float16 data type.";
@@ -1066,7 +1067,6 @@ GraphBuilderOrt::BuildModel() {
     AddInitializerAsExternalData(constant_id);
   }
 
-  // TODO: Implement all operations.
   // Add operations.
   for (const mojom::OperationPtr& operation : graph_info_->operations) {
     switch (operation->which()) {

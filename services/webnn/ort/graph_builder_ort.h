@@ -112,8 +112,9 @@ class GraphBuilderOrt {
   void AddInput(uint64_t input_id);
   void AddOutput(uint64_t output_id);
 
-  // TODO: Figure out whether to upload constants to external data or raw data
-  // in graph. See Issue(https://github.com/shiyi9801/chromium/issues/52).
+  // TODO(https://github.com/shiyi9801/chromium/issues/52): Figure out whether
+  // to upload constants to external data or raw data in graph.
+  //
   // Add initializer to external data.
   void AddInitializerAsExternalData(uint64_t constant_id);
 

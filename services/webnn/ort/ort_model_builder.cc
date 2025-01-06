@@ -95,7 +95,8 @@ void OrtModelBuilder::AddInitializerAsExternalData(
   model_info_->external_data.push_back(std::move(weight));
 
   ScopedOrtValuePtr initializer;
-  // TODO: Use `CreateTensorWithDataAndDeleterAsOrtValue()`.
+  // TODO(https://github.com/shiyi9801/chromium/issues/45): Use
+  // `CreateTensorWithDataAndDeleterAsOrtValue()`.
   CHECK_STATUS(GetOrtApi()->CreateTensorWithDataAsOrtValue(
       allocator_->memory_info(), model_info_->external_data.back().data(),
       model_info_->external_data.back().size(), shape.data(), shape.size(),

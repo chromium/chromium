@@ -28,8 +28,6 @@ PlatformFunctions::PlatformFunctions() {
     return;
   }
 
-  // TODO: Consider checking the version of the loaded onnxruntime.dll before
-  // loading all these functions to avoid runtime crashes.
   OrtGetApiBaseProc ort_get_api_base_proc = reinterpret_cast<OrtGetApiBaseProc>(
       ort_library.GetFunctionPointer("OrtGetApiBase"));
   if (!ort_get_api_base_proc) {
