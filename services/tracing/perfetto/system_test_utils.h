@@ -41,7 +41,7 @@ class MockSystemService {
   void StartService();
 
   const bool used_tmpdir_;
-  const char* old_tmpdir_ = nullptr;
+  std::optional<std::string> old_tmpdir_;
   std::string consumer_;
   std::string producer_;
   std::unique_ptr<perfetto::ServiceIPCHost> service_;

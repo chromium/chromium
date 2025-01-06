@@ -4,8 +4,10 @@
 
 #include "services/tracing/public/cpp/system_tracing_service.h"
 
+#include <sys/un.h>
 #include <unistd.h>
 
+#include <cstdint>
 #include <optional>
 
 #include "base/files/scoped_temp_dir.h"
@@ -36,8 +38,12 @@ class SystemTracingServiceTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     system_service_ = std::make_unique<MockSystemService>(temp_dir_);
 
+    // Save the current producer socket name from env if currently set.
+    const auto* producer_sock_name_env = getenv(kProducerSockEnvName);
+    if (producer_sock_name_env) {
+      saved_producer_sock_env_ = producer_sock_name_env;
+    }
     // Override the default system producer socket.
-    saved_producer_sock_env_ = getenv(kProducerSockEnvName);
     ASSERT_EQ(0, setenv(kProducerSockEnvName,
                         system_service_->producer().c_str(), 1));
 
@@ -47,14 +53,15 @@ class SystemTracingServiceTest : public testing::Test {
   }
 
   void TearDown() override {
-    system_service_ = nullptr;
     // Restore the value of Perfetto producer socket name env variable.
     if (saved_producer_sock_env_) {
-      ASSERT_EQ(0,
-                setenv(kProducerSockEnvName, saved_producer_sock_env_, true));
+      ASSERT_EQ(0, setenv(kProducerSockEnvName,
+                          saved_producer_sock_env_->c_str(), 1));
     } else {
       ASSERT_EQ(0, unsetenv(kProducerSockEnvName));
     }
+
+    system_service_ = nullptr;
     task_environment_.RunUntilIdle();
   }
 
@@ -63,7 +70,7 @@ class SystemTracingServiceTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<MockSystemService> system_service_;
   std::unique_ptr<PerfettoTracedProcess::TestHandle> test_handle_;
-  const char* saved_producer_sock_env_ = nullptr;
+  std::optional<std::string> saved_producer_sock_env_;
 };
 
 // Test the OpenProducerSocket implementation. Expect a valid socket file
@@ -99,7 +106,6 @@ TEST_F(SystemTracingServiceTest, OpenProducerSocket_Nonexistent) {
   bool callback_called = false;
 
   // Set the producer socket name to a nonexistent path.
-  saved_producer_sock_env_ = getenv(kProducerSockEnvName);
   ASSERT_EQ(0, setenv(kProducerSockEnvName, "nonexistent_socket", 1));
 
   base::RunLoop run_loop;
@@ -153,8 +159,36 @@ TEST_F(SystemTracingServiceTest, BindAndPassPendingRemote_Nonexistent) {
   bool callback_called = false;
 
   // Set the producer socket name to a nonexistent path.
-  saved_producer_sock_env_ = getenv(kProducerSockEnvName);
   ASSERT_EQ(0, setenv(kProducerSockEnvName, "nonexistent_socket", 1));
+
+  // Bind the pending remote on the current thread.
+  mojo::Remote<mojom::SystemTracingService> remote;
+  remote.Bind(sts->BindAndPassPendingRemote(), nullptr);
+
+  base::RunLoop run_loop;
+  auto callback = base::BindLambdaForTesting([&](base::File file) {
+    callback_called = true;
+    ASSERT_FALSE(file.IsValid());
+    run_loop.Quit();
+  });
+
+  remote->OpenProducerSocket(std::move(callback));
+  ASSERT_FALSE(callback_called);
+  run_loop.Run();
+  ASSERT_TRUE(callback_called);
+}
+
+TEST_F(SystemTracingServiceTest, BindAndPassPendingRemote_NonexistentLong) {
+  auto sts = std::make_unique<SystemTracingService>();
+  bool callback_called = false;
+
+  // Set the producer socket name to a long nonexistent path.
+  std::string sock_name;
+  while (sock_name.size() < 1024) {
+    sock_name.append("nonexistent/");
+  }
+  ASSERT_GT(sock_name.size(), sizeof(sockaddr_un::sun_path));
+  ASSERT_EQ(0, setenv(kProducerSockEnvName, sock_name.c_str(), 1));
 
   // Bind the pending remote on the current thread.
   mojo::Remote<mojom::SystemTracingService> remote;
