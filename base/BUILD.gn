@@ -1866,6 +1866,7 @@ component("base") {
       "win/scoped_co_mem.h",
       "win/scoped_com_initializer.cc",
       "win/scoped_com_initializer.h",
+      "win/scoped_gdi_object.cc",
       "win/scoped_gdi_object.h",
       "win/scoped_handle.cc",
       "win/scoped_handle.h",
