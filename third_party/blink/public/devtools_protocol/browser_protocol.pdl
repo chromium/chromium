@@ -7436,6 +7436,7 @@ domain Network
         InternalError
         UnknownError
         FulfilledLocally
+        SiteIssuerLimit
       TrustTokenOperationType type
       RequestId requestId
       # Top level origin. The context in which the operation was attempted.

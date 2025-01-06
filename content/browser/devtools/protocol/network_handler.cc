@@ -3683,6 +3683,9 @@ String GetTrustTokenOperationStatus(
         kOperationSuccessfullyFulfilledLocally:
       return protocol::Network::TrustTokenOperationDone::StatusEnum::
           FulfilledLocally;
+    case network::mojom::TrustTokenOperationStatus::kSiteIssuerLimit:
+      return protocol::Network::TrustTokenOperationDone::StatusEnum::
+          SiteIssuerLimit;
   }
 }
 

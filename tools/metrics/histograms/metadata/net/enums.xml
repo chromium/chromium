@@ -2738,6 +2738,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="9" label="Internal error"/>
   <int value="10" label="Unknown error"/>
   <int value="11" label="Operation fulfilled locally"/>
+  <int value="12" label="Per-site issuer limit reached"/>
 </enum>
 
 <!-- LINT.ThenChange(//services/network/public/mojom/trust_tokens.mojom:TrustTokenOperationStatus) -->

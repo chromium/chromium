@@ -161,6 +161,9 @@ DOMException* TrustTokenErrorToDOMException(TrustTokenOperationStatus error) {
     case TrustTokenOperationStatus::kResourceLimited:
       return create("Quota hit for Private State Tokens operation",
                     DOMExceptionCode::kOperationError);
+    case TrustTokenOperationStatus::kSiteIssuerLimit:
+      return create("Limit hit for Private State Tokens issuers per site",
+                    DOMExceptionCode::kOperationError);
     case TrustTokenOperationStatus::kUnauthorized:
       return create(
           "Private State Tokens API unavailable due to user settings.",
