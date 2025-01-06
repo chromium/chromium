@@ -50,6 +50,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
@@ -68,6 +69,7 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -335,6 +337,39 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
         // Verify history sync state.
         assertFalse(SyncTestUtil.isHistorySyncEnabled());
         historySyncHistogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures(SigninFeatures.USE_HOSTED_DOMAIN_FOR_MANAGEMENT_CHECK_ON_SIGNIN)
+    public void testWithManagedAccount_signIn_showsManagementNotice() {
+        mSigninTestRule.addAccount(TestAccounts.MANAGED_ACCOUNT);
+
+        launchActivity(
+                NoAccountSigninMode.BOTTOM_SHEET,
+                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                HistorySyncConfig.OptInMode.NONE);
+
+        // Start sign-in from the collapsed sign-in bottom-sheet shown.
+        onView(
+                        allOf(
+                                withId(R.id.account_picker_continue_as_button),
+                                withParent(withId(R.id.account_picker_state_collapsed)),
+                                isCompletelyDisplayed()))
+                .perform(click());
+
+        // The management notice should be displayed.
+        onViewWaiting(withText(R.string.sign_in_managed_account)).check(matches(isDisplayed()));
+        onView(allOf(withText(R.string.continue_button), isCompletelyDisplayed())).perform(click());
+
+        mSigninTestRule.waitForSignin(TestAccounts.MANAGED_ACCOUNT);
+        if (BuildInfo.getInstance().isAutomotive) {
+            verify(mDeviceLockActivityLauncher)
+                    .launchDeviceLockActivity(any(), any(), anyBoolean(), any(), any(), any());
+        }
+
+        // Verify that the activity is finished after the sign-in has completed.
+        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
     }
 
     @Test

@@ -34,6 +34,9 @@ BASE_FEATURE(kForceSupervisedSigninWithCapabilities,
              "ForceSupervisedSigninWithCapabilities",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kUseHostedDomainForManagementCheckOnSignin,
+             "UseHostedDomainForManagementCheckOnSignin",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
