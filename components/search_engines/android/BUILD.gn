@@ -85,7 +85,6 @@ android_library("test_utils_java") {
     "java/src/org/chromium/components/search_engines/FakeTemplateUrl.java",
     "java/src/org/chromium/components/search_engines/TemplateUrlTestHelpers.java",
     "java/src/org/chromium/components/search_engines/test/util/SearchEngineChoiceServiceTestUtil.java",
-    "java/src/org/chromium/components/search_engines/test/util/SearchEnginesFeaturesTestUtil.java",
   ]
   deps = [
     ":delegate_java",

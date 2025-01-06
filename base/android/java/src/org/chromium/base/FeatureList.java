@@ -234,7 +234,7 @@ public class FeatureList {
      */
     @VisibleForTesting
     @Deprecated
-    public static void removeAllTestOverrides() {
+    static void removeAllTestOverrides() {
         overwriteTestValues(null);
     }
 
@@ -262,7 +262,7 @@ public class FeatureList {
      * @param replace if true, replaces existing overrides; otherwise preserve them
      */
     @Deprecated
-    public static void mergeTestValues(TestValues testValuesToMerge, boolean replace) {
+    static void mergeTestValues(TestValues testValuesToMerge, boolean replace) {
         TestValues newTestValues = new TestValues();
         if (sTestFeatures != null) {
             newTestValues.merge(sTestFeatures, /* replace= */ true);

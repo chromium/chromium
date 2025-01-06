@@ -10,6 +10,7 @@ import androidx.annotation.AnyThread;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureMap;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.cached_flags.ValuesReturned;
 import org.chromium.base.supplier.Supplier;
 
@@ -73,12 +74,8 @@ public class BooleanCachedFeatureParam extends CachedFeatureParam<Boolean> {
      * Forces the parameter to return a specific value for testing.
      *
      * @param overrideValue the value to be returned
-     * @deprecated use <code>@EnableFeatures("Feature:param/value")</code> instead.
      */
-    @Deprecated
     public void setForTesting(boolean overrideValue) {
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFieldTrialParamOverride(this, String.valueOf(overrideValue));
-        FeatureList.mergeTestValues(testValues, /* replace= */ true);
+        FeatureOverrides.overrideParam(getFeatureName(), getName(), overrideValue);
     }
 }

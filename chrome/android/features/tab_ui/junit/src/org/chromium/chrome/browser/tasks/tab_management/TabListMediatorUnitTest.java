@@ -84,7 +84,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.Callback;
-import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
@@ -4957,10 +4957,7 @@ public class TabListMediatorUnitTest {
     }
 
     private static void setPriceTrackingEnabledForTesting(boolean value) {
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFeatureFlagOverride(ChromeFeatureList.PRICE_ANNOTATIONS, true);
-        FeatureList.mergeTestValues(testValues, /* replace= */ true);
-
+        FeatureOverrides.enable(ChromeFeatureList.PRICE_ANNOTATIONS);
         PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(value);
     }
 
