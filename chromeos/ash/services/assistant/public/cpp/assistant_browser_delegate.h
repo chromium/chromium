@@ -113,6 +113,9 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantBrowserDelegate {
   // Opens the new entry point.
   virtual void OpenNewEntryPoint() = 0;
 
+  // Returns resource id of Assistant new entry point icon.
+  virtual int GetNewEntryPointIconResourceId() = 0;
+
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
   // Requests a connection to Libassistant service interface via the browser.
   virtual void RequestLibassistantService(

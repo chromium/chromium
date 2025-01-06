@@ -18,6 +18,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -29,6 +30,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
@@ -895,6 +897,30 @@ void SearchBoxViewBase::SetShowAssistantNewEntryPointButton(bool show) {
   CHECK(assistant_new_entry_point_button_);
   show_assistant_new_entry_point_button_ = show;
   assistant_new_entry_point_button_->SetVisible(show);
+
+  if (show && assistant_new_entry_point_button_
+                  ->GetImage(views::ImageButton::STATE_NORMAL)
+                  .isNull()) {
+    // `AssistantBrowserDelegate::Get` has `DCHECK`. It's not allowed to call if
+    // `AssistantBrowserDelegate` is not available, and that is the case for
+    // some tests. Query resource id only if visibility is determined to be
+    // visible. Querying visibility requires access to
+    // `AssistantBrowserDelegate`. It means that the delegate is available.
+    assistant::AssistantBrowserDelegate* assistant_browser_delegate =
+        assistant::AssistantBrowserDelegate::Get();
+    CHECK(assistant_browser_delegate);
+
+    // Assistant new entry point icon includes margins. Use button size
+    // instead of search box icon size, which contains margins, to avoid
+    // having duplicated margins.
+    assistant_new_entry_point_button()->SetImageModel(
+        views::ImageButton::STATE_NORMAL,
+        ui::ImageModel::FromImage(gfx::ResizedImage(
+            ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+                assistant_browser_delegate->GetNewEntryPointIconResourceId()),
+            assistant_new_entry_point_button_->GetPreferredSize())));
+  }
+
   UpdateButtonsVisibility();
 }
 

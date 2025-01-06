@@ -32,6 +32,8 @@ source_set("new_entry_point_constants") {
   } else {
     deps = [ ":new_entry_point_constants_placeholder" ]
   }
+
+  public_deps = [ ":new_entry_point_constants_interface" ]
 }
 
 source_set("new_entry_point_constants_placeholder") {

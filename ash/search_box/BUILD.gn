@@ -19,6 +19,7 @@ source_set("search_box") {
     "//ash/strings",
     "//ash/style",
     "//base",
+    "//chromeos/ash/services/assistant/public/cpp",
     "//skia",
     "//ui/base",
     "//ui/base/ime",

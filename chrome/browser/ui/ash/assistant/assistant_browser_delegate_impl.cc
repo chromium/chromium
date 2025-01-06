@@ -45,6 +45,7 @@
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/assistant/public/mojom/assistant_audio_decoder.mojom.h"
 #include "chromeos/services/assistant/public/shared/constants.h"
+#include "chromeos/services/assistant/public/shared/new_entry_point_constants.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/audio_service.h"
@@ -321,6 +322,10 @@ void AssistantBrowserDelegateImpl::OpenNewEntryPoint() {
           WindowOpenDisposition::NEW_WINDOW,
           // TODO(xiaohuic): maybe add new source
           apps::LaunchSource::kUnknown));
+}
+
+int AssistantBrowserDelegateImpl::GetNewEntryPointIconResourceId() {
+  return chromeos::assistant::kIconResourceId;
 }
 
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)

@@ -832,11 +832,10 @@ void SearchBoxView::OnThemeChanged() {
       views::ImageButton::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(
           chromeos::kAssistantIcon, button_icon_color, GetSearchBoxIconSize()));
-  // TODO(crbug.com/380089265): set Assistant new entry point icon.
-  assistant_new_entry_point_button()->SetImageModel(
-      views::ImageButton::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(
-          chromeos::kAssistantIcon, button_icon_color, GetSearchBoxIconSize()));
+
+  // Image model of `assistant_new_entry_point_button()` is set in
+  // `SearchBoxViewBase::SetShowAssistantNewEntryPointButton`.
+
   if (filter_button()) {
     filter_button()->SetImageModel(
         views::ImageButton::STATE_NORMAL,
