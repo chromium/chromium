@@ -154,8 +154,9 @@ class RestrictedMGSPolicyProviderAshBrowserTest
   ash::EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
 };
 
+// TODO(crbug.com/387568360): Re-enable flaky test.
 IN_PROC_BROWSER_TEST_F(RestrictedMGSPolicyProviderAshBrowserTest,
-                       DeviceRestrictedManagedGuestSessionDisabled) {
+                       DISABLED_DeviceRestrictedManagedGuestSessionDisabled) {
   SetUpPolicy(/*restricted=*/false);
   ash::SessionStateWaiter(session_manager::SessionState::ACTIVE).Wait();
 
@@ -165,8 +166,9 @@ IN_PROC_BROWSER_TEST_F(RestrictedMGSPolicyProviderAshBrowserTest,
   EXPECT_TRUE(expected_policy_map_.Equals(current_policy_map));
 }
 
+// TODO(crbug.com/387568360): Re-enable flaky test.
 IN_PROC_BROWSER_TEST_F(RestrictedMGSPolicyProviderAshBrowserTest,
-                       DeviceRestrictedManagedGuestSessionEnabled) {
+                       DISABLED_DeviceRestrictedManagedGuestSessionEnabled) {
   SetUpPolicy(/*restricted=*/true);
   ash::SessionStateWaiter(session_manager::SessionState::ACTIVE).Wait();
 
