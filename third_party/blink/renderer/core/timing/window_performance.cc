@@ -197,6 +197,22 @@ bool IsEventTypeForInteractionId(const AtomicString& type) {
          type == event_type_names::kInput;
 }
 
+base::TimeDelta TotalNonOverlappingProcessingDuration(
+    HeapVector<Member<PerformanceEventTiming>> event_timing_entries) {
+  base::TimeDelta processing_duration;
+  for (auto entry : event_timing_entries) {
+    const auto& processing_start_time =
+        entry->GetEventTimingReportingInfo()->processing_start_time;
+    const auto& processing_end_time =
+        entry->GetEventTimingReportingInfo()->processing_end_time;
+    if (!entry->GetEventTimingReportingInfo()
+             ->is_processing_fully_nested_in_another_event) {
+      processing_duration += processing_end_time - processing_start_time;
+    }
+  }
+  return processing_duration;
+}
+
 }  // namespace
 
 constexpr size_t kDefaultVisibilityStateEntrySize = 50;
@@ -207,6 +223,14 @@ const char kHistogramEventQueueTimeToProcessingStartPerAnimationFrame[] =
     "Blink.Responsiveness.PerAnimationFrame.EventQueueTimeToProcessingStart";
 const char kHistogramEventCreationTimeToEventQueueTimePerAnimationFrame[] =
     "Blink.Responsiveness.PerAnimationFrame.EventCreationTimeToEventQueueTime";
+
+const char
+    kHistogramFirstProcessingStartToLastProcessingEndPerAnimationFrame[] =
+        "Blink.Responsiveness.PerAnimationFrame."
+        "FirstProcessingStartToLastProcessingEnd";
+const char kHistogramTotalUnaccountedEventProcessingTimePerAnimationFrame[] =
+    "Blink.Responsiveness.PerAnimationFrame."
+    "TotalUnaccountedEventProcessingTime";
 
 const char kHistogramProcessingEndToRenderStartTimePerAnimationFrame[] =
     "Blink.Responsiveness.PerAnimationFrame.ProcessingEndToRenderStartTime";
@@ -627,6 +651,18 @@ void WindowPerformance::EventTimingProcessingEnd(
   CHECK(reporting_info);
   reporting_info->processing_end_time = processing_end;
 
+  if (auto pre_iter = std::next(iter);
+      pre_iter != event_timing_entries_.rend()) {
+    auto iter_null_time = std::find_if(
+        event_timing_entries_.begin(), pre_iter.base(), [](const auto& event) {
+          return event->GetEventTimingReportingInfo()
+              ->processing_end_time.is_null();
+        });
+    if (iter_null_time != pre_iter.base()) {
+      reporting_info->is_processing_fully_nested_in_another_event = true;
+    }
+  }
+
   // "Artificial" pointerup events will re-use the same timestamp as the
   // pointerdown, leading to large delays. crbug.com/1321819.
   if ((event_type == event_type_names::kPointerup ||
@@ -957,6 +993,23 @@ void WindowPerformance::ReportEventTimings() {
               first_event_enqueued_to_main_thread_time,
           base::Milliseconds(1), base::Seconds(60), 50);
 
+      // Event Processing duration breakdown.
+      base::TimeDelta total_processing_duration =
+          last_event_processing_end_time - first_event_processing_start;
+      UMA_HISTOGRAM_CUSTOM_TIMES(
+          kHistogramFirstProcessingStartToLastProcessingEndPerAnimationFrame,
+          total_processing_duration, base::Milliseconds(1), base::Seconds(60),
+          50);
+
+      base::TimeDelta total_accountable_processing_duration =
+          TotalNonOverlappingProcessingDuration(event_timing_entries_);
+      base::TimeDelta total_unaccountable_processing_duration =
+          total_processing_duration - total_accountable_processing_duration;
+      UMA_HISTOGRAM_CUSTOM_TIMES(
+          kHistogramTotalUnaccountedEventProcessingTimePerAnimationFrame,
+          total_unaccountable_processing_duration, base::Milliseconds(1),
+          base::Seconds(60), 50);
+
       // Presentation delay breakdown.
       if (!last_event_presentation_time.is_null() &&
           !last_event_commit_finish_time.is_null() &&
@@ -1006,7 +1059,6 @@ void WindowPerformance::ReportEvent(
   CHECK(!processing_start.is_null());
   CHECK(!processing_end.is_null());
   CHECK(!event_end_time.is_null());
-
 
   // Round to 8ms.
   int rounded_duration =

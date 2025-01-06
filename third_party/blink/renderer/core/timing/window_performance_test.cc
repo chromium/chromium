@@ -562,6 +562,48 @@ TEST_P(WindowPerformanceTest, FirstInput) {
   }
 }
 
+// Test whether we can detect that the event is fully nested in another event
+// during the processing time.
+TEST_P(WindowPerformanceTest, NestedEventInProcessingTime) {
+  RegisterKeyboardEvent(event_type_names::kKeydown, GetTimeOrigin(),
+                        GetTimeOrigin() + base::Milliseconds(1),
+                        GetTimeOrigin() + base::Milliseconds(2), 4);
+  KeyboardEventInit* init = KeyboardEventInit::Create();
+  init->setKeyCode(4);
+  KeyboardEvent* keyboard_event = MakeGarbageCollected<KeyboardEvent>(
+      event_type_names::kKeypress, init, GetTimeOrigin());
+  performance_->EventTimingProcessingStart(
+      *keyboard_event, GetTimeOrigin() + base::Milliseconds(1), nullptr);
+
+  UIEventInit* event_init = UIEventInit::Create();
+  event_init->setBubbles(true);
+  event_init->setCancelable(false);
+  event_init->setComposed(true);
+  UIEvent* event = MakeGarbageCollected<UIEvent>(event_type_names::kBeforeinput,
+                                                 event_init, GetTimeOrigin());
+  performance_->EventTimingProcessingStart(
+      *event, GetTimeOrigin() + base::Milliseconds(2), nullptr);
+
+  performance_->EventTimingProcessingEnd(
+      *event, GetTimeOrigin() + base::Milliseconds(4));
+  performance_->EventTimingProcessingEnd(
+      *keyboard_event, GetTimeOrigin() + base::Milliseconds(5));
+
+  base::TimeTicks presentation_time = GetTimeOrigin() + base::Seconds(6.0);
+  SimulatePaintAndResolvePresentationPromise(presentation_time);
+  const auto& entries =
+      performance_->getBufferedEntriesByType(performance_entry_names::kEvent);
+  EXPECT_EQ(3u, entries.size());
+  EXPECT_EQ(event_type_names::kKeydown, entries.at(0)->name());
+  EXPECT_EQ(event_type_names::kKeypress, entries.at(1)->name());
+
+  PerformanceEventTiming* entry =
+      static_cast<PerformanceEventTiming*>(entries.at(2).Get());
+  EXPECT_EQ(event_type_names::kBeforeinput, entry->name());
+  EXPECT_TRUE(entry->GetEventTimingReportingInfo()
+                  ->is_processing_fully_nested_in_another_event);
+}
+
 // Test that the 'first-input' is populated after some irrelevant events are
 // ignored.
 TEST_P(WindowPerformanceTest, FirstInputAfterIgnored) {
