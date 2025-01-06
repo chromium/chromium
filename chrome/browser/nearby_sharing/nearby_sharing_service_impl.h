@@ -74,6 +74,10 @@ namespace NearbySharingServiceUnitTests {
 class NearbySharingServiceImplTestBase;
 }
 
+namespace user_manager {
+class User;
+}  // namespace user_manager
+
 // All methods should be called from the same sequence that created the service.
 class NearbySharingServiceImpl
     : public NearbySharingService,
@@ -92,8 +96,9 @@ class NearbySharingServiceImpl
   static constexpr int kMaxRecentNearbyProcessUnexpectedShutdownCount = 4;
 
   NearbySharingServiceImpl(
-      NotificationDisplayService* notification_display_service,
+      user_manager::User& user,
       Profile* profile,
+      NotificationDisplayService* notification_display_service,
       std::unique_ptr<NearbyConnectionsManager> nearby_connections_manager,
       ash::nearby::NearbyProcessManager* process_manager,
       std::unique_ptr<PowerClient> power_client,

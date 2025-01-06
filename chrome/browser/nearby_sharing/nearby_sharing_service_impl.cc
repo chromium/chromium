@@ -309,8 +309,9 @@ NearbyShareEncryptedMetadataKey AdvertisementToKey(
 }  // namespace
 
 NearbySharingServiceImpl::NearbySharingServiceImpl(
-    NotificationDisplayService* notification_display_service,
+    user_manager::User& user,
     Profile* profile,
+    NotificationDisplayService* notification_display_service,
     std::unique_ptr<NearbyConnectionsManager> nearby_connections_manager,
     ash::nearby::NearbyProcessManager* process_manager,
     std::unique_ptr<PowerClient> power_client,
@@ -329,9 +330,8 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
           std::make_unique<NearbyShareProfileInfoProviderImpl>(profile_)),
       local_device_data_manager_(
           NearbyShareLocalDeviceDataManagerImpl::Factory::Create(
-              prefs_,
-              http_client_factory_.get(),
-              profile_info_provider_.get())),
+              user,
+              http_client_factory_.get())),
       contact_manager_(NearbyShareContactManagerImpl::Factory::Create(
           prefs_,
           http_client_factory_.get(),

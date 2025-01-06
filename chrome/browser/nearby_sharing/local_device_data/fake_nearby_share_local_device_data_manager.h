@@ -17,8 +17,6 @@
 #include "third_party/nearby/sharing/proto/rpc_resources.pb.h"
 
 class NearbyShareClientFactory;
-class NearbyShareProfileInfoProvider;
-class PrefService;
 
 // A fake implementation of NearbyShareLocalDeviceDataManager, along with a fake
 // factory, to be used in tests.
@@ -45,15 +43,10 @@ class FakeNearbyShareLocalDeviceDataManager
       return latest_http_client_factory_;
     }
 
-    NearbyShareProfileInfoProvider* latest_profile_info_provider() const {
-      return latest_profile_info_provider_;
-    }
-
    protected:
     std::unique_ptr<NearbyShareLocalDeviceDataManager> CreateInstance(
-        PrefService* pref_service,
-        NearbyShareClientFactory* http_client_factory,
-        NearbyShareProfileInfoProvider* profile_info_provider) override;
+        user_manager::User& user,
+        NearbyShareClientFactory* http_client_factory) override;
 
    private:
     std::vector<
@@ -61,8 +54,6 @@ class FakeNearbyShareLocalDeviceDataManager
         instances_;
     raw_ptr<NearbyShareClientFactory, DanglingUntriaged>
         latest_http_client_factory_ = nullptr;
-    raw_ptr<NearbyShareProfileInfoProvider, DanglingUntriaged>
-        latest_profile_info_provider_ = nullptr;
   };
 
   struct UploadContactsCall {
