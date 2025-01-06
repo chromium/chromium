@@ -795,7 +795,6 @@
 -external/wpt/html/semantics/forms/the-input-element/range-intrinsic-size.html
 -external/wpt/html/semantics/forms/the-option-element/dynamic-content-change-rendering.html
 -external/wpt/html/semantics/forms/the-select-element/customizable-select/appearance-base-select-other-elements.tentative.html
--external/wpt/html/semantics/forms/the-select-element/customizable-select/button-in-popover.tentative.html
 -external/wpt/html/semantics/forms/the-select-element/customizable-select/select-events.tentative.html
 -external/wpt/html/semantics/forms/the-select-element/customizable-select/select-mouse-behavior.tentative.html
 -external/wpt/html/semantics/forms/the-select-element/customizable-select/select-size-multiple-new-content.tentative.html
@@ -1072,7 +1071,6 @@
 -virtual/coop-restrict-properties/external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-soap.https.html*
 -virtual/coop-restrict-properties/external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-un.https.html*
 -virtual/css-gap-decorations/external/wpt/css/css-ui/compute-kind-widget-no-fallback-props-001.html
--virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/button-in-popover.tentative.html
 -virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-inside-top-layer.tentative.html
 -virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-size-multiple-new-content.tentative.html
 -virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/reset-algorithm-rendering.html
@@ -1156,7 +1154,6 @@
 -virtual/pna-navigations-warning/external/wpt/fetch/private-network-access/iframe.tentative.https.window.html?include=from-treat-as-public
 -virtual/popover-anchor-relationships-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-events.tentative.html
 -virtual/popover-anchor-relationships-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-mouse-behavior.tentative.html
--virtual/popover-anchor-relationships-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/button-in-popover.tentative.html
 -virtual/popover-anchor-relationships-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/switch-picker-appearance.tentative.html
 -virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-events.tentative.html
 -virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-events.tentative.html
