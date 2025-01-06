@@ -456,11 +456,9 @@ ASH_PUBLIC_EXPORT inline constexpr size_t
     kToggleDoNotDisturbAcceleratorDataLength =
         std::size(kToggleDoNotDisturbAcceleratorData);
 
-// TODO(385364574): Replace this fake temporary keycode with actual keycode.
 ASH_PUBLIC_EXPORT inline constexpr AcceleratorData
     kToggleCameraAllowedAcceleratorData[] = {
-        {true, ui::VKEY_F23,
-         ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
+        {true, ui::VKEY_CAMERA_ACCESS_TOGGLE, ui::EF_NONE,
          AcceleratorAction::kToggleCameraAllowed},
 };
 ASH_PUBLIC_EXPORT inline constexpr size_t
