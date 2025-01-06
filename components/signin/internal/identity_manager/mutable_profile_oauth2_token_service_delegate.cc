@@ -353,9 +353,11 @@ MutableProfileOAuth2TokenServiceDelegate::CreateAccessTokenFetcher(
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   if (token_binding_helper_ &&
       token_binding_helper_->HasBindingKey(account_id)) {
-    const GaiaId gaia_id =
-        account_tracker_service_->GetAccountInfo(account_id).gaia;
-    CHECK(!gaia_id.empty());
+    // `CoreAccountId` is always equal to Gaia ID on DICE platforms.
+    // We cannot get Gaia ID from `account_tracker_service_` as it's sometimes
+    // unknown and the only way of getting it requires an access token, which
+    // requires a known Gaia ID (see https://crbug.com/386841916).
+    const GaiaId gaia_id(account_id.ToString());
     // `GaiaAccessTokenFetcher` doesn't support bound refresh tokens.
     auto fetcher = std::make_unique<OAuth2MintAccessTokenFetcherAdapter>(
         consumer, url_loader_factory, gaia_id, refresh_token,
