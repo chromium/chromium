@@ -28,6 +28,12 @@ inline constexpr char kWebNNTfliteDumpModel[] = "webnn-tflite-dump-model";
 
 #if BUILDFLAG(WEBNN_USE_ORT)
 inline constexpr char kWebNNUseOrt[] = "webnn-use-ort";
+
+// Save the generated ONNX model file to the folder specified by
+// --webnn-ort-dump-model. Note, the folder needs to be accessible from the
+// GPU process sandbox or --no-sandbox must be used.
+// Usage: --no-sandbox --webnn-ort-dump-model=./OnnxModels
+inline constexpr char kWebNNOrtDumpModel[] = "webnn-ort-dump-model";
 #endif  // BUILDFLAG(WEBNN_USE_ORT)
 
 }  // namespace switches

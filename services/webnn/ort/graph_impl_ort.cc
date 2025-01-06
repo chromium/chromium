@@ -4,6 +4,7 @@
 
 #include "services/webnn/ort/graph_impl_ort.h"
 
+#include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notimplemented.h"
 #include "base/task/bind_post_task.h"
@@ -22,6 +23,7 @@
 #include "services/webnn/resource_task.h"
 #include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_graph_impl.h"
+#include "services/webnn/webnn_switches.h"
 
 namespace webnn::ort {
 
@@ -107,6 +109,22 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
   // https://onnxruntime.ai/docs/performance/model-optimizations/graph-optimizations.html#layout-optimizations
   CHECK_STATUS(ort_api->SetSessionGraphOptimizationLevel(
       session_options, GraphOptimizationLevel::ORT_ENABLE_BASIC));
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kWebNNOrtDumpModel)) {
+    static uint64_t dump_count = 0;
+    base::FilePath dump_directory =
+        base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+            switches::kWebNNOrtDumpModel);
+    base::FilePath dump_path = dump_directory.AppendASCII(
+        base::StringPrintf("model%d.onnx", dump_count++));
+    CHECK_STATUS(ort_api->SetOptimizedModelFilePath(session_options,
+                                                    dump_path.value().c_str()));
+    // TODO(https://github.com/shiyi9801/chromium/issues/54): Support saving
+    // tensors created with `CreateTensorWithDataAsOrtValue()` or
+    // `CreateTensorWithDataAndDeleterAsOrtValue()` when ORT Model Builder API
+    // supports it.
+  }
 
   // TODO: Append OpenVINO EP for GPU and NPU devices.
 
