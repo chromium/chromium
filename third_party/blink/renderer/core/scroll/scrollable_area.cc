@@ -1286,13 +1286,15 @@ void ScrollableArea::SnapAfterLayout() {
   gfx::PointF current_position = ScrollPosition();
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
       cc::SnapSelectionStrategy::CreateForTargetElement(current_position);
-  PerformSnapping(*strategy, mojom::blink::ScrollBehavior::kInstant);
+  PerformSnapping(*strategy, mojom::blink::ScrollBehavior::kInstant,
+                  base::ScopedClosureRunner(), true);
 }
 
 bool ScrollableArea::PerformSnapping(
     const cc::SnapSelectionStrategy& strategy,
     mojom::blink::ScrollBehavior scroll_behavior,
-    base::ScopedClosureRunner on_finish) {
+    base::ScopedClosureRunner on_finish,
+    bool preserve_pinned_marker) {
   std::optional<gfx::PointF> snap_point = GetSnapPositionAndSetTarget(strategy);
   if (!snap_point) {
     UpdateSnappedTargetsAndEnqueueScrollSnapChange();
@@ -1309,10 +1311,18 @@ bool ScrollableArea::PerformSnapping(
 
   CancelScrollAnimation();
   CancelProgrammaticScrollAnimation();
-  if (!SetScrollOffset(ScrollPositionToOffset(snap_point.value()),
-                       mojom::blink::ScrollType::kProgrammatic, scroll_behavior,
-                       IgnoreArgs<ScrollableArea::ScrollCompletionMode>(
-                           on_finish.Release()))) {
+
+  bool targeted_scroll = false;
+  if (ScrollMarkerGroupPseudoElement* group = GetScrollMarkerGroup()) {
+    if (preserve_pinned_marker) {
+      targeted_scroll = group->SelectedMarkerIsPinned();
+    }
+  }
+  if (!SetScrollOffset(
+          ScrollPositionToOffset(snap_point.value()),
+          mojom::blink::ScrollType::kProgrammatic, scroll_behavior,
+          IgnoreArgs<ScrollableArea::ScrollCompletionMode>(on_finish.Release()),
+          targeted_scroll)) {
     // If no scroll happens, e.g. we got here because of a layout change, we
     // need to re-compute snapped targets and fire scrollsnapchange if
     // necessary.

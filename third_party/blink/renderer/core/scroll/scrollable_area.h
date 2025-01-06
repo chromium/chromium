@@ -699,7 +699,8 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
       const cc::SnapSelectionStrategy& strategy,
       mojom::blink::ScrollBehavior behavior =
           mojom::blink::ScrollBehavior::kSmooth,
-      base::ScopedClosureRunner on_finish = base::ScopedClosureRunner());
+      base::ScopedClosureRunner on_finish = base::ScopedClosureRunner(),
+      bool preserve_pinned_marker = false);
 
   void ScrollToScrollInitialTarget(const LayoutObject*);
 
