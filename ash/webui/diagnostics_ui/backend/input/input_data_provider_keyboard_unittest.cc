@@ -167,6 +167,11 @@ class VivaldiKeyboardTestBase : public InputDataProviderKeyboardTest {
         ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard;
     device_information.keyboard_top_row_layout =
         ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom;
+    device_information.bottom_left_layout =
+        mojom::BottomLeftLayout::kBottomLeft4Keys;
+    device_information.bottom_right_layout =
+        mojom::BottomRightLayout::kBottomRight2Keys;
+    device_information.numpad_layout = mojom::NumpadLayout::kUnknown;
   }
 
   void TearDown() override {
@@ -449,6 +454,18 @@ TEST_F(HasNumpadTest, SwitchDisabled) {
 
   EXPECT_EQ(mojom::NumberPadPresence::kNotPresent,
             keyboard_info_->number_pad_present);
+}
+
+class SplitModifierKeyboardTest : public VivaldiKeyboardTestBase {};
+TEST_F(SplitModifierKeyboardTest, CheckConfig) {
+  keyboard_info_ = input_data_provider_keyboard_->ConstructKeyboard(
+      &device_information, &aux_data_);
+
+  EXPECT_EQ(mojom::BottomLeftLayout::kBottomLeft4Keys,
+            keyboard_info_->bottom_left_layout);
+  EXPECT_EQ(mojom::BottomRightLayout::kBottomRight2Keys,
+            keyboard_info_->bottom_right_layout);
+  EXPECT_EQ(mojom::NumpadLayout::kUnknown, keyboard_info_->numpad_layout);
 }
 
 class RevenBoardTest : public VivaldiKeyboardTestBase {};
