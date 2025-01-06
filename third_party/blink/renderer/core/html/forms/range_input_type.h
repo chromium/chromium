@@ -70,6 +70,7 @@ class RangeInputType final : public InputType, public InputTypeView {
   void SanitizeValueInResponseToMinOrMaxAttributeChange() override;
   void StepAttributeChanged() override;
   void WarnIfValueIsInvalid(const String&) const override;
+  String ValueNotEqualText(const Decimal& value) const override;
   String RangeOverflowText(const Decimal& maxmum) const override;
   String RangeUnderflowText(const Decimal& minimum) const override;
   String RangeInvalidText(const Decimal& minimum,
