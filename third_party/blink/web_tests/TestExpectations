@@ -6111,6 +6111,9 @@ crbug.com/384009734 external/wpt/html/semantics/links/links-created-by-a-and-are
 crbug.com/384009734 external/wpt/html/semantics/forms/form-submission-target/form-target-blank-useractivation-multi-globals.html [ Timeout ]
 crbug.com/384009734 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/cross-origin-top-navigation-with-user-activation-in-parent.window.html [ Timeout ]
 
+# Marked as failing due to different failure output on headless vs content_shell
+crbug.com/341935362 virtual/dialog-close-when-open-removed-disabled/external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-close-via-attribute.tentative.html [ Failure ]
+
 # CustomizableSelect
 crbug.com/40146374 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-* [ Failure ]
 crbug.com/40146374 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-* [ Failure ]

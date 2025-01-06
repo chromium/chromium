@@ -142,7 +142,8 @@ HTMLDialogElement::HTMLDialogElement(Document& document)
 }
 
 void HTMLDialogElement::close(const String& return_value,
-                              bool ignore_open_attribute) {
+                              bool ignore_open_attribute,
+                              bool async_focus) {
   // https://html.spec.whatwg.org/C/#close-the-dialog
   if (is_closing_) {
     return;
@@ -182,8 +183,6 @@ void HTMLDialogElement::close(const String& return_value,
   // We should call focus() last since it will fire a focus event which could
   // modify this element.
   if (previously_focused_element_) {
-    FocusOptions* focus_options = FocusOptions::Create();
-    focus_options->setPreventScroll(true);
     Element* previously_focused_element = previously_focused_element_;
     previously_focused_element_ = nullptr;
 
@@ -191,9 +190,25 @@ void HTMLDialogElement::close(const String& return_value,
                                  FlatTreeTraversal::IsDescendantOf(
                                      *GetDocument().FocusedElement(), *this);
     if (previously_focused_element && (was_modal || descendant_is_focused)) {
-      previously_focused_element->Focus(FocusParams(
-          SelectionBehaviorOnFocus::kNone, mojom::blink::FocusType::kScript,
-          nullptr, focus_options));
+      auto focus_fn = [](Element* element) {
+        FocusOptions* focus_options = FocusOptions::Create();
+        focus_options->setPreventScroll(true);
+        element->Focus(FocusParams(SelectionBehaviorOnFocus::kNone,
+                                   mojom::blink::FocusType::kScript, nullptr,
+                                   focus_options));
+      };
+
+      if (async_focus) {
+        CHECK(RuntimeEnabledFeatures::DialogCloseWhenOpenRemovedEnabled());
+        GetDocument()
+            .GetTaskRunner(TaskType::kDOMManipulation)
+            ->PostTask(
+                FROM_HERE,
+                WTF::BindOnce(focus_fn,
+                              WrapWeakPersistent(previously_focused_element)));
+      } else {
+        focus_fn(previously_focused_element);
+      }
     }
   }
 
@@ -702,15 +717,14 @@ void HTMLDialogElement::ParseAttribute(
       !is_closing_) {
     // The open attribute has been removed explicitly, without calling close().
     if (RuntimeEnabledFeatures::DialogCloseWhenOpenRemovedEnabled()) {
-      auto* console_message = MakeGarbageCollected<ConsoleMessage>(
+      AddConsoleMessage(
           mojom::blink::ConsoleMessageSource::kOther,
           mojom::blink::ConsoleMessageLevel::kWarning,
           "The open attribute was removed from a dialog element while it was "
           "open. This is not recommended. Please close it using the "
           "dialog.close() method instead.");
-      console_message->SetNodes(GetDocument().GetFrame(), {GetDomNodeId()});
-      GetDocument().AddConsoleMessage(console_message);
-      close(/*return_value=*/String(), /*ignore_open_attribute=*/true);
+      close(/*return_value=*/String(), /*ignore_open_attribute=*/true,
+            /*async_focus=*/true);
     } else {
       GetDocument().AllOpenDialogs().erase(this);
       if (close_watcher_) {
