@@ -117,6 +117,7 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
                             const bool verify_app_logo_loaded,
                             const bool expect_success,
                             const bool wait_for_the_installer,
+                            const int expected_exit_code,
                             const base::Value::List& additional_switches,
                             const base::FilePath& updater_path) const override {
     RunCommand(
@@ -129,6 +130,7 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
          Param("verify_app_logo_loaded", BoolToString(verify_app_logo_loaded)),
          Param("expect_success", BoolToString(expect_success)),
          Param("wait_for_the_installer", BoolToString(wait_for_the_installer)),
+         Param("expected_exit_code", base::NumberToString(expected_exit_code)),
          Param("additional_switches",
                StringFromValue(base::Value(additional_switches.Clone()))),
          Param("updater_path", updater_path.MaybeAsASCII())});

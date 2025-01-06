@@ -305,13 +305,15 @@ class IntegrationTest : public ::testing::Test {
       const bool verify_app_logo_loaded = false,
       const bool expect_success = true,
       const bool wait_for_the_installer = true,
+      const int expected_exit_code = 0,
       const base::Value::List& additional_switches =
           base::Value::List().Append(kEnableCecaExperimentSwitch),
       const base::FilePath& updater_path = GetSetupExecutablePath()) {
     test_commands_->InstallUpdaterAndApp(
         app_id, is_silent_install, tag, child_window_text_to_find,
         always_launch_cmd, verify_app_logo_loaded, expect_success,
-        wait_for_the_installer, additional_switches, updater_path);
+        wait_for_the_installer, expected_exit_code, additional_switches,
+        updater_path);
   }
 
   void ExpectInstalled() { test_commands_->ExpectInstalled(); }
@@ -1621,8 +1623,9 @@ TEST_P(IntegrationSansInstallIdTest, Test) {
       base::StrCat({"appguid=", kAppId, "&iid=my_install_id"}),
       /*child_window_text_to_find=*/{}, /*always_launch_cmd=*/false,
       /*verify_app_logo_loaded=*/false, /*expect_success=*/true,
-      /*wait_for_the_installer=*/true, /*additional_switches=*/{},
-      GetParam().updater_setup_path));
+      /*wait_for_the_installer=*/true,
+      /*expected_exit_code=*/{},
+      /*additional_switches=*/{}, GetParam().updater_setup_path));
 
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
 
@@ -2624,7 +2627,9 @@ TEST_F(IntegrationTestDeviceManagementBase,
       base::StrCat({"appguid=", kApp1.appid, "&usagestats=1"}),
       /*child_window_text_to_find=*/{}, /*always_launch_cmd=*/false,
       /*verify_app_logo_loaded=*/false, /*expect_success=*/true,
-      /*wait_for_the_installer=*/true, /*additional_switches=*/{}));
+      /*wait_for_the_installer=*/true,
+      /*expected_exit_code=*/{},
+      /*additional_switches=*/{}));
   ASSERT_TRUE(WaitForUpdaterExit());
 
   ASSERT_NO_FATAL_FAILURE(InstallEnterpriseCompanionApp());
@@ -2664,6 +2669,7 @@ TEST_P(IntegrationTestDeviceManagement, RuntimeEnrollmentToken) {
       /*child_window_text_to_find=*/{}, /*always_launch_cmd=*/false,
       /*verify_app_logo_loaded=*/false, /*expect_success=*/true,
       /*wait_for_the_installer=*/true,
+      /*expected_exit_code=*/{},
       /*additional_switches=*/GetInstallSwitches()));
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kApp1.appid, kApp1.v1));
@@ -3222,6 +3228,7 @@ class IntegrationTestUserInSystem : public IntegrationTest {
         app_id, is_silent_install, tag, child_window_text_to_find,
         always_launch_cmd, verify_app_logo_loaded,
         /*expect_success=*/true, /*wait_for_the_installer=*/true,
+        /*expected_exit_code=*/{},
         /*additional_switches=*/{}, /*updater_path=*/GetSetupExecutablePath());
   }
 
@@ -3478,7 +3485,9 @@ TEST_F(IntegrationTest, FallbackToOutOfProcessFetcher) {
       base::StrCat({"appguid=", kAppId2, "&ap=foo2&usagestats=1"}),
       /*child_window_text_to_find=*/{}, /*always_launch_cmd=*/false,
       /*verify_app_logo_loaded=*/false,
-      /*expect_success=*/false));
+      /*expect_success=*/false,
+      /*wait_for_the_installer=*/true,
+      /*expected_exit_code=*/5));
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kAppId2, base::Version()));
   ASSERT_NO_FATAL_FAILURE(ExpectAppTag(kAppId2, ""));
@@ -5065,6 +5074,21 @@ INSTANTIATE_TEST_SUITE_P(
                 true,
             },
 
+            // Silent install with a launch command, with `always_launch_cmd`
+            // set to `true`, InstallerResult::kMsiError, explicit error
+            // code.
+            {
+                false,
+                "INSTALLER_RESULT=2 INSTALLER_ERROR=1603 "
+                "REGISTER_LAUNCH_COMMAND=more.com",
+                UpdateService::ErrorCategory::kInstaller,
+                1603,
+                {},
+                "more.com",
+                {},
+                true,
+            },
+
             // Interactive install, InstallerResult::kMsiError,
             // `ERROR_SUCCESS_REBOOT_REQUIRED`.
             {
@@ -5203,7 +5227,11 @@ TEST_P(IntegrationInstallerResultsTest, TestCases) {
     ASSERT_NO_FATAL_FAILURE(
         InstallUpdaterAndApp(kMsiAppId, !GetTestCase().interactive_install,
                              GetTestCase().tag.value_or("usagestats=1"),
-                             GetTestCase().installer_text, always_launch_cmd));
+                             GetTestCase().installer_text, always_launch_cmd,
+                             /*verify_app_logo_loaded=*/false,
+                             /*expect_success=*/should_install_successfully,
+                             /*wait_for_the_installer=*/true,
+                             /*expected_exit_code=*/GetTestCase().error_code));
     ASSERT_TRUE(WaitForUpdaterExit());
   } else {
     std::optional<int64_t> crx_file_size;

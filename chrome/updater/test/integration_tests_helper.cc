@@ -376,23 +376,25 @@ void AppTestHelper::FirstTaskRun() {
                WithSwitch(
                    "additional_switches",
                    WithSwitch(
-                       "wait_for_the_installer",
+                       "expected_exit_code",
                        WithSwitch(
-                           "expect_success",
+                           "wait_for_the_installer",
                            WithSwitch(
-                               "verify_app_logo_loaded",
+                               "expect_success",
                                WithSwitch(
-                                   "always_launch_cmd",
+                                   "verify_app_logo_loaded",
                                    WithSwitch(
-                                       "child_window_text_to_find",
+                                       "always_launch_cmd",
                                        WithSwitch(
-                                           "tag",
+                                           "child_window_text_to_find",
                                            WithSwitch(
-                                               "is_silent_install",
+                                               "tag",
                                                WithSwitch(
-                                                   "app_id",
-                                                   WithSystemScope(Wrap(
-                                                       &InstallUpdaterAndApp))))))))))))},  // NOLINT
+                                                   "is_silent_install",
+                                                   WithSwitch(
+                                                       "app_id",
+                                                       WithSystemScope(Wrap(
+                                                           &InstallUpdaterAndApp)))))))))))))},  // NOLINT
           {"print_log", WithSystemScope(Wrap(&PrintLog))},
           {"run_wake",
            WithSwitch("version", WithSwitch("exit_code",

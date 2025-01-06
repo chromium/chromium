@@ -198,6 +198,7 @@ void InstallUpdaterAndApp(UpdaterScope scope,
                           bool verify_app_logo_loaded,
                           bool expect_success,
                           bool wait_for_the_installer,
+                          int expected_exit_code,
                           const base::Value::List& additional_switches,
                           const base::FilePath& updater_path);
 

@@ -566,6 +566,7 @@ void InstallUpdaterAndApp(UpdaterScope scope,
                           const bool verify_app_logo_loaded,
                           const bool expect_success,
                           const bool wait_for_the_installer,
+                          const int expected_exit_code,
                           const base::Value::List& additional_switches,
                           const base::FilePath& updater_path) {
   ASSERT_FALSE(updater_path.empty());
@@ -589,7 +590,7 @@ void InstallUpdaterAndApp(UpdaterScope scope,
     int exit_code = -1;
     Run(scope, command_line, wait_for_the_installer ? &exit_code : nullptr);
     if (wait_for_the_installer) {
-      ASSERT_EQ(expect_success, exit_code == 0);
+      ASSERT_EQ(exit_code, expected_exit_code);
     }
   } else {
 #if BUILDFLAG(IS_WIN)

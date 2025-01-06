@@ -534,6 +534,12 @@ inline constexpr int kErrorFailedToUninstallCompanionApp =
 inline constexpr int kErrorFailedToUninstallOtherVersion =
     kUpdaterErrorBase + 81;
 
+// No observer completion info for the install.
+inline constexpr int kErrorNoObserverCompletionInfo = kUpdaterErrorBase + 82;
+
+// No apps to install.
+inline constexpr int kErrorNoApps = kUpdaterErrorBase + 83;
+
 // Policy Management constants.
 // The maximum value allowed for policy AutoUpdateCheckPeriodMinutes.
 inline constexpr int kMaxAutoUpdateCheckPeriodMinutes = 43200;

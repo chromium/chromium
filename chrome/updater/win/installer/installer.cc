@@ -535,8 +535,10 @@ ProcessExitResult InstallerMain(HMODULE module) {
 
 int WMain(HMODULE module) {
   const ProcessExitResult result = InstallerMain(module);
-  VLOG(1) << "Metainstaller WMain returned: " << result.exit_code
-          << ", Windows error: " << result.windows_error;
+  const DWORD wmain_exit_code = result.exit_code == UPDATER_EXIT_CODE
+                                    ? result.windows_error
+                                    : result.exit_code;
+  VLOG(1) << "Metainstaller WMain returning: " << wmain_exit_code;
 
   // Display UI only for metainstaller errors.
   if (result.exit_code != SUCCESS_EXIT_CODE &&
@@ -550,8 +552,7 @@ int WMain(HMODULE module) {
                        .c_str(),
                    exe_path.BaseName().value().c_str(), 0, 0);
   }
-  return result.exit_code == UPDATER_EXIT_CODE ? result.windows_error
-                                               : result.exit_code;
+  return wmain_exit_code;
 }
 
 }  // namespace updater

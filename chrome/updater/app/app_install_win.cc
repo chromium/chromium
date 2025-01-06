@@ -29,6 +29,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
@@ -879,8 +880,30 @@ void AppInstallControllerImpl::RunUI() {
   if (!callback_) {
     return;
   }
-  main_task_runner_->PostTask(FROM_HERE,
-                              base::BindOnce(std::move(callback_), kErrorOk));
+
+  main_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback_), [&]() {
+        if (!observer_completion_info_) {
+          return kErrorNoObserverCompletionInfo;
+        }
+
+        if (observer_completion_info_->completion_code !=
+            CompletionCodes::COMPLETION_CODE_ERROR) {
+          return kErrorOk;
+        }
+
+        if (observer_completion_info_->apps_info.empty()) {
+          return kErrorNoApps;
+        }
+
+        return base::ranges::max_element(
+                   observer_completion_info_->apps_info,
+                   [](const auto& app_info1, const auto& app_info2) {
+                     return GetPriority(app_info1.completion_code) <
+                            GetPriority(app_info2.completion_code);
+                   })
+            ->error_code;
+      }()));
 }
 
 void AppInstallControllerImpl::DoExit() {

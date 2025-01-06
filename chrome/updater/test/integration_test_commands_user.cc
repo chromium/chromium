@@ -63,13 +63,14 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
                             const bool verify_app_logo_loaded,
                             const bool expect_success,
                             const bool wait_for_the_installer,
+                            const int expected_exit_code,
                             const base::Value::List& additional_switches,
                             const base::FilePath& updater_path) const override {
     updater::test::InstallUpdaterAndApp(
         updater_scope_, app_id, is_silent_install, tag,
         child_window_text_to_find, always_launch_cmd, verify_app_logo_loaded,
-        expect_success, wait_for_the_installer, additional_switches,
-        updater_path);
+        expect_success, wait_for_the_installer, expected_exit_code,
+        additional_switches, updater_path);
   }
 
   void ExpectInstalled() const override {
