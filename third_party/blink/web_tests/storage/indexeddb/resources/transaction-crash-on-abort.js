@@ -15,7 +15,7 @@ function prepareDatabase()
 
 function setVersionComplete()
 {
-    evalAndLog("db.transaction('foo', 'readonly', {durability: 'relaxed'})");
+    evalAndLog("db.transaction('foo', 'readonly')");
     evalAndLog("self.gc()");
     finishJSTest();
 }

@@ -18,7 +18,7 @@ function runTransaction()
 {
     debug("");
     debug("runTransaction():");
-    evalAndLog("transaction = db.transaction('store', 'readwrite', {durability: 'relaxed'})");
+    evalAndLog("transaction = db.transaction('store', 'readwrite')");
 
     debug("");
     debug("Verify that transactions are created with |active| flag set:");

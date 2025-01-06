@@ -15,7 +15,7 @@ store.put(0, 0)
 
 verifyWrappers():
 db = event.target.result
-tx = db.transaction('store', 'readwrite', {durability: 'relaxed'})
+tx = db.transaction('store', 'readwrite')
 request = tx.objectStore('store').openCursor()
 
 
