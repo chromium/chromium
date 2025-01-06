@@ -29,6 +29,7 @@
 #include "third_party/blink/public/platform/web_worker_fetch_context.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/navigator_base.h"
+#include "third_party/blink/renderer/platform/accept_languages_watcher.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -46,6 +47,9 @@ class CORE_EXPORT WorkerNavigator final : public NavigatorBase,
 
   // AcceptLanguagesWatcher override
   void NotifyUpdate() override;
+
+  // Both NavigatorLanguage and AcceptLanguagesWatcher override
+  void Trace(Visitor* visitor) const override;
 };
 
 }  // namespace blink

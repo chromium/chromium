@@ -33,18 +33,11 @@ class SiteForCookies;
 
 namespace blink {
 
+class AcceptLanguagesWatcher;
 class WebDocumentSubresourceFilter;
 class URLLoaderFactory;
 class WebURLRequest;
 class URLLoaderThrottle;
-
-// Helper class allowing DedicatedOrSharedWorkerFetchContextImpl to notify blink
-// upon an accept languages update. This class will be extended by
-// WorkerNavigator.
-class AcceptLanguagesWatcher {
- public:
-  virtual void NotifyUpdate() = 0;
-};
 
 // WebWorkerFetchContext is a per-worker object created on the main thread,
 // passed to a worker (dedicated, shared and service worker) and initialized on
