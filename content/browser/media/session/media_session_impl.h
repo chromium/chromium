@@ -450,6 +450,9 @@ class MediaSessionImpl : public MediaSession,
   CONTENT_EXPORT bool AddOneShotPlayer(MediaSessionPlayerObserver* observer,
                                        int player_id);
 
+  CONTENT_EXPORT bool AddAmbientPlayer(MediaSessionPlayerObserver* observer,
+                                       int player_id);
+
   // Returns true if there is at least one player and all the players are
   // one-shot.
   bool HasOnlyOneShotPlayers() const;
@@ -544,13 +547,21 @@ class MediaSessionImpl : public MediaSession,
   std::set<media_session::mojom::MediaSessionAction> actions_;
 
   std::unique_ptr<AudioFocusDelegate> delegate_;
+
+  // Standard video playback (e.g. WebMediaPlayerImpl players).
   std::map<PlayerIdentifier, media_session::mojom::AudioFocusType>
       normal_players_;
+
+  // Pepper players (PPAPI players).
   base::flat_set<PlayerIdentifier> pepper_players_;
 
   // Players that are playing in the web contents but we cannot control (e.g.
-  // WebAudio or MediaStream).
+  // MediaStream).
   base::flat_set<PlayerIdentifier> one_shot_players_;
+
+  // Players that we can neither control nor should affect other players in the
+  // audio focus stack (e.g. WebAudio).
+  base::flat_set<PlayerIdentifier> ambient_players_;
 
   // Players that are removed from |normal_players_| temporarily when the page
   // goes to back-forward cache. When the page is restored from the cache, these

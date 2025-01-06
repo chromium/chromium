@@ -1,5 +1,6 @@
 include_rules = [
     "+media/base",
+    "+media/mojo",
     "+services/metrics/public/cpp/ukm_builders.h",
     "+services/metrics/public/cpp/ukm_recorder.h",
     "-third_party/blink/renderer/modules",
