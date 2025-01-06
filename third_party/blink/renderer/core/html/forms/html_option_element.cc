@@ -656,6 +656,18 @@ void HTMLOptionElement::DefaultEventHandler(Event& event) {
   HTMLElement::DefaultEventHandler(event);
 }
 
+namespace {
+bool OptionIsVisible(HTMLOptionElement& option) {
+  PhysicalRect popover_rect =
+      option.OwnerSelectElement()->PopoverForAppearanceBase()->BoundingBox();
+  PhysicalRect option_rect = option.BoundingBox();
+  LayoutUnit popover_top = popover_rect.Y();
+  LayoutUnit option_top = option_rect.Y();
+  return option_top >= popover_top && option_top + option_rect.Height() <=
+                                          popover_top + popover_rect.Height();
+}
+}  // namespace
+
 void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
   auto* select = OwnerSelectElement();
   if (!select || !select->IsAppearanceBasePicker()) {
@@ -694,43 +706,75 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
         return;
       }
       if (key == keywords::kArrowUp) {
-        if (auto* previous_option = options.NextMatchingOption(
-                *this, [](auto& option) { return option.IsFocusable(); },
-                /*forward*/ false)) {
+        if (auto* previous_option = options.PreviousFocusableOption(*this)) {
           previous_option->Focus(focus_params);
         }
         event.SetDefaultHandled();
         return;
       } else if (key == keywords::kArrowDown) {
-        if (auto* next_option = options.NextMatchingOption(
-                *this, [](auto& option) { return option.IsFocusable(); },
-                /*forward*/ true)) {
+        if (auto* next_option = options.NextFocusableOption(*this)) {
           next_option->Focus(focus_params);
         }
         event.SetDefaultHandled();
         return;
       } else if (key == keywords::kHome) {
-        if (auto* first_option = options.NextMatchingOption(
-                *options.begin(),
-                [](auto& option) { return option.IsFocusable(); },
-                /*forward*/ true, /*inclusive*/ true)) {
+        if (auto* first_option = options.NextFocusableOption(
+                *options.begin(), /*inclusive*/ true)) {
           first_option->Focus(focus_params);
           event.SetDefaultHandled();
           return;
         }
       } else if (key == keywords::kEnd) {
-        if (auto* last_option = options.NextMatchingOption(
-                *options.last(),
-                [](auto& option) { return option.IsFocusable(); },
-                /*forward*/ false, /*inclusive*/ true)) {
+        if (auto* last_option = options.PreviousFocusableOption(
+                *options.last(), /*inclusive*/ true)) {
           last_option->Focus(focus_params);
           event.SetDefaultHandled();
           return;
         }
       } else if (key == keywords::kPageDown) {
-        // TODO(382101095): Need to implement page down behavior.
+        if (!OptionIsVisible(*this)) {
+          // If the option isn't visible at all right now, *only* scroll it into
+          // view.
+          scrollIntoViewIfNeeded(/*center_if_needed*/ false);
+        } else {
+          auto* next_option = options.NextFocusableOption(*this);
+          if (next_option && !OptionIsVisible(*next_option)) {
+            // The next option isn't visible, which means we were at the very
+            // bottom. Scroll the current option to the top, and then focus the
+            // bottom one.
+            scrollIntoView(/*align_to_top*/ true);
+          }
+          // Then find the last option that is still in the view.
+          HTMLOptionElement* next_focus = this;
+          for (auto* current = this; current && OptionIsVisible(*current);
+               current = options.NextFocusableOption(*current)) {
+            next_focus = current;
+          }
+          next_focus->Focus(focus_params);
+        }
+        event.SetDefaultHandled();
       } else if (key == keywords::kPageUp) {
-        // TODO(382101095): Need to implement page up behavior.
+        if (!OptionIsVisible(*this)) {
+          // If the option isn't visible at all right now, *only* scroll it into
+          // view.
+          scrollIntoViewIfNeeded(/*center_if_needed*/ false);
+        } else {
+          auto* previous_option = options.PreviousFocusableOption(*this);
+          if (previous_option && !OptionIsVisible(*previous_option)) {
+            // The previous option isn't visible, which means we were at the
+            // very top. Scroll the current option to the bottom, and then focus
+            // the top one.
+            scrollIntoView(/*align_to_top*/ false);
+          }
+          // Then find the first option that is in the view.
+          HTMLOptionElement* next_focus = this;
+          for (auto* current = this; current && OptionIsVisible(*current);
+               current = options.PreviousFocusableOption(*current)) {
+            next_focus = current;
+          }
+          next_focus->Focus(focus_params);
+        }
+        event.SetDefaultHandled();
       }
     }
 

@@ -38,6 +38,7 @@ class CORE_EXPORT OptionListIterator final {
     }
   }
   HTMLOptionElement& operator*() { return *current_; }
+  HTMLOptionElement* operator->() { return current_; }
   OptionListIterator& operator++() {
     if (current_) {
       Advance(current_);
@@ -87,12 +88,20 @@ class OptionList final {
   }
   unsigned size() const;
   typedef bool (*OptionMatchingPredicate)(HTMLOptionElement& option);
-  HTMLOptionElement* NextMatchingOption(HTMLOptionElement& option,
-                                        OptionMatchingPredicate matching,
-                                        bool forward,
-                                        bool inclusive = false);
+  HTMLOptionElement* NextFocusableOption(HTMLOptionElement& option,
+                                         bool inclusive = false) {
+    return FindFocusableOption(option, /*forward*/ true, inclusive);
+  }
+  HTMLOptionElement* PreviousFocusableOption(HTMLOptionElement& option,
+                                             bool inclusive = false) {
+    return FindFocusableOption(option, /*forward*/ false, inclusive);
+  }
 
  private:
+  HTMLOptionElement* FindFocusableOption(HTMLOptionElement& option,
+                                         bool forward,
+                                         bool inclusive);
+
   const HTMLSelectElement& select_;
 };
 
