@@ -84,6 +84,9 @@ using ::testing::Return;
 using ::testing::ReturnRef;
 using ::testing::SaveArg;
 
+namespace views {
+class Widget;
+}
 namespace {
 
 MATCHER_P3(MatchesLoginAndURL,
@@ -116,7 +119,7 @@ class CredentialManagementDialogPromptMock : public AccountChooserPrompt,
 class PasswordLeakDialogMock : public CredentialLeakPrompt {
  public:
   MOCK_METHOD(void, ShowCredentialLeakPrompt, (), (override));
-  MOCK_METHOD(void, ControllerGone, (), (override));
+  MOCK_METHOD(views::Widget*, GetWidgetForTesting, (), (override));
 };
 
 class TestManagePasswordsIconView : public ManagePasswordsIconView {
@@ -173,7 +176,7 @@ class TestManagePasswordsUIController : public ManagePasswordsUIController {
               CreateAutoSigninPrompt,
               (CredentialManagerDialogController*),
               (override));
-  MOCK_METHOD(CredentialLeakPrompt*,
+  MOCK_METHOD(std::unique_ptr<CredentialLeakPrompt>,
               CreateCredentialLeakPrompt,
               (CredentialLeakDialogController*),
               (override));
@@ -1656,11 +1659,12 @@ TEST_F(ManagePasswordsUIControllerTest, SaveBubbleAfterLeakCheck) {
   EXPECT_TRUE(controller()->opened_automatic_bubble());
 
   // Leak detection dialog hides the bubble.
-  PasswordLeakDialogMock dialog_prompt;
+  auto dialog_prompt = std::make_unique<PasswordLeakDialogMock>();
   CredentialLeakDialogController* dialog_controller = nullptr;
+  EXPECT_CALL(*dialog_prompt, ShowCredentialLeakPrompt);
   EXPECT_CALL(*controller(), CreateCredentialLeakPrompt)
-      .WillOnce(DoAll(SaveArg<0>(&dialog_controller), Return(&dialog_prompt)));
-  EXPECT_CALL(dialog_prompt, ShowCredentialLeakPrompt);
+      .WillOnce(DoAll(SaveArg<0>(&dialog_controller),
+                      Return(std::move(dialog_prompt))));
   controller()->OnCredentialLeak(password_manager::LeakedPasswordDetails(
       password_manager::CreateLeakType(password_manager::IsSaved(false),
                                        password_manager::IsReused(false),
@@ -1678,7 +1682,6 @@ TEST_F(ManagePasswordsUIControllerTest, SaveBubbleAfterLeakCheck) {
           Return(base::span<const password_manager::InteractionsStats>()));
 
   // Close the dialog.
-  EXPECT_CALL(dialog_prompt, ControllerGone);
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
   dialog_controller->OnAcceptDialog();
 
@@ -1698,11 +1701,12 @@ TEST_F(ManagePasswordsUIControllerTest,
   EXPECT_FALSE(controller()->opened_automatic_bubble());
 
   // Leak detection dialog hides the bubble.
-  PasswordLeakDialogMock dialog_prompt;
+  auto dialog_prompt = std::make_unique<PasswordLeakDialogMock>();
   CredentialLeakDialogController* dialog_controller = nullptr;
+  EXPECT_CALL(*dialog_prompt, ShowCredentialLeakPrompt);
   EXPECT_CALL(*controller(), CreateCredentialLeakPrompt)
-      .WillOnce(DoAll(SaveArg<0>(&dialog_controller), Return(&dialog_prompt)));
-  EXPECT_CALL(dialog_prompt, ShowCredentialLeakPrompt);
+      .WillOnce(DoAll(SaveArg<0>(&dialog_controller),
+                      Return(std::move(dialog_prompt))));
   controller()->OnCredentialLeak(password_manager::LeakedPasswordDetails(
       password_manager::CreateLeakType(password_manager::IsSaved(false),
                                        password_manager::IsReused(false),
@@ -1717,7 +1721,6 @@ TEST_F(ManagePasswordsUIControllerTest,
   EXPECT_CALL(*form_manager_ptr, IsBlocklisted()).WillOnce(Return(true));
 
   // Close the dialog.
-  EXPECT_CALL(dialog_prompt, ControllerGone);
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
   dialog_controller->OnAcceptDialog();
 
@@ -1735,11 +1738,13 @@ TEST_F(ManagePasswordsUIControllerTest, UpdateBubbleAfterLeakCheck) {
   EXPECT_TRUE(controller()->opened_automatic_bubble());
 
   // Leak detection dialog hides the bubble.
-  PasswordLeakDialogMock dialog_prompt;
+  auto dialog_prompt = std::make_unique<PasswordLeakDialogMock>();
+  auto* dialog_prompt_ptr = dialog_prompt.get();
   CredentialLeakDialogController* dialog_controller = nullptr;
   EXPECT_CALL(*controller(), CreateCredentialLeakPrompt)
-      .WillOnce(DoAll(SaveArg<0>(&dialog_controller), Return(&dialog_prompt)));
-  EXPECT_CALL(dialog_prompt, ShowCredentialLeakPrompt);
+      .WillOnce(DoAll(SaveArg<0>(&dialog_controller),
+                      Return(std::move(dialog_prompt))));
+  EXPECT_CALL(*dialog_prompt_ptr, ShowCredentialLeakPrompt);
   controller()->OnCredentialLeak(password_manager::LeakedPasswordDetails(
       password_manager::CreateLeakType(password_manager::IsSaved(true),
                                        password_manager::IsReused(false),
@@ -1750,7 +1755,6 @@ TEST_F(ManagePasswordsUIControllerTest, UpdateBubbleAfterLeakCheck) {
   EXPECT_FALSE(controller()->opened_automatic_bubble());
 
   // Close the dialog.
-  EXPECT_CALL(dialog_prompt, ControllerGone);
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
   dialog_controller->OnAcceptDialog();
 
