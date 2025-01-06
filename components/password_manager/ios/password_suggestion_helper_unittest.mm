@@ -127,7 +127,8 @@ class PasswordSuggestionHelperTest : public PlatformTest {
                                                        fieldType:fieldType
                                                             type:kQueryFocusType
                                                       typedValue:@""
-                                                         frameID:frameID];
+                                                         frameID:frameID
+                                                    onlyPassword:NO];
   }
 
   FormSuggestionProviderQuery* BuildPasswordQuery(

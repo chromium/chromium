@@ -528,7 +528,8 @@ TEST_F(SharedPasswordControllerTest,
              fieldType:@"text"
                   type:@"focus"
             typedValue:@""
-               frameID:kTestFrameID];
+               frameID:kTestFrameID
+          onlyPassword:NO];
 
   auto web_frame =
       web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
@@ -570,7 +571,8 @@ TEST_F(SharedPasswordControllerTest, ReturnsNoSuggestionsIfNoneAreAvailable) {
              fieldType:kObfuscatedFieldType  // Ensures this is a password form.
                   type:@"focus"
             typedValue:@""
-               frameID:kTestFrameID];
+               frameID:kTestFrameID
+          onlyPassword:NO];
   const std::string web_frame_id = SysNSStringToUTF8(kTestFrameID);
   auto web_frame =
       web::FakeWebFrame::Create(web_frame_id,
@@ -611,7 +613,8 @@ TEST_F(SharedPasswordControllerTest, ReturnsNoSuggestionsIfFrameDestroyed) {
              fieldType:kObfuscatedFieldType  // Ensures this is a password form.
                   type:@"focus"
             typedValue:@""
-               frameID:kTestFrameID];
+               frameID:kTestFrameID
+          onlyPassword:NO];
 
   web::WebFrame* frame = nullptr;
   const std::string frame_id = "";
@@ -647,7 +650,8 @@ TEST_F(SharedPasswordControllerTest, ReturnsSuggestionsIfAvailable) {
              fieldType:kObfuscatedFieldType  // Ensures this is a password form.
                   type:@"focus"
             typedValue:@""
-               frameID:kTestFrameID];
+               frameID:kTestFrameID
+          onlyPassword:NO];
   FormSuggestion* suggestion = [FormSuggestion
              suggestionWithValue:@"value"
               displayDescription:@"display-description"
@@ -703,7 +707,8 @@ TEST_F(SharedPasswordControllerTest,
              fieldType:kObfuscatedFieldType  // Ensures this is a password form.
                   type:@"focus"
             typedValue:@""
-               frameID:kTestFrameID];
+               frameID:kTestFrameID
+          onlyPassword:NO];
 
   const std::string web_frame_id = SysNSStringToUTF8(kTestFrameID);
   auto web_frame =
@@ -1339,7 +1344,8 @@ TEST_P(SharedPasswordControllerTestWithRealSuggestionHelper,
              fieldType:@"text"
                   type:@"focus"
             typedValue:@""
-               frameID:kTestFrameID];
+               frameID:kTestFrameID
+          onlyPassword:NO];
 
   [[form_helper_ expect] findPasswordFormsInFrame:frame
                                 completionHandler:[OCMArg any]];
@@ -1409,7 +1415,8 @@ TEST_P(SharedPasswordControllerTestWithRealSuggestionHelper,
                  fieldType:@"text"
                       type:@"focus"
                 typedValue:@""
-                   frameID:kTestFrameID];
+                   frameID:kTestFrameID
+              onlyPassword:NO];
 
   [[form_helper_ expect] findPasswordFormsInFrame:frame
                                 completionHandler:[OCMArg any]];
@@ -1436,7 +1443,8 @@ TEST_P(SharedPasswordControllerTestWithRealSuggestionHelper,
                  fieldType:kObfuscatedFieldType
                       type:@"focus"
                 typedValue:@""
-                   frameID:kTestFrameID];
+                   frameID:kTestFrameID
+              onlyPassword:NO];
 
   [[form_helper_ expect] findPasswordFormsInFrame:frame
                                 completionHandler:[OCMArg any]];
@@ -1514,7 +1522,8 @@ TEST_P(SharedPasswordControllerTestWithRealSuggestionHelper,
              fieldType:kObfuscatedFieldType
                   type:@"focus"
             typedValue:@""
-               frameID:kTestFrameID];
+               frameID:kTestFrameID
+          onlyPassword:NO];
 
   [controller_
       retrieveSuggestionsForForm:form_query
@@ -1650,7 +1659,8 @@ TEST_F(SharedPasswordControllerTest,
              fieldType:@"text"
                   type:@"focus"
             typedValue:@""
-               frameID:kTestFrameID];
+               frameID:kTestFrameID
+          onlyPassword:NO];
 
   id mock_completion_handler =
       [OCMArg checkWithBlock:^BOOL(void (^completionHandler)(BOOL)) {
@@ -1695,7 +1705,8 @@ TEST_F(SharedPasswordControllerTest,
              fieldType:@"text"
                   type:@"focus"
             typedValue:@""
-               frameID:kTestFrameID];
+               frameID:kTestFrameID
+          onlyPassword:NO];
 
   OCMExpect([suggestion_helper_ retrieveSuggestionsWithForm:form_query])
       .andReturn(@[]);

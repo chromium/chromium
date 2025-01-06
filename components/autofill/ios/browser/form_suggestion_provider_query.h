@@ -48,6 +48,10 @@ NSString* const kObfuscatedFieldType = @"password";
 // ID of a frame containing the form.
 @property(readonly, nonatomic, copy) NSString* frameID;
 
+// YES if only passwords should be returned as suggestions (e.g. no password
+// generation suggestion).
+@property(readonly, nonatomic, assign) BOOL onlyPassword;
+
 - (instancetype)initWithFormName:(NSString*)formName
                   formRendererID:(autofill::FormRendererId)formRendererID
                  fieldIdentifier:(NSString*)fieldIdentifier
@@ -55,7 +59,8 @@ NSString* const kObfuscatedFieldType = @"password";
                        fieldType:(NSString*)fieldType
                             type:(NSString*)type
                       typedValue:(NSString*)typedValue
-                         frameID:(NSString*)frameID NS_DESIGNATED_INITIALIZER;
+                         frameID:(NSString*)frameID
+                    onlyPassword:(BOOL)onlyPassword NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

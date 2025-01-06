@@ -222,7 +222,8 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
              fieldType:fieldType
                   type:_lastFormActivityType
             typedValue:_lastFormActivityTypedValue
-               frameID:frameID];
+               frameID:frameID
+          onlyPassword:NO];
   // It is necessary to call |checkIfSuggestionsAvailableForForm| before
   // |retrieveSuggestionsForForm| because the former actually queries the db,
   // while the latter merely returns them.

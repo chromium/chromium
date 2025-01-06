@@ -408,7 +408,8 @@ TEST_F(AutofillAgentTests,
                                                   fieldType:@"text"
                                                        type:@"focus"
                                                  typedValue:@""
-                                                    frameID:@"frameID"];
+                                                    frameID:@"frameID"
+                                               onlyPassword:NO];
   [autofill_agent_ checkIfSuggestionsAvailableForForm:form_query
                                        hasUserGesture:NO
                                              webState:&fake_web_state_
@@ -456,7 +457,8 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ShowAccountCards) {
                                                   fieldType:@"text"
                                                        type:@"focus"
                                                  typedValue:@""
-                                                    frameID:@"frameID"];
+                                                    frameID:@"frameID"
+                                               onlyPassword:NO];
   [autofill_agent_ retrieveSuggestionsForForm:form_query
                                      webState:&fake_web_state_
                             completionHandler:completionHandler];
@@ -796,7 +798,8 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearForm) {
                                                   fieldType:@"text"
                                                        type:@"focus"
                                                  typedValue:@""
-                                                    frameID:@"frameID"];
+                                                    frameID:@"frameID"
+                                               onlyPassword:NO];
   [autofill_agent_ retrieveSuggestionsForForm:form_query
                                      webState:&fake_web_state_
                             completionHandler:completionHandler];
@@ -854,7 +857,8 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearFormWithGPay) {
                                                   fieldType:@"text"
                                                        type:@"focus"
                                                  typedValue:@""
-                                                    frameID:@"frameID"];
+                                                    frameID:@"frameID"
+                                               onlyPassword:NO];
   [autofill_agent_ retrieveSuggestionsForForm:form_query
                                      webState:&fake_web_state_
                             completionHandler:completionHandler];

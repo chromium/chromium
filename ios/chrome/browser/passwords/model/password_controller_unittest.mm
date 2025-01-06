@@ -382,7 +382,8 @@ class PasswordControllerTest : public PlatformTest {
                    fieldType:@"not_important"
                         type:@"input"
                   typedValue:SysUTF8ToNSString(typed_value)
-                     frameID:SysUTF8ToNSString(main_frame_id)];
+                     frameID:SysUTF8ToNSString(main_frame_id)
+                onlyPassword:NO];
     [passwordController_.sharedPasswordController
         checkIfSuggestionsAvailableForForm:form_query
                             hasUserGesture:YES
@@ -581,7 +582,8 @@ void PasswordControllerTest::FillFormAndValidate(TestPasswordFormData test_data,
              fieldType:@"text"
                   type:@"focus"
             typedValue:@""
-               frameID:SysUTF8ToNSString(frame->GetFrameId())];
+               frameID:SysUTF8ToNSString(frame->GetFrameId())
+          onlyPassword:NO];
 
   NSString* suggestion_text = [NSString
       stringWithFormat:@"%@ ••••••••",
@@ -1503,7 +1505,8 @@ TEST_F(PasswordControllerTest, CheckAsyncSuggestions) {
                    fieldType:@"text"
                         type:@"focus"
                   typedValue:@""
-                     frameID:SysUTF8ToNSString(GetMainWebFrameId())];
+                     frameID:SysUTF8ToNSString(GetMainWebFrameId())
+                onlyPassword:NO];
     [passwordController_.sharedPasswordController
         checkIfSuggestionsAvailableForForm:form_query
                             hasUserGesture:YES
@@ -1547,7 +1550,8 @@ TEST_F(PasswordControllerTest, CheckNoAsyncSuggestionsOnNonUsernameField) {
              fieldType:@"text"
                   type:@"focus"
             typedValue:@""
-               frameID:SysUTF8ToNSString(GetMainWebFrameId())];
+               frameID:SysUTF8ToNSString(GetMainWebFrameId())
+          onlyPassword:NO];
   [passwordController_.sharedPasswordController
       checkIfSuggestionsAvailableForForm:form_query
                           hasUserGesture:YES
@@ -1581,7 +1585,8 @@ TEST_F(PasswordControllerTest, CheckNoAsyncSuggestionsOnNoPasswordForms) {
              fieldType:@"text"
                   type:@"focus"
             typedValue:@""
-               frameID:SysUTF8ToNSString(GetMainWebFrameId())];
+               frameID:SysUTF8ToNSString(GetMainWebFrameId())
+          onlyPassword:NO];
   [passwordController_.sharedPasswordController
       checkIfSuggestionsAvailableForForm:form_query
                           hasUserGesture:YES
@@ -2102,7 +2107,8 @@ TEST_F(PasswordControllerTest, PasswordGenerationFieldFocus) {
                  fieldType:@"password"
                       type:@"focus"
                 typedValue:@""
-                   frameID:SysUTF8ToNSString(GetMainWebFrameId())];
+                   frameID:SysUTF8ToNSString(GetMainWebFrameId())
+              onlyPassword:NO];
   [passwordController_.sharedPasswordController
       checkIfSuggestionsAvailableForForm:focus_query
                           hasUserGesture:YES
@@ -2144,7 +2150,8 @@ TEST_F(PasswordControllerTest, PasswordGenerationFieldInput) {
                  fieldType:@"password"
                       type:@"input"
                 typedValue:@"generated_password_long"
-                   frameID:SysUTF8ToNSString(GetMainWebFrameId())];
+                   frameID:SysUTF8ToNSString(GetMainWebFrameId())
+              onlyPassword:NO];
   [passwordController_.sharedPasswordController
       checkIfSuggestionsAvailableForForm:extend_query
                           hasUserGesture:YES
@@ -2186,7 +2193,8 @@ TEST_F(PasswordControllerTest, PasswordGenerationFieldClear) {
                  fieldType:@"password"
                       type:@"input"
                 typedValue:@""
-                   frameID:SysUTF8ToNSString(GetMainWebFrameId())];
+                   frameID:SysUTF8ToNSString(GetMainWebFrameId())
+              onlyPassword:NO];
   [passwordController_.sharedPasswordController
       checkIfSuggestionsAvailableForForm:clear_query
                           hasUserGesture:YES

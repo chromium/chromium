@@ -645,7 +645,8 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
     [suggestions addObject:suggestion];
   }
 
-  if ([self canGeneratePasswordForForm:formQuery.formRendererID
+  if (!formQuery.onlyPassword &&
+      [self canGeneratePasswordForForm:formQuery.formRendererID
                        fieldIdentifier:formQuery.fieldRendererID
                              fieldType:formQuery.fieldType
                                inFrame:frame]) {

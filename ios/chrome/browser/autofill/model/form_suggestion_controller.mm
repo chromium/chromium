@@ -257,7 +257,8 @@ bool IsStateless() {
              fieldType:base::SysUTF8ToNSString(params.field_type)
                   type:base::SysUTF8ToNSString(params.type)
             typedValue:base::SysUTF8ToNSString(params.value)
-               frameID:base::SysUTF8ToNSString(params.frame_id)];
+               frameID:base::SysUTF8ToNSString(params.frame_id)
+          onlyPassword:NO];
 
   BOOL hasUserGesture = params.has_user_gesture;
 

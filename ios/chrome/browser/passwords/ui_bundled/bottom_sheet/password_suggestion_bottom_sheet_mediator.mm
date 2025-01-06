@@ -67,7 +67,7 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
 }
 
 // Makes a query to retrieve suggestions from a FormSuggestionProvider from the
-// provided `params`.
+// provided `params`. Only ask for suggestions with passwords.
 FormSuggestionProviderQuery* MakeQueryFromParameters(
     const autofill::FormActivityParams& params) {
   return [[FormSuggestionProviderQuery alloc]
@@ -78,7 +78,8 @@ FormSuggestionProviderQuery* MakeQueryFromParameters(
              fieldType:base::SysUTF8ToNSString(params.field_type)
                   type:base::SysUTF8ToNSString(params.type)
             typedValue:base::SysUTF8ToNSString(params.value)
-               frameID:base::SysUTF8ToNSString(params.frame_id)];
+               frameID:base::SysUTF8ToNSString(params.frame_id)
+          onlyPassword:YES];
 }
 
 }  // namespace
