@@ -549,9 +549,9 @@ bool DrawingBuffer::FinishPrepareTransferableResourceSoftware(
   return true;
 }
 
-bool DrawingBuffer::FinishPrepareTransferableResourceGpu(
-    viz::TransferableResource* out_resource,
-    scoped_refptr<gpu::ClientSharedImage>* client_si,
+scoped_refptr<gpu::ClientSharedImage>
+DrawingBuffer::ExportSharedImageFromBackBuffer(
+    gpu::SyncToken& sync_token,
     viz::ReleaseCallback* out_release_callback) {
   DCHECK(state_restorer_);
   if (webgl_version_ > kWebGL1) {
@@ -570,7 +570,7 @@ bool DrawingBuffer::FinishPrepareTransferableResourceGpu(
     back_color_buffer_ = CreateOrRecycleColorBuffer();
     if (!back_color_buffer_) {
       // Context is likely lost.
-      return false;
+      return nullptr;
     }
     AttachColorBufferToReadFramebuffer();
 
@@ -593,7 +593,7 @@ bool DrawingBuffer::FinishPrepareTransferableResourceGpu(
     color_buffer_for_mailbox = CreateOrRecycleColorBuffer();
     if (!color_buffer_for_mailbox) {
       // Context is likely lost.
-      return false;
+      return nullptr;
     }
     gl_->CopySubTextureCHROMIUM(
         back_color_buffer_->texture_id(), 0,
@@ -616,6 +616,7 @@ bool DrawingBuffer::FinishPrepareTransferableResourceGpu(
     // there are implicit flushes between contexts at the lowest level.
     color_buffer_for_mailbox->produce_sync_token =
         color_buffer_for_mailbox->EndAccess();
+    sync_token = color_buffer_for_mailbox->produce_sync_token;
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
     // Needed for GPU back-pressure on macOS and Android. Used to be in the
     // middle of the commands above; try to move it to the bottom to allow them
@@ -624,12 +625,8 @@ bool DrawingBuffer::FinishPrepareTransferableResourceGpu(
 #endif
   }
 
-  // Populate the output SharedImage and callback.
+  // Populate the output callback.
   {
-    if (client_si) {
-      *client_si = color_buffer_for_mailbox->shared_image;
-    }
-
     // This holds a ref on the DrawingBuffer that will keep it alive until the
     // mailbox is released (and while the release callback is running).
     auto func = base::BindOnce(&DrawingBuffer::NotifyMailboxReleasedGpu,
@@ -646,19 +643,33 @@ bool DrawingBuffer::FinishPrepareTransferableResourceGpu(
     SetBufferClearNeeded(true);
   }
 
+  return color_buffer_for_mailbox->shared_image;
+}
+
+bool DrawingBuffer::FinishPrepareTransferableResourceGpu(
+    viz::TransferableResource* out_resource,
+    scoped_refptr<gpu::ClientSharedImage>* client_si,
+    viz::ReleaseCallback* out_release_callback) {
+  gpu::SyncToken sync_token;
+  auto shared_image =
+      ExportSharedImageFromBackBuffer(sync_token, out_release_callback);
+  if (!shared_image) {
+    return false;
+  }
+
+  if (client_si) {
+    *client_si = shared_image;
+  }
+
   // Populate the output TransferableResource.
   *out_resource = viz::TransferableResource::MakeGpu(
-      front_color_buffer_->shared_image,
-      front_color_buffer_->shared_image->GetTextureTarget(),
-      front_color_buffer_->produce_sync_token,
-      front_color_buffer_->shared_image->size(),
-      front_color_buffer_->shared_image->format(),
-      front_color_buffer_->shared_image->usage().Has(
-          gpu::SHARED_IMAGE_USAGE_SCANOUT),
+      shared_image, shared_image->GetTextureTarget(), sync_token,
+      shared_image->size(), shared_image->format(),
+      shared_image->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT),
       viz::TransferableResource::ResourceSource::kDrawingBuffer);
-  out_resource->color_space = front_color_buffer_->shared_image->color_space();
+  out_resource->color_space = shared_image->color_space();
   out_resource->hdr_metadata = hdr_metadata_;
-  out_resource->origin = front_color_buffer_->shared_image->surface_origin();
+  out_resource->origin = shared_image->surface_origin();
 
   return true;
 }

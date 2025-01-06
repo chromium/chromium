@@ -513,7 +513,26 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   CheckForDestructionResult CheckForDestructionAndChangeAndResolveIfNeeded(
       DiscardBehavior discardBehavior);
 
-  // Helper functions to be called only by PrepareTransferableResourceInternal.
+  // Helper functions to be called when exporting the backbuffer's contents to
+  // other APIs/use cases.
+  //
+  // Exports a SharedImage holding the backbuffer's contents for external
+  // usage:
+  // * Ensures that the backbuffer's contents are up-to-date.
+  // * If the backbuffer's contents need to be preserved, copies the
+  //   backbuffer's contents into a newly allocated/recycled buffer and
+  //   exports the SharedImage from that buffer. Otherwise exports the
+  //   backbuffer's SharedImage directly and allocates/recycles a new
+  //   buffer to serve as the backbuffer.
+  // * Ends DrawingBuffer's GL access on the SharedImage of the buffer being
+  //   exported.
+  // * Changes `front_color_buffer_` to point to the buffer being exported.
+  // * Saves a ref on the buffer being exported in `out_release_callback`,
+  //   which should be invoked when the buffer's SharedImage is available for
+  //   reuse by WebGL after the external usage finishes.
+  scoped_refptr<gpu::ClientSharedImage> ExportSharedImageFromBackBuffer(
+      gpu::SyncToken& sync_token,
+      viz::ReleaseCallback* out_release_callback);
   bool FinishPrepareTransferableResourceGpu(
       viz::TransferableResource* out_resource,
       scoped_refptr<gpu::ClientSharedImage>* client_si,
