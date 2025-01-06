@@ -12,6 +12,7 @@
   <script src="/resources/testdriver-vendor.js"></script>
   <script src="/css/css-transitions/support/helper.js"></script>
   <script src="/dom/events/scrolling/scroll_support.js"></script>
+  <script src="/css/css-overflow/support/scroll-marker-support.js"></script>
 </head>
 
 <body>
@@ -117,17 +118,6 @@
     RED = "rgb(255, 0, 0)";
     GREEN = "rgb(0, 128, 0)";
 
-    function verifySelectedMarker(selected_idx) {
-      for (let idx = 0; idx < items.length; ++idx) {
-        const should_be_selected = idx == selected_idx
-        let expected_color = should_be_selected ? GREEN : RED;
-        const color =
-          getComputedStyle(items[idx], "::scroll-marker").backgroundColor;
-        assert_equals(color, expected_color,
-          `marker ${idx} should be ${should_be_selected ? "" : "un"}selected.`);
-      }
-    }
-
     async function test_unreachable(idx, dragAmount, targetLower, targetUpper) {
       const scroll_promise = new Promise((resolve) => {
         carousel.addEventListener("scroll", () => {
@@ -158,7 +148,7 @@
       assert_less_than_equal(carousel.scrollLeft, targetUpper,
         `scrolled within region reserved for unreachable ${idx}.`);
 
-      verifySelectedMarker(idx);
+      verifySelectedMarker(idx, items, GREEN, RED);
 
       // Complete the scroll gesture.
       actions_promise = actions.pointerUp().send();
@@ -195,7 +185,7 @@
       let scrollend_promise = waitForScrollendEventNoTimeout(carousel);
       carousel.scrollLeft = maxScrollOffset;
       await scrollend_promise;
-      verifySelectedMarker(15);
+      verifySelectedMarker(15, items, GREEN, RED);
 
       await test_unreachable(14, delta_x,
         maxScrollOffset - 2 * allocation_per_target_within_reserved,
@@ -204,7 +194,7 @@
       scrollend_promise = waitForScrollendEventNoTimeout(carousel);
       carousel.scrollLeft = 0;
       await scrollend_promise;
-      verifySelectedMarker(0);
+      verifySelectedMarker(0, items, GREEN, RED);
     }, "scroll-marker whose originating element cannot be scroll-aligned is " +
   "selected when scrolling within 1/8 of the scroll port.");
   </script>

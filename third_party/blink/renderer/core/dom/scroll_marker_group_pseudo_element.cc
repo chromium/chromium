@@ -298,7 +298,13 @@ HeapVector<Member<ScrollMarkerPseudoElement>> ScrollMarkerChooser::Choose() {
   HeapVector<Member<ScrollMarkerPseudoElement>> selection;
   if (within_start || within_end) {
     selection = ChooseReserved(candidates_);
-  } else {
+  }
+
+  if (selection.empty()) {
+    // This is independent of the within_{start, end} check because it can
+    // happen that we are within the reserved region but the scroll
+    // targets are positioned such that the first target is beyond the
+    // reserved region. In this case we should use generic selection.
     selection = ChooseGeneric(candidates_);
   }
 
