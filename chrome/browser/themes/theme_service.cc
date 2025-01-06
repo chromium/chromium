@@ -1032,3 +1032,7 @@ bool ThemeService::DisableExtension(const std::string& extension_id) {
   }
   return false;
 }
+
+void ThemeService::ResetThemeSyncableServiceForTest() {
+  theme_syncable_service_.reset();
+}
