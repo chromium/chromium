@@ -819,3 +819,10 @@
 
 # TODO(crbug.com/382316457): This test has been failing on the bot.
 -FormControlsBrowserTest.Meter
+
+# TODO(crbug.com/385300330): This test has been failing since
+# https://crrev.com/c/5953628.
+-All/CustomizableSelectDisabledDumpAccessibilityTreeTest.AccessibilitySelect/blink
+-All/CustomizableSelectDisabledDumpAccessibilityTreeTest.AccessibilitySelectOpen/blink
+-All/CustomizableSelectEnabledDumpAccessibilityTreeTest.AccessibilitySelectOpen/blink
+-All/CustomizableSelectEnabledDumpAccessibilityTreeTest.ENABLED_AccessibiltySelect/blink
