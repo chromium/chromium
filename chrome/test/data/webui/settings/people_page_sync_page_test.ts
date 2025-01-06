@@ -951,6 +951,7 @@ suite('SyncSettings', function() {
         !!syncPage.shadowRoot!.querySelector('settings-sync-account-control'));
     syncPage.syncStatus = {
       syncSystemEnabled: false,
+      signedInState: SignedInState.SIGNED_IN,
       statusAction: StatusAction.NO_ACTION,
     };
     flush();
@@ -958,6 +959,7 @@ suite('SyncSettings', function() {
         !!syncPage.shadowRoot!.querySelector('settings-sync-account-control'));
     syncPage.syncStatus = {
       syncSystemEnabled: true,
+      signedInState: SignedInState.SIGNED_IN,
       statusAction: StatusAction.NO_ACTION,
     };
     flush();

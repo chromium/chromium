@@ -23345,6 +23345,7 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AutofillRemovePaymentsButterDropdown",
+                        "ImprovedSettingsUIOnDesktop",
                         "ImprovedSigninUIOnDesktop",
                         "OutlineSilhouetteIcon"
                     ]

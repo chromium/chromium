@@ -170,6 +170,7 @@ suite('SyncStatusTests', function() {
   test('ShowCorrectRows', async function() {
     await syncBrowserProxy.whenCalled('getSyncStatus');
     simulateSyncStatus({
+      signedInState: SignedInState.SIGNED_IN,
       syncSystemEnabled: true,
       statusAction: StatusAction.NO_ACTION,
     });
@@ -178,12 +179,6 @@ suite('SyncStatusTests', function() {
     // The correct /manageProfile link row is shown.
     assertTrue(!!peoplePage.shadowRoot!.querySelector('#edit-profile'));
     assertFalse(!!peoplePage.shadowRoot!.querySelector('#profile-row'));
-
-    simulateSyncStatus({
-      signedInState: SignedInState.SIGNED_IN,
-      syncSystemEnabled: true,
-      statusAction: StatusAction.NO_ACTION,
-    });
 
     // The control element should exist when policy allows.
     const accountControl =
