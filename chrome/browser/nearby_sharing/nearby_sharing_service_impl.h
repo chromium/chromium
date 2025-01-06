@@ -91,8 +91,7 @@ class NearbySharingServiceImpl
   // fixed window before deciding not to restart the process.
   static constexpr int kMaxRecentNearbyProcessUnexpectedShutdownCount = 4;
 
-  explicit NearbySharingServiceImpl(
-      PrefService* prefs,
+  NearbySharingServiceImpl(
       NotificationDisplayService* notification_display_service,
       Profile* profile,
       std::unique_ptr<NearbyConnectionsManager> nearby_connections_manager,
@@ -448,8 +447,9 @@ class NearbySharingServiceImpl
   void OnVisibilityReminderTimerFired();
   base::TimeDelta GetTimeUntilNextVisibilityReminder();
 
-  raw_ptr<PrefService> prefs_ = nullptr;
   raw_ptr<Profile> profile_;
+  raw_ptr<PrefService> prefs_ = nullptr;
+
   std::unique_ptr<NearbyConnectionsManager> nearby_connections_manager_;
   raw_ptr<ash::nearby::NearbyProcessManager> process_manager_;
   std::unique_ptr<ash::nearby::NearbyProcessManager::NearbyProcessReference>

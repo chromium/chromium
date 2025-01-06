@@ -121,7 +121,6 @@ NearbySharingServiceFactory::BuildServiceInstanceForBrowserContext(
   ash::nearby::NearbyProcessManager* process_manager =
       ash::nearby::NearbyProcessManagerFactory::GetForProfile(profile);
 
-  PrefService* pref_service = profile->GetPrefs();
   NotificationDisplayService* notification_display_service =
       NotificationDisplayServiceFactory::GetForProfile(profile);
 
@@ -133,7 +132,7 @@ NearbySharingServiceFactory::BuildServiceInstanceForBrowserContext(
       << __func__ << ": creating NearbySharingService for primary profile";
 
   return std::make_unique<NearbySharingServiceImpl>(
-      pref_service, notification_display_service, profile,
+      notification_display_service, profile,
       std::move(nearby_connections_manager), process_manager,
       std::make_unique<PowerClientChromeos>(),
       std::make_unique<WifiNetworkConfigurationHandler>());

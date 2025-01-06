@@ -42,8 +42,6 @@ class FakeNearbyShareContactManager : public NearbyShareContactManager {
       return instances_;
     }
 
-    PrefService* latest_pref_service() const { return latest_pref_service_; }
-
     NearbyShareClientFactory* latest_http_client_factory() const {
       return latest_http_client_factory_;
     }
@@ -67,7 +65,6 @@ class FakeNearbyShareContactManager : public NearbyShareContactManager {
 
     std::vector<raw_ptr<FakeNearbyShareContactManager, VectorExperimental>>
         instances_;
-    raw_ptr<PrefService> latest_pref_service_ = nullptr;
     raw_ptr<NearbyShareClientFactory, DanglingUntriaged>
         latest_http_client_factory_ = nullptr;
     raw_ptr<NearbyShareLocalDeviceDataManager, DanglingUntriaged>

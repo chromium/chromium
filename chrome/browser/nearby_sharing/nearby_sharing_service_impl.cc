@@ -309,15 +309,14 @@ NearbyShareEncryptedMetadataKey AdvertisementToKey(
 }  // namespace
 
 NearbySharingServiceImpl::NearbySharingServiceImpl(
-    PrefService* prefs,
     NotificationDisplayService* notification_display_service,
     Profile* profile,
     std::unique_ptr<NearbyConnectionsManager> nearby_connections_manager,
     ash::nearby::NearbyProcessManager* process_manager,
     std::unique_ptr<PowerClient> power_client,
     std::unique_ptr<WifiNetworkConfigurationHandler> wifi_network_handler)
-    : prefs_(prefs),
-      profile_(profile),
+    : profile_(profile),
+      prefs_(profile_->GetPrefs()),
       nearby_connections_manager_(std::move(nearby_connections_manager)),
       process_manager_(process_manager),
       power_client_(std::move(power_client)),
@@ -330,11 +329,11 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
           std::make_unique<NearbyShareProfileInfoProviderImpl>(profile_)),
       local_device_data_manager_(
           NearbyShareLocalDeviceDataManagerImpl::Factory::Create(
-              prefs,
+              prefs_,
               http_client_factory_.get(),
               profile_info_provider_.get())),
       contact_manager_(NearbyShareContactManagerImpl::Factory::Create(
-          prefs,
+          prefs_,
           http_client_factory_.get(),
           local_device_data_manager_.get(),
           profile_info_provider_.get())),
@@ -342,14 +341,14 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
           local_device_data_manager_.get(),
           contact_manager_.get(),
           profile_info_provider_.get(),
-          prefs,
+          prefs_,
           profile->GetDefaultStoragePartition()->GetProtoDatabaseProvider(),
           profile->GetPath(),
           http_client_factory_.get())),
       transfer_profiler_(std::make_unique<NearbyShareTransferProfiler>()),
       logger_(std::make_unique<NearbyShareLogger>()),
-      settings_(prefs, local_device_data_manager_.get()),
-      feature_usage_metrics_(prefs),
+      settings_(prefs_, local_device_data_manager_.get()),
+      feature_usage_metrics_(prefs_),
       on_network_changed_delay_timer_(
           FROM_HERE,
           kProcessNetworkChangeTimerDelay,
@@ -398,7 +397,7 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
   GetBluetoothAdapter();
 
   nearby_notification_manager_ = std::make_unique<NearbyNotificationManager>(
-      notification_display_service, this, prefs, profile_);
+      notification_display_service, this, prefs_, profile_);
 
   net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
 

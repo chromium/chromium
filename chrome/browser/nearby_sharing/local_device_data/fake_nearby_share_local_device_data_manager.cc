@@ -20,7 +20,6 @@ FakeNearbyShareLocalDeviceDataManager::Factory::CreateInstance(
     PrefService* pref_service,
     NearbyShareClientFactory* http_client_factory,
     NearbyShareProfileInfoProvider* profile_info_provider) {
-  latest_pref_service_ = pref_service;
   latest_http_client_factory_ = http_client_factory;
   latest_profile_info_provider_ = profile_info_provider;
 

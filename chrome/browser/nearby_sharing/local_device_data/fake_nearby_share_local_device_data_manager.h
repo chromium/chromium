@@ -41,8 +41,6 @@ class FakeNearbyShareLocalDeviceDataManager
       return instances_;
     }
 
-    PrefService* latest_pref_service() const { return latest_pref_service_; }
-
     NearbyShareClientFactory* latest_http_client_factory() const {
       return latest_http_client_factory_;
     }
@@ -61,7 +59,6 @@ class FakeNearbyShareLocalDeviceDataManager
     std::vector<
         raw_ptr<FakeNearbyShareLocalDeviceDataManager, VectorExperimental>>
         instances_;
-    raw_ptr<PrefService> latest_pref_service_ = nullptr;
     raw_ptr<NearbyShareClientFactory, DanglingUntriaged>
         latest_http_client_factory_ = nullptr;
     raw_ptr<NearbyShareProfileInfoProvider, DanglingUntriaged>
