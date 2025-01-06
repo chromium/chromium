@@ -22,6 +22,9 @@ class BrowserContext;
 //
 // Instances can be obtained via
 // ContentBrowserClient::CreateDipsDelegate().
+//
+// TODO: crbug.com/387281262 - move methods to ContentBrowserClient and delete
+// this class.
 class CONTENT_EXPORT DipsDelegate {
  public:
   // The mask that will be used in place of GetRemoveMask() when embedders
@@ -38,9 +41,6 @@ class CONTENT_EXPORT DipsDelegate {
       content::BrowsingDataRemover::DATA_TYPE_DEVICE_BOUND_SESSIONS;
 
   virtual ~DipsDelegate();
-
-  // DIPS will be enabled in browser contexts for which this returns true.
-  virtual bool ShouldEnableDips(BrowserContext* browser_context) = 0;
 
   // Called once for each DIPSService instance when it's created.
   // DIPSService::Get() is guaranteed to return the given instance if called

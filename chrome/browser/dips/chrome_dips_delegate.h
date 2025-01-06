@@ -7,11 +7,10 @@
 
 #include <stdint.h>
 
-#include <memory>
-
 #include "base/types/pass_key.h"
 #include "content/public/browser/dips_delegate.h"
 
+class ChromeContentBrowserClient;
 class DIPSService;
 
 namespace content {
@@ -20,18 +19,7 @@ class BrowserContext;
 
 class ChromeDipsDelegate : public content::DipsDelegate {
  public:
-  using PassKey = base::PassKey<ChromeDipsDelegate>;
-
-  // The constructor takes a PassKey so that the factory method Create() can
-  // call std::make_unique() to create an instance, while other classes cannot.
-  explicit ChromeDipsDelegate(PassKey);
-
-  // TODO(rtarpine): remove this and make clients call
-  // ContentBrowserClient::CreateDipsDelegate(), falling back on a default
-  // implementation if it returned null, once DIPS has moved to //content.
-  static std::unique_ptr<content::DipsDelegate> Create();
-
-  bool ShouldEnableDips(content::BrowserContext* browser_context) override;
+  explicit ChromeDipsDelegate(base::PassKey<ChromeContentBrowserClient>);
 
   void OnDipsServiceCreated(content::BrowserContext* browser_context,
                             DIPSService* dips_service) override;

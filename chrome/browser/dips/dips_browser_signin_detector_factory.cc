@@ -4,7 +4,7 @@
 
 #include "chrome/browser/dips/dips_browser_signin_detector_factory.h"
 
-#include "chrome/browser/dips/chrome_dips_delegate.h"
+#include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/dips/dips_browser_signin_detector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -51,7 +51,7 @@ DIPSBrowserSigninDetectorFactory::GetBrowserContextToUse(
     return nullptr;
   }
 
-  if (!ChromeDipsDelegate::Create()->ShouldEnableDips(context)) {
+  if (!ShouldBrowserContextEnableDips(context)) {
     return nullptr;
   }
 

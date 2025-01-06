@@ -343,6 +343,7 @@
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/browser/digital_identity_provider.h"
+#include "content/public/browser/dips_delegate.h"
 #include "content/public/browser/file_url_loader.h"
 #include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/browser/legacy_tech_cookie_issue_details.h"
@@ -1472,6 +1473,15 @@ net::handles::NetworkHandle GetBoundNetworkFromRenderFrameHost(
     return net::handles::kInvalidNetworkHandle;
   }
   return web_contents->GetTargetNetwork();
+}
+
+ProfileSelections GetHumanProfileSelections() {
+  return ProfileSelections::Builder()
+      .WithRegular(ProfileSelection::kOwnInstance)
+      .WithGuest(ProfileSelection::kOffTheRecordOnly)
+      .WithSystem(ProfileSelection::kNone)
+      .WithAshInternals(ProfileSelection::kNone)
+      .Build();
 }
 
 }  // namespace
@@ -8541,7 +8551,22 @@ void ChromeContentBrowserClient::NotifyMultiCaptureStateChanged(
 
 std::unique_ptr<content::DipsDelegate>
 ChromeContentBrowserClient::CreateDipsDelegate() {
-  return ChromeDipsDelegate::Create();
+  return std::make_unique<ChromeDipsDelegate>(
+      base::PassKey<ChromeContentBrowserClient>());
+}
+
+bool ChromeContentBrowserClient::ShouldEnableDips(
+    content::BrowserContext* browser_context) {
+  return ShouldBrowserContextEnableDips(browser_context);
+}
+
+bool ShouldBrowserContextEnableDips(content::BrowserContext* browser_context) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  Profile* result = GetHumanProfileSelections().ApplyProfileSelection(profile);
+  // TODO: crbug.com/358137275 - Use CHECK() once we know it's safe.
+  DUMP_WILL_BE_CHECK(!result || result == profile)
+      << "ApplyProfileSelection() returned a different profile";
+  return result == profile;
 }
 
 bool ChromeContentBrowserClient::ShouldSuppressAXLoadComplete(

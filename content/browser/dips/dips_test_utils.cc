@@ -410,10 +410,6 @@ void TpcBlockingBrowserClient::GrantCookieAccessDueToHeuristic(
 // DATA_TYPE_HISTORY bit.
 class SimpleDipsDelegate : public content::DipsDelegate {
  public:
-  bool ShouldEnableDips(content::BrowserContext* browser_context) override {
-    return true;
-  }
-
   void OnDipsServiceCreated(content::BrowserContext* browser_context,
                             DIPSService* dips_service) override {}
 

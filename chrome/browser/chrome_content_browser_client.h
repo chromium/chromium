@@ -1080,6 +1080,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   std::unique_ptr<content::DipsDelegate> CreateDipsDelegate() override;
+  bool ShouldEnableDips(content::BrowserContext* browser_context) override;
 
   bool ShouldSuppressAXLoadComplete(content::RenderFrameHost* rfh) override;
 
@@ -1362,5 +1363,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   base::WeakPtrFactory<ChromeContentBrowserClient> weak_factory_{this};
 };
+
+// The implementation of ChromeContentBrowserClient::ShouldEnableDips(), for use
+// within //chrome.
+bool ShouldBrowserContextEnableDips(content::BrowserContext* browser_context);
 
 #endif  // CHROME_BROWSER_CHROME_CONTENT_BROWSER_CLIENT_H_

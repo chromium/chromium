@@ -89,7 +89,7 @@ void BrowserContextImpl::MaybeCleanupDips() {
   // have DIPS enabled. (This is important for embedders like ChromeOS, which
   // have internal non-user-facing browser contexts. We don't want to touch
   // them.)
-  if (dips_delegate_ && !dips_delegate_->ShouldEnableDips(self_)) {
+  if (!GetContentClient()->browser()->ShouldEnableDips(self_)) {
     return;
   }
 
@@ -412,13 +412,12 @@ void BrowserContextImpl::WriteIntoTrace(
 }
 
 namespace {
-bool ShouldEnableDips(BrowserContext* browser_context,
-                      DipsDelegate* dips_delegate) {
+bool ShouldEnableDips(BrowserContext* browser_context) {
   if (!base::FeatureList::IsEnabled(features::kDIPS)) {
     return false;
   }
 
-  if (dips_delegate && !dips_delegate->ShouldEnableDips(browser_context)) {
+  if (!GetContentClient()->browser()->ShouldEnableDips(browser_context)) {
     return false;
   }
 
@@ -428,7 +427,7 @@ bool ShouldEnableDips(BrowserContext* browser_context,
 
 DIPSServiceImpl* BrowserContextImpl::GetDipsService() {
   if (!dips_service_) {
-    if (!ShouldEnableDips(self_, dips_delegate_.get())) {
+    if (!ShouldEnableDips(self_)) {
       return nullptr;
     }
     dips_service_ = std::make_unique<DIPSServiceImpl>(

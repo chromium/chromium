@@ -3054,6 +3054,10 @@ class CONTENT_EXPORT ContentBrowserClient {
   // default behavior.
   virtual std::unique_ptr<DipsDelegate> CreateDipsDelegate();
 
+  // DIPS will be enabled in browser contexts for which this returns true. The
+  // default implementation returns true for all contexts.
+  virtual bool ShouldEnableDips(BrowserContext* browser_context);
+
   // Allows the embedder to suppress the firing of the AXLoadComplete event.
   // Currently, this is only respected on Mac. Since VoiceOver on Mac will
   // move the focus to web content if the AXLoadComplete event is fired,

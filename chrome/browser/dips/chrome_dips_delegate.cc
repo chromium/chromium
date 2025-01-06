@@ -15,19 +15,6 @@
 #include "chrome/browser/profiles/profile_selections.h"
 #include "content/public/browser/dips_delegate.h"
 
-namespace {
-
-ProfileSelections GetHumanProfileSelections() {
-  return ProfileSelections::Builder()
-      .WithRegular(ProfileSelection::kOwnInstance)
-      .WithGuest(ProfileSelection::kOffTheRecordOnly)
-      .WithSystem(ProfileSelection::kNone)
-      .WithAshInternals(ProfileSelection::kNone)
-      .Build();
-}
-
-}  // namespace
-
 static_assert(DIPSService::kDefaultRemoveMask ==
                   (chrome_browsing_data_remover::FILTERABLE_DATA_TYPES &
                    ((content::BrowsingDataRemover::DATA_TYPE_CONTENT_END << 1) -
@@ -35,22 +22,8 @@ static_assert(DIPSService::kDefaultRemoveMask ==
               "kDefaultRemoveMask must contain all the entries of "
               "FILTERABLE_DATA_TYPES that are known in //content");
 
-ChromeDipsDelegate::ChromeDipsDelegate(PassKey) {}
-
-// static
-std::unique_ptr<content::DipsDelegate> ChromeDipsDelegate::Create() {
-  return std::make_unique<ChromeDipsDelegate>(PassKey());
-}
-
-bool ChromeDipsDelegate::ShouldEnableDips(
-    content::BrowserContext* browser_context) {
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  Profile* result = GetHumanProfileSelections().ApplyProfileSelection(profile);
-  // TODO: crbug.com/358137275 - Use CHECK() once we know it's safe.
-  DUMP_WILL_BE_CHECK(!result || result == profile)
-      << "ApplyProfileSelection() returned a different profile";
-  return result == profile;
-}
+ChromeDipsDelegate::ChromeDipsDelegate(
+    base::PassKey<ChromeContentBrowserClient>) {}
 
 void ChromeDipsDelegate::OnDipsServiceCreated(
     content::BrowserContext* browser_context,

@@ -1790,6 +1790,10 @@ std::unique_ptr<DipsDelegate> ContentBrowserClient::CreateDipsDelegate() {
   return nullptr;
 }
 
+bool ContentBrowserClient::ShouldEnableDips(BrowserContext* browser_context) {
+  return true;
+}
+
 bool ContentBrowserClient::ShouldSuppressAXLoadComplete(RenderFrameHost* rfh) {
   return false;
 }
