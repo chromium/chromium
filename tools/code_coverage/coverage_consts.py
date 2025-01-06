@@ -329,7 +329,6 @@ FUZZERS_WITH_CORPORA = [
     'preg_parser_fuzzer',
     'prtime_fuzzer',
     'pseudotcp_parser_fuzzer',
-    'qcms_color_space_fuzzer',
     'qr_code_generator_fuzzer',
     'reader_fuzzer',
     'redaction_tool_fuzzer',

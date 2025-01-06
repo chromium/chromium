@@ -431,7 +431,6 @@ KNOWN_NON_IOS_LIBRARIES = set([
     os.path.join('third_party', 'ots'),
     os.path.join('third_party', 'perfetto'),
     os.path.join('third_party', 'ppapi'),
-    os.path.join('third_party', 'qcms'),
     os.path.join('third_party', 're2'),
     os.path.join('third_party', 'safe_browsing'),
     os.path.join('third_party', 'smhasher'),
