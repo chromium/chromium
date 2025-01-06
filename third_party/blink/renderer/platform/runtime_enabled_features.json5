@@ -3582,6 +3582,10 @@
       status: "stable",
     },
     {
+      name: "ReportFirstFrameTimeAsRenderTime",
+      status: "test",
+    },
+    {
       name: "ResetInputTypeToNoneBeforeCharacterInput",
       status: "stable",
     },

@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -275,8 +276,8 @@ void ImageRecordsManager::AssignPaintTimeToRegisteredQueuedRecords(
     // TODO(crbug.com/364860066): When cleaning up the flag, remove this whole
     // block. This re-enables the old behavior where animated images were not
     // reported until fully loaded.
-    if (!record->loaded && !base::FeatureList::IsEnabled(
-                               features::kReportFirstFrameTimeAsRenderTime)) {
+    if (!record->loaded &&
+        !RuntimeEnabledFeatures::ReportFirstFrameTimeAsRenderTimeEnabled()) {
       continue;
     }
 
@@ -483,8 +484,7 @@ bool ImageRecordsManager::OnFirstAnimatedFramePainted(
     // ImageRecord object.
     record->first_animated_frame_time =
         record->media_timing->GetFirstVideoFrameTime();
-    if (base::FeatureList::IsEnabled(
-            features::kReportFirstFrameTimeAsRenderTime)) {
+    if (RuntimeEnabledFeatures::ReportFirstFrameTimeAsRenderTimeEnabled()) {
       record->paint_time = record->first_animated_frame_time;
 
       // TODO(crbug.com/383568320): this timestamp it not specified, and it's
