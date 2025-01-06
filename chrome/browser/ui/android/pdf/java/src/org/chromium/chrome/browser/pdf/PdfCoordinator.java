@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
@@ -59,7 +60,7 @@ public class PdfCoordinator {
     /** Uri of the pdf document. Generated when the pdf is ready to load. */
     private Uri mUri;
 
-    private ChromePdfViewerFragment mChromePdfViewerFragment;
+    @VisibleForTesting ChromePdfViewerFragment mChromePdfViewerFragment;
 
     private int mFindInPageCount;
 
