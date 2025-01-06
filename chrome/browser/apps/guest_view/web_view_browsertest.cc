@@ -5387,6 +5387,8 @@ IN_PROC_BROWSER_TEST_P(WebViewAccessibilityTest, LoadWebViewAccessibility) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewAccessibilityTest, FocusAccessibility) {
+  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
+
   content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
   LoadAppWithGuest("web_view/focus_accessibility");
   content::WebContents* web_contents = GetFirstAppWindowWebContents();
