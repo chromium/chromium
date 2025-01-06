@@ -1890,9 +1890,7 @@ void PaintCanvasVideoRenderer::YUVTextureCache::Reset() {
 
   // Kick off the GL work as well as the SharedImageInterface work, to ensure
   // the shared image memory is released in a timely fashion.
-  // TODO(crbug.com/343011436): Replace the FlushPendingWork with
-  // SharedImageInterface::Flush.
-  raster_context_provider->ContextSupport()->FlushPendingWork();
+  raster_context_provider->SharedImageInterface()->Flush();
   raster_context_provider.reset();
 }
 
