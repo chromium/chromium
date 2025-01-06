@@ -45,6 +45,12 @@ IN_PROC_BROWSER_TEST_F(SidePanelPowerBookmarksTest, Service) {
           "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SidePanelPowerBookmarksTest,
+                       KeyboardArrowNavigationService) {
+  RunTest("side_panel/bookmarks/keyboard_arrow_navigation_service_test.js",
+          "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(SidePanelPowerBookmarksTest, DragManager) {
   RunTest("side_panel/bookmarks/power_bookmarks_drag_manager_test.js",
           "mocha.run()");
