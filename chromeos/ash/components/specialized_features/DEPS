@@ -1,4 +1,6 @@
 include_rules = [
+  "+chromeos/ash/components/channel",
+  "+components/feedback",
   "+components/metrics/metrics_state_manager.h",
   "+components/signin/public",
   "+components/variations/service",
