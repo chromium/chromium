@@ -13,7 +13,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -34,10 +33,6 @@
 namespace gpu {
 
 namespace {
-
-BASE_FEATURE(kAlwaysUsePrivateFormatForImageReader,
-             "AlwaysUsePrivateFormatForImageReader",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsSurfaceControl(TextureOwner::Mode mode) {
   switch (mode) {
@@ -147,13 +142,6 @@ ImageReaderGLOwner::ImageReaderGLOwner(
   // Surface.
   int32_t width = 1, height = 1;
   max_images_ = NumRequiredMaxImages(mode);
-  AIMAGE_FORMATS format = mode == Mode::kAImageReaderSecureSurfaceControl
-                              ? AIMAGE_FORMAT_PRIVATE
-                              : AIMAGE_FORMAT_YUV_420_888;
-
-  if (base::FeatureList::IsEnabled(kAlwaysUsePrivateFormatForImageReader)) {
-    format = AIMAGE_FORMAT_PRIVATE;
-  }
 
   AImageReader* reader = nullptr;
 
@@ -167,7 +155,7 @@ ImageReaderGLOwner::ImageReaderGLOwner(
 
   // Create a new reader for images of the desired size and format.
   media_status_t return_code = AImageReader_newWithUsage(
-      width, height, format, usage, max_images_, &reader);
+      width, height, AIMAGE_FORMAT_PRIVATE, usage, max_images_, &reader);
   if (return_code != AMEDIA_OK) {
     LOG(ERROR) << " Image reader creation failed on device model : "
                << base::android::BuildInfo::GetInstance()->model()
