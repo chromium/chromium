@@ -174,12 +174,6 @@ enum class EnforcementAndEnrollmentStatus {
   kAttestationsEnforcedMainHostEnrolled = 2,
 };
 
-#if BUILDFLAG(IS_ANDROID)
-base::FilePath GetChromeTestDataDir() {
-  return base::FilePath(FILE_PATH_LITERAL("chrome/test/data"));
-}
-#endif
-
 // With `WebContentsConsoleObserver`, we can only wait for the last message in a
 // group.
 base::RepeatingCallback<

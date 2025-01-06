@@ -73,6 +73,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/renderer/chrome_content_renderer_client.h"
 #include "chrome/test/base/chrome_test_suite.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/test_launcher_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -821,7 +822,7 @@ base::CommandLine InProcessBrowserTest::GetCommandLineForRelaunch() {
 #endif  // !BUILDFLAG(IS_MAC)
 
 base::FilePath InProcessBrowserTest::GetChromeTestDataDir() const {
-  return base::FilePath(FILE_PATH_LITERAL("chrome/test/data"));
+  return chrome_test_utils::GetChromeTestDataDir();
 }
 
 void InProcessBrowserTest::PreRunTestOnMainThread() {

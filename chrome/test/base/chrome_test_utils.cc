@@ -40,4 +40,8 @@ Profile* GetProfile(PlatformBrowserTest* browser_test) {
 #endif
 }
 
+base::FilePath GetChromeTestDataDir() {
+  return base::FilePath(FILE_PATH_LITERAL("chrome/test/data"));
+}
+
 }  // namespace chrome_test_utils

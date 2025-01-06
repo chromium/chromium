@@ -129,10 +129,6 @@ class TabInteractionRecorderAndroidBrowserTest : public AndroidBrowserTest {
         "/autofill/iframe_autocomplete_simple_form.html");
   }
 
-  base::FilePath GetChromeTestDataDir() {
-    return base::FilePath(FILE_PATH_LITERAL("chrome/test/data"));
-  }
-
   base::HistogramTester histogram_tester_;
 
  private:
