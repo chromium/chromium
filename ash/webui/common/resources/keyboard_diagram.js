@@ -39,7 +39,6 @@ export const PhysicalLayout = {
   CHROME_OS: 'chrome-os',
   CHROME_OS_DELL_ENTERPRISE_WILCO: 'dell-enterprise-wilco',
   CHROME_OS_DELL_ENTERPRISE_DRALLION: 'dell-enterprise-drallion',
-  SPLIT_MODIFIER: 'split-modifier',
 };
 
 /**
@@ -50,34 +49,6 @@ export const TopRightKey = {
   POWER: 'power',
   LOCK: 'lock',
   CONTROL_PANEL: 'control-panel',
-};
-
-/**
- * Enum of bottom left functional keys layout.
- * @enum {string}
- */
-export const BottomLeftLayout = {
-  THREE_KEYS: '3keys',
-  FOUR_KEYS: '4keys',
-};
-
-/**
- * Enum of bottom right functional keys layout.
- * @enum {string}
- */
-export const BottomRightLayout = {
-  TWO_KEYS: '2keys',
-  THREE_KEYS: '3keys',
-  FOUR_KEYS: '4keys',
-};
-
-/**
- * Enum of number pad layout.
- * @enum {string}
- */
-export const NumberPadLayout = {
-  THREE_COLUMN: '3columns',
-  FOUR_COLUMN: '4columns',
 };
 
 /**
@@ -163,12 +134,6 @@ export const TopRowKey = {
   kScreenMirror: {
     icon: 'keyboard:screen-mirror',
     ariaNameI18n: 'keyboardDiagramAriaNameScreenMirror',
-  },
-  kAccessibility: {
-    icon: 'keyboard:accessibility',
-  },
-  kDictation: {
-    icon: 'keyboard:dictation',
   },
   // TODO(crbug.com/1207678): work out the localization scheme for keys like
   // delete and unknown.
