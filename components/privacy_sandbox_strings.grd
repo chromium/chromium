@@ -553,7 +553,7 @@
         Google requires companies to state publicly that they won't use this data to track you across sites. Some sites may use your activity to personalize your experience for more than just ads. They may also combine it with other information they already know about you. Companies are responsible for letting you know how they use your data. Learn more in our <ph name="BEGIN_LINK1">&lt;a href="$1" aria-description="$2" on-click="$3" id="$4" target="_blank"&gt;</ph>Privacy Policy<ph name="LINK_END1">&lt;/a&gt;</ph>.
       </message>
       <message name="IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_DISCLAIMER_LINK_ARIA_DESCRIPTION" desc="" translateable="false">
-        Learn more in our
+        Opens Privacy Policy in a new tab
       </message>
       <!--Ad topics page - Ads API UX Enhancement-->
       <message name="IDS_SETTINGS_AD_TOPICS_PAGE_DISCLAIMER" desc="" translateable="false">
