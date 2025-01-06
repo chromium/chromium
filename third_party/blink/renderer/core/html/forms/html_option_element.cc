@@ -735,7 +735,8 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
     }
 
     if (key == keywords::kTab &&
-        !(keyboard_event->GetModifiers() & tab_ignore_modifiers)) {
+        !(keyboard_event->GetModifiers() & tab_ignore_modifiers) &&
+        !select->IsInDialogMode()) {
       // TODO(http://crbug.com/1511354): Consider focusing something in this
       // case. https://github.com/openui/open-ui/issues/1016
       select->HidePopup(SelectPopupHideBehavior::kNormal);
