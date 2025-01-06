@@ -28,13 +28,11 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
@@ -205,7 +203,6 @@ public class DragAndDropLauncherActivityTest {
      */
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.DRAG_DROP_TAB_TEARING)
     public void testDraggedTab_newWindow() throws Exception {
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newSingleRecordWatcher(

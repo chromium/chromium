@@ -256,7 +256,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCrossDeviceTabPaneAndroid,
     &kDelayTempStripRemoval,
     &kDeviceAuthenticatorAndroidx,
-    &kDragDropTabTearing,
     &kDrawKeyNativeEdgeToEdge,
     &kDrawNativeEdgeToEdge,
     &kEdgeToEdgeBottomChin,
@@ -758,10 +757,6 @@ BASE_FEATURE(kDelayTempStripRemoval,
 // Android with androidx.biometric.
 BASE_FEATURE(kDeviceAuthenticatorAndroidx,
              "DeviceAuthenticatorAndroidx",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kDragDropTabTearing,
-             "DragDropTabTearing",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDrawKeyNativeEdgeToEdge,

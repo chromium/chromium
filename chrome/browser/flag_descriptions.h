@@ -2601,9 +2601,6 @@ extern const char kConvertTrackpadEventsToMouseDescription[];
 extern const char kDeprecatedExternalPickerFunctionName[];
 extern const char kDeprecatedExternalPickerFunctionDescription[];
 
-extern const char kDragDropTabTearingName[];
-extern const char kDragDropTabTearingDescription[];
-
 extern const char kDrawCutoutEdgeToEdgeName[];
 extern const char kDrawCutoutEdgeToEdgeDescription[];
 

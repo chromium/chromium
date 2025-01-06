@@ -9372,9 +9372,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAnimatedImageDragShadowName,
      flag_descriptions::kAnimatedImageDragShadowDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAnimatedImageDragShadow)},
-    {"drag-drop-tab-tearing", flag_descriptions::kDragDropTabTearingName,
-     flag_descriptions::kDragDropTabTearingDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kDragDropTabTearing)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)

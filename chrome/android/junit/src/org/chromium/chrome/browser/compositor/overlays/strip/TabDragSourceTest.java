@@ -97,7 +97,6 @@ import org.chromium.ui.widget.ToastManager;
 import java.lang.ref.WeakReference;
 
 /** Tests for {@link TabDragSource}. */
-@DisableFeatures(ChromeFeatureList.DRAG_DROP_TAB_TEARING)
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(qualifiers = "sw600dp", sdk = VERSION_CODES.S, shadows = ShadowToast.class)
 public class TabDragSourceTest {
@@ -353,10 +352,7 @@ public class TabDragSourceTest {
     }
 
     @Test
-    @DisableFeatures({
-        ChromeFeatureList.TAB_DRAG_DROP_ANDROID,
-        ChromeFeatureList.DRAG_DROP_TAB_TEARING
-    })
+    @DisableFeatures({ChromeFeatureList.TAB_DRAG_DROP_ANDROID})
     public void test_startTabDragAction_returnFalseForNonSplitScreen() {
         // Set params.
         when(mMultiWindowUtils.isInMultiWindowMode(mActivity)).thenReturn(false);
@@ -374,7 +370,6 @@ public class TabDragSourceTest {
 
     @Test
     @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
-    @EnableFeatures(ChromeFeatureList.DRAG_DROP_TAB_TEARING)
     public void test_startTabDragAction_FullScreenWithMultipleTabs() {
         // Set params.
         when(mMultiWindowUtils.isInMultiWindowMode(mActivity)).thenReturn(false);
@@ -386,7 +381,6 @@ public class TabDragSourceTest {
 
     @Test
     @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
-    @EnableFeatures(ChromeFeatureList.DRAG_DROP_TAB_TEARING)
     public void test_startTabDragAction_FullScreenWithOneTab() {
         // Set params.
         when(mMultiWindowUtils.isInMultiWindowMode(mActivity)).thenReturn(false);
@@ -405,7 +399,6 @@ public class TabDragSourceTest {
 
     @Test
     @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
-    @EnableFeatures(ChromeFeatureList.DRAG_DROP_TAB_TEARING)
     public void test_startTabDragAction_FullScreenWithMaxChromeInstances() {
         // Set params.
         when(mMultiWindowUtils.isInMultiWindowMode(mActivity)).thenReturn(false);
@@ -419,7 +412,6 @@ public class TabDragSourceTest {
 
     @Test
     @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
-    @EnableFeatures(ChromeFeatureList.DRAG_DROP_TAB_TEARING)
     public void test_startTabDragAction_FullScreenWithMaxInstanceAllowlistedOEM() {
         // Set params.
         when(mMultiWindowUtils.isInMultiWindowMode(mActivity)).thenReturn(false);
@@ -433,7 +425,6 @@ public class TabDragSourceTest {
 
     @Test
     @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
-    @EnableFeatures(ChromeFeatureList.DRAG_DROP_TAB_TEARING)
     public void test_startTabDragAction_SplitScreenWithMaxChromeInstances() {
         // Set params.
         when(mTabModelSelector.getTotalTabCount()).thenReturn(2);
@@ -685,14 +676,12 @@ public class TabDragSourceTest {
 
     @Test
     @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
-    @EnableFeatures(ChromeFeatureList.DRAG_DROP_TAB_TEARING)
     public void test_onDrag_unhandledDropOutside_maxChromeInstances() {
         doTestUnhandledDropOutsideWithMaxInstances(/* isInDesktopWindow= */ false);
     }
 
     @Test
     @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
-    @EnableFeatures(ChromeFeatureList.DRAG_DROP_TAB_TEARING)
     public void test_onDrag_unhandledDropOutside_maxChromeInstances_desktopWindow() {
         doTestUnhandledDropOutsideWithMaxInstances(/* isInDesktopWindow= */ true);
     }
@@ -735,7 +724,6 @@ public class TabDragSourceTest {
 
     @Test
     @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
-    @EnableFeatures(ChromeFeatureList.DRAG_DROP_TAB_TEARING)
     public void test_onDrag_multipleUnhandledDropsOutside_maxChromeInstances() {
         MultiWindowUtils.setInstanceCountForTesting(5);
         MultiWindowUtils.setMaxInstancesForTesting(5);

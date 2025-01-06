@@ -17,7 +17,6 @@ import java.util.Set;
 
 /** A class to handle the state of flags for tab_management. */
 public class TabUiFeatureUtilities {
-    private static final String TAG = "TabFeatureUtilities";
     private static final Set<String> TAB_TEARING_OEM_ALLOWLIST = Set.of("samsung");
 
     // Cached and fixed values.
@@ -65,9 +64,7 @@ public class TabUiFeatureUtilities {
     /** Returns whether drag drop from tab strip to create new instance is enabled. */
     public static boolean isTabDragToCreateInstanceSupported() {
         // TODO(crbug/328511660): Add OS version check once available.
-        return doesOEMSupportDragToCreateInstance()
-                || (ChromeFeatureList.isEnabled(ChromeFeatureList.DRAG_DROP_TAB_TEARING)
-                        && !isTabDragAsWindowEnabled());
+        return doesOEMSupportDragToCreateInstance() || !isTabDragAsWindowEnabled();
     }
 
     /** Returns whether device OEM is allow-listed for tab tearing */

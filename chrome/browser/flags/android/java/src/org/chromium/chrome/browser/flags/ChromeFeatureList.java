@@ -317,7 +317,6 @@ public abstract class ChromeFeatureList {
     public static final String DISABLE_INSTANCE_LIMIT = "DisableInstanceLimit";
     public static final String DISCO_FEED_ENDPOINT = "DiscoFeedEndpoint";
     public static final String DOWNLOADS_MIGRATE_TO_JOBS_API = "DownloadsMigrateToJobsAPI";
-    public static final String DRAG_DROP_TAB_TEARING = "DragDropTabTearing";
     public static final String DRAW_CUTOUT_EDGE_TO_EDGE = "DrawCutoutEdgeToEdge";
     public static final String DRAW_KEY_NATIVE_EDGE_TO_EDGE = "DrawKeyNativeEdgeToEdge";
     public static final String DRAW_NATIVE_EDGE_TO_EDGE = "DrawNativeEdgeToEdge";

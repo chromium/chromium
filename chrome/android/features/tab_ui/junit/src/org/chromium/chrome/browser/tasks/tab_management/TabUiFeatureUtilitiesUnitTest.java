@@ -22,7 +22,6 @@ import org.chromium.base.BaseSwitches;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -78,23 +77,14 @@ public class TabUiFeatureUtilitiesUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.DRAG_DROP_TAB_TEARING)
-    public void testTabDragToCreateInstance_withAllowlistedOEM_FFDisabled() {
+    public void testTabDragToCreateInstance_withAllowlistedOEM() {
         ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "samsung");
         assertTrue(TabUiFeatureUtilities.isTabDragToCreateInstanceSupported());
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.DRAG_DROP_TAB_TEARING)
-    public void testTabDragToCreateInstance_withNonAllowlistedOEM_FFEnabled() {
+    public void testTabDragToCreateInstance_withNonAllowlistedOEM() {
         ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "other");
         assertTrue(TabUiFeatureUtilities.isTabDragToCreateInstanceSupported());
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.DRAG_DROP_TAB_TEARING)
-    public void testTabDragToCreateInstance_withNonAllowlistedOEM_FFDisabled() {
-        ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "other");
-        assertFalse(TabUiFeatureUtilities.isTabDragToCreateInstanceSupported());
     }
 }
