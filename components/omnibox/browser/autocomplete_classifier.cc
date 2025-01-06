@@ -83,6 +83,7 @@ int AutocompleteClassifier::DefaultOmniboxProviders(bool is_low_memory_device) {
       AutocompleteProvider::TYPE_SEARCH | AutocompleteProvider::TYPE_SHORTCUTS |
       AutocompleteProvider::TYPE_HISTORY_FUZZY |
       AutocompleteProvider::TYPE_CALCULATOR |
+      AutocompleteProvider::TYPE_ENTERPRISE_SEARCH_AGGREGATOR |
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
       (history_embeddings::GetFeatureParameters().omnibox_scoped ||
                history_embeddings::GetFeatureParameters().omnibox_unscoped

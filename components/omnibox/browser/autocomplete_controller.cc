@@ -56,6 +56,7 @@
 #include "components/omnibox/browser/calculator_provider.h"
 #include "components/omnibox/browser/clipboard_provider.h"
 #include "components/omnibox/browser/document_provider.h"
+#include "components/omnibox/browser/enterprise_search_aggregator_provider.h"
 #include "components/omnibox/browser/featured_search_provider.h"
 #include "components/omnibox/browser/history_embeddings_provider.h"
 #include "components/omnibox/browser/history_fuzzy_provider.h"
@@ -1114,10 +1115,15 @@ bool AutocompleteController::ShouldRunProvider(
 
       // Don't run document provider, except for Google Drive.
       case AutocompleteProvider::TYPE_DOCUMENT:
-        return (keyword_turl &&
-                base::StartsWith(keyword_turl->url(),
-                                 "https://drive.google.com",
-                                 base::CompareCase::INSENSITIVE_ASCII));
+        return keyword_turl &&
+               base::StartsWith(keyword_turl->url(), "https://drive.google.com",
+                                base::CompareCase::INSENSITIVE_ASCII);
+
+      // Don't run aggregator provider unless the user is in a aggregator scope.
+      case AutocompleteProvider::TYPE_ENTERPRISE_SEARCH_AGGREGATOR:
+        return keyword_turl &&
+               keyword_turl->policy_origin() ==
+                   TemplateURLData::PolicyOrigin::kSearchAggregator;
 
       // Treat all other providers as usual.
       default:
@@ -1128,6 +1134,8 @@ bool AutocompleteController::ShouldRunProvider(
   // Some providers should only run in starter pack mode or in the CrOS
   // launcher. If we reach here, we're not in starter pack mode.
   switch (provider->type()) {
+    case AutocompleteProvider::TYPE_ENTERPRISE_SEARCH_AGGREGATOR:
+      return false;
     case AutocompleteProvider::TYPE_OPEN_TAB:
       return is_cros_launcher_;
 #if !BUILDFLAG(IS_IOS)
@@ -1184,6 +1192,10 @@ void AutocompleteController::InitializeAsyncProviders(int provider_types) {
   if (provider_types & AutocompleteProvider::TYPE_DOCUMENT) {
     document_provider_ = DocumentProvider::Create(provider_client_.get(), this);
     providers_.push_back(document_provider_.get());
+  }
+  if (provider_types &
+      AutocompleteProvider::TYPE_ENTERPRISE_SEARCH_AGGREGATOR) {
+    providers_.push_back(new EnterpriseSearchAggregatorProvider());
   }
   if (provider_types & AutocompleteProvider::TYPE_ON_DEVICE_HEAD) {
     on_device_head_provider_ =

@@ -193,6 +193,8 @@ static_library("browser") {
     "document_provider.h",
     "document_suggestions_service.cc",
     "document_suggestions_service.h",
+    "enterprise_search_aggregator_provider.cc",
+    "enterprise_search_aggregator_provider.h",
     "favicon_cache.cc",
     "favicon_cache.h",
     "featured_search_provider.cc",

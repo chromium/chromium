@@ -77,8 +77,10 @@ template <class T>
 class Config {
  public:
   static const T& Get() {
-    static T config;
-    return config;
+    static T* config;
+    if (config == nullptr)
+      config = new T();
+    return *config;
   }
 };
 
