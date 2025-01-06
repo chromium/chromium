@@ -7,8 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
+enum class ShareKitFlowOutcome;
+
 using ShareGroupCompletionBlock = void (^)(NSString* collabID);
-using CompletionBlock = void (^)(BOOL result);
+using CompletionBlock = void (^)(ShareKitFlowOutcome result);
 
 // Different types of fake share kit flows.
 enum class FakeShareKitFlowType {
@@ -40,6 +42,11 @@ enum class FakeShareKitFlowType {
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil
                          bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
+
+// Simulates the user tapping on "save", to be used in unit tests.
+- (void)accept;
+// Simulates the user tapping on "cancel", to be used in unit tests.
+- (void)cancel;
 
 @end
 

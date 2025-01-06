@@ -55,7 +55,7 @@ NSString* TestShareKitService::ShareTabGroup(
   FakeShareKitFlowViewController* viewController =
       [[FakeShareKitFlowViewController alloc]
           initWithType:FakeShareKitFlowType::kShare];
-  viewController.completionBlock = config.completionBlock;
+  viewController.completionBlock = config.completion;
 
   // Set the shared group completion block.
   auto shared_group_completion_block = base::CallbackToBlock(
@@ -76,6 +76,7 @@ NSString* TestShareKitService::ManageTabGroup(
   FakeShareKitFlowViewController* viewController =
       [[FakeShareKitFlowViewController alloc]
           initWithType:FakeShareKitFlowType::kManage];
+  viewController.completionBlock = config.completion;
 
   UINavigationController* navController = [[UINavigationController alloc]
       initWithRootViewController:viewController];
@@ -89,7 +90,7 @@ NSString* TestShareKitService::JoinTabGroup(ShareKitJoinConfiguration* config) {
   FakeShareKitFlowViewController* viewController =
       [[FakeShareKitFlowViewController alloc]
           initWithType:FakeShareKitFlowType::kJoin];
-  viewController.completionBlock = config.completionBlock;
+  viewController.completionBlock = config.completion;
 
   UINavigationController* navController = [[UINavigationController alloc]
       initWithRootViewController:viewController];

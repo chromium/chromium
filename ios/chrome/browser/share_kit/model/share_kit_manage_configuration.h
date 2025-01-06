@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 @protocol ApplicationCommands;
+enum class ShareKitFlowOutcome;
 
 // Configuration object for managing a shared group.
 @interface ShareKitManageConfiguration : NSObject
@@ -23,6 +24,9 @@
 
 // Executed when the manage flow ended.
 @property(nonatomic, copy) void (^completionBlock)(BOOL succeeded);
+
+// Executed when the manage flow ended.
+@property(nonatomic, copy) void (^completion)(ShareKitFlowOutcome outcome);
 
 @end
 

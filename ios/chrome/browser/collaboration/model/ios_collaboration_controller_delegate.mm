@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_action_context.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_flow_outcome.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_join_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_manage_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service.h"
@@ -35,6 +36,23 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace collaboration {
+
+namespace {
+
+// Converts `outcome` between the two enums.
+CollaborationControllerDelegate::Outcome ConvertOutcome(
+    ShareKitFlowOutcome outcome) {
+  switch (outcome) {
+    case ShareKitFlowOutcome::kSuccess:
+      return CollaborationControllerDelegate::Outcome::kSuccess;
+    case ShareKitFlowOutcome::kFailure:
+      return CollaborationControllerDelegate::Outcome::kFailure;
+    case ShareKitFlowOutcome::kCancel:
+      return CollaborationControllerDelegate::Outcome::kCancel;
+  }
+}
+
+}  // namespace
 
 IOSCollaborationControllerDelegate::IOSCollaborationControllerDelegate(
     Browser* browser,
@@ -141,6 +159,9 @@ void IOSCollaborationControllerDelegate::ShowJoinDialog(
                           : CollaborationControllerDelegate::Outcome::kFailure;
     completion_block(outcome);
   };
+  config.completion = ^(ShareKitFlowOutcome outcome) {
+    completion_block(ConvertOutcome(outcome));
+  };
 
   session_id_ = share_kit_service_->JoinTabGroup(config);
 }
@@ -191,6 +212,9 @@ void IOSCollaborationControllerDelegate::ShowShareDialog(
                           : CollaborationControllerDelegate::Outcome::kFailure;
     completion_block(outcome);
   };
+  config.completion = ^(ShareKitFlowOutcome outcome) {
+    completion_block(ConvertOutcome(outcome));
+  };
 
   session_id_ = share_kit_service_->ShareTabGroup(config);
 }
@@ -222,7 +246,11 @@ void IOSCollaborationControllerDelegate::ShowManageDialog(
                           : CollaborationControllerDelegate::Outcome::kFailure;
     completion_block(outcome);
   };
-  share_kit_service_->ManageTabGroup(config);
+  config.completion = ^(ShareKitFlowOutcome outcome) {
+    completion_block(ConvertOutcome(outcome));
+  };
+
+  session_id_ = share_kit_service_->ManageTabGroup(config);
 }
 
 void IOSCollaborationControllerDelegate::PromoteTabGroup(

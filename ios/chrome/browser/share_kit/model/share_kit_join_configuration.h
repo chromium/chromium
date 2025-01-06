@@ -9,6 +9,8 @@
 
 #import "components/data_sharing/public/group_data.h"
 
+enum class ShareKitFlowOutcome;
+
 // Configuration object for joining a shared group.
 @interface ShareKitJoinConfiguration : NSObject
 
@@ -21,6 +23,9 @@
 // Executed when the join flow ended. The `result` parameter indicates whether
 // the user successfully joined the group.
 @property(nonatomic, copy) void (^completionBlock)(BOOL result);
+
+// Executed when the join flow ended.
+@property(nonatomic, copy) void (^completion)(ShareKitFlowOutcome outcome);
 
 @end
 

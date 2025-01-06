@@ -16,6 +16,7 @@
 #import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
+#import "ios/chrome/browser/share_kit/model/fake_share_kit_flow_view_controller.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/test_share_kit_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -169,6 +170,26 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
     PlatformTest::TearDown();
   }
 
+  // Returns a FakeShareKitFlowViewController if it is what is presented by
+  // `base_view_controller`. Returns nil otherwise.
+  FakeShareKitFlowViewController* ShareKitFlowFromBaseViewController(
+      UIViewController* base_view_controller) {
+    UIViewController* presented_view_controller =
+        base_view_controller.presentedViewController;
+    if (![presented_view_controller
+            isKindOfClass:UINavigationController.class]) {
+      return nil;
+    }
+    UINavigationController* navigation_controller =
+        reinterpret_cast<UINavigationController*>(presented_view_controller);
+    if (![[navigation_controller topViewController]
+            isKindOfClass:FakeShareKitFlowViewController.class]) {
+      return nil;
+    }
+    return reinterpret_cast<FakeShareKitFlowViewController*>(
+        [navigation_controller topViewController]);
+  }
+
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -187,13 +208,17 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
 TEST_F(IOSCollaborationControllerDelegateTest, ShowShareDialogValid) {
   InitDelegate();
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
-      completion_callback;
-  delegate_->ShowShareDialog(tab_group_->tab_group_id(),
-                             completion_callback.Get());
-  EXPECT_TRUE(base_view_controller_.presentedViewController);
-  // The callback is not expected to be called, as it is called when the
-  // given ShareKit flow returns, i.e. when the presented view controller is
-  // dismissed. Here, it's not dismissed.
+      mock_callback;
+  EXPECT_CALL(mock_callback,
+              Run(CollaborationControllerDelegate::Outcome::kSuccess));
+
+  delegate_->ShowShareDialog(tab_group_->tab_group_id(), mock_callback.Get());
+
+  FakeShareKitFlowViewController* share_kit_flow_view_controller =
+      ShareKitFlowFromBaseViewController(base_view_controller_);
+  EXPECT_TRUE(share_kit_flow_view_controller);
+
+  [share_kit_flow_view_controller accept];
 }
 
 // Tests `ShowShareDialog` with an invalid tabGroup.
@@ -206,31 +231,92 @@ TEST_F(IOSCollaborationControllerDelegateTest, ShowShareDialogInvalid) {
   web_state_list_->DeleteGroup(tab_group_);
 
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
-      completion_callback;
-  EXPECT_CALL(completion_callback,
+      mock_callback;
+  EXPECT_CALL(mock_callback,
               Run(CollaborationControllerDelegate::Outcome::kFailure));
-  delegate_->ShowShareDialog(tab_group_id, completion_callback.Get());
+  delegate_->ShowShareDialog(tab_group_id, mock_callback.Get());
   EXPECT_FALSE(base_view_controller_.presentedViewController);
 }
 
-// Tests `ShowJoinDialog`.
-TEST_F(IOSCollaborationControllerDelegateTest, ShowJoinDialog) {
+// Tests `ShowJoinDialog` and accept.
+TEST_F(IOSCollaborationControllerDelegateTest, ShowJoinDialogAccept) {
   InitDelegate();
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
-      completion_callback;
+      mock_callback;
+  EXPECT_CALL(mock_callback,
+              Run(CollaborationControllerDelegate::Outcome::kSuccess));
+
   data_sharing::SharedDataPreview preview_data;
   delegate_->ShowJoinDialog(data_sharing::GroupToken(), preview_data,
-                            completion_callback.Get());
-  EXPECT_TRUE(base_view_controller_.presentedViewController);
-  // The callback is not expected to be called, as it is called when the
-  // given ShareKit flow returns, i.e. when the presented view controller is
-  // dismissed. Here, it's not dismissed.
+                            mock_callback.Get());
+
+  FakeShareKitFlowViewController* share_kit_flow_view_controller =
+      ShareKitFlowFromBaseViewController(base_view_controller_);
+  EXPECT_TRUE(share_kit_flow_view_controller);
+
+  [share_kit_flow_view_controller accept];
 }
 
-// Tests `ShowAuthenticationUi` from a share flow when the user chooses to
-// cancel the sign in.
+// Tests `ShowJoinDialog` and cancel.
+TEST_F(IOSCollaborationControllerDelegateTest, ShowJoinDialogCancel) {
+  InitDelegate();
+  base::MockCallback<CollaborationControllerDelegate::ResultCallback>
+      mock_callback;
+  EXPECT_CALL(mock_callback,
+              Run(CollaborationControllerDelegate::Outcome::kCancel));
+
+  data_sharing::SharedDataPreview preview_data;
+  delegate_->ShowJoinDialog(data_sharing::GroupToken(), preview_data,
+                            mock_callback.Get());
+
+  FakeShareKitFlowViewController* share_kit_flow_view_controller =
+      ShareKitFlowFromBaseViewController(base_view_controller_);
+  EXPECT_TRUE(share_kit_flow_view_controller);
+
+  [share_kit_flow_view_controller cancel];
+}
+
+// Tests `ShowManageDialog` and accept.
+TEST_F(IOSCollaborationControllerDelegateTest, ShowManageDialogAccept) {
+  InitDelegate();
+  base::MockCallback<CollaborationControllerDelegate::ResultCallback>
+      mock_callback;
+  EXPECT_CALL(mock_callback,
+              Run(CollaborationControllerDelegate::Outcome::kSuccess));
+
+  data_sharing::SharedDataPreview preview_data;
+  delegate_->ShowJoinDialog(data_sharing::GroupToken(), preview_data,
+                            mock_callback.Get());
+
+  FakeShareKitFlowViewController* share_kit_flow_view_controller =
+      ShareKitFlowFromBaseViewController(base_view_controller_);
+  EXPECT_TRUE(share_kit_flow_view_controller);
+
+  [share_kit_flow_view_controller accept];
+}
+
+// Tests `ShowManageDialog` and cancel.
+TEST_F(IOSCollaborationControllerDelegateTest, ShowManageDialogCancel) {
+  InitDelegate();
+  base::MockCallback<CollaborationControllerDelegate::ResultCallback>
+      mock_callback;
+  EXPECT_CALL(mock_callback,
+              Run(CollaborationControllerDelegate::Outcome::kCancel));
+
+  data_sharing::SharedDataPreview preview_data;
+  delegate_->ShowJoinDialog(data_sharing::GroupToken(), preview_data,
+                            mock_callback.Get());
+
+  FakeShareKitFlowViewController* share_kit_flow_view_controller =
+      ShareKitFlowFromBaseViewController(base_view_controller_);
+  EXPECT_TRUE(share_kit_flow_view_controller);
+
+  [share_kit_flow_view_controller cancel];
+}
+
+// Tests `ShowAuthenticationUi` when the user chooses to cancel the sign in.
 TEST_F(IOSCollaborationControllerDelegateTest,
-       ShowAuthenticationUiShareFlowSignInCanceled) {
+       ShowAuthenticationUiSignInCanceled) {
   InitDelegate();
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
       mock_callback;
@@ -250,10 +336,10 @@ TEST_F(IOSCollaborationControllerDelegateTest,
   delegate_->ShowAuthenticationUi(mock_callback.Get());
 }
 
-// Tests `ShowAuthenticationUi` from a share flow when the user sign in and
-// accept the sync opt in.
+// Tests `ShowAuthenticationUi` when the user sign in and accept the sync opt
+// in.
 TEST_F(IOSCollaborationControllerDelegateTest,
-       ShowAuthenticationUiShareFlowSyncAccepted) {
+       ShowAuthenticationUiSyncAccepted) {
   InitDelegate();
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
       mock_callback;
@@ -275,10 +361,8 @@ TEST_F(IOSCollaborationControllerDelegateTest,
   delegate_->ShowAuthenticationUi(mock_callback.Get());
 }
 
-// Tests `ShowAuthenticationUi` from a share flow when the user sign in but
-// don't sync.
-TEST_F(IOSCollaborationControllerDelegateTest,
-       ShowAuthenticationUiShareFlowSyncDenied) {
+// Tests `ShowAuthenticationUi` when the user sign in but don't sync.
+TEST_F(IOSCollaborationControllerDelegateTest, ShowAuthenticationUiSyncDenied) {
   InitDelegate();
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
       mock_callback;
@@ -300,36 +384,29 @@ TEST_F(IOSCollaborationControllerDelegateTest,
   delegate_->ShowAuthenticationUi(mock_callback.Get());
 }
 
-// Tests `ShowAuthenticationUi` from a join flow.
-TEST_F(IOSCollaborationControllerDelegateTest, ShowAuthenticationUiJoinFlow) {
-  InitDelegate();
-  base::MockCallback<CollaborationControllerDelegate::ResultCallback>
-      completion_callback;
-  OCMExpect([application_commands_mock_
-              showSignin:[OCMArg checkWithBlock:^BOOL(
-                                     ShowSigninCommand* command) {
-                return command.operation ==
-                       AuthenticationOperation::kSheetSigninAndHistorySync;
-              }]
-      baseViewController:base_view_controller_]);
-  delegate_->ShowAuthenticationUi(completion_callback.Get());
-}
-
-// Tests `ShowAuthenticationUi` from a join flow when being SignedIn only.
-TEST_F(IOSCollaborationControllerDelegateTest,
-       ShowAuthenticationUiSyncJoinFlow) {
+// Tests `ShowAuthenticationUi` when the user is SignedIn but not syncing.
+TEST_F(IOSCollaborationControllerDelegateTest, ShowAuthenticationUiWithSignIn) {
   SignIn();
   InitDelegate();
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
-      completion_callback;
+      mock_callback;
+
+  EXPECT_CALL(mock_callback,
+              Run(CollaborationControllerDelegate::Outcome::kSuccess));
+
   OCMExpect([application_commands_mock_
               showSignin:[OCMArg
                              checkWithBlock:^BOOL(ShowSigninCommand* command) {
+                               AcceptSyncOptIn();
+                               command.completion(
+                                   SigninCoordinatorResultSuccess,
+                                   [FakeSystemIdentity fakeIdentity1]);
                                return command.operation ==
                                       AuthenticationOperation::kHistorySync;
                              }]
       baseViewController:base_view_controller_]);
-  delegate_->ShowAuthenticationUi(completion_callback.Get());
+
+  delegate_->ShowAuthenticationUi(mock_callback.Get());
 }
 
 // Tests `NotifySignInAndSyncStatusChange`.
