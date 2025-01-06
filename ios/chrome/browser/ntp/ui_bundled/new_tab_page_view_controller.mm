@@ -388,7 +388,7 @@ const CGFloat kFeedContainerExtraHeight = 500;
                         if (self.feedVisible) {
                           [self updateFeedInsetsForMinimumHeight];
                         }
-                        [self updateFeedContainerHeight];
+                        [self updateFeedContainerSizeAndPosition];
                       }];
 }
 
@@ -681,13 +681,6 @@ const CGFloat kFeedContainerExtraHeight = 500;
 }
 
 - (void)feedLayoutDidEndUpdatesWithType:(FeedLayoutUpdateType)type {
-  if (_feedContainer) {
-    // Feed content gets added to the top of the subview array, so after content
-    // loads the feed container needs to be sent to the back so that it isn't
-    // in front of the new content and doesn't intercept taps / interactions
-    // that are meant for the feed content.
-    [self.collectionView sendSubviewToBack:_feedContainer];
-  }
   [self updateFeedInsetsForMinimumHeight];
   // Updating insets can influence contentOffset, so update saved scroll state
   // after it. This handles what the starting offset be with the feed enabled,
@@ -700,7 +693,7 @@ const CGFloat kFeedContainerExtraHeight = 500;
     [self setContentOffset:self.savedScrollOffset];
   }
 
-  [self updateFeedContainerHeight];
+  [self updateFeedContainerSizeAndPosition];
 }
 
 - (void)invalidate {
@@ -817,13 +810,7 @@ const CGFloat kFeedContainerExtraHeight = 500;
   }
 
   [self updateScrollPositionToSave];
-
-  // The feed model callbacks don't always reliably tell us that the content has
-  // paginated, so check if the container should be extended.
-  if (self.collectionView.contentSize.height >
-      self.feedContainerHeightConstraint.constant) {
-    [self updateFeedContainerHeight];
-  }
+  [self updateFeedContainerSizeAndPosition];
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView*)scrollView {
@@ -1464,7 +1451,7 @@ const CGFloat kFeedContainerExtraHeight = 500;
       [_feedContainer.topAnchor
           constraintEqualToAnchor:self.feedHeaderViewController.view.topAnchor],
     ]];
-    [self updateFeedContainerHeight];
+    [self updateFeedContainerSizeAndPosition];
   }
 
   [NSLayoutConstraint activateConstraints:@[
@@ -1594,8 +1581,8 @@ const CGFloat kFeedContainerExtraHeight = 500;
   self.mutator.scrollPositionToSave = scrollPositionToSave;
 }
 
-// Updates the feed container's height constraint.
-- (void)updateFeedContainerHeight {
+// Updates the feed container's height constraint and z-position.
+- (void)updateFeedContainerSizeAndPosition {
   if (!_feedContainer) {
     return;
   }
@@ -1611,6 +1598,12 @@ const CGFloat kFeedContainerExtraHeight = 500;
   self.feedContainerHeightConstraint =
       [_feedContainer.heightAnchor constraintEqualToConstant:containerHeight];
   self.feedContainerHeightConstraint.active = YES;
+
+  // Feed content gets added to the top of the subview array, so after content
+  // loads the feed container needs to be sent to the back so that it isn't
+  // in front of the new content and doesn't intercept taps / interactions
+  // that are meant for the feed content.
+  [self.collectionView sendSubviewToBack:_feedContainer];
 }
 
 // Updates the width constraint of `moduleLayoutGuide`.
