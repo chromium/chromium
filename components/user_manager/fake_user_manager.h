@@ -69,8 +69,6 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerImpl {
                     bool browser_restart,
                     bool is_child) override;
 
-  const User* GetActiveUser() const override;
-  User* GetActiveUser() override;
   void SwitchActiveUser(const AccountId& account_id) override;
   void SaveUserDisplayName(const AccountId& account_id,
                            const std::u16string& display_name) override;
@@ -115,15 +113,7 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerImpl {
   using UserManagerImpl::SetEphemeralModeConfig;
   using UserManagerImpl::SetOwnerId;
 
- protected:
-  // If set this is the active user. If empty, the first created user is the
-  // active user.
-  AccountId active_account_id_ = EmptyAccountId();
-
  private:
-  // We use this internal function for const-correctness.
-  User* GetActiveUserInternal() const;
-
   // stub, always empty.
   AccountId owner_account_id_ = EmptyAccountId();
 

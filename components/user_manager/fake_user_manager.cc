@@ -156,31 +156,6 @@ void FakeUserManager::UserLoggedIn(const AccountId& account_id,
   NotifyOnLogin();
 }
 
-User* FakeUserManager::GetActiveUserInternal() const {
-  if (active_user_ != nullptr)
-    return active_user_;
-
-  if (!users_.empty()) {
-    if (active_account_id_.is_valid()) {
-      for (UserList::const_iterator it = users_.begin(); it != users_.end();
-           ++it) {
-        if ((*it)->GetAccountId() == active_account_id_)
-          return *it;
-      }
-    }
-    return users_[0];
-  }
-  return nullptr;
-}
-
-const User* FakeUserManager::GetActiveUser() const {
-  return GetActiveUserInternal();
-}
-
-User* FakeUserManager::GetActiveUser() {
-  return GetActiveUserInternal();
-}
-
 void FakeUserManager::SwitchActiveUser(const AccountId& account_id) {
   for (UserList::const_iterator it = logged_in_users_.begin();
        it != logged_in_users_.end(); ++it) {
