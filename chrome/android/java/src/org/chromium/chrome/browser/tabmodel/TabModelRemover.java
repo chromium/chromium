@@ -300,11 +300,18 @@ class TabModelRemover {
 
         @Nullable SavedTabGroup savedTabGroup = tabGroupSyncService.getGroup(localTabGroupId);
         String collaborationId = savedTabGroup != null ? savedTabGroup.collaborationId : null;
-        if (!TabShareUtils.isCollaborationIdValid(collaborationId)) {
+        if (!TabShareUtils.isCollaborationIdValid(collaborationId)
+                || savedTabGroup.localId == null
+                || savedTabGroup.localId.tabGroupId == null) {
             return new CollaborationInfo();
         }
 
-        String title = TabGroupTitleUtils.getDisplayableTitle(mContext, savedTabGroup);
+        TabGroupModelFilter filter = getTabGroupModelFilter();
+        int rootId = filter.getRootIdFromStableId(savedTabGroup.localId.tabGroupId);
+        if (rootId == Tab.INVALID_TAB_ID) {
+            return new CollaborationInfo();
+        }
+        String title = TabGroupTitleUtils.getDisplayableTitle(mContext, filter, rootId);
 
         CollaborationService collaborationService = getCollaborationService();
         @MemberRole

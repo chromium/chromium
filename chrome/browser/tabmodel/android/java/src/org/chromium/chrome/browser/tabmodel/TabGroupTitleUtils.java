@@ -8,12 +8,10 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.tab_group_sync.SavedTabGroup;
 
 import java.util.Objects;
 
@@ -65,19 +63,6 @@ public class TabGroupTitleUtils {
         } else {
             return explicitTitle;
         }
-    }
-
-    /**
-     * Returns a displayable title for a given saved tab group.
-     *
-     * @param context To load resources from.
-     * @param savedTabGroup The {@link SavedTabGroup} to create a title from.
-     * @return A non-null string that can be shown to users.
-     */
-    public static String getDisplayableTitle(
-            Context context, @NonNull SavedTabGroup savedTabGroup) {
-        if (!TextUtils.isEmpty(savedTabGroup.title)) return savedTabGroup.title;
-        return TabGroupTitleUtils.getDefaultTitle(context, savedTabGroup.savedTabs.size());
     }
 
     /**

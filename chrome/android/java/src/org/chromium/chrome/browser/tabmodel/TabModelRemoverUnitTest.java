@@ -69,7 +69,9 @@ public class TabModelRemoverUnitTest {
     private static final String COLLABORATION_ID = "collaboration";
     private static final String TAB_GROUP_TITLE = "My Title";
     private static final LocalTabGroupId TAB_GROUP_1 = new LocalTabGroupId(new Token(1L, 2L));
+    private static final int ROOT_ID_1 = 1;
     private static final LocalTabGroupId TAB_GROUP_2 = new LocalTabGroupId(new Token(2L, 3L));
+    private static final int ROOT_ID_2 = 3;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -93,7 +95,8 @@ public class TabModelRemoverUnitTest {
     private TabModelRemover mTabModelRemover;
     private InOrder mHandlerInOrder;
     private int mNextTabId;
-    private SavedTabGroup mSavedTabGroup;
+    private SavedTabGroup mSavedTabGroup1;
+    private SavedTabGroup mSavedTabGroup2;
 
     @Before
     public void setUp() {
@@ -118,6 +121,11 @@ public class TabModelRemoverUnitTest {
 
         when(mTabGroupModelFilter.isIncognitoBranded()).thenReturn(false);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
+        when(mTabGroupModelFilter.getRootIdFromStableId(TAB_GROUP_1.tabGroupId))
+                .thenReturn(ROOT_ID_1);
+        when(mTabGroupModelFilter.getRootIdFromStableId(TAB_GROUP_2.tabGroupId))
+                .thenReturn(ROOT_ID_2);
+        when(mTabGroupModelFilter.getTabGroupTitle(anyInt())).thenReturn(TAB_GROUP_TITLE);
 
         doAnswer(
                         invocation -> {
@@ -135,10 +143,17 @@ public class TabModelRemoverUnitTest {
                         () -> mTabGroupModelFilter);
         mHandlerInOrder = inOrder(mHandler);
 
-        mSavedTabGroup = new SavedTabGroup();
-        mSavedTabGroup.title = TAB_GROUP_TITLE;
-        mSavedTabGroup.collaborationId = COLLABORATION_ID;
-        when(mTabGroupSyncService.getGroup(any(LocalTabGroupId.class))).thenReturn(mSavedTabGroup);
+        mSavedTabGroup1 = new SavedTabGroup();
+        mSavedTabGroup1.localId = TAB_GROUP_1;
+        mSavedTabGroup1.title = TAB_GROUP_TITLE;
+        mSavedTabGroup1.collaborationId = COLLABORATION_ID;
+        when(mTabGroupSyncService.getGroup(TAB_GROUP_1)).thenReturn(mSavedTabGroup1);
+
+        mSavedTabGroup2 = new SavedTabGroup();
+        mSavedTabGroup2.localId = TAB_GROUP_2;
+        mSavedTabGroup2.title = TAB_GROUP_TITLE;
+        mSavedTabGroup2.collaborationId = COLLABORATION_ID;
+        when(mTabGroupSyncService.getGroup(TAB_GROUP_2)).thenReturn(mSavedTabGroup2);
     }
 
     @Test
