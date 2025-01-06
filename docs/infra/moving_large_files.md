@@ -26,10 +26,10 @@ For Android-related files, it might be appropriate to use the shared
 chromium-android-tools bucket. Create a new folder in the bucket, and use
 chromium-android-tools/[new folder name] as the bucket name.
 
-Otherwise, go to [go/chromeinfraticket](http://go/chromeinfraticket) to request
-a bucket.  We ask that you do this so we can ensure the ACLs will work on our
-buildbots, and storage costs will be centralize to Chrome Infrastructure.
-You'll need to specify:
+Otherwise, to create a new bucket you can add an entry into
+[bucket.json](http://shortn/_wkOtCQm10E). Entries within `bucket.json` should
+aim to answer the below questions. Afterwards, send the CL to a coworker for review.
+After that is aprroved, someone from chops security will do a final review.
 
 * Who can have read access to this bucket? Certain groups at Google? All of
   Google? All of Chrome-Team? Everyone? Consider adding googlers@chromium.org to
