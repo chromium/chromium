@@ -37,6 +37,78 @@ targets.variant(
 )
 
 targets.variant(
+    name = "CROS_RELEASE_LKGM",
+    identifier = "RELEASE_LKGM",
+    skylab = targets.skylab(
+        use_lkgm = True,
+    ),
+)
+
+targets.variant(
+    name = "CROS_PUBLIC_LKGM",
+    identifier = "PUBLIC_LKGM",
+    skylab = targets.skylab(
+        bucket = "chromiumos-image-archive",
+        public_builder = "cros_test_platform_public",
+        public_builder_bucket = "testplatform-public",
+        use_lkgm = True,
+    ),
+)
+
+targets.variant(
+    name = "CROS_JACUZZI_RELEASE_LKGM",
+    identifier = "JACUZZI_RELEASE_LKGM",
+    skylab = targets.skylab(
+        cros_board = "jacuzzi",
+        use_lkgm = True,
+    ),
+)
+
+targets.variant(
+    name = "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
+    identifier = "VOLTEER_PUBLIC_RELEASE_LKGM",
+    skylab = targets.skylab(
+        bucket = "chromiumos-image-archive",
+        cros_board = "volteer",
+        cros_model = "voxel",
+        dut_pool = "chromium",
+        public_builder = "cros_test_platform_public",
+        public_builder_bucket = "testplatform-public",
+        use_lkgm = True,
+    ),
+)
+
+targets.variant(
+    name = "CROS_GPU_BRYA_RELEASE_LKGM",
+    identifier = "GPU_BRYA_RELEASE_LKGM",
+    skylab = targets.skylab(
+        cros_board = "brya",
+        dut_pool = "chrome-gpu",
+        use_lkgm = True,
+    ),
+)
+
+targets.variant(
+    name = "CROS_GPU_CORSOLA_RELEASE_LKGM",
+    identifier = "GPU_CORSOLA_RELEASE_LKGM",
+    skylab = targets.skylab(
+        cros_board = "corsola",
+        dut_pool = "chrome-gpu",
+        use_lkgm = True,
+    ),
+)
+
+targets.variant(
+    name = "CROS_GPU_SKYRIM_RELEASE_LKGM",
+    identifier = "GPU_SKYRIM_RELEASE_LKGM",
+    skylab = targets.skylab(
+        cros_board = "skyrim",
+        dut_pool = "chrome-gpu",
+        use_lkgm = True,
+    ),
+)
+
+targets.variant(
     name = "DISABLE_FIELD_TRIAL_CONFIG",
     identifier = "Disable Field Trial Config",
     generate_pyl_entry = False,
@@ -765,22 +837,6 @@ targets.variant(
         "--test-apk-as-instant",
     ],
 )
-
-# This set of variants is encoded in a json file so that
-# chrome/official.infra/lacros-skylab-tests-cros-img-roller can update the
-# variant definitions
-[targets.variant(
-    name = name,
-    enabled = variant.get("enabled"),
-    identifier = variant["identifier"],
-    # The cros_chrome_version field isn't used by the generator: it's used by
-    # the cros skylab test image roller to compare against other data sources
-    skylab = targets.skylab(**{
-        k: v
-        for k, v in variant["skylab"].items()
-        if k != "cros_chrome_version"
-    }),
-) for name, variant in json.decode(io.read_file("./cros-skylab-variants.json")).items()]
 
 targets.variant(
     name = "WIN10_INTEL_UHD_630_STABLE",
