@@ -17,8 +17,6 @@
 
 class NearbyShareClientFactory;
 class NearbyShareLocalDeviceDataManager;
-class NearbyShareProfileInfoProvider;
-class PrefService;
 
 // A fake implementation of NearbyShareContactManager, along with a fake
 // factory, to be used in tests. Stores parameters input into
@@ -51,17 +49,13 @@ class FakeNearbyShareContactManager : public NearbyShareContactManager {
       return latest_local_device_data_manager_;
     }
 
-    NearbyShareProfileInfoProvider* latest_profile_info_provider() const {
-      return latest_profile_info_provider_;
-    }
-
    private:
     // NearbyShareContactManagerImpl::Factory:
     std::unique_ptr<NearbyShareContactManager> CreateInstance(
+        std::string user_email,
         PrefService* pref_service,
         NearbyShareClientFactory* http_client_factory,
-        NearbyShareLocalDeviceDataManager* local_device_data_manager,
-        NearbyShareProfileInfoProvider* profile_info_provider) override;
+        NearbyShareLocalDeviceDataManager* local_device_data_manager) override;
 
     std::vector<raw_ptr<FakeNearbyShareContactManager, VectorExperimental>>
         instances_;
@@ -69,8 +63,6 @@ class FakeNearbyShareContactManager : public NearbyShareContactManager {
         latest_http_client_factory_ = nullptr;
     raw_ptr<NearbyShareLocalDeviceDataManager, DanglingUntriaged>
         latest_local_device_data_manager_ = nullptr;
-    raw_ptr<NearbyShareProfileInfoProvider, DanglingUntriaged>
-        latest_profile_info_provider_ = nullptr;
   };
 
   FakeNearbyShareContactManager();

@@ -333,10 +333,10 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
               user,
               http_client_factory_.get())),
       contact_manager_(NearbyShareContactManagerImpl::Factory::Create(
+          profile_->GetProfileUserName(),
           prefs_,
           http_client_factory_.get(),
-          local_device_data_manager_.get(),
-          profile_info_provider_.get())),
+          local_device_data_manager_.get())),
       certificate_manager_(NearbyShareCertificateManagerImpl::Factory::Create(
           local_device_data_manager_.get(),
           contact_manager_.get(),
