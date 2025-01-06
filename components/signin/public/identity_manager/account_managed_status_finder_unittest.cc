@@ -11,6 +11,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace signin {
@@ -557,6 +558,51 @@ TEST_F(AccountManagedStatusFinderTest,
       /*locale=*/"", /*picture_url=*/"");
   EXPECT_EQ(finder.GetOutcome(),
             AccountManagedStatusFinder::Outcome::kEnterprise);
+}
+
+TEST_F(AccountManagedStatusFinderTest, ImmediateOutcomeAuthError) {
+  AccountInfo account =
+      identity_env_.MakeAccountAvailable("account@not-an-enterprise.com");
+  identity_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
+      account.account_id,
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER));
+
+  base::MockCallback<base::OnceClosure> outcome_determined;
+  // Need to specify the timeout, otherwise `AccountManagedStatusFinder` ignores
+  // auth errors.
+  base::TimeDelta timeout(base::Seconds(30));
+  AccountManagedStatusFinder finder(identity_env_.identity_manager(), account,
+                                    outcome_determined.Get(), timeout);
+
+  // Since the account has a persistent auth error, the outcome should be
+  // decided immediately.
+  EXPECT_EQ(finder.GetOutcome(), AccountManagedStatusFinder::Outcome::kTimeout);
+  EXPECT_CALL(outcome_determined, Run).Times(0);
+}
+
+TEST_F(AccountManagedStatusFinderTest, DelayedOutcomeAuthError) {
+  AccountInfo account =
+      identity_env_.MakeAccountAvailable("account@not-an-enterprise.com");
+
+  base::MockCallback<base::OnceClosure> outcome_determined;
+  // Need to specify the timeout, otherwise `AccountManagedStatusFinder` ignores
+  // auth errors.
+  base::TimeDelta timeout(base::Seconds(30));
+  AccountManagedStatusFinder finder(identity_env_.identity_manager(), account,
+                                    outcome_determined.Get(), timeout);
+
+  EXPECT_EQ(finder.GetOutcome(), AccountManagedStatusFinder::Outcome::kPending);
+  EXPECT_CALL(outcome_determined, Run);
+
+  identity_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
+      account.account_id,
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER));
+
+  EXPECT_EQ(finder.GetOutcome(), AccountManagedStatusFinder::Outcome::kTimeout);
 }
 
 }  // namespace signin

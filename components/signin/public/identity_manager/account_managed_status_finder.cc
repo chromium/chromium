@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/callback_android.h"
@@ -502,6 +503,11 @@ AccountManagedStatusFinder::AccountManagedStatusFinder(
     base::OnceClosure async_callback,
     base::TimeDelta timeout)
     : identity_manager_(identity_manager), account_(account) {
+  // If a timeout is provided - treat persistent auth errors as timeouts.
+  // The assumption being that time-sensitive code paths (which are mostly in
+  // the UI) shouldn't wait for user to resolve the persistent auth error.
+  ignore_persistent_auth_errors_ = timeout.is_max();
+
   if (!identity_manager_->AreRefreshTokensLoaded()) {
     // We want to make sure that `account` exists in the IdentityManager but
     // we can only that after tokens are loaded. Wait for the
@@ -557,6 +563,32 @@ void AccountManagedStatusFinder::OnRefreshTokenRemovedForAccount(
 
   // The interesting account was removed, we're done here.
   OutcomeDeterminedAsync(Outcome::kError);
+}
+
+void AccountManagedStatusFinder::OnErrorStateOfRefreshTokenUpdatedForAccount(
+    const CoreAccountInfo& account_info,
+    const GoogleServiceAuthError& error,
+    signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
+  DCHECK_EQ(outcome_, Outcome::kPending);
+
+  if (!identity_manager_->AreRefreshTokensLoaded()) {
+    // `OnRefreshTokensLoaded` will update the outcome.
+    return;
+  }
+
+  // Don't care about other accounts.
+  if (account_info.account_id != account_.account_id) {
+    return;
+  }
+
+  Outcome outcome = DetermineOutcome();
+  if (outcome == Outcome::kPending) {
+    // There is still not enough information to determine the account managed
+    // status. Keep waiting for notifications from IdentityManager.
+    return;
+  }
+
+  OutcomeDeterminedAsync(outcome);
 }
 
 void AccountManagedStatusFinder::OnRefreshTokensLoaded() {
@@ -618,6 +650,13 @@ AccountManagedStatusFinder::DetermineOutcome() const {
   if (!info.hosted_domain.empty()) {
     return info.IsManaged() ? Outcome::kEnterprise
                             : Outcome::kConsumerNotWellKnown;
+  }
+
+  GoogleServiceAuthError authError =
+      identity_manager_->GetErrorStateOfRefreshTokenForAccount(
+          account_.account_id);
+  if (!ignore_persistent_auth_errors_ && authError.IsPersistentError()) {
+    return Outcome::kTimeout;
   }
 
   // Hosted domain info isn't available yet. Observe the IdentityManager to

@@ -90,6 +90,11 @@ class AccountManagedStatusFinder : public signin::IdentityManager::Observer {
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
   void OnRefreshTokenRemovedForAccount(
       const CoreAccountId& account_id) override;
+  void OnErrorStateOfRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info,
+      const GoogleServiceAuthError& error,
+      signin_metrics::SourceForRefreshTokenOperation token_operation_source)
+      override;
   void OnRefreshTokensLoaded() override;
   void OnIdentityManagerShutdown(
       signin::IdentityManager* identity_manager) override;
@@ -109,6 +114,7 @@ class AccountManagedStatusFinder : public signin::IdentityManager::Observer {
 
   raw_ptr<signin::IdentityManager> identity_manager_;
   const CoreAccountInfo account_;
+  bool ignore_persistent_auth_errors_ = true;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
