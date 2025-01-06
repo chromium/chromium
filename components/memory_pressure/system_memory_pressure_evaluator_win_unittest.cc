@@ -410,5 +410,40 @@ TEST_F(WinSystemMemoryPressureEvaluatorTest, GetPerformanceInfoOverflows) {
                                       1);
 }
 
+// Verifies behavior when commit limit is zero (division by zero).
+TEST_F(WinSystemMemoryPressureEvaluatorTest, DivisionByZero) {
+  base::HistogramTester histogram_tester;
+  TestSystemMemoryPressureEvaluator evaluator(false, nullptr);
+  evaluator.SetPerformanceRetrievalSuccessCall(true);
+  evaluator.SetCommitLimit(0, 0);  // Commit limit is zero.
+
+  evaluator.RecordCommitHistograms();
+
+  histogram_tester.ExpectUniqueSample(
+      kPerformanceInfoRetrievalSuccessHistogramName, true, 1);
+  histogram_tester.ExpectUniqueSample(kCommitLimitMBHistogramName, 0, 1);
+  histogram_tester.ExpectUniqueSample(kCommitRemainingMBHistogramName, 0, 1);
+  histogram_tester.ExpectUniqueSample(kCommitPercentageUsedHistogramName, 0, 1);
+}
+
+// Verifies behavior with potential underflow when calculating remaining commit
+// limit.
+TEST_F(WinSystemMemoryPressureEvaluatorTest, PotentialUnderflow) {
+  base::HistogramTester histogram_tester;
+  TestSystemMemoryPressureEvaluator evaluator(false, nullptr);
+  evaluator.SetPerformanceRetrievalSuccessCall(true);
+  // Set a commit total that is greater than commit limit
+  evaluator.SetCommitLimit(1024, 2048);
+
+  evaluator.RecordCommitHistograms();
+
+  histogram_tester.ExpectUniqueSample(
+      kPerformanceInfoRetrievalSuccessHistogramName, true, 1);
+  histogram_tester.ExpectUniqueSample(kCommitLimitMBHistogramName, 4, 1);
+  histogram_tester.ExpectUniqueSample(kCommitRemainingMBHistogramName, 0, 1);
+  histogram_tester.ExpectUniqueSample(kCommitPercentageUsedHistogramName, 200,
+                                      1);
+}
+
 }  // namespace win
 }  // namespace memory_pressure

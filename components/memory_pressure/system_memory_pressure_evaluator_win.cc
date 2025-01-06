@@ -302,8 +302,14 @@ void SystemMemoryPressureEvaluator::RecordCommitHistograms() {
   base::UmaHistogramCounts10M("Memory.CommitRemainingMB", remaining_limit_int);
 
   // Calculate percentage used
-  uint64_t temp_percentage = (commit_total_mb * 100) / commit_limit_mb;
-  int percentage_used = base::saturated_cast<int>(temp_percentage);
+  int percentage_used;
+  if (commit_limit_int == 0) {
+    // Handle division by zero.
+    percentage_used = 0;
+  } else {
+    uint64_t temp_percentage = (commit_total_mb * 100) / commit_limit_mb;
+    percentage_used = base::saturated_cast<int>(temp_percentage);
+  }
 
   base::UmaHistogramPercentage("Memory.CommitPercentageUsed", percentage_used);
 }
