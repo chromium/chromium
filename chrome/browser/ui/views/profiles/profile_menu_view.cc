@@ -1012,9 +1012,17 @@ void ProfileMenuView::MaybeBuildChromeAccountSettingsButton() {
       !identity_manager->GetExtendedAccountInfoForAccountsWithRefreshToken()
            .empty();
 
+  int message_id = IDS_PROFILE_MENU_OPEN_ACCOUNT_SETTINGS;
+  const gfx::VectorIcon* icon = &vector_icons::kSettingsChromeRefreshIcon;
   if (switches::IsImprovedSigninUIOnDesktopEnabled()) {
     if (!profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed)) {
       should_show_settings_button = true;
+    }
+    if (signin_util::GetSignedInState(identity_manager) ==
+        signin_util::SignedInState::kSyncing) {
+      // Indicates clearly that Sync is ON.
+      message_id = IDS_PROFILES_OPEN_SYNC_SETTINGS_BUTTON;
+      icon = &kSyncChromeRefreshIcon;
     }
   } else {
     if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
@@ -1029,10 +1037,10 @@ void ProfileMenuView::MaybeBuildChromeAccountSettingsButton() {
   }
 
   AddFeatureButton(
-      l10n_util::GetStringUTF16(IDS_PROFILE_MENU_OPEN_ACCOUNT_SETTINGS),
+      l10n_util::GetStringUTF16(message_id),
       base::BindRepeating(&ProfileMenuView::OnSyncSettingsButtonClicked,
                           base::Unretained(this)),
-      vector_icons::kSettingsChromeRefreshIcon);
+      *icon);
 }
 
 void ProfileMenuView::MaybeBuildManageGoogleAccountButton() {
