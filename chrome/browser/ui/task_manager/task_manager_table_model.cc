@@ -912,7 +912,8 @@ bool TaskManagerTableModel::IsTaskKillable(size_t row_index) const {
   return observed_task_manager()->IsTaskKillable(tasks_[row_index]);
 }
 
-void TaskManagerTableModel::RetrieveSavedColumnsSettingsAndUpdateTable() {
+void TaskManagerTableModel::RetrieveSavedColumnsSettingsAndUpdateTable(
+    bool default_sorted_column_to_cpu) {
   if (!g_browser_process->local_state()) {
     return;
   }
@@ -948,6 +949,13 @@ void TaskManagerTableModel::RetrieveSavedColumnsSettingsAndUpdateTable() {
       if (sorted_col_id && *sorted_col_id == col_id_key) {
         table_view_delegate_->SetSortDescriptor(
             TableSortDescriptor(col_id, sort_is_ascending));
+      } else if (default_sorted_column_to_cpu && !sorted_col_id &&
+                 col_id_key ==
+                     GetColumnIdAsString(IDS_TASK_MANAGER_CPU_COLUMN)) {
+        // If there is no user selected column, the sorting default should be
+        // the CPU column if it's visible.
+        table_view_delegate_->SetSortDescriptor(
+            TableSortDescriptor(IDS_TASK_MANAGER_CPU_COLUMN, false));
       }
     }
   }

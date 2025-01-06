@@ -130,6 +130,7 @@ class TaskManagerView : public TableViewDelegate,
     bool scroll_view_rounded;
     bool layout_refresh;
     bool dialog_button_disabled;
+    bool sort_on_cpu_by_default;
   };
 
   friend class TaskManagerViewTest;
@@ -194,6 +195,9 @@ class TaskManagerView : public TableViewDelegate,
 
   raw_ptr<views::TableView, DanglingUntriaged> tab_table_;
   raw_ptr<views::View, DanglingUntriaged> tab_table_parent_;
+
+  // Specifications on how to layout the table.
+  TableConfigs table_config_;
 
   // all possible columns, not necessarily visible.
   std::vector<ui::TableColumn> columns_;

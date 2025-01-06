@@ -353,6 +353,7 @@ void TaskManagerView::MenuClosed(ui::SimpleMenuModel* source) {
 TaskManagerView::TaskManagerView(StartAction start_action)
     : tab_table_(nullptr),
       tab_table_parent_(nullptr),
+      table_config_(GetTableConfigs()),
       is_always_on_top_(false) {
   task_manager::RecordNewOpenEvent(start_action);
   set_use_custom_frame(false);
@@ -386,6 +387,7 @@ TaskManagerView::TableConfigs TaskManagerView::GetTableConfigs() {
       .scroll_view_rounded = tm_refresh_enabled,
       .layout_refresh = tm_refresh_enabled,
       .dialog_button_disabled = tm_refresh_enabled,
+      .sort_on_cpu_by_default = tm_refresh_enabled,
   };
 }
 
@@ -400,7 +402,8 @@ void TaskManagerView::PerformFilter(DisplayCategory category) {
   // Columns are already retrieved, however since the table model changed, the
   // refresh types for this model need to be set for each column. Otherwise, the
   // values for each column will stop updating.
-  table_model_->RetrieveSavedColumnsSettingsAndUpdateTable();
+  table_model_->RetrieveSavedColumnsSettingsAndUpdateTable(
+      table_config_.sort_on_cpu_by_default);
 
   // Redraw the table immediately by scheduling a paint since the rows most
   // likely changed in between switching models.
@@ -600,8 +603,6 @@ std::unique_ptr<views::ScrollView> TaskManagerView::CreateProcessView(
 }
 
 void TaskManagerView::Init() {
-  const auto table_config = GetTableConfigs();
-
   // Create the table columns.
   for (size_t i = 0; i < kColumnsSize; ++i) {
     const auto& col_data = kColumns[i];
@@ -617,8 +618,8 @@ void TaskManagerView::Init() {
       nullptr, columns_, views::TableType::kIconAndText, false);
   tab_table_ = tab_table.get();
   table_model_ = std::make_unique<TaskManagerTableModel>(
-      this, table_config.layout_refresh ? DisplayCategory::kTabs
-                                        : DisplayCategory::kAll);
+      this, table_config_.layout_refresh ? DisplayCategory::kTabs
+                                         : DisplayCategory::kAll);
   tab_table->SetModel(table_model_.get());
   tab_table->SetGrouper(this);
   tab_table->SetSortOnPaint(true);
@@ -626,7 +627,7 @@ void TaskManagerView::Init() {
   tab_table->set_context_menu_controller(this);
   set_context_menu_controller(this);
 
-  if (table_config.dialog_button_disabled) {
+  if (table_config_.dialog_button_disabled) {
     SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   } else {
     SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
@@ -634,7 +635,7 @@ void TaskManagerView::Init() {
                    l10n_util::GetStringUTF16(IDS_TASK_MANAGER_KILL));
   }
 
-  if (table_config.header_padding) {
+  if (table_config_.header_padding) {
     views::TableHeaderStyle header_style = {
         .cell_vertical_padding = 16,
         .cell_horizontal_padding = 12,
@@ -659,7 +660,7 @@ void TaskManagerView::Init() {
   SetBorder(views::CreateEmptyBorder(content_insets));
 
   // Setup Layout Manager for Dialog
-  if (table_config.layout_refresh) {
+  if (table_config_.layout_refresh) {
     views::FlexLayout* content_layout =
         SetLayoutManager(std::make_unique<views::FlexLayout>());
     content_layout->SetOrientation(views::LayoutOrientation::kVertical);
@@ -671,10 +672,10 @@ void TaskManagerView::Init() {
 
   // Add Process List (a.k.a Scroll View)
   tab_table_parent_ = AddChildView(
-      CreateProcessView(std::move(tab_table), table_config.table_has_border,
-                        table_config.layout_refresh));
+      CreateProcessView(std::move(tab_table), table_config_.table_has_border,
+                        table_config_.layout_refresh));
 
-  if (table_config.scroll_view_rounded) {
+  if (table_config_.scroll_view_rounded) {
     tab_table_parent_->SetPaintToLayer(ui::LAYER_TEXTURED);
     ui::Layer* scroll_view_layer = tab_table_parent_->layer();
 
@@ -684,7 +685,8 @@ void TaskManagerView::Init() {
     scroll_view_layer->SetIsFastRoundedCorner(true);
   }
 
-  table_model_->RetrieveSavedColumnsSettingsAndUpdateTable();
+  table_model_->RetrieveSavedColumnsSettingsAndUpdateTable(
+      table_config_.sort_on_cpu_by_default);
 
   AddAccelerator(ui::Accelerator(ui::VKEY_W, ui::EF_CONTROL_DOWN));
   AddAccelerator(
