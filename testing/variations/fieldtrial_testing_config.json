@@ -20684,6 +20684,21 @@
             ]
         }
     ],
+    "SchoolToolsSpotlight": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BocaSpotlight"
+                    ]
+                }
+            ]
+        }
+    ],
     "ScreenCaptureKitMacScreen": [
         {
             "platforms": [
