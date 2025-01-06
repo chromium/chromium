@@ -20692,16 +20692,28 @@ class InterestGroupBiddingAndAuctionServerBrowserTest
     url_loader_interceptor_.reset();
   }
 
-  // Attempts to get the auction blob for seller.  Returns kSuccess if the
+  // Attempts to get the auction blob for seller. Returns kSuccess if the
   // operation claims to have succeeded, and the exception message on failure.
   //
   // If `execution_target` is non-null, uses it as the target. Otherwise, uses
   // shell().
   [[nodiscard]] std::string GetInterestGroupAdAuctionData(
-      url::Origin seller,
+      std::optional<url::Origin> seller,
       std::optional<std::string> coordinator,
+      std::optional<std::vector<std::pair<url::Origin, std::string>>> sellers =
+          std::nullopt,
       blink::mojom::AuctionDataConfig* config = nullptr,
       std::optional<ToRenderFrameHost> execution_target = std::nullopt) {
+    std::string fill_sellers;
+    if (sellers.has_value()) {
+      fill_sellers += "config.sellers = [";
+      for (const auto& [one_seller, one_coordinator] : *sellers) {
+        fill_sellers += JsReplace("{seller: $1, coordinatorOrigin: $2},",
+                                  one_seller, one_coordinator);
+      }
+      fill_sellers += "];";
+    }
+
     std::string fill_config;
     if (config) {
       if (config->request_size) {
@@ -20725,14 +20737,21 @@ class InterestGroupBiddingAndAuctionServerBrowserTest
       }
     }
 
-    return EvalJs(execution_target ? *execution_target : shell(),
-                  JsReplace(R"(
-    let config = {seller: $1}
-    if ($2) {
-      config.coordinatorOrigin = $2;
+    return EvalJs(
+               execution_target ? *execution_target : shell(),
+               JsReplace(R"(
+    let config = {};
+    if ($1) {
+      config.seller = $2;
     }
     if ($3) {
-      eval($3);
+      config.coordinatorOrigin = $3;
+    }
+    if ($4) {
+      eval($4);
+    }
+    if ($5) {
+      eval($5);
     }
     (async function() {
       try {
@@ -20743,7 +20762,8 @@ class InterestGroupBiddingAndAuctionServerBrowserTest
         return e.toString();
       }
     })())",
-                            seller, coordinator.value_or(""), fill_config))
+                         seller.has_value(), seller.value_or(url::Origin()),
+                         coordinator.value_or(""), fill_sellers, fill_config))
         .ExtractString();
   }
 
@@ -20804,6 +20824,15 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
   content::FetchHistogramsFromChildProcesses();
   histogram_tester.ExpectTotalCount(
       "Ads.InterestGroup.GetInterestGroupAdAuctionData.TimeToResolve", 1);
+
+  std::vector<std::pair<url::Origin, std::string>> sellers = {
+      {test_origin, kDefaultBiddingAndAuctionGCPCoordinatorOrigin}};
+  EXPECT_EQ("|", GetInterestGroupAdAuctionData(
+                     /*seller=*/std::nullopt, /*coordinator=*/std::nullopt,
+                     std::move(sellers)));
+  content::FetchHistogramsFromChildProcesses();
+  histogram_tester.ExpectTotalCount(
+      "Ads.InterestGroup.GetInterestGroupAdAuctionData.TimeToResolve", 2);
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
@@ -20821,6 +20850,102 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
       "https origin.",
       GetInterestGroupAdAuctionData(
           url::Origin(), kDefaultBiddingAndAuctionGCPCoordinatorOrigin));
+  content::FetchHistogramsFromChildProcesses();
+  histogram_tester.ExpectTotalCount(
+      "Ads.InterestGroup.GetInterestGroupAdAuctionData.TimeToResolve", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
+                       TestInvalidSellers) {
+  GURL test_url = embedded_https_test_server().GetURL(
+      "a.test", "/interest_group/empty.html");
+  url::Origin test_origin = url::Origin::Create(test_url);
+
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  base::HistogramTester histogram_tester;
+  std::vector<std::pair<url::Origin, std::string>> sellers = {
+      {url::Origin(), kDefaultBiddingAndAuctionGCPCoordinatorOrigin}};
+
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'getInterestGroupAdAuctionData' on "
+      "'Navigator': seller 'null' in sellers for AdAuctionDataConfig must be a "
+      "valid https origin.",
+      GetInterestGroupAdAuctionData(
+          /*seller=*/std::nullopt, /*coordinator=*/std::nullopt,
+          std::move(sellers)));
+  content::FetchHistogramsFromChildProcesses();
+  histogram_tester.ExpectTotalCount(
+      "Ads.InterestGroup.GetInterestGroupAdAuctionData.TimeToResolve", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
+                       DuplicateSellers) {
+  GURL test_url = embedded_https_test_server().GetURL(
+      "a.test", "/interest_group/empty.html");
+  url::Origin test_origin = url::Origin::Create(test_url);
+
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  base::HistogramTester histogram_tester;
+  std::vector<std::pair<url::Origin, std::string>> sellers = {
+      {test_origin, kDefaultBiddingAndAuctionGCPCoordinatorOrigin},
+      {test_origin, kDefaultBiddingAndAuctionGCPCoordinatorOrigin}};
+
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'getInterestGroupAdAuctionData' on "
+      "'Navigator': Each seller in sellers for AdAuctionDataConfig must be "
+      "unique.",
+      GetInterestGroupAdAuctionData(
+          /*seller=*/std::nullopt, /*coordinator=*/std::nullopt,
+          std::move(sellers)));
+  content::FetchHistogramsFromChildProcesses();
+  histogram_tester.ExpectTotalCount(
+      "Ads.InterestGroup.GetInterestGroupAdAuctionData.TimeToResolve", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
+                       BothSellerAndSellersInConfig) {
+  GURL test_url = embedded_https_test_server().GetURL(
+      "a.test", "/interest_group/empty.html");
+  url::Origin test_origin = url::Origin::Create(test_url);
+
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  base::HistogramTester histogram_tester;
+  std::vector<std::pair<url::Origin, std::string>> sellers = {
+      {test_origin, kDefaultBiddingAndAuctionGCPCoordinatorOrigin}};
+
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'getInterestGroupAdAuctionData' on "
+      "'Navigator': Cannot provide both seller and sellers fields for "
+      "AdAuctionDataConfig.",
+      GetInterestGroupAdAuctionData(
+          /*seller=*/test_origin,
+          /*coordinator=*/kDefaultBiddingAndAuctionGCPCoordinatorOrigin,
+          std::move(sellers)));
+  content::FetchHistogramsFromChildProcesses();
+  histogram_tester.ExpectTotalCount(
+      "Ads.InterestGroup.GetInterestGroupAdAuctionData.TimeToResolve", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
+                       NeitherSellerNorSellersInConfig) {
+  GURL test_url = embedded_https_test_server().GetURL(
+      "a.test", "/interest_group/empty.html");
+  url::Origin test_origin = url::Origin::Create(test_url);
+
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  base::HistogramTester histogram_tester;
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'getInterestGroupAdAuctionData' on "
+      "'Navigator': One of seller or sellers for AdAuctionDataConfig must be "
+      "provided.",
+      GetInterestGroupAdAuctionData(
+          /*seller=*/std::nullopt,
+          /*coordinator=*/std::nullopt,
+          /*sellers=*/std::nullopt));
   content::FetchHistogramsFromChildProcesses();
   histogram_tester.ExpectTotalCount(
       "Ads.InterestGroup.GetInterestGroupAdAuctionData.TimeToResolve", 0);
@@ -20846,7 +20971,21 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
       "'Navigator': buyer origin 'http://not.secure.test' for "
       "AdAuctionDataConfig must be a valid https origin.",
       GetInterestGroupAdAuctionData(
-          test_origin, kDefaultBiddingAndAuctionGCPCoordinatorOrigin, &config));
+          test_origin, kDefaultBiddingAndAuctionGCPCoordinatorOrigin,
+          /*sellers=*/std::nullopt, &config));
+  content::FetchHistogramsFromChildProcesses();
+  histogram_tester.ExpectTotalCount(
+      "Ads.InterestGroup.GetInterestGroupAdAuctionData.TimeToResolve", 0);
+
+  std::vector<std::pair<url::Origin, std::string>> sellers = {
+      {test_origin, kDefaultBiddingAndAuctionGCPCoordinatorOrigin}};
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'getInterestGroupAdAuctionData' on "
+      "'Navigator': buyer origin 'http://not.secure.test' for "
+      "AdAuctionDataConfig must be a valid https origin.",
+      GetInterestGroupAdAuctionData(
+          /*seller=*/std::nullopt, /*coordinator=*/std::nullopt,
+          std::move(sellers), &config));
   content::FetchHistogramsFromChildProcesses();
   histogram_tester.ExpectTotalCount(
       "Ads.InterestGroup.GetInterestGroupAdAuctionData.TimeToResolve", 0);
@@ -20869,7 +21008,21 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
       "'Navigator': All per-buyer configs must have a target size when request "
       "size is not specified.",
       GetInterestGroupAdAuctionData(
-          test_origin, kDefaultBiddingAndAuctionGCPCoordinatorOrigin, &config));
+          test_origin, kDefaultBiddingAndAuctionGCPCoordinatorOrigin,
+          /*sellers=*/std::nullopt, &config));
+  content::FetchHistogramsFromChildProcesses();
+  histogram_tester.ExpectTotalCount(
+      "Ads.InterestGroup.GetInterestGroupAdAuctionData.TimeToResolve", 0);
+
+  std::vector<std::pair<url::Origin, std::string>> sellers = {
+      {test_origin, kDefaultBiddingAndAuctionGCPCoordinatorOrigin}};
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'getInterestGroupAdAuctionData' on "
+      "'Navigator': All per-buyer configs must have a target size when request "
+      "size is not specified.",
+      GetInterestGroupAdAuctionData(
+          /*seller=*/std::nullopt, /*coordinator=*/std::nullopt,
+          std::move(sellers), &config));
   content::FetchHistogramsFromChildProcesses();
   histogram_tester.ExpectTotalCount(
       "Ads.InterestGroup.GetInterestGroupAdAuctionData.TimeToResolve", 0);
@@ -20896,7 +21049,20 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
       "TypeError: Failed to execute 'getInterestGroupAdAuctionData' on "
       "'Navigator': Computed request size is invalid.",
       GetInterestGroupAdAuctionData(
-          test_origin, kDefaultBiddingAndAuctionGCPCoordinatorOrigin, &config));
+          test_origin, kDefaultBiddingAndAuctionGCPCoordinatorOrigin,
+          /*sellers=*/std::nullopt, &config));
+  content::FetchHistogramsFromChildProcesses();
+  histogram_tester.ExpectTotalCount(
+      "Ads.InterestGroup.GetInterestGroupAdAuctionData.TimeToResolve", 0);
+
+  std::vector<std::pair<url::Origin, std::string>> sellers = {
+      {test_origin, kDefaultBiddingAndAuctionGCPCoordinatorOrigin}};
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'getInterestGroupAdAuctionData' on "
+      "'Navigator': Computed request size is invalid.",
+      GetInterestGroupAdAuctionData(
+          /*seller=*/std::nullopt, /*coordinator=*/std::nullopt,
+          std::move(sellers), &config));
   content::FetchHistogramsFromChildProcesses();
   histogram_tester.ExpectTotalCount(
       "Ads.InterestGroup.GetInterestGroupAdAuctionData.TimeToResolve", 0);
@@ -21004,8 +21170,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
                                    blink::mojom::AuctionDataBuyerConfig::New());
   config.per_buyer_configs.emplace(
       test_origin2, blink::mojom::AuctionDataBuyerConfig::New(kRequestSize));
-  std::string result =
-      GetInterestGroupAdAuctionData(test_origin, std::nullopt, &config);
+  std::string result = GetInterestGroupAdAuctionData(
+      test_origin, std::nullopt, /*sellers=*/std::nullopt, &config);
 
   const unsigned int kCharsInUUID = 36;
   const unsigned int kCharsInSeparator = 1;
@@ -21046,8 +21212,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
   config.per_buyer_configs.emplace(
       test_origin,
       blink::mojom::AuctionDataBuyerConfig::New(/*target_size=*/kRequestSize));
-  std::string result =
-      GetInterestGroupAdAuctionData(test_origin, std::nullopt, &config);
+  std::string result = GetInterestGroupAdAuctionData(
+      test_origin, std::nullopt, /*sellers=*/std::nullopt, &config);
 
   const unsigned int kCharsInUUID = 36;
   const unsigned int kCharsInSeparator = 1;
@@ -21071,6 +21237,29 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
       "'Navigator': coordinatorOrigin 'foo' for AdAuctionDataConfig must be "
       "a valid https origin.",
       GetInterestGroupAdAuctionData(test_origin, "foo"));
+  content::FetchHistogramsFromChildProcesses();
+  histogram_tester.ExpectTotalCount(
+      "Ads.InterestGroup.GetInterestGroupAdAuctionData.TimeToResolve", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
+                       TestInvalidCoordinatorInSellers) {
+  GURL test_url = embedded_https_test_server().GetURL(
+      "a.test", "/interest_group/empty.html");
+  url::Origin test_origin = url::Origin::Create(test_url);
+
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  base::HistogramTester histogram_tester;
+  std::vector<std::pair<url::Origin, std::string>> sellers = {
+      {test_origin, "foo"}};
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'getInterestGroupAdAuctionData' on "
+      "'Navigator': coordinatorOrigin 'foo' in sellers for AdAuctionDataConfig "
+      "must be a valid https origin.",
+      GetInterestGroupAdAuctionData(/*seller=*/std::nullopt,
+                                    /*coordinator=*/std::nullopt,
+                                    std::move(sellers)));
   content::FetchHistogramsFromChildProcesses();
   histogram_tester.ExpectTotalCount(
       "Ads.InterestGroup.GetInterestGroupAdAuctionData.TimeToResolve", 0);
@@ -21119,6 +21308,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
     EXPECT_EQ("|",
               GetInterestGroupAdAuctionData(
                   test_origin, kDefaultBiddingAndAuctionGCPCoordinatorOrigin,
+                  /*sellers=*/std::nullopt,
                   /*config=*/nullptr, execution_target));
     RenderFrameHost* execution_targets_with_message[] = {
         cross_origin_iframe, inner_cross_origin_iframe,
@@ -21560,11 +21750,13 @@ IN_PROC_BROWSER_TEST_F(
           "Feature run-ad-auction is not enabled by Permissions Policy",
           GetInterestGroupAdAuctionData(
               test_origin, kDefaultBiddingAndAuctionGCPCoordinatorOrigin,
+              /*sellers=*/std::nullopt,
               /*config=*/nullptr, execution_target));
     } else {
       EXPECT_EQ("|",
                 GetInterestGroupAdAuctionData(
                     test_origin, kDefaultBiddingAndAuctionGCPCoordinatorOrigin,
+                    /*sellers=*/std::nullopt,
                     /*config=*/nullptr, execution_target));
     }
   }

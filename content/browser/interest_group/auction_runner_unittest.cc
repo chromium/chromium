@@ -26065,8 +26065,10 @@ TEST_F(AuctionRunnerTest, ServerResponseLogsErrors) {
        false,
        kSellerUrl,
        true,
-       {"runAdAuction(): No corresponding request with ID: " +
-        bad_request_id.AsLowercaseString()},
+       {base::StringPrintf("runAdAuction(): No corresponding request for "
+                           "seller '%s' with ID '%s'",
+                           kSeller.Serialize(),
+                           bad_request_id.AsLowercaseString())},
        AuctionResult::kInvalidServerResponse},
       {"wrong seller",
        chaff_response,
@@ -26074,7 +26076,9 @@ TEST_F(AuctionRunnerTest, ServerResponseLogsErrors) {
        true,
        kBidder1Url,  // Not the seller
        true,
-       {"runAdAuction(): Seller in response doesn't match request"},
+       {base::StringPrintf(
+           "runAdAuction(): No corresponding request for seller '%s' with ID ",
+           url::Origin::Create(kBidder1Url).Serialize())},
        AuctionResult::kInvalidServerResponse},
       {"not encrypted",
        chaff_response,
@@ -26149,7 +26153,15 @@ TEST_F(AuctionRunnerTest, ServerResponseLogsErrors) {
         mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
 
     task_environment()->RunUntilIdle();
-    EXPECT_THAT(result_.errors, testing::ElementsAreArray(test_case.errors));
+    if (test_case.test_name != "wrong seller") {
+      EXPECT_THAT(result_.errors, testing::ElementsAreArray(test_case.errors));
+    } else {
+      EXPECT_EQ(result_.errors.size(), 1u);
+      EXPECT_EQ(test_case.errors.size(), 1u);
+      EXPECT_EQ(result_.errors[0], test_case.errors[0] + "'" +
+                                       request_id.AsLowercaseString() + "'");
+    }
+
     hist.ExpectUniqueSample("Ads.InterestGroup.ServerAuction.Result",
                             test_case.result, 1);
   }

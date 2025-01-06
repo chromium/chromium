@@ -11003,6 +11003,17 @@ class AdAuctionServiceImplBAndATest : public AdAuctionServiceImplTest {
     std::string error_message;
   };
 
+  struct AdAuctionPerSellerData {
+    url::Origin seller;
+    std::string request;
+    std::string error;
+  };
+
+  struct AdAuctionDataAndIdMultiSellers {
+    std::vector<AdAuctionPerSellerData> requests;
+    std::optional<base::Uuid> request_id;
+  };
+
   // Gets auction data in the frame `rfh`. If `rfh` is nullptr, uses the main
   // frame. Returns the auction data.
   std::optional<AdAuctionDataAndId> GetAdAuctionDataAndFlushForFrame(
@@ -11014,24 +11025,80 @@ class AdAuctionServiceImplBAndATest : public AdAuctionServiceImplTest {
 
     base::RunLoop run_loop;
     std::optional<AdAuctionDataAndId> output;
+    base::flat_map<url::Origin, std::optional<url::Origin>> sellers;
+    sellers.insert(std::make_pair(
+        seller, url::Origin::Create(
+                    GURL(kDefaultBiddingAndAuctionGCPCoordinatorOrigin))));
     interest_service->GetInterestGroupAdAuctionData(
-        seller,
-        /*coordinator=*/
-        url::Origin::Create(
-            GURL(kDefaultBiddingAndAuctionGCPCoordinatorOrigin)),
+        std::move(sellers),
         /*config=*/blink::mojom::AuctionDataConfig::New(),
         /*callback=*/
-        base::BindLambdaForTesting([&](mojo_base::BigBuffer result,
-                                       const std::optional<base::Uuid>& id,
-                                       const std::string& error_message) {
-          AdAuctionDataAndId data;
-          data.request = std::string(reinterpret_cast<char*>(result.data()),
-                                     result.size());
-          data.request_id = id;
-          data.error_message = error_message;
-          output = data;
-          run_loop.Quit();
-        }));
+        base::BindLambdaForTesting(
+            [&](std::vector<blink::mojom::AdAuctionPerSellerRequestPtr>
+                    requests,
+                const std::optional<base::Uuid>& id) {
+              ASSERT_LE(requests.size(), 1u);
+              AdAuctionDataAndId data;
+              data.request_id = id;
+              if (requests.size() == 1) {
+                if (requests[0]->data->is_error()) {
+                  data.error_message = requests[0]->data->get_error();
+                } else {
+                  ASSERT_TRUE(requests[0]->data->is_request());
+                  data.request =
+                      std::string(reinterpret_cast<char*>(
+                                      requests[0]->data->get_request().data()),
+                                  requests[0]->data->get_request().size());
+                }
+              }
+              output = data;
+              run_loop.Quit();
+            }));
+    interest_service.FlushForTesting();
+    run_loop.Run();
+    return output;
+  }
+
+  std::optional<AdAuctionDataAndIdMultiSellers>
+  GetAdAuctionDataAndFlushForFrameMultiSellers(url::Origin seller,
+                                               RenderFrameHost* rfh = nullptr) {
+    mojo::Remote<blink::mojom::AdAuctionService> interest_service;
+    AdAuctionServiceImpl::CreateMojoService(
+        rfh ? rfh : main_rfh(), interest_service.BindNewPipeAndPassReceiver());
+
+    base::RunLoop run_loop;
+    std::optional<AdAuctionDataAndIdMultiSellers> output;
+    base::flat_map<url::Origin, std::optional<url::Origin>> sellers;
+    sellers.insert(std::make_pair(
+        seller, url::Origin::Create(
+                    GURL(kDefaultBiddingAndAuctionGCPCoordinatorOrigin))));
+    interest_service->GetInterestGroupAdAuctionData(
+        std::move(sellers),
+        /*config=*/blink::mojom::AuctionDataConfig::New(),
+        /*callback=*/
+        base::BindLambdaForTesting(
+            [&](std::vector<blink::mojom::AdAuctionPerSellerRequestPtr>
+                    requests,
+                const std::optional<base::Uuid>& id) {
+              AdAuctionDataAndIdMultiSellers data;
+              for (const auto& req : requests) {
+                AdAuctionPerSellerData per_seller_data;
+                per_seller_data.seller = req->seller;
+                if (req->data->is_error()) {
+                  per_seller_data.error = std::move(req->data->get_error());
+                } else {
+                  ASSERT_TRUE(req->data->is_request());
+                  per_seller_data.request = std::string(
+                      reinterpret_cast<char*>(req->data->get_request().data()),
+                      req->data->get_request().size());
+                }
+                data.requests.emplace_back(std::move(per_seller_data));
+              }
+
+              data.request_id = id;
+              output = data;
+              run_loop.Quit();
+            }));
     interest_service.FlushForTesting();
     run_loop.Run();
     return output;
@@ -11094,16 +11161,17 @@ TEST_F(AdAuctionServiceImplTest, HandlesInvalidCoordinatorOrigin) {
       main_rfh(), interest_service.BindNewPipeAndPassReceiver());
   base::RunLoop run_loop;
   interest_service.set_disconnect_handler(run_loop.QuitClosure());
+  base::flat_map<url::Origin, std::optional<url::Origin>> sellers;
+  sellers.insert(std::make_pair(test_origin, bad_coordinator));
   interest_service->GetInterestGroupAdAuctionData(
-      /*seller=*/test_origin,
-      /*coordinator=*/bad_coordinator,
+      std::move(sellers),
       /*config=*/blink::mojom::AuctionDataConfig::New(),
       /*callback=*/
-      base::BindLambdaForTesting([&](mojo_base::BigBuffer result,
-                                     const std::optional<base::Uuid>& id,
-                                     const std::string& error_message) {
-        ADD_FAILURE() << "This callback should not be invoked.";
-      }));
+      base::BindLambdaForTesting(
+          [&](std::vector<blink::mojom::AdAuctionPerSellerRequestPtr> requests,
+              const std::optional<base::Uuid>& id) {
+            ADD_FAILURE() << "This callback should not be invoked.";
+          }));
   run_loop.Run();
 }
 
@@ -11118,17 +11186,20 @@ TEST_F(AdAuctionServiceImplTest, HandlesUnsupportedCoordinatorOrigin) {
   AdAuctionServiceImpl::CreateMojoService(
       main_rfh(), interest_service.BindNewPipeAndPassReceiver());
   base::RunLoop run_loop;
+  base::flat_map<url::Origin, std::optional<url::Origin>> sellers;
+  sellers.insert(std::make_pair(test_origin, bad_coordinator));
   interest_service->GetInterestGroupAdAuctionData(
-      /*seller=*/test_origin,
-      /*coordinator=*/bad_coordinator,
+      std::move(sellers),
       /*config=*/blink::mojom::AuctionDataConfig::New(),
       /*callback=*/
-      base::BindLambdaForTesting([&](mojo_base::BigBuffer result,
-                                     const std::optional<base::Uuid>& id,
-                                     const std::string& error_message) {
-        EXPECT_EQ("Invalid Coordinator", error_message);
-        run_loop.Quit();
-      }));
+      base::BindLambdaForTesting(
+          [&](std::vector<blink::mojom::AdAuctionPerSellerRequestPtr> requests,
+              const std::optional<base::Uuid>& id) {
+            CHECK_EQ(requests.size(), 1u);
+            CHECK(requests[0]->data->is_error());
+            EXPECT_EQ("Invalid Coordinator", requests[0]->data->get_error());
+            run_loop.Quit();
+          }));
   run_loop.Run();
 
   // Keep running callbacks to ensure the failed request is cleaned up
@@ -12323,8 +12394,8 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayload) {
       static_cast<RenderFrameHostImpl*>(main_rfh())->GetPage());
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(result.value().request_id);
-  AdAuctionRequestContext* context =
-      page_data->GetContextForAdAuctionRequest(*result.value().request_id);
+  AdAuctionRequestContext* context = page_data->GetContextForAdAuctionRequest(
+      ContextMapKey(*result.value().request_id, test_origin));
   ASSERT_TRUE(context);
   EXPECT_EQ(test_origin, context->seller);
   EXPECT_THAT(context->group_names,
@@ -12517,8 +12588,8 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayloadWithKAnon) {
       static_cast<RenderFrameHostImpl*>(main_rfh())->GetPage());
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(result.value().request_id);
-  AdAuctionRequestContext* context =
-      page_data->GetContextForAdAuctionRequest(*result.value().request_id);
+  AdAuctionRequestContext* context = page_data->GetContextForAdAuctionRequest(
+      ContextMapKey(*result.value().request_id, test_origin));
   ASSERT_TRUE(context);
   EXPECT_EQ(test_origin, context->seller);
   EXPECT_THAT(context->group_names,
@@ -12594,7 +12665,8 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuction) {
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(auction_data->request_id);
   AdAuctionRequestContext* request_context =
-      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
 
   std::string response = GetSingleSellerResponse();
 
@@ -12716,7 +12788,8 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionComponentCheckWithNone) {
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(auction_data->request_id);
   AdAuctionRequestContext* request_context =
-      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
 
   std::string response;
   // CBOR response computed using https://cbor.me/ (make sure to click the
@@ -12794,7 +12867,8 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionNoBids) {
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(auction_data->request_id);
   AdAuctionRequestContext* request_context =
-      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
 
   std::string response;
   // CBOR response computed using https://cbor.me/
@@ -12884,7 +12958,8 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionServerError) {
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(auction_data->request_id);
   AdAuctionRequestContext* request_context =
-      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
 
   std::string response;
   // CBOR response computed using https://cbor.me/
@@ -12973,7 +13048,8 @@ TEST_F(AdAuctionServiceImplBAndATest, HandlesBadResponseForBAndAAuction) {
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(auction_data->request_id);
   AdAuctionRequestContext* request_context =
-      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
 
   std::string response = "Invalid Response: Is not CBOR!";
 
@@ -13057,7 +13133,8 @@ TEST_F(AdAuctionServiceImplBAndATest,
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(auction_data->request_id);
   AdAuctionRequestContext* request_context =
-      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
 
   std::string response = GetMultiSellerResponse();
 
@@ -13152,7 +13229,8 @@ function reportResult(auctionConfig, browserSignals) {
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(auction_data->request_id);
   AdAuctionRequestContext* request_context =
-      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
 
   std::string response = GetSingleSellerResponse();
 
@@ -13243,7 +13321,8 @@ TEST_F(AdAuctionServiceImplBAndATest, RunMultiSellerBAndAAuctionWrongSeller) {
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(auction_data->request_id);
   AdAuctionRequestContext* request_context =
-      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
 
   std::string response = GetMultiSellerResponse();
 
@@ -13351,7 +13430,8 @@ function reportResult(auctionConfig, browserSignals) {
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(auction_data->request_id);
   AdAuctionRequestContext* request_context =
-      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
 
   std::string response = GetMultiSellerResponse();
 
@@ -13470,7 +13550,8 @@ function reportResult(auctionConfig, browserSignals) {
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(auction_data->request_id);
   AdAuctionRequestContext* request_context =
-      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
 
   std::string response;
   // CBOR response computed using https://cbor.me/
@@ -13622,7 +13703,8 @@ TEST_F(AdAuctionServiceImplBAndATest,
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(auction_data->request_id);
   AdAuctionRequestContext* request_context =
-      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
 
   std::string response;
   // CBOR response computed using https://cbor.me/
@@ -13828,7 +13910,8 @@ function reportResult(auctionConfig, browserSignals) {
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(auction_data->request_id);
   AdAuctionRequestContext* request_context =
-      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
 
   std::string response;
   // CBOR response computed using https://cbor.me/
@@ -14026,7 +14109,8 @@ function reportResult(auctionConfig, browserSignals) {
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(auction_data->request_id);
   AdAuctionRequestContext* request_context =
-      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
 
   std::string response;
   // CBOR response computed using https://cbor.me/
@@ -14225,7 +14309,8 @@ function reportResult(auctionConfig, browserSignals) {
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(auction_data->request_id);
   AdAuctionRequestContext* request_context =
-      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
 
   std::string response;
   // CBOR response computed using https://cbor.me/
@@ -14378,7 +14463,8 @@ function reportResult(auctionConfig, browserSignals) {
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(auction_data->request_id);
   AdAuctionRequestContext* request_context =
-      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
 
   std::string response;
   // CBOR response computed using https://cbor.me/
@@ -14502,7 +14588,8 @@ TEST_F(AdAuctionServiceImplBAndATest,
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(auction_data->request_id);
   AdAuctionRequestContext* request_context =
-      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
 
   std::string response;
   // CBOR response computed using https://cbor.me/
@@ -14625,7 +14712,8 @@ TEST_F(AdAuctionServiceImplBAndATest,
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(auction_data->request_id);
   AdAuctionRequestContext* request_context =
-      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
 
   std::string response;
   // CBOR response computed using https://cbor.me/
@@ -14760,7 +14848,8 @@ TEST_F(AdAuctionServiceImplBAndATest,
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(auction_data->request_id);
   AdAuctionRequestContext* request_context =
-      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
 
   std::string response;
   // CBOR response computed using https://cbor.me/
@@ -14879,7 +14968,8 @@ TEST_F(AdAuctionServiceImplBAndATest,
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(auction_data->request_id);
   AdAuctionRequestContext* request_context =
-      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
 
   std::string response;
   // CBOR response computed using https://cbor.me/
@@ -15002,7 +15092,8 @@ function reportResult(auctionConfig, browserSignals) {
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(auction_data->request_id);
   AdAuctionRequestContext* request_context =
-      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
 
   std::string response = GetMultiSellerResponse();
 
@@ -15174,7 +15265,8 @@ function reportResult(auctionConfig, browserSignals) {
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(auction_data->request_id);
   AdAuctionRequestContext* request_context =
-      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
 
   std::string response = GetMultiSellerResponse();
 
@@ -15347,7 +15439,8 @@ function reportResult(auctionConfig, browserSignals) {
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(auction_data->request_id);
   AdAuctionRequestContext* request_context =
-      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
 
   std::string response = GetMultiSellerResponse();
 
@@ -15496,7 +15589,8 @@ function reportResult(auctionConfig, browserSignals) {
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(auction_data->request_id);
   AdAuctionRequestContext* request_context =
-      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
 
   std::string response = GetMultiSellerResponse();
 
@@ -15671,20 +15765,31 @@ TEST_F(AdAuctionServiceImplBAndATest,
 
   base::RunLoop run_loop;
   std::optional<AdAuctionDataAndId> output;
+  base::flat_map<url::Origin, std::optional<url::Origin>> sellers;
+  sellers.insert(std::make_pair(test_origin, coordinator));
   interest_service->GetInterestGroupAdAuctionData(
-      test_origin, coordinator,
+      std::move(sellers),
       /*config=*/blink::mojom::AuctionDataConfig::New(),
-      base::BindLambdaForTesting([&](mojo_base::BigBuffer result,
-                                     const std::optional<base::Uuid>& id,
-                                     const std::string& error_message) {
-        AdAuctionDataAndId data;
-        data.request =
-            std::string(reinterpret_cast<char*>(result.data()), result.size());
-        data.request_id = id;
-        data.error_message = error_message;
-        output = data;
-        run_loop.Quit();
-      }));
+      base::BindLambdaForTesting(
+          [&](std::vector<blink::mojom::AdAuctionPerSellerRequestPtr> requests,
+              const std::optional<base::Uuid>& id) {
+            ASSERT_LE(requests.size(), 1u);
+            AdAuctionDataAndId data;
+            data.request_id = id;
+            if (requests.size() == 1) {
+              if (requests[0]->data->is_error()) {
+                data.error_message = requests[0]->data->get_error();
+              } else {
+                ASSERT_TRUE(requests[0]->data->is_request());
+                data.request =
+                    std::string(reinterpret_cast<char*>(
+                                    requests[0]->data->get_request().data()),
+                                requests[0]->data->get_request().size());
+              }
+            }
+            output = data;
+            run_loop.Quit();
+          }));
   task_environment()->RunUntilIdle();
   ASSERT_TRUE(network_responder_->HasPendingResponse(kBAndAKeyPath));
   ProvideDeferredKeys();
@@ -15724,46 +15829,75 @@ TEST_F(AdAuctionServiceImplBAndATest,
   std::optional<AdAuctionDataAndId> output1;
   std::optional<AdAuctionDataAndId> output2;
   std::optional<AdAuctionDataAndId> output3;
+  base::flat_map<url::Origin, std::optional<url::Origin>> sellers;
+  sellers.insert(std::make_pair(test_origin, coordinator));
   interest_service->GetInterestGroupAdAuctionData(
-      test_origin, coordinator,
+      sellers,
       /*config=*/blink::mojom::AuctionDataConfig::New(),
-      base::BindLambdaForTesting([&](mojo_base::BigBuffer result,
-                                     const std::optional<base::Uuid>& id,
-                                     const std::string& error_message) {
-        AdAuctionDataAndId data;
-        data.request =
-            std::string(reinterpret_cast<char*>(result.data()), result.size());
-        data.request_id = id;
-        data.error_message = error_message;
-        output1 = data;
-      }));
+      base::BindLambdaForTesting(
+          [&](std::vector<blink::mojom::AdAuctionPerSellerRequestPtr> requests,
+              const std::optional<base::Uuid>& id) {
+            ASSERT_LE(requests.size(), 1u);
+            AdAuctionDataAndId data;
+            data.request_id = id;
+            if (requests.size() == 1) {
+              if (requests[0]->data->is_error()) {
+                data.error_message = requests[0]->data->get_error();
+              } else {
+                ASSERT_TRUE(requests[0]->data->is_request());
+                data.request =
+                    std::string(reinterpret_cast<char*>(
+                                    requests[0]->data->get_request().data()),
+                                requests[0]->data->get_request().size());
+              }
+            }
+            output1 = data;
+          }));
   interest_service->GetInterestGroupAdAuctionData(
-      test_origin, coordinator,
+      sellers,
       /*config=*/blink::mojom::AuctionDataConfig::New(),
-      base::BindLambdaForTesting([&](mojo_base::BigBuffer result,
-                                     const std::optional<base::Uuid>& id,
-                                     const std::string& error_message) {
-        AdAuctionDataAndId data;
-        data.request =
-            std::string(reinterpret_cast<char*>(result.data()), result.size());
-        data.request_id = id;
-        data.error_message = error_message;
-        output2 = data;
-      }));
+      base::BindLambdaForTesting(
+          [&](std::vector<blink::mojom::AdAuctionPerSellerRequestPtr> requests,
+              const std::optional<base::Uuid>& id) {
+            ASSERT_LE(requests.size(), 1u);
+            AdAuctionDataAndId data;
+            data.request_id = id;
+            if (requests.size() == 1) {
+              if (requests[0]->data->is_error()) {
+                data.error_message = requests[0]->data->get_error();
+              } else {
+                ASSERT_TRUE(requests[0]->data->is_request());
+                data.request =
+                    std::string(reinterpret_cast<char*>(
+                                    requests[0]->data->get_request().data()),
+                                requests[0]->data->get_request().size());
+              }
+            }
+            output2 = data;
+          }));
   interest_service->GetInterestGroupAdAuctionData(
-      test_origin, coordinator,
+      std::move(sellers),
       /*config=*/blink::mojom::AuctionDataConfig::New(),
-      base::BindLambdaForTesting([&](mojo_base::BigBuffer result,
-                                     const std::optional<base::Uuid>& id,
-                                     const std::string& error_message) {
-        AdAuctionDataAndId data;
-        data.request =
-            std::string(reinterpret_cast<char*>(result.data()), result.size());
-        data.request_id = id;
-        data.error_message = error_message;
-        output3 = data;
-        run_loop.Quit();
-      }));
+      base::BindLambdaForTesting(
+          [&](std::vector<blink::mojom::AdAuctionPerSellerRequestPtr> requests,
+              const std::optional<base::Uuid>& id) {
+            ASSERT_LE(requests.size(), 1u);
+            AdAuctionDataAndId data;
+            data.request_id = id;
+            if (requests.size() == 1) {
+              if (requests[0]->data->is_error()) {
+                data.error_message = requests[0]->data->get_error();
+              } else {
+                ASSERT_TRUE(requests[0]->data->is_request());
+                data.request =
+                    std::string(reinterpret_cast<char*>(
+                                    requests[0]->data->get_request().data()),
+                                requests[0]->data->get_request().size());
+              }
+            }
+            output3 = data;
+            run_loop.Quit();
+          }));
   interest_service.FlushForTesting();
   run_loop.Run();
 
@@ -15793,46 +15927,75 @@ TEST_F(AdAuctionServiceImplBAndATest,
   std::optional<AdAuctionDataAndId> output1;
   std::optional<AdAuctionDataAndId> output2;
   std::optional<AdAuctionDataAndId> output3;
+  base::flat_map<url::Origin, std::optional<url::Origin>> sellers;
+  sellers.insert(std::make_pair(test_origin, coordinator));
   interest_service->GetInterestGroupAdAuctionData(
-      test_origin, coordinator,
+      sellers,
       /*config=*/blink::mojom::AuctionDataConfig::New(),
-      base::BindLambdaForTesting([&](mojo_base::BigBuffer result,
-                                     const std::optional<base::Uuid>& id,
-                                     const std::string& error_message) {
-        AdAuctionDataAndId data;
-        data.request =
-            std::string(reinterpret_cast<char*>(result.data()), result.size());
-        data.request_id = id;
-        data.error_message = error_message;
-        output1 = data;
-      }));
+      base::BindLambdaForTesting(
+          [&](std::vector<blink::mojom::AdAuctionPerSellerRequestPtr> requests,
+              const std::optional<base::Uuid>& id) {
+            ASSERT_LE(requests.size(), 1u);
+            AdAuctionDataAndId data;
+            data.request_id = id;
+            if (requests.size() == 1) {
+              if (requests[0]->data->is_error()) {
+                data.error_message = requests[0]->data->get_error();
+              } else {
+                ASSERT_TRUE(requests[0]->data->is_request());
+                data.request =
+                    std::string(reinterpret_cast<char*>(
+                                    requests[0]->data->get_request().data()),
+                                requests[0]->data->get_request().size());
+              }
+            }
+            output1 = data;
+          }));
   interest_service->GetInterestGroupAdAuctionData(
-      test_origin, coordinator,
+      sellers,
       /*config=*/blink::mojom::AuctionDataConfig::New(),
-      base::BindLambdaForTesting([&](mojo_base::BigBuffer result,
-                                     const std::optional<base::Uuid>& id,
-                                     const std::string& error_message) {
-        AdAuctionDataAndId data;
-        data.request =
-            std::string(reinterpret_cast<char*>(result.data()), result.size());
-        data.request_id = id;
-        data.error_message = error_message;
-        output2 = data;
-      }));
+      base::BindLambdaForTesting(
+          [&](std::vector<blink::mojom::AdAuctionPerSellerRequestPtr> requests,
+              const std::optional<base::Uuid>& id) {
+            ASSERT_LE(requests.size(), 1u);
+            AdAuctionDataAndId data;
+            data.request_id = id;
+            if (requests.size() == 1) {
+              if (requests[0]->data->is_error()) {
+                data.error_message = requests[0]->data->get_error();
+              } else {
+                ASSERT_TRUE(requests[0]->data->is_request());
+                data.request =
+                    std::string(reinterpret_cast<char*>(
+                                    requests[0]->data->get_request().data()),
+                                requests[0]->data->get_request().size());
+              }
+            }
+            output2 = data;
+          }));
   interest_service->GetInterestGroupAdAuctionData(
-      test_origin, coordinator,
+      std::move(sellers),
       /*config=*/blink::mojom::AuctionDataConfig::New(),
-      base::BindLambdaForTesting([&](mojo_base::BigBuffer result,
-                                     const std::optional<base::Uuid>& id,
-                                     const std::string& error_message) {
-        AdAuctionDataAndId data;
-        data.request =
-            std::string(reinterpret_cast<char*>(result.data()), result.size());
-        data.request_id = id;
-        data.error_message = error_message;
-        output3 = data;
-        run_loop.Quit();
-      }));
+      base::BindLambdaForTesting(
+          [&](std::vector<blink::mojom::AdAuctionPerSellerRequestPtr> requests,
+              const std::optional<base::Uuid>& id) {
+            ASSERT_LE(requests.size(), 1u);
+            AdAuctionDataAndId data;
+            data.request_id = id;
+            if (requests.size() == 1) {
+              if (requests[0]->data->is_error()) {
+                data.error_message = requests[0]->data->get_error();
+              } else {
+                ASSERT_TRUE(requests[0]->data->is_request());
+                data.request =
+                    std::string(reinterpret_cast<char*>(
+                                    requests[0]->data->get_request().data()),
+                                requests[0]->data->get_request().size());
+              }
+            }
+            output3 = data;
+            run_loop.Quit();
+          }));
   interest_service.FlushForTesting();
   run_loop.Run();
 
@@ -15892,7 +16055,8 @@ function reportResult(auctionConfig, browserSignals) {
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(auction_data->request_id);
   AdAuctionRequestContext* request_context =
-      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
 
   std::string response = GetMultiSellerResponse();
 
@@ -16019,7 +16183,8 @@ function reportResult(auctionConfig, browserSignals) {
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(auction_data->request_id);
   AdAuctionRequestContext* request_context =
-      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
 
   std::string response = GetMultiSellerResponse();
 
@@ -16120,7 +16285,8 @@ function reportResult(auctionConfig, browserSignals) {
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(auction_data->request_id);
   AdAuctionRequestContext* request_context =
-      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
 
   std::string response = GetMultiSellerResponse();
 
@@ -16221,7 +16387,8 @@ function reportResult(auctionConfig, browserSignals) {
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(auction_data->request_id);
   AdAuctionRequestContext* request_context =
-      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
 
   std::string response = GetMultiSellerResponse();
 
@@ -16304,7 +16471,8 @@ TEST_F(AdAuctionServiceImplBAndATest, RunServerMultiSellerBAndAAuction) {
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(auction_data->request_id);
   AdAuctionRequestContext* request_context =
-      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
 
   std::string response;
   // CBOR response computed using https://cbor.me/
@@ -16445,7 +16613,8 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionWithBid) {
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(auction_data->request_id);
   AdAuctionRequestContext* request_context =
-      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
 
   std::string response;
   // CBOR response computed using https://cbor.me/
@@ -16587,7 +16756,8 @@ TEST_F(AdAuctionServiceImplBAndALocalKAnonTest, RunBAndAAuctionWithLocalKAnon) {
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(auction_data->request_id);
   AdAuctionRequestContext* request_context =
-      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
 
   std::string response = GetSingleSellerResponse();
 
@@ -16764,7 +16934,8 @@ TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest, NoKAnonInResponse) {
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(auction_data->request_id);
   AdAuctionRequestContext* request_context =
-      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
 
   std::string response = GetSingleSellerResponse();
 
@@ -16833,7 +17004,8 @@ TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest, AdInResponseNotInGroup) {
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(auction_data->request_id);
   AdAuctionRequestContext* request_context =
-      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
 
   base::Value response_value = base::Value(
       base::Value::Dict()
@@ -16946,7 +17118,8 @@ TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest, OnlyGhostWinner) {
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(auction_data->request_id);
   AdAuctionRequestContext* request_context =
-      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
 
   ASSERT_EQ(request_context->group_names.begin()->second.size(), 2u);
   int win_idx =
@@ -17066,7 +17239,8 @@ TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest, WinnerBadAdHash) {
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(auction_data->request_id);
   AdAuctionRequestContext* request_context =
-      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
 
   ASSERT_EQ(request_context->group_names.begin()->second.size(), 1u);
   base::Value response_value = base::Value(
@@ -17179,7 +17353,8 @@ TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest, WinnerBadReportingHash) {
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(auction_data->request_id);
   AdAuctionRequestContext* request_context =
-      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
 
   ASSERT_EQ(request_context->group_names.begin()->second.size(), 1u);
   base::Value response_value = base::Value(
@@ -17303,7 +17478,8 @@ TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest, WinnerAndGhostWinner) {
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(auction_data->request_id);
   AdAuctionRequestContext* request_context =
-      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
 
   ASSERT_EQ(request_context->group_names.begin()->second.size(), 2u);
   int win_idx =
@@ -17466,7 +17642,8 @@ TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest,
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(auction_data->request_id);
   AdAuctionRequestContext* request_context =
-      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
 
   ASSERT_EQ(request_context->group_names.begin()->second.size(), 2u);
   int win_idx =
@@ -17650,7 +17827,8 @@ TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest,
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(auction_data->request_id);
   AdAuctionRequestContext* request_context =
-      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
 
   ASSERT_EQ(request_context->group_names.begin()->second.size(), 2u);
   int win_idx =
@@ -17833,7 +18011,8 @@ TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest,
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(auction_data->request_id);
   AdAuctionRequestContext* request_context =
-      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
 
   base::Value response_value = base::Value(
       base::Value::Dict()
@@ -18002,7 +18181,8 @@ TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest,
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(auction_data->request_id);
   AdAuctionRequestContext* request_context =
-      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
 
   ASSERT_EQ(request_context->group_names.begin()->second.size(), 2u);
   int win_idx =
@@ -18184,7 +18364,8 @@ function reportResult(auctionConfig, browserSignals) {}
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(auction_data->request_id);
   AdAuctionRequestContext* request_context =
-      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
 
   ASSERT_EQ(request_context->group_names.begin()->second.size(), 2u);
   int win_idx =
@@ -18397,7 +18578,8 @@ function reportResult(auctionConfig, browserSignals) {}
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(auction_data->request_id);
   AdAuctionRequestContext* request_context =
-      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
 
   ASSERT_EQ(request_context->group_names.begin()->second.size(), 2u);
   int win_idx =
@@ -18591,7 +18773,8 @@ function reportResult(auctionConfig, browserSignals) {}
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(auction_data->request_id);
   AdAuctionRequestContext* request_context =
-      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
 
   ASSERT_EQ(request_context->group_names.begin()->second.size(), 2u);
   int win_idx =
@@ -18841,7 +19024,8 @@ TEST_F(AdAuctionServiceImplBAndAUpdateTest, OlderThan) {
   ASSERT_TRUE(page_data);
   ASSERT_TRUE(auction_data->request_id);
   AdAuctionRequestContext* request_context =
-      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
 
   std::string response;
   // CBOR response computed using https://cbor.me/

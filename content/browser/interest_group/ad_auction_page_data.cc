@@ -121,12 +121,14 @@ AdAuctionPageData::TakeAuctionAdditionalBidsForOriginAndNonce(
 void AdAuctionPageData::RegisterAdAuctionRequestContext(
     const base::Uuid& id,
     AdAuctionRequestContext context) {
-  context_map_.insert(std::make_pair(id, std::move(context)));
+  url::Origin seller = context.seller;
+  context_map_.insert(
+      std::make_pair(ContextMapKey(id, seller), std::move(context)));
 }
 
 AdAuctionRequestContext* AdAuctionPageData::GetContextForAdAuctionRequest(
-    const base::Uuid& id) {
-  auto it = context_map_.find(id);
+    const ContextMapKey& key) {
+  auto it = context_map_.find(key);
   if (it == context_map_.end()) {
     return nullptr;
   }

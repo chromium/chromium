@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/int128.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
@@ -682,4 +683,17 @@ struct AuctionDataConfig {
 
   // Maximum size to make the returned encrypted request.
   uint32? request_size;
+};
+
+union AdAuctionRequestOrError {
+  mojo_base.mojom.BigBuffer request;
+  string error;
+};
+
+// The per seller ad auction data for running an external auction on a bidding
+// and auction server. Upon success, `data` will contain the encrypted ad
+// auction data, or an error message upon failure.
+struct AdAuctionPerSellerRequest {
+  url.mojom.Origin seller;
+  AdAuctionRequestOrError data;
 };

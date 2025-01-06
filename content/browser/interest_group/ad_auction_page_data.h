@@ -28,6 +28,16 @@ class DataDecoder;
 
 namespace content {
 
+struct ContextMapKey {
+  bool operator<(const ContextMapKey& other) const {
+    return std::tie(request_id, seller) <
+           std::tie(other.request_id, other.seller);
+  }
+
+  base::Uuid request_id;
+  url::Origin seller;
+};
+
 struct CONTENT_EXPORT AdAuctionRequestContext {
   AdAuctionRequestContext(
       url::Origin seller,
@@ -101,7 +111,8 @@ class CONTENT_EXPORT AdAuctionPageData
 
   void RegisterAdAuctionRequestContext(const base::Uuid& id,
                                        AdAuctionRequestContext context);
-  AdAuctionRequestContext* GetContextForAdAuctionRequest(const base::Uuid& id);
+  AdAuctionRequestContext* GetContextForAdAuctionRequest(
+      const ContextMapKey& key);
 
   // Returns a pointer to a DataDecoder owned by this AdAuctionPageData instance
   // The DataDecoder is only valid for the life of the page.
@@ -129,7 +140,7 @@ class CONTENT_EXPORT AdAuctionPageData
   std::map<url::Origin,
            std::map<std::string, std::vector<SignedAdditionalBidWithMetadata>>>
       origin_nonce_additional_bids_map_;
-  std::map<base::Uuid, AdAuctionRequestContext> context_map_;
+  std::map<ContextMapKey, AdAuctionRequestContext> context_map_;
 
   // The real time reporting quota left for origin at a certain timestamp. Used
   // to do per page per reporting origin rate limiting on real time reporting.

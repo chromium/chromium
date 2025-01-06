@@ -3394,28 +3394,22 @@ bool InterestGroupAuction::HandleServerResponseImpl(
 
   AdAuctionRequestContext* request_context =
       ad_auction_page_data.GetContextForAdAuctionRequest(
-          config_->server_response->request_id);
+          ContextMapKey(config_->server_response->request_id, config_->seller));
   if (!request_context) {
     // The corresponding context for the requested blob couldn't be found.
     saved_response_.emplace();
     base::UmaHistogramEnumeration(
         kInvalidServerResponseReasonUMAName,
         InvalidServerResponseReason::kUnknownRequestId);
-    errors_.push_back(base::StrCat(
-        {"runAdAuction(): No corresponding request with ID: ",
-         config_->server_response->request_id.AsLowercaseString()}));
+    errors_.push_back(base::StringPrintf(
+        "runAdAuction(): No corresponding request for seller '%s' with ID '%s'",
+        config_->seller.Serialize(),
+        config_->server_response->request_id.AsLowercaseString()));
     return false;
   }
 
   // The auction must be for the same seller that requested the blob.
-  if (request_context->seller != config_->seller) {
-    saved_response_.emplace();
-    base::UmaHistogramEnumeration(kInvalidServerResponseReasonUMAName,
-                                  InvalidServerResponseReason::kSellerMismatch);
-    errors_.push_back(
-        "runAdAuction(): Seller in response doesn't match request");
-    return false;
-  }
+  CHECK_EQ(request_context->seller, config_->seller);
   get_ad_auction_data_start_time_ = request_context->start_time;
 
   // Trigger updates for buyers in the auction config.
