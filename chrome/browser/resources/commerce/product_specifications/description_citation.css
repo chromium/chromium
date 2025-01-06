@@ -24,4 +24,54 @@ cr-button {
 cr-tooltip {
     --paper-tooltip-duration-in: 0ms;
     --paper-tooltip-duration-out: 0ms;
+    --paper-tooltip-background: transparent;
+    --paper-tooltip-opacity: 1;
+    pointer-events: none;
+}
+
+.citation {
+    background-color: var(--color-product-specifications-citation-popup-background);
+    box-shadow: var(--cr-card-shadow);
+    border-radius: var(--cr-card-border-radius);
+    line-height: 16px;
+    padding: 8px;
+    max-width: 220px;
+    min-width: 220px;
+    white-space: normal;
+}
+
+.faviconContainer {
+    width: 16px;
+    height: 16px;
+    display: block;
+    padding-inline-end: 4px;
+}
+
+.faviconContainer img {
+    height: 100%;
+    object-fit: contain;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+}
+
+.url {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--color-product-specifications-citation-popup-title);
+}
+
+.title {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--color-product-specifications-citation-popup-text);
+    margin-top: 8px;
+}
+
+.previewText {
+    font-size: 11px;
+    color: var(--color-product-specifications-citation-popup-text);
+    margin-top: 8px;
 }

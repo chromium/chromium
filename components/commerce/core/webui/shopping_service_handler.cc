@@ -42,16 +42,21 @@
 namespace commerce {
 namespace {
 
-std::vector<shopping_service::mojom::UrlInfoPtr> UrlInfoToMojo(
+shopping_service::mojom::UrlInfoPtr UrlInfoToMojo(const UrlInfo& url_info) {
+  auto url_info_ptr = shopping_service::mojom::UrlInfo::New();
+  url_info_ptr->url = url_info.url;
+  url_info_ptr->title = base::UTF16ToUTF8(url_info.title);
+  url_info_ptr->previewText = url_info.previewText.value_or("");
+  url_info_ptr->favicon_url = url_info.favicon_url.value_or(GURL());
+  return url_info_ptr;
+}
+
+std::vector<shopping_service::mojom::UrlInfoPtr> UrlInfoListToMojo(
     const std::vector<UrlInfo>& url_infos) {
   std::vector<shopping_service::mojom::UrlInfoPtr> url_info_ptr_list;
 
   for (const UrlInfo& url_info : url_infos) {
-    auto url_info_ptr = shopping_service::mojom::UrlInfo::New();
-    url_info_ptr->url = url_info.url;
-    url_info_ptr->title = base::UTF16ToUTF8(url_info.title);
-    url_info_ptr->previewText = url_info.previewText.value_or("");
-    url_info_ptr_list.push_back(std::move(url_info_ptr));
+    url_info_ptr_list.push_back(UrlInfoToMojo(url_info));
   }
   return url_info_ptr_list;
 }
@@ -145,12 +150,7 @@ DescriptionTextToMojo(const ProductSpecifications::DescriptionText& desc_text) {
     if (!url_info.url.SchemeIsHTTPOrHTTPS()) {
       continue;
     }
-    auto url_info_ptr = shopping_service::mojom::UrlInfo::New();
-    url_info_ptr->url = url_info.url;
-    url_info_ptr->title = base::UTF16ToUTF8(url_info.title);
-    url_info_ptr->favicon_url = url_info.favicon_url.value_or(GURL());
-    url_info_ptr->thumbnail_url = url_info.thumbnail_url.value_or(GURL());
-    desc_text_ptr->urls.push_back(std::move(url_info_ptr));
+    desc_text_ptr->urls.push_back(UrlInfoToMojo(url_info));
   }
   return desc_text_ptr;
 }
@@ -520,7 +520,7 @@ void ShoppingServiceHandler::GetUrlInfosForProductTabs(
   shopping_service_->GetUrlInfosForWebWrappersWithProducts(base::BindOnce(
       [](GetUrlInfosForProductTabsCallback callback,
          const std::vector<UrlInfo> infos) {
-        std::move(callback).Run(UrlInfoToMojo(infos));
+        std::move(callback).Run(UrlInfoListToMojo(infos));
       },
       std::move(callback)));
 }
@@ -532,7 +532,7 @@ void ShoppingServiceHandler::GetUrlInfosForRecentlyViewedTabs(
     return;
   }
 
-  std::move(callback).Run(UrlInfoToMojo(
+  std::move(callback).Run(UrlInfoListToMojo(
       shopping_service_->GetUrlInfosForRecentlyViewedWebWrappers()));
 }
 
