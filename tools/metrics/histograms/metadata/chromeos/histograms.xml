@@ -4676,17 +4676,6 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   </summary>
 </histogram>
 
-<histogram name="ChromeOS.UrlXattrsCount" units="units"
-    expires_after="2025-02-02">
-  <owner>jorgelo@chromium.org</owner>
-  <owner>tnagel@chromium.org</owner>
-  <summary>
-    The number of files with URL extended attributes found in the users' home
-    directories. This is emitted once per boot. See crbug.com/919486 and
-    crbug.com/939386 for more details.
-  </summary>
-</histogram>
-
 <histogram base="true" name="ChromeOS.USB.DeviceAttached"
     enum="ChromeOSUsbEventTiming" expires_after="2026-01-01">
   <owner>allenwebb@chromium.org</owner>
