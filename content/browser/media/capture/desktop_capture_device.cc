@@ -847,7 +847,11 @@ std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
 }
 
 DesktopCaptureDevice::~DesktopCaptureDevice() {
-  DCHECK(!core_);
+  // There is an edge case that `StopAndDeAllocate()` is not called before
+  // destruction, which might happen during shutdown (can't repro it though).
+  // It calls `StopAndDeAllocate()` here in order to ensure `core_` is deleted
+  // on the `desktopCaptureThread`.
+  StopAndDeAllocate();
 }
 
 void DesktopCaptureDevice::AllocateAndStart(
