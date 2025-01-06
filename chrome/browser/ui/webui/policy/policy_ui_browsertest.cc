@@ -1065,7 +1065,7 @@ class PolicyUIManagedStatusTest : public PolicyUITest,
 
   // The browser's locale needs to be "en-US" to be able to see the banner
   static constexpr std::string_view kValidLocale = "en-US";
-  static constexpr std::string_view kInvalidLocale = "not-en-US";
+  static constexpr std::string_view kInvalidLocale = "en-AU";
 
  protected:
   void SetPromotionBannerDismissedPref(bool is_dismissed) {
