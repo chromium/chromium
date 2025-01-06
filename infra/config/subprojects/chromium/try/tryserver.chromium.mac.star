@@ -336,10 +336,8 @@ try_.builder(
     ],
     gn_args = gn_args.config(
         configs = [
+            "ci/Mac Builder",
             "release_try_builder",
-            "remoteexec",
-            "mac",
-            "x64",
         ],
     ),
     builderless = False,
