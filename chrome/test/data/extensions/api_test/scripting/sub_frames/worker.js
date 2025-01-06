@@ -382,4 +382,24 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
+  async function injectIntoSandboxedSrcdoc() {
+    const tab = await getSingleTab({url: 'http://e.com/*'});
+    const results = await chrome.scripting.executeScript({
+      target: {
+        tabId: tab.id,
+        allFrames: true,
+      },
+      func: injectedFunction,
+    });
+    chrome.test.assertEq(2, results.length);
+
+    // Note: The 'e.com' result is guaranteed to be first, since it's the root
+    // frame.
+    const url1 = new URL(results[0].result);
+    chrome.test.assertEq('e.com', url1.hostname);
+
+    chrome.test.assertEq('about:srcdoc', results[1].result);
+    chrome.test.succeed();
+  },
+
 ]);

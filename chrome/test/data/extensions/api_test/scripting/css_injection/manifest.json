@@ -10,6 +10,7 @@
   "host_permissions": [
     "http://example.com/*",
     "http://subframes.example/*",
-    "http://b.com/*"
+    "http://b.com/*",
+    "http://subframes-sandboxed.example/*"
   ]
 }

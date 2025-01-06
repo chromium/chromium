@@ -693,8 +693,7 @@ bool ScriptingExecuteScriptFunction::Execute(
           user_gesture() ? blink::mojom::UserActivationOption::kActivate
                          : blink::mojom::UserActivationOption::kDoNotActivate,
           blink::mojom::PromiseResultOption::kAwait)),
-      frame_scope, frame_ids,
-      mojom::MatchOriginAsFallbackBehavior::kMatchForAboutSchemeAndClimbTree,
+      frame_scope, frame_ids, mojom::MatchOriginAsFallbackBehavior::kAlways,
       run_location, ScriptExecutor::DEFAULT_PROCESS,
       /* webview_src */ GURL(),
       base::BindOnce(&ScriptingExecuteScriptFunction::OnScriptExecuted, this));
@@ -818,8 +817,7 @@ bool ScriptingInsertCSSFunction::Execute(
       mojom::CodeInjection::NewCss(mojom::CSSInjection::New(
           std::move(sources), ConvertStyleOriginToCSSOrigin(injection_.origin),
           mojom::CSSInjection::Operation::kAdd)),
-      frame_scope, frame_ids,
-      mojom::MatchOriginAsFallbackBehavior::kMatchForAboutSchemeAndClimbTree,
+      frame_scope, frame_ids, mojom::MatchOriginAsFallbackBehavior::kAlways,
       kCSSRunLocation, ScriptExecutor::DEFAULT_PROCESS,
       /* webview_src */ GURL(),
       base::BindOnce(&ScriptingInsertCSSFunction::OnCSSInserted, this));
@@ -896,8 +894,7 @@ ExtensionFunction::ResponseAction ScriptingRemoveCSSFunction::Run() {
       mojom::CodeInjection::NewCss(mojom::CSSInjection::New(
           std::move(sources), ConvertStyleOriginToCSSOrigin(injection.origin),
           mojom::CSSInjection::Operation::kRemove)),
-      frame_scope, frame_ids,
-      mojom::MatchOriginAsFallbackBehavior::kMatchForAboutSchemeAndClimbTree,
+      frame_scope, frame_ids, mojom::MatchOriginAsFallbackBehavior::kAlways,
       kCSSRunLocation, ScriptExecutor::DEFAULT_PROCESS,
       /* webview_src */ GURL(),
       base::BindOnce(&ScriptingRemoveCSSFunction::OnCSSRemoved, this));

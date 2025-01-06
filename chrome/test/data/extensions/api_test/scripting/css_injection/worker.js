@@ -16,7 +16,8 @@ const YELLOW = 'rgb(255, 255, 0)';
 
 function getBodyColor() {
   const hostname = (new URL(location.href)).hostname;
-  return hostname + ' ' + getComputedStyle(document.body).backgroundColor;
+  return (hostname || location.href) + ' ' +
+      getComputedStyle(document.body).backgroundColor;
 }
 
 async function getBodyColorsForTab(tabId) {
@@ -72,6 +73,25 @@ chrome.test.runTests([
     // the extension doesn't have permission to).
     chrome.test.assertEq(`b.com ${RED}`, colors[0]);
     chrome.test.assertEq(`subframes.example ${RED}`, colors[1]);
+    chrome.test.succeed();
+  },
+
+  async function sandboxedSubframes() {
+    const query = {url: 'http://subframes-sandboxed.example/*'};
+    const tab = await getSingleTab(query);
+    const results = await chrome.scripting.insertCSS({
+      target: {
+        tabId: tab.id,
+        allFrames: true,
+      },
+      css: CSS_RED,
+    });
+    chrome.test.assertEq(undefined, results);
+    const colors = await getBodyColorsForTab(tab.id);
+    chrome.test.assertEq(2, colors.length);
+    colors.sort();
+    chrome.test.assertEq(`about:srcdoc ${RED}`, colors[0]);
+    chrome.test.assertEq(`subframes-sandboxed.example ${RED}`, colors[1]);
     chrome.test.succeed();
   },
 
