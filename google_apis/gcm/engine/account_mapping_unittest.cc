@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace gcm {
@@ -14,7 +15,7 @@ namespace {
 
 TEST(AccountMappingTest, SerializeAccountMapping) {
   AccountMapping account_mapping;
-  account_mapping.account_id = CoreAccountId::FromGaiaId("acc_id");
+  account_mapping.account_id = CoreAccountId::FromGaiaId(GaiaId("acc_id"));
   account_mapping.email = "test@example.com";
   account_mapping.access_token = "access_token";
   account_mapping.status = AccountMapping::NEW;
@@ -41,7 +42,7 @@ TEST(AccountMappingTest, SerializeAccountMapping) {
   EXPECT_EQ("test@example.com&mapped&1305797421259977",
             account_mapping.SerializeAsString());
 
-  account_mapping.account_id = CoreAccountId::FromGaiaId("acc_id2");
+  account_mapping.account_id = CoreAccountId::FromGaiaId(GaiaId("acc_id2"));
   account_mapping.email = "test@gmail.com";
   account_mapping.access_token = "access_token";  // should be ignored.
   account_mapping.status = AccountMapping::REMOVING;
@@ -59,7 +60,7 @@ TEST(AccountMappingTest, SerializeAccountMapping) {
 
 TEST(AccountMappingTest, DeserializeAccountMapping) {
   AccountMapping account_mapping;
-  account_mapping.account_id = CoreAccountId::FromGaiaId("acc_id");
+  account_mapping.account_id = CoreAccountId::FromGaiaId(GaiaId("acc_id"));
 
   EXPECT_TRUE(account_mapping.ParseFromString("test@example.com&new&0"));
   EXPECT_EQ("acc_id", account_mapping.account_id.ToString());
@@ -122,7 +123,7 @@ TEST(AccountMappingTest, DeserializeAccountMapping) {
 
 TEST(AccountMappingTest, DeserializeAccountMappingInvalidInput) {
   AccountMapping account_mapping;
-  account_mapping.account_id = CoreAccountId::FromGaiaId("acc_id");
+  account_mapping.account_id = CoreAccountId::FromGaiaId(GaiaId("acc_id"));
   // Too many arguments.
   EXPECT_FALSE(account_mapping.ParseFromString(
       "test@example.com&adding&1305797421259935&last_message_id_1&stuff_here"));

@@ -20,6 +20,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gcm/base/fake_encryptor.h"
 #include "google_apis/gcm/base/gcm_constants.h"
 #include "google_apis/gcm/base/mcs_message.h"
@@ -566,7 +567,8 @@ TEST_F(GCMStoreImplTest, AccountMapping) {
 
   // Add account mappings.
   AccountMapping account_mapping1;
-  account_mapping1.account_id = CoreAccountId::FromGaiaId("account_id_1");
+  account_mapping1.account_id =
+      CoreAccountId::FromGaiaId(GaiaId("account_id_1"));
   account_mapping1.email = "account_id_1@gmail.com";
   account_mapping1.access_token = "account_token1";
   account_mapping1.status = AccountMapping::ADDING;
@@ -574,7 +576,8 @@ TEST_F(GCMStoreImplTest, AccountMapping) {
   account_mapping1.last_message_id = "message_1";
 
   AccountMapping account_mapping2;
-  account_mapping2.account_id = CoreAccountId::FromGaiaId("account_id_2");
+  account_mapping2.account_id =
+      CoreAccountId::FromGaiaId(GaiaId("account_id_2"));
   account_mapping2.email = "account_id_2@gmail.com";
   account_mapping2.access_token = "account_token1";
   account_mapping2.status = AccountMapping::REMOVING;
