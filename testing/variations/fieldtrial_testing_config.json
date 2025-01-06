@@ -22641,25 +22641,6 @@
             ]
         }
     ],
-    "TabStripCollectionStorage": [
-        {
-            "platforms": [
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "TabStripCollectionStorage"
-                    ]
-                }
-            ]
-        }
-    ],
     "TabStripIncognitoMigration": [
         {
             "platforms": [

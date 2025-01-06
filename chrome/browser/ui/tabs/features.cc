@@ -49,7 +49,7 @@ BASE_FEATURE(kTabSearchPositionSetting,
 // vector in the tabstrip model. b/323937237
 BASE_FEATURE(kTabStripCollectionStorage,
              "TabStripCollectionStorage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool CanShowTabSearchPositionSetting() {
   // The combo button, which includes tab search, is always on the right side
