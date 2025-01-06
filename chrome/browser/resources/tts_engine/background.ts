@@ -25,14 +25,14 @@ fetch(DOWNLOAD_BASE_URL + 'version.json')
         if (version < CURRENT_VERSION_NUMBER) {
           // If the version is valid, update the download version.
           CURRENT_VERSION_NUMBER = version;
+        }
+      } else {
+        if (!version) {
+          console.info(
+              'Found invalid version in version.json: ' +
+              'versionNumber undefined');
         } else {
-          if (!version) {
-            console.info(
-                'Found invalid version in version.json: ' +
-                'versionNumber undefined');
-          } else {
-            console.info('Found invalid version in version.json: ' + version);
-          }
+          console.info('Found invalid version in version.json: ' + version);
         }
       }
     });
