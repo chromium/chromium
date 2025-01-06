@@ -10,8 +10,6 @@ import android.os.Message;
 import android.util.Pair;
 
 import androidx.annotation.MainThread;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -21,6 +19,8 @@ import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePort;
 
@@ -77,6 +77,7 @@ import org.chromium.content_public.browser.MessagePort;
  * This object is not thread safe but public methods may be called from any thread.
  */
 @JNINamespace("content::android")
+@NullMarked
 public class AppWebMessagePort implements MessagePort {
     private static final String TAG = "AppWebMessagePort";
 
@@ -84,15 +85,15 @@ public class AppWebMessagePort implements MessagePort {
         // The |what| value for handleMessage.
         private static final int MESSAGE_RECEIVED = 1;
 
-        @NonNull private final MessageCallback mMessageCallback;
+        private final MessageCallback mMessageCallback;
 
-        MessageHandler(@NonNull MessageCallback callback, @Nullable Handler handler) {
+        MessageHandler(MessageCallback callback, @Nullable Handler handler) {
             super(handler == null ? Looper.getMainLooper() : handler.getLooper());
             mMessageCallback = callback;
         }
 
         @Override
-        public void handleMessage(@NonNull final Message msg) {
+        public void handleMessage(final Message msg) {
             if (msg.what == MESSAGE_RECEIVED) {
                 final Pair<MessagePayload, MessagePort[]> obj =
                         (Pair<MessagePayload, MessagePort[]>) msg.obj;
@@ -103,7 +104,8 @@ public class AppWebMessagePort implements MessagePort {
         }
 
         @MainThread
-        public void onMessage(final MessagePayload messagePayload, final MessagePort[] sentPorts) {
+        public void onMessage(
+                final MessagePayload messagePayload, final MessagePort @Nullable [] sentPorts) {
             ThreadUtils.assertOnUiThread();
             sendMessage(obtainMessage(MESSAGE_RECEIVED, Pair.create(messagePayload, sentPorts)));
         }
@@ -111,7 +113,7 @@ public class AppWebMessagePort implements MessagePort {
 
     // Accessed on UI thread only.
     private long mNativeAppWebMessagePort;
-    private MessageHandler mMessageHandler;
+    private @Nullable MessageHandler mMessageHandler;
 
     // Can be accessed from any thread, client needs to keep thread safe. Need volatile since they
     // may be accessed concurrently from UI thread and client thread, which may be different.
@@ -182,7 +184,7 @@ public class AppWebMessagePort implements MessagePort {
     }
 
     @Override
-    public void postMessage(MessagePayload messagePayload, MessagePort[] sentPorts)
+    public void postMessage(MessagePayload messagePayload, MessagePort @Nullable [] sentPorts)
             throws IllegalStateException {
         if (isClosed() || isTransferred()) {
             throw new IllegalStateException("Port is already closed or transferred");
@@ -253,7 +255,7 @@ public class AppWebMessagePort implements MessagePort {
 
     @MainThread
     @CalledByNative
-    private void onMessage(@NonNull MessagePayload payload, @Nullable MessagePort[] ports) {
+    private void onMessage(MessagePayload payload, MessagePort @Nullable [] ports) {
         ThreadUtils.assertOnUiThread();
         if (mMessageHandler != null) {
             mMessageHandler.onMessage(payload, ports);
@@ -290,13 +292,13 @@ public class AppWebMessagePort implements MessagePort {
     @NativeMethods
     @MainThread
     interface Natives {
-        @NonNull
+
         AppWebMessagePort[] createPair();
 
         void postMessage(
                 long nativeAppWebMessagePort,
                 MessagePayload messagePayload,
-                MessagePort[] sentPorts);
+                MessagePort @Nullable [] sentPorts);
 
         void setShouldReceiveMessages(long nativeAppWebMessagePort, boolean shouldReceiveMessage);
 

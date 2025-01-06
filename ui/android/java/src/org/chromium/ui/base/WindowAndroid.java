@@ -391,7 +391,8 @@ public class WindowAndroid
      *     results, or null if no message is required.
      * @return Whether the intent was shown.
      */
-    public boolean showIntent(PendingIntent intent, IntentCallback callback, Integer errorId) {
+    public boolean showIntent(
+            PendingIntent intent, IntentCallback callback, @Nullable Integer errorId) {
         if (mIntentRequestTracker == null) {
             Log.d(TAG, "Can't show intent as context is not an Activity: " + intent);
             return false;
@@ -407,7 +408,8 @@ public class WindowAndroid
      *                 results, or null if no message is required.
      * @return Whether the intent was shown.
      */
-    public boolean showIntent(@Nullable Intent intent, IntentCallback callback, Integer errorId) {
+    public boolean showIntent(
+            @Nullable Intent intent, IntentCallback callback, @Nullable Integer errorId) {
         if (mIntentRequestTracker == null) {
             Log.d(TAG, "Can't show intent as context is not an Activity: " + intent);
             return false;
@@ -425,7 +427,7 @@ public class WindowAndroid
      *         START_INTENT_FAILURE if failed.
      */
     public int showCancelableIntent(
-            PendingIntent intent, IntentCallback callback, Integer errorId) {
+            PendingIntent intent, IntentCallback callback, @Nullable Integer errorId) {
         if (mIntentRequestTracker == null) {
             Log.d(TAG, "Can't show intent as context is not an Activity: " + intent);
             return START_INTENT_FAILURE;
@@ -442,7 +444,8 @@ public class WindowAndroid
      * @return A non-negative request code that could be used for finishActivity, or
      *         START_INTENT_FAILURE if failed.
      */
-    public int showCancelableIntent(Intent intent, IntentCallback callback, Integer errorId) {
+    public int showCancelableIntent(
+            Intent intent, IntentCallback callback, @Nullable Integer errorId) {
         if (mIntentRequestTracker == null) {
             Log.d(TAG, "Can't show intent as context is not an Activity: " + intent);
             return START_INTENT_FAILURE;
@@ -451,7 +454,7 @@ public class WindowAndroid
     }
 
     public int showCancelableIntent(
-            Callback<Integer> intentTrigger, IntentCallback callback, Integer errorId) {
+            Callback<Integer> intentTrigger, IntentCallback callback, @Nullable Integer errorId) {
         if (mIntentRequestTracker == null) {
             Log.d(TAG, "Can't show intent as context is not an Activity");
             return START_INTENT_FAILURE;

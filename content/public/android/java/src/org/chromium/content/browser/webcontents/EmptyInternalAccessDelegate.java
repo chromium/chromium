@@ -7,12 +7,14 @@ package org.chromium.content.browser.webcontents;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.ViewEventSink;
 
 /**
  * Empty implementation of {@link ViewEventSink.InternalAccessDelegate}. Intentional no-op for
  * transient stage usage.
  */
+@NullMarked
 public class EmptyInternalAccessDelegate implements ViewEventSink.InternalAccessDelegate {
     @Override
     public boolean super_onKeyUp(int keyCode, KeyEvent event) {

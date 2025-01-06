@@ -6,9 +6,11 @@ package org.chromium.content_public.common;
 
 import android.os.Build;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
 
+@NullMarked
 public class InputUtils {
     public static boolean isTransferInputToVizSupported() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM

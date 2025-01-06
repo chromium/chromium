@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
@@ -20,6 +22,8 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.net.ConnectionType;
 import org.chromium.net.NetworkChangeNotifierAutoDetect;
 import org.chromium.net.RegistrationPolicyAlwaysRegister;
@@ -41,14 +45,15 @@ import java.util.List;
  */
 @JNINamespace("content")
 @VisibleForTesting
+@NullMarked
 public class BackgroundSyncNetworkObserver implements NetworkChangeNotifierAutoDetect.Observer {
     private static final String TAG = "BgSyncNetObserver";
     private static boolean sSetConnectionTypeForTesting;
-    private NetworkChangeNotifierAutoDetect mNotifier;
+    private @Nullable NetworkChangeNotifierAutoDetect mNotifier;
 
     // The singleton instance.
     @SuppressLint("StaticFieldLeak")
-    private static BackgroundSyncNetworkObserver sInstance;
+    private static @Nullable BackgroundSyncNetworkObserver sInstance;
 
     // List of native observers. These are each called when the network state changes.
     private List<Long> mNativePtrs;
@@ -84,7 +89,7 @@ public class BackgroundSyncNetworkObserver implements NetworkChangeNotifierAutoD
     }
 
     @CalledByNative
-    private static BackgroundSyncNetworkObserver createObserver(long nativePtr) {
+    private static @Nullable BackgroundSyncNetworkObserver createObserver(long nativePtr) {
         ThreadUtils.assertOnUiThread();
 
         getBackgroundSyncNetworkObserver().registerObserver(nativePtr);
@@ -174,6 +179,7 @@ public class BackgroundSyncNetworkObserver implements NetworkChangeNotifierAutoD
     public void onNetworkDisconnect(long netId) {
         ThreadUtils.assertOnUiThread();
         if (sSetConnectionTypeForTesting) return;
+        assumeNonNull(mNotifier);
 
         // If we're in doze mode (N+ devices), onConnectionTypeChanged may not
         // be called, but this function should. So update the connection type

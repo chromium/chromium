@@ -17,6 +17,8 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * AudioFocusDelegate is the Java counterpart of content::AudioFocusDelegateAndroid.
@@ -30,12 +32,13 @@ import org.chromium.base.ThreadUtils;
  * like a notification.
  */
 @JNINamespace("content")
+@NullMarked
 public class AudioFocusDelegate implements AudioManager.OnAudioFocusChangeListener {
     private static final String TAG = "MediaSession";
 
     private int mFocusType;
     private boolean mIsDucking;
-    private AudioFocusRequest mFocusRequest;
+    private @Nullable AudioFocusRequest mFocusRequest;
 
     // Native pointer to C++ content::AudioFocusDelegateAndroid.
     // It will be set to 0 when the native AudioFocusDelegateAndroid object is destroyed.

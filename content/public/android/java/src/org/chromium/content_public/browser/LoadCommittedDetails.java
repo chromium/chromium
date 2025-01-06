@@ -7,6 +7,7 @@ package org.chromium.content_public.browser;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.url.GURL;
 
 /**
@@ -14,6 +15,7 @@ import org.chromium.url.GURL;
  * {@link WebContentsObserver#navigationEntryCommitted(LoadCommittedDetails)}.
  */
 @JNINamespace("content")
+@NullMarked
 public class LoadCommittedDetails {
     private final boolean mDidReplaceEntry;
     private final int mPreviousEntryIndex;

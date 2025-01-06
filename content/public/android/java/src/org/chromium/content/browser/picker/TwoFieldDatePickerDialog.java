@@ -9,10 +9,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content.R;
 import org.chromium.content.browser.picker.TwoFieldDatePicker.OnMonthOrWeekChangedListener;
 
 /** A two-field data picker dialog. */
+@NullMarked
 public abstract class TwoFieldDatePickerDialog extends AlertDialog
         implements OnClickListener, OnMonthOrWeekChangedListener {
 
@@ -74,9 +76,8 @@ public abstract class TwoFieldDatePickerDialog extends AlertDialog
         mPicker.init(year, positionInYear, this);
     }
 
-    protected TwoFieldDatePicker createPicker(Context context, double minValue, double maxValue) {
-        return null;
-    }
+    protected abstract TwoFieldDatePicker createPicker(
+            Context context, double minValue, double maxValue);
 
     @Override
     public void onClick(DialogInterface dialog, int which) {

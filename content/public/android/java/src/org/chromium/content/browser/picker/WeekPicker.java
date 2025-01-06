@@ -6,12 +6,14 @@ package org.chromium.content.browser.picker;
 
 import android.content.Context;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content.R;
 
 import java.util.Calendar;
 import java.util.TimeZone;
 
 /** This class is heavily based on android.widget.DatePicker. */
+@NullMarked
 public class WeekPicker extends TwoFieldDatePicker {
 
     public WeekPicker(Context context, double minValue, double maxValue) {

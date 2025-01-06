@@ -65,14 +65,14 @@ public class ChildProcessCreationParamsImpl {
         if (sInitialized) extras.putInt(EXTRA_LIBRARY_PROCESS_TYPE, sLibraryProcessType);
     }
 
-    public static @Nullable String getPackageNameForPrivilegedService() {
-        return sInitialized
+    public static String getPackageNameForPrivilegedService() {
+        return sPackageNameForPrivilegedService != null
                 ? sPackageNameForPrivilegedService
                 : ContextUtils.getApplicationContext().getPackageName();
     }
 
-    public static @Nullable String getPackageNameForSandboxedService() {
-        return sInitialized
+    public static String getPackageNameForSandboxedService() {
+        return sPackageNameForSandboxedService != null
                 ? sPackageNameForSandboxedService
                 : ContextUtils.getApplicationContext().getPackageName();
     }
@@ -93,11 +93,11 @@ public class ChildProcessCreationParamsImpl {
         return extras.getInt(EXTRA_LIBRARY_PROCESS_TYPE, LibraryProcessType.PROCESS_CHILD);
     }
 
-    public static @Nullable String getPrivilegedServicesName() {
-        return sInitialized ? sPrivilegedServicesName : PRIVILEGED_SERVICES_NAME;
+    public static String getPrivilegedServicesName() {
+        return sPrivilegedServicesName != null ? sPrivilegedServicesName : PRIVILEGED_SERVICES_NAME;
     }
 
-    public static @Nullable String getSandboxedServicesName() {
-        return sInitialized ? sSandboxedServicesName : SANDBOXED_SERVICES_NAME;
+    public static String getSandboxedServicesName() {
+        return sSandboxedServicesName != null ? sSandboxedServicesName : SANDBOXED_SERVICES_NAME;
     }
 }

@@ -7,6 +7,7 @@ package org.chromium.services.device;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.device.battery.BatteryMonitorFactory;
 import org.chromium.device.mojom.BatteryMonitor;
 import org.chromium.device.mojom.NfcProvider;
@@ -16,6 +17,7 @@ import org.chromium.mojo.system.impl.CoreImpl;
 import org.chromium.services.service_manager.InterfaceRegistry;
 
 @JNINamespace("device")
+@NullMarked
 class InterfaceRegistrar {
     @CalledByNative
     static void createInterfaceRegistryForContext(long nativeHandle, NfcDelegate nfcDelegate) {

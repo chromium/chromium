@@ -25,52 +25,23 @@ public class OngoingGestureTest {
     private static final String GESTURE_RESULT_HISTOGRAM =
             "InputMethod.StylusHandwriting.GestureResult";
 
+    private static OngoingGesture makeOngoingGesture() {
+        return new OngoingGesture(
+                new org.chromium.blink.mojom.StylusWritingGestureData(),
+                (command) -> {},
+                (value) -> {});
+    }
+
     @Test
     @SmallTest
     public void testGestureRequestsHaveIncreasingIDs() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    OngoingGesture baseline = new OngoingGesture(null, null, null);
-                    OngoingGesture request1 = new OngoingGesture(null, null, null);
-                    OngoingGesture request2 = new OngoingGesture(null, null, null);
+                    OngoingGesture baseline = makeOngoingGesture();
+                    OngoingGesture request1 = makeOngoingGesture();
+                    OngoingGesture request2 = makeOngoingGesture();
                     assertEquals(baseline.getId() + 1, request1.getId());
                     assertEquals(baseline.getId() + 2, request2.getId());
-                });
-    }
-
-    @Test
-    @SmallTest
-    public void testGestureRequestLogsUnknownWithNullExecutor() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    var histogram =
-                            HistogramWatcher.newSingleRecordWatcher(
-                                    GESTURE_RESULT_HISTOGRAM, HandwritingGestureResult.UNKNOWN);
-                    OngoingGesture request =
-                            new OngoingGesture(
-                                    new org.chromium.blink.mojom.StylusWritingGestureData(),
-                                    null,
-                                    (value) -> {});
-                    request.onGestureHandled(HandwritingGestureResult.SUCCESS);
-                    histogram.assertExpected();
-                });
-    }
-
-    @Test
-    @SmallTest
-    public void testGestureRequestLogsUnknownWithNullIntConsumer() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    var histogram =
-                            HistogramWatcher.newSingleRecordWatcher(
-                                    GESTURE_RESULT_HISTOGRAM, HandwritingGestureResult.UNKNOWN);
-                    OngoingGesture request =
-                            new OngoingGesture(
-                                    new org.chromium.blink.mojom.StylusWritingGestureData(),
-                                    (command) -> {},
-                                    null);
-                    request.onGestureHandled(HandwritingGestureResult.FAILED);
-                    histogram.assertExpected();
                 });
     }
 
@@ -79,11 +50,7 @@ public class OngoingGestureTest {
     public void testGestureRequestLogsCorrectResult() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    OngoingGesture request =
-                            new OngoingGesture(
-                                    new org.chromium.blink.mojom.StylusWritingGestureData(),
-                                    (command) -> {},
-                                    (value) -> {});
+                    OngoingGesture request = makeOngoingGesture();
 
                     var histogram =
                             HistogramWatcher.newSingleRecordWatcher(

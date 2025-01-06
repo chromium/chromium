@@ -8,18 +8,18 @@ import android.content.Context;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.CancellationSignal;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.provider.FontRequest;
 import androidx.core.provider.FontsContractCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** Wrapper around the {@link FontsContractCompat} static API to allow for mocking in tests. */
+@NullMarked
 public class FontsContractWrapper {
-    @NonNull
+
     FontsContractCompat.FontFamilyResult fetchFonts(
-            @NonNull Context context,
-            @Nullable CancellationSignal cancellationSignal,
-            @NonNull FontRequest request)
+            Context context, @Nullable CancellationSignal cancellationSignal, FontRequest request)
             throws NameNotFoundException {
         return FontsContractCompat.fetchFonts(context, cancellationSignal, request);
     }

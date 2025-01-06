@@ -12,6 +12,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.ContactsPicker;
 import org.chromium.content_public.browser.ContactsPickerListener;
 import org.chromium.content_public.browser.WebContents;
@@ -25,6 +27,7 @@ import java.util.List;
  * side.
  */
 @JNINamespace("content")
+@NullMarked
 public class ContactsDialogHost implements ContactsPickerListener {
     private long mNativeContactsProviderAndroid;
     private final WebContents mWebContents;
@@ -173,11 +176,11 @@ public class ContactsDialogHost implements ContactsPickerListener {
     interface Natives {
         void addContact(
                 long nativeContactsProviderAndroid,
-                String[] names,
-                String[] emails,
-                String[] tel,
-                ByteBuffer[] addresses,
-                ByteBuffer[] icons);
+                String @Nullable [] names,
+                String @Nullable [] emails,
+                String @Nullable [] tel,
+                ByteBuffer @Nullable [] addresses,
+                ByteBuffer @Nullable [] icons);
 
         void endContactsList(
                 long nativeContactsProviderAndroid,

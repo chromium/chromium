@@ -57,6 +57,8 @@ import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
 
@@ -70,6 +72,7 @@ import java.util.Locale;
  * construct objects for the virtual view hierarchy to provide to the Android framework.
  */
 @JNINamespace("content")
+@NullMarked
 public class AccessibilityNodeInfoBuilder {
     // Constants defined for AccessibilityNodeInfo Bundle extras keys. These values are Chromium
     // specific, and allow Chromium-based browsers to provide richer information to AT. These
@@ -150,9 +153,11 @@ public class AccessibilityNodeInfoBuilder {
         int currentAccessibilityFocusId();
 
         // The language tag String provided by the default Locale of the device.
+        @Nullable
         String getLanguageTag();
 
         // Comma separate value of HTML tags that a given node can traverse by.
+        @Nullable
         String getSupportedHtmlTags();
 
         // Set of coordinates for providing the correct size and scroll of the View.

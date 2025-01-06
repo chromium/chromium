@@ -4,6 +4,7 @@
 
 package org.chromium.content_public.browser;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content.browser.SpeechRecognitionImpl;
 
 /**
@@ -11,6 +12,7 @@ import org.chromium.content.browser.SpeechRecognitionImpl;
  * on Android. Using Android's platform recognizer offers several benefits, like good quality and
  * good local fallback when no data connection is available.
  */
+@NullMarked
 public final class SpeechRecognition {
     private SpeechRecognition() {}
 

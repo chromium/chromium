@@ -4,6 +4,7 @@
 
 package org.chromium.components.browser_ui.banners;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency.ALL_UPDATES;
 
 import android.animation.Animator;
@@ -120,14 +121,14 @@ public abstract class SwipableOverlayView extends FrameLayout {
     /** Set the given WebContents for scrolling changes. */
     public void setWebContents(WebContents webContents) {
         if (mWebContents != null) {
-            GestureListenerManager.fromWebContents(mWebContents)
+            assumeNonNull(GestureListenerManager.fromWebContents(mWebContents))
                     .removeListener(mGestureStateListener);
         }
 
         mWebContents = webContents;
         // See comment in onLayout() as to why the listener is only attached if mTotalHeight is > 0.
-        if (mWebContents != null && mTotalHeight > 0) {
-            GestureListenerManager.fromWebContents(mWebContents)
+        if (webContents != null && mTotalHeight > 0) {
+            assumeNonNull(GestureListenerManager.fromWebContents(webContents))
                     .addListener(mGestureStateListener, ALL_UPDATES);
         }
     }
@@ -220,12 +221,13 @@ public abstract class SwipableOverlayView extends FrameLayout {
         // Adding a listener to GestureListenerManager results in extra IPCs on every frame, which
         // is very costly. Only attach the listener if needed.
         if (mWebContents != null && mGestureStateListener != null) {
+            GestureListenerManager gestureManager =
+                    GestureListenerManager.fromWebContents(mWebContents);
+            assumeNonNull(gestureManager);
             if (mTotalHeight > 0) {
-                GestureListenerManager.fromWebContents(mWebContents)
-                        .addListener(mGestureStateListener, ALL_UPDATES);
+                gestureManager.addListener(mGestureStateListener, ALL_UPDATES);
             } else {
-                GestureListenerManager.fromWebContents(mWebContents)
-                        .removeListener(mGestureStateListener);
+                gestureManager.removeListener(mGestureStateListener);
             }
         }
 

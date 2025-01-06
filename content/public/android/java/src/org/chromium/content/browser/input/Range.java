@@ -6,7 +6,10 @@ package org.chromium.content.browser.input;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** A simple class to set start and end in int type. */
+@NullMarked
 public class Range {
     private int mStart; // guaranteed to be smaller than or equal to mEnd
     private int mEnd;
