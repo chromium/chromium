@@ -178,9 +178,10 @@ class POLICY_EXPORT PolicyConversionsClient {
   std::string GetPolicyScope(const std::string& policy_name,
                              const PolicyScope& policy_scope) const;
 
-  std::u16string GetPolicyError(
+  std::u16string GetPolicyMessage(
       const std::string& policy_name,
       const PolicyMap::Entry& policy,
+      PolicyMap::MessageType message_type,
       PolicyErrorMap* errors,
       std::optional<Schema> known_policy_schema) const;
 

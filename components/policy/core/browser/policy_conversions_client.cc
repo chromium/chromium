@@ -307,29 +307,28 @@ Value::Dict PolicyConversionsClient::GetPolicyValue(
               (policy.conflicts.size() <= 1 || !policy_has_unmerged_source));
   }
 
-  std::u16string error =
-      GetPolicyError(policy_name, policy, errors, known_policy_schema);
-
-  if (!error.empty()) {
+  if (std::u16string error =
+          GetPolicyMessage(policy_name, policy, PolicyMap::MessageType::kError,
+                           errors, known_policy_schema);
+      !error.empty()) {
     value.Set("error", error);
     LOG_POLICY(ERROR, POLICY_PROCESSING)
         << policy_name << " has an error of type: " << error;
   }
 
-  if (!IsMachineInfoHidden(policy.scope, show_machine_values_)) {
-    std::u16string warning = policy.GetLocalizedMessages(
-        PolicyMap::MessageType::kWarning,
-        base::BindRepeating(&l10n_util::GetStringUTF16));
-    if (!warning.empty()) {
-      value.Set("warning", warning);
-    }
+  if (std::u16string warning = GetPolicyMessage(
+          policy_name, policy, PolicyMap::MessageType::kWarning, errors,
+          known_policy_schema);
+      !warning.empty()) {
+    value.Set("warning", warning);
   }
 
-  std::u16string info = policy.GetLocalizedMessages(
-      PolicyMap::MessageType::kInfo,
-      base::BindRepeating(&l10n_util::GetStringUTF16));
-  if (!info.empty())
+  if (std::u16string info =
+          GetPolicyMessage(policy_name, policy, PolicyMap::MessageType::kInfo,
+                           errors, known_policy_schema);
+      !info.empty()) {
     value.Set("info", info);
+  }
 
   if (policy.ignored())
     value.Set("ignored", true);
@@ -463,15 +462,17 @@ std::string PolicyConversionsClient::GetPolicyScope(
   return USER_SCOPE;
 }
 
-std::u16string PolicyConversionsClient::GetPolicyError(
+std::u16string PolicyConversionsClient::GetPolicyMessage(
     const std::string& policy_name,
     const PolicyMap::Entry& policy,
+    PolicyMap::MessageType message_type,
     PolicyErrorMap* errors,
     std::optional<Schema> known_policy_schema) const {
   if (IsMachineInfoHidden(policy.scope, show_machine_values_)) {
     return u"";
   }
-  if (!known_policy_schema.has_value()) {
+  if (!known_policy_schema.has_value() &&
+      message_type == PolicyMap::MessageType::kError) {
     // We don't know what this policy is. This is an important error to
     // show.
     return l10n_util::GetStringUTF16(IDS_POLICY_UNKNOWN);
@@ -480,10 +481,10 @@ std::u16string PolicyConversionsClient::GetPolicyError(
   // The PolicyMap contains errors about retrieving the policy, while the
   // PolicyErrorMap contains validation errors. Concat the errors.
   auto policy_map_errors = policy.GetLocalizedMessages(
-      PolicyMap::MessageType::kError,
-      base::BindRepeating(&l10n_util::GetStringUTF16));
+      message_type, base::BindRepeating(&l10n_util::GetStringUTF16));
   auto error_map_errors =
-      errors ? errors->GetErrorMessages(policy_name) : std::u16string();
+      errors ? errors->GetErrorMessages(policy_name, message_type)
+             : std::u16string();
   if (policy_map_errors.empty()) {
     return error_map_errors;
   }
@@ -493,7 +494,8 @@ std::u16string PolicyConversionsClient::GetPolicyError(
   }
 
   return base::JoinString(
-      {policy_map_errors, errors->GetErrorMessages(policy_name)}, u"\n");
+      {policy_map_errors, errors->GetErrorMessages(policy_name, message_type)},
+      u"\n");
 }
 
 }  // namespace policy
