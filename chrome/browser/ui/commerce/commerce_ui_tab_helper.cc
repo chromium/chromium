@@ -145,7 +145,7 @@ void CommerceUiTabHelper::UpdateUiForShoppingServiceReady(
     return;
   }
 
-  if (service->IsPriceInsightsEligible()) {
+  if (commerce::IsPriceInsightsEligible(service->GetAccountChecker())) {
     UpdatePriceInsightsIconView();
   }
 }
@@ -187,7 +187,11 @@ void CommerceUiTabHelper::DidFinishNavigation(
   discounts_page_action_controller_->ResetForNewNavigation(
       web_contents()->GetLastCommittedURL());
 
-  if (shopping_service_->IsPriceInsightsEligible()) {
+  // This value should not be a class member variable as it might change within
+  // a browser session.
+  bool is_price_insights_eligible =
+      commerce::IsPriceInsightsEligible(shopping_service_->GetAccountChecker());
+  if (is_price_insights_eligible) {
     UpdatePriceInsightsIconView();
   }
 
@@ -197,7 +201,7 @@ void CommerceUiTabHelper::DidFinishNavigation(
   product_specifications_controller_->ResetForNewNavigation(
       web_contents()->GetLastCommittedURL());
 
-  if (shopping_service_->IsPriceInsightsEligible()) {
+  if (is_price_insights_eligible) {
     // Price insights needs product info to get the product cluster title.
     shopping_service_->GetProductInfoForUrl(
         web_contents()->GetLastCommittedURL(),
@@ -239,7 +243,8 @@ void CommerceUiTabHelper::TriggerUpdateForIconView() {
     return;
   }
 
-  if (shopping_service_->IsPriceInsightsEligible()) {
+  if (commerce::IsPriceInsightsEligible(
+          shopping_service_->GetAccountChecker())) {
     UpdatePriceInsightsIconView();
   }
   UpdatePriceTrackingIconView();
@@ -265,7 +270,9 @@ bool CommerceUiTabHelper::ShouldShowPriceTrackingIconView() {
 }
 
 bool CommerceUiTabHelper::ShouldShowPriceInsightsIconView() {
-  return shopping_service_ && shopping_service_->IsPriceInsightsEligible() &&
+  return shopping_service_ &&
+         commerce::IsPriceInsightsEligible(
+             shopping_service_->GetAccountChecker()) &&
          price_insights_info_.has_value();
 }
 
@@ -287,7 +294,8 @@ void CommerceUiTabHelper::HandleProductInfoResponse(
 
   product_info_for_page_ = info;
 
-  if (shopping_service_->IsPriceInsightsEligible()) {
+  if (commerce::IsPriceInsightsEligible(
+          shopping_service_->GetAccountChecker())) {
     if (!info->product_cluster_title.empty()) {
       shopping_service_->GetPriceInsightsInfoForUrl(
           url,
@@ -328,10 +336,11 @@ void CommerceUiTabHelper::MaybeComputePageActionToExpand() {
     return;
   }
 
-  if (shopping_service_->IsPriceInsightsEligible() &&
-      !got_insights_response_for_page_) {
-    return;
-  }
+    if (commerce::IsPriceInsightsEligible(
+            shopping_service_->GetAccountChecker()) &&
+        !got_insights_response_for_page_) {
+      return;
+    }
 
   if (!price_tracking_controller_->ShouldShowForNavigation().has_value()) {
     return;

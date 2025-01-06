@@ -840,15 +840,6 @@ bool ShoppingService::IsMerchantViewerEnabled() {
                                       kCommerceMerchantViewerRegionLaunched);
 }
 
-bool ShoppingService::IsPriceInsightsEligible() {
-  if (!IsRegionLockedFeatureEnabled(kPriceInsights,
-                                    kPriceInsightsRegionLaunched)) {
-    return false;
-  }
-  return account_checker_ &&
-         account_checker_->IsAnonymizedUrlDataCollectionEnabled();
-}
-
 bool ShoppingService::IsPriceInsightsInfoApiEnabled() {
   return IsRegionLockedFeatureEnabled(kPriceInsights,
                                       kPriceInsightsRegionLaunched);

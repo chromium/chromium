@@ -365,8 +365,9 @@ ShoppingServiceHandler::~ShoppingServiceHandler() = default;
 
 void ShoppingServiceHandler::GetProductInfoForCurrentUrl(
     GetProductInfoForCurrentUrlCallback callback) {
-  if (!shopping_service_->IsPriceInsightsEligible() || !delegate_ ||
-      !delegate_->GetCurrentTabUrl().has_value()) {
+  if (!commerce::IsPriceInsightsEligible(
+          shopping_service_->GetAccountChecker()) ||
+      !delegate_ || !delegate_->GetCurrentTabUrl().has_value()) {
     std::move(callback).Run(shared::mojom::ProductInfo::New());
     return;
   }
@@ -449,8 +450,9 @@ void ShoppingServiceHandler::GetPriceTrackingStatusForCurrentUrl(
 
 void ShoppingServiceHandler::GetPriceInsightsInfoForCurrentUrl(
     GetPriceInsightsInfoForCurrentUrlCallback callback) {
-  if (!shopping_service_->IsPriceInsightsEligible() || !delegate_ ||
-      !delegate_->GetCurrentTabUrl().has_value()) {
+  if (!commerce::IsPriceInsightsEligible(
+          shopping_service_->GetAccountChecker()) ||
+      !delegate_ || !delegate_->GetCurrentTabUrl().has_value()) {
     std::move(callback).Run(shopping_service::mojom::PriceInsightsInfo::New());
     return;
   }
@@ -465,7 +467,8 @@ void ShoppingServiceHandler::GetPriceInsightsInfoForCurrentUrl(
 void ShoppingServiceHandler::GetPriceInsightsInfoForUrl(
     const GURL& url,
     GetPriceInsightsInfoForUrlCallback callback) {
-  if (!shopping_service_->IsPriceInsightsEligible()) {
+  if (!commerce::IsPriceInsightsEligible(
+          shopping_service_->GetAccountChecker())) {
     std::move(callback).Run(url,
                             shopping_service::mojom::PriceInsightsInfo::New());
     return;

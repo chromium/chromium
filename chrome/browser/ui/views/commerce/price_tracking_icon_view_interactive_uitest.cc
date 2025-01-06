@@ -185,11 +185,7 @@ class PriceTrackingIconViewInteractiveTest : public InteractiveBrowserTest {
     product_info_->image_url = GURL("http://example.com/image.png");
     mock_shopping_service_->SetResponseForGetProductInfoForUrl(product_info_);
 
-    EXPECT_CALL(*mock_shopping_service_, IsPriceInsightsEligible)
-        .Times(testing::AnyNumber());
-
     mock_shopping_service_->SetIsShoppingListEligible(true);
-    mock_shopping_service_->SetIsPriceInsightsEligible(false);
     mock_shopping_service_->SetIsDiscountEligibleToShowOnNavigation(false);
   }
 

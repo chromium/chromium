@@ -153,7 +153,8 @@ TEST_F(ShoppingServiceHandlerTest,
        TestGetProductInfoForCurrentUrl_FeatureEligible) {
   base::RunLoop run_loop;
 
-  shopping_service_->SetIsPriceInsightsEligible(true);
+  commerce::SetUpPriceInsightsEligibility(&features_, account_checker_.get(),
+                                          true);
 
   std::optional<commerce::ProductInfo> info;
   info.emplace();
@@ -177,8 +178,8 @@ TEST_F(ShoppingServiceHandlerTest,
 TEST_F(ShoppingServiceHandlerTest, TestGetProductInfoForUrl) {
   base::RunLoop run_loop;
 
-  shopping_service_->SetIsPriceInsightsEligible(true);
-
+  commerce::SetUpPriceInsightsEligibility(&features_, account_checker_.get(),
+                                          true);
   std::optional<commerce::ProductInfo> info;
   info.emplace();
   info->title = "example_title";
@@ -210,7 +211,8 @@ TEST_F(ShoppingServiceHandlerTest,
   info.emplace();
   info->title = "example_title";
   shopping_service_->SetResponseForGetProductInfoForUrl(info);
-  shopping_service_->SetIsPriceInsightsEligible(false);
+  commerce::SetUpPriceInsightsEligibility(&features_, account_checker_.get(),
+                                          false);
 
   handler_->GetProductInfoForCurrentUrl(base::BindOnce(
       [](base::RunLoop* run_loop, shared::mojom::ProductInfoPtr product_info) {
@@ -239,7 +241,8 @@ TEST_F(ShoppingServiceHandlerTest, TestGetPriceInsightsInfoForCurrentUrl) {
   info->catalog_history_prices.emplace_back("2021-01-01", 3330000);
   info->catalog_history_prices.emplace_back("2021-01-02", 4440000);
 
-  shopping_service_->SetIsPriceInsightsEligible(true);
+  commerce::SetUpPriceInsightsEligibility(&features_, account_checker_.get(),
+                                          true);
   shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(info);
 
   handler_->GetPriceInsightsInfoForCurrentUrl(base::BindOnce(
@@ -286,7 +289,8 @@ TEST_F(ShoppingServiceHandlerTest, TestGetPriceInsightsInfoForUrl) {
   info->catalog_history_prices.emplace_back("2021-01-01", 3330000);
   info->catalog_history_prices.emplace_back("2021-01-02", 4440000);
 
-  shopping_service_->SetIsPriceInsightsEligible(true);
+  commerce::SetUpPriceInsightsEligibility(&features_, account_checker_.get(),
+                                          true);
   shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(info);
 
   handler_->GetPriceInsightsInfoForUrl(
@@ -327,7 +331,8 @@ TEST_F(ShoppingServiceHandlerTest,
   info.emplace();
   info->product_cluster_id = 123u;
 
-  shopping_service_->SetIsPriceInsightsEligible(false);
+  commerce::SetUpPriceInsightsEligibility(&features_, account_checker_.get(),
+                                          false);
   shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(info);
 
   handler_->GetPriceInsightsInfoForUrl(

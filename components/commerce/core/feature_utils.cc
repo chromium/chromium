@@ -58,6 +58,16 @@ bool IsShoppingListEligible(AccountChecker* account_checker) {
   return true;
 }
 
+bool IsPriceInsightsEligible(AccountChecker* account_checker) {
+  if (!account_checker ||
+      !commerce::IsRegionLockedFeatureEnabled(
+          kPriceInsights, kPriceInsightsRegionLaunched,
+          account_checker->GetCountry(), account_checker->GetLocale())) {
+    return false;
+  }
+  return account_checker->IsAnonymizedUrlDataCollectionEnabled();
+}
+
 bool IsSubscriptionsApiEnabled(AccountChecker* account_checker) {
   return IsRegionLockedFeatureEnabled(
       kSubscriptionsApi, kSubscriptionsApiRegionLaunched,

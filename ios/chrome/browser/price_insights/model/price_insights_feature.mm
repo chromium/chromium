@@ -6,6 +6,7 @@
 
 #import "base/metrics/field_trial_params.h"
 #import "components/commerce/core/commerce_feature_list.h"
+#import "components/commerce/core/feature_utils.h"
 #import "components/commerce/core/shopping_service.h"
 #import "components/variations/service/variations_service_utils.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
@@ -49,7 +50,7 @@ bool IsPriceInsightsEnabled(ProfileIOS* profile) {
     return false;
   }
 
-  return service->IsPriceInsightsEligible();
+  return commerce::IsPriceInsightsEligible(service->GetAccountChecker());
 }
 
 std::string GetLowPriceParamValue() {

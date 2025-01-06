@@ -11,6 +11,7 @@
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/commerce/core/feature_utils.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
@@ -439,7 +440,8 @@ bool ShoppingServiceAndroid::IsPriceInsightsEligible(
     const JavaParamRef<jobject>& obj) {
   CHECK(shopping_service_);
 
-  return shopping_service_->IsPriceInsightsEligible();
+  return commerce::IsPriceInsightsEligible(
+      shopping_service_->GetAccountChecker());
 }
 
 bool ShoppingServiceAndroid::IsDiscountEligibleToShowOnNavigation(
