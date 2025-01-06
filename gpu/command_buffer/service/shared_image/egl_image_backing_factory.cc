@@ -84,19 +84,6 @@ std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::CreateSharedImage(
                              pixel_data);
 }
 
-std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::CreateSharedImage(
-    const Mailbox& mailbox,
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label,
-    gfx::GpuMemoryBufferHandle handle) {
-  NOTREACHED();
-}
-
 bool EGLImageBackingFactory::IsSupported(SharedImageUsageSet usage,
                                          viz::SharedImageFormat format,
                                          const gfx::Size& size,
