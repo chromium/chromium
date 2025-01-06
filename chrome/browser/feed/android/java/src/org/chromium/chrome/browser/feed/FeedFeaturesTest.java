@@ -22,7 +22,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DisabledTest;
@@ -42,7 +41,6 @@ public class FeedFeaturesTest {
     @Mock private Profile mProfile;
     @Mock private PrefService mPrefService;
 
-    private FeatureList.TestValues mParamsTestValues;
     private @StreamTabId int mPrefStoredTab;
 
     @Before

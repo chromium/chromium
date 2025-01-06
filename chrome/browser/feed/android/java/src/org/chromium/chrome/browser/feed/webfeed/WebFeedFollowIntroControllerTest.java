@@ -33,7 +33,6 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.Callback;
-import org.chromium.base.FeatureList;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -98,7 +97,6 @@ public final class WebFeedFollowIntroControllerTest {
     private EmptyTabObserver mEmptyTabObserver;
     private FakeClock mClock;
     private WebFeedFollowIntroController mWebFeedFollowIntroController;
-    private FeatureList.TestValues mBaseTestValues;
     private UserDataHost mTestUserDataHost;
 
     @Before

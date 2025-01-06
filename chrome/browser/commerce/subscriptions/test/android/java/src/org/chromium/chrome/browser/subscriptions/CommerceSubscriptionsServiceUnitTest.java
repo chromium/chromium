@@ -28,7 +28,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
@@ -81,7 +80,6 @@ public class CommerceSubscriptionsServiceUnitTest {
     private SharedPreferencesManager mSharedPreferencesManager;
     private MockNotificationManagerProxy mMockNotificationManager;
     private PriceDropNotificationManager mPriceDropNotificationManager;
-    private FeatureList.TestValues mTestValues;
 
     @Before
     public void setUp() {
