@@ -185,7 +185,11 @@ void FeedbackCommon::PrepareReport(
 
   if (image().size()) {
     userfeedback::PostedScreenshot screenshot;
-    screenshot.set_mime_type(kPngMimeType);
+    if (image_mime_type().empty()) {
+      screenshot.set_mime_type(kPngMimeType);
+    } else {
+      screenshot.set_mime_type(image_mime_type());
+    }
 
     // Set that we 'have' dimensions of the screenshot. These dimensions are
     // ignored by the server but are a 'required' field in the protobuf.
