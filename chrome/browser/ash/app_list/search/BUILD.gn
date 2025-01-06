@@ -63,8 +63,6 @@ static_library("search") {
     "search_provider.h",
     "search_session_metrics_manager.cc",
     "search_session_metrics_manager.h",
-    "sparky_event_rewriter.cc",
-    "sparky_event_rewriter.h",
     "types.cc",
     "types.h",
   ]
