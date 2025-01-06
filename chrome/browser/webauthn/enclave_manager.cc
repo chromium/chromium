@@ -133,7 +133,8 @@ struct EnclaveManager::PendingAction {
   bool renew_pin = false;
   std::unique_ptr<StoreKeysArgs> store_keys_args;
   bool setup_account = false;
-  std::string pin;          // the PIN to add to an account.
+  std::string pin;          // the PIN to add to set up an account with.
+  std::string set_pin;      // the PIN to set on an existing account.
   std::string updated_pin;  // a new PIN, to replace the current PIN.
   std::string rapt;         // ReAuthentication Proof Token.
   bool update_wrapped_pin;  // copy `wrapped_pin` and `pin_public_key` to the
@@ -1104,14 +1105,14 @@ class EnclaveManager::StateMachine {
     kHashingPIN,
     kDownloadingRecoveryKeyStoreKeys,
     kWaitingForEnclaveTokenForPINWrapping,
-    kWrappingPIN,
+    kWrappingPINAndSecret,
     kWaitingForRecoveryKeyStore,
     kJoiningPINToDomain,
     kJoiningUpdatedPINToDomain,
 #if BUILDFLAG(IS_MAC)
     kJoiningICloudKeychainToDomain,
 #endif  // BUILDFLAG(IS_MAC)
-    kChangingPIN,
+    kSettingPIN,
     kRenewingPIN,
     kWaitingForEnclaveTokenForUnregister,
     kUnregistering,
@@ -1218,8 +1219,8 @@ class EnclaveManager::StateMachine {
         DoWaitingForEnclaveTokenForPINWrapping(std::move(event));
         break;
 
-      case State::kWrappingPIN:
-        DoWrappingPIN(std::move(event));
+      case State::kWrappingPINAndSecret:
+        DoWrappingPINAndSecret(std::move(event));
         break;
 
       case State::kWaitingForRecoveryKeyStore:
@@ -1230,8 +1231,8 @@ class EnclaveManager::StateMachine {
         DoJoiningPINToDomain(std::move(event));
         break;
 
-      case State::kChangingPIN:
-        DoChangingPIN(std::move(event));
+      case State::kSettingPIN:
+        DoSettingPIN(std::move(event));
         break;
 
       case State::kJoiningUpdatedPINToDomain:
@@ -1316,14 +1317,14 @@ class EnclaveManager::StateMachine {
         return "DownloadingRecoveryKeyStoreKeys";
       case State::kWaitingForEnclaveTokenForPINWrapping:
         return "WaitingForEnclaveTokenForPINWrapping";
-      case State::kWrappingPIN:
-        return "WrappingPIN";
+      case State::kWrappingPINAndSecret:
+        return "WrappingPINAndSecret";
       case State::kWaitingForRecoveryKeyStore:
         return "WaitingForRecoveryKeyStore";
       case State::kJoiningPINToDomain:
         return "JoiningPINToDomain";
-      case State::kChangingPIN:
-        return "ChangingPIN";
+      case State::kSettingPIN:
+        return "SettingPIN";
       case State::kJoiningUpdatedPINToDomain:
         return "JoiningUpdatedPINToDomain";
       case State::kRenewingPIN:
@@ -1501,13 +1502,15 @@ class EnclaveManager::StateMachine {
     }
 #endif  // BUILDFLAG(IS_MAC)
 
-    if (!action_->updated_pin.empty()) {
+    if (!action_->set_pin.empty() || !action_->updated_pin.empty()) {
       if (!user_->registered()) {
         state_ = State::kStop;
         return;
       }
 
-      is_pin_update_ = true;
+      is_set_pin_ = !action_->set_pin.empty();
+      is_pin_update_ = !action_->updated_pin.empty();
+      CHECK(is_set_pin_ ^ is_pin_update_);
       rapt_ = std::move(action_->rapt);
       SyncWithSecurityDomain();
       return;
@@ -1956,8 +1959,15 @@ class EnclaveManager::StateMachine {
       }
     }
 
+    if (is_set_pin_ && result->gpm_pin_metadata) {
+      // There is already a PIN.
+      state_ = State::kStop;
+      return;
+    }
+
     state_ = State::kHashingPIN;
-    HashPIN(std::move(action_->updated_pin));
+    HashPIN(action_->set_pin.empty() ? std::move(action_->updated_pin)
+                                     : std::move(action_->set_pin));
   }
 
   void DoHashingPIN(Event event) {
@@ -2023,17 +2033,17 @@ class EnclaveManager::StateMachine {
     CHECK(absl::holds_alternative<AccessToken>(event)) << ToString(event);
     std::string token = std::move(absl::get_if<AccessToken>(&event)->value());
 
-    if (is_pin_update_) {
-      SendPINChangeRequest(std::move(token));
+    if (is_set_pin_ || is_pin_update_) {
+      SendPINSetRequest(std::move(token));
     } else if (is_pin_renewal_) {
       SendPINRenewalRequest(std::move(token));
     } else {
-      SendPINWrappingRequest(std::move(token));
+      SendPINAndSecretWrappingRequest(std::move(token));
     }
   }
 
-  void SendPINWrappingRequest(std::string token) {
-    state_ = State::kWrappingPIN;
+  void SendPINAndSecretWrappingRequest(std::string token) {
+    state_ = State::kWrappingPINAndSecret;
     enclave::Transact(
         manager_->network_context_factory_, enclave::GetEnclaveIdentity(),
         std::move(token),
@@ -2049,13 +2059,13 @@ class EnclaveManager::StateMachine {
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
-  void SendPINChangeRequest(std::string token) {
+  void SendPINSetRequest(std::string token) {
     uint8_t counter_id[enclave::kCounterIDLen];
     crypto::RandBytes(counter_id);
     uint8_t vault_handle_without_type[enclave::kVaultHandleLen - 1];
     crypto::RandBytes(vault_handle_without_type);
 
-    state_ = State::kChangingPIN;
+    state_ = State::kSettingPIN;
     std::vector<uint8_t> wrapped_secret =
         GetCurrentWrappedSecretForUser(user_).second;
     enclave::Transact(
@@ -2095,7 +2105,7 @@ class EnclaveManager::StateMachine {
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
-  void DoWrappingPIN(Event event) {
+  void DoWrappingPINAndSecret(Event event) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     if (absl::holds_alternative<Failure>(event)) {
@@ -2163,7 +2173,7 @@ class EnclaveManager::StateMachine {
     }
 
     const bool updating_pin_member = is_pin_update_ || is_pin_renewal_;
-    if (!updating_pin_member) {
+    if (!updating_pin_member && !is_set_pin_) {
       CHECK(wrapped_pin_proto_->wrapped_pin().empty());
       wrapped_pin_proto_->set_wrapped_pin(BuildWrappedPIN(
           *hashed_pin_, /*generation=*/0,
@@ -2185,15 +2195,17 @@ class EnclaveManager::StateMachine {
     CHECK_EQ(!previous_pin_public_key.empty(), updating_pin_member);
     user_->set_pin_public_key(vault_public_key);
 
-    state_ = updating_pin_member ? State::kJoiningUpdatedPINToDomain
-                                 : State::kJoiningPINToDomain;
+    state_ = (updating_pin_member || is_set_pin_)
+                 ? State::kJoiningUpdatedPINToDomain
+                 : State::kJoiningPINToDomain;
     std::optional<trusted_vault::MemberKeysSource> member_keys_source =
         std::move(member_keys_source_);
-    // If changing or renewing a PIN then `member_keys_source` will have been
-    // populated by the enclave. Otherwise a new PIN is being set and
+    // If changing, renewing, or setting a PIN then `member_keys_source` will
+    // have been populated by the enclave. Otherwise a new PIN is being set and
     // `store_keys_args_for_joining_` will contain the security domain secret,
     // which is sufficient for calculating the member keys.
-    CHECK_EQ(member_keys_source.has_value(), updating_pin_member);
+    CHECK_EQ(member_keys_source.has_value(),
+             updating_pin_member || is_set_pin_);
     if (!member_keys_source) {
       member_keys_source = trusted_vault::GetTrustedVaultKeysWithVersions(
           store_keys_args_for_joining_->keys,
@@ -2224,12 +2236,19 @@ class EnclaveManager::StateMachine {
       return;
     }
 
+    if (is_set_pin_) {
+      // If adding a PIN to an existing account, then we're done.
+      success_ = true;
+      state_ = State::kStop;
+      return;
+    }
+
     store_keys_args_for_joining_->last_key_version = key_version;
 
     if (!StoreWrappedSecrets(
             user_, GetNewSecretsToStore(*user_, *store_keys_args_for_joining_),
             base::span_from_ref(wrapping_response_->GetArray()[1]))) {
-      FIDO_LOG(ERROR) << "Secret wrapping resulted in malformed resposne: "
+      FIDO_LOG(ERROR) << "Secret wrapping resulted in malformed response: "
                       << cbor::DiagnosticWriter::Write(*wrapping_response_);
       state_ = State::kStop;
       return;
@@ -2274,7 +2293,7 @@ class EnclaveManager::StateMachine {
   }
 #endif  // BUILDFLAG(IS_MAC)
 
-  void DoChangingPIN(Event event) {
+  void DoSettingPIN(Event event) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     state_ = State::kStop;
@@ -2562,6 +2581,8 @@ class EnclaveManager::StateMachine {
   std::unique_ptr<trusted_vault::RecoveryKeyStoreConnection::Request>
       recovery_key_store_request_;
   std::optional<cbor::Value> wrapping_response_;
+  // True if a PIN is being hashed in order to add to an existing account.
+  bool is_set_pin_ = false;
   // True if a PIN is being hashed in order to change it, rather than to set
   // a new PIN on an account.
   bool is_pin_update_ = false;
@@ -2734,6 +2755,20 @@ void EnclaveManager::AddDeviceAndPINToAccount(
   action->callback = std::move(callback);
   action->store_keys_args = std::move(pending_keys_);
   action->pin = std::move(pin);
+  pending_actions_.emplace_back(std::move(action));
+  Act();
+}
+
+void EnclaveManager::SetPIN(std::string pin,
+                            std::string rapt,
+                            EnclaveManager::Callback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(user_->registered());
+
+  auto action = std::make_unique<PendingAction>();
+  action->callback = std::move(callback);
+  action->set_pin = std::move(pin);
+  action->rapt = std::move(rapt);
   pending_actions_.emplace_back(std::move(action));
   Act();
 }

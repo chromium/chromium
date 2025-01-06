@@ -888,6 +888,71 @@ TEST_F(EnclaveManagerTest, ChangePIN) {
               GetAssertionResponseExpectation());
 }
 
+TEST_F(EnclaveManagerTest, AddPINToExistingAccount) {
+  security_domain_service_->pretend_there_are_members();
+  const std::string new_pin = "newpin";
+
+  std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
+  ASSERT_FALSE(manager_.has_pending_keys());
+  manager_.StoreKeys(gaia_id_, {std::move(key)},
+                     /*last_key_version=*/kSecretVersion);
+  ASSERT_TRUE(manager_.has_pending_keys());
+
+  BoolFuture add_future;
+  manager_.AddDeviceToAccount(std::nullopt, add_future.GetCallback());
+  EXPECT_TRUE(add_future.Wait());
+  ASSERT_TRUE(manager_.is_ready());
+  const std::vector<uint8_t> security_domain_secret =
+      std::move(manager_.TakeSecret()->second);
+
+  BoolFuture set_pin_future;
+  manager_.SetPIN(new_pin, "rapt", set_pin_future.GetCallback());
+  EXPECT_TRUE(set_pin_future.Wait());
+  ASSERT_TRUE(set_pin_future.Get());
+
+  EXPECT_EQ(security_domain_service_->num_physical_members(), 1u);
+  EXPECT_EQ(security_domain_service_->num_pin_members(), 1u);
+  EXPECT_EQ(recovery_key_store_->vaults().size(), 1u);
+  const std::optional<std::vector<uint8_t>> recovered_security_domain_secret =
+      FakeMagicArch::RecoverWithPIN(new_pin, *security_domain_service_,
+                                    *recovery_key_store_);
+  CHECK(recovered_security_domain_secret.has_value());
+  EXPECT_EQ(*recovered_security_domain_secret, security_domain_secret);
+
+  std::unique_ptr<device::enclave::ClaimedPIN> claimed_pin =
+      EnclaveManager::MakeClaimedPINSlowly(new_pin, manager_.GetWrappedPIN());
+  std::unique_ptr<sync_pb::WebauthnCredentialSpecifics> entity;
+  DoCreate(/*claimed_pin=*/nullptr, &entity);
+  DoAssertion(std::move(entity), std::move(claimed_pin),
+              GetAssertionResponseExpectation());
+}
+
+TEST_F(EnclaveManagerTest, AddPINToExistingAccountButTheresAlreadyOne) {
+  security_domain_service_->pretend_there_are_members();
+  const std::string pin = "pin";
+  const std::string new_pin = "newpin";
+
+  std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
+  ASSERT_FALSE(manager_.has_pending_keys());
+  manager_.StoreKeys(gaia_id_, {std::move(key)},
+                     /*last_key_version=*/kSecretVersion);
+  ASSERT_TRUE(manager_.has_pending_keys());
+
+  BoolFuture add_future;
+  manager_.AddDeviceAndPINToAccount(pin, add_future.GetCallback());
+  EXPECT_TRUE(add_future.Wait());
+  ASSERT_TRUE(manager_.is_ready());
+  const std::vector<uint8_t> security_domain_secret =
+      std::move(manager_.TakeSecret()->second);
+
+  BoolFuture set_pin_future;
+  manager_.SetPIN(new_pin, "rapt", set_pin_future.GetCallback());
+  EXPECT_TRUE(set_pin_future.Wait());
+
+  // This should fail because there's already a PIN set.
+  ASSERT_FALSE(set_pin_future.Get());
+}
+
 TEST_F(EnclaveManagerTest, ChangePINWithTwoDevices) {
   security_domain_service_->pretend_there_are_members();
   const std::string pin = "pin";

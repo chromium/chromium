@@ -184,6 +184,8 @@ class EnclaveManager : public EnclaveManagerInterface {
   // to call after `StoreKeys` has been called and thus `has_pending_keys`
   // returns true.
   void AddDeviceAndPINToAccount(std::string pin, Callback callback);
+  // Set a PIN on an account that doesn't currently have one.
+  void SetPIN(std::string pin, std::string rapt, Callback callback);
   // Change the GPM PIN on the account. If a RAPT (Reauthentication Proof Token)
   // is given then it will be used, otherwise the UV key will be used, causing
   // system UI to appear to verify the user.
