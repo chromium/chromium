@@ -308,8 +308,7 @@ bool ChromePasswordManagerClient::IsFillingEnabled(const GURL& url) const {
   }
 
   const bool ssl_errors = net::IsCertStatusError(GetMainFrameCertStatus());
-  autofill::LogManager* log_manager =
-      const_cast<ChromePasswordManagerClient*>(this)->GetCurrentLogManager();
+  autofill::LogManager* log_manager = GetOrCreateLogManager();
   if (log_manager && log_manager->IsLoggingActive()) {
     password_manager::BrowserSavePasswordProgressLogger logger(log_manager);
     logger.LogBoolean(Logger::STRING_SSL_ERRORS_PRESENT, ssl_errors);
@@ -974,8 +973,7 @@ bool ChromePasswordManagerClient::WasLastNavigationHTTPError() const {
   DCHECK(web_contents());
 
   std::unique_ptr<password_manager::BrowserSavePasswordProgressLogger> logger;
-  autofill::LogManager* log_manager =
-      const_cast<ChromePasswordManagerClient*>(this)->GetCurrentLogManager();
+  autofill::LogManager* log_manager = GetOrCreateLogManager();
   if (log_manager && log_manager->IsLoggingActive()) {
     logger =
         std::make_unique<password_manager::BrowserSavePasswordProgressLogger>(
@@ -1078,6 +1076,11 @@ ChromePasswordManagerClient::GetStoreResultFilter() const {
 }
 
 autofill::LogManager* ChromePasswordManagerClient::GetCurrentLogManager() {
+  return GetOrCreateLogManager();
+}
+
+autofill::LogManager* ChromePasswordManagerClient::GetOrCreateLogManager()
+    const {
   if (!log_manager_ && log_router_ && log_router_->HasReceivers()) {
     ContentPasswordManagerDriverFactory* driver_factory = GetDriverFactory();
     log_manager_ = autofill::LogManager::Create(
@@ -1998,8 +2001,7 @@ bool ChromePasswordManagerClient::IsPasswordManagementEnabledForCurrentPage(
     is_enabled = false;
   }
 
-  autofill::LogManager* log_manager =
-      const_cast<ChromePasswordManagerClient*>(this)->GetCurrentLogManager();
+  autofill::LogManager* log_manager = GetOrCreateLogManager();
   if (log_manager && log_manager->IsLoggingActive()) {
     password_manager::BrowserSavePasswordProgressLogger logger(log_manager);
     logger.LogURL(Logger::STRING_SECURITY_ORIGIN, url);

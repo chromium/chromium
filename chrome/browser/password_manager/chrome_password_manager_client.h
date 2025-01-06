@@ -463,6 +463,8 @@ class ChromePasswordManagerClient
   GetOrCreateKeyboardReplacingSurfaceVisibilityController();
 #endif
 
+  autofill::LogManager* GetOrCreateLogManager() const;
+
   const raw_ptr<Profile> profile_;
 
   password_manager::PasswordManager password_manager_;
@@ -523,7 +525,7 @@ class ChromePasswordManagerClient
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
   const raw_ptr<autofill::LogRouter> log_router_;
-  std::unique_ptr<autofill::RoutingLogManager> log_manager_;
+  mutable std::unique_ptr<autofill::RoutingLogManager> log_manager_;
 
   // Recorder of metrics that is associated with the last committed navigation
   // of the WebContents owning this ChromePasswordManagerClient. May be unset at
