@@ -414,6 +414,8 @@ class TimeBase {
       kMicrosecondsPerHour * kHoursPerDay;
   static constexpr int64_t kMicrosecondsPerWeek = kMicrosecondsPerDay * 7;
   static constexpr int64_t kNanosecondsPerMicrosecond = 1000;
+  static constexpr int64_t kNanosecondsPerMillisecond =
+      kNanosecondsPerMicrosecond * kMicrosecondsPerMillisecond;
   static constexpr int64_t kNanosecondsPerSecond =
       kNanosecondsPerMicrosecond * kMicrosecondsPerSecond;
 

@@ -21,9 +21,10 @@
 #include "gpu/ipc/common/surface_handle.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "components/input/android/android_input_callback.h"
 #include "components/input/android/input_receiver_data.h"
+#include "components/viz/service/input/android_state_transfer_handler.h"
 #include "components/viz/service/input/fling_scheduler_android.h"
+#include "components/viz/service/input/render_input_router_support_android.h"
 #endif
 
 namespace input {
@@ -55,7 +56,6 @@ class VIZ_SERVICE_EXPORT InputManager
     : public FrameSinkObserver,
       public input::RenderWidgetHostInputEventRouter::Delegate,
 #if BUILDFLAG(IS_ANDROID)
-      public input::AndroidInputCallbackClient,
       public FlingSchedulerAndroid::Delegate,
 #endif
       public RenderInputRouterSupportBase::Delegate,
@@ -98,10 +98,6 @@ class VIZ_SERVICE_EXPORT InputManager
       const FrameSinkId& frame_sink_id) override;
 
 #if BUILDFLAG(IS_ANDROID)
-  // AndroidInputCallbackClient implementation.
-  bool OnMotionEvent(base::android::ScopedInputEvent input_event,
-                     const FrameSinkId& root_frame_sink_id) override;
-
   // FlingSchedulerAndroid::Delegate implementation.
   BeginFrameSource* GetBeginFrameSourceForFrameSink(
       const FrameSinkId& id) override;
@@ -166,6 +162,8 @@ class VIZ_SERVICE_EXPORT InputManager
   void CreateOrReuseAndroidInputReceiver(
       const FrameSinkId& frame_sink_id,
       const gpu::SurfaceHandle& surface_handle);
+
+  AndroidStateTransferHandler android_state_transfer_handler_;
 
   std::unique_ptr<input::InputReceiverData> receiver_data_;
 #endif  // BUILDFLAG(IS_ANDROID)

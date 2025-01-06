@@ -381,7 +381,18 @@ std::optional<bool> InputManager::IsDelegatedInkHovering(
 }
 void InputManager::StateOnTouchTransfer(
     input::mojom::TouchTransferStatePtr state) {
-  // TODO(crbug.com/370506271): Handle state to start processing input events.
+#if BUILDFLAG(IS_ANDROID)
+  auto iter = frame_sink_metadata_map_.find(state->root_widget_frame_sink_id);
+  base::WeakPtr<RenderInputRouterSupportAndroidInterface>
+      support_android_interface = nullptr;
+  if (iter != frame_sink_metadata_map_.end()) {
+    auto* support_android = static_cast<RenderInputRouterSupportAndroid*>(
+        iter->second.rir_support.get());
+    support_android_interface = support_android->GetWeakPtr();
+  }
+  android_state_transfer_handler_.StateOnTouchTransfer(
+      std::move(state), support_android_interface);
+#endif
 }
 
 void InputManager::NotifySiteIsMobileOptimized(
@@ -512,7 +523,8 @@ void InputManager::CreateOrReuseAndroidInputReceiver(
   }
 
   std::unique_ptr<input::AndroidInputCallback> android_input_callback =
-      std::make_unique<input::AndroidInputCallback>(frame_sink_id, this);
+      std::make_unique<input::AndroidInputCallback>(
+          frame_sink_id, &android_state_transfer_handler_);
   // Destructor of |ScopedInputReceiverCallbacks| will call
   // |AInputReceiverCallbacks_release|, so we don't have to explicitly unset the
   // motion event callback we set below using
@@ -558,16 +570,6 @@ void InputManager::CreateOrReuseAndroidInputReceiver(
       parent_input_surface, input_surface, std::move(browser_input_token),
       std::move(android_input_callback), std::move(callbacks),
       std::move(receiver), std::move(viz_input_token));
-}
-
-bool InputManager::OnMotionEvent(base::android::ScopedInputEvent input_event,
-                                 const FrameSinkId& root_frame_sink_id) {
-  // TODO(370506271): Implement once we do the state transfer from Browser on
-  // touch down.
-
-  // Always return true since we are receiving input on Viz after hit testing on
-  // Browser already determined that web contents are being hit.
-  return true;
 }
 
 BeginFrameSource* InputManager::GetBeginFrameSourceForFrameSink(

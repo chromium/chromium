@@ -421,6 +421,8 @@ viz_component("service") {
       "frame_sinks/external_begin_frame_source_android.h",
       "gl/throw_uncaught_exception.cc",
       "gl/throw_uncaught_exception.h",
+      "input/android_state_transfer_handler.cc",
+      "input/android_state_transfer_handler.h",
       "input/fling_scheduler_android.cc",
       "input/fling_scheduler_android.h",
       "input/render_input_router_support_android.cc",
@@ -689,7 +691,9 @@ viz_source_set("unit_tests") {
       "display/overlay_unittest.cc",
       "frame_sinks/external_begin_frame_source_android_unittest.cc",
       "frame_sinks/fling_scheduler_android_unittest.cc",
+      "input/android_state_transfer_handler_unittest.cc",
     ]
+    deps += [ "//ui/events:motionevent_jni_headers" ]
   }
 
   if (enable_vulkan) {

@@ -44,6 +44,8 @@ InputTransferHandlerAndroid::InputTransferHandlerAndroid(
 InputTransferHandlerAndroid::~InputTransferHandlerAndroid() = default;
 
 bool InputTransferHandlerAndroid::OnTouchEvent(const ui::MotionEvent& event) {
+  // TODO(crbug.com/383307455): Forward events seen on Browser post transfer
+  // over to Viz.
   if (touch_transferred_) {
     // TODO(crbug.com/370506271): Add support for getDownTime in MotionEvent and
     // check if this cancel has same downtime as the original down used for

@@ -143,4 +143,9 @@ void RenderInputRouterSupportAndroid::GestureEventAck(
   StopFlingingIfNecessary(event, ack_result);
 }
 
+base::WeakPtr<RenderInputRouterSupportAndroid>
+RenderInputRouterSupportAndroid::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 }  // namespace viz

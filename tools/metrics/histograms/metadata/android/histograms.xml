@@ -2213,6 +2213,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.InputOnViz.Viz.PendingStateTransfers.{CurrentState}"
+    units="counts" expires_after="2025-06-30">
+  <owner>kartarsingh@google.com</owner>
+  <owner>woa-performance-team@google.com</owner>
+  <summary>
+    When `InputOnViz` is enabled Browser process sends state on TouchDown to Viz
+    in case touch transfer was successful. In theory, due to hiccups in system
+    we can have multiple pending states on Viz.
+
+    This metric records the number of pending states on Viz when {CurrentState}.
+    This would help us verify if we have pending states in practice as well.
+  </summary>
+  <token key="CurrentState">
+    <variant name="NonNullCurrentState" summary="current state is non-null"/>
+    <variant name="NullCurrentState" summary="current state is null"/>
+  </token>
+</histogram>
+
 <histogram name="Android.Intent.HasNonSpoofablePackageName" enum="Boolean"
     expires_after="2024-12-01">
   <owner>katzz@google.com</owner>
