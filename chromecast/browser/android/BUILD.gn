@@ -159,10 +159,6 @@ common_android_library_deps = [
 
   # TODO(slan): We may need to pass this in as a parameter.
   "//third_party/androidx:androidx_localbroadcastmanager_localbroadcastmanager_java",
-  "//third_party/androidx:androidx_slice_slice_builders_java",
-
-  # Used internally for Settings UI.
-  "//third_party/androidx:androidx_slice_slice_core_java",
   "//ui/android:ui_java",
 ]
 
