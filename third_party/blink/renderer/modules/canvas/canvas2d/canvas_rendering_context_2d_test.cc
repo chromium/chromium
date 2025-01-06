@@ -2512,6 +2512,59 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 }
 
 TEST_P(CanvasRenderingContext2DTestAccelerated,
+       DisablingAccelerationWhileHibernationIsPendingAbortsHibernation) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
+
+  CreateContext(kNonOpaque);
+  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  ASSERT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
+
+  // Install a minimal delay for testing to ensure that the test remains fast
+  // to execute.
+  CanvasElement().GetHibernationHandler()->SetBeforeCompressionDelayForTesting(
+      base::Microseconds(10));
+
+  ASSERT_FALSE(CanvasElement().IsHibernating());
+
+  // Verify that going to the background triggers hibernation asynchronously.
+  {
+    base::HistogramTester histogram_tester;
+    GetDocument().GetPage()->SetVisibilityState(
+        mojom::blink::PageVisibilityState::kHidden,
+        /*is_initial_state=*/false);
+
+    histogram_tester.ExpectUniqueSample(
+        "Blink.Canvas.HibernationEvents",
+        CanvasHibernationHandler::HibernationEvent::kHibernationScheduled, 1);
+    ASSERT_FALSE(CanvasElement().IsHibernating());
+  }
+
+  CanvasElement().DisableAcceleration();
+  ASSERT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
+
+  // Verify that running the hibernation task aborts hibernation as
+  // disabling acceleration has caused the hibernation handler to be destroyed.
+  {
+    base::HistogramTester histogram_tester;
+
+    // Run the task that initiates hibernation, which has been posted as an idle
+    // task.
+    ThreadScheduler::Current()
+        ->ToMainThreadScheduler()
+        ->StartIdlePeriodForTesting();
+    blink::test::RunPendingTasks();
+
+    histogram_tester.ExpectUniqueSample(
+        "Blink.Canvas.HibernationEvents",
+        CanvasHibernationHandler::HibernationEvent::
+            kHibernationAbortedDueToDestructionWhileHibernatePending,
+        1);
+    EXPECT_FALSE(CanvasElement().IsHibernating());
+  }
+}
+
+TEST_P(CanvasRenderingContext2DTestAccelerated,
        ForegroundingWhileHibernationIsPendingAbortsHibernation) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
