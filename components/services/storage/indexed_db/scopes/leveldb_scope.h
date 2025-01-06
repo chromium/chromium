@@ -140,7 +140,6 @@ class LevelDBScope {
   // decrements the |undo_sequence_number_|.
   void AddBufferedUndoTask();
 
-  void AddCleanupDeleteRangeTask(std::string begin, std::string end);
   void AddCleanupDeleteAndCompactRangeTask(std::string begin, std::string end);
   // Writes the current |cleanup_task_buffer_| to the |write_batch_|, and
   // decrements the |cleanup_sequence_number_|.

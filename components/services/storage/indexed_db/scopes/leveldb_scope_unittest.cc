@@ -327,51 +327,6 @@ TEST_F(LevelDBScopeTest, DeleteRangeInclusive) {
   locks.clear();
 }
 
-TEST_F(LevelDBScopeTest, DeleteRangeDeferred) {
-  SetUpRealDatabase();
-  PartitionedLockManager lock_manager;
-  std::optional<leveldb::Status> failure_status;
-  LevelDBScopes scopes(
-      metadata_prefix_, kWriteBatchSizeForTesting, leveldb_, &lock_manager,
-      base::BindLambdaForTesting(
-          [&failure_status](leveldb::Status s) { failure_status = s; }));
-
-  leveldb::Status s = scopes.Initialize();
-  EXPECT_TRUE(s.ok());
-  scopes.StartRecoveryAndCleanupTasks();
-
-  std::string value;
-  auto scope = scopes.CreateScope(
-      AcquireLocksSync(&lock_manager, {CreateSimpleExclusiveLock()}));
-  for (int i = 0; i < 20; ++i) {
-    std::string key = CreateKey(i);
-    value = i % 2 == 0 ? CreateLargeValue(i) : "smallvalue";
-    s = scope->Put(key, value);
-    EXPECT_TRUE(s.ok());
-  }
-  CommitAndWaitForCleanup(scopes, std::move(scope));
-  EXPECT_FALSE(failure_status.has_value());
-
-  scope = scopes.CreateScope(
-      AcquireLocksSync(&lock_manager, {CreateSimpleExclusiveLock()}));
-  s = scope->DeleteRange(CreateKey(0), CreateKey(20),
-                         LevelDBScopeDeletionMode::kDeferred);
-  EXPECT_TRUE(s.ok());
-  CommitAndWaitForCleanup(scopes, std::move(scope));
-  EXPECT_FALSE(failure_status.has_value());
-
-  // Be a good citizen and acquire read locks.
-  auto locks = AcquireLocksSync(&lock_manager, {CreateSimpleSharedLock()});
-  leveldb::ReadOptions options;
-  options.verify_checksums = true;
-  for (int i = 0; i < 20; ++i) {
-    std::string key = CreateKey(i);
-    s = leveldb_->db()->Get(options, key, &value);
-    EXPECT_TRUE(s.IsNotFound()) << i;
-  }
-  EXPECT_FALSE(failure_status.has_value());
-}
-
 TEST_F(LevelDBScopeTest, DeleteRangeCompact) {
   SetUpRealDatabase();
   PartitionedLockManager lock_manager;
@@ -413,64 +368,6 @@ TEST_F(LevelDBScopeTest, DeleteRangeCompact) {
     s = leveldb_->db()->Get(options, key, &value);
     EXPECT_TRUE(s.IsNotFound()) << i;
   }
-  EXPECT_FALSE(failure_status.has_value());
-}
-
-TEST_F(LevelDBScopeTest, RevertWithDeferredDelete) {
-  SetUpRealDatabase();
-  PartitionedLockManager lock_manager;
-  std::optional<leveldb::Status> failure_status;
-  LevelDBScopes scopes(
-      metadata_prefix_, kWriteBatchSizeForTesting, leveldb_, &lock_manager,
-      base::BindLambdaForTesting(
-          [&failure_status](leveldb::Status s) { failure_status = s; }));
-  leveldb::Status s = scopes.Initialize();
-  EXPECT_TRUE(s.ok());
-  scopes.StartRecoveryAndCleanupTasks();
-
-  // This test makes sure that the cleanup scheduled after the revert doesn't
-  // execute it's cleanup tasks.
-
-  // Populate the database.
-  std::string value;
-  auto scope = scopes.CreateScope(
-      AcquireLocksSync(&lock_manager, {CreateSimpleExclusiveLock()}));
-  for (int i = 0; i < 20; ++i) {
-    std::string key = CreateKey(i);
-    value = i % 2 == 0 ? CreateLargeValue(i) : "smallvalue";
-    s = scope->Put(key, value);
-    EXPECT_TRUE(s.ok());
-  }
-  CommitAndWaitForCleanup(scopes, std::move(scope));
-  EXPECT_FALSE(failure_status.has_value());
-
-  // Do a deferred delete & a write large enough to make this a log-based scope,
-  // and then revert it.
-  scope = scopes.CreateScope(
-      AcquireLocksSync(&lock_manager, {CreateSimpleExclusiveLock()}));
-  value = CreateLargeValue(20);
-  s = scope->Put(CreateKey(20), value);
-  s = scope->DeleteRange(CreateKey(0), CreateKey(20),
-                         LevelDBScopeDeletionMode::kDeferred);
-  EXPECT_TRUE(s.ok());
-  scope.reset();
-
-  // Wait until cleanup task runs.
-  task_env_.RunUntilIdle();
-  EXPECT_FALSE(failure_status.has_value());
-
-  // If the cleanup correctly ignored the tasks, then the values should still
-  // exist.
-  auto locks = AcquireLocksSync(&lock_manager, {CreateSimpleSharedLock()});
-  leveldb::ReadOptions options;
-  options.verify_checksums = true;
-  for (int i = 0; i < 20; ++i) {
-    std::string key = CreateKey(i);
-    s = leveldb_->db()->Get(options, key, &value);
-    EXPECT_TRUE(s.ok()) << i;
-  }
-  s = leveldb_->db()->Get(options, CreateKey(20), &value);
-  EXPECT_TRUE(s.IsNotFound());
   EXPECT_FALSE(failure_status.has_value());
 }
 

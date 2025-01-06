@@ -181,34 +181,23 @@ leveldb::Status CleanupScopeTask::ExecuteAndDeleteCleanupTasks(
   for (; iterator->Valid() && iterator->key().starts_with(cleanup_tasks_prefix);
        iterator->Next()) {
     leveldb::Slice value = iterator->value();
-    if (!cleanup_task.ParseFromArray(value.data(), value.size()))
+    if (!cleanup_task.ParseFromArray(value.data(), value.size())) {
       return leveldb::Status::Corruption("Invalid cleanup operation value.");
-
-    switch (cleanup_task.operation_case()) {
-      case LevelDBScopesCleanupTask::kDeleteRange: {
-        auto range = cleanup_task.delete_range();
-        s = DeleteRange(range.begin(), range.end(), read_options,
-                        write_options);
-        if (!s.ok() || level_db_->destruction_requested()) [[unlikely]] {
-          return s;
-        }
-        break;
-      }
-      case LevelDBScopesCleanupTask::kDeleteRangeAndCompact: {
-        auto range = cleanup_task.delete_range_and_compact();
-        leveldb::Slice begin(range.begin());
-        leveldb::Slice end(range.end());
-        s = DeleteRange(begin, end, read_options, write_options);
-        if (!s.ok() || level_db_->destruction_requested()) [[unlikely]] {
-          return s;
-        }
-        level_db_->db()->CompactRange(&begin, &end);
-        break;
-      }
-      // The protobuf code generator is to blame for this style mismatch.
-      case LevelDBScopesCleanupTask::OPERATION_NOT_SET:
-        return leveldb::Status::Corruption("Invalid cleanup operation type.");
     }
+
+    if (!cleanup_task.has_delete_range_and_compact()) {
+      return leveldb::Status::Corruption("Invalid cleanup operation type.");
+    }
+
+    const auto& range = cleanup_task.delete_range_and_compact();
+    leveldb::Slice begin(range.begin());
+    leveldb::Slice end(range.end());
+    s = DeleteRange(begin, end, read_options, write_options);
+    if (!s.ok() || level_db_->destruction_requested()) [[unlikely]] {
+      return s;
+    }
+    level_db_->db()->CompactRange(&begin, &end);
+
     write_batch_.Delete(iterator->key());
 
     s = MaybeSubmitWriteBatch(write_options);
