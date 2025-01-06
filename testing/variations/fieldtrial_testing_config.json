@@ -25391,22 +25391,6 @@
             ]
         }
     ],
-    "WebViewFrameRateHints": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WebViewFrameRateHints"
-                    ],
-                    "min_os_version": "15.0.0"
-                }
-            ]
-        }
-    ],
     "WebViewInterceptedCookieHeader": [
         {
             "platforms": [
