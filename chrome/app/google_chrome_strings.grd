@@ -1150,7 +1150,7 @@ Permissions you've already given to websites and apps may apply to this account.
           clear the Chrome data in your account
         </message>
         <message name="IDS_SYNC_PASSPHRASE_DIALOG_BODY" desc="">
-          Your data is encrypted with your passphrase. Enter it to use and save Chrome data in your Google account.
+          Your data is encrypted with your passphrase. Enter it to use and save Chrome data in your Google Account.
         </message>
         <message name="IDS_AVATAR_BUTTON_INTERCEPT_BUBBLE_CHROME_SIGNIN_ACCESSIBILITY_LABEL"
           desc="Accessibility label (read by the accessibility tools) of the avatar button when the Chrome Signin bubble is shown. The text implies that the expanded bubble underneath the button is closable by clicking on the button. The actual text is 'Sign in to Chrome?' with a bubble shown under it.">

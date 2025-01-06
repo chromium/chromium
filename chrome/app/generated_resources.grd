@@ -1377,7 +1377,7 @@ are declared in tools/grit/grit_args.gni.
             {NUM_PROFILES, plural, =1 {&amp;Close this profile} other {&amp;Close this profile (# windows)}}
           </message>
           <message name="IDS_MANAGE_GOOGLE_ACCOUNT" desc="The text label of the Manage Google account item">
-            Manage your &amp;Google account
+            Manage your &amp;Google Account
           </message>
           <message name="IDS_OTHER_CHROME_PROFILES_TITLE" desc="The title of the Other Chrome profiles section">
             Other Chrome profiles
