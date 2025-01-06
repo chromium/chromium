@@ -59,6 +59,9 @@ class GURL;
 - (void)start;
 
 // Reloads a previous result in the overlay.
+// Only accepts results that were returned by the Lens SDK through one of the
+// delegate methods. Calling this API with ChromeLensOverlayResultImpl or some
+// other object that implements ChromeLensOverlayResult is a no-op.
 - (void)reloadResult:(id<ChromeLensOverlayResult>)result;
 
 // Removes the current selection and optionally clears the query text.

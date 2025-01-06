@@ -271,6 +271,21 @@
   [self.delegate lensOverlayMediatorOpenURLInNewTabRequsted:URL];
 }
 
+- (void)lensResultPageWillLoadNonLensSRP:(NSString*)query
+                                     url:(const GURL&)destinationURL {
+  [self.lensHandler resetSelectionAreaToInitialPosition:^{
+  }];
+  _navigationManager->RegisterRelatedSearchNavigation(
+      destinationURL, base::SysNSStringToUTF16(query));
+
+  [self.omniboxCoordinator setThumbnailImage:nil];
+  if (self.omniboxClient) {
+    [self setOmniboxSuggestSignals:nil];
+    self.omniboxClient->SetLensResultHasThumbnail(false);
+  }
+  [self updateOmniboxText:query];
+}
+
 #pragma mark - Private
 
 /// Updates the UI for lens `result`.
