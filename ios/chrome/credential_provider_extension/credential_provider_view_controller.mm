@@ -50,6 +50,16 @@ UIColor* BackgroundColor() {
 }
 }
 
+enum class PasskeyCreationEligibility {
+  kCanCreate,
+  kCanCreateWithUserInteraction,
+  kPasswordSaveDisabledByUser,
+  kPasswordSaveDisabledByEnterprise,
+  kPasswordSyncDisabled,
+  kSignedOut,
+  kUnsupportedAlgorithm,
+};
+
 @interface CredentialProviderViewController () <
     ConfirmationAlertActionHandler,
     CredentialResponseHandler,
@@ -298,8 +308,23 @@ UIColor* BackgroundColor() {
 // Only available in iOS 18.0+.
 - (void)performPasskeyRegistrationWithoutUserInteractionIfPossible:
     (ASPasskeyCredentialRequest*)registrationRequest API_AVAILABLE(ios(18.0)) {
+  PasskeyRequestDetails* passkeyRequestDetails =
+      [self passkeyDetailsFromRequest:registrationRequest];
+  NSString* gaia = [self gaia];
+  PasskeyCreationEligibility passkeyCreationEligibility =
+      [self passkeyCreationEligibilityForGaia:gaia
+                        passkeyRequestDetails:passkeyRequestDetails];
+
+  // For any other state than `kCanCreate`, either passkey creation is not
+  // allowed or user interaction is required, so exit immediately.
+  if (passkeyCreationEligibility != PasskeyCreationEligibility::kCanCreate) {
+    [self exitWithErrorCode:ASExtensionErrorCodeFailed];
+    return;
+  }
+
   // This function is called to silently create passkeys.
   // We're always allowed to return an error until we support this flow.
+  // TODO(crbug.com/355666571): Create a passkey here.
   [self exitWithErrorCode:ASExtensionErrorCodeFailed];
 }
 
@@ -310,26 +335,33 @@ UIColor* BackgroundColor() {
     return;
   }
 
-  if (!IsPasswordCreationUserEnabled()) {
-    if (IsPasswordCreationManaged()) {
-      [self showSavingDisabledByEnterpriseAlert];
-    } else {
-      [self showSavingManuallyDisabledAlert];
-    }
-    return;
-  }
-
-  if (!IsPasswordSyncEnabled()) {
-    [self showSavingToAccountDisabledAlert];
-    return;
-  }
-
+  PasskeyRequestDetails* passkeyRequestDetails =
+      [self passkeyDetailsFromRequest:registrationRequest];
   NSString* gaia = [self gaia];
-  if ([gaia length] == 0) {
-    // If we don't have a gaia, either the user is signed out of Chrome or has
-    // never opened Chrome. Passkeys require the user to be signed in to Chrome.
-    [self showSignedOutUserAlert];
-    return;
+  PasskeyCreationEligibility passkeyCreationEligibility =
+      [self passkeyCreationEligibilityForGaia:gaia
+                        passkeyRequestDetails:passkeyRequestDetails];
+
+  switch (passkeyCreationEligibility) {
+    case PasskeyCreationEligibility::kPasswordSaveDisabledByUser:
+      [self showSavingManuallyDisabledAlert];
+      return;
+    case PasskeyCreationEligibility::kPasswordSaveDisabledByEnterprise:
+      [self showSavingDisabledByEnterpriseAlert];
+      return;
+    case PasskeyCreationEligibility::kPasswordSyncDisabled:
+      [self showSavingToAccountDisabledAlert];
+      return;
+    case PasskeyCreationEligibility::kSignedOut:
+      [self showSignedOutUserAlert];
+      return;
+    case PasskeyCreationEligibility::kUnsupportedAlgorithm:
+      [self exitWithErrorCode:ASExtensionErrorCodeFailed];
+      return;
+    case PasskeyCreationEligibility::kCanCreate:
+    case PasskeyCreationEligibility::kCanCreateWithUserInteraction:
+      // Passkey creation is allowed.
+      break;
   }
 
   __weak __typeof__(self) weakSelf = self;
@@ -338,7 +370,7 @@ UIColor* BackgroundColor() {
       [weakSelf exitWithErrorCode:ASExtensionErrorCodeFailed];
       return;
     }
-    [weakSelf createPasskeyForRequest:registrationRequest gaia:gaia];
+    [weakSelf createPasskeyWithDetails:passkeyRequestDetails gaia:gaia];
   }];
 }
 
@@ -596,6 +628,37 @@ UIColor* BackgroundColor() {
       isBiometricAuthenticationEnabled:[self isBiometricAuthenticationEnabled]];
 }
 
+- (PasskeyCreationEligibility)passkeyCreationEligibilityForGaia:(NSString*)gaia
+                                          passkeyRequestDetails:
+                                              (PasskeyRequestDetails*)
+                                                  passkeyRequestDetails {
+  if (!IsPasswordCreationUserEnabled()) {
+    if (IsPasswordCreationManaged()) {
+      return PasskeyCreationEligibility::kPasswordSaveDisabledByEnterprise;
+    } else {
+      return PasskeyCreationEligibility::kPasswordSaveDisabledByUser;
+    }
+  }
+
+  if (!IsPasswordSyncEnabled()) {
+    return PasskeyCreationEligibility::kPasswordSyncDisabled;
+  }
+
+  if ([gaia length] == 0) {
+    return PasskeyCreationEligibility::kSignedOut;
+  }
+
+  if (!passkeyRequestDetails.algorithmIsSupported) {
+    return PasskeyCreationEligibility::kUnsupportedAlgorithm;
+  }
+
+  if (passkeyRequestDetails.userVerificationRequired) {
+    return PasskeyCreationEligibility::kCanCreateWithUserInteraction;
+  }
+
+  return PasskeyCreationEligibility::kCanCreate;
+}
+
 // Asks user for hardware reauthentication if needed. `forPasskeys` indicates
 // whether the reauthentication is guarding an access to passkeys (when `YES`)
 // or an access to passwords (when `NO`).
@@ -689,20 +752,6 @@ UIColor* BackgroundColor() {
     }
   }
   [self exitWithErrorCode:ASExtensionErrorCodeCredentialIdentityNotFound];
-}
-
-// Creates a passkey for the provided gaia ID.
-- (void)createPasskeyForRequest:(id<ASCredentialRequest>)registrationRequest
-                           gaia:(NSString*)gaia API_AVAILABLE(ios(17.0)) {
-  PasskeyRequestDetails* passkeyRequestDetails =
-      [self passkeyDetailsFromRequest:registrationRequest];
-
-  if (!passkeyRequestDetails.algorithmIsSupported) {
-    [self exitWithErrorCode:ASExtensionErrorCodeFailed];
-    return;
-  }
-
-  [self createPasskeyWithDetails:passkeyRequestDetails gaia:gaia];
 }
 
 // Shows a loading indicator,
