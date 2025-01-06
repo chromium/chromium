@@ -72,7 +72,11 @@ void QuickInsertGifView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
 
 void QuickInsertGifView::UpdateFrame() {
   CHECK(next_frame_index_ < frames_.size());
-  SetImage(ui::ImageModel::FromImageSkia(frames_[next_frame_index_].image));
+  // Don't update the frame image if the view is not visible, but keep the timer
+  // going.
+  if (!GetVisibleBounds().IsEmpty()) {
+    SetImage(ui::ImageModel::FromImageSkia(frames_[next_frame_index_].image));
+  }
 
   // Schedule next frame update.
   update_frame_timer_.Start(FROM_HERE, frames_[next_frame_index_].duration,
