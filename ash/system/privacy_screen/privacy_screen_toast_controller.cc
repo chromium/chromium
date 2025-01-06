@@ -85,6 +85,7 @@ void PrivacyScreenToastController::HideToast() {
 
 void PrivacyScreenToastController::BubbleViewDestroyed() {
   close_timer_.Stop();
+  toast_view_ = nullptr;
   bubble_view_ = nullptr;
   bubble_widget_ = nullptr;
 }
