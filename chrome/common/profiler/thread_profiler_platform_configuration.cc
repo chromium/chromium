@@ -276,14 +276,6 @@ bool AndroidPlatformConfiguration::IsEnabledForThread(
     sampling_profiler::ProfilerProcessType process,
     sampling_profiler::ProfilerThreadType thread,
     std::optional<version_info::Channel> release_channel) const {
-#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64)
-  // For now, we only enable SSM in the Browser process and Main thread on
-  // Android 64, since Libunwindstack doesn't support JavaScript.
-  if (!(process == sampling_profiler::ProfilerProcessType::kBrowser &&
-        thread == sampling_profiler::ProfilerThreadType::kMain)) {
-    return false;
-  }
-#endif
   if (!release_channel.has_value() || browser_test_mode_enabled()) {
     return true;
   }

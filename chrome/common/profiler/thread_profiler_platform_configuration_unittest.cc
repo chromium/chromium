@@ -161,21 +161,10 @@ MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
         continue;
       }
 
-#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64)
-      if (process == sampling_profiler::ProfilerProcessType::kBrowser &&
-          thread == sampling_profiler::ProfilerThreadType::kMain) {
-        EXPECT_TRUE(config()->IsEnabledForThread(
-            process, thread, version_info::Channel::CANARY));
-      } else {
-        EXPECT_FALSE(config()->IsEnabledForThread(
-            process, thread, version_info::Channel::CANARY));
-      }
-#else
       EXPECT_TRUE(config()->IsEnabledForThread(process, thread,
                                                version_info::Channel::CANARY));
-#endif
 
-#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL)
+#if BUILDFLAG(IS_ANDROID)
       auto android_config1 = ThreadProfilerPlatformConfiguration::Create(
           /* browser_test_mode_enabled=*/false,
           base::BindLambdaForTesting([](double probability) { return true; }));
@@ -184,25 +173,6 @@ MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
       auto android_config2 = ThreadProfilerPlatformConfiguration::Create(
           /* browser_test_mode_enabled=*/false,
           base::BindLambdaForTesting([](double probability) { return false; }));
-      EXPECT_FALSE(android_config2->IsEnabledForThread(
-          process, thread, version_info::Channel::DEV));
-#elif BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64)
-      auto android_config1 = ThreadProfilerPlatformConfiguration::Create(
-          /* browser_test_mode_enabled=*/false,
-          base::BindLambdaForTesting([](double probability) { return true; }));
-      auto android_config2 = ThreadProfilerPlatformConfiguration::Create(
-          /* browser_test_mode_enabled=*/false,
-          base::BindLambdaForTesting([](double probability) { return false; }));
-
-      if (process == sampling_profiler::ProfilerProcessType::kBrowser &&
-          thread == sampling_profiler::ProfilerThreadType::kMain) {
-        EXPECT_TRUE(android_config1->IsEnabledForThread(
-            process, thread, version_info::Channel::DEV));
-      } else {
-        EXPECT_FALSE(android_config1->IsEnabledForThread(
-            process, thread, version_info::Channel::DEV));
-      }
-
       EXPECT_FALSE(android_config2->IsEnabledForThread(
           process, thread, version_info::Channel::DEV));
 #else
