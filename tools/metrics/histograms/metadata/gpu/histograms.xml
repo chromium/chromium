@@ -2052,6 +2052,27 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Viz.FrameIntervalDecider.ResultMatcherType"
+    enum="FrameIntervalMatcherType" expires_after="M143">
+  <owner>boliu@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    Frame interval matcher type matched current frame. Recorded every viz frame,
+    sub-sampled by base::ShouldLogHistogramForCpuReductionExperiment.
+  </summary>
+</histogram>
+
+<histogram name="Viz.FrameIntervalDecider.ResultTimeDelta" units="ms"
+    expires_after="M143">
+  <owner>boliu@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    Frame interval decider result interval. Recorded every viz frame but only if
+    the result variant is an interval time delta, sub-sampled by
+    base::ShouldLogHistogramForCpuReductionExperiment
+  </summary>
+</histogram>
+
 <histogram name="Viz.FrameSink.GpuBusyDuration" units="microseconds"
     expires_after="2024-10-20">
   <owner>sashamcintosh@chromium.org</owner>

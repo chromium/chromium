@@ -416,6 +416,15 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="ANGLE Metal NULL"/>
 </enum>
 
+<enum name="FrameIntervalMatcherType">
+  <int value="0" label="kNone"/>
+  <int value="1" label="kInputBoost"/>
+  <int value="2" label="kOnlyVideo"/>
+  <int value="3" label="kVideoConference"/>
+  <int value="4" label="kOnlyAnimatingImage"/>
+  <int value="5" label="kOnlyScrollBarFadeOut"/>
+</enum>
+
 <enum name="GLImplementation">
   <int value="0" label="kGLImplementationNone"/>
   <int value="1" label="kGLImplementationDesktopGL"/>
