@@ -2576,7 +2576,6 @@
 <translation id="2764920001292228569">சுயவிவரப் பெயரை டைப் செய்யவும்</translation>
 <translation id="2765100602267695013">உங்கள் மொபைல் வழங்குநரைத் தொடர்புகொள்ளவும்</translation>
 <translation id="2765217105034171413">சிறிய</translation>
-<translation id="2765349783094807040"><ph name="MEMBER_FIRST_NAME" /> பக்கத்தை அகற்றியுள்ளார்</translation>
 <translation id="2765820627968019645">லைட்</translation>
 <translation id="276582196519778359">பெற்றோர் கட்டுப்பாடுகளுக்குச் செல்ல உங்கள் பின்னை வழங்குங்கள்</translation>
 <translation id="2766006623206032690">ஒட்&amp;டி விட்டு செல்</translation>
@@ -4140,7 +4139,6 @@
 <translation id="3872991219937722530">சாதனத்தில் காலி இடத்தை உருவாக்கவும் அல்லது உங்கள் சாதனம் இயங்காது.</translation>
 <translation id="3873315167136380065">இதை இயக்குவதற்கு, <ph name="BEGIN_LINK" />ஒத்திசைவை மீட்டமைத்து<ph name="END_LINK" /> உங்கள் ஒத்திசைவுக் கடவுச்சொற்றொடரை அகற்றவும்.</translation>
 <translation id="3873423927483480833">பின்களைக் காட்டும்</translation>
-<translation id="3873893412864594794"><ph name="MEMBER_FIRST_NAME" /> பக்கத்தைச் சேர்த்துள்ளார்</translation>
 <translation id="3873915545594852654">ARC++ல் ஒரு சிக்கல் ஏற்பட்டது.</translation>
 <translation id="3874164307099183178">Google Assistantடை இயக்கு</translation>
 <translation id="3875511946736639169">படங்களை இயக்கும்</translation>
@@ -4270,7 +4268,6 @@
 <translation id="3959969108528118741">உரிமையாளர்</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" />க்கான கூடுதல் செயல்கள்</translation>
-<translation id="3962607437409665666"><ph name="MEMBER_FIRST_NAME" /> குழுவில் இருந்து வெளியேறிவிட்டார்</translation>
 <translation id="3963753386716096475">வேறொரு மொபைல், டேப்லெட் அல்லது பாதுகாப்பு விசையைப் பயன்படுத்து</translation>
 <translation id="3964480518399667971">செல்லுலார் நெட்வொர்க்கை முடக்கு</translation>
 <translation id="3965965397408324205"><ph name="PROFILE_NAME" />ஐ மூடு</translation>
@@ -5393,7 +5390,6 @@
 <translation id="4789348252524569426">பேச்சு அறிதல் ஃபைல்களை நிறுவ முடியவில்லை. உங்கள் சாதனத்தைப் புதுப்பிக்க வேண்டும். சாதனத்தை மீண்டும் தொடங்கி மறுபடியும் முயலவும்.</translation>
 <translation id="4789550509729954245">அருகிலுள்ள சாதனங்கள் பகிரும்போது அறிவிப்பைக் காட்டும்</translation>
 <translation id="4791037424585594169">(UDP)</translation>
-<translation id="4791200512372376561">பரிந்துரைகள் எதுவும் இல்லை. “இந்தப் பக்கத்தைச் சுருக்கு” போன்ற கேள்விகளைக் கேளுங்கள் அல்லது நீங்களே கேள்வியை உருவாக்குங்கள்.</translation>
 <translation id="4791793693640849493">தகவல்களைக் கணக்கில் சேமித்தல்</translation>
 <translation id="4792290259143007505">TrackPoint ஆக்ஸிலரேஷனை இயக்கு</translation>
 <translation id="4792711294155034829">&amp;சிக்கலைப் புகார் செய்க...</translation>
@@ -9024,7 +9020,6 @@
 <translation id="7421293530411019405">பக்கக் குழுவில் இருந்து வெளியேற வேண்டுமா?</translation>
 <translation id="7421925624202799674">&amp;பக்கத்தின் ஆதாரத்தைக் காண்க</translation>
 <translation id="7422192691352527311">விருப்பத்தேர்வுகள்...</translation>
-<translation id="7422516375032300779"><ph name="MEMBER_FIRST_NAME" /> குழுவின் பெயரை மாற்றியுள்ளார்</translation>
 <translation id="7423425410216218516"><ph name="MINUTES" /> நிமிடங்களுக்குச் சாதனம் காட்டப்படும்</translation>
 <translation id="7423513079490750513"><ph name="INPUT_METHOD_NAME" /> ஐ அகற்றும்</translation>
 <translation id="7423807071740419372"><ph name="APP_NAME" /> ஆப்ஸை இயக்க அனுமதி தேவை</translation>
@@ -9515,7 +9510,6 @@
 <translation id="7772032839648071052">கடவுச்சொற்றொடரை உறுதி செய்க</translation>
 <translation id="7772127298218883077"><ph name="PRODUCT_NAME" /> ஐப் பற்றி</translation>
 <translation id="7773726648746946405">அமர்வு சேமிப்பகம்</translation>
-<translation id="7773887159761725143"><ph name="MEMBER_FIRST_NAME" /> குழுவில் சேர்ந்துள்ளார்</translation>
 <translation id="7774365994322694683">பறவை</translation>
 <translation id="7774581652827321413">பக்கம் குறித்த சுருக்க விவரம், தொடர்புடைய தேடல்கள், இந்தப் பக்கம் பற்றிய பிற பயனுள்ள தகவல்கள் ஆகியவற்றைப் பெறுங்கள்</translation>
 <translation id="7774792847912242537">அளவுக்கு அதிகமான கோரிக்கைகள்.</translation>
@@ -11112,7 +11106,6 @@
 <translation id="8888253246822647887">மேம்படுத்தப்பட்டதும் உங்கள் ஆப்ஸ் திறக்கும். மேம்படுத்துவதற்குச் சில நிமிடங்கள் ஆகலாம்.</translation>
 <translation id="8888459276890791557">எளிதாக அணுக இந்தப் பக்கவாட்டு பேனலைப் பின் செய்யலாம்</translation>
 <translation id="8889294078294184559">நீங்கள் தேடத் தேட, தளங்கள் Chromeமைத் தொடர்புகொண்டு நீங்கள் பார்வையிட்ட முந்தைய தளத்தைப் பயன்படுத்தி நீங்கள் ஒரு நபர்தானா என்பதைச் சரிபார்க்கலாம்</translation>
-<translation id="88895904696396879"><ph name="MEMBER_FIRST_NAME" /> குழுவின் வண்ணத்தை மாற்றியுள்ளார்</translation>
 <translation id="8889651696183044030">பின்வரும் கோப்புகளையும் ஃபோல்டர்களையும் <ph name="ORIGIN" /> தளத்தால் திருத்த முடியும்</translation>
 <translation id="8890170499370378450">மொபைல் டேட்டா கட்டணங்கள் விதிக்கப்படலாம்</translation>
 <translation id="8890516388109605451">மூலங்கள்</translation>
@@ -11263,7 +11256,6 @@
 <translation id="8991520179165052608">தளத்தால் உங்கள் மைக்ரோஃபோனைப் பயன்படுத்த முடியும்</translation>
 <translation id="8991694323904646277">கேமரா இல்லை</translation>
 <translation id="8991766915726096402">சாதனத்தில் உள்ள தரவை மீட்டெடுத்தல்</translation>
-<translation id="8992268506092808992">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" />நி முன்பு}=1{<ph name="TIME_COUNT" />ம.நே முன்பு}other{<ph name="TIME_COUNT" />நா முன்பு}}</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> - நினைவக உபயோகம் - <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527"><ph name="DEVICE_TYPE" /> சாதனத்தின் கடவுச்சொல்லை நீங்கள் மறந்துவிட்டாலும்கூட சாதனத்தில் உள்ள தரவை நீங்கள் மீட்டெடுக்க முடியும். நீங்கள் Google கணக்கில் உள்நுழைய வேண்டும் அல்லது கணக்கு மீட்டெடுப்பு அம்சத்தைப் பயன்படுத்த வேண்டும்.</translation>
 <translation id="8993198843374358393"><ph name="CERT_NAME" />க்கான சான்றிதழ் ஹேஷை நகலெடுக்கும்</translation>
@@ -11665,7 +11657,6 @@
 <translation id="973558314812359997">மவுஸ் அளவு</translation>
 <translation id="973788791897303708">இந்தப் பக்கக் குழு நிரம்பிவிட்டது</translation>
 <translation id="97381968209917373"><ph name="CERT_NAME" /> சான்றிதழை நீக்கு</translation>
-<translation id="973825986436797073"><ph name="MEMBER_FIRST_NAME" /> பக்கத்தை மாற்றியுள்ளார்</translation>
 <translation id="975893173032473675">இதற்கு மொழிபெயர்க்கவும்:</translation>
 <translation id="976499800099896273"><ph name="TYPED_WORD" /> என டைப் செய்யப்பட்ட சொல் <ph name="CORRECTED_WORD" /> எனத் தானாகத் திருத்தப்பட்டதைச் செயல்தவிர்க்கும் உரையாடல்.  ஏற்றுக்கொள்ள மேல்நோக்கிய அம்புக்குறியையும் நிராகரிக்க எஸ்கேப் விசையையும் அழுத்துங்கள்.</translation>
 <translation id="976572010712028687">நீங்கள் பெற்றோர் என்பதை உறுதிப்படுத்துங்கள்</translation>

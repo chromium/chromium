@@ -2576,7 +2576,6 @@
 <translation id="2764920001292228569">Εισαγάγετε όνομα προφίλ</translation>
 <translation id="2765100602267695013">Επικοινωνήστε με τον πάροχο κινητής τηλεφωνίας σας.</translation>
 <translation id="2765217105034171413">Μικρό</translation>
-<translation id="2765349783094807040">Ο χρήστης <ph name="MEMBER_FIRST_NAME" /> κατάργησε μια καρτέλα</translation>
 <translation id="2765820627968019645">Φωτεινό</translation>
 <translation id="276582196519778359">Εισαγάγετε το PIN για γονικούς ελέγχους</translation>
 <translation id="2766006623206032690">Επικό&amp;λληση και μετάβαση</translation>
@@ -4140,7 +4139,6 @@
 <translation id="3872991219937722530">Αποδεσμεύστε χώρο στον δίσκο, διαφορετικά η συσκευή θα σταματήσει να ανταποκρίνεται.</translation>
 <translation id="3873315167136380065">Για ενεργοποίηση, <ph name="BEGIN_LINK" />κάντε επαναφορά στον συγχρονισμό<ph name="END_LINK" />, ώστε να καταργηθεί η φράση πρόσβασης συγχρονισμού</translation>
 <translation id="3873423927483480833">Εμφάνιση PIN</translation>
-<translation id="3873893412864594794">Ο χρήστης <ph name="MEMBER_FIRST_NAME" /> πρόσθεσε μια καρτέλα</translation>
 <translation id="3873915545594852654">Παρουσιάστηκε ένα πρόβλημα με το ARC++.</translation>
 <translation id="3874164307099183178">Ενεργοποίηση Βοηθού Google.</translation>
 <translation id="3875511946736639169">Ενεργοποίηση εικόνων</translation>
@@ -4270,7 +4268,6 @@
 <translation id="3959969108528118741">Κάτοχος</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Περισσότερες ενέργειες για <ph name="IBAN_DESCRIPTION" /></translation>
-<translation id="3962607437409665666">Ο χρήστης <ph name="MEMBER_FIRST_NAME" /> αποχώρησε από την ομάδα</translation>
 <translation id="3963753386716096475">Χρήση διαφορετικού τηλεφώνου, tablet ή κλειδιού ασφαλείας</translation>
 <translation id="3964480518399667971">Απενεργοποίηση δικτύου κινητής τηλεφωνίας</translation>
 <translation id="3965965397408324205">Έξοδος από <ph name="PROFILE_NAME" /></translation>
@@ -5393,7 +5390,6 @@
 <translation id="4789348252524569426">Δεν είναι δυνατή η εγκατάσταση αρχείων ομιλίας. Η συσκευή σας πρέπει να ενημερωθεί. Επανεκκινήστε τη συσκευή και δοκιμάστε ξανά.</translation>
 <translation id="4789550509729954245">Εμφάνιση ειδοποίησης όταν συσκευές που βρίσκονται σε κοντινή απόσταση κοινοποιούν περιεχόμενο</translation>
 <translation id="4791037424585594169">(UDP)</translation>
-<translation id="4791200512372376561">Δεν υπάρχουν διαθέσιμες προτάσεις. Δοκιμάστε να ζητήσετε κάτι όπως "συνόψισε αυτή τη σελίδα" ή να κάνετε τη δική σας ερώτηση.</translation>
 <translation id="4791793693640849493">Αποθήκευση στοιχείων στον λογαριασμό</translation>
 <translation id="4792290259143007505">Ενεργοποίηση επιτάχυνσης TrackPoint</translation>
 <translation id="4792711294155034829">&amp;Αναφορά προβλήματος...</translation>
@@ -9024,7 +9020,6 @@
 <translation id="7421293530411019405">Αποχώρηση από την ομάδα καρτελών;</translation>
 <translation id="7421925624202799674">&amp;Προβολή Πηγαίου Κώδικα Σελίδας</translation>
 <translation id="7422192691352527311">Προτιμήσεις</translation>
-<translation id="7422516375032300779">Ο χρήστης <ph name="MEMBER_FIRST_NAME" /> άλλαξε το όνομα της ομάδας</translation>
 <translation id="7423425410216218516">Η ορατότητα είναι ενεργή για <ph name="MINUTES" /> λεπτά.</translation>
 <translation id="7423513079490750513">Κατάργηση <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7423807071740419372">Απαιτείται άδεια για την εκτέλεση της εφαρμογής <ph name="APP_NAME" /></translation>
@@ -9515,7 +9510,6 @@
 <translation id="7772032839648071052">Επιβεβαίωση φράσης πρόσβασης</translation>
 <translation id="7772127298218883077">Σχετικά με το <ph name="PRODUCT_NAME" /></translation>
 <translation id="7773726648746946405">Αποθηκευτικός χώρος περιόδου σύνδεσης</translation>
-<translation id="7773887159761725143">Ο <ph name="MEMBER_FIRST_NAME" /> έγινε μέλος της ομάδας</translation>
 <translation id="7774365994322694683">Πουλί</translation>
 <translation id="7774581652827321413">Λάβετε μια σύνοψη σελίδας, συναφείς αναζητήσεις και άλλες χρήσιμες πληροφορίες σχετικά με αυτή τη σελίδα</translation>
 <translation id="7774792847912242537">Πάρα πολλά αιτήματα.</translation>
@@ -11110,7 +11104,6 @@
 <translation id="8888253246822647887">Η εφαρμογή σας θα ανοίξει όταν η αναβάθμιση ολοκληρωθεί. Οι αναβαθμίσεις μπορεί να διαρκέσουν μερικά λεπτά.</translation>
 <translation id="8888459276890791557">Μπορείτε να καρφιτσώσετε αυτό το πλαϊνό πλαίσιο για εύκολη πρόσβαση</translation>
 <translation id="8889294078294184559">Καθώς συνεχίζετε την περιήγηση, οι ιστότοποι μπορούν να ελέγξουν με το Chrome και να επαληθεύσουν ότι πιθανώς είστε πραγματικό άτομο, χρησιμοποιώντας έναν προηγούμενο ιστότοπο που έχετε επισκεφτεί.</translation>
-<translation id="88895904696396879">Ο χρήστης <ph name="MEMBER_FIRST_NAME" /> άλλαξε το χρώμα της ομάδας</translation>
 <translation id="8889651696183044030">Ο ιστότοπος <ph name="ORIGIN" /> μπορεί να επεξεργαστεί τα παρακάτω αρχεία και φακέλους</translation>
 <translation id="8890170499370378450">Μπορεί να επιφέρει χρεώσεις δεδομένων κινητής τηλεφωνίας.</translation>
 <translation id="8890516388109605451">Πηγές</translation>
@@ -11261,7 +11254,6 @@
 <translation id="8991520179165052608">Ο ιστότοπος μπορεί να χρησιμοποιήσει το μικρόφωνό σας</translation>
 <translation id="8991694323904646277">Δεν υπάρχει κάμερα</translation>
 <translation id="8991766915726096402">Ανάκτηση τοπικών δεδομένων</translation>
-<translation id="8992268506092808992">{TIME_DIMENSION,plural, =0{Πριν από <ph name="TIME_COUNT" /> λ.}=1{Πριν από <ph name="TIME_COUNT" /> ώ.}other{Πριν από <ph name="TIME_COUNT" /> η.}}</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> - Χρήση μνήμης - <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">Αν ξεχάσετε τον κωδικό πρόσβασης <ph name="DEVICE_TYPE" />, μπορείτε ακόμα να επαναφέρετε τα τοπικά δεδομένα σας. Θα πρέπει να συνδεθείτε στον Λογαριασμό σας Google ή να χρησιμοποιήσετε την ανάκτηση λογαριασμού.</translation>
 <translation id="8993198843374358393">Αντιγραφή του κατακερματισμού πιστοποιητικού για το <ph name="CERT_NAME" /></translation>
@@ -11663,7 +11655,6 @@
 <translation id="973558314812359997">Μέγεθος δείκτη ποντικιού</translation>
 <translation id="973788791897303708">Αυτή η ομάδα καρτελών είναι πλήρης</translation>
 <translation id="97381968209917373">Διαγραφή πιστοποιητικού <ph name="CERT_NAME" /></translation>
-<translation id="973825986436797073">Ο χρήστης <ph name="MEMBER_FIRST_NAME" /> άλλαξε μια καρτέλα</translation>
 <translation id="975893173032473675">Γλώσσα στην οποία θα γίνει η μετάφραση</translation>
 <translation id="976499800099896273">Εμφανίζεται το παράθυρο διαλόγου αναίρεσης αυτόματης διόρθωσης για τη λέξη <ph name="TYPED_WORD" /> που διορθώθηκε σε <ph name="CORRECTED_WORD" />.  Πατήστε το επάνω βέλος για πρόσβαση. Διαφορετικά, πατήστε Escape για παράβλεψη.</translation>
 <translation id="976572010712028687">Επαληθεύστε ότι είστε γονέας</translation>

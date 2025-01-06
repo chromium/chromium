@@ -2578,7 +2578,6 @@
 <translation id="2764920001292228569">프로필 이름을 입력하세요.</translation>
 <translation id="2765100602267695013">이동통신사에 문의해 주세요.</translation>
 <translation id="2765217105034171413">작게</translation>
-<translation id="2765349783094807040"><ph name="MEMBER_FIRST_NAME" />님이 탭을 삭제했습니다.</translation>
 <translation id="2765820627968019645">밝게</translation>
 <translation id="276582196519778359">자녀 보호 기능 PIN을 입력하세요</translation>
 <translation id="2766006623206032690">붙여넣어 바로가기(&amp;S)</translation>
@@ -4142,7 +4141,6 @@
 <translation id="3872991219937722530">디스크 저장 공간을 확보하지 않으면 기기가 응답하지 않을 것입니다.</translation>
 <translation id="3873315167136380065">사용하려면 <ph name="BEGIN_LINK" />동기화를 재설정<ph name="END_LINK" />하여 동기화 암호를 삭제하세요.</translation>
 <translation id="3873423927483480833">PIN 표시</translation>
-<translation id="3873893412864594794"><ph name="MEMBER_FIRST_NAME" />님이 탭을 추가했습니다.</translation>
 <translation id="3873915545594852654">ARC++에 문제가 발생했습니다.</translation>
 <translation id="3874164307099183178">Google 어시스턴트 사용 설정</translation>
 <translation id="3875511946736639169">이미지 표시</translation>
@@ -4272,7 +4270,6 @@
 <translation id="3959969108528118741">소유자</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" />의 작업 더보기</translation>
-<translation id="3962607437409665666"><ph name="MEMBER_FIRST_NAME" />님이 그룹을 나갔습니다.</translation>
 <translation id="3963753386716096475">다른 휴대전화, 태블릿 또는 보안 키 사용</translation>
 <translation id="3964480518399667971">셀룰러 네트워크 끄기</translation>
 <translation id="3965965397408324205"><ph name="PROFILE_NAME" /> 나가기</translation>
@@ -5394,7 +5391,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4789348252524569426">음성 파일을 설치할 수 없습니다. 기기를 업데이트해야 합니다. 기기를 재시작한 후 다시 시도해 보세요.</translation>
 <translation id="4789550509729954245">근처의 기기가 공유 중일 때 알림 표시</translation>
 <translation id="4791037424585594169">(UDP)</translation>
-<translation id="4791200512372376561">추천사항이 없습니다. '이 페이지 요약해 줘'와 같은 질문을 입력하거나 다른 질문을 입력해 보세요.</translation>
 <translation id="4791793693640849493">계정에 항목 저장</translation>
 <translation id="4792290259143007505">TrackPoint 가속 사용</translation>
 <translation id="4792711294155034829">문제 신고(&amp;R)...</translation>
@@ -9024,7 +9020,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7421293530411019405">탭 그룹에서 나가시겠습니까?</translation>
 <translation id="7421925624202799674">페이지 소스 보기(&amp;V)</translation>
 <translation id="7422192691352527311">환경설정...</translation>
-<translation id="7422516375032300779"><ph name="MEMBER_FIRST_NAME" />님이 그룹 이름을 변경했습니다.</translation>
 <translation id="7423425410216218516"><ph name="MINUTES" />분 동안 공개됨</translation>
 <translation id="7423513079490750513"><ph name="INPUT_METHOD_NAME" /> 삭제</translation>
 <translation id="7423807071740419372"><ph name="APP_NAME" />에 실행 권한 필요</translation>
@@ -9514,7 +9509,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7772032839648071052">암호 확인</translation>
 <translation id="7772127298218883077"><ph name="PRODUCT_NAME" /> 정보</translation>
 <translation id="7773726648746946405">세션 저장소</translation>
-<translation id="7773887159761725143"><ph name="MEMBER_FIRST_NAME" />님이 그룹에 참여했습니다.</translation>
 <translation id="7774365994322694683">새</translation>
 <translation id="7774581652827321413">이 페이지에 관한 페이지 요약, 관련 검색어, 기타 유용한 정보를 받습니다.</translation>
 <translation id="7774792847912242537">요청 횟수가 너무 많습니다.</translation>
@@ -11112,7 +11106,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8888253246822647887">업그레이드가 종료되면 앱이 열립니다. 업그레이드하는 데 몇 분 정도 걸릴 수 있습니다.</translation>
 <translation id="8888459276890791557">측면 패널을 고정하여 쉽게 액세스할 수 있습니다.</translation>
 <translation id="8889294078294184559">브라우징을 계속하면 사이트에서 Chrome을 통해 이를 확인하고 이전에 방문한 적이 있는 이전 사이트로 내가 실제 사람인지 확인할 수 있습니다.</translation>
-<translation id="88895904696396879"><ph name="MEMBER_FIRST_NAME" />님이 그룹 색상을 변경했습니다.</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" />에서 다음 파일과 폴더를 수정할 수 있습니다.</translation>
 <translation id="8890170499370378450">모바일 데이터 요금이 발생할 수 있음</translation>
 <translation id="8890516388109605451">소스</translation>
@@ -11263,7 +11256,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8991520179165052608">사이트에서 마이크를 사용할 수 있습니다.</translation>
 <translation id="8991694323904646277">카메라 없음</translation>
 <translation id="8991766915726096402">로컬 데이터 복구</translation>
-<translation id="8992268506092808992">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" />분 전}=1{<ph name="TIME_COUNT" />시간 전}other{<ph name="TIME_COUNT" />일 전}}</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> - 메모리 사용량 - <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527"><ph name="DEVICE_TYPE" /> 비밀번호를 잊어버린 경우에도 로컬 데이터를 복원할 수 있습니다. Google 계정에 로그인하거나 계정 복구를 사용해야 합니다.</translation>
 <translation id="8993198843374358393"><ph name="CERT_NAME" />의 인증서 해시 복사</translation>
@@ -11665,7 +11657,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="973558314812359997">마우스 커서 크기</translation>
 <translation id="973788791897303708">탭 그룹이 가득 참</translation>
 <translation id="97381968209917373"><ph name="CERT_NAME" /> 인증서 삭제</translation>
-<translation id="973825986436797073"><ph name="MEMBER_FIRST_NAME" />님이 탭을 변경했습니다.</translation>
 <translation id="975893173032473675">다음 언어로 번역</translation>
 <translation id="976499800099896273"><ph name="TYPED_WORD" />에서 <ph name="CORRECTED_WORD" />(으)로 수정된 것과 관련하여 자동 수정 실행취소 대화상자가 표시되었습니다.  액세스하려면 위쪽 화살표를, 무시하려면 Esc를 누르세요.</translation>
 <translation id="976572010712028687">부모임을 확인</translation>

@@ -2564,7 +2564,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2764920001292228569">Introduce un nombre de perfil</translation>
 <translation id="2765100602267695013">Ponte en contacto con tu proveedor de telefonía móvil</translation>
 <translation id="2765217105034171413">Pequeño</translation>
-<translation id="2765349783094807040"><ph name="MEMBER_FIRST_NAME" /> ha eliminado una pestaña</translation>
 <translation id="2765820627968019645">Claro</translation>
 <translation id="276582196519778359">Introduce tu PIN de controles parentales</translation>
 <translation id="2766006623206032690">Pe&amp;gar y acceder</translation>
@@ -4128,7 +4127,6 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="3872991219937722530">Libera espacio del disco o el dispositivo no responderá.</translation>
 <translation id="3873315167136380065">Para activar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización<ph name="END_LINK" /> para eliminar tu frase de contraseña de sincronización</translation>
 <translation id="3873423927483480833">Mostrar PINs</translation>
-<translation id="3873893412864594794"><ph name="MEMBER_FIRST_NAME" /> ha añadido una pestaña</translation>
 <translation id="3873915545594852654">Ha habido un problema con ARC++.</translation>
 <translation id="3874164307099183178">Activar Asistente de Google</translation>
 <translation id="3875511946736639169">Habilitar imágenes</translation>
@@ -4257,7 +4255,6 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="3959969108528118741">Propietario</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Más acciones para <ph name="IBAN_DESCRIPTION" /></translation>
-<translation id="3962607437409665666"><ph name="MEMBER_FIRST_NAME" /> ha abandonado el grupo</translation>
 <translation id="3963753386716096475">Utilizar un teléfono, una tablet o una llave de seguridad diferentes</translation>
 <translation id="3964480518399667971">Desactivar red móvil</translation>
 <translation id="3965965397408324205">Salir de <ph name="PROFILE_NAME" /></translation>
@@ -5380,7 +5377,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4789348252524569426">No se pueden instalar los archivos de voz. El dispositivo debe actualizarse. Reinícialo y vuelve a intentarlo.</translation>
 <translation id="4789550509729954245">Mostrar notificación cuando algún dispositivo cercano esté compartiendo contenido</translation>
 <translation id="4791037424585594169">(UDP)</translation>
-<translation id="4791200512372376561">No hay sugerencias disponibles. Prueba a pedir cosas como "resume esta página" o haz tu propia pregunta.</translation>
 <translation id="4791793693640849493">Guardar elementos en la cuenta</translation>
 <translation id="4792290259143007505">Habilitar aceleración del TrackPoint</translation>
 <translation id="4792711294155034829">&amp;Notificar un error...</translation>
@@ -9008,7 +9004,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7421293530411019405">¿Salir del grupo de pestañas?</translation>
 <translation id="7421925624202799674">&amp;Ver código fuente de la página</translation>
 <translation id="7422192691352527311">Preferencias...</translation>
-<translation id="7422516375032300779"><ph name="MEMBER_FIRST_NAME" /> ha cambiado el nombre del grupo</translation>
 <translation id="7423425410216218516">La visibilidad está activada durante <ph name="MINUTES" /> minutos</translation>
 <translation id="7423513079490750513">Quitar <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7423807071740419372"><ph name="APP_NAME" /> necesita permiso para ejecutarse</translation>
@@ -9499,7 +9494,6 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7772032839648071052">Repite la frase de contraseña</translation>
 <translation id="7772127298218883077">Información de <ph name="PRODUCT_NAME" /></translation>
 <translation id="7773726648746946405">Almacenamiento de sesión</translation>
-<translation id="7773887159761725143"><ph name="MEMBER_FIRST_NAME" /> se ha unido al grupo</translation>
 <translation id="7774365994322694683">Pájaro</translation>
 <translation id="7774581652827321413">Obtén un resumen de la página, búsquedas relacionadas y otra información útil sobre ella</translation>
 <translation id="7774792847912242537">Demasiadas solicitudes.</translation>
@@ -11096,7 +11090,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8888253246822647887">La aplicación se abrirá cuando la actualización se haya completado. Las actualizaciones pueden tardar varios minutos.</translation>
 <translation id="8888459276890791557">Puedes fijar este panel lateral para acceder a él fácilmente</translation>
 <translation id="8889294078294184559">A medida que sigas navegando, los sitios podrán realizar comprobaciones con Chrome y verificar, con un sitio que hayas visitado anteriormente, que es probable que seas una persona real</translation>
-<translation id="88895904696396879"><ph name="MEMBER_FIRST_NAME" /> ha cambiado el color del grupo</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> puede editar los siguientes archivos y carpetas</translation>
 <translation id="8890170499370378450">Es posible que se apliquen cargos por el uso de datos móviles</translation>
 <translation id="8890516388109605451">Fuentes</translation>
@@ -11247,7 +11240,6 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="8991520179165052608">El sitio web puede usar tu micrófono</translation>
 <translation id="8991694323904646277">No hay cámara</translation>
 <translation id="8991766915726096402">Recuperación de datos locales</translation>
-<translation id="8992268506092808992">{TIME_DIMENSION,plural, =0{Hace <ph name="TIME_COUNT" /> min}=1{Hace <ph name="TIME_COUNT" /> h}other{Hace <ph name="TIME_COUNT" /> días}}</translation>
 <translation id="8992671062738341478">Uso de memoria de <ph name="WINDOW_TITLE" />: <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">Aunque olvides la contraseña de tu <ph name="DEVICE_TYPE" />, puedes restaurar tus datos locales. Deberás iniciar sesión en tu cuenta de Google o usar la recuperación de la cuenta.</translation>
 <translation id="8993198843374358393">Copiar hash de certificado de <ph name="CERT_NAME" /></translation>
@@ -11649,7 +11641,6 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="973558314812359997">Tamaño del ratón</translation>
 <translation id="973788791897303708">Este grupo de pestañas está lleno</translation>
 <translation id="97381968209917373">Eliminar certificado <ph name="CERT_NAME" /></translation>
-<translation id="973825986436797073"><ph name="MEMBER_FIRST_NAME" /> ha cambiado una pestaña</translation>
 <translation id="975893173032473675">Idioma al que se va a traducir</translation>
 <translation id="976499800099896273">Se muestra el cuadro de diálogo para deshacer la autocorrección de <ph name="TYPED_WORD" /> a <ph name="CORRECTED_WORD" />.  Pulsa la flecha hacia arriba para acceder a la palabra y Escape para ignorar.</translation>
 <translation id="976572010712028687">Verifica que eres padre o madre</translation>

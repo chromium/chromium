@@ -285,6 +285,7 @@
 <translation id="2214453882118345682">يمكنك التسوّق وترجمة النصوص والتعرّف على ما تراه باستخدام الكاميرا.</translation>
 <translation id="2220529011494928058">الإبلاغ عن مشكلة</translation>
 <translation id="2223461067862937305">إنشاء رمز استجابة سريعة</translation>
+<translation id="2229345671837147090">شبكة علامات التبويب البعيدة</translation>
 <translation id="2230173723195178503">تم تحميل الصفحة المطلوبة</translation>
 <translation id="2236949375853147973">نشاطي</translation>
 <translation id="2240256190924001613">ملف تحميل الإعدادات متوفِّر</translation>
@@ -651,6 +652,7 @@
 <translation id="3992684624889376114">لمحة حول هذه الصفحة</translation>
 <translation id="3994422733891749358">اختيار الإشعارات التي تريد تلقّيها</translation>
 <translation id="3994522032746736727">تسجيل الدخول بحساب <ph name="EMAIL" /></translation>
+<translation id="3994911892367422121">حسنًا</translation>
 <translation id="3995521777587992544">شريط تقدُّم تحميل الصفحة، تم تحميل <ph name="EMAIL" />.</translation>
 <translation id="3997522473364371632">أوقَفَ المشرف ميزة "مشاركة كلمات المرور".</translation>
 <translation id="4002066346123236978">العنوان</translation>
@@ -798,6 +800,7 @@
 <translation id="4651927776207937667">{count,plural, =1{إخفاء علامات التبويب بعد دقيقة واحدة}zero{إخفاء علامات التبويب بعد {count} دقيقة}two{إخفاء علامات التبويب بعد دقيقتَين ({count})}few{إخفاء علامات التبويب بعد {count} دقائق}many{إخفاء علامات التبويب بعد {count} دقيقة}other{إخفاء علامات التبويب بعد {count} دقيقة}}</translation>
 <translation id="4652817563047461855">يُرجى التأكّد من أنّ كلمات المرور الخاصة بك آمنة، وتحديد ما إذا تم اختراقها، والحصول على نصائح للمساعدة في حماية نفسك على الإنترنت. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">حفظ</translation>
+<translation id="466307903888586355">حظرت مؤسستك حفظ الملفات</translation>
 <translation id="4668929960204016307">،</translation>
 <translation id="4669618761237477717">تفرض مؤسستك سياسة التصفُّح بخصوصية تامّة. لذا، لا تتم مزامنة مجموعات علامات التبويب في وضع التصفُّح المتخفي.
 <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
@@ -1269,6 +1272,7 @@
 <translation id="6641465290890659327">مشاركة نسخة من كلمة المرور</translation>
 <translation id="6642362222295953972">التبديل إلى علامة تبويب حالية</translation>
 <translation id="6644512095122093795">اقتراح حفظ كلمات المرور</translation>
+<translation id="664573288952458293">شبكة علامات التبويب العادية</translation>
 <translation id="6645899968535965230">رمز الاستجابة السريعة: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">‏يتم إرسال عناوين URL التي تزورها إلى Google لتوقّع المواقع الإلكترونية التي ستزورها بعد ذلك.</translation>
 <translation id="6657585470893396449">كلمة المرور</translation>
@@ -1661,6 +1665,7 @@
 <translation id="8407669440184693619">لم يتم العثور على كلمات مرور لهذا الموقع الإلكتروني</translation>
 <translation id="8407831512155324054">كلمات مرورك تبدو قوية</translation>
 <translation id="842523302461531262">الضبط كمتصفِّح تلقائي من خلال "الإعدادات"…</translation>
+<translation id="8425826545759040372">شبكة علامات التبويب في وضع التصفّح المتخفي</translation>
 <translation id="8428045167754449968">المدينة/البلدة</translation>
 <translation id="8428213095426709021">الإعدادات</translation>
 <translation id="8428634594422941299">حسنًا</translation>

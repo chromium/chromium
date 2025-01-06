@@ -2579,7 +2579,6 @@
 <translation id="2764920001292228569">Введіть назву профілю</translation>
 <translation id="2765100602267695013">Зв’яжіться з оператором мобільного зв’язку</translation>
 <translation id="2765217105034171413">Малий</translation>
-<translation id="2765349783094807040"><ph name="MEMBER_FIRST_NAME" /> вилучає вкладку</translation>
 <translation id="2765820627968019645">Світла</translation>
 <translation id="276582196519778359">Щоб керувати налаштуваннями батьківського контролю, введіть PIN-код</translation>
 <translation id="2766006623206032690">Вста&amp;вити та перейти</translation>
@@ -4143,7 +4142,6 @@
 <translation id="3872991219937722530">Звільніть місце на диску. Інакше пристрій перестане відповідати.</translation>
 <translation id="3873315167136380065">Щоб увімкнути цю функцію, видаліть парольну фразу синхронізації, <ph name="BEGIN_LINK" />скинувши синхронізацію<ph name="END_LINK" />.</translation>
 <translation id="3873423927483480833">Показати PIN-коди</translation>
-<translation id="3873893412864594794"><ph name="MEMBER_FIRST_NAME" /> додає вкладку</translation>
 <translation id="3873915545594852654">Виникла проблема з ARC++.</translation>
 <translation id="3874164307099183178">Увімкнути Google Асистента</translation>
 <translation id="3875511946736639169">Увімкнути зображення</translation>
@@ -4273,7 +4271,6 @@
 <translation id="3959969108528118741">Власник</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Інші дії для номера "<ph name="IBAN_DESCRIPTION" />"</translation>
-<translation id="3962607437409665666"><ph name="MEMBER_FIRST_NAME" /> залишає групу</translation>
 <translation id="3963753386716096475">Вибрати інший телефон, планшет або ключ безпеки</translation>
 <translation id="3964480518399667971">Вимкнути мобільну мережу</translation>
 <translation id="3965965397408324205">Вийти з профілю <ph name="PROFILE_NAME" /></translation>
@@ -5396,7 +5393,6 @@
 <translation id="4789348252524569426">Не вдається встановити файли для розпізнавання мовлення. Потрібно оновити пристрій. Перезапустіть пристрій і повторіть спробу.</translation>
 <translation id="4789550509729954245">Показувати сповіщення, коли пристрої поблизу обмінюються даними</translation>
 <translation id="4791037424585594169">(UDP)</translation>
-<translation id="4791200512372376561">Пропозицій немає. Спробуйте запит на кшталт "підсумуй вміст цієї сторінки" або поставте власне запитання.</translation>
 <translation id="4791793693640849493">Збережіть об’єкти в обліковому записі</translation>
 <translation id="4792290259143007505">Увімкнути прискорення TrackPoint</translation>
 <translation id="4792711294155034829">&amp;Повідомити про проблему...</translation>
@@ -9027,7 +9023,6 @@
 <translation id="7421293530411019405">Вийти з групи вкладок?</translation>
 <translation id="7421925624202799674">&amp;Переглянути джерело сторінки</translation>
 <translation id="7422192691352527311">Налаштування...</translation>
-<translation id="7422516375032300779"><ph name="MEMBER_FIRST_NAME" /> змінює назву групи</translation>
 <translation id="7423425410216218516">Пристрій буде видимим упродовж <ph name="MINUTES" /> хв</translation>
 <translation id="7423513079490750513">Вилучити метод введення "<ph name="INPUT_METHOD_NAME" />"</translation>
 <translation id="7423807071740419372">Щоб запустити додаток <ph name="APP_NAME" />, потрібен дозвіл</translation>
@@ -9517,7 +9512,6 @@
 <translation id="7772032839648071052">Підтвердити парольну фразу</translation>
 <translation id="7772127298218883077">Про <ph name="PRODUCT_NAME" /></translation>
 <translation id="7773726648746946405">Пам’ять сеансу</translation>
-<translation id="7773887159761725143"><ph name="MEMBER_FIRST_NAME" /> приєднується до групи</translation>
 <translation id="7774365994322694683">Птах</translation>
 <translation id="7774581652827321413">Отримайте короткий виклад сторінки, пов’язані пошукові запити й іншу корисну інформацію про цю сторінку</translation>
 <translation id="7774792847912242537">Забагато запитів.</translation>
@@ -11117,7 +11111,6 @@
 <translation id="8888253246822647887">Додаток відкриється, коли завершиться оновлення. Воно може тривати кілька хвилин.</translation>
 <translation id="8888459276890791557">Ви можете закріпити цю бічну панель для швидкого доступу</translation>
 <translation id="8889294078294184559">Завдяки цьому інші відвідувані вами сайти зможуть перевіряти в Chrome, що ви, імовірно, реальна людина</translation>
-<translation id="88895904696396879"><ph name="MEMBER_FIRST_NAME" /> змінює колір групи</translation>
 <translation id="8889651696183044030">Сайт <ph name="ORIGIN" /> може змінювати вказані нижче файли й папки</translation>
 <translation id="8890170499370378450">Може стягуватися плата за мобільний трафік</translation>
 <translation id="8890516388109605451">Джерела</translation>
@@ -11268,7 +11261,6 @@
 <translation id="8991520179165052608">Сайт може використовувати мікрофон</translation>
 <translation id="8991694323904646277">Немає підключених камер</translation>
 <translation id="8991766915726096402">Відновлення локальних даних</translation>
-<translation id="8992268506092808992">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> хв тому}=1{<ph name="TIME_COUNT" /> год тому}one{<ph name="TIME_COUNT" /> день тому}few{<ph name="TIME_COUNT" /> дні тому}many{<ph name="TIME_COUNT" /> днів тому}other{<ph name="TIME_COUNT" /> дня тому}}</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> – використання пам’яті – <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">Якщо ви забудете свій пароль для пристрою <ph name="DEVICE_TYPE" />, то все одно зможете відновити локальні дані. Для цього вам потрібно ввійти у свій обліковий запис Google або скористатися спеціальною функцією для його відновлення.</translation>
 <translation id="8993198843374358393">Копіювати хеш сертифіката <ph name="CERT_NAME" /></translation>
@@ -11670,7 +11662,6 @@
 <translation id="973558314812359997">Розмір курсора</translation>
 <translation id="973788791897303708">Ця група вкладок заповнена</translation>
 <translation id="97381968209917373">Видалити сертифікат "<ph name="CERT_NAME" />"?</translation>
-<translation id="973825986436797073"><ph name="MEMBER_FIRST_NAME" /> змінює вкладку</translation>
 <translation id="975893173032473675">Мова перекладу</translation>
 <translation id="976499800099896273">Вікно відміни автовиправлення: "<ph name="TYPED_WORD" />" виправлено на "<ph name="CORRECTED_WORD" />".  Щоб відкрити вікно відміни, натисніть стрілку вгору; щоб закрити, натисніть клавішу Escape.</translation>
 <translation id="976572010712028687">Підтвердьте батьківський доступ</translation>

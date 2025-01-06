@@ -2563,7 +2563,6 @@
 <translation id="2764920001292228569">請輸入設定檔名稱</translation>
 <translation id="2765100602267695013">請與你的行動服務供應商聯絡</translation>
 <translation id="2765217105034171413">小</translation>
-<translation id="2765349783094807040"><ph name="MEMBER_FIRST_NAME" />已移除分頁</translation>
 <translation id="2765820627968019645">淺色</translation>
 <translation id="276582196519778359">輸入 PIN 碼才能使用家長監護功能</translation>
 <translation id="2766006623206032690">貼上及前往(&amp;S)</translation>
@@ -4124,7 +4123,6 @@
 <translation id="3872991219937722530">請釋出磁碟空間，否則裝置會無回應。</translation>
 <translation id="3873315167136380065">如要啟用這項功能，請<ph name="BEGIN_LINK" />重設同步功能<ph name="END_LINK" />以移除同步處理通關密語</translation>
 <translation id="3873423927483480833">顯示 PIN 碼</translation>
-<translation id="3873893412864594794"><ph name="MEMBER_FIRST_NAME" />已新增分頁</translation>
 <translation id="3873915545594852654">ARC++ 發生問題。</translation>
 <translation id="3874164307099183178">開啟 Google 助理</translation>
 <translation id="3875511946736639169">顯示圖片</translation>
@@ -4253,7 +4251,6 @@
 <translation id="3959969108528118741">擁有者</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">可對<ph name="IBAN_DESCRIPTION" /> 執行的其他動作</translation>
-<translation id="3962607437409665666"><ph name="MEMBER_FIRST_NAME" />已退出群組</translation>
 <translation id="3963753386716096475">使用其他手機、平板電腦或安全金鑰</translation>
 <translation id="3964480518399667971">關閉行動數據網路</translation>
 <translation id="3965965397408324205">離開<ph name="PROFILE_NAME" /></translation>
@@ -5376,7 +5373,6 @@
 <translation id="4789348252524569426">無法安裝語音檔案，必須更新裝置。請重新啟動裝置，然後再試一次。</translation>
 <translation id="4789550509729954245">鄰近裝置分享內容時顯示通知</translation>
 <translation id="4791037424585594169">(UDP)</translation>
-<translation id="4791200512372376561">沒有可用的建議。你可以說「請提供這個頁面的重點摘要」，或是提出自己的問題。</translation>
 <translation id="4791793693640849493">儲存項目至帳戶</translation>
 <translation id="4792290259143007505">啟用 TrackPoint 加速功能</translation>
 <translation id="4792711294155034829">回報問題(&amp;R)...</translation>
@@ -8999,7 +8995,6 @@
 <translation id="7421293530411019405">要退出分頁群組嗎？</translation>
 <translation id="7421925624202799674">檢視網頁原始碼(&amp;V)</translation>
 <translation id="7422192691352527311">偏好設定...</translation>
-<translation id="7422516375032300779"><ph name="MEMBER_FIRST_NAME" />已變更群組名稱</translation>
 <translation id="7423425410216218516">分享設定在 <ph name="MINUTES" /> 分鐘內為開啟狀態</translation>
 <translation id="7423513079490750513">移除<ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7423807071740419372">需要權限才能執行「<ph name="APP_NAME" />」</translation>
@@ -9490,7 +9485,6 @@
 <translation id="7772032839648071052">確認通關密語</translation>
 <translation id="7772127298218883077">關於 <ph name="PRODUCT_NAME" /></translation>
 <translation id="7773726648746946405">工作階段儲存空間</translation>
-<translation id="7773887159761725143"><ph name="MEMBER_FIRST_NAME" />已加入群組</translation>
 <translation id="7774365994322694683">鳥</translation>
 <translation id="7774581652827321413">取得與這個頁面的摘要、相關搜尋內容和其他實用資訊</translation>
 <translation id="7774792847912242537">要求數量過多。</translation>
@@ -11087,7 +11081,6 @@
 <translation id="8888253246822647887">升級完成後，你的應用程式即會啟動。升級作業可能需要幾分鐘才能完成。</translation>
 <translation id="8888459276890791557">你可以固定這個側邊面板，方便之後存取</translation>
 <translation id="8889294078294184559">你隨後瀏覽的網站可從 Chrome 取得前一個網站提供的資訊，確認你應該是真人</translation>
-<translation id="88895904696396879"><ph name="MEMBER_FIRST_NAME" />已變更群組顏色</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> 可以編輯下列檔案與資料夾</translation>
 <translation id="8890170499370378450">可能需要支付行動數據傳輸費用</translation>
 <translation id="8890516388109605451">來源</translation>
@@ -11238,7 +11231,6 @@
 <translation id="8991520179165052608">網站可以使用你的麥克風</translation>
 <translation id="8991694323904646277">找不到相機</translation>
 <translation id="8991766915726096402">本機資料復原</translation>
-<translation id="8992268506092808992">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> 分鐘前}=1{<ph name="TIME_COUNT" /> 小時前}other{<ph name="TIME_COUNT" /> 天前}}</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> - 記憶體用量 - <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">即使忘記 <ph name="DEVICE_TYPE" /> 密碼，還是可以還原本機資料。你必須登入 Google 帳戶或使用帳戶救援功能。</translation>
 <translation id="8993198843374358393">複製「<ph name="CERT_NAME" />」的憑證雜湊</translation>
@@ -11640,7 +11632,6 @@
 <translation id="973558314812359997">游標大小</translation>
 <translation id="973788791897303708">這個分頁群組已額滿</translation>
 <translation id="97381968209917373">刪除憑證「<ph name="CERT_NAME" />」</translation>
-<translation id="973825986436797073"><ph name="MEMBER_FIRST_NAME" />已變更分頁</translation>
 <translation id="975893173032473675">翻譯目標語言</translation>
 <translation id="976499800099896273">系統將「<ph name="TYPED_WORD" />」更正為「<ph name="CORRECTED_WORD" />」後，已顯示復原自動更正內容的對話方塊。按向上鍵即可選取對話方塊，按 Esc 鍵則為忽略。</translation>
 <translation id="976572010712028687">驗證家長身分</translation>

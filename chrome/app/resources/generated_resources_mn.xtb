@@ -2572,7 +2572,6 @@
 <translation id="2764920001292228569">Профайлын нэр оруулна уу</translation>
 <translation id="2765100602267695013">Мобайл үйлчилгээ үзүүлэгчтэйгээ холбогдоно уу</translation>
 <translation id="2765217105034171413">Жижиг</translation>
-<translation id="2765349783094807040"><ph name="MEMBER_FIRST_NAME" /> таб хассан</translation>
 <translation id="2765820627968019645">Цайвар</translation>
 <translation id="276582196519778359">Эцэг эхийн хяналтын ПИН-ээ оруулна уу</translation>
 <translation id="2766006623206032690">Хуулан буулгасны дараагаар үргэлжлүүлэх</translation>
@@ -4136,7 +4135,6 @@
 <translation id="3872991219937722530">Дискний багтаамжийг нэмэгдүүлнэ үү. Ингээгүй тохиолдолд төхөөрөмж хариу үзүүлэхээ болино.</translation>
 <translation id="3873315167136380065">Үүнийг асаахын тулд <ph name="BEGIN_LINK" />синкийг шинэчилж<ph name="END_LINK" /> синкийн нэвтрэх үгийг устгана уу</translation>
 <translation id="3873423927483480833">ПИН харуулах</translation>
-<translation id="3873893412864594794"><ph name="MEMBER_FIRST_NAME" /> таб нэмсэн</translation>
 <translation id="3873915545594852654">ARC++-д асуудал гарлаа.</translation>
 <translation id="3874164307099183178">Google Туслахыг асаах</translation>
 <translation id="3875511946736639169">Зургуудыг идэвхжүүлэх</translation>
@@ -4265,7 +4263,6 @@
 <translation id="3959969108528118741">Өмчлөгч</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" />-н бусад үйлдэл</translation>
-<translation id="3962607437409665666"><ph name="MEMBER_FIRST_NAME" /> бүлгээс гарсан</translation>
 <translation id="3963753386716096475">Өөр утас, таблет эсвэл аюулгүй байдлын түлхүүр ашиглах</translation>
 <translation id="3964480518399667971">Үүрэн холбооны сүлжээг унтраах</translation>
 <translation id="3965965397408324205"><ph name="PROFILE_NAME" />-с гарах</translation>
@@ -5388,7 +5385,6 @@
 <translation id="4789348252524569426">Ярианы файлуудыг суулгах боломжгүй. Та төхөөрөмжөө шинэчлэх шаардлагатай. Төхөөрөмжөө дахин эхлүүлээд, дахин оролдоно уу.</translation>
 <translation id="4789550509729954245">Төхөөрөмжүүд ойролцоо хуваалцаж байгаа үед мэдэгдэл харуулах</translation>
 <translation id="4791037424585594169">(UDP)</translation>
-<translation id="4791200512372376561">Ямар ч зөвлөмж боломжгүй. “Энэ хуудсыг хураангуйлах” зэрэг зүйлсийг эсвэл өөрийн асуултыг асууж үзнэ үү.</translation>
 <translation id="4791793693640849493">Бүртгэлд зүйлсийг хадгалах</translation>
 <translation id="4792290259143007505">TrackPoint хурдасгуурыг идэвхжүүлэх</translation>
 <translation id="4792711294155034829">&amp;Асуудлыг тайлагнах...</translation>
@@ -9017,7 +9013,6 @@
 <translation id="7421293530411019405">Табын бүлгийг орхих уу?</translation>
 <translation id="7421925624202799674">&amp; Хуудасны эх сурвалжийг харах</translation>
 <translation id="7422192691352527311">Тусдаа тохиргоо...</translation>
-<translation id="7422516375032300779"><ph name="MEMBER_FIRST_NAME" /> бүлгийн нэрийг өөрчилсөн</translation>
 <translation id="7423425410216218516">Харагдац <ph name="MINUTES" /> минутын турш асаалттай байна</translation>
 <translation id="7423513079490750513"><ph name="INPUT_METHOD_NAME" />-г хасах</translation>
 <translation id="7423807071740419372"><ph name="APP_NAME" />-г ажиллуулахын тулд зөвшөөрөл хэрэгтэй</translation>
@@ -9508,7 +9503,6 @@
 <translation id="7772032839648071052">Нэвтрэх үгүүдийг баталгаажуул</translation>
 <translation id="7772127298218883077"><ph name="PRODUCT_NAME" />-ийн тухай</translation>
 <translation id="7773726648746946405">Ажиллах талбарын хадгалалтын сан</translation>
-<translation id="7773887159761725143"><ph name="MEMBER_FIRST_NAME" /> бүлэгт нэгдсэн</translation>
 <translation id="7774365994322694683">Шувуу</translation>
 <translation id="7774581652827321413">Хуудасны хураангуй, холбоотой хайлт болон энэ хуудасны талаар бусад хэрэгтэй мэдээллийг авна уу</translation>
 <translation id="7774792847912242537">Хэт олон хүсэлт байна.</translation>
@@ -11100,7 +11094,6 @@
 <translation id="8888253246822647887">Таны апп шинэчлэлт дуусах үед нээгдэнэ. Шинэчлэлтэд хэсэг хугацаа шаардлагатай.</translation>
 <translation id="8888459276890791557">Та энэ хажуугийн самбарыг хялбар хандахад зориулж бэхлэх боломжтой</translation>
 <translation id="8889294078294184559">Таныг үргэлжлүүлэн үзэж байхад сайтууд Chrome-с шалгаж, таныг жинхэнэ хүн эсэхийг таны өмнө нь зочилсон сайтаас баталгаажуулах боломжтой</translation>
-<translation id="88895904696396879"><ph name="MEMBER_FIRST_NAME" /> бүлгийн өнгийг өөрчилсөн</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> дараах файл болон фолдерыг засах боломжтой</translation>
 <translation id="8890170499370378450">Мобайл дата төлбөр гарч болзошгүй</translation>
 <translation id="8890516388109605451">Эх сурвалж</translation>
@@ -11251,7 +11244,6 @@
 <translation id="8991520179165052608">Сайт таны микрофоныг ашиглах боломжтой</translation>
 <translation id="8991694323904646277">Камер алга</translation>
 <translation id="8991766915726096402">Дотоод өгөгдлийг сэргээх</translation>
-<translation id="8992268506092808992">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> минутын өмнө}=1{<ph name="TIME_COUNT" /> цагийн өмнө}other{<ph name="TIME_COUNT" /> хоногийн өмнө}}</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> - Санах ойн ашиглалт - <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">Хэрэв та <ph name="DEVICE_TYPE" />-н нууц үгээ мартвал дотоод өгөгдлөө сэргээх боломжтой хэвээр байна. Та Google Бүртгэлдээ нэвтрэх эсвэл бүртгэл сэргээх онцлогийг ашиглах шаардлагатай.</translation>
 <translation id="8993198843374358393"><ph name="CERT_NAME" />-н гэрчилгээний хэшийг хуулна уу</translation>
@@ -11653,7 +11645,6 @@
 <translation id="973558314812359997">Хулганын хэмжээ</translation>
 <translation id="973788791897303708">Энэ табын бүлэг дүүрсэн байна</translation>
 <translation id="97381968209917373"><ph name="CERT_NAME" /> сертификатыг устгах</translation>
-<translation id="973825986436797073"><ph name="MEMBER_FIRST_NAME" /> таб өөрчилсөн</translation>
 <translation id="975893173032473675">Орчуулах хэл</translation>
 <translation id="976499800099896273"><ph name="TYPED_WORD" /> үгийг <ph name="CORRECTED_WORD" /> болгон автоматаар засахыг болих харилцах цонхыг харуулсан.  Хандахын тулд дээш сумыг, үл хэрэгсэхийн тулд escape-г дарна уу.</translation>
 <translation id="976572010712028687">Эцэг эх гэдгээ баталгаажуулна уу</translation>

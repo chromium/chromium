@@ -2569,7 +2569,6 @@
 <translation id="2764920001292228569">يُرجى إدخال اسم للملف الشخصي.</translation>
 <translation id="2765100602267695013">يُرجى التواصل مع مقدِّم خدمة الجوّال.</translation>
 <translation id="2765217105034171413">صغير</translation>
-<translation id="2765349783094807040">تمت إزالة علامة تبويب من قِبل "<ph name="MEMBER_FIRST_NAME" />"</translation>
 <translation id="2765820627968019645">فاتح</translation>
 <translation id="276582196519778359">أدخِل رقم التعريف الشخصي لأدوات رقابة الأهل</translation>
 <translation id="2766006623206032690">‏&amp;لصق عنوان URL والدخول إليه</translation>
@@ -4133,7 +4132,6 @@
 <translation id="3872991219937722530">احرص على تفريغ مساحة على القرص أو سيصبح الجهاز غير مستجيب.</translation>
 <translation id="3873315167136380065">لتفعيل هذا الإعداد، يمكنك <ph name="BEGIN_LINK" />إعادة ضبط المزامنة<ph name="END_LINK" /> لإزالة عبارة مرور المزامنة.</translation>
 <translation id="3873423927483480833">إظهار أرقام التعريف الشخصية</translation>
-<translation id="3873893412864594794">تمت إضافة علامة تبويب من قِبل "<ph name="MEMBER_FIRST_NAME" />"</translation>
 <translation id="3873915545594852654">‏حدثت مشكلة في "وقت تشغيل التطبيقات في Chrome (ARC++)".</translation>
 <translation id="3874164307099183178">‏تفعيل خدمة "مساعد Google"</translation>
 <translation id="3875511946736639169">السماح بعرض الصور</translation>
@@ -4260,7 +4258,6 @@
 <translation id="3959969108528118741">المالك</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">مزيد من الإجراءات لـ "<ph name="IBAN_DESCRIPTION" />"</translation>
-<translation id="3962607437409665666">تمت مغادرة المجموعة من قِبل "<ph name="MEMBER_FIRST_NAME" />"</translation>
 <translation id="3963753386716096475">استخدام هواتف أو أجهزة لوحية أو مفاتيح أمان مختلفة</translation>
 <translation id="3964480518399667971">إيقاف شبكة الجوّال</translation>
 <translation id="3965965397408324205">الخروج من <ph name="PROFILE_NAME" /></translation>
@@ -5383,7 +5380,6 @@
 <translation id="4789348252524569426">يتعذّر تثبيت ملفات التعرّف على الكلام. يجب تحديث جهازك. أعِد تشغيل الجهاز وحاوِل مجددًا.</translation>
 <translation id="4789550509729954245">عرض الإشعارات عند محاولة الأجهزة المجاورة مشاركة محتوى</translation>
 <translation id="4791037424585594169">‏بروتوكول (UDP)</translation>
-<translation id="4791200512372376561">لا تتوفّر أي اقتراحات. جرِّب طلبات مثل "تلخيص هذه الصفحة" أو اطرح سؤالك الخاص.</translation>
 <translation id="4791793693640849493">حفظ العناصر في الحساب</translation>
 <translation id="4792290259143007505">‏تفعيل تسارع TrackPoint</translation>
 <translation id="4792711294155034829">&amp;الإبلاغ عن مشكلة...</translation>
@@ -9022,7 +9018,6 @@
 <translation id="7421293530411019405">هل تريد مغادرة مجموعة علامات التبويب؟</translation>
 <translation id="7421925624202799674">عرض م&amp;صدر الصفحة</translation>
 <translation id="7422192691352527311">الإعدادات المفضّلة...</translation>
-<translation id="7422516375032300779">تم تغيير اسم المجموعة من قِبل "<ph name="MEMBER_FIRST_NAME" />"</translation>
 <translation id="7423425410216218516">تم تفعيل ظهور الجهاز لمدة <ph name="MINUTES" /> دقيقة.</translation>
 <translation id="7423513079490750513">إزالة <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7423807071740419372">يجب الحصول على إذن لتشغيل <ph name="APP_NAME" /></translation>
@@ -9512,7 +9507,6 @@
 <translation id="7772032839648071052">تأكيد عبارة المرور</translation>
 <translation id="7772127298218883077">لمحة عن <ph name="PRODUCT_NAME" /></translation>
 <translation id="7773726648746946405">مساحة تخزين الجلسة</translation>
-<translation id="7773887159761725143">تم الانضمام إلى المجموعة من قِبل "<ph name="MEMBER_FIRST_NAME" />"</translation>
 <translation id="7774365994322694683">طائر</translation>
 <translation id="7774581652827321413">يمكنك الحصول على ملخّص للصفحة وعمليات البحث ذات الصلة ومعلومات أخرى مفيدة حول هذه الصفحة.</translation>
 <translation id="7774792847912242537">عدد الطلبات كبير جدًا.</translation>
@@ -11114,7 +11108,6 @@
 <translation id="8888253246822647887">سيتم فتح التطبيق عند انتهاء الترقية. قد تستغرق عمليات الترقية بضع دقائق.</translation>
 <translation id="8888459276890791557">يمكنك تثبيت هذه اللوحة الجانبية للوصول إليها بسهولة.</translation>
 <translation id="8889294078294184559">‏عند مواصلة التصفُّح على الإنترنت، يمكن للمواقع الإلكترونية التأكّد من أنّك مستخدِم حقيقي من خلال متصفّح Chrome وأحد المواقع الإلكترونية التي سبقت لك زيارتها.</translation>
-<translation id="88895904696396879">تم تغيير لون المجموعة من قِبل "<ph name="MEMBER_FIRST_NAME" />"</translation>
 <translation id="8889651696183044030">بإمكان <ph name="ORIGIN" /> تعديل الملفات والمجلدات التالية:</translation>
 <translation id="8890170499370378450">قد يتم تحصيل رسوم منك مقابل استخدام بيانات الجوّال.</translation>
 <translation id="8890516388109605451">المصادر</translation>
@@ -11265,7 +11258,6 @@
 <translation id="8991520179165052608">يمكن للموقع الإلكتروني استخدام الميكروفون.</translation>
 <translation id="8991694323904646277">ما مِن كاميرا متّصلة بالجهاز.</translation>
 <translation id="8991766915726096402">استرداد البيانات المحلّية</translation>
-<translation id="8992268506092808992">{TIME_DIMENSION,plural, =0{قبل <ph name="TIME_COUNT" /> دقيقة}=1{قبل ساعة واحدة (<ph name="TIME_COUNT" />)}two{قبل يوميَن (<ph name="TIME_COUNT" />)}few{قبل <ph name="TIME_COUNT" /> أيام}many{قبل <ph name="TIME_COUNT" /> يومًا}other{قبل <ph name="TIME_COUNT" /> يوم}}</translation>
 <translation id="8992671062738341478">"<ph name="WINDOW_TITLE" />" - استخدام الذاكرة - <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">‏في حال نسيت كلمة مرور <ph name="DEVICE_TYPE" />، سيظل بإمكانك استعادة بياناتك المُخزّنة على الجهاز. ما عليك سوى تسجيل الدخول إلى حسابك على Google أو استخدام ميزة "استرداد الحساب".</translation>
 <translation id="8993198843374358393">نسخ تجزئة شهادة <ph name="CERT_NAME" /></translation>
@@ -11667,7 +11659,6 @@
 <translation id="973558314812359997">حجم مؤشر الماوس</translation>
 <translation id="973788791897303708">مجموعة علامات التبويب هذه ممتلئة</translation>
 <translation id="97381968209917373">هل تريد حذف الشهادة "<ph name="CERT_NAME" />"؟</translation>
-<translation id="973825986436797073">تم تغيير علامة تبويب من قِبل "<ph name="MEMBER_FIRST_NAME" />"</translation>
 <translation id="975893173032473675">اللغة التي تريد الترجمة إليها</translation>
 <translation id="976499800099896273">‏يُظهر مربّع الحوار إمكانية التراجع عن التصحيح التلقائي لكلمة <ph name="TYPED_WORD" /> التي تم تصحيحها بكلمة <ph name="CORRECTED_WORD" />.  اضغط على مفتاح السهم المتّجه للأعلى للتراجع عن التصحيح التلقائي، أو اضغط على مفتاح escape للتجاهل.</translation>
 <translation id="976572010712028687">إثبات أنّك أحد الوالدَين</translation>

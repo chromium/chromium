@@ -2564,7 +2564,6 @@
 <translation id="2764920001292228569">Увядзіце назву профілю</translation>
 <translation id="2765100602267695013">Звярніцеся да свайго аператара мабільнай сувязі</translation>
 <translation id="2765217105034171413">Малы</translation>
-<translation id="2765349783094807040">Карыстальнік (<ph name="MEMBER_FIRST_NAME" />) выдаліў гэту ўкладку</translation>
 <translation id="2765820627968019645">Светлая</translation>
 <translation id="276582196519778359">Увядзіце PIN-код, каб адкрыць налады бацькоўскага кантролю</translation>
 <translation id="2766006623206032690">Ус&amp;тавіць і перайсці</translation>
@@ -4126,7 +4125,6 @@
 <translation id="3872991219937722530">Вызваліце месца на дыску, інакш прылада перастане адказваць на запыты.</translation>
 <translation id="3873315167136380065">Каб уключыць гэта, трэба выдаліць фразу-пароль – <ph name="BEGIN_LINK" />скіньце налады сінхранізацыі<ph name="END_LINK" /></translation>
 <translation id="3873423927483480833">Паказваць PIN-коды</translation>
-<translation id="3873893412864594794">Карыстальнік (<ph name="MEMBER_FIRST_NAME" />) дадаў укладку</translation>
 <translation id="3873915545594852654">Узнікла праблема з ARC++.</translation>
 <translation id="3874164307099183178">Уключыць Памочніка Google</translation>
 <translation id="3875511946736639169">Уключыць паказ відарысаў</translation>
@@ -4256,7 +4254,6 @@
 <translation id="3959969108528118741">Уладальнік</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Іншыя дзеянні з нумарам "<ph name="IBAN_DESCRIPTION" />"</translation>
-<translation id="3962607437409665666">Карыстальнік (<ph name="MEMBER_FIRST_NAME" />) пакінуў групу</translation>
 <translation id="3963753386716096475">Выкарыстаць іншы тэлефон, планшэт або ключ бяспекі</translation>
 <translation id="3964480518399667971">Выключыць сотавую сетку</translation>
 <translation id="3965965397408324205">Выйсці з профілю <ph name="PROFILE_NAME" /></translation>
@@ -5379,7 +5376,6 @@
 <translation id="4789348252524569426">Не ўдалося ўсталяваць файлы для распазнавання маўлення. Неабходна абнавіць прыладу. Перазапусціце яе і паўтарыце спробу.</translation>
 <translation id="4789550509729954245">Паказваць апавяшчэнне, калі прылады, якія знаходзяцца паблізу, абагульваюць змесціва</translation>
 <translation id="4791037424585594169">(UDP)</translation>
-<translation id="4791200512372376561">Няма даступных прапаноў. Паспрабуйце папрасіць "падсумаваць гэту старонку" ці задайце сваё пытанне.</translation>
 <translation id="4791793693640849493">Захавайце элементы ва ўліковым запісе</translation>
 <translation id="4792290259143007505">Уключыць паскарэнне TrackPoint</translation>
 <translation id="4792711294155034829">&amp;Паведаміць аб праблеме...</translation>
@@ -9013,7 +9009,6 @@
 <translation id="7421293530411019405">Выйсці з групы ўкладак?</translation>
 <translation id="7421925624202799674">&amp;Прагляд зыходнага тэксту старонкі</translation>
 <translation id="7422192691352527311">Параметры...</translation>
-<translation id="7422516375032300779">Карыстальнік (<ph name="MEMBER_FIRST_NAME" />) змяніў назву групы</translation>
 <translation id="7423425410216218516">Прылада будзе бачнай яшчэ <ph name="MINUTES" /> хв</translation>
 <translation id="7423513079490750513">Выдаліць: <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7423807071740419372">Праграме <ph name="APP_NAME" /> патрабуецца ваш дазвол</translation>
@@ -9504,7 +9499,6 @@
 <translation id="7772032839648071052">Пацвердзіце фразу-пароль</translation>
 <translation id="7772127298218883077">Інфармацыя пра <ph name="PRODUCT_NAME" /></translation>
 <translation id="7773726648746946405">Захаванне сеанса</translation>
-<translation id="7773887159761725143"><ph name="MEMBER_FIRST_NAME" /> цяпер у групе</translation>
 <translation id="7774365994322694683">Птушка</translation>
 <translation id="7774581652827321413">Праглядзіце зводку па старонцы, падобныя пошукавыя запыты і іншую карысную інфармацыю пра яе</translation>
 <translation id="7774792847912242537">Занадта многа запытаў.</translation>
@@ -11103,7 +11097,6 @@
 <translation id="8888253246822647887">Праграма будзе адкрыта пасля завяршэння абнаўлення. Абнаўленні могуць заняць некалькі хвілін.</translation>
 <translation id="8888459276890791557">Для лёгкага доступу да гэтай бакавой панэлі яе можна замацаваць</translation>
 <translation id="8889294078294184559">Гэта дазваляе іншым сайтам, якія вы наведваеце, запытваць гэты даныя ў Chrome, каб правяраць, ці сапраўды вы чалавек.</translation>
-<translation id="88895904696396879">Карыстальнік (<ph name="MEMBER_FIRST_NAME" />) змяніў колер групы</translation>
 <translation id="8889651696183044030">Сайт <ph name="ORIGIN" /> можа змяняць наступныя файлы і папкі</translation>
 <translation id="8890170499370378450">За мабільную перадачу даных можа спаганяцца плата</translation>
 <translation id="8890516388109605451">Крыніцы</translation>
@@ -11254,7 +11247,6 @@
 <translation id="8991520179165052608">Сайт можа выкарыстоўваць ваш мікрафон</translation>
 <translation id="8991694323904646277">Няма камеры</translation>
 <translation id="8991766915726096402">Аднаўленне лакальных даных</translation>
-<translation id="8992268506092808992">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> хв таму}=1{<ph name="TIME_COUNT" /> гадз таму}one{<ph name="TIME_COUNT" /> сут таму}few{<ph name="TIME_COUNT" /> сут таму}many{<ph name="TIME_COUNT" /> сут таму}other{<ph name="TIME_COUNT" /> сут таму}}</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> – Выкарыстанне памяці: <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">Калі вы забудзеце пароль для прылады <ph name="DEVICE_TYPE" />, лакальныя даныя можна будзе аднавіць. Вам трэба будзе ўвайсці ва Уліковы запіс Google або выкарыстаць функцыю аднаўлення доступу да ўліковага запісу.</translation>
 <translation id="8993198843374358393">Скапіраваць хэш сертыфіката "<ph name="CERT_NAME" />"</translation>
@@ -11653,7 +11645,6 @@
 <translation id="973558314812359997">Памер курсора мышы</translation>
 <translation id="973788791897303708">Гэта група ўкладак запоўнена</translation>
 <translation id="97381968209917373">Выдаліць сертыфікат "<ph name="CERT_NAME" />"</translation>
-<translation id="973825986436797073">Карыстальнік (<ph name="MEMBER_FIRST_NAME" />) змяніў укладку</translation>
 <translation id="975893173032473675">На якую мову перакласці</translation>
 <translation id="976499800099896273">Паказваецца дыялогавае акно, з дапамогай якога аўтавыпраўленне слова "<ph name="TYPED_WORD" />" на слова "<ph name="CORRECTED_WORD" />" можна адрабіць.  Націсніце стрэлку ўверх, каб перайсці да выпраўленага слова, або Escape, каб адхіліць гэта акно.</translation>
 <translation id="976572010712028687">Спраўдзіце, што вы з’яўляецеся адным з бацькоў</translation>

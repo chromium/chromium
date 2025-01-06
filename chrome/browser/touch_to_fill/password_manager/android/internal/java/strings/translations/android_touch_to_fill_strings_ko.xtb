@@ -17,6 +17,7 @@
 <translation id="5441504010984421144">터치 시 작성되는 사용자 인증 정보 목록이 전체 높이로 열렸습니다.</translation>
 <translation id="5591247451101092906">저장된 비밀번호 또는 패스키를 사용하시겠습니까?</translation>
 <translation id="5624120631404540903">비밀번호 관리</translation>
+<translation id="592182999816790476"><ph name="WEBSITE" />에 <ph name="USERNAME" />님의 비밀번호가 저장됨</translation>
 <translation id="6560306912274274630"><ph name="USERNAME" />님의 패스키입니다. 화면 잠금을 사용하세요.</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{이 사이트의 새 비밀번호}other{이 사이트의 새 비밀번호}}</translation>
 <translation id="7286867818472074330">패스키 선택</translation>

@@ -2576,7 +2576,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2764920001292228569">Enter a profile name</translation>
 <translation id="2765100602267695013">Please contact your mobile provider</translation>
 <translation id="2765217105034171413">Small</translation>
-<translation id="2765349783094807040"><ph name="MEMBER_FIRST_NAME" /> removed a tab</translation>
 <translation id="2765820627968019645">Light</translation>
 <translation id="276582196519778359">Enter your PIN for parental controls</translation>
 <translation id="2766006623206032690">Pa&amp;ste and go</translation>
@@ -4140,7 +4139,6 @@ This can include information about installed software, files, your browser and t
 <translation id="3872991219937722530">Free up disk space or device will become unresponsive.</translation>
 <translation id="3873315167136380065">To turn this on, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" /> to remove your sync passphrase</translation>
 <translation id="3873423927483480833">Show PINs</translation>
-<translation id="3873893412864594794"><ph name="MEMBER_FIRST_NAME" /> added a tab</translation>
 <translation id="3873915545594852654">A problem with ARC++ occurred.</translation>
 <translation id="3874164307099183178">Turn on Google Assistant</translation>
 <translation id="3875511946736639169">Enable images</translation>
@@ -4270,7 +4268,6 @@ This can include information about installed software, files, your browser and t
 <translation id="3959969108528118741">Owner</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">More actions for <ph name="IBAN_DESCRIPTION" /></translation>
-<translation id="3962607437409665666"><ph name="MEMBER_FIRST_NAME" /> left the group</translation>
 <translation id="3963753386716096475">Use a different phone, tablet or security key</translation>
 <translation id="3964480518399667971">Turn off mobile network</translation>
 <translation id="3965965397408324205">Exit <ph name="PROFILE_NAME" /></translation>
@@ -5393,7 +5390,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4789348252524569426">Can't install speech files. Your device needs to be updated. Restart your device and try again.</translation>
 <translation id="4789550509729954245">Show notification when devices are sharing nearby</translation>
 <translation id="4791037424585594169">(UDP)</translation>
-<translation id="4791200512372376561">No suggestions available. Try asking things like 'summarise this page' or your own question.</translation>
 <translation id="4791793693640849493">Save items in account</translation>
 <translation id="4792290259143007505">Enable TrackPoint acceleration</translation>
 <translation id="4792711294155034829">&amp;Report an Issue...</translation>
@@ -9023,7 +9019,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7421293530411019405">Leave tab group?</translation>
 <translation id="7421925624202799674">&amp;View Page Source</translation>
 <translation id="7422192691352527311">Preferences...</translation>
-<translation id="7422516375032300779"><ph name="MEMBER_FIRST_NAME" /> changed the group name</translation>
 <translation id="7423425410216218516">Visibility is on for <ph name="MINUTES" /> minutes</translation>
 <translation id="7423513079490750513">Remove <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7423807071740419372"><ph name="APP_NAME" /> needs permission to run</translation>
@@ -9514,7 +9509,6 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7772032839648071052">Confirm passphrase</translation>
 <translation id="7772127298218883077">About <ph name="PRODUCT_NAME" /></translation>
 <translation id="7773726648746946405">Session Storage</translation>
-<translation id="7773887159761725143"><ph name="MEMBER_FIRST_NAME" /> joined the group</translation>
 <translation id="7774365994322694683">Bird</translation>
 <translation id="7774581652827321413">Get a page summary, related searches and other useful info about this page</translation>
 <translation id="7774792847912242537">Too many requests.</translation>
@@ -11111,7 +11105,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8888253246822647887">Your app will open when the upgrade is finished. Upgrades can take a few minutes.</translation>
 <translation id="8888459276890791557">You can pin this side panel for easy access</translation>
 <translation id="8889294078294184559">As you keep browsing, sites can check with Chrome and verify with a previous site that you've visited that you're likely a real person</translation>
-<translation id="88895904696396879"><ph name="MEMBER_FIRST_NAME" /> changed the group colour</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> can edit the following files and folders</translation>
 <translation id="8890170499370378450">May incur mobile data charges</translation>
 <translation id="8890516388109605451">Sources</translation>
@@ -11262,7 +11255,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8991520179165052608">Site can use your microphone</translation>
 <translation id="8991694323904646277">No camera</translation>
 <translation id="8991766915726096402">Local Data Recovery</translation>
-<translation id="8992268506092808992">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" />m ago}=1{<ph name="TIME_COUNT" />h ago}other{<ph name="TIME_COUNT" />d ago}}</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> - Memory usage - <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">If you forget your <ph name="DEVICE_TYPE" /> password, you can still restore your local data. You'll need to sign in to your Google Account or use account recovery.</translation>
 <translation id="8993198843374358393">Copy certificate hash for <ph name="CERT_NAME" /></translation>
@@ -11664,7 +11656,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="973558314812359997">Mouse size</translation>
 <translation id="973788791897303708">This tab group is full</translation>
 <translation id="97381968209917373">Delete certificate <ph name="CERT_NAME" /></translation>
-<translation id="973825986436797073"><ph name="MEMBER_FIRST_NAME" /> changed a tab</translation>
 <translation id="975893173032473675">Language to translate into</translation>
 <translation id="976499800099896273">Autocorrect undo dialogue is shown for <ph name="TYPED_WORD" /> corrected to <ph name="CORRECTED_WORD" />.  Press up arrow to access, escape to ignore.</translation>
 <translation id="976572010712028687">Verify that you're a parent</translation>

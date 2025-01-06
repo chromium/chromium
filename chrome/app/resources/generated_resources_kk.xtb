@@ -2560,7 +2560,6 @@
 <translation id="2764920001292228569">Профиль атауын енгізіңіз.</translation>
 <translation id="2765100602267695013">Мобильдік операторға хабарласыңыз.</translation>
 <translation id="2765217105034171413">Кіші</translation>
-<translation id="2765349783094807040"><ph name="MEMBER_FIRST_NAME" /> қойындыны өшірді.</translation>
 <translation id="2765820627968019645">Жарық</translation>
 <translation id="276582196519778359">Ата-ана бақылауына арналған PIN кодыңызды енгізіңіз</translation>
 <translation id="2766006623206032690">Қ&amp;ою және өту</translation>
@@ -4122,7 +4121,6 @@
 <translation id="3872991219937722530">Дискіде орын босатпасаңыз, құрылғы жауап бермейді.</translation>
 <translation id="3873315167136380065">Мұны қосу үшін <ph name="BEGIN_LINK" />синхрондауды бастапқы күйге қайтарып<ph name="END_LINK" />, синхрондау құпия фразасын өшіріңіз</translation>
 <translation id="3873423927483480833">PIN кодтарын көрсету</translation>
-<translation id="3873893412864594794"><ph name="MEMBER_FIRST_NAME" /> қойынды қосты.</translation>
 <translation id="3873915545594852654">ARC++ ақауы орын алды.</translation>
 <translation id="3874164307099183178">Google Assistant қолданбасын қосу</translation>
 <translation id="3875511946736639169">Кескіндерді қосу</translation>
@@ -4252,7 +4250,6 @@
 <translation id="3959969108528118741">Иесі</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" /> арналған қосымша әрекеттер</translation>
-<translation id="3962607437409665666"><ph name="MEMBER_FIRST_NAME" /> топтан шықты.</translation>
 <translation id="3963753386716096475">Басқа телефонды, планшетті немесе қауіпсіздік кілтін пайдалану</translation>
 <translation id="3964480518399667971">Ұялы байланыс желісін өшіру</translation>
 <translation id="3965965397408324205"><ph name="PROFILE_NAME" /> профилінен шығу</translation>
@@ -5375,7 +5372,6 @@
 <translation id="4789348252524569426">Дыбыс тану файлдарын орнату мүмкін емес. Құрылғыны жаңарту қажет. Құрылғыны өшіріп қосып, әрекетті қайталаңыз.</translation>
 <translation id="4789550509729954245">Маңайдағы құрылғылар деректерді бөлісіп жатқан кезде, хабарландыруларды көрсету</translation>
 <translation id="4791037424585594169">(UDP)</translation>
-<translation id="4791200512372376561">Ұсыныстар жоқ. "Осы бетті қорытындыла" деген сияқты нұсқау беріңіз немесе сұрақ қойыңыз.</translation>
 <translation id="4791793693640849493">Элементтерді аккаунтқа сақтаңыз</translation>
 <translation id="4792290259143007505">TrackPoint жылдамдатуын қосу</translation>
 <translation id="4792711294155034829">&amp;Мәселе туралы хабарлау…</translation>
@@ -8999,7 +8995,6 @@
 <translation id="7421293530411019405">Қойындылар тобынан шығу қажет пе?</translation>
 <translation id="7421925624202799674">&amp;Бет дереккөзін көру</translation>
 <translation id="7422192691352527311">Реттеулер…</translation>
-<translation id="7422516375032300779"><ph name="MEMBER_FIRST_NAME" /> топ атауын өзгертті.</translation>
 <translation id="7423425410216218516">Көріну мүмкіндігі <ph name="MINUTES" /> минутқа қосулы.</translation>
 <translation id="7423513079490750513"><ph name="INPUT_METHOD_NAME" /> контентін өшіру</translation>
 <translation id="7423807071740419372"><ph name="APP_NAME" /> іске қосылуы үшін рұқсат қажет</translation>
@@ -9489,7 +9484,6 @@
 <translation id="7772032839648071052">Құпия фразаны растау</translation>
 <translation id="7772127298218883077"><ph name="PRODUCT_NAME" /> туралы</translation>
 <translation id="7773726648746946405">Сеанс жады</translation>
-<translation id="7773887159761725143"><ph name="MEMBER_FIRST_NAME" /> топқа қосылды.</translation>
 <translation id="7774365994322694683">Құс</translation>
 <translation id="7774581652827321413">Беттің қысқартылған нұсқасын, ұқсас сұрауларды және осы бет жайында басқа пайдалы ақпаратты алыңыз</translation>
 <translation id="7774792847912242537">Сұраулар тым көп.</translation>
@@ -11085,7 +11079,6 @@
 <translation id="8888253246822647887">Қолданба, жаңа нұсқа орнатылғаннан кейін, ашылады. Бұл бірнеше минутқа созылуы мүмкін.</translation>
 <translation id="8888459276890791557">Бұл бүйірлік панельді жылдам ашу үшін бекітіп қойсаңыз болады.</translation>
 <translation id="8889294078294184559">Шолуды жалғастыра отырып, сайттар Chrome-мен тексеріп, шынайы адам екеніңізді алдыңғы кірген сайтпен растай алады</translation>
-<translation id="88895904696396879"><ph name="MEMBER_FIRST_NAME" /> топ түсін өзгертті.</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> мына файлдар мен қалталарды өңдей алады.</translation>
 <translation id="8890170499370378450">Мобильдік интернет ақысы алынуы мүмкін.</translation>
 <translation id="8890516388109605451">Дереккөздер</translation>
@@ -11236,7 +11229,6 @@
 <translation id="8991520179165052608">Сайт микрофонды пайдалана алады</translation>
 <translation id="8991694323904646277">Камера жоқ</translation>
 <translation id="8991766915726096402">Жергілікті деректерді қалпына келтіру</translation>
-<translation id="8992268506092808992">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> мин бұрын}=1{<ph name="TIME_COUNT" /> сағ бұрын}other{<ph name="TIME_COUNT" /> күн бұрын}}</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> – Жадтың пайдаланылуы – <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527"><ph name="DEVICE_TYPE" /> құпия сөзін ұмытып қалсаңыз, жергілікті деректерді қалпына келтіре бересіз. Google аккаунтына кіруіңіз немесе аккаунтты қалпына келтіру функциясын пайдалануыңыз керек.</translation>
 <translation id="8993198843374358393"><ph name="CERT_NAME" /> сертификатының хешін көшіру</translation>
@@ -11638,7 +11630,6 @@
 <translation id="973558314812359997">Курсор көлемі</translation>
 <translation id="973788791897303708">Бұл қойындылар тобында орын жоқ</translation>
 <translation id="97381968209917373">"<ph name="CERT_NAME" />" сертификатын жою</translation>
-<translation id="973825986436797073"><ph name="MEMBER_FIRST_NAME" /> қойындыны өзгертті.</translation>
 <translation id="975893173032473675">Аударма тілі</translation>
 <translation id="976499800099896273"><ph name="TYPED_WORD" /> деп теріліп, <ph name="CORRECTED_WORD" /> деп түзетілген сөз үшін автоматты түзетуден бас тарту диалогтік терезесі көрсетілді.  Оны қолдану үшін жоғары бағыттауыш пернені, ал елемеу үшін Escape пернесін басыңыз.</translation>
 <translation id="976572010712028687">Ата-ана екеніңізді растаңыз</translation>

@@ -2560,7 +2560,6 @@
 <translation id="2764920001292228569">प्रोफाइलको नाम हाल्नुहोस्</translation>
 <translation id="2765100602267695013">कृपया आफ्नो मोबाइल प्रदायकलाई सम्पर्क गर्नुहोस्</translation>
 <translation id="2765217105034171413">सानो</translation>
-<translation id="2765349783094807040"><ph name="MEMBER_FIRST_NAME" /> ले एउटा ट्याब हटाउनुभयो</translation>
 <translation id="2765820627968019645">उज्यालो</translation>
 <translation id="276582196519778359">अभिभावकीय नियन्त्रणहरूका लागि आफूले सेट गरेको PIN हाल्नुहोस्</translation>
 <translation id="2766006623206032690">टाँ&amp;स्नुहोस् र जानुहोस्</translation>
@@ -4123,7 +4122,6 @@
 <translation id="3872991219937722530">डिस्कको ठाउँ खाली गर्नुहोस् नत्र यन्त्रले प्रतिक्रिया दिन छाड्नेछ।</translation>
 <translation id="3873315167136380065">यसलाई सक्रिय गर्ने प्रयोजनका लागि आफ्नो सिंकसम्बन्धी पासफ्रेज हटाउन <ph name="BEGIN_LINK" />सिंक गर्ने सेवा रिसेट गर्नुहोस्<ph name="END_LINK" />।</translation>
 <translation id="3873423927483480833">PIN हरू देखाउनुहोस्</translation>
-<translation id="3873893412864594794"><ph name="MEMBER_FIRST_NAME" /> ले एउटा ट्याब थप्नुभयो</translation>
 <translation id="3873915545594852654">ARC++ सम्बन्धी कुनै समस्या भयो।</translation>
 <translation id="3874164307099183178">Google सहायक अन गर्नुहोस्</translation>
 <translation id="3875511946736639169">फोटोहरू अन गर्नुहोस्</translation>
@@ -4252,7 +4250,6 @@
 <translation id="3959969108528118741">मालिक</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" /> का सम्बन्धमा गर्न सकिने थप कारबाहीहरू</translation>
-<translation id="3962607437409665666"><ph name="MEMBER_FIRST_NAME" /> समूहबाट बाहिरिनुभयो</translation>
 <translation id="3963753386716096475">कुनै अर्को फोन, ट्याब्लेट वा सुरक्षा साँचो प्रयोग गर्नुहोस्</translation>
 <translation id="3964480518399667971">सेलुलर नेटवर्क अफ गर्नुहोस्</translation>
 <translation id="3965965397408324205">बाहिरिन निस्कनुहोस् <ph name="PROFILE_NAME" /></translation>
@@ -5375,7 +5372,6 @@
 <translation id="4789348252524569426">वाक् पहिचानसम्बन्धी फाइलहरू इन्स्टल गर्न सकिएन। तपाईंको डिभाइस अपडेट गर्नु पर्ने हुन्छ। आफ्नो डिभाइस रिस्टार्ट गर्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="4789550509729954245">नजिकैका डिभाइसहरूले सेयर गरिरहेका बेला सूचना देखाउनुहोस्</translation>
 <translation id="4791037424585594169">(UDP)</translation>
-<translation id="4791200512372376561">कुनै पनि सुझाव उपलब्ध छैन। “यो पेजको सारांश बनाउनुहोस्” जस्तो प्रश्न वा आफ्नै प्रश्न सोधी हेर्नुहोस्।</translation>
 <translation id="4791793693640849493">यी कुराहरू खातामा सेभ गर्नुहोस्</translation>
 <translation id="4792290259143007505">TrackPoint एक्सिलेरेसन अन गर्नुहोस्</translation>
 <translation id="4792711294155034829">एउटा मामिला रिपोर्ट गर्नुहोस्...</translation>
@@ -9003,7 +8999,6 @@
 <translation id="7421293530411019405">यो ट्याब समूह छाड्ने हो?</translation>
 <translation id="7421925624202799674">पृष्ठ स्रोत &amp;हेर्नुहोस्</translation>
 <translation id="7422192691352527311">प्राथमिकताहरू...</translation>
-<translation id="7422516375032300779"><ph name="MEMBER_FIRST_NAME" /> ले समूहको नाम परिवर्तन गर्नुभयो</translation>
 <translation id="7423425410216218516">पहुँचसम्बन्धी सेटिङ <ph name="MINUTES" /> मिनेटसम्म अन हुन्छ</translation>
 <translation id="7423513079490750513"><ph name="INPUT_METHOD_NAME" /> हटाउनुहोस्</translation>
 <translation id="7423807071740419372"><ph name="APP_NAME" /> चलाउन अनुमति दिनु पर्ने हुन्छ</translation>
@@ -9494,7 +9489,6 @@
 <translation id="7772032839648071052">पासफ्रेज पक्का</translation>
 <translation id="7772127298218883077"><ph name="PRODUCT_NAME" /> बारेमा</translation>
 <translation id="7773726648746946405">सत्र भण्डारण</translation>
-<translation id="7773887159761725143"><ph name="MEMBER_FIRST_NAME" /> यो समूहमा सामेल हुनुभयो</translation>
 <translation id="7774365994322694683">चरो</translation>
 <translation id="7774581652827321413">यो पेजको सारांश, सम्बन्धित खोज र यसका बारेमा अन्य उपयोगी जानकारी प्राप्त गर्नुहोस्</translation>
 <translation id="7774792847912242537">अत्यन्त धेरै पटक अनुरोध गरियो।</translation>
@@ -11090,7 +11084,6 @@
 <translation id="8888253246822647887">स्तरवृद्धि सम्पन्न भएपछि तपाईंको एप खुल्ने छ। स्तरवृद्धि गर्न केही बेर लाग्न सक्छ।</translation>
 <translation id="8888459276890791557">तपाईं यो साइड प्यानल पिन गरी सजिलै एक्सेस गर्न सक्नुहुन्छ</translation>
 <translation id="8889294078294184559">तपाईंले ब्राउज गरिरहँदा साइटहरूले तपाईंले यसअघि खोलेको साइटका मद्दतले तपाईं वास्तविक व्यक्ति हो कि होइन भन्ने कुरा पुष्टि गर्न Chrome को सहायता लिन सक्छन्</translation>
-<translation id="88895904696396879"><ph name="MEMBER_FIRST_NAME" /> ले समूहको रङ परिवर्तन गर्नुभयो</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> ले निम्न फाइल र फोल्डरहरू सम्पादन गर्न सक्छ</translation>
 <translation id="8890170499370378450">मोबाइल डेटा प्रयोग गर्दा शुल्क लाग्न सक्छ</translation>
 <translation id="8890516388109605451">स्रोतहरू</translation>
@@ -11241,7 +11234,6 @@
 <translation id="8991520179165052608">साइटले तपाईंको माइक्रोफोन प्रयोग गर्न सक्छ</translation>
 <translation id="8991694323904646277">क्यामेरा कनेक्ट गरिएको छैन</translation>
 <translation id="8991766915726096402">लोकल डेटा रिकभर गर्ने सुविधा</translation>
-<translation id="8992268506092808992">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> मिनेटअघि}=1{<ph name="TIME_COUNT" /> घण्टाअघि}other{<ph name="TIME_COUNT" /> दिनअघि}}</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> - मेमोरीको प्रयोग - <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">तपाईंले आफ्नो <ph name="DEVICE_TYPE" /> को पासवर्ड बिर्सनुभयो भने पनि तपाईं आफ्नो लोकल डेटा रिस्टोर गर्न सक्नुहुन्छ। तपाईंले आफ्नो Google खातामा साइन इन गर्नु पर्ने हुन्छ वा खाता रिकभर गर्ने सुविधा प्रयोग गर्नु पर्ने हुन्छ।</translation>
 <translation id="8993198843374358393"><ph name="CERT_NAME" /> को सर्टिफिकेट ह्यास कपी गर्नुहोस्</translation>
@@ -11643,7 +11635,6 @@
 <translation id="973558314812359997">माउसको आकार</translation>
 <translation id="973788791897303708">यो ट्याब समूह भरिएको छ</translation>
 <translation id="97381968209917373"><ph name="CERT_NAME" /> नामक प्रमाणपत्र मेटाउनुहोस्</translation>
-<translation id="973825986436797073"><ph name="MEMBER_FIRST_NAME" /> ले एउटा ट्याब परिवर्तन गर्नुभयो</translation>
 <translation id="975893173032473675">अनुवाद गरिनु पर्ने भाषा</translation>
 <translation id="976499800099896273"><ph name="TYPED_WORD" /> सच्याएर <ph name="CORRECTED_WORD" /> बनाइयो र 'अटोकरेक्ट अन्डू गर्नुहोस्' नामक डायलग देखाइयो।  सच्याइएको शब्द हेर्न अप एरो थिच्नुहोस्, बेवास्ता गर्न escape थिच्नुहोस्।</translation>
 <translation id="976572010712028687">आफू अभिभावक भएको कुरा पुष्टि गर्नुहोस्</translation>

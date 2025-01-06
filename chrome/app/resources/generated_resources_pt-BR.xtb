@@ -2577,7 +2577,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2764920001292228569">Insira um nome de perfil</translation>
 <translation id="2765100602267695013">Entre em contato com sua operadora de rede móvel</translation>
 <translation id="2765217105034171413">Pequeno</translation>
-<translation id="2765349783094807040"><ph name="MEMBER_FIRST_NAME" /> removeu uma guia</translation>
 <translation id="2765820627968019645">Claro</translation>
 <translation id="276582196519778359">Digite o PIN do controle da família</translation>
 <translation id="2766006623206032690">Co&amp;lar e ir</translation>
@@ -4141,7 +4140,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="3872991219937722530">Libere espaço em disco, ou o dispositivo deixará de responder.</translation>
 <translation id="3873315167136380065">Para ativar essa configuração, <ph name="BEGIN_LINK" />redefina a sincronização<ph name="END_LINK" /> e remova sua senha longa de sincronização</translation>
 <translation id="3873423927483480833">Mostrar PINs</translation>
-<translation id="3873893412864594794"><ph name="MEMBER_FIRST_NAME" /> adicionou uma guia</translation>
 <translation id="3873915545594852654">Ocorreu um problema com o ARC++.</translation>
 <translation id="3874164307099183178">Ativar o Google Assistente</translation>
 <translation id="3875511946736639169">Ativar imagens</translation>
@@ -4271,7 +4269,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="3959969108528118741">Proprietário</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Mais ações para o <ph name="IBAN_DESCRIPTION" /></translation>
-<translation id="3962607437409665666"><ph name="MEMBER_FIRST_NAME" /> saiu do grupo</translation>
 <translation id="3963753386716096475">Usar um smartphone, tablet ou chave de segurança diferente</translation>
 <translation id="3964480518399667971">Desativar a rede celular</translation>
 <translation id="3965965397408324205">Sair de <ph name="PROFILE_NAME" /></translation>
@@ -5394,7 +5391,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4789348252524569426">Não foi possível instalar arquivos de fala. Seu dispositivo precisa ser atualizado. Reinicie o dispositivo e tente novamente.</translation>
 <translation id="4789550509729954245">Mostrar notificação quando dispositivos estiverem compartilhando itens por perto</translation>
 <translation id="4791037424585594169">(UDP)</translation>
-<translation id="4791200512372376561">Nenhuma sugestão disponível. Tente pedir algo como "resuma esta página" ou faça sua própria pergunta.</translation>
 <translation id="4791793693640849493">Salvar itens na conta</translation>
 <translation id="4792290259143007505">Ativar aceleração do TrackPoint</translation>
 <translation id="4792711294155034829">&amp;Informar um problema...</translation>
@@ -9027,7 +9023,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7421293530411019405">Sair do grupo de guias?</translation>
 <translation id="7421925624202799674">&amp;Exibir código fonte da página</translation>
 <translation id="7422192691352527311">Preferências...</translation>
-<translation id="7422516375032300779"><ph name="MEMBER_FIRST_NAME" /> mudou o nome do grupo</translation>
 <translation id="7423425410216218516">A visibilidade está ativada por <ph name="MINUTES" /> minutos</translation>
 <translation id="7423513079490750513">Remover <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7423807071740419372">O app <ph name="APP_NAME" /> precisa de permissão para ser executado</translation>
@@ -9518,7 +9513,6 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7772032839648071052">Confirmar senha</translation>
 <translation id="7772127298218883077">Sobre o <ph name="PRODUCT_NAME" /></translation>
 <translation id="7773726648746946405">Armazenamento da sessão</translation>
-<translation id="7773887159761725143"><ph name="MEMBER_FIRST_NAME" /> entrou no grupo</translation>
 <translation id="7774365994322694683">Pássaro</translation>
 <translation id="7774581652827321413">Receba um resumo da página, pesquisas relacionadas e outras informações úteis</translation>
 <translation id="7774792847912242537">Excesso de solicitações.</translation>
@@ -11116,7 +11110,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8888253246822647887">O app será aberto após a conclusão do upgrade. Os upgrades podem levar alguns minutos.</translation>
 <translation id="8888459276890791557">Fixe este painel lateral para facilitar o acesso</translation>
 <translation id="8889294078294184559">Conforme você navega, eles podem verificar com o navegador e o site visitado anteriormente que você é uma pessoa real</translation>
-<translation id="88895904696396879"><ph name="MEMBER_FIRST_NAME" /> mudou a cor do grupo</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> pode editar os arquivos e as pastas a seguir</translation>
 <translation id="8890170499370378450">Sujeito a cobrança para dados móveis</translation>
 <translation id="8890516388109605451">Fontes</translation>
@@ -11267,7 +11260,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="8991520179165052608">O site pode usar seu microfone</translation>
 <translation id="8991694323904646277">Sem câmera</translation>
 <translation id="8991766915726096402">Recuperação de dados locais</translation>
-<translation id="8992268506092808992">{TIME_DIMENSION,plural, =0{Há <ph name="TIME_COUNT" />min}=1{Há <ph name="TIME_COUNT" />h}one{Há <ph name="TIME_COUNT" /> d}other{Há <ph name="TIME_COUNT" /> d}}</translation>
 <translation id="8992671062738341478">Uso da memória em <ph name="WINDOW_TITLE" />: <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">Se você esquecer a senha do <ph name="DEVICE_TYPE" />, ainda poderá restaurar seus dados locais. Faça login na sua Conta do Google ou use a recuperação de conta.</translation>
 <translation id="8993198843374358393">Copiar hash do certificado para <ph name="CERT_NAME" /></translation>
@@ -11669,7 +11661,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="973558314812359997">Tamanho do mouse</translation>
 <translation id="973788791897303708">Este grupo de guias está cheio</translation>
 <translation id="97381968209917373">Excluir o certificado <ph name="CERT_NAME" /></translation>
-<translation id="973825986436797073"><ph name="MEMBER_FIRST_NAME" /> mudou uma guia</translation>
 <translation id="975893173032473675">Traduzir para</translation>
 <translation id="976499800099896273">Caixa de diálogo exibida para desfazer a correção automática de <ph name="TYPED_WORD" /> para <ph name="CORRECTED_WORD" />.  Pressione a seta para cima para acessar ou "Esc" para ignorar.</translation>
 <translation id="976572010712028687">Confirme que você é o familiar responsável</translation>
