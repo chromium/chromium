@@ -66,7 +66,7 @@ AX_TEST_F('SwitchAccessTabNodeTest', 'Construction', async function() {
       RectUtil.equal(tabAsRoot.location, tabToSelect.location),
       'Tab node to select should not have the same location as tab as root');
   assertEquals(
-      null, tabToSelect.asRootNode(),
+      undefined, tabToSelect.asRootNode(),
       'Tab node to select should not be a root node');
 
   Navigator.byItem.moveForward();

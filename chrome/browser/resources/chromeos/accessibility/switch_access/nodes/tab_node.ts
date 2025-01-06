@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {RectUtil} from '../../common/rect_util.js';
+import {RectUtil} from '/common/rect_util.js';
+
 import {Navigator} from '../navigator.js';
 import {ActionResponse} from '../switch_access_constants.js';
 
@@ -10,8 +11,10 @@ import {BackButtonNode} from './back_button_node.js';
 import {BasicNode, BasicRootNode} from './basic_node.js';
 import {SAChildNode, SARootNode} from './switch_access_node.js';
 
-const AutomationNode = chrome.automation.AutomationNode;
-const MenuAction = chrome.accessibilityPrivate.SwitchAccessMenuAction;
+type AutomationNode = chrome.automation.AutomationNode;
+import MenuAction = chrome.accessibilityPrivate.SwitchAccessMenuAction;
+type Rect = chrome.automation.Rect;
+import RoleType = chrome.automation.RoleType;
 
 /**
  * This class handles the behavior of tab nodes at the top level (i.e. as
@@ -19,40 +22,33 @@ const MenuAction = chrome.accessibilityPrivate.SwitchAccessMenuAction;
  */
 export class TabNode extends BasicNode {
   /**
-   * @param {!AutomationNode} node The node in the automation
-   *    tree
-   * @param {?SARootNode} parent
-   * @param {!SARootNode} tabAsRoot A pre-calculated object for exploring the
-   * parts of tab (i.e. choosing whether to open the tab or close it).
+   * @param node The node in the automation tree
+   * @param tabAsRoot A pre-calculated object for exploring the parts of tab
+   * (i.e. choosing whether to open the tab or close it).
    */
-  constructor(node, parent, tabAsRoot) {
+  constructor(
+      node: AutomationNode, parent: SARootNode|null,
+      private tabAsRoot_: SARootNode) {
     super(node, parent);
-
-    /** @private {!SARootNode} */
-    this.tabAsRoot_ = tabAsRoot;
   }
 
   // ================= Getters and setters =================
 
-  /** @override */
-  get actions() {
+  override get actions(): MenuAction[] {
     return [MenuAction.DRILL_DOWN];
   }
 
   // ================= General methods =================
 
-  /** @override */
-  asRootNode() {
+  override asRootNode(): SARootNode {
     return this.tabAsRoot_;
   }
 
-  /** @override */
-  isGroup() {
+  override isGroup(): boolean {
     return true;
   }
 
-  /** @override */
-  performAction(action) {
+  override performAction(action: MenuAction): ActionResponse {
     if (action !== MenuAction.DRILL_DOWN) {
       return ActionResponse.NO_ACTION_TAKEN;
     }
@@ -62,13 +58,13 @@ export class TabNode extends BasicNode {
 
   // ================= Static methods =================
 
-  /** @override */
-  static create(tabNode, parent) {
+  static override create(tabNode: AutomationNode, parent: SARootNode|null):
+      BasicNode {
     const tabAsRoot = new BasicRootNode(tabNode);
 
     let closeButton;
     for (const child of tabNode.children) {
-      if (child.role === chrome.automation.RoleType.BUTTON) {
+      if (child.role === RoleType.BUTTON) {
         closeButton = new BasicNode(child, tabAsRoot);
         break;
       }
@@ -89,27 +85,19 @@ export class TabNode extends BasicNode {
 
 /** This class handles the behavior of tabs as actionable elements */
 class ActionableTabNode extends BasicNode {
-  /**
-   * @param {!AutomationNode} node
-   * @param {?SARootNode} parent
-   * @param {?SAChildNode} closeButton
-   */
-  constructor(node, parent, closeButton) {
+  constructor(
+      node: AutomationNode, parent: SARootNode|null,
+      private closeButton_: SAChildNode|null) {
     super(node, parent);
-
-    /** @private {?SAChildNode} */
-    this.closeButton_ = closeButton;
   }
 
   // ================= Getters and setters =================
 
-  /** @override */
-  get actions() {
+  override get actions(): MenuAction[] {
     return [MenuAction.SELECT];
   }
 
-  /** @override */
-  get location() {
+  override get location(): Rect|undefined {
     if (!this.closeButton_) {
       return super.location;
     }
@@ -118,19 +106,18 @@ class ActionableTabNode extends BasicNode {
 
   // ================= General methods =================
 
-  /** @override */
-  asRootNode() {
-    return null;
+  override asRootNode(): SARootNode|undefined {
+    return undefined;
   }
 
-  /** @override */
-  isGroup() {
+  override isGroup(): boolean {
     return false;
   }
 }
 
+// TODO(crbug.com/314203187): Not null asserted, check that this is correct.
 BasicNode.creators.push({
-  predicate: baseNode => baseNode.role === chrome.automation.RoleType.TAB &&
-      baseNode.root.role === chrome.automation.RoleType.DESKTOP,
+  predicate: baseNode => baseNode.role === RoleType.TAB &&
+      baseNode.root!.role === RoleType.DESKTOP,
   creator: TabNode.create,
 });

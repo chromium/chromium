@@ -49,6 +49,7 @@ ts_modules = [
   "nodes/keyboard_node.ts",
   "nodes/modal_dialog_node.ts",
   "nodes/switch_access_node.ts",
+  "nodes/tab_node.ts",
   "nodes/window_node.ts",
   "point_scan_manager.ts",
   "settings_manager.ts",
@@ -63,7 +64,6 @@ ts_modules = [
 js_modules = [
   "nodes/editable_text_node.js",
   "nodes/slider_node.js",
-  "nodes/tab_node.js",
 ]
 
 # Root dir must be the parent directory so it can reach common.
