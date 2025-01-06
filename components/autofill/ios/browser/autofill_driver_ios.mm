@@ -163,6 +163,8 @@ bool AutofillDriverIOS::IsActive() const {
 
 bool AutofillDriverIOS::IsInAnyMainFrame() const {
   web::WebFrame* frame = web_frame();
+  // Unlike the content/ implementation, WebKit does not have a distinction
+  // between primary and non-primary main frames.
   return frame ? frame->IsMainFrame() : true;
 }
 
