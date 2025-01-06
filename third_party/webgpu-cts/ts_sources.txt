@@ -360,6 +360,8 @@ src/webgpu/api/validation/texture/rg11b10ufloat_renderable.spec.ts
 src/webgpu/compat/compatibility_test.ts
 src/webgpu/compat/api/validation/createBindGroup.spec.ts
 src/webgpu/compat/api/validation/createBindGroupLayout.spec.ts
+src/webgpu/compat/api/validation/createBindGroupLayout_limits.spec.ts
+src/webgpu/compat/api/validation/createPipelineLayout.spec.ts
 src/webgpu/shader/types.ts
 src/webgpu/shader/validation/decl/util.ts
 src/webgpu/shader/execution/expression/call/builtin/texture_utils.ts
@@ -369,6 +371,7 @@ src/webgpu/compat/api/validation/encoding/cmds/copyTextureToTexture.spec.ts
 src/webgpu/compat/api/validation/encoding/programmable/pipeline_bind_group_compat.spec.ts
 src/webgpu/compat/api/validation/render_pipeline/depth_stencil_state.spec.ts
 src/webgpu/compat/api/validation/render_pipeline/fragment_state.spec.ts
+src/webgpu/compat/api/validation/render_pipeline/in_stage_limits.spec.ts
 src/webgpu/compat/api/validation/render_pipeline/unsupported_wgsl.spec.ts
 src/webgpu/compat/api/validation/render_pipeline/vertex_state.spec.ts
 src/webgpu/compat/api/validation/texture/createTexture.spec.ts
