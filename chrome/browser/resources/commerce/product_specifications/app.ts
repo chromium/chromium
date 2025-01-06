@@ -109,8 +109,12 @@ export enum CompareTableColumnAction {
 export enum CompareTableLoadStatus {
   SUCCESS = 0,
   FAILURE = 1,
+  FAILURE_EMPTY_TABLE_BACKEND = 2,
+  FAILURE_EMPTY_TABLE_NON_PRODUCTS = 2,
+  FAILURE_USER_NOT_ELIGIBLE = 3,
+  FAILURE_OFFLINE = 4,
   // Must be last:
-  MAX_VALUE = 2,
+  MAX_VALUE = 5,
 }
 
 export const COLUMN_MODIFICATION_HISTOGRAM_NAME: string =
@@ -404,6 +408,10 @@ export class ProductSpecificationsElement extends PolymerElement {
       if (!(this.productSpecificationsFeatureState_.canLoadFullPageUi &&
             this.productSpecificationsFeatureState_.canFetchData &&
             this.productSpecificationsFeatureState_.isAllowedForEnterprise)) {
+        chrome.metricsPrivate.recordEnumerationValue(
+            TABLE_LOAD_HISTOGRAM_NAME,
+            CompareTableLoadStatus.FAILURE_USER_NOT_ELIGIBLE,
+            CompareTableLoadStatus.MAX_VALUE);
         return AppState.ERROR;
       }
       if (this.loadingState_.loading) {
@@ -416,6 +424,9 @@ export class ProductSpecificationsElement extends PolymerElement {
     }
 
     if (this.isOffline_) {
+      chrome.metricsPrivate.recordEnumerationValue(
+          TABLE_LOAD_HISTOGRAM_NAME, CompareTableLoadStatus.FAILURE_OFFLINE,
+          CompareTableLoadStatus.MAX_VALUE);
       return AppState.ERROR;
     }
 
@@ -537,9 +548,19 @@ export class ProductSpecificationsElement extends PolymerElement {
       // the URLs in the comparison will still be displayed as columns.
       if (productSpecs.productDimensionMap.size === 0 && urls.length > 1) {
         this.$.errorToast.show();
-        chrome.metricsPrivate.recordEnumerationValue(
-            TABLE_LOAD_HISTOGRAM_NAME, CompareTableLoadStatus.FAILURE,
-            CompareTableLoadStatus.MAX_VALUE);
+        // If there's no product info for any of the URLs, the table is a
+        // collection of non-products.
+        if (urls.some((url) => !!aggregatedDataByUrl.get(url))) {
+          chrome.metricsPrivate.recordEnumerationValue(
+              TABLE_LOAD_HISTOGRAM_NAME,
+              CompareTableLoadStatus.FAILURE_EMPTY_TABLE_NON_PRODUCTS,
+              CompareTableLoadStatus.MAX_VALUE);
+        } else {
+          chrome.metricsPrivate.recordEnumerationValue(
+              TABLE_LOAD_HISTOGRAM_NAME,
+              CompareTableLoadStatus.FAILURE_EMPTY_TABLE_BACKEND,
+              CompareTableLoadStatus.MAX_VALUE);
+        }
       } else {
         chrome.metricsPrivate.recordEnumerationValue(
             TABLE_LOAD_HISTOGRAM_NAME, CompareTableLoadStatus.SUCCESS,

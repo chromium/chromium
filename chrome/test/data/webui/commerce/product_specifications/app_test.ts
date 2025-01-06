@@ -1449,7 +1449,7 @@ suite('AppTest', () => {
               TABLE_LOAD_HISTOGRAM_NAME, CompareTableLoadStatus.SUCCESS));
     });
 
-    test('record metrics for error state', async () => {
+    test('record metrics for "no table" error state', async () => {
       const productInfo1 = createProductInfo({
         clusterId: BigInt(123),
         title: 'Product 1',
@@ -1477,7 +1477,94 @@ suite('AppTest', () => {
       assertEquals(
           1,
           metrics.count(
-              TABLE_LOAD_HISTOGRAM_NAME, CompareTableLoadStatus.FAILURE));
+              TABLE_LOAD_HISTOGRAM_NAME,
+              CompareTableLoadStatus.FAILURE_EMPTY_TABLE_BACKEND));
+      assertEquals(
+          0,
+          metrics.count(
+              TABLE_LOAD_HISTOGRAM_NAME,
+              CompareTableLoadStatus.FAILURE_USER_NOT_ELIGIBLE));
+    });
+
+    test(
+        'record metrics for "no table" (non-product) error state', async () => {
+          const promiseValues = createAppPromiseValues({
+            urlsParam: ['https://example.com/1', 'https://example.com/2'],
+            specs: createSpecs({
+              productDimensionMap: new Map<bigint, string>(),
+            }),
+            productInfos: [],
+          });
+          await createAppElementWithPromiseValues(promiseValues);
+
+          assertTrue(appElement.$.errorToast.open);
+          assertEquals(
+              1,
+              metrics.count(
+                  TABLE_LOAD_HISTOGRAM_NAME,
+                  CompareTableLoadStatus.FAILURE_EMPTY_TABLE_NON_PRODUCTS));
+        });
+
+    test('record metrics for "ineligible" error state', async () => {
+      shoppingServiceApi.setResultFor(
+          'getProductSpecificationsFeatureState', Promise.resolve({
+            state: {
+              isSyncingTabCompare: true,
+              canLoadFullPageUi: true,
+              canManageSets: true,
+              canFetchData: false,
+              isAllowedForEnterprise: true,
+            },
+          }));
+
+      const productInfo1 = createProductInfo({
+        clusterId: BigInt(123),
+        title: 'Product 1',
+        productUrl: {url: 'https://example.com/1'},
+        imageUrl: {url: 'http://example.com/image1.png'},
+      });
+
+      const productInfo2 = createProductInfo({
+        clusterId: BigInt(456),
+        title: 'Product 2',
+        productUrl: {url: 'https://example.com/2'},
+        imageUrl: {url: 'http://example.com/image2.png'},
+      });
+
+      const promiseValues = createAppPromiseValues({
+        urlsParam: ['https://example.com/1', 'https://example.com/2'],
+        specs: createSpecs({
+          productDimensionMap: new Map<bigint, string>(),
+        }),
+        productInfos: [productInfo1, productInfo2],
+      });
+      await createAppElementWithPromiseValues(promiseValues);
+
+      assertEquals(
+          0,
+          metrics.count(
+              TABLE_LOAD_HISTOGRAM_NAME,
+              CompareTableLoadStatus.FAILURE_EMPTY_TABLE_BACKEND));
+      assertEquals(
+          1,
+          metrics.count(
+              TABLE_LOAD_HISTOGRAM_NAME,
+              CompareTableLoadStatus.FAILURE_USER_NOT_ELIGIBLE));
+    });
+
+    test('record metrics for "offline" error state', async () => {
+      router.setResultFor(
+          'getCurrentQuery',
+          new URLSearchParams(
+              'urls=' + JSON.stringify('https://example.com/')));
+      windowProxy.setResultFor('onLine', false);
+      await createAppElement();
+
+      assertEquals(
+          1,
+          metrics.count(
+              TABLE_LOAD_HISTOGRAM_NAME,
+              CompareTableLoadStatus.FAILURE_OFFLINE));
     });
   });
 

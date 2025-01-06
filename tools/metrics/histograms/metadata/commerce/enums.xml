@@ -90,6 +90,10 @@ chromium-metrics-reviews@google.com.
   <summary>The statuses of a compare table loading.</summary>
   <int value="0" label="Success"/>
   <int value="1" label="Failure"/>
+  <int value="2" label="Failure - empty table from backend"/>
+  <int value="3" label="Failure - empty table with non-products"/>
+  <int value="4" label="Failure - user not eligible"/>
+  <int value="5" label="Failure - offline"/>
 </enum>
 
 <!-- LINT.IfChange(DiscountClusterType) -->
