@@ -1061,19 +1061,22 @@ SVGElement::GetPresentationAttributeStyleForDirectUpdate() {
   if (!GetLayoutObject()) {
     return nullptr;
   }
-  auto& element_data = EnsureUniqueElementData();
+  auto* element_data = GetElementData();
+  if (!element_data) {
+    return nullptr;
+  }
   // If _something_ has already marked our presentation attribute style as
   // dirty, just roll with that and let the normal update via
   // CollectStyleForPresentationAttribute() handle it.
-  if (element_data.presentation_attribute_style_is_dirty()) {
+  if (element_data->presentation_attribute_style_is_dirty()) {
     return nullptr;
   }
   // Ditto if no property value set has been created yet.
-  if (!element_data.PresentationAttributeStyle()) {
+  if (!element_data->PresentationAttributeStyle()) {
     return nullptr;
   }
   return To<MutableCSSPropertyValueSet>(
-      element_data.presentation_attribute_style_.Get());
+      element_data->presentation_attribute_style_.Get());
 }
 
 void SVGElement::UpdatePresentationAttributeStyle(
