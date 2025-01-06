@@ -3509,7 +3509,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.UserInfoFetch.HttpErrorCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-02-12">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-06-12">
   <owner>vincb@google.com</owner>
   <owner>zmin@chromium.org</owner>
   <summary>
