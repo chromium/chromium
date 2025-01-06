@@ -139,6 +139,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Discarding.DiscardPageOnUIThreadOutcome"
+    enum="DiscardPageOnUIThreadOutcome" expires_after="2025-03-01">
+  <owner>fdoray@chromium.org</owner>
+  <owner>joenotcharles@chromium.org</owner>
+  <summary>
+    Reports the outcome of each discard tab attempt by the
+    DiscardPagesOnUIThread function. Will be used to validate that the number of
+    failures does not increase if DiscardAttemptMarker is retired (it was
+    introduced to prevent repeated attempts to discard a non-discardable tab,
+    but that shouldn't happen in practice).
+  </summary>
+</histogram>
+
 <histogram name="Discarding.DiscardsDrivenByStaleSignal" units="tabs"
     expires_after="2025-06-08">
   <owner>kalutes@chromium.org</owner>

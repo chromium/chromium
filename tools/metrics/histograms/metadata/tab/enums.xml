@@ -72,6 +72,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/saved_tab_groups/internal/tab_group_sync_metrics_logger_impl.h:DeviceType) -->
 
+<!-- LINT.IfChange(DiscardPageOnUIThreadOutcome) -->
+
+<enum name="DiscardPageOnUIThreadOutcome">
+  <int value="0" label="Success"/>
+  <int value="1" label="NoContents"/>
+  <int value="2" label="DiscardTabFailure"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/performance_manager/mechanisms/page_discarder.cc:DiscardPageOnUIThreadOutcome) -->
+
 <enum name="ExternalLauncherOption">
   <int value="0" label="Cancel"/>
   <int value="1" label="Open"/>
