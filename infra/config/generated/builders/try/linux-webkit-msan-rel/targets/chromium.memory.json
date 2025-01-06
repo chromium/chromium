@@ -117,6 +117,9 @@
           "dimensions": {
             "os": "Ubuntu-22.04"
           },
+          "expiration": 36000,
+          "hard_timeout": 10800,
+          "io_timeout": 3600,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 18
         },

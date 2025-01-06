@@ -1248,6 +1248,11 @@ ci.builder(
                 args = [
                     "-j6",
                 ],
+                swarming = targets.swarming(
+                    expiration_sec = 36000,
+                    hard_timeout_sec = 10800,
+                    io_timeout_sec = 3600,
+                ),
             ),
         },
     ),
