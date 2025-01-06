@@ -30,8 +30,9 @@ select:not(:-internal-list-box) {
   display: -internal-appearance-auto-base-select(inline-block, inline-flex);
   gap: -internal-appearance-auto-base-select(initial, 0.5em);
   border-radius: -internal-appearance-auto-base-select(0, 0.5em);
-
   align-items: -internal-appearance-auto-base-select(center, unset);
+  /* https://github.com/whatwg/html/issues/10876 */
+  user-select: -internal-appearance-auto-base-select(auto, none);
 }
 
 select:not(:-internal-list-box) > button:first-child {
