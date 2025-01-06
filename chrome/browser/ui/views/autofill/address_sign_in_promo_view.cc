@@ -23,9 +23,6 @@ AddressSignInPromoView::AddressSignInPromoView(
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetTitle(IDS_AUTOFILL_SIGNIN_PROMO_TITLE_ADDRESS);
   SetShowCloseButton(true);
-  // TODO(crbug.com/382447697): Change this to focus the full bubble instead of
-  // the close button.
-  SetInitiallyFocusedView(this);
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
@@ -34,22 +31,10 @@ AddressSignInPromoView::AddressSignInPromoView(
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
 
-  // Add an accessibility alert view first so that it does not overlap with
-  // any other child view.
-  views::View* accessibility_alert =
-      AddChildView(std::make_unique<views::View>());
-
   // Show the sign in promo.
-  auto sign_in_promo = std::make_unique<AutofillBubbleSignInPromoView>(
+  AddChildView(std::make_unique<AutofillBubbleSignInPromoView>(
       web_contents, signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE,
-      std::move(move_address_callback));
-  AddChildView(std::move(sign_in_promo));
-
-  // Notify the screen reader that the bubble changed.
-  views::ViewAccessibility& ax = accessibility_alert->GetViewAccessibility();
-  ax.SetRole(ax::mojom::Role::kAlert);
-  ax.SetName(GetWindowTitle(), ax::mojom::NameFrom::kAttribute);
-  accessibility_alert->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+      std::move(move_address_callback)));
 }
 
 AddressSignInPromoView::~AddressSignInPromoView() = default;
