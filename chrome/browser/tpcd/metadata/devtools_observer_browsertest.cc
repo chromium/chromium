@@ -274,7 +274,10 @@ class TpcdMetadataDevtoolsObserverBrowserTest
   }
 
   void WaitForCookieIssueAndCheck(std::string_view third_party_site,
-                                  std::string_view warning) {
+                                  std::string_view warning,
+                                  std::string_view exclusion) {
+    CHECK(warning.empty() || exclusion.empty())
+        << "inclusion reason and exclusion reason should not co-exist";
     auto is_cookie_issue = [](const base::Value::Dict& params) {
       const std::string* issue_code =
           params.FindStringByDottedPath("issue.code");
@@ -285,6 +288,9 @@ class TpcdMetadataDevtoolsObserverBrowserTest
     base::Value::Dict params = WaitForMatchingNotification(
         "Audits.issueAdded", base::BindRepeating(is_cookie_issue));
 
+    std::string_view reason_name =
+        warning.empty() ? "cookieExclusionReasons" : "cookieWarningReasons";
+    std::string_view reason_value = warning.empty() ? exclusion : warning;
     std::string partial_expected =
         content::JsReplace(R"({
             "cookie": {
@@ -292,10 +298,10 @@ class TpcdMetadataDevtoolsObserverBrowserTest
                "name": "name",
                "path": "/"
             },
-            "cookieWarningReasons": [ $2 ],
+            $2: [ $3 ],
             "operation": "ReadCookie",
          })",
-                           third_party_site, warning);
+                           third_party_site, reason_name, reason_value);
 
     // Find relevant fields from cookieIssueDetails
     ASSERT_THAT(params.FindDictByDottedPath("issue.details.cookieIssueDetails"),
@@ -370,10 +376,26 @@ IN_PROC_BROWSER_TEST_F(TpcdMetadataDevtoolsObserverDtrpDisabledBrowserTest,
 IN_PROC_BROWSER_TEST_F(TpcdMetadataDevtoolsObserverBrowserTest,
                        EmitsDevtoolsIssuesForExemption) {
   AddCookieAccess("a.test", "b.test", /*is_ad_tagged=*/false);
-  WaitForCookieIssueAndCheck("b.test", {"WarnDeprecationTrialMetadata"});
+  WaitForCookieIssueAndCheck(
+      "b.test", /*warning=*/{"WarnDeprecationTrialMetadata"}, /*exclusion=*/{});
 
   AddCookieAccess("a.test", "c.test", /*is_ad_tagged=*/false);
-  WaitForCookieIssueAndCheck("c.test", {"WarnDeprecationTrialMetadata"});
+  WaitForCookieIssueAndCheck(
+      "c.test", /*warning=*/{"WarnDeprecationTrialMetadata"}, /*exclusion=*/{});
+}
+
+IN_PROC_BROWSER_TEST_F(TpcdMetadataDevtoolsObserverBrowserTest,
+                       DevToolsDisableMetadata) {
+  SendCommandAsync("Network.enable");
+  base::Value::Dict command_params;
+  command_params.Set("enableThirdPartyCookieRestriction", true);
+  command_params.Set("disableThirdPartyCookieMetadata", true);
+  command_params.Set("disableThirdPartyCookieHeuristics", false);
+  SendCommandSync("Network.setCookieControls", std::move(command_params));
+  AddCookieAccess("a.test", "b.test", /*is_ad_tagged=*/false);
+  // Since the cookie is no longer exempted by metadata,
+  // ExcludeThirdPartyPhaseout cookie issue should be present.
+  WaitForCookieIssueAndCheck("b.test", {}, {"ExcludeThirdPartyPhaseout"});
 }
 
 IN_PROC_BROWSER_TEST_F(TpcdMetadataDevtoolsObserverBrowserTest,

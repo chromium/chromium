@@ -5436,6 +5436,60 @@ TEST_P(URLLoaderCookieSettingOverridesTest,
                   ExpectedCookieSettingOverridesForCrossSiteRedirect()));
 }
 
+TEST_F(URLLoaderTest, DevToolsCookieSettingOverrides_NotApplied) {
+  GURL url("http://www.example.com.test/");
+  base::RunLoop delete_run_loop;
+  mojo::PendingRemote<mojom::URLLoader> loader;
+
+  context().mutable_factory_params().process_id = kProcessId;
+  // This override should only apply conditionally when devtools is enabled.
+  context().mutable_factory_params().devtools_cookie_setting_overrides = {
+      net::CookieSettingOverride::kForceDisableThirdPartyCookies};
+
+  ResourceRequest request = CreateResourceRequest("GET", url);
+  std::unique_ptr<URLLoader> url_loader = URLLoaderOptions().MakeURLLoader(
+      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.InitWithNewPipeAndPassReceiver(), request,
+      client()->CreateRemote());
+
+  client()->RunUntilComplete();
+  delete_run_loop.Run();
+
+  const std::vector<net::CookieSettingOverrides> records =
+      test_network_delegate()->cookie_setting_overrides_records();
+  EXPECT_THAT(records, ElementsAre(net::CookieSettingOverrides(),
+                                   net::CookieSettingOverrides()));
+}
+
+TEST_F(URLLoaderTest, DevToolsCookieSettingOverrides_Applied) {
+  GURL url("http://www.example.com.test/");
+  base::RunLoop delete_run_loop;
+  mojo::PendingRemote<mojom::URLLoader> loader;
+
+  net::CookieSettingOverrides devtools_overrides = {
+      net::CookieSettingOverride::kForceDisableThirdPartyCookies};
+  context().mutable_factory_params().process_id = kProcessId;
+  // This override should only apply conditionally when devtools is enabled.
+  context().mutable_factory_params().devtools_cookie_setting_overrides =
+      devtools_overrides;
+
+  ResourceRequest request = CreateResourceRequest("GET", url);
+  // `devtools_request_id` is present, meaning devtools is enabled for this
+  // request.
+  request.devtools_request_id = "devtools_id";
+  std::unique_ptr<URLLoader> url_loader = URLLoaderOptions().MakeURLLoader(
+      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.InitWithNewPipeAndPassReceiver(), request,
+      client()->CreateRemote());
+
+  client()->RunUntilComplete();
+  delete_run_loop.Run();
+
+  const std::vector<net::CookieSettingOverrides> records =
+      test_network_delegate()->cookie_setting_overrides_records();
+  EXPECT_THAT(records, ElementsAre(devtools_overrides, devtools_overrides));
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     URLLoaderCookieSettingOverridesTest,

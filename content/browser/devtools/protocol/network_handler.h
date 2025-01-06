@@ -21,6 +21,7 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/filter/source_stream.h"
 #include "net/net_buildflags.h"
 #include "services/network/public/mojom/devtools_observer.mojom-forward.h"
@@ -220,6 +221,7 @@ class NetworkHandler : public DevToolsDomainHandler,
                       bool* disable_cache,
                       std::optional<std::vector<net::SourceStream::SourceType>>*
                           accepted_stream_types);
+  void ApplyCookieControlsOverrides(net::CookieSettingOverrides& overrides);
   void PrefetchRequestWillBeSent(
       const std::string& request_id,
       const network::ResourceRequest& request,

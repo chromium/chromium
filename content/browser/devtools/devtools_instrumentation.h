@@ -9,6 +9,7 @@
   to the relevant set of devtools protocol handlers.
 */
 
+#include <cstdint>
 #include <optional>
 #include <vector>
 
@@ -25,6 +26,7 @@
 #include "content/public/browser/certificate_request_result_type.h"
 #include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/filter/source_stream.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -141,6 +143,8 @@ class WillCreateURLLoaderFactoryParams final {
            bool is_download,
            network::URLLoaderFactoryBuilder& factory_builder,
            network::mojom::URLLoaderFactoryOverridePtr* factory_override);
+
+  DevToolsAgentHostImpl* agent_host() { return agent_host_; }
 
  private:
   WillCreateURLLoaderFactoryParams(DevToolsAgentHostImpl* agent_host,
@@ -484,6 +488,11 @@ void OnFencedFrameReportResponseReceived(
     scoped_refptr<net::HttpResponseHeaders> headers);
 
 void DidChangeFrameLoadingState(FrameTreeNode& ftn);
+
+// Returns true if devtools wants to override the cookie settings.
+bool ApplyNetworkCookieControlsOverrides(
+    DevToolsAgentHostImpl* params,
+    net::CookieSettingOverrides& overrides);
 
 }  // namespace devtools_instrumentation
 

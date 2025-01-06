@@ -375,7 +375,10 @@ class OpenerHeuristicBrowserTest : public content::ContentBrowserTest,
 
  protected:
   void WaitForCookieIssueAndCheck(std::string_view third_party_site,
-                                  std::string_view warning) {
+                                  std::string_view warning,
+                                  std::string_view exclusion) {
+    CHECK(warning.empty() || exclusion.empty())
+        << "inclusion reason and exclusion reason should not co-exist";
     auto is_cookie_issue = [](const base::Value::Dict& params) {
       const std::string* issue_code =
           params.FindStringByDottedPath("issue.code");
@@ -386,6 +389,9 @@ class OpenerHeuristicBrowserTest : public content::ContentBrowserTest,
     base::Value::Dict params = WaitForMatchingNotification(
         "Audits.issueAdded", base::BindRepeating(is_cookie_issue));
 
+    std::string_view reason_name =
+        warning.empty() ? "cookieExclusionReasons" : "cookieWarningReasons";
+    std::string_view reason_value = warning.empty() ? exclusion : warning;
     std::string partial_expected =
         content::JsReplace(R"({
             "cookie": {
@@ -393,10 +399,10 @@ class OpenerHeuristicBrowserTest : public content::ContentBrowserTest,
                "name": "name",
                "path": "/"
             },
-            "cookieWarningReasons": [ $2 ],
+            $2: [ $3 ],
             "operation": "ReadCookie",
          })",
-                           third_party_site, warning);
+                           third_party_site, reason_name, reason_value);
 
     // Find relevant fields from cookieIssueDetails
     ASSERT_THAT(params.FindDictByDottedPath("issue.details.cookieIssueDetails"),
@@ -1336,7 +1342,54 @@ IN_PROC_BROWSER_TEST_F(
       https_server_.GetURL("sub.b.test", "/favicon/icon.png"));
 
   // CookieIssue was fired since it was exempt from blocking
-  WaitForCookieIssueAndCheck("sub.b.test", "WarnThirdPartyCookieHeuristic");
+  WaitForCookieIssueAndCheck("sub.b.test",
+                             /*warning=*/{"WarnThirdPartyCookieHeuristic"},
+                             /*exclusion=*/{});
+}
+
+// TODO: crbug.com/376625002 - disabled for the move to //content since the
+// DevTools integration is still only in //chrome. Either find a way to
+// implement this test in //content or move it back to //chrome.
+IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
+                       DISABLED_PopupInteraction_DevtoolsDisableHeuristics) {
+  GURL opener_url = https_server_.GetURL("a.test", "/title1.html");
+  GURL popup_url_1 = https_server_.GetURL("c.test", "/title1.html");
+  GURL popup_url_2 =
+      https_server_.GetURL("b.test", "/server-redirect?title1.html");
+  GURL popup_url_3 = https_server_.GetURL("b.test", "/title1.html");
+
+  // Initialize popup and interaction.
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), opener_url));
+  ASSERT_OK_AND_ASSIGN(WebContents * popup, OpenPopup(popup_url_1));
+
+  clock_.Advance(base::Minutes(1));
+  ASSERT_TRUE(content::NavigateToURL(popup, popup_url_2, popup_url_3));
+
+  clock_.Advance(base::Minutes(1));
+  SimulateMouseClick(popup);
+
+  // Add a cookie access by popup_url on opener_url.
+  ASSERT_TRUE(NavigateToSetCookie(GetActiveWebContents(), &https_server_,
+                                  "sub.b.test",
+                                  /*is_secure_cookie_set=*/true,
+                                  /*is_ad_tagged=*/false));
+
+  SendCommandAsync("Network.enable");
+  base::Value::Dict command_params;
+  command_params.Set("enableThirdPartyCookieRestriction", true);
+  command_params.Set("disableThirdPartyCookieMetadata", false);
+  command_params.Set("disableThirdPartyCookieHeuristics", true);
+  SendCommandSync("Network.setCookieControls", std::move(command_params));
+
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), opener_url));
+  CreateImageAndWaitForCookieAccess(
+      GetActiveWebContents(),
+      https_server_.GetURL("sub.b.test", "/favicon/icon.png"));
+
+  // Since the cookie is no longer exempted by heuristics,
+  // ExcludeThirdPartyPhaseout cookie issue should be present.
+  WaitForCookieIssueAndCheck("sub.b.test", /*warning=*/{},
+                             /*exclusion=*/{"ExcludeThirdPartyPhaseout"});
 }
 
 IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,

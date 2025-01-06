@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/enum_set.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/files/file.h"
 #include "base/functional/bind.h"
@@ -101,6 +102,7 @@
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/http_raw_headers.mojom.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_context_client.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -127,6 +129,17 @@ constexpr size_t kBlockedBodyAllocationSize = 1;
 
 // Size to allocate for `discard_buffer_`.
 constexpr size_t kDiscardBufferSize = 128 * 1024;
+
+// TODO(https://crbug.com/375352611): add the check for enabling third-party
+// cookies.
+constexpr uint64_t kAllowedDevToolsCookieSettingOverrides =
+    1u << static_cast<int>(
+        net::CookieSettingOverride::kForceDisableThirdPartyCookies) |
+    1u << static_cast<int>(
+        net::CookieSettingOverride::kForceEnableThirdPartyCookieMitigations) |
+    1u << static_cast<int>(net::CookieSettingOverride::kSkipTPCDMetadataGrant) |
+    1u << static_cast<int>(
+        net::CookieSettingOverride::kSkipTPCDHeuristicsGrant);
 
 constexpr char kActivateStorageAccessHeader[] = "activate-storage-access";
 
@@ -791,8 +804,10 @@ URLLoader::URLLoader(
       /*request_load_flags=*/request.load_flags,
       /*priority_incremental=*/request.priority_incremental,
       /*cookie_setting_overrides=*/
-      CalculateCookieSettingOverrides(factory_params_->cookie_setting_overrides,
-                                      request, /*emit_metrics=*/true),
+      CalculateCookieSettingOverrides(
+          factory_params_->cookie_setting_overrides,
+          factory_params_->devtools_cookie_setting_overrides, request,
+          /*emit_metrics=*/true),
       /*shared_dictionary_getter=*/
       shared_dictionary_manager
           ? std::make_optional(
@@ -1779,6 +1794,7 @@ std::optional<net::IsolationInfo> URLLoader::GetIsolationInfo(
 // static
 net::CookieSettingOverrides URLLoader::CalculateCookieSettingOverrides(
     net::CookieSettingOverrides factory_overrides,
+    net::CookieSettingOverrides devtools_overrides,
     const ResourceRequest& request,
     bool emit_metrics) {
   net::CookieSettingOverrides overrides(factory_overrides);
@@ -1790,6 +1806,14 @@ net::CookieSettingOverrides URLLoader::CalculateCookieSettingOverrides(
 
   AddAdsHeuristicCookieSettingOverrides(request.is_ad_tagged, overrides,
                                         emit_metrics);
+  // Only apply the DevTools overrides if the request is from devtools enabled
+  // context.
+  if (request.devtools_request_id.has_value()) {
+    CHECK_EQ(devtools_overrides.ToEnumBitmask() &
+                 ~kAllowedDevToolsCookieSettingOverrides,
+             0u);
+    overrides = base::Union(overrides, devtools_overrides);
+  }
 
   // The `kStorageAccessGrantEligible` override should not be present in
   // factory_overrides.

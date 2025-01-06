@@ -90,7 +90,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
       scoped_refptr<SharedDictionaryStorage> shared_dictionary_storage,
       raw_ptr<mojom::SharedDictionaryAccessObserver> shared_dictionary_observer,
       NetworkContext* context,
-      net::CookieSettingOverrides factory_cookie_setting_overrides);
+      net::CookieSettingOverrides factory_cookie_setting_overrides,
+      net::CookieSettingOverrides devtools_cookie_setting_overrides);
 
   CorsURLLoader(const CorsURLLoader&) = delete;
   CorsURLLoader& operator=(const CorsURLLoader&) = delete;
@@ -396,6 +397,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
       shared_dictionary_data_pipe_writer_;
   std::optional<URLLoaderCompletionStatus> deferred_completion_status_;
   const net::CookieSettingOverrides factory_cookie_setting_overrides_;
+  const net::CookieSettingOverrides devtools_cookie_setting_overrides_;
 
   // Used to provide weak pointers of this class for synchronously calling
   // URLLoaderClient methods. This should be reset any time

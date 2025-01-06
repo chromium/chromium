@@ -80,6 +80,7 @@
 #include "net/base/load_timing_info.h"
 #include "net/cert/sct_status_flags.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/http/http_content_disposition.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
@@ -1701,17 +1702,28 @@ NavigationURLLoaderImpl::CreateNetworkLoaderFactory(
       factory_builder, &header_client, bypass_redirect_checks,
       /*disable_secure_dns=*/nullptr, /*factory_override=*/nullptr,
       GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
-  devtools_instrumentation::WillCreateURLLoaderFactoryParams::ForFrame(
-      frame_tree_node->current_frame_host())
-      .Run(/*is_navigation=*/true,
-           /*is_download=*/false, factory_builder,
-           /*factory_override=*/nullptr);
+
+  auto devtools_params =
+      devtools_instrumentation::WillCreateURLLoaderFactoryParams::ForFrame(
+          frame_tree_node->current_frame_host());
+  devtools_params.Run(/*is_navigation=*/true,
+                      /*is_download=*/false, factory_builder,
+                      /*factory_override=*/nullptr);
+  net::CookieSettingOverrides devtools_cookie_overrides;
 
   if (header_client) {
     return base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
         CreateURLLoaderFactoryWithHeaderClient(std::move(header_client),
                                                std::move(factory_builder),
                                                storage_partition));
+  } else if (devtools_instrumentation::ApplyNetworkCookieControlsOverrides(
+                 devtools_params.agent_host(), devtools_cookie_overrides)) {
+    network::mojom::URLLoaderFactoryParamsPtr params =
+        storage_partition->CreateURLLoaderFactoryParams();
+    params->devtools_cookie_setting_overrides =
+        std::move(devtools_cookie_overrides);
+    return std::move(factory_builder)
+        .Finish(storage_partition->GetNetworkContext(), std::move(params));
   } else {
     return std::move(factory_builder)
         .Finish(storage_partition->GetURLLoaderFactoryForBrowserProcess());

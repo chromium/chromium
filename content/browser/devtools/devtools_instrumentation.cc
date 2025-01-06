@@ -1355,6 +1355,20 @@ bool ApplyUserAgentMetadataOverrides(
   return result;
 }
 
+bool ApplyNetworkCookieControlsOverrides(
+    DevToolsAgentHostImpl* agent_host,
+    net::CookieSettingOverrides& overrides) {
+  if (!agent_host) {
+    return false;
+  }
+  for (auto* network : protocol::NetworkHandler::ForAgentHost(agent_host)) {
+    if (network->enabled()) {
+      network->ApplyCookieControlsOverrides(overrides);
+    }
+  }
+  return !overrides.empty();
+}
+
 namespace {
 template <typename HandlerType>
 bool MaybeCreateProxyForInterception(

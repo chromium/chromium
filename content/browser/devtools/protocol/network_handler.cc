@@ -78,6 +78,7 @@
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_partition_key.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
@@ -3190,6 +3191,23 @@ void NetworkHandler::ApplyOverrides(
   (*accepted_stream_types)
       ->insert((*accepted_stream_types)->end(), accepted_stream_types_->begin(),
                accepted_stream_types_->end());
+}
+
+void NetworkHandler::ApplyCookieControlsOverrides(
+    net::CookieSettingOverrides& overrides) {
+  if (enable_third_party_cookie_restriction_) {
+    overrides.Put(net::CookieSettingOverride::kForceDisableThirdPartyCookies);
+    overrides.Put(
+        net::CookieSettingOverride::kForceEnableThirdPartyCookieMitigations);
+  }
+  // TODO(https://crbug.com/375352611): Handle the case to force enable
+  // third-party cookies.
+  if (disable_third_party_cookie_metadata_) {
+    overrides.Put(net::CookieSettingOverride::kSkipTPCDMetadataGrant);
+  }
+  if (disable_third_party_cookie_heuristics_) {
+    overrides.Put(net::CookieSettingOverride::kSkipTPCDHeuristicsGrant);
+  }
 }
 
 void NetworkHandler::RequestIntercepted(

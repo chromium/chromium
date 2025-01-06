@@ -901,6 +901,11 @@ struct URLLoaderFactoryParams {
   // each URLRequest.
   CookieSettingOverrides cookie_setting_overrides;
 
+  // The cookie setting overrides from devtools, only conditionally applied
+  // on requests from devtools enabled context, i.e. when
+  // `ResourceRequest::devtools_request_id` is present.
+  CookieSettingOverrides devtools_cookie_setting_overrides;
+
   // If `require_cross_site_request_for_cookies` is specified, then all
   // loaded requests must have an empty site_for_cookies to ensure only
   // SameSite=None cookies can be attached to the request.

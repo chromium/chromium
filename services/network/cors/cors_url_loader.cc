@@ -307,7 +307,8 @@ CorsURLLoader::CorsURLLoader(
     scoped_refptr<SharedDictionaryStorage> shared_dictionary_storage,
     raw_ptr<mojom::SharedDictionaryAccessObserver> shared_dictionary_observer,
     NetworkContext* context,
-    net::CookieSettingOverrides factory_cookie_setting_overrides)
+    net::CookieSettingOverrides factory_cookie_setting_overrides,
+    net::CookieSettingOverrides devtools_cookie_setting_overrides)
     : receiver_(this, std::move(loader_receiver)),
       process_id_(process_id),
       request_id_(request_id),
@@ -335,7 +336,8 @@ CorsURLLoader::CorsURLLoader(
       context_(context),
       shared_dictionary_storage_(std::move(shared_dictionary_storage)),
       shared_dictionary_observer_(shared_dictionary_observer),
-      factory_cookie_setting_overrides_(factory_cookie_setting_overrides) {
+      factory_cookie_setting_overrides_(factory_cookie_setting_overrides),
+      devtools_cookie_setting_overrides_(devtools_cookie_setting_overrides) {
   TRACE_EVENT("loading", "CorsURLLoader::CorsURLLoader",
               perfetto::Flow::ProcessScoped(net_log_.source().id));
   CHECK(url_loader_network_service_observer_ != nullptr);
@@ -875,7 +877,8 @@ void CorsURLLoader::StartRequest() {
             request_.url, request_.site_for_cookies,
             isolation_info_.top_frame_origin(),
             network::URLLoader::CalculateCookieSettingOverrides(
-                factory_cookie_setting_overrides_, request_,
+                factory_cookie_setting_overrides_,
+                devtools_cookie_setting_overrides_, request_,
                 /*emit_metrics=*/false)) ==
             net::cookie_util::StorageAccessStatus::kInactive) {
       // Lower layers will add the Sec-Fetch-Storage-Access header, and the

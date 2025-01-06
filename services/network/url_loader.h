@@ -317,6 +317,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // May also emit to histograms.
   static net::CookieSettingOverrides CalculateCookieSettingOverrides(
       net::CookieSettingOverrides factory_overrides,
+      net::CookieSettingOverrides devtools_overrides,
       const ResourceRequest& request,
       bool emit_metrics);
 
