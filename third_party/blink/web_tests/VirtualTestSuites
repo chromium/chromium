@@ -4714,7 +4714,7 @@
     ],
     "args": ["--js-flags=--js-float16array"],
     "owners": ["syg@chromium.org"],
-    "expires": "Jan 1, 2025"
+    "expires": "Mar 1, 2025"
   },
   {
     "prefix": "single-import-map",
