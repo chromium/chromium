@@ -4,11 +4,6 @@
 //
 // This file defines utility functions for working with strings.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef BASE_STRINGS_STRING_UTIL_H_
 #define BASE_STRINGS_STRING_UTIL_H_
 
@@ -414,8 +409,8 @@ BASE_EXPORT bool EndsWith(
 template <typename Char>
   requires(std::integral<Char>)
 constexpr bool IsAsciiWhitespace(Char c) {
-  // kWhitespaceASCII is a null-terminated string.
-  for (const char* cur = kWhitespaceASCII; *cur; ++cur) {
+  // SAFETY: kWhitespaceASCII is a NUL-terminated string.
+  for (const char* cur = kWhitespaceASCII; *cur; UNSAFE_BUFFERS(++cur)) {
     if (*cur == c) {
       return true;
     }
@@ -504,8 +499,8 @@ inline char HexDigitToInt(char16_t c) {
 template <typename Char>
   requires(sizeof(Char) > 1)
 constexpr bool IsUnicodeWhitespace(Char c) {
-  // kWhitespaceWide is a null-terminated string.
-  for (const auto* cur = kWhitespaceWide; *cur; ++cur) {
+  // SAFETY: kWhitespaceWide is a NUL-terminated string.
+  for (const auto* cur = kWhitespaceWide; *cur; UNSAFE_BUFFERS(++cur)) {
     if (static_cast<typename std::make_unsigned_t<wchar_t>>(*cur) ==
         static_cast<typename std::make_unsigned_t<Char>>(c)) {
       return true;
