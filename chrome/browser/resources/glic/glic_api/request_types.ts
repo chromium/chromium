@@ -113,6 +113,12 @@ export declare interface HostRequestTypes {
       profileInfo?: UserProfileInfoPrivate,
     },
   };
+  glicBrowserRefreshSignInCookies: {
+    request: {},
+    response: {
+      success: boolean,
+    },
+  };
 }
 
 // Types of requests to the GlicWebClient.

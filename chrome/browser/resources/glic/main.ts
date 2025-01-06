@@ -62,4 +62,6 @@ class GlicAppHostManager {
   }
 }
 
-new GlicAppHostManager();
+// Blocking on cookie syncing here introduces latency, we should consider ways
+// to avoid it.
+browserProxy.handler.syncWebviewCookies().then(() => new GlicAppHostManager());

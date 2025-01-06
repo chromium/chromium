@@ -33,6 +33,8 @@ class GlicPageHandler : public glic::mojom::PageHandler {
   void CreateWebClient(::mojo::PendingReceiver<glic::mojom::WebClientHandler>
                            web_client_receiver) override;
 
+  void SyncWebviewCookies(SyncWebviewCookiesCallback callback) override;
+
  private:
   // There should at most one WebClientHandler at a time. A new one is created
   // each time the webview loads a page.

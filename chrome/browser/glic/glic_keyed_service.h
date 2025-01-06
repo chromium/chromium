@@ -9,6 +9,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/glic/glic_cookie_synchronizer.h"
 #include "chrome/browser/glic/glic_focused_tab_manager.h"
 #include "chrome/browser/glic/glic_profile_configuration.h"
 #include "chrome/browser/glic/glic_window_controller.h"
@@ -20,6 +21,10 @@ namespace content {
 class BrowserContext;
 }  // namespace content
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 namespace glic {
 class GlicFocusedTabManager;
 class GlicProfileManager;
@@ -28,6 +33,7 @@ class GlicWindowController;
 class GlicKeyedService : public KeyedService {
  public:
   explicit GlicKeyedService(content::BrowserContext* browser_context,
+                            signin::IdentityManager* identity_manager,
                             GlicProfileManager* profile_manager);
   GlicKeyedService(const GlicKeyedService&) = delete;
   GlicKeyedService& operator=(const GlicKeyedService&) = delete;
@@ -71,6 +77,9 @@ class GlicKeyedService : public KeyedService {
       bool include_viewport_screenshot,
       glic::mojom::WebClientHandler::GetContextFromFocusedTabCallback callback);
 
+  void SyncWebviewCookies(
+      mojom::PageHandler::SyncWebviewCookiesCallback callback);
+
   base::WeakPtr<GlicKeyedService> GetWeakPtr();
 
  private:
@@ -81,6 +90,7 @@ class GlicKeyedService : public KeyedService {
   GlicProfileConfiguration configuration_;
   GlicWindowController window_controller_;
   GlicFocusedTabManager focused_tab_manager_;
+  GlicCookieSynchronizer cookie_synchronizer_;
   // Unowned
   raw_ptr<GlicProfileManager> profile_manager_;
 

@@ -168,6 +168,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     installed_ = false;
   }
 
+  void SyncCookies(SyncCookiesCallback callback) override {
+    glic_service_->SyncWebviewCookies(std::move(callback));
+  }
+
  private:
   void WebClientDisconnected() { Uninstall(); }
 
@@ -214,6 +218,10 @@ void GlicPageHandler::CreateWebClient(
         web_client_receiver) {
   web_client_handler_ = std::make_unique<GlicWebClientHandler>(
       browser_context_, std::move(web_client_receiver));
+}
+void GlicPageHandler::SyncWebviewCookies(SyncWebviewCookiesCallback callback) {
+  GlicKeyedServiceFactory::GetGlicKeyedService(browser_context_)
+      ->SyncWebviewCookies(std::move(callback));
 }
 
 }  // namespace glic

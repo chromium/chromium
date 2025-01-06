@@ -227,6 +227,14 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
           avatarIconImage && rgbaImageToBlob(avatarIconImage),
     };
   }
+
+  async refreshSignInCookies(): Promise<void> {
+    const result = await this.sender.requestWithResponse(
+        'glicBrowserRefreshSignInCookies', {});
+    if (!result.success) {
+      throw Error('refreshSignInCookies failed');
+    }
+  }
 }
 
 // Returns a promise which resolves to the `GlicHostRegistry`. This promise

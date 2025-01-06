@@ -252,6 +252,10 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     }
     return {profileInfo};
   }
+
+  glicBrowserRefreshSignInCookies(): Promise<{success: boolean}> {
+    return this.handler.syncCookies();
+  }
 }
 
 export class GlicApiHost implements PostMessageRequestHandler {

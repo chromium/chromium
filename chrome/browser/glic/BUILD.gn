@@ -4,6 +4,7 @@
 
 source_set("glic") {
   sources = [
+    "glic_cookie_synchronizer.h",
     "glic_focused_tab_manager.h",
     "glic_keyed_service.h",
     "glic_keyed_service_factory.h",
@@ -23,6 +24,7 @@ source_set("glic") {
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//chrome/browser/ui/webui/glic:mojo_bindings",
     "//components/prefs",
+    "//components/signin/public/identity_manager:identity_manager",
     "//content/public/browser",
     "//ui/views:views",
   ]
@@ -30,6 +32,7 @@ source_set("glic") {
 
 source_set("impl") {
   sources = [
+    "glic_cookie_synchronizer.cc",
     "glic_focused_tab_manager.cc",
     "glic_keyed_service.cc",
     "glic_keyed_service_factory.cc",
@@ -77,6 +80,7 @@ source_set("enabling") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "glic_cookie_synchronizer_unittest.cc",
     "glic_enabling_unittest.cc",
     "glic_profile_manager_unittest.cc",
   ]

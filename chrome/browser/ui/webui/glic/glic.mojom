@@ -20,6 +20,10 @@ interface PageHandlerFactory {
 interface PageHandler {
   // Creates a WebClientHandler, for use by a single web client instance.
   CreateWebClient(pending_receiver<WebClientHandler> web_client_receiver);
+
+  // Sync Google account sign-in cookies to the webview, so that it can sign-in
+  // automatically.
+  SyncWebviewCookies() => (bool success);
 };
 
 // Reason why getting tab context failed.
@@ -101,6 +105,11 @@ interface WebClientHandler {
   // the profile associated with this webui is invalid, which should only
   // possibly happen during teardown.
   GetUserProfileInfo() => (UserProfileInfo? profile_info);
+
+  // Sync signin cookies to webview. This is the same as
+  // `PageHandler.SyncWebviewCookies()`, except this call originates from the
+  // webview.
+  SyncCookies() => (bool success);
 };
 
 // State of the glic panel.

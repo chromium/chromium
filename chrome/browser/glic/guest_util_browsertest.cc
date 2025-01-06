@@ -7,6 +7,7 @@
 #include "base/check_deref.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -16,6 +17,7 @@
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -65,6 +67,16 @@ class GuestUtilBrowserTest : public InProcessBrowserTest {
   GuestUtilBrowserTest& operator=(const GuestUtilBrowserTest&) = delete;
 
   ~GuestUtilBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+
+    // A signed-in user is required for chrome://glic.
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(browser()->profile());
+    CoreAccountInfo account_info = SetPrimaryAccount(
+        identity_manager, "foo@gmail.com", signin::ConsentLevel::kSync);
+  }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Load blank page in glic guest view

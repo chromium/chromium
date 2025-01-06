@@ -131,6 +131,14 @@ export declare interface GlicBrowserHost {
 
   // Returns the user profile information.
   getUserProfileInfo?(): Promise<UserProfileInfo>;
+
+  // Update Google sign-in cookies for this client. Resolves after the cookies
+  // are successfully updated. Rejects if sign-in cookies cannot be updated.
+  // This should only be called if the web client detects that it is not
+  // signed-in, as Chrome will attempt to refresh cookies automatically in some
+  // circumstances. If this is called while a cookie refresh is already in
+  // progress, only one cookie refresh will take place.
+  refreshSignInCookies?(): Promise<void>;
 }
 
 // A panel can be in one of these three states.

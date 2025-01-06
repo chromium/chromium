@@ -22,11 +22,14 @@
 namespace glic {
 
 GlicKeyedService::GlicKeyedService(content::BrowserContext* browser_context,
+                                   signin::IdentityManager* identity_manager,
                                    GlicProfileManager* profile_manager)
     : browser_context_(browser_context),
       window_controller_(Profile::FromBrowserContext(browser_context)),
       focused_tab_manager_(Profile::FromBrowserContext(browser_context),
                            window_controller_),
+      cookie_synchronizer_(browser_context, identity_manager),
+
       profile_manager_(profile_manager) {
   focused_tab_changed_subscription_ =
       focused_tab_manager_.AddFocusedTabChangedCallback(base::BindRepeating(
@@ -155,6 +158,12 @@ content::WebContents* GlicKeyedService::GetFocusedTab() {
 
 base::WeakPtr<GlicKeyedService> GlicKeyedService::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+void GlicKeyedService::SyncWebviewCookies(
+    mojom::PageHandler::SyncWebviewCookiesCallback callback) {
+  cookie_synchronizer_.CopyCookiesToWebviewStoragePartition(
+      std::move(callback));
 }
 
 }  // namespace glic
