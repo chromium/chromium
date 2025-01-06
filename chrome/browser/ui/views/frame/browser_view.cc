@@ -1122,6 +1122,10 @@ BrowserView::~BrowserView() {
   // OS with some tabs than the NativeBrowserFrame should have destroyed them.
   DCHECK_EQ(0, browser_->tab_strip_model()->count());
 
+  // Stop the animation timer explicitly here to avoid running it in a nested
+  // message loop, which may run by Browser destructor.
+  loading_animation_timer_.Stop();
+
   // Immersive mode may need to reparent views before they are removed/deleted.
   immersive_mode_controller_.reset();
 
@@ -1622,7 +1626,7 @@ void BrowserView::UpdateTitleBar() {
     web_app_window_title_->SetText(GetWindowTitle());
     InvalidateLayout();
   }
-  if (!IsLoadingAnimationRunning() && CanChangeWindowIcon()) {
+  if (!loading_animation_timer_.IsRunning() && CanChangeWindowIcon()) {
     frame_->UpdateWindowIcon();
   }
 }
@@ -1662,7 +1666,7 @@ void BrowserView::UpdateLoadingAnimations(bool is_visible) {
   const bool should_animate =
       is_visible && browser_->tab_strip_model()->TabsNeedLoadingUI();
 
-  if (should_animate == IsLoadingAnimationRunning()) {
+  if (should_animate == loading_animation_timer_.IsRunning()) {
     // Early return if the loading animation state doesn't change.
     return;
   }
@@ -1678,44 +1682,23 @@ void BrowserView::UpdateLoadingAnimations(bool is_visible) {
     loading_animation_tracker_->Start(ash::metrics_util::ForSmoothnessV3(
         base::BindRepeating(&RecordTabLoadingSmoothness)));
 #endif
-    // Loads are happening, and the animation isn't running, so start it.
+    // Loads are happening, and the timer isn't running, so start it.
     loading_animation_start_ = base::TimeTicks::Now();
-    loading_animation_observation_.Observe(GetWidget()->GetCompositor());
+    loading_animation_timer_.Start(FROM_HERE, base::Milliseconds(30), this,
+                                   &BrowserView::LoadingAnimationCallback);
   } else {
-    loading_animation_observation_.Reset();
+    loading_animation_timer_.Stop();
 #if BUILDFLAG(IS_CHROMEOS)
     loading_animation_tracker_->Stop();
 #endif
     // Loads are now complete, update the state if a task was scheduled.
-    OnAnimationStep(base::TimeTicks::Now());
+    LoadingAnimationCallback();
   }
 }
 
 void BrowserView::SetLoadingAnimationStateChangeClosureForTesting(
     base::OnceClosure closure) {
   loading_animation_state_change_closure_ = std::move(closure);
-}
-
-void BrowserView::OnAnimationStep(base::TimeTicks timestamp) {
-  if (GetSupportsTabStrip()) {
-    // Loading animations are shown in the tab for tabbed windows. Update them
-    // even if the tabstrip isn't currently visible so they're in the right
-    // state when it returns.
-    tabstrip_->UpdateLoadingAnimations(timestamp - loading_animation_start_);
-  }
-
-  if (ShouldShowWindowIcon()) {
-    WebContents* web_contents =
-        browser_->tab_strip_model()->GetActiveWebContents();
-    // GetActiveWebContents can return null for example under Purify when
-    // the animations are running slowly and this function is called on a timer
-    // through LoadingAnimationCallback.
-    frame_->UpdateThrobber(web_contents && web_contents->IsLoading());
-  }
-}
-
-void BrowserView::OnCompositingShuttingDown(ui::Compositor* compositor) {
-  loading_animation_observation_.Reset();
 }
 
 gfx::Point BrowserView::GetThemeOffsetFromBrowserView() const {
@@ -1757,8 +1740,8 @@ BrowserView::DevToolsDockedPlacement BrowserView::GetDevToolsDockedPlacement(
   return BrowserView::DevToolsDockedPlacement::kUnknown;
 }
 
-bool BrowserView::IsLoadingAnimationRunning() const {
-  return loading_animation_observation_.IsObserving();
+bool BrowserView::IsLoadingAnimationRunningForTesting() const {
+  return loading_animation_timer_.IsRunning();
 }
 
 void BrowserView::SetStarredState(bool is_starred) {
@@ -4849,6 +4832,25 @@ void BrowserView::MaybeInitializeWebUITabStrip() {
     toolbar_->UpdateForWebUITabStrip();
   }
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
+}
+
+void BrowserView::LoadingAnimationCallback() {
+  if (GetSupportsTabStrip()) {
+    // Loading animations are shown in the tab for tabbed windows. Update them
+    // even if the tabstrip isn't currently visible so they're in the right
+    // state when it returns.
+    tabstrip_->UpdateLoadingAnimations(base::TimeTicks::Now() -
+                                       loading_animation_start_);
+  }
+
+  if (ShouldShowWindowIcon()) {
+    WebContents* web_contents =
+        browser_->tab_strip_model()->GetActiveWebContents();
+    // GetActiveWebContents can return null for example under Purify when
+    // the animations are running slowly and this function is called on a timer
+    // through LoadingAnimationCallback.
+    frame_->UpdateThrobber(web_contents && web_contents->IsLoading());
+  }
 }
 
 #if BUILDFLAG(IS_WIN)

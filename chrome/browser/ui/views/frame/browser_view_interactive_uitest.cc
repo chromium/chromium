@@ -391,7 +391,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest,
   }
 
   EXPECT_TRUE(browser()->tab_strip_model()->TabsNeedLoadingUI());
-  EXPECT_FALSE(browser_view()->IsLoadingAnimationRunning());
+  EXPECT_FALSE(browser_view()->IsLoadingAnimationRunningForTesting());
 
   {
     base::RunLoop run_loop;
@@ -404,7 +404,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest,
   }
 
   EXPECT_TRUE(browser()->tab_strip_model()->TabsNeedLoadingUI());
-  EXPECT_TRUE(browser_view()->IsLoadingAnimationRunning());
+  EXPECT_TRUE(browser_view()->IsLoadingAnimationRunningForTesting());
 
   // Now block for the navigation to complete.
   navigation_watcher.Wait();
