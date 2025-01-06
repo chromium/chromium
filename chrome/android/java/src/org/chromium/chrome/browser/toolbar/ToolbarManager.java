@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.back_press.BackPressMetrics;
+import org.chromium.chrome.browser.back_press.BackPressMetrics.NavigationDirection;
 import org.chromium.chrome.browser.back_press.BackPressMetrics.PredictiveGestureNavPhase;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
@@ -175,6 +176,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.NavigationHistory;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.back_forward_transition.AnimationStage;
 import org.chromium.net.NetError;
@@ -188,6 +190,7 @@ import org.chromium.ui.widget.ViewRectProvider;
 import org.chromium.url.GURL;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Contains logic for managing the toolbar visual component. This class manages the interactions
@@ -333,6 +336,11 @@ public class ToolbarManager
     private FormFieldFocusedSupplier mFormFieldFocusedSupplier = new FormFieldFocusedSupplier();
     private final View mProgressBarContainer;
     private @Nullable ObservableSupplier<Integer> mBookmarkBarHeightSupplier;
+
+    private String mLastUrl;
+    private String mCurrentUrl;
+    private int mLastIndex = -1;
+    private Tab mLastTab;
 
     private static class TabObscuringCallback implements Callback<Boolean> {
         private final TabObscuringHandler mTabObscuringHandler;
@@ -992,6 +1000,17 @@ public class ToolbarManager
                             mLocationBarModel.notifyUrlChanged();
                             return;
                         }
+                        // Switching tabs.
+                        if (mLastTab != tab) {
+                            NavigationHistory navigationHistory =
+                                    Objects.requireNonNull(tab.getWebContents())
+                                            .getNavigationController()
+                                            .getNavigationHistory();
+                            // Reset mLastIndex to the index of the new tab we switched to.
+                            mLastIndex = navigationHistory.getCurrentEntryIndex();
+                            // Update mLastTab.
+                            mLastTab = tab;
+                        }
 
                         refreshSelectedTab(tab);
                         onTabOrModelChanged();
@@ -1122,6 +1141,34 @@ public class ToolbarManager
                             Tab tab, NavigationHandle navigation) {
                         onBackPressStateChanged();
                         if (navigation.hasCommitted() && !navigation.isSameDocument()) {
+                            // Account for forward vs backward navigation.
+                            NavigationHistory navigationHistory =
+                                    Objects.requireNonNull(tab.getWebContents())
+                                            .getNavigationController()
+                                            .getNavigationHistory();
+
+                            int currentIndex = navigationHistory.getCurrentEntryIndex();
+                            // 0: forward nav, 1: backward nav, 2: neither (tab switched).
+                            @NavigationDirection
+                            int direction =
+                                    currentIndex > mLastIndex
+                                            ? NavigationDirection.FORWARD
+                                            : currentIndex < mLastIndex
+                                                    ? NavigationDirection.BACKWARD
+                                                    : NavigationDirection.NEITHER;
+                            String newUrl = navigation.getUrl().getSpec();
+
+                            if (mLastUrl != null
+                                    && mLastUrl.equals(newUrl)
+                                    && !mLastUrl.equals(mCurrentUrl)) {
+                                // Backfalsing detected, emit metrics.
+                                BackPressMetrics.recordBackFalsing(direction);
+                            }
+                            // Update the URLs and index.
+                            mLastUrl = mCurrentUrl;
+                            mCurrentUrl = newUrl;
+                            mLastIndex = currentIndex;
+
                             mToolbar.onNavigatedToDifferentPage();
                             maybeTriggerCacheRefreshForZeroSuggest(navigation.getUrl());
                         }

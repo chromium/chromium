@@ -80,6 +80,10 @@ public class NavigationHandlerTest {
             "Android.BackPress.IncorrectEdgeSwipe";
     private static final String INCORRECT_EDGE_SWIPE_COUNT_CHAINED_HISTOGRAM =
             "Android.BackPress.IncorrectEdgeSwipe.CountChained";
+    private static final String BACK_FALSING_HISTOGRAM = "Android.BackPress.Backfalsing";
+    private static final int FORWARD_NAV = 0;
+    private static final int DIFFERENT_TAB = 2;
+
     private static final boolean LEFT_EDGE = true;
     private static final boolean RIGHT_EDGE = false;
 
@@ -393,6 +397,78 @@ public class NavigationHandlerTest {
 
     @Test
     @SmallTest
+    public void testBackfalsingHappyPath() {
+        // URL A -> URL B -> URL A -> URL B should emit two metrics.
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(BACK_FALSING_HISTOGRAM, FORWARD_NAV)
+                        .expectIntRecord(BACK_FALSING_HISTOGRAM, FORWARD_NAV)
+                        .build();
+
+        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        ChromeTabUtils.waitForTabPageLoaded(currentTab(), UrlConstants.NTP_URL);
+        mActivityTestRule.loadUrl(UrlConstants.GOOGLE_URL);
+        ChromeTabUtils.waitForTabPageLoaded(currentTab(), UrlConstants.GOOGLE_URL);
+        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        ChromeTabUtils.waitForTabPageLoaded(currentTab(), UrlConstants.NTP_URL);
+        mActivityTestRule.loadUrl(UrlConstants.GOOGLE_URL);
+        ChromeTabUtils.waitForTabPageLoaded(currentTab(), UrlConstants.GOOGLE_URL);
+
+        histogramWatcher.assertExpected("Wrong histogram recording");
+    }
+
+    @Test
+    @SmallTest
+    public void testBackfalsingAllSameUrls() {
+        // URL A -> URL A -> URL A should not emit any metrics.
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder().expectNoRecords(BACK_FALSING_HISTOGRAM).build();
+
+        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        ChromeTabUtils.waitForTabPageLoaded(currentTab(), UrlConstants.NTP_URL);
+        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        ChromeTabUtils.waitForTabPageLoaded(currentTab(), UrlConstants.NTP_URL);
+        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        ChromeTabUtils.waitForTabPageLoaded(currentTab(), UrlConstants.NTP_URL);
+
+        histogramWatcher.assertExpected("Wrong histogram recording");
+    }
+
+    @Test
+    @SmallTest
+    public void testBackfalsingOpenNewTabs() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        // url A -> url B -> open new tab to url A -> url B in that new tab
+                        .expectIntRecord(BACK_FALSING_HISTOGRAM, DIFFERENT_TAB)
+                        .expectIntRecord(BACK_FALSING_HISTOGRAM, FORWARD_NAV)
+                        .build();
+
+        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        ChromeTabUtils.waitForTabPageLoaded(currentTab(), UrlConstants.NTP_URL);
+        mActivityTestRule.loadUrl(UrlConstants.GOOGLE_URL);
+        ChromeTabUtils.waitForTabPageLoaded(currentTab(), UrlConstants.GOOGLE_URL);
+        TabCreator tabCreator =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mActivityTestRule.getActivity().getTabCreator(false));
+
+        Tab newTab =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                tabCreator.createNewTab(
+                                        new LoadUrlParams(
+                                                UrlConstants.NTP_URL, PageTransition.LINK),
+                                        TabLaunchType.FROM_LINK,
+                                        currentTab()));
+
+        ChromeTabUtils.waitForTabPageLoaded(newTab, UrlConstants.NTP_URL);
+        mActivityTestRule.loadUrl(UrlConstants.GOOGLE_URL);
+        ChromeTabUtils.waitForTabPageLoaded(currentTab(), UrlConstants.GOOGLE_URL);
+        histogramWatcher.assertExpected("Wrong histogram recording");
+    }
+
+    @Test
+    @SmallTest
     @DisableIf.Device(DeviceFormFactor.TABLET)
     public void testIncorrectEdgeSwipes() {
         // Swipe incorrectly 3 times and correctly once.
@@ -404,6 +480,7 @@ public class NavigationHandlerTest {
                         .build();
 
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        ChromeTabUtils.waitForTabPageLoaded(currentTab(), UrlConstants.NTP_URL);
         mNavUtils.swipeFromEdge(RIGHT_EDGE);
         mNavUtils.swipeFromEdge(RIGHT_EDGE);
         mNavUtils.swipeFromEdge(RIGHT_EDGE);

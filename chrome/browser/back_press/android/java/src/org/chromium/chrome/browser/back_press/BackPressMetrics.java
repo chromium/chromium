@@ -13,6 +13,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.Type;
 import org.chromium.ui.UiUtils;
+import org.chromium.ui.base.BackGestureEventSwipeEdge;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -33,6 +34,7 @@ public class BackPressMetrics {
             "Android.BackPress.IncorrectEdgeSwipe";
     private static final String INCORRECT_EDGE_SWIPE_COUNT_CHAINED_HISTOGRAM =
             "Android.BackPress.IncorrectEdgeSwipe.CountChained";
+    private static final String BACK_FALSING_HISTOGRAM = "Android.BackPress.Backfalsing";
 
     @IntDef({
         PredictiveGestureNavPhase.ACTIVATED,
@@ -48,8 +50,30 @@ public class BackPressMetrics {
         int NUM_ENTRIES = 3;
     }
 
+    @IntDef({
+        NavigationDirection.FORWARD,
+        NavigationDirection.BACKWARD,
+        NavigationDirection.NEITHER
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface NavigationDirection {
+        int FORWARD = 0;
+        int BACKWARD = 1;
+        int NEITHER = 2;
+
+        int NUM_ENTRIES = 3;
+    }
+
     /**
-     * @param edge The edge from which the gesture is swiped from {@link BackEventCompat}.
+     * @param navigationDirection The direction of the navigation.
+     */
+    public static void recordBackFalsing(@NavigationDirection int navigationDirection) {
+        RecordHistogram.recordEnumeratedHistogram(
+                BACK_FALSING_HISTOGRAM, navigationDirection, NavigationDirection.NUM_ENTRIES);
+    }
+
+    /**
+     * @param edge The edge from which the gesture is swiped from {@link BackGestureEventSwipeEdge}.
      */
     public static void recordIncorrectEdgeSwipe(int edge) {
         RecordHistogram.recordEnumeratedHistogram(INCORRECT_EDGE_SWIPE_HISTOGRAM, edge, 2);
