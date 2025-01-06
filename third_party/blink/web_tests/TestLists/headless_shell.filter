@@ -1074,7 +1074,6 @@
 -virtual/css-gap-decorations/external/wpt/css/css-ui/compute-kind-widget-no-fallback-props-001.html
 -virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/button-in-popover.tentative.html
 -virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-inside-top-layer.tentative.html
--virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-option-hover-styles.tentative.html
 -virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-size-multiple-new-content.tentative.html
 -virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/reset-algorithm-rendering.html
 -virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/select-tabindex-order.tentative.html
@@ -1183,7 +1182,6 @@
 -virtual/scalefactor200/external/wpt/largest-contentful-paint/initially-invisible-images.html
 -virtual/scalefactor200/external/wpt/largest-contentful-paint/multiple-image-same-src.html
 -virtual/scalefactor200/external/wpt/largest-contentful-paint/video-data-uri.html
--virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-option-hover-styles.tentative.html
 -virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/select-tabindex-order.tentative.html
 -virtual/shared-storage-fenced-frame-mparch/external/wpt/shared-storage/select-url-saved-query-cross-origin-multi-query.tentative.https.sub.html
 -virtual/shared-storage-fenced-frame-mparch/external/wpt/shared-storage/select-url-saved-query-same-origin-multi-query.tentative.https.sub.html
