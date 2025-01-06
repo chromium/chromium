@@ -871,6 +871,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Arc.ContainerLifetimeEvent" enum="ArcContainerLifetimeEvent"
     expires_after="2025-09-01">
   <owner>khmel@google.com</owner>
+  <owner>arc-core@google.com</owner>
   <summary>
     The number of ARC container lifetime events. One START event and up to one
     non-START event are recorded per ARC session, which ends when the user opts
@@ -884,6 +885,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Arc.ContainerRestartAfterCrashCount" units="units"
     expires_after="2025-09-01">
   <owner>khmel@google.com</owner>
+  <owner>arc-core@google.com</owner>
   <summary>
     The number of times ARC container crashes and automatically restarts in one
     ARC session, which ends when the user opts out from ARC or signs out.
@@ -925,6 +927,9 @@ chromium-metrics-reviews@google.com.
   <owner>arc-performance@google.com</owner>
   <summary>
     Records the result of setting ARC CPU restrictions in ARCVM.
+
+    Warning: this histogram was expired after 2024-09-15 and brought back
+    2025-01-06; data may be missing.
   </summary>
 </histogram>
 
@@ -975,7 +980,12 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-09-01">
   <owner>khmel@google.com</owner>
   <owner>arc-core@google.com</owner>
-  <summary>True if data was successfully removed on request.</summary>
+  <summary>
+    True if data was successfully removed on request.
+
+    Warning: this histogram was expired after 2024-09-01 and brought back
+    2025-01-06; data may be missing.
+  </summary>
 </histogram>
 
 <histogram name="Arc.DataRestore.Duration" units="ms"
@@ -1115,12 +1125,16 @@ chromium-metrics-reviews@google.com.
 <histogram name="Arc.FirstAppLaunchDelay.TimeDeltaUntilAppLaunch" units="ms"
     expires_after="2025-09-01">
   <owner>khmel@google.com</owner>
+  <owner>arc-performance@google.com</owner>
   <summary>
     How long the user sees the spinning icon waiting for ARC boot. This metric
     is not recorded at all if the user launches apps only after ARC is booted.
     Unlike Arc.FirstAppLaunchDelay.TimeDelta, this metric might be recorded
     multiple times per a user session, for example when users starts multiple
     ARC apps while ARC is booting.
+
+    Warning: this histogram was expired after 2024-11-17 and brought back
+    2025-01-06; data may be missing.
   </summary>
 </histogram>
 
@@ -1131,6 +1145,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     Elapsed time from the when UI is shown after login to when the user
     activates first ARC app.
+
+    Warning: this histogram was expired after 2024-03-01 and brought back
+    2025-01-06; data may be missing.
   </summary>
 </histogram>
 
@@ -1379,6 +1396,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     The 15-minute load average multiplied by 100 and divided by the number of
     logical processors online. Recorded 15 minutes after ARC start.
+
+    Warning: this histogram was expired after 2024-11-03 and brought back
+    2025-01-06; data may be missing.
   </summary>
   <token key="ArcBootType" variants="ArcBootTypes"/>
 </histogram>
@@ -1392,6 +1412,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     The 1-minute load average multiplied by 100 and divided by the number of
     logical processors online. Recorded 1 minute after ARC start.
+
+    Warning: this histogram was expired after 2024-11-01 and brought back
+    2025-01-06; data may be missing.
   </summary>
   <token key="ArcBootType" variants="ArcBootTypes"/>
 </histogram>
@@ -1405,6 +1428,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     The 5-minute load average multiplied by 100 and divided by the number of
     logical processors online. Recorded 5 minutes after ARC start.
+
+    Warning: this histogram was expired after 2024-11-01 and brought back
+    2025-01-06; data may be missing.
   </summary>
   <token key="ArcBootType" variants="ArcBootTypes"/>
 </histogram>
@@ -1676,6 +1702,9 @@ chromium-metrics-reviews@google.com.
   <owner>arc-core@google.com</owner>
   <summary>
     State of PlayAutoInstall flow after the request. {ArcUserTypes}
+
+    Warning: this histogram was expired after 2024-07-01 and brought back
+    2025-01-06; data may be missing.
   </summary>
   <token key="ArcUserTypes" variants="ArcUserTypes">
     <variant name=""/>
@@ -1690,6 +1719,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     Elapsed time from the when the PlayAutoInstall request was issued and
     completed. {ArcUserTypes}
+
+    Warning: this histogram was expired after 2024-07-01 and brought back
+    2025-01-06; data may be missing.
   </summary>
   <token key="ArcUserTypes" variants="ArcUserTypes">
     <variant name=""/>
@@ -1703,6 +1735,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     Elapsed time from the when the user launches the Play Store app and to when
     the Play Store window is shown to the user.
+
+    Warning: this histogram was expired after 2024-03-01 and brought back
+    2025-01-06; data may be missing.
   </summary>
 </histogram>
 
@@ -1778,6 +1813,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     Elapsed time from the when the user agrees ToS to when the Play Store window
     is shown to the user. {ArcUserTypes}
+
+    Warning: this histogram was expired after 2024-03-01 and brought back
+    2025-01-06; data may be missing.
   </summary>
   <token key="ArcUserTypes" variants="ArcUserTypes">
     <variant name=""/>
@@ -1999,6 +2037,7 @@ chromium-metrics-reviews@google.com.
     name="Arc.Runtime.Performance.CommitDeviation2{ArcPerformanceAppCategories}"
     units="microseconds" expires_after="2025-09-01">
   <owner>khmel@google.com</owner>
+  <owner>arc-performance@google.com</owner>
   <summary>
     Standard deviation for commit time delta from ideal time. Only collected if
     the user has app syncing enabled and doesn't have a custom passphrase set.
@@ -2013,6 +2052,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Arc.Runtime.Performance.FPS2{ArcPerformanceAppCategories}"
     units="fps" expires_after="2025-09-01">
   <owner>khmel@google.com</owner>
+  <owner>arc-performance@google.com</owner>
   <summary>
     Render frames per second. Only collected if the user has app syncing enabled
     and doesn't have a custom passphrase set. {ArcPerformanceAppCategories}
@@ -2026,6 +2066,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Arc.Runtime.Performance.Generic.FirstFrameRendered" units="ms"
     expires_after="2025-09-01">
   <owner>khmel@google.com</owner>
+  <owner>arc-performance@google.com</owner>
   <summary>
     Time (in ms) between an app launch request and the detection of the first
     rendered frame. Recorded when the frame is detected by the first commit to
@@ -2036,6 +2077,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Arc.Runtime.Performance.Generic.FrameTime" units="ms"
     expires_after="2025-09-01">
   <owner>khmel@google.com</owner>
+  <owner>arc-performance@google.com</owner>
   <summary>
     95 percent of the frames in the first 5 minutes after app launch took
     shorter time (in ms) than this value.
@@ -2045,6 +2087,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Arc.Runtime.Performance.Generic.Jankiness" units="%"
     expires_after="2025-09-01">
   <owner>khmel@google.com</owner>
+  <owner>arc-performance@google.com</owner>
   <summary>
     Percentage ratio of janky frames to total frames recorded in a 5 minute
     interval.
@@ -2056,6 +2099,7 @@ chromium-metrics-reviews@google.com.
     units="%" expires_after="2025-09-01">
   <owner>khmel@google.com</owner>
   <owner>matvore@google.com</owner>
+  <owner>arc-performance@google.com</owner>
   <summary>
     Percentage of the number of present frames during the tracing period which
     contain UI janks. A jank is defined as a displayed frame with duration
@@ -2072,6 +2116,7 @@ chromium-metrics-reviews@google.com.
     units="count" expires_after="2025-09-01">
   <owner>khmel@google.com</owner>
   <owner>matvore@google.com</owner>
+  <owner>arc-performance@google.com</owner>
   <summary>
     Count of the number of UI janks per minute that occured during the tracing
     period. A jank is defined as a displayed frame with duration longer than the
@@ -2088,6 +2133,7 @@ chromium-metrics-reviews@google.com.
     units="fps" expires_after="2025-09-01">
   <owner>khmel@google.com</owner>
   <owner>matvore@google.com</owner>
+  <owner>arc-performance@google.com</owner>
   <summary>
     Render frames per second, not considering frames which exo could not
     present. Only collected if the user has app syncing enabled and doesn't have
@@ -2103,6 +2149,7 @@ chromium-metrics-reviews@google.com.
     name="Arc.Runtime.Performance.PresentDeviation2{ArcPerformanceAppCategories}"
     units="microseconds" expires_after="2025-09-01">
   <owner>khmel@google.com</owner>
+  <owner>arc-performance@google.com</owner>
   <summary>
     Standard deviation for present time delta from ideal time. Only collected if
     the user has app syncing enabled and doesn't have a custom passphrase set.
@@ -2118,6 +2165,7 @@ chromium-metrics-reviews@google.com.
     name="Arc.Runtime.Performance.RenderQuality2{ArcPerformanceAppCategories}"
     units="%" expires_after="2025-09-01">
   <owner>khmel@google.com</owner>
+  <owner>arc-performance@google.com</owner>
   <summary>
     Render quality with maximum 100%. Only collected if the user has app syncing
     enabled and doesn't have a custom passphrase set.
@@ -2160,6 +2208,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     True if there has been a WebView usage in an ARC session. This is recorded
     when an ARC session is stopped.
+
+    Warning: this histogram was expired after 2023-12-24 and brought back
+    2025-01-06; data may be missing.
   </summary>
 </histogram>
 
