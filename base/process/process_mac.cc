@@ -24,12 +24,6 @@ namespace base {
 
 namespace {
 
-// Enables setting the task role of every child process to
-// TASK_DEFAULT_APPLICATION.
-BASE_FEATURE(kMacSetDefaultTaskRole,
-             "MacSetDefaultTaskRole",
-             FEATURE_ENABLED_BY_DEFAULT);
-
 // Returns the `task_role_t` of the process whose task port is `task_port`.
 std::optional<task_role_t> GetTaskCategoryPolicyRole(mach_port_t task_port) {
   task_category_policy_data_t category_policy;
@@ -231,10 +225,6 @@ bool Process::SetPriority(PortProvider* port_provider, Priority priority) {
 
 // static
 void Process::SetCurrentTaskDefaultRole() {
-  if (!base::FeatureList::IsEnabled(kMacSetDefaultTaskRole)) {
-    return;
-  }
-
   SetTaskCategoryPolicy(mach_task_self(), TASK_FOREGROUND_APPLICATION);
 
   // Set the QoS settings to tier 0, to match the default value given to App Nap
