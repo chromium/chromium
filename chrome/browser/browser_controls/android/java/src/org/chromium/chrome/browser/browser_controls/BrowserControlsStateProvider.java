@@ -111,7 +111,8 @@ public interface BrowserControlsStateProvider {
     void removeObserver(Observer obs);
 
     /**
-     * @return The height of the top controls in pixels.
+     * @return The height of the top controls in pixels. During an animation that changes the
+     *     height, this function returns the final height after animation completes.
      */
     int getTopControlsHeight();
 
@@ -119,6 +120,13 @@ public interface BrowserControlsStateProvider {
      * @return The minimum visible height top controls can have in pixels.
      */
     int getTopControlsMinHeight();
+
+    /**
+     * @return The current height of the top controls in the current animation. Similar to
+     * {@link #getTopControlsMinHeightOffset()}, this will return a value between the old height and
+     * new height. Returns the same value as {@link #getTopControlsHeight()} if not in an animation.
+     */
+    int getTopControlsCurrentHeight();
 
     /**
      * @return The offset of the controls from the top of the screen.

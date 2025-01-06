@@ -173,8 +173,9 @@ public class TopToolbarOverlayMediator {
                             boolean isVisibilityForced) {
                         if (!ChromeFeatureList.sBrowserControlsInViz.isEnabled()
                                 || requestNewFrame
-                                || isVisibilityForced) {
-                            updateContentOffset();
+                                || isVisibilityForced
+                                || topControlsMinHeightChanged) {
+                            updateContentOffset(topControlsMinHeightChanged);
                         }
 
                         // TODO(peilinwang) Clean up this flag and remove the updateVisibility call
@@ -380,10 +381,10 @@ public class TopToolbarOverlayMediator {
     void setViewportHeight(float viewportHeight) {
         if (viewportHeight == mViewportHeight) return;
         mViewportHeight = viewportHeight;
-        updateContentOffset();
+        updateContentOffset(false);
     }
 
-    private void updateContentOffset() {
+    private void updateContentOffset(boolean minHeightChanged) {
         // When top-anchored, the content offset is used to position the toolbar
         // layer instead of the top controls offset because the top controls can
         // have a different height than that of just the toolbar, (e.g. when status
@@ -396,6 +397,11 @@ public class TopToolbarOverlayMediator {
         // provided to us indirectly via BottomControlsStacker, which controls the
         // position of bottom controls layers.
         int contentOffset = mBrowserControlsStateProvider.getContentOffset();
+        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled() && minHeightChanged) {
+            // We only want to use the height, any scroll offsets will be applied by viz.
+            contentOffset = mBrowserControlsStateProvider.getTopControlsCurrentHeight();
+        }
+
         if (mBrowserControlsStateProvider.getControlsPosition() == ControlsPosition.BOTTOM) {
             contentOffset = (int) (mBottomToolbarControlsOffsetSupplier.get() + mViewportHeight);
         }

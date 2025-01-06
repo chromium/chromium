@@ -465,6 +465,11 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
     }
 
     @Override
+    public int getTopControlsCurrentHeight() {
+        return mTopControlsHeight - mTopControlsMinHeight + mRendererTopControlsMinHeightOffset;
+    }
+
+    @Override
     public int getBottomControlsHeight() {
         return mBottomControlsHeight;
     }

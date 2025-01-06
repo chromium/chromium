@@ -248,10 +248,17 @@ public class StaticLayout extends Layout {
                             boolean isVisibilityForced) {
                         if (!ChromeFeatureList.sBrowserControlsInViz.isEnabled()
                                 || requestNewFrame
-                                || isVisibilityForced) {
-                            mModel.set(
-                                    LayoutTab.CONTENT_OFFSET,
-                                    mBrowserControlsStateProvider.getContentOffset());
+                                || isVisibilityForced
+                                || topControlsMinHeightChanged) {
+                            int contentOffset = mBrowserControlsStateProvider.getContentOffset();
+                            if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()
+                                    && topControlsMinHeightChanged) {
+                                // We only want to use the height, any scroll offsets will be
+                                // applied by viz.
+                                contentOffset =
+                                        mBrowserControlsStateProvider.getTopControlsCurrentHeight();
+                            }
+                            mModel.set(LayoutTab.CONTENT_OFFSET, contentOffset);
                         }
                     }
                 };
