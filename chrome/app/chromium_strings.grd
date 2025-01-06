@@ -1254,6 +1254,9 @@ Permissions you've already given to websites and apps may apply to this account.
       <message name="IDS_PROFILE_MENU_BROWSER_MANAGED_HEADER" desc="Disclaimer indicating that Chromium is managed">
         Chromium is managed
       </message>
+      <message name="IDS_PROFILE_MENU_PLACEHOLDER_PROFILE_NAME" desc="Placeholder profile name, used when the user did not enter a name for their profile.">
+        Your Chromium
+      </message>
       <if expr="not use_titlecase">
         <message name="IDS_PROFILE_MENU_SIGN_OUT_WHEN_SIGNIN_PENDING" desc="The text label of the Sign out of Chromium button in the Profile Menu when the user is in sign in pending state.">
           Remove account from Chromium
