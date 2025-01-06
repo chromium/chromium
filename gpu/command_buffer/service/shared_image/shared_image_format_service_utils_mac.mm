@@ -14,6 +14,7 @@
 
 #if BUILDFLAG(SKIA_USE_METAL)
 #include "third_party/skia/include/gpu/graphite/mtl/MtlGraphiteTypes.h"
+#include "third_party/skia/include/gpu/graphite/mtl/MtlGraphiteTypesUtils.h"
 #endif
 
 namespace gpu {
