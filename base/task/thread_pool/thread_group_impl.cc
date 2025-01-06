@@ -23,12 +23,6 @@
 namespace base {
 namespace internal {
 
-namespace {
-
-constexpr size_t kMaxNumberOfWorkers = 256;
-
-}  // namespace
-
 // Upon destruction, executes actions that control the number of active workers.
 // Useful to satisfy locking requirements of these actions.
 class ThreadGroupImpl::ScopedCommandsExecutor

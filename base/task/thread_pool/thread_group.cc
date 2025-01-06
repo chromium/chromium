@@ -24,8 +24,6 @@ namespace internal {
 
 namespace {
 
-constexpr size_t kMaxNumberOfWorkers = 256;
-
 // In a background thread group:
 // - Blocking calls take more time than in a foreground thread group.
 // - We want to minimize impact on foreground work, not maximize execution

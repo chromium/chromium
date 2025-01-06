@@ -5,6 +5,8 @@
 #ifndef BASE_TASK_THREAD_POOL_THREAD_GROUP_H_
 #define BASE_TASK_THREAD_POOL_THREAD_GROUP_H_
 
+#include <stddef.h>
+
 #include <memory>
 #include <optional>
 #include <string>
@@ -208,6 +210,8 @@ class BASE_EXPORT ThreadGroup {
   class ThreadGroupWorkerDelegate;
 
  protected:
+  static constexpr size_t kMaxNumberOfWorkers = 256;
+
   ThreadGroup(std::string_view histogram_label,
               std::string_view thread_group_label,
               ThreadType thread_type_hint,
