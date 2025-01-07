@@ -32,21 +32,18 @@
 #include "base/types/expected.h"
 #include "base/types/optional_util.h"
 #include "base/types/variant_util.h"
+#include "components/performance_manager/graph/frame_node_impl.h"
+#include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
+#include "components/performance_manager/graph/worker_node_impl.h"
 #include "components/performance_manager/public/features.h"
-#include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/graph_operations.h"
-#include "components/performance_manager/public/graph/node_data_describer_util.h"
-#include "components/performance_manager/public/graph/page_node.h"
-#include "components/performance_manager/public/graph/process_node.h"
-#include "components/performance_manager/public/graph/worker_node.h"
 #include "components/performance_manager/public/resource_attribution/attribution_helpers.h"
 #include "components/performance_manager/public/resource_attribution/frame_context.h"
 #include "components/performance_manager/public/resource_attribution/worker_context.h"
 #include "components/performance_manager/resource_attribution/cpu_measurement_data.h"
 #include "components/performance_manager/resource_attribution/graph_change.h"
-#include "components/performance_manager/resource_attribution/node_data_describers.h"
 #include "components/performance_manager/resource_attribution/worker_client_pages.h"
 #include "content/public/common/process_type.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -104,6 +101,37 @@ void DestroyCPUMeasurementData(const ProcessNode* process_node) {
   }
 }
 
+template <typename NodeImpl>
+scoped_refptr<ScopedCPUTimeResult>& GetNodeImplResultPtr(NodeImpl* node_impl) {
+  // Create() is called from On*NodeAdded, but UpdateCPUMeasurements() from the
+  // same function can visit nodes whose On*NodeAdded hasn't been called yet. So
+  // must ensure that the SharedCPUTimeResultData has been created.
+  if (!SharedCPUTimeResultData::Exists(node_impl)) {
+    return SharedCPUTimeResultData::Create(node_impl).result_ptr;
+  }
+  return SharedCPUTimeResultData::Get(node_impl).result_ptr;
+}
+
+scoped_refptr<ScopedCPUTimeResult>& GetNodeResultPtr(const FrameNode* node) {
+  CHECK(node);
+  return GetNodeImplResultPtr(FrameNodeImpl::FromNode(node));
+}
+
+scoped_refptr<ScopedCPUTimeResult>& GetNodeResultPtr(const PageNode* node) {
+  CHECK(node);
+  return GetNodeImplResultPtr(PageNodeImpl::FromNode(node));
+}
+
+scoped_refptr<ScopedCPUTimeResult>& GetNodeResultPtr(const ProcessNode* node) {
+  CHECK(node);
+  return GetNodeImplResultPtr(ProcessNodeImpl::FromNode(node));
+}
+
+scoped_refptr<ScopedCPUTimeResult>& GetNodeResultPtr(const WorkerNode* node) {
+  CHECK(node);
+  return GetNodeImplResultPtr(WorkerNodeImpl::FromNode(node));
+}
+
 }  // namespace
 
 CPUMeasurementMonitor::CPUMeasurementMonitor()
@@ -129,9 +157,9 @@ void CPUMeasurementMonitor::SetDelegateFactoryForTesting(
 void CPUMeasurementMonitor::StartMonitoring(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!graph_);
-  CHECK(measurement_results_.empty());
-  CHECK(dead_context_results_.empty());
+  CHECK(origin_results_.empty());
   CHECK(weak_origin_results_.empty());
+  CHECK(dead_context_results_.empty());
   graph_ = graph;
   graph_->AddFrameNodeObserver(this);
   graph_->AddPageNodeObserver(this);
@@ -150,12 +178,24 @@ void CPUMeasurementMonitor::StartMonitoring(Graph* graph) {
 void CPUMeasurementMonitor::StopMonitoring() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(graph_);
+  for (const FrameNode* frame_node : graph_->GetAllFrameNodes()) {
+    GetNodeResultPtr(frame_node).reset();
+  }
+  for (const PageNode* page_node : graph_->GetAllPageNodes()) {
+    GetNodeResultPtr(page_node).reset();
+  }
   for (const ProcessNode* process_node : graph_->GetAllProcessNodes()) {
+    GetNodeResultPtr(process_node).reset();
     DestroyCPUMeasurementData(process_node);
   }
-  measurement_results_.clear();
+  for (const WorkerNode* worker_node : graph_->GetAllWorkerNodes()) {
+    GetNodeResultPtr(worker_node).reset();
+  }
+  origin_results_.clear();
   dead_context_results_.clear();
-  weak_origin_results_.clear();
+  // All ScopedCPUTimeResult objects should be deleted above, removing them all
+  // from `weak_origin_results_`.
+  CHECK(weak_origin_results_.empty());
   graph_->RemoveFrameNodeObserver(this);
   graph_->RemovePageNodeObserver(this);
   graph_->RemoveProcessNodeObserver(this);
@@ -205,6 +245,33 @@ QueryResultMap CPUMeasurementMonitor::UpdateAndGetCPUMeasurements(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   UpdateAllCPUMeasurements();
 
+  QueryResultMap results;
+  auto save_result = [&results](
+                         const ResourceContext& context,
+                         const scoped_refptr<ScopedCPUTimeResult>& result_ptr) {
+    if (result_ptr) {
+      ValidateCPUTimeResult(result_ptr->result());
+      // Each context should only be added once.
+      const auto [_, inserted] = results.emplace(
+          context, QueryResults{.cpu_time_result = result_ptr->result()});
+      CHECK(inserted);
+    }
+  };
+
+  // Populate `results` with CPU results for all live PM node contexts.
+  for (const FrameNode* node : graph_->GetAllFrameNodes()) {
+    save_result(node->GetResourceContext(), GetNodeResultPtr(node));
+  }
+  for (const PageNode* node : graph_->GetAllPageNodes()) {
+    save_result(node->GetResourceContext(), GetNodeResultPtr(node));
+  }
+  for (const ProcessNode* node : graph_->GetAllProcessNodes()) {
+    save_result(node->GetResourceContext(), GetNodeResultPtr(node));
+  }
+  for (const WorkerNode* node : graph_->GetAllWorkerNodes()) {
+    save_result(node->GetResourceContext(), GetNodeResultPtr(node));
+  }
+
   // Get the set of live `OriginInBrowsingInstanceContext`s.
   //
   // TODO(crbug.com/333248839): Find a way to reduce the number of iterations
@@ -215,24 +282,18 @@ QueryResultMap CPUMeasurementMonitor::UpdateAndGetCPUMeasurements(
   const std::set<OriginInBrowsingInstanceContext> live_origin_contexts =
       GetLiveOriginInBrowsingInstanceContexts();
 
-  // Populate `results` with CPU results for all live contexts, and remove dead
-  // `OriginInBrowsingInstanceContext`s referenced by `measurement_results_`.
-  QueryResultMap results;
-  for (auto it = measurement_results_.begin();
-       it != measurement_results_.end();) {
-    const ResourceContext& context = it->first;
-    ScopedCPUTimeResultPtr& result_ptr = it->second;
+  // Populate `results` with CPU results for all live
+  // `OriginInBrowsingInstanceContext`s, and remove dead ones.
+  for (auto it = origin_results_.begin(); it != origin_results_.end();) {
+    const OriginInBrowsingInstanceContext& origin_context = it->first;
+    scoped_refptr<ScopedCPUTimeResult>& result_ptr = it->second;
     CHECK(result_ptr);
-    if (ContextIs<OriginInBrowsingInstanceContext>(context) &&
-        !base::Contains(live_origin_contexts,
-                        AsContext<OriginInBrowsingInstanceContext>(context))) {
-      SaveFinalMeasurement(std::move(result_ptr));
-      it = measurement_results_.erase(it);
-    } else {
-      ValidateCPUTimeResult(result_ptr->result());
-      results.emplace(context,
-                      QueryResults{.cpu_time_result = result_ptr->result()});
+    if (base::Contains(live_origin_contexts, origin_context)) {
+      save_result(ResourceContext(origin_context), result_ptr);
       ++it;
+    } else {
+      SaveFinalMeasurement(std::move(result_ptr));
+      it = origin_results_.erase(it);
     }
   }
 
@@ -248,7 +309,7 @@ QueryResultMap CPUMeasurementMonitor::UpdateAndGetCPUMeasurements(
     auto& dead_context_results_kept_alive = it->second.kept_alive;
     dead_context_results_kept_alive.clear();
 
-    std::set<ScopedCPUTimeResultPtr> dead_context_results_to_report;
+    std::set<scoped_refptr<ScopedCPUTimeResult>> dead_context_results_to_report;
     std::swap(it->second.to_report, dead_context_results_to_report);
 
     for (auto& result : dead_context_results_to_report) {
@@ -280,34 +341,59 @@ void CPUMeasurementMonitor::RecordMemoryMetrics() {
   constexpr size_t kNumContextTypes =
       absl::variant_size<ResourceContext>::value;
 
-  // Size of an entry in `measurement_results_` (key + value). Clamped so that
-  // multiplying by it will never overflow.
-  constexpr base::ClampedNumeric<uint32_t> kResultEntrySize =
-      sizeof(std::pair<ResourceContext, ScopedCPUTimeResultPtr>);
-
-  std::set<ScopedCPUTimeResult*> visited_result_ptrs;
-
   // Estimates for each live ResourceContext type by index into the
   // ResourceContext variant.
-  std::vector<base::ClampedNumeric<uint32_t>> live_context_estimates(
+  std::set<ScopedCPUTimeResult*> visited_result_ptrs;
+  std::vector<base::ClampedNumeric<size_t>> live_context_estimates(
       kNumContextTypes);
-  base::ClampedNumeric<uint32_t> total_live_estimate = 0;
-  for (const auto& [context, result_ptr] : measurement_results_) {
-    CHECK(result_ptr);
-    const auto [_, inserted] = visited_result_ptrs.insert(result_ptr.get());
-    CHECK(inserted);
+  base::ClampedNumeric<size_t> total_live_estimate = 0;
+  auto update_live_estimates =
+      [&](const ResourceContext& context,
+          const scoped_refptr<ScopedCPUTimeResult>& result_ptr,
+          size_t overhead) {
+        base::ClampedNumeric<size_t> estimate = overhead;
+        if (result_ptr) {
+          const auto [_, inserted] =
+              visited_result_ptrs.insert(result_ptr.get());
+          CHECK(inserted);
 
-    // Each result has a single reference.
-    auto estimate = kResultEntrySize + result_ptr->EstimateMemoryUsage();
-    live_context_estimates.at(context.index()) += estimate;
-    total_live_estimate += estimate;
+          // Each result has a single reference.
+          estimate += result_ptr->EstimateMemoryUsage();
+        }
+        live_context_estimates.at(context.index()) += estimate;
+        total_live_estimate += estimate;
+      };
+
+  // Overhead in NodeInlineData is one pointer per node.
+  for (const FrameNode* node : graph_->GetAllFrameNodes()) {
+    update_live_estimates(node->GetResourceContext(), GetNodeResultPtr(node),
+                          sizeof(scoped_refptr<ScopedCPUTimeResult>));
+  }
+  for (const PageNode* node : graph_->GetAllPageNodes()) {
+    update_live_estimates(node->GetResourceContext(), GetNodeResultPtr(node),
+                          sizeof(scoped_refptr<ScopedCPUTimeResult>));
+  }
+  for (const ProcessNode* node : graph_->GetAllProcessNodes()) {
+    update_live_estimates(node->GetResourceContext(), GetNodeResultPtr(node),
+                          sizeof(scoped_refptr<ScopedCPUTimeResult>));
+  }
+  for (const WorkerNode* node : graph_->GetAllWorkerNodes()) {
+    update_live_estimates(node->GetResourceContext(), GetNodeResultPtr(node),
+                          sizeof(scoped_refptr<ScopedCPUTimeResult>));
+  }
+
+  // Overhead in `origin_results_` is one pair (value_type) per map entry.
+  for (const auto& [context, result_ptr] : origin_results_) {
+    CHECK(result_ptr);
+    update_live_estimates(context, result_ptr,
+                          sizeof(decltype(origin_results_)::value_type));
   }
 
   // Estimates for each dead ResourceContext type by index into the
   // ResourceContext variant.
-  std::vector<base::ClampedNumeric<uint32_t>> dead_context_estimates(
+  std::vector<base::ClampedNumeric<size_t>> dead_context_estimates(
       kNumContextTypes);
-  base::ClampedNumeric<uint32_t> total_dead_estimate = 0;
+  base::ClampedNumeric<size_t> total_dead_estimate = 0;
   for (const auto& [_, dead_context_results_for_query] :
        dead_context_results_) {
     for (const auto& dead_context_results_set :
@@ -319,7 +405,7 @@ void CPUMeasurementMonitor::RecordMemoryMetrics() {
         // There can be multiple references to the same `ScopedCPUTimeResult`.
         // Only include the size of the `ScopedCPUTimeResult` object the first
         // time it's seen, but always include the size of the pointer.
-        auto estimate = sizeof(ScopedCPUTimeResultPtr);
+        auto estimate = sizeof(scoped_refptr<ScopedCPUTimeResult>);
         if (inserted) {
           estimate += result->EstimateMemoryUsage();
         }
@@ -384,6 +470,7 @@ void CPUMeasurementMonitor::OnBeforeFrameNodeAdded(
     const ProcessNode* pending_process_node,
     const FrameNode* pending_parent_or_outer_document_or_embedder) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  SharedCPUTimeResultData::Create(FrameNodeImpl::FromNode(frame_node));
   // Take a measurement of the process CPU usage *before* this node was added.
   // This is safe because frames should only be added after their containing
   // process has started.
@@ -396,7 +483,7 @@ void CPUMeasurementMonitor::OnBeforeFrameNodeRemoved(
   // Take a measurement of the process CPU usage, including this frame, so that
   // its final CPU usage is attributed to it before it's removed.
   UpdateCPUMeasurements(frame_node->GetProcessNode());
-  SaveFinalMeasurement(frame_node->GetResourceContext());
+  SaveFinalMeasurement(std::move(GetNodeResultPtr(frame_node)));
 }
 
 void CPUMeasurementMonitor::OnOriginChanged(
@@ -410,11 +497,22 @@ void CPUMeasurementMonitor::OnOriginChanged(
                         GraphChangeUpdateOrigin(frame_node, previous_value));
 }
 
+void CPUMeasurementMonitor::OnPageNodeAdded(const PageNode* page_node) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  SharedCPUTimeResultData::Create(PageNodeImpl::FromNode(page_node));
+}
+
 void CPUMeasurementMonitor::OnBeforePageNodeRemoved(const PageNode* page_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // No need to call UpdateCPUMeasurements() since a measurement was taken when
   // the last frame was removed from the page.
-  SaveFinalMeasurement(page_node->GetResourceContext());
+  SaveFinalMeasurement(std::move(GetNodeResultPtr(page_node)));
+}
+
+void CPUMeasurementMonitor::OnProcessNodeAdded(
+    const ProcessNode* process_node) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  SharedCPUTimeResultData::Create(ProcessNodeImpl::FromNode(process_node));
 }
 
 void CPUMeasurementMonitor::OnProcessLifetimeChange(
@@ -438,7 +536,7 @@ void CPUMeasurementMonitor::OnBeforeProcessNodeRemoved(
   // TODO(crbug.com/325330345): Capture the full final measurement reported
   // through ChildProcessTerminationInfo::cpu_usage.
   UpdateCPUMeasurements(process_node);
-  SaveFinalMeasurement(process_node->GetResourceContext());
+  SaveFinalMeasurement(std::move(GetNodeResultPtr(process_node)));
 }
 
 void CPUMeasurementMonitor::OnPriorityChanged(
@@ -452,6 +550,7 @@ void CPUMeasurementMonitor::OnBeforeWorkerNodeAdded(
     const WorkerNode* worker_node,
     const ProcessNode* pending_process_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  SharedCPUTimeResultData::Create(WorkerNodeImpl::FromNode(worker_node));
   // Take a measurement of the process CPU usage *before* this node was added.
   // This is safe because workers should only be added after their containing
   // process has started.
@@ -464,7 +563,7 @@ void CPUMeasurementMonitor::OnBeforeWorkerNodeRemoved(
   // Take a measurement of the process CPU usage, including this node, so that
   // its final CPU usage is attributed to it before it's removed.
   UpdateCPUMeasurements(worker_node->GetProcessNode());
-  SaveFinalMeasurement(worker_node->GetResourceContext());
+  SaveFinalMeasurement(std::move(GetNodeResultPtr(worker_node)));
 }
 
 void CPUMeasurementMonitor::OnBeforeClientFrameAdded(
@@ -509,22 +608,24 @@ void CPUMeasurementMonitor::OnBeforeClientWorkerRemoved(
 
 base::Value::Dict CPUMeasurementMonitor::DescribeFrameNodeData(
     const FrameNode* node) const {
-  return DescribeContextData(node->GetResourceContext());
+  return SharedCPUTimeResultData::Get(FrameNodeImpl::FromNode(node)).Describe();
 }
 
 base::Value::Dict CPUMeasurementMonitor::DescribePageNodeData(
     const PageNode* node) const {
-  return DescribeContextData(node->GetResourceContext());
+  return SharedCPUTimeResultData::Get(PageNodeImpl::FromNode(node)).Describe();
 }
 
 base::Value::Dict CPUMeasurementMonitor::DescribeProcessNodeData(
     const ProcessNode* node) const {
-  return DescribeContextData(node->GetResourceContext());
+  return SharedCPUTimeResultData::Get(ProcessNodeImpl::FromNode(node))
+      .Describe();
 }
 
 base::Value::Dict CPUMeasurementMonitor::DescribeWorkerNodeData(
     const WorkerNode* node) const {
-  return DescribeContextData(node->GetResourceContext());
+  return SharedCPUTimeResultData::Get(WorkerNodeImpl::FromNode(node))
+      .Describe();
 }
 
 void CPUMeasurementMonitor::MonitorCPUUsage(const ProcessNode* process_node) {
@@ -579,21 +680,39 @@ void CPUMeasurementMonitor::UpdateCPUMeasurements(
   ApplyMeasurementDeltas(measurement_deltas, graph_change);
 }
 
-CPUMeasurementMonitor::ScopedCPUTimeResultPtr&
-CPUMeasurementMonitor::GetResultPtr(const ResourceContext& context) {
+scoped_refptr<ScopedCPUTimeResult>& CPUMeasurementMonitor::GetResultPtr(
+    const ResourceContext& context) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto [it, inserted] = measurement_results_.try_emplace(context, nullptr);
-  ScopedCPUTimeResultPtr& result_ptr = it->second;
-  if (inserted && ContextIs<OriginInBrowsingInstanceContext>(context)) {
-    // Check if there is a result for this `OriginInBrowsingInstanceContext`
-    // which is still referenced by `dead_context_results_`.
-    auto result_it = weak_origin_results_.find(
-        AsContext<OriginInBrowsingInstanceContext>(context));
-    if (result_it != weak_origin_results_.end()) {
-      result_ptr = result_it->second;
-    }
+  if (ContextIs<FrameContext>(context)) {
+    return GetNodeResultPtr(AsContext<FrameContext>(context).GetFrameNode());
   }
-  return result_ptr;
+  if (ContextIs<PageContext>(context)) {
+    return GetNodeResultPtr(AsContext<PageContext>(context).GetPageNode());
+  }
+  if (ContextIs<ProcessContext>(context)) {
+    return GetNodeResultPtr(
+        AsContext<ProcessContext>(context).GetProcessNode());
+  }
+  if (ContextIs<WorkerContext>(context)) {
+    return GetNodeResultPtr(AsContext<WorkerContext>(context).GetWorkerNode());
+  }
+  if (ContextIs<OriginInBrowsingInstanceContext>(context)) {
+    const auto& origin_context =
+        AsContext<OriginInBrowsingInstanceContext>(context);
+    auto [it, inserted] = origin_results_.try_emplace(origin_context, nullptr);
+    scoped_refptr<ScopedCPUTimeResult>& result_ptr = it->second;
+    if (inserted) {
+      // Check if there is a result for this `OriginInBrowsingInstanceContext`
+      // which is still referenced by `dead_context_results_`.
+      auto result_it = weak_origin_results_.find(origin_context);
+      if (result_it != weak_origin_results_.end()) {
+        result_ptr = result_it->second;
+      }
+    }
+    return result_ptr;
+  }
+  // That should cover all context types.
+  NOTREACHED();
 }
 
 void CPUMeasurementMonitor::ApplyMeasurementDeltas(
@@ -656,7 +775,7 @@ void CPUMeasurementMonitor::ApplySequentialDelta(const ResourceContext& context,
                                                  const CPUTimeResult& delta) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ValidateCPUTimeResult(delta);
-  ScopedCPUTimeResultPtr& result_ptr = GetResultPtr(context);
+  scoped_refptr<ScopedCPUTimeResult>& result_ptr = GetResultPtr(context);
   if (!result_ptr) {
     result_ptr =
         base::MakeRefCounted<ScopedCPUTimeResult>(this, context, delta);
@@ -680,7 +799,7 @@ void CPUMeasurementMonitor::ApplyOverlappingDelta(
     const CPUTimeResult& delta) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ValidateCPUTimeResult(delta);
-  ScopedCPUTimeResultPtr& result_ptr = GetResultPtr(context);
+  scoped_refptr<ScopedCPUTimeResult>& result_ptr = GetResultPtr(context);
   if (!result_ptr) {
     result_ptr =
         base::MakeRefCounted<ScopedCPUTimeResult>(this, context, delta);
@@ -702,27 +821,18 @@ void CPUMeasurementMonitor::ApplyOverlappingDelta(
 }
 
 void CPUMeasurementMonitor::SaveFinalMeasurement(
-    const ResourceContext& context) {
+    scoped_refptr<ScopedCPUTimeResult>&& result_ptr) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = measurement_results_.find(context);
-  if (it != measurement_results_.end()) {
-    SaveFinalMeasurement(std::move(it->second));
-    measurement_results_.erase(it);
+  if (result_ptr) {
+    // Copy the scoped_refptr to result list for every existing query_id.
+    for (auto& [query_id, dead_context_results_for_query] :
+         dead_context_results_) {
+      dead_context_results_for_query.to_report.emplace(result_ptr);
+    }
+    // When `result_ptr` goes out of scope it's dropped from the live
+    // measurement results. Now there's one reference for every query, and the
+    // CPUTimeResult will be deleted once all queries have gotten the result.
   }
-}
-
-void CPUMeasurementMonitor::SaveFinalMeasurement(
-    ScopedCPUTimeResultPtr&& result_ptr) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(result_ptr);
-  // Copy the scoped_refptr to result list for every existing query_id.
-  for (auto& [query_id, dead_context_results_for_query] :
-       dead_context_results_) {
-    dead_context_results_for_query.to_report.emplace(result_ptr);
-  }
-  // When `result_ptr` goes out of scope it's dropped from the live measurement
-  // results. Now there's one reference for every query, and the CPUTimeResult
-  // will be deleted once all queries have gotten the result.
 }
 
 std::set<OriginInBrowsingInstanceContext>
@@ -753,60 +863,6 @@ CPUMeasurementMonitor::GetLiveOriginInBrowsingInstanceContexts() {
     }
   }
   return live_origin_contexts;
-}
-
-CPUMeasurementMonitor::ScopedCPUTimeResult::ScopedCPUTimeResult(
-    CPUMeasurementMonitor* monitor,
-    const ResourceContext& context,
-    const CPUTimeResult& result)
-    : monitor_(monitor), context_(context), result_(result) {
-  if (ContextIs<OriginInBrowsingInstanceContext>(context_)) {
-    auto [_, inserted] = monitor_->weak_origin_results_.emplace(
-        AsContext<OriginInBrowsingInstanceContext>(context_), this);
-    CHECK(inserted);
-  }
-}
-
-CPUMeasurementMonitor::ScopedCPUTimeResult::~ScopedCPUTimeResult() {
-  if (ContextIs<OriginInBrowsingInstanceContext>(context_)) {
-    size_t num_erased = monitor_->weak_origin_results_.erase(
-        AsContext<OriginInBrowsingInstanceContext>(context_));
-    CHECK_EQ(num_erased, 1U);
-  }
-}
-
-size_t CPUMeasurementMonitor::ScopedCPUTimeResult::EstimateMemoryUsage() const {
-  size_t size = sizeof(*this);
-  if (ContextIs<OriginInBrowsingInstanceContext>(context_)) {
-    // OriginInBrowsingInstanceContext includes an url::Origin, which has
-    // variable-size data.
-    size += AsContext<OriginInBrowsingInstanceContext>(context_)
-                .GetOrigin()
-                .EstimateMemoryUsage();
-  }
-  return size;
-}
-
-base::Value::Dict CPUMeasurementMonitor::DescribeContextData(
-    const ResourceContext& context) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::Value::Dict dict;
-  const auto it = measurement_results_.find(context);
-  if (it != measurement_results_.end()) {
-    CHECK(it->second);
-    const CPUTimeResult& result = it->second->result();
-    const base::TimeDelta measurement_interval =
-        result.metadata.measurement_time - result.start_time;
-    dict.Merge(DescribeResultMetadata(result.metadata));
-    dict.Set("measurement_interval",
-             performance_manager::TimeDeltaToValue(measurement_interval));
-    dict.Set("cumulative_cpu",
-             performance_manager::TimeDeltaToValue(result.cumulative_cpu));
-    dict.Set("cumulative_background_cpu",
-             performance_manager::TimeDeltaToValue(
-                 result.cumulative_background_cpu));
-  }
-  return dict;
 }
 
 // static
@@ -1023,5 +1079,36 @@ CPUMeasurementMonitor::DeadContextResults::DeadContextResults(
 CPUMeasurementMonitor::DeadContextResults&
 CPUMeasurementMonitor::DeadContextResults::operator=(DeadContextResults&&) =
     default;
+
+ScopedCPUTimeResult::ScopedCPUTimeResult(CPUMeasurementMonitor* monitor,
+                                         const ResourceContext& context,
+                                         const CPUTimeResult& result)
+    : monitor_(monitor), context_(context), result_(result) {
+  if (ContextIs<OriginInBrowsingInstanceContext>(context_)) {
+    auto [_, inserted] = monitor_->weak_origin_results_.emplace(
+        AsContext<OriginInBrowsingInstanceContext>(context_), this);
+    CHECK(inserted);
+  }
+}
+
+ScopedCPUTimeResult::~ScopedCPUTimeResult() {
+  if (ContextIs<OriginInBrowsingInstanceContext>(context_)) {
+    size_t num_erased = monitor_->weak_origin_results_.erase(
+        AsContext<OriginInBrowsingInstanceContext>(context_));
+    CHECK_EQ(num_erased, 1U);
+  }
+}
+
+size_t ScopedCPUTimeResult::EstimateMemoryUsage() const {
+  size_t size = sizeof(*this);
+  if (ContextIs<OriginInBrowsingInstanceContext>(context_)) {
+    // OriginInBrowsingInstanceContext includes an url::Origin, which has
+    // variable-size data.
+    size += AsContext<OriginInBrowsingInstanceContext>(context_)
+                .GetOrigin()
+                .EstimateMemoryUsage();
+  }
+  return size;
+}
 
 }  // namespace resource_attribution

@@ -23,6 +23,7 @@
 #include "components/performance_manager/graph/node_attached_data_storage.h"
 #include "components/performance_manager/graph/node_base.h"
 #include "components/performance_manager/public/graph/page_node.h"
+#include "components/performance_manager/resource_attribution/cpu_measurement_data.h"
 #include "components/performance_manager/scenarios/loading_scenario_data.h"
 #include "url/gurl.h"
 
@@ -50,15 +51,17 @@ using PagePropertyFlags = base::
 class PageNodeImpl
     : public PublicNodeImpl<PageNodeImpl, PageNode>,
       public TypedNodeBase<PageNodeImpl, PageNode, PageNodeObserver>,
-      public SupportsNodeInlineData<PageLoadTrackerDecoratorData,
-                                    PageAggregatorData,
+      public SupportsNodeInlineData<
+          PageLoadTrackerDecoratorData,
+          PageAggregatorData,
 #if !BUILDFLAG(IS_ANDROID)
-                                    SiteDataNodeData,
+          SiteDataNodeData,
 #endif
-                                    FrozenData,
-                                    LoadingScenarioPageFrameCounts,
-                                    // Keep this last to avoid merge conflicts.
-                                    NodeAttachedDataStorage> {
+          FrozenData,
+          LoadingScenarioPageFrameCounts,
+          resource_attribution::SharedCPUTimeResultData,
+          // Keep this last to avoid merge conflicts.
+          NodeAttachedDataStorage> {
  public:
   using PassKey = base::PassKey<PageNodeImpl>;
 

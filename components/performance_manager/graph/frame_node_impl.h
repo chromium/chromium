@@ -20,6 +20,7 @@
 #include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
 #include "components/performance_manager/public/mojom/web_memory.mojom.h"
 #include "components/performance_manager/public/render_frame_host_proxy.h"
+#include "components/performance_manager/resource_attribution/cpu_measurement_data.h"
 #include "content/public/browser/browsing_instance_id.h"
 #include "content/public/browser/site_instance.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -40,9 +41,11 @@ class FrameNodeImpl
     : public PublicNodeImpl<FrameNodeImpl, FrameNode>,
       public TypedNodeBase<FrameNodeImpl, FrameNode, FrameNodeObserver>,
       public mojom::DocumentCoordinationUnit,
-      public SupportsNodeInlineData<execution_context::FrameExecutionContext,
-                                    // Keep this last to avoid merge conflicts.
-                                    NodeAttachedDataStorage> {
+      public SupportsNodeInlineData<
+          execution_context::FrameExecutionContext,
+          resource_attribution::SharedCPUTimeResultData,
+          // Keep this last to avoid merge conflicts.
+          NodeAttachedDataStorage> {
  public:
   static const char kDefaultPriorityReason[];
 
