@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/tabs/tab_strip_scroll_session.h"
+#include "chrome/browser/ui/views/tabs/dragging/tab_strip_scroll_session.h"
 
 #include <algorithm>
 
 #include "base/check.h"
-#include "chrome/browser/ui/views/tabs/tab_drag_controller.h"
+#include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/controls/scroll_view.h"
 

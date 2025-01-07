@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_DRAG_CONTEXT_H_
-#define CHROME_BROWSER_UI_VIEWS_TABS_TAB_DRAG_CONTEXT_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_TABS_DRAGGING_TAB_DRAG_CONTEXT_H_
+#define CHROME_BROWSER_UI_VIEWS_TABS_DRAGGING_TAB_DRAG_CONTEXT_H_
 
 #include <memory>
 #include <optional>
@@ -159,4 +159,4 @@ class TabDragContext : public TabDragContextBase {
   virtual void ForceLayout() = 0;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_DRAG_CONTEXT_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_TABS_DRAGGING_TAB_DRAG_CONTEXT_H_

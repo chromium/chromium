@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_SCROLL_SESSION_H_
-#define CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_SCROLL_SESSION_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_TABS_DRAGGING_TAB_STRIP_SCROLL_SESSION_H_
+#define CHROME_BROWSER_UI_VIEWS_TABS_DRAGGING_TAB_STRIP_SCROLL_SESSION_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "tab_style_views.h"
+#include "chrome/browser/ui/views/tabs/tab_style_views.h"
 
 class TabDragWithScrollManager;
 
@@ -100,4 +100,4 @@ class TabStripScrollSessionWithTimer : public TabStripScrollSession {
       ScrollSessionTimerType::kConstantTimer;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_SCROLL_SESSION_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_TABS_DRAGGING_TAB_STRIP_SCROLL_SESSION_H_
