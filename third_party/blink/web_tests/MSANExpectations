@@ -64,9 +64,6 @@ crbug.com/931660 [ Linux ] fast/history/replacestate-nocrash.html [ Pass Timeout
 
 crbug.com/856601 [ Linux ] external/wpt/compression/compression-stream.tentative.any.serviceworker.html [ Pass Timeout ]
 
-# Sheriff 2020-01-10
-crbug.com/1041052 [ Linux ] external/wpt/html/canvas/offscreen/manual/filter/offscreencanvas.filter.w.html [ Timeout ]
-
 # Sheriff 2020-02-10
 crbug.com/1050559 [ Linux ] external/wpt/WebCryptoAPI/derive_bits_keys/hkdf.https.any.worker.html?1-1000 [ Skip ]
 
@@ -135,3 +132,7 @@ crbug.com/377507247 external/wpt/webidl/ecmascript-binding/window-named-properti
 
 # Gardener 2024-11-12
 crbug.com/378566920 [ Linux ] external/wpt/speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html* [ Failure Pass ]
+
+# Failing on WebKit Linux MSAN
+crbug.com/40667709 [ Linux ] external/wpt/html/canvas/element/manual/fill-and-stroke-styles/canvas_colorsandstyles_createlineargradient_001.htm [ Failure Pass Timeout ]
+crbug.com/40667709 [ Linux ] external/wpt/html/canvas/offscreen/manual/filter/offscreencanvas.filter.w.html [ Failure Pass Timeout ]
