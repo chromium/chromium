@@ -162,7 +162,11 @@ export namespace Session {
   );
 }
 export const SessionResultSchema = z.lazy(() =>
-  z.union([Session.NewResultSchema, Session.StatusResultSchema]),
+  z.union([
+    Session.NewResultSchema,
+    Session.StatusResultSchema,
+    Session.SubscribeResultSchema,
+  ]),
 );
 export namespace Session {
   export const CapabilitiesRequestSchema = z.lazy(() =>
@@ -365,7 +369,7 @@ export namespace Session {
   );
 }
 export namespace Session {
-  export const SubscriptionRequestResultSchema = z.lazy(() =>
+  export const SubscribeResultSchema = z.lazy(() =>
     z.object({
       subscription: Session.SubscriptionSchema,
     }),

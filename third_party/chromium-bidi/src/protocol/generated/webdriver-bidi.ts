@@ -122,7 +122,10 @@ export namespace Session {
     | Session.SystemProxyConfiguration
     | Record<string, never>;
 }
-export type SessionResult = Session.NewResult | Session.StatusResult;
+export type SessionResult =
+  | Session.NewResult
+  | Session.StatusResult
+  | Session.SubscribeResult;
 export namespace Session {
   export type CapabilitiesRequest = {
     alwaysMatch?: Session.CapabilityRequest;
@@ -273,7 +276,7 @@ export namespace Session {
   };
 }
 export namespace Session {
-  export type SubscriptionRequestResult = {
+  export type SubscribeResult = {
     subscription: Session.Subscription;
   };
 }
