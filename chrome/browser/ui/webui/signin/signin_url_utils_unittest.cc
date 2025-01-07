@@ -74,7 +74,7 @@ TEST(SigninURLUtilsSyncConfirmationURLTest, GetAndParseURL) {
   EXPECT_TRUE(IsSyncConfirmationPromo(url));
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 TEST(SigninURLUtilsTest, ParseParameterlessProfileCustomizationURL) {
   GURL url = GURL(chrome::kChromeUIProfileCustomizationURL);
   EXPECT_EQ(ProfileCustomizationStyle::kDefault,
@@ -100,7 +100,7 @@ TEST(SigninURLUtilsProfileCustomizationURLTest, GetAndParseURL) {
   EXPECT_EQ(ProfileCustomizationStyle::kLocalProfileCreation,
             GetProfileCustomizationStyle(url));
 }
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 class SigninURLUtilsReauthConfirmationURLTest
     : public ::testing::TestWithParam<int> {};

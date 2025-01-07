@@ -12,7 +12,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
@@ -36,7 +35,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/webui/webui_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
@@ -65,11 +64,11 @@
 #include "ui/strings/grit/ui_strings.h"
 #else
 #include "chrome/browser/ui/webui/signin/inline_login_handler_impl.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void AddEduStrings(content::WebUIDataSource* source,
                    const std::u16string& username) {
   source->AddLocalizedString("okButton", IDS_APP_OK);
@@ -113,7 +112,7 @@ void AddEduStrings(content::WebUIDataSource* source,
       "addSchoolAccountLabel",
       IDS_ACCOUNT_MANAGER_DIALOG_ADD_SCHOOL_ACCOUNT_LABEL);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void CreateAndAddWebUIDataSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
@@ -129,12 +128,12 @@ void CreateAndAddWebUIDataSource(Profile* profile) {
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ConnectSrc, "connect-src *;");
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   source->AddResourcePaths(kArcAccountPickerResources);
   source->AddResourcePaths(kGaiaActionButtonsResources);
   source->AddResourcePaths(kEduCoexistenceResources);
   source->AddResourcePaths(kSupervisionResources);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Only add a filter when runing as test.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -145,7 +144,7 @@ void CreateAndAddWebUIDataSource(Profile* profile) {
                              test::GetTestFilesRequestFilter());
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   static constexpr webui::ResourcePath kResources[] = {
       {"account_manager_shared.css.js", IDR_ACCOUNT_MANAGER_SHARED_CSS_JS},
       {"error_screen.html.js",
@@ -164,12 +163,12 @@ void CreateAndAddWebUIDataSource(Profile* profile) {
 #endif
   };
   source->AddResourcePaths(kResources);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"accessibleCloseButtonLabel", IDS_SIGNIN_ACCESSIBLE_CLOSE_BUTTON},
       {"accessibleBackButtonLabel", IDS_SIGNIN_ACCESSIBLE_BACK_BUTTON},
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       {"title", IDS_ACCOUNT_MANAGER_DIALOG_TITLE},
       {"ok", IDS_APP_OK},
       {"nextButtonLabel", IDS_ACCOUNT_MANAGER_DIALOG_NEXT_BUTTON},
@@ -208,7 +207,7 @@ void CreateAndAddWebUIDataSource(Profile* profile) {
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   source->AddBoolean(
       "secondaryGoogleAccountSigninAllowed",
       profile->GetPrefs()->GetBoolean(
@@ -311,13 +310,13 @@ void CreateAndAddWebUIDataSource(Profile* profile) {
   std::u16string username =
       ash::ProfileHelper::Get()->GetUserByProfile(profile)->GetGivenName();
   AddEduStrings(source, username);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 // Returns whether |url| can be displayed in a chrome://chrome-signin web
 // contents, depending on the signin reason that is encoded in the url.
 bool IsValidChromeSigninReason(const GURL& url) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return true;
 #else
   signin_metrics::Reason reason =
@@ -341,7 +340,7 @@ bool IsValidChromeSigninReason(const GURL& url) {
       return false;
   }
   NOTREACHED();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace
@@ -356,7 +355,7 @@ InlineLoginUI::InlineLoginUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
     return;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   web_ui->AddMessageHandler(
       std::make_unique<ash::InlineLoginHandlerImpl>(base::BindRepeating(
           &WebDialogUIBase::CloseDialog, weak_factory_.GetWeakPtr(),
@@ -370,7 +369,7 @@ InlineLoginUI::InlineLoginUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
 
 #else
   web_ui->AddMessageHandler(std::make_unique<InlineLoginHandlerImpl>());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());
 

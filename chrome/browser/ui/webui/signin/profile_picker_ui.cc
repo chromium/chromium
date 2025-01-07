@@ -8,7 +8,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/browser_signin_policy_handler.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -46,11 +45,6 @@
 #include "ui/webui/webui_util.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/device_settings_service.mojom.h"
-#include "ui/chromeos/devicetype_utils.h"
-#endif
-
 namespace {
 
 // Miniumum size for the picker UI.
@@ -79,19 +73,11 @@ bool IsBrowserSigninAllowed() {
 }
 
 std::string GetManagedDeviceDisclaimer() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::optional<std::string> manager = chrome::GetSessionManagerIdentity();
-  int managed_id =
-      IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_SESSION_MANAGED_DESCRIPTION;
-  int managed_by_id =
-      IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_SESSION_MANAGED_BY_DESCRIPTION;
-#else
   std::optional<std::string> manager = chrome::GetDeviceManagerIdentity();
   int managed_id =
       IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_DEVICE_MANAGED_DESCRIPTION;
   int managed_by_id =
       IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_DEVICE_MANAGED_BY_DESCRIPTION;
-#endif
   if (!manager) {
     return std::string();
   }
@@ -102,33 +88,18 @@ std::string GetManagedDeviceDisclaimer() {
 }
 
 int GetMainViewTitleId() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_LACROS;
-#else
   return ProfilePicker::Shown() ? IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_V2
                                 : IDS_PROFILE_PICKER_MAIN_VIEW_TITLE;
-#endif
 }
 
 void AddStrings(content::WebUIDataSource* html_source) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  int profile_type_choice_subtitle =
-      IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE_LACROS;
-#else
   int profile_type_choice_subtitle =
       base::FeatureList::IsEnabled(switches::kExplicitBrowserSigninUIOnDesktop)
           ? IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE_UNO
           : IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE;
-#endif
 
   static webui::LocalizedString kLocalizedStrings[] = {
-      {"mainViewSubtitle",
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-       IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_LACROS
-#else
-       IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE
-#endif
-      },
+      {"mainViewSubtitle", IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE},
       {"addSpaceButton", IDS_PROFILE_PICKER_ADD_SPACE_BUTTON},
       {"askOnStartupCheckboxText", IDS_PROFILE_PICKER_ASK_ON_STARTUP},
       {"browseAsGuestButton", IDS_PROFILE_PICKER_BROWSE_AS_GUEST_BUTTON},
@@ -203,33 +174,6 @@ void AddStrings(content::WebUIDataSource* html_source) {
 
   html_source->AddString("managedDeviceDisclaimer",
                          GetManagedDeviceDisclaimer());
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::string remove_warning_profile = l10n_util::GetStringFUTF8(
-      IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE_LACROS,
-      ui::GetChromeOSDeviceName(),
-      l10n_util::GetStringUTF16(IDS_SETTINGS_TITLE),
-      l10n_util::GetStringUTF16(IDS_OS_SETTINGS_PEOPLE_V2));
-  html_source->AddString("removeWarningProfileLacros", remove_warning_profile);
-  html_source->AddString("deviceType", ui::GetChromeOSDeviceName());
-
-  bool guest_mode_enabled = true;
-  // Device settings may be nullptr in tests.
-  if (crosapi::mojom::DeviceSettings* device_settings =
-          g_browser_process->browser_policy_connector()->GetDeviceSettings()) {
-    if (device_settings->device_guest_mode_enabled ==
-        crosapi::mojom::DeviceSettings::OptionalBool::kFalse) {
-      guest_mode_enabled = false;
-    }
-  }
-  const int account_selection_lacros_subtitle =
-      guest_mode_enabled
-          ? IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_ACCOUNT_SELECTION_LACROS_SUBTITLE_WITH_GUEST
-          : IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_ACCOUNT_SELECTION_LACROS_SUBTITLE;
-  html_source->AddLocalizedString("accountSelectionLacrosSubtitle",
-                                  account_selection_lacros_subtitle);
-
-#endif
 
   // Add policies.
   html_source->AddBoolean("isBrowserSigninAllowed", IsBrowserSigninAllowed());

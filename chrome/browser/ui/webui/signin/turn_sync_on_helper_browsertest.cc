@@ -298,16 +298,6 @@ IN_PROC_BROWSER_TEST_P(TurnSyncOnHelperBrowserTestWithParam,
       break;
     case TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT:
       if (should_remove_initial_account()) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-        // First account was removed, second account became the primary.
-        EXPECT_THAT(
-            identity_manager()->GetAccountsWithRefreshTokens(),
-            UnorderedElementsAre(second_account_info, third_account_info));
-        EXPECT_EQ(signin::ConsentLevel::kSignin,
-                  signin::GetPrimaryAccountConsentLevel(identity_manager()));
-        EXPECT_EQ(second_account_id, identity_manager()->GetPrimaryAccountId(
-                                         signin::ConsentLevel::kSignin));
-#else
         // With `switches::kExplicitBrowserSigninUIOnDesktop` enabled, the
         // primary account isn't set implicitly based on cookies but by explicit
         // user action, therefore it is also not removed when cookies change.
@@ -323,7 +313,6 @@ IN_PROC_BROWSER_TEST_P(TurnSyncOnHelperBrowserTestWithParam,
           EXPECT_FALSE(identity_manager()->HasPrimaryAccount(
               signin::ConsentLevel::kSignin));
         }
-#endif
       } else {
         // First account is still primary, second account was not removed.
         EXPECT_THAT(
@@ -406,12 +395,6 @@ IN_PROC_BROWSER_TEST_F(TurnSyncOnHelperBrowserTest, UndoSyncRemoveAccount) {
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
-  // For the scenario in https://crbug.com/1404961, the reconcilor has to be
-  // triggered by the account removal.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  ASSERT_EQ(reconcilor->GetState(),
-            signin_metrics::AccountReconcilorState::kRunning);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   // On Dice platforms with `switches::kExplicitBrowserSigninUIOnDesktop`
   // enabled and empty primary account, updating cookies is disabled. Therefore
   // running the reconcilor doesn't require any network requests and might have

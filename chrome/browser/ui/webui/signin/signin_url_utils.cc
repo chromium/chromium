@@ -88,7 +88,7 @@ GURL GetReauthConfirmationURL(signin_metrics::ReauthAccessPoint access_point) {
   return url;
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 ProfileCustomizationStyle GetProfileCustomizationStyle(const GURL& url) {
   std::string style_str;
   int style_int;
@@ -107,7 +107,7 @@ GURL AppendProfileCustomizationQueryParams(const GURL& url,
       url, kStyleParamKey, base::NumberToString(static_cast<int>(style)));
   return url_with_params;
 }
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 bool HasFromProfilePickerURLParameter(const GURL& url) {
   std::string from_profile_picker;

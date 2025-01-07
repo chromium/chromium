@@ -15,7 +15,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -196,7 +195,7 @@ enum class SyncConfirmationDialogAction { kConfirm, kCancel, kSettings };
 
 enum class ReauthDialogAction { kConfirm, kCancel };
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 std::string GetButtonIdForSyncConfirmationDialogAction(
     SyncConfirmationDialogAction action) {
   switch (action) {
@@ -264,7 +263,7 @@ bool IsElementReady(content::WebContents* web_contents,
       element_selector.c_str(), element_selector.c_str());
   return content::EvalJs(web_contents, find_element_js).ExtractString() == "Ok";
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -274,7 +273,7 @@ class SigninViewControllerTestUtil {
   static bool TryDismissSyncConfirmationDialog(
       Browser* browser,
       SyncConfirmationDialogAction action) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     NOTREACHED();
 #else
     SigninViewController* signin_view_controller =
@@ -304,7 +303,7 @@ class SigninViewControllerTestUtil {
   static bool TryCompleteSigninEmailConfirmationDialog(
       Browser* browser,
       SigninEmailConfirmationDialog::Action action) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     NOTREACHED();
 #else
     SigninViewController* signin_view_controller =
@@ -338,7 +337,7 @@ class SigninViewControllerTestUtil {
 
   static bool TryCompleteReauthConfirmationDialog(Browser* browser,
                                                   ReauthDialogAction action) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     NOTREACHED();
 #else
     SigninViewController* signin_view_controller =
@@ -367,7 +366,7 @@ class SigninViewControllerTestUtil {
   }
 
   static bool TryCompleteProfileCustomizationDialog(Browser* browser) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     NOTREACHED();
 #else
     SigninViewController* signin_view_controller =
@@ -394,7 +393,7 @@ class SigninViewControllerTestUtil {
   }
 
   static bool ShowsModalDialog(Browser* browser) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     NOTREACHED();
 #else
     return browser->signin_view_controller()->ShowsModalDialog();

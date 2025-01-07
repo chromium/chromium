@@ -11,7 +11,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -101,7 +100,7 @@ class LoginUIService : public KeyedService {
   // Set the profile blocking modal error dialog message.
   void SetProfileBlockingErrorMessage();
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Gets the last error set through |DisplayLoginResult|.
   const SigninUIError& GetLastLoginError() const;
 #endif
@@ -109,7 +108,7 @@ class LoginUIService : public KeyedService {
  private:
   // Weak pointers to the recently opened UIs, with the most recent in front.
   std::list<raw_ptr<LoginUI, CtnExperimental>> ui_list_;
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   raw_ptr<Profile> profile_;
   SigninUIError last_login_error_ = SigninUIError::Ok();
 #endif

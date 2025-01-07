@@ -6,19 +6,18 @@
 
 #include "base/observer_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/url_constants.h"
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/profiles/profile_picker.h"
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 LoginUIService::LoginUIService(Profile* profile)
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
     : profile_(profile)
 #endif
 {
@@ -57,7 +56,7 @@ void LoginUIService::SyncConfirmationUIClosed(
 void LoginUIService::DisplayLoginResult(Browser* browser,
                                         const SigninUIError& error,
                                         bool from_profile_picker) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // ChromeOS doesn't have the avatar bubble so it never calls this function.
   NOTREACHED();
 #else
@@ -74,14 +73,14 @@ void LoginUIService::DisplayLoginResult(Browser* browser,
 }
 
 void LoginUIService::SetProfileBlockingErrorMessage() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   NOTREACHED();
 #else
   last_login_error_ = SigninUIError::ProfileIsBlocked();
 #endif
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 const SigninUIError& LoginUIService::GetLastLoginError() const {
   return last_login_error_;
 }
