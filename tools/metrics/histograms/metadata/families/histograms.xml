@@ -826,6 +826,23 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
   </summary>
 </histogram>
 
+<histogram name="SupervisedUsers.ClassifyUrlThrottle.FinalStatus"
+    enum="ClassifyUrlThrottleFinalStatus" expires_after="2025-05-04">
+  <owner>tju@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    The final verdict of the throttle, recorded exactly once per navigation when
+    the throttle had chance to make its decision.
+
+    Throttle might not make decision if another throttle made not-allowing
+    decision first, or navigation was genuinely terminated or canceled by the
+    user.
+
+    See ManagedUsers.TopLevelFilteringResult2.NavigationThrottle for filtering
+    sub-decisions that led to the reported verdict.
+  </summary>
+</histogram>
+
 <histogram name="SupervisedUsers.ClassifyUrlThrottle.LaterThanContentResponse"
     units="ms" expires_after="2025-07-06">
   <owner>tju@google.com</owner>

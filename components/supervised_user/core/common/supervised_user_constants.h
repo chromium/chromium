@@ -192,10 +192,18 @@ extern const char kDefaultEmptyFamilyMemberRole[];
 // Feedback source name for family member role in Family Link.
 extern const char kFamilyMemberRoleFeedbackTag[];
 
-// Histogram name for the ::ClassifyUrlLoaderThrottle
+// Histogram name to track throttle's headroom before its decision was required.
 extern const char kClassifiedEarlierThanContentResponseHistogramName[];
+
+// Histogram name to track how much throttle delayed the navigation.
 extern const char kClassifiedLaterThanContentResponseHistogramName[];
+
+// Histogram name to track intermediate throttle states.
 extern const char kClassifyUrlThrottleStatusHistogramName[];
+
+// Histogram name to track the final throttle verdict.
+extern const char kClassifyUrlThrottleFinalStatusHistogramName[];
+
 }  // namespace supervised_user
 
 #endif  // COMPONENTS_SUPERVISED_USER_CORE_COMMON_SUPERVISED_USER_CONSTANTS_H_

@@ -40,6 +40,21 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Has conflict"/>
 </enum>
 
+<!-- LINT.IfChange(ClassifyUrlThrottleFinalStatus) -->
+
+<enum name="ClassifyUrlThrottleFinalStatus">
+  <int value="0" label="Allowed">
+    The navigation is allowed as a result of aggregating filtering results from
+    SupervisedUserURLFilter
+  </int>
+  <int value="1" label="Blocked">
+    The navigation is denied as a result of aggregating filtering results from
+    SupervisedUserURLFilter, and an interstitial is scheduled.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/supervised_user/classify_url_navigation_throttle.h:ClassifyUrlThrottleFinalStatus) -->
+
 <!-- LINT.IfChange(ClassifyUrlThrottleStatus) -->
 
 <enum name="ClassifyUrlThrottleStatus">

@@ -20,6 +20,14 @@
 
 namespace supervised_user {
 
+// LINT.IfChange(ClassifyUrlThrottleFinalStatus)
+enum class ClassifyUrlThrottleFinalStatus : int {
+  kAllowed = 0,
+  kBlocked = 1,
+  kMaxValue = kBlocked,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:ClassifyUrlThrottleFinalStatus)
+
 // LINT.IfChange(ClassifyUrlThrottleStatus)
 enum class ClassifyUrlThrottleStatus : int {
   kContinue = 0,
