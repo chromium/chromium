@@ -98,10 +98,13 @@ void LayoutFieldset::InsertedIntoTree() {
   // Update CanContain*PositionObjects flag again though
   // CreateAnonymousWithParentAndDisplay() already called them because
   // ComputeIs*Container() depends on Parent().
+  const auto& content_style = fieldset_content->StyleRef();
+  const bool is_fixed_container =
+      fieldset_content->ComputeIsFixedContainer(content_style);
+  fieldset_content->SetCanContainFixedPositionObjects(is_fixed_container);
   fieldset_content->SetCanContainAbsolutePositionObjects(
-      fieldset_content->ComputeIsAbsoluteContainer(fieldset_content->Style()));
-  fieldset_content->SetCanContainFixedPositionObjects(
-      fieldset_content->ComputeIsFixedContainer(fieldset_content->Style()));
+      fieldset_content->ComputeIsAbsoluteContainer(content_style,
+                                                   is_fixed_container));
 }
 
 void LayoutFieldset::UpdateAnonymousChildStyle(
