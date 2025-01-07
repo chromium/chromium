@@ -1617,7 +1617,7 @@ BASE_FEATURE(kIppFirstSetupForUsbPrinters,
 // Enables Kiosk sessions with Isolated Web Apps.
 BASE_FEATURE(kIsolatedWebAppKiosk,
              "IsolatedWebAppKiosk",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables correct handling of the function key row in Japanese.
 BASE_FEATURE(kJapaneseFunctionRow,
