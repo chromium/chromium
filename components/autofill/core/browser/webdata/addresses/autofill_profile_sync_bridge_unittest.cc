@@ -75,7 +75,6 @@ constexpr char kGuidB[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44B";
 constexpr char kGuidC[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44C";
 constexpr char kGuidD[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44D";
 constexpr char kGuidInvalid[] = "EDC609ED-7EEE-4F27-B00C";
-constexpr int kValidityStateBitfield = 1984;
 constexpr char kLocaleString[] = "en-US";
 constexpr base::Time kJune2017 =
     base::Time::FromSecondsSinceUnixEpoch(1497552271);
@@ -239,7 +238,6 @@ AutofillProfileSpecifics ConstructCompleteSpecifics() {
   specifics.set_address_home_thoroughfare_number("House Number");
   specifics.set_address_home_subpremise_name("Subpremise");
 
-  specifics.set_validity_state_bitfield(kValidityStateBitfield);
   return specifics;
 }
 
@@ -394,25 +392,6 @@ TEST_F(AutofillProfileSyncBridgeTest,
   AutofillProfile local(kGuidA, AutofillProfile::RecordType::kLocalOrSyncable,
                         i18n_model_definition::kLegacyHierarchyCountryCode);
   local.set_language_code("en");
-  AutofillProfileChange change(AutofillProfileChange::ADD, kGuidA, local);
-
-  EXPECT_CALL(
-      mock_processor(),
-      Put(kGuidA, HasSpecifics(CreateAutofillProfileSpecifics(local)), _));
-  // The bridge does not need to commit when reacting to a notification about a
-  // local change.
-  EXPECT_CALL(*backend(), CommitChanges()).Times(0);
-
-  bridge()->AutofillProfileChanged(change);
-}
-
-// Validity state bitfield in autofill profiles should be synced to the server.
-TEST_F(AutofillProfileSyncBridgeTest,
-       AutofillProfileChanged_Added_LocalValidityBitfieldPropagates) {
-  StartSyncing({});
-
-  AutofillProfile local(kGuidA, AutofillProfile::RecordType::kLocalOrSyncable,
-                        i18n_model_definition::kLegacyHierarchyCountryCode);
   AutofillProfileChange change(AutofillProfileChange::ADD, kGuidA, local);
 
   EXPECT_CALL(
@@ -1070,88 +1049,6 @@ TEST_F(AutofillProfileSyncBridgeTest,
   merged.FinalizeAfterImport();
 
   // No update to sync, remote language code overwrites the local one.
-  EXPECT_CALL(mock_processor(), Put).Times(0);
-  EXPECT_CALL(*backend(), CommitChanges());
-  StartSyncing({remote});
-  EXPECT_THAT(GetAllLocalData(), ElementsAre(merged));
-}
-
-// Missing validity state bitifield should not generate sync events.
-TEST_F(AutofillProfileSyncBridgeTest,
-       RemoteWithSameGuid_ValidityState_DefaultValueNoSync) {
-  AutofillProfile local(kGuidA, AutofillProfile::RecordType::kLocalOrSyncable,
-                        i18n_model_definition::kLegacyHierarchyCountryCode);
-  AddAutofillProfilesToTable({local});
-
-  // Remote data does not have a validity state bitfield value.
-  AutofillProfileSpecifics remote = CreateAutofillProfileSpecifics(kGuidA);
-  ASSERT_FALSE(remote.has_validity_state_bitfield());
-  ASSERT_FALSE(remote.is_client_validity_states_updated());
-
-  // No update to sync, no change in local data.
-  EXPECT_CALL(mock_processor(), Put).Times(0);
-  EXPECT_CALL(*backend(), CommitChanges());
-  StartSyncing({remote});
-  EXPECT_THAT(GetAllLocalData(), ElementsAre(local));
-}
-
-// Default validity state bitfield should be overwritten by sync.
-TEST_F(AutofillProfileSyncBridgeTest,
-       RemoteWithSameGuid_ValidityState_ExistingRemoteWinsOverMissingLocal) {
-  AutofillProfile local(kGuidA, AutofillProfile::RecordType::kLocalOrSyncable,
-                        i18n_model_definition::kLegacyHierarchyCountryCode);
-  AddAutofillProfilesToTable({local});
-
-  // Remote data has a non default validity state bitfield value.
-  AutofillProfileSpecifics remote = CreateAutofillProfileSpecifics(kGuidA);
-  remote.set_validity_state_bitfield(kValidityStateBitfield);
-  ASSERT_TRUE(remote.has_validity_state_bitfield());
-
-  // No update to sync, the validity bitfield should be stored to local.
-  EXPECT_CALL(mock_processor(), Put).Times(0);
-  EXPECT_CALL(*backend(), CommitChanges());
-  StartSyncing({remote});
-  EXPECT_THAT(GetAllLocalData(), ElementsAre(CreateAutofillProfile(remote)));
-}
-
-// Local validity state bitfield should be overwritten by sync.
-TEST_F(AutofillProfileSyncBridgeTest,
-       RemoteWithSameGuid_ValidityState_ExistingRemoteWinsOverExistingLocal) {
-  AutofillProfile local(kGuidA, AutofillProfile::RecordType::kLocalOrSyncable,
-                        i18n_model_definition::kLegacyHierarchyCountryCode);
-  AddAutofillProfilesToTable({local});
-
-  // Remote data has a non default validity state bitfield value.
-  AutofillProfileSpecifics remote = CreateAutofillProfileSpecifics(kGuidA);
-  remote.set_validity_state_bitfield(kValidityStateBitfield);
-  ASSERT_TRUE(remote.has_validity_state_bitfield());
-
-  // No update to sync, the remote validity bitfield should overwrite local.
-  EXPECT_CALL(mock_processor(), Put).Times(0);
-  EXPECT_CALL(*backend(), CommitChanges());
-  StartSyncing({remote});
-  EXPECT_THAT(GetAllLocalData(), ElementsAre(CreateAutofillProfile(remote)));
-}
-
-// Sync data without a default validity state bitfield should not overwrite
-// an existing validity state bitfield in local autofill profile.
-TEST_F(AutofillProfileSyncBridgeTest,
-       RemoteWithSameGuid_ValidityState_ExistingLocalWinsOverMissingRemote) {
-  AutofillProfile local(kGuidA, AutofillProfile::RecordType::kLocalOrSyncable,
-                        i18n_model_definition::kLegacyHierarchyCountryCode);
-  AddAutofillProfilesToTable({local});
-
-  // Remote data has a non default validity state bitfield value.
-  AutofillProfileSpecifics remote = CreateAutofillProfileSpecifics(kGuidA);
-  remote.add_name_first("John");
-  ASSERT_FALSE(remote.has_validity_state_bitfield());
-
-  // Expect local autofill profile to still have the validity state after.
-  AutofillProfile merged(local);
-  merged.SetRawInfo(NAME_FIRST, u"John");
-  merged.FinalizeAfterImport();
-
-  // No update to sync, the local validity bitfield should stay untouched.
   EXPECT_CALL(mock_processor(), Put).Times(0);
   EXPECT_CALL(*backend(), CommitChanges());
   StartSyncing({remote});

@@ -451,24 +451,3 @@ message AutofillUploadContents {
   reserved 5;
   reserved "Field";
 }
-
-// This proto contains information about the validity of each field in an
-// autofill profile. It is used to transfer the results of running the profile
-// validation pipeline on the server side to the client via ChromeSync
-// PriorityPreferences. An identical copy of this proto is maintained in
-// the server code base.
-message ProfileValidityMap {
-  // Map from autofill type to the validity of its value in the profile.
-  //
-  // Key should be one of the enum values from FieldType. Values should be
-  // from the AutofillProfile::ValidityState. Plain integers are used
-  // instead of enums because proto2 treats unknown enum values as unknown
-  // fields, which is confusing when the enums are in maps.
-  map<int32, int32> field_validity_states = 1;
-}
-
-// Map from profile GUIDs to profile validity maps for that profile. Each
-// message should contain entries for all profiles from a single user.
-message UserProfileValidityMap {
-  map<string, ProfileValidityMap> profile_validity = 1;
-}
