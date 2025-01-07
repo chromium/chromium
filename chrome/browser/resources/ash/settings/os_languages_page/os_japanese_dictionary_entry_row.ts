@@ -16,6 +16,13 @@ import type {JapaneseDictionaryEntry} from '../mojom-webui/user_data_japanese_di
 import {getTemplate} from './os_japanese_dictionary_entry_row.html.js';
 import {UserDataServiceProvider} from './user_data_service_provider.js';
 
+
+interface OsJapaneseDictionaryEntryRowElement {
+  $: {
+    posDropdownMenu: HTMLSelectElement,
+  };
+}
+
 class OsJapaneseDictionaryEntryRowElement extends PolymerElement {
   static get is() {
     return 'os-japanese-dictionary-entry-row' as const;
@@ -68,6 +75,13 @@ class OsJapaneseDictionaryEntryRowElement extends PolymerElement {
 
   private saveComment_(e: Event): void {
     this.entry.comment = (e.target as CrInputElement).value;
+    this.saveEntryToDictionary_();
+  }
+
+  private onOptionChanged_(): void {
+    const selected = this.$.posDropdownMenu.value;
+
+    this.entry.pos = Number(selected);
     this.saveEntryToDictionary_();
   }
 

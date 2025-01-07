@@ -45,12 +45,58 @@
      on-change="saveWord_"></cr-input>
   <div class="category-div" >
     <div class="cr-form-field-label category-label">Category</div>
-    <!-- TODO(b/340393256): Make these options match actual POS values -->
-    <select class="md-select" class="entry-input">
-      <option>ENTRY ROW ELEM POS Type 1</option>
-      <option>POS Type 2</option>
-      <option>POS Type 3</option>
-      <option selected>POS Type 4</option>
+    <!--
+      These Japanese terms are not translated on purpose since they are technical linguistic terms
+      The option values needs to corresponds to the int value of the mojo enum JpPosType.
+    -->
+    <select id="posDropdownMenu" class="md-select" class="entry-input" on-change="onOptionChanged_">
+       <!-- LINT.IfChange(JpPosType) -->
+       <option value="0" selected>品詞なし</option>
+       <option value="1">名詞</option>
+       <option value="2">短縮よみ</option>
+       <option value="3">サジェストのみ</option>
+       <option value="4">固有名詞</option>
+       <option value="5">人名</option>
+       <option value="6">姓</option>
+       <option value="7">名</option>
+       <option value="8">組織</option>
+       <option value="9">地名</option>
+       <option value="10">名詞サ変</option>
+       <option value="11">名詞形動</option>
+       <option value="12">数</option>
+       <option value="13">アルファベット</option>
+       <option value="14">記号</option>
+       <option value="15">顔文字</option>
+       <option value="16">副詞</option>
+       <option value="17">連体詞</option>
+       <option value="18">接続詞</option>
+       <option value="19">感動詞</option>
+       <option value="20">接頭語</option>
+       <option value="21">助数詞</option>
+       <option value="22">接尾一般</option>
+       <option value="23">接尾人名</option>
+       <option value="24">接尾地名</option>
+       <option value="25">動詞ワ行五段</option>
+       <option value="26">動詞カ行五段</option>
+       <option value="27">動詞サ行五段</option>
+       <option value="28">動詞タ行五段</option>
+       <option value="29">動詞ナ行五段</option>
+       <option value="30">動詞マ行五段</option>
+       <option value="31">動詞ラ行五段</option>
+       <option value="32">動詞ガ行五段</option>
+       <option value="33">動詞バ行五段</option>
+       <option value="34">動詞ハ行四段</option>
+       <option value="35">動詞一段</option>
+       <option value="36">動詞カ変</option>
+       <option value="37">動詞サ変</option>
+       <option value="38">動詞ザ変</option>
+       <option value="39">動詞ラ変</option>
+       <option value="40">形容詞</option>
+       <option value="41">終助詞</option>
+       <option value="42">句読点</option>
+       <option value="43">独立語</option>
+       <option value="44">抑制単語</option>
+       <!-- LINT.ThenChange(//chromeos/ash/services/ime/public/mojom/user_data_japanese_dictionary.mojom:JpPosType) -->
     </select>
   </div>
   <cr-input value="[[entry.comment]]"
