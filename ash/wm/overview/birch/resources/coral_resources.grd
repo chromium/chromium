@@ -9,6 +9,7 @@
   <release seq="1">
     <structures>
       <structure type="lottie" name="IDR_CORAL_LOADING_TITLE_ANIMATION" file="coral_title.json" compress="gzip" />
+      <structure type="lottie" name="IDR_CORAL_BORDER_ANIMATION" file="coral_border.json" compress="gzip" />
       </structures>
   </release>
 </grit>

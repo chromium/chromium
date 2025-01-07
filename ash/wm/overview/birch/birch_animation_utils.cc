@@ -16,8 +16,7 @@ namespace {
 constexpr char kLoadingAnimationRestartMarker[] =
     "_CrOS_Marker_CycleRestart_Line";
 
-base::TimeDelta GetCycleRestartTimestamp(const cc::SkottieWrapper& skottie,
-                                         int animation_id) {
+base::TimeDelta GetCycleRestartTimestamp(const cc::SkottieWrapper& skottie) {
   CHECK(skottie.is_valid());
   CHECK_EQ(skottie.GetAllMarkers().size(), 1u);
 
@@ -45,12 +44,11 @@ std::unique_ptr<lottie::Animation> GetLottieAnimationData(int animation_id) {
 }
 
 std::optional<lottie::Animation::PlaybackConfig> GetLottiePlaybackConfig(
-    const cc::SkottieWrapper& skottie,
-    int animation_id) {
+    const cc::SkottieWrapper& skottie) {
   auto animation_duration = base::Seconds(skottie.duration());
   return lottie::Animation::PlaybackConfig(
       {{base::TimeDelta(), animation_duration},
-       {GetCycleRestartTimestamp(skottie, animation_id), animation_duration}},
+       {GetCycleRestartTimestamp(skottie), animation_duration}},
       /*initial_offset=*/base::TimeDelta(),
       /*initial_completed_cycles=*/0, lottie::Animation::Style::kLoop);
 }

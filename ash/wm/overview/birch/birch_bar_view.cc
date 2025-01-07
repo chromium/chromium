@@ -416,8 +416,11 @@ std::unique_ptr<BirchChipButtonBase> BirchBarView::CreateChipForItem(
       item->GetType() == BirchItemType::kCoral
           ? std::make_unique<CoralChipButton>()
           : std::make_unique<BirchChipButton>();
-  chip->Init(item);
+
+  // Setting preferred size ahead since the preferred size may be needed during
+  // initialization.
   chip->SetPreferredSize(chip_size_);
+  chip->Init(item);
   return chip;
 }
 

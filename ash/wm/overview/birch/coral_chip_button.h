@@ -6,6 +6,7 @@
 #define ASH_WM_OVERVIEW_BIRCH_CORAL_CHIP_BUTTON_H_
 
 #include "ash/wm/overview/birch/birch_chip_button.h"
+#include "base/timer/timer.h"
 
 namespace views {
 class AnimatedImageView;
@@ -55,7 +56,16 @@ class ASH_EXPORT CoralChipButton : public BirchChipButton {
   // Builds `title_loading_animated_image_`.
   void BuildTitleLoadingAnimation();
 
+  // Builds `rainbow_border_animated_image_`.
+  void BuildBorderAnimation();
+
+  // Destroys `rainbow_border_animated_image_`.
+  void DestroyBorderAnimation();
+
   raw_ptr<views::AnimatedImageView> title_loading_animated_image_ = nullptr;
+  raw_ptr<views::AnimatedImageView> rainbow_border_animated_image_ = nullptr;
+
+  base::OneShotTimer stop_border_animation_timer_;
 
   // The selection menu to select tabs and apps for coral launching. Created
   // once the coral add on button is clicked.

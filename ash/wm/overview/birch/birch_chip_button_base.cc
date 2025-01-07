@@ -50,6 +50,10 @@ void BirchChipButtonBase::UpdateRoundedCorners(bool selection_widget_visible) {
   StyleUtil::SetUpFocusRingForView(this);
 }
 
+int BirchChipButtonBase::GetRoundedCornerRadius() const {
+  return kRoundedCornerRadius;
+}
+
 BEGIN_METADATA(BirchChipButtonBase)
 END_METADATA
 
