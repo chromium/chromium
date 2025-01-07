@@ -42,11 +42,13 @@ namespace {
 class UpdaterObserver : public DYNAMICIIDSIMPL(IUpdaterObserver) {
  public:
   UpdaterObserver(
+      UpdaterScope scope,
       base::RepeatingCallback<void(const UpdateService::UpdateState&)>
           state_update_callback,
       base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
           callback)
-      : state_update_callback_(state_update_callback),
+      : DYNAMICIIDSIMPL(IUpdaterObserver)(scope),
+        state_update_callback_(state_update_callback),
         callback_(std::move(callback)) {}
   UpdaterObserver(const UpdaterObserver&) = delete;
   UpdaterObserver& operator=(const UpdaterObserver&) = delete;
@@ -229,11 +231,15 @@ class UpdaterObserver : public DYNAMICIIDSIMPL(IUpdaterObserver) {
 class UpdaterCallback : public DYNAMICIIDSIMPL(IUpdaterCallback) {
  public:
   explicit UpdaterCallback(
+      UpdaterScope scope,
       base::OnceCallback<void(base::expected<LONG, RpcError>)> callback)
-      : callback_(std::move(callback)) {}
+      : DYNAMICIIDSIMPL(IUpdaterCallback)(scope),
+        callback_(std::move(callback)) {}
   explicit UpdaterCallback(
+      UpdaterScope scope,
       base::OnceCallback<void(base::expected<int, RpcError>)> callback)
-      : callback_(base::BindOnce(
+      : DYNAMICIIDSIMPL(IUpdaterCallback)(scope),
+        callback_(base::BindOnce(
             [](base::OnceCallback<void(base::expected<int, RpcError>)> callback,
                base::expected<LONG, RpcError> result) {
               std::move(callback).Run(
@@ -274,10 +280,12 @@ class UpdaterAppStatesCallback
     : public DYNAMICIIDSIMPL(IUpdaterAppStatesCallback) {
  public:
   explicit UpdaterAppStatesCallback(
+      UpdaterScope scope,
       base::OnceCallback<
           void(base::expected<std::vector<UpdateService::AppState>, RpcError>)>
           callback)
-      : callback_(std::move(callback)) {}
+      : DYNAMICIIDSIMPL(IUpdaterAppStatesCallback)(scope),
+        callback_(std::move(callback)) {}
   UpdaterAppStatesCallback(const UpdaterAppStatesCallback&) = delete;
   UpdaterAppStatesCallback& operator=(const UpdaterAppStatesCallback&) = delete;
 
@@ -592,7 +600,7 @@ class UpdateServiceProxyImplImpl
       return;
     }
     auto callback_wrapper =
-        MakeComObjectOrCrash<UpdaterCallback>(std::move(callback));
+        MakeComObjectOrCrash<UpdaterCallback>(scope(), std::move(callback));
     if (HRESULT hr = get_interface()->FetchPolicies(callback_wrapper.Get());
         FAILED(hr)) {
       VLOG(2) << "Failed to call IUpdater::FetchPolicies: " << std::hex << hr;
@@ -646,7 +654,7 @@ class UpdateServiceProxyImplImpl
     }
 
     auto callback_wrapper =
-        MakeComObjectOrCrash<UpdaterCallback>(std::move(callback));
+        MakeComObjectOrCrash<UpdaterCallback>(scope(), std::move(callback));
     if (interface2_) {
       if (HRESULT hr = interface2_->RegisterApp2(
               app_id_w.c_str(), brand_code_w.c_str(), brand_path_w.c_str(),
@@ -679,8 +687,8 @@ class UpdateServiceProxyImplImpl
       std::move(callback).Run(base::unexpected(hr));
       return;
     }
-    auto callback_wrapper =
-        MakeComObjectOrCrash<UpdaterAppStatesCallback>(std::move(callback));
+    auto callback_wrapper = MakeComObjectOrCrash<UpdaterAppStatesCallback>(
+        scope(), std::move(callback));
     if (HRESULT hr = get_interface()->GetAppStates(callback_wrapper.Get());
         FAILED(hr)) {
       VLOG(2) << "Failed to call IUpdater::GetAppStates: " << std::hex << hr;
@@ -697,7 +705,7 @@ class UpdateServiceProxyImplImpl
       return;
     }
     auto callback_wrapper =
-        MakeComObjectOrCrash<UpdaterCallback>(std::move(callback));
+        MakeComObjectOrCrash<UpdaterCallback>(scope(), std::move(callback));
     if (HRESULT hr = get_interface()->RunPeriodicTasks(callback_wrapper.Get());
         FAILED(hr)) {
       VLOG(2) << "Failed to call IUpdater::RunPeriodicTasks " << std::hex << hr;
@@ -732,7 +740,7 @@ class UpdateServiceProxyImplImpl
       return;
     }
 
-    auto observer = MakeComObjectOrCrash<UpdaterObserver>(state_update,
+    auto observer = MakeComObjectOrCrash<UpdaterObserver>(scope(), state_update,
                                                           std::move(callback));
     if (interface2_) {
       HRESULT hr = interface2_->CheckForUpdate2(
@@ -799,7 +807,7 @@ class UpdateServiceProxyImplImpl
       return;
     }
 
-    auto observer = MakeComObjectOrCrash<UpdaterObserver>(state_update,
+    auto observer = MakeComObjectOrCrash<UpdaterObserver>(scope(), state_update,
                                                           std::move(callback));
     if (interface2_) {
       HRESULT hr = interface2_->Update2(
@@ -838,7 +846,7 @@ class UpdateServiceProxyImplImpl
       std::move(callback).Run(base::unexpected(hr));
       return;
     }
-    auto observer = MakeComObjectOrCrash<UpdaterObserver>(state_update,
+    auto observer = MakeComObjectOrCrash<UpdaterObserver>(scope(), state_update,
                                                           std::move(callback));
     if (HRESULT hr = get_interface()->UpdateAll(observer.Get()); FAILED(hr)) {
       VLOG(2) << "Failed to call IUpdater::UpdateAll: " << std::hex << hr;
@@ -914,7 +922,7 @@ class UpdateServiceProxyImplImpl
       std::move(callback).Run(UpdateService::Result::kServiceFailed);
       return;
     }
-    auto observer = MakeComObjectOrCrash<UpdaterObserver>(state_update,
+    auto observer = MakeComObjectOrCrash<UpdaterObserver>(scope(), state_update,
                                                           std::move(callback));
     if (interface2_) {
       HRESULT hr = interface2_->Install2(
@@ -1002,7 +1010,7 @@ class UpdateServiceProxyImplImpl
       return;
     }
 
-    auto observer = MakeComObjectOrCrash<UpdaterObserver>(state_update,
+    auto observer = MakeComObjectOrCrash<UpdaterObserver>(scope(), state_update,
                                                           std::move(callback));
     if (interface2_) {
       HRESULT hr = interface2_->RunInstaller2(

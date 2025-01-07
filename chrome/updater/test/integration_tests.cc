@@ -1715,6 +1715,58 @@ TEST_F(IntegrationTest, GetAppStates_AppIdsAlwaysLowercase) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
+TEST_F(IntegrationTest, CreateCorrectAndIncorrectScopeProxies) {
+  ScopedServer test_server(test_commands_);
+  ASSERT_NO_FATAL_FAILURE(Install());
+
+  const std::string kAppId("test");
+  const base::Version v1("0.1");
+  ASSERT_NO_FATAL_FAILURE(InstallApp(kAppId));
+
+  ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kAppId, v1));
+
+  ASSERT_NO_FATAL_FAILURE(ExpectUpdateCheckSequence(
+      &test_server, kAppId, UpdateService::Priority::kForeground,
+      base::Version("0.1"), base::Version("1")));
+
+  // Proxy created with the correct scope.
+  {
+    scoped_refptr<UpdateService> update_service =
+        CreateUpdateServiceProxy(GetUpdaterScopeForTesting());
+    base::RunLoop loop;
+    update_service->CheckForUpdate(
+        kAppId, UpdateService::Priority::kForeground,
+        UpdateService::PolicySameVersionUpdate::kNotAllowed,
+        /*language=*/{}, base::DoNothing(),
+        base::BindLambdaForTesting(
+            [&loop](UpdateService::Result result_unused) { loop.Quit(); }));
+    loop.Run();
+  }
+
+  // Proxy created with the opposite of what `GetUpdaterScopeForTesting`
+  // returns.
+  {
+    scoped_refptr<UpdateService> update_service = CreateUpdateServiceProxy(
+        IsSystemInstall(GetUpdaterScopeForTesting()) ? UpdaterScope::kUser
+                                                     : UpdaterScope::kSystem);
+    base::RunLoop loop;
+    update_service->CheckForUpdate(
+        kAppId, UpdateService::Priority::kForeground,
+        UpdateService::PolicySameVersionUpdate::kNotAllowed,
+        /*language=*/{}, base::DoNothing(),
+        base::BindLambdaForTesting([&loop](UpdateService::Result result) {
+          EXPECT_TRUE(result == UpdateService::Result::kServiceFailed ||
+                      result == UpdateService::Result::kIPCConnectionFailed)
+              << "result == " << result;
+          loop.Quit();
+        }));
+    loop.Run();
+  }
+
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
 TEST_F(IntegrationTest, UnregisterUninstalledApp) {
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());

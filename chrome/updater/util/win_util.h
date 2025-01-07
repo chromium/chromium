@@ -119,20 +119,25 @@ using WrlRuntimeClass = Microsoft::WRL::RuntimeClass<
 template <typename Interface, REFIID iid_user, REFIID iid_system>
 class DynamicIIDsImpl : public internal::WrlRuntimeClass<Interface> {
  public:
-  DynamicIIDsImpl() {
+  explicit DynamicIIDsImpl(UpdaterScope scope) : scope_(scope) {
     VLOG(3) << __func__ << ": Interface: " << typeid(Interface).name()
             << ": iid_user: " << StringFromGuid(iid_user)
             << ": iid_system: " << StringFromGuid(iid_system)
-            << ": IsSystemInstall(): " << IsSystemInstall();
+            << ": scope: " << scope;
   }
+
+  DynamicIIDsImpl() : DynamicIIDsImpl(GetUpdaterScope()) {}
 
   IFACEMETHODIMP QueryInterface(REFIID riid, void** object) override {
     return internal::WrlRuntimeClass<Interface>::QueryInterface(
-        riid == (IsSystemInstall() ? iid_system : iid_user)
+        riid == (IsSystemInstall(scope_) ? iid_system : iid_user)
             ? __uuidof(Interface)
             : riid,
         object);
   }
+
+ private:
+  const UpdaterScope scope_;
 };
 
 // Macro that makes it easier to derive from `DynamicIIDsImpl`.

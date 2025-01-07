@@ -121,6 +121,8 @@ class ProxyImplBase {
     return interface_.value();
   }
 
+  UpdaterScope scope() const { return scope_; }
+
   HRESULT ConnectToServer() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (interface_.has_value()) {
