@@ -8939,3 +8939,7 @@ crbug.com/385571958 virtual/gpu-rasterization/external/wpt/css/css-images/object
 
 # Gardener 2024-12-27
 crbug.com/386349197 external/wpt/css/css-masking/clip-path/clip-path-inline-005.html [ Failure Pass ]
+
+# Gardener 2025-01-07
+crbug.com/388188842 external/wpt/html/semantics/forms/the-select-element/customizable-select/select-home-end-pagedown-pageup-detailed.optional.html [ Failure Pass Timeout ]
+crbug.com/388188842 external/wpt/html/semantics/forms/the-select-element/customizable-select/select-home-end-pagedown-pageup.tentative.html [ Failure Pass Timeout ]
