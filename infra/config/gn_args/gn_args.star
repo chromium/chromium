@@ -1099,13 +1099,6 @@ gn_args.config(
 )
 
 gn_args.config(
-    name = "pgo_phase_0",
-    args = {
-        "chrome_pgo_phase": 0,
-    },
-)
-
-gn_args.config(
     name = "pgo_phase_1",
     args = {
         "chrome_pgo_phase": 1,
