@@ -73,7 +73,6 @@ include_rules = [
   "+chrome/browser/ui/webui/ash/slow",
   "+chrome/browser/ui/webui/ash/smb_shares",
   "+chrome/browser/ui/webui/ash/sys_internals",
-  "+chrome/browser/ui/webui/ash/vc_tray_tester",
   "+chrome/browser/ui/webui/ash/vm",
   "+chrome/browser/ui/webui/chromeos/chrome_url_disabled",
   "+chrome/browser/ui/webui/nearby_internals",

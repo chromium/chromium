@@ -61,7 +61,6 @@ bool IsSystemWebUIHost(std::string_view host) {
       kChromeUISetTimeHost,
       kChromeUISmbCredentialsHost,
       kChromeUISmbShareHost,
-      kChromeUIVcTrayTesterHost,
   });
 
   return kHosts.contains(host);

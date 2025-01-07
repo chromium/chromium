@@ -336,10 +336,6 @@
     "META": {"sizes": {"includes": [10],}},
     "includes": [3660],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/vc_tray_tester/resources.grd": {
-    "META": {"sizes": {"includes": [5]}},
-    "includes": [3680],
-  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/vm/resources.grd": {
     "META": {"sizes": {"includes": [5],}},
     "includes": [3690],

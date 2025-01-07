@@ -475,8 +475,6 @@ inline constexpr char kChromeUIUrgentPasswordExpiryNotificationHost[] =
 inline constexpr char kChromeUIUrgentPasswordExpiryNotificationUrl[] =
     "chrome://urgent-password-expiry-notification/";
 inline constexpr char kChromeUIUserImageHost[] = "userimage";
-inline constexpr char kChromeUIVcTrayTesterHost[] = "vc-tray-tester";
-inline constexpr char kChromeUIVcTrayTesterURL[] = "chrome://vc-tray-tester";
 inline constexpr char kChromeUIVmHost[] = "vm";
 
 // Returns true if this web UI is part of the "system UI". Generally this is
