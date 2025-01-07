@@ -28,7 +28,6 @@ if (is_ios) {
 
 if (is_chromeos) {
   mojo_js_files = [
-    "chromeos/ash/components/multidevice/mojom/multidevice_types.mojom-webui.js",
     "mojo/public/mojom/base/absl_status.mojom-webui.js",
     "mojo/public/mojom/base/big_string.mojom-webui.js",
     "mojo/public/mojom/base/big_buffer.mojom-webui.js",
@@ -50,12 +49,13 @@ if (is_chromeos) {
   ]
 
   mojo_ts_files += [
-    "chromeos/ash/services/device_sync/public/mojom/device_sync.mojom-webui.ts",
+    "chromeos/ash/components/multidevice/mojom/multidevice_types.mojom-webui.ts",
     "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.ts",
     "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.ts",
     "chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom-webui.ts",
     "chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.ts",
     "chromeos/ash/services/connectivity/public/mojom/passpoint.mojom-webui.ts",
+    "chromeos/ash/services/device_sync/public/mojom/device_sync.mojom-webui.ts",
     "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom-webui.ts",
     "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-webui.ts",
     "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.ts",
@@ -115,6 +115,7 @@ preprocess_if_expr("copy_mojo_ts") {
 
   if (is_chromeos) {
     deps += [
+      "//chromeos/ash/components/multidevice/mojom:mojom_ts__generator",
       "//chromeos/ash/services/auth_factor_config/public/mojom:mojom_ts__generator",
       "//chromeos/ash/services/bluetooth_config/public/mojom:mojom_ts__generator",
       "//chromeos/ash/services/cellular_setup/public/mojom:mojom_ts__generator",
@@ -150,7 +151,6 @@ if (is_chromeos) {
     in_files = mojo_js_files
 
     deps = [
-      "//chromeos/ash/components/multidevice/mojom:mojom_js__generator",
       "//mojo/public/mojom/base:base_js__generator",
       "//services/network/public/mojom:mojom_ip_address_js__generator",
       "//url/mojom:url_mojom_gurl_js__generator",
