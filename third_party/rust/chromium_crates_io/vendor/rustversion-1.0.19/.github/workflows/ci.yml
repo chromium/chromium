@@ -40,6 +40,7 @@ jobs:
         with:
           name: Cargo.lock
           path: Cargo.lock
+        continue-on-error: true
 
   windows:
     name: Windows

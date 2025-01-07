@@ -18,79 +18,86 @@
 //! # Selectors
 //!
 //! - <p style="margin-left:50px;text-indent:-50px">
-//!   <b><code>#[rustversion::stable]</code></b>
+//!   <b><code style="display:inline">#[rustversion::stable]</code></b>
 //!   —<br>
 //!   True on any stable compiler.
 //!   </p>
 //!
 //! - <p style="margin-left:50px;text-indent:-50px">
-//!   <b><code>#[rustversion::stable(1.34)]</code></b>
+//!   <b><code style="display:inline">#[rustversion::stable(1.34)]</code></b>
 //!   —<br>
 //!   True on exactly the specified stable compiler.
 //!   </p>
 //!
 //! - <p style="margin-left:50px;text-indent:-50px">
-//!   <b><code>#[rustversion::beta]</code></b>
+//!   <b><code style="display:inline">#[rustversion::beta]</code></b>
 //!   —<br>
 //!   True on any beta compiler.
 //!   </p>
 //!
 //! - <p style="margin-left:50px;text-indent:-50px">
-//!   <b><code>#[rustversion::nightly]</code></b>
+//!   <b><code style="display:inline">#[rustversion::nightly]</code></b>
 //!   —<br>
 //!   True on any nightly compiler or dev build.
 //!   </p>
 //!
 //! - <p style="margin-left:50px;text-indent:-50px">
-//!   <b><code>#[rustversion::nightly(2019-01-01)]</code></b>
+//!   <b><code style="display:inline">#[rustversion::nightly(2019-01-01)]</code></b>
 //!   —<br>
 //!   True on exactly one nightly.
 //!   </p>
 //!
 //! - <p style="margin-left:50px;text-indent:-50px">
-//!   <b><code>#[rustversion::since(1.34)]</code></b>
+//!   <b><code style="display:inline">#[rustversion::since(1.34)]</code></b>
 //!   —<br>
 //!   True on that stable release and any later compiler, including beta and
 //!   nightly.
 //!   </p>
 //!
 //! - <p style="margin-left:50px;text-indent:-50px">
-//!   <b><code>#[rustversion::since(2019-01-01)]</code></b>
+//!   <b><code style="display:inline">#[rustversion::since(2019-01-01)]</code></b>
 //!   —<br>
 //!   True on that nightly and all newer ones.
 //!   </p>
 //!
 //! - <p style="margin-left:50px;text-indent:-50px">
-//!   <b><code>#[rustversion::before(</code></b><i>version or date</i><b><code>)]</code></b>
+//!   <b><code style="display:inline">#[rustversion::before(</code></b><i>version or date</i><b><code style="display:inline">)]</code></b>
 //!   —<br>
 //!   Negative of <i>#[rustversion::since(...)]</i>.
 //!   </p>
 //!
 //! - <p style="margin-left:50px;text-indent:-50px">
-//!   <b><code>#[rustversion::not(</code></b><i>selector</i><b><code>)]</code></b>
+//!   <b><code style="display:inline">#[rustversion::not(</code></b><i>selector</i><b><code style="display:inline">)]</code></b>
 //!   —<br>
 //!   Negative of any selector; for example <i>#[rustversion::not(nightly)]</i>.
 //!   </p>
 //!
 //! - <p style="margin-left:50px;text-indent:-50px">
-//!   <b><code>#[rustversion::any(</code></b><i>selectors...</i><b><code>)]</code></b>
+//!   <b><code style="display:inline">#[rustversion::any(</code></b><i>selectors...</i><b><code style="display:inline">)]</code></b>
 //!   —<br>
 //!   True if any of the comma-separated selectors is true; for example
 //!   <i>#[rustversion::any(stable, beta)]</i>.
 //!   </p>
 //!
 //! - <p style="margin-left:50px;text-indent:-50px">
-//!   <b><code>#[rustversion::all(</code></b><i>selectors...</i><b><code>)]</code></b>
+//!   <b><code style="display:inline">#[rustversion::all(</code></b><i>selectors...</i><b><code style="display:inline">)]</code></b>
 //!   —<br>
 //!   True if all of the comma-separated selectors are true; for example
 //!   <i>#[rustversion::all(since(1.31), before(1.34))]</i>.
 //!   </p>
 //!
 //! - <p style="margin-left:50px;text-indent:-50px">
-//!   <b><code>#[rustversion::attr(</code></b><i>selector</i><b><code>, </code></b><i>attribute</i><b><code>)]</code></b>
+//!   <b><code style="display:inline">#[rustversion::attr(</code></b><i>selector</i><b><code style="display:inline">, </code></b><i>attribute</i><b><code style="display:inline">)]</code></b>
 //!   —<br>
 //!   For conditional inclusion of attributes; analogous to
-//!   <code>cfg_attr</code>.
+//!   <code style="display:inline">cfg_attr</code>.
+//!   </p>
+//!
+//! - <p style="margin-left:50px;text-indent:-50px">
+//!   <b><code style="display:inline">rustversion::cfg!(</code></b><i>selector</i><b><code style="display:inline">)</code></b>
+//!   —<br>
+//!   An expression form of any of the above attributes; for example
+//!   <i>if rustversion::cfg!(any(stable, beta)) { ... }</i>.
 //!   </p>
 //!
 //! <br>
@@ -143,9 +150,32 @@
 //! }
 //! ```
 //!
+//! Emitting Cargo cfg directives from a build script. Note that this requires
+//! listing `rustversion` under `[build-dependencies]` in Cargo.toml, not
+//! `[dependencies]`.
+//!
+//! ```
+//! // build.rs
+//!
+//! fn main() {
+//!     if rustversion::cfg!(since(1.36)) {
+//!         println!("cargo:rustc-cfg=no_std");
+//!     }
+//! }
+//! ```
+//!
+//! ```
+//! // src/lib.rs
+//!
+//! #![cfg_attr(no_std, no_std)]
+//!
+//! #[cfg(no_std)]
+//! extern crate alloc;
+//! ```
+//!
 //! <br>
 
-#![doc(html_root_url = "https://docs.rs/rustversion/1.0.18")]
+#![doc(html_root_url = "https://docs.rs/rustversion/1.0.19")]
 #![allow(
     clippy::cast_lossless,
     clippy::cast_possible_truncation,

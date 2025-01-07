@@ -1,9 +1,9 @@
 Name: rustversion
 URL: https://crates.io/crates/rustversion
-Version: 1.0.18
-Revision: 04f18461f03f7586b32238529b3e6c4731e63db5
+Version: 1.0.19
+Revision: 9ef9df29942a4ef9f6e45579da07efcaadb16f29
 License: Apache-2.0
-License File: //third_party/rust/chromium_crates_io/vendor/rustversion-1.0.18/LICENSE-APACHE
+License File: //third_party/rust/chromium_crates_io/vendor/rustversion-1.0.19/LICENSE-APACHE
 Shipped: yes
 Security Critical: yes
 

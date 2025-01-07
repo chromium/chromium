@@ -13,7 +13,7 @@
 edition = "2018"
 rust-version = "1.31"
 name = "rustversion"
-version = "1.0.18"
+version = "1.0.19"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = "build/build.rs"
 autolib = false
