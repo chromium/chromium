@@ -27,10 +27,6 @@
                 "async": ["enable", "takeComputedStyleUpdates"]
             },
             {
-                "domain": "Database",
-                "async": ["executeSQL"]
-            },
-            {
                 "domain": "DeviceOrientation"
             },
             {

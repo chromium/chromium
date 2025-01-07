@@ -419,11 +419,6 @@ SQLTransactionCoordinator* Database::TransactionCoordinator() const {
   return GetDatabaseContext()->GetDatabaseThread()->TransactionCoordinator();
 }
 
-// static
-const char* Database::DatabaseInfoTableName() {
-  return kInfoTableName;
-}
-
 void Database::CloseDatabase() {
   if (!opened_.load(std::memory_order_relaxed))
     return;
@@ -868,49 +863,6 @@ void Database::ScheduleTransactionCallback(SQLTransaction* transaction) {
       *GetDatabaseTaskRunner(), FROM_HERE,
       CrossThreadBindOnce(&SQLTransaction::PerformPendingCallback,
                           WrapCrossThreadPersistent(transaction)));
-}
-
-Vector<String> Database::PerformGetTableNames() {
-  DisableAuthorizer();
-
-  SQLiteStatement statement(
-      SqliteDatabase(), "SELECT name FROM sqlite_master WHERE type='table';");
-  if (statement.Prepare() != kSQLResultOk) {
-    DLOG(ERROR) << "Unable to retrieve list of tables for database "
-                << DatabaseDebugName();
-    EnableAuthorizer();
-    return Vector<String>();
-  }
-
-  Vector<String> table_names;
-  int result;
-  while ((result = statement.Step()) == kSQLResultRow) {
-    String name = statement.GetColumnText(0);
-    if (name != DatabaseInfoTableName())
-      table_names.push_back(name);
-  }
-
-  EnableAuthorizer();
-
-  if (result != kSQLResultDone) {
-    DLOG(ERROR) << "Error getting tables for database " << DatabaseDebugName();
-    return Vector<String>();
-  }
-
-  return table_names;
-}
-
-Vector<String> Database::TableNames() {
-  Vector<String> result;
-  base::WaitableEvent event;
-  if (!GetDatabaseContext()->DatabaseThreadAvailable())
-    return result;
-
-  auto task = std::make_unique<DatabaseTableNamesTask>(this, &event, result);
-  GetDatabaseContext()->GetDatabaseThread()->ScheduleTask(std::move(task));
-  event.Wait();
-
-  return result;
 }
 
 const SecurityOrigin* Database::GetSecurityOrigin() const {
