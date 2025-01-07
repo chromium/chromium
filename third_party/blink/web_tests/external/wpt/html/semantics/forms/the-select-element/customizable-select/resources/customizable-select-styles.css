@@ -7,6 +7,9 @@
 }
 
 .customizable-select-popover {
+  position: fixed;
+  width: fit-content;
+  height: fit-content;
   box-sizing: border-box;
   border: 1px solid;
   padding: 0;
