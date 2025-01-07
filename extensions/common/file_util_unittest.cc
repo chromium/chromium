@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/common/file_util.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <optional>
 #include <string_view>
 #include <utility>
@@ -364,8 +360,8 @@ TEST_F(FileUtilTest, CheckIllegalFilenamesOnlyReserved) {
   base::ScopedTempDir temp;
   ASSERT_TRUE(temp.CreateUniqueTempDir());
 
-  static const base::FilePath::CharType* const folders[] = {
-      kLocaleFolder, kPlatformSpecificFolder};
+  static const auto folders = std::to_array<const base::FilePath::CharType*>(
+      {kLocaleFolder, kPlatformSpecificFolder});
 
   for (size_t i = 0; i < std::size(folders); i++) {
     base::FilePath src_path = temp.GetPath().Append(folders[i]);
@@ -716,29 +712,30 @@ TEST_F(FileUtilTest, ExtensionURLToRelativeFilePath) {
   struct TestCase {
     const char* url;
     const char* expected_relative_path;
-  } test_cases[] = {
-    {URL_PREFIX "simple.html", "simple.html"},
-    {URL_PREFIX "directory/to/file.html", "directory/to/file.html"},
-    {URL_PREFIX "escape%20spaces.html", "escape spaces.html"},
-    {URL_PREFIX "%C3%9Cber.html",
-     "\xC3\x9C"
-     "ber.html"},
-#if BUILDFLAG(IS_WIN)
-    {URL_PREFIX "C%3A/simple.html", ""},
-#endif
-    {URL_PREFIX "////simple.html", "simple.html"},
-    {URL_PREFIX "/simple.html", "simple.html"},
-    {URL_PREFIX "\\simple.html", "simple.html"},
-    {URL_PREFIX "\\\\foo\\simple.html", "foo/simple.html"},
-    // Escaped file paths result in failure.
-    {URL_PREFIX "..%2f..%2fsimple.html", ""},
-    // Escaped things that look like escaped file paths, on the other hand,
-    // should work.
-    {URL_PREFIX "..%252f..%252fsimple.html", "..%2f..%2fsimple.html"},
-    // This is a UTF-8 lock icon, which is unsafe to display in the omnibox, but
-    // is a valid, if unusual, file name.
-    {URL_PREFIX "%F0%9F%94%93.html", "\xF0\x9F\x94\x93.html"},
   };
+  auto test_cases = std::to_array<TestCase>({
+      {URL_PREFIX "simple.html", "simple.html"},
+      {URL_PREFIX "directory/to/file.html", "directory/to/file.html"},
+      {URL_PREFIX "escape%20spaces.html", "escape spaces.html"},
+      {URL_PREFIX "%C3%9Cber.html",
+       "\xC3\x9C"
+       "ber.html"},
+#if BUILDFLAG(IS_WIN)
+      {URL_PREFIX "C%3A/simple.html", ""},
+#endif
+      {URL_PREFIX "////simple.html", "simple.html"},
+      {URL_PREFIX "/simple.html", "simple.html"},
+      {URL_PREFIX "\\simple.html", "simple.html"},
+      {URL_PREFIX "\\\\foo\\simple.html", "foo/simple.html"},
+      // Escaped file paths result in failure.
+      {URL_PREFIX "..%2f..%2fsimple.html", ""},
+      // Escaped things that look like escaped file paths, on the other hand,
+      // should work.
+      {URL_PREFIX "..%252f..%252fsimple.html", "..%2f..%2fsimple.html"},
+      // This is a UTF-8 lock icon, which is unsafe to display in the omnibox,
+      // but is a valid, if unusual, file name.
+      {URL_PREFIX "%F0%9F%94%93.html", "\xF0\x9F\x94\x93.html"},
+  });
 #undef URL_PREFIX
 
   for (size_t i = 0; i < std::size(test_cases); ++i) {
