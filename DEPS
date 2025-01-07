@@ -2662,7 +2662,7 @@ deps = {
     Var('skia_git') + '/skia.git' + '@' +  Var('skia_revision'),
 
   'src/third_party/smhasher/src':
-    Var('chromium_git') + '/external/smhasher.git' + '@' + 'e87738e57558e0ec472b2fc3a643b838e5b6e88f',
+    Var('chromium_git') + '/external/smhasher.git' + '@' + '3e1f0d1d8340cfe136d33fd27c75eb7694148214',
 
   'src/third_party/snappy/src':
     Var('chromium_git') + '/external/github.com/google/snappy.git' + '@' + '32ded457c0b1fe78ceb8397632c416568d6714a0',
