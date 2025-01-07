@@ -1096,7 +1096,8 @@ void BidderWorklet::V8State::ReportWin(
     return;
   }
 
-  context_recycler.AddReportBindings();
+  context_recycler.AddReportBindings(
+      /*queue_report_aggregate_win_allowed=*/true);
   context_recycler.AddRegisterAdBeaconBindings();
   context_recycler.AddRegisterAdMacroBindings();
 

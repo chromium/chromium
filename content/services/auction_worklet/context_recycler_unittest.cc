@@ -790,7 +790,8 @@ TEST_F(ContextRecyclerTest, ReportBindings) {
   ContextRecycler context_recycler(helper_.get());
   {
     ContextRecyclerScope scope(context_recycler);  // Initialize context
-    context_recycler.AddReportBindings();
+    context_recycler.AddReportBindings(
+        /*queue_report_aggregate_win_allowed=*/false);
   }
 
   {
@@ -886,6 +887,238 @@ TEST_F(ContextRecyclerTest, ReportBindings) {
     EXPECT_FALSE(context_recycler.report_bindings()->report_url().has_value());
   }
   EXPECT_FALSE(context_recycler.report_bindings()->report_url().has_value());
+}
+
+class ContextRecyclerPrivateModelTrainingEnabledTest
+    : public ContextRecyclerTest {
+ public:
+  ContextRecyclerPrivateModelTrainingEnabledTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kFledgePrivateModelTraining);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Exercise ReportBindings, and make sure they reset properly.
+TEST_F(ContextRecyclerPrivateModelTrainingEnabledTest,
+       ReportBindingsQueueReportAggregateWin) {
+  const char kScript[] = R"(
+    function queueReportOnce(modelingSignalsConfig) {
+      queueReportAggregateWin({
+        modelingSignalsConfig: {
+          destination: modelingSignalsConfig.destination,
+          aggregationCoordinatorOrigin: modelingSignalsConfig.aggregationCoordinatorOrigin,
+          payloadLength: modelingSignalsConfig.payloadLength,
+        }
+      });
+    }
+
+    function queueReportTwice(modelingSignalsConfig) {
+      queueReportAggregateWin({
+        modelingSignalsConfig: {
+          destination: modelingSignalsConfig.destination,
+          aggregationCoordinatorOrigin: modelingSignalsConfig.aggregationCoordinatorOrigin,
+          payloadLength: modelingSignalsConfig.payloadLength,
+        }
+      });
+      queueReportAggregateWin({
+        modelingSignalsConfig: {
+          destination: modelingSignalsConfig.destination,
+          aggregationCoordinatorOrigin: modelingSignalsConfig.aggregationCoordinatorOrigin,
+          payloadLength: modelingSignalsConfig.payloadLength,
+        }
+      });
+    }
+  )";
+
+  v8::Local<v8::UnboundScript> script = Compile(kScript);
+  ASSERT_FALSE(script.IsEmpty());
+
+  ContextRecycler context_recycler(helper_.get());
+  {
+    ContextRecyclerScope scope(context_recycler);  // Initialize context
+    context_recycler.AddReportBindings(
+        /*queue_report_aggregate_win_allowed=*/true);
+  }
+
+  {
+    // Make sure an exception doesn't stick around between executions.
+    ContextRecyclerScope scope(context_recycler);
+    gin::Dictionary config_dict =
+        gin::Dictionary::CreateEmpty(helper_->isolate());
+    config_dict.Set("destination", std::string("invalid-url"));
+    config_dict.Set("aggregationCoordinatorOrigin",
+                    std::string("https://example.test"));
+    config_dict.Set("payloadLength", 256);
+    std::vector<std::string> error_msgs;
+    Run(scope, script, "queueReportOnce", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), config_dict));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre("https://example.test/script.js:3 Uncaught TypeError: "
+                    "modelingSignalsConfig's destination must be passed a "
+                    "valid HTTPS url."));
+  }
+
+  {
+    ContextRecyclerScope scope(context_recycler);
+    gin::Dictionary config_dict =
+        gin::Dictionary::CreateEmpty(helper_->isolate());
+    config_dict.Set("destination", std::string("https://example.destination"));
+    config_dict.Set("aggregationCoordinatorOrigin",
+                    std::string("https://example.origin"));
+    config_dict.Set("payloadLength", 256);
+    std::vector<std::string> error_msgs;
+    Run(scope, script, "queueReportOnce", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), config_dict));
+    EXPECT_THAT(error_msgs, ElementsAre());
+    ASSERT_TRUE(context_recycler.report_bindings()
+                    ->modeling_signals_config()
+                    .has_value());
+    EXPECT_EQ("https://example.destination/",
+              context_recycler.report_bindings()
+                  ->modeling_signals_config()
+                  ->destination.spec());
+    EXPECT_EQ("https://example.origin/",
+              context_recycler.report_bindings()
+                  ->modeling_signals_config()
+                  ->aggregation_coordinator_origin.spec());
+    EXPECT_EQ(uint32_t(256), context_recycler.report_bindings()
+                                 ->modeling_signals_config()
+                                 ->payload_length);
+  }
+  // Should already be cleared between executions.
+  EXPECT_FALSE(context_recycler.report_bindings()
+                   ->modeling_signals_config()
+                   .has_value());
+
+  // Calling queueReportAggregateWin() twice should result in an error.
+  {
+    ContextRecyclerScope scope(context_recycler);
+    gin::Dictionary config_dict =
+        gin::Dictionary::CreateEmpty(helper_->isolate());
+    config_dict.Set("destination", std::string("https://example.destination"));
+    config_dict.Set("aggregationCoordinatorOrigin",
+                    std::string("https://example.origin"));
+    config_dict.Set("payloadLength", 256);
+    std::vector<std::string> error_msgs;
+    Run(scope, script, "queueReportTwice", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), config_dict));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre("https://example.test/script.js:20 Uncaught TypeError: "
+                    "queueReportAggregateWin() may be called at most once."));
+    EXPECT_FALSE(context_recycler.report_bindings()
+                     ->modeling_signals_config()
+                     .has_value());
+  }
+  EXPECT_FALSE(context_recycler.report_bindings()
+                   ->modeling_signals_config()
+                   .has_value());
+
+  // URLs that are the max URL length should be passed along without issues.
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+    gin::Dictionary config_dict =
+        gin::Dictionary::CreateEmpty(helper_->isolate());
+    config_dict.Set("destination", almost_too_long_url());
+    config_dict.Set("aggregationCoordinatorOrigin",
+                    std::string("https://example.origin"));
+    config_dict.Set("payloadLength", 256);
+    Run(scope, script, "queueReportOnce", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), config_dict));
+    EXPECT_THAT(error_msgs, ElementsAre());
+    ASSERT_TRUE(context_recycler.report_bindings()
+                    ->modeling_signals_config()
+                    .has_value());
+    EXPECT_EQ(almost_too_long_url(), context_recycler.report_bindings()
+                                         ->modeling_signals_config()
+                                         ->destination.spec());
+  }
+  EXPECT_FALSE(context_recycler.report_bindings()
+                   ->modeling_signals_config()
+                   .has_value());
+
+  // URLs that are too long should throw an error
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+    gin::Dictionary config_dict =
+        gin::Dictionary::CreateEmpty(helper_->isolate());
+    config_dict.Set("destination", too_long_url());
+    config_dict.Set("aggregationCoordinatorOrigin",
+                    std::string("https://example.origin"));
+    config_dict.Set("payloadLength", 256);
+    Run(scope, script, "queueReportOnce", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), config_dict));
+    EXPECT_THAT(error_msgs,
+                ElementsAre("https://example.test/script.js:3 Uncaught "
+                            "TypeError: modelingSignalsConfig's destination "
+                            "exceeds the maximum URL length."));
+    EXPECT_FALSE(context_recycler.report_bindings()
+                     ->modeling_signals_config()
+                     .has_value());
+  }
+  EXPECT_FALSE(context_recycler.report_bindings()
+                   ->modeling_signals_config()
+                   .has_value());
+}
+
+class ContextRecyclerPrivateModelTrainingDisabledTest
+    : public ContextRecyclerTest {
+ public:
+  ContextRecyclerPrivateModelTrainingDisabledTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        blink::features::kFledgePrivateModelTraining);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(ContextRecyclerPrivateModelTrainingDisabledTest,
+       ReportBindingsQueueReportAggregateWin) {
+  const char kScript[] = R"(
+    function queueReportOnce(modelingSignalsConfig) {
+      queueReportAggregateWin({
+        modelingSignalsConfig: {
+          destination: modelingSignalsConfig.destination,
+          aggregationCoordinatorOrigin: modelingSignalsConfig.aggregationCoordinatorOrigin,
+          payloadLength: modelingSignalsConfig.payloadLength,
+        }
+      });
+    }
+  )";
+
+  v8::Local<v8::UnboundScript> script = Compile(kScript);
+  ASSERT_FALSE(script.IsEmpty());
+
+  ContextRecycler context_recycler(helper_.get());
+  {
+    ContextRecyclerScope scope(context_recycler);  // Initialize context
+    context_recycler.AddReportBindings(
+        /*queue_report_aggregate_win_allowed=*/true);
+  }
+
+  {
+    ContextRecyclerScope scope(context_recycler);
+    gin::Dictionary config_dict =
+        gin::Dictionary::CreateEmpty(helper_->isolate());
+    config_dict.Set("destination", std::string("https://example.test"));
+    config_dict.Set("aggregationCoordinatorOrigin",
+                    std::string("https://example.test"));
+    config_dict.Set("payloadLength", 256);
+    std::vector<std::string> error_msgs;
+    Run(scope, script, "queueReportOnce", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), config_dict));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre("https://example.test/script.js:3 Uncaught ReferenceError: "
+                    "queueReportAggregateWin is not defined."));
+  }
 }
 
 // Exercise SetBidBindings, and make sure they reset properly.

@@ -1793,7 +1793,8 @@ void SellerWorklet::V8State::ReportResult(
     return;
   }
 
-  context_recycler.AddReportBindings();
+  context_recycler.AddReportBindings(
+      /*queue_report_aggregate_win_allowed=*/false);
   context_recycler.AddRegisterAdBeaconBindings();
   context_recycler.AddPrivateAggregationBindings(
       permissions_policy_state_->private_aggregation_allowed,

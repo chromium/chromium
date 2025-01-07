@@ -76,10 +76,11 @@ void ContextRecycler::AddRegisterAdMacroBindings() {
   AddBindings(register_ad_macro_bindings_.get());
 }
 
-void ContextRecycler::AddReportBindings() {
+void ContextRecycler::AddReportBindings(
+    bool queue_report_aggregate_win_allowed) {
   DCHECK(!report_bindings_);
-  report_bindings_ =
-      std::make_unique<ReportBindings>(v8_helper_, v8_logger_.get());
+  report_bindings_ = std::make_unique<ReportBindings>(
+      v8_helper_, v8_logger_.get(), queue_report_aggregate_win_allowed);
   AddBindings(report_bindings_.get());
 }
 
