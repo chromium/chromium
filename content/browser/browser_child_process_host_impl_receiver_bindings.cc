@@ -31,6 +31,8 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "content/browser/renderer_host/dwrite_font_proxy_impl_win.h"
+#include "content/browser/sandbox_support_impl.h"
+#include "content/common/sandbox_support.mojom.h"
 #include "content/public/common/font_cache_dispatcher_win.h"
 #include "content/public/common/font_cache_win.mojom.h"
 #endif
@@ -90,7 +92,11 @@ void BrowserChildProcessHostImpl::BindHostReceiver(
     FontCacheDispatcher::Create(std::move(r));
     return;
   }
-
+  if (auto r = receiver.As<mojom::SandboxSupport>()) {
+    static base::NoDestructor<SandboxSupportImpl> sandbox_support;
+    sandbox_support->BindReceiver(std::move(r));
+    return;
+  }
   if (auto r = receiver.As<blink::mojom::DWriteFontProxy>()) {
     base::ThreadPool::CreateSequencedTaskRunner(
         {base::TaskPriority::USER_BLOCKING, base::MayBlock()})

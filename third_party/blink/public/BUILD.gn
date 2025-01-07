@@ -411,6 +411,7 @@ source_set("blink_headers") {
     sources += [
       "platform/web_font_prewarmer.h",
       "platform/web_font_rendering_client.h",
+      "platform/win/web_sandbox_support.h",
       "web/win/web_font_family_names.h",
       "web/win/web_font_rendering.h",
     ]

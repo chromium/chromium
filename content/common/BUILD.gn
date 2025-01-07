@@ -507,6 +507,10 @@ mojom("mojo_bindings") {
     sources += [ "gin_java_bridge.mojom" ]
   }
 
+  if (is_win) {
+    sources += [ "sandbox_support.mojom" ]
+  }
+
   enabled_features = []
   if (enable_ipc_logging) {
     enabled_features += [ "ipc_logging" ]

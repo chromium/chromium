@@ -66,6 +66,8 @@
 #if BUILDFLAG(IS_WIN)
 #include "components/services/font_data/font_data_service_impl.h"
 #include "content/browser/renderer_host/dwrite_font_proxy_impl_win.h"
+#include "content/browser/sandbox_support_impl.h"
+#include "content/common/sandbox_support.mojom.h"
 #include "content/public/common/font_cache_dispatcher_win.h"
 #include "content/public/common/font_cache_win.mojom.h"
 #endif
@@ -379,7 +381,7 @@ void RenderProcessHostImpl::IOThreadHostImpl::BindHostReceiver(
   }
 #endif
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   if (auto r = receiver.As<mojom::SandboxSupport>()) {
     static base::NoDestructor<SandboxSupportImpl> sandbox_support;
     sandbox_support->BindReceiver(std::move(r));
