@@ -213,40 +213,6 @@ std::u16string GetCategoryName(SearchResult* search_result) {
   }
 }
 
-std::u16string GetCategoryMenuItemTooltip(
-    AppListSearchControlCategory category) {
-  int tooltip_id = -1;
-  switch (category) {
-    case AppListSearchControlCategory::kApps:
-      tooltip_id = IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_APPS_TOOLTIP;
-      break;
-    case AppListSearchControlCategory::kAppShortcuts:
-      tooltip_id = IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_APP_SHORTCUTS_TOOLTIP;
-      break;
-    case AppListSearchControlCategory::kFiles:
-      tooltip_id = IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_FILES_TOOLTIP;
-      break;
-    case AppListSearchControlCategory::kGames:
-      tooltip_id = IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_GAMES_TOOLTIP;
-      break;
-    case AppListSearchControlCategory::kHelp:
-      tooltip_id = IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_HELP_TOOLTIP;
-      break;
-    case AppListSearchControlCategory::kImages:
-      tooltip_id = IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_IMAGES_TOOLTIP;
-      break;
-    case AppListSearchControlCategory::kPlayStore:
-      tooltip_id = IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_PLAYSTORE_TOOLTIP;
-      break;
-    case AppListSearchControlCategory::kWeb:
-      tooltip_id = IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_WEBSITES_TOOLTIP;
-      break;
-    case AppListSearchControlCategory::kCannotToggle:
-      NOTREACHED();
-  }
-  return l10n_util::GetStringUTF16(tooltip_id);
-}
-
 // Returns the check box icon that is shown on the category filter menu item.
 ui::ImageModel GetCheckboxImage(bool checked) {
   return ui::ImageModel::FromVectorIcon(
@@ -304,6 +270,10 @@ class CheckBoxMenuItemView : public views::MenuItemView {
                             command,
                             views::MenuItemView::Type::kNormal),
         view_delegate_(view_delegate) {
+    SetTooltip(GetCategoryMenuItemTooltip(
+                   static_cast<AppListSearchControlCategory>(command)),
+               command);
+
     // Set the role of the toggleable menu items to checkbox.
     GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItemCheckBox);
     // The title of the menu is not focusable but included in the position
@@ -323,6 +293,40 @@ class CheckBoxMenuItemView : public views::MenuItemView {
     GetViewAccessibility().SetCheckedState(
         category_enabled ? ax::mojom::CheckedState::kTrue
                          : ax::mojom::CheckedState::kFalse);
+  }
+
+  std::u16string GetCategoryMenuItemTooltip(
+      AppListSearchControlCategory category) const {
+    int tooltip_id = -1;
+    switch (category) {
+      case AppListSearchControlCategory::kApps:
+        tooltip_id = IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_APPS_TOOLTIP;
+        break;
+      case AppListSearchControlCategory::kAppShortcuts:
+        tooltip_id = IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_APP_SHORTCUTS_TOOLTIP;
+        break;
+      case AppListSearchControlCategory::kFiles:
+        tooltip_id = IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_FILES_TOOLTIP;
+        break;
+      case AppListSearchControlCategory::kGames:
+        tooltip_id = IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_GAMES_TOOLTIP;
+        break;
+      case AppListSearchControlCategory::kHelp:
+        tooltip_id = IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_HELP_TOOLTIP;
+        break;
+      case AppListSearchControlCategory::kImages:
+        tooltip_id = IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_IMAGES_TOOLTIP;
+        break;
+      case AppListSearchControlCategory::kPlayStore:
+        tooltip_id = IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_PLAYSTORE_TOOLTIP;
+        break;
+      case AppListSearchControlCategory::kWeb:
+        tooltip_id = IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_WEBSITES_TOOLTIP;
+        break;
+      case AppListSearchControlCategory::kCannotToggle:
+        NOTREACHED();
+    }
+    return l10n_util::GetStringUTF16(tooltip_id);
   }
 
  private:
@@ -380,14 +384,6 @@ class FilterMenuAdapter : public views::MenuModelAdapter {
                                               const ui::Event& e) override {
     // Keep the menu open if the user toggles the checkboxes in the menu.
     return true;
-  }
-  std::u16string GetTooltipText(int id,
-                                const gfx::Point& screen_loc) const override {
-    if (id == ui::MenuModel::kTitleId) {
-      return std::u16string();
-    }
-    return GetCategoryMenuItemTooltip(
-        static_cast<AppListSearchControlCategory>(id));
   }
   void ExecuteCommand(int id) override { ExecuteCommand(id, 0); }
   void ExecuteCommand(int id, int mouse_event_flags) override {
