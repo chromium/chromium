@@ -10,9 +10,11 @@
 #include <vector>
 
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_future.h"
+#include "base/values.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -22,6 +24,7 @@
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -100,6 +103,7 @@ class SubAppsServiceImplBrowserTest : public IsolatedWebAppBrowserTestHarness {
             SubAppsInstallDialogController::SetAutomaticActionForTesting(
                 SubAppsInstallDialogController::DialogActionForTesting::
                     kAccept)) {}
+
   void SetUpOnMainThread() override {
     IsolatedWebAppBrowserTestHarness::SetUpOnMainThread();
     notification_display_service_ =
@@ -151,11 +155,15 @@ class SubAppsServiceImplBrowserTest : public IsolatedWebAppBrowserTestHarness {
   }
 
   IsolatedWebAppUrlInfo InstallIwaParentApp() {
-    iwa_dev_server_ = CreateAndStartDevServer(
-        FILE_PATH_LITERAL("web_apps/subapps_isolated_app"));
-    IsolatedWebAppUrlInfo parent_app =
-        web_app::InstallDevModeProxyIsolatedWebApp(
-            browser()->profile(), iwa_dev_server_->GetOrigin());
+    std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+        IsolatedWebAppBuilder(
+            ManifestBuilder().AddPermissionsPolicy(
+                blink::mojom::PermissionsPolicyFeature::kSubApps, /*self=*/true,
+                /*origins=*/{}))
+            .AddFolderFromDisk("/", "web_apps/subapps_isolated_app")
+            .BuildBundle();
+    app->TrustSigningKey();
+    IsolatedWebAppUrlInfo parent_app = app->InstallChecked(profile());
     parent_app_id_ = parent_app.app_id();
 
     EXPECT_EQ(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
@@ -167,8 +175,9 @@ class SubAppsServiceImplBrowserTest : public IsolatedWebAppBrowserTestHarness {
   }
 
   // sub_app_paths should contain paths, not full URLs.
-  bool AddSubAppsJS(content::RenderFrameHost* frame,
-                    const std::vector<std::string>& sub_app_paths) const {
+  content::EvalJsResult AddSubAppsJS(
+      content::RenderFrameHost* frame,
+      const std::vector<std::string>& sub_app_paths) const {
     std::string script = "navigator.subApps.add({";
     for (std::string path : sub_app_paths) {
       base::StringAppendF(&script, R"("%s": {"installURL": "%s"},)", &path[0],
@@ -176,7 +185,7 @@ class SubAppsServiceImplBrowserTest : public IsolatedWebAppBrowserTestHarness {
     }
     script += " })";
 
-    return content::ExecJs(frame, script);
+    return content::EvalJs(frame, script);
   }
 
   content::EvalJsResult ListSubAppsJS(content::RenderFrameHost* frame) const {
@@ -308,7 +317,10 @@ class SubAppsServiceImplBrowserTest : public IsolatedWebAppBrowserTestHarness {
 IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, EndToEndAdd) {
   content::RenderFrameHost* iwa_frame = InstallAndOpenParentIwaApp();
 
-  EXPECT_TRUE(AddSubAppsJS(iwa_frame, {kSub1, kSub2}));
+  EXPECT_EQ(
+      AddSubAppsJS(iwa_frame, {kSub1, kSub2}),
+      base::Value(
+          base::Value::Dict().Set(kSub1, "success").Set(kSub2, "success")));
   EXPECT_EQ(2ul, GetAllSubAppIds(parent_app_id_).size());
 }
 
@@ -1052,12 +1064,14 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
                        ListReturnsOnlyAppsInstalledByTheCurrentParent) {
   content::RenderFrameHost* iwa_frame_1 = InstallAndOpenParentIwaApp();
 
-  // Install the parent app a second time. InstallDevModeProxyIsolatedWebApp
-  // generates a new random app id, making the 2 installs effectively 2
-  // different apps.
-  IsolatedWebAppUrlInfo parent_app_2 =
-      web_app::InstallDevModeProxyIsolatedWebApp(browser()->profile(),
-                                                 iwa_dev_server_->GetOrigin());
+  // Install a second IWA.
+  ASSERT_OK_AND_ASSIGN(
+      IsolatedWebAppUrlInfo parent_app_2,
+      IsolatedWebAppBuilder(
+          ManifestBuilder().AddPermissionsPolicy(
+              blink::mojom::PermissionsPolicyFeature::kSubApps, true, {}))
+          .BuildBundle()
+          ->TrustBundleAndInstall(profile()));
   content::RenderFrameHost* iwa_frame_2 = OpenApp(parent_app_2.app_id());
 
   EXPECT_EQ(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
@@ -1068,9 +1082,15 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
   EXPECT_NE(parent_app_id_, parent_app_2.app_id());
 
   // Call Add for both IWAs.
-  EXPECT_TRUE(AddSubAppsJS(iwa_frame_1, {kSubAppPath, kSubAppPath2}));
-  EXPECT_TRUE(AddSubAppsJS(iwa_frame_2, {}));
-  EXPECT_TRUE(AddSubAppsJS(iwa_frame_1, {kSubAppPath, kSubAppPath3}));
+  EXPECT_EQ(AddSubAppsJS(iwa_frame_1, {kSubAppPath, kSubAppPath2}),
+            base::Value(base::Value::Dict()
+                            .Set(kSubAppPath, "success")
+                            .Set(kSubAppPath2, "success")));
+  EXPECT_EQ(AddSubAppsJS(iwa_frame_2, {}), base::Value(base::Value::Dict()));
+  EXPECT_EQ(AddSubAppsJS(iwa_frame_1, {kSubAppPath, kSubAppPath3}),
+            base::Value(base::Value::Dict()
+                            .Set(kSubAppPath, "success")
+                            .Set(kSubAppPath3, "success")));
 
   // Check List results for the main app contains 3 sub-apps.
   auto list_result_1 = ListSubAppsJS(iwa_frame_1);
@@ -1196,26 +1216,28 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, RemoveFailRegularApp) {
 
 // Remove fails for a sub-app with a different parent_app_id.
 IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, RemoveFailWrongParent) {
-  content::RenderFrameHost* iwa_frame = InstallAndOpenParentIwaApp();
-  BindRemote(iwa_frame);
+  content::RenderFrameHost* iwa_frame_1 = InstallAndOpenParentIwaApp();
+  BindRemote(iwa_frame_1);
 
   ExpectCallAdd(
       {{GetURLFromPath(kSubAppPath), SubAppsServiceResultCode::kSuccess}},
       {{kSubAppPath, kSubAppPath}});
 
   // Install a second IWA.
-  auto iwa_dev_server_2 = CreateAndStartDevServer(
-      FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
-  IsolatedWebAppUrlInfo parent_app_2 =
-      web_app::InstallDevModeProxyIsolatedWebApp(browser()->profile(),
-                                                 iwa_dev_server_->GetOrigin());
+  ASSERT_OK_AND_ASSIGN(
+      IsolatedWebAppUrlInfo parent_app_2,
+      IsolatedWebAppBuilder(
+          ManifestBuilder().AddPermissionsPolicy(
+              blink::mojom::PermissionsPolicyFeature::kSubApps, true, {}))
+          .BuildBundle()
+          ->TrustBundleAndInstall(profile()));
   content::RenderFrameHost* iwa_frame_2 = OpenApp(parent_app_2.app_id());
   remote_.reset();
   BindRemote(iwa_frame_2);
 
   EXPECT_EQ(
-      SingleRemoveResultMojo(kSubAppPath2, SubAppsServiceResultCode::kFailure),
-      CallRemove({kSubAppPath2}));
+      SingleRemoveResultMojo(kSubAppPath, SubAppsServiceResultCode::kFailure),
+      CallRemove({kSubAppPath}));
   EXPECT_FALSE(UninstallNotificationShown());
 }
 
