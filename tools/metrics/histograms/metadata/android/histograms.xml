@@ -1038,22 +1038,26 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.ChromeStartupDelegate.FailureReason"
-    enum="ChromeStartupDelegateFailureType" expires_after="2022-12-25">
+    enum="ChromeStartupDelegateFailureType" expires_after="2026-02-10">
   <owner>gangwu@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
     Records the failure reason for ChromeStartupDelegate requests. Recorded at
     most once on application startup.
+
+    (Expired in 2022-12-25. Revived in 2025-01-07.)
   </summary>
 </histogram>
 
 <histogram name="Android.ChromeStartupDelegate.Result"
-    enum="ChromeStartupDelegateResult" expires_after="2022-10-16">
+    enum="ChromeStartupDelegateResult" expires_after="2026-02-10">
   <owner>gangwu@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
     Records the result for ChromeStartupDelegate. Recorded on application
     startup.
+
+    (Expired in 2022-10-16. Revived in 2025-01-07.)
   </summary>
 </histogram>
 
