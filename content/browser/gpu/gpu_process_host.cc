@@ -1138,6 +1138,11 @@ std::string GpuProcessHost::GetIsolationKey(
           service_worker_host->GetNetworkIsolationKey().ToCacheKeyString();
       return isolation_key ? *isolation_key : "";
     }
+    // Return an empty isolation key if there's no workers matching the token.
+    // This may happen if a user has a service worker started locally for a web
+    // app but now uses same origin for another web app bar which doesn't have a
+    // service worker.
+    return "";
   }
 
   NOTREACHED();
