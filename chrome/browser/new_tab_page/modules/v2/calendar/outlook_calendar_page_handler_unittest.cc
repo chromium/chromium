@@ -679,3 +679,22 @@ TEST_F(OutlookCalendarPageHandlerTest, MakeRequestAfterRetryTimeout) {
 
   EXPECT_EQ(future.Get().size(), 3u);
 }
+
+// Verifies that prefs are accurately set on dismissal and restoring of module.
+TEST_F(OutlookCalendarPageHandlerTest, DismissAndRestoreModule) {
+  std::unique_ptr<OutlookCalendarPageHandler> handler = CreateHandler();
+
+  EXPECT_EQ(profile_->GetPrefs()->GetTime(
+                prefs::kNtpOutlookCalendarLastDismissedTime),
+            base::Time());
+
+  handler->DismissModule();
+  EXPECT_EQ(profile_->GetPrefs()->GetTime(
+                prefs::kNtpOutlookCalendarLastDismissedTime),
+            base::Time::Now());
+
+  handler->RestoreModule();
+  EXPECT_EQ(profile_->GetPrefs()->GetTime(
+                prefs::kNtpOutlookCalendarLastDismissedTime),
+            base::Time());
+}

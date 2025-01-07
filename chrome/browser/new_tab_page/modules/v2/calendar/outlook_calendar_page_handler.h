@@ -35,6 +35,8 @@ class OutlookCalendarPageHandler
 
   // ntp::calendar::mojom::OutlookCalendarPageHandler
   void GetEvents(GetEventsCallback callback) override;
+  void DismissModule() override;
+  void RestoreModule() override;
 
  private:
   void MakeRequest(GetEventsCallback callback);

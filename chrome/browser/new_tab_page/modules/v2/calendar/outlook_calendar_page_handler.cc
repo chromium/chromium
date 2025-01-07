@@ -124,6 +124,8 @@ void OutlookCalendarPageHandler::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterTimePref(prefs::kNtpOutlookCalendarRetryAfterTime,
                              base::Time());
+  registry->RegisterTimePref(prefs::kNtpOutlookCalendarLastDismissedTime,
+                             base::Time());
 }
 
 OutlookCalendarPageHandler::OutlookCalendarPageHandler(
@@ -137,6 +139,15 @@ OutlookCalendarPageHandler::OutlookCalendarPageHandler(
 OutlookCalendarPageHandler::~OutlookCalendarPageHandler() = default;
 
 void OutlookCalendarPageHandler::GetEvents(GetEventsCallback callback) {
+  // Do not get events if the module was dismissed.
+  base::Time last_dismissed_time =
+      pref_service_->GetTime(prefs::kNtpOutlookCalendarLastDismissedTime);
+  if (last_dismissed_time != base::Time() &&
+      base::Time::Now() - last_dismissed_time < base::Hours(12)) {
+    std::move(callback).Run(
+        std::vector<ntp::calendar::mojom::CalendarEventPtr>());
+    return;
+  }
   const std::string fake_data_param = base::GetFieldTrialParamValueByFeature(
       ntp_features::kNtpOutlookCalendarModule,
       ntp_features::kNtpOutlookCalendarModuleDataParam);
@@ -146,6 +157,16 @@ void OutlookCalendarPageHandler::GetEvents(GetEventsCallback callback) {
   } else {
     MakeRequest(std::move(callback));
   }
+}
+
+void OutlookCalendarPageHandler::DismissModule() {
+  pref_service_->SetTime(prefs::kNtpOutlookCalendarLastDismissedTime,
+                         base::Time::Now());
+}
+
+void OutlookCalendarPageHandler::RestoreModule() {
+  pref_service_->SetTime(prefs::kNtpOutlookCalendarLastDismissedTime,
+                         base::Time());
 }
 
 void OutlookCalendarPageHandler::MakeRequest(GetEventsCallback callback) {

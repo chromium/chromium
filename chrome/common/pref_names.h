@@ -2398,6 +2398,9 @@ inline constexpr char kNtpModulesLoadedCountDict[] =
 // Dictionary of number of times the user has interacted with a module.
 inline constexpr char kNtpModulesInteractedCountDict[] =
     "NewTabPage.ModulesInteractedCountDict";
+// Time the Outlook Calendar module was last dismissed.
+inline constexpr char kNtpOutlookCalendarLastDismissedTime[] =
+    "NewTabPage.OutlookCalendar.LastDismissedTime";
 // The next time a user's Outlook calendar data can be requested after hitting a
 // throttling error.
 inline constexpr char kNtpOutlookCalendarRetryAfterTime[] =
