@@ -527,7 +527,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1914326953223720820">Serviço Descompactar</translation>
 <translation id="1919367280705858090">Receber ajuda com uma mensagem de erro específica</translation>
 <translation id="1919526244108283799">400 x 600 mm</translation>
-<translation id="192020519938775529">{COUNT,plural, =0{Nenhum}=1{1 site}one{# site}other{# sites}}</translation>
+<translation id="192020519938775529">{COUNT,plural, =0{Nenhuma}=1{1 site}one{# site}other{# sites}}</translation>
 <translation id="192095259937375524">Botão "Compartilhar esta guia". Ative para compartilhar esta guia com um link, um QR code, uma transmissão, entre outras opções</translation>
 <translation id="1921479021518565778">Sugestões carregadas</translation>
 <translation id="1924727005275031552">Novo</translation>
