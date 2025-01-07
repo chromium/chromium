@@ -115,17 +115,21 @@ class RoundedCornerImageView : public views::ImageView {
   METADATA_HEADER(RoundedCornerImageView, views::ImageView)
 
  public:
-  RoundedCornerImageView() = default;
+  RoundedCornerImageView();
+
   RoundedCornerImageView(const RoundedCornerImageView&) = delete;
   RoundedCornerImageView& operator=(const RoundedCornerImageView&) = delete;
 
-  // views::ImageView:
-  bool GetCanProcessEventsWithinSubtree() const override { return false; }
+  ~RoundedCornerImageView() override = default;
 
  protected:
   // views::ImageView:
   void OnPaint(gfx::Canvas* canvas) override;
 };
+
+RoundedCornerImageView::RoundedCornerImageView() {
+  SetCanProcessEventsWithinSubtree(false);
+}
 
 void RoundedCornerImageView::OnPaint(gfx::Canvas* canvas) {
   SkPath mask;

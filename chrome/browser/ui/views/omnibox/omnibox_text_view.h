@@ -40,7 +40,6 @@ class OmniboxTextView : public views::View {
   // views::View:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
-  bool GetCanProcessEventsWithinSubtree() const override;
   void OnPaint(gfx::Canvas* canvas) override;
 
   // Applies given theme color to underlying render text. This is called Apply*

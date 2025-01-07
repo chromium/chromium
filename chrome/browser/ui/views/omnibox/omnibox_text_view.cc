@@ -95,7 +95,9 @@ bool AnswerHasDefinedMaxLines(omnibox::AnswerType answer_type) {
 }  // namespace
 
 OmniboxTextView::OmniboxTextView(OmniboxResultView* result_view)
-    : result_view_(result_view) {}
+    : result_view_(result_view) {
+  SetCanProcessEventsWithinSubtree(false);
+}
 
 OmniboxTextView::~OmniboxTextView() = default;
 
@@ -124,10 +126,6 @@ gfx::Size OmniboxTextView::CalculatePreferredSize(
     cached_calculate_preferred_size_ = string_size;
   }
   return cached_calculate_preferred_size_;
-}
-
-bool OmniboxTextView::GetCanProcessEventsWithinSubtree() const {
-  return false;
 }
 
 void OmniboxTextView::OnPaint(gfx::Canvas* canvas) {
