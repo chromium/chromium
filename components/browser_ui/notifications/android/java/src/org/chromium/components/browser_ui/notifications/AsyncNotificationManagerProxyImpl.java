@@ -196,7 +196,12 @@ import java.util.function.Function;
 
             @Override
             protected void onPostExecute(T result) {
-                callback.onResult(result);
+                // TODO(crbug.com/388114708): currently the callback is not called on failure to
+                // match the behavior of NotificationManangerproxyImpl. But this should be changed
+                // to always call the callback as it might cause undesirable consequences.
+                if (mSuccess) {
+                    callback.onResult(result);
+                }
                 NotificationProxyUtils.recordNotificationEventHistogram(
                         mSuccess
                                 ? NotificationEvent.HAS_CALLBACK_SUCCESS
