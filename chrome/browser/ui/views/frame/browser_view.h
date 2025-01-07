@@ -93,6 +93,10 @@ class WebAppFrameToolbarView;
 class WebContentsCloseHandler;
 class WebUITabStripContainerView;
 
+namespace gfx {
+class AnimationRunner;
+}  // namespace gfx
+
 namespace ui {
 class NativeTheme;
 }  // namespace ui
@@ -167,7 +171,7 @@ class BrowserView : public BrowserWindow,
   // (and hide immediately).
   static void SetDisableRevealerDelayForTesting(bool disable);
 
-  bool IsLoadingAnimationRunningForTesting() const;
+  bool IsLoadingAnimationRunning() const;
 
   // Returns a Browser instance of this view.
   Browser* browser() { return browser_.get(); }
@@ -914,7 +918,8 @@ class BrowserView : public BrowserWindow,
   void MaybeInitializeWebUITabStrip();
 
   // Callback for the loading animation(s) associated with this view.
-  void LoadingAnimationCallback();
+  void LoadingAnimationTimerCallback();
+  void LoadingAnimationCallback(base::TimeTicks timestamp);
 
 #if BUILDFLAG(IS_WIN)
   // Creates the JumpList.
@@ -1266,13 +1271,16 @@ class BrowserView : public BrowserWindow,
   // Kiosk session.
   bool force_fullscreen_ = false;
 
+  // The runner used for displaying tab-loading animations.
+  std::unique_ptr<gfx::AnimationRunner> loading_animation_;
+
   // The timer used to update frames for tab-loading animations.
   base::RepeatingTimer loading_animation_timer_;
 
   // Closure invoked when the state of the loading animation changes.
   base::OnceClosure loading_animation_state_change_closure_;
 
-  // Start timestamp for all throbbers. Set when |loading_animation_timer_|
+  // Start timestamp for all throbbers. Set when the loading animation
   // starts and used for all consecutive tabs (while any are loading) to keep
   // throbbers in sync.
   base::TimeTicks loading_animation_start_;

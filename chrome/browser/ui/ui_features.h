@@ -272,6 +272,10 @@ BASE_DECLARE_FEATURE(kInlineFullscreenPerfExperiment);
 // actions.
 BASE_DECLARE_FEATURE(kPageActionsMigration);
 
+// Controls whether browser tab loading animations are driven by the compositor
+// vs. a repeating timer.
+BASE_DECLARE_FEATURE(kCompositorLoadingAnimations);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_UI_UI_FEATURES_H_

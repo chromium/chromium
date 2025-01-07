@@ -265,6 +265,7 @@
 #include "ui/content_accelerators/accelerator_util.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_utils.h"
+#include "ui/gfx/animation/animation_runner.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/point.h"
@@ -275,6 +276,7 @@
 #include "ui/gfx/scrollbar_size.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/accessibility/view_accessibility_utils.h"
+#include "ui/views/animation/compositor_animation_runner.h"
 #include "ui/views/background.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/menu_button.h"
@@ -1626,7 +1628,7 @@ void BrowserView::UpdateTitleBar() {
     web_app_window_title_->SetText(GetWindowTitle());
     InvalidateLayout();
   }
-  if (!loading_animation_timer_.IsRunning() && CanChangeWindowIcon()) {
+  if (!IsLoadingAnimationRunning() && CanChangeWindowIcon()) {
     frame_->UpdateWindowIcon();
   }
 }
@@ -1666,7 +1668,7 @@ void BrowserView::UpdateLoadingAnimations(bool is_visible) {
   const bool should_animate =
       is_visible && browser_->tab_strip_model()->TabsNeedLoadingUI();
 
-  if (should_animate == loading_animation_timer_.IsRunning()) {
+  if (should_animate == IsLoadingAnimationRunning()) {
     // Early return if the loading animation state doesn't change.
     return;
   }
@@ -1682,17 +1684,34 @@ void BrowserView::UpdateLoadingAnimations(bool is_visible) {
     loading_animation_tracker_->Start(ash::metrics_util::ForSmoothnessV3(
         base::BindRepeating(&RecordTabLoadingSmoothness)));
 #endif
-    // Loads are happening, and the timer isn't running, so start it.
+    static constexpr base::TimeDelta kAnimationUpdateInterval =
+        base::Milliseconds(30);
+    // Loads are happening, and the animation isn't running, so start it.
     loading_animation_start_ = base::TimeTicks::Now();
-    loading_animation_timer_.Start(FROM_HERE, base::Milliseconds(30), this,
-                                   &BrowserView::LoadingAnimationCallback);
+    if (base::FeatureList::IsEnabled(features::kCompositorLoadingAnimations)) {
+      loading_animation_ =
+          std::make_unique<views::CompositorAnimationRunner>(GetWidget());
+      loading_animation_->Start(
+          kAnimationUpdateInterval, base::TimeDelta(),
+          base::BindRepeating(&BrowserView::LoadingAnimationCallback,
+                              base::Unretained(this)));
+    } else {
+      loading_animation_timer_.Start(
+          FROM_HERE, kAnimationUpdateInterval, this,
+          &BrowserView::LoadingAnimationTimerCallback);
+    }
   } else {
-    loading_animation_timer_.Stop();
+    if (base::FeatureList::IsEnabled(features::kCompositorLoadingAnimations)) {
+      loading_animation_->Stop();
+      loading_animation_.reset();
+    } else {
+      loading_animation_timer_.Stop();
+    }
 #if BUILDFLAG(IS_CHROMEOS)
     loading_animation_tracker_->Stop();
 #endif
     // Loads are now complete, update the state if a task was scheduled.
-    LoadingAnimationCallback();
+    LoadingAnimationCallback(base::TimeTicks::Now());
   }
 }
 
@@ -1740,8 +1759,12 @@ BrowserView::DevToolsDockedPlacement BrowserView::GetDevToolsDockedPlacement(
   return BrowserView::DevToolsDockedPlacement::kUnknown;
 }
 
-bool BrowserView::IsLoadingAnimationRunningForTesting() const {
-  return loading_animation_timer_.IsRunning();
+bool BrowserView::IsLoadingAnimationRunning() const {
+  if (base::FeatureList::IsEnabled(features::kCompositorLoadingAnimations)) {
+    return loading_animation_ != nullptr;
+  } else {
+    return loading_animation_timer_.IsRunning();
+  }
 }
 
 void BrowserView::SetStarredState(bool is_starred) {
@@ -4834,13 +4857,16 @@ void BrowserView::MaybeInitializeWebUITabStrip() {
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 }
 
-void BrowserView::LoadingAnimationCallback() {
+void BrowserView::LoadingAnimationTimerCallback() {
+  LoadingAnimationCallback(base::TimeTicks::Now());
+}
+
+void BrowserView::LoadingAnimationCallback(base::TimeTicks timestamp) {
   if (GetSupportsTabStrip()) {
     // Loading animations are shown in the tab for tabbed windows. Update them
     // even if the tabstrip isn't currently visible so they're in the right
     // state when it returns.
-    tabstrip_->UpdateLoadingAnimations(base::TimeTicks::Now() -
-                                       loading_animation_start_);
+    tabstrip_->UpdateLoadingAnimations(timestamp - loading_animation_start_);
   }
 
   if (ShouldShowWindowIcon()) {
