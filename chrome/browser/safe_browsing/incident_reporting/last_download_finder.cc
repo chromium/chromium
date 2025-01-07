@@ -266,10 +266,7 @@ LastDownloadFinder::LastDownloadFinder(
     : download_details_getter_(std::move(download_details_getter)),
       callback_(std::move(callback)) {
   // Begin the search for all existing profiles.
-  for (auto* profile :
-       g_browser_process->profile_manager()->GetLoadedProfiles()) {
-    SearchInProfile(profile);
-  }
+  SearchInProfiles(g_browser_process->profile_manager()->GetLoadedProfiles());
 
   // Also search on new profiles when they are added.
   g_browser_process->profile_manager()->AddObserver(this);
@@ -292,23 +289,39 @@ LastDownloadFinder::ProfileKey LastDownloadFinder::KeyForProfile(
 }
 
 void LastDownloadFinder::SearchInProfile(Profile* profile) {
-  // Do not look in OTR profiles or in profiles that do not participate in
-  // safe browsing extended reporting.
-  if (!IncidentReportingService::IsEnabledForProfile(profile))
-    return;
+  SearchInProfiles({profile});
+}
 
-  // Try to initiate a metadata search.
-  ProfileKey profile_key = KeyForProfile(profile);
-  auto [iter, inserted] = pending_profiles_.try_emplace(
-      profile_key, this, profile, PendingProfileData::WAITING_FOR_METADATA);
+void LastDownloadFinder::SearchInProfiles(
+    const std::vector<Profile*>& profiles) {
+  std::vector<std::pair<Profile*, ProfileKey>> keys_to_search;
+  keys_to_search.reserve(profiles.size());
 
-  // If the profile was already being processed, do nothing.
-  if (!inserted) {
-    return;
+  for (Profile* profile : profiles) {
+    // Do not look in OTR profiles or in profiles that do not participate in
+    // safe browsing extended reporting.
+    if (!IncidentReportingService::IsEnabledForProfile(profile)) {
+      continue;
+    }
+
+    // Try to initiate a metadata search.
+    ProfileKey profile_key = KeyForProfile(profile);
+    auto [iter, inserted] = pending_profiles_.try_emplace(
+        profile_key, this, profile, PendingProfileData::WAITING_FOR_METADATA);
+
+    // If the profile was already being processed, do nothing.
+    if (!inserted) {
+      continue;
+    }
+
+    keys_to_search.emplace_back(profile, profile_key);
   }
-  download_details_getter_.Run(
-      profile, base::BindOnce(&LastDownloadFinder::OnMetadataQuery,
-                              weak_ptr_factory_.GetWeakPtr(), profile_key));
+
+  for (auto [profile, profile_key] : keys_to_search) {
+    download_details_getter_.Run(
+        profile, base::BindOnce(&LastDownloadFinder::OnMetadataQuery,
+                                weak_ptr_factory_.GetWeakPtr(), profile_key));
+  }
 }
 
 void LastDownloadFinder::OnMetadataQuery(

@@ -111,6 +111,12 @@ class LastDownloadFinder : public ProfileManagerObserver,
   // extended reporting. A search for metadata is initiated immediately.
   void SearchInProfile(Profile* profile);
 
+  // Adds every profile in `profiles` to the set of profiles to be searched if
+  // it is an on-the-record profile with history that participates in safe
+  // browsing extended reporting. A search for metadata is initiated
+  // immediately.
+  void SearchInProfiles(const std::vector<Profile*>& profiles);
+
   // DownloadMetadataManager::GetDownloadDetailsCallback. If |details| are
   // provided, retrieves them if they are the most relevant results. Otherwise
   // begins a search in history. Reports results if there are no more pending
