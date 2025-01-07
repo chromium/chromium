@@ -9346,10 +9346,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-    {"touch-drag-and-context-menu",
-     flag_descriptions::kTouchDragAndContextMenuName,
-     flag_descriptions::kTouchDragAndContextMenuDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kTouchDragAndContextMenu)},
     {"animated-image-drag-shadow",
      flag_descriptions::kAnimatedImageDragShadowName,
      flag_descriptions::kAnimatedImageDragShadowDescription, kOsAndroid,

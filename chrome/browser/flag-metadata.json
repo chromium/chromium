@@ -8711,11 +8711,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "touch-drag-and-context-menu",
-    "owners": [ "wenyufu@chromium.org", "clank-app-team@google.com" ],
-    "expiry_milestone": 134
-  },
-  {
     "name": "touch-selection-strategy",
     "owners": [ "dovizu@google.com" ],
     "expiry_milestone": 99

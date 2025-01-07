@@ -4333,9 +4333,7 @@ const char kAndroidTabDeclutterArchiveDuplicateTabsDescription[] =
 const char kAnimatedImageDragShadowName[] =
     "Enable animated image drag shadow on Android.";
 const char kAnimatedImageDragShadowDescription[] =
-    "Animate the shadow image from its original bound to the touch point. "
-    "Image drag on Android is available when flag touch-drag-and-context-menu "
-    "is enabled.";
+    "Animate the shadow image from its original bound to the touch point. ";
 
 const char kAnimateSuggestionsListAppearanceName[] =
     "Animate appearance of the omnibox suggestions list";
@@ -4926,12 +4924,6 @@ const char kDelayTempStripRemovalName[] =
 const char kDelayTempStripRemovalDescription[] =
     "By delaying the removal of the placeholder tab strip, we mitigate the "
     "jank seen as tabs are being restored on startup.";
-
-const char kTouchDragAndContextMenuName[] =
-    "Simultaneous touch drag and context menu";
-const char kTouchDragAndContextMenuDescription[] =
-    "Enables touch dragging and a context menu to start simultaneously, with"
-    "the assumption that the menu is non-modal.";
 
 const char kUseHardwareBufferUsageFlagsFromVulkanName[] =
     "Use recommended AHardwareBuffer usage flags from Vulkan";

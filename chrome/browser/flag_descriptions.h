@@ -2871,9 +2871,6 @@ extern const char kTabSwitcherFullNewTabButtonDescription[];
 extern const char kHideTabletToolbarDownloadButtonName[];
 extern const char kHideTabletToolbarDownloadButtonDescription[];
 
-extern const char kTouchDragAndContextMenuName[];
-extern const char kTouchDragAndContextMenuDescription[];
-
 extern const char kUndoMigrationOfSyncingUserToSignedInName[];
 extern const char kUndoMigrationOfSyncingUserToSignedInDescription[];
 
