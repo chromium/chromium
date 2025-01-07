@@ -631,7 +631,8 @@ def FinishUpdatingCrate(args, title: str, diff: CratesDiff):
         exempted_crate_name = ConvertCrateIdToCrateName(exempted_crate_id)
         print(f"  WARNING: The `{exempted_crate_name}` crate "\
                "is covered by an exemption rather than an audit. "\
-               "Please bump the exemption in `vet_config.toml.hbs` "\
+               "Please bump the exemption in "\
+               "`third_party/rust/chromium_crates_io/vet_config.toml.hbs` "\
                "and run `tools/crates/run_gnrt.py vendor` again.")
 
 
