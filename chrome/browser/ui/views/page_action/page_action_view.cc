@@ -148,6 +148,7 @@ void PageActionViewInterface::ActionItemChangedImpl(
     actions::ActionItem* action_item) {
   views::LabelButtonActionViewInterface::ActionItemChangedImpl(action_item);
   action_view_->SetVisible(ShouldShow(action_item->GetAsWeakPtr(), model_));
+  action_view_->UpdateIconImage();
 }
 
 }  // namespace page_actions

@@ -52,12 +52,12 @@ class PageActionView : public IconLabelBubbleView,
 
   void SetShouldShowLabelForTesting(bool should_show_label);
 
- private:
   // The image associated with the `action_item_` size may be different from the
   // size needed for the location bar page action icon. Therefore, we should to
   // update the image size if needed.
   void UpdateIconImage();
 
+ private:
   bool should_show_label_ = false;
 
   base::WeakPtr<actions::ActionItem> action_item_ = nullptr;

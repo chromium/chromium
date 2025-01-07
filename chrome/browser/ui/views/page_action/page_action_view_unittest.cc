@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
@@ -22,6 +23,8 @@
 
 namespace page_actions {
 namespace {
+
+constexpr int kDefaultIconSize = 16;
 
 class MockIconLabelViewDelegate : public IconLabelBubbleView::Delegate {
  public:
@@ -42,9 +45,8 @@ class PageActionViewTest : public ChromeViewsTestBase {
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
     // Use any arbitrary vector icon.
-    auto image = ui::ImageModel::FromVectorIcon(vector_icons::kBackArrowIcon,
-                                                ui::kColorSysPrimary,
-                                                /*icon_size=*/16);
+    auto image = ui::ImageModel::FromVectorIcon(
+        vector_icons::kBackArrowIcon, ui::kColorSysPrimary, kDefaultIconSize);
     action_item_ = actions::ActionManager::Get().AddAction(
         actions::ActionItem::Builder().SetActionId(0).SetImage(image).Build());
     page_action_view_ = std::make_unique<PageActionView>(
@@ -78,6 +80,13 @@ class PageActionViewTest : public ChromeViewsTestBase {
   void RegisterActionViewRelationship() {
     action_view_controller_->CreateActionViewRelationship(
         page_action_view_.get(), action_item_->GetAsWeakPtr());
+  }
+
+  int GetViewImageWidth() {
+    return page_action_view()
+        ->GetImageModel(views::Button::STATE_NORMAL)
+        ->Size()
+        .width();
   }
 
   PageActionView* page_action_view() { return page_action_view_.get(); }
@@ -201,13 +210,21 @@ TEST_F(PageActionViewTest, NoActiveController) {
 
 // Test that OnThemeChanged updates the icon image correctly.
 TEST_F(PageActionViewTest, OnThemeChangedUpdatesIconImage) {
-  // Simulate OnThemeChanged.
-  page_action_view()->OnThemeChanged();
+  const int required_icon_size =
+      GetLayoutConstant(LOCATION_BAR_TRAILING_ICON_SIZE);
+  // If the default size is the intended icon size, this test is useless.
+  EXPECT_GT(required_icon_size, kDefaultIconSize);
 
-  // Verify that UpdateIconImage is invoked and sets a valid image model.
-  gfx::ImageSkia image_model =
-      page_action_view()->GetImage(views::Button::STATE_NORMAL);
-  ASSERT_FALSE(image_model.isNull());
+  EXPECT_EQ(GetViewImageWidth(), required_icon_size);
+
+  // Icon maintains its size across a theme change.
+  page_action_view()->OnThemeChanged();
+  EXPECT_EQ(GetViewImageWidth(), required_icon_size);
+
+  // Icon maintains its size across an ActionItem update.
+  page_action_view()->GetActionViewInterface()->ActionItemChangedImpl(
+      action_item());
+  EXPECT_EQ(GetViewImageWidth(), required_icon_size);
 }
 
 // Test that UpdateBorder adjusts the insets based on label visibility.
