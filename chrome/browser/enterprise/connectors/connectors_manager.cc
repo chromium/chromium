@@ -112,7 +112,7 @@ std::optional<AnalysisSettings> ConnectorsManager::GetAnalysisSettings(
   // While multiple services can be set by the connector policies, only the
   // first one is considered for now.
   return analysis_connector_settings_[connector][0].GetAnalysisSettings(
-      url, GetDataRegion());
+      url, GetDataRegion(connector));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -136,7 +136,7 @@ std::optional<AnalysisSettings> ConnectorsManager::GetAnalysisSettings(
   // While multiple services can be set by the connector policies, only the
   // first one is considered for now.
   return analysis_connector_settings_[connector][0].GetAnalysisSettings(
-      context, source_url, destination_url, GetDataRegion());
+      context, source_url, destination_url, GetDataRegion(connector));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -315,16 +315,26 @@ std::vector<const AnalysisConfig*> ConnectorsManager::GetAnalysisServiceConfigs(
   return {};
 }
 
-DataRegion ConnectorsManager::GetDataRegion() const {
+DataRegion ConnectorsManager::GetDataRegion(AnalysisConnector connector) const {
 #if BUILDFLAG(IS_ANDROID)
   return DataRegion::NO_PREFERENCE;
 #else
-  bool apply_data_region =
-      prefs()->HasPrefPath(prefs::kChromeDataRegionSetting) &&
-      base::FeatureList::IsEnabled(safe_browsing::kDlpRegionalizedEndpoints);
-  return apply_data_region ? ChromeDataRegionSettingToEnum(prefs()->GetInteger(
-                                 prefs::kChromeDataRegionSetting))
-                           : DataRegion::NO_PREFERENCE;
+  // Connector's policy scope determines the DRZ policy scope to use.
+  policy::PolicyScope scope = static_cast<policy::PolicyScope>(
+      prefs()->GetInteger(AnalysisConnectorScopePref(connector)));
+
+  const PrefService* pref_service =
+      (scope == policy::PolicyScope::POLICY_SCOPE_MACHINE)
+          ? g_browser_process->local_state()
+          : prefs();
+
+  if (!pref_service ||
+      !pref_service->HasPrefPath(prefs::kChromeDataRegionSetting)) {
+    return DataRegion::NO_PREFERENCE;
+  }
+
+  return ChromeDataRegionSettingToEnum(
+      pref_service->GetInteger(prefs::kChromeDataRegionSetting));
 #endif
 }
 
