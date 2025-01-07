@@ -6384,7 +6384,14 @@
             ],
             "experiments": [
                 {
-                    "name": "Preperiod_Enabled_NonDogfood"
+                    "name": "Preperiod_Enabled_NonDogfood",
+                    "enable_features": [
+                        "LinkLayerPrivacy"
+                    ],
+                    "min_os_version": "16151.0.0",
+                    "hardware_classes": [
+                        "brya"
+                    ]
                 }
             ]
         }
