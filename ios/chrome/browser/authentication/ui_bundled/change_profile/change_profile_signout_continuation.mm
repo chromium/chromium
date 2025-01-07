@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_signout_continuation.h"
 
+#import "base/functional/callback_helpers.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -17,11 +18,14 @@
 namespace {
 
 // Called by ChangeProfileSignoutContinuation once the sign-out is complete.
-void SignoutDone(Browser* browser,
+void SignoutDone(base::WeakPtr<Browser> weak_browser,
                  bool force_snackbar_over_toolbar,
-                 MDCSnackbarMessage* snackbar_message,
-                 ProceduralBlock signout_completion,
-                 ProceduralBlock continuation_completion) {
+                 MDCSnackbarMessage* snackbar_message) {
+  Browser* browser = weak_browser.get();
+  if (!browser) {
+    return;
+  }
+
   id<SnackbarCommands> snackbar_commands_handler =
       HandlerForProtocol(browser->GetCommandDispatcher(), SnackbarCommands);
   if (force_snackbar_over_toolbar) {
@@ -30,12 +34,6 @@ void SignoutDone(Browser* browser,
   } else {
     [snackbar_commands_handler showSnackbarMessage:snackbar_message
                                       bottomOffset:0];
-  }
-  if (signout_completion) {
-    signout_completion();
-  }
-  if (continuation_completion) {
-    continuation_completion();
   }
 }
 
@@ -74,17 +72,24 @@ void SignoutDone(Browser* browser,
       sceneState.browserProviderInterface.currentBrowserProvider.browser;
   CHECK(browser);
 
+  // Create the closure corresponding to the action to perform once the signout
+  // action completes, chaining `_signoutCompletion` and `completion` if needed.
+  base::OnceClosure closure =
+      base::BindOnce(&SignoutDone, browser->AsWeakPtr(),
+                     _forceSnackbarOverToolbar, _snackbarMessage);
+
+  if (_signoutCompletion) {
+    closure = std::move(closure).Then(base::BindOnce(_signoutCompletion));
+  }
+  if (completion) {
+    closure = std::move(closure).Then(base::BindOnce(completion));
+  }
+
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForProfile(browser->GetProfile());
 
-  BOOL forceSnackbarOverToolbar = _forceSnackbarOverToolbar;
-  MDCSnackbarMessage* snackbarMessage = _snackbarMessage;
-  ProceduralBlock signoutCompletion = _signoutCompletion;
-
-  authenticationService->SignOut(_signoutSourceMetric, _forceClearData, ^{
-    SignoutDone(browser, forceSnackbarOverToolbar, snackbarMessage,
-                signoutCompletion, completion);
-  });
+  authenticationService->SignOut(_signoutSourceMetric, _forceClearData,
+                                 base::CallbackToBlock(std::move(closure)));
 
   signin_metrics::RecordSignoutForceClearDataChoice(_forceClearData);
   signin_metrics::RecordSignoutUserAction(_forceClearData);
