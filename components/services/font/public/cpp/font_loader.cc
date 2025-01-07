@@ -15,9 +15,28 @@
 
 namespace font_service {
 
+// Wikpedia's main country selection page activates 21 fallback fonts,
+// doubling this we should be on the generous side as an upper bound,
+// but nevertheless not have the mapped typefaces cache grow excessively.
+constexpr const size_t kMaxMappedTypefaces = 42;
+
+std::size_t SkFontConfigInterfaceFontIdentityHash::operator()(
+    const SkFontConfigInterface::FontIdentity& sp) const {
+  std::hash<std::string> stringhash;
+  std::hash<int> inthash;
+  size_t r = inthash(sp.fID);
+  r = r * 41 + inthash(sp.fTTCIndex);
+  r = r * 41 + stringhash(sp.fString.c_str());
+  r = r * 41 + inthash(sp.fStyle.weight());
+  r = r * 41 + inthash(sp.fStyle.slant());
+  r = r * 41 + inthash(sp.fStyle.width());
+  return r;
+}
+
 FontLoader::FontLoader(
     mojo::PendingRemote<mojom::FontService> pending_font_service)
-    : thread_(base::MakeRefCounted<internal::FontServiceThread>()) {
+    : thread_(base::MakeRefCounted<internal::FontServiceThread>()),
+      mapped_typefaces_(kMaxMappedTypefaces) {
   thread_->Init(std::move(pending_font_service));
 }
 
@@ -66,7 +85,24 @@ SkStreamAsset* FontLoader::openStream(const FontIdentity& identity) {
 sk_sp<SkTypeface> FontLoader::makeTypeface(const FontIdentity& identity,
                                            sk_sp<SkFontMgr> mgr) {
   TRACE_EVENT0("fonts", "FontServiceThread::makeTypeface");
-  return SkFontConfigInterface::makeTypeface(identity, mgr);
+  {
+    base::AutoLock lock(lock_);
+    auto mapped_typefaces_it = mapped_typefaces_.Get(identity);
+    if (mapped_typefaces_it != mapped_typefaces_.end()) {
+      return mapped_typefaces_it->second;
+    }
+  }
+
+  auto typeface = mgr->makeFromStream(
+      std::unique_ptr<SkStreamAsset>(this->openStream(identity)),
+      identity.fTTCIndex);
+
+  {
+    base::AutoLock lock(lock_);
+    auto mapped_typefaces_insert_it =
+        mapped_typefaces_.Put(identity, std::move(typeface));
+    return mapped_typefaces_insert_it->second;
+  }
 }
 
 // Additional cross-thread accessible methods.

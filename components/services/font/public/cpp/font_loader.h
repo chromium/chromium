@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/containers/lru_cache.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
@@ -22,6 +23,10 @@ namespace font_service {
 namespace internal {
 class FontServiceThread;
 }
+
+struct SkFontConfigInterfaceFontIdentityHash {
+  std::size_t operator()(const SkFontConfigInterface::FontIdentity& sp) const;
+};
 
 // FontConfig implementation for Skia which proxies to the font service to get
 // out of the sandbox. This methods of this class (as imposed by blink
@@ -105,6 +110,11 @@ class FontLoader : public SkFontConfigInterface,
   std::unordered_map<uint32_t,
                      raw_ptr<internal::MappedFontFile, CtnExperimental>>
       mapped_font_files_;
+
+  base::HashingLRUCache<FontIdentity,
+                        sk_sp<SkTypeface>,
+                        SkFontConfigInterfaceFontIdentityHash>
+      mapped_typefaces_;
 };
 
 }  // namespace font_service
