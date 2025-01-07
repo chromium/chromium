@@ -501,7 +501,7 @@ gfx::Size ScrollbarThemeAura::ButtonSize(const Scrollbar& scrollbar) const {
 }
 
 bool ScrollbarThemeAura::UsesSolidColorThumb() const {
-  return RuntimeEnabledFeatures::AuraScrollbarUsesSolidColorThumbEnabled();
+  return true;
 }
 
 gfx::Insets ScrollbarThemeAura::SolidColorThumbInsets(

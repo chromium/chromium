@@ -493,11 +493,6 @@
       name: "AuraScrollbarUsesNinePatchTrack",
       status: "test",
     },
-    // Killswitch. Remove after 1 or 2 stable releases.
-    {
-      name: "AuraScrollbarUsesSolidColorThumb",
-      status: "stable",
-    },
     {
       name: "AutoDarkMode",
       base_feature: "none",
