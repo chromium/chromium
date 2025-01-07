@@ -4664,7 +4664,7 @@
     ],
     "args": ["--disable-blink-features=CSSRelativeColorSupportsCurrentcolor"],
     "owners": ["kbabbitt@microsoft.com"],
-    "expires": "Jan 1, 2025"
+    "expires": "Jun 1, 2025"
   },
   {
     "prefix": "css-relative-preservenone-disabled",
