@@ -94,7 +94,10 @@ class VIZ_SERVICE_EXPORT RenderInputRouterDelegateImpl
       blink::WebInputEvent::Type gesture_event) override {}
   void OnInputIgnored(const blink::WebInputEvent& event) override {}
 
+  void SetIsBlocked(bool blocked) { is_blocked_ = blocked; }
+
  private:
+  bool is_blocked_ = false;
   scoped_refptr<input::RenderWidgetHostInputEventRouter> rwhier_;
   raw_ref<Delegate> delegate_;
   const FrameSinkId frame_sink_id_;

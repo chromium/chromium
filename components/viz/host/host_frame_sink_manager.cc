@@ -320,6 +320,13 @@ void HostFrameSinkManager::SetupRenderInputRouterDelegateConnection(
       std::move(rir_delegate_receiver));
 }
 
+void HostFrameSinkManager::NotifyRendererBlockStateChanged(
+    bool blocked,
+    const std::vector<FrameSinkId>& render_input_routers) {
+  frame_sink_manager_->NotifyRendererBlockStateChanged(blocked,
+                                                       render_input_routers);
+}
+
 void HostFrameSinkManager::SetOnCopyOutputReadyCallback(
     const blink::SameDocNavigationScreenshotDestinationToken& destination_token,
     ScreenshotDestinationReadyCallback callback) {

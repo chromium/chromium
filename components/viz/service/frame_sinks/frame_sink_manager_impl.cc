@@ -1200,6 +1200,13 @@ void FrameSinkManagerImpl::SetupRenderInputRouterDelegateConnection(
       std::move(rir_delegate_receiver));
 }
 
+void FrameSinkManagerImpl::NotifyRendererBlockStateChanged(
+    bool blocked,
+    const std::vector<FrameSinkId>& render_input_routers) {
+  input_manager_->NotifyRendererBlockStateChanged(blocked,
+                                                  render_input_routers);
+}
+
 void FrameSinkManagerImpl::RequestBeginFrameForGpuService(bool toggle) {
   if (root_begin_frame_source_ && gpu_service_) {
     if (toggle) {

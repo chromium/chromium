@@ -70,6 +70,7 @@
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
+#include "components/input/utils.h"
 #include "components/metrics/histogram_controller.h"
 #include "components/metrics/single_sample_metrics.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom.h"
@@ -81,6 +82,7 @@
 #include "components/tracing/common/tracing_switches.h"
 #include "components/viz/common/switches.h"
 #include "components/viz/host/gpu_client.h"
+#include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/blob_storage/blob_registry_wrapper.h"
 #include "content/browser/blob_storage/file_backed_blob_factory_worker_impl.h"
@@ -1798,6 +1800,29 @@ bool RenderProcessHostImpl::Init() {
 void RenderProcessHostImpl::EnableSendQueue() {
   if (!channel_)
     InitializeChannelProxy();
+}
+
+void RenderProcessHostImpl::MaybeNotifyVizOfRendererBlockStateChanged(
+    bool blocked) {
+  if (!input::IsTransferInputToVizSupported()) {
+    return;
+  }
+
+  // Viz needs to know about block status when it could be handling input with
+  // InputVizard.
+  std::unique_ptr<RenderWidgetHostIterator> widgets(
+      RenderWidgetHost::GetRenderWidgetHosts());
+
+  std::vector<viz::FrameSinkId> in_process_render_input_routers;
+  while (RenderWidgetHost* widget = widgets->GetNextHost()) {
+    // Count only RenderWidgetHosts/RenderInputRouters in this process.
+    if (widget->GetProcess() == this) {
+      in_process_render_input_routers.emplace_back(widget->GetFrameSinkId());
+    }
+  }
+
+  GetHostFrameSinkManager()->NotifyRendererBlockStateChanged(
+      blocked, in_process_render_input_routers);
 }
 
 void RenderProcessHostImpl::InitializeChannelProxy() {
@@ -3822,6 +3847,8 @@ void RenderProcessHostImpl::SetBlocked(bool blocked) {
     return;
 
   is_blocked_ = blocked;
+
+  MaybeNotifyVizOfRendererBlockStateChanged(blocked);
   blocked_state_changed_callback_list_.Notify(blocked);
 }
 

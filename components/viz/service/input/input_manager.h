@@ -135,6 +135,9 @@ class VIZ_SERVICE_EXPORT InputManager
       mojo::PendingReceiver<input::mojom::RenderInputRouterDelegate>
           rir_delegate_receiver);
 
+  void NotifyRendererBlockStateChanged(bool blocked,
+                                       const std::vector<FrameSinkId>& rirs);
+
   input::RenderInputRouter* GetRenderInputRouterFromFrameSinkId(
       const FrameSinkId& id);
 

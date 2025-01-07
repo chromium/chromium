@@ -224,6 +224,12 @@ interface FrameSinkManager {
       rir_delegate_client_remote,
     pending_receiver<input.mojom.RenderInputRouterDelegate>
       rir_delegate_receiver);
+
+  // Notifies list of RenderInputRouters of their block state changes for input
+  // event handling on the VizCompositorThread.
+  NotifyRendererBlockStateChanged(
+    bool blocked,
+    array<FrameSinkId> render_input_routers);
 };
 
 // The FrameSinkManagerClient interface is implemented by the Display

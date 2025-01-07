@@ -994,6 +994,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
                         StoragePartitionImpl* storage_partition_impl,
                         int flags);
 
+  void MaybeNotifyVizOfRendererBlockStateChanged(bool blocked);
+
   // Initializes a new IPC::ChannelProxy in |channel_|, which will be
   // connected to the next child process launched for this host, if any.
   void InitializeChannelProxy();

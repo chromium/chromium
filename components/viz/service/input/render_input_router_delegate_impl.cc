@@ -68,9 +68,9 @@ RenderInputRouterDelegateImpl::GetInputEventRouter() {
 
 bool RenderInputRouterDelegateImpl::IsIgnoringWebInputEvents(
     const blink::WebInputEvent& event) const {
-  // TODO(b/365541296): Implement RenderInputRouterDelegate interface in Viz.
-  NOTIMPLEMENTED();
-  return false;
+  // TODO(377625588): Implement notifying Viz of WebContentsImpl's ignoring
+  // input events.
+  return is_blocked_;
 }
 
 bool RenderInputRouterDelegateImpl::PreHandleGestureEvent(

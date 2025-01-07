@@ -419,6 +419,18 @@ void InputManager::SetupRenderInputRouterDelegateConnection(
   rir_delegate_receivers_.Add(this, std::move(rir_delegate_receiver));
 }
 
+void InputManager::NotifyRendererBlockStateChanged(
+    bool blocked,
+    const std::vector<FrameSinkId>& rirs) {
+  for (auto& frame_sink_id : rirs) {
+    auto itr = frame_sink_metadata_map_.find(frame_sink_id);
+
+    if (itr != frame_sink_metadata_map_.end()) {
+      itr->second.rir_delegate->SetIsBlocked(blocked);
+    }
+  }
+}
+
 GpuServiceImpl* InputManager::GetGpuService() {
   return frame_sink_manager_->GetGpuService();
 }
