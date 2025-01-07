@@ -135,13 +135,7 @@ LikelyFormFilling SendFillInformationToRenderer(
   }
 
   if (best_matches.empty() && !webauthn_suggestions_available) {
-    bool should_show_popup_without_passwords =
-        client->IsSavingAndFillingEnabled(observed_form.url) &&
-        (client->GetPasswordFeatureManager()->ShouldShowAccountStorageOptIn() ||
-         client->GetPasswordFeatureManager()->ShouldShowAccountStorageReSignin(
-             client->GetLastCommittedURL()));
-
-    driver->InformNoSavedCredentials(should_show_popup_without_passwords);
+    driver->InformNoSavedCredentials();
     metrics_recorder->RecordFillEvent(
         PasswordFormMetricsRecorder::kManagerFillEventNoCredential);
     return LikelyFormFilling::kNoFilling;

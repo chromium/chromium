@@ -2736,42 +2736,18 @@ TEST_F(PasswordAutofillAgentTest,
   ClearUsernameAndPasswordFieldValues();
   UpdateRendererIDsInFillData();
 
-  // A call to InformNoSavedCredentials(should_show_popup_without_passwords) is
-  // what informs the agent whether it should show the popup even without
-  // suggestions. In this test, that call hasn't happened yet, so the popup
-  // should NOT show up without suggestions.
   ASSERT_TRUE(SimulateElementClick(kPasswordName));
 
   CheckSuggestionsNotShown();
 }
 
-// With butter, passwords fields should always trigger the popup so the user can
-// unlock account-stored suggestions from there.
-TEST_F(PasswordAutofillAgentTest, ShowPopupOnPasswordFieldWithoutSuggestions) {
-  ClearUsernameAndPasswordFieldValues();
-  UpdateRendererIDsInFillData();
-
-  // InformNoSavedCredentials(should_show_popup_without_passwords) tells the
-  // agent to show the popup even without suggestions.
-  password_autofill_agent_->InformNoSavedCredentials(
-      /*should_show_popup_without_passwords=*/true);
-
-  EXPECT_CALL(fake_driver_, ShowPasswordSuggestions)
-      .Times(NumShowSuggestionsCalls());
-  ASSERT_TRUE(SimulateElementClick(kPasswordName));
-  base::RunLoop().RunUntilIdle();
-}
-
-// Before butter, passwords fields should never trigger the popup on password
-// passwords fields without suggestions since it would not be helpful.
+// Passwords fields should never trigger the popup on password passwords fields
+// without suggestions since it would not be helpful.
 TEST_F(PasswordAutofillAgentTest, NoPopupOnPasswordFieldWithoutSuggestions) {
   ClearUsernameAndPasswordFieldValues();
   UpdateRendererIDsInFillData();
 
-  // InformNoSavedCredentials(should_show_popup_without_passwords) tells the
-  // agent NOT to show the popup without suggestions.
-  password_autofill_agent_->InformNoSavedCredentials(
-      /*should_show_popup_without_passwords=*/false);
+  password_autofill_agent_->InformNoSavedCredentials();
 
   ASSERT_TRUE(SimulateElementClick(kPasswordName));
 

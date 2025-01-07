@@ -1687,10 +1687,7 @@ void PasswordAutofillAgent::AnnotateFieldsWithParsingResult(
                                  "confirmation_password_element");
 }
 
-void PasswordAutofillAgent::InformNoSavedCredentials(
-    bool should_show_popup_without_passwords) {
-  should_show_popup_without_passwords_ = should_show_popup_without_passwords;
-
+void PasswordAutofillAgent::InformNoSavedCredentials() {
   autofilled_elements_cache_.clear();
 
   // Clear the actual field values.
@@ -1838,9 +1835,7 @@ bool PasswordAutofillAgent::ShowSuggestionsForDomain(
 
   if (!password_info) {
     MaybeCheckSafeBrowsingReputation(element);
-    if (!CanShowPopupWithoutPasswords(password_element)) {
-      return false;
-    }
+    return false;
   }
 
   if (!element.IsTextField() || !IsElementEditable(element)) {
@@ -1974,7 +1969,6 @@ void PasswordAutofillAgent::CleanupOnDocumentShutdown() {
   web_input_to_password_info_.clear();
   password_to_username_.clear();
   last_supplied_password_info_iter_ = web_input_to_password_info_.end();
-  should_show_popup_without_passwords_ = false;
   field_data_manager().ClearData();
   previewed_elements_.clear();
   sent_request_to_store_ = false;
@@ -2429,12 +2423,6 @@ void PasswordAutofillAgent::AutofillField(const std::u16string& value,
       field_id, value, FieldPropertiesFlags::kAutofilledOnPageLoad);
   autofilled_elements_cache_.emplace(field_id, WebString::FromUTF16(value));
   all_autofilled_elements_.insert(field_id);
-}
-
-bool PasswordAutofillAgent::CanShowPopupWithoutPasswords(
-    const WebInputElement& password_element) const {
-  return should_show_popup_without_passwords_ && password_element &&
-         IsElementEditable(password_element);
 }
 
 bool PasswordAutofillAgent::IsPasswordFieldFilledByUser(

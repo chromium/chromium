@@ -135,7 +135,7 @@ interface PasswordAutofillAgent {
 
   // Informs that there are no saved credentials for filling.
   // This is the "no results" equivalent of SetPasswordFillData.
-  InformNoSavedCredentials(bool should_show_popup_without_passwords);
+  InformNoSavedCredentials();
 
   // Fills the given `credential` into the last focused text input.
   FillIntoFocusedField(

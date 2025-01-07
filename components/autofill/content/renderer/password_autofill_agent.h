@@ -147,8 +147,7 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
                                      FieldRendererId password_element_id,
                                      const std::u16string& username,
                                      const std::u16string& password) override;
-  void InformNoSavedCredentials(
-      bool should_show_popup_without_passwords) override;
+  void InformNoSavedCredentials() override;
   void FillIntoFocusedField(bool is_password,
                             const std::u16string& credential) override;
   void PreviewField(FieldRendererId field_id,
@@ -575,9 +574,6 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   void SetLastUpdatedFormAndField(const blink::WebFormElement& form,
                                   const blink::WebFormControlElement& input);
 
-  bool CanShowPopupWithoutPasswords(
-      const blink::WebInputElement& password_element) const;
-
   // Returns true if the element is of type 'password' and has either user typed
   // input or input autofilled on user trigger.
   bool IsPasswordFieldFilledByUser(
@@ -617,8 +613,6 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 
   // Set of fields that are reliably identified as non-credential fields.
   base::flat_set<FieldRendererId> suggestion_banned_fields_;
-
-  bool should_show_popup_without_passwords_ = false;
 
   PasswordValueGatekeeper gatekeeper_;
 

@@ -54,7 +54,7 @@ class MockPasswordManagerDriver : public StubPasswordManagerDriver {
               SetPasswordFillData,
               (const PasswordFormFillData&),
               (override));
-  MOCK_METHOD(void, InformNoSavedCredentials, (bool), (override));
+  MOCK_METHOD(void, InformNoSavedCredentials, (), (override));
 };
 
 class MockPasswordManagerClient : public StubPasswordManagerClient {
@@ -155,8 +155,8 @@ class PasswordFormFillingTest : public testing::Test {
 TEST_F(PasswordFormFillingTest, NoSavedCredentials) {
   std::vector<PasswordForm> best_matches;
 
-  EXPECT_CALL(driver_, InformNoSavedCredentials(_));
-  EXPECT_CALL(driver_, SetPasswordFillData(_)).Times(0);
+  EXPECT_CALL(driver_, InformNoSavedCredentials);
+  EXPECT_CALL(driver_, SetPasswordFillData).Times(0);
 
   LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
       &client_, &driver_, observed_form_, best_matches, federated_matches_,
@@ -174,9 +174,9 @@ TEST_F(PasswordFormFillingTest, Autofill) {
   another_saved_match.password_value += u"1";
   best_matches.push_back(another_saved_match);
 
-  EXPECT_CALL(driver_, InformNoSavedCredentials(_)).Times(0);
+  EXPECT_CALL(driver_, InformNoSavedCredentials).Times(0);
   PasswordFormFillData fill_data;
-  EXPECT_CALL(driver_, SetPasswordFillData(_)).WillOnce(SaveArg<0>(&fill_data));
+  EXPECT_CALL(driver_, SetPasswordFillData).WillOnce(SaveArg<0>(&fill_data));
   EXPECT_CALL(client_, PasswordWasAutofilled);
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   EXPECT_CALL(feature_manager_, IsBiometricAuthenticationBeforeFillingEnabled)
@@ -256,8 +256,7 @@ TEST_F(PasswordFormFillingTest, TestFillOnLoadSuggestion) {
     }
 
     PasswordFormFillData fill_data;
-    EXPECT_CALL(driver_, SetPasswordFillData(_))
-        .WillOnce(SaveArg<0>(&fill_data));
+    EXPECT_CALL(driver_, SetPasswordFillData).WillOnce(SaveArg<0>(&fill_data));
     EXPECT_CALL(client_, PasswordWasAutofilled);
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
     EXPECT_CALL(feature_manager_, IsBiometricAuthenticationBeforeFillingEnabled)
@@ -369,9 +368,9 @@ TEST_F(PasswordFormFillingTest, TestFillOnLoadSuggestionWithPrefill) {
 TEST_F(PasswordFormFillingTest, AutofillPSLMatch) {
   std::vector<PasswordForm> best_matches = {psl_saved_match_};
 
-  EXPECT_CALL(driver_, InformNoSavedCredentials(_)).Times(0);
+  EXPECT_CALL(driver_, InformNoSavedCredentials).Times(0);
   PasswordFormFillData fill_data;
-  EXPECT_CALL(driver_, SetPasswordFillData(_)).WillOnce(SaveArg<0>(&fill_data));
+  EXPECT_CALL(driver_, SetPasswordFillData).WillOnce(SaveArg<0>(&fill_data));
   EXPECT_CALL(client_, PasswordWasAutofilled);
 
   LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
@@ -475,38 +474,6 @@ TEST_F(PasswordFormFillingTest, AutofillAffiliatedWebMatch) {
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.MatchedFormType",
       PasswordFormMetricsRecorder::MatchedFormType::kAffiliatedWebsites, 1);
-}
-
-TEST_F(PasswordFormFillingTest,
-       AccountStorePromoWhenNoCredentialSavedAndSavingAndFillingEnabled) {
-  ON_CALL(client_, IsSavingAndFillingEnabled).WillByDefault(Return(true));
-  ON_CALL(*client_.GetPasswordFeatureManager(), ShouldShowAccountStorageOptIn())
-      .WillByDefault(Return(true));
-
-  std::vector<PasswordForm> best_matches;
-  EXPECT_CALL(driver_, InformNoSavedCredentials(
-                           /*should_show_popup_without_passwords=*/true));
-  SendFillInformationToRenderer(&client_, &driver_, observed_form_,
-                                best_matches, federated_matches_, nullptr,
-                                metrics_recorder_.get(),
-                                /*webauthn_suggestions_available=*/false,
-                                /*suggestion_banned_fields=*/{});
-}
-
-TEST_F(PasswordFormFillingTest,
-       NoAccountStorePromoWhenNoCredentialSavedAndSavingAndFillingDisabled) {
-  ON_CALL(client_, IsSavingAndFillingEnabled).WillByDefault(Return(false));
-  ON_CALL(*client_.GetPasswordFeatureManager(), ShouldShowAccountStorageOptIn())
-      .WillByDefault(Return(true));
-
-  std::vector<PasswordForm> best_matches;
-  EXPECT_CALL(driver_, InformNoSavedCredentials(
-                           /*should_show_popup_without_passwords=*/false));
-  SendFillInformationToRenderer(&client_, &driver_, observed_form_,
-                                best_matches, federated_matches_, nullptr,
-                                metrics_recorder_.get(),
-                                /*webauthn_suggestions_available=*/false,
-                                /*suggestion_banned_fields=*/{});
 }
 
 // Exclude Android and iOS, because there credentials are not filled on

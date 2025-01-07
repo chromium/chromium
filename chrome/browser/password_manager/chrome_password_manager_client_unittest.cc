@@ -278,8 +278,7 @@ class FakePasswordAutofillAgent
       const std::u16string& username,
       const std::u16string& password) override {}
 
-  void InformNoSavedCredentials(
-      bool should_show_popup_without_passwords) override {}
+  void InformNoSavedCredentials() override {}
 
   void FillIntoFocusedField(bool is_password,
                             const std::u16string& credential) override {}

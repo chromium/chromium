@@ -56,13 +56,8 @@ class PasswordManagerDriver {
 
   // Informs the driver that there are no saved credentials in the password
   // store for the current page.
-  // `should_show_popup_without_passwords` instructs the driver that the popup
-  // should be shown even without password suggestions. This is set to true if
-  // the popup will include another item that the driver doesn't know about
-  // (e.g. a promo to unlock passwords from the user's Google Account).
   // TODO(crbug.com/41259715): Remove and observe FormFetcher instead.
-  virtual void InformNoSavedCredentials(
-      bool should_show_popup_without_passwords) {}
+  virtual void InformNoSavedCredentials() {}
 
   // Notifies the driver that a password can be generated on the fields
   // identified by `form`.
