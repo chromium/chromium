@@ -202,6 +202,7 @@ source_set("unit_tests") {
     "aes_decryptor_unittest.cc",
     "cbcs_decryptor_unittest.cc",
     "cenc_decryptor_unittest.cc",
+    "cenc_utils_unittest.cc",
     "json_web_key_unittest.cc",
   ]
 
@@ -245,10 +246,6 @@ source_set("unit_tests") {
       "//media/cdm/library_cdm:cdm_host_proxy",
       "//media/cdm/library_cdm:test_support",
     ]
-  }
-
-  if (proprietary_codecs) {
-    sources += [ "cenc_utils_unittest.cc" ]
   }
 
   if (is_win) {
