@@ -171,9 +171,6 @@ BASE_FEATURE(kMahiSendingUrl,
 BASE_FEATURE(kMahiManaged, "MahiManaged", base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// Controls enabling / disabling the sparky feature.
-BASE_FEATURE(kSparky, "Sparky", base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls enabling / disabling the mahi debugging.
 BASE_FEATURE(kMahiDebugging,
              "MahiDebugging",
@@ -458,15 +455,12 @@ bool IsJellyEnabled() {
   return base::FeatureList::IsEnabled(kJelly);
 }
 
-// Sparkly depends on Mahi, so we turn on Mahi if the sparky flag is enabled.
-// Sparky doesn't work on LACROS so that case is ignored.
 bool IsMahiEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   return chromeos::BrowserParamsProxy::Get()->IsMahiEnabled();
 #else
-  return (base::FeatureList::IsEnabled(kMahi) &&
-          base::FeatureList::IsEnabled(kFeatureManagementMahi)) ||
-         base::FeatureList::IsEnabled(kSparky);
+  return base::FeatureList::IsEnabled(kMahi) &&
+         base::FeatureList::IsEnabled(kFeatureManagementMahi);
 #endif
 }
 
@@ -485,10 +479,6 @@ bool IsMahiManagedEnabled() {
 #else
   return false;
 #endif
-}
-
-bool IsSparkyEnabled() {
-  return base::FeatureList::IsEnabled(kSparky);
 }
 
 bool IsMahiDebuggingEnabled() {

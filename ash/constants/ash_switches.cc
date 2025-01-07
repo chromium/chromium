@@ -35,10 +35,6 @@ constexpr char kMantisHashKey[] =
     "\x7c\x8c\x82\x6f\x3e\xcd\x16\xf0\xfb\xfe\xfc\x9c\x2a\x48\x07\x75\x7e\xea"
     "\x46\xf2";
 
-// The hash value for the secret key of the sparky feature.
-constexpr char kSparkyHashKey[] =
-    "\x3b\xcc\x52\x86\xf0\x4d\xfd\xd2\xcf\xd7\x05\xe0\xcc\x97\x95\xfd\x8a\x78"
-    "\x44\x77";
 
 }  // namespace
 
@@ -789,12 +785,6 @@ const char kLoginProfile[] = "login-profile";
 // Specifies the user which is already logged in.
 const char kLoginUser[] = "login-user";
 
-// Supply secret key for the sparky feature.
-const char kSparkyFeatureKey[] = "sparky-feature-key";
-
-// Supply server url for the sparky feature.
-const char kSparkyServerUrl[] = "sparky-server-url";
-
 // Specifies the user that the browser data migration should happen for.
 const char kBrowserDataMigrationForUser[] = "browser-data-migration-for-user";
 
@@ -1296,35 +1286,6 @@ bool IsMantisSecretKeyMatched() {
   }
 
   return key_matched;
-}
-
-bool IsSparkySecretKeyMatched() {
-  // Commandline looks like:
-  //  out/Default/chrome --user-data-dir=/tmp/tmp123
-  //  --sparky-feature-key="INSERT KEY HERE" --enable-features=Sparky
-  const std::string provided_key_hash = base::SHA1HashString(
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          kSparkyFeatureKey));
-
-  bool sparky_key_matched = (provided_key_hash == kSparkyHashKey);
-  if (!sparky_key_matched) {
-    LOG(ERROR) << "Provided secret key does not match with the expected one.";
-  }
-
-  return sparky_key_matched;
-}
-
-std::optional<std::string> ObtainSparkyServerUrl() {
-  // Commandline looks like:
-  //  out/Default/chrome --user-data-dir=/tmp/tmp123
-  //  --sparky-server-url="INSERT KEY HERE"
-  //  --enable-features=Sparky
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(kSparkyServerUrl)) {
-    return std::make_optional(
-        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-            kSparkyServerUrl));
-  }
-  return std::nullopt;
 }
 
 }  // namespace ash::switches

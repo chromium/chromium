@@ -10487,18 +10487,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNotificationWidthIncreaseDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kNotificationWidthIncrease)},
 
-    {"sparky", flag_descriptions::kSparkyName,
-     flag_descriptions::kSparkyDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kSparky)},
-
-    {"sparky-feature-key", flag_descriptions::kSparkyFeatureKeyName,
-     flag_descriptions::kSparkyFeatureKeyDescription, kOsCrOS,
-     STRING_VALUE_TYPE(ash::switches::kSparkyFeatureKey, "")},
-
-    {"sparky-server-url", flag_descriptions::kSparkyServerUrlName,
-     flag_descriptions::kSparkyServerUrlDescription, kOsCrOS,
-     STRING_VALUE_TYPE(ash::switches::kSparkyServerUrl, "")},
-
     {"pompano", flag_descriptions::kPompanoName,
      flag_descriptions::kPompanoDescritpion, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kPompano)},

@@ -51,7 +51,6 @@ include_rules = [
   "+chrome/browser/ash/scanning",
   "+chrome/browser/ash/secure_channel",
   "+chrome/browser/ash/smb_client",
-  "+chrome/browser/ash/sparky",
   "+chrome/browser/ash/sync",
   "+chrome/browser/ash/system_web_apps",
   "+chrome/browser/ash/tether",

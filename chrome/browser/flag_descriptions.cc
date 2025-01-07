@@ -7229,17 +7229,6 @@ const char kContinuousOverviewScrollAnimationDescription[] =
     "the transition into Overview as the gesture is done. Allows for the user "
     "to scrub (move forward and backward) through Overview.";
 
-const char kSparkyName[] = "Sparky feature";
-const char kSparkyDescription[] = "Enable Sparky feature on ChromeOS.";
-
-const char kSparkyFeatureKeyName[] = "Feature key for Sparky feature";
-const char kSparkyFeatureKeyDescription[] =
-    "Feature key to use the Sparky feature on ChromeOS.";
-
-const char kSparkyServerUrlName[] = "Server Url for Sparky feature";
-const char kSparkyServerUrlDescription[] =
-    "The Url of the server which the Sparky feature will call on ChromeOS.";
-
 const char kSpectreVariant2MitigationName[] = "Spectre variant 2 mitigation";
 const char kSpectreVariant2MitigationDescription[] =
     "Controls whether Spectre variant 2 mitigation is enabled when "
