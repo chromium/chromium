@@ -32,6 +32,7 @@ final class CursorAnchorInfoController {
 
     /** An interface to mock out composing text retrieval from ImeAdapter. */
     public interface ComposingTextDelegate {
+        @Nullable
         CharSequence getText();
 
         int getSelectionStart();

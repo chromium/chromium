@@ -20,6 +20,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.UserData;
+import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
@@ -60,10 +61,8 @@ public class SmartSelectionClient implements SelectionClient, UserData {
 
     private long mNativeSmartSelectionClient;
 
-    @SuppressWarnings("NullAway.Init")
     private SmartSelectionProvider mProvider;
 
-    @SuppressWarnings("NullAway.Init")
     private ResultCallback mCallback;
 
     private @Nullable SmartSelectionEventProcessor mSmartSelectionEventProcessor;
@@ -103,6 +102,7 @@ public class SmartSelectionClient implements SelectionClient, UserData {
                 SmartSelectionClientJni.get().init(SmartSelectionClient.this, webContents);
     }
 
+    @Initializer
     private void setCallback(ResultCallback callback, WebContents webContents) {
         mCallback = callback;
         mProvider =

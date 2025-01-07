@@ -65,6 +65,7 @@ import org.chromium.blink_public.web.WebInputEventModifier;
 import org.chromium.blink_public.web.WebTextInputMode;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.content.browser.GestureListenerManagerImpl;
 import org.chromium.content.browser.WindowEventObserver;
 import org.chromium.content.browser.WindowEventObserverManager;
@@ -168,8 +169,7 @@ public class ImeAdapterImpl
     private int mLastSelectionStart;
     private int mLastSelectionEnd;
 
-    @SuppressWarnings("NullAway.Init")
-    private String mLastText;
+    private @Nullable String mLastText;
 
     private int mLastCompositionStart;
     private int mLastCompositionEnd;
@@ -288,7 +288,7 @@ public class ImeAdapterImpl
                         wrapper,
                         new CursorAnchorInfoController.ComposingTextDelegate() {
                             @Override
-                            public CharSequence getText() {
+                            public @Nullable CharSequence getText() {
                                 return mLastText;
                             }
 
@@ -448,6 +448,7 @@ public class ImeAdapterImpl
         if (mInputConnectionFactory == null) return null;
         View containerView = getContainerView();
         if (DEBUG_LOGS) Log.i(TAG, "Last text: " + mLastText);
+        assert mLastText != null;
         setInputConnection(
                 mInputConnectionFactory.initializeAndGet(
                         containerView,
@@ -551,6 +552,7 @@ public class ImeAdapterImpl
         return modifiers;
     }
 
+    @RequiresNonNull("mLastText")
     private void updateInputStateForStylusWriting() {
         if (mWebContents.getStylusWritingHandler() == null) return;
         mWebContents
@@ -1285,6 +1287,7 @@ public class ImeAdapterImpl
         View containerView = getContainerView();
         if (!ViewUtils.hasFocus(containerView)) ViewUtils.requestFocus(containerView);
 
+        assert mLastText != null;
         updateInputStateForStylusWriting();
         return mWebContents.getStylusWritingHandler().shouldInitiateStylusWriting();
     }

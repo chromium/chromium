@@ -4,6 +4,8 @@
 
 package org.chromium.ui.display;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -27,8 +29,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.util.Arrays;
@@ -46,8 +48,7 @@ import java.util.function.Consumer;
     // When this object exists, a positive value means that the forced DIP scale is set and
     // the zero means it is not. The non existing object (i.e. null reference) means that
     // the existence and value of the forced DIP scale has not yet been determined.
-    @SuppressWarnings("NullAway.Init")
-    private static Float sForcedDIPScale;
+    private static @Nullable Float sForcedDIPScale;
 
     private static @Nullable Float getHdrSdrRatio(Display display) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) return null;
@@ -59,29 +60,26 @@ import java.util.function.Consumer;
         return display.isHdr() && display.isHdrSdrRatioAvailable();
     }
 
+    @EnsuresNonNull("sForcedDIPScale")
     private static boolean hasForcedDIPScale() {
         if (sForcedDIPScale == null) {
+            float value = 0.0f;
             String forcedScaleAsString =
                     CommandLine.getInstance()
                             .getSwitchValue(DisplaySwitches.FORCE_DEVICE_SCALE_FACTOR);
-            if (forcedScaleAsString == null) {
-                sForcedDIPScale = Float.valueOf(0.0f);
-            } else {
-                boolean isInvalid = false;
+            if (forcedScaleAsString != null) {
                 try {
-                    sForcedDIPScale = Float.valueOf(forcedScaleAsString);
-                    // Negative values are discarded.
-                    if (sForcedDIPScale.floatValue() <= 0.0f) isInvalid = true;
+                    value = Float.valueOf(forcedScaleAsString);
                 } catch (NumberFormatException e) {
-                    // Strings that do not represent numbers are discarded.
-                    isInvalid = true;
                 }
 
-                if (isInvalid) {
-                    Log.w(TAG, "Ignoring invalid forced DIP scale '" + forcedScaleAsString + "'");
-                    sForcedDIPScale = Float.valueOf(0.0f);
+                if (value <= 0.0f) {
+                    // Strings that do not represent numbers are discarded.
+                    Log.w(TAG, "Ignoring invalid forced DIP scale: %s", forcedScaleAsString);
+                    value = 0.0f;
                 }
             }
+            sForcedDIPScale = value;
         }
         return sForcedDIPScale.floatValue() > 0;
     }
@@ -206,9 +204,9 @@ import java.util.function.Consumer;
         return mWindowContext;
     }
 
-    @NullUnmarked
     @RequiresApi(VERSION_CODES.R)
     private void updateFromConfiguration() {
+        assumeNonNull(mWindowContext);
         WindowManager windowManager = mWindowContext.getSystemService(WindowManager.class);
         Rect bounds = windowManager.getMaximumWindowMetrics().getBounds();
         int windowInsetsType = WindowInsets.Type.systemBars() | WindowInsets.Type.displayCutout();
@@ -236,9 +234,11 @@ import java.util.function.Consumer;
                 mWindowContext.getDisplay());
     }
 
-    /* package */ @NullUnmarked
+    /* package */
     void onDisplayRemoved() {
         if (USE_CONFIGURATION) {
+            assumeNonNull(mWindowContext);
+            assumeNonNull(mComponentCallbacks);
             mWindowContext.unregisterComponentCallbacks(mComponentCallbacks);
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
@@ -299,7 +299,6 @@ import java.util.function.Consumer;
                 /* isInternal= */ null);
     }
 
-    @NullUnmarked
     private void updateCommon(
             Rect bounds,
             @Nullable Insets insets,
@@ -331,7 +330,7 @@ import java.util.function.Consumer;
             DeviceProductInfo deviceProductInfo = display.getDeviceProductInfo();
             if (deviceProductInfo != null) {
                 isInternal =
-                        display.getDeviceProductInfo().getConnectionToSinkType()
+                        deviceProductInfo.getConnectionToSinkType()
                                 == DeviceProductInfo.CONNECTION_TO_SINK_BUILT_IN;
             }
         }

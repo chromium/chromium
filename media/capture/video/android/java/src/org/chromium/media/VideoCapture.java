@@ -4,6 +4,8 @@
 
 package org.chromium.media;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.graphics.ImageFormat;
 import android.hardware.display.DisplayManager;
@@ -50,8 +52,7 @@ public abstract class VideoCapture {
     // individual implementations.
     protected boolean mInvertDeviceOrientationReadings;
 
-    @SuppressWarnings("NullAway.Init")
-    protected VideoCaptureFormat mCaptureFormat;
+    protected @Nullable VideoCaptureFormat mCaptureFormat;
 
     protected final int mId;
     // Native callback context variable.
@@ -146,21 +147,25 @@ public abstract class VideoCapture {
 
     @CalledByNative
     public final int queryWidth() {
+        assumeNonNull(mCaptureFormat);
         return mCaptureFormat.mWidth;
     }
 
     @CalledByNative
     public final int queryHeight() {
+        assumeNonNull(mCaptureFormat);
         return mCaptureFormat.mHeight;
     }
 
     @CalledByNative
     public final int queryFrameRate() {
+        assumeNonNull(mCaptureFormat);
         return mCaptureFormat.mFramerate;
     }
 
     @CalledByNative
     public final int getColorspace() {
+        assumeNonNull(mCaptureFormat);
         switch (mCaptureFormat.mPixelFormat) {
             case ImageFormat.YV12:
                 return AndroidImageFormat.YV12;

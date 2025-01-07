@@ -44,6 +44,7 @@ import org.chromium.base.StrictModeContext;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.NullUnmarked;
@@ -248,11 +249,8 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
             return networkInfo;
         }
 
-        /**
-         * Returns connection type and status information about the current
-         * default network.
-         */
-        NetworkState getNetworkState(WifiManagerDelegate wifiManagerDelegate) {
+        /** Returns connection type and status information about the current default network. */
+        NetworkState getNetworkState(@Nullable WifiManagerDelegate wifiManagerDelegate) {
             Network network = null;
             NetworkInfo networkInfo;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -313,7 +311,7 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
                         networkInfo.getType(),
                         networkInfo.getSubtype(),
                         false,
-                        wifiManagerDelegate.getWifiSsid(),
+                        assumeNonNull(wifiManagerDelegate).getWifiSsid(),
                         false,
                         "");
             }
@@ -965,8 +963,7 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
     // mConnectivityManagerDelegates and mWifiManagerDelegate are only non-final for testing.
     private ConnectivityManagerDelegate mConnectivityManagerDelegate;
 
-    @SuppressWarnings("NullAway.Init")
-    private WifiManagerDelegate mWifiManagerDelegate;
+    private @Nullable WifiManagerDelegate mWifiManagerDelegate;
 
     // mNetworkCallback and mNetworkRequest are only non-null in Android L and above.
     // mNetworkCallback will be null if ConnectivityManager.registerNetworkCallback() ever fails.
@@ -974,7 +971,6 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
     private NetworkRequest mNetworkRequest;
     private boolean mRegistered;
 
-    @SuppressWarnings("NullAway.Init")
     private NetworkState mNetworkState;
 
     // When a BroadcastReceiver is registered for a sticky broadcast that has been sent out at
@@ -1242,6 +1238,7 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
      * TODO(crbug.com/40936429): migrate external callers to getCurrentNetworkState() and make this
      * method private (to be called only when updates are received from the system.)
      */
+    @EnsuresNonNull("mNetworkState")
     public void updateCurrentNetworkState() {
         try (ScopedSysTraceEvent event =
                 ScopedSysTraceEvent.scoped(
@@ -1308,8 +1305,8 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
     public long[] getNetworksAndTypes() {
         try (ScopedSysTraceEvent event =
                 ScopedSysTraceEvent.scoped("NetworkChangeNotifierAutoDetect.getNetworksAndTypes")) {
-            final Network networks[] = getAllNetworksFiltered(mConnectivityManagerDelegate, null);
-            final long networksAndTypes[] = new long[networks.length * 2];
+            final Network[] networks = getAllNetworksFiltered(mConnectivityManagerDelegate, null);
+            final long[] networksAndTypes = new long[networks.length * 2];
             int index = 0;
             for (Network network : networks) {
                 networksAndTypes[index++] = networkToNetId(network);

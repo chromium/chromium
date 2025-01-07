@@ -74,7 +74,7 @@ class MediaCodecUtil {
 
         @SuppressWarnings("deprecation")
         private int getCodecCount() {
-            if (hasNewMediaCodecList()) return mCodecList.length;
+            if (mCodecList != null) return mCodecList.length;
             try {
                 return MediaCodecList.getCodecCount();
             } catch (RuntimeException e) {
@@ -86,16 +86,11 @@ class MediaCodecUtil {
 
         @SuppressWarnings("deprecation")
         private MediaCodecInfo getCodecInfoAt(int index) {
-            if (hasNewMediaCodecList()) return mCodecList[index];
+            if (mCodecList != null) return mCodecList[index];
             return MediaCodecList.getCodecInfoAt(index);
         }
 
-        private boolean hasNewMediaCodecList() {
-            return mCodecList != null;
-        }
-
-        @SuppressWarnings("NullAway.Init")
-        private MediaCodecInfo[] mCodecList;
+        private MediaCodecInfo @Nullable [] mCodecList;
 
         private class CodecInfoIterator implements Iterator<MediaCodecInfo> {
             private int mPosition;
@@ -224,7 +219,7 @@ class MediaCodecUtil {
         }
 
         MediaCodecListHelper codecListHelper = new MediaCodecListHelper();
-        if (codecListHelper.hasNewMediaCodecList()) {
+        if (codecListHelper.mCodecList != null) {
             for (MediaCodecInfo info : codecListHelper) {
                 if (info.isEncoder()) continue;
 

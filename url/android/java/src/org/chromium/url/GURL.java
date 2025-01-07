@@ -23,6 +23,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.url.mojom.Url;
@@ -67,12 +68,8 @@ public class GURL {
     // TODO(crbug.com/40113773): Right now we return a new String with each request for a
     //      GURL component other than the spec itself. Should we cache return Strings (as
     //      WeakReference?) so that callers can share String memory?
-    @SuppressWarnings("NullAway.Init")
     private String mSpec;
-
     private boolean mIsValid;
-
-    @SuppressWarnings("NullAway.Init")
     private Parsed mParsed;
 
     private static class Holder {
@@ -147,6 +144,7 @@ public class GURL {
     }
 
     @CalledByNative
+    @Initializer
     private void init(@JniType("std::string") String spec, boolean isValid, Parsed parsed) {
         mSpec = spec;
         mIsValid = isValid;

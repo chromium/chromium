@@ -10,6 +10,7 @@ import android.text.Spanned;
 import android.text.style.TextAppearanceSpan;
 import android.view.View;
 
+import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content.R;
@@ -21,7 +22,6 @@ import org.chromium.ui.base.WindowAndroid;
  */
 @NullMarked
 public class TextSuggestionsPopupWindow extends SuggestionsPopupWindow {
-    @SuppressWarnings("NullAway.Init")
     private SuggestionInfo[] mSuggestionInfos;
 
     private TextAppearanceSpan mPrefixSpan;
@@ -47,6 +47,7 @@ public class TextSuggestionsPopupWindow extends SuggestionsPopupWindow {
     }
 
     /** Shows the text suggestion menu at the specified coordinates (relative to the viewport). */
+    @Initializer
     public void show(
             double caretX,
             double caretY,

@@ -45,6 +45,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
@@ -255,21 +256,18 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
     private static @Nullable WindowAndroid sWindowAndroidForTesting;
 
     private long mNativeSelectFileDialog;
-    private @Nullable String mIntentAction;
+    private String mIntentAction;
 
     // File types may contain both file extensions and MIME types.
-    @SuppressWarnings("NullAway.Init")
     private List<String> mFileTypes;
 
     // Converted from `mFileTypes`, only contains deduped MIME types.
-    @SuppressWarnings("NullAway.Init")
     private List<String> mMimeTypes;
 
     private boolean mCapture;
     private boolean mAllowMultiple;
     private @Nullable Uri mCameraOutputUri;
 
-    @SuppressWarnings("NullAway.Init")
     private WindowAndroid mWindowAndroid;
 
     /** Whether an Activity is available on the system to support capturing images (i.e. Camera). */
@@ -338,6 +336,7 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
      * @param window The WindowAndroid that can show intents
      */
     @CalledByNative
+    @Initializer
     protected void selectFile(
             String intentAction,
             String[] fileTypes,

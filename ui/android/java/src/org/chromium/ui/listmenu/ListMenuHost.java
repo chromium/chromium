@@ -4,6 +4,8 @@
 
 package org.chromium.ui.listmenu;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -15,7 +17,7 @@ import android.view.ViewParent;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
 import org.chromium.ui.widget.AnchoredPopupWindow;
@@ -53,9 +55,7 @@ public class ListMenuHost implements AnchoredPopupWindow.LayoutObserver {
 
     private int mMenuMaxWidth;
 
-    @SuppressWarnings("NullAway.Init")
-    private AnchoredPopupWindow mPopupMenu;
-
+    private @Nullable AnchoredPopupWindow mPopupMenu;
     private @Nullable ListMenuDelegate mDelegate;
     private ObserverList<PopupMenuShownListener> mPopupListeners = new ObserverList<>();
     private boolean mTryToFitLargestItem;
@@ -136,7 +136,7 @@ public class ListMenuHost implements AnchoredPopupWindow.LayoutObserver {
     }
 
     /** Init the popup window with provided attributes, called before {@link #showMenu()} */
-    @NullUnmarked
+    @EnsuresNonNull("mPopupMenu")
     private void initPopupWindow() {
         if (mDelegate == null) throw new IllegalStateException("Delegate was not set.");
 
@@ -206,6 +206,7 @@ public class ListMenuHost implements AnchoredPopupWindow.LayoutObserver {
     @Override
     public void onPreLayoutChange(
             boolean positionBelow, int x, int y, int width, int height, Rect anchorRect) {
+        assumeNonNull(mPopupMenu);
         if (mPositionedAtEnd) {
             mPopupMenu.setAnimationStyle(
                     positionBelow ? R.style.EndIconMenuAnim : R.style.EndIconMenuAnimBottom);

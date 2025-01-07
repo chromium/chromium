@@ -37,17 +37,18 @@ public interface StylusWritingHandler {
 
     /**
      * Update current input state parameters to stylus writing system.
-     *  @param text the input text
+     *
+     * @param text the input text
      * @param selectionStart the input selection start offset
      * @param selectionEnd the input selection end offset
      */
-    default void updateInputState(String text, int selectionStart, int selectionEnd) {}
+    default void updateInputState(@Nullable String text, int selectionStart, int selectionEnd) {}
 
     /**
      * Notify focused node has changed in web page.
      *
      * @param editableBoundsOnScreenDip the Editable element bounds Rect in dip
-     * @param isEditable     is true if focused node is of editable type.
+     * @param isEditable is true if focused node is of editable type.
      * @param currentView the {@link View} in which the focused node changed.
      */
     default @Nullable EditorBoundsInfo onFocusedNodeChanged(

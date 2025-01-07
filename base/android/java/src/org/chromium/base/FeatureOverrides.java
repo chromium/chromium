@@ -5,9 +5,9 @@
 package org.chromium.base;
 
 import androidx.annotation.CheckResult;
-import androidx.annotation.Nullable;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Allows overriding feature flags and parameters for tests. Prefer @Features annotations.
@@ -23,7 +23,7 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 public class FeatureOverrides {
     public static class Builder extends FeatureList.TestValues {
-        @Nullable private String mLastFeatureName;
+        private @Nullable String mLastFeatureName;
 
         private Builder() {}
 

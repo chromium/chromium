@@ -4,6 +4,8 @@
 
 package org.chromium.ui.dragdrop;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.ContentProvider;
 import android.content.ContentResolver;
 import android.content.res.AssetFileDescriptor;
@@ -21,7 +23,6 @@ import android.webkit.MimeTypeMap;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.UsedByReflection;
 
@@ -93,8 +94,7 @@ public class DropDataProviderImpl {
 
     private int mClearCachedDataIntervalMs = DEFAULT_CLEAR_CACHED_DATA_INTERVAL_MS;
 
-    @SuppressWarnings("NullAway.Init")
-    private byte[] mImageBytes;
+    private byte @Nullable [] mImageBytes;
 
     private @Nullable String mImageFilename;
     private @Nullable String mMimeType;
@@ -109,14 +109,7 @@ public class DropDataProviderImpl {
     private long mLastUriClearedTimestamp;
     private long mLastUriCreatedTimestamp;
     private boolean mLastUriRecorded;
-
-    @SuppressWarnings("NullAway.Init")
-    private DropPipeDataWriter mDropPipeDataWriter;
-
-    /** This constructor is being used to initialize the pipeWriter. */
-    public DropDataProviderImpl() {
-        initPipeWriter();
-    }
+    private DropPipeDataWriter mDropPipeDataWriter = new DropPipeDataWriter();
 
     /** Update the delayed time before clearing the image cache. */
     public void setClearCachedDataIntervalMs(int milliseconds) {
@@ -139,8 +132,7 @@ public class DropDataProviderImpl {
     /**
      * Cache the passed-in image data of Drag and Drop. It is expected for filename to be non-empty.
      */
-    public Uri cache(
-            byte[] imageBytes, @Nullable String encodingFormat, @Nullable String filename) {
+    public Uri cache(byte[] imageBytes, String encodingFormat, String filename) {
         long elapsedRealtime = SystemClock.elapsedRealtime();
         long lastUriCreatedTimestamp = mLastUriCreatedTimestamp;
         String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(encodingFormat);
@@ -205,7 +197,6 @@ public class DropDataProviderImpl {
     }
 
     /** Clear the image data of Drag and Drop. */
-    @NullUnmarked
     private void clearCacheData() {
         mImageBytes = null;
         mImageFilename = null;
@@ -238,16 +229,9 @@ public class DropDataProviderImpl {
     }
 
     /**
-     * @see android.content.ContentProvider.PipeDataWriter
-     */
-    public void initPipeWriter() {
-        mDropPipeDataWriter = new DropPipeDataWriter();
-    }
-
-    /**
      * @see ContentProvider#getType(Uri)
      */
-    public @Nullable String getType(Uri uri) {
+    public @Nullable String getType(@Nullable Uri uri) {
         synchronized (LOCK) {
             if (uri == null || !uri.equals(mContentProviderUri)) {
                 return null;
@@ -290,7 +274,6 @@ public class DropDataProviderImpl {
     /**
      * @see ContentProvider#openAssetFile(Uri, String)
      */
-    @NullUnmarked
     public @Nullable AssetFileDescriptor openAssetFile(
             ContentProvider providerWrapper, Uri uri, String mode)
             throws FileNotFoundException, SecurityException {
@@ -316,11 +299,12 @@ public class DropDataProviderImpl {
                         "Android.DragDrop.Image.OpenFileTime.FirstAttempt", duration);
             }
             mOpenFileLastAccessTime = elapsedRealtime;
-            imageBytes = this.mImageBytes;
+            imageBytes = assumeNonNull(this.mImageBytes);
         }
+        String type = getType(uri);
+        assert type != null;
         ParcelFileDescriptor fd =
-                providerWrapper.openPipeHelper(
-                        uri, getType(uri), null, imageBytes, mDropPipeDataWriter);
+                providerWrapper.openPipeHelper(uri, type, null, imageBytes, mDropPipeDataWriter);
         return new AssetFileDescriptor(fd, 0, imageBytes.length);
     }
 
@@ -336,7 +320,6 @@ public class DropDataProviderImpl {
     /**
      * @see ContentProvider#query(Uri, String[], String, String[], String)
      */
-    @NullUnmarked
     public Cursor query(Uri uri, String @Nullable [] projection) {
         byte[] imageBytes;
         String imageFilename;
@@ -344,8 +327,8 @@ public class DropDataProviderImpl {
             if (uri == null || !uri.equals(mContentProviderUri)) {
                 return new MatrixCursor(COLUMNS, 0);
             }
-            imageBytes = this.mImageBytes;
-            imageFilename = mImageFilename;
+            imageBytes = assumeNonNull(mImageBytes);
+            imageFilename = assumeNonNull(mImageFilename);
         }
         if (projection == null) {
             projection = COLUMNS;
@@ -384,25 +367,29 @@ public class DropDataProviderImpl {
     /**
      * @see ContentProvider#call(String, String, Bundle)
      */
-    @NullUnmarked
     public @Nullable Bundle call(String method, @Nullable String arg, @Nullable Bundle extras) {
         switch (method) {
             case CACHE_METHOD_NAME:
+                assumeNonNull(extras);
+                byte[] imageBytes = (byte[]) extras.getSerializable(BYTES_PARAM);
+                String encodingFormat = extras.getString(IMAGE_CONTENT_EXTENSION_PARAM);
+                String filename = extras.getString(IMAGE_FILE_PARAM);
+                assert imageBytes != null;
+                assert encodingFormat != null;
+                assert filename != null;
+                Uri uri = cache(imageBytes, encodingFormat, filename);
                 Bundle bundleToReturn = new Bundle();
-                Uri uri =
-                        cache(
-                                (byte[]) extras.getSerializable(BYTES_PARAM),
-                                extras.getString(IMAGE_CONTENT_EXTENSION_PARAM),
-                                extras.getString(IMAGE_FILE_PARAM));
                 bundleToReturn.putParcelable("uri", uri);
                 return bundleToReturn;
             case SET_INTERVAL_METHOD_NAME:
+                assumeNonNull(extras);
                 setClearCachedDataIntervalMs(
                         extras.getInt(
                                 CLEAR_CACHE_PARAM,
                                 DropDataProviderImpl.DEFAULT_CLEAR_CACHED_DATA_INTERVAL_MS));
                 break;
             case ON_DRAG_END_METHOD_NAME:
+                assumeNonNull(extras);
                 onDragEnd(extras.getBoolean(IMAGE_USAGE_PARAM));
                 break;
         }
@@ -410,7 +397,7 @@ public class DropDataProviderImpl {
         return null;
     }
 
-    byte[] getImageBytesForTesting() {
+    byte @Nullable [] getImageBytesForTesting() {
         synchronized (LOCK) {
             return mImageBytes;
         }

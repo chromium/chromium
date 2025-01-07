@@ -4,6 +4,8 @@
 
 package org.chromium.base.process_launcher;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -35,6 +37,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.memory.MemoryPressureMonitor;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -93,7 +96,6 @@ public class ChildProcessService {
     private @Nullable String mBoundCallingClazz;
 
     // This is the native "Main" thread for the renderer / utility process.
-    @SuppressWarnings("NullAway.Init")
     private Thread mMainThread;
 
     // Parameters received via IPC, only accessed while holding the mMainThread monitor.
@@ -110,8 +112,7 @@ public class ChildProcessService {
     private boolean mServiceBound;
 
     // Interface to send notifications to the parent process.
-    @SuppressWarnings("NullAway.Init")
-    private IParentProcess mParentProcess;
+    private @Nullable IParentProcess mParentProcess;
 
     public ChildProcessService(
             ChildProcessServiceDelegate delegate, Service service, Context applicationContext) {
@@ -257,7 +258,7 @@ public class ChildProcessService {
             };
 
     /** Loads Chrome's native libraries and initializes a ChildProcessService. */
-    // For sCreateCalled check.
+    @Initializer
     public void onCreate() {
         Log.i(TAG, "Creating new ChildProcessService pid=%d", Process.myPid());
         if (sCreateCalled) {
@@ -283,6 +284,7 @@ public class ChildProcessService {
     }
 
     private void mainThreadMain() {
+        assumeNonNull(mParentProcess);
         try {
             // CommandLine must be initialized before everything else.
             synchronized (mMainThread) {
