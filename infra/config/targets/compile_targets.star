@@ -424,6 +424,8 @@ targets.compile_target(
 targets.compile_target(
     name = "chrome/updater:all",
     label = "//chrome/updater:all",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(

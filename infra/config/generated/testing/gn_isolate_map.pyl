@@ -409,6 +409,7 @@
   "chrome/updater:all": {
     "label": "//chrome/updater:all",
     "type": "additional_compile_target",
+    "skip_usage_check": True,
   },
   "chrome_ai_wpt_tests": {
     "label": "//components/optimization_guide/internal/testing:chrome_ai_wpt_tests",
@@ -1879,6 +1880,7 @@
   "updater_tests": {
     "label": "//chrome/updater:updater_tests",
     "type": "console_test_launcher",
+    "skip_usage_check": True,
     "args": [
       "--gtest_shuffle",
       "--test-launcher-timeout=180000",
@@ -1889,6 +1891,7 @@
   "updater_tests_system": {
     "label": "//chrome/updater:updater_tests_system",
     "type": "console_test_launcher",
+    "skip_usage_check": True,
     "args": [
       "--gtest_shuffle",
       "--test-launcher-timeout=180000",
@@ -1901,6 +1904,7 @@
     "label": "//chrome/updater:updater_tests_win_uac",
     "type": "script",
     "script": "//testing/scripts/run_telemetry_as_googletest.py",
+    "skip_usage_check": True,
     "args": [
       "test_service/run_command_as_standard_user.py",
       "--command=updater_tests.exe",

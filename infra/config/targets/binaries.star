@@ -2125,6 +2125,8 @@ targets.binaries.windowed_test_launcher(
 targets.binaries.console_test_launcher(
     name = "updater_tests",
     label = "//chrome/updater:updater_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
     args = [
         "--gtest_shuffle",
         "--test-launcher-timeout=180000",
@@ -2136,6 +2138,8 @@ targets.binaries.console_test_launcher(
 targets.binaries.console_test_launcher(
     name = "updater_tests_system",
     label = "//chrome/updater:updater_tests_system",
+    # All references have been moved to starlark
+    skip_usage_check = True,
     args = [
         "--gtest_shuffle",
         "--test-launcher-timeout=180000",
@@ -2149,6 +2153,8 @@ targets.binaries.script(
     name = "updater_tests_win_uac",
     label = "//chrome/updater:updater_tests_win_uac",
     script = "//testing/scripts/run_telemetry_as_googletest.py",
+    # All references have been moved to starlark
+    skip_usage_check = True,
     args = [
         "test_service/run_command_as_standard_user.py",
         "--command=updater_tests.exe",
