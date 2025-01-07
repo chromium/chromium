@@ -992,13 +992,12 @@ experimental domain Audits
       InteractiveContentOptionChild
       InteractiveContentLegendChild
 
-  # This isue warns about errors in the select element content model.
+  # This issue warns about errors in the select element content model.
   type SelectElementAccessibilityIssueDetails extends object
     properties
       DOM.BackendNodeId nodeId
       SelectElementAccessibilityIssueReason selectElementAccessibilityIssueReason
       boolean hasDisallowedAttributes
-
 
   type StyleSheetLoadingIssueReason extends string
     enum
