@@ -8,6 +8,7 @@ for more details about the presubmit API built into depot_tools.
 """
 
 import os
+import xml.etree.ElementTree as ElementTree
 
 NULLABILITY_PATTERN = r'(nonnull|nullable|_Nullable|_Nonnull)'
 TODO_PATTERN = r'TO[D]O\(([^\)]*)\)'
@@ -267,6 +268,46 @@ def _CheckNoTearDownEGTest(input_api, output_api):
 
     return [output_api.PresubmitError(warning_message)]
 
+
+def _IsAlphabeticallySortedXML(file):
+    """Check that the `file` is alphabetically sorted"""
+    parser = ElementTree.XMLParser(target=ElementTree.TreeBuilder(
+        insert_comments=True))
+    with open(file, 'r') as xml_file:
+        tree = ElementTree.parse(xml_file, parser)
+    root = tree.getroot()
+
+    original_tree_string = ElementTree.tostring(root, encoding='utf8')
+
+    messages_element = tree.findall('.//messages')[0]
+    messages = messages_element.findall('message')
+    messages.sort(key=lambda message: message.attrib["name"])
+    for message in messages:
+        messages_element.remove(message)
+    for message in messages:
+        messages_element.append(message)
+    ordered_tree_string = ElementTree.tostring(root, encoding='utf8')
+    return ordered_tree_string == original_tree_string
+
+
+def _CheckOrderedStringFile(input_api, output_api):
+    """ Checks that the string files are alphabetically ordered"""
+    errors = []
+    for f in input_api.AffectedFiles():
+        if not f.LocalPath().endswith("_strings.grd"):
+            continue
+        if not _IsAlphabeticallySortedXML(f.AbsoluteLocalPath()):
+            errors.append('  python3 ios/tools/order_string_file.py ' +
+                          f.LocalPath())
+
+    if not errors:
+        return []
+    warning_message = '\n'.join(
+        ['Files not alphabetically sorted, try running:'] + errors) + '\n'
+
+    return [output_api.PresubmitPromptWarning(warning_message)]
+
+
 def CheckChangeOnUpload(input_api, output_api):
     results = []
     results.extend(_CheckBugInToDo(input_api, output_api))
@@ -276,4 +317,5 @@ def CheckChangeOnUpload(input_api, output_api):
     results.extend(_CheckHasNoBoxedBOOL(input_api, output_api))
     results.extend(_CheckNoTearDownEGTest(input_api, output_api))
     results.extend(_CheckCanImproveTestUsingExpectNSEQ(input_api, output_api))
+    results.extend(_CheckOrderedStringFile(input_api, output_api))
     return results
