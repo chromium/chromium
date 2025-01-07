@@ -1711,6 +1711,7 @@ MLOperand* MLGraphBuilder::constant(ScriptState* script_state,
   auto* constant =
       MakeGarbageCollected<MLConstantOperand>(this, std::move(descriptor));
 
+  UMA_HISTOGRAM_MEMORY_KB("WebNN.ConstantDataSizeInKB", bytes.size() / 1024);
   scoped_trace.AddStep(
       String::Format("copy constant bytes into BigBuffer, size: %zu",
                      bytes.size())

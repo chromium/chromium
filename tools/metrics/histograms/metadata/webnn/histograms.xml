@@ -46,6 +46,13 @@ chromium-metrics-reviews@google.com.
       summary="time to record graph execution on the main thread."/>
 </variants>
 
+<histogram name="WebNN.ConstantDataSizeInKB" units="KB"
+    expires_after="2025-06-27">
+  <owner>reillyg@chromium.org</owner>
+  <owner>src/services/webnn/OWNERS</owner>
+  <summary>Records the constant data sizes in KB.</summary>
+</histogram>
+
 <histogram name="WebNN.CoreML.TimingMs.{WebNNCoreMLActions}" units="ms"
     expires_after="2025-02-26">
   <owner>reillyg@chromium.org</owner>
