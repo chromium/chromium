@@ -903,12 +903,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // Marks all views in the frame tree as evicted.
   std::vector<viz::SurfaceId> CollectSurfaceIdsForEviction();
 
-  // This function validates a renderer's attempt to activate frames. It
-  // removes one pending user activation if available and returns true;
-  // otherwise, it returns false.  See comments on
-  // Add/ClearPendingUserActivation() for details.
-  bool RemovePendingUserActivationIfAvailable();
-
   const mojo::AssociatedRemote<blink::mojom::FrameWidget>&
   GetAssociatedFrameWidget();
 
@@ -1067,7 +1061,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
                            DoNotAcceptPopupBoundsUntilScreenRectsAcked);
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostTest,
                            DontPostponeInputEventAckTimeout);
-  FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostTest, PendingUserActivationTimeout);
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostTest, RendererExitedNoDrag);
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostTest,
                            StopAndStartInputEventAckTimeout);
@@ -1239,22 +1232,10 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // TODO(oshima): Update the comment when the migration is completed.
   gfx::PointF ConvertWindowPointToViewport(const gfx::PointF& window_point);
 
-  // The following functions are used to keep track of pending user activation
-  // events, which are input events (e.g., mousedown or keydown) that allow a
-  // renderer to gain user activation.  AddPendingUserActivation() increments
-  // |pending_user_activation_counter_| and sets a timer, which allows the
-  // renderer to claim user activation within
-  // |kActivationNotificationExpireTime| ms.  ClearPendingUserActivation()
-  // clears the counter and is called after navigations or timeouts.
-  void AddPendingUserActivation(const blink::WebInputEvent& event);
-  void ClearPendingUserActivation();
 
   // Dispatch any buffered FrameSink requests from the renderer if the widget
   // has a view and is the owner for the FrameSinkId assigned to it.
   void MaybeDispatchBufferedFrameSinkRequest();
-
-  // An expiry time for resetting the pending_user_activation_timer_.
-  static const base::TimeDelta kActivationNotificationExpireTime;
 
   raw_ptr<FrameTree> frame_tree_;
 
@@ -1554,11 +1535,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   bool sent_autoscroll_scroll_begin_ = false;
   gfx::PointF autoscroll_start_position_;
 
-  // Counter for possible-activation-triggering input event.
-  int pending_user_activation_counter_ = 0;
-  // This timer resets |pending_user_activation_counter_| after a short delay.
-  // See comments on Add/ClearPendingUserActivation().
-  base::OneShotTimer pending_user_activation_timer_;
 
   input::InputRouterImpl::RequestMouseLockCallback request_pointer_lock_callback_;
 

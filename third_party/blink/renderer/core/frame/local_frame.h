@@ -345,8 +345,7 @@ class CORE_EXPORT LocalFrame final
   // The |notification_type| parameter is used for histograms only.
   static void NotifyUserActivation(
       LocalFrame*,
-      mojom::blink::UserActivationNotificationType notification_type,
-      bool need_browser_verification = false);
+      mojom::blink::UserActivationNotificationType notification_type);
 
   // Returns the transient user activation state of the |LocalFrame|, provided
   // it is non-null.  Otherwise returns |false|.
@@ -1012,13 +1011,6 @@ class CORE_EXPORT LocalFrame final
   void MainFrameInteractive() override;
   void MainFrameFirstMeaningfulPaint() override;
   DocumentResourceCoordinator* GetDocumentResourceCoordinator() override;
-
-  // Activates the user activation states of this frame and all its ancestors.
-  //
-  // The |notification_type| parameter is used for histograms only.
-  void NotifyUserActivation(
-      mojom::blink::UserActivationNotificationType notification_type,
-      bool need_browser_verification);
 
   // Consumes and returns the transient user activation state this frame, after
   // updating all other frames in the frame tree.

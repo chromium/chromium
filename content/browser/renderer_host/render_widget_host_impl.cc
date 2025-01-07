@@ -20,7 +20,6 @@
 #include "base/containers/contains.h"
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -594,10 +593,6 @@ void RenderWidgetHostImpl::SetView(RenderWidgetHostViewBase* view) {
   }
   GetRenderInputRouter()->SetView(view);
 }
-
-// static
-const base::TimeDelta RenderWidgetHostImpl::kActivationNotificationExpireTime =
-    base::Milliseconds(300);
 
 RenderProcessHost* RenderWidgetHostImpl::GetProcess() {
   return agent_scheduling_group_->GetProcess();
@@ -1507,8 +1502,6 @@ void RenderWidgetHostImpl::DidNavigate() {
   if (view_) {
     view_->DidNavigate();
   }
-
-  ClearPendingUserActivation();
 }
 
 void RenderWidgetHostImpl::StartNewContentRenderingTimeout() {
@@ -2554,7 +2547,6 @@ std::optional<bool> RenderWidgetHostImpl::IsDelegatedInkHovering() {
 
 void RenderWidgetHostImpl::NotifyObserversOfInputEvent(
     const WebInputEvent& event) {
-  AddPendingUserActivation(event);
   for (auto& observer : input_event_observers_) {
     observer.OnInputEvent(*this, event);
   }
@@ -3289,35 +3281,6 @@ void RenderWidgetHostImpl::DecrementInFlightEventCount(
   }
 }
 
-void RenderWidgetHostImpl::AddPendingUserActivation(
-    const WebInputEvent& event) {
-  if ((base::FeatureList::IsEnabled(
-           features::kBrowserVerifiedUserActivationMouse) &&
-       event.GetType() == WebInputEvent::Type::kMouseDown) ||
-      (base::FeatureList::IsEnabled(
-           features::kBrowserVerifiedUserActivationKeyboard) &&
-       (event.GetType() == WebInputEvent::Type::kKeyDown ||
-        event.GetType() == WebInputEvent::Type::kRawKeyDown))) {
-    pending_user_activation_timer_.Start(
-        FROM_HERE, kActivationNotificationExpireTime,
-        base::BindOnce(&RenderWidgetHostImpl::ClearPendingUserActivation,
-                       base::Unretained(this)));
-    pending_user_activation_counter_++;
-  }
-}
-
-void RenderWidgetHostImpl::ClearPendingUserActivation() {
-  pending_user_activation_counter_ = 0;
-  pending_user_activation_timer_.Stop();
-}
-
-bool RenderWidgetHostImpl::RemovePendingUserActivationIfAvailable() {
-  if (pending_user_activation_counter_ > 0) {
-    pending_user_activation_counter_--;
-    return true;
-  }
-  return false;
-}
 
 const mojo::AssociatedRemote<blink::mojom::FrameWidget>&
 RenderWidgetHostImpl::GetAssociatedFrameWidget() {

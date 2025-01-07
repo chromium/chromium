@@ -872,27 +872,6 @@ class SitePerProcessNonIntegerScaleFactorHitTestBrowserTest
   }
 };
 
-//
-// SitePerProcessUserActivationHitTestBrowserTest
-//
-
-class SitePerProcessUserActivationHitTestBrowserTest
-    : public SitePerProcessHitTestBrowserTest {
- public:
-  SitePerProcessUserActivationHitTestBrowserTest() {}
-
- protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    SitePerProcessBrowserTestBase::SetUpCommandLine(command_line);
-    ui::PlatformEventSource::SetIgnoreNativePlatformEvents(true);
-    feature_list_.InitAndEnableFeature(
-        features::kBrowserVerifiedUserActivationMouse);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Restrict to Aura to we can use routable MouseWheel event via
 // RenderWidgetHostViewAura::OnScrollEvent().
 #if defined(USE_AURA)
@@ -6893,96 +6872,6 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
     run_loop.Run();
     EXPECT_EQ(rwhv_child->GetFrameSinkId(), received_frame_sink_id);
   }
-}
-
-// TODO(crbug.com/40804367): This flakes badly on debug & sanitizer
-// builds on almost all platforms, and on Mac and Android.
-IN_PROC_BROWSER_TEST_F(SitePerProcessUserActivationHitTestBrowserTest,
-                       DISABLED_RenderWidgetUserActivationStateTest) {
-  GURL main_url(embedded_test_server()->GetURL(
-      "foo.com", "/frame_tree/page_with_positioned_frame.html"));
-  EXPECT_TRUE(NavigateToURL(shell(), main_url));
-
-  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
-  FrameTreeNode* child = root->child_at(0);
-  ASSERT_EQ(
-      " Site A ------------ proxies for B\n"
-      "   +--Site B ------- proxies for A\n"
-      "Where A = http://foo.com/\n"
-      "      B = http://baz.com/",
-      DepictFrameTree(root));
-
-  WaitForHitTestData(child->current_frame_host());
-
-  RenderWidgetHostMouseEventMonitor main_frame_monitor(
-      root->current_frame_host()->GetRenderWidgetHost());
-  RenderWidgetHostMouseEventMonitor child_frame_monitor(
-      child->current_frame_host()->GetRenderWidgetHost());
-
-  RenderWidgetHostViewBase* rwhv_root = static_cast<RenderWidgetHostViewBase*>(
-      root->current_frame_host()->GetRenderWidgetHost()->GetView());
-  RenderWidgetHostViewBase* rwhv_child = static_cast<RenderWidgetHostViewBase*>(
-      child->current_frame_host()->GetRenderWidgetHost()->GetView());
-
-  // Send a mouse down event to main frame.
-  blink::WebMouseEvent mouse_event(
-      blink::WebInputEvent::Type::kMouseDown,
-      blink::WebInputEvent::kNoModifiers,
-      blink::WebInputEvent::GetStaticTimeStampForTests());
-  mouse_event.button = blink::WebPointerProperties::Button::kLeft;
-  mouse_event.click_count = 1;
-  main_frame_monitor.ResetEventReceived();
-
-  gfx::PointF click_point(10, 10);
-  DispatchMouseEventAndWaitUntilDispatch(web_contents(), mouse_event, rwhv_root,
-                                         click_point, rwhv_root, click_point);
-  EXPECT_TRUE(main_frame_monitor.EventWasReceived());
-  base::RunLoop().RunUntilIdle();
-
-  // Wait for root frame gets activated.
-  while (!root->HasTransientUserActivation()) {
-    base::RunLoop loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, loop.QuitClosure());
-    loop.Run();
-  }
-  // Child frame doesn't have user activation.
-  EXPECT_FALSE(child->HasTransientUserActivation());
-  // Root frame's pending activation state has been cleared by activation.
-  EXPECT_FALSE(root->current_frame_host()
-                   ->GetRenderWidgetHost()
-                   ->RemovePendingUserActivationIfAvailable());
-
-  // Clear the activation state.
-  root->UpdateUserActivationState(
-      blink::mojom::UserActivationUpdateType::kClearActivation,
-      blink::mojom::UserActivationNotificationType::kTest);
-
-  // Send a mouse down to child frame.
-  mouse_event.SetType(blink::WebInputEvent::Type::kMouseDown);
-  child_frame_monitor.ResetEventReceived();
-  DispatchMouseEventAndWaitUntilDispatch(web_contents(), mouse_event,
-                                         rwhv_child, click_point, rwhv_child,
-                                         click_point);
-  EXPECT_TRUE(child_frame_monitor.EventWasReceived());
-  base::RunLoop().RunUntilIdle();
-
-  // Wait for child frame to get activated.
-  while (!child->HasTransientUserActivation()) {
-    base::RunLoop loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, loop.QuitClosure());
-    loop.Run();
-  }
-  // With UAV2, ancestor frames get activated too.
-  EXPECT_TRUE(root->HasTransientUserActivation());
-  // Both child frame and root frame don't have allowed_activation state
-  EXPECT_FALSE(root->current_frame_host()
-                   ->GetRenderWidgetHost()
-                   ->RemovePendingUserActivationIfAvailable());
-  EXPECT_FALSE(child->current_frame_host()
-                   ->GetRenderWidgetHost()
-                   ->RemovePendingUserActivationIfAvailable());
 }
 
 class SitePerProcessHitTestDataGenerationBrowserTest

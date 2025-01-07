@@ -65,11 +65,6 @@ BASE_FEATURE(kHidePastePopupOnGSB,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// When enabled, keyboard user activation will be verified by the browser side.
-BASE_FEATURE(kBrowserVerifiedUserActivationKeyboard,
-             "BrowserVerifiedUserActivationKeyboard",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, changes to the zoom level are temporary and are forgotten when
 // the tab is closed. If disabled, changes to the zoom level persist, as though
 // the user affected them through the browser's UX.

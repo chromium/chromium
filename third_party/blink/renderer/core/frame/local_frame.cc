@@ -2804,10 +2804,9 @@ mojom::blink::DevicePostureProvider* LocalFrame::GetDevicePostureProvider() {
 // static
 void LocalFrame::NotifyUserActivation(
     LocalFrame* frame,
-    mojom::blink::UserActivationNotificationType notification_type,
-    bool need_browser_verification) {
+    mojom::blink::UserActivationNotificationType notification_type) {
   if (frame) {
-    frame->NotifyUserActivation(notification_type, need_browser_verification);
+    frame->NotifyUserActivation(notification_type);
   }
 }
 
@@ -2824,16 +2823,10 @@ bool LocalFrame::ConsumeTransientUserActivation(
 }
 
 void LocalFrame::NotifyUserActivation(
-    mojom::blink::UserActivationNotificationType notification_type,
-    bool need_browser_verification) {
-  mojom::blink::UserActivationUpdateType update_type =
-      need_browser_verification
-          ? mojom::blink::UserActivationUpdateType::
-                kNotifyActivationPendingBrowserVerification
-          : mojom::blink::UserActivationUpdateType::kNotifyActivation;
-
-  GetLocalFrameHostRemote().UpdateUserActivationState(update_type,
-                                                      notification_type);
+    mojom::blink::UserActivationNotificationType notification_type) {
+  GetLocalFrameHostRemote().UpdateUserActivationState(
+      mojom::blink::UserActivationUpdateType::kNotifyActivation,
+      notification_type);
   Client()->NotifyUserActivation();
   NotifyUserActivationInFrameTree(notification_type);
 }
@@ -3123,7 +3116,7 @@ void LocalFrame::LoadJavaScriptURL(const KURL& url) {
   // TODO(mustaq): This is called only through the user typing a javascript URL
   // into the omnibox.  See https://crbug.com/1082900
   NotifyUserActivation(
-      mojom::blink::UserActivationNotificationType::kInteraction, false);
+      mojom::blink::UserActivationNotificationType::kInteraction);
   auto* window = DomWindow();
   window->GetScriptController().ExecuteJavaScriptURL(
       url, network::mojom::CSPDisposition::DO_NOT_CHECK,
@@ -3502,11 +3495,6 @@ mojom::blink::LocalFrameHost& LocalFrame::GetLocalFrameHostRemote() const {
 mojom::blink::BackForwardCacheControllerHost&
 LocalFrame::GetBackForwardCacheControllerHostRemote() {
   return mojo_handler_->BackForwardCacheControllerHostRemote();
-}
-
-void LocalFrame::NotifyUserActivation(
-    mojom::blink::UserActivationNotificationType notification_type) {
-  NotifyUserActivation(notification_type, false);
 }
 
 void LocalFrame::RegisterVirtualKeyboardOverlayChangedObserver(

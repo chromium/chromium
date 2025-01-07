@@ -229,8 +229,7 @@ WebInputEventResult KeyboardEventManager::KeyEvent(
       (initial_key_event.GetType() == WebInputEvent::Type::kKeyDown ||
        initial_key_event.GetType() == WebInputEvent::Type::kRawKeyDown)) {
     LocalFrame::NotifyUserActivation(
-        frame_, mojom::blink::UserActivationNotificationType::kInteraction,
-        RuntimeEnabledFeatures::BrowserVerifiedUserActivationKeyboardEnabled());
+        frame_, mojom::blink::UserActivationNotificationType::kInteraction);
   }
 
   // Don't expose key events to pages while browsing on the drive-by web. This

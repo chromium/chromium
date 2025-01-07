@@ -903,8 +903,7 @@ WebInputEventResult EventHandler::HandleMousePressEvent(
   }
 
   LocalFrame::NotifyUserActivation(
-      frame_, mojom::blink::UserActivationNotificationType::kInteraction,
-      RuntimeEnabledFeatures::BrowserVerifiedUserActivationMouseEnabled());
+      frame_, mojom::blink::UserActivationNotificationType::kInteraction);
 
   if (RuntimeEnabledFeatures::MiddleClickAutoscrollEnabled()) {
     // We store whether middle click autoscroll is in progress before calling

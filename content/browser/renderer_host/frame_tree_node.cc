@@ -889,17 +889,6 @@ bool FrameTreeNode::ClearUserActivation() {
   return true;
 }
 
-bool FrameTreeNode::VerifyUserActivation() {
-  DCHECK(base::FeatureList::IsEnabled(
-             features::kBrowserVerifiedUserActivationMouse) ||
-         base::FeatureList::IsEnabled(
-             features::kBrowserVerifiedUserActivationKeyboard));
-
-  return render_manager_.current_frame_host()
-      ->GetRenderWidgetHost()
-      ->RemovePendingUserActivationIfAvailable();
-}
-
 bool FrameTreeNode::UpdateUserActivationState(
     blink::mojom::UserActivationUpdateType update_type,
     blink::mojom::UserActivationNotificationType notification_type) {
@@ -911,19 +900,6 @@ bool FrameTreeNode::UpdateUserActivationState(
     case blink::mojom::UserActivationUpdateType::kNotifyActivation:
       update_result = NotifyUserActivation(notification_type);
       break;
-    case blink::mojom::UserActivationUpdateType::
-        kNotifyActivationPendingBrowserVerification: {
-      if (VerifyUserActivation()) {
-        update_result = NotifyUserActivation(
-            blink::mojom::UserActivationNotificationType::kInteraction);
-        update_type = blink::mojom::UserActivationUpdateType::kNotifyActivation;
-      } else {
-        // TODO(crbug.com/40091540): We need to decide what to do when
-        // user activation verification failed. NOTREACHED here will make all
-        // unrelated tests that inject event to renderer fail.
-        return false;
-      }
-    } break;
     case blink::mojom::UserActivationUpdateType::kNotifyActivationStickyOnly:
       update_result = NotifyUserActivationStickyOnly();
       break;
