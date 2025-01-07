@@ -1,6 +1,6 @@
 [package]
 name = "bstr"
-version = "1.11.1"  #:version
+version = "1.11.3"  #:version
 authors = ["Andrew Gallant <jamslam@gmail.com>"]
 description = "A string type that is not required to be valid UTF-8."
 documentation = "https://docs.rs/bstr"

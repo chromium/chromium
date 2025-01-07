@@ -1,6 +1,6 @@
 macro_rules! impl_partial_eq {
     ($lhs:ty, $rhs:ty) => {
-        impl<'a, 'b> PartialEq<$rhs> for $lhs {
+        impl<'a> PartialEq<$rhs> for $lhs {
             #[inline]
             fn eq(&self, other: &$rhs) -> bool {
                 let other: &[u8] = other.as_ref();
@@ -8,7 +8,7 @@ macro_rules! impl_partial_eq {
             }
         }
 
-        impl<'a, 'b> PartialEq<$lhs> for $rhs {
+        impl<'a> PartialEq<$lhs> for $rhs {
             #[inline]
             fn eq(&self, other: &$lhs) -> bool {
                 let this: &[u8] = self.as_ref();
@@ -20,7 +20,7 @@ macro_rules! impl_partial_eq {
 
 macro_rules! impl_partial_eq_n {
     ($lhs:ty, $rhs:ty) => {
-        impl<'a, 'b, const N: usize> PartialEq<$rhs> for $lhs {
+        impl<'a, const N: usize> PartialEq<$rhs> for $lhs {
             #[inline]
             fn eq(&self, other: &$rhs) -> bool {
                 let other: &[u8] = other.as_ref();
@@ -28,7 +28,7 @@ macro_rules! impl_partial_eq_n {
             }
         }
 
-        impl<'a, 'b, const N: usize> PartialEq<$lhs> for $rhs {
+        impl<'a, const N: usize> PartialEq<$lhs> for $rhs {
             #[inline]
             fn eq(&self, other: &$lhs) -> bool {
                 let this: &[u8] = self.as_ref();
@@ -41,7 +41,7 @@ macro_rules! impl_partial_eq_n {
 #[cfg(feature = "alloc")]
 macro_rules! impl_partial_eq_cow {
     ($lhs:ty, $rhs:ty) => {
-        impl<'a, 'b> PartialEq<$rhs> for $lhs {
+        impl<'a> PartialEq<$rhs> for $lhs {
             #[inline]
             fn eq(&self, other: &$rhs) -> bool {
                 let other: &[u8] = (&**other).as_ref();
@@ -49,11 +49,11 @@ macro_rules! impl_partial_eq_cow {
             }
         }
 
-        impl<'a, 'b> PartialEq<$lhs> for $rhs {
+        impl<'a> PartialEq<$lhs> for $rhs {
             #[inline]
             fn eq(&self, other: &$lhs) -> bool {
-                let this: &[u8] = (&**other).as_ref();
-                PartialEq::eq(this, self.as_bytes())
+                let this: &[u8] = (&**self).as_ref();
+                PartialEq::eq(this, other.as_bytes())
             }
         }
     };
@@ -61,7 +61,7 @@ macro_rules! impl_partial_eq_cow {
 
 macro_rules! impl_partial_ord {
     ($lhs:ty, $rhs:ty) => {
-        impl<'a, 'b> PartialOrd<$rhs> for $lhs {
+        impl<'a> PartialOrd<$rhs> for $lhs {
             #[inline]
             fn partial_cmp(&self, other: &$rhs) -> Option<Ordering> {
                 let other: &[u8] = other.as_ref();
@@ -69,7 +69,7 @@ macro_rules! impl_partial_ord {
             }
         }
 
-        impl<'a, 'b> PartialOrd<$lhs> for $rhs {
+        impl<'a> PartialOrd<$lhs> for $rhs {
             #[inline]
             fn partial_cmp(&self, other: &$lhs) -> Option<Ordering> {
                 let this: &[u8] = self.as_ref();
@@ -81,7 +81,7 @@ macro_rules! impl_partial_ord {
 
 macro_rules! impl_partial_ord_n {
     ($lhs:ty, $rhs:ty) => {
-        impl<'a, 'b, const N: usize> PartialOrd<$rhs> for $lhs {
+        impl<'a, const N: usize> PartialOrd<$rhs> for $lhs {
             #[inline]
             fn partial_cmp(&self, other: &$rhs) -> Option<Ordering> {
                 let other: &[u8] = other.as_ref();
@@ -89,7 +89,7 @@ macro_rules! impl_partial_ord_n {
             }
         }
 
-        impl<'a, 'b, const N: usize> PartialOrd<$lhs> for $rhs {
+        impl<'a, const N: usize> PartialOrd<$lhs> for $rhs {
             #[inline]
             fn partial_cmp(&self, other: &$lhs) -> Option<Ordering> {
                 let this: &[u8] = self.as_ref();
@@ -525,6 +525,9 @@ mod bstr {
             for (s, e, ch) in self.char_indices() {
                 match ch {
                     '\0' => write!(f, "\\0")?,
+                    '\x01'..='\x7f' => {
+                        write!(f, "{}", (ch as u8).escape_ascii())?;
+                    }
                     '\u{FFFD}' => {
                         let bytes = self[s..e].as_bytes();
                         if bytes == b"\xEF\xBF\xBD" {
@@ -534,17 +537,6 @@ mod bstr {
                                 write!(f, "\\x{:02x}", b)?;
                             }
                         }
-                    }
-                    // ASCII control characters except \0, \n, \r, \t
-                    '\x01'..='\x08'
-                    | '\x0b'
-                    | '\x0c'
-                    | '\x0e'..='\x19'
-                    | '\x7f' => {
-                        write!(f, "\\x{:02x}", ch as u32)?;
-                    }
-                    '\n' | '\r' | '\t' => {
-                        write!(f, "{}", ch.escape_debug())?;
                     }
                     _ => {
                         write!(f, "{}", ch.escape_debug())?;
@@ -1305,7 +1297,12 @@ fn test_debug() {
         // Before fixing #188, the output here would be:
         //   \\xED\\xA0\\x80Aa\\x7f\\x0b
         B(&format!("{:?}", b"\xed\xa0\x80Aa\x7f\x0b".as_bstr())).as_bstr(),
-    )
+    );
+
+    assert_eq!(
+        r#""\0\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x11\x12\r\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f \x7f\x80\x81\xfe\xff""#,
+        format!("{:?}", b"\0\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x11\x12\r\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f \x7f\x80\x81\xfe\xff".as_bstr()),
+    );
 }
 
 // See: https://github.com/BurntSushi/bstr/issues/82

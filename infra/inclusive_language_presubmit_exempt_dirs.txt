@@ -65,7 +65,6 @@ chrome/browser/speech/extension_api 1 1
 chrome/browser/support_tool/ash 1 1
 chrome/browser/sync/test/integration 1 1
 chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox 1 1
-chrome/browser/ui/webui/ash/parent_access 1 1
 chrome/browser/ui/webui/settings 1 1
 chrome/browser/win 2 1
 chromecast 1 1
@@ -147,6 +146,7 @@ components/services/storage/dom_storage 1 1
 components/signin/public/base 2 2
 components/signin/public/identity_manager 1 1
 components/strictmode/android/java/src/org/chromium/components/strictmode 4 3
+components/supervised_user/core/browser/proto 1 1
 components/sync/engine/nigori 1 1
 components/test/data/autofill/heuristics/input 10 7
 components/test/data/browsing_topics 1 1
@@ -432,7 +432,7 @@ third_party/blink/web_tests/external/wpt/css/css-writing-modes/test-plan 1 1
 third_party/blink/web_tests/external/wpt/css/mediaqueries 1 1
 third_party/blink/web_tests/external/wpt/docs 2 1
 third_party/blink/web_tests/external/wpt/docs/reviewing-tests 5 2
-third_party/blink/web_tests/external/wpt/docs/writing-tests 22 7
+third_party/blink/web_tests/external/wpt/docs/writing-tests 23 8
 third_party/blink/web_tests/external/wpt/dom/traversal 1 1
 third_party/blink/web_tests/external/wpt/encrypted-media/content 5 5
 third_party/blink/web_tests/external/wpt/feature-policy/resources 1 1

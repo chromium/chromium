@@ -325,6 +325,12 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 delta = "1.11.0 -> 1.11.1"
 notes = "This release just excludes Unicode data files from being published to crates.io"
 
+[[audits.bstr]]
+who = "Dustin J. Mitchell <djmitche@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.11.1 -> 1.11.3"
+notes = "No unsafe changes"
+
 [[audits.bytemuck]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = "safe-to-deploy"
