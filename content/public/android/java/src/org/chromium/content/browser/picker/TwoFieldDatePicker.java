@@ -15,8 +15,6 @@ import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.NumberPicker.OnValueChangeListener;
 
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.content.R;
 
 import java.util.Calendar;
@@ -24,14 +22,13 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 /** This class is heavily based on android.widget.DatePicker. */
-@NullMarked
 public abstract class TwoFieldDatePicker extends FrameLayout {
 
     private final NumberPicker mPositionInYearSpinner;
 
     private final NumberPicker mYearSpinner;
 
-    private @Nullable OnMonthOrWeekChangedListener mMonthOrWeekChangedListener;
+    private OnMonthOrWeekChangedListener mMonthOrWeekChangedListener;
 
     // It'd be nice to use android.text.Time like in other Dialogs but
     // it suffers from the 2038 effect so it would prevent us from
@@ -180,7 +177,7 @@ public abstract class TwoFieldDatePicker extends FrameLayout {
     public void init(
             int year,
             int positionInYear,
-            @Nullable OnMonthOrWeekChangedListener onMonthOrWeekChangedListener) {
+            OnMonthOrWeekChangedListener onMonthOrWeekChangedListener) {
         setCurrentDate(year, positionInYear);
         updateSpinners();
         mMonthOrWeekChangedListener = onMonthOrWeekChangedListener;

@@ -4,16 +4,12 @@
 
 package org.chromium.content.browser.input;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.PopupWindow;
 
 import org.chromium.base.Callback;
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.WebContents;
@@ -23,16 +19,15 @@ import org.chromium.ui.DropdownPopupWindow;
 import java.util.List;
 
 /** Handles the dropdown popup for the <select> HTML tag support. */
-@NullMarked
 public class SelectPopupDropdown implements SelectPopup.Ui {
-    private final Callback<int @Nullable []> mSelectionChangedCallback;
+    private final Callback<int[]> mSelectionChangedCallback;
     private final DropdownPopupWindow mDropdownPopupWindow;
 
     private boolean mSelectionNotified;
 
     public SelectPopupDropdown(
             Context context,
-            Callback<int @Nullable []> selectionChangedCallback,
+            Callback<int[]> selectionChangedCallback,
             View anchorView,
             List<SelectPopupItem> items,
             int[] selected,
@@ -65,19 +60,18 @@ public class SelectPopupDropdown implements SelectPopup.Ui {
                         notifySelection(null);
                     }
                 });
-        GestureListenerManager gestureManager = GestureListenerManager.fromWebContents(webContents);
-        assumeNonNull(gestureManager);
-        gestureManager.addListener(
-                new GestureStateListener() {
-                    @Override
-                    public void onScrollStarted(
-                            int scrollOffsetY, int scrollExtentY, boolean isDirectionUp) {
-                        hide(true);
-                    }
-                });
+        GestureListenerManager.fromWebContents(webContents)
+                .addListener(
+                        new GestureStateListener() {
+                            @Override
+                            public void onScrollStarted(
+                                    int scrollOffsetY, int scrollExtentY, boolean isDirectionUp) {
+                                hide(true);
+                            }
+                        });
     }
 
-    private void notifySelection(int @Nullable [] indicies) {
+    private void notifySelection(int[] indicies) {
         if (mSelectionNotified) return;
         mSelectionChangedCallback.onResult(indicies);
         mSelectionNotified = true;

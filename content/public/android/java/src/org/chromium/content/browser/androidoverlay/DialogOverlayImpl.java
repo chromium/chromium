@@ -4,8 +4,6 @@
 
 package org.chromium.content.browser.androidoverlay;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 import android.os.IBinder;
 import android.view.Surface;
@@ -18,8 +16,6 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.gfx.mojom.Rect;
 import org.chromium.media.mojom.AndroidOverlay;
@@ -35,16 +31,15 @@ import org.chromium.ui.base.WindowAndroid;
  * from that thread from the UI thread.
  */
 @JNINamespace("content")
-@NullMarked
 public class DialogOverlayImpl
         implements AndroidOverlay, DialogOverlayCore.Host, ViewTreeObserver.OnPreDrawListener {
     private static final String TAG = "DialogOverlayImpl";
 
-    private @Nullable AndroidOverlayClient mClient;
+    private AndroidOverlayClient mClient;
     // Runnable that we'll run when the overlay notifies us that it's been released.
     private Runnable mReleasedRunnable;
 
-    private @Nullable DialogOverlayCore mDialogCore;
+    private DialogOverlayCore mDialogCore;
 
     private long mNativeHandle;
 
@@ -58,7 +53,7 @@ public class DialogOverlayImpl
     private Rect mLastRect;
 
     // Observes the container view to update our location.
-    private @Nullable ViewTreeObserver mContainerViewViewTreeObserver;
+    private ViewTreeObserver mContainerViewViewTreeObserver;
 
     private final AndroidOverlayConfig mConfig;
     private final boolean mAsPanel;
@@ -67,7 +62,7 @@ public class DialogOverlayImpl
     // notify the client to cleanup tasks on the surface, because the surface may be
     // destroyed before SurfaceHolder.Callback2.surfaceDestroyed returns.
     private final Runnable mTearDownDialogOverlaysHandler = this::onOverlayDestroyed;
-    private @Nullable WebContentsImpl mWebContents;
+    private WebContentsImpl mWebContents;
 
     /**
      * @param client Mojo client interface.
@@ -279,8 +274,9 @@ public class DialogOverlayImpl
 
         Context context = window.getContext().get();
         if (ContextUtils.activityFromContext(context) == null) return;
+
         mDialogCore = new DialogOverlayCore();
-        mDialogCore.initialize(assumeNonNull(context), mConfig, DialogOverlayImpl.this, mAsPanel);
+        mDialogCore.initialize(context, mConfig, DialogOverlayImpl.this, mAsPanel);
         mDialogCore.onWindowToken(window.getWindowToken());
     }
 

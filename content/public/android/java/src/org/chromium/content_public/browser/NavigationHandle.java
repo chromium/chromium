@@ -4,14 +4,13 @@
 
 package org.chromium.content_public.browser;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.base.UserDataHost;
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.net.NetError;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
@@ -19,16 +18,15 @@ import org.chromium.url.Origin;
 
 /** JNI bridge with content::NavigationHandle */
 @JNINamespace("content")
-@NullMarked
 public class NavigationHandle {
     private long mNativeNavigationHandle;
     private boolean mIsInPrimaryMainFrame;
     private boolean mIsRendererInitiated;
     private boolean mIsSameDocument;
     private @PageTransition int mPageTransition;
-    private @Nullable GURL mUrl;
-    private @Nullable GURL mReferrerUrl;
-    private @Nullable GURL mBaseUrlForDataUrl;
+    private GURL mUrl;
+    private GURL mReferrerUrl;
+    private GURL mBaseUrlForDataUrl;
     private boolean mHasCommitted;
     private boolean mIsDownload;
     private boolean mIsErrorPage;
@@ -36,7 +34,7 @@ public class NavigationHandle {
     private boolean mIsValidSearchFormUrl;
     private @NetError int mErrorCode;
     private int mHttpStatusCode;
-    private @Nullable Origin mInitiatorOrigin;
+    private Origin mInitiatorOrigin;
     private boolean mIsPost;
     private boolean mHasUserGesture;
     private boolean mIsRedirect;
@@ -44,13 +42,13 @@ public class NavigationHandle {
     private long mNavigationId;
     private boolean mIsPageActivation;
     private boolean mIsReload;
-    private @Nullable UserDataHost mUserDataHost;
+    private UserDataHost mUserDataHost;
     private boolean mIsPdf;
-    private @Nullable String mMimeType;
+    private String mMimeType;
     private boolean mIsSaveableNavigation;
 
     public static NavigationHandle createForTesting(
-            GURL url,
+            @NonNull GURL url,
             boolean isRendererInitiated,
             @PageTransition int transition,
             boolean hasUserGesture) {
@@ -66,7 +64,7 @@ public class NavigationHandle {
     }
 
     public static NavigationHandle createForTesting(
-            GURL url,
+            @NonNull GURL url,
             boolean isInPrimaryMainFrame,
             boolean isSameDocument,
             boolean isRendererInitiated,
@@ -85,7 +83,7 @@ public class NavigationHandle {
     }
 
     public static NavigationHandle createForTesting(
-            GURL url,
+            @NonNull GURL url,
             boolean isInPrimaryMainFrame,
             boolean isSameDocument,
             boolean isRendererInitiated,
@@ -125,13 +123,13 @@ public class NavigationHandle {
     @CalledByNative
     private void initialize(
             long unused_nativeNavigationHandleProxy,
-            GURL url,
-            GURL referrerUrl,
-            GURL baseUrlForDataUrl,
+            @NonNull GURL url,
+            @NonNull GURL referrerUrl,
+            @NonNull GURL baseUrlForDataUrl,
             boolean isInPrimaryMainFrame,
             boolean isSameDocument,
             boolean isRendererInitiated,
-            @Nullable Origin initiatorOrigin,
+            Origin initiatorOrigin,
             @PageTransition int transition,
             boolean isPost,
             boolean hasUserGesture,
@@ -180,7 +178,7 @@ public class NavigationHandle {
     @CalledByNative
     @VisibleForTesting
     public void didFinish(
-            GURL url,
+            @NonNull GURL url,
             boolean isErrorPage,
             boolean hasCommitted,
             boolean isPrimaryMainFrameFragmentNavigation,
@@ -222,17 +220,20 @@ public class NavigationHandle {
      * The URL the frame is navigating to.  This may change during the navigation when encountering
      * a server redirect.
      */
-    public @Nullable GURL getUrl() {
+    @NonNull
+    public GURL getUrl() {
         return mUrl;
     }
 
     /** The referrer URL for the navigation. */
-    public @Nullable GURL getReferrerUrl() {
+    @NonNull
+    public GURL getReferrerUrl() {
         return mReferrerUrl;
     }
 
     /** Used for specifying a base URL for pages loaded via data URLs. */
-    public @Nullable GURL getBaseUrlForDataUrl() {
+    @NonNull
+    public GURL getBaseUrlForDataUrl() {
         return mBaseUrlForDataUrl;
     }
 
@@ -343,7 +344,7 @@ public class NavigationHandle {
      * Get the Origin that initiated this navigation. May be null in the case of navigations
      * originating from the browser.
      */
-    public @Nullable Origin getInitiatorOrigin() {
+    public Origin getInitiatorOrigin() {
         return mInitiatorOrigin;
     }
 
@@ -394,7 +395,7 @@ public class NavigationHandle {
     }
 
     /** Sets the user data host. This should not be considered part of the content API. */
-    public void setUserDataHost(@Nullable UserDataHost userDataHost) {
+    public void setUserDataHost(UserDataHost userDataHost) {
         mUserDataHost = userDataHost;
     }
 
@@ -404,7 +405,7 @@ public class NavigationHandle {
     }
 
     /** MIME type of the page. */
-    public @Nullable String getMimeType() {
+    public String getMimeType() {
         return mMimeType;
     }
 

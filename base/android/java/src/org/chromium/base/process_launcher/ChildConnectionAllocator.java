@@ -87,7 +87,7 @@ public abstract class ChildConnectionAllocator {
 
     // Runnable which will be called when allocator wants to allocate a new connection, but does
     // not have any more free slots. May be null.
-    private final @Nullable Runnable mFreeSlotCallback;
+    private final Runnable mFreeSlotCallback;
 
     private final Queue<Runnable> mPendingAllocations = new ArrayDeque<>();
 
@@ -129,7 +129,7 @@ public abstract class ChildConnectionAllocator {
     public static ChildConnectionAllocator create(
             Context context,
             Handler launcherHandler,
-            @Nullable Runnable freeSlotCallback,
+            Runnable freeSlotCallback,
             String packageName,
             String serviceClassName,
             String numChildServicesManifestKey,
@@ -224,7 +224,7 @@ public abstract class ChildConnectionAllocator {
      * instead of being retrieved from the AndroidManifest.xml.
      */
     public static FixedSizeAllocatorImpl createFixedForTesting(
-            @Nullable Runnable freeSlotCallback,
+            Runnable freeSlotCallback,
             String packageName,
             String serviceClassName,
             int serviceCount,
@@ -245,7 +245,7 @@ public abstract class ChildConnectionAllocator {
     public static VariableSizeAllocatorImpl createVariableSizeForTesting(
             Handler launcherHandler,
             String packageName,
-            @Nullable Runnable freeSlotCallback,
+            Runnable freeSlotCallback,
             String serviceClassName,
             boolean bindToCaller,
             boolean bindAsExternalService,
@@ -266,7 +266,7 @@ public abstract class ChildConnectionAllocator {
     public static Android10WorkaroundAllocatorImpl createWorkaroundForTesting(
             Handler launcherHandler,
             String packageName,
-            @Nullable Runnable freeSlotCallback,
+            Runnable freeSlotCallback,
             String serviceClassName,
             boolean bindToCaller,
             boolean bindAsExternalService,
@@ -285,7 +285,7 @@ public abstract class ChildConnectionAllocator {
 
     private ChildConnectionAllocator(
             Handler launcherHandler,
-            @Nullable Runnable freeSlotCallback,
+            Runnable freeSlotCallback,
             String packageName,
             String serviceClassName,
             @Nullable String fallbackServiceClassName,
@@ -440,7 +440,7 @@ public abstract class ChildConnectionAllocator {
 
         private FixedSizeAllocatorImpl(
                 Handler launcherHandler,
-                @Nullable Runnable freeSlotCallback,
+                Runnable freeSlotCallback,
                 String packageName,
                 String serviceClassName,
                 boolean bindToCaller,
@@ -554,7 +554,7 @@ public abstract class ChildConnectionAllocator {
         // Note |serviceClassName| includes the service suffix.
         private VariableSizeAllocatorImpl(
                 Handler launcherHandler,
-                @Nullable Runnable freeSlotCallback,
+                Runnable freeSlotCallback,
                 String packageName,
                 String serviceClassName,
                 @Nullable String fallbackServiceClassName,
@@ -668,7 +668,7 @@ public abstract class ChildConnectionAllocator {
 
         private Android10WorkaroundAllocatorImpl(
                 Handler launcherHandler,
-                @Nullable Runnable freeSlotCallback,
+                Runnable freeSlotCallback,
                 String packageName,
                 String serviceClassName,
                 boolean bindToCaller,

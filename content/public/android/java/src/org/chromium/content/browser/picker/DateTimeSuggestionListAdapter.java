@@ -4,8 +4,6 @@
 
 package org.chromium.content.browser.picker;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,14 +11,11 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.content.R;
 
 import java.util.List;
 
 /** Date/time suggestion adapter for the suggestion dialog. */
-@NullMarked
 class DateTimeSuggestionListAdapter extends ArrayAdapter<DateTimeSuggestion> {
     private final Context mContext;
 
@@ -30,11 +25,9 @@ class DateTimeSuggestionListAdapter extends ArrayAdapter<DateTimeSuggestion> {
     }
 
     @Override
-    public View getView(int position, @Nullable View convertView, ViewGroup parent) {
-        View layout;
-        if (convertView != null) {
-            layout = convertView;
-        } else {
+    public View getView(int position, View convertView, ViewGroup parent) {
+        View layout = convertView;
+        if (convertView == null) {
             LayoutInflater inflater = LayoutInflater.from(mContext);
             layout = inflater.inflate(R.layout.date_time_suggestion, parent, false);
         }
@@ -45,9 +38,8 @@ class DateTimeSuggestionListAdapter extends ArrayAdapter<DateTimeSuggestion> {
             labelView.setText(mContext.getText(R.string.date_picker_dialog_other_button_label));
             sublabelView.setText("");
         } else {
-            DateTimeSuggestion item = assumeNonNull(getItem(position));
-            labelView.setText(item.localizedValue());
-            sublabelView.setText(item.label());
+            labelView.setText(getItem(position).localizedValue());
+            sublabelView.setText(getItem(position).label());
         }
 
         return layout;

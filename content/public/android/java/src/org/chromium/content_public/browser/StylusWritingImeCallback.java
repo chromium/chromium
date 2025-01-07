@@ -7,7 +7,6 @@ package org.chromium.content_public.browser;
 import android.view.View;
 
 import org.chromium.blink.mojom.StylusWritingGestureData;
-import org.chromium.build.annotations.NullMarked;
 
 /**
  * This interface implements the IME functionality like committing text, showing or hiding soft
@@ -16,7 +15,6 @@ import org.chromium.build.annotations.NullMarked;
  * implemented within //content by class responsible to provide the above Ime functions in the
  * current focused input field (i.e. ImeAdapterImpl).
  */
-@NullMarked
 public interface StylusWritingImeCallback {
     /**
      * Send a request to set the selection to given range.

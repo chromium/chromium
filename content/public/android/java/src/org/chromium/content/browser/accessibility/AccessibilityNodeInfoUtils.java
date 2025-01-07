@@ -55,15 +55,11 @@ import android.text.TextUtils;
 
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /** Utility class for common actions involving AccessibilityNodeInfo objects. */
-@NullMarked
 public class AccessibilityNodeInfoUtils {
     /**
      * Helper method to perform a custom toString on a given AccessibilityNodeInfo object.
@@ -72,8 +68,7 @@ public class AccessibilityNodeInfoUtils {
      * @return String Custom toString result for the given object
      */
     public static String toString(
-            @Nullable AccessibilityNodeInfoCompat node,
-            boolean includeScreenSizeDependentAttributes) {
+            AccessibilityNodeInfoCompat node, boolean includeScreenSizeDependentAttributes) {
         if (node == null) return "";
 
         StringBuilder builder = new StringBuilder();
@@ -407,8 +402,7 @@ public class AccessibilityNodeInfoUtils {
 
             // Since every node has a few Bundle extras, and some are often empty, we will only
             // print non-null and not empty values.
-            Object value = extras.get(key);
-            if (value == null || value.toString().isEmpty()) {
+            if (extras.get(key) == null || extras.get(key).toString().isEmpty()) {
                 continue;
             }
 
@@ -437,7 +431,11 @@ public class AccessibilityNodeInfoUtils {
             }
 
             // Simplify the key String before printing to make test outputs easier to read.
-            bundleStrings.add(key.replace("AccessibilityNodeInfo.", "") + "=\"" + value + "\"");
+            bundleStrings.add(
+                    key.replace("AccessibilityNodeInfo.", "")
+                            + "=\""
+                            + extras.get(key).toString()
+                            + "\"");
         }
         builder.append(TextUtils.join(", ", bundleStrings)).append("]");
 

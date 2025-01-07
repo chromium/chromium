@@ -8,15 +8,12 @@ import android.content.Context;
 import android.text.SpannableString;
 import android.view.View;
 
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
  * A subclass of SuggestionsPopupWindow to be used for showing suggestions from a spell check
  * marker.
  */
-@NullMarked
 public class SpellCheckPopupWindow extends SuggestionsPopupWindow {
     private String[] mSuggestions = new String[0];
 
@@ -29,7 +26,7 @@ public class SpellCheckPopupWindow extends SuggestionsPopupWindow {
     public SpellCheckPopupWindow(
             Context context,
             TextSuggestionHost textSuggestionHost,
-            @Nullable WindowAndroid windowAndroid,
+            WindowAndroid windowAndroid,
             View parentView) {
         super(context, textSuggestionHost, windowAndroid, parentView);
     }

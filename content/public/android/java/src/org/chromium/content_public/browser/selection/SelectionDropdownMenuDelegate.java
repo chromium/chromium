@@ -10,10 +10,9 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import androidx.annotation.IdRes;
+import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -23,7 +22,6 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Each content embedder will need to provide an implementation of this to enable
  * the behavior when showing the context menu for mouse & trackpad.
  */
-@NullMarked
 public interface SelectionDropdownMenuDelegate {
     /** Listener for handling list item click events. */
     @FunctionalInterface
@@ -70,7 +68,8 @@ public interface SelectionDropdownMenuDelegate {
      * Returns the {@link android.view.View.OnClickListener} for an item if there is
      * one. Otherwise returns null.
      */
-    View.@Nullable OnClickListener getClickListener(PropertyModel itemModel);
+    @Nullable
+    View.OnClickListener getClickListener(PropertyModel itemModel);
 
     /** Returns a divider menu item to be shown in the dropdown menu. */
     ListItem getDivider();
@@ -91,7 +90,7 @@ public interface SelectionDropdownMenuDelegate {
      * @return ListItem with text and optionally an icon.
      */
     ListItem getMenuItem(
-            @Nullable String title,
+            String title,
             @Nullable String contentDescription,
             @IdRes int groupId,
             @IdRes int id,
@@ -99,6 +98,6 @@ public interface SelectionDropdownMenuDelegate {
             boolean isIconTintable,
             boolean groupContainsIcon,
             boolean enabled,
-            View.@Nullable OnClickListener clickListener,
+            @Nullable View.OnClickListener clickListener,
             @Nullable Intent intent);
 }

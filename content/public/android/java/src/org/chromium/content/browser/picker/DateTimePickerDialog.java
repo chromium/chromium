@@ -17,7 +17,6 @@ import android.widget.TimePicker.OnTimeChangedListener;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.build.annotations.NullMarked;
 import org.chromium.content.R;
 
 import java.util.Calendar;
@@ -28,7 +27,6 @@ import java.util.TimeZone;
  * A dialog that allows the user to choose a date and time. Shown for HTML form input elements
  * with type "datetime" or "datetime-local".
  */
-@NullMarked
 public class DateTimePickerDialog extends AlertDialog
         implements OnClickListener, OnDateChangedListener, OnTimeChangedListener {
     private final DatePicker mDatePicker;

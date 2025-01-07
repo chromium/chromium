@@ -10,15 +10,12 @@ import android.util.SparseArray;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.Callback;
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Tracks the Activiy for a given WebContents on behalf of a NFC instance that cannot talk
  * directly to WebContents.
  */
-@NullMarked
 class NfcHost implements WindowEventObserver {
     private static final SparseArray<NfcHost> sContextHostsMap = new SparseArray<NfcHost>();
 
@@ -30,7 +27,7 @@ class NfcHost implements WindowEventObserver {
 
     // The callback that the NFC instance has registered for being notified when the Activity
     // changes.
-    private @Nullable Callback<@Nullable Activity> mCallback;
+    private Callback<Activity> mCallback;
 
     /** Provides access to NfcHost via context ID. */
     public static NfcHost fromContextId(int contextId) {
@@ -54,7 +51,7 @@ class NfcHost implements WindowEventObserver {
      * track changes to the Activity associated with its context ID (i.e., the activity associated
      * with |mWebContents|).
      */
-    public void trackActivityChanges(Callback<@Nullable Activity> callback) {
+    public void trackActivityChanges(Callback<Activity> callback) {
         // Only the main frame is allowed to access NFC
         // (https://w3c.github.io/web-nfc/#security-policies). The renderer enforces this by
         // dropping connection requests from nested frames.  Therefore, this class should never see
@@ -63,13 +60,13 @@ class NfcHost implements WindowEventObserver {
         mCallback = callback;
 
         // This may be null in tests.
-        WindowEventObserverManager manager = WindowEventObserverManager.maybeFrom(mWebContents);
+        WindowEventObserverManager manager = WindowEventObserverManager.from(mWebContents);
         if (manager != null) {
             manager.addObserver(this);
         }
 
         WindowAndroid window = mWebContents.getTopLevelNativeWindow();
-        callback.onResult(window != null ? window.getActivity().get() : null);
+        mCallback.onResult(window != null ? window.getActivity().get() : null);
     }
 
     /**
@@ -79,7 +76,7 @@ class NfcHost implements WindowEventObserver {
         mCallback = null;
 
         // This may be null in tests.
-        WindowEventObserverManager manager = WindowEventObserverManager.maybeFrom(mWebContents);
+        WindowEventObserverManager manager = WindowEventObserverManager.from(mWebContents);
         if (manager != null) {
             manager.removeObserver(this);
         }
@@ -89,7 +86,7 @@ class NfcHost implements WindowEventObserver {
 
     /** Updates the Activity associated with this instance. */
     @Override
-    public void onWindowAndroidChanged(@Nullable WindowAndroid newWindowAndroid) {
+    public void onWindowAndroidChanged(WindowAndroid newWindowAndroid) {
         Activity activity = null;
         if (newWindowAndroid != null) {
             activity = newWindowAndroid.getActivity().get();

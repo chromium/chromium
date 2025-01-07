@@ -4,8 +4,6 @@
 
 package org.chromium.content.browser.androidoverlay;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
@@ -17,9 +15,6 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import org.chromium.base.Log;
-import org.chromium.build.annotations.Initializer;
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.gfx.mojom.Rect;
 import org.chromium.media.mojom.AndroidOverlayConfig;
 
@@ -30,11 +25,8 @@ import org.chromium.media.mojom.AndroidOverlayConfig;
  * Note that this does not implement AndroidOverlay; we just manage the android side of it.  The
  * mojo interface is implemented by DialogOverlayImpl.
  */
-@NullMarked
 class DialogOverlayCore {
     private static final String TAG = "DSCore";
-    // Android marks LayoutParams.token as @NonNull, but we null it out to mark state.
-    private static final IBinder INVALID_TOKEN = assumeNonNull(null);
 
     // Host interface, since we're on the wrong thread to talk to mojo, or anything else, really.
     public interface Host {
@@ -46,15 +38,15 @@ class DialogOverlayCore {
         void onOverlayDestroyed();
     }
 
-    private @Nullable Host mHost;
+    private Host mHost;
 
     // When initialized via Init, we'll create mDialog.  We'll clear it when we send
     // onOverlayDestroyed to the host.  In general, when this is null, either we haven't been
     // initialized yet, or we've been torn down.  It shouldn't be the case that anything calls
     // methods after construction but before |initialize()|, though.
-    private @Nullable Dialog mDialog;
+    private Dialog mDialog;
 
-    private @Nullable Callbacks mDialogCallbacks;
+    private Callbacks mDialogCallbacks;
 
     // Most recent layout parameters.
     private WindowManager.LayoutParams mLayoutParams;
@@ -75,7 +67,6 @@ class DialogOverlayCore {
      * @param host host interface, for sending messages that (probably) need to thread hop.
      * @param asPanel if true, then we'll be a panel.  This is intended for tests only.
      */
-    @Initializer
     public void initialize(
             Context context, AndroidOverlayConfig config, Host host, boolean asPanel) {
         mHost = host;
@@ -97,7 +88,7 @@ class DialogOverlayCore {
         // If we've not released the dialog yet, then do so.
         dismissDialogQuietly();
 
-        mLayoutParams.token = INVALID_TOKEN;
+        mLayoutParams.token = null;
 
         // We don't bother to notify |mHost| that we've been destroyed; it told us.
         mHost = null;
@@ -129,13 +120,13 @@ class DialogOverlayCore {
      * client shouldn't call us before getting the surface anyway.
      */
     public void layoutSurface(final Rect rect) {
-        if (mDialog == null || mLayoutParams.token == INVALID_TOKEN) return;
+        if (mDialog == null || mLayoutParams.token == null) return;
 
         // Note that it is important to not update the attributes if updating the layout params was
         // a no-op because it results in unnecessary re-layouts for the window.
         if (!copyRectToLayoutParams(rect)) return;
 
-        assumeNonNull(mDialog.getWindow()).setAttributes(mLayoutParams);
+        mDialog.getWindow().setAttributes(mLayoutParams);
     }
 
     /**
@@ -167,11 +158,10 @@ class DialogOverlayCore {
         public void surfaceRedrawNeeded(SurfaceHolder holder) {}
     }
 
-    public void onWindowToken(@Nullable IBinder token) {
+    public void onWindowToken(IBinder token) {
         if (mDialog == null || mHost == null) return;
 
-        if (token == null
-                || (mLayoutParams.token != INVALID_TOKEN && token != mLayoutParams.token)) {
+        if (token == null || (mLayoutParams.token != null && token != mLayoutParams.token)) {
             // We've lost the token, if we had one, or we got a new one.
             // Notify the client.
             mHost.onOverlayDestroyed();
@@ -187,10 +177,9 @@ class DialogOverlayCore {
 
         // We have a token, so layout the dialog.
         mLayoutParams.token = token;
-        Window window = assumeNonNull(mDialog.getWindow());
-        window.setAttributes(mLayoutParams);
+        mDialog.getWindow().setAttributes(mLayoutParams);
         mDialogCallbacks = new Callbacks();
-        window.takeSurface(mDialogCallbacks);
+        mDialog.getWindow().takeSurface(mDialogCallbacks);
         mDialog.show();
 
         // We don't notify the client here.  We'll wait until the Android Surface is created.
@@ -255,7 +244,6 @@ class DialogOverlayCore {
     }
 
     /** Package-private to retrieve our current dialog for tests. */
-    @Nullable
     Dialog getDialog() {
         return mDialog;
     }

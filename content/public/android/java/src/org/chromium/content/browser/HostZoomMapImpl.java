@@ -16,7 +16,6 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.HostZoomMap;
 import org.chromium.content_public.browser.SiteZoomInfo;
@@ -26,7 +25,6 @@ import java.util.HashMap;
 
 /** Implementations of {@link HostZoomMap} */
 @JNINamespace("content")
-@NullMarked
 public class HostZoomMapImpl {
     // Private constructor to prevent unwanted construction.
     private HostZoomMapImpl() {}

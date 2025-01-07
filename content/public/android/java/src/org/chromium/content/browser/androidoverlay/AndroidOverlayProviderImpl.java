@@ -8,8 +8,6 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.media.mojom.AndroidOverlay;
 import org.chromium.media.mojom.AndroidOverlayClient;
 import org.chromium.media.mojom.AndroidOverlayConfig;
@@ -23,7 +21,6 @@ import org.chromium.services.service_manager.InterfaceFactory;
  * sense that all provider clients talk to the same instance in the browser.
  */
 @JNINamespace("content")
-@NullMarked
 public class AndroidOverlayProviderImpl implements AndroidOverlayProvider {
     private static final String TAG = "AndroidOverlayProvider";
 
@@ -105,7 +102,7 @@ public class AndroidOverlayProviderImpl implements AndroidOverlayProvider {
 
     /** Mojo factory. */
     public static class Factory implements InterfaceFactory<AndroidOverlayProvider> {
-        private static @Nullable AndroidOverlayProviderImpl sImpl;
+        private static AndroidOverlayProviderImpl sImpl;
 
         public Factory() {}
 

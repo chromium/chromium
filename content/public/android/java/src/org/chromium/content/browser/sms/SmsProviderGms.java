@@ -16,8 +16,6 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -32,19 +30,18 @@ import org.chromium.ui.base.WindowAndroid;
  *
  */
 @JNINamespace("content")
-@NullMarked
 public class SmsProviderGms {
     private static final String TAG = "SmsProviderGms";
     private static final int MIN_GMS_VERSION_NUMBER_WITH_CODE_BROWSER_BACKEND = 202990000;
     private final long mSmsProviderGmsAndroid;
 
     private final @GmsBackend int mBackend;
-    private @Nullable SmsUserConsentReceiver mUserConsentReceiver;
-    private @Nullable SmsVerificationReceiver mVerificationReceiver;
+    private SmsUserConsentReceiver mUserConsentReceiver;
+    private SmsVerificationReceiver mVerificationReceiver;
 
     private Wrappers.WebOTPServiceContext mContext;
-    private @Nullable WindowAndroid mWindow;
-    private Wrappers.@Nullable SmsRetrieverClientWrapper mClient;
+    private WindowAndroid mWindow;
+    private Wrappers.SmsRetrieverClientWrapper mClient;
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public SmsProviderGms(
@@ -80,11 +77,11 @@ public class SmsProviderGms {
         ResettersForTesting.register(() -> mVerificationReceiver = oldValue);
     }
 
-    public @Nullable SmsUserConsentReceiver getUserConsentReceiverForTesting() {
+    public SmsUserConsentReceiver getUserConsentReceiverForTesting() {
         return mUserConsentReceiver;
     }
 
-    public @Nullable SmsVerificationReceiver getVerificationReceiverForTesting() {
+    public SmsVerificationReceiver getVerificationReceiverForTesting() {
         return mVerificationReceiver;
     }
 
@@ -121,16 +118,16 @@ public class SmsProviderGms {
         // If the SMS retrieval request is made from a remote device, e.g. desktop, we only proceed
         // with the verification receiver because the user consent receiver introduces too much user
         // friction. In addition, we do not apply the fallback logic in such case.
-        if (mVerificationReceiver != null
-                && (!isLocalRequest || mBackend != GmsBackend.USER_CONSENT)) {
-            mVerificationReceiver.listen(isLocalRequest);
-        }
-        if (mUserConsentReceiver != null
-                && isLocalRequest
-                && mBackend != GmsBackend.VERIFICATION
-                && window != null) {
-            mUserConsentReceiver.listen(window);
-        }
+        boolean shouldUseVerificationReceiver =
+                mVerificationReceiver != null
+                        && (!isLocalRequest || mBackend != GmsBackend.USER_CONSENT);
+        boolean shouldUseUserConsentReceiver =
+                mUserConsentReceiver != null
+                        && isLocalRequest
+                        && mBackend != GmsBackend.VERIFICATION
+                        && window != null;
+        if (shouldUseVerificationReceiver) mVerificationReceiver.listen(isLocalRequest);
+        if (shouldUseUserConsentReceiver) mUserConsentReceiver.listen(window);
     }
 
     /**
@@ -173,7 +170,7 @@ public class SmsProviderGms {
 
     // --------- Callbacks for receivers
 
-    void onReceive(@Nullable String sms, @GmsBackend int backend) {
+    void onReceive(String sms, @GmsBackend int backend) {
         SmsProviderGmsJni.get().onReceive(mSmsProviderGmsAndroid, sms, backend);
     }
 
@@ -189,7 +186,7 @@ public class SmsProviderGms {
         SmsProviderGmsJni.get().onNotAvailable(mSmsProviderGmsAndroid);
     }
 
-    public @Nullable WindowAndroid getWindow() {
+    public WindowAndroid getWindow() {
         return mWindow;
     }
 
@@ -220,7 +217,7 @@ public class SmsProviderGms {
 
     @NativeMethods
     interface Natives {
-        void onReceive(long nativeSmsProviderGms, @Nullable String sms, @GmsBackend int backend);
+        void onReceive(long nativeSmsProviderGms, String sms, @GmsBackend int backend);
 
         void onTimeout(long nativeSmsProviderGms);
 

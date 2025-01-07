@@ -5,11 +5,10 @@
 package org.chromium.content_public.browser;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.TerminationStatus;
 import org.chromium.blink.mojom.ViewportFit;
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
 import org.chromium.url.GURL;
@@ -22,12 +21,11 @@ import java.lang.ref.WeakReference;
  * This class receives callbacks that act as hooks for various a native web contents events related
  * to loading a url. A single web contents can have multiple WebContentObservers.
  */
-@NullMarked
 public abstract class WebContentsObserver {
     // TODO(jdduke): Remove the destroy method and hold observer embedders
     // responsible for explicit observer detachment.
     // Using a weak reference avoids cycles that might prevent GC of WebView's WebContents.
-    protected @Nullable WeakReference<WebContents> mWebContents;
+    protected WeakReference<WebContents> mWebContents;
 
     public WebContentsObserver(WebContents webContents) {
         mWebContents = new WeakReference<WebContents>(webContents);

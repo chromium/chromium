@@ -11,16 +11,12 @@ import android.view.inputmethod.SurroundingText;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
-
 import java.util.Locale;
 
 /**
  * An immutable class to contain text, selection range, composition range, and whether
  * it's single line or multiple lines that are being edited.
  */
-@NullMarked
 public class TextInputState {
     private final CharSequence mText;
     private final Range mSelection;
@@ -87,7 +83,7 @@ public class TextInputState {
         return mReplyToRequest;
     }
 
-    public @Nullable CharSequence getSelectedText() {
+    public CharSequence getSelectedText() {
         if (mSelection.start() == mSelection.end()) return null;
         return TextUtils.substring(mText, mSelection.start(), mSelection.end());
     }

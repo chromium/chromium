@@ -6,7 +6,8 @@ package org.chromium.content_public.browser.selection;
 
 import android.content.pm.ResolveInfo;
 
-import org.chromium.build.annotations.NullMarked;
+import androidx.annotation.NonNull;
+
 import org.chromium.content_public.browser.SelectionMenuItem;
 import org.chromium.content_public.browser.SelectionPopupController;
 
@@ -16,7 +17,6 @@ import java.util.List;
  * Interface for modifying text selection menu functionality. Content embedders can provide
  * implementation to provide text selection menu item custom behavior.
  */
-@NullMarked
 public interface SelectionActionMenuDelegate {
     /**
      * Allows the delegate make changes to default menu items created by {@link
@@ -35,7 +35,7 @@ public interface SelectionActionMenuDelegate {
             List<SelectionMenuItem.Builder> menuItemBuilders,
             boolean isSelectionPassword,
             boolean isSelectionReadOnly,
-            String selectedText);
+            @NonNull String selectedText);
 
     /**
      * Allows filtering of text processing activities.
@@ -52,6 +52,7 @@ public interface SelectionActionMenuDelegate {
      *
      * @return list of additional non selection secondary menu items if any.
      */
+    @NonNull
     List<SelectionMenuItem> getAdditionalNonSelectionItems();
 
     /**
@@ -61,6 +62,7 @@ public interface SelectionActionMenuDelegate {
      *
      * @return list of additional text selection menu items handling text processing if any.
      */
+    @NonNull
     List<SelectionMenuItem> getAdditionalTextProcessingItems();
 
     /**

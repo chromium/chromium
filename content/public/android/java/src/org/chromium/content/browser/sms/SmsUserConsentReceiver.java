@@ -18,13 +18,10 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
-import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Encapsulates logic to retrieve OTP code via SMS User Consent API. */
-@NullMarked
 public class SmsUserConsentReceiver extends BroadcastReceiver {
     private static final String TAG = "SmsUserConsentRcvr";
     private static final boolean DEBUG = false;
@@ -78,8 +75,12 @@ public class SmsUserConsentReceiver extends BroadcastReceiver {
             return;
         }
 
-        final Status status = IntentUtils.safeGetParcelableExtra(intent, SmsRetriever.EXTRA_STATUS);
-        if (status == null) {
+        final Status status;
+
+        try {
+            status = (Status) intent.getParcelableExtra(SmsRetriever.EXTRA_STATUS);
+        } catch (Throwable e) {
+            if (DEBUG) Log.d(TAG, "Error getting parceable.");
             return;
         }
 

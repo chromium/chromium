@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.inputmethod.CursorAnchorInfo;
 
 import org.chromium.base.Callback;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.InputMethodManagerWrapper;
 import org.chromium.ui.base.WindowAndroid;
@@ -70,7 +69,7 @@ public class PartialCustomTabInputMethodWrapper implements InputMethodManagerWra
     }
 
     @Override
-    public void onWindowAndroidChanged(@Nullable WindowAndroid newWindowAndroid) {
+    public void onWindowAndroidChanged(WindowAndroid newWindowAndroid) {
         mWrapper.onWindowAndroidChanged(newWindowAndroid);
     }
 

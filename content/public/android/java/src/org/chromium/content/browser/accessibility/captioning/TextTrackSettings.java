@@ -4,26 +4,22 @@
 
 package org.chromium.content.browser.accessibility.captioning;
 
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
-
 import java.util.Objects;
 
 /**
  * Bundles the Closed Caption Track Settings and ensures that non-null
  * strings are used used by the recipient of this bundle.
  */
-@NullMarked
 public final class TextTrackSettings {
     private static final String DEFAULT_VALUE = "";
     private boolean mTextTracksEnabled;
-    private @Nullable String mTextTrackBackgroundColor;
-    private @Nullable String mTextTrackFontFamily;
-    private @Nullable String mTextTrackFontStyle;
-    private @Nullable String mTextTrackFontVariant;
-    private @Nullable String mTextTrackTextColor;
-    private @Nullable String mTextTrackTextShadow;
-    private @Nullable String mTextTrackTextSize;
+    private String mTextTrackBackgroundColor;
+    private String mTextTrackFontFamily;
+    private String mTextTrackFontStyle;
+    private String mTextTrackFontVariant;
+    private String mTextTrackTextColor;
+    private String mTextTrackTextShadow;
+    private String mTextTrackTextSize;
 
     /**
      * Constructs a new TextTrackSettings object that will
@@ -45,13 +41,13 @@ public final class TextTrackSettings {
      */
     public TextTrackSettings(
             boolean textTracksEnabled,
-            @Nullable String textTrackBackgroundColor,
-            @Nullable String textTrackFontFamily,
-            @Nullable String textTrackFontStyle,
-            @Nullable String textTrackFontVariant,
-            @Nullable String textTrackTextColor,
-            @Nullable String textTrackTextShadow,
-            @Nullable String textTrackTextSize) {
+            String textTrackBackgroundColor,
+            String textTrackFontFamily,
+            String textTrackFontStyle,
+            String textTrackFontVariant,
+            String textTrackTextColor,
+            String textTrackTextShadow,
+            String textTrackTextSize) {
         mTextTracksEnabled = textTracksEnabled;
         mTextTrackBackgroundColor = textTrackBackgroundColor;
         mTextTrackFontFamily = textTrackFontFamily;

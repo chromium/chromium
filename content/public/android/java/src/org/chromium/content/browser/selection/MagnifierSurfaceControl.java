@@ -4,8 +4,6 @@
 
 package org.chromium.content.browser.selection;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.graphics.Rect;
 import android.os.Build;
 import android.view.AttachedSurfaceControl;
@@ -18,8 +16,6 @@ import androidx.annotation.RequiresApi;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 
 /**
@@ -29,7 +25,6 @@ import org.chromium.content.browser.webcontents.WebContentsImpl;
  */
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @JNINamespace("content")
-@NullMarked
 public class MagnifierSurfaceControl implements MagnifierWrapper {
     // Shadows are implemented as linear gradients with the same rounded corner as the main
     // content. Values are in device independent pixels, and converted to pixels at run time.
@@ -44,12 +39,12 @@ public class MagnifierSurfaceControl implements MagnifierWrapper {
 
     private final WebContentsImpl mWebContents;
     private final SelectionPopupControllerImpl.ReadbackViewCallback mViewCallback;
-    private @Nullable View mView;
+    private View mView;
     private int mWidthPx;
     private int mHeightPx;
     private int mVerticalOffsetPx;
-    private @Nullable SurfaceControl mSurfaceControl;
-    private SurfaceControl.@Nullable Transaction mTransaction;
+    private SurfaceControl mSurfaceControl;
+    private SurfaceControl.Transaction mTransaction;
 
     public MagnifierSurfaceControl(
             WebContentsImpl webContents,
@@ -61,15 +56,13 @@ public class MagnifierSurfaceControl implements MagnifierWrapper {
     @Override
     public void show(float x, float y) {
         Rect localVisibleRect = new Rect();
-        View view = assumeNonNull(getView());
-        if (!view.getLocalVisibleRect(localVisibleRect)) {
+        if (!getView().getLocalVisibleRect(localVisibleRect)) {
             dismiss();
             return;
         }
 
         createNativeIfNeeded();
         if (mSurfaceControl != null) {
-            assumeNonNull(mTransaction);
             x = x - mWidthPx / 2f;
             y = y - mHeightPx / 2f;
             float readback_y = y;
@@ -88,7 +81,7 @@ public class MagnifierSurfaceControl implements MagnifierWrapper {
                     .setReadbackOrigin(mNativeMagnifierSurfaceControl, x, readback_y);
 
             int[] viewOriginInSurface = new int[2];
-            view.getLocationInSurface(viewOriginInSurface);
+            getView().getLocationInSurface(viewOriginInSurface);
             mTransaction.setPosition(
                     mSurfaceControl, x + viewOriginInSurface[0], y + viewOriginInSurface[1]);
             mTransaction.apply();
@@ -113,9 +106,8 @@ public class MagnifierSurfaceControl implements MagnifierWrapper {
 
     private void createNativeIfNeeded() {
         if (mNativeMagnifierSurfaceControl != 0) return;
-        View view = getView();
-        if (view == null) return;
-        AttachedSurfaceControl attachedSurfaceControl = view.getRootSurfaceControl();
+        if (getView() == null) return;
+        AttachedSurfaceControl attachedSurfaceControl = getView().getRootSurfaceControl();
         if (attachedSurfaceControl == null) return;
 
         SurfaceControl surfaceControl =
@@ -131,7 +123,7 @@ public class MagnifierSurfaceControl implements MagnifierWrapper {
         float cornerRadius;
         float zoom;
         {
-            Magnifier androidMagnifier = new Magnifier(view);
+            Magnifier androidMagnifier = new Magnifier(getView());
             mWidthPx = androidMagnifier.getWidth();
             mHeightPx = androidMagnifier.getHeight();
             mVerticalOffsetPx = androidMagnifier.getDefaultVerticalSourceToMagnifierOffset();
@@ -140,7 +132,7 @@ public class MagnifierSurfaceControl implements MagnifierWrapper {
             androidMagnifier.dismiss();
         }
 
-        float density = view.getResources().getDisplayMetrics().density;
+        float density = getView().getResources().getDisplayMetrics().density;
         mNativeMagnifierSurfaceControl =
                 MagnifierSurfaceControlJni.get()
                         .create(
@@ -164,7 +156,6 @@ public class MagnifierSurfaceControl implements MagnifierWrapper {
         }
         mNativeMagnifierSurfaceControl = 0;
         if (mSurfaceControl != null) {
-            assumeNonNull(mTransaction);
             mTransaction.reparent(mSurfaceControl, null);
             mTransaction.apply();
             mTransaction.close();
@@ -175,7 +166,7 @@ public class MagnifierSurfaceControl implements MagnifierWrapper {
         mView = null;
     }
 
-    private @Nullable View getView() {
+    private View getView() {
         if (mView == null) {
             mView = mViewCallback.getReadbackView();
         }

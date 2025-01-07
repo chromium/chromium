@@ -5,14 +5,12 @@
 package org.chromium.content_public.browser;
 
 import org.chromium.base.Callback;
-import org.chromium.build.annotations.NullMarked;
 
 /**
  * The Android interface to allow communicating with the RenderWidgetHostViewImpl and the native
  * RenderWidgetHostViewAndroid object.  This object allows the browser to access and control the
  * renderer's top level View.
  */
-@NullMarked
 public interface RenderWidgetHostView {
     /**
      * If the view is ready to draw contents to the screen. In hardware mode,

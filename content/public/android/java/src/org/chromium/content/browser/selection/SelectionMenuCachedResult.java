@@ -4,8 +4,8 @@
 
 package org.chromium.content.browser.selection;
 
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
+import androidx.annotation.Nullable;
+
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionMenuGroup;
 import org.chromium.content_public.browser.selection.SelectionActionMenuDelegate;
@@ -25,16 +25,15 @@ import java.util.SortedSet;
  *       compare other params.
  * </ol>
  */
-@NullMarked
 public class SelectionMenuCachedResult {
-    private final SelectionClient.@Nullable Result mClassificationResult;
+    private final @Nullable SelectionClient.Result mClassificationResult;
     private final boolean mIsSelectionPassword;
     private final boolean mIsSelectionReadOnly;
     private final String mSelectedText;
     private final SortedSet<SelectionMenuGroup> mLastSelectionMenuItems;
 
     public SelectionMenuCachedResult(
-            SelectionClient.@Nullable Result classificationResult,
+            @Nullable SelectionClient.Result classificationResult,
             boolean isSelectionPassword,
             boolean isSelectionReadOnly,
             String selectedText,
@@ -63,11 +62,11 @@ public class SelectionMenuCachedResult {
      * @return true if params are equivalent otherwise false.
      */
     public boolean canReuseResult(
-            SelectionClient.@Nullable Result classificationResult,
+            @Nullable SelectionClient.Result classificationResult,
             boolean isSelectionPassword,
             boolean isSelectionReadOnly,
             String selectedText,
-            @Nullable SelectionActionMenuDelegate selectionActionMenuDelegate) {
+            SelectionActionMenuDelegate selectionActionMenuDelegate) {
         if (selectionActionMenuDelegate != null
                 && !selectionActionMenuDelegate.canReuseCachedSelectionMenu()) {
             return false;

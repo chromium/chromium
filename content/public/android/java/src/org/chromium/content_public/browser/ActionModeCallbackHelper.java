@@ -12,8 +12,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebSettings;
 
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
+import androidx.annotation.Nullable;
+
 import org.chromium.content.browser.selection.SelectionPopupControllerImpl;
 
 /**
@@ -21,7 +21,6 @@ import org.chromium.content.browser.selection.SelectionPopupControllerImpl;
  * {@link android.view.ActionMode}. Exposes the functionality of the class
  * for embedder to provide with the callback instance that interacts with it.
  */
-@NullMarked
 public abstract class ActionModeCallbackHelper {
     private static final String TAG = "ActionModeHelper";
 
@@ -72,7 +71,7 @@ public abstract class ActionModeCallbackHelper {
                 int groupId,
                 int id,
                 @Nullable Intent intent,
-                View.@Nullable OnClickListener clickListener) {
+                @Nullable View.OnClickListener clickListener) {
             return false;
         }
     }
@@ -101,7 +100,8 @@ public abstract class ActionModeCallbackHelper {
      * @return {@link RenderFrameHost} object only available during page selection,
      *      if there is a valid ActionMode available.
      */
-    public abstract @Nullable RenderFrameHost getRenderFrameHost();
+    @Nullable
+    public abstract RenderFrameHost getRenderFrameHost();
 
     /**
      * Set the action mode menu items allowed on the content.
@@ -144,7 +144,7 @@ public abstract class ActionModeCallbackHelper {
             int groupId,
             int id,
             @Nullable Intent intent,
-            View.@Nullable OnClickListener clickListener);
+            @Nullable View.OnClickListener clickListener);
 
     /**
      * @see {@link ActionMode.Callback#onDestroyActionMode(ActionMode)}

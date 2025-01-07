@@ -14,8 +14,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.process_launcher.ChildProcessConnection;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 
 import java.util.Random;
 import java.util.Set;
@@ -29,16 +27,15 @@ import java.util.Set;
  *
  * This class enforces that it is only used on the launcher thread other than during init.
  */
-@NullMarked
 public class ChildProcessConnectionMetrics {
     @VisibleForTesting private static final long INITIAL_EMISSION_DELAY_MS = 60 * 1000; // 1 min.
     private static final long REGULAR_EMISSION_DELAY_MS = 5 * 60 * 1000; // 5 min.
 
-    private static @Nullable ChildProcessConnectionMetrics sInstance;
+    private static ChildProcessConnectionMetrics sInstance;
 
     // Whether the main application is currently brought to the foreground.
     private boolean mApplicationInForegroundOnUiThread;
-    private @Nullable BindingManager mBindingManager;
+    private BindingManager mBindingManager;
 
     private final Set<ChildProcessConnection> mConnections = new ArraySet<>();
     private final Random mRandom = new Random();

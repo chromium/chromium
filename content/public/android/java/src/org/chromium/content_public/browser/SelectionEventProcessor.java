@@ -4,8 +4,5 @@
 
 package org.chromium.content_public.browser;
 
-import org.chromium.build.annotations.NullMarked;
-
 /** Interface for selection event logging. */
-@NullMarked
 public interface SelectionEventProcessor {}

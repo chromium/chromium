@@ -4,13 +4,7 @@
 
 package org.chromium.content.browser.selection;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import androidx.annotation.VisibleForTesting;
-
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
-import org.chromium.build.annotations.RequiresNonNull;
 
 import java.text.BreakIterator;
 import java.util.regex.Pattern;
@@ -29,16 +23,15 @@ import java.util.regex.Pattern;
  * updateSelectionState() must be called. If updateSelectionState() or getWordDelta() returns false,
  * we should end the current logging session immediately since there must be a DOM change.
  */
-@NullMarked
 public class SelectionIndicesConverter {
     private static final Pattern PATTERN_WHITESPACE = Pattern.compile("[\\p{javaSpaceChar}\\s]+");
 
     // Tracking the overall selection during current logging session.
-    private @Nullable String mGlobalSelectionText;
+    private String mGlobalSelectionText;
     private int mGlobalStartOffset;
 
     // Tracking previous selection.
-    private @Nullable String mLastSelectionText;
+    private String mLastSelectionText;
     private int mLastStartOffset;
 
     // The start offset from SelectionStarted call.
@@ -53,7 +46,6 @@ public class SelectionIndicesConverter {
             updateGlobalSelection(selectionText, startOffset);
             return true;
         }
-        assumeNonNull(mLastSelectionText);
 
         boolean update = false;
         int endOffset = startOffset + selectionText.length();
@@ -85,7 +77,6 @@ public class SelectionIndicesConverter {
     }
 
     public boolean getWordDelta(int start, int end, int[] wordIndices) {
-        assumeNonNull(mGlobalSelectionText);
         assert wordIndices.length == 2;
         wordIndices[0] = wordIndices[1] = 0;
 
@@ -134,7 +125,7 @@ public class SelectionIndicesConverter {
     }
 
     @VisibleForTesting
-    protected @Nullable String getGlobalSelectionText() {
+    protected String getGlobalSelectionText() {
         return mGlobalSelectionText;
     }
 
@@ -179,7 +170,6 @@ public class SelectionIndicesConverter {
 
     @VisibleForTesting
     protected boolean isWhitespace(int start, int end) {
-        assumeNonNull(mGlobalSelectionText);
         return PATTERN_WHITESPACE.matcher(mGlobalSelectionText.substring(start, end)).matches();
     }
 
@@ -212,7 +202,6 @@ public class SelectionIndicesConverter {
     // Within each selection logging session, we obtain the next selection from shrink, expand or
     // reverse select the current selection. To update global selection, we only need to extend both
     // sides of the last global selection with current selection if necessary.
-    @RequiresNonNull("mGlobalSelectionText")
     private void combineGlobalSelection(String selectionText, int startOffset) {
         int endOffset = startOffset + selectionText.length();
         int globalEndOffset = mGlobalStartOffset + mGlobalSelectionText.length();

@@ -4,8 +4,6 @@
 
 package org.chromium.content.browser.input;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -45,6 +43,7 @@ import android.view.inputmethod.RemoveSpaceGesture;
 import android.view.inputmethod.SelectGesture;
 import android.view.inputmethod.SelectRangeGesture;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.inputmethod.EditorInfoCompat;
 
@@ -63,8 +62,6 @@ import org.chromium.blink.mojom.InputCursorAnchorInfo;
 import org.chromium.blink.mojom.StylusWritingGestureData;
 import org.chromium.blink_public.web.WebInputEventModifier;
 import org.chromium.blink_public.web.WebTextInputMode;
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.content.browser.GestureListenerManagerImpl;
 import org.chromium.content.browser.WindowEventObserver;
 import org.chromium.content.browser.WindowEventObserverManager;
@@ -118,7 +115,6 @@ import java.util.List;
  * lifetime of the object.
  */
 @JNINamespace("content")
-@NullMarked
 public class ImeAdapterImpl
         implements ImeAdapter, WindowEventObserver, UserData, InputMethodManagerWrapper.Delegate {
     private static final String TAG = "Ime";
@@ -133,12 +129,12 @@ public class ImeAdapterImpl
 
     private long mNativeImeAdapterAndroid;
     private InputMethodManagerWrapper mInputMethodManagerWrapper;
-    private @Nullable ChromiumBaseInputConnection mInputConnection;
-    private ChromiumBaseInputConnection.@Nullable Factory mInputConnectionFactory;
+    private ChromiumBaseInputConnection mInputConnection;
+    private ChromiumBaseInputConnection.Factory mInputConnectionFactory;
 
     // NOTE: This object will not be released by Android framework until the matching
     // ResultReceiver in the InputMethodService (IME app) gets gc'ed.
-    private @Nullable ShowKeyboardResultReceiver mShowKeyboardResultReceiver;
+    private ShowKeyboardResultReceiver mShowKeyboardResultReceiver;
 
     private final WebContentsImpl mWebContents;
     private ViewAndroidDelegate mViewDelegate;
@@ -167,15 +163,12 @@ public class ImeAdapterImpl
 
     private int mLastSelectionStart;
     private int mLastSelectionEnd;
-
-    @SuppressWarnings("NullAway.Init")
     private String mLastText;
-
     private int mLastCompositionStart;
     private int mLastCompositionEnd;
     private boolean mRestartInputOnNextStateUpdate;
     // Do not access directly, use getStylusWritingImeCallback() instead.
-    private @Nullable StylusWritingImeCallback mStylusWritingImeCallback;
+    private StylusWritingImeCallback mStylusWritingImeCallback;
     private SparseArray<OngoingGesture> mOngoingGestures = new SparseArray<>();
 
     // True if ImeAdapter is connected to render process.
@@ -248,17 +241,14 @@ public class ImeAdapterImpl
      * @return {@link ImeAdapter} object.
      */
     public static ImeAdapterImpl fromWebContents(WebContents webContents) {
-        ImeAdapterImpl ret =
-                ((WebContentsImpl) webContents)
-                        .getOrSetUserData(ImeAdapterImpl.class, UserDataFactoryLazyHolder.INSTANCE);
-        assert ret != null;
-        return ret;
+        return ((WebContentsImpl) webContents)
+                .getOrSetUserData(ImeAdapterImpl.class, UserDataFactoryLazyHolder.INSTANCE);
     }
 
     /** Returns an instance of the default {@link InputMethodManagerWrapper} */
     public static InputMethodManagerWrapper createDefaultInputMethodManagerWrapper(
             Context context,
-            @Nullable WindowAndroid windowAndroid,
+            WindowAndroid windowAndroid,
             InputMethodManagerWrapper.Delegate delegate) {
         return new InputMethodManagerWrapperImpl(context, windowAndroid, delegate);
     }
@@ -269,9 +259,8 @@ public class ImeAdapterImpl
      */
     public ImeAdapterImpl(WebContents webContents) {
         mWebContents = (WebContentsImpl) webContents;
-        ViewAndroidDelegate viewDelegate = mWebContents.getViewAndroidDelegate();
-        assert viewDelegate != null;
-        mViewDelegate = viewDelegate;
+        mViewDelegate = mWebContents.getViewAndroidDelegate();
+        assert mViewDelegate != null;
 
         // Use application context here to avoid leaking the activity context.
         InputMethodManagerWrapper wrapper =
@@ -318,12 +307,12 @@ public class ImeAdapterImpl
     }
 
     @Override
-    public @Nullable InputConnection getActiveInputConnection() {
+    public InputConnection getActiveInputConnection() {
         return mInputConnection;
     }
 
     @Override
-    public @Nullable InputConnection onCreateInputConnection(EditorInfo outAttrs) {
+    public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
         boolean allowKeyboardLearning = mWebContents != null && !mWebContents.isIncognito();
         InputConnection inputConnection = onCreateInputConnection(outAttrs, allowKeyboardLearning);
 
@@ -430,7 +419,7 @@ public class ImeAdapterImpl
      * @see View#onCreateInputConnection(EditorInfo)
      * @param allowKeyboardLearning Whether to allow keyboard (IME) app to do personalized learning.
      */
-    public @Nullable ChromiumBaseInputConnection onCreateInputConnection(
+    public ChromiumBaseInputConnection onCreateInputConnection(
             EditorInfo outAttrs, boolean allowKeyboardLearning) {
         // InputMethodService evaluates fullscreen mode even when the new input connection is
         // null. This makes sure IME doesn't enter fullscreen mode or open custom UI.
@@ -484,7 +473,7 @@ public class ImeAdapterImpl
         return mInputConnection;
     }
 
-    private void setInputConnection(@Nullable ChromiumBaseInputConnection inputConnection) {
+    private void setInputConnection(ChromiumBaseInputConnection inputConnection) {
         if (mInputConnection == inputConnection) return;
         // The previous input connection might be waiting for state update.
         if (mInputConnection != null) mInputConnection.unblockOnUiThread();
@@ -509,29 +498,27 @@ public class ImeAdapterImpl
         mInputConnectionFactory = factory;
     }
 
-    ChromiumBaseInputConnection.@Nullable Factory getInputConnectionFactoryForTest() {
+    ChromiumBaseInputConnection.Factory getInputConnectionFactoryForTest() {
         return mInputConnectionFactory;
     }
 
     public void setTriggerDelayedOnCreateInputConnectionForTest(boolean trigger) {
-        assumeNonNull(mInputConnectionFactory);
         mInputConnectionFactory.setTriggerDelayedOnCreateInputConnection(trigger);
     }
 
     /** Get the current input connection for testing purposes. */
     @VisibleForTesting
     @Override
-    public @Nullable InputConnection getInputConnectionForTest() {
+    public InputConnection getInputConnectionForTest() {
         return mInputConnection;
     }
 
     @VisibleForTesting
     @Override
     public void setComposingTextForTest(final CharSequence text, final int newCursorPosition) {
-        ChromiumBaseInputConnection inputConnection = assumeNonNull(mInputConnection);
-        inputConnection
+        mInputConnection
                 .getHandler()
-                .post(() -> inputConnection.setComposingText(text, newCursorPosition));
+                .post(() -> mInputConnection.setComposingText(text, newCursorPosition));
     }
 
     private static int getModifiers(int metaState) {
@@ -838,7 +825,7 @@ public class ImeAdapterImpl
     }
 
     @Override
-    public void onWindowAndroidChanged(@Nullable WindowAndroid windowAndroid) {
+    public void onWindowAndroidChanged(WindowAndroid windowAndroid) {
         if (mInputMethodManagerWrapper != null) {
             mInputMethodManagerWrapper.onWindowAndroidChanged(windowAndroid);
         }
@@ -925,7 +912,7 @@ public class ImeAdapterImpl
     }
 
     /** Update extracted text to input method manager. */
-    void updateExtractedText(int token, @Nullable ExtractedText extractedText) {
+    void updateExtractedText(int token, ExtractedText extractedText) {
         mInputMethodManagerWrapper.updateExtractedText(getContainerView(), token, extractedText);
     }
 
@@ -1628,7 +1615,7 @@ public class ImeAdapterImpl
     }
 
     @CalledByNative
-    private void setBounds(float @Nullable [] characterBounds, float @Nullable [] lineBounds) {
+    private void setBounds(@Nullable float[] characterBounds, @Nullable float[] lineBounds) {
         mCursorAnchorInfoController.setBounds(characterBounds, lineBounds, getContainerView());
     }
 
@@ -1647,7 +1634,7 @@ public class ImeAdapterImpl
         boolean sendKeyEvent(
                 long nativeImeAdapterAndroid,
                 ImeAdapterImpl caller,
-                @Nullable KeyEvent event,
+                KeyEvent event,
                 int type,
                 int modifiers,
                 long timestampMs,

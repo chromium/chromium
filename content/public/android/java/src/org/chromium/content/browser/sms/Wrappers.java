@@ -4,8 +4,6 @@
 
 package org.chromium.content.browser.sms;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -18,10 +16,6 @@ import com.google.android.gms.auth.api.phone.SmsCodeRetriever;
 import com.google.android.gms.auth.api.phone.SmsRetrieverClient;
 import com.google.android.gms.tasks.Task;
 
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
-
-@NullMarked
 class Wrappers {
     // Prevent instantiation.
     private Wrappers() {}
@@ -29,14 +23,13 @@ class Wrappers {
     /** Wraps com.google.android.gms.auth.api.phone.SmsRetrieverClient. */
     static class SmsRetrieverClientWrapper {
         // Used for user consent flow.
-        private final @Nullable SmsRetrieverClient mSmsRetrieverClient;
+        private final SmsRetrieverClient mSmsRetrieverClient;
         // Used for browser code flow.
-        private final @Nullable SmsCodeBrowserClient mSmsCodeBrowserClient;
-        private @Nullable WebOTPServiceContext mContext;
+        private final SmsCodeBrowserClient mSmsCodeBrowserClient;
+        private WebOTPServiceContext mContext;
 
         public SmsRetrieverClientWrapper(
-                @Nullable SmsRetrieverClient smsRetrieverClient,
-                @Nullable SmsCodeBrowserClient smsCodeBrowserClient) {
+                SmsRetrieverClient smsRetrieverClient, SmsCodeBrowserClient smsCodeBrowserClient) {
             mSmsRetrieverClient = smsRetrieverClient;
             mSmsCodeBrowserClient = smsCodeBrowserClient;
         }
@@ -45,17 +38,15 @@ class Wrappers {
             mContext = context;
         }
 
-        public @Nullable WebOTPServiceContext getContext() {
+        public WebOTPServiceContext getContext() {
             return mContext;
         }
 
         public Task<Void> startSmsCodeBrowserRetriever() {
-            assumeNonNull(mSmsCodeBrowserClient);
             return mSmsCodeBrowserClient.startSmsCodeRetriever();
         }
 
-        public Task<Void> startSmsUserConsent(@Nullable String senderAddress) {
-            assumeNonNull(mSmsRetrieverClient);
+        public Task<Void> startSmsUserConsent(String senderAddress) {
             return mSmsRetrieverClient.startSmsUserConsent(senderAddress);
         }
     }
@@ -65,8 +56,8 @@ class Wrappers {
      * registered BroadcastReceiver.
      */
     static class WebOTPServiceContext extends ContextWrapper {
-        private @Nullable BroadcastReceiver mVerificationReceiver;
-        private @Nullable BroadcastReceiver mUserConsentReceiver;
+        private BroadcastReceiver mVerificationReceiver;
+        private BroadcastReceiver mUserConsentReceiver;
         private final SmsProviderGms mSmsProviderGms;
 
         public WebOTPServiceContext(Context context, SmsProviderGms provider) {
@@ -74,11 +65,11 @@ class Wrappers {
             mSmsProviderGms = provider;
         }
 
-        public @Nullable SmsVerificationReceiver getRegisteredVerificationReceiver() {
+        public SmsVerificationReceiver getRegisteredVerificationReceiver() {
             return (SmsVerificationReceiver) mVerificationReceiver;
         }
 
-        public @Nullable SmsUserConsentReceiver getRegisteredUserConsentReceiver() {
+        public SmsUserConsentReceiver getRegisteredUserConsentReceiver() {
             return (SmsUserConsentReceiver) mUserConsentReceiver;
         }
 
@@ -86,7 +77,7 @@ class Wrappers {
             return new SmsVerificationReceiver(mSmsProviderGms, this);
         }
 
-        private void onRegisterReceiver(@Nullable BroadcastReceiver receiver, IntentFilter filter) {
+        private void onRegisterReceiver(BroadcastReceiver receiver, IntentFilter filter) {
             if (filter.hasAction(SmsCodeRetriever.SMS_CODE_RETRIEVED_ACTION)) {
                 mVerificationReceiver = receiver;
             } else {
@@ -99,33 +90,32 @@ class Wrappers {
 
         @Override
         public Intent registerReceiver(
-                @Nullable BroadcastReceiver receiver,
+                BroadcastReceiver receiver,
                 IntentFilter filter,
-                @Nullable String permission,
-                @Nullable Handler handler) {
+                String permission,
+                Handler handler) {
             onRegisterReceiver(receiver, filter);
             return super.registerReceiver(receiver, filter, permission, handler);
         }
 
         @Override
-        public Intent registerReceiver(@Nullable BroadcastReceiver receiver, IntentFilter filter) {
+        public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter) {
             throw new RuntimeException(); // Not implemented.
         }
 
         @Override
         public Intent registerReceiver(
-                @Nullable BroadcastReceiver receiver,
+                BroadcastReceiver receiver,
                 IntentFilter filter,
-                @Nullable String permission,
-                @Nullable Handler handler,
+                String permission,
+                Handler handler,
                 int flags) {
             onRegisterReceiver(receiver, filter);
             return super.registerReceiver(receiver, filter, permission, handler, flags);
         }
 
         @Override
-        public Intent registerReceiver(
-                @Nullable BroadcastReceiver receiver, IntentFilter filter, int flags) {
+        public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter, int flags) {
             throw new RuntimeException(); // Not implemented.
         }
 

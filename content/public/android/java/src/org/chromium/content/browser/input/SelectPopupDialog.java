@@ -16,8 +16,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 import org.chromium.base.Callback;
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.content.R;
 import org.chromium.content_public.browser.util.DialogTypeRecorder;
 import org.chromium.ui.widget.UiWidgetFactory;
@@ -25,7 +23,6 @@ import org.chromium.ui.widget.UiWidgetFactory;
 import java.util.List;
 
 /** Handles the popup dialog for the <select> HTML tag support. */
-@NullMarked
 public class SelectPopupDialog implements SelectPopup.Ui {
     private static final int[] SELECT_DIALOG_ATTRS = {
         R.attr.select_dialog_multichoice, R.attr.select_dialog_singlechoice
@@ -33,13 +30,13 @@ public class SelectPopupDialog implements SelectPopup.Ui {
 
     // The dialog hosting the popup list view.
     private final AlertDialog mListBoxPopup;
-    private final Callback<int @Nullable []> mSelectionChangedCallback;
+    private final Callback<int[]> mSelectionChangedCallback;
 
     private boolean mSelectionNotified;
 
     public SelectPopupDialog(
             Context windowContext,
-            Callback<int @Nullable []> selectionChangedCallback,
+            Callback<int[]> selectionChangedCallback,
             List<SelectPopupItem> items,
             boolean multiple,
             int[] selected) {
@@ -147,7 +144,7 @@ public class SelectPopupDialog implements SelectPopup.Ui {
         return indices;
     }
 
-    private void notifySelection(int @Nullable [] indicies) {
+    private void notifySelection(int[] indicies) {
         if (mSelectionNotified) return;
         mSelectionChangedCallback.onResult(indicies);
         mSelectionNotified = true;

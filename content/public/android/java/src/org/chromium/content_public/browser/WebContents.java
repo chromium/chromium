@@ -9,10 +9,11 @@ import android.graphics.Rect;
 import android.os.Handler;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.chromium.base.Callback;
 import org.chromium.blink_public.input.SelectionGranularity;
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsOffsetTagsInfo;
 import org.chromium.content_public.browser.back_forward_transition.AnimationStage;
 import org.chromium.ui.OverscrollRefreshHandler;
@@ -43,7 +44,6 @@ import org.chromium.url.GURL;
  * bundle.setClassLoader(WebContents.class.getClassLoader()); webContents =
  * bundle.get("WEBCONTENTSKEY");
  */
-@NullMarked
 public interface WebContents extends Parcelable {
     /**
      * Interface used to transfer the internal objects (but callers should own) from WebContents.
@@ -54,10 +54,9 @@ public interface WebContents extends Parcelable {
          *
          * @param internals a {@link WebContentsInternals} object.
          */
-        void set(@Nullable WebContentsInternals internals);
+        void set(WebContentsInternals internals);
 
         /** Returns {@link WebContentsInternals} object. Can be {@code null}. */
-        @Nullable
         WebContentsInternals get();
     }
 
@@ -67,15 +66,15 @@ public interface WebContents extends Parcelable {
      */
     public static InternalsHolder createDefaultInternalsHolder() {
         return new InternalsHolder() {
-            private @Nullable WebContentsInternals mInternals;
+            private WebContentsInternals mInternals;
 
             @Override
-            public void set(@Nullable WebContentsInternals internals) {
+            public void set(WebContentsInternals internals) {
                 mInternals = internals;
             }
 
             @Override
-            public @Nullable WebContentsInternals get() {
+            public WebContentsInternals get() {
                 return mInternals;
             }
         };
@@ -100,7 +99,7 @@ public interface WebContents extends Parcelable {
             ViewAndroidDelegate viewDelegate,
             ViewEventSink.InternalAccessDelegate accessDelegate,
             WindowAndroid windowAndroid,
-            InternalsHolder internalsHolder);
+            @NonNull InternalsHolder internalsHolder);
 
     /**
      * Clear Java WebContentsObservers so we can put this WebContents to the background. Use this
@@ -124,7 +123,7 @@ public interface WebContents extends Parcelable {
      * TODO(jinsukkim): This should happen through view android tree instead.
      * @param windowAndroid The new {@link WindowAndroid} for this {@link WebContents}.
      */
-    void setTopLevelNativeWindow(@Nullable WindowAndroid windowAndroid);
+    void setTopLevelNativeWindow(WindowAndroid windowAndroid);
 
     /**
      * If called too early, the {@link ViewAndroidDelegate} might not be yet available. One can
@@ -155,7 +154,6 @@ public interface WebContents extends Parcelable {
     /**
      * @return The navigation controller associated with this WebContents.
      */
-    @Nullable
     NavigationController getNavigationController();
 
     /**
@@ -394,9 +392,9 @@ public interface WebContents extends Parcelable {
      */
     void postMessageToMainFrame(
             MessagePayload messagePayload,
-            @Nullable String sourceOrigin,
+            String sourceOrigin,
             String targetOrigin,
-            MessagePort @Nullable [] ports);
+            @Nullable MessagePort[] ports);
 
     /**
      * Creates a message channel for sending postMessage requests and returns the ports for
@@ -458,7 +456,6 @@ public interface WebContents extends Parcelable {
      * @return {@link StylusWritingImeCallback} which is used to implement the IME functionality for
      *     the Stylus handwriting feature.
      */
-    @Nullable
     StylusWritingImeCallback getStylusWritingImeCallback();
 
     /**

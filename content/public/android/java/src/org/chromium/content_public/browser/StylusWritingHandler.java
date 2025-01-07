@@ -12,8 +12,7 @@ import android.view.View;
 import android.view.inputmethod.EditorBoundsInfo;
 import android.view.inputmethod.EditorInfo;
 
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Interface that provides Stylus handwriting to text input functionality in HTML edit fields. This
@@ -21,7 +20,6 @@ import org.chromium.build.annotations.Nullable;
  * in this interface outside of //content (i.e. //components/stylus_handwriting) and these are
  * called from the current WebContents related classes in //content.
  */
-@NullMarked
 public interface StylusWritingHandler {
     /**
      * @return true if soft keyboard can be shown during stylus writing.
@@ -50,7 +48,8 @@ public interface StylusWritingHandler {
      * @param isEditable     is true if focused node is of editable type.
      * @param currentView the {@link View} in which the focused node changed.
      */
-    default @Nullable EditorBoundsInfo onFocusedNodeChanged(
+    @Nullable
+    default EditorBoundsInfo onFocusedNodeChanged(
             Rect editableBoundsOnScreenDip,
             boolean isEditable,
             View currentView,
@@ -108,7 +107,8 @@ public interface StylusWritingHandler {
      * @param contentOffsetY the Physical on-screen Y offset amount below the browser controls
      * @param view the view on which to start stylus handwriting
      */
-    default @Nullable EditorBoundsInfo onEditElementFocusedForStylusWriting(
+    @Nullable
+    default EditorBoundsInfo onEditElementFocusedForStylusWriting(
             Rect focusedEditBounds,
             Point cursorPosition,
             float scaleFactor,

@@ -4,6 +4,8 @@
 
 package org.chromium.content_public.browser;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.JNINamespace;
@@ -11,8 +13,6 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.navigation_controller.LoadURLType;
 import org.chromium.content_public.browser.navigation_controller.UserAgentOverrideOption;
 import org.chromium.content_public.common.Referrer;
@@ -31,22 +31,21 @@ import java.util.Map;
  * values.
  */
 @JNINamespace("content")
-@NullMarked
 public class LoadUrlParams {
     // Fields with counterparts in NavigationController::LoadURLParams.
     private String mUrl;
-    private @Nullable Origin mInitiatorOrigin;
+    private Origin mInitiatorOrigin;
     private int mLoadUrlType;
     private int mTransitionType;
-    private @Nullable Referrer mReferrer;
-    private @Nullable Map<String, String> mExtraHeaders;
-    private @Nullable UserDataHost mNavigationHandleUserDataHost;
-    private @Nullable String mVerbatimHeaders;
+    private Referrer mReferrer;
+    private Map<String, String> mExtraHeaders;
+    @Nullable private UserDataHost mNavigationHandleUserDataHost;
+    private String mVerbatimHeaders;
     private int mUaOverrideOption;
-    private @Nullable ResourceRequestBody mPostData;
-    private @Nullable String mBaseUrlForDataUrl;
-    private @Nullable String mVirtualUrlForSpecialCases;
-    private @Nullable String mDataUrlAsString;
+    private ResourceRequestBody mPostData;
+    private String mBaseUrlForDataUrl;
+    private String mVirtualUrlForSpecialCases;
+    private String mDataUrlAsString;
     private boolean mCanLoadLocalResources;
     private boolean mIsRendererInitiated;
     private boolean mShouldReplaceCurrentEntry;
@@ -54,8 +53,8 @@ public class LoadUrlParams {
     private long mInputStartTimestamp;
     private boolean mHasUserGesture;
     private boolean mShouldClearHistoryList;
-    private @Nullable AdditionalNavigationParams mAdditionalNavigationParams;
-    private @Nullable Supplier<Long> mNavigationUIDataSupplier;
+    @Nullable private AdditionalNavigationParams mAdditionalNavigationParams;
+    private Supplier<Long> mNavigationUIDataSupplier;
     private boolean mIsPdf;
 
     /**
@@ -106,7 +105,7 @@ public class LoadUrlParams {
      * Creates a new LoadUrlParams that is a copy of {@code other}.
      * The user data host is intentionally not copied.
      */
-    public static LoadUrlParams copy(LoadUrlParams other) {
+    public static LoadUrlParams copy(@NonNull LoadUrlParams other) {
         LoadUrlParams copy = new LoadUrlParams(other.mUrl);
         copy.mInitiatorOrigin = other.mInitiatorOrigin;
         copy.mLoadUrlType = other.mLoadUrlType;
@@ -156,7 +155,7 @@ public class LoadUrlParams {
      *                does not require a special charset.
      */
     public static LoadUrlParams createLoadDataParams(
-            String data, String mimeType, boolean isBase64Encoded, @Nullable String charset) {
+            String data, String mimeType, boolean isBase64Encoded, String charset) {
         LoadUrlParams params =
                 new LoadUrlParams(buildDataUri(data, mimeType, isBase64Encoded, charset));
         params.setLoadType(LoadURLType.DATA);
@@ -165,7 +164,7 @@ public class LoadUrlParams {
     }
 
     private static String buildDataUri(
-            String data, String mimeType, boolean isBase64Encoded, @Nullable String charset) {
+            String data, String mimeType, boolean isBase64Encoded, String charset) {
         StringBuilder dataUrl = new StringBuilder("data:");
         dataUrl.append(mimeType);
         if (charset != null && !charset.isEmpty()) {
@@ -223,7 +222,7 @@ public class LoadUrlParams {
             boolean isBase64Encoded,
             String baseUrl,
             String historyUrl,
-            @Nullable String charset) {
+            String charset) {
         LoadUrlParams params;
         // For WebView compatibility, when the base URL has the 'data:'
         // scheme, we treat it as a regular data URL load and skip setting
@@ -276,7 +275,7 @@ public class LoadUrlParams {
     }
 
     /** Return the base url for a data url, otherwise null. */
-    public @Nullable String getBaseUrl() {
+    public String getBaseUrl() {
         return mBaseUrlForDataUrl;
     }
 
@@ -309,7 +308,7 @@ public class LoadUrlParams {
     /**
      * @return the referrer of this load.
      */
-    public @Nullable Referrer getReferrer() {
+    public Referrer getReferrer() {
         return mReferrer;
     }
 
@@ -324,7 +323,7 @@ public class LoadUrlParams {
     }
 
     /** Return the extra headers as a map. */
-    public @Nullable Map<String, String> getExtraHeaders() {
+    public Map<String, String> getExtraHeaders() {
         return mExtraHeaders;
     }
 
@@ -343,7 +342,8 @@ public class LoadUrlParams {
      * Returns the user data to be added to the navigation handle. Clears out the existing user data
      * host on each call.  May return null if there is no data. This is not part of the content API.
      */
-    public @Nullable UserDataHost takeNavigationHandleUserData() {
+    @Nullable
+    public UserDataHost takeNavigationHandleUserData() {
         UserDataHost returnValue = mNavigationHandleUserDataHost;
         mNavigationHandleUserDataHost = null;
         return returnValue;
@@ -356,7 +356,7 @@ public class LoadUrlParams {
      * exploded form through setExtraHeaders(). Embedders that work with extra headers in opaque
      * collapsed form can use the setVerbatimHeaders() / getVerbatimHeaders() instead.
      */
-    public @Nullable String getExtraHeadersString() {
+    public String getExtraHeadersString() {
         return getExtraHeadersString("\n", false);
     }
 
@@ -365,11 +365,11 @@ public class LoadUrlParams {
      * is set. This form is suitable for passing to native
      * net::HttpRequestHeaders::AddHeadersFromString.
      */
-    public @Nullable String getExtraHttpRequestHeadersString() {
+    public String getExtraHttpRequestHeadersString() {
         return getExtraHeadersString("\r\n", true);
     }
 
-    private @Nullable String getExtraHeadersString(String delimiter, boolean addTerminator) {
+    private String getExtraHeadersString(String delimiter, boolean addTerminator) {
         if (mExtraHeaders == null) return null;
 
         StringBuilder headerBuilder = new StringBuilder();
@@ -407,7 +407,7 @@ public class LoadUrlParams {
     /**
      * @return the verbatim extra headers string
      */
-    public @Nullable String getVerbatimHeaders() {
+    public String getVerbatimHeaders() {
         return mVerbatimHeaders;
     }
 
@@ -439,7 +439,7 @@ public class LoadUrlParams {
     /**
      * @return the data to be sent through POST
      */
-    public @Nullable ResourceRequestBody getPostData() {
+    public ResourceRequestBody getPostData() {
         return mPostData;
     }
 
@@ -459,7 +459,7 @@ public class LoadUrlParams {
      *
      * @return The virtual url for this data or pdf load.
      */
-    public @Nullable String getVirtualUrlForSpecialCases() {
+    public String getVirtualUrlForSpecialCases() {
         return mVirtualUrlForSpecialCases;
     }
 
@@ -479,7 +479,7 @@ public class LoadUrlParams {
      *
      * @return The data url.
      */
-    public @Nullable String getDataUrlAsString() {
+    public String getDataUrlAsString() {
         return mDataUrlAsString;
     }
 
@@ -612,7 +612,8 @@ public class LoadUrlParams {
     /**
      * @return The additional navigation params associated with the load.
      */
-    public @Nullable AdditionalNavigationParams getAdditionalNavigationParams() {
+    @Nullable
+    public AdditionalNavigationParams getAdditionalNavigationParams() {
         return mAdditionalNavigationParams;
     }
 
@@ -631,7 +632,7 @@ public class LoadUrlParams {
     }
 
     /** Returns the supplier for {@link NavigationUIData} or null. */
-    public @Nullable Supplier<Long> getNavigationUIDataSupplier() {
+    public Supplier<Long> getNavigationUIDataSupplier() {
         return mNavigationUIDataSupplier;
     }
 
@@ -653,6 +654,6 @@ public class LoadUrlParams {
          * Parses |url| as a GURL on the native side, and
          * returns true if it's scheme is data:.
          */
-        boolean isDataScheme(@Nullable String url);
+        boolean isDataScheme(String url);
     }
 }

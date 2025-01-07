@@ -6,9 +6,6 @@ package org.chromium.content.browser.accessibility;
 
 import android.os.SystemClock;
 
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -18,7 +15,6 @@ import java.util.Set;
  * throttle and queue AccessibilityEvents that are sent in quick succession. This ensures we do
  * not overload the system and create lag by sending superfluous events.
  */
-@NullMarked
 public class AccessibilityEventDispatcher {
     // Maps an AccessibilityEvent type to a throttle delay in milliseconds. This is populated once
     // in the constructor.
@@ -64,7 +60,7 @@ public class AccessibilityEventDispatcher {
          *
          * @param toRemove              The Runnable to remove.
          */
-        void removeRunnable(@Nullable Runnable toRemove);
+        void removeRunnable(Runnable toRemove);
 
         /**
          * Build an AccessibilityEvent for the given id and type. Requires a connection through the

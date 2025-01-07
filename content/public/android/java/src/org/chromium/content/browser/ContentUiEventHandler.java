@@ -4,8 +4,6 @@
 
 package org.chromium.content.browser;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.os.SystemClock;
 import android.view.InputDevice;
 import android.view.KeyEvent;
@@ -18,8 +16,6 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.UserData;
-import org.chromium.build.annotations.Initializer;
-import org.chromium.build.annotations.NullMarked;
 import org.chromium.content.browser.input.ImeAdapterImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl.UserDataFactory;
@@ -33,7 +29,6 @@ import org.chromium.ui.base.EventForwarder;
  * content components.
  */
 @JNINamespace("content")
-@NullMarked
 public class ContentUiEventHandler implements UserData {
     private final WebContentsImpl mWebContents;
     private InternalAccessDelegate mEventDelegate;
@@ -45,12 +40,8 @@ public class ContentUiEventHandler implements UserData {
     }
 
     public static ContentUiEventHandler fromWebContents(WebContents webContents) {
-        ContentUiEventHandler ret =
-                ((WebContentsImpl) webContents)
-                        .getOrSetUserData(
-                                ContentUiEventHandler.class, UserDataFactoryLazyHolder.INSTANCE);
-        assert ret != null;
-        return ret;
+        return ((WebContentsImpl) webContents)
+                .getOrSetUserData(ContentUiEventHandler.class, UserDataFactoryLazyHolder.INSTANCE);
     }
 
     public ContentUiEventHandler(WebContents webContents) {
@@ -66,7 +57,6 @@ public class ContentUiEventHandler implements UserData {
         return contentUiEventHandler;
     }
 
-    @Initializer
     public void setEventDelegate(InternalAccessDelegate delegate) {
         mEventDelegate = delegate;
     }
@@ -211,10 +201,7 @@ public class ContentUiEventHandler implements UserData {
         // It's a very real (and valid) possibility that a fling may still
         // be active when programatically scrolling. Cancelling the fling in
         // such cases ensures a consistent gesture event stream.
-        GestureListenerManagerImpl gestureManager =
-                GestureListenerManagerImpl.fromWebContents(mWebContents);
-        assumeNonNull(gestureManager);
-        if (gestureManager.hasActiveFlingScroll()) {
+        if (GestureListenerManagerImpl.fromWebContents(mWebContents).hasActiveFlingScroll()) {
             ContentUiEventHandlerJni.get()
                     .cancelFling(mNativeContentUiEventHandler, ContentUiEventHandler.this, time);
         }

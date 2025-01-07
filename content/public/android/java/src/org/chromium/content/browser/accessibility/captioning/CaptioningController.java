@@ -8,12 +8,10 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.WebContents;
 
 /** Sends notification when platform closed caption settings have changed. */
 @JNINamespace("content")
-@NullMarked
 public class CaptioningController implements SystemCaptioningBridge.SystemCaptioningBridgeListener {
     private SystemCaptioningBridge mSystemCaptioningBridge;
     private long mNativeCaptioningController;

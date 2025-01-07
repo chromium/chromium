@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser.framehost;
 
+import androidx.annotation.Nullable;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
@@ -12,8 +14,6 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Callback;
 import org.chromium.base.UnguessableToken;
 import org.chromium.blink.mojom.AuthenticatorStatus;
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.JavaScriptCallback;
 import org.chromium.content_public.browser.LifecycleState;
@@ -33,7 +33,6 @@ import java.util.List;
  * object.
  */
 @JNINamespace("content")
-@NullMarked
 public class RenderFrameHostImpl implements RenderFrameHost {
     private long mNativeRenderFrameHostAndroid;
     // mDelegate can be null.
@@ -95,25 +94,28 @@ public class RenderFrameHostImpl implements RenderFrameHost {
     }
 
     @Override
-    public @Nullable GURL getLastCommittedURL() {
+    @Nullable
+    public GURL getLastCommittedURL() {
         if (mNativeRenderFrameHostAndroid == 0) return null;
         return RenderFrameHostImplJni.get().getLastCommittedURL(mNativeRenderFrameHostAndroid);
     }
 
     @Override
-    public @Nullable Origin getLastCommittedOrigin() {
+    @Nullable
+    public Origin getLastCommittedOrigin() {
         if (mNativeRenderFrameHostAndroid == 0) return null;
         return RenderFrameHostImplJni.get().getLastCommittedOrigin(mNativeRenderFrameHostAndroid);
     }
 
     @Override
-    public @Nullable RenderFrameHost getMainFrame() {
+    @Nullable
+    public RenderFrameHost getMainFrame() {
         if (mNativeRenderFrameHostAndroid == 0) return null;
         return RenderFrameHostImplJni.get().getMainFrame(mNativeRenderFrameHostAndroid);
     }
 
     @Override
-    public void getCanonicalUrlForSharing(Callback<@Nullable GURL> callback) {
+    public void getCanonicalUrlForSharing(Callback<GURL> callback) {
         if (mNativeRenderFrameHostAndroid == 0) {
             callback.onResult(null);
             return;
@@ -123,7 +125,7 @@ public class RenderFrameHostImpl implements RenderFrameHost {
     }
 
     @Override
-    public @Nullable List<RenderFrameHost> getAllRenderFrameHosts() {
+    public List<RenderFrameHost> getAllRenderFrameHosts() {
         if (mNativeRenderFrameHostAndroid == 0) return null;
         return RenderFrameHostImplJni.get().getAllRenderFrameHosts(mNativeRenderFrameHostAndroid);
     }
@@ -175,7 +177,7 @@ public class RenderFrameHostImpl implements RenderFrameHost {
     }
 
     @Override
-    public <I extends Interface, P extends Interface.Proxy> @Nullable P getInterfaceToRendererFrame(
+    public <I extends Interface, P extends Interface.Proxy> P getInterfaceToRendererFrame(
             Interface.Manager<I, P> manager) {
         if (mNativeRenderFrameHostAndroid == 0) return null;
         Pair<P, InterfaceRequest<I>> result = manager.getInterfaceRequest(CoreImpl.getInstance());
@@ -195,7 +197,8 @@ public class RenderFrameHostImpl implements RenderFrameHost {
     }
 
     /** Return the AndroidOverlay routing token for this RenderFrameHostImpl. */
-    public @Nullable UnguessableToken getAndroidOverlayRoutingToken() {
+    @Nullable
+    public UnguessableToken getAndroidOverlayRoutingToken() {
         if (mNativeRenderFrameHostAndroid == 0) return null;
         return RenderFrameHostImplJni.get()
                 .getAndroidOverlayRoutingToken(mNativeRenderFrameHostAndroid);
@@ -300,8 +303,7 @@ public class RenderFrameHostImpl implements RenderFrameHost {
 
         RenderFrameHost getMainFrame(long nativeRenderFrameHostAndroid);
 
-        void getCanonicalUrlForSharing(
-                long nativeRenderFrameHostAndroid, Callback<@Nullable GURL> callback);
+        void getCanonicalUrlForSharing(long nativeRenderFrameHostAndroid, Callback<GURL> callback);
 
         @JniType("std::vector")
         List<RenderFrameHost> getAllRenderFrameHosts(long nativeRenderFrameHostAndroid);
@@ -352,6 +354,6 @@ public class RenderFrameHostImpl implements RenderFrameHost {
                 long nativeRenderFrameHostAndroid,
                 String stript,
                 int isolatedWorldId,
-                @Nullable JavaScriptCallback callback);
+                JavaScriptCallback callback);
     }
 }

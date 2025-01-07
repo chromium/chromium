@@ -9,8 +9,6 @@ import android.content.res.Configuration;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ObserverList;
 import org.chromium.base.UserData;
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl.UserDataFactory;
 import org.chromium.content_public.browser.WebContents;
@@ -19,11 +17,10 @@ import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayAndroid.DisplayAndroidObserver;
 
 /** Manages {@link WindowEventObserver} instances used for WebContents. */
-@NullMarked
 public final class WindowEventObserverManager implements DisplayAndroidObserver, UserData {
     private final ObserverList<WindowEventObserver> mWindowEventObservers = new ObserverList<>();
 
-    private @Nullable WindowAndroid mWindowAndroid;
+    private WindowAndroid mWindowAndroid;
     private ViewEventSinkImpl mViewEventSink;
     private boolean mAttachedToWindow;
 
@@ -37,12 +34,6 @@ public final class WindowEventObserverManager implements DisplayAndroidObserver,
     }
 
     public static WindowEventObserverManager from(WebContents webContents) {
-        WindowEventObserverManager ret = maybeFrom(webContents);
-        assert ret != null;
-        return ret;
-    }
-
-    public static @Nullable WindowEventObserverManager maybeFrom(WebContents webContents) {
         return ((WebContentsImpl) webContents)
                 .getOrSetUserData(
                         WindowEventObserverManager.class, UserDataFactoryLazyHolder.INSTANCE);
@@ -105,7 +96,7 @@ public final class WindowEventObserverManager implements DisplayAndroidObserver,
      * Called when {@link WindowAndroid} for WebContents is updated.
      * @param windowAndroid A new WindowAndroid object.
      */
-    public void onWindowAndroidChanged(@Nullable WindowAndroid windowAndroid) {
+    public void onWindowAndroidChanged(WindowAndroid windowAndroid) {
         if (windowAndroid == mWindowAndroid) return;
         removeUiObservers();
 

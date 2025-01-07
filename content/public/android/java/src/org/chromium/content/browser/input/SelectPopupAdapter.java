@@ -12,9 +12,6 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckedTextView;
 import android.widget.TextView;
 
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +19,6 @@ import java.util.List;
  * Select popup item adapter for SelectPopupDialog, used so we can disable
  * OPTION_GROUP items.
  */
-@NullMarked
 public class SelectPopupAdapter extends ArrayAdapter<SelectPopupItem> {
     // Holds the items of the select popup alert dialog list.
     private List<SelectPopupItem> mItems;
@@ -50,8 +46,8 @@ public class SelectPopupAdapter extends ArrayAdapter<SelectPopupItem> {
     }
 
     @Override
-    public View getView(int position, @Nullable View convertView, ViewGroup parent) {
-        assert position >= 0 && position < getCount();
+    public View getView(int position, View convertView, ViewGroup parent) {
+        if (position < 0 || position >= getCount()) return null;
 
         convertView = super.getView(position, convertView, parent);
         ((TextView) convertView).setText(mItems.get(position).getLabel());

@@ -193,7 +193,7 @@ public class SelectionPopupControllerTest {
         when(mWindowAndroid.getContext()).thenReturn(mWeakContext);
 
         mController = SelectionPopupControllerImpl.createForTesting(mWebContents, mPopupController);
-        GestureListenerManagerImpl.setInstanceForTesting(mGestureStateListenerManager);
+        when(mController.getGestureListenerManager()).thenReturn(mGestureStateListenerManager);
     }
 
     @Test

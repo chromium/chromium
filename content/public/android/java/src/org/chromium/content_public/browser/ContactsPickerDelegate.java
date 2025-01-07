@@ -4,10 +4,7 @@
 
 package org.chromium.content_public.browser;
 
-import org.chromium.build.annotations.NullMarked;
-
 /** A delegate interface for the contacts picker. */
-@NullMarked
 public interface ContactsPickerDelegate {
     /**
      * Called to display the contacts picker.

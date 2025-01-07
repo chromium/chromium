@@ -35,7 +35,7 @@ import java.util.HashMap;
     // Ideally, this would be a SparseArray<String>, but there's no easy way to store a
     // SparseArray<String> in a bundle during saveInstanceState(). So we use a HashMap and suppress
     // the Android lint warning "UseSparseArrays".
-    private HashMap<Integer, @Nullable String> mIntentErrors;
+    private HashMap<Integer, String> mIntentErrors;
 
     /**
      * Creates an instance of the class.
@@ -48,7 +48,7 @@ import java.util.HashMap;
     }
 
     /* package */ int showCancelableIntent(
-            PendingIntent intent, IntentCallback callback, @Nullable Integer errorId) {
+            PendingIntent intent, IntentCallback callback, Integer errorId) {
         int requestCode = generateNextRequestCode();
 
         if (!mDelegate.startIntentSenderForResult(intent.getIntentSender(), requestCode)) {
@@ -61,7 +61,7 @@ import java.util.HashMap;
 
     @Override
     public int showCancelableIntent(
-            @Nullable Intent intent, IntentCallback callback, @Nullable Integer errorId) {
+            @Nullable Intent intent, IntentCallback callback, Integer errorId) {
         int requestCode = generateNextRequestCode();
 
         if (!mDelegate.startActivityForResult(intent, requestCode)) {
@@ -73,7 +73,7 @@ import java.util.HashMap;
     }
 
     /* package */ int showCancelableIntent(
-            Callback<Integer> intentTrigger, IntentCallback callback, @Nullable Integer errorId) {
+            Callback<Integer> intentTrigger, IntentCallback callback, Integer errorId) {
         int requestCode = generateNextRequestCode();
 
         intentTrigger.onResult(requestCode);
@@ -128,7 +128,7 @@ import java.util.HashMap;
         Object errors = bundle.getSerializable(WindowAndroid.WINDOW_CALLBACK_ERRORS);
         if (errors instanceof HashMap) {
             @SuppressWarnings("unchecked")
-            HashMap<Integer, String> intentErrors = (HashMap<Integer, @Nullable String>) errors;
+            HashMap<Integer, String> intentErrors = (HashMap<Integer, String>) errors;
             mIntentErrors = intentErrors;
         }
     }
@@ -139,8 +139,7 @@ import java.util.HashMap;
         return requestCode;
     }
 
-    private void storeCallbackData(
-            int requestCode, IntentCallback callback, @Nullable Integer errorId) {
+    private void storeCallbackData(int requestCode, IntentCallback callback, Integer errorId) {
         mOutstandingIntents.put(requestCode, callback);
         mIntentErrors.put(
                 requestCode,

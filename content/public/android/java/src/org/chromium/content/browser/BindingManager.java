@@ -15,8 +15,6 @@ import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.process_launcher.ChildProcessConnection;
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 
 import java.util.Iterator;
 import java.util.Set;
@@ -25,7 +23,6 @@ import java.util.Set;
  * Manages oom bindings used to bound child services.
  * This object must only be accessed from the launcher thread.
  */
-@NullMarked
 class BindingManager implements ComponentCallbacks2 {
     private static final String TAG = "BindingManager";
 
@@ -39,7 +36,7 @@ class BindingManager implements ComponentCallbacks2 {
     // Delays used when clearing moderate binding pool when onSentToBackground happens.
     private static final long BINDING_POOL_CLEARER_DELAY_MILLIS = 10 * 1000;
 
-    private static @Nullable Boolean sUseNotPerceptibleBindingForTesting;
+    private static Boolean sUseNotPerceptibleBindingForTesting;
 
     private final Set<ChildProcessConnection> mConnections = new ArraySet<ChildProcessConnection>();
     // Can be -1 to mean no max size.
@@ -49,7 +46,7 @@ class BindingManager implements ComponentCallbacks2 {
 
     // If not null, this is the connection in |mConnections| that does not have a binding added
     // by BindingManager.
-    private @Nullable ChildProcessConnection mWaivedConnection;
+    private ChildProcessConnection mWaivedConnection;
 
     private int mConnectionsDroppedDueToMaxSize;
 

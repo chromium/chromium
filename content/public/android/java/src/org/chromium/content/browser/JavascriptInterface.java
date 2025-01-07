@@ -4,8 +4,6 @@
 
 package org.chromium.content.browser;
 
-import org.chromium.build.annotations.NullMarked;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -19,5 +17,4 @@ import java.lang.annotation.Target;
 @SuppressWarnings("javadoc")
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
-@NullMarked
 public @interface JavascriptInterface {}

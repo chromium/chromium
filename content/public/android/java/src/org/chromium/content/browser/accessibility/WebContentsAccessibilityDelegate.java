@@ -4,19 +4,14 @@
 
 package org.chromium.content.browser.accessibility;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.view.View;
 import android.view.ViewStructure;
 
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content_public.browser.WebContents;
 
 /** Implementation of {@link AccessibilityDelegate} based on {@link WebContents}. */
-@NullMarked
 public class WebContentsAccessibilityDelegate implements AccessibilityDelegate {
     private final WebContentsImpl mWebContents;
     private final AccessibilityCoordinatesImpl mAccessibilityCoordinatesImpl;
@@ -28,13 +23,11 @@ public class WebContentsAccessibilityDelegate implements AccessibilityDelegate {
 
     @Override
     public View getContainerView() {
-        View ret = assumeNonNull(mWebContents.getViewAndroidDelegate()).getContainerView();
-        assert ret != null;
-        return ret;
+        return mWebContents.getViewAndroidDelegate().getContainerView();
     }
 
     @Override
-    public @Nullable String getProductVersion() {
+    public String getProductVersion() {
         return mWebContents.getProductVersion();
     }
 

@@ -6,25 +6,21 @@ package org.chromium.content_public.browser;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
-
 /**
  * A utility class that allows the embedder to provide a Contacts Picker implementation to content.
  */
-@NullMarked
 public final class ContactsPicker {
     /**
      * The current delegate for the contacts picker, or null if navigator.contacts is not
      * supported.
      */
-    private static @Nullable ContactsPickerDelegate sContactsPickerDelegate;
+    private static ContactsPickerDelegate sContactsPickerDelegate;
 
     /**
      * The object that represents the currently visible contacts picker UI, or null if none is
      * visible.
      */
-    private static @Nullable Object sPicker;
+    private static Object sPicker;
 
     private ContactsPicker() {}
 

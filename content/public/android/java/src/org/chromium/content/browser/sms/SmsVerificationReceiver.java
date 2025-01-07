@@ -4,8 +4,6 @@
 
 package org.chromium.content.browser.sms;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -26,10 +24,8 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.tasks.Task;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.build.annotations.NullMarked;
 import org.chromium.content.browser.sms.Wrappers.WebOTPServiceContext;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -42,7 +38,6 @@ import java.lang.annotation.RetentionPolicy;
  *
  * <p>TODO(majidvp): rename legacy Verification name to more appropriate name ( e.g., BrowserCode.
  */
-@NullMarked
 public class SmsVerificationReceiver extends BroadcastReceiver {
     private static final String TAG = "SmsVerification";
     private static final boolean DEBUG = false;
@@ -102,7 +97,6 @@ public class SmsVerificationReceiver extends BroadcastReceiver {
     }
 
     @Override
-    @SuppressWarnings("NullAway") // https://github.com/uber/NullAway/issues/1122
     public void onReceive(Context context, Intent intent) {
         if (DEBUG) Log.d(TAG, "Received something!");
 
@@ -118,8 +112,12 @@ public class SmsVerificationReceiver extends BroadcastReceiver {
             return;
         }
 
-        Status status = IntentUtils.safeGetParcelableExtra(intent, SmsRetriever.EXTRA_STATUS);
-        if (status == null) {
+        final Status status;
+
+        try {
+            status = (Status) intent.getParcelableExtra(SmsRetriever.EXTRA_STATUS);
+        } catch (Throwable e) {
+            if (DEBUG) Log.d(TAG, "Error getting parceable");
             return;
         }
 
@@ -180,7 +178,8 @@ public class SmsVerificationReceiver extends BroadcastReceiver {
                 ResolvableApiException rex = (ResolvableApiException) exception;
                 try {
                     PendingIntent resolutionIntent = rex.getResolution();
-                    assumeNonNull(mProvider.getWindow())
+                    mProvider
+                            .getWindow()
                             .showIntent(
                                     resolutionIntent,
                                     new WindowAndroid.IntentCallback() {
