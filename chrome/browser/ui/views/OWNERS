@@ -3,20 +3,24 @@
 # individuals. These CLs will be automatically reassigned to a reviewer within
 # about 5 minutes. This approach helps our team to load-balance incoming
 # reviews. Googlers can read more about this at go/gwsq-gerrit.
+chromium-chrome-browser-ui-views-reviews@google.com
 
-bsep@chromium.org
-collinbaker@chromium.org
-corising@chromium.org
-dfried@chromium.org
-dpenning@chromium.org
-ellyjones@chromium.org
-emshack@chromium.org
-kylixrd@chromium.org
-msw@chromium.org
-pbos@chromium.org
-pkasting@chromium.org
-tbergquist@chromium.org
-dljames@chromium.org
+# The find-owners plugin does not support groups, so the actual c/b/ui/views
+# reviewers are listed below but tagged with {LAST_RESORT_SUGGESTION} so that
+# Gerrit will preferentially suggest the review alias above.
+bsep@chromium.org         #{LAST_RESORT_SUGGESTION}
+collinbaker@chromium.org  #{LAST_RESORT_SUGGESTION}
+corising@chromium.org     #{LAST_RESORT_SUGGESTION}
+dfried@chromium.org       #{LAST_RESORT_SUGGESTION}
+dljames@chromium.org      #{LAST_RESORT_SUGGESTION}
+dpenning@chromium.org     #{LAST_RESORT_SUGGESTION}
+ellyjones@chromium.org    #{LAST_RESORT_SUGGESTION}
+emshack@chromium.org      #{LAST_RESORT_SUGGESTION}
+kylixrd@chromium.org      #{LAST_RESORT_SUGGESTION}
+msw@chromium.org          #{LAST_RESORT_SUGGESTION}
+pbos@chromium.org         #{LAST_RESORT_SUGGESTION}
+pkasting@chromium.org     #{LAST_RESORT_SUGGESTION}
+tbergquist@chromium.org   #{LAST_RESORT_SUGGESTION}
 
 per-file content_settings*=file://components/content_settings/OWNERS
 
