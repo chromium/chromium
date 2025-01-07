@@ -11,10 +11,12 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleProperties.ModuleOption;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleProperties.ModuleState;
+import org.chromium.components.content_settings.ContentSettingsType;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.StringJoiner;
+import java.util.stream.IntStream;
 
 /** Helper utils to log UMA histograms for Safety Hub. */
 public class SafetyHubMetricUtils {
@@ -36,6 +38,10 @@ public class SafetyHubMetricUtils {
 
     @VisibleForTesting
     public static final String MODULE_STATE_HISTOGRAM_NAME = "Settings.SafetyHub";
+
+    @VisibleForTesting
+    public static final String ABUSIVE_NOTIFICATION_REVOCATION_INTERACTIONS_HISTOGRAM_NAME =
+            "Settings.SafetyHub.AbusiveNotificationPermissionRevocation.Interactions";
 
     /**
      * Interactions on surfaces outside of the Safety Hub settings pages. These can be in the Magic
@@ -235,5 +241,20 @@ public class SafetyHubMetricUtils {
     static void recordDashboardInteractions(@DashboardInteractions int value) {
         RecordHistogram.recordEnumeratedHistogram(
                 DASHBOARD_INTERACTIONS_HISTOGRAM_NAME, value, DashboardInteractions.MAX_VALUE);
+    }
+
+    static void maybeRecordAbusiveNotificationRevokedInteraction(
+            PermissionsData[] permissionsDataList, @PermissionsModuleInteractions int value) {
+        // If any of the `PermissionsData` objects include notifications, log the histogram once.
+        for (PermissionsData permissionsData : permissionsDataList) {
+            if (IntStream.of(permissionsData.getPermissions())
+                    .anyMatch(x -> x == ContentSettingsType.NOTIFICATIONS)) {
+                RecordHistogram.recordEnumeratedHistogram(
+                        ABUSIVE_NOTIFICATION_REVOCATION_INTERACTIONS_HISTOGRAM_NAME,
+                        value,
+                        PermissionsModuleInteractions.MAX_VALUE);
+                return;
+            }
+        }
     }
 }

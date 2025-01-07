@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.safety_hub;
 
 import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.getDashboardModuleTypeForModuleOption;
+import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.maybeRecordAbusiveNotificationRevokedInteraction;
 import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.recordDashboardInteractions;
 import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.recordModuleState;
 import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.recordNotificationsInteraction;
@@ -296,10 +297,17 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                                                     recordRevokedPermissionsInteraction(
                                                             PermissionsModuleInteractions
                                                                     .UNDO_ACKNOWLEDGE_ALL);
+                                                    maybeRecordAbusiveNotificationRevokedInteraction(
+                                                            (PermissionsData[]) actionData,
+                                                            PermissionsModuleInteractions
+                                                                    .UNDO_ACKNOWLEDGE_ALL);
                                                 }
                                             },
                                             permissionsDataList);
                                     recordRevokedPermissionsInteraction(
+                                            PermissionsModuleInteractions.ACKNOWLEDGE_ALL);
+                                    maybeRecordAbusiveNotificationRevokedInteraction(
+                                            permissionsDataList,
                                             PermissionsModuleInteractions.ACKNOWLEDGE_ALL);
                                 })
                         .with(
