@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 (async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
-  const {dp} = await testRunner.startURL(
+  const {dp, session} = await testRunner.startURL(
       'http://devtools.test:8000/inspector-protocol/resources/empty.html',
       'Test that registering a trigger using a subresource request in an insecure context triggers an issue.');
 
@@ -11,9 +11,9 @@
 
   const issue = dp.Audits.onceIssueAdded();
 
-  await dp.Runtime.evaluate({expression: `
-    document.body.innerHTML = '<img src="https://devtools.test:8443/inspector-protocol/attribution-reporting/resources/register-trigger.php">';
-  `});
+  await session.evaluate(`
+    document.body.innerHTML = '<img src="https://devtools.test:8443/inspector-protocol/attribution-reporting/resources/register-trigger.php">'
+  `);
 
   testRunner.log((await issue).params.issue, 'Issue reported: ', ['request']);
   testRunner.completeTest();

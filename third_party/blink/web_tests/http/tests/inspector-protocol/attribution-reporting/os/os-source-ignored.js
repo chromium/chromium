@@ -3,17 +3,17 @@
 // found in the LICENSE file.
 
 (async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
-  const {dp} = await testRunner.startBlank(
+  const {dp, session} = await testRunner.startBlank(
       'Test that an attributionsrc request that is ineligible for OS registrations triggers an issue when it tries to register an OS source.');
 
   await dp.Audits.enable();
 
   const issue = dp.Audits.onceIssueAdded();
 
-  await dp.Runtime.evaluate({expression: `
+  await session.evaluateAsync(`
     fetch('/inspector-protocol/attribution-reporting/resources/register-os-source.php',
-        {keepalive: true});
-  `});
+        {keepalive: true})
+  `);
 
   testRunner.log((await issue).params.issue, 'Issue reported: ', ['request']);
   testRunner.completeTest();

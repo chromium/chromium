@@ -3,17 +3,18 @@
 // found in the LICENSE file.
 
 (async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
-  const {dp} = await testRunner.startBlank(
+  const {dp, session} = await testRunner.startBlank(
       'Test that using window.open with attributionsrc without transient user activation triggers an issue.');
 
   await dp.Audits.enable();
 
   const issue = dp.Audits.onceIssueAdded();
 
-  await dp.Runtime.evaluate({
-    expression: `window.open('https://a.com', '_blank', 'attributionsrc');`,
-    userGesture: false,
-  });
+  // The `.name` is irrelevant for the test, but `evaluate` serializes the
+  // result of the expression as JSON, which is not possible for the WindowProxy
+  // returned by `open` itself.
+  await session.evaluate(
+      `window.open('https://a.com', '_blank', 'attributionsrc').name`);
 
   testRunner.log((await issue).params.issue, 'Issue reported: ');
   testRunner.completeTest();

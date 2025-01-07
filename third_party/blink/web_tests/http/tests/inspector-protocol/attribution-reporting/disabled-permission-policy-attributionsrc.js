@@ -3,22 +3,20 @@
 // found in the LICENSE file.
 
 (async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
-  const {dp} = await testRunner.startURL(
+  const {dp, session} = await testRunner.startURL(
       'https://devtools.test:8443/inspector-protocol/attribution-reporting/resources/permissions-policy-no-conversion-measurement.php',
       'Test that clicking an anchor with attributionsrc triggers an issue when the attribution-reporting Permissions Policy is disabled.');
 
   await dp.Audits.enable();
 
-  await dp.Runtime.evaluate({expression: `
-    document.body.innerHTML = '<a id="adlink" href="https://a.com" attributionsrc="https://b.com" target="_blank">Link</a>';
-  `});
+  await session.evaluate(`
+    document.body.innerHTML = '<a id="adlink" href="https://a.com" attributionsrc="https://b.com" target="_blank">Link</a>'
+  `);
 
   const issue = dp.Audits.onceIssueAdded();
 
-  await dp.Runtime.evaluate({
-    expression: `document.getElementById('adlink').click()`,
-    userGesture: true,
-  });
+  await session.evaluateAsyncWithUserGesture(
+      `document.getElementById('adlink').click()`);
 
   testRunner.log((await issue).params.issue, 'Issue reported: ', ['violatingNodeId']);
   testRunner.completeTest();
