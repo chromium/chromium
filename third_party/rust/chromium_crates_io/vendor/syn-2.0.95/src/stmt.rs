@@ -208,7 +208,8 @@ pub(crate) mod parsing {
                 if ahead.peek2(Ident) || ahead.peek2(Token![try]) {
                     is_item_macro = true;
                 } else if ahead.peek2(token::Brace)
-                    && !(ahead.peek3(Token![.]) || ahead.peek3(Token![?]))
+                    && !(ahead.peek3(Token![.]) && !ahead.peek3(Token![..])
+                        || ahead.peek3(Token![?]))
                 {
                     input.advance_to(&ahead);
                     return stmt_mac(input, attrs, path).map(Stmt::Macro);
@@ -452,11 +453,12 @@ pub(crate) mod printing {
             self.pat.to_tokens(tokens);
             if let Some(init) = &self.init {
                 init.eq_token.to_tokens(tokens);
-                if init.diverge.is_some() && classify::expr_trailing_brace(&init.expr) {
-                    token::Paren::default().surround(tokens, |tokens| init.expr.to_tokens(tokens));
-                } else {
-                    init.expr.to_tokens(tokens);
-                }
+                expr::printing::print_subexpression(
+                    &init.expr,
+                    init.diverge.is_some() && classify::expr_trailing_brace(&init.expr),
+                    tokens,
+                    FixupContext::NONE,
+                );
                 if let Some((else_token, diverge)) = &init.diverge {
                     else_token.to_tokens(tokens);
                     match &**diverge {

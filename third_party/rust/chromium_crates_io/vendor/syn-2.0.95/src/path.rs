@@ -528,7 +528,10 @@ pub(crate) mod parsing {
                 input.parse()?
             };
 
-            if !expr_style && input.peek(Token![<]) && !input.peek(Token![<=])
+            if !expr_style
+                && input.peek(Token![<])
+                && !input.peek(Token![<=])
+                && !input.peek(Token![<<=])
                 || input.peek(Token![::]) && input.peek3(Token![<])
             {
                 Ok(PathSegment {
