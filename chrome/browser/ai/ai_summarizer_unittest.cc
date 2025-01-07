@@ -30,52 +30,6 @@ using optimization_guide::proto::SummarizerOutputFormat;
 using optimization_guide::proto::SummarizerOutputLength;
 using optimization_guide::proto::SummarizerOutputType;
 
-class MockModelStreamingResponder
-    : public blink::mojom::ModelStreamingResponder {
- public:
-  MockModelStreamingResponder() = default;
-  ~MockModelStreamingResponder() override = default;
-  MockModelStreamingResponder(const MockModelStreamingResponder&) = delete;
-  MockModelStreamingResponder& operator=(const MockModelStreamingResponder&) =
-      delete;
-
-  void OnStreaming(const std::string& text) override {
-    status_ = blink::mojom::ModelStreamingResponseStatus::kOngoing;
-    result_ += text;
-  }
-
-  void OnError(blink::mojom::ModelStreamingResponseStatus status) override {
-    status_ = status;
-    run_loop_.Quit();
-  }
-
-  void OnCompletion(
-      blink::mojom::ModelExecutionContextInfoPtr context_info) override {
-    status_ = blink::mojom::ModelStreamingResponseStatus::kComplete;
-    run_loop_.Quit();
-  }
-
-  void OnContextOverflow() override {}
-
-  mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
-  BindNewPipeAndPassRemote() {
-    return responder_.BindNewPipeAndPassRemote();
-  }
-
-  blink::mojom::ModelStreamingResponseStatus status() { return status_; }
-
-  std::string result() { return result_; }
-
-  void WaitForResponseComplete() { run_loop_.Run(); }
-
- private:
-  mojo::Receiver<blink::mojom::ModelStreamingResponder> responder_{this};
-
-  blink::mojom::ModelStreamingResponseStatus status_;
-  std::string result_;
-  base::RunLoop run_loop_;
-};
-
 class AISummarizerUnitTest : public AITestUtils::AITestBase {
  public:
   AISummarizerUnitTest() = default;
@@ -217,12 +171,22 @@ TEST_F(AISummarizerUnitTest, SummarizeSuccess) {
   EXPECT_TRUE(summarizer);
   ASSERT_EQ(1u, GetAIManagerContextBoundObjectSetSize());
 
-  MockModelStreamingResponder responder;
-  summarizer->Summarize("Test input", "", responder.BindNewPipeAndPassRemote());
-  responder.WaitForResponseComplete();
-  EXPECT_EQ(responder.status(),
-            blink::mojom::ModelStreamingResponseStatus::kComplete);
-  EXPECT_EQ(responder.result(), "Test output");
+  AITestUtils::MockModelStreamingResponder mock_responder;
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_responder, OnStreaming(_))
+      .WillOnce(testing::Invoke(
+          [&](const std::string& text) { EXPECT_THAT(text, "Test output"); }));
+
+  EXPECT_CALL(mock_responder, OnCompletion(_))
+      .WillOnce(testing::Invoke(
+          [&](blink::mojom::ModelExecutionContextInfoPtr context_info) {
+            run_loop.Quit();
+          }));
+
+  summarizer->Summarize("Test input", "",
+                        mock_responder.BindNewPipeAndPassRemote());
+  run_loop.Run();
 
   summarizer.reset();
   ASSERT_TRUE(base::test::RunUntil(
@@ -251,9 +215,9 @@ TEST_F(AISummarizerUnitTest, SessionDetachedDuringSummarization) {
   EXPECT_TRUE(summarizer);
   ASSERT_EQ(1u, GetAIManagerContextBoundObjectSetSize());
 
-  MockModelStreamingResponder responder;
+  AITestUtils::MockModelStreamingResponder mock_responder;
   summarizer->Summarize("Test input", /*context=*/"",
-                        responder.BindNewPipeAndPassRemote());
+                        mock_responder.BindNewPipeAndPassRemote());
 
   summarizer.reset();
   ASSERT_TRUE(base::test::RunUntil(
@@ -287,13 +251,23 @@ TEST_F(AISummarizerUnitTest, MultipleSummarizeWithOptions) {
   ASSERT_EQ(1u, GetAIManagerContextBoundObjectSetSize());
 
   {
-    MockModelStreamingResponder responder;
+    AITestUtils::MockModelStreamingResponder mock_responder;
+
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_responder, OnStreaming(_))
+        .WillOnce(testing::Invoke([&](const std::string& text) {
+          EXPECT_THAT(text, "Test output1");
+        }));
+
+    EXPECT_CALL(mock_responder, OnCompletion(_))
+        .WillOnce(testing::Invoke(
+            [&](blink::mojom::ModelExecutionContextInfoPtr context_info) {
+              run_loop.Quit();
+            }));
+
     summarizer->Summarize("Test input1", /*context=*/"",
-                          responder.BindNewPipeAndPassRemote());
-    responder.WaitForResponseComplete();
-    EXPECT_EQ(responder.status(),
-              blink::mojom::ModelStreamingResponseStatus::kComplete);
-    EXPECT_EQ(responder.result(), "Test output1");
+                          mock_responder.BindNewPipeAndPassRemote());
+    run_loop.Run();
   }
 
   EXPECT_CALL(session_, ExecuteModel(testing::_, testing::_))
@@ -304,13 +278,23 @@ TEST_F(AISummarizerUnitTest, MultipleSummarizeWithOptions) {
           SummarizerOutputLength::SUMMARIZER_OUTPUT_LENGTH_LONG,
           "Test output2"));
   {
-    MockModelStreamingResponder responder;
+    AITestUtils::MockModelStreamingResponder mock_responder;
+
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_responder, OnStreaming(_))
+        .WillOnce(testing::Invoke([&](const std::string& text) {
+          EXPECT_THAT(text, "Test output2");
+        }));
+
+    EXPECT_CALL(mock_responder, OnCompletion(_))
+        .WillOnce(testing::Invoke(
+            [&](blink::mojom::ModelExecutionContextInfoPtr context_info) {
+              run_loop.Quit();
+            }));
+
     summarizer->Summarize("Test input2", "New context.",
-                          responder.BindNewPipeAndPassRemote());
-    responder.WaitForResponseComplete();
-    EXPECT_EQ(responder.status(),
-              blink::mojom::ModelStreamingResponseStatus::kComplete);
-    EXPECT_EQ(responder.result(), "Test output2");
+                          mock_responder.BindNewPipeAndPassRemote());
+    run_loop.Run();
   }
 
   summarizer.reset();
