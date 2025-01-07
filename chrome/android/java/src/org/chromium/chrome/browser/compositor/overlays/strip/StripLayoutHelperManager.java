@@ -259,7 +259,7 @@ public class StripLayoutHelperManager
                     && mModelSelectorButton.onDown(x, y, fromMouse, buttons)) {
                 return;
             }
-            getActiveStripLayoutHelper().onDown(time(), x, y, fromMouse, buttons);
+            getActiveStripLayoutHelper().onDown(x, y, fromMouse, buttons);
         }
 
         @Override

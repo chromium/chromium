@@ -8,6 +8,8 @@ import android.graphics.PointF;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.chrome.browser.compositor.overlays.strip.ReorderDelegate.ReorderType;
+
 interface ReorderStrategy {
     /**
      * Begin reordering the interacting view.
@@ -32,13 +34,15 @@ interface ReorderStrategy {
      * @param stripTabs The list of {@link StripLayoutTab}.
      * @param endX The x position where this update ended.
      * @param deltaX The change in position for the reordering tab based on dragging and scrolling.
+     * @param reorderType The type {@link ReorderType} of reorder for this update event.
      */
     void updateReorderPosition(
             StripLayoutView[] stripViews,
             StripLayoutGroupTitle[] groupTitles,
             StripLayoutTab[] stripTabs,
             float endX,
-            float deltaX);
+            float deltaX,
+            @ReorderType int reorderType);
 
     /**
      * Stop reorder mode and clear any relevant state. Don't call if not in reorder mode.

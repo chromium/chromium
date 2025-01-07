@@ -383,7 +383,7 @@ public class TabDragSource implements View.OnDragListener {
     private boolean onDrop(DragEvent dropEvent) {
         StripLayoutHelper helper = mStripLayoutHelperSupplier.get();
         int destinationTabId = helper.getTabDropId();
-        helper.onUpOrCancel(LayoutManagerImpl.time());
+        helper.stopReorderMode();
 
         if (isDragSource()) {
             DragDropMetricUtils.recordTabReorderStripWithDragDrop(mUmaState.mDragEverLeftStrip);
@@ -523,9 +523,7 @@ public class TabDragSource implements View.OnDragListener {
                 mShadowView.expand();
             }
         }
-        mStripLayoutHelperSupplier
-                .get()
-                .clearForTabDrop(LayoutManagerImpl.time(), isDragSource(), isDraggedTabIncognito());
+        mStripLayoutHelperSupplier.get().clearForTabDrop(isDragSource(), isDraggedTabIncognito());
         return true;
     }
 

@@ -1227,8 +1227,7 @@ public class StripLayoutHelperTest {
         initializeTest(false, false, 0, 1);
 
         // Verify new tab button is in pressed state, not hover state, when clicked from mouse.
-        mStripLayoutHelper.onDown(
-                1L, mStripLayoutHelper.getNewTabButton().getDrawX() + 1, 0, true, 1);
+        mStripLayoutHelper.onDown(mStripLayoutHelper.getNewTabButton().getDrawX() + 1, 0, true, 1);
         assertFalse(
                 "New tab button should not be hovered",
                 mStripLayoutHelper.getNewTabButton().isHovered());
@@ -1367,9 +1366,9 @@ public class StripLayoutHelperTest {
         tabs[0].setCloseButtonForTesting(closeButton);
 
         // Verify close button is in pressed state, not hover state, when clicked from mouse.
-        mStripLayoutHelper.onDown(1L, x + 1, y + 1, true, 1);
+        mStripLayoutHelper.onDown(x + 1, y + 1, true, 1);
         assertFalse("Close button should not be hovered", closeButton.isHovered());
-        mStripLayoutHelper.onDown(1L, (int) x + 1, y + 1, true, 1);
+        mStripLayoutHelper.onDown((int) x + 1, y + 1, true, 1);
         assertFalse("Close should NOT be hovered", closeButton.isPressedFromMouse());
 
         // Verify close button is not in hover state or press state when long-pressed.
@@ -1723,7 +1722,7 @@ public class StripLayoutHelperTest {
         // Press down on new tab button.
         // CenterX = getX() + (getWidth() / 2) = 700 + (100 / 2) = 750
         // CenterY = getY() + (getHeight() / 2) = 1400 + (100 / 2) = 1450
-        mStripLayoutHelper.onDown(TIMESTAMP, 750f, 1450f, false, 0);
+        mStripLayoutHelper.onDown(750f, 1450f, false, 0);
 
         // Verify.
         assertTrue(
@@ -1744,7 +1743,7 @@ public class StripLayoutHelperTest {
         // Press down on second tab.
         when(tabs[1].checkCloseHitTest(anyFloat(), anyFloat())).thenReturn(false);
         mStripLayoutHelper.setTabAtPositionForTesting(tabs[1]);
-        mStripLayoutHelper.onDown(TIMESTAMP, 150f, 0f, false, 0);
+        mStripLayoutHelper.onDown(150f, 0f, false, 0);
 
         // Verify.
         assertFalse(
@@ -1767,8 +1766,7 @@ public class StripLayoutHelperTest {
         // Press down on second tab with mouse followed by drag.
         when(tabs[1].checkCloseHitTest(anyFloat(), anyFloat())).thenReturn(false);
         mStripLayoutHelper.setTabAtPositionForTesting(tabs[1]);
-        mStripLayoutHelper.onDown(
-                TIMESTAMP, DRAG_START_POINT.x, 0, true, MotionEvent.BUTTON_PRIMARY);
+        mStripLayoutHelper.onDown(DRAG_START_POINT.x, 0, true, MotionEvent.BUTTON_PRIMARY);
         mStripLayoutHelper.drag(TIMESTAMP, DRAG_START_POINT.x, DRAG_START_POINT.y, 30f);
 
         // Verify.
@@ -1798,7 +1796,7 @@ public class StripLayoutHelperTest {
         // Press down on second tab's close button.
         when(tabs[1].checkCloseHitTest(anyFloat(), anyFloat())).thenReturn(true);
         mStripLayoutHelper.setTabAtPositionForTesting(tabs[1]);
-        mStripLayoutHelper.onDown(TIMESTAMP, 150f, 0f, false, MotionEvent.BUTTON_PRIMARY);
+        mStripLayoutHelper.onDown(150f, 0f, false, MotionEvent.BUTTON_PRIMARY);
 
         // Verify.
         assertFalse(
@@ -1821,7 +1819,7 @@ public class StripLayoutHelperTest {
         // Press down on second tab's close button with mouse.
         when(tabs[1].checkCloseHitTest(anyFloat(), anyFloat())).thenReturn(true);
         mStripLayoutHelper.setTabAtPositionForTesting(tabs[1]);
-        mStripLayoutHelper.onDown(TIMESTAMP, 150f, 0f, true, MotionEvent.BUTTON_PRIMARY);
+        mStripLayoutHelper.onDown(150f, 0f, true, MotionEvent.BUTTON_PRIMARY);
 
         // Verify.
         assertFalse(
@@ -1852,7 +1850,7 @@ public class StripLayoutHelperTest {
 
         // Press down on second tab and assert scroller is finished.
         mStripLayoutHelper.setTabAtPositionForTesting(tabs[1]);
-        mStripLayoutHelper.onDown(TIMESTAMP, 150f, 0f, false, 0);
+        mStripLayoutHelper.onDown(150f, 0f, false, 0);
         assertFalse(
                 "New tab button should not be pressed.",
                 mStripLayoutHelper.getNewTabButton().isPressed());
@@ -2087,7 +2085,7 @@ public class StripLayoutHelperTest {
 
         // Start then stop reorder.
         mStripLayoutHelper.startReorderModeAtIndexForTesting(0);
-        mStripLayoutHelper.stopReorderModeForTesting();
+        mStripLayoutHelper.stopReorderMode();
 
         // Verify no tabs have a trailing margin when reordering is stopped.
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
@@ -2117,7 +2115,7 @@ public class StripLayoutHelperTest {
                 EPSILON);
 
         // Stop reorder. Verify the scroll offset is still 0.
-        mStripLayoutHelper.stopReorderModeForTesting();
+        mStripLayoutHelper.stopReorderMode();
         assertEquals(
                 "Scroll offset should return to 0 after stopping reorder mode.",
                 0f,
@@ -2771,7 +2769,7 @@ public class StripLayoutHelperTest {
 
         // Start and stop reorder mode for tab drop.
         mStripLayoutHelper.prepareForTabDrop(/* currX= */ 10.f, /* lastX= */ 0f, false, false);
-        mStripLayoutHelper.stopReorderModeForTesting();
+        mStripLayoutHelper.stopReorderMode();
 
         // Verify: folio reattachment animation does not run for tab drop.
         verify(reorderDelegateSpy, never()).updateTabAttachState(any(), eq(true), notNull());
@@ -3606,7 +3604,8 @@ public class StripLayoutHelperTest {
             StripLayoutTab[] tabs, boolean draggingTabOffStrip, int tabIndexToDrag) {
         // Start drag tab out of group or drag off strip.
         if (draggingTabOffStrip) {
-            mStripLayoutHelper.clearForTabDrop(TIMESTAMP, true, false);
+            mStripLayoutHelper.startReorderModeAtIndexForTesting(tabIndexToDrag);
+            mStripLayoutHelper.clearForTabDrop(true, false);
         } else {
             float dragDistance =
                     ((tabs[0].getWidth() - TAB_OVERLAP_WIDTH_DP) / 2)
@@ -4451,7 +4450,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.prepareForTabDrop(0f, 0f, true, false);
         StripLayoutTab draggedTab = mStripLayoutHelper.getInteractingTabForTesting();
         draggedTab.setOffsetX(expectedOffsetX);
-        mStripLayoutHelper.clearForTabDrop(TIMESTAMP, true, false);
+        mStripLayoutHelper.clearForTabDrop(true, false);
 
         // Finish animations.
         assertNotNull(
@@ -4487,7 +4486,7 @@ public class StripLayoutHelperTest {
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         mStripLayoutHelper.setTabAtPositionForTesting(tabs[1]);
         mStripLayoutHelper.prepareForTabDrop(0f, 0f, true, false);
-        mStripLayoutHelper.clearForTabDrop(TIMESTAMP, true, false);
+        mStripLayoutHelper.clearForTabDrop(true, false);
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         // Verify 3rd, 4th and 5th tab's start divider is visible.
@@ -4750,7 +4749,7 @@ public class StripLayoutHelperTest {
 
         // Set reorder mode for testing, then clear for tab drop and verify no interaction.
         mStripLayoutHelper.startReorderModeAtIndexForTesting(0);
-        mStripLayoutHelper.clearForTabDrop(TIMESTAMP, false, !isIncognito);
+        mStripLayoutHelper.clearForTabDrop(false, !isIncognito);
         assertTrue(
                 "Shouldn't stop reorder when dragged tab Incognito state is different.",
                 mStripLayoutHelper.getInReorderModeForTesting());
