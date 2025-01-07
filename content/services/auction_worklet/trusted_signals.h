@@ -23,6 +23,7 @@
 #include "content/services/auction_worklet/public/mojom/auction_network_events_handler.mojom.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
+#include "third_party/blink/public/common/interest_group/ad_display_size.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "v8/include/v8-forward.h"
@@ -145,6 +146,40 @@ class CONTENT_EXPORT TrustedSignals {
     const std::optional<uint32_t> data_version_;
   };
 
+  // Info about a creative, either ad or component ad, that's sent to trusted
+  // scoring signals server, corresponding to one chosen by a generateBid()
+  // invocation.
+  //
+  // If operating with `send_creative_scanning_metadata` true, the same URL may
+  // need to be repeated, in cases like it occurring in multiple interest groups
+  // with the same ad creative but different scanning metadata.
+  //
+  // When `send_creative_scanning_metadata` is false, all fields other than
+  // `ad_descriptor`'s `url` must be kept empty to avoid needlessly duplicating
+  // URLs.
+  struct CONTENT_EXPORT CreativeInfo {
+    CreativeInfo();
+    CreativeInfo(blink::AdDescriptor ad_descriptor,
+                 std::string creative_scanning_metadata,
+                 std::optional<url::Origin> interest_group_owner);
+    ~CreativeInfo();
+
+    CreativeInfo(CreativeInfo&&);
+    CreativeInfo& operator=(CreativeInfo&&);
+
+    bool operator<(const CreativeInfo& other) const;
+
+    // The ad and size selected by generateBid().
+    blink::AdDescriptor ad_descriptor;
+
+    // From `InterestGroup::Ad::creative_scanning_metadata`, with nullopt
+    // converted to empty string.
+    std::string creative_scanning_metadata;
+
+    // From `InterestGroup::owner`.
+    std::optional<url::Origin> interest_group_owner;
+  };
+
   using LoadSignalsCallback =
       base::OnceCallback<void(scoped_refptr<Result> result,
                               std::optional<std::string> error_msg)>;
@@ -161,12 +196,22 @@ class CONTENT_EXPORT TrustedSignals {
       std::optional<uint16_t> experiment_group_id,
       const std::string& trusted_bidding_signals_slot_size_param);
 
+  // `ads` and `component_ads` are set<CreativeInfo> rather than
+  // map<GURL, something> because the same URL can have different creative
+  // scanning metadata in different IGs, or different size in difference
+  // occurrences as a component ad, etc.
   static GURL BuildTrustedScoringSignalsURL(
+      bool send_creative_scanning_metadata,
       const std::string& hostname,
       const GURL& trusted_scoring_signals_url,
-      const std::set<std::string>& render_urls,
-      const std::set<std::string>& ad_component_render_urls,
+      const std::set<CreativeInfo>& ads,
+      const std::set<CreativeInfo>& component_ads,
       std::optional<uint16_t> experiment_group_id);
+
+  // This is a transitional method while we're migrating to a new signature
+  // for loading scoring signals.
+  static std::set<CreativeInfo> ConvertToCreativeInfoSet(
+      const std::set<std::string>& urls);
 
   // Constructs a TrustedSignals for fetching bidding signals, and starts
   // the fetch. `trusted_bidding_signals_url` must be the base URL (no query

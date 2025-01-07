@@ -1366,5 +1366,228 @@ TEST_F(TrustedSignalsTest, BiddingSignalsV1HeaderV2Body) {
   EXPECT_EQ(nullptr, signals->GetPerGroupData("name1"));
 }
 
+TEST_F(TrustedSignalsTest, BuildTrustedScoringSignalsURL) {
+  for (const bool send_creative_scanning_metadata : {false, true}) {
+    SCOPED_TRACE(send_creative_scanning_metadata);
+
+    auto test_data = std::to_array<TrustedSignals::CreativeInfo>(
+        {{/*ad_descriptor=*/blink::AdDescriptor(
+              GURL("https://creative1.test"),
+              std::optional(
+                  blink::AdSize(200, blink::AdSize::LengthUnit::kPixels, 100,
+                                blink::AdSize::LengthUnit::kScreenHeight))),
+          /*creative_scanning_metadata=*/"scan1",
+          /*interest_group_owner=*/
+          std::optional(url::Origin::Create(GURL("https://bidder1.test")))},
+         {/*ad_descriptor=*/blink::AdDescriptor(
+              GURL("https://creative1.test"),
+              std::optional(
+                  blink::AdSize(200, blink::AdSize::LengthUnit::kPixels, 100,
+                                blink::AdSize::LengthUnit::kScreenHeight))),
+          /*creative_scanning_metadata=*/"scan1b",
+          /*interest_group_owner=*/
+          std::optional(url::Origin::Create(GURL("https://bidder1.test")))},
+         {/*ad_descriptor=*/blink::AdDescriptor(
+              GURL("https://creative1.test"),
+              std::optional(
+                  blink::AdSize(200, blink::AdSize::LengthUnit::kPixels, 100,
+                                blink::AdSize::LengthUnit::kScreenHeight))),
+          /*creative_scanning_metadata=*/"scan1/2",
+          /*interest_group_owner=*/
+          std::optional(url::Origin::Create(GURL("https://bidder2.test")))},
+         {/*ad_descriptor=*/blink::AdDescriptor(
+              GURL("https://creative2.test"),
+              std::optional(
+                  blink::AdSize(200, blink::AdSize::LengthUnit::kPixels, 100,
+                                blink::AdSize::LengthUnit::kScreenHeight))),
+          /*creative_scanning_metadata=*/"scan2",
+          /*interest_group_owner=*/
+          std::optional(url::Origin::Create(GURL("https://bidder2.test")))},
+         {// Same thing at different size.
+          /*ad_descriptor=*/blink::AdDescriptor(
+              GURL("https://creative2.test"),
+              std::optional(
+                  blink::AdSize(100, blink::AdSize::LengthUnit::kPixels, 50,
+                                blink::AdSize::LengthUnit::kScreenHeight))),
+          /*creative_scanning_metadata=*/"scan2",
+          /*interest_group_owner=*/
+          std::optional(url::Origin::Create(GURL("https://bidder2.test")))}});
+
+    std::set<TrustedSignals::CreativeInfo> creative_set;
+    for (auto& input : test_data) {
+      if (!send_creative_scanning_metadata) {
+        input.ad_descriptor.size = std::nullopt;
+        input.creative_scanning_metadata.clear();
+        input.interest_group_owner = std::nullopt;
+      }
+      creative_set.insert(std::move(input));
+    }
+
+    // Minimal valid input for main ad, to use when mainly testing component-ad
+    // specific query params..
+    std::set<TrustedSignals::CreativeInfo> single_ad_set;
+    TrustedSignals::CreativeInfo single_ad;
+    single_ad.ad_descriptor.url = GURL("https://product.test");
+    if (send_creative_scanning_metadata) {
+      single_ad.interest_group_owner =
+          url::Origin::Create(GURL("https://bidder0.test"));
+    }
+    single_ad_set.insert(std::move(single_ad));
+
+    GURL ads_result = TrustedSignals::BuildTrustedScoringSignalsURL(
+        send_creative_scanning_metadata,
+        /*hostname=*/"https://publisher.test/",
+        /*trusted_scoring_signals_url=*/GURL("https://kv.test"),
+        /*ads=*/creative_set,
+        /*component_ads=*/{},
+        /*experiment_group_id=*/std::nullopt);
+    GURL component_ads_result = TrustedSignals::BuildTrustedScoringSignalsURL(
+        send_creative_scanning_metadata,
+        /*hostname=*/"https://publisher.test/",
+        /*trusted_scoring_signals_url=*/GURL("https://kv.test"),
+        /*ads=*/single_ad_set,
+        /*component_ads=*/creative_set,
+        /*experiment_group_id=*/std::nullopt);
+
+    if (send_creative_scanning_metadata) {
+      EXPECT_EQ(
+          "https://kv.test/?hostname=https%3A%2F%2Fpublisher.test%2F"
+          "&renderUrls=https%3A%2F%2Fcreative1.test%2F,"
+          "https%3A%2F%2Fcreative1.test%2F,"
+          "https%3A%2F%2Fcreative1.test%2F,"
+          "https%3A%2F%2Fcreative2.test%2F,"
+          "https%3A%2F%2Fcreative2.test%2F&"
+          "adCreativeScanningMetadata=scan1,scan1%2F2,scan1b,scan2,scan2"
+          "&adSizes=200px,100sh,200px,100sh,200px,100sh,100px,50sh,200px,100sh"
+          "&adBuyer=https%3A%2F%2Fbidder1.test,"
+          "https%3A%2F%2Fbidder2.test,"
+          "https%3A%2F%2Fbidder1.test,"
+          "https%3A%2F%2Fbidder2.test,"
+          "https%3A%2F%2Fbidder2.test",
+          ads_result);
+      EXPECT_EQ(
+          "https://kv.test/?hostname=https%3A%2F%2Fpublisher.test%2F"
+          "&renderUrls=https%3A%2F%2Fproduct.test%2F"
+          "&adComponentRenderUrls=https%3A%2F%2Fcreative1.test%2F,"
+          "https%3A%2F%2Fcreative1.test%2F,"
+          "https%3A%2F%2Fcreative1.test%2F,"
+          "https%3A%2F%2Fcreative2.test%2F,"
+          "https%3A%2F%2Fcreative2.test%2F"
+          "&adCreativeScanningMetadata="
+          "&adComponentCreativeScanningMetadata="
+          "scan1,scan1%2F2,scan1b,scan2,scan2"
+          "&adSizes=,"
+          "&adComponentSizes="
+          "200px,100sh,200px,100sh,200px,100sh,100px,50sh,200px,100sh"
+          "&adBuyer=https%3A%2F%2Fbidder0.test"
+          "&adComponentBuyer=https%3A%2F%2Fbidder1.test,"
+          "https%3A%2F%2Fbidder2.test,"
+          "https%3A%2F%2Fbidder1.test,"
+          "https%3A%2F%2Fbidder2.test,"
+          "https%3A%2F%2Fbidder2.test",
+          component_ads_result);
+    } else {
+      EXPECT_EQ(
+          "https://kv.test/?hostname=https%3A%2F%2Fpublisher.test%2F"
+          "&renderUrls=https%3A%2F%2Fcreative1.test%2F,"
+          "https%3A%2F%2Fcreative2.test%2F",
+          ads_result);
+      EXPECT_EQ(
+          "https://kv.test/?hostname=https%3A%2F%2Fpublisher.test%2F"
+          "&renderUrls=https%3A%2F%2Fproduct.test%2F"
+          "&adComponentRenderUrls=https%3A%2F%2Fcreative1.test%2F,"
+          "https%3A%2F%2Fcreative2.test%2F",
+          component_ads_result);
+    }
+  }
+}
+
+// An empty size should be a comma, to make things line up properly.
+TEST_F(TrustedSignalsTest, BuildTrustedScoringSignalsURLNoSize) {
+  for (const bool both_without_size : {false, true}) {
+    SCOPED_TRACE(both_without_size);
+    std::set<TrustedSignals::CreativeInfo> input;
+
+    input.insert(TrustedSignals::CreativeInfo(
+        /*ad_descriptor=*/blink::AdDescriptor(GURL("https://c1.test"),
+                                              /*size=*/std::nullopt),
+        /*creative_scanning_metadata=*/"s1",
+        /*interest_group_owner=*/url::Origin::Create(GURL("https://b1.test"))));
+
+    input.insert(TrustedSignals::CreativeInfo(
+        /*ad_descriptor=*/blink::AdDescriptor(
+            GURL("https://c2.test"),
+            /*size=*/both_without_size
+                ? std::nullopt
+                : std::optional(
+                      blink::AdSize(100, blink::AdSize::LengthUnit::kPixels, 50,
+                                    blink::AdSize::LengthUnit::kPixels))),
+        /*creative_scanning_metadata=*/"s2",
+        /*interest_group_owner=*/url::Origin::Create(GURL("https://b2.test"))));
+
+    GURL result = TrustedSignals::BuildTrustedScoringSignalsURL(
+        /*send_creative_scanning_metadata=*/true,
+        /*hostname=*/"https://publisher.test/",
+        /*trusted_scoring_signals_url=*/GURL("https://kv.test"),
+        /*ads=*/input,
+        /*component_ads=*/{},
+        /*experiment_group_id=*/std::nullopt);
+
+    if (both_without_size) {
+      EXPECT_EQ(
+          "https://kv.test/?hostname=https%3A%2F%2Fpublisher.test%2F"
+          "&renderUrls=https%3A%2F%2Fc1.test%2F,https%3A%2F%2Fc2.test%2F"
+          "&adCreativeScanningMetadata=s1,s2"
+          "&adSizes=,,,"
+          "&adBuyer=https%3A%2F%2Fb1.test,https%3A%2F%2Fb2.test",
+          result);
+    } else {
+      EXPECT_EQ(
+          "https://kv.test/?hostname=https%3A%2F%2Fpublisher.test%2F"
+          "&renderUrls=https%3A%2F%2Fc1.test%2F,https%3A%2F%2Fc2.test%2F"
+          "&adCreativeScanningMetadata=s1,s2"
+          "&adSizes=,,100px,50px"
+          "&adBuyer=https%3A%2F%2Fb1.test,https%3A%2F%2Fb2.test",
+          result);
+    }
+  }
+}
+
+TEST_F(TrustedSignalsTest,
+       BuildTrustedScoringSignalsURLEmptyCreativeScanMetadata) {
+  std::set<TrustedSignals::CreativeInfo> input;
+
+  input.insert(TrustedSignals::CreativeInfo(
+      /*ad_descriptor=*/blink::AdDescriptor(
+          GURL("https://c1.test"),
+          blink::AdSize(100, blink::AdSize::LengthUnit::kPixels, 50,
+                        blink::AdSize::LengthUnit::kPixels)),
+      /*creative_scanning_metadata=*/std::string(),
+      /*interest_group_owner=*/url::Origin::Create(GURL("https://b1.test"))));
+
+  input.insert(TrustedSignals::CreativeInfo(
+      /*ad_descriptor=*/blink::AdDescriptor(
+          GURL("https://c2.test"),
+          blink::AdSize(100, blink::AdSize::LengthUnit::kPixels, 50,
+                        blink::AdSize::LengthUnit::kPixels)),
+      /*creative_scanning_metadata=*/"s2",
+      /*interest_group_owner=*/url::Origin::Create(GURL("https://b2.test"))));
+
+  GURL result = TrustedSignals::BuildTrustedScoringSignalsURL(
+      /*send_creative_scanning_metadata=*/true,
+      /*hostname=*/"https://publisher.test/",
+      /*trusted_scoring_signals_url=*/GURL("https://kv.test"),
+      /*ads=*/std::move(input),
+      /*component_ads=*/{},
+      /*experiment_group_id=*/std::nullopt);
+
+  EXPECT_EQ(
+      "https://kv.test/?hostname=https%3A%2F%2Fpublisher.test%2F"
+      "&renderUrls=https%3A%2F%2Fc1.test%2F,https%3A%2F%2Fc2.test%2F"
+      "&adCreativeScanningMetadata=,s2"
+      "&adSizes=100px,50px,100px,50px"
+      "&adBuyer=https%3A%2F%2Fb1.test,https%3A%2F%2Fb2.test",
+      result);
+}
 }  // namespace
 }  // namespace auction_worklet

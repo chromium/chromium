@@ -237,8 +237,11 @@ class TrustedSignalsRequestManager::TrustedScoringSignalsUrlBuilder
   // TrustedSignalsUrlBuilder implementation.
   GURL Build() override {
     return TrustedSignals::BuildTrustedScoringSignalsURL(
-        hostname_, trusted_signals_url_, render_urls_,
-        ad_component_render_urls_, experiment_group_id_);
+        /*send_creative_scanning_metadata=*/false, hostname_,
+        trusted_signals_url_,
+        TrustedSignals::ConvertToCreativeInfoSet(render_urls_),
+        TrustedSignals::ConvertToCreativeInfoSet(ad_component_render_urls_),
+        experiment_group_id_);
   }
 
   bool TryToAddRequest(RequestImpl* request) override {

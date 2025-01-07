@@ -58,12 +58,10 @@ AdDescriptor& AdDescriptor::operator=(const AdDescriptor&) = default;
 
 AdDescriptor& AdDescriptor::operator=(AdDescriptor&&) = default;
 
-bool AdDescriptor::operator==(const AdDescriptor& other) const {
-  return std::tie(url, size) == std::tie(other.url, other.size);
-}
+bool AdDescriptor::operator==(const AdDescriptor& other) const = default;
 
-bool AdDescriptor::operator!=(const AdDescriptor& other) const {
-  return !(*this == other);
+bool AdDescriptor::operator<(const AdDescriptor& other) const {
+  return std::tie(url, size) < std::tie(other.url, other.size);
 }
 
 AdDescriptor::~AdDescriptor() = default;
