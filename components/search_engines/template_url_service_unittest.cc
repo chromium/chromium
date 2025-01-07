@@ -326,11 +326,12 @@ TEST_F(TemplateURLServiceWithDatabaseUnitTest,
       template_url_service().GetTemplateURLForKeyword(overriden_keyword);
   EXPECT_TRUE(new_play_engine);
   EXPECT_TRUE(new_play_engine->created_from_play_api());
-  EXPECT_EQ(new_play_engine->prepopulate_id(), 0);
+  EXPECT_EQ(new_play_engine->prepopulate_id(), /* bing_id */ 3);
   EXPECT_EQ(new_play_engine, template_url_service().GetDefaultSearchProvider());
 
-  // The properties are the ones coming from play, not the prepopulated ones.
-  EXPECT_EQ(new_play_engine->url(), new_engine_url_from_play);
+  // The properties are the ones coming from Chromium database: reconciliation
+  // detects matching defiition and re-uses it.
+  EXPECT_EQ(new_play_engine->url(), old_prepopulated_engine->url());
   EXPECT_EQ(new_play_engine->short_name(), new_engine_name_from_play);
 
   // Both the old prepopulated engine and the new one from play are registered.

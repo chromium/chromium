@@ -383,12 +383,6 @@ TEST_F(DefaultSearchManagerTest,
   manager->SetUserSelectedDefaultSearchEngine(*supplied_engine);
   auto* result = manager->GetDefaultSearchEngine(nullptr);
   ExpectSimilar(builtin_engine, result);
-
-  // Play definitions must not be reconciled using prepopulated_id.
-  supplied_engine->created_from_play_api = true;
-  manager->SetUserSelectedDefaultSearchEngine(*supplied_engine);
-  result = manager->GetDefaultSearchEngine(nullptr);
-  ExpectSimilar(supplied_engine.get(), result);
 }
 
 TEST_F(DefaultSearchManagerTest,
