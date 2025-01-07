@@ -20,6 +20,8 @@
 
 namespace {
 ProfileSelections BuildKAnonymityServiceProfileSelections() {
+  if (!base::FeatureList::IsEnabled(features::kKAnonymityService))
+    return ProfileSelections::BuildNoProfilesSelected();
   return ProfileSelections::Builder()
       .WithRegular(ProfileSelection::kOwnInstance)
       .WithGuest(ProfileSelection::kOwnInstance)

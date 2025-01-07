@@ -11,7 +11,6 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/k_anonymity_service/k_anonymity_service_metrics.h"
-#include "chrome/browser/k_anonymity_service/k_anonymity_service_urls.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/common/chrome_features.h"
@@ -409,6 +408,8 @@ class TestTrustTokenQueryAnswerer
   }
 };
 
+const char kJoinRelayURL[] = "https://relay.test/join_relay";
+const char kQueryRelayURL[] = "https://relay.test/query_relay";
 
 class OhttpTestNetworkContext : public network::TestNetworkContext {
  public:
@@ -433,13 +434,13 @@ class OhttpTestNetworkContext : public network::TestNetworkContext {
     EXPECT_EQ("binaryKeyInBase64", request->key_config);
     EXPECT_EQ("application/json", request->request_body->content_type);
     if (request->trust_token_params) {
-      EXPECT_EQ(kKAnonymityServiceJoinRelayServer, request->relay_url);
+      EXPECT_EQ(kJoinRelayURL, request->relay_url);
       EXPECT_TRUE(base::StartsWith(
           request->resource_url.spec(),
           "https://chromekanonymity-pa.googleapis.com/v1/types/"
           "fledge/sets/"));
     } else {
-      EXPECT_EQ(kKAnonymityServiceQueryRelayServer, request->relay_url);
+      EXPECT_EQ(kQueryRelayURL, request->relay_url);
       EXPECT_TRUE(base::StartsWith(
           request->resource_url.spec(),
           "https://chromekanonymityquery-pa.googleapis.com/v1:query"));
@@ -520,7 +521,12 @@ class KAnonymityServiceClientJoinQueryTest
  protected:
   void SetUp() override {
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::kKAnonymityServiceOHTTPRequests, {}},
+        {{features::kKAnonymityService,
+          {
+              {"KAnonymityServiceJoinRelayServer", kJoinRelayURL},
+              {"KAnonymityServiceQueryRelayServer", kQueryRelayURL},
+          }},
+         {features::kKAnonymityServiceOHTTPRequests, {}},
          {features::kKAnonymityServiceStorage, {}}},
         {});
     TestingProfile::Builder builder;
@@ -550,8 +556,7 @@ class KAnonymityServiceClientJoinQueryTest
 
   void RespondWithJoin() {
     task_environment_->RunUntilIdle();
-    network_context_.RespondToPendingRequest(kKAnonymityServiceJoinRelayServer,
-                                             "{}\n");
+    network_context_.RespondToPendingRequest(kJoinRelayURL, "{}\n");
   }
 
   void RespondWithQueryKey() {
@@ -562,8 +567,7 @@ class KAnonymityServiceClientJoinQueryTest
 
   void RespondWithQuery(const std::string& response_str) {
     task_environment_->RunUntilIdle();
-    network_context_.RespondToPendingRequest(kKAnonymityServiceQueryRelayServer,
-                                             response_str);
+    network_context_.RespondToPendingRequest(kQueryRelayURL, response_str);
   }
 
   void DropOhttpRequests() { network_context_.SetDropRequests(true); }

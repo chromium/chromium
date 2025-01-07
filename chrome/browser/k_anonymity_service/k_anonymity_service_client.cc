@@ -42,9 +42,6 @@ namespace {
 constexpr base::TimeDelta kRequestTimeout = base::Seconds(5);
 constexpr base::TimeDelta kRequestMargin = base::Minutes(5);
 constexpr base::TimeDelta kKeyCacheDuration = base::Hours(24);
-constexpr base::TimeDelta kKAnonymityServiceQueryInterval = base::Days(1);
-constexpr base::TimeDelta kKAnonymityServiceJoinInterval = base::Days(1);
-
 constexpr int kMaxRetries = 5;
 constexpr size_t kMaxQueueSize = 100;
 
@@ -189,17 +186,19 @@ KAnonymityServiceClient::KAnonymityServiceClient(Profile* profile)
                         .AppendASCII(kKAnonymityServiceStoragePath))
               : std::make_unique<KAnonymityServiceMemoryStorage>()),
       // Pass the auth server origin as if it is our "top frame".
-      trust_token_answerer_(
-          url::Origin::Create(GetURL(kKAnonymityServiceAuthServer)),
-          profile),
+      trust_token_answerer_(url::Origin::Create(GURL(
+                                features::kKAnonymityServiceAuthServer.Get())),
+                            profile),
       token_getter_(IdentityManagerFactory::GetForProfile(profile),
                     url_loader_factory_,
                     &trust_token_answerer_,
                     storage_.get()),
       profile_(profile) {
-  join_origin_ = url::Origin::Create(GetURL(kKAnonymityServiceJoinServer));
+  join_origin_ =
+      url::Origin::Create(GURL(features::kKAnonymityServiceJoinServer.Get()));
   DCHECK(!join_origin_.opaque());
-  query_origin_ = url::Origin::Create(GetURL(kKAnonymityServiceQueryServer));
+  query_origin_ =
+      url::Origin::Create(GURL(features::kKAnonymityServiceQueryServer.Get()));
   DCHECK(!query_origin_.opaque());
 }
 
@@ -216,14 +215,6 @@ bool KAnonymityServiceClient::CanUseKAnonymityService(Profile* profile) {
   auto capability =
       account_info.capabilities.can_run_chrome_privacy_sandbox_trials();
   return capability == signin::Tribool::kTrue;
-}
-
-// IN-TEST
-void KAnonymityServiceClient::SetTestOriginForTesting(GURL url) {
-  test_origin_ = url;
-  join_origin_ = url::Origin::Create(url);
-  query_origin_ = url::Origin::Create(url);
-  token_getter_.SetTestOriginForTesting(url::Origin::Create(url));
 }
 
 void KAnonymityServiceClient::JoinSet(std::string id,
@@ -351,7 +342,7 @@ void KAnonymityServiceClient::JoinSetSendRequest(
 
   network::mojom::ObliviousHttpRequestPtr request =
       network::mojom::ObliviousHttpRequest::New();
-  request->relay_url = GetURL(kKAnonymityServiceJoinRelayServer);
+  request->relay_url = GURL(features::kKAnonymityServiceJoinRelayServer.Get());
   request->traffic_annotation = net::MutableNetworkTrafficAnnotationTag(
       kKAnonymityServiceJoinSetTrafficAnnotation);
   request->key_config = ohttp_key.key;
@@ -378,7 +369,7 @@ void KAnonymityServiceClient::JoinSetSendRequest(
   // are scoped to auth_origin. That means we need to specify auth_origin as the
   // issuer.
   url::Origin auth_origin =
-      url::Origin::Create(GetURL(kKAnonymityServiceAuthServer));
+      url::Origin::Create(GURL(features::kKAnonymityServiceAuthServer.Get()));
   network::mojom::TrustTokenParamsPtr params =
       network::mojom::TrustTokenParams::New();
   params->operation = network::mojom::TrustTokenOperationType::kRedemption;
@@ -575,7 +566,7 @@ void KAnonymityServiceClient::QuerySetsSendRequest(
 
   network::mojom::ObliviousHttpRequestPtr request =
       network::mojom::ObliviousHttpRequest::New();
-  request->relay_url = GetURL(kKAnonymityServiceQueryRelayServer);
+  request->relay_url = GURL(features::kKAnonymityServiceQueryRelayServer.Get());
   request->traffic_annotation = net::MutableNetworkTrafficAnnotationTag(
       kKAnonymityServiceQuerySetTrafficAnnotation);
   request->key_config = ohttp_key.key;
@@ -734,13 +725,9 @@ void KAnonymityServiceClient::DoQuerySetsCallback(std::vector<bool> result) {
 }
 
 base::TimeDelta KAnonymityServiceClient::GetJoinInterval() {
-  return kKAnonymityServiceJoinInterval;
+  return features::kKAnonymityServiceJoinInterval.Get();
 }
 
 base::TimeDelta KAnonymityServiceClient::GetQueryInterval() {
-  return kKAnonymityServiceQueryInterval;
-}
-
-GURL KAnonymityServiceClient::GetURL(const char url[]) {
-  return test_origin_ ? test_origin_.value() : GURL(url);
+  return features::kKAnonymityServiceQueryInterval.Get();
 }

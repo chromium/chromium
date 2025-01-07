@@ -69,8 +69,6 @@ class KAnonymityTrustTokenGetter {
   // should immediately initiate the request that uses the trust token.
   void TryGetTrustTokenAndKey(TryGetTrustTokenAndKeyCallback callback);
 
-  void SetTestOriginForTesting(url::Origin url);
-
  private:
   struct PendingRequest {
     explicit PendingRequest(TryGetTrustTokenAndKeyCallback callback);

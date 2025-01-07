@@ -83,8 +83,6 @@ class KAnonymityServiceClient : public content::KAnonymityServiceDelegate,
   // service.
   static bool CanUseKAnonymityService(Profile* profile);
 
-  void SetTestOriginForTesting(GURL url);
-
  private:
   struct PendingJoinRequest {
     PendingJoinRequest(std::string set_id,
@@ -185,8 +183,6 @@ class KAnonymityServiceClient : public content::KAnonymityServiceDelegate,
   // query_queue_.
   void DoQuerySetsCallback(std::vector<bool> result);
 
-  GURL GetURL(const char url[]);
-
   // queues
   base::circular_deque<std::unique_ptr<PendingJoinRequest>> join_queue_;
   base::circular_deque<std::unique_ptr<PendingQueryRequest>> query_queue_;
@@ -206,7 +202,6 @@ class KAnonymityServiceClient : public content::KAnonymityServiceDelegate,
 
   url::Origin join_origin_;
   url::Origin query_origin_;
-  std::optional<GURL> test_origin_;
 
   raw_ptr<Profile> profile_;
   base::WeakPtrFactory<KAnonymityServiceClient> weak_ptr_factory_{this};
