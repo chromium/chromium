@@ -14,6 +14,10 @@
 
 namespace ash::diagnostics {
 
+template <typename T>
+T GetLayoutFromFile(const base::FilePath& file_path,
+                    const std::map<std::string, T>& layout_mapping);
+
 // Wrapper for tracking several pieces of information about an evdev-backed
 // device.
 class InputDeviceInformation {
@@ -33,6 +37,9 @@ class InputDeviceInformation {
   // Keyboard-only fields:
   ui::KeyboardCapability::DeviceType keyboard_type;
   ui::KeyboardCapability::KeyboardTopRowLayout keyboard_top_row_layout;
+  mojom::BottomLeftLayout bottom_left_layout = mojom::BottomLeftLayout::kUnknown;
+  mojom::BottomRightLayout bottom_right_layout = mojom::BottomRightLayout::kUnknown;
+  mojom::NumpadLayout numpad_layout = mojom::NumpadLayout::kUnknown;
   std::vector<uint32_t> keyboard_scan_codes;
 };
 
