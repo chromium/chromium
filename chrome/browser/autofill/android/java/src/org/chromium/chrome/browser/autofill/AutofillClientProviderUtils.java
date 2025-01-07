@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.autofill;
 
+import static org.chromium.chrome.browser.autofill.AutofillThirdPartyModeContentProvider.AUTOFILL_THIRD_PARTY_MODE_KEY;
+import static org.chromium.chrome.browser.autofill.AutofillThirdPartyModeContentProvider.AUTOFILL_THIRD_PARTY_MODE_SHARED_PREFS_FILE;
+
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.SharedPreferences.Editor;
@@ -24,9 +27,6 @@ import org.chromium.components.prefs.PrefService;
 public class AutofillClientProviderUtils {
     private static final String AWG_COMPONENT_NAME =
             "com.google.android.gms/com.google.android.gms.autofill.service.AutofillService";
-    private static final String AUTOFILL_THIRD_PARTY_MODE_SHARED_PREFS_FILE =
-            "autofill_third_party_mode_shared_prefs_file";
-    private static final String AUTOFILL_THIRD_PARTY_MODE_KEY = "AUTOFILL_THIRD_PARTY_MODE_KEY";
     private static Integer sAndroidAutofillFrameworkAvailabilityForTesting;
 
     /**

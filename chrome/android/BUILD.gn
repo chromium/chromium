@@ -377,6 +377,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/data_sharing:instant_message_delegate_factory_java",
 
       # TODO(ssid): Decouple dependency on internal library.
+      "//chrome/browser/autofill/android:third_party_provider_java",
       "//chrome/browser/data_sharing:data_sharing_public_java",
       "//chrome/browser/data_sharing:internal_library_java",
       "//chrome/browser/data_sharing:invitation_dialog_java",
@@ -2783,6 +2784,7 @@ if (current_toolchain == default_toolchain) {
       "$google_play_services_package:google_firebase_firebase_messaging_java",
       "$google_play_services_package:google_play_services_gcm_java",
       "//base:base_java",
+      "//chrome/browser/autofill/android:third_party_provider_java",
       "//chrome/browser/download/android:file_provider_java",
       "//chrome/browser/flags:java",
       "//chrome/browser/language/android:base_module_java",

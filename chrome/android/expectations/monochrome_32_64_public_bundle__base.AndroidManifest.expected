@@ -209,6 +209,11 @@
         android:process=":webview_service"
         android:visibleToInstantApps="true">
     </provider>  # DIFF-ANCHOR: c41df08d
+    <provider  # DIFF-ANCHOR: 3b9c6c31
+        android:name="org.chromium.chrome.browser.autofill.AutofillThirdPartyModeContentProvider"
+        android:authorities="$PACKAGE.AutofillThirdPartyModeContentProvider"
+        android:exported="true">
+    </provider>  # DIFF-ANCHOR: 3b9c6c31
     <provider  # DIFF-ANCHOR: b73a881a
         android:name="org.chromium.chrome.browser.download.DownloadFileProvider"
         android:authorities="$PACKAGE.DownloadFileProvider"

@@ -1349,6 +1349,13 @@ by a child template that "extends" this file.
             android:grantUriPermissions="true">
       </provider>
 
+      <!-- Provider for querying the Autofill third party mode state. -->
+      <provider android:name="org.chromium.chrome.browser.autofill.AutofillThirdPartyModeContentProvider"
+          android:authorities="{{ manifest_package }}.AutofillThirdPartyModeContentProvider"
+          android:exported="true"
+          tools:ignore="ExportedContentProvider">
+      </provider>
+
       {% block base_application_definitions %}
       {% endblock %}
       {% block extra_application_definitions_for_test %}
