@@ -1112,6 +1112,7 @@ class Port(object):
                 or max(100, num_tests // 33))
 
     WPTDirectory = Literal[tuple(WPT_DIRS)]
+    PathsByWPTDir = Mapping[Optional[WPTDirectory], Set[str]]
 
     # A "test root" represents a (virtual suite, WPT directory) pair (where
     # `None` means the affiliated paths are not virtual and not WPT,
@@ -1975,50 +1976,54 @@ class Port(object):
         of any virtual suite, and the base test is not in the test's own virtual
         suite's exclusive_tests list.
         """
-        base_test = self.lookup_virtual_test_base(test)
-        if base_test:
-            # For a virtual test, if the base test is in exclusive_tests of the
-            # test's own virtual suite, then we should not skip the test.
-            virtual_suite = self._lookup_virtual_suite(test)
-            for exclusive_test in self._normalized_exclusive_tests(
-                    virtual_suite):
-                if base_test.startswith(exclusive_test):
-                    return False
-                if exclusive_test.startswith(base_test):
-                    # This means base_test is a directory containing exclusive
-                    # tests, so should not skip the directory.
-                    return False
-        else:
-            base_test = self.normalize_test_name(test)
+        base_test = self.lookup_virtual_test_base(test) or test
+        wpt_dir, path_from_root = self.split_wpt_dir(
+            posixpath.normpath(base_test))
+        virtual_suite = self._lookup_virtual_suite(test)
+        if virtual_suite:
+            exclusive_tests = self._parse_exclusive_tests_for_suite(
+                virtual_suite)
+            # When `test` is a virtual test,
+            # * If `base_test` descends from any exclusive test of `test`'s
+            #   own virtual suite, don't skip `test`.
+            # * Conversely, if any exclusive test descends from `base_test`,
+            #   `test` is a virtual test file/directory that encompasses at
+            #   least some non-skipped test IDs, so `test` itself is not
+            #   considered skipped.
+            common_tests = self._common_tests(exclusive_tests[wpt_dir],
+                                              {path_from_root}, wpt_dir)
+            if next(common_tests, None):
+                return False
 
         # For a non-virtual test or a virtual test not listed in exclusive_tests
         # of the test's own virtual suite, we should skip the test if the base
         # test is in exclusive_tests of any virtual suite.
-        for exclusive_test in self._all_normalized_exclusive_tests():
-            if base_test.startswith(exclusive_test):
-                return True
-        return False
+        all_exclusive_tests = self._parse_all_exclusive_tests()
+        return self._is_test_descendent(all_exclusive_tests[wpt_dir],
+                                        path_from_root, wpt_dir)
 
     @memoized
-    def _all_normalized_exclusive_tests(self):
-        tests = set()
+    def _parse_all_exclusive_tests(self) -> PathsByWPTDir:
+        all_exclusive_tests = defaultdict(set)
         for suite in self.virtual_test_suites():
-            tests.update(self._normalized_exclusive_tests(suite))
-        return tests
+            exclusive_tests = self._parse_exclusive_tests_for_suite(suite)
+            for wpt_dir, paths_from_root in exclusive_tests.items():
+                all_exclusive_tests[wpt_dir].update(paths_from_root)
+        return all_exclusive_tests
 
     @memoized
-    def _normalized_exclusive_tests(self, virtual_suite):
-        tests = set()
-        for exclusive_test in virtual_suite.exclusive_tests:
-            normalized_test = self.normalize_test_name(exclusive_test)
-            # WPT JS tests can expand to multiple tests. Remove the "js" suffix
-            # so that generated variants (e.g. "test.any.worker.html") match
-            # against the base with startswith and are correctly excluded.
-            if self.is_wpt_test(normalized_test) and normalized_test.endswith(
-                    '.js'):
-                normalized_test = normalized_test[:-2]
-            tests.add(normalized_test)
-        return tests
+    def _parse_exclusive_tests_for_suite(
+            self, virtual_suite: 'VirtualTestSuite') -> PathsByWPTDir:
+        # Callers don't need the virtual roots because `_parse_paths()` already
+        # copies physical test paths under `virtual/` into the non-virtual
+        # non-WPT root (None, None). Drop them here, which simplifies the return
+        # type.
+        exclusive_tests_by_root = self._parse_paths(
+            virtual_suite.exclusive_tests)
+        return {
+            wpt_dir: exclusive_tests_by_root[None, wpt_dir]
+            for wpt_dir in (None, *self.WPT_DIRS)
+        }
 
     @memoized
     def skipped_due_to_skip_base_tests(self, test):
@@ -2944,19 +2949,17 @@ class Port(object):
         if not suite:
             return None
         assert test_name.startswith(suite.full_prefix)
-        maybe_base = self.normalize_test_name(
-            test_name[len(suite.full_prefix):])
-        for base in suite.bases:
-            normalized_base = self.normalize_test_name(base)
-            # Wpt js file can expand to multiple tests. Remove the "js"
-            # suffix so that the startswith test can pass. This could
-            # be inaccurate but is computationally cheap.
-            if (self.is_wpt_test(normalized_base)
-                    and normalized_base.endswith(".js")):
-                normalized_base = normalized_base[:-2]
-            if normalized_base.startswith(maybe_base) or maybe_base.startswith(
-                    normalized_base):
-                return maybe_base
+        virtual_suite, target_base = self.get_suite_name_and_base_test(
+            posixpath.normpath(test_name))
+        if not target_base:
+            return None
+        wpt_dir, target_path_from_root = self.split_wpt_dir(target_base)
+        bases_by_root = self._parse_all_bases()
+        common_tests = self._common_tests(
+            bases_by_root[virtual_suite, wpt_dir], {target_path_from_root},
+            wpt_dir)
+        if next(common_tests, None):
+            return self.normalize_test_name(target_base)
         return None
 
     def _lookup_virtual_test_args(self, test_name):

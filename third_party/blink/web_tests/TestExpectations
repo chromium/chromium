@@ -2733,7 +2733,7 @@ crbug.com/388073809 external/wpt/css/css-images/gradient/gradient-single-stop-00
 crbug.com/388073809 external/wpt/css/css-images/gradient/gradient-single-stop-longer-hue-hsl-002.html [ Failure ]
 crbug.com/388073809 external/wpt/css/css-images/gradient/gradient-single-stop-longer-hue-hsl.html [ Failure ]
 crbug.com/388073809 external/wpt/css/css-images/gradient/gradient-single-stop-longer-hue-oklch.html [ Failure ]
-crbug.com/388063576 [ Mac14 ] external/wpt/webrtc-encoded-transform/idlharness.https.window.html [ Skip Timeout ]
+crbug.com/388063576 [ Mac14 ] external/wpt/webrtc-encoded-transform/idlharness.https.window.html [ Timeout Skip ]
 crbug.com/388073809 virtual/gpu-rasterization/external/wpt/css/css-images/gradient/gradient-longer-hue-hsl-002.html [ Failure ]
 crbug.com/388073809 virtual/gpu-rasterization/external/wpt/css/css-images/gradient/gradient-longer-hue-hsl-003.html [ Failure ]
 crbug.com/388073809 virtual/gpu-rasterization/external/wpt/css/css-images/gradient/gradient-longer-hue-hsl-006.html [ Failure ]
