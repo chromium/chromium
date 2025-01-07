@@ -547,7 +547,7 @@ bool CookieSettings::HasFedCmSharingPermission(
                       entry->second.value) == CONTENT_SETTING_ALLOW;
 }
 
-const ContentSettingsForOneType CookieSettings::GetTpcdMetadataGrants() const {
+ContentSettingsForOneType CookieSettings::GetTpcdMetadataGrants() const {
   return tpcd_metadata_manager_ ? tpcd_metadata_manager_->GetGrants()
                                 : ContentSettingsForOneType();
 }

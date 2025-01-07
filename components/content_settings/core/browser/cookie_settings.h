@@ -163,7 +163,7 @@ class CookieSettings
   // not covered by user bypass at this state of art.
   bool IsStoragePartitioningBypassEnabled(const GURL& first_party_url) const;
 
-  const ContentSettingsForOneType GetTpcdMetadataGrants() const;
+  ContentSettingsForOneType GetTpcdMetadataGrants() const;
 
   // Resets the cookie setting for the given url.
   //
