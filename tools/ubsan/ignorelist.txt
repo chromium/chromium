@@ -46,8 +46,3 @@ fun:*angle*PoolAllocator*allocate*
 # https://crbug.com/385155394
 [pointer-overflow]
 fun:*VP8BitReaderSetBuffer*
-
-# Remove this once https://android-review.googlesource.com/c/platform/external/perfetto/+/3427002
-# has landed.
-[pointer-overflow]
-fun:*protozero*ScatteredStreamWriter*ReserveBytes*
