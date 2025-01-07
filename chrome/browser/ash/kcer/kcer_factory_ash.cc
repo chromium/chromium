@@ -4,10 +4,6 @@
 
 #include "chrome/browser/ash/kcer/kcer_factory_ash.h"
 
-#include "ash/components/kcer/chaps/session_chaps_client.h"
-#include "ash/components/kcer/extra_instances.h"
-#include "ash/components/kcer/kcer.h"
-#include "ash/components/kcer/kcer_token.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -20,6 +16,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#include "chromeos/ash/components/kcer/chaps/session_chaps_client.h"
+#include "chromeos/ash/components/kcer/extra_instances.h"
+#include "chromeos/ash/components/kcer/kcer.h"
+#include "chromeos/ash/components/kcer/kcer_token.h"
 #include "chromeos/ash/components/network/system_token_cert_db_storage.h"
 #include "chromeos/ash/components/tpm/tpm_token_info_getter.h"
 #include "components/pref_registry/pref_registry_syncable.h"

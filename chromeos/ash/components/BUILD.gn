@@ -36,6 +36,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/hid_detection:unit_tests",
     "//chromeos/ash/components/human_presence:unit_tests",
     "//chromeos/ash/components/install_attributes:unit_tests",
+    "//chromeos/ash/components/kcer:unit_tests",
     "//chromeos/ash/components/kiosk/vision:unit_tests",
     "//chromeos/ash/components/language_packs:unit_tests",
     "//chromeos/ash/components/local_search_service:unit_tests",

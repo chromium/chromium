@@ -16,7 +16,6 @@ test("chromeos_components_unittests") {
   ]
 
   deps = [
-    "//ash/components/kcer:unit_tests",
     "//base",
     "//base/test:test_support",
     "//build:chromeos_buildflags",

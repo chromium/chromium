@@ -656,9 +656,9 @@ specific_include_rules = {
     "+components/services/storage/shared_storage/shared_storage_manager.h",
   ],
   "certificate_manager_model.cc": [
-    "+ash/components/kcer",
+    "+chromeos/ash/components/kcer",
   ],
   "certificate_manager_model_unittest.cc": [
-    "+ash/components/kcer/extra_instances.h",
+    "+chromeos/ash/components/kcer/extra_instances.h",
   ],
 }

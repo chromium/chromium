@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/components/kcer/extra_instances.h"
 #include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -28,6 +27,7 @@
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/kcer/extra_instances.h"
 #include "chromeos/ash/components/network/system_token_cert_db_storage.h"
 #include "components/user_manager/user.h"
 #include "content/public/browser/browser_task_traits.h"

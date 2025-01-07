@@ -6,10 +6,6 @@
 
 #include <memory>
 
-#include "ash/components/kcer/chaps/mock_high_level_chaps_client.h"
-#include "ash/components/kcer/kcer.h"
-#include "ash/components/kcer/kcer_impl.h"
-#include "ash/components/kcer/kcer_nss/test_utils.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
@@ -18,6 +14,10 @@
 #include "chrome/browser/net/fake_nss_service.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/kcer/chaps/mock_high_level_chaps_client.h"
+#include "chromeos/ash/components/kcer/kcer.h"
+#include "chromeos/ash/components/kcer/kcer_impl.h"
+#include "chromeos/ash/components/kcer/kcer_nss/test_utils.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/cert/scoped_nss_types.h"

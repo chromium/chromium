@@ -5,14 +5,14 @@
 #ifndef CHROME_BROWSER_ASH_KCER_KCER_FACTORY_ASH_H_
 #define CHROME_BROWSER_ASH_KCER_KCER_FACTORY_ASH_H_
 
-#include "ash/components/kcer/chaps/session_chaps_client.h"
-#include "ash/components/kcer/kcer.h"
-#include "ash/components/kcer/kcer_token.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/kcer/nssdb_migration/kcer_rollback_helper.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "chromeos/ash/components/kcer/chaps/session_chaps_client.h"
+#include "chromeos/ash/components/kcer/kcer.h"
+#include "chromeos/ash/components/kcer/kcer_token.h"
 #include "chromeos/ash/components/tpm/tpm_token_info_getter.h"
 
 class Profile;
