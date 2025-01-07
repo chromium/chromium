@@ -30,12 +30,14 @@ using optimization_guide::proto::SummarizerOutputFormat;
 using optimization_guide::proto::SummarizerOutputLength;
 using optimization_guide::proto::SummarizerOutputType;
 
-class MockStreamingResponder : public blink::mojom::ModelStreamingResponder {
+class MockModelStreamingResponder
+    : public blink::mojom::ModelStreamingResponder {
  public:
-  MockStreamingResponder() = default;
-  ~MockStreamingResponder() override = default;
-  MockStreamingResponder(const MockStreamingResponder&) = delete;
-  MockStreamingResponder& operator=(const MockStreamingResponder&) = delete;
+  MockModelStreamingResponder() = default;
+  ~MockModelStreamingResponder() override = default;
+  MockModelStreamingResponder(const MockModelStreamingResponder&) = delete;
+  MockModelStreamingResponder& operator=(const MockModelStreamingResponder&) =
+      delete;
 
   void OnStreaming(const std::string& text) override {
     status_ = blink::mojom::ModelStreamingResponseStatus::kOngoing;
@@ -46,11 +48,14 @@ class MockStreamingResponder : public blink::mojom::ModelStreamingResponder {
     status_ = status;
     run_loop_.Quit();
   }
+
   void OnCompletion(
       blink::mojom::ModelExecutionContextInfoPtr context_info) override {
     status_ = blink::mojom::ModelStreamingResponseStatus::kComplete;
     run_loop_.Quit();
   }
+
+  void OnContextOverflow() override {}
 
   mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
   BindNewPipeAndPassRemote() {
@@ -212,7 +217,7 @@ TEST_F(AISummarizerUnitTest, SummarizeSuccess) {
   EXPECT_TRUE(summarizer);
   ASSERT_EQ(1u, GetAIManagerContextBoundObjectSetSize());
 
-  MockStreamingResponder responder;
+  MockModelStreamingResponder responder;
   summarizer->Summarize("Test input", "", responder.BindNewPipeAndPassRemote());
   responder.WaitForResponseComplete();
   EXPECT_EQ(responder.status(),
@@ -246,7 +251,7 @@ TEST_F(AISummarizerUnitTest, SessionDetachedDuringSummarization) {
   EXPECT_TRUE(summarizer);
   ASSERT_EQ(1u, GetAIManagerContextBoundObjectSetSize());
 
-  MockStreamingResponder responder;
+  MockModelStreamingResponder responder;
   summarizer->Summarize("Test input", /*context=*/"",
                         responder.BindNewPipeAndPassRemote());
 
@@ -282,7 +287,7 @@ TEST_F(AISummarizerUnitTest, MultipleSummarizeWithOptions) {
   ASSERT_EQ(1u, GetAIManagerContextBoundObjectSetSize());
 
   {
-    MockStreamingResponder responder;
+    MockModelStreamingResponder responder;
     summarizer->Summarize("Test input1", /*context=*/"",
                           responder.BindNewPipeAndPassRemote());
     responder.WaitForResponseComplete();
@@ -299,7 +304,7 @@ TEST_F(AISummarizerUnitTest, MultipleSummarizeWithOptions) {
           SummarizerOutputLength::SUMMARIZER_OUTPUT_LENGTH_LONG,
           "Test output2"));
   {
-    MockStreamingResponder responder;
+    MockModelStreamingResponder responder;
     summarizer->Summarize("Test input2", "New context.",
                           responder.BindNewPipeAndPassRemote());
     responder.WaitForResponseComplete();

@@ -32,6 +32,7 @@ const char kExceptionMessageCancelled[] = "The request was cancelled.";
 const char kExceptionMessageSessionDestroyed[] =
     "The model execution session has been destroyed.";
 const char kExceptionMessageRequestAborted[] = "The request has been aborted.";
+const char kExceptionRequestTooLarge[] = "The prompt request is too large.";
 
 const char kExceptionMessageInvalidTemperatureAndTopKFormat[] =
     "Initializing a new session must either specify both topK and temperature, "
@@ -135,6 +136,10 @@ DOMException* ConvertModelStreamingResponseErrorToDOMException(
       return DOMException::Create(
           kExceptionMessageSessionDestroyed,
           DOMException::GetErrorName(DOMExceptionCode::kInvalidStateError));
+    case ModelStreamingResponseStatus::kErrorPromptRequestTooLarge:
+      return DOMException::Create(
+          kExceptionRequestTooLarge,
+          DOMException::GetErrorName(DOMExceptionCode::kQuotaExceededError));
     case ModelStreamingResponseStatus::kOngoing:
     case ModelStreamingResponseStatus::kComplete:
       NOTREACHED();

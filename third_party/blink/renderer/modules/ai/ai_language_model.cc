@@ -215,7 +215,9 @@ ScriptPromise<IDLString> AILanguageModel::prompt(
       script_state, signal, resolver, task_runner_,
       AIMetrics::AISessionType::kLanguageModel,
       WTF::BindOnce(&AILanguageModel::OnResponseComplete,
-                    WrapWeakPersistent(this)));
+                    WrapWeakPersistent(this)),
+      WTF::BindRepeating(&AILanguageModel::OnContextOverflow,
+                         WrapWeakPersistent(this)));
   language_model_remote_->Prompt(input, std::move(pending_remote));
   return promise;
 }
@@ -256,7 +258,9 @@ ReadableStream* AILanguageModel::promptStreaming(
           script_state, signal, task_runner_,
           AIMetrics::AISessionType::kLanguageModel,
           WTF::BindOnce(&AILanguageModel::OnResponseComplete,
-                        WrapWeakPersistent(this)));
+                        WrapWeakPersistent(this)),
+          WTF::BindRepeating(&AILanguageModel::OnContextOverflow,
+                             WrapWeakPersistent(this)));
   language_model_remote_->Prompt(input, std::move(pending_remote));
   return readable_stream;
 }
@@ -354,9 +358,6 @@ void AILanguageModel::OnResponseComplete(
     mojom::blink::ModelExecutionContextInfoPtr context_info) {
   if (context_info) {
     current_tokens_ = context_info->current_tokens;
-    if (context_info->did_overflow) {
-      OnContextOverflow();
-    }
   }
 }
 

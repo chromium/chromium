@@ -142,16 +142,36 @@ AILanguageModel::Context::Context(const Context& context) = default;
 
 AILanguageModel::Context::~Context() = default;
 
-bool AILanguageModel::Context::AddContextItem(ContextItem context_item) {
-  bool is_overflow = false;
-  context_items_.emplace_back(context_item);
-  current_tokens_ += context_item.tokens;
-  while (current_tokens_ > max_tokens_) {
-    is_overflow = true;
+AILanguageModel::Context::SpaceReservationResult
+AILanguageModel::Context::ReserveSpace(uint32_t num_tokens) {
+  // If there is no enough space to hold the `initial_prompts_` as well as the
+  // newly requested `num_tokens`,  return `kInsufficientSpace`.
+  if (num_tokens + initial_prompts_.tokens > max_tokens_) {
+    return AILanguageModel::Context::SpaceReservationResult::kInsufficientSpace;
+  }
+
+  if (current_tokens_ + num_tokens <= max_tokens_) {
+    return AILanguageModel::Context::SpaceReservationResult::kSufficientSpace;
+  }
+
+  CHECK(!context_items_.empty());
+  do {
     current_tokens_ -= context_items_.begin()->tokens;
     context_items_.pop_front();
+  } while (current_tokens_ + num_tokens > max_tokens_);
+
+  return AILanguageModel::Context::SpaceReservationResult::kSpaceMadeAvailable;
+}
+
+AILanguageModel::Context::SpaceReservationResult
+AILanguageModel::Context::AddContextItem(ContextItem context_item) {
+  auto result = ReserveSpace(context_item.tokens);
+  if (result != SpaceReservationResult::kInsufficientSpace) {
+    context_items_.emplace_back(context_item);
+    current_tokens_ += context_item.tokens;
   }
-  return is_overflow;
+
+  return result;
 }
 
 std::unique_ptr<google::protobuf::MessageLite>
@@ -276,15 +296,17 @@ void AILanguageModel::AddPromptHistoryAndSendCompletion(
   // If the on device model service fails to get the size, it will be 0.
   // TODO(crbug.com/351935691): make sure the error is explicitly returned and
   // handled accordingly.
-  bool did_overflow = false;
   if (size) {
     auto item = Context::ContextItem();
     item.tokens = size;
     item.prompts = history_request.prompt_history();
-    did_overflow = context_->AddContextItem(std::move(item));
+    if (context_->AddContextItem(std::move(item)) ==
+        Context::SpaceReservationResult::kSpaceMadeAvailable) {
+      responder->OnContextOverflow();
+    }
   }
-  responder->OnCompletion(blink::mojom::ModelExecutionContextInfo::New(
-      context_->current_tokens(), did_overflow));
+  responder->OnCompletion(
+      blink::mojom::ModelExecutionContextInfo::New(context_->current_tokens()));
 }
 
 void AILanguageModel::ModelExecutionCallback(
@@ -294,6 +316,8 @@ void AILanguageModel::ModelExecutionCallback(
   blink::mojom::ModelStreamingResponder* responder =
       responder_set_.Get(responder_id);
   if (!responder) {
+    // It might be possible for the responder mojo connection to be closed
+    // before this callback is invoked, in this case, we can't do anything.
     return;
   }
 
@@ -341,6 +365,36 @@ void AILanguageModel::ModelExecutionCallback(
   }
 }
 
+void AILanguageModel::PromptGetInputSizeCompletion(
+    mojo::RemoteSetElementId responder_id,
+    PromptApiRequest request,
+    uint32_t number_of_tokens) {
+  blink::mojom::ModelStreamingResponder* responder =
+      responder_set_.Get(responder_id);
+  if (!responder) {
+    // It might be possible for the responder mojo connection to be closed
+    // before this callback is invoked, in this case, we can't do anything.
+    return;
+  }
+
+  auto result = context_->ReserveSpace(number_of_tokens);
+  if (result == Context::SpaceReservationResult::kInsufficientSpace) {
+    responder->OnError(blink::mojom::ModelStreamingResponseStatus::
+                           kErrorPromptRequestTooLarge);
+    return;
+  }
+
+  if (result == Context::SpaceReservationResult::kSpaceMadeAvailable) {
+    responder->OnContextOverflow();
+  }
+
+  session_->ExecuteModel(
+      *context_->MaybeFormatRequest(request),
+      base::BindRepeating(&AILanguageModel::ModelExecutionCallback,
+                          weak_ptr_factory_.GetWeakPtr(), request,
+                          responder_id));
+}
+
 void AILanguageModel::Prompt(
     const std::string& input,
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
@@ -357,18 +411,18 @@ void AILanguageModel::Prompt(
     session_->AddContext(*context_->MakeRequest());
   }
 
+  // Clear the response from the previous execution.
+  current_response_ = "";
   mojo::RemoteSetElementId responder_id =
       responder_set_.Add(std::move(pending_responder));
   PromptApiRequest request;
   *request.add_current_prompts() =
       MakePrompt(PromptApiRole::PROMPT_API_ROLE_USER, input);
-  // Clear the response from the previous execution.
-  current_response_ = "";
-  session_->ExecuteModel(
+
+  session_->GetExecutionInputSizeInTokens(
       *context_->MaybeFormatRequest(request),
-      base::BindRepeating(&AILanguageModel::ModelExecutionCallback,
-                          weak_ptr_factory_.GetWeakPtr(), request,
-                          responder_id));
+      base::BindOnce(&AILanguageModel::PromptGetInputSizeCompletion,
+                     weak_ptr_factory_.GetWeakPtr(), responder_id, request));
 }
 
 void AILanguageModel::Fork(

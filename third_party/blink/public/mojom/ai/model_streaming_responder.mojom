@@ -41,6 +41,8 @@ enum ModelStreamingResponseStatus {
   kErrorCancelled = 12,
   // The session has been destroyed.
   kErrorSessionDestroyed = 13,
+  // The prompt is too large to be stored in the context.
+  kErrorPromptRequestTooLarge = 14,
   // Append new items here.
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ai/enums.xml:AIModelStreamingResponseStatus)
@@ -49,8 +51,6 @@ enum ModelStreamingResponseStatus {
 struct ModelExecutionContextInfo {
   // The latest number of existing tokens.
   uint64 current_tokens;
-  // Whether the context overflow happened in this round of model execution.
-  bool did_overflow;
 };
 
 // The responder provides methods for the session to return the execution
@@ -67,4 +67,9 @@ interface ModelStreamingResponder {
   // It will only be set when necessary, for example, in the `AILanguageModel`
   // interface as it maintains the context of the past model execution.
   OnCompletion(ModelExecutionContextInfo? context_info);
+  // Called when the `AILanguageModel` evicts some items from the context in
+  // order to make space for the newly added items.
+  // This might be called multiple times after prompting, but it won't happen
+  // after `OnCompletion()` or `OnError()`.
+  OnContextOverflow();
 };

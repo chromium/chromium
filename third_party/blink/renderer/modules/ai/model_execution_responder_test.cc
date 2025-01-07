@@ -58,14 +58,17 @@ TEST(CreateModelExecutionResponder, Simple) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
-  base::RunLoop callback_runloop;
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(script_state);
   auto promise = resolver->Promise();
+  base::RunLoop disconnect_runloop;
+  base::RunLoop complete_runloop;
+  base::RunLoop overflow_runloop;
   auto pending_remote = CreateModelExecutionResponder(
       script_state, /*signal=*/nullptr, resolver,
       blink::scheduler::GetSequencedTaskRunnerForTesting(),
       AIMetrics::AISessionType::kLanguageModel,
+      /*complete_callback=*/
       base::BindOnce(
           [](uint64_t expected_tokens, base::RunLoop* runloop,
              mojom::blink::ModelExecutionContextInfoPtr context_info) {
@@ -73,15 +76,16 @@ TEST(CreateModelExecutionResponder, Simple) {
             EXPECT_EQ(context_info->current_tokens, expected_tokens);
             runloop->Quit();
           },
-          kTestTokenNumber, &callback_runloop));
+          kTestTokenNumber, &complete_runloop),
+      /*overflow_callback=*/overflow_runloop.QuitClosure());
 
-  base::RunLoop runloop;
   mojo::Remote<blink::mojom::blink::ModelStreamingResponder> responder(
       std::move(pending_remote));
-  responder.set_disconnect_handler(runloop.QuitClosure());
+  responder.set_disconnect_handler(disconnect_runloop.QuitClosure());
   responder->OnStreaming("result");
-  responder->OnCompletion(mojom::blink::ModelExecutionContextInfo::New(
-      kTestTokenNumber, /*did_overflow=*/false));
+  responder->OnContextOverflow();
+  responder->OnCompletion(
+      mojom::blink::ModelExecutionContextInfo::New(kTestTokenNumber));
   // Check that the promise will be resolved with the "result" string.
   ScriptPromiseTester tester(scope.GetScriptState(), promise);
   tester.WaitUntilSettled();
@@ -90,10 +94,11 @@ TEST(CreateModelExecutionResponder, Simple) {
   EXPECT_EQ("result", ToCoreString(scope.GetIsolate(),
                                    tester.Value().V8Value().As<v8::String>()));
 
-  // Check that the callback is run.
-  callback_runloop.Run();
+  // Check that the complete and overflow callback is run.
+  complete_runloop.Run();
+  overflow_runloop.Run();
   // Check that the Mojo handle will be disconnected.
-  runloop.Run();
+  disconnect_runloop.Run();
 }
 
 TEST(CreateModelExecutionResponder, ErrorPermissionDenied) {
@@ -107,7 +112,8 @@ TEST(CreateModelExecutionResponder, ErrorPermissionDenied) {
       script_state, /*signal=*/nullptr, resolver,
       blink::scheduler::GetSequencedTaskRunnerForTesting(),
       AIMetrics::AISessionType::kLanguageModel,
-      /*complete_callback=*/base::DoNothing());
+      /*complete_callback=*/base::DoNothing(),
+      /*overflow_callback=*/base::DoNothing());
 
   mojo::Remote<blink::mojom::blink::ModelStreamingResponder> responder(
       std::move(pending_remote));
@@ -142,7 +148,8 @@ TEST(CreateModelExecutionResponder, AbortWithoutResponse) {
       script_state, controller->signal(), resolver,
       blink::scheduler::GetSequencedTaskRunnerForTesting(),
       AIMetrics::AISessionType::kLanguageModel,
-      /*complete_callback=*/base::DoNothing());
+      /*complete_callback=*/base::DoNothing(),
+      /*overflow_callback=*/base::DoNothing());
 
   controller->abort(scope.GetScriptState());
 
@@ -177,7 +184,8 @@ TEST(CreateModelExecutionResponder, AbortAfterResponse) {
       script_state, controller->signal(), resolver,
       blink::scheduler::GetSequencedTaskRunnerForTesting(),
       AIMetrics::AISessionType::kLanguageModel,
-      /*complete_callback=*/base::DoNothing());
+      /*complete_callback=*/base::DoNothing(),
+      /*overflow_callback=*/base::DoNothing());
 
   mojo::Remote<blink::mojom::blink::ModelStreamingResponder> responder(
       std::move(pending_remote));
@@ -185,7 +193,7 @@ TEST(CreateModelExecutionResponder, AbortAfterResponse) {
   responder.set_disconnect_handler(runloop.QuitClosure());
   responder->OnStreaming("result");
   responder->OnCompletion(mojom::blink::ModelExecutionContextInfo::New(
-      /*current_tokens=*/1u, /*did_overflow=*/false));
+      /*current_tokens=*/1u));
 
   controller->abort(scope.GetScriptState());
 
@@ -211,7 +219,8 @@ TEST(CreateModelExecutionStreamingResponder, Simple) {
       script_state, /*signal=*/nullptr,
       blink::scheduler::GetSequencedTaskRunnerForTesting(),
       AIMetrics::AISessionType::kLanguageModel,
-      /*complete_callback=*/base::DoNothing());
+      /*complete_callback=*/base::DoNothing(),
+      /*overflow_callback=*/base::DoNothing());
 
   mojo::Remote<blink::mojom::blink::ModelStreamingResponder> responder(
       std::move(pending_remote));
@@ -219,7 +228,7 @@ TEST(CreateModelExecutionStreamingResponder, Simple) {
   responder.set_disconnect_handler(runloop.QuitClosure());
   responder->OnStreaming("result");
   responder->OnCompletion(mojom::blink::ModelExecutionContextInfo::New(
-      /*current_tokens=*/1u, /*did_overflow=*/false));
+      /*current_tokens=*/1u));
 
   // Check that we can read the stream.
   auto* reader =
@@ -245,7 +254,8 @@ TEST(CreateModelExecutionStreamingResponder, ErrorPermissionDenied) {
       script_state, /*signal=*/nullptr,
       blink::scheduler::GetSequencedTaskRunnerForTesting(),
       AIMetrics::AISessionType::kLanguageModel,
-      /*complete_callback=*/base::DoNothing());
+      /*complete_callback=*/base::DoNothing(),
+      /*overflow_callback=*/base::DoNothing());
 
   mojo::Remote<blink::mojom::blink::ModelStreamingResponder> responder(
       std::move(pending_remote));
@@ -280,7 +290,8 @@ TEST(CreateModelExecutionStreamingResponder, AbortWithoutResponse) {
       script_state, controller->signal(),
       blink::scheduler::GetSequencedTaskRunnerForTesting(),
       AIMetrics::AISessionType::kLanguageModel,
-      /*complete_callback=*/base::DoNothing());
+      /*complete_callback=*/base::DoNothing(),
+      /*overflow_callback=*/base::DoNothing());
 
   controller->abort(scope.GetScriptState());
 
@@ -315,7 +326,8 @@ TEST(CreateModelExecutionStreamingResponder, AbortAfterResponse) {
       script_state, controller->signal(),
       blink::scheduler::GetSequencedTaskRunnerForTesting(),
       AIMetrics::AISessionType::kLanguageModel,
-      /*complete_callback=*/base::DoNothing());
+      /*complete_callback=*/base::DoNothing(),
+      /*overflow_callback=*/base::DoNothing());
 
   controller->abort(scope.GetScriptState());
 
@@ -324,8 +336,7 @@ TEST(CreateModelExecutionStreamingResponder, AbortAfterResponse) {
   base::RunLoop runloop;
   responder.set_disconnect_handler(runloop.QuitClosure());
   responder->OnStreaming("result");
-  responder->OnCompletion(
-      mojom::blink::ModelExecutionContextInfo::New(1u, /*did_overflow=*/false));
+  responder->OnCompletion(mojom::blink::ModelExecutionContextInfo::New(1u));
 
   // Check that the AbortError is passed to the stream.
   auto* reader =

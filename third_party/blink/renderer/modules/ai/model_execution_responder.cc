@@ -41,13 +41,15 @@ class Responder final : public GarbageCollected<Responder>,
             ScriptPromiseResolver<IDLString>* resolver,
             AIMetrics::AISessionType session_type,
             base::OnceCallback<void(mojom::blink::ModelExecutionContextInfoPtr)>
-                complete_callback)
+                complete_callback,
+            base::RepeatingClosure overflow_callback)
       : script_state_(script_state),
         resolver_(resolver),
         receiver_(this, ExecutionContext::From(script_state)),
         abort_signal_(signal),
         session_type_(session_type),
-        complete_callback_(std::move(complete_callback)) {
+        complete_callback_(std::move(complete_callback)),
+        overflow_callback_(overflow_callback) {
     SetContextLifecycleNotifier(ExecutionContext::From(script_state));
     if (abort_signal_) {
       CHECK(!abort_signal_->aborted());
@@ -107,6 +109,12 @@ class Responder final : public GarbageCollected<Responder>,
     Cleanup();
   }
 
+  void OnContextOverflow() override {
+    if (overflow_callback_) {
+      overflow_callback_.Run();
+    }
+  }
+
   // ContextLifecycleObserver implementation.
   void ContextDestroyed() override { Cleanup(); }
 
@@ -159,6 +167,7 @@ class Responder final : public GarbageCollected<Responder>,
   base::OnceCallback<void(
       mojom::blink::ModelExecutionContextInfoPtr context_info)>
       complete_callback_;
+  base::RepeatingClosure overflow_callback_;
 };
 
 // Implementation of blink::mojom::blink::ModelStreamingResponder that
@@ -173,13 +182,15 @@ class StreamingResponder final
       AbortSignal* signal,
       AIMetrics::AISessionType session_type,
       base::OnceCallback<void(mojom::blink::ModelExecutionContextInfoPtr)>
-          complete_callback)
+          complete_callback,
+      base::RepeatingClosure overflow_callback)
       : UnderlyingSourceBase(script_state),
         script_state_(script_state),
         receiver_(this, ExecutionContext::From(script_state)),
         abort_signal_(signal),
         session_type_(session_type),
-        complete_callback_(std::move(complete_callback)) {
+        complete_callback_(std::move(complete_callback)),
+        overflow_callback_(overflow_callback) {
     if (abort_signal_) {
       CHECK(!abort_signal_->aborted());
       abort_handle_ = abort_signal_->AddAlgorithm(WTF::BindOnce(
@@ -260,6 +271,12 @@ class StreamingResponder final
     Cleanup();
   }
 
+  void OnContextOverflow() override {
+    if (overflow_callback_) {
+      overflow_callback_.Run();
+    }
+  }
+
  private:
   void OnAborted() {
     // TODO(crbug.com/374879795): fix the abort handling for streaming
@@ -307,6 +324,7 @@ class StreamingResponder final
   // `kComplete`.
   base::OnceCallback<void(mojom::blink::ModelExecutionContextInfoPtr)>
       complete_callback_;
+  base::RepeatingClosure overflow_callback_;
 };
 
 }  // namespace
@@ -319,10 +337,11 @@ CreateModelExecutionResponder(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     AIMetrics::AISessionType session_type,
     base::OnceCallback<void(mojom::blink::ModelExecutionContextInfoPtr)>
-        complete_callback) {
+        complete_callback,
+    base::RepeatingClosure overflow_callback) {
   Responder* responder = MakeGarbageCollected<Responder>(
       script_state, signal, resolver, session_type,
-      std::move(complete_callback));
+      std::move(complete_callback), overflow_callback);
   return responder->BindNewPipeAndPassRemote(task_runner);
 }
 
@@ -334,10 +353,12 @@ CreateModelExecutionStreamingResponder(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     AIMetrics::AISessionType session_type,
     base::OnceCallback<void(mojom::blink::ModelExecutionContextInfoPtr)>
-        complete_callback) {
+        complete_callback,
+    base::RepeatingClosure overflow_callback) {
   StreamingResponder* streaming_responder =
       MakeGarbageCollected<StreamingResponder>(
-          script_state, signal, session_type, std::move(complete_callback));
+          script_state, signal, session_type, std::move(complete_callback),
+          overflow_callback);
   return std::make_tuple(
       streaming_responder->CreateReadableStream(),
       streaming_responder->BindNewPipeAndPassRemote(task_runner));

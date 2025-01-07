@@ -71,11 +71,26 @@ class AILanguageModel : public AIContextBoundObject,
     Context(const Context&);
     ~Context();
 
+    // The status of the result returned from `ReserveSpace()`.
+    enum class SpaceReservationResult {
+      // There remaining space is enough for the required tokens.
+      kSufficientSpace = 0,
+      // There remaining space is not enough for the required tokens, but after
+      // evicting some of the oldest `ContextItem`s, it has enough space now.
+      kSpaceMadeAvailable,
+      // Even after evicting all the `ContextItem`s, it's not possible to make
+      // enough space. In this case, no eviction will happen.
+      kInsufficientSpace
+    };
+
+    // Make sure the context has at least `number_of_tokens` available, if there
+    // is no enough space, the oldest `ContextItem`s will be evicted.
+    SpaceReservationResult ReserveSpace(uint32_t num_tokens);
+
     // Insert a new context item, this may evict some oldest items to ensure the
-    // total number of tokens in the context is below the limit.
-    // It returns whether the context overflows and some existing item gets
-    // evicted.
-    bool AddContextItem(ContextItem context_item);
+    // total number of tokens in the context is below the limit. It returns the
+    // result from the space reservation.
+    SpaceReservationResult AddContextItem(ContextItem context_item);
 
     // Combines the initial prompts and all current items into a request.
     // The type of request produced is either PromptApiRequest or StringValue,
@@ -142,6 +157,9 @@ class AILanguageModel : public AIContextBoundObject,
   mojo::PendingRemote<blink::mojom::AILanguageModel> TakePendingRemote();
 
  private:
+  void PromptGetInputSizeCompletion(mojo::RemoteSetElementId responder_id,
+                                    PromptApiRequest request,
+                                    uint32_t number_of_tokens);
   void ModelExecutionCallback(
       const PromptApiRequest& input,
       mojo::RemoteSetElementId responder_id,

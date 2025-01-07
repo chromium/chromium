@@ -666,7 +666,8 @@ TEST_P(AILanguageModelContextTest, TestContextOperation_Empty) {
 // Tests `GetContextString()` and `HasContextItem()` when some items are added
 // to the context.
 TEST_P(AILanguageModelContextTest, TestContextOperation_NonEmpty) {
-  context_.AddContextItem(SimpleContextItem("test", 1u));
+  EXPECT_EQ(context_.AddContextItem(SimpleContextItem("test", 1u)),
+            AILanguageModel::Context::SpaceReservationResult::kSufficientSpace);
   EXPECT_EQ(GetContextString(context_), GetInitialPromptsPrefix() + "test\n");
   EXPECT_TRUE(context_.HasContextItem());
 
@@ -678,14 +679,17 @@ TEST_P(AILanguageModelContextTest, TestContextOperation_NonEmpty) {
 
 // Tests `GetContextString()` and `HasContextItem()` when the items overflow.
 TEST_P(AILanguageModelContextTest, TestContextOperation_Overflow) {
-  context_.AddContextItem(SimpleContextItem("test", 1u));
+  EXPECT_EQ(context_.AddContextItem(SimpleContextItem("test", 1u)),
+            AILanguageModel::Context::SpaceReservationResult::kSufficientSpace);
   EXPECT_EQ(GetContextString(context_), GetInitialPromptsPrefix() + "test\n");
   EXPECT_TRUE(context_.HasContextItem());
 
   // Since the total number of tokens will exceed `kTestMaxContextToken`, the
   // old item will be evicted.
-  context_.AddContextItem(
-      SimpleContextItem("test long token", GetMaxContextToken()));
+  EXPECT_EQ(
+      context_.AddContextItem(
+          SimpleContextItem("test long token", GetMaxContextToken())),
+      AILanguageModel::Context::SpaceReservationResult::kSpaceMadeAvailable);
   EXPECT_EQ(GetContextString(context_),
             GetInitialPromptsPrefix() + "test long token\n");
   EXPECT_TRUE(context_.HasContextItem());
@@ -694,8 +698,10 @@ TEST_P(AILanguageModelContextTest, TestContextOperation_Overflow) {
 // Tests `GetContextString()` and `HasContextItem()` when the items overflow on
 // the first insertion.
 TEST_P(AILanguageModelContextTest, TestContextOperation_OverflowOnFirstItem) {
-  context_.AddContextItem(
-      SimpleContextItem("test very long token", GetMaxContextToken() + 1u));
+  EXPECT_EQ(
+      context_.AddContextItem(
+          SimpleContextItem("test very long token", GetMaxContextToken() + 1u)),
+      AILanguageModel::Context::SpaceReservationResult::kInsufficientSpace);
   EXPECT_EQ(GetContextString(context_), GetInitialPromptsPrefix());
   if (IsInitializedWithInitialPrompts()) {
     EXPECT_TRUE(context_.HasContextItem());

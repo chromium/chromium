@@ -76,7 +76,9 @@ ScriptPromise<IDLString> AIWriter::write(ScriptState* script_state,
 
   auto pending_remote = CreateModelExecutionResponder(
       script_state, signal, resolver, task_runner_,
-      AIMetrics::AISessionType::kWriter, base::DoNothing());
+      AIMetrics::AISessionType::kWriter,
+      /*complete_callback=*/base::DoNothing(),
+      /*overflow_callback=*/base::DoNothing());
   remote_->Write(input, context_string, std::move(pending_remote));
   return promise;
 }
@@ -111,9 +113,10 @@ ReadableStream* AIWriter::writeStreaming(ScriptState* script_state,
     return nullptr;
   }
   auto [readable_stream, pending_remote] =
-      CreateModelExecutionStreamingResponder(script_state, signal, task_runner_,
-                                             AIMetrics::AISessionType::kWriter,
-                                             base::DoNothing());
+      CreateModelExecutionStreamingResponder(
+          script_state, signal, task_runner_, AIMetrics::AISessionType::kWriter,
+          /*complete_callback=*/base::DoNothing(),
+          /*overflow_callback=*/base::DoNothing());
   remote_->Write(input, context_string, std::move(pending_remote));
   return readable_stream;
 }
