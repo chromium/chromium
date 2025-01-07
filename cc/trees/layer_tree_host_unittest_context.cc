@@ -1657,7 +1657,11 @@ class SoftwareTileResourceFreedIfLostWhileExported : public LayerTreeTest {
   viz::ResourceId exported_resource_id_ = viz::kInvalidResourceId;
 };
 
+// TODO(crbug.com/388228379): Test is failing on ChromeOS ASan LSan builds.
+#if !BUILDFLAG(IS_CHROMEOS) || !defined(LEAK_SANITIZER) || \
+    !defined(ADDRESS_SANITIZER)
 SINGLE_AND_MULTI_THREAD_TEST_F(SoftwareTileResourceFreedIfLostWhileExported);
+#endif
 
 class LayerTreeHostContextTestLoseAfterSendingBeginMainFrame
     : public LayerTreeHostContextTest {
