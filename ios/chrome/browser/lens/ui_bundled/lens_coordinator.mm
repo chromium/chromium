@@ -221,7 +221,13 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
   }
 }
 
-- (void)lensOverlayDismissed {
+- (void)lensOverlayDidDismissWithCause:
+    (LensOverlayDismissalCause)dismissalCause {
+  // NO-OP
+}
+
+- (void)lensOverlayWillDismissWithCause:
+    (LensOverlayDismissalCause)dismissalCause {
   // NO-OP
 }
 

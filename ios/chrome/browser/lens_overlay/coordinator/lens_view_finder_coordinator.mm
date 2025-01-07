@@ -107,8 +107,20 @@ const CGFloat kBottomCornerRadius = 108.0;
                                       completion:nil];
 }
 
-- (void)lensOverlayDismissed {
-  [self exitLensViewFinder];
+- (void)lensOverlayWillDismissWithCause:
+    (LensOverlayDismissalCause)dismissalCause {
+  if (dismissalCause == LensOverlayDismissalCauseSwipeDown) {
+    // If it was a swipe down of the bottom sheet, restart capturing.
+    [_lensViewController buildCaptureInfrastructure];
+  }
+}
+
+- (void)lensOverlayDidDismissWithCause:
+    (LensOverlayDismissalCause)dismissalCause {
+  if (dismissalCause != LensOverlayDismissalCauseSwipeDown) {
+    // All other dismissal sources cause the UI to shut down.
+    [self exitLensViewFinder];
+  }
 }
 
 #pragma mark - ChromeLensViewFinderDelegate

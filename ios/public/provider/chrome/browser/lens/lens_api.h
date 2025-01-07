@@ -87,6 +87,10 @@ enum class LensEntrypoint;
 // Sets the delegate for LVF.
 - (void)setLensViewFinderDelegate:(id<ChromeLensViewFinderDelegate>)delegate;
 
+// Builds the capture infrastructure for the live camera preview. This is called
+// on view load and can be called after the UI has been torn down to restore.
+- (void)buildCaptureInfrastructure;
+
 // Tears down the live camera preview and destroys the UI.
 - (void)tearDownCaptureInfrastructure;
 

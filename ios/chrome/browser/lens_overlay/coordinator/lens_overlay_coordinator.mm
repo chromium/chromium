@@ -416,10 +416,15 @@ const int kExpectedExitAnimationCount = 2;
 
   __weak id<LensCommands> weakCommands =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), LensCommands);
-  [_containerPresenter dismissContainerAnimated:animated
-                                     completion:^{
-                                       [weakCommands lensOverlayDismissed];
-                                     }];
+  [weakCommands lensOverlayWillDismissWithCause:
+                    LensOverlayDismissalCauseExternalNavigation];
+  [_containerPresenter
+      dismissContainerAnimated:animated
+                    completion:^{
+                      [weakCommands
+                          lensOverlayDidDismissWithCause:
+                              LensOverlayDismissalCauseExternalNavigation];
+                    }];
 }
 
 - (void)destroyLensUI:(BOOL)animated
@@ -459,9 +464,18 @@ const int kExpectedExitAnimationCount = 2;
   __weak __typeof(self) weakSelf = self;
   __weak id<LensCommands> weakCommands =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), LensCommands);
+
+  BOOL dismissedWithSwipeDown =
+      dismissalSource ==
+      lens::LensOverlayDismissalSource::kBottomSheetDismissed;
+  LensOverlayDismissalCause dismissalCause =
+      dismissedWithSwipeDown ? LensOverlayDismissalCauseSwipeDown
+                             : LensOverlayDismissalCauseDismissButton;
+
+  [weakCommands lensOverlayWillDismissWithCause:dismissalCause];
   void (^onAnimationFinished)() = ^{
     [weakSelf dismissLensOverlayWithCompletion:^{
-      [weakCommands lensOverlayDismissed];
+      [weakCommands lensOverlayDidDismissWithCause:dismissalCause];
       [weakSelf destroyViewControllersAndMediators];
     }];
   };
