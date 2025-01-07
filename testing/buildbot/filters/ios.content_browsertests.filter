@@ -826,3 +826,8 @@
 -All/CustomizableSelectDisabledDumpAccessibilityTreeTest.AccessibilitySelectOpen/blink
 -All/CustomizableSelectEnabledDumpAccessibilityTreeTest.AccessibilitySelectOpen/blink
 -All/CustomizableSelectEnabledDumpAccessibilityTreeTest.ENABLED_AccessibiltySelect/blink
+
+# TODO(crbug.com/384770166): These tests have been failing since
+# https://crrev.com/c/6101118.
+-PrerenderBrowserTest.ActivateOnWindowOpen_NewTab
+-PrerenderBrowserTest.ActivateOnWindowOpen_PopUp
