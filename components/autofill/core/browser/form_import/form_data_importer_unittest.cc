@@ -3689,28 +3689,6 @@ TEST_F(FormDataImporterTest, FormAssociator) {
   EXPECT_FALSE(associations->last_credit_card_form_submitted);
 }
 
-// Tests that ac=unrecognized fields have a prediction, but are not imported.
-TEST_F(FormDataImporterTest, SkipAutocompleteUnrecognizedFields) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kAutofillImportFromAutocompleteUnrecognized);
-  // Create a `form_structure` where the email field has ac=unrecognized.
-  std::unique_ptr<FormStructure> form_structure =
-      ConstructDefaultProfileFormStructure();
-  AutofillField* email_field = form_structure->field(2);
-  ASSERT_EQ(email_field->Type().GetStorableType(), EMAIL_ADDRESS);
-  email_field->SetHtmlType(HtmlFieldType::kUnrecognized, HtmlFieldMode::kNone);
-
-  // Expect that ac=unrecognized doesn't change the prediction.
-  EXPECT_EQ(email_field->Type().GetStorableType(), EMAIL_ADDRESS);
-
-  // Expect that the email address is not imported.
-  AutofillProfile expected_profile = ConstructDefaultProfile();
-  expected_profile.ClearFields({EMAIL_ADDRESS});
-  ExtractAddressProfilesAndVerifyExpectation(*form_structure,
-                                             {expected_profile});
-}
-
 #if !BUILDFLAG(IS_IOS)
 TEST_F(FormDataImporterTest,
        ProcessIbanImportCandidate_ShouldOfferLocalSave_NewIban) {
@@ -4053,25 +4031,11 @@ TEST_F(FormDataImporterTest,
   field.SetHtmlType(HtmlFieldType::kUnrecognized, HtmlFieldMode::kNone);
   field.SetTypeTo(AutofillType(NAME_FIRST));
   field.set_value(u"First");
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndDisableFeature(
-        features::kAutofillImportFromAutocompleteUnrecognized);
-    base::flat_map<FieldType, std::u16string> observed_field_types =
-        test_api(form_data_importer())
-            .GetObservedFieldValues(
-                std::to_array<const AutofillField*>({&field}));
-    EXPECT_TRUE(observed_field_types.empty());
-  }
-  {
-    base::test::ScopedFeatureList scoped_feature_list{
-        features::kAutofillImportFromAutocompleteUnrecognized};
-    base::flat_map<FieldType, std::u16string> observed_field_types =
-        test_api(form_data_importer())
-            .GetObservedFieldValues(
-                std::to_array<const AutofillField*>({&field}));
-    EXPECT_EQ(observed_field_types.size(), 1u);
-  }
+  base::flat_map<FieldType, std::u16string> observed_field_types =
+      test_api(form_data_importer())
+          .GetObservedFieldValues(
+              std::to_array<const AutofillField*>({&field}));
+  EXPECT_EQ(observed_field_types.size(), 1u);
 }
 
 // Test case for credit card extraction.

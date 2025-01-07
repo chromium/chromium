@@ -265,13 +265,6 @@ BASE_FEATURE(kAutofillGivePrecedenceToEmailOverUsername,
              "AutofillGivePrecedenceToEmailOverUsername",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Makes Autofill try to import data from fields annotated with an unrecognized
-// autocomplete HTML attribute. The default behavior doesn't allow that.
-// TODO(crbug.com/347698797): Cleanup when launched.
-BASE_FEATURE(kAutofillImportFromAutocompleteUnrecognized,
-             "AutofillImportFromAutocompleteUnrecognized",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, the autofill suggestion labels are more descriptive and
 // relevant.
 // TODO(crbug.com/380273791): Cleanup when launched.

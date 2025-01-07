@@ -1454,8 +1454,7 @@ TEST_P(AddressProfileSaveManagerTest, Migration_Never) {
 // Runs the suite as if:
 // - the phone number was (not) removed (relevant for UKM metrics).
 // - the imported profile contains information from an input with an
-//   unrecognized autocomplete attribute. Such fields are considered for import
-//   when `kAutofillImportFromAutocompleteUnrecognized` is active.
+//   unrecognized autocomplete attribute. This is needed to test some metrics.
 INSTANTIATE_TEST_SUITE_P(,
                          AddressProfileSaveManagerTest,
                          testing::Combine(testing::Bool(), testing::Bool()));

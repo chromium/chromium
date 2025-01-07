@@ -502,12 +502,6 @@ FormDataImporter::GetAddressObservedFieldValues(
          plus_address_delegate->MatchesPlusAddressFormat(value))) {
       continue;
     }
-    // Don't import from ac=unrecognized fields.
-    if (field->ShouldSuppressSuggestionsAndFillingByDefault() &&
-        !base::FeatureList::IsEnabled(
-            features::kAutofillImportFromAutocompleteUnrecognized)) {
-      continue;
-    }
 
     FieldType field_type = field->Type().GetStorableType();
     // Only address types are relevant in this function, other types are treated
