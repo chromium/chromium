@@ -2,35 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {EventGenerator} from '../../common/event_generator.js';
-import {KeyCode} from '../../common/key_code.js';
+import {EventGenerator} from '/common/event_generator.js';
+import {KeyCode} from '/common/key_code.js';
+
 import {ActionResponse} from '../switch_access_constants.js';
 
 import {BasicNode} from './basic_node.js';
-import {SAChildNode, SARootNode} from './switch_access_node.js';
+import {SARootNode} from './switch_access_node.js';
 
-const AutomationNode = chrome.automation.AutomationNode;
-const MenuAction = chrome.accessibilityPrivate.SwitchAccessMenuAction;
+type AutomationNode = chrome.automation.AutomationNode;
+import MenuAction = chrome.accessibilityPrivate.SwitchAccessMenuAction;
+import RoleType = chrome.automation.RoleType;
 
 /** This class handles interactions with sliders. */
 export class SliderNode extends BasicNode {
-  /**
-   * @param {!AutomationNode} baseNode
-   * @param {?SARootNode} parent
-   */
-  constructor(baseNode, parent) {
+  private isCustomSlider_ = true;
+
+  constructor(baseNode: AutomationNode, parent: SARootNode|null) {
     super(baseNode, parent);
-    this.isCustomSlider_ = true;
   }
 
-  /** @override */
-  onFocus() {
+  override onFocus(): void {
     super.onFocus();
     this.automationNode.focus();
   }
 
-  /** @override */
-  performAction(action) {
+  override performAction(action: MenuAction): ActionResponse {
     // Currently, custom sliders have no way to support increment/decrement via
     // the automation API. We handle this case by simulating left/right arrow
     // presses.
@@ -49,6 +46,6 @@ export class SliderNode extends BasicNode {
 }
 
 BasicNode.creators.push({
-  predicate: baseNode => baseNode.role === chrome.automation.RoleType.SLIDER,
+  predicate: baseNode => baseNode.role === RoleType.SLIDER,
   creator: (node, parent) => new SliderNode(node, parent),
 });
