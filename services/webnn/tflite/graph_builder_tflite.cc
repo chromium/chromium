@@ -23,6 +23,8 @@
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
+#include "services/webnn/public/cpp/supported_data_types.h"
+#include "services/webnn/public/cpp/supported_tensors.h"
 #include "services/webnn/public/cpp/webnn_errors.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
@@ -430,21 +432,45 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*dequantize_linear_input=*/kInt4AndInts8,
        // TODO(crbug.com/376722724): Support float16 scale.
        /*dequantize_linear_scale=*/DataTypeConstraint::kFloat32,
-       /*add_input=*/kFloat16To32AndInt32To64,
-       /*sub_input=*/kFloat16To32AndInt32To64,
-       /*mul_input=*/kFloat16To32AndInt32To64AndUint32,
-       /*div_input=*/kFloat16To32AndInt32,
-       /*max_input=*/kFloat16To32AndInt32To64,
-       /*min_input=*/kFloat16To32AndInt32To64,
-       /*pow_input=*/kFloat16To32AndInt32,
-       /*equal_input=*/kFloat16To32AndInt32To64,
-       /*greater_input=*/kFloat16To32AndInt32To64,
-       /*greater_or_equal_input=*/kFloat16To32AndInt32To64,
-       /*lesser_input=*/kFloat16To32AndInt32To64,
-       /*lesser_or_equal_input=*/kFloat16To32AndInt32To64,
-       /*logical_and_input=*/DataTypeConstraint::kUint8,
-       /*logical_or_input=*/DataTypeConstraint::kUint8,
-       /*logical_xor_input=*/DataTypeConstraint::kUint8,
+       // Limited to 6D when broadcasting is required:
+       // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/add.cc
+       /*add_input=*/{kFloat16To32AndInt32To64, SupportedRanks::UpTo(6)},
+       // Limited to 6D when broadcasting is required:
+       // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/internal/reference/sub.h
+       /*sub_input=*/{kFloat16To32AndInt32To64, SupportedRanks::UpTo(6)},
+       // Limited to 6D when broadcasting is required:
+       // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/mul.cc
+       /*mul_input=*/
+       {kFloat16To32AndInt32To64AndUint32, SupportedRanks::UpTo(6)},
+       // Limited to 5D when broadcasting is required:
+       // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/internal/reference/div.h
+       /*div_input=*/{kFloat16To32AndInt32, SupportedRanks::UpTo(5)},
+       // MAX and MIN are limited to 5D when broadcasting is required:
+       // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/internal/reference/maximum_minimum.h
+       /*max_input=*/{kFloat16To32AndInt32To64, SupportedRanks::UpTo(5)},
+       /*min_input=*/{kFloat16To32AndInt32To64, SupportedRanks::UpTo(5)},
+       // Limited to 4D when broadcasting is required:
+       // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/pow.cc
+       /*pow_input=*/{kFloat16To32AndInt32, SupportedRanks::UpTo(4)},
+       // Comparisons are limited to 4D when broadcasting is required:
+       // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/comparisons.cc
+       /*equal_input=*/{kFloat16To32AndInt32To64, SupportedRanks::UpTo(4)},
+       /*greater_input=*/{kFloat16To32AndInt32To64, SupportedRanks::UpTo(4)},
+       /*greater_or_equal_input=*/
+       {kFloat16To32AndInt32To64, SupportedRanks::UpTo(4)},
+       /*lesser_input=*/{kFloat16To32AndInt32To64, SupportedRanks::UpTo(4)},
+       /*lesser_or_equal_input=*/
+       {kFloat16To32AndInt32To64, SupportedRanks::UpTo(4)},
+       // Logical binary operators are limited to 4D when broadcasting is
+       // required:
+       // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/logical.cc
+       /*logical_and_input=*/
+       {DataTypeConstraint::kUint8, SupportedRanks::UpTo(4)},
+       /*logical_or_input=*/
+       {DataTypeConstraint::kUint8, SupportedRanks::UpTo(4)},
+       // Polyfilled using a cast to BOOL and NOT_EQUAL.
+       /*logical_xor_input=*/
+       {DataTypeConstraint::kUint8, SupportedRanks::UpTo(4)},
        /*logical_not_input=*/DataTypeConstraint::kUint8,
        /*logical_output=*/DataTypeConstraint::kUint8,
        /*abs_input=*/kFloat16To32AndInt32,
@@ -486,7 +512,8 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*linear_input=*/kFloat16To32AndInt32To64,
        /*lstm_input=*/DataTypeConstraint::kFloat16To32,
        /*lstm_cell_input=*/DataTypeConstraint::kFloat16To32,
-       /*matmul_input=*/kFloat16To32AndInt8,
+       // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/internal/reference/batch_matmul.h
+       /*matmul_input=*/{kFloat16To32AndInt8, SupportedRanks::UpTo(5)},
        /*pad_input=*/kFloat16To32AndInt32To64AndUint8,
        /*average_pool2d_input=*/DataTypeConstraint::kFloat16To32,
        /*l2_pool2d_input=*/{},
@@ -1984,78 +2011,81 @@ auto GraphBuilderTflite::SerializeElementWiseBinary(
   ::tflite::BuiltinOperator code;
   switch (op.kind) {
     case mojom::ElementWiseBinary::Kind::kAdd:
-      CHECK(
-          context_properties_.data_type_limits.add_input.Has(input_data_type));
+      CHECK(context_properties_.data_type_limits.add_input.data_types.Has(
+          input_data_type));
       code = ::tflite::BuiltinOperator_ADD;
       break;
     case mojom::ElementWiseBinary::Kind::kSub:
-      CHECK(
-          context_properties_.data_type_limits.sub_input.Has(input_data_type));
+      CHECK(context_properties_.data_type_limits.sub_input.data_types.Has(
+          input_data_type));
       code = ::tflite::BuiltinOperator_SUB;
       break;
     case mojom::ElementWiseBinary::Kind::kMul:
-      CHECK(
-          context_properties_.data_type_limits.mul_input.Has(input_data_type));
+      CHECK(context_properties_.data_type_limits.mul_input.data_types.Has(
+          input_data_type));
       code = ::tflite::BuiltinOperator_MUL;
       break;
     case mojom::ElementWiseBinary::Kind::kDiv:
-      CHECK(
-          context_properties_.data_type_limits.div_input.Has(input_data_type));
+      CHECK(context_properties_.data_type_limits.div_input.data_types.Has(
+          input_data_type));
       code = ::tflite::BuiltinOperator_DIV;
       break;
     case mojom::ElementWiseBinary::Kind::kMax:
-      CHECK(
-          context_properties_.data_type_limits.max_input.Has(input_data_type));
+      CHECK(context_properties_.data_type_limits.max_input.data_types.Has(
+          input_data_type));
       code = ::tflite::BuiltinOperator_MAXIMUM;
       break;
     case mojom::ElementWiseBinary::Kind::kMin:
-      CHECK(
-          context_properties_.data_type_limits.min_input.Has(input_data_type));
+      CHECK(context_properties_.data_type_limits.min_input.data_types.Has(
+          input_data_type));
       code = ::tflite::BuiltinOperator_MINIMUM;
       break;
     case mojom::ElementWiseBinary::Kind::kPow:
-      CHECK(
-          context_properties_.data_type_limits.pow_input.Has(input_data_type));
+      CHECK(context_properties_.data_type_limits.pow_input.data_types.Has(
+          input_data_type));
       code = ::tflite::BuiltinOperator_POW;
       break;
     case mojom::ElementWiseBinary::Kind::kEqual:
-      CHECK(context_properties_.data_type_limits.equal_input.Has(
+      CHECK(context_properties_.data_type_limits.equal_input.data_types.Has(
           input_data_type));
       code = ::tflite::BuiltinOperator_EQUAL;
       break;
     case mojom::ElementWiseBinary::Kind::kGreater:
-      CHECK(context_properties_.data_type_limits.greater_input.Has(
+      CHECK(context_properties_.data_type_limits.greater_input.data_types.Has(
           input_data_type));
       code = ::tflite::BuiltinOperator_GREATER;
       break;
     case mojom::ElementWiseBinary::Kind::kGreaterOrEqual:
-      CHECK(context_properties_.data_type_limits.greater_or_equal_input.Has(
-          input_data_type));
+      CHECK(context_properties_.data_type_limits.greater_or_equal_input
+                .data_types.Has(input_data_type));
       code = ::tflite::BuiltinOperator_GREATER_EQUAL;
       break;
     case mojom::ElementWiseBinary::Kind::kLesser:
-      CHECK(context_properties_.data_type_limits.lesser_input.Has(
+      CHECK(context_properties_.data_type_limits.lesser_input.data_types.Has(
           input_data_type));
       code = ::tflite::BuiltinOperator_LESS;
       break;
     case mojom::ElementWiseBinary::Kind::kLesserOrEqual:
-      CHECK(context_properties_.data_type_limits.lesser_or_equal_input.Has(
-          input_data_type));
+      CHECK(context_properties_.data_type_limits.lesser_or_equal_input
+                .data_types.Has(input_data_type));
       code = ::tflite::BuiltinOperator_LESS_EQUAL;
       break;
     case mojom::ElementWiseBinary::Kind::kLogicalAnd:
-      CHECK(context_properties_.data_type_limits.logical_and_input.Has(
-          input_data_type));
+      CHECK(
+          context_properties_.data_type_limits.logical_and_input.data_types.Has(
+              input_data_type));
       code = ::tflite::BuiltinOperator_LOGICAL_AND;
       break;
     case mojom::ElementWiseBinary::Kind::kLogicalOr:
-      CHECK(context_properties_.data_type_limits.logical_or_input.Has(
-          input_data_type));
+      CHECK(
+          context_properties_.data_type_limits.logical_or_input.data_types.Has(
+              input_data_type));
       code = ::tflite::BuiltinOperator_LOGICAL_OR;
       break;
     case mojom::ElementWiseBinary::Kind::kLogicalXor:
-      CHECK(context_properties_.data_type_limits.logical_xor_input.Has(
-          input_data_type));
+      CHECK(
+          context_properties_.data_type_limits.logical_xor_input.data_types.Has(
+              input_data_type));
       // TFLite does not have a logical_xor operator. Since the inputs are
       // converted to bools below, we can use the not_equal operator to get the
       // same results as logical_xor.
@@ -4072,7 +4102,7 @@ int32_t GraphBuilderTflite::ReshapeHiddenAndCellState(
 
 auto GraphBuilderTflite::SerializeMatmul(const mojom::Matmul& matmul)
     -> base::expected<OperatorOffset, std::string> {
-  CHECK(context_properties_.data_type_limits.matmul_input.Has(
+  CHECK(context_properties_.data_type_limits.matmul_input.data_types.Has(
       GetOperand(matmul.a_operand_id).descriptor.data_type()));
   ASSIGN_OR_RETURN(const TensorInfo& a_tensor_info,
                    SerializeInputTensorInfo(matmul.a_operand_id));

@@ -7,7 +7,9 @@
 #include <string>
 #include <vector>
 
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
@@ -57,6 +59,31 @@ std::string NotSupportedArgumentTypeError(std::string_view argument_name,
   return base::StrCat({"Unsupported data type ", DataTypeToString(type),
                        " for argument ", argument_name,
                        SupportedDataTypesString(supported_types)});
+}
+
+std::string NotSupportedArgumentError(std::string_view argument_name,
+                                      const OperandDescriptor& descriptor,
+                                      SupportedTensors supported_tensors) {
+  if (!supported_tensors.data_types.Has(descriptor.data_type())) {
+    return NotSupportedArgumentTypeError(argument_name, descriptor.data_type(),
+                                         supported_tensors.data_types);
+  }
+
+  if (descriptor.Rank() < supported_tensors.ranks.min) {
+    return base::StrCat(
+        {"Unsupported rank ", base::NumberToString(descriptor.Rank()),
+         " for argument ", argument_name, " (must be at least ",
+         base::NumberToString(supported_tensors.ranks.min), ")."});
+  }
+
+  if (descriptor.Rank() > supported_tensors.ranks.max) {
+    return base::StrCat(
+        {"Unsupported rank ", base::NumberToString(descriptor.Rank()),
+         " for argument ", argument_name, " (must be at most ",
+         base::NumberToString(supported_tensors.ranks.max), ")."});
+  }
+
+  NOTREACHED();
 }
 
 std::string NotSupportedConstantTypeError(OperandDataType type,

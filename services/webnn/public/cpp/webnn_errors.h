@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
+#include "services/webnn/public/cpp/supported_tensors.h"
 
 namespace webnn {
 
@@ -124,6 +125,10 @@ std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
     NotSupportedArgumentTypeError(std::string_view argument_name,
                                   OperandDataType type,
                                   SupportedDataTypes supported_types);
+std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
+    NotSupportedArgumentError(std::string_view argument_name,
+                              const OperandDescriptor& descriptor,
+                              SupportedTensors supported_tensors);
 std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
     NotSupportedConstantTypeError(OperandDataType type,
                                   SupportedDataTypes supported_types);

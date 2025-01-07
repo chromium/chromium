@@ -907,24 +907,24 @@ MLOperand* BuildArgMinMax(MLGraphBuilder* builder,
 MLOperand* BuildElementWiseBinary(
     MLGraphBuilder* builder,
     blink_mojom::ElementWiseBinary::Kind kind,
-    const webnn::SupportedDataTypes& data_type_constraint,
+    const webnn::SupportedTensors& tensor_constraint,
     MLOperand* a,
     MLOperand* b,
     const MLOperatorOptions* options,
     ExceptionState& exception_state) {
   const std::string label = options->label().Utf8();
-  if (!data_type_constraint.Has(a->DataType())) {
+  if (!tensor_constraint.Supports(a->Descriptor())) {
     exception_state.ThrowTypeError(
         String::FromUTF8(webnn::GetErrorLabelPrefix(label)) +
-        String(NotSupportedArgumentTypeError("a", a->DataType(),
-                                             data_type_constraint)));
+        String(NotSupportedArgumentError("a", a->Descriptor(),
+                                         tensor_constraint)));
     return nullptr;
   }
-  if (!data_type_constraint.Has(b->DataType())) {
+  if (!tensor_constraint.Supports(b->Descriptor())) {
     exception_state.ThrowTypeError(
         String::FromUTF8(webnn::GetErrorLabelPrefix(label)) +
-        String(NotSupportedArgumentTypeError("b", b->DataType(),
-                                             data_type_constraint)));
+        String(NotSupportedArgumentError("b", b->Descriptor(),
+                                         tensor_constraint)));
     return nullptr;
   }
 

@@ -7,6 +7,7 @@
 
 #include "mojo/public/cpp/bindings/default_construct_tag.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
+#include "services/webnn/public/cpp/supported_tensors.h"
 
 namespace webnn {
 
@@ -26,21 +27,21 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedDataTypes cumulative_sum_input,
                  SupportedDataTypes dequantize_linear_input,
                  SupportedDataTypes dequantize_linear_scale,
-                 SupportedDataTypes add_input,
-                 SupportedDataTypes sub_input,
-                 SupportedDataTypes mul_input,
-                 SupportedDataTypes div_input,
-                 SupportedDataTypes max_input,
-                 SupportedDataTypes min_input,
-                 SupportedDataTypes pow_input,
-                 SupportedDataTypes equal_input,
-                 SupportedDataTypes greater_input,
-                 SupportedDataTypes greater_or_equal_input,
-                 SupportedDataTypes lesser_input,
-                 SupportedDataTypes lesser_or_equal_input,
-                 SupportedDataTypes logical_and_input,
-                 SupportedDataTypes logical_or_input,
-                 SupportedDataTypes logical_xor_input,
+                 SupportedTensors add_input,
+                 SupportedTensors sub_input,
+                 SupportedTensors mul_input,
+                 SupportedTensors div_input,
+                 SupportedTensors max_input,
+                 SupportedTensors min_input,
+                 SupportedTensors pow_input,
+                 SupportedTensors equal_input,
+                 SupportedTensors greater_input,
+                 SupportedTensors greater_or_equal_input,
+                 SupportedTensors lesser_input,
+                 SupportedTensors lesser_or_equal_input,
+                 SupportedTensors logical_and_input,
+                 SupportedTensors logical_or_input,
+                 SupportedTensors logical_xor_input,
                  SupportedDataTypes logical_not_input,
                  SupportedDataTypes logical_output,
                  SupportedDataTypes abs_input,
@@ -77,7 +78,7 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedDataTypes linear_input,
                  SupportedDataTypes lstm_input,
                  SupportedDataTypes lstm_cell_input,
-                 SupportedDataTypes matmul_input,
+                 SupportedTensors matmul_input,
                  SupportedDataTypes pad_input,
                  SupportedDataTypes average_pool2d_input,
                  SupportedDataTypes l2_pool2d_input,
@@ -139,21 +140,21 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedDataTypes cumulative_sum_input;
   SupportedDataTypes dequantize_linear_input;
   SupportedDataTypes dequantize_linear_scale;
-  SupportedDataTypes add_input;
-  SupportedDataTypes sub_input;
-  SupportedDataTypes mul_input;
-  SupportedDataTypes div_input;
-  SupportedDataTypes max_input;
-  SupportedDataTypes min_input;
-  SupportedDataTypes pow_input;
-  SupportedDataTypes equal_input;
-  SupportedDataTypes greater_input;
-  SupportedDataTypes greater_or_equal_input;
-  SupportedDataTypes lesser_input;
-  SupportedDataTypes lesser_or_equal_input;
-  SupportedDataTypes logical_and_input;
-  SupportedDataTypes logical_or_input;
-  SupportedDataTypes logical_xor_input;
+  SupportedTensors add_input;
+  SupportedTensors sub_input;
+  SupportedTensors mul_input;
+  SupportedTensors div_input;
+  SupportedTensors max_input;
+  SupportedTensors min_input;
+  SupportedTensors pow_input;
+  SupportedTensors equal_input;
+  SupportedTensors greater_input;
+  SupportedTensors greater_or_equal_input;
+  SupportedTensors lesser_input;
+  SupportedTensors lesser_or_equal_input;
+  SupportedTensors logical_and_input;
+  SupportedTensors logical_or_input;
+  SupportedTensors logical_xor_input;
   SupportedDataTypes logical_not_input;
   SupportedDataTypes logical_output;
   SupportedDataTypes abs_input;
@@ -190,7 +191,7 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedDataTypes linear_input;
   SupportedDataTypes lstm_input;
   SupportedDataTypes lstm_cell_input;
-  SupportedDataTypes matmul_input;
+  SupportedTensors matmul_input;
   SupportedDataTypes pad_input;
   SupportedDataTypes average_pool2d_input;
   SupportedDataTypes l2_pool2d_input;

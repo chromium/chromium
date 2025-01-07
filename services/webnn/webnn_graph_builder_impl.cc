@@ -565,7 +565,7 @@ class OperationValidationContext {
   bool ValidateDequantizeLinear(
       const mojom::DequantizeLinear& dequantize_linear,
       size_t operation_id);
-  bool ValidateElementWiseBinaryDataTypes(
+  bool ValidateElementWiseBinaryOperands(
       const mojom::Operand* lhs,
       const mojom::Operand* rhs,
       const mojom::Operand* output,
@@ -1025,7 +1025,7 @@ bool OperationValidationContext::ValidateDequantizeLinear(
   return true;
 }
 
-bool OperationValidationContext::ValidateElementWiseBinaryDataTypes(
+bool OperationValidationContext::ValidateElementWiseBinaryOperands(
     const mojom::Operand* lhs,
     const mojom::Operand* rhs,
     const mojom::Operand* output,
@@ -1049,50 +1049,50 @@ bool OperationValidationContext::ValidateElementWiseBinaryDataTypes(
 
   switch (operation.kind) {
     case mojom::ElementWiseBinary::Kind::kAdd:
-      return context_properties_->data_type_limits.add_input.Has(
-          lhs->descriptor.data_type());
+      return context_properties_->data_type_limits.add_input.SupportsAll(
+          {lhs->descriptor, rhs->descriptor});
     case mojom::ElementWiseBinary::Kind::kSub:
-      return context_properties_->data_type_limits.sub_input.Has(
-          lhs->descriptor.data_type());
+      return context_properties_->data_type_limits.sub_input.SupportsAll(
+          {lhs->descriptor, rhs->descriptor});
     case mojom::ElementWiseBinary::Kind::kMul:
-      return context_properties_->data_type_limits.mul_input.Has(
-          lhs->descriptor.data_type());
+      return context_properties_->data_type_limits.mul_input.SupportsAll(
+          {lhs->descriptor, rhs->descriptor});
     case mojom::ElementWiseBinary::Kind::kDiv:
-      return context_properties_->data_type_limits.div_input.Has(
-          lhs->descriptor.data_type());
+      return context_properties_->data_type_limits.div_input.SupportsAll(
+          {lhs->descriptor, rhs->descriptor});
     case mojom::ElementWiseBinary::Kind::kMax:
-      return context_properties_->data_type_limits.max_input.Has(
-          lhs->descriptor.data_type());
+      return context_properties_->data_type_limits.max_input.SupportsAll(
+          {lhs->descriptor, rhs->descriptor});
     case mojom::ElementWiseBinary::Kind::kMin:
-      return context_properties_->data_type_limits.min_input.Has(
-          lhs->descriptor.data_type());
+      return context_properties_->data_type_limits.min_input.SupportsAll(
+          {lhs->descriptor, rhs->descriptor});
     case mojom::ElementWiseBinary::Kind::kPow:
-      return context_properties_->data_type_limits.pow_input.Has(
-          lhs->descriptor.data_type());
+      return context_properties_->data_type_limits.pow_input.SupportsAll(
+          {lhs->descriptor, rhs->descriptor});
     case mojom::ElementWiseBinary::Kind::kEqual:
-      return context_properties_->data_type_limits.equal_input.Has(
-          lhs->descriptor.data_type());
+      return context_properties_->data_type_limits.equal_input.SupportsAll(
+          {lhs->descriptor, rhs->descriptor});
     case mojom::ElementWiseBinary::Kind::kGreater:
-      return context_properties_->data_type_limits.greater_input.Has(
-          lhs->descriptor.data_type());
+      return context_properties_->data_type_limits.greater_input.SupportsAll(
+          {lhs->descriptor, rhs->descriptor});
     case mojom::ElementWiseBinary::Kind::kGreaterOrEqual:
-      return context_properties_->data_type_limits.greater_or_equal_input.Has(
-          lhs->descriptor.data_type());
+      return context_properties_->data_type_limits.greater_or_equal_input
+          .SupportsAll({lhs->descriptor, rhs->descriptor});
     case mojom::ElementWiseBinary::Kind::kLesser:
-      return context_properties_->data_type_limits.lesser_input.Has(
-          lhs->descriptor.data_type());
+      return context_properties_->data_type_limits.lesser_input.SupportsAll(
+          {lhs->descriptor, rhs->descriptor});
     case mojom::ElementWiseBinary::Kind::kLesserOrEqual:
-      return context_properties_->data_type_limits.lesser_or_equal_input.Has(
-          lhs->descriptor.data_type());
+      return context_properties_->data_type_limits.lesser_or_equal_input
+          .SupportsAll({lhs->descriptor, rhs->descriptor});
     case mojom::ElementWiseBinary::Kind::kLogicalAnd:
-      return context_properties_->data_type_limits.logical_and_input.Has(
-          lhs->descriptor.data_type());
+      return context_properties_->data_type_limits.logical_and_input
+          .SupportsAll({lhs->descriptor, rhs->descriptor});
     case mojom::ElementWiseBinary::Kind::kLogicalOr:
-      return context_properties_->data_type_limits.logical_or_input.Has(
-          lhs->descriptor.data_type());
+      return context_properties_->data_type_limits.logical_or_input.SupportsAll(
+          {lhs->descriptor, rhs->descriptor});
     case mojom::ElementWiseBinary::Kind::kLogicalXor:
-      return context_properties_->data_type_limits.logical_xor_input.Has(
-          lhs->descriptor.data_type());
+      return context_properties_->data_type_limits.logical_xor_input
+          .SupportsAll({lhs->descriptor, rhs->descriptor});
   }
 }
 
@@ -1118,7 +1118,7 @@ bool OperationValidationContext::ValidateElementWiseBinary(
     return false;
   }
 
-  if (!ValidateElementWiseBinaryDataTypes(a, b, output, operation)) {
+  if (!ValidateElementWiseBinaryOperands(a, b, output, operation)) {
     return false;
   }
 

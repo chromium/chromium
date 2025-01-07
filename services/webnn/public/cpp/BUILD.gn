@@ -15,6 +15,7 @@ component("cpp") {
     "operand_descriptor.h",
     "range.h",
     "supported_data_types.h",
+    "supported_tensors.h",
     "webnn_errors.cc",
     "webnn_errors.h",
   ]

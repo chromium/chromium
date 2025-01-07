@@ -2119,7 +2119,8 @@ void CreateOperatorNodeForBinary(
   std::array<const NodeOutput*, 2> inputs = {input_a, input_b};
   switch (binary->kind) {
     case mojom::ElementWiseBinary::Kind::kAdd: {
-      CHECK(context_properties.data_type_limits.add_input.Has(input_data_type));
+      CHECK(context_properties.data_type_limits.add_input.data_types.Has(
+          input_data_type));
       std::optional<const Operation*> fusible_activation =
           GetFusibleActivationFromOperation(
               operation_to_fusible_standalone_activation_map, operation);
@@ -2155,28 +2156,32 @@ void CreateOperatorNodeForBinary(
       break;
     }
     case mojom::ElementWiseBinary::Kind::kDiv: {
-      CHECK(context_properties.data_type_limits.div_input.Has(input_data_type));
+      CHECK(context_properties.data_type_limits.div_input.data_types.Has(
+          input_data_type));
       binary_node = CreateBinaryOperator<DML_ELEMENT_WISE_DIVIDE_OPERATOR_DESC>(
           input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
           graph_builder, DML_OPERATOR_ELEMENT_WISE_DIVIDE, inputs, label);
       break;
     }
     case mojom::ElementWiseBinary::Kind::kMax: {
-      CHECK(context_properties.data_type_limits.max_input.Has(input_data_type));
+      CHECK(context_properties.data_type_limits.max_input.data_types.Has(
+          input_data_type));
       binary_node = CreateBinaryOperator<DML_ELEMENT_WISE_MAX_OPERATOR_DESC>(
           input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
           graph_builder, DML_OPERATOR_ELEMENT_WISE_MAX, inputs, label);
       break;
     }
     case mojom::ElementWiseBinary::Kind::kMin: {
-      CHECK(context_properties.data_type_limits.min_input.Has(input_data_type));
+      CHECK(context_properties.data_type_limits.min_input.data_types.Has(
+          input_data_type));
       binary_node = CreateBinaryOperator<DML_ELEMENT_WISE_MIN_OPERATOR_DESC>(
           input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
           graph_builder, DML_OPERATOR_ELEMENT_WISE_MIN, inputs, label);
       break;
     }
     case mojom::ElementWiseBinary::Kind::kMul: {
-      CHECK(context_properties.data_type_limits.mul_input.Has(input_data_type));
+      CHECK(context_properties.data_type_limits.mul_input.data_types.Has(
+          input_data_type));
       binary_node =
           CreateBinaryOperator<DML_ELEMENT_WISE_MULTIPLY_OPERATOR_DESC>(
               input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
@@ -2184,7 +2189,8 @@ void CreateOperatorNodeForBinary(
       break;
     }
     case mojom::ElementWiseBinary::Kind::kSub: {
-      CHECK(context_properties.data_type_limits.sub_input.Has(input_data_type));
+      CHECK(context_properties.data_type_limits.sub_input.data_types.Has(
+          input_data_type));
       binary_node =
           CreateBinaryOperator<DML_ELEMENT_WISE_SUBTRACT_OPERATOR_DESC>(
               input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
@@ -2192,7 +2198,8 @@ void CreateOperatorNodeForBinary(
       break;
     }
     case mojom::ElementWiseBinary::Kind::kPow: {
-      CHECK(context_properties.data_type_limits.pow_input.Has(input_data_type));
+      CHECK(context_properties.data_type_limits.pow_input.data_types.Has(
+          input_data_type));
       DML_ELEMENT_WISE_POW_OPERATOR_DESC element_wise_operator_desc{
           .InputTensor = &input_a_tensor_desc.GetDMLTensorDesc(),
           .ExponentTensor = &input_b_tensor_desc.GetDMLTensorDesc(),
@@ -2203,8 +2210,8 @@ void CreateOperatorNodeForBinary(
       break;
     }
     case mojom::ElementWiseBinary::Kind::kEqual: {
-      CHECK(
-          context_properties.data_type_limits.equal_input.Has(input_data_type));
+      CHECK(context_properties.data_type_limits.equal_input.data_types.Has(
+          input_data_type));
       binary_node =
           CreateBinaryOperator<DML_ELEMENT_WISE_LOGICAL_EQUALS_OPERATOR_DESC>(
               input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
@@ -2213,7 +2220,7 @@ void CreateOperatorNodeForBinary(
       break;
     }
     case mojom::ElementWiseBinary::Kind::kGreater: {
-      CHECK(context_properties.data_type_limits.greater_input.Has(
+      CHECK(context_properties.data_type_limits.greater_input.data_types.Has(
           input_data_type));
       binary_node = CreateBinaryOperator<
           DML_ELEMENT_WISE_LOGICAL_GREATER_THAN_OPERATOR_DESC>(
@@ -2223,8 +2230,8 @@ void CreateOperatorNodeForBinary(
       break;
     }
     case mojom::ElementWiseBinary::Kind::kGreaterOrEqual: {
-      CHECK(context_properties.data_type_limits.greater_or_equal_input.Has(
-          input_data_type));
+      CHECK(context_properties.data_type_limits.greater_or_equal_input
+                .data_types.Has(input_data_type));
       binary_node = CreateBinaryOperator<
           DML_ELEMENT_WISE_LOGICAL_GREATER_THAN_OR_EQUAL_OPERATOR_DESC>(
           input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
@@ -2234,7 +2241,7 @@ void CreateOperatorNodeForBinary(
       break;
     }
     case mojom::ElementWiseBinary::Kind::kLesser: {
-      CHECK(context_properties.data_type_limits.lesser_input.Has(
+      CHECK(context_properties.data_type_limits.lesser_input.data_types.Has(
           input_data_type));
       binary_node = CreateBinaryOperator<
           DML_ELEMENT_WISE_LOGICAL_LESS_THAN_OPERATOR_DESC>(
@@ -2244,8 +2251,8 @@ void CreateOperatorNodeForBinary(
       break;
     }
     case mojom::ElementWiseBinary::Kind::kLesserOrEqual: {
-      CHECK(context_properties.data_type_limits.lesser_or_equal_input.Has(
-          input_data_type));
+      CHECK(context_properties.data_type_limits.lesser_or_equal_input.data_types
+                .Has(input_data_type));
       binary_node = CreateBinaryOperator<
           DML_ELEMENT_WISE_LOGICAL_LESS_THAN_OR_EQUAL_OPERATOR_DESC>(
           input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
@@ -2254,8 +2261,9 @@ void CreateOperatorNodeForBinary(
       break;
     }
     case mojom::ElementWiseBinary::Kind::kLogicalAnd: {
-      CHECK(context_properties.data_type_limits.logical_and_input.Has(
-          input_data_type));
+      CHECK(
+          context_properties.data_type_limits.logical_and_input.data_types.Has(
+              input_data_type));
       binary_node =
           CreateBinaryOperator<DML_ELEMENT_WISE_LOGICAL_AND_OPERATOR_DESC>(
               input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
@@ -2264,7 +2272,7 @@ void CreateOperatorNodeForBinary(
       break;
     }
     case mojom::ElementWiseBinary::Kind::kLogicalOr: {
-      CHECK(context_properties.data_type_limits.logical_or_input.Has(
+      CHECK(context_properties.data_type_limits.logical_or_input.data_types.Has(
           input_data_type));
       binary_node =
           CreateBinaryOperator<DML_ELEMENT_WISE_LOGICAL_OR_OPERATOR_DESC>(
@@ -2274,8 +2282,9 @@ void CreateOperatorNodeForBinary(
       break;
     }
     case mojom::ElementWiseBinary::Kind::kLogicalXor: {
-      CHECK(context_properties.data_type_limits.logical_xor_input.Has(
-          input_data_type));
+      CHECK(
+          context_properties.data_type_limits.logical_xor_input.data_types.Has(
+              input_data_type));
       binary_node =
           CreateBinaryOperator<DML_ELEMENT_WISE_LOGICAL_XOR_OPERATOR_DESC>(
               input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
@@ -4707,7 +4716,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForMatmul(
     input_b_tensor_desc.BroadcastTo(output_tensor_dims, 2);
   }
 
-  CHECK(context_properties.data_type_limits.matmul_input.Has(
+  CHECK(context_properties.data_type_limits.matmul_input.data_types.Has(
       DmlDataTypeToOperand(input_a_tensor_desc.GetDataType())));
   CHECK_EQ(input_a_tensor_desc.GetDimensions().size(),
            input_b_tensor_desc.GetDimensions().size());

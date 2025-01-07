@@ -8,6 +8,7 @@
 #include "base/test/test_future.h"
 #include "base/unguessable_token.h"
 #include "services/webnn/public/cpp/context_properties.h"
+#include "services/webnn/public/cpp/supported_tensors.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
@@ -587,21 +588,26 @@ ContextProperties GetContextPropertiesForTesting() {
        /*cumulative_sum_input=*/DataTypeConstraint::kFloat16To32,
        /*dequantize_linear_input=*/SupportedDataTypes::All(),
        /*dequantize_linear_scale=*/SupportedDataTypes::All(),
-       /*add_input=*/SupportedDataTypes::All(),
-       /*sub_input=*/SupportedDataTypes::All(),
-       /*mul_input=*/SupportedDataTypes::All(),
-       /*div_input=*/SupportedDataTypes::All(),
-       /*max_input=*/SupportedDataTypes::All(),
-       /*min_input=*/SupportedDataTypes::All(),
-       /*pow_input=*/SupportedDataTypes::All(),
-       /*equal_input=*/SupportedDataTypes::All(),
-       /*greater_input=*/SupportedDataTypes::All(),
-       /*greater_or_equal_input=*/SupportedDataTypes::All(),
-       /*lesser_input=*/SupportedDataTypes::All(),
-       /*lesser_or_equal_input=*/SupportedDataTypes::All(),
-       /*logical_and_input=*/DataTypeConstraint::kUint8,
-       /*logical_or_input=*/DataTypeConstraint::kUint8,
-       /*logical_xor_input=*/DataTypeConstraint::kUint8,
+       /*add_input=*/{SupportedDataTypes::All(), SupportedRanks::UpTo(8)},
+       /*sub_input=*/{SupportedDataTypes::All(), SupportedRanks::UpTo(8)},
+       /*mul_input=*/{SupportedDataTypes::All(), SupportedRanks::UpTo(8)},
+       /*div_input=*/{SupportedDataTypes::All(), SupportedRanks::UpTo(8)},
+       /*max_input=*/{SupportedDataTypes::All(), SupportedRanks::UpTo(8)},
+       /*min_input=*/{SupportedDataTypes::All(), SupportedRanks::UpTo(8)},
+       /*pow_input=*/{SupportedDataTypes::All(), SupportedRanks::UpTo(8)},
+       /*equal_input=*/{SupportedDataTypes::All(), SupportedRanks::UpTo(8)},
+       /*greater_input=*/{SupportedDataTypes::All(), SupportedRanks::UpTo(8)},
+       /*greater_or_equal_input=*/
+       {SupportedDataTypes::All(), SupportedRanks::UpTo(8)},
+       /*lesser_input=*/{SupportedDataTypes::All(), SupportedRanks::UpTo(8)},
+       /*lesser_or_equal_input=*/
+       {SupportedDataTypes::All(), SupportedRanks::UpTo(8)},
+       /*logical_and_input=*/
+       {DataTypeConstraint::kUint8, SupportedRanks::UpTo(8)},
+       /*logical_or_input=*/
+       {DataTypeConstraint::kUint8, SupportedRanks::UpTo(8)},
+       /*logical_xor_input=*/
+       {DataTypeConstraint::kUint8, SupportedRanks::UpTo(8)},
        /*logical_not_input=*/SupportedDataTypes::All(),
        /*logical_output=*/SupportedDataTypes::All(),
        /*abs_input=*/SupportedDataTypes::All(),
@@ -641,7 +647,7 @@ ContextProperties GetContextPropertiesForTesting() {
        /*linear_input=*/SupportedDataTypes::All(),
        /*lstm_input=*/SupportedDataTypes::All(),
        /*lstm_cell_input=*/SupportedDataTypes::All(),
-       /*matmul_input=*/SupportedDataTypes::All(),
+       /*matmul_input=*/{SupportedDataTypes::All(), SupportedRanks::UpTo(8)},
        /*pad_input=*/SupportedDataTypes::All(),
        /*average_pool2d_input=*/SupportedDataTypes::All(),
        /*l2_pool2d_input=*/SupportedDataTypes::All(),

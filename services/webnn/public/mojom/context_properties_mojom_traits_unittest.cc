@@ -7,6 +7,7 @@
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
+#include "services/webnn/public/cpp/supported_tensors.h"
 #include "services/webnn/public/mojom/webnn_context_properties.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -35,28 +36,43 @@ TEST(ContextPropertiesMojomTraitsTest, Basic) {
        /*dequantize_linear_scale=*/
        {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
        /*add_input=*/
-       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
-       /*sub_input=*/webnn::SupportedDataTypes::All(),
-       /*mul_input=*/webnn::SupportedDataTypes::All(),
-       /*div_input=*/webnn::SupportedDataTypes::All(),
+       {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+        webnn::SupportedRanks::UpTo(8)},
+       /*sub_input=*/
+       {webnn::SupportedDataTypes::All(), webnn::SupportedRanks::UpTo(8)},
+       /*mul_input=*/
+       {webnn::SupportedDataTypes::All(), webnn::SupportedRanks::UpTo(8)},
+       /*div_input=*/
+       {webnn::SupportedDataTypes::All(), webnn::SupportedRanks::UpTo(8)},
        /*max_input=*/
-       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+        webnn::SupportedRanks::UpTo(8)},
        /*min_input=*/
-       {webnn::OperandDataType::kInt32, webnn::OperandDataType::kInt64},
+       {{webnn::OperandDataType::kInt32, webnn::OperandDataType::kInt64},
+        webnn::SupportedRanks::UpTo(8)},
        /*pow_input=*/
-       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kInt8},
+       {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kInt8},
+        webnn::SupportedRanks::UpTo(8)},
        /*equal_input=*/
-       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+        webnn::SupportedRanks::UpTo(8)},
        /*greater_input=*/
-       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
-       /*greater_or_equal_input=*/{webnn::OperandDataType::kFloat16},
+       {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+        webnn::SupportedRanks::UpTo(8)},
+       /*greater_or_equal_input=*/
+       {{webnn::OperandDataType::kFloat16}, webnn::SupportedRanks::UpTo(8)},
        /*lesser_input=*/
-       {webnn::OperandDataType::kInt32, webnn::OperandDataType::kInt64},
+       {{webnn::OperandDataType::kInt32, webnn::OperandDataType::kInt64},
+        webnn::SupportedRanks::UpTo(8)},
        /*lesser_or_equal_input=*/
-       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
-       /*logical_and_input=*/{webnn::OperandDataType::kUint8},
-       /*logical_or_input=*/{webnn::OperandDataType::kUint8},
-       /*logical_xor_input=*/{webnn::OperandDataType::kUint8},
+       {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+        webnn::SupportedRanks::UpTo(8)},
+       /*logical_and_input=*/
+       {{webnn::OperandDataType::kUint8}, webnn::SupportedRanks::UpTo(8)},
+       /*logical_or_input=*/
+       {{webnn::OperandDataType::kUint8}, webnn::SupportedRanks::UpTo(8)},
+       /*logical_xor_input=*/
+       {{webnn::OperandDataType::kUint8}, webnn::SupportedRanks::UpTo(8)},
        /*logical_not_input=*/webnn::SupportedDataTypes::All(),
        /*logical_output=*/{webnn::OperandDataType::kUint64},
        /*abs_input=*/
@@ -107,7 +123,8 @@ TEST(ContextPropertiesMojomTraitsTest, Basic) {
        /*lstm_input=*/{webnn::OperandDataType::kFloat32},
        /*lstm_cell_input=*/
        {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
-       /*matmul_input=*/webnn::SupportedDataTypes::All(),
+       /*matmul_input=*/
+       {webnn::SupportedDataTypes::All(), webnn::SupportedRanks::UpTo(8)},
        /*pad_input=*/
        {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
        /*average_pool2d_input=*/

@@ -286,9 +286,6 @@ MLOperand* BuildElementWiseBinary(
 
 class MLGraphTest : public testing::Test {
  public:
-  MLGraphTest()
-      : scoped_feature_list_(webnn::mojom::features::kWebMachineLearningNeuralNetwork) {}
-
   void SetGraphInfo(blink_mojom::GraphInfoPtr graph_info) {
     graph_info_ = std::move(graph_info);
   }
@@ -332,7 +329,8 @@ class MLGraphTest : public testing::Test {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      webnn::mojom::features::kWebMachineLearningNeuralNetwork};
   test::TaskEnvironment task_environment_;
 
   blink_mojom::GraphInfoPtr graph_info_;
@@ -557,21 +555,36 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
          /*cumulative_sum_input=*/webnn::SupportedDataTypes::All(),
          /*dequantize_linear_input=*/webnn::SupportedDataTypes::All(),
          /*dequantize_linear_scale=*/webnn::SupportedDataTypes::All(),
-         /*add_input=*/webnn::SupportedDataTypes::All(),
-         /*sub_input=*/webnn::SupportedDataTypes::All(),
-         /*mul_input=*/webnn::SupportedDataTypes::All(),
-         /*div_input=*/webnn::SupportedDataTypes::All(),
-         /*max_input=*/webnn::SupportedDataTypes::All(),
-         /*min_input=*/webnn::SupportedDataTypes::All(),
-         /*pow_input=*/webnn::SupportedDataTypes::All(),
-         /*equal_input=*/webnn::SupportedDataTypes::All(),
-         /*greater_input=*/webnn::SupportedDataTypes::All(),
-         /*greater_or_equal_input=*/webnn::SupportedDataTypes::All(),
-         /*lesser_input=*/webnn::SupportedDataTypes::All(),
-         /*lesser_or_equal_input=*/webnn::SupportedDataTypes::All(),
-         /*logical_and_input=*/webnn::SupportedDataTypes::All(),
-         /*logical_or_input=*/webnn::SupportedDataTypes::All(),
-         /*logical_xor_input=*/webnn::SupportedDataTypes::All(),
+         /*add_input=*/
+         {webnn::SupportedDataTypes::All(), webnn::SupportedRanks::UpTo(8)},
+         /*sub_input=*/
+         {webnn::SupportedDataTypes::All(), webnn::SupportedRanks::UpTo(8)},
+         /*mul_input=*/
+         {webnn::SupportedDataTypes::All(), webnn::SupportedRanks::UpTo(8)},
+         /*div_input=*/
+         {webnn::SupportedDataTypes::All(), webnn::SupportedRanks::UpTo(8)},
+         /*max_input=*/
+         {webnn::SupportedDataTypes::All(), webnn::SupportedRanks::UpTo(8)},
+         /*min_input=*/
+         {webnn::SupportedDataTypes::All(), webnn::SupportedRanks::UpTo(8)},
+         /*pow_input=*/
+         {webnn::SupportedDataTypes::All(), webnn::SupportedRanks::UpTo(8)},
+         /*equal_input=*/
+         {webnn::SupportedDataTypes::All(), webnn::SupportedRanks::UpTo(8)},
+         /*greater_input=*/
+         {webnn::SupportedDataTypes::All(), webnn::SupportedRanks::UpTo(8)},
+         /*greater_or_equal_input=*/
+         {webnn::SupportedDataTypes::All(), webnn::SupportedRanks::UpTo(8)},
+         /*lesser_input=*/
+         {webnn::SupportedDataTypes::All(), webnn::SupportedRanks::UpTo(8)},
+         /*lesser_or_equal_input=*/
+         {webnn::SupportedDataTypes::All(), webnn::SupportedRanks::UpTo(8)},
+         /*logical_and_input=*/
+         {webnn::SupportedDataTypes::All(), webnn::SupportedRanks::UpTo(8)},
+         /*logical_or_input=*/
+         {webnn::SupportedDataTypes::All(), webnn::SupportedRanks::UpTo(8)},
+         /*logical_xor_input=*/
+         {webnn::SupportedDataTypes::All(), webnn::SupportedRanks::UpTo(8)},
          /*logical_not_input=*/webnn::SupportedDataTypes::All(),
          /*logical_output=*/webnn::SupportedDataTypes::All(),
          /*abs_input=*/webnn::SupportedDataTypes::All(),
@@ -611,7 +624,8 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
          /*linear_input=*/webnn::SupportedDataTypes::All(),
          /*lstm_input=*/webnn::SupportedDataTypes::All(),
          /*lstm_cell_input=*/webnn::SupportedDataTypes::All(),
-         /*matmul_input=*/webnn::SupportedDataTypes::All(),
+         /*matmul_input=*/
+         {webnn::SupportedDataTypes::All(), webnn::SupportedRanks::UpTo(8)},
          /*pad_input=*/webnn::SupportedDataTypes::All(),
          /*average_pool2d_input=*/webnn::SupportedDataTypes::All(),
          /*l2_pool2d_input=*/webnn::SupportedDataTypes::All(),
@@ -664,8 +678,7 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
 
 class ScopedWebNNServiceBinder {
  public:
-  explicit ScopedWebNNServiceBinder(MLGraphTest& helper,
-                                    V8TestingScope& scope)
+  explicit ScopedWebNNServiceBinder(MLGraphTest& helper, V8TestingScope& scope)
       : fake_webnn_context_provider_(
             std::make_unique<FakeWebNNContextProvider>(helper)),
         interface_broker_(

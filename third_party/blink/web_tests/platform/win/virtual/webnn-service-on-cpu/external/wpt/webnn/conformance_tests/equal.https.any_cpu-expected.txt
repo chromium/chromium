@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] equal float32 5D tensors
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'equal' on 'MLGraphBuilder': Unsupported rank 5 for argument a (must be at most 4)."
+[FAIL] equal float16 5D tensors
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'equal' on 'MLGraphBuilder': Unsupported rank 5 for argument a (must be at most 4)."
+Harness: the test ran to completion.
+

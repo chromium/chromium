@@ -978,11 +978,16 @@ base::expected<OperandDescriptor, std::string> ValidateMatmulAndInferOutput(
     const OperandDescriptor& a,
     const OperandDescriptor& b,
     std::string_view label) {
-  if (!context_properties.data_type_limits.matmul_input.Has(a.data_type())) {
+  if (!context_properties.data_type_limits.matmul_input.Supports(a)) {
     return base::unexpected(ErrorWithLabel(
-        label,
-        NotSupportedInputArgumentTypeError(
-            a.data_type(), context_properties.data_type_limits.matmul_input)));
+        label, NotSupportedArgumentError(
+                   "a", a, context_properties.data_type_limits.matmul_input)));
+  }
+
+  if (!context_properties.data_type_limits.matmul_input.Supports(b)) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedArgumentError(
+                   "b", b, context_properties.data_type_limits.matmul_input)));
   }
 
   if (a.data_type() != b.data_type()) {
@@ -990,16 +995,10 @@ base::expected<OperandDescriptor, std::string> ValidateMatmulAndInferOutput(
         label, "The data types of first two inputs don't match."));
   }
 
-  // Based on the WG discussion:
-  // https://github.com/webmachinelearning/webnn/issues/470, prototype the
-  // matmul without 1-D input tensors support.
-  if (a.Rank() < 2 || b.Rank() < 2) {
-    return base::unexpected(ErrorWithLabel(
-        label, "The rank of input must be larger than or equal to 2."));
-  }
-
   std::vector<uint32_t> a_dimensions = a.shape();
+  CHECK_GE(a_dimensions.size(), 2u);
   std::vector<uint32_t> b_dimensions = b.shape();
+  CHECK_GE(b_dimensions.size(), 2u);
 
   // The number of columns in the first matrix must be equal to the number of
   // rows in the second matrix.
