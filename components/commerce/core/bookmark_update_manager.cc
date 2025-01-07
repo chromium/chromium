@@ -93,19 +93,12 @@ void BookmarkUpdateManager::RunUpdate() {
 
   size_t current_batch_count = 0;
   size_t total_bookmarks_processed = 0;
-  size_t max_allowed_updated = kShoppingListBookmarkpdateBatchMaxParam.Get();
   pending_update_batches_.emplace();
   for (auto* node : nodes) {
     // If we've reached the max for a batch, push a new vector onto the queue
     // and continue.
     if (current_batch_count >=
         shopping_service_->GetMaxProductBookmarkUpdatesPerBatch()) {
-      // If batching updates isn't allowed, block all but one.
-      if (!base::FeatureList::IsEnabled(
-              kCommerceAllowOnDemandBookmarkBatchUpdates)) {
-        break;
-      }
-
       pending_update_batches_.emplace();
       current_batch_count = 0;
     }
@@ -115,7 +108,7 @@ void BookmarkUpdateManager::RunUpdate() {
 
     // If we've reached the maximum number of bookmarks we're willing to
     // update, stop.
-    if (total_bookmarks_processed >= max_allowed_updated) {
+    if (total_bookmarks_processed >= kShoppingListBookmarkUpdateBatchMaxParam) {
       break;
     }
   }
