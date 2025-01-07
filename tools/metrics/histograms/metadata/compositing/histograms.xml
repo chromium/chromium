@@ -1599,7 +1599,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Graphics.Smoothness.PercentDroppedFrames4.{Thread}{Sequence}"
-    units="%" expires_after="2025-01-19">
+    units="%" expires_after="2025-10-16">
   <owner>jonross@chromium.org</owner>
   <owner>gaiko@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
