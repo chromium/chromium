@@ -41,7 +41,8 @@ void AvatarFetcher::Fetch(const GURL& avatar_url,
   // content. See GetAvatarImageURLWithOptions. It handles legacy and content
   // urls nicely but missing crop option.
   GURL image_url_with_size = signin::GetAvatarImageURLWithOptions(
-      avatar_url, size, /*no_silhouette=*/true);
+      avatar_url, size, /*no_silhouette=*/true,
+      signin::AvatarCropType::kCircle);
 
   image_fetcher->FetchImage(
       image_url_with_size,
