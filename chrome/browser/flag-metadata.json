@@ -1817,7 +1817,7 @@
   {
     "name": "cups-ipp-printing-backend",
     "owners": [ "awscreen@chromium.org", "//printing/OWNERS" ],
-    "expiry_milestone": 134
+    "expiry_milestone": 145
   },
   {
     "name": "customize-chrome-side-panel-extensions-card",
@@ -7433,7 +7433,7 @@
   {
     "name": "read-printer-capabilities-with-xps",
     "owners": [ "awscreen@chromium.org", "//printing/OWNERS" ],
-    "expiry_milestone": 134
+    "expiry_milestone": 145
   },
   {
     "name": "reader-mode-heuristics",
@@ -9032,12 +9032,12 @@
   {
     "name": "use-xps-for-printing",
     "owners": [ "awscreen@chromium.org", "thestig@chromium.org" ],
-    "expiry_milestone": 134
+    "expiry_milestone": 145
   },
   {
     "name": "use-xps-for-printing-from-pdf",
     "owners": [ "awscreen@chromium.org", "thestig@chromium.org" ],
-    "expiry_milestone": 134
+    "expiry_milestone": 145
   },
   {
     "name": "user-education-experience-v2",
