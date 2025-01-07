@@ -30,6 +30,10 @@ constexpr char kDefaultCrashpadUploadUrl[] =
 const base::FilePath::CharType kChromotingCrashpadDatabasePath[] =
     FILE_PATH_LITERAL("crashpad");
 
+// Maximum number of crash reports to log. Reports are sorted by timestamp so
+// the most recent N reports will be logged.
+const int kMaxReportsToLog = 2;
+
 class CrashpadLinux {
  public:
   CrashpadLinux();
@@ -47,6 +51,10 @@ class CrashpadLinux {
   bool GetCrashpadHandlerPath(base::FilePath* handler_path);
   base::FilePath GetCrashpadDatabasePath();
   void LogCrashReportInfo(const CrashReportDatabase::Report& report);
+  void SortAndLogCrashReports(std::vector<CrashReportDatabase::Report>& reports,
+                              std::string report_type,
+                              size_t max_reports);
+
   bool InitializeCrashpadDatabase(base::FilePath database_path);
 
   std::unique_ptr<CrashReportDatabase> database_;
@@ -78,6 +86,30 @@ void CrashpadLinux::LogCrashReportInfo(
            << " (attempts: " << report.upload_attempts << ")";
 }
 
+void CrashpadLinux::SortAndLogCrashReports(
+    std::vector<CrashReportDatabase::Report>& reports,
+    std::string report_type,
+    size_t max_reports) {
+  size_t num_reports = reports.size();
+  if (num_reports > max_reports) {
+    HOST_LOG << report_type << " crash reports: " << num_reports
+             << " (most recent " << max_reports << " shown)";
+  } else {
+    HOST_LOG << report_type << " crash reports: " << num_reports;
+  }
+
+  // Sort so most recent reports are first.
+  std::sort(reports.begin(), reports.end(),
+            [](CrashReportDatabase::Report const& a,
+               CrashReportDatabase::Report const& b) {
+              return a.creation_time > b.creation_time;
+            });
+  for (size_t i = 0; i < reports.size() && i < max_reports; ++i) {
+    const auto& report = reports[i];
+    LogCrashReportInfo(report);
+  }
+}
+
 bool CrashpadLinux::InitializeCrashpadDatabase(base::FilePath database_path) {
   base::File::Error error;
   if (!base::CreateDirectoryAndGetError(database_path, &error)) {
@@ -96,10 +128,7 @@ bool CrashpadLinux::InitializeCrashpadDatabase(base::FilePath database_path) {
   std::vector<CrashReportDatabase::Report> completed_reports;
   status = database_->GetCompletedReports(&completed_reports);
   if (status == CrashReportDatabase::OperationStatus::kNoError) {
-    HOST_LOG << "Completed crash reports: " << completed_reports.size();
-    for (const auto& report : completed_reports) {
-      LogCrashReportInfo(report);
-    }
+    SortAndLogCrashReports(completed_reports, "Completed", kMaxReportsToLog);
   } else {
     LOG(ERROR) << "Unable to read completed crash reports: " << status;
   }
@@ -107,10 +136,7 @@ bool CrashpadLinux::InitializeCrashpadDatabase(base::FilePath database_path) {
   std::vector<CrashReportDatabase::Report> pending_reports;
   status = database_->GetPendingReports(&pending_reports);
   if (status == CrashReportDatabase::OperationStatus::kNoError) {
-    HOST_LOG << "Pending crash reports: " << pending_reports.size();
-    for (const auto& report : pending_reports) {
-      LogCrashReportInfo(report);
-    }
+    SortAndLogCrashReports(pending_reports, "Pending", kMaxReportsToLog);
   } else {
     LOG(ERROR) << "Unable to read pending crash reports: " << status;
   }
