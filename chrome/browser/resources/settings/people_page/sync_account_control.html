@@ -272,7 +272,8 @@
             <span>$i18n{useAnotherAccount}</span>
           </button>
           <button class="dropdown-item" on-click="onSignoutClick_"
-              disabled="[[syncStatus.firstSetupInProgress]]" id="sign-out-item">
+              disabled="[[syncStatus.firstSetupInProgress]]" id="sign-out-item"
+              hidden="[[shouldHideSignoutDropdownButton_()]]">
             <cr-icon icon="settings:exit-to-app"></cr-icon>
             <span>$i18n{peopleSignOut}</span>
           </button>

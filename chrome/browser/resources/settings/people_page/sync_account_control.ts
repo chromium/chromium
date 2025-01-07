@@ -439,11 +439,11 @@ export class SettingsSyncAccountControlElement extends
     }
 
     switch (this.syncStatus.signedInState) {
-      case SignedInState.SYNCING:
       case SignedInState.SIGNED_IN:
       case SignedInState.SIGNED_OUT:
       case SignedInState.WEB_ONLY_SIGNED_IN:
         return false;
+      case SignedInState.SYNCING:
       case SignedInState.SIGNED_IN_PAUSED:
         return true;
     }
@@ -534,6 +534,11 @@ export class SettingsSyncAccountControlElement extends
     return (this.isSyncing_() || this.storedAccounts_.length > 0) &&
         this.syncStatus.signedInState !== SignedInState.WEB_ONLY_SIGNED_IN;
   }
+
+  private shouldHideSignoutDropdownButton_(): boolean {
+    return loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled');
+  }
+
 
   private onErrorButtonClick_() {
     const router = Router.getInstance();
