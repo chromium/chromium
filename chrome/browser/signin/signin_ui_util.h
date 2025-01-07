@@ -14,7 +14,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/signin/reauth_result.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/signin/signin_reauth_view_controller.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 

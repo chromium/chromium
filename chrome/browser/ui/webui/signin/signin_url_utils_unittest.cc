@@ -101,25 +101,3 @@ TEST(SigninURLUtilsProfileCustomizationURLTest, GetAndParseURL) {
             GetProfileCustomizationStyle(url));
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
-class SigninURLUtilsReauthConfirmationURLTest
-    : public ::testing::TestWithParam<int> {};
-
-TEST_P(SigninURLUtilsReauthConfirmationURLTest,
-       GetAndParseReauthConfirmationURL) {
-  auto access_point =
-      static_cast<signin_metrics::ReauthAccessPoint>(GetParam());
-  GURL url = GetReauthConfirmationURL(access_point);
-  ASSERT_TRUE(url.is_valid());
-  EXPECT_EQ(url.host(), chrome::kChromeUISigninReauthHost);
-  signin_metrics::ReauthAccessPoint get_access_point =
-      GetReauthAccessPointForReauthConfirmationURL(url);
-  EXPECT_EQ(get_access_point, access_point);
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    AllAccessPoints,
-    SigninURLUtilsReauthConfirmationURLTest,
-    ::testing::Range(
-        static_cast<int>(signin_metrics::ReauthAccessPoint::kUnknown),
-        static_cast<int>(signin_metrics::ReauthAccessPoint::kMax) + 1));

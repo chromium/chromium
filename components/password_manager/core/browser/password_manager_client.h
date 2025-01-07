@@ -67,7 +67,6 @@ class IdentityManager;
 
 namespace signin_metrics {
 enum class AccessPoint;
-enum class ReauthAccessPoint;
 }  // namespace signin_metrics
 
 namespace url {

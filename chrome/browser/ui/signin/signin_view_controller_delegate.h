@@ -14,15 +14,10 @@
 #include "components/signin/public/base/signin_buildflags.h"
 
 class Browser;
-struct CoreAccountId;
 enum class SyncConfirmationStyle;
 
 namespace content {
 class WebContents;
-}
-
-namespace signin_metrics {
-enum class ReauthAccessPoint;
 }
 
 // Interface to the platform-specific managers of the Signin and Sync
@@ -60,14 +55,6 @@ class SigninViewControllerDelegate {
       Browser* browser);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Returns a platform-specific SigninViewContolllerDelegate instance that
-  // displays the reauth confirmation modal dialog. The returned object should
-  // delete itself when the window it's managing is closed.
-  static SigninViewControllerDelegate* CreateReauthConfirmationDelegate(
-      Browser* browser,
-      const CoreAccountId& account_id,
-      signin_metrics::ReauthAccessPoint access_point);
-
   // Returns a platform-specific SigninViewControllerDelegate instance that
   // displays the profile customization modal dialog. The returned object should
   // delete itself when the window it's managing is closed.

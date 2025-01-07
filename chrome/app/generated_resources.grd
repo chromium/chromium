@@ -14105,26 +14105,6 @@ This can include information about installed software, files, your browser, and 
         Continue
       </message>
 
-      <!-- Account password storage reauth tab modal dialog -->
-      <message name="IDS_ACCOUNT_PASSWORDS_WITH_PASSKEYS_REAUTH_TITLE" desc="Title of the account password storage reauth tab modal dialog. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">
-        Use your Google Account to save and fill passwords and passkeys?
-      </message>
-      <message name="IDS_ACCOUNT_PASSWORDS_WITH_PASSKEYS_REAUTH_DESC" desc="Body of the account password storage reauth tab modal dialog. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">
-        Passwords and passkeys in your Google Account will also be available on this device while you're signed in
-      </message>
-      <message name="IDS_ACCOUNT_PASSWORDS_WITH_PASSKEYS_REAUTH_DESC_ALREADY_SAVED_LOCALLY" desc="Body of the account password storage reauth tab modal dialog, shown in the case where the password was already saved locally. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">
-        Chrome saved your password to this device, but you can save it to your Google Account instead. Then, all passwords and passkeys in your Google Account will also be available while you're signed in.
-      </message>
-      <message name="IDS_ACCOUNT_PASSWORDS_REAUTH_CONFIRM_BUTTON_LABEL" desc="Label of the confirmation button in the account password storage reauth tab modal dialog.">
-        Yes
-      </message>
-      <message name="IDS_ACCOUNT_PASSWORDS_REAUTH_CLOSE_BUTTON_LABEL" desc="Label of the close button in the account password storage reauth tab modal dialog.">
-        No thanks
-      </message>
-      <message name="IDS_ACCOUNT_PASSWORDS_REAUTH_CLOSE_BUTTON_LABEL_ALREADY_SAVED_LOCALLY" desc="Label of the close button in the account password storage reauth tab modal dialog, shown in the case where the password was already saved locally.">
-        No, this device only
-      </message>
-
       <message name="IDS_PLUGIN_CRASHED_PROMPT" desc="Infobar message to notify about a crashed plugin">
        <ph name="PLUGIN_NAME">$1<ex>Flash</ex></ph> has crashed
       </message>

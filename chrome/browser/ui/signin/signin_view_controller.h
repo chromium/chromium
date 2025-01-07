@@ -46,13 +46,8 @@ namespace signin_metrics {
 enum class AccessPoint;
 enum class PromoAction;
 enum class Reason;
-enum class ReauthAccessPoint;
 enum class SourceForRefreshTokenOperation;
 }  // namespace signin_metrics
-
-namespace signin {
-enum class ReauthResult;
-}
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 namespace {
@@ -67,12 +62,6 @@ class NewTabWebContentsObserver;
 // Chrome OS has its own sign-in flow and doesn't use DICE.
 class SigninViewController {
  public:
-  // Handle that will stop ongoing reauths upon destruction.
-  class ReauthAbortHandle {
-   public:
-    virtual ~ReauthAbortHandle() = default;
-  };
-
   explicit SigninViewController(Browser* browser);
 
   SigninViewController(const SigninViewController&) = delete;
@@ -147,21 +136,6 @@ class SigninViewController {
       const std::string& last_email,
       const std::string& email,
       SigninEmailConfirmationDialog::Callback callback);
-
-  // Shows the reauth prompt for |account_id| as either:
-  // - a tab-modal dialog on top of the currently active tab, or
-  // - a new tab
-  // |account_id| should be signed into the content area. Otherwise, the method
-  // fails with |kAccountNotSignedIn| error.
-  // |access_point| indicates a call site of this method.
-  // Calls |reauth_callback| on completion of the reauth flow, or on error. The
-  // callback may be called synchronously. The user may also ignore the reauth
-  // indefinitely.
-  // Returns a handle that aborts the ongoing reauth on destruction.
-  virtual std::unique_ptr<ReauthAbortHandle> ShowReauthPrompt(
-      const CoreAccountId& account_id,
-      signin_metrics::ReauthAccessPoint access_point,
-      base::OnceCallback<void(signin::ReauthResult)> reauth_callback);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // Shows the modal sync confirmation dialog as a browser-modal dialog on top
@@ -229,7 +203,6 @@ class SigninViewController {
   FRIEND_TEST_ALL_PREFIXES(ProfilePickerCreationFlowBrowserTest,
                            CancelLocalProfileCreation);
   friend class login_ui_test_utils::SigninViewControllerTestUtil;
-  friend class SigninReauthViewControllerBrowserTest;
   friend class SigninInterceptFirstRunExperienceDialogBrowserTest;
   friend class SyncConfirmationUIDialogPixelTest;
 

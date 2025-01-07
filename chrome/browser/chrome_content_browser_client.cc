@@ -3966,25 +3966,16 @@ bool UpdatePreferredColorScheme(WebPreferences* web_prefs,
           : blink::mojom::PreferredColorScheme::kDark;
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  // Reauth WebUI doesn't support dark mode yet because it shares the dialog
-  // with GAIA web contents that is not correctly themed.
-  const bool force_light =
-      url.SchemeIs(content::kChromeUIScheme) &&
-      url.host_piece() == chrome::kChromeUISigninReauthHost;
-
-  if (force_light) {
-    web_prefs->preferred_color_scheme =
-        blink::mojom::PreferredColorScheme::kLight;
 #if !BUILDFLAG(IS_ANDROID)
-  } else if (content::HasWebUIScheme(url)) {
+  if (content::HasWebUIScheme(url)) {
     // If color scheme is not forced, WebUI should track the color mode of the
     // ColorProvider associated with `web_contents`.
     web_prefs->preferred_color_scheme =
         web_contents->GetColorMode() == ui::ColorProviderKey::ColorMode::kLight
             ? blink::mojom::PreferredColorScheme::kLight
             : blink::mojom::PreferredColorScheme::kDark;
-#endif  // !BUILDFLAG(IS_ANDROID)
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   return old_preferred_color_scheme != web_prefs->preferred_color_scheme;
 }

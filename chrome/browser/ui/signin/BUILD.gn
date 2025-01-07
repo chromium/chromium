@@ -40,14 +40,6 @@ source_set("signin") {
     ]
     public_deps += [ "//chrome/browser/signin" ]
   }
-
-  if (!is_chromeos_ash) {
-    sources += [ "signin_reauth_view_controller.h" ]
-    public_deps += [
-      "//components/sync/protocol",
-      "//google_apis",
-    ]
-  }
 }
 
 source_set("impl") {
@@ -92,11 +84,6 @@ source_set("impl") {
       "chrome_signout_confirmation_prompt.cc",
       "dice_web_signin_interceptor_delegate.cc",
     ]
-  }
-
-  if (!is_chromeos_ash) {
-    sources += [ "signin_reauth_view_controller.cc" ]
-    deps += [ "//components/consent_auditor" ]
   }
 }
 
@@ -172,11 +159,6 @@ if (!is_android) {
         "//chrome/test:test_support",
         "//components/sync:test_support",
       ]
-    }
-
-    # Tests for non mobile and non CrOS (includes Linux, Win, Mac, Lacros).
-    if (!is_chromeos_ash) {
-      sources += [ "signin_reauth_view_controller_browsertest.cc" ]
     }
 
     if (!is_chromeos) {

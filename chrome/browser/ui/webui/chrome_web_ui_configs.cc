@@ -173,10 +173,6 @@
 #include "chrome/browser/ui/webui/signin/inline_login_ui.h"
 #endif
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-#include "chrome/browser/ui/webui/signin/signin_reauth_ui.h"
-#endif
-
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 #include "chrome/browser/ui/webui/reset_password/reset_password_ui.h"
 #endif
@@ -381,10 +377,6 @@ void RegisterChromeWebUIConfigs() {
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_ASH)
   map.AddWebUIConfig(std::make_unique<InlineLoginUIConfig>());
-#endif
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  map.AddWebUIConfig(std::make_unique<SigninReauthUIConfig>());
 #endif
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)

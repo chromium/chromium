@@ -193,8 +193,6 @@ bool ElementExistsByIdInSigninFrame(content::WebContents* web_contents,
 
 enum class SyncConfirmationDialogAction { kConfirm, kCancel, kSettings };
 
-enum class ReauthDialogAction { kConfirm, kCancel };
-
 #if !BUILDFLAG(IS_CHROMEOS)
 std::string GetButtonIdForSyncConfirmationDialogAction(
     SyncConfirmationDialogAction action) {
@@ -227,16 +225,6 @@ std::string GetButtonIdForSigninEmailConfirmationDialogAction(
       return "confirmButton";
     case SigninEmailConfirmationDialog::CLOSE:
       return "closeButton";
-  }
-}
-
-std::string GetButtonIdForReauthConfirmationDialogAction(
-    ReauthDialogAction action) {
-  switch (action) {
-    case ReauthDialogAction::kConfirm:
-      return "confirmButton";
-    case ReauthDialogAction::kCancel:
-      return "cancelButton";
   }
 }
 
@@ -331,36 +319,6 @@ class SigninViewControllerTestUtil {
         dialog_web_contents, base::StringPrintf("%s.click(); %s.click();",
                                                 radio_button_selector.c_str(),
                                                 button_selector.c_str()));
-    return true;
-#endif
-  }
-
-  static bool TryCompleteReauthConfirmationDialog(Browser* browser,
-                                                  ReauthDialogAction action) {
-#if BUILDFLAG(IS_CHROMEOS)
-    NOTREACHED();
-#else
-    SigninViewController* signin_view_controller =
-        browser->signin_view_controller();
-    DCHECK(signin_view_controller);
-    if (!signin_view_controller->ShowsModalDialog()) {
-      return false;
-    }
-
-    content::WebContents* dialog_web_contents =
-        signin_view_controller->GetModalDialogWebContentsForTesting();
-    DCHECK(dialog_web_contents);
-    std::string button_selector = GetButtonSelectorForApp(
-        "signin-reauth-app",
-        GetButtonIdForReauthConfirmationDialogAction(action));
-    if (!IsElementReady(dialog_web_contents, button_selector)) {
-      return false;
-    }
-
-    // This cannot be a synchronous call, because it closes the window as a side
-    // effect, which may cause the javascript execution to never finish.
-    content::ExecuteScriptAsync(dialog_web_contents,
-                                button_selector + ".click();");
     return true;
 #endif
   }
@@ -562,27 +520,6 @@ bool CompleteSigninEmailConfirmationDialog(
                               TryCompleteSigninEmailConfirmationDialog,
                           browser, action),
       timeout);
-}
-
-bool CompleteReauthConfirmationDialog(Browser* browser,
-                                      base::TimeDelta timeout,
-                                      ReauthDialogAction action) {
-  return TryUntilSuccessWithTimeout(
-      base::BindRepeating(
-          SigninViewControllerTestUtil::TryCompleteReauthConfirmationDialog,
-          browser, action),
-      timeout);
-}
-
-bool ConfirmReauthConfirmationDialog(Browser* browser,
-                                     base::TimeDelta timeout) {
-  return CompleteReauthConfirmationDialog(browser, timeout,
-                                          ReauthDialogAction::kConfirm);
-}
-
-bool CancelReauthConfirmationDialog(Browser* browser, base::TimeDelta timeout) {
-  return CompleteReauthConfirmationDialog(browser, timeout,
-                                          ReauthDialogAction::kCancel);
 }
 
 bool CompleteProfileCustomizationDialog(Browser* browser,

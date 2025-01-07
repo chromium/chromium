@@ -31,15 +31,6 @@ GURL AppendSyncConfirmationQueryParams(const GURL& url,
                                        SyncConfirmationStyle style,
                                        bool is_sync_promo);
 
-// Returns `ReauthAccessPoint` encoded in the query of the reauth confirmation
-// URL.
-signin_metrics::ReauthAccessPoint GetReauthAccessPointForReauthConfirmationURL(
-    const GURL& url);
-
-// Returns a URL to display in the reauth confirmation dialog. The dialog was
-// triggered by |access_point|.
-GURL GetReauthConfirmationURL(signin_metrics::ReauthAccessPoint access_point);
-
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 enum class ProfileCustomizationStyle {
   kDefault = 0,
