@@ -178,9 +178,6 @@ class CORE_EXPORT CanvasRenderingContext
     return nullptr;
   }
 
-  SkColorInfo CanvasRenderingContextSkColorInfo() const {
-    return SkColorInfo(GetSkColorType(), GetAlphaType(), GetSkColorSpace());
-  }
   virtual SkAlphaType GetAlphaType() const = 0;
   virtual SkColorType GetSkColorType() const = 0;
   virtual sk_sp<SkColorSpace> GetSkColorSpace() const = 0;

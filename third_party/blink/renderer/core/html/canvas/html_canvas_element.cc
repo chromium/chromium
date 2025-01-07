@@ -936,8 +936,7 @@ void HTMLCanvasElement::NotifyListenersCanvasChanged() {
   }
 
   const bool context_color_is_opaque =
-      context_ ? context_->CanvasRenderingContextSkColorInfo().isOpaque()
-               : false;
+      context_ ? SkAlphaTypeIsOpaque(context_->GetAlphaType()) : false;
 
   for (CanvasDrawListener* listener : listeners_) {
     if (!listener->NeedsNewFrame())
