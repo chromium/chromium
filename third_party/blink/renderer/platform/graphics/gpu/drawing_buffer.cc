@@ -839,19 +839,16 @@ scoped_refptr<CanvasResource> DrawingBuffer::ExportCanvasResource() {
   }
 
   CHECK(IsUsingGpuCompositing());
-  viz::TransferableResource out_resource;
+  gpu::SyncToken sync_token;
   viz::ReleaseCallback out_release_callback;
-  scoped_refptr<gpu::ClientSharedImage> client_si;
-  if (!FinishPrepareTransferableResourceGpu(&out_resource, &client_si,
-                                            &out_release_callback)) {
+  scoped_refptr<gpu::ClientSharedImage> client_si =
+      ExportSharedImageFromBackBuffer(sync_token, &out_release_callback);
+  if (!client_si) {
     return nullptr;
   }
 
-  // FinishPrepareTransferableResourceGpu() always populates `client_si` if it
-  // returns true.
-  CHECK(client_si);
   return ExternalCanvasResource::Create(
-      client_si, out_resource.sync_token(),
+      client_si, sync_token,
       viz::TransferableResource::ResourceSource::kDrawingBuffer, hdr_metadata_,
       std::move(out_release_callback), context_provider_->GetWeakPtr(),
       /*resource_provider=*/nullptr);
