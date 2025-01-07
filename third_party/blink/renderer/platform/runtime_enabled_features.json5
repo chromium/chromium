@@ -4057,6 +4057,10 @@
     {
       name: "SpeculationRulesPrefetchWithSubresources",
     },
+    {
+      name: "SplitTextNotCleanupDummySpans",
+      status: "stable",
+    },
     // Kill switch for change to unify image-set and srcset selection logic.
     {
       name: "SrcsetSelectionMatchesImageSet",
