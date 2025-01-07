@@ -81,6 +81,7 @@
 
 .customizable-select-button::after {
   content: counter(fake-counter-name, disclosure-open);
+  margin-inline-start: auto;
 }
 
 .customizable-select-legend {

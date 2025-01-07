@@ -6170,6 +6170,14 @@ crbug.com/40146374 virtual/customizable-select-disabled/external/wpt/html/semant
 crbug.com/40146374 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-home-end-pagedown-pageup.tentative.html [ Failure ]
 crbug.com/40146374 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-home-end-pagedown-pageup-detailed.optional.html [ Failure ]
 crbug.com/40146374 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-home-end-pagedown-pageup-detailed.optional.html [ Failure ]
+crbug.com/40146374 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-explicit-size.tentative.html [ Failure ]
+crbug.com/40146374 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-font-size.tentative.html [ Failure ]
+crbug.com/40146374 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-selected-value-behavior.tentative.html [ Failure ]
+crbug.com/40146374 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-text-only.tentative.html [ Failure ]
+crbug.com/40146374 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-explicit-size.tentative.html [ Failure ]
+crbug.com/40146374 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-font-size.tentative.html [ Failure ]
+crbug.com/40146374 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-selected-value-behavior.tentative.html [ Failure ]
+crbug.com/40146374 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-text-only.tentative.html [ Failure ]
 
 # Flaky on headless_shell_wpt_tests
 crbug.com/40146374 external/wpt/html/semantics/forms/the-select-element/customizable-select/select-option-images.tentative.html [ Failure Pass ]
@@ -6217,23 +6225,6 @@ crbug.com/362922565 html/select/select-typeahead-with-spacekey.html [ Failure ]
 # Interesting issue with max-block-size: stretch
 crbug.com/382679385 external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-fallback-bottom-left.tentative.html [ Failure ]
 crbug.com/382679385 external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-fallback-bottom-right.tentative.html [ Failure ]
-
-# Several behavior differences between <selectlist> and <select style="appearance:base-select">. (These tests
-# were migrated from the old `the-selectlist-element` test suite.)
-crbug.com/366394195 external/wpt/html/semantics/forms/the-select-element/select-events.tentative.html [ Failure ]
-crbug.com/366394195 external/wpt/html/semantics/forms/the-select-element/customizable-select/select-explicit-size.tentative.html [ Failure ]
-crbug.com/366394195 external/wpt/html/semantics/forms/the-select-element/customizable-select/select-font-size.tentative.html [ Failure ]
-crbug.com/366394195 external/wpt/html/semantics/forms/the-select-element/select-keyboard.tentative.html [ Failure ]
-crbug.com/366394195 external/wpt/html/semantics/forms/the-select-element/select-marker-end-aligned.tentative.html [ Crash Failure ]
-crbug.com/366394195 external/wpt/html/semantics/forms/the-select-element/select-marker-visible-overflow.tentative.html [ Failure ]
-crbug.com/366394195 external/wpt/html/semantics/forms/the-select-element/select-option-label-rendering.tentative.html [ Failure ]
-crbug.com/366394195 external/wpt/html/semantics/forms/the-select-element/select-overflow-x.tentative.html [ Failure ]
-crbug.com/366394195 external/wpt/html/semantics/forms/the-select-element/select-pseudo-open-closed.tentative.html [ Failure ]
-crbug.com/366394195 external/wpt/html/semantics/forms/the-select-element/select-rtl.tentative.html [ Failure ]
-crbug.com/366394195 external/wpt/html/semantics/forms/the-select-element/customizable-select/select-selected-value-behavior.tentative.html [ Failure ]
-crbug.com/366394195 external/wpt/html/semantics/forms/the-select-element/select-value-selectedOption.tentative.html [ Failure ]
-# Shape of the disclosure:
-crbug.com/366394195 external/wpt/html/semantics/forms/the-select-element/customizable-select/select-text-only.tentative.html [ Failure ]
 
 # Sheriff 2022-04-21
 crbug.com/1318318 external/wpt/fetch/private-network-access/service-worker-background-fetch.tentative.https.window.html [ Failure Pass Timeout ]

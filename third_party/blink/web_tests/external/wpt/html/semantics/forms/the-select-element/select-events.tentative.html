@@ -8,7 +8,7 @@
 
 <select id="select0">
   <button id="select0-button">
-    <selectedvalue></selectedvalue>
+    <selectedcontent></selectedcontent>
     select0-button
   </button>
   <option>one</option>
@@ -73,25 +73,24 @@
 
   promise_test(async (t) => {
     const select = document.getElementById("select0");
-    const selectButton = document.getElementById("select0-button");
     assert_false(select.matches(':open'));
 
-    const selectButtonWatcher = new EventWatcher(t, selectButton, ["click"]);
-    const selectButtonPromise = selectButtonWatcher.wait_for("click").then((e) => {
+    const selectButtonWatcher = new EventWatcher(t, select, ["mousedown"]);
+    const selectButtonPromise = selectButtonWatcher.wait_for("mousedown").then((e) => {
       assert_false(select.matches(':open'), "Listbox shouldn't have opened yet");
       // PreventDefaulting the event here should prevent UA controller code
       // on the button part from opening the listbox.
       e.preventDefault();
     });
 
-    const selectWatcher = new EventWatcher(t, select, ["click"]);
-    const selectPromise = selectWatcher.wait_for("click").then((e) => {
-      assert_true(e.defaultPrevented, "Event should have been defaultPrevented by selectButton click handler");
-      assert_false(select.matches(':open'), "Listbox shouldn't have opened, because click event was defaultPrevented.");
+    const selectWatcher = new EventWatcher(t, select, ["mousedown"]);
+    const selectPromise = selectWatcher.wait_for("mousedown").then((e) => {
+      assert_true(e.defaultPrevented, "Event should have been defaultPrevented by select mousedown handler");
+      assert_false(select.matches(':open'), "Listbox shouldn't have opened, because mousedown event was defaultPrevented.");
     });
 
-    return Promise.all([selectButtonPromise, selectPromise, clickOn(selectButton)]);
-  }, "Button controller code should not run if the click event is preventDefaulted.");
+    return Promise.all([selectButtonPromise, selectPromise, clickOn(select)]);
+  }, "Button controller code should not run if the mousedown event is preventDefaulted.");
 
   // See https://w3c.github.io/webdriver/#keyboard-actions
   const KEY_CODE_MAP = {
@@ -104,27 +103,26 @@
 
   promise_test(async (t) => {
     const select = document.getElementById("select1");
-    const selectButton = document.getElementById("select1-button");
     await clickOn(select);
     assert_true(select.matches(':open'));
 
-    const selectButtonWatcher = new EventWatcher(t, selectButton, ["click"]);
-    const selectButtonPromise = selectButtonWatcher.wait_for("click").then((e) => {
+    const selectButtonWatcher = new EventWatcher(t, select, ["mousedown"]);
+    const selectButtonPromise = selectButtonWatcher.wait_for("mousedown").then((e) => {
       assert_true(select.matches(':open'), "Listbox shouldn't have closed yet");
       // PreventDefaulting the event here should prevent UA controller code
       // on the listbox part from selecting the option and closing the listbox.
       e.preventDefault();
     });
 
-    const selectWatcher = new EventWatcher(t, select, ["click"]);
-    const selectPromise = selectWatcher.wait_for("click").then((e) => {
-      assert_true(e.defaultPrevented, "Event should have been defaultPrevented by selectButton click handler");
+    const selectWatcher = new EventWatcher(t, select, ["mousedown"]);
+    const selectPromise = selectWatcher.wait_for("mousedown").then((e) => {
+      assert_true(e.defaultPrevented, "Event should have been defaultPrevented by select mousedown handler");
       assert_true(select.matches(':open'), "Listbox shouldn't have closed, because keydown event was defaultPrevented.");
       assert_equals(select.value, "one", "<select> shouldn't have changed value, because keydown event was defaultPrevented.");
     });
 
-    return Promise.all([selectButtonPromise, selectPromise, clickOn(selectButton)]);
-  }, "Listbox controller code should not run if the click event is preventDefaulted.");
+    return Promise.all([selectButtonPromise, selectPromise, clickOn(select)]);
+  }, "Listbox controller code should not run if the mousedown event is preventDefaulted.");
 
   promise_test(async (t) => {
     const select = document.getElementById("select2");
@@ -141,20 +139,20 @@
 
     await clickOn(select);
     assert_true(select.matches(':open'));
-    await test_driver.send_keys(select, KEY_CODE_MAP.Enter);
+    await test_driver.send_keys(document.activeElement, KEY_CODE_MAP.Enter);
     assert_false(select.matches(':open'));
     assert_equals(select.value, "one");
     assert_array_equals(events, [], "input and change shouldn't fire if value wansn't changed.");
 
     await clickOn(select);
     assert_true(select.matches(':open'));
-    await test_driver.send_keys(select, KEY_CODE_MAP.ArrowDown);
+    await test_driver.send_keys(document.activeElement, KEY_CODE_MAP.ArrowDown);
     assert_equals(select.value, "one", "value shouldn't change when user switches options with arrow key.");
-    assert_array_equals(events, ['input'], "input event should fire when user switches options with arrow key.");
+    assert_array_equals(events, [], "input event should not fire when user switches options with arrow key.");
 
-    await test_driver.send_keys(select, KEY_CODE_MAP.Enter);
+    await test_driver.send_keys(document.activeElement, KEY_CODE_MAP.Enter);
     assert_equals(select.value, "two");
-    assert_array_equals(events, ['input', 'input', 'change'], "input and change should fire after pressing enter.");
+    assert_array_equals(events, ['input', 'change'], "input and change should fire after pressing enter.");
   }, "<select> should fire input and change events when new option is selected.");
 
   promise_test(async (t) => {
@@ -173,10 +171,10 @@
     await clickOn(select);
     assert_true(select.matches(':open'));
     await test_driver.send_keys(select, KEY_CODE_MAP.ArrowDown);
-    assert_array_equals(events, ['input'], "input event should have fired after ArrowDown.");
+    assert_array_equals(events, [], "input event not should have fired after ArrowDown.");
     await test_driver.send_keys(select, KEY_CODE_MAP.Enter);
-    assert_array_equals(events, ['input', 'input', 'change'], "input and change should fire after pressing Enter.");
-  }, "<select> should fire input and change events even when new selected option has the same value as the old.");
+    assert_array_equals(events, [], "input and change should not fire after pressing Enter.");
+  }, "<select> should not fire input and change events when new selected option has the same value as the old.");
 
   promise_test(async (t) => {
     const select = document.getElementById("select4");
@@ -209,7 +207,7 @@
     const select = document.getElementById("select2");
     await test_driver.send_keys(select, " ");
     assert_true(select.matches(':open'), "<Space> should open select");
-    await test_driver.send_keys(select, KEY_CODE_MAP.Enter);
+    await test_driver.send_keys(document.activeElement, KEY_CODE_MAP.Enter);
     assert_false(select.matches(':open'), "<Enter> should close select");
   }, "Check that <Space> opens <select>.");
 
@@ -217,26 +215,7 @@
     const select = document.getElementById("select5WithTabIndex");
     await test_driver.send_keys(select, " ");
     assert_true(select.matches(':open'), "<Space> should open select");
-    await test_driver.send_keys(select, KEY_CODE_MAP.Enter);
+    await test_driver.send_keys(document.activeElement, KEY_CODE_MAP.Enter);
     assert_false(select.matches(':open'), "<Enter> should close select");
   }, "Check that <Space> opens <select> when <select> specifies tabindex");
-
-  promise_test(async() => {
-    const input6 = document.getElementById("input6");
-    const select = document.getElementById("select7");
-    const selectButton = document.getElementById("select7-button")
-
-    var keydown_count = 0;
-    selectButton.addEventListener("keydown", (e) => {
-      keydown_count++;
-    });
-
-    // Focus select via Tab traversal because focus() does not work when select
-    // has custom slot.
-    // TODO(http://crbug.com/1440573) Fix this.
-    await test_driver.send_keys(input6, KEY_CODE_MAP.Tab);
-
-    await test_driver.send_keys(select, "a");
-    assert_equals(keydown_count, 1, "button in shadowroot should have observed keydown");
-  }, "Test that <select> button slot receives key events.");
 </script>

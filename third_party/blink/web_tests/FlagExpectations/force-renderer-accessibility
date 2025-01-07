@@ -15,10 +15,6 @@
 # run virtual test suites.
 virtual/* [ Skip ]
 
-# CustomizableSelect Crashes crbug.com/1401767
-# Several behavior differences between <selectlist> and <select style="appearance:base-select"> crbug.com/366394195
-crbug.com/1401767 external/wpt/html/semantics/forms/the-select-element/select-marker-end-aligned.tentative.html [ Crash Failure ]
-
 # Intentional skips for media tests using proprietary codecs.
 # The linux-blink-web-tests-force-accessibility-rel bot compiles without proprietary codecs.
 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-cuechange.html [ Skip ]
