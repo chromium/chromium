@@ -1585,7 +1585,7 @@ void OmniboxEditModel::OnCurrentMatchChanged() {
     // We don't call MaybeStripKeyword, as we haven't yet updated our internal
     // state (keyword_ and is_keyword_hint_), and MaybeStripKeyword checks this.
     user_text_ =
-        KeywordProvider::SplitReplacementStringFromInput(user_text_, false);
+        AutocompleteInput::SplitReplacementStringFromInput(user_text_, false);
     original_user_text_with_keyword_.clear();
   }
 
@@ -1622,7 +1622,7 @@ void OmniboxEditModel::InternalSetUserText(const std::u16string& text) {
 std::u16string OmniboxEditModel::MaybeStripKeyword(
     const std::u16string& text) const {
   return is_keyword_selected()
-             ? KeywordProvider::SplitReplacementStringFromInput(text, false)
+             ? AutocompleteInput::SplitReplacementStringFromInput(text, false)
              : text;
 }
 

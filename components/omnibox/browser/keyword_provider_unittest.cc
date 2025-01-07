@@ -410,7 +410,7 @@ TEST_F(KeywordProviderTest, GetSubstitutingTemplateURLForInput) {
         metrics::OmniboxEventProto::OTHER, TestingSchemeClassifier());
     input.set_allow_exact_keyword_match(cases[i].allow_exact_keyword_match);
     const TemplateURL* url =
-        KeywordProvider::GetSubstitutingTemplateURLForInput(
+        AutocompleteInput::GetSubstitutingTemplateURLForInput(
             client_->GetTemplateURLService(), &input);
     if (cases[i].expected_url.empty())
       EXPECT_FALSE(url);

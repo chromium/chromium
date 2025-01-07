@@ -140,8 +140,8 @@ void FeaturedSearchProvider::Start(const AutocompleteInput& input,
 
   AutocompleteInput keyword_input = input;
   const TemplateURL* keyword_turl =
-      KeywordProvider::GetSubstitutingTemplateURLForInput(template_url_service_,
-                                                          &keyword_input);
+      AutocompleteInput::GetSubstitutingTemplateURLForInput(
+          template_url_service_, &keyword_input);
   bool is_history_scope =
       keyword_turl &&
       keyword_turl->starter_pack_id() == TemplateURLStarterPackData::kHistory;

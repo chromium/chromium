@@ -1064,7 +1064,7 @@ bool AutocompleteController::ShouldRunProvider(
     // mode and whether this provider should be run.
     AutocompleteInput keyword_input = input_;
     const TemplateURL* keyword_turl =
-        KeywordProvider::GetSubstitutingTemplateURLForInput(
+        AutocompleteInput::GetSubstitutingTemplateURLForInput(
             template_url_service_, &keyword_input);
 
     if (keyword_turl && keyword_turl->starter_pack_id() > 0) {

@@ -12,6 +12,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/i18n/case_conversion.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -22,6 +23,9 @@
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_scheme_classifier.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_service.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/url_formatter/url_fixer.h"
 #include "components/url_formatter/url_formatter.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -733,6 +737,193 @@ AutocompleteInput::GetFeaturedKeywordMode(const std::u16string& text) {
   if (text.starts_with(u'@'))
     return FeaturedKeywordMode::kPrefix;
   return FeaturedKeywordMode::kFalse;
+}
+
+// static
+const TemplateURL* AutocompleteInput::AdjustInputForStarterPackEngines(
+    TemplateURLService* model,
+    AutocompleteInput* input) {
+  DCHECK(model);
+
+  // If the feature is disabled, or not in keyword mode, then `input` is
+  // definitely not in a starter pack scope, so early exit.
+  if (!input->prefer_keyword()) {
+    return nullptr;
+  }
+
+  // If in a starter pack scope, should run the provider with only
+  // the user text AFTER the keyword.  E.g. if the input is "@history text",
+  // set the autocomplete input to just "text".
+  const TemplateURL* template_url =
+      AutocompleteInput::GetSubstitutingTemplateURLForInput(model, input);
+  if (template_url && template_url->starter_pack_id() > 0) {
+    return template_url;
+  }
+
+  return nullptr;
+}
+
+// static
+const TemplateURL* AutocompleteInput::GetSubstitutingTemplateURLForInput(
+    TemplateURLService* model,
+    AutocompleteInput* input) {
+  if (!input->allow_exact_keyword_match()) {
+    return nullptr;
+  }
+
+  DCHECK(model);
+  std::u16string keyword, remaining_input;
+  if (!ExtractKeywordFromInput(*input, model, &keyword, &remaining_input)) {
+    return nullptr;
+  }
+
+  const TemplateURL* template_url = model->GetTemplateURLForKeyword(keyword);
+  if (template_url &&
+      template_url->SupportsReplacement(model->search_terms_data())) {
+    // Adjust cursor position iff it was set before, otherwise leave it as is.
+    size_t cursor_position = std::u16string::npos;
+    // The adjustment assumes that the keyword was stripped from the beginning
+    // of the original input.
+    if (input->cursor_position() != std::u16string::npos &&
+        !remaining_input.empty() &&
+        base::EndsWith(input->text(), remaining_input,
+                       base::CompareCase::SENSITIVE)) {
+      int offset = input->text().length() - input->cursor_position();
+      // The cursor should never be past the last character or before the
+      // first character.
+      DCHECK_GE(offset, 0);
+      DCHECK_LE(offset, static_cast<int>(input->text().length()));
+      if (offset <= 0) {
+        // Normalize the cursor to be exactly after the last character.
+        cursor_position = remaining_input.length();
+      } else {
+        // If somehow the cursor was before the remaining text, set it to 0,
+        // otherwise adjust it relative to the remaining text.
+        cursor_position = offset > static_cast<int>(remaining_input.length())
+                              ? 0u
+                              : remaining_input.length() - offset;
+      }
+    }
+    input->UpdateText(remaining_input, cursor_position, input->parts());
+    return template_url;
+  }
+
+  return nullptr;
+}
+
+// static
+bool AutocompleteInput::ExtractKeywordFromInput(
+    const AutocompleteInput& input,
+    const TemplateURLService* template_url_service,
+    std::u16string* keyword,
+    std::u16string* remaining_input) {
+  if ((input.type() == metrics::OmniboxInputType::EMPTY)) {
+    return false;
+  }
+
+  DCHECK(template_url_service);
+  *keyword = CleanUserInputKeyword(
+      template_url_service,
+      SplitKeywordFromInput(input.text(), true, remaining_input));
+  return !keyword->empty();
+}
+
+// static
+std::u16string AutocompleteInput::SplitReplacementStringFromInput(
+    const std::u16string& input,
+    bool trim_leading_whitespace) {
+  // The input may contain leading whitespace, strip it.
+  std::u16string trimmed_input;
+  base::TrimWhitespace(input, base::TRIM_LEADING, &trimmed_input);
+
+  // And extract the replacement string.
+  std::u16string remaining_input;
+  SplitKeywordFromInput(trimmed_input, trim_leading_whitespace,
+                        &remaining_input);
+  return remaining_input;
+}
+
+// static
+std::u16string AutocompleteInput::CleanUserInputKeyword(
+    const TemplateURLService* template_url_service,
+    const std::u16string& keyword) {
+  DCHECK(template_url_service);
+  std::u16string result(base::i18n::ToLower(keyword));
+  base::TrimWhitespace(result, base::TRIM_ALL, &result);
+  // If this keyword is found with no additional cleaning of input, return it.
+  if (template_url_service->GetTemplateURLForKeyword(result) != nullptr) {
+    return result;
+  }
+
+  // If keyword is not found, try removing a "http" or "https" scheme if any.
+  url::Component scheme_component;
+  if (url::ExtractScheme(result.c_str(), static_cast<int>(result.length()),
+                         &scheme_component)) {
+    const std::u16string_view scheme = std::u16string_view(result).substr(
+        scheme_component.begin, scheme_component.len);
+    if (scheme == url::kHttpScheme16 || scheme == url::kHttpsScheme16) {
+      // Remove the scheme and the trailing ':'.
+      result.erase(0, scheme_component.end() + 1);
+      if (template_url_service->GetTemplateURLForKeyword(result) != nullptr) {
+        return result;
+      }
+      // Many schemes usually have "//" after them, so strip it too.
+      constexpr std::u16string_view kAfterScheme(u"//");
+      if (base::StartsWith(result, kAfterScheme)) {
+        result.erase(0, kAfterScheme.length());
+      }
+      if (template_url_service->GetTemplateURLForKeyword(result) != nullptr) {
+        return result;
+      }
+    }
+  }
+
+  // Remove leading "www.", if any, and again try to find a matching keyword.
+  // The 'www.' stripping is done directly here instead of calling
+  // url_formatter::StripWWW because we're not assuming that the keyword is a
+  // hostname.
+  constexpr std::u16string_view kWww(u"www.");
+  result = base::StartsWith(result, kWww, base::CompareCase::SENSITIVE)
+               ? result.substr(kWww.length())
+               : std::move(result);
+  if (template_url_service->GetTemplateURLForKeyword(result) != nullptr) {
+    return result;
+  }
+
+  // Remove trailing "/", if any.
+  if (!result.empty() && result.back() == '/') {
+    result.pop_back();
+  }
+  return result;
+}
+
+// static
+std::u16string AutocompleteInput::AutocompleteInput::SplitKeywordFromInput(
+    const std::u16string& input,
+    bool trim_leading_whitespace,
+    std::u16string* remaining_input) {
+  // Find end of first token.  The AutocompleteController has trimmed leading
+  // whitespace, so we need not skip over that.
+  const size_t first_white(input.find_first_of(base::kWhitespaceUTF16));
+  DCHECK_NE(0U, first_white);
+  if (first_white == std::u16string::npos) {
+    return input;  // Only one token provided.
+  }
+
+  // Set |remaining_input| to everything after the first token.
+  if (remaining_input != nullptr) {
+    const size_t remaining_start =
+        trim_leading_whitespace
+            ? input.find_first_not_of(base::kWhitespaceUTF16, first_white)
+            : first_white + 1;
+
+    if (remaining_start < input.length()) {
+      remaining_input->assign(input.begin() + remaining_start, input.end());
+    }
+  }
+
+  // Return first token as keyword.
+  return input.substr(0, first_white);
 }
 
 void AutocompleteInput::UpdateText(const std::u16string& text,
