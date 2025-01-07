@@ -1168,23 +1168,56 @@ void RecordAutomaticBeaconOutcome(const blink::AutomaticBeaconOutcome outcome) {
                                 outcome);
 }
 
+// Traverse up a frame tree, starting at `rfh`, until finding a RFH whose
+// associated fenced document data matches the expected criteria. Namely, it
+// must contain automatic beacon data for the provided `event_type`, and if
+// `is_same_origin` is set to false (i.e. the frame initiating an automatic
+// beacon is cross-origin to the mapped URL of the root frame's fenced frame
+// config), the data must be marked as cross-origin exposed.
 FencedDocumentData* GetFencedDocumentData(
     RenderFrameHostImpl* rfh,
-    blink::mojom::AutomaticBeaconType event_type) {
-  while (rfh) {
+    blink::mojom::AutomaticBeaconType event_type,
+    bool is_same_origin) {
+  // Traverse up to but not past a URN iframe root.
+  for (; rfh; rfh = rfh->frame_tree_node()->HasFencedFrameProperties()
+                        ? nullptr
+                        : rfh->GetParent()) {
     FencedDocumentData* fenced_document_data =
         FencedDocumentData::GetForCurrentDocument(rfh);
-    if (fenced_document_data &&
-        fenced_document_data->GetAutomaticBeaconInfo(event_type)) {
+    if (!fenced_document_data) {
+      continue;
+    }
+
+    const std::optional<AutomaticBeaconInfo> beacon_info =
+        fenced_document_data->GetAutomaticBeaconInfo(event_type);
+    if (!beacon_info) {
+      continue;
+    }
+
+    // Check if the beacon data is usable based on whether the data needs to be
+    // cross-origin exposed. If the feature flag is not enabled, unconditionally
+    // return the document data, even if it means returning non-cross origin
+    // exposed data for a cross-origin automatic beacon (which would result in
+    // no data being sent).
+    if (is_same_origin || beacon_info->cross_origin_exposed ||
+        !base::FeatureList::IsEnabled(
+            blink::features::kFencedFramesCrossOriginAutomaticBeaconData)) {
       return fenced_document_data;
     }
-    // Don't traverse past a URN iframe root.
-    if (rfh->frame_tree_node()->HasFencedFrameProperties()) {
-      return nullptr;
-    }
-    rfh = rfh->GetParent();
   }
   return nullptr;
+}
+
+bool FencedFrameAutomaticBeaconsAllowed(RenderFrameHostImpl* rfh) {
+  if (!rfh->GetLastResponseHead() || !rfh->GetLastResponseHead()->headers) {
+    return false;
+  }
+
+  std::optional<std::string> allow =
+      rfh->GetLastResponseHead()->headers->GetNormalizedHeader(
+          "Allow-Fenced-Frame-Automatic-Beacons");
+
+  return allow && base::EqualsCaseInsensitiveASCII(*allow, "true");
 }
 
 bool NewProcessUsedForNavigationWhenSameSiteProcessExists(
@@ -9793,25 +9826,27 @@ void RenderFrameHostImpl::MaybeSendFencedFrameAutomaticReportingBeacon(
   if (!properties.has_value() || !properties->fenced_frame_reporter()) {
     return;
   }
+  bool is_same_origin =
+      properties->mapped_url().has_value() &&
+      initiator_rfh->GetLastCommittedOrigin().IsSameOriginWith(
+          url::Origin::Create(
+              properties->mapped_url()->GetValueIgnoringVisibility()));
   FencedDocumentData* fenced_document_data = nullptr;
   std::optional<AutomaticBeaconInfo> info;
-  fenced_document_data = GetFencedDocumentData(initiator_rfh, event_type);
+  fenced_document_data =
+      GetFencedDocumentData(initiator_rfh, event_type, is_same_origin);
   if (fenced_document_data) {
     info = fenced_document_data->GetAutomaticBeaconInfo(event_type);
   }
 
   // The initiator of the navigation can opt-in to sending automatic beacons
   // when they are served using the `Allow-Fenced-Frame-Automatic-Beacons=true`
-  // HTTP response header. A cross-origin document can only opt in through the
-  // header.
-  const bool initiator_allows_fenced_frame_automatic_beacons =
-      initiator_rfh->GetLastResponseHead() &&
-      initiator_rfh->GetLastResponseHead()->headers && [&]() -> bool {
-    std::optional<std::string> allow =
-        initiator_rfh->GetLastResponseHead()->headers->GetNormalizedHeader(
-            "Allow-Fenced-Frame-Automatic-Beacons");
-    return allow && base::EqualsCaseInsensitiveASCII(*allow, "true");
-  }();
+  // HTTP response header. This is used when automatic beacon data lives in a
+  // different document as an alternative to opting in via setting automatic
+  // beacon data itself, or when there is no data to be sent as part of the
+  // beacon.
+  bool initiator_allows_fenced_frame_automatic_beacons =
+      FencedFrameAutomaticBeaconsAllowed(initiator_rfh);
 
   // If there is no automatic beacon declared and no opt-in through a header,
   // don't send an automatic beacon.
@@ -9840,11 +9875,6 @@ void RenderFrameHostImpl::MaybeSendFencedFrameAutomaticReportingBeacon(
   // Beacons can be sent when the initiator document is cross-origin with the
   // fenced frame config's mapped url, but only if the document opts in through
   // a header.
-  bool is_same_origin =
-      properties->mapped_url().has_value() &&
-      initiator_rfh->GetLastCommittedOrigin().IsSameOriginWith(
-          url::Origin::Create(
-              properties->mapped_url()->GetValueIgnoringVisibility()));
   if (!is_same_origin && !initiator_allows_fenced_frame_automatic_beacons) {
     RecordAutomaticBeaconOutcome(
         blink::AutomaticBeaconOutcome::kNotSameOriginNotOptedIn);
@@ -10029,10 +10059,20 @@ void RenderFrameHostImpl::SetFencedFrameAutomaticBeaconReportEventData(
       !GetLastCommittedOrigin().IsSameOriginWith(
           url::Origin::Create(fenced_frame_properties->mapped_url()
                                   ->GetValueIgnoringVisibility()))) {
-    mojo::ReportBadMessage(
-        "Automatic beacon data can only be set from frames that registered "
-        "reporting metadata.");
-    return;
+    if (!base::FeatureList::IsEnabled(
+            blink::features::kFencedFramesCrossOriginAutomaticBeaconData)) {
+      mojo::ReportBadMessage(
+          "Automatic beacon data can only be set from frames that registered "
+          "reporting metadata.");
+      return;
+    }
+    if (!cross_origin_exposed) {
+      mojo::ReportBadMessage(
+          "This document is cross-origin to the document that contains "
+          "reporting metadata, but setReportEventDataForAutomaticBeacons() was "
+          "not called with crossOriginExposed=true.");
+      return;
+    }
   }
 
   // Ad components cannot set event data for automatic beacons.

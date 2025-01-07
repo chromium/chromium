@@ -14,6 +14,13 @@
 <body>
 <script>
 promise_test(async(t) => {
+  // This test creates the following frame tree:
+  // Root Frame (A)
+  //  └─Fenced Frame (A)
+  //     └─IFrame (B) [sets data]
+  //        └─IFrame (C) [performs navigation]
+  // It then checks that C's navigation uses the data set in B, even if B is
+  // cross-origin to fencedframe A.
   const fencedframe = await attachFencedFrameContext({
     generator_api: 'fledge', register_beacon: true
   });
@@ -27,31 +34,20 @@ promise_test(async(t) => {
 
   await fencedframe.execute(async (beacon) => {
     const iframe = await attachIFrameContext({
-      origin: get_host_info().HTTPS_REMOTE_ORIGIN,
-      headers: [['Allow-Fenced-Frame-Automatic-Beacons', 'true']]
+      origin: 'https://{{hosts[][www2]}}:{{ports[https][1]}}'
     });
-    await setupAutomaticBeacon(iframe, [beacon],
-        "resources/close.html", NavigationTrigger.ClickOnce,
+    // IFrame (C) is created during this setupAutomaticBeacon() call. The data
+    // for IFrame (B) is also set during this call.
+    return setupAutomaticBeacon(iframe, [beacon],
+        "resources/close.html", NavigationTrigger.CrossOriginClick,
         "_blank");
-    return iframe.execute(() => {
-      // Test that automatic beacon data is set correctly in the subframe. Data
-      // that is not cross-origin exposed should not be able to be set in a
-      // cross-origin subframe, even if the same frame that sets the data
-      // triggers the report.
-      window.fence.setReportEventDataForAutomaticBeacons({
-        eventType: "reserved.top_navigation_start",
-        eventData: "This should not be the data",
-        destination: ["buyer"],
-        crossOriginExposed: false
-      });
-    });
   }, [beacon]);
 
   await multiClick(10, 10, fencedframe.element)
 
   await verifyBeaconData(beacon.eventType, beacon.eventData,
       get_host_info().HTTPS_REMOTE_ORIGIN);
-}, 'A cross origin subframe can set automatic beacon data.');
+}, 'An automatic beacon can use data set by a cross-origin ancestor.');
 
 </script>
 </body>

@@ -295,10 +295,20 @@ void Fence::setReportEventDataForAutomaticBeacons(
   }
 
   if (properties->is_cross_origin_content()) {
-    AddConsoleMessage(
-        "Automatic beacon data can only be set from documents that registered "
-        "reporting metadata.");
-    return;
+    if (!base::FeatureList::IsEnabled(
+            blink::features::kFencedFramesCrossOriginAutomaticBeaconData)) {
+      exception_state.ThrowSecurityError(
+          "Automatic beacon data can only be set from documents that "
+          "registered reporting metadata.");
+      return;
+    }
+    if (!event->crossOriginExposed()) {
+      AddConsoleMessage(
+          "This document is cross-origin to the document that contains "
+          "reporting metadata, but setReportEventDataForAutomaticBeacons() was "
+          "not called with crossOriginExposed=true.");
+      return;
+    }
   }
 
   WTF::Vector<blink::FencedFrame::ReportingDestination> destinations;

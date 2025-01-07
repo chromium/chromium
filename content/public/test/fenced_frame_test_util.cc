@@ -64,7 +64,8 @@ FencedFrameTestHelper::FencedFrameTestHelper() {
        {blink::features::kFencedFramesLocalUnpartitionedDataAccess, {}},
        {blink::features::kFencedFramesCrossOriginEventReporting, {}},
        {blink::features::kFencedFramesReportEventHeaderChanges, {}},
-       {blink::features::kExemptUrlFromNetworkRevocationForTesting, {}}},
+       {blink::features::kExemptUrlFromNetworkRevocationForTesting, {}},
+       {blink::features::kFencedFramesCrossOriginAutomaticBeaconData, {}}},
       {/* disabled_features */});
 }
 

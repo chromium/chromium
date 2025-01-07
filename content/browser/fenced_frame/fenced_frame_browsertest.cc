@@ -2467,7 +2467,8 @@ class FencedFrameParameterizedBrowserTest : public FencedFrameBrowserTestBase {
          {blink::features::kFencedFramesAutomaticBeaconCredentials, {}},
          {blink::features::kFencedFramesLocalUnpartitionedDataAccess, {}},
          {blink::features::kFencedFramesCrossOriginEventReporting, {}},
-         {blink::features::kFencedFramesReportEventHeaderChanges, {}}},
+         {blink::features::kFencedFramesReportEventHeaderChanges, {}},
+         {blink::features::kFencedFramesCrossOriginAutomaticBeaconData, {}}},
         {/* disabled_features */});
   }
 
@@ -8785,7 +8786,8 @@ class FencedFrameAutomaticBeaconBrowserTest
                    JsReplace(R"(
               window.fence.setReportEventDataForAutomaticBeacons({
                 eventType: $1,
-                destination: $2
+                destination: $2,
+                crossOriginExposed: true,
               });
             )",
                              config.beacon_type.name, destination_list.Clone()),
@@ -8802,7 +8804,8 @@ class FencedFrameAutomaticBeaconBrowserTest
               window.fence.setReportEventDataForAutomaticBeacons({
                 eventType: $1,
                 eventData: $2,
-                destination: $3
+                destination: $3,
+                crossOriginExposed: true,
               });
             )",
                              config.beacon_type.name, config.message.value(),
@@ -9101,7 +9104,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameAutomaticBeaconBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(FencedFrameAutomaticBeaconBrowserTest,
-                       CrossOriginToMappedURL) {
+                       CrossOriginToMappedURLWithoutOptIn) {
   Config config = {
       .starting_url = {"a.test", "/fenced_frames/title1.html"},
       .secondary_initiator_url = {"c.test", "/fenced_frames/title1.html"},
