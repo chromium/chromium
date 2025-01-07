@@ -37,13 +37,13 @@
 
 namespace blink {
 
-PLATFORM_EXPORT DEFINE_GLOBAL(Length, g_auto_length);
-PLATFORM_EXPORT DEFINE_GLOBAL(Length, g_fill_available_length);
-PLATFORM_EXPORT DEFINE_GLOBAL(Length, g_stretch_length);
-PLATFORM_EXPORT DEFINE_GLOBAL(Length, g_fit_content_length);
-PLATFORM_EXPORT DEFINE_GLOBAL(Length, g_max_content_length);
-PLATFORM_EXPORT DEFINE_GLOBAL(Length, g_min_content_length);
-PLATFORM_EXPORT DEFINE_GLOBAL(Length, g_min_intrinsic_length);
+DEFINE_GLOBAL(PLATFORM_EXPORT, Length, g_auto_length);
+DEFINE_GLOBAL(PLATFORM_EXPORT, Length, g_fill_available_length);
+DEFINE_GLOBAL(PLATFORM_EXPORT, Length, g_stretch_length);
+DEFINE_GLOBAL(PLATFORM_EXPORT, Length, g_fit_content_length);
+DEFINE_GLOBAL(PLATFORM_EXPORT, Length, g_max_content_length);
+DEFINE_GLOBAL(PLATFORM_EXPORT, Length, g_min_content_length);
+DEFINE_GLOBAL(PLATFORM_EXPORT, Length, g_min_intrinsic_length);
 
 // static
 void Length::Initialize() {

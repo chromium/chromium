@@ -248,8 +248,8 @@ void StringImpl::FreezeStaticStrings() {
 
 wtf_size_t StringImpl::highest_static_string_length_ = 0;
 
-DEFINE_GLOBAL(StringImpl, g_global_empty);
-DEFINE_GLOBAL(StringImpl, g_global_empty16_bit);
+DEFINE_GLOBAL(, StringImpl, g_global_empty);
+DEFINE_GLOBAL(, StringImpl, g_global_empty16_bit);
 // Callers need the global empty strings to be non-const.
 StringImpl* StringImpl::empty_ = const_cast<StringImpl*>(&g_global_empty);
 StringImpl* StringImpl::empty16_bit_ =
