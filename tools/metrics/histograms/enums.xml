@@ -404,6 +404,10 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="11" label="Unknown reason"/>
   <int value="12" label="User requested"/>
   <int value="13" label="User stopped"/>
+  <int value="14" label="Android API failed"/>
+  <int value="15" label="Killed by App Freezer"/>
+  <int value="16" label="App was disabled or components updated"/>
+  <int value="17" label="Package was updated"/>
 </enum>
 
 <enum name="AnrSkippedReason">

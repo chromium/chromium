@@ -78,7 +78,7 @@ public class TrackExitReasons {
      * Looks up the exit reason for the process identified in the data, and records histograms in
      * UMA if the reason is found.
      *
-     * @return The exit reason or null if not found
+     * @return The exit reason or -1 if not found
      */
     @VisibleForTesting
     public static int findExitReasonAndLog(AppStateData data) {

@@ -198,6 +198,8 @@ chromium-metrics-reviews@google.com.
     Reason given by Android ActivityManager for the exit of the process, only
     recorded in Android R+. Recorded on the next browser startup for browser
     exits, or right after the process died for child processes.
+
+    Records API failed when the ActivityManager does not return a reason.
   </summary>
 </histogram>
 

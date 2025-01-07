@@ -6,7 +6,6 @@ package org.chromium.android_webview.robolectric.metrics;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
@@ -33,7 +32,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.crash.browser.ProcessExitReasonFromSystem;
-import org.chromium.components.crash.browser.ProcessExitReasonFromSystem.ExitReason;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -153,8 +151,16 @@ public class TrackExitReasonsTest {
         long previousTimeMillis = 5L;
         long currentTimeMillis = 7L;
         TrackExitReasons.setCurrentTimeMillisForTest(currentTimeMillis);
+        // A few valid return values from ProcessExitReasonFromSystem#getExitReason.
+        int reasonsToTest[] = {
+            ApplicationExitInfo.REASON_ANR,
+            ApplicationExitInfo.REASON_CRASH_NATIVE,
+            ApplicationExitInfo.REASON_FREEZER,
+            -1
+        };
 
-        for (int systemReason = 0; systemReason < ExitReason.NUM_ENTRIES; systemReason++) {
+        for (int i = 0; i < reasonsToTest.length; i++) {
+            int systemReason = reasonsToTest[i];
             for (@AppState int state = 0; state <= AppState.STARTUP; state++) {
                 ProcessExitReasonFromSystem.setActivityManagerForTest(
                         createMockActivityManager(previousPid, systemReason));
@@ -179,7 +185,7 @@ public class TrackExitReasonsTest {
                                         (int) (currentTimeMillis - previousTimeMillis))
                                 .build();
 
-                assertNotEquals(-1, TrackExitReasons.findExitReasonAndLog(data));
+                assertEquals(systemReason, TrackExitReasons.findExitReasonAndLog(data));
                 histogramWatcher.assertExpected();
             }
         }
