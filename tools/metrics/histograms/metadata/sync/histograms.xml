@@ -1261,37 +1261,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.ModelTypeCount4{SyncDataType}" units="entries"
-    expires_after="2025-05-18">
-  <owner>rushans@google.com</owner>
-  <owner>mastiz@chromium.org</owner>
-  <summary>
-    Counts the number of entries for each data type. The count is based on
-    metadata entries for the type. Recorded after sync configuration. This
-    metric is used for monitoring general health of sync client-side code.
-
-    TODO(crbug.com/358120886): Remove once alerts are switched to
-    Sync.DataTypeCount.
-  </summary>
-  <token key="SyncDataType" variants="SyncDataType"/>
-</histogram>
-
-<histogram name="Sync.ModelTypeEntityChange3{SyncDataType}"
-    enum="SyncEntityChange" expires_after="2025-05-18">
-  <owner>treib@chromium.org</owner>
-  <owner>rushans@google.com</owner>
-  <summary>
-    Recorded once for every sync entity change (whenever it is commited to the
-    server or updated from the server). This metric is used for monitoring
-    general health of sync client-side code. Note: This is only recorded with a
-    data type suffix. The base version is never recorded.
-
-    TODO(crbug.com/358120886): Remove once alerts are switched to
-    Sync.DataTypeEntityChange.
-  </summary>
-  <token key="SyncDataType" variants="SyncDataType"/>
-</histogram>
-
 <histogram
     name="Sync.NonReflectionUpdateFreshnessPossiblySkewed2{SyncDataType}"
     units="ms" expires_after="2025-07-06">
