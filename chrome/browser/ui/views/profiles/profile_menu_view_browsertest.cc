@@ -1029,7 +1029,6 @@ constexpr std::array kActionableItems_SingleProfileWithCustomName = {
     ProfileMenuViewBase::ActionableItem::kSigninButton,
     ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
     ProfileMenuViewBase::ActionableItem::kEditProfileButton,
-    ProfileMenuViewBase::ActionableItem::kExitProfileButton,
     ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
     ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
     ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
@@ -1164,10 +1163,11 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
          switches::kImprovedSigninUIOnDesktop}),
     /*disabled_features=*/{}) {
   // Add two additional profiles.
+  Profile* other_profile = CreateAdditionalProfile();
   CreateAdditionalProfile();
-  CreateAdditionalProfile();
-  // Open a second browser window for the current profile, so the
-  // ExitProfileButton is shown.
+  // Open a browser for another profile, and a second browser for the current
+  // profile, so the kExitProfileButton is shown.
+  Browser::Create(Browser::CreateParams(other_profile, /*user_gesture=*/true));
   SetTargetBrowser(CreateBrowser(browser()->profile()));
   RunTest();
 }
@@ -1240,7 +1240,6 @@ constexpr std::array kActionableItems_SyncEnabled = {
     ProfileMenuViewBase::ActionableItem::kManageGoogleAccountButton,
     ProfileMenuViewBase::ActionableItem::kEditProfileButton,
     ProfileMenuViewBase::ActionableItem::kSyncSettingsButton,
-    ProfileMenuViewBase::ActionableItem::kExitProfileButton,
     ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
     ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
     ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
@@ -1340,7 +1339,6 @@ constexpr std::array kActionableItems_SyncError = {
     ProfileMenuViewBase::ActionableItem::kManageGoogleAccountButton,
     ProfileMenuViewBase::ActionableItem::kEditProfileButton,
     ProfileMenuViewBase::ActionableItem::kSyncSettingsButton,
-    ProfileMenuViewBase::ActionableItem::kExitProfileButton,
     ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
     ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
     ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
@@ -1454,7 +1452,6 @@ constexpr std::array kActionableItems_SyncPaused = {
     ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
     ProfileMenuViewBase::ActionableItem::kEditProfileButton,
     ProfileMenuViewBase::ActionableItem::kSyncSettingsButton,
-    ProfileMenuViewBase::ActionableItem::kExitProfileButton,
     ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
     ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
     ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
@@ -1561,7 +1558,6 @@ constexpr std::array kActionableItems_SigninDisallowed = {
     ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
     ProfileMenuViewBase::ActionableItem::kEditProfileButton,
     ProfileMenuViewBase::ActionableItem::kSyncSettingsButton,
-    ProfileMenuViewBase::ActionableItem::kExitProfileButton,
     ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
     ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
     ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
@@ -1670,7 +1666,6 @@ constexpr std::array kActionableItems_WithUnconsentedPrimaryAccount = {
     ProfileMenuViewBase::ActionableItem::kManageGoogleAccountButton,
     ProfileMenuViewBase::ActionableItem::kEditProfileButton,
     ProfileMenuViewBase::ActionableItem::kSyncSettingsButton,
-    ProfileMenuViewBase::ActionableItem::kExitProfileButton,
     ProfileMenuViewBase::ActionableItem::kSignoutButton,
     ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
     ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
@@ -1761,7 +1756,6 @@ constexpr std::array kActionableItems_WithPendingAccount = {
     ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
     ProfileMenuViewBase::ActionableItem::kEditProfileButton,
     ProfileMenuViewBase::ActionableItem::kSyncSettingsButton,
-    ProfileMenuViewBase::ActionableItem::kExitProfileButton,
     ProfileMenuViewBase::ActionableItem::kSignoutButton,
     ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
     ProfileMenuViewBase::ActionableItem::kGuestProfileButton,

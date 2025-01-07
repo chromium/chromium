@@ -1101,13 +1101,37 @@ void ProfileMenuView::MaybeBuildCloseBrowsersButton() {
                          IDS_GUEST_PROFILE_MENU_CLOSE_BUTTON, window_count),
                      std::move(callback),
                      vector_icons::kCloseChromeRefreshIcon);
-  } else if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
-             window_count > 0) {
+    return;
+  }
+
+  if (switches::IsImprovedSigninUIOnDesktopEnabled()) {
+    // Show the button only if there are multiple profiles open.
+    bool other_profile_open = false;
+    for (Profile* loaded_profile :
+         g_browser_process->profile_manager()->GetLoadedProfiles()) {
+      if (loaded_profile == profile) {
+        continue;
+      }
+      if (CountBrowsersFor(loaded_profile) > 0) {
+        other_profile_open = true;
+        break;
+      }
+    }
+    if (!other_profile_open) {
+      return;
+    }
+  }
+
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
+      window_count > 0) {
     AddFeatureButton(
         l10n_util::GetPluralStringFUTF16(
             IDS_PROFILE_MENU_CLOSE_PROFILE_X_WINDOWS_BUTTON, window_count),
         std::move(callback), vector_icons::kCloseChromeRefreshIcon);
-  } else if (window_count > 1) {
+    return;
+  }
+
+  if (window_count > 1) {
     AddFeatureButton(l10n_util::GetPluralStringFUTF16(
                          IDS_PROFILES_CLOSE_X_WINDOWS_BUTTON, window_count),
                      std::move(callback),
