@@ -44,7 +44,12 @@
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/system_identity_util.h"
+#import "ios/chrome/browser/widget_kit/model/features.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
+
+#if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
+#import "ios/chrome/browser/widget_kit/model/model_swift.h"  // nogncheck
+#endif
 
 using signin::constants::kNoHostedDomainFound;
 
@@ -91,6 +96,10 @@ void UpdateLoadedAccounts(std::vector<AccountInfo> accounts_on_device) {
   }
   NSUserDefaults* shared_defaults = app_group::GetGroupUserDefaults();
   [shared_defaults setObject:accounts forKey:app_group::kAccountsOnDevice];
+
+#if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
+  [WidgetTimelinesUpdater reloadAllTimelines];
+#endif
 }
 
 }  // namespace

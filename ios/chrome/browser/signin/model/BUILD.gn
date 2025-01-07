@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ios/build/chrome_build.gni")
+
 source_set("model") {
   sources = [
     "about_signin_internals_factory.cc",
@@ -147,8 +149,12 @@ source_set("authentication_service") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/widget_kit/model:features",
     "//ios/chrome/common/app_group",
   ]
+  if (ios_enable_widget_kit_extension && ios_enable_widgets_for_mim) {
+    deps += [ "//ios/chrome/browser/widget_kit/model:model_swift" ]
+  }
 }
 
 source_set("authentication_service_factory") {
