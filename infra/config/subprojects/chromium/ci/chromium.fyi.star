@@ -1957,7 +1957,7 @@ fyi_ios_builder(
             "mac_default_arm64",
             "mac_toolchain",
             "out_dir_arg",
-            "xcode_15_beta",
+            "xcode_16_main",
             "xctest",
         ],
     ),
