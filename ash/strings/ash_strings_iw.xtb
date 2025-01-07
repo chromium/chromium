@@ -530,6 +530,7 @@
 <translation id="2847759467426165163">‏הפעלת Cast אל</translation>
 <translation id="2848120746144143659">‏כדי לצלם את המסך המלא, מקישים על Enter</translation>
 <translation id="2849936225196189499">קריטי</translation>
+<translation id="2850207700020959936">לאפליקציות יש גישה למצלמה</translation>
 <translation id="2860184359326882502">ההתאמה הטובה ביותר</translation>
 <translation id="2865888419503095837">פרטי רשת</translation>
 <translation id="2869095047958348710">ביום <ph name="DAY_OF_WEEK" /> האחרון</translation>
@@ -584,6 +585,7 @@
 <translation id="304417730895741346">האפליקציות המוצמדות והפתוחות נמצאות על המדף. כדי להצמיד אפליקציה למדף, לוחצים לחיצה ימנית על אפליקציה או מקישים על לוח המגע בשתי אצבעות.</translation>
 <translation id="3045488863354895414">צהריים טובים,</translation>
 <translation id="3047761520276763270">אפשר לנסות לומר:</translation>
+<translation id="3053407068093039599">הפעלה או השבתה של הגישה למצלמה</translation>
 <translation id="3055162170959710888">השתמשת היום במכשיר הזה במשך <ph name="USED_TIME" /></translation>
 <translation id="3062298103034426069">אין תמיכה</translation>
 <translation id="3068622547379332530">גרסה <ph name="VERSION_NAME" /> ‏(<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -1800,6 +1802,7 @@
 <translation id="7034025838182392395">האפליקציה <ph name="APP_NAME" /> מבקשת להשתמש ב<ph name="DEVICE_NAME" />. יש להפעיל את המתג הפיזי ב<ph name="DEVICE_NAME" />.</translation>
 <translation id="703425375924687388">‏<ph name="QUERY_NAME" />,‏ Google Assistant</translation>
 <translation id="7042322267639375032">כיווץ של אזור הסטטוס</translation>
+<translation id="7042593542151411225">לאפליקציות אין גישה למצלמה</translation>
 <translation id="7045033600005038336">להחליף את התבנית?</translation>
 <translation id="7051244143160304048">המכשיר <ph name="DEVICE_NAME" /> מנותק</translation>
 <translation id="7055910611768509537">לא נעשה שימוש בסטיילוס יותר משבוע</translation>
@@ -2377,6 +2380,7 @@
 <translation id="9074432941673450836">‏בעזרת האפליקציות אפשר לבצע כל מה שצריך ב-<ph name="PRODUCT_NAME" />. האפליקציות נמצאות במרכז האפליקציות. אפשר גם להקיש על מקש 'מרכז האפליקציות' (מעל מקש Shift השמאלי) במקלדת.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9077515519330855811">פקדי מדיה, <ph name="MEDIA_TITLE" /> מופעל עכשיו</translation>
+<translation id="9079012373317704997">אי אפשר להפעיל את הגישה למצלמה מרחוק</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">המצלמה מוצמדת לפינה הימנית העליונה</translation>
 <translation id="9080132581049224423">כדי לחזור לדף הבית, צריך להחליק למעלה</translation>

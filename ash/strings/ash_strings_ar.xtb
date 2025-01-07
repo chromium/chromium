@@ -529,6 +529,7 @@
 <translation id="2847759467426165163">البث إلى</translation>
 <translation id="2848120746144143659">‏اضغط على المفتاح Enter لالتقاط صورة للشاشة بأكملها</translation>
 <translation id="2849936225196189499">مهمة</translation>
+<translation id="2850207700020959936">يمكن للتطبيقات الوصول إلى الكاميرا</translation>
 <translation id="2860184359326882502">أفضل نتيجة مطابقة</translation>
 <translation id="2865888419503095837">معلومات الشبكة</translation>
 <translation id="2869095047958348710">يوم <ph name="DAY_OF_WEEK" /> الماضي</translation>
@@ -583,6 +584,7 @@
 <translation id="304417730895741346">تطبيقاتك المثبَّتة والمفتوحة معروضة هنا على الرف. لتثبيت تطبيق في الرف، انقر بزر الماوس الأيمن عليه أو انقر بإصبعين على لوحة اللمس.</translation>
 <translation id="3045488863354895414">مساء الخير،</translation>
 <translation id="3047761520276763270">حاوِِل قول:</translation>
+<translation id="3053407068093039599">تفعيل إذن الوصول إلى الكاميرا أو إيقافه</translation>
 <translation id="3055162170959710888">استخدمت هذا الجهاز لمدة <ph name="USED_TIME" /> اليوم</translation>
 <translation id="3062298103034426069">غير متاح</translation>
 <translation id="3068622547379332530">الإصدار <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -1798,6 +1800,7 @@
 <translation id="7034025838182392395">‫"<ph name="APP_NAME" />" بحاجة إلى استخدام <ph name="DEVICE_NAME" />. عليك تشغيل <ph name="DEVICE_NAME" /> باستخدام الزر اليدوي على جهازك.</translation>
 <translation id="703425375924687388">‏<ph name="QUERY_NAME" />، "مساعد Google"</translation>
 <translation id="7042322267639375032">تصغير منطقة الحالة</translation>
+<translation id="7042593542151411225">لا يمكن للتطبيقات الوصول إلى الكاميرا</translation>
 <translation id="7045033600005038336">هل تريد استبدال النموذج؟</translation>
 <translation id="7051244143160304048">تم قطع الاتصال بجهاز <ph name="DEVICE_NAME" />.</translation>
 <translation id="7055910611768509537">لم يتم استخدام قلم الشاشة منذ أكثر من أسبوع.</translation>
@@ -2374,6 +2377,7 @@
 <translation id="9074432941673450836">‏استخدِم التطبيقات لتنفيذ كل مهامك المطلوبة على <ph name="PRODUCT_NAME" />. وانتقِل إلى "مشغِّل التطبيقات" للعثور على كل تطبيقاتك. يمكنك أيضًا الضغط على مفتاح "مشغّل التطبيقات" (فوق مفتاح Shift الأيسر) في لوحة المفاتيح.</translation>
 <translation id="9074739597929991885">بلوتوث</translation>
 <translation id="9077515519330855811">عناصر التحكّم في الوسائط. يجري الآن تشغيل <ph name="MEDIA_TITLE" />.</translation>
+<translation id="9079012373317704997">لا يمكن تفعيل إذن الوصول إلى الكاميرا عن بُعد</translation>
 <translation id="9079731690316798640">‏Wi-Fi:‏ <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">تم توجيه الكاميرا إلى الزاوية العلوية اليسرى.</translation>
 <translation id="9080132581049224423">يُرجى التمرير السريع إلى الأعلى للانتقال إلى الصفحة الرئيسية.</translation>

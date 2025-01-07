@@ -285,6 +285,7 @@
 <translation id="2214453882118345682">使用相機購物、翻譯及識別所見內容。</translation>
 <translation id="2220529011494928058">報告問題</translation>
 <translation id="2223461067862937305">建立 QR 碼</translation>
+<translation id="2229345671837147090">遠端分頁網格</translation>
 <translation id="2230173723195178503">已載入網頁</translation>
 <translation id="2236949375853147973">我的活動</translation>
 <translation id="2240256190924001613">有可用的設定描述檔</translation>
@@ -651,6 +652,7 @@
 <translation id="3992684624889376114">關於本頁</translation>
 <translation id="3994422733891749358">選擇要接收的通知</translation>
 <translation id="3994522032746736727">使用 <ph name="EMAIL" /> 登入</translation>
+<translation id="3994911892367422121">知道了</translation>
 <translation id="3995521777587992544">網頁載入進度列，已經載入咗 <ph name="EMAIL" />。</translation>
 <translation id="3997522473364371632">管理員已停用分享密碼功能。</translation>
 <translation id="4002066346123236978">標題</translation>
@@ -798,6 +800,7 @@
 <translation id="4651927776207937667">{count,plural, =1{1分鐘後隱藏}other{{count} 分鐘後隱藏}}</translation>
 <translation id="4652817563047461855">確保密碼安全、檢查密碼是否被盜用，並提供可確保網上安全的建議。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">儲存</translation>
+<translation id="466307903888586355">你的機構不允許儲存檔案</translation>
 <translation id="4668929960204016307">，</translation>
 <translation id="4669618761237477717">你的機構要求你私密瀏覽內容。在無痕模式下，系統不會同步分頁群組。
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -1271,6 +1274,7 @@
 <translation id="6641465290890659327">分享密碼副本</translation>
 <translation id="6642362222295953972">切換至現有的分頁</translation>
 <translation id="6644512095122093795">儲存密碼提議</translation>
+<translation id="664573288952458293">一般分頁網格</translation>
 <translation id="6645899968535965230">二維條碼：<ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">系統會將您瀏覽的網址傳送至 Google，以便預測您接下來可能會瀏覽的網站</translation>
 <translation id="6657585470893396449">密碼</translation>
@@ -1661,6 +1665,7 @@
 <translation id="8407669440184693619">找不到此網站的密碼</translation>
 <translation id="8407831512155324054">你密碼的安全度夠高</translation>
 <translation id="842523302461531262">在「設定」中設定為預設…</translation>
+<translation id="8425826545759040372">無痕式分頁網格</translation>
 <translation id="8428045167754449968">城市/鄉鎮</translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8428634594422941299">知道了</translation>

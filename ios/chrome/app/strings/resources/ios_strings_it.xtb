@@ -285,6 +285,7 @@
 <translation id="2214453882118345682">Acquista, traduci e identifica ciò che vedi con la fotocamera.</translation>
 <translation id="2220529011494928058">Segnala un problema</translation>
 <translation id="2223461067862937305">Crea un codice QR</translation>
+<translation id="2229345671837147090">Griglia schede remote</translation>
 <translation id="2230173723195178503">Pagina web caricata</translation>
 <translation id="2236949375853147973">Le mie attività</translation>
 <translation id="2240256190924001613">Profilo di configurazione disponibile</translation>
@@ -651,6 +652,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3992684624889376114">Informazioni su questa pagina</translation>
 <translation id="3994422733891749358">Scegli le notifiche che vuoi ricevere</translation>
 <translation id="3994522032746736727">Accedi come <ph name="EMAIL" /></translation>
+<translation id="3994911892367422121">OK</translation>
 <translation id="3995521777587992544">Barra di avanzamento del caricamento delle pagine. Percentuale di caricamento: <ph name="EMAIL" />.</translation>
 <translation id="3997522473364371632">La condivisione della password è stata disattivata dall'amministratore.</translation>
 <translation id="4002066346123236978">Titolo</translation>
@@ -798,6 +800,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4651927776207937667">{count,plural, =1{Nascondi dopo 1 minuto}other{Nascondi dopo {count} minuti}}</translation>
 <translation id="4652817563047461855">Assicurati che le tue password siano al sicuro, scopri se sono state compromesse e ricevi consigli per proteggerti online. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Salva</translation>
+<translation id="466307903888586355">La tua organizzazione ha bloccato il salvataggio dei file</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">La tua organizzazione ti richiede di navigare in privato. I gruppi di schede non vengono sincronizzati in modalità di navigazione in incognito.
 <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
@@ -1271,6 +1274,7 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="6641465290890659327">Condividi una copia della password</translation>
 <translation id="6642362222295953972">Passa alla scheda esistente</translation>
 <translation id="6644512095122093795">Chiedi di salvare le password</translation>
+<translation id="664573288952458293">Griglia schede normali</translation>
 <translation id="6645899968535965230">Codice QR: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">Gli URL che visiti vengono inviati a Google per prevedere quali siti potresti visitare in futuro</translation>
 <translation id="6657585470893396449">Password</translation>
@@ -1661,6 +1665,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8407669440184693619">Non è stata trovata alcuna password per questo sito</translation>
 <translation id="8407831512155324054">Le tue password sembrano efficaci</translation>
 <translation id="842523302461531262">Rendilo predefinito nelle impostazioni…</translation>
+<translation id="8425826545759040372">Griglia schede di navigazione in incognito</translation>
 <translation id="8428045167754449968">Città/località</translation>
 <translation id="8428213095426709021">Impostazioni</translation>
 <translation id="8428634594422941299">Ok</translation>

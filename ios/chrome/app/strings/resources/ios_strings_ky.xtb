@@ -285,6 +285,7 @@
 <translation id="2214453882118345682">Камера аркылуу соода кылыңыз, тексттерди которуңуз жана көргөн нерсеңизди аныктаңыз.</translation>
 <translation id="2220529011494928058">Маселе жөнүндө кабар берүү</translation>
 <translation id="2223461067862937305">QR кодун түзүү</translation>
+<translation id="2229345671837147090">Алыскы өтмөк торчосу</translation>
 <translation id="2230173723195178503">Веб баракча жүктөлдү</translation>
 <translation id="2236949375853147973">Менин аракеттерим</translation>
 <translation id="2240256190924001613">Профилдин конфигурациясы жеткиликтүү</translation>
@@ -651,6 +652,7 @@
 <translation id="3992684624889376114">Бул бет жөнүндө</translation>
 <translation id="3994422733891749358">Алгыңыз келген билдирмелерди тандаңыз</translation>
 <translation id="3994522032746736727"><ph name="EMAIL" /> аккаунту менен кириңиз</translation>
+<translation id="3994911892367422121">ТҮШҮНДҮМ</translation>
 <translation id="3995521777587992544">Барактын жүктөлүшүн көрсөтүүчү тилке, <ph name="EMAIL" /> жүктөлдү.</translation>
 <translation id="3997522473364371632">Сырсөздү бөлүшүү функциясын администраторуңуз өчүрүп койгон.</translation>
 <translation id="4002066346123236978">Аталышы</translation>
@@ -798,6 +800,7 @@
 <translation id="4651927776207937667">{count,plural, =1{1 мүнөттөн кийин жашыруу}other{{count} мүнөттөн кийин жашыруу}}</translation>
 <translation id="4652817563047461855">Сырсөздөр коопсуз экенин жана уурдалбаганын текшерип, Интернеттеги шылуундуктан коргонуңуз. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Сактоо</translation>
+<translation id="466307903888586355">Уюмуңуз файлдарды сактоого тыюу салган</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Уюмуңуз жекече серептөөңүздү талап кылат. Өтмөктөр топтору Жашыруун режимде шайкештирилбейт.
 <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
@@ -1271,6 +1274,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6641465290890659327">Сырсөзүңүздүн көчүрмөсүн бөлүшүңүз</translation>
 <translation id="6642362222295953972">Учурдагы өтмөккө которулуу</translation>
 <translation id="6644512095122093795">Сырсөздөрдү сактоону сунуштоо</translation>
+<translation id="664573288952458293">Кадимки өтмөк торчосу</translation>
 <translation id="6645899968535965230">QR код: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">Кийин кайсы сайттарга кирериңизди болжолдоо үчүн сиз баш баккан URL даректери Google'га жөнөтүлүп турат</translation>
 <translation id="6657585470893396449">Сырсөз</translation>
@@ -1661,6 +1665,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8407669440184693619">Бул сайт үчүн бир да сырсөз табылган жок</translation>
 <translation id="8407831512155324054">Сырсөздөрүңүз татаал көрүнөт</translation>
 <translation id="842523302461531262">Параметрлерде демейки катары коюу…</translation>
+<translation id="8425826545759040372">Жашыруун өтмөк торчосу</translation>
 <translation id="8428045167754449968">Шаар/Шаарча</translation>
 <translation id="8428213095426709021">Параметрлер</translation>
 <translation id="8428634594422941299">Түшүнүктүү</translation>

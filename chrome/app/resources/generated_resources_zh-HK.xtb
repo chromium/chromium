@@ -99,7 +99,6 @@
 <translation id="1061904396131502319">快到休息時間了</translation>
 <translation id="10619348099955377">複製顯示名稱</translation>
 <translation id="1062407476771304334">取代</translation>
-<translation id="1062628064301375934">協助我們建立更私密的網絡</translation>
 <translation id="1066964438793906105">掃瞄是否有惡意軟件</translation>
 <translation id="1067661089446014701">為進一步加強安全性，建議先在裝置上將密碼加密，再儲存至您的 Google 帳戶</translation>
 <translation id="1067922213147265141">其他 Google 服務</translation>
@@ -684,7 +683,6 @@
 <translation id="1473223074251193484">設定網絡共享設定</translation>
 <translation id="1473927070149284123">請再試一次或手動連線至特定網路</translation>
 <translation id="1474785664565228650">Parallels Desktop 需要重新啟動，麥克風設定的變更才會生效。重新啟動 Parallels Desktop 即可繼續。</translation>
-<translation id="1474893630593443211">更全面控制系統顯示的廣告</translation>
 <translation id="1475502736924165259">下列檔案上的憑證不屬於任何其他類別</translation>
 <translation id="1476088332184200792">複製至您的裝置</translation>
 <translation id="1476347941828409626">管理 Chrome 設定檔(&amp;M)</translation>
@@ -1217,7 +1215,6 @@
 <translation id="1829192082282182671">縮小(&amp;O)</translation>
 <translation id="1830550083491357902">未登入</translation>
 <translation id="1831848493690504725">我們無法透過已連線的網絡連接 Google。請嘗試選取其他網絡，或檢查網絡設定或 Proxy 設定 (如有使用 Proxy)。</translation>
-<translation id="1832459821645506983">是，我同意使用</translation>
 <translation id="1832511806131704864">手機變更內容已更新</translation>
 <translation id="1832848789136765277">為確保您可隨時存取同步資料，請驗證您的身分</translation>
 <translation id="1833059747301212935">輕鬆存取最近使用的文件和近期日曆活動</translation>
@@ -1541,7 +1538,6 @@
 <translation id="2051555741181591333">自動停用熱點</translation>
 <translation id="2051669996101374349">盡量使用 HTTPS，並在系統載入不支援 HTTPS 的網站前先接收提醒。由於已啟用「進階保護」功能，因此你無法變更此設定。</translation>
 <translation id="2052572566310583903">您在其他裝置上安裝的應用程式</translation>
-<translation id="2053105195397337973">我們正在探索方法，讓網站阻止垃圾廣告和欺詐行為，同時限制追蹤功能。</translation>
 <translation id="2053312383184521053">閒置狀態數據</translation>
 <translation id="205560151218727633">「Google 助理」標誌</translation>
 <translation id="2058456167109518507">偵測到的裝置</translation>
@@ -2510,7 +2506,6 @@
 <translation id="2727633948226935816">不要再提醒我</translation>
 <translation id="2727712005121231835">實際大小</translation>
 <translation id="2727744317940422214">抱歉，發生錯誤。請提供意見，並在說明中加上 #bruschetta。錯誤代碼：<ph name="ERROR" />。清理失敗，您可能需要手動清理。</translation>
-<translation id="2729327310379176711">Chrome 正在尋找新方法，以減少追蹤，並進一步提高瀏覽時的安全性。Chrome 亦會<ph name="ESTIMATE_INTERESTS_LINK" />，並讓您管理這些興趣。然後，您瀏覽的網站便可要求 Chrome 提供您的興趣，以向您展示廣告。</translation>
 <translation id="2729577602370119849">輕鬆存取和管理打印機</translation>
 <translation id="2729661575355442512"><ph name="BEGIN_PARAGRAPH1" />開啟「定位精確度」時，系統會根據 Wi-Fi 存取點和流動網絡發射塔等無線訊號相關資料，以及加速計和陀螺儀等裝置感應器資料，更精確地估計裝置位置，供 Android 應用程式和服務提供適地性功能。為此，Google 會定期收集此裝置附近的裝置感應器資訊和無線訊號，協助尋找無線訊號位置。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />Google 會將從此裝置收集的資料用於改善定位精確度和適地性服務，並改善、提供和維護 Google 整體的服務。我們會按照自身和第三方的合法權益來處理這些資料，滿足使用者的需要。這些資料不會用於識別任何人士。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />你可隨時在此裝置的位置設定關閉「定位精確度」，只需前往 [設定] &gt; [私隱與安全] &gt; [私隱權設定] &gt; [位置資料存取權] &gt; [進階位置設定] 便可。如果停用「定位精確度」，系統就不會收集任何「定位精確度」資料。Android 應用程式和服務只能使用 IP 位址 (如有) 來判斷此裝置的位置，而這種做法可能會影響 Android 應用程式和服務 (例如「Google 地圖」) 的位置資訊可用性和準確度。<ph name="END_PARAGRAPH3" /></translation>
@@ -2671,7 +2666,6 @@
 <translation id="2828375943530438449">從「登入」頁面返回</translation>
 <translation id="2828650939514476812">連線至 Wi-Fi 網絡</translation>
 <translation id="2828833307884755422">已釋出 <ph name="MEMORY_SAVINGS" /></translation>
-<translation id="2830528677948328648">管理 Google 帳戶(&amp;G)</translation>
 <translation id="2831430281393059038">支援裝置</translation>
 <translation id="2832124733806557606">子女可使用 PIN 來登入裝置或裝置解鎖。</translation>
 <translation id="2833144527504272627">使用文字游標瀏覽</translation>
@@ -8077,7 +8071,6 @@
 <translation id="6769902329858794251"><ph name="BEGIN_PARAGRAPH1" />為提供最佳體驗，<ph name="DEVICE_OS" /> 會收集裝置硬件資料並與 Google 分享，以判斷要提供的更新內容。你可選擇是否允許 Google 將這些資料用於其他用途，例如支援和改善 <ph name="DEVICE_OS" /> 體驗和服務。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />你可登入此裝置，並前往 chrome://system 查看列為 chromeosflex_ 的欄位，以查看傳送至 Google 進行更新篩選的資料，以及你選擇與 Google 分享資料的其他情況。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />如要進一步瞭解 <ph name="DEVICE_OS" /> 可能與 Google 分享的資料，以及這些資料的用途，請前往 g.co/flex/HWDataCollection。<ph name="END_PARAGRAPH3" /></translation>
-<translation id="6770042910635026163">您所瀏覽的網站會定義您的興趣</translation>
 <translation id="6770602306803890733">為您和網絡上的所有使用者提高安全性</translation>
 <translation id="6771503742377376720">這是憑證授權單位</translation>
 <translation id="6772974422346500939">開啟並編輯</translation>
@@ -8450,7 +8443,6 @@
 <translation id="7009709314043432820"><ph name="APP_NAME" /> 正在使用您的攝錄機</translation>
 <translation id="701020165009334820">你可以透過「Play 商店」下載 Android 應用程式同遊戲。</translation>
 <translation id="701080569351381435">檢視原始碼</translation>
-<translation id="7011797924920577670">推斷您的興趣</translation>
 <translation id="7012430956470647760">應用程式家長監控設定</translation>
 <translation id="7013762323294215682">此密鑰將會儲存至密碼管理工具。任何擁有存取權的使用者都可使用此密鑰。</translation>
 <translation id="7014174261166285193">安裝失敗。</translation>
@@ -8716,7 +8708,6 @@
 <translation id="722099540765702221">充電電源</translation>
 <translation id="7221869452894271364">重新載入這個網頁</translation>
 <translation id="7222232353993864120">電郵地址</translation>
-<translation id="7222235798733126207">限制網站共用</translation>
 <translation id="7222335051802562841">完成更新</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7223952304612664117">此操作會允許系統服務使用「定位精確度」以判斷你的位置。「定位精確度」會使用無線訊號和感應器資料，估算裝置位置。</translation>
@@ -10758,7 +10749,6 @@
 <translation id="8666268818656583275">功能鍵現在會執行系統最上排按鍵原本的行為</translation>
 <translation id="8666321716757704924">已再次向 <ph name="WEBSITE" /> 授予權限</translation>
 <translation id="8667261224612332309">您有密碼可以改善安全性</translation>
-<translation id="8667760277771450375">我們正在探索方法，讓網站阻止垃圾廣告和欺詐行為，同時限制跨網站追蹤功能。</translation>
 <translation id="8668378421690365723">裝置可能無法再正常運作，並可能會遇到安全性和效能問題。</translation>
 <translation id="8669284339312441707">暖色調</translation>
 <translation id="8670537393737592796">如要快速返回此處，請按一下安裝按鈕來安裝「<ph name="APP_NAME" />」</translation>
@@ -11080,7 +11070,6 @@
 <translation id="888256071122006425">滑鼠和觸控板設定</translation>
 <translation id="8883478023074930307">傳送使用情況和診斷資料。此裝置目前會將診斷、裝置及應用程式使用情況資料自動傳送至 Google。這些資料將有助改善系統和應用程式的穩定性及其他功能。部分彙整資料亦會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。擁有者可強制執行此<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />。如果已開啟「其他網絡及應用程式活動記錄」設定，系統可能會將此資料儲存至你的 Google 帳戶。<ph name="BEGIN_LINK2" />進一步瞭解數據<ph name="BEGIN_LINK2_END" />瞭解詳情<ph name="END_LINK2" /></translation>
 <translation id="8883722590720107848">我信任呢個網站 (<ph name="SITE_URL" />)，圓形按鈕群組，3 個按鈕入面嘅第 2 個</translation>
-<translation id="8884023684057697730"><ph name="BEGIN_BOLD" />您可如何管理資料：<ph name="END_BOLD" />為保障您的私隱，我們會自動刪除清單上超過 4 星期的網站。您再次瀏覽的網頁可能會再次在清單中顯示。如果您不想系統根據特定網站定義興趣，亦可移除網站。</translation>
 <translation id="8884570509232205463">您的裝置會於<ph name="UNLOCK_TIME" />鎖上。</translation>
 <translation id="8885449336974696155">只要報告<ph name="BEGIN_LINK" />目前的設定<ph name="END_LINK" />，就能助我們一臂之力，讓 ChromeOS 更臻完美</translation>
 <translation id="8886745493279779790">檢視閒置分頁</translation>
@@ -11366,7 +11355,6 @@
 <translation id="9078546160009814724">使用者名稱：<ph name="USERNAME" /></translation>
 <translation id="9079267182985899251">系統即將停止支援此選項。如要分享分頁畫面，請使用 <ph name="GOOGLE_MEET" />。</translation>
 <translation id="9080175821499742274">「記憶體節省模式」會從閒置分頁釋出記憶體，給使用中的分頁和其他應用程式。</translation>
-<translation id="9080971985541434310">推測您的興趣 - Chrome 可以推測您的興趣</translation>
 <translation id="9081543426177426948">在無痕模式下無法儲存您瀏覽的網站</translation>
 <translation id="9082750838489080452">應用程式：<ph name="APP_NAME" /></translation>
 <translation id="9084064520949870008">在視窗中開啟</translation>
@@ -11552,7 +11540,6 @@
 <translation id="9218430445555521422">設定為預設</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (不支援的應用程式)</translation>
 <translation id="9219572436491982747">傳送至 Google 的資料可能會送交人手審查以改善 Chrome AI 技術</translation>
-<translation id="9219582468404818260">協助我們建立更完善的網絡</translation>
 <translation id="9219741625496141320">瀏覽資料已自動刪除</translation>
 <translation id="9220525904950070496">移除帳戶</translation>
 <translation id="9220723036554088545">上載檔案</translation>

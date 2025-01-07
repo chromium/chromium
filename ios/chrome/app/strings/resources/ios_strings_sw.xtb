@@ -285,6 +285,7 @@
 <translation id="2214453882118345682">Nunua, tafsiri na utambue unachokiona ukitumia kamera yako.</translation>
 <translation id="2220529011494928058">Ripoti tatizo</translation>
 <translation id="2223461067862937305">Buni Msimbo wa QR</translation>
+<translation id="2229345671837147090">Gridi ya kichupo cha kidhibiti cha mbali</translation>
 <translation id="2230173723195178503">Ukurasa wa Wavuti umepakiwa</translation>
 <translation id="2236949375853147973">Shughuli Zangu</translation>
 <translation id="2240256190924001613">Wasifu wa mipangilio unapatikana</translation>
@@ -651,6 +652,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="3992684624889376114">Kuhusu ukurasa huu</translation>
 <translation id="3994422733891749358">Chagua arifa unazotaka kupokea</translation>
 <translation id="3994522032746736727">Ingia katika akaunti ukitumia <ph name="EMAIL" /></translation>
+<translation id="3994911892367422121">NIMEELEWA</translation>
 <translation id="3995521777587992544">Upau wa shughuli ya upakiaji wa ukurasa, imepakia <ph name="EMAIL" />.</translation>
 <translation id="3997522473364371632">Msimamizi wako amezima kipengele cha kuruhusu kufikia nenosiri.</translation>
 <translation id="4002066346123236978">Kichwa</translation>
@@ -798,6 +800,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="4651927776207937667">{count,plural, =1{Ficha baada ya dakika 1}other{Ficha baada ya dakika {count}}}</translation>
 <translation id="4652817563047461855">Hakikisha manenosiri yako ni salama, fahamu ikiwa yameathiriwa na upate ushauri wa kukusaidia ujilinde ukiwa mtandaoni. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Hifadhi</translation>
+<translation id="466307903888586355">Shirika lako limezuia hatua ya kuhifadhi faili</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Shirika lako linahitaji uvinjari kwa faragha. Vikundi vya vichupo havijasawazishwa katika hali ya kutumia Faraghani.
 <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
@@ -1271,6 +1274,7 @@ Tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="6641465290890659327">Tuma nakala ya nenosiri lako</translation>
 <translation id="6642362222295953972">Badilisha utumie kichupo kilichopo</translation>
 <translation id="6644512095122093795">Uliza kama manenosiri yahifadhiwe</translation>
+<translation id="664573288952458293">Gridi ya kichupo cha kawaida</translation>
 <translation id="6645899968535965230">Msimbo wa QR: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">URL unazotembelea hutumwa kwa Google ili kutabiri tovuti ambazo huenda ukazitembelea baadaye</translation>
 <translation id="6657585470893396449">Nenosiri</translation>
@@ -1661,6 +1665,7 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="8407669440184693619">Hatukupata manenosiri yoyote ya tovuti hii</translation>
 <translation id="8407831512155324054">Manenosiri yako ni thabiti</translation>
 <translation id="842523302461531262">Ifanye iwe chaguomsingi katika mipangilio…</translation>
+<translation id="8425826545759040372">Gridi ya kichupo cha faragha</translation>
 <translation id="8428045167754449968">Jiji / Mji</translation>
 <translation id="8428213095426709021">Mipangilio</translation>
 <translation id="8428634594422941299">Nimeelewa</translation>

@@ -99,7 +99,6 @@
 <translation id="1061904396131502319">もうすぐ休憩の時間です</translation>
 <translation id="10619348099955377">表示名をコピー</translation>
 <translation id="1062407476771304334">置換</translation>
-<translation id="1062628064301375934">ウェブのプライバシー強化にご協力ください</translation>
 <translation id="1066964438793906105">マルウェアをスキャン</translation>
 <translation id="1067661089446014701">セキュリティ強化のため、Google アカウントに保存する前にデバイス上でパスワードを暗号化できます。</translation>
 <translation id="1067922213147265141">他の Google サービス</translation>
@@ -683,7 +682,6 @@
 <translation id="1473223074251193484">テザリング設定を行う</translation>
 <translation id="1473927070149284123">もう一度試すか、手動でネットワークに接続してください</translation>
 <translation id="1474785664565228650">マイクの設定を変更するには、Parallels Desktop を再起動する必要があります。続行するには、Parallels Desktop を再起動してください。</translation>
-<translation id="1474893630593443211">表示される広告の詳細な管理</translation>
 <translation id="1475502736924165259">他のどのカテゴリにも適合しない証明書がファイルに格納されています</translation>
 <translation id="1476088332184200792">デバイスにコピー</translation>
 <translation id="1476347941828409626">Chrome プロフィールを管理(&amp;M)</translation>
@@ -1208,7 +1206,6 @@
 <translation id="1829192082282182671">縮小(&amp;O)</translation>
 <translation id="1830550083491357902">ログインしていません</translation>
 <translation id="1831848493690504725">接続されたネットワーク経由で Google に接続できません。別のネットワークを選択するか、ネットワーク設定またはプロキシ設定（プロキシを使用している場合）を確認してください。</translation>
-<translation id="1832459821645506983">同意する</translation>
 <translation id="1832511806131704864">スマートフォンの変更が反映されました</translation>
 <translation id="1832848789136765277">同期データに常にアクセスできるようにするには、本人確認を行ってください</translation>
 <translation id="1833059747301212935">最近使用したドキュメントや今後のカレンダーの予定に簡単にアクセスできます</translation>
@@ -1528,7 +1525,6 @@
 <translation id="2051555741181591333">アクセス ポイントを自動的に無効にする</translation>
 <translation id="2051669996101374349">可能な限り HTTPS を使用し、HTTPS をサポートしていないサイトは読み込む前に警告を表示します。高度な保護機能が有効になっているため、この設定は変更できません。</translation>
 <translation id="2052572566310583903">他のデバイスにインストール済み</translation>
-<translation id="2053105195397337973">Google では、サイトが広告のスパムと不正行為を防止できるようにしながら、トラッキングを制限する方法を模索しています。</translation>
 <translation id="2053312383184521053">アイドル状態のデータ</translation>
 <translation id="205560151218727633">Google アシスタントのロゴ</translation>
 <translation id="2058456167109518507">デバイスが検出されました</translation>
@@ -2491,7 +2487,6 @@
 <translation id="2727633948226935816">今後表示しない</translation>
 <translation id="2727712005121231835">実際のサイズ</translation>
 <translation id="2727744317940422214">エラーが発生しました。説明に #bruschetta と入力してフィードバックを送信してください。エラーコード: <ph name="ERROR" />。クリーンアップできませんでした。手動でのクリーンアップが必要な場合があります。</translation>
-<translation id="2729327310379176711">Chrome では、ブラウジング時のトラッキングを抑制して、セキュリティを強化する新しい方法を検討しています。また、<ph name="ESTIMATE_INTERESTS_LINK" />して管理できるようにします。これにより、アクセスしたサイトでユーザーの興味 / 関心を Chrome にリクエストして、広告を表示することができます。</translation>
 <translation id="2729577602370119849">プリンタに簡単にアクセスして管理</translation>
 <translation id="2729661575355442512"><ph name="BEGIN_PARAGRAPH1" />[位置情報の精度] をオンにした場合、Wi-Fi アクセス ポイントやモバイル ネットワーク基地局などのワイヤレス シグナルに関する情報と、加速度計やジャイロスコープなどのデバイスのセンサーデータに基づき、デバイスのより正確な位置情報が推定され、Android アプリやサービスの位置情報を利用した機能で使用されます。この設定では、クラウドソースのワイヤレス シグナルを利用した位置情報の向上に役立てるため、デバイスのセンサーに関する情報やこのデバイスの付近のワイヤレス シグナルが Google で定期的に処理されます。<ph name="END_PARAGRAPH1" />
 　　　　<ph name="BEGIN_PARAGRAPH2" />Google は、位置情報の精度と、位置情報を利用したサービスを改善し、Google のサービスを全般的に改善、提供、維持する目的でこの情報を使用します。また、ユーザーのニーズに応えるうえでの Google およびサードパーティの正当な利益に基づき、この情報を処理します。この情報が個人の特定に使用されることはありません。<ph name="END_PARAGRAPH2" />
@@ -2653,7 +2648,6 @@
 <translation id="2828375943530438449">ログインページから戻る</translation>
 <translation id="2828650939514476812">Wi-Fi ネットワークへの接続</translation>
 <translation id="2828833307884755422"><ph name="MEMORY_SAVINGS" /> を解放しました</translation>
-<translation id="2830528677948328648">Google アカウントを管理(&amp;G)</translation>
 <translation id="2831430281393059038">デバイスはサポートされています</translation>
 <translation id="2832124733806557606">お子様はデバイスのログインやロック解除に PIN を使用できます。</translation>
 <translation id="2833144527504272627">テキスト カーソルで移動する</translation>
@@ -8062,7 +8056,6 @@
 <translation id="6769902329858794251"><ph name="BEGIN_PARAGRAPH1" />利便性を高めるため、<ph name="DEVICE_OS" /> ではデバイスのハードウェア データを収集し、Google と共有して、適切なアップデートを確認します。さらに、サポートや <ph name="DEVICE_OS" /> の利便性やサービスの改善といった追加の目的で Google がこのデータを使用することを許可できます。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />アップデートの確認時のほか、追加の目的で Google とのデータの共有を許可した場合に Google に送信されるデータについては、このデバイスにログインして、chrome://system の chromeosflex_ で始まるフィールドを展開するとご確認いただけます。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" /><ph name="DEVICE_OS" /> が Google と共有するデータおよびその使用方法について詳しくは、g.co/flex/HWDataCollection をご覧ください。<ph name="END_PARAGRAPH3" /></translation>
-<translation id="6770042910635026163">お客様の興味 / 関心を定義しているアクセスしたサイト</translation>
 <translation id="6770602306803890733">すべてのウェブユーザーの安全性を高めます</translation>
 <translation id="6771503742377376720">認証局である</translation>
 <translation id="6772974422346500939">開いて編集</translation>
@@ -8434,7 +8427,6 @@
 <translation id="7009709314043432820"><ph name="APP_NAME" /> がカメラを使用しています</translation>
 <translation id="701020165009334820">Google Play ストアから Android のアプリやゲームをダウンロードできます。</translation>
 <translation id="701080569351381435">ソースを表示</translation>
-<translation id="7011797924920577670">興味 / 関心を推定</translation>
 <translation id="7012430956470647760">アプリの保護者による使用制限</translation>
 <translation id="7013762323294215682">このパスキーはパスワード マネージャーに保存されます。パスワード マネージャーにアクセスできるユーザーなら誰でも、このパスキーを使用できます。</translation>
 <translation id="7014174261166285193">インストールできませんでした。</translation>
@@ -8700,7 +8692,6 @@
 <translation id="722099540765702221">充電源</translation>
 <translation id="7221869452894271364">このページを再読み込みします</translation>
 <translation id="7222232353993864120">メール アドレス</translation>
-<translation id="7222235798733126207">サイト間での共有の制限</translation>
 <translation id="7222335051802562841">更新を完了</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7223952304612664117">これにより、システム サービスは [位置情報の精度] の機能を使用してユーザーの現在地を特定できるようになります。[位置情報の精度] をオンにした場合、ワイヤレス シグナルとセンサーに関する情報に基づいて、デバイスの位置情報が推定されます。</translation>
@@ -10742,7 +10733,6 @@
 <translation id="8666268818656583275">F キーはシステムの最上段のキーと同じように動作します</translation>
 <translation id="8666321716757704924"><ph name="WEBSITE" /> にもう一度権限を許可しました</translation>
 <translation id="8667261224612332309">改善できるパスワードがあります</translation>
-<translation id="8667760277771450375">Chrome では、サイトが広告のスパムと不正行為を防止できるようにしながら、クロスサイト トラッキングを制限する方法を模索しています。</translation>
 <translation id="8668378421690365723">お使いのデバイスが正しく動作しなくなり、セキュリティやパフォーマンス上の問題が発生する可能性があります。</translation>
 <translation id="8669284339312441707">暖色</translation>
 <translation id="8670537393737592796">このページにすぐにアクセスできるようにするには、インストール ボタンをクリックして <ph name="APP_NAME" /> をインストールしてください</translation>
@@ -11066,7 +11056,6 @@
 <translation id="888256071122006425">マウスとタッチパッドの設定</translation>
 <translation id="8883478023074930307">使用状況データや診断データを送信します。このデバイスは現在、診断データやデバイスとアプリの使用状況データを Google に自動送信するように設定されています。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。この<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />は所有者によって管理されています。[その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータは Google アカウントに保存されます。<ph name="BEGIN_LINK2" />統計情報の詳細<ph name="BEGIN_LINK2_END" />詳細<ph name="END_LINK2" /></translation>
 <translation id="8883722590720107848">このサイトを信頼している（<ph name="SITE_URL" />）、ラジオボタン グループ、2/3</translation>
-<translation id="8884023684057697730"><ph name="BEGIN_BOLD" />データの管理方法:<ph name="END_BOLD" /> ユーザーのプライバシーを保護するため、4 週間以上経過したウェブサイトはリストから自動削除されます。ウェブサイトにもう一度アクセスすると、リストに再度表示される場合もあります。ユーザーの興味 / 関心を定義させたくないウェブサイトを完全に削除することもできます。</translation>
 <translation id="8884570509232205463">デバイスは <ph name="UNLOCK_TIME" /> にロックされるようになりました。</translation>
 <translation id="8885449336974696155"><ph name="BEGIN_LINK" />現在の設定<ph name="END_LINK" />を送信して ChromeOS の品質向上にご協力ください</translation>
 <translation id="8886745493279779790">アクティブでないタブを確認</translation>
@@ -11352,7 +11341,6 @@
 <translation id="9078546160009814724">ユーザー名: <ph name="USERNAME" /></translation>
 <translation id="9079267182985899251">このオプションはまもなくサポートされなくなります。タブを表示するには <ph name="GOOGLE_MEET" /> を使用してください。</translation>
 <translation id="9080175821499742274">メモリセーバーは、アクティブでないタブのメモリを解放し、アクティブなタブやその他のアプリが使用できるようにします。</translation>
-<translation id="9080971985541434310">興味や関心を推定 - Chrome でユーザーの関心の対象を推定します</translation>
 <translation id="9081543426177426948">シークレット モードでは、アクセスしたサイトは保存されません</translation>
 <translation id="9082750838489080452">アプリケーション: <ph name="APP_NAME" /></translation>
 <translation id="9084064520949870008">ウィンドウとして開く</translation>
@@ -11538,7 +11526,6 @@
 <translation id="9218430445555521422">デフォルトに設定</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" />（サポートされていないアプリ）</translation>
 <translation id="9219572436491982747">Google に送信されたデータは、Chrome の AI 技術の改善のために人間のレビュアーによって確認される場合があります</translation>
-<translation id="9219582468404818260">ウェブの改善にご協力ください</translation>
 <translation id="9219741625496141320">閲覧データが自動的に削除されました</translation>
 <translation id="9220525904950070496">アカウントを削除</translation>
 <translation id="9220723036554088545">ファイルをアップロードします</translation>

@@ -530,6 +530,7 @@ Si no, el ratolí tàctil integrat es tornarà a activar d'aquí a <ph name="TIM
 <translation id="2847759467426165163">Emet a</translation>
 <translation id="2848120746144143659">Prem Retorn per fer una captura de pantalla completa</translation>
 <translation id="2849936225196189499">Crítica</translation>
+<translation id="2850207700020959936">Les aplicacions poden accedir a la càmera</translation>
 <translation id="2860184359326882502">Millor coincidència</translation>
 <translation id="2865888419503095837">Informació de la xarxa</translation>
 <translation id="2869095047958348710">El <ph name="DAY_OF_WEEK" /> passat</translation>
@@ -584,6 +585,7 @@ Si no, el ratolí tàctil integrat es tornarà a activar d'aquí a <ph name="TIM
 <translation id="304417730895741346">Les aplicacions fixades i les obertes es troben al prestatge. Per fixar-hi una aplicació, fes clic en una aplicació amb el botó dret o toca el ratolí tàctil amb dos dits.</translation>
 <translation id="3045488863354895414">Bona tarda,</translation>
 <translation id="3047761520276763270">Prova de dir:</translation>
+<translation id="3053407068093039599">Activa o desactiva l'accés a la càmera</translation>
 <translation id="3055162170959710888">Avui has fet servir aquest dispositiu durant <ph name="USED_TIME" /></translation>
 <translation id="3062298103034426069">No compatible</translation>
 <translation id="3068622547379332530">Versió <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -1800,6 +1802,7 @@ Instal·lació nova</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> vol utilitzar <ph name="DEVICE_NAME" />. Activa l'interruptor físic de <ph name="DEVICE_NAME" /> del dispositiu.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Assistent de Google</translation>
 <translation id="7042322267639375032">Replega l'àrea d'estat</translation>
+<translation id="7042593542151411225">Les aplicacions no poden accedir a la càmera</translation>
 <translation id="7045033600005038336">Vols substituir la plantilla?</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> s'ha desconnectat</translation>
 <translation id="7055910611768509537">El llapis òptic no s'utilitza des de fa més d'una setmana</translation>
@@ -2375,6 +2378,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="9074432941673450836">Utilitza les aplicacions per fer tot el que necessitis al teu <ph name="PRODUCT_NAME" />. Pots accedir a les teves aplicacions des del menú d'aplicacions. També pots prémer la tecla del menú d'aplicacions al teclat (a sobre de la tecla Maj de l'esquerra).</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9077515519330855811">Controls multimèdia; ara s'està reproduint <ph name="MEDIA_TITLE" /></translation>
+<translation id="9079012373317704997">No es pot activar l'accés a la càmera de manera remota</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">La càmera s'ha ajustat a l'extrem superior esquerre</translation>
 <translation id="9080132581049224423">Llisca cap amunt per anar a la pàgina d'inici</translation>

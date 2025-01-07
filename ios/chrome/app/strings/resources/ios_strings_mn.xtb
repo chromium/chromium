@@ -285,6 +285,7 @@
 <translation id="2214453882118345682">Камераа ашиглан дэлгүүр хэсэж, орчуулж, тодорхойлоорой.</translation>
 <translation id="2220529011494928058">Асуудлыг мэдэгдэх</translation>
 <translation id="2223461067862937305">QR код үүсгэх</translation>
+<translation id="2229345671837147090">Алсын зайн табын хүснэгт</translation>
 <translation id="2230173723195178503">Веб хуудсыг ачаалласан</translation>
 <translation id="2236949375853147973">Миний үйл ажиллагаа</translation>
 <translation id="2240256190924001613">Тохируулгын профайл боломжтой</translation>
@@ -651,6 +652,7 @@
 <translation id="3992684624889376114">Энэ хуудасны тухай</translation>
 <translation id="3994422733891749358">Та хүлээн авахыг хүсэж буй мэдэгдлүүдээ сонгоно уу</translation>
 <translation id="3994522032746736727"><ph name="EMAIL" />-р нэвтрэх</translation>
+<translation id="3994911892367422121">ОЙЛГОЛОО</translation>
 <translation id="3995521777587992544"><ph name="EMAIL" /> хуудас ачаалах явцын заалтыг ачаалсан.</translation>
 <translation id="3997522473364371632">Танай администратор нууц үг хуваалцахыг идэвхгүй болгосон.</translation>
 <translation id="4002066346123236978">Гарчиг</translation>
@@ -798,6 +800,7 @@
 <translation id="4651927776207937667">{count,plural, =1{1 минутын дараа нуух}other{{count} минутын дараа нуух}}</translation>
 <translation id="4652817563047461855">Таны нууц үгнүүд аюулгүй эсэхийг шалгах, тэдгээр нь алдагдсан эсэхийг олж мэдэх болон өөрийгөө онлайн орчинд хамгаалахад туслах зөвлөгөөг аваарай. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Хадгалах</translation>
+<translation id="466307903888586355">Файл хадгалахыг танай байгууллагаас блоклосон</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Танай байгууллага танаас нууцлалтайгаар үзэхийг шаардаж байна. Табын бүлгүүдийг Нууцлалын горимд синк хийдэггүй.
 <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
@@ -1271,6 +1274,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6641465290890659327">Нууц үгнийхээ хуулбарыг хуваалцах</translation>
 <translation id="6642362222295953972">Аль хэдийн нээсэн таб руу сэлгэх</translation>
 <translation id="6644512095122093795">Нууц үг хадгалахыг санал болгох</translation>
+<translation id="664573288952458293">Энгийн табын хүснэгт</translation>
 <translation id="6645899968535965230">QR код: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">Таны зочилсон URL-г Google рүү илгээж, дараа нь ямар сайтад зочилж болохыг таамаглах болно</translation>
 <translation id="6657585470893396449">Нууц үг</translation>
@@ -1661,6 +1665,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8407669440184693619">Энэ сайтад нууц үг олдсонгүй</translation>
 <translation id="8407831512155324054">Таны нууц үгнүүд сайн харагдаж байна</translation>
 <translation id="842523302461531262">Тохиргоонд өгөгдмөл болгох…</translation>
+<translation id="8425826545759040372">Нууцлалтай табын хүснэгт</translation>
 <translation id="8428045167754449968">Хот / Тосгон</translation>
 <translation id="8428213095426709021">Тохиргоо</translation>
 <translation id="8428634594422941299">Ойлголоо</translation>

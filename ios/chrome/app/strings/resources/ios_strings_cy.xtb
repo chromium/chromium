@@ -285,6 +285,7 @@
 <translation id="2214453882118345682">Siopa, cyfieithu, a nodi'r hyn a welwch gyda'ch camera.</translation>
 <translation id="2220529011494928058">Adrodd am broblem</translation>
 <translation id="2223461067862937305">Wrthi'n creu cod QR</translation>
+<translation id="2229345671837147090">Grid tabiau o bell</translation>
 <translation id="2230173723195178503">Mae tudalen we wedi'i llwytho</translation>
 <translation id="2236949375853147973">Fy Ngweithgarwch</translation>
 <translation id="2240256190924001613">Mae proffil ffurfweddiad ar gael</translation>
@@ -651,6 +652,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="3992684624889376114">Ynghylch y dudalen hon</translation>
 <translation id="3994422733891749358">Dewiswch yr hysbysiadau rydych am eu derbyn</translation>
 <translation id="3994522032746736727">Mewngofnodi fel <ph name="EMAIL" /></translation>
+<translation id="3994911892367422121">IAWN</translation>
 <translation id="3995521777587992544">Bar cynnydd llwytho tudalen, mae <ph name="EMAIL" /> wedi'i lwytho.</translation>
 <translation id="3997522473364371632">Mae rhannu cyfrineiriau wedi'i analluogi gan eich gweinyddwr.</translation>
 <translation id="4002066346123236978">Teitl</translation>
@@ -798,6 +800,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="4651927776207937667">{count,plural, =1{Cuddio ar ôl 1 funud}zero{Cuddio ar ôl {count} munud}two{Cuddio ar ôl {count} funud}few{Cuddio ar ôl {count} munud}many{Cuddio ar ôl {count} munud}other{Cuddio ar ôl {count} munud}}</translation>
 <translation id="4652817563047461855">Gwneud yn siŵr bod eich cyfrineiriau yn ddiogel, darganfod a ydynt wedi cael eu peryglu, a chael cyngor i helpu i amddiffyn eich hun ar-lein. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Cadw</translation>
+<translation id="466307903888586355">Mae eich sefydliad yn rhwystro cadw ffeiliau</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Mae eich sefydliad yn gofyn i chi bori'n breifat. Nid yw grwpiau tabiau yn cael eu cysoni yn y modd Anhysbys.
 <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
@@ -1271,6 +1274,7 @@ Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahano
 <translation id="6641465290890659327">Rhannu copi o'ch cyfrinair</translation>
 <translation id="6642362222295953972">Newid i dab presennol</translation>
 <translation id="6644512095122093795">Cynnig cadw cyfrineiriau</translation>
+<translation id="664573288952458293">Grid tabiau rheolaidd</translation>
 <translation id="6645899968535965230">Cod QR: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">Anfonir cyfeiriadau URL rydych yn ymweld â nhw at Google i ragfynegi pa wefannau y mae'n bosib y byddwch yn ymweld â nhw nesaf</translation>
 <translation id="6657585470893396449">Cyfrinair</translation>
@@ -1661,6 +1665,7 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="8407669440184693619">Nid ydym wedi dod o hyd i unrhyw gyfrineiriau ar gyfer y wefan hon</translation>
 <translation id="8407831512155324054">Mae'ch cyfrineiriau'n edrych yn gryf</translation>
 <translation id="842523302461531262">Gwneud yn ddiofyn yn y gosodiadau…</translation>
+<translation id="8425826545759040372">Grid tabiau anhysbys</translation>
 <translation id="8428045167754449968">Dinas / Tref</translation>
 <translation id="8428213095426709021">Gosodiadau</translation>
 <translation id="8428634594422941299">Deall</translation>

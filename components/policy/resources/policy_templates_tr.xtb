@@ -703,13 +703,6 @@ Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://cloud.google
 <translation id="1523282650847750947">Son oturumu geri yükleme.</translation>
 <translation id="1523587744262636189">bağlantı noktası 10080 (01.04.2022'ye kadar engellemesi kaldırılabilir)</translation>
 <translation id="1523774894176285446">Yapılandırılan web siteleri için başlatılacak alternatif tarayıcı.</translation>
-<translation id="1524243669991877602">Politika, Etkin değere ayarlandığında <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> hesabıyla ilişkilendirilmiş politikaların, makine düzeyinde politikalarla birleşmesine izin verilir.
-
-      Yalnızca güvenli kullanıcılardan gelen politikalar birleştirilebilir. Güvenli kullanıcı, tarayıcısını <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> kullanarak yöneten kuruluşa bağlıdır. Diğer tüm kullanıcı düzeyindeki politikalar yok sayılır.
-
-      Birleştirilmesi gereken politikaların aynı zamanda <ph name="POLICY_POLICYLISTMULTIPLESOURCEMERGELIST" /> veya <ph name="POLICY_POLICYDICTIONARYMULTIPLESOURCEMERGELIST" /> içerisinde de ayarlanması gerekir. Yukarıda bahsedilen iki politika da yapılandırılmamışsa bu politika yok sayılır.
-
-      Politikayı ayarlamamak veya Devre Dışı olarak ayarlamak, kullanıcı düzeyinde bulut politikalarının diğer kaynaklardaki politikalarla birleştirilmesine engel olur.</translation>
 <translation id="152657506688053119">Varsayılan arama sağlayıcısına ilişkin alternatif URL'lerin listesi</translation>
 <translation id="1530812829012954197">Aşağıdaki URL kalıplarını her zaman ana makine tarayıcısında oluştur</translation>
 <translation id="1534007181698071943">Desteğin sonlandırılması sırasında kaldırma etkinlik işleyicilerin varsayılan olarak devre dışı bırakılmasına izin ver</translation>
@@ -5225,11 +5218,6 @@ Politika, Yanlış değerine ayarlanırsa varsayılan davranış kullanılır.</
 <translation id="4876805738539874299">Etkinleştirilen maksimum SSL sürümü</translation>
 <translation id="4877305769899044884">Varsayılan klavye arka ışığı rengi</translation>
 <translation id="4886138258823889910">Windows'da tarayıcının <ph name="UIA_NAME" /> erişilebilirlik çerçevesi sağlayıcısını etkinleştir</translation>
-<translation id="4886783562285047261">Politika, Etkin değerine ayarlanırsa <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> hizmetine kaydolmak zorunlu olur ve başarısız olması halinde <ph name="PRODUCT_NAME" /> ürününün işlemi başlatmasını engeller.
-
-      Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> isteğe bağlı olur ve başarısız olması halinde <ph name="PRODUCT_NAME" /> ürününün işlemi başlatmasını engellemez.
-
-      Masaüstünde makine kapsamı bulut politika kaydı bu politikayı kullanır. Ayrıntılar için https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744 adresine bakın.</translation>
 <translation id="4889589161838982604"><ph name="DBSC_FEATURE_NAME" /> özelliğinin durumunu kontrol eder.
 
 <ph name="DBSC_FEATURE_NAME" />, cihaz sahipliğini Google sunucularına belirli aralıklarla kriptografik bir şekilde kanıtlayarak Google kimlik doğrulama çerezlerinin çalınmasını engeller.
@@ -6524,13 +6512,6 @@ Bu politika hem giriş hem de kilit ekranı kimlik doğrulama akışlarını etk
 <translation id="5697306356229823047">Cihaz kullanıcılarını raporla</translation>
 <translation id="5697387906103995839">Kurumsal uzantıların sistem günlük kaydını devre dışı bırak</translation>
 <translation id="569777361305162263">Tanıtım amaçlı içeriği tam sekmede göstermeyi devre dışı bırak</translation>
-<translation id="5698923148503075597">Politika, Etkin değerine ayarlandığında bulut politikası platform politikasıyla çakışıyorsa bulut politikası tercih edilir.
-
-      Politika, Devre Dışı değerine ayarlandığında veya ayarlanmadan bırakıldığında bulut politikası platform politikasıyla çakışıyorsa platform politikası tercih edilir.
-
-      Bu zorunlu politika, makine genelinde geçerli olan bulut politikalarını etkiler.
-
-      Bu politika yalnızca <ph name="PRODUCT_NAME" /> ürününde geçerli olup <ph name="GOOGLE_UPDATE_NAME" /> üzerinde etkisi yoktur.</translation>
 <translation id="5705055136345677598">Arka plan modunu devre dışı bırak</translation>
 <translation id="5705632645298500887">Ekran görüntülerinin depolanacağı konumu ayarla</translation>
 <translation id="5705828032077475554">CRD oturumlarını raporla</translation>
@@ -9171,13 +9152,6 @@ Bu politikanın ayarlanması için <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLI
       Bu politikayı Yanlış değerine ayarlamak veya ayarlamadan bırakmak, raporlamayı devre dışı bırakır.
       DataLeakPreventionRulesList politikasında İZİN VER seviye kısıtlamalarıyla belirlenen kurallar, her iki durumda da etkinlikleri raporlamaz.</translation>
 <translation id="7648907905084499629">Tüm sitelerde çerezler için <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> davranışını kullan</translation>
-<translation id="765347139142030086">Politika, Etkin değerine ayarlanırsa bir <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> hesabına ilişkin politikalar ile <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> politikaları arasında uyuşmazlık olması halinde ilki öncelikli olur.
-
-      Yalnızca güvenli kullanıcılardan gelen politikalar öncelikli olabilir. Güvenli kullanıcı, tarayıcı yönetimini <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> ile yapan kuruluşa bağlıdır. Diğer tüm kullanıcı düzeyindeki politikalar varsayılan olarak öncelikli olur.
-
-      Politika, <ph name="POLICY_CLOUDPOLICYOVERRIDESPLATFORMPOLICY" /> ile birlikte kullanılabilir. İki politika da etkinleştirilirse kullanıcı bulut politikaları da uyuşmazlık içeren platform politikaları karşısında öncelikli olur.
-
-      Politika ayarlanmadan bırakılır veya Devre Dışı değerine ayarlanırsa kullanıcı düzeyindeki bulut politikaları varsayılan olarak öncelikli olur.</translation>
 <translation id="7657261947024629645">Performans için optimize et.</translation>
 <translation id="76580522298425324">Önceki kullanıcı hareketi olmadan ekran görüntüsü almaya izin ver</translation>
 <translation id="7666228839913571182">3. taraf çerezlere izin ver</translation>
@@ -10224,9 +10198,6 @@ Bu politika ayarlanmadan bırakılırsa veya 0 değerine ayarlanırsa tanımlana
       Ayarlanmazsa 15 dakikalık varsayılan süre geçerli olur.</translation>
 <translation id="8420426128163801949">Kullanıcıların Bluetooth'u açıp kapatmalarına izin ver</translation>
 <translation id="8422658829373743789">Devre dışı bırakılan form kontrollerinde etkinlik göndermeyle ilgili yeni davranışı kontrol et</translation>
-<translation id="8422866312638683210">Politika ayarlanırsa <ph name="PRODUCT_NAME" />, kendini <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> hizmetine kaydettirmeye çalışır. Bu politikanın değeri, <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> hizmetinden alabileceğiniz kayıt jetonudur.
-
-      Ayrıntılar için https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744 adresine bakın.</translation>
 <translation id="8423237137411858515">Yerel dosyaları salt okuma modunda tut</translation>
 <translation id="8424255554404582727">Her yeniden başlatmada tekrar uygulanacak varsayılan ekran döndürmesini ayarla</translation>
 <translation id="8426231401662877819">Ekranı saat yönünde 90 derece döndür</translation>

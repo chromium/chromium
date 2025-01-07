@@ -1313,7 +1313,6 @@
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">Поново пусти 10 секунди</translation>
 <translation id="3352881017886802007">Спортске игре</translation>
-<translation id="3354508510846323339"><ph name="CURRENT_CITATION" />. навод од <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Промени подешавања проксија...</translation>
 <translation id="335809815767823">Извезено је</translation>
 <translation id="3359565626472459400">Брак</translation>
@@ -3910,6 +3909,7 @@
 <translation id="7975858430722947486">Додато је у поређење</translation>
 <translation id="7976214039405368314">Превише је захтева</translation>
 <translation id="7977538094055660992">Излазни уређај</translation>
+<translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{Пре <ph name="TIME_COUNT" /> м}=1{Пре <ph name="TIME_COUNT" /> с}one{Пре <ph name="TIME_COUNT" /> д}few{Пре <ph name="TIME_COUNT" /> д}other{Пре <ph name="TIME_COUNT" /> д}}</translation>
 <translation id="7979595116210197019">Припрема и достава хране</translation>
 <translation id="798134797138789862">Може да тражи да користи уређаје и податке виртуелне реалности</translation>
 <translation id="7982789257301363584">Мрежа</translation>

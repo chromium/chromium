@@ -25,6 +25,7 @@
 <translation id="1081932398873105675">{count,plural, =1{{count} ներդիր}one{{count} ներդիր}other{{count} ներդիր}}</translation>
 <translation id="1084365883616172403">Ֆեյսբուքում փակցնումն ավարտվեց:</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> ֆայլը չհաջողվեց բացել</translation>
+<translation id="1086468407802688066"><ph name="USER_EMAIL" /> հաշիվը կառավարվում է <ph name="HOSTED_DOMAIN" /> տիրույթի կողմից, որին կարող են տեսանելի լինել որոշ տեղեկություններ։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="1096992026380844478">Համաժամացման ձեր կարգավորումները կվերականգնվեն վերջին պահուստավորված տվյալների հիման վրա։ <ph name="BEGIN_LINK" />Ինչ տվյալներ կարող եք համաժամացնել<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Միշտ թարգմանել <ph name="LANGUAGE" />-ից</translation>
 <translation id="1108938384783527433">Պատմության համաժամացում</translation>
@@ -83,6 +84,7 @@
 <translation id="1335767868357998043">Ընտրեք հասցեագոտու դիրքը</translation>
 <translation id="1347468774581902829">Կառավարել պատմությունը</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
+<translation id="1358106883354237005">Կառավարվող հաշիվ</translation>
 <translation id="1358214951266274152">Անցեք ձեր պատճենաց հասցեով</translation>
 <translation id="1360432990279830238">Դուրս գրվե՞լ և անջատել համաժամացումը</translation>
 <translation id="1363028406613469049">Կատարում</translation>
@@ -695,6 +697,7 @@
 <translation id="4183350924949589798">Ուզո՞ւմ եք ուժեղացնել հաշվի պաշտպանությունը</translation>
 <translation id="4184063163998877398">{count,plural, =1{{count} թույլ գաղտնաբառ}one{{count} թույլ գաղտնաբառ}other{{count} թույլ գաղտնաբառ}}</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} տարր պահվում է միայն այս սարքում։ Տարրը ձեր մյուս սարքերում օգտագործելու համար պահեք այն ձեր Google հաշվում ({email})։}one{{count} տարր պահվում է միայն այս սարքում։ Այդ գաղտնաբառն ու տարրերը ձեր մյուս սարքերում օգտագործելու համար պահեք դրանք ձեր Google հաշվում ({email})։}other{{count} տարր պահվում է միայն այս սարքում։ Այդ գաղտնաբառն ու տարրերը ձեր մյուս սարքերում օգտագործելու համար պահեք դրանք ձեր Google հաշվում ({email})։}}</translation>
+<translation id="4207873326995387292">Տեղեկություններ դիտարկիչի մասին</translation>
 <translation id="421070604241073551">Երբ միացված է, տվյալները պահվում են ձեր Google հաշվում։ Հակառակ դեպքում տվյալները կպահվեն միայն այս սարքում։</translation>
 <translation id="4224534474590365556">Փակե՞լ 99+ ոչ ակտիվ ներդիրները</translation>
 <translation id="422474357428465195">Դուք ունեք մի քանի ոչ հուսալի գաղտնաբառ, որոնք վտանգում են ձեր անվտանգությունը։</translation>
@@ -762,6 +765,7 @@
 <translation id="4495516234578759322">Գտնել հաջորդը</translation>
 <translation id="4502423230170890588">Հեռացնել սարքից</translation>
 <translation id="4508750114462689118">Փակել մուտք գործելու առաջարկը</translation>
+<translation id="4517684186578051919">Տեղեկություններ սարքից</translation>
 <translation id="4520798012560649652">Իմանալ ավելին ինկոգնիտո ռեժիմի մասին</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} էջանիշ}one{{count} էջանիշ}other{{count} էջանիշ}}</translation>
 <translation id="4525629404718770519">Նախադիտել հղումները</translation>
@@ -969,6 +973,7 @@
 <translation id="5444892875087332195">Էջանիշեր</translation>
 <translation id="5452354193031718372">Օգտագործեք հուսալի գաղտնաբառ՝</translation>
 <translation id="5454211924362324495">Որպեսզի թույլ չտաք որևէ մեկին օգտագործել ձեր գաղտնաբառը, <ph name="BEGIN_LINK" />փոխեք այն <ph name="WEBSITE" /> կայքում<ph name="END_LINK" /></translation>
+<translation id="5454723301413569630"><ph name="USER_EMAIL" /> հաշիվը կառավարվում է <ph name="HOSTED_DOMAIN" /> տիրույթի կողմից, որին կարող են տեսանելի լինել որոշ տեղեկություններ, այդ թվում՝</translation>
 <translation id="5457082343331641453">Ավելացրեք մանրամասներ</translation>
 <translation id="5457226814769348910">Բացել օֆլայն տարբերակը</translation>
 <translation id="5478327362747197944">Ստեղծեք Օրացույցի միջոցառումներ՝ անմիջապես սեղմելով ամսաթվի վրա վեբ էջում։</translation>
@@ -1371,6 +1376,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7102005569666697658">Ներբեռնում… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Ընտրացանկ → Կարգավորումներ → Վճարման եղանակներ</translation>
 <translation id="7108338896283013870">Թաքցնել</translation>
+<translation id="7128693485119315539">Ձեր կազմակերպությանը կարող է անհրաժեշտ լինել տեսնել և կառավարել կայքերի այցելությունների մասին տվյալները, որոնք կապված են ձեր կառավարվող հաշվի հետ, օրինակ՝ ձեր այցելությունների պատմությունը և գաղտնաբառերը։</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Ֆոտոխցիկն անհասանելի է</translation>
 <translation id="7141960840225504692">Ներդիրները կփակվեն, իսկ այցելությունների պատմությունը կջնջվի</translation>
@@ -1764,6 +1770,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8813277370772331957">Հիշեցնել ավելի ուշ</translation>
 <translation id="8814719628147284151">Շարունակել</translation>
 <translation id="8820817407110198400">Էջանիշներ</translation>
+<translation id="8822421075653507124">Անվտանգության նկատառումներից ելնելով՝ ձեր կազմակերպությունը կարող է տեսնել տեղեկություններ սարքի օպերացիոն համակարգի, դիտարկիչի և կարգավորումների մասին, ինչպես նաև՝ տվյալներ սարքում տեղադրված ծրագրերի մասին։</translation>
 <translation id="8825562130641217944">Ստացեք հասանելիություն ձեր էջանիշներին, գաղտնաբառերին և այլ տեղեկություններին</translation>
 <translation id="8827154289515190290">Ձեր սիրելի դիտարկիչը՝ այժմ iOS-ում</translation>
 <translation id="8831208860914609320">Փակել բոլոր ոչ ակտիվ ներդիրները</translation>

@@ -690,13 +690,6 @@ Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns vo
 <translation id="1523282650847750947">De laatste sessie niet herstellen.</translation>
 <translation id="1523587744262636189">poort 10080 (blokkering kan worden opgeheven tot 01-04-2022)</translation>
 <translation id="1523774894176285446">Alternatieve browser die wordt gestart voor geconfigureerde websites.</translation>
-<translation id="1524243669991877602">Als je dit beleid toepast, kunnen beleidsregels die aan een <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />-account zijn gekoppeld, worden samengevoegd in beleidsregels op machineniveau.
-
-      Alleen beleidsregels die afkomstig zijn van beveiligde gebruikers kunnen worden samengevoegd. Een beveiligde gebruiker is aangesloten bij de organisatie die de browser van de gebruiker beheert via <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Alle andere beleidsregels op gebruikersniveau worden altijd genegeerd.
-
-      Beleidsregels die moeten worden samengevoegd, moeten ook worden ingesteld in <ph name="POLICY_POLICYLISTMULTIPLESOURCEMERGELIST" /> of <ph name="POLICY_POLICYDICTIONARYMULTIPLESOURCEMERGELIST" />. Dit beleid wordt genegeerd als geen van de twee eerder genoemde beleidsregels is ingesteld.
-
-      Als je het beleid niet instelt of toepast, kunnen cloudbeleidsregels op gebruikersniveau niet worden samengevoegd met beleidsregels van andere bronnen.</translation>
 <translation id="152657506688053119">Lijst met alternatieve URL's voor de standaardzoekprovider</translation>
 <translation id="1530812829012954197">De volgende URL-patronen altijd verwerken in de hostbrowser</translation>
 <translation id="1534007181698071943">Toestaan dat unload-gebeurtenishandlers standaard worden uitgezet tijdens de beëindiging</translation>
@@ -5113,11 +5106,6 @@ Als je het beleid instelt op False, wordt het standaardgedrag gebruikt.</transla
 <translation id="4876805738539874299">Maximale SSL-versie aangezet</translation>
 <translation id="4877305769899044884">Standaardkleur voor achtergrondverlichting van toetsenbord</translation>
 <translation id="4886138258823889910">De provider van het <ph name="UIA_NAME" />-toegankelijkheidsframework van de browser aanzetten in Windows</translation>
-<translation id="4886783562285047261">Als je dit beleid toepast, wordt <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> verplicht ingeschreven en wordt het startproces van <ph name="PRODUCT_NAME" /> geblokkeerd als dit mislukt.
-
-      Als je het beleid niet toepast, of niet instelt, is <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> optioneel en wordt het startproces van <ph name="PRODUCT_NAME" /> niet geblokkeerd als het mislukt.
-
-      Dit beleid wordt gebruikt door cloud-beleidsinschrijving voor machinebereik op desktop. Zie https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744 voor meer informatie.</translation>
 <translation id="4889589161838982604">Beheert de status van de functie <ph name="DBSC_FEATURE_NAME" />.
 
 <ph name="DBSC_FEATURE_NAME" /> beschermt Google-verificatiecookies tegen diefstal van cookies door regelmatig een cryptografisch bewijs van eigendom van het apparaat te verstrekken aan de servers van Google.
@@ -6388,13 +6376,6 @@ Dit beleid heeft invloed op de verificatieprocessen voor zowel inloggen als het 
 <translation id="5697306356229823047">Apparaatgebruikers melden</translation>
 <translation id="5697387906103995839">Systeemlogboeken voor zakelijke extensies uitzetten</translation>
 <translation id="569777361305162263">Weergave van promotiecontent op volledig tabblad uitzetten</translation>
-<translation id="5698923148503075597">Als je het beleid toepast, krijgt het cloudbeleid voorrang bij een conflict met het platformbeleid.
-
-      Als je het beleid niet toepast of niet instelt, krijgt het platformbeleid voorrang bij een conflict met het cloudbeleid.
-
-      Dit verplichte beleid heeft gevolgen voor cloudbeleid op machineniveau.
-
-      Dit beleid is alleen beschikbaar in <ph name="PRODUCT_NAME" /> en heeft geen effect op <ph name="GOOGLE_UPDATE_NAME" />.</translation>
 <translation id="5705055136345677598">Achtergrondmodus uitzetten</translation>
 <translation id="5705632645298500887">Locatie instellen om schermopnamen op te slaan</translation>
 <translation id="5705828032077475554">CRD-sessies rapporteren</translation>
@@ -8445,6 +8426,17 @@ Opmerking: Als je dit beleid gebruikt om de tijdzone automatisch te wijzigen, mo
 
       Als je het beleid instelt op 'False', kunnen gebruikers, apps en extensies de modus voor volledig scherm niet openen.</translation>
 <translation id="718126088895133062">Met dit beleid wordt de licentiegebruikers-ID voor <ph name="PLUGIN_VM_NAME" /> voor dit apparaat opgegeven.</translation>
+<translation id="7184152751828902217">De batterijconditie kan worden beïnvloed door factoren zoals vaak volledig opladen en langere oplaadtijden. Dit beleid biedt 3 opties om het oplaadgedrag te optimaliseren en deze factoren te beperken, waardoor de levensduur van de batterij wordt verlengd.
+
+Als je het beleid instelt op 1 - Standard (Standaard) of niet instelt, wordt de batterij gewoon opgeladen tot 100%. Hiermee zet je aangepast en beperkt opladen uit.
+
+Als je het beleid instelt op 2 - Adaptive (Aangepast), leert het apparaat je oplaadgewoonten kennen en wordt opladen tot 100% uitgesteld totdat dat nodig is. Zo gaat de batterij langer mee.
+
+Als je het beleid instelt op 3 - Limited (Beperkt), wordt de batterij maar tot ongeveer 80% opgeladen om de levensduur te maximaliseren.
+
+Dit beleid overschrijft <ph name="DEVICE_POWER_ADAPTIVE_CHARGING_ENABLED_POLICY_NAME" />.
+
+Het beleid <ph name="DEVICE_POWER_BATTERY_CHARGING_OPTIMIZATION_POLICY_NAME" /> en het beleid <ph name="DEVICE_POWER_ADAPTIVE_CHARGING_ENABLED_POLICY_NAME" /> hebben altijd voorrang op gebruikersinstellingen.</translation>
 <translation id="7185078796915954712">TLS 1.3</translation>
 <translation id="7185630966939835143">Een Google-webservice gebruiken om spelfouten op te lossen</translation>
 <translation id="7187248416163189586">Rapportage van achtergrondverlichtingsinformatie van apparaat uitzetten</translation>
@@ -8965,13 +8957,6 @@ Als je dit beleid instelt, moet je het beleid <ph name="PRIVACY_SANDBOX_PROMPT_E
       Als je dit beleid instelt op False of niet instelt, wordt de rapportage uitgezet.
       Regels die zijn gedefinieerd met beperkingen op ALLOW-niveau in DataLeakPreventionRulesList, rapporteren in beide gevallen geen gebeurtenissen.</translation>
 <translation id="7648907905084499629">Gedrag van <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> voor cookies op alle sites gebruiken</translation>
-<translation id="765347139142030086">Als je het beleid toepast, krijgen beleidsregels die zijn gekoppeld aan een <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />-account voorrang als er een conflict is met <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />-beleidsregels.
-
-      Alleen beleidsregels die afkomstig zijn van beveiligde gebruikers kunnen voorrang krijgen. Een beveiligde gebruiker is aangesloten bij de organisatie die de browser van de gebruiker beheert via <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Alle andere beleidsregels op gebruikersniveau hebben een standaardvoorrang.
-
-      Het beleid kan worden gecombineerd met <ph name="POLICY_CLOUDPOLICYOVERRIDESPLATFORMPOLICY" />. Als beide beleidsregels worden toegepast, krijgen cloudbeleidsregels voor gebruikers ook voorrang als er een conflict is met platformbeleid.
-
-      Als je het beleid niet instelt of niet toepast, krijgen cloudbeleidsregels op gebruikersniveau een standaardprioriteit.</translation>
 <translation id="7657261947024629645">Optimaliseren voor betere prestaties.</translation>
 <translation id="76580522298425324">Schermopname zonder eerder gebruikersgebaar toestaan</translation>
 <translation id="7666228839913571182">Cookies van derden toestaan</translation>
@@ -9987,9 +9972,6 @@ Als je dit beleid niet instelt of instelt op 0, wordt de URL onmiddellijk in een
       Als je dit beleid niet instelt, is de standaardsnelheid van 15 minuten van toepassing.</translation>
 <translation id="8420426128163801949">Gebruikers toestaan bluetooth aan of uit te zetten</translation>
 <translation id="8422658829373743789">Het nieuwe gedrag beheren voor de verzending van gebeurtenissen voor uitgezette bedieningselementen op formulieren</translation>
-<translation id="8422866312638683210">Als je het beleid instelt, probeert <ph name="PRODUCT_NAME" /> zichzelf aan te melden bij <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. De waarde van dit beleid is een token voor inschrijving die je kunt ophalen uit de <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
-
-      Zie https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744 voor meer informatie.</translation>
 <translation id="8423237137411858515">Lokale bestanden in de modus Alleen lezen houden</translation>
 <translation id="8424255554404582727">Standaard displayrotatie instellen, wordt telkens toegepast na opnieuw opstarten</translation>
 <translation id="8426231401662877819">Scherm 90 graden met de klok mee draaien</translation>
@@ -10507,6 +10489,15 @@ Dit beleid is niet van toepassing als het virtuele toetsenbord is uitgezet (bijv
 <translation id="8827275450034266143">De tekenreeks voor User-agent zet de hoofdversie vast op 99 en neemt de hoofdversie van de browser op in de secundaire positie.</translation>
 <translation id="8827366480126575426">Het protocol voor de protocolhandler.</translation>
 <translation id="8827417642396462482">Aanvullende DNS-zoekopdrachttypen toestaan</translation>
+<translation id="8829335556009496455">Geeft aan of een model voor aangepast opladen het oplaadproces mag onderbreken om de batterijduur te verlengen.
+
+Als het apparaat gebruikmaakt van wisselstroom, evalueert het model voor aangepast opladen of het oplaadproces moet worden onderbroken om de batterijduur te verlengen. Onderbreekt het model voor aangepast opladen het oplaadproces, dan wordt de batterij op een bepaald niveau gehouden (bijv. 80%) en wordt het apparaat tot 100% opgeladen als de gebruiker dat nodig heeft.
+
+Als je dit beleid instelt op Waar, wordt het model voor aangepast opladen aangezet en mag dit het oplaadproces onderbreken om de batterijduur te verlengen.
+
+Als je dit beleid instelt op Onwaar of niet instelt, heeft het model voor aangepast opladen geen invloed op het oplaadproces.
+
+Opmerking: Dit beleid heeft geen effect als DevicePowerBatteryChargingOptimization is ingesteld.</translation>
 <translation id="8830717323204407209">Hiermee kan de promotie voor de extensie voor inloggegevensproviders worden getoond aan gebruikers</translation>
 <translation id="8832829916385857156">De pagina Nieuw tabblad laat kaarten zien als er content beschikbaar is</translation>
 <translation id="8833109046074170275">Verificatie via GAIA (standaard)</translation>

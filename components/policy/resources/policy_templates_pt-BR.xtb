@@ -717,13 +717,6 @@ Para informações detalhadas sobre padrões de URL válidos, consulte https://c
 <translation id="1523282650847750947">Não restaurar a última sessão.</translation>
 <translation id="1523587744262636189">porta 10080 (pode ser desbloqueada até 01/04/2022)</translation>
 <translation id="1523774894176285446">Navegador alternativo que será iniciado com sites configurados.</translation>
-<translation id="1524243669991877602">Se a política for ativada, as políticas associadas a uma conta do <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> poderão ser mescladas com outras no nível da máquina.
-
-      Apenas políticas originárias de usuários seguros podem ser mescladas. Um usuário seguro é afiliado à organização que gerencia o navegador com o <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Todas as outras políticas no nível do usuário sempre serão ignoradas.
-
-      As políticas que precisam ser mescladas também precisam ser definidas na <ph name="POLICY_POLICYLISTMULTIPLESOURCEMERGELIST" /> ou <ph name="POLICY_POLICYDICTIONARYMULTIPLESOURCEMERGELIST" />. Esta política será ignorada se nenhuma das duas mencionadas acima for configurada.
-
-      Se esta for desativada ou deixada sem definição, as políticas de nuvem no nível do usuário não poderão ser mescladas com políticas de outras origens.</translation>
 <translation id="152657506688053119">Lista de URLs alternativos para o provedor de pesquisa padrão</translation>
 <translation id="1530812829012954197">Sempre renderizar os seguintes padrões de URL no navegador do host</translation>
 <translation id="1534007181698071943">Permitir que manipuladores de eventos de descarregamento sejam desativados por padrão durante a suspensão de uso</translation>
@@ -5342,11 +5335,6 @@ Se a política for definida como "false", o comportamento padrão será usado.</
 <translation id="4876805738539874299">Versão máxima de SSL ativada</translation>
 <translation id="4877305769899044884">Luz de fundo padrão do teclado</translation>
 <translation id="4886138258823889910">Ativar o provedor do framework de acessibilidade de <ph name="UIA_NAME" /> para o navegador no Windows</translation>
-<translation id="4886783562285047261">Se a política for definida como "Ativada", o <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> forçará o registro e impedirá o processo de inicialização do <ph name="PRODUCT_NAME" /> em caso de erro.
-
-      Se ela for definida como "Desativada" ou não for definida, o <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> será opcional e não impedirá o processo de inicialização do <ph name="PRODUCT_NAME" /> em caso de erro.
-
-      A inscrição de políticas da nuvem para o escopo da máquina em computadores usa esta política. Veja mais detalhes em https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744.</translation>
 <translation id="4889589161838982604">Controla o estado do recurso <ph name="DBSC_FEATURE_NAME" />.
 
 O <ph name="DBSC_FEATURE_NAME" /> protege os cookies de autenticação do Google contra o roubo de cookies. Ele faz isso ao fornecer uma prova criptográfica de posse do dispositivo regularmente aos servidores do Google.
@@ -6671,13 +6659,6 @@ Esta política afeta os fluxos de autenticação da tela de bloqueio e de login.
 <translation id="5697306356229823047">Reporta os usuários do dispositivo</translation>
 <translation id="5697387906103995839">Desativar a geração de registros do sistema de extensões empresariais</translation>
 <translation id="569777361305162263">Desativar a exibição de conteúdo promocional na guia inteira</translation>
-<translation id="5698923148503075597">Se a política for ativada, a política de nuvem vai ter precedência caso haja um conflito com a política da plataforma.
-
-      Se a política for desativada ou deixada sem definição, a política da plataforma vai ter precedência caso haja um conflito com a política de nuvem.
-
-      Esta política obrigatória afeta as políticas de nuvem no escopo da máquina.
-
-      Ela está disponível apenas no <ph name="PRODUCT_NAME" /> e não afeta o <ph name="GOOGLE_UPDATE_NAME" />.</translation>
 <translation id="5705055136345677598">Desativar o modo de segundo plano</translation>
 <translation id="5705632645298500887">Definir um local para armazenar capturas de tela</translation>
 <translation id="5705828032077475554">Informar sessões de CRD</translation>
@@ -8859,6 +8840,17 @@ Observação: se você estiver usando esta política para resolver o fuso horár
 
       Se ela for definida como falsa, os usuários, apps e extensões não poderão entrar no modo de tela cheia.</translation>
 <translation id="718126088895133062">Esta política especifica o código de licenciamento do usuário do <ph name="PLUGIN_VM_NAME" /> para este dispositivo.</translation>
+<translation id="7184152751828902217">A integridade da bateria pode ser afetada por fatores como cargas completas frequentes e carregamentos com duração prolongada. Esta política oferece três opções para otimizar o comportamento de carregamento e reduzir esses fatores, prolongando a vida útil da bateria.
+
+Se a política for definida como "1: padrão" ou deixada sem definição, a bateria vai carregar normalmente até 100%. Isso desativa o carregamento adaptável e limitado.
+
+Se a política for definida como "2: adaptável", o dispositivo vai aprender seus hábitos de carregamento e adiar o carregamento a 100% até que seja necessário. Isso ajuda a prolongar a integridade da bateria.
+
+Se a política for definida como "3: limitada", a bateria será carregada apenas até cerca de 80% para maximizar a vida útil.
+
+Ela substitui a <ph name="DEVICE_POWER_ADAPTIVE_CHARGING_ENABLED_POLICY_NAME" />.
+
+As políticas <ph name="DEVICE_POWER_BATTERY_CHARGING_OPTIMIZATION_POLICY_NAME" /> e <ph name="DEVICE_POWER_ADAPTIVE_CHARGING_ENABLED_POLICY_NAME" /> sempre têm precedência sobre as configurações do usuário.</translation>
 <translation id="7185078796915954712">TLS 1.3</translation>
 <translation id="7185630966939835143">Usar um serviço da Web do Google para ajudar a solucionar erros de ortografia</translation>
 <translation id="7187248416163189586">Desativar relatórios de informações da luz de fundo do dispositivo</translation>
@@ -9383,13 +9375,6 @@ A definição desta política requer que a <ph name="PRIVACY_SANDBOX_PROMPT_ENAB
       Se ela for definida como falsa ou for deixada sem definição, os relatórios serão desativados.
       Em ambos os casos, as regras definidas com o nível de restrições ALLOW na DataLeakPreventionRulesList não criarão relatórios de eventos.</translation>
 <translation id="7648907905084499629">Use o comportamento <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> para cookies em todos os sites</translation>
-<translation id="765347139142030086">Se a política for ativada, políticas associadas a uma conta do <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> poderão ter precedência se entrarem em conflito com políticas do <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-      Apenas políticas originárias de usuários seguros podem ter precedência. Um usuário seguro é afiliado à organização que gerencia o navegador com o <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Todas as outras políticas do usuário terão precedência por padrão.
-
-      A política pode ser combinada com a <ph name="POLICY_CLOUDPOLICYOVERRIDESPLATFORMPOLICY" />. Se as duas forem ativadas, as políticas de nuvem do usuário também poderão ter precedência sobre as políticas em conflito da plataforma.
-
-      Se a política for desativada ou deixada sem definição, as políticas de nuvem do usuário terão prioridade por padrão.</translation>
 <translation id="7657261947024629645">Otimiza o desempenho.</translation>
 <translation id="76580522298425324">Permitir captura de tela sem o gesto anterior do usuário</translation>
 <translation id="7666228839913571182">Permitir cookies de terceiros</translation>
@@ -10445,9 +10430,6 @@ Se ela não for definida ou for definida como "0", a navegação para um URL des
       Se deixada sem definição, a frequência padrão de 15 minutos é usada.</translation>
 <translation id="8420426128163801949">Permitir que os usuários ativem ou desativem o Bluetooth</translation>
 <translation id="8422658829373743789">Controlar o novo comportamento para envio de eventos em controles de formulário desativados</translation>
-<translation id="8422866312638683210">Se a política for definida, o <ph name="PRODUCT_NAME" /> tentará se registrar como <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. O valor desta política é um token de inscrição que pode ser recuperado pelo <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
-
-      Veja mais detalhes em https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744.</translation>
 <translation id="8423237137411858515">Manter os arquivos locais no modo somente leitura</translation>
 <translation id="8424255554404582727">Definir rotação padrão da tela, reaplicada em cada reinicialização</translation>
 <translation id="8426231401662877819">Girar tela no sentido horário em 90 graus</translation>
@@ -10991,6 +10973,15 @@ Esta política não se aplica se o teclado virtual estiver desativado, por exemp
 <translation id="8827275450034266143">A string do user agent vai congelar a versão principal em 99 e incluir a versão principal do navegador na posição secundária.</translation>
 <translation id="8827366480126575426">O protocolo do gerenciador de protocolos.</translation>
 <translation id="8827417642396462482">Permitir mais tipos de consulta DNS</translation>
+<translation id="8829335556009496455">Especifica se um modelo de Carregamento adaptável tem permissão para controlar o processo de carregamento e prolongar a duração da bateria.
+
+Quando o dispositivo está no Carregamento adaptável, o modelo avalia se o processo precisa desse controle. Quando o modelo controla o processo de carregamento, ele mantém a bateria carregada até certo nível, como 80%, e só carrega o dispositivo até 100% quando o usuário precisa.
+
+Se esta política for definida como verdadeira, o modelo de Carregamento adaptável será ativado e terá permissão para controlar o processo e prolongar a vida útil da bateria.
+
+Se a política for definida como falsa ou for deixada sem definição, o modelo de Carregamento adaptável não vai influenciar no processo.
+
+Observação: essa política não terá efeito se DevicePowerBatteryChargingOptimization estiver definida.</translation>
 <translation id="8830717323204407209">Permite que os usuários confiram a promoção da extensão do provedor de credenciais</translation>
 <translation id="8832829916385857156">A página Nova guia exibirá cards se houver conteúdo disponível</translation>
 <translation id="8833109046074170275">Autenticação por fluxo GAIA padrão</translation>

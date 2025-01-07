@@ -530,6 +530,7 @@
 <translation id="2847759467426165163">Пребаци на</translation>
 <translation id="2848120746144143659">Притисните Enter да бисте направили снимак целог екрана</translation>
 <translation id="2849936225196189499">Од пресудне важности</translation>
+<translation id="2850207700020959936">Апликације могу да приступају камери</translation>
 <translation id="2860184359326882502">Најбоље подударање</translation>
 <translation id="2865888419503095837">Информације о мрежи</translation>
 <translation id="2869095047958348710">Прошлог/прошле: <ph name="DAY_OF_WEEK" /></translation>
@@ -584,6 +585,7 @@
 <translation id="304417730895741346">Закачене и отворене апликације налазе се на полици. Да бисте закачили апликацију за полицу, кликните десним тастером на њу или додирните тачпед са два прста.</translation>
 <translation id="3045488863354895414">Добар дан,</translation>
 <translation id="3047761520276763270">Пробајте да кажете:</translation>
+<translation id="3053407068093039599">Укључите или искључите приступ камери</translation>
 <translation id="3055162170959710888">Данас користите овај уређај већ <ph name="USED_TIME" /></translation>
 <translation id="3062298103034426069">Није подржано</translation>
 <translation id="3068622547379332530">Верзија <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -1801,6 +1803,7 @@
 <translation id="7034025838182392395"><ph name="APP_NAME" /> жели да користи уређај <ph name="DEVICE_NAME" />. Укључите физички прекидач на уређају за: <ph name="DEVICE_NAME" />.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google помоћник</translation>
 <translation id="7042322267639375032">Скупите област статуса</translation>
+<translation id="7042593542151411225">Апликације не могу да приступају камери</translation>
 <translation id="7045033600005038336">Желите да замените шаблон?</translation>
 <translation id="7051244143160304048">Веза са уређајем <ph name="DEVICE_NAME" /> је прекинута</translation>
 <translation id="7055910611768509537">Писаљка није коришћена дуже од недељу дана</translation>
@@ -2377,6 +2380,7 @@
 <translation id="9074432941673450836">Користите апликације да бисте обављали све потребне радње на <ph name="PRODUCT_NAME" />-у. Апликације можете да пронађете у Покретачу. Можете и да притиснете тастер покретача (изнад левог тастера Shift) на тастатури.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9077515519330855811">Контроле за медије, тренутно свира <ph name="MEDIA_TITLE" /></translation>
+<translation id="9079012373317704997">Укључивање приступа камери на даљину није успело</translation>
 <translation id="9079731690316798640">WiFi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">Камера је уклопљена у горњи леви угао</translation>
 <translation id="9080132581049224423">Превуците нагоре да бисте отишли на почетни екран</translation>

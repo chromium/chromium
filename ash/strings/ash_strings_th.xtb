@@ -530,6 +530,7 @@
 <translation id="2847759467426165163">ส่งไปยัง</translation>
 <translation id="2848120746144143659">กด Enter เพื่อจับภาพแบบเต็มหน้าจอ</translation>
 <translation id="2849936225196189499">สำคัญ</translation>
+<translation id="2850207700020959936">แอปเข้าถึงกล้องได้</translation>
 <translation id="2860184359326882502">ตรงที่สุด</translation>
 <translation id="2865888419503095837">ข้อมูลเครือข่าย</translation>
 <translation id="2869095047958348710"><ph name="DAY_OF_WEEK" />ที่ผ่านมานี้</translation>
@@ -584,6 +585,7 @@
 <translation id="304417730895741346">แอปที่ปักหมุดและเปิดไว้จะอยู่ในแถบ หากต้องการปักหมุดแอปในแถบ ให้คลิกขวาที่แอปหรือใช้ 2 นิ้วแตะทัชแพด</translation>
 <translation id="3045488863354895414">สวัสดียามบ่าย</translation>
 <translation id="3047761520276763270">ลองพูดว่า</translation>
+<translation id="3053407068093039599">เปิด/ปิดสิทธิ์เข้าถึงกล้อง</translation>
 <translation id="3055162170959710888">วันนี้คุณใช้อุปกรณ์เครื่องนี้ไป <ph name="USED_TIME" /></translation>
 <translation id="3062298103034426069">ไม่รองรับ</translation>
 <translation id="3068622547379332530">เวอร์ชัน <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -1795,6 +1797,7 @@
 <translation id="7034025838182392395"><ph name="APP_NAME" /> ต้องการใช้ <ph name="DEVICE_NAME" /> เปิดสวิตช์ <ph name="DEVICE_NAME" /> ของอุปกรณ์</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
 <translation id="7042322267639375032">ยุบพื้นที่แสดงสถานะ</translation>
+<translation id="7042593542151411225">แอปเข้าถึงกล้องไม่ได้</translation>
 <translation id="7045033600005038336">แทนที่เทมเพลตใช่ไหม</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> ยกเลิกการเชื่อมต่อแล้ว</translation>
 <translation id="7055910611768509537">คุณไม่ได้ใช้สไตลัสนานกว่า 1 สัปดาห์แล้ว</translation>
@@ -2370,6 +2373,7 @@
 <translation id="9074432941673450836">ใช้แอปเพื่อทำทุกอย่างที่คุณต้องการใน <ph name="PRODUCT_NAME" /> คุณค้นหาแอปได้ใน Launcher หรือจะกดแป้น Launcher (เหนือแป้น Shift ทางด้านซ้าย) บนแป้นพิมพ์ก็ได้เช่นกัน</translation>
 <translation id="9074739597929991885">บลูทูธ</translation>
 <translation id="9077515519330855811">การควบคุมสื่อ กำลังเล่น <ph name="MEDIA_TITLE" /></translation>
+<translation id="9079012373317704997">เปิดสิทธิ์เข้าถึงกล้องจากระยะไกลไม่ได้</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">จัดกล้องพอดีกับมุมซ้ายบนแล้ว</translation>
 <translation id="9080132581049224423">ปัดขึ้นเพื่อไปที่หน้าแรก</translation>

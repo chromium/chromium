@@ -721,13 +721,6 @@ Untuk informasi selengkapnya tentang pola URL yang valid, lihat https://cloud.go
 <translation id="1523282650847750947">Jangan pulihkan sesi terakhir.</translation>
 <translation id="1523587744262636189">port 10080 (blokir dapat dibatalkan hingga 01/04/2022)</translation>
 <translation id="1523774894176285446">Browser alternatif untuk membuka situs yang dikonfigurasi.</translation>
-<translation id="1524243669991877602">Jika kebijakan disetel ke Aktif, kebijakan yang terkait dengan akun <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> akan diizinkan untuk digabungkan ke kebijakan tingkat mesin.
-
-      Hanya kebijakan yang berasal dari pengguna aman yang dapat digabungkan. Pengguna aman berafiliasi dengan organisasi yang mengelola browser mereka menggunakan <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Semua kebijakan tingkat pengguna lain akan selalu diabaikan.
-
-      Kebijakan yang perlu digabungkan juga perlu disetel di <ph name="POLICY_POLICYLISTMULTIPLESOURCEMERGELIST" /> atau <ph name="POLICY_POLICYDICTIONARYMULTIPLESOURCEMERGELIST" />. Kebijakan ini akan diabaikan jika tidak satu pun kebijakan yang disebutkan sebelumnya dikonfigurasi.
-
-      Jika kebijakan tidak disetel atau disetel ke Nonaktif, kebijakan cloud tingkat pengguna tidak akan digabungkan dengan kebijakan dari sumber lain.</translation>
 <translation id="152657506688053119">Daftar URL pengganti untuk penyedia penelusuran default</translation>
 <translation id="1530812829012954197">Selalu urai pola URL berikut di browser host</translation>
 <translation id="1534007181698071943">Mengizinkan pengendali peristiwa penghapusan muatan dinonaktifkan secara default selama penghentian</translation>
@@ -5356,11 +5349,6 @@ Jika kebijakan disetel ke Salah (False), perilaku default akan digunakan.</trans
 <translation id="4876805738539874299">Versi SSL maksimum diaktifkan</translation>
 <translation id="4877305769899044884">Warna lampu latar keyboard default</translation>
 <translation id="4886138258823889910">Mengaktifkan penyedia framework aksesibilitas <ph name="UIA_NAME" /> browser di Windows</translation>
-<translation id="4886783562285047261">Menyetel kebijakan ke Aktif akan memerintahkan pendaftaran <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> dan memblokir proses peluncuran <ph name="PRODUCT_NAME" /> jika gagal.
-
-      Jika kebijakan disetel ke Nonaktif atau tidak disetel, <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> akan menjadi opsional dan proses peluncuran <ph name="PRODUCT_NAME" /> tidak akan diblokir jika gagal.
-
-      Pendaftaran kebijakan cloud cakupan perangkat di desktop menggunakan kebijakan ini. Lihat https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744 untuk detailnya.</translation>
 <translation id="4889589161838982604">Mengontrol status fitur <ph name="DBSC_FEATURE_NAME" />.
 
 <ph name="DBSC_FEATURE_NAME" /> melindungi cookie autentikasi Google dari pencurian cookie dengan memberikan bukti kriptografis kepemilikan perangkat ke server Google secara berkala.
@@ -6687,13 +6675,6 @@ Kebijakan ini memengaruhi alur login dan autentikasi layar kunci.</translation>
 <translation id="5697306356229823047">Laporkan pengguna perangkat</translation>
 <translation id="5697387906103995839">Menonaktifkan logging sistem ekstensi perusahaan</translation>
 <translation id="569777361305162263">Jangan izinkan konten promosi ditampilkan dalam tab penuh</translation>
-<translation id="5698923148503075597">Jika kebijakan disetel ke Aktif, kebijakan cloud akan diutamakan jika bertentangan dengan kebijakan platform.
-
-      Jika kebijakan disetel ke Nonaktif atau tidak disetel, kebijakan platform akan diutamakan jika bertentangan dengan kebijakan cloud.
-
-      Kebijakan wajib ini memengaruhi kebijakan cloud cakupan perangkat.
-
-      Kebijakan ini hanya tersedia di <ph name="PRODUCT_NAME" />; dan tidak berpengaruh pada <ph name="GOOGLE_UPDATE_NAME" />.</translation>
 <translation id="5705055136345677598">Nonaktifkan mode latar belakang</translation>
 <translation id="5705632645298500887">Menyetel tempat untuk menyimpan screenshot</translation>
 <translation id="5705828032077475554">Melaporkan sesi CRD</translation>
@@ -9410,13 +9391,6 @@ Jika kebijakan ini disetel, kebijakan <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_P
       Jika kebijakan ini disetel ke Salah (False) atau tidak disetel, pelaporan akan dinonaktifkan.
       Baik disetel maupun tidak disetel, aturan yang ditentukan dengan batasan tingkat ALLOW di DataLeakPreventionRulesList tidak akan melaporkan peristiwa.</translation>
 <translation id="7648907905084499629">Gunakan perilaku <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> untuk cookie di semua situs</translation>
-<translation id="765347139142030086">Jika kebijakan disetel ke Aktif, kebijakan yang berkaitan dengan akun <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> akan diprioritaskan jika kebijakan tersebut bertentangan dengan kebijakan <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-      Hanya kebijakan yang berasal dari pengguna aman yang dapat diprioritaskan. Pengguna aman berafiliasi dengan organisasi yang mengelola browser mereka menggunakan <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Semua kebijakan tingkat pengguna lainnya akan memiliki prioritas default.
-
-      Kebijakan ini dapat digabungkan dengan <ph name="POLICY_CLOUDPOLICYOVERRIDESPLATFORMPOLICY" />. Jika kedua kebijakan disetel ke aktif, kebijakan cloud pengguna juga akan lebih diprioritaskan daripada kebijakan platform yang bertentangan.
-
-      Jika kebijakan tidak disetel atau disetel ke nonaktif, kebijakan cloud tingkat pengguna akan memiliki prioritas default.</translation>
 <translation id="7657261947024629645">Mengoptimalkan performa.</translation>
 <translation id="76580522298425324">Mengizinkan screenshot tanpa gestur pengguna sebelumnya</translation>
 <translation id="7666228839913571182">Izinkan cookie pihak ketiga</translation>
@@ -10471,9 +10445,6 @@ Jika kebijakan tidak disetel atau disetel ke 0, navigasi ke URL yang ditetapkan 
       Jika tidak disetel, interval default 15 menit akan berlaku.</translation>
 <translation id="8420426128163801949">Izinkan pengguna mengaktifkan atau menonaktifkan Bluetooth</translation>
 <translation id="8422658829373743789">Mengontrol perilaku baru untuk pengiriman peristiwa pada kontrol formulir yang dinonaktifkan</translation>
-<translation id="8422866312638683210">Jika kebijakan disetel, <ph name="PRODUCT_NAME" /> akan mencoba mendaftarkan diri ke <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Nilai kebijakan ini adalah token pendaftaran yang dapat Anda ambil dari <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
-
-      Lihat https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744 untuk detailnya.</translation>
 <translation id="8423237137411858515">Simpan file lokal dalam mode hanya baca</translation>
 <translation id="8424255554404582727">Setel pemutaran layar default, diterapkan kembali setiap kali melakukan boot ulang</translation>
 <translation id="8426231401662877819">Putar layar searah jarum jam sebesar 90 derajat</translation>

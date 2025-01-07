@@ -1313,7 +1313,6 @@
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">Повторно відтворити останні 10 секунд</translation>
 <translation id="3352881017886802007">Спортивні ігри</translation>
-<translation id="3354508510846323339">Посилання <ph name="CURRENT_CITATION" /> з <ph name="MAX_CITATIONS" /> (<ph name="PRODUCT_NAME" />, <ph name="URL" />)</translation>
 <translation id="3355823806454867987">Змінити налаштування проксі...</translation>
 <translation id="335809815767823">Експортовано</translation>
 <translation id="3359565626472459400">Шлюб</translation>
@@ -3911,6 +3910,7 @@
 <translation id="7975858430722947486">Додано до порівняння</translation>
 <translation id="7976214039405368314">Забагато запитів</translation>
 <translation id="7977538094055660992">Пристрій виведення</translation>
+<translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> хв тому}=1{<ph name="TIME_COUNT" /> год тому}one{<ph name="TIME_COUNT" /> дн. тому}few{<ph name="TIME_COUNT" /> дн. тому}many{<ph name="TIME_COUNT" /> дн. тому}other{<ph name="TIME_COUNT" /> дн. тому}}</translation>
 <translation id="7979595116210197019">Приготування й доставка їжі</translation>
 <translation id="798134797138789862">Може просити дозвіл використовувати пристрої й дані віртуальної реальності</translation>
 <translation id="7982789257301363584">Мережа</translation>

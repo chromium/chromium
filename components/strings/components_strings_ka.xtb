@@ -1313,7 +1313,6 @@
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">10 წამის ხელახლა დაკვრა</translation>
 <translation id="3352881017886802007">სპორტული თამაშები</translation>
-<translation id="3354508510846323339"><ph name="MAX_CITATIONS" />-დან <ph name="CURRENT_CITATION" /> ციტირება, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">პროქსის პარამეტრების შეცვლა…</translation>
 <translation id="335809815767823">ექსპორტირებულია</translation>
 <translation id="3359565626472459400">ქორწინება</translation>
@@ -3910,6 +3909,7 @@
 <translation id="7975858430722947486">დაემატა შედარებას</translation>
 <translation id="7976214039405368314">ზედმეტად ბევრი მოთხოვნაა</translation>
 <translation id="7977538094055660992">გამოტანის მოწყობილობა</translation>
+<translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> წთ-ის წინ}=1{<ph name="TIME_COUNT" /> სთ-ის წინ}other{<ph name="TIME_COUNT" /> დღის წინ}}</translation>
 <translation id="7979595116210197019">სასურსათო მომსახურება</translation>
 <translation id="798134797138789862">შეუძლია ვირტუალური რეალობის მოწყობილობებისა და მონაცემების გამოყენების თხოვნა</translation>
 <translation id="7982789257301363584">ქსელი</translation>

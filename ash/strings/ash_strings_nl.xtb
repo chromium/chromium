@@ -530,6 +530,7 @@ Anders wordt de ingebouwde touchpad over <ph name="TIMEOUT_SECONDS" /> weer aang
 <translation id="2847759467426165163">Casten naar</translation>
 <translation id="2848120746144143659">Druk op Enter om een screenshot van het volledige scherm te maken</translation>
 <translation id="2849936225196189499">Kritiek</translation>
+<translation id="2850207700020959936">Apps hebben toegang tot de camera</translation>
 <translation id="2860184359326882502">Beste resultaat</translation>
 <translation id="2865888419503095837">Netwerkinfo</translation>
 <translation id="2869095047958348710">Afgelopen <ph name="DAY_OF_WEEK" /></translation>
@@ -584,6 +585,7 @@ Anders wordt de ingebouwde touchpad over <ph name="TIMEOUT_SECONDS" /> weer aang
 <translation id="304417730895741346">Je vastgezette en geopende apps staan op de plank. Als je een app wilt vastzetten op de plank, klik je met de rechtermuisknop op een app of tik je met 2 vingers op de touchpad.</translation>
 <translation id="3045488863354895414">Goedemiddag,</translation>
 <translation id="3047761520276763270">Zeg eens:</translation>
+<translation id="3053407068093039599">Cameratoegang aan-/uitzetten</translation>
 <translation id="3055162170959710888">Je hebt dit apparaat vandaag <ph name="USED_TIME" /> gebruikt</translation>
 <translation id="3062298103034426069">Niet ondersteund</translation>
 <translation id="3068622547379332530">Versie <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -1800,6 +1802,7 @@ Nieuwe installatie</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> wil de <ph name="DEVICE_NAME" /> gebruiken. Zet de fysieke schakelaar van de <ph name="DEVICE_NAME" /> van je apparaat aan.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistent</translation>
 <translation id="7042322267639375032">Statusgedeelte samenvouwen</translation>
+<translation id="7042593542151411225">Apps hebben geen toegang tot de camera</translation>
 <translation id="7045033600005038336">Template vervangen?</translation>
 <translation id="7051244143160304048">Verbinding met <ph name="DEVICE_NAME" /> verbroken</translation>
 <translation id="7055910611768509537">De stylus is langer dan een week niet gebruikt</translation>
@@ -2375,6 +2378,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="9074432941673450836">Gebruik apps waarmee je van alles kunt doen op je <ph name="PRODUCT_NAME" />. Je vindt je apps in de Launcher. Je kunt ook op de Launcher-toets (boven de linker Shift-toets) op het toetsenbord drukken.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9077515519330855811">Mediabediening, <ph name="MEDIA_TITLE" /> wordt nu afgespeeld</translation>
+<translation id="9079012373317704997">Kan cameratoegang niet op afstand aanzetten</translation>
 <translation id="9079731690316798640">Wifi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">Camera uitgelijnd op de linkerbovenhoek</translation>
 <translation id="9080132581049224423">Swipe omhoog om naar het startscherm te gaan</translation>

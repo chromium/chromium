@@ -285,6 +285,7 @@
 <translation id="2214453882118345682">Пазарувайте, превеждайте и идентифицирайте това, което виждате, с камерата си.</translation>
 <translation id="2220529011494928058">Подаване на сигнал за проблем</translation>
 <translation id="2223461067862937305">Създаване на QR код</translation>
+<translation id="2229345671837147090">Табличен изглед с раздели „Отдалечено“</translation>
 <translation id="2230173723195178503">Уеб страницата се зареди</translation>
 <translation id="2236949375853147973">Моята активност</translation>
 <translation id="2240256190924001613">Налице е конфигурационен профил</translation>
@@ -651,6 +652,7 @@
 <translation id="3992684624889376114">Всичко за тази страница</translation>
 <translation id="3994422733891749358">Изберете известията, които искате да получавате</translation>
 <translation id="3994522032746736727">Вход като <ph name="EMAIL" /></translation>
+<translation id="3994911892367422121">РАЗБРАХ</translation>
 <translation id="3995521777587992544">Лента за напредъка на зареждането на страницата. Заредени са <ph name="EMAIL" />.</translation>
 <translation id="3997522473364371632">Споделянето на пароли е деактивирано от администратора ви.</translation>
 <translation id="4002066346123236978">Заглавие</translation>
@@ -798,6 +800,7 @@
 <translation id="4651927776207937667">{count,plural, =1{Скриване след 1 минута}other{Скриване след {count} минути}}</translation>
 <translation id="4652817563047461855">Уверете се, че паролите ви са защитени, разберете дали са били компрометирани и получете съвет за това как да се предпазите онлайн. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Запазване</translation>
+<translation id="466307903888586355">Запазването на файлове е блокирано от организацията ви</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Организацията ви изисква да сърфирате частно. Групите раздели не се синхронизират в режим „инкогнито“.
 <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
@@ -1271,6 +1274,7 @@
 <translation id="6641465290890659327">Споделяне на копие на паролата ви</translation>
 <translation id="6642362222295953972">Превключване към съществуващия раздел</translation>
 <translation id="6644512095122093795">Показване на предложение за запазване на паролите</translation>
+<translation id="664573288952458293">Табличен изглед с обикновени раздели</translation>
 <translation id="6645899968535965230">QR код: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">Посещаваните от вас URL адреси се изпращат до Google с цел предвиждане на следващите страници, които е възможно да посетите</translation>
 <translation id="6657585470893396449">Парола</translation>
@@ -1661,6 +1665,7 @@
 <translation id="8407669440184693619">Няма намерени пароли за този сайт</translation>
 <translation id="8407831512155324054">Паролите ви изглеждат надеждни</translation>
 <translation id="842523302461531262">Задаване като браузър по подразбиране в настройките…</translation>
+<translation id="8425826545759040372">Табличен изглед с раздели в режим „инкогнито“</translation>
 <translation id="8428045167754449968">Град/селище</translation>
 <translation id="8428213095426709021">Настройки</translation>
 <translation id="8428634594422941299">Разбрах</translation>

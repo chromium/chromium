@@ -716,13 +716,6 @@ Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cl
 <translation id="1523282650847750947">Non ripristinare l'ultima sessione.</translation>
 <translation id="1523587744262636189">porta 10080 (può essere sbloccata fino al 01/04/2022)</translation>
 <translation id="1523774894176285446">Browser alternativo da aprire per i siti web configurati.</translation>
-<translation id="1524243669991877602">Se il criterio viene impostato su Attivato, è possibile unire i criteri associati a un account <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> ai criteri a livello di macchina.
-
-      È possibile unire soltanto i criteri derivanti da utenti sicuri. Un utente sicuro è affiliato all'organizzazione che gestisce il suo browser usando <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Tutti gli altri criteri a livello di utente verranno sempre ignorati.
-
-      I criteri da unire devono essere impostati anche nel criterio <ph name="POLICY_POLICYLISTMULTIPLESOURCEMERGELIST" /> o <ph name="POLICY_POLICYDICTIONARYMULTIPLESOURCEMERGELIST" />. Questo criterio viene ignorato se non viene configurato nessuno dei due criteri sopra indicati.
-
-      Se il criterio non viene configurato o se viene impostato su Disattivato, non è possibile unire i criteri relativi al cloud a livello di utente ai criteri di altre fonti.</translation>
 <translation id="152657506688053119">Elenco di URL alternativi per il fornitore del servizio di ricerca predefinito</translation>
 <translation id="1530812829012954197">Visualizza sempre i seguenti schemi URL nel browser host</translation>
 <translation id="1534007181698071943">Consenti la disattivazione per impostazione predefinita dei gestori di eventi unload durante il ritiro</translation>
@@ -5209,11 +5202,6 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 <translation id="4876805738539874299">Versione SSL massima abilitata</translation>
 <translation id="4877305769899044884">Colore della retroilluminazione predefinita della tastiera predefinito</translation>
 <translation id="4886138258823889910">Attiva il provider del framework di accessibilità di <ph name="UIA_NAME" /> del browser su Windows</translation>
-<translation id="4886783562285047261">L'impostazione del criterio su Attivato impone la registrazione a <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> e blocca il processo di avvio di <ph name="PRODUCT_NAME" /> in caso di esito negativo.
-
-      Se il criterio viene impostato su Disattivato o non viene impostato, <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> diventa facoltativo e non blocca il processo di avvio di <ph name="PRODUCT_NAME" /> in caso di esito negativo.
-
-      Questo criterio viene utilizzato su desktop dalla registrazione con criteri cloud in ambito macchina. Per ulteriori informazioni, vai all'indirizzo https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744.</translation>
 <translation id="4889589161838982604">Consente di controllare lo stato della funzionalità <ph name="DBSC_FEATURE_NAME" />.
 
 <ph name="DBSC_FEATURE_NAME" /> protegge i cookie di autenticazione di Google dal furto fornendo regolarmente una prova crittografica del possesso del dispositivo ai server di Google.
@@ -6502,13 +6490,6 @@ Il criterio riguarda i flussi di autenticazione di accesso e della schermata di 
 <translation id="5697306356229823047">Segnala utenti dispositivo</translation>
 <translation id="5697387906103995839">Disattiva il log di sistema per le estensioni aziendali</translation>
 <translation id="569777361305162263">Disattiva la visualizzazione di contenuti promozionali a scheda intera</translation>
-<translation id="5698923148503075597">Se il criterio viene impostato su Enabled, in caso di conflitto il criterio relativo al cloud prevale sul criterio relativo alla piattaforma.
-
-      Se il criterio viene impostato su Disabled o se non viene configurato, in caso di conflitto il criterio relativo alla piattaforma prevale sul criterio relativo al cloud.
-
-      Questo criterio obbligatorio interessa i criteri relativi al cloud in ambito macchina.
-
-      Questo criterio è disponibile soltanto su <ph name="PRODUCT_NAME" /> e non ha effetto su <ph name="GOOGLE_UPDATE_NAME" />.</translation>
 <translation id="5705055136345677598">Disattiva la modalità in background</translation>
 <translation id="5705632645298500887">Imposta la posizione in cui archiviare le acquisizioni schermo</translation>
 <translation id="5705828032077475554">Segnala sessioni CRD</translation>
@@ -9142,13 +9123,6 @@ Se configuri questo criterio, il criterio <ph name="PRIVACY_SANDBOX_PROMPT_ENABL
       Se viene impostato su Falso o se non viene configurato, la generazione di rapporti viene disattivata.
       Le regole definite con limitazioni a livello ALLOW nel criterio DataLeakPreventionRulesList non genereranno rapporti sugli eventi in nessun caso.</translation>
 <translation id="7648907905084499629">Usa il comportamento <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> per i cookie su tutti i siti</translation>
-<translation id="765347139142030086">Se il criterio viene impostato su Attivato, i criteri associati a un account <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> hanno la precedenza in caso di conflitto con i criteri <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-      Soltanto i criteri derivanti da utenti sicuri possono ottenere la precedenza. Un utente sicuro è affiliato all'organizzazione che gestisce il suo browser usando <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Tutti gli altri criteri a livello di utente hanno la precedenza per impostazione predefinita.
-
-      Il criterio può essere combinato con <ph name="POLICY_CLOUDPOLICYOVERRIDESPLATFORMPOLICY" />. Se entrambi i criteri vengono attivati, anche quelli relativi al cloud degli utenti hanno la precedenza sui criteri relativi alla piattaforma in conflitto.
-
-      Se il criterio non viene configurato o se viene impostato su Disattivato, i criteri relativi al cloud degli utenti hanno la priorità per impostazione predefinita.</translation>
 <translation id="7657261947024629645">Ottimizza per ottenere il massimo rendimento.</translation>
 <translation id="76580522298425324">Consenti acquisizione schermo senza gesto dell'utente precedente</translation>
 <translation id="7666228839913571182">Consenti cookie di terze parti</translation>
@@ -10183,9 +10157,6 @@ Se il criterio non viene impostato o viene impostato su 0 e si passa a un URL de
       Se il criterio non viene configurato, viene applicata la frequenza predefinita di 15 minuti.</translation>
 <translation id="8420426128163801949">Consenti agli utenti di attivare o disattivare il Bluetooth</translation>
 <translation id="8422658829373743789">Gestisci il nuovo comportamento per l'esecuzione di eventi sui controlli dei moduli disattivati</translation>
-<translation id="8422866312638683210">La configurazione del criterio significa che <ph name="PRODUCT_NAME" /> cerca di registrarsi con <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Il valore del criterio è un token di registrazione che puoi recuperare da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
-
-      Per ulteriori informazioni, vai all'indirizzo https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744.</translation>
 <translation id="8423237137411858515">Mantieni i file locali in modalità di sola lettura</translation>
 <translation id="8424255554404582727">Imposta la rotazione predefinita dello schermo, riapplicata a ogni riavvio</translation>
 <translation id="8426231401662877819">Ruota lo schermo in senso orario di 90°</translation>

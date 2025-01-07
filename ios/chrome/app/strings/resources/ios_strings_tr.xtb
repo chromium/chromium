@@ -285,6 +285,7 @@
 <translation id="2214453882118345682">Gördüklerinizi satın almak, çevirmek ve tanımlamak için kameranızı kullanın.</translation>
 <translation id="2220529011494928058">Sorun bildir</translation>
 <translation id="2223461067862937305">QR Kodu Oluştur</translation>
+<translation id="2229345671837147090">Uzak sekme ızgarası</translation>
 <translation id="2230173723195178503">Web sayfası yüklendi</translation>
 <translation id="2236949375853147973">Etkinliğim</translation>
 <translation id="2240256190924001613">Yapılandırma profili mevcut</translation>
@@ -651,6 +652,7 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="3992684624889376114">Bu sayfa hakkında</translation>
 <translation id="3994422733891749358">Almak istediğiniz bildirimleri seçin</translation>
 <translation id="3994522032746736727"><ph name="EMAIL" /> olarak oturum aç</translation>
+<translation id="3994911892367422121">ANLADIM</translation>
 <translation id="3995521777587992544">Sayfa yükleme ilerleme çubuğu, <ph name="EMAIL" /> yüklendi.</translation>
 <translation id="3997522473364371632">Şifre paylaşımı, yöneticiniz tarafından devre dışı bırakıldı.</translation>
 <translation id="4002066346123236978">Başlık</translation>
@@ -798,6 +800,7 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="4651927776207937667">{count,plural, =1{1 dakika sonra gizle}other{{count} dakika sonra gizle}}</translation>
 <translation id="4652817563047461855">Şifrelerinizin güvenliğini sağlayın, sızdırılıp sızdırılmadıklarını öğrenin ve internette kendinizi korumanıza yardımcı olacak öneriler alın. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Kaydet</translation>
+<translation id="466307903888586355">Dosya kaydetme işlemi, kuruluşunuz tarafından engelleniyor</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Kuruluşunuz, gizli olarak göz atmanızı zorunlu tutuyor. Sekme grupları "Gizli mod"da senkronize edilmez.
 <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
@@ -1271,6 +1274,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="6641465290890659327">Şifrenizin kopyasını paylaşın</translation>
 <translation id="6642362222295953972">Mevcut sekmeye geçiş yapın</translation>
 <translation id="6644512095122093795">Şifreleri kaydetmeyi öner</translation>
+<translation id="664573288952458293">Normal sekme ızgarası</translation>
 <translation id="6645899968535965230">QR Kodu: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">Ziyaret ettiğiniz URL'ler, daha sonra hangi siteleri ziyaret edebileceğinizi tahmin etmek için Google'a gönderilir</translation>
 <translation id="6657585470893396449">Şifre</translation>
@@ -1661,6 +1665,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="8407669440184693619">Bu site için şifre bulunamadı</translation>
 <translation id="8407831512155324054">Şifreleriniz güçlü görünüyor</translation>
 <translation id="842523302461531262">Ayarlar'dan varsayılan yap…</translation>
+<translation id="8425826545759040372">Gizli sekme ızgarası</translation>
 <translation id="8428045167754449968">İl / İlçe</translation>
 <translation id="8428213095426709021">Ayarlar</translation>
 <translation id="8428634594422941299">Anladım</translation>

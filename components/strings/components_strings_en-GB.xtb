@@ -1313,7 +1313,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">Replay 10 seconds</translation>
 <translation id="3352881017886802007">Sports games</translation>
-<translation id="3354508510846323339">Citation <ph name="CURRENT_CITATION" /> of <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Change proxy settings...</translation>
 <translation id="335809815767823">Exported</translation>
 <translation id="3359565626472459400">Marriage</translation>
@@ -1696,6 +1695,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3990532701115075684">Track your hands</translation>
 <translation id="3992684624889376114">About this page</translation>
 <translation id="3995639283717357522">Apply policies</translation>
+<translation id="3996683183117168945">Citation <ph name="CURRENT_CITATION" /> of <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" />. <ph name="PAGE_TITLE" />. <ph name="PAGE_PREVIEW" />.</translation>
 <translation id="399754345297554962">Standardised and admissions tests</translation>
 <translation id="3999173941208168054">Horror films</translation>
 <translation id="4000598935132966791">Learn more about site restrictions in managed browsers</translation>
@@ -3911,6 +3911,7 @@ Additional details:
 <translation id="7975858430722947486">Added to comparison</translation>
 <translation id="7976214039405368314">Too many requests</translation>
 <translation id="7977538094055660992">Output device</translation>
+<translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" />m ago}=1{<ph name="TIME_COUNT" />h ago}other{<ph name="TIME_COUNT" />d ago}}</translation>
 <translation id="7979595116210197019">Food Service</translation>
 <translation id="798134797138789862">Can ask to use virtual reality devices and data</translation>
 <translation id="7982789257301363584">Network</translation>

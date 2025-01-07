@@ -531,7 +531,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1914326953223720820">Servicio de descompresión</translation>
 <translation id="1919367280705858090">Solucionar un error específico</translation>
 <translation id="1919526244108283799">400x600 mm</translation>
-<translation id="192020519938775529">{COUNT,plural, =0{Ninguno}=1{1 sitio web}other{# sitios}}</translation>
+<translation id="192020519938775529">{COUNT,plural, =0{Ninguna}=1{1 sitio}other{# sitios}}</translation>
 <translation id="192095259937375524">Botón Compartir esta pestaña: actívalo para compartir esta pestaña mediante el enlace, creando un código QR, enviando contenido y más</translation>
 <translation id="1921479021518565778">Sugerencias cargadas</translation>
 <translation id="1924727005275031552">Nueva</translation>
@@ -1313,7 +1313,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">Volver a reproducir 10 segundos</translation>
 <translation id="3352881017886802007">Juegos deportivos</translation>
-<translation id="3354508510846323339">Cita <ph name="CURRENT_CITATION" /> de <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Cambiar la configuración de proxy...</translation>
 <translation id="335809815767823">Exportadas</translation>
 <translation id="3359565626472459400">Matrimonio</translation>
