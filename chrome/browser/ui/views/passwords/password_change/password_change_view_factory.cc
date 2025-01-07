@@ -8,6 +8,7 @@
 #include "base/notreached.h"
 #include "chrome/browser/password_manager/password_change_delegate.h"
 #include "chrome/browser/ui/views/passwords/password_change/password_change_info_bubble_view.h"
+#include "chrome/browser/ui/views/passwords/password_change/privacy_notice_view.h"
 
 PasswordBubbleViewBase* CreatePasswordChangeBubbleView(
     PasswordChangeDelegate* delegate,
@@ -15,11 +16,12 @@ PasswordBubbleViewBase* CreatePasswordChangeBubbleView(
     views::View* anchor_view) {
   switch (delegate->GetCurrentState()) {
       // TODO (crbug.com/375564659): Implement views for each state.
+    case PasswordChangeDelegate::State::kWaitingForAgreement:
+      return new PrivacyNoticeView(web_contents, anchor_view);
     case PasswordChangeDelegate::State::kWaitingForChangePasswordForm:
     case PasswordChangeDelegate::State::kChangingPassword:
       return new PasswordChangeInfoBubbleView(web_contents, anchor_view,
                                               delegate->GetCurrentState());
-    case PasswordChangeDelegate::State::kWaitingForAgreement:
     case PasswordChangeDelegate::State::kPasswordSuccessfullyChanged:
     case PasswordChangeDelegate::State::kPasswordChangeFailed:
       NOTIMPLEMENTED();
