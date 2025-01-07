@@ -149,6 +149,8 @@ public class PageInfoViewTest {
     private static final String sSimpleHtml = "/chrome/test/data/android/simple.html";
     private static final String sSiteDataHtml = "/content/test/data/browsing_data/site_data.html";
 
+    private static final int DAYS_UNTIL_EXPIRATION = 33;
+
     private static String[] sCookieDataTypes = {
         "Cookie", "LocalStorage", "ServiceWorker", "CacheStorage", "IndexedDb", "FileSystem"
     };
@@ -1379,6 +1381,70 @@ public class PageInfoViewTest {
         // Wait until the UI navigates back and check cookies are deleted.
         onViewWaiting(allOf(withId(R.id.page_info_cookies_row), isDisplayed()));
         expectHasCookies(false);
+    }
+
+    static Matcher<View> hasAccessibilityLiveRegion(int liveRegionState) {
+        return new TypeSafeMatcher<>() {
+            @Override
+            protected boolean matchesSafely(View view) {
+                return view.getAccessibilityLiveRegion() == liveRegionState;
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("View has live region state " + liveRegionState);
+            }
+        };
+    }
+
+    /** Tests that the User Bypass has an accessibility live region set up correctly. */
+    @Test
+    @MediumTest
+    public void testA11yLiveRegionInUserBypass() throws Exception {
+        setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
+        sActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSiteDataHtml));
+        // Create cookies.
+        expectHasCookies(false);
+        createCookies();
+        expectHasCookies(true);
+        // Go to cookies subpage.
+        openPageInfo(PageInfoController.NO_HIGHLIGHTED_PERMISSION);
+        enableTrackingProtectionFixedExpiration(
+                /* isModeBUiInCookiesController= */ false, /* days= */ DAYS_UNTIL_EXPIRATION);
+        onView(withId(R.id.page_info_cookies_row)).perform(click());
+        // Check that cookies usage is displayed.
+        onViewWaiting(allOf(withText(containsString("stored data")), isDisplayed()));
+        // Check that the cookie toggle is displayed.
+        onViewWaiting(
+                allOf(
+                        withText(R.string.page_info_tracking_protection_toggle_blocked),
+                        isDisplayed()));
+        // Verify the a11y live region.
+        onView(withText(R.string.page_info_cookies_site_not_working_title))
+                .check(matches(hasAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE)));
+        onView(
+                        withText(
+                                R.string
+                                        .page_info_cookies_site_not_working_description_tracking_protection))
+                .check(matches(hasAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE)));
+        // Click on the toggle for the content to change.
+        onView(withText(R.string.page_info_tracking_protection_toggle_blocked)).perform(click());
+        // Verify the a11y live region.
+        Context context = ApplicationProvider.getApplicationContext();
+        String title =
+                context.getResources()
+                        .getQuantityString(
+                                R.plurals
+                                        .page_info_cookies_blocking_restart_tracking_protection_title,
+                                DAYS_UNTIL_EXPIRATION,
+                                DAYS_UNTIL_EXPIRATION);
+        onView(withText(title))
+                .check(matches(hasAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE)));
+        String description =
+                context.getString(R.string.page_info_cookies_send_feedback_description)
+                        .replaceAll("<link>|</link>", "");
+        onView(withText(description))
+                .check(matches(hasAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE)));
     }
 
     /** Tests resetting permissions on the permissions page of the PageInfo UI. */
