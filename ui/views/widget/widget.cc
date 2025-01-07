@@ -72,15 +72,16 @@ namespace views {
 
 namespace {
 
-// If |view| has a layer the layer is added to |layers|. Else this recurses
-// through the children. This is used to build a list of the layers created by
-// views that are direct children of the Widgets layer.
-void BuildViewsWithLayers(View* view, View::Views* views) {
+// If `view` has a layer the layer is added to `layers`. Else this recurses
+// through the children. This is used to build a list of the layers in reverse
+// z-order (i.e views later in the returned vector have a higher z-order)
+// created by views that are direct children of the Widgets layer.
+void BuildViewsWithLayersInZOrder(View* view, View::Views* views) {
   if (view->layer()) {
     views->push_back(view);
   } else {
-    for (View* child : view->children()) {
-      BuildViewsWithLayers(child, views);
+    for (View* child : view->GetChildrenInZOrder()) {
+      BuildViewsWithLayersInZOrder(child, views);
     }
   }
 }
@@ -2172,7 +2173,7 @@ bool Widget::ShouldDescendIntoChildForEventHandling(
     return false;
   }
 
-  const View::Views& views_with_layers = GetViewsWithLayers();
+  const View::Views& views_with_layers = GetViewsWithLayersInZOrder();
   if (views_with_layers.empty()) {
     return true;
   }
@@ -2514,11 +2515,11 @@ bool Widget::GetSavedWindowPlacement(gfx::Rect* bounds,
   return true;
 }
 
-const View::Views& Widget::GetViewsWithLayers() {
+const View::Views& Widget::GetViewsWithLayersInZOrder() {
   if (views_with_layers_dirty_) {
     views_with_layers_dirty_ = false;
     views_with_layers_.clear();
-    BuildViewsWithLayers(GetRootView(), &views_with_layers_);
+    BuildViewsWithLayersInZOrder(GetRootView(), &views_with_layers_);
   }
   return views_with_layers_;
 }

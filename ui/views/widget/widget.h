@@ -1399,8 +1399,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
                                ui::mojom::WindowShowState* show_state);
 
   // Returns the Views whose layers are parented directly to the Widget's
-  // layer.
-  const View::Views& GetViewsWithLayers();
+  // layer in reverse z-order (i.e views later in the returned vector have a
+  // higher z-order).
+  const View::Views& GetViewsWithLayersInZOrder();
 
   // If a descendent of |root_view_| is focused, then clear the focus.
   void ClearFocusFromWidget();
