@@ -571,6 +571,11 @@ public class TabContentManager {
         assert mNativeTabContentManager != 0;
         assert mSnapshotsEnabled;
 
+        if (tab.isHidden()) {
+            Callback.runNullSafe(callback, null);
+            return;
+        }
+
         if (tab.getNativePage() != null || isNativeViewShowing(tab)) {
             // If we use readbackNativeBitmap() with a downsampled scale and not saving it through
             // TabContentManagerJni.get().cacheTabWithBitmap(), the logic
@@ -593,10 +598,8 @@ public class TabContentManager {
                             bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
             callback.onResult(resized);
         } else {
-            if (tab.getWebContents() == null || tab.isHidden()) {
-                if (callback != null) {
-                    callback.onResult(null);
-                }
+            if (tab.getWebContents() == null) {
+                Callback.runNullSafe(callback, null);
                 return;
             }
             TabContentManagerJni.get()
@@ -607,8 +610,9 @@ public class TabContentManager {
 
     /**
      * Invalidate a thumbnail if the content of the tab has been changed.
+     *
      * @param tabId The id of the {@link Tab} thumbnail to check.
-     * @param url   The current URL of the {@link Tab}.
+     * @param url The current URL of the {@link Tab}.
      */
     public void invalidateIfChanged(int tabId, GURL url) {
         if (mNativeTabContentManager != 0) {
