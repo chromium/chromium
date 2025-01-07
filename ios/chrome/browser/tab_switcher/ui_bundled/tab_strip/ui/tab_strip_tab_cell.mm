@@ -32,35 +32,35 @@
 namespace {
 
 // The size of the close button.
-const CGFloat kCloseButtonSize = 16;
-const CGFloat kCloseButtonMinimumTouchTarget = 36;
+constexpr CGFloat kCloseButtonSize = 16;
+constexpr CGFloat kCloseButtonMinimumTouchTarget = 36;
 
 // Size of the decoration corner and corner radius when the cell is selected.
-const CGFloat kCornerSize = 16;
+constexpr CGFloat kCornerSize = 16;
 
 // Threshold width for collapsing the cell and hiding the close button.
-const CGFloat kCollapsedWidthThreshold = 150;
+constexpr CGFloat kCollapsedWidthThreshold = 150;
 
 // Separator constraints.
-const CGFloat kSeparatorHorizontalInset = 2;
-const CGFloat kSeparatorHorizontalInsetDetached = 6;
-const CGFloat kSeparatorGradientWidth = 4;
-const CGFloat kDetachedOutlineWidth = 1;
+constexpr CGFloat kSeparatorHorizontalInset = 2;
+constexpr CGFloat kSeparatorHorizontalInsetDetached = 6;
+constexpr CGFloat kSeparatorGradientWidth = 4;
+constexpr CGFloat kDetachedOutlineWidth = 1;
 
 // Visibility constants.
 constexpr CGFloat kCloseButtonVisibilityThreshold = 0.3;
 
 // Content view constants.
-const CGFloat kFaviconLeadingMargin = 10;
-const CGFloat kCloseButtonMargin = 10;
-const CGFloat kTitleInset = 10;
-const CGFloat kTitleOverflowWidth = 20;
-const CGFloat kFaviconSize = 16;
-const CGFloat kTitleGradientWidth = 16;
-const CGFloat kContentViewBottomInset = 4;
+constexpr CGFloat kFaviconLeadingMargin = 10;
+constexpr CGFloat kCloseButtonMargin = 10;
+constexpr CGFloat kTitleInset = 10;
+constexpr CGFloat kTitleOverflowWidth = 20;
+constexpr CGFloat kFaviconSize = 16;
+constexpr CGFloat kTitleGradientWidth = 16;
+constexpr CGFloat kContentViewBottomInset = 4;
 
 // Selected border background view constants.
-const CGFloat kSelectedBorderBackgroundViewWidth = 8;
+constexpr CGFloat kSelectedBorderBackgroundViewWidth = 8;
 
 // The storke width around a blue dot view.
 constexpr CGFloat kBlueDotStrokeWidth = 2;
