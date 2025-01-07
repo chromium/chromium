@@ -2713,9 +2713,7 @@ crbug.com/388081043 [ Linux ] external/wpt/editing/other/paste-clipboard-change.
 crbug.com/388081043 [ Win10.20h2 ] external/wpt/editing/other/paste-clipboard-change.tentative.html?id=text [ Crash ]
 crbug.com/388081043 [ Mac14 ] external/wpt/editing/other/paste-clipboard-change.tentative.html?id=text [ Crash ]
 crbug.com/388081043 [ Linux ] external/wpt/editing/other/paste-clipboard-change.tentative.html?id=text [ Crash ]
-crbug.com/388115419 [ Linux ] external/wpt/html/semantics/forms/the-select-element/customizable-select/switch-picker-appearance.tentative.html [ Timeout ]
 crbug.com/388073800 [ Mac13 ] external/wpt/webrtc/RTCPeerConnection-setLocalDescription-parameterless.https.html [ Timeout ]
-crbug.com/388115419 virtual/popover-anchor-relationships-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/switch-picker-appearance.tentative.html [ Timeout ]
 crbug.com/387777047 external/wpt/css/css-align/blocks/align-content-block-012.html [ Failure ]
 crbug.com/387626415 external/wpt/css/css-backgrounds/background-clip/clip-border-area-on-body-not-propagated-to-root.html [ Failure ]
 crbug.com/387378127 external/wpt/css/css-scoping/host-multiple-002.html [ Failure ]
@@ -6198,10 +6196,6 @@ crbug.com/362922565 virtual/customizable-select-disabled/external/wpt/html/seman
 crbug.com/362922565 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-type-to-search.tentative.html [ Failure ]
 crbug.com/366415131 external/wpt/html/semantics/forms/the-select-element/customizable-select/picker-and-slotted.tentative.html [ Failure ]
 crbug.com/380466909 virtual/popover-anchor-relationships-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-events.tentative.html [ Failure Pass ]
-
-# This fails with !owner_->GetDocument().IsSlotAssignmentRecalcForbidden().
-crbug.com/384394713 [ Mac ] external/wpt/html/semantics/forms/the-select-element/customizable-select/switch-picker-appearance.tentative.html [ Crash Failure ]
-crbug.com/384394713 [ Win ] external/wpt/html/semantics/forms/the-select-element/customizable-select/switch-picker-appearance.tentative.html [ Crash Failure ]
 
 ### Tests failing with CSSGapDecorations Enabled:
 crbug.com/357648037 virtual/css-gap-decorations/animations/interpolation/webkit-column-rule-color-interpolation.html [ Crash Failure Timeout ]

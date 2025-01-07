@@ -55,11 +55,6 @@ class V8UnionHTMLOptGroupElementOrHTMLOptionElement;
 class HTMLSelectedContentElement;
 class SelectDescendantsObserver;
 
-enum class SelectPopupHideBehavior {
-  kNormal,
-  kNoEventsOrFocusing,
-};
-
 class CORE_EXPORT HTMLSelectElement final
     : public HTMLFormControlElementWithState,
       private TypeAheadDataSource {
@@ -217,7 +212,7 @@ class CORE_EXPORT HTMLSelectElement final
   // the menulist mode.
   const ComputedStyle* OptionStyle() const;
   void ShowPopup();
-  void HidePopup(SelectPopupHideBehavior);
+  void HidePopup();
   PopupMenu* PopupForTesting() const;
 
   void ResetTypeAheadSessionForTesting();

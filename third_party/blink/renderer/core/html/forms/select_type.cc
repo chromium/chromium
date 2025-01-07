@@ -58,7 +58,6 @@
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/input/input_device_capabilities.h"
-#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/page/autoscroll_controller.h"
@@ -102,14 +101,6 @@ bool CanAssignToCustomizableSelectSlot(const Node& node) {
   return IsA<HTMLOptionElement>(node) || IsA<HTMLOptGroupElement>(node) ||
          IsA<HTMLHRElement>(node) || IsA<HTMLSpanElement>(node) ||
          IsA<HTMLDivElement>(node);
-}
-
-void PostChangingAppearanceConsoleWarning(HTMLSelectElement& select) {
-  select.AddConsoleMessage(
-      mojom::blink::ConsoleMessageSource::kJavaScript,
-      mojom::blink::ConsoleMessageLevel::kWarning,
-      "A customizable-<select> changed its `appearance` property while open. "
-      "As a result, it was closed to avoid circularity problems.");
 }
 
 class PopoverElementForAppearanceBase : public HTMLDivElement {
@@ -206,36 +197,10 @@ class PopoverElementForAppearanceBase : public HTMLDivElement {
   void DidRecalcStyle(const StyleRecalcChange change) override {
     HTMLDivElement::DidRecalcStyle(change);
     if (auto* style = GetComputedStyle()) {
-      AppearanceState new_appearance_state =
-          style->EffectiveAppearance() == AppearanceValue::kBaseSelect
-              ? AppearanceState::kAppearanceBase
-              : AppearanceState::kAppearanceNotBase;
-      auto* select = ParentSelect();
-      if (appearance_state_ != AppearanceState::kNoStyle &&
-          appearance_state_ != new_appearance_state && select &&
-          select->PopupIsVisible()) {
-        // The picker, as the result of CSS, changed `appearance` values upon
-        // opening. Per spec, we close it in that case, to avoid circularity.
-        PostChangingAppearanceConsoleWarning(*select);
-        // Post a task to close the popup, so we don't change style in the
-        // middle of style recalc.
-        GetDocument()
-            .GetTaskRunner(TaskType::kUserInteraction)
-            ->PostTask(FROM_HERE,
-                       WTF::BindOnce(
-                           [](HTMLSelectElement* select) {
-                             select->HidePopup(
-                                 SelectPopupHideBehavior::kNoEventsOrFocusing);
-                           },
-                           WrapPersistent(select)));
-      }
-      if (new_appearance_state == AppearanceState::kAppearanceBase) {
+      if (style->EffectiveAppearance() == AppearanceValue::kBaseSelect) {
         UseCounter::Count(GetDocument(),
                           WebFeature::kSelectElementPickerAppearanceBaseSelect);
       }
-      appearance_state_ = new_appearance_state;
-    } else {
-      appearance_state_ = AppearanceState::kNoStyle;
     }
   }
 
@@ -249,12 +214,6 @@ class PopoverElementForAppearanceBase : public HTMLDivElement {
     }
     return nullptr;
   }
-  enum AppearanceState {
-    kNoStyle = 0,
-    kAppearanceBase = 1,
-    kAppearanceNotBase = 2,
-  };
-  AppearanceState appearance_state_{AppearanceState::kNoStyle};
 };
 
 }  // anonymous namespace
@@ -294,7 +253,7 @@ class MenuListSelectType final : public SelectType {
       const override;
   Element& InnerElement() const override;
   void ShowPopup(PopupMenu::ShowEventType type) override;
-  void HidePopup(SelectPopupHideBehavior) override;
+  void HidePopup() override;
   void PopupDidHide() override;
   bool PopupIsVisible() const override;
   PopupMenu* PopupForTesting() const override;
@@ -504,7 +463,7 @@ bool MenuListSelectType::DefaultEventHandler(const Event& event) {
         !select_->IsDisabledFormControl()) {
       if (PopupIsVisible()) {
         if (!IsAppearanceBasePicker()) {
-          HidePopup(SelectPopupHideBehavior::kNormal);
+          HidePopup();
         }
       } else {
         // Save the selection so it can be compared to the new selection
@@ -761,15 +720,6 @@ void MenuListSelectType::ShowPopup(PopupMenu::ShowEventType type) {
 
   if (IsAppearanceBasePicker()) {
     popover_->ShowPopoverInternal(select_, /*exception_state=*/nullptr);
-    if (!IsAppearanceBasePicker()) {
-      // The picker, as the result of CSS, changed `appearance` values upon
-      // opening. Per spec, we close it in that case, to avoid circularity.
-      PostChangingAppearanceConsoleWarning(*select_);
-      popover_->HidePopoverInternal(
-          HidePopoverFocusBehavior::kNone,
-          HidePopoverTransitionBehavior::kNoEventsNoWaiting,
-          /*exception_state=*/nullptr);
-    }
     return;
   }
 
@@ -826,15 +776,11 @@ void MenuListSelectType::ShowPopup(PopupMenu::ShowEventType type) {
     cache->DidShowMenuListPopup(select_);
 }
 
-void MenuListSelectType::HidePopup(SelectPopupHideBehavior behavior) {
+void MenuListSelectType::HidePopup() {
   if (IsAppearanceBasePicker()) {
-    bool normal_behavior = behavior == SelectPopupHideBehavior::kNormal;
     popover_->HidePopoverInternal(
-        normal_behavior ? HidePopoverFocusBehavior::kFocusPreviousElement
-                        : HidePopoverFocusBehavior::kNone,
-        normal_behavior
-            ? HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions
-            : HidePopoverTransitionBehavior::kNoEventsNoWaiting,
+        HidePopoverFocusBehavior::kFocusPreviousElement,
+        HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
         /*exception_state=*/nullptr);
     return;
   }
@@ -945,7 +891,7 @@ void MenuListSelectType::DidBlur() {
   // want to hide the popover in the case that the user just opened it and we
   // focused the first option in it.
   if (native_popup_is_visible_) {
-    HidePopup(SelectPopupHideBehavior::kNormal);
+    HidePopup();
   }
 }
 
@@ -986,13 +932,6 @@ void MenuListSelectType::DidRecalcStyle(const StyleRecalcChange change) {
     bool is_appearance_base_select =
         style->EffectiveAppearance() == AppearanceValue::kBaseSelect;
     if (is_appearance_base_select_ != is_appearance_base_select) {
-      if (PopupIsVisible()) {
-        // The picker, as the result of CSS, changed `appearance` values upon
-        // opening. Per spec, we close it in that case, to avoid circularity.
-        PostChangingAppearanceConsoleWarning(*select_);
-        HidePopup(SelectPopupHideBehavior::kNoEventsOrFocusing);
-      }
-
       is_appearance_base_select_ = is_appearance_base_select;
       // Switching appearance needs layout to be rebuilt because of special
       // logic in LayoutFlexibleBox::IsChildAllowed which ignores children in
@@ -2014,7 +1953,7 @@ void SelectType::ShowPopup(PopupMenu::ShowEventType) {
   NOTREACHED();
 }
 
-void SelectType::HidePopup(SelectPopupHideBehavior) {
+void SelectType::HidePopup() {
   NOTREACHED();
 }
 
