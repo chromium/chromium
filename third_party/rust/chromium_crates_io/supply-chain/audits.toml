@@ -1389,6 +1389,12 @@ uses the fs module for that and returns lists of paths. There's no net
 usage or crypto.
 """
 
+[[audits.glob]]
+who = "Dustin J. Mitchell <djmitche@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "0.3.1 -> 0.3.2"
+notes = "Still no unsafe"
+
 [[audits.heck]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["ub-risk-0", "safe-to-deploy", "does-not-implement-crypto"]

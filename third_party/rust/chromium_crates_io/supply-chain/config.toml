@@ -131,7 +131,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."getrandom:0.2.15"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."glob:0.3.1"]
+[policy."glob:0.3.2"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."heck:0.4.1"]

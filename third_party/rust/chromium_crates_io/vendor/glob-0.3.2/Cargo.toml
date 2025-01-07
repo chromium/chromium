@@ -10,9 +10,16 @@
 # See Cargo.toml.orig for the original contents.
 
 [package]
+rust-version = "1.23.0"
 name = "glob"
-version = "0.3.1"
+version = "0.3.2"
 authors = ["The Rust Project Developers"]
+build = false
+autolib = false
+autobins = false
+autoexamples = false
+autotests = false
+autobenches = false
 description = """
 Support for matching file paths against Unix shell style patterns.
 """
@@ -22,6 +29,14 @@ readme = "README.md"
 categories = ["filesystem"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/rust-lang/glob"
+
+[lib]
+name = "glob"
+path = "src/lib.rs"
+
+[[test]]
+name = "glob-std"
+path = "tests/glob-std.rs"
 
 [dev-dependencies.doc-comment]
 version = "0.3"

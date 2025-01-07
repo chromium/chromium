@@ -16,8 +16,7 @@ To use `glob`, add this to your `Cargo.toml`:
 glob = "0.3.1"
 ```
 
-And add this to your crate root:
-
+If you're using Rust 1.30 or earlier, or edition 2015, add this to your crate root:
 ```rust
 extern crate glob;
 ```

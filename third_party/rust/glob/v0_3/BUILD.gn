@@ -13,14 +13,14 @@ cargo_crate("lib") {
   epoch = "0.3"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/glob-0.3.1/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/glob-0.3.2/src/lib.rs"
   sources =
-      [ "//third_party/rust/chromium_crates_io/vendor/glob-0.3.1/src/lib.rs" ]
+      [ "//third_party/rust/chromium_crates_io/vendor/glob-0.3.2/src/lib.rs" ]
   inputs = []
 
   build_native_rust_unit_tests = false
   edition = "2015"
-  cargo_pkg_version = "0.3.1"
+  cargo_pkg_version = "0.3.2"
   cargo_pkg_authors = "The Rust Project Developers"
   cargo_pkg_name = "glob"
   cargo_pkg_description =
