@@ -31,7 +31,7 @@ public class TabArchiveSettingsTest {
 
     static final String ARCHIVE_ENABLED_PARAM = "android_tab_declutter_archive_enabled";
     static final String ARCHIVE_TIME_DELTA_PARAM = "android_tab_declutter_archive_time_delta_hours";
-    static final int ARCHIVE_TIME_DELTA_HOURS_DEFAULT = 7 * 24;
+    static final int ARCHIVE_TIME_DELTA_HOURS_DEFAULT = 21 * 24;
     static final String AUTO_DELETE_ENABLED_PARAM = "android_tab_declutter_auto_delete_enabled";
     static final String AUTO_DELETE_TIME_DELTA_PARAM =
             "android_tab_declutter_auto_delete_time_delta_hours";
