@@ -59,6 +59,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
@@ -109,11 +110,11 @@ constexpr char kScreenShotNotificationType[] = "screen_shot_notification_type";
 constexpr char kScreenRecordingNotificationType[] =
     "screen_recording_notification_type";
 
-// The format strings of the file names of captured images.
+// The base file names of captured images.
 // TODO(afakhry): Discuss with UX localizing "Screenshot" and "Screen
 // recording".
-constexpr char kScreenshotFileNameFmtStr[] = "Screenshot %s %s";
-constexpr char kVideoFileNameFmtStr[] = "Screen recording %s %s";
+constexpr char kScreenshotFileName[] = "Screenshot";
+constexpr char kVideoFileName[] = "Screen recording";
 
 // Duration to clear the capture region selection from the previous session.
 constexpr base::TimeDelta kResetCaptureRegionDuration = base::Minutes(8);
@@ -2209,36 +2210,32 @@ void CaptureModeController::HandleNotificationClicked(
 }
 
 base::FilePath CaptureModeController::BuildImagePath() const {
-  return BuildPathNoExtension(kScreenshotFileNameFmtStr, base::Time::Now())
+  return BuildPathNoExtension(kScreenshotFileName, base::Time::Now())
       .AddExtension("png");
 }
 
 base::FilePath CaptureModeController::BuildVideoPath() const {
-  return BuildPathNoExtension(kVideoFileNameFmtStr, base::Time::Now())
+  return BuildPathNoExtension(kVideoFileName, base::Time::Now())
       .AddExtension(GetVideoExtension(recording_type_, source_));
 }
 
 base::FilePath CaptureModeController::BuildImagePathForDisplay(
     int display_index) const {
   auto path_str =
-      BuildPathNoExtension(kScreenshotFileNameFmtStr, base::Time::Now())
-          .value();
+      BuildPathNoExtension(kScreenshotFileName, base::Time::Now()).value();
   auto full_path = base::StringPrintf("%s - Display %d.png", path_str.c_str(),
                                       display_index);
   return base::FilePath(full_path);
 }
 
 base::FilePath CaptureModeController::BuildPathNoExtension(
-    const char* const format_string,
+    std::string_view base_name,
     base::Time timestamp) const {
-  return GetCurrentCaptureFolder().path.AppendASCII(
-      base::StringPrintfNonConstexpr(
-          format_string,
-          base::UnlocalizedTimeFormatWithPattern(timestamp, "y-MM-dd").c_str(),
-          base::UnlocalizedTimeFormatWithPattern(
-              timestamp,
-              delegate_->Uses24HourFormat() ? "HH.mm.ss" : "h.mm.ss a")
-              .c_str()));
+  return GetCurrentCaptureFolder().path.AppendASCII(base::StrCat(
+      {base_name, base::UnlocalizedTimeFormatWithPattern(timestamp, " y-MM-dd"),
+       base::UnlocalizedTimeFormatWithPattern(
+           timestamp,
+           delegate_->Uses24HourFormat() ? " HH.mm.ss" : " h.mm.ss a")}));
 }
 
 base::FilePath CaptureModeController::GetFallbackFilePathFromFile(

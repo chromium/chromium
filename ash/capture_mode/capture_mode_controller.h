@@ -608,10 +608,10 @@ class ASH_EXPORT CaptureModeController
   base::FilePath BuildVideoPath() const;
   base::FilePath BuildImagePathForDisplay(int display_index) const;
   // Used by the above three functions by providing the corresponding file name
-  // |format_string| to a capture type (image or video). The returned file path
+  // |base_name| to a capture type (image or video). The returned file path
   // excludes the file extension. The above functions are responsible for adding
   // it.
-  base::FilePath BuildPathNoExtension(const char* const format_string,
+  base::FilePath BuildPathNoExtension(std::string_view base_name,
                                       base::Time timestamp) const;
 
   // Returns a fallback path concatenating the default `Downloads` folder and
