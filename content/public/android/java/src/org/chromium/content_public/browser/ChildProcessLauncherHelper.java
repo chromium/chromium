@@ -6,9 +6,11 @@ package org.chromium.content_public.browser;
 
 import android.content.Context;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content.browser.ChildProcessLauncherHelperImpl;
 
 /** Interface for helper launching child processes. */
+@NullMarked
 public final class ChildProcessLauncherHelper {
     private ChildProcessLauncherHelper() {}
 

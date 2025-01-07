@@ -13,6 +13,8 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.UserData;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content.browser.PopupController;
 import org.chromium.content.browser.PopupController.HideablePopup;
 import org.chromium.content.browser.WindowEventObserver;
@@ -30,6 +32,7 @@ import java.util.List;
 
 /** Handles the popup UI for the lt&;select&gt; HTML tag support. */
 @JNINamespace("content")
+@NullMarked
 public class SelectPopup
         implements HideablePopup,
                 ViewAndroidDelegate.ContainerViewObserver,
@@ -49,7 +52,7 @@ public class SelectPopup
 
     private final WebContentsImpl mWebContents;
     private View mContainerView;
-    private Ui mPopupView;
+    private @Nullable Ui mPopupView;
     private long mNativeSelectPopup;
     private long mNativeSelectPopupSourceFrame;
 
@@ -63,8 +66,11 @@ public class SelectPopup
      * @return {@link SelectPopup} object.
      */
     public static SelectPopup fromWebContents(WebContents webContents) {
-        return ((WebContentsImpl) webContents)
-                .getOrSetUserData(SelectPopup.class, UserDataFactoryLazyHolder.INSTANCE);
+        SelectPopup ret =
+                ((WebContentsImpl) webContents)
+                        .getOrSetUserData(SelectPopup.class, UserDataFactoryLazyHolder.INSTANCE);
+        assert ret != null;
+        return ret;
     }
 
     @CalledByNative
@@ -113,7 +119,7 @@ public class SelectPopup
     // WindowEventObserver
 
     @Override
-    public void onWindowAndroidChanged(WindowAndroid windowAndroid) {
+    public void onWindowAndroidChanged(@Nullable WindowAndroid windowAndroid) {
         close();
     }
 
@@ -199,7 +205,7 @@ public class SelectPopup
      * Notifies that items were selected in the currently showing select popup.
      * @param indices Array of indices of the selected items.
      */
-    public void selectMenuItems(int[] indices) {
+    public void selectMenuItems(int @Nullable [] indices) {
         if (mNativeSelectPopup != 0) {
             SelectPopupJni.get()
                     .selectMenuItems(
@@ -218,6 +224,6 @@ public class SelectPopup
                 long nativeSelectPopup,
                 SelectPopup caller,
                 long nativeSelectPopupSourceFrame,
-                int[] indices);
+                int @Nullable [] indices);
     }
 }

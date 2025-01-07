@@ -4,7 +4,10 @@
 
 package org.chromium.content_public.browser;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Convenience static methods to access {@link ContentFeatureMap}. */
+@NullMarked
 public class ContentFeatureList {
     private ContentFeatureList() {}
 

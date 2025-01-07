@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,7 +13,6 @@ import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -38,6 +39,9 @@ import org.chromium.base.process_launcher.ChildProcessLauncher;
 import org.chromium.base.process_launcher.FileDescriptorInfo;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content.app.SandboxedProcessService;
 import org.chromium.content.common.ContentSwitchUtils;
 import org.chromium.content_public.browser.ChildProcessImportance;
@@ -58,6 +62,7 @@ import java.util.Map;
  * Each public or jni methods should have explicit documentation on what threads they are called.
  */
 @JNINamespace("content::internal")
+@NullMarked
 public final class ChildProcessLauncherHelperImpl {
     private static final String TAG = "ChildProcLH";
 
@@ -85,37 +90,38 @@ public final class ChildProcessLauncherHelperImpl {
     private static boolean sCheckedServiceGroupImportance;
 
     // A warmed-up connection to a sandboxed service.
-    private static SpareChildConnection sSpareSandboxedConnection;
+    private static @Nullable SpareChildConnection sSpareSandboxedConnection;
 
     // Allocator used for sandboxed services.
-    private static ChildConnectionAllocator sSandboxedChildConnectionAllocator;
-    private static ChildProcessRanking sSandboxedChildConnectionRanking;
+    private static @Nullable ChildConnectionAllocator sSandboxedChildConnectionAllocator;
+    private static @Nullable ChildProcessRanking sSandboxedChildConnectionRanking;
 
     // Map from PID to ChildProcessLauncherHelper.
     private static final Map<Integer, ChildProcessLauncherHelperImpl> sLauncherByPid =
             new HashMap<>();
 
     // Allocator used for non-sandboxed services.
-    private static ChildConnectionAllocator sPrivilegedChildConnectionAllocator;
+    private static @Nullable ChildConnectionAllocator sPrivilegedChildConnectionAllocator;
 
     // Used by tests to override the default sandboxed service allocator settings.
-    private static ChildConnectionAllocator.ConnectionFactory sSandboxedServiceFactoryForTesting;
+    private static ChildConnectionAllocator.@Nullable ConnectionFactory
+            sSandboxedServiceFactoryForTesting;
     private static int sSandboxedServicesCountForTesting = -1;
-    private static String sSandboxedServicesNameForTesting;
+    private static @Nullable String sSandboxedServicesNameForTesting;
     private static boolean sSkipDelayForReducePriorityOnBackgroundForTesting;
 
-    private static BindingManager sBindingManager;
+    private static @Nullable BindingManager sBindingManager;
 
     // Whether the main application is currently brought to the foreground.
     private static boolean sApplicationInForegroundOnUiThread;
 
     // Set on UI thread only, but null-checked on launcher thread as well.
-    private static ApplicationStatus.ApplicationStateListener sAppStateListener;
+    private static ApplicationStatus.@Nullable ApplicationStateListener sAppStateListener;
 
     // TODO(boliu): These are only set for sandboxed renderer processes. Generalize them for
     // all types of processes.
-    private final ChildProcessRanking mRanking;
-    private final BindingManager mBindingManager;
+    private final @Nullable ChildProcessRanking mRanking;
+    private final @Nullable BindingManager mBindingManager;
 
     // Whether the created process should be sandboxed.
     private final boolean mSandboxed;
@@ -124,7 +130,7 @@ public final class ChildProcessLauncherHelperImpl {
     private final boolean mReducePriorityOnBackground;
 
     // The type of process as determined by the command line.
-    private final String mProcessType;
+    private final @Nullable String mProcessType;
 
     // Whether the process can use warmed up connection.
     private final boolean mCanUseWarmUpConnection;
@@ -143,14 +149,14 @@ public final class ChildProcessLauncherHelperImpl {
     // The bundle with RELRO FD. For sending to child processes, including the ones that did not
     // announce whether they inherit from the app zygote. Declared as volatile to allow sending it
     // from different threads.
-    private static volatile Bundle sZygoteBundle;
+    private static volatile @Nullable Bundle sZygoteBundle;
 
     private static boolean sIgnoreMainFrameVisibilityForImportance;
 
     private final ChildProcessLauncher.Delegate mLauncherDelegate =
             new ChildProcessLauncher.Delegate() {
                 @Override
-                public ChildProcessConnection getBoundConnection(
+                public @Nullable ChildProcessConnection getBoundConnection(
                         ChildConnectionAllocator connectionAllocator,
                         ChildProcessConnection.ServiceCallback serviceCallback) {
                     if (!mCanUseWarmUpConnection) return null;
@@ -306,10 +312,12 @@ public final class ChildProcessLauncherHelperImpl {
     }
 
     private static void sendPreviouslySeenZygoteBundleToExistingConnections(int pid) {
+        assumeNonNull(sZygoteBundle);
         for (var entry : sLauncherByPid.entrySet()) {
             int otherPid = entry.getKey();
             if (pid != otherPid) {
-                ChildProcessConnection otherConnection = entry.getValue().mLauncher.getConnection();
+                ChildProcessConnection otherConnection =
+                        assumeNonNull(entry.getValue().mLauncher.getConnection());
                 if (otherConnection.getZygotePid() == 0) {
                     // The Zygote PID for each connection must be finalized before the launcher
                     // thread starts processing the zygote info. Zygote PID being 0 guarantees that
@@ -334,7 +342,7 @@ public final class ChildProcessLauncherHelperImpl {
     private boolean mDroppedStrongBingingDueToBackgrounding;
 
     @CalledByNative
-    private static FileDescriptorInfo makeFdInfo(
+    private static @Nullable FileDescriptorInfo makeFdInfo(
             int id, int fd, boolean autoClose, long offset, long size) {
         assert LauncherThread.runningOnLauncherThread();
         ParcelFileDescriptor pFd;
@@ -446,6 +454,7 @@ public final class ChildProcessLauncherHelperImpl {
                 new Runnable() {
                     @Override
                     public void run() {
+                        assumeNonNull(sSandboxedChildConnectionRanking);
                         ChildConnectionAllocator allocator =
                                 getConnectionAllocator(context, /* sandboxed= */ true);
                         if (ChildProcessConnection.supportVariableConnections()) {
@@ -492,7 +501,7 @@ public final class ChildProcessLauncherHelperImpl {
     private void reducePriorityOnBackgroundOnLauncherThread() {
         assert LauncherThread.runningOnLauncherThread();
         if (mDroppedStrongBingingDueToBackgrounding) return;
-        ChildProcessConnection connection = mLauncher.getConnection();
+        ChildProcessConnection connection = assumeNonNull(mLauncher.getConnection());
         if (!connection.isConnected()) return;
         if (connection.isStrongBindingBound()) {
             connection.removeStrongBinding();
@@ -503,7 +512,7 @@ public final class ChildProcessLauncherHelperImpl {
     private void raisePriorityOnForegroundOnLauncherThread() {
         assert LauncherThread.runningOnLauncherThread();
         if (!mDroppedStrongBingingDueToBackgrounding) return;
-        ChildProcessConnection connection = mLauncher.getConnection();
+        ChildProcessConnection connection = assumeNonNull(mLauncher.getConnection());
         if (!connection.isConnected()) return;
         connection.addStrongBinding();
         mDroppedStrongBingingDueToBackgrounding = false;
@@ -574,6 +583,7 @@ public final class ChildProcessLauncherHelperImpl {
                     packageName);
             Runnable freeSlotRunnable =
                     () -> {
+                        assumeNonNull(sSandboxedChildConnectionRanking);
                         ChildProcessConnection lowestRank =
                                 sSandboxedChildConnectionRanking.getLowestRankedConnection();
                         if (lowestRank != null) {
@@ -637,6 +647,7 @@ public final class ChildProcessLauncherHelperImpl {
         return sSandboxedChildConnectionAllocator;
     }
 
+    @NullUnmarked
     private ChildProcessLauncherHelperImpl(
             long nativePointer,
             String[] commandLine,
@@ -644,8 +655,8 @@ public final class ChildProcessLauncherHelperImpl {
             boolean sandboxed,
             boolean reducePriorityOnBackground,
             boolean canUseWarmUpConnection,
-            IBinder binderCallback,
-            IBinder binderBox) {
+            @Nullable IBinder binderCallback,
+            @Nullable IBinder binderBox) {
         assert LauncherThread.runningOnLauncherThread();
 
         mNativeChildProcessLauncherHelper = nativePointer;
@@ -745,6 +756,7 @@ public final class ChildProcessLauncherHelperImpl {
         LauncherThread.post(() -> mLauncher.stop());
     }
 
+    @NullUnmarked
     @CalledByNative
     private void setPriority(
             int pid,
@@ -768,7 +780,7 @@ public final class ChildProcessLauncherHelperImpl {
             return;
         }
 
-        ChildProcessConnection connection = mLauncher.getConnection();
+        ChildProcessConnection connection = assumeNonNull(mLauncher.getConnection());
         if (ChildProcessCreationParamsImpl.getIgnoreVisibilityForImportance()) {
             visible = false;
             boostForPendingViews = false;
@@ -877,12 +889,13 @@ public final class ChildProcessLauncherHelperImpl {
      * Dumps the stack of the child process with |pid|  without crashing it.
      * @param pid Process id of the child process.
      */
+    @NullUnmarked
     @CalledByNative
     private void dumpProcessStack(int pid) {
         assert LauncherThread.runningOnLauncherThread();
         ChildProcessLauncherHelperImpl launcher = getByPid(pid);
         if (launcher != null) {
-            ChildProcessConnection connection = launcher.mLauncher.getConnection();
+            ChildProcessConnection connection = assumeNonNull(launcher.mLauncher.getConnection());
             connection.dumpProcessStack();
         }
     }
@@ -898,7 +911,7 @@ public final class ChildProcessLauncherHelperImpl {
         return bundle;
     }
 
-    private static ChildProcessLauncherHelperImpl getByPid(int pid) {
+    private static @Nullable ChildProcessLauncherHelperImpl getByPid(int pid) {
         return sLauncherByPid.get(pid);
     }
 
@@ -977,7 +990,7 @@ public final class ChildProcessLauncherHelperImpl {
     }
 
     @VisibleForTesting
-    public ChildProcessConnection getChildProcessConnection() {
+    public @Nullable ChildProcessConnection getChildProcessConnection() {
         return mLauncher.getConnection();
     }
 
@@ -985,7 +998,7 @@ public final class ChildProcessLauncherHelperImpl {
         return mLauncher.getConnectionAllocator();
     }
 
-    public static ChildProcessConnection getWarmUpConnectionForTesting() {
+    public static @Nullable ChildProcessConnection getWarmUpConnectionForTesting() {
         return sSpareSandboxedConnection == null ? null : sSpareSandboxedConnection.getConnection();
     }
 

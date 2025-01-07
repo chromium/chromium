@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Context;
@@ -26,6 +28,8 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content.R;
 import org.chromium.content_public.browser.SpeechRecognition;
 import org.chromium.media.mojom.SpeechRecognitionErrorCode;
@@ -36,6 +40,7 @@ import java.util.List;
 
 /** Implementation of {@link SpeechRecognition}. */
 @JNINamespace("content")
+@NullMarked
 public class SpeechRecognitionImpl {
     private static final String TAG = "SpeechRecog";
 
@@ -55,11 +60,11 @@ public class SpeechRecognitionImpl {
 
     // The speech recognition provider (if any) matching PROVIDER_PACKAGE_NAME and
     // PROVIDER_MIN_VERSION as selected by initialize().
-    private static ComponentName sRecognitionProvider;
+    private static @Nullable ComponentName sRecognitionProvider;
 
     private final Intent mIntent;
     private final RecognitionListener mListener;
-    private SpeechRecognizer mRecognizer;
+    private @Nullable SpeechRecognizer mRecognizer;
 
     // Native pointer to C++ SpeechRecognizerImplAndroid.
     private long mNativeSpeechRecognizerImplAndroid;
@@ -174,10 +179,11 @@ public class SpeechRecognitionImpl {
             }
 
             ArrayList<String> list =
-                    bundle.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+                    assumeNonNull(bundle.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION));
             String[] results = list.toArray(new String[list.size()]);
 
-            float[] scores = bundle.getFloatArray(SpeechRecognizer.CONFIDENCE_SCORES);
+            float[] scores =
+                    assumeNonNull(bundle.getFloatArray(SpeechRecognizer.CONFIDENCE_SCORES));
 
             SpeechRecognitionImplJni.get()
                     .onRecognitionResults(
@@ -205,7 +211,7 @@ public class SpeechRecognitionImpl {
     }
 
     /** Returns null if there is no Google LLC provided RecognitionService available on device. */
-    private static ComponentName createRecognitionProvider() {
+    private static @Nullable ComponentName createRecognitionProvider() {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
                 || BuildInfo.getInstance().isAutomotive) {
             return getComponent(SSBG_PACKAGE_NAME, -1);
@@ -215,7 +221,7 @@ public class SpeechRecognitionImpl {
     }
 
     @SuppressLint("WrongConstant")
-    private static ComponentName getComponent(String packageName, int packageMinVersion) {
+    private static @Nullable ComponentName getComponent(String packageName, int packageMinVersion) {
         Context context = ContextUtils.getApplicationContext();
         PackageManager pm = context.getPackageManager();
         Intent intent = new Intent(RecognitionService.SERVICE_INTERFACE);
@@ -283,6 +289,7 @@ public class SpeechRecognitionImpl {
         }
 
         try {
+            assumeNonNull(mRecognizer);
             mRecognizer.destroy();
         } catch (IllegalArgumentException e) {
             // Intentionally swallow exception. This incorrectly throws exception on some samsung

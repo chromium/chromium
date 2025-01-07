@@ -6,11 +6,11 @@ package org.chromium.content_public.browser;
 
 import android.graphics.Bitmap;
 
-import androidx.annotation.NonNull;
-
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.url.GURL;
 
 /** Represents one entry in the navigation history of a page. */
+@NullMarked
 public class NavigationEntry {
 
     private final int mIndex;
@@ -26,9 +26,9 @@ public class NavigationEntry {
     /** Default constructor. */
     public NavigationEntry(
             int index,
-            @NonNull GURL url,
-            @NonNull GURL virtualUrl,
-            @NonNull GURL originalUrl,
+            GURL url,
+            GURL virtualUrl,
+            GURL originalUrl,
             String title,
             Bitmap favicon,
             int transition,
@@ -57,7 +57,7 @@ public class NavigationEntry {
      *         scary data: URL or something like that. Use GetVirtualURL() for
      *         showing to the user.
      */
-    public @NonNull GURL getUrl() {
+    public GURL getUrl() {
         return mUrl;
     }
 
@@ -72,14 +72,14 @@ public class NavigationEntry {
      *         cases, so if there is no overridden display URL, it will return
      *         the actual one.
      */
-    public @NonNull GURL getVirtualUrl() {
+    public GURL getVirtualUrl() {
         return mVirtualUrl;
     }
 
     /**
      * @return The URL that caused this NavigationEntry to be created.
      */
-    public @NonNull GURL getOriginalUrl() {
+    public GURL getOriginalUrl() {
         return mOriginalUrl;
     }
 

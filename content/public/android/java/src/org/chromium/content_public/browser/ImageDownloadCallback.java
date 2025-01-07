@@ -7,11 +7,13 @@ package org.chromium.content_public.browser;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.url.GURL;
 
 import java.util.List;
 
 /** Java counterpart of native ImageDownloadCallback. */
+@NullMarked
 public interface ImageDownloadCallback {
     /**
      * Called when image downloading is completed.

@@ -4,10 +4,10 @@
 
 package org.chromium.content_public.browser;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
 import org.chromium.blink.mojom.AuthenticatorStatus;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.mojo.bindings.Interface;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
@@ -17,6 +17,7 @@ import java.util.List;
 /**
  * The RenderFrameHost Java wrapper to allow communicating with the native RenderFrameHost object.
  */
+@NullMarked
 public interface RenderFrameHost {
     /** The results of {@link #GetAssertionWebAuthSecurityChecks}. */
     final class WebAuthSecurityChecksResults {
@@ -85,7 +86,7 @@ public interface RenderFrameHost {
      *
      * @return A list of RenderFramesHosts including the current frame and all descendents.
      */
-    public List<RenderFrameHost> getAllRenderFrameHosts();
+    public @Nullable List<RenderFrameHost> getAllRenderFrameHosts();
 
     /**
      * Returns whether the feature policy allows the feature in this frame.
@@ -106,7 +107,7 @@ public interface RenderFrameHost {
      * isRenderFrameLive() if the caller is not inside the call-stack of an
      * IPC form the renderer (which would guarantee its existence at that time).
      */
-    <I extends Interface, P extends Interface.Proxy> P getInterfaceToRendererFrame(
+    <I extends Interface, P extends Interface.Proxy> @Nullable P getInterfaceToRendererFrame(
             Interface.Manager<I, P> manager);
 
     /**

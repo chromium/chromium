@@ -4,12 +4,12 @@
 
 package org.chromium.content.browser;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.blink.mojom.PaymentOptions;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.ClientDataRequestType;
 import org.chromium.url.Origin;
 
@@ -17,17 +17,17 @@ import java.nio.ByteBuffer;
 
 /** The implementation of ClientDataJson. */
 @JNINamespace("content")
+@NullMarked
 public class ClientDataJsonImpl {
     /** The implementation of {@link ClientDataJson#buildClientDataJson}. */
-    @Nullable
-    public static String buildClientDataJson(
+    public static @Nullable String buildClientDataJson(
             @ClientDataRequestType int clientDataRequestType,
             String callerOrigin,
             byte[] challenge,
             boolean isCrossOrigin,
-            PaymentOptions paymentOptions,
-            String relyingPartyId,
-            Origin topOrigin) {
+            @Nullable PaymentOptions paymentOptions,
+            @Nullable String relyingPartyId,
+            @Nullable Origin topOrigin) {
         return ClientDataJsonImplJni.get()
                 .buildClientDataJson(
                         clientDataRequestType,
@@ -46,8 +46,8 @@ public class ClientDataJsonImpl {
                 String callerOrigin,
                 byte[] challenge,
                 boolean isCrossOrigin,
-                ByteBuffer optionsByteBuffer,
-                String relyingPartyId,
-                Origin topOrigin);
+                @Nullable ByteBuffer optionsByteBuffer,
+                @Nullable String relyingPartyId,
+                @Nullable Origin topOrigin);
     }
 }

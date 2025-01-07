@@ -4,10 +4,12 @@
 
 package org.chromium.content_public.browser;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.UsedByReflection;
 
 /** Represents the zoom information for a host. */
 @UsedByReflection("host_zoom_map_impl.cc")
+@NullMarked
 public final class SiteZoomInfo {
     public final String host;
     public final double zoomLevel;

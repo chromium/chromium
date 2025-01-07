@@ -46,7 +46,7 @@ public class Log {
 
     /** Returns a formatted log message, using the supplied format and arguments. */
     private static String formatLog(
-            String messageTemplate, @Nullable Throwable tr, @Nullable Object... params) {
+            String messageTemplate, @Nullable Throwable tr, @Nullable Object @Nullable [] params) {
         if ((params != null) && ((tr == null && params.length > 0) || params.length > 1)) {
             messageTemplate = String.format(Locale.US, messageTemplate, params);
         }
@@ -88,7 +88,7 @@ public class Log {
      * @param args Arguments referenced by the format specifiers in the format string. If the last
      *     one is a {@link Throwable}, its trace will be printed.
      */
-    public static void v(String tag, String messageTemplate, Object... args) {
+    public static void v(String tag, String messageTemplate, @Nullable Object @Nullable ... args) {
         if (!isLoggable(tag, VERBOSE)) return;
 
         Throwable tr = getThrowableToLog(args);
@@ -111,7 +111,7 @@ public class Log {
      * @param args Arguments referenced by the format specifiers in the format string. If the last
      *     one is a {@link Throwable}, its trace will be printed.
      */
-    public static void d(String tag, String messageTemplate, Object... args) {
+    public static void d(String tag, String messageTemplate, @Nullable Object @Nullable ... args) {
         if (!isLoggable(tag, DEBUG)) return;
 
         Throwable tr = getThrowableToLog(args);
@@ -134,7 +134,7 @@ public class Log {
      * @param args Arguments referenced by the format specifiers in the format string. If the last
      *             one is a {@link Throwable}, its trace will be printed.
      */
-    public static void i(String tag, String messageTemplate, Object... args) {
+    public static void i(String tag, String messageTemplate, @Nullable Object... args) {
         Throwable tr = getThrowableToLog(args);
         String message = formatLog(messageTemplate, tr, args);
         tag = normalizeTag(tag);
@@ -901,7 +901,7 @@ public class Log {
         return android.util.Log.getStackTraceString(tr);
     }
 
-    private static @Nullable Throwable getThrowableToLog(Object[] args) {
+    private static @Nullable Throwable getThrowableToLog(@Nullable Object @Nullable [] args) {
         if (args == null || args.length == 0) return null;
 
         Object lastArg = args[args.length - 1];

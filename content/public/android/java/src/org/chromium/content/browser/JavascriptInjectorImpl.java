@@ -12,6 +12,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.UserData;
 import org.chromium.build.annotations.DoNotInline;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl.UserDataFactory;
 import org.chromium.content_public.browser.JavascriptInjector;
@@ -25,6 +27,7 @@ import java.util.Set;
 
 /** Implementation class of the interface {@link JavascriptInjector}. */
 @JNINamespace("content")
+@NullMarked
 public class JavascriptInjectorImpl implements JavascriptInjector, UserData {
     private static final class UserDataFactoryLazyHolder {
         private static final UserDataFactory<JavascriptInjectorImpl> INSTANCE =
@@ -42,7 +45,7 @@ public class JavascriptInjectorImpl implements JavascriptInjector, UserData {
      * @return {@link JavascriptInjector} object used for the give WebContents. Creates one if not
      *     present.
      */
-    public static JavascriptInjector fromWebContents(WebContents webContents) {
+    public static @Nullable JavascriptInjector fromWebContents(WebContents webContents) {
         JavascriptInjectorImpl javascriptInjector =
                 ((WebContentsImpl) webContents)
                         .getOrSetUserData(
@@ -76,7 +79,9 @@ public class JavascriptInjectorImpl implements JavascriptInjector, UserData {
 
     @Override
     public void addPossiblyUnsafeInterface(
-            Object object, String name, Class<? extends Annotation> requiredAnnotation) {
+            @Nullable Object object,
+            String name,
+            @Nullable Class<? extends Annotation> requiredAnnotation) {
         if (object == null) return;
 
         if (mNativePtr != 0) {
@@ -112,7 +117,7 @@ public class JavascriptInjectorImpl implements JavascriptInjector, UserData {
                 JavascriptInjectorImpl caller,
                 Object object,
                 String name,
-                Class requiredAnnotation);
+                @Nullable Class requiredAnnotation);
 
         void removeInterface(
                 long nativeJavascriptInjector, JavascriptInjectorImpl caller, String name);

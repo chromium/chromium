@@ -10,6 +10,8 @@ import android.view.accessibility.CaptioningManager.CaptionStyle;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content.browser.accessibility.captioning.SystemCaptioningBridge.SystemCaptioningBridgeListener;
 
 import java.lang.ref.WeakReference;
@@ -26,6 +28,7 @@ import java.util.Locale;
  *
  * <p>https://developer.android.com/reference/android/view/accessibility/CaptioningManager.CaptioningChangeListener.html
  */
+@NullMarked
 public class CaptioningChangeDelegate {
     private static final String FONT_STYLE_ITALIC = "italic";
 
@@ -33,13 +36,13 @@ public class CaptioningChangeDelegate {
 
     private boolean mTextTracksEnabled;
 
-    private String mTextTrackBackgroundColor;
-    private String mTextTrackFontFamily;
-    private String mTextTrackFontStyle;
-    private String mTextTrackFontVariant;
-    private String mTextTrackTextColor;
-    private String mTextTrackTextShadow;
-    private String mTextTrackTextSize;
+    private @Nullable String mTextTrackBackgroundColor;
+    private @Nullable String mTextTrackFontFamily;
+    private @Nullable String mTextTrackFontStyle;
+    private @Nullable String mTextTrackFontVariant;
+    private @Nullable String mTextTrackTextColor;
+    private @Nullable String mTextTrackTextShadow;
+    private @Nullable String mTextTrackTextSize;
     // Using weak references to avoid preventing listeners from getting GC'ed.
     private final HashSet<WeakReference<SystemCaptioningBridgeListener>> mListeners =
             new HashSet<>();
@@ -63,7 +66,7 @@ public class CaptioningChangeDelegate {
     /**
      * @see android.view.accessibility.CaptioningManager.CaptioningChangeListener#onLocaleChanged
      */
-    public void onLocaleChanged(Locale locale) {}
+    public void onLocaleChanged(@Nullable Locale locale) {}
 
     /**
      * @see android.view.accessibility.CaptioningManager.CaptioningChangeListener#onUserStyleChanged
@@ -98,7 +101,7 @@ public class CaptioningChangeDelegate {
      * @return the CSS-friendly String representation of the
      *         edge attribute.
      */
-    public static String getShadowFromColorAndSystemEdge(String color, Integer type) {
+    public static String getShadowFromColorAndSystemEdge(String color, @Nullable Integer type) {
         String edgeShadow = "";
         if (type != null) {
             switch (type) {
@@ -135,7 +138,7 @@ public class CaptioningChangeDelegate {
      * @param typeFace a Typeface object.
      * @return a string representation of the font family name.
      */
-    public static String getFontFromSystemFont(Typeface typeFace) {
+    public static String getFontFromSystemFont(@Nullable Typeface typeFace) {
         if (typeFace == null) return "";
 
         // The list of fonts are obtained from apps/Settings/res/values/arrays.xml
@@ -159,7 +162,7 @@ public class CaptioningChangeDelegate {
      * @param color The Integer color to convert
      * @return a "rgba" CSS style string
      */
-    public static String androidColorToCssColor(Integer color) {
+    public static String androidColorToCssColor(@Nullable Integer color) {
         if (color == null) {
             return DEFAULT_CAPTIONING_PREF_VALUE;
         }

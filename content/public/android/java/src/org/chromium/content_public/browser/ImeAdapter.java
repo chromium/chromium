@@ -11,10 +11,13 @@ import android.view.inputmethod.InputConnection;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content.browser.input.ImeAdapterImpl;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Adapts and plumbs android IME service onto the chrome text input API. */
+@NullMarked
 public interface ImeAdapter {
     /** Composition key code sent when user either hit a key or hit a selection. */
     static final int COMPOSITION_KEY_CODE = 229;
@@ -44,6 +47,7 @@ public interface ImeAdapter {
      * @return the active {@link InputConnection} that the IME uses to communicate updates to its
      * clients.
      */
+    @Nullable
     InputConnection getActiveInputConnection();
 
     /**
@@ -59,6 +63,7 @@ public interface ImeAdapter {
     /**
      * @see View#onCreateInputConnection(EditorInfo)
      */
+    @Nullable
     InputConnection onCreateInputConnection(EditorInfo outAttrs);
 
     /**
@@ -92,6 +97,7 @@ public interface ImeAdapter {
     ResultReceiver getNewShowKeyboardReceiver();
 
     /** Get the current input connection for testing purposes. */
+    @Nullable
     InputConnection getInputConnectionForTest();
 
     /**

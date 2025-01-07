@@ -6,6 +6,8 @@ package org.chromium.content_public.browser;
 
 import android.util.Pair;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content.browser.JavascriptInjectorImpl;
 
 import java.lang.annotation.Annotation;
@@ -15,13 +17,14 @@ import java.util.Map;
  * Interface that provides API used to inject user-defined objects that allow custom Javascript
  * interfaces.
  */
+@NullMarked
 public interface JavascriptInjector {
     /**
      * @param webContents {@link WebContents} object.
      * @return {@link JavascriptInjector} object used for the give WebContents. Creates one if not
      *     present.
      */
-    static JavascriptInjector fromWebContents(WebContents webContents) {
+    static @Nullable JavascriptInjector fromWebContents(WebContents webContents) {
         return JavascriptInjectorImpl.fromWebContents(webContents);
     }
 

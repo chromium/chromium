@@ -4,13 +4,13 @@
 
 package org.chromium.content.browser;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.MediaSession;
 import org.chromium.content_public.browser.MediaSessionObserver;
 import org.chromium.content_public.browser.WebContents;
@@ -28,6 +28,7 @@ import java.util.List;
  * collection root.
  */
 @JNINamespace("content")
+@NullMarked
 public class MediaSessionImpl extends MediaSession {
     private long mNativeMediaSessionAndroid;
 
@@ -35,11 +36,11 @@ public class MediaSessionImpl extends MediaSession {
     private ObserverList.RewindableIterator<MediaSessionObserver> mObserversIterator;
 
     private boolean mIsControllable;
-    private Boolean mIsSuspended;
-    private MediaMetadata mMetadata;
-    private List<MediaImage> mImagesList;
-    private HashSet<Integer> mActionSet;
-    private MediaPosition mPosition;
+    private @Nullable Boolean mIsSuspended;
+    private @Nullable MediaMetadata mMetadata;
+    private @Nullable List<MediaImage> mImagesList;
+    private @Nullable HashSet<Integer> mActionSet;
+    private @Nullable MediaPosition mPosition;
 
     public static MediaSessionImpl fromWebContents(WebContents webContents) {
         return MediaSessionImplJni.get().getMediaSessionFromWebContents(webContents);

@@ -12,9 +12,11 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.MathUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.accessibility.AccessibilityState;
 
 /** Helper class for recording UMA histograms of accessibility events */
+@NullMarked
 public class AccessibilityHistogramRecorder {
     // OnDemand AX Mode histogram values
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)

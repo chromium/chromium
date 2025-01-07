@@ -10,6 +10,8 @@ import android.text.Spanned;
 import android.text.style.TextAppearanceSpan;
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content.R;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -17,8 +19,11 @@ import org.chromium.ui.base.WindowAndroid;
  * A subclass of SuggestionsPopupWindow to be used for showing suggestions from one or more
  * SuggestionSpans.
  */
+@NullMarked
 public class TextSuggestionsPopupWindow extends SuggestionsPopupWindow {
+    @SuppressWarnings("NullAway.Init")
     private SuggestionInfo[] mSuggestionInfos;
+
     private TextAppearanceSpan mPrefixSpan;
     private TextAppearanceSpan mSuffixSpan;
 
@@ -31,7 +36,7 @@ public class TextSuggestionsPopupWindow extends SuggestionsPopupWindow {
     public TextSuggestionsPopupWindow(
             Context context,
             TextSuggestionHost textSuggestionHost,
-            WindowAndroid windowAndroid,
+            @Nullable WindowAndroid windowAndroid,
             View parentView) {
         super(context, textSuggestionHost, windowAndroid, parentView);
 

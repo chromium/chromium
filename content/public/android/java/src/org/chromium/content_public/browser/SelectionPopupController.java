@@ -7,10 +7,9 @@ package org.chromium.content_public.browser;
 import android.view.ActionMode;
 import android.view.textclassifier.TextClassifier;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content.browser.selection.SelectionPopupControllerImpl;
 import org.chromium.content_public.browser.selection.SelectionActionMenuDelegate;
 import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
@@ -25,6 +24,7 @@ import org.chromium.ui.base.WindowAndroid;
  * this interface to create {@link ActionMode.Callback} instance and configure the selection
  * action mode tasks to their requirements.
  */
+@NullMarked
 public interface SelectionPopupController {
     // User action of clicking on the Share option within the selection UI.
     static final String UMA_MOBILE_ACTION_MODE_SHARE = "MobileActionMode.Share";
@@ -34,7 +34,7 @@ public interface SelectionPopupController {
      * @return {@link SelectionPopupController} object used for the give WebContents.
      *         {@code null} if not available.
      */
-    static SelectionPopupController fromWebContents(WebContents webContents) {
+    static @Nullable SelectionPopupController fromWebContents(WebContents webContents) {
         return SelectionPopupControllerImpl.fromWebContents(webContents);
     }
 
@@ -43,7 +43,7 @@ public interface SelectionPopupController {
      * @return {@link SelectionPopupController} object used for the given WebContents if created.
      *         {@code null} if not available.
      */
-    static SelectionPopupController fromWebContentsNoCreate(WebContents webContents) {
+    static @Nullable SelectionPopupController fromWebContentsNoCreate(WebContents webContents) {
         return SelectionPopupControllerImpl.fromWebContentsNoCreate(webContents);
     }
 
@@ -119,7 +119,7 @@ public interface SelectionPopupController {
     void setSelectionClient(SelectionClient selectionClient);
 
     /** Returns the {@link SelectionClient} in the selection popup controller. */
-    public SelectionClient getSelectionClient();
+    public @Nullable SelectionClient getSelectionClient();
 
     /** Sets TextClassifier for Smart Text selection. */
     void setTextClassifier(TextClassifier textClassifier);
@@ -129,9 +129,11 @@ public interface SelectionPopupController {
      * has been set with setTextClassifier, returns that object, otherwise returns the system
      * classifier.
      */
+    @Nullable
     TextClassifier getTextClassifier();
 
     /** Returns the TextClassifier which has been set with setTextClassifier(), or null. */
+    @Nullable
     TextClassifier getCustomTextClassifier();
 
     /**
@@ -151,7 +153,7 @@ public interface SelectionPopupController {
     void updateTextSelectionUI(boolean focused);
 
     /** Set the dropdown menu delegate that handles showing a dropdown style text selection menu. */
-    void setDropdownMenuDelegate(@NonNull SelectionDropdownMenuDelegate dropdownMenuDelegate);
+    void setDropdownMenuDelegate(SelectionDropdownMenuDelegate dropdownMenuDelegate);
 
     /**
      * Set the {@link SelectionActionMenuDelegate} used by {@link SelectionPopupController} while
@@ -165,5 +167,6 @@ public interface SelectionPopupController {
      *
      * @return SelectionActionMenuDelegate instance if available, Otherwise Null.
      */
+    @Nullable
     SelectionActionMenuDelegate getSelectionActionMenuDelegate();
 }

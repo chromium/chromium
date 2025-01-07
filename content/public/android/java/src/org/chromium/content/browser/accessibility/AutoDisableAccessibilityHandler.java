@@ -8,11 +8,14 @@ import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Helper class that handles the logic and state behind the "Auto Disable" accessibility feature.
  * Clients need to cancel/reset the timer based on their implementation (e.g. on a user action).
  * Only one timer per instance can exist.
  */
+@NullMarked
 public class AutoDisableAccessibilityHandler {
     /** Interface for any Client of this handler. */
     interface Client {
