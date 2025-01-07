@@ -7211,6 +7211,7 @@ CSSValue* ConsumeTextBoxEdge(CSSParserTokenStream& stream) {
     return auto_value;
   }
 
+  const CSSParserTokenStream::State savepoint_before_first = stream.Save();
   CSSIdentifierValue* over_type =
       ConsumeIdent<CSSValueID::kText, CSSValueID::kCap, CSSValueID::kEx>(
           stream);
@@ -7246,6 +7247,7 @@ CSSValue* ConsumeTextBoxEdge(CSSParserTokenStream& stream) {
   }
 
   // Fail if the `under` is required but it's missing.
+  stream.Restore(savepoint_before_first);
   return nullptr;
 }
 
