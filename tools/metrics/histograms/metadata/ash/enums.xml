@@ -1333,28 +1333,6 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="8" label="FailedToGetNssCerts"/>
 </enum>
 
-<enum name="LacrosLaunchMode">
-  <int value="0" label="Only Ash browser"/>
-  <int value="1" label="Ash and Lacros browser available"/>
-  <int value="2" label="Lacros browser is primary"/>
-  <int value="3" label="Only Lacros browser"/>
-</enum>
-
-<enum name="LacrosLaunchModeAndSource">
-  <int value="0" label="Default or user set, only Ash browser"/>
-  <int value="1" label="Default or user set, Ash and Lacros browser available"/>
-  <int value="2" label="Default or user set, Lacros browser is primary"/>
-  <int value="3" label="Default or user set, only Lacros browser"/>
-  <int value="4" label="User forced, only Ash browser"/>
-  <int value="5" label="User forced, Ash and Lacros browser available"/>
-  <int value="6" label="User forced, Lacros browser is primary"/>
-  <int value="7" label="User forced, only Lacros browser"/>
-  <int value="8" label="Policy forced, only Ash browser"/>
-  <int value="9" label="Policy forced, Ash and Lacros browser available"/>
-  <int value="10" label="Policy forced, Lacros browser is primary"/>
-  <int value="11" label="Policy forced, only Lacros browser"/>
-</enum>
-
 <enum name="LobsterState">
   <int value="0" label="Shown Opportunity"/>
   <int value="1" label="Blocked"/>
