@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.notifications;
 
+import static org.chromium.chrome.browser.notifications.SuspiciousNotificationWarningUtils.recordSuspiciousNotificationWarningInteractions;
 import static org.chromium.components.content_settings.PrefNames.NOTIFICATIONS_VIBRATE_ENABLED;
 
 import android.app.Notification;
@@ -41,6 +42,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
+import org.chromium.chrome.browser.notifications.SuspiciousNotificationWarningUtils.SuspiciousNotificationWarningInteractions;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -262,6 +264,8 @@ public class NotificationPlatformBridge {
             restoreNotificationBackups(
                     attributes,
                     NotificationConstants.EXTRA_NOTIFICATION_BACKUP_FOR_SUSPICIOUS_VERDICT);
+            recordSuspiciousNotificationWarningInteractions(
+                    SuspiciousNotificationWarningInteractions.SHOW_ORIGINAL_NOTIFICATION);
             return false;
         }
 
@@ -832,6 +836,9 @@ public class NotificationPlatformBridge {
                                                     timestamp,
                                                     silent,
                                                     notification.getNotification()));
+                                    recordSuspiciousNotificationWarningInteractions(
+                                            SuspiciousNotificationWarningInteractions
+                                                    .WARNING_SHOWN);
                                 } else {
                                     mNotificationManager.notify(notification);
                                 }

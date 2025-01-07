@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.notifications;
 
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
+import static org.chromium.chrome.browser.notifications.SuspiciousNotificationWarningUtils.SUSPICIOUS_NOTIFICATION_WARNING_INTERACTIONS_HISTOGRAM_NAME;
 import static org.chromium.components.content_settings.PrefNames.NOTIFICATIONS_VIBRATE_ENABLED;
 
 import android.app.Notification;
@@ -39,10 +40,12 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.notifications.SuspiciousNotificationWarningUtils.SuspiciousNotificationWarningInteractions;
 import org.chromium.chrome.browser.permissions.PermissionTestRule;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
@@ -1088,6 +1091,13 @@ public class NotificationPlatformBridgeTest {
                 ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
         Assert.assertEquals("\"granted\"", runJavaScript("Notification.permission"));
 
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                SUSPICIOUS_NOTIFICATION_WARNING_INTERACTIONS_HISTOGRAM_NAME,
+                                SuspiciousNotificationWarningInteractions.WARNING_SHOWN)
+                        .build();
+
         NotificationPlatformBridge notificationBridge =
                 NotificationPlatformBridge.getInstanceForTests();
         Assert.assertNotNull(notificationBridge);
@@ -1097,6 +1107,8 @@ public class NotificationPlatformBridgeTest {
                 showAndGetNotification(
                         "MyNotification",
                         "{ actions: [{action: 'myAction', title: 'reply', type: 'text'}] }");
+        mNotificationTestRule.waitForNotificationCount(1);
+        notificationBridge.setIsSuspiciousParameterForTesting(false);
         showNotification("Notification2", "{}");
         mNotificationTestRule.waitForNotificationCount(2);
 
@@ -1114,6 +1126,9 @@ public class NotificationPlatformBridgeTest {
                         .contains("Chrome detected possible spam from " + expectedOrigin));
         Assert.assertEquals(
                 expectedOrigin, NotificationTestUtil.getExtraSubText(warningNotification));
+
+        // Validate histogram is logged after showing warning.
+        histogramWatcher.assertExpected();
 
         // Check expected buttons.
         Assert.assertEquals(2, notification1.actions.length);
@@ -1158,6 +1173,15 @@ public class NotificationPlatformBridgeTest {
                 ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
         Assert.assertEquals("\"granted\"", runJavaScript("Notification.permission"));
 
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                SUSPICIOUS_NOTIFICATION_WARNING_INTERACTIONS_HISTOGRAM_NAME,
+                                SuspiciousNotificationWarningInteractions.WARNING_SHOWN,
+                                SuspiciousNotificationWarningInteractions
+                                        .SHOW_ORIGINAL_NOTIFICATION)
+                        .build();
+
         NotificationPlatformBridge notificationBridge =
                 NotificationPlatformBridge.getInstanceForTests();
         Assert.assertNotNull(notificationBridge);
@@ -1185,6 +1209,9 @@ public class NotificationPlatformBridgeTest {
         Assert.assertEquals(
                 "MyNotification", NotificationTestUtil.getExtraTitle(restoredNotification));
         Assert.assertEquals("Hello", NotificationTestUtil.getExtraText(restoredNotification));
+
+        // Validate histogram is logged after tapping to show original notification.
+        histogramWatcher.assertExpected();
 
         // Verify that the notification is silent once restored.
         Assert.assertEquals(

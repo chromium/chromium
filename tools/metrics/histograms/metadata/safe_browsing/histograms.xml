@@ -2952,6 +2952,17 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.SuspiciousNotificationWarning.Interactions"
+    enum="SuspiciousNotificationWarningInteractions" expires_after="2026-01-02">
+  <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-core@google.com</owner>
+  <summary>
+    Records user interactions with the warning shown for suspicious
+    notifications. Logged when a warning is shown and when a user performs a
+    notification action.
+  </summary>
+</histogram>
+
 <histogram
     name="SafeBrowsing.TailoredSecurity.ConsentedDesktopDialogDisabledOutcome"
     enum="SafeBrowsingTailoredSecurityOutcome" expires_after="2025-09-29">
