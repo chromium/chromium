@@ -29,6 +29,7 @@
 #include "chromeos/ash/components/boca/session_api/remove_student_request.h"
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
 #include "chromeos/ash/components/boca/session_api/update_session_request.h"
+#include "chromeos/ash/components/boca/spotlight/spotlight_service.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_context_helper/fake_browser_context_helper_delegate.h"
@@ -214,6 +215,17 @@ class MockSessionManager : public BocaSessionManager {
   ~MockSessionManager() override = default;
 };
 
+class MockSpotlightService : public SpotlightService {
+ public:
+  explicit MockSpotlightService(
+      std::unique_ptr<google_apis::RequestSender> sender)
+      : SpotlightService(std::move(sender)) {}
+  MOCK_METHOD(void,
+              ViewScreen,
+              (std::string, std::string, ViewScreenRequestCallback),
+              (override));
+};
+
 class BocaAppPageHandlerTest : public testing::Test {
  public:
   BocaAppPageHandlerTest() = default;
@@ -275,6 +287,7 @@ class BocaAppPageHandlerTest : public testing::Test {
         pending_receiver_.InitWithNewPipeAndPassRemote(), web_ui_.get(),
         /*classroom_client_impl=*/nullptr, &session_client_impl_,
         /*is_producer=*/true);
+    boca_app_handler_->SetSpotlightService(&spotlight_service_);
   }
 
   void TearDown() override {
@@ -295,6 +308,7 @@ class BocaAppPageHandlerTest : public testing::Test {
   MockBocaAppClient* boca_app_client() { return boca_app_client_.get(); }
   MockSessionManager* session_manager() { return session_manager_.get(); }
   BocaAppHandler* boca_app_handler() { return boca_app_handler_.get(); }
+  MockSpotlightService* spotlight_service() { return &spotlight_service_; }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -314,6 +328,7 @@ class BocaAppPageHandlerTest : public testing::Test {
   mojo::Remote<mojom::PageHandler> remote_;
   mojo::PendingReceiver<mojom::Page> pending_receiver_;
   std::unique_ptr<BocaAppHandler> boca_app_handler_;
+  StrictMock<MockSpotlightService> spotlight_service_{nullptr};
 };
 
 TEST_F(BocaAppPageHandlerTest, CreateSessionWithFullInput) {
@@ -1594,6 +1609,37 @@ TEST_F(BocaAppPageHandlerTest, JoinSessionFailed) {
   boca_app_handler()->SubmitAccessCode("code", future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
   EXPECT_EQ(mojom::SubmitAccessCodeError::kInvalid, future_1.Get().value());
+}
+
+TEST_F(BocaAppPageHandlerTest, ViewScreenSucceeded) {
+  const std::string student_id = "123";
+  EXPECT_CALL(*spotlight_service(),
+              ViewScreen(student_id, kSchoolToolsApiBaseUrl, _))
+      .WillOnce(WithArg<2>(Invoke(
+          [&](auto request) { std::move(request).Run(base::ok(true)); })));
+
+  base::test::TestFuture<std::optional<mojom::ViewStudentScreenError>> future;
+
+  boca_app_handler()->ViewStudentScreen(student_id, future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_FALSE(future.Get().has_value());
+}
+
+TEST_F(BocaAppPageHandlerTest, ViewScreenFailed) {
+  const std::string student_id = "123";
+
+  EXPECT_CALL(*spotlight_service(),
+              ViewScreen(student_id, kSchoolToolsApiBaseUrl, _))
+      .WillOnce(WithArg<2>(Invoke([&](auto request) {
+        std::move(request).Run(
+            base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
+      })));
+
+  base::test::TestFuture<std::optional<mojom::ViewStudentScreenError>> future;
+
+  boca_app_handler()->ViewStudentScreen(student_id, future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(mojom::ViewStudentScreenError::kHTTPError, future.Get().value());
 }
 
 class BocaAppPageHandlerFloatModeTest : public AshTestBase {

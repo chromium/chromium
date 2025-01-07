@@ -129,6 +129,7 @@ void BocaUI::Create(
       std::make_unique<ClassroomPageHandlerImpl>(),
       BocaAppClient::Get()->GetSessionManager()->session_client_impl(),
       is_producer_);
+  page_handler_impl_->SetSpotlightService(&spotlight_service_);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(BocaUI)

@@ -27,6 +27,7 @@
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
+#include "chromeos/ash/components/boca/session_api/constants.h"
 #include "chromeos/ash/components/boca/session_api/create_session_request.h"
 #include "chromeos/ash/components/boca/session_api/get_session_request.h"
 #include "chromeos/ash/components/boca/session_api/join_session_request.h"
@@ -428,6 +429,25 @@ void BocaAppHandler::SubmitAccessCode(const std::string& access_code,
   session_client_impl_->JoinSession(std::move(request));
 }
 
+void BocaAppHandler::ViewStudentScreen(const std::string& id,
+                                       ViewStudentScreenCallback callback) {
+  CHECK(spotlight_service_);
+  spotlight_service_->ViewScreen(
+      id, kSchoolToolsApiBaseUrl,
+      base::BindOnce(
+          [](ViewStudentScreenCallback callback,
+             base::expected<bool, google_apis::ApiErrorCode> result) {
+            if (!result.has_value()) {
+              std::move(callback).Run(
+                  mojom::ViewStudentScreenError::kHTTPError);
+              return;
+            } else {
+              std::move(callback).Run(std::nullopt);
+            }
+          },
+          std::move(callback)));
+}
+
 void BocaAppHandler::OnStudentActivityUpdated(
     std::vector<mojom::IdentifiedActivityPtr> activities) {
   if (!test_activity_callback_.is_null()) {
@@ -501,6 +521,10 @@ void BocaAppHandler::NotifyLocalCaptionConfigUpdate(
   local_caption_config.set_translations_enabled(config->local_caption_enabled);
   BocaAppClient::Get()->GetSessionManager()->NotifyLocalCaptionEvents(
       std::move(local_caption_config));
+}
+
+void BocaAppHandler::SetSpotlightService(SpotlightService* spotlight_service) {
+  spotlight_service_ = spotlight_service;
 }
 
 void BocaAppHandler::SetFloatModeAndBoundsForWindow(

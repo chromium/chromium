@@ -224,6 +224,10 @@ export class ClientDelegateFactory {
           return SubmitAccessCodeResult.SUCCESS;
         }
         return SubmitAccessCodeResult.INVALID_CODE;
+      },
+      viewStudentScreen: async (id: string) => {
+        const result = await pageHandler.viewStudentScreen(id);
+        return !resultHasError(result);
       }
     };
   }

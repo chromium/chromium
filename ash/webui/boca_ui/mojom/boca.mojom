@@ -165,6 +165,11 @@ enum SubmitAccessCodeError {
   kInvalid,
 };
 
+enum ViewStudentScreenError {
+  kInvalid,
+  kHTTPError,
+};
+
 // Implemented by browser process for page chrome-untrusted://boca-app/
 interface PageHandler {
   // Fetches a list of browser windows and tabs in it. Windows are ordered using
@@ -194,6 +199,8 @@ interface PageHandler {
   SetFloatMode(bool isFloatMode)=> (bool success);
   // Submit access code to join a current class session.
   SubmitAccessCode(string access_code) => (SubmitAccessCodeError? error);
+  // Requests to view screen of a given student.
+  ViewStudentScreen(string id) => (ViewStudentScreenError? error);
 };
 
 // Implemented by renderer process

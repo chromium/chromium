@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {ClientDelegateFactory, getNetworkInfoMojomToUI, getSessionConfigMojomToUI, getStudentActivityMojomToUI} from 'chrome-untrusted://boca-app/app/client_delegate.js';
-import {CaptionConfig, Config, Course, Identity, OnTaskConfig, PageHandlerRemote, RemoveStudentError, SessionResult, SubmitAccessCodeError, UpdateSessionError, Window} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
+import {CaptionConfig, Config, Course, Identity, OnTaskConfig, PageHandlerRemote, RemoveStudentError, SessionResult, SubmitAccessCodeError, UpdateSessionError, ViewStudentScreenError, Window} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
 import {Url} from 'chrome-untrusted://resources/mojo/url/mojom/url.mojom-webui.js';
 import {assertDeepEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
@@ -227,6 +227,11 @@ class MockRemoteHandler extends PageHandlerRemote {
     } else {
       return Promise.resolve({error: SubmitAccessCodeError.kInvalid});
     }
+  }
+  override viewStudentScreen(id: string):
+      Promise<{error: ViewStudentScreenError | null}> {
+    id;
+    return Promise.resolve({error: null});
   }
 }
 
@@ -585,4 +590,13 @@ suite('ClientDelegateTest', function() {
         ],
         result);
   });
+
+  test(
+      'client delegate should translate data for view student screen',
+      async () => {
+        const result =
+            await clientDelegateImpl.getInstance().viewStudentScreen('1');
+        assertTrue(result);
+      });
+
 });

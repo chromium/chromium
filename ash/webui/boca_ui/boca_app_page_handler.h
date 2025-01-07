@@ -18,6 +18,7 @@
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
+#include "chromeos/ash/components/boca/spotlight/spotlight_service.h"
 #include "components/account_id/account_id.h"
 #include "content/public/browser/web_ui.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -70,6 +71,8 @@ class BocaAppHandler : public mojom::PageHandler,
   void SubmitAccessCode(const std::string& access_code,
                         SubmitAccessCodeCallback callback) override;
 
+  void ViewStudentScreen(const std::string& id,
+                         ViewStudentScreenCallback callback) override;
   // mojom::Page:
   void OnStudentActivityUpdated(
       std::vector<mojom::IdentifiedActivityPtr> activities) override;
@@ -93,6 +96,8 @@ class BocaAppHandler : public mojom::PageHandler,
 
   void NotifyLocalCaptionConfigUpdate(mojom::CaptionConfigPtr config);
 
+  void SetSpotlightService(SpotlightService* spotlight_service);
+
   // For testing.
   // Mojo service binding is not invoked in unit test. So we manually override
   // a interceptor for testing.
@@ -100,6 +105,7 @@ class BocaAppHandler : public mojom::PageHandler,
       ActivityInterceptorCallback callback);
   void SetSessionConfigInterceptorCallbackForTesting(
       SessionConfigInterceptorCallback callback);
+  void SetSpotlightServiceForTesting(std::unique_ptr<SpotlightService> service);
 
  private:
   void UpdateSessionConfig();
@@ -122,7 +128,8 @@ class BocaAppHandler : public mojom::PageHandler,
   const bool is_producer_;
   TabInfoCollector tab_info_collector_;
   std::unique_ptr<ClassroomPageHandlerImpl> class_room_page_handler_;
-  // Lastest config is not always the same as the instance maintained in
+  raw_ptr<SpotlightService> spotlight_service_;
+  // Latest config is not always the same as the instance maintained in
   // boca_session_manager as it contains the async config that hasn't been
   // committed yet. OnTask and caption config use the same server endpoint. We
   // keep track of pending config to avoid override in race.

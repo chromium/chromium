@@ -223,6 +223,11 @@ export declare interface ClientApiDelegate {
    * Submit an access code for student to join the session.
    */
   submitAccessCode(accessCode: string): Promise<SubmitAccessCodeResult>;
+
+  /**
+   * Request to view the screen of the student with the given id.
+   */
+  viewStudentScreen(id: string): Promise<boolean>;
 }
 
 /**
