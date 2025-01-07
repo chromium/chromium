@@ -72,7 +72,7 @@ std::ostream& operator<<(std::ostream& os,
             << base::Value::Dict()
                    .Set("installed_version",
                         success.installed_version.GetString())
-                   .Set("location", base::ToString(success.location));
+                   .Set("location", success.location.ToDebugValue());
 }
 
 std::ostream& operator<<(std::ostream& os,
