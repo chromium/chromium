@@ -9,6 +9,7 @@
 #include "chrome/browser/password_manager/password_change_delegate.h"
 #include "chrome/browser/ui/views/passwords/password_change/password_change_info_bubble_view.h"
 #include "chrome/browser/ui/views/passwords/password_change/privacy_notice_view.h"
+#include "chrome/browser/ui/views/passwords/password_change/successful_password_change_view.h"
 
 PasswordBubbleViewBase* CreatePasswordChangeBubbleView(
     PasswordChangeDelegate* delegate,
@@ -23,6 +24,7 @@ PasswordBubbleViewBase* CreatePasswordChangeBubbleView(
       return new PasswordChangeInfoBubbleView(web_contents, anchor_view,
                                               delegate->GetCurrentState());
     case PasswordChangeDelegate::State::kPasswordSuccessfullyChanged:
+      return new SuccessfulPasswordChangeView(web_contents, anchor_view);
     case PasswordChangeDelegate::State::kPasswordChangeFailed:
       NOTIMPLEMENTED();
   }
