@@ -5,6 +5,7 @@
 #ifndef BASE_STRINGS_STRING_SLICE_H_
 #define BASE_STRINGS_STRING_SLICE_H_
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <bit>
