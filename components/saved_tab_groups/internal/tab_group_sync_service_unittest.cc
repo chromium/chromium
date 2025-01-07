@@ -1855,16 +1855,18 @@ TEST_F(TabGroupSyncServiceTest, MakeTabGroupShared) {
               saved_tab.creation_time_windows_epoch_micros());
     EXPECT_GT(shared_tab.update_time_windows_epoch_micros(),
               saved_tab.update_time_windows_epoch_micros());
+    EXPECT_NE(shared_tab.local_tab_id(), std::nullopt);
+    EXPECT_EQ(saved_tab.local_tab_id(), std::nullopt);
+
+    // The local tab ID should remain the same. Use `group_1_` to verify because
+    // it's a copy of the originating group before the migration.
+    EXPECT_EQ(shared_tab.local_tab_id(),
+              group_1_.saved_tabs()[i].local_tab_id());
 
     // Do not verify the position of the original tab because its meaning
     // differs for shared tab groups: it's the index of the tab in the shared
     // group.
     EXPECT_EQ(shared_tab.position(), i);
-
-    // Local tab ID is not covered by this test but the originating tab should
-    // not have it.
-    EXPECT_EQ(shared_tab.local_tab_id(), std::nullopt);
-    EXPECT_EQ(saved_tab.local_tab_id(), std::nullopt);
   }
 }
 
@@ -1996,6 +1998,8 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupUnShareSucceeded) {
               shared_tab.creation_time_windows_epoch_micros());
     EXPECT_GT(saved_tab.update_time_windows_epoch_micros(),
               shared_tab.update_time_windows_epoch_micros());
+    EXPECT_NE(saved_tab.local_tab_id(), std::nullopt);
+    EXPECT_EQ(shared_tab.local_tab_id(), std::nullopt);
 
     // Do not verify the position of the original tab because its meaning
     // differs for shared tab groups: it's the index of the tab in the shared

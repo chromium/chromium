@@ -1389,6 +1389,15 @@ bool TabGroupSyncServiceImpl::TransitionOriginatingTabGroupToNewGroupIfNeeded(
     const LocalTabGroupID local_group_id =
         originating_tab_group->local_group_id().value();
 
+    // Before disconnecting the local group, keep the local tab group IDs to
+    // assign them later to the new group. Note that RemoveLocalTabGroupMapping
+    // below will clear the local tab IDs.
+    std::vector<std::optional<LocalTabID>> local_tab_ids;
+    for (const SavedTabGroupTab& tab : originating_tab_group->saved_tabs()) {
+      // All tabs should have local IDs but use optional to be safe.
+      local_tab_ids.push_back(tab.local_tab_id());
+    }
+
     // First, remove the local tab group mapping and then disconnect the local
     // tab group. Note that on some platforms the coordinator may call
     // RemoveLocalTabGroupMapping() but it should be a no-op.
@@ -1400,6 +1409,22 @@ bool TabGroupSyncServiceImpl::TransitionOriginatingTabGroupToNewGroupIfNeeded(
     // restore.
     ConnectLocalTabGroup(tab_group.saved_guid(), local_group_id,
                          opening_source);
+
+    // Assign local tab IDs on best effort basis if ConnectLocalTabGroup()
+    // has not assigned them yet.
+    const SavedTabGroup* transitioned_group = model_->Get(local_group_id);
+    CHECK(transitioned_group);
+    for (size_t i = 0; i < std::min(local_tab_ids.size(),
+                                    transitioned_group->saved_tabs().size());
+         ++i) {
+      const SavedTabGroupTab& tab = transitioned_group->saved_tabs()[i];
+      if (!tab.local_tab_id().has_value() &&
+          tab.local_tab_id() != local_tab_ids[i]) {
+        // Copy the tab as it's required for updating the local tab ID.
+        model_->UpdateLocalTabId(transitioned_group->saved_guid(), tab,
+                                 local_tab_ids[i]);
+      }
+    }
   }
 
   return true;
