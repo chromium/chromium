@@ -32,7 +32,8 @@
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/url_constants.h"
-#include "components/grit/dev_ui_components_resources.h"
+#include "components/grit/net_export_resources.h"
+#include "components/grit/net_export_resources_map.h"
 #include "components/net_log/net_export_file_writer.h"
 #include "components/net_log/net_export_ui_constants.h"
 #include "content/public/browser/browser_thread.h"
@@ -46,6 +47,7 @@
 #include "net/log/net_log_capture_mode.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/selected_file_info.h"
+#include "ui/webui/webui_util.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/browser_ui/share/android/intent_helper.h"
@@ -64,11 +66,8 @@ base::LazyInstance<base::FilePath>::Leaky last_save_dir =
 void CreateAndAddNetExportHTMLSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUINetExportHost);
-
-  source->UseStringsJs();
-  source->AddResourcePath(net_log::kNetExportUICSS, IDR_NET_LOG_NET_EXPORT_CSS);
-  source->AddResourcePath(net_log::kNetExportUIJS, IDR_NET_LOG_NET_EXPORT_JS);
-  source->SetDefaultResource(IDR_NET_LOG_NET_EXPORT_HTML);
+  webui::SetupWebUIDataSource(source, kNetExportResources,
+                              IDR_NET_EXPORT_NET_EXPORT_HTML);
 }
 
 // This class receives javascript messages from the renderer.

@@ -34,6 +34,7 @@ group("resources") {
     "../chrome_urls_ui/resources:resources",
     "../crash/core/browser/resources:resources",
     "../flags_ui/resources:resources",
+    "../net_log/resources",
     "../signin/core/browser/resources",
     "../user_actions_ui/resources:resources",
     "../version_ui/resources:resources",

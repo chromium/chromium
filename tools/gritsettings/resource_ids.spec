@@ -1019,6 +1019,10 @@
     "META": {"sizes": {"includes": [15]}},
     "includes": [7380],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/components/net_log/resources/resources.grd": {
+    "META": {"sizes": {"includes": [5]}},
+    "includes": [7385],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/components/ntp_tiles/webui/resources/resources.grd": {
     "META": {"sizes": {"includes": [5]}},
     "includes": [7390],

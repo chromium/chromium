@@ -7,11 +7,6 @@
 
 namespace net_log {
 
-// Resource paths.
-// Must match the resource file names.
-extern const char kNetExportUICSS[];
-extern const char kNetExportUIJS[];
-
 // Message handlers.
 // Must match the constants used in the resource files.
 extern const char kEnableNotifyUIWithStateHandler[];

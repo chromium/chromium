@@ -166,6 +166,7 @@ def validateJavaScriptAllowed(source_dir, out_dir, is_ios):
       'chrome/test/data/webui/cr_components/chromeos',
       # TODO(crbug.com/373951324): Migrate offline dino game to TypeScript.
       'components/neterror/resources',
+      'components/net_log/resources',
       'components/policy/resources/webui',
       'content/browser/webrtc/resources',
       'ui/webui/resources/js',
