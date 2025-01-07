@@ -10119,6 +10119,25 @@
             ]
         }
     ],
+    "FusedLocationProviderTuning": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "geolocation_request_max_location_age_millis": "2147483647",
+                        "geolocation_request_min_update_interval_millis": "0"
+                    },
+                    "enable_features": [
+                        "UseFusedLocationProvider"
+                    ]
+                }
+            ]
+        }
+    ],
     "GMSCoreEmoji": [
         {
             "platforms": [
@@ -23662,21 +23681,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "UseDMSAAForTiles"
-                    ]
-                }
-            ]
-        }
-    ],
-    "UseFusedLocationProvider": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UseFusedLocationProvider"
                     ]
                 }
             ]
