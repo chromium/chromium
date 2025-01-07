@@ -20,8 +20,6 @@ source_set("internal") {
     "tab_group_sync_service_factory_helper.cc",
     "tab_group_sync_service_impl.cc",
     "tab_group_sync_service_impl.h",
-    "tab_group_type_observer.cc",
-    "tab_group_type_observer.h",
   ]
   deps = [
     ":tab_group_sync_bridge",
@@ -164,7 +162,6 @@ source_set("unit_tests") {
     "tab_group_sync_coordinator_unittest.cc",
     "tab_group_sync_metrics_logger_unittest.cc",
     "tab_group_sync_service_unittest.cc",
-    "tab_group_type_observer_unittest.cc",
   ]
   deps = [
     ":internal",

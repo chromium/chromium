@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/data_sharing/data_sharing_service_factory.h"
@@ -18,7 +17,6 @@
 #include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/tab_group_sync/feature_utils.h"
-#include "chrome/browser/tab_group_sync/tab_group_trial.h"
 #include "chrome/common/channel_info.h"
 #include "components/collaboration/internal/collaboration_finder_impl.h"
 #include "components/data_sharing/public/features.h"
@@ -26,7 +24,6 @@
 #include "components/saved_tab_groups/delegate/empty_tab_group_sync_delegate.h"
 #include "components/saved_tab_groups/delegate/tab_group_sync_delegate.h"
 #include "components/saved_tab_groups/public/features.h"
-#include "components/saved_tab_groups/public/synthetic_field_trial_helper.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service_factory_helper.h"
 #include "components/sync/base/data_type.h"
@@ -62,10 +59,7 @@ TabGroupSyncServiceFactory::TabGroupSyncServiceFactory()
           "TabGroupSyncService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
-              .Build()),
-      synthetic_field_trial_helper_(std::make_unique<SyntheticFieldTrialHelper>(
-          base::BindRepeating(&TabGroupTrial::OnHadSyncedTabGroup),
-          base::BindRepeating(&TabGroupTrial::OnHadSharedTabGroup))) {
+              .Build()) {
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
@@ -98,7 +92,7 @@ TabGroupSyncServiceFactory::BuildServiceInstanceForBrowserContext(
           ->GetDeviceInfoTracker(),
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
       IdentityManagerFactory::GetForProfile(profile),
-      std::move(collaboration_finder), synthetic_field_trial_helper_.get());
+      std::move(collaboration_finder));
 
   std::unique_ptr<TabGroupSyncDelegate> delegate;
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \

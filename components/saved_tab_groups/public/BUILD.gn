@@ -15,8 +15,6 @@ source_set("public") {
     "saved_tab_group.h",
     "saved_tab_group_tab.cc",
     "saved_tab_group_tab.h",
-    "synthetic_field_trial_helper.cc",
-    "synthetic_field_trial_helper.h",
     "tab_group_sync_metrics_logger.h",
     "tab_group_sync_service.cc",
     "tab_group_sync_service.h",
@@ -124,7 +122,6 @@ source_set("unit_tests") {
   sources = [
     "saved_tab_group_unittest.cc",
     "string_utils_unittest.cc",
-    "synthetic_field_trial_helper_unittest.cc",
   ]
   deps = [
     ":public",

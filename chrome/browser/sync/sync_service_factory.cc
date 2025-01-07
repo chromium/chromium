@@ -147,7 +147,7 @@ tab_groups::TabGroupSyncService* GetTabGroupSyncService(Profile* profile) {
       tab_groups::IsTabGroupSyncEnabled(profile->GetPrefs()) &&
       !base::FeatureList::IsEnabled(
           tab_groups::kTabGroupSyncDisableNetworkLayer);
-  tab_groups::TabGroupTrial::OnTabGroupSyncEnabled(enable_tab_group_sync);
+  tab_groups::TabGroupTrial::OnTabgroupSyncEnabled(enable_tab_group_sync);
   if (!enable_tab_group_sync) {
     return nullptr;
   }
