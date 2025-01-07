@@ -96,6 +96,9 @@ AutofillClientProvider::AutofillClientProvider(PrefService* prefs)
           autofill::features::kAutofillThirdPartyModeContentProvider)) {
     Java_AutofillClientProviderUtils_setThirdPartyModePref(
         base::android::AttachCurrentThread(), uses_platform_autofill_);
+  } else {
+    Java_AutofillClientProviderUtils_unsetThirdPartyModePref(
+        base::android::AttachCurrentThread());
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 }

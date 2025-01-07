@@ -102,5 +102,16 @@ public class AutofillClientProviderUtils {
         editor.apply();
     }
 
+    @CalledByNative
+    public static void unsetThirdPartyModePref() {
+        Editor editor =
+                ContextUtils.getApplicationContext()
+                        .getSharedPreferences(
+                                AUTOFILL_THIRD_PARTY_MODE_SHARED_PREFS_FILE, Context.MODE_PRIVATE)
+                        .edit();
+        editor.remove(AUTOFILL_THIRD_PARTY_MODE_KEY);
+        editor.apply();
+    }
+
     private AutofillClientProviderUtils() {}
 }
