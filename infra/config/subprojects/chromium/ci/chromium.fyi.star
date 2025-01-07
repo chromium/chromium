@@ -1968,7 +1968,6 @@ fyi_ios_builder(
         short_name = "ios-blk",
     ),
     execution_timeout = 3 * time.hour,
-    xcode = xcode.x15betabots,
 )
 
 fyi_ios_builder(
