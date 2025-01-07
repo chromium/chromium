@@ -358,8 +358,7 @@ std::optional<bool> EnterpriseSeparationMaybeRequired(
   // make a network call.
   // Fetching the value will not be possible isf we cannot make network calls
   // nor have a value set locally for testing.
-  if (is_new_account_interception &&
-      !intercepted_profile_separation_policies.has_value() &&
+  if (!intercepted_profile_separation_policies.has_value() &&
       (g_browser_process->system_network_context_manager() ||
        expects_intercepted_profile_separation_policies_for_testing)) {
     return std::nullopt;
@@ -1389,6 +1388,15 @@ void DiceWebSigninInterceptor::OnEnterpriseProfileCreationResult(
         << "The user can only accept or decline";
     if (state_->interception_type_ ==
         WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced) {
+      if (account_info == identity_manager_->GetPrimaryAccountInfo(
+                              signin::ConsentLevel::kSignin)) {
+        auto* primary_account_mutator =
+            IdentityManagerFactory::GetForProfile(profile_)
+                ->GetPrimaryAccountMutator();
+        primary_account_mutator->ClearPrimaryAccount(
+            signin_metrics::ProfileSignout::kAbortSignin);
+      }
+
       auto* accounts_mutator = identity_manager_->GetAccountsMutator();
       accounts_mutator->RemoveAccount(
           account_info.account_id,

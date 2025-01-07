@@ -2059,6 +2059,34 @@ TEST_F(DiceWebSigninInterceptorTestWithUnoEnabled,
 }
 
 TEST_F(DiceWebSigninInterceptorTestWithUnoEnabled,
+       EnforceManagedAccountAsPrimaryReauth) {
+  interceptor()->SetInterceptedAccountProfileSeparationPoliciesForTesting(
+      policy::ProfileSeparationPolicies(
+          policy::ProfileSeparationSettings::ENFORCED, std::nullopt));
+
+  // Reauth intercepted if enterprise confirmation not shown yet for forced
+  // managed separation.
+  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
+      "alice@example.com", signin::ConsentLevel::kSignin);
+  MakeValidAccountInfo(&account_info, "example.com");
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+
+  // Check that interception works otherwise, as a sanity check.
+  WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
+      WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced,
+      account_info, account_info, SkColor(),
+      /*show_link_data_option=*/true, /*show_managed_disclaimer=*/true);
+  EXPECT_CALL(*mock_delegate(),
+              ShowSigninInterceptionBubble(
+                  web_contents(), MatchBubbleParameters(expected_parameters),
+                  testing::_));
+
+  TestAsynchronousInterception(
+      account_info, /*is_new_account=*/false, /*is_sync_signin=*/false,
+      SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced);
+}
+
+TEST_F(DiceWebSigninInterceptorTestWithUnoEnabled,
        InterceptShouldShowChromeSigninReauthWaitOnAccountInfo) {
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("alice@example.com");
