@@ -8,7 +8,6 @@
 #include <string>
 #include <string_view>
 
-#include "ash/constants/ash_features.h"
 #include "base/base64.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
@@ -99,25 +98,23 @@
 #include "third_party/blink/public/common/features.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/certificate_provider/certificate_provider.h"
-#include "chrome/browser/certificate_provider/certificate_provider_service.h"
-#include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
-#include "chrome/browser/policy/networking/policy_cert_service.h"
-#include "chrome/browser/policy/networking/policy_cert_service_factory.h"
-#include "chromeos/components/kiosk/kiosk_utils.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "net/cert/x509_util.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/kcer/kcer_factory_ash.h"
 #include "chrome/browser/ash/net/client_cert_store_ash.h"
 #include "chrome/browser/ash/net/client_cert_store_kcer.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/certificate_provider/certificate_provider.h"
+#include "chrome/browser/certificate_provider/certificate_provider_service.h"
+#include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
+#include "chrome/browser/policy/networking/policy_cert_service.h"
+#include "chrome/browser/policy/networking/policy_cert_service_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "net/cert/x509_util.h"
 #endif
 
 #if BUILDFLAG(USE_NSS_CERTS)
@@ -135,14 +132,6 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/constants.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/check_is_test.h"
-#include "chrome/browser/lacros/cert/cert_db_initializer_factory.h"
-#include "chrome/browser/lacros/cert/client_cert_store_lacros.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
-#include "chromeos/startup/browser_params_proxy.h"
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -1084,7 +1073,7 @@ void ProfileNetworkContextService::SetDiscardDomainReliabilityUploadsForTesting(
   g_discard_domain_reliability_uploads_for_testing = new bool(value);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void ProfileNetworkContextService::CreateClientCertIssuerSourcesWithDBCerts(
     net::ClientCertIssuerSourceGetterCallback callback,
     std::vector<net::ServerCertificateDatabase::CertInformation>
@@ -1165,7 +1154,7 @@ ProfileNetworkContextService::CreateClientCertStore() {
   }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   bool use_system_key_slot = false;
   // Enable client certificates for the Chrome OS sign-in frame, if this feature
   // is not disabled by a flag.
@@ -1207,23 +1196,6 @@ ProfileNetworkContextService::CreateClientCertStore() {
       std::make_unique<net::ClientCertStoreNSS>(
           base::BindRepeating(&CreateCryptoModuleBlockingPasswordDelegate,
                               kCryptoModulePasswordClientAuth));
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-
-  if (!Profile::FromBrowserContext(
-           GetBrowserContextRedirectedInIncognito(profile_))
-           ->IsMainProfile()) {
-    // TODO(crbug.com/40156976): At the moment client certs are only enabled for
-    // the main profile and its incognito profile (similarly to how it worked in
-    // Ash-Chrome). Return some cert store for secondary profiles in
-    // Lacros-Chrome when certs are supported there.
-    return nullptr;
-  }
-
-  CertDbInitializer* cert_db_initializer =
-      CertDbInitializerFactory::GetForBrowserContext(profile_);
-  store = std::make_unique<ClientCertStoreLacros>(
-      std::move(certificate_provider), cert_db_initializer, std::move(store));
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 #if BUILDFLAG(IS_LINUX)
   return GetWrappedCertStore(profile_, std::move(store));
 #else
@@ -1464,42 +1436,7 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
                   metrics::prefs::kMetricsReportingEnabled);
   }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Configure cert verifier to use the same software NSS database as Chrome is
-  // currently using (secondary profiles don't have their own databases at the
-  // moment).
-  cert_verifier_creation_params->nss_full_path.reset();
-  if (profile_->IsMainProfile()) {
-    const crosapi::mojom::DefaultPathsPtr& default_paths =
-        chromeos::BrowserParamsProxy::Get()->DefaultPaths();
-    // `default_paths` can be nullptr in tests.
-    if (!default_paths) {
-      CHECK_IS_TEST();
-    }
-    // Populating `nss_full_path` will make cert verifier load
-    // and use the corresponding NSS public slot. Kiosk sessions don't have
-    // the UI that could result in interactions with the public slot. Kiosk
-    // users are also not owner users and can't have the owner key in the
-    // public slot. Leaving it empty will make cert verifier ignore the
-    // public slot. This is done mainly because Chrome sometimes fails to
-    // load the public slot and has to crash because of that.
-    if (default_paths && default_paths->user_nss_database.has_value() &&
-        !chromeos::IsKioskSession()) {
-      cert_verifier_creation_params->nss_full_path =
-          default_paths->user_nss_database.value();
-    }
-  }
-
-  const policy::PolicyCertService* policy_cert_service =
-      policy::PolicyCertServiceFactory::GetForProfile(profile_);
-  if (policy_cert_service && !policy_cert_service->IsObservingCertChanges()) {
-    policy_cert_service->StartObservingCertChanges(base::BindRepeating(
-        &ProfileNetworkContextService::UpdateAdditionalCertificates,
-        weak_ptr_factory_.GetWeakPtr()));
-  }
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   bool profile_supports_policy_certs = false;
   if (ash::ProfileHelper::IsSigninProfile(profile_) ||
       ash::ProfileHelper::IsLockScreenProfile(profile_)) {

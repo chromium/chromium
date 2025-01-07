@@ -31,7 +31,7 @@
 #include "components/offline_pages/core/client_namespace_constants.h"
 #endif  // BUILDFLAG(ENABLE_OFFLINE_PAGES)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/ui/ash/network/network_portal_signin_controller.h"
 #endif
@@ -165,11 +165,8 @@ void NetErrorTabHelper::SetIsShowingDownloadButtonInErrorPage(
 
 #if BUILDFLAG(IS_CHROMEOS)
 void NetErrorTabHelper::ShowPortalSignin() {
-  // TODO(b/247618374): Lacros implementation.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::NetworkPortalSigninController::Get()->ShowSignin(
       ash::NetworkPortalSigninController::SigninSource::kErrorPage);
-#endif
 }
 #endif
 

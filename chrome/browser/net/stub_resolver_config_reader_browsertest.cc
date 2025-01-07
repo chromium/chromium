@@ -37,7 +37,7 @@
 #include "base/win/win_util.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/net/secure_dns_manager.h"
 #endif
 
@@ -47,13 +47,8 @@
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-const std::string kDnsOverHttpsTemplatesPrefName =
-    prefs::kDnsOverHttpsEffectiveTemplatesChromeOS;
-#else
 const std::string kDnsOverHttpsTemplatesPrefName =
     prefs::kDnsOverHttpsTemplates;
-#endif
 
 class StubResolverConfigReaderBrowsertest
     : public InProcessBrowserTest,
@@ -142,11 +137,11 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest, ConfigFromPrefs) {
   PrefService* pref_service_for_user_settings =
       g_browser_process->local_state();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // On ChromeOS, the local_state is shared between all users so the user-set
   // pref is stored in the profile's pref service.
   pref_service_for_user_settings = browser()->profile()->GetPrefs();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   pref_service_for_user_settings->SetString(prefs::kDnsOverHttpsMode,
                                             SecureDnsConfig::kModeSecure);
@@ -316,12 +311,7 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest,
 #endif
 
   SetSecureDnsModePolicy("secure");
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  g_browser_process->local_state()->SetString(
-      prefs::kDnsOverHttpsEffectiveTemplatesChromeOS, "https://doh.test/");
-#else
   SetDohTemplatesPolicy("https://doh.test/");
-#endif
   SecureDnsConfig secure_dns_config = config_reader_->GetSecureDnsConfiguration(
       /*force_check_parental_controls_for_automatic_mode=*/false);
   EXPECT_EQ(secure_dns_config.mode(), net::SecureDnsMode::kSecure);

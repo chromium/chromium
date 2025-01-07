@@ -135,7 +135,7 @@ class ProfileNetworkContextService
   // Get platform ClientCertStore. May return nullptr.
   std::unique_ptr<net::ClientCertStore> CreateClientCertStore();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Returns a factory callback that may be run to get the issuer sources for
   // client cert pathbuilding. The factory callback may run its result callback
   // either synchronously or asynchronously.
@@ -190,7 +190,7 @@ class ProfileNetworkContextService
   void UpdateAdditionalCertificatesWithUserAddedCerts(
       std::vector<net::ServerCertificateDatabase::CertInformation> cert_infos);
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void CreateClientCertIssuerSources(
       net::ClientCertIssuerSourceGetterCallback callback);
   void CreateClientCertIssuerSourcesWithDBCerts(

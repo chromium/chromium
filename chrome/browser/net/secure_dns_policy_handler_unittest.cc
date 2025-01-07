@@ -30,7 +30,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
 
@@ -452,7 +452,7 @@ TEST_F(SecureDnsPolicyHandlerTest, TemplatesPolicyWithModeSecure) {
   EXPECT_EQ(templates, test_policy_value);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(SecureDnsPolicyHandlerTest, TemplatesWithIdentifiers) {
   SetPolicyValue(key::kDnsOverHttpsMode,
                  base::Value(SecureDnsConfig::kModeSecure));
@@ -635,6 +635,6 @@ TEST_F(SecureDnsPolicyHandlerTest, NoMode) {
   EXPECT_EQ(salt, kDohSalt);
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace policy

@@ -40,9 +40,9 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/net/dhcp_wpad_url_client.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -145,7 +145,7 @@ IN_PROC_BROWSER_TEST_F(HttpProxyScriptBrowserTest, Verify) {
   VerifyProxyScript(browser());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Tests the use of a PAC script set via Web Proxy Autodiscovery Protocol.
 // TODO(crbug.com/41475031): Add a test case for when DhcpWpadUrlClient
 // returns an empty PAC URL.
@@ -183,7 +183,7 @@ class WPADHttpProxyScriptBrowserTest : public HttpProxyScriptBrowserTest {
 IN_PROC_BROWSER_TEST_F(WPADHttpProxyScriptBrowserTest, Verify) {
   VerifyProxyScript(browser());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Tests the use of a PAC script that rejects requests to
 // https://www.google.com/ when myIpAddress() and myIpAddressEx() appear to be

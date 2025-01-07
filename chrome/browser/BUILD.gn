@@ -2486,10 +2486,8 @@ static_library("browser") {
 
   # Platforms that have a network diagnostics dialog. All others fall through
   # to the stub which is not implemented.
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [ "net/net_error_diagnostics_dialog_chromeos.cc" ]
-  } else if (is_chromeos_lacros) {
-    sources += [ "net/net_error_diagnostics_dialog_lacros.cc" ]
   } else if (is_win) {
     sources += [ "net/net_error_diagnostics_dialog_win.cc" ]
   } else {
@@ -8301,15 +8299,10 @@ static_library("browser") {
     ]
     if (is_chromeos) {
       sources += [
+        "net/nss_service_chromeos.cc",
         "net/nss_temp_certs_cache_chromeos.cc",
         "net/nss_temp_certs_cache_chromeos.h",
       ]
-    }
-    if (is_chromeos_ash) {
-      sources += [ "net/nss_service_chromeos.cc" ]
-    }
-    if (is_chromeos_lacros) {
-      sources += [ "net/nss_service_lacros.cc" ]
     }
     if (is_linux) {
       sources += [ "net/nss_service_linux.cc" ]
