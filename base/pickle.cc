@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/pickle.h"
 
 #include <algorithm>
@@ -63,7 +58,7 @@ inline const char* PickleIterator::GetReadPointerAndAdvance() {
     read_index_ = end_index_;
     return nullptr;
   }
-  const char* current_read_ptr = payload_ + read_index_;
+  const char* current_read_ptr = UNSAFE_TODO(payload_ + read_index_);
   Advance(sizeof(Type));
   return current_read_ptr;
 }
@@ -73,7 +68,7 @@ const char* PickleIterator::GetReadPointerAndAdvance(size_t num_bytes) {
     read_index_ = end_index_;
     return nullptr;
   }
-  const char* current_read_ptr = payload_ + read_index_;
+  const char* current_read_ptr = UNSAFE_TODO(payload_ + read_index_);
   Advance(num_bytes);
   return current_read_ptr;
 }
@@ -236,7 +231,7 @@ std::optional<span<const uint8_t>> PickleIterator::ReadData() {
     return std::nullopt;
   }
 
-  return as_bytes(span(ptr, length));
+  return as_bytes(UNSAFE_TODO(span(ptr, length)));
 }
 
 bool PickleIterator::ReadBytes(const char** data, size_t length) {
@@ -362,7 +357,7 @@ void Pickle::WriteString16(std::u16string_view value) {
 }
 
 void Pickle::WriteData(const char* data, size_t length) {
-  WriteData(as_bytes(span(data, length)));
+  WriteData(as_bytes(UNSAFE_TODO(span(data, length))));
 }
 
 void Pickle::WriteData(std::string_view data) {
@@ -375,7 +370,8 @@ void Pickle::WriteData(base::span<const uint8_t> data) {
 }
 
 void Pickle::WriteBytes(const void* data, size_t length) {
-  WriteBytesCommon(span(static_cast<const uint8_t*>(data), length));
+  WriteBytesCommon(
+      UNSAFE_TODO(span(static_cast<const uint8_t*>(data), length)));
 }
 
 void Pickle::WriteBytes(span<const uint8_t> data) {
@@ -443,7 +439,7 @@ const char* Pickle::FindNext(size_t header_size,
     return nullptr;
   }
 
-  return start + pickle_size;
+  return UNSAFE_TODO(start + pickle_size);
 }
 
 // static
@@ -473,7 +469,8 @@ bool Pickle::PeekNext(size_t header_size,
 
 template <size_t length>
 void Pickle::WriteBytesStatic(const void* data) {
-  WriteBytesCommon(span(static_cast<const uint8_t*>(data), length));
+  WriteBytesCommon(
+      UNSAFE_TODO(span(static_cast<const uint8_t*>(data), length)));
 }
 
 template void Pickle::WriteBytesStatic<2>(const void* data);
@@ -500,8 +497,9 @@ inline void* Pickle::ClaimUninitializedBytesInternal(size_t length) {
     Resize(std::max(new_capacity, new_size));
   }
 
-  char* write = mutable_payload() + write_offset_;
-  std::fill(write + length, write + data_len, 0);  // Always initialize padding
+  char* write = UNSAFE_TODO(mutable_payload() + write_offset_);
+  std::fill(UNSAFE_TODO(write + length), UNSAFE_TODO(write + data_len),
+            0);  // Always initialize padding
   header_->payload_size = static_cast<uint32_t>(new_size);
   write_offset_ = new_size;
   return write;
@@ -512,7 +510,8 @@ inline void Pickle::WriteBytesCommon(span<const uint8_t> data) {
       << "oops: pickle is readonly";
   MSAN_CHECK_MEM_IS_INITIALIZED(data.data(), data.size());
   void* write = ClaimUninitializedBytesInternal(data.size());
-  std::copy(data.data(), data.data() + data.size(), static_cast<char*>(write));
+  std::copy(data.data(), UNSAFE_TODO(data.data() + data.size()),
+            static_cast<char*>(write));
 }
 
 }  // namespace base

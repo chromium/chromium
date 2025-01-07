@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef BASE_PICKLE_H_
 #define BASE_PICKLE_H_
 
@@ -305,7 +300,7 @@ class BASE_EXPORT Pickle {
   size_t payload_size() const { return header_ ? header_->payload_size : 0; }
 
   span<const uint8_t> payload_bytes() const {
-    return as_bytes(span(payload(), payload_size()));
+    return as_bytes(UNSAFE_TODO(span(payload(), payload_size())));
   }
 
  protected:
@@ -319,18 +314,18 @@ class BASE_EXPORT Pickle {
   size_t header_size() const { return header_size_; }
 
   const char* payload() const {
-    return reinterpret_cast<const char*>(header_) + header_size_;
+    return UNSAFE_TODO(reinterpret_cast<const char*>(header_) + header_size_);
   }
 
   // Returns the address of the byte immediately following the currently valid
   // header + payload.
   const char* end_of_payload() const {
     // This object may be invalid.
-    return header_ ? payload() + payload_size() : NULL;
+    return header_ ? UNSAFE_TODO(payload() + payload_size()) : NULL;
   }
 
   char* mutable_payload() {
-    return reinterpret_cast<char*>(header_) + header_size_;
+    return UNSAFE_TODO(reinterpret_cast<char*>(header_) + header_size_);
   }
 
   size_t capacity_after_header() const { return capacity_after_header_; }
