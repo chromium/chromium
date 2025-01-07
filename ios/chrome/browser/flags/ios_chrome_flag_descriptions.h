@@ -43,6 +43,11 @@ extern const char kAutofillEnableCardArtImageDescription[];
 extern const char kAutofillEnableCardBenefitsForAmericanExpressName[];
 extern const char kAutofillEnableCardBenefitsForAmericanExpressDescription[];
 
+// Title and description for the flag to enable BMO card benefits
+// for autofill Payments UI.
+extern const char kAutofillEnableCardBenefitsForBmoName[];
+extern const char kAutofillEnableCardBenefitsForBmoDescription[];
+
 // Title and description for the flag to enable Capital One card benefits for
 // autofill Payments UI.
 extern const char kAutofillEnableCardBenefitsForCapitalOneName[];

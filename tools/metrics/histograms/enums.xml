@@ -17939,6 +17939,7 @@ from previous Chrome versions.
   <int value="-1007267652"
       label="NtpPhotosModuleCustomizedOptInArtWork:disabled"/>
   <int value="-1007219628" label="IncreasedCmdBufferParseSlice:enabled"/>
+  <int value="-1006508846" label="AutofillEnableCardBenefitsForBmo:disabled"/>
   <int value="-1005937042" label="ArcVmBalloonPolicy:enabled"/>
   <int value="-1005164075" label="ContextualSearchTranslations:enabled"/>
   <int value="-1004904621"
@@ -24779,6 +24780,7 @@ from previous Chrome versions.
   <int value="1711286384" label="ContextMenuCopyImage:disabled"/>
   <int value="1711315265" label="AndroidHatsRefactor:disabled"/>
   <int value="1711998812" label="LinkCapturingInfoBar:disabled"/>
+  <int value="1712281597" label="AutofillEnableCardBenefitsForBmo:enabled"/>
   <int value="1712622545" label="Memories:disabled"/>
   <int value="1712697097" label="QuickAnswersV2:disabled"/>
   <int value="1712880335" label="FiltersInRecents:enabled"/>

@@ -2294,6 +2294,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSetUpListWithoutSignInItemDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(set_up_list::kSetUpListWithoutSignInItem)},
+    {"autofill-enable-card-benefits-for-bmo",
+     flag_descriptions::kAutofillEnableCardBenefitsForBmoName,
+     flag_descriptions::kAutofillEnableCardBenefitsForBmoDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableCardBenefitsForBmo)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

@@ -49,6 +49,12 @@ BASE_FEATURE(kAutofillEnableCardBenefitsForAmericanExpress,
              "AutofillEnableCardBenefitsForAmericanExpress",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, card benefits offered by BMO will be shown in Payments Autofill
+// UI.
+BASE_FEATURE(kAutofillEnableCardBenefitsForBmo,
+             "AutofillEnableCardBenefitsForBmo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, card benefits offered by Capital One will be shown in Payments
 // Autofill UI.
 BASE_FEATURE(kAutofillEnableCardBenefitsForCapitalOne,

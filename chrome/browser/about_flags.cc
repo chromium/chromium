@@ -11765,6 +11765,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ui::kEnableKeyboardUsedPalmSuppression)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+    {"autofill-enable-card-benefits-for-bmo",
+     flag_descriptions::kAutofillEnableCardBenefitsForBmoName,
+     flag_descriptions::kAutofillEnableCardBenefitsForBmoDescription, kOsAll,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableCardBenefitsForBmo)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
