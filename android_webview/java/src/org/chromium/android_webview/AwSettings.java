@@ -787,9 +787,9 @@ public class AwSettings {
             if (!oldUserAgent.equals(mUserAgent)) {
                 if (ua != null
                         && ua.length() > 0
-                        && AwContents.BAD_HEADER_CHAR.matcher(ua).find()) {
+                        && AwBrowserContext.BAD_HEADER_CHAR.matcher(ua).find()) {
                     throw new IllegalArgumentException(
-                            AwContents.BAD_HEADER_MSG + "Invalid User-Agent '" + ua + "'");
+                            AwBrowserContext.BAD_HEADER_MSG + "Invalid User-Agent '" + ua + "'");
                 }
                 mEventHandler.runOnUiThreadBlockingAndLocked(
                         () -> updateUserAgentOnUiThreadLocked());

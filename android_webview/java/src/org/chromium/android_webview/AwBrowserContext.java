@@ -37,9 +37,12 @@ import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentViewStatics;
 import org.chromium.url.Origin;
 
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Executor;
+import java.util.regex.Pattern;
 
 /**
  * Java side of the Browser Context: contains all the java side objects needed to host one browsing
@@ -53,6 +56,10 @@ import java.util.concurrent.Executor;
 @Lifetime.Profile
 public class AwBrowserContext implements BrowserContextHandle {
     private static final String BASE_PREFERENCES = "WebViewProfilePrefs";
+
+    /* package */ static final Pattern BAD_HEADER_CHAR = Pattern.compile("[\u0000\r\n]");
+    /* package */ static final String BAD_HEADER_MSG =
+            "HTTP headers must not contain null, CR, or NL characters. ";
 
     /**
      * Cache storing already-initialized Play providers for the Media Integrity Blink renderer
@@ -284,6 +291,39 @@ public class AwBrowserContext implements BrowserContextHandle {
         }
     }
 
+    /**
+     * Check if additional HTTP headers sent along with loadUrl, prefetchUrl, or prerenderUrl
+     * contains invalid characters.
+     *
+     * @param headers The additional HTTP headers to be sent along with loadUrl, prefetchUrl, or
+     *     prerenderUrl.
+     * @return An exception if validation fails. Otherwise, an empty Optional.
+     */
+    public static Optional<IllegalArgumentException> validateAdditionalHeaders(
+            Map<String, String> headers) {
+        if (headers == null) return Optional.empty();
+        for (Map.Entry<String, String> header : headers.entrySet()) {
+            String headerName = header.getKey();
+            String headerValue = header.getValue();
+            if (headerName != null && BAD_HEADER_CHAR.matcher(headerName).find()) {
+                return Optional.of(
+                        new IllegalArgumentException(
+                                BAD_HEADER_MSG + "Invalid header name '" + headerName + "'."));
+            }
+            if (headerValue != null && BAD_HEADER_CHAR.matcher(headerValue).find()) {
+                return Optional.of(
+                        new IllegalArgumentException(
+                                BAD_HEADER_MSG
+                                        + "Header '"
+                                        + headerName
+                                        + "' has invalid value '"
+                                        + headerValue
+                                        + "'"));
+            }
+        }
+        return Optional.empty();
+    }
+
     @UiThread
     public void startPrefetchRequest(
             @NonNull String url,
@@ -307,6 +347,14 @@ public class AwBrowserContext implements BrowserContextHandle {
                                         new IllegalStateException(
                                                 "WebView initiated prefetching feature is not"
                                                         + " enabled.")));
+            }
+
+            if (prefetchParameters != null) {
+                Optional<IllegalArgumentException> exception =
+                        validateAdditionalHeaders(prefetchParameters.getAdditionalHeaders());
+                if (exception.isPresent()) {
+                    callbackExecutor.execute(() -> callback.onError(exception.get()));
+                }
             }
 
             AwBrowserContextJni.get()

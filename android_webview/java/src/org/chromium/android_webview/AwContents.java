@@ -147,6 +147,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.WeakHashMap;
 import java.util.concurrent.Callable;
 import java.util.function.BiFunction;
@@ -1886,7 +1887,12 @@ public class AwContents implements SmartClipProvider {
             @Nullable Callback<Void> activationCallback) {
         if (isDestroyed(NO_WARN)) return;
         if (prefetchParameters != null) {
-            validateHeaders(prefetchParameters.getAdditionalHeaders());
+            Optional<IllegalArgumentException> exception =
+                    AwBrowserContext.validateAdditionalHeaders(
+                            prefetchParameters.getAdditionalHeaders());
+            if (exception.isPresent()) {
+                throw exception.get();
+            }
         }
         AwContentsJni.get()
                 .startPrerendering(
@@ -2230,10 +2236,6 @@ public class AwContents implements SmartClipProvider {
         mContentsClient.getVisitedHistory(callback);
     }
 
-    /* package */ static final Pattern BAD_HEADER_CHAR = Pattern.compile("[\u0000\r\n]");
-    /* package */ static final String BAD_HEADER_MSG =
-            "HTTP headers must not contain null, CR, or NL characters. ";
-
     /** WebView.loadUrl. */
     public void loadUrl(String url, Map<String, String> additionalHttpHeaders) {
         if (TRACE) Log.i(TAG, "%s loadUrl(extra headers)=%s", this, url);
@@ -2257,7 +2259,11 @@ public class AwContents implements SmartClipProvider {
 
         LoadUrlParams params = new LoadUrlParams(url, PageTransition.TYPED);
         if (additionalHttpHeaders != null) {
-            validateHeaders(additionalHttpHeaders);
+            Optional<IllegalArgumentException> exception =
+                    AwBrowserContext.validateAdditionalHeaders(additionalHttpHeaders);
+            if (exception.isPresent()) {
+                throw exception.get();
+            }
             params.setExtraHeaders(new HashMap<String, String>(additionalHttpHeaders));
         }
 
@@ -4292,28 +4298,6 @@ public class AwContents implements SmartClipProvider {
 
     public static void resetRecordMemoryForTesting() {
         sLastCollectionTime = -MEMORY_COLLECTION_INTERVAL_MS;
-    }
-
-    // Check if the headers contains invalid characters.
-    private static void validateHeaders(Map<String, String> headers) {
-        if (headers == null) return;
-        for (Map.Entry<String, String> header : headers.entrySet()) {
-            String headerName = header.getKey();
-            String headerValue = header.getValue();
-            if (headerName != null && BAD_HEADER_CHAR.matcher(headerName).find()) {
-                throw new IllegalArgumentException(
-                        BAD_HEADER_MSG + "Invalid header name '" + headerName + "'.");
-            }
-            if (headerValue != null && BAD_HEADER_CHAR.matcher(headerValue).find()) {
-                throw new IllegalArgumentException(
-                        BAD_HEADER_MSG
-                                + "Header '"
-                                + headerName
-                                + "' has invalid value '"
-                                + headerValue
-                                + "'");
-            }
-        }
     }
 
     // --------------------------------------------------------------------------------------------
