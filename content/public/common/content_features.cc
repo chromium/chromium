@@ -976,12 +976,6 @@ BASE_FEATURE(kSharedArrayBuffer,
              "SharedArrayBuffer",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Kill switch for creating first-party StorageKeys in
-// RenderFrameHostImpl::CalculateStorageKey for frames with extension URLs.
-BASE_FEATURE(kShouldAllowFirstPartyStorageKeyOverrideFromEmbedder,
-             "ShouldAllowFirstPartyStorageKeyOverrideFromEmbedder",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, GetUserMedia API will only work when the concerned tab is in
 // focus
 BASE_FEATURE(kUserMediaCaptureOnFocus,
