@@ -197,6 +197,6 @@ public class CreatorActivity extends SnackbarActivity {
     // This implements the SignInInterstitialInitiator interface.
     public void showSignInInterstitial() {
         mCreatorActionDelegate.showSignInInterstitial(
-                SigninAccessPoint.CREATOR_FEED_FOLLOW, mBottomSheetController, mWindowAndroid);
+                SigninAccessPoint.CREATOR_FEED_FOLLOW, mBottomSheetController);
     }
 }
