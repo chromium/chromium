@@ -55,15 +55,7 @@
 -base/third_party/
 -chrome/browser/platform_experience/win/
 -chrome/chrome_elf/third_party_dlls/
--chrome/common/profiler/
--chrome/credential_provider/
--chrome/elevation_service/
--chrome/services/cups_proxy/
--chrome/services/ipp_parser/public/cpp/
--chrome/services/sharing/nearby/decoder/
--chrome/test/
--chrome/tools/service_discovery_sniffer/
--chrome/updater/net/
+-chrome/elevation_service/internal/
 -chromecast/
 -clank/
 -components/optimization_guide/internal/
