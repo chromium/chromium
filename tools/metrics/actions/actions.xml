@@ -23014,6 +23014,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileKeyCommandGoToTabGroupsPanel">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>
+    The user has performed the key command to go to the Tab Groups panel.
+  </description>
+</action>
+
 <action name="MobileKeyCommandOpenLocation">
   <owner>lpromero@google.com</owner>
   <owner>alionadangla@google.com</owner>
