@@ -7,7 +7,12 @@ source_set("features") {
     "features.h",
     "features.mm",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/search_engines",
+    "//ios/chrome/browser/search_engines/model",
+    "//ios/chrome/browser/shared/model/profile",
+  ]
 }
 
 source_set("field_trial") {
