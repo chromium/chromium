@@ -263,6 +263,9 @@ enum class AccessPoint : int {
 // Enum values which enumerates all access points where transactional reauth
 // could be initiated. Transactional reauth is used when the user already has
 // a valid refresh token but a system still wants to verify user's identity.
+//
+// TODO(crbug.com/374293518): Delete this and the reauth UI entirely once no
+// access points are hooked anymore.
 enum class ReauthAccessPoint {
   kUnknown,
   // Account password storage opt-in:
