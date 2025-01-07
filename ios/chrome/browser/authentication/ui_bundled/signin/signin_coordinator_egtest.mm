@@ -74,14 +74,6 @@ typedef NS_ENUM(NSInteger, OpenSigninMethod) {
 
 namespace {
 
-// Duplicated from
-// ios/chrome/browser/authentication/ui_bundled/authentication_flow.mm, which is
-// fine since the enum values should never be renumbered.
-enum class SigninAccountType {
-  kRegular = 0,
-  kManaged = 1,
-};
-
 // Label used to find the 'Learn more' link.
 NSString* const kLearnMoreLabel = @"Learn More";
 
@@ -101,7 +93,8 @@ void SetParentalControlsCapabilityForIdentity(
                  }];
 }
 
-void ExpectSigninConsentHistogram(SigninAccountType signinAccountType) {
+void ExpectSigninConsentHistogram(
+    signin_metrics::SigninAccountType signinAccountType) {
   NSError* error = [MetricsAppInterface
       expectTotalCount:1
           forHistogram:@"Signin.AccountType.SigninConsent"];
@@ -173,7 +166,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
   // Check `fakeIdentity` is signed-in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
-  ExpectSigninConsentHistogram(SigninAccountType::kRegular);
+  ExpectSigninConsentHistogram(signin_metrics::SigninAccountType::kRegular);
 }
 
 // Tests that opening the sign-in screen from the Settings and signing in works
@@ -299,7 +292,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
   // Check `fakeIdentity` is signed-in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
-  ExpectSigninConsentHistogram(SigninAccountType::kManaged);
+  ExpectSigninConsentHistogram(signin_metrics::SigninAccountType::kManaged);
 
   [SigninEarlGreyUI signOut];
 }
@@ -312,7 +305,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
   // Check `fakeIdentity` is signed-in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
-  ExpectSigninConsentHistogram(SigninAccountType::kManaged);
+  ExpectSigninConsentHistogram(signin_metrics::SigninAccountType::kManaged);
 
   [ChromeEarlGreyUI openSettingsMenu];
 

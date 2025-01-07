@@ -549,6 +549,20 @@ enum class SignoutDataLossAlertReason : int {
   // A managed user is signing out and the data will be cleared from the device.
   kSignoutWithClearDataForManagedUser = 1,
 };
+
+// Values of Signin.AccountType histogram. This histogram records if the user
+// uses a gmail account or a managed account when signing in.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Keep in sync with SigninAccountType in
+// tools/metrics/histograms/metadata/signin/enums.xml.
+enum class SigninAccountType {
+  // Gmail account.
+  kRegular = 0,
+  // Managed account.
+  kManaged = 1,
+  // Always the last enumerated type.
+  kMaxValue = kManaged,
+};
 #endif  // BUILDFLAG(IS_IOS)
 
 // -----------------------------------------------------------------------------
@@ -572,6 +586,11 @@ void LogSignInOffered(AccessPoint access_point, PromoAction promo_action);
 // completion events are automatically logged when the primary account state
 // changes, see `signin::PrimaryAccountMutator`.
 void LogSignInStarted(AccessPoint access_point);
+
+#if BUILDFLAG(IS_IOS)
+// Records the account type when the user signs in.
+void LogSigninWithAccountType(SigninAccountType account_type);
+#endif  // BUILDFLAG(IS_IOS)
 
 // Logs sync opt-in start events and their associated access points. The
 // completion events are automatically logged when the primary account state

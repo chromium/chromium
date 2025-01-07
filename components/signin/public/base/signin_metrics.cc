@@ -174,6 +174,13 @@ void LogSignInStarted(AccessPoint access_point) {
                                 AccessPoint::ACCESS_POINT_MAX);
 }
 
+#if BUILDFLAG(IS_IOS)
+void LogSigninWithAccountType(SigninAccountType account_type) {
+  base::UmaHistogramEnumeration("Signin.AccountType.SigninConsent",
+                                account_type);
+}
+#endif  // BUILDFLAG(IS_IOS)
+
 void LogSyncOptInStarted(AccessPoint access_point) {
   base::UmaHistogramEnumeration("Signin.SyncOptIn.Started", access_point,
                                 AccessPoint::ACCESS_POINT_MAX);

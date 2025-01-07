@@ -53,14 +53,6 @@ NSString* const kFakeDMToken = @"fake_dm_token";
 NSString* const kFakeClientID = @"fake_client_id";
 NSString* const kFakeUserAffiliationID = @"fake_user_affiliation_id";
 
-// Duplicated from
-// ios/chrome/browser/authentication/ui_bundled/authentication_flow.mm, which
-// is fine since the enum values should never be renumbered.
-enum class SigninAccountType {
-  kRegular = 0,
-  kManaged = 1,
-};
-
 class AuthenticationFlowTest : public PlatformTest {
  protected:
   void SetUp() override {
@@ -267,8 +259,9 @@ TEST_F(AuthenticationFlowTest, TestSignInSimple) {
 
   SignIn(identity1_, signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE);
 
-  histogram_tester_.ExpectUniqueSample("Signin.AccountType.SigninConsent",
-                                       SigninAccountType::kRegular, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Signin.AccountType.SigninConsent",
+      signin_metrics::SigninAccountType::kRegular, 1);
 }
 
 // Tests a Sign In of a normal account on the same profile using a navigatiion
@@ -284,8 +277,9 @@ TEST_F(AuthenticationFlowTest, TestSignInNewScreen) {
 
   SignIn(identity1_, signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE);
 
-  histogram_tester_.ExpectUniqueSample("Signin.AccountType.SigninConsent",
-                                       SigninAccountType::kRegular, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Signin.AccountType.SigninConsent",
+      signin_metrics::SigninAccountType::kRegular, 1);
 }
 
 // Tests the fetch managed status failure case.
@@ -325,8 +319,9 @@ TEST_F(AuthenticationFlowTest,
 
   SignIn(managed_identity1_,
          signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER);
-  histogram_tester_.ExpectUniqueSample("Signin.AccountType.SigninConsent",
-                                       SigninAccountType::kManaged, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Signin.AccountType.SigninConsent",
+      signin_metrics::SigninAccountType::kManaged, 1);
   EXPECT_EQ(1, managed_confirmation_dialog_shown_count_);
 }
 
@@ -352,8 +347,9 @@ TEST_F(AuthenticationFlowTest,
 
   SignIn(managed_identity1_,
          signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER);
-  histogram_tester_.ExpectUniqueSample("Signin.AccountType.SigninConsent",
-                                       SigninAccountType::kManaged, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Signin.AccountType.SigninConsent",
+      signin_metrics::SigninAccountType::kManaged, 1);
   EXPECT_EQ(0, managed_confirmation_dialog_shown_count_);
 }
 

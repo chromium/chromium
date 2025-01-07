@@ -69,20 +69,6 @@ enum AuthenticationState {
   DONE
 };
 
-// Values of Signin.AccountType histogram. This histogram records if the user
-// uses a gmail account or a managed account when signing in.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused. Keep in sync with SigninAccountType in
-// tools/metrics/histograms/metadata/signin/enums.xml.
-enum class SigninAccountType {
-  // Gmail account.
-  kRegular = 0,
-  // Managed account.
-  kManaged = 1,
-  // Always the last enumerated type.
-  kMaxValue = kManaged,
-};
-
 enum class CancelationReason {
   // Not canceled.
   kNotCanceled,
@@ -491,10 +477,11 @@ BOOL IsIdentityInCoreAccountInfos(
 - (void)completeWithSuccessStep {
   DCHECK(_signInCompletion)
       << "`completeSignInWithResult` should not be called twice.";
-  base::UmaHistogramEnumeration("Signin.AccountType.SigninConsent",
-                                _identityToSignInHostedDomain.length > 0
-                                    ? SigninAccountType::kManaged
-                                    : SigninAccountType::kRegular);
+  signin_metrics::SigninAccountType accountType =
+      (_identityToSignInHostedDomain.length > 0)
+          ? signin_metrics::SigninAccountType::kManaged
+          : signin_metrics::SigninAccountType::kRegular;
+  signin_metrics::LogSigninWithAccountType(accountType);
   SigninCompletionCallback signInCompletion = _signInCompletion;
   _signInCompletion = nil;
   signInCompletion(SigninCoordinatorResult::SigninCoordinatorResultSuccess);
