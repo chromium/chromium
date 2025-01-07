@@ -1,7 +1,6 @@
 # Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Presubmit script for ios.
 
 See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
@@ -72,31 +71,31 @@ def _CheckBugInToDo(input_api, output_api):
 
     output = []
     if errors:
-      singular_article = 'a ' if len(errors) == 1 else ''
-      plural_suffix = '' if len(errors) == 1 else 's'
-      error_message = '\n'.join([
-          'Found TO'
-          'DO%(plural)s without %(a)sbug number%(plural)s (expected format '
-          'is \"TO'
-          'DO(crbug.com/######)\"):' % {
-              'plural': plural_suffix,
-              'a' : singular_article
-          }
-      ] + errors) + '\n'
-      output.append(output_api.PresubmitError(error_message))
+        singular_article = 'a ' if len(errors) == 1 else ''
+        plural_suffix = '' if len(errors) == 1 else 's'
+        error_message = '\n'.join([
+            'Found TO'
+            'DO%(plural)s without %(a)sbug number%(plural)s (expected format '
+            'is \"TO'
+            'DO(crbug.com/######)\"):' % {
+                'plural': plural_suffix,
+                'a' : singular_article
+            }
+        ] + errors) + '\n'
+        output.append(output_api.PresubmitError(error_message))
 
     if warnings:
-      singular_article = 'a ' if len(warnings) == 1 else ''
-      plural_suffix = '' if len(warnings) == 1 else 's'
-      warning_message = '\n'.join([
-          'Found TO'
-          'DO%(plural)s with %(a)sdeprecated bug link%(plural)s (found '
-          '"b/#####\", expected format is \"crbug.com/######"):' % {
-              'plural': plural_suffix,
-              'a' : singular_article
-          }
-      ] + warnings) + '\n'
-      output.append(output_api.PresubmitPromptWarning(warning_message))
+        singular_article = 'a ' if len(warnings) == 1 else ''
+        plural_suffix = '' if len(warnings) == 1 else 's'
+        warning_message = '\n'.join([
+            'Found TO'
+            'DO%(plural)s with %(a)sdeprecated bug link%(plural)s (found '
+            '"b/#####\", expected format is \"crbug.com/######"):' % {
+                'plural': plural_suffix,
+                'a' : singular_article
+            }
+        ] + warnings) + '\n'
+        output.append(output_api.PresubmitPromptWarning(warning_message))
 
     return output
 
@@ -165,19 +164,19 @@ def _CheckCanImproveTestUsingExpectNSEQ(input_api, output_api):
     wrong_patterns = ["isEqualToString:", "isEqualToData:", "isEqualToArray:"]
     for f in input_api.AffectedFiles():
         if not '_unittest.' in f.LocalPath():
-          continue
+            continue
         for line_num, line in f.ChangedContents():
             if line.startswith(("EXPECT_TRUE", "EXPECT_FALSE")):
-              # Condition is in one line.
-              if any(x in line for x in wrong_patterns):
-                errors.append('%s:%s' % (f.LocalPath(), line_num))
-              # Condition is split on multiple lines.
-              elif not line.endswith(";"):
-                # Check this is not the last line.
-                if line_num < len(f.NewContents()):
-                  next_line = f.NewContents()[line_num]
-                  if any(x in next_line for x in wrong_patterns):
+                # Condition is in one line.
+                if any(x in line for x in wrong_patterns):
                     errors.append('%s:%s' % (f.LocalPath(), line_num))
+                # Condition is split on multiple lines.
+                elif not line.endswith(";"):
+                    # Check this is not the last line.
+                    if line_num < len(f.NewContents()):
+                        next_line = f.NewContents()[line_num]
+                        if any(x in next_line for x in wrong_patterns):
+                            errors.append('%s:%s' % (f.LocalPath(), line_num))
 
     if not errors:
         return []
@@ -253,7 +252,7 @@ def _CheckNoTearDownEGTest(input_api, output_api):
     errors = []
     for f in input_api.AffectedFiles():
         if not '_egtest.' in f.LocalPath():
-          continue
+            continue
         for line_num, line in f.ChangedContents():
             if line.startswith("- (void)tearDown {"):
                 errors.append('%s:%s' % (f.LocalPath(), line_num))
