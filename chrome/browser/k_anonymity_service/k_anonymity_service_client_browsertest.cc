@@ -11,14 +11,12 @@
 #include "chrome/browser/k_anonymity_service/k_anonymity_service_urls.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "content/public/browser/k_anonymity_service_delegate.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/third_party/quiche/src/quiche/binary_http/binary_http_message.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/test/oblivious_http_request_test_helper.h"
 #include "services/network/test/trust_token_request_handler.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -77,22 +75,6 @@ class TestKAnonymityServiceMixin : public InProcessBrowserTestMixin {
     https_server_->RegisterRequestHandler(base::BindRepeating(
         &TestKAnonymityServiceMixin::HandleRequest, base::Unretained(this)));
     ASSERT_TRUE((https_server_handle_ = https_server_->StartAndReturnHandle()));
-
-    GURL ohttp_relay = https_server_->GetURL("/ohttpRelay");
-
-    feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{features::kKAnonymityService,
-                               {{"KAnonymityServiceAuthServer",
-                                 https_server_->base_url().spec()},
-                                {"KAnonymityServiceJoinServer",
-                                 https_server_->base_url().spec()},
-                                {"KAnonymityServiceJoinRelayServer",
-                                 ohttp_relay.spec()},
-                                {"KAnonymityServiceQueryServer",
-                                 https_server_->base_url().spec()},
-                                {"KAnonymityServiceQueryRelayServer",
-                                 ohttp_relay.spec()}}}},
-        /*disabled_features=*/{});
   }
 
   std::unique_ptr<HttpResponse> HandleGenerateShortIdentifierRequest(
@@ -109,8 +91,7 @@ class TestKAnonymityServiceMixin : public InProcessBrowserTestMixin {
     return http_response;
   }
 
-  std::unique_ptr<HttpResponse> HandleTrustTokenKeyRequest(
-      const HttpRequest& request) {
+  std::unique_ptr<HttpResponse> HandleTrustTokenKeyRequest() {
     std::string commitment_in = trust_token_handler_.GetKeyCommitmentRecord();
     // Parse and reformat JSON for the key commitment.
 
@@ -174,8 +155,7 @@ class TestKAnonymityServiceMixin : public InProcessBrowserTestMixin {
     return MakeTrustTokenResponse(*operation_result);
   }
 
-  std::unique_ptr<HttpResponse> HandleOHttpKeyRequest(
-      const HttpRequest& request) {
+  std::unique_ptr<HttpResponse> HandleOHttpKeyRequest() {
     auto http_response = std::make_unique<BasicHttpResponse>();
     http_response->set_code(net::HTTP_OK);
     http_response->set_content(ohttp_request_handler_.GetPublicKeyConfigs());
@@ -254,6 +234,8 @@ class TestKAnonymityServiceMixin : public InProcessBrowserTestMixin {
       response.emplace(HandleBhttpQueryRequest(bhttp_request));
     } else if (path.starts_with("/v1/types/fledge/sets/")) {
       response.emplace(HandleBhttpJoinRequest(bhttp_request));
+    } else {
+      return nullptr;
     }
     CHECK(response) << path;
     http_response->set_content(ohttp_request_handler_.EncryptResponse(
@@ -269,15 +251,13 @@ class TestKAnonymityServiceMixin : public InProcessBrowserTestMixin {
     if (path == "/v1/generateShortIdentifier") {
       return HandleGenerateShortIdentifierRequest(request);
     } else if (path.starts_with("/v1/1/fetchKeys")) {
-      return HandleTrustTokenKeyRequest(request);
+      return HandleTrustTokenKeyRequest();
     } else if (path.starts_with("/v1/1/issueTrustToken")) {
       return HandleIssueRequest(request);
     } else if (path.starts_with("/v1/proxy/keys")) {
-      return HandleOHttpKeyRequest(request);
-    } else if (path.starts_with("/ohttpRelay")) {
-      return HandleOhttpRelayRequest(request);
+      return HandleOHttpKeyRequest();
     } else {
-      return nullptr;
+      return HandleOhttpRelayRequest(request);
     }
   }
 
@@ -286,9 +266,9 @@ class TestKAnonymityServiceMixin : public InProcessBrowserTestMixin {
     return join_called_;
   }
 
- private:
-  base::test::ScopedFeatureList feature_list_;
+  GURL server_url() { return GURL(https_server_->base_url().spec()); }
 
+ private:
   network::test::TrustTokenRequestHandler trust_token_handler_;
   network::test::ObliviousHttpRequestTestHelper ohttp_request_handler_;
 
@@ -331,6 +311,8 @@ class KAnonymityServiceClientBrowserTest
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
   }
 
+  GURL server_url() { return k_anon_service_.server_url(); }
+
  protected:
   TestKAnonymityServiceMixin k_anon_service_{&mixin_host_};
 
@@ -343,6 +325,9 @@ IN_PROC_BROWSER_TEST_F(KAnonymityServiceClientBrowserTest, TestJoin) {
   content::KAnonymityServiceDelegate* delegate =
       profile->GetKAnonymityServiceDelegate();
   ASSERT_TRUE(delegate);
+  static_cast<KAnonymityServiceClient*>(delegate)->SetTestOriginForTesting(
+      server_url());
+
   base::RunLoop run_loop;
   delegate->JoinSet("asdf", base::BindLambdaForTesting([&](bool result) {
                       EXPECT_TRUE(result);
@@ -356,8 +341,10 @@ IN_PROC_BROWSER_TEST_F(KAnonymityServiceClientBrowserTest, TestQuery) {
   content::KAnonymityServiceDelegate* delegate =
       profile->GetKAnonymityServiceDelegate();
   ASSERT_TRUE(delegate);
-  base::RunLoop run_loop;
+  static_cast<KAnonymityServiceClient*>(delegate)->SetTestOriginForTesting(
+      server_url());
 
+  base::RunLoop run_loop;
   std::vector<std::string> set_ids = {"foo", "bar", "baz"};
   delegate->QuerySets(
       set_ids, base::BindLambdaForTesting([&](std::vector<bool> results) {

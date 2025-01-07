@@ -108,8 +108,7 @@ KAnonymityTrustTokenGetter::KAnonymityTrustTokenGetter(
       url_loader_factory_(std::move(url_loader_factory)),
       trust_token_query_answerer_(answerer),
       storage_(storage) {
-  auth_origin_ =
-      url::Origin::Create(GURL(features::kKAnonymityServiceAuthServer.Get()));
+  auth_origin_ = url::Origin::Create(GURL(kKAnonymityServiceAuthServer));
   isolation_info_ = net::IsolationInfo::Create(
       net::IsolationInfo::RequestType::kOther, auth_origin_, auth_origin_,
       net::SiteForCookies());
@@ -559,4 +558,11 @@ void KAnonymityTrustTokenGetter::DoCallback(bool status) {
   // start another thread of execution since there was an empty queue.
   std::move(pending_callbacks_.front().callback).Run(result);
   pending_callbacks_.pop_front();
+}
+
+void KAnonymityTrustTokenGetter::SetTestOriginForTesting(url::Origin url) {
+  auth_origin_ = url;
+  isolation_info_ = net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kOther, auth_origin_, auth_origin_,
+      net::SiteForCookies());
 }

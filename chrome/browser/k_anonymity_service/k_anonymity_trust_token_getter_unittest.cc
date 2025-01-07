@@ -17,7 +17,6 @@
 #include "chrome/browser/k_anonymity_service/k_anonymity_service_urls.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -25,7 +24,6 @@
 #include "google_apis/gaia/gaia_constants.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -33,8 +31,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
-
-const char kAuthServer[] = "https://authserver";
 
 class TestTrustTokenQueryAnswerer
     : public network::mojom::TrustTokenQueryAnswerer {
@@ -65,10 +61,6 @@ class TestTrustTokenQueryAnswerer
 class KAnonymityTrustTokenGetterTest : public testing::Test {
  protected:
   void SetUp() override {
-    feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{features::kKAnonymityService,
-                               {{"KAnonymityServiceAuthServer", kAuthServer}}}},
-        /*disabled_features=*/{});
     TestingProfile::Builder builder;
     builder.SetSharedURLLoaderFactory(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
@@ -80,7 +72,8 @@ class KAnonymityTrustTokenGetterTest : public testing::Test {
     getter_ = std::make_unique<KAnonymityTrustTokenGetter>(
         IdentityManagerFactory::GetForProfile(profile_.get()),
         profile_->GetURLLoaderFactory(), &trust_token_answerer_, &storage_);
-    url::Origin auth_origin = url::Origin::Create(GURL(kAuthServer));
+    url::Origin auth_origin =
+        url::Origin::Create(GURL(kKAnonymityServiceAuthServer));
     isolation_info_ = net::IsolationInfo::Create(
         net::IsolationInfo::RequestType::kOther, auth_origin, auth_origin,
         net::SiteForCookies());
@@ -142,8 +135,8 @@ class KAnonymityTrustTokenGetterTest : public testing::Test {
   }
 
   void RespondWithTrustTokenNonUniqueUserId(int id) {
-    std::string request_url =
-        base::StrCat({kAuthServer, "/v1/generateShortIdentifier"});
+    std::string request_url = base::StrCat(
+        {kKAnonymityServiceAuthServer, "v1/generateShortIdentifier"});
 
     const auto* pending_request = WaitForPendingRequest();
     const auto& request = pending_request->request;
@@ -161,8 +154,8 @@ class KAnonymityTrustTokenGetterTest : public testing::Test {
   }
 
   void RespondWithTrustTokenKeys(int id, base::Time expiration) {
-    std::string request_url =
-        base::StringPrintf("%s/v1/%d/fetchKeys?key=", kAuthServer, id);
+    std::string request_url = base::StringPrintf(
+        "%sv1/%d/fetchKeys?key=", kKAnonymityServiceAuthServer, id);
 
     const auto* pending_request = WaitForPendingRequest();
     const auto& request = pending_request->request;
@@ -193,8 +186,8 @@ class KAnonymityTrustTokenGetterTest : public testing::Test {
   }
 
   void RespondWithTrustTokenIssued(int id) {
-    std::string request_url =
-        base::StringPrintf("%s/v1/%d/issueTrustToken", kAuthServer, id);
+    std::string request_url = base::StringPrintf(
+        "%sv1/%d/issueTrustToken", kKAnonymityServiceAuthServer, id);
 
     const auto* pending_request = WaitForPendingRequest();
     const auto& request = pending_request->request;
@@ -246,7 +239,6 @@ class KAnonymityTrustTokenGetterTest : public testing::Test {
   bool HasPendingRequest() { return test_url_loader_factory_.NumPending() > 0; }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   net::IsolationInfo isolation_info_;
@@ -306,8 +298,8 @@ TEST_F(KAnonymityTrustTokenGetterTest, TryGetNonUniqueUserIdFetchFailed) {
                 run_loop.Quit();
               })));
   RespondWithOAuthToken(base::Time::Max());
-  SimulateFailedResponseForPendingRequest(
-      "https://authserver/v1/generateShortIdentifier");
+  SimulateFailedResponseForPendingRequest(base::StrCat(
+      {kKAnonymityServiceAuthServer, "v1/generateShortIdentifier"}));
   run_loop.Run();
   CheckHistogramActions(
       hist, {KAnonymityTrustTokenGetterAction::kTryGetTrustTokenAndKey,
@@ -356,8 +348,8 @@ TEST_F(KAnonymityTrustTokenGetterTest,
                 })));
     RespondWithOAuthToken(base::Time::Now() + base::Seconds(1));
     SimulateResponseForPendingRequest(
-        "https://authserver/v1/"
-        "generateShortIdentifier",
+        base::StrCat(
+            {kKAnonymityServiceAuthServer, "v1/generateShortIdentifier"}),
         response);
     run_loop.Run();
     task_environment()->FastForwardBy(base::Minutes(1));
@@ -387,7 +379,8 @@ TEST_F(KAnonymityTrustTokenGetterTest, TryGetKeyFetchFails) {
               })));
   RespondWithOAuthToken(base::Time::Max());
   RespondWithTrustTokenNonUniqueUserId(2);
-  SimulateFailedResponseForPendingRequest("https://authserver/v1/2/fetchKeys");
+  SimulateFailedResponseForPendingRequest(
+      base::StrCat({kKAnonymityServiceAuthServer, "v1/2/fetchKeys"}));
   run_loop.Run();
   CheckHistogramActions(
       hist, {KAnonymityTrustTokenGetterAction::kTryGetTrustTokenAndKey,
@@ -554,8 +547,9 @@ TEST_F(KAnonymityTrustTokenGetterTest,
                 })));
     RespondWithOAuthToken(base::Time::Now() + base::Seconds(1));
     RespondWithTrustTokenNonUniqueUserId(2);
-    SimulateResponseForPendingRequest("https://authserver/v1/2/fetchKeys",
-                                      response);
+    SimulateResponseForPendingRequest(
+        base::StrCat({kKAnonymityServiceAuthServer, "v1/2/fetchKeys"}),
+        response);
     run_loop.Run();
     task_environment()->FastForwardBy(base::Minutes(1));
   }
@@ -661,10 +655,11 @@ TEST_F(KAnonymityTrustTokenGetterTest, TryJoinSetValidKeyCommitmentResponse) {
                 })));
     RespondWithOAuthToken(base::Time::Now() + base::Seconds(1));
     RespondWithTrustTokenNonUniqueUserId(2);
-    SimulateResponseForPendingRequest("https://authserver/v1/2/fetchKeys",
-                                      test_case.response);
+    SimulateResponseForPendingRequest(
+        base::StrCat({kKAnonymityServiceAuthServer, "v1/2/fetchKeys"}),
+        test_case.response);
     SimulateFailedResponseForPendingRequest(
-        "https://authserver/v1/2/issueTrustToken");
+        base::StrCat({kKAnonymityServiceAuthServer, "v1/2/issueTrustToken"}));
     run_loop.Run();
     task_environment()->FastForwardBy(base::Minutes(1));
 
@@ -705,7 +700,8 @@ TEST_F(KAnonymityTrustTokenGetterTest, TryGetNoToken) {
   RespondWithTrustTokenNonUniqueUserId(2);
   RespondWithTrustTokenKeys(2, base::Time::Now() + base::Days(1));
   SimulateFailedResponseForPendingRequest(
-      "https://authserver/v1/2/issueTrustToken");
+
+      base::StrCat({kKAnonymityServiceAuthServer, "v1/2/issueTrustToken"}));
 
   run_loop.Run();
   CheckHistogramActions(
@@ -818,7 +814,7 @@ TEST_F(KAnonymityTrustTokenGetterTest, TryGetFailureDropsAllRequests) {
   RespondWithTrustTokenNonUniqueUserId(2);
   RespondWithTrustTokenKeys(2, base::Time::Now() + base::Days(1));
   SimulateFailedResponseForPendingRequest(
-      "https://authserver/v1/2/issueTrustToken");
+      base::StrCat({kKAnonymityServiceAuthServer, "v1/2/issueTrustToken"}));
   run_loop.Run();
   EXPECT_EQ(10, callback_count);
   CheckHistogramActions(
