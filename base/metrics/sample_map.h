@@ -14,7 +14,6 @@
 #include <memory>
 
 #include "base/base_export.h"
-#include "base/compiler_specific.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_samples.h"
 
@@ -24,8 +23,10 @@ namespace base {
 // data structures. Changes here likely need to be duplicated there.
 class BASE_EXPORT SampleMap : public HistogramSamples {
  public:
-  SampleMap();
-  explicit SampleMap(uint64_t id);
+  using SampleToCountMap =
+      std::map<HistogramBase::Sample, HistogramBase::Count>;
+
+  explicit SampleMap(uint64_t id = 0);
 
   SampleMap(const SampleMap&) = delete;
   SampleMap& operator=(const SampleMap&) = delete;
@@ -46,7 +47,7 @@ class BASE_EXPORT SampleMap : public HistogramSamples {
   bool AddSubtractImpl(SampleCountIterator* iter, Operator op) override;
 
  private:
-  std::map<HistogramBase::Sample, HistogramBase::Count> sample_counts_;
+  SampleToCountMap sample_counts_;
 };
 
 }  // namespace base

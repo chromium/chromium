@@ -4,26 +4,30 @@
 
 #include "base/metrics/persistent_sample_map.h"
 
+#include <stddef.h>
+#include <stdint.h>
+
 #include <atomic>
 #include <type_traits>
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/debug/crash_logging.h"
+#include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_samples.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/metrics/sample_map_iterator.h"
 #include "base/notreached.h"
-#include "base/numerics/safe_conversions.h"
+#include "build/buildflag.h"
+
+#if !BUILDFLAG(IS_NACL)
+#include "base/debug/crash_logging.h"
+#endif
 
 namespace base {
 
-typedef HistogramBase::Count Count;
-typedef HistogramBase::Sample Sample;
-
-typedef std::map<HistogramBase::Sample,
-                 raw_ptr<std::atomic<HistogramBase::Count>, CtnExperimental>>
-    SampleToCountMap;
+using Count = HistogramBase::Count;
+using Sample = HistogramBase::Sample;
 
 namespace {
 
@@ -68,23 +72,18 @@ void PersistentSampleMap::Accumulate(Sample value, Count count) {
   // concurrently modify the value.
   GetOrCreateSampleCountStorage(value)->fetch_add(count,
                                                   std::memory_order_relaxed);
-  IncreaseSumAndCount(strict_cast<int64_t>(count) * value, count);
+  IncreaseSumAndCount(int64_t{count} * value, count);
 }
 
 Count PersistentSampleMap::GetCount(Sample value) const {
-  // Have to override "const" to make sure all samples have been loaded before
-  // being able to know what value to return.
-  const std::atomic<Count>* const count_pointer =
-      const_cast<PersistentSampleMap*>(this)->GetSampleCountStorage(value);
+  const std::atomic<Count>* const count_pointer = GetSampleCountStorage(value);
   return count_pointer ? count_pointer->load(std::memory_order_relaxed) : 0;
 }
 
 Count PersistentSampleMap::TotalCount() const {
-  // Have to override "const" in order to make sure all samples have been
-  // loaded before trying to iterate over the map.
-  const_cast<PersistentSampleMap*>(this)->ImportSamples(
-      /*until_value=*/std::nullopt);
-
+  // Make sure all samples have been loaded before trying to iterate over the
+  // map.
+  ImportSamples();
   Count count = 0;
   for (const auto& entry : sample_counts_) {
     count += entry.second->load(std::memory_order_relaxed);
@@ -93,10 +92,9 @@ Count PersistentSampleMap::TotalCount() const {
 }
 
 std::unique_ptr<SampleCountIterator> PersistentSampleMap::Iterator() const {
-  // Have to override "const" in order to make sure all samples have been
-  // loaded before trying to iterate over the map.
-  const_cast<PersistentSampleMap*>(this)->ImportSamples(
-      /*until_value=*/std::nullopt);
+  // Make sure all samples have been loaded before trying to iterate over the
+  // map.
+  ImportSamples();
   return std::make_unique<SampleMapIterator<SampleToCountMap, false>>(
       sample_counts_);
 }
@@ -104,7 +102,7 @@ std::unique_ptr<SampleCountIterator> PersistentSampleMap::Iterator() const {
 std::unique_ptr<SampleCountIterator> PersistentSampleMap::ExtractingIterator() {
   // Make sure all samples have been loaded before trying to iterate over the
   // map.
-  ImportSamples(/*until_value=*/std::nullopt);
+  ImportSamples();
   return std::make_unique<SampleMapIterator<SampleToCountMap, true>>(
       sample_counts_);
 }
@@ -137,26 +135,25 @@ PersistentSampleMap::CreatePersistentRecord(
     uint64_t sample_map_id,
     Sample value) {
   SampleRecord* record = allocator->New<SampleRecord>();
-  if (!record) {
-    if (!allocator->IsFull()) {
-#if !BUILDFLAG(IS_NACL)
-      // TODO(crbug.com/40064026): Remove these. They are used to investigate
-      // unexpected failures.
-      SCOPED_CRASH_KEY_BOOL("PersistentSampleMap", "corrupted",
-                            allocator->IsCorrupt());
-#endif  // !BUILDFLAG(IS_NACL)
-      DUMP_WILL_BE_NOTREACHED() << "corrupt=" << allocator->IsCorrupt();
-    }
-    return 0;
+  if (record) {
+    record->id = sample_map_id;
+    record->value = value;
+    record->count = 0;
+    PersistentMemoryAllocator::Reference ref =
+        allocator->GetAsReference(record);
+    allocator->MakeIterable(ref);
+    return ref;
   }
 
-  record->id = sample_map_id;
-  record->value = value;
-  record->count = 0;
-
-  PersistentMemoryAllocator::Reference ref = allocator->GetAsReference(record);
-  allocator->MakeIterable(ref);
-  return ref;
+  if (!allocator->IsFull()) {
+    const bool corrupt = allocator->IsCorrupt();
+#if !BUILDFLAG(IS_NACL)
+    // TODO(crbug.com/40064026): Remove.
+    SCOPED_CRASH_KEY_BOOL("PersistentSampleMap", "corrupted", corrupt);
+#endif  // !BUILDFLAG(IS_NACL)
+    DUMP_WILL_BE_NOTREACHED() << "corrupt=" << corrupt;
+  }
+  return 0;
 }
 
 bool PersistentSampleMap::AddSubtractImpl(SampleCountIterator* iter,
@@ -169,7 +166,7 @@ bool PersistentSampleMap::AddSubtractImpl(SampleCountIterator* iter,
     if (count == 0) {
       continue;
     }
-    if (strict_cast<int64_t>(min) + 1 != max) {
+    if (int64_t{min} + 1 != max) {
       return false;  // SparseHistogram only supports bucket with size 1.
     }
 
@@ -183,15 +180,11 @@ bool PersistentSampleMap::AddSubtractImpl(SampleCountIterator* iter,
   return true;
 }
 
-std::atomic<Count>* PersistentSampleMap::GetSampleCountStorage(Sample value) {
+std::atomic<Count>* PersistentSampleMap::GetSampleCountStorage(
+    Sample value) const {
   // If |value| is already in the map, just return that.
-  auto it = sample_counts_.find(value);
-  if (it != sample_counts_.end()) {
-    return it->second;
-  }
-
-  // Import any new samples from persistent memory looking for the value.
-  return ImportSamples(/*until_value=*/value);
+  const auto it = sample_counts_.find(value);
+  return (it == sample_counts_.end()) ? ImportSamples(value) : it->second.get();
 }
 
 std::atomic<Count>* PersistentSampleMap::GetOrCreateSampleCountStorage(
@@ -225,12 +218,12 @@ std::atomic<Count>* PersistentSampleMap::GetOrCreateSampleCountStorage(
   // Thread-safety within a process where multiple threads use the same
   // histogram object is delegated to the controlling histogram object which,
   // for sparse histograms, is a lock object.
-  count_pointer = ImportSamples(/*until_value=*/value);
+  count_pointer = ImportSamples(value);
   DCHECK(count_pointer);
   return count_pointer;
 }
 
-PersistentSampleMapRecords* PersistentSampleMap::GetRecords() {
+PersistentSampleMapRecords* PersistentSampleMap::GetRecords() const {
   // The |records_| pointer is lazily fetched from the |allocator_| only on
   // first use. Sometimes duplicate histograms are created by race conditions
   // and if both were to grab the records object, there would be a conflict.
@@ -243,7 +236,7 @@ PersistentSampleMapRecords* PersistentSampleMap::GetRecords() {
 }
 
 std::atomic<Count>* PersistentSampleMap::ImportSamples(
-    std::optional<Sample> until_value) {
+    std::optional<Sample> until_value) const {
   std::vector<PersistentMemoryAllocator::Reference> refs;
   PersistentSampleMapRecords* records = GetRecords();
   while (!(refs = records->GetNextRecords(until_value)).empty()) {
@@ -251,7 +244,7 @@ std::atomic<Count>* PersistentSampleMap::ImportSamples(
     // map. Iterate through them all and store them internally. Note that if
     // |until_value| was found, it will be the last element in |refs|.
     for (auto ref : refs) {
-      SampleRecord* record = records->GetAsObject<SampleRecord>(ref);
+      SampleRecord* const record = records->GetAsObject<SampleRecord>(ref);
       if (!record) {
         continue;
       }
@@ -259,10 +252,8 @@ std::atomic<Count>* PersistentSampleMap::ImportSamples(
       DCHECK_EQ(id(), record->id);
 
       // Check if the record's value is already known.
-      if (!Contains(sample_counts_, record->value)) {
-        // No: Add it to map of known values.
-        sample_counts_[record->value] = &record->count;
-      } else {
+      const auto ret = sample_counts_.insert({record->value, &record->count});
+      if (!ret.second) {
         // Yes: Ignore it; it's a duplicate caused by a race condition -- see
         // code & comment in GetOrCreateSampleCountStorage() for details.
         // Check that nothing ever operated on the duplicate record.

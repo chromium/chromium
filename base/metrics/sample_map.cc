@@ -4,20 +4,19 @@
 
 #include "base/metrics/sample_map.h"
 
-#include <type_traits>
+#include <stdint.h>
 
-#include "base/check.h"
+#include <memory>
+
+#include "base/metrics/histogram_base.h"
+#include "base/metrics/histogram_samples.h"
 #include "base/metrics/sample_map_iterator.h"
-#include "base/numerics/safe_conversions.h"
+#include "base/numerics/wrapping_math.h"
 
 namespace base {
 
-typedef HistogramBase::Count Count;
-typedef HistogramBase::Sample Sample;
-
-typedef std::map<HistogramBase::Sample, HistogramBase::Count> SampleToCountMap;
-
-SampleMap::SampleMap() : SampleMap(0) {}
+using Count = HistogramBase::Count;
+using Sample = HistogramBase::Sample;
 
 SampleMap::SampleMap(uint64_t id)
     : HistogramSamples(id, std::make_unique<LocalMetadata>()) {}
@@ -35,11 +34,8 @@ void SampleMap::Accumulate(Sample value, Count count) {
 }
 
 Count SampleMap::GetCount(Sample value) const {
-  auto it = sample_counts_.find(value);
-  if (it == sample_counts_.end()) {
-    return 0;
-  }
-  return it->second;
+  const auto it = sample_counts_.find(value);
+  return (it == sample_counts_.end()) ? 0 : it->second;
 }
 
 Count SampleMap::TotalCount() const {
@@ -75,7 +71,7 @@ bool SampleMap::AddSubtractImpl(SampleCountIterator* iter, Operator op) {
   Count count;
   for (; !iter->Done(); iter->Next()) {
     iter->Get(&min, &max, &count);
-    if (strict_cast<int64_t>(min) + 1 != max) {
+    if (int64_t{min} + 1 != max) {
       return false;  // SparseHistogram only supports bucket with size 1.
     }
 
