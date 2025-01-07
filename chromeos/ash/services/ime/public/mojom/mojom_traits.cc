@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/services/ime/public/mojom/mojom_traits.h"
 
+#include "base/strings/string_util.h"
 #include "chromeos/ash/services/ime/public/mojom/input_method_host.mojom-shared.h"
 
 namespace mojo {

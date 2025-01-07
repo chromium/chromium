@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/containers/fixed_flat_map.h"
+#include "base/strings/string_util.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 
 namespace auction_worklet {

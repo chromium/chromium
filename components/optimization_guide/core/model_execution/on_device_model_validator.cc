@@ -4,6 +4,8 @@
 
 #include "components/optimization_guide/core/model_execution/on_device_model_validator.h"
 
+#include "base/strings/string_util.h"
+
 namespace optimization_guide {
 
 OnDeviceModelValidator::OnDeviceModelValidator(

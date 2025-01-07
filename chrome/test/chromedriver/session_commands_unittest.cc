@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
+#include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/test/values_test_util.h"
 #include "base/threading/thread.h"
