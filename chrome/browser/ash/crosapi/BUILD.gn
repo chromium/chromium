@@ -237,7 +237,6 @@ static_library("crosapi") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service/app_icon",
     "//chrome/browser/apps/app_service/app_install:implementation",
-    "//chrome/browser/apps/browser_instance",
     "//chrome/browser/apps/platform_apps/api",
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/app_list",

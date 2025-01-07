@@ -16,7 +16,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/subscriber_crosapi.h"
 #include "chrome/browser/apps/app_service/subscriber_crosapi_factory.h"
-#include "chrome/browser/apps/browser_instance/browser_app_instance_registry.h"
 #include "chrome/browser/apps/digital_goods/digital_goods_ash.h"
 #include "chrome/browser/ash/crosapi/arc_ash.h"
 #include "chrome/browser/ash/crosapi/audio_service_ash.h"

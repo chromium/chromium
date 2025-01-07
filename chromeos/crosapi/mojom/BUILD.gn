@@ -15,7 +15,6 @@ mojom("mojom") {
     "authentication.mojom",
     "automation.mojom",
     "bitmap.mojom",
-    "browser_app_instance_registry.mojom",
     "cec_private.mojom",
     "cert_database.mojom",
     "cert_provisioning.mojom",
@@ -284,7 +283,6 @@ mojom("mojom") {
       ]
       traits_headers = [
         "//chromeos/crosapi/mojom/app_service_types_mojom_traits.h",
-        "//chromeos/crosapi/mojom/browser_app_instance_registry_mojom_traits.h",
         "//chromeos/crosapi/mojom/cert_database_mojom_traits.h",
         "//chromeos/crosapi/mojom/desk_mojom_traits.h",
         "//chromeos/crosapi/mojom/desk_template_mojom_traits.h",
@@ -303,7 +301,6 @@ mojom("mojom") {
       ]
       traits_sources = [
         "//chromeos/crosapi/mojom/app_service_types_mojom_traits.cc",
-        "//chromeos/crosapi/mojom/browser_app_instance_registry_mojom_traits.cc",
         "//chromeos/crosapi/mojom/cert_database_mojom_traits.cc",
         "//chromeos/crosapi/mojom/desk_mojom_traits.cc",
         "//chromeos/crosapi/mojom/desk_template_mojom_traits.cc",

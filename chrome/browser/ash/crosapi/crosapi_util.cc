@@ -63,7 +63,6 @@
 #include "chromeos/crosapi/mojom/audio_service.mojom.h"
 #include "chromeos/crosapi/mojom/authentication.mojom.h"
 #include "chromeos/crosapi/mojom/automation.mojom.h"
-#include "chromeos/crosapi/mojom/browser_app_instance_registry.mojom.h"
 #include "chromeos/crosapi/mojom/cec_private.mojom.h"
 #include "chromeos/crosapi/mojom/cert_database.mojom.h"
 #include "chromeos/crosapi/mojom/cert_provisioning.mojom.h"
@@ -299,7 +298,6 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::AutomationFactory>(),
     MakeInterfaceVersionEntry<crosapi::mojom::AccountManager>(),
     MakeInterfaceVersionEntry<crosapi::mojom::AppServiceProxy>(),
-    MakeInterfaceVersionEntry<crosapi::mojom::BrowserAppInstanceRegistry>(),
     MakeInterfaceVersionEntry<crosapi::mojom::CecPrivate>(),
     MakeInterfaceVersionEntry<crosapi::mojom::CertDatabase>(),
     MakeInterfaceVersionEntry<crosapi::mojom::CertProvisioning>(),

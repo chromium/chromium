@@ -10,7 +10,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/process/process.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/browser_instance/browser_app_instance_map.h"
 #include "chrome/browser/apps/browser_instance/browser_app_instance_observer.h"
 #include "chrome/browser/apps/browser_instance/web_contents_instance_id_utils.h"
@@ -31,13 +30,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
 #include "ui/aura/window.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/lacros_extensions_util.h"
-#include "chrome/browser/lacros/profile_util.h"
-#else
 #include "ui/wm/core/window_util.h"
-#endif
 
 namespace apps {
 
@@ -52,18 +45,6 @@ Browser* GetBrowserWithTabStripModel(TabStripModel* tab_strip_model) {
   return nullptr;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-Browser* GetBrowserWithAuraWindow(aura::Window* aura_window) {
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    BrowserWindow* window = browser->window();
-    if (window && window->GetNativeWindow() == aura_window) {
-      return browser;
-    }
-  }
-  return nullptr;
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 aura::Window* AuraWindowForBrowser(Browser* browser) {
   BrowserWindow* window = browser->window();
   DCHECK(window && window->GetNativeWindow());
@@ -71,15 +52,6 @@ aura::Window* AuraWindowForBrowser(Browser* browser) {
   DCHECK(aura_window);
   return aura_window;
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-wm::ActivationClient* ActivationClientForBrowser(Browser* browser) {
-  aura::Window* window = AuraWindowForBrowser(browser)->GetRootWindow();
-  wm::ActivationClient* client = wm::GetActivationClient(window);
-  DCHECK(client);
-  return client;
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 bool IsBrowserActive(Browser* browser) {
   auto* aura_window = AuraWindowForBrowser(browser);
@@ -589,17 +561,12 @@ void BrowserAppInstanceTracker::RemoveAppWindowInstanceIfExists(
 }
 
 void BrowserAppInstanceTracker::CreateBrowserWindowInstance(Browser* browser) {
-  uint64_t lacros_profile_id = 0;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  lacros_profile_id = HashProfilePathToProfileId(browser->profile()->GetPath());
-#endif
   auto& instance = AddInstance(
       window_instances_, browser,
       std::make_unique<BrowserWindowInstance>(
           GenerateId(), browser->window()->GetNativeWindow(),
           browser->session_id().id(), browser->create_params().restore_id,
-          browser->profile()->IsIncognitoProfile(), lacros_profile_id,
-          IsBrowserActive(browser)));
+          browser->profile()->IsIncognitoProfile(), IsBrowserActive(browser)));
   for (auto& observer : observers_) {
     observer.OnBrowserWindowAdded(instance);
   }
@@ -622,96 +589,5 @@ base::UnguessableToken BrowserAppInstanceTracker::GenerateId() const {
 bool BrowserAppInstanceTracker::IsBrowserTracked(Browser* browser) const {
   return base::Contains(tracked_browsers_, browser);
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-BrowserAppInstanceTrackerLacros::BrowserAppInstanceTrackerLacros(
-    Profile* profile,
-    AppRegistryCache& app_registry_cache)
-    : BrowserAppInstanceTracker(profile, app_registry_cache) {}
-
-BrowserAppInstanceTrackerLacros::~BrowserAppInstanceTrackerLacros() {
-  DCHECK_EQ(activation_client_observations_.GetSourcesCount(), 0u);
-}
-
-void BrowserAppInstanceTrackerLacros::OnWindowActivated(
-    ActivationReason reason,
-    aura::Window* gained_active,
-    aura::Window* lost_active) {
-  if (Browser* browser = GetBrowserWithAuraWindow(lost_active)) {
-    OnBrowserWindowUpdated(browser);
-  }
-  if (Browser* browser = GetBrowserWithAuraWindow(gained_active)) {
-    OnBrowserWindowUpdated(browser);
-  }
-}
-
-void BrowserAppInstanceTrackerLacros::OnBrowserWindowUpdated(Browser* browser) {
-  // We only want to send window events for the browsers we track to avoid
-  // sending window events before a "browser added" event.
-  if (!IsBrowserTracked(browser)) {
-    return;
-  }
-  BrowserWindowInstance* instance = GetInstance(window_instances_, browser);
-  if (instance) {
-    MaybeUpdateBrowserWindowInstance(*instance, browser);
-  }
-
-  TabStripModel* tab_strip_model = browser->tab_strip_model();
-  for (int i = 0; i < tab_strip_model->count(); i++) {
-    content::WebContents* contents = tab_strip_model->GetWebContentsAt(i);
-    OnTabUpdated(browser, contents);
-  }
-}
-
-void BrowserAppInstanceTrackerLacros::MaybeUpdateBrowserWindowInstance(
-    BrowserWindowInstance& instance,
-    Browser* browser) {
-  if (instance.MaybeUpdate(IsBrowserActive(browser))) {
-    for (auto& observer : observers_) {
-      observer.OnBrowserWindowUpdated(instance);
-    }
-  }
-}
-
-bool BrowserAppInstanceTrackerLacros::IsActivationClientTracked(
-    wm::ActivationClient* client) const {
-  // Iterate over the full list of browsers instead of tracked_browsers_ in case
-  // tracked_browsers_ is out of date with global state
-  // TODO(crbug.com/40782702): This can be changed to iterate tracked_browsers_
-  // when confident it doesn't get out of sync.
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (IsBrowserTracked(browser) &&
-        ActivationClientForBrowser(browser) == client) {
-      return true;
-    }
-  }
-  return false;
-}
-
-void BrowserAppInstanceTrackerLacros::OnBrowserFirstTabAttached(
-    Browser* browser) {
-  // Observe the activation client of the root window of
-  // the browser's aura
-  // window if this is the first browser matching it (there is no other tracked
-  // browser matching it).
-  wm::ActivationClient* activation_client = ActivationClientForBrowser(browser);
-  if (!IsActivationClientTracked(activation_client)) {
-    activation_client_observations_.AddObservation(activation_client);
-  }
-  BrowserAppInstanceTracker::OnBrowserFirstTabAttached(browser);
-}
-
-void BrowserAppInstanceTrackerLacros::OnBrowserLastTabDetached(
-    Browser* browser) {
-  BrowserAppInstanceTracker::OnBrowserLastTabDetached(browser);
-
-  // Unobserve the activation client of the root window of the browser's aura
-  // window if the last browser using it was just removed.
-  wm::ActivationClient* activation_client = ActivationClientForBrowser(browser);
-  if (!IsActivationClientTracked(activation_client)) {
-    activation_client_observations_.RemoveObservation(activation_client);
-  }
-}
-#endif  // #BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace apps

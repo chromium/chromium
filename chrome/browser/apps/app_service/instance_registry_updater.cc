@@ -4,7 +4,6 @@
 
 #include "chrome/browser/apps/app_service/instance_registry_updater.h"
 
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
@@ -97,8 +96,7 @@ void InstanceRegistryUpdater::OnWindowInitialized(aura::Window* window) {
 
 void InstanceRegistryUpdater::OnWindowVisibilityChanged(aura::Window* window,
                                                         bool visible) {
-  if (!crosapi::browser_util::IsLacrosWindow(window) &&
-      !IsAshBrowserWindow(window)) {
+  if (!IsAshBrowserWindow(window)) {
     return;
   }
   for (const BrowserAppInstance* instance :
