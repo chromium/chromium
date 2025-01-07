@@ -1818,12 +1818,6 @@ void CaptureModeSession::OnDisplayMetricsChanged(
     controller_->camera_controller()->MaybeUpdatePreviewWidget();
   }
 
-  // TODO: crbug.com/377519801 - Investigate if we can move this to
-  // `SearchResultsPanel` so it will still update after the session ends.
-  // The search results panel may be offscreen after the display metrics change,
-  // so we can reset it back to a default position.
-  controller_->MaybeUpdateSearchResultsPanelBounds();
-
   if (capture_label_widget_) {
     UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
   }

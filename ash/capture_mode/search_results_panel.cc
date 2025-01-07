@@ -260,12 +260,12 @@ void SearchResultsPanel::SetSearchBoxText(const std::u16string& text) {
   search_box_view_->textfield_->SetText(text);
 }
 
-void SearchResultsPanel::RefreshStackingOrder(bool is_active) {
+void SearchResultsPanel::RefreshStackingOrder(aura::Window* new_root) {
   aura::Window* native_window = GetWidget()->GetNativeWindow();
   // While the capture mode session is active, we parent the panel to its own
   // container, else we parent it to the system modal container.
-  aura::Window* new_parent =
-      GetParentContainer(native_window->GetRootWindow(), is_active);
+  aura::Window* new_parent = GetParentContainer(
+      new_root ? new_root : native_window->GetRootWindow(), !!new_root);
   views::Widget::ReparentNativeView(native_window, new_parent);
 }
 

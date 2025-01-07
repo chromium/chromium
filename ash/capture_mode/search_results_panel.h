@@ -47,10 +47,10 @@ class ASH_EXPORT SearchResultsPanel : public SystemPanelView {
   virtual void SetSearchBoxImage(const gfx::ImageSkia& image);
   void SetSearchBoxText(const std::u16string& text);
 
-  // Refreshes the panel z-order. `is_active` indicates whether capture mode
-  // session is currently active and will be used to determine the panel
-  // stacking order.
-  void RefreshStackingOrder(bool is_active);
+  // Refreshes the panel z-order. If `new_root` is not null, capture mode
+  // session is active and will be used to determine the panel root. Else the
+  // panel will be re-stacked on its native window's root window.
+  void RefreshStackingOrder(aura::Window* new_root);
 
   // SystemPanelView:
   bool HasFocus() const override;

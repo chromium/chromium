@@ -2096,6 +2096,79 @@ TEST_F(SunfishTest, RestartDefaultModeReShowsActionButton) {
   EXPECT_TRUE(search_button->GetVisible());
 }
 
+using SunfishMultiDisplayTest = SunfishTest;
+
+TEST_F(SunfishMultiDisplayTest, SelectNewRegionAndPanelRoot) {
+  UpdateDisplay("800x600,1000x900");
+  aura::Window::Windows roots = Shell::GetAllRootWindows();
+  EXPECT_THAT(roots, SizeIs(2));
+
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+
+  // Select a region on display 1.
+  auto* generator = GetEventGenerator();
+  SelectCaptureModeRegion(generator, gfx::Rect(100, 100, 600, 500),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
+  ASSERT_EQ(roots[0], controller->capture_mode_session()->current_root());
+  auto* panel_window =
+      controller->search_results_panel_widget()->GetNativeWindow();
+  EXPECT_EQ(roots[0], controller->search_results_panel_widget()
+                          ->GetNativeWindow()
+                          ->GetRootWindow());
+
+  // Start a drag on display 2.
+  generator->MoveMouseTo(1010, 10);
+  generator->PressLeftButton();
+  generator->MoveMouseBy(100, 100);
+
+  // The panel will be hidden during the drag.
+  ASSERT_TRUE(controller->capture_mode_session()->is_drag_in_progress());
+  EXPECT_FALSE(controller->search_results_panel_widget()->IsVisible());
+
+  // Release the drag. Test the region and panel are on display 2.
+  generator->ReleaseLeftButton();
+  ASSERT_EQ(roots[1], controller->capture_mode_session()->current_root());
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
+  EXPECT_EQ(roots[1], controller->search_results_panel_widget()
+                          ->GetNativeWindow()
+                          ->GetRootWindow());
+  EXPECT_EQ(Shell::GetContainer(roots[1],
+                                kShellWindowId_CaptureModeSearchResultsPanel),
+            panel_window->parent());
+
+  // Start a drag on display 1 again.
+  generator->MoveMouseTo(10, 10);
+  generator->PressLeftButton();
+  generator->MoveMouseBy(100, 100);
+  ASSERT_TRUE(controller->capture_mode_session()->is_drag_in_progress());
+  EXPECT_FALSE(controller->search_results_panel_widget()->IsVisible());
+
+  // Release the drag. Test the region and panel are on display 1.
+  generator->ReleaseLeftButton();
+  ASSERT_EQ(roots[0], controller->capture_mode_session()->current_root());
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
+  EXPECT_EQ(roots[0], controller->search_results_panel_widget()
+                          ->GetNativeWindow()
+                          ->GetRootWindow());
+  EXPECT_EQ(Shell::GetContainer(roots[0],
+                                kShellWindowId_CaptureModeSearchResultsPanel),
+            panel_window->parent());
+
+  // Stop the session. Test the panel stays on display 1.
+  controller->Stop();
+  ASSERT_EQ(gfx::Rect(10, 10, 100, 100), controller->user_capture_region());
+  EXPECT_EQ(roots[0], controller->search_results_panel_widget()
+                          ->GetNativeWindow()
+                          ->GetRootWindow());
+
+  // Restart the session. The region and panel will be cleared.
+  controller->StartSunfishSession();
+  ASSERT_EQ(gfx::Rect(), controller->user_capture_region());
+  EXPECT_FALSE(controller->search_results_panel_widget());
+}
+
 class ScannerTest : public AshTestBase {
  public:
   ScannerTest()
