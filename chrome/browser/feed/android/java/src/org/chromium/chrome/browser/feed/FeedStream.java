@@ -733,6 +733,7 @@ public class FeedStream implements Stream {
         mReliabilityLoggingBridge = new FeedReliabilityLoggingBridge();
         mBridge =
                 feedSurfaceRendererBridgeFactory.create(
+                        profile,
                         new Renderer(),
                         mReliabilityLoggingBridge,
                         streamKind,

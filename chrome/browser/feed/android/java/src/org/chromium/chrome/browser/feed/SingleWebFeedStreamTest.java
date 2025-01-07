@@ -119,6 +119,7 @@ public class SingleWebFeedStreamTest {
     class FeedSurfaceRendererBridgeFactory implements FeedSurfaceRendererBridge.Factory {
         @Override
         public FeedSurfaceRendererBridge create(
+                Profile profile,
                 FeedSurfaceRendererBridge.Renderer renderer,
                 FeedReliabilityLoggingBridge reliabilityLoggingBridge,
                 @StreamKind int streamKind,
