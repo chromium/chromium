@@ -38,10 +38,10 @@ def muxed_name(muxed_signature):
   params_list = [_muxed_type_char(t) for t in muxed_signature.param_types]
   params_part = ''
   if params_list:
-    params_part = '_' + ''.join(p for p in params_list)
+    params_part = ''.join(p for p in params_list)
 
   return_value_part = _muxed_type_char(muxed_signature.return_type)
-  return '_' + return_value_part + params_part
+  return return_value_part + params_part
 
 
 def muxed_signature(proxy_signature):
