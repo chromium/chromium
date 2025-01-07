@@ -19,8 +19,6 @@ namespace gpu {
 
 class COMPONENT_EXPORT(VULKAN) VulkanInstance {
  public:
-  static bool CheckMinVersion();
-
   VulkanInstance();
 
   VulkanInstance(const VulkanInstance&) = delete;
