@@ -277,12 +277,7 @@ LayoutUnit ComputeFloatAncestorInlineEndSize(
     const HeapVector<InlineItem>& items,
     wtf_size_t item_index) {
   LayoutUnit inline_end_size;
-  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-  for (const InlineItem *cur = UNSAFE_TODO(items.data() + item_index),
-                        *end = UNSAFE_TODO(items.data() + items.size());
-       cur != end; UNSAFE_TODO(++cur)) {
-    const InlineItem& item = *cur;
-
+  for (const auto& item : base::span(items).subspan(item_index)) {
     if (item.Type() == InlineItem::kCloseTag) {
       inline_end_size += ComputeInlineEndSize(space, item.Style());
       continue;
@@ -1218,12 +1213,9 @@ const InlineItem* LineBreaker::TryGetAtomicInlineItemAfter(
 }
 
 unsigned LineBreaker::IgnorableBidiControlLength(const InlineItem& item) const {
-  const InlineItem* items = Items().data();
-  for (wtf_size_t i =
-           base::checked_cast<wtf_size_t>(std::distance(items, &item)) + 1;
-       i < end_item_index_; ++i) {
-    // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-    const InlineItem& item_i = UNSAFE_TODO(items[i]);
+  size_t start_item_index = std::distance(Items().data(), &item) + 1;
+  for (const auto& item_i : base::span(Items()).subspan(
+           start_item_index, end_item_index_ - start_item_index)) {
     if (item_i.Length() == 0u) {
       continue;
     }
@@ -1232,10 +1224,9 @@ unsigned LineBreaker::IgnorableBidiControlLength(const InlineItem& item) const {
       return item_i.StartOffset() - item.EndOffset();
     }
   }
-  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
   return (end_item_index_ >= Items().size()
               ? Text().length()
-              : UNSAFE_TODO(items[end_item_index_]).StartOffset()) -
+              : Items()[end_item_index_].StartOffset()) -
          item.EndOffset();
 }
 
