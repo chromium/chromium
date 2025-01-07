@@ -2302,14 +2302,13 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
   // This must be done after `MaybeUpdateCaptureUisOpacity()` which will hide
   // the panel if a drag is in progress and before running
   // `deferred_cursor_updater` to allow the panel to update the cursor type.
-  if (controller_->IsSearchResultsPanelVisible() &&
-      controller_->IsEventOnSearchResultsPanel(screen_location)) {
+  if (controller_->IsEventOnSearchResultsPanel(screen_location)) {
     if (cursor_setter_) {
       cursor_setter_->ResetCursor();
     }
     // If the event is a mouse or touch down, we assume the user wants to
     // interact with the panel and stop the session now.
-    if (is_press_event) {
+    if (is_press_event && (event->flags() & ui::EF_RIGHT_MOUSE_BUTTON)) {
       controller_->Stop();  // Deletes `this`.
     }
     return;

@@ -629,6 +629,34 @@ TEST_F(SunfishTest, DragSearchResultsPanel) {
   }
 }
 
+TEST_F(SunfishTest, DragPanelInSession) {
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+  auto* event_generator = GetEventGenerator();
+  SelectCaptureModeRegion(event_generator, gfx::Rect(50, 50, 400, 400),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
+  auto* panel = controller->GetSearchResultsPanel();
+  ASSERT_TRUE(panel);
+  ASSERT_TRUE(controller->IsActive());
+
+  // Start dragging the panel.
+  const gfx::Point draggable_point(
+      panel->search_results_view()->GetBoundsInScreen().origin() +
+      gfx::Vector2d(0, -3));
+  event_generator->MoveMouseTo(draggable_point);
+  event_generator->PressLeftButton();
+
+  // Test the session is still active.
+  ASSERT_TRUE(panel->IsDragging());
+  EXPECT_TRUE(controller->IsActive());
+
+  // Move the panel. Test the session is still active.
+  event_generator->MoveMouseTo(400, 400);
+  ASSERT_TRUE(panel->IsDragging());
+  EXPECT_TRUE(controller->IsActive());
+}
+
 class MockSearchResultsPanel : public SearchResultsPanel {
  public:
   MockSearchResultsPanel() = default;

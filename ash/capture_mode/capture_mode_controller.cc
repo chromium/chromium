@@ -805,9 +805,9 @@ bool CaptureModeController::IsEventOnSearchResultsPanel(
   // target, because the panel may not be the target of certain events (e.g.
   // right clicks), and lose focus, after which the panel will no longer be able
   // to be targeted (b/377019438).
-  return search_results_panel_widget_ &&
-         search_results_panel_widget_->GetWindowBoundsInScreen().Contains(
-             screen_location);
+  return IsSearchResultsPanelVisible() &&
+         (search_results_panel_widget_->GetWindowBoundsInScreen().Contains(
+             screen_location));
 }
 
 bool CaptureModeController::IsSearchResultsPanelVisible() const {
