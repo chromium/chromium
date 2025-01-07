@@ -36,7 +36,7 @@ const CGFloat kDotSize = 14;
     self.accessibilityTraits |= UIAccessibilityTraitButton;
 
     _stackView = [self setUpStackView];
-    [self addSubview:_stackView];
+    [self.contentView addSubview:_stackView];
 
     _faviconsGrid = [[TabGroupFaviconsGrid alloc] init];
     _faviconsGrid.translatesAutoresizingMaskIntoConstraints = NO;
@@ -62,17 +62,7 @@ const CGFloat kDotSize = 14;
     AddSquareConstraints(_dot, kDotSize);
     AddSameCenterYConstraint(_faviconsGrid, self.contentView);
     AddSameCenterYConstraint(labelsStackView, self.contentView);
-
-    [NSLayoutConstraint activateConstraints:@[
-      [_stackView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor
-                                               constant:kMargin],
-      [_stackView.topAnchor constraintEqualToAnchor:self.topAnchor
-                                           constant:kMargin],
-      [_stackView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor
-                                              constant:-kMargin],
-      [_stackView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor
-                                                constant:-kMargin],
-    ]];
+    AddSameConstraintsWithInset(_stackView, self.contentView, kMargin);
   }
   return self;
 }
