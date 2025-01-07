@@ -18,6 +18,7 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_constants.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
+#include "components/prefs/pref_service.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features_test_support.h"
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
 #include "components/url_pattern_index/proto/rules.pb.h"

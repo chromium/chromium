@@ -14,6 +14,7 @@
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_breakage_exception.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_constants.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
+#include "components/prefs/pref_service.h"
 #include "components/subresource_filter/content/shared/browser/utils.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
 #include "components/subresource_filter/core/common/scoped_timers.h"
