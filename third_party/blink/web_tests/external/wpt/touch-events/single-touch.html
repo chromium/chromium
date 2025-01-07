@@ -332,6 +332,11 @@
     }
 
     async function run() {
+      // Some user-agents require a brief waiting period before input can be
+      // processed correctly.
+      await new Promise(resolve => {
+        requestAnimationFrame(() => requestAnimationFrame(resolve));
+      });
       const target0 = document.getElementById("target0");
       const target1 = document.getElementById("target1");
       const doneButton = document.getElementById('done');
