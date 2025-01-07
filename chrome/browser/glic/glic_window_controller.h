@@ -60,8 +60,9 @@ class GlicWindowController : public views::WidgetObserver {
   // Called to notify the controller that the window was requested to be closed.
   void Close();
 
-  // Drags the glic window following the current mouse location with a given
-  // offset and checks for pinning points after the move loop.
+  // Drags the glic window following the current mouse location with the given
+  // `mouse_offset` and checks if the glic window is at a position where it
+  // could attach to a browser window when a drag ends.
   void HandleWindowDragWithOffset(gfx::Vector2d mouse_offset);
 
   const mojom::PanelState& GetPanelState() const { return panel_state_; }
@@ -71,7 +72,8 @@ class GlicWindowController : public views::WidgetObserver {
   // Returns whether or not the glic window is currently active.
   bool IsActive();
 
-  // Whether there is a glic window, regardless of it's visibility to the user.
+  // Returns whether there is a glic window, regardless of it's visibility to
+  // the user.
   bool HasWindow() const;
 
   using WindowActivationChangedCallback =
@@ -91,37 +93,39 @@ class GlicWindowController : public views::WidgetObserver {
  private:
   GlicView* GetGlicView();
   // Determines the correct position for the glic window when attached to a
-  // browser.
-  gfx::Point GetTopRightPositionForAttachedWindow(
+  // browser window.
+  gfx::Point GetTopRightPositionForAttachedGlicWindow(
       views::View* glic_button_view);
 
-  // Determines the correct position for the glic window when in a detached
-  // state.
-  gfx::Point GetTopRightPositionForDetachedWindow();
+  // Determines the correct initial position for the glic window when in a
+  // detached state.
+  gfx::Point GetTopRightPositionForDetachedGlicWindow();
 
-  // Reparents the glic widget under the given widget.
-  void AttachToBrowser(Browser* browser, views::Widget* widget);
+  // Reparents the glic widget under `target_widget`.
+  void AttachToBrowser(Browser* browser, views::Widget* target_widget);
 
-  // observes the pinned target
-  class PinnedTargetWidgetObserver : public views::WidgetObserver {
+  // Observes changes in the widget that the glic window is currently attached
+  // to in order to update its position.
+  class AttachedTargetWidgetObserver : public views::WidgetObserver {
    public:
-    explicit PinnedTargetWidgetObserver(
+    explicit AttachedTargetWidgetObserver(
         glic::GlicWindowController* glic_window_controller);
-    PinnedTargetWidgetObserver(const PinnedTargetWidgetObserver&) = delete;
-    PinnedTargetWidgetObserver& operator=(const PinnedTargetWidgetObserver&) =
-        delete;
-    ~PinnedTargetWidgetObserver() override;
-    void SetPinnedTargetWidget(views::Widget* widget);
+    AttachedTargetWidgetObserver(const AttachedTargetWidgetObserver&) = delete;
+    AttachedTargetWidgetObserver& operator=(
+        const AttachedTargetWidgetObserver&) = delete;
+    ~AttachedTargetWidgetObserver() override;
+    void SetAttachedTargetWidget(views::Widget* new_attachment_target);
     void OnWidgetBoundsChanged(views::Widget* widget,
                                const gfx::Rect& new_bounds) override;
     void OnWidgetDestroying(views::Widget* widget) override;
 
    private:
     raw_ptr<glic::GlicWindowController> glic_window_controller_;
-    raw_ptr<views::Widget> pinned_target_widget_;
+    // The browser window widget that the glic window is currently attached to.
+    raw_ptr<views::Widget> current_attachment_target_;
   };
 
-  // Helper class for observing activation events from the widget.
+  // Helper class for observing activation events from the glic widget.
   class GlicWidgetObserver : public views::WidgetObserver {
    public:
     explicit GlicWidgetObserver(
@@ -138,23 +142,23 @@ class GlicWindowController : public views::WidgetObserver {
     raw_ptr<views::Widget> widget_;
   };
 
-  // If the widget is in snapping distance of a browser's glic button, it snaps
-  // glic to the top right of the browser's glic button.
-  void HandleBrowserPinning(views::Widget* widget);
+  // If `widget` is within attachment distance of a browser window's glic
+  // button, attach the glic window to the button's position.
+  void HandleAttachmentToBrowserWindows(views::Widget* widget);
 
-  // When glic is unpinned, reparent it to an empty holder Widget. Initializes
-  // the empty holder widget if it hasn't been created yet.
+  // Reparents the glic window to an empty holder Widget when in a detached
+  // state. Initializes the holder widget if it hasn't been created yet.
   void MaybeCreateHolderWindowAndReparent();
 
-  // Moves glic view to the pin target of the specified browser. Animate
-  // determines if the move to the pin target is animated or not.
-  void MoveToBrowserPinTarget(Browser* browser, bool animate);
+  // Updates the position of the glic window to that of the glic button of
+  // `browser`'s window. This position change is animated if `animate` is true.
+  void MovePositionToBrowserGlicButton(Browser* browser, bool animate);
 
   void NotifyIfPanelStateChanged();
   mojom::PanelState ComputePanelState() const;
 
-  PinnedTargetWidgetObserver pinned_target_widget_observer_{this};
-  base::WeakPtr<Browser> pinned_browser_;
+  AttachedTargetWidgetObserver attached_target_widget_observer_{this};
+  base::WeakPtr<Browser> attached_browser_;
 
   // Notifies subscribers of a change to the window activation.
   void NotifyWindowActivationChanged(bool active);
@@ -162,12 +166,12 @@ class GlicWindowController : public views::WidgetObserver {
   // List of callbacks to be notified when window activation has changed.
   base::RepeatingCallbackList<void(bool)> window_activation_callback_list_;
 
-  // Empty holder widget to reparent to when unpinned.
+  // Empty holder widget to reparent to when detached.
   std::unique_ptr<views::Widget> holder_widget_;
 
   const raw_ptr<Profile> profile_;
-  views::UniqueWidgetPtr widget_;
-  bool widget_visible_ = false;
+  views::UniqueWidgetPtr glic_window_widget_;
+  bool glic_window_widget_visible_ = false;
 
   // Used to monitor key and mouse events from native window.
   std::unique_ptr<WindowEventObserver> window_event_observer_;
