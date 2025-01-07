@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_CHROMEOS_MAGIC_BOOST_MAGIC_BOOST_METRICS_H_
-#define CHROME_BROWSER_UI_CHROMEOS_MAGIC_BOOST_MAGIC_BOOST_METRICS_H_
+#ifndef CHROME_BROWSER_UI_ASH_MAGIC_BOOST_MAGIC_BOOST_METRICS_H_
+#define CHROME_BROWSER_UI_ASH_MAGIC_BOOST_MAGIC_BOOST_METRICS_H_
 
 #include "chromeos/crosapi/mojom/magic_boost.mojom.h"
 
@@ -39,4 +39,4 @@ void RecordOptInCardActionMetrics(OptInFeatures opt_in_features,
 
 }  // namespace chromeos::magic_boost
 
-#endif  // CHROME_BROWSER_UI_CHROMEOS_MAGIC_BOOST_MAGIC_BOOST_METRICS_H_
+#endif  // CHROME_BROWSER_UI_ASH_MAGIC_BOOST_MAGIC_BOOST_METRICS_H_

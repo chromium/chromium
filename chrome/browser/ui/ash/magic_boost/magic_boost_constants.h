@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_CHROMEOS_MAGIC_BOOST_MAGIC_BOOST_CONSTANTS_H_
-#define CHROME_BROWSER_UI_CHROMEOS_MAGIC_BOOST_MAGIC_BOOST_CONSTANTS_H_
+#ifndef CHROME_BROWSER_UI_ASH_MAGIC_BOOST_MAGIC_BOOST_CONSTANTS_H_
+#define CHROME_BROWSER_UI_ASH_MAGIC_BOOST_MAGIC_BOOST_CONSTANTS_H_
 
 namespace chromeos::magic_boost {
 
@@ -17,4 +17,4 @@ enum ViewId {
 
 }  // namespace chromeos::magic_boost
 
-#endif  // CHROME_BROWSER_UI_CHROMEOS_MAGIC_BOOST_MAGIC_BOOST_CONSTANTS_H_
+#endif  // CHROME_BROWSER_UI_ASH_MAGIC_BOOST_MAGIC_BOOST_CONSTANTS_H_

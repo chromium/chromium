@@ -14,11 +14,22 @@ specific_include_rules = {
   ],
 
   ".*test.*": [
-    "+chrome/test/base",
+    "+chrome/test",
     "+chrome/browser/ui/views/tabs",
     "+components/user_education/views",
     "+components/viz/test",
     "+media",
     "+ui/message_center",
+  ],
+
+  "test_util\.*": [
+    "+ash",
+    "+chrome/browser/ash/crosapi",
+    "+chrome/browser/ui/ash",
+    "+chrome/browser/ui/browser_commands.h",
+    "+chrome/browser/ui/browser.h",
+    "+chrome/browser/ui/exclusive_access",
+    "+chrome/browser/ui/views",
+    "+chrome/test/base",
   ],
 }

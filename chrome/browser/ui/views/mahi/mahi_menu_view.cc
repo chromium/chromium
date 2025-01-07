@@ -16,7 +16,7 @@
 #include "chrome/browser/ui/ash/editor_menu/utils/pre_target_handler.h"
 #include "chrome/browser/ui/ash/editor_menu/utils/pre_target_handler_view.h"
 #include "chrome/browser/ui/ash/editor_menu/utils/utils.h"
-#include "chrome/browser/ui/chromeos/magic_boost/magic_boost_constants.h"
+#include "chrome/browser/ui/ash/magic_boost/magic_boost_constants.h"
 #include "chrome/browser/ui/views/mahi/mahi_menu_constants.h"
 #include "chromeos/components/magic_boost/public/cpp/views/experiment_badge.h"
 #include "chromeos/components/mahi/public/cpp/mahi_browser_util.h"
@@ -148,8 +148,8 @@ class MahiMenuWidget : public views::Widget {
  public:
   explicit MahiMenuWidget(views::Widget::InitParams init_params)
       : views::Widget(std::move(init_params)) {}
-  MahiMenuWidget(const Widget&) = delete;
-  MahiMenuWidget& operator=(const Widget&) = delete;
+  MahiMenuWidget(const MahiMenuWidget&) = delete;
+  MahiMenuWidget& operator=(const MahiMenuWidget&) = delete;
   ~MahiMenuWidget() override = default;
 
  protected:

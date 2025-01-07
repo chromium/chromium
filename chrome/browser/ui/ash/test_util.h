@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_CHROMEOS_TEST_UTIL_H_
-#define CHROME_BROWSER_UI_CHROMEOS_TEST_UTIL_H_
+#ifndef CHROME_BROWSER_UI_ASH_TEST_UTIL_H_
+#define CHROME_BROWSER_UI_ASH_TEST_UTIL_H_
 
 #include "ash/wm/splitview/split_view_types.h"
 #include "base/test/test_future.h"
@@ -85,4 +85,4 @@ class ChromeOSBrowserUITest : public MixinBasedInProcessBrowserTest {
   static void SetOverviewMode(bool enabled);
 };
 
-#endif  // CHROME_BROWSER_UI_CHROMEOS_TEST_UTIL_H_
+#endif  // CHROME_BROWSER_UI_ASH_TEST_UTIL_H_

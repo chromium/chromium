@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/chromeos/magic_boost/magic_boost_card_controller.h"
+#include "chrome/browser/ui/ash/magic_boost/magic_boost_card_controller.h"
 
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
@@ -11,9 +11,9 @@
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
-#include "chrome/browser/ui/chromeos/magic_boost/magic_boost_constants.h"
-#include "chrome/browser/ui/chromeos/magic_boost/magic_boost_metrics.h"
-#include "chrome/browser/ui/chromeos/magic_boost/magic_boost_opt_in_card.h"
+#include "chrome/browser/ui/ash/magic_boost/magic_boost_constants.h"
+#include "chrome/browser/ui/ash/magic_boost/magic_boost_metrics.h"
+#include "chrome/browser/ui/ash/magic_boost/magic_boost_opt_in_card.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_events_proxy.h"
 #include "chromeos/crosapi/mojom/magic_boost.mojom.h"

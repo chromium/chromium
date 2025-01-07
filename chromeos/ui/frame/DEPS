@@ -1,9 +1,6 @@
 include_rules = [
-  "+chrome/browser/ui/chromeos",
-  "+chrome/test/base",
   "+chromeos/strings/grit/chromeos_strings.h",
   "+components/user_manager",
-  "+content/public/test",
   "+third_party/skia",
   "+ui/aura",
   "+ui/base",
@@ -19,3 +16,12 @@ include_rules = [
   "+ui/views",
   "+ui/wm/public",
 ]
+
+
+specific_include_rules = {
+  ".*test.*": [
+    "+chrome/browser/ui/ash/test_util.h",
+    "+chrome/test/base",
+    "+content/public/test",
+  ]
+}

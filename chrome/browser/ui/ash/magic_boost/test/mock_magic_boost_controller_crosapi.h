@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_CHROMEOS_MAGIC_BOOST_TEST_MOCK_MAGIC_BOOST_CONTROLLER_CROSAPI_H_
-#define CHROME_BROWSER_UI_CHROMEOS_MAGIC_BOOST_TEST_MOCK_MAGIC_BOOST_CONTROLLER_CROSAPI_H_
+#ifndef CHROME_BROWSER_UI_ASH_MAGIC_BOOST_TEST_MOCK_MAGIC_BOOST_CONTROLLER_CROSAPI_H_
+#define CHROME_BROWSER_UI_ASH_MAGIC_BOOST_TEST_MOCK_MAGIC_BOOST_CONTROLLER_CROSAPI_H_
 
 #include "chromeos/crosapi/mojom/magic_boost.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -27,4 +27,4 @@ class MockMagicBoostControllerCrosapi
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_UI_CHROMEOS_MAGIC_BOOST_TEST_MOCK_MAGIC_BOOST_CONTROLLER_CROSAPI_H_
+#endif  // CHROME_BROWSER_UI_ASH_MAGIC_BOOST_TEST_MOCK_MAGIC_BOOST_CONTROLLER_CROSAPI_H_
