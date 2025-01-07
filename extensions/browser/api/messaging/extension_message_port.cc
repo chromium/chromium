@@ -159,27 +159,28 @@ class ExtensionMessagePort::FrameTracker : public content::WebContentsObserver,
   raw_ptr<ExtensionMessagePort> port_;  // Owns this FrameTracker.
 };
 
-ExtensionMessagePort::ExtensionMessagePort(
+std::unique_ptr<ExtensionMessagePort> ExtensionMessagePort::CreateForTab(
     base::WeakPtr<ChannelDelegate> channel_delegate,
     const PortId& port_id,
     const ExtensionId& extension_id,
     content::RenderFrameHost* render_frame_host,
-    bool include_child_frames)
-    : MessagePort(std::move(channel_delegate), port_id),
-      extension_id_(extension_id),
-      browser_context_(render_frame_host->GetProcess()->GetBrowserContext()),
-      frame_tracker_(new FrameTracker(this)) {
+    bool include_child_frames) {
+  auto port = std::make_unique<ExtensionMessagePort>(
+      channel_delegate, port_id, extension_id,
+      render_frame_host->GetBrowserContext(), PassKey());
+  port->frame_tracker_ = std::make_unique<FrameTracker>(port.get());
+
   content::WebContents* tab =
       content::WebContents::FromRenderFrameHost(render_frame_host);
   CHECK(tab);
-  frame_tracker_->TrackTabFrames(tab);
+  port->frame_tracker_->TrackTabFrames(tab);
   if (include_child_frames) {
     // TODO(crbug.com/40189370) We don't yet support MParch for
     // prerender so make sure `include_child_frames` is only provided for
     // primary main frames.
     CHECK(render_frame_host->IsInPrimaryMainFrame());
     render_frame_host->ForEachRenderFrameHostWithAction(
-        [tab, this](content::RenderFrameHost* render_frame_host) {
+        [tab, &port](content::RenderFrameHost* render_frame_host) {
           // RegisterFrame should only be called for frames associated with
           // `tab` and not any inner WebContents.
           if (content::WebContents::FromRenderFrameHost(render_frame_host) !=
@@ -187,12 +188,14 @@ ExtensionMessagePort::ExtensionMessagePort(
             return content::RenderFrameHost::FrameIterationAction::
                 kSkipChildren;
           }
-          RegisterFrame(render_frame_host);
+          port->RegisterFrame(render_frame_host);
           return content::RenderFrameHost::FrameIterationAction::kContinue;
         });
   } else {
-    RegisterFrame(render_frame_host);
+    port->RegisterFrame(render_frame_host);
   }
+
+  return port;
 }
 
 // static

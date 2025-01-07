@@ -48,11 +48,12 @@ struct PortContext;
 class ExtensionMessagePort : public MessagePort {
  public:
   // Create a port that is tied to frame(s) in a single tab.
-  ExtensionMessagePort(base::WeakPtr<ChannelDelegate> channel_delegate,
-                       const PortId& port_id,
-                       const ExtensionId& extension_id,
-                       content::RenderFrameHost* render_frame_host,
-                       bool include_child_frames);
+  static std::unique_ptr<ExtensionMessagePort> CreateForTab(
+      base::WeakPtr<ChannelDelegate> channel_delegate,
+      const PortId& port_id,
+      const ExtensionId& extension_id,
+      content::RenderFrameHost* render_frame_host,
+      bool include_child_frames);
 
   // Create a port that is tied to all frames and service workers of an
   // extension. Should only be used for a receiver port.
