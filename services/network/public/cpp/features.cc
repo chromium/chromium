@@ -208,12 +208,6 @@ BASE_FEATURE(kPrivateNetworkAccessPreflightShortTimeout,
              "PrivateNetworkAccessPreflightShortTimeout",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Allow potentially trustworthy same origin local network requests without
-// preflights.
-BASE_FEATURE(kLocalNetworkAccessAllowPotentiallyTrustworthySameOrigin,
-             "LocalNetworkAccessAllowPotentiallyTrustworthySameOrigin",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When kPrivateNetworkAccessPermissionPrompt is enabled, public secure websites
 // are allowed to access private insecure subresources with user's permission.
 BASE_FEATURE(kPrivateNetworkAccessPermissionPrompt,

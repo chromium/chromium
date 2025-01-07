@@ -75,9 +75,6 @@ COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE(kPrivateNetworkAccessPreflightShortTimeout);
 
 COMPONENT_EXPORT(NETWORK_CPP)
-BASE_DECLARE_FEATURE(kLocalNetworkAccessAllowPotentiallyTrustworthySameOrigin);
-
-COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE(kPrivateNetworkAccessPermissionPrompt);
 
 // If enabled, then the network service will parse the Cookie-Indices header.

@@ -8,11 +8,9 @@
 
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/transport_info.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/client_security_state.mojom-shared.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
@@ -165,10 +163,6 @@ TEST(PrivateNetworkAccessCheckerTest, CheckLoadOptionLocal) {
 
 TEST(PrivateNetworkAccessCheckerTest,
      CheckAllowedPotentiallyTrustworthySameOrigin) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kLocalNetworkAccessAllowPotentiallyTrustworthySameOrigin);
-
   base::HistogramTester histogram_tester;
 
   ResourceRequest request;
@@ -193,10 +187,6 @@ TEST(PrivateNetworkAccessCheckerTest,
 
 TEST(PrivateNetworkAccessCheckerTest,
      CheckDisallowedPotentiallyTrustworthyCrossOrigin) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kLocalNetworkAccessAllowPotentiallyTrustworthySameOrigin);
-
   base::HistogramTester histogram_tester;
 
   ResourceRequest request;
@@ -220,10 +210,6 @@ TEST(PrivateNetworkAccessCheckerTest,
 }
 
 TEST(PrivateNetworkAccessCheckerTest, CheckDisallowedUntrustworthySameOrigin) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kLocalNetworkAccessAllowPotentiallyTrustworthySameOrigin);
-
   base::HistogramTester histogram_tester;
 
   ResourceRequest request;
@@ -247,10 +233,6 @@ TEST(PrivateNetworkAccessCheckerTest, CheckDisallowedUntrustworthySameOrigin) {
 
 TEST(PrivateNetworkAccessCheckerTest,
      CheckDisallowedPotentiallyTrustworthyCrossOriginAfterResetForRedirect) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kLocalNetworkAccessAllowPotentiallyTrustworthySameOrigin);
-
   base::HistogramTester histogram_tester;
 
   ResourceRequest request;
@@ -275,10 +257,6 @@ TEST(PrivateNetworkAccessCheckerTest,
 
 TEST(PrivateNetworkAccessCheckerTest,
      CheckAllowedPotentiallyTrustworthySameOriginAfterResetForRedirect) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kLocalNetworkAccessAllowPotentiallyTrustworthySameOrigin);
-
   base::HistogramTester histogram_tester;
 
   ResourceRequest request;
