@@ -493,14 +493,12 @@ void ShortcutsBackend::InitCompleted() {
 
   ComputeDatabaseMetrics();
 
-  if (base::FeatureList::IsEnabled(omnibox::kOmniboxDeleteOldShortcuts)) {
-    main_runner_->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(
-            base::IgnoreResult(&ShortcutsBackend::DeleteOldShortcuts),
-            weak_factory_.GetWeakPtr()),
-        base::Minutes(kInitialExpirationDelayMinutes));
-  }
+  main_runner_->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          base::IgnoreResult(&ShortcutsBackend::DeleteOldShortcuts),
+          weak_factory_.GetWeakPtr()),
+      base::Minutes(kInitialExpirationDelayMinutes));
 }
 
 void ShortcutsBackend::ComputeDatabaseMetrics() {

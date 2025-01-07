@@ -139,7 +139,6 @@ BASE_DECLARE_FEATURE(kPostDelayedTaskFocusTab);
 
 // `ShortcutsProvider` features.
 BASE_DECLARE_FEATURE(kOmniboxShortcutsAndroid);
-BASE_DECLARE_FEATURE(kOmniboxDeleteOldShortcuts);
 
 // Enterprise search aggregators features.
 BASE_DECLARE_FEATURE(kEnableSearchAggregatorPolicy);
