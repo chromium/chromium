@@ -1146,18 +1146,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="MobileOmnibox.LongPressPasteAge" units="ms"
-    expires_after="2021-04-18">
-  <owner>gangwu@chromium.org</owner>
-  <owner>jdonnelly@chromium.org</owner>
-  <summary>
-    Recorded when user long presses and pastes clipboard content into omnibox.
-    The value indicates the estimated age of the clipboard.
-
-    Intended to be compared to Omnibox.ClipboardSuggestionShownAge.
-  </summary>
-</histogram>
-
 <histogram name="MobileOmnibox.PopupOpenDuration" units="ms"
     expires_after="2022-02-02">
   <owner>stkhapugin@chromium.org</owner>

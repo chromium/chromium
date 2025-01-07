@@ -2017,7 +2017,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="IMAGE" label="IMAGE from clipboard."/>
   <suffix name="TEXT" label="Text from clipboard."/>
   <suffix name="URL" label="URL from clipboard."/>
-  <affected-histogram name="MobileOmnibox.LongPressPasteAge"/>
   <affected-histogram name="MobileOmnibox.PressedClipboardSuggestionAge"/>
   <affected-histogram name="Omnibox.ClipboardSuggestionRemovedAge"/>
   <affected-histogram name="Omnibox.ClipboardSuggestionShownAge"/>
