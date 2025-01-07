@@ -86,12 +86,17 @@ std::string GetTosHost(ToS terms_type) {
         ash_switch);
   }
 
-  const char* url_path = kTermsTypeToUrlAndSwitch.at(terms_type).first;
-  if (terms_type == ToS::GOOGLE_EULA || terms_type == ToS::CROS_EULA) {
-    return base::StringPrintfNonConstexpr(
-        url_path, g_browser_process->GetApplicationLocale().c_str());
+  if (terms_type == ToS::GOOGLE_EULA) {
+    return base::StringPrintf(
+        chrome::kGoogleEulaOnlineURLPath,
+        g_browser_process->GetApplicationLocale().c_str());
   }
-  return url_path;
+  if (terms_type == ToS::CROS_EULA) {
+    return base::StringPrintf(
+        chrome::kCrosEulaOnlineURLPath,
+        g_browser_process->GetApplicationLocale().c_str());
+  }
+  return kTermsTypeToUrlAndSwitch.at(terms_type).first;
 }
 
 ConsolidatedConsentScreen::RecoveryOptInResult GetRecoveryOptInResult(
