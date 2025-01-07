@@ -1063,7 +1063,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTestExplicitParamTest,
           .Wait());
 
   // Opt out. The passkey should be removed.
-  password_manager::features_util::OptOutOfAccountStorageAndClearSettings(
+  password_manager::features_util::OptOutOfAccountStorage(
       GetProfile(0)->GetPrefs(), GetSyncService(0));
   EXPECT_TRUE(LocalPasskeysMatchChecker(kSingleProfile, IsEmpty()).Wait());
 }

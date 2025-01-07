@@ -169,10 +169,8 @@ PasswordAccountStorageUserState ComputePasswordAccountStorageUserState(
 
   if (sync_service->HasDisableReason(
           syncer::SyncService::DisableReason::DISABLE_REASON_NOT_SIGNED_IN)) {
-    // Signed out. Check if any account storage opt-in exists.
-    return ShouldShowAccountStorageReSignin(pref_service, sync_service, GURL())
-               ? PasswordAccountStorageUserState::kSignedOutAccountStoreUser
-               : PasswordAccountStorageUserState::kSignedOutUser;
+    // Signed out.
+    return PasswordAccountStorageUserState::kSignedOutUser;
   }
 
   bool saving_locally = IsDefaultPasswordStoreSet(pref_service, sync_service) &&
@@ -201,7 +199,6 @@ PasswordAccountStorageUsageLevel ComputePasswordAccountStorageUsageLevel(
   using UsageLevel = PasswordAccountStorageUsageLevel;
   switch (ComputePasswordAccountStorageUserState(pref_service, sync_service)) {
     case UserState::kSignedOutUser:
-    case UserState::kSignedOutAccountStoreUser:
     case UserState::kSignedInUser:
     case UserState::kSignedInUserSavingLocally:
       return UsageLevel::kNotUsingAccountStorage;

@@ -69,17 +69,6 @@ bool PasswordFeatureManagerImpl::IsOptedInForAccountStorage() const {
                                                    sync_service_);
 }
 
-bool PasswordFeatureManagerImpl::ShouldShowAccountStorageOptIn() const {
-  return features_util::ShouldShowAccountStorageOptIn(pref_service_,
-                                                      sync_service_);
-}
-
-bool PasswordFeatureManagerImpl::ShouldShowAccountStorageReSignin(
-    const GURL& current_page_url) const {
-  return features_util::ShouldShowAccountStorageReSignin(
-      pref_service_, sync_service_, current_page_url);
-}
-
 PasswordForm::Store PasswordFeatureManagerImpl::GetDefaultPasswordStore()
     const {
   DCHECK(pref_service_);
@@ -105,19 +94,9 @@ void PasswordFeatureManagerImpl::OptOutOfAccountStorage() {
   features_util::OptOutOfAccountStorage(pref_service_, sync_service_);
 }
 
-void PasswordFeatureManagerImpl::OptOutOfAccountStorageAndClearSettings() {
-  features_util::OptOutOfAccountStorageAndClearSettings(pref_service_,
-                                                        sync_service_);
-}
-
 void PasswordFeatureManagerImpl::SetDefaultPasswordStore(
     const PasswordForm::Store& store) {
   features_util::SetDefaultPasswordStore(pref_service_, sync_service_, store);
-}
-
-bool PasswordFeatureManagerImpl::
-    ShouldOfferOptInAndMoveToAccountStoreAfterSavingLocally() const {
-  return ShouldShowAccountStorageOptIn() && !IsDefaultPasswordStoreSet();
 }
 
 bool PasswordFeatureManagerImpl::ShouldChangeDefaultPasswordStore() const {

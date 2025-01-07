@@ -395,8 +395,7 @@ TEST_P(PasswordReceiverServiceImplTest,
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   pref_service().registry()->RegisterDictionaryPref(
       password_manager::prefs::kAccountStoragePerAccountSettings);
-  features_util::OptOutOfAccountStorageAndClearSettings(&pref_service(),
-                                                        &sync_service());
+  features_util::OptOutOfAccountStorage(&pref_service(), &sync_service());
 #else
   sync_service().GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kPasswords, false);

@@ -42,8 +42,7 @@ AccountStorageAuthHelper::~AccountStorageAuthHelper() = default;
 void AccountStorageAuthHelper::TriggerOptInReauth(
     signin_metrics::ReauthAccessPoint access_point,
     base::OnceCallback<void(ReauthSucceeded)> reauth_callback) {
-  // Reauth is only required if promos are allowed, see the predicate docs.
-  CHECK(password_manager::features_util::AreAccountStorageOptInPromosAllowed());
+  // TODO(crbug.com/369341336): Delete this class, it's unused.
 
   SigninViewController* signin_view_controller =
       signin_view_controller_getter_.Run();

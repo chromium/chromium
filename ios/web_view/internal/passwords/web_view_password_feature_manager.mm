@@ -27,15 +27,6 @@ bool WebViewPasswordFeatureManager::IsOptedInForAccountStorage() const {
       pref_service_, sync_service_);
 }
 
-bool WebViewPasswordFeatureManager::ShouldShowAccountStorageOptIn() const {
-  return false;
-}
-
-bool WebViewPasswordFeatureManager::ShouldShowAccountStorageReSignin(
-    const GURL& current_page_url) const {
-  return false;
-}
-
 password_manager::PasswordForm::Store
 WebViewPasswordFeatureManager::GetDefaultPasswordStore() const {
   // ios/web_view should never write to the profile password store.

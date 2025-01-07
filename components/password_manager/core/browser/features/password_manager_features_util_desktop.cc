@@ -98,48 +98,6 @@ class ScopedAccountStorageSettingsUpdate {
 
 }  // namespace
 
-bool ShouldShowAccountStorageOptIn(const PrefService* pref_service,
-                                   const syncer::SyncService* sync_service) {
-  if (!AreAccountStorageOptInPromosAllowed()) {
-    return false;
-  }
-
-  // Show the opt-in if the user is eligible, but not yet opted in.
-  return internal::IsUserEligibleForAccountStorage(pref_service,
-                                                   sync_service) &&
-         !IsOptedInForAccountStorage(pref_service, sync_service);
-}
-
-bool ShouldShowAccountStorageReSignin(const PrefService* pref_service,
-                                      const syncer::SyncService* sync_service,
-                                      const GURL& current_page_url) {
-  if (!AreAccountStorageOptInPromosAllowed()) {
-    return false;
-  }
-
-  // Checks that the sync_service is not null and the feature is enabled.
-  // IsUserEligibleForAccountStorage() doesn't fit because it's false for
-  // signed-out users.
-  if (!internal::CanAccountStorageBeEnabled(pref_service, sync_service)) {
-    return false;  // Opt-in wouldn't work here, so don't show the re-signin.
-  }
-
-  // In order to show a re-signin prompt, no user may be logged in.
-  if (!sync_service->HasDisableReason(
-          syncer::SyncService::DisableReason::DISABLE_REASON_NOT_SIGNED_IN)) {
-    return false;
-  }
-
-  if (gaia::HasGaiaSchemeHostPort(current_page_url)) {
-    return false;
-  }
-
-  // Show the opt-in if any known previous user opted into using the account
-  // storage before and might want to access it again.
-  return sync_service->GetUserSettings()
-             ->GetNumberOfAccountsWithPasswordsSelected() > 0;
-}
-
 PasswordForm::Store GetDefaultPasswordStore(
     const PrefService* pref_service,
     const syncer::SyncService* sync_service) {
@@ -246,30 +204,6 @@ void OptOutOfAccountStorage(PrefService* pref_service,
       .SetDefaultStore(PasswordForm::Store::kProfileStore);
 }
 
-void OptOutOfAccountStorageAndClearSettings(PrefService* pref_service,
-                                            syncer::SyncService* sync_service) {
-  DCHECK(pref_service);
-  DCHECK(sync_service);
-  CHECK(CanCreateAccountStore(pref_service));
-
-  const GaiaId gaia_id = sync_service->GetAccountInfo().gaia;
-  if (gaia_id.empty()) {
-    // In rare cases, it could happen that the account went away since the
-    // opt-out UI was triggered.
-    return;
-  }
-
-  // Note SyncUserSettings::SetSelectedType() won't clear the gaia id hash
-  // but that's not required here.
-  syncer::SyncUserSettings* sync_user_settings =
-      sync_service->GetUserSettings();
-  sync_user_settings->SetSelectedType(syncer::UserSelectableType::kPasswords,
-                                      false);
-  ScopedAccountStorageSettingsUpdate(pref_service,
-                                     GaiaIdHash::FromGaiaId(gaia_id))
-      .ClearAllSettings();
-}
-
 void SetDefaultPasswordStore(PrefService* pref_service,
                              const syncer::SyncService* sync_service,
                              PasswordForm::Store default_store) {
@@ -323,18 +257,6 @@ bool ShouldShowAccountStorageSettingToggle(
     const PrefService* pref_service,
     const syncer::SyncService* sync_service) {
   return internal::IsUserEligibleForAccountStorage(pref_service, sync_service);
-}
-
-bool AreAccountStorageOptInPromosAllowed() {
-  // Disallow promos when kExplicitBrowserSigninUIOnDesktop is on.
-  // - For users who went through explicit sign-in, account storage is enabled
-  //   by default. If they bothered to disable this feature, they should not be
-  //   spammed into re-enabling it.
-  // - Users who went through implicit sign-in will be migrated to explicit
-  //   sign-in in the future, at which point the above applies. In the meantime,
-  //   it's not worth keeping the promos UI. Most users in this group have seen
-  //   the promo by now and have accepted *if* they want the feature.
-  return !switches::IsExplicitBrowserSigninUIOnDesktopEnabled();
 }
 
 // Note: See also password_manager_features_util_common.cc for shared

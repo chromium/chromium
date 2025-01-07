@@ -1078,8 +1078,8 @@ IN_PROC_BROWSER_TEST_F(
       pref_service, sync_service));
 
   // Opt out of account storage.
-  password_manager::features_util::OptOutOfAccountStorageAndClearSettings(
-      pref_service, sync_service);
+  password_manager::features_util::OptOutOfAccountStorage(pref_service,
+                                                          sync_service);
 
   // Check that the password account storage is disabled.
   EXPECT_FALSE(password_manager::features_util::IsOptedInForAccountStorage(

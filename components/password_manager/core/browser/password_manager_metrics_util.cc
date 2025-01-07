@@ -67,9 +67,6 @@ std::string GetPasswordAccountStorageUserStateHistogramSuffix(
         kSignedOutUser:
       return "SignedOutUser";
     case password_manager::features_util::PasswordAccountStorageUserState::
-        kSignedOutAccountStoreUser:
-      return "SignedOutAccountStoreUser";
-    case password_manager::features_util::PasswordAccountStorageUserState::
         kSignedInUser:
       return "SignedInUser";
     case password_manager::features_util::PasswordAccountStorageUserState::

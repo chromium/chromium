@@ -159,8 +159,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".SignedInUserSavingLocally"
       summary="signed-in user, not opted in to the account storage, and has
                explicitly chosen to save passwords only on the device."/>
-  <variant name=".SignedOutAccountStoreUser"
-      summary="signed-out user, but an account storage opt-in exists."/>
   <variant name=".SignedOutUser"
       summary="signed-out user (and no account storage opt-in exists)."/>
   <variant name=".SyncUser" summary="syncing user."/>
