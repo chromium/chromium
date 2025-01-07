@@ -6826,7 +6826,7 @@
   {
     "name": "pdf-ink2",
     "owners": [ "andyphan@chromium.org", "awscreen@chromium.org", "thestig@chromium.org" ],
-    "expiry_milestone": 134
+    "expiry_milestone": 140
   },
   {
     "name": "pdf-oopif",
