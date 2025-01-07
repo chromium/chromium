@@ -298,7 +298,7 @@ struct GPU_EXPORT GPUInfo {
     // unique relative its vendor, not to each other. If there are more than one
     // of the same exact graphics card, they all have the same vendor id and
     // device id but different LUIDs.
-    CHROME_LUID luid;
+    CHROME_LUID luid = {};
 #endif  // BUILDFLAG(IS_WIN)
 
     // The 64-bit ID used for GPU selection by ANGLE_platform_angle_device_id.
