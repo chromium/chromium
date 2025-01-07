@@ -42,9 +42,21 @@ class DesktopPaymentsWindowManagerTestApi {
     return window_manager_->vcn_3ds_context_;
   }
 
+  const std::optional<PaymentsWindowManager::BnplContext>& GetBnplContext() {
+    return window_manager_->bnpl_context_;
+  }
+
   bool NoOngoingFlow() {
     return window_manager_->flow_type_ ==
            DesktopPaymentsWindowManager::FlowType::kNoFlow;
+  }
+
+  GURL GetMostRecentUrlNavigation() {
+    return window_manager_->most_recent_url_navigation_;
+  }
+
+  void SetPopupClosedClosure(base::RepeatingClosure popup_closed_closure) {
+    window_manager_->popup_closed_closure_for_testing_ = popup_closed_closure;
   }
 
  private:

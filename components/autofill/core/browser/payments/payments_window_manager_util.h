@@ -29,6 +29,14 @@ base::expected<PaymentsWindowManager::RedirectCompletionResult,
 ParseUrlForVcn3ds(const GURL& url,
                   const Vcn3dsChallengeOptionMetadata& metadata);
 
+// Parses the URL for BNPL, which is set in `url`. `bnpl_context` contains the
+// expected URL's for a success or failure in the BNPL pop-up flow. If `url`
+// does not match any of them, it is assumed the flow has not yet completed.
+// This function will return the flow status for `url` inside of the pop-up.
+PaymentsWindowManager::BnplPopupStatus ParseUrlForBnpl(
+    const GURL& url,
+    const PaymentsWindowManager::BnplContext& bnpl_context);
+
 // Creates UnmaskRequestDetails specific to VCN 3DS. `client` is the
 // AutofillClient associated with the original browser window. `context` is the
 // context that was set when the flow was initialized, and

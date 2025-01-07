@@ -52,6 +52,7 @@ class DesktopPaymentsWindowManager : public PaymentsWindowManager,
 
   // PaymentsWindowManager:
   void InitVcn3dsAuthentication(Vcn3dsContext context) override;
+  void InitBnplFlow(BnplContext context) override;
 
   // content::WebContentsObserver:
   void DidFinishNavigation(
@@ -70,7 +71,8 @@ class DesktopPaymentsWindowManager : public PaymentsWindowManager,
   enum class FlowType {
     kNoFlow = 0,
     kVcn3ds = 1,
-    kMaxValue = kVcn3ds,
+    kBnpl = 2,
+    kMaxValue = kBnpl,
   };
 
   // Creates a pop-up for `flow_type_`, with an initial URL of `url` and size of
@@ -82,8 +84,15 @@ class DesktopPaymentsWindowManager : public PaymentsWindowManager,
   // kVcn3ds.
   void OnDidFinishNavigationForVcn3ds();
 
+  // Triggered when a pop-up navigation has finished, and the `flow_type_` is
+  // kBnpl.
+  void OnDidFinishNavigationForBnpl();
+
   // Triggered when a pop-up is destroyed, and the `flow_type_` is kVcn3ds.
   void OnWebContentsDestroyedForVcn3ds();
+
+  // Triggered when a pop-up is destroyed, and the `flow_type_` is kVcn3ds.
+  void OnWebContentsDestroyedForBnpl();
 
   // Initiates the second UnmaskCardRequest in the VCN 3DS flow to attempt to
   // retrieve the virtual card. This method is run once risk data is loaded for
@@ -121,9 +130,22 @@ class DesktopPaymentsWindowManager : public PaymentsWindowManager,
   // Only present if `flow_type_` is `kVcn3ds`.
   std::optional<Vcn3dsContext> vcn_3ds_context_;
 
+  // Only present if `flow_type_` is `kBnpl`.
+  std::optional<BnplContext> bnpl_context_;
+
   // The timestamp for when the VCN 3DS pop-up was shown to the user. Used for
   // logging purposes.
   std::optional<base::TimeTicks> vcn_3ds_popup_shown_timestamp_;
+
+  // Set on every navigation inside of the observed pop-up. Used on pop-up
+  // destruction to understand the reason for destruction, and to notify the
+  // caller. This class variable is required because at the point where the most
+  // recent URL navigation needs to be known, accessing the observed web
+  // contents is unsafe. Thus it is preferred to cache this earlier and read
+  // from it when needed.
+  // TODO(crbug.com/388088113): Currently, only the BNPL flow uses this.
+  // Refactor the VCN 3DS flow to also use this.
+  GURL most_recent_url_navigation_;
 
   // The type of flow that is currently ongoing. Set when a flow is initiated.
   FlowType flow_type_ = FlowType::kNoFlow;
@@ -135,6 +157,9 @@ class DesktopPaymentsWindowManager : public PaymentsWindowManager,
   // previously set) when the dialog is triggered.
   std::unique_ptr<PaymentsWindowUserConsentDialogControllerImpl>
       payments_window_user_consent_dialog_controller_;
+
+  // Used in tests to notify the test infrastructure that the pop-up has closed.
+  base::RepeatingClosure popup_closed_closure_for_testing_;
 
 #if BUILDFLAG(IS_LINUX)
   base::ScopedObservation<BrowserList, BrowserListObserver> scoped_observation_{
