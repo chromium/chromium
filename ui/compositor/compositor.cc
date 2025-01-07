@@ -542,6 +542,15 @@ void Compositor::SetBackgroundColor(SkColor color) {
 void Compositor::SetVisible(bool visible) {
   const bool changed = visible != IsVisible();
   if (changed) {
+    // Since the compositor won't draw any frames when invisible, copy requests
+    // for surfaces embedded by this compositor won't get serviced. This is
+    // because copy requests are handled as a part of drawing a new frame.
+    // Trigger an immediate draw to service pending copy requests before marking
+    // the compositor invisible.
+    if (!visible && display_private_ && !pending_surface_copies_.empty()) {
+      display_private_->ForceImmediateDrawAndSwapIfPossible();
+    }
+
     observer_list_.Notify(&CompositorObserver::OnCompositorVisibilityChanging,
                           this, visible);
   }
@@ -1019,5 +1028,26 @@ void Compositor::OnSetPreferredRefreshRate(float refresh_rate) {
                         refresh_rate);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+Compositor::ScopedKeepSurfaceAliveCallback
+Compositor::TakeScopedKeepSurfaceAliveCallback(
+    const viz::SurfaceId& surface_id) {
+  DCHECK(surface_id.is_valid());
+  CHECK(!pending_surface_copies_.contains(pending_surface_copy_id_));
+  pending_surface_copies_[pending_surface_copy_id_] =
+      host_->CreateScopedKeepSurfaceAlive(surface_id);
+  PendingSurfaceCopyId pending_surface_copy_id(pending_surface_copy_id_);
+  ++(*pending_surface_copy_id_);
+  return base::ScopedClosureRunner(base::BindOnce(
+      &Compositor::RemoveScopedKeepSurfaceAlive, weak_ptr_factory_.GetWeakPtr(),
+      std::move(pending_surface_copy_id)));
+}
+
+void Compositor::RemoveScopedKeepSurfaceAlive(
+    const PendingSurfaceCopyId& scoped_keep_surface_alive_id) {
+  CHECK(pending_surface_copies_.find(scoped_keep_surface_alive_id) !=
+        pending_surface_copies_.end());
+  pending_surface_copies_.erase(scoped_keep_surface_alive_id);
+}
 
 }  // namespace ui

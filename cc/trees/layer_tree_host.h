@@ -113,6 +113,20 @@ class CC_EXPORT ScopedPauseRendering {
   base::WeakPtr<LayerTreeHost> host_;
 };
 
+// A scoped object to keep a `viz::Surface` referenced, such that a
+// `CopyOutputRequest` can be made against it, even after the original
+// `SurfaceLayer` is destroyed.
+class CC_EXPORT ScopedKeepSurfaceAlive {
+ public:
+  explicit ScopedKeepSurfaceAlive(LayerTreeHost* host,
+                                  const viz::SurfaceId& surface_id);
+  ~ScopedKeepSurfaceAlive();
+
+ private:
+  const base::WeakPtr<LayerTreeHost> host_;
+  const viz::SurfaceRange range_;
+};
+
 class CC_EXPORT LayerTreeHost : public MutatorHostClient {
  public:
   struct CC_EXPORT InitParams {
@@ -269,6 +283,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // LayerTreeFrameSink, if any. Can be safely called any time, but the
   // compositor should not be visible.
   std::unique_ptr<LayerTreeFrameSink> ReleaseLayerTreeFrameSink();
+  std::unique_ptr<ScopedKeepSurfaceAlive> CreateScopedKeepSurfaceAlive(
+      const viz::SurfaceId& surface_id);
 
   // Frame Scheduling (main and compositor frames) requests -------
 
@@ -986,6 +1002,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   friend class LayerTreeTest;
   friend class ScopedDeferMainFrameUpdate;
   friend class ScopedPauseRendering;
+  friend class ScopedKeepSurfaceAlive;
 
   // This is the number of consecutive frames in which we want the content to be
   // free of slow-paths before toggling the flag.

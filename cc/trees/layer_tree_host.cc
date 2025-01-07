@@ -540,6 +540,24 @@ std::unique_ptr<LayerTreeFrameSink> LayerTreeHost::ReleaseLayerTreeFrameSink() {
   return std::move(current_layer_tree_frame_sink_);
 }
 
+ScopedKeepSurfaceAlive::ScopedKeepSurfaceAlive(LayerTreeHost* host,
+                                               const viz::SurfaceId& surface_id)
+    : host_(host->weak_ptr_factory_.GetWeakPtr()),
+      range_(surface_id, surface_id) {
+  host_->AddSurfaceRange(range_);
+}
+
+ScopedKeepSurfaceAlive::~ScopedKeepSurfaceAlive() {
+  if (host_) {
+    host_->RemoveSurfaceRange(range_);
+  }
+}
+
+std::unique_ptr<ScopedKeepSurfaceAlive>
+LayerTreeHost::CreateScopedKeepSurfaceAlive(const viz::SurfaceId& surface_id) {
+  return std::make_unique<ScopedKeepSurfaceAlive>(this, surface_id);
+}
+
 void LayerTreeHost::RequestNewLayerTreeFrameSink() {
   DCHECK(IsMainThread());
   client_->RequestNewLayerTreeFrameSink();

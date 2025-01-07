@@ -528,6 +528,16 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   void OnSetPreferredRefreshRate(float refresh_rate);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+  // While there are outstanding `ScopedKeepSurfaceAlive`, Compositor will
+  // attempt to ensure any pending `viz::CopyOutputRequest` in any part of the
+  // compositor surface tree are fulfilled in a timely manner. `surface_id`
+  // corresponds to the `Surface` being copied. The GPU contents of this
+  // `surface_id` are kept alive as long as there is an outstanding
+  // `ScopedKeepSurfaceAlive` for it.
+  using ScopedKeepSurfaceAliveCallback = base::ScopedClosureRunner;
+  ScopedKeepSurfaceAliveCallback TakeScopedKeepSurfaceAliveCallback(
+      const viz::SurfaceId& surface_id);
+
  private:
   friend class base::RefCounted<Compositor>;
   friend class TotalAnimationThroughputReporter;
@@ -541,6 +551,17 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
       const cc::FrameSequenceMetrics::CustomReportData& data);
 
   void MaybeUpdateObserveBeginFrame();
+
+  // Tracks a list of pending `viz::CopyOutputRequest`s.
+  using PendingSurfaceCopyId =
+      base::StrongAlias<struct PendingSurfaceCopyIdTag, uint32_t>;
+  void RemoveScopedKeepSurfaceAlive(
+      const PendingSurfaceCopyId& scoped_keep_surface_alive_id);
+
+  PendingSurfaceCopyId pending_surface_copy_id_ = PendingSurfaceCopyId(0u);
+  base::flat_map<PendingSurfaceCopyId,
+                 std::unique_ptr<cc::ScopedKeepSurfaceAlive>>
+      pending_surface_copies_;
 
   gfx::Size size_;
 

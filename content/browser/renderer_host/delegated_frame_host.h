@@ -244,6 +244,7 @@ class CONTENT_EXPORT DelegatedFrameHost
   void CopyFromCompositingSurfaceInternal(
       const gfx::Rect& src_subrect,
       const gfx::Size& output_size,
+      const viz::SurfaceId& surface_id,
       viz::CopyOutputRequest::ResultFormat format,
       viz::CopyOutputRequest::ResultDestination destination,
       viz::CopyOutputRequest::CopyOutputRequestCallback callback);

@@ -144,24 +144,40 @@ void DelegatedFrameHost::CopyFromCompositingSurface(
     const gfx::Rect& src_subrect,
     const gfx::Size& output_size,
     base::OnceCallback<void(const SkBitmap&)> callback) {
+  const viz::SurfaceId surface_id(frame_sink_id_, local_surface_id_);
+
+  ui::Compositor::ScopedKeepSurfaceAliveCallback keep_surface_alive;
+
+  if (compositor_) {
+    keep_surface_alive =
+        compositor_->TakeScopedKeepSurfaceAliveCallback(surface_id);
+  }
+
   CopyFromCompositingSurfaceInternal(
-      src_subrect, output_size, viz::CopyOutputRequest::ResultFormat::RGBA,
+      src_subrect, output_size, surface_id,
+      viz::CopyOutputRequest::ResultFormat::RGBA,
       viz::CopyOutputRequest::ResultDestination::kSystemMemory,
       base::BindOnce(
           [](base::OnceCallback<void(const SkBitmap&)> callback,
+             ui::Compositor::ScopedKeepSurfaceAliveCallback keep_alive,
              std::unique_ptr<viz::CopyOutputResult> result) {
+            if (keep_alive) {
+              std::move(keep_alive).RunAndReset();
+            }
             auto scoped_bitmap = result->ScopedAccessSkBitmap();
             std::move(callback).Run(scoped_bitmap.GetOutScopedBitmap());
           },
-          std::move(callback)));
+          std::move(callback), std::move(keep_surface_alive)));
 }
 
 void DelegatedFrameHost::CopyFromCompositingSurfaceAsTexture(
     const gfx::Rect& src_subrect,
     const gfx::Size& output_size,
     viz::CopyOutputRequest::CopyOutputRequestCallback callback) {
+  const viz::SurfaceId surface_id(frame_sink_id_, local_surface_id_);
   CopyFromCompositingSurfaceInternal(
-      src_subrect, output_size, viz::CopyOutputRequest::ResultFormat::RGBA,
+      src_subrect, output_size, surface_id,
+      viz::CopyOutputRequest::ResultFormat::RGBA,
       viz::CopyOutputRequest::ResultDestination::kNativeTextures,
       std::move(callback));
 }
@@ -169,6 +185,7 @@ void DelegatedFrameHost::CopyFromCompositingSurfaceAsTexture(
 void DelegatedFrameHost::CopyFromCompositingSurfaceInternal(
     const gfx::Rect& src_subrect,
     const gfx::Size& output_size,
+    const viz::SurfaceId& surface_id,
     viz::CopyOutputRequest::ResultFormat format,
     viz::CopyOutputRequest::ResultDestination destination,
     viz::CopyOutputRequest::CopyOutputRequestCallback callback) {
@@ -212,8 +229,7 @@ void DelegatedFrameHost::CopyFromCompositingSurfaceInternal(
       base::SingleThreadTaskRunner::GetCurrentDefault());
 
   CHECK(host_frame_sink_manager_);
-  host_frame_sink_manager_->RequestCopyOfOutput(
-      viz::SurfaceId(frame_sink_id_, local_surface_id_), std::move(request));
+  host_frame_sink_manager_->RequestCopyOfOutput(surface_id, std::move(request));
 }
 
 void DelegatedFrameHost::SetFrameEvictionStateAndNotifyObservers(
