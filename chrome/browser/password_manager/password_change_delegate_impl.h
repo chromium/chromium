@@ -27,13 +27,15 @@ class PasswordChangeDelegateImpl
       public PasswordChangeDelegate,
       public content::WebContentsObserver {
  public:
-  PasswordChangeDelegateImpl(
-      GURL change_password_url,
-      std::u16string username,
-      std::u16string password,
-      content::WebContents* originator,
-      base::RepeatingCallback<
-          content::WebContents*(const GURL&, content::WebContents*)> callback);
+  using OpenPasswordChangeTabCallback =
+      base::RepeatingCallback<content::WebContents*(const GURL&,
+                                                    content::WebContents*)>;
+
+  PasswordChangeDelegateImpl(GURL change_password_url,
+                             std::u16string username,
+                             std::u16string password,
+                             content::WebContents* originator,
+                             OpenPasswordChangeTabCallback callback);
   ~PasswordChangeDelegateImpl() override;
 
   PasswordChangeDelegateImpl(const PasswordChangeDelegateImpl&) = delete;
@@ -56,9 +58,13 @@ class PasswordChangeDelegateImpl
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   const GURL& GetChangePasswordUrl() const override;
+  void OnPrivacyNoticeAccepted() override;
 
   // content::WebContentsObserver Impl
   void WebContentsDestroyed() override;
+
+  // Opens the tab for password change and observes it.
+  void OpenPasswordChangeTab();
 
   // Updates `current_state_` and notifies `observers_`.
   void UpdateState(State new_state);
@@ -68,6 +74,8 @@ class PasswordChangeDelegateImpl
       base::WeakPtr<password_manager::PasswordManagerDriver> driver);
   void ChangePasswordFormFilled(const autofill::FormData& submitted_form);
 
+  bool IsPrivacyNoticeAcknowledged() const;
+
   const GURL change_password_url_;
   const std::u16string username_;
   const std::u16string original_password_;
@@ -75,6 +83,7 @@ class PasswordChangeDelegateImpl
   std::u16string generated_password_;
 
   base::WeakPtr<content::WebContents> originator_;
+  OpenPasswordChangeTabCallback open_password_change_tab_callback_;
   base::WeakPtr<content::WebContents> executor_;
 
   State current_state_ = State::kWaitingForChangePasswordForm;

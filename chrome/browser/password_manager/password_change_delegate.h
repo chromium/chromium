@@ -19,6 +19,9 @@ class PasswordChangeDelegate {
  public:
   // Internal state of a password change flow.
   enum class State {
+    // Waiting for the user to accept privacy notice.
+    kWaitingForAgreement,
+
     // Delegate is waiting for change password form to appear.
     kWaitingForChangePasswordForm,
 
@@ -68,6 +71,8 @@ class PasswordChangeDelegate {
 
   // Returns the change password url.
   virtual const GURL& GetChangePasswordUrl() const = 0;
+
+  virtual void OnPrivacyNoticeAccepted() = 0;
 
   virtual base::WeakPtr<PasswordChangeDelegate> AsWeakPtr() = 0;
 };

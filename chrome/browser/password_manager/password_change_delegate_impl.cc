@@ -5,10 +5,14 @@
 #include "chrome/browser/password_manager/password_change_delegate_impl.h"
 
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/generation/password_generator.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
 #include "ui/base/window_open_disposition.h"
@@ -67,14 +71,28 @@ PasswordChangeDelegateImpl::PasswordChangeDelegateImpl(
     std::u16string username,
     std::u16string password,
     content::WebContents* originator,
-    base::RepeatingCallback<
-        content::WebContents*(const GURL&, content::WebContents*)> callback)
+    OpenPasswordChangeTabCallback callback)
     : change_password_url_(std::move(change_password_url)),
       username_(std::move(username)),
       original_password_(std::move(password)),
-      originator_(originator->GetWeakPtr()) {
+      originator_(originator->GetWeakPtr()),
+      open_password_change_tab_callback_(std::move(callback)) {
+  UpdateState(IsPrivacyNoticeAcknowledged()
+                  ? PasswordChangeDelegate::State::kWaitingForChangePasswordForm
+                  : PasswordChangeDelegate::State::kWaitingForAgreement);
+  if (GetCurrentState() ==
+      PasswordChangeDelegate::State::kWaitingForChangePasswordForm) {
+    OpenPasswordChangeTab();
+  }
+}
+
+PasswordChangeDelegateImpl::~PasswordChangeDelegateImpl() = default;
+
+void PasswordChangeDelegateImpl::OpenPasswordChangeTab() {
+  CHECK(originator_);
   content::WebContents* new_tab =
-      std::move(callback).Run(change_password_url_, originator);
+      std::move(open_password_change_tab_callback_)
+          .Run(change_password_url_, originator_.get());
   if (new_tab) {
     executor_ = new_tab->GetWeakPtr();
     GetFormCache(new_tab).SetObserver(weak_ptr_factory_.GetWeakPtr());
@@ -82,8 +100,6 @@ PasswordChangeDelegateImpl::PasswordChangeDelegateImpl(
     Observe(new_tab);
   }
 }
-
-PasswordChangeDelegateImpl::~PasswordChangeDelegateImpl() = default;
 
 void PasswordChangeDelegateImpl::OnPasswordFormParsed(
     PasswordFormManager* form_manager) {
@@ -152,6 +168,15 @@ const GURL& PasswordChangeDelegateImpl::GetChangePasswordUrl() const {
   return change_password_url_;
 }
 
+void PasswordChangeDelegateImpl::OnPrivacyNoticeAccepted() {
+  Profile* profile =
+      Profile::FromBrowserContext(originator_->GetBrowserContext());
+  profile->GetPrefs()->SetBoolean(
+      password_manager::prefs::kPasswordChangeFlowNoticeAgreement, true);
+  UpdateState(PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
+  OpenPasswordChangeTab();
+}
+
 void PasswordChangeDelegateImpl::UpdateState(
     PasswordChangeDelegate::State new_state) {
   if (new_state != current_state_) {
@@ -191,6 +216,13 @@ void PasswordChangeDelegateImpl::FillChangePasswordForm(
 
   form_manager_->PresaveGeneratedPassword(form.form_data, generated_password_);
   UpdateState(PasswordChangeDelegate::State::kChangingPassword);
+}
+
+bool PasswordChangeDelegateImpl::IsPrivacyNoticeAcknowledged() const {
+  Profile* profile =
+      Profile::FromBrowserContext(originator_->GetBrowserContext());
+  return profile->GetPrefs()->GetBoolean(
+      password_manager::prefs::kPasswordChangeFlowNoticeAgreement);
 }
 
 base::WeakPtr<PasswordChangeDelegate> PasswordChangeDelegateImpl::AsWeakPtr() {

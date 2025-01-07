@@ -21,6 +21,8 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -86,6 +88,11 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
     PasswordManagerBrowserTestBase::SetUpOnMainThread();
   }
 
+  void SetPrivacyNoticeAcceptedPref() {
+    browser()->profile()->GetPrefs()->SetBoolean(
+        password_manager::prefs::kPasswordChangeFlowNoticeAgreement, true);
+  }
+
   MockAffiliationService* affiliation_service() {
     return static_cast<MockAffiliationService*>(
         AffiliationServiceFactory::GetForProfile(browser()->profile()));
@@ -112,6 +119,7 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
                        StartingPasswordChangeOpensNewTab) {
+  SetPrivacyNoticeAcceptedPref();
   TabStripModel* tab_strip = browser()->tab_strip_model();
   // Assert that there is a single tab.
   ASSERT_EQ(1, tab_strip->count());
@@ -145,7 +153,42 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
+                       DoesNotOpenNewTabUntilPrivacyNoticeAccepted) {
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  // Assert that there is a single tab.
+  ASSERT_EQ(1, tab_strip->count());
+  ASSERT_FALSE(
+      password_change_service()->GetPasswordChangeDelegate(WebContents()));
+
+  GURL main_url("https://example.com/");
+  GURL change_pwd_url("https://example.com/password/");
+  EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
+      .WillOnce(testing::Return(change_pwd_url));
+
+  password_change_service()->StartPasswordChange(main_url, u"test", u"password",
+                                                 WebContents());
+
+  // No new tab should be opened until the privacy notice acceptance.
+  ASSERT_EQ(1, tab_strip->count());
+  auto* delegate = password_change_service()->GetPasswordChangeDelegate(
+      browser()->tab_strip_model()->GetWebContentsAt(0));
+  EXPECT_EQ(delegate->GetCurrentState(),
+            PasswordChangeDelegate::State::kWaitingForAgreement);
+
+  // Privacy notice accepted.
+  delegate->OnPrivacyNoticeAccepted();
+
+  // Verify a new tab is added, although the focus remained on the initial tab.
+  ASSERT_EQ(2, tab_strip->count());
+  // Verify a new tab is opened with a change pwd url.
+  EXPECT_EQ(change_pwd_url, tab_strip->GetWebContentsAt(1)->GetURL());
+  EXPECT_EQ(delegate->GetCurrentState(),
+            PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
                        ChangePasswordFormIsFilledAutomatically) {
+  SetPrivacyNoticeAcceptedPref();
   GURL main_url("https://example.com/");
 
   EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
@@ -173,6 +216,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, PasswordChangeStateUpdated) {
   MockPasswordChangeDelegateObserver observer;
 
+  SetPrivacyNoticeAcceptedPref();
   GURL main_url("https://example.com/");
   EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
       .WillOnce(testing::Return(embedded_test_server()->GetURL(
@@ -209,6 +253,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, PasswordChangeStateUpdated) {
 // TODO(crbug.com/382703186): Fix flakiness and re-enable.
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
                        DISABLED_GeneratedPasswordIsPreSaved) {
+  SetPrivacyNoticeAcceptedPref();
   GURL main_url("https://example.com/");
 
   EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
@@ -233,6 +278,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
 // Verify that after password change is stopped, password change delegate is not
 // returned.
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, StopPasswordChange) {
+  SetPrivacyNoticeAcceptedPref();
   GURL main_url("https://example.com/");
 
   EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
@@ -255,6 +301,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, StopPasswordChange) {
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, NewPasswordIsSaved) {
+  SetPrivacyNoticeAcceptedPref();
   GURL main_url("https://example.com/");
   EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
       .WillOnce(testing::Return(embedded_test_server()->GetURL(
@@ -291,6 +338,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, NewPasswordIsSaved) {
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OldPasswordIsUpdated) {
+  SetPrivacyNoticeAcceptedPref();
   password_manager::PasswordStoreInterface* password_store =
       ProfilePasswordStoreFactory::GetForProfile(
           browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
@@ -336,6 +384,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OldPasswordIsUpdated) {
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
                        SignInCheckBubgehbleIsHiddenWhenStateIsUpdated) {
+  SetPrivacyNoticeAcceptedPref();
   GURL main_url("https://example.com/");
   GURL change_password_url =
       embedded_test_server()->GetURL("/password/update_form_empty_fields.html");

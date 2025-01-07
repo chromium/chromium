@@ -48,6 +48,7 @@ std::u16string PasswordChangeInfoBubbleController::GetTitle() const {
           IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_INFO_BUBBLE_TITLE);
     case PasswordChangeDelegate::State::kPasswordSuccessfullyChanged:
     case PasswordChangeDelegate::State::kPasswordChangeFailed:
+    case PasswordChangeDelegate::State::kWaitingForAgreement:
       NOTIMPLEMENTED();
       break;
   }
