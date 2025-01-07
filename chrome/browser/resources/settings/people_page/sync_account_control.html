@@ -166,7 +166,7 @@
                 syncStatus.statusAction, syncStatus.disabled)]]
           </div>
           <div class="secondary text-elide"
-          hidden="[[shouldHideSubtitleWithAccountInfoText_()]]">
+          hidden="[[shouldHideSubtitleWithAccountInfoText_(syncStatus)]]">
             [[getAccountLabel_(
                 '$i18nPolymer{signedInTo}',
                 '$i18nPolymer{syncingTo}',
@@ -176,9 +176,12 @@
                 shownAccount_.isPrimaryAccount)]]
           </div>
           <div class="secondary"
-          hidden="[[!shouldHideSubtitleWithAccountInfoText_()]]">
+          hidden="[[!shouldHideSubtitleWithAccountInfoText_(syncStatus)]]">
           [[getAvatarSubtitleLabel_(
-            '$i18nPolymer{accountAwareRowSubtitle}')]]
+            '$i18nPolymer{accountAwareRowSubtitle}',
+            '$i18nPolymer{pendingStateAvatarRowSubtitle}',
+            shownAccount_.email,
+            this.syncStatus.signedInState)]]
           </div>
         </div>
         <cr-icon-button class="icon-arrow-dropdown cr-button-gap"
@@ -213,7 +216,9 @@
                 syncStatus.domain, showSetupButtons_)]]"
             on-click="onTurnOffButtonClick_"
             disabled="[[syncStatus.firstSetupInProgress]]">
-          $i18n{turnOffSync}
+            [[getTurnOffSyncLabel_(
+              '$i18nPolymer{turnOffSync}',
+              syncStatus.secondaryButtonActionText)]]
         </cr-button>
         <cr-button id="sync-error-button" class="action-button cr-button-gap"
             hidden="[[!shouldShowErrorActionButton_(syncStatus,

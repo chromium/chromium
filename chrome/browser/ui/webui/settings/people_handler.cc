@@ -550,6 +550,7 @@ void PeopleHandler::OnRefreshTokenUpdatedForAccount(
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   UpdateChromeSigninUserChoiceInfo();
   UpdateSyncStatus();
+  UpdateStoredAccounts();
 #endif
 }
 
@@ -1144,6 +1145,8 @@ base::Value::Dict PeopleHandler::GetSyncStatusDictionary() const {
                   GetStringUTF16(status_labels.status_label_string_id));
   sync_status.Set("statusActionText",
                   GetStringUTF16(status_labels.button_string_id));
+  sync_status.Set("secondaryButtonActionText",
+                  GetStringUTF16(status_labels.secondary_button_string_id));
   sync_status.Set(
       "hasError",
       status_labels.message_type == SyncStatusMessageType::kSyncError ||

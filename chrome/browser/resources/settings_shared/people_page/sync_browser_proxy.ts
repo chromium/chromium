@@ -45,6 +45,7 @@ export interface SyncStatus {
   signedInState?: SignedInState;
   signedInUsername?: string;
   statusActionText?: string;
+  secondaryButtonActionText?: string;
   statusText?: string;
   supervisedUser?: boolean;
   syncCookiesSupported?: boolean;
