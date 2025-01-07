@@ -1,2 +1,2 @@
-AXFocusedUIElementChanged on AXStaticText AXValue='Orange'
+AXFocusedUIElementChanged on AXMenuItem AXValue='Orange'
 AXSelectedChildrenChanged on AXList

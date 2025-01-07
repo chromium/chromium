@@ -1168,6 +1168,13 @@ bool ui::IsNSRange(id value) {
     cocoa_role = NSAccessibilityUnknownRole;
   } else if (_owner->IsRootWebAreaForPresentationalIframe()) {
     cocoa_role = NSAccessibilityGroupRole;
+  } else if (role == ax::mojom::Role::kListBoxOption && _owner->IsWebContent()) {
+    // Short term solution that allows children until Mac gets a more
+    // appropriate role for options than AXStaticText, which can result
+    // truncation or incorrect announcements of the option text when there are
+    // children. For now, only do this for web content, and not UI, where
+    // there are not interesting descendants of list box options.
+    cocoa_role = NSAccessibilityMenuItemRole;
   } else {
     cocoa_role = [AXPlatformNodeCocoa nativeRoleFromAXRole:role];
   }
@@ -1505,12 +1512,7 @@ bool ui::IsNSRange(id value) {
   DCHECK(_owner->node()->IsDataValid());
 
   if (ui::IsNameExposedInAXValueForRole([self internalRole])) {
-    std::u16string name = _owner->GetTextContentUTF16();
-    // Leaf node with aria-label will have empty text content.
-    // e.g. <div role="option" aria-label="label">content</div>
-    // So we use its computed name for AXValue.
-    if (name.empty())
-      name = _owner->GetNameAsString16();
+    std::u16string name = _owner->GetNameAsString16();
     if (!IsSelectedStateRelevant(_owner)) {
       return base::SysUTF16ToNSString(name);
     }
@@ -1523,7 +1525,6 @@ bool ui::IsNSRange(id value) {
         is_selected ? IDS_AX_OBJECT_SELECTED : IDS_AX_OBJECT_NOT_SELECTED;
     std::u16string name_with_selection = base::ReplaceStringPlaceholders(
         _owner->GetLocalizedString(msg_id), {name}, nullptr);
-
     return base::SysUTF16ToNSString(name_with_selection);
   }
 
