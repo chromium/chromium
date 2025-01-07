@@ -1845,7 +1845,7 @@ void PrefetchContainer::MakeResourceRequest(
 
   auto request = CreateResourceRequestForNavigation(
       net::HttpRequestHeaders::kGetMethod, url,
-      network::mojom::RequestDestination::kEmpty, referrer_, isolation_info,
+      network::mojom::RequestDestination::kDocument, referrer_, isolation_info,
       std::move(devtools_observer_remote), priority, is_main_frame);
 
   // Note: Even without LOAD_DISABLE_CACHE, a cross-site prefetch uses a

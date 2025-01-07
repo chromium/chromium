@@ -250,7 +250,6 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
       std::move(devtools_observer), /*priority=*/net::HIGHEST,
       request_info.is_main_frame);
 
-  new_request->navigation_redirect_chain.push_back(new_request->url);
   new_request->trusted_params->cookie_observer = std::move(cookie_observer);
   new_request->trusted_params->trust_token_observer =
       std::move(trust_token_observer);
@@ -292,7 +291,6 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
 
   new_request->request_body = request_info.common_params->post_data.get();
   new_request->has_user_gesture = request_info.common_params->has_user_gesture;
-  new_request->mode = network::mojom::RequestMode::kNavigate;
 
   if (ui::PageTransitionIsWebTriggerable(
           ui::PageTransitionFromInt(request_info.common_params->transition))) {
@@ -302,7 +300,6 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
     new_request->trusted_params->has_user_activation = true;
   }
 
-  new_request->redirect_mode = network::mojom::RedirectMode::kManual;
   new_request->upgrade_if_insecure = request_info.upgrade_if_insecure;
   new_request->throttling_profile_id = request_info.devtools_frame_token;
   new_request->transition_type = request_info.common_params->transition;
@@ -474,7 +471,7 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequestForNavigation(
 
   // url: entry's URL [spec text]
   new_request->url = url;
-  // TODO(crbug.com/379263818): Set `navigation_redirect_chain` here as well.
+  new_request->navigation_redirect_chain.push_back(new_request->url);
 
   // client: sourceSnapshotParams's fetch client [spec text]
 
@@ -487,14 +484,14 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequestForNavigation(
   // use-URL-credentials flag: set [spec text]
 
   // redirect mode: "manual" [spec text]
-  // TODO(crbug.com/379263818): Set this here.
+  new_request->redirect_mode = network::mojom::RedirectMode::kManual;
 
   // replaces client id: navigable's active document's relevant settings
   // object's id [spec text]
   // Not implemented (https://crbug.com/40287592).
 
   // mode: "navigate"  [spec text]
-  // TODO(crbug.com/379263818): Set this here.
+  new_request->mode = network::mojom::RequestMode::kNavigate;
 
   // referrer: entry's document state's request referrer [spec text]
   new_request->referrer = referrer.url;
