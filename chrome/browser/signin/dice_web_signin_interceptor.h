@@ -214,8 +214,8 @@ class DiceWebSigninInterceptor : public KeyedService,
                            ShouldEnforceEnterpriseProfileSeparationReauth);
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest,
                            EnforceManagedAccountAsPrimary);
-  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest,
-                           ShouldEnforceEnterpriseProfileSeparationReauth);
+  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTestWithUnoEnabled,
+                           EnforceManagedAccountAsPrimaryReauth);
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest,
                            ForcedEnterpriseInterceptionTestAccountLevelPolicy);
   FRIEND_TEST_ALL_PREFIXES(
