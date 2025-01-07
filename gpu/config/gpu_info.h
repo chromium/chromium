@@ -85,8 +85,10 @@ enum class IntelGpuSeriesType {
   // Intel 13th gen
   kLunarlake = 29,
   kBattlemage = 31,
+  // Intel 14th gen
+  kPantherlake = 32,
   // Please also update |gpu_series_map| in process_json.py.
-  kMaxValue = kBattlemage,
+  kMaxValue = kPantherlake,
 };
 
 // Video profile.  This *must* match media::VideoCodecProfile.

@@ -923,6 +923,8 @@ IntelGpuSeriesType GetIntelGpuSeriesType(uint32_t vendor_id,
         return IntelGpuSeriesType::kLunarlake;
       case 0xE200:
         return IntelGpuSeriesType::kBattlemage;
+      case 0xB000:
+        return IntelGpuSeriesType::kPantherlake;
       default:
         break;
     }
@@ -975,6 +977,8 @@ std::string GetIntelGpuGeneration(uint32_t vendor_id, uint32_t device_id) {
       case IntelGpuSeriesType::kLunarlake:
       case IntelGpuSeriesType::kBattlemage:
         return "13";
+      case IntelGpuSeriesType::kPantherlake:
+        return "14";
       default:
         break;
     }

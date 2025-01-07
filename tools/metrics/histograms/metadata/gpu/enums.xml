@@ -1104,6 +1104,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="11" label="11th Gen"/>
   <int value="12" label="12th Gen"/>
   <int value="13" label="13th Gen"/>
+  <int value="14" label="14th Gen"/>
 </enum>
 
 <enum name="IntelGpuSeriesType">
@@ -1142,6 +1143,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="29" label="Intel Lunarlake"/>
   <int value="30" label="Intel Arrowlake"/>
   <int value="31" label="Intel Battlemage"/>
+  <int value="32" label="Intel Pantherlake"/>
 </enum>
 
 <enum name="MaximumGLESVersion">

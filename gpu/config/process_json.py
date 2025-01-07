@@ -741,7 +741,8 @@ def write_intel_conditions(entry_id, is_exception, exception_id,
       'meteorlake': 'kMeteorlake',
       'arrowlake': 'kArrowlake',
       'lunarlake': 'kLunarlake',
-      'battlemage': 'kBattlemage'
+      'battlemage': 'kBattlemage',
+      'pantherlake': 'kPantherlake'
     }
     for series in intel_gpu_series_list:
       assert series in intel_gpu_series_map
