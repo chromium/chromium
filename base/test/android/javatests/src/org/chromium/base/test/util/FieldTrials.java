@@ -6,7 +6,7 @@ package org.chromium.base.test.util;
 
 import android.util.ArraySet;
 
-import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.Log;
 
 import java.util.Collections;
@@ -64,12 +64,12 @@ class FieldTrials {
         return mUnmodifiableFeatureToTrial;
     }
 
-    FeatureList.TestValues createTestValues() {
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
+    FeatureOverrides.Builder createTestOverrides() {
+        FeatureOverrides.Builder overrides = FeatureOverrides.newBuilder();
         for (var e : mFeatureFlags.entrySet()) {
             String feature = e.getKey();
             Boolean featureValue = e.getValue();
-            testValues.addFeatureFlagOverride(feature, featureValue);
+            overrides = overrides.flag(feature, featureValue);
         }
 
         for (var e : mFeatureToParams.entrySet()) {
@@ -78,7 +78,7 @@ class FieldTrials {
             for (var f : featureToParams.entrySet()) {
                 String param = f.getKey();
                 String paramValue = f.getValue();
-                testValues.addFieldTrialParamOverride(feature, param, paramValue);
+                overrides = overrides.param(feature, param, paramValue);
             }
         }
 
@@ -109,14 +109,14 @@ class FieldTrials {
                     for (var f : trialParams.entrySet()) {
                         String param = f.getKey();
                         String paramValue = f.getValue();
-                        testValues.addFieldTrialParamOverride(feature, param, paramValue);
+                        overrides = overrides.param(feature, param, paramValue);
                     }
                 }
             } else {
                 Log.w(TAG, "Did you forget enable-features=FeatureName<%s?", trial);
             }
         }
-        return testValues;
+        return overrides;
     }
 
     FieldTrials createCopy() {

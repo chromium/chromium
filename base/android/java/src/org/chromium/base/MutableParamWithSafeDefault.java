@@ -45,7 +45,7 @@ public abstract class MutableParamWithSafeDefault<T> extends FeatureParam<T> {
     protected T getValueBoxed() {
         if (mInMemoryCachedValue != null) return mInMemoryCachedValue;
 
-        if (FeatureList.hasTestParam(mFeatureName, mParamName)) {
+        if (FeatureOverrides.hasTestParam(mFeatureName, mParamName)) {
             return readValueFromFeatureMap();
         }
 

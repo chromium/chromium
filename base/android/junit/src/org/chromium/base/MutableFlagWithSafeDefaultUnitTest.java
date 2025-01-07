@@ -4,7 +4,9 @@
 
 package org.chromium.base;
 
-import static org.chromium.base.test.util.BaseFlagTestRule.A_OFF_B_ON;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import static org.chromium.base.test.util.BaseFlagTestRule.A_ON_B_OFF;
 import static org.chromium.base.test.util.BaseFlagTestRule.FEATURE_A;
 import static org.chromium.base.test.util.BaseFlagTestRule.FEATURE_B;
@@ -45,7 +47,8 @@ public class MutableFlagWithSafeDefaultUnitTest {
         A_ON_B_OFF.apply();
 
         // Verify that {@link MutableFlagWithSafeDefault} returns values from FeatureMap.
-        BaseFlagTestRule.assertIsEnabledMatches(A_ON_B_OFF, featureA, featureB);
+        assertTrue(featureA.isEnabled());
+        assertFalse(featureB.isEnabled());
     }
 
     @Test
@@ -56,7 +59,8 @@ public class MutableFlagWithSafeDefaultUnitTest {
                 FEATURE_MAP.mutableFlagWithSafeDefault(FEATURE_B, true);
 
         // Query the flags to make sure the default values are returned.
-        BaseFlagTestRule.assertIsEnabledMatches(A_OFF_B_ON, featureA, featureB);
+        assertFalse(featureA.isEnabled());
+        assertTrue(featureB.isEnabled());
     }
 
     @Test
@@ -67,12 +71,14 @@ public class MutableFlagWithSafeDefaultUnitTest {
                 FEATURE_MAP.mutableFlagWithSafeDefault(FEATURE_B, true);
 
         // Query the flags to make sure the default values are returned.
-        BaseFlagTestRule.assertIsEnabledMatches(A_OFF_B_ON, featureA, featureB);
+        assertFalse(featureA.isEnabled());
+        assertTrue(featureB.isEnabled());
 
         // Values from FeatureMap should be used from now on.
         A_ON_B_OFF.apply();
 
         // Verify that {@link MutableFlagWithSafeDefault} returns values from FeatureMap.
-        BaseFlagTestRule.assertIsEnabledMatches(A_ON_B_OFF, featureA, featureB);
+        assertTrue(featureA.isEnabled());
+        assertFalse(featureB.isEnabled());
     }
 }

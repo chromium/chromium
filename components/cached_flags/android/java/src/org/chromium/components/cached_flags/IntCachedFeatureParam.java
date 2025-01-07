@@ -8,7 +8,6 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.AnyThread;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureMap;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.cached_flags.ValuesReturned;
@@ -30,7 +29,8 @@ public class IntCachedFeatureParam extends CachedFeatureParam<Integer> {
     public int getValue() {
         CachedFlagsSafeMode.getInstance().onFlagChecked();
 
-        String testValue = FeatureList.getTestValueForFieldTrialParam(mFeatureName, mParamName);
+        String testValue =
+                FeatureOverrides.getTestValueForFieldTrialParam(mFeatureName, mParamName);
         if (testValue != null) {
             return Integer.parseInt(testValue);
         }

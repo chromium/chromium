@@ -52,7 +52,7 @@ public abstract class FeatureMap {
      * @return Whether the feature is enabled or not.
      */
     public boolean isEnabledInNative(String featureName) {
-        Boolean testValue = FeatureList.getTestValueForFeatureStrict(featureName);
+        Boolean testValue = FeatureOverrides.getTestValueForFeatureStrict(featureName);
         if (testValue != null) return testValue;
         ensureNativeMapInit();
         return FeatureMapJni.get().isEnabled(mNativeMapPtr, featureName);
@@ -64,10 +64,10 @@ public abstract class FeatureMap {
      * @param featureName The name of the feature to retrieve a param for.
      * @param paramName The name of the param for which to get as an integer.
      * @return The parameter value as a String. The string is empty if the feature does not exist or
-     *   the specified parameter does not exist.
+     *     the specified parameter does not exist.
      */
     public String getFieldTrialParamByFeature(String featureName, String paramName) {
-        String testValue = FeatureList.getTestValueForFieldTrialParam(featureName, paramName);
+        String testValue = FeatureOverrides.getTestValueForFieldTrialParam(featureName, paramName);
         if (testValue != null) return testValue;
         if (FeatureList.getDisableNativeForTesting()) return "";
         ensureNativeMapInit();
@@ -82,11 +82,11 @@ public abstract class FeatureMap {
      * @param paramName The name of the param for which to get as an integer.
      * @param defaultValue The boolean value to use if the param is not available.
      * @return The parameter value as a boolean. Default value if the feature does not exist or the
-     *         specified parameter does not exist or its string value is neither "true" nor "false".
+     *     specified parameter does not exist or its string value is neither "true" nor "false".
      */
     public boolean getFieldTrialParamByFeatureAsBoolean(
             String featureName, String paramName, boolean defaultValue) {
-        String testValue = FeatureList.getTestValueForFieldTrialParam(featureName, paramName);
+        String testValue = FeatureOverrides.getTestValueForFieldTrialParam(featureName, paramName);
         if (testValue != null) return Boolean.valueOf(testValue);
         if (FeatureList.getDisableNativeForTesting()) return defaultValue;
         ensureNativeMapInit();
@@ -102,11 +102,11 @@ public abstract class FeatureMap {
      * @param paramName The name of the param for which to get as an integer.
      * @param defaultValue The integer value to use if the param is not available.
      * @return The parameter value as an int. Default value if the feature does not exist or the
-     *         specified parameter does not exist or its string value does not represent an int.
+     *     specified parameter does not exist or its string value does not represent an int.
      */
     public int getFieldTrialParamByFeatureAsInt(
             String featureName, String paramName, int defaultValue) {
-        String testValue = FeatureList.getTestValueForFieldTrialParam(featureName, paramName);
+        String testValue = FeatureOverrides.getTestValueForFieldTrialParam(featureName, paramName);
         if (testValue != null) return Integer.valueOf(testValue);
         if (FeatureList.getDisableNativeForTesting()) return defaultValue;
         ensureNativeMapInit();
@@ -122,11 +122,11 @@ public abstract class FeatureMap {
      * @param paramName The name of the param for which to get as an integer.
      * @param defaultValue The double value to use if the param is not available.
      * @return The parameter value as a double. Default value if the feature does not exist or the
-     *         specified parameter does not exist or its string value does not represent a double.
+     *     specified parameter does not exist or its string value does not represent a double.
      */
     public double getFieldTrialParamByFeatureAsDouble(
             String featureName, String paramName, double defaultValue) {
-        String testValue = FeatureList.getTestValueForFieldTrialParam(featureName, paramName);
+        String testValue = FeatureOverrides.getTestValueForFieldTrialParam(featureName, paramName);
         if (testValue != null) return Double.valueOf(testValue);
         if (FeatureList.getDisableNativeForTesting()) return defaultValue;
         ensureNativeMapInit();
@@ -138,7 +138,7 @@ public abstract class FeatureMap {
     /** Returns all the field trial parameters for the specified feature. */
     public Map<String, String> getFieldTrialParamsForFeature(String featureName) {
         Map<String, String> testValues =
-                FeatureList.getTestValuesForAllFieldTrialParamsForFeature(featureName);
+                FeatureOverrides.getTestValuesForAllFieldTrialParamsForFeature(featureName);
         if (testValues != null) return testValues;
         if (FeatureList.getDisableNativeForTesting()) return Collections.emptyMap();
 

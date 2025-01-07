@@ -24,29 +24,30 @@ public class FeatureOverridesUnitTest {
     public void test_getTestValueForFeature_noOverride_throwsException() {
         Assert.assertThrows(
                 IllegalArgumentException.class,
-                () -> FeatureList.getTestValueForFeatureStrict(FEATURE_A));
+                () -> FeatureOverrides.getTestValueForFeatureStrict(FEATURE_A));
     }
 
     @Test
     public void test_getTestValueForFeature_canUseDefaults_noException() {
         FeatureList.setDisableNativeForTesting(false);
-        Assert.assertNull(FeatureList.getTestValueForFeatureStrict(FEATURE_A));
+        Assert.assertNull(FeatureOverrides.getTestValueForFeatureStrict(FEATURE_A));
     }
 
     @Test
     public void test_getTestValueForFieldTrialParam_noOverride_returnsNull() {
-        Assert.assertNull(FeatureList.getTestValueForFieldTrialParam(FEATURE_A, FEATURE_A_PARAM_1));
+        Assert.assertNull(
+                FeatureOverrides.getTestValueForFieldTrialParam(FEATURE_A, FEATURE_A_PARAM_1));
     }
 
     @Test
     public void test_getTestValueForFeature_override() {
         FeatureOverrides.enable(FEATURE_A);
 
-        Assert.assertEquals(true, FeatureList.getTestValueForFeatureStrict(FEATURE_A));
+        Assert.assertEquals(true, FeatureOverrides.getTestValueForFeatureStrict(FEATURE_A));
 
         FeatureOverrides.disable(FEATURE_A);
 
-        Assert.assertEquals(false, FeatureList.getTestValueForFeatureStrict(FEATURE_A));
+        Assert.assertEquals(false, FeatureOverrides.getTestValueForFeatureStrict(FEATURE_A));
     }
 
     @Test
@@ -55,10 +56,11 @@ public class FeatureOverridesUnitTest {
 
         Assert.assertEquals(
                 "paramValue",
-                FeatureList.getTestValueForFieldTrialParam(FEATURE_A, FEATURE_A_PARAM_1));
+                FeatureOverrides.getTestValueForFieldTrialParam(FEATURE_A, FEATURE_A_PARAM_1));
 
         // Other params should still return null
-        Assert.assertNull(FeatureList.getTestValueForFieldTrialParam(FEATURE_A, FEATURE_A_PARAM_2));
+        Assert.assertNull(
+                FeatureOverrides.getTestValueForFieldTrialParam(FEATURE_A, FEATURE_A_PARAM_2));
     }
 
     @Test
@@ -67,7 +69,7 @@ public class FeatureOverridesUnitTest {
 
         Assert.assertThrows(
                 IllegalArgumentException.class,
-                () -> FeatureList.getTestValueForFeatureStrict(FEATURE_B));
+                () -> FeatureOverrides.getTestValueForFeatureStrict(FEATURE_B));
     }
 
     @Test
@@ -81,14 +83,14 @@ public class FeatureOverridesUnitTest {
                 .disable(FEATURE_B)
                 .apply();
 
-        Assert.assertEquals(true, FeatureList.getTestValueForFeatureStrict(FEATURE_A));
-        Assert.assertEquals(false, FeatureList.getTestValueForFeatureStrict(FEATURE_B));
+        Assert.assertEquals(true, FeatureOverrides.getTestValueForFeatureStrict(FEATURE_A));
+        Assert.assertEquals(false, FeatureOverrides.getTestValueForFeatureStrict(FEATURE_B));
         Assert.assertEquals(
                 "paramValue1",
-                FeatureList.getTestValueForFieldTrialParam(FEATURE_A, FEATURE_A_PARAM_1));
+                FeatureOverrides.getTestValueForFieldTrialParam(FEATURE_A, FEATURE_A_PARAM_1));
         Assert.assertEquals(
                 "paramValue2",
-                FeatureList.getTestValueForFieldTrialParam(FEATURE_A, FEATURE_A_PARAM_2));
+                FeatureOverrides.getTestValueForFieldTrialParam(FEATURE_A, FEATURE_A_PARAM_2));
     }
 
     @Test
@@ -104,14 +106,14 @@ public class FeatureOverridesUnitTest {
                 .disable(FEATURE_B)
                 .apply();
 
-        Assert.assertEquals(true, FeatureList.getTestValueForFeatureStrict(FEATURE_A));
-        Assert.assertEquals(false, FeatureList.getTestValueForFeatureStrict(FEATURE_B));
+        Assert.assertEquals(true, FeatureOverrides.getTestValueForFeatureStrict(FEATURE_A));
+        Assert.assertEquals(false, FeatureOverrides.getTestValueForFeatureStrict(FEATURE_B));
         Assert.assertEquals(
                 "paramValue1Replaced",
-                FeatureList.getTestValueForFieldTrialParam(FEATURE_A, FEATURE_A_PARAM_1));
+                FeatureOverrides.getTestValueForFieldTrialParam(FEATURE_A, FEATURE_A_PARAM_1));
         Assert.assertEquals(
                 "paramValue2",
-                FeatureList.getTestValueForFieldTrialParam(FEATURE_A, FEATURE_A_PARAM_2));
+                FeatureOverrides.getTestValueForFieldTrialParam(FEATURE_A, FEATURE_A_PARAM_2));
     }
 
     @Test
@@ -127,14 +129,14 @@ public class FeatureOverridesUnitTest {
                 .disable(FEATURE_B)
                 .applyWithoutOverwrite();
 
-        Assert.assertEquals(true, FeatureList.getTestValueForFeatureStrict(FEATURE_A));
-        Assert.assertEquals(true, FeatureList.getTestValueForFeatureStrict(FEATURE_B));
+        Assert.assertEquals(true, FeatureOverrides.getTestValueForFeatureStrict(FEATURE_A));
+        Assert.assertEquals(true, FeatureOverrides.getTestValueForFeatureStrict(FEATURE_B));
         Assert.assertEquals(
                 "paramValue1Original",
-                FeatureList.getTestValueForFieldTrialParam(FEATURE_A, FEATURE_A_PARAM_1));
+                FeatureOverrides.getTestValueForFieldTrialParam(FEATURE_A, FEATURE_A_PARAM_1));
         Assert.assertEquals(
                 "paramValue2",
-                FeatureList.getTestValueForFieldTrialParam(FEATURE_A, FEATURE_A_PARAM_2));
+                FeatureOverrides.getTestValueForFieldTrialParam(FEATURE_A, FEATURE_A_PARAM_2));
     }
 
     @Test
@@ -142,8 +144,8 @@ public class FeatureOverridesUnitTest {
     public void test_apply_replacesAnnotation() {
         FeatureOverrides.newBuilder().disable(FEATURE_A).apply();
 
-        Assert.assertEquals(false, FeatureList.getTestValueForFeatureStrict(FEATURE_A));
-        Assert.assertEquals(true, FeatureList.getTestValueForFeatureStrict(FEATURE_B));
+        Assert.assertEquals(false, FeatureOverrides.getTestValueForFeatureStrict(FEATURE_A));
+        Assert.assertEquals(true, FeatureOverrides.getTestValueForFeatureStrict(FEATURE_B));
     }
 
     @Test
@@ -151,7 +153,7 @@ public class FeatureOverridesUnitTest {
     public void test_mergeTestValues_doNotReplace_doesNotOverrideAnnotation() {
         FeatureOverrides.newBuilder().disable(FEATURE_A).applyWithoutOverwrite();
 
-        Assert.assertEquals(true, FeatureList.getTestValueForFeatureStrict(FEATURE_A));
-        Assert.assertEquals(true, FeatureList.getTestValueForFeatureStrict(FEATURE_B));
+        Assert.assertEquals(true, FeatureOverrides.getTestValueForFeatureStrict(FEATURE_A));
+        Assert.assertEquals(true, FeatureOverrides.getTestValueForFeatureStrict(FEATURE_B));
     }
 }

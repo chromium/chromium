@@ -4,13 +4,10 @@
 
 package org.chromium.base.test.util;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureMap;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.FeatureParam;
@@ -53,10 +50,4 @@ public class BaseFlagTestRule implements TestRule {
                                     + " instead.");
                 }
             };
-
-    public static void assertIsEnabledMatches(
-            FeatureList.TestValues state, Flag feature1, Flag feature2) {
-        assertEquals(state.getFeatureFlagOverride(FEATURE_A), feature1.isEnabled());
-        assertEquals(state.getFeatureFlagOverride(FEATURE_B), feature2.isEnabled());
-    }
 }
