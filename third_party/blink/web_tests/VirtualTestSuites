@@ -411,7 +411,7 @@
     "args": ["--enable-blink-features=CompositeClipPathAnimation",
              "--enable-threaded-compositing"],
     "owners": ["clchambers@microsoft.com", "gerchiko@microsoft.com"],
-    "expires": "Jan 1, 2025"
+    "expires": "Jan 1, 2026"
   },
   {
     "prefix": "main-thread-clip-path-animation",
@@ -425,7 +425,7 @@
     "exclusive_tests": "ALL",
     "args": ["--disable-blink-features=CompositeClipPathAnimation"],
     "owners": ["clchambers@microsoft.com", "gerchiko@microsoft.com"],
-    "expires": "Jan 1, 2025"
+    "expires": "Jan 1, 2026"
   },
   {
     "prefix": "fractional-scroll-offsets",
