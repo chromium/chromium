@@ -1036,30 +1036,23 @@ void BrowserAutofillManager::OnTextFieldDidChangeImpl(
   }
 
   auto* logger = GetEventFormLogger(*autofill_field);
-  if (!autofill_field->is_autofilled()) {
-    if (logger) {
-      logger->OnTypedIntoNonFilledField();
-    }
-  }
-
   if (autofill_field->is_autofilled()) {
     autofill_field->set_is_autofilled(false);
     autofill_field->set_previously_autofilled(true);
     if (logger) {
-      logger->OnEditedAutofilledField();
+      logger->OnEditedAutofilledField(field.global_id());
     }
     if (AutofillAiDelegate* delegate = client().GetAutofillAiDelegate();
         delegate &&
         autofill_field->filling_product() == FillingProduct::kAutofillAi) {
       delegate->OnEditedAutofilledField(form.global_id());
     }
+  } else {
+    if (logger) {
+      logger->OnEditedNonFilledField(field.global_id());
+    }
   }
-
   UpdateInitialInteractionTimestamp(timestamp);
-
-  if (logger) {
-    logger->OnTextFieldDidChange(autofill_field->global_id());
-  }
 }
 
 bool BrowserAutofillManager::IsFormNonSecure(const FormData& form) const {
@@ -1893,7 +1886,36 @@ void BrowserAutofillManager::OnFocusOnFormFieldImpl(
 void BrowserAutofillManager::OnSelectControlDidChangeImpl(
     const FormData& form,
     const FieldGlobalId& field_id) {
-  // TODO(crbug.com/40564270): Handle select control change.
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillRecordCorrectionOfSelectElements)) {
+    return;
+  }
+  FormStructure* form_structure = nullptr;
+  AutofillField* autofill_field = nullptr;
+  if (!GetCachedFormAndField(form.global_id(), field_id, &form_structure,
+                             &autofill_field)) {
+    return;
+  }
+
+  UpdatePendingForm(form);
+
+  auto* logger = GetEventFormLogger(*autofill_field);
+  if (autofill_field->is_autofilled()) {
+    autofill_field->set_is_autofilled(false);
+    autofill_field->set_previously_autofilled(true);
+    if (logger) {
+      logger->OnEditedAutofilledField(autofill_field->global_id());
+    }
+    if (AutofillAiDelegate* delegate = client().GetAutofillAiDelegate();
+        delegate &&
+        autofill_field->filling_product() == FillingProduct::kAutofillAi) {
+      delegate->OnEditedAutofilledField(form.global_id());
+    }
+  } else {
+    if (logger) {
+      logger->OnEditedNonFilledField(autofill_field->global_id());
+    }
+  }
 }
 
 void BrowserAutofillManager::OnDidFillAutofillFormDataImpl(

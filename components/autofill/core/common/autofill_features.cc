@@ -238,6 +238,13 @@ BASE_FEATURE(kAutofillFixCurrentValueInImport,
              "AutofillFixCurrentValueInImport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, and upon receiving a signal that a select element has been
+// edited by the user, BrowserAutofillManager will record this correction, which
+// will affect many correctness metrics.
+BASE_FEATURE(kAutofillRecordCorrectionOfSelectElements,
+             "AutofillRecordCorrectionOfSelectElements",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, AutofillManager::GetCachedFormAndField will return the cached
 // form if found, even if it doesn't satisfy
 // `cached_form->autofill_count() != 0`.
