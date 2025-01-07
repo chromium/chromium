@@ -36,8 +36,8 @@
 #include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -511,8 +511,10 @@ FilePath GetUniquePathWithSuffixFormat(const FilePath& path,
     return path;
   }
   for (int count = 1; count <= kMaxUniqueFiles; ++count) {
-    FilePath candidate_path = path.InsertBeforeExtensionASCII(
-        StringPrintfNonConstexpr(suffix_format.data(), count));
+    std::string suffix(suffix_format);
+    base::ReplaceFirstSubstringAfterOffset(&suffix, 0, "%d",
+                                           base::NumberToString(count));
+    FilePath candidate_path = path.InsertBeforeExtensionASCII(suffix);
     if (!PathExists(candidate_path)) {
       return candidate_path;
     }
