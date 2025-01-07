@@ -73,6 +73,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/local_search_service/public/cpp:cpp",
     "//chromeos/ash/components/local_search_service/public/mojom",
     "//chromeos/ash/components/local_search_service/public/mojom:mojom",
+    "//chromeos/ash/services/assistant/public/cpp",
     "//content/test:test_support",
     "//device/udev_linux:test_support",
     "//mojo/public/cpp/bindings:bindings",

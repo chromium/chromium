@@ -297,8 +297,9 @@ ASH_PUBLIC_EXPORT inline constexpr auto kAcceleratorData = std::to_array<
     {true, ui::VKEY_OEM_103, ui::EF_NONE, AcceleratorAction::kMediaRewind},
     {true, ui::VKEY_OEM_104, ui::EF_NONE, AcceleratorAction::kMediaFastForward},
 
-    // Assistant shortcuts.
-    {true, ui::VKEY_A, ui::EF_COMMAND_DOWN, AcceleratorAction::kStartAssistant},
+    // Assistant shortcut. Assistant has two shortcuts, a dedicated Assistant
+    // key and Search+A. Search+A is defined below as
+    // `kAssistantSearchPlusAAcceleratorData`.
     {true, ui::VKEY_ASSISTANT, ui::EF_NONE, AcceleratorAction::kStartAssistant},
 
     // IME mode change key.
@@ -355,6 +356,11 @@ ASH_PUBLIC_EXPORT inline constexpr auto kAcceleratorData = std::to_array<
     {true, ui::VKEY_G, ui::EF_COMMAND_DOWN,
      AcceleratorAction::kToggleGameDashboard},
 });
+
+ASH_PUBLIC_EXPORT inline constexpr AcceleratorData
+    kAssistantSearchPlusAAcceleratorData[] = {
+        {true, ui::VKEY_A, ui::EF_COMMAND_DOWN,
+         AcceleratorAction::kStartAssistant}};
 
 // Accelerators that are enabled/disabled with new accelerator mapping.
 // crbug.com/1067269
