@@ -532,7 +532,7 @@ const BookmarkNode* BookmarkBarView::GetNodeForButtonAtModelIndex(
   // Then the overflow button.
   if (overflow_button_->GetVisible() &&
       overflow_button_->bounds().Contains(adjusted_loc)) {
-    *model_start_index = GetFirstHiddenNodeIndex();
+    *model_start_index = first_hidden_node_idx_;
     return bookmark_model_->bookmark_bar_node();
   }
 
@@ -1250,10 +1250,7 @@ void BookmarkBarView::BookmarkAllUserNodesRemoved(
   UpdateOtherAndManagedButtonsVisibility();
 
   // Remove the existing buttons.
-  for (views::LabelButton* button : bookmark_buttons_) {
-    delete button;
-  }
-  bookmark_buttons_.clear();
+  RemoveAllBookmarkButtons();
 
   LayoutAndPaint();
 
@@ -1275,10 +1272,7 @@ void BookmarkBarView::BookmarkNodeChildrenReordered(const BookmarkNode* node) {
   }
 
   // Remove the existing buttons.
-  for (views::LabelButton* button : bookmark_buttons_) {
-    delete button;
-  }
-  bookmark_buttons_.clear();
+  RemoveAllBookmarkButtons();
 
   // Create the new buttons.
   for (size_t i = 0; i < node->children().size(); ++i) {
@@ -1392,7 +1386,7 @@ void BookmarkBarView::OnMenuButtonPressed(const bookmarks::BookmarkNode* node,
   } else {
     RecordBookmarkFolderOpen(BookmarkLaunchLocation::kAttachedBar);
     const size_t start_index = (node == bookmark_model_->bookmark_bar_node())
-                                   ? GetFirstHiddenNodeIndex()
+                                   ? first_hidden_node_idx_
                                    : 0;
     bookmark_menu_ = new BookmarkMenuController(browser_, GetWidget(), node,
                                                 start_index, false);
@@ -1629,7 +1623,38 @@ std::unique_ptr<views::View> BookmarkBarView::CreateBookmarkButton(
   ConfigureButton(node, button.get());
   size_t index = node->parent()->GetIndexOf(node).value();
   bookmark_buttons_.insert(bookmark_buttons_.cbegin() + index, button.get());
+  button_visibility_changed_callbacks_[button.get()] =
+      button->AddVisibleChangedCallback(
+          base::BindRepeating(&BookmarkBarView::UpdateFirstHiddenNodeIndex,
+                              base::Unretained(this)));
+  UpdateFirstHiddenNodeIndex();
   return button;
+}
+
+void BookmarkBarView::RemoveBookmarkButton(size_t index) {
+  CHECK_LE(index, bookmark_buttons_.size());
+  views::LabelButton* button = bookmark_buttons_[index];
+  bookmark_buttons_.erase(bookmark_buttons_.cbegin() + index);
+  // Set not visible before removing to advance focus if needed, and to ensure
+  // that the overflow menu is updated.
+  button->SetVisible(false);
+  button_visibility_changed_callbacks_.erase(button);
+  RemoveChildViewT(button);
+}
+
+void BookmarkBarView::RemoveAllBookmarkButtons() {
+  while (!bookmark_buttons_.empty()) {
+    RemoveBookmarkButton(0);
+  }
+}
+
+void BookmarkBarView::UpdateFirstHiddenNodeIndex() {
+  size_t prev_idx = first_hidden_node_idx_;
+  first_hidden_node_idx_ = GetFirstHiddenNodeIndex();
+  if (bookmark_menu_ && prev_idx != first_hidden_node_idx_) {
+    bookmark_menu_->BookmarkStartIndexChanged(
+        bookmark_model_->bookmark_bar_node(), first_hidden_node_idx_);
+  }
 }
 
 std::unique_ptr<views::LabelButton>
@@ -1752,13 +1777,7 @@ bool BookmarkBarView::BookmarkNodeRemovedImpl(const BookmarkNode* parent,
     return needs_layout;
   }
 
-  views::LabelButton* button = bookmark_buttons_[index];
-  bookmark_buttons_.erase(bookmark_buttons_.cbegin() + index);
-  // Set not visible before removing to advance focus if needed. See
-  // crbug.com/1183980. TODO(crbug.com/40755614): remove this workaround if
-  // FocusManager behavior is changed.
-  button->SetVisible(false);
-  RemoveChildViewT(button);
+  RemoveBookmarkButton(index);
 
   return true;
 }
@@ -1807,7 +1826,7 @@ void BookmarkBarView::ShowDropFolderForNode(const BookmarkNode* node) {
 
   size_t start_index = 0;
   if (node == bookmark_model_->bookmark_bar_node()) {
-    start_index = GetFirstHiddenNodeIndex();
+    start_index = first_hidden_node_idx_;
   }
 
   drop_info_->is_menu_showing = true;
@@ -1912,12 +1931,12 @@ void BookmarkBarView::CalculateDropLocation(
       if (overflow_delta_x >= 0 &&
           overflow_delta_x < overflow_button_->width()) {
         // Mouse is over overflow button.
-        location->index = GetFirstHiddenNodeIndex();
+        location->index = first_hidden_node_idx_;
         location->button_type = DROP_OVERFLOW;
       } else if (overflow_delta_x < 0) {
         // Mouse is after the last visible button but before overflow button;
         // use the last visible index.
-        location->index = GetFirstHiddenNodeIndex();
+        location->index = first_hidden_node_idx_;
       } else {
         return;
       }
@@ -1925,7 +1944,7 @@ void BookmarkBarView::CalculateDropLocation(
                mirrored_x < all_bookmarks_button_->x()) {
       // Mouse is after the last visible button but before more recently
       // bookmarked; use the last visible index.
-      location->index = GetFirstHiddenNodeIndex();
+      location->index = first_hidden_node_idx_;
     } else {
       return;
     }

@@ -30,11 +30,11 @@ BookmarkMenuController::BookmarkMenuController(Browser* browser,
                                                const BookmarkNode* node,
                                                size_t start_child_index,
                                                bool for_drop)
-    : menu_delegate_(
-          new BookmarkMenuDelegate(browser,
-                                   parent,
-                                   this,
-                                   BookmarkLaunchLocation::kSubfolder)),
+    : menu_delegate_(std::make_unique<BookmarkMenuDelegate>(
+          browser,
+          parent,
+          this,
+          BookmarkLaunchLocation::kSubfolder)),
       node_(node),
       observer_(nullptr),
       for_drop_(for_drop),
@@ -196,6 +196,11 @@ void BookmarkMenuController::BookmarkModelChanged() {
   if (!menu_delegate_->is_mutating_model()) {
     menu()->Cancel();
   }
+}
+
+void BookmarkMenuController::BookmarkStartIndexChanged(const BookmarkNode* node,
+                                                       size_t new_start_index) {
+  menu_delegate_->SetMenuStartIndex(node, new_start_index);
 }
 
 bool BookmarkMenuController::ShouldTryPositioningBesideAnchor() const {

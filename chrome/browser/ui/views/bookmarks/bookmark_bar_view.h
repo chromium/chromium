@@ -32,6 +32,7 @@
 #include "ui/views/controls/menu/menu_types.h"
 #include "ui/views/drag_controller.h"
 #include "ui/views/view.h"
+#include "ui/views/view_observer.h"
 
 class BookmarkBarViewObserver;
 class BookmarkBarViewTestHelper;
@@ -278,6 +279,10 @@ class BookmarkBarView : public views::AccessiblePaneView,
   // visible, this returns GetBookmarkButtonCount().
   size_t GetFirstHiddenNodeIndex() const;
 
+  // Updates `first_hidden_node_idx_` and notifies the controller, if any, to
+  // update the overflow menu.
+  void UpdateFirstHiddenNodeIndex();
+
   // Creates the button showing the "All Bookmarks" folder.
   std::unique_ptr<views::MenuButton> CreateAllBookmarksButton();
 
@@ -290,6 +295,12 @@ class BookmarkBarView : public views::AccessiblePaneView,
   // Creates the button for rendering the specified bookmark node.
   std::unique_ptr<views::View> CreateBookmarkButton(
       const bookmarks::BookmarkNode* node);
+
+  // Removes the bookmark button at the given index.
+  void RemoveBookmarkButton(size_t index);
+
+  // Removes all bookmark buttons.
+  void RemoveAllBookmarkButtons();
 
   // Creates the button for rendering the apps page shortcut.
   std::unique_ptr<views::LabelButton> CreateAppsPageShortcutButton();
@@ -444,8 +455,14 @@ class BookmarkBarView : public views::AccessiblePaneView,
   raw_ptr<views::MenuButton> overflow_button_ = nullptr;
 
   // The individual bookmark buttons.
-  std::vector<raw_ptr<views::LabelButton, VectorExperimental>>
-      bookmark_buttons_;
+  std::vector<raw_ptr<views::LabelButton>> bookmark_buttons_;
+
+  std::map<raw_ptr<const views::LabelButton>, base::CallbackListSubscription>
+      button_visibility_changed_callbacks_;
+
+  // The index of the bookmark bar's first hidden node.
+  // This is used to populate the overflow bookmarks button.
+  size_t first_hidden_node_idx_ = 0;
 
   raw_ptr<ButtonSeparatorView> bookmarks_separator_view_ = nullptr;
   raw_ptr<ButtonSeparatorView> saved_tab_groups_separator_view_ = nullptr;

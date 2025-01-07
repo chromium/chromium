@@ -113,6 +113,9 @@ class BookmarkMenuController : public bookmarks::BaseBookmarkModelObserver,
   // bookmarks::BaseBookmarkModelObserver:
   void BookmarkModelChanged() override;
 
+  void BookmarkStartIndexChanged(const bookmarks::BookmarkNode* node,
+                                 size_t new_start_index);
+
  private:
   // BookmarkMenuController deletes itself as necessary.
   ~BookmarkMenuController() override;
