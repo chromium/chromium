@@ -205,6 +205,12 @@ ShoppingService::ShoppingService(
       web_extractor_(std::move(web_extractor)),
       tab_restore_service_(tab_restore_service),
       weak_ptr_factory_(this) {
+  if (identity_manager) {
+    account_checker_ = base::WrapUnique(new AccountChecker(
+        country_on_startup_, locale_on_startup_, pref_service, identity_manager,
+        sync_service, url_loader_factory));
+  }
+
   // Register for the types of information we're allowed to receive from
   // optimization guide.
   if (opt_guide_) {
@@ -217,7 +223,7 @@ ShoppingService::ShoppingService(
       types.push_back(optimization_guide::proto::OptimizationType::
                           MERCHANT_TRUST_SIGNALS_V2);
     }
-    if (IsPriceInsightsInfoApiEnabled()) {
+    if (IsPriceInsightsApiEnabled(account_checker_.get())) {
       types.push_back(
           optimization_guide::proto::OptimizationType::PRICE_INSIGHTS);
     }
@@ -232,12 +238,6 @@ ShoppingService::ShoppingService(
     }
 
     opt_guide_->RegisterOptimizationTypes(types);
-  }
-
-  if (identity_manager) {
-    account_checker_ = base::WrapUnique(new AccountChecker(
-        country_on_startup_, locale_on_startup_, pref_service, identity_manager,
-        sync_service, url_loader_factory));
   }
 
   if (identity_manager && account_checker_) {
@@ -735,7 +735,7 @@ void ShoppingService::GetMerchantInfoForUrl(const GURL& url,
 void ShoppingService::GetPriceInsightsInfoForUrl(
     const GURL& url,
     PriceInsightsInfoCallback callback) {
-  if (!opt_guide_ || !IsPriceInsightsInfoApiEnabled()) {
+  if (!opt_guide_ || !IsPriceInsightsApiEnabled(account_checker_.get())) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), url, std::nullopt));
     return;
@@ -838,11 +838,6 @@ bool ShoppingService::IsRegionLockedFeatureEnabled(
 bool ShoppingService::IsMerchantViewerEnabled() {
   return IsRegionLockedFeatureEnabled(kCommerceMerchantViewer,
                                       kCommerceMerchantViewerRegionLaunched);
-}
-
-bool ShoppingService::IsPriceInsightsInfoApiEnabled() {
-  return IsRegionLockedFeatureEnabled(kPriceInsights,
-                                      kPriceInsightsRegionLaunched);
 }
 
 bool ShoppingService::IsDiscountEligibleToShowOnNavigation() {
@@ -1438,7 +1433,7 @@ ShoppingService::OptGuideResultToPriceInsightsInfo(
 
 void ShoppingService::HandleDidNavigatePrimaryMainFrameForPriceInsightsInfo(
     WebWrapper* web) {
-  if (!opt_guide_ || !IsPriceInsightsInfoApiEnabled() ||
+  if (!opt_guide_ || !IsPriceInsightsApiEnabled(account_checker_.get()) ||
       !kPriceInsightsUseCache.Get()) {
     return;
   }

@@ -577,10 +577,6 @@ class ShoppingService : public KeyedService,
   // Get the data stored in the cache or nullptr if none exists.
   const ProductInfo* GetFromProductInfoCache(const GURL& url);
 
-  // Whether APIs like |GetPriceInsightsInfoForURL| are enabled and allowed to
-  // be used.
-  bool IsPriceInsightsInfoApiEnabled();
-
   // Whether APIs like |IsShoppingPage| are enabled and allowed to be used.
   bool IsShoppingPageTypesApiEnabled();
 

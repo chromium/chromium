@@ -20,6 +20,10 @@ class ProductSpecificationsService;
 // whether to create critical, feature-related infrastructure.
 bool IsShoppingListEligible(AccountChecker* account_checker);
 
+// Returns whether the API for getting price insights is available for use. This
+// considers the user's region and locale.
+bool IsPriceInsightsApiEnabled(AccountChecker* account_checker);
+
 // This is a feature check for the "price insights", which will return true
 // if the user has the feature flag enabled, has MSBB enabled, and (if
 // applicable) is in an eligible country and locale. The value returned by
