@@ -982,6 +982,11 @@ Minimal change in `syntax/parse.rs`
 (coming from my https://github.com/dtolnay/cxx/pull/1414)
 """
 
+[[audits.cxxbridge-cmd]]
+who = "Dustin J. Mitchell <djmitche@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.135 -> 1.0.136"
+
 [[audits.cxxbridge-flags]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -1041,6 +1046,11 @@ who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "1.0.131 -> 1.0.135"
 notes = "No code changes in the delta"
+
+[[audits.cxxbridge-flags]]
+who = "Dustin J. Mitchell <djmitche@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "1.0.135 -> 1.0.136"
 
 [[audits.cxxbridge-macro]]
 who = "danakj <danakj@chromium.org>"
