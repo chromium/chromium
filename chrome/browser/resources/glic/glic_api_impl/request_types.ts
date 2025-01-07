@@ -8,8 +8,6 @@ import type {DraggableArea, GetTabContextErrorReason, PanelState, TabContextResu
 This file defines messages sent over postMessage in-between the Glic WebUI
 and the Glic web client.
 
-CHANGES MADE HERE MUST BE BACKWARDS COMPATIBLE.
-
 Request type entries should have this structure
 // The name of the function, should be unique.
 'name': {

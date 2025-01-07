@@ -83,7 +83,8 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   private receiver: PostMessageRequestReceiver;
   private handlerFunctionNames: Set<string> = new Set();
   private webClientMessageHandler: WebClientMessageHandler;
-  private panelState = new ObservableValue<PanelState>({ kind: PanelStateKind.HIDDEN });
+  private panelState =
+      new ObservableValue<PanelState>({kind: PanelStateKind.HIDDEN});
   private permissionStateMicrophone = new ObservableValue<boolean>(false);
   private permissionStateLocation = new ObservableValue<boolean>(false);
   private permissionStateTabContext = new ObservableValue<boolean>(false);

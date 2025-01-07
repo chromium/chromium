@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {GlicApiBootMessage, GlicApiWindowAddition, GlicHostRegistry} from '../glic_api/glic_api.js';
+import type {GlicApiBootMessage, GlicHostRegistry, WithGlicApi} from '../glic_api/glic_api.js';
 
 /*
 This code is intended to be used by a glic web client to connect to the glic
@@ -30,7 +30,7 @@ export function createGlicHostRegistryOnLoad(): Promise<GlicHostRegistry> {
         const scriptElement = document.createElement('script');
         scriptElement.text = glicApiSource;
         document.head.appendChild(scriptElement);
-        const bootFunc = (window as GlicApiWindowAddition).internalAutoGlicBoot;
+        const bootFunc = (window as WithGlicApi).internalAutoGlicBoot;
         if (!bootFunc) {
           throw new Error('Glic client import failed.');
         }

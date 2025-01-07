@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {WithGlicApi} from './glic_api.js';
+import type {WithGlicApi} from '../glic_api/glic_api.js';
+
 import {GlicHostRegistryImpl} from './glic_api_client.js';
 
 /*

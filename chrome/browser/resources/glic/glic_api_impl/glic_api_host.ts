@@ -20,10 +20,11 @@ import type {PanelState as PanelStateMojo, WebClientHandlerInterface, WebClientI
 import {GetTabContextErrorReason as MojoGetTabContextErrorReason, WebClientHandlerRemote, WebClientReceiver} from '../glic.mojom-webui.js';
 import type {DraggableArea, PanelState, Screenshot, WebPageData} from '../glic_api/glic_api.js';
 import {GetTabContextErrorReason} from '../glic_api/glic_api.js';
-import type {PostMessageRequestHandler} from '../glic_api/post_message_transport.js';
-import {PostMessageRequestReceiver, PostMessageRequestSender} from '../glic_api/post_message_transport.js';
-import type {HostRequestTypes, RgbaImage, UserProfileInfoPrivate} from '../glic_api/request_types.js';
-import {ImageAlphaType, ImageColorType} from '../glic_api/request_types.js';
+
+import type {PostMessageRequestHandler} from './post_message_transport.js';
+import {PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
+import type {HostRequestTypes, RgbaImage, UserProfileInfoPrivate} from './request_types.js';
+import {ImageAlphaType, ImageColorType} from './request_types.js';
 
 // Turn everything except void into a promise.
 type Promisify<T> = T extends void ? void : Promise<T>;
