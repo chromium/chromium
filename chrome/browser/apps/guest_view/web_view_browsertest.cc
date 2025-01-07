@@ -2728,8 +2728,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, CookieIsolation) {
 // This tests that in-memory storage partitions are reset on browser restart,
 // but persistent ones maintain state for cookies and HTML5 storage.
 IN_PROC_BROWSER_TEST_P(WebViewTest, PRE_StoragePersistence) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   ASSERT_TRUE(StartEmbeddedTestServer());
   // We don't care where the main browser is on this test.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
@@ -2743,8 +2741,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, PRE_StoragePersistence) {
 // This is the post-reset portion of the StoragePersistence test.  See
 // PRE_StoragePersistence for main comment.
 IN_PROC_BROWSER_TEST_P(WebViewTest, StoragePersistence) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   ASSERT_TRUE(StartEmbeddedTestServer());
   // We don't care where the main browser is on this test.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
@@ -2760,8 +2756,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, StoragePersistence) {
 // entries, which the test checks to ensure proper storage isolation is
 // enforced.
 IN_PROC_BROWSER_TEST_P(WebViewTest, DOMStorageIsolation) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   GURL navigate_to_url = embedded_test_server()->GetURL(
@@ -5089,8 +5083,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, LoadWebviewAccessibleResource) {
 
 // Tests that a WebView can be navigated to a WebView accessible resource.
 IN_PROC_BROWSER_TEST_P(WebViewTest, NavigateGuestToWebviewAccessibleResource) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testNavigateGuestToWebviewAccessibleResource",
              "web_view/load_webview_accessible_resource", NO_TEST_SERVER);
 
@@ -5137,8 +5129,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, ReloadWebviewAccessibleResource) {
 
 IN_PROC_BROWSER_TEST_P(WebViewTest,
                        CookiesEnabledAfterWebviewAccessibleResource) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testCookiesEnabledAfterWebviewAccessibleResource",
              "web_view/load_webview_accessible_resource", NEEDS_TEST_SERVER);
 }
