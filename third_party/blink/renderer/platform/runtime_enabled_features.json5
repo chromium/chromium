@@ -488,10 +488,10 @@
       name: "AudioVideoTracks",
       status: "experimental",
     },
-    // Re-enable this after crbug.com/378027651 is fixed.
+    // Killswitch.
     {
       name: "AuraScrollbarUsesNinePatchTrack",
-      status: "test",
+      status: "stable",
     },
     {
       name: "AutoDarkMode",
