@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.browser.collaboration;
 
+import android.app.Activity;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.components.collaboration.CollaborationControllerDelegate;
 import org.chromium.components.collaboration.Outcome;
 import org.chromium.components.collaboration.Type;
@@ -19,7 +22,8 @@ import org.chromium.components.data_sharing.SharedDataPreview;
 public class CollaborationControllerDelegateImpl implements CollaborationControllerDelegate {
     private long mNativePtr;
 
-    CollaborationControllerDelegateImpl() {
+    public CollaborationControllerDelegateImpl(
+            Activity activity, DataSharingTabManager tabManager) {
         mNativePtr = CollaborationControllerDelegateImplJni.get().createNativeObject(this);
     }
 
@@ -36,7 +40,7 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
     @CalledByNative
     void prepareFlowUI(long resultCallback) {
         CollaborationControllerDelegateImplJni.get()
-                .runResultCallback(Outcome.FAILURE, resultCallback);
+                .runResultCallback(Outcome.SUCCESS, resultCallback);
     }
 
     /**

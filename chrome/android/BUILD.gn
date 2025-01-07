@@ -378,6 +378,8 @@ if (current_toolchain == default_toolchain) {
 
       # TODO(ssid): Decouple dependency on internal library.
       "//chrome/browser/autofill/android:third_party_provider_java",
+      "//chrome/browser/collaboration:internal_java",
+      "//chrome/browser/collaboration:utils_java",
       "//chrome/browser/data_sharing:data_sharing_public_java",
       "//chrome/browser/data_sharing:internal_library_java",
       "//chrome/browser/data_sharing:invitation_dialog_java",
@@ -1024,6 +1026,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/browser_controls/android:junit",
       "//chrome/browser/collaboration:factory_java",
       "//chrome/browser/collaboration:messaging_factory_java",
+      "//chrome/browser/collaboration:utils_java",
       "//chrome/browser/commerce/android:java",
       "//chrome/browser/commerce/android:junit",
       "//chrome/browser/commerce/coupons/android:junit",

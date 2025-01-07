@@ -15,7 +15,7 @@ namespace collaboration::conversion {
 jlong GetJavaResultCallbackPtr(
     CollaborationControllerDelegate::ResultCallback result);
 
-// Convers a Java long obtained from GetJavaResultCallbackPtr() back into a
+// Converts a Java long obtained from GetJavaResultCallbackPtr() back into a
 // ResultCallback.
 std::unique_ptr<CollaborationControllerDelegate::ResultCallback>
 GetNativeResultCallbackFromJava(jlong callback);

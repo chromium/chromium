@@ -43,6 +43,8 @@ import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarCoordinator;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
+import org.chromium.chrome.browser.collaboration.CollaborationControllerDelegateFactory;
+import org.chromium.chrome.browser.collaboration.CollaborationControllerDelegateImpl;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServiceFactory;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
@@ -442,6 +444,13 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         DataSharingTabGroupsDelegate dataSharingTabGroupsDelegate =
                 createDataSharingTabGroupsDelegate();
 
+        CollaborationControllerDelegateFactory collaborationControllerDelegateFactory =
+                () -> {
+                    assert getDataSharingTabManager() != null;
+                    return new CollaborationControllerDelegateImpl(
+                            mActivity, getDataSharingTabManager());
+                };
+
         mDataSharingTabManager =
                 new DataSharingTabManager(
                         mTabModelSelectorSupplier,
@@ -450,7 +459,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mShareDelegateSupplier,
                         mWindowAndroid,
                         mActivity.getResources(),
-                        mTabGroupUiActionHandlerSupplier);
+                        mTabGroupUiActionHandlerSupplier,
+                        collaborationControllerDelegateFactory);
 
         mEdgeToEdgeManager = edgeToEdgeManager;
         initAppHeaderCoordinator(
@@ -1284,7 +1294,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mDataSharingTabManager.initWithProfile(
                 originalProfile,
                 DataSharingServiceFactory.getForProfile(originalProfile),
-                MessagingBackendServiceFactory.getForProfile(originalProfile));
+                MessagingBackendServiceFactory.getForProfile(originalProfile),
+                collaborationService);
 
         TabModelUtils.onInitializedTabModelSelector(mTabModelSelectorSupplier)
                 .runSyncOrOnAvailable(

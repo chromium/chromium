@@ -22,8 +22,10 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.chrome.browser.collaboration.CollaborationControllerDelegateFactory;
 import org.chromium.chrome.browser.data_sharing.ui.recent_activity.RecentActivityActionHandler;
 import org.chromium.chrome.browser.data_sharing.ui.recent_activity.RecentActivityListCoordinator;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
@@ -37,6 +39,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.share.ShareHelper;
 import org.chromium.components.browser_ui.share.ShareParams;
+import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.DataSharingUIDelegate;
@@ -90,10 +93,12 @@ public class DataSharingTabManager {
             new HashMap<>();
     private final LinkedList<Runnable> mTasksToRunOnProfileAvailable = new LinkedList<>();
     private final BulkFaviconUtil mBulkFaviconUtil = new BulkFaviconUtil();
+    private final CollaborationControllerDelegateFactory mCollaborationControllerDelegateFactory;
 
     private @Nullable Profile mProfile;
     private @Nullable DataSharingService mDataSharingService;
     private @Nullable MessagingBackendService mMessagingBackendService;
+    private @Nullable CollaborationService mCollaborationService;
 
     /** This class is responsible for observing sync tab activities. */
     private static class SyncObserver implements TabGroupSyncService.Observer {
@@ -137,6 +142,8 @@ public class DataSharingTabManager {
      * @param resources Used to load localized android resources.
      * @param tabGroupUiActionHandlerSupplier Supplier for the controller used to open tab groups
      *     locally.
+     * @param collaborationControllerDelegateFactory The factory to create a {@link
+     *     CollaborationControllerDelegate}
      */
     public DataSharingTabManager(
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
@@ -145,7 +152,8 @@ public class DataSharingTabManager {
             ObservableSupplier<ShareDelegate> shareDelegateSupplier,
             WindowAndroid windowAndroid,
             Resources resources,
-            OneshotSupplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier) {
+            OneshotSupplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
+            CollaborationControllerDelegateFactory collaborationControllerDelegateFactory) {
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mDataSharingTabGroupsDelegate = tabGroupsDelegate;
         mBottomSheetControllerSupplier = bottomSheetControllerSupplier;
@@ -153,6 +161,7 @@ public class DataSharingTabManager {
         mWindowAndroid = windowAndroid;
         mResources = resources;
         mTabGroupUiActionHandlerSupplier = tabGroupUiActionHandlerSupplier;
+        mCollaborationControllerDelegateFactory = collaborationControllerDelegateFactory;
         assert mBottomSheetControllerSupplier != null;
         assert mShareDelegateSupplier != null;
     }
@@ -163,15 +172,18 @@ public class DataSharingTabManager {
      * @param profile The loaded profile.
      * @param dataSharingService Data sharing service associated with the profile.
      * @param messagingBackendService The messaging backend used to show recent activity UI.
+     * @param collaborationService The collaboration service to manage collaboration flows.
      */
     public void initWithProfile(
             @NonNull Profile profile,
             DataSharingService dataSharingService,
-            MessagingBackendService messagingBackendService) {
+            MessagingBackendService messagingBackendService,
+            CollaborationService collaborationService) {
         mProfile = profile;
         assert !mProfile.isOffTheRecord();
         mDataSharingService = dataSharingService;
         mMessagingBackendService = messagingBackendService;
+        mCollaborationService = collaborationService;
         while (!mTasksToRunOnProfileAvailable.isEmpty()) {
             Runnable task = mTasksToRunOnProfileAvailable.removeFirst();
             task.run();
@@ -269,6 +281,15 @@ public class DataSharingTabManager {
     private void initiateJoinFlowWithProfile(Activity activity, GURL dataSharingUrl) {
         DataSharingMetrics.recordJoinActionFlowState(
                 DataSharingMetrics.JoinActionStateAndroid.PROFILE_AVAILABLE);
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.COLLABORATION_FLOW_ANDROID)
+                && mCollaborationControllerDelegateFactory != null) {
+            assert mCollaborationService != null;
+            mCollaborationService.startJoinFlow(
+                    mCollaborationControllerDelegateFactory.create(), dataSharingUrl);
+            return;
+        }
+
         TabGroupSyncService tabGroupSyncService =
                 TabGroupSyncServiceFactory.getForProfile(mProfile);
         assert tabGroupSyncService != null;

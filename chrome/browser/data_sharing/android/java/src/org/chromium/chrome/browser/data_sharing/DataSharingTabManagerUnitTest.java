@@ -49,6 +49,11 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.collaboration.CollaborationControllerDelegateFactory;
+import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -60,6 +65,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareParams;
+import org.chromium.components.collaboration.CollaborationControllerDelegate;
+import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.messaging.ActivityLogItem;
 import org.chromium.components.collaboration.messaging.CollaborationEvent;
 import org.chromium.components.collaboration.messaging.MessageAttribution;
@@ -104,6 +111,7 @@ import java.util.List;
 
 /** Unit test for {@link DataSharingTabManager} */
 @RunWith(BaseRobolectricTestRunner.class)
+@DisableFeatures(ChromeFeatureList.COLLABORATION_FLOW_ANDROID)
 public class DataSharingTabManagerUnitTest {
     private static final LocalTabGroupId LOCAL_ID = new LocalTabGroupId(Token.createRandom());
     private static final Integer TAB_ID = 456;
@@ -140,6 +148,8 @@ public class DataSharingTabManagerUnitTest {
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private DataSharingService mDataSharingService;
     @Mock private MessagingBackendService mMessagingBackendService;
+    @Mock private CollaborationService mCollaborationService;
+    @Mock private CollaborationControllerDelegate mCollaborationControllerDelegate;
     @Mock private DataSharingUIDelegate mDataSharingUiDelegate;
     @Mock private DataSharingTabGroupsDelegate mDataSharingTabGroupsDelegate;
     @Mock private Profile mProfile;
@@ -174,10 +184,16 @@ public class DataSharingTabManagerUnitTest {
 
         DataSharingServiceFactory.setForTesting(mDataSharingService);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
+        CollaborationServiceFactory.setForTesting(mCollaborationService);
         mTabModelSelectorSupplier = new ObservableSupplierImpl<>(mTabModelSelector);
         mBottomSheetControllerSupplier = new ObservableSupplierImpl<>(mBottomSheetController);
         mShareDelegateSupplier = new ObservableSupplierImpl<>(mShareDelegate);
         mTabGroupUiActionHandlerSupplier.set(mTabGroupUiActionHandler);
+
+        CollaborationControllerDelegateFactory collaborationControllerDelegateFactory =
+                () -> {
+                    return mCollaborationControllerDelegate;
+                };
 
         mDataSharingTabManager =
                 new DataSharingTabManager(
@@ -187,10 +203,11 @@ public class DataSharingTabManagerUnitTest {
                         mShareDelegateSupplier,
                         mWindowAndroid,
                         ApplicationProvider.getApplicationContext().getResources(),
-                        mTabGroupUiActionHandlerSupplier);
+                        mTabGroupUiActionHandlerSupplier,
+                        collaborationControllerDelegateFactory);
 
         mDataSharingTabManager.initWithProfile(
-                mProfile, mDataSharingService, mMessagingBackendService);
+                mProfile, mDataSharingService, mMessagingBackendService, mCollaborationService);
 
         mSyncedGroupTestHelper = new SyncedGroupTestHelper(mTabGroupSyncService);
         mSavedTabGroup = mSyncedGroupTestHelper.newTabGroup(SYNC_GROUP_ID1);
@@ -261,7 +278,8 @@ public class DataSharingTabManagerUnitTest {
                         mShareDelegateSupplier,
                         mWindowAndroid,
                         ApplicationProvider.getApplicationContext().getResources(),
-                        mTabGroupUiActionHandlerSupplier);
+                        mTabGroupUiActionHandlerSupplier,
+                        null);
         mDataSharingTabManager.initiateJoinFlow(mActivity, TEST_URL);
 
         // Verify we never parse the URL without a profile.
@@ -290,6 +308,15 @@ public class DataSharingTabManagerUnitTest {
 
         mDataSharingTabManager.initiateJoinFlow(mActivity, TEST_URL);
         verify(mDataSharingTabGroupsDelegate).openTabGroupWithTabId(TAB_ID);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.COLLABORATION_FLOW_ANDROID)
+    public void testJoinFlowWithCollaborationService() {
+        mockSuccessfulParseDataSharingUrl();
+        mDataSharingTabManager.initiateJoinFlow(mActivity, TEST_URL);
+
+        verify(mCollaborationService).startJoinFlow(any(), eq(TEST_URL));
     }
 
     @Test
