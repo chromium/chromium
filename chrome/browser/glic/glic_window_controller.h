@@ -61,7 +61,7 @@ class GlicWindowController : public views::WidgetObserver {
   void Close();
 
   // Drags the glic window following the current mouse location with a given
-  // offset and checks for pinning points during and after the move loop.
+  // offset and checks for pinning points after the move loop.
   void HandleWindowDragWithOffset(gfx::Vector2d mouse_offset);
 
   const mojom::PanelState& GetPanelState() const { return panel_state_; }
@@ -139,8 +139,7 @@ class GlicWindowController : public views::WidgetObserver {
   };
 
   // If the widget is in snapping distance of a browser's glic button, it snaps
-  // glic to the top right of the browser's glic button. Also handles snapping
-  // when dragging for magnetism.
+  // glic to the top right of the browser's glic button.
   void HandleBrowserPinning(views::Widget* widget);
 
   // When glic is unpinned, reparent it to an empty holder Widget. Initializes
@@ -163,7 +162,7 @@ class GlicWindowController : public views::WidgetObserver {
   // List of callbacks to be notified when window activation has changed.
   base::RepeatingCallbackList<void(bool)> window_activation_callback_list_;
 
-  // Empty holder widget to reparent to when unpinned and when being dragged.
+  // Empty holder widget to reparent to when unpinned.
   std::unique_ptr<views::Widget> holder_widget_;
 
   const raw_ptr<Profile> profile_;

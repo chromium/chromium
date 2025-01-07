@@ -26,7 +26,6 @@ namespace {
 // Default value for how close the corner of glic has to be from a browser's
 // glic button to snap.
 constexpr static int kSnapDistanceThreshold = 50;
-constexpr static int kUnsnapDistanceThreshold = kSnapDistanceThreshold + 10;
 
 constexpr static int kWidgetWidth = 400;
 constexpr static int kWidgetHeight = 800;
@@ -229,32 +228,14 @@ void GlicWindowController::HandleWindowDragWithOffset(
   // This code isn't set up to handle nested run loops. Nested run loops will
   // lead to crashes.
   if (!in_move_loop_) {
-    // Prepare to start a new drag of the glic window using holder_widget_ as
-    // the new parent.
-    MaybeCreateHolderWindowAndReparent();
     in_move_loop_ = true;
     const views::Widget::MoveLoopSource move_loop_source =
         views::Widget::MoveLoopSource::kMouse;
-    // On Windows, RunMoveLoop doesn't work with `holder_widget_` because
-    // `widget_`'s hwnd received the mouse down and move messages, not
-    // `holder_widget_`'s hwnd. Calling RunMoveLoop on `holder_widget_` exits
-    // the loop immediately.
-    views::Widget* run_loop_widget =
-#if BUILDFLAG(IS_WIN)
-        widget_.get();
-#else
-        holder_widget_.get();
-#endif
-    run_loop_widget->RunMoveLoop(
-        mouse_offset, move_loop_source,
-        views::Widget::MoveLoopEscapeBehavior::kDontHide);
+    widget_->RunMoveLoop(mouse_offset, move_loop_source,
+                         views::Widget::MoveLoopEscapeBehavior::kDontHide);
     in_move_loop_ = false;
     // Look for pins
     HandleBrowserPinning(widget_.get());
-  } else {
-    // while in move loop, find browser pin targets close to the holder widget
-    // to animate glic to for a magnetic effect.
-    HandleBrowserPinning(holder_widget_.get());
   }
 }
 
@@ -287,29 +268,10 @@ void GlicWindowController::HandleBrowserPinning(views::Widget* widget) {
     float corner_distance = (glic_button_rect.CenterPoint() -
                              widget->GetWindowBoundsInScreen().top_right())
                                 .Length();
-    // While glic window is actively being dragged, simulate a visual effect of
-    // being pulled to and away from the browser by updating its parent.
-    if (in_move_loop_) {
-      if (corner_distance > kUnsnapDistanceThreshold &&
-          widget_->parent() == window_widget) {
-        // Pull the glic window away from the browser window anchor point when a
-        // drag is far enough away
-        views::Widget::ReparentNativeView(widget_->GetNativeView(),
-                                          holder_widget_->GetNativeView());
-        // TODO(https://crbug.com/384792988): Should use GlicView->
-        // AnimateFrameBounds here but is currently having a glitchy animation.
-      } else if (corner_distance < kSnapDistanceThreshold &&
-                 widget_->parent() != window_widget) {
-        // Temporarily attach the window for the visual effect of being
-        // magnetised to the snapping point
-        MoveToBrowserPinTarget(browser, true);
-        views::Widget::ReparentNativeView(widget_->GetNativeView(),
-                                          window_widget->GetNativeView());
-      }
-    } else {
-      // If there is no active drag (i.e. the previous drag has ended)
-      // then determine whether to snap the glic window to the browser,
-      // or to detach it from the browser.
+    // If there is no active drag (i.e. the previous drag has ended)
+    // then determine whether to snap the glic window to the browser,
+    // or to detach it from the browser.
+    if (!in_move_loop_) {
       if (corner_distance < kSnapDistanceThreshold) {
         MoveToBrowserPinTarget(browser, true);
         // Close holder window if existing
