@@ -13,7 +13,7 @@
 edition = "2015"
 rust-version = "1.61"
 name = "serde_derive"
-version = "1.0.216"
+version = "1.0.217"
 authors = [
     "Erick Tryzelaar <erick.tryzelaar@gmail.com>",
     "David Tolnay <dtolnay@gmail.com>",
@@ -46,6 +46,10 @@ repository = "https://github.com/serde-rs/serde"
 rustdoc-args = ["--generate-link-to-definition"]
 targets = ["x86_64-unknown-linux-gnu"]
 
+[features]
+default = []
+deserialize_in_place = []
+
 [lib]
 name = "serde_derive"
 path = "src/lib.rs"
@@ -74,7 +78,3 @@ default-features = false
 
 [dev-dependencies.serde]
 version = "1"
-
-[features]
-default = []
-deserialize_in_place = []

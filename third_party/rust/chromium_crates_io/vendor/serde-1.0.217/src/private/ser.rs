@@ -54,6 +54,7 @@ enum Unsupported {
     Sequence,
     Tuple,
     TupleStruct,
+    #[cfg(not(any(feature = "std", feature = "alloc")))]
     Enum,
 }
 
@@ -70,6 +71,7 @@ impl Display for Unsupported {
             Unsupported::Sequence => formatter.write_str("a sequence"),
             Unsupported::Tuple => formatter.write_str("a tuple"),
             Unsupported::TupleStruct => formatter.write_str("a tuple struct"),
+            #[cfg(not(any(feature = "std", feature = "alloc")))]
             Unsupported::Enum => formatter.write_str("an enum"),
         }
     }
@@ -1095,9 +1097,9 @@ where
         self,
         _: &'static str,
         _: u32,
-        _: &'static str,
+        variant: &'static str,
     ) -> Result<Self::Ok, Self::Error> {
-        Err(Self::bad_type(Unsupported::Enum))
+        self.0.serialize_entry(variant, &())
     }
 
     fn serialize_newtype_struct<T>(
