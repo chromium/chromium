@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
+#include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
@@ -17,6 +18,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace web_app {
 
@@ -37,9 +39,7 @@ class PreventCloseControllerBrowserTest : public WebAppBrowserTestBase {
                                           {});
   }
 
-  void ApplyPolicySettings(const webapps::AppId& app_id,
-                           const GURL& url,
-                           bool prevent_close) {
+  void ForceInstallWebApp(const webapps::AppId& app_id, const GURL& url) {
     web_app::WebAppTestInstallObserver observer(browser()->profile());
     observer.BeginListening({app_id});
 
@@ -50,21 +50,27 @@ class PreventCloseControllerBrowserTest : public WebAppBrowserTestBase {
                 .Set(kUrlKey, url.spec())
                 .Set(kDefaultLaunchContainerKey,
                      kDefaultLaunchContainerWindowValue)));
+
+    const webapps::AppId installed_app_id = observer.Wait();
+    EXPECT_EQ(installed_app_id, app_id);
+  }
+
+  void ConfigurePreventClose(const GURL& url, bool prevent_close) {
     profile()->GetPrefs()->SetList(
         prefs::kWebAppSettings,
         base::Value::List().Append(base::Value::Dict()
                                        .Set(kManifestId, url.spec())
                                        .Set(kRunOnOsLogin, kRunWindowed)
                                        .Set(kPreventClose, prevent_close)));
-
-    const webapps::AppId installed_app_id = observer.Wait();
-    EXPECT_EQ(installed_app_id, app_id);
+    WebAppProvider::GetForTest(profile())
+        ->policy_manager()
+        .RefreshPolicySettingsForTesting();
   }
 
   void ClearPolicySettings() {
+    profile()->GetPrefs()->SetList(prefs::kWebAppSettings, base::Value::List());
     profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
                                    base::Value::List());
-    profile()->GetPrefs()->SetList(prefs::kWebAppSettings, base::Value::List());
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -72,17 +78,21 @@ class PreventCloseControllerBrowserTest : public WebAppBrowserTestBase {
 
 IN_PROC_BROWSER_TEST_F(PreventCloseControllerBrowserTest,
                        NonClosablePWADoesNotLaunchAdditionalWindow) {
+  absl::Cleanup policy_cleanup = [this] { ClearPolicySettings(); };
+
   // Arrange with non-closable PWA and start it a first time
   size_t expected_browser_count = chrome::GetBrowserCount(profile());
 
   const GURL url(kCalculatorAppUrl);
-  ApplyPolicySettings(ash::kCalculatorAppId, url, /*prevent_close=*/true);
+  ForceInstallWebApp(ash::kCalculatorAppId, url);
 
-  Browser* browser = LaunchWebAppBrowser(ash::kCalculatorAppId);
+  Browser* browser = LaunchWebAppBrowserAndWait(ash::kCalculatorAppId);
   ++expected_browser_count;
 
   ASSERT_TRUE(browser);
   EXPECT_EQ(expected_browser_count, chrome::GetBrowserCount(profile()));
+
+  ConfigurePreventClose(url, /*prevent_close=*/true);
 
   // Act by launching PWA a second time
   Browser* second_browser = LaunchWebAppBrowser(ash::kCalculatorAppId);
@@ -102,32 +112,32 @@ IN_PROC_BROWSER_TEST_F(PreventCloseControllerBrowserTest,
   EXPECT_NE(browser, second_browser);
   EXPECT_EQ(expected_browser_count + 1, chrome::GetBrowserCount(profile()));
 #endif
-
-  ClearPolicySettings();
 }
 
 IN_PROC_BROWSER_TEST_F(PreventCloseControllerBrowserTest,
                        ClosablePWALaunchesAdditionalWindow) {
+  absl::Cleanup policy_cleanup = [this] { ClearPolicySettings(); };
+
   size_t expected_browser_count = chrome::GetBrowserCount(profile());
 
   const GURL url(kCalculatorAppUrl);
-  ApplyPolicySettings(ash::kCalculatorAppId, url, /*prevent_close=*/false);
+  ForceInstallWebApp(ash::kCalculatorAppId, url);
 
-  Browser* browser = LaunchWebAppBrowser(ash::kCalculatorAppId);
+  Browser* browser = LaunchWebAppBrowserAndWait(ash::kCalculatorAppId);
   ++expected_browser_count;
 
   ASSERT_TRUE(browser);
   EXPECT_EQ(expected_browser_count, chrome::GetBrowserCount(profile()));
 
+  ConfigurePreventClose(url, /*prevent_close=*/false);
+
   // Act by launching PWA a second time
-  Browser* second_browser = LaunchWebAppBrowser(ash::kCalculatorAppId);
+  Browser* second_browser = LaunchWebAppBrowserAndWait(ash::kCalculatorAppId);
   expected_browser_count++;
 
   // Assert that the PWA only has one existing window
   EXPECT_NE(browser, second_browser);
   EXPECT_EQ(expected_browser_count, chrome::GetBrowserCount(profile()));
-
-  ClearPolicySettings();
 }
 
 }  // namespace web_app
