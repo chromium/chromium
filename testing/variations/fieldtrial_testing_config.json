@@ -25817,6 +25817,22 @@
             ]
         }
     ],
+    "WinSboxCsrssLockdown": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_with_locale_proxy",
+                    "enable_features": [
+                        "EnableCsrssLockdown",
+                        "WinSboxProxyLocale"
+                    ]
+                }
+            ]
+        }
+    ],
     "WinSboxNoFakeGdiInit": [
         {
             "platforms": [
