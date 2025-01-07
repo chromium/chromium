@@ -12645,6 +12645,25 @@
             ]
         }
     ],
+    "IpadZpsSuggestionsLimitIncrease": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_ZPS_SUGGESTIONS_LIMIT_INCREASE_WITH_TRENDS",
+                    "params": {
+                        "IpadAdditionalTrendingQueries": "5",
+                        "IpadZPSSuggestionsLimit": "20"
+                    },
+                    "enable_features": [
+                        "IpadZeroSuggestMatches"
+                    ]
+                }
+            ]
+        }
+    ],
     "IsolatedWebApps": [
         {
             "platforms": [
