@@ -6821,7 +6821,7 @@
   {
     "name": "pdf-cr23",
     "owners": [ "andyphan@chromium.org", "//pdf/OWNERS" ],
-    "expiry_milestone": 134
+    "expiry_milestone": 136
   },
   {
     "name": "pdf-ink2",
