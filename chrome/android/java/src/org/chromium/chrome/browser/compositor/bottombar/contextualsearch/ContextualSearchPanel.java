@@ -221,6 +221,11 @@ public class ContextualSearchPanel extends OverlayPanel {
         return mSceneLayer;
     }
 
+    @Override
+    public void removeFromParent() {
+        mSceneLayer.removeFromParent();
+    }
+
     // ============================================================================================
     // Contextual Search Manager Integration
     // ============================================================================================

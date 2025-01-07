@@ -771,6 +771,11 @@ public class StripLayoutHelperManager
         return mTabStripTreeProvider;
     }
 
+    @Override
+    public void removeFromParent() {
+        mTabStripTreeProvider.removeFromParent();
+    }
+
     private int getStripTransitionScrimColor() {
         return mToolbarManager.getPrimaryColor();
     }

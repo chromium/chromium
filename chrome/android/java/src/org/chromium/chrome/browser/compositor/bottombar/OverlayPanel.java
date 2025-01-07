@@ -975,6 +975,9 @@ public class OverlayPanel extends OverlayPanelAnimation
     }
 
     @Override
+    public void removeFromParent() {}
+
+    @Override
     public boolean isSceneOverlayTreeShowing() {
         return isShowing();
     }

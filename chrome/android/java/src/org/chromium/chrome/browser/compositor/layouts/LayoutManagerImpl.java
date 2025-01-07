@@ -760,17 +760,19 @@ public class LayoutManagerImpl
                         : mBrowserControlsStateProvider.getTopControlOffset();
 
         for (int i = 0; i < mSceneOverlays.size(); i++) {
+            SceneOverlay overlay = mSceneOverlays.get(i);
             // If the SceneOverlay is not showing, don't bother adding it to the tree.
-            if (!mSceneOverlays.get(i).isSceneOverlayTreeShowing()) continue;
+            if (!overlay.isSceneOverlayTreeShowing()) {
+                overlay.removeFromParent();
+                continue;
+            }
 
             SceneOverlayLayer overlayLayer =
-                    mSceneOverlays
-                            .get(i)
-                            .getUpdatedSceneOverlayTree(
-                                    mCachedWindowViewport,
-                                    mCachedVisibleViewport,
-                                    resourceManager,
-                                    offsetPx * mPxToDp);
+                    overlay.getUpdatedSceneOverlayTree(
+                            mCachedWindowViewport,
+                            mCachedVisibleViewport,
+                            resourceManager,
+                            offsetPx * mPxToDp);
 
             overlayLayer.setContentTree(layer);
             layer = overlayLayer;

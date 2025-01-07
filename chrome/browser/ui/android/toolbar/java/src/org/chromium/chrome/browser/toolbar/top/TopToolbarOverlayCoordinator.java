@@ -127,6 +127,11 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
     }
 
     @Override
+    public void removeFromParent() {
+        mSceneLayer.removeFromParent();
+    }
+
+    @Override
     public boolean isSceneOverlayTreeShowing() {
         return mMediator.shouldBeAttachedToTree();
     }

@@ -22,15 +22,19 @@ public interface SceneOverlay extends BackPressHandler {
      * @param visibleViewport The viewport accounting for browser controls.
      * @param resourceManager A resource manager.
      * @param yOffset Current browser controls offset in dp.
-     * @return A {@link SceneOverlayLayer} that represents an scene overlay.
-     * Or {@code null} if this {@link SceneOverlay} doesn't have a tree.
+     * @return A {@link SceneOverlayLayer} that represents an scene overlay. Or {@code null} if this
+     *     {@link SceneOverlay} doesn't have a tree.
      */
     SceneOverlayLayer getUpdatedSceneOverlayTree(
             RectF viewport, RectF visibleViewport, ResourceManager resourceManager, float yOffset);
 
+    /** Notify the {@link SceneOverlayLayer} that it should be removed from its parent. */
+    void removeFromParent();
+
     /**
      * Notify the layout that a SceneOverlay is visible. If not visible, the content tree will not
      * be modified.
+     *
      * @return True if the SceneOverlay tree is showing.
      */
     boolean isSceneOverlayTreeShowing();
