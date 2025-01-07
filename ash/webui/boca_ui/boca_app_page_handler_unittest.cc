@@ -1353,6 +1353,9 @@ TEST_F(BocaAppPageHandlerTest, UpdateNonEmptyStudentActivitySucceed) {
   ::boca::StudentDevice device_11;
   auto* activity_11 = device_11.mutable_activity();
   activity_11->mutable_active_tab()->set_title("google1");
+  device_11.mutable_view_screen_config()
+      ->mutable_connection_param()
+      ->set_connection_code("abcd");
   (*status_1.mutable_devices())["device1"] = std::move(device_1);
   (*status_1.mutable_devices())["device11"] = std::move(device_11);
 
@@ -1388,6 +1391,11 @@ TEST_F(BocaAppPageHandlerTest, UpdateNonEmptyStudentActivitySucceed) {
   EXPECT_EQ("2", result[2]->id);
   EXPECT_EQ("youtube", result[2]->activity->active_tab);
   EXPECT_FALSE(result[2]->activity->is_active);
+
+  // Connection code should be set
+  EXPECT_EQ("abcd", result[0]->activity->view_screen_session_code);
+  EXPECT_EQ("", result[1]->activity->view_screen_session_code);
+  EXPECT_EQ("", result[2]->activity->view_screen_session_code);
 }
 
 TEST_F(BocaAppPageHandlerTest, RemoveStudentSucceedAlsoRemoveFromLocalSession) {

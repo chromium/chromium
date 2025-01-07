@@ -481,8 +481,12 @@ void BocaAppHandler::OnConsumerActivityUpdated(
       auto identity_ptr = mojom::IdentifiedActivity::New(
           item.first, mojom::StudentActivity::New(
                           item.second.state() == ::boca::StudentStatus::ACTIVE,
-                          device.second.activity().active_tab().title(), false,
-                          false, mojom::JoinMethod::kRoster));
+                          device.second.activity().active_tab().title(),
+                          /*is_caption_enabled=*/false,
+                          /*is_hand_raised=*/false, mojom::JoinMethod::kRoster,
+                          device.second.view_screen_config()
+                              .connection_param()
+                              .connection_code()));
       result.push_back(std::move(identity_ptr));
     }
   }

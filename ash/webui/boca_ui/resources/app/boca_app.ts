@@ -148,6 +148,7 @@ export declare interface StudentActivity {
   // TODO(b/365191878): Remove this after refactoring existing schema to support
   // multi-group.
   joinMethod: JoinMethod;
+  viewScreenSessionCode?: string;
 }
 
 /**

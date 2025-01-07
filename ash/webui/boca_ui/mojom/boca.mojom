@@ -131,6 +131,8 @@ struct StudentActivity {
   // TODO(b/365191878): Remove this after refactoring existing schema to support
   // multi-group.
   JoinMethod join_method;
+  // A string-format code to connect to student's device.
+  string? view_screen_session_code;
 };
 
 struct IdentifiedActivity{

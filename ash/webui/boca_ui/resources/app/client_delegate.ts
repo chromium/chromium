@@ -24,7 +24,10 @@ export function getStudentActivityMojomToUI(activities: Activity[]):
                                                undefined,
           isCaptionEnabled: item.activity.isCaptionEnabled,
           isHandRaised: item.activity.isHandRaised,
-          joinMethod: item.activity.joinMethod.valueOf()
+          joinMethod: item.activity.joinMethod.valueOf(),
+          viewScreenSessionCode: item.activity.viewScreenSessionCode ?
+              item.activity.viewScreenSessionCode :
+              undefined,
         }
     }
   })

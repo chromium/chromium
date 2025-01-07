@@ -505,7 +505,8 @@ suite('ClientDelegateTest', function() {
               activeTab: 'google',
               isCaptionEnabled: false,
               isHandRaised: false,
-              joinMethod: 0
+              joinMethod: 0,
+              viewScreenSessionCode: 'abcd'
             }
           },
           {
@@ -515,7 +516,8 @@ suite('ClientDelegateTest', function() {
               activeTab: 'youtube',
               isCaptionEnabled: false,
               isHandRaised: false,
-              joinMethod: 1
+              joinMethod: 1,
+              viewScreenSessionCode: null
             }
           }
         ];
@@ -529,7 +531,8 @@ suite('ClientDelegateTest', function() {
                   activeTab: 'google',
                   isCaptionEnabled: false,
                   isHandRaised: false,
-                  joinMethod: 0
+                  joinMethod: 0,
+                  viewScreenSessionCode: 'abcd'
                 }
               },
               {
@@ -539,7 +542,8 @@ suite('ClientDelegateTest', function() {
                   activeTab: 'youtube',
                   isCaptionEnabled: false,
                   isHandRaised: false,
-                  joinMethod: 1
+                  joinMethod: 1,
+                  viewScreenSessionCode: undefined
                 }
               }
             ],
