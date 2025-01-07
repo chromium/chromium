@@ -447,7 +447,7 @@ BOOL IsIdentityInCoreAccountInfos(
     [self signInInCurrentProfile];
   } else if (isValidIdentityOnDevice) {
     CHECK(AreSeparateProfilesForManagedAccountsEnabled());
-    NSString* sceneIdentifier = _browser->GetSceneState().sceneSessionID;
+    SceneState* sceneState = _browser->GetSceneState();
     __weak __typeof(self) weakSelf = self;
     OnProfileSwitchCompletion completion = base::BindOnce(
         [](__typeof(self) strong_self, bool success,
@@ -458,7 +458,7 @@ BOOL IsIdentityInCoreAccountInfos(
         },
         weakSelf);
     [_performer switchToProfileWithIdentity:_identityToSignIn
-                            sceneIdentifier:sceneIdentifier
+                                 sceneState:sceneState
                                  completion:std::move(completion)];
   } else {
     // Handle the case where the identity is no longer valid.

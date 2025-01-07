@@ -16,6 +16,7 @@
 class Browser;
 @protocol ChangeProfileCommands;
 class ProfileIOS;
+@class SceneState;
 @protocol SystemIdentity;
 
 // Callback called the profile switching succeded (`success` is true) or failed
@@ -55,7 +56,7 @@ using OnProfileSwitchCompletion = base::OnceCallback<
 // Switches to the profile that `identity` is assigned, for `sceneIdentifier`.
 // `completion` is called once the switch failed or succeeded.
 - (void)switchToProfileWithIdentity:(id<SystemIdentity>)identity
-                    sceneIdentifier:(NSString*)sceneIdentifier
+                         sceneState:(SceneState*)sceneState
                          completion:(OnProfileSwitchCompletion)completion;
 
 // Converts the personal profile to a managed one and attaches `identity` to it.

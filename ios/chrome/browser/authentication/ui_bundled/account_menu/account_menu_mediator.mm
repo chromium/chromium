@@ -322,8 +322,7 @@
         *profileName != _accountManagerService->GetProfileName()) {
       // TODO(crbug.com/375604649): Unblock the UI (and show some error?) if
       // switching failed.
-      [self.delegate triggerProfileSwitchToProfileNamed:base::SysUTF8ToNSString(
-                                                            *profileName)
+      [self.delegate triggerProfileSwitchToProfileNamed:*profileName
                             andSigninWithSystemIdentity:newIdentity];
       return;
     }

@@ -7,7 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_continuation.h"
+#import "base/ios/block_types.h"
+#import "ios/chrome/app/change_profile_continuation.h"
 
 @class MDCSnackbarMessage;
 

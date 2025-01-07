@@ -67,7 +67,7 @@ void SignoutDone(base::WeakPtr<Browser> weak_browser,
 #pragma mark - ChangeProfileContinuation
 
 - (void)executeWithSceneState:(SceneState*)sceneState
-                   completion:(ProceduralBlock)completion {
+                   completion:(base::OnceClosure)completion {
   Browser* browser =
       sceneState.browserProviderInterface.currentBrowserProvider.browser;
   CHECK(browser);
@@ -82,7 +82,7 @@ void SignoutDone(base::WeakPtr<Browser> weak_browser,
     closure = std::move(closure).Then(base::BindOnce(_signoutCompletion));
   }
   if (completion) {
-    closure = std::move(closure).Then(base::BindOnce(completion));
+    closure = std::move(closure).Then(std::move(completion));
   }
 
   AuthenticationService* authenticationService =

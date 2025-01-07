@@ -26,6 +26,7 @@
 #import "google_apis/gaia/gaia_auth_util.h"
 #import "google_apis/gaia/gaia_urls.h"
 #import "ios/chrome/app/change_profile_commands.h"
+#import "ios/chrome/app/change_profile_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/managed_profile_creation_coordinator.h"
@@ -67,8 +68,39 @@ NSString* const kAuthenticationSnackbarCategory =
 
 }  // namespace
 
+@interface AuthenticationFlowContinuation : NSObject <ChangeProfileContinuation>
+
+- (instancetype)initWithCompletion:(OnProfileSwitchCompletion)completion
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
+
+@end
+
+@implementation AuthenticationFlowContinuation {
+  OnProfileSwitchCompletion _completion;
+}
+
+- (instancetype)initWithCompletion:(OnProfileSwitchCompletion)completion {
+  if ((self = [super init])) {
+    _completion = std::move(completion);
+  }
+  return self;
+}
+
+- (void)executeWithSceneState:(SceneState*)sceneState
+                   completion:(base::OnceClosure)completion {
+  UIViewController* viewController = sceneState.rootViewController;
+  Browser* newBrowser =
+      sceneState.browserProviderInterface.currentBrowserProvider.browser;
+
+  std::move(_completion).Run(/*success=*/true, newBrowser, viewController);
+  std::move(completion).Run();
+}
+
+@end
+
 @interface AuthenticationFlowPerformer () <
-    ChangeProfileObserving,
     ManagedProfileCreationCoordinatorDelegate>
 @end
 
@@ -82,7 +114,6 @@ NSString* const kAuthenticationSnackbarCategory =
   AlertCoordinator* _errorAlertCoordinator;
   std::unique_ptr<base::OneShotTimer> _watchdogTimer;
   id<ChangeProfileCommands> _changeProfileHandler;
-  OnProfileSwitchCompletion _onProfileSwitchCompletion;
 }
 
 - (id<AuthenticationFlowPerformerDelegate>)delegate {
@@ -141,23 +172,27 @@ NSString* const kAuthenticationSnackbarCategory =
 }
 
 - (void)switchToProfileWithIdentity:(id<SystemIdentity>)identity
-                    sceneIdentifier:(NSString*)sceneIdentifier
+                         sceneState:(SceneState*)sceneState
                          completion:(OnProfileSwitchCompletion)completion {
   CHECK(AreSeparateProfilesForManagedAccountsEnabled());
-  _onProfileSwitchCompletion = std::move(completion);
   std::optional<std::string> profileName =
       GetApplicationContext()
           ->GetAccountProfileMapper()
           ->FindProfileNameForGaiaID(base::SysNSStringToUTF8(identity.gaiaID));
   if (!profileName.has_value()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(_onProfileSwitchCompletion), false,
-                                  nullptr, nil));
+        FROM_HERE,
+        base::BindOnce(std::move(completion), /*success=*/false, nullptr, nil));
     return;
   }
-  [_changeProfileHandler changeProfile:base::SysUTF8ToNSString(*profileName)
-                              forScene:sceneIdentifier
-                              observer:self];
+
+  AuthenticationFlowContinuation* continuation =
+      [[AuthenticationFlowContinuation alloc]
+          initWithCompletion:std::move(completion)];
+
+  [_changeProfileHandler changeProfile:*profileName
+                              forScene:sceneState
+                         continuations:@[ continuation ]];
 }
 
 - (void)makePersonalProfileManagedWithIdentity:(id<SystemIdentity>)identity {
@@ -405,27 +440,6 @@ NSString* const kAuthenticationSnackbarCategory =
         }
         [weakSelf.delegate didFetchUserPolicyWithSuccess:success];
       }));
-}
-
-#pragma mark - ChangeProfileObserving
-
-- (void)operationFailed:(ChangeProfileFailure)failure {
-  std::move(_onProfileSwitchCompletion).Run(false, nullptr, nil);
-}
-
-- (void)willStartOperation:(UIViewController*)viewController {
-  // Nothing to do.
-}
-
-- (void)operationDidComplete:(UIViewController*)viewController
-              withSceneState:(SceneState*)sceneState {
-  Browser* newProfileBrowser =
-      sceneState.browserProviderInterface.currentBrowserProvider.browser;
-  // TODO(crbug.com/375605482): `viewController` is nil. This is not expected.
-  // `sceneState.rootViewController` is used until the bug is fixed.
-  viewController = sceneState.rootViewController;
-  std::move(_onProfileSwitchCompletion)
-      .Run(true, newProfileBrowser, viewController);
 }
 
 #pragma mark - Private

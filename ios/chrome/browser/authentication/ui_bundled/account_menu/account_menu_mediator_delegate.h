@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import <string_view>
+
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/sync_error_settings_command_handler.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
@@ -14,7 +16,6 @@
 
 @class AccountMenuMediator;
 @class AuthenticationFlow;
-@protocol ChangeProfileObserving;
 @protocol SystemIdentity;
 
 @protocol AccountMenuMediatorDelegate <SyncErrorSettingsCommandHandler>
@@ -40,7 +41,7 @@
                    completion:(void (^)(BOOL))completion;
 
 // Requests a switch to the profile with the given `profileName`.
-- (void)triggerProfileSwitchToProfileNamed:(NSString*)profileName
+- (void)triggerProfileSwitchToProfileNamed:(std::string_view)profileName
                andSigninWithSystemIdentity:(id<SystemIdentity>)identity;
 
 // Shows https://myaccount.google.com/ for the account currently signed-in

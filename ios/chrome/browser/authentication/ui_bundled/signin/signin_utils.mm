@@ -19,7 +19,6 @@
 #import "ios/chrome/app/change_profile_commands.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/tests_hook.h"
-#import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_observer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_signout_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_utils.h"
@@ -375,8 +374,7 @@ void MultiProfileSignOut(Browser* browser,
 
   ChangeProfileSignoutContinuation* signout_continuation =
       [[ChangeProfileSignoutContinuation alloc]
-          initWithSignoutSourceMetric:(signin_metrics::ProfileSignout)
-                                          signout_source
+          initWithSignoutSourceMetric:signout_source
                        forceClearData:force_clear_data
              forceSnackbarOverToolbar:force_snackbar_over_toolbar
                       snackbarMessage:snackbar_message
@@ -390,7 +388,8 @@ void MultiProfileSignOut(Browser* browser,
   SceneState* scene_state = browser->GetSceneState();
 
   if (!should_switch_profile_at_signout) {
-    [signout_continuation executeWithSceneState:scene_state completion:nil];
+    [signout_continuation executeWithSceneState:scene_state
+                                     completion:base::DoNothing()];
     return;
   }
 
@@ -406,13 +405,9 @@ void MultiProfileSignOut(Browser* browser,
       HandlerForProtocol(scene_state.profileState.appState.appCommandDispatcher,
                          ChangeProfileCommands);
 
-  ChangeProfileObserver* observer = [[ChangeProfileObserver alloc]
-      initWithContinuations:@[ signout_continuation ]];
-
-  [change_profile_handler
-      changeProfile:base::SysUTF8ToNSString(default_profile_name)
-           forScene:scene_state.sceneSessionID
-           observer:observer];
+  [change_profile_handler changeProfile:default_profile_name
+                               forScene:scene_state
+                          continuations:@[ signout_continuation ]];
 }
 
 }  // namespace signin

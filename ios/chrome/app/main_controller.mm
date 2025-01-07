@@ -4,13 +4,12 @@
 
 #import "ios/chrome/app/main_controller.h"
 
-#import <objc/runtime.h>
-
 #import <memory>
 
 #import "base/apple/bundle_locations.h"
 #import "base/apple/foundation_util.h"
 #import "base/barrier_closure.h"
+#import "base/check_op.h"
 #import "base/feature_list.h"
 #import "base/functional/callback.h"
 #import "base/functional/concurrent_closures.h"
@@ -22,6 +21,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/path_service.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/bind_post_task.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/component_updater/component_updater_service.h"
 #import "components/component_updater/installer_policies/autofill_states_component_installer.h"
@@ -47,6 +47,7 @@
 #import "ios/chrome/app/background_refresh/background_refresh_app_agent.h"
 #import "ios/chrome/app/background_refresh/test_refresher.h"
 #import "ios/chrome/app/blocking_scene_commands.h"
+#import "ios/chrome/app/change_profile_animator.h"
 #import "ios/chrome/app/change_profile_commands.h"
 #import "ios/chrome/app/deferred_initialization_runner.h"
 #import "ios/chrome/app/deferred_initialization_task_names.h"
@@ -275,85 +276,42 @@ void MarkSessionsAsDiscardedForAllProfiles(NSSet<UISceneSession*>* sessions) {
   sessions_storage_util::ResetDiscardedSessions();
 }
 
-}  // namespace
+// Runs the continuation at `index` with SceneState.
+void RunContinuationAtIndex(
+    NSArray<id<ChangeProfileContinuation>>* continuations,
+    NSUInteger index,
+    __weak SceneState* scene) {
+  CHECK(continuations);
+  CHECK_LT(index, continuations.count);
 
-// Helper class allowing to wait for the ProfileState to reach a specific
-// initialisation stage.
-@interface ProfileInitObserver : NSObject <ProfileStateObserver>
-
-+ (void)waitForProfile:(ProfileState*)profileState
-      toReachInitStage:(ProfileInitStage)initStage
-            completion:(ProceduralBlock)completion;
-
-@end
-
-@interface ProfileInitObserver ()
-
-- (void)waitForProfile:(ProfileState*)profileState
-      toReachInitStage:(ProfileInitStage)initStage
-            completion:(ProceduralBlock)completion;
-
-@end
-
-@implementation ProfileInitObserver {
-  ProceduralBlock _completion;
-  ProfileInitStage _initStage;
-}
-
-+ (void)waitForProfile:(ProfileState*)profileState
-      toReachInitStage:(ProfileInitStage)initStage
-            completion:(ProceduralBlock)completion {
-  // If the init stage is already reached, skip the creation of the
-  // ProfileInitObserver (as it would be immediately destroyed).
-  if (profileState.initStage >= initStage) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(completion));
+  // If the SceneState is nil, then do not run the continuations. This
+  // can happen for multiple reasons such as the app terminating, the
+  // user closing one of the windows, another profile change, ...
+  SceneState* strong_scene = scene;
+  if (!strong_scene) {
     return;
   }
 
-  // The ProfileInitObserver instance attaches itself as an associated object
-  // of the ProfileState, taking care of destroying itself when the init stage
-  // is reached. There is no need to retain it here.
-  ProfileInitObserver* observer = [[self alloc] init];
-  [observer waitForProfile:profileState
-          toReachInitStage:initStage
-                completion:completion];
-}
-
-- (void)waitForProfile:(ProfileState*)profileState
-      toReachInitStage:(ProfileInitStage)initStage
-            completion:(ProceduralBlock)completion {
-  DCHECK_LT(profileState.initStage, initStage);
-  _completion = completion;
-  _initStage = initStage;
-
-  // Ensure the object lifetime is tied to that of ProfileState.
-  objc_setAssociatedObject(profileState, [self associationKey], self,
-                           OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-  [profileState addObserver:self];
-}
-
-- (void)profileState:(ProfileState*)profileState
-    didTransitionToInitStage:(ProfileInitStage)nextInitStage
-               fromInitStage:(ProfileInitStage)fromInitStage {
-  if (nextInitStage == _initStage) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::exchange(_completion, nil)));
-
-    // Stop observing the ProfileState and detach self. This will cause
-    // the object to be deallocated, thus nothing should happen after
-    // this line.
-    [profileState removeObserver:self];
-    objc_setAssociatedObject(profileState, [self associationKey], nil,
-                             OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+  // If there are other continuations after this one, create a closure
+  // that will invoke the next one, and pass it to the continuation to
+  // run. It needs to bind the weak pointer to the SceneState, not the
+  // strong pointer. Use BindPostTask(...) since the implementation of
+  // -executeWithSceneState:completion: may not call the completion
+  // asynchronously.
+  base::OnceClosure closure = base::DoNothing();
+  if (index + 1 < continuations.count) {
+    closure =
+        base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                           base::BindOnce(&RunContinuationAtIndex,
+                                          continuations, index + 1, scene));
   }
+
+  id<ChangeProfileContinuation> continuation = continuations[index];
+  [continuation executeWithSceneState:strong_scene
+                           completion:std::move(closure)];
 }
 
-- (void*)associationKey {
-  return &_initStage;
-}
-
-@end
+}  // namespace
 
 @interface MainController () <AppStateObserver,
                               BlockingSceneCommands,
@@ -1571,78 +1529,62 @@ void MarkSessionsAsDiscardedForAllProfiles(NSSet<UISceneSession*>* sessions) {
 
 #pragma mark - ChangeProfileCommands
 
-- (void)changeProfile:(NSString*)profileName
-             forScene:(NSString*)sceneIdentifier
-             observer:(id<ChangeProfileObserving>)observer {
-  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
-    // Not supported when kSeparateProfilesForManagedAccounts is disabled or not
-    // available.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(^{
-          [observer operationFailed:ChangeProfileFailure::kFeatureDisabled];
-        }));
-    return;
+- (void)changeProfile:(std::string_view)profileName
+             forScene:(SceneState*)sceneState
+        continuations:(NSArray<id<ChangeProfileContinuation>>*)continuations {
+  ChangeProfileCompletion completion = base::DoNothing();
+  if (continuations.count != 0) {
+    completion = base::BindOnce(&RunContinuationAtIndex, continuations, 0);
   }
+  [self changeProfile:profileName
+             forScene:sceneState
+           completion:std::move(completion)];
+}
 
-  if (self.appState.initStage < AppInitStage::kFinal) {
-    // Cannot change profile before the MainController is done with loading
-    // the initial profiles.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(^{
-          [observer operationFailed:ChangeProfileFailure::kApplicationNotReady];
-        }));
-    return;
-  }
+#pragma mark - Private
 
-  SceneState* sceneState = [self sceneForIdentifier:sceneIdentifier];
-  if (sceneState == nil) {
-    // No scene with that identifier, cannot change the profile.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(^{
-          [observer operationFailed:ChangeProfileFailure::kInvalidSceneStateId];
-        }));
-    return;
-  }
+- (void)changeProfile:(std::string_view)profileName
+             forScene:(SceneState*)sceneState
+           completion:(ChangeProfileCompletion)completion {
+  CHECK(AreSeparateProfilesForManagedAccountsEnabled());
+  CHECK_EQ(self.appState.initStage, AppInitStage::kFinal);
+
+  CHECK(sceneState);
+  CHECK([self.appState.connectedScenes containsObject:sceneState]);
 
   ProfileManagerIOS* manager = GetApplicationContext()->GetProfileManager();
-  const std::string wantedProfileName = base::SysNSStringToUTF8(profileName);
-
-  if (!manager->HasProfileWithName(wantedProfileName) &&
-      !manager->CanCreateProfileWithName(wantedProfileName)) {
-    // The profile does not exists and cannot be created, so cannot change
-    // the Scene to use that profile.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(^{
-          [observer operationFailed:ChangeProfileFailure::kInvalidProfileName];
-        }));
-    return;
-  }
+  CHECK(manager->HasProfileWithName(profileName) ||
+        manager->CanCreateProfileWithName(profileName));
 
   // Get the SceneDelegate from the SceneState.
   UIWindowScene* scene = sceneState.scene;
   SceneDelegate* sceneDelegate =
       base::apple::ObjCCast<SceneDelegate>(scene.delegate);
-  DCHECK(sceneDelegate);
+  CHECK(sceneDelegate);
 
   UIWindow* window = sceneDelegate.window;
   UIViewController* rootViewController = window.rootViewController;
-  [observer willStartOperation:rootViewController];
+
+  ChangeProfileAnimator* animator =
+      [[ChangeProfileAnimator alloc] initWithViewController:rootViewController];
 
   ProfileAttributesStorageIOS* storage = manager->GetProfileAttributesStorage();
-  const std::string actualProfileName = storage->GetProfileNameForSceneID(
-      base::SysNSStringToUTF8(sceneIdentifier));
+  const std::string sceneIdentifier =
+      base::SysNSStringToUTF8(sceneState.sceneSessionID);
 
   // If the SceneState is not associated with the correct profile, then
   // perform the necessary work to switch the profile used for the scene.
-  if (actualProfileName != wantedProfileName) {
+  if (profileName != storage->GetProfileNameForSceneID(sceneIdentifier)) {
+    // The UI has to be destroyed, start animating.
+    [animator startAnimation];
+
     // Ensure the profile exists.
-    if (!storage->HasProfileWithName(wantedProfileName)) {
-      storage->AddProfile(wantedProfileName);
+    if (!storage->HasProfileWithName(profileName)) {
+      storage->AddProfile(profileName);
     }
 
     // Set the mapping between profile and scene.
-    storage->SetProfileNameForSceneID(
-        base::SysNSStringToUTF8(sceneState.sceneSessionID), wantedProfileName);
+    storage->SetProfileNameForSceneID(sceneIdentifier, profileName);
 
     // Pretend the scene has been disconnected, then reconnect it.
     const SceneActivationLevel savedLevel = sceneState.activationLevel;
@@ -1679,37 +1621,9 @@ void MarkSessionsAsDiscardedForAllProfiles(NSSet<UISceneSession*>* sessions) {
   }
 
   // Wait for the profile to complete its initialisation.
-  __weak SceneState* weakSceneState = sceneState;
-  __weak UIViewController* weakViewController = rootViewController;
-  [ProfileInitObserver waitForProfile:sceneState.profileState
-                     toReachInitStage:ProfileInitStage::kUIReady
-                           completion:^{
-                             [observer operationDidComplete:weakViewController
-                                             withSceneState:weakSceneState];
-                           }];
-}
-
-#pragma mark - Private
-
-// Returns the SceneState with the given `sceneIdentifier`.
-- (SceneState*)sceneForIdentifier:(NSString*)sceneIdentifier {
-  for (SceneState* sceneState in self.appState.connectedScenes) {
-    if ([sceneState.sceneSessionID isEqualToString:sceneIdentifier]) {
-      return sceneState;
-    }
-  }
-
-  return nil;
-}
-
-// Returns the set of Session identifiers for all connected scenes.
-- (std::set<std::string>)connectedSessionIDs {
-  std::set<std::string> connectedSessionIDs;
-  for (SceneState* sceneState in self.appState.connectedScenes) {
-    connectedSessionIDs.insert(
-        base::SysNSStringToUTF8(sceneState.sceneSessionID));
-  }
-  return connectedSessionIDs;
+  [animator waitForSceneState:sceneState
+             toInitReachStage:ProfileInitStage::kUIReady
+                   completion:std::move(completion)];
 }
 
 // Attach a Profile to all connected scenes.

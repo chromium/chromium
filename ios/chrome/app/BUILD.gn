@@ -376,7 +376,9 @@ source_set("app_internal") {
     ":app_lifetime_observer",
     ":app_metrics_app_state_agent",
     ":blocking_scene_commands",
+    ":change_profile_animator",
     ":change_profile_commands",
+    ":change_profile_continuation",
     ":enterprise_app_agent",
     ":fast_app_terminate_buildflags",
     ":launch_screen_ui",
@@ -554,6 +556,25 @@ source_set("task_names") {
 
 source_set("change_profile_commands") {
   sources = [ "change_profile_commands.h" ]
+  deps = [ ":change_profile_continuation" ]
+}
+
+source_set("change_profile_continuation") {
+  sources = [ "change_profile_continuation.h" ]
+  deps = [ "//base" ]
+}
+
+source_set("change_profile_animator") {
+  sources = [
+    "change_profile_animator.h",
+    "change_profile_animator.mm",
+  ]
+  deps = [
+    ":change_profile_commands",
+    "//base",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+  ]
 }
 
 source_set("blocking_scene_commands") {

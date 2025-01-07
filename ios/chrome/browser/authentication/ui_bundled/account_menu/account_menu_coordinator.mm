@@ -7,6 +7,7 @@
 #import <MaterialComponents/MaterialSnackbar.h>
 
 #import "base/check.h"
+#import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -24,8 +25,6 @@
 #import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_mediator_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_view_controller.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
-#import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_continuation.h"
-#import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_observer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/add_account_signin/add_account_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/interruptible_chrome_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
@@ -91,7 +90,7 @@
 #pragma mark - ChangeProfileContinuation
 
 - (void)executeWithSceneState:(SceneState*)sceneState
-                   completion:(ProceduralBlock)completion {
+                   completion:(base::OnceClosure)completion {
   Browser* browser =
       sceneState.browserProviderInterface.mainBrowserProvider.browser;
   AuthenticationService* authenticationService =
@@ -99,14 +98,14 @@
 
   if (!authenticationService->HasPrimaryIdentity(
           signin::ConsentLevel::kSignin)) {
-    completion();
+    std::move(completion).Run();
     return;
   }
   id<SystemIdentity> existingIdentity =
       authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   if (existingIdentity == _identity) {
     // The correct account is already signed in in the new profile.
-    completion();
+    std::move(completion).Run();
     return;
   }
 
@@ -120,7 +119,8 @@
                ->GetPersonalProfileName());
   authenticationService->SignOut(
       signin_metrics::ProfileSignout::kChangeAccountInAccountMenu,
-      /*force_clear_browsing_data=*/false, completion);
+      /*force_clear_browsing_data=*/false,
+      base::CallbackToBlock(std::move(completion)));
 }
 
 @end
@@ -149,7 +149,7 @@
 #pragma mark - ChangeProfileContinuation
 
 - (void)executeWithSceneState:(SceneState*)sceneState
-                   completion:(ProceduralBlock)completion {
+                   completion:(base::OnceClosure)completion {
   Browser* browser =
       sceneState.browserProviderInterface.mainBrowserProvider.browser;
   // TODO(crbug.com/375604649): This should probably go through
@@ -160,7 +160,7 @@
       AuthenticationServiceFactory::GetForProfile(browser->GetProfile());
   authenticationService->SignIn(
       _identity, signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU);
-  completion();
+  std::move(completion).Run();
 }
 
 @end
@@ -371,7 +371,7 @@
   [_signoutActionSheetCoordinator start];
 }
 
-- (void)triggerProfileSwitchToProfileNamed:(NSString*)profileName
+- (void)triggerProfileSwitchToProfileNamed:(std::string_view)profileName
                andSigninWithSystemIdentity:(id<SystemIdentity>)identity {
   CHECK(AreSeparateProfilesForManagedAccountsEnabled());
   SceneState* sceneState = self.browser->GetSceneState();
@@ -383,12 +383,10 @@
       [[ChangeProfileSignInContinuation alloc]
           initWithDesiredIdentity:identity];
 
-  ChangeProfileObserver* observer = [[ChangeProfileObserver alloc]
-      initWithContinuations:@[ signOutContinuation, signInContinuation ]];
-
-  [_changeProfileHandler changeProfile:profileName
-                              forScene:sceneState.sceneSessionID
-                              observer:observer];
+  [_changeProfileHandler
+      changeProfile:profileName
+           forScene:sceneState
+      continuations:@[ signOutContinuation, signInContinuation ]];
 }
 
 - (void)didTapAddAccountWithCompletion:
