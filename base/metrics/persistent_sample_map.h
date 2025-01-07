@@ -21,12 +21,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_samples.h"
+#include "base/metrics/persistent_histogram_allocator.h"
 #include "base/metrics/persistent_memory_allocator.h"
 
 namespace base {
-
-class PersistentHistogramAllocator;
-class PersistentSampleMapRecords;
 
 // The logic here is similar to that of SampleMap but with different data
 // structures. Changes here likely need to be duplicated there.

@@ -16,6 +16,7 @@
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/dns/context_host_resolver.h"
 #include "net/dns/host_resolver.h"
 #include "net/log/net_log_with_source.h"
 #include "url/scheme_host_port.h"
@@ -25,7 +26,6 @@ class TickClock;
 }  // namespace base
 
 namespace net {
-class ContextHostResolver;
 
 namespace {
 class StaleHostResolverTest;
