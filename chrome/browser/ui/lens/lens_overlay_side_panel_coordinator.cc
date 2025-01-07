@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
 
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/companion/text_finder/text_finder_manager.h"
+#include "chrome/browser/companion/text_finder/text_highlighter_manager.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
@@ -25,6 +27,7 @@
 #include "components/lens/lens_overlay_dismissal_source.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_overlay_side_panel_result.h"
+#include "components/shared_highlighting/core/common/fragment_directives_utils.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -222,6 +225,15 @@ void LensOverlaySidePanelCoordinator::DidStartNavigation(
       lens::GetSearchResultsUrlFromRedirectUrl(navigation_handle->GetURL())
           .is_empty()) {
     navigation_handle->SetSilentlyIgnoreErrors();
+
+    // If the contextual search box is enabled, cross-origin navigations could
+    // be a citation that should be rendered as text highlights in the current
+    // tab.
+    const GURL& nav_url = navigation_handle->GetURL();
+    if (MaybeHandleTextDirectives(nav_url)) {
+      return;
+    }
+
     lens_overlay_controller_->GetTabInterface()
         ->GetBrowserWindowInterface()
         ->OpenGURL(navigation_handle->GetURL(),
@@ -255,6 +267,89 @@ LensOverlaySidePanelCoordinator::GetWebContentsModalDialogHost() {
   return lens_overlay_controller_->GetTabInterface()
       ->GetBrowserWindowInterface()
       ->GetWebContentsModalDialogHostForWindow();
+}
+
+bool LensOverlaySidePanelCoordinator::MaybeHandleTextDirectives(
+    const GURL& nav_url) {
+  if (lens::features::IsLensOverlayContextualSearchboxEnabled() &&
+      lens::features::HandleSidePanelTextDirectivesEnabled() &&
+      ShouldHandleTextDirectives(nav_url)) {
+    // Nav url should have a text fragment.
+    auto text_fragments =
+        shared_highlighting::ExtractTextFragments(nav_url.ref());
+
+    // TODO(crbug.com/383575917): PDFs will likely need a different function
+    // call to PDFDocumentHelper to render these text highlights. Create and
+    // attach a `TextFinderManager` to the primary page.
+    content::Page& page = lens_overlay_controller_->GetTabInterface()
+                              ->GetContents()
+                              ->GetPrimaryPage();
+    companion::TextFinderManager* text_finder_manager =
+        companion::TextFinderManager::GetOrCreateForPage(page);
+    text_finder_manager->CreateTextFinders(
+        text_fragments,
+        base::BindOnce(
+            &LensOverlaySidePanelCoordinator::OnTextFinderLookupComplete,
+            weak_ptr_factory_.GetWeakPtr(), nav_url));
+    return true;
+  }
+  return false;
+}
+
+bool LensOverlaySidePanelCoordinator::ShouldHandleTextDirectives(
+    const GURL& nav_url) {
+  const GURL& page_url = lens_overlay_controller_->GetTabInterface()
+                             ->GetContents()
+                             ->GetLastCommittedURL();
+  // Only handle text directives when the page URL and the URL being navigated
+  // to have the same host and path. This ignores the ref and query attributes.
+  if (page_url.host() != nav_url.host() || page_url.path() != nav_url.path()) {
+    return false;
+  }
+
+  auto text_fragments =
+      shared_highlighting::ExtractTextFragments(nav_url.ref());
+  // If the url that is being navigated to does not have a text directive, then
+  // it cannot be handled.
+  return !text_fragments.empty();
+}
+
+void LensOverlaySidePanelCoordinator::OnTextFinderLookupComplete(
+    const GURL& nav_url,
+    const std::vector<std::pair<std::string, bool>>& lookup_results) {
+  if (lookup_results.empty()) {
+    lens_overlay_controller_->GetTabInterface()
+        ->GetBrowserWindowInterface()
+        ->OpenGURL(nav_url, WindowOpenDisposition::NEW_FOREGROUND_TAB);
+    return;
+  }
+
+  for (auto pair : lookup_results) {
+    // If any of the text fragments are not found, then open in a new tab.
+    if (!pair.second) {
+      lens_overlay_controller_->GetTabInterface()
+          ->GetBrowserWindowInterface()
+          ->OpenGURL(nav_url, WindowOpenDisposition::NEW_FOREGROUND_TAB);
+      return;
+    }
+  }
+
+  // Delete any existing `TextHighlighterManager` on the page. Without this, any
+  // text highlights after the first to be rendered on the page will not render.
+  auto& page = lens_overlay_controller_->GetTabInterface()
+                   ->GetContents()
+                   ->GetPrimaryPage();
+  if (companion::TextHighlighterManager::GetForPage(page)) {
+    companion::TextHighlighterManager::DeleteForPage(page);
+  }
+
+  // TODO(crbug.com/387318456): Add support for multiple text directives to
+  // TextHighlighterManager. If every text fragment was found, then
+  // create a text highlighter manager to render the text highlights.
+  companion::TextHighlighterManager* text_highlighter_manager =
+      companion::TextHighlighterManager::GetOrCreateForPage(page);
+  text_highlighter_manager->CreateTextHighlighterAndRemoveExistingInstance(
+      lookup_results[0].first);
 }
 
 void LensOverlaySidePanelCoordinator::OpenURLInBrowser(

@@ -47,6 +47,7 @@ source_set("lens") {
 
   public_deps = [
     "//base",
+    "//chrome/browser/companion/text_finder",
     "//chrome/browser/content_extraction",
     "//chrome/browser/lens/core/mojom:mojo_bindings",
     "//chrome/browser/search_engines:search_engines",

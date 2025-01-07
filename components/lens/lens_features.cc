@@ -320,6 +320,10 @@ constexpr base::FeatureParam<bool> kUseWebpageInteractionType{
 constexpr base::FeatureParam<int> kScannedPdfCharacterPerPageHeuristic{
     &kLensOverlayContextualSearchbox, "characters-per-page-heuristic", 200};
 
+constexpr base::FeatureParam<bool> kHandleSidePanelTextDirectives{
+    &kLensOverlayContextualSearchbox, "handle-side-panel-text-directives",
+    true};
+
 constexpr base::FeatureParam<std::string> kTranslateEndpointUrl{
     &kLensOverlayTranslateLanguages, "translate-endpoint-url",
     "https://translate-pa.googleapis.com/v1/supportedLanguages"};
@@ -777,6 +781,10 @@ int GetLensOverlayTranslateRecentLanguagesAmount() {
 
 bool IsLensOverlayRoutingInfoEnabled() {
   return base::FeatureList::IsEnabled(kLensOverlayRoutingInfo);
+}
+
+bool HandleSidePanelTextDirectivesEnabled() {
+  return kHandleSidePanelTextDirectives.Get();
 }
 
 }  // namespace lens::features

@@ -20,6 +20,8 @@
 #include "base/test/with_feature_override.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "chrome/browser/companion/text_finder/text_highlighter.h"
+#include "chrome/browser/companion/text_finder/text_highlighter_manager.h"
 #include "chrome/browser/lens/core/mojom/geometry.mojom.h"
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
 #include "chrome/browser/lens/core/mojom/lens_side_panel.mojom.h"
@@ -2243,6 +2245,88 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Verify the loading state was never set.
   EXPECT_EQ(fake_controller->is_side_panel_loading_set_to_true_, 0);
   EXPECT_EQ(fake_controller->is_side_panel_loading_set_to_false_, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LensOverlayControllerBrowserTest,
+    SidePanel_SameTabCrossOriginLinkClick_WithTextDirective) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  EXPECT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  EXPECT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+  EXPECT_TRUE(controller->GetOverlayViewForTesting()->GetVisible());
+
+  // Loading a url in the side panel should show the results page. This needs to
+  // be done to set up the WebContentsObserver.
+  const GURL search_url("https://www.google.com/search");
+  controller->LoadURLInResultsFrame(search_url);
+  int tabs = browser()->tab_strip_model()->count();
+
+  // Expect the Lens Overlay results panel to open.
+  auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
+  EXPECT_TRUE(coordinator->IsSidePanelShowing());
+  EXPECT_EQ(coordinator->GetCurrentEntryId(),
+            SidePanelEntry::Id::kLensOverlayResults);
+  EXPECT_TRUE(content::WaitForLoadStop(
+      controller->GetSidePanelWebContentsForTesting()));
+
+  // The results frame should be the only child frame of the side panel web
+  // contents.
+  content::RenderFrameHost* results_frame = content::ChildFrameAt(
+      controller->GetSidePanelWebContentsForTesting()->GetPrimaryMainFrame(),
+      0);
+  EXPECT_TRUE(results_frame);
+
+  // Verify the fake controller exists and reset any loading that was done
+  // before as part of setup.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  fake_controller->ResetSidePanelTracking();
+
+  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
+  std::string relative_url =
+      std::string(kDocumentWithNamedElement) + "#:~:text=select";
+  const GURL nav_url = embedded_test_server()->GetURL(relative_url);
+
+  // There should be no text highlighter manager for the main web contents at
+  // this point.
+  companion::TextHighlighterManager* manager =
+      companion::TextHighlighterManager::GetForPage(browser()
+                                                        ->tab_strip_model()
+                                                        ->GetActiveTab()
+                                                        ->GetContents()
+                                                        ->GetPrimaryPage());
+  EXPECT_FALSE(manager);
+
+  // Simulate a cross-origin navigation on the results frame.
+  EXPECT_TRUE(content::ExecJs(
+      results_frame, content::JsReplace(kSameTabLinkClickScript, nav_url),
+      content::EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  // Wait for the TextHighlighterManager to be created.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    manager =
+        companion::TextHighlighterManager::GetForPage(browser()
+                                                          ->tab_strip_model()
+                                                          ->GetActiveTab()
+                                                          ->GetContents()
+                                                          ->GetPrimaryPage());
+    return manager;
+  }));
+
+  // It should not open a new tab as this only renders text highlights.
+  EXPECT_EQ(tabs, browser()->tab_strip_model()->count());
+  EXPECT_TRUE(manager);
+  EXPECT_THAT(manager->get_text_highlighter_for_testing()->GetTextDirective(),
+              "select");
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,

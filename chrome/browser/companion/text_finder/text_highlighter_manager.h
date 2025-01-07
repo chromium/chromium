@@ -38,6 +38,11 @@ class TextHighlighterManager
   void CreateTextHighlighterAndRemoveExistingInstance(
       const std::string& text_directive);
 
+  // Returns the text highlighter for testing.
+  internal::TextHighlighter* get_text_highlighter_for_testing() {
+    return text_highlighter_.get();
+  }
+
  private:
   friend class content::PageUserData<TextHighlighterManager>;
   FRIEND_TEST_ALL_PREFIXES(TextHighlighterManagerTest, TextHighlighterTest);
