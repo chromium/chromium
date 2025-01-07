@@ -9,6 +9,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/strings/cstring_view.h"
 #include "base/test/bind.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/platform_util.h"
@@ -28,32 +29,12 @@
 #include "ui/views/widget/widget_observer.h"
 
 namespace {
-constexpr char mock_app_manifest1[] =
-    "{"
-    "  \"name\": \"Test App1\","
-    "  \"version\": \"1\","
-    "  \"manifest_version\": 2,"
-    "  \"app\": {"
-    "    \"launch\": {"
-    "      \"web_url\": \"%s\""
-    "    },"
-    "    \"urls\": [\"*://app1.com/\"]"
-    "  }"
-    "}";
-constexpr char mock_app_manifest2[] =
-    "{"
-    "  \"name\": \"Test App2\","
-    "  \"version\": \"1\","
-    "  \"manifest_version\": 2,"
-    "  \"app\": {"
-    "    \"launch\": {"
-    "      \"web_url\": \"%s\""
-    "    },"
-    "    \"urls\": [\"*://app2.com/\"]"
-    "  }"
-    "}";
-constexpr char mock_url1[] = "https://www.app1.com/index.html";
-constexpr char mock_url2[] = "https://www.app2.com/index.html";
+constexpr char kMockName1[] = "Test App1";
+constexpr char kMockName2[] = "Test App2";
+constexpr char kMockUrl1[] = "https://www.app1.com/index.html";
+constexpr char kMockUrl2[] = "https://www.app2.com/index.html";
+constexpr char kMockHost1[] = "app1.com";
+constexpr char kMockHost2[] = "app2.com";
 }  // namespace
 
 class DeprecatedAppDialogWidgetObserver : public views::WidgetObserver {
@@ -132,11 +113,24 @@ class DeprecatedAppsDialogViewBrowserTest
     return nullptr;
   }
 
-  extensions::ExtensionId InstallExtensionForTesting(const char* app_manifest,
-                                                     const char* url) {
+  extensions::ExtensionId InstallExtensionForTesting(base::cstring_view name,
+                                                     std::string_view url,
+                                                     base::cstring_view host) {
     extensions::TestExtensionDir test_app_dir;
+    static constexpr char kMockAppManifest[] = R"({
+  "name": "%s",
+  "version": "1",
+  "manifest_version": 2,
+  "app": {
+    "launch": {
+      "web_url": "%s"
+    },
+    "urls": ["*://%s/"]
+  }
+})";
     test_app_dir.WriteManifest(
-        base::StringPrintfNonConstexpr(app_manifest, GURL(url).spec().c_str()));
+        base::StringPrintf(kMockAppManifest, name.c_str(),
+                           GURL(url).spec().c_str(), host.c_str()));
     const extensions::Extension* app = InstallExtensionWithSourceAndFlags(
         test_app_dir.UnpackedPath(), /*expected_change=*/1,
         extensions::mojom::ManifestLocation::kInternal,
@@ -155,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(DeprecatedAppsDialogViewBrowserTest,
                        VerifyTableModelForSingleApp) {
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
 
-  InstallExtensionForTesting(mock_app_manifest1, mock_url1);
+  InstallExtensionForTesting(kMockName1, kMockUrl1, kMockHost1);
   test_dialog_view_ =
       DeprecatedAppsDialogView::CreateAndShowDialog(
           std::string(), deprecated_app_ids_for_testing_, web_contents)
@@ -170,8 +164,8 @@ IN_PROC_BROWSER_TEST_F(DeprecatedAppsDialogViewBrowserTest,
                        VerifyTableModelForMultipleApps) {
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
 
-  InstallExtensionForTesting(mock_app_manifest1, mock_url1);
-  InstallExtensionForTesting(mock_app_manifest2, mock_url2);
+  InstallExtensionForTesting(kMockName1, kMockUrl1, kMockHost1);
+  InstallExtensionForTesting(kMockName2, kMockUrl2, kMockHost2);
   test_dialog_view_ =
       DeprecatedAppsDialogView::CreateAndShowDialog(
           std::string(), deprecated_app_ids_for_testing_, web_contents)
@@ -187,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(DeprecatedAppsDialogViewBrowserTest,
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
 
   extensions::ExtensionId test_id(
-      InstallExtensionForTesting(mock_app_manifest1, mock_url1));
+      InstallExtensionForTesting(kMockName1, kMockUrl1, kMockHost1));
   test_dialog_view_ =
       DeprecatedAppsDialogView::CreateAndShowDialog(
           std::string(), deprecated_app_ids_for_testing_, web_contents)
@@ -219,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(DeprecatedAppsDialogViewBrowserTest,
 IN_PROC_BROWSER_TEST_F(DeprecatedAppsDialogViewBrowserTest,
                        DeprecatedAppsDialogShownFromLinkClick) {
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  InstallExtensionForTesting(mock_app_manifest1, mock_url1);
+  InstallExtensionForTesting(kMockName1, kMockUrl1, kMockHost1);
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIAppsURL)));
   auto waiter = views::NamedWidgetShownWaiter(
