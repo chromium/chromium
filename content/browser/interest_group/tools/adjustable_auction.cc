@@ -131,8 +131,8 @@ function generateBid(
     interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
     unusedBrowserSignals) {
     const ad = interestGroup.ads[0];
-    let result = {'ad': ad, 'bid': 1, 'render': ad.renderURL,
-                  'allowComponentAuction': true};
+    let result = {'ad': ad, 'bid': ad.metadata['whether-to-bid'],
+     'render': ad.renderURL, 'allowComponentAuction': true};
     runNAdditions(%d);
     return result;
 })",
@@ -226,9 +226,11 @@ class AdjustableAuction : public ContentBrowserTest {
   inline static size_t kPreauctionLogicDelay = 5;
 
   inline static size_t kAdsPerInterestGroup = 30;
-  inline static size_t kInterestGroupsPerOwner = 100;
+  inline static size_t kInterestGroupsPerOwner = 40;
   inline static size_t kSellers = 1;
-  inline static size_t kOwners = 2;
+  inline static size_t kOwners = 1;
+  inline static size_t kJoiningOrigins = 35;
+  inline static size_t kBiddingGroupsPerOwner = 30;
 
   // Script delays measured in number of operations.
   inline static size_t kBiddingLogicDelay = 20000000;
@@ -280,6 +282,32 @@ class AdjustableAuction : public ContentBrowserTest {
     manager_ = nullptr;  // don't dangle once StoragePartition cleans it up.
     network_responder_.reset();
     ContentBrowserTest::TearDownOnMainThread();
+  }
+
+  // Bid on alternate interest groups until we run out of bidders or
+  // non-bidders. Then make the same decision for every remaining interest
+  // group.
+  // Choose to intersperse bids among the interest groups instead of
+  // bidding on the first `kBiddingGroupsPerOwner` for the following reason: If
+  // `kBiddingGroupsPerOwner` bids were done consecutively, the profile would be
+  // similar to having all interest groups bid if
+  // `kInterestGroupsPerOwner`=`kBiddingGroupsPerOwner`. For example, the
+  // overall auction latency with 50 bids among 60 interest groups may be the
+  // same as 50 bids among 50 interest groups, because the last bid will need to
+  // wait for scoring signals to be received.
+  bool BidDecision(size_t interest_group_index) {
+    if (kBiddingGroupsPerOwner > kInterestGroupsPerOwner) {
+      return true;
+    }
+    if (interest_group_index <
+        std::min(2 * kBiddingGroupsPerOwner,
+                 2 * (kInterestGroupsPerOwner - kBiddingGroupsPerOwner))) {
+      return (interest_group_index % 2) == 0;
+    } else if (kBiddingGroupsPerOwner >
+               (kInterestGroupsPerOwner - kBiddingGroupsPerOwner)) {
+      return true;
+    }
+    return false;
   }
 
   content::EvalJsResult RunAuctionsAndWait(
@@ -358,16 +386,26 @@ IN_PROC_BROWSER_TEST_F(AdjustableAuction, RunAdjustableAuction) {
     GURL bidding_signals_url =
         https_server_->GetURL(owner_str, kBiddingSignalsRelativeURL);
 
+    size_t joining_origin_idx = 0;
     for (size_t ig_i = 0; ig_i < kInterestGroupsPerOwner; ++ig_i) {
       std::vector<blink::InterestGroup::Ad> ads;
+      bool whether_to_bid = BidDecision(ig_i);
       for (size_t ad_i = 0; ad_i < kAdsPerInterestGroup; ++ad_i) {
         GURL ad_url = https_server_->GetURL(
             "c.test", base::StrCat({"/test?test_render_url_here_and_some_more_"
                                     "words_for_extra_length",
                                     base::NumberToString(ad_i)}));
 
-        ads.emplace_back(ad_url, R"({"ad":"metadata","here":[1,2,3,4,5]})");
+        std::string ad_metadata = base::StrCat(
+            {R"({"ad":"metadata","here":[1,2,3,4,5],"whether-to-bid":)",
+             base::NumberToString(whether_to_bid), R"(})"});
+        ads.emplace_back(ad_url, ad_metadata);
       }
+
+      GURL joining_url = https_server_->GetURL(
+          base::StrCat(
+              {"join", base::NumberToString(joining_origin_idx), ".b.test"}),
+          "/");
       manager_->JoinInterestGroup(
           blink::TestInterestGroupBuilder(
               /*owner=*/owner_origin,
@@ -377,7 +415,8 @@ IN_PROC_BROWSER_TEST_F(AdjustableAuction, RunAdjustableAuction) {
               .SetTrustedBiddingSignalsKeys({{"key1"}})
               .SetAds(ads)
               .Build(),
-          owner_origin.GetURL());
+          joining_url);
+      joining_origin_idx = (joining_origin_idx + 1) % kJoiningOrigins;
     }
   }
 
@@ -534,6 +573,19 @@ void SetUpCommandLineArgs() {
       "ig-per-owner", &content::AdjustableAuction::kInterestGroupsPerOwner);
   // The number of sellers participating in the auction.
   SetUpSizeTCommandlineArg("sellers", &content::AdjustableAuction::kSellers);
+  // The number of unique joining origins to use among the `ig-per-owner`
+  // interest groups. If this number is greater than or equal to `ig-per-owner`,
+  // each interest group will use its own joining origin. If it's less, the
+  // joining origins will be assigned to each of the `ig-per-owner` in a
+  // round-robin -- this round-robin will reset for the next owner.
+  SetUpSizeTCommandlineArg("joining-origins",
+                           &content::AdjustableAuction::kJoiningOrigins);
+  // The number of groups of the `ig-per-owner` interest groups that actually
+  // bid. Groups will alternate bidding and not bidding until there are
+  // `bidding-groups` bids or `ig-per-owner`-`bidding-groups` non-bids. The
+  // remaining groups will then make the same bidding decision.
+  SetUpSizeTCommandlineArg("bidding-groups",
+                           &content::AdjustableAuction::kBiddingGroupsPerOwner);
   // The number of top level auctions to run.
   SetUpSizeTCommandlineArg("n-auctions",
                            &content::AdjustableAuction::kAuctions);
