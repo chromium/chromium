@@ -1117,7 +1117,7 @@
   {
     "name": "boundary-event-dispatch-tracks-node-removal",
     "owners": [ "mustaq@chromium.org", "blink-interactions-team@google.com" ],
-    "expiry_milestone": 134
+    "expiry_milestone": 140
   },
   {
     "name": "browsing-data-model-clank",
