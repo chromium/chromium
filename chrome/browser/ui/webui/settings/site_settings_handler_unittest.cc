@@ -66,6 +66,7 @@
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/chrome_features.h"
@@ -2998,43 +2999,43 @@ class SiteSettingsHandlerIsolatedWebAppTest
  public:
   void SetUp() override {
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
-    InstallIsolatedWebApp(iwa_url(), "IWA Name");
+    iwa_url_info_ = InstallIsolatedWebApp("IWA Name");
 
     SiteSettingsHandlerBaseTest::SetUp();
   }
 
  protected:
-  GURL iwa_url() {
-    return GURL(
-        "isolated-app://"
-        "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
+  std::optional<web_app::IsolatedWebAppUrlInfo> iwa_url_info_;
+
+  web_app::IsolatedWebAppUrlInfo InstallIsolatedWebApp(
+      const std::string& name) {
+    const std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> bundle =
+        web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder().SetName(name))
+            .BuildBundle();
+    bundle->FakeInstallPageState(profile());
+    bundle->TrustSigningKey();
+    return bundle->InstallChecked(profile());
   }
 
-  webapps::AppId InstallIsolatedWebApp(const GURL& iwa_url,
-                                       const std::string& name) {
-    webapps::AppId app_id =
-        web_app::AddDummyIsolatedAppToRegistry(profile(), iwa_url, name);
-    RegisterWebApp(profile(), MakeApp(app_id, apps::AppType::kWeb,
-                                      iwa_url.spec(), apps::Readiness::kReady,
-                                      apps::InstallReason::kUser));
-    return app_id;
-  }
-
-  content::HostZoomMap* GetIwaHostZoomMap(const GURL& url) {
-    auto url_info = *web_app::IsolatedWebAppUrlInfo::Create(url);
+  content::HostZoomMap* GetIwaHostZoomMap(
+      const web_app::IsolatedWebAppUrlInfo& url_info) {
     content::StoragePartition* iwa_partition = profile()->GetStoragePartition(
         url_info.storage_partition_config(profile()));
     return content::HostZoomMap::GetForStoragePartition(iwa_partition);
   }
+
+ private:
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 
 TEST_F(SiteSettingsHandlerIsolatedWebAppTest, AllSitesDisplaysAppName) {
-  GURL https_url("https://" + iwa_url().host());
+  GURL https_url("https://" + iwa_url_info_->origin().host());
+  GURL iwa_origin_url = iwa_url_info_->origin().GetURL();
 
-  SetupModelWithIsolatedWebAppData({{iwa_url().spec(), 50}});
+  SetupModelWithIsolatedWebAppData({{iwa_url_info_->origin().Serialize(), 50}});
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(profile());
-  map->SetContentSettingDefaultScope(iwa_url(), iwa_url(),
+  map->SetContentSettingDefaultScope(iwa_origin_url, iwa_origin_url,
                                      ContentSettingsType::NOTIFICATIONS,
                                      CONTENT_SETTING_BLOCK);
   map->SetContentSettingDefaultScope(https_url, https_url,
@@ -3048,28 +3049,30 @@ TEST_F(SiteSettingsHandlerIsolatedWebAppTest, AllSitesDisplaysAppName) {
   const base::Value::Dict& origin1 =
       CHECK_DEREF(group1.FindList("origins"))[0].GetDict();
   EXPECT_THAT(CHECK_DEREF(group1.FindString("groupingKey")),
-              IsOrigin(iwa_url()));
+              IsOrigin(iwa_origin_url));
   EXPECT_EQ(group1.FindString("etldPlus1"), nullptr);
   EXPECT_EQ(CHECK_DEREF(group1.FindString("displayName")), "IWA Name");
-  EXPECT_EQ(CHECK_DEREF(origin1.FindString("origin")), iwa_url());
+  EXPECT_EQ(CHECK_DEREF(origin1.FindString("origin")), iwa_origin_url);
   EXPECT_EQ(origin1.FindDouble("usage").value(), 50.0);
 
   const base::Value::Dict& group2 = site_groups[1].GetDict();
   const base::Value::Dict& origin2 =
       CHECK_DEREF(group2.FindList("origins"))[0].GetDict();
   EXPECT_THAT(CHECK_DEREF(group2.FindString("groupingKey")),
-              IsEtldPlus1(iwa_url().host()));
-  EXPECT_EQ(CHECK_DEREF(group2.FindString("etldPlus1")), iwa_url().host());
-  EXPECT_EQ(CHECK_DEREF(group2.FindString("displayName")), iwa_url().host());
+              IsEtldPlus1(iwa_url_info_->origin().host()));
+  EXPECT_EQ(CHECK_DEREF(group2.FindString("etldPlus1")),
+            iwa_url_info_->origin().host());
+  EXPECT_EQ(CHECK_DEREF(group2.FindString("displayName")),
+            iwa_url_info_->origin().host());
   EXPECT_EQ(CHECK_DEREF(origin2.FindString("origin")), https_url);
   EXPECT_EQ(origin2.FindDouble("usage").value(), 0.0);
 }
 
 TEST_F(SiteSettingsHandlerIsolatedWebAppTest, ZoomLevel) {
-  content::HostZoomMap* iwa_host_zoom_map = GetIwaHostZoomMap(iwa_url());
+  content::HostZoomMap* iwa_host_zoom_map = GetIwaHostZoomMap(*iwa_url_info_);
 
-  std::string host_or_spec = url::Origin::Create(iwa_url()).Serialize();
-  iwa_host_zoom_map->SetZoomLevelForHost(iwa_url().host(), 1.1);
+  std::string host_or_spec = iwa_url_info_->origin().Serialize();
+  iwa_host_zoom_map->SetZoomLevelForHost(iwa_url_info_->origin().host(), 1.1);
   ValidateZoom({{host_or_spec, "IWA Name", "122%"}}, 1U);
 
   base::Value::List args;
@@ -3082,40 +3085,35 @@ TEST_F(SiteSettingsHandlerIsolatedWebAppTest, ZoomLevel) {
 
   double default_level = iwa_host_zoom_map->GetDefaultZoomLevel();
   double level = iwa_host_zoom_map->GetZoomLevelForHostAndScheme(
-      "isolated-app", iwa_url().host());
+      "isolated-app", iwa_url_info_->origin().host());
   EXPECT_EQ(default_level, level);
 }
 
 TEST_F(SiteSettingsHandlerIsolatedWebAppTest, ZoomLevelsSortedByAppName) {
-  GetIwaHostZoomMap(iwa_url())->SetZoomLevelForHost(iwa_url().host(), 1.1);
+  GetIwaHostZoomMap(*iwa_url_info_)
+      ->SetZoomLevelForHost(iwa_url_info_->origin().host(), 1.1);
 
   // Install 3 more IWAs.
-  GURL iwa3_url(
-      "isolated-app://"
-      "cerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
-  InstallIsolatedWebApp(iwa3_url, "IWA Name 3");
-  GetIwaHostZoomMap(iwa3_url)->SetZoomLevelForHost(iwa3_url.host(), 1.1);
+  web_app::IsolatedWebAppUrlInfo iwa3_url_info =
+      InstallIsolatedWebApp("IWA Name 3");
+  GetIwaHostZoomMap(iwa3_url_info)
+      ->SetZoomLevelForHost(iwa3_url_info.origin().host(), 1.1);
 
-  GURL iwa2_url(
-      "isolated-app://"
-      "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
-  InstallIsolatedWebApp(iwa2_url, "IWA Name 2");
-  GetIwaHostZoomMap(iwa2_url)->SetZoomLevelForHost(iwa2_url.host(), 1.1);
+  web_app::IsolatedWebAppUrlInfo iwa2_url_info =
+      InstallIsolatedWebApp("IWA Name 2");
+  GetIwaHostZoomMap(iwa2_url_info)
+      ->SetZoomLevelForHost(iwa2_url_info.origin().host(), 1.1);
 
   // Don't set a zoom for this app to make sure it's not in the list.
-  GURL iwa4_url(
-      "isolated-app://"
-      "derugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
-  InstallIsolatedWebApp(iwa4_url, "IWA Name 4");
+  web_app::IsolatedWebAppUrlInfo iwa4_url = InstallIsolatedWebApp("IWA Name 4");
 
   base::Value::List args;
   handler()->HandleFetchZoomLevels(args);
 
-  ValidateZoom(
-      {{url::Origin::Create(iwa_url()).Serialize(), "IWA Name", "122%"},
-       {url::Origin::Create(iwa2_url).Serialize(), "IWA Name 2", "122%"},
-       {url::Origin::Create(iwa3_url).Serialize(), "IWA Name 3", "122%"}},
-      2U);
+  ValidateZoom({{iwa_url_info_->origin().Serialize(), "IWA Name", "122%"},
+                {iwa2_url_info.origin().Serialize(), "IWA Name 2", "122%"},
+                {iwa3_url_info.origin().Serialize(), "IWA Name 3", "122%"}},
+               2U);
 }
 
 class SiteSettingsHandlerInfobarTest : public BrowserWithTestWindowTest {
