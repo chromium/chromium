@@ -284,7 +284,6 @@ TEST_F(AppInfoDialogViewsTest, DestroyedProfileClosesDialog) {
 
   EXPECT_FALSE(widget_);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Tests that the dialog does not close when a different profile is destroyed.
 TEST_F(AppInfoDialogViewsTest, DestroyedOtherProfileDoesNotCloseDialog) {
@@ -304,6 +303,7 @@ TEST_F(AppInfoDialogViewsTest, DestroyedOtherProfileDoesNotCloseDialog) {
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(widget_);
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Tests that clicking the View in Store link opens a browser tab and closes the
 // dialog cleanly.
