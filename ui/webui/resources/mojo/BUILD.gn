@@ -44,7 +44,6 @@ if (is_chromeos) {
     "mojo/public/mojom/base/unguessable_token.mojom-webui.js",
     "mojo/public/mojom/base/uuid.mojom-webui.js",
     "mojo/public/mojom/base/values.mojom-webui.js",
-    "services/network/public/mojom/ip_address.mojom-webui.js",
     "url/mojom/url.mojom-webui.js",
   ]
 
@@ -67,6 +66,7 @@ if (is_chromeos) {
     "chromeos/services/network_health/public/mojom/network_diagnostics.mojom-webui.ts",
     "chromeos/services/network_health/public/mojom/network_health.mojom-webui.ts",
     "chromeos/services/network_health/public/mojom/network_health_types.mojom-webui.ts",
+    "services/network/public/mojom/ip_address.mojom-webui.ts",
     "ui/base/accelerators/mojom/accelerator.mojom-webui.ts",
     "ui/events/mojom/event.mojom-webui.ts",
     "ui/events/mojom/event_constants.mojom-webui.ts",
@@ -129,6 +129,7 @@ preprocess_if_expr("copy_mojo_ts") {
       "//chromeos/services/network_config/public/mojom:network_types_ts__generator",
       "//chromeos/services/network_health/public/mojom:mojom_ts__generator",
       "//chromeos/services/network_health/public/mojom:types_ts__generator",
+      "//services/network/public/mojom:mojom_ip_address_ts__generator",
       "//ui/base/accelerators/mojom:mojom_ts__generator",
       "//ui/events/mojom:mojom_ts__generator",
       "//ui/latency/mojom:mojom_ts__generator",
@@ -152,7 +153,6 @@ if (is_chromeos) {
 
     deps = [
       "//mojo/public/mojom/base:base_js__generator",
-      "//services/network/public/mojom:mojom_ip_address_js__generator",
       "//url/mojom:url_mojom_gurl_js__generator",
     ]
   }

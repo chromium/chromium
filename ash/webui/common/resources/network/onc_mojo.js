@@ -12,11 +12,11 @@ import {assert, assertNotReached} from '//resources/ash/common/assert.js';
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
 import {ActivationStateType, AuthenticationType, HiddenSsidMode, InhibitReason, MatchType, ProxyMode, SecurityType, SubjectAltName_Type, VpnType} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, DeviceStateType, IPConfigType, NetworkType, OncSource, PolicySource, PortalState} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {IPAddress} from '//resources/mojo/services/network/public/mojom/ip_address.mojom-webui.js';
 
 // Type aliases for js-webui to ts-webui migration
 /** @typedef {*} ApnProperties */
 /** @typedef {*} ConfigProperties */
+/** @typedef {*} IPAddress */
 /** @typedef {*} IPConfigProperties */
 /** @typedef {*} ManagedApnList */
 /** @typedef {*} ManagedBoolean */
