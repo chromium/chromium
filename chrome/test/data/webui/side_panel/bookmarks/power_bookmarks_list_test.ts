@@ -14,6 +14,7 @@ import type {PageRemote} from 'chrome://resources/cr_components/commerce/price_t
 import {PriceTrackingBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/price_tracking_browser_proxy.js';
 import {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/page_image_service/browser_proxy.js';
 import {PageImageServiceHandlerRemote} from 'chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import type {CrUrlListItemElement} from 'chrome://resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -95,6 +96,11 @@ suite('SidePanelPowerBookmarksListTest', () => {
       return [];
     }
     return ironList.items!;
+  }
+
+  function getAddTabButton(): CrButtonElement {
+    return powerBookmarksList.shadowRoot!.querySelector<CrButtonElement>(
+        '#addCurrentTabButton')!;
   }
 
   function getBookmarkWithId(id: string): chrome.bookmarks.BookmarkTreeNode|
@@ -312,6 +318,32 @@ suite('SidePanelPowerBookmarksListTest', () => {
 
     // Bookmark no longer matches search term and should not display.
     assertEquals(0, getBookmarks().length);
+  });
+
+  test('DefaultsAddTabButtonEnabled', () => {
+    const btn = getAddTabButton();
+    // The AddTabButton is enabled because the current url is not bookmarked.
+    assertFalse(btn.disabled);
+  });
+
+  test('UpdatesAddTabButton', () => {
+    bookmarksApi.callbackRouter.onCreated.callListeners('999', {
+      id: '999',
+      title: 'New bookmark of current url',
+      index: 0,
+      parentId: folders[1]!.id,
+      url: powerBookmarksList.getCurrentUrlForTesting(),
+    });
+    flush();
+
+    let btn = getAddTabButton();
+    assertTrue(btn.disabled);
+
+    bookmarksApi.callbackRouter.onRemoved.callListeners('999');
+    flush();
+
+    btn = getAddTabButton();
+    assertFalse(btn.disabled);
   });
 
   test('AddsCreatedBookmark', async () => {
