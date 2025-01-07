@@ -204,11 +204,6 @@ class ManagePasswordsUIController
   void OnDialogHidden() override;
   void AuthenticateUserWithMessage(const std::u16string& message,
                                    AvailabilityCallback callback) override;
-  void AuthenticateUserForAccountStoreOptInAndSavePassword(
-      const std::u16string& username,
-      const std::u16string& password) override;
-  void AuthenticateUserForAccountStoreOptInAfterSavingLocallyAndMovePassword()
-      override;
   void MaybeShowIOSPasswordPromo() override;
   void RelaunchChrome() override;
   // Skips user os level authentication during the life time of the returned
@@ -320,32 +315,11 @@ class ManagePasswordsUIController
   // content::WebContentsObserver:
   void WebContentsDestroyed() override;
 
-  // Gets invoked gaia reauth flow is finished. If the reauth was successful,
-  // and the |form_manager| is still the same, |username| and |password| are
-  // saved against the current origin. If the reauth was unsuccessful, it
-  // changes the default destination to profle store and reopens the save
-  // bubble.
-  void FinishSavingPasswordAfterAccountStoreOptInAuth(
-      const url::Origin& origin,
-      password_manager::PasswordFormManagerForUI* form_manager,
-      const std::u16string& username,
-      const std::u16string& password,
-      password_manager::PasswordManagerClient::ReauthSucceeded
-          reauth_succeeded);
-
   void OnTriggerPostSaveCompromisedBubble(
       password_manager::PostSaveCompromisedHelper::BubbleType type,
       size_t count_compromised_passwords_);
 
-  // Called from an opt-in/reauth flow that was triggered after a new
-  // account-storage-eligible user saved a password locally. If the opt-in was
-  // successful, this moves the just-saved password into the account store.
-  void MoveJustSavedPasswordAfterAccountStoreOptIn(
-      const password_manager::PasswordForm& form,
-      password_manager::PasswordManagerClient::ReauthSucceeded
-          reauth_succeeded);
-
-  void OnMoveJustSavedPasswordAfterAccountStoreOptInCompleted(
+  void OnMovePasswordToAccountStoreComplete(
       std::list<std::unique_ptr<
           password_manager::MovePasswordToAccountStoreHelper>>::iterator
           done_helper_it);

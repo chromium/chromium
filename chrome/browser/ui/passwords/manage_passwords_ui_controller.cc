@@ -1110,33 +1110,6 @@ void ManagePasswordsUIController::AuthenticateUserWithMessage(
 #endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
 }
 
-void ManagePasswordsUIController::
-    AuthenticateUserForAccountStoreOptInAndSavePassword(
-        const std::u16string& username,
-        const std::u16string& password) {
-  password_manager::PasswordManagerClient* client = passwords_data_.client();
-  client->TriggerReauthForPrimaryAccount(
-      signin_metrics::ReauthAccessPoint::kPasswordSaveBubble,
-      base::BindOnce(&ManagePasswordsUIController::
-                         FinishSavingPasswordAfterAccountStoreOptInAuth,
-                     weak_ptr_factory_.GetWeakPtr(), passwords_data_.origin(),
-                     passwords_data_.form_manager(), username, password));
-}
-
-void ManagePasswordsUIController::
-    AuthenticateUserForAccountStoreOptInAfterSavingLocallyAndMovePassword() {
-  DCHECK(GetState() == password_manager::ui::MANAGE_STATE) << GetState();
-  // Note: While saving the password locally earlier, the FormManager has been
-  // updated with any edits the user made in the Save bubble. So at this point,
-  // just using GetPendingCredentials() is safe.
-  passwords_data_.client()->TriggerReauthForPrimaryAccount(
-      signin_metrics::ReauthAccessPoint::kPasswordSaveLocallyBubble,
-      base::BindOnce(&ManagePasswordsUIController::
-                         MoveJustSavedPasswordAfterAccountStoreOptIn,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     passwords_data_.form_manager()->GetPendingCredentials()));
-}
-
 void ManagePasswordsUIController::MaybeShowIOSPasswordPromo() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
@@ -1226,10 +1199,9 @@ void ManagePasswordsUIController::MovePendingPasswordToAccountStoreUsingHelper(
   auto helper_it = move_to_account_store_helpers_.insert(
       move_to_account_store_helpers_.begin(), nullptr);
   // This class owns and thus outlives the helper so base::Unretained is safe.
-  auto on_move_finished =
-      base::BindOnce(&ManagePasswordsUIController::
-                         OnMoveJustSavedPasswordAfterAccountStoreOptInCompleted,
-                     base::Unretained(this), helper_it);
+  auto on_move_finished = base::BindOnce(
+      &ManagePasswordsUIController::OnMovePasswordToAccountStoreComplete,
+      base::Unretained(this), helper_it);
   *helper_it = CreateMovePasswordToAccountStoreHelper(
       form, trigger, std::move(on_move_finished));
 }
@@ -1317,36 +1289,6 @@ void ManagePasswordsUIController::WebContentsDestroyed() {
   // `this` is now destroyed - do not add code here.
 }
 
-void ManagePasswordsUIController::
-    FinishSavingPasswordAfterAccountStoreOptInAuth(
-        const url::Origin& origin,
-        password_manager::PasswordFormManagerForUI* form_manager,
-        const std::u16string& username,
-        const std::u16string& password,
-        password_manager::PasswordManagerClient::ReauthSucceeded
-            reauth_succeeded) {
-  if (reauth_succeeded) {
-    // Save the password only if it is the same origin and same form manager.
-    // Otherwise it can be dangerous (e.g. saving the credentials against
-    // another origin).
-    if (passwords_data_.origin() == origin &&
-        passwords_data_.form_manager() == form_manager) {
-      SavePassword(username, password);
-    }
-    return;
-  }
-  // If reauth wasn't successful, explicitly opt out, change to local store and
-  // reopen the bubble if the state didn't change.
-  GetPasswordFeatureManager()->OptOutOfAccountStorageAndClearSettings();
-  GetPasswordFeatureManager()->SetDefaultPasswordStore(
-      password_manager::PasswordForm::Store::kProfileStore);
-  if (passwords_data_.state() != password_manager::ui::PENDING_PASSWORD_STATE) {
-    return;
-  }
-  bubble_status_ = BubbleStatus::SHOULD_POP_UP;
-  UpdateBubbleAndIconVisibility();
-}
-
 void ManagePasswordsUIController::OnTriggerPostSaveCompromisedBubble(
     password_manager::PostSaveCompromisedHelper::BubbleType type,
     size_t count_compromised_passwords_) {
@@ -1374,33 +1316,9 @@ void ManagePasswordsUIController::OnTriggerPostSaveCompromisedBubble(
   UpdateBubbleAndIconVisibility();
 }
 
-void ManagePasswordsUIController::MoveJustSavedPasswordAfterAccountStoreOptIn(
-    const password_manager::PasswordForm& form,
-    password_manager::PasswordManagerClient::ReauthSucceeded reauth_succeeded) {
-  // Successful opt-in means that the just-saved password should be moved to the
-  // account.
-  if (reauth_succeeded) {
-    MovePendingPasswordToAccountStoreUsingHelper(
-        form, password_manager::metrics_util::MoveToAccountStoreTrigger::
-                  kUserOptedInAfterSavingLocally);
-  } else {
-    // Failed or canceled opt-in means the user has (implicitly) chosen to save
-    // locally. This is already the default value, but setting it explicitly
-    // makes sure the user won't be asked to opt in again (since "store not set"
-    // gets interpreted as "first-time save").
-    // Similarly, opting out explicitly has special handling in
-    // SyncUserSettings::GetSelectedTypes(), and thus in
-    // IsOptedInForAccountStorage().
-    GetPasswordFeatureManager()->OptOutOfAccountStorageAndClearSettings();
-    GetPasswordFeatureManager()->SetDefaultPasswordStore(
-        password_manager::PasswordForm::Store::kProfileStore);
-  }
-}
-
-void ManagePasswordsUIController::
-    OnMoveJustSavedPasswordAfterAccountStoreOptInCompleted(
-        std::list<std::unique_ptr<MovePasswordToAccountStoreHelper>>::iterator
-            done_helper_it) {
+void ManagePasswordsUIController::OnMovePasswordToAccountStoreComplete(
+    std::list<std::unique_ptr<MovePasswordToAccountStoreHelper>>::iterator
+        done_helper_it) {
   move_to_account_store_helpers_.erase(done_helper_it);
 }
 

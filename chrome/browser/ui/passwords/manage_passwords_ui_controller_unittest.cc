@@ -137,12 +137,6 @@ class TestPasswordManagerClient
   TestPasswordManagerClient()
       : mock_profile_store_(new MockPasswordStoreInterface()) {}
 
-  MOCK_METHOD(void,
-              TriggerReauthForPrimaryAccount,
-              (signin_metrics::ReauthAccessPoint,
-               base::OnceCallback<void(ReauthSucceeded)>),
-              (override));
-
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   MOCK_METHOD(std::unique_ptr<device_reauth::DeviceAuthenticator>,
               GetDeviceAuthenticator,
@@ -696,86 +690,6 @@ TEST_F(ManagePasswordsUIControllerTest, PasswordSavedUKMRecording) {
     histogram_tester.ExpectUniqueSample("PasswordManager.EditsInSaveBubble",
                                         test.expected_uma_sample, 1);
   }
-}
-
-TEST_F(ManagePasswordsUIControllerTest,
-       PasswordSavedInAccountStoreWhenReauthSucceeds) {
-  std::vector<PasswordForm> best_matches;
-  auto test_form_manager =
-      CreateFormManagerWithBestMatches(best_matches, &submitted_form());
-  MockPasswordFormManagerForUI* test_form_manager_ptr = test_form_manager.get();
-
-  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
-  controller()->OnPasswordSubmitted(std::move(test_form_manager));
-
-  // The user hasn't opted in, so a reauth flow will be triggered.
-  base::OnceCallback<void(ReauthSucceeded)> reauth_callback;
-  EXPECT_CALL(client(),
-              TriggerReauthForPrimaryAccount(
-                  signin_metrics::ReauthAccessPoint::kPasswordSaveBubble, _))
-      .WillOnce(MoveArg<1>(&reauth_callback));
-
-  // The user clicks save which will invoke the reauth flow.
-  controller()->AuthenticateUserForAccountStoreOptInAndSavePassword(
-      submitted_form().username_value, submitted_form().password_value);
-
-  // The bubble gets hidden after the user clicks on save.
-  controller()->OnBubbleHidden();
-
-  // Simulate a successful reauth which will cause the password to be saved.
-  EXPECT_CALL(*test_form_manager_ptr, Save());
-  std::move(reauth_callback).Run(ReauthSucceeded(true));
-
-  // We should be now in the manage state and no other bubble should be opened
-  // automatically.
-  ExpectIconAndControllerStateIs(password_manager::ui::MANAGE_STATE);
-}
-
-TEST_F(ManagePasswordsUIControllerTest,
-       PasswordNotSavedInAccountStoreWhenReauthFails) {
-  std::vector<PasswordForm> best_matches;
-  auto test_form_manager =
-      CreateFormManagerWithBestMatches(best_matches, &submitted_form());
-
-  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
-  EXPECT_CALL(*test_form_manager, Save()).Times(0);
-
-  controller()->OnPasswordSubmitted(std::move(test_form_manager));
-
-  // The user hasn't opted in, so a reauth flow will be triggered.
-  base::OnceCallback<void(ReauthSucceeded)> reauth_callback;
-  EXPECT_CALL(client(),
-              TriggerReauthForPrimaryAccount(
-                  signin_metrics::ReauthAccessPoint::kPasswordSaveBubble, _))
-      .WillOnce(MoveArg<1>(&reauth_callback));
-
-  {
-    // Unsuccessful reauth should change the default store to profile store and
-    // opt out of account storage. OptOutOfAccountStorageAndClearSettings()
-    // clears the store pref, so SetDefaultPasswordStore() should come second.
-    testing::InSequence in_sequence;
-    EXPECT_CALL(*client().GetPasswordFeatureManager(),
-                OptOutOfAccountStorageAndClearSettings());
-    EXPECT_CALL(*client().GetPasswordFeatureManager(),
-                SetDefaultPasswordStore(
-                    password_manager::PasswordForm::Store::kProfileStore));
-  }
-
-  // The user clicks save which will invoke the reauth flow.
-  controller()->AuthenticateUserForAccountStoreOptInAndSavePassword(
-      submitted_form().username_value, submitted_form().password_value);
-
-  // The bubble gets hidden after the user clicks on save.
-  controller()->OnBubbleHidden();
-
-  // Simulate an unsuccessful reauth which will cause the bubble to be open
-  // again.
-  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
-  std::move(reauth_callback).Run(ReauthSucceeded(false));
-
-  // The bubble should have been opened again.
-  ExpectIconAndControllerStateIs(password_manager::ui::PENDING_PASSWORD_STATE);
-  EXPECT_TRUE(controller()->opened_automatic_bubble());
 }
 
 TEST_F(ManagePasswordsUIControllerTest, PasswordBlocklisted) {

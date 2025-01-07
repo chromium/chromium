@@ -91,6 +91,7 @@ class PasswordFeatureManager {
   // Whether the user should be asked if they want to use the account store
   // after saving a password locally. This is true for eligible users that
   // haven't made this choice before.
+  // TODO(crbug.com/374293518): Unused, delete.
   virtual bool ShouldOfferOptInAndMoveToAccountStoreAfterSavingLocally()
       const = 0;
 

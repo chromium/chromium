@@ -136,22 +136,9 @@ void SaveUpdateBubbleController::OnSaveClicked() {
   SetDismissalReason(metrics_util::CLICKED_ACCEPT);
   if (delegate_) {
     CleanStatisticsForSite(GetProfile(), GetOrigin());
-    if (IsAccountStorageOptInRequiredBeforeSave()) {
-      delegate_->AuthenticateUserForAccountStoreOptInAndSavePassword(
-          GetPendingPassword().username_value,
-          GetPendingPassword().password_value);
-    } else {
-      delegate_->SavePassword(GetPendingPassword().username_value,
-                              GetPendingPassword().password_value);
-      if (!IsCurrentStateUpdate() &&
-          delegate_->GetPasswordFeatureManager()
-              ->ShouldOfferOptInAndMoveToAccountStoreAfterSavingLocally()) {
-        delegate_
-            ->AuthenticateUserForAccountStoreOptInAfterSavingLocallyAndMovePassword();
-      } else {
-        delegate_->MaybeShowIOSPasswordPromo();
-      }
-    }
+    delegate_->SavePassword(GetPendingPassword().username_value,
+                            GetPendingPassword().password_value);
+    delegate_->MaybeShowIOSPasswordPromo();
   }
 }
 
@@ -251,26 +238,6 @@ void SaveUpdateBubbleController::ShouldRevealPasswords(
 bool SaveUpdateBubbleController::IsUsingAccountStore() {
   return delegate_->GetPasswordFeatureManager()->GetDefaultPasswordStore() ==
          Store::kAccountStore;
-}
-
-bool SaveUpdateBubbleController::IsAccountStorageOptInRequiredBeforeSave() {
-  // If this is an update, either a) the password only exists in the profile
-  // store, so the opt-in shouldn't be offered because the account storage won't
-  // be used, or b) there is a copy in the account store, which means the user
-  // already opted in. Either way, the opt-in shouldn't be offered.
-  if (IsCurrentStateUpdate()) {
-    return false;
-  }
-  // If saving to the profile store, then no need to ask for opt-in.
-  if (!IsUsingAccountStore()) {
-    return false;
-  }
-  // If already opted in, no need to ask again.
-  if (delegate_->GetPasswordFeatureManager()->IsOptedInForAccountStorage()) {
-    return false;
-  }
-
-  return true;
 }
 
 std::u16string SaveUpdateBubbleController::GetTitle() const {

@@ -278,15 +278,9 @@ void PasswordSaveUpdateView::UpdateUsernameAndPasswordInModel() {
 void PasswordSaveUpdateView::UpdateBubbleUIElements() {
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk) |
              static_cast<int>(ui::mojom::DialogButton::kCancel));
-  std::u16string ok_button_text;
-  if (controller_.IsAccountStorageOptInRequiredBeforeSave()) {
-    ok_button_text = l10n_util::GetStringUTF16(
-        IDS_PASSWORD_MANAGER_SAVE_BUBBLE_OPT_IN_BUTTON);
-  } else {
-    ok_button_text = l10n_util::GetStringUTF16(
-        controller_.IsCurrentStateUpdate() ? IDS_PASSWORD_MANAGER_UPDATE_BUTTON
-                                           : IDS_PASSWORD_MANAGER_SAVE_BUTTON);
-  }
+  std::u16string ok_button_text = l10n_util::GetStringUTF16(
+      controller_.IsCurrentStateUpdate() ? IDS_PASSWORD_MANAGER_UPDATE_BUTTON
+                                         : IDS_PASSWORD_MANAGER_SAVE_BUTTON);
   SetButtonLabel(ui::mojom::DialogButton::kOk, ok_button_text);
   SetButtonLabel(
       ui::mojom::DialogButton::kCancel,
