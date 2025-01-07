@@ -1183,6 +1183,19 @@ public class TabDragSourceTest {
                 mSourceInstance.onDrag(mTabsToolbarView, event));
     }
 
+    /**
+     * Tests fix for crash reported in crbug.com/379842187 when dropping tabs from a different
+     * channel.
+     */
+    @Test
+    public void test_onDrag_tabFromDifferentChannel() {
+        assertFalse(
+                "#onDragStart should return false when no global tab state exists.",
+                mSourceInstance.onDrag(
+                        mTabsToolbarView,
+                        mockDragEvent(DragEvent.ACTION_DRAG_STARTED, POS_X, mPosY)));
+    }
+
     private void invokeDropInDestinationStrip(boolean dragEndRes) {
         new DragEventInvoker()
                 .dragExit(mSourceInstance)

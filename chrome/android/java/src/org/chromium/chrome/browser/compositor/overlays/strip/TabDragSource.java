@@ -325,7 +325,8 @@ public class TabDragSource implements View.OnDragListener {
 
     private boolean onDragStart(float xPx, float yPx, ClipDescription clipDescription) {
         if (clipDescription == null
-                || clipDescription.filterMimeTypes(MimeTypeUtils.CHROME_MIMETYPE_TAB) == null) {
+                || clipDescription.filterMimeTypes(MimeTypeUtils.CHROME_MIMETYPE_TAB) == null
+                || DragDropGlobalState.getState(sDragTrackerToken) == null) {
             return false;
         }
 
