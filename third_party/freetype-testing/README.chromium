@@ -1,7 +1,7 @@
 Name: FreeType-Testing
 URL: https://github.com/freetype/freetype2-testing
-Version: VER-7a69b1a2b
-Revision: 7a69b1a2b028476f840ab7d4a2ffdfe4eb2c389f
+Version: VER-f2f190f85
+Revision: f2f190f8524d68ce1ba8e848a0be4552f523d9bc
 License: GPL
 License File: LICENSE
 Security Critical: no
@@ -15,6 +15,14 @@ some of the fuzzing harness as part of Chromium's own fuzzing. This is the
 reason for this repository to be included.
 
 How to update:
-1. Update the revision in this file, and the freetype-testing revision in the
-   top level Chromium DEPS file.
-2. Update BUILD.gn to reflect changes if needed.
+0. Ensure the mirror is up to date. May need to force a fetch with
+   gob-ctl repos update-mirror-config github/freetype/freetype2-testing \
+     --fetch_frequency 4h \
+     --uri https://github.com/freetype/freetype2-testing.git
+
+1. Create roll commit
+   roll-dep src/third_party/freetype-testing/src/
+
+2. Update the revision in this file.
+
+3. Update BUILD.gn to reflect changes if needed.
