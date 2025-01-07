@@ -1306,7 +1306,7 @@ TEST_F(AccountReconcilorDiceTest, ClearPrimaryAccountNotAllowed) {
 
   test_signin_client()->set_is_clear_primary_account_allowed_for_testing(
       SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED);
-  signin::SetListAccountsResponseOneAccount(kFakeEmail, kFakeGaiaId,
+  signin::SetListAccountsResponseOneAccount(kFakeEmail, GaiaId(kFakeGaiaId),
                                             &test_url_loader_factory_);
   identity_test_env()->MakePrimaryAccountAvailable(
       kFakeEmail, signin::ConsentLevel::kSignin);
@@ -1410,7 +1410,7 @@ TEST_F(AccountReconcilorDiceTest, DiceReconcileReuseGaiaFirstAccount) {
   // Add account "other" to the Gaia cookie.
   signin::SetListAccountsResponseTwoAccounts(
       kFakeEmail2, signin::GetTestGaiaIdForEmail(kFakeEmail2), "foo@gmail.com",
-      "9999", &test_url_loader_factory_);
+      GaiaId("9999"), &test_url_loader_factory_);
 
   // Add accounts "user" and "other" to the token service.
   const AccountInfo account_info_1 =
@@ -1523,8 +1523,8 @@ TEST_F(AccountReconcilorDiceTest, DiceLastKnownFirstAccount) {
 TEST_F(AccountReconcilorDiceTest, UnverifiedAccountNoop) {
   // Add a unverified account to the Gaia cookie.
   signin::SetListAccountsResponseOneAccountWithParams(
-      {kFakeEmail, kFakeGaiaId, true /* valid */, false /* signed_out */,
-       false /* verified */},
+      {kFakeEmail, GaiaId(kFakeGaiaId), true /* valid */,
+       false /* signed_out */, false /* verified */},
       &test_url_loader_factory_);
 
   // Check that nothing happens.
@@ -1546,7 +1546,7 @@ TEST_F(AccountReconcilorDiceTest, UnverifiedAccountMerge) {
   // Add a unverified account to the Gaia cookie.
   signin::SetListAccountsResponseOneAccountWithParams(
       {.email = kFakeEmail,
-       .gaia_id = kFakeGaiaId,
+       .gaia_id = GaiaId(kFakeGaiaId),
        .valid = true,
        .signed_out = false,
        .verified = false},
@@ -1670,7 +1670,7 @@ class AccountReconcilorDiceTestForSupervisedUsers
 TEST_F(AccountReconcilorDiceTestForSupervisedUsers,
        DeleteCookieForNonSyncingSupervisedUsers) {
   auto* identity_manager = identity_test_env()->identity_manager();
-  signin::SetListAccountsResponseOneAccount(kFakeEmail, kFakeGaiaId,
+  signin::SetListAccountsResponseOneAccount(kFakeEmail, GaiaId(kFakeGaiaId),
                                             &test_url_loader_factory_);
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
       kFakeEmail, signin::ConsentLevel::kSignin);
@@ -1698,7 +1698,7 @@ TEST_F(AccountReconcilorDiceTestForSupervisedUsers,
 TEST_F(AccountReconcilorDiceTestForSupervisedUsers,
        DeleteCookieForSyncingSupervisedUsers) {
   auto* identity_manager = identity_test_env()->identity_manager();
-  signin::SetListAccountsResponseOneAccount(kFakeEmail, kFakeGaiaId,
+  signin::SetListAccountsResponseOneAccount(kFakeEmail, GaiaId(kFakeGaiaId),
                                             &test_url_loader_factory_);
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
       kFakeEmail, consent_level_for_reconcile_);
@@ -1746,7 +1746,7 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
 
 TEST_P(AccountReconcilorDiceTestWithUnoDesktop, DeleteCookieForSignedInUser) {
   auto* identity_manager = identity_test_env()->identity_manager();
-  signin::SetListAccountsResponseOneAccount(kFakeEmail, kFakeGaiaId,
+  signin::SetListAccountsResponseOneAccount(kFakeEmail, GaiaId(kFakeGaiaId),
                                             &test_url_loader_factory_);
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
       kFakeEmail, signin::ConsentLevel::kSignin);
@@ -1772,7 +1772,7 @@ TEST_P(AccountReconcilorDiceTestWithUnoDesktop, DeleteCookieForSignedInUser) {
 
 TEST_P(AccountReconcilorDiceTestWithUnoDesktop, DeleteCookieForSyncingUser) {
   auto* identity_manager = identity_test_env()->identity_manager();
-  signin::SetListAccountsResponseOneAccount(kFakeEmail, kFakeGaiaId,
+  signin::SetListAccountsResponseOneAccount(kFakeEmail, GaiaId(kFakeGaiaId),
                                             &test_url_loader_factory_);
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
       kFakeEmail, signin::ConsentLevel::kSync);
@@ -2556,7 +2556,7 @@ TEST_F(AccountReconcilorMirrorTest, StartReconcileRemoveFromCookie) {
   const CoreAccountId account_id = account_info.account_id;
   identity_test_env()->SetRefreshTokenForAccount(account_id);
   signin::SetListAccountsResponseTwoAccounts(
-      account_info.email, account_info.gaia, kFakeEmail2, kFakeGaiaId,
+      account_info.email, account_info.gaia, kFakeEmail2, GaiaId(kFakeGaiaId),
       &test_url_loader_factory_);
 
   std::vector<CoreAccountId> accounts_to_send = {account_id};
@@ -2588,7 +2588,7 @@ TEST_F(AccountReconcilorMirrorTest, TokenErrorOnPrimary) {
 
   AccountReconcilor* reconcilor = GetMockReconcilor();
   signin::SetListAccountsResponseTwoAccounts(
-      account_info.email, account_info.gaia, kFakeEmail2, "67890",
+      account_info.email, account_info.gaia, kFakeEmail2, GaiaId("67890"),
       &test_url_loader_factory_);
   reconcilor->StartReconcile(AccountReconcilor::Trigger::kCookieChange);
   base::RunLoop().RunUntilIdle();
@@ -3349,7 +3349,7 @@ TEST_F(AccountReconcilorTest, MultiloginLogout) {
 
   MockAccountReconcilor* reconcilor =
       CreateMockReconcilor(std::make_unique<MultiloginLogoutDelegate>());
-  signin::SetListAccountsResponseOneAccount(kFakeEmail, "123456",
+  signin::SetListAccountsResponseOneAccount(kFakeEmail, GaiaId("123456"),
                                             &test_url_loader_factory_);
 
   // Logout call to Gaia.

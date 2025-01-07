@@ -166,12 +166,12 @@ class SigninHeaderHelperTest : public testing::Test {
 TEST_F(SigninHeaderHelperTest, TestMirrorRequestNoAccountIdChromeOS) {
   account_consistency_ = AccountConsistencyMethod::kMirror;
   CheckMirrorHeaderRequest(
-      GURL("https://docs.google.com"), /*gaia_id=*/"",
+      GURL("https://docs.google.com"), GaiaId(),
       /*is_child_account=*/Tribool::kUnknown,
       "source=TestSource,mode=0,enable_account_consistency=true,"
       "consistency_enabled_by_default=" +
           consistency_enabled_by_default_value());
-  CheckMirrorCookieRequest(GURL("https://docs.google.com"), /*gaia_id=*/"",
+  CheckMirrorCookieRequest(GURL("https://docs.google.com"), GaiaId(),
                            "mode=0:enable_account_consistency=true:"
                            "consistency_enabled_by_default=" +
                                consistency_enabled_by_default_value());
@@ -182,10 +182,10 @@ TEST_F(SigninHeaderHelperTest, TestMirrorRequestNoAccountIdChromeOS) {
 // when reaching to Gaia origin and there's no primary account.
 TEST_F(SigninHeaderHelperTest, TestEligibleForConsistencyRequestGaiaOrigin) {
   account_consistency_ = AccountConsistencyMethod::kMirror;
-  CheckMirrorHeaderRequest(GURL("https://accounts.google.com"), /*gaia_id=*/"",
+  CheckMirrorHeaderRequest(GURL("https://accounts.google.com"), GaiaId(),
                            /*is_child_account=*/Tribool::kUnknown,
                            "source=TestSource,eligible_for_consistency=true");
-  CheckMirrorCookieRequest(GURL("https://accounts.google.com"), /*gaia_id=*/"",
+  CheckMirrorCookieRequest(GURL("https://accounts.google.com"), GaiaId(),
                            "eligible_for_consistency=true");
 }
 
@@ -194,9 +194,9 @@ TEST_F(SigninHeaderHelperTest, TestEligibleForConsistencyRequestGaiaOrigin) {
 TEST_F(SigninHeaderHelperTest,
        TestNoEligibleForConsistencyRequestNonGaiaOrigin) {
   account_consistency_ = AccountConsistencyMethod::kMirror;
-  CheckMirrorHeaderRequest(GURL("https://docs.google.com"), /*gaia_id=*/"",
+  CheckMirrorHeaderRequest(GURL("https://docs.google.com"), GaiaId(),
                            /*is_child_account=*/Tribool::kUnknown, "");
-  CheckMirrorCookieRequest(GURL("https://docs.google.com"), /*gaia_id=*/"", "");
+  CheckMirrorCookieRequest(GURL("https://docs.google.com"), GaiaId(), "");
 }
 
 // Tests that the full Mirror request is returned when the
@@ -205,7 +205,7 @@ TEST_F(SigninHeaderHelperTest, TestForceAccountConsistencyMobile) {
   account_consistency_ = AccountConsistencyMethod::kMirror;
   force_account_consistency_ = true;
   CheckMirrorHeaderRequest(
-      GURL("https://docs.google.com"), /*gaia_id=*/"",
+      GURL("https://docs.google.com"), GaiaId(),
       /*is_child_account=*/Tribool::kUnknown,
       "source=TestSource,mode=0,enable_account_consistency=true,"
       "consistency_enabled_by_default=false");
@@ -216,9 +216,9 @@ TEST_F(SigninHeaderHelperTest, TestForceAccountConsistencyMobile) {
 // account id), for non Chrome OS platforms.
 TEST_F(SigninHeaderHelperTest, TestNoMirrorRequestNoAccountId) {
   account_consistency_ = AccountConsistencyMethod::kMirror;
-  CheckMirrorHeaderRequest(GURL("https://docs.google.com"), /*gaia_id=*/"",
+  CheckMirrorHeaderRequest(GURL("https://docs.google.com"), GaiaId(),
                            /*is_child_account=*/Tribool::kUnknown, "");
-  CheckMirrorCookieRequest(GURL("https://docs.google.com"), /*gaia_id=*/"", "");
+  CheckMirrorCookieRequest(GURL("https://docs.google.com"), GaiaId(), "");
 }
 #endif
 
@@ -227,9 +227,11 @@ TEST_F(SigninHeaderHelperTest, TestNoMirrorRequestNoAccountId) {
 // Regression test for b/247647476
 TEST_F(SigninHeaderHelperTest, TestNoMirrorHeaderForYoutubekids) {
   account_consistency_ = AccountConsistencyMethod::kMirror;
-  CheckMirrorHeaderRequest(GURL("https://youtubekids.com"), "0123456789",
+  CheckMirrorHeaderRequest(GURL("https://youtubekids.com"),
+                           GaiaId("0123456789"),
                            /*is_child_account=*/Tribool::kUnknown, "");
-  CheckMirrorCookieRequest(GURL("https://youtubekids.com"), "0123456789", "");
+  CheckMirrorCookieRequest(GURL("https://youtubekids.com"),
+                           GaiaId("0123456789"), "");
 }
 
 // Does not apply to iOS as users cannot set cookies settings in iOS.
@@ -239,16 +241,18 @@ TEST_F(SigninHeaderHelperTest, TestNoMirrorHeaderForYoutubekids) {
 TEST_F(SigninHeaderHelperTest, TestNoMirrorRequestCookieSettingBlocked) {
   account_consistency_ = AccountConsistencyMethod::kMirror;
   cookie_settings_->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
-  CheckMirrorHeaderRequest(GURL("https://docs.google.com"), "0123456789",
+  CheckMirrorHeaderRequest(GURL("https://docs.google.com"),
+                           GaiaId("0123456789"),
                            /*is_child_account=*/Tribool::kUnknown, "");
-  CheckMirrorCookieRequest(GURL("https://docs.google.com"), "0123456789", "");
+  CheckMirrorCookieRequest(GURL("https://docs.google.com"),
+                           GaiaId("0123456789"), "");
 }
 #endif
 
 TEST_F(SigninHeaderHelperTest,
        BuildMirrorRequestCookieIfPossibleHandlesNullptrCookieSettings) {
   std::string cookie = BuildMirrorRequestCookieIfPossible(
-      GURL("https://docs.google.com"), /*gaia_id=*/"0123456789",
+      GURL("https://docs.google.com"), GaiaId("0123456789"),
       AccountConsistencyMethod::kMirror,
       /*cookie_settings=*/nullptr, PROFILE_MODE_DEFAULT);
 #if BUILDFLAG(IS_IOS)
@@ -266,9 +270,9 @@ TEST_F(SigninHeaderHelperTest,
 // Tests that no Mirror request is returned when the target is a non-Google URL.
 TEST_F(SigninHeaderHelperTest, TestNoMirrorRequestExternalURL) {
   account_consistency_ = AccountConsistencyMethod::kMirror;
-  CheckMirrorHeaderRequest(GURL("https://foo.com"), "0123456789",
+  CheckMirrorHeaderRequest(GURL("https://foo.com"), GaiaId("0123456789"),
                            /*is_child_account=*/Tribool::kUnknown, "");
-  CheckMirrorCookieRequest(GURL("https://foo.com"), "0123456789", "");
+  CheckMirrorCookieRequest(GURL("https://foo.com"), GaiaId("0123456789"), "");
 }
 
 // Tests that the Mirror request is returned without the GAIA Id when the target
@@ -276,12 +280,12 @@ TEST_F(SigninHeaderHelperTest, TestNoMirrorRequestExternalURL) {
 TEST_F(SigninHeaderHelperTest, TestMirrorRequestGoogleTLD) {
   account_consistency_ = AccountConsistencyMethod::kMirror;
   CheckMirrorHeaderRequest(
-      GURL("https://google.fr"), "0123456789",
+      GURL("https://google.fr"), GaiaId("0123456789"),
       /*is_child_account=*/Tribool::kUnknown,
       "source=TestSource,mode=0,enable_account_consistency=true,"
       "consistency_enabled_by_default=" +
           consistency_enabled_by_default_value());
-  CheckMirrorCookieRequest(GURL("https://google.de"), "0123456789",
+  CheckMirrorCookieRequest(GURL("https://google.de"), GaiaId("0123456789"),
                            "mode=0:enable_account_consistency=true:"
                            "consistency_enabled_by_default=" +
                                consistency_enabled_by_default_value());
@@ -292,12 +296,12 @@ TEST_F(SigninHeaderHelperTest, TestMirrorRequestGoogleTLD) {
 TEST_F(SigninHeaderHelperTest, TestMirrorRequestGoogleCom) {
   account_consistency_ = AccountConsistencyMethod::kMirror;
   CheckMirrorHeaderRequest(
-      GURL("https://www.google.com"), "0123456789",
+      GURL("https://www.google.com"), GaiaId("0123456789"),
       /*is_child_account=*/Tribool::kUnknown,
       "source=TestSource,mode=0,enable_account_consistency=true,"
       "consistency_enabled_by_default=" +
           consistency_enabled_by_default_value());
-  CheckMirrorCookieRequest(GURL("https://www.google.com"), "0123456789",
+  CheckMirrorCookieRequest(GURL("https://www.google.com"), GaiaId("0123456789"),
                            "mode=0:enable_account_consistency=true:"
                            "consistency_enabled_by_default=" +
                                consistency_enabled_by_default_value());
@@ -309,7 +313,7 @@ TEST_F(SigninHeaderHelperTest, TestMirrorRequestGoogleComNoProfileConsistency) {
   RequestAdapterWrapper request_adapter(GURL("https://www.google.com"),
                                         original_headers);
   AppendOrRemoveMirrorRequestHeader(
-      request_adapter.adapter(), GURL(), "0123456789",
+      request_adapter.adapter(), GURL(), GaiaId("0123456789"),
       /*is_child_account=*/Tribool::kUnknown, account_consistency_,
       cookie_settings_.get(), PROFILE_MODE_DEFAULT, kTestSource,
       false /* force_account_consistency */);
@@ -324,7 +328,7 @@ TEST_F(SigninHeaderHelperTest, TestMirrorRequestGoogleComProfileConsistency) {
   RequestAdapterWrapper request_adapter(GURL("https://www.google.com"),
                                         original_headers);
   AppendOrRemoveMirrorRequestHeader(
-      request_adapter.adapter(), GURL(), "0123456789",
+      request_adapter.adapter(), GURL(), GaiaId("0123456789"),
       /*is_child_account=*/Tribool::kUnknown, account_consistency_,
       cookie_settings_.get(), PROFILE_MODE_DEFAULT, kTestSource,
       false /* force_account_consistency */);
@@ -338,19 +342,19 @@ TEST_F(SigninHeaderHelperTest, TestMirrorRequestGoogleComProfileConsistency) {
 TEST_F(SigninHeaderHelperTest, TestMirrorRequestGoogleComSupervised) {
   account_consistency_ = AccountConsistencyMethod::kMirror;
   CheckMirrorHeaderRequest(
-      GURL("https://www.google.com"), "0123456789",
+      GURL("https://www.google.com"), GaiaId("0123456789"),
       /*is_child_account=*/Tribool::kUnknown,
       "source=TestSource,mode=0,enable_account_consistency=true,"
       "consistency_enabled_by_default=" +
           consistency_enabled_by_default_value());
   CheckMirrorHeaderRequest(
-      GURL("https://www.google.com"), "0123456789",
+      GURL("https://www.google.com"), GaiaId("0123456789"),
       /*is_child_account=*/Tribool::kTrue,
       "source=TestSource,mode=0,enable_account_consistency=true,"
       "supervised=true,consistency_enabled_by_default=" +
           consistency_enabled_by_default_value());
   CheckMirrorHeaderRequest(
-      GURL("https://www.google.com"), "0123456789",
+      GURL("https://www.google.com"), GaiaId("0123456789"),
       /*is_child_account=*/Tribool::kFalse,
       "source=TestSource,mode=0,enable_account_consistency=true,"
       "supervised=false,consistency_enabled_by_default=" +
@@ -364,29 +368,32 @@ TEST_F(SigninHeaderHelperTest, TestMirrorRequestGoogleComSupervised) {
 TEST_F(SigninHeaderHelperTest, TestMirrorRequestGaiaURL) {
   // No request when account consistency is disabled.
   account_consistency_ = AccountConsistencyMethod::kDisabled;
-  CheckMirrorHeaderRequest(GURL("https://accounts.google.com"), "0123456789",
+  CheckMirrorHeaderRequest(GURL("https://accounts.google.com"),
+                           GaiaId("0123456789"),
                            /*is_child_account=*/Tribool::kUnknown,
                            /*expected_request=*/"");
-  CheckMirrorCookieRequest(GURL("https://accounts.google.com"), "0123456789",
+  CheckMirrorCookieRequest(GURL("https://accounts.google.com"),
+                           GaiaId("0123456789"),
                            /*expected_request=*/"");
 
   account_consistency_ = AccountConsistencyMethod::kMirror;
   // No request when Mirror account consistency enabled, but user not signed in
   // to Chrome.
-  CheckMirrorHeaderRequest(GURL("https://accounts.google.com"), /*gaia_id=*/"",
+  CheckMirrorHeaderRequest(GURL("https://accounts.google.com"), GaiaId(),
                            /*is_child_account=*/Tribool::kUnknown,
                            /*expected_request=*/"");
-  CheckMirrorCookieRequest(GURL("https://accounts.google.com"), /*gaia_id=*/"",
+  CheckMirrorCookieRequest(GURL("https://accounts.google.com"), GaiaId(),
                            /*expected_request=*/"");
 
   // Request with Gaia ID when Mirror account consistency enabled, and user is
   // signed in to Chrome.
   CheckMirrorHeaderRequest(
-      GURL("https://accounts.google.com"), "0123456789",
+      GURL("https://accounts.google.com"), GaiaId("0123456789"),
       /*is_child_account=*/Tribool::kUnknown,
       "source=TestSource,mode=0,enable_account_consistency=true,"
       "consistency_enabled_by_default=false");
-  CheckMirrorCookieRequest(GURL("https://accounts.google.com"), "0123456789",
+  CheckMirrorCookieRequest(GURL("https://accounts.google.com"),
+                           GaiaId("0123456789"),
                            "mode=0:enable_account_consistency=true:"
                            "consistency_enabled_by_default=false");
 }
@@ -396,7 +403,7 @@ TEST_F(SigninHeaderHelperTest, TestDiceRequest) {
   account_consistency_ = AccountConsistencyMethod::kDice;
   // ChromeConnected but no Dice for Docs URLs.
   CheckDiceHeaderRequest(
-      GURL("https://docs.google.com"), "0123456789",
+      GURL("https://docs.google.com"), GaiaId("0123456789"),
       /*is_child_account=*/Tribool::kUnknown,
       "source=TestSource,id=0123456789,mode=0,enable_account_consistency=false,"
       "consistency_enabled_by_default=false",
@@ -407,7 +414,7 @@ TEST_F(SigninHeaderHelperTest, TestDiceRequest) {
   std::string client_id = GaiaUrls::GetInstance()->oauth2_chrome_client_id();
   ASSERT_FALSE(client_id.empty());
   CheckDiceHeaderRequest(
-      GURL("https://accounts.google.com"), "0123456789",
+      GURL("https://accounts.google.com"), GaiaId("0123456789"),
       /*is_child_account=*/Tribool::kUnknown, /*expected_mirror_request=*/"",
       base::StringPrintf(
           "version=%s,client_id=%s,device_id=DeviceID,signin_mode=all_accounts,"
@@ -417,7 +424,7 @@ TEST_F(SigninHeaderHelperTest, TestDiceRequest) {
   // the mirror header is not modified.
   sync_enabled_ = true;
   CheckDiceHeaderRequest(
-      GURL("https://accounts.google.com"), "0123456789",
+      GURL("https://accounts.google.com"), GaiaId("0123456789"),
       /*is_child_account=*/Tribool::kUnknown, /*expected_mirror_request=*/"",
       base::StringPrintf("version=%s,client_id=%s,device_id=DeviceID,"
                          "sync_account_id=0123456789,signin_mode=all_accounts,"
@@ -426,7 +433,7 @@ TEST_F(SigninHeaderHelperTest, TestDiceRequest) {
   sync_enabled_ = false;
 
   // No ChromeConnected and no Dice for other URLs.
-  CheckDiceHeaderRequest(GURL("https://www.google.com"), "0123456789",
+  CheckDiceHeaderRequest(GURL("https://www.google.com"), GaiaId("0123456789"),
                          /*is_child_account=*/Tribool::kUnknown,
                          /*expected_mirror_request=*/"",
                          /*expected_dice_request=*/"");
@@ -440,7 +447,7 @@ TEST_F(SigninHeaderHelperTest, DiceCookiesBlocked) {
   std::string client_id = GaiaUrls::GetInstance()->oauth2_chrome_client_id();
   ASSERT_FALSE(client_id.empty());
   CheckDiceHeaderRequest(
-      GURL("https://accounts.google.com"), "0123456789",
+      GURL("https://accounts.google.com"), GaiaId("0123456789"),
       /*is_child_account=*/Tribool::kUnknown, /*expected_mirror_request=*/"",
       base::StringPrintf(
           "version=%s,client_id=%s,device_id=DeviceID,signin_mode=all_accounts,"
@@ -452,7 +459,7 @@ TEST_F(SigninHeaderHelperTest, DiceCookiesBlocked) {
 TEST_F(SigninHeaderHelperTest, TestNoDiceRequestWhenDisabled) {
   account_consistency_ = AccountConsistencyMethod::kMirror;
   CheckDiceHeaderRequest(
-      GURL("https://accounts.google.com"), "0123456789",
+      GURL("https://accounts.google.com"), GaiaId("0123456789"),
       /*is_child_account=*/Tribool::kUnknown,
       "source=TestSource,mode=0,enable_account_consistency=true,"
       "consistency_enabled_by_default=false",
@@ -467,7 +474,7 @@ TEST_F(SigninHeaderHelperTest, TestDiceEmptyDeviceID) {
   device_id_.clear();
 
   CheckDiceHeaderRequest(
-      GURL("https://accounts.google.com"), "0123456789",
+      GURL("https://accounts.google.com"), GaiaId("0123456789"),
       /*is_child_account=*/Tribool::kUnknown, /*expected_mirror_request=*/"",
       base::StringPrintf("version=%s,client_id=%s,signin_mode=all_accounts,"
                          "signout_mode=show_confirmation",
@@ -481,7 +488,7 @@ TEST_F(SigninHeaderHelperTest, TestSignoutConfirmation) {
   ASSERT_FALSE(client_id.empty());
 
   CheckDiceHeaderRequest(
-      GURL("https://accounts.google.com"), "0123456789",
+      GURL("https://accounts.google.com"), GaiaId("0123456789"),
       /*is_child_account=*/Tribool::kUnknown, /*expected_mirror_request=*/"",
       base::StringPrintf(
           "version=%s,client_id=%s,device_id=DeviceID,signin_mode=all_accounts,"
@@ -499,10 +506,10 @@ TEST_F(SigninHeaderHelperTest, TestMirrorHeaderRequestDriveSignedOut) {
          {AccountConsistencyMethod::kDisabled,
           AccountConsistencyMethod::kMirror, AccountConsistencyMethod::kDice}) {
       account_consistency_ = account_consistency;
-      CheckMirrorHeaderRequest(url, /*gaia_id=*/"",
+      CheckMirrorHeaderRequest(url, GaiaId(),
                                /*is_child_account=*/Tribool::kUnknown,
                                /*expected_request=*/"");
-      CheckMirrorCookieRequest(url, /*gaia_id=*/"", /*expected_request=*/"");
+      CheckMirrorCookieRequest(url, GaiaId(), /*expected_request=*/"");
     }
   }
 }
@@ -516,19 +523,19 @@ TEST_F(SigninHeaderHelperTest, TestMirrorHeaderRequestDriveSignedIn) {
     // Request with Gaia ID when Mirror account consistency is enabled and user
     // is signed in to Chrome.
     CheckMirrorHeaderRequest(
-        url, /*gaia_id=*/"0123456789", /*is_child_account=*/Tribool::kUnknown,
+        url, GaiaId("0123456789"), /*is_child_account=*/Tribool::kUnknown,
         "source=TestSource,id=0123456789,mode=0,"
         "enable_account_consistency=true,consistency_enabled_by_default=false");
     // Cookie does not include the Gaia ID even when Mirror account consistency
     // is enabled and user is signed in to Chrome.
-    CheckMirrorCookieRequest(url, /*gaia_id=*/"0123456789",
+    CheckMirrorCookieRequest(url, GaiaId("0123456789"),
                              "mode=0:enable_account_consistency=true:"
                              "consistency_enabled_by_default=false");
 
     account_consistency_ = AccountConsistencyMethod::kDice;
     // Request with Gaia ID when DICE account consistency is enabled and user is
     // opted in to sync.
-    CheckMirrorHeaderRequest(url, /*gaia_id=*/"0123456789",
+    CheckMirrorHeaderRequest(url, GaiaId("0123456789"),
                              /*is_child_account=*/Tribool::kUnknown,
                              "source=TestSource,id=0123456789,mode=0,"
                              "enable_account_consistency=false,"
@@ -561,7 +568,7 @@ TEST_F(SigninHeaderHelperTest, TestBuildDiceResponseParams) {
             kSupportedTokenBindingAlgorithms));
     EXPECT_EQ(DiceAction::SIGNIN, params.user_intention);
     ASSERT_TRUE(params.signin_info);
-    EXPECT_EQ(kGaiaID, params.signin_info->account_info.gaia_id);
+    EXPECT_EQ(GaiaId(kGaiaID), params.signin_info->account_info.gaia_id);
     EXPECT_EQ(kEmail, params.signin_info->account_info.email);
     EXPECT_EQ(kSessionIndex, params.signin_info->account_info.session_index);
     EXPECT_EQ(kAuthorizationCode, params.signin_info->authorization_code);
@@ -578,7 +585,7 @@ TEST_F(SigninHeaderHelperTest, TestBuildDiceResponseParams) {
                            kGaiaID, kEmail, kSessionIndex));
     EXPECT_EQ(DiceAction::ENABLE_SYNC, params.user_intention);
     ASSERT_TRUE(params.enable_sync_info);
-    EXPECT_EQ(kGaiaID, params.enable_sync_info->account_info.gaia_id);
+    EXPECT_EQ(GaiaId(kGaiaID), params.enable_sync_info->account_info.gaia_id);
     EXPECT_EQ(kEmail, params.enable_sync_info->account_info.email);
     EXPECT_EQ(kSessionIndex,
               params.enable_sync_info->account_info.session_index);
@@ -594,7 +601,7 @@ TEST_F(SigninHeaderHelperTest, TestBuildDiceResponseParams) {
     ASSERT_EQ(DiceAction::SIGNOUT, params.user_intention);
     ASSERT_TRUE(params.signout_info);
     EXPECT_EQ(1u, params.signout_info->account_infos.size());
-    EXPECT_EQ(kGaiaID, params.signout_info->account_infos[0].gaia_id);
+    EXPECT_EQ(GaiaId(kGaiaID), params.signout_info->account_infos[0].gaia_id);
     EXPECT_EQ(kEmail, params.signout_info->account_infos[0].email);
     EXPECT_EQ(kSessionIndex,
               params.signout_info->account_infos[0].session_index);
@@ -613,11 +620,11 @@ TEST_F(SigninHeaderHelperTest, TestBuildDiceResponseParams) {
     ASSERT_EQ(DiceAction::SIGNOUT, params.user_intention);
     ASSERT_TRUE(params.signout_info);
     EXPECT_EQ(2u, params.signout_info->account_infos.size());
-    EXPECT_EQ(kGaiaID, params.signout_info->account_infos[0].gaia_id);
+    EXPECT_EQ(GaiaId(kGaiaID), params.signout_info->account_infos[0].gaia_id);
     EXPECT_EQ(kEmail, params.signout_info->account_infos[0].email);
     EXPECT_EQ(kSessionIndex,
               params.signout_info->account_infos[0].session_index);
-    EXPECT_EQ(kGaiaID2, params.signout_info->account_infos[1].gaia_id);
+    EXPECT_EQ(GaiaId(kGaiaID2), params.signout_info->account_infos[1].gaia_id);
     EXPECT_EQ(kEmail2, params.signout_info->account_infos[1].email);
     EXPECT_EQ(kSessionIndex2,
               params.signout_info->account_infos[1].session_index);
@@ -633,7 +640,7 @@ TEST_F(SigninHeaderHelperTest, TestBuildDiceResponseParams) {
                            kGaiaID, kEmail, kSessionIndex));
     EXPECT_EQ(DiceAction::SIGNIN, params.user_intention);
     ASSERT_TRUE(params.signin_info);
-    EXPECT_EQ(kGaiaID, params.signin_info->account_info.gaia_id);
+    EXPECT_EQ(GaiaId(kGaiaID), params.signin_info->account_info.gaia_id);
     EXPECT_EQ(kEmail, params.signin_info->account_info.email);
     EXPECT_EQ(kSessionIndex, params.signin_info->account_info.session_index);
     EXPECT_TRUE(params.signin_info->authorization_code.empty());
@@ -704,7 +711,7 @@ TEST_F(SigninHeaderHelperTest, BuildDiceSigninResponseParamsMixedOrder) {
       kAuthorizationCode));
   EXPECT_EQ(DiceAction::SIGNIN, params.user_intention);
   ASSERT_TRUE(params.signin_info);
-  EXPECT_EQ(kGaiaID, params.signin_info->account_info.gaia_id);
+  EXPECT_EQ(GaiaId(kGaiaID), params.signin_info->account_info.gaia_id);
   EXPECT_EQ(kEmail, params.signin_info->account_info.email);
   EXPECT_EQ(kSessionIndex, params.signin_info->account_info.session_index);
   EXPECT_EQ(kAuthorizationCode, params.signin_info->authorization_code);

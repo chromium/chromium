@@ -9,6 +9,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/signin/public/identity_manager/tribool.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/platform_test.h"
 
 using signin::constants::kNoHostedDomainFound;
@@ -89,7 +90,7 @@ TEST_F(AccountInfoUtilTest, FromUserInfo) {
 
   AccountInfo& account_info = maybe_account_info.value();
   ASSERT_EQ(account_info.email, "user@example.com");
-  ASSERT_EQ(account_info.gaia, "gaia_id_user_example_com");
+  ASSERT_EQ(account_info.gaia.ToString(), "gaia_id_user_example_com");
   ASSERT_EQ(account_info.hosted_domain, "example.com");
   ASSERT_EQ(account_info.full_name, "full name");
   ASSERT_EQ(account_info.given_name, "given name");
@@ -111,7 +112,7 @@ TEST_F(AccountInfoUtilTest, FromUserInfo_EmptyValues) {
 
   AccountInfo& account_info = maybe_account_info.value();
   ASSERT_EQ(account_info.email, "user@example.com");
-  ASSERT_EQ(account_info.gaia, "gaia_id_user_example_com");
+  ASSERT_EQ(account_info.gaia.ToString(), "gaia_id_user_example_com");
   ASSERT_EQ(account_info.hosted_domain, kNoHostedDomainFound);
   ASSERT_EQ(account_info.full_name, std::string());
   ASSERT_EQ(account_info.given_name, std::string());

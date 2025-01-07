@@ -81,8 +81,7 @@ void UpdateRefreshTokenForAccount(
   const AccountInfo& account_info =
       account_tracker_service->GetAccountInfo(account_id);
   account_manager::Account account{
-      account_manager::AccountKey{account_info.gaia,
-                                  account_manager::AccountType::kGaia},
+      account_manager::AccountKey::FromGaiaId(account_info.gaia),
       account_info.email};
   GetAccountManagerFacade(identity_manager)
       ->UpsertAccountForTesting(account, new_token);
@@ -526,8 +525,8 @@ void RemoveRefreshTokenForAccount(IdentityManager* identity_manager,
   const AccountInfo& account_info =
       identity_manager->GetAccountTrackerService()->GetAccountInfo(account_id);
   GetAccountManagerFacade(identity_manager)
-      ->RemoveAccountForTesting(account_manager::AccountKey{
-          account_info.gaia, account_manager::AccountType::kGaia});
+      ->RemoveAccountForTesting(
+          account_manager::AccountKey::FromGaiaId(account_info.gaia));
 #else
   identity_manager->GetTokenService()->RevokeCredentials(account_id);
 #endif  // BUILDFLAG(IS_CHROMEOS)

@@ -214,7 +214,8 @@ std::string CreateMultiBearerAuthorizationHeader(
     const std::vector<gaia::MultiloginAccountAuthCredentials>& accounts) {
   std::vector<std::string> token_id_pairs = base::ToVector(
       accounts, [](const gaia::MultiloginAccountAuthCredentials& credentials) {
-        return base::StrCat({credentials.token, ":", credentials.gaia_id});
+        return base::StrCat(
+            {credentials.token, ":", credentials.gaia_id.ToString()});
       });
   return base::StrCat({"MultiBearer ", base::JoinString(token_id_pairs, ",")});
 }
@@ -405,7 +406,7 @@ class OAuthMultiloginHelperTest
 // Everything succeeds.
 TEST_F(OAuthMultiloginHelperTest, Success) {
   token_service()->UpdateCredentials(kAccountId, "refresh_token");
-  CreateHelper({{kAccountId, kGaiaId}});
+  CreateHelper({{kAccountId, GaiaId(kGaiaId)}});
 
   // Configure mock cookie manager:
   // - check that the cookie is the expected one
@@ -442,7 +443,7 @@ TEST_F(OAuthMultiloginHelperTest, Success) {
 TEST_F(OAuthMultiloginHelperTest, SuccessWithRefreshToken) {
   ReplaceTokenService(/*use_refresh_tokens_for_multilogin=*/true);
   token_service()->UpdateCredentials(kAccountId, "refresh_token");
-  CreateHelper({{kAccountId, kGaiaId}});
+  CreateHelper({{kAccountId, GaiaId(kGaiaId)}});
 
   // Configure mock cookie manager:
   // - check that the cookie is the expected one
@@ -476,7 +477,8 @@ TEST_F(OAuthMultiloginHelperTest, MultipleAccounts) {
   token_service()->UpdateCredentials(kAccountId, "refresh_token");
   token_service()->UpdateCredentials(kAccountId2, "refresh_token_2");
   // The order of accounts must be respected.
-  CreateHelper({{kAccountId2, kGaiaId2}, {kAccountId, kGaiaId}});
+  CreateHelper(
+      {{kAccountId2, GaiaId(kGaiaId2)}, {kAccountId, GaiaId(kGaiaId)}});
 
   // Configure mock cookie manager:
   // - check that the cookie is the expected one
@@ -519,7 +521,7 @@ TEST_F(OAuthMultiloginHelperTest, MultipleAccounts) {
 // Multiple cookies in the multilogin response.
 TEST_F(OAuthMultiloginHelperTest, MultipleCookies) {
   token_service()->UpdateCredentials(kAccountId, "refresh_token");
-  CreateHelper({{kAccountId, kGaiaId}});
+  CreateHelper({{kAccountId, GaiaId(kGaiaId)}});
 
   // Configure mock cookie manager:
   // - check that the cookie is the expected one
@@ -557,7 +559,8 @@ TEST_F(OAuthMultiloginHelperTest, MultipleCookies) {
 // Multiple cookies in the multilogin response.
 TEST_F(OAuthMultiloginHelperTest, SuccessWithExternalCcResult) {
   token_service()->UpdateCredentials(kAccountId, "refresh_token");
-  CreateHelper({{kAccountId, kGaiaId}}, /*set_external_cc_result=*/true);
+  CreateHelper({{kAccountId, GaiaId(kGaiaId)}},
+               /*set_external_cc_result=*/true);
 
   // Configure mock cookie manager:
   // - check that the cookie is the expected one
@@ -597,7 +600,7 @@ TEST_F(OAuthMultiloginHelperTest, SuccessWithExternalCcResult) {
 // Failure to get the access token.
 TEST_F(OAuthMultiloginHelperTest, OneAccountAccessTokenFailure) {
   token_service()->UpdateCredentials(kAccountId, "refresh_token");
-  CreateHelper({{kAccountId, kGaiaId}});
+  CreateHelper({{kAccountId, GaiaId(kGaiaId)}});
 
   token_service()->IssueErrorForAllPendingRequestsForAccount(
       kAccountId,
@@ -609,7 +612,7 @@ TEST_F(OAuthMultiloginHelperTest, OneAccountAccessTokenFailure) {
 // Retry on transient errors in the multilogin call.
 TEST_F(OAuthMultiloginHelperTest, OneAccountTransientMultiloginError) {
   token_service()->UpdateCredentials(kAccountId, "refresh_token");
-  CreateHelper({{kAccountId, kGaiaId}});
+  CreateHelper({{kAccountId, GaiaId(kGaiaId)}});
 
   // Configure mock cookie manager:
   // - check that the cookie is the expected one
@@ -649,7 +652,7 @@ TEST_F(OAuthMultiloginHelperTest, OneAccountTransientMultiloginError) {
 TEST_F(OAuthMultiloginHelperTest,
        OneAccountTransientMultiloginErrorMaxRetries) {
   token_service()->UpdateCredentials(kAccountId, "refresh_token");
-  CreateHelper({{kAccountId, kGaiaId}});
+  CreateHelper({{kAccountId, GaiaId(kGaiaId)}});
 
   // Issue access token.
   OAuth2AccessTokenConsumer::TokenResponse success_response;
@@ -672,7 +675,7 @@ TEST_F(OAuthMultiloginHelperTest,
 // Persistent error in the multilogin call.
 TEST_F(OAuthMultiloginHelperTest, OneAccountPersistentMultiloginError) {
   token_service()->UpdateCredentials(kAccountId, "refresh_token");
-  CreateHelper({{kAccountId, kGaiaId}});
+  CreateHelper({{kAccountId, GaiaId(kGaiaId)}});
 
   // Issue access token.
   OAuth2AccessTokenConsumer::TokenResponse success_response;
@@ -692,7 +695,8 @@ TEST_F(OAuthMultiloginHelperTest, OneAccountPersistentMultiloginError) {
 TEST_F(OAuthMultiloginHelperTest, InvalidTokenError) {
   token_service()->UpdateCredentials(kAccountId, "refresh_token");
   token_service()->UpdateCredentials(kAccountId2, "refresh_token");
-  CreateHelper({{kAccountId, kGaiaId}, {kAccountId2, kGaiaId2}});
+  CreateHelper(
+      {{kAccountId, GaiaId(kGaiaId)}, {kAccountId2, GaiaId(kGaiaId2)}});
 
   // The failed access token should be invalidated.
   EXPECT_CALL(*token_service(),
@@ -741,7 +745,8 @@ TEST_F(OAuthMultiloginHelperTest, InvalidTokenErrorWithRefreshTokens) {
   ReplaceTokenService(/*use_refresh_tokens_for_multilogin=*/true);
   token_service()->UpdateCredentials(kAccountId, "refresh_token");
   token_service()->UpdateCredentials(kAccountId2, "refresh_token2");
-  CreateHelper({{kAccountId, kGaiaId}, {kAccountId2, kGaiaId2}});
+  CreateHelper(
+      {{kAccountId, GaiaId(kGaiaId)}, {kAccountId2, GaiaId(kGaiaId2)}});
 
   // The failed refresh token should be invalidated.
   EXPECT_CALL(*token_service(),
@@ -767,7 +772,8 @@ TEST_F(OAuthMultiloginHelperTest, InvalidTokenErrorWithRefreshTokens) {
 TEST_F(OAuthMultiloginHelperTest, InvalidTokenErrorMaxRetries) {
   token_service()->UpdateCredentials(kAccountId, "refresh_token");
   token_service()->UpdateCredentials(kAccountId2, "refresh_token");
-  CreateHelper({{kAccountId, kGaiaId}, {kAccountId2, kGaiaId2}});
+  CreateHelper(
+      {{kAccountId, GaiaId(kGaiaId)}, {kAccountId2, GaiaId(kGaiaId2)}});
 
   // The failed access token should be invalidated.
   EXPECT_CALL(*token_service(),
@@ -807,7 +813,7 @@ TEST_F(OAuthMultiloginHelperTest, BoundTokenSuccessNoChallenge) {
       kAccountId, "refresh_token",
       signin_metrics::SourceForRefreshTokenOperation::kUnknown,
       kFakeWrappedBindingKey);
-  CreateHelper({{kAccountId, kGaiaId}});
+  CreateHelper({{kAccountId, GaiaId(kGaiaId)}});
 
   // Configure mock cookie manager:
   // - check that the cookie is the expected one
@@ -843,7 +849,7 @@ TEST_F(OAuthMultiloginHelperTest, BoundTokenSuccessWithChallenge) {
       kAccountId, "refresh_token",
       signin_metrics::SourceForRefreshTokenOperation::kUnknown,
       kFakeWrappedBindingKey);
-  CreateHelper({{kAccountId, kGaiaId}});
+  CreateHelper({{kAccountId, GaiaId(kGaiaId)}});
 
   // First Multilogin call returns a token binding challenge.
   EXPECT_FALSE(callback_called_);
@@ -908,7 +914,7 @@ TEST_F(OAuthMultiloginHelperTest,
   url_loader()->SetInterceptor(
       base::IgnoreArgs<const network::ResourceRequest&>(
           wait_for_request_loop.QuitClosure()));
-  OAuthMultiloginHelper* helper = CreateHelper({{kAccountId, kGaiaId}});
+  OAuthMultiloginHelper* helper = CreateHelper({{kAccountId, GaiaId(kGaiaId)}});
   // Ephemeral key must be set after the first request is sent. Otherwise, the
   // ephemeral key would be consumed by the first request.
   wait_for_request_loop.Run();
@@ -949,7 +955,7 @@ TEST_F(OAuthMultiloginHelperTest, BoundTokenFailureChallengedTwice) {
       kAccountId, "refresh_token",
       signin_metrics::SourceForRefreshTokenOperation::kUnknown,
       kFakeWrappedBindingKey);
-  CreateHelper({{kAccountId, kGaiaId}});
+  CreateHelper({{kAccountId, GaiaId(kGaiaId)}});
 
   // First Multilogin call returns a token binding challenge.
   EXPECT_FALSE(callback_called_);
@@ -1000,7 +1006,7 @@ TEST_F(OAuthMultiloginHelperTest, BoundTokenFailureChallengedTwice) {
 
 TEST_F(OAuthMultiloginHelperTest, BoundSessionHelperCalled) {
   token_service()->UpdateCredentials(kAccountId, "refresh_token");
-  CreateHelper({{kAccountId, kGaiaId}});
+  CreateHelper({{kAccountId, GaiaId(kGaiaId)}});
 
   {
     testing::InSequence seq;

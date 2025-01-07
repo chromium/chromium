@@ -18,6 +18,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -170,9 +171,9 @@ AccountInfo ToAccountInfo(ListedAccount account) {
 // NOTE: IdentityTestEnvironment uses a prefix for generating gaia IDs:
 // "gaia_id_for_". For this reason, the tests prefix expected account IDs
 // used so that there is a match.
-const std::string kGaiaId1 = signin::GetTestGaiaIdForEmail("1@mail.com");
-const std::string kGaiaId2 = signin::GetTestGaiaIdForEmail("2@mail.com");
-const std::string kGaiaId3 = signin::GetTestGaiaIdForEmail("3@mail.com");
+const GaiaId kGaiaId1 = signin::GetTestGaiaIdForEmail("1@mail.com");
+const GaiaId kGaiaId2 = signin::GetTestGaiaIdForEmail("2@mail.com");
+const GaiaId kGaiaId3 = signin::GetTestGaiaIdForEmail("3@mail.com");
 
 const ListedAccount one(Account(CoreAccountId::FromGaiaId(kGaiaId1)));
 const ListedAccount two(Account(CoreAccountId::FromGaiaId(kGaiaId2)));

@@ -111,8 +111,8 @@ std::string AccountKeyToEmail(AccountKey account_key) {
   return base::StringPrintf("%s@gmail.com", account_key.value);
 }
 
-std::string AccountKeyToGaiaId(AccountKey account_key) {
-  return base::StringPrintf("gaia-%s", account_key.value);
+GaiaId AccountKeyToGaiaId(AccountKey account_key) {
+  return GaiaId(base::StringPrintf("gaia-%s", account_key.value));
 }
 
 std::string AccountKeyToFullName(AccountKey account_key) {
@@ -327,19 +327,21 @@ class AccountTrackerServiceTest : public testing::Test {
   }
 
   std::string GenerateValidTokenInfoResponse(AccountKey account_key) {
-    return base::StringPrintf(kTokenInfoResponseFormat,
-                              AccountKeyToGaiaId(account_key).c_str(),
-                              AccountKeyToEmail(account_key).c_str(),
-                              AccountKeyToFullName(account_key).c_str(),
-                              AccountKeyToGivenName(account_key).c_str(),
-                              AccountKeyToLocale(account_key).c_str(),
-                              AccountKeyToPictureURL(account_key).c_str());
+    return base::StringPrintf(
+        kTokenInfoResponseFormat,
+        AccountKeyToGaiaId(account_key).ToString().c_str(),
+        AccountKeyToEmail(account_key).c_str(),
+        AccountKeyToFullName(account_key).c_str(),
+        AccountKeyToGivenName(account_key).c_str(),
+        AccountKeyToLocale(account_key).c_str(),
+        AccountKeyToPictureURL(account_key).c_str());
   }
 
   std::string GenerateIncompleteTokenInfoResponse(AccountKey account_key) {
-    return base::StringPrintf(kTokenInfoIncompleteResponseFormat,
-                              AccountKeyToGaiaId(account_key).c_str(),
-                              AccountKeyToEmail(account_key).c_str());
+    return base::StringPrintf(
+        kTokenInfoIncompleteResponseFormat,
+        AccountKeyToGaiaId(account_key).ToString().c_str(),
+        AccountKeyToEmail(account_key).c_str());
   }
 
   void ReturnAccountInfoFetchSuccess(AccountKey account_key);
@@ -854,7 +856,7 @@ TEST_F(AccountTrackerServiceTest, GetAccountInfo_TokenAvailable) {
   AccountInfo info = account_tracker()->GetAccountInfo(
       AccountKeyToAccountId(kAccountKeyAlpha));
   EXPECT_EQ(AccountKeyToAccountId(kAccountKeyAlpha), info.account_id);
-  EXPECT_EQ(std::string(), info.gaia);
+  EXPECT_EQ(GaiaId(), info.gaia);
   EXPECT_EQ(std::string(), info.email);
 }
 
@@ -1218,21 +1220,21 @@ TEST_F(AccountTrackerServiceTest, TimerRefresh) {
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(AccountTrackerServiceTest, MigrateAccountIdToGaiaId) {
   const std::string email_alpha = AccountKeyToEmail(kAccountKeyAlpha);
-  const std::string gaia_alpha = AccountKeyToGaiaId(kAccountKeyAlpha);
+  const GaiaId gaia_alpha = AccountKeyToGaiaId(kAccountKeyAlpha);
   const std::string email_beta = AccountKeyToEmail(kAccountKeyBeta);
-  const std::string gaia_beta = AccountKeyToGaiaId(kAccountKeyBeta);
+  const GaiaId gaia_beta = AccountKeyToGaiaId(kAccountKeyBeta);
 
   ScopedListPrefUpdate update(prefs(), prefs::kAccountInfo);
 
   update->Append(base::Value::Dict()
                      .Set("account_id", email_alpha)
                      .Set("email", email_alpha)
-                     .Set("gaia", gaia_alpha));
+                     .Set("gaia", gaia_alpha.ToString()));
 
   update->Append(base::Value::Dict()
                      .Set("account_id", email_beta)
                      .Set("email", email_beta)
-                     .Set("gaia", gaia_beta));
+                     .Set("gaia", gaia_beta.ToString()));
 
   base::HistogramTester tester;
   ResetAccountTracker();
@@ -1261,7 +1263,7 @@ TEST_F(AccountTrackerServiceTest, MigrateAccountIdToGaiaId) {
 
 TEST_F(AccountTrackerServiceTest, CanNotMigrateAccountIdToGaiaId) {
   const std::string email_alpha = AccountKeyToEmail(kAccountKeyAlpha);
-  const std::string gaia_alpha = AccountKeyToGaiaId(kAccountKeyAlpha);
+  const GaiaId gaia_alpha = AccountKeyToGaiaId(kAccountKeyAlpha);
   const std::string email_beta = AccountKeyToEmail(kAccountKeyBeta);
 
   ScopedListPrefUpdate update(prefs(), prefs::kAccountInfo);
@@ -1269,7 +1271,7 @@ TEST_F(AccountTrackerServiceTest, CanNotMigrateAccountIdToGaiaId) {
   update->Append(base::Value::Dict()
                      .Set("account_id", email_alpha)
                      .Set("email", email_alpha)
-                     .Set("gaia", gaia_alpha));
+                     .Set("gaia", gaia_alpha.ToString()));
 
   update->Append(base::Value::Dict()
                      .Set("account_id", email_beta)
@@ -1302,27 +1304,27 @@ TEST_F(AccountTrackerServiceTest, CanNotMigrateAccountIdToGaiaId) {
 
 TEST_F(AccountTrackerServiceTest, GaiaIdMigrationCrashInTheMiddle) {
   const std::string email_alpha = AccountKeyToEmail(kAccountKeyAlpha);
-  const std::string gaia_alpha = AccountKeyToGaiaId(kAccountKeyAlpha);
+  const GaiaId gaia_alpha = AccountKeyToGaiaId(kAccountKeyAlpha);
   const std::string email_beta = AccountKeyToEmail(kAccountKeyBeta);
-  const std::string gaia_beta = AccountKeyToGaiaId(kAccountKeyBeta);
+  const GaiaId gaia_beta = AccountKeyToGaiaId(kAccountKeyBeta);
 
   ScopedListPrefUpdate update(prefs(), prefs::kAccountInfo);
 
   update->Append(base::Value::Dict()
                      .Set("account_id", email_alpha)
                      .Set("email", email_alpha)
-                     .Set("gaia", gaia_alpha));
+                     .Set("gaia", gaia_alpha.ToString()));
 
   update->Append(base::Value::Dict()
                      .Set("account_id", email_beta)
                      .Set("email", email_beta)
-                     .Set("gaia", gaia_beta));
+                     .Set("gaia", gaia_beta.ToString()));
 
   // Succeed miggrated account.
   update->Append(base::Value::Dict()
-                     .Set("account_id", gaia_alpha)
+                     .Set("account_id", gaia_alpha.ToString())
                      .Set("email", email_alpha)
-                     .Set("gaia", gaia_alpha));
+                     .Set("gaia", gaia_alpha.ToString()));
 
   base::HistogramTester tester;
   ResetAccountTracker();
@@ -1653,21 +1655,21 @@ TEST_F(AccountTrackerServiceTest, CountOfLoadedAccounts_TwoAccounts) {
 #endif
 
   const std::string email_alpha = AccountKeyToEmail(kAccountKeyAlpha);
-  const std::string gaia_alpha = AccountKeyToGaiaId(kAccountKeyAlpha);
+  const GaiaId gaia_alpha = AccountKeyToGaiaId(kAccountKeyAlpha);
   const std::string email_beta = AccountKeyToEmail(kAccountKeyBeta);
-  const std::string gaia_beta = AccountKeyToGaiaId(kAccountKeyBeta);
+  const GaiaId gaia_beta = AccountKeyToGaiaId(kAccountKeyBeta);
 
   ScopedListPrefUpdate update(prefs(), prefs::kAccountInfo);
 
   update->Append(base::Value::Dict()
-                     .Set("account_id", gaia_alpha)
+                     .Set("account_id", gaia_alpha.ToString())
                      .Set("email", email_alpha)
-                     .Set("gaia", gaia_alpha));
+                     .Set("gaia", gaia_alpha.ToString()));
 
   update->Append(base::Value::Dict()
-                     .Set("account_id", gaia_beta)
+                     .Set("account_id", gaia_beta.ToString())
                      .Set("email", email_beta)
-                     .Set("gaia", gaia_beta));
+                     .Set("gaia", gaia_beta.ToString()));
 
   base::HistogramTester tester;
   ResetAccountTracker();
@@ -1680,21 +1682,21 @@ TEST_F(AccountTrackerServiceTest, CountOfLoadedAccounts_TwoAccounts) {
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(AccountTrackerServiceTest, Migrate_CountOfLoadedAccounts_TwoAccounts) {
   const std::string email_alpha = AccountKeyToEmail(kAccountKeyAlpha);
-  const std::string gaia_alpha = AccountKeyToGaiaId(kAccountKeyAlpha);
+  const GaiaId gaia_alpha = AccountKeyToGaiaId(kAccountKeyAlpha);
   const std::string email_beta = AccountKeyToEmail(kAccountKeyBeta);
-  const std::string gaia_beta = AccountKeyToGaiaId(kAccountKeyBeta);
+  const GaiaId gaia_beta = AccountKeyToGaiaId(kAccountKeyBeta);
 
   ScopedListPrefUpdate update(prefs(), prefs::kAccountInfo);
 
   update->Append(base::Value::Dict()
                      .Set("account_id", email_alpha)
                      .Set("email", email_alpha)
-                     .Set("gaia", gaia_alpha));
+                     .Set("gaia", gaia_alpha.ToString()));
 
   update->Append(base::Value::Dict()
                      .Set("account_id", email_beta)
                      .Set("email", email_beta)
-                     .Set("gaia", gaia_beta));
+                     .Set("gaia", gaia_beta.ToString()));
 
   base::HistogramTester tester;
   ResetAccountTracker();
@@ -1707,23 +1709,23 @@ TEST_F(AccountTrackerServiceTest, Migrate_CountOfLoadedAccounts_TwoAccounts) {
 TEST_F(AccountTrackerServiceTest,
        Migrate_CountOfLoadedAccounts_TwoAccountsOneInvalid) {
   const std::string email_alpha = AccountKeyToEmail(kAccountKeyAlpha);
-  const std::string gaia_alpha = AccountKeyToGaiaId(kAccountKeyAlpha);
+  const GaiaId gaia_alpha = AccountKeyToGaiaId(kAccountKeyAlpha);
   const std::string email_foobar = AccountKeyToEmail(kAccountKeyFooDotBar);
-  const std::string gaia_foobar = AccountKeyToGaiaId(kAccountKeyFooDotBar);
+  const GaiaId gaia_foobar = AccountKeyToGaiaId(kAccountKeyFooDotBar);
 
   ScopedListPrefUpdate update(prefs(), prefs::kAccountInfo);
 
   update->Append(base::Value::Dict()
                      .Set("account_id", email_alpha)
                      .Set("email", email_alpha)
-                     .Set("gaia", gaia_alpha));
+                     .Set("gaia", gaia_alpha.ToString()));
 
   // This account is invalid because the account_id is a non-canonicalized
   // version of the email.
   update->Append(base::Value::Dict()
                      .Set("account_id", email_foobar)
                      .Set("email", email_foobar)
-                     .Set("gaia", gaia_foobar));
+                     .Set("gaia", gaia_foobar.ToString()));
 
   base::HistogramTester tester;
   ResetAccountTracker();

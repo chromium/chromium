@@ -33,6 +33,7 @@
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
@@ -200,7 +201,7 @@ class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
 
     account_tracker_service_.Initialize(&pref_service_, base::FilePath());
 
-    account_info_ = CreateAccountInfoTestFixture(kGaiaId, kUserEmail);
+    account_info_ = CreateAccountInfoTestFixture(GaiaId(kGaiaId), kUserEmail);
     account_tracker_service_.SeedAccountInfo(account_info_);
     ResetProfileOAuth2TokenServiceDelegateChromeOS(
         /*delete_signin_cookies_on_exit=*/false, /*is_syncing=*/false);
@@ -223,7 +224,7 @@ class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
   }
 
   account_manager::AccountKey gaia_account_key() const {
-    return {account_info_.gaia, account_manager::AccountType::kGaia};
+    return account_manager::AccountKey::FromGaiaId(account_info_.gaia);
   }
 
   account_manager::AccountKey ad_account_key() const {
@@ -608,19 +609,17 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
        BatchChangeObserversAreNotifiedOncePerBatch) {
   // Setup
   AccountInfo account1 = CreateAccountInfoTestFixture(
-      "1" /* gaia_id */, "user1@example.com" /* email */);
+      GaiaId("1"), "user1@example.com" /* email */);
   AccountInfo account2 = CreateAccountInfoTestFixture(
-      "2" /* gaia_id */, "user2@example.com" /* email */);
+      GaiaId("2"), "user2@example.com" /* email */);
 
   account_tracker_service_.SeedAccountInfo(account1);
   account_tracker_service_.SeedAccountInfo(account2);
   account_manager_.UpsertAccount(
-      account_manager::AccountKey{account1.gaia,
-                                  account_manager::AccountType::kGaia},
+      account_manager::AccountKey::FromGaiaId(account1.gaia),
       "user1@example.com", "token1");
   account_manager_.UpsertAccount(
-      account_manager::AccountKey{account2.gaia,
-                                  account_manager::AccountType::kGaia},
+      account_manager::AccountKey::FromGaiaId(account2.gaia),
       "user2@example.com", "token2");
   task_environment_.RunUntilIdle();
 
@@ -712,10 +711,10 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
   // accounts, 1 has a valid refresh token and 1 has a dummy token.
   UpsertAccountAndWaitForCompletion(gaia_account_key(), kUserEmail, kGaiaToken);
 
-  account_manager::AccountKey gaia_account_key2{
-      "random-gaia-id", account_manager::AccountType::kGaia};
-  account_tracker_service_.SeedAccountInfo(
-      CreateAccountInfoTestFixture(gaia_account_key2.id(), kUserEmail2));
+  account_manager::AccountKey gaia_account_key2 =
+      account_manager::AccountKey::FromGaiaId(GaiaId("random-gaia-id"));
+  account_tracker_service_.SeedAccountInfo(CreateAccountInfoTestFixture(
+      GaiaId(gaia_account_key2.id()), kUserEmail2));
   UpsertAccountAndWaitForCompletion(gaia_account_key2, kUserEmail2,
                                     AccountManager::kInvalidToken);
 

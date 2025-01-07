@@ -72,7 +72,7 @@ class SigninMetricsServiceTest : public ::testing::Test {
   AccountInfo Signin(
       const std::string& email,
       signin_metrics::AccessPoint access_point = kDefaultTestAccessPoint,
-      const GaiaId& gaia_id = "") {
+      const GaiaId& gaia_id = GaiaId()) {
     signin::AccountAvailabilityOptionsBuilder builder;
     builder.AsPrimary(signin::ConsentLevel::kSignin)
         .WithAccessPoint(access_point);

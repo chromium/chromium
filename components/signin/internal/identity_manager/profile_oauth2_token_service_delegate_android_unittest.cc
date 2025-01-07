@@ -14,6 +14,7 @@
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -96,8 +97,10 @@ class OAuth2TokenServiceDelegateAndroidTest : public testing::Test {
   }
 
   void CreateAndSeedAccounts() {
-    account1_ = CreateAccountInfo("gaia-id-user-1", "user-1@example.com");
-    account2_ = CreateAccountInfo("gaia-id-user-2", "user-2@example.com");
+    account1_ =
+        CreateAccountInfo(GaiaId("gaia-id-user-1"), "user-1@example.com");
+    account2_ =
+        CreateAccountInfo(GaiaId("gaia-id-user-2"), "user-2@example.com");
     // SeedAccountInfo is required for
     // OAuth2TokenServiceDelegateAndrod::MapAccountNameToAccountId
     account_tracker_service_.SeedAccountsInfo(

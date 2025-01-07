@@ -109,7 +109,8 @@ class AccountsCookieMutatorTest
         SetListAccountsResponseNoAccounts(GetTestURLLoaderFactory());
         break;
       case AccountsCookiesMutatorAction::kTriggerCookieJarUpdateOneAccount:
-        SetListAccountsResponseOneAccount(kTestAccountEmail, kTestAccountGaiaId,
+        SetListAccountsResponseOneAccount(kTestAccountEmail,
+                                          GaiaId(kTestAccountGaiaId),
                                           GetTestURLLoaderFactory());
         break;
       case AccountsCookiesMutatorAction::kTriggerOnCookieChangeNoAccounts:
