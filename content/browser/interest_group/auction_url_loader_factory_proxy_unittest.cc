@@ -319,8 +319,14 @@ class AuctionUrlLoaderFactoryProxyTest : public testing::Test {
               observed_request.redirect_mode);
 
     // Should bypass cache when in force-reload mode.
-    EXPECT_EQ(force_reload_ ? net::LOAD_BYPASS_CACHE : 0,
-              observed_request.load_flags);
+    if (force_reload_) {
+      EXPECT_EQ(observed_request.load_flags, net::LOAD_BYPASS_CACHE);
+    } else if (request.load_flags & net::LOAD_SUPPORT_ASYNC_REVALIDATION) {
+      EXPECT_EQ(observed_request.load_flags,
+                net::LOAD_SUPPORT_ASYNC_REVALIDATION);
+    } else {
+      EXPECT_EQ(observed_request.load_flags, 0);
+    }
 
     // Check method, body and content-type for POST requests.
     if (request.method == net::HttpRequestHeaders::kPostMethod) {
@@ -548,6 +554,24 @@ TEST_F(AuctionUrlLoaderFactoryProxyTest, ForceReload) {
   CreateUrlLoaderFactoryProxy();
 
   TryMakeRequest(kScriptUrl, kAcceptJavascript, ExpectedResponse::kAllow);
+}
+
+TEST_F(AuctionUrlLoaderFactoryProxyTest, SupportsStaleWhileRevalidate) {
+  network::ResourceRequest request;
+  request.url = GURL(kScriptUrl);
+  request.headers.SetHeader(net::HttpRequestHeaders::kAccept,
+                            kAcceptJavascript);
+
+  request.load_flags = net::LOAD_SUPPORT_ASYNC_REVALIDATION;
+  TryMakeRequest(request, ExpectedResponse::kAllow);
+
+  // Try repeating the request with force_reload_. force_reload_
+  // should take precedence.
+  force_reload_ = true;
+  // Force creation of a new proxy, with correct `force_reload` value.
+  remote_url_loader_factory_.reset();
+  CreateUrlLoaderFactoryProxy();
+  TryMakeRequest(request, ExpectedResponse::kAllow);
 }
 
 TEST_F(AuctionUrlLoaderFactoryProxyTest, NoWasmUrl) {

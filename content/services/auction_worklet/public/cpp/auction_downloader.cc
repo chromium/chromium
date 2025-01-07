@@ -19,6 +19,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
+#include "content/services/auction_worklet/public/cpp/auction_worklet_features.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/base/request_priority.h"
@@ -183,6 +184,33 @@ void WriteTraceTiming(const net::LoadTimingInfo& timing,
   dict.Add("pushEnd", timing.push_end.since_origin().InSecondsF());
 }
 
+std::unique_ptr<network::ResourceRequest> MakeResourceRequest(
+    const GURL& source_url,
+    AuctionDownloader::MimeType mime_type,
+    bool post,
+    bool allow_stale_response,
+    std::string_view request_id) {
+  DCHECK(!(allow_stale_response && post));
+  auto resource_request = std::make_unique<network::ResourceRequest>();
+  resource_request->url = source_url;
+  resource_request->redirect_mode = network::mojom::RedirectMode::kError;
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  resource_request->enable_load_timing =
+      *TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED("devtools.timeline");
+  resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
+                                      MimeTypeToString(mime_type));
+
+  if (post) {
+    resource_request->method = net::HttpRequestHeaders::kPostMethod;
+  }
+  if (allow_stale_response) {
+    resource_request->load_flags |= net::LOAD_SUPPORT_ASYNC_REVALIDATION;
+  }
+  resource_request->devtools_request_id = request_id;
+
+  return resource_request;
+}
+
 }  // namespace
 
 AuctionDownloader::AuctionDownloader(
@@ -196,7 +224,8 @@ AuctionDownloader::AuctionDownloader(
     ResponseStartedCallback response_started_callback,
     AuctionDownloaderCallback auction_downloader_callback,
     std::unique_ptr<NetworkEventsDelegate> network_events_delegate)
-    : source_url_(source_url),
+    : url_loader_factory_(*url_loader_factory),
+      source_url_(source_url),
       mime_type_(mime_type),
       is_trusted_bidding_signals_kvv1_download_(
           is_trusted_bidding_signals_kvv1_download),
@@ -205,19 +234,16 @@ AuctionDownloader::AuctionDownloader(
       auction_downloader_callback_(std::move(auction_downloader_callback)),
       network_events_delegate_(std::move(network_events_delegate)) {
   DCHECK(auction_downloader_callback_);
-  auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = source_url;
-  resource_request->redirect_mode = network::mojom::RedirectMode::kError;
-  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-  resource_request->enable_load_timing =
-      *TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED("devtools.timeline");
-  resource_request->devtools_request_id = request_id_;
-  resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
-                                      MimeTypeToString(mime_type_));
-
-  if (post_body.has_value()) {
-    resource_request->method = net::HttpRequestHeaders::kPostMethod;
-  }
+  // Stale-while-revalidate is not supported for POST in the http cache,
+  // so do not try to support it here -- so we do not need to hold onto
+  // the post body.
+  auto resource_request = MakeResourceRequest(
+      source_url_, mime_type_, post_body.has_value(),
+      /*allow_stale_response=*/
+      (base::FeatureList::IsEnabled(
+           features::kFledgeAuctionDownloaderStaleWhileRevalidate) &&
+       !post_body.has_value()),
+      request_id_);
 
   if (network_events_delegate_ != nullptr) {
     network_events_delegate_->OnNetworkSendRequest(*resource_request);
@@ -306,6 +332,21 @@ void AuctionDownloader::OnBodyReceived(std::unique_ptr<std::string> body) {
                     TruncateUrlIfNeededForError(source_url_).c_str(),
                     net::ErrorToString(simple_url_loader->NetError()).c_str()));
     return;
+  }
+
+  if (simple_url_loader->ResponseInfo()->async_revalidation_requested) {
+    auto resource_request =
+        MakeResourceRequest(source_url_, mime_type_, /*post=*/false,
+                            /*allow_stale_response=*/false, request_id_);
+    auto revalidation_url_loader = network::SimpleURLLoader::Create(
+        std::move(resource_request), kTrafficAnnotation);
+    // Pass the URL loader to the callback to prevent it from being destroyed
+    // until revalidation is done. If the loader is destroyed, the call to
+    // revalidate will not complete.
+    revalidation_url_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+        &url_loader_factory_.get(),
+        base::BindOnce(&AuctionDownloader::OnRevalidatedBodyReceived,
+                       std::move(revalidation_url_loader)));
   }
 
   // Everything below is a network success even if it's a semantic failure.

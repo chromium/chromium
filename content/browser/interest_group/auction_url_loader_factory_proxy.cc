@@ -236,6 +236,9 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
 
   if (force_reload_) {
     new_request.load_flags = net::LOAD_BYPASS_CACHE;
+  } else if (url_request.load_flags & net::LOAD_SUPPORT_ASYNC_REVALIDATION) {
+    // Support stale-while-revalidate in the worklet.
+    new_request.load_flags |= net::LOAD_SUPPORT_ASYNC_REVALIDATION;
   }
 
   if (maybe_subresource_info || needs_cors_for_additional_bid_ ||
