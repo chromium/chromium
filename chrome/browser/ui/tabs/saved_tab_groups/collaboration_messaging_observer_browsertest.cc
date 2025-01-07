@@ -137,7 +137,6 @@ IN_PROC_BROWSER_TEST_F(CollaborationMessagingObserverBrowserTest,
   // Add 4 more tabs, for a total of 5.
   AddTabs(browser(), 4);
   EXPECT_EQ(5, browser()->tab_strip_model()->count());
-  EXPECT_TRUE(browser()->IsActive());
 
   // Observer is initialized
   EXPECT_NE(observer(), nullptr);
@@ -233,6 +232,71 @@ IN_PROC_BROWSER_TEST_F(CollaborationMessagingObserverBrowserTest,
   EXPECT_TRUE(GetTabIcon(browser(), 2)->GetShowingAttentionIndicator());
   observer()->HidePersistentMessage(dirty_tab_message);
   EXPECT_FALSE(GetTabIcon(browser(), 2)->GetShowingAttentionIndicator());
+}
+
+IN_PROC_BROWSER_TEST_F(CollaborationMessagingObserverBrowserTest,
+                       IgnoresTabMessagesWithIncompleteData) {
+  // Add 1 more tab, for a total of 2.
+  AddTabs(browser(), 1);
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+
+  // Observer is initialized
+  EXPECT_NE(observer(), nullptr);
+
+  // Group 2 tabs in the middle of the tab strip to test group offsets.
+  auto group_id = browser()->tab_strip_model()->AddToNewGroup({0, 1});
+
+  // CHIP messages set the message in TabFeatures
+  auto tab0_id =
+      browser()->tab_strip_model()->GetTabAtIndex(0)->GetHandle().raw_value();
+
+  // Prevent network request.
+  GetTabDataAtIndex(browser(), 0)->set_mocked_avatar_for_testing(gfx::Image());
+
+  // Message has no tab group metadata.
+  {
+    auto message =
+        CreateMessage("User", "URL", CollaborationEvent::TAB_ADDED,
+                      PersistentNotificationType::CHIP, tab0_id, group_id);
+
+    // Remove tab group metadata.
+    message.attribution.tab_group_metadata = std::nullopt;
+
+    // No messages are delivered.
+    EXPECT_FALSE(GetTabDataAtIndex(browser(), 0)->HasMessage());
+    observer()->DisplayPersistentMessage(message);
+    EXPECT_FALSE(GetTabDataAtIndex(browser(), 0)->HasMessage());
+  }
+
+  // Message has no tab metadata.
+  {
+    auto message =
+        CreateMessage("User", "URL", CollaborationEvent::TAB_UPDATED,
+                      PersistentNotificationType::DIRTY_TAB, tab0_id, group_id);
+
+    // Remove tab metadata.
+    message.attribution.tab_metadata = std::nullopt;
+
+    // No messages are delivered.
+    EXPECT_FALSE(GetTabIcon(browser(), 0)->GetShowingAttentionIndicator());
+    observer()->DisplayPersistentMessage(message);
+    EXPECT_FALSE(GetTabIcon(browser(), 0)->GetShowingAttentionIndicator());
+  }
+
+  // Tab does not exists.
+  {
+    auto message =
+        CreateMessage("User", "URL", CollaborationEvent::TAB_ADDED,
+                      PersistentNotificationType::DIRTY_TAB, tab0_id, group_id);
+
+    // Close the tab group so no message can be delivered.
+    browser()->tab_strip_model()->CloseWebContentsAt(0, 0);
+    EXPECT_EQ(1, browser()->tab_strip_model()->count());
+
+    EXPECT_FALSE(GetTabIcon(browser(), 0)->GetShowingAttentionIndicator());
+    observer()->DisplayPersistentMessage(message);
+    EXPECT_FALSE(GetTabIcon(browser(), 0)->GetShowingAttentionIndicator());
+  }
 }
 
 }  // namespace tab_groups

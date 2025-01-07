@@ -77,6 +77,8 @@ class CollaborationMessagingTabData {
                            IgnoresRequestsWhenMessageIsCleared);
   FRIEND_TEST_ALL_PREFIXES(CollaborationMessagingTabDataTest,
                            IgnoresRequestsWhenMessageIsChanged);
+  FRIEND_TEST_ALL_PREFIXES(CollaborationMessagingTabDataTest,
+                           IgnoresMessageWithoutUser);
 
   // Notify callback list that a new message has been committed.
   void NotifyMessageChanged();

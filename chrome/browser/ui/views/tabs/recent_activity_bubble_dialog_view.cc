@@ -58,8 +58,11 @@ std::u16string GetActivityText(ActivityLogItem item) {
 // Returns the correct user that should be used for a given log item.
 // Sometimes the string should describe the user that triggered an event
 // and sometimes it should describe the user that was affected by the event.
-data_sharing::GroupMember GetRelevantUserForActivity(ActivityLogItem item) {
-  std::optional<data_sharing::GroupMember> user;
+std::optional<data_sharing::GroupMember> GetRelevantUserForActivity(
+    ActivityLogItem item) {
+  using collaboration::messaging::CollaborationEvent;
+
+  std::optional<data_sharing::GroupMember> user = std::nullopt;
   switch (item.collaboration_event) {
     case CollaborationEvent::TAB_UPDATED:
     case CollaborationEvent::TAB_REMOVED:
@@ -74,11 +77,14 @@ data_sharing::GroupMember GetRelevantUserForActivity(ActivityLogItem item) {
       // Membership changes should show the affected user.
       user = item.activity_metadata.affected_user;
       break;
-    default:
+    case CollaborationEvent::TAB_GROUP_ADDED:
+    case CollaborationEvent::TAB_GROUP_REMOVED:
+    case CollaborationEvent::COLLABORATION_ADDED:
+    case CollaborationEvent::COLLABORATION_REMOVED:
+    case CollaborationEvent::UNDEFINED:
       NOTREACHED();
   }
-  CHECK(user.has_value());
-  return user.value();
+  return user;
 }
 
 // Gets the string for the metadata line to describe an event.
@@ -192,7 +198,10 @@ RecentActivityRowImageView::RecentActivityRowImageView(ActivityLogItem item,
 RecentActivityRowImageView::~RecentActivityRowImageView() = default;
 
 void RecentActivityRowImageView::FetchAvatar() {
-  auto avatar_url = GetRelevantUserForActivity(item_).avatar_url;
+  auto user = GetRelevantUserForActivity(item_);
+  if (!user.has_value()) {
+    return;
+  }
 
   image_fetcher::ImageFetcherService* image_fetcher_service =
       ImageFetcherServiceFactory::GetForKey(profile_->GetProfileKey());
@@ -207,7 +216,7 @@ void RecentActivityRowImageView::FetchAvatar() {
   }
 
   data_sharing_service->GetAvatarImageForURL(
-      avatar_url,
+      user->avatar_url,
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           DISTANCE_RECENT_ACTIVITY_AVATAR_SIZE),
       base::BindOnce(&RecentActivityRowImageView::SetAvatar,

@@ -53,7 +53,9 @@ void CollaborationMessagingTabData::SetMessage(PersistentMessage message) {
         message.collaboration_event == CollaborationEvent::TAB_UPDATED);
 
   // Chip messages must contain a triggering user.
-  CHECK(message.attribution.triggering_user.has_value());
+  if (!message.attribution.triggering_user.has_value()) {
+    return;
+  }
 
   // Cache this message to prevent committing stale data when the
   // image request resolves.
@@ -95,7 +97,7 @@ void CollaborationMessagingTabData::NotifyMessageChanged() {
 }
 
 void CollaborationMessagingTabData::FetchAvatar(PersistentMessage message) {
-  // Safe to unwrap member because it was previously CHECKed.
+  // Safe to unwrap member because it was previously verified.
   auto avatar_url = message.attribution.triggering_user->avatar_url;
 
   image_fetcher::ImageFetcherService* image_fetcher_service =

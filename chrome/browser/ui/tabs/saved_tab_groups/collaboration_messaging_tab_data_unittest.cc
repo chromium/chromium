@@ -218,4 +218,33 @@ TEST_F(CollaborationMessagingTabDataTest, IgnoresRequestsWhenMessageIsChanged) {
   EXPECT_FALSE(tab_data().HasMessage());
 }
 
+TEST_F(CollaborationMessagingTabDataTest, IgnoresMessageWithoutUser) {
+  EXPECT_FALSE(tab_data().HasMessage());
+
+  std::string given_name = "User";
+  std::string avatar_url = "https://google.com/chrome/1";
+  auto message =
+      CreateMessage(given_name, avatar_url, CollaborationEvent::TAB_ADDED);
+
+  // Remove triggering_user. Not all messages will be fully formed, so tab
+  // data should be able to ignore messages without enough data to display.
+  message.attribution.triggering_user = std::nullopt;
+
+  // Service will be triggered to request the image.
+  EXPECT_CALL(*sharing_service(),
+              GetAvatarImageForURL(GURL(avatar_url), 20, _, _))
+      .Times(0);
+
+  // Set the message. This will trigger the avatar request, but will not
+  // set data since the fetcher is mocked.
+  tab_data().SetMessage(message);
+
+  // Mock resolution of the avatar image request by directly
+  // triggering the callback.
+  tab_data().CommitMessage(message, gfx::Image());
+
+  // Data will not be set.
+  EXPECT_FALSE(tab_data().HasMessage());
+}
+
 }  // namespace tab_groups

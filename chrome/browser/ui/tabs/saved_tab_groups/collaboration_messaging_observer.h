@@ -52,6 +52,8 @@ class CollaborationMessagingObserver
                            HandlesMessages);
   FRIEND_TEST_ALL_PREFIXES(CollaborationMessagingObserverBrowserTest,
                            HandlesTabMessagesInCollapsedGroup);
+  FRIEND_TEST_ALL_PREFIXES(CollaborationMessagingObserverBrowserTest,
+                           IgnoresTabMessagesWithIncompleteData);
 
   // MessagingBackendService::PersistentMessageObserver
   void OnMessagingBackendServiceInitialized() override;
