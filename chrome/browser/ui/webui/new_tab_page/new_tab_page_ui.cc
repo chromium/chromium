@@ -444,10 +444,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   };
   source->AddLocalizedStrings(kStrings);
 
-  source->AddBoolean(
-      "modulesOverflowScrollbarEnabled",
-      base::FeatureList::IsEnabled(ntp_features::kNtpModulesOverflowScrollbar));
-
   source->AddString(
       "calendarModuleDismissHours",
       base::NumberToString(
