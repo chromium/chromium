@@ -634,7 +634,6 @@ void ManagePasswordsUIController::UpdateIconAndBubbleState(
     ManagePasswordsIconView* icon) {
   if (IsAutomaticallyOpeningBubble() ||
       bubble_status_ == BubbleStatus::SHOULD_POP_UP_WITH_FOCUS) {
-    DCHECK(!dialog_controller_);
     // This will detach any existing bubble so OnBubbleHidden() isn't called.
     weak_ptr_factory_.InvalidateWeakPtrs();
     // We must display the icon before showing the bubble, as the bubble would
@@ -1034,10 +1033,6 @@ void ManagePasswordsUIController::OnDialogHidden() {
 }
 
 void ManagePasswordsUIController::OnLeakDialogHidden() {
-  // Should not trigger any other dialogs while password change is running.
-  if (IsPasswordChangeOngoing()) {
-    return;
-  }
   dialog_controller_.reset();
   if (GetState() == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE) {
     bubble_status_ = BubbleStatus::SHOULD_POP_UP;
@@ -1056,11 +1051,20 @@ void ManagePasswordsUIController::ChangePassword(
     const GURL& url,
     const std::u16string& username,
     const std::u16string& password) {
-  if (auto* password_change_service =
-          GetPasswordChangeService(web_contents())) {
-    password_change_service->StartPasswordChange(url, username, password,
-                                                 web_contents());
+  ChromePasswordChangeService* password_change_service =
+      GetPasswordChangeService(web_contents());
+  if (!password_change_service) {
+    return;
   }
+  password_change_service->StartPasswordChange(url, username, password,
+                                               web_contents());
+
+  if (password_change_service->GetPasswordChangeDelegate(web_contents())
+          ->GetCurrentState() ==
+      PasswordChangeDelegate::State::kWaitingForAgreement) {
+    bubble_status_ = BubbleStatus::SHOULD_POP_UP;
+  }
+  UpdateBubbleAndIconVisibility();
 }
 
 bool ManagePasswordsUIController::IsSavingPromptBlockedExplicitlyOrImplicitly()

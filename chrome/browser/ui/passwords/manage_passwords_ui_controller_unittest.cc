@@ -2049,6 +2049,28 @@ TEST_F(ManagePasswordsUIControllerTest, PasswordChangeOngoing) {
             controller()->GetState());
 }
 
+TEST_F(ManagePasswordsUIControllerTest, ShowsPasswordChangePrivacyNotice) {
+  testing::StrictMock<affiliations::MockAffiliationService>
+      mock_affiliation_service;
+  PasswordChangeServiceFactory::GetInstance()->SetTestingFactory(
+      profile(),
+      base::BindLambdaForTesting(
+          [&mock_affiliation_service](content::BrowserContext* context)
+              -> std::unique_ptr<KeyedService> {
+            return std::make_unique<ChromePasswordChangeService>(
+                &mock_affiliation_service);
+          }));
+
+  const GURL kUrl = GURL("https://example.com/");
+  EXPECT_CALL(mock_affiliation_service, GetChangePasswordURL(kUrl))
+      .WillOnce(testing::Return(GURL("https://example.com/password/")));
+  static_cast<PasswordsLeakDialogDelegate*>(controller())
+      ->ChangePassword(kUrl, u"new_username", u"new_password");
+
+  // Should show privacy notice bubble automatically
+  EXPECT_TRUE(controller()->opened_automatic_bubble());
+}
+
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ManagePasswordsUIControllerTest,
        ShouldShowBiometricAuthenticationForFillingPromo) {
