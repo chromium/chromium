@@ -94,7 +94,7 @@ public class AccountManagementFragmentTest {
     @MediumTest
     @Feature("RenderTest")
     public void testAccountManagementFragmentView() throws Exception {
-        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+        mSyncTestRule.setUpAccountAndSignInForTesting();
         mSettingsActivityTestRule.startSettingsActivity();
         View view = mSettingsActivityTestRule.getFragment().getView();
         onViewWaiting(allOf(is(view), isDisplayed()));
@@ -105,8 +105,8 @@ public class AccountManagementFragmentTest {
     @MediumTest
     @Feature("RenderTest")
     public void testSignedInAccountShownOnTop() throws Exception {
-        mSyncTestRule.addAccount("testSecondary@gmail.com");
-        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+        mSyncTestRule.getSigninTestRule().addAccount(TestAccounts.ACCOUNT1);
+        mSyncTestRule.getSigninTestRule().addAccountThenSignin(TestAccounts.ACCOUNT2);
         mSettingsActivityTestRule.startSettingsActivity();
         View view = mSettingsActivityTestRule.getFragment().getView();
         onViewWaiting(allOf(is(view), isDisplayed()));
@@ -237,18 +237,6 @@ public class AccountManagementFragmentTest {
         onView(withText(R.string.sign_out)).perform(click());
 
         onView(withText(R.string.sign_out_unsaved_data_title))
-                .inRoot(isDialog())
-                .check(matches(isDisplayed()));
-    }
-
-    @Test
-    @SmallTest
-    public void showSignOutDialogBeforeSigningUserOut() {
-        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        mSettingsActivityTestRule.startSettingsActivity();
-
-        onView(withText(R.string.sign_out_and_turn_off_sync)).perform(click());
-        onView(withText(R.string.turn_off_sync_and_signout_title))
                 .inRoot(isDialog())
                 .check(matches(isDisplayed()));
     }

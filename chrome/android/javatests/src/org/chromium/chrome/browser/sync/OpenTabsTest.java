@@ -93,7 +93,7 @@ public class OpenTabsTest {
 
     @Before
     public void setUp() throws Exception {
-        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+        mSyncTestRule.setUpAccountAndEnableHistorySync();
         mClientName = getClientName();
         mSessionTagCounter = 0;
     }
