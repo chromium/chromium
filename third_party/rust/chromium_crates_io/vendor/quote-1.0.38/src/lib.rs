@@ -92,12 +92,13 @@
 //! [prettyplease]: https://github.com/dtolnay/prettyplease
 
 // Quote types in rustdoc of other crates get linked to here.
-#![doc(html_root_url = "https://docs.rs/quote/1.0.37")]
+#![doc(html_root_url = "https://docs.rs/quote/1.0.38")]
 #![allow(
     clippy::doc_markdown,
     clippy::missing_errors_doc,
     clippy::missing_panics_doc,
     clippy::module_name_repetitions,
+    clippy::needless_lifetimes,
     // false positive https://github.com/rust-lang/rust-clippy/issues/6983
     clippy::wrong_self_convention,
 )]

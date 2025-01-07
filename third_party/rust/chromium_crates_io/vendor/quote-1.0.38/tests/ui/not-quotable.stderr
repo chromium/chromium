@@ -8,8 +8,8 @@ error[E0277]: the trait bound `Ipv4Addr: ToTokens` is not satisfied
   |             required by a bound introduced by this call
   |
   = help: the following other types implement trait `ToTokens`:
-            &'a T
-            &'a mut T
+            &T
+            &mut T
             Box<T>
             CStr
             CString

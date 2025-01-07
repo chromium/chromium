@@ -102,7 +102,7 @@ pub mod ext {
         fn quote_into_iter(&'q self) -> (Self::Iter, HasIter);
     }
 
-    impl<'q, 'a, T: RepAsIteratorExt<'q> + ?Sized> RepAsIteratorExt<'q> for &'a T {
+    impl<'q, T: RepAsIteratorExt<'q> + ?Sized> RepAsIteratorExt<'q> for &T {
         type Iter = T::Iter;
 
         fn quote_into_iter(&'q self) -> (Self::Iter, HasIter) {
@@ -110,7 +110,7 @@ pub mod ext {
         }
     }
 
-    impl<'q, 'a, T: RepAsIteratorExt<'q> + ?Sized> RepAsIteratorExt<'q> for &'a mut T {
+    impl<'q, T: RepAsIteratorExt<'q> + ?Sized> RepAsIteratorExt<'q> for &mut T {
         type Iter = T::Iter;
 
         fn quote_into_iter(&'q self) -> (Self::Iter, HasIter) {
@@ -119,6 +119,14 @@ pub mod ext {
     }
 
     impl<'q, T: 'q> RepAsIteratorExt<'q> for [T] {
+        type Iter = slice::Iter<'q, T>;
+
+        fn quote_into_iter(&'q self) -> (Self::Iter, HasIter) {
+            (self.iter(), HasIter)
+        }
+    }
+
+    impl<'q, T: 'q, const N: usize> RepAsIteratorExt<'q> for [T; N] {
         type Iter = slice::Iter<'q, T>;
 
         fn quote_into_iter(&'q self) -> (Self::Iter, HasIter) {

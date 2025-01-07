@@ -105,6 +105,9 @@ fn test_array() {
 
     let ref_slice: &[X] = &[X, X];
     let _ = quote!(#(#ref_slice #ref_slice)*);
+
+    let array_of_array: [[u8; 2]; 2] = [[0; 2]; 2];
+    let _ = quote!(#(#(#array_of_array)*)*);
 }
 
 #[test]

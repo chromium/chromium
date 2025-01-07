@@ -75,13 +75,13 @@ pub trait ToTokens {
     }
 }
 
-impl<'a, T: ?Sized + ToTokens> ToTokens for &'a T {
+impl<T: ?Sized + ToTokens> ToTokens for &T {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         (**self).to_tokens(tokens);
     }
 }
 
-impl<'a, T: ?Sized + ToTokens> ToTokens for &'a mut T {
+impl<T: ?Sized + ToTokens> ToTokens for &mut T {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         (**self).to_tokens(tokens);
     }

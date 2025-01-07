@@ -37,6 +37,12 @@ jobs:
         if: matrix.rust == 'nightly'
       - run: cargo test
       - run: cargo run --manifest-path benches/Cargo.toml
+      - uses: actions/upload-artifact@v4
+        if: matrix.rust == 'nightly' && always()
+        with:
+          name: Cargo.lock
+          path: Cargo.lock
+        continue-on-error: true
 
   minimal:
     name: Minimal versions
