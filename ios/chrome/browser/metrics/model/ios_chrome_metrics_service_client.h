@@ -46,6 +46,10 @@ namespace ukm {
 class UkmService;
 }
 
+namespace metrics::dwa {
+class DwaService;
+}
+
 // IOSChromeMetricsServiceClient provides an implementation of
 // MetricsServiceClient that depends on //ios/chrome/.
 class IOSChromeMetricsServiceClient : public metrics::MetricsServiceClient,
@@ -72,6 +76,7 @@ class IOSChromeMetricsServiceClient : public metrics::MetricsServiceClient,
   variations::SyntheticTrialRegistry* GetSyntheticTrialRegistry() override;
   metrics::MetricsService* GetMetricsService() override;
   ukm::UkmService* GetUkmService() override;
+  metrics::dwa::DwaService* GetDwaService() override;
   void SetMetricsClientId(const std::string& client_id) override;
   int32_t GetProduct() override;
   std::string GetApplicationLocale() override;
@@ -90,6 +95,7 @@ class IOSChromeMetricsServiceClient : public metrics::MetricsServiceClient,
       override;
   base::TimeDelta GetStandardUploadInterval() override;
   bool IsUkmAllowedForAllProfiles() override;
+  bool IsDwaAllowedForAllProfiles() override;
   bool AreNotificationListenersEnabledOnAllProfiles() override;
   std::string GetUploadSigningKey() override;
 
@@ -175,6 +181,9 @@ class IOSChromeMetricsServiceClient : public metrics::MetricsServiceClient,
 
   // The UkmService that `this` is a client of.
   std::unique_ptr<ukm::UkmService> ukm_service_;
+
+  // The DwaService that `this` is a client of.
+  std::unique_ptr<metrics::dwa::DwaService> dwa_service_;
 
   // Observation of the ProfileManagerIOS.
   base::ScopedObservation<ProfileManagerIOS, ProfileManagerObserverIOS>

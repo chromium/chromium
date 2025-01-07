@@ -36,6 +36,7 @@
 #import "components/metrics/cpu_metrics_provider.h"
 #import "components/metrics/demographics/demographic_metrics_provider.h"
 #import "components/metrics/drive_metrics_provider.h"
+#import "components/metrics/dwa/dwa_service.h"
 #import "components/metrics/entropy_state_provider.h"
 #import "components/metrics/field_trials_provider.h"
 #import "components/metrics/metrics_data_validation.h"
@@ -180,6 +181,7 @@ void IOSChromeMetricsServiceClient::RegisterPrefs(
                                                     kBrowserMetricsName);
   metrics::RegisterMetricsReportingStatePrefs(registry);
   ukm::UkmService::RegisterPrefs(registry);
+  metrics::dwa::DwaService::RegisterPrefs(registry);
 }
 
 variations::SyntheticTrialRegistry*
@@ -193,6 +195,10 @@ metrics::MetricsService* IOSChromeMetricsServiceClient::GetMetricsService() {
 
 ukm::UkmService* IOSChromeMetricsServiceClient::GetUkmService() {
   return ukm_service_.get();
+}
+
+metrics::dwa::DwaService* IOSChromeMetricsServiceClient::GetDwaService() {
+  return dwa_service_.get();
 }
 
 void IOSChromeMetricsServiceClient::SetMetricsClientId(
@@ -283,6 +289,11 @@ void IOSChromeMetricsServiceClient::Initialize() {
             metrics::MetricsLogUploader::MetricServiceType::UKM));
 
     RegisterUKMProviders();
+  }
+
+  if (base::FeatureList::IsEnabled(metrics::dwa::kDwaFeature)) {
+    dwa_service_ =
+        std::make_unique<metrics::dwa::DwaService>(this, local_state);
   }
 }
 
@@ -510,33 +521,44 @@ IOSChromeMetricsServiceClient::GetMetricsReportingDefaultState() {
 void IOSChromeMetricsServiceClient::OnHistoryDeleted() {
   if (ukm_service_)
     ukm_service_->Purge();
+  if (dwa_service_) {
+    dwa_service_->Purge();
+  }
 }
 
 void IOSChromeMetricsServiceClient::OnUkmAllowedStateChanged(
     bool must_purge,
     ukm::UkmConsentState previous_consent_state) {
   const ukm::UkmConsentState consent_state = GetUkmConsentState();
-  if (!ukm_service_)
-    return;
-  if (must_purge) {
-    ukm_service_->Purge();
-    ukm_service_->ResetClientState(ukm::ResetReason::kOnUkmAllowedStateChanged);
-  } else {
-    // Purge recording if required consent has been revoked.
-    if (!consent_state.Has(ukm::MSBB)) {
-      ukm_service_->PurgeMsbbData();
+  if (ukm_service_) {
+    if (must_purge) {
+      ukm_service_->Purge();
+      ukm_service_->ResetClientState(ukm::ResetReason::kOnUkmAllowedStateChanged);
+    } else {
+      // Purge recording if required consent has been revoked.
+      if (!consent_state.Has(ukm::MSBB)) {
+        ukm_service_->PurgeMsbbData();
+      }
+      // No need to test for ukm::APPS and ukm::EXTENSIONS as they are not
+      // supported on iOS.
     }
-    // No need to test for ukm::APPS and ukm::EXTENSIONS as they are not
-    // supported on iOS.
+
+    // Notify the recording service of changed metrics consent.
+    ukm_service_->UpdateRecording(consent_state);
+
+    // Broadcast UKM consent state change.
+    ukm_service_->OnUkmAllowedStateChanged(consent_state);
   }
 
-  // Notify the recording service of changed metrics consent.
-  ukm_service_->UpdateRecording(consent_state);
+  // Purges DWA data if any of the UKM consents is missing. For consent changes
+  // to metrics collection, this is handled in a separate callback
+  // (see MetricsServicesManager::UpdatePermissions()). Other scenarios,
+  // such as incognito, are handled further downstream.
+  if (dwa_service_ && (must_purge || !IsDwaAllowedForAllProfiles())) {
+    dwa_service_->Purge();
+  }
 
-  // Broadcast UKM consent state change.
-  ukm_service_->OnUkmAllowedStateChanged(consent_state);
-
-  // Signal service manager to enable/disable UKM based on new state.
+  // Signal service manager to enable/disable UKM/DWA based on new states.
   UpdateRunningServices();
 }
 
@@ -574,6 +596,10 @@ void IOSChromeMetricsServiceClient::OnProfileMarkedForPermanentDeletion(
 
 bool IOSChromeMetricsServiceClient::IsUkmAllowedForAllProfiles() {
   return UkmConsentStateObserver::IsUkmAllowedForAllProfiles();
+}
+
+bool IOSChromeMetricsServiceClient::IsDwaAllowedForAllProfiles() {
+  return UkmConsentStateObserver::IsDwaAllowedForAllProfiles();
 }
 
 bool IOSChromeMetricsServiceClient::
