@@ -450,12 +450,11 @@ class VideoResourceUpdater::SoftwarePlaneResource
                       viz::SinglePlaneFormat::kBGRA_8888,
                       /*is_software=*/true),
         video_resource_updater_(video_resource_updater) {
-    auto shared_image_mapping = shared_image_interface->CreateSharedImage(
-        {viz::SinglePlaneFormat::kBGRA_8888, size, color_space,
-         gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, "VideoResourceUpdater"});
-    shared_image_ = std::move(shared_image_mapping.shared_image);
-    shared_mapping_ = std::move(shared_image_mapping.mapping);
-    CHECK(shared_image_);
+    shared_image_ =
+        shared_image_interface->CreateSharedImageForSoftwareCompositor(
+            {viz::SinglePlaneFormat::kBGRA_8888, size, color_space,
+             gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, "VideoResourceUpdater"});
+    mapping_ = shared_image_->Map();
 
     sync_token_ = shared_image_interface->GenVerifiedSyncToken();
   }
@@ -473,11 +472,11 @@ class VideoResourceUpdater::SoftwarePlaneResource
   }
   const gpu::SyncToken& sync_token() { return sync_token_; }
 
-  void* pixels() { return shared_mapping_.memory(); }
+  void* pixels() { return mapping_->GetMemoryForPlane(0).data(); }
 
   // Returns a memory dump GUID consistent across processes.
   base::UnguessableToken GetSharedMemoryGuid() const {
-    return shared_mapping_.guid();
+    return mapping_->GetSharedMemoryGuid();
   }
 
  private:
@@ -487,7 +486,7 @@ class VideoResourceUpdater::SoftwarePlaneResource
   gpu::SyncToken sync_token_;
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
 
-  base::WritableSharedMemoryMapping shared_mapping_;
+  std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> mapping_;
 };
 
 class VideoResourceUpdater::HardwarePlaneResource
