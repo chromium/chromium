@@ -2070,6 +2070,9 @@ extern const char kBackdropFilterMirrorEdgeDescription[];
 extern const char kSmoothScrollingName[];
 extern const char kSmoothScrollingDescription[];
 
+extern const char kStorageAccessApiFollowsSameOriginPolicyName[];
+extern const char kStorageAccessApiFollowsSameOriginPolicyDescription[];
+
 extern const char kStorageAccessHeadersName[];
 extern const char kStorageAccessHeadersDescription[];
 

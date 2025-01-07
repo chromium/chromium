@@ -10973,6 +10973,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kStorageAccessHeadersDescription, kOsAll,
      FEATURE_VALUE_TYPE(network::features::kStorageAccessHeaders)},
 
+    {"storage-access-api-follows-same-origin-policy",
+     flag_descriptions::kStorageAccessApiFollowsSameOriginPolicyName,
+     flag_descriptions::kStorageAccessApiFollowsSameOriginPolicyDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         net::features::kStorageAccessApiFollowsSameOriginPolicy)},
+
     {"canvas-2d-hibernation", flag_descriptions::kCanvasHibernationName,
      flag_descriptions::kCanvasHibernationDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kCanvas2DHibernation)},

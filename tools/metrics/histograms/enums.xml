@@ -17685,6 +17685,8 @@ from previous Chrome versions.
   <int value="-1107762575" label="enable-data-reduction-proxy-config-client"/>
   <int value="-1107103335" label="FsNosymfollow:enabled"/>
   <int value="-1106191827" label="VirtualKeyboardNewHeader:enabled"/>
+  <int value="-1105925767"
+      label="StorageAccessApiFollowsSameOriginPolicy:disabled"/>
   <int value="-1105686819" label="ShareUsageRanking:enabled"/>
   <int value="-1105637876" label="FilteringScrollPrediction:enabled"/>
   <int value="-1105274313"
@@ -18192,6 +18194,8 @@ from previous Chrome versions.
   <int value="-900871741" label="DesktopPWAsNotificationIconAndTitle:disabled"/>
   <int value="-899969457" label="ReadAloudBackgroundPlayback:disabled"/>
   <int value="-899915066" label="ImprovedKeyboardShortcuts:disabled"/>
+  <int value="-899881954"
+      label="StorageAccessApiFollowsSameOriginPolicy:enabled"/>
   <int value="-899799867" label="AllowWgcScreenCapturer:disabled"/>
   <int value="-899393472" label="enable-new-app-menu-icon"/>
   <int value="-899334103" label="disable-fast-text-autosizing"/>

@@ -5261,8 +5261,18 @@ TEST_F(StorageAccessHeaderURLLoaderTest, NoLoadWhenHeaderNotEnabled) {
 class URLLoaderCookieSettingOverridesTest
     : public URLLoaderTest,
       public ::testing::WithParamInterface<
-          std::tuple<bool, bool, net::StorageAccessApiStatus, std::string>> {
+          std::tuple<bool,
+                     bool,
+                     net::StorageAccessApiStatus,
+                     std::string,
+                     bool>> {
  public:
+  URLLoaderCookieSettingOverridesTest() {
+    features_.InitWithFeatureState(
+        net::features::kStorageAccessApiFollowsSameOriginPolicy,
+        storage_access_api_follows_same_origin_policy());
+  }
+
   ~URLLoaderCookieSettingOverridesTest() override = default;
 
   void SetUpRequest(ResourceRequest& request) {
@@ -5288,12 +5298,25 @@ class URLLoaderCookieSettingOverridesTest
       case net::StorageAccessApiStatus::kNone:
         break;
       case net::StorageAccessApiStatus::kAccessViaAPI:
-        if (net::SchemefulSite(Initiator()) ==
-            net::SchemefulSite(request.url)) {
+        if (Initiator().IsSameOriginWith(request.url) ||
+            (!storage_access_api_follows_same_origin_policy() &&
+             net::SchemefulSite(Initiator()) ==
+                 net::SchemefulSite(request.url))) {
           overrides.Put(
               net::CookieSettingOverride::kStorageAccessGrantEligible);
         }
         break;
+    }
+    return overrides;
+  }
+
+  net::CookieSettingOverrides
+  ExpectedCookieSettingOverridesForCrossOriginRedirect(
+      const ResourceRequest& request) const {
+    net::CookieSettingOverrides overrides =
+        ExpectedCookieSettingOverrides(request);
+    if (storage_access_api_follows_same_origin_policy()) {
+      overrides.Remove(net::CookieSettingOverride::kStorageAccessGrantEligible);
     }
     return overrides;
   }
@@ -5317,6 +5340,12 @@ class URLLoaderCookieSettingOverridesTest
     return url::Origin::Create(
         test_server()->GetURL(std::get<3>(GetParam()), "/"));
   }
+  bool storage_access_api_follows_same_origin_policy() const {
+    return std::get<4>(GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
 };
 
 // This test makes a request to an endpoint which does not redirect.
@@ -5347,11 +5376,13 @@ TEST_P(URLLoaderCookieSettingOverridesTest, CrossOriginSameSiteRedirect) {
   set_expect_redirect();
   EXPECT_EQ(LoadRequest(request), net::OK);
 
-  EXPECT_THAT(test_network_delegate()->cookie_setting_overrides_records(),
-              ElementsAre(ExpectedCookieSettingOverrides(request),
-                          ExpectedCookieSettingOverrides(request),
-                          ExpectedCookieSettingOverrides(request),
-                          ExpectedCookieSettingOverrides(request)));
+  EXPECT_THAT(
+      test_network_delegate()->cookie_setting_overrides_records(),
+      ElementsAre(
+          ExpectedCookieSettingOverrides(request),
+          ExpectedCookieSettingOverrides(request),
+          ExpectedCookieSettingOverridesForCrossOriginRedirect(request),
+          ExpectedCookieSettingOverridesForCrossOriginRedirect(request)));
 }
 
 // This test makes a request to an endpoint which redirects to a cross-site
@@ -5476,7 +5507,8 @@ INSTANTIATE_TEST_SUITE_P(
             // Same-site cross-origin initiator
             "example.test",
             // Cross-site initiator
-            "other-origin.test")));
+            "other-origin.test"),
+        testing::Bool()));
 
 namespace {
 

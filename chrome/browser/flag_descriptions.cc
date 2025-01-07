@@ -3603,6 +3603,12 @@ const char kSmoothScrollingName[] = "Smooth Scrolling";
 const char kSmoothScrollingDescription[] =
     "Animate smoothly when scrolling page content.";
 
+const char kStorageAccessApiFollowsSameOriginPolicyName[] =
+    "Storage Access API follows Same Origin Policy";
+const char kStorageAccessApiFollowsSameOriginPolicyDescription[] =
+    "Modifies the Storage Access API to follow the Same Origin Policy with "
+    "respect to security.";
+
 const char kStorageAccessHeadersName[] = "Storage Access Headers";
 const char kStorageAccessHeadersDescription[] =
     "Enables HTTP headers related to the Storage Access API.";

@@ -8195,6 +8195,11 @@
     "expiry_milestone": 94
   },
   {
+    "name": "storage-access-api-follows-same-origin-policy",
+    "owners": [ "cfredric@chromium.org", "potassium-auth-embeds@google.com" ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "storage-access-headers",
     "owners": [ "cfredric@chromium.org", "potassium-auth-embeds@google.com" ],
     "expiry_milestone": 140

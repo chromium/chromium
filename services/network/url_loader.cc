@@ -1679,7 +1679,9 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
           net::SchemefulSite(origin) != net::SchemefulSite(pending_origin);
       storage_access_redirect_kind =
           cross_site ? kCrossSite : kCrossOriginSameSite;
-      if (cross_site) {
+      if (cross_site ||
+          base::FeatureList::IsEnabled(
+              net::features::kStorageAccessApiFollowsSameOriginPolicy)) {
         url_request_->cookie_setting_overrides().Remove(
             net::CookieSettingOverride::kStorageAccessGrantEligible);
       }

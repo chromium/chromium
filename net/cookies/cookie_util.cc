@@ -1162,6 +1162,10 @@ bool ShouldAddInitialStorageAccessApiOverride(
     RecordStorageAccessNetRequestMetric(kind);
   }
 
+  if (base::FeatureList::IsEnabled(
+          features::kStorageAccessApiFollowsSameOriginPolicy)) {
+    return kind == kSameOrigin;
+  }
   return kind != kCrossSite;
 }
 
