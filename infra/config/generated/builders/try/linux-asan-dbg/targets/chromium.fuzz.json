@@ -1,7 +1,0 @@
-{
-  "ASAN Debug": {
-    "additional_compile_targets": [
-      "chromium_builder_asan"
-    ]
-  }
-}
