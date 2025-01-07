@@ -17,7 +17,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
-#include "gpu/ipc/common/gpu_memory_buffer_support.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "media/capture/video/chromeos/camera_buffer_factory.h"
 #include "media/capture/video/chromeos/camera_metadata_utils.h"
 #include "media/capture/video/chromeos/pixel_format_utils.h"
@@ -39,11 +39,7 @@ StreamBufferManager::StreamBufferManager(
     : device_context_(device_context),
       buffer_observer_(std::move(buffer_observer)),
       video_capture_use_gmb_(video_capture_use_gmb),
-      camera_buffer_factory_(std::move(camera_buffer_factory)) {
-  if (video_capture_use_gmb_) {
-    gmb_support_ = std::make_unique<gpu::GpuMemoryBufferSupport>();
-  }
-}
+      camera_buffer_factory_(std::move(camera_buffer_factory)) {}
 
 StreamBufferManager::~StreamBufferManager() {
   DestroyCurrentStreamsAndBuffers();
@@ -57,7 +53,7 @@ void StreamBufferManager::ReserveBuffer(StreamType stream_type) {
   }
 }
 
-gfx::GpuMemoryBuffer* StreamBufferManager::GetGpuMemoryBufferById(
+scoped_refptr<gpu::ClientSharedImage> StreamBufferManager::GetSharedImageById(
     StreamType stream_type,
     uint64_t buffer_ipc_id) {
   auto& stream_context = stream_context_[stream_type];
@@ -67,7 +63,7 @@ gfx::GpuMemoryBuffer* StreamBufferManager::GetGpuMemoryBufferById(
     LOG(ERROR) << "Invalid buffer: " << key << " for stream: " << stream_type;
     return nullptr;
   }
-  return it->second.gmb.get();
+  return it->second.shared_image;
 }
 
 std::optional<StreamBufferManager::Buffer>
@@ -102,12 +98,16 @@ StreamBufferManager::AcquireBufferForClientById(StreamType stream_type,
   const std::optional<gfx::BufferFormat> gfx_format =
       PixFormatVideoToGfx(format->pixel_format);
   DCHECK(gfx_format);
-  const auto& original_gmb = buffer_pair.gmb;
-  if (!original_gmb->Map()) {
-    DLOG(WARNING) << "Failed to map original buffer";
+  const auto& original_shared_image = buffer_pair.shared_image;
+  std::unique_ptr<gpu::ClientSharedImage::ScopedMapping>
+      original_scoped_mapping;
+  if (original_shared_image) {
+    original_scoped_mapping = original_shared_image->Map();
+  }
+  if (!original_scoped_mapping) {
+    LOG(WARNING) << "Failed to map original shared image.";
     return std::move(buffer_pair.vcd_buffer);
   }
-  absl::Cleanup unmap_original_gmb = [&original_gmb] { original_gmb->Unmap(); };
 
   const size_t original_width = stream_context->buffer_dimension.width();
   const size_t original_height = stream_context->buffer_dimension.height();
@@ -139,14 +139,17 @@ StreamBufferManager::AcquireBufferForClientById(StreamType stream_type,
     // We can reuse the original buffer in this case because the size is same.
     // Note that libyuv can in-place rotate the Y-plane by 180 degrees.
     libyuv::NV12ToI420Rotate(
-        static_cast<uint8_t*>(original_gmb->memory(0)), original_gmb->stride(0),
-        static_cast<uint8_t*>(original_gmb->memory(1)), original_gmb->stride(1),
-        static_cast<uint8_t*>(original_gmb->memory(0)), original_gmb->stride(0),
-        temp_u, temp_uv_width, temp_v, temp_uv_width, original_width,
-        original_height, translate_rotation(rotation));
+        original_scoped_mapping->GetMemoryForPlane(0).data(),
+        original_scoped_mapping->Stride(0),
+        original_scoped_mapping->GetMemoryForPlane(1).data(),
+        original_scoped_mapping->Stride(1),
+        original_scoped_mapping->GetMemoryForPlane(0).data(),
+        original_scoped_mapping->Stride(0), temp_u, temp_uv_width, temp_v,
+        temp_uv_width, original_width, original_height,
+        translate_rotation(rotation));
     libyuv::MergeUVPlane(temp_u, temp_uv_width, temp_v, temp_uv_width,
-                         static_cast<uint8_t*>(original_gmb->memory(1)),
-                         original_gmb->stride(1), temp_uv_width,
+                         original_scoped_mapping->GetMemoryForPlane(1).data(),
+                         original_scoped_mapping->Stride(1), temp_uv_width,
                          temp_uv_height);
     return std::move(buffer_pair.vcd_buffer);
   }
@@ -161,26 +164,35 @@ StreamBufferManager::AcquireBufferForClientById(StreamType stream_type,
     return std::move(buffer_pair.vcd_buffer);
   }
 
-  auto rotated_gmb = gmb_support_->CreateGpuMemoryBufferImplFromHandle(
-      rotated_buffer.handle_provider->GetGpuMemoryBufferHandle(),
-      format->frame_size, *gfx_format, stream_context->buffer_usage,
-      base::NullCallback());
-
-  if (!rotated_gmb || !rotated_gmb->Map()) {
-    DLOG(WARNING) << "Failed to map rotated buffer";
+  // TODO(crbug.com/359601431): Get shared image directly from the
+  // |rotated_buffer->handle_provider| once all VideoCaptureBufferTracker are
+  // converted to create MappableSI.
+  auto rotated_shared_image =
+      camera_buffer_factory_->CreateSharedImageFromGmbHandle(
+          rotated_buffer.handle_provider->GetGpuMemoryBufferHandle(),
+          format->frame_size, *gfx_format, stream_context->buffer_usage);
+  std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> rotated_scoped_mapping;
+  if (rotated_shared_image) {
+    rotated_scoped_mapping = rotated_shared_image->Map();
+  }
+  if (!rotated_scoped_mapping) {
+    LOG(WARNING) << "Failed to map rotated shared image.";
     return std::move(buffer_pair.vcd_buffer);
   }
-  absl::Cleanup unmap_rotated_gmb = [&rotated_gmb] { rotated_gmb->Unmap(); };
 
-  libyuv::NV12ToI420Rotate(
-      static_cast<uint8_t*>(original_gmb->memory(0)), original_gmb->stride(0),
-      static_cast<uint8_t*>(original_gmb->memory(1)), original_gmb->stride(1),
-      static_cast<uint8_t*>(rotated_gmb->memory(0)), rotated_gmb->stride(0),
-      temp_u, temp_uv_height, temp_v, temp_uv_height, original_width,
-      original_height, translate_rotation(rotation));
+  libyuv::NV12ToI420Rotate(original_scoped_mapping->GetMemoryForPlane(0).data(),
+                           original_scoped_mapping->Stride(0),
+                           original_scoped_mapping->GetMemoryForPlane(1).data(),
+                           original_scoped_mapping->Stride(1),
+                           rotated_scoped_mapping->GetMemoryForPlane(0).data(),
+                           rotated_scoped_mapping->Stride(0), temp_u,
+                           temp_uv_height, temp_v, temp_uv_height,
+                           original_width, original_height,
+                           translate_rotation(rotation));
   libyuv::MergeUVPlane(temp_u, temp_uv_height, temp_v, temp_uv_height,
-                       static_cast<uint8_t*>(rotated_gmb->memory(1)),
-                       rotated_gmb->stride(1), temp_uv_height, temp_uv_width);
+                       rotated_scoped_mapping->GetMemoryForPlane(1).data(),
+                       rotated_scoped_mapping->Stride(1), temp_uv_height,
+                       temp_uv_width);
   return std::move(rotated_buffer);
 }
 
@@ -336,7 +348,8 @@ std::optional<BufferInfo> StreamBufferManager::RequestBufferForCaptureRequest(
   stream_context->free_buffers.pop();
   buffer_info.ipc_id = GetBufferIpcId(stream_type, key);
   buffer_info.dimension = stream_context->buffer_dimension;
-  buffer_info.gpu_memory_buffer_handle = it->second.gmb->CloneHandle();
+  buffer_info.gpu_memory_buffer_handle =
+      it->second.shared_image->CloneGpuMemoryBufferHandle();
   buffer_info.drm_format = drm_format;
   buffer_info.hal_pixel_format = stream_context_[stream_type]->stream->format;
   buffer_info.modifier =
@@ -365,16 +378,20 @@ bool StreamBufferManager::IsRecordingSupported() {
          stream_context_.end();
 }
 
-std::unique_ptr<gpu::GpuMemoryBufferImpl>
-StreamBufferManager::CreateGpuMemoryBuffer(gfx::GpuMemoryBufferHandle handle,
-                                           const VideoCaptureFormat& format,
-                                           gfx::BufferUsage buffer_usage) {
-  std::optional<gfx::BufferFormat> gfx_format =
+scoped_refptr<gpu::ClientSharedImage>
+StreamBufferManager::CreateSharedImageFromGmbHandle(
+    gfx::GpuMemoryBufferHandle handle,
+    const VideoCaptureFormat& format,
+    gfx::BufferUsage buffer_usage) {
+  std::optional<gfx::BufferFormat> buffer_format =
       PixFormatVideoToGfx(format.pixel_format);
-  DCHECK(gfx_format);
-  return gmb_support_->CreateGpuMemoryBufferImplFromHandle(
-      std::move(handle), format.frame_size, *gfx_format, buffer_usage,
-      base::NullCallback());
+  CHECK(buffer_format);
+  auto shared_image = camera_buffer_factory_->CreateSharedImageFromGmbHandle(
+      std::move(handle), format.frame_size, *buffer_format, buffer_usage);
+  if (!shared_image) {
+    LOG(ERROR) << "Failed to create mappable shared image.";
+  }
+  return shared_image;
 }
 
 // static
@@ -402,27 +419,28 @@ void StreamBufferManager::ReserveBufferFromFactory(StreamType stream_type) {
   if (!gfx_format) {
     device_context_->SetErrorState(
         media::VideoCaptureError::
-            kCrosHalV3BufferManagerFailedToCreateGpuMemoryBuffer,
-        FROM_HERE, "Unsupported video pixel format");
+            kCrosHalV3BufferManagerFailedToCreateMappableSI,
+        FROM_HERE, "Unsupported video pixel format.");
     return;
   }
-  auto gmb = camera_buffer_factory_->CreateGpuMemoryBuffer(
+  auto shared_image = camera_buffer_factory_->CreateSharedImage(
       stream_context->buffer_dimension, *gfx_format,
       stream_context->buffer_usage);
-  if (!gmb) {
+  if (!shared_image) {
     device_context_->SetErrorState(
         media::VideoCaptureError::
-            kCrosHalV3BufferManagerFailedToCreateGpuMemoryBuffer,
-        FROM_HERE, "Failed to allocate GPU memory buffer");
+            kCrosHalV3BufferManagerFailedToCreateMappableSI,
+        FROM_HERE, "Failed to create mappable shared image.");
     return;
   }
-  // All the GpuMemoryBuffers are allocated from the factory in bulk when the
+
+  // All the shared_images are allocated from the factory in bulk when the
   // streams are configured.  Here we simply use the sequence of the allocated
   // buffer as the buffer id.
   int key = stream_context->buffers.size() + 1;
   stream_context->free_buffers.push(key);
-  stream_context->buffers.insert(
-      std::make_pair(key, BufferPair(std::move(gmb), std::nullopt)));
+  stream_context->buffers.emplace(
+      key, BufferPair(std::move(shared_image), std::nullopt));
 }
 
 void StreamBufferManager::ReserveBufferFromPool(StreamType stream_type) {
@@ -432,8 +450,8 @@ void StreamBufferManager::ReserveBufferFromPool(StreamType stream_type) {
   if (!gfx_format) {
     device_context_->SetErrorState(
         media::VideoCaptureError::
-            kCrosHalV3BufferManagerFailedToCreateGpuMemoryBuffer,
-        FROM_HERE, "Unsupported video pixel format");
+            kCrosHalV3BufferManagerFailedToCreateMappableSI,
+        FROM_HERE, "Unsupported video pixel format.");
     return;
   }
   Buffer vcd_buffer;
@@ -444,7 +462,7 @@ void StreamBufferManager::ReserveBufferFromPool(StreamType stream_type) {
           client_type, stream_context->buffer_dimension,
           stream_context->capture_format.pixel_format, &vcd_buffer,
           &require_new_buffer_id, &retire_old_buffer_id)) {
-    DLOG(WARNING) << "Failed to reserve video capture buffer";
+    DLOG(WARNING) << "Failed to reserve video capture buffer.";
     return;
   }
   // TODO(b/333813928): This is a temporary solution to fix the cros camera
@@ -456,14 +474,25 @@ void StreamBufferManager::ReserveBufferFromPool(StreamType stream_type) {
         client_type, GetBufferIpcId(stream_type, retire_old_buffer_id));
   }
 
-  auto gmb = gmb_support_->CreateGpuMemoryBufferImplFromHandle(
+  // TODO(crbug.com/359601431): Get shared image directly from the
+  // |vcd_buffer.handle_provider| once all VideoCaptureBufferTracker are
+  // converted to create MappableSI.
+  auto shared_image = camera_buffer_factory_->CreateSharedImageFromGmbHandle(
       vcd_buffer.handle_provider->GetGpuMemoryBufferHandle(),
       stream_context->buffer_dimension, *gfx_format,
-      stream_context->buffer_usage, base::NullCallback());
+      stream_context->buffer_usage);
+  if (!shared_image) {
+    device_context_->SetErrorState(
+        media::VideoCaptureError::
+            kCrosHalV3BufferManagerFailedToCreateMappableSI,
+        FROM_HERE, "Failed to create mappable shared image.");
+    return;
+  }
 
   if (kEnableBufferSynchronizationWithCameraService &&
       require_new_buffer_id != VideoCaptureBufferPool::kInvalidId) {
-    gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle = gmb->CloneHandle();
+    gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle =
+        shared_image->CloneGpuMemoryBufferHandle();
     gfx::NativePixmapHandle& native_pixmap_handle =
         gpu_memory_buffer_handle.native_pixmap_handle;
     auto buffer_handle = cros::mojom::CameraBufferHandle::New();
@@ -495,8 +524,8 @@ void StreamBufferManager::ReserveBufferFromPool(StreamType stream_type) {
   }
   stream_context->free_buffers.push(vcd_buffer.id);
   const int id = vcd_buffer.id;
-  stream_context->buffers.insert(
-      std::make_pair(id, BufferPair(std::move(gmb), std::move(vcd_buffer))));
+  stream_context->buffers.insert(std::make_pair(
+      id, BufferPair(std::move(shared_image), std::move(vcd_buffer))));
 }
 
 void StreamBufferManager::DestroyCurrentStreamsAndBuffers() {
@@ -504,13 +533,14 @@ void StreamBufferManager::DestroyCurrentStreamsAndBuffers() {
 }
 
 StreamBufferManager::BufferPair::BufferPair(
-    std::unique_ptr<gfx::GpuMemoryBuffer> input_gmb,
+    scoped_refptr<gpu::ClientSharedImage> input_shared_image,
     std::optional<Buffer> input_vcd_buffer)
-    : gmb(std::move(input_gmb)), vcd_buffer(std::move(input_vcd_buffer)) {}
+    : shared_image(std::move(input_shared_image)),
+      vcd_buffer(std::move(input_vcd_buffer)) {}
 
 StreamBufferManager::BufferPair::BufferPair(
     StreamBufferManager::BufferPair&& other) {
-  gmb = std::move(other.gmb);
+  shared_image = std::move(other.shared_image);
   vcd_buffer = std::move(other.vcd_buffer);
 }
 

@@ -17,4 +17,7 @@ specific_include_rules = {
   "video_capture_effects_processor_unittest\.cc": [
     "+components/viz/test",
   ],
+  "video_capture_device_client_unittest.cc": [
+    "+components/viz/test/test_context_provider.h",
+  ],
 }
