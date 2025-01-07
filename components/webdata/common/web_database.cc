@@ -94,7 +94,9 @@ void WebDatabase::AddTable(WebDatabaseTable* table) {
 }
 
 WebDatabaseTable* WebDatabase::GetTable(WebDatabaseTable::TypeKey key) {
-  return tables_[key];
+  WebDatabaseTable* table = tables_[key];
+  CHECK(table);
+  return table;
 }
 
 void WebDatabase::BeginTransaction() {
