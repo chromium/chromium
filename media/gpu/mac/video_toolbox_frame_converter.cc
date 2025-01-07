@@ -220,6 +220,27 @@ void VideoToolboxFrameConverter::Convert(
   VideoPixelFormat video_pixel_format =
       PixelFormatToVideoPixelFormat(pixel_format);
 
+  if (__builtin_available(macOS 13.0, iOS 16.0, *)) {
+    // On macOS < 13 or iOS < 16, there is a video artifact issue if the decoded
+    // YUV 4:4:4 CVImageBuffer is processed by macOS internally.
+    //
+    // There are some operations that could trigger the process operation:
+    // - Video overlay promotion.
+    // - Video down/up-sampling. i.e. 10 bit 4:4:4 -> 10 bit 4:2:0, or 16 bit
+    // 4:4:4 -> 10 bit 4:4:4.
+    //
+    // Below codes that disable overlay promotion for 4:4:4 chroma sampling
+    // video could solve the artifact issue for 8/10 bit 4:4:4 video. But note
+    // that for 12 bit 4:4:4 chroma sampling video, unfortunately since there is
+    // no `444YpCbCr12BiPlanarVideoRange` pixel format support, we have to down
+    // sampling the video to `444YpCbCr10BiPlanarVideoRange`, which means the
+    // issue still could not be solved for 12 bit 4:4:4 videos. See:
+    // crbug.com/387619594.
+  } else if (VideoPixelFormatToChromaSampling(video_pixel_format) ==
+             VideoChromaSampling::k444) {
+    allow_overlay = false;
+  }
+
   auto shared_image_interface = sis_->shared_image_interface();
   CHECK(shared_image_interface);
 
