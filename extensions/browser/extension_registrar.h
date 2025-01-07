@@ -150,6 +150,17 @@ class ExtensionRegistrar : public ProcessManagerObserver {
 
   // TODO(michaelpg): Add methods for blocklisting and blocking extensions.
 
+  // Helper method to determine if an extension can be blocked.
+  bool CanBlockExtension(const Extension* extension) const;
+
+  // Puts all extensions in a blocked state: Unloading every extension, and
+  // preventing them from ever loading until UnblockAllExtensions is called.
+  // This state is stored in preferences, so persists until Chrome restarts.
+  //
+  // Component, external component and allowlisted policy installed extensions
+  // are exempt from being Blocked (see CanBlockExtension in .cc file).
+  void BlockAllExtensions();
+
   // Deactivates the extension, adding its id to the list of terminated
   // extensions.
   void TerminateExtension(const ExtensionId& extension_id);

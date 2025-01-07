@@ -602,9 +602,6 @@ class ExtensionService : public ExtensionServiceInterface,
   // enable this extension initially.
   int GetDisableReasonsOnInstalled(const Extension* extension);
 
-  // Helper method to determine if an extension can be blocked.
-  bool CanBlockExtension(const Extension* extension) const;
-
   // Helper to determine if installing an extensions should proceed immediately,
   // or if we should delay the install until further notice, or if the install
   // should be aborted. A pending install is delayed or aborted when any of the

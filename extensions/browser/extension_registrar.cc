@@ -28,6 +28,7 @@
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/service_worker/service_worker_task_queue.h"
 #include "extensions/browser/task_queue_util.h"
+#include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
@@ -37,6 +38,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 using content::DevToolsAgentHost;
+using extensions::mojom::ManifestLocation;
 
 namespace extensions {
 
@@ -429,6 +431,35 @@ void ExtensionRegistrar::ReloadExtension(
   }
 
   delegate_->LoadExtensionForReload(extension_id, path, load_error_behavior);
+}
+
+bool ExtensionRegistrar::CanBlockExtension(const Extension* extension) const {
+  DCHECK(extension);
+  return extension->location() != ManifestLocation::kComponent &&
+         extension->location() != ManifestLocation::kExternalComponent &&
+         !extension_system_->management_policy()->MustRemainEnabled(extension,
+                                                                    nullptr);
+}
+
+// Extensions that are not locked, components or forced by policy should be
+// locked. Extensions are no longer considered enabled or disabled. Blocklisted
+// extensions are now considered both blocklisted and locked.
+void ExtensionRegistrar::BlockAllExtensions() {
+  // Blocklisted extensions are already unloaded, need not be blocked.
+  const ExtensionSet extensions = registry_->GenerateInstalledExtensionsSet(
+      ExtensionRegistry::ENABLED | ExtensionRegistry::DISABLED |
+      ExtensionRegistry::TERMINATED);
+
+  for (const auto& extension : extensions) {
+    const std::string& id = extension->id();
+
+    if (!CanBlockExtension(extension.get())) {
+      continue;
+    }
+
+    registry_->AddBlocked(extension.get());
+    RemoveExtension(id, UnloadedExtensionReason::LOCK_ALL);
+  }
 }
 
 void ExtensionRegistrar::OnUnpackedExtensionReloadFailed(

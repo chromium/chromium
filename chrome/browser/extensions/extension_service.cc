@@ -1096,20 +1096,7 @@ void ExtensionService::BlockAllExtensions() {
     return;
   block_extensions_ = true;
 
-  // Blocklisted extensions are already unloaded, need not be blocked.
-  const ExtensionSet extensions = registry_->GenerateInstalledExtensionsSet(
-      ExtensionRegistry::ENABLED | ExtensionRegistry::DISABLED |
-      ExtensionRegistry::TERMINATED);
-
-  for (const auto& extension : extensions) {
-    const std::string& id = extension->id();
-
-    if (!CanBlockExtension(extension.get()))
-      continue;
-
-    registry_->AddBlocked(extension.get());
-    UnloadExtension(id, UnloadedExtensionReason::LOCK_ALL);
-  }
+  extension_registrar_.BlockAllExtensions();
 }
 
 // All locked extensions should revert to being either enabled or disabled
@@ -1900,7 +1887,7 @@ void ExtensionService::OnExtensionManagementSettingsChanged() {
     if (!settings->IsPermissionSetAllowed(
             extension.get(),
             extension->permissions_data()->active_permissions()) &&
-        CanBlockExtension(extension.get())) {
+        extension_registrar_.CanBlockExtension(extension.get())) {
       PermissionsUpdater(profile()).RemovePermissionsUnsafe(
           extension.get(), *settings->GetBlockedPermissions(extension.get()));
     }
@@ -2253,14 +2240,6 @@ int ExtensionService::GetDisableReasonsOnInstalled(const Extension* extension) {
   return disable_reason::DISABLE_NONE;
 }
 
-// Helper method to determine if an extension can be blocked.
-bool ExtensionService::CanBlockExtension(const Extension* extension) const {
-  DCHECK(extension);
-  return extension->location() != ManifestLocation::kComponent &&
-         extension->location() != ManifestLocation::kExternalComponent &&
-         !system_->management_policy()->MustRemainEnabled(extension, nullptr);
-}
-
 InstallGate::Action ExtensionService::ShouldDelayExtensionInstall(
     const Extension* extension,
     bool install_immediately,
@@ -2354,7 +2333,7 @@ bool ExtensionService::ShouldBlockExtension(const Extension* extension) {
   // |block_extensions_| is true then CanBlockExtension() must be called with an
   // Extension object. If |extension| is not loaded, assume it should be
   // blocked.
-  return !extension || CanBlockExtension(extension);
+  return !extension || extension_registrar_.CanBlockExtension(extension);
 }
 
 void ExtensionService::OnProfileMarkedForPermanentDeletion(Profile* profile) {
