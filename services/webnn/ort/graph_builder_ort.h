@@ -94,29 +94,35 @@ class GraphBuilderOrt {
   const mojom::Operand& GetOperand(uint64_t operand_id);
   std::string GetOperandName(uint64_t operand_id);
 
-  // Some initializers must be uploaded to raw data, for example:
-  // 1. Reshape op needs parameter *shape* as raw data to do shape inference.
-  // 2. Reduce op needs parameter *axes* as raw data to do shape inference.
-  // 3. Expand op needs parameter *shape* as raw data to do shape inference.
-  // 4. Slice op needs parameter *starts*, *ends* and *steps* as raw data to do
-  // shape inference.
+  // Create a new initializer for the graph with the given shape, data and data
+  // type, return the name of the initializer.
   //
-  // See issue(https://github.com/shiyi9801/chromium/issues/52) for more
-  // details.
+  // The guidelines recommends using raw data when:
+  // 1. The byte size of the data is less than 128.
+  // 2. The initializer is used for shape inference.
+  // Otherwise, use external data.
   //
-  // Create a new initializer copied into graph.
-  std::string CreateInitializerAsRawData(base::span<const uint32_t> shape,
-                                         base::span<const uint8_t> data,
-                                         OperandDataType data_type);
+  // Actually, 128 byte size would cover all initializers used for shape
+  // inference, because it could carry 16 x int64_t values and the existing
+  // WebNN maximum rank is 8, so whether to use raw data only depends on the
+  // data size.
+  //
+  // For example, some initializers will use raw data to do shape inference:
+  // 1. Reshape: parameter *shape*.
+  // 2. Reduce: parameter *axes*.
+  // 3. Expand: parameter *shape*.
+  // 4. Slice: parameter *starts*, *ends* and *steps*.
+  template <typename T>
+  std::string CreateInitializer(base::span<const uint32_t> shape,
+                                base::span<const T> data,
+                                OperandDataType data_type);
 
   void AddInput(uint64_t input_id);
   void AddOutput(uint64_t output_id);
 
-  // TODO(https://github.com/shiyi9801/chromium/issues/52): Figure out whether
-  // to upload constants to external data or raw data in graph.
-  //
-  // Add initializer to external data.
-  void AddInitializerAsExternalData(uint64_t constant_id);
+  // Similar to the `CreateInitializer` above, add an initializer to the graph
+  // with the given constant from WebNN.
+  void AddInitializer(uint64_t constant_id);
 
   template <typename T>
   void AddBinaryOperation(const T& operation, std::string op_type);
