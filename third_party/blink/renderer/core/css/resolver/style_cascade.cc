@@ -1546,20 +1546,11 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
 // through a large tree of function calls.
 const CSSValue* StyleCascade::ResolveFunctionExpression(
     StringView expr,
-    const StyleRuleFunction::Type& type,
+    const CSSSyntaxDefinition& type,
     CascadeResolver& resolver,
     const CSSParserContext& context,
     const FunctionContext& function_context) {
   TokenSequence resolved_expr;
-
-  // See documentation on should_add_implicit_calc.
-  if (type.should_add_implicit_calc) {
-    static const char kCalcToken[] = "calc";
-    static const char kCalcStart[] = "calc(";
-    resolved_expr.Append(
-        CSSParserToken(kFunctionToken, kCalcToken, CSSParserToken::kBlockStart),
-        false, kCalcStart);
-  }
 
   CSSParserTokenStream argument_stream(expr);
   if (!ResolveTokensInto(argument_stream, resolver, context, function_context,
@@ -1567,15 +1558,8 @@ const CSSValue* StyleCascade::ResolveFunctionExpression(
     return nullptr;
   }
 
-  if (type.should_add_implicit_calc) {
-    static const char kCalcEnd[] = ")";
-    resolved_expr.Append(
-        CSSParserToken(kRightParenthesisToken, CSSParserToken::kBlockEnd),
-        false, kCalcEnd);
-  }
-
-  const CSSValue* value = type.syntax.Parse(
-      resolved_expr.OriginalText(), context, /*is_animation_tainted=*/false);
+  const CSSValue* value = type.Parse(resolved_expr.OriginalText(), context,
+                                     /*is_animation_tainted=*/false);
   if (!value) {
     return nullptr;
   }

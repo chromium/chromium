@@ -980,7 +980,7 @@ StyleRuleFunction::StyleRuleFunction(
     AtomicString name,
     Vector<StyleRuleFunction::Parameter> parameters,
     CSSVariableData* function_body,
-    StyleRuleFunction::Type return_type)
+    CSSSyntaxDefinition return_type)
     : StyleRuleBase(kFunction),
       name_(std::move(name)),
       parameters_(std::move(parameters)),

@@ -443,7 +443,7 @@ class CORE_EXPORT StyleCascade {
 
   const CSSValue* ResolveFunctionExpression(
       StringView expr,
-      const StyleRuleFunction::Type& type,
+      const CSSSyntaxDefinition& type,
       CascadeResolver& resolver,
       const CSSParserContext& context,
       const FunctionContext& function_context);

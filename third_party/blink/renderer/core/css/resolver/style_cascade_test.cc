@@ -4394,13 +4394,13 @@ TEST_F(StyleCascadeTest, CSSFunctionReturnTypeCoercion) {
 TEST_F(StyleCascadeTest, CSSFunctionImplicitCalc) {
   AppendSheet(R"HTML(
      @function --foo(--x: number): number {
-       @return arg(--x) * 2;
+       @return calc(arg(--x) * 2);
      }
     )HTML");
 
   TestCascade cascade(GetDocument());
 
-  cascade.Add("--result", "--foo(4 + 5)");
+  cascade.Add("--result", "--foo(calc(4 + 5))");
   cascade.Apply();
 
   EXPECT_EQ("18", cascade.ComputedValue("--result"));
