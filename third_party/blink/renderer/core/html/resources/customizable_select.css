@@ -8,7 +8,7 @@
 
 @namespace "http://www.w3.org/1999/xhtml";
 
-select:not(:-internal-list-box) {
+select:not(:-internal-list-box):not([multiple]) {
   font: -internal-appearance-auto-base-select(-webkit-small-control, inherit);
   color: -internal-appearance-auto-base-select(FieldText, inherit);
   background-color: -internal-appearance-auto-base-select(Field, transparent);
@@ -35,32 +35,32 @@ select:not(:-internal-list-box) {
   user-select: -internal-appearance-auto-base-select(auto, none);
 }
 
-select:not(:-internal-list-box) > button:first-child {
+select:not(:-internal-list-box):not([multiple]) > button:first-child {
   all: unset;
   display: contents;
 }
 
-select:not(:-internal-list-box):enabled:hover {
+select:not(:-internal-list-box):not([multiple]):enabled:hover {
   background-color: -internal-appearance-auto-base-select(Field, color-mix(in lab, currentColor 10%, transparent));
 }
-select:not(:-internal-list-box):enabled:active {
+select:not(:-internal-list-box):not([multiple]):enabled:active {
   background-color: -internal-appearance-auto-base-select(Field, color-mix(in lab, currentColor 20%, transparent));
 }
 
 /* Without this rule, we would be changing the styles for disabled
  * appearance:auto selects. */
-select:not(:-internal-list-box):disabled {
+select:not(:-internal-list-box):not([multiple]):disabled {
   color: -internal-appearance-auto-base-select(light-dark(GrayText, #aaa), inherit);
   border-color: -internal-appearance-auto-base-select(rgba(118, 118, 118, 0.3), inherit);
 }
 
 /* Undo unwanted styles from select rules */
-select:not(:-internal-list-box) > button:first-child,
+select:not(:-internal-list-box):not([multiple]) > button:first-child,
 select::picker(select) {
   white-space: normal;
 }
 
-select:not(:-internal-list-box)::picker(select) {
+select:not(:-internal-list-box):not([multiple])::picker(select) {
   box-sizing: border-box;
   border: 1px solid;
   padding: 0;
@@ -86,7 +86,7 @@ select:not(:-internal-list-box)::picker(select) {
     block-start span-inline-start;
 }
 
-select:not(:-internal-list-box) option {
+select:not(:-internal-list-box):not([multiple]) option {
   /* min-size rules ensure that we meet accessibility guidelines for minimum target size.
    * https://github.com/openui/open-ui/issues/1026
    * https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html */
@@ -103,18 +103,18 @@ select:not(:-internal-list-box) option {
   gap: 0.5em;
 }
 
-select:not(:-internal-list-box) option:enabled:hover {
+select:not(:-internal-list-box):not([multiple]) option:enabled:hover {
   background-color: color-mix(in lab, currentColor 10%, transparent);
 }
-select:not(:-internal-list-box) option:enabled:active {
+select:not(:-internal-list-box):not([multiple]) option:enabled:active {
   background-color: color-mix(in lab, currentColor 20%, transparent);
 }
-select:not(:-internal-list-box) option:disabled {
+select:not(:-internal-list-box):not([multiple]) option:disabled {
   color: -internal-appearance-auto-base-select(inherit, color-mix(in lab, currentColor 50%, transparent));
 }
 
 
-select:not(:-internal-list-box) option::checkmark {
+select:not(:-internal-list-box):not([multiple]) option::checkmark {
   content: '\2713' / '';
 }
 select option:not(:checked)::checkmark {
@@ -144,7 +144,7 @@ select::-internal-select-autofill-preview-text {
   white-space: nowrap;
 }
 
-select:not(:-internal-list-box)::picker-icon {
+select:not(:-internal-list-box):not([multiple])::picker-icon {
   content: -internal-appearance-auto-base-select(none, counter(fake-counter-name, disclosure-open));
   /* We don't have to use -internal-appearance-auto-base-select() here because
    * the pseudo-element won't get generated unless the content property is set. */
@@ -153,18 +153,18 @@ select:not(:-internal-list-box)::picker-icon {
 }
 
 /* This can be merged with the :-internal-list-box rule in html.css */
-select:not(:-internal-list-box) optgroup option {
+select:not(:-internal-list-box):not([multiple]) optgroup option {
   padding-inline-start: -internal-appearance-auto-base-select(20px, 0.5em);
   font-weight: normal;
 }
 
-select:not(:-internal-list-box) optgroup::-internal-optgroup-label {
+select:not(:-internal-list-box):not([multiple]) optgroup::-internal-optgroup-label {
   padding-inline: -internal-appearance-auto-base-select(2px, 0.5em);
   padding-block: -internal-appearance-auto-base-select(0 1px, 0);
   min-height: -internal-appearance-auto-base-select(1.2em, 0);
 }
 
-select:not(:-internal-list-box) optgroup legend {
+select:not(:-internal-list-box):not([multiple]) optgroup legend {
   padding-inline: -internal-appearance-auto-base-select(2px, 0.5em);
   min-block-size: -internal-appearance-auto-base-select(initial, 1lh);
 }

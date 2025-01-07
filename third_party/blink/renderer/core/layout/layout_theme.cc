@@ -192,12 +192,16 @@ AppearanceValue LayoutTheme::AdjustAppearanceWithElementType(
     case AppearanceValue::kMediaVolumeSliderThumb:
     case AppearanceValue::kMediaControl:
       return appearance;
-    case AppearanceValue::kBaseSelect:
+    case AppearanceValue::kBaseSelect: {
       CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
-      return IsA<HTMLSelectElement>(element) ||
-                     HTMLSelectElement::IsPopoverForAppearanceBase(element)
-                 ? appearance
-                 : auto_appearance;
+      bool base_appearance_allowed = false;
+      if (auto* select = DynamicTo<HTMLSelectElement>(element)) {
+        base_appearance_allowed = !select->IsMultiple();
+      } else if (HTMLSelectElement::IsPopoverForAppearanceBase(element)) {
+        base_appearance_allowed = true;
+      }
+      return base_appearance_allowed ? appearance : auto_appearance;
+    }
 
     // Aliases of 'auto'.
     // https://drafts.csswg.org/css-ui-4/#typedef-appearance-compat-auto
