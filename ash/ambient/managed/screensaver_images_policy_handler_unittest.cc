@@ -128,7 +128,7 @@ class ScreensaverImagesPolicyHandlerTest : public AshTestBase {
 
     GetSessionControllerClient()->Reset();
     GetSessionControllerClient()->AddUserSession(
-        kUserEmail, user_type,
+        account_id, account_id.GetUserEmail(), user_type,
         /*provide_pref_service=*/false);
     GetSessionControllerClient()->SetUserPrefService(account_id,
                                                      std::move(user_prefs));

@@ -182,7 +182,7 @@ void AshTestHelper::SetUp() {
 
 void AshTestHelper::TearDown() {
   fwupd_download_client_.reset();
-  saved_desk_test_helper_.reset();
+  saved_desk_test_helper_->Shutdown();
 
   ambient_ash_test_helper_.reset();
 
@@ -232,6 +232,7 @@ void AshTestHelper::TearDown() {
   statistics_provider_.reset();
   command_line_.reset();
   quick_pair_browser_delegate_.reset();
+  saved_desk_test_helper_.reset();
 
   // Purge ColorProviderManager between tests so that we don't accumulate
   // ColorProviderInitializers. crbug.com/1349232.
@@ -402,6 +403,9 @@ void AshTestHelper::SetUp(InitParams init_params) {
   // Requires the AppListController the Shell creates.
   app_list_test_helper_ = std::make_unique<AppListTestHelper>();
 
+  // SavedDeskTestHelper depends on account.
+  saved_desk_test_helper_ = std::make_unique<SavedDeskTestHelper>();
+
   Shell::GetPrimaryRootWindow()->Show();
   Shell::GetPrimaryRootWindow()->GetHost()->Show();
 
@@ -475,7 +479,6 @@ void AshTestHelper::SetUp(InitParams init_params) {
     StabilizeUIForPixelTest();
   }
 
-  saved_desk_test_helper_ = std::make_unique<SavedDeskTestHelper>();
   fwupd_download_client_ = std::make_unique<FakeFwupdDownloadClient>();
 }
 
