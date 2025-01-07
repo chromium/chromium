@@ -1017,6 +1017,10 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "CSSReadingFlow",
                 "Enables new CSS reading-flow property for focus navigation in visual order."),
+        Flag.baseFeature(
+                "SimpleCachePrioritizedCaching",
+                "When enabled, main frame navigation resources will be prioritized in Simple"
+                        + " Cache."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
