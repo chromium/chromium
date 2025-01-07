@@ -92,26 +92,52 @@ TaskManagerSearchBarView::TaskManagerSearchBarView(
   if (input_->GetText().empty()) {
     clear_->SetVisible(false);
   }
+  SetNotifyEnterExitOnChild(true);
 }
 
 TaskManagerSearchBarView::~TaskManagerSearchBarView() = default;
+
+void TaskManagerSearchBarView::AddedToWidget() {
+  GetFocusManager()->AddFocusChangeListener(this);
+}
+
+void TaskManagerSearchBarView::RemovedFromWidget() {
+  GetFocusManager()->RemoveFocusChangeListener(this);
+}
+
+void TaskManagerSearchBarView::OnWillChangeFocus(View* /*focused_before*/,
+                                                 View* /*focused_now*/) {}
+
+void TaskManagerSearchBarView::OnDidChangeFocus(views::View* /*focused_before*/,
+                                                views::View* /*focused_now*/) {
+  UpdateBackground();
+}
 
 void TaskManagerSearchBarView::OnThemeChanged() {
   views::View::OnThemeChanged();
   UpdateTextfield();
 }
 
-void TaskManagerSearchBarView::OnMouseEntered(const ui::MouseEvent& event) {
-  if (!input_->HasFocus()) {
-    // Hover on effect only when text field is not in focus.
-    delegate_->SearchBarOnHoverChange(true);
+void TaskManagerSearchBarView::UpdateBackground() {
+  // When cursor hovers on input field and other non-icon field of search bar,
+  // update the background color. This behavior is consistent with the omnibox.
+  const bool is_hovered = !input_->HasFocus() && !clear_->IsMouseHovered() &&
+                          (IsMouseHovered() || input_->IsMouseHovered());
+  if (is_hovered_ != is_hovered) {
+    is_hovered_ = is_hovered;
+    delegate_->SearchBarOnHoverChange(is_hovered);
   }
 }
-void TaskManagerSearchBarView::OnMouseExited(const ui::MouseEvent& event) {
-  delegate_->SearchBarOnHoverChange(false);
+
+void TaskManagerSearchBarView::OnMouseEntered(const ui::MouseEvent& /*event*/) {
+  UpdateBackground();
 }
 
-bool TaskManagerSearchBarView::HandleKeyEvent(views::Textfield* sender,
+void TaskManagerSearchBarView::OnMouseExited(const ui::MouseEvent& /*event*/) {
+  UpdateBackground();
+}
+
+bool TaskManagerSearchBarView::HandleKeyEvent(views::Textfield* /*sender*/,
                                               const ui::KeyEvent& key_event) {
   // Clear button should be visible only if input text is not empty.
   // Early return if visibility is consistent with the input text.

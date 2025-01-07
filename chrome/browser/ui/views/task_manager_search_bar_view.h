@@ -21,6 +21,7 @@
 
 namespace task_manager {
 class TaskManagerSearchBarView : public views::View,
+                                 public views::FocusChangeListener,
                                  public views::TextfieldController {
   METADATA_HEADER(TaskManagerSearchBarView, views::View)
 
@@ -57,10 +58,14 @@ class TaskManagerSearchBarView : public views::View,
 
   // views::View:
   void OnThemeChanged() override;
-
-  // views::View:
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
+  void AddedToWidget() override;
+  void RemovedFromWidget() override;
+
+  // views::FocusChangeListener:
+  void OnWillChangeFocus(View* focused_before, View* focused_now) override;
+  void OnDidChangeFocus(View* focused_before, View* focused_now) override;
 
   // views::TextfieldController:
   bool HandleKeyEvent(views::Textfield* sender,
@@ -75,6 +80,9 @@ class TaskManagerSearchBarView : public views::View,
   // Updates related fields on the Textfield.
   void UpdateTextfield();
 
+  // Update background color for the search bar based on its hover status.
+  void UpdateBackground();
+
  private:
   void OnInputChanged();
   void OnClearPressed();
@@ -86,6 +94,9 @@ class TaskManagerSearchBarView : public views::View,
 
   raw_ptr<views::Textfield> input_ = nullptr;
   raw_ptr<views::Button> clear_ = nullptr;
+
+  // Indicate if the search bar is hovered on or not.
+  bool is_hovered_ = false;
 
   base::CallbackListSubscription input_changed_subscription_;
   base::OneShotTimer input_change_notification_timer_;
