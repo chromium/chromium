@@ -4217,6 +4217,56 @@ experimental domain DOMStorage
     parameters
       StorageId storageId
 
+experimental domain Database
+
+  # Unique identifier of Database object.
+  type DatabaseId extends string
+
+  # Database object.
+  type Database extends object
+    properties
+      # Database ID.
+      DatabaseId id
+      # Database domain.
+      string domain
+      # Database name.
+      string name
+      # Database version.
+      string version
+
+  # Database error.
+  type Error extends object
+    properties
+      # Error message.
+      string message
+      # Error code.
+      integer code
+
+  # Disables database tracking, prevents database events from being sent to the client.
+  command disable
+
+  # Enables database tracking, database events will now be delivered to the client.
+  command enable
+
+  command executeSQL
+    parameters
+      DatabaseId databaseId
+      string query
+    returns
+      optional array of string columnNames
+      optional array of any values
+      optional Error sqlError
+
+  command getDatabaseTableNames
+    parameters
+      DatabaseId databaseId
+    returns
+      array of string tableNames
+
+  event addDatabase
+    parameters
+      Database database
+
 experimental domain DeviceOrientation
 
   # Clears the overridden Device Orientation.

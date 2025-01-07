@@ -64,7 +64,7 @@ class CORE_EXPORT WebDevToolsAgentImpl final
  public:
   static WebDevToolsAgentImpl* CreateForFrame(WebLocalFrameImpl*);
 
-  WebDevToolsAgentImpl(WebLocalFrameImpl*);
+  WebDevToolsAgentImpl(WebLocalFrameImpl*, bool include_view_agents);
   ~WebDevToolsAgentImpl() override;
   virtual void Trace(Visitor*) const;
   DevToolsAgent* GetDevToolsAgent() const { return agent_.Get(); }
@@ -133,6 +133,7 @@ class CORE_EXPORT WebDevToolsAgentImpl final
   Member<InspectedFrames> inspected_frames_;
   Member<InspectorResourceContainer> resource_container_;
   Member<Node> node_to_inspect_;
+  bool include_view_agents_;
   bool wait_for_debugger_when_shown_ = false;
   bool is_paused_for_new_window_shown_ = false;
 };

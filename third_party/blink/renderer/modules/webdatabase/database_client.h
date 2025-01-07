@@ -41,6 +41,7 @@ namespace blink {
 
 class Database;
 class ExecutionContext;
+class InspectorDatabaseAgent;
 class Page;
 
 class MODULES_EXPORT DatabaseClient : public GarbageCollected<DatabaseClient>,
@@ -57,8 +58,18 @@ class MODULES_EXPORT DatabaseClient : public GarbageCollected<DatabaseClient>,
 
   bool AllowDatabase(ExecutionContext*);
 
+  void DidOpenDatabase(Database*,
+                       const String& domain,
+                       const String& name,
+                       const String& version);
+
   static DatabaseClient* FromPage(Page*);
   static DatabaseClient* From(ExecutionContext*);
+
+  void SetInspectorAgent(InspectorDatabaseAgent*);
+
+ private:
+  Member<InspectorDatabaseAgent> inspector_agent_;
 };
 
 }  // namespace blink
