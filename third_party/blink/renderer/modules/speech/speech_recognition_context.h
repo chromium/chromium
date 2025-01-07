@@ -25,7 +25,7 @@ class MODULES_EXPORT SpeechRecognitionContext final : public ScriptWrappable {
   void Trace(Visitor* visitor) const override;
 
   // SpeechRecognitionContext:
-  SpeechRecognitionPhraseList* phrases() { return phrases_.Get(); }
+  SpeechRecognitionPhraseList* phrases() const { return phrases_.Get(); }
   void setPhrases(SpeechRecognitionPhraseList* phrases) { phrases_ = phrases; }
 
  private:

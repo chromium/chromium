@@ -28,6 +28,7 @@
 #include <memory>
 #include <optional>
 
+#include "media/mojo/mojom/speech_recognition_recognition_context.mojom-blink.h"
 #include "media/mojo/mojom/speech_recognizer.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -67,6 +68,7 @@ void SpeechRecognitionController::Start(
     mojo::PendingRemote<media::mojom::blink::SpeechRecognitionSessionClient>
         session_client,
     const SpeechGrammarList& grammars,
+    const SpeechRecognitionContext* context,
     const String& lang,
     bool continuous,
     bool interim_results,
@@ -83,6 +85,17 @@ void SpeechRecognitionController::Start(
     msg_params->grammars.push_back(
         media::mojom::blink::SpeechRecognitionGrammar::New(grammar->src(),
                                                            grammar->weight()));
+  }
+  // TODO(crbug.com/381349238): Add a unit test.
+  if (context && context->phrases()) {
+    msg_params->recognition_context =
+        media::mojom::blink::SpeechRecognitionRecognitionContext::New();
+    for (unsigned i = 0; i < context->phrases()->length(); i++) {
+      SpeechRecognitionPhrase* phrase = context->phrases()->item(i);
+      msg_params->recognition_context->phrases.push_back(
+          media::mojom::blink::SpeechRecognitionPhrase::New(phrase->phrase(),
+                                                            phrase->boost()));
+    }
   }
   msg_params->language = lang.IsNull() ? g_empty_string : lang;
   msg_params->max_hypotheses = max_alternatives;

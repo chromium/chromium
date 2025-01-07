@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/speech/speech_grammar_list.h"
+#include "third_party/blink/renderer/modules/speech/speech_recognition_context.h"
 #include "third_party/blink/renderer/modules/speech/speech_recognition_result.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
@@ -75,6 +76,8 @@ class MODULES_EXPORT SpeechRecognition final
   // Attributes.
   SpeechGrammarList* grammars() const { return grammars_.Get(); }
   void setGrammars(SpeechGrammarList* grammars) { grammars_ = grammars; }
+  SpeechRecognitionContext* context() const { return context_.Get(); }
+  void setContext(SpeechRecognitionContext* context) { context_ = context; }
   String lang() const { return lang_; }
   void setLang(const String& lang) { lang_ = lang; }
   bool continuous() const { return continuous_; }
@@ -156,6 +159,7 @@ class MODULES_EXPORT SpeechRecognition final
 
   Member<MediaStreamTrack> stream_track_;
   Member<SpeechGrammarList> grammars_;
+  Member<SpeechRecognitionContext> context_;
   String lang_;
   bool continuous_ = false;
   bool interim_results_ = false;

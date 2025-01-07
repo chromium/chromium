@@ -348,8 +348,8 @@ void SpeechRecognition::StartController(
   receiver_.set_disconnect_handler(WTF::BindOnce(
       &SpeechRecognition::OnConnectionError, WrapWeakPersistent(this)));
   controller_->Start(
-      std::move(session_receiver), std::move(session_client), *grammars_, lang_,
-      continuous_, interim_results_, max_alternatives_,
+      std::move(session_receiver), std::move(session_client), *grammars_,
+      context(), lang_, continuous_, interim_results_, max_alternatives_,
       /*on_device=*/
       (mode_ == V8SpeechRecognitionMode::Enum::kOndevicePreferred ||
        mode_ == V8SpeechRecognitionMode::Enum::kOndeviceOnly),
@@ -375,6 +375,7 @@ SpeechRecognition::~SpeechRecognition() = default;
 void SpeechRecognition::Trace(Visitor* visitor) const {
   visitor->Trace(stream_track_);
   visitor->Trace(grammars_);
+  visitor->Trace(context_);
   visitor->Trace(controller_);
   visitor->Trace(final_results_);
   visitor->Trace(receiver_);
