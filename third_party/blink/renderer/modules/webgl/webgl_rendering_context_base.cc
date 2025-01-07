@@ -8595,8 +8595,18 @@ CanvasResourceProvider* WebGLRenderingContextBase::
     CanvasResourceProvider* resource_provider = resource_providers_[i].get();
     if (!resource_provider)
       break;
-    if (resource_provider->GetSkImageInfo() != info)
-      continue;
+    if (resource_provider->GetSkImageInfo() != info) {
+      // Detect and allow for the case wherein the passed-info implicitly
+      // specifies sRGB via a null SkColorSpace whereas the resource provider is
+      // explicitly storing sRGB.
+      if (info.colorSpace()) {
+        continue;
+      }
+      if (resource_provider->GetSkImageInfo() !=
+          info.makeColorSpace(SkColorSpace::MakeSRGB())) {
+        continue;
+      }
+    }
     BubbleToFront(i);
     return resource_provider;
   }

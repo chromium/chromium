@@ -471,7 +471,7 @@ class FakeCanvasResourceProvider : public CanvasResourceProvider {
                                size,
                                kN32_SkColorType,
                                kPremul_SkAlphaType,
-                               SkColorSpace::MakeSRGB(),
+                               gfx::ColorSpace::CreateSRGB(),
                                SharedGpuContext::ContextProviderWrapper(),
                                resource_host),
         is_accelerated_(hint != RasterModeHint::kPreferCPU),

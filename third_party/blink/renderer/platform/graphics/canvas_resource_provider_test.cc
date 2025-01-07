@@ -165,7 +165,8 @@ TEST_F(CanvasResourceProviderTest,
 
 TEST_F(CanvasResourceProviderTest, CanvasResourceProviderAcceleratedOverlay) {
   const gfx::Size kSize(10, 10);
-  const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
+  const SkImageInfo kInfo =
+      SkImageInfo::MakeN32Premul(10, 10, SkColorSpace::MakeSRGB());
 
   const gpu::SharedImageUsageSet shared_image_usage_flags =
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT |
@@ -198,7 +199,8 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderAcceleratedOverlay) {
 
 TEST_F(CanvasResourceProviderTest, CanvasResourceProviderTexture) {
   const gfx::Size kSize(10, 10);
-  const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
+  const SkImageInfo kInfo =
+      SkImageInfo::MakeN32Premul(10, 10, SkColorSpace::MakeSRGB());
 
   auto provider = CanvasResourceProvider::CreateSharedImageProvider(
       kSize, kInfo.colorType(), kInfo.alphaType(), kInfo.refColorSpace(),
@@ -220,7 +222,8 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderTexture) {
 
 TEST_F(CanvasResourceProviderTest, CanvasResourceProviderUnacceleratedOverlay) {
   const gfx::Size kSize(10, 10);
-  const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
+  const SkImageInfo kInfo =
+      SkImageInfo::MakeN32Premul(10, 10, SkColorSpace::MakeSRGB());
 
   const gpu::SharedImageUsageSet shared_image_usage_flags =
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
@@ -322,7 +325,8 @@ TEST_F(CanvasResourceProviderTest,
 TEST_F(CanvasResourceProviderTest,
        CanvasResourceProviderSharedImageResourceRecycling) {
   const gfx::Size kSize(10, 10);
-  const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
+  const SkImageInfo kInfo =
+      SkImageInfo::MakeN32Premul(10, 10, SkColorSpace::MakeSRGB());
 
   const gpu::SharedImageUsageSet shared_image_usage_flags =
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
@@ -572,7 +576,8 @@ TEST_F(CanvasResourceProviderTest,
 
 TEST_F(CanvasResourceProviderTest, CanvasResourceProviderBitmap) {
   const gfx::Size kSize(10, 10);
-  const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
+  const SkImageInfo kInfo =
+      SkImageInfo::MakeN32Premul(10, 10, SkColorSpace::MakeSRGB());
 
   auto provider = CanvasResourceProvider::CreateBitmapProvider(
       kSize, kInfo.colorType(), kInfo.alphaType(), kInfo.refColorSpace(),
@@ -606,7 +611,8 @@ TEST_F(CanvasResourceProviderTest,
   platform_->SetGpuCompositingDisabled(true);
 
   const gfx::Size kSize(10, 10);
-  const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
+  const SkImageInfo kInfo =
+      SkImageInfo::MakeN32Premul(10, 10, SkColorSpace::MakeSRGB());
   std::unique_ptr<WebGraphicsSharedImageInterfaceProvider>
       test_web_shared_image_interface_provider =
           TestWebGraphicsSharedImageInterfaceProvider::Create();
@@ -631,7 +637,8 @@ TEST_F(CanvasResourceProviderTest,
 TEST_F(CanvasResourceProviderTest,
        CanvasResourceProviderDirect2DGpuMemoryBuffer) {
   const gfx::Size kSize(10, 10);
-  const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
+  const SkImageInfo kInfo =
+      SkImageInfo::MakeN32Premul(10, 10, SkColorSpace::MakeSRGB());
 
   const gpu::SharedImageUsageSet shared_image_usage_flags =
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT |
@@ -665,7 +672,8 @@ TEST_F(CanvasResourceProviderTest,
 TEST_F(CanvasResourceProviderTest,
        CanvasResourceProviderDirect3DGpuMemoryBuffer) {
   const gfx::Size kSize(10, 10);
-  const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
+  const SkImageInfo kInfo =
+      SkImageInfo::MakeN32Premul(10, 10, SkColorSpace::MakeSRGB());
 
   auto provider = CanvasResourceProvider::CreatePassThroughProvider(
       kSize, kInfo.colorType(), kInfo.alphaType(), kInfo.refColorSpace(),
@@ -788,7 +796,8 @@ TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_PassThrough) {
 
 TEST_F(CanvasResourceProviderTest, CanvasResourceProviderDirect2DSwapChain) {
   const gfx::Size kSize(10, 10);
-  const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
+  const SkImageInfo kInfo =
+      SkImageInfo::MakeN32Premul(10, 10, SkColorSpace::MakeSRGB());
 
   auto provider = CanvasResourceProvider::CreateSwapChainProvider(
       kSize, kInfo.colorType(), kInfo.alphaType(), kInfo.refColorSpace(),

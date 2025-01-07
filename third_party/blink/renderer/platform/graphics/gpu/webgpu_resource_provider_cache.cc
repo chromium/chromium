@@ -105,6 +105,14 @@ WebGPURecyclableResourceCache::AcquireCachedProvider(
     if (image_info == resource_provider->GetSkImageInfo()) {
       break;
     }
+    // Detect and allow for the case wherein the passed-info implicitly
+    // specifies sRGB via a null SkColorSpace whereas the resource provider is
+    // explicitly storing sRGB.
+    if (!image_info.colorSpace() &&
+        (image_info.makeColorSpace(SkColorSpace::MakeSRGB()) ==
+         resource_provider->GetSkImageInfo())) {
+      break;
+    }
   }
 
   // Found one.
