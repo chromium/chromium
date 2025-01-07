@@ -991,6 +991,7 @@ class URLLoaderTest : public testing::Test {
     EXPECT_EQ(actual_body, expected_body);
   }
 
+  const net::EmbeddedTestServer* test_server() const { return &test_server_; }
   net::EmbeddedTestServer* test_server() { return &test_server_; }
   net::URLRequestContext* url_request_context() {
     return url_request_context_.get();
@@ -5260,7 +5261,7 @@ TEST_F(StorageAccessHeaderURLLoaderTest, NoLoadWhenHeaderNotEnabled) {
 class URLLoaderCookieSettingOverridesTest
     : public URLLoaderTest,
       public ::testing::WithParamInterface<
-          std::tuple<bool, bool, net::StorageAccessApiStatus, bool>> {
+          std::tuple<bool, bool, net::StorageAccessApiStatus, std::string>> {
  public:
   ~URLLoaderCookieSettingOverridesTest() override = default;
 
@@ -5273,13 +5274,11 @@ class URLLoaderCookieSettingOverridesTest
     }
     request.is_outermost_main_frame = IsOuterMostFrame();
     request.storage_access_api_status = StorageAccessApiStatus();
-    if (!InitiatorIsOtherOrigin()) {
-      request.request_initiator =
-          url::Origin::Create(GURL("http://other-origin.test/"));
-    }
+    request.request_initiator = Initiator();
   }
 
-  net::CookieSettingOverrides ExpectedCookieSettingOverrides() const {
+  net::CookieSettingOverrides ExpectedCookieSettingOverrides(
+      const ResourceRequest& request) const {
     net::CookieSettingOverrides overrides;
     if (IsCors() && IsOuterMostFrame()) {
       overrides.Put(
@@ -5289,7 +5288,8 @@ class URLLoaderCookieSettingOverridesTest
       case net::StorageAccessApiStatus::kNone:
         break;
       case net::StorageAccessApiStatus::kAccessViaAPI:
-        if (InitiatorIsOtherOrigin()) {
+        if (net::SchemefulSite(Initiator()) ==
+            net::SchemefulSite(request.url)) {
           overrides.Put(
               net::CookieSettingOverride::kStorageAccessGrantEligible);
         }
@@ -5299,105 +5299,80 @@ class URLLoaderCookieSettingOverridesTest
   }
 
   net::CookieSettingOverrides
-  ExpectedCookieSettingOverridesForCrossSiteRedirect() const {
-    net::CookieSettingOverrides overrides = ExpectedCookieSettingOverrides();
+  ExpectedCookieSettingOverridesForCrossSiteRedirect(
+      const ResourceRequest& request) const {
+    net::CookieSettingOverrides overrides =
+        ExpectedCookieSettingOverrides(request);
     overrides.Remove(net::CookieSettingOverride::kStorageAccessGrantEligible);
     return overrides;
   }
 
- private:
+ protected:
   bool IsCors() const { return std::get<0>(GetParam()); }
   bool IsOuterMostFrame() const { return std::get<1>(GetParam()); }
   net::StorageAccessApiStatus StorageAccessApiStatus() const {
     return std::get<2>(GetParam());
   }
-  bool InitiatorIsOtherOrigin() const { return std::get<3>(GetParam()); }
+  url::Origin Initiator() const {
+    return url::Origin::Create(
+        test_server()->GetURL(std::get<3>(GetParam()), "/"));
+  }
 };
 
-TEST_P(URLLoaderCookieSettingOverridesTest, CookieSettingOverrides) {
-  GURL url("http://www.example.com.test/");
-  base::RunLoop delete_run_loop;
+// This test makes a request to an endpoint which does not redirect.
+TEST_P(URLLoaderCookieSettingOverridesTest, NoRedirect) {
+  const GURL url = test_server()->GetURL(kHostnameWithAliases, "/");
+
   ResourceRequest request = CreateResourceRequest("GET", url);
   SetUpRequest(request);
 
-  mojo::PendingRemote<mojom::URLLoader> loader;
-  std::unique_ptr<URLLoader> url_loader;
-  context().mutable_factory_params().process_id = mojom::kBrowserProcessId;
-  url_loader = URLLoaderOptions().MakeURLLoader(
-      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
-      loader.InitWithNewPipeAndPassReceiver(), request,
-      client()->CreateRemote());
+  EXPECT_EQ(LoadRequest(request), net::OK);
 
-  client()->RunUntilComplete();
-  delete_run_loop.Run();
-
-  const std::vector<net::CookieSettingOverrides> records =
-      test_network_delegate()->cookie_setting_overrides_records();
-  EXPECT_THAT(records, ElementsAre(ExpectedCookieSettingOverrides(),
-                                   ExpectedCookieSettingOverrides()));
+  EXPECT_THAT(test_network_delegate()->cookie_setting_overrides_records(),
+              ElementsAre(ExpectedCookieSettingOverrides(request),
+                          ExpectedCookieSettingOverrides(request)));
 }
 
-TEST_P(URLLoaderCookieSettingOverridesTest,
-       CookieSettingOverrides_OnSameSiteRedirects) {
-  GURL redirecting_url = test_server()->GetURL(
-      "/server-redirect?" + test_server()->GetURL("/simple_page.html").spec());
+// This test makes a request to an endpoint that redirects to a cross-origin,
+// same-site endpoint.
+TEST_P(URLLoaderCookieSettingOverridesTest, CrossOriginSameSiteRedirect) {
+  const GURL url = test_server()->GetURL(
+      kHostnameWithAliases,
+      "/server-redirect?" +
+          test_server()->GetURL("example.test", "/simple_page.html").spec());
 
-  base::RunLoop delete_run_loop;
-  ResourceRequest request = CreateResourceRequest("GET", redirecting_url);
+  ResourceRequest request = CreateResourceRequest("GET", url);
   SetUpRequest(request);
 
-  mojo::Remote<mojom::URLLoader> loader;
-  std::unique_ptr<URLLoader> url_loader;
-  context().mutable_factory_params().process_id = mojom::kBrowserProcessId;
-  url_loader = URLLoaderOptions().MakeURLLoader(
-      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
-      loader.BindNewPipeAndPassReceiver(), request, client()->CreateRemote());
+  set_expect_redirect();
+  EXPECT_EQ(LoadRequest(request), net::OK);
 
-  client()->RunUntilRedirectReceived();
-  loader->FollowRedirect({}, {}, {}, std::nullopt);
-  client()->RunUntilComplete();
-  delete_run_loop.Run();
-
-  const std::vector<net::CookieSettingOverrides> records =
-      test_network_delegate()->cookie_setting_overrides_records();
-
-  EXPECT_THAT(records, ElementsAre(ExpectedCookieSettingOverrides(),
-                                   ExpectedCookieSettingOverrides(),
-                                   ExpectedCookieSettingOverrides(),
-                                   ExpectedCookieSettingOverrides()));
+  EXPECT_THAT(test_network_delegate()->cookie_setting_overrides_records(),
+              ElementsAre(ExpectedCookieSettingOverrides(request),
+                          ExpectedCookieSettingOverrides(request),
+                          ExpectedCookieSettingOverrides(request),
+                          ExpectedCookieSettingOverrides(request)));
 }
 
-TEST_P(URLLoaderCookieSettingOverridesTest,
-       CookieSettingOverrides_OnCrossSiteRedirects) {
-  GURL dest_url("http://www.example.com.test/");
-  GURL redirecting_url =
-      test_server()->GetURL("/server-redirect?" + dest_url.spec());
+// This test makes a request to an endpoint which redirects to a cross-site
+// endpoint.
+TEST_P(URLLoaderCookieSettingOverridesTest, CrossSiteRedirect) {
+  const GURL url = test_server()->GetURL(
+      kHostnameWithAliases,
+      "/server-redirect?" + test_server()->GetURL("other.test", "/").spec());
 
-  base::RunLoop delete_run_loop;
-  ResourceRequest request = CreateResourceRequest("GET", redirecting_url);
+  ResourceRequest request = CreateResourceRequest("GET", url);
   SetUpRequest(request);
 
-  mojo::Remote<mojom::URLLoader> loader;
-  std::unique_ptr<URLLoader> url_loader;
-  context().mutable_factory_params().process_id = mojom::kBrowserProcessId;
-  url_loader = URLLoaderOptions().MakeURLLoader(
-      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
-      loader.BindNewPipeAndPassReceiver(), request, client()->CreateRemote());
-
-  client()->RunUntilRedirectReceived();
-  loader->FollowRedirect({}, {}, {}, std::nullopt);
-  client()->RunUntilComplete();
-  delete_run_loop.Run();
-
-  const std::vector<net::CookieSettingOverrides> records =
-      test_network_delegate()->cookie_setting_overrides_records();
+  set_expect_redirect();
+  EXPECT_EQ(LoadRequest(request), net::OK);
 
   EXPECT_THAT(
-      records,
-      ElementsAre(ExpectedCookieSettingOverrides(),
-                  ExpectedCookieSettingOverrides(),
-                  ExpectedCookieSettingOverridesForCrossSiteRedirect(),
-                  ExpectedCookieSettingOverridesForCrossSiteRedirect()));
+      test_network_delegate()->cookie_setting_overrides_records(),
+      ElementsAre(ExpectedCookieSettingOverrides(request),
+                  ExpectedCookieSettingOverrides(request),
+                  ExpectedCookieSettingOverridesForCrossSiteRedirect(request),
+                  ExpectedCookieSettingOverridesForCrossSiteRedirect(request)));
 }
 
 // This test sends a request to an endpoint that is cross-site from the
@@ -5405,35 +5380,32 @@ TEST_P(URLLoaderCookieSettingOverridesTest,
 // to the initiator. The second redirect leg should not have the
 // `kStorageAccessGrantEligible` override, since that would include cookies on
 // the request and therefore make a CSRF attack possible via that redirect.
-TEST_P(URLLoaderCookieSettingOverridesTest,
-       CookieSettingOverrides_OnCrossSiteToSameSite) {
-  GURL cross_site_to_same_site_redirect_url = test_server()->GetURL(
-      kHostnameWithAliases,
-      "/server-redirect?" + test_server()->GetURL("/empty.html").spec());
+TEST_P(URLLoaderCookieSettingOverridesTest, OnCrossSiteToSameSite) {
+  if (!Initiator().DomainIs(kHostnameWithAliases)) {
+    // This test sets its own request initiator below, so it effectively ignores
+    // the `initiator()` test param. WLOG, we can skip all but one of the
+    // instances of that param.
+    GTEST_SKIP();
+  }
 
-  base::RunLoop delete_run_loop;
-  ResourceRequest request =
-      CreateResourceRequest("GET", cross_site_to_same_site_redirect_url);
-  request.request_initiator = test_server()->GetOrigin();
+  const GURL url = test_server()->GetURL(
+      "cross-site.test",
+      "/server-redirect?" +
+          test_server()->GetURL(kHostnameWithAliases, "/empty.html").spec());
+
+  ResourceRequest request = CreateResourceRequest("GET", url);
   SetUpRequest(request);
+  request.request_initiator = test_server()->GetOrigin();
 
-  mojo::Remote<mojom::URLLoader> loader;
-  std::unique_ptr<URLLoader> url_loader;
-  context().mutable_factory_params().process_id = mojom::kBrowserProcessId;
-  url_loader = URLLoaderOptions().MakeURLLoader(
-      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
-      loader.BindNewPipeAndPassReceiver(), request, client()->CreateRemote());
+  set_expect_redirect();
+  EXPECT_EQ(LoadRequest(request), net::OK);
 
-  client()->RunUntilRedirectReceived();
-  loader->FollowRedirect({}, {}, {}, std::nullopt);
-  client()->RunUntilComplete();
-  delete_run_loop.Run();
   EXPECT_THAT(
       test_network_delegate()->cookie_setting_overrides_records(),
-      ElementsAre(ExpectedCookieSettingOverridesForCrossSiteRedirect(),
-                  ExpectedCookieSettingOverridesForCrossSiteRedirect(),
-                  ExpectedCookieSettingOverridesForCrossSiteRedirect(),
-                  ExpectedCookieSettingOverridesForCrossSiteRedirect()));
+      ElementsAre(ExpectedCookieSettingOverridesForCrossSiteRedirect(request),
+                  ExpectedCookieSettingOverridesForCrossSiteRedirect(request),
+                  ExpectedCookieSettingOverridesForCrossSiteRedirect(request),
+                  ExpectedCookieSettingOverridesForCrossSiteRedirect(request)));
 }
 
 TEST_F(URLLoaderTest, DevToolsCookieSettingOverrides_NotApplied) {
@@ -5498,7 +5470,13 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Bool(),
         testing::Values(net::StorageAccessApiStatus::kNone,
                         net::StorageAccessApiStatus::kAccessViaAPI),
-        testing::Bool()));
+        testing::Values(
+            // Same-origin initiator
+            kHostnameWithAliases,
+            // Same-site cross-origin initiator
+            "example.test",
+            // Cross-site initiator
+            "other-origin.test")));
 
 namespace {
 
