@@ -15,6 +15,20 @@
 
 namespace views {
 
+namespace {
+
+// Returns the visible anchored dialog or nullptr.
+DialogDelegate* GetAnchoredDialog(View* view) {
+  DialogDelegate* dialog_delegate = view->GetProperty(kAnchoredDialogKey);
+  if (dialog_delegate && dialog_delegate->GetWidget() &&
+      dialog_delegate->GetWidget()->IsVisible()) {
+    return dialog_delegate;
+  }
+  return nullptr;
+}
+
+}  // namespace
+
 FocusSearch::FocusSearch(View* root, bool cycle, bool accessibility_mode)
     : root_(root), cycle_(cycle), accessibility_mode_(accessibility_mode) {
 #if BUILDFLAG(IS_MAC)
@@ -211,7 +225,7 @@ View* FocusSearch::FindNextFocusableViewImpl(
     // Check to see if we should navigate into a dialog anchored at this view.
     if (can_go_into_anchored_dialog ==
         AnchoredDialogPolicy::kCanGoIntoAnchoredDialog) {
-      DialogDelegate* bubble = starting_view->GetProperty(kAnchoredDialogKey);
+      DialogDelegate* bubble = GetAnchoredDialog(starting_view);
       if (bubble) {
         *focus_traversable = bubble->GetWidget()->GetFocusTraversable();
         *focus_traversable_view = starting_view;
@@ -238,7 +252,7 @@ View* FocusSearch::FindNextFocusableViewImpl(
     while (parent && parent != root_) {
       if (can_go_into_anchored_dialog ==
           AnchoredDialogPolicy::kCanGoIntoAnchoredDialog) {
-        DialogDelegate* bubble = parent->GetProperty(kAnchoredDialogKey);
+        DialogDelegate* bubble = GetAnchoredDialog(parent);
         if (bubble) {
           *focus_traversable = bubble->GetWidget()->GetFocusTraversable();
           *focus_traversable_view = starting_view;
@@ -309,7 +323,7 @@ View* FocusSearch::FindPreviousFocusableViewImpl(
     // Check to see if we should navigate into a dialog anchored at this view.
     if (can_go_into_anchored_dialog ==
         AnchoredDialogPolicy::kCanGoIntoAnchoredDialog) {
-      DialogDelegate* bubble = starting_view->GetProperty(kAnchoredDialogKey);
+      DialogDelegate* bubble = GetAnchoredDialog(starting_view);
       if (bubble) {
         *focus_traversable = bubble->GetWidget()->GetFocusTraversable();
         *focus_traversable_view = starting_view;

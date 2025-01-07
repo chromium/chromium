@@ -123,9 +123,6 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest, ReShow) {
   // The dialog should be reshown after the WebContents is Visible.
   ASSERT_TRUE(GetDialog());
   EXPECT_TRUE(GetDialog()->IsVisible());
-  // Test workaround for http://crbug.com/1367309 where
-  // NativeWidgetMac::Activate() ignores views::Widget::IsVisible().
-  EXPECT_TRUE(GetDialog()->widget_delegate()->CanActivate());
 }
 
 IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest, ShowWhileHidden) {
@@ -212,9 +209,6 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest, AddTabHidesUI) {
   // The dialog should be hidden since the new tab is appended foregrounded.
   ASSERT_TRUE(GetDialog());
   EXPECT_FALSE(GetDialog()->IsVisible());
-  // Test workaround for http://crbug.com/1367309 where
-  // NativeWidgetMac::Activate() ignores views::Widget::IsVisible().
-  EXPECT_FALSE(GetDialog()->widget_delegate()->CanActivate());
 
   ASSERT_TRUE(AddTabAtIndex(2, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
   ASSERT_TRUE(GetDialog());

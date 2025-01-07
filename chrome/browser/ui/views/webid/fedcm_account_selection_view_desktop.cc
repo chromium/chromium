@@ -99,7 +99,6 @@ void FedCmAccountSelectionView::ShowDialogWidget() {
   }
 
   input_protector_->VisibilityChanged(true);
-  GetDialogWidget()->widget_delegate()->SetCanActivate(true);
   GetDialogWidget()->Show();
   if (dialog_type_ == DialogType::MODAL) {
     scoped_ignore_input_events_ =
@@ -1031,14 +1030,9 @@ void FedCmAccountSelectionView::PrimaryMainFrameWasResized(bool width_changed) {
 }
 
 void FedCmAccountSelectionView::HideDialogWidget() {
-  // On Mac, NativeWidgetMac::Activate() ignores the views::Widget visibility.
-  // Make the views::Widget non-activatable while it is hidden to prevent the
-  // views::Widget from being shown during focus traversal.
-  // TODO(crbug.com/40239995): fix the issue on Mac.
   GetDialogWidget()->Hide();
   scoped_ignore_input_events_.reset();
   tab_accept_mouse_events_.reset();
-  GetDialogWidget()->widget_delegate()->SetCanActivate(false);
   // TODO(crbug.com/331166928): This is only null in one test. Fix the test to
   // match production.
   if (input_protector_) {
