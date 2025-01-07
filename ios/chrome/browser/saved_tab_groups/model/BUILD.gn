@@ -18,6 +18,7 @@ source_set("model") {
   deps = [
     "//base",
     "//components/collaboration/internal:collaboration_finder",
+    "//components/collaboration/public",
     "//components/data_sharing/public",
     "//components/saved_tab_groups/delegate",
     "//components/saved_tab_groups/internal",
@@ -61,6 +62,7 @@ source_set("unit_tests") {
     ":model",
     "//base",
     "//base/test:test_support",
+    "//components/collaboration:test_support",
     "//components/saved_tab_groups/delegate",
     "//components/saved_tab_groups/public",
     "//components/saved_tab_groups/test_support",

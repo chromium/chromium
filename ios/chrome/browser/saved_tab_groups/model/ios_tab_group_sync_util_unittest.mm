@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 
 #import "base/test/scoped_feature_list.h"
+#import "components/collaboration/test_support/mock_collaboration_service.h"
 #import "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
 #import "components/tab_groups/tab_group_id.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_local_update_observer.h"
@@ -27,6 +28,8 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+
+using ::testing::_;
 
 namespace tab_groups {
 namespace utils {
@@ -569,6 +572,54 @@ TEST_F(TabGroupSyncUtilTest, GetTabGroupCollabIDWithNonShared) {
   EXPECT_NE(GetTabGroupCollabID(local_group, mock_service_).value(),
             "collaboration");
   EXPECT_EQ(GetTabGroupCollabID(local_group, nullptr).value(), "");
+}
+
+// Tests the `GetUserRoleForGroup` method with a shared group.
+TEST_F(TabGroupSyncUtilTest, GetUserRoleForGroupShared) {
+  std::unique_ptr<collaboration::MockCollaborationService>
+      collaboration_service_ =
+          std::make_unique<collaboration::MockCollaborationService>();
+
+  TabGroupId tab_group_id = TabGroupId::GenerateNew();
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  const TabGroup* local_group =
+      web_state_list->CreateGroup({0}, {}, tab_group_id);
+
+  SavedTabGroup saved_group(u"title", tab_groups::TabGroupColorId::kGrey,
+                            /*urls=*/{}, /*position=*/std::nullopt);
+  saved_group.SetCollaborationId(CollaborationId("collaboration"));
+
+  tab_groups::EitherGroupID either_id = tab_group_id;
+  EXPECT_CALL(*mock_service_, GetGroup(either_id))
+      .WillOnce(testing::Return(saved_group));
+  EXPECT_CALL(*collaboration_service_, GetCurrentUserRoleForGroup(_))
+      .WillOnce(testing::Return(data_sharing::MemberRole::kOwner));
+  EXPECT_EQ(GetUserRoleForGroup(local_group, mock_service_,
+                                collaboration_service_.get()),
+            data_sharing::MemberRole::kOwner);
+}
+
+// Tests the `GetUserRoleForGroup` method with a non shared group.
+TEST_F(TabGroupSyncUtilTest, GetUserRoleForGroupNonShared) {
+  std::unique_ptr<collaboration::MockCollaborationService>
+      collaboration_service_ =
+          std::make_unique<collaboration::MockCollaborationService>();
+
+  TabGroupId tab_group_id = TabGroupId::GenerateNew();
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  const TabGroup* local_group =
+      web_state_list->CreateGroup({0}, {}, tab_group_id);
+
+  SavedTabGroup saved_group(u"title", tab_groups::TabGroupColorId::kGrey,
+                            /*urls=*/{}, /*position=*/std::nullopt);
+
+  tab_groups::EitherGroupID either_id = tab_group_id;
+  EXPECT_CALL(*mock_service_, GetGroup(either_id))
+      .WillOnce(testing::Return(saved_group));
+  EXPECT_CALL(*collaboration_service_, GetCurrentUserRoleForGroup(_)).Times(0);
+  EXPECT_EQ(GetUserRoleForGroup(local_group, mock_service_,
+                                collaboration_service_.get()),
+            data_sharing::MemberRole::kUnknown);
 }
 
 }  // namespace utils

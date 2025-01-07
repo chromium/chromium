@@ -8,8 +8,11 @@
 #import "base/metrics/histogram_functions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
+#import "components/collaboration/public/collaboration_service.h"
+#import "components/data_sharing/public/group_data.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
+#import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/collaboration/model/features.h"
 #import "ios/chrome/browser/menu/ui_bundled/action_factory.h"
 #import "ios/chrome/browser/menu/ui_bundled/tab_context_menu_delegate.h"
@@ -324,13 +327,17 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
   BOOL incognito = self.incognito;
   ShareKitService* shareKitService =
       ShareKitServiceFactory::GetForProfile(_profile);
+  tab_groups::TabGroupSyncService* tabGroupSyncService =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(_profile);
+  collaboration::CollaborationService* collaborationService =
+      collaboration::CollaborationServiceFactory::GetForProfile(_profile);
   BOOL isSharedTabGroupSupported =
       shareKitService && shareKitService->IsSupported();
   BOOL isTabGroupShared =
       isSharedTabGroupSupported &&
-      tab_groups::utils::IsTabGroupShared(
-          group,
-          tab_groups::TabGroupSyncServiceFactory::GetForProfile(_profile));
+      tab_groups::utils::IsTabGroupShared(group, tabGroupSyncService);
+  data_sharing::MemberRole userRole = tab_groups::utils::GetUserRoleForGroup(
+      group, tabGroupSyncService, collaborationService);
   __weak __typeof(self) weakSelf = self;
 
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
@@ -388,12 +395,16 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
                                             incognito:incognito];
         }]];
     if (!incognito) {
-      [destructiveActions
-          addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
-            [weakSelf.contextMenuDelegate deleteTabGroup:weakGroup
-                                               incognito:incognito
-                                              sourceView:cell];
-          }]];
+      if (isTabGroupShared && userRole == data_sharing::MemberRole::kMember) {
+        // TODO(crbug.com/375587197): Add the "Leave group" destructive action.
+      } else {
+        [destructiveActions
+            addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
+              [weakSelf.contextMenuDelegate deleteTabGroup:weakGroup
+                                                 incognito:incognito
+                                                sourceView:cell];
+            }]];
+      }
     }
   } else {
     [destructiveActions
