@@ -115,6 +115,30 @@ bool HasNameSeparator(const std::string& name) {
   return re2::RE2::PartialMatch(name, autofill::kCjkNameSeperatorsRe);
 }
 
+// Logs whether the alternative name in a new/updated profile contains a
+// separator.
+void RecordAlternativeNameSeparatorUsage(
+    const autofill::AutofillProfile& profile,
+    const autofill::AutofillProfile* existing_profile) {
+  const std::u16string existing_alternative_name =
+      existing_profile
+          ? existing_profile->GetInfo(autofill::ALTERNATIVE_FULL_NAME,
+                                      extensions::ExtensionsBrowserClient::Get()
+                                          ->GetApplicationLocale())
+          : std::u16string();
+
+  const std::u16string saved_alternative_name = profile.GetInfo(
+      autofill::ALTERNATIVE_FULL_NAME,
+      extensions::ExtensionsBrowserClient::Get()->GetApplicationLocale());
+
+  if (!saved_alternative_name.empty() &&
+      saved_alternative_name != existing_alternative_name) {
+    base::UmaHistogramBoolean(
+        "Autofill.Settings.EditedAlternativeNameContainsASeparator",
+        HasNameSeparator(base::UTF16ToUTF8(saved_alternative_name)));
+  }
+}
+
 autofill::BrowserAutofillManager* GetBrowserAutofillManager(
     content::WebContents* web_contents) {
   if (!web_contents) {
@@ -244,23 +268,7 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveAddressFunction::Run() {
   }
   profile.FinalizeAfterImport();
 
-  const std::u16string existing_alternative_name =
-      existing_profile
-          ? existing_profile->GetInfo(
-                autofill::ALTERNATIVE_FULL_NAME,
-                ExtensionsBrowserClient::Get()->GetApplicationLocale())
-          : std::u16string();
-
-  const std::u16string saved_alternative_name =
-      profile.GetInfo(autofill::ALTERNATIVE_FULL_NAME,
-                      ExtensionsBrowserClient::Get()->GetApplicationLocale());
-
-  if (!saved_alternative_name.empty() &&
-      saved_alternative_name != existing_alternative_name) {
-    base::UmaHistogramBoolean(
-        "Autofill.Settings.EditedAlternativeNameContainsASeparator",
-        HasNameSeparator(base::UTF16ToUTF8(saved_alternative_name)));
-  }
+  RecordAlternativeNameSeparatorUsage(profile, existing_profile);
 
   if (address->language_code) {
     profile.set_language_code(*address->language_code);
