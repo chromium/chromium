@@ -24,7 +24,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-#include <list>
 #include <utility>
 
 #include "base/memory/ref_counted.h"
