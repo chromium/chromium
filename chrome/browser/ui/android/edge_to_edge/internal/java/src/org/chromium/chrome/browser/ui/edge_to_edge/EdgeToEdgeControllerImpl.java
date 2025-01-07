@@ -340,6 +340,16 @@ public class EdgeToEdgeControllerImpl
                                 EdgeToEdgeUtils.isPageOptedIntoEdgeToEdge(mCurrentTab, value),
                                 /* changedWindowState= */ false);
                     }
+
+                    @Override
+                    public void safeAreaConstraintChanged(boolean hasConstraint) {
+                        if (mHasSafeAreaConstraint == hasConstraint) return;
+
+                        mHasSafeAreaConstraint = hasConstraint;
+                        for (var observer : mEdgeChangeObservers) {
+                            observer.onSafeAreaConstraintChanged(mHasSafeAreaConstraint);
+                        }
+                    }
                 };
     }
 
@@ -372,13 +382,16 @@ public class EdgeToEdgeControllerImpl
         boolean shouldDrawToEdge =
                 EdgeToEdgeUtils.shouldDrawToEdge(
                         pageOptedIntoEdgeToEdge, currentLayoutType, mSystemInsets.bottom);
-        boolean changedPageOptedIn = pageOptedIntoEdgeToEdge != mIsPageOptedIntoEdgeToEdge;
-        boolean changedDrawToEdge = shouldDrawToEdge != mIsDrawingToEdge;
-        mIsPageOptedIntoEdgeToEdge = pageOptedIntoEdgeToEdge;
-        mIsDrawingToEdge = shouldDrawToEdge;
         // Refresh the mHasSafeAreaConstraint to ensure the boolean stays fresh (e.g. when
         // #drawToEdge is called due to tab switching)
-        mHasSafeAreaConstraint = EdgeToEdgeUtils.hasSafeAreaConstraintForTab(mCurrentTab);
+        boolean hasSafeAreaConstraint = EdgeToEdgeUtils.hasSafeAreaConstraintForTab(mCurrentTab);
+
+        boolean changedPageOptedIn = pageOptedIntoEdgeToEdge != mIsPageOptedIntoEdgeToEdge;
+        boolean changedDrawToEdge = shouldDrawToEdge != mIsDrawingToEdge;
+        boolean changedSafeAreaConstraint = mHasSafeAreaConstraint != hasSafeAreaConstraint;
+        mIsPageOptedIntoEdgeToEdge = pageOptedIntoEdgeToEdge;
+        mIsDrawingToEdge = shouldDrawToEdge;
+        mHasSafeAreaConstraint = hasSafeAreaConstraint;
 
         if (changedPageOptedIn) {
             Log.v(
@@ -400,6 +413,11 @@ public class EdgeToEdgeControllerImpl
             for (var observer : mEdgeChangeObservers) {
                 observer.onToEdgeChange(
                         mSystemInsets.bottom, isDrawingToEdge(), isPageOptedIntoEdgeToEdge());
+            }
+        }
+
+        if (changedSafeAreaConstraint) {
+            for (var observer : mEdgeChangeObservers) {
                 observer.onSafeAreaConstraintChanged(mHasSafeAreaConstraint);
             }
         }
@@ -595,6 +613,10 @@ public class EdgeToEdgeControllerImpl
 
     void setKeyboardInsetsForTesting(Insets keyboardInsetsForTesting) {
         mKeyboardInsets = keyboardInsetsForTesting;
+    }
+
+    public boolean getHasSafeAreaConstraintForTesting() {
+        return mHasSafeAreaConstraint;
     }
 
     private static Insets getSystemInsets(@NonNull WindowInsetsCompat windowInsets) {

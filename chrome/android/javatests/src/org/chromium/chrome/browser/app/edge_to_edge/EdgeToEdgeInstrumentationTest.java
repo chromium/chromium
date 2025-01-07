@@ -83,6 +83,8 @@ public class EdgeToEdgeInstrumentationTest {
             "/chrome/test/data/android/edge_to_edge/viewport-fit-auto.html";
     private static final String TEST_COVER_PAGE =
             "/chrome/test/data/android/edge_to_edge/viewport-fit-cover.html";
+    private static final String TEST_CONTAIN_PAGE =
+            "/chrome/test/data/android/edge_to_edge/viewport-fit-contain.html";
 
     private static final int TO_EDGE_PADDING = 0;
 
@@ -169,6 +171,17 @@ public class EdgeToEdgeInstrumentationTest {
         assertFalse(
                 "Helper optOutOfToEdge failed to stop opting into E2E",
                 mEdgeToEdgeController.isPageOptedIntoEdgeToEdge());
+    }
+
+    void loadSafeAreaConstrainPage() {
+        sActivityTestRule.loadUrl(mTestServer.getURL(TEST_CONTAIN_PAGE));
+        waitUntilNotOptedIntoEdgeToEdge();
+        assertFalse(
+                "Helper loadSafeAreaConstrainPage failed to stop opting into E2E",
+                mEdgeToEdgeController.isPageOptedIntoEdgeToEdge());
+        assertTrue(
+                "Safe area constraint should be set for contain pages.",
+                mEdgeToEdgeController.getHasSafeAreaConstraintForTesting());
     }
 
     void waitUntilOptedIntoEdgeToEdge() {
@@ -497,6 +510,24 @@ public class EdgeToEdgeInstrumentationTest {
                 "Should return toEdge upon leaving the Tab Switcher.",
                 Color.TRANSPARENT,
                 mActivity.getWindow().getNavigationBarColor());
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_SAFE_AREA_CONSTRAINT)
+    public void testSafeAreaConstraint() {
+        loadSafeAreaConstrainPage();
+
+        int bottomInsets = mEdgeToEdgeController.getBottomInsetPx();
+        int bottomControlsMinHeight =
+                mActivity
+                        .getRootUiCoordinatorForTesting()
+                        .getBottomControlsStackerForTesting()
+                        .getTotalMinHeight();
+        assertEquals(
+                "Bottom controls min height should be set as the height of the bottom insets.",
+                bottomInsets,
+                bottomControlsMinHeight);
     }
 
     private void assertOptedIntoEdgeToEdge() {

@@ -803,8 +803,29 @@ public class EdgeToEdgeControllerTest {
                 "Should be drawing toEdge after toggling viewport-fit.",
                 mEdgeToEdgeControllerImpl.isDrawingToEdge());
         verify(mOsWrapper).setPadding(any(), eq(0), eq(TOP_INSET), eq(0), eq(0));
+    }
 
-        verify(mChangeObserver, atLeastOnce()).onSafeAreaConstraintChanged(false);
+    @Test
+    public void safeAreaConstraint() {
+        when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
+        when(mTab.isNativePage()).thenReturn(false);
+        mTabProvider.set(mTab);
+        verifyInteractions(mTab);
+        assertFalse(
+                "Safe area constrain should default to false.",
+                mEdgeToEdgeControllerImpl.getHasSafeAreaConstraintForTesting());
+
+        mEdgeToEdgeControllerImpl.getWebContentsObserver().safeAreaConstraintChanged(true);
+        assertTrue(
+                "Safe area constrain should be set by observer.",
+                mEdgeToEdgeControllerImpl.getHasSafeAreaConstraintForTesting());
+        verify(mChangeObserver).onSafeAreaConstraintChanged(true);
+
+        mEdgeToEdgeControllerImpl.getWebContentsObserver().safeAreaConstraintChanged(false);
+        assertFalse(
+                "Safe area constrain should be removed by observer.",
+                mEdgeToEdgeControllerImpl.getHasSafeAreaConstraintForTesting());
+        verify(mChangeObserver).onSafeAreaConstraintChanged(false);
     }
 
     @Test
