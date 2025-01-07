@@ -230,9 +230,6 @@ class ChromiumDepGraph {
         org_robolectric_shadows_framework: new PropertyOverride(
             licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE',
             licenseName: 'MIT'),
-        org_robolectric_shadows_versioning: new PropertyOverride(
-            licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE',
-            licenseName: 'MIT'),
         org_robolectric_utils: new PropertyOverride(
             licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE',
             licenseName: 'MIT'),
