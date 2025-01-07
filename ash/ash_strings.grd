@@ -8886,6 +8886,24 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_BIRCH_CORAL_SAVED_GROUPS_MAX_NUM_REACHED" translateable="false" desc="Message shown to users when they attempt to save a new coral group when the maximum number of coral saved groups has been reached.">
         Maximum number of saved groups reached.
       </message>
+      <message name="IDS_ASH_BIRCH_CORAL_SUGGESTION_NAME" translateable="false" desc="The general name of the suggestions provided by coral service">
+        Suggested group
+      </message>
+      <message name="IDS_ASH_BIRCH_CORAL_RESTORE_CHIP_SUBTITLE" translateable="false" desc="The subtitle of coral restore chip">
+        Resume suggested group
+      </message>
+      <message name="IDS_ASH_BIRCH_CORAL_IN_SESSION_CHIP_SUBTITLE" translateable="false" desc="The subtitle of coral in-session chip">
+        Organize in a new desk
+      </message>
+      <message name="IDS_ASH_BIRCH_CORAL_CHIP_MENU_OPEN_GROUP" translateable="false" desc="The chip menu item label of opening a group">
+        Open
+      </message>
+      <message name="IDS_ASH_BIRCH_CORAL_CHIP_MENU_SAVE_GROUP" translateable="false" desc="The chip menu item label of saving a group as a desk template">
+        Save group for later
+      </message>
+      <message name="IDS_ASH_BIRCH_CORAL_CHIP_MENU_HIDE_GROUP" translateable="false" desc="The chip menu item label of hiding a group">
+        Don't suggest group to resume
+      </message>
 
       <!-- Graduation app strings -->
       <message name="IDS_ASH_GRADUATION_NUDGE_TEXT" desc="Text shown in nudge that is displayed after the Content Transfer app becomes available.">

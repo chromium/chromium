@@ -407,9 +407,9 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, GroupTitleLoadingFail) {
   // updated title.
   BirchCoralProvider::Get()->TitleUpdated(base::Token(), "");
   ASSERT_TRUE(coral_chip->title()->GetVisible());
-  EXPECT_EQ(coral_chip->title()->GetText(), u"Suggested Group");
+  EXPECT_EQ(coral_chip->title()->GetText(), u"Suggested group");
   EXPECT_EQ(coral_chip->GetAccessibleName(),
-            u"Suggested Group Organize in a new desk");
+            u"Suggested group Organize in a new desk");
 }
 
 // Tests that the coral chip gets updated while corresponding tab/app items are

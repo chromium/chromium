@@ -20,6 +20,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/coral/coral_controller.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
@@ -34,6 +35,7 @@
 #include "chromeos/ui/base/window_properties.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/wm/core/window_util.h"
 
 // Implement custom hash for EntityPtr because GURL doesn't support hash.
@@ -65,8 +67,6 @@ constexpr base::TimeDelta kPostLoginClustersLifespan = base::Minutes(15);
 // cluster.
 constexpr base::TimeDelta kPostLoginSecondClusterLifespan = base::Minutes(10);
 BirchCoralProvider* g_instance = nullptr;
-
-constexpr char16_t kTitlePlaceholder[] = u"Suggested Group";
 
 // The minimum number of entities in a group that allows user to remove an
 // entity.
@@ -677,21 +677,23 @@ void BirchCoralProvider::HandleCoralResponse(
     const auto& group = response_->groups()[i];
     // Set a placeholder to item title. The chip title will be directly fetched
     // from group title.
-    // TODO(zxdan): Localize the strings.
-    std::u16string subtitle;
+    int subtitle_id;
     switch (response_->source()) {
       case CoralSource::kPostLogin:
-        subtitle = u"Resume suggested group";
+        subtitle_id = IDS_ASH_BIRCH_CORAL_RESTORE_CHIP_SUBTITLE;
         break;
       case CoralSource::kInSession:
-        subtitle = u"Organize in a new desk";
+        subtitle_id = IDS_ASH_BIRCH_CORAL_IN_SESSION_CHIP_SUBTITLE;
         break;
       case CoralSource::kUnknown:
-        break;
+        NOTREACHED() << "Unknown response type.";
     }
-    items.emplace_back(/*title=*/kTitlePlaceholder,
-                       /*subtitle=*/subtitle, response_->source(),
-                       /*group_id=*/group->id);
+
+    items.emplace_back(
+        group->title
+            ? base::UTF8ToUTF16(*(group->title))
+            : l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CORAL_SUGGESTION_NAME),
+        l10n_util::GetStringUTF16(subtitle_id), response_->source(), group->id);
   }
   Shell::Get()->birch_model()->SetCoralItems(items);
 
