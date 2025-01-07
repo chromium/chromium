@@ -512,6 +512,7 @@ public class ViewTransitionPixelTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "crbug.com/387372707")
     public void testBrowserControlsRootSnapshotControlsPush() throws Throwable {
         String url = "/chrome/test/data/android/view_transition_browser_controls.html";
         mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(url));
