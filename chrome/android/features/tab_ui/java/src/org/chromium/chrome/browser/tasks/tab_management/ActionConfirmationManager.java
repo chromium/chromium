@@ -89,7 +89,7 @@ public class ActionConfirmationManager {
     public void processDeleteSharedGroupAttempt(String groupTitle, Callback<Integer> onResult) {
         processGroupNameAction(
                 DELETE_SHARED_GROUP_USER_ACTION,
-                R.string.delete_tab_group_dialog_title,
+                R.string.delete_shared_tab_group_dialog_title,
                 R.string.delete_shared_tab_group_description,
                 groupTitle,
                 R.string.delete_tab_group_menu_item,
@@ -103,7 +103,7 @@ public class ActionConfirmationManager {
                 R.string.leave_tab_group_dialog_title,
                 R.string.leave_tab_group_description,
                 groupTitle,
-                R.string.leave_tab_group_menu_item,
+                R.string.keep_tab_group_dialog_leave_action,
                 onResult);
     }
 
