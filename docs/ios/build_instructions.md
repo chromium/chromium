@@ -12,6 +12,8 @@ Are you a Google employee? See
 
 ## System requirements
 
+[comment]: # (Keep the Xcode version in sync with ios/build/chrome_build.)
+
 * A 64-bit Mac capable of running the required version of Xcode.
 * [Xcode](https://developer.apple.com/xcode) 16.0 or higher.
 

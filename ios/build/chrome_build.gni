@@ -9,10 +9,12 @@ import("//build/config/features.gni")
 import("//build/config/ios/config.gni")
 import("//build/config/ios/ios_sdk.gni")
 
-# Xcode 13.1 or higher is required to build Chromium on iOS. This file should
+# Xcode 16.0 or higher is required to build Chromium on iOS. This file should
 # only be included when building Chromium, not other related projects (cronet,
 # webrtc, ...).
-assert(xcode_version_int >= 1310, "Xcode 13.1 or higher is required.")
+#
+# Please keep this value in sync with docs/ios/build_instructions.md.
+assert(xcode_version_int >= 1600, "Xcode 16.0 or higher is required.")
 
 declare_args() {
   # Disable notification center widget extensions.
