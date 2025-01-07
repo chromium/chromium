@@ -54,7 +54,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Mobile.AppMenu.TimeToTakeAction.Abandoned" units="ms"
-    expires_after="2023-05-07">
+    expires_after="2026-02-10">
   <owner>gangwu@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -63,11 +63,13 @@ chromium-metrics-reviews@google.com.
     is abandoned. See Mobile.AppMenu.TimeToTakeAction.SelectedItem for the cases
     where it is closed as a result of user interaction with the menu. Android
     only.
+
+    (Expired in 2023-05-07. Revived in 2025-01-07.)
   </summary>
 </histogram>
 
 <histogram name="Mobile.AppMenu.TimeToTakeAction.SelectedItem" units="ms"
-    expires_after="2023-11-12">
+    expires_after="2026-02-10">
   <owner>gangwu@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -75,6 +77,8 @@ chromium-metrics-reviews@google.com.
     menu is closed as a result of the user clicking a menu item. See
     Mobile.AppMenu.TimeToTakeAction.Abandoned for the cases where it is
     abandoned by the user. Android only.
+
+    (Expired in 2023-11-12. Revived in 2025-01-07.)
   </summary>
 </histogram>
 
