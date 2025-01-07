@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/accessibility/accessibility_ui.h"
 
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -15,7 +16,9 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ref.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
@@ -42,6 +45,8 @@
 #include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_updates_and_events.h"
@@ -346,6 +351,192 @@ const std::string& CheckJSValue(const std::string* str) {
   return *str;
 }
 
+// A holder for process-wide and per-tab accessibility state. An instance of
+// this class is attached to the WebContents hosting chrome://accessibility.
+// This state is not attached to AccessibilityUIMessageHandler, as it does not
+// survive page reload in some situations; see https://crbug.com/355190669. An
+// instance of this class monitors its WebContents's primary page and
+// saves/restores accessibility state as the user navigates away from and back
+// to chrome://accessibility.
+class AccessibilityUiModes
+    : public content::WebContentsUserData<AccessibilityUiModes>,
+      public content::WebContentsObserver {
+ public:
+  ~AccessibilityUiModes() override = default;
+
+  // Returns the instance for the WebContents hosting chrome://accessibility.
+  static AccessibilityUiModes& GetInstance(content::WebContents* web_contents) {
+    CreateForWebContents(web_contents);
+    return *FromWebContents(web_contents);
+  }
+
+  // Sets or clears `flags` (as per `enabled`) for all tabs in the browser
+  // process for the lifetime of the accessibility UI page.
+  void SetModeForProcess(uint32_t flags, bool enabled) {
+    if (process_accessibility_mode_) {
+      ui::AXMode mode = process_accessibility_mode_->mode();
+      mode.set_mode(flags, enabled);
+      process_accessibility_mode_ =
+          content::BrowserAccessibilityState::GetInstance()
+              ->CreateScopedModeForProcess(mode);
+    }
+  }
+
+  // Applies `mode` to `web_contents` for the lifetime of the accessibility
+  // UI page.
+  void SetModeForWebContents(content::WebContents* web_contents,
+                             ui::AXMode mode) {
+    // Create/replace a ScopedAccessibilityMode targeting `web_contents`.
+    auto scoped_mode = content::BrowserAccessibilityState::GetInstance()
+                           ->CreateScopedModeForWebContents(web_contents, mode);
+    auto [iter, inserted] = page_accessibility_modes_.try_emplace(
+        web_contents, *this, *web_contents, std::move(scoped_mode));
+    if (!inserted) {
+      iter->second.SetMode(std::move(scoped_mode));
+    }
+  }
+
+  // content::WebContentsObserver:
+  void PrimaryPageChanged(content::Page& page) override {
+    const GURL& new_page_url = GetWebContents().GetLastCommittedURL();
+    if (new_page_url != page_url_) {
+      if (process_accessibility_mode_) {
+        // Navigating away from chrome://accessibility. Save the process mode.
+        SaveAccessibilityState();
+      }
+    } else if (!process_accessibility_mode_) {
+      // Navigating back to chrome://accessibility. Restore the process mode.
+      RestoreAccessibilityState();
+    }
+  }
+
+ private:
+  friend content::WebContentsUserData<AccessibilityUiModes>;
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
+
+  explicit AccessibilityUiModes(content::WebContents* web_contents)
+      : WebContentsUserData(*web_contents),
+        WebContentsObserver(web_contents),
+        page_url_(web_contents->GetLastCommittedURL()),
+        process_accessibility_mode_(
+            content::BrowserAccessibilityState::GetInstance()
+                ->CreateScopedModeForProcess(ui::AXMode())) {}
+
+  // Saves the process-wide and per-tab accessibility mode flags and clears
+  // all ScopedAccessibilityMode instances managed for this instance of the
+  // accessibility UI page.
+  void SaveAccessibilityState() {
+    saved_process_mode_ = process_accessibility_mode_->mode();
+    process_accessibility_mode_.reset();
+
+    base::ranges::for_each(
+        page_accessibility_modes_,
+        [](PageAccessibilityMode& page_mode) { page_mode.Save(); },
+        &std::map<void*, PageAccessibilityMode>::value_type::second);
+  }
+
+  // Restores the process-wide and per-tab accessibility mode flags and clears
+  // all ScopedAccessibilityMode instances managed for this instance of the
+  // accessibility UI page.
+  void RestoreAccessibilityState() {
+    auto& browser_accessibility_state =
+        *content::BrowserAccessibilityState::GetInstance();
+    process_accessibility_mode_ =
+        browser_accessibility_state.CreateScopedModeForProcess(
+            std::exchange(saved_process_mode_, ui::AXMode()));
+
+    base::ranges::for_each(
+        page_accessibility_modes_,
+        [&browser_accessibility_state](PageAccessibilityMode& page_mode) {
+          page_mode.Restore(browser_accessibility_state);
+        },
+        &std::map<void*, PageAccessibilityMode>::value_type::second);
+  }
+
+  void OnPageDestroyed(content::WebContents& page_web_contents) {
+    page_accessibility_modes_.erase(&page_web_contents);
+  }
+
+  // A ScopedAccessibilityMode for a page hosted in a WebContents.
+  class PageAccessibilityMode : public content::WebContentsObserver {
+   public:
+    PageAccessibilityMode(
+        AccessibilityUiModes& parent,
+        content::WebContents& web_contents,
+        std::unique_ptr<content::ScopedAccessibilityMode> accessibility_mode);
+    PageAccessibilityMode(const PageAccessibilityMode&) = delete;
+    PageAccessibilityMode& operator=(const PageAccessibilityMode&) = delete;
+    ~PageAccessibilityMode() override;
+
+    void SetMode(
+        std::unique_ptr<content::ScopedAccessibilityMode> accessibility_mode);
+    void Save();
+    void Restore(
+        content::BrowserAccessibilityState& browser_accessibility_state);
+
+    // content::WebContentsObserver:
+    void WebContentsDestroyed() override;
+
+   private:
+    const raw_ref<AccessibilityUiModes> parent_;
+    std::unique_ptr<content::ScopedAccessibilityMode> accessibility_mode_;
+
+    // The accessibility mode for this WebContents when the accessibility UI
+    // page is no longer the primary page in its WebContents.
+    ui::AXMode saved_mode_;
+  };
+
+  // The URL of the chrome://accessibility page visible in the WebContents.
+  const GURL page_url_;
+
+  // Accessibility modes for pages in WebContentses. The map's key is a pointer
+  // to a WebContents.
+  std::map<void*, PageAccessibilityMode> page_accessibility_modes_;
+
+  // A ScopedAccessibilityMode that holds the process-wide ("global") mode flags
+  // modified via the `setGlobalFlag` callback from the page. Holds at least an
+  // instance with no mode flags set while the chrome://accessibility page is
+  // the primary page in its WebContents.
+  std::unique_ptr<content::ScopedAccessibilityMode> process_accessibility_mode_;
+
+  // The process-wide accessibility mode when the accessibility UI page is no
+  // longer the primary page in its WebContents.
+  ui::AXMode saved_process_mode_;
+};
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(AccessibilityUiModes);
+
+AccessibilityUiModes::PageAccessibilityMode::PageAccessibilityMode(
+    AccessibilityUiModes& parent,
+    content::WebContents& web_contents,
+    std::unique_ptr<content::ScopedAccessibilityMode> accessibility_mode)
+    : content::WebContentsObserver(&web_contents),
+      parent_(parent),
+      accessibility_mode_(std::move(accessibility_mode)) {}
+
+AccessibilityUiModes::PageAccessibilityMode::~PageAccessibilityMode() = default;
+
+void AccessibilityUiModes::PageAccessibilityMode::SetMode(
+    std::unique_ptr<content::ScopedAccessibilityMode> accessibility_mode) {
+  accessibility_mode_ = std::move(accessibility_mode);
+}
+
+void AccessibilityUiModes::PageAccessibilityMode::Save() {
+  saved_mode_ = accessibility_mode_->mode();
+  accessibility_mode_.reset();
+}
+
+void AccessibilityUiModes::PageAccessibilityMode::Restore(
+    content::BrowserAccessibilityState& browser_accessibility_state) {
+  accessibility_mode_ =
+      browser_accessibility_state.CreateScopedModeForWebContents(
+          web_contents(), std::exchange(saved_mode_, ui::AXMode()));
+}
+
+void AccessibilityUiModes::PageAccessibilityMode::WebContentsDestroyed() {
+  parent_->OnPageDestroyed(*web_contents());
+}
+
 }  // namespace
 
 AccessibilityUIConfig::AccessibilityUIConfig()
@@ -393,22 +584,7 @@ void AccessibilityUIObserver::AccessibilityEventReceived(
   }
 }
 
-AccessibilityUIMessageHandler::PageAccessibilityMode::PageAccessibilityMode(
-    base::WeakPtr<content::WebContents> web_contents,
-    std::unique_ptr<content::ScopedAccessibilityMode> accessibility_mode)
-    : web_contents(std::move(web_contents)),
-      accessibility_mode(std::move(accessibility_mode)) {}
-
-AccessibilityUIMessageHandler::PageAccessibilityMode::PageAccessibilityMode(
-    PageAccessibilityMode&& other) noexcept = default;
-
-AccessibilityUIMessageHandler::PageAccessibilityMode::~PageAccessibilityMode() =
-    default;
-
-AccessibilityUIMessageHandler::AccessibilityUIMessageHandler()
-    : process_accessibility_mode_(
-          content::BrowserAccessibilityState::GetInstance()
-              ->CreateScopedModeForProcess(ui::AXMode())) {}
+AccessibilityUIMessageHandler::AccessibilityUIMessageHandler() = default;
 
 AccessibilityUIMessageHandler::~AccessibilityUIMessageHandler() {
   if (!observer_) {
@@ -461,24 +637,6 @@ void AccessibilityUIMessageHandler::RegisterMessages() {
           base::Unretained(this)));
 }
 
-void AccessibilityUIMessageHandler::SetAccessibilityModeForWebContents(
-    content::WebContents* web_contents,
-    ui::AXMode mode) {
-  // Erase any items in the container for WebContentses that have since been
-  // destroyed.
-  std::erase_if(page_accessibility_modes_, [](const auto& item) {
-    return item.second.web_contents.WasInvalidated();
-  });
-
-  // Create/replace a ScopedAccessibilityMode targeting `web_contents`.
-  page_accessibility_modes_.insert_or_assign(
-      web_contents,
-      PageAccessibilityMode(
-          web_contents->GetWeakPtr(),
-          content::BrowserAccessibilityState::GetInstance()
-              ->CreateScopedModeForWebContents(web_contents, mode)));
-}
-
 void AccessibilityUIMessageHandler::ToggleAccessibilityForWebContents(
     const base::Value::List& args) {
   const base::Value::Dict& data = args[0].GetDict();
@@ -518,7 +676,8 @@ void AccessibilityUIMessageHandler::ToggleAccessibilityForWebContents(
     current_mode.set_mode(ui::AXMode::kHTML, true);
   }
 
-  SetAccessibilityModeForWebContents(web_contents, current_mode);
+  AccessibilityUiModes::GetInstance(web_ui()->GetWebContents())
+      .SetModeForWebContents(web_contents, current_mode);
 
   if (should_request_tree) {
     base::Value::Dict request_data;
@@ -581,11 +740,8 @@ void AccessibilityUIMessageHandler::SetGlobalFlag(
     new_mode.set_mode(ui::AXMode::kHTML, true);
   }
 
-  ui::AXMode mode = process_accessibility_mode_->mode();
-  mode.set_mode(new_mode.flags(), enabled);
-  process_accessibility_mode_ =
-      content::BrowserAccessibilityState::GetInstance()
-          ->CreateScopedModeForProcess(mode);
+  AccessibilityUiModes::GetInstance(web_ui()->GetWebContents())
+      .SetModeForProcess(new_mode.flags(), enabled);
 
   // It's possible that the user is trying to remove a global flag that was set
   // outside of chrome://accessibility. Modify the process-wide state
@@ -651,7 +807,8 @@ void AccessibilityUIMessageHandler::RequestWebContentsTree(
       content::WebContents::FromRenderViewHost(rvh);
   // No matter the state of the current web_contents, we want to force the mode
   // because we are about to show the accessibility tree
-  SetAccessibilityModeForWebContents(web_contents, ui::kAXModeComplete);
+  AccessibilityUiModes::GetInstance(web_ui()->GetWebContents())
+      .SetModeForWebContents(web_contents, ui::kAXModeComplete);
 
   std::vector<AXPropertyFilter> property_filters;
   AddPropertyFilters(property_filters, allow, AXPropertyFilter::ALLOW);
