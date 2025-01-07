@@ -32,7 +32,7 @@ PasswordFeatureManagerImpl::PasswordFeatureManagerImpl(
 bool PasswordFeatureManagerImpl::IsGenerationEnabled() const {
   switch (password_manager::sync_util::GetPasswordSyncState(sync_service_)) {
     case sync_util::SyncState::kNotActive:
-      return ShouldShowAccountStorageOptIn();
+      return false;
     case sync_util::SyncState::kActiveWithNormalEncryption:
     case sync_util::SyncState::kActiveWithCustomPassphrase:
       return true;

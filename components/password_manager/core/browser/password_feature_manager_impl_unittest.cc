@@ -94,33 +94,10 @@ TEST_F(PasswordFeatureManagerImplTest, GenerationEnabledIfSyncing) {
   EXPECT_TRUE(password_feature_manager_.IsGenerationEnabled());
 }
 
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-
-class PasswordFeatureManagerImplExplicitSigninParamTest
-    : public base::test::WithFeatureOverride,
-      public PasswordFeatureManagerImplTest {
- public:
-  PasswordFeatureManagerImplExplicitSigninParamTest()
-      : base::test::WithFeatureOverride(
-            ::switches::kExplicitBrowserSigninUIOnDesktop) {
-    // `::prefs::kExplicitBrowserSignin` should only be set if
-    // `switches::kExplicitBrowserSigninUIOnDesktop` is enabled.
-    pref_service_.SetBoolean(::prefs::kExplicitBrowserSignin,
-                             IsExplicitSignin());
-  }
-
-  bool IsExplicitSignin() const {
-    return ::switches::IsExplicitBrowserSigninUIOnDesktopEnabled();
-  }
-};
-
-// Desktop users can be offered to opt in to account storage if eligible. One
-// such offer is triggered from the generation entry point, so
-// IsGenerationEnabled() must return true in that state.
-// When signin is explicit, account storage is ON by default, and password
-// generation no longer triggers an optin.
-TEST_P(PasswordFeatureManagerImplExplicitSigninParamTest,
-       GenerationEnabledIfUserEligibleForAccountStorageOptIn) {
+// Signed-in non-syncing users with account storage disabled should not get
+// password generation.
+TEST_F(PasswordFeatureManagerImplTest,
+       GenerationDisabledIfNonSyncingAndNotUsingAccountStorage) {
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account_);
   // The user hasn't opted in to account storage yet.
   sync_service_.GetUserSettings()->SetSelectedType(
@@ -129,19 +106,11 @@ TEST_P(PasswordFeatureManagerImplExplicitSigninParamTest,
   ASSERT_EQ(password_manager::sync_util::GetPasswordSyncState(&sync_service_),
             password_manager::sync_util::SyncState::kNotActive);
 
-  // If signin is implicit, the user must be eligible for account storage opt in
-  // now. When signin is explicit, account storage is ON by default, and
-  // password generation no longer triggers an optin.
-  ASSERT_EQ(password_feature_manager_.ShouldShowAccountStorageOptIn(),
-            !IsExplicitSignin());
-
-  EXPECT_EQ(password_feature_manager_.IsGenerationEnabled(),
-            !IsExplicitSignin());
+  EXPECT_FALSE(password_feature_manager_.IsGenerationEnabled());
 }
 
-// When signin is explicit, account storage remains disabled in auth errors.
-TEST_P(PasswordFeatureManagerImplExplicitSigninParamTest,
-       OptedInIfSigninPaused) {
+// Account storage remains disabled if there is an auth error.
+TEST_F(PasswordFeatureManagerImplTest, OptedOutIfSigninPaused) {
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account_);
   sync_service_.SetPersistentAuthError();
 
@@ -151,11 +120,6 @@ TEST_P(PasswordFeatureManagerImplExplicitSigninParamTest,
             password_manager::sync_util::SyncState::kNotActive);
   EXPECT_FALSE(password_feature_manager_.IsOptedInForAccountStorage());
 }
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    PasswordFeatureManagerImplExplicitSigninParamTest);
-
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
 // On Android, for certain versions of GMS Core, signed-in users have a single

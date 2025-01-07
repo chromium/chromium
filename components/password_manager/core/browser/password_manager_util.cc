@@ -132,29 +132,9 @@ void UserTriggeredManualGenerationFromContextMenu(
             kOverlappingWithPasswordGenerationPopup);
     autofill_client->HideAutofillFieldIph();
   }
-  if (!password_manager_client->GetPasswordFeatureManager()
-           ->ShouldShowAccountStorageOptIn()) {
-    password_manager_client->GeneratePassword(PasswordGenerationType::kManual);
-    LogPasswordGenerationEvent(autofill::password_generation::
-                                   PASSWORD_GENERATION_CONTEXT_MENU_PRESSED);
-    return;
-  }
-  // The client ensures the callback won't be run if it is destroyed, so
-  // base::Unretained is safe.
-  password_manager_client->TriggerReauthForPrimaryAccount(
-      signin_metrics::ReauthAccessPoint::kGeneratePasswordContextMenu,
-      base::BindOnce(
-          [](password_manager::PasswordManagerClient* client,
-             password_manager::PasswordManagerClient::ReauthSucceeded
-                 succeeded) {
-            if (succeeded) {
-              client->GeneratePassword(PasswordGenerationType::kManual);
-              LogPasswordGenerationEvent(
-                  autofill::password_generation::
-                      PASSWORD_GENERATION_CONTEXT_MENU_PRESSED);
-            }
-          },
-          base::Unretained(password_manager_client)));
+  password_manager_client->GeneratePassword(PasswordGenerationType::kManual);
+  LogPasswordGenerationEvent(
+      autofill::password_generation::PASSWORD_GENERATION_CONTEXT_MENU_PRESSED);
 }
 
 bool IsAbleToSavePasswords(password_manager::PasswordManagerClient* client) {
