@@ -433,7 +433,7 @@ void UseCounterCallback(v8::Isolate* isolate,
       blink_feature = WebFeature::kLocaleInfoObsoletedGetters;
       break;
     case v8::Isolate::kLocaleInfoFunctions:
-      webdx_feature = WebDXFeature::kLocaleInfoFunctions;
+      webdx_feature = WebDXFeature::kIntlLocaleInfo;
       break;
     case v8::Isolate::kExtendingNonExtensibleWithPrivate:
       blink_feature = WebFeature::kV8ExtendingNonExtensibleWithPrivate;

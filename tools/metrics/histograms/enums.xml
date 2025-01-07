@@ -34172,7 +34172,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="91" label="CanvasCreateconicgradient"/>
   <int value="92" label="CanvasReset"/>
   <int value="93" label="CanvasRoundrect"/>
-  <int value="94" label="CanvasTextBaselines"/>
+  <int value="94" label="OBSOLETE_CanvasTextBaselines"/>
   <int value="95" label="ColorMix"/>
   <int value="96" label="AriaAttributeReflection"/>
   <int value="97" label="AnchorPositioning"/>
@@ -34193,9 +34193,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="112" label="OverflowShorthand"/>
   <int value="113" label="FieldSizing"/>
   <int value="114" label="DetailsName"/>
-  <int value="115" label="ElementCheckVisibility"/>
+  <int value="115" label="OBSOLETE_ElementCheckVisibility"/>
   <int value="116" label="KeyboardMap"/>
-  <int value="117" label="HiddenUntilFoundAttribute"/>
+  <int value="117" label="OBSOLETE_HiddenUntilFoundAttribute"/>
   <int value="118" label="Scheduler"/>
   <int value="119" label="KeyboardLock"/>
   <int value="120" label="Search"/>
@@ -34293,7 +34293,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="212" label="HyphenateLimitChars"/>
   <int value="213" label="Quotes"/>
   <int value="214" label="BaselineSource"/>
-  <int value="215" label="ClipPathGeometryBox"/>
+  <int value="215" label="ClipPathBoxes"/>
   <int value="216" label="ClipPath"/>
   <int value="217" label="ActiveViewTransition"/>
   <int value="218" label="BoxDecorationBreak"/>
@@ -34321,8 +34321,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="240" label="PromiseWithresolvers"/>
   <int value="241" label="TransferableArraybuffer"/>
   <int value="242" label="AtomicsWaitAsync"/>
-  <int value="243" label="LocaleInfoObsoletedGetters"/>
-  <int value="244" label="LocaleInfoFunctions"/>
+  <int value="243" label="OBSOLETE_LocaleInfoObsoletedGetters"/>
+  <int value="244" label="IntlLocaleInfo"/>
   <int value="245" label="ViewTransitionClass"/>
   <int value="246" label="DRAFT_ReferenceTarget"/>
   <int value="247" label="Fedcm"/>
