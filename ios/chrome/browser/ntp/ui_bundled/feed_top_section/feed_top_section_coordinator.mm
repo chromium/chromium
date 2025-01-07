@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/feed_top_section/notifications_promo_view_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_utils.h"
+#import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
@@ -192,6 +193,7 @@ using base::UserMetricsAction;
   _optInAlertCoordinator = [[NotificationsOptInAlertCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser];
+  _optInAlertCoordinator.accessPoint = NotificationOptInAccessPoint::kFeed;
   _optInAlertCoordinator.clientIds = std::vector{
       PushNotificationClientId::kContent, PushNotificationClientId::kSports};
   _optInAlertCoordinator.alertMessage = l10n_util::GetNSString(

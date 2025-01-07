@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
+#import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
@@ -370,7 +371,8 @@ using password_manager::WarningType;
   _optInAlertCoordinator = [[NotificationsOptInAlertCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser];
-
+  _optInAlertCoordinator.accessPoint =
+      NotificationOptInAccessPoint::kSafetyCheck;
   _optInAlertCoordinator.delegate = self;
 
   _optInAlertCoordinator.clientIds =

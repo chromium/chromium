@@ -10,6 +10,7 @@
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_util.h"
+#import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/ui_bundled/metrics.h"
 #import "ios/chrome/browser/push_notification/ui_bundled/notifications_opt_in_alert_coordinator.h"
@@ -110,6 +111,7 @@
   _optInAlertCoordinator = [[NotificationsOptInAlertCoordinator alloc]
       initWithBaseViewController:_viewController
                          browser:self.browser];
+  _optInAlertCoordinator.accessPoint = self.accessPoint;
   _optInAlertCoordinator.delegate = self;
   _optInAlertCoordinator.clientIds = clientIds;
   [_optInAlertCoordinator start];

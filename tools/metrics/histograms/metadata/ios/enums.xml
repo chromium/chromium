@@ -1278,6 +1278,19 @@ the generic promo launch. -->
   <int value="2" label="User tapped on notification"/>
 </enum>
 
+<!-- LINT.IfChange(PushNotificationOptInAccessPoint) -->
+
+<enum name="PushNotificationOptInAccessPoint">
+  <int value="1" label="Tips"/>
+  <int value="2" label="SetUpList"/>
+  <int value="3" label="SendTabMagicStackPromo"/>
+  <int value="4" label="SafetyCheck"/>
+  <int value="5" label="Feed"/>
+  <int value="6" label="Settings"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/push_notification/model/constants.h:NotificationOptInAccessPoint) -->
+
 <enum name="PushNotificationPermissionPromptStatus">
   <int value="0" label="Accepted"/>
   <int value="1" label="Declined"/>

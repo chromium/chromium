@@ -67,6 +67,7 @@
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
+#import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/provisional_push_notification_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
@@ -947,6 +948,30 @@ using segmentation_platform::TipIdentifier;
   NOTREACHED();
 }
 
+- (NotificationOptInAccessPoint)convertModuleTypeToNotificationOptInAccessPoint:
+    (ContentSuggestionsModuleType)type {
+  switch (type) {
+    case ContentSuggestionsModuleType::kSafetyCheck:
+      return NotificationOptInAccessPoint::kSafetyCheck;
+    case ContentSuggestionsModuleType::kSendTabPromo:
+      return NotificationOptInAccessPoint::kSendTabMagicStackPromo;
+    case ContentSuggestionsModuleType::kSetUpListSync:
+    case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
+    case ContentSuggestionsModuleType::kSetUpListAutofill:
+    case ContentSuggestionsModuleType::kSetUpListNotifications:
+    case ContentSuggestionsModuleType::kSetUpListDocking:
+    case ContentSuggestionsModuleType::kSetUpListAddressBar:
+    case ContentSuggestionsModuleType::kCompactedSetUpList:
+    case ContentSuggestionsModuleType::kSetUpListAllSet:
+      return NotificationOptInAccessPoint::kSetUpList;
+    case ContentSuggestionsModuleType::kTipsWithProductImage:
+    case ContentSuggestionsModuleType::kTips:
+      return NotificationOptInAccessPoint::kTips;
+    default:
+      NOTREACHED();
+  }
+}
+
 - (void)enableNotifications:(ContentSuggestionsModuleType)type
              viaContextMenu:(BOOL)viaContextMenu {
   // This is only supported for Set Up List, Tips, Send Tab, and Safety Check
@@ -964,7 +989,8 @@ using segmentation_platform::TipIdentifier;
       [[NotificationsOptInAlertCoordinator alloc]
           initWithBaseViewController:self.magicStackCollectionView
                              browser:self.browser];
-
+  _notificationsOptInAlertCoordinator.accessPoint =
+      [self convertModuleTypeToNotificationOptInAccessPoint:type];
   _notificationsOptInAlertCoordinator.delegate = self;
 
   const PushNotificationClientId clientId =
@@ -1195,7 +1221,8 @@ using segmentation_platform::TipIdentifier;
       break;
     case SetUpListItemType::kNotifications:
       if (IsIOSTipsNotificationsEnabled()) {
-        [self showNotificationsOptInView];
+        [self showNotificationsOptInView:NotificationOptInAccessPoint::
+                                             kSetUpList];
       } else {
         [self showContentNotificationBottomSheet];
       }
@@ -1280,11 +1307,12 @@ using segmentation_platform::TipIdentifier;
   [_contentNotificationCoordinator start];
 }
 
-- (void)showNotificationsOptInView {
+- (void)showNotificationsOptInView:(NotificationOptInAccessPoint)accessPoint {
   [_notificationsOptInCoordinator stop];
   _notificationsOptInCoordinator = [[NotificationsOptInCoordinator alloc]
       initWithBaseViewController:self.magicStackCollectionView
                          browser:self.browser];
+  _notificationsOptInCoordinator.accessPoint = accessPoint;
   _notificationsOptInCoordinator.delegate = self;
   [_notificationsOptInCoordinator start];
 }
