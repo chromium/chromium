@@ -288,8 +288,9 @@ void VerifyModelMatchesNode(TestNode* expected, const BookmarkNode* actual) {
 void VerifyNoDuplicateIDs(BookmarkModel* model) {
   ui::TreeNodeIterator<const BookmarkNode> it(model->root_node());
   std::unordered_set<int64_t> ids;
-  while (it.has_next())
+  while (it.has_next()) {
     ASSERT_TRUE(ids.insert(it.Next()->id()).second);
+  }
 }
 
 class BookmarkModelTest : public testing::Test, public BookmarkModelObserver {
@@ -514,8 +515,9 @@ class BookmarkModelTest : public testing::Test, public BookmarkModelObserver {
     model_->AddObserver(this);
     ClearCounts();
 
-    if (!model_->root_node()->GetIndexOf(managed_node).has_value())
+    if (!model_->root_node()->GetIndexOf(managed_node).has_value()) {
       ADD_FAILURE();
+    }
 
     return managed_node;
   }
@@ -1220,6 +1222,44 @@ TEST_F(BookmarkModelTest, Move) {
   matches = model_->GetBookmarksMatching(
       u"foo", /*max_count=*/1, query_parser::MatchingAlgorithm::DEFAULT);
   EXPECT_TRUE(matches.empty());
+}
+
+TEST_F(BookmarkModelTest, MoveToSameParent) {
+  TestNode abc;
+  PopulateNodeFromString("A B C", &abc);
+  TestNode bac;
+  PopulateNodeFromString("B A C", &bac);
+  TestNode bca;
+  PopulateNodeFromString("B C A", &bca);
+
+  // Populate the parent with [a, b, c].
+  BookmarkNode* parent = AsMutable(model_->bookmark_bar_node());
+  PopulateBookmarkNode(&abc, model_.get(), parent);
+
+  // Move to current_index - 1 moves to the left: [a, b, c] -> [b, a, c]
+  ClearCounts();
+  model_->Move(parent->children()[1].get(), parent, 0);
+  VerifyModelMatchesNode(&bac, parent);
+  AssertObserverCount(0, /*moved_count=*/1, 0, 0, 0, 0, 0, 0, 0);
+
+  // Move the current_index is a no-op: [b, a, c] -> [b, a, c]
+  ClearCounts();
+  model_->Move(parent->children()[1].get(), parent, 1);
+  VerifyModelMatchesNode(&bac, parent);
+  AssertObserverCount(0, /*moved_count=*/0, 0, 0, 0, 0, 0, 0, 0);
+
+  // Move to current_index + 1 is a no-op: [b, a, c] -> [b, a, c]
+  ClearCounts();
+  model_->Move(parent->children()[1].get(), parent, 2);
+  VerifyModelMatchesNode(&bac, parent);
+  AssertObserverCount(0, /*moved_count=*/0, 0, 0, 0, 0, 0, 0, 0);
+
+  // Move to current_index + 2 moves 1 to the right: [b, a, c] -> [b, c, a]
+  // Note: this tests moving to an index that is one past the end of the list.
+  ClearCounts();
+  model_->Move(parent->children()[1].get(), parent, 3);
+  VerifyModelMatchesNode(&bca, parent);
+  AssertObserverCount(0, /*moved_count=*/1, 0, 0, 0, 0, 0, 0, 0);
 }
 
 TEST_F(BookmarkModelTest, NonMovingMoveCall) {
@@ -2753,9 +2793,8 @@ TEST_F(BookmarkModelTest, IsLocalOnlyNodeWithSyncFeatureOnAndDettachedNode) {
   static_cast<TestBookmarkClient*>(model_->client())
       ->SetIsSyncFeatureEnabledIncludingBookmarks(true);
 
-  auto dettached_node =
-      std::make_unique<BookmarkNode>(/*id=*/200, base::Uuid::GenerateRandomV4(),
-                                     GURL());
+  auto dettached_node = std::make_unique<BookmarkNode>(
+      /*id=*/200, base::Uuid::GenerateRandomV4(), GURL());
 
   EXPECT_TRUE(model_->IsLocalOnlyNode(*dettached_node));
 }

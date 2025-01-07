@@ -216,6 +216,14 @@ class BookmarkModel : public BookmarkUndoProvider,
   //
   // Note: this might cause UUIDs to get reassigned for `node` or its
   // descendants, when the node is moved between local and account storages.
+  //
+  // `new_parent` may be the same as `node`'s current parent, in which case the
+  // semantics are "insert before the element currently at `index`". Suppose the
+  // initial current children of new_parent are ordered [A, B, C]:
+  // * Move(B, new_parent, 0) -> [B, A, C]
+  // * Move(B, new_parent, 1) -> [A, B, C]
+  // * Move(B, new_parent, 2) -> [A, B, C]
+  // * Move(B, new_parent, 3) -> [A, C, B]
   void Move(const BookmarkNode* node,
             const BookmarkNode* new_parent,
             size_t index);
