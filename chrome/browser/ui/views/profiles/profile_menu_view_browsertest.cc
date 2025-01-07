@@ -37,6 +37,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/signin/signin_promo.h"
+#include "chrome/browser/signin/signin_ui_delegate.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
@@ -116,6 +117,35 @@
 namespace {
 
 constexpr char kTestEmail[] = "foo@example.com";
+
+class MockSigninUiDelegate : public signin_ui_util::SigninUiDelegate {
+ public:
+  MOCK_METHOD(void,
+              ShowTurnSyncOnUI,
+              (Profile*,
+               signin_metrics::AccessPoint,
+               signin_metrics::PromoAction,
+               const CoreAccountId&,
+               TurnSyncOnHelper::SigninAbortedMode,
+               bool),
+              (override));
+
+  MOCK_METHOD(void,
+              ShowSigninUI,
+              (Profile*,
+               bool,
+               signin_metrics::AccessPoint,
+               signin_metrics::PromoAction),
+              (override));
+  MOCK_METHOD(void,
+              ShowReauthUI,
+              (Profile*,
+               const std::string&,
+               bool,
+               signin_metrics::AccessPoint,
+               signin_metrics::PromoAction),
+              (override));
+};
 
 class UnconsentedPrimaryAccountChecker
     : public StatusChangeChecker,
@@ -729,6 +759,65 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewSyncErrorButtonTest, OpenReauthTab) {
 
 #if !BUILDFLAG(IS_CHROMEOS)
 
+class ProfileMenuViewWebOnlyTest : public ProfileMenuViewTestBase,
+                                   public SigninBrowserTestBase {
+ public:
+  // SigninBrowserTestBase:
+  void SetUpOnMainThread() override {
+    SigninBrowserTestBase::SetUpOnMainThread();
+    SetTargetBrowser(browser());
+
+    // Add an account, not signed in.
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(browser()->profile());
+    account_info_ = identity_test_env()->MakeAccountAvailable(
+        kTestEmail,
+        {.primary_account_consent_level = std::nullopt, .set_cookie = true});
+
+    ASSERT_FALSE(
+        identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+    ASSERT_EQ(identity_manager->GetAccountsWithRefreshTokens().size(), 1u);
+  }
+
+  void ClickSigninButton() {
+    base::HistogramTester histogram_tester;
+    OpenProfileMenu();
+
+    // Select the signin button by advancing the focus.
+    profile_menu_view()->GetFocusManager()->AdvanceFocus(/*reverse=*/false);
+    auto* focused_item =
+        profile_menu_view()->GetFocusManager()->GetFocusedView();
+    ASSERT_TRUE(focused_item);
+    Click(focused_item);
+
+    histogram_tester.ExpectUniqueSample(
+        "Profile.Menu.ClickedActionableItem",
+        ProfileMenuViewBase::ActionableItem::kSigninAccountButton,
+        /*expected_bucket_count=*/1);
+  }
+
+  base::test::ScopedFeatureList feature_list_{
+      switches::kImprovedSigninUIOnDesktop};
+  CoreAccountInfo account_info_;
+};
+
+// Checks that the signin flow starts in one click.
+IN_PROC_BROWSER_TEST_F(ProfileMenuViewWebOnlyTest, ContinueAs) {
+  testing::StrictMock<MockSigninUiDelegate> mock_signin_ui_delegate;
+  base::AutoReset<signin_ui_util::SigninUiDelegate*> delegate_auto_reset =
+      signin_ui_util::SetSigninUiDelegateForTesting(&mock_signin_ui_delegate);
+  EXPECT_CALL(
+      mock_signin_ui_delegate,
+      ShowTurnSyncOnUI(browser()->profile(),
+                       signin_metrics::AccessPoint::
+                           ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO,
+                       signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
+                       account_info_.account_id,
+                       TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
+                       /*is_sync_promo=*/true));
+  ClickSigninButton();
+}
+
 class ProfileMenuViewSigninPendingTest : public ProfileMenuViewTestBase,
                                          public InProcessBrowserTest {
  public:
@@ -1169,6 +1258,43 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
   // profile, so the kExitProfileButton is shown.
   Browser::Create(Browser::CreateParams(other_profile, /*user_gesture=*/true));
   SetTargetBrowser(CreateBrowser(browser()->profile()));
+  RunTest();
+}
+
+// List of actionable items in the correct order as they appear in the menu. If
+// a new button is added to the menu, it should also be added to this list.
+constexpr std::array kActionableItems_WebOnly = {
+    ProfileMenuViewBase::ActionableItem::kSigninAccountButton,
+    ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
+    ProfileMenuViewBase::ActionableItem::kEditProfileButton,
+    ProfileMenuViewBase::ActionableItem::kSyncSettingsButton,
+    ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
+    ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
+    ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
+    // The first button is added again to finish the cycle and test that
+    // there are no other buttons at the end.
+    ProfileMenuViewBase::ActionableItem::kSigninAccountButton};
+
+PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
+    kActionableItems_WebOnly,
+    ProfileMenuClickTest_WebOnly,
+    std::vector<base::test::FeatureRef>(
+        {switches::kExplicitBrowserSigninUIOnDesktop,
+         switches::kImprovedSigninUIOnDesktop}),
+    /*disabled_features=*/{}) {
+  // Add an account, not signed in.
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->profile());
+  signin::AccountAvailabilityOptionsBuilder builder;
+  AccountInfo account_info = signin::MakeAccountAvailable(
+      identity_manager,
+      builder
+          .WithAccessPoint(signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN)
+          .Build(kTestEmail));
+  ASSERT_FALSE(
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_EQ(identity_manager->GetAccountsWithRefreshTokens().size(), 1u);
+
   RunTest();
 }
 
