@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './app_details_item.js';
+import './app_language_item.js';
 import './pin_to_shelf_item.js';
 import './read_only_permission_item.js';
 import './resize_lock_item.js';

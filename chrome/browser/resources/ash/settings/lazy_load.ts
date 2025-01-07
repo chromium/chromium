@@ -5,7 +5,13 @@
 /**
  * @fileoverview This file is the entry point for custom elements and other
  * modules that should be lazily loaded in the ChromeOS Settings frontend app.
- * This should include all subpages and exclude all top-level pages.
+ *
+ * Usage instructions:
+ * 1. This file should not import top-level pages. They should be imported into
+ *    the main entry point file `os_settings.ts` instead.
+ * 2. This file should import all subpages.
+ * 3. Components used within subpages should be imported directly in the
+ *    component that renders it.
  */
 
 import '/strings.m.js';
@@ -39,12 +45,12 @@ import './os_a11y_page/switch_access_subpage.js';
 import './os_a11y_page/text_to_speech_subpage.js';
 import './os_a11y_page/tts_voice_subpage.js';
 import './os_about_page/detailed_build_info_subpage.js';
+import './os_apps_page/android_apps_subpage.js';
 import './os_apps_page/app_management_page/app_detail_view.js';
 import './os_apps_page/app_management_page/app_management_page.js';
-import './os_apps_page/app_management_page/dom_switch.js';
-import './os_apps_page/app_management_page/main_view.js';
+import './os_apps_page/app_notifications_page/app_notifications_manager_subpage.js';
+import './os_apps_page/app_notifications_page/app_notifications_subpage.js';
 import './os_apps_page/app_parental_controls/app_parental_controls_subpage.js';
-import './os_apps_page/app_parental_controls/block_app_item.js';
 import './os_bluetooth_page/os_bluetooth_device_detail_subpage.js';
 import './os_bluetooth_page/os_bluetooth_devices_subpage.js';
 import './os_bluetooth_page/os_bluetooth_saved_devices_subpage.js';
@@ -85,17 +91,6 @@ import './guest_os/guest_os_shared_usb_devices_add_dialog.js';
 import './keyboard_shortcut_banner/keyboard_shortcut_banner.js';
 import './nearby_share_page/nearby_share_receive_dialog.js';
 import './nearby_share_page/nearby_share_subpage.js';
-import './os_apps_page/app_management_page/app_details_item.js';
-import './os_apps_page/app_management_page/app_item.js';
-import './os_apps_page/app_management_page/app_language_item.js';
-import './os_apps_page/app_management_page/arc_detail_view.js';
-import './os_apps_page/app_management_page/borealis_page/borealis_detail_view.js';
-import './os_apps_page/app_management_page/chrome_app_detail_view.js';
-import './os_apps_page/app_management_page/permission_heading.js';
-import './os_apps_page/app_management_page/pin_to_shelf_item.js';
-import './os_apps_page/app_management_page/plugin_vm_page/plugin_vm_detail_view.js';
-import './os_apps_page/app_management_page/pwa_detail_view.js';
-import './os_apps_page/app_management_page/sub_apps_item.js';
 import './os_files_page/google_drive_subpage.js';
 import './os_files_page/google_drive_confirmation_dialog.js';
 import './os_files_page/google_drive_subpage.js';

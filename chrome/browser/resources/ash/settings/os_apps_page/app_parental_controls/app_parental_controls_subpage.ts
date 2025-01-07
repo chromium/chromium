@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import '../../settings_shared.css.js';
+import './block_app_item.js';
 
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
