@@ -136,6 +136,7 @@ public class SharedPreferencesManager {
      * @return a {@link SharedPreferencesManager} that operates on SharedPreferences keys registered
      *     in the passed |registry|
      */
+    @SuppressWarnings("NullAway") // Cannot assumeNonNull(sInstances) due to @GuardedBy warning.
     public static SharedPreferencesManager getInstanceForRegistry(
             @Nullable PreferenceKeyRegistry registry) {
         if (!BuildConfig.ENABLE_ASSERTS) {
@@ -143,7 +144,6 @@ public class SharedPreferencesManager {
         }
         SharedPreferencesManager manager;
         synchronized (sInstances) {
-            assumeNonNull(sInstances);
             manager = sInstances.get(registry);
             if (manager == null) {
                 manager = new SharedPreferencesManager(registry);

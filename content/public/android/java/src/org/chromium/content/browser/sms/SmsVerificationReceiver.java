@@ -102,7 +102,6 @@ public class SmsVerificationReceiver extends BroadcastReceiver {
     }
 
     @Override
-    @SuppressWarnings("NullAway") // https://github.com/uber/NullAway/issues/1122
     public void onReceive(Context context, Intent intent) {
         if (DEBUG) Log.d(TAG, "Received something!");
 
