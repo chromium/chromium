@@ -4294,8 +4294,9 @@ content::TtsPlatform* ChromeContentBrowserClient::GetTtsPlatform() {
 #endif
 }
 
-void ChromeContentBrowserClient::OverrideWebkitPrefs(
+void ChromeContentBrowserClient::OverrideWebPreferences(
     WebContents* web_contents,
+    content::SiteInstance& main_frame_site,
     WebPreferences* web_prefs) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
@@ -4560,10 +4561,8 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
 
   UpdateForcedColorsForWebContent(web_prefs, web_contents, GetWebTheme());
 
-  UpdatePreferredColorScheme(
-      web_prefs,
-      web_contents->GetPrimaryMainFrame()->GetSiteInstance()->GetSiteURL(),
-      web_contents, GetWebTheme());
+  UpdatePreferredColorScheme(web_prefs, main_frame_site.GetSiteURL(),
+                             web_contents, GetWebTheme());
 
   web_prefs->translate_service_available = TranslateService::IsAvailable(prefs);
 
@@ -4599,7 +4598,7 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
 #endif
 
   for (auto& parts : extra_parts_) {
-    parts->OverrideWebkitPrefs(web_contents, web_prefs);
+    parts->OverrideWebPreferences(web_contents, main_frame_site, web_prefs);
   }
 
   web_prefs->prefers_default_scrollbar_styles =
@@ -4608,12 +4607,14 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
 
 bool ChromeContentBrowserClientParts::OverrideWebPreferencesAfterNavigation(
     WebContents* web_contents,
+    content::SiteInstance& main_frame_site,
     WebPreferences* web_prefs) {
   return false;
 }
 
 bool ChromeContentBrowserClient::OverrideWebPreferencesAfterNavigation(
     WebContents* web_contents,
+    content::SiteInstance& main_frame_site,
     WebPreferences* web_prefs) {
   bool prefs_changed = false;
 
@@ -4642,8 +4643,8 @@ bool ChromeContentBrowserClient::OverrideWebPreferencesAfterNavigation(
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   for (auto& parts : extra_parts_) {
-    prefs_changed |=
-        parts->OverrideWebPreferencesAfterNavigation(web_contents, web_prefs);
+    prefs_changed |= parts->OverrideWebPreferencesAfterNavigation(
+        web_contents, main_frame_site, web_prefs);
   }
 
   prefs_changed |=

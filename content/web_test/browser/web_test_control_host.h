@@ -133,7 +133,7 @@ class WebTestControlHost : public WebContentsObserver,
   void DidCreateOrAttachWebContents(WebContents* web_contents);
 
   void SetTempPath(const base::FilePath& temp_path);
-  void OverrideWebkitPrefs(blink::web_pref::WebPreferences* prefs);
+  void OverrideWebPreferences(blink::web_pref::WebPreferences* prefs);
   void OpenURL(const GURL& url);
   bool IsMainWindow(WebContents* web_contents) const;
   std::unique_ptr<BluetoothChooser> RunBluetoothChooser(

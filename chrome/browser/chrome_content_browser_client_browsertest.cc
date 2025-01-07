@@ -344,10 +344,12 @@ class SystemAccentColorTest : public InProcessBrowserTest {
       web_app_scope_ = web_app_scope;
     }
 
-    void OverrideWebkitPrefs(
+    void OverrideWebPreferences(
         content::WebContents* web_contents,
+        content::SiteInstance& main_frame_site,
         blink::web_pref::WebPreferences* web_prefs) override {
-      ChromeContentBrowserClient::OverrideWebkitPrefs(web_contents, web_prefs);
+      ChromeContentBrowserClient::OverrideWebPreferences(
+          web_contents, main_frame_site, web_prefs);
 
       web_prefs->web_app_scope = web_app_scope_;
     }

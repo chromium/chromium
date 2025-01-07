@@ -1327,7 +1327,7 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // This means if there's any value previously set through SetWebPreferences
   // which does not have special recomputation logic in either
   // WebContentsImpl::ComputeWebPreferences or
-  // ContentBrowserClient::OverrideWebkitPrefs, it will return back to its
+  // ContentBrowserClient::OverrideWebPreferences, it will return back to its
   // default value whenever this function is called.
   virtual void NotifyPreferencesChanged() = 0;
 
@@ -1340,7 +1340,7 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // be overridden. if there's any value previously set through
   // SetWebPreferences which does not have special recomputation logic in either
   // WebContentsImpl::ComputeWebPreferences or
-  // ContentBrowserClient::OverrideWebkitPrefs, it will return back to its
+  // ContentBrowserClient::OverrideWebPreferences, it will return back to its
   // default value, which might be different from the value we set it to here.
   // If you want to use this function outside of tests, consider adding
   // recomputation logic in either of those functions.

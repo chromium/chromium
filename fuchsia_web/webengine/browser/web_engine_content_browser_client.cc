@@ -190,8 +190,9 @@ blink::UserAgentMetadata WebEngineContentBrowserClient::GetUserAgentMetadata() {
   return embedder_support::GetUserAgentMetadata();
 }
 
-void WebEngineContentBrowserClient::OverrideWebkitPrefs(
+void WebEngineContentBrowserClient::OverrideWebPreferences(
     content::WebContents* web_contents,
+    content::SiteInstance& main_frame_site,
     blink::web_pref::WebPreferences* web_prefs) {
   // Disable WebSQL support since it is being removed from the web platform
   // and does not work. See crbug.com/1317431.

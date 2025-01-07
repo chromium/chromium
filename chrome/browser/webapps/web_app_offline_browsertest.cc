@@ -386,7 +386,7 @@ class WebAppOfflineDarkModeTest
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    // ShellContentBrowserClient::OverrideWebkitPrefs() overrides the
+    // ShellContentBrowserClient::OverrideWebPreferences() overrides the
     // prefers-color-scheme according to switches::kForceDarkMode
     // command line.
     if (GetParam() == blink::mojom::PreferredColorScheme::kDark)

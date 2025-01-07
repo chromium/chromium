@@ -941,6 +941,8 @@ class CONTENT_EXPORT WebContentsImpl
       const std::optional<std::u16string>& untrusted_stack_trace) override;
   const blink::RendererPreferences& GetRendererPrefs(
       RenderViewHostImpl* render_view_host) override;
+  const blink::web_pref::WebPreferences& GetOrCreateWebPreferences(
+      RenderViewHostImpl* render_view_host) override;
   void DidReceiveInputEvent(RenderWidgetHostImpl* render_widget_host,
                             const blink::WebInputEvent& event) override;
   bool ShouldIgnoreWebInputEvents(const blink::WebInputEvent& event) override;
@@ -1497,7 +1499,8 @@ class CONTENT_EXPORT WebContentsImpl
   // Recomputes only the "fast" preferences (those not requiring slow
   // platform/device polling); the remaining "slow" ones are recomputed only if
   // the preference cache is empty.
-  const blink::web_pref::WebPreferences ComputeWebPreferences();
+  const blink::web_pref::WebPreferences ComputeWebPreferences(
+      RenderFrameHostImpl* main_frame);
 
   // Certain WebXr modes integrate with Viz as a compositor directly, and thus
   // have their own FrameSinkId that typically renders fullscreen, obscuring

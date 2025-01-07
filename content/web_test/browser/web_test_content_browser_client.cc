@@ -400,11 +400,12 @@ void WebTestContentBrowserClient::BindStorageAccessAutomation(
       std::move(receiver));
 }
 
-void WebTestContentBrowserClient::OverrideWebkitPrefs(
+void WebTestContentBrowserClient::OverrideWebPreferences(
     WebContents* web_contents,
+    SiteInstance& main_frame_site,
     blink::web_pref::WebPreferences* prefs) {
   if (WebTestControlHost::Get())
-    WebTestControlHost::Get()->OverrideWebkitPrefs(prefs);
+    WebTestControlHost::Get()->OverrideWebPreferences(prefs);
 }
 
 std::vector<std::unique_ptr<content::NavigationThrottle>>

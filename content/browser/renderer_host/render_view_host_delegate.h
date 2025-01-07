@@ -94,8 +94,8 @@ class RenderViewHostDelegate {
   // WebPreferences. If we want to guarantee that the value reflects the current
   // state of the WebContents, NotifyPreferencesChanged() should be called
   // before calling this.
-  virtual const blink::web_pref::WebPreferences&
-  GetOrCreateWebPreferences() = 0;
+  virtual const blink::web_pref::WebPreferences& GetOrCreateWebPreferences(
+      RenderViewHostImpl* render_view_host) = 0;
 
   // Sets the WebPreferences for the WebContents associated with this
   // RenderViewHost to |prefs| and send the new value to all renderers in the

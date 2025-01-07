@@ -493,6 +493,7 @@ bool ContentBrowserClient::AllowSharedWorkerBlobURLFix(
 
 bool ContentBrowserClient::OverrideWebPreferencesAfterNavigation(
     WebContents* web_contents,
+    SiteInstance& main_frame_site,
     blink::web_pref::WebPreferences* prefs) {
   return false;
 }

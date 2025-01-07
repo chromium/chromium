@@ -1232,7 +1232,8 @@ void PageHandler::CaptureScreenshot(
 
   if (capture_beyond_viewport.value_or(false)) {
     pending_request->original_web_prefs =
-        host_->render_view_host()->GetDelegate()->GetOrCreateWebPreferences();
+        host_->render_view_host()->GetDelegate()->GetOrCreateWebPreferences(
+            host_->render_view_host());
     const blink::web_pref::WebPreferences& original_web_prefs =
         *pending_request->original_web_prefs;
     blink::web_pref::WebPreferences modified_web_prefs = original_web_prefs;

@@ -1375,18 +1375,23 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual DirectSocketsDelegate* GetDirectSocketsDelegate();
 #endif
 
-  // Called by WebContents to override the WebKit preferences that are used by
+  // Called by WebContents to override the web preferences that are used by
   // the renderer. The content layer will add its own settings, and then it's up
-  // to the embedder to update it if it wants.
-  virtual void OverrideWebkitPrefs(WebContents* web_contents,
-                                   blink::web_pref::WebPreferences* prefs) {}
+  // to the embedder to update it if it wants. `main_frame_site` is the
+  // `SiteInstance` of the closest main frame. This can be called on inner frame
+  // trees, and `main_frame_site` will not match the primary main frame's site.
+  virtual void OverrideWebPreferences(WebContents* web_contents,
+                                      SiteInstance& main_frame_site,
+                                      blink::web_pref::WebPreferences* prefs) {}
 
-  // Similar to OverrideWebkitPrefs, but is only called after navigations. Some
-  // attributes in WebPreferences might need its value updated after navigation,
-  // and this method will give the opportunity for embedder to update them.
-  // Returns true if some values |prefs| changed due to embedder override.
+  // Similar to OverrideWebPreferences, but is only called after navigations.
+  // Some attributes in WebPreferences might need their values updated after
+  // navigation, and this method will give the opportunity for the embedder to
+  // update them. Returns true if some values in `prefs` changed due to embedder
+  // override.
   virtual bool OverrideWebPreferencesAfterNavigation(
       WebContents* web_contents,
+      SiteInstance& main_frame_site,
       blink::web_pref::WebPreferences* prefs);
 
   // Notifies that BrowserURLHandler has been created, so that the embedder can

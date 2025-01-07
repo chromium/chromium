@@ -493,8 +493,10 @@ void TestRenderViewHost::SimulateWasShown() {
 
 blink::web_pref::WebPreferences
 TestRenderViewHost::TestComputeWebPreferences() {
-  return static_cast<WebContentsImpl*>(WebContents::FromRenderViewHost(this))
-      ->ComputeWebPreferences();
+  auto* web_contents_impl =
+      static_cast<WebContentsImpl*>(WebContents::FromRenderViewHost(this));
+  return web_contents_impl->ComputeWebPreferences(
+      web_contents_impl->GetPrimaryMainFrame());
 }
 
 bool TestRenderViewHost::IsTestRenderViewHost() const {

@@ -3362,8 +3362,10 @@ void WebContentsImpl::DidChangeVisibleSecurityState() {
       &WebContentsObserver::DidChangeVisibleSecurityState);
 }
 
-const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences() {
+const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences(
+    RenderFrameHostImpl* main_frame) {
   OPTIONAL_TRACE_EVENT0("browser", "WebContentsImpl::ComputeWebPreferences");
+  CHECK(main_frame->is_main_frame());
 
   blink::web_pref::WebPreferences prefs;
 
@@ -3540,13 +3542,14 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences() {
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // GuestViews in the same StoragePartition need to find each other's frames.
-  prefs.renderer_wide_named_frame_lookup = IsGuest();
+  prefs.renderer_wide_named_frame_lookup =
+      IsGuest() || main_frame->frame_tree()->is_guest();
 
   if (command_line.HasSwitch(switches::kHideScrollbars)) {
     prefs.hide_scrollbars = true;
   }
-
-  GetContentClient()->browser()->OverrideWebkitPrefs(this, &prefs);
+  GetContentClient()->browser()->OverrideWebPreferences(
+      this, *main_frame->GetSiteInstance(), &prefs);
   return prefs;
 }
 
@@ -3560,7 +3563,7 @@ void WebContentsImpl::OnWebPreferencesChanged() {
     return;
   }
   updating_web_preferences_ = true;
-  SetWebPreferences(ComputeWebPreferences());
+  SetWebPreferences(ComputeWebPreferences(GetPrimaryMainFrame()));
 #if BUILDFLAG(IS_ANDROID)
   for (FrameTreeNode* node : primary_frame_tree_.Nodes()) {
     RenderFrameHostImpl* rfh = node->current_frame_host();
@@ -7011,6 +7014,10 @@ void WebContentsImpl::DidFinishNavigation(NavigationHandle* navigation_handle) {
     max_loaded_frame_count_ = GetFrameTreeSize(&primary_frame_tree_);
   }
 
+  // TODO(crbug.com/40202416): MPArch GuestView: We might need to look up the
+  // preferences for the navigation here and adjust the guest, but for now
+  // SetWebPreferences does not adjust the guest frame tree so we look for the
+  // preferences matching the primary main frame.
   if (web_preferences_) {
     // Update the WebPreferences for this WebContents that depends on changes
     // that might occur during navigation. This will only update the preferences
@@ -7018,7 +7025,8 @@ void WebContentsImpl::DidFinishNavigation(NavigationHandle* navigation_handle) {
     // that needs to stay the same after navigations).
     bool value_changed_due_to_override =
         GetContentClient()->browser()->OverrideWebPreferencesAfterNavigation(
-            this, web_preferences_.get());
+            this, *GetPrimaryMainFrame()->GetSiteInstance(),
+            web_preferences_.get());
     // We need to update the WebPreferences value on the renderer if the value
     // is changed due to the override above, or if the navigation is served from
     // the back-forward cache, because the WebPreferences value stored in the
@@ -8652,6 +8660,16 @@ const blink::RendererPreferences& WebContentsImpl::GetRendererPrefs(
   }
   RenderViewHostImpl::GetPlatformSpecificPrefs(&renderer_preferences_);
   return renderer_preferences_;
+}
+
+const blink::web_pref::WebPreferences&
+WebContentsImpl::GetOrCreateWebPreferences(
+    RenderViewHostImpl* render_view_host) {
+  if (auto* guest = GuestPageHolderImpl::FromRenderFrameHost(
+          *render_view_host->frame_tree()->GetMainFrame())) {
+    return guest->GetWebPreferences();
+  }
+  return GetOrCreateWebPreferences();
 }
 
 RenderFrameHostImpl* WebContentsImpl::GetOuterWebContentsFrame() {

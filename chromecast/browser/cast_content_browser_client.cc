@@ -480,8 +480,9 @@ CastContentBrowserClient::GetSystemNetworkContext() {
   return cast_network_contexts_->GetSystemContext();
 }
 
-void CastContentBrowserClient::OverrideWebkitPrefs(
+void CastContentBrowserClient::OverrideWebPreferences(
     content::WebContents* web_contents,
+    content::SiteInstance& main_frame_site,
     blink::web_pref::WebPreferences* prefs) {
   prefs->allow_scripts_to_close_windows = true;
 

@@ -450,7 +450,7 @@ bool RenderViewHostImpl::CreateRenderView(
   mojom::CreateViewParamsPtr params = mojom::CreateViewParams::New();
 
   params->renderer_preferences = delegate_->GetRendererPrefs(this);
-  params->web_preferences = delegate_->GetOrCreateWebPreferences();
+  params->web_preferences = delegate_->GetOrCreateWebPreferences(this);
   params->color_provider_colors = delegate_->GetColorProviderColorMaps();
   params->opener_frame_token = opener_frame_token;
   params->replication_state =
@@ -766,7 +766,7 @@ blink::web_pref::WebPreferences
 RenderViewHostImpl::GetWebkitPreferencesForWidget() {
   if (!delegate_)
     return blink::web_pref::WebPreferences();
-  return delegate_->GetOrCreateWebPreferences();
+  return delegate_->GetOrCreateWebPreferences(this);
 }
 
 void RenderViewHostImpl::RenderViewCreated(
@@ -908,7 +908,7 @@ void RenderViewHostImpl::SendWebPreferencesToRenderer() {
     if (!will_send_web_preferences_callback_for_testing_.is_null()) {
       will_send_web_preferences_callback_for_testing_.Run();
     }
-    broadcast->UpdateWebPreferences(delegate_->GetOrCreateWebPreferences());
+    broadcast->UpdateWebPreferences(delegate_->GetOrCreateWebPreferences(this));
   }
 }
 

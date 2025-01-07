@@ -112,7 +112,7 @@ NavigationController& GuestPageHolderImpl::GetController() {
   return frame_tree_.controller();
 }
 
-RenderFrameHost* GuestPageHolderImpl::GetGuestMainFrame() {
+RenderFrameHostImpl* GuestPageHolderImpl::GetGuestMainFrame() {
   return frame_tree_.root()->current_frame_host();
 }
 
@@ -241,6 +241,15 @@ const blink::RendererPreferences& GuestPageHolderImpl::GetRendererPrefs() {
   }
 
   return renderer_preferences_;
+}
+
+const blink::web_pref::WebPreferences&
+GuestPageHolderImpl::GetWebPreferences() {
+  if (!web_preferences_) {
+    web_preferences_ = std::make_unique<blink::web_pref::WebPreferences>(
+        owner_web_contents_->ComputeWebPreferences(GetGuestMainFrame()));
+  }
+  return *web_preferences_;
 }
 
 GuestPageHolderImpl* GuestPageHolderImpl::FromRenderFrameHost(

@@ -11581,8 +11581,9 @@ class EnableForceZoomContentClient
   EnableForceZoomContentClient& operator=(const EnableForceZoomContentClient&) =
       delete;
 
-  void OverrideWebkitPrefs(WebContents* web_contents,
-                           blink::web_pref::WebPreferences* prefs) override {
+  void OverrideWebPreferences(WebContents* web_contents,
+                              SiteInstance& main_frame_site,
+                              blink::web_pref::WebPreferences* prefs) override {
     prefs->force_enable_zoom = true;
   }
 };
@@ -12562,8 +12563,9 @@ class DoubleTapZoomContentBrowserClient
   DoubleTapZoomContentBrowserClient& operator=(
       const DoubleTapZoomContentBrowserClient&) = delete;
 
-  void OverrideWebkitPrefs(
+  void OverrideWebPreferences(
       content::WebContents* web_contents,
+      SiteInstance& main_frame_site,
       blink::web_pref::WebPreferences* web_prefs) override {
     web_prefs->double_tap_to_zoom_enabled = true;
   }

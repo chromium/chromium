@@ -889,7 +889,7 @@ class WebContentsObserverColorSchemeBrowserTest
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     WebContentsObserverBrowserTest::SetUpCommandLine(command_line);
-    // ShellContentBrowserClient::OverrideWebkitPrefs() overrides the
+    // ShellContentBrowserClient::OverrideWebPreferences() overrides the
     // prefers-color-scheme according to switches::kForceDarkMode command line.
     if (GetParam() == blink::mojom::PreferredColorScheme::kDark)
       command_line->AppendSwitch(switches::kForceDarkMode);

@@ -325,8 +325,9 @@ class ChromeContentBrowserClientForMixedContentTest
   ChromeContentBrowserClientForMixedContentTest& operator=(
       const ChromeContentBrowserClientForMixedContentTest&) = delete;
 
-  void OverrideWebkitPrefs(
+  void OverrideWebPreferences(
       content::WebContents* web_contents,
+      content::SiteInstance& main_frame_site,
       blink::web_pref::WebPreferences* web_prefs) override {
     web_prefs->allow_running_insecure_content = allow_running_insecure_content_;
     web_prefs->strict_mixed_content_checking = strict_mixed_content_checking_;

@@ -158,8 +158,9 @@ HeadlessContentBrowserClient::CreateBrowserMainParts(
   return std::make_unique<HeadlessBrowserMainParts>(*browser_);
 }
 
-void HeadlessContentBrowserClient::OverrideWebkitPrefs(
+void HeadlessContentBrowserClient::OverrideWebPreferences(
     content::WebContents* web_contents,
+    content::SiteInstance& main_frame_site,
     blink::web_pref::WebPreferences* prefs) {
   prefs->lazy_load_enabled = browser_->options()->lazy_load_enabled;
 

@@ -3747,8 +3747,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, ClearData) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, ClearSessionCookies) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   ASSERT_TRUE(StartEmbeddedTestServer());  // For serving guest pages.
   ASSERT_TRUE(RunExtensionTest(
       "platform_apps/web_view/common",
@@ -3757,8 +3755,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, ClearSessionCookies) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, ClearPersistentCookies) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   ASSERT_TRUE(StartEmbeddedTestServer());  // For serving guest pages.
   ASSERT_TRUE(RunExtensionTest(
       "platform_apps/web_view/common",
@@ -3768,8 +3764,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, ClearPersistentCookies) {
 
 // Regression test for https://crbug.com/615429.
 IN_PROC_BROWSER_TEST_P(WebViewTest, ClearDataTwice) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   ASSERT_TRUE(StartEmbeddedTestServer());  // For serving guest pages.
   ASSERT_TRUE(RunExtensionTest(
       "platform_apps/web_view/common",
