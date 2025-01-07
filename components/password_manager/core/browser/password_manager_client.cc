@@ -75,14 +75,6 @@ void PasswordManagerClient::AutofillHttpAuth(
 void PasswordManagerClient::NotifyUserCredentialsWereLeaked(
     LeakedPasswordDetails details) {}
 
-void PasswordManagerClient::TriggerReauthForPrimaryAccount(
-    signin_metrics::ReauthAccessPoint access_point,
-    base::OnceCallback<void(ReauthSucceeded)> reauth_callback) {
-  std::move(reauth_callback).Run(ReauthSucceeded(false));
-}
-
-void PasswordManagerClient::TriggerSignIn(signin_metrics::AccessPoint) {}
-
 bool PasswordManagerClient::WasLastNavigationHTTPError() const {
   return false;
 }

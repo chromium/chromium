@@ -3112,8 +3112,6 @@ static_library("ui") {
 
   if (is_win || is_mac || is_linux) {
     sources += [
-      "passwords/account_storage_auth_helper.cc",
-      "passwords/account_storage_auth_helper.h",
       "profiles/profile_customization_bubble_sync_controller.h",
       "profiles/profile_customization_synced_theme_waiter.cc",
       "profiles/profile_customization_synced_theme_waiter.h",

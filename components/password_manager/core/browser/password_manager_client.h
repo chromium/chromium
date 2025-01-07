@@ -326,18 +326,6 @@ class PasswordManagerClient {
   // Informs the embedder that user credentials were leaked.
   virtual void NotifyUserCredentialsWereLeaked(LeakedPasswordDetails details);
 
-  // Requests a reauth for the primary account with |access_point| representing
-  // where the reauth was triggered.
-  // Triggers the |reauth_callback| with ReauthSucceeded(true) if
-  // reauthentication succeeded.
-  virtual void TriggerReauthForPrimaryAccount(
-      signin_metrics::ReauthAccessPoint access_point,
-      base::OnceCallback<void(ReauthSucceeded)> reauth_callback);
-
-  // Redirects the user to a sign-in in a new tab. |access_point| is used for
-  // metrics recording and represents where the sign-in was triggered.
-  virtual void TriggerSignIn(signin_metrics::AccessPoint access_point);
-
   // Gets prefs associated with this embedder.
   virtual PrefService* GetPrefs() const = 0;
 

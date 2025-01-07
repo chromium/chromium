@@ -67,10 +67,6 @@ class TouchToFillController;
 #include "components/password_manager/core/browser/sync_credentials_filter.h"
 #endif
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/ui/passwords/account_storage_auth_helper.h"
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
-
 class PasswordGenerationPopupObserver;
 class PasswordGenerationPopupControllerImpl;
 class Profile;
@@ -215,10 +211,6 @@ class ChromePasswordManagerClient
   void NotifyUserCredentialsWereLeaked(
       password_manager::LeakedPasswordDetails details) override;
   void NotifyKeychainError() override;
-  void TriggerReauthForPrimaryAccount(
-      signin_metrics::ReauthAccessPoint access_point,
-      base::OnceCallback<void(ReauthSucceeded)> reauth_callback) override;
-  void TriggerSignIn(signin_metrics::AccessPoint access_point) override;
   PrefService* GetPrefs() const override;
   PrefService* GetLocalStatePrefs() const override;
   const syncer::SyncService* GetSyncService() const override;
@@ -519,10 +511,6 @@ class ChromePasswordManagerClient
 #else
   const password_manager::SyncCredentialsFilter credentials_filter_;
 #endif
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  AccountStorageAuthHelper account_storage_auth_helper_;
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
   const raw_ptr<autofill::LogRouter> log_router_;
   mutable std::unique_ptr<autofill::RoutingLogManager> log_manager_;

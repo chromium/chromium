@@ -9983,7 +9983,6 @@ test("unit_tests") {
 
   if (is_win || is_mac || is_linux) {
     sources += [
-      "../browser/ui/passwords/account_storage_auth_helper_unittest.cc",
       "../browser/ui/profiles/profile_customization_util_unittest.cc",
       "../browser/ui/profiles/profile_picker_unittest.cc",
     ]

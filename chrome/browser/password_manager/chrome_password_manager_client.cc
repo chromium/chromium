@@ -903,24 +903,6 @@ void ChromePasswordManagerClient::NotifyKeychainError() {
 #endif
 }
 
-void ChromePasswordManagerClient::TriggerReauthForPrimaryAccount(
-    signin_metrics::ReauthAccessPoint access_point,
-    base::OnceCallback<void(ReauthSucceeded)> reauth_callback) {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  account_storage_auth_helper_.TriggerOptInReauth(access_point,
-                                                  std::move(reauth_callback));
-#else
-  std::move(reauth_callback).Run(ReauthSucceeded(false));
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
-}
-
-void ChromePasswordManagerClient::TriggerSignIn(
-    signin_metrics::AccessPoint access_point) {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  account_storage_auth_helper_.TriggerSignIn(access_point);
-#endif
-}
-
 PrefService* ChromePasswordManagerClient::GetPrefs() const {
   return profile_->GetPrefs();
 }
@@ -1798,18 +1780,6 @@ ChromePasswordManagerClient::ChromePasswordManagerClient(
 #else
       credentials_filter_(this),
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
-      account_storage_auth_helper_(
-          profile_,
-          IdentityManagerFactory::GetForProfile(profile_),
-          &password_feature_manager_,
-          base::BindRepeating(
-              [](content::WebContents* web_contents) {
-                Browser* browser = chrome::FindBrowserWithTab(web_contents);
-                return browser ? browser->signin_view_controller() : nullptr;
-              },
-              web_contents)),
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
       log_router_(password_manager::PasswordManagerLogRouterFactory::
                       GetForBrowserContext(profile_)),
       helper_(this) {
