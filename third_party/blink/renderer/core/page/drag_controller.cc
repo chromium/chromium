@@ -162,9 +162,6 @@ static DocumentFragment* DocumentFragmentFromDragData(
     DragSourceType& drag_source_type,
     bool is_richly_editable_position) {
   DCHECK(drag_data);
-  CHECK(is_richly_editable_position ||
-        RuntimeEnabledFeatures::
-            DropUrlAsPlainTextInPlainTextOnlyEditablePositionEnabled());
   drag_source_type = DragSourceType::kHTMLSource;
 
   Document& document = context->OwnerDocument();
@@ -661,10 +658,6 @@ bool DragController::ConcludeEditDrag(DragData* drag_data) {
 
   if (drag_is_move || is_richly_editable_position) {
     DragSourceType drag_source_type = DragSourceType::kHTMLSource;
-    if (!RuntimeEnabledFeatures::
-            DropUrlAsPlainTextInPlainTextOnlyEditablePositionEnabled()) {
-      is_richly_editable_position = true;
-    }
     DocumentFragment* fragment = DocumentFragmentFromDragData(
         drag_data, inner_frame, range, true, drag_source_type,
         is_richly_editable_position);
