@@ -46,7 +46,7 @@
 #include "google_apis/gaia/gaia_id.h"
 #include "ui/gfx/image/image.h"
 
-#if !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS))
+#if !BUILDFLAG(IS_CHROMEOS)
 #include "components/supervised_user/core/common/features.h"
 #endif
 
@@ -397,7 +397,20 @@ void AccountTrackerService::SetAccountCapabilities(
 
   bool modified = account_info.capabilities.UpdateWith(account_capabilities);
 
-#if !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS))
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          switches::kForceSupervisedSigninWithCapabilities)) {
+    // Set the child account status based on the account capabilities.
+    // TODO(crbug.com/355388109): Merge with the statement below when experiment
+    // is launched.
+    modified =
+        UpdateAccountInfoChildStatus(
+            account_info,
+            account_info.capabilities.is_subject_to_parental_controls() ==
+                signin::Tribool::kTrue) ||
+        modified;
+  }
+#elif !(BUILDFLAG(IS_CHROMEOS))
   // Set the child account status based on the account capabilities.
   modified = UpdateAccountInfoChildStatus(
                  account_info,

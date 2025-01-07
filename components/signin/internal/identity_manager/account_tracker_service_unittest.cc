@@ -57,10 +57,6 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #endif
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-#include "components/supervised_user/core/common/features.h"
-#endif
-
 using signin::constants::kNoHostedDomainFound;
 
 namespace {
@@ -209,6 +205,8 @@ class AccountTrackerServiceTest : public testing::Test {
     // Mock AccountManagerFacade in java code for tests that require its
     // initialization.
     signin::SetUpMockAccountManagerFacade();
+    feature_list_.InitAndEnableFeature(
+        switches::kForceSupervisedSigninWithCapabilities);
 #endif
 
     AccountTrackerService::RegisterPrefs(pref_service_.registry());
@@ -350,7 +348,7 @@ class AccountTrackerServiceTest : public testing::Test {
   void ReturnAccountImageFetchSuccess(AccountKey account_key);
   void ReturnAccountImageFetchFailure(AccountKey account_key);
   void ReturnAccountCapabilitiesFetchSuccess(AccountKey account_key);
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if !BUILDFLAG(IS_CHROMEOS)
   void ReturnAccountCapabilitiesFetchIsSubjectToParentalSupervision(
       AccountKey account_key,
       bool is_subject_to_parental_controls);
@@ -433,6 +431,7 @@ class AccountTrackerServiceTest : public testing::Test {
   raw_ptr<FakeAccountCapabilitiesFetcherFactory>
       fake_account_capabilities_fetcher_factory_;
   std::vector<TrackingEvent> account_tracker_events_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 void AccountTrackerServiceTest::ReturnFetchResults(
@@ -495,7 +494,7 @@ void AccountTrackerServiceTest::ReturnAccountCapabilitiesFetchSuccess(
       AccountKeyToAccountId(account_key), capabilities);
 }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if !BUILDFLAG(IS_CHROMEOS)
 void AccountTrackerServiceTest::
     ReturnAccountCapabilitiesFetchIsSubjectToParentalSupervision(
         AccountKey account_key,
@@ -531,7 +530,7 @@ void AccountTrackerServiceTest::
 
   EXPECT_EQ(account_info.is_child_account, expected_is_child_account);
 }
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 void AccountTrackerServiceTest::ReturnAccountCapabilitiesFetchFailure(
     AccountKey account_key) {
