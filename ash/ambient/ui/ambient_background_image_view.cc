@@ -287,8 +287,8 @@ void AmbientBackgroundImageView::SetResizedImage(
       topic_type_ == ::ambient::TopicType::kGeo
           ? MaybeRotateImage(image_unscaled, image_view->size(), GetWidget())
           : image_unscaled;
-  image_view->SetImage(
-      ResizeImage(image_rotated, image_view->size(), force_resize_to_fit_));
+  image_view->SetImage(ui::ImageModel::FromImageSkia(
+      ResizeImage(image_rotated, image_view->size(), force_resize_to_fit_)));
 
   // Intend to update the image origin in image view.
   // There is no bounds change or preferred size change when updating image from
