@@ -15,7 +15,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_theme_utils.h"
-#include "chrome/browser/ui/webui/searchbox/realbox_handler.h"
+#include "chrome/browser/ui/webui/searchbox/lens_searchbox_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/lens_shared_resources.h"
@@ -140,11 +140,10 @@ void LensSidePanelUntrustedUI::BindInterface(
     mojo::PendingReceiver<searchbox::mojom::PageHandler> receiver) {
   LensOverlayController& controller = GetLensOverlayController();
 
-  auto handler = std::make_unique<RealboxHandler>(
+  auto handler = std::make_unique<LensSearchboxHandler>(
       std::move(receiver), Profile::FromWebUI(web_ui()),
       web_ui()->GetWebContents(),
-      /*metrics_reporter=*/nullptr, /*lens_searchbox_client=*/&controller,
-      /*omnibox_controller=*/nullptr);
+      /*metrics_reporter=*/nullptr, /*lens_searchbox_client=*/&controller);
   controller.SetSidePanelSearchboxHandler(std::move(handler));
 }
 

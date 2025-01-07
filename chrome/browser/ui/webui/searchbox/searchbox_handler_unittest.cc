@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "realbox_handler.h"
+#include "searchbox_handler.h"
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
@@ -18,6 +18,8 @@
 #include "components/variations/variations_ids_provider.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui_data_source.h"
+#include "lens_searchbox_handler.h"
+#include "realbox_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -124,27 +126,23 @@ class TestObserver : public OmniboxWebUIPopupChangeObserver {
 
 }  // namespace
 
-class RealboxHandlerTest : public ::testing::Test {
+class SearchboxHandlerTest : public ::testing::Test {
  public:
-  RealboxHandlerTest() = default;
+  SearchboxHandlerTest() = default;
 
-  RealboxHandlerTest(const RealboxHandlerTest&) = delete;
-  RealboxHandlerTest& operator=(const RealboxHandlerTest&) = delete;
-  ~RealboxHandlerTest() override = default;
+  SearchboxHandlerTest(const SearchboxHandlerTest&) = delete;
+  SearchboxHandlerTest& operator=(const SearchboxHandlerTest&) = delete;
+  ~SearchboxHandlerTest() override = default;
 
   content::TestWebUIDataSource* source() { return source_.get(); }
   TestingProfile* profile() { return profile_.get(); }
 
  protected:
-  std::unique_ptr<RealboxHandler> handler_;
   testing::NiceMock<MockPage> page_;
   raw_ptr<testing::NiceMock<MockAutocompleteController>>
       autocomplete_controller_;
   raw_ptr<testing::NiceMock<MockOmniboxEditModel>> omnibox_edit_model_;
-  std::unique_ptr<testing::NiceMock<MockLensSearchboxClient>>
-      lens_searchbox_client_;
 
- private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<content::TestWebUIDataSource> source_;
   std::unique_ptr<TestingProfile> profile_;
@@ -161,18 +159,38 @@ class RealboxHandlerTest : public ::testing::Test {
         variations::VariationsIdsProvider::ForceIdsResult::SUCCESS,
         variations::VariationsIdsProvider::GetInstance()->ForceVariationIds(
             /*variation_ids=*/{"100"}, /*command_line_variation_ids=*/""));
+  }
+
+  void TearDown() override {
+    omnibox_edit_model_ = nullptr;
+    autocomplete_controller_ = nullptr;
+  }
+};
+
+class RealboxHandlerTest : public SearchboxHandlerTest {
+ public:
+  RealboxHandlerTest() = default;
+
+  RealboxHandlerTest(const RealboxHandlerTest&) = delete;
+  RealboxHandlerTest& operator=(const RealboxHandlerTest&) = delete;
+  ~RealboxHandlerTest() override = default;
+
+ protected:
+  std::unique_ptr<RealboxHandler> handler_;
+
+ private:
+  void SetUp() override {
+    SearchboxHandlerTest::SetUp();
 
     handler_ = std::make_unique<RealboxHandler>(
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(), profile(),
         /*web_contents=*/nullptr, /*metrics_reporter=*/nullptr,
-        /*lens_searchbox_client=*/nullptr, /*omnibox_controller=*/nullptr);
+        /*omnibox_controller=*/nullptr);
     handler_->SetPage(page_.BindAndGetRemote());
   }
 
   void TearDown() override {
-    lens_searchbox_client_ = nullptr;
-    omnibox_edit_model_ = nullptr;
-    autocomplete_controller_ = nullptr;
+    SearchboxHandlerTest::TearDown();
     handler_.reset();
   }
 };
@@ -318,7 +336,37 @@ TEST_F(RealboxHandlerTest, AutocompleteController_Start) {
   }
 }
 
-TEST_F(RealboxHandlerTest, Lens_AutocompleteController_Start) {
+class LensSearchboxHandlerTest : public SearchboxHandlerTest {
+ public:
+  LensSearchboxHandlerTest() = default;
+
+  LensSearchboxHandlerTest(const LensSearchboxHandlerTest&) = delete;
+  LensSearchboxHandlerTest& operator=(const LensSearchboxHandlerTest&) = delete;
+  ~LensSearchboxHandlerTest() override = default;
+
+ protected:
+  std::unique_ptr<testing::NiceMock<MockLensSearchboxClient>>
+      lens_searchbox_client_;
+  std::unique_ptr<LensSearchboxHandler> handler_;
+
+ private:
+  void SetUp() override {
+    SearchboxHandlerTest::SetUp();
+
+    // Set a mock LensSearchboxClient.
+    lens_searchbox_client_ =
+        std::make_unique<testing::NiceMock<MockLensSearchboxClient>>();
+
+    handler_ = std::make_unique<LensSearchboxHandler>(
+        mojo::PendingReceiver<searchbox::mojom::PageHandler>(), profile(),
+        /*web_contents=*/nullptr, /*metrics_reporter=*/nullptr,
+        lens_searchbox_client_.get());
+
+    handler_->SetPage(page_.BindAndGetRemote());
+  }
+};
+
+TEST_F(LensSearchboxHandlerTest, Lens_AutocompleteController_Start) {
   // Stop observing the AutocompleteController instance which will be destroyed.
   handler_->autocomplete_controller_observation_.Reset();
   // Set a mock AutocompleteController.
@@ -336,10 +384,6 @@ TEST_F(RealboxHandlerTest, Lens_AutocompleteController_Start) {
   omnibox_edit_model_ = omnibox_edit_model.get();
   handler_->omnibox_controller()->SetEditModelForTesting(
       std::move(omnibox_edit_model));
-  // Set a mock LensSearchboxClient.
-  lens_searchbox_client_ =
-      std::make_unique<testing::NiceMock<MockLensSearchboxClient>>();
-  handler_->SetLensSearchboxClientForTesting(lens_searchbox_client_.get());
 
   {
     SCOPED_TRACE("Empty input");
@@ -446,6 +490,4 @@ TEST_F(RealboxHandlerTest, Lens_AutocompleteController_Start) {
     testing::Mock::VerifyAndClearExpectations(autocomplete_controller_);
     testing::Mock::VerifyAndClearExpectations(lens_searchbox_client_.get());
   }
-
-  handler_->SetLensSearchboxClientForTesting(nullptr);  // Avoids dangling ptr.
 }

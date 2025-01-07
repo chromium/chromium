@@ -51,9 +51,6 @@ class LensSearchboxHandler : public SearchboxHandler {
   // Invoked by LensOverlayController.
   void SetThumbnail(const std::string& thumbnail_url);
 
-  void SetLensSearchboxClientForTesting(
-      LensSearchboxClient* lens_searchbox_client);
-
   // AutocompleteController::Observer:
   void OnAutocompleteStopTimerTriggered(
       const AutocompleteInput& input) override;

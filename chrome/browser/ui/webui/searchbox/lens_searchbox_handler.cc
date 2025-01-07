@@ -75,11 +75,6 @@ class LensOmniboxClient : public OmniboxClient {
       const AutocompleteMatch& alternative_nav_match) override;
   base::WeakPtr<OmniboxClient> AsWeakPtr() override;
 
-  void SetLensSearchboxClientForTesting(  // IN-TEST
-      LensSearchboxClient* lens_searchbox_client) {
-    lens_searchbox_client_ = lens_searchbox_client;
-  }
-
  private:
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
@@ -275,13 +270,6 @@ void LensSearchboxHandler::SetThumbnail(const std::string& thumbnail_url) {
 
 void LensSearchboxHandler::OnThumbnailRemoved() {
   omnibox_controller()->client()->OnThumbnailRemoved();
-}
-
-void LensSearchboxHandler::SetLensSearchboxClientForTesting(
-    LensSearchboxClient* lens_searchbox_client) {
-  lens_searchbox_client_ = lens_searchbox_client;
-  static_cast<LensOmniboxClient*>(omnibox_controller()->client())
-      ->SetLensSearchboxClientForTesting(lens_searchbox_client);  // IN-TEST
 }
 
 void LensSearchboxHandler::OnAutocompleteStopTimerTriggered(

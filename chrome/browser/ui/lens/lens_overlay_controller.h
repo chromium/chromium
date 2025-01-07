@@ -35,7 +35,7 @@
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/webui/searchbox/lens_searchbox_client.h"
-#include "chrome/browser/ui/webui/searchbox/realbox_handler.h"
+#include "chrome/browser/ui/webui/searchbox/lens_searchbox_handler.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/find_in_page/find_result_observer.h"
 #include "components/lens/lens_overlay_dismissal_source.h"
@@ -242,12 +242,14 @@ class LensOverlayController : public LensSearchboxClient,
   // searchbox WebUI. This is called by the WebUIController when the WebUI is
   // executing javascript and has bound the handler. Takes ownership of
   // `handler`.
-  void SetSidePanelSearchboxHandler(std::unique_ptr<RealboxHandler> handler);
+  void SetSidePanelSearchboxHandler(
+      std::unique_ptr<LensSearchboxHandler> handler);
 
-  // Passes ownership of the realbox handler to the search bubble controller.
-  // This is called by the WebUIController when the WebUI is executing
-  // javascript and has bound the handler.
-  void SetContextualSearchboxHandler(std::unique_ptr<RealboxHandler> handler);
+  // Passes ownership of the lens serachbox handler to the search bubble
+  // controller. This is called by the WebUIController when the WebUI is
+  // executing javascript and has bound the handler.
+  void SetContextualSearchboxHandler(
+      std::unique_ptr<LensSearchboxHandler> handler);
 
   // This method is used to release the owned `SearchboxHandler`. It should be
   // called before the embedding web contents is destroyed since it contains a
@@ -1277,7 +1279,7 @@ class LensOverlayController : public LensSearchboxClient,
   // that:
   //      1) searchbox_handler_ exists and
   //      2) searchbox_handler_->IsRemoteBound() is true.
-  std::unique_ptr<RealboxHandler> side_panel_searchbox_handler_;
+  std::unique_ptr<LensSearchboxHandler> side_panel_searchbox_handler_;
 
   // Handler for the contextual searchbox in the overlay . The handler is
   // null if the WebUI containing the searchbox has not been initialized yet.
@@ -1286,7 +1288,7 @@ class LensOverlayController : public LensSearchboxClient,
   // C++. Therefore, we must always check that:
   //      1) contextual_searchbox_handler_ exists and
   //      2) contextual_searchbox_handler_->IsRemoteBound() is true.
-  std::unique_ptr<RealboxHandler> overlay_searchbox_handler_;
+  std::unique_ptr<LensSearchboxHandler> overlay_searchbox_handler_;
 
   // The controller for sending requests to get the list of supported languages.
   // Requests are only made if the WebUI has not already cached the languages

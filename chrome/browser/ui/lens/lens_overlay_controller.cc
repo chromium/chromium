@@ -606,12 +606,12 @@ void LensOverlayController::BindSidePanelGhostLoader(
 }
 
 void LensOverlayController::SetSidePanelSearchboxHandler(
-    std::unique_ptr<RealboxHandler> handler) {
+    std::unique_ptr<LensSearchboxHandler> handler) {
   side_panel_searchbox_handler_ = std::move(handler);
 }
 
 void LensOverlayController::SetContextualSearchboxHandler(
-    std::unique_ptr<RealboxHandler> handler) {
+    std::unique_ptr<LensSearchboxHandler> handler) {
   overlay_searchbox_handler_ = std::move(handler);
 }
 

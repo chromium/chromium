@@ -32,7 +32,6 @@
 #include "chrome/browser/ui/omnibox/omnibox_pedal_implementations.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
-#include "chrome/browser/ui/webui/searchbox/lens_searchbox_client.h"
 #include "chrome/grit/new_tab_page_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/lens/lens_features.h"
@@ -72,15 +71,12 @@ namespace {
 //  to avoid reimplementation of methods like `OnBookmarkLaunched`.
 class RealboxOmniboxClient final : public OmniboxClient {
  public:
-  RealboxOmniboxClient(Profile* profile,
-                       content::WebContents* web_contents,
-                       LensSearchboxClient* lens_searchbox_client);
+  RealboxOmniboxClient(Profile* profile, content::WebContents* web_contents);
   ~RealboxOmniboxClient() override;
 
   // OmniboxClient:
   std::unique_ptr<AutocompleteProviderClient> CreateAutocompleteProviderClient()
       override;
-  const GURL& GetURL() const override;
   bool IsPasteAndGoEnabled() const override;
   SessionID GetSessionID() const override;
   PrefService* GetPrefs() override;
@@ -103,9 +99,6 @@ class RealboxOmniboxClient final : public OmniboxClient {
   security_state::SecurityLevel GetSecurityLevel() const override;
   net::CertStatus GetCertStatus() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
-  std::optional<lens::proto::LensOverlaySuggestInputs>
-  GetLensOverlaySuggestInputs() const override;
-  void OnThumbnailRemoved() override;
   gfx::Image GetFaviconForPageUrl(
       const GURL& page_url,
       FaviconFetchedCallback on_favicon_fetched) override;
@@ -125,29 +118,20 @@ class RealboxOmniboxClient final : public OmniboxClient {
       const AutocompleteMatch& alternative_nav_match) override;
   base::WeakPtr<OmniboxClient> AsWeakPtr() override;
 
-  void SetLensSearchboxClientForTesting(  // IN-TEST
-      LensSearchboxClient* lens_searchbox_client) {
-    lens_searchbox_client_ = lens_searchbox_client;
-  }
-
  private:
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
   // Owns RealboxHandler which owns this.
-  raw_ptr<LensSearchboxClient> lens_searchbox_client_;
   ChromeAutocompleteSchemeClassifier scheme_classifier_;
   // This is unused, but needed for `GetVectorIcon()`.
   gfx::VectorIcon vector_icon_{nullptr, 0u, ""};
   base::WeakPtrFactory<RealboxOmniboxClient> weak_factory_{this};
 };
 
-RealboxOmniboxClient::RealboxOmniboxClient(
-    Profile* profile,
-    content::WebContents* web_contents,
-    LensSearchboxClient* lens_searchbox_client)
+RealboxOmniboxClient::RealboxOmniboxClient(Profile* profile,
+                                           content::WebContents* web_contents)
     : profile_(profile),
       web_contents_(web_contents),
-      lens_searchbox_client_(lens_searchbox_client),
       scheme_classifier_(ChromeAutocompleteSchemeClassifier(profile)) {}
 
 RealboxOmniboxClient::~RealboxOmniboxClient() = default;
@@ -157,21 +141,11 @@ RealboxOmniboxClient::CreateAutocompleteProviderClient() {
   return std::make_unique<ChromeAutocompleteProviderClient>(profile_);
 }
 
-const GURL& RealboxOmniboxClient::GetURL() const {
-  if (lens_searchbox_client_) {
-    return lens_searchbox_client_->GetPageURL();
-  }
-  return GURL::EmptyGURL();
-}
-
 bool RealboxOmniboxClient::IsPasteAndGoEnabled() const {
   return false;
 }
 
 SessionID RealboxOmniboxClient::GetSessionID() const {
-  if (lens_searchbox_client_) {
-    return lens_searchbox_client_->GetTabId();
-  }
   return sessions::SessionTabHelper::IdForTab(web_contents_);
 }
 
@@ -237,9 +211,6 @@ GURL RealboxOmniboxClient::GetNavigationEntryURL() const {
 
 metrics::OmniboxEventProto::PageClassification
 RealboxOmniboxClient::GetPageClassification(bool is_prefetch) const {
-  if (lens_searchbox_client_) {
-    return lens_searchbox_client_->GetPageClassification();
-  }
   return metrics::OmniboxEventProto::NTP_REALBOX;
 }
 
@@ -259,20 +230,6 @@ gfx::Image RealboxOmniboxClient::GetFaviconForPageUrl(
     const GURL& page_url,
     FaviconFetchedCallback on_favicon_fetched) {
   return gfx::Image();
-}
-
-std::optional<lens::proto::LensOverlaySuggestInputs>
-RealboxOmniboxClient::GetLensOverlaySuggestInputs() const {
-  if (lens_searchbox_client_) {
-    return lens_searchbox_client_->GetLensSuggestInputs();
-  }
-  return std::nullopt;
-}
-
-void RealboxOmniboxClient::OnThumbnailRemoved() {
-  if (lens_searchbox_client_) {
-    lens_searchbox_client_->OnThumbnailRemoved();
-  }
 }
 
 void RealboxOmniboxClient::OnBookmarkLaunched() {
@@ -301,12 +258,6 @@ void RealboxOmniboxClient::OnAutocompleteAccept(
     const std::u16string& text,
     const AutocompleteMatch& match,
     const AutocompleteMatch& alternative_nav_match) {
-  if (lens_searchbox_client_) {
-    lens_searchbox_client_->OnSuggestionAccepted(
-        destination_url, match.type,
-        match.subtypes.contains(omnibox::SUBTYPE_ZERO_PREFIX));
-    return;
-  }
   web_contents_->OpenURL(
       content::OpenURLParams(destination_url, content::Referrer(), disposition,
                              transition, false),
@@ -324,13 +275,11 @@ RealboxHandler::RealboxHandler(
     Profile* profile,
     content::WebContents* web_contents,
     MetricsReporter* metrics_reporter,
-    LensSearchboxClient* lens_searchbox_client,
     OmniboxController* omnibox_controller)
     : SearchboxHandler(std::move(pending_page_handler),
                        profile,
                        web_contents,
-                       metrics_reporter),
-      lens_searchbox_client_(lens_searchbox_client) {
+                       metrics_reporter) {
   // Keep a reference to the OmniboxController instance owned by the OmniboxView
   // when the handler is being used in the context of the omnibox popup.
   // Otherwise, create own instance of OmniboxController. Either way, observe
@@ -340,11 +289,8 @@ RealboxHandler::RealboxHandler(
   } else {
     owned_controller_ = std::make_unique<OmniboxController>(
         /*view=*/nullptr,
-        std::make_unique<RealboxOmniboxClient>(profile_, web_contents_,
-                                               lens_searchbox_client),
-        lens_searchbox_client
-            ? lens::features::GetLensSearchboxAutocompleteTimeout()
-            : kAutocompleteDefaultStopTimerDuration);
+        std::make_unique<RealboxOmniboxClient>(profile_, web_contents_),
+        kAutocompleteDefaultStopTimerDuration);
     controller_ = owned_controller_.get();
   }
 
@@ -365,38 +311,6 @@ void RealboxHandler::RemoveObserver(OmniboxWebUIPopupChangeObserver* observer) {
 bool RealboxHandler::HasObserver(
     const OmniboxWebUIPopupChangeObserver* observer) const {
   return observers_.HasObserver(observer);
-}
-
-void RealboxHandler::SetPage(
-    mojo::PendingRemote<searchbox::mojom::Page> pending_page) {
-  SearchboxHandler::SetPage(std::move(pending_page));
-
-  // The client may have text waiting to be sent to the searchbox that it
-  // couldn't do earlier since the page binding was not set. So now we let the
-  // client know the binding is ready.
-  if (lens_searchbox_client_) {
-    lens_searchbox_client_->OnPageBound();
-  }
-}
-
-void RealboxHandler::OnFocusChanged(bool focused) {
-  SearchboxHandler::OnFocusChanged(focused);
-  if (lens_searchbox_client_) {
-    lens_searchbox_client_->OnFocusChanged(focused);
-  }
-}
-
-void RealboxHandler::QueryAutocomplete(const std::u16string& input,
-                                       bool prevent_inline_autocomplete) {
-  if (lens_searchbox_client_) {
-    lens_searchbox_client_->OnTextModified();
-  }
-
-  SearchboxHandler::QueryAutocomplete(input, prevent_inline_autocomplete);
-}
-
-void RealboxHandler::OnThumbnailRemoved() {
-  omnibox_controller()->client()->OnThumbnailRemoved();
 }
 
 void RealboxHandler::PopupElementSizeChanged(const gfx::Size& size) {
@@ -473,14 +387,6 @@ searchbox::mojom::SelectionLineState ConvertLineState(
   }
 }
 
-void RealboxHandler::SetInputText(const std::string& input_text) {
-  page_->SetInputText(input_text);
-}
-
-void RealboxHandler::SetThumbnail(const std::string& thumbnail_url) {
-  page_->SetThumbnail(thumbnail_url);
-}
-
 void RealboxHandler::UpdateSelection(OmniboxPopupSelection old_selection,
                                      OmniboxPopupSelection selection) {
   page_->UpdateSelection(
@@ -490,43 +396,4 @@ void RealboxHandler::UpdateSelection(OmniboxPopupSelection old_selection,
       searchbox::mojom::OmniboxPopupSelection::New(
           selection.line, ConvertLineState(selection.state),
           selection.action_index));
-}
-
-void RealboxHandler::SetLensSearchboxClientForTesting(
-    LensSearchboxClient* lens_searchbox_client) {
-  lens_searchbox_client_ = lens_searchbox_client;
-  static_cast<RealboxOmniboxClient*>(omnibox_controller()->client())
-      ->SetLensSearchboxClientForTesting(lens_searchbox_client);  // IN-TEST
-}
-
-void RealboxHandler::OnAutocompleteStopTimerTriggered(
-    const AutocompleteInput& input) {
-  // Only notify the lens controller when autocomplete stop timer is triggered
-  // for zero suggest inputs.
-  if (lens_searchbox_client_ && input.IsZeroSuggest() &&
-      autocomplete_controller()->done()) {
-    lens_searchbox_client_->ShowGhostLoaderErrorState();
-  }
-}
-
-void RealboxHandler::OnResultChanged(AutocompleteController* controller,
-                                     bool default_match_changed) {
-  SearchboxHandler::OnResultChanged(controller, default_match_changed);
-  // Show the ghost loader error state if the result is empty on the last
-  // async pass of the autocomplete controller (there will not be anymore
-  // updates). controller->done() itself is not a sufficient check since it
-  // takes into account kStop update types which occurs when a user unfocuses
-  // the searchbox, and the error state should not be shown in this case.
-  if (lens_searchbox_client_) {
-    if (controller->done() &&
-        controller->last_update_type() ==
-            AutocompleteController::UpdateType::kLastAsyncPass &&
-        controller->result().empty()) {
-      lens_searchbox_client_->ShowGhostLoaderErrorState();
-    }
-
-    if (controller->input().IsZeroSuggest() && !controller->result().empty()) {
-      lens_searchbox_client_->OnZeroSuggestShown();
-    }
-  }
 }
