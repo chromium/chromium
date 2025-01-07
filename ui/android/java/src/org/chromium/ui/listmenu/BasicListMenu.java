@@ -194,4 +194,8 @@ public class BasicListMenu implements ListMenu, OnItemClickListener {
                 new LayoutViewBuilder(R.layout.list_section_divider),
                 ListSectionDividerViewBinder::bind);
     }
+
+    public ModelListAdapter getAdapterForTesting() {
+        return mAdapter;
+    }
 }

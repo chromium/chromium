@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -25,6 +26,8 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.util.DisplayMetrics;
+import android.view.View.OnCreateContextMenuListener;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 
@@ -111,6 +114,7 @@ public class HomeModulesCoordinatorUnitTest {
     @Captor private ArgumentCaptor<Callback<Profile>> mProfileObserver;
     @Captor private ArgumentCaptor<RecyclerView.OnScrollListener> mOnScrollListener;
     @Captor private ArgumentCaptor<Callback<ClassificationResult>> mClassificationResultCaptor;
+    @Captor private ArgumentCaptor<OnLongClickListener> mLongClickListenerArgumentCaptor;
 
     @Captor
     private ArgumentCaptor<HomeModulesConfigManager.HomeModulesStateListener>
@@ -360,6 +364,24 @@ public class HomeModulesCoordinatorUnitTest {
         when(mMediator.getModuleRank(eq(ModuleType.SINGLE_TAB))).thenReturn(0);
         mCoordinator.onModuleClicked(ModuleType.SINGLE_TAB);
         verify(mMediator).onModuleClicked(eq(ModuleType.SINGLE_TAB));
+    }
+
+    @Test
+    @SmallTest
+    public void testOnLongClick() {
+        HomeModulesContextMenuManager mHomeModulesContextMenuManager = mock();
+        mCoordinator = createCoordinator(/* skipInitProfile= */ true);
+        mCoordinator.setMediatorForTesting(mMediator);
+        mCoordinator.setHomeModulesContextMenuManagerForTesting(mHomeModulesContextMenuManager);
+        when(mMediator.getModuleProvider(ModuleType.SINGLE_TAB)).thenReturn(mModuleProvider);
+        when(mView.getLayoutParams()).thenReturn(mLayoutParams);
+
+        mCoordinator.onViewCreated(ModuleType.SINGLE_TAB, mView);
+        verify(mView).setOnLongClickListener(mLongClickListenerArgumentCaptor.capture());
+        mLongClickListenerArgumentCaptor.getValue().onLongClick(mView);
+        verify(mHomeModulesContextMenuManager).displayMenu(mView, mModuleProvider);
+        verify(mView, never())
+                .setOnCreateContextMenuListener(any(OnCreateContextMenuListener.class));
     }
 
     private void setupAndVerifyTablets() {

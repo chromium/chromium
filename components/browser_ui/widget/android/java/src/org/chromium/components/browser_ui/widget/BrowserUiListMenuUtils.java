@@ -164,6 +164,38 @@ public class BrowserUiListMenuUtils {
     }
 
     /**
+     * Helper function to build a list menu item. Set 0 if there is no icon or text. This ListItem
+     * is set enabled as default.
+     *
+     * @param title The text on the menu item.
+     * @param menuId Id of the menu item.
+     * @param startIconId The icon on the start of the menu item. Pass 0 for no icon.
+     * @param enabled Whether or not this menu item should be enabled.
+     * @param isTextEllipsizedAtEnd Whether or not the text in this menu item is ellipsized at the
+     *     end
+     * @return ListItem Representing an item with text or icon.
+     */
+    @NonNull
+    public static ListItem buildMenuListItemWithEllipsizedAtEnd(
+            @NonNull String title,
+            @IdRes int menuId,
+            @DrawableRes int startIconId,
+            boolean enabled,
+            boolean isTextEllipsizedAtEnd) {
+        PropertyModel.Builder builder =
+                getListItemPropertyBuilder()
+                        .with(ListMenuItemProperties.TITLE, title)
+                        .with(ListMenuItemProperties.MENU_ITEM_ID, menuId)
+                        .with(ListMenuItemProperties.START_ICON_ID, startIconId)
+                        .with(ListMenuItemProperties.ENABLED, enabled)
+                        .with(
+                                ListMenuItemProperties.IS_TEXT_ELLIPSIZED_AT_END,
+                                isTextEllipsizedAtEnd);
+
+        return new MVCListAdapter.ListItem(ListMenuItemType.MENU_ITEM, builder.build());
+    }
+
+    /**
      * Helper function to build a list menu item. Pass 0 for attributes that aren't applicable to
      * the menu item (e.g. if there is no icon or text).
      *

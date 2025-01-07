@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.magic_stack;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Point;
 import android.os.SystemClock;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -21,6 +20,7 @@ import androidx.recyclerview.widget.SnapHelper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry.OnViewCreatedCallback;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -93,9 +93,7 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
         assert mModuleRegistry != null;
 
         mCallbackController = new CallbackController();
-        mHomeModulesContextMenuManager =
-                new HomeModulesContextMenuManager(
-                        this, moduleDelegateHost.getContextMenuStartPoint());
+        mHomeModulesContextMenuManager = new HomeModulesContextMenuManager(this);
         mProfileSupplier = profileSupplier;
 
         mModel = new ModelList();
@@ -394,13 +392,8 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
         group.setLayoutParams(layoutParams);
         group.setOnLongClickListener(
                 view -> {
-                    Point offset = mHomeModulesContextMenuManager.getContextMenuOffset();
-                    return view.showContextMenu(offset.x, offset.y);
-                });
-        group.setOnCreateContextMenuListener(
-                (contextMenu, view, contextMenuInfo) -> {
-                    mHomeModulesContextMenuManager.createContextMenu(
-                            contextMenu, view, moduleProvider);
+                    mHomeModulesContextMenuManager.displayMenu(view, moduleProvider);
+                    return true;
                 });
         moduleProvider.onViewCreated();
         int position = mMediator.findModuleIndexInRecyclerView(moduleType, mAdapter.getItemCount());
@@ -473,5 +466,11 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
 
     public void setModelForTesting(ModelList model) {
         mModel = model;
+    }
+
+    void setHomeModulesContextMenuManagerForTesting(HomeModulesContextMenuManager manager) {
+        HomeModulesContextMenuManager oldManager = mHomeModulesContextMenuManager;
+        mHomeModulesContextMenuManager = manager;
+        ResettersForTesting.register(() -> mHomeModulesContextMenuManager = oldManager);
     }
 }
