@@ -625,6 +625,8 @@ String StylePropertySerializer::SerializeShorthand(
       return Get2Values(marginBlockShorthand());
     case CSSPropertyID::kMarginInline:
       return Get2Values(marginInlineShorthand());
+    case CSSPropertyID::kMasonryFlow:
+      return GetShorthandValue(masonryFlowShorthand());
     case CSSPropertyID::kMasonryTrack:
       return GetShorthandValueForMasonryTrack();
     case CSSPropertyID::kOffset:

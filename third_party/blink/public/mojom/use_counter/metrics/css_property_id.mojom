@@ -870,6 +870,7 @@ enum CSSSampleId {
     kInteractivity = 811,
     kMasonryFill = 812,
     kMasonryDirection = 813,
+    kMasonryFlow = 814,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

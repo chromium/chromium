@@ -1234,6 +1234,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kMargin:
     case CSSPropertyID::kMarker:
     case CSSPropertyID::kMask:
+    case CSSPropertyID::kMasonryFlow:
     case CSSPropertyID::kMasonryTrack:
     case CSSPropertyID::kOffset:
     case CSSPropertyID::kOutline:

@@ -2476,6 +2476,55 @@ const CSSValue* Marker::CSSValueFromComputedStyleInternal(
   return nullptr;
 }
 
+bool MasonryFlow::ParseShorthand(
+    bool important,
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  const StylePropertyShorthand::Properties& longhands =
+      masonryFlowShorthand().properties();
+  DCHECK_EQ(longhands.size(), 2u);
+
+  if (longhands[0]->PropertyID() != CSSPropertyID::kMasonryDirection ||
+      longhands[1]->PropertyID() != CSSPropertyID::kMasonryFill) {
+    return false;
+  }
+
+  const CSSValue* masonry_direction = css_parsing_utils::ParseLonghand(
+      longhands[0]->PropertyID(), masonryFlowShorthand().id(), context, stream);
+
+  if (!masonry_direction) {
+    return false;
+  }
+
+  const CSSValue* masonry_fill = css_parsing_utils::ParseLonghand(
+      longhands[1]->PropertyID(), masonryFlowShorthand().id(), context, stream);
+
+  if (!masonry_fill) {
+    return false;
+  }
+
+  AddProperty(longhands[0]->PropertyID(), masonryFlowShorthand().id(),
+              *masonry_direction, important,
+              css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  AddProperty(longhands[1]->PropertyID(), masonryFlowShorthand().id(),
+              *masonry_fill, important,
+              css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+
+  return true;
+}
+
+const CSSValue* MasonryFlow::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return ComputedStyleUtils::ValuesForShorthandProperty(
+      masonryFlowShorthand(), style, layout_object, allow_visited_style,
+      value_phase);
+}
+
 bool MasonryTrack::ParseShorthand(
     bool important,
     CSSParserTokenStream& stream,
