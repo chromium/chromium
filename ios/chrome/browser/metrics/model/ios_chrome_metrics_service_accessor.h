@@ -26,6 +26,10 @@ namespace segmentation_platform {
 class IOSFieldTrialRegisterImpl;
 }
 
+namespace tab_groups {
+class TabGroupSyncServiceFactory;
+}
+
 // This class limits and documents access to metrics service helper methods.
 // Since these methods are private, each user has to be explicitly declared
 // as a 'friend' below.
@@ -49,6 +53,7 @@ class IOSChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class ApplicationBreadcrumbsLogger;
   friend class CrashesDOMHandler;
   friend class DiscoverFeedExperimentsTracker;
+  friend class tab_groups::TabGroupSyncServiceFactory;
   friend class IOSChromeMainParts;
   friend class IOSChromeSyncClient;
   friend class OptimizationGuideService;
