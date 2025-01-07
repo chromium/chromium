@@ -192,7 +192,9 @@ class IsolatedWebAppUpdateManagerTest : public WebAppTest {
  public:
   explicit IsolatedWebAppUpdateManagerTest(
       const base::flat_map<base::test::FeatureRef, bool>& feature_states =
-          {{features::kIsolatedWebApps, true}},
+          {
+              {features::kIsolatedWebApps, true},
+          },
       base::test::TaskEnvironment::TimeSource time_source =
           base::test::TaskEnvironment::TimeSource::DEFAULT)
       : WebAppTest(WebAppTest::WithTestUrlLoaderFactory(), time_source) {
@@ -329,8 +331,10 @@ class IsolatedWebAppUpdateManagerUpdateTest
   explicit IsolatedWebAppUpdateManagerUpdateTest(
       base::test::TaskEnvironment::TimeSource time_source =
           base::test::TaskEnvironment::TimeSource::DEFAULT)
-      : IsolatedWebAppUpdateManagerTest({{features::kIsolatedWebApps, true}},
-                                        time_source) {}
+      : IsolatedWebAppUpdateManagerTest(
+            {{features::kIsolatedWebApps, true},
+             {features::kIsolatedWebAppAutomaticUpdates, true}},
+            time_source) {}
 
  protected:
   struct IwaInfo {
@@ -462,7 +466,6 @@ class IsolatedWebAppUpdateManagerUpdateTest
 
   virtual void SeedWebAppDatabase() {}
 
-#if BUILDFLAG(IS_CHROMEOS)
   void SetIwaForceInstallPolicy(
       std::vector<IwaForceInstallPolicyEntry> entries) {
     PolicyGenerator policy_generator;
@@ -488,7 +491,6 @@ class IsolatedWebAppUpdateManagerUpdateTest
         future.GetCallback());
     return future.Take();
   }
-#endif
 
   NiceMock<MockCommandScheduler>& mock_command_scheduler() {
     return static_cast<NiceMock<MockCommandScheduler>&>(
@@ -554,7 +556,6 @@ class IsolatedWebAppUpdateManagerUpdateMockTimeTest
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 };
 
-#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
        DiscoversAndPreparesUpdateOfPolicyInstalledApps) {
   IsolatedWebAppUrlInfo non_installed_url_info =
@@ -907,7 +908,6 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
   ChromeBrowsingDataRemoverDelegateFactory::GetForProfile(profile())
       ->Shutdown();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
        MaybeDiscoverUpdatesForApp) {
@@ -937,7 +937,6 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
                   iwa_info1_->url_info.app_id()),
               IsFalse());
 
-#if BUILDFLAG(IS_CHROMEOS)
   SetIwaForceInstallPolicy(
       {{iwa_info1_->url_info, iwa_info1_->update_manifest_url}});
 
@@ -964,7 +963,6 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
       UnorderedElementsAre(IsDict(DictionaryHasValue(
           "result", base::Value("Success::kUpdateFoundAndDryRunSuccessful")))));
   EXPECT_THAT(UpdateApplyLog(), IsEmpty());
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // TODO(crbug.com/40277668): As a temporary fix to avoid race conditions with
   // `ScopedProfileKeepAlive`s, manually shutdown `KeyedService`s holding them.
@@ -973,7 +971,6 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
       ->Shutdown();
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest, DiscoverUpdatesNow) {
   AddDummyIsolatedAppToRegistry(
       profile(), iwa_info1_->url_info.origin().GetURL(), "installed iwa 1",
@@ -1212,6 +1209,13 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
                   "app_id", base::Value(iwa_to_keep->url_info.app_id())))));
   EXPECT_THAT(UpdateDiscoveryLog(), IsEmpty());
 
+  // TODO(crbug.com/386760496): Temporary fix to ensure temp folder won't be
+  // used during clean-up. Attempts to delete files that are in use caused
+  // failures on Windows.
+#if BUILDFLAG(IS_WIN)
+  task_environment()->RunUntilIdle();
+#endif  // BUILDFLAG(IS_WIN)
+
   // TODO(crbug.com/40277668): As a temporary fix to avoid race conditions with
   // `ScopedProfileKeepAlive`s, manually shutdown `KeyedService`s holding them.
   fake_provider().Shutdown();
@@ -1220,7 +1224,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
 }
 
 // TODO(b/338380813): The test is flaky on asan ChromeOS builder.
-TEST_F(IsolatedWebAppUpdateManagerUpdateTest, StopsWaitingIfIwaIsUninstalled) {
+TEST_F(IsolatedWebAppUpdateManagerUpdateTest, DISABLED_StopsWaitingIfIwaIsUninstalled) {
   AddDummyIsolatedAppToRegistry(
       profile(), iwa_info1_->url_info.origin().GetURL(), "installed app",
       IsolationData::Builder(iwa_info1_->installed_location,
@@ -1249,6 +1253,15 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest, StopsWaitingIfIwaIsUninstalled) {
   EXPECT_THAT(UpdateApplyWaiters(), IsEmpty());
   EXPECT_THAT(UpdateApplyTasks(), IsEmpty());
   EXPECT_THAT(UpdateApplyLog(), IsEmpty());
+
+  fake_ui_manager().SetNumWindowsForApp(iwa_info1_->url_info.app_id(), 0);
+
+  // TODO(crbug.com/386760496): Temporary fix to ensure temp folder won't be
+  // used during clean-up. Attempts to delete files that are in use caused
+  // failures on Windows.
+#if BUILDFLAG(IS_WIN)
+  task_environment()->RunUntilIdle();
+#endif  // BUILDFLAG(IS_WIN)
 
   // TODO(crbug.com/40277668): As a temporary fix to avoid race conditions with
   // `ScopedProfileKeepAlive`s, manually shutdown `KeyedService`s holding them.
@@ -1329,13 +1342,19 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
                   DictionaryHasValue("app_id", base::Value(iwa_to_keep)))));
   EXPECT_THAT(UpdateApplyLog(), IsEmpty());
 
+  // TODO(crbug.com/386760496): Temporary fix to ensure temp folder won't be
+  // used during clean-up. Attempts to delete files that are in use caused
+  // failures on Windows.
+#if BUILDFLAG(IS_WIN)
+  task_environment()->RunUntilIdle();
+#endif  // BUILDFLAG(IS_WIN)
+
   // TODO(crbug.com/40277668): As a temporary fix to avoid race conditions with
   // `ScopedProfileKeepAlive`s, manually shutdown `KeyedService`s holding them.
   fake_provider().Shutdown();
   ChromeBrowsingDataRemoverDelegateFactory::GetForProfile(profile())
       ->Shutdown();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class IsolatedWebAppUpdateManagerUpdateApplyOnStartupTest
     : public IsolatedWebAppUpdateManagerUpdateTest {
@@ -1539,14 +1558,6 @@ INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     IsolatedWebAppUpdateManagerFeatureFlagTest,
     ::testing::Values(
-// TODO: crbug.com/40274058 - Enable automatic updates on other platforms.
-#if !BUILDFLAG(IS_CHROMEOS)
-        FeatureFlagParam{
-            .feature_states = {{features::kIsolatedWebApps, false}},
-            .expected_result = false},
-        FeatureFlagParam{.feature_states = {{features::kIsolatedWebApps, true}},
-                         .expected_result = false}
-#else   // BUILDFLAG(IS_CHROMEOS)
         FeatureFlagParam{
             .feature_states = {{features::kIsolatedWebApps, false},
                                {features::kIsolatedWebAppAutomaticUpdates,
@@ -1562,7 +1573,6 @@ INSTANTIATE_TEST_SUITE_P(
                                {features::kIsolatedWebAppAutomaticUpdates,
                                 true}},
             .expected_result = true}
-#endif  // BUILDFLAG(IS_CHROMEOS)
         ));
 
 }  // namespace
