@@ -14,7 +14,6 @@ mojom("mojom") {
 
   webui_module_path = "chrome://resources/mojo/chromeos/ash/services/multidevice_setup/public/mojom"
 
-  # Used by ash/webui/common/resources/multidevice_setup, which is still using
-  # JS + Closure.
-  generate_webui_js_bindings = true
+  # chromeos/ash/resources/BUILD.gn still uses the lite bindings.
+  generate_legacy_js_bindings = true
 }

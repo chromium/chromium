@@ -95,7 +95,6 @@ group("closure_compile") {
     "crostini_upgrader:closure_compile",
     "emulator:closure_compile",
     "multidevice_internals:closure_compile",
-    "multidevice_setup:closure_compile",
     "password_change:closure_compile",
     "smb_shares:closure_compile",
     "sys_internals:closure_compile",
