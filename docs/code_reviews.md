@@ -40,15 +40,15 @@ these are advisory and not policy.
 
 #### Expectations for all reviewers
 
-  * Aim to provide some kind of actionable response within 24 hours of receipt
-    (not counting weekends and holidays). This doesn't mean you have to do a
-    complete review, but you should be able to give some initial feedback,
-    request more time, or suggest another reviewer.
+*   As a reviewer, aim to provide actionable feedback 3 times per work day. The
+    expectation is that if you're in the same time zone as the CL author, there
+    are 3 review iterations. If there is a time zone divide, aim for 2 review
+    iterations.
 
-  * Use the status field in Gerrit settings to indicate if you're away and when
+*   Use the status field in Gerrit settings to indicate if you're away and when
     you'll be back.
 
-  * Don't generally discourage people from sending you code reviews. This
+*   Don't generally discourage people from sending you code reviews. This
     includes using a blanket "slow" in your status field.
 
 ## OWNERS files
