@@ -70,18 +70,18 @@ enum class SuggestionType {
   kGeneratePasswordEntry = 23,
   // Password related suggestion. Displays the option to enable credentials from
   // the account storage.
-  kPasswordAccountStorageOptIn = 25,
+  // Deprecated: kPasswordAccountStorageOptIn = 25,
   // Password related suggestion. Displays the option to enable password
   // generation and saving in the account storage.
-  kPasswordAccountStorageOptInAndGenerate = 26,
+  // Deprecated: kPasswordAccountStorageOptInAndGenerate = 26,
   // Password related suggestion. Displays a password from the account storage.
   kAccountStoragePasswordEntry = 27,
   // Password related suggestion. Displays the option to re-signin to enable the
   // account storage.
-  kPasswordAccountStorageReSignin = 28,
+  // Deprecated: kPasswordAccountStorageReSignin = 28,
   // Password related suggestion. Displays that there is no fillable credentials
   // after opting into the account storage.
-  kPasswordAccountStorageEmpty = 29,
+  // Deprecated: kPasswordAccountStorageEmpty = 29,
   // Password sub-popup suggestion. Fills the username from the manual fallback
   // entry.
   kPasswordFieldByFieldFilling = 30,

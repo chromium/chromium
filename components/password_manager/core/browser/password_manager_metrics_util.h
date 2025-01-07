@@ -377,11 +377,11 @@ enum class PasswordDropdownSelectedOption {
   // User selected to generate a password.
   kGenerate = 2,
   // User unlocked the account-store to fill a password.
-  kUnlockAccountStorePasswords = 3,
+  // Deprecated: kUnlockAccountStorePasswords = 3,
   // User unlocked the account-store to generate a password.
-  kUnlockAccountStoreGeneration = 4,
+  // Deprecated: kUnlockAccountStoreGeneration = 4,
   // Previoulsy opted-in user decided to log-in again to access their passwords.
-  kResigninToUnlockAccountStore = 5,
+  // Deprecated: kResigninToUnlockAccountStore = 5,
   // User selected a WebAuthn credential.
   kWebAuthn = 6,
   // User selected the "Sign in with another device" button.
@@ -885,15 +885,9 @@ void LogPasswordSuccessfulSubmissionIndicatorEvent(
 void LogPasswordAcceptedSaveUpdateSubmissionIndicatorEvent(
     autofill::mojom::SubmissionIndicatorEvent event);
 
-// Logs how many account-stored passwords are available for filling in the
-// current password form right after unlock.
-void LogPasswordsCountFromAccountStoreAfterUnlock(
-    int account_store_passwords_count);
-
 // Logs how many account-stored passwords are downloaded right after unlock.
-// This is different from `LogPasswordsCountFromAccountStoreAfterUnlock` since
-// it records all the downloaded passwords not just those available for filling
-// in a specific password form.
+// This records all the downloaded passwords not just those available for
+// filling in a specific password form.
 void LogDownloadedPasswordsCountFromAccountStoreAfterUnlock(
     int account_store_passwords_count);
 

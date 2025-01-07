@@ -240,7 +240,6 @@ struct Suggestion {
     kDevice,
     kEdit,
     kEmail,
-    kEmpty,
     kError,
     kGlobe,
     kGoogle,

@@ -431,6 +431,7 @@ class AutofillClient {
 
   // Informs the client that the suggestion UI needs to be kept alive. Call
   // before `UpdateAutofillSuggestions` to update the open popup in-place.
+  // TODO(crbug.com/374293518): Unused, remove.
   virtual void PinAutofillSuggestions() = 0;
 
   // Returns the information of the popup on the screen, if there is one that is

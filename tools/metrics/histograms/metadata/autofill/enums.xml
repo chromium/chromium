@@ -5369,11 +5369,12 @@ Called by update_autofill_enums.py.-->
   <int value="22" label="All saved passwords entry"/>
   <int value="23" label="Generate password entry"/>
   <int value="24" label="Show account cards"/>
-  <int value="25" label="Password account storage opt-in"/>
-  <int value="26" label="Password account storage opt-in and generate"/>
+  <int value="25" label="(obsolete) Password account storage opt-in"/>
+  <int value="26"
+      label="(obsolete) Password account storage opt-in and generate"/>
   <int value="27" label="Account storage password entry"/>
-  <int value="28" label="Password account storage re-sign-in"/>
-  <int value="29" label="Password account storage empty"/>
+  <int value="28" label="(obsolete) Password account storage re-sign-in"/>
+  <int value="29" label="(obsolete) Password account storage empty"/>
   <int value="30" label="Password field-by-field filling"/>
   <int value="31" label="Fill password"/>
   <int value="32" label="View password details"/>

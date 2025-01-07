@@ -101,10 +101,6 @@ const std::vector<SuggestionType> kClickableSuggestionTypes{
     SuggestionType::kDatalistEntry,
     SuggestionType::kScanCreditCard,
     SuggestionType::kAllSavedPasswordsEntry,
-    SuggestionType::kPasswordAccountStorageOptIn,
-    SuggestionType::kPasswordAccountStorageReSignin,
-    SuggestionType::kPasswordAccountStorageOptInAndGenerate,
-    SuggestionType::kPasswordAccountStorageEmpty,
     SuggestionType::kVirtualCreditCardEntry,
 };
 
@@ -576,7 +572,7 @@ TEST_F(PopupViewViewsTest, SelectionOnTouchAndUnselectionOnCancel) {
 TEST_F(PopupViewViewsTest, ClickDisabledEntry) {
   Suggestion opt_int_suggestion("dummy_main_text", "",
                                 Suggestion::Icon::kNoIcon,
-                                SuggestionType::kPasswordAccountStorageOptIn);
+                                SuggestionType::kWebauthnCredential);
   opt_int_suggestion.is_loading = Suggestion::IsLoading(true);
   controller().set_suggestions({opt_int_suggestion});
   CreateAndShowView();

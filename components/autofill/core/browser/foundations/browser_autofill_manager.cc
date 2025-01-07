@@ -260,10 +260,6 @@ FillDataType GetEventTypeFromSingleFieldSuggestionType(SuggestionType type) {
     case SuggestionType::kGeneratePasswordEntry:
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
     case SuggestionType::kMixedFormMessage:
-    case SuggestionType::kPasswordAccountStorageEmpty:
-    case SuggestionType::kPasswordAccountStorageOptIn:
-    case SuggestionType::kPasswordAccountStorageOptInAndGenerate:
-    case SuggestionType::kPasswordAccountStorageReSignin:
     case SuggestionType::kPasswordEntry:
     case SuggestionType::kPasswordFieldByFieldFilling:
     case SuggestionType::kPlusAddressError:

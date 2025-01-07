@@ -48,16 +48,8 @@ std::string_view SuggestionTypeToStringView(SuggestionType type) {
       return "kGeneratePasswordEntry";
     case SuggestionType::kShowAccountCards:
       return "kShowAccountCards";
-    case SuggestionType::kPasswordAccountStorageOptIn:
-      return "kPasswordAccountStorageOptIn";
-    case SuggestionType::kPasswordAccountStorageOptInAndGenerate:
-      return "kPasswordAccountStorageOptInAndGenerate";
     case SuggestionType::kAccountStoragePasswordEntry:
       return "kAccountStoragePasswordEntry";
-    case SuggestionType::kPasswordAccountStorageReSignin:
-      return "kPasswordAccountStorageReSignin";
-    case SuggestionType::kPasswordAccountStorageEmpty:
-      return "kPasswordAccountStorageEmpty";
     case SuggestionType::kPasswordFieldByFieldFilling:
       return "kPasswordFieldByFieldFilling";
     case SuggestionType::kFillPassword:

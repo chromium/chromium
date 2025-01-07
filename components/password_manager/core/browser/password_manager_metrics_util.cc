@@ -266,9 +266,6 @@ void LogPasswordDropdownShown(
   for (const auto& suggestion : suggestions) {
     switch (suggestion.type) {
       case autofill::SuggestionType::kGeneratePasswordEntry:
-        // TODO(crbug.com/40122999): Revisit metrics for the "opt in and
-        // generate" button.
-      case autofill::SuggestionType::kPasswordAccountStorageOptInAndGenerate:
         dropdown_state = PasswordDropdownState::kStandardGenerate;
         break;
       default:
@@ -303,9 +300,6 @@ void LogPasswordDropdownItemSelected(PasswordDropdownSelectedOption type,
       break;
     case PasswordDropdownSelectedOption::kShowAll:
     case PasswordDropdownSelectedOption::kGenerate:
-    case PasswordDropdownSelectedOption::kUnlockAccountStorePasswords:
-    case PasswordDropdownSelectedOption::kResigninToUnlockAccountStore:
-    case PasswordDropdownSelectedOption::kUnlockAccountStoreGeneration:
     default:
       base::RecordAction(base::UserMetricsAction(
           "PasswordManager.PasswordDropdownSelected.Others"));
@@ -323,13 +317,6 @@ void LogPasswordAcceptedSaveUpdateSubmissionIndicatorEvent(
     autofill::mojom::SubmissionIndicatorEvent event) {
   base::UmaHistogramEnumeration(
       "PasswordManager.AcceptedSaveUpdateSubmissionIndicatorEvent", event);
-}
-
-void LogPasswordsCountFromAccountStoreAfterUnlock(
-    int account_store_passwords_count) {
-  base::UmaHistogramCounts100(
-      "PasswordManager.CredentialsCountFromAccountStoreAfterUnlock",
-      account_store_passwords_count);
 }
 
 void LogDownloadedPasswordsCountFromAccountStoreAfterUnlock(

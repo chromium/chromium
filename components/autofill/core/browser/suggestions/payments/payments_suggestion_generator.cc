@@ -1376,10 +1376,6 @@ bool IsCreditCardFooterSuggestion(
     case SuggestionType::kManageAddress:
     case SuggestionType::kManageIban:
     case SuggestionType::kManagePlusAddress:
-    case SuggestionType::kPasswordAccountStorageEmpty:
-    case SuggestionType::kPasswordAccountStorageOptIn:
-    case SuggestionType::kPasswordAccountStorageOptInAndGenerate:
-    case SuggestionType::kPasswordAccountStorageReSignin:
     case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kViewPasswordDetails:
     case SuggestionType::kAutofillAiFeedback:

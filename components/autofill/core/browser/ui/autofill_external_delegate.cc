@@ -261,10 +261,6 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
     case SuggestionType::kMerchantPromoCodeEntry:
     case SuggestionType::kMixedFormMessage:
-    case SuggestionType::kPasswordAccountStorageEmpty:
-    case SuggestionType::kPasswordAccountStorageOptIn:
-    case SuggestionType::kPasswordAccountStorageOptInAndGenerate:
-    case SuggestionType::kPasswordAccountStorageReSignin:
     case SuggestionType::kPasswordEntry:
     case SuggestionType::kPlusAddressError:
     case SuggestionType::kAutofillAiFeedback:
@@ -706,11 +702,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case SuggestionType::kPasswordEntry:
     case SuggestionType::kAccountStoragePasswordEntry:
     case SuggestionType::kAllSavedPasswordsEntry:
-    case SuggestionType::kPasswordAccountStorageEmpty:
     case SuggestionType::kGeneratePasswordEntry:
-    case SuggestionType::kPasswordAccountStorageOptIn:
-    case SuggestionType::kPasswordAccountStorageReSignin:
-    case SuggestionType::kPasswordAccountStorageOptInAndGenerate:
     case SuggestionType::kWebauthnCredential:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
     case SuggestionType::kPasswordFieldByFieldFilling:
@@ -909,11 +901,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kPasswordEntry:
     case SuggestionType::kAccountStoragePasswordEntry:
     case SuggestionType::kAllSavedPasswordsEntry:
-    case SuggestionType::kPasswordAccountStorageEmpty:
     case SuggestionType::kGeneratePasswordEntry:
-    case SuggestionType::kPasswordAccountStorageOptIn:
-    case SuggestionType::kPasswordAccountStorageReSignin:
-    case SuggestionType::kPasswordAccountStorageOptInAndGenerate:
     case SuggestionType::kDevtoolsTestAddresses:
     case SuggestionType::kDevtoolsTestAddressByCountry:
     case SuggestionType::kWebauthnCredential:
@@ -1044,11 +1032,7 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case SuggestionType::kAllSavedPasswordsEntry:
     case SuggestionType::kGeneratePasswordEntry:
     case SuggestionType::kShowAccountCards:
-    case SuggestionType::kPasswordAccountStorageOptIn:
-    case SuggestionType::kPasswordAccountStorageOptInAndGenerate:
     case SuggestionType::kAccountStoragePasswordEntry:
-    case SuggestionType::kPasswordAccountStorageReSignin:
-    case SuggestionType::kPasswordAccountStorageEmpty:
     case SuggestionType::kComposeResumeNudge:
     case SuggestionType::kComposeDisable:
     case SuggestionType::kComposeGoToSettings:

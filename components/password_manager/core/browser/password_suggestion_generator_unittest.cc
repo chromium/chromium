@@ -121,37 +121,6 @@ Matcher<Suggestion> EqualsGeneratePasswordSuggestion() {
       Suggestion::Icon::kKey);
 }
 
-Matcher<Suggestion> EqualsOptInToAccountThenGeneratePasswordSuggestion() {
-  return EqualsSuggestion(
-      SuggestionType::kPasswordAccountStorageOptInAndGenerate,
-      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_GENERATE_PASSWORD),
-      Suggestion::Icon::kKey);
-}
-
-Matcher<Suggestion> EqualsEntryToOptInToAccountStorageThenFill() {
-#if BUILDFLAG(IS_IOS)
-  const bool webauthn_sync_credentials =
-      syncer::IsWebauthnCredentialSyncEnabled();
-#else
-  constexpr bool webauthn_sync_credentials = true;
-#endif
-  return EqualsSuggestion(
-      SuggestionType::kPasswordAccountStorageOptIn,
-      webauthn_sync_credentials
-          ? l10n_util::GetStringUTF16(
-                IDS_PASSWORD_MANAGER_OPT_INTO_ACCOUNT_STORE_WITH_PASSKEYS)
-          : l10n_util::GetStringUTF16(
-                IDS_PASSWORD_MANAGER_OPT_INTO_ACCOUNT_STORE),
-      Suggestion::Icon::kGoogle);
-}
-
-Matcher<Suggestion> EqualsAccountStorageResignin() {
-  return EqualsSuggestion(
-      SuggestionType::kPasswordAccountStorageReSignin,
-      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_RE_SIGNIN_ACCOUNT_STORE),
-      Suggestion::Icon::kGoogle);
-}
-
 Matcher<Suggestion> EqualsManagePasswordsSuggestion(
     bool has_webauthn_credential = false) {
   return AllOf(EqualsSuggestion(
@@ -657,79 +626,6 @@ TEST_F(PasswordSuggestionGeneratorTest, GeneratePassword_HasSavedPasskey) {
               /*has_webauthn_credential=*/true)));
 }
 
-// Verifies the generate password suggestion content when account storage opt in
-// should be shown to the user.
-TEST_F(PasswordSuggestionGeneratorTest,
-       GeneratePassword_ShouldShowAccountStorageOptIn) {
-  ON_CALL(*client().GetPasswordFeatureManager(), ShouldShowAccountStorageOptIn)
-      .WillByDefault(Return(true));
-  std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
-      password_form_fill_data(), favicon(), /*username_filter=*/u"",
-      OffersGeneration(true), ShowPasswordSuggestions(true),
-      ShowWebAuthnCredentials(false));
-
-  EXPECT_THAT(suggestions,
-              ElementsAre(EqualsDomainPasswordSuggestion(
-                              SuggestionType::kPasswordEntry, u"username",
-                              password_label(8u),
-                              /*realm_label=*/u"", favicon()),
-                          EqualsOptInToAccountThenGeneratePasswordSuggestion(),
-                          EqualsEntryToOptInToAccountStorageThenFill(),
-                          EqualsSuggestion(SuggestionType::kSeparator),
-                          EqualsManagePasswordsSuggestion()));
-}
-
-// Verifies that opt into account storage suggestion is still shown if there're
-// no saved credentials for the current domain.
-TEST_F(PasswordSuggestionGeneratorTest,
-       OptInToAccountStorage_NoSavedCredentials) {
-  ON_CALL(*client().GetPasswordFeatureManager(), ShouldShowAccountStorageOptIn)
-      .WillByDefault(Return(true));
-  std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
-      /*fill_data=*/{}, favicon(), /*username_filter=*/u"",
-      OffersGeneration(false), ShowPasswordSuggestions(true),
-      ShowWebAuthnCredentials(false));
-
-  EXPECT_THAT(suggestions,
-              ElementsAre(EqualsEntryToOptInToAccountStorageThenFill()));
-}
-
-// Test that account storage resignin suggestion is still shown if the there're
-// no credentials saved for the current domain.
-TEST_F(PasswordSuggestionGeneratorTest,
-       AccountStorageResignin_NoSavedCredentials) {
-  ON_CALL(*client().GetPasswordFeatureManager(),
-          ShouldShowAccountStorageReSignin)
-      .WillByDefault(Return(true));
-  std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
-      /*fill_data=*/{}, favicon(), /*username_filter=*/u"",
-      OffersGeneration(false), ShowPasswordSuggestions(true),
-      ShowWebAuthnCredentials(false));
-
-  EXPECT_THAT(suggestions, ElementsAre(EqualsAccountStorageResignin()));
-}
-
-// Test the account storage resignin suggestion content.
-TEST_F(PasswordSuggestionGeneratorTest,
-       AccountStorageResignin_HasSavedPassword) {
-  ON_CALL(*client().GetPasswordFeatureManager(),
-          ShouldShowAccountStorageReSignin)
-      .WillByDefault(Return(true));
-  std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
-      password_form_fill_data(), favicon(), /*username_filter=*/u"",
-      OffersGeneration(false), ShowPasswordSuggestions(true),
-      ShowWebAuthnCredentials(false));
-
-  EXPECT_THAT(suggestions,
-              ElementsAre(EqualsDomainPasswordSuggestion(
-                              SuggestionType::kPasswordEntry, u"username",
-                              password_label(8u),
-                              /*realm_label=*/u"", favicon()),
-                          EqualsAccountStorageResignin(),
-                          EqualsSuggestion(SuggestionType::kSeparator),
-                          EqualsManagePasswordsSuggestion()));
-}
-
 // Test the suggestion order when all possible suggestions should be generated.
 TEST_F(PasswordSuggestionGeneratorTest, DomainSuggestions_SuggestionOrder) {
   // Configure saved password data.
@@ -760,11 +656,6 @@ TEST_F(PasswordSuggestionGeneratorTest, DomainSuggestions_SuggestionOrder) {
 #else
   bool use_new_strings = false;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  ON_CALL(*client().GetPasswordFeatureManager(), ShouldShowAccountStorageOptIn)
-      .WillByDefault(Return(true));
-  ON_CALL(*client().GetPasswordFeatureManager(),
-          ShouldShowAccountStorageReSignin)
-      .WillByDefault(Return(true));
 
   std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
       fill_data, favicon(), /*username_filter=*/u"", OffersGeneration(true),
@@ -800,9 +691,7 @@ TEST_F(PasswordSuggestionGeneratorTest, DomainSuggestions_SuggestionOrder) {
           EqualsDomainPasswordSuggestion(SuggestionType::kPasswordEntry, u"foo",
                                          password_label(12u),
                                          /*realm_label=*/u"", favicon()),
-          EqualsOptInToAccountThenGeneratePasswordSuggestion(),
-          EqualsEntryToOptInToAccountStorageThenFill(),
-          EqualsAccountStorageResignin(),
+          EqualsGeneratePasswordSuggestion(),
           EqualsSuggestion(SuggestionType::kSeparator),
           EqualsManagePasswordsSuggestion(
               /*has_webauthn_credential=*/true)));

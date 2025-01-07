@@ -91,10 +91,6 @@ constexpr auto kPopupItemTypesUsingLeadingIcons =
         {SuggestionType::kAllSavedPasswordsEntry,
          SuggestionType::kManageAddress, SuggestionType::kManageCreditCard,
          SuggestionType::kManageIban, SuggestionType::kManagePlusAddress,
-         SuggestionType::kPasswordAccountStorageEmpty,
-         SuggestionType::kPasswordAccountStorageOptIn,
-         SuggestionType::kPasswordAccountStorageOptInAndGenerate,
-         SuggestionType::kPasswordAccountStorageReSignin,
          SuggestionType::kShowAccountCards, SuggestionType::kUndoOrClear,
          SuggestionType::kViewPasswordDetails,
          SuggestionType::kRetrieveAutofillAi});

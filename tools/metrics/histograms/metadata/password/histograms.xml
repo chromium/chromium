@@ -1393,18 +1393,6 @@ chromium-metrics-reviews@google.com.
   <token key="ProfileType" variants="ProfileType"/>
 </histogram>
 
-<histogram name="PasswordManager.CredentialsCountFromAccountStoreAfterUnlock"
-    units="credentials" expires_after="2025-04-13">
-  <owner>friedrichh@chromium.org</owner>
-  <owner>mamir@chromium.org</owner>
-  <summary>
-    Recorded after unlocking the account store from the password filling flow.
-    Records how many credentials from the account store can be used to fill the
-    current password form. If a credential is an exact duplicate with a local
-    credential, it still counts into this metric.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.CredentialsWithDuplicates3" units="units"
     expires_after="2025-05-11">
   <owner>kazinova@google.com</owner>

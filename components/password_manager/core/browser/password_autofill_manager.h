@@ -107,10 +107,6 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate {
   // Called when main frame navigates. Not called for in-page navigations.
   void DidNavigateMainFrame();
 
-  // Called if no suggestions were found. Assumed to be mutually exclusive with
-  // |OnAddPasswordFillData|.
-  void OnNoCredentialsFound();
-
   PasswordManualFallbackMetricsRecorder&
   GetPasswordManualFallbackMetricsRecorder() {
     return CHECK_DEREF(manual_fallback_metrics_recorder_.get());

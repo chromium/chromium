@@ -70,15 +70,6 @@ using autofill::Suggestion;
 using autofill::password_generation::PasswordGenerationType;
 using IsLoading = autofill::Suggestion::IsLoading;
 
-// Entry showing the empty state (i.e. no passwords found in account-storage).
-Suggestion CreateAccountStorageEmptyEntry() {
-  Suggestion suggestion(
-      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_NO_ACCOUNT_STORE_MATCHES));
-  suggestion.type = autofill::SuggestionType::kPasswordAccountStorageEmpty;
-  suggestion.icon = Suggestion::Icon::kEmpty;
-  return suggestion;
-}
-
 // If `suggestion` was made for an empty username, then return the empty
 // string, otherwise return `suggestion`.
 std::u16string GetUsernameFromSuggestion(const std::u16string& suggestion) {
@@ -95,30 +86,10 @@ bool ContainsOtherThanManagePasswords(
   });
 }
 
-bool HasLoadingSuggestion(base::span<const Suggestion> suggestions,
-                          autofill::SuggestionType item_id) {
-  return base::ranges::any_of(suggestions, [&item_id](const auto& suggestion) {
-    return suggestion.type == item_id && suggestion.is_loading;
-  });
-}
-
 std::string GetGuidFromSuggestion(const Suggestion& suggestion) {
   return absl::holds_alternative<Suggestion::Guid>(suggestion.payload)
              ? suggestion.GetPayload<Suggestion::Guid>().value()
              : std::string();
-}
-
-std::vector<Suggestion> SetUnlockLoadingState(
-    std::vector<Suggestion> suggestions,
-    autofill::SuggestionType type,
-    IsLoading is_loading) {
-  using enum autofill::SuggestionType;
-  DCHECK(type == kPasswordAccountStorageOptIn ||
-         type == kPasswordAccountStorageReSignin ||
-         type == kPasswordAccountStorageOptInAndGenerate);
-  auto unlock_iter = base::ranges::find(suggestions, type, &Suggestion::type);
-  unlock_iter->is_loading = is_loading;
-  return suggestions;
 }
 
 std::vector<Suggestion> PrepareLoadingStateSuggestions(
@@ -145,20 +116,6 @@ bool AreNewSuggestionsTheSame(
         return lhs.main_text == rhs.main_text && lhs.type == rhs.type &&
                lhs.icon == rhs.icon && lhs.payload == rhs.payload;
       });
-}
-
-void LogAccountStoredPasswordsCountInFillDataAfterUnlock(
-    const autofill::PasswordFormFillData& fill_data) {
-  int account_store_passwords_count =
-      base::ranges::count_if(fill_data.additional_logins,
-                             [](const autofill::PasswordAndMetadata& metadata) {
-                               return metadata.uses_account_store;
-                             });
-  if (fill_data.preferred_login.uses_account_store) {
-    ++account_store_passwords_count;
-  }
-  metrics_util::LogPasswordsCountFromAccountStoreAfterUnlock(
-      account_store_passwords_count);
 }
 
 }  // namespace
@@ -201,15 +158,7 @@ void PasswordAutofillManager::DidSelectSuggestion(
     const Suggestion& suggestion) {
   ClearPreviewedForm();
   if (suggestion.type == autofill::SuggestionType::kAllSavedPasswordsEntry ||
-      suggestion.type ==
-          autofill::SuggestionType::kPasswordAccountStorageEmpty ||
       suggestion.type == autofill::SuggestionType::kGeneratePasswordEntry ||
-      suggestion.type ==
-          autofill::SuggestionType::kPasswordAccountStorageOptIn ||
-      suggestion.type ==
-          autofill::SuggestionType::kPasswordAccountStorageReSignin ||
-      suggestion.type ==
-          autofill::SuggestionType::kPasswordAccountStorageOptInAndGenerate ||
       suggestion.type ==
           autofill::SuggestionType::kWebauthnSignInWithAnotherDevice) {
     return;
@@ -217,28 +166,6 @@ void PasswordAutofillManager::DidSelectSuggestion(
 
   PreviewSuggestion(GetUsernameFromSuggestion(suggestion.main_text.value),
                     suggestion.type);
-}
-
-void PasswordAutofillManager::OnUnlockItemAccepted(
-    autofill::SuggestionType type) {
-  using metrics_util::PasswordDropdownSelectedOption;
-  using enum autofill::SuggestionType;
-  DCHECK(type == kPasswordAccountStorageOptIn ||
-         type == kPasswordAccountStorageOptInAndGenerate);
-
-  std::vector<Suggestion> suggestions{
-      autofill_client_->GetAutofillSuggestions().begin(),
-      autofill_client_->GetAutofillSuggestions().end()};
-  UpdatePopup(
-      SetUnlockLoadingState(std::move(suggestions), type, IsLoading(true)));
-  signin_metrics::ReauthAccessPoint reauth_access_point =
-      type == kPasswordAccountStorageOptIn
-          ? signin_metrics::ReauthAccessPoint::kAutofillDropdown
-          : signin_metrics::ReauthAccessPoint::kGeneratePasswordDropdown;
-  password_client_->TriggerReauthForPrimaryAccount(
-      reauth_access_point,
-      base::BindOnce(&PasswordAutofillManager::OnUnlockReauthCompleted,
-                     weak_ptr_factory_.GetWeakPtr(), type));
 }
 
 void PasswordAutofillManager::DidAcceptSuggestion(
@@ -253,7 +180,6 @@ void PasswordAutofillManager::DidAcceptSuggestion(
           password_client_->IsOffTheRecord());
       break;
     case autofill::SuggestionType::kAllSavedPasswordsEntry:
-    case autofill::SuggestionType::kPasswordAccountStorageEmpty:
       password_client_->NavigateToManagePasswordsPage(
           ManagePasswordsReferrer::kPasswordDropdown);
       metrics_util::LogPasswordDropdownItemSelected(
@@ -266,23 +192,6 @@ void PasswordAutofillManager::DidAcceptSuggestion(
         password_client_->GetMetricsRecorder()->RecordPageLevelUserAction(
             UserAction::kShowAllPasswordsWhileSomeAreSuggested);
       }
-      break;
-    case autofill::SuggestionType::kPasswordAccountStorageReSignin:
-      password_client_->TriggerSignIn(
-          signin_metrics::AccessPoint::ACCESS_POINT_AUTOFILL_DROPDOWN);
-      metrics_util::LogPasswordDropdownItemSelected(
-          PasswordDropdownSelectedOption::kResigninToUnlockAccountStore,
-          password_client_->IsOffTheRecord());
-      break;
-    case autofill::SuggestionType::kPasswordAccountStorageOptIn:
-    case autofill::SuggestionType::kPasswordAccountStorageOptInAndGenerate:
-      OnUnlockItemAccepted(suggestion.type);
-      metrics_util::LogPasswordDropdownItemSelected(
-          suggestion.type ==
-                  autofill::SuggestionType::kPasswordAccountStorageOptIn
-              ? PasswordDropdownSelectedOption::kUnlockAccountStorePasswords
-              : PasswordDropdownSelectedOption::kUnlockAccountStoreGeneration,
-          password_client_->IsOffTheRecord());
       break;
     case autofill::SuggestionType::kWebauthnCredential:
       metrics_util::LogPasswordDropdownItemSelected(
@@ -397,27 +306,9 @@ void PasswordAutofillManager::OnAddPasswordFillData(
   if (!autofill_client_ || autofill_client_->GetAutofillSuggestions().empty()) {
     return;
   }
-  // Only log account-stored passwords if the unlock just happened.
-  if (HasLoadingSuggestion(
-          autofill_client_->GetAutofillSuggestions(),
-          autofill::SuggestionType::kPasswordAccountStorageOptIn)) {
-    LogAccountStoredPasswordsCountInFillDataAfterUnlock(fill_data);
-  }
   UpdatePopup(suggestion_generator_.GetSuggestionsForDomain(
       fill_data, page_favicon_, std::u16string(), OffersGeneration(false),
       ShowPasswordSuggestions(true), ShowWebAuthnCredentials(false)));
-}
-
-void PasswordAutofillManager::OnNoCredentialsFound() {
-  if (!autofill_client_ ||
-      !HasLoadingSuggestion(
-          autofill_client_->GetAutofillSuggestions(),
-          autofill::SuggestionType::kPasswordAccountStorageOptIn)) {
-    return;
-  }
-  metrics_util::LogPasswordsCountFromAccountStoreAfterUnlock(
-      /*account_store_passwords_count=*/0);
-  UpdatePopup({CreateAccountStorageEmptyEntry()});
 }
 
 void PasswordAutofillManager::DeleteFillData() {
@@ -662,27 +553,6 @@ void PasswordAutofillManager::OnFaviconReady(
   if (!result.image.IsEmpty()) {
     page_favicon_ = result.image;
   }
-}
-
-void PasswordAutofillManager::OnUnlockReauthCompleted(
-    autofill::SuggestionType type,
-    PasswordManagerClient::ReauthSucceeded reauth_succeeded) {
-  autofill_client_->ShowAutofillSuggestions(last_popup_open_args_,
-                                            weak_ptr_factory_.GetWeakPtr());
-  autofill_client_->PinAutofillSuggestions();
-  if (reauth_succeeded) {
-    if (type ==
-        autofill::SuggestionType::kPasswordAccountStorageOptInAndGenerate) {
-      password_client_->GeneratePassword(PasswordGenerationType::kAutomatic);
-      autofill_client_->HideAutofillSuggestions(
-          autofill::SuggestionHidingReason::kAcceptSuggestion);
-    }
-    return;
-  }
-  UpdatePopup(SetUnlockLoadingState(
-      std::move(last_popup_open_args_).suggestions, type, IsLoading(false)));
-  // Resets the popup arguments until the next ShowPopup() call.
-  last_popup_open_args_ = {};
 }
 
 void PasswordAutofillManager::OnBiometricReauthCompleted(

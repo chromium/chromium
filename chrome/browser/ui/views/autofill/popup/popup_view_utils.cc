@@ -484,10 +484,6 @@ bool IsExpandableSuggestionType(SuggestionType type) {
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
     case SuggestionType::kMerchantPromoCodeEntry:
     case SuggestionType::kMixedFormMessage:
-    case SuggestionType::kPasswordAccountStorageEmpty:
-    case SuggestionType::kPasswordAccountStorageOptIn:
-    case SuggestionType::kPasswordAccountStorageOptInAndGenerate:
-    case SuggestionType::kPasswordAccountStorageReSignin:
     case SuggestionType::kPasswordFieldByFieldFilling:
     case SuggestionType::kPlusAddressError:
     case SuggestionType::kAutofillAiFeedback:

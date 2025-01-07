@@ -190,7 +190,6 @@ void ContentPasswordManagerDriver::SetPasswordFillData(
 
 void ContentPasswordManagerDriver::InformNoSavedCredentials(
     bool should_show_popup_without_passwords) {
-  GetPasswordAutofillManager()->OnNoCredentialsFound();
   if (const auto& agent = GetPasswordAutofillAgent()) {
     agent->InformNoSavedCredentials(should_show_popup_without_passwords);
   }

@@ -67,11 +67,7 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
     case SuggestionType::kPasswordEntry:
     case SuggestionType::kAllSavedPasswordsEntry:
     case SuggestionType::kGeneratePasswordEntry:
-    case SuggestionType::kPasswordAccountStorageOptIn:
-    case SuggestionType::kPasswordAccountStorageOptInAndGenerate:
     case SuggestionType::kAccountStoragePasswordEntry:
-    case SuggestionType::kPasswordAccountStorageReSignin:
-    case SuggestionType::kPasswordAccountStorageEmpty:
     case SuggestionType::kWebauthnCredential:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
     case SuggestionType::kPasswordFieldByFieldFilling:
