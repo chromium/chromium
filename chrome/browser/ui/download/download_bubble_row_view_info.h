@@ -66,8 +66,6 @@ class DownloadBubbleRowViewInfo
   bool has_progress_bar() const { return progress_bar_.is_visible; }
   bool is_progress_bar_looping() const { return progress_bar_.is_looping; }
 
-  bool ShouldShowDeepScanNotice() const;
-
   void SetQuickActionsForTesting(
       const std::vector<DownloadBubbleQuickAction>& actions);
 
