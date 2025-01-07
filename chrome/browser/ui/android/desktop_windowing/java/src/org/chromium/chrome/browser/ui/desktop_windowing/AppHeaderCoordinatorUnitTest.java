@@ -72,8 +72,6 @@ public class AppHeaderCoordinatorUnitTest {
     private static final Rect WIDEST_UNOCCLUDED_RECT =
             new Rect(LEFT_BLOCK, 0, WINDOW_WIDTH - RIGHT_BLOCK, HEADER_HEIGHT);
     private static final int KEYBOARD_INSET = 736;
-    private static final int NAV_BAR_INSET = 128;
-    private static final int UNSPECIFIED_INSET = -1;
     private static final int APPEARANCE_LIGHT_CAPTION_BARS = 1 << 8;
 
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
@@ -347,7 +345,7 @@ public class AppHeaderCoordinatorUnitTest {
     }
 
     @Test
-    public void noImeOrNavBarInsets() {
+    public void noImeInsets() {
         // Simulate switching to desktop windowing mode, without any bottom insets.
         setupWithLeftAndRightBoundingRect();
         notifyInsetsRectObserver();
@@ -360,7 +358,7 @@ public class AppHeaderCoordinatorUnitTest {
                 /* error= */ "DesktopWindowing should exit when no insets is supplied.");
 
         // Simulate overlapping keyboard.
-        var insets = applyWindowInsets(KEYBOARD_INSET, UNSPECIFIED_INSET);
+        var insets = applyWindowInsets(KEYBOARD_INSET);
         assertNotEquals(
                 "Ime insets should not be consumed when root view is not adjusted.",
                 Insets.NONE,
@@ -370,7 +368,7 @@ public class AppHeaderCoordinatorUnitTest {
         // Simulate switching to desktop windowing mode.
         setupWithLeftAndRightBoundingRect();
         notifyInsetsRectObserver();
-        insets = applyWindowInsets(KEYBOARD_INSET, UNSPECIFIED_INSET);
+        insets = applyWindowInsets(KEYBOARD_INSET);
         assertEquals(
                 "Ime insets should be consumed when root view is bottom-padded.",
                 Insets.NONE,
@@ -384,7 +382,7 @@ public class AppHeaderCoordinatorUnitTest {
         // Simulate switching out of desktop windowing mode.
         setupWithNoCaptionInsets();
         notifyInsetsRectObserver();
-        insets = applyWindowInsets(KEYBOARD_INSET, UNSPECIFIED_INSET);
+        insets = applyWindowInsets(KEYBOARD_INSET);
         assertNotEquals(
                 "Ime insets should not be consumed when root view is not adjusted.",
                 Insets.NONE,
@@ -400,7 +398,7 @@ public class AppHeaderCoordinatorUnitTest {
         notifyInsetsRectObserver();
 
         // Simulate overlapping keyboard.
-        var insets = applyWindowInsets(KEYBOARD_INSET, UNSPECIFIED_INSET);
+        var insets = applyWindowInsets(KEYBOARD_INSET);
         assertEquals(
                 "Ime insets should be consumed when root view is adjusted.",
                 Insets.NONE,
@@ -411,7 +409,7 @@ public class AppHeaderCoordinatorUnitTest {
                 mSpyRootView.getPaddingBottom());
 
         // Simulate moving a desktop window that causes the keyboard inset to be updated.
-        insets = applyWindowInsets(KEYBOARD_INSET + 100, UNSPECIFIED_INSET);
+        insets = applyWindowInsets(KEYBOARD_INSET + 100);
         assertEquals(
                 "Ime insets should be consumed when root view is adjusted.",
                 Insets.NONE,
@@ -419,84 +417,6 @@ public class AppHeaderCoordinatorUnitTest {
         assertEquals(
                 "Root view bottom padding should be updated.",
                 KEYBOARD_INSET + 100,
-                mSpyRootView.getPaddingBottom());
-    }
-
-    @Test
-    public void overlappingNavBar_SwitchToAndFromDesktopWindowingMode() {
-        verifyDesktopWindowingDisabled(
-                /* error= */ "Desktop windowing mode should be disabled initially.");
-
-        // Simulate overlapping nav bar bottom inset.
-        var insets = applyWindowInsets(UNSPECIFIED_INSET, NAV_BAR_INSET);
-        assertNotEquals(
-                "Nav bar insets should not be consumed when root view is not adjusted.",
-                Insets.NONE,
-                insets.getInsets(WindowInsetsCompat.Type.navigationBars()));
-        assertEquals("Root view bottom should not be padded.", 0, mSpyRootView.getPaddingBottom());
-
-        // Simulate switching to desktop windowing mode.
-        setupWithLeftAndRightBoundingRect();
-        notifyInsetsRectObserver();
-        insets = applyWindowInsets(UNSPECIFIED_INSET, NAV_BAR_INSET);
-        assertEquals(
-                "Nav bar insets should be consumed when root view is bottom-padded.",
-                Insets.NONE,
-                insets.getInsets(WindowInsetsCompat.Type.ime()));
-        verifyDesktopWindowingEnabled();
-        assertEquals(
-                "Root view bottom padding should be updated.",
-                NAV_BAR_INSET,
-                mSpyRootView.getPaddingBottom());
-
-        // Simulate switching out of desktop windowing mode.
-        setupWithNoCaptionInsets();
-        notifyInsetsRectObserver();
-        insets = applyWindowInsets(UNSPECIFIED_INSET, NAV_BAR_INSET);
-        assertNotEquals(
-                "Nav bar insets should not be consumed when root view is not adjusted.",
-                Insets.NONE,
-                insets.getInsets(WindowInsetsCompat.Type.navigationBars()));
-        assertEquals(
-                "Root view bottom padding should be reset.", 0, mSpyRootView.getPaddingBottom());
-    }
-
-    @Test
-    public void overlappingNavBar_MoveDesktopWindow() {
-        // Simulate switching to desktop windowing mode.
-        setupWithLeftAndRightBoundingRect();
-        notifyInsetsRectObserver();
-
-        // Simulate overlapping nav bar bottom inset.
-        var insets = applyWindowInsets(UNSPECIFIED_INSET, NAV_BAR_INSET);
-        assertEquals(
-                "Nav bar insets should be consumed when root view is adjusted.",
-                Insets.NONE,
-                insets.getInsets(WindowInsetsCompat.Type.navigationBars()));
-
-        // Simulate moving a desktop window that causes the nav bar inset to be updated.
-        insets = applyWindowInsets(UNSPECIFIED_INSET, NAV_BAR_INSET - 10);
-        assertEquals(
-                "Nav bar insets should be consumed when root view is adjusted.",
-                Insets.NONE,
-                insets.getInsets(WindowInsetsCompat.Type.navigationBars()));
-        assertEquals(
-                "Root view bottom padding should be updated.",
-                NAV_BAR_INSET - 10,
-                mSpyRootView.getPaddingBottom());
-    }
-
-    @Test
-    public void overlappingKeyboardAndNavBar() {
-        // Simulate switching to desktop windowing mode.
-        setupWithLeftAndRightBoundingRect();
-        notifyInsetsRectObserver();
-
-        // Simulate overlapping keyboard and nav bar bottom insets.
-        var insets = applyWindowInsets(KEYBOARD_INSET, NAV_BAR_INSET);
-        assertEquals(
-                "Root view bottom padding should be updated.",
-                KEYBOARD_INSET,
                 mSpyRootView.getPaddingBottom());
     }
 
@@ -674,16 +594,10 @@ public class AppHeaderCoordinatorUnitTest {
         assertFalse("Edge to edge should not be active.", mEdgeToEdgeStateProvider.get());
     }
 
-    private WindowInsetsCompat applyWindowInsets(int keyboardInset, int navBarInset) {
+    private WindowInsetsCompat applyWindowInsets(int keyboardInset) {
         var windowInsetsBuilder = new WindowInsetsCompat.Builder();
-        if (keyboardInset != UNSPECIFIED_INSET) {
-            windowInsetsBuilder.setInsets(
-                    WindowInsetsCompat.Type.ime(), Insets.of(0, 0, 0, keyboardInset));
-        }
-        if (navBarInset != UNSPECIFIED_INSET) {
-            windowInsetsBuilder.setInsets(
-                    WindowInsetsCompat.Type.navigationBars(), Insets.of(0, 0, 0, navBarInset));
-        }
+        windowInsetsBuilder.setInsets(
+                WindowInsetsCompat.Type.ime(), Insets.of(0, 0, 0, keyboardInset));
         return mAppHeaderCoordinator.onApplyWindowInsets(mSpyRootView, windowInsetsBuilder.build());
     }
 }
