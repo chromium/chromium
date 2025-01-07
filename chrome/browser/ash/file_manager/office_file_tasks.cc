@@ -27,7 +27,6 @@
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/types_util.h"
@@ -123,15 +122,6 @@ bool AnyFileNeedsUploadToDrive(
 void RegisterOfficeProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kOfficeFilesAlwaysMoveToDrive, false);
   registry->RegisterBooleanPref(prefs::kOfficeFilesAlwaysMoveToOneDrive, false);
-  if (chromeos::features::IsUploadOfficeToCloudSyncEnabled()) {
-    registry->RegisterBooleanPref(
-        prefs::kOfficeFilesAlwaysMoveToDriveSyncable, false,
-        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-    registry->RegisterBooleanPref(
-        prefs::kOfficeFilesAlwaysMoveToOneDriveSyncable, false,
-        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-  }
-
   registry->RegisterBooleanPref(prefs::kOfficeMoveConfirmationShownForDrive,
                                 false);
   registry->RegisterBooleanPref(prefs::kOfficeMoveConfirmationShownForOneDrive,

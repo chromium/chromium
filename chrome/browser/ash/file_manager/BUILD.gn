@@ -12,6 +12,8 @@ static_library("file_manager") {
     "app_service_file_tasks.h",
     "cloud_upload_prefs_watcher.cc",
     "cloud_upload_prefs_watcher.h",
+    "cloud_upload_prompt_prefs_handler.cc",
+    "cloud_upload_prompt_prefs_handler.h",
     "copy_or_move_encrypted_hook_delegate.cc",
     "copy_or_move_encrypted_hook_delegate.h",
     "copy_or_move_io_task.cc",
@@ -389,6 +391,7 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   sources = [
+    "cloud_upload_prompt_prefs_handler_browsertest.cc",
     "external_filesystem_apitest.cc",
     "file_manager_browsertest.cc",
     "file_manager_browsertest_base.cc",
@@ -459,6 +462,7 @@ source_set("browser_tests") {
     "//chrome/browser/chromeos/upload_office_to_cloud",
     "//chrome/browser/enterprise/connectors/test:test_support",
     "//chrome/browser/extensions",
+    "//chrome/browser/policy:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/cast_config",
