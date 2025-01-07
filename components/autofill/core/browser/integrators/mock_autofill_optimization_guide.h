@@ -20,7 +20,7 @@ class MockAutofillOptimizationGuide : public AutofillOptimizationGuide {
 
   MOCK_METHOD(void,
               OnDidParseForm,
-              (const FormStructure&, const PersonalDataManager&),
+              (const FormStructure&, const PaymentsDataManager&),
               (override));
   MOCK_METHOD(CreditCardCategoryBenefit::BenefitCategory,
               AttemptToGetEligibleCreditCardBenefitCategory,

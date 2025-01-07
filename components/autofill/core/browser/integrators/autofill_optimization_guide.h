@@ -21,7 +21,7 @@ namespace autofill {
 class AutofillField;
 class CreditCard;
 class FormStructure;
-class PersonalDataManager;
+class PaymentsDataManager;
 
 // Class to enable and disable features on a per-origin basis using
 // optimization_guide::OptimizationGuideDecider.
@@ -38,12 +38,12 @@ class AutofillOptimizationGuide : public KeyedService {
   // Registers the necessary optimization guide deciders based on
   // `form_structure`, which is a result of the form parsing that takes place
   // once a user navigates to a new page. Based on `form_structure`,
-  // `personal_data_manager` is used to check whether the user has the required
+  // `payments_data_manager` is used to check whether the user has the required
   // pre-requisites saved in the web database to necessitate an optimization
   // type registration for certain optimization types that require additional
   // web database checks.
   virtual void OnDidParseForm(const FormStructure& form_structure,
-                              const PersonalDataManager& personal_data_manager);
+                              const PaymentsDataManager& payments_data_manager);
 
   // Checks if the `url` has an applicable category benefit for the credit card
   // issuer `issuer_id`. If an optimization is found, returns the applicable
@@ -94,7 +94,7 @@ class AutofillOptimizationGuide : public KeyedService {
  private:
   // Raw pointer to a decider which is owned by the decider's factory.
   // The factory dependencies ensure that the `decider_` outlives this object.
-  raw_ptr<optimization_guide::OptimizationGuideDecider> decider_;
+  const raw_ptr<optimization_guide::OptimizationGuideDecider> decider_;
 };
 
 }  // namespace autofill

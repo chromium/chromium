@@ -2751,9 +2751,10 @@ void BrowserAutofillManager::OnFormProcessed(
           client().GetAutofillOptimizationGuide()) {
     // Initiate necessary pre-processing based on the forms and fields that are
     // parsed, as well as the information that the user has saved in the web
-    // database based on `client().GetPersonalDataManager()`.
+    // database.
     autofill_optimization_guide->OnDidParseForm(
-        form_structure, client().GetPersonalDataManager());
+        form_structure,
+        client().GetPersonalDataManager().payments_data_manager());
   }
 
   if (AutofillAiDelegate* delegate = client().GetAutofillAiDelegate()) {

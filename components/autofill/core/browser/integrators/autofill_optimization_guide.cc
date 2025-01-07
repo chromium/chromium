@@ -8,11 +8,11 @@
 #include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
-#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/payments/constants.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
@@ -79,11 +79,10 @@ GetCardBenefitsOptimizationTypesForCard(const CreditCard& card) {
 }
 
 void AddCreditCardOptimizationTypes(
-    const PersonalDataManager& personal_data_manager,
+    base::span<const CreditCard* const> cards,
     base::flat_set<optimization_guide::proto::OptimizationType>&
         optimization_types) {
-  for (const CreditCard* card :
-       personal_data_manager.payments_data_manager().GetServerCreditCards()) {
+  for (const CreditCard* card : cards) {
     auto vcn_merchant_opt_out_optimization_type =
         GetVcnMerchantOptOutOptimizationTypeForCard(*card);
     if (vcn_merchant_opt_out_optimization_type !=
@@ -93,7 +92,7 @@ void AddCreditCardOptimizationTypes(
 
     // Check if the card is eligible for category-level benefit
     // optimizations from supported issuers. Other benefit types are read
-    // directly from the PersonalDataManager and don't require filter
+    // directly from the `PaymentsDataManager` and don't require filter
     // optimizations.
     if (base::FeatureList::IsEnabled(
             features::kAutofillEnableCardBenefitsSync)) {
@@ -158,38 +157,35 @@ AutofillOptimizationGuide::AutofillOptimizationGuide(
 
 AutofillOptimizationGuide::~AutofillOptimizationGuide() = default;
 
-// TODO(crbug.com/41492637): Pass PersonalDataManager by reference and remove
-// check for presence.
 void AutofillOptimizationGuide::OnDidParseForm(
     const FormStructure& form_structure,
-    const PersonalDataManager& personal_data_manager) {
+    const PaymentsDataManager& payments_data_manager) {
   // This flat set represents all of the optimization types that we need to
   // register based on `form_structure`.
   base::flat_set<optimization_guide::proto::OptimizationType>
       optimization_types;
 
-  bool has_iban_field =
+  const bool has_iban_field =
       std::ranges::any_of(form_structure, [](const auto& field) {
         return field->Type().GetStorableType() == IBAN_VALUE;
       });
   if (has_iban_field) {
     optimization_types.insert(optimization_guide::proto::IBAN_AUTOFILL_BLOCKED);
   }
-  bool has_credit_card_field =
+  const bool has_credit_card_field =
       std::ranges::any_of(form_structure, [](const auto& field) {
         return field->Type().group() == FieldTypeGroup::kCreditCard;
       });
 
+  std::vector<const CreditCard*> server_cards;
   if (has_credit_card_field) {
-    AddCreditCardOptimizationTypes(personal_data_manager, optimization_types);
+    server_cards = payments_data_manager.GetServerCreditCards();
+    AddCreditCardOptimizationTypes(server_cards, optimization_types);
   }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-  if (has_credit_card_field &&
-      !personal_data_manager.payments_data_manager()
-           .GetServerCreditCards()
-           .empty() &&
+  if (!server_cards.empty() &&
       base::FeatureList::IsEnabled(
           features::kAutofillEnableAmountExtractionDesktop)) {
     optimization_types.insert(
