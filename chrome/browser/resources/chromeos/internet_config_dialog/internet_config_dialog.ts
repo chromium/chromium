@@ -81,7 +81,7 @@ export class InternetConfigDialogElement extends
        * empty if nothing to prefill or the information will be synced based on
        * given guid.
        */
-      prefilledProperties_: ConfigProperties,
+      prefilledProperties_: Object,
 
       enableConnect_: Boolean,
 

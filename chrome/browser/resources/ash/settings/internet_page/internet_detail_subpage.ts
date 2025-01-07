@@ -956,8 +956,8 @@ export class SettingsInternetDetailPageElement extends
       textMessageAllowState: {
         allowTextMessages: e.detail.value,
       },
-      roaming: undefined,
-      apn: undefined,
+      roaming: null,
+      apn: null,
     };
     this.networkConfig_.setProperties(this.guid, config).then(response => {
       if (!response.success) {
@@ -1813,7 +1813,7 @@ export class SettingsInternetDetailPageElement extends
     const config = this.getDefaultConfigProperties_();
     const apn = event.detail;
     config.typeConfig
-        .cellular = {apn, roaming: undefined, textMessageAllowState: undefined};
+        .cellular = {apn, roaming: null, textMessageAllowState: null};
     this.setMojoNetworkProperties_(config);
   }
 

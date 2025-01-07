@@ -296,9 +296,6 @@ webui_ts_library("build_ts") {
     "metrics:copy_files",
     "shortcut_input_ui:copy_mojo_files",
     "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/common/resources/network:onc_mojo",
-    "//chromeos/services/network_config/public/mojom:mojom_webui_js",
-    "//chromeos/services/network_config/public/mojom:network_types_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 
@@ -567,7 +564,6 @@ group("closure_compile") {
     ":closure_compile_local",
     "cr_picture:closure_compile_module",
     "multidevice_setup:closure_compile_module",
-    "network:closure_compile_module",
     "post_message_api:closure_compile",
     "smb_shares:closure_compile_module",
   ]

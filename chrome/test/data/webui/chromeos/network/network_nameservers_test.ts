@@ -89,16 +89,16 @@ suite('NetworkNameserversTest', () => {
             NetworkType.kEthernet, 'f19a0128-0b37-490a-bfc9-d04031f27d2a',
             'name');
         managedProperties.staticIpConfig = {
-          gateway: undefined,
-          ipAddress: undefined,
+          gateway: null,
+          ipAddress: null,
           nameServers: {
             activeValue: ['8.8.8.2', '8.8.8.8', '0.0.0.0', '0.0.0.0'],
             policySource: PolicySource.kNone,
-            policyValue: undefined,
+            policyValue: null,
           },
-          routingPrefix: undefined,
+          routingPrefix: null,
           type: IPConfigType.kIPv4,
-          webProxyAutoDiscoveryUrl: undefined,
+          webProxyAutoDiscoveryUrl: null,
         };
         managedProperties.ipAddressConfigType.activeValue = 'DHCP';
         managedProperties.nameServersConfigType.activeValue = 'Static';
@@ -111,7 +111,7 @@ suite('NetworkNameserversTest', () => {
         assertTrue(!!customNameServerInput);
         assertEquals(ipAddress, customNameServerInput.value);
 
-        managedProperties.staticIpConfig.nameServers!.activeValue =
+        managedProperties.staticIpConfig!.nameServers!.activeValue =
             ['0.0.0.2', '8.8.8.8', '0.0.0.0', '0.0.0.0'];
         flush();
 

@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-{% if not for_bindings_internals -%}
+{% if not for_bindings_internals and
+   (interfaces|length > 0 or structs|length > 0 or unions|length > 0
+    or enums|length > 0) -%}
 import {mojo} from '{{bindings_library_path}}';
 {%- endif %}
 

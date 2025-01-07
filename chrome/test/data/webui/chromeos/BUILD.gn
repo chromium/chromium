@@ -108,7 +108,6 @@ js_type_check("closure_compile_local") {
                   ]
   deps = [
     ":chai_assert",
-    ":fake_network_config_mojom",
     ":mock_controller.m",
     ":test_browser_proxy",
     ":test_util",
@@ -117,14 +116,6 @@ js_type_check("closure_compile_local") {
 
 js_library("chai_assert") {
   externs_list = [ "//third_party/closure_compiler/externs/chai-3.5.js" ]
-}
-
-js_library("fake_network_config_mojom") {
-  deps = [
-    "//ash/webui/common/resources:assert",
-    "//ash/webui/common/resources:promise_resolver",
-    "//ash/webui/common/resources/network:onc_mojo",
-  ]
 }
 
 js_library("mock_controller.m") {

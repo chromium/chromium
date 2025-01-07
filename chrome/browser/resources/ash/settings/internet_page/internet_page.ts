@@ -50,7 +50,7 @@ import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/m
 import type {NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
 import {NetworkListenerBehavior} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {CrosNetworkConfigInterface, GlobalPolicy, NetworkStateProperties, VpnProvider} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {StartConnectResult} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
@@ -1049,7 +1049,6 @@ export class SettingsInternetPageElement extends
             ' Error: ' + response.message);
         return;
     }
-    assertNotReached();
   }
 
   /** Opens the three dots menu. */

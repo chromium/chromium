@@ -11,7 +11,6 @@ import '//resources/ash/common/cr_elements/policy/cr_tooltip_icon.js';
 import '//resources/ash/common/cr_elements/cr_hidden_style.css.js';
 
 import {CrPolicyIndicatorBehavior, CrPolicyIndicatorBehaviorInterface, CrPolicyIndicatorType} from '//resources/ash/common/cr_policy_indicator_behavior.js';
-import {ManagedBoolean, ManagedInt32, ManagedString} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {PolicySource} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

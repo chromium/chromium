@@ -116,16 +116,18 @@ suite('internet-detail-dialog', () => {
       cellularNetwork.typeProperties.cellular.iccid = testIccid;
       // Required for networkChooseMobile to be rendered.
       cellularNetwork.typeProperties.cellular.supportNetworkScan = true;
-      cellularNetwork.typeProperties.cellular.connectedApn = connectedApn;
-      cellularNetwork.typeProperties.cellular.customApnList = customApnList;
+      cellularNetwork.typeProperties.cellular.connectedApn =
+          connectedApn || null;
+      cellularNetwork.typeProperties.cellular.customApnList =
+          customApnList || null;
     }
     // Required for connectDisconnectButton to be rendered.
     cellularNetwork.connectionState = isPrimary ?
         ConnectionStateType.kConnected :
         ConnectionStateType.kNotConnected;
-    cellularNetwork.errorState = errorState;
+    cellularNetwork.errorState = errorState || null;
     if (portalState) {
-      cellularNetwork.portalState = portalState;
+      cellularNetwork.portalState = portalState || null;
     }
 
     mojoApi.setManagedPropertiesForTest(cellularNetwork);
@@ -150,16 +152,16 @@ suite('internet-detail-dialog', () => {
       deviceState: deviceState,
       inhibitReason: inhibitReason ? inhibitReason :
                                      InhibitReason.kNotInhibited,
-      simInfos: simInfos ? simInfos : undefined,
-      ipv4Address: undefined,
-      ipv6Address: undefined,
-      imei: undefined,
-      macAddress: macAddress,
+      simInfos: simInfos || null,
+      ipv4Address: null,
+      ipv6Address: null,
+      imei: null,
+      macAddress: macAddress || null,
       scanning: false,
-      simLockStatus: undefined,
+      simLockStatus: null,
       simAbsent: false,
       managedNetworkAvailable: false,
-      serial: undefined,
+      serial: null,
       isCarrierLocked: false,
       isFlashing: false,
     });
@@ -169,14 +171,14 @@ suite('internet-detail-dialog', () => {
       accessPointName: string, source: ApnSource, name?: string) {
     return {
       accessPointName: accessPointName,
-      id: undefined,
+      id: null,
       authentication: ApnAuthenticationType.kAutomatic,
-      language: undefined,
-      localizedName: undefined,
-      name: name,
-      password: undefined,
-      username: undefined,
-      attach: undefined,
+      language: null,
+      localizedName: null,
+      name: name || null,
+      password: null,
+      username: null,
+      attach: null,
       state: ApnState.kEnabled,
       ipType: ApnIpType.kAutomatic,
       apnTypes: [ApnType.kDefault],

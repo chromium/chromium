@@ -382,8 +382,8 @@ suite('network-config', () => {
       assertTrue(!!properties.typeConfig.wifi);
       properties.typeConfig.wifi.ssid = ssid;
       properties.typeConfig.wifi.security = security;
-      properties.typeConfig.wifi.passphrase = password;
-      properties.typeConfig.wifi.eap = eapConfig;
+      properties.typeConfig.wifi.passphrase = password || null;
+      properties.typeConfig.wifi.eap = eapConfig || null;
       return properties;
     }
 

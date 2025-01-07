@@ -136,8 +136,6 @@ export class RoutineGroupElement extends RoutineGroupElementBase {
       case RoutineVerdict.kNotRun:
         return Icons.TEST_NOT_RUN;
     }
-
-    return Icons.TEST_NOT_RUN;
   }
 
   /**

@@ -17,6 +17,7 @@ import {MojoInterfaceProviderImpl} from '//resources/ash/common/network/mojo_int
 import {NetworkListenerBehavior} from '//resources/ash/common/network/network_listener_behavior.js';
 import {assert, assertNotReached} from '//resources/js/assert.js';
 import {ESimManagerInterface, ESimOperationResult, ESimProfileProperties, EuiccRemote, ProfileInstallMethod, ProfileInstallResult, ProfileState} from '//resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
+import type {CrosNetworkConfigInterface} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {FilterType, NetworkStateProperties, NO_LIMIT} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -226,7 +227,7 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
     super();
 
     this.eSimManagerRemote_ = getESimManagerRemote();
-    const networkConfig =
+    const networkConfig: CrosNetworkConfigInterface =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
 
     const filter = {

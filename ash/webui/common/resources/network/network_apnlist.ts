@@ -163,9 +163,9 @@ export class NetworkApnListElement extends NetworkApnListElementBase {
       ipType: ApnIpType.kAutomatic,
       apnTypes: [ApnType.kDefault],
       source: ApnSource.kModem,
-      id: undefined,
-      language: undefined,
-      attach: undefined,
+      id: null,
+      language: null,
+      attach: null,
     };
   }
 
@@ -206,8 +206,7 @@ export class NetworkApnListElement extends NetworkApnListElementBase {
     const newApnList = this.managedProperties.typeProperties.cellular!.apnList;
     const oldApnList = oldManagedProperties.typeProperties.cellular!.apnList;
     if (!OncMojo.apnListMatch(
-            oldApnList && oldApnList.activeValue,
-            newApnList && newApnList.activeValue)) {
+            oldApnList?.activeValue, newApnList?.activeValue)) {
       return true;
     }
 
@@ -316,7 +315,7 @@ export class NetworkApnListElement extends NetworkApnListElementBase {
       return {
         accessPointName: apn.accessPointName,
         localizedName: apn.localizedName,
-        name: apn.name || apn.accessPointName || undefined,
+        name: apn.name || apn.accessPointName,
         username: apn.username,
         password: apn.password,
         id: apn.id,
@@ -392,11 +391,11 @@ export class NetworkApnListElement extends NetworkApnListElementBase {
         password: this.otherApn_.password,
         attach: this.isAttachApnToggleEnabled_ ? OncMojo.USE_ATTACH_APN_NAME :
                                                  '',
-        id: undefined,
+        id: null,
         authentication: ApnAuthenticationType.kAutomatic,
-        language: undefined,
-        localizedName: undefined,
-        name: undefined,
+        language: null,
+        localizedName: null,
+        name: null,
         state: ApnState.kEnabled,
         ipType: ApnIpType.kAutomatic,
         apnTypes: [ApnType.kDefault],

@@ -11,8 +11,8 @@ import {NetworkConfigInputElement} from 'chrome://resources/ash/common/network/n
 import {NetworkConfigSelectElement} from 'chrome://resources/ash/common/network/network_config_select.js';
 import {NetworkPasswordInputElement} from 'chrome://resources/ash/common/network/network_password_input.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {ManagedEAPProperties, ManagedIPConfigProperties, ManagedIPSecProperties, ManagedL2TPProperties, ManagedString, ManagedWireGuardProperties, NetworkCertificate, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+import {ManagedIPConfigProperties, ManagedIPSecProperties, ManagedL2TPProperties, ManagedString, ManagedWireGuardProperties, NetworkCertificate, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {NetworkType, PolicySource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -340,13 +340,21 @@ suite('network-config-vpn', function() {
           publicKey: 'KFhwdv4+jKpSXMW6xEUVtOe4Mo8l/xOvGmshmjiHx1Y=',
           endpoint: '192.168.66.66:32000',
           allowedIps: '0.0.0.0/0,::/0',
-          presharedKey: undefined,
+          presharedKey: null,
           persistentKeepaliveInterval: 0,
         }],
+        policySource: PolicySource.kNone,
+        policyValue: null,
       };
       wg1.typeProperties.vpn.wireguard = {
-        ipAddresses: {activeValue: ['10.10.0.1', 'fd00::1']},
+        ipAddresses: {
+          activeValue: ['10.10.0.1', 'fd00::1'],
+          policySource: PolicySource.kNone,
+          policyValue: null
+        },
         peers: peers,
+        privateKey: null,
+        publicKey: null,
       } as ManagedWireGuardProperties;
       const staticIpConfig = {
         nameServers: {activeValue: ['8.8.8.8', '8.8.4.4']}
@@ -391,7 +399,7 @@ suite('network-config-vpn', function() {
             !!configToSet.typeConfig.vpn.wireguard.peers);
         const peer = configToSet.typeConfig.vpn.wireguard.peers[0];
         assertTrue(!!peer);
-        assertEquals(undefined, peer.presharedKey);
+        assertEquals(null, peer.presharedKey);
       });
     });
   });
@@ -535,8 +543,8 @@ suite('network-config-vpn', function() {
       assertEquals(2, props.typeConfig.vpn.ipSec.ikeVersion);
       assertFalse(props.typeConfig.vpn.ipSec.saveCredentials);
       assertEquals(kTestPsk, props.typeConfig.vpn.ipSec.psk);
-      assertEquals('', props.typeConfig.vpn.ipSec.localIdentity);
-      assertEquals('', props.typeConfig.vpn.ipSec.remoteIdentity);
+      assertEquals(null, props.typeConfig.vpn.ipSec.localIdentity);
+      assertEquals(null, props.typeConfig.vpn.ipSec.remoteIdentity);
 
       networkConfig.set('vpnSaveCredentials_', true);
       props = networkConfig.getPropertiesToSetForTesting();
@@ -752,7 +760,6 @@ suite('network-config-vpn', function() {
         serverCaPems: {activeValue: [kCaPem]},
       };
       ikev2.typeProperties.vpn.ipSec = ipSec as ManagedIPSecProperties;
-      ManagedEAPProperties
       networkConfig = createNetworkConfigWithProperties(mojoApi_, ikev2);
       initNetworkConfigWithCerts(
           /* hasServerCa= */ true, /* hasUserCert= */ false);
@@ -977,9 +984,9 @@ suite('network-config-vpn', function() {
         assertTrue(!!props.typeConfig.vpn.ipSec);
         assertEquals('PSK', props.typeConfig.vpn.ipSec.authenticationType);
         assertEquals(1, props.typeConfig.vpn.ipSec.ikeVersion);
-        assertEquals(undefined, props.typeConfig.vpn.ipSec.eap);
-        assertEquals(undefined, props.typeConfig.vpn.ipSec.localIdentity);
-        assertEquals(undefined, props.typeConfig.vpn.ipSec.remoteIdentity);
+        assertEquals(null, props.typeConfig.vpn.ipSec.eap);
+        assertEquals(null, props.typeConfig.vpn.ipSec.localIdentity);
+        assertEquals(null, props.typeConfig.vpn.ipSec.remoteIdentity);
         assertTrue(!!props.typeConfig.vpn.l2tp);
         assertEquals(kTestUsername, props.typeConfig.vpn.l2tp.username);
         assertTrue(props.typeConfig.vpn.ipSec.saveCredentials);
@@ -1078,9 +1085,9 @@ suite('network-config-vpn', function() {
         assertEquals('PKCS11Id', props.typeConfig.vpn.ipSec.clientCertType);
         assertEquals(
             kUserCertId, props.typeConfig.vpn.ipSec.clientCertPkcs11Id);
-        assertEquals(undefined, props.typeConfig.vpn.ipSec.eap);
-        assertEquals(undefined, props.typeConfig.vpn.ipSec.localIdentity);
-        assertEquals(undefined, props.typeConfig.vpn.ipSec.remoteIdentity);
+        assertEquals(null, props.typeConfig.vpn.ipSec.eap);
+        assertEquals(null, props.typeConfig.vpn.ipSec.localIdentity);
+        assertEquals(null, props.typeConfig.vpn.ipSec.remoteIdentity);
         assertTrue(!!props.typeConfig.vpn.l2tp);
         assertEquals(kTestUsername, props.typeConfig.vpn.l2tp.username);
         assertTrue(props.typeConfig.vpn.ipSec.saveCredentials);

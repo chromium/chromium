@@ -92,7 +92,7 @@ export class NetworkChooseMobileElement extends NetworkChooseMobileElementBase {
       this.networkConfig_ =
           MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
     }
-    return this.networkConfig_;
+    return this.networkConfig_!;
   }
 
   private managedPropertiesChanged_(): void {
@@ -106,7 +106,7 @@ export class NetworkChooseMobileElement extends NetworkChooseMobileElementBase {
         networkId: 'none',
         technology: '',
         longName: this.i18n('networkCellularNoNetworks'),
-        shortName: undefined
+        shortName: null
       }];
     }
     // Set selectedMobileNetworkId_ after the dom-repeat has been stamped.

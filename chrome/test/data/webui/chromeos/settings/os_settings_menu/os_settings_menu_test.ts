@@ -810,19 +810,19 @@ suite('<os-settings-menu>', () => {
 
     function getCellularDeviceStateProps(): OncMojo.DeviceStateProperties {
       return {
-        ipv4Address: undefined,
-        ipv6Address: undefined,
-        imei: undefined,
-        macAddress: undefined,
+        ipv4Address: null,
+        ipv6Address: null,
+        imei: null,
+        macAddress: null,
         scanning: false,
-        simLockStatus: undefined,
-        simInfos: undefined,
+        simLockStatus: null,
+        simInfos: null,
         inhibitReason: InhibitReason.kNotInhibited,
         simAbsent: false,
         deviceState: DeviceStateType.kDisabled,
         type: NetworkType.kCellular,
         managedNetworkAvailable: false,
-        serial: undefined,
+        serial: null,
         isCarrierLocked: false,
         isFlashing: false,
       };

@@ -85,7 +85,7 @@ suite('NetworkChooseMobileTest', () => {
       networkId: '1',
       technology: '',
       longName: 'network_name',
-      shortName: undefined
+      shortName: null
     }];
     chooseMobile.managedProperties = managedProperties;
     chooseMobile.deviceState = getDeviceState(/* scanning= */ false);
