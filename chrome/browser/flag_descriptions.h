@@ -2610,9 +2610,6 @@ extern const char kDrawCutoutEdgeToEdgeDescription[];
 extern const char kDrawKeyNativeEdgeToEdgeName[];
 extern const char kDrawKeyNativeEdgeToEdgeDescription[];
 
-extern const char kDrawNativeEdgeToEdgeName[];
-extern const char kDrawNativeEdgeToEdgeDescription[];
-
 extern const char kDynamicSafeAreaInsetsName[];
 extern const char kDynamicSafeAreaInsetsDescription[];
 

@@ -319,7 +319,6 @@ public abstract class ChromeFeatureList {
     public static final String DOWNLOADS_MIGRATE_TO_JOBS_API = "DownloadsMigrateToJobsAPI";
     public static final String DRAW_CUTOUT_EDGE_TO_EDGE = "DrawCutoutEdgeToEdge";
     public static final String DRAW_KEY_NATIVE_EDGE_TO_EDGE = "DrawKeyNativeEdgeToEdge";
-    public static final String DRAW_NATIVE_EDGE_TO_EDGE = "DrawNativeEdgeToEdge";
     public static final String DYNAMIC_SAFE_AREA_INSETS = "DynamicSafeAreaInsets";
     public static final String EDGE_TO_EDGE_BOTTOM_CHIN = "EdgeToEdgeBottomChin";
     public static final String EDGE_TO_EDGE_EVERYWHERE = "EdgeToEdgeEverywhere";
@@ -669,8 +668,6 @@ public abstract class ChromeFeatureList {
                     DRAW_KEY_NATIVE_EDGE_TO_EDGE,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
-    public static final CachedFlag sDrawNativeEdgeToEdge =
-            newCachedFlag(DRAW_NATIVE_EDGE_TO_EDGE, false);
     public static final CachedFlag sEdgeToEdgeBottomChin =
             newCachedFlag(
                     EDGE_TO_EDGE_BOTTOM_CHIN,
@@ -857,7 +854,6 @@ public abstract class ChromeFeatureList {
                     sDisableInstanceLimit,
                     sDownloadsMigrateToJobsAPI,
                     sDrawKeyNativeEdgeToEdge,
-                    sDrawNativeEdgeToEdge,
                     sEdgeToEdgeBottomChin,
                     sEdgeToEdgeEverywhere,
                     sEdgeToEdgeWebOptIn,

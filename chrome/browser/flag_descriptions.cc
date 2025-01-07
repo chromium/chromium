@@ -4484,11 +4484,6 @@ const char kDrawKeyNativeEdgeToEdgeDescription[] =
     "Enables the Android feature Edge-to-Edge and forces a draw ToEdge on "
     "select native pages.";
 
-const char kDrawNativeEdgeToEdgeName[] = "DrawNativeEdgeToEdge";
-const char kDrawNativeEdgeToEdgeDescription[] =
-    "Enables the Android feature Edge-to-Edge and forces a draw ToEdge on all "
-    "native pages.";
-
 const char kEdgeToEdgeBottomChinName[] = "EdgeToEdgeBottomChin";
 const char kEdgeToEdgeBottomChinDescription[] =
     "Enables the scrollable bottom chin for an intermediate Edge-to-Edge "

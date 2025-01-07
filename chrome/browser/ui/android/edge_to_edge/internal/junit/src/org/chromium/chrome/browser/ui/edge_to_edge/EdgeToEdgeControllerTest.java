@@ -91,7 +91,6 @@ import org.chromium.ui.base.WindowAndroid;
     ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
     ChromeFeatureList.EDGE_TO_EDGE_WEB_OPT_IN
 })
-@DisableFeatures(ChromeFeatureList.DRAW_NATIVE_EDGE_TO_EDGE)
 public class EdgeToEdgeControllerTest {
 
     private static final int TOP_INSET = 113;
@@ -220,9 +219,7 @@ public class EdgeToEdgeControllerTest {
                         eq(0),
                         intThat(Matchers.greaterThan(0)),
                         eq(0),
-                        ChromeFeatureList.sDrawNativeEdgeToEdge.isEnabled()
-                                ? eq(0)
-                                : intThat(Matchers.greaterThan(0)));
+                        intThat(Matchers.greaterThan(0)));
         verify(mInsetObserver, times(1))
                 .addInsetsConsumer(any(), eq(InsetConsumerSource.EDGE_TO_EDGE_CONTROLLER_IMPL));
         EdgeToEdgeControllerFactory.setHas3ButtonNavBar(false);
@@ -289,29 +286,6 @@ public class EdgeToEdgeControllerTest {
         verifyInteractions(mTab);
         assertFalse(mEdgeToEdgeControllerImpl.isPageOptedIntoEdgeToEdge());
         assertNoChangeExpectations();
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.DRAW_NATIVE_EDGE_TO_EDGE)
-    public void onObservingDifferentTab_changeToNative() {
-        when(mTab.isNativePage()).thenReturn(true);
-        mTabProvider.set(mTab);
-        verifyInteractions(mTab);
-        assertTrue(mEdgeToEdgeControllerImpl.isPageOptedIntoEdgeToEdge());
-        assertToEdgeExpectations();
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.DRAW_NATIVE_EDGE_TO_EDGE)
-    public void onObservingDifferentTab_changeToTabSwitcher() {
-        // For the Tab Switcher we need to switch from some non-null Tab to null.
-        when(mTab.isNativePage()).thenReturn(false);
-        mTabProvider.set(mTab);
-        verifyInteractions(mTab);
-        Tab nullForTabSwitcher = null;
-        mTabProvider.set(nullForTabSwitcher);
-        assertTrue(mEdgeToEdgeControllerImpl.isPageOptedIntoEdgeToEdge());
-        assertToEdgeExpectations();
     }
 
     @Test
@@ -502,20 +476,6 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.DRAW_NATIVE_EDGE_TO_EDGE,
-        ChromeFeatureList.DYNAMIC_SAFE_AREA_INSETS
-    })
-    public void onObservingDifferentTab_simple() {
-        // For the Tab Switcher we need to switch from some non-null Tab to null.
-        when(mTab.isNativePage()).thenReturn(true);
-        mTabProvider.set(mTab);
-        verifyInteractions(mTab);
-        assertToEdgeExpectations();
-        assertBottomInsetForSafeArea(SYSTEM_INSETS.bottom);
-    }
-
-    @Test
     @DisableFeatures(ChromeFeatureList.DYNAMIC_SAFE_AREA_INSETS)
     public void bottomInsetForSafeArea_noTab() {
         mEdgeToEdgeControllerImpl.setIsOptedIntoEdgeToEdgeForTesting(true);
@@ -683,7 +643,6 @@ public class EdgeToEdgeControllerTest {
 
     @Test
     @Config(qualifiers = "xlarge")
-    @EnableFeatures(ChromeFeatureList.DRAW_NATIVE_EDGE_TO_EDGE)
     public void disabledWhenNotPhone() {
         // Even these always-draw flags do not override the device abilities.
         EdgeToEdgeUtils.setAlwaysDrawWebEdgeToEdgeForTesting(true);
@@ -694,7 +653,6 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.DRAW_NATIVE_EDGE_TO_EDGE)
     public void disabledWhenNotGestureEnabled() {
         // Even these always-draw flags do not override the device abilities.
         EdgeToEdgeUtils.setAlwaysDrawWebEdgeToEdgeForTesting(true);

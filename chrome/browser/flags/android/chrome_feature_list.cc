@@ -257,7 +257,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kDelayTempStripRemoval,
     &kDeviceAuthenticatorAndroidx,
     &kDrawKeyNativeEdgeToEdge,
-    &kDrawNativeEdgeToEdge,
     &kEdgeToEdgeBottomChin,
     &kEdgeToEdgeEverywhere,
     &kEdgeToEdgeSafeAreaConstraint,
@@ -761,10 +760,6 @@ BASE_FEATURE(kDeviceAuthenticatorAndroidx,
 
 BASE_FEATURE(kDrawKeyNativeEdgeToEdge,
              "DrawKeyNativeEdgeToEdge",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kDrawNativeEdgeToEdge,
-             "DrawNativeEdgeToEdge",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEdgeToEdgeBottomChin,

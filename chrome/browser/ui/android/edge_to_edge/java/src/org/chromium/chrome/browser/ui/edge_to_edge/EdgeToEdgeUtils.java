@@ -223,9 +223,6 @@ public class EdgeToEdgeUtils {
 
     /** Whether a native tab will be drawn edge to to edge. */
     static boolean isNativeTabDrawingToEdge(Tab activeTab) {
-        // sDrawNativeEdgeToEdge will draw all native page to edge forcefully.
-        if (ChromeFeatureList.sDrawNativeEdgeToEdge.isEnabled()) return true;
-
         if (!ChromeFeatureList.sDrawKeyNativeEdgeToEdge.isEnabled()) return false;
 
         // TODO(crbug.com/339025702): Check if we are in tab switcher when activeTab is null.

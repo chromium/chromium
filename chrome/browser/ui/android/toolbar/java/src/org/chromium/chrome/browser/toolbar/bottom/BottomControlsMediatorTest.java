@@ -38,7 +38,6 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
@@ -199,7 +198,6 @@ public class BottomControlsMediatorTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.DRAW_NATIVE_EDGE_TO_EDGE)
     public void testEdgeToEdge_ObserverCalled() {
         // Set up a mediator with a live EdgeToEdgeController.
         Activity activity = Robolectric.buildActivity(TestActivity.class).setup().get();
