@@ -6653,7 +6653,6 @@ bool ChromeContentBrowserClient::WillInterceptWebSocket(
     return false;
 
   return (web_request_api->MayHaveProxies() ||
-          web_request_api->MayHaveWebsocketProxiesForExtensionTelemetry() ||
           web_request_api->IsAvailableToWebViewEmbedderFrame(frame));
 #else
   return false;

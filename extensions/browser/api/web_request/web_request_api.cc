@@ -445,21 +445,6 @@ WebRequestAPI::ProxyDecision WebRequestAPI::MaybeProxyURLLoaderFactoryInternal(
     }
 #endif
 
-    // Create a proxy URLLoader even when there is no CRX
-    // installed with webRequest permissions. This allows the extension
-    // requests to be intercepted for CRX telemetry service if enabled.
-    // Only proxy if the new RHC interception logic is disabled.
-    // TODO(crbug.com/40913716): Clean up collection logic here once new RHC
-    // interception logic is fully launched.
-    const std::string& request_scheme = request_initiator.scheme();
-    if (extensions::kExtensionScheme == request_scheme &&
-        ExtensionsBrowserClient::Get()->IsExtensionTelemetryServiceEnabled(
-            browser_context) &&
-        !base::FeatureList::IsEnabled(
-            safe_browsing::
-                kExtensionTelemetryInterceptRemoteHostsContactedInRenderer)) {
-      decision = ProxyDecision::kWillProxyForTelemetry;
-    }
     if (decision == ProxyDecision::kWillNotProxy) {
       return decision;
     }
@@ -551,8 +536,7 @@ void WebRequestAPI::ProxyWebSocket(
     mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
         handshake_client) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(MayHaveProxies() || MayHaveWebsocketProxiesForExtensionTelemetry() ||
-         IsAvailableToWebViewEmbedderFrame(frame));
+  DCHECK(MayHaveProxies() || IsAvailableToWebViewEmbedderFrame(frame));
 
   content::BrowserContext* browser_context =
       frame->GetProcess()->GetBrowserContext();
@@ -606,16 +590,6 @@ bool WebRequestAPI::MayHaveProxies() const {
   }
 
   return web_request_extension_count_ > 0;
-}
-
-bool WebRequestAPI::MayHaveWebsocketProxiesForExtensionTelemetry() const {
-  // TODO(crbug.com/40913716): Clean up once new RHC interception logic is fully
-  // launched.
-  return ExtensionsBrowserClient::Get()->IsExtensionTelemetryServiceEnabled(
-             browser_context_) &&
-         !base::FeatureList::IsEnabled(
-             safe_browsing::
-                 kExtensionTelemetryInterceptRemoteHostsContactedInRenderer);
 }
 
 bool WebRequestAPI::IsAvailableToWebViewEmbedderFrame(

@@ -84,7 +84,6 @@
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/update_client/update_client.h"
 #include "components/version_info/version_info.h"
@@ -837,38 +836,6 @@ void ChromeExtensionsBrowserClient::
       CreateDeclarativeNetRequestRedirectActionSignal(extension_id, request_url,
                                                       redirect_url);
   telemetry_service->AddSignal(std::move(signal));
-}
-
-void ChromeExtensionsBrowserClient::NotifyExtensionRemoteHostContacted(
-    content::BrowserContext* context,
-    const ExtensionId& extension_id,
-    const GURL& url) const {
-  // Collect only if new interception feature is disabled to avoid duplicates.
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::
-              kExtensionTelemetryInterceptRemoteHostsContactedInRenderer)) {
-    return;
-  }
-
-  safe_browsing::RemoteHostInfo::ProtocolType protocol =
-      safe_browsing::RemoteHostInfo::UNSPECIFIED;
-  if (url.SchemeIsHTTPOrHTTPS()) {
-    protocol = safe_browsing::RemoteHostInfo::HTTP_HTTPS;
-  } else if (url.SchemeIsWSOrWSS()) {
-    protocol = safe_browsing::RemoteHostInfo::WEBSOCKET;
-  } else {
-    return;
-  }
-  auto* telemetry_service =
-      safe_browsing::ExtensionTelemetryServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(context));
-  if (!telemetry_service || !telemetry_service->enabled()) {
-    return;
-  }
-  auto remote_host_signal =
-      std::make_unique<safe_browsing::RemoteHostContactedSignal>(extension_id,
-                                                                 url, protocol);
-  telemetry_service->AddSignal(std::move(remote_host_signal));
 }
 
 // static

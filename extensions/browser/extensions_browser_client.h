@@ -473,14 +473,6 @@ class ExtensionsBrowserClient {
       const GURL& request_url,
       const GURL& redirect_url) const;
 
-  // TODO(zackhan): This is a temporary implementation of notifying the
-  // extension telemetry service when there are web requests initiated from
-  // chrome extensions. Its usefulness will be evaluated.
-  virtual void NotifyExtensionRemoteHostContacted(
-      content::BrowserContext* context,
-      const ExtensionId& extension_id,
-      const GURL& url) const;
-
   // Return true if the USB device is allowed by policy.
   virtual bool IsUsbDeviceAllowedByPolicy(content::BrowserContext* context,
                                           const ExtensionId& extension_id,

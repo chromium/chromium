@@ -164,11 +164,6 @@ void ExtensionsBrowserClient::
         const GURL& request_url,
         const GURL& redirect_url) const {}
 
-void ExtensionsBrowserClient::NotifyExtensionRemoteHostContacted(
-    content::BrowserContext* context,
-    const ExtensionId& extension_id,
-    const GURL& url) const {}
-
 bool ExtensionsBrowserClient::IsUsbDeviceAllowedByPolicy(
     content::BrowserContext* context,
     const ExtensionId& extension_id,

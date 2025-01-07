@@ -206,9 +206,6 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
       const ExtensionId& extension_id,
       const GURL& request_url,
       const GURL& redirect_url) const override;
-  void NotifyExtensionRemoteHostContacted(content::BrowserContext* context,
-                                          const ExtensionId& extension_id,
-                                          const GURL& url) const override;
   static void set_did_chrome_update_for_testing(bool did_update);
   bool IsUsbDeviceAllowedByPolicy(content::BrowserContext* context,
                                   const ExtensionId& extension_id,

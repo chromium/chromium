@@ -184,11 +184,6 @@ constexpr base::FeatureParam<int>
         &kExtensionTelemetryForEnterprise, "EnterpriseReportingIntervalSeconds",
         /*default_value=*/300};
 
-BASE_FEATURE(
-    kExtensionTelemetryInterceptRemoteHostsContactedInRenderer,
-    "SafeBrowsingExtensionTelmetryInterceptRemoteHostsContactedInRenderer",
-    base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kExtensionTelemetryTabsExecuteScriptSignal,
              "SafeBrowsingExtensionTelemetryTabsExecuteScriptSignal",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -346,7 +341,6 @@ base::Value::List GetFeatureStatusList() {
       &kEnterpriseRealTimeUrlCheckOnAndroid,
       &kExtensionTelemetryDeclarativeNetRequestActionSignal,
       &kExtensionTelemetryForEnterprise,
-      &kExtensionTelemetryInterceptRemoteHostsContactedInRenderer,
       &kExtensionTelemetryTabsExecuteScriptSignal,
       &kExternalAppRedirectTelemetry,
       &kHashPrefixRealTimeLookups,

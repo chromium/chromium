@@ -905,18 +905,6 @@ int WebRequestEventRouter::OnBeforeRequest(
 
   const bool is_incognito_context = browser_context->IsOffTheRecord();
 
-  // CRX requests information can be intercepted here.
-  // May be null for browser-initiated requests such as navigations.
-  if (request->initiator) {
-    const std::string& scheme = request->initiator->scheme();
-    const ExtensionId& extension_id = request->initiator->host();
-    const GURL& request_url = request->url;
-    if (scheme == extensions::kExtensionScheme) {
-      ExtensionsBrowserClient::Get()->NotifyExtensionRemoteHostContacted(
-          browser_context, extension_id, request_url);
-    }
-  }
-
   // Whether to initialized `blocked_requests_`.
   bool initialize_blocked_requests = false;
 
