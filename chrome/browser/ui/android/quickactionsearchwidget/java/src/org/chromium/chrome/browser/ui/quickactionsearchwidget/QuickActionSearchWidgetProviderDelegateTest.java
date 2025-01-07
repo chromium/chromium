@@ -31,11 +31,11 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -616,7 +616,6 @@ public class QuickActionSearchWidgetProviderDelegateTest {
 
     @Test
     @SmallTest
-    @RequiresRestart("Failing 1st try, crbug.com/379168927")
     public void resizeDinoWidgetToFillTargetCellArea_repositionContent() {
         final Resources r = mContext.getResources();
 
@@ -651,6 +650,12 @@ public class QuickActionSearchWidgetProviderDelegateTest {
 
         final Resources r = mContext.getResources();
         r.updateConfiguration(c, null);
+
+        ResettersForTesting.register(
+                () -> {
+                    c.setLayoutDirection(Locale.getDefault());
+                    r.updateConfiguration(c, null);
+                });
 
         // Again, apply half the size of what the widget was designed for.
         final int areaWidthDp = mDinoWidgetEdgeSizeDp / 4;
