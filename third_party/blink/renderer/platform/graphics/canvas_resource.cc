@@ -290,7 +290,7 @@ CanvasResourceSharedBitmap::~CanvasResourceSharedBitmap() {
 }
 
 bool CanvasResourceSharedBitmap::IsValid() const {
-  return shared_mapping_.IsValid();
+  return !!shared_image_;
 }
 
 scoped_refptr<StaticBitmapImage> CanvasResourceSharedBitmap::Bitmap() {
@@ -331,9 +331,9 @@ scoped_refptr<CanvasResourceSharedBitmap> CanvasResourceSharedBitmap::Create(
 }
 
 void CanvasResourceSharedBitmap::NotifyResourceLost() {
-  // Release our reference to the shared memory mapping since the resource can
-  // no longer be safely recycled and this memory is needed for copy-on-write.
-  shared_mapping_ = {};
+  // Release our reference to the SharedImage since the resource can
+  // no longer be safely recycled and its memory is needed for copy-on-write.
+  shared_image_.reset();
 }
 
 void CanvasResourceSharedBitmap::UploadSoftwareRenderingResults(
