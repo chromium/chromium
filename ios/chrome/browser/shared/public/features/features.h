@@ -945,6 +945,10 @@ BASE_DECLARE_FEATURE(kOmahaResyncTimerOnForeground);
 // Feature flag to use the async version of the chrome startup method.
 BASE_DECLARE_FEATURE(kChromeStartupParametersAsync);
 
+// Feature flag to enable the opening of links from Youtube Incognito in Chrome
+// incognito.
+BASE_DECLARE_FEATURE(kYoutubeIncognito);
+
 // Feature flag to enable Reactivation Notifications.
 BASE_DECLARE_FEATURE(kIOSReactivationNotifications);
 

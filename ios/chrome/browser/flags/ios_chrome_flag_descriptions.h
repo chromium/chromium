@@ -221,6 +221,11 @@ extern const char kContextualPanelDescription[];
 extern const char kCredentialProviderPerformanceImprovementsName[];
 extern const char kCredentialProviderPerformanceImprovementsDescription[];
 
+// Title and description for the flag to enable the use of the  async version of
+// the chrome startup method.
+extern const char kChromeStartupParametersAsyncName[];
+extern const char kChromeStartupParametersAsyncDescription[];
+
 // Title and description for the flag to enable experience kit apple calendar
 // events.
 extern const char kAppleCalendarExperienceKitName[];
@@ -1135,10 +1140,10 @@ extern const char kWebPageAlternativeTextZoomDescription[];
 extern const char kWebPageTextZoomIPadName[];
 extern const char kWebPageTextZoomIPadDescription[];
 
-// Title and description for the flag to enable the use of the  async version of
-// the chrome startup method.
-extern const char kChromeStartupParametersAsyncName[];
-extern const char kChromeStartupParametersAsyncDescription[];
+// Title and description for the flag to enable the opening of links from
+// Youtube incognito in Chrome incognito.
+extern const char kYoutubeIncognitoName[];
+extern const char kYoutubeIncognitoDescription[];
 
 // Please add names and descriptions above in alphabetical order.
 
