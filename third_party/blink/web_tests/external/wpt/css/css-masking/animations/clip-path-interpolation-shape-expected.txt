@@ -1,5 +1,33 @@
 This is a testharness.js-based test.
-Found 606 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 620 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] CSS Transitions: property <clip-path> from neutral to [shape(from -5px 5px, line to 20px 20%)] at (-0.3) should be [shape(from 8px 5px, line to 7px 7%)]
+  assert_equals: expected "shape ( from 8px 5px , line to 7px 7 % ) " but got "shape ( from - 5px 5px , line to 20px 20 % ) "
+[FAIL] CSS Transitions: property <clip-path> from neutral to [shape(from -5px 5px, line to 20px 20%)] at (0) should be [shape(from 5px 5px, line to 10px 10%)]
+  assert_equals: expected "shape ( from 5px 5px , line to 10px 10 % ) " but got "shape ( from - 5px 5px , line to 20px 20 % ) "
+[FAIL] CSS Transitions: property <clip-path> from neutral to [shape(from -5px 5px, line to 20px 20%)] at (0.6) should be [shape(from -1px 5px, line to 16px 16%)]
+  assert_equals: expected "shape ( from - 1px 5px , line to 16px 16 % ) " but got "shape ( from - 5px 5px , line to 20px 20 % ) "
+[FAIL] CSS Transitions: property <clip-path> from neutral to [shape(from -5px 5px, line to 20px 20%)] at (1.5) should be [shape(from -10px 5px, line to 25px 25%)]
+  assert_equals: expected "shape ( from - 10px 5px , line to 25px 25 % ) " but got "shape ( from - 5px 5px , line to 20px 20 % ) "
+[FAIL] CSS Transitions with transition: all: property <clip-path> from neutral to [shape(from -5px 5px, line to 20px 20%)] at (-0.3) should be [shape(from 8px 5px, line to 7px 7%)]
+  assert_equals: expected "shape ( from 8px 5px , line to 7px 7 % ) " but got "shape ( from - 5px 5px , line to 20px 20 % ) "
+[FAIL] CSS Transitions with transition: all: property <clip-path> from neutral to [shape(from -5px 5px, line to 20px 20%)] at (0) should be [shape(from 5px 5px, line to 10px 10%)]
+  assert_equals: expected "shape ( from 5px 5px , line to 10px 10 % ) " but got "shape ( from - 5px 5px , line to 20px 20 % ) "
+[FAIL] CSS Transitions with transition: all: property <clip-path> from neutral to [shape(from -5px 5px, line to 20px 20%)] at (0.6) should be [shape(from -1px 5px, line to 16px 16%)]
+  assert_equals: expected "shape ( from - 1px 5px , line to 16px 16 % ) " but got "shape ( from - 5px 5px , line to 20px 20 % ) "
+[FAIL] CSS Transitions with transition: all: property <clip-path> from neutral to [shape(from -5px 5px, line to 20px 20%)] at (1.5) should be [shape(from -10px 5px, line to 25px 25%)]
+  assert_equals: expected "shape ( from - 10px 5px , line to 25px 25 % ) " but got "shape ( from - 5px 5px , line to 20px 20 % ) "
+[FAIL] CSS Animations: property <clip-path> from neutral to [shape(from -5px 5px, line to 20px 20%)] at (-0.3) should be [shape(from 8px 5px, line to 7px 7%)]
+  assert_equals: expected "shape ( from 8px 5px , line to 7px 7 % ) " but got "shape ( from 5px 5px , line to 10px 10 % ) "
+[FAIL] CSS Animations: property <clip-path> from neutral to [shape(from -5px 5px, line to 20px 20%)] at (0.6) should be [shape(from -1px 5px, line to 16px 16%)]
+  assert_equals: expected "shape ( from - 1px 5px , line to 16px 16 % ) " but got "shape ( from - 5px 5px , line to 20px 20 % ) "
+[FAIL] CSS Animations: property <clip-path> from neutral to [shape(from -5px 5px, line to 20px 20%)] at (1.5) should be [shape(from -10px 5px, line to 25px 25%)]
+  assert_equals: expected "shape ( from - 10px 5px , line to 25px 25 % ) " but got "shape ( from - 5px 5px , line to 20px 20 % ) "
+[FAIL] Web Animations: property <clip-path> from neutral to [shape(from -5px 5px, line to 20px 20%)] at (-0.3) should be [shape(from 8px 5px, line to 7px 7%)]
+  assert_equals: expected "shape ( from 8px 5px , line to 7px 7 % ) " but got "shape ( from 5px 5px , line to 10px 10 % ) "
+[FAIL] Web Animations: property <clip-path> from neutral to [shape(from -5px 5px, line to 20px 20%)] at (0.6) should be [shape(from -1px 5px, line to 16px 16%)]
+  assert_equals: expected "shape ( from - 1px 5px , line to 16px 16 % ) " but got "shape ( from - 5px 5px , line to 20px 20 % ) "
+[FAIL] Web Animations: property <clip-path> from neutral to [shape(from -5px 5px, line to 20px 20%)] at (1.5) should be [shape(from -10px 5px, line to 25px 25%)]
+  assert_equals: expected "shape ( from - 10px 5px , line to 25px 25 % ) " but got "shape ( from - 5px 5px , line to 20px 20 % ) "
 [FAIL] CSS Transitions: property <clip-path> from [inherit] to [shape(from 15% 15px, move to 20% -10px)] at (-0.3) should be [shape(from calc(-4.5% - 6.5px) 2px, move to 0.5% 4.3px)]
   assert_true: 'to' value should be supported expected true got false
 [FAIL] CSS Transitions: property <clip-path> from [inherit] to [shape(from 15% 15px, move to 20% -10px)] at (0) should be [shape(from calc(0% - 5px) 5px, move to 5% 1px)]

@@ -47,7 +47,8 @@ const BasicShape* GetBasicShape(const CSSProperty& property,
       // Path and Ray shapes are handled by PathInterpolationType and
       // RayInterpolationType.
       if (shape.GetType() == BasicShape::kStylePathType ||
-          shape.GetType() == BasicShape::kStyleRayType) {
+          shape.GetType() == BasicShape::kStyleRayType ||
+          shape.GetType() == BasicShape::kStyleShapeType) {
         return nullptr;
       }
 
@@ -61,8 +62,10 @@ const BasicShape* GetBasicShape(const CSSProperty& property,
       auto* shape = clip_path_operation->GetBasicShape();
 
       // Path shape is handled by PathInterpolationType.
-      if (shape->GetType() == BasicShape::kStylePathType)
+      if (shape->GetType() == BasicShape::kStylePathType ||
+          shape->GetType() == BasicShape::kStyleShapeType) {
         return nullptr;
+      }
 
       return shape;
     }

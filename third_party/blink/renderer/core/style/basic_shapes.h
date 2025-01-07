@@ -63,7 +63,8 @@ class CORE_EXPORT BasicShape : public RefCounted<BasicShape> {
     kBasicShapeCircleType,
     kBasicShapeInsetType,
     kStyleRayType,
-    kStylePathType
+    kStylePathType,
+    kStyleShapeType,
   };
 
   bool IsSameType(const BasicShape& other) const {

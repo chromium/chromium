@@ -256,7 +256,8 @@ class StyleBuilderConverter {
                                                  const CSSValue&);
   static StyleOffsetRotation ConvertOffsetRotate(StyleResolverState&,
                                                  const CSSValue&);
-  static LengthPoint ConvertPosition(StyleResolverState&, const CSSValue&);
+  static LengthPoint ConvertPosition(const StyleResolverState&,
+                                     const CSSValue&);
   static LengthPoint ConvertPositionOrAuto(StyleResolverState&,
                                            const CSSValue&);
   static LengthPoint ConvertOffsetPosition(StyleResolverState&,
@@ -342,7 +343,8 @@ class StyleBuilderConverter {
   static StyleOffsetRotation ConvertOffsetRotate(const CSSLengthResolver&,
                                                  const CSSValue&);
   template <CSSValueID cssValueFor0, CSSValueID cssValueFor100>
-  static Length ConvertPositionLength(StyleResolverState&, const CSSValue&);
+  static Length ConvertPositionLength(const StyleResolverState&,
+                                      const CSSValue&);
   static Rotation ConvertRotation(const CSSLengthResolver&, const CSSValue&);
 
   static const CSSValue& ConvertRegisteredPropertyInitialValue(Document&,
@@ -482,8 +484,9 @@ T StyleBuilderConverter::ConvertLineWidth(StyleResolverState& state,
 }
 
 template <CSSValueID cssValueFor0, CSSValueID cssValueFor100>
-Length StyleBuilderConverter::ConvertPositionLength(StyleResolverState& state,
-                                                    const CSSValue& value) {
+Length StyleBuilderConverter::ConvertPositionLength(
+    const StyleResolverState& state,
+    const CSSValue& value) {
   if (const auto* pair = DynamicTo<CSSValuePair>(value)) {
     Length length = StyleBuilderConverter::ConvertLength(state, pair->Second());
     if (To<CSSIdentifierValue>(pair->First()).GetValueID() == cssValueFor0) {

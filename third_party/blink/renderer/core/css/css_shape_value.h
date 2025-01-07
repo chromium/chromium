@@ -30,31 +30,41 @@ class CSSShapeCommand : public GarbageCollected<CSSShapeCommand> {
   // relative to the end of the previous command.
   enum class PointOrigin { kReferenceBox, kPreviousCommand };
 
+  Type GetType() const { return type_; }
+  PointOrigin GetOrigin() const { return origin_; }
+  const CSSValue& GetEndPoint() const { return *end_point_.Get(); }
+
   String CSSText() const;
   bool operator==(const CSSShapeCommand& other) const;
   void Trace(Visitor* visitor) const { visitor->Trace(end_point_); }
 
   explicit CSSShapeCommand(Type type,
                            PointOrigin origin,
-                           const CSSValue* end_point)
+                           const CSSValuePair& end_point)
       : type_(type), origin_(origin), end_point_(end_point) {}
 
  private:
   Type type_;
   PointOrigin origin_;
-  Member<const CSSValue> end_point_;
+  Member<const CSSValuePair> end_point_;
 };
 
 class CSSShapeValue : public CSSValue {
  public:
   CSSShapeValue(WindRule wind_rule,
-                const CSSValuePair* origin,
+                const CSSValuePair& origin,
                 HeapVector<Member<const CSSShapeCommand>> commands)
       : CSSValue(kShapeClass),
         wind_rule_(wind_rule),
         origin_(origin),
         commands_(std::move(commands)) {}
   String CustomCSSText() const;
+
+  WindRule GetWindRule() const { return wind_rule_; }
+  const CSSValuePair& GetOrigin() const { return *origin_; }
+  const HeapVector<Member<const CSSShapeCommand>>& Commands() const {
+    return commands_;
+  }
 
   bool Equals(const CSSShapeValue& other) const {
     return wind_rule_ == other.wind_rule_ && *origin_ == *other.origin_ &&

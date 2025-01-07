@@ -40,10 +40,12 @@
 #include "third_party/blink/renderer/core/css/css_shape_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
+#include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/style/basic_shapes.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/style_ray.h"
+#include "third_party/blink/renderer/core/style/style_shape.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -79,6 +81,42 @@ static CSSValueID RaySizeToKeyword(StyleRay::RaySize size) {
       return CSSValueID::kSides;
   }
   NOTREACHED();
+}
+
+const CSSValuePair& LengthPointToCSSValue(const LengthPoint& point,
+                                          float zoom) {
+  return *MakeGarbageCollected<CSSValuePair>(
+      CSSPrimitiveValue::CreateFromLength(point.X(), zoom),
+      CSSPrimitiveValue::CreateFromLength(point.Y(), zoom),
+      CSSValuePair::IdenticalValuesPolicy::kKeepIdenticalValues);
+}
+
+StyleShape::Segment ShapeCommandToShapeSegment(
+    const cssvalue::CSSShapeCommand& command,
+    const StyleResolverState& state) {
+  // TODO(crbug.com/384870259): support other segment types.
+  return StyleShape::Segment{
+      .type = StyleShape::Segment::kLine,
+      .end_point_origin =
+          command.GetOrigin() ==
+                  cssvalue::CSSShapeCommand::PointOrigin::kReferenceBox
+              ? StyleShape::Segment::kReferenceBox
+              : StyleShape::Segment::kPreviousSegment,
+      .end_point =
+          StyleBuilderConverter::ConvertPosition(state, command.GetEndPoint())};
+}
+
+const cssvalue::CSSShapeCommand* ShapeSegmentToShapeCommand(
+    const StyleShape::Segment& segment,
+    float zoom) {
+  // TODO(crbug.com/384870259): support other segment types.
+  return MakeGarbageCollected<const cssvalue::CSSShapeCommand>(
+      cssvalue::CSSShapeCommand::Type::kLine,
+      segment.end_point_origin ==
+              StyleShape::Segment::PointOrigin::kReferenceBox
+          ? cssvalue::CSSShapeCommand::PointOrigin::kReferenceBox
+          : cssvalue::CSSShapeCommand::PointOrigin::kPreviousCommand,
+      LengthPointToCSSValue(segment.end_point, zoom));
 }
 
 static CSSValue* ValueForCenterCoordinate(
@@ -174,6 +212,20 @@ CSSValue* ValueForBasicShape(const ComputedStyle& style,
 
     case BasicShape::kStylePathType:
       return To<StylePath>(basic_shape)->ComputedCSSValue();
+
+    case BasicShape::kStyleShapeType: {
+      const StyleShape* shape = To<StyleShape>(basic_shape);
+      HeapVector<Member<const cssvalue::CSSShapeCommand>> commands;
+      commands.reserve(shape->Segments().size());
+      for (const auto& segment : shape->Segments()) {
+        commands.push_back(
+            ShapeSegmentToShapeCommand(segment, style.EffectiveZoom()));
+      }
+      return MakeGarbageCollected<cssvalue::CSSShapeValue>(
+          shape->GetWindRule(),
+          LengthPointToCSSValue(shape->GetOrigin(), style.EffectiveZoom()),
+          std::move(commands));
+    }
 
     case BasicShape::kBasicShapeCircleType: {
       const BasicShapeCircle* circle = To<BasicShapeCircle>(basic_shape);
@@ -455,9 +507,17 @@ scoped_refptr<BasicShape> BasicShapeForValue(
   } else if (const auto* path_value =
                  DynamicTo<cssvalue::CSSPathValue>(basic_shape_value)) {
     basic_shape = path_value->GetStylePath();
-  } else if (basic_shape_value.IsShapeValue()) {
-    // TODO(crbug.com/384605099) Placeholder until we render shape().
-    basic_shape = BasicShapePolygon::Create();
+  } else if (const auto* shape_value =
+                 DynamicTo<cssvalue::CSSShapeValue>(basic_shape_value)) {
+    Vector<StyleShape::Segment> segments;
+    segments.ReserveInitialCapacity(shape_value->Commands().size());
+    for (const cssvalue::CSSShapeCommand* command : shape_value->Commands()) {
+      segments.push_back(ShapeCommandToShapeSegment(*command, state));
+    }
+    basic_shape = StyleShape::Create(
+        shape_value->GetWindRule(),
+        StyleBuilderConverter::ConvertPosition(state, shape_value->GetOrigin()),
+        std::move(segments));
   } else {
     NOTREACHED();
   }

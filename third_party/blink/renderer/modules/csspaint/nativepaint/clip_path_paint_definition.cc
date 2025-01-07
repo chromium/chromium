@@ -188,6 +188,9 @@ scoped_refptr<BasicShape> CreateBasicShape(
     return PathInterpolationFunctions::AppliedValue(
         interpolable_value, &untyped_non_interpolable_value);
   }
+
+  // TODO(crbug.com/384781868) interpolate shape()
+
   CSSToLengthConversionData conversion_data(/*element=*/nullptr);
   return basic_shape_interpolation_functions::CreateBasicShape(
       interpolable_value, untyped_non_interpolable_value, conversion_data);

@@ -2137,8 +2137,9 @@ StyleOffsetRotation StyleBuilderConverter::ConvertOffsetRotate(
   return result;
 }
 
-LengthPoint StyleBuilderConverter::ConvertPosition(StyleResolverState& state,
-                                                   const CSSValue& value) {
+LengthPoint StyleBuilderConverter::ConvertPosition(
+    const StyleResolverState& state,
+    const CSSValue& value) {
   const auto& pair = To<CSSValuePair>(value);
   return LengthPoint(
       ConvertPositionLength<CSSValueID::kLeft, CSSValueID::kRight>(

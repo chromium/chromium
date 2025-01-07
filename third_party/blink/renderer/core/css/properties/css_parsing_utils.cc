@@ -6771,7 +6771,7 @@ cssvalue::CSSShapeValue* ConsumeBasicShapeShape(
                 args, context, UnitlessQuirk::kForbid, std::nullopt)) {
           commands.push_back(MakeGarbageCollected<CSSShapeCommand>(
               CSSShapeCommand::Type::kLine,
-              CSSShapeCommand::PointOrigin::kReferenceBox, end_point));
+              CSSShapeCommand::PointOrigin::kReferenceBox, *end_point));
         } else {
           return nullptr;
         }
@@ -6781,7 +6781,7 @@ cssvalue::CSSShapeValue* ConsumeBasicShapeShape(
         if (CSSValuePair* end_point = ConsumeCoordinatePair(args, context)) {
           commands.push_back(MakeGarbageCollected<CSSShapeCommand>(
               CSSShapeCommand::Type::kLine,
-              CSSShapeCommand::PointOrigin::kPreviousCommand, end_point));
+              CSSShapeCommand::PointOrigin::kPreviousCommand, *end_point));
         } else {
           return nullptr;
         }
@@ -6800,7 +6800,7 @@ cssvalue::CSSShapeValue* ConsumeBasicShapeShape(
     return nullptr;
   }
 
-  return MakeGarbageCollected<CSSShapeValue>(wind_rule, origin,
+  return MakeGarbageCollected<CSSShapeValue>(wind_rule, *origin,
                                              std::move(commands));
 }
 

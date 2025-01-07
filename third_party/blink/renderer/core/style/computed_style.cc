@@ -78,6 +78,7 @@
 #include "third_party/blink/renderer/core/style/style_inherited_variables.h"
 #include "third_party/blink/renderer/core/style/style_non_inherited_variables.h"
 #include "third_party/blink/renderer/core/style/style_ray.h"
+#include "third_party/blink/renderer/core/style/style_shape.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_geometry_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length_functions.h"
@@ -1676,6 +1677,13 @@ void ComputedStyle::ApplyMotionPathTransform(float origin_x,
       case BasicShape::kStylePathType: {
         const StylePath& path = To<StylePath>(basic_shape);
         path_position = CalculatePointAndTangentOnPath(path.GetPath());
+        break;
+      }
+      case BasicShape::kStyleShapeType: {
+        const StyleShape& shape = To<StyleShape>(basic_shape);
+        Path path;
+        shape.GetPath(path, bounding_box, EffectiveZoom());
+        path_position = CalculatePointAndTangentOnPath(path);
         break;
       }
       case BasicShape::kStyleRayType: {
