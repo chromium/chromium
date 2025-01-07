@@ -398,13 +398,6 @@ void VariationsService::PerformPreMainMessageLoopStartup() {
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
-std::string VariationsService::LoadPermanentConsistencyCountry(
-    const base::Version& version,
-    const std::string& latest_country) {
-  return field_trial_creator_.LoadPermanentConsistencyCountry(version,
-                                                              latest_country);
-}
-
 bool VariationsService::EncryptString(const std::string& plaintext,
                                       std::string* encrypted) {
   encrypted_messages::EncryptedMessage encrypted_message;

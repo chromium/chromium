@@ -333,8 +333,6 @@ class VariationsService
   FRIEND_TEST_ALL_PREFIXES(VariationsServiceTest, SeedStoredWhenOKStatus);
   FRIEND_TEST_ALL_PREFIXES(VariationsServiceTest, SeedNotStoredWhenNonOKStatus);
   FRIEND_TEST_ALL_PREFIXES(VariationsServiceTest, InstanceManipulations);
-  FRIEND_TEST_ALL_PREFIXES(VariationsServiceTest,
-                           LoadPermanentConsistencyCountry);
   FRIEND_TEST_ALL_PREFIXES(VariationsServiceTest, CountryHeader);
   FRIEND_TEST_ALL_PREFIXES(VariationsServiceTest, GetVariationsServerURL);
   FRIEND_TEST_ALL_PREFIXES(VariationsServiceTest, VariationsURLHasParams);
@@ -385,15 +383,6 @@ class VariationsService
   // |encrypted|. Returns true on success, false on failure. The encryption can
   // be done in-place.
   bool EncryptString(const std::string& plaintext, std::string* encrypted);
-
-  // Loads the country code to use for filtering permanent consistency studies,
-  // updating the stored country code if the stored value was for a different
-  // Chrome version. The country used for permanent consistency studies is kept
-  // consistent between Chrome upgrades in order to avoid annoying the user due
-  // to experiment churn while traveling.
-  std::string LoadPermanentConsistencyCountry(
-      const base::Version& version,
-      const std::string& latest_country);
 
   std::unique_ptr<VariationsServiceClient> client_;
 
