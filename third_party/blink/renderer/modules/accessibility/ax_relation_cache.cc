@@ -386,6 +386,49 @@ void AXRelationCache::UpdateReverseRelations(
   UpdateReverseElementAttributeRelations(node_map, &source, target_nodes);
 }
 
+void AXRelationCache::GetSingleRelationTarget(const Element& source,
+                                              const QualifiedName& attr_name,
+                                              AtomicString& target_id,
+                                              Element** element) {
+  const AtomicString& id = AXObject::AriaAttribute(source, attr_name);
+  if (!id.empty()) {
+    target_id = id;
+    return;
+  }
+
+  HeapVector<Member<Element>> target_elements;
+  GetExplicitlySetElementsForAttr(source, attr_name, target_elements);
+  if (target_elements.empty()) {
+    return;
+  }
+
+  DCHECK_EQ(target_elements.size(), 1u);
+  *element = target_elements.at(0).Get();
+}
+
+void AXRelationCache::UpdateReverseSingleRelation(
+    Element& source,
+    const QualifiedName& attr_name,
+    TargetIdToSourceNodeMap& id_map,
+    TargetNodeToSourceNodeMap& node_map) {
+  AtomicString target_id;
+  Element* target_element = nullptr;
+  GetSingleRelationTarget(source, attr_name, target_id, &target_element);
+
+  if (!target_id.empty()) {
+    UpdateReverseIdAttributeRelations(id_map, &source, {target_id});
+    return;
+  }
+
+  if (!target_element) {
+    return;
+  }
+
+  Vector<DOMNodeId> target_nodes;
+  target_nodes.push_back(target_element->GetDomNodeId());
+  UpdateReverseElementAttributeRelations(node_map, &source, target_nodes);
+}
+
 // Update reverse relation map, where source is related to target_ids.
 void AXRelationCache::UpdateReverseIdAttributeRelations(
     TargetIdToSourceNodeMap& id_map,
@@ -492,9 +535,9 @@ void AXRelationCache::UpdateReverseElementAttributeTextRelations(
 }
 
 void AXRelationCache::UpdateReverseActiveDescendantRelations(Element& source) {
-  UpdateReverseRelations(source, html_names::kAriaActivedescendantAttr,
-                         aria_activedescendant_id_map_,
-                         aria_activedescendant_node_map_);
+  UpdateReverseSingleRelation(source, html_names::kAriaActivedescendantAttr,
+                              aria_activedescendant_id_map_,
+                              aria_activedescendant_node_map_);
 }
 
 void AXRelationCache::UpdateReverseOwnsRelations(Element& source) {

@@ -5270,14 +5270,26 @@ Element* AXObject::ElementFromAttributeOrInternals(
     return nullptr;
   }
 
-  const HeapVector<Member<Element>>* vector =
-      ElementsFromAttributeOrInternals(from, attribute);
-  if (!vector) {
+  bool has_content_attribute = from->hasAttribute(attribute);
+  if (has_content_attribute) {
+    return from->GetElementAttributeResolvingReferenceTarget(attribute);
+  }
+
+  const ElementInternals* element_internals = from->GetElementInternals();
+  if (!element_internals) {
     return nullptr;
   }
 
-  DCHECK_EQ(vector->size(), 1u);
-  return vector->at(0).Get();
+  const FrozenArray<Element>* element_internals_attr_elements =
+      element_internals->GetElementArrayAttribute(attribute);
+
+  if (!element_internals_attr_elements ||
+      element_internals_attr_elements->empty()) {
+    return nullptr;
+  }
+
+  DCHECK_EQ(element_internals_attr_elements->size(), 1u);
+  return element_internals_attr_elements->at(0).Get();
 }
 
 // static

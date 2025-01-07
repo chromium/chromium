@@ -193,6 +193,25 @@ class AXRelationCache {
                               TargetIdToSourceNodeMap& id_map,
                               TargetNodeToSourceNodeMap& node_map);
 
+  // Get ID or element reference relation target for source for the
+  // given attribute. Either id or element will be populated with the
+  // appropriate values, depending on whether the attribute was set as a content
+  // attribute or an element reference attribute.
+  // Use this for attributes which take a single ID/Element value.
+  static void GetSingleRelationTarget(const Element& source,
+                                      const QualifiedName& attr_name,
+                                      AtomicString& id,
+                                      Element** element);
+
+  // If source has a value for attr_name, update either id_map or node_map with
+  // a new entry, depending on whether the attribute was set as a content
+  // attribute or an element reference attribute.
+  // Use this for attributes which take a single ID/Element value.
+  void UpdateReverseSingleRelation(Element& source,
+                                   const QualifiedName& attr_name,
+                                   TargetIdToSourceNodeMap& id_map,
+                                   TargetNodeToSourceNodeMap& node_map);
+
   // Update map of ids to reverse relations. This populates a lookup table so
   // that if an element with that id appears later, it can be added when you
   // call UpdateRelatedTree.
