@@ -4,6 +4,8 @@
 
 import '/strings.m.js';
 
+import {loadTimeData} from '//resources/js/load_time_data.js';
+
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {GlicApiHost} from './glic_api_impl/glic_api_host.js';
 
@@ -64,4 +66,8 @@ class GlicAppHostManager {
 
 // Blocking on cookie syncing here introduces latency, we should consider ways
 // to avoid it.
-browserProxy.handler.syncWebviewCookies().then(() => new GlicAppHostManager());
+browserProxy.handler.syncWebviewCookies().then(() => {
+  // Load the web client only after cookie sync is complete.
+  webview.src = loadTimeData.getString('glicGuestURL');
+  new GlicAppHostManager();
+});

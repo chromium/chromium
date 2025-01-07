@@ -13,8 +13,6 @@
 #include "base/timer/timer.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/storage_partition.h"
-#include "content/public/browser/storage_partition_config.h"
 
 namespace content {
 class BrowserContext;
@@ -54,9 +52,14 @@ class GlicCookieSynchronizer
   virtual content::StoragePartition* GetStoragePartition();
 
  private:
+  class SyncCookiesForDevelopmentTask;
   base::WeakPtr<GlicCookieSynchronizer> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
+
+  void SyncCookiesForDevelopmentComplete(bool success);
+  void BeginCookieSync();
+
   // signin::AccountsCookieMutator::PartitionDelegate:
   std::unique_ptr<GaiaAuthFetcher> CreateGaiaAuthFetcherForPartition(
       GaiaAuthConsumer* consumer,
@@ -67,16 +70,14 @@ class GlicCookieSynchronizer
   void OnAuthFinished(signin::SetAccountsInCookieResult cookie_result);
   void CompleteAuth(bool is_success);
 
-  // Storage partition configuration for this authentication request.
-  content::StoragePartitionConfig storage_partition_config_;
-
   const raw_ptr<content::BrowserContext> context_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
 
   std::vector<base::OnceCallback<void(bool)>> callbacks_;
   std::unique_ptr<signin::AccountsCookieMutator::SetAccountsInCookieTask>
       cookie_loader_;
-
+  std::unique_ptr<SyncCookiesForDevelopmentTask>
+      sync_cookies_for_development_task_;
   base::WeakPtrFactory<GlicCookieSynchronizer> weak_ptr_factory_{this};
 };
 
