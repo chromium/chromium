@@ -169,6 +169,10 @@ struct CONTENT_EXPORT BiddingAndAuctionResponse {
   // auctions start the bidding phase.
   AuctionResult result = AuctionResult::kInvalidServerResponse;
 
+  // Nonce used to match against the Ad-Auction-Result-Nonce header in a fetch
+  // response from the seller.
+  std::optional<std::string> nonce;
+
   bool is_chaff = false;  // indicates this response should be ignored.
   // TODO(behamilton): Add support for creative dimensions to the response from
   // the Bidding and Auction server.

@@ -377,19 +377,14 @@ void AuctionRunner::ResolvedAuctionAdResponsePromise(
     return;
   }
   config->server_response->got_response = true;
-  AdAuctionPageData* page_data = ad_auction_page_data_callback_.Run();
-  if (!page_data) {
-    // There's no page data attached so we can't decode the response. There's
-    // no way the auction can proceed.
-    FailAuction(false);
-    return;
-  }
 
   if (auction_id->is_main_auction()) {
-    auction_.HandleServerResponse(std::move(response), *page_data);
+    auction_.HandleServerResponse(std::move(response),
+                                  ad_auction_page_data_callback_);
   } else {
     auction_.HandleComponentServerResponse(auction_id->get_component_auction(),
-                                           std::move(response), *page_data);
+                                           std::move(response),
+                                           ad_auction_page_data_callback_);
   }
 }
 

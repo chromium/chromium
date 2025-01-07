@@ -554,12 +554,15 @@ class CONTENT_EXPORT InterestGroupAuction
 
   // Handles the server response for an auction.
   void HandleServerResponse(mojo_base::BigBuffer response,
-                            AdAuctionPageData& ad_auction_page_data);
+                            base::RepeatingCallback<AdAuctionPageData*()>
+                                ad_auction_page_data_callback);
 
   // Handles a server response in a component auction.
-  void HandleComponentServerResponse(uint32_t pos,
-                                     mojo_base::BigBuffer response,
-                                     AdAuctionPageData& ad_auction_page_data);
+  void HandleComponentServerResponse(
+      uint32_t pos,
+      mojo_base::BigBuffer response,
+      base::RepeatingCallback<AdAuctionPageData*()>
+          ad_auction_page_data_callback);
 
   // Creates an InterestGroupAuctionReporter, after the auction has completed.
   // Takes ownership of the `auction_config`, so that the reporter can outlive
@@ -1257,19 +1260,29 @@ class CONTENT_EXPORT InterestGroupAuction
   // Returns false if we need to fail the auction instead of continuing in
   // OnDecompressedServerResponse.
   bool HandleServerResponseImpl(mojo_base::BigBuffer response,
-                                AdAuctionPageData& ad_auction_page_data);
+                                base::RepeatingCallback<AdAuctionPageData*()>
+                                    ad_auction_page_data_callback);
 
   void OnDecompressedServerResponse(
       AdAuctionRequestContext* request_context,
+      base::RepeatingCallback<AdAuctionPageData*()>
+          ad_auction_page_data_callback,
+      bool authorized,
       base::expected<mojo_base::BigBuffer, std::string> result);
 
   void OnParsedServerResponse(AdAuctionRequestContext* request_context,
+                              base::RepeatingCallback<AdAuctionPageData*()>
+                                  ad_auction_page_data_callback,
+                              bool authorized,
                               data_decoder::DataDecoder::ValueOrError result);
 
   // Returns false if we need to fail the auction instead of continuing in
   // OnLoadedWinningGroup.
   bool OnParsedServerResponseImpl(
       AdAuctionRequestContext* request_context,
+      base::RepeatingCallback<AdAuctionPageData*()>
+          ad_auction_page_data_callback,
+      bool authorized,
       data_decoder::DataDecoder::ValueOrError result);
 
   void OnLoadedWinningGroup(

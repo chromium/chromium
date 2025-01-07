@@ -51,6 +51,23 @@ bool AdAuctionPageData::WitnessedAuctionResultForOrigin(
   return it->second.contains(response);
 }
 
+void AdAuctionPageData::AddAuctionResultNonceWitnessForOrigin(
+    const url::Origin& origin,
+    const std::string& nonce) {
+  origin_auction_result_nonce_map_[origin].insert(nonce);
+}
+
+bool AdAuctionPageData::WitnessedAuctionResultNonceForOrigin(
+    const url::Origin& origin,
+    const std::string& nonce) const {
+  auto it = origin_auction_result_nonce_map_.find(origin);
+  if (it == origin_auction_result_nonce_map_.end()) {
+    return false;
+  }
+
+  return it->second.contains(nonce);
+}
+
 void AdAuctionPageData::AddAuctionSignalsWitnessForOrigin(
     const url::Origin& origin,
     const std::string& response) {

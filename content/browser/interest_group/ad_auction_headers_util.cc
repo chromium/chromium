@@ -42,6 +42,7 @@ namespace content {
 
 const char kAdAuctionRequestHeaderKey[] = "Sec-Ad-Auction-Fetch";
 const char kAdAuctionResultResponseHeaderKey[] = "Ad-Auction-Result";
+const char kAdAuctionResultNonceResponseHeaderKey[] = "Ad-Auction-Result-Nonce";
 const char kAdAuctionSignalsResponseHeaderKey[] = "Ad-Auction-Signals";
 const char kAdAuctionAdditionalBidResponseHeaderKey[] =
     "Ad-Auction-Additional-Bid";
@@ -203,6 +204,26 @@ std::vector<std::string> ParseAdAuctionResultResponseHeader(
 // this function simple and avoid adding custom logic.
 //
 // Fuzzer: ad_auction_headers_util_fuzzer
+std::vector<std::string> ParseAdAuctionResultNonceResponseHeader(
+    const std::string& ad_auction_result_nonces) {
+  std::vector<std::string> parsed_results;
+  for (const auto& result :
+       base::SplitString(ad_auction_result_nonces, ",", base::TRIM_WHITESPACE,
+                         base::SPLIT_WANT_NONEMPTY)) {
+    base::Uuid result_uuid = base::Uuid::ParseCaseInsensitive(result);
+    if (!result_uuid.is_valid()) {
+      continue;
+    }
+    parsed_results.emplace_back(result_uuid.AsLowercaseString());
+  }
+  return parsed_results;
+}
+
+// Please note: before modifying this function, please acknowledge this is
+// processing untrusted content from a non sandboxed process. So please keep
+// this function simple and avoid adding custom logic.
+//
+// Fuzzer: ad_auction_headers_util_fuzzer
 base::expected<void, std::string> ParseAdAuctionAdditionalBidResponseHeader(
     const std::string& header_line,
     std::map<std::string, std::vector<SignedAdditionalBidWithMetadata>>&
@@ -319,6 +340,20 @@ void ProcessAdAuctionResponseHeaders(
   }
   // We intentionally leave the `Ad-Auction-Result` response header in place.
 
+  if (base::FeatureList::IsEnabled(
+          features::kFledgeBiddingAndAuctionNonceSupport)) {
+    if (std::optional<std::string> ad_auction_results =
+            headers->GetNormalizedHeader(
+                kAdAuctionResultNonceResponseHeaderKey)) {
+      for (const std::string& nonce :
+           ParseAdAuctionResultNonceResponseHeader(*ad_auction_results)) {
+        ad_auction_page_data->AddAuctionResultNonceWitnessForOrigin(
+            request_origin, nonce);
+      }
+    }
+  }
+  headers->RemoveHeader(kAdAuctionResultNonceResponseHeaderKey);
+
   if (base::FeatureList::IsEnabled(blink::features::kAdAuctionSignals)) {
     if (std::optional<std::string> ad_auction_signals =
             headers->GetNormalizedHeader(kAdAuctionSignalsResponseHeaderKey)) {
@@ -360,6 +395,7 @@ void RemoveAdAuctionResponseHeaders(
     return;
   }
   // We intentionally leave the `Ad-Auction-Result` response header in place.
+  headers->RemoveHeader(kAdAuctionResultNonceResponseHeaderKey);
   headers->RemoveHeader(kAdAuctionSignalsResponseHeaderKey);
   headers->RemoveHeader(kAdAuctionAdditionalBidResponseHeaderKey);
 }

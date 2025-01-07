@@ -92,6 +92,12 @@ class CONTENT_EXPORT AdAuctionPageData
   bool WitnessedAuctionResultForOrigin(const url::Origin& origin,
                                        const std::string& response) const;
 
+  void AddAuctionResultNonceWitnessForOrigin(const url::Origin& origin,
+                                             const std::string& nonce);
+
+  bool WitnessedAuctionResultNonceForOrigin(const url::Origin& origin,
+                                            const std::string& nonce) const;
+
   void AddAuctionSignalsWitnessForOrigin(const url::Origin& origin,
                                          const std::string& response);
 
@@ -136,6 +142,7 @@ class CONTENT_EXPORT AdAuctionPageData
       std::vector<std::string> errors);
 
   std::map<url::Origin, std::set<std::string>> origin_auction_result_map_;
+  std::map<url::Origin, std::set<std::string>> origin_auction_result_nonce_map_;
   HeaderDirectFromSellerSignals header_direct_from_seller_signals_;
   std::map<url::Origin,
            std::map<std::string, std::vector<SignedAdditionalBidWithMetadata>>>

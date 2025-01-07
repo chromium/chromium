@@ -3347,7 +3347,8 @@ void InterestGroupAuction::StartBiddingAndScoringPhase(
 void InterestGroupAuction::HandleComponentServerResponse(
     uint32_t pos,
     mojo_base::BigBuffer response,
-    AdAuctionPageData& ad_auction_page_data) {
+    base::RepeatingCallback<AdAuctionPageData*()>
+        ad_auction_page_data_callback) {
   CHECK(!parent_);  // Should not be called on a component.
   auto it = component_auctions_.find(pos);
 
@@ -3358,14 +3359,16 @@ void InterestGroupAuction::HandleComponentServerResponse(
   }
 
   InterestGroupAuction* component_auction = it->second.get();
-  component_auction->HandleServerResponse(std::move(response),
-                                          ad_auction_page_data);
+  component_auction->HandleServerResponse(
+      std::move(response), std::move(ad_auction_page_data_callback));
 }
 
 void InterestGroupAuction::HandleServerResponse(
     mojo_base::BigBuffer response,
-    AdAuctionPageData& ad_auction_page_data) {
-  if (!HandleServerResponseImpl(std::move(response), ad_auction_page_data)) {
+    base::RepeatingCallback<AdAuctionPageData*()>
+        ad_auction_page_data_callback) {
+  if (!HandleServerResponseImpl(std::move(response),
+                                std::move(ad_auction_page_data_callback))) {
     DCHECK(saved_response_);
     if (bidding_and_scoring_phase_state_ == PhaseState::kDuring) {
       MaybeCompleteBiddingAndScoringPhase();
@@ -3375,25 +3378,26 @@ void InterestGroupAuction::HandleServerResponse(
 
 bool InterestGroupAuction::HandleServerResponseImpl(
     mojo_base::BigBuffer response,
-    AdAuctionPageData& ad_auction_page_data) {
+    base::RepeatingCallback<AdAuctionPageData*()>
+        ad_auction_page_data_callback) {
+  bool authorized = false;
   // Check that response was witnessed by seller origin.
   std::array<uint8_t, crypto::kSHA256Length> hash =
       crypto::SHA256Hash(response);
-  if (!ad_auction_page_data.WitnessedAuctionResultForOrigin(
+  AdAuctionPageData* ad_auction_page_data = ad_auction_page_data_callback.Run();
+  if (!ad_auction_page_data) {
+    // The page is in the process of being destroyed, so fail the auction.
+    saved_response_.emplace();
+    return false;
+  }
+  if (ad_auction_page_data->WitnessedAuctionResultForOrigin(
           config_->seller,
           std::string(reinterpret_cast<char*>(hash.data()), hash.size()))) {
-    // If it wasn't witnessed then we don't know that it came from the server.
-    saved_response_.emplace();
-    base::UmaHistogramEnumeration(kInvalidServerResponseReasonUMAName,
-                                  InvalidServerResponseReason::kNotWitnessed);
-    errors_.push_back(
-        base::StrCat({"runAdAuction(): Server response was not witnessed from ",
-                      config_->seller.Serialize()}));
-    return false;
+    authorized = true;
   }
 
   AdAuctionRequestContext* request_context =
-      ad_auction_page_data.GetContextForAdAuctionRequest(
+      ad_auction_page_data->GetContextForAdAuctionRequest(
           ContextMapKey(config_->server_response->request_id, config_->seller));
   if (!request_context) {
     // The corresponding context for the requested blob couldn't be found.
@@ -3411,14 +3415,6 @@ bool InterestGroupAuction::HandleServerResponseImpl(
   // The auction must be for the same seller that requested the blob.
   CHECK_EQ(request_context->seller, config_->seller);
   get_ad_auction_data_start_time_ = request_context->start_time;
-
-  // Trigger updates for buyers in the auction config.
-  if (config_->non_shared_params.interest_group_buyers.has_value()) {
-    const std::vector<url::Origin>& buyers =
-        config_->non_shared_params.interest_group_buyers.value();
-    post_auction_update_owners_.insert(post_auction_update_owners_.end(),
-                                       buyers.begin(), buyers.end());
-  }
 
   auto maybe_response =
       quiche::ObliviousHttpResponse::CreateClientObliviousResponse(
@@ -3467,7 +3463,8 @@ bool InterestGroupAuction::HandleServerResponseImpl(
           // by a PageUserData and is only deleted when the page is destroyed.
           // This auction is owned by the page through a DocumentService, so it
           // will be destroyed before the decoder.
-          weak_ptr_factory_.GetWeakPtr(), base::Unretained(request_context)));
+          weak_ptr_factory_.GetWeakPtr(), base::Unretained(request_context),
+          std::move(ad_auction_page_data_callback), authorized));
   return true;
 }
 
@@ -6139,6 +6136,8 @@ const std::string& InterestGroupAuction::GetTrustedBiddingSignalsSlotSizeParam(
 
 void InterestGroupAuction::OnDecompressedServerResponse(
     AdAuctionRequestContext* request_context,
+    base::RepeatingCallback<AdAuctionPageData*()> ad_auction_page_data_callback,
+    bool authorized,
     base::expected<mojo_base::BigBuffer, std::string> result) {
   data_decoder::DataDecoder* data_decoder =
       get_data_decoder_callback_.Run(config_->seller);
@@ -6164,7 +6163,8 @@ void InterestGroupAuction::OnDecompressedServerResponse(
           // by a PageUserData and is only deleted when the page is destroyed.
           // This auction is owned by the page through a DocumentService, so
           // it will be destroyed before the decoder.
-          base::Unretained(request_context)));
+          base::Unretained(request_context),
+          std::move(ad_auction_page_data_callback), authorized));
 
   // `result` falls out of scope, deallocating the buffer with the
   // decompressed response. This is okay because `DataDecoder::ParseCbor` made
@@ -6174,8 +6174,12 @@ void InterestGroupAuction::OnDecompressedServerResponse(
 
 void InterestGroupAuction::OnParsedServerResponse(
     AdAuctionRequestContext* request_context,
+    base::RepeatingCallback<AdAuctionPageData*()> ad_auction_page_data_callback,
+    bool authorized,
     data_decoder::DataDecoder::ValueOrError result) {
-  if (!OnParsedServerResponseImpl(request_context, std::move(result))) {
+  if (!OnParsedServerResponseImpl(request_context,
+                                  std::move(ad_auction_page_data_callback),
+                                  authorized, std::move(result))) {
     DCHECK(saved_response_);
 
     if (bidding_and_scoring_phase_state_ == PhaseState::kDuring) {
@@ -6186,6 +6190,8 @@ void InterestGroupAuction::OnParsedServerResponse(
 
 bool InterestGroupAuction::OnParsedServerResponseImpl(
     AdAuctionRequestContext* request_context,
+    base::RepeatingCallback<AdAuctionPageData*()> ad_auction_page_data_callback,
+    bool authorized,
     data_decoder::DataDecoder::ValueOrError result) {
   if (!result.has_value()) {
     // We couldn't parse the CBOR of the response.
@@ -6210,6 +6216,34 @@ bool InterestGroupAuction::OnParsedServerResponseImpl(
         InvalidServerResponseReason::kUnexpectedResponseStructure);
     return false;
   }
+  AdAuctionPageData* ad_auction_page_data = ad_auction_page_data_callback.Run();
+  if (!ad_auction_page_data) {
+    // The page is in the process of being destroyed, so fail the auction.
+    saved_response_.emplace();
+    return false;
+  }
+  if (!authorized &&
+      (!response->nonce ||
+       !ad_auction_page_data->WitnessedAuctionResultNonceForOrigin(
+           config_->seller, *response->nonce))) {
+    // If it wasn't witnessed then we don't know that it came from the server.
+    saved_response_.emplace();
+    base::UmaHistogramEnumeration(kInvalidServerResponseReasonUMAName,
+                                  InvalidServerResponseReason::kNotWitnessed);
+    errors_.push_back(
+        base::StrCat({"runAdAuction(): Server response was not witnessed from ",
+                      config_->seller.Serialize()}));
+    return false;
+  }
+
+  // Trigger updates for buyers in the auction config.
+  if (config_->non_shared_params.interest_group_buyers.has_value()) {
+    const std::vector<url::Origin>& buyers =
+        config_->non_shared_params.interest_group_buyers.value();
+    post_auction_update_owners_.insert(post_auction_update_owners_.end(),
+                                       buyers.begin(), buyers.end());
+  }
+
   if (response->error) {
     errors_.push_back(base::StrCat({"runAdAuction(): ", *response->error}));
   }
@@ -6450,7 +6484,6 @@ void InterestGroupAuction::OnLoadDebugReportLockoutAndCooldownsComplete(
 void InterestGroupAuction::CreateBidFromServerResponse() {
   DCHECK(saved_response_);
   DCHECK_EQ(PhaseState::kDuring, bidding_and_scoring_phase_state_);
-
   // We require a bid for component auctions. Otherwise we use a fake value.
   if (parent_ && !saved_response_->bid) {
     saved_response_->result = AuctionResult::kInvalidServerResponse;

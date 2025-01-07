@@ -11,6 +11,7 @@
 #include "base/containers/adapters.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_pa_report_util.h"
@@ -103,6 +104,17 @@ std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
   base::Value::Dict* input_dict = input.GetIfDict();
   if (!input_dict) {
     return std::nullopt;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kFledgeBiddingAndAuctionNonceSupport)) {
+    const std::string* nonce = input_dict->FindString("nonce");
+    if (nonce) {
+      base::Uuid nonce_uuid = base::Uuid::ParseCaseInsensitive(*nonce);
+      if (nonce_uuid.is_valid()) {
+        output.nonce = nonce_uuid.AsLowercaseString();
+      }
+    }
   }
 
   base::Value::Dict* error_struct = input_dict->FindDict("error");

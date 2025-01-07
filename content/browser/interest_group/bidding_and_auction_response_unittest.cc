@@ -108,6 +108,7 @@ std::ostream& operator<<(
 std::ostream& operator<<(std::ostream& os,
                          const BiddingAndAuctionResponse& response) {
   os << "BiddingAndAuctionResponse(";
+  os << "nonce: " << testing::PrintToString(response.nonce) << ",";
   os << "is_chaff: " << (response.is_chaff ? "true" : "false") << ", ";
   os << "ad_render_url: " << response.ad_render_url << ", ";
   os << "ad_components: [";
@@ -483,6 +484,7 @@ MATCHER_P(EqualsBiddingAndAuctionResponse,
           "EqualsBiddingAndAuctionResponse(" +
               testing::PrintToString(other.get()) + ")") {
   std::vector<testing::Matcher<BiddingAndAuctionResponse>> matchers = {
+      // nonce handled below
       testing::Field("is_chaff", &BiddingAndAuctionResponse::is_chaff,
                      testing::Eq(other.get().is_chaff)),
       testing::Field("ad_render_url", &BiddingAndAuctionResponse::ad_render_url,
@@ -543,6 +545,14 @@ MATCHER_P(EqualsBiddingAndAuctionResponse,
                      testing::Eq(other.get().triggered_updates)),
 
   };
+  if (other.get().nonce) {
+    matchers.push_back(testing::Field("nonce",
+                                      &BiddingAndAuctionResponse::nonce,
+                                      testing::Optional(*other.get().nonce)));
+  } else {
+    matchers.push_back(testing::Field(
+        "nonce", &BiddingAndAuctionResponse::nonce, testing::Eq(std::nullopt)));
+  }
   if (other.get().bid_currency) {
     matchers.push_back(
         testing::Field("bid_currency", &BiddingAndAuctionResponse::bid_currency,
@@ -667,8 +677,10 @@ TEST(BiddingAndAuctionResponseTest, ParseFails) {
 
 TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kEnableBandATriggeredUpdates);
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kEnableBandATriggeredUpdates,
+                            features::kFledgeBiddingAndAuctionNonceSupport},
+      /*disabled_features=*/{});
   static const struct {
     base::Value input;
     BiddingAndAuctionResponse output;
@@ -696,6 +708,32 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
           base::Value(CreateValidResponseDict()),
           CreateExpectedValidResponse(),
       },
+      {
+          // Ignore nonce with wrong type
+          base::Value(CreateValidResponseDict().Set("nonce", 0)),
+          CreateExpectedValidResponse(),
+      },
+      {
+          // Ignore invalid nonce
+          base::Value(CreateValidResponseDict().Set("nonce", "not a UUID")),
+          CreateExpectedValidResponse(),
+      },
+      {// Nonce with valid message
+       base::Value(CreateValidResponseDict().Set(
+           "nonce", "00000000-0000-0000-0000-000000000000")),
+       []() {
+         auto response = CreateExpectedValidResponse();
+         response.nonce = "00000000-0000-0000-0000-000000000000";
+         return response;
+       }()},
+      {// Nonce converted to lowercase
+       base::Value(CreateValidResponseDict().Set(
+           "nonce", "A0000000-0000-0000-0000-000000000000")),
+       []() {
+         auto response = CreateExpectedValidResponse();
+         response.nonce = "a0000000-0000-0000-0000-000000000000";
+         return response;
+       }()},
       {
           base::Value(CreateValidResponseDict().Set("error", "not a dict")),
           CreateExpectedValidResponse(),
