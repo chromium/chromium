@@ -77,7 +77,6 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerImpl {
   void Shutdown() override {}
   const UserList& GetLRULoggedInUsers() const override;
   UserList GetUnlockUsers() const override;
-  const AccountId& GetOwnerAccountId() const override;
   void OnSessionStarted() override {}
   bool IsKnownUser(const AccountId& account_id) const override;
   void SaveUserOAuthStatus(const AccountId& account_id,
@@ -87,7 +86,6 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerImpl {
                              bool force_online_signin) override {}
   void SaveUserDisplayEmail(const AccountId& account_id,
                             const std::string& display_email) override {}
-  std::optional<std::string> GetOwnerEmail() override;
   bool IsCurrentUserNonCryptohomeDataEphemeral() const override;
   bool IsUserLoggedIn() const override;
   bool IsLoggedInAsUserWithGaiaAccount() const override;
@@ -114,12 +112,6 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerImpl {
   using UserManagerImpl::SetOwnerId;
 
  private:
-  // stub, always empty.
-  AccountId owner_account_id_ = EmptyAccountId();
-
-  // stub. Always empty.
-  gfx::ImageSkia empty_image_;
-
   // Contains AccountIds for which IsCurrentUserNonCryptohomeDataEphemeral will
   // return true.
   std::set<AccountId> accounts_with_ephemeral_non_cryptohome_data_;

@@ -188,16 +188,8 @@ UserList FakeUserManager::GetUnlockUsers() const {
   return users_;
 }
 
-const AccountId& FakeUserManager::GetOwnerAccountId() const {
-  return owner_account_id_;
-}
-
 bool FakeUserManager::IsKnownUser(const AccountId& account_id) const {
   return true;
-}
-
-std::optional<std::string> FakeUserManager::GetOwnerEmail() {
-  return GetLocalState() ? UserManagerImpl::GetOwnerEmail() : std::nullopt;
 }
 
 bool FakeUserManager::IsCurrentUserNonCryptohomeDataEphemeral() const {
