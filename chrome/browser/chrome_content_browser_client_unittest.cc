@@ -1104,11 +1104,9 @@ class ChromeContentSettingsPolicyTrustAnchor
 
 TEST_F(ChromeContentSettingsPolicyTrustAnchor, PolicyTrustAnchor) {
   ChromeContentBrowserClient client;
-  EXPECT_FALSE(policy::PolicyCertServiceFactory::GetForProfile(&profile_)
-                   ->UsedPolicyCertificates());
+  EXPECT_FALSE(policy::PolicyCertService::UsedPolicyCertificates(&profile_));
   client.OnTrustAnchorUsed(&profile_);
-  EXPECT_TRUE(policy::PolicyCertServiceFactory::GetForProfile(&profile_)
-                  ->UsedPolicyCertificates());
+  EXPECT_TRUE(policy::PolicyCertService::UsedPolicyCertificates(&profile_));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

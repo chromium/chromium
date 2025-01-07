@@ -1490,7 +1490,13 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
     }
   }
 
-  policy::PolicyCertServiceFactory::CreateAndStartObservingForProfile(profile_);
+  const policy::PolicyCertService* policy_cert_service =
+      policy::PolicyCertServiceFactory::GetForProfile(profile_);
+  if (policy_cert_service && !policy_cert_service->IsObservingCertChanges()) {
+    policy_cert_service->StartObservingCertChanges(base::BindRepeating(
+        &ProfileNetworkContextService::UpdateAdditionalCertificates,
+        weak_ptr_factory_.GetWeakPtr()));
+  }
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1513,11 +1519,11 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
       // the UI that could result in interactions with the public slot. Kiosk
       // users are also not owner users and can't have the owner key in the
       // public slot. Leaving them empty will make cert verifier ignore the
-      // public slot. This is done mainly because Chrome sometimes fails to
-      // load the public slot and has to crash because of that.
-      // If the kEnableCertManagementUIV2Write flag is enabled, then NSS certs
-      // will be migrated to the chrome user certificate database, and the NSS
-      // user cert database should no longer be used by the verifier.
+      // public slot. This is done mainly because Chrome sometimes fails to load
+      // the public slot and has to crash because of that. If the
+      // kEnableCertManagementUIV2Write flag is enabled, then NSS certs will be
+      // migrated to the chrome user certificate database, and the NSS user cert
+      // database should no longer be used by the verifier.
       if (!base::FeatureList::IsEnabled(
               features::kEnableCertManagementUIV2Write) &&
           !chromeos::IsKioskSession()) {
@@ -1528,8 +1534,17 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
     }
   }
   if (profile_supports_policy_certs) {
-    policy::PolicyCertServiceFactory::CreateAndStartObservingForProfile(
-        profile_);
+    auto* policy_cert_service =
+        policy::PolicyCertServiceFactory::GetForProfile(profile_);
+
+    // Note: in the case of Network Service restarts, we assume that
+    // `profile_supports_policy_certs` will be calculated the same way on
+    // subsequent NetworkContext creations as it was on the first one.
+    if (policy_cert_service && !policy_cert_service->IsObservingCertChanges()) {
+      policy_cert_service->StartObservingCertChanges(base::BindRepeating(
+          &ProfileNetworkContextService::UpdateAdditionalCertificates,
+          weak_factory_.GetWeakPtr()));
+    }
   }
 #endif
 

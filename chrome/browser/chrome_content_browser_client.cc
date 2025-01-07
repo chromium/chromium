@@ -3711,13 +3711,8 @@ void ChromeContentBrowserClient::GrantCookieAccessDueToHeuristic(
 #if BUILDFLAG(IS_CHROMEOS)
 void ChromeContentBrowserClient::OnTrustAnchorUsed(
     content::BrowserContext* browser_context) {
-  policy::PolicyCertService* service =
-      policy::PolicyCertServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(browser_context));
-  if (!service) {
-    NOTREACHED();
-  }
-  service->SetUsedPolicyCertificates();
+  policy::PolicyCertService::SetUsedPolicyCertificates(
+      Profile::FromBrowserContext(browser_context));
 }
 #endif
 

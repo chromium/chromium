@@ -167,10 +167,17 @@ void ChromeSecurityStateTabHelper::PrimaryPageChanged(content::Page& page) {
 
 bool ChromeSecurityStateTabHelper::UsedPolicyInstalledCertificate() const {
 #if BUILDFLAG(IS_CHROMEOS)
+  auto* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   policy::PolicyCertService* service =
-      policy::PolicyCertServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
-  if (service && service->UsedPolicyCertificates()) {
+      policy::PolicyCertServiceFactory::GetForProfile(profile);
+  // Note: Checking whether the service was created for this profile and whether
+  // we are observing cert changes is more complicated than needed - we could
+  // just check the value of the pref (via UsedPolicyCertificates), which
+  // defaults to false and will only be set to true if the service was created
+  // for this profile and was observing cert changes at least at some point.
+  if (service && service->IsObservingCertChanges() &&
+      policy::PolicyCertService::UsedPolicyCertificates(profile)) {
     return true;
   }
 #endif

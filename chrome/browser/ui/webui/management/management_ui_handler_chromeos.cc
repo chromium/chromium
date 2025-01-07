@@ -777,7 +777,8 @@ void ManagementUIHandlerChromeOS::HandleGetLocalTrustRootsInfo(
   policy::PolicyCertService* policy_service =
       policy::PolicyCertServiceFactory::GetForProfile(
           Profile::FromWebUI(web_ui()));
-  if (policy_service && policy_service->has_policy_certificates()) {
+  if (policy_service && policy_service->IsObservingCertChanges() &&
+      policy_service->has_policy_certificates()) {
     trust_roots_configured = base::Value(true);
   }
 

@@ -284,8 +284,7 @@ TEST_F(SessionControllerClientImplTest,
   ASSERT_TRUE(
       policy::PolicyCertServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           user_profile, base::BindRepeating(&CreateTestPolicyCertService)));
-  policy::PolicyCertServiceFactory::GetForProfile(user_profile)
-      ->SetUsedPolicyCertificates();
+  policy::PolicyCertService::SetUsedPolicyCertificates(user_profile);
 
   EXPECT_EQ(ash::AddUserSessionPolicy::ALLOWED,
             SessionControllerClientImpl::GetAddUserSessionPolicy());

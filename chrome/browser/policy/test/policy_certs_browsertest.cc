@@ -438,18 +438,11 @@ IN_PROC_BROWSER_TEST_F(PolicyProvidedCertsRegularUserTest, NoTrustAnchor) {
             VerifyTestServerCert(multi_profile_policy_helper_.profile_2(),
                                  user_policy_certs_helper_.server_cert()));
 
-  if (PolicyCertServiceFactory::GetForProfile(
-          multi_profile_policy_helper_.profile_1())) {
-    EXPECT_FALSE(PolicyCertServiceFactory::GetForProfile(
-                     multi_profile_policy_helper_.profile_1())
-                     ->UsedPolicyCertificates());
-  }
-  if (PolicyCertServiceFactory::GetForProfile(
-          multi_profile_policy_helper_.profile_2())) {
-    EXPECT_FALSE(PolicyCertServiceFactory::GetForProfile(
-                     multi_profile_policy_helper_.profile_2())
-                     ->UsedPolicyCertificates());
-  }
+  EXPECT_FALSE(PolicyCertService::UsedPolicyCertificates(
+      multi_profile_policy_helper_.profile_1()));
+
+  EXPECT_FALSE(PolicyCertService::UsedPolicyCertificates(
+      multi_profile_policy_helper_.profile_2()));
 }
 
 IN_PROC_BROWSER_TEST_F(PolicyProvidedCertsRegularUserTest, TrustAnchorApplied) {
@@ -460,9 +453,8 @@ IN_PROC_BROWSER_TEST_F(PolicyProvidedCertsRegularUserTest, TrustAnchorApplied) {
             VerifyTestServerCert(multi_profile_policy_helper_.profile_1(),
                                  user_policy_certs_helper_.server_cert()));
 
-  EXPECT_TRUE(PolicyCertServiceFactory::GetForProfile(
-                  multi_profile_policy_helper_.profile_1())
-                  ->UsedPolicyCertificates());
+  EXPECT_TRUE(PolicyCertService::UsedPolicyCertificates(
+      multi_profile_policy_helper_.profile_1()));
 }
 
 // Test that policy provided trust anchors are available in Incognito mode.
@@ -494,15 +486,10 @@ IN_PROC_BROWSER_TEST_F(PolicyProvidedCertsRegularUserTest,
             VerifyTestServerCert(multi_profile_policy_helper_.profile_2(),
                                  user_policy_certs_helper_.server_cert()));
 
-  EXPECT_TRUE(PolicyCertServiceFactory::GetForProfile(
-                  multi_profile_policy_helper_.profile_1())
-                  ->UsedPolicyCertificates());
-  if (PolicyCertServiceFactory::GetForProfile(
-          multi_profile_policy_helper_.profile_2())) {
-    EXPECT_FALSE(PolicyCertServiceFactory::GetForProfile(
-                     multi_profile_policy_helper_.profile_2())
-                     ->UsedPolicyCertificates());
-  }
+  EXPECT_TRUE(PolicyCertService::UsedPolicyCertificates(
+      multi_profile_policy_helper_.profile_1()));
+  EXPECT_FALSE(PolicyCertService::UsedPolicyCertificates(
+      multi_profile_policy_helper_.profile_2()));
 }
 
 IN_PROC_BROWSER_TEST_F(PolicyProvidedCertsRegularUserTest,
@@ -526,8 +513,8 @@ IN_PROC_BROWSER_TEST_F(PolicyProvidedCertsRegularUserTest,
   EXPECT_EQ(net::OK,
             VerifyTestServerCert(multi_profile_policy_helper_.profile_2(),
                                  user_policy_certs_helper_.server_cert()));
-#else  // Implies #if BUILDFLAG(IS_CHROMEOS_LACROS), but this is a generally
-       // correct behavior according to the comment above.
+#else   // Implies #if BUILDFLAG(IS_CHROMEOS_LACROS), but this is a generally
+        // correct behavior according to the comment above.
   EXPECT_EQ(net::ERR_CERT_AUTHORITY_INVALID,
             VerifyTestServerCert(multi_profile_policy_helper_.profile_2(),
                                  user_policy_certs_helper_.server_cert()));
@@ -564,8 +551,9 @@ bool IsCertInCertificateList(
     const net::X509Certificate* cert,
     const ash::NetworkCertLoader::NetworkCertList& network_cert_list) {
   for (const auto& network_cert : network_cert_list) {
-    if (net::x509_util::IsSameCertificate(network_cert.cert(), cert))
+    if (net::x509_util::IsSameCertificate(network_cert.cert(), cert)) {
       return true;
+    }
   }
   return false;
 }
@@ -620,11 +608,9 @@ IN_PROC_BROWSER_TEST_F(PolicyProvidedCertsRegularUserTest,
             VerifyTestServerCert(ash::ProfileHelper::GetLockScreenProfile(),
                                  user_policy_certs_helper_.server_cert()));
 
-  EXPECT_TRUE(PolicyCertServiceFactory::GetForProfile(browser()->profile())
-                  ->UsedPolicyCertificates());
-  EXPECT_TRUE(PolicyCertServiceFactory::GetForProfile(
-                  ash::ProfileHelper::GetLockScreenProfile())
-                  ->UsedPolicyCertificates());
+  EXPECT_TRUE(PolicyCertService::UsedPolicyCertificates(browser()->profile()));
+  EXPECT_TRUE(PolicyCertService::UsedPolicyCertificates(
+      ash::ProfileHelper::GetLockScreenProfile()));
 }
 
 // Test that the lock screen profile doesn't use the policy provided custom

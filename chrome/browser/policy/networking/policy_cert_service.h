@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "chromeos/ash/components/network/policy_certificate_provider.h"
@@ -53,14 +54,24 @@ class PolicyCertService : public KeyedService,
 
   ~PolicyCertService() override;
 
-  // Returns true if the profile that owns this service has used certificates
-  // installed via policy to establish a secure connection before. This means
-  // that it may have cached content from an untrusted source.
-  bool UsedPolicyCertificates() const;
+  // Starts observing for changes to the policy-provided certificates and sets
+  // a callback to be called when this happens. This should only be called if
+  // the network service is enabled.
+  void StartObservingCertChanges(base::RepeatingClosure callback);
 
-  // Sets the flag that the current profile used certificates pushed by policy
-  // before.
-  void SetUsedPolicyCertificates();
+  // Returns true if the service is currently observing changes to the
+  // policy-provided certificates.
+  bool IsObservingCertChanges() const {
+    return !!on_policy_provided_certs_changed_callback_;
+  }
+
+  // Returns true if the service corresponding to `profile` has used
+  // certificates installed via policy to establish a secure connection before.
+  // This means that it may have cached content from an untrusted source.
+  static bool UsedPolicyCertificates(Profile* profile);
+
+  // Sets the flag that `profile` used certificates pushed by policy before.
+  static void SetUsedPolicyCertificates(Profile* profile);
 
   // Returns true if the profile that owns this service has at least one
   // policy-provided trust anchor configured.
@@ -107,6 +118,10 @@ class PolicyCertService : public KeyedService,
   void StopListeningToPolicyCertificateProvider();
 
   const raw_ptr<Profile> profile_;
+
+  // Callback to be called when the policy-provided certificates change. Set via
+  // `StartObservingForProfile()`.
+  base::RepeatingClosure on_policy_provided_certs_changed_callback_;
 
   // The source of certificates for this PolicyCertService.
   raw_ptr<ash::PolicyCertificateProvider> policy_certificate_provider_;

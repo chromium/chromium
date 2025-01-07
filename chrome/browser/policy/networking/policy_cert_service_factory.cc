@@ -58,8 +58,9 @@ std::unique_ptr<KeyedService> BuildServiceInstanceAsh(
 
   ash::PolicyCertificateProvider* policy_certificate_provider =
       GetPolicyCertificateProvider(profile);
-  if (!policy_certificate_provider)
+  if (!policy_certificate_provider) {
     return nullptr;
+  }
 
   if (ash::ProfileHelper::Get()->IsSigninProfile(profile)) {
     return std::make_unique<PolicyCertService>(
@@ -78,8 +79,9 @@ std::unique_ptr<KeyedService> BuildServiceInstanceAsh(
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   const user_manager::User* user = ash::ProfileHelper::Get()->GetUserByProfile(
       profile->GetOriginalProfile());
-  if (!user)
+  if (!user) {
     return nullptr;
+  }
 
   // Only allow trusted policy-provided certificates for non-guest primary
   // users. Guest users don't have user policy, but set
@@ -102,8 +104,9 @@ std::unique_ptr<KeyedService> BuildServiceInstanceLacros(
 
   ash::PolicyCertificateProvider* policy_certificate_provider =
       UserNetworkConfigurationUpdaterFactory::GetForBrowserContext(profile);
-  if (!policy_certificate_provider)
+  if (!policy_certificate_provider) {
     return nullptr;
+  }
 
   Profile* original_profile = Profile::FromBrowserContext(
       GetBrowserContextRedirectedInIncognito(profile));
@@ -124,14 +127,7 @@ std::unique_ptr<KeyedService> BuildServiceInstanceLacros(
 // static
 PolicyCertService* PolicyCertServiceFactory::GetForProfile(Profile* profile) {
   return static_cast<PolicyCertService*>(
-      GetInstance()->GetServiceForBrowserContext(profile, false));
-}
-
-// static
-bool PolicyCertServiceFactory::CreateAndStartObservingForProfile(
-    Profile* profile) {
-  // Note that this can be called multiple times if the network process crashes.
-  return GetInstance()->GetServiceForBrowserContext(profile, true) != nullptr;
+      GetInstance()->GetServiceForBrowserContext(profile, true));
 }
 
 // static

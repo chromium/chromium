@@ -263,9 +263,8 @@ TEST_F(MultiUserSignInPolicyControllerTest, CachedBehaviorUpdate) {
 // upon login.
 TEST_F(MultiUserSignInPolicyControllerTest, CompromisedCacheFixedOnLogin) {
   MockUserManagerObserver mock_observer;
-  base::ScopedObservation<UserManager,
-                          UserManager::Observer>
-      observation(&mock_observer);
+  base::ScopedObservation<UserManager, UserManager::Observer> observation(
+      &mock_observer);
   observation.Observe(fake_user_manager_.Get());
 
   SetPrefBehavior(0, MultiUserSignInPolicy::kPrimaryOnly);
@@ -308,9 +307,8 @@ TEST_F(MultiUserSignInPolicyControllerTest, IsSecondaryAllowed) {
 // Tests user behavior changes within a two-user session.
 TEST_F(MultiUserSignInPolicyControllerTest, PrimaryBehaviorChange) {
   MockUserManagerObserver mock_observer;
-  base::ScopedObservation<UserManager,
-                          UserManager::Observer>
-      observation(&mock_observer);
+  base::ScopedObservation<UserManager, UserManager::Observer> observation(
+      &mock_observer);
   observation.Observe(fake_user_manager_.Get());
   EXPECT_CALL(mock_observer, OnUserNotAllowed(testing::_))
       .Times(testing::AnyNumber());
@@ -343,8 +341,7 @@ TEST_F(MultiUserSignInPolicyControllerTest,
   ASSERT_TRUE(
       policy::PolicyCertServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           profile(0), base::BindRepeating(&TestPolicyCertServiceFactory)));
-  policy::PolicyCertServiceFactory::GetForProfile(profile(0))
-      ->SetUsedPolicyCertificates();
+  policy::PolicyCertService::SetUsedPolicyCertificates(profile(0));
 
   EXPECT_TRUE(
       controller()->IsUserAllowedInSession(test_users_[0].GetUserEmail()));
@@ -368,8 +365,7 @@ TEST_F(MultiUserSignInPolicyControllerTest,
   ASSERT_TRUE(
       policy::PolicyCertServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           profile(0), base::BindRepeating(&TestPolicyCertServiceFactory)));
-  policy::PolicyCertServiceFactory::GetForProfile(profile(0))
-      ->SetUsedPolicyCertificates();
+  policy::PolicyCertService::SetUsedPolicyCertificates(profile(0));
 
   EXPECT_TRUE(
       controller()->IsUserAllowedInSession(test_users_[0].GetUserEmail()));
@@ -382,8 +378,7 @@ TEST_F(MultiUserSignInPolicyControllerTest,
   ASSERT_TRUE(
       policy::PolicyCertServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           profile(0), base::BindRepeating(&TestPolicyCertServiceFactory)));
-  policy::PolicyCertServiceFactory::GetForProfile(profile(0))
-      ->SetUsedPolicyCertificates();
+  policy::PolicyCertService::SetUsedPolicyCertificates(profile(0));
   LoginUser(0);
 
   EXPECT_TRUE(
@@ -392,8 +387,7 @@ TEST_F(MultiUserSignInPolicyControllerTest,
   ASSERT_TRUE(
       policy::PolicyCertServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           profile(1), base::BindRepeating(&TestPolicyCertServiceFactory)));
-  policy::PolicyCertServiceFactory::GetForProfile(profile(1))
-      ->SetUsedPolicyCertificates();
+  policy::PolicyCertService::SetUsedPolicyCertificates(profile(1));
 
   EXPECT_TRUE(
       controller()->IsUserAllowedInSession(test_users_[1].GetUserEmail()));
