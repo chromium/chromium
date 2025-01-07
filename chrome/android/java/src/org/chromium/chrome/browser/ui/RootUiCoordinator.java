@@ -843,6 +843,7 @@ public class RootUiCoordinator
                 },
                 showWebSearchInActionMode(),
                 mShareDelegateSupplier,
+                mBrowserControlsManager,
                 mReadAloudControllerSupplier);
 
         mCaptureController =
