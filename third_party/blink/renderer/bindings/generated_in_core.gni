@@ -1902,6 +1902,8 @@ generated_union_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_keyframeeffectoptions_unrestricteddouble.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_medialist_string.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_medialist_string.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_node_string.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_node_string.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_node_string_trustedscript.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_node_string_trustedscript.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_object_objectarray_string.cc",
