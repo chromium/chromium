@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught Error: assert_equals: expected "network" but got "audio-capture"
+[TIMEOUT] Speech recognition onerror event is called.
+  Test timed out
+Harness: the test ran to completion.
