@@ -150,7 +150,7 @@ void NameRegion(void* start, size_t length, PageTag page_tag) {
       PA_NOTREACHED();
   }
 
-  // No error checking on purpose, testing only.
+  // No error checking on purpose, used for debugging only.
   prctl(PR_SET_VMA, PR_SET_VMA_ANON_NAME, start, length, name);
 }
 
