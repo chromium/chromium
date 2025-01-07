@@ -319,6 +319,13 @@ static_library("test_support") {
     deps += [ "//extensions/common/api" ]
   }
 
+  if (enable_extensions_core) {
+    sources += [
+      "../common/extensions/manifest_tests/chrome_manifest_test.cc",
+      "../common/extensions/manifest_tests/chrome_manifest_test.h",
+    ]
+  }
+
   if (enable_extensions) {
     sources += [
       "../browser/apps/platform_apps/app_browsertest_util.cc",
@@ -369,8 +376,6 @@ static_library("test_support") {
       "../browser/ui/web_applications/web_app_browsertest_base.h",
       "../browser/ui/webui/extensions/extension_settings_test_base.cc",
       "../browser/ui/webui/extensions/extension_settings_test_base.h",
-      "../common/extensions/manifest_tests/chrome_manifest_test.cc",
-      "../common/extensions/manifest_tests/chrome_manifest_test.h",
     ]
 
     deps += [
@@ -8591,8 +8596,44 @@ test("unit_tests") {
     }
   }
 
+  # Unit tests that run on Win/Mac/Linux and Android desktop.
   if (enable_extensions_core) {
-    deps += [ "//chrome/browser/extensions:test_support" ]
+    sources += [
+      "../common/extensions/manifest_handlers/automation_unittest.cc",
+      "../common/extensions/manifest_handlers/content_scripts_manifest_unittest.cc",
+      "../common/extensions/manifest_handlers/exclude_matches_manifest_unittest.cc",
+      "../common/extensions/manifest_handlers/natively_connectable_handler_unittest.cc",
+      "../common/extensions/manifest_handlers/settings_overrides_handler_unittest.cc",
+      "../common/extensions/manifest_tests/extension_manifests_background_unittest.cc",
+      "../common/extensions/manifest_tests/extension_manifests_chromepermission_unittest.cc",
+      "../common/extensions/manifest_tests/extension_manifests_contentsecuritypolicy_unittest.cc",
+      "../common/extensions/manifest_tests/extension_manifests_default_extent_path_unittest.cc",
+      "../common/extensions/manifest_tests/extension_manifests_devtools_unittest.cc",
+      "../common/extensions/manifest_tests/extension_manifests_experimental_unittest.cc",
+      "../common/extensions/manifest_tests/extension_manifests_icons_unittest.cc",
+      "../common/extensions/manifest_tests/extension_manifests_initvalue_unittest.cc",
+      "../common/extensions/manifest_tests/extension_manifests_kiosk_unittest.cc",
+      "../common/extensions/manifest_tests/extension_manifests_launch_unittest.cc",
+      "../common/extensions/manifest_tests/extension_manifests_manifest_version_unittest.cc",
+      "../common/extensions/manifest_tests/extension_manifests_name_unittest.cc",
+      "../common/extensions/manifest_tests/extension_manifests_offline_unittest.cc",
+      "../common/extensions/manifest_tests/extension_manifests_old_unittest.cc",
+      "../common/extensions/manifest_tests/extension_manifests_options_unittest.cc",
+      "../common/extensions/manifest_tests/extension_manifests_override_unittest.cc",
+      "../common/extensions/manifest_tests/extension_manifests_portsinpermissions_unittest.cc",
+      "../common/extensions/manifest_tests/extension_manifests_sample_unittest.cc",
+      "../common/extensions/manifest_tests/extension_manifests_ui_unittest.cc",
+      "../common/extensions/manifest_tests/extension_manifests_validapp_unittest.cc",
+      "../common/extensions/manifest_tests/extension_manifests_web_accessible_resources_unittest.cc",
+      "../common/extensions/manifest_tests/extension_manifests_web_unittest.cc",
+      "../common/extensions/manifest_tests/extension_manifests_webview_accessible_resources_unittest.cc",
+      "../common/extensions/manifest_tests/permissions_parser_unittest.cc",
+      "../common/extensions/manifest_unittest.cc",
+    ]
+    deps += [
+      "//chrome/browser/extensions:test_support",
+      "//components/crx_file",
+    ]
   }
 
   # TODO(crbug.com/1229899): Clean up and move this to a separate target.
@@ -8853,38 +8894,12 @@ test("unit_tests") {
       "../common/extensions/chrome_extensions_client_unittest.cc",
       "../common/extensions/chrome_manifest_url_handlers_unittest.cc",
       "../common/extensions/extension_unittest.cc",
-      "../common/extensions/manifest_handlers/automation_unittest.cc",
-      "../common/extensions/manifest_handlers/content_scripts_manifest_unittest.cc",
-      "../common/extensions/manifest_handlers/exclude_matches_manifest_unittest.cc",
-      "../common/extensions/manifest_handlers/natively_connectable_handler_unittest.cc",
-      "../common/extensions/manifest_handlers/settings_overrides_handler_unittest.cc",
-      "../common/extensions/manifest_tests/extension_manifests_background_unittest.cc",
-      "../common/extensions/manifest_tests/extension_manifests_chromepermission_unittest.cc",
-      "../common/extensions/manifest_tests/extension_manifests_contentsecuritypolicy_unittest.cc",
-      "../common/extensions/manifest_tests/extension_manifests_default_extent_path_unittest.cc",
-      "../common/extensions/manifest_tests/extension_manifests_devtools_unittest.cc",
-      "../common/extensions/manifest_tests/extension_manifests_experimental_unittest.cc",
-      "../common/extensions/manifest_tests/extension_manifests_icons_unittest.cc",
-      "../common/extensions/manifest_tests/extension_manifests_initvalue_unittest.cc",
-      "../common/extensions/manifest_tests/extension_manifests_kiosk_unittest.cc",
-      "../common/extensions/manifest_tests/extension_manifests_launch_unittest.cc",
-      "../common/extensions/manifest_tests/extension_manifests_manifest_version_unittest.cc",
-      "../common/extensions/manifest_tests/extension_manifests_name_unittest.cc",
-      "../common/extensions/manifest_tests/extension_manifests_offline_unittest.cc",
-      "../common/extensions/manifest_tests/extension_manifests_old_unittest.cc",
-      "../common/extensions/manifest_tests/extension_manifests_options_unittest.cc",
-      "../common/extensions/manifest_tests/extension_manifests_override_unittest.cc",
-      "../common/extensions/manifest_tests/extension_manifests_platformapp_unittest.cc",
-      "../common/extensions/manifest_tests/extension_manifests_portsinpermissions_unittest.cc",
-      "../common/extensions/manifest_tests/extension_manifests_sample_unittest.cc",
+
+      # Side panel is not yet supported on desktop Android.
       "../common/extensions/manifest_tests/extension_manifests_side_panel_unittest.cc",
-      "../common/extensions/manifest_tests/extension_manifests_ui_unittest.cc",
-      "../common/extensions/manifest_tests/extension_manifests_validapp_unittest.cc",
-      "../common/extensions/manifest_tests/extension_manifests_web_accessible_resources_unittest.cc",
-      "../common/extensions/manifest_tests/extension_manifests_web_unittest.cc",
-      "../common/extensions/manifest_tests/extension_manifests_webview_accessible_resources_unittest.cc",
-      "../common/extensions/manifest_tests/permissions_parser_unittest.cc",
-      "../common/extensions/manifest_unittest.cc",
+
+      # Platform apps are not supported on desktop Android.
+      "../common/extensions/manifest_tests/extension_manifests_platformapp_unittest.cc",
       "../common/extensions/permissions/chrome_api_permissions_unittest.cc",
       "../common/extensions/permissions/chrome_permission_message_provider_unittest.cc",
       "../common/extensions/permissions/chrome_permission_message_rules_unittest.cc",
