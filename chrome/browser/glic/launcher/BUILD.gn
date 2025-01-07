@@ -36,6 +36,7 @@ source_set("impl") {
     "//chrome/browser:browser_process",
     "//chrome/browser/glic",
     "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_element_identifiers",
     "//components/keep_alive_registry",
     "//ui/base",
     "//ui/base/accelerators/global_accelerator_listener",

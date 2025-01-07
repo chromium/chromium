@@ -767,6 +767,8 @@ void SettingsUI::CreateHelpBubbleHandler(
           kAnonymizedUrlCollectionPersonalizationSettingId,
           kInactiveTabSettingElementId,
           kAutofillPredictionImprovementsHeaderElementId,
+          kGlicOsToggleElementId,
+          kGlicOsWidgetKeyboardShortcutElementId,
       });
 }
 

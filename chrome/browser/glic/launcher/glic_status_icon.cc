@@ -14,8 +14,10 @@
 #include "chrome/browser/status_icons/status_icon.h"
 #include "chrome/browser/status_icons/status_icon_menu_model.h"
 #include "chrome/browser/status_icons/status_tray.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "glic_status_icon.h"
@@ -77,24 +79,35 @@ void GlicStatusIcon::OnStatusIconClicked() {
 
 void GlicStatusIcon::ExecuteCommand(int command_id, int event_flags) {
   switch (command_id) {
-    case IDC_GLIC_STATUS_ICON_MENU_SHOW:
+    case IDC_GLIC_STATUS_ICON_MENU_SHOW: {
       controller_->Show();
       break;
-    case IDC_GLIC_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT:
-      // TODO(https://crbug.com/378143781): Use correct settings subpage and
-      // show help bubble on the appropriate setting.
-      chrome::ShowSettingsSubPageForProfile(
+    }
+    case IDC_GLIC_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT: {
+      ShowPromoInPage::Params params;
+      params.bubble_anchor_id = kGlicOsWidgetKeyboardShortcutElementId;
+      params.bubble_arrow = user_education::HelpBubbleArrow::kBottomRight;
+      params.bubble_text = l10n_util::GetStringUTF16(
+          IDS_GLIC_OS_WIDGET_KEYBOARD_SHORTCUT_HELP_BUBBLE);
+      chrome::ShowPageWithPromoForProfile(
           glic::GlicProfileManager::GetInstance()->GetProfileForLaunch(),
-          std::string());
+          chrome::GetSettingsUrl(chrome::kChromeUIGlicHost), std::move(params));
       break;
-    case IDC_GLIC_STATUS_ICON_MENU_SETTINGS:
-      // TODO(https://crbug.com/378143780): Use the correct settings subpage.
-      chrome::ShowSettingsSubPageForProfile(
+    }
+    case IDC_GLIC_STATUS_ICON_MENU_SETTINGS: {
+      ShowPromoInPage::Params params;
+      params.bubble_anchor_id = kGlicOsToggleElementId;
+      params.bubble_arrow = user_education::HelpBubbleArrow::kBottomRight;
+      params.bubble_text =
+          l10n_util::GetStringUTF16(IDS_GLIC_OS_WIDGET_TOGGLE_HELP_BUBBLE);
+      chrome::ShowPageWithPromoForProfile(
           glic::GlicProfileManager::GetInstance()->GetProfileForLaunch(),
-          std::string());
+          chrome::GetSettingsUrl(chrome::kChromeUIGlicHost), std::move(params));
       break;
-    default:
+    }
+    default: {
       NOTREACHED();
+    }
   }
 }
 

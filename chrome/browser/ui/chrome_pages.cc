@@ -309,6 +309,14 @@ void ShowSystemAppInternal(Profile* profile, const GURL& url) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+Browser* GetOrCreateBrowserForProfile(Profile* profile) {
+  Browser* browser = chrome::FindTabbedBrowser(profile, false);
+  if (!browser) {
+    return Browser::Create(Browser::CreateParams(profile, true));
+  }
+  return browser;
+}
+
 }  // namespace
 
 void ShowBookmarkManager(Browser* browser) {
@@ -432,7 +440,7 @@ void ShowSettings(Browser* browser) {
 }
 
 void ShowSettingsSubPage(Browser* browser, std::string_view sub_page) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ShowSettingsSubPageForProfile(browser->profile(), sub_page);
 #else
   ShowSettingsSubPageInTabbedBrowser(browser, sub_page);
@@ -441,15 +449,12 @@ void ShowSettingsSubPage(Browser* browser, std::string_view sub_page) {
 
 void ShowSettingsSubPageForProfile(Profile* profile,
                                    std::string_view sub_page) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // OS settings sub-pages are handled else where and should never be
   // encountered here.
   DCHECK(!chromeos::settings::IsOSSettingsSubPage(sub_page)) << sub_page;
 #endif
-  Browser* browser = chrome::FindTabbedBrowser(profile, false);
-  if (!browser) {
-    browser = Browser::Create(Browser::CreateParams(profile, true));
-  }
+  Browser* browser = GetOrCreateBrowserForProfile(profile);
   ShowSettingsSubPageInTabbedBrowser(browser, sub_page);
 }
 
@@ -462,6 +467,14 @@ void ShowSettingsSubPageInTabbedBrowser(Browser* browser,
   // about to be shown) is focused. (See crbug/926492 for motivation.)
   FocusWebContents(browser);
   ShowSingletonTabIgnorePathOverwriteNTP(browser, GetSettingsUrl(sub_page));
+}
+
+void ShowPageWithPromoForProfile(Profile* profile,
+                                 GURL url,
+                                 ShowPromoInPage::Params promo_params) {
+  Browser* browser = GetOrCreateBrowserForProfile(profile);
+  promo_params.target_url = url;
+  ShowPromoInPage::Start(browser, std::move(promo_params));
 }
 
 void ShowContentSettingsExceptions(Browser* browser,

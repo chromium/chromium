@@ -8,6 +8,8 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import '../controls/settings_toggle_button.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
+import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
@@ -19,11 +21,17 @@ export enum SettingsGlicPageFeaturePrefName {
   // TODO(crbug.com/379166610): Keyboard shortcut
 }
 
-const SettingsGlicPageElementBase = PrefsMixin(PolymerElement);
+// browser_element_identifiers constants
+const OS_WIDGET_TOGGLE_ELEMENT_ID = 'kGlicOsToggleElementId';
+const OS_WIDGET_KEYBOARD_SHORTCUT_ELEMENT_ID =
+    'kGlicOsWidgetKeyboardShortcutElementId';
+
+const SettingsGlicPageElementBase = HelpBubbleMixin(PrefsMixin(PolymerElement));
 
 export interface SettingsGlicPageElement {
   $: {
     launcherToggle: SettingsToggleButtonElement,
+    editIconButton: CrIconButtonElement,
   };
 }
 
@@ -43,6 +51,15 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
         notify: true,
       },
     };
+  }
+
+  override ready() {
+    super.ready();
+
+    this.registerHelpBubble(
+        OS_WIDGET_TOGGLE_ELEMENT_ID, this.$.launcherToggle.getBubbleAnchor());
+    this.registerHelpBubble(
+        OS_WIDGET_KEYBOARD_SHORTCUT_ELEMENT_ID, this.$.editIconButton);
   }
 }
 

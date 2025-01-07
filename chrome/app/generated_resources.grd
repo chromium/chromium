@@ -18706,6 +18706,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_GLIC_STATUS_ICON_MENU_SETTINGS" translateable="false" desc="This is the menu item for opening the glic settings.">
         Settings...
       </message>
+      <message name="IDS_GLIC_OS_WIDGET_TOGGLE_HELP_BUBBLE" translateable="false" desc="Help bubble above the toggle for turning off the glic os widget.">
+        Disable glic here
+      </message>
+      <message name="IDS_GLIC_OS_WIDGET_KEYBOARD_SHORTCUT_HELP_BUBBLE" translateable="false" desc="Help bubble message above the keyboard shortcut editor that allows customizing it.">
+        Customize the keyboard shortcut here
+      </message>
     </if>
   </messages>
 </release>
