@@ -40,7 +40,6 @@ import type {CursorAndTouchpadPageBrowserProxy} from './cursor_and_touchpad_page
 import {CursorAndTouchpadPageBrowserProxyImpl} from './cursor_and_touchpad_page_browser_proxy.js';
 import {DisableTouchpadMode} from './disable_touchpad_constants.js';
 
-const DEFAULT_BLACK_CURSOR_COLOR = 0;
 interface Option {
   name: string;
   value: number;
@@ -140,7 +139,7 @@ export class SettingsCursorAndTouchpadPageElement extends
         value() {
           return [
             {
-              value: DEFAULT_BLACK_CURSOR_COLOR,
+              value: -0x1000000,  // Black
               name: loadTimeData.getString('cursorColorBlack'),
             },
             {
@@ -511,15 +510,6 @@ export class SettingsCursorAndTouchpadPageElement extends
         'settings.a11y.tablet_mode_shelf_nav_buttons_enabled', enabled);
     this.cursorAndTouchpadBrowserProxy_
         .recordSelectedShowShelfNavigationButtonValue(enabled);
-  }
-
-  private onA11yCursorColorChange_(): void {
-    // Custom cursor color is enabled when the color is not set to black.
-    const a11yCursorColorOn =
-        this.getPref<number>('settings.a11y.cursor_color').value !==
-        DEFAULT_BLACK_CURSOR_COLOR;
-    this.set(
-        'prefs.settings.a11y.cursor_color_enabled.value', a11yCursorColorOn);
   }
 
   private showTouchpadEnableMessage_(trackpadMode: number): boolean {

@@ -215,7 +215,6 @@ TEST_F(AccessibilityControllerTest, PrefsAreRegistered) {
       prefs()->FindPreference(prefs::kAccessibilityCaretHighlightEnabled));
   EXPECT_TRUE(
       prefs()->FindPreference(prefs::kAccessibilityCursorHighlightEnabled));
-  EXPECT_TRUE(prefs()->FindPreference(prefs::kAccessibilityCursorColorEnabled));
   EXPECT_TRUE(prefs()->FindPreference(prefs::kAccessibilityDictationEnabled));
   EXPECT_TRUE(prefs()->FindPreference(prefs::kAccessibilityDictationLocale));
   EXPECT_TRUE(
@@ -480,21 +479,28 @@ TEST_F(AccessibilityControllerTest, SetCursorHighlightEnabled) {
 }
 
 TEST_F(AccessibilityControllerTest, SetCursorColorEnabled) {
-  EXPECT_FALSE(controller()->cursor_color().enabled());
-
   TestAccessibilityObserver observer;
   controller()->AddObserver(&observer);
   EXPECT_EQ(0, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosCursorColor", 0);
 
-  controller()->cursor_color().SetEnabled(true);
-  EXPECT_TRUE(controller()->cursor_color().enabled());
+  prefs()->SetInteger(prefs::kAccessibilityCursorColor, 1);
   EXPECT_EQ(1, observer.status_changed_count_);
   ExpectSessionDurationMetricCount("CrosCursorColor", 0);
 
-  controller()->cursor_color().SetEnabled(false);
-  EXPECT_FALSE(controller()->cursor_color().enabled());
+  prefs()->SetInteger(prefs::kAccessibilityCursorColor, kDefaultCursorColor);
   EXPECT_EQ(2, observer.status_changed_count_);
   ExpectSessionDurationMetricCount("CrosCursorColor", 1);
+
+  // Set to custom color, and return back to default cursor color to ensure
+  // that second duration is still counted.
+  prefs()->SetInteger(prefs::kAccessibilityCursorColor, 1);
+  EXPECT_EQ(3, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosCursorColor", 1);
+
+  prefs()->SetInteger(prefs::kAccessibilityCursorColor, kDefaultCursorColor);
+  EXPECT_EQ(4, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosCursorColor", 2);
 
   controller()->RemoveObserver(&observer);
 }
@@ -1357,7 +1363,6 @@ TEST_F(AccessibilityControllerTest, ChangingCursorColorPrefChangesCursorColor) {
   // Simulate using chrome settings webui to set cursor color, which also turns
   // on the cursor color enabled pref.
   prefs()->SetInteger(prefs::kAccessibilityCursorColor, SK_ColorBLUE);
-  prefs()->SetBoolean(prefs::kAccessibilityCursorColorEnabled, true);
 
   CursorWindowController* cursor_window_controller =
       Shell::Get()->window_tree_host_manager()->cursor_window_controller();
@@ -1374,11 +1379,10 @@ TEST_F(AccessibilityControllerTest, ChangingCursorColorPrefChangesCursorColor) {
 
   // Simulate using chrome settings webui to set cursor color to black, which
   // which also turns off the cursor color enabled pref.
-  prefs()->SetInteger(prefs::kAccessibilityCursorColor, 0);
-  prefs()->SetBoolean(prefs::kAccessibilityCursorColorEnabled, false);
+  prefs()->SetInteger(prefs::kAccessibilityCursorColor, kDefaultCursorColor);
+
   EXPECT_EQ(kDefaultCursorColor,
             cursor_window_controller->GetCursorColorForTest());
-  ExpectSessionDurationMetricCount("CrosCursorColor", 1);
 }
 
 TEST_F(AccessibilityControllerTest, SetMonoAudioEnabled) {

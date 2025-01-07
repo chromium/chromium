@@ -65,7 +65,6 @@ IN_PROC_BROWSER_TEST_F(ChromeOSInfoPrivateTest, DISABLED_TestGetAndSet) {
   ASSERT_FALSE(
       prefs->GetBoolean(ash::prefs::kAccessibilityHighContrastEnabled));
   ASSERT_FALSE(prefs->GetBoolean(ash::prefs::kAccessibilityAutoclickEnabled));
-  ASSERT_FALSE(prefs->GetBoolean(ash::prefs::kAccessibilityCursorColorEnabled));
 
   ASSERT_FALSE(
       profile()->GetPrefs()->GetBoolean(ash::prefs::kSendFunctionKeys));
@@ -81,7 +80,6 @@ IN_PROC_BROWSER_TEST_F(ChromeOSInfoPrivateTest, DISABLED_TestGetAndSet) {
       prefs->GetBoolean(ash::prefs::kAccessibilitySpokenFeedbackEnabled));
   ASSERT_TRUE(prefs->GetBoolean(ash::prefs::kAccessibilityHighContrastEnabled));
   ASSERT_TRUE(prefs->GetBoolean(ash::prefs::kAccessibilityAutoclickEnabled));
-  ASSERT_TRUE(prefs->GetBoolean(ash::prefs::kAccessibilityCursorColorEnabled));
 
   ASSERT_TRUE(prefs->GetBoolean(ash::prefs::kSendFunctionKeys));
 }

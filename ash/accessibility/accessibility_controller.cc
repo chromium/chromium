@@ -162,8 +162,6 @@ const FeatureData kFeatures[] = {
      nullptr, IDS_ASH_STATUS_TRAY_ACCESSIBILITY_CARET_HIGHLIGHT},
     {FeatureType::kCursorHighlight, prefs::kAccessibilityCursorHighlightEnabled,
      nullptr, IDS_ASH_STATUS_TRAY_ACCESSIBILITY_HIGHLIGHT_MOUSE_CURSOR},
-    {FeatureType::kCursorColor, prefs::kAccessibilityCursorColorEnabled,
-     nullptr, 0, /*toggleable_in_quicksettings=*/false},
     {FeatureType::kDictation, prefs::kAccessibilityDictationEnabled,
      &kDictationMenuIcon, IDS_ASH_STATUS_TRAY_ACCESSIBILITY_DICTATION},
     {FeatureType::kColorCorrection, prefs::kAccessibilityColorCorrectionEnabled,
@@ -288,7 +286,6 @@ constexpr const char* const kCopiedOnSigninAccessibilityPrefs[]{
     prefs::kAccessibilityChromeVoxVoiceName,
     prefs::kAccessibilityColorCorrectionEnabled,
     prefs::kAccessibilityCursorHighlightEnabled,
-    prefs::kAccessibilityCursorColorEnabled,
     prefs::kAccessibilityCursorColor,
     prefs::kAccessibilityDictationEnabled,
     prefs::kAccessibilityDictationLocale,
@@ -463,6 +460,16 @@ const gfx::VectorIcon& GetNotificationIcon(A11yNotificationType type) {
     default:
       return kNotificationChromevoxIcon;
   }
+}
+
+// Calculate the duration and record it into a histogram.
+void RecordFeatureDurationMetric(const std::string& feature_duration_metric,
+                                 const base::Time& enabled_time) {
+  // Calculate the duration from the enabled time to now.
+  base::TimeDelta duration = base::Time::Now() - enabled_time;
+  // Log the duration into a histogram.
+  base::UmaHistogramCustomCounts(feature_duration_metric, duration.InSeconds(),
+                                 1, base::Days(1) / base::Seconds(1), 100);
 }
 
 void ShowAccessibilityNotification(
@@ -1021,9 +1028,6 @@ void AccessibilityController::Feature::LogDurationMetric() {
     case FeatureType::kColorCorrection:
       feature_duration_metric += "CrosColorCorrection";
       break;
-    case FeatureType::kCursorColor:
-      feature_duration_metric += "CrosCursorColor";
-      break;
     case FeatureType::kCursorHighlight:
       feature_duration_metric += "CrosCursorHighlight";
       break;
@@ -1090,11 +1094,7 @@ void AccessibilityController::Feature::LogDurationMetric() {
 
   feature_duration_metric += ".SessionDuration";
 
-  base::TimeDelta duration = base::Time::Now() - enabled_time_;
-  base::UmaHistogramCustomCounts(feature_duration_metric, duration.InSeconds(),
-                                 1, base::Days(1) / base::Seconds(1), 100);
-
-  // Reset enabled time as this duration is now logged and accounted for.
+  RecordFeatureDurationMetric(feature_duration_metric, enabled_time_);
   enabled_time_ = base::Time();
 }
 
@@ -1223,7 +1223,6 @@ void AccessibilityController::RegisterProfilePrefs(
   // not synced due to the impact they have on device interaction.
   registry->RegisterBooleanPref(prefs::kAccessibilityAutoclickEnabled, false);
   registry->RegisterBooleanPref(prefs::kAccessibilityBounceKeysEnabled, false);
-  registry->RegisterBooleanPref(prefs::kAccessibilityCursorColorEnabled, false);
   registry->RegisterBooleanPref(prefs::kAccessibilityCaretHighlightEnabled,
                                 false);
   registry->RegisterBooleanPref(prefs::kAccessibilityCursorHighlightEnabled,
@@ -1682,11 +1681,6 @@ AccessibilityController::Feature& AccessibilityController::caret_highlight()
 AccessibilityController::Feature& AccessibilityController::cursor_highlight()
     const {
   return GetFeature(FeatureType::kCursorHighlight);
-}
-
-AccessibilityController::Feature& AccessibilityController::cursor_color()
-    const {
-  return GetFeature(FeatureType::kCursorColor);
 }
 
 AccessibilityController::Feature& AccessibilityController::dictation() const {
@@ -3017,16 +3011,46 @@ void AccessibilityController::UpdateLargeCursorFromPref() {
 void AccessibilityController::UpdateCursorColorFromPrefs(bool notify) {
   DCHECK(active_user_prefs_);
 
-  const bool enabled =
-      active_user_prefs_->GetBoolean(prefs::kAccessibilityCursorColorEnabled);
+  int cursor_color =
+      active_user_prefs_->GetInteger(prefs::kAccessibilityCursorColor);
+  UpdateCursorColor(cursor_color, notify);
+  TrackCursorColorEnabledDuration(cursor_color);
+}
+
+void AccessibilityController::UpdateCursorColor(SkColor cursor_color,
+                                                bool notify) {
   Shell* shell = Shell::Get();
-  shell->SetCursorColor(
-      enabled ? active_user_prefs_->GetInteger(prefs::kAccessibilityCursorColor)
-              : kDefaultCursorColor);
+  shell->SetCursorColor(cursor_color);
+
   if (notify) {
     NotifyAccessibilityStatusChanged();
   }
   shell->UpdateCursorCompositingEnabled();
+}
+
+void AccessibilityController::TrackCursorColorEnabledDuration(
+    SkColor cursor_color) {
+  // Check if a custom cursor color is currently enabled.
+  bool is_custom_color_enabled = cursor_color != kDefaultCursorColor;
+
+  if (last_cursor_color_enabled_time_ == base::Time()) {
+    cursor_color_enabled_ = is_custom_color_enabled;
+    if (is_custom_color_enabled) {
+      last_cursor_color_enabled_time_ = base::Time::Now();
+    }
+  }
+
+  if (cursor_color_enabled_ == is_custom_color_enabled) {
+    return;
+  }
+
+  if (!is_custom_color_enabled) {
+    RecordFeatureDurationMetric("Accessibility.CrosCursorColor.SessionDuration",
+                                last_cursor_color_enabled_time_);
+    last_cursor_color_enabled_time_ = base::Time();
+  }
+
+  cursor_color_enabled_ = is_custom_color_enabled;
 }
 
 void AccessibilityController::UpdateFaceGazeFromPrefs() {
@@ -3937,11 +3961,6 @@ void AccessibilityController::UpdateFeatureFromPref(FeatureType feature) {
       break;
     case FeatureType::kVirtualKeyboard:
       keyboard::SetAccessibilityKeyboardEnabled(enabled);
-      break;
-    case FeatureType::kCursorColor:
-      // The notification will already come via UpdateFeatureFromPref
-      // so we don't need to run it twice.
-      UpdateCursorColorFromPrefs(/*notify=*/false);
       break;
     case FeatureType::kColorCorrection:
       if (enabled && !active_user_prefs_->GetBoolean(

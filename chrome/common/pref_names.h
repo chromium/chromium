@@ -3554,10 +3554,6 @@ inline constexpr char kLacrosAccessibilityAutoclickEnabled[] =
 inline constexpr char kLacrosAccessibilityCaretHighlightEnabled[] =
     "lacros.settings.a11y.caret_highlight";
 
-// A boolean pref which determines whether custom cursor color is enabled.
-inline constexpr char kLacrosAccessibilityCursorColorEnabled[] =
-    "lacros.settings.a11y.cursor_color_enabled";
-
 // A boolean pref which determines whether cursor highlighting is enabled.
 inline constexpr char kLacrosAccessibilityCursorHighlightEnabled[] =
     "lacros.settings.a11y.cursor_highlight";

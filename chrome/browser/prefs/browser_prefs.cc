@@ -1154,25 +1154,27 @@ inline constexpr char kDeleteTimePeriodV2Basic[] =
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Deprecated 12/2024
-const char kCryptAuthDeviceSyncIsRecoveringFromFailure[] =
+inline const char kCryptAuthDeviceSyncIsRecoveringFromFailure[] =
     "cryptauth.device_sync.is_recovering_from_failure";
-const char kCryptAuthDeviceSyncLastSyncTimeSeconds[] =
+inline const char kCryptAuthDeviceSyncLastSyncTimeSeconds[] =
     "cryptauth.device_sync.last_device_sync_time_seconds";
-const char kCryptAuthDeviceSyncReason[] = "cryptauth.device_sync.reason";
-const char kCryptAuthDeviceSyncUnlockKeys[] =
+inline const char kCryptAuthDeviceSyncReason[] = "cryptauth.device_sync.reason";
+inline const char kCryptAuthDeviceSyncUnlockKeys[] =
     "cryptauth.device_sync.unlock_keys";
-const char kCryptAuthEnrollmentIsRecoveringFromFailure[] =
+inline const char kCryptAuthEnrollmentIsRecoveringFromFailure[] =
     "cryptauth.enrollment.is_recovering_from_failure";
-const char kCryptAuthEnrollmentLastEnrollmentTimeSeconds[] =
+inline const char kCryptAuthEnrollmentLastEnrollmentTimeSeconds[] =
     "cryptauth.enrollment.last_enrollment_time_seconds";
-const char kCryptAuthEnrollmentReason[] = "cryptauth.enrollment.reason";
-const char kCryptAuthEnrollmentUserPublicKey[] =
+inline const char kCryptAuthEnrollmentReason[] = "cryptauth.enrollment.reason";
+inline const char kCryptAuthEnrollmentUserPublicKey[] =
     "cryptauth.enrollment.user_public_key";
-const char kCryptAuthEnrollmentUserPrivateKey[] =
+inline const char kCryptAuthEnrollmentUserPrivateKey[] =
     "cryptauth.enrollment.user_private_key";
-const char kLacrosLaunchOnLogin[] = "lacros.launch_on_login";
-const char kLacrosLaunchSwitch[] = "lacros_launch_switch";
-const char kLacrosSelection[] = "lacros_selection";
+inline const char kLacrosLaunchOnLogin[] = "lacros.launch_on_login";
+inline const char kLacrosLaunchSwitch[] = "lacros_launch_switch";
+inline const char kLacrosSelection[] = "lacros_selection";
+inline constexpr char kAccessibilityCursorColorEnabled[] =
+    "settings.a11y.cursor_color_enabled";
 #endif
 
 // Deprecated 12/2024.
@@ -1676,6 +1678,7 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterStringPref(kCryptAuthEnrollmentUserPrivateKey,
                                std::string());
   registry->RegisterBooleanPref(kLacrosLaunchOnLogin, false);
+  registry->RegisterBooleanPref(kAccessibilityCursorColorEnabled, false);
 #endif
 
   // Deprecated 12/2024.
@@ -3022,6 +3025,7 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kCryptAuthEnrollmentUserPublicKey);
   profile_prefs->ClearPref(kCryptAuthEnrollmentUserPrivateKey);
   profile_prefs->ClearPref(kLacrosLaunchOnLogin);
+  profile_prefs->ClearPref(kAccessibilityCursorColorEnabled);
 #endif
 
   // Added 12/2024.

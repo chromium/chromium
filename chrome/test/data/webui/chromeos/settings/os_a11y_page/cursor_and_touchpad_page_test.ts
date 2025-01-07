@@ -17,7 +17,7 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 import {TestDevicePageBrowserProxy} from '../device_page/test_device_page_browser_proxy.js';
 import {clearBody} from '../utils.js';
 
-const DEFAULT_BLACK_CURSOR_COLOR = 0;
+const DEFAULT_BLACK_CURSOR_COLOR = -0x1000000;
 const RED_CURSOR_COLOR = 0xd93025;
 
 /**
@@ -118,22 +118,18 @@ suite('<settings-cursor-and-touchpad-page>', () => {
         cursorColorDropdown.shadowRoot!.querySelector('select');
     assert(cursorColorSelectElement);
     assertEquals(
-        'SETTINGS_DROPDOWN_NOT_FOUND_ITEM', cursorColorSelectElement.value);
+        String(DEFAULT_BLACK_CURSOR_COLOR), cursorColorSelectElement.value);
 
     // Turn cursor color to red, and verify pref is also red.
     cursorColorSelectElement.value = String(RED_CURSOR_COLOR);
     cursorColorSelectElement.dispatchEvent(new CustomEvent('change'));
     const cursorColorPref = page.getPref('settings.a11y.cursor_color');
-    const cursorColorEnabledPref =
-        page.getPref('settings.a11y.cursor_color_enabled');
     assertEquals(RED_CURSOR_COLOR, cursorColorPref.value);
-    assertTrue(cursorColorEnabledPref.value);
 
     // Turn cursor color back to default, and verify pref is also default.
     cursorColorSelectElement.value = String(DEFAULT_BLACK_CURSOR_COLOR);
     cursorColorSelectElement.dispatchEvent(new CustomEvent('change'));
     assertEquals(DEFAULT_BLACK_CURSOR_COLOR, cursorColorPref.value);
-    assertFalse(cursorColorEnabledPref.value);
   });
 
   // Only run this test when input device setting split feature flag is

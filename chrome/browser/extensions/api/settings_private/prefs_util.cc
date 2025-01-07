@@ -1161,8 +1161,6 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[chromeos::prefs::kAccessibilityCaretHighlightEnabled] =
       settings_api::PrefType::kBoolean;
-  (*s_allowlist)[chromeos::prefs::kAccessibilityCursorColorEnabled] =
-      settings_api::PrefType::kBoolean;
   (*s_allowlist)[chromeos::prefs::kAccessibilityCursorHighlightEnabled] =
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[chromeos::prefs::kAccessibilityDictationEnabled] =

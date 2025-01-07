@@ -16,7 +16,6 @@ enum class A11yFeatureType {
   kBounceKeys,
   kCaretHighlight,
   kColorCorrection,
-  kCursorColor,
   kCursorHighlight,
   kDictation,
   kDisableTouchpad,
