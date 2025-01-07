@@ -226,15 +226,15 @@ NSCollectionLayoutSection* InactiveTabButtonSection(
   const CGFloat spacing = Spacing(layout_environment);
   const CGFloat section_horizontal_inset = spacing;
 
-  NSInteger colums_count = ColumnsCount(layout_environment);
+  NSInteger columns_count = ColumnsCount(layout_environment);
   CGFloat groupHorizontalInset = 0;
-  if (colums_count > 2) {
+  if (columns_count > 2) {
     const CGFloat width =
         layout_environment.container.effectiveContentSize.width;
-    const CGFloat number_of_spacing = (colums_count % 2 == 0) ? 1 : 2;
+    const CGFloat number_of_spacing = (columns_count % 2 == 0) ? 1 : 2;
     const CGFloat tab_width =
-        (width - spacing * (colums_count - 1) - 2 * section_horizontal_inset) /
-        colums_count;
+        (width - spacing * (columns_count - 1) - 2 * section_horizontal_inset) /
+        columns_count;
     const CGFloat button_width =
         AlignValueToPixel(2 * tab_width + number_of_spacing * spacing);
     groupHorizontalInset =
