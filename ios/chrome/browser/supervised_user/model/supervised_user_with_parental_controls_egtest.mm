@@ -229,8 +229,8 @@ static const char* kInterstitialDetails = "Details";
   // Check the previously used tabs are maintained.
   [ChromeEarlGrey waitForMainTabCount:3];
   // Set up histogram tracking before changing the filtering behaviour.
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Failed to set up histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
   // Change the filtering setting to block the previously used urls. This
   // results in a new filtering of the existing tabs.
   [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];

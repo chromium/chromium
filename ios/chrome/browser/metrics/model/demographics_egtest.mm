@@ -31,8 +31,8 @@ const metrics::UserDemographicsProto::Gender kTestGender =
 
 - (void)setUp {
   [super setUp];
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Failed to set up histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
   [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
 
   // Set a network time so that SyncPrefs::GetUserNoisedBirthYearAndGender does
@@ -51,8 +51,8 @@ const metrics::UserDemographicsProto::Gender kTestGender =
 - (void)tearDownHelper {
   [ChromeEarlGrey clearFakeSyncServerData];
   [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
-  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
-                @"Failed to release histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface releaseHistogramTester]);
   [super tearDownHelper];
 }
 

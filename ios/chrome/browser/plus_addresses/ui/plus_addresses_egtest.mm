@@ -49,7 +49,7 @@ void ExpectModalHistogram(
       [MetricsAppInterface expectCount:count
                              forBucket:static_cast<int>(event_type)
                           forHistogram:@"PlusAddresses.Modal.Events"];
-  GREYAssertNil(error, @"Failed to record modal event histogram");
+  chrome_test_util::GREYAssertErrorNil(error);
 }
 
 // Assert that the bottom sheet shown duration metrics is recorded.
@@ -66,7 +66,7 @@ void ExpectModalTimeSample(
 
   NSError* error = [MetricsAppInterface expectTotalCount:count
                                             forHistogram:name];
-  GREYAssertNil(error, @"Failed to record modal shown duration histogram");
+  chrome_test_util::GREYAssertErrorNil(error);
 }
 
 }  // namespace
@@ -83,8 +83,8 @@ void ExpectModalTimeSample(
   [super setUp];
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Failed to set up histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
 
   // Ensure a fake identity is available, as this is required by the
   // plus_addresses feature.
@@ -100,8 +100,8 @@ void ExpectModalTimeSample(
 
 - (void)tearDownHelper {
   [super tearDownHelper];
-  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
-                @"Cannot reset histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface releaseHistogramTester]);
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {

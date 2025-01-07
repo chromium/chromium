@@ -74,7 +74,7 @@ void CheckPasswordDetailsVisitMetricCount(int count) {
       expectTotalCount:count
           forHistogram:
               @(password_manager::kPasswordManagerSurfaceVisitHistogramName)];
-  GREYAssertNil(error, @"Unexpected Password Details Visit histogram count");
+  chrome_test_util::GREYAssertErrorNil(error);
 
   error = [MetricsAppInterface
        expectCount:count
@@ -82,7 +82,7 @@ void CheckPasswordDetailsVisitMetricCount(int count) {
                                         kPasswordDetails)
       forHistogram:
           @(password_manager::kPasswordManagerSurfaceVisitHistogramName)];
-  GREYAssertNil(error, @"Unexpected Password Details Visit histogram count");
+  chrome_test_util::GREYAssertErrorNil(error);
 }
 
 // Verifies that the number of accepted suggestions recorded for the given
@@ -128,8 +128,8 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
   // enabled by default.
   [PasswordSuggestionBottomSheetAppInterface setDismissCount:0];
 
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Cannot setup histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
   [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
 }
 
@@ -140,8 +140,8 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
   [PasswordSuggestionBottomSheetAppInterface removeMockReauthenticationModule];
 
   [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
-  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
-                @"Failed to release histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface releaseHistogramTester]);
   [super tearDownHelper];
 }
 

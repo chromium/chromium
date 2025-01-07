@@ -488,14 +488,14 @@ void CheckPasswordManagerVisitMetricCount(int count) {
   NSError* error = [MetricsAppInterface
       expectTotalCount:count
           forHistogram:@(kPasswordManagerSurfaceVisitHistogramName)];
-  GREYAssertNil(error, @"Unexpected Password Manager Visit histogram count");
+  chrome_test_util::GREYAssertErrorNil(error);
 
   error = [MetricsAppInterface
        expectCount:count
          forBucket:static_cast<int>(
                        password_manager::PasswordManagerSurface::kPasswordList)
       forHistogram:@(kPasswordManagerSurfaceVisitHistogramName)];
-  GREYAssertNil(error, @"Unexpected Password Manager Visit histogram count");
+  chrome_test_util::GREYAssertErrorNil(error);
 }
 
 // Verifies that the elements of the Password Manager widget promo are as
@@ -674,8 +674,8 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
 - (void)setUp {
   [super setUp];
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Cannot setup histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
   _passwordAutoFillStatusSwizzler =
       std::make_unique<EarlGreyScopedBlockSwizzler>(
           @"PasswordAutoFillStatusManager", @"sharedManager",
@@ -695,8 +695,8 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   GREYAssert([PasswordSettingsAppInterface clearProfilePasswordStore],
              @"PasswordStore was not cleared.");
 
-  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
-                @"Cannot reset histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface releaseHistogramTester]);
 
   [PasswordsInOtherAppsAppInterface resetManager];
   _passwordAutoFillStatusSwizzler.reset();

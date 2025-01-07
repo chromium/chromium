@@ -76,8 +76,8 @@ void OpenNTPAndBackgroundAndForegroundApp() {
 - (void)setUp {
   [super setUp];
   [[self class] testForStartup];
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Cannot setup histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
   [ChromeEarlGrey
       removeUserDefaultsObjectForKey:kDisplayedSSORecallPromoCountKey];
   [ChromeEarlGrey
@@ -89,8 +89,8 @@ void OpenNTPAndBackgroundAndForegroundApp() {
 }
 
 - (void)tearDownHelper {
-  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
-                @"Cannot reset histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface releaseHistogramTester]);
   [super tearDownHelper];
 }
 

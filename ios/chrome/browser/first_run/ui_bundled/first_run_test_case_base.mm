@@ -46,8 +46,8 @@
   [[self class] testForStartup];
   [super setUp];
 
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Failed to set up histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
 
   // Because this test suite changes the state of Sync passwords, wait
   // until the engine is initialized before startup.

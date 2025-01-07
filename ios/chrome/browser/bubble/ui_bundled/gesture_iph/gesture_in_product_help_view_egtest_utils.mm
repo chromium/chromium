@@ -45,8 +45,8 @@ void RelaunchWithIPHFeature(NSString* feature, BOOL safari_switcher) {
   }
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Cannot setup histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
 }
 
 void AssertGestureIPHVisibleWithDismissAction(NSString* description,
@@ -150,5 +150,5 @@ void ExpectHistogramEmittedForIPHDismissal(IPHDismissalReasonType reason) {
     error = [MetricsAppInterface expectTotalCount:1
                                      forHistogram:dismissalHistogramName];
   }
-  GREYAssertNil(error, error.description);
+  chrome_test_util::GREYAssertErrorNil(error);
 }

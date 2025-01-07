@@ -180,15 +180,15 @@ void ExpectContextMenuHistoryEntryActionsHistogram(int count,
   // screen.
   [ChromeEarlGrey resetBrowsingDataPrefs];
 
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Cannot setup histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
   [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
 }
 
 - (void)tearDownHelper {
   [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
-  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
-                @"Cannot reset histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface releaseHistogramTester]);
 
   NSError* error = nil;
   // Dismiss search bar by pressing cancel, if present. Passing error prevents

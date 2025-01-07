@@ -28,16 +28,16 @@
   // Make sure the search engine has been reset, to avoid any issues if it was
   // not by a previous test.
   [SettingsAppInterface resetSearchEngine];
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Failed to set up histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
 }
 
 - (void)tearDownHelper {
   // Reset the default search engine to Google
   [SettingsAppInterface resetSearchEngine];
   // Release the histogram tester.
-  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
-                @"Cannot reset histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface releaseHistogramTester]);
   [super tearDownHelper];
 }
 
@@ -204,17 +204,14 @@
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
                       grey_accessibilityID(
                           kSearchEngineChoiceLearnMoreAccessibilityIdentifier)];
-  GREYAssertNil([MetricsAppInterface expectTotalCount:1
-                                         forHistogram:eventHistogram],
-                @"Failed to record event histogram");
-  GREYAssertNil(
-      [MetricsAppInterface
-           expectCount:1
-             forBucket:static_cast<int>(
-                           search_engines::SearchEngineChoiceScreenEvents::
-                               kLearnMoreWasDisplayed)
-          forHistogram:eventHistogram],
-      @"Failed to record event histogram");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface expectTotalCount:1 forHistogram:eventHistogram]);
+  chrome_test_util::GREYAssertErrorNil([MetricsAppInterface
+       expectCount:1
+         forBucket:static_cast<int>(
+                       search_engines::SearchEngineChoiceScreenEvents::
+                           kLearnMoreWasDisplayed)
+      forHistogram:eventHistogram]);
   // Close the Learn More dialog.
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
@@ -232,17 +229,14 @@
   [[[EarlGrey selectElementWithMatcher:continueButtonMatcher]
       assertWithMatcher:grey_notNil()] performAction:grey_tap()];
   [SearchEngineChoiceEarlGreyUI confirmSearchEngineChoiceScreen];
-  GREYAssertNil([MetricsAppInterface expectTotalCount:2
-                                         forHistogram:eventHistogram],
-                @"Failed to record event histogram");
-  GREYAssertNil(
-      [MetricsAppInterface
-           expectCount:1
-             forBucket:static_cast<int>(
-                           search_engines::SearchEngineChoiceScreenEvents::
-                               kDefaultWasSet)
-          forHistogram:eventHistogram],
-      @"Failed to record event histogram");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface expectTotalCount:2 forHistogram:eventHistogram]);
+  chrome_test_util::GREYAssertErrorNil([MetricsAppInterface
+       expectCount:1
+         forBucket:
+             static_cast<int>(
+                 search_engines::SearchEngineChoiceScreenEvents::kDefaultWasSet)
+      forHistogram:eventHistogram]);
 }
 
 @end

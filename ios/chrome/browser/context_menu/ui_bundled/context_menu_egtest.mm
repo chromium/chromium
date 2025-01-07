@@ -318,15 +318,15 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
 }
 
 - (void)setUpHistogramTester {
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Failed to set up histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
   _setUpHistogramTesterCalled = true;
 }
 
 - (void)tearDownHelper {
   if (_setUpHistogramTesterCalled) {
-    GREYAssertNil([MetricsAppInterface releaseHistogramTester],
-                  @"Failed to release histogram tester.");
+    chrome_test_util::GREYAssertErrorNil(
+        [MetricsAppInterface releaseHistogramTester]);
   }
   [super tearDownHelper];
 }

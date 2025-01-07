@@ -135,8 +135,8 @@ void NoDeleteBrowsingDataDialogHistogram(
 - (void)setUp {
   [super setUp];
   [ChromeEarlGrey resetBrowsingDataPrefs];
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Cannot setup histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
   [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
 }
 
@@ -145,8 +145,8 @@ void NoDeleteBrowsingDataDialogHistogram(
   // Close any open UI to avoid test flakiness.
   [ChromeTestCase removeAnyOpenMenusAndInfoBars];
   [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
-  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
-                @"Cannot reset histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface releaseHistogramTester]);
   [super tearDownHelper];
 }
 

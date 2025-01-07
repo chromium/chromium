@@ -193,8 +193,8 @@ void FillAndSubmitXframeCreditCardForm() {
 - (void)setUp {
   [super setUp];
   // Observe histograms in tests.
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Cannot setup histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
   [AutofillAppInterface setUpFakeCreditCardServer];
 }
 
@@ -209,8 +209,8 @@ void FillAndSubmitXframeCreditCardForm() {
   [AutofillAppInterface tearDownFakeCreditCardServer];
 
   // Release the histogram tester.
-  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
-                @"Cannot reset histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface releaseHistogramTester]);
   [super tearDownHelper];
 }
 

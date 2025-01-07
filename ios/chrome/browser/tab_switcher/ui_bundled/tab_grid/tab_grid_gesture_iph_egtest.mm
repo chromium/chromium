@@ -50,8 +50,8 @@ using ::chrome_test_util::TabGridSearchTabsButton;
   [[self class] testForStartup];
   [super setUp];
   MakeFirstRunRecent();
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Cannot setup histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
   [[self class] removeAnyOpenMenusAndInfoBars];
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
   [ChromeEarlGreyUI openTabGrid];

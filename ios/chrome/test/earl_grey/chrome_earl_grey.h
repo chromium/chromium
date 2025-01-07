@@ -30,6 +30,12 @@ namespace chrome_test_util {
 // windows. Use only for single window tests.
 UIWindow* GetAnyKeyWindow();
 
+// Assert the error is nil. Use the error description as error message.
+void GREYAssertErrorNil(NSError* error);
+
+// Assert the error is nil. Postpone the error description to the error message.
+void GREYAssertErrorNil(NSError* error, NSString* description);
+
 }  // namespace chrome_test_util
 
 // Overload of grey_longPressWithDuration() taking a base::TimeDelta.

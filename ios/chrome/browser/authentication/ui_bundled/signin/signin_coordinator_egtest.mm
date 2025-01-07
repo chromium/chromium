@@ -105,11 +105,11 @@ void ExpectSigninConsentHistogram(SigninAccountType signinAccountType) {
   NSError* error = [MetricsAppInterface
       expectTotalCount:1
           forHistogram:@"Signin.AccountType.SigninConsent"];
-  GREYAssertNil(error, @"Failed to record show count histogram");
+  chrome_test_util::GREYAssertErrorNil(error);
   error = [MetricsAppInterface expectCount:1
                                  forBucket:static_cast<int>(signinAccountType)
                               forHistogram:@"Signin.AccountType.SigninConsent"];
-  GREYAssertNil(error, @"Failed to record show count histogram");
+  chrome_test_util::GREYAssertErrorNil(error);
 }
 
 // Sets up the sign-in policy value dynamically at runtime.
@@ -136,15 +136,15 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   }
   [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [BookmarkEarlGrey clearBookmarks];
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Failed to set up histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
 }
 
 - (void)tearDownHelper {
   [super tearDownHelper];
   [BookmarkEarlGrey clearBookmarksPositionCache];
-  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
-                @"Cannot reset histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface releaseHistogramTester]);
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {

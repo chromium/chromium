@@ -66,7 +66,7 @@ void SelectTab(NSString* title) {
 void ExpectIdleHistogramCount(const char* histogram, int expected_count) {
   NSError* error = [MetricsAppInterface expectTotalCount:expected_count
                                             forHistogram:@(histogram)];
-  GREYAssertNil(error, error.description);
+  chrome_test_util::GREYAssertErrorNil(error);
 }
 
 // Expects that the total number of samples in histogram `histogram` for bucket
@@ -77,7 +77,7 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
   NSError* error = [MetricsAppInterface expectCount:expected_count
                                           forBucket:static_cast<int>(bucket)
                                        forHistogram:@(histogram)];
-  GREYAssertNil(error, error.description);
+  chrome_test_util::GREYAssertErrorNil(error);
 }
 
 }  // namespace
@@ -96,8 +96,8 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
   [super setUp];
 
   // Observe histograms in tests.
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Cannot setup histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
 }
 
 // Rotate the device back to portrait if needed, since some tests attempt to run
@@ -106,8 +106,8 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
   [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
 
   // Release the histogram tester.
-  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
-                @"Cannot reset histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface releaseHistogramTester]);
   [super tearDownHelper];
 }
 
@@ -699,8 +699,8 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
   config.additional_args.push_back("true");
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Cannot setup histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleRegularTabGridPageHistogram, 0);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleIncognitoTabGridPageHistogram, 0);
 
