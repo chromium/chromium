@@ -354,8 +354,7 @@ void UserManagerImpl::UserLoggedIn(const AccountId& account_id,
 
     case UserType::kPublicAccount:
       if (!user) {
-        user = User::CreatePublicAccountUser(account_id);
-        user_storage_.emplace_back(user);
+        user = AddPublicAccountUser(account_id);
       }
       PublicAccountUserLoggedIn(user);
       break;
@@ -1449,12 +1448,62 @@ User* UserManagerImpl::FindUserInListAndModify(const AccountId& account_id) {
   return nullptr;
 }
 
+// TODO(crbug.com/278643115): Verify AccountId uniqueness in the following
+// User creation methods.
+
+User* UserManagerImpl::AddGaiaUser(const AccountId& account_id,
+                                   UserType user_type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto* user = User::CreateRegularUser(account_id, user_type);
+  user_storage_.emplace_back(user);
+  SaveUserType(user);
+
+  user->set_oauth_token_status(LoadUserOAuthStatus(account_id));
+  SaveUserDisplayName(account_id,
+                      base::UTF8ToUTF16(user->GetAccountName(
+                          /*use_display_email=*/true)));
+  KnownUser(local_state_.get()).SetIsEphemeralUser(user->GetAccountId(), false);
+
+  // Add to the persisted list.
+  users_.push_back(user);
+  ScopedListPrefUpdate prefs_users_update(local_state_.get(),
+                                          prefs::kRegularUsersPref);
+  prefs_users_update->Append(base::Value(account_id.GetUserEmail()));
+
+  return user;
+}
+
+User* UserManagerImpl::AddEphemeralUser(const AccountId& account_id,
+                                        UserType user_type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto* user = User::CreateRegularUser(account_id, user_type);
+  user_storage_.emplace_back(user);
+  KnownUser(local_state_.get()).SetIsEphemeralUser(account_id, true);
+
+  return user;
+}
+
+User* UserManagerImpl::AddGuestUser() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto* user = User::CreateGuestUser(GuestAccountId());
+  user_storage_.emplace_back(user);
+  return user;
+}
+
+User* UserManagerImpl::AddPublicAccountUser(const AccountId& account_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto* user = User::CreatePublicAccountUser(account_id);
+  user_storage_.emplace_back(user);
+
+  return user;
+}
+
 void UserManagerImpl::RegularUserLoggedIn(const AccountId& account_id,
                                           const UserType user_type) {
-  KnownUser known_user(local_state_.get());
 
   auto* user = FindUserAndModify(account_id);
   if (user) {
+    KnownUser known_user(local_state_.get());
     // There already is a registered User, update the type as needed.
     if (user->GetType() != user_type) {
       user->SetType(user_type);
@@ -1463,23 +1512,12 @@ void UserManagerImpl::RegularUserLoggedIn(const AccountId& account_id,
       // it again for the new account type.
       known_user.ClearProfileRequiresPolicy(account_id);
     }
+    known_user.SetIsEphemeralUser(user->GetAccountId(), false);
   } else {
     // Ensure User is created.
+    user = AddGaiaUser(account_id, user_type);
     SetIsCurrentUserNew(true);
-    user = User::CreateRegularUser(account_id, user_type);
-    user_storage_.emplace_back(user);
-    SaveUserType(user);
-
-    user->set_oauth_token_status(LoadUserOAuthStatus(account_id));
-    SaveUserDisplayName(account_id,
-                        base::UTF8ToUTF16(user->GetAccountName(true)));
-
-    ScopedListPrefUpdate prefs_users_update(local_state_.get(),
-                                            prefs::kRegularUsersPref);
-    prefs_users_update->Append(base::Value(account_id.GetUserEmail()));
-    users_.push_back(user);
   }
-  known_user.SetIsEphemeralUser(user->GetAccountId(), false);
 
   CHECK(user);
   active_user_ = user;
@@ -1507,20 +1545,17 @@ void UserManagerImpl::RegularUserLoggedInAsEphemeral(
     const AccountId& account_id,
     const UserType user_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto* user = User::CreateRegularUser(account_id, user_type);
-  user_storage_.emplace_back(user);
+  auto* user = AddEphemeralUser(account_id, user_type);
   SetIsCurrentUserNew(true);
 
   is_current_user_ephemeral_regular_user_ = true;
-  KnownUser(local_state_.get()).SetIsEphemeralUser(account_id, true);
 
   active_user_ = user;
 }
 
 void UserManagerImpl::GuestUserLoggedIn() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto* user = User::CreateGuestUser(GuestAccountId());
-  user_storage_.emplace_back(user);
+  auto* user = AddGuestUser();
 
   active_user_ = user;
 }
