@@ -78,6 +78,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/sub_apps_install_dialog_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
@@ -561,10 +562,6 @@ Browser* GetAppBrowserForAppId(const Profile* profile,
   return nullptr;
 }
 
-bool AreAppBrowsersOpen(const Profile* profile, const webapps::AppId& app_id) {
-  return GetAppBrowserForAppId(profile, app_id) != nullptr;
-}
-
 content::WebContents* GetAnyWebContentsForAppId(const webapps::AppId& app_id) {
   auto* browser_list = BrowserList::GetInstance();
   for (Browser* browser : *browser_list) {
@@ -610,7 +607,12 @@ class UninstallCompleteWaiter final : public BrowserListObserver,
   }
 
   // BrowserListObserver
-  void OnBrowserRemoved(Browser* browser) override { MaybeFinishWaiting(); }
+  void OnBrowserRemoved(Browser* browser) override {
+    if (WebAppBrowserController::IsForWebApp(browser, app_id_)) {
+      LOG(INFO) << base::StringPrintf("App browser closed: %p", browser);
+      MaybeFinishWaiting();
+    }
+  }
 
   // WebAppInstallManagerObserver
   void OnWebAppUninstalled(
@@ -619,15 +621,23 @@ class UninstallCompleteWaiter final : public BrowserListObserver,
     if (app_id != app_id_) {
       return;
     }
+    LOG(INFO) << "App uninstalled.";
     uninstall_complete_ = true;
     MaybeFinishWaiting();
   }
 
   void MaybeFinishWaiting() {
     if (!uninstall_complete_) {
+      LOG(INFO) << "Uninstall not completed yet.";
       return;
     }
-    if (AreAppBrowsersOpen(profile_, app_id_)) {
+    Browser* app_browser = GetAppBrowserForAppId(profile_, app_id_);
+    if (app_browser != nullptr) {
+      LOG(INFO) << base::StringPrintf(
+          "An app browser is still open at %p: IsAttemptingToClose(): %v, "
+          "IsBrowserClosing(): %v, is_delete_scheduled(): %v",
+          app_browser, app_browser->IsAttemptingToCloseBrowser(),
+          app_browser->IsBrowserClosing(), app_browser->is_delete_scheduled());
       return;
     }
 
