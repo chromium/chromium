@@ -371,7 +371,7 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
                        GetWeakPtr()));
   }
 
-  void assertCvcIncludedInRequest(std::string cvc) {
+  void AssertCvcIncludedInRequest(std::string cvc) {
     EXPECT_TRUE(!GetUploadData().empty());
     // Verify that the encrypted_cvc and s7e_13_cvc parameters were both
     // included in the request.
@@ -382,7 +382,7 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
                 std::string::npos);
   }
 
-  void assertOtpIncludedInRequest(std::string otp) {
+  void AssertOtpIncludedInRequest(std::string otp) {
     EXPECT_TRUE(!GetUploadData().empty());
     // Verify that the otp and s7e_263_otp parameters were both included in the
     // request.
@@ -393,7 +393,7 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
                 std::string::npos);
   }
 
-  void assertCvcNotIncludedInRequest() {
+  void AssertCvcNotIncludedInRequest() {
     EXPECT_TRUE(!GetUploadData().empty());
     // Verify that the encrypted_cvc and s7e_13_cvc parameters were NOT included
     // in the request.
@@ -403,7 +403,7 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
     EXPECT_TRUE(GetUploadData().find("&s7e_13_cvc=") == std::string::npos);
   }
 
-  void assertOtpNotIncludedInRequest() {
+  void AssertOtpNotIncludedInRequest() {
     EXPECT_TRUE(!GetUploadData().empty());
     // Verify that the otp and s7e_263_otp parameters were NOT included in the
     // request.
@@ -413,11 +413,11 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
     EXPECT_TRUE(GetUploadData().find("&s7e_263_otp=") == std::string::npos);
   }
 
-  void assertIncludedInRequest(std::string field_name_or_value) {
+  void AssertIncludedInRequest(std::string field_name_or_value) {
     EXPECT_TRUE(GetUploadData().find(field_name_or_value) != std::string::npos);
   }
 
-  void assertNotIncludedInRequest(std::string field_name_or_value) {
+  void AssertNotIncludedInRequest(std::string field_name_or_value) {
     EXPECT_TRUE(GetUploadData().find(field_name_or_value) == std::string::npos);
   }
 
@@ -518,7 +518,7 @@ TEST_F(PaymentsNetworkInterfaceTest, UnmaskSuccessViaCVC) {
   ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
                  "{ \"pan\": \"1234\" }");
 
-  assertCvcIncludedInRequest("111");
+  AssertCvcIncludedInRequest("111");
   EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("1234", unmask_response_details()->real_pan);
 }
@@ -529,7 +529,7 @@ TEST_F(PaymentsNetworkInterfaceTest, UnmaskSuccessViaFIDO) {
   ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
                  "{ \"pan\": \"1234\" }");
 
-  assertCvcNotIncludedInRequest();
+  AssertCvcNotIncludedInRequest();
   EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("1234", unmask_response_details()->real_pan);
 }
@@ -560,11 +560,11 @@ TEST_F(PaymentsNetworkInterfaceTest, UnmaskSuccessWithVirtualCardCvcAuth) {
                  "{ \"pan\": \"4111111111111111\", \"dcvv\": \"999\",  "
                  "\"expiration\": { \"month\":12, \"year\":2099 } }");
 
-  assertCvcIncludedInRequest("222");
-  assertIncludedInRequest("cvc_challenge_option");
-  assertIncludedInRequest("challenge_id");
-  assertIncludedInRequest("cvc_length");
-  assertIncludedInRequest("cvc_position");
+  AssertCvcIncludedInRequest("222");
+  AssertIncludedInRequest("cvc_challenge_option");
+  AssertIncludedInRequest("challenge_id");
+  AssertIncludedInRequest("cvc_length");
+  AssertIncludedInRequest("cvc_position");
   EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("4111111111111111", unmask_response_details()->real_pan);
   EXPECT_EQ("999", unmask_response_details()->dcvv);
@@ -579,8 +579,8 @@ TEST_F(PaymentsNetworkInterfaceTest, UnmaskSuccessWithVirtualCardFidoAuth) {
                  "{ \"pan\": \"4111111111111111\", \"dcvv\": \"999\",  "
                  "\"expiration\": { \"month\":12, \"year\":2099 } }");
 
-  assertCvcNotIncludedInRequest();
-  assertNotIncludedInRequest("cvc_challenge_option");
+  AssertCvcNotIncludedInRequest();
+  AssertNotIncludedInRequest("cvc_challenge_option");
   EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("4111111111111111", unmask_response_details()->real_pan);
   EXPECT_EQ("999", unmask_response_details()->dcvv);
@@ -596,9 +596,9 @@ TEST_F(PaymentsNetworkInterfaceTest, VirtualCardRiskBasedGreenPathResponse) {
                  "\"expiration\": { \"month\":12, \"year\":2099 } }");
 
   // Verify that Cvc/FIDO/OTP are not included in the request.
-  assertCvcNotIncludedInRequest();
-  assertOtpNotIncludedInRequest();
-  assertNotIncludedInRequest("cvc_challenge_option");
+  AssertCvcNotIncludedInRequest();
+  AssertOtpNotIncludedInRequest();
+  AssertNotIncludedInRequest("cvc_challenge_option");
   EXPECT_TRUE(GetUploadData().find("fido_assertion_info") == std::string::npos);
   // Only merchant_domain is included.
   EXPECT_TRUE(GetUploadData().find("merchant_domain") != std::string::npos);
@@ -728,9 +728,9 @@ TEST_F(PaymentsNetworkInterfaceTest, VirtualCardRiskBasedThenFido) {
                  "\"expiration\": { \"month\":12, \"year\":2099 } }");
 
   // Verify that Cvc/OTP are not included in the request.
-  assertCvcNotIncludedInRequest();
-  assertOtpNotIncludedInRequest();
-  assertNotIncludedInRequest("cvc_challenge_option");
+  AssertCvcNotIncludedInRequest();
+  AssertOtpNotIncludedInRequest();
+  AssertNotIncludedInRequest("cvc_challenge_option");
   // Verify the fido assertion and context token is included.
   EXPECT_TRUE(GetUploadData().find("fido_assertion_info") != std::string::npos);
   EXPECT_TRUE(GetUploadData().find("context_token") != std::string::npos);
@@ -752,10 +752,10 @@ TEST_F(PaymentsNetworkInterfaceTest, VirtualCardRiskBasedThenOtpSuccess) {
                  "{ \"pan\": \"4111111111111111\", \"dcvv\": \"999\",  "
                  "\"expiration\": { \"month\":12, \"year\":2099 } }");
 
-  assertOtpIncludedInRequest(otp);
+  AssertOtpIncludedInRequest(otp);
   // Verify that Cvc/FIDO are not included in the request.
-  assertCvcNotIncludedInRequest();
-  assertNotIncludedInRequest("cvc_challenge_option");
+  AssertCvcNotIncludedInRequest();
+  AssertNotIncludedInRequest("cvc_challenge_option");
   EXPECT_TRUE(GetUploadData().find("fido_assertion_info") == std::string::npos);
   // Verify the context token is also included.
   EXPECT_TRUE(GetUploadData().find("context_token") != std::string::npos);
@@ -777,9 +777,9 @@ TEST_F(PaymentsNetworkInterfaceTest, ExpiredOtp) {
                  "{ \"context_token\": \"fake_context_token\", "
                  "\"flow_status\": \"FLOW_STATUS_EXPIRED_OTP\" }");
 
-  assertOtpIncludedInRequest(otp);
-  assertCvcNotIncludedInRequest();
-  assertNotIncludedInRequest("cvc_challenge_option");
+  AssertOtpIncludedInRequest(otp);
+  AssertCvcNotIncludedInRequest();
+  AssertNotIncludedInRequest("cvc_challenge_option");
   // Verify the context token is also included.
   EXPECT_TRUE(GetUploadData().find("context_token") != std::string::npos);
   EXPECT_TRUE(GetUploadData().find("merchant_domain") != std::string::npos);
@@ -797,9 +797,9 @@ TEST_F(PaymentsNetworkInterfaceTest, IncorrectOtp) {
                  "{ \"context_token\": \"fake_context_token\", "
                  "\"flow_status\": \"FLOW_STATUS_INCORRECT_OTP\" }");
 
-  assertOtpIncludedInRequest(otp);
-  assertCvcNotIncludedInRequest();
-  assertNotIncludedInRequest("cvc_challenge_option");
+  AssertOtpIncludedInRequest(otp);
+  AssertCvcNotIncludedInRequest();
+  AssertNotIncludedInRequest("cvc_challenge_option");
   // Verify the context token is also included.
   EXPECT_TRUE(GetUploadData().find("context_token") != std::string::npos);
   EXPECT_TRUE(GetUploadData().find("merchant_domain") != std::string::npos);
@@ -1555,15 +1555,15 @@ TEST_F(PaymentsNetworkInterfaceTest, SelectChallengeOptionWithSmsOtpMethod) {
                  "{ \"context_token\": \"new context token\" }");
 
   EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
-  assertIncludedInRequest("context_token");
-  assertIncludedInRequest("external_customer_id");
-  assertIncludedInRequest("selected_idv_challenge_option");
-  assertIncludedInRequest("sms_otp_challenge_option");
+  AssertIncludedInRequest("context_token");
+  AssertIncludedInRequest("external_customer_id");
+  AssertIncludedInRequest("selected_idv_challenge_option");
+  AssertIncludedInRequest("sms_otp_challenge_option");
   // We should only set the challenge id. No need to send the masked phone
   // number.
-  assertIncludedInRequest("challenge_id");
-  assertIncludedInRequest("arbitrary id for sms otp");
-  assertNotIncludedInRequest("masked_phone_number");
+  AssertIncludedInRequest("challenge_id");
+  AssertIncludedInRequest("arbitrary id for sms otp");
+  AssertNotIncludedInRequest("masked_phone_number");
 }
 
 TEST_F(PaymentsNetworkInterfaceTest, SelectChallengeOptionSuccess) {
