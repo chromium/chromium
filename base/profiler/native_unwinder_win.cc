@@ -4,10 +4,11 @@
 
 #include "base/profiler/native_unwinder_win.h"
 
-#include <winnt.h>
+#include <windows.h>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "base/profiler/register_context_registers.h"
 #include "base/profiler/win32_stack_frame_unwinder.h"
 #include "build/build_config.h"
 

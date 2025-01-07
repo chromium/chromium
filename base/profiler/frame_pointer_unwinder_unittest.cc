@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/profiler/module_cache.h"
+#include "base/profiler/register_context_registers.h"
 #include "base/profiler/stack_sampling_profiler_test_util.h"
 #include "base/profiler/unwinder.h"
 #include "build/buildflag.h"

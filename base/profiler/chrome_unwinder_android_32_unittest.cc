@@ -11,6 +11,7 @@
 
 #include "base/memory/aligned_memory.h"
 #include "base/profiler/chrome_unwind_info_android_32.h"
+#include "base/profiler/register_context_registers.h"
 #include "base/profiler/stack_sampling_profiler_test_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/gtest_util.h"

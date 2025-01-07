@@ -18,6 +18,7 @@
 #include "base/apple/mach_logging.h"
 #include "base/check.h"
 #include "base/profiler/profile_builder.h"
+#include "base/profiler/register_context_registers.h"
 #include "build/build_config.h"
 
 // IMPORTANT NOTE: Some functions within this implementation are invoked while

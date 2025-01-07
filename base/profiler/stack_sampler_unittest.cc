@@ -22,6 +22,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/profiler/module_cache.h"
 #include "base/profiler/profile_builder.h"
+#include "base/profiler/register_context_registers.h"
 #include "base/profiler/stack_buffer.h"
 #include "base/profiler/stack_copier.h"
 #include "base/profiler/stack_sampling_profiler_test_util.h"

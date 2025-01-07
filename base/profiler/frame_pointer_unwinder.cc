@@ -14,6 +14,7 @@
 #include "base/notreached.h"
 #include "base/numerics/clamped_math.h"
 #include "base/profiler/module_cache.h"
+#include "base/profiler/register_context_registers.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_APPLE)

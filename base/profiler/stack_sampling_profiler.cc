@@ -33,6 +33,8 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
 #include "base/win/static_constants.h"
 #endif
 

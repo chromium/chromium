@@ -15,6 +15,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/profiler/metadata_recorder.h"
 #include "base/profiler/profile_builder.h"
+#include "base/profiler/register_context_registers.h"
 #include "base/profiler/sample_metadata.h"
 #include "base/profiler/stack_buffer.h"
 #include "base/profiler/stack_copier.h"

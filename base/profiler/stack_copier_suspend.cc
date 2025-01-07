@@ -4,6 +4,7 @@
 
 #include "base/profiler/stack_copier_suspend.h"
 
+#include "base/profiler/register_context_registers.h"
 #include "base/profiler/stack_buffer.h"
 #include "base/profiler/suspendable_thread_delegate.h"
 

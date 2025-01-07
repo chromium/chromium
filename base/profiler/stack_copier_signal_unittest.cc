@@ -15,6 +15,7 @@
 #include <utility>
 
 #include "base/debug/alias.h"
+#include "base/profiler/register_context_registers.h"
 #include "base/profiler/sampling_profiler_thread_token.h"
 #include "base/profiler/stack_buffer.h"
 #include "base/profiler/thread_delegate_posix.h"

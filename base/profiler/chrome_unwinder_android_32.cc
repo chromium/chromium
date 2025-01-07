@@ -16,6 +16,7 @@
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/profiler/chrome_unwind_info_android_32.h"
+#include "base/profiler/register_context_registers.h"
 
 namespace base {
 namespace {
