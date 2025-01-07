@@ -3304,7 +3304,8 @@ const char kReduceTransferSizeUpdatedIPCDescription[] =
 const char kReplaceSyncPromosWithSignInPromosName[] =
     "Replace all sync-related UI with sign-in ones";
 const char kReplaceSyncPromosWithSignInPromosDescription[] =
-    "When enabled, all sync-related promos will be replaced by sign-in ones.";
+    "Follow-ups to the project that replaced sync-related UIs with sign-in "
+    "ones.";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const char kResetShortcutCustomizationsName[] =
