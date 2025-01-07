@@ -18,7 +18,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
 #endif
@@ -67,9 +67,9 @@ enum DistinctState {
   STATUS_CASE_TRUSTED_VAULT_RECOVERABILITY_ERROR,
   STATUS_CASE_SYNCED,
   STATUS_CASE_SYNC_DISABLED_BY_POLICY,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   STATUS_CASE_SYNC_RESET_FROM_DASHBOARD,
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   NUMBER_OF_STATUS_CASES
 };
 
@@ -99,7 +99,7 @@ SyncStatusLabels SetUpDistinctCase(
       service->SetInitialSyncFeatureSetupComplete(false);
       service->SetHasUnrecoverableError(true);
       return {SyncStatusMessageType::kSyncError,
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
               IDS_SYNC_STATUS_UNRECOVERABLE_ERROR,
 #else
               IDS_SYNC_STATUS_UNRECOVERABLE_ERROR_NEEDS_SIGNOUT,
@@ -160,7 +160,7 @@ SyncStatusLabels SetUpDistinctCase(
               IDS_SIGNED_IN_WITH_SYNC_DISABLED_BY_POLICY, IDS_SYNC_EMPTY_STRING,
               IDS_SYNC_EMPTY_STRING, SyncStatusActionType::kNoAction};
     }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     case STATUS_CASE_SYNC_RESET_FROM_DASHBOARD: {
       service->GetUserSettings()->SetSyncFeatureDisabledViaDashboard(true);
       return {SyncStatusMessageType::kSyncError,
@@ -168,7 +168,7 @@ SyncStatusLabels SetUpDistinctCase(
               IDS_SYNC_EMPTY_STRING, IDS_SYNC_EMPTY_STRING,
               SyncStatusActionType::kNoAction};
     }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     case NUMBER_OF_STATUS_CASES:
       NOTREACHED();
   }
@@ -215,7 +215,7 @@ TEST(SyncUIUtilTest, UnrecoverableErrorWithActionableProtocolError) {
 
   // Expect the generic unrecoverable error action which is to reauthenticate.
   int unrecoverable_error =
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
       IDS_SYNC_STATUS_UNRECOVERABLE_ERROR;
 #else
       IDS_SYNC_STATUS_UNRECOVERABLE_ERROR_NEEDS_SIGNOUT;

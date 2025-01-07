@@ -31,7 +31,7 @@
 #include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #endif
 
@@ -46,7 +46,7 @@ namespace {
 
 SyncStatusLabels GetStatusForUnrecoverableError(
     bool is_user_clear_primary_account_allowed) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   int status_label_string_id =
       is_user_clear_primary_account_allowed
           ? IDS_SYNC_STATUS_UNRECOVERABLE_ERROR
@@ -113,14 +113,14 @@ SyncStatusLabels GetSyncStatusLabelsImpl(
 
   // Check to see if sync has been disabled via the dashboard and needs to be
   // set up once again.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (service->GetUserSettings()->IsSyncFeatureDisabledViaDashboard()) {
     return {SyncStatusMessageType::kSyncError,
             IDS_SIGNED_IN_WITH_SYNC_STOPPED_VIA_DASHBOARD,
             IDS_SYNC_EMPTY_STRING, IDS_SYNC_EMPTY_STRING,
             SyncStatusActionType::kNoAction};
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (service->GetUserSettings()->IsInitialSyncFeatureSetupComplete()) {
     // Check for a passphrase error.
