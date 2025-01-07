@@ -164,6 +164,10 @@ BASE_DECLARE_FEATURE(kDropLoginDbRenameForUpmSyncingUsers);
 // Instead, it either uses the Android-specific storage or an empty backend
 // if the client isn't eligible for the former.
 BASE_DECLARE_FEATURE(kLoginDbDeprecationAndroid);
+
+inline constexpr base::FeatureParam<int> kLoginDbDeprecationExportDelay = {
+    &kLoginDbDeprecationAndroid,
+    /*name=*/"login-db-deprecation-export-delay-seconds", /*default_value=*/15};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Improves PSL matching capabilities by utilizing PSL-extension list from

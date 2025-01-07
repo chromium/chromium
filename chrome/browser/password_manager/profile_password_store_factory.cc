@@ -106,7 +106,7 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
   password_manager::LoginDbDeprecationRunner* login_db_deprecation_runner =
       LoginDbDeprecationRunnerFactory::GetForProfile(profile);
   if (login_db_deprecation_runner) {
-    login_db_deprecation_runner->StartExport(ps);
+    login_db_deprecation_runner->StartExportWithDelay(ps);
   }
 #endif
   DelayReportingPasswordStoreMetrics(profile);

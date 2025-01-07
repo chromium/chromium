@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/android/password_manager_util_bridge.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/password_manager/core/browser/export/login_db_deprecation_password_exporter.h"
 #include "components/password_manager/core/browser/export/login_db_deprecation_runner.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_buildflags.h"
@@ -61,5 +62,6 @@ LoginDbDeprecationRunnerFactory::BuildServiceInstanceForBrowserContext(
   }
 
   return std::make_unique<password_manager::LoginDbDeprecationRunner>(
-      profile->GetPrefs(), profile->GetPath());
+      std::make_unique<password_manager::LoginDbDeprecationPasswordExporter>(
+          profile->GetPrefs(), profile->GetPath()));
 }

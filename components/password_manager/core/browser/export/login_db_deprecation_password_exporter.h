@@ -7,6 +7,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "components/password_manager/core/browser/export/login_db_deprecation_password_exporter_interface.h"
 #include "components/password_manager/core/browser/export/password_manager_exporter.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
@@ -32,8 +33,10 @@ enum class LoginDbDeprecationExportResult {
 
 // Directs exporting the passwords from the `LoginDatabase` to a CSV stored
 // in the same place to allow for database deprecation.
-class LoginDbDeprecationPasswordExporter : public PasswordStoreConsumer,
-                                           public PasswordsProvider {
+class LoginDbDeprecationPasswordExporter
+    : public LoginDbDeprecationPasswordExporterInterface,
+      public PasswordStoreConsumer,
+      public PasswordsProvider {
  public:
   explicit LoginDbDeprecationPasswordExporter(PrefService* pref_service,
                                               base::FilePath export_dir_path);
@@ -44,7 +47,7 @@ class LoginDbDeprecationPasswordExporter : public PasswordStoreConsumer,
   ~LoginDbDeprecationPasswordExporter() override;
 
   void Start(scoped_refptr<PasswordStoreInterface> password_store,
-             base::OnceClosure export_cleanup_calback);
+             base::OnceClosure export_cleanup_calback) override;
 
   // Allows the `PasswordManagerExporter` to retrieve the saved credentials
   // after `this` receives them. Not a necessary pattern for this use-case

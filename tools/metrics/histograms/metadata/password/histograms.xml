@@ -4382,6 +4382,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.UPM.LoginDbDeprecationExport.Progress"
+    enum="LoginDbDeprecationExportResult" expires_after="2025-04-01">
+  <owner>ioanap@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Records when the pre-deprecation export flow is scheduled, started and
+    finished, irrespective of success status. The success status breakdown is
+    recorded in &quot;PasswordManager.UPM.LoginDbDeprecationExport.Result&quot;.
+    The export might be started with a delay. Android only.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.UPM.LoginDbDeprecationExport.Result"
     enum="LoginDbDeprecationExportResult" expires_after="2025-04-01">
   <owner>ioanap@chromium.org</owner>

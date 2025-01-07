@@ -5,28 +5,45 @@
 #include "components/password_manager/core/browser/export/login_db_deprecation_runner.h"
 
 #include "base/memory/scoped_refptr.h"
-
+#include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
+#include "components/password_manager/core/browser/export/login_db_deprecation_password_exporter.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 namespace password_manager {
 
-LoginDbDeprecationRunner::LoginDbDeprecationRunner(PrefService* pref_service,
-                                                   base::FilePath export_dir)
-    : exporter_(
-          std::make_unique<LoginDbDeprecationPasswordExporter>(pref_service,
-                                                               export_dir)) {}
+void LogExportProgress(LoginDbDeprecationExportProgress progress) {
+  base::UmaHistogramEnumeration(
+      "PasswordManager.UPM.LoginDbDeprecationExport.Progress", progress);
+}
+
+LoginDbDeprecationRunner::LoginDbDeprecationRunner(
+    std::unique_ptr<LoginDbDeprecationPasswordExporterInterface> exporter)
+    : exporter_(std::move(exporter)) {}
 
 LoginDbDeprecationRunner::~LoginDbDeprecationRunner() = default;
 
+void LoginDbDeprecationRunner::StartExportWithDelay(
+    scoped_refptr<PasswordStoreInterface> password_store) {
+  CHECK(exporter_);
+  LogExportProgress(LoginDbDeprecationExportProgress::kScheduled);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&LoginDbDeprecationRunner::StartExport,
+                     weak_ptr_factory_.GetWeakPtr(), password_store),
+      base::Seconds(
+          password_manager::features::kLoginDbDeprecationExportDelay.Get()));
+}
+
 void LoginDbDeprecationRunner::StartExport(
     scoped_refptr<PasswordStoreInterface> password_store) {
-  // TODO(crbug.com/378650395): Delay the export by a configurable amount
-  // of time.
-  CHECK(exporter_);
+  LogExportProgress(LoginDbDeprecationExportProgress::kStarted);
   exporter_->Start(password_store,
                    base::BindOnce(&LoginDbDeprecationRunner::ExportFinished,
                                   weak_ptr_factory_.GetWeakPtr()));
 }
 
 void LoginDbDeprecationRunner::ExportFinished() {
+  LogExportProgress(LoginDbDeprecationExportProgress::kFinished);
   exporter_.reset();
 }
 
