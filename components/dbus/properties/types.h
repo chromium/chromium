@@ -105,6 +105,8 @@ namespace detail {
 class UntypedDbusContainer final : public DbusType {
  public:
   UntypedDbusContainer();
+  UntypedDbusContainer(std::vector<std::unique_ptr<DbusType>> value,
+                       std::string signature);
   UntypedDbusContainer(UntypedDbusContainer&& other) noexcept;
   UntypedDbusContainer& operator=(UntypedDbusContainer&& other) noexcept;
   ~UntypedDbusContainer() override;
@@ -520,6 +522,8 @@ class COMPONENT_EXPORT(COMPONENTS_DBUS) DbusParameters<> final
   std::tuple<> value_;
 };
 
+using DbusVoid = DbusParameters<>;
+
 template <typename... Ts>
 auto MakeDbusParameters(Ts&&... ts) {
   return DbusParameters<Ts...>{std::move(ts)...};
@@ -644,5 +648,14 @@ DbusDictionary MakeDbusDictionary(const std::string& key,
   dict.PutAs(key, std::forward<V>(value));
   return dict;
 }
+
+// Reads all fields of a message. Returns a DbusVariant with the
+// following stored values:
+//   - For read errors, nullptr
+//   - For 0 fields, DbusVoid (aka DbusParameters<>)
+//   - For 1 field, the unwrapped type
+//   - For 2 or more fields, DbusParameters
+COMPONENT_EXPORT(COMPONENTS_DBUS)
+DbusVariant ReadDbusMessage(dbus::MessageReader* reader);
 
 #endif  // COMPONENTS_DBUS_PROPERTIES_TYPES_H_
