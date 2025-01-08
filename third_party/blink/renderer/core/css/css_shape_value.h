@@ -31,10 +31,10 @@ class CSSShapeCommand : public GarbageCollected<CSSShapeCommand> {
   bool operator==(const CSSShapeCommand& other) const;
   void Trace(Visitor* visitor) const { visitor->Trace(end_point_); }
 
-  explicit CSSShapeCommand(CSSValueID type,
-                           CSSValueID origin,
-                           const CSSValue& end_point)
+  CSSShapeCommand(CSSValueID type, CSSValueID origin, const CSSValue& end_point)
       : type_(type), end_point_origin_(origin), end_point_(end_point) {}
+
+  explicit CSSShapeCommand(CSSValueID type) : type_(type) {}
 
  private:
   // Either kMove or kLine.

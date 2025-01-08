@@ -125,6 +125,8 @@ StyleShape::Segment ShapeCommandToShapeSegment(
               CSSValueIDToShapeSegmentOrigin(command.GetEndPointOrigin()),
           .end_point = StyleBuilderConverter::ConvertPosition(
               state, command.GetEndPoint())};
+    case CSSValueID::kClose:
+      return StyleShape::Segment{.type = StyleShape::Segment::kClose};
     default:
       NOTREACHED();
   }
@@ -145,6 +147,9 @@ const cssvalue::CSSShapeCommand* ShapeSegmentToShapeCommand(
           CSSValueID::kLine,
           ShapeSegmentOriginToCSSValueID(segment.end_point_origin),
           LengthPointToCSSValue(segment.end_point, zoom));
+    case blink::StyleShape::Segment::Type::kClose:
+      return MakeGarbageCollected<const cssvalue::CSSShapeCommand>(
+          CSSValueID::kClose);
   }
 }
 

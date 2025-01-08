@@ -27,6 +27,9 @@ String CSSShapeCommand::CSSText() const {
       builder.Append(end_point_origin_ == CSSValueID::kTo ? " to " : " by ");
       builder.Append(end_point_->CssText());
       break;
+    case CSSValueID::kClose:
+      builder.Append("close");
+      break;
     default:
       NOTREACHED();
   }

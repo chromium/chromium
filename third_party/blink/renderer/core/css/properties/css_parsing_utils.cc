@@ -6791,6 +6791,11 @@ cssvalue::CSSShapeValue* ConsumeBasicShapeShape(
         }
         break;
       }
+      // https://drafts.csswg.org/css-shapes-2/#typedef-shape-close
+      case CSSValueID::kClose:
+        commands.push_back(
+            MakeGarbageCollected<const CSSShapeCommand>(CSSValueID::kClose));
+        break;
       default:
         return nullptr;
     }
