@@ -190,9 +190,7 @@ bool ShouldSplitCardNameAndLastFourDigitsForMetadata() {
 #else
   return base::FeatureList::IsEnabled(
              features::kAutofillEnableVirtualCardMetadata) &&
-         base::FeatureList::IsEnabled(
-             features::kAutofillEnableCardProductName) &&
-         base::FeatureList::IsEnabled(features::kAutofillEnableCardArtImage);
+         base::FeatureList::IsEnabled(features::kAutofillEnableCardProductName);
 #endif
 }
 
@@ -1414,8 +1412,7 @@ void SuggestionMatchingTest::InitializeFeatures() {}
 void SuggestionMatchingTest::InitializeFeatures() {
   features_.InitWithFeatureStates(
       {{features::kAutofillEnableVirtualCardMetadata, IsMetadataEnabled()},
-       {features::kAutofillEnableCardProductName, IsMetadataEnabled()},
-       {features::kAutofillEnableCardArtImage, IsMetadataEnabled()}});
+       {features::kAutofillEnableCardProductName, IsMetadataEnabled()}});
 }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
@@ -1970,15 +1967,13 @@ class BrowserAutofillManagerTestForMetadataCardSuggestions
     if (IsMetadataEnabled()) {
       card_metadata_flags_.InitWithFeatures(
           /*enabled_features=*/{features::kAutofillEnableVirtualCardMetadata,
-                                features::kAutofillEnableCardProductName,
-                                features::kAutofillEnableCardArtImage},
+                                features::kAutofillEnableCardProductName},
           /*disabled_features=*/{});
     } else {
       card_metadata_flags_.InitWithFeatures(
           /*enabled_features=*/{},
           /*=disabled_features=*/{features::kAutofillEnableVirtualCardMetadata,
-                                  features::kAutofillEnableCardProductName,
-                                  features::kAutofillEnableCardArtImage});
+                                  features::kAutofillEnableCardProductName});
     }
   }
 
@@ -5358,8 +5353,7 @@ TEST_F(BrowserAutofillManagerTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kAutofillEnableVirtualCardMetadata,
-                            features::kAutofillEnableCardProductName,
-                            features::kAutofillEnableCardArtImage},
+                            features::kAutofillEnableCardProductName},
       /*disabled_features=*/{});
   personal_data().test_payments_data_manager().ClearCreditCards();
   CreditCard masked_server_card(CreditCard::RecordType::kMaskedServerCard,
@@ -6941,15 +6935,13 @@ class BrowserAutofillManagerTestForSharingNickname
     if (GetParam().metadata_enabled) {
       card_metadata_flags_.InitWithFeatures(
           /*enabled_features=*/{features::kAutofillEnableVirtualCardMetadata,
-                                features::kAutofillEnableCardProductName,
-                                features::kAutofillEnableCardArtImage},
+                                features::kAutofillEnableCardProductName},
           /*disabled_features=*/{});
     } else {
       card_metadata_flags_.InitWithFeatures(
           /*enabled_features=*/{},
           /*disabled_features=*/{features::kAutofillEnableVirtualCardMetadata,
-                                 features::kAutofillEnableCardProductName,
-                                 features::kAutofillEnableCardArtImage});
+                                 features::kAutofillEnableCardProductName});
     }
   }
 

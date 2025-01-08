@@ -98,10 +98,7 @@ import java.util.stream.StreamSupport;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.PER_CLASS)
-@DisableFeatures({
-    AutofillFeatures.AUTOFILL_ENABLE_CARD_ART_IMAGE,
-    AutofillFeatures.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID
-})
+@DisableFeatures({AutofillFeatures.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID})
 public class TouchToFillPaymentMethodControllerRobolectricTest {
     private static final CreditCard VISA =
             createCreditCard(

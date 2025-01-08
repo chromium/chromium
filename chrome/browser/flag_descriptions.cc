@@ -547,11 +547,6 @@ const char kAutofillEnableFpanRiskBasedAuthenticationDescription[] =
     "When enabled, server card retrieval will begin with a risk-based check "
     "instead of jumping straight to CVC or biometric auth.";
 
-const char kAutofillEnableCardArtImageName[] = "Enable showing card art images";
-const char kAutofillEnableCardArtImageDescription[] =
-    "When enabled, card product images (instead of network icons) will be "
-    "shown in Payments Autofill UI.";
-
 const char kAutofillEnableCardBenefitsForAmericanExpressName[] =
     "Enable showing card benefits for American Express cards";
 const char kAutofillEnableCardBenefitsForAmericanExpressDescription[] =

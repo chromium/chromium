@@ -33,11 +33,6 @@ extern const char kAutofillDisableProfileUpdatesDescription[];
 extern const char kAutofillDisableSilentProfileUpdatesName[];
 extern const char kAutofillDisableSilentProfileUpdatesDescription[];
 
-// Title and description for the flag to enable custom card art images for
-// autofill Payments UI, instead of built-in network images.
-extern const char kAutofillEnableCardArtImageName[];
-extern const char kAutofillEnableCardArtImageDescription[];
-
 // Title and description for the flag to enable American Express card benefits
 // for autofill Payments UI.
 extern const char kAutofillEnableCardBenefitsForAmericanExpressName[];

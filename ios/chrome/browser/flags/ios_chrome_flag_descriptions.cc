@@ -41,11 +41,6 @@ const char kAutofillDisableSilentProfileUpdatesDescription[] =
     "When enabled, Autofill will not apply silent updates to address profiles. "
     "For testing purposes.";
 
-const char kAutofillEnableCardArtImageName[] = "Enable showing card art images";
-const char kAutofillEnableCardArtImageDescription[] =
-    "When enabled, card product images (instead of network icons) will be "
-    "shown in Payments Autofill UI.";
-
 const char kAutofillEnableCardBenefitsForAmericanExpressName[] =
     "Enable showing American Express card benefits";
 const char kAutofillEnableCardBenefitsForAmericanExpressDescription[] =

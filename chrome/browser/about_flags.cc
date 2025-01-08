@@ -9542,11 +9542,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     "VmMemorySize")},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-    {"autofill-enable-card-art-image",
-     flag_descriptions::kAutofillEnableCardArtImageName,
-     flag_descriptions::kAutofillEnableCardArtImageDescription, kOsAll,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableCardArtImage)},
-
 #if BUILDFLAG(IS_ANDROID)
     {"tab-group-creation-dialog-android",
      flag_descriptions::kTabGroupCreationDialogAndroidName,

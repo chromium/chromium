@@ -563,17 +563,14 @@ void SetCardArtURL(Suggestion& suggestion,
   if (!virtual_card_option && card_art_url == kCapitalOneCardArtUrl) {
     return;
   }
-  // Only show card art if the experiment is enabled or if it is the Capital One
-  // virtual card icon.
-  if (base::FeatureList::IsEnabled(features::kAutofillEnableCardArtImage) ||
-      card_art_url == kCapitalOneCardArtUrl) {
-    if constexpr (BUILDFLAG(IS_ANDROID)) {
-      suggestion.custom_icon = Suggestion::CustomIconUrl(card_art_url);
-    } else {
-      if (const gfx::Image* const image =
-              payments_data.GetCachedCardArtImageForUrl(card_art_url)) {
-        suggestion.custom_icon = *image;
-      }
+
+  if constexpr (BUILDFLAG(IS_ANDROID)) {
+    suggestion.custom_icon = Suggestion::CustomIconUrl(card_art_url);
+  } else {
+    const gfx::Image* image =
+        payments_data.GetCachedCardArtImageForUrl(card_art_url);
+    if (image) {
+      suggestion.custom_icon = *image;
     }
   }
 }

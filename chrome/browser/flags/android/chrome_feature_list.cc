@@ -92,7 +92,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &autofill::features::kAutofillEnableRankingFormulaCreditCards,
     &autofill::features::kAutofillEnableNewCardArtAndNetworkImages,
     &autofill::features::kAutofillEnableVirtualCardMetadata,
-    &autofill::features::kAutofillEnableCardArtImage,
     &autofill::features::kAutofillEnableCardBenefitsForAmericanExpress,
     &autofill::features::kAutofillEnableCardProductName,
     &autofill::features::kAutofillEnablePaymentSettingsCardPromoAndScanCard,

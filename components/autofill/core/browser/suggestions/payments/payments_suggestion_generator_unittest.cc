@@ -2266,13 +2266,11 @@ TEST_P(
 
 class PaymentsSuggestionGeneratorTestForMetadata
     : public PaymentsSuggestionGeneratorTest,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   PaymentsSuggestionGeneratorTestForMetadata() {
     feature_list_card_product_description_.InitWithFeatureState(
         features::kAutofillEnableCardProductName, std::get<0>(GetParam()));
-    feature_list_card_art_image_.InitWithFeatureState(
-        features::kAutofillEnableCardArtImage, std::get<1>(GetParam()));
   }
 
   ~PaymentsSuggestionGeneratorTestForMetadata() override = default;
@@ -2280,19 +2278,15 @@ class PaymentsSuggestionGeneratorTestForMetadata
   bool card_product_description_enabled() const {
     return std::get<0>(GetParam());
   }
-  bool card_art_image_enabled() const { return std::get<1>(GetParam()); }
-  bool card_has_capital_one_icon() const { return std::get<2>(GetParam()); }
+  bool card_has_capital_one_icon() const { return std::get<1>(GetParam()); }
 
  private:
   base::test::ScopedFeatureList feature_list_card_product_description_;
-  base::test::ScopedFeatureList feature_list_card_art_image_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
                          PaymentsSuggestionGeneratorTestForMetadata,
-                         testing::Combine(testing::Bool(),
-                                          testing::Bool(),
-                                          testing::Bool()));
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
 TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
        CreateCreditCardSuggestion_ServerCard) {
@@ -2312,9 +2306,8 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
             SuggestionType::kVirtualCreditCardEntry);
   EXPECT_EQ(virtual_card_suggestion.GetPayload<Suggestion::Guid>(),
             Suggestion::Guid("00000000-0000-0000-0000-000000000001"));
-  EXPECT_EQ(VerifyCardArtImageExpectation(virtual_card_suggestion, card_art_url,
-                                          fake_image),
-            card_art_image_enabled());
+  EXPECT_TRUE(VerifyCardArtImageExpectation(virtual_card_suggestion,
+                                            card_art_url, fake_image));
 
   Suggestion real_card_suggestion = CreateCreditCardSuggestionForTest(
       server_card, *autofill_client(), CREDIT_CARD_NUMBER,
@@ -2324,9 +2317,8 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
   EXPECT_EQ(real_card_suggestion.type, SuggestionType::kCreditCardEntry);
   EXPECT_EQ(real_card_suggestion.GetPayload<Suggestion::Guid>(),
             Suggestion::Guid("00000000-0000-0000-0000-000000000001"));
-  EXPECT_EQ(VerifyCardArtImageExpectation(real_card_suggestion, card_art_url,
-                                          fake_image),
-            card_art_image_enabled());
+  EXPECT_TRUE(VerifyCardArtImageExpectation(real_card_suggestion, card_art_url,
+                                            fake_image));
 }
 
 TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
@@ -2371,9 +2363,8 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
             SuggestionType::kVirtualCreditCardEntry);
   EXPECT_EQ(virtual_card_suggestion.GetPayload<Suggestion::Guid>(),
             Suggestion::Guid("00000000-0000-0000-0000-000000000001"));
-  EXPECT_EQ(VerifyCardArtImageExpectation(virtual_card_suggestion, card_art_url,
-                                          fake_image),
-            card_art_image_enabled());
+  EXPECT_TRUE(VerifyCardArtImageExpectation(virtual_card_suggestion,
+                                            card_art_url, fake_image));
 
   Suggestion real_card_suggestion = CreateCreditCardSuggestionForTest(
       local_card, *autofill_client(), CREDIT_CARD_NUMBER,
@@ -2383,9 +2374,8 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
   EXPECT_EQ(real_card_suggestion.type, SuggestionType::kCreditCardEntry);
   EXPECT_EQ(real_card_suggestion.GetPayload<Suggestion::Guid>(),
             Suggestion::Guid("00000000-0000-0000-0000-000000000002"));
-  EXPECT_EQ(VerifyCardArtImageExpectation(real_card_suggestion, card_art_url,
-                                          fake_image),
-            card_art_image_enabled());
+  EXPECT_TRUE(VerifyCardArtImageExpectation(real_card_suggestion, card_art_url,
+                                            fake_image));
 }
 
 // Verifies that the `metadata_logging_context` is correctly set.
@@ -2450,8 +2440,7 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
             .contains(server_card_with_metadata.instrument_id()));
     EXPECT_EQ(summary.metadata_logging_context.card_product_description_shown,
               card_product_description_enabled());
-    EXPECT_EQ(summary.metadata_logging_context.card_art_image_shown,
-              card_art_image_enabled());
+    EXPECT_TRUE(summary.metadata_logging_context.card_art_image_shown);
 
     // Verify that a record is added that a Capital One card suggestion
     // was generated, and it had metadata.
@@ -2498,17 +2487,15 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
   Suggestion virtual_card_suggestion = suggestions[0];
   Suggestion fpan_card_suggestion = suggestions[1];
 
-  // Verify that for virtual cards, the custom icon is shown if the card art is
-  // the Capital One virtual card art or if the metadata card art is enabled.
-  EXPECT_EQ(VerifyCardArtImageExpectation(virtual_card_suggestion, card_art_url,
-                                          fake_image),
-            card_has_capital_one_icon() || card_art_image_enabled());
+  // Verify that for virtual cards, the custom icon is shown.
+  EXPECT_TRUE(VerifyCardArtImageExpectation(virtual_card_suggestion,
+                                            card_art_url, fake_image));
 
   // Verify that for FPAN, the custom icon is shown if the card art is not the
-  // Capital One virtual card art and the metadata card art is enabled.
+  // Capital One virtual card art.
   EXPECT_EQ(VerifyCardArtImageExpectation(fpan_card_suggestion, card_art_url,
                                           fake_image),
-            !card_has_capital_one_icon() && card_art_image_enabled());
+            !card_has_capital_one_icon());
 }
 
 class PaymentsSuggestionGeneratorTestForOffer
@@ -2556,8 +2543,7 @@ TEST_P(PaymentsSuggestionGeneratorTestForOffer,
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{},
       /*disabled_features=*/{features::kAutofillEnableVirtualCardMetadata,
-                             features::kAutofillEnableCardProductName,
-                             features::kAutofillEnableCardArtImage});
+                             features::kAutofillEnableCardProductName});
   // Create a server card.
   CreditCard server_card1 =
       CreateServerCard(/*guid=*/"00000000-0000-0000-0000-000000000001");
@@ -2603,8 +2589,7 @@ TEST_P(PaymentsSuggestionGeneratorTestForOffer,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kAutofillEnableVirtualCardMetadata,
-                            features::kAutofillEnableCardProductName,
-                            features::kAutofillEnableCardArtImage},
+                            features::kAutofillEnableCardProductName},
       /*disabled_features=*/{});
   // Create a server card.
   CreditCard server_card1 =

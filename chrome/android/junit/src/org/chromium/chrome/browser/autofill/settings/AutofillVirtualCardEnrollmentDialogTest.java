@@ -48,10 +48,7 @@ import java.util.List;
 
 /** Unit tests for {@link AutofillVirtualCardEnrollmentDialog}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({
-    AutofillFeatures.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES,
-    AutofillFeatures.AUTOFILL_ENABLE_CARD_ART_IMAGE
-})
+@EnableFeatures({AutofillFeatures.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES})
 public class AutofillVirtualCardEnrollmentDialogTest {
     private static final String LEGAL_MESSAGE_URL = "http://www.google.com";
     private static final String ACCEPT_BUTTON_TEXT = "Yes";

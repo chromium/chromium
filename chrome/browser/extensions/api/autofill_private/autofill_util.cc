@@ -318,13 +318,9 @@ autofill_private::CreditCardEntry CreditCardToCreditCardEntry(
   if (!credit_card.nickname().empty()) {
     card.nickname = base::UTF16ToUTF8(credit_card.nickname());
   }
-  const gfx::Image* card_art_image = nullptr;
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableCardArtImage)) {
-    card_art_image =
-        personal_data.payments_data_manager().GetCachedCardArtImageForUrl(
-            credit_card.card_art_url());
-  }
+  const gfx::Image* card_art_image =
+      personal_data.payments_data_manager().GetCachedCardArtImageForUrl(
+          credit_card.card_art_url());
   card.image_src =
       card_art_image ? webui::GetBitmapDataUrl(card_art_image->AsBitmap())
                      : CardNetworkToIconResourceIdString(credit_card.network());

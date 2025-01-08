@@ -436,11 +436,7 @@ TEST_F(
 }
 
 TEST_F(PaymentMethodAccessoryControllerTest,
-       CardArtIsNotShownEvenWhenMetadataIsAvailableAndEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillEnableCardArtImage);
-
+       CardArtIsNotShownEvenWhenMetadataIsAvailable) {
   // Add a masked card to PersonalDataManager.
   CreditCard masked_card = test::GetMaskedServerCard();
   masked_card.set_card_art_url(GURL("http://www.example.com/image.png"));
@@ -460,37 +456,6 @@ TEST_F(PaymentMethodAccessoryControllerTest,
   EXPECT_EQ(result->user_info_list().size(), 2u);
   // Verify card art is not shown for the virtual card.
   EXPECT_EQ(result->user_info_list()[0].icon_url(), GURL());
-  // Verify card art is not shown for the masked server card.
-  EXPECT_EQ(result->user_info_list()[1].icon_url(), GURL());
-}
-
-TEST_F(
-    PaymentMethodAccessoryControllerTest,
-    CapitalOneVirtualCardIconIsShownForVirtualCardsEvenWhenMetadataIsNotEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kAutofillEnableCardArtImage);
-
-  // Add a masked card to PersonalDataManager.
-  CreditCard masked_card = test::GetMaskedServerCard();
-  masked_card.set_card_art_url(GURL(kCapitalOneCardArtUrl));
-  masked_card.set_virtual_card_enrollment_state(
-      CreditCard::VirtualCardEnrollmentState::kEnrolled);
-  data_manager_.payments_data_manager().AddCreditCard(masked_card);
-
-  EXPECT_CALL(filling_source_observer_,
-              Run(controller(), IsFillingSourceAvailable(true)));
-  ASSERT_TRUE(controller());
-  controller()->RefreshSuggestions();
-
-  std::optional<AccessorySheetData> result = controller()->GetSheetData();
-  ASSERT_TRUE(result);
-  // Verify both the virtual card and the masked server card are in the
-  // suggestions.
-  EXPECT_EQ(result->user_info_list().size(), 2u);
-  // Verify the the Capital One virtual card icon is shown for the virtual card.
-  EXPECT_EQ(result->user_info_list()[0].icon_url(),
-            GURL(kCapitalOneCardArtUrl));
   // Verify card art is not shown for the masked server card.
   EXPECT_EQ(result->user_info_list()[1].icon_url(), GURL());
 }

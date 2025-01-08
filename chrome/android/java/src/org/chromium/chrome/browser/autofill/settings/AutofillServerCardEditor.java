@@ -24,7 +24,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.ImageSize;
@@ -158,8 +157,7 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
                         mCard.getCardArtUrl(),
                         mCard.getIssuerIconDrawableId(),
                         ImageSize.LARGE,
-                        ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_IMAGE)));
+                        /* showCustomIcon= */ true));
 
         ((TextView) v.findViewById(R.id.settings_page_card_name))
                 .setText(mCard.getCardNameForAutofillDisplay());

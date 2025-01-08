@@ -277,8 +277,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                             card.getCardArtUrl(),
                             card.getIssuerIconDrawableId(),
                             ImageSize.LARGE,
-                            ChromeFeatureList.isEnabled(
-                                    ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_IMAGE)));
+                            /* showCustomIcon= */ true));
 
             if (card.getIsLocal()) {
                 card_pref.setOnPreferenceClickListener(

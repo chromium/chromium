@@ -946,14 +946,12 @@ TEST_P(CreditCardOtpAuthenticatorCardMetadataTest, MetadataSignal) {
   base::test::ScopedFeatureList metadata_feature_list;
   if (MetadataEnabled()) {
     metadata_feature_list.InitWithFeatures(
-        /*enabled_features=*/{features::kAutofillEnableCardProductName,
-                              features::kAutofillEnableCardArtImage},
+        /*enabled_features=*/{features::kAutofillEnableCardProductName},
         /*disabled_features=*/{});
   } else {
     metadata_feature_list.InitWithFeaturesAndParameters(
         /*enabled_features=*/{},
-        /*disabled_features=*/{features::kAutofillEnableCardProductName,
-                               features::kAutofillEnableCardArtImage});
+        /*disabled_features=*/{features::kAutofillEnableCardProductName});
   }
   if (CardNameAvailable()) {
     card_.set_product_description(u"fake product description");
