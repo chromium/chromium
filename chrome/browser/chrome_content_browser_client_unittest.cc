@@ -1427,6 +1427,18 @@ TEST_F(ChromeContentBrowserClientSwitchTest, DataUrlInSvgEnabled) {
   EXPECT_TRUE(result.HasSwitch(blink::switches::kDataUrlInSvgUseEnabled));
 }
 
+TEST_F(ChromeContentBrowserClientSwitchTest, kPartitionedBlobUrlUsageDisabled) {
+  profile()->GetPrefs()->SetBoolean(prefs::kPartitionedBlobUrlUsage, false);
+  base::CommandLine result = FetchCommandLineSwitchesForRendererProcess();
+  EXPECT_TRUE(result.HasSwitch(blink::switches::kDisableBlobUrlPartitioning));
+}
+
+TEST_F(ChromeContentBrowserClientSwitchTest, kPartitionedBlobUrlUsageEnabled) {
+  profile()->GetPrefs()->SetBoolean(prefs::kPartitionedBlobUrlUsage, true);
+  base::CommandLine result = FetchCommandLineSwitchesForRendererProcess();
+  EXPECT_FALSE(result.HasSwitch(blink::switches::kDisableBlobUrlPartitioning));
+}
+
 TEST_F(ChromeContentBrowserClientSwitchTest, LegacyTechReportDisabled) {
   base::CommandLine result = FetchCommandLineSwitchesForRendererProcess();
   EXPECT_FALSE(

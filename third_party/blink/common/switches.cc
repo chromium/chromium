@@ -32,6 +32,9 @@ const char kDarkModeSettings[] = "dark-mode-settings";
 // Overrides data: URLs in SVGUseElement deprecation through enterprise policy.
 const char kDataUrlInSvgUseEnabled[] = "data-url-in-svg-use-enabled";
 
+// Toggles partitioning of Blob URLs through enterprise policy.
+const char kDisableBlobUrlPartitioning[] = "disable-blob-url-partitioning";
+
 // Sets the tile size used by composited layers.
 const char kDefaultTileWidth[] = "default-tile-width";
 const char kDefaultTileHeight[] = "default-tile-height";

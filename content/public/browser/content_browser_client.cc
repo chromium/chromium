@@ -1746,6 +1746,11 @@ bool ContentBrowserClient::
   return true;
 }
 
+bool ContentBrowserClient::IsBlobUrlPartitioningEnabled(
+    content::BrowserContext* browser_context) {
+  return true;
+}
+
 bool ContentBrowserClient::UseOutermostMainFrameOrEmbedderForSubCaptureTargets()
     const {
   return false;

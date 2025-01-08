@@ -1934,6 +1934,10 @@ inline constexpr char kHadThreeConsecutiveNotificationPermissionDenies[] =
 inline constexpr char kDataUrlInSvgUseEnabled[] =
     "profile.content_settings.data_url_in_svg_use_enabled";
 
+// Boolean indicating whether Blob URL should be partitioned.
+inline constexpr char kPartitionedBlobUrlUsage[] =
+    "profile.content_settings.partitioned_blob_url_usage";
+
 // Boolean indicating if JS dialogs triggered from a different origin iframe
 // should be blocked. Has no effect if
 // "SuppressDifferentOriginSubframeJSDialogs" feature is disabled.

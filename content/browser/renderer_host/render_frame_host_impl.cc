@@ -12244,7 +12244,9 @@ void RenderFrameHostImpl::BindBlobUrlStoreAssociatedReceiver(
       GetStorageKey(), GetLastCommittedOrigin(),
       GetProcess()->GetDeprecatedID(), std::move(receiver),
       CreateLogWebFeatureClosure(
-          blink::mojom::WebFeature::kCrossPartitionBlobURLFetch));
+          blink::mojom::WebFeature::kCrossPartitionBlobURLFetch),
+      !(GetContentClient()->browser()->IsBlobUrlPartitioningEnabled(
+          GetBrowserContext())));
 }
 
 void RenderFrameHostImpl::BindBlobUrlStoreReceiver(

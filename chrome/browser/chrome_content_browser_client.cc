@@ -1618,6 +1618,7 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       prefs::kAccessControlAllowMethodsInCORSPreflightSpecConformant, true);
   registry->RegisterBooleanPref(prefs::kDataUrlInSvgUseEnabled, false);
+  registry->RegisterBooleanPref(prefs::kPartitionedBlobUrlUsage, true);
 
   registry->RegisterBooleanPref(policy::policy_prefs::kMutationEventsEnabled,
                                 false);
@@ -2788,6 +2789,11 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
 
       if (prefs->GetBoolean(prefs::kDataUrlInSvgUseEnabled)) {
         command_line->AppendSwitch(blink::switches::kDataUrlInSvgUseEnabled);
+      }
+
+      if (!prefs->GetBoolean(prefs::kPartitionedBlobUrlUsage)) {
+        command_line->AppendSwitch(
+            blink::switches::kDisableBlobUrlPartitioning);
       }
 
       if (prefs->GetBoolean(policy::policy_prefs::kMutationEventsEnabled)) {
@@ -8435,6 +8441,20 @@ bool ChromeContentBrowserClient::
   }
   // If the pref is not found or not managed, BFCaching CCNS page should be
   // enabled by default.
+  return true;
+}
+
+bool ChromeContentBrowserClient::IsBlobUrlPartitioningEnabled(
+    content::BrowserContext* browser_context) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  const PrefService::Preference* pref =
+      Profile::FromBrowserContext(browser_context)
+          ->GetPrefs()
+          ->FindPreference(prefs::kPartitionedBlobUrlUsage);
+
+  if (pref && pref->IsManaged() && pref->GetValue()->is_bool()) {
+    return pref->GetValue()->GetBool();
+  }
   return true;
 }
 

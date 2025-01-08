@@ -33,6 +33,9 @@ specific_include_rules = {
   "history_util\.cc": [
     "+url/url_util.h"
   ],
+  "local_dom_window\.cc" : [
+    "+base/command_line.h"
+  ],
   "local_frame_back_forward_cache_test\.cc": [
     "+base/run_loop.h",
   ],

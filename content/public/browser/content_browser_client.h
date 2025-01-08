@@ -2977,6 +2977,11 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool ShouldAllowBackForwardCacheForCacheControlNoStorePage(
       content::BrowserContext* browser_context);
 
+  // Determine whether Blob URL fetching should be restricted for a given
+  // context.
+  virtual bool IsBlobUrlPartitioningEnabled(
+      content::BrowserContext* browser_context);
+
   // Set whether the browser is running in minimal mode (where most subsystems
   // are left uninitialized).
   virtual void SetIsMinimalMode(bool minimal) {}

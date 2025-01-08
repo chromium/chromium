@@ -2197,6 +2197,7 @@ chromium-metrics-reviews@google.com.
   <int value="1323" label="AllowedInputMethodsForceEnabled"/>
   <int value="1324" label="WebRtcIPHandlingUrl"/>
   <int value="1325" label="GenAIPhotoEditingSettings"/>
+  <int value="1326" label="PartitionedBlobUrlUsage"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

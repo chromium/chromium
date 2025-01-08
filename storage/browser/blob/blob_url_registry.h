@@ -44,7 +44,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobUrlRegistry {
       const url::Origin& renderer_origin,
       int render_process_host_id,
       mojo::PendingAssociatedReceiver<blink::mojom::BlobURLStore> receiver,
-      base::RepeatingClosure partitioned_fetch_failure_closure);
+      base::RepeatingClosure partitioned_fetch_failure_closure,
+      bool partitioning_disabled_by_policy = false);
 
   // Binds receivers corresponding to connections from renderer worker
   // contexts and stores them in `worker_receivers_`.
@@ -52,6 +53,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobUrlRegistry {
                    const url::Origin& renderer_origin,
                    int render_process_host_id,
                    mojo::PendingReceiver<blink::mojom::BlobURLStore> receiver,
+                   bool partitioning_disabled_by_policy = false,
                    BlobURLValidityCheckBehavior validity_check_behavior =
                        BlobURLValidityCheckBehavior::DEFAULT);
 

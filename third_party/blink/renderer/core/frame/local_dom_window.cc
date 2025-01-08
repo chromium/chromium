@@ -30,6 +30,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
@@ -41,6 +42,7 @@
 #include "net/storage_access_api/status.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/navigation/impression.h"
+#include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/policy_disposition.mojom-blink.h"
@@ -2310,7 +2312,9 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
       UseCounter::Count(document(),
                         WebFeature::kCrossTopLevelSiteBlobURLNavigation);
       if (base::FeatureList::IsEnabled(
-              features::kEnforceNoopenerOnBlobURLNavigation)) {
+              features::kEnforceNoopenerOnBlobURLNavigation) &&
+          !base::CommandLine::ForCurrentProcess()->HasSwitch(
+              blink::switches::kDisableBlobUrlPartitioning)) {
         window_features.noopener = true;
       }
     }

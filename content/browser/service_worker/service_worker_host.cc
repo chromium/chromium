@@ -229,7 +229,9 @@ void ServiceWorkerHost::CreateBlobUrlStoreProvider(
 
   storage_partition_impl->GetBlobUrlRegistry()->AddReceiver(
       version()->key(), version()->key().origin(),
-      GetProcessHost()->GetDeprecatedID(), std::move(receiver));
+      GetProcessHost()->GetDeprecatedID(), std::move(receiver),
+      !(GetContentClient()->browser()->IsBlobUrlPartitioningEnabled(
+          GetProcessHost()->GetBrowserContext())));
 }
 
 void ServiceWorkerHost::CreateBucketManagerHost(

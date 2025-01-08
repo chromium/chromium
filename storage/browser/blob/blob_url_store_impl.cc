@@ -71,14 +71,16 @@ BlobURLStoreImpl::BlobURLStoreImpl(
     int render_process_host_id,
     base::WeakPtr<BlobUrlRegistry> registry,
     BlobURLValidityCheckBehavior validity_check_behavior,
-    base::RepeatingClosure partitioned_fetch_failure_closure)
+    base::RepeatingClosure partitioned_fetch_failure_closure,
+    bool partitioning_disabled_by_policy)
     : storage_key_(storage_key),
       renderer_origin_(renderer_origin),
       render_process_host_id_(render_process_host_id),
       registry_(std::move(registry)),
       validity_check_behavior_(validity_check_behavior),
       partitioned_fetch_failure_closure_(
-          std::move(partitioned_fetch_failure_closure)) {}
+          std::move(partitioned_fetch_failure_closure)),
+      partitioning_disabled_by_policy_(partitioning_disabled_by_policy) {}
 
 BlobURLStoreImpl::~BlobURLStoreImpl() {
   if (registry_) {
@@ -131,7 +133,8 @@ void BlobURLStoreImpl::ResolveAsURLLoaderFactory(
                               storage_key_)) {
     partitioned_fetch_failure_closure_.Run();
     if (base::FeatureList::IsEnabled(
-            features::kBlockCrossPartitionBlobUrlFetching)) {
+            features::kBlockCrossPartitionBlobUrlFetching) &&
+        !partitioning_disabled_by_policy_) {
       BlobURLLoaderFactory::Create(mojo::NullRemote(), url,
                                    std::move(receiver));
       std::move(callback).Run(std::nullopt, std::nullopt);
@@ -178,7 +181,8 @@ void BlobURLStoreImpl::ResolveForWorkerScriptFetch(
                               storage_key_)) {
     partitioned_fetch_failure_closure_.Run();
     if (base::FeatureList::IsEnabled(
-            features::kBlockCrossPartitionBlobUrlFetching)) {
+            features::kBlockCrossPartitionBlobUrlFetching) &&
+        !partitioning_disabled_by_policy_) {
       std::move(callback).Run(std::nullopt);
       return;
     }

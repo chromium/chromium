@@ -35,7 +35,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLStoreImpl
                    BlobURLValidityCheckBehavior validity_check_options =
                        BlobURLValidityCheckBehavior::DEFAULT,
                    base::RepeatingClosure partitioned_fetch_failure_closure =
-                       base::DoNothing());
+                       base::DoNothing(),
+                   bool partitioning_disabled_by_policy = false);
 
   BlobURLStoreImpl(const BlobURLStoreImpl&) = delete;
   BlobURLStoreImpl& operator=(const BlobURLStoreImpl&) = delete;
@@ -86,6 +87,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLStoreImpl
   std::set<GURL> urls_;
 
   base::RepeatingClosure partitioned_fetch_failure_closure_;
+
+  const bool partitioning_disabled_by_policy_;
 
   base::WeakPtrFactory<BlobURLStoreImpl> weak_ptr_factory_{this};
 };

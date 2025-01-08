@@ -171,7 +171,8 @@ void StorageAccessHandle::BindBlobStorage(
                         render_frame_host().GetStorageKey().origin()),
                     render_frame_host().GetLastCommittedOrigin(),
                     render_frame_host().GetProcess()->GetDeprecatedID(),
-                    std::move(receiver), base::DoNothing());
+                    std::move(receiver), base::DoNothing(),
+                    /*partitioning_disabled_by_policy=*/false);
 }
 
 void StorageAccessHandle::BindBroadcastChannel(

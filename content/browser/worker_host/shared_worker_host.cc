@@ -555,6 +555,8 @@ void SharedWorkerHost::CreateBlobUrlStoreProvider(
   storage_partition_impl->GetBlobUrlRegistry()->AddReceiver(
       GetStorageKey(), instance().renderer_origin(),
       GetProcessHost()->GetDeprecatedID(), std::move(receiver),
+      !(GetContentClient()->browser()->IsBlobUrlPartitioningEnabled(
+          GetProcessHost()->GetBrowserContext())),
       storage::BlobURLValidityCheckBehavior::
           ALLOW_OPAQUE_ORIGIN_STORAGE_KEY_MISMATCH);
 }

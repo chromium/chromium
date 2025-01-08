@@ -33,12 +33,14 @@ void BlobUrlRegistry::AddReceiver(
     const url::Origin& renderer_origin,
     int render_process_host_id,
     mojo::PendingAssociatedReceiver<blink::mojom::BlobURLStore> receiver,
-    base::RepeatingClosure partitioned_fetch_failure_closure) {
+    base::RepeatingClosure partitioned_fetch_failure_closure,
+    bool partitioning_disabled_by_policy) {
   mojo::ReceiverId receiver_id = frame_receivers_.Add(
       std::make_unique<storage::BlobURLStoreImpl>(
           storage_key, renderer_origin, render_process_host_id, AsWeakPtr(),
           storage::BlobURLValidityCheckBehavior::DEFAULT,
-          std::move(partitioned_fetch_failure_closure)),
+          std::move(partitioned_fetch_failure_closure),
+          partitioning_disabled_by_policy),
       std::move(receiver));
 
   if (g_url_store_creation_hook) {
@@ -51,11 +53,13 @@ void BlobUrlRegistry::AddReceiver(
     const url::Origin& renderer_origin,
     int render_process_host_id,
     mojo::PendingReceiver<blink::mojom::BlobURLStore> receiver,
+    bool partitioning_disabled_by_policy,
     BlobURLValidityCheckBehavior validity_check_behavior) {
   worker_receivers_.Add(
       std::make_unique<storage::BlobURLStoreImpl>(
           storage_key, renderer_origin, render_process_host_id, AsWeakPtr(),
-          validity_check_behavior),
+          validity_check_behavior, base::DoNothing(),
+          partitioning_disabled_by_policy),
       std::move(receiver));
 }
 

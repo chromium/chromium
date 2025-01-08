@@ -1324,7 +1324,7 @@ policies:
   1323: AllowedInputMethodsForceEnabled
   1324: WebRtcIPHandlingUrl
   1325: GenAIPhotoEditingSettings
-
+  1326: PartitionedBlobUrlUsage
 
 atomic_groups:
   1: Homepage
