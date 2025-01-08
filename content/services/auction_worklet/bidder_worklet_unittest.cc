@@ -551,6 +551,7 @@ class BidderWorkletTest : public testing::Test {
                 blink::PrintableAdCurrency(bids_[i]->bid_currency));
       EXPECT_EQ(expected_bid->ad_descriptor.url, bids_[i]->ad_descriptor.url);
       EXPECT_EQ(expected_bid->ad_descriptor.size, bids_[i]->ad_descriptor.size);
+      EXPECT_EQ(expected_bid->modeling_signals, bids_[i]->modeling_signals);
       EXPECT_EQ(expected_bid->aggregate_win_signals,
                 bids_[i]->aggregate_win_signals);
       if (!expected_bid->ad_component_descriptors) {
@@ -2389,6 +2390,7 @@ TEST_F(BidderWorkletTest, GenerateBidModelingSignalsNegativeInfinity) {
           /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
 }
 
+// IEEE 754 states that -0 is equal to 0, therefore -0 should be accepted.
 TEST_F(BidderWorkletTest, GenerateBidModelingSignalsNegativeZero) {
   const std::string kGenerateBidBody =
       R"({bid:1, render:"https://response.test/", modelingSignals: -0})";
@@ -2401,7 +2403,7 @@ TEST_F(BidderWorkletTest, GenerateBidModelingSignalsNegativeZero) {
           blink::AdDescriptor(GURL("https://response.test/")),
           /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
           /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
+          /*modeling_signals=*/-0,
           /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
 }
 
