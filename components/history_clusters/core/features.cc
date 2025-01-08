@@ -55,10 +55,6 @@ BASE_FEATURE(kHistoryClustersInternalsPage,
              "HistoryClustersInternalsPage",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kHistoryClustersUseContinueOnShutdown,
-             "HistoryClustersUseContinueOnShutdown",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kHistoryClustersKeywordFiltering,
              "HistoryClustersKeywordFiltering",
              base::FEATURE_DISABLED_BY_DEFAULT);

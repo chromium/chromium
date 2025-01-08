@@ -249,9 +249,6 @@ struct Config {
   // Whether to check if all visits for a host should be in resulting clusters.
   bool should_check_hosts_to_skip_clustering_for = false;
 
-  // True if the task runner should use trait CONTINUE_ON_SHUTDOWN.
-  bool use_continue_on_shutdown = true;
-
   // Whether to show all clusters on prominent UI surfaces unconditionally. This
   // should only be set to true via command line.
   bool should_show_all_clusters_unconditionally_on_prominent_ui_surfaces =
