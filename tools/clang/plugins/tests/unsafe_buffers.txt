@@ -50,4 +50,19 @@ ptrs_
 <scratch space>:20:1: note: expanded from here
 ptrs_
 ^
-9 warnings generated.
+In file included from unsafe_buffers.cpp:24:
+./unsafe_libc_calls_clean.h:11:10: warning: function 'memcpy' is unsafe [-Wunsafe-buffer-usage-in-libc-call]
+  return memcpy(i, &s, sizeof(s));  // Should generate a warning.
+         ^~~~~~~~~~~~~~~~~~~~~~~~
+./unsafe_libc_calls_clean.h:11:10: note: See //docs/unsafe_buffers.md for help.
+In file included from unsafe_buffers.cpp:25:
+./unsafe_libc_calls_not_clean.h:11:10: warning: function 'memcpy' is unsafe [-Wunsafe-buffer-usage-in-libc-call]
+  return memcpy(i, &s, sizeof(s));  // Should generate a warning.
+         ^~~~~~~~~~~~~~~~~~~~~~~~
+./unsafe_libc_calls_not_clean.h:11:10: note: See //docs/unsafe_buffers.md for help.
+In file included from unsafe_buffers.cpp:26:
+./unsafe_libc_calls_opt_out.h:18:10: warning: unsafe buffer access [-Wunsafe-buffer-usage]
+  return i[s];  // Gives warning, allow_unafe_libc_calls does not imply allow_unsafe_buffers.
+         ^
+./unsafe_libc_calls_opt_out.h:18:10: note: See //docs/unsafe_buffers.md for help.
+12 warnings generated.
