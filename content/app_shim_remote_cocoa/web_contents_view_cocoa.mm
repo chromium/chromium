@@ -403,10 +403,18 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
 }
 
 - (void)setWebContentsVisibility:(remote_cocoa::mojom::Visibility)visibility {
-  if (_host && !(content::GetContentClient()->browser() &&
-                 content::GetContentClient()->browser()->IsShuttingDown())) {
-    _host->OnWindowVisibilityChanged(visibility);
+  if (!_host) {
+    return;
   }
+  auto* content_client = content::GetContentClient();
+  if (!content_client) {
+    return;
+  }
+  auto* browser = content_client->browser();
+  if (browser && browser->IsShuttingDown()) {
+    return;
+  }
+  _host->OnWindowVisibilityChanged(visibility);
 }
 
 - (void)performDelayedSetWebContentsOccluded {
