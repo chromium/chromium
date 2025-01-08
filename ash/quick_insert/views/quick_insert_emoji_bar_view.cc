@@ -74,6 +74,9 @@ constexpr int kItemGap = 8;
 // Horizontal gap between the GIFs button icon and the label.
 constexpr int kGifsButtonIconLabelSpacing = 2;
 
+// Size of the GIFs button icon.
+constexpr int kGifsButtonIconSize = 16;
+
 std::unique_ptr<views::View> CreateEmptyCell() {
   auto cell_view = std::make_unique<views::View>();
   cell_view->SetUseDefaultFillLayout(true);
@@ -185,6 +188,17 @@ class GifsButton : public views::LabelButton {
     views::LabelButton::StateChanged(old_state);
     UpdateBackground();
   }
+  gfx::Size GetMaximumSize() const override {
+    if (!base::FeatureList::IsEnabled(features::kPickerGifs)) {
+      return GetPreferredSize();
+    }
+    const int max_height = views::LabelButton::GetMaximumSize().height();
+    return gfx::Size(
+        GetPreferredSize().width() +
+            (is_checked_ ? 0
+                         : kGifsButtonIconSize + kGifsButtonIconLabelSpacing),
+        max_height);
+  }
 
   void UpdateBackground() {
     SetBackground(views::CreateThemedRoundedRectBackground(
@@ -202,12 +216,13 @@ class GifsButton : public views::LabelButton {
     }
 
     is_checked_ = !is_checked_;
-    SetImageModel(views::Button::ButtonState::STATE_NORMAL,
-                  is_checked_
-                      ? std::make_optional(ui::ImageModel::FromVectorIcon(
-                            kCheckIcon,
-                            cros_tokens::kCrosSysSystemOnPrimaryContainer, 16))
-                      : std::nullopt);
+    SetImageModel(
+        views::Button::ButtonState::STATE_NORMAL,
+        is_checked_
+            ? std::make_optional(ui::ImageModel::FromVectorIcon(
+                  kCheckIcon, cros_tokens::kCrosSysSystemOnPrimaryContainer,
+                  kGifsButtonIconSize))
+            : std::nullopt);
     PreferredSizeChanged();
     GetViewAccessibility().SetCheckedState(
         is_checked_ ? ax::mojom::CheckedState::kTrue
@@ -397,7 +412,7 @@ void QuickInsertEmojiBarView::ToggleGifs(bool is_checked) {
 
 int QuickInsertEmojiBarView::CalculateAvailableWidthForItemRow() {
   return quick_insert_view_width_ - kEmojiBarMargins.width() -
-         kItemRowAndGifsSpacing - gifs_button_->GetPreferredSize().width() -
+         kItemRowAndGifsSpacing - gifs_button_->GetMaximumSize().width() -
          kGifsAndMoreEmojisSpacing -
          more_emojis_button_->GetPreferredSize().width();
 }
