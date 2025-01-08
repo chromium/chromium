@@ -20,7 +20,6 @@
 #include "unsafe_buffers_not_clean_dir/clean_header.h"
 #include "unsafe_buffers_not_clean_dir/not_checked_header.h"
 #include "unsafe_buffers_not_clean_dir/not_clean_header.h"
-#include "unsafe_buffers_not_clean_dir/opt_in_header.h"
 #include "unsafe_buffers_opt_out.h"
 
 int main() {

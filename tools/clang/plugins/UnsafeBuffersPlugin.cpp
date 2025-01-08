@@ -451,25 +451,6 @@ class AllowUnsafeBuffersPragmaHandler : public clang::PragmaHandler {
   }
 };
 
-class CheckUnsafeBuffersPragmaHandler : public clang::PragmaHandler {
- public:
-  static constexpr char kName[] = "check_unsafe_buffers";
-
-  CheckUnsafeBuffersPragmaHandler() : clang::PragmaHandler(kName) {}
-
-  void HandlePragma(clang::Preprocessor& preprocessor,
-                    clang::PragmaIntroducer introducer,
-                    clang::Token& token) override {
-    // TODO(danakj): It would be an optimization to find a way to avoid creating
-    // a std::string here.
-    std::string filename =
-        GetFilename(preprocessor.getSourceManager(), introducer.Loc,
-                    FilenameLocationType::kExpansionLoc);
-    // The pragma opts the file into checks.
-    g_checked_files_cache.insert({filename, true});
-  }
-};
-
 static clang::FrontendPluginRegistry::Add<UnsafeBuffersASTAction> X1(
     "unsafe-buffers",
     "Enforces -Wunsafe-buffer-usage during incremental rollout");
@@ -477,9 +458,5 @@ static clang::FrontendPluginRegistry::Add<UnsafeBuffersASTAction> X1(
 static clang::PragmaHandlerRegistry::Add<AllowUnsafeBuffersPragmaHandler> X2(
     AllowUnsafeBuffersPragmaHandler::kName,
     "Avoid reporting unsafe-buffer-usage warnings in the file");
-
-static clang::PragmaHandlerRegistry::Add<CheckUnsafeBuffersPragmaHandler> X3(
-    CheckUnsafeBuffersPragmaHandler::kName,
-    "Report unsafe-buffer-usage warnings in the file");
 
 }  // namespace chrome_checker
