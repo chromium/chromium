@@ -597,7 +597,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2040894699575719559">Standort blockiert</translation>
 <translation id="2041788246978549610">Verfügbare Mikrofone verwenden (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Fach 7</translation>
-<translation id="204357726431741734">Anmelden, um die in deinem Google-Konto gespeicherten Passwörter zu verwenden</translation>
 <translation id="2045871135676061132">Umschlag Personal</translation>
 <translation id="2046951263634619614">Buchhändler</translation>
 <translation id="2048261947532620704">Seite wird übersetzt</translation>
@@ -1366,7 +1365,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="343474037147570563">Dateien, die du hochlädst oder anhängst, werden zur Analyse an Google Cloud oder Dritte gesendet. Sie können beispielsweise auf sensible Daten oder Malware geprüft und gemäß Unternehmensrichtlinien gespeichert und für deinen Administrator sichtbar sein.</translation>
 <translation id="3435557549311968410">Endlos (kurz)</translation>
 <translation id="3435738964857648380">Sicherheit</translation>
-<translation id="3438829137925142401">Im Google-Konto gespeicherte Passwörter verwenden</translation>
 <translation id="3440783957068352691">Quadrat</translation>
 <translation id="3441653493275994384">Bildschirm</translation>
 <translation id="3443504041532578451">Optische Disk (Satin)</translation>
@@ -3908,6 +3906,7 @@ Weitere Details:
 <translation id="7975858430722947486">Zum Vergleich hinzugefügt</translation>
 <translation id="7976214039405368314">Zu viele Anfragen</translation>
 <translation id="7977538094055660992">Ausgabegerät</translation>
+<translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{Vor <ph name="TIME_COUNT" /> Min.}=1{Vor <ph name="TIME_COUNT" /> Std.}other{Vor <ph name="TIME_COUNT" /> Tagen}}</translation>
 <translation id="7979595116210197019">Gastronomie und Catering</translation>
 <translation id="798134797138789862">Darf nachfragen, wenn sie Virtual-Reality-Geräte und -Daten verwenden möchte</translation>
 <translation id="7982789257301363584">Netzwerk</translation>
@@ -4269,7 +4268,6 @@ Weitere Details:
 <translation id="861775596732816396">Größe 4</translation>
 <translation id="8620276786115098679">Umschlag Kaku 7</translation>
 <translation id="8622864575115813231">Dein Finanzinstitut wird kontaktiert…</translation>
-<translation id="8623885649813806493">Keine übereinstimmenden Passwörter. Alle gespeicherten Passwörter anzeigen.</translation>
 <translation id="8624354461147303341">Rabatte sichern</translation>
 <translation id="8634957317623797170">54 × 86 mm</translation>
 <translation id="8637362707224133343">Chrome verfügt über integrierte Sicherheitsfunktionen, die dich beim Surfen schützen. Eine dieser Funktionen, Google Safe Browsing, hat auf dieser Website kürzlich <ph name="BEGIN_LINK" />Phishing-Versuche festgestellt<ph name="END_LINK" />. Phishing-Websites geben sich als andere Websites aus, um dich zu täuschen.<ph name="NEW_LINE" />Selbst Websites, die normalerweise sicher sind, werden manchmal gehackt. Wenn du der Meinung bist, dass es sich um einen Fehler handelt und diese Website keine Gefahr darstellt, melde uns das bitte <ph name="BEGIN_ERROR_LINK" />unter diesem Link<ph name="END_ERROR_LINK" />.</translation>
@@ -4601,7 +4599,6 @@ Weitere Details:
 <translation id="937885410143139026">Daten an Admin-Konsole gesendet</translation>
 <translation id="939736085109172342">Neuer Ordner</translation>
 <translation id="940524522703752213">Der Dateiupload in <ph name="CLOUD_PROVIDER" /> beginnt in <ph name="MINUTES" /> Minuten</translation>
-<translation id="944540589955480312">Im Google-Konto gespeicherte Passwörter und Passkeys verwenden</translation>
 <translation id="944578681290094302">Anzeigen, welche Prämien und Vorteile für deine Karten an der Kasse verfügbar sind. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Informationen zu Kartenvorteilen<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945646848072568856">Chrome verhindert, dass Websites Drittanbieter-Cookies verwenden, um deine Aktivitäten während des Surfens zu erfassen.</translation>
 <translation id="945855313015696284">Lies dir die unten stehenden Informationen durch und lösche ungültige Karten</translation>

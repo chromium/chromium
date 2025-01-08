@@ -17,6 +17,7 @@
 <translation id="5441504010984421144">Ukitzean bete beharreko kredentzialen zerrenda altuera osoan irekita dago.</translation>
 <translation id="5591247451101092906">Gordetako pasahitza edo sarbide-gakoa erabili nahi duzu?</translation>
 <translation id="5624120631404540903">Kudeatu pasahitzak</translation>
+<translation id="592182999816790476">Gorde da <ph name="USERNAME" /> erabiltzaileari dagokion pasahitza <ph name="WEBSITE" /> webgunerako</translation>
 <translation id="6560306912274274630"><ph name="USERNAME" /> erabiltzaile-kontuko sarbide-gakoa. Erabili pantailaren blokeoa.</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Webgunerako pasahitz berria}other{Webgunerako pasahitz berriak}}</translation>
 <translation id="7286867818472074330">Hautatu sarbide-gakoa</translation>

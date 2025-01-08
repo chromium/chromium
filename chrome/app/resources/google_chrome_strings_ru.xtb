@@ -13,7 +13,6 @@
 <translation id="110877069173485804">Ваш персональный Chrome</translation>
 <translation id="1125124144982679672">Кто использует Chrome?</translation>
 <translation id="1142745911746664600">Не удалось обновить Chrome</translation>
-<translation id="1149651794389918149">Войдите в Chrome. Если этот аккаунт вам больше не понадобится, можно <ph name="GUEST_LINK_BEGIN" />воспользоваться устройством в гостевом режиме<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">Подробнее о ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Открыть в Chrome</translation>
 <translation id="1157985233335035034">Недавние языки</translation>
@@ -99,7 +98,6 @@
 <translation id="2216543877350048334">Чтобы удалить аккаунт Google из браузера, выйдите из Chrome</translation>
 <translation id="2236949375853147973">Мои действия</translation>
 <translation id="223889379102603431">Информация о том, как Chrome управляет корневыми сертификатами</translation>
-<translation id="2258103955319320201">Чтобы получить доступ к данным в браузере Chrome на всех своих устройствах, войдите в аккаунт и включите синхронизацию.</translation>
 <translation id="2290014774651636340">Отсутствуют ключи API Google. Некоторые функции Google Chrome могут не работать.</translation>
 <translation id="2290095356545025170">Вы действительно хотите удалить Google Chrome?</translation>
 <translation id="2309047409763057870">Это дополнительная установка Google Chrome. Его нельзя сделать браузером по умолчанию.</translation>
@@ -610,7 +608,6 @@
 <translation id="8550334526674375523">Этот рабочий профиль никак не связан с вашим личным профилем.</translation>
 <translation id="8555465886620020932">Ошибка службы: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Поиск по списку языков</translation>
-<translation id="8571790202382503603">Профили Chrome позволяют хранить личные и рабочие данные в браузере раздельно.</translation>
 <translation id="8601359445272098721">Новая функция! Теперь, нажав кнопку "Перевести текст на экране", вы можете переводить и текст, и изображения на экране.</translation>
 <translation id="8614913330719544658">Google Chrome не отвечает. Перезапустить сейчас?</translation>
 <translation id="861702415419836452">Chrome запрашивает доступ к камере, чтобы создать 3D-карту места, в котором вы находитесь.</translation>
@@ -620,7 +617,6 @@
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">Кроме того, расширение изменило стартовую страницу Chrome.</translation>
 <translation id="8686817260976772516">Профили Chrome нужны для раздельного использования браузера, например разными людьми или в разных целях.</translation>
-<translation id="8708721325840166640">Ваши пароли и другие данные Chrome сохранены в аккаунте Google, но будут удалены с этого устройства. Чтобы снова использовать их, войдите в Chrome.</translation>
 <translation id="8712767363896337380">Почти готово! Чтобы завершить обновление, перезапустите Chrome.</translation>
 <translation id="8718062187489036808">Выйти из аккаунта Chrome</translation>
 <translation id="873133009373065397">Google Chrome не удалось определить или задать браузер по умолчанию</translation>

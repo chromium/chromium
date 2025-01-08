@@ -104,9 +104,6 @@ Dacă îl ștergi, toți utilizatorii vor pierde imediat accesul la grupul de fi
 <translation id="5494920125229734069">Selectează-le pe toate</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Închide grupul de file cu <ph name="TABS_COUNT_ONE" /> filă, culoarea <ph name="COLOR_NAME" />.}few{Închide grupul de file cu <ph name="TABS_COUNT_MANY" /> file, culoarea <ph name="COLOR_NAME" />.}other{Închide grupul de file cu <ph name="TABS_COUNT_MANY" /> de file, culoarea <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Vezi informații despre magazin, opțiune disponibilă în partea de sus a ecranului</translation>
-<translation id="5615302411300498438">Păstrează acest grup pentru a adăuga file mai târziu sau părăsește-l.
-
-Dacă îl părăsești, vei pierde imediat accesul la grupul de file <ph name="TITLE_OF_GROUP" />.</translation>
 <translation id="5627941783489838464">Fără actualizări ale filelor</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Restabilește fila}few{Restabilește filele}other{Restabilește filele}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link din Chrome}few{<ph name="TABS_COUNT_MANY" /> linkuri din Chrome}other{<ph name="TABS_COUNT_MANY" /> de linkuri din Chrome}}</translation>
@@ -117,7 +114,6 @@ Dacă îl părăsești, vei pierde imediat accesul la grupul de file <ph name="T
 <translation id="6040143037577758943">Închide</translation>
 <translation id="6051432659151380973">Grupurile de file se salvează automat</translation>
 <translation id="6054741997831917303">Prețul articolului a scăzut recent de la <ph name="PREVIOUS_PRICE" /> la <ph name="NEW_PRICE" /></translation>
-<translation id="6082313992897617440">Vei pierde imediat accesul la grupul de file <ph name="GROUP_NAME" /></translation>
 <translation id="6109251075362363230">Toate filele dublură vor fi acum arhivate, cu excepția copiei folosite cel mai recent.</translation>
 <translation id="6193448654517602979">Selectează file</translation>
 <translation id="6228793724645064692">(evaluare a magazinului)</translation>
@@ -145,9 +141,9 @@ Dacă îl părăsești, vei pierde imediat accesul la grupul de file <ph name="T
 <translation id="731648547091221002">S-a selectat <ph name="COLOR_NAME" /></translation>
 <translation id="7326879924029668159">Vezi politica privind returnarea și altele</translation>
 <translation id="7352298686197644113">Vezi care dintre articolele din filele deschise are un preț mai mic</translation>
-<translation id="7421293530411019405">Ieși din grupul de file?</translation>
 <translation id="7452985128687107478">Grupurile de file se salvează și se actualizează automat pe toate dispozitivele</translation>
 <translation id="747459581954555080">Restabilește-le pe toate</translation>
+<translation id="750886945254958667">Păstrează acest grup pentru a adăuga file mai târziu sau părăsește-l dacă nu mai dorești să ai acces la el</translation>
 <translation id="753732157349120914">Comutator de file</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> recenzie de pe Google}few{<ph name="REVIEWS_COUNT_MANY" /> recenzii de pe Google}other{<ph name="REVIEWS_COUNT_MANY" /> de recenzii de pe Google}}</translation>
 <translation id="7559245342362162951">Arată filele grupului în grilă pe ecran complet</translation>
@@ -177,9 +173,7 @@ Dacă îl părăsești, vei pierde imediat accesul la grupul de file <ph name="T
 <translation id="8398929769197326728">Dosar nou – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Setări</translation>
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> filă adăugată, <ph name="ANY_CLOSED" /> închisă}few{<ph name="MANY_ADDED" /> file adăugate, <ph name="ANY_CLOSED" /> închise}other{<ph name="MANY_ADDED" /> de file adăugate, <ph name="ANY_CLOSED" /> închise}}</translation>
-<translation id="8631711675211020168">Toți utilizatorii vor pierde imediat accesul la grupul de file <ph name="GROUP_NAME" /> și acesta va fi șters de pe toate dispozitivele</translation>
 <translation id="8633025649649592204">Activitate recentă</translation>
-<translation id="8635399646025169806">Păstrezi grupul de file?</translation>
 <translation id="870736955561925754">Închizi fila și ștergi grupul?</translation>
 <translation id="8714939927607906138">Preț mai mic</translation>
 <translation id="8730621377337864115">Terminat</translation>

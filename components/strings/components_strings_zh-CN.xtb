@@ -597,7 +597,6 @@
 <translation id="2040894699575719559">已阻止获取位置信息</translation>
 <translation id="2041788246978549610">使用可用的麦克风（<ph name="MICS_COUNT" /> 个）</translation>
 <translation id="2042213636306070719">纸匣 7</translation>
-<translation id="204357726431741734">登录后即可使用您 Google 账号中保存的密码</translation>
 <translation id="2045871135676061132">Personal 信封</translation>
 <translation id="2046951263634619614">图书零售商</translation>
 <translation id="2048261947532620704">正在翻译网页</translation>
@@ -1364,7 +1363,6 @@
 <translation id="343474037147570563">系统会将您上传或附加的文件发送给 Google Cloud 或第三方以供分析。例如，这些文件可能会被扫描以确定其是否包含敏感数据或恶意软件，并且可能会被根据公司政策存储起来并对您的管理员可见。</translation>
 <translation id="3435557549311968410">连续纸（短边）</translation>
 <translation id="3435738964857648380">安全</translation>
-<translation id="3438829137925142401">使用您 Google 账号中保存的密码</translation>
 <translation id="3440783957068352691">方形</translation>
 <translation id="3441653493275994384">屏幕</translation>
 <translation id="3443504041532578451">光盘（磨光）</translation>
@@ -1691,6 +1689,7 @@
 <translation id="3990532701115075684">跟踪您的手部动作</translation>
 <translation id="3992684624889376114">关于此页面</translation>
 <translation id="3995639283717357522">应用政策</translation>
+<translation id="3996683183117168945">第 <ph name="CURRENT_CITATION" /> 项引用，共 <ph name="MAX_CITATIONS" /> 项，<ph name="PRODUCT_NAME" />，<ph name="URL" />。<ph name="PAGE_TITLE" />。<ph name="PAGE_PREVIEW" />。</translation>
 <translation id="399754345297554962">标准考试与入学考试</translation>
 <translation id="3999173941208168054">恐怖片</translation>
 <translation id="4000598935132966791">详细了解受管理的浏览器中的网站限制</translation>
@@ -3905,6 +3904,7 @@
 <translation id="7975858430722947486">已添加到比较表格</translation>
 <translation id="7976214039405368314">请求次数过多</translation>
 <translation id="7977538094055660992">输出设备</translation>
+<translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> 分钟前}=1{<ph name="TIME_COUNT" /> 小时前}other{<ph name="TIME_COUNT" /> 天前}}</translation>
 <translation id="7979595116210197019">餐饮服务</translation>
 <translation id="798134797138789862">可以询问能否使用虚拟现实设备和数据</translation>
 <translation id="7982789257301363584">网络</translation>
@@ -4266,7 +4266,6 @@
 <translation id="861775596732816396">大小：4</translation>
 <translation id="8620276786115098679">Kaku 7 信封</translation>
 <translation id="8622864575115813231">正在联系金融机构…</translation>
-<translation id="8623885649813806493">没有匹配的密码。显示所有已保存的密码。</translation>
 <translation id="8624354461147303341">获取折扣信息</translation>
 <translation id="8634957317623797170">54 x 86 毫米</translation>
 <translation id="8637362707224133343">Chrome 内置的安全功能可在您浏览网页时为您提供保护，例如 Google 安全浏览功能近期在您尝试访问的网站上<ph name="BEGIN_LINK" />发现了钓鱼式攻击<ph name="END_LINK" />。钓鱼式攻击网站会假冒其他网站来诱骗您。<ph name="NEW_LINE" />即使是通常很安全的网站，有时也会遭到攻击者的入侵。如果您认为我们的判定有误，并认为此网站不会构成危险，请<ph name="BEGIN_ERROR_LINK" />告知我们<ph name="END_ERROR_LINK" />。</translation>
@@ -4597,7 +4596,6 @@
 <translation id="937885410143139026">数据已发送到管理控制台</translation>
 <translation id="939736085109172342">新建文件夹</translation>
 <translation id="940524522703752213">系统将在 <ph name="MINUTES" /> 分钟后开始将文件上传到<ph name="CLOUD_PROVIDER" /></translation>
-<translation id="944540589955480312">使用保存在您 Google 账号中的密码和通行密钥</translation>
 <translation id="944578681290094302">在结账时显示凭您的卡可以享受哪些奖励和福利。<ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />了解凭卡可享受的福利<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945646848072568856">Chrome 会阻止网站使用第三方 Cookie 跟踪您在浏览时的活动。</translation>
 <translation id="945855313015696284">请查看下面的信息，并删除所有无效卡片</translation>

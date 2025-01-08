@@ -228,7 +228,6 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1151917987301063366">Sempre permitir que <ph name="HOST" /> acesse os sensores</translation>
 <translation id="1152346050262092795">Insira sua senha novamente para verificar a conta.</translation>
 <translation id="1153636665119721804">Programa Proteção Avançada do Google</translation>
-<translation id="1155545602507378023">Não, apenas neste dispositivo</translation>
 <translation id="1155816283571436363">Conectando ao seu smartphone</translation>
 <translation id="1157952955648710254">Fechar painel lateral da Pesquisa Google</translation>
 <translation id="1158080958325422608">Letra maiúscula</translation>
@@ -1163,7 +1162,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1794791083288629568">Envie um feedback para nos ajudar a corrigir esse problema.</translation>
 <translation id="1795214765651529549">Usar "Clássico"</translation>
 <translation id="1795438342141780114">Redefinir o cursor para o centro</translation>
-<translation id="1795668164971917185">Na próxima vez que a Navegação segura do Google encontrar um download suspeito, ela vai fazer a verificação automática como parte do <ph name="LINK" /> que você escolheu.</translation>
 <translation id="1796588414813960292">Os recursos que precisam de som não funcionarão</translation>
 <translation id="1797117170091578105">Jogue com o teclado do Chromebook. Você pode personalizar quais teclas vão realizar ações específicas.</translation>
 <translation id="1798335429200675510">Clique com o botão direito do mouse em uma caixa de texto para criar um rascunho ou refinar um trabalho com a tecnologia de IA do Google. No momento, a disponibilidade é limitada.</translation>
@@ -1417,7 +1415,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1974043046396539880">Pontos de distribuição de lista de certificados revogados</translation>
 <translation id="1974060860693918893">Avançadas</translation>
 <translation id="1974159333077206889">Mesmo áudio em todos os alto-falantes</translation>
-<translation id="1974216844776165821">O Chrome salvou sua senha neste dispositivo, mas ela pode ser salva na sua Conta do Google, se preferir. Assim, todas as senhas e chaves de acesso da sua Conta do Google também estarão disponíveis enquanto ela estiver conectada.</translation>
 <translation id="1975841812214822307">Remover...</translation>
 <translation id="1976150099241323601">Faça login no dispositivo seguro</translation>
 <translation id="1976823515278601587">Grande economia</translation>
@@ -1667,7 +1664,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2143915448548023856">Configurações de exibição</translation>
 <translation id="2144536955299248197">Visualizador do certificado: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Desenvolvimento de apps Android no Linux</translation>
-<translation id="2144873026585036769">Usar sua Conta do Google para salvar e preencher senhas e chaves de acesso?</translation>
 <translation id="2145917706968602070">Confira se o smartphone está por perto, desbloqueado e com o Bluetooth e o Wi-Fi ativados</translation>
 <translation id="2146263598007866206">Os sites podem fazer o download automático de arquivos relacionados em conjunto para economizar tempo</translation>
 <translation id="2147218225094845757">Ocultar painel lateral</translation>
@@ -2131,7 +2127,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2458591546854598341">O token de gerenciamento do dispositivo é inválido.</translation>
 <translation id="2459703812219683497">Código de ativação detectado</translation>
 <translation id="2459706890611560967">Retomar transmissão da guia para <ph name="DEVICE_NAME" /></translation>
-<translation id="2460356425461033301">Faça backup e use seus dados do navegador em qualquer dispositivo</translation>
 <translation id="2460482211073772897">Em outras pastas</translation>
 <translation id="2460826998961521840">Para usar as chaves de acesso salvas na sua Conta do Google</translation>
 <translation id="2461045498706592033">O favorito <ph name="LOCAL_FOLDER" /> foi salvo apenas neste dispositivo. Se ele for movido para <ph name="LOCAL_FOLDER" />, não vai mais aparecer nos seus outros dispositivos.</translation>
@@ -6058,7 +6053,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5263656105659419083">Para voltar facilmente ao painel lateral, clique em "Fixar" no canto superior direito</translation>
 <translation id="5264148714798105376">Isso pode levar aproximadamente um minuto.</translation>
 <translation id="5264252276333215551">Conecte-se à Internet para iniciar seu aplicativo no modo quiosque.</translation>
-<translation id="526539328530966548">proteção reforçada</translation>
 <translation id="5265797726250773323">Erro ao instalar</translation>
 <translation id="5266113311903163739">Erro de importação da Autoridade de certificação</translation>
 <translation id="526622169288322445">Mais ações para <ph name="ADDRESS_SUMMARY" /></translation>
@@ -7387,7 +7381,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6234108445915742946">Os Termos de Serviço do Chrome serão atualizados em 31 de março</translation>
 <translation id="6234474535228214774">Instalação pendente</translation>
 <translation id="6235208551686043831">A câmera do dispositivo foi ativada. Posicione o QR code do eSIM na frente dela.</translation>
-<translation id="6237297174664969437">Nas configurações do Chrome, você escolhe a qualquer momento quais dados de navegação são sincronizados. Nas <ph name="LINK_BEGIN" />configurações do dispositivo<ph name="LINK_END" />, controle a sincronização dos apps da Web instalados no navegador Chrome. O Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
 <translation id="6237474966939441970">App de anotações com a stylus</translation>
 <translation id="6237481151388361546">Mude sua conexão de Internet e escolha "Tentar de novo" ou "Abrir no editor básico" para usar as opções limitadas de edição e visualização.</translation>
 <translation id="623755660902014047">Modo de leitura</translation>
@@ -8847,7 +8840,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="730515362922783851">Trocar dados com qualquer dispositivo da rede local ou Internet</translation>
 <translation id="7306521477691455105">Abra as configurações para conectar o <ph name="USB_DEVICE_NAME" /> à VM <ph name="USB_VM_NAME" /></translation>
 <translation id="7307129035224081534">Pausada</translation>
-<translation id="7307647374092371434">As senhas e chaves de acesso da sua Conta do Google também estarão disponíveis neste dispositivo enquanto ela estiver conectada</translation>
 <translation id="7308643132139167865">Idiomas de sites</translation>
 <translation id="7309214454733221756">Criar uma chave de acesso para fazer login no app <ph name="APP_NAME" />?</translation>
 <translation id="7311005168897771689">Acesse seus arquivos do Google Drive quando estiver off-line</translation>

@@ -104,9 +104,6 @@
 <translation id="5494920125229734069">બધા પસંદ કરો</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> રંગનું <ph name="TABS_COUNT_ONE" /> ટૅબ ધરાવતા ટૅબના ગ્રૂપને બંધ કરો.}one{<ph name="COLOR_NAME" /> રંગનું <ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા ટૅબના ગ્રૂપને બંધ કરો.}other{<ph name="COLOR_NAME" /> રંગના <ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા ટૅબના ગ્રૂપને બંધ કરો.}}</translation>
 <translation id="5556417849629758491">સ્ટોરની માહિતી જુઓ, વિકલ્પ સ્ક્રીનની ટોચની નજીક ઉપલબ્ધ છે</translation>
-<translation id="5615302411300498438">પછીથી ટૅબ ઉમેરવા માટે આ ગ્રૂપ રાખો અથવા છોડી દો.
-
-જો તમે છોડી દેશો, તો તમે તરત જ "<ph name="TITLE_OF_GROUP" />" ટૅબના ગ્રૂપનો ઍક્સેસ ગુમાવશો.</translation>
 <translation id="5627941783489838464">ટૅબ સંબંધી કોઈ અપડેટ નથી</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{ટૅબને રિસ્ટોર કરો}one{ટૅબને રિસ્ટોર કરો}other{ટૅબને રિસ્ટોર કરો}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chromeમાંથી <ph name="TABS_COUNT_ONE" /> લિંક}one{Chromeમાંથી <ph name="TABS_COUNT_MANY" /> લિંક}other{Chromeમાંથી <ph name="TABS_COUNT_MANY" /> લિંક}}</translation>
@@ -117,7 +114,6 @@
 <translation id="6040143037577758943">બંધ કરો</translation>
 <translation id="6051432659151380973">તમારા ટૅબના ગ્રૂપ ઑટોમૅટિક રીતે સાચવવામાં આવશે</translation>
 <translation id="6054741997831917303">આ આઇટમની કિંમત તાજેતરમાં <ph name="PREVIOUS_PRICE" />થી ઘટીને <ph name="NEW_PRICE" /> થઈ ગઈ છે</translation>
-<translation id="6082313992897617440">તમે તાત્કાલિક <ph name="GROUP_NAME" /> ટૅબના ગ્રૂપનો ઍક્સેસ ગુમાવશો</translation>
 <translation id="6109251075362363230">તાજેતરમાં ઉપયોગમાં લેવાયેલી કૉપિના અપવાદ સાથે તમામ ડુપ્લિકેટ ટૅબ પણ હવે આર્કાઇવ કરવામાં આવશે.</translation>
 <translation id="6193448654517602979">ટૅબ પસંદ કરો</translation>
 <translation id="6228793724645064692">(સ્ટોરનું રેટિંગ)</translation>
@@ -145,9 +141,9 @@
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> પસંદ કરેલો છે</translation>
 <translation id="7326879924029668159">પરત કરવાની પૉલિસી અને બીજું ઘણું બધું જુઓ</translation>
 <translation id="7352298686197644113">તમારી ખુલ્લી ટૅબમાં કઈ આઇટમની કિંમત ઓછી થઈ છે, તે જુઓ</translation>
-<translation id="7421293530411019405">ટૅબનું ગ્રૂપ છોડી દઈએ?</translation>
 <translation id="7452985128687107478">ટૅબના ગ્રૂપ તમારા બધા ડિવાઇસ પર ઑટોમૅટિક રીતે સાચવવામાં અને અપડેટ કરવામાં આવે છે</translation>
 <translation id="747459581954555080">બધુ પુનર્પ્રાપ્ત કરો</translation>
+<translation id="750886945254958667">પછીથી ટૅબ ઉમેરવા માટે આ ગ્રૂપ રાખો અથવા જો તમને હવે તેનો ઍક્સેસ ન જોઈતો હોય તો તેને છોડી દો</translation>
 <translation id="753732157349120914">ટૅબ સ્વિચર</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Google તરફથી <ph name="REVIEWS_COUNT_ONE" /> રિવ્યૂ}one{Google તરફથી <ph name="REVIEWS_COUNT_MANY" /> રિવ્યૂ}other{Google તરફથી <ph name="REVIEWS_COUNT_MANY" /> રિવ્યૂ}}</translation>
 <translation id="7559245342362162951">ગ્રુપના ટૅબને પૂર્ણસ્ક્રીન ગ્રિડમાં બતાવો</translation>
@@ -177,9 +173,7 @@
 <translation id="8398929769197326728">નવું ફોલ્ડર - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">સેટિંગ</translation>
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ટૅબ ઉમેર્યું, <ph name="ANY_CLOSED" /> બંધ કર્યા}one{<ph name="MANY_ADDED" /> ટૅબ ઉમેર્યું, <ph name="ANY_CLOSED" /> બંધ કર્યા}other{<ph name="MANY_ADDED" /> ટૅબ ઉમેર્યા, <ph name="ANY_CLOSED" /> બંધ કર્યા}}</translation>
-<translation id="8631711675211020168">દરેક જણ તાત્કાલિક <ph name="GROUP_NAME" /> ટૅબના ગ્રૂપનો ઍક્સેસ ગુમાવશે અને તેને બધા ડિવાઇસમાંથી ડિલીટ કરવામાં આવશે</translation>
 <translation id="8633025649649592204">તાજેતરની પ્રવૃત્તિ</translation>
-<translation id="8635399646025169806">ટૅબનું ગ્રૂપ રાખીએ?</translation>
 <translation id="870736955561925754">શું ટૅબ બંધ કરીને ગ્રૂપ ડિલીટ કરીએ?</translation>
 <translation id="8714939927607906138">ઓછી કિંમત</translation>
 <translation id="8730621377337864115">થઈ ગયું</translation>

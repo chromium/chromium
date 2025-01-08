@@ -14,7 +14,6 @@
 <translation id="110877069173485804">हा तुमचा Chrome आहे</translation>
 <translation id="1125124144982679672">Chrome कोण वापरत आहे?</translation>
 <translation id="1142745911746664600">Chrome अपडेट करू शकत नाही</translation>
-<translation id="1149651794389918149">Chrome मध्ये साइन इन करा. तुम्हाला खात्यामध्ये एकदाच साइन इन करायचे असल्यास, तुम्ही <ph name="GUEST_LINK_BEGIN" />अतिथी म्हणून डिव्हाइस वापरणे<ph name="GUEST_LINK_END" /> हे करू शकता.</translation>
 <translation id="1152920704813762236">ChromeOS बद्दल</translation>
 <translation id="1154147086299354128">Chrome मध्‍ये &amp;उघडा</translation>
 <translation id="1157985233335035034">अलीकडील भाषा</translation>
@@ -102,7 +101,6 @@
 <translation id="2216543877350048334">Chrome मधून तुमचे Google खाते काढून टाकण्यासाठी, साइन आउट करा</translation>
 <translation id="2236949375853147973">माझी अ‍ॅक्टिव्हिटी</translation>
 <translation id="223889379102603431">Chrome त्याची रूट सर्टिफिकेट कशी व्यवस्थापित करते याबद्दल माहिती</translation>
-<translation id="2258103955319320201">तुमच्या Chrome ब्राउझरवरील आशय तुमच्या सर्व डिव्हाइसवर अ‍ॅक्सेस करण्यासाठी साइन इन करा, त्यानंतर सिंक सुरू करा</translation>
 <translation id="2290014774651636340">Google API की गहाळ आहेत. Google Chrome ची काही कार्यक्षमता अक्षम केली जाईल.</translation>
 <translation id="2290095356545025170">तुमची खात्री आहे की तुम्ही Google Chrome अनइंस्टॉल करू इच्छिता?</translation>
 <translation id="2309047409763057870">ही Google Chrome ची दुय्यम स्थापना असून त्यास तुमचा डीफॉल्ट ब्राउझर बनवू शकत नाही.</translation>
@@ -617,7 +615,6 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="8550334526674375523">ही कार्य प्रोफाइल तुमच्या वैयक्तिक प्रोफाइलपेक्षा पूर्णपणे स्वतंत्र आहे.</translation>
 <translation id="8555465886620020932">सेवेशी संबंधित एरर: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">भाषा सूचीमध्ये शोधा</translation>
-<translation id="8571790202382503603">Chrome प्रोफाइल वापरून तुम्ही तुमच्या सर्व गोष्टी Chrome वर वेगवेगळ्या ठेवू शकता. ती काम आणि मनोरंजन यामध्ये विभागणी करणे सोपे करते.</translation>
 <translation id="8601359445272098721">नवीन! "स्क्रीनचे भाषांतर करा" बटण निवडून तुम्ही तुमच्या स्क्रीनवरील मजकूर आणि इमेज दोन्हींचे भाषांतर करू शकता</translation>
 <translation id="8614913330719544658">Google Chrome प्रतिसाद देत नाही. त्वरित पुन्हा लाँच करायचा?</translation>
 <translation id="861702415419836452">तुमच्या आसपासचा 3D नकाशा तयार करण्यासाठी Chrome ला तुमचा कॅमेरा अ‍ॅक्सेस करण्याची परवानगी हवी आहे</translation>
@@ -627,7 +624,6 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="8669527147644353129">Google Chrome मदतनीस</translation>
 <translation id="8679801911857917785">तुम्ही Chrome सुरू करता तेव्हा कोणते पेज दर्शविले जाते हेदेखील हे नियंत्रित करते.</translation>
 <translation id="8686817260976772516">Chrome प्रोफाइल वापरून तुम्ही तुमच्या सर्व गोष्टी Chrome वर वेगवेगळ्या ठेवू शकता. मित्रमैत्रिणी आणि कुटुंबासाठी प्रोफाइल तयार करा किंवा त्यांची काम व मनोरंजन यामध्ये विभागणी करा.</translation>
-<translation id="8708721325840166640">तुमचे पासवर्ड आणि इतर Chrome डेटा तुमच्या Google खाते मध्ये सेव्ह केला जातो आणि तो या डिव्हाइसवरून काढून टाकला जाईल. तो भविष्यात वापरण्यासाठी, Chrome मध्ये परत साइन इन करा.</translation>
 <translation id="8712767363896337380">जवळजवळ अप टू डेट! अपडेट करणे पूर्ण करण्यासाठी, Chrome पुन्हा लाँच करा.</translation>
 <translation id="8718062187489036808">Chrome मधून साइन आउट करा</translation>
 <translation id="873133009373065397">Google Chrome डीफॉल्ट ब्राउझर निर्धारित करू शकत नाही किंवा सेट करू शकत नाही</translation>

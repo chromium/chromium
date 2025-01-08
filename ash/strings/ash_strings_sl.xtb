@@ -274,6 +274,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1908992311423394684">Nova namestitev</translation>
 <translation id="1915307458270490472">Prekini</translation>
 <translation id="1918022425394817322">Fotoaparat je pripet v zgornji desni kot</translation>
+<translation id="1920390473494685033">Stiki</translation>
 <translation id="1923539912171292317">Samodejni kliki</translation>
 <translation id="1925320505152357008">manj kot 1 min</translation>
 <translation id="1928739107511554905">Če želite prejeti posodobitev, uporabite zaslon na dotik, da znova zaženete Chromebook s priklopljeno tipkovnico.</translation>
@@ -530,6 +531,7 @@ V nasprotnem primeru bo vgrajena sledilna ploščica znova omogočena čez <ph n
 <translation id="2847759467426165163">Predvajanje v napravi</translation>
 <translation id="2848120746144143659">Pritisnite Enter, če želite zajeti posnetek zaslona v celozaslonskem načinu</translation>
 <translation id="2849936225196189499">Kritično</translation>
+<translation id="2850207700020959936">Aplikacije imajo dostop do kamere</translation>
 <translation id="2860184359326882502">Najboljše ujemanje</translation>
 <translation id="2865888419503095837">Podatki o omrežju</translation>
 <translation id="2869095047958348710">Pretekli/-a <ph name="DAY_OF_WEEK" /></translation>
@@ -584,6 +586,7 @@ V nasprotnem primeru bo vgrajena sledilna ploščica znova omogočena čez <ph n
 <translation id="304417730895741346">Pripete in odprte aplikacije so na polici. Če želite aplikacijo pripeti na polico, z desnim gumbom kliknite aplikacijo ali se dotaknite sledilne ploščice z dvema prstoma.</translation>
 <translation id="3045488863354895414">Dober dan,</translation>
 <translation id="3047761520276763270">Recite:</translation>
+<translation id="3053407068093039599">Vklop/izklop dostopa do kamere</translation>
 <translation id="3055162170959710888">To napravo si danes uporabljal <ph name="USED_TIME" /></translation>
 <translation id="3062298103034426069">Ni podprto</translation>
 <translation id="3068622547379332530">Različica <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -884,6 +887,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="4042660782729322247">Zaslon delite z drugimi</translation>
 <translation id="404437169852192935">Posodobitve so končane</translation>
 <translation id="4049230407053723315">Hitre nastavitve</translation>
+<translation id="4054070260844648638">Vidna vsem</translation>
 <translation id="4057003836560082631">Zavihek brskalnika <ph name="INDEX" /> od <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4059696795118403455">Če si želite ogledati osebno prilagojene predloge za naslednje stvari, ki jih lahko počnete, pritisnite tipko za pregled</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Izklop. za eno}one{Izklop. za #}two{Izklop. za #}few{Izklop. za #}other{Izklop. za #}}</translation>
@@ -1407,7 +1411,6 @@ Nobena naprava ni povezana.</translation>
 <translation id="5727460725221669831">Če ste pozabili geslo ali nedavno spremenili geslo za račun Google, poskusite obnoviti tega uporabnika.</translation>
 <translation id="5733630091161562207">Pozdravno obvestilo</translation>
 <translation id="573413375004481890">Ta naprava ne podpira vseh zaslonov, zato je bila z enim prekinjena povezava</translation>
-<translation id="5740328398383587084">Deljenje v bližini</translation>
 <translation id="574392208103952083">Srednji</translation>
 <translation id="5744083938413354016">Vlečenje z dotikom</translation>
 <translation id="5745612484876805746">Nočna svetloba se samodejno vklopi ob sončnem zahodu</translation>
@@ -1484,6 +1487,7 @@ Nobena naprava ni povezana.</translation>
 <translation id="5990992855591814753">Ostanite na tekočem z osebno prilagojenimi seznami predvajanja za osredotočanje. Zagotovite si YouTube Music in YouTube brez oglasov s 3 meseci naročnine YouTube Premium brez stroškov. Veljajo pogoji.</translation>
 <translation id="5998374579424866922">Izklop kontrolnikov za igre</translation>
 <translation id="6000279412553873020">Tipke, gumbi in drugo</translation>
+<translation id="6002122790816966947">Vaše naprave</translation>
 <translation id="6012623610530968780"><ph name="SELECTED_PAGE" />. stran od <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Označevanje naslednjega elementa na polici</translation>
 <translation id="6015573907265691211">Označi kot končano</translation>
@@ -1800,6 +1804,7 @@ Nova namestitev</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> želi uporabljati napravo <ph name="DEVICE_NAME" />. Vklopite fizično stikalo naprave <ph name="DEVICE_NAME" />.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Pomočnik Google</translation>
 <translation id="7042322267639375032">Strnitev območja stanja</translation>
+<translation id="7042593542151411225">Aplikacije nimajo dostopa do kamere</translation>
 <translation id="7045033600005038336">Želite zamenjati predlogo?</translation>
 <translation id="7051244143160304048">Povezava z napravo <ph name="DEVICE_NAME" /> je prekinjena.</translation>
 <translation id="7055910611768509537">Pisala niste uporabljali več kot en teden.</translation>
@@ -2375,6 +2380,7 @@ Nova namestitev</translation>
 <translation id="9074432941673450836">Za vse, kar morate opraviti v napravi <ph name="PRODUCT_NAME" />, lahko uporabite aplikacije. Aplikacije so na voljo v zaganjalniku. Pritisnete lahko tudi tipko za zaganjalnik (nad levo tipko Shift) na tipkovnici.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9077515519330855811">Kontrolniki predstavnosti – zdaj se predvaja <ph name="MEDIA_TITLE" /></translation>
+<translation id="9079012373317704997">Dostopa do kamere ni mogoče vklopiti na daljavo</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">Fotoaparat je pripet v zgornji levi kot</translation>
 <translation id="9080132581049224423">Povlecite navzgor za začetni zaslon</translation>

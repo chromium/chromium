@@ -14,7 +14,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="110877069173485804">Voici votre Chrome</translation>
 <translation id="1125124144982679672">Qui utilise Chrome ?</translation>
 <translation id="1142745911746664600">Impossible de mettre Chrome à jour</translation>
-<translation id="1149651794389918149">Connectez-vous à Chrome. Si vous souhaitez vous connecter à un compte une seule fois, vous pouvez <ph name="GUEST_LINK_BEGIN" />utiliser l'appareil en tant qu'invité<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">À propos de ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Ouvrir dans Chrome</translation>
 <translation id="1157985233335035034">Langues récentes</translation>
@@ -78,6 +77,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Cette extension n'est plus prise en charge. Chrome vous recommande de la supprimer.}one{Cette extension n'est plus prise en charge. Chrome vous recommande de la supprimer.}other{Ces extensions ne sont plus prises en charge. Chrome vous recommande de les supprimer.}}</translation>
 <translation id="2018528049276128029">Chaque profil possède ses propres informations Chrome, comme des favoris, un historique, des mots de passe, etc.</translation>
 <translation id="2018879682492276940">Échec de l'installation. Veuillez réessayer.</translation>
+<translation id="2024959665595762054">Pour utiliser et enregistrer des données Chrome dans votre compte Google, confirmez votre identité</translation>
 <translation id="2034233344106846793">Chrome convertit automatiquement les connexions non sécurisées en HTTPS lorsque c'est possible</translation>
 <translation id="207902854391093810">Pendant les essais, Ad Measurement autorise les sites que vous visitez à demander à Chrome des informations pour les aider à mesurer les performances de leurs annonces. Cette API limite le suivi intersites en transférant le minimum d'informations entre les sites.</translation>
 <translation id="2091012649849228750">Pour recevoir les futures mises à jour de Google Chrome, vous devez disposer de Windows 10 ou d'une version ultérieure. Cet ordinateur utilise Windows 8.</translation>
@@ -101,7 +101,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2216543877350048334">Pour supprimer votre compte Google de Chrome, déconnectez-vous</translation>
 <translation id="2236949375853147973">Mon activité</translation>
 <translation id="223889379102603431">Informations sur la manière dont Chrome gère ses certificats racine</translation>
-<translation id="2258103955319320201">Pour retrouver vos réglages Chrome sur tous vos appareils, connectez-vous, puis activez la synchronisation.</translation>
 <translation id="2290014774651636340">Les clés API Google sont manquantes. Certaines fonctionnalités de Google Chrome vont être désactivées.</translation>
 <translation id="2290095356545025170">Voulez-vous vraiment désinstaller Google Chrome ?</translation>
 <translation id="2309047409763057870">Ceci est une installation secondaire de Google Chrome. Vous ne pouvez pas le définir comme navigateur par défaut.</translation>
@@ -137,6 +136,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2665296953892887393">Aidez-nous à améliorer Google Chrome en nous envoyant des rapports d'erreur et des <ph name="UMA_LINK" />.</translation>
 <translation id="2668094785979141847">Cliquer pour quitter Google Lens</translation>
 <translation id="2681444469812712297">Ouvrir <ph name="URL" /> dans un nouvel onglet dans Google Chrome.</translation>
+<translation id="2687871045452977757"><ph name="ACCOUNT_EMAIL" />, pour utiliser et enregistrer des données Chrome dans votre compte Google, saisissez votre phrase secrète</translation>
 <translation id="2712141162840347885">Sélectionnez quelque chose à rechercher avec Google Lens ou appuyez sur Échap pour quitter Google Lens</translation>
 <translation id="2738871930057338499">Impossible de se connecter à Internet : erreur HTTP 403 (accès interdit). Veuillez vérifier la configuration de votre proxy.</translation>
 <translation id="2742320827292110288">Avertissement : Google Chrome ne peut pas empêcher les extensions d'enregistrer l'historique de votre navigation. Pour désactiver cette extension en mode navigation privée, désélectionnez cette option.</translation>
@@ -616,7 +616,6 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="8550334526674375523">Ce profil professionnel est parfaitement séparé de votre profil personnel.</translation>
 <translation id="8555465886620020932">Erreur du service : <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Rechercher dans la liste des langues</translation>
-<translation id="8571790202382503603">Utilisez les profils Chrome pour dissocier toutes vos données Chrome. Vous pouvez ainsi faire plus facilement la distinction entre vos contenus personnels et professionnels.</translation>
 <translation id="8601359445272098721">Nouveau ! Vous pouvez traduire du texte et des images sur votre écran en sélectionnant le bouton "Traduire l'écran".</translation>
 <translation id="8614913330719544658">Google Chrome ne répond pas. Voulez-vous le relancer maintenant ?</translation>
 <translation id="861702415419836452">Chrome a besoin de votre autorisation pour accéder à votre appareil photo afin de créer un plan 3D de votre environnement</translation>
@@ -626,7 +625,6 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="8669527147644353129">Application d'aide de Google Chrome</translation>
 <translation id="8679801911857917785">Elle contrôle également la page qui s'affiche au démarrage de Chrome.</translation>
 <translation id="8686817260976772516">Utilisez les profils Chrome pour dissocier toutes vos données Chrome. Créez des profils pour vos amis et votre famille, ou créez un profil pour travailler et un autre pour vous divertir.</translation>
-<translation id="8708721325840166640">Vos mots de passe et d'autres données Chrome sont enregistrés dans votre compte Google et seront supprimés de cet appareil. Pour les utiliser à l'avenir, reconnectez-vous à Chrome.</translation>
 <translation id="8712767363896337380">Presque à jour ! Relancez Chrome pour terminer la mise à jour.</translation>
 <translation id="8718062187489036808">Se déconnecter de Chrome</translation>
 <translation id="873133009373065397">Impossible d'identifier ou de définir le navigateur par défaut avec Google Chrome</translation>

@@ -15,7 +15,6 @@
 <translation id="110877069173485804">ਇਹ ਤੁਹਾਡਾ Chrome ਹੈ</translation>
 <translation id="1125124144982679672">Chrome ਕੌਣ ਵਰਤ ਰਿਹਾ ਹੈ?</translation>
 <translation id="1142745911746664600">Chrome ਅੱਪਡੇਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
-<translation id="1149651794389918149">Chrome 'ਤੇ ਸਾਈਨ-ਇਨ ਕਰੋ। ਜੇ ਤੁਸੀਂ ਕਿਸੇ ਖਾਤੇ ਵਿੱਚ ਸਿਰਫ਼ ਇੱਕ-ਵਾਰ ਸਾਈਨ-ਇਨ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ, ਤਾਂ ਤੁਸੀਂ <ph name="GUEST_LINK_BEGIN" />ਡੀਵਾਈਸ ਨੂੰ ਮਹਿਮਾਨ ਵਜੋਂ ਵਰਤ<ph name="GUEST_LINK_END" /> ਸਕਦੇ ਹੋ।</translation>
 <translation id="1152920704813762236">ChromeOS ਬਾਰੇ</translation>
 <translation id="1154147086299354128">&amp;Chrome ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="1157985233335035034">ਹਾਲੀਆ ਭਾਸ਼ਾਵਾਂ</translation>
@@ -103,7 +102,6 @@
 <translation id="2216543877350048334">Chrome ਤੋਂ ਆਪਣਾ Google ਖਾਤਾ ਹਟਾਉਣ ਲਈ, ਸਾਈਨ-ਆਊਟ ਕਰੋ</translation>
 <translation id="2236949375853147973">ਮੇਰੀ ਸਰਗਰਮੀ</translation>
 <translation id="223889379102603431">Chrome ਵੱਲੋਂ ਇਸਦੇ ਰੂਟ ਸਰਟੀਫਿਕੇਟਾਂ ਦੇ ਪ੍ਰਬੰਧਨ ਦੇ ਤਰੀਕੇ ਬਾਰੇ ਜਾਣਕਾਰੀ</translation>
-<translation id="2258103955319320201">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ ਵਿੱਚ ਆਪਣੀ Chrome ਬ੍ਰਾਊਜ਼ਰ ਸਮੱਗਰੀ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਲਈ, ਸਾਈਨ-ਇਨ ਕਰੋ, ਫਿਰ ਸਿੰਕ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="2290014774651636340">Google API ਕੁੰਜੀਆਂ ਮੌਜੂਦ ਨਹੀਂ ਹਨ। Google Chrome ਦੀ ਕੁਝ ਫੰਕਸ਼ਨੈਲਿਟੀ ਬੰਦ ਕੀਤੀ ਜਾਵੇਗੀ।</translation>
 <translation id="2290095356545025170">ਕੀ ਤੁਸੀਂ ਪੱਕਾ Google Chrome ਨੂੰ ਅਣਸਥਾਪਤ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="2309047409763057870">ਇਹ Google Chrome ਦੀ ਇੱਕ ਸੈਕੰਡਰੀ ਸਥਾਪਨਾ ਹੈ, ਅਤੇ ਇਸਨੂੰ ਤੁਹਾਡਾ ਪੂਰਵ-ਨਿਰਧਾਰਤ ਬ੍ਰਾਊਜ਼ਰ ਨਹੀਂ ਬਣਾਇਆ ਜਾ ਸਕਦਾ ਹੈ।</translation>
@@ -619,7 +617,6 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="8550334526674375523">ਇਹ ਕਾਰਜ ਪ੍ਰੋਫਾਈਲ ਤੁਹਾਡੀ ਨਿੱਜੀ ਪ੍ਰੋਫਾਈਲ ਤੋਂ ਪੂਰੀ ਤਰ੍ਹਾਂ ਵੱਖ ਹੈ।</translation>
 <translation id="8555465886620020932">ਸੇਵਾ ਸੰਬੰਧੀ ਗੜਬੜ: <ph name="SERVICE_ERROR" />।</translation>
 <translation id="856656450041460113">ਭਾਸ਼ਾ ਸੂਚੀ ਖੋਜੋ</translation>
-<translation id="8571790202382503603">Chrome ਪ੍ਰੋਫਾਈਲਾਂ ਨਾਲ ਤੁਸੀਂ ਆਪਣੀ ਸਾਰੀ Chrome ਸਮੱਗਰੀ ਨੂੰ ਵੱਖ ਕਰ ਸਕਦੇ ਹੋ। ਇਹ ਕਾਰਜ ਅਤੇ ਮੌਜ-ਮਸਤੀ ਵਿਚਕਾਰ ਵੰਡਣ ਲਈ ਇਸਨੂੰ ਆਸਾਨ ਬਣਾਉਂਦਾ ਹੈ।</translation>
 <translation id="8601359445272098721">ਨਵਾਂ! ਤੁਸੀਂ "ਅਨੁਵਾਦ ਸਕ੍ਰੀਨ" ਬਟਨ ਨੂੰ ਚੁਣ ਕੇ ਆਪਣੀ ਸਕ੍ਰੀਨ 'ਤੇ ਲਿਖਤ ਅਤੇ ਚਿੱਤਰਾਂ, ਦੋਵਾਂ ਦਾ ਅਨੁਵਾਦ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="8614913330719544658">Google Chrome ਜਵਾਬ ਨਹੀਂ ਦੇ ਰਿਹਾ ਹੈ। ਕੀ ਹੁਣੇ ਮੁੜ-ਲਾਂਚ ਕਰਨਾ ਹੈ?</translation>
 <translation id="861702415419836452">Chrome ਨੂੰ ਤੁਹਾਡੇ ਆਲੇ-ਦੁਆਲੇ ਦਾ 3D ਨਕਸ਼ਾ ਬਣਾਉਣ ਵਾਸਤੇ ਤੁਹਾਡੇ ਕੈਮਰੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਲਈ ਇਜਾਜ਼ਤ ਦੀ ਲੋੜ ਹੈ</translation>
@@ -629,7 +626,6 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="8669527147644353129">Google Chrome ਸਹਾਇਕ</translation>
 <translation id="8679801911857917785">ਇਹ ਇਸ ਨੂੰ ਵੀ ਕੰਟਰੋਲ ਕਰਦਾ ਹੈ ਕਿ ਜਦੋਂ ਤੁਸੀਂ Chrome ਨੂੰ ਸ਼ੁਰੂ ਕਰਦੇ ਹੋ ਤਾਂ ਕਿਹੜਾ ਪੰਨਾ ਦਿਖਾਇਆ ਜਾਵੇ।</translation>
 <translation id="8686817260976772516">Chrome ਪ੍ਰੋਫਾਈਲਾਂ ਨਾਲ ਤੁਸੀਂ ਆਪਣੀ ਸਾਰੀ Chrome ਸਮੱਗਰੀ ਨੂੰ ਵੱਖ ਕਰ ਸਕਦੇ ਹੋ। ਦੋਸਤਾਂ ਅਤੇ ਪਰਿਵਾਰ ਲਈ ਪ੍ਰੋਫਾਈਲਾਂ ਬਣਾਓ ਜਾਂ ਕਾਰਜ ਅਤੇ ਮੌਜ-ਮਸਤੀ ਵਿੱਚ ਵੰਡੋ।</translation>
-<translation id="8708721325840166640">ਤੁਹਾਡੇ ਪਾਸਵਰਡਾਂ ਅਤੇ ਹੋਰ Chrome ਡਾਟੇ ਨੂੰ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ ਅਤੇ ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਹਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ। ਭਵਿੱਖ ਵਿੱਚ ਉਨ੍ਹਾਂ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ, Chrome ਵਿੱਚ ਵਾਪਸ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
 <translation id="8712767363896337380">ਲਗਭਗ ਅੱਪ-ਟੂ-ਡੇਟ! ਅੱਪਡੇਟ ਨੂੰ ਪੂਰਾ ਕਰਨ ਲਈ Chrome ਨੂੰ ਮੁੜ-ਲਾਂਚ ਕਰੋ।</translation>
 <translation id="8718062187489036808">Chrome ਤੋਂ ਸਾਈਨ ਆਊਟ ਕਰੋ</translation>
 <translation id="873133009373065397">Google Chrome ਪੂਰਵ-ਨਿਰਧਾਰਤ ਬ੍ਰਾਊਜ਼ਰ ਦਾ ਪਤਾ ਨਹੀਂ ਲਗਾ ਸਕਦਾ ਹੈ ਜਾਂ ਉਸਨੂੰ ਸੈੱਟ ਨਹੀਂ ਕਰ ਸਕਦਾ ਹੈ</translation>

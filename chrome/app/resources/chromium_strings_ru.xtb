@@ -322,7 +322,6 @@
 <translation id="5496810170689441661">Chromium пытается изменить пароли. Чтобы разрешить это действие, введите свой пароль Windows.</translation>
 <translation id="5527463683072221100">Открывать PDF-файлы в Chromium</translation>
 <translation id="5568136785038042132">Чтобы получить доступ к расширениям на всех ваших устройствах, войдите в Chromium.</translation>
-<translation id="5575418445468216473">Ваши пароли и другие данные Chromium сохранены в аккаунте Google, но будут удалены с этого устройства. Чтобы снова использовать их, войдите в Chromium.</translation>
 <translation id="5579324208890605088">Ошибка. Запустите установщик от имени обычного пользователя, а не администратора.</translation>
 <translation id="5596627076506792578">Ещё</translation>
 <translation id="5605834417512968703">Выберите что-нибудь для поиска по изображениям или нажмите клавишу Escape, чтобы его закрыть</translation>
@@ -471,7 +470,6 @@
 <translation id="7355355292030546812">Chromium заблокировал скачивание, поскольку этот файл может представлять опасность для ваших личных аккаунтов и аккаунтов в социальных сетях, включая <ph name="USER_EMAIL" />.</translation>
 <translation id="7384121030444253939">Это расширение больше не поддерживается. Рекомендуем удалить его из Chromium.</translation>
 <translation id="7389750180956889333">Chromium лучше определяет формы и быстрее их заполняет. Подробнее <ph name="BEGIN_LINK" />об автозаполнении Chrome<ph name="END_LINK" />…</translation>
-<translation id="7398989605938454041">Профили Chromium позволяют хранить личные и рабочие данные в браузере раздельно.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium для разработчиков</translation>
 <translation id="7450541714075000668">Текст скопирован.</translation>
 <translation id="7451052299415159299">Для этого сайта Chromium запрашивает доступ к камере.</translation>
@@ -535,7 +533,6 @@
 <translation id="8326785589245660814">удалите данные Chromium из аккаунта</translation>
 <translation id="8330519371938183845">Войдите, чтобы синхронизировать данные Chromium на всех устройствах</translation>
 <translation id="8340674089072921962">Адрес <ph name="USER_EMAIL_ADDRESS" /> уже использовался в Chromium</translation>
-<translation id="8357820681460164151">Чтобы получить доступ к данным в браузере Chromium на всех своих устройствах, войдите в аккаунт и включите синхронизацию.</translation>
 <translation id="8359544530202147897">Обновите Chromium, чтобы продолжать использовать данные Chromium в аккаунте Google <ph name="ACCOUNT_EMAIL" />.</translation>
 <translation id="8360718212975266891">На вашем компьютере используется Windows 8. Чтобы получать обновления Chromium, установите на устройство Windows 10 или более поздней версии.</translation>
 <translation id="8362914115861174987">Перевести на</translation>
@@ -586,7 +583,6 @@
 <translation id="9022552996538154597">Войти в Chromium</translation>
 <translation id="904366664621834601">Chromium заблокировал скачивание, поскольку этот архив содержит файлы, в которых может быть скрыто вредоносное ПО.</translation>
 <translation id="9062666675513499497">Входить в Chromium при входе в другие сервисы Google</translation>
-<translation id="907832235989677238">Войдите в Chromium. Если этот аккаунт вам больше не понадобится, можно <ph name="GUEST_LINK_BEGIN" />воспользоваться устройством в гостевом режиме<ph name="GUEST_LINK_END" />.</translation>
 <translation id="9078733879136747090">Chromium был закрыт автоматически</translation>
 <translation id="9089354809943900324">Версия Chromium устарела</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium перезапустится через 1 час}one{Chromium перезапустится через # час}few{Chromium перезапустится через # часа}many{Chromium перезапустится через # часов}other{Chromium перезапустится через # часа}}</translation>

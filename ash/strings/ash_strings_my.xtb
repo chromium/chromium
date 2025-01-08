@@ -274,6 +274,7 @@
 <translation id="1908992311423394684">အသစ်ထည့်သွင်းမှု</translation>
 <translation id="1915307458270490472">ဖုန်းချရန်</translation>
 <translation id="1918022425394817322">ကင်မရာကို အပေါ်ညာဘက်ထောင့်သို့ ကပ်ထားသည်</translation>
+<translation id="1920390473494685033">အဆက်အသွယ်များ</translation>
 <translation id="1923539912171292317">အလိုအလျောက် နှိပ်ချက်များ</translation>
 <translation id="1925320505152357008">၁ မိနစ်အောက်</translation>
 <translation id="1928739107511554905">အပ်ဒိတ်ရယူရန်အတွက် ကီးဘုတ်ကို ချိတ်ဆက်ထားပြီး Chromebook ကို ပြန်လည်စတင်ရန် ထိတွေ့မျက်နှာပြင်ကို အသုံးပြုပါ။</translation>
@@ -884,6 +885,7 @@
 <translation id="4042660782729322247">သင့်မျက်နှာပြင်ကို မျှဝေနေသည်</translation>
 <translation id="404437169852192935">အပ်ဒိတ်လုပ်ပြီးပြီ</translation>
 <translation id="4049230407053723315">အမြန်ဆက်တင်များ</translation>
+<translation id="4054070260844648638">လူတိုင်း မြင်နိုင်သည်</translation>
 <translation id="4057003836560082631">ဘရောင်ဇာတဘ် <ph name="TOTAL_COUNT" /> ခုအနက် <ph name="INDEX" />။ <ph name="SITE_TITLE" />၊ <ph name="SITE_URL" /></translation>
 <translation id="4059696795118403455">နောက်ထပ်လုပ်ဆောင်ရမည့်အရာများအတွက် ပုဂ္ဂိုလ်ရေးသီးသန့် အကြံပြုချက်များ ကြည့်ရန် ‘ဝင်းဒိုးပြ ကီး’ ကို နှိပ်ပါ</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{အက်ပ်တစ်ခုပိတ်}other{အက်ပ် # ခုပိတ်}}</translation>
@@ -1407,7 +1409,6 @@
 <translation id="5727460725221669831">သင့်စကားဝှက်မေ့သွားပါက (သို့) သင့် Google Account စကားဝှက်ကို မကြာသေးမီက ပြောင်းထားပါက ဤအသုံးပြုသူကို ပြန်လည်ရယူကြည့်ပါ။</translation>
 <translation id="5733630091161562207">ကြိုဆိုရေး အကြောင်းကြားချက်</translation>
 <translation id="573413375004481890">ဤစက်သည် သင့်ဖန်သားပြင်ပြသမှုများအားလုံးကို မပံ့ပိုးသည့်အတွက် တစ်ခုကို ချိတ်ဆက်မှုဖြုတ်လိုက်ပါပြီ</translation>
-<translation id="5740328398383587084">မျှဝေခြင်း</translation>
 <translation id="574392208103952083">အလယ်အလတ်</translation>
 <translation id="5744083938413354016">တို့၍ ဖိဆွဲခြင်း</translation>
 <translation id="5745612484876805746">နေဝင်ချိန်တွင် 'ညအလင်းရောင်' အလိုအလျောက် ပွင့်လာပါမည်</translation>
@@ -1484,6 +1485,7 @@
 <translation id="5990992855591814753">ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ထားသော အာရုံစိုက်ပလေးလစ်များဖြင့် အလုပ်ပြီးအောင်လုပ်လိုက်ပါ။ ကြော်ငြာမဲ့ YouTube Music နှင့် YouTube ကို YouTube Premium ဖြင့် ၃ လ အခမဲ့ရယူပါ။ စည်းမျဉ်းများ ရှိသည်။</translation>
 <translation id="5998374579424866922">ဂိမ်းထိန်းချုပ်ကိရိယာများ ပိတ်ရန်</translation>
 <translation id="6000279412553873020">ကီး၊ ခလုတ် စသည်</translation>
+<translation id="6002122790816966947">သင်၏စက်များ</translation>
 <translation id="6012623610530968780">စာမျက်နှာ <ph name="TOTAL_PAGE_NUM" /> အနက် <ph name="SELECTED_PAGE" /></translation>
 <translation id="601304062528754300">စင်ပေါ်ရှိ နောက်အက်ပ်တစ်ခုကို မြင်သာအောင်လုပ်ရန်</translation>
 <translation id="6015573907265691211">လုပ်ပြီးဟု မှတ်ရန်</translation>

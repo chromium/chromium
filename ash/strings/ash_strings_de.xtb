@@ -274,6 +274,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1908992311423394684">Neuinstallation</translation>
 <translation id="1915307458270490472">Auflegen</translation>
 <translation id="1918022425394817322">Kamera ist an der oberen rechten Ecke angepinnt</translation>
+<translation id="1920390473494685033">Kontakte</translation>
 <translation id="1923539912171292317">Automatische Klicks</translation>
 <translation id="1925320505152357008">weniger als 1 Min.</translation>
 <translation id="1928739107511554905">Du kannst das Update vornehmen, indem du den Touchscreen verwendest, um dein Chromebook mit angeschlossener Tastatur neu zu starten.</translation>
@@ -530,6 +531,7 @@ Ansonsten wird das integrierte Touchpad in <ph name="TIMEOUT_SECONDS" /> wieder 
 <translation id="2847759467426165163">Übertragen an</translation>
 <translation id="2848120746144143659">Eingabetaste drücken, um einen Screenshot vom ganzen Bildschirm aufzunehmen</translation>
 <translation id="2849936225196189499">Kritisch</translation>
+<translation id="2850207700020959936">Apps können auf die Kamera zugreifen</translation>
 <translation id="2860184359326882502">Beste Ergebnisse</translation>
 <translation id="2865888419503095837">Netzwerkinformationen</translation>
 <translation id="2869095047958348710">Letzter <ph name="DAY_OF_WEEK" /></translation>
@@ -584,6 +586,7 @@ Ansonsten wird das integrierte Touchpad in <ph name="TIMEOUT_SECONDS" /> wieder 
 <translation id="304417730895741346">Deine angepinnten und geöffneten Apps sind in der Ablage. Um eine App in der Ablage anzupinnen, klicke mit der rechten Maustaste auf die App oder tippe mit zwei Fingern auf das Touchpad.</translation>
 <translation id="3045488863354895414">Guten Tag,</translation>
 <translation id="3047761520276763270">Sage z. B.:</translation>
+<translation id="3053407068093039599">Kamerazugriff aktivieren / deaktivieren</translation>
 <translation id="3055162170959710888">Du hast das Gerät heute <ph name="USED_TIME" /> verwendet</translation>
 <translation id="3062298103034426069">Wird nicht unterstützt</translation>
 <translation id="3068622547379332530">Version <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -884,6 +887,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="4042660782729322247">Du gibst deinen Bildschirm frei</translation>
 <translation id="404437169852192935">Gerät erhält keine Updates mehr</translation>
 <translation id="4049230407053723315">Schnelleinstellungen</translation>
+<translation id="4054070260844648638">Für alle sichtbar</translation>
 <translation id="4057003836560082631">Browser-Tab <ph name="INDEX" /> von <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4059696795118403455">Drücke die Taste zum Anzeigen der Fenster, um personalisierte Vorschläge für mögliche weitere Aktionen zu sehen</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Aus für 1 App}other{Aus für # Apps}}</translation>
@@ -1407,7 +1411,6 @@ Keine Geräte verbunden.</translation>
 <translation id="5727460725221669831">Wenn du dein Passwort vergessen oder das Passwort für dein Google-Konto vor Kurzem geändert hast, versuche, diesen Nutzer wiederherzustellen.</translation>
 <translation id="5733630091161562207">Willkommensbenachrichtigung</translation>
 <translation id="573413375004481890">Dieses Gerät kann nicht alle deine Displays unterstützen. Daher wurde die Verbindung zu einem Display getrennt.</translation>
-<translation id="5740328398383587084">Nearby Share</translation>
 <translation id="574392208103952083">Mittel</translation>
 <translation id="5744083938413354016">Antippen und Ziehen</translation>
 <translation id="5745612484876805746">Die Funktion "Nachtlicht" wird bei Sonnenuntergang automatisch aktiviert</translation>
@@ -1484,6 +1487,7 @@ Keine Geräte verbunden.</translation>
 <translation id="5990992855591814753">Mit personalisierten Playlists zur besseren Konzentration bleibst du auf Kurs. Sichere dir YouTube Music und YouTube werbefrei und probiere YouTube Premium 3 Monate kostenlos aus. Es gelten die Angebotsbedingungen.</translation>
 <translation id="5998374579424866922">Spielsteuerung deaktivieren</translation>
 <translation id="6000279412553873020">Tasten, Knöpfe und mehr</translation>
+<translation id="6002122790816966947">Meine Geräte</translation>
 <translation id="6012623610530968780">Seite <ph name="SELECTED_PAGE" /> von <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Nächstes Element in der Ablage hervorheben</translation>
 <translation id="6015573907265691211">Als abgeschlossen markieren</translation>
@@ -1800,6 +1804,7 @@ Neuinstallation</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> möchte dein Gerät „<ph name="DEVICE_NAME" />“ verwenden. Aktiviere den physischen Schalter deines Geräts „<ph name="DEVICE_NAME" />“.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
 <translation id="7042322267639375032">Statusbereich minimieren</translation>
+<translation id="7042593542151411225">Apps können nicht auf die Kamera zugreifen</translation>
 <translation id="7045033600005038336">Vorlage ersetzen?</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> getrennt</translation>
 <translation id="7055910611768509537">Eingabestift wurde seit über einer Woche nicht mehr verwendet</translation>
@@ -2375,6 +2380,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="9074432941673450836">Auf deinem <ph name="PRODUCT_NAME" /> kannst du mit Apps alle deine Aufgaben erledigen. Du findest deine Apps im Launcher. Du kannst auch auf der Tastatur die Launcher-Taste (über der linken Umschalttaste) drücken.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9077515519330855811">Mediensteuerelemente – <ph name="MEDIA_TITLE" /> wird abgespielt</translation>
+<translation id="9079012373317704997">Kamerazugriff kann nicht aus der Ferne aktiviert werden</translation>
 <translation id="9079731690316798640">WLAN: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">Kamera ist an der oberen linken Ecke angepinnt</translation>
 <translation id="9080132581049224423">Nach oben wischen, um zum Startbildschirm zu gehen</translation>

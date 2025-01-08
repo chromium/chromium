@@ -274,6 +274,7 @@
 <translation id="1908992311423394684">ახალდაინსტალირებული</translation>
 <translation id="1915307458270490472">გათიშვა</translation>
 <translation id="1918022425394817322">კამერა მიზიდულია ზედა მარჯვენა კუთხეში</translation>
+<translation id="1920390473494685033">კონტაქტები</translation>
 <translation id="1923539912171292317">ავტომატური დაწკაპუნებები</translation>
 <translation id="1925320505152357008">1 წთ-ზე ნაკლები</translation>
 <translation id="1928739107511554905">განახლების ჩამოსატვირთად გადატვირთეთ თქვენი Chromebook სენსორული ეკრანის მეშვეობით და არ გამოართოთ კლავიატურა.</translation>
@@ -886,6 +887,7 @@
 <translation id="4042660782729322247">თქვენ აზიარებთ ეკრანს</translation>
 <translation id="404437169852192935">განახლებები დასრულდა</translation>
 <translation id="4049230407053723315">სწრაფი პარამეტრები</translation>
+<translation id="4054070260844648638">ხილულია ყველასთვის</translation>
 <translation id="4057003836560082631">ბრაუზერის ჩანართი <ph name="INDEX" /> / <ph name="TOTAL_COUNT" />-დან. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4059696795118403455">მომდევნო მოქმედებების პერსონალიზებული შემოთავაზებებისთვის დააჭირეთ მიმოხილვის კლავიშს</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{გამორთულია აპისთვის}other{გამორთულია # აპისთვის}}</translation>
@@ -1409,7 +1411,6 @@
 <translation id="5727460725221669831">თუ პაროლი დაგავიწყდათ, ან ახლახან შეცვალეთ თქვენი Google ანგარიშის პაროლი, ცადეთ ამ მომხმარებლის აღდგენა.</translation>
 <translation id="5733630091161562207">მისასალმებელი შეტყობინება</translation>
 <translation id="573413375004481890">ამ მოწყობილობას არ შეეძლო თქვენი ყველა ეკრანის მხარდაჭერა, ამიტომ ერთ-ერთი გაითიშა</translation>
-<translation id="5740328398383587084">მახლობლად გაზიარება</translation>
 <translation id="574392208103952083">საშუალო</translation>
 <translation id="5744083938413354016">შეხებით გადატანა</translation>
 <translation id="5745612484876805746">ღამის განათება ავტომატურად ირთვება მზის ჩასვლისას</translation>
@@ -1486,6 +1487,7 @@
 <translation id="5990992855591814753">მართვაში დაიხმარეთ კონცენტრაციისთვის პერსონალიზებული დასაკრავი სიები. მიიღეთ YouTube Music და YouTube რეკლამის გარეშე, 3-თვიანი YouTube Premium-ით, დამატებითი ღირებულების გარეშე. მოქმედებს გარკვეული პირობები.</translation>
 <translation id="5998374579424866922">თამაშის მართვის საშუალებების გამორთვა</translation>
 <translation id="6000279412553873020">კლავიშები, ღილაკები და სხვა</translation>
+<translation id="6002122790816966947">თქვენი მოწყობილობები</translation>
 <translation id="6012623610530968780">გვერდი <ph name="SELECTED_PAGE" /> / <ph name="TOTAL_PAGE_NUM" />-დან</translation>
 <translation id="601304062528754300">შემდეგი ერთეულის გამოყოფა თაროზე</translation>
 <translation id="6015573907265691211">შესრულებულად მონიშვნა</translation>

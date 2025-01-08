@@ -228,7 +228,6 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1151917987301063366">Toujours autoriser le site <ph name="HOST" /> à accéder aux capteurs</translation>
 <translation id="1152346050262092795">Entrez à nouveau votre mot de passe pour vérifier votre compte.</translation>
 <translation id="1153636665119721804">Programme de protection avancée de Google</translation>
-<translation id="1155545602507378023">Non, cet appareil uniquement</translation>
 <translation id="1155816283571436363">Connexion à votre téléphone en cours…</translation>
 <translation id="1157952955648710254">Fermer le panneau latéral de la recherche Google</translation>
 <translation id="1158080958325422608">Mettre en majuscules</translation>
@@ -1154,7 +1153,6 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1794791083288629568">Envoyer des commentaires pour nous aider à résoudre ce problème.</translation>
 <translation id="1795214765651529549">Utiliser le thème classique</translation>
 <translation id="1795438342141780114">Réinitialiser le curseur au centre</translation>
-<translation id="1795668164971917185">La prochaine fois que la Navigation sécurisée Google détectera un téléchargement suspect, elle l'analysera automatiquement dans le cadre de la <ph name="LINK" /> que vous avez choisie.</translation>
 <translation id="1796588414813960292">Les fonctionnalités qui utilisent des sons ne fonctionneront pas</translation>
 <translation id="1797117170091578105">Jouez à l'aide de votre clavier Chromebook. Vous pouvez affecter des touches à des actions particulières.</translation>
 <translation id="1798335429200675510">Faites un clic droit dans une zone de texte pour créer un brouillon ou affiner un travail existant grâce à l'IA de Google. Disponibilité actuellement limitée.</translation>
@@ -1407,7 +1405,6 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1974043046396539880">Points de distribution de listes de révocation des certificats</translation>
 <translation id="1974060860693918893">Options avancées</translation>
 <translation id="1974159333077206889">Même son sur tous les haut-parleurs</translation>
-<translation id="1974216844776165821">Chrome a enregistré votre mot de passe sur cet appareil, mais vous pouvez l'enregistrer dans votre compte Google à la place. Ensuite, tous les mots de passe et les clés d'accès stockés dans votre compte Google seront également accessibles lorsque vous serez connecté.</translation>
 <translation id="1975841812214822307">Supprimer...</translation>
 <translation id="1976150099241323601">Connexion au dispositif de sécurité</translation>
 <translation id="1976823515278601587">Grandes économies</translation>
@@ -1657,7 +1654,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2143915448548023856">Paramètres d'affichage</translation>
 <translation id="2144536955299248197">Lecteur de certificat : <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Conception d'applications Android pour Linux</translation>
-<translation id="2144873026585036769">Utiliser votre compte Google pour enregistrer et remplir les mots de passe et les clés d'accès?</translation>
 <translation id="2145917706968602070">Assurez-vous que votre téléphone est à proximité et déverrouillé, et que le Bluetooth et le Wi-Fi sont activés</translation>
 <translation id="2146263598007866206">Les sites peuvent télécharger automatiquement et en même temps les fichiers associés pour vous faire gagner du temps</translation>
 <translation id="2147218225094845757">Masquer le panneau latéral</translation>
@@ -2118,7 +2114,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2458591546854598341">Le jeton de la gestion d'appareils est incorrect.</translation>
 <translation id="2459703812219683497">Code d'activation détecté</translation>
 <translation id="2459706890611560967">Reprendre l'onglet de diffusion sur <ph name="DEVICE_NAME" /></translation>
-<translation id="2460356425461033301">Sauvegarder vos données et les utiliser sur n'importe quel appareil</translation>
 <translation id="2460482211073772897">Dans d'autres dossiers</translation>
 <translation id="2460826998961521840">Pour user des clés d'accès dans votre compte</translation>
 <translation id="2461045498706592033"><ph name="LOCAL_FOLDER" /> est enregistré uniquement sur cet appareil. Si vous déplacez ce favori vers <ph name="LOCAL_FOLDER" />, il ne se trouvera plus sur vos autres appareils.</translation>
@@ -6046,7 +6041,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5263656105659419083">Pour revenir facilement au panneau latéral, cliquez sur Épingler en haut à droite</translation>
 <translation id="5264148714798105376">Cette opération peut prendre environ une minute.</translation>
 <translation id="5264252276333215551">Veuillez vous connecter à Internet pour lancer l'application en mode kiosque.</translation>
-<translation id="526539328530966548">protection renforcée</translation>
 <translation id="5265797726250773323">Erreur lors de l'installation</translation>
 <translation id="5266113311903163739">Erreur d'importation de l'autorité de certification</translation>
 <translation id="526622169288322445">Autres actions pour <ph name="ADDRESS_SUMMARY" /></translation>
@@ -7373,7 +7367,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6234108445915742946">Les conditions d'utilisation de Chrome changeront le 31 mars</translation>
 <translation id="6234474535228214774">Installation en attente…</translation>
 <translation id="6235208551686043831">L'appareil photo est activé. Veuillez placer le code QR de votre carte eSIM devant l'appareil photo.</translation>
-<translation id="6237297174664969437">Vous pouvez toujours choisir les données du navigateur à synchroniser dans les paramètres de Chrome. Dans les <ph name="LINK_BEGIN" />paramètres de l'appareil<ph name="LINK_END" />, vous pouvez contrôler la synchronisation des applications Web installées à partir du navigateur Chrome. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="6237474966939441970">Application de prise de notes avec stylet</translation>
 <translation id="6237481151388361546">Modifiez votre connexion Internet et choisissez « Réessayer » ou « Ouvrir dans l'éditeur de base » pour utiliser les options d'affichage et de modification limitées.</translation>
 <translation id="623755660902014047">Mode de lecture</translation>
@@ -8832,7 +8825,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="730515362922783851">Échanger des données avec tout appareil sur le réseau local ou sur Internet</translation>
 <translation id="7306521477691455105">Ouvrez le menu Paramètres pour connecter <ph name="USB_DEVICE_NAME" /> à <ph name="USB_VM_NAME" /></translation>
 <translation id="7307129035224081534">Suspendue</translation>
-<translation id="7307647374092371434">Les clés d'accès et les mots de passe stockés dans votre compte Google seront également accessibles sur cet appareil lorsque vous serez connecté</translation>
 <translation id="7308643132139167865">Langues du site Web</translation>
 <translation id="7309214454733221756">Créer une clé d'accès pour se connecter à <ph name="APP_NAME" />?</translation>
 <translation id="7311005168897771689">Accéder facilement à vos fichiers Google Disque lorsque vous êtes hors ligne</translation>

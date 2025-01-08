@@ -274,6 +274,7 @@
 <translation id="1908992311423394684">Նոր տեղադրում</translation>
 <translation id="1915307458270490472">Փակել</translation>
 <translation id="1918022425394817322">Տեսախցիկի պատկերն ամրացված է վերևի աջ անկյունում</translation>
+<translation id="1920390473494685033">Կոնտակտներ</translation>
 <translation id="1923539912171292317">Ավտոմատ սեղմումներ</translation>
 <translation id="1925320505152357008">1 րոպեից պակաս</translation>
 <translation id="1928739107511554905">Թարմացումը տեղադրելու համար հպէկրանի միջոցով վերագործարկեք Chromebook-ը՝ առանց ստեղնաշարն անջատելու։</translation>
@@ -884,6 +885,7 @@
 <translation id="4042660782729322247">Դուք հասանելի եք դարձրել ձեր էկրանը</translation>
 <translation id="404437169852192935">Թարմացումներն ավարտվեցին</translation>
 <translation id="4049230407053723315">Արագ կարգավորումներ</translation>
+<translation id="4054070260844648638">Բոլորին տեսանելի</translation>
 <translation id="4057003836560082631">Դիտարկիչի ներդիր <ph name="INDEX" />/<ph name="TOTAL_COUNT" />։ <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4059696795118403455">Անհատականացված առաջարկներ տեսնելու համար սեղմեք բոլոր պատուհանների ցուցադրման ստեղնը</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Անջատել 1 ծրագրի համար}one{Անջատել # ծրագրի համար}other{Անջատել # ծրագրերի համար}}</translation>
@@ -1407,7 +1409,6 @@
 <translation id="5727460725221669831">Եթե մոռացել եք ձեր գաղտնաբառը կամ վերջերս փոխել եք Google հաշվի գաղտնաբառը, փորձեք վերականգնել այս օգտատիրոջը։</translation>
 <translation id="5733630091161562207">Ողջույնի ծանուցում</translation>
 <translation id="573413375004481890">Այս սարքը չի կարող աջակցել բոլոր էկրանները, այդ պատճառով դրանցից մեկն անջատվել է:</translation>
-<translation id="5740328398383587084">Փոխանակում մոտակա սարքերի հետ</translation>
 <translation id="574392208103952083">Միջին</translation>
 <translation id="5744083938413354016">Հպումով քաշում</translation>
 <translation id="5745612484876805746">Մութն ընկնելուն պես գիշերային ռեժիմը ավտոմատ կմիանա</translation>
@@ -1484,6 +1485,7 @@
 <translation id="5990992855591814753">Պահպանեք կենտրոնացումը անհատականացված երգացանկերի օգնությամբ։ Օգտվեք YouTube Music-ից և YouTube-ից առանց գովազդի՝ ստանալով 3 ամիս անվճար YouTube Premium-ից օգտվելու հնարավորություն։ Ծանոթացեք պայմաններին։</translation>
 <translation id="5998374579424866922">Անջատել խաղի կարգավորումները</translation>
 <translation id="6000279412553873020">Բանալիներ, կոճակներ և ավելին</translation>
+<translation id="6002122790816966947">Ձեր սարքերը</translation>
 <translation id="6012623610530968780">Էջ <ph name="SELECTED_PAGE" />/<ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Առանձնացնել հաջորդ տարրը դարակում</translation>
 <translation id="6015573907265691211">Նշել որպես կատարված</translation>

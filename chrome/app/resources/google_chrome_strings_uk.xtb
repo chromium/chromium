@@ -13,7 +13,6 @@
 <translation id="110877069173485804">Це ваш Chrome</translation>
 <translation id="1125124144982679672">Хто користується веб-переглядачем Chrome?</translation>
 <translation id="1142745911746664600">Не вдається оновити Chrome</translation>
-<translation id="1149651794389918149">Увійдіть у Chrome. Якщо ви хочете ввійти в цей обліковий запис лише один раз, <ph name="GUEST_LINK_BEGIN" />використовуйте пристрій у режимі гостя<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">Про ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Відкрити в Chrome</translation>
 <translation id="1157985233335035034">Останні мови</translation>
@@ -99,7 +98,6 @@
 <translation id="2216543877350048334">Щоб вилучити обліковий запис Google, вийдіть із Chrome</translation>
 <translation id="2236949375853147973">Мої дії</translation>
 <translation id="223889379102603431">Інформація про те, як Chrome керує кореневими сертифікатами</translation>
-<translation id="2258103955319320201">Щоб мати доступ до своїх даних у веб-переглядачі Chrome на всіх пристроях, увійдіть в обліковий запис і ввімкніть синхронізацію</translation>
 <translation id="2290014774651636340">Ключі API Google відсутні. Деякі функції Google Chrome буде вимкнено.</translation>
 <translation id="2290095356545025170">Ви дійсно хочете видалити Google Chrome?</translation>
 <translation id="2309047409763057870">Це додаткове встановлення Google Chrome. Його не можна зробити вашим веб-переглядачем за умовчанням.</translation>
@@ -611,7 +609,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="8550334526674375523">Цей робочий профіль ніяк не пов'язаний із вашим особистим профілем.</translation>
 <translation id="8555465886620020932">Помилка сервісу: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Пошук у списку мов</translation>
-<translation id="8571790202382503603">Створюйте профілі Chrome для різних цілей (наприклад, робочий і особистий), щоб розмежовувати роботу й дозвілля.</translation>
 <translation id="8601359445272098721">Новинка! Тепер ви можете перекладати текст і зображення на екрані, натиснувши кнопку "Перекласти вміст екрана".</translation>
 <translation id="8614913330719544658">Google Chrome не відповідає. Перезапустити зараз?</translation>
 <translation id="861702415419836452">Chrome потрібен дозвіл на використання камери, щоб створити 3D-карту вашого оточення</translation>
@@ -621,7 +618,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="8669527147644353129">Помічник Google Chrome</translation>
 <translation id="8679801911857917785">Розширення також змінило сторінку, яка відкривається під час запуску Chrome.</translation>
 <translation id="8686817260976772516">Створюйте різні профілі Chrome для різних цілей (наприклад, робочий і особистий) і для різних людей (як-от друзів і членів сім'ї).</translation>
-<translation id="8708721325840166640">Ваші паролі й інші дані Chrome, які зберігаються у вашому обліковому записі Google, буде вилучено із цього пристрою. Щоб користуватися ними в майбутньому, знову ввійдіть у Chrome.</translation>
 <translation id="8712767363896337380">Майже готово. Перезапустіть Chrome, щоб завершити оновлення.</translation>
 <translation id="8718062187489036808">Вийти з облікового запису Chrome</translation>
 <translation id="873133009373065397">Google Chrome не може визначити чи встановити веб-переглядач за умовчанням</translation>

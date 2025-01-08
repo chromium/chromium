@@ -25,6 +25,7 @@
 <translation id="1081932398873105675">{count,plural, =1{{count} pestanya}other{{count} pestanyes}}</translation>
 <translation id="1084365883616172403">S'ha completat la publicació a Facebook.</translation>
 <translation id="1085677983426914530">No s'ha pogut obrir <ph name="FILENAME" /></translation>
+<translation id="1086468407802688066"><ph name="HOSTED_DOMAIN" /> gestiona el compte <ph name="USER_EMAIL" />, així que pot veure algunes dades. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="1096992026380844478">La configuració de sincronització es restaurarà a partir de la darrera còpia de seguretat. <ph name="BEGIN_LINK" />Consulta què pots sincronitzar<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Tradueix sempre el text en <ph name="LANGUAGE" /></translation>
 <translation id="1108938384783527433">Sincronització de l'historial</translation>
@@ -83,6 +84,7 @@
 <translation id="1335767868357998043">Tria la posició de la barra d'adreces</translation>
 <translation id="1347468774581902829">Gestiona l'activitat</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
+<translation id="1358106883354237005">Compte gestionat</translation>
 <translation id="1358214951266274152">Ves a l'enllaç que has copiat</translation>
 <translation id="1360432990279830238">Vols tancar la sessió i desactivar la sincronització?</translation>
 <translation id="1363028406613469049">Fes un seguiment</translation>
@@ -697,6 +699,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4183350924949589798">Més seguretat?</translation>
 <translation id="4184063163998877398">{count,plural, =1{{count} contrasenya poc segura}other{{count} contrasenyes poc segures}}</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} element s'ha desat només en aquest dispositiu. Per utilitzar-lo en altres dispositius, desa'l al teu Compte de Google {email}.}other{{count} elements s'han desat només en aquest dispositiu. Per utilitzar-los en altres dispositius, desa'ls al teu Compte de Google {email}.}}</translation>
+<translation id="4207873326995387292">Informació del navegador</translation>
 <translation id="421070604241073551">Si aquesta opció està activada, les dades es desen al teu Compte de Google. Si està desactivada, les dades només es desen en aquest dispositiu.</translation>
 <translation id="4224534474590365556">Vols tancar les més de 99 pestanyes inactives?</translation>
 <translation id="422474357428465195">Tens diversos problemes relacionats amb les contrasenyes que poden posar en perill la teva seguretat.</translation>
@@ -764,6 +767,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4495516234578759322">Cerca el següent</translation>
 <translation id="4502423230170890588">Suprimeix d'aquest dispositiu</translation>
 <translation id="4508750114462689118">Tanca la promoció d'inici de sessió</translation>
+<translation id="4517684186578051919">Informació del dispositiu</translation>
 <translation id="4520798012560649652">Més informació sobre el mode d'incògnit</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} adreça d'interès}other{{count} adreces d'interès}}</translation>
 <translation id="4525629404718770519">Mostra les previsualitzacions dels enllaços</translation>
@@ -972,6 +976,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="5444892875087332195">Adreces d'interès</translation>
 <translation id="5452354193031718372">Utilitza una contrasenya segura:</translation>
 <translation id="5454211924362324495">Per evitar que altres persones utilitzin la teva contrasenya, <ph name="BEGIN_LINK" />canvia-la a <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
+<translation id="5454723301413569630"><ph name="HOSTED_DOMAIN" /> gestiona el compte <ph name="USER_EMAIL" />, així que pot veure algunes dades, com ara</translation>
 <translation id="5457082343331641453">Afegeix a la cerca</translation>
 <translation id="5457226814769348910">Obre la versió sense connexió</translation>
 <translation id="5478327362747197944">Crea esdeveniments del calendari directament fent clic en una data d'una pàgina web.</translation>
@@ -1375,6 +1380,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7102005569666697658">S'està baixant… (<ph name="FILE_SIZE" />)</translation>
 <translation id="7104701424653979232">Menú → Configuració → Formes de pagament</translation>
 <translation id="7108338896283013870">Amaga</translation>
+<translation id="7128693485119315539">És possible que la teva organització necessiti veure i gestionar les dades de navegació associades al teu compte gestionat, com ara l'historial de navegació i les contrasenyes.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">La càmera no està disponible</translation>
 <translation id="7141960840225504692">Les pestanyes es tancaran i les dades de navegació se suprimiran</translation>
@@ -1769,6 +1775,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8813277370772331957">Recorda-m'ho més tard</translation>
 <translation id="8814719628147284151">Continua</translation>
 <translation id="8820817407110198400">Adreces d'interès</translation>
+<translation id="8822421075653507124">Per assegurar-se que aquest dispositiu es pot utilitzar de manera segura, és possible que la teva organització necessiti veure informació sobre el sistema operatiu, el navegador, la configuració i el programari que hi ha instal·lat al dispositiu.</translation>
 <translation id="8825562130641217944">Obtén les adreces d'interès, les contrasenyes i altres dades.</translation>
 <translation id="8827154289515190290">El navegador que tant t'agrada, ara a iOS</translation>
 <translation id="8831208860914609320">Tanca totes les inactives</translation>

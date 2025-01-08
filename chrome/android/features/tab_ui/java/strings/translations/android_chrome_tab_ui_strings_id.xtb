@@ -104,9 +104,6 @@ Jika Anda menghapusnya, semua orang akan segera kehilangan akses ke grup tab "<p
 <translation id="5494920125229734069">Pilih semua</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Tutup grup tab yang berisi <ph name="TABS_COUNT_ONE" /> tab, warna <ph name="COLOR_NAME" />.}other{Tutup grup tab yang berisi <ph name="TABS_COUNT_MANY" /> tab, warna <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Lihat info toko, opsi tersedia di dekat bagian atas layar</translation>
-<translation id="5615302411300498438">Simpan grup ini untuk menambahkan tab nanti, atau keluar.
-
-Jika keluar, Anda akan segera kehilangan akses ke grup tab "<ph name="TITLE_OF_GROUP" />".</translation>
 <translation id="5627941783489838464">Tidak ada pembaruan tab</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Pulihkan tab}other{Pulihkan tab}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link dari Chrome}other{<ph name="TABS_COUNT_MANY" /> link dari Chrome}}</translation>
@@ -117,7 +114,6 @@ Jika keluar, Anda akan segera kehilangan akses ke grup tab "<ph name="TITLE_OF_G
 <translation id="6040143037577758943">Tutup</translation>
 <translation id="6051432659151380973">Grup tab Anda otomatis disimpan</translation>
 <translation id="6054741997831917303">Harga item ini baru-baru ini turun dari <ph name="PREVIOUS_PRICE" /> ke <ph name="NEW_PRICE" /></translation>
-<translation id="6082313992897617440">Anda akan segera kehilangan akses ke grup tab <ph name="GROUP_NAME" /></translation>
 <translation id="6109251075362363230">Semua tab duplikat kini juga akan diarsipkan, kecuali salinan yang terakhir digunakan.</translation>
 <translation id="6193448654517602979">Pilih tab</translation>
 <translation id="6228793724645064692">(rating toko)</translation>
@@ -145,9 +141,9 @@ Jika keluar, Anda akan segera kehilangan akses ke grup tab "<ph name="TITLE_OF_G
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> Dipilih</translation>
 <translation id="7326879924029668159">Lihat kebijakan pengembalian dan lainnya</translation>
 <translation id="7352298686197644113">Lihat item mana di tab terbuka yang memiliki harga lebih rendah</translation>
-<translation id="7421293530411019405">Keluar dari grup tab?</translation>
 <translation id="7452985128687107478">Grup tab disimpan dan diperbarui otomatis di semua perangkat Anda</translation>
 <translation id="747459581954555080">Pulihkan semua</translation>
+<translation id="750886945254958667">Simpan grup ini untuk menambahkan tab nanti, atau keluar dari grup jika Anda tidak ingin lagi mengaksesnya</translation>
 <translation id="753732157349120914">Pengalih Tab</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> ulasan dari Google}other{<ph name="REVIEWS_COUNT_MANY" /> ulasan dari Google}}</translation>
 <translation id="7559245342362162951">Tampilkan tab grup dalam petak layar penuh</translation>
@@ -177,9 +173,7 @@ Jika keluar, Anda akan segera kehilangan akses ke grup tab "<ph name="TITLE_OF_G
 <translation id="8398929769197326728">Folder Baru - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Setelan</translation>
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tab ditambahkan, <ph name="ANY_CLOSED" /> ditutup}other{<ph name="MANY_ADDED" /> tab ditambahkan, <ph name="ANY_CLOSED" /> ditutup}}</translation>
-<translation id="8631711675211020168">Semua orang akan segera kehilangan akses ke grup tab <ph name="GROUP_NAME" />, dan grup tersebut akan dihapus dari semua perangkat</translation>
 <translation id="8633025649649592204">Aktivitas terbaru</translation>
-<translation id="8635399646025169806">Simpan grup tab?</translation>
 <translation id="870736955561925754">Tutup tab dan hapus grup?</translation>
 <translation id="8714939927607906138">Harga yang lebih rendah</translation>
 <translation id="8730621377337864115">Selesai</translation>

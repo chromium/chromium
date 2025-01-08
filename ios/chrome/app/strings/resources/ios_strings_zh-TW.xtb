@@ -25,6 +25,7 @@
 <translation id="1081932398873105675">{count,plural, =1{{count} 個分頁}other{{count} 個分頁}}</translation>
 <translation id="1084365883616172403">已順利發布到 Facebook。</translation>
 <translation id="1085677983426914530">無法開啟「<ph name="FILENAME" />」</translation>
+<translation id="1086468407802688066">這個帳戶 (<ph name="USER_EMAIL" />) 是由 <ph name="HOSTED_DOMAIN" /> 管理，管理者可查看部分資訊。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="1096992026380844478">系統會根據上次的備份記錄還原同步處理設定。<ph name="BEGIN_LINK" />查看可以同步處理的內容<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">一律翻譯<ph name="LANGUAGE" /></translation>
 <translation id="1108938384783527433">同步處理歷史記錄</translation>
@@ -83,6 +84,7 @@
 <translation id="1335767868357998043">選擇網址列的位置</translation>
 <translation id="1347468774581902829">管理活動</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
+<translation id="1358106883354237005">代管帳戶</translation>
 <translation id="1358214951266274152">前往你複製的連結</translation>
 <translation id="1360432990279830238">要登出並關閉同步處理功能嗎？</translation>
 <translation id="1363028406613469049">追蹤</translation>
@@ -285,6 +287,7 @@
 <translation id="2214453882118345682">使用相機購物、翻譯及辨識所見內容。</translation>
 <translation id="2220529011494928058">回報問題</translation>
 <translation id="2223461067862937305">建立 QR code</translation>
+<translation id="2229345671837147090">遠端分頁方格</translation>
 <translation id="2230173723195178503">已載入網頁</translation>
 <translation id="2236949375853147973">我的活動</translation>
 <translation id="2240256190924001613">有可用的組態設定檔</translation>
@@ -651,6 +654,7 @@
 <translation id="3992684624889376114">關於本頁</translation>
 <translation id="3994422733891749358">選擇要接收的通知</translation>
 <translation id="3994522032746736727">以「<ph name="EMAIL" />」身分登入</translation>
+<translation id="3994911892367422121">我知道了</translation>
 <translation id="3995521777587992544">網頁載入進度列，已載入 <ph name="EMAIL" />。</translation>
 <translation id="3997522473364371632">系統管理員已停用分享密碼功能。</translation>
 <translation id="4002066346123236978">標題</translation>
@@ -695,6 +699,7 @@
 <translation id="4183350924949589798">想要加強安全性嗎？</translation>
 <translation id="4184063163998877398">{count,plural, =1{有 {count} 組低強度密碼}other{有 {count} 組低強度密碼}}</translation>
 <translation id="4197456013861852807">{count,plural, =1{這 {count} 個項目只會儲存到這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶 ({email})。}other{這 {count} 個項目只會儲存到這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶 ({email})。}}</translation>
+<translation id="4207873326995387292">瀏覽器資訊</translation>
 <translation id="421070604241073551">開啟時，資料會儲存到 Google 帳戶；關閉後，資料只會儲存到這部裝置。</translation>
 <translation id="4224534474590365556">要關閉 99 個以上的閒置分頁嗎？</translation>
 <translation id="422474357428465195">你有多個密碼問題，可能導致安全性風險。</translation>
@@ -762,6 +767,7 @@
 <translation id="4495516234578759322">尋找下一個項目</translation>
 <translation id="4502423230170890588">從這個裝置中移除</translation>
 <translation id="4508750114462689118">關閉登入提示</translation>
+<translation id="4517684186578051919">裝置資訊</translation>
 <translation id="4520798012560649652">進一步瞭解無痕模式</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} 個書籤}other{{count} 個書籤}}</translation>
 <translation id="4525629404718770519">顯示連結預覽</translation>
@@ -798,6 +804,7 @@
 <translation id="4651927776207937667">{count,plural, =1{1 分鐘後隱藏}other{{count} 分鐘後隱藏}}</translation>
 <translation id="4652817563047461855">確保密碼安全、檢查密碼是否外洩，並取得相關建議，保障上網安全。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">儲存</translation>
+<translation id="466307903888586355">貴機構已禁止儲存檔案</translation>
 <translation id="4668929960204016307">、</translation>
 <translation id="4669618761237477717">貴機構要求你使用私密瀏覽模式。在無痕模式下，系統不會同步分頁群組。
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -969,6 +976,7 @@
 <translation id="5444892875087332195">書籤</translation>
 <translation id="5452354193031718372">使用高強度密碼</translation>
 <translation id="5454211924362324495">如果不希望他人使用你的密碼，請<ph name="BEGIN_LINK" />前往 <ph name="WEBSITE" /> 變更密碼<ph name="END_LINK" /></translation>
+<translation id="5454723301413569630">這個帳戶 (<ph name="USER_EMAIL" />) 是由 <ph name="HOSTED_DOMAIN" /> 管理，管理者可查看部分資訊，包括：</translation>
 <translation id="5457082343331641453">加入更多搜尋字詞</translation>
 <translation id="5457226814769348910">開啟離線版本</translation>
 <translation id="5478327362747197944">按一下網頁上的日期，即可直接建立日曆活動。</translation>
@@ -1271,6 +1279,7 @@
 <translation id="6641465290890659327">分享密碼副本</translation>
 <translation id="6642362222295953972">切換至現有分頁</translation>
 <translation id="6644512095122093795">顯示儲存密碼的選項</translation>
+<translation id="664573288952458293">一般分頁方格</translation>
 <translation id="6645899968535965230">QR 圖碼：<ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">系統會將你造訪的網址傳送給 Google，預測你接下來可能會前往的網站</translation>
 <translation id="6657585470893396449">密碼</translation>
@@ -1371,6 +1380,7 @@
 <translation id="7102005569666697658">下載中… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">「選單」→「設定」→「付款方式」</translation>
 <translation id="7108338896283013870">隱藏</translation>
+<translation id="7128693485119315539">貴機構可能需要查看及管理與代管帳戶相關聯的瀏覽資料，例如瀏覽記錄和密碼。</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">無法使用相機</translation>
 <translation id="7141960840225504692">系統將關閉分頁並刪除瀏覽資料</translation>
@@ -1661,6 +1671,7 @@
 <translation id="8407669440184693619">找不到這個網站的密碼</translation>
 <translation id="8407831512155324054">你的密碼強度夠高</translation>
 <translation id="842523302461531262">在「設定」中設為預設…</translation>
+<translation id="8425826545759040372">無痕分頁方格</translation>
 <translation id="8428045167754449968">鄉/鎮/市/區</translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8428634594422941299">我知道了</translation>
@@ -1764,6 +1775,7 @@
 <translation id="8813277370772331957">稍後提醒我</translation>
 <translation id="8814719628147284151">繼續</translation>
 <translation id="8820817407110198400">書籤</translation>
+<translation id="8822421075653507124">貴機構可能需要查看這部裝置的作業系統、瀏覽器、設定的相關資訊，以及裝置上安裝的軟體，確保裝置能安全使用。</translation>
 <translation id="8825562130641217944">取得書籤、密碼等內容。</translation>
 <translation id="8827154289515190290">現在可將最愛的瀏覽器設為 iOS 預設瀏覽器</translation>
 <translation id="8831208860914609320">關閉所有閒置分頁</translation>

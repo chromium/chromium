@@ -104,9 +104,6 @@ Silsəniz, hər kəs "<ph name="TITLE_OF_GROUP" />" tab qrupuna girişi dərhal 
 <translation id="5494920125229734069">Hamısını seçin</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> tabdan ibarət tab qrupunu bağlayın, rəng <ph name="COLOR_NAME" />.}other{<ph name="TABS_COUNT_MANY" /> tabdan ibarət tab qrupunu bağlayın, rəng <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Mağaza məlumatlarına baxın, seçim ekranın yuxarı hissəsində əlçatandır</translation>
-<translation id="5615302411300498438">Sonra tab əlavə etmək üçün bu qrupu saxlayın və ya çıxın.
-
-Çıxsanız, "<ph name="TITLE_OF_GROUP" />" tab qrupuna girişi dərhal itirəcəksiniz.</translation>
 <translation id="5627941783489838464">Tab yeniləməsi yoxdur</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Tabı bərpa edin}other{Tabları bərpa edin}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome'dan <ph name="TABS_COUNT_ONE" /> keçid}other{Chrome'dan <ph name="TABS_COUNT_MANY" /> keçid}}</translation>
@@ -117,7 +114,6 @@ Silsəniz, hər kəs "<ph name="TITLE_OF_GROUP" />" tab qrupuna girişi dərhal 
 <translation id="6040143037577758943">Qapat</translation>
 <translation id="6051432659151380973">Tab qruplarınız avtomatik olaraq yadda saxlanılır</translation>
 <translation id="6054741997831917303">Bu element bu yaxınlarda <ph name="PREVIOUS_PRICE" /> qiymətindən <ph name="NEW_PRICE" /> qiymətinə endirilib</translation>
-<translation id="6082313992897617440"><ph name="GROUP_NAME" /> tab qrupuna girişi dərhal itirəcəksiniz</translation>
 <translation id="6109251075362363230">Ən son istifadə olunan nüsxə istisna olmaqla bütün dublikat tablar da artıq arxivlənəcək.</translation>
 <translation id="6193448654517602979">Tablar seçin</translation>
 <translation id="6228793724645064692">(mağaza reytinqi)</translation>
@@ -145,9 +141,9 @@ Silsəniz, hər kəs "<ph name="TITLE_OF_GROUP" />" tab qrupuna girişi dərhal 
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> Seçilib</translation>
 <translation id="7326879924029668159">Qaytarma siyasətinə və digər məlumatlara baxın</translation>
 <translation id="7352298686197644113">Açıq tablarda hansı əşyanın qiymətinin daha aşağı olduğuna baxın</translation>
-<translation id="7421293530411019405">Tab qrupundan çıxırsınız?</translation>
 <translation id="7452985128687107478">Tab qrupları bütün cihazlarınızda avtomatik olaraq yaddaşda saxlanılır və güncəllənir</translation>
 <translation id="747459581954555080">Hamısını bərpa edin</translation>
+<translation id="750886945254958667">Sonra tab əlavə etmək üçün bu qrupu saxlayın və ya artıq ona daxil olmaq istəmirsinizsə, çıxın</translation>
 <translation id="753732157349120914">Tab Keçiricisi</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Google'dan <ph name="REVIEWS_COUNT_ONE" /> rəy}other{Google'dan <ph name="REVIEWS_COUNT_MANY" /> rəy}}</translation>
 <translation id="7559245342362162951">Qrup tabını tam ekran cədvəlində göstərin</translation>
@@ -177,9 +173,7 @@ Silsəniz, hər kəs "<ph name="TITLE_OF_GROUP" />" tab qrupuna girişi dərhal 
 <translation id="8398929769197326728">Yeni Qovluq - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Ayarlar</translation>
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tab əlavə edilib, <ph name="ANY_CLOSED" /> tab bağlanıb}other{<ph name="MANY_ADDED" /> tab əlavə edilib, <ph name="ANY_CLOSED" /> tab bağlanıb}}</translation>
-<translation id="8631711675211020168">Hər kəs <ph name="GROUP_NAME" /> tab qrupuna girişi dərhal itirəcək və o, bütün cihazlardan silinəcək</translation>
 <translation id="8633025649649592204">Son fəaliyyət</translation>
-<translation id="8635399646025169806">Tab qrupu saxlanılsın?</translation>
 <translation id="870736955561925754">Tab bağlansın və tab qrupu silinsin?</translation>
 <translation id="8714939927607906138">Aşağı qiymət</translation>
 <translation id="8730621377337864115">Tamamdır</translation>

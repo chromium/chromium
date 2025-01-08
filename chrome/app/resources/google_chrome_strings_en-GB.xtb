@@ -15,7 +15,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="110877069173485804">This is your Chrome</translation>
 <translation id="1125124144982679672">Who's using Chrome?</translation>
 <translation id="1142745911746664600">Can't update Chrome</translation>
-<translation id="1149651794389918149">Sign in to Chrome. If you'd just like to sign in an account once, you can <ph name="GUEST_LINK_BEGIN" />use the device as guest<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">About ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Open in Chrome</translation>
 <translation id="1157985233335035034">Recent languages</translation>
@@ -103,7 +102,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2216543877350048334">To remove your Google Account from Chrome, sign out</translation>
 <translation id="2236949375853147973">My Activity</translation>
 <translation id="223889379102603431">Information about how Chrome manages its root certificates</translation>
-<translation id="2258103955319320201">To access your Chrome browser across all your devices, sign in, then turn on sync</translation>
 <translation id="2290014774651636340">Google API keys are missing. Some functionality of Google Chrome will be disabled.</translation>
 <translation id="2290095356545025170">Are you sure you want to uninstall Google Chrome?</translation>
 <translation id="2309047409763057870">This is a secondary installation of Google Chrome, and cannot be made your default browser.</translation>
@@ -619,7 +617,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8550334526674375523">This work profile is completely separate from your personal profile.</translation>
 <translation id="8555465886620020932">Service error: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Search language list</translation>
-<translation id="8571790202382503603">With Chrome profiles you can separate all of your Chrome things. This makes it easier to split between work and fun.</translation>
 <translation id="8601359445272098721">New! You can translate both text and images on your screen by selecting the 'translate screen' button</translation>
 <translation id="8614913330719544658">Google Chrome is unresponsive. Relaunch now?</translation>
 <translation id="861702415419836452">Chrome needs permission to access your camera to create a 3D map of your surroundings</translation>
@@ -629,7 +626,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">It also controls what page is shown when you start Chrome.</translation>
 <translation id="8686817260976772516">With Chrome profiles you can separate all of your Chrome stuff. Create profiles for friends and family, or split between work and fun.</translation>
-<translation id="8708721325840166640">Your passwords and other Chrome data are saved in your Google Account, and will be removed from this device. To use them in the future, sign back in to Chrome.</translation>
 <translation id="8712767363896337380">Nearly up to date! Relaunch Chrome to finish updating.</translation>
 <translation id="8718062187489036808">Sign out of Chrome</translation>
 <translation id="873133009373065397">Google Chrome cannot determine or set the default browser</translation>

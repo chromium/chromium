@@ -274,6 +274,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1908992311423394684">Instalare nouă</translation>
 <translation id="1915307458270490472">Încheie apelul</translation>
 <translation id="1918022425394817322">Camera foto este aliniată cu colțul din dreapta sus</translation>
+<translation id="1920390473494685033">Agendă</translation>
 <translation id="1923539912171292317">Clicuri automate</translation>
 <translation id="1925320505152357008">mai puțin de 1 minut</translation>
 <translation id="1928739107511554905">Pentru a obține actualizarea, folosește ecranul tactil ca să repornești Chromebookul cu tastatura atașată.</translation>
@@ -530,6 +531,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2847759467426165163">Proiectează pe</translation>
 <translation id="2848120746144143659">Apasă pe Enter pentru a realiza o captură de ecran completă</translation>
 <translation id="2849936225196189499">Critic</translation>
+<translation id="2850207700020959936">Aplicațiile pot accesa camera foto</translation>
 <translation id="2860184359326882502">Cea mai bună potrivire</translation>
 <translation id="2865888419503095837">Informații despre rețea</translation>
 <translation id="2869095047958348710"><ph name="DAY_OF_WEEK" /> trecută</translation>
@@ -584,6 +586,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="304417730895741346">Aplicațiile fixate și deschise sunt pe raft. Pentru a fixa o aplicație pe raft, dă clic dreapta pe aplicație sau atinge touchpadul cu două degete.</translation>
 <translation id="3045488863354895414">Bună!</translation>
 <translation id="3047761520276763270">Încearcă să rostești:</translation>
+<translation id="3053407068093039599">Activează/dezactivează accesul la camera foto</translation>
 <translation id="3055162170959710888">Ai folosit acest dispozitiv <ph name="USED_TIME" /> astăzi</translation>
 <translation id="3062298103034426069">Nu se acceptă</translation>
 <translation id="3068622547379332530">Versiunea <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -884,6 +887,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="4042660782729322247">Permiți accesul la ecran</translation>
 <translation id="404437169852192935">Actualizările s-au încheiat</translation>
 <translation id="4049230407053723315">Setări rapide</translation>
+<translation id="4054070260844648638">Vizibil pentru toată lumea</translation>
 <translation id="4057003836560082631">Fila de browser <ph name="INDEX" /> din <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4059696795118403455">Pentru a vedea sugestii personalizate de activități de făcut în continuare, apasă tasta Afișează ferestrele</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Dezac., o apl.}few{Dezac., # apl.}other{Dezac., # apl.}}</translation>
@@ -1407,7 +1411,6 @@ Niciun dispozitiv conectat.</translation>
 <translation id="5727460725221669831">Dacă ai uitat parola sau ai schimbat recent parola Contului Google, încearcă să recuperezi acest utilizator.</translation>
 <translation id="5733630091161562207">Notificare de bun venit</translation>
 <translation id="573413375004481890">Acest dispozitiv nu acceptă toate afișajele, prin urmare unul a fost deconectat</translation>
-<translation id="5740328398383587084">Trimitere în apropiere</translation>
 <translation id="574392208103952083">Mediu</translation>
 <translation id="5744083938413354016">Tragere prin atingere</translation>
 <translation id="5745612484876805746">Lumina de noapte se activează automat la apus</translation>
@@ -1484,6 +1487,7 @@ Niciun dispozitiv conectat.</translation>
 <translation id="5990992855591814753">Rămâi pe drumul cel bun cu playlisturi personalizate pentru concentrare. Bucură-te de YouTube Music și YouTube, fără anunțuri, cu trei luni de YouTube Premium fără costuri. Se aplică condiții.</translation>
 <translation id="5998374579424866922">Dezactivează comenzile jocului</translation>
 <translation id="6000279412553873020">Chei, butoane și altele</translation>
+<translation id="6002122790816966947">Dispozitivele tale</translation>
 <translation id="6012623610530968780">Pagina <ph name="SELECTED_PAGE" /> din <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Evidențiază elementul următor de pe raft</translation>
 <translation id="6015573907265691211">Marchează ca finalizată</translation>
@@ -1800,6 +1804,7 @@ Instalare nouă</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> vrea să folosească <ph name="DEVICE_NAME" />. Activează comutatorul fizic pentru <ph name="DEVICE_NAME" /> al dispozitivului.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Asistent Google</translation>
 <translation id="7042322267639375032">Restrânge zona de stare</translation>
+<translation id="7042593542151411225">Aplicațiile nu pot accesa camera foto</translation>
 <translation id="7045033600005038336">Înlocuiești șablonul?</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> s-a deconectat</translation>
 <translation id="7055910611768509537">Creionul nu a fost folosit de mai mult de o săptămână</translation>
@@ -2375,6 +2380,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="9074432941673450836">Folosește aplicațiile pentru a face toate activitățile necesare pe <ph name="PRODUCT_NAME" />. Aplicațiile se găsesc în Lansator. Poți și să apeși tasta Lansator (deasupra tastei Shift din stânga) de pe tastatură.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9077515519330855811">Comenzi media, se redă <ph name="MEDIA_TITLE" /></translation>
+<translation id="9079012373317704997">Nu se poate activa de la distanță accesul la camera foto</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">Camera foto este aliniată cu colțul din stânga sus</translation>
 <translation id="9080132581049224423">Glisează în sus pentru a accesa pagina principală</translation>

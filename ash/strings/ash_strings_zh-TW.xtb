@@ -274,6 +274,7 @@
 <translation id="1908992311423394684">最新安裝</translation>
 <translation id="1915307458270490472">掛斷</translation>
 <translation id="1918022425394817322">攝影機已對齊右上角</translation>
+<translation id="1920390473494685033">聯絡人</translation>
 <translation id="1923539912171292317">自動點擊</translation>
 <translation id="1925320505152357008">還剩不到 1 分鐘</translation>
 <translation id="1928739107511554905">如要更新，請連接鍵盤並使用觸控螢幕重新啟動 Chromebook。</translation>
@@ -530,6 +531,7 @@
 <translation id="2847759467426165163">投放至</translation>
 <translation id="2848120746144143659">按下 Enter 鍵以擷取全螢幕截圖</translation>
 <translation id="2849936225196189499">重要</translation>
+<translation id="2850207700020959936">應用程式可存取相機</translation>
 <translation id="2860184359326882502">最符合的項目</translation>
 <translation id="2865888419503095837">網路資訊</translation>
 <translation id="2869095047958348710">剛過去的<ph name="DAY_OF_WEEK" /></translation>
@@ -584,6 +586,7 @@
 <translation id="304417730895741346">檔案櫃會顯示已固定及開啟的應用程式。如要將應用程式固定到檔案櫃，請在應用程式上按一下滑鼠右鍵，或在觸控板上用兩指輕觸應用程式。</translation>
 <translation id="3045488863354895414">午安，</translation>
 <translation id="3047761520276763270">試著說出：</translation>
+<translation id="3053407068093039599">開啟/關閉攝影機存取權</translation>
 <translation id="3055162170959710888">你今天的螢幕時間：<ph name="USED_TIME" /></translation>
 <translation id="3062298103034426069">不支援</translation>
 <translation id="3068622547379332530">版本 <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -882,6 +885,7 @@
 <translation id="4042660782729322247">你正在分享螢幕畫面</translation>
 <translation id="404437169852192935">更新服務已終止</translation>
 <translation id="4049230407053723315">快速設定</translation>
+<translation id="4054070260844648638">向所有人顯示</translation>
 <translation id="4057003836560082631">第 <ph name="INDEX" /> 個瀏覽器分頁，共 <ph name="TOTAL_COUNT" /> 個。<ph name="SITE_TITLE" />，<ph name="SITE_URL" /></translation>
 <translation id="4059696795118403455">如要查看個人化的後續事項建議，請按下視窗總覽鍵</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{1 個應用程式已關閉}other{# 個應用程式已關閉}}</translation>
@@ -1404,7 +1408,6 @@
 <translation id="5727460725221669831">如果你忘記密碼，或最近曾變更 Google 帳戶密碼，建議你復原這個使用者密碼。</translation>
 <translation id="5733630091161562207">歡迎通知</translation>
 <translation id="573413375004481890">這部裝置無法支援你的所有螢幕，因此其中一個畫面已中斷連線</translation>
-<translation id="5740328398383587084">鄰近分享</translation>
 <translation id="574392208103952083">中</translation>
 <translation id="5744083938413354016">輕觸拖曳</translation>
 <translation id="5745612484876805746">夜燈功能會在日落時自動開啟</translation>
@@ -1481,6 +1484,7 @@
 <translation id="5990992855591814753">聆聽個人化專注模式播放清單，專心處理手邊工作。免付費體驗 YouTube Premium 3 個月，享受零廣告的 YouTube Music 和 YouTube 服務。須遵守相關條款。</translation>
 <translation id="5998374579424866922">關閉遊戲控制選項</translation>
 <translation id="6000279412553873020">按鍵、按鈕等等</translation>
+<translation id="6002122790816966947">你的裝置</translation>
 <translation id="6012623610530968780">第 <ph name="SELECTED_PAGE" /> 頁 (共 <ph name="TOTAL_PAGE_NUM" /> 頁)</translation>
 <translation id="601304062528754300">醒目顯示檔案櫃中的下一個項目</translation>
 <translation id="6015573907265691211">標示為完成</translation>
@@ -1796,6 +1800,7 @@
 <translation id="7034025838182392395">「<ph name="APP_NAME" />」想要使用「<ph name="DEVICE_NAME" />」。請開啟裝置的實體<ph name="DEVICE_NAME" />開關。</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />，Google 助理</translation>
 <translation id="7042322267639375032">收合狀態區</translation>
+<translation id="7042593542151411225">應用程式無法存取攝影機</translation>
 <translation id="7045033600005038336">要取代範本嗎？</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> 已中斷連線</translation>
 <translation id="7055910611768509537">已超過一週未使用觸控筆</translation>
@@ -2370,6 +2375,7 @@
 <translation id="9074432941673450836">你可以在 <ph name="PRODUCT_NAME" /> 上使用應用程式處理大小事。如要尋找應用程式，可以使用啟動器。按下鍵盤的啟動器鍵 (位於左側 Shift 鍵上方) 也能開啟啟動器。</translation>
 <translation id="9074739597929991885">藍牙</translation>
 <translation id="9077515519330855811">媒體控制項，正在播放「<ph name="MEDIA_TITLE" />」</translation>
+<translation id="9079012373317704997">無法遠端開啟相機存取權</translation>
 <translation id="9079731690316798640">Wi-Fi：<ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">攝影機已對齊左上角</translation>
 <translation id="9080132581049224423">向上滑動即可開啟主畫面</translation>

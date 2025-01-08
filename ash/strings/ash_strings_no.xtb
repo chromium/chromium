@@ -274,6 +274,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1908992311423394684">Nylig installert</translation>
 <translation id="1915307458270490472">Legg på</translation>
 <translation id="1918022425394817322">Kameraet er festet til øvre høyre hjørne</translation>
+<translation id="1920390473494685033">Kontakter</translation>
 <translation id="1923539912171292317">Automatiske klikk</translation>
 <translation id="1925320505152357008">under 1 min</translation>
 <translation id="1928739107511554905">For å laste ned oppdateringen, bruk berøringsskjermen til å starte Chromebooken på nytt med tastaturet tilkoblet.</translation>
@@ -530,6 +531,7 @@ Ellers blir den innebygde styreflaten slått på igjen om <ph name="TIMEOUT_SECO
 <translation id="2847759467426165163">Cast til</translation>
 <translation id="2848120746144143659">Trykk på Enter for å ta et skjermbilde av hele skjermen</translation>
 <translation id="2849936225196189499">Kritisk</translation>
+<translation id="2850207700020959936">Apper har tilgang til kameraet</translation>
 <translation id="2860184359326882502">Beste treff</translation>
 <translation id="2865888419503095837">Nettverksinformasjon</translation>
 <translation id="2869095047958348710">Forrige <ph name="DAY_OF_WEEK" /></translation>
@@ -584,6 +586,7 @@ Ellers blir den innebygde styreflaten slått på igjen om <ph name="TIMEOUT_SECO
 <translation id="304417730895741346">De festede og åpne appene dine er på hyllen. For å feste en app på hyllen, høyreklikk på appen eller trykk på styreflaten med to fingre.</translation>
 <translation id="3045488863354895414">God ettermiddag</translation>
 <translation id="3047761520276763270">Prøv å si:</translation>
+<translation id="3053407068093039599">Slå på/av kameratilgang</translation>
 <translation id="3055162170959710888">Du har brukt denne enheten i <ph name="USED_TIME" /> i dag</translation>
 <translation id="3062298103034426069">Støttes ikke</translation>
 <translation id="3068622547379332530">Versjon <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -884,6 +887,7 @@ Koble enheten til strøm.</translation>
 <translation id="4042660782729322247">Du deler skjermen din</translation>
 <translation id="404437169852192935">Enheten får ikke oppdateringer lenger</translation>
 <translation id="4049230407053723315">Hurtiginnstillinger</translation>
+<translation id="4054070260844648638">Synlig for alle</translation>
 <translation id="4057003836560082631">Nettleserfane <ph name="INDEX" /> av <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4059696795118403455">For å se personlig tilpassede forslag til ting du kan gjøre videre, trykk på Oversiktsmodus-tasten</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Av for én app}other{Av for # apper}}</translation>
@@ -1407,7 +1411,6 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="5727460725221669831">Hvis du har glemt passordet ditt eller nylig endret passordet for Google-kontoen din, kan du prøve å gjenopprette denne brukeren.</translation>
 <translation id="5733630091161562207">Velkomstvarsel</translation>
 <translation id="573413375004481890">Enheten kunne ikke støtte alle skjermene dine, så en av dem ble koblet fra</translation>
-<translation id="5740328398383587084">Nærdeling</translation>
 <translation id="574392208103952083">Medium</translation>
 <translation id="5744083938413354016">Trykk-og-dra</translation>
 <translation id="5745612484876805746">Nattlys slås på automatisk ved solnedgang</translation>
@@ -1484,6 +1487,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="5990992855591814753">Hold deg på rett spor med personlig tilpassede fokus-spillelister. Få YouTube Music og YouTube uten annonser med 3 måneder med YouTube Premium kostnadsfritt. Vilkår gjelder.</translation>
 <translation id="5998374579424866922">Slå av spillkontroller</translation>
 <translation id="6000279412553873020">Taster, knapper med mer</translation>
+<translation id="6002122790816966947">Enhetene dine</translation>
 <translation id="6012623610530968780">Side <ph name="SELECTED_PAGE" /> av <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Fremhev neste element på hyllen</translation>
 <translation id="6015573907265691211">Merk som fullført</translation>
@@ -1800,6 +1804,7 @@ Nylig installert</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> vil bruke <ph name="DEVICE_NAME" />. Slå på enhetens fysiske <ph name="DEVICE_NAME" />-bryter.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" /> – Google Assistent</translation>
 <translation id="7042322267639375032">Skjul statusområdet</translation>
+<translation id="7042593542151411225">Apper kan ikke bruke kameraet</translation>
 <translation id="7045033600005038336">Vil du erstatte malen?</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> er koblet fra</translation>
 <translation id="7055910611768509537">Pekepennen har ikke vært brukt på over en uke</translation>
@@ -2375,6 +2380,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="9074432941673450836">Bruk apper til å gjøre alt du trenger, på <ph name="PRODUCT_NAME" />. Du finner appene dine i appoversikten. Du kan også trykke på Appoversikt-tasten (over den venstre Shift-tasten) på tastaturet.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9077515519330855811">Mediekontroller – <ph name="MEDIA_TITLE" /> spilles nå</translation>
+<translation id="9079012373317704997">Kan ikke slå på kameratilgang eksternt</translation>
 <translation id="9079731690316798640">Wifi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">Kameraet er festet til øvre venstre hjørne</translation>
 <translation id="9080132581049224423">Sveip opp for å gå til startskjermen</translation>

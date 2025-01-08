@@ -274,6 +274,7 @@
 <translation id="1908992311423394684">새로 설치됨</translation>
 <translation id="1915307458270490472">종료</translation>
 <translation id="1918022425394817322">카메라 미리보기가 오른쪽 상단으로 맞춰졌습니다</translation>
+<translation id="1920390473494685033">연락처</translation>
 <translation id="1923539912171292317">자동 클릭</translation>
 <translation id="1925320505152357008">1분 미만</translation>
 <translation id="1928739107511554905">업데이트하려면 키보드가 연결된 상태로 터치스크린을 사용하여 Chromebook을 다시 시작하세요.</translation>
@@ -530,6 +531,7 @@
 <translation id="2847759467426165163">전송할 기기</translation>
 <translation id="2848120746144143659">전체 화면 스크린샷을 캡처하려면 Enter를 누르세요</translation>
 <translation id="2849936225196189499">중요</translation>
+<translation id="2850207700020959936">앱이 카메라에 액세스할 수 있음</translation>
 <translation id="2860184359326882502">가장 일치하는 결과</translation>
 <translation id="2865888419503095837">네트워크 정보</translation>
 <translation id="2869095047958348710">지난 <ph name="DAY_OF_WEEK" /></translation>
@@ -584,6 +586,7 @@
 <translation id="304417730895741346">앱 표시줄에서 고정된 앱과 열려 있는 앱을 확인할 수 있습니다. 앱 표시줄에 앱을 고정하려면 앱을 마우스 오른쪽 버튼으로 클릭하거나 두 손가락으로 터치패드를 탭합니다.</translation>
 <translation id="3045488863354895414">즐거운 오후 보내세요</translation>
 <translation id="3047761520276763270">다음과 같이 말해 보세요.</translation>
+<translation id="3053407068093039599">카메라 액세스 사용 설정/중지</translation>
 <translation id="3055162170959710888">오늘 이 기기를 <ph name="USED_TIME" /> 동안 사용했습니다.</translation>
 <translation id="3062298103034426069">지원되지 않음</translation>
 <translation id="3068622547379332530">버전 <ph name="VERSION_NAME" />(<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /><ph name="PROCESSOR_VARIATION" /></translation>
@@ -884,6 +887,7 @@
 <translation id="4042660782729322247">화면 공유 중</translation>
 <translation id="404437169852192935">업데이트 종료됨</translation>
 <translation id="4049230407053723315">빠른 설정</translation>
+<translation id="4054070260844648638">모두에게 공개</translation>
 <translation id="4057003836560082631">브라우저 탭 <ph name="INDEX" />/<ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4059696795118403455">다음에 할 일을 위한 맞춤 추천을 보려면 전체보기 키를 누르세요.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{앱 1개에서 사용 중지됨}other{앱 #개에서 사용 중지됨}}</translation>
@@ -1407,7 +1411,6 @@
 <translation id="5727460725221669831">비밀번호를 잊어버렸거나 최근에 Google 계정 비밀번호를 변경한 경우 이 사용자를 복구해 보세요.</translation>
 <translation id="5733630091161562207">환영 알림</translation>
 <translation id="573413375004481890">사용 중인 일부 디스플레이가 기기에서 지원되지 않아 1개 디스플레이의 연결이 끊김</translation>
-<translation id="5740328398383587084">Nearby Share</translation>
 <translation id="574392208103952083">보통</translation>
 <translation id="5744083938413354016">탭 드래그</translation>
 <translation id="5745612484876805746">일몰 시 야간 조명이 자동으로 켜짐</translation>
@@ -1484,6 +1487,7 @@
 <translation id="5990992855591814753">맞춤설정된 집중에 도움이 되는 재생목록으로 흐트러짐 없이 공부하세요. YouTube Premium을 3개월간 무료로 체험하고 YouTube Music 및 YouTube를 광고 없이 즐기세요. 약관이 적용됩니다.</translation>
 <translation id="5998374579424866922">게임 컨트롤 사용 중지</translation>
 <translation id="6000279412553873020">키, 버튼 등</translation>
+<translation id="6002122790816966947">내 기기</translation>
 <translation id="6012623610530968780"><ph name="SELECTED_PAGE" />/<ph name="TOTAL_PAGE_NUM" />페이지</translation>
 <translation id="601304062528754300">앱 표시줄의 다음 항목 강조 표시</translation>
 <translation id="6015573907265691211">완료로 표시</translation>
@@ -1800,6 +1804,7 @@
 <translation id="7034025838182392395"><ph name="APP_NAME" />에서 <ph name="DEVICE_NAME" /> 기기를 사용하려고 합니다. 기기의 물리적 <ph name="DEVICE_NAME" /> 스위치를 켜세요.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google 어시스턴트</translation>
 <translation id="7042322267639375032">상태 영역 접기</translation>
+<translation id="7042593542151411225">앱이 카메라에 액세스할 수 없음</translation>
 <translation id="7045033600005038336">템플릿을 교체하시겠습니까?</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> 연결 해제됨</translation>
 <translation id="7055910611768509537">1주일 넘게 스타일러스가 사용되지 않았습니다.</translation>
@@ -2375,6 +2380,7 @@
 <translation id="9074432941673450836">앱을 사용하여 <ph name="PRODUCT_NAME" />에서 필요한 모든 작업을 수행해 보세요. 런처에서 앱을 찾을 수 있습니다. 키보드의 왼쪽 Shift 키 위에 있는 런처 키를 누를 수도 있습니다.</translation>
 <translation id="9074739597929991885">블루투스</translation>
 <translation id="9077515519330855811">미디어 제어 기능, 현재 <ph name="MEDIA_TITLE" /> 재생 중</translation>
+<translation id="9079012373317704997">카메라 액세스를 원격으로 사용 설정할 수 없음</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">카메라 미리보기가 왼쪽 상단으로 맞춰졌습니다</translation>
 <translation id="9080132581049224423">위로 스와이프하여 홈으로 이동</translation>

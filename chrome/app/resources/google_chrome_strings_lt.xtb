@@ -15,7 +15,6 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="110877069173485804">Tai jūsų „Chrome“</translation>
 <translation id="1125124144982679672">Kas naudoja „Chrome“?</translation>
 <translation id="1142745911746664600">Nepavyko atnaujinti „Chrome“</translation>
-<translation id="1149651794389918149">Prisijunkite prie „Chrome“. Jei prie paskyros norite prisijungti tik vieną kartą, galite <ph name="GUEST_LINK_BEGIN" />naudoti įrenginį kaip svečias<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">Apie „ChromeOS“</translation>
 <translation id="1154147086299354128">&amp;Atidaryti naudojant „Chrome“</translation>
 <translation id="1157985233335035034">Naujausios kalbos</translation>
@@ -103,7 +102,6 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="2216543877350048334">Jei norite pašalinti „Google“ paskyrą iš „Chrome“, atsijunkite</translation>
 <translation id="2236949375853147973">Mano veikla</translation>
 <translation id="223889379102603431">Informacija apie tai, kaip „Chrome“ tvarko šakninius sertifikatus</translation>
-<translation id="2258103955319320201">Jei norite pasiekti „Chrome“ naršyklės duomenis visuose savo įrenginiuose, prisijunkite ir įjunkite sinchronizavimą</translation>
 <translation id="2290014774651636340">Trūksta „Google“ API raktų. Bus išjungtos kai kurios „Google Chrome“ funkcijos.</translation>
 <translation id="2290095356545025170">Ar tikrai norite pašalinti „Google Chrome“?</translation>
 <translation id="2309047409763057870">Tai yra antrinis „Google Chrome“ diegimas, todėl ji negali būti nustatyta kaip numatytoji naršyklė.</translation>
@@ -619,7 +617,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="8550334526674375523">Šis darbo profilis visiškai atskirtas nuo jūsų asmeninio profilio.</translation>
 <translation id="8555465886620020932">Paslaugos klaida: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Ieškoti kalbų sąrašo</translation>
-<translation id="8571790202382503603">Naudodami „Chrome“ profilius galite atskirti visus savo „Chrome“ duomenis. Galėsite lengviau atskirti darbą ir pramogas.</translation>
 <translation id="8601359445272098721">Naujiena! Galite versti tekstą ir vaizdus ekrane pasirinkę mygtuką „Išversti ekrano turinį“</translation>
 <translation id="8614913330719544658">„Google Chrome“ neatsako. Paleisti iš naujo dabar?</translation>
 <translation id="861702415419836452">„Chrome“ reikia leidimo naudoti fotoaparatą jūsų aplinkos 3D žemėlapiui kurti</translation>
@@ -629,7 +626,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="8669527147644353129">„Google Chrome“ pagalbos priemonė</translation>
 <translation id="8679801911857917785">Ji taip pat kontroliuoja, koks puslapis rodomas, kai paleidžiate „Chrome“.</translation>
 <translation id="8686817260976772516">Naudodami „Chrome“ profilius galite atskirti visus savo „Chrome“ duomenis. Sukurkite profilius draugams ir šeimos nariams arba atskirkite darbą ir pramogas</translation>
-<translation id="8708721325840166640">Slaptažodžiai ir kiti „Chrome“ duomenys išsaugomi „Google“ paskyroje ir bus pašalinti iš šio įrenginio. Jei ateityje norėsite juos naudoti, vėl prisijunkite prie „Chrome“.</translation>
 <translation id="8712767363896337380">Beveik atnaujinta! Paleiskite „Chrome“ iš naujo, kad būtų užbaigtas atnaujinimas.</translation>
 <translation id="8718062187489036808">Atsijungti nuo „Chrome“</translation>
 <translation id="873133009373065397">„Google Chrome“ nepavyko aptikti arba nustatyti numatytosios naršyklės</translation>

@@ -274,6 +274,7 @@
 <translation id="1908992311423394684">Ново инсталирање</translation>
 <translation id="1915307458270490472">Прекини везу</translation>
 <translation id="1918022425394817322">Камера је уклопљена у горњи десни угао</translation>
+<translation id="1920390473494685033">Контакти</translation>
 <translation id="1923539912171292317">Аутоматски кликови</translation>
 <translation id="1925320505152357008">мање од 1 мин</translation>
 <translation id="1928739107511554905">Да бисте преузели ажурирање, рестартујте Chromebook са прикљученом тастатуром на додирном екрану.</translation>
@@ -886,6 +887,7 @@
 <translation id="4042660782729322247">Делите екран</translation>
 <translation id="404437169852192935">Ажурирања су завршена</translation>
 <translation id="4049230407053723315">Брза подешавања</translation>
+<translation id="4054070260844648638">Видљиво свима</translation>
 <translation id="4057003836560082631"><ph name="INDEX" />. картица прегледача од <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4059696795118403455">Да бисте видели персонализоване предлоге за предложене активности, притисните тастер за приказ свих прозора</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Иск. за апл.}one{Иск. за # апл.}few{Иск. за # апл.}other{Иск. за # апл.}}</translation>
@@ -1410,7 +1412,6 @@
 <translation id="5727460725221669831">Ако сте недавно заборавили лозинку или променили лозинку за Google налог, пробајте да вратите приступ свом корисничком налогу.</translation>
 <translation id="5733630091161562207">Обавештење о добродошлици</translation>
 <translation id="573413375004481890">Овај уређај не може да подржава све ваше екране, па је веза са једним од њих прекинута</translation>
-<translation id="5740328398383587084">Дељење у близини</translation>
 <translation id="574392208103952083">Средња</translation>
 <translation id="5744083938413354016">Превлачење додиром</translation>
 <translation id="5745612484876805746">Ноћно светло се аутоматски укључује када сунце зађе</translation>
@@ -1487,6 +1488,7 @@
 <translation id="5990992855591814753">Останите на правом путу уз персонализоване фокусиране плејлисте. Набавите YouTube Music и YouTube без огласа уз 3 месеца YouTube Premium-а без накнаде. Важе услови.</translation>
 <translation id="5998374579424866922">Искључиte контроле игара</translation>
 <translation id="6000279412553873020">Тастери, дугмад и друго</translation>
+<translation id="6002122790816966947">Уређаји</translation>
 <translation id="6012623610530968780"><ph name="SELECTED_PAGE" />. страница од <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Истакните следећу ставку на полици</translation>
 <translation id="6015573907265691211">Означите као завршено</translation>

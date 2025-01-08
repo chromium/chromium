@@ -274,6 +274,7 @@
 <translation id="1908992311423394684">Нещодавно встановлений додаток</translation>
 <translation id="1915307458270490472">Закрити</translation>
 <translation id="1918022425394817322">Зображення з камери закріплено у верхньому правому куті</translation>
+<translation id="1920390473494685033">Контакти</translation>
 <translation id="1923539912171292317">Автоматичні кліки</translation>
 <translation id="1925320505152357008">менше ніж 1 хв</translation>
 <translation id="1928739107511554905">Щоб завантажити оновлення, перезапустіть Chromebook із під’єднаною клавіатурою, використовуючи сенсорний екран.</translation>
@@ -886,6 +887,7 @@
 <translation id="4042660782729322247">Ви ділитеся екраном</translation>
 <translation id="404437169852192935">Система більше не оновлюватиметься</translation>
 <translation id="4049230407053723315">Швидкі налаштування</translation>
+<translation id="4054070260844648638">Пристрій видимий усім</translation>
 <translation id="4057003836560082631">Вкладка веб-переглядача: <ph name="INDEX" /> з <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4059696795118403455">Щоб переглянути персоналізовані пропозиції щодо подальших дій, натисніть клавішу огляду</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Вимк. для додатка}one{Вимк. для # додатка}few{Вимк. для # додатків}many{Вимк. для # додатків}other{Вимк. для # додатка}}</translation>
@@ -1409,7 +1411,6 @@
 <translation id="5727460725221669831">Якщо ви забули або нещодавно змінили пароль облікового запису Google, спробуйте відновити його.</translation>
 <translation id="5733630091161562207">Привітальне сповіщення</translation>
 <translation id="573413375004481890">Цей пристрій не може підтримувати всі екрани, тому один із них відключено</translation>
-<translation id="5740328398383587084">Обмін поблизу</translation>
 <translation id="574392208103952083">Середній</translation>
 <translation id="5744083938413354016">Перетягування дотиком</translation>
 <translation id="5745612484876805746">Нічний екран увімкнеться автоматично після заходу сонця</translation>
@@ -1486,6 +1487,7 @@
 <translation id="5990992855591814753">Зберігайте концентрацію уваги завдяки персоналізованим спискам відтворення для зосередження. Отримайте YouTube Music і YouTube без реклами з безкоштовною пробною підпискою YouTube Premium на 3 місяці. Діють умови.</translation>
 <translation id="5998374579424866922">Вимкнути елементи керування іграми</translation>
 <translation id="6000279412553873020">Клавіші, кнопки тощо</translation>
+<translation id="6002122790816966947">Ваші пристрої</translation>
 <translation id="6012623610530968780">Сторінка <ph name="SELECTED_PAGE" /> з <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Виділити наступний елемент на панелі запуску</translation>
 <translation id="6015573907265691211">Позначити як виконане</translation>

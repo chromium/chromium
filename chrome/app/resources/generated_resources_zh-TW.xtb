@@ -228,7 +228,6 @@
 <translation id="1151917987301063366">一律允許 <ph name="HOST" /> 存取感應器</translation>
 <translation id="1152346050262092795">請再次輸入密碼以驗證帳戶。</translation>
 <translation id="1153636665119721804">Google 進階保護計畫</translation>
-<translation id="1155545602507378023">否，僅限這部裝置</translation>
 <translation id="1155816283571436363">正在連線到你的手機</translation>
 <translation id="1157952955648710254">關閉 Google 搜尋側邊面板</translation>
 <translation id="1158080958325422608">使用大寫字母</translation>
@@ -460,6 +459,7 @@
 <translation id="1306606229401759371">變更設定</translation>
 <translation id="1307165550267142340">已建立 PIN 碼</translation>
 <translation id="1307431692088049276">不要再詢問我</translation>
+<translation id="130744661532298792">請驗證身分，確保你隨時可以使用 Google 帳戶中的密碼</translation>
 <translation id="1307559529304613120">糟糕！系統無法為這個裝置儲存長期 API 存取符記。</translation>
 <translation id="1308548450293664112">這是我建立的檔案，一組 3 個圓形按鈕中的第 1 個</translation>
 <translation id="131112695174432497">系統會刪除影響廣告個人化的資料</translation>
@@ -1152,7 +1152,6 @@
 <translation id="1794791083288629568">提供意見，協助我們修正這個問題。</translation>
 <translation id="1795214765651529549">使用傳統版</translation>
 <translation id="1795438342141780114">將游標重設至螢幕中央</translation>
-<translation id="1795668164971917185">下次 Google 安全瀏覽功能偵測到可疑的下載項目時，就會根據你選擇的<ph name="LINK" />設定自動掃描該項目</translation>
 <translation id="1796588414813960292">需要使用音訊的功能將無法運作</translation>
 <translation id="1797117170091578105">使用 Chromebook 鍵盤玩遊戲。你可以為特定動作自訂按鍵。</translation>
 <translation id="1798335429200675510">在文字方塊中按一下滑鼠右鍵，即可運用 Google AI 技術建立草稿或修正現有作品。這項功能目前僅供部分使用者使用。</translation>
@@ -1405,7 +1404,6 @@
 <translation id="1974043046396539880">CRL 發布點</translation>
 <translation id="1974060860693918893">進階</translation>
 <translation id="1974159333077206889">所有揚聲器都播放相同音效</translation>
-<translation id="1974216844776165821">Chrome 已將你的密碼儲存至這個裝置，但你可以改將密碼儲存到 Google 帳戶。這樣一來，只要登入 Google 帳戶，也就能使用帳戶中的所有密碼和密碼金鑰。</translation>
 <translation id="1975841812214822307">移除...</translation>
 <translation id="1976150099241323601">登入安全性裝置</translation>
 <translation id="1976823515278601587">節省量：大</translation>
@@ -1655,7 +1653,6 @@
 <translation id="2143915448548023856">顯示設定</translation>
 <translation id="2144536955299248197">憑證檢視者：<ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Linux Android 應用程式開發</translation>
-<translation id="2144873026585036769">要使用 Google 帳戶儲存及填入密碼和密碼金鑰嗎？</translation>
 <translation id="2145917706968602070">請確認你的手機在附近，且已解鎖及開啟藍牙功能和 Wi-Fi</translation>
 <translation id="2146263598007866206">網站可能會自動一併下載相關檔案，為你節省時間</translation>
 <translation id="2147218225094845757">隱藏側邊面板</translation>
@@ -2116,7 +2113,6 @@
 <translation id="2458591546854598341">裝置管理憑證無效。</translation>
 <translation id="2459703812219683497">已偵測到啟用代碼</translation>
 <translation id="2459706890611560967">繼續將分頁投放到「<ph name="DEVICE_NAME" />」</translation>
-<translation id="2460356425461033301">備份瀏覽器資料即可在任何裝置上使用</translation>
 <translation id="2460482211073772897">在其他資料夾中</translation>
 <translation id="2460826998961521840">使用儲存在 Google 帳戶中的密碼金鑰</translation>
 <translation id="2461045498706592033">「<ph name="LOCAL_FOLDER" />」只會儲存到這部裝置。如果移到「<ph name="LOCAL_FOLDER" />」，你將無法在其他裝置上使用這個書籤。</translation>
@@ -2819,6 +2815,7 @@
 <translation id="2953210795988451570">安全性更新已終止，請改用新款 Chromebook</translation>
 <translation id="2953218713108551165">你並未允許 <ph name="SITE" /> 傳送通知，系統會在你下次造訪時再次詢問。</translation>
 <translation id="2956070239128776395">群組中有巢狀區段：<ph name="ERROR_LINE" /></translation>
+<translation id="2957124229512318478">開啟開發人員模式即可使用這項擴充功能。請注意，Chrome 線上應用程式商店無法審查這項擴充功能。</translation>
 <translation id="2958721676848865875">封裝擴充功能警告</translation>
 <translation id="2959127025785722291">發生錯誤，無法完成掃描作業。請再試一次。</translation>
 <translation id="2959474507964749987">這個加密的檔案可能是病毒或惡意軟體。<ph name="LINE_BREAK" />如要檢查檔案是否不安全，你可以將檔案和密碼提供給 Google 安全瀏覽功能。檔案掃描作業通常需要幾秒鐘的時間。<ph name="LINE_BREAK" />如要掃描，請提供檔案的密碼。</translation>
@@ -4313,6 +4310,7 @@
 <translation id="4001540981461989979">移動時醒目顯示滑鼠游標</translation>
 <translation id="4002347779798688515">如果行動網路供應商處於鎖定狀態，你可能無法使用已下載的設定檔。請向供應商尋求支援。</translation>
 <translation id="4002440992267487163">PIN 碼設定</translation>
+<translation id="4003617970184602156">如要將密碼儲存到 Google 帳戶，或使用帳戶中的密碼，請驗證身分</translation>
 <translation id="4005817994523282006">時區偵測方法</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{這項操作會將群組從裝置中永久刪除。}other{這項操作會將群組從裝置中永久刪除。}}</translation>
 <translation id="4010036441048359843">開啟醒目顯示功能</translation>
@@ -6036,7 +6034,6 @@
 <translation id="5263656105659419083">如要輕鬆返回側邊面板，請按一下右上方的「固定」</translation>
 <translation id="5264148714798105376">請稍候片刻。</translation>
 <translation id="5264252276333215551">如要以 Kiosk 模式啟動你的應用程式，請連線至網際網路。</translation>
-<translation id="526539328530966548">強化防護</translation>
 <translation id="5265797726250773323">安裝時發生錯誤</translation>
 <translation id="5266113311903163739">憑證授權單位匯入錯誤</translation>
 <translation id="526622169288322445">可對「<ph name="ADDRESS_SUMMARY" />」執行的其他動作</translation>
@@ -6941,6 +6938,7 @@
 <translation id="5932224571077948991">網站顯示干擾性或誤導性廣告</translation>
 <translation id="59324397759951282"><ph name="MANUFACTURER_NAME" /> USB 裝置</translation>
 <translation id="5932441198730183141">你的可用授權不足，無法註冊這部 Google Meet 設備。請與銷售人員聯絡以購買更多授權。如果你確信這是系統誤判，請與支援團隊聯絡。</translation>
+<translation id="593271375210025655">開啟開發人員模式即可使用這項擴充功能。如不信任這項擴充功能，請勿開啟。這項擴充功能可能有實驗功能，且尚未通過 Chrome 線上應用程式商店審查。</translation>
 <translation id="5932881020239635062">序列</translation>
 <translation id="5933376509899483611">時區</translation>
 <translation id="5933522550144185133">「<ph name="APP_NAME" />」正在使用你的攝影機和麥克風</translation>
@@ -6968,6 +6966,7 @@
 <translation id="5948476936444935795">取消匯入</translation>
 <translation id="5948536763493709626">請連接鍵盤或滑鼠，或使用觸控螢幕繼續設定。如果使用藍牙裝置，請確認該裝置處於可進行配對的狀態。</translation>
 <translation id="5949544233750246342">無法剖析檔案</translation>
+<translation id="5949795028157144515">開發人員模式已關閉，部分擴充功能已停用。</translation>
 <translation id="594993197557058302">請按下 1 到 4 個輔助鍵 (Ctrl、Alt、Shift、搜尋鍵或啟動鍵) 和另外 1 個按鍵，也可以選取單一鍵。</translation>
 <translation id="5950762317146173294">這個檔案可能是病毒或惡意軟體</translation>
 <translation id="5951303645598168883"><ph name="ORIGIN" /> 要求使用本機字型</translation>
@@ -7357,7 +7356,6 @@
 <translation id="6234108445915742946">Chrome《服務條款》將於 3 月 31 日變更</translation>
 <translation id="6234474535228214774">等待安裝中</translation>
 <translation id="6235208551686043831">已開啟裝置攝影機。請將攝影機鏡頭對準 eSIM 卡的 QR 圖碼。</translation>
-<translation id="6237297174664969437">你隨時可以在 Chrome 設定中選擇要同步處理哪些瀏覽器資料，也可以在<ph name="LINK_BEGIN" />裝置設定<ph name="LINK_END" />中，控管如何同步處理透過 Chrome 瀏覽器安裝的網頁應用程式。Google 可能會根據你的歷史記錄在 Google 搜尋和其他服務中提供個人化體驗。</translation>
 <translation id="6237474966939441970">觸控筆做筆記應用程式</translation>
 <translation id="6237481151388361546">請變更網際網路連線並選擇「再試一次」。你也可以選擇「在基本編輯器中開啟」，使用功能有限的檢視和編輯選項。</translation>
 <translation id="623755660902014047">閱讀模式</translation>
@@ -8814,7 +8812,6 @@
 <translation id="730515362922783851">與區域網路或網際網路中的任何裝置交換資料</translation>
 <translation id="7306521477691455105">開啟「設定」頁面即可將「<ph name="USB_DEVICE_NAME" />」連接到「<ph name="USB_VM_NAME" />」</translation>
 <translation id="7307129035224081534">已暫停</translation>
-<translation id="7307647374092371434">登入 Google 帳戶後，你也可以在這部裝置上使用帳戶中的密碼和密碼金鑰</translation>
 <translation id="7308643132139167865">網站語言</translation>
 <translation id="7309214454733221756">要建立用於登入 <ph name="APP_NAME" /> 的密碼金鑰嗎？</translation>
 <translation id="7311005168897771689">在離線狀態下存取 Google 雲端硬碟檔案</translation>
@@ -9388,6 +9385,7 @@
 <translation id="7709152031285164251">失敗 - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">投放(&amp;C)...</translation>
 <translation id="7711968363685835633">停用個人化轉換、建議和使用者字典</translation>
+<translation id="771220840345868810">沒有建議的問題</translation>
 <translation id="7712739869553853093">列印預覽對話方塊</translation>
 <translation id="7713139339518499741">自然語音</translation>
 <translation id="7714307061282548371">系統允許使用 <ph name="DOMAIN" /> 的 Cookie</translation>

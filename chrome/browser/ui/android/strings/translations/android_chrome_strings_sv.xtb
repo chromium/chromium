@@ -239,7 +239,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2088833076121753253">Slutför konfigureringen av autofyll genom att starta om Chrome nu. Flikarna öppnas igen automatiskt.</translation>
 <translation id="2091863218454846791">Visar kompakt vy</translation>
 <translation id="2093731487903423814">de senaste 15 minuterna</translation>
-<translation id="2096012225669085171">Synkronisera och anpassa på alla enheter</translation>
 <translation id="2100273922101894616">Automatisk inloggning</translation>
 <translation id="2109384632594340939">din profilbild</translation>
 <translation id="2111511281910874386">Öppna sida</translation>
@@ -980,7 +979,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5492637351392383067">Kryptering på enheten</translation>
 <translation id="549660026907543296">Gå med som <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5503125329065007089">Lösenorden på alla dina enheter har öppnats över halva skärmen</translation>
-<translation id="5514904542973294328">Har inaktiverats av enhetens administratör</translation>
 <translation id="5515439363601853141">Lås upp om du vill visa lösenordet</translation>
 <translation id="5517095782334947753">Du har bokmärken, historik, lösenord och andra inställningar från <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5517326820028369152">Senaste aktiviteten i arket på nedre delen av skärmen</translation>

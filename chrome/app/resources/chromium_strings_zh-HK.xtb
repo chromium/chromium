@@ -135,6 +135,7 @@
 <translation id="277338894894732084">日後，Chromium 就會詢問你是否要使用已儲存的資料來自動填入表格</translation>
 <translation id="2785438272836277133">此擴充程式含有惡意軟件且不安全。請從 Chromium 中移除此擴充程式，令其無法再查看及變更您瀏覽的網站相關資料，包括您的個人資料。</translation>
 <translation id="2799223571221894425">重新啟動</translation>
+<translation id="2803971713792056305">你的 Chromium</translation>
 <translation id="2806241689335397269">Chromium 會詢問你是否要儲存表格資料，例如出生日期、年齡和護照號碼</translation>
 <translation id="2837693172913560447">此操作將為 <ph name="USER_EMAIL_ADDRESS" /> 建立新的 Chromium 設定檔</translation>
 <translation id="2841525013647267359">原文語言</translation>
@@ -295,6 +296,7 @@
 <translation id="5123973130450702873">Chromium 需要相關權限才能追蹤手勢</translation>
 <translation id="5174969993834422967">系統已按照你的使用習慣封鎖通知。如要允許此網站傳送通知，請按一下網址列右上角的通知圖示。</translation>
 <translation id="5187123684706427865">Chromium 帳戶需要重新驗證</translation>
+<translation id="5203572811198011329">如要將 Chromium 的資料儲存至 Google 帳戶及使用這類資料，請輸入密碼短語 <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="5224391634244552924">沒有已儲存的密碼。儲存密碼時，Chromium 可檢查您的密碼。</translation>
 <translation id="5231355151045086930">登出 Chromium</translation>
 <translation id="5234764350956374838">關閉</translation>
@@ -324,7 +326,6 @@
 <translation id="5496810170689441661">Chromium 正在嘗試編輯密碼。如果您同意的話，請輸入 Windows 密碼。</translation>
 <translation id="5527463683072221100">在 Chromium 中開啟 PDF</translation>
 <translation id="5568136785038042132">如要在所有電腦上取得你的擴充程式，請登入 Chromium</translation>
-<translation id="5575418445468216473">你現時儲存在 Google 帳戶的密碼和其他 Chromium 資料，將會從這部裝置移除。如想日後使用，請再次登入 Chromium。</translation>
 <translation id="5579324208890605088">啟動錯誤：請以一般使用者 (而非管理員) 身分執行安裝程式。</translation>
 <translation id="5596627076506792578">更多選項</translation>
 <translation id="5605834417512968703">選取任何要使用「圖片搜尋」尋找的內容，或按下 Esc 鍵退出「圖片搜尋」</translation>
@@ -475,7 +476,6 @@ Chromium 無法復原您的設定。</translation>
 <translation id="7355355292030546812">此檔案可能會損害你的個人和社交網絡帳戶 (包括 <ph name="USER_EMAIL" />)，因此 Chromium 已禁止下載</translation>
 <translation id="7384121030444253939">此擴充程式不再受支援，Chromium 建議你將其移除。</translation>
 <translation id="7389750180956889333">Chromium 可以更準確識別表格內容，更快自動填入相關資料。進一步瞭解「<ph name="BEGIN_LINK" />Chrome 自動填入<ph name="END_LINK" />」功能</translation>
-<translation id="7398989605938454041">透過 Chromium 設定檔，您可將所有 Chromium 內容分門別類，從而更輕易劃分工作和娛樂內容。</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium 開發人員版</translation>
 <translation id="7450541714075000668">已複製文字</translation>
 <translation id="7451052299415159299">Chromium 需要取得權限，才能讓這個網站存取您的相機</translation>
@@ -539,7 +539,6 @@ Chromium 無法復原您的設定。</translation>
 <translation id="8326785589245660814">清除帳戶中的 Chromium 資料</translation>
 <translation id="8330519371938183845">登入即可在不同裝置上同步和設定個人化的 Chromium</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> 以往曾使用 Chromium</translation>
-<translation id="8357820681460164151">如要透過所有裝置存取 Chromium 瀏覽器資料，請登入並開啟同步處理功能</translation>
 <translation id="8359544530202147897">請更新 Chromium 以繼續使用 Google 帳戶 <ph name="ACCOUNT_EMAIL" /> 中的 Chromium 資料</translation>
 <translation id="8360718212975266891">如要取得日後的 Chromium 更新，您需要使用 Windows 10 或以上版本。此電腦目前版本為 Windows 8。</translation>
 <translation id="8362914115861174987">譯文語言</translation>
@@ -553,6 +552,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="8453117565092476964">安裝程式封存檔案已損毀或無效，請重新下載 Chromium。</translation>
 <translation id="8458614432758743027">Chromium 只支援 Windows 10 或以上版本的作業系統。</translation>
 <translation id="8463672209299734063">可選用：將診斷和使用情況資料自動傳送給 Google，協助改善 Chromium 作業系統的功能和效能。</translation>
+<translation id="8471947159125090285">如要將 Chromium 的資料儲存至 Google 帳戶及使用這類資料，請驗證身分</translation>
 <translation id="8493179195440786826">Chromium 版本過舊</translation>
 <translation id="8522801943730206384">儲存密碼時，Chromium 可檢查你的密碼</translation>
 <translation id="8550334526674375523">此工作設定檔與個人設定檔是完全分開。</translation>
@@ -589,7 +589,6 @@ Chromium 無法復原您的設定。</translation>
 <translation id="9022552996538154597">登入 Chromium</translation>
 <translation id="904366664621834601">此封存檔案包含可能隱藏惡意軟件的其他檔案，因此 Chromium 已禁止下載</translation>
 <translation id="9062666675513499497">在登入其他 Google 服務時登入 Chromium</translation>
-<translation id="907832235989677238">登入 Chromium。如果您想只登入帳戶一次，可以<ph name="GUEST_LINK_BEGIN" />透過訪客身份使用裝置<ph name="GUEST_LINK_END" />。</translation>
 <translation id="9078733879136747090">Chromium 已自動關閉</translation>
 <translation id="9089354809943900324">Chromium 版本過舊</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium 將於 1 小時後重新啟動}other{Chromium 將於 # 小時後重新啟動}}</translation>

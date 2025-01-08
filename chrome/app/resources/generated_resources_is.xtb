@@ -228,7 +228,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1151917987301063366">Veita <ph name="HOST" /> alltaf aðgang að skynjurum</translation>
 <translation id="1152346050262092795">Sláðu aðgangsorðið inn aftur til að staðfesta reikninginn þinn.</translation>
 <translation id="1153636665119721804">Áætlun Google um ítarlega vernd</translation>
-<translation id="1155545602507378023">Nei, aðeins í þessu tæki</translation>
 <translation id="1155816283571436363">Tengist símanum þínum</translation>
 <translation id="1157952955648710254">Loka hliðarglugga Google-leitar</translation>
 <translation id="1158080958325422608">Breyta í hástafi</translation>
@@ -1163,7 +1162,6 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1794791083288629568">Sendu ábendingu til að hjálpa okkur að leysa þetta vandamál.</translation>
 <translation id="1795214765651529549">Nota hefðbundið þema</translation>
 <translation id="1795438342141780114">Endurstilla bendil á miðju</translation>
-<translation id="1795668164971917185">Næst þegar örugg vefskoðun Google finnur grunsamlegt niðurhal mun hún sjálfkrafa skanna það sem hluti af <ph name="LINK" /> sem þú valdir</translation>
 <translation id="1796588414813960292">Eiginleikar sem þarfnast hljóðs munu ekki virka</translation>
 <translation id="1797117170091578105">Spilaðu með Chromebook lyklaborðinu. Þú getur sérsniðið lykla fyrir ákveðnar aðgerðir.</translation>
 <translation id="1798335429200675510">Hægrismelltu í textareit til að búa til drög eða fínpússa fyrirliggjandi skrif með aðstoð gervigreindar Google. Aðgengi er takmarkað eins og er.</translation>
@@ -1417,7 +1415,6 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1974043046396539880">CRL-dreifingarpunktar</translation>
 <translation id="1974060860693918893">Ítarlegt</translation>
 <translation id="1974159333077206889">Sama hljóð með öllum hátölurum</translation>
-<translation id="1974216844776165821">Chrome vistaði aðgangsorðið þitt í þessu tæki en þú getur vistað það á Google-reikningnum þínum í staðinn. Ef þú gerir það verða öll aðgangsorð og aðgangslyklar á Google-reikningum einnig í boði þegar þú ert innskráð(ur).</translation>
 <translation id="1975841812214822307">Fjarlægja...</translation>
 <translation id="1976150099241323601">Innskráning á öryggistæki</translation>
 <translation id="1976823515278601587">Mikill sparnaður</translation>
@@ -1667,7 +1664,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2143915448548023856">Skjástillingar</translation>
 <translation id="2144536955299248197">Vottorðaskoðari: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Android forritaþróun í Linux</translation>
-<translation id="2144873026585036769">Viltu nota Google-reikninginn þinn til að vista og fylla út aðgangsorð og aðgangslykla?</translation>
 <translation id="2145917706968602070">Gakktu úr skugga um að síminn sé nálægt þér, ólæstur og með kveikt á Bluetooth og WiFi</translation>
 <translation id="2146263598007866206">Vefsvæði gætu sjálfkrafa sótt tengdar skrár saman til að spara þér tíma</translation>
 <translation id="2147218225094845757">Fela hliðarglugga</translation>
@@ -2131,7 +2127,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2458591546854598341">Lykill tækjastjórnunar er ógildur</translation>
 <translation id="2459703812219683497">Virkjunarkóði greindist</translation>
 <translation id="2459706890611560967">Halda áfram að varpa flipa yfir í <ph name="DEVICE_NAME" /></translation>
-<translation id="2460356425461033301">Afritaðu vafraefnið þitt og notaðu það í hvaða tæki sem er</translation>
 <translation id="2460482211073772897">Í öðrum möppum</translation>
 <translation id="2460826998961521840">Til að nota aðgangslykla sem eru vistaðir á Google-reikningnum þínum</translation>
 <translation id="2461045498706592033"><ph name="LOCAL_FOLDER" /> er eingöngu vistuð í þessu tæki. Ef þú færir þetta bókamerki í <ph name="LOCAL_FOLDER" /> hefurðu ekki lengur aðgang að því í hinum tækjunum þínum.</translation>
@@ -6058,7 +6053,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5263656105659419083">Smelltu á Festa uppi í hægra horninu til að komast auðveldlega aftur í hliðargluggann</translation>
 <translation id="5264148714798105376">Þetta gæti tekið um það bil mínútu.</translation>
 <translation id="5264252276333215551">Tengstu internetinu til að ræsa forritið í sjálfsalastillingu.</translation>
-<translation id="526539328530966548">auknu vörninni</translation>
 <translation id="5265797726250773323">Villa við uppsetningu</translation>
 <translation id="5266113311903163739">Villa við innflutning vottunarstöðvar</translation>
 <translation id="526622169288322445">Fleiri aðgerðir fyrir <ph name="ADDRESS_SUMMARY" /></translation>
@@ -7386,7 +7380,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6234108445915742946">Þjónustuskilmálar Chrome breytast 31. mars</translation>
 <translation id="6234474535228214774">Uppsetning bíður</translation>
 <translation id="6235208551686043831">Kveikt er á myndavél tækisins. Settu QR-kóða eSiM fyrir framan myndavélina.</translation>
-<translation id="6237297174664969437">Þú getur alltaf valið hvaða vafragögn á að samstilla í Chrome-stillingum. Í <ph name="LINK_BEGIN" />tækjastillingum<ph name="LINK_END" /> geturðu stjórnað samstillingu vefforrita sem eru sett upp úr Chrome-vafra. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
 <translation id="6237474966939441970">Forrit til að skrifa glósur með penna</translation>
 <translation id="6237481151388361546">Breyttu nettengunni þinni og veldu „Reyna aftur“ eða „Opna í grunnbreytingum“ til að nota takmarkaða skoðunar- og breytingavalkosti.</translation>
 <translation id="623755660902014047">Lesstilling</translation>
@@ -7456,6 +7449,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6278776436938569440">Breyta staðsetningu</translation>
 <translation id="6280215091796946657">Skrá inn með öðrum reikningi</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281218688313242284">Stjórnaðu &amp;Google-reikningnum þínum</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Yfir 1 blaðsíðu mörkum}one{Yfir {COUNT} blaðsíðu mörkum}other{Yfir {COUNT} blaðsíðna mörkum}}</translation>
 <translation id="6282490239556659745">Fjarlægja <ph name="EMBEDDED_SITE" /> af <ph name="SITE" /></translation>
 <translation id="6283438600881103103">Þú verður skráð(ur) út sjálfkrafa núna.
@@ -8069,6 +8063,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6745592621698551453">Uppfæra núna</translation>
 <translation id="6746124502594467657">Færa niður</translation>
 <translation id="67465227497040338">Sýna aðgangsorð fyrir <ph name="DOMAIN" /></translation>
+<translation id="6746834324024491643">Skráðu þig inn sem „<ph name="EMAIL" />“ til að fá aðgang að aðgangsorðum og fleiru úr öllum tækjunum þínum</translation>
 <translation id="6748980958975836188">Ég hef lesið og samþykki <ph name="BEGIN_LINK1" />þjónustuskilmála Google<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />viðbótarþjónustuskilmála Chrome og ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="6749077623962119521">Endurstilla heimildir?</translation>
 <translation id="6749473226660745022">Myndir</translation>
@@ -8845,7 +8840,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="730515362922783851">Skiptast á gögnum við hvaða tæki sem er á staðarneti eða internetinu</translation>
 <translation id="7306521477691455105">Opnaðu stillingarnar til að tengja <ph name="USB_DEVICE_NAME" /> við <ph name="USB_VM_NAME" /></translation>
 <translation id="7307129035224081534">Hlé</translation>
-<translation id="7307647374092371434">Aðgangsorð og aðgangslyklar á Google-reikningnum þínum verða einnig í boði í þessu tæki þegar þú ert skráð(ur) inn</translation>
 <translation id="7308643132139167865">Tungumál vefsvæða</translation>
 <translation id="7309214454733221756">Búa til aðgangslykil til að skrá þig inn á <ph name="APP_NAME" />?</translation>
 <translation id="7311005168897771689">Fáðu aðgang að Google Drive-skrám þegar þú ert án nettengingar</translation>
@@ -9419,6 +9413,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7709152031285164251">Mistókst – <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">&amp;Senda út...</translation>
 <translation id="7711968363685835633">Slökkva á sérsniðinni umbreytingu og tillögum ásamt orðabók notanda</translation>
+<translation id="771220840345868810">Engar tillögur að spurningum tiltækar</translation>
 <translation id="7712739869553853093">Gluggi prentforskoðunar</translation>
 <translation id="7713139339518499741">Eðlileg rödd</translation>
 <translation id="7714307061282548371">Fótspor frá <ph name="DOMAIN" /> leyfð</translation>

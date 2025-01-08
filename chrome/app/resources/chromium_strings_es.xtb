@@ -136,6 +136,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="277338894894732084">Más adelante, Chromium te preguntará si quieres usar la información guardada para rellenar formularios automáticamente</translation>
 <translation id="2785438272836277133">Esta extensión contiene malware y no es segura. Elimínala de Chromium para que no pueda ver ni cambiar tus datos en los sitios que visites, incluida tu información personal.</translation>
 <translation id="2799223571221894425">Reiniciar</translation>
+<translation id="2803971713792056305">Tu Chromium</translation>
 <translation id="2806241689335397269">Chromium te preguntará si quieres guardar información de formularios, como tu fecha de nacimiento, edad y número de pasaporte</translation>
 <translation id="2837693172913560447">Se creará un perfil nuevo de Chromium para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="2841525013647267359">Traducir del</translation>
@@ -296,6 +297,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5123973130450702873">Chromium necesita permiso para hacer seguimiento de tus manos</translation>
 <translation id="5174969993834422967">Sueles bloquear las notificaciones. Para permitir que este sitio te envíe notificaciones, haz clic en el icono de notificación que aparece en la esquina derecha de la barra de direcciones.</translation>
 <translation id="5187123684706427865">La cuenta de Chromium debe volver a autenticarse</translation>
+<translation id="5203572811198011329">Para usar y guardar los datos de Chromium en tu cuenta de Google (<ph name="ACCOUNT_EMAIL" />), introduce tu frase de contraseña</translation>
 <translation id="5224391634244552924">No hay ninguna contraseña guardada. Chromium puede comprobar tus contraseñas si las guardas.</translation>
 <translation id="5231355151045086930">Cerrar sesión en Chromium</translation>
 <translation id="5234764350956374838">Cerrar</translation>
@@ -325,7 +327,6 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5496810170689441661">Chromium está intentando cambiar contraseñas. Para permitirlo, escribe tu contraseña de Windows.</translation>
 <translation id="5527463683072221100">Abrir archivos PDF en Chromium</translation>
 <translation id="5568136785038042132">Para obtener tus extensiones en todos tus ordenadores, inicia sesión en Chromium</translation>
-<translation id="5575418445468216473">Tus contraseñas y otros datos de Chromium se guardan en tu cuenta de Google y se eliminarán de este dispositivo. Para usarlos en el futuro, vuelve a iniciar sesión en Chromium.</translation>
 <translation id="5579324208890605088">Error de arranque: ejecuta el instalador como usuario normal, no como administrador.</translation>
 <translation id="5596627076506792578">Más opciones</translation>
 <translation id="5605834417512968703">Selecciona cualquier cosa para buscarla con la búsqueda por imágenes o pulsa la tecla Esc para salir de la búsqueda por imágenes</translation>
@@ -476,7 +477,6 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="7355355292030546812">Chromium ha bloqueado esta descarga porque el archivo puede dañar tus cuentas personales y de redes sociales, incluida <ph name="USER_EMAIL" /></translation>
 <translation id="7384121030444253939">Esta extensión ya no se admite. Chromium te recomienda que la elimines.</translation>
 <translation id="7389750180956889333">Chromium entiende mejor los formularios y puede autocompletarlos más rápido. Más información sobre <ph name="BEGIN_LINK" />Autocompletar de Chrome<ph name="END_LINK" /></translation>
-<translation id="7398989605938454041">Los perfiles de Chromium te permiten organizar todos tus elementos de Chromium. Esto permite separar el trabajo del entretenimiento con más facilidad.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> ‑ Chromium Dev</translation>
 <translation id="7450541714075000668">Texto copiado</translation>
 <translation id="7451052299415159299">Chromium necesita permiso para acceder a la cámara en este sitio web</translation>
@@ -540,7 +540,6 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="8326785589245660814">borra los datos de Chromium de tu cuenta</translation>
 <translation id="8330519371938183845">Inicia sesión para sincronizar y personalizar Chromium en todos tus dispositivos</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> usaba Chromium anteriormente</translation>
-<translation id="8357820681460164151">Para acceder a tus elementos del navegador de Chromium en todos tus dispositivos, inicia sesión y activa la sincronización.</translation>
 <translation id="8359544530202147897">Actualiza Chromium para seguir usando los datos de Chromium en tu cuenta de Google (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="8360718212975266891">Para recibir futuras actualizaciones de Chromium, deberás tener Windows 10 o una versión posterior. Este ordenador tiene Windows 8.</translation>
 <translation id="8362914115861174987">Traducir al</translation>
@@ -554,6 +553,7 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="8453117565092476964">El archivo de instalación está dañado o no es válido. Vuelve a descargar Chromium.</translation>
 <translation id="8458614432758743027">Chromium requiere Windows 10 o una versión posterior.</translation>
 <translation id="8463672209299734063">Opcional: Ayuda a mejorar las funciones y el rendimiento de ChromiumOS enviando automáticamente datos de diagnóstico y de uso a Google.</translation>
+<translation id="8471947159125090285">Para usar y guardar los datos de Chromium en tu cuenta de Google, verifica tu identidad</translation>
 <translation id="8493179195440786826">Chromium no está actualizado</translation>
 <translation id="8522801943730206384">Chromium puede comprobar tus contraseñas si las guardas</translation>
 <translation id="8550334526674375523">Este perfil de trabajo es completamente independiente de tu perfil personal.</translation>
@@ -590,7 +590,6 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="9022552996538154597">Iniciar sesión en Chromium</translation>
 <translation id="904366664621834601">Chromium ha bloqueado esta descarga porque el archivo incluye otros archivos que pueden ocultar malware</translation>
 <translation id="9062666675513499497">Iniciar sesión en Chromium al iniciar sesión en otros servicios de Google</translation>
-<translation id="907832235989677238">Inicia sesión en Chromium. Si quieres iniciar sesión en una cuenta solo una vez, puedes <ph name="GUEST_LINK_BEGIN" />usar el dispositivo como invitado<ph name="GUEST_LINK_END" />.</translation>
 <translation id="9078733879136747090">Chromium se ha cerrado automáticamente</translation>
 <translation id="9089354809943900324">Chromium no está actualizado</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium se reiniciará dentro de 1 hora}other{Chromium se reiniciará dentro de # horas}}</translation>

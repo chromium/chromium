@@ -25,6 +25,7 @@
 <translation id="1081932398873105675">{count,plural, =1{{count} pestaña}other{{count} pestañas}}</translation>
 <translation id="1084365883616172403">Publicado en Facebook</translation>
 <translation id="1085677983426914530">No se ha podido abrir <ph name="FILENAME" /></translation>
+<translation id="1086468407802688066">La cuenta <ph name="USER_EMAIL" /> la gestiona <ph name="HOSTED_DOMAIN" />, que puede ver cierta información. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="1096992026380844478">Tus ajustes de sincronización se restaurarán en función de tu última copia de seguridad. <ph name="BEGIN_LINK" />Consulta lo que puedes sincronizar<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Traducir siempre del <ph name="LANGUAGE" /></translation>
 <translation id="1108938384783527433">Sincronización del historial</translation>
@@ -83,6 +84,7 @@
 <translation id="1335767868357998043">Elige la posición de la barra de direcciones</translation>
 <translation id="1347468774581902829">Gestionar actividad</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
+<translation id="1358106883354237005">Cuenta gestionada</translation>
 <translation id="1358214951266274152">Ir al enlace que has copiado</translation>
 <translation id="1360432990279830238">¿Cerrar sesión y detener sincronización?</translation>
 <translation id="1363028406613469049">Seguir</translation>
@@ -384,6 +386,7 @@ Los sitios no pueden usar cookies para ver tu actividad de navegación en otros 
 <translation id="2640733327287333451">Sin nombre de usuario ••••••</translation>
 <translation id="264215785133931186">Comprobado justo ahora</translation>
 <translation id="2647434099613338025">Añadir idioma</translation>
+<translation id="2649592894792404568">Estás a punto de eliminar tus datos del Gestor de contraseñas de Google</translation>
 <translation id="2652129567809778422">Seleccionar contraseña</translation>
 <translation id="2658056020748144467">No se puede abrir archivo</translation>
 <translation id="2661809266906115479"><ph name="TITLE" />, <ph name="STATE" />, solo en este dispositivo, <ph name="URL" /></translation>
@@ -697,6 +700,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="4183350924949589798">¿Más seguridad?</translation>
 <translation id="4184063163998877398">{count,plural, =1{{count} contraseña poco segura}other{{count} contraseñas poco seguras}}</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} elemento solo se guarda en este dispositivo. Para usarlo en tus otros dispositivos, guárdalo en tu cuenta de Google: {email}.}other{{count} elementos solo se guardan en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu cuenta de Google: {email}.}}</translation>
+<translation id="4207873326995387292">Información del navegador</translation>
 <translation id="421070604241073551">Si esta opción está activada, los datos se guardan en tu cuenta de Google. Si está desactivada, los datos solo se guardan en este dispositivo.</translation>
 <translation id="4224534474590365556">¿Cerrar 99+ pestañas inactivas?</translation>
 <translation id="422474357428465195">Tienes varios problemas relacionados con contraseñas que podrían poner en riesgo tu seguridad.</translation>
@@ -764,6 +768,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="4495516234578759322">Buscar siguiente</translation>
 <translation id="4502423230170890588">Eliminar del dispositivo</translation>
 <translation id="4508750114462689118">Cierra el inicio de sesión en la promoción</translation>
+<translation id="4517684186578051919">Información del dispositivo</translation>
 <translation id="4520798012560649652">Más información sobre el modo Incógnito</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} marcador}other{{count} marcadores}}</translation>
 <translation id="4525629404718770519">Mostrar vistas previas de enlaces</translation>
@@ -972,6 +977,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="5444892875087332195">Marcadores</translation>
 <translation id="5452354193031718372">Usar contraseña segura:</translation>
 <translation id="5454211924362324495">Para impedir que otros usuarios usen tu contraseña, <ph name="BEGIN_LINK" />cámbiala en <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
+<translation id="5454723301413569630">La cuenta <ph name="USER_EMAIL" /> la gestiona <ph name="HOSTED_DOMAIN" />, que puede ver cierta información</translation>
 <translation id="5457082343331641453">Añadir algo a tu búsqueda</translation>
 <translation id="5457226814769348910">Abrir versión sin conexión</translation>
 <translation id="5478327362747197944">Crea eventos del calendario directamente haciendo clic en una fecha en una página web.</translation>
@@ -1375,6 +1381,7 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="7102005569666697658">Descargando… (<ph name="FILE_SIZE" />)</translation>
 <translation id="7104701424653979232">Menú → Configuración → Métodos de pago</translation>
 <translation id="7108338896283013870">Ocultar</translation>
+<translation id="7128693485119315539">Es posible que tu organización necesite ver y gestionar los datos de navegación asociados a tu cuenta gestionada, como el historial de navegación y las contraseñas.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">La cámara no está disponible</translation>
 <translation id="7141960840225504692">Tus pestañas se cerrarán y se eliminarán los datos de navegación</translation>
@@ -1769,6 +1776,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8813277370772331957">Recordar más tarde</translation>
 <translation id="8814719628147284151">Continuar</translation>
 <translation id="8820817407110198400">Marcadores</translation>
+<translation id="8822421075653507124">Para asegurarse de que este dispositivo se puede usar de forma segura, es posible que tu organización necesite ver información sobre su sistema operativo, navegador, configuración y el software instalado en el dispositivo.</translation>
 <translation id="8825562130641217944">Accede a tus marcadores, contraseñas y más.</translation>
 <translation id="8827154289515190290">Tu navegador favorito, ahora en iOS</translation>
 <translation id="8831208860914609320">Cerrar todas las inactivas</translation>

@@ -285,6 +285,7 @@
 <translation id="2214453882118345682">Bli, përkthe dhe identifiko ato që shikon me kamerën tënde.</translation>
 <translation id="2220529011494928058">Raporto një problem</translation>
 <translation id="2223461067862937305">Krijo një kod QR</translation>
+<translation id="2229345671837147090">Rrjeta e skedave në distancë</translation>
 <translation id="2230173723195178503">Faqja e uebit u ngarkua</translation>
 <translation id="2236949375853147973">Aktiviteti im</translation>
 <translation id="2240256190924001613">Ofrohet profili i konfigurimit</translation>
@@ -651,6 +652,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="3992684624889376114">Rreth kësaj faqeje</translation>
 <translation id="3994422733891749358">Zgjidh se cilat njoftime dëshiron të marrësh</translation>
 <translation id="3994522032746736727">Identifikohu si <ph name="EMAIL" /></translation>
+<translation id="3994911892367422121">E KUPTOVA</translation>
 <translation id="3995521777587992544">Shiriti i progresit të ngarkimit të faqes, është ngarkuar <ph name="EMAIL" />.</translation>
 <translation id="3997522473364371632">Ndarja e fjalëkalimeve është çaktivizuar nga administratori yt.</translation>
 <translation id="4002066346123236978">Titulli</translation>
@@ -798,6 +800,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="4651927776207937667">{count,plural, =1{Fshih pas 1 minute}other{Fshih pas {count} minutash}}</translation>
 <translation id="4652817563047461855">Sigurohu që fjalëkalimet e tua të jetë të sigurta, zbulo nëse janë komprometuar dhe merr këshilla për të të ndihmuar për mbrojtjen tënde online. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Ruaj</translation>
+<translation id="466307903888586355">Ruajtja e skedarëve është bllokuar nga organizata jote</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Organizata jote kërkon që të shfletosh në mënyrë private. Grupet e skedave nuk sinkronizohen në modalitetin "i fshehtë".
 <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
@@ -1271,6 +1274,7 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 <translation id="6641465290890659327">Ndaj një kopje të fjalëkalimit tënd</translation>
 <translation id="6642362222295953972">Kalo te skeda ekzistuese</translation>
 <translation id="6644512095122093795">Ofro të ruhen fjalëkalimet</translation>
+<translation id="664573288952458293">Rrjeta e skedave të zakonshme</translation>
 <translation id="6645899968535965230">Kodi QR: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">URL-të që viziton dërgohen te Google për të parashikuar sajtet që mund të vizitosh në vijim</translation>
 <translation id="6657585470893396449">Fjalëkalimi</translation>
@@ -1661,6 +1665,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8407669440184693619">Nuk u gjetën fjalëkalime për këtë sajt</translation>
 <translation id="8407831512155324054">Fjalëkalimet e tua duken të forta</translation>
 <translation id="842523302461531262">Bëje të parazgjedhur te cilësimet…</translation>
+<translation id="8425826545759040372">Rrjeta e skedave "të fshehta"</translation>
 <translation id="8428045167754449968">Qyteti / Qyteza</translation>
 <translation id="8428213095426709021">Cilësimet</translation>
 <translation id="8428634594422941299">E kuptova</translation>

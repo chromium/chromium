@@ -274,6 +274,7 @@
 <translation id="1908992311423394684">भर्खरै इन्स्टल गरिएको</translation>
 <translation id="1915307458270490472">ह्याङ्ग अप</translation>
 <translation id="1918022425394817322">क्यामेरा सिरानको दायाँ कुनामा स्न्याप गरियो</translation>
+<translation id="1920390473494685033">कन्ट्याक्टहरू</translation>
 <translation id="1923539912171292317">स्वचालित क्लिकहरू</translation>
 <translation id="1925320505152357008">१ मिनेटभन्दा कम</translation>
 <translation id="1928739107511554905">उक्त अद्यावधिक प्राप्त गर्न, किबोर्ड जोडिएकै अवस्थामा आफ्नो Chromebook लाई पुनः सुचारु गर्न टचस्क्रिनको प्रयोग गर्नुहोस्।</translation>
@@ -884,6 +885,7 @@
 <translation id="4042660782729322247">तपाईं आफ्नो स्क्रिन आदान प्रदान गर्दै हुनुहुन्छ</translation>
 <translation id="404437169852192935">अपडेट प्राप्त गर्ने सुविधाको म्याद सकियो</translation>
 <translation id="4049230407053723315">द्रुत सेटिङ</translation>
+<translation id="4054070260844648638">सबैजनाले देख्न सक्ने</translation>
 <translation id="4057003836560082631"><ph name="TOTAL_COUNT" /> मध्ये <ph name="INDEX" /> औँ ट्याब। <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4059696795118403455">यसपछि गर्न सकिने कार्यहरूका बारेमा पर्सनलाइज गरिएका सुझावहरू हेर्न ओभरभ्यू की थिच्नुहोस्</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{एउटा एपमा अफ}other{# एपमा अफ}}</translation>
@@ -1407,7 +1409,6 @@
 <translation id="5727460725221669831">तपाईंले आफ्नो पासवर्ड बिर्सनुभयो वा आफ्नो Google खाताको पासवर्ड बदल्नुभयो भने यो प्रयोगकर्ता खाता रिकभर गरी हेर्नुहोस्।</translation>
 <translation id="5733630091161562207">"स्वागत छ" डायलग भएको नोटिफिकेसन</translation>
 <translation id="573413375004481890">यो डिभाइसले तपाईंको कुनै पनि डिस्प्ले समर्थन गर्न सकेन, त्यसैले एउटाको जडान डिस्कनेक्ट गरियो</translation>
-<translation id="5740328398383587084">नजिकैका डिभाइससँग सेयर गर्ने सुविधा</translation>
 <translation id="574392208103952083">मध्यम</translation>
 <translation id="5744083938413354016">ड्र्याग गर्ने विकल्पमा ट्याप गर्नुहोस्</translation>
 <translation id="5745612484876805746">रात्रि प्रकाश सूर्यास्तको बेला स्वतः सक्रिय हुन्छ</translation>
@@ -1484,6 +1485,7 @@
 <translation id="5990992855591814753">पर्सनलाइज गरिएका फोकस प्लेलिस्टहरू सुनेर ध्यान केन्द्रित गर्नुहोस्। YouTube Premium को ३ महिने निःशुल्क ट्रायल सदस्यता लिनुहोस् र विज्ञापनरहित YouTube Music तथा YouTube प्राप्त गर्नुहोस्। सर्तहरू लागू हुन्छन्।</translation>
 <translation id="5998374579424866922">गेम कन्ट्रोलहरू अफ गर्नुहोस्</translation>
 <translation id="6000279412553873020">की, बटन र अन्य कुरा</translation>
+<translation id="6002122790816966947">तपाईंका डिभाइसहरू</translation>
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" /> मध्ये <ph name="SELECTED_PAGE" /> पृष्ठ</translation>
 <translation id="601304062528754300">सेल्फमा भएको अर्को वस्तु हाइलाइट गर्नुहोस्</translation>
 <translation id="6015573907265691211">पूरा भएको कार्यका रूपमा चिन्ह लगाउनुहोस्</translation>

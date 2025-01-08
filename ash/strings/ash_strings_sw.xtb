@@ -274,6 +274,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1908992311423394684">Imesakinishwa hivi karibuni</translation>
 <translation id="1915307458270490472">Kata simu</translation>
 <translation id="1918022425394817322">Onyesho la kukagua kamera limelinganishwa kwenye kona ya juu kulia</translation>
+<translation id="1920390473494685033">Anwani</translation>
 <translation id="1923539912171292317">Mibofyo ya kiotomatiki</translation>
 <translation id="1925320505152357008">chini ya dak 1</translation>
 <translation id="1928739107511554905">Ili usasishe, tumia skrini ya kugusa kuwasha Chromebook yako upya huku kibodi ikiwa imeunganishwa.</translation>
@@ -530,6 +531,7 @@ Vinginevyo, padi ya kugusa iliyojumuishwa kwenye kifaa itawashwa tena baada ya <
 <translation id="2847759467426165163">Tuma kwenye</translation>
 <translation id="2848120746144143659">Bonyeza enter ili upige picha ya skrini nzima</translation>
 <translation id="2849936225196189499">Muhimu</translation>
+<translation id="2850207700020959936">Programu zinaweza kufikia kamera</translation>
 <translation id="2860184359326882502">Inayolingana Zaidi</translation>
 <translation id="2865888419503095837">Maelezo ya mtandao</translation>
 <translation id="2869095047958348710"><ph name="DAY_OF_WEEK" /> hii iliyopita</translation>
@@ -584,6 +586,7 @@ Vinginevyo, padi ya kugusa iliyojumuishwa kwenye kifaa itawashwa tena baada ya <
 <translation id="304417730895741346">Programu zako ulizobandika na kufungua zipo kwenye rafu. Ili ubandike programu kwenye rafu, bofya kulia kwenye programu au uguse padi ya kugusa ukitumia vidole viwili.</translation>
 <translation id="3045488863354895414">Habari za mchana,</translation>
 <translation id="3047761520276763270">Jaribu kusema:</translation>
+<translation id="3053407068093039599">Zima/washa uwezo wa kufikia kamera</translation>
 <translation id="3055162170959710888">Leo umetumia kifaa hiki kwa <ph name="USED_TIME" /></translation>
 <translation id="3062298103034426069">Haiwezi kutumika</translation>
 <translation id="3068622547379332530">Toleo la <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -884,6 +887,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="4042660782729322247">Unashiriki skrini yako</translation>
 <translation id="404437169852192935">Masasisho yameisha</translation>
 <translation id="4049230407053723315">Mipangilio ya Haraka</translation>
+<translation id="4054070260844648638">Inaonekana na kila mtu</translation>
 <translation id="4057003836560082631">Kichupo cha kivinjari cha <ph name="INDEX" /> kati ya <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4059696795118403455">Ili uone mapendekezo ya mambo ya kufanya baadaye yaliyowekewa mapendeleo, bonyeza kitufe cha Muhtasari</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Imezimwa - moja}other{Imezimwa - #}}</translation>
@@ -1407,7 +1411,6 @@ Hakuna vifaa vilivyounganishwa.</translation>
 <translation id="5727460725221669831">Ikiwa ulisahau nenosiri lako au ulibadilisha nenosiri la Akaunti yako ya Google hivi karibuni, jaribu kumrejesha mtumiaji huyu.</translation>
 <translation id="5733630091161562207">Arifa ya kukaribishwa</translation>
 <translation id="573413375004481890">Kifaa hiki kimeshindwa kutumia skrini zako zote. Kwa hivyo, skrini moja imeondolewa</translation>
-<translation id="5740328398383587084">Uhamishaji wa Karibu</translation>
 <translation id="574392208103952083">Wastani</translation>
 <translation id="5744083938413354016">Uburutaji wa kugonga</translation>
 <translation id="5745612484876805746">Kipengele cha Mwanga wa Usiku kitawaka kiotomatiki wakati wa machweo</translation>
@@ -1484,6 +1487,7 @@ Hakuna vifaa vilivyounganishwa.</translation>
 <translation id="5990992855591814753">Endelea kumakinika ukitumia orodha ya muziki wa kuongeza umakini, iliyowekewa mapendeleo. Pata YouTube Music na YouTube, bila matangazo, ukitumia YouTube Premium kwa miezi 3 bila malipo. Sheria na masharti yatatumika.</translation>
 <translation id="5998374579424866922">Zima vidhibiti vya mchezo</translation>
 <translation id="6000279412553873020">Vitufe, vitufe na zaidi</translation>
+<translation id="6002122790816966947">Vifaa vyako</translation>
 <translation id="6012623610530968780">Ukurasa wa <ph name="SELECTED_PAGE" /> kati ya <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Angazia kipengee kinachofuata kwenye rafu</translation>
 <translation id="6015573907265691211">Tia alama kuwa umekamilisha</translation>
@@ -1800,6 +1804,7 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> inataka kutumia <ph name="DEVICE_NAME" />. Washa swichi halisi ya <ph name="DEVICE_NAME" /> ya kifaa chako.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Mratibu wa Google</translation>
 <translation id="7042322267639375032">Kunja eneo la hali</translation>
+<translation id="7042593542151411225">Programu haziwezi kufikia kamera</translation>
 <translation id="7045033600005038336">Ungependa kubadilisha kiolezo?</translation>
 <translation id="7051244143160304048">Muunganisho wa <ph name="DEVICE_NAME" /> umekatika</translation>
 <translation id="7055910611768509537">Hujatumia Stylus kwa zaidi ya wiki moja</translation>
@@ -2376,6 +2381,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="9074432941673450836">Tumia programu kufanya kila kitu unachohitaji kwenye <ph name="PRODUCT_NAME" /> yako. Unaweza kupata programu zako kwenye Kifungua Programu. Unaweza pia kubonyeza kitufe cha Kifungua Programu (kilicho sehemu ya juu ya kitufe cha Shift cha kushoto) kwenye kibodi.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9077515519330855811">Vidhibiti vya maudhui, kwa sasa inacheza <ph name="MEDIA_TITLE" /></translation>
+<translation id="9079012373317704997">Haiwezi kuwasha uwezo wa kufikia kamera kutoka mbali</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">Onyesho la kukagua kamera limelinganishwa kwenye kona ya juu kushoto</translation>
 <translation id="9080132581049224423">Telezesha kidole juu ili urudi kwenye skrini ya kwanza</translation>

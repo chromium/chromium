@@ -104,9 +104,6 @@ Se o eliminas, todas as persoas perderán inmediatamente o acceso ao grupo de pe
 <translation id="5494920125229734069">Seleccionar todo</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Pecha o grupo de pestanas de cor <ph name="COLOR_NAME" /> que ten <ph name="TABS_COUNT_ONE" /> pestana.}other{Pecha o grupo de pestanas de cor <ph name="COLOR_NAME" /> que ten <ph name="TABS_COUNT_MANY" /> pestanas.}}</translation>
 <translation id="5556417849629758491">Ver información sobre a tenda, opción dispoñible preto da parte superior da pantalla</translation>
-<translation id="5615302411300498438">Mantén este grupo para engadir pestanas máis adiante ou sae del.
-
-Se saes del, perderás inmediatamente o acceso ao grupo de pestanas "<ph name="TITLE_OF_GROUP" />".</translation>
 <translation id="5627941783489838464">Non hai actualizacións de pestanas</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Restaurar pestana}other{Restaurar pestanas}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ligazón de Chrome}other{<ph name="TABS_COUNT_MANY" /> ligazóns de Chrome}}</translation>
@@ -117,7 +114,6 @@ Se saes del, perderás inmediatamente o acceso ao grupo de pestanas "<ph name="T
 <translation id="6040143037577758943">Pechar</translation>
 <translation id="6051432659151380973">Os teus grupos de pestanas gárdanse automaticamente</translation>
 <translation id="6054741997831917303">O prezo deste artigo baixou recentemente de <ph name="PREVIOUS_PRICE" /> a <ph name="NEW_PRICE" /></translation>
-<translation id="6082313992897617440">Perderás inmediatamente o acceso ao grupo de pestanas <ph name="GROUP_NAME" /></translation>
 <translation id="6109251075362363230">Agora tamén se arquivarán todas as pestanas duplicadas, a excepción da copia usada máis recentemente.</translation>
 <translation id="6193448654517602979">Selecciona pestanas</translation>
 <translation id="6228793724645064692">(valoración da tenda)</translation>
@@ -145,9 +141,9 @@ Se saes del, perderás inmediatamente o acceso ao grupo de pestanas "<ph name="T
 <translation id="731648547091221002"><ph name="COLOR_NAME" />, opción seleccionada</translation>
 <translation id="7326879924029668159">Consulta a política de devolución e outra información</translation>
 <translation id="7352298686197644113">Descubre que artigo baixou de prezo nunha das pestanas que tes abertas</translation>
-<translation id="7421293530411019405">Queres saír do grupo de pestanas?</translation>
 <translation id="7452985128687107478">Os grupos de pestanas gárdanse e actualízanse automaticamente en todos os dispositivos</translation>
 <translation id="747459581954555080">Restablecer todo</translation>
+<translation id="750886945254958667">Mantén este grupo para engadir pestanas máis adiante ou abandónao se xa non vas acceder a el</translation>
 <translation id="753732157349120914">Selector de pestanas</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> recensión procedente de Google}other{<ph name="REVIEWS_COUNT_MANY" /> recensións procedentes de Google}}</translation>
 <translation id="7559245342362162951">Mostrar as pestanas do grupo nunha grade en pantalla completa</translation>
@@ -177,9 +173,7 @@ Se saes del, perderás inmediatamente o acceso ao grupo de pestanas "<ph name="T
 <translation id="8398929769197326728">Cartafol novo: <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> pestana engadida. Pestanas pechadas: <ph name="ANY_CLOSED" />}other{<ph name="MANY_ADDED" /> pestanas engadidas. Pestanas pechadas: <ph name="ANY_CLOSED" />}}</translation>
-<translation id="8631711675211020168">Todas as persoas perderán inmediatamente o acceso ao grupo de pestanas <ph name="GROUP_NAME" />, que se eliminará de todos os dispositivos</translation>
 <translation id="8633025649649592204">Actividade recente</translation>
-<translation id="8635399646025169806">Queres manter o grupo de pestanas?</translation>
 <translation id="870736955561925754">Queres pechar a pestana e eliminar o grupo?</translation>
 <translation id="8714939927607906138">Prezo máis baixo</translation>
 <translation id="8730621377337864115">Feito</translation>

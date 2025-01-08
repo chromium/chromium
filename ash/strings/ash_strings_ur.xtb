@@ -274,6 +274,7 @@
 <translation id="1908992311423394684">نئی انسٹال کردہ ایپ</translation>
 <translation id="1915307458270490472">کال منقطع کریں</translation>
 <translation id="1918022425394817322">کیمرا اوپری دائیں کونے میں اسنیپ کیا گیا ہے</translation>
+<translation id="1920390473494685033">رابطے</translation>
 <translation id="1923539912171292317">خودکار کلکس</translation>
 <translation id="1925320505152357008">1 منٹ سے کم</translation>
 <translation id="1928739107511554905">‏اپ ڈیٹ حاصل کرنے کیلئے، ٹچ اسکرین استعمال کر کے منسلک شدہ کی بورڈ سے اپنا Chromebook دوبارہ شروع کریں۔</translation>
@@ -884,6 +885,7 @@
 <translation id="4042660782729322247">آپ اپنی اسکرین کا اشتراک کر رہے ہیں</translation>
 <translation id="404437169852192935">اپ ڈیٹس ختم ہو گئیں</translation>
 <translation id="4049230407053723315">فوری ترتیبات</translation>
+<translation id="4054070260844648638">ہر کسی کیلئے مرئی</translation>
 <translation id="4057003836560082631"><ph name="TOTAL_COUNT" /> میں سے <ph name="INDEX" /> براؤزر ٹیب۔ <ph name="SITE_TITLE" />، <ph name="SITE_URL" /></translation>
 <translation id="4059696795118403455">آگے کرنے کی چیزوں کے لیے ذاتی نوعیت کی تجاویز دیکھنے کے لیے، مجموعی جائزہ کی کلید کو دبائیں</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{ایک ایپ کیلئے آف ہے}other{# ایپس کیلئے آف ہے}}</translation>
@@ -1407,7 +1409,6 @@
 <translation id="5727460725221669831">‏اگر آپ اپنا پاس ورڈ بھول گئے ہیں یا حال ہی میں اپنے Google اکاؤنٹ کا پاس ورڈ تبدیل کر دیا ہے تو اس صارف کو بازیاب کرنے کی کوشش کریں۔</translation>
 <translation id="5733630091161562207">خوش آمدید اطلاع</translation>
 <translation id="573413375004481890">یہ آلہ آپ کے تمام ڈسپلیز کو سپورٹ نہیں کر سکتا، لہذا ایک کو غیر منسلک کر دیا گیا ہے</translation>
-<translation id="5740328398383587084">قریبی آلات کے ساتھ اشتراک</translation>
 <translation id="574392208103952083">متوسط</translation>
 <translation id="5744083938413354016">ٹیپ کر کے گھسیٹنا</translation>
 <translation id="5745612484876805746">غروب آفتاب کے وقت نائٹ لائٹ خودکار طور پر آن ہو جاتی ہے</translation>
@@ -1484,6 +1485,7 @@
 <translation id="5990992855591814753">‏ذاتی نوعیت کی فوکس والی پلے لسٹس کے ساتھ اپنے کام مکمل کریں۔ بغیر کسی قیمت کے 3 ماہ کے YouTube Premium کے ساتھ، اشتہارات سے پاک، YouTube Music اور YouTube حاصل کریں۔ شرائط لاگو ہیں۔</translation>
 <translation id="5998374579424866922">گیم کنٹرولز آف کریں</translation>
 <translation id="6000279412553873020">کلیدیں، بٹنز، اور مزید بہت کچھ</translation>
+<translation id="6002122790816966947">آپ کے آلات</translation>
 <translation id="6012623610530968780">صفحہ <ph name="TOTAL_PAGE_NUM" /> کا <ph name="SELECTED_PAGE" /></translation>
 <translation id="601304062528754300">اگلے آئٹم کو شیلف پر نمایاں کریں</translation>
 <translation id="6015573907265691211">بطور مکمل نشان زد کریں</translation>

@@ -285,7 +285,7 @@
 <translation id="2214453882118345682">קונים, מתרגמים ומזהים את מה שרואים באמצעות המצלמה.</translation>
 <translation id="2220529011494928058">דיווח על בעיה</translation>
 <translation id="2223461067862937305">‏יצירת קוד QR</translation>
-<translation id="2229345671837147090">רשת כרטיסיות מרוחקת</translation>
+<translation id="2229345671837147090">תצוגה של כרטיסיות ממכשירים אחרים</translation>
 <translation id="2230173723195178503">דף האינטרנט נטען</translation>
 <translation id="2236949375853147973">הפעילות שלי</translation>
 <translation id="2240256190924001613">יש פרופיל של הגדרות אישיות</translation>
@@ -384,6 +384,7 @@
 <translation id="2640733327287333451">אין שם משתמש ••••••</translation>
 <translation id="264215785133931186">התבצעה בדיקה עכשיו</translation>
 <translation id="2647434099613338025">להוספת שפה</translation>
+<translation id="2649592894792404568">‏בחרת למחוק את הנתונים שלך במנהל הסיסמאות של Google</translation>
 <translation id="2652129567809778422">בחירת סיסמה</translation>
 <translation id="2658056020748144467">לא ניתן לפתוח את הקובץ</translation>
 <translation id="2661809266906115479"><ph name="TITLE" />, <ph name="STATE" />, רק במכשיר הזה, <ph name="URL" /></translation>
@@ -1274,7 +1275,7 @@
 <translation id="6641465290890659327">שיתוף עותק של הסיסמה שלך</translation>
 <translation id="6642362222295953972">מעבר אל כרטיסייה קיימת</translation>
 <translation id="6644512095122093795">תופיע הצעה לשמור סיסמאות</translation>
-<translation id="664573288952458293">רשת כרטיסיות רגילה</translation>
+<translation id="664573288952458293">תצוגה של כרטיסיות רגילות</translation>
 <translation id="6645899968535965230">‏קוד QR‏: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">‏כתובות URL שבהן ביקרת יישלחו אל Google כדי לחזות את האתרים הבאים שאליהם תתבצע כניסה על ידך</translation>
 <translation id="6657585470893396449">סיסמה</translation>
@@ -1665,7 +1666,7 @@
 <translation id="8407669440184693619">לא נמצאו סיסמאות בשביל האתר הזה</translation>
 <translation id="8407831512155324054">הסיסמאות נראות חזקות</translation>
 <translation id="842523302461531262">להגדרה כברירת מחדל בהגדרות…</translation>
-<translation id="8425826545759040372">רשת של כרטיסיות פרטיות</translation>
+<translation id="8425826545759040372">תצוגה של כרטיסיות פרטיות</translation>
 <translation id="8428045167754449968">עיר / יישוב</translation>
 <translation id="8428213095426709021">הגדרות</translation>
 <translation id="8428634594422941299">הבנתי</translation>

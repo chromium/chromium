@@ -531,7 +531,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1914326953223720820">Servizio di decompressione</translation>
 <translation id="1919367280705858090">Assistenza per un messaggio di errore specifico</translation>
 <translation id="1919526244108283799">400 x 600 mm</translation>
-<translation id="192020519938775529">{COUNT,plural, =0{Nessuno}=1{1 sito}other{# siti}}</translation>
+<translation id="192020519938775529">{COUNT,plural, =0{Nessun sito}=1{1 sito}other{# siti}}</translation>
 <translation id="192095259937375524">Pulsante Condividi questa scheda, attiva per condividere questa scheda tramite link, creando un codice QR, mediante trasmissione e altro ancora</translation>
 <translation id="1921479021518565778">Suggerimenti caricati</translation>
 <translation id="1924727005275031552">Nuovo</translation>
@@ -597,7 +597,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2040894699575719559">Posizione bloccata</translation>
 <translation id="2041788246978549610">Usa i microfoni disponibili (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Vassoio 7</translation>
-<translation id="204357726431741734">Accedi per usare le password salvate nel tuo Account Google</translation>
 <translation id="2045871135676061132">Busta Personal</translation>
 <translation id="2046951263634619614">Rivenditori di libri</translation>
 <translation id="2048261947532620704">Traduzione della pagina in corso…</translation>
@@ -1363,7 +1362,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="343474037147570563">I file che carichi o alleghi vengono inviati a Google Cloud o a terze parti per essere analizzati. Ad esempio, potrebbero essere analizzati per rilevare dati sensibili o malware, essere archiviati in base ai criteri aziendali ed essere visibili al tuo amministratore.</translation>
 <translation id="3435557549311968410">Continuo (corto)</translation>
 <translation id="3435738964857648380">Sicurezza</translation>
-<translation id="3438829137925142401">Usa le password salvate nel tuo Account Google</translation>
 <translation id="3440783957068352691">Quadrata</translation>
 <translation id="3441653493275994384">Schermo</translation>
 <translation id="3443504041532578451">Disco ottico (satinato)</translation>
@@ -3906,6 +3904,7 @@ Ulteriori dettagli:
 <translation id="7975858430722947486">Aggiunto al confronto</translation>
 <translation id="7976214039405368314">Numero eccessivo di richieste</translation>
 <translation id="7977538094055660992">Dispositivo di uscita</translation>
+<translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> min fa}=1{<ph name="TIME_COUNT" /> h fa}other{<ph name="TIME_COUNT" /> g fa}}</translation>
 <translation id="7979595116210197019">Servizi alimentari</translation>
 <translation id="798134797138789862">Può chiedere di usare dati e dispositivi per realtà virtuale</translation>
 <translation id="7982789257301363584">Rete</translation>
@@ -4267,7 +4266,6 @@ Ulteriori dettagli:
 <translation id="861775596732816396">Dimensione 4</translation>
 <translation id="8620276786115098679">Busta Kaku 7</translation>
 <translation id="8622864575115813231">Contatto dell'istituto finanziario in corso…</translation>
-<translation id="8623885649813806493">Nessuna password corrispondente. Mostra tutte le password salvate.</translation>
 <translation id="8624354461147303341">Ricevi sconti</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
 <translation id="8637362707224133343">Chrome è dotato di funzionalità di sicurezza integrate che ti proteggono durante la navigazione, come Google Navigazione sicura, che <ph name="BEGIN_LINK" />di recente ha rilevato phishing<ph name="END_LINK" /> sul sito che hai cercato di visitare. I siti di phishing si spacciano per altri siti per ingannarti.<ph name="NEW_LINE" />Anche i siti che in genere sono sicuri possono essere compromessi da utenti malintenzionati. <ph name="BEGIN_ERROR_LINK" />Contattaci<ph name="END_ERROR_LINK" /> se ritieni che sia stato commesso un errore e che questo sito non rappresenti un pericolo.</translation>
@@ -4598,7 +4596,6 @@ Ulteriori dettagli:
 <translation id="937885410143139026">Dati inviati alla Console di amministrazione</translation>
 <translation id="939736085109172342">Nuova cartella</translation>
 <translation id="940524522703752213">Il caricamento del file su <ph name="CLOUD_PROVIDER" /> inizierà tra <ph name="MINUTES" /> minuti</translation>
-<translation id="944540589955480312">Usa password e passkey salvate nel tuo Account Google</translation>
 <translation id="944578681290094302">Mostra i premi e i vantaggi disponibili per le tue carte al momento del pagamento. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Scopri di più sui vantaggi delle carte<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945646848072568856">Chrome impedisce ai siti di utilizzare i cookie di terze parti per monitorare la tua navigazione.</translation>
 <translation id="945855313015696284">Controlla le informazioni riportate di seguito ed elimina le schede non valide</translation>

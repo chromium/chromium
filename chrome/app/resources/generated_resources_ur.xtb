@@ -228,7 +228,6 @@
 <translation id="1151917987301063366"><ph name="HOST" /> کو ہمیشہ سینسرز تک رسائی حاصل کرنے کی اجازت دیں</translation>
 <translation id="1152346050262092795">اپنے اکاؤنٹ کی توثیق کرنے کیلئے اپنے پاس ورڈ کو دوبارہ درج کریں۔</translation>
 <translation id="1153636665119721804">‏Google کا اعلی تحفظ پروگرام</translation>
-<translation id="1155545602507378023">نہیں، صرف یہ آلہ</translation>
 <translation id="1155816283571436363">آپ کے فون سے رابطہ ہو رہا ہے</translation>
 <translation id="1157952955648710254">‏Google تلاش کے سائیڈ پینل کو بند کریں</translation>
 <translation id="1158080958325422608">بڑے حروف میں تبدیل کریں</translation>
@@ -1153,7 +1152,6 @@
 <translation id="1794791083288629568">اس مسئلے کو حل کرنے میں ہماری مدد کیلئے تاثرات بھیجیں۔</translation>
 <translation id="1795214765651529549">کلاسک استعمال کریں</translation>
 <translation id="1795438342141780114">کرسر کو وسط پر ری سیٹ کریں</translation>
-<translation id="1795668164971917185">‏اگلی بار جب Google محفوظ براؤزنگ کو کوئی مشتبہ ڈاؤن لوڈ ملے گا، تو یہ آپ کے منتخب کردہ <ph name="LINK" /> کے حصے کے طور پر اسے خودکار طور پر اسکین کرے گی</translation>
 <translation id="1796588414813960292">وہ خصوصیات کام نہیں کریں گی جن کیلئے آواز کی ضرورت ہوتی ہے</translation>
 <translation id="1797117170091578105">‏اپنا Chromebook کی بورڈ استعمال کر کے کھیلیں۔ آپ مخصوص کاروائیوں کے لیے کلیدوں کو حسب ضرورت بنا سکتے ہیں۔</translation>
 <translation id="1798335429200675510">‏مسودہ تخلیق کرنے یا موجودہ کام کو بہتر بنانے کے لیے ٹیکسٹ باکس میں دائیں کلک کریں، Google AI کے ذریعے تقویت یافتہ۔ فی الحال محدود دستیابی ہے۔</translation>
@@ -1406,7 +1404,6 @@
 <translation id="1974043046396539880">‏CRL تقسیم کے پوائنٹس</translation>
 <translation id="1974060860693918893">جدید ترین</translation>
 <translation id="1974159333077206889">سبھی اسپیکرز کے ساتھ ایک ہی آڈیو</translation>
-<translation id="1974216844776165821">‏Chrome نے آپ کا پاس ورڈ اس آلہ میں محفوظ کر لیا ہے، لیکن آپ اس کے بجائے اسے اپنے Google اکاؤنٹ میں محفوظ کر سکتے ہیں۔ پھر، آپ کے سائن ان ہونے پر آپ کے Google اکاؤنٹ میں موجود تمام پاس ورڈز اور پاس کیز بھی دستیاب ہوں گی۔</translation>
 <translation id="1975841812214822307">ہٹائیں…</translation>
 <translation id="1976150099241323601">سیکیورٹی آلہ میں سائن ان کریں</translation>
 <translation id="1976823515278601587">بڑی بچتیں</translation>
@@ -1657,7 +1654,6 @@
 <translation id="2143915448548023856">ڈسپلے کی ترتیبات</translation>
 <translation id="2144536955299248197">سرٹیفکیٹ کا ناظر: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">‏Linux Android ایپ ڈیولپمنٹ</translation>
-<translation id="2144873026585036769">‏پاس ورڈز اور پاس کیز کو محفوظ کرنے اور بھرنے کے لیے اپنا Google اکاؤنٹ استعمال کریں؟</translation>
 <translation id="2145917706968602070">‏یقینی بنائیں کہ آپ کا فون قریب میں ہے، غیر مقفل ہے اور اس میں بلوٹوتھ اور Wi-Fi آن ہے</translation>
 <translation id="2146263598007866206">سائٹس آپ کا وقت بچانے کے لیے خودکار طور پر متعلقہ فائلز کو ایک ساتھ ڈاؤن لوڈ کر سکتی ہیں</translation>
 <translation id="2147218225094845757">سائیڈ پینل چھپائیں</translation>
@@ -2119,7 +2115,6 @@
 <translation id="2458591546854598341">آلہ کی مینیجمنٹ کا ٹوکن غلط ہے۔</translation>
 <translation id="2459703812219683497">فعالیت کے کوڈ کا پتہ چلا</translation>
 <translation id="2459706890611560967"><ph name="DEVICE_NAME" /> پر ٹیب کاسٹ کرنا دوبارہ شروع کریں</translation>
-<translation id="2460356425461033301">اپنے براؤزر کے ڈیٹا کا بیک اپ لیں اور اسے کسی بھی آلے پر استعمال کریں</translation>
 <translation id="2460482211073772897">دیگر فولڈرز میں</translation>
 <translation id="2460826998961521840">‏اپنے Google اکاؤنٹ میں محفوظ کردہ پاس کیز استعمال کرنے کے لیے</translation>
 <translation id="2461045498706592033"><ph name="LOCAL_FOLDER" /> صرف اس آلے پر محفوظ ہے۔ اگر آپ اس بُک مارک کو <ph name="LOCAL_FOLDER" /> میں منتقل کرتے ہیں تو آپ اسے مزید اپنے دیگر آلات پر نہیں حاصل کر سکیں گے۔</translation>
@@ -6043,7 +6038,6 @@
 <translation id="5263656105659419083">آسانی سے سائیڈ پینل پر واپس جانے کے لیے، اوپر دائیں جانب "پن" پر کلک کریں</translation>
 <translation id="5264148714798105376">اس میں ایک منٹ یا اس سے تھوڑا زیادہ وقت لگ سکتا ہے۔</translation>
 <translation id="5264252276333215551">براہ کرم کیوسک وضع میں اپنی ایپ شروع کرنے کیلئے انٹرنیٹ سے منسلک ہوں۔</translation>
-<translation id="526539328530966548">بہتر کردہ حفاظت</translation>
 <translation id="5265797726250773323">انسٹال کرنے کے دوران خرابی</translation>
 <translation id="5266113311903163739">سرٹیفکیشن اتھارٹی درآمد کرنے میں خرابی</translation>
 <translation id="526622169288322445"><ph name="ADDRESS_SUMMARY" /> کے لیے مزید کارروائیاں</translation>
@@ -7369,7 +7363,6 @@
 <translation id="6234108445915742946">‏Chrome کی سروس کی شرائط 31 مارچ کو بدل رہی ہیں</translation>
 <translation id="6234474535228214774">انسٹال زیر التوا ہے</translation>
 <translation id="6235208551686043831">‏آلہ کا کیمرا آن ہو گیا ہے۔ براہ کرم اپنے eSIM کے QR کوڈ کو کیمرے کے سامنے رکھیں۔</translation>
-<translation id="6237297174664969437">‏آپ کسی بھی وقت یہ منتخب کر سکتے ہیں کہ براؤزر کے کون سے ڈیٹا کو Chrome کی ترتیبات میں مطابقت پذیر کرنا ہے۔ <ph name="LINK_BEGIN" />آلے کی ترتیبات<ph name="LINK_END" /> میں، آپ Chrome براؤزر سے انسٹال کردہ ویب ایپس کے لیے مطابقت پذیری کو کنٹرول کر سکتے ہیں۔ Google آپ کی سرگزشت کی بنیاد پر تلاش اور دیگر سروسز کو ذاتی نوعیت کا بنا سکتا ہے۔</translation>
 <translation id="6237474966939441970">اسٹائلس نوٹ لینے والی ایپ</translation>
 <translation id="6237481151388361546">اپنا انٹرنیٹ کنکشن تبدیل کریں اور "دوبارہ کوشش کریں" کو منتخب کریں یا محدود منظر اور ترمیم کے اختیارات استعمال کرنے کے لیے "بنیادی ایڈیٹر میں کھولیں" کو منتخب کریں۔</translation>
 <translation id="623755660902014047">Reading Mode</translation>
@@ -7439,6 +7432,7 @@
 <translation id="6278776436938569440">مقام تبدیل کریں</translation>
 <translation id="6280215091796946657">مختلف اکاؤنٹ کے ساتھ سائن ان کریں</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281218688313242284">‏اپنے Google اکاؤنٹ کا نظم کریں</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{کاغذ کی 1 شیٹ کی حد سے تجاوز ہو گیا}other{کاغذ کی {COUNT} شیٹ کی حد سے تجاوز ہو گیا}}</translation>
 <translation id="6282490239556659745"><ph name="EMBEDDED_SITE" /> کو <ph name="SITE" /> سے ہٹائیں</translation>
 <translation id="6283438600881103103">اب آپ خودکار طور پر سائن آؤٹ ہو جائیں گے۔
@@ -8050,6 +8044,7 @@
 <translation id="6745592621698551453">ابھی اپ ڈیٹ کریں</translation>
 <translation id="6746124502594467657">نیچے منتقل کریں</translation>
 <translation id="67465227497040338"><ph name="DOMAIN" /> کیلئے پاس ورڈ دکھائیں</translation>
+<translation id="6746834324024491643">اپنے تمام آلات پر اپنے پاس ورڈز وغیرہ حاصل کرنے کے لیے، <ph name="EMAIL" /> کے بطور سائن ان کریں</translation>
 <translation id="6748980958975836188">‏میں نے پڑھا اور میں <ph name="BEGIN_LINK1" />Google کی سروس کی شرائط<ph name="END_LINK1" />، <ph name="BEGIN_LINK2" />Chrome اور ChromeOS کی اضافی سروس کی شرائط<ph name="END_LINK2" /> سے اتفاق کرتا ہوں۔</translation>
 <translation id="6749077623962119521">اجازتیں ری سیٹ کریں؟</translation>
 <translation id="6749473226660745022">تصاویر</translation>
@@ -8826,7 +8821,6 @@
 <translation id="730515362922783851">مقامی نیٹ ورک یا انٹرنیٹ پر کسی بھی آلہ کے ساتھ ڈیٹا کا تبادلہ کریں</translation>
 <translation id="7306521477691455105">‫<ph name="USB_DEVICE_NAME" /> کو <ph name="USB_VM_NAME" /> سے منسلک کرنے کے ليے ترتیبات کھولیں</translation>
 <translation id="7307129035224081534">موقوف ہو گیا</translation>
-<translation id="7307647374092371434">‏آپ کے سائن ان ہونے پر آپ کے Google اکاؤنٹ میں پاس ورڈز اور پاس کیز بھی اس آلے پر دستیاب ہوں گی</translation>
 <translation id="7308643132139167865">ویب سائٹ کی زبانیں</translation>
 <translation id="7309214454733221756"><ph name="APP_NAME" /> میں سائن ان کرنے کیلئے پاس کی تخلیق کریں؟</translation>
 <translation id="7311005168897771689">‏آف لائن ہونے پر اپنی Google Drive فائلز تک رسائی حاصل کریں</translation>

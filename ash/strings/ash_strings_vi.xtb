@@ -274,6 +274,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1908992311423394684">Mới cài đặt</translation>
 <translation id="1915307458270490472">Kết thúc</translation>
 <translation id="1918022425394817322">Máy ảnh đang bám theo góc trên bên phải</translation>
+<translation id="1920390473494685033">Danh bạ</translation>
 <translation id="1923539912171292317">Nhấp chuột tự động</translation>
 <translation id="1925320505152357008">dưới 1 phút</translation>
 <translation id="1928739107511554905">Để cập nhật, hãy dùng màn hình cảm ứng để khởi động lại Chromebook bằng bàn phím đã kết nối.</translation>
@@ -884,6 +885,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="4042660782729322247">Bạn đang chia sẻ màn hình</translation>
 <translation id="404437169852192935">Đã ngừng cập nhật</translation>
 <translation id="4049230407053723315">Cài đặt nhanh</translation>
+<translation id="4054070260844648638">Hiển thị với mọi người</translation>
 <translation id="4057003836560082631">Duyệt xem thẻ <ph name="INDEX" />/<ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4059696795118403455">Để xem những việc nên làm tiếp theo được đề xuất dành riêng cho bạn, hãy nhấn phím Tổng quan</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Tắt, 1 ư.dụng}other{Tắt, # ư.dụng}}</translation>
@@ -1407,7 +1409,6 @@ Chưa kết nối thiết bị nào.</translation>
 <translation id="5727460725221669831">Nếu gần đây bạn quên mật khẩu hoặc thay đổi mật khẩu của Tài khoản Google, hãy thử khôi phục người dùng này.</translation>
 <translation id="5733630091161562207">Thông báo chào mừng</translation>
 <translation id="573413375004481890">Thiết bị này không thể hỗ trợ tất cả màn hình của bạn nên một màn hình đã bị ngắt kết nối</translation>
-<translation id="5740328398383587084">Chia sẻ lân cận</translation>
 <translation id="574392208103952083">Trung bình</translation>
 <translation id="5744083938413354016">Nhấn và kéo</translation>
 <translation id="5745612484876805746">Chế độ Ánh sáng đêm sẽ tự động bật khi trời tối</translation>
@@ -1484,6 +1485,7 @@ Chưa kết nối thiết bị nào.</translation>
 <translation id="5990992855591814753">Không bị phân tâm nhờ danh sách phát giúp tập trung dành riêng cho bạn. Tận hưởng YouTube Music và YouTube không có quảng cáo với 3 tháng sử dụng miễn phí YouTube Premium. Có áp dụng các điều khoản.</translation>
 <translation id="5998374579424866922">Tắt các nút điều khiển trò chơi</translation>
 <translation id="6000279412553873020">Phím, nút và các chế độ điều khiển khác</translation>
+<translation id="6002122790816966947">Các thiết bị của bạn</translation>
 <translation id="6012623610530968780">Trang <ph name="SELECTED_PAGE" />/<ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Đánh dấu mục tiếp theo trên kệ</translation>
 <translation id="6015573907265691211">Đánh dấu là đã hoàn thành</translation>

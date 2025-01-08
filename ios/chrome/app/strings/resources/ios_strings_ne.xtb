@@ -287,6 +287,7 @@
 <translation id="2214453882118345682">क्यामेरामा देखिएका कुराहरू किनमेल, अनुवाद तथा पहिचान गर्नुहोस्।</translation>
 <translation id="2220529011494928058">मुद्दा उजुरी गर्नुहोस्</translation>
 <translation id="2223461067862937305">QR कोड बनाउनुहोस्</translation>
+<translation id="2229345671837147090">रिमोट ट्याब ग्रिड</translation>
 <translation id="2230173723195178503">वेबपृष्ठ लोड गरियो</translation>
 <translation id="2236949375853147973">मेरो गतिविधि</translation>
 <translation id="2240256190924001613">कन्फिगुरेसन प्रोफाइल उपलब्ध छ</translation>
@@ -385,6 +386,7 @@
 <translation id="2640733327287333451">युजरनेम छैन ••••••</translation>
 <translation id="264215785133931186">भर्खरै जाँच गरिएको</translation>
 <translation id="2647434099613338025">भाषा हाल्नुहोस्</translation>
+<translation id="2649592894792404568">तपाईं Google पासवर्ड म्यानेजरमा भएको आफ्नो जानकारी मेटाउन लाग्दै हुनुहुन्छ</translation>
 <translation id="2652129567809778422">पासवर्ड चयन गर्नुहोस्</translation>
 <translation id="2658056020748144467">फाइल खोल्न सकिएन</translation>
 <translation id="2661809266906115479"><ph name="TITLE" />, <ph name="STATE" />, यो डिभाइसमा मात्र, <ph name="URL" /></translation>
@@ -653,6 +655,7 @@
 <translation id="3992684624889376114">यो पेजका बारेमा</translation>
 <translation id="3994422733891749358">आफूले प्राप्त गर्न चाहेका सूचनाहरू छनौट गर्नुहोस्</translation>
 <translation id="3994522032746736727"><ph name="EMAIL" /> मार्फत साइन इन गर्नुहोस्</translation>
+<translation id="3994911892367422121">बुझेँ</translation>
 <translation id="3995521777587992544">पृष्ठ लोडसम्बन्धी प्रगति पट्टी, <ph name="EMAIL" /> लोड गरियो।</translation>
 <translation id="3997522473364371632">तपाईंका एड्मिनले पासवर्ड सेयर गर्ने सुविधा अफ गर्नुभएको छ।</translation>
 <translation id="4002066346123236978">शीर्षक</translation>
@@ -802,6 +805,7 @@
 <translation id="4651927776207937667">{count,plural, =1{१ मिनेटपछि लुकाउनुहोस्}other{{count} मिनेटपछि लुकाउनुहोस्}}</translation>
 <translation id="4652817563047461855">तपाईंका पासवर्डहरू सुरक्षित छन् भन्ने कुरा सुनिश्चित गर्नुहोस्, ती पासवर्ड ह्याक वा चोरी भएका छन् कि छैनन् भन्ने कुरा थाहा पाउनुहोस् र इन्टरनेटमा आफूलाई सुरक्षित राख्न सघाउने सुझाव प्राप्त गर्नुहोस्। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">सेभ गर्नुहोस्</translation>
+<translation id="466307903888586355">तपाईंको सङ्गठनले फाइलहरू सेभ गर्ने सुविधा ब्लक गरेको छ</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">तपाईंको सङ्गठनको नीतिअनुसार तपाईंले गोप्य रूपमा ब्राउज गर्नु पर्ने हुन्छ। ट्याब समूहहरू इन्कोग्निटो मोडमा सिंक हुँदैनन्।
 <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
@@ -1276,6 +1280,7 @@
 <translation id="6641465290890659327">आफ्नो पासवर्डको कपी सेयर गर्नुहोस्</translation>
 <translation id="6642362222295953972">विद्यमान ट्याबमा जानुहोस्</translation>
 <translation id="6644512095122093795">पासवर्डहरू सुरक्षित गर्ने प्रस्ताव गर्नुहोस्</translation>
+<translation id="664573288952458293">नियमित ट्याब ग्रिड</translation>
 <translation id="6645899968535965230">QR कोड: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">तपाईंले यसपछि खोल्न सक्ने साइट पूर्वानुमान गर्ने प्रयोजनका लागि तपाईंले खोल्ने URL हरू Google मा पठाइन्छन्</translation>
 <translation id="6657585470893396449">पासवर्ड</translation>
@@ -1667,6 +1672,7 @@
 <translation id="8407669440184693619">यो साइटका लागि कुनै पनि पासवर्ड फेला परेन</translation>
 <translation id="8407831512155324054">तपाईंका पासवर्डहरू भरपर्दा देखिन्छन्</translation>
 <translation id="842523302461531262">सेटिङमा गई यसलाई डिफल्ट ब्राउजर बनाउनुहोस्…</translation>
+<translation id="8425826545759040372">इन्कोग्निटो ट्याब ग्रिड</translation>
 <translation id="8428045167754449968">गाउँ / टोल</translation>
 <translation id="8428213095426709021">सेटिङहरू</translation>
 <translation id="8428634594422941299">बुझेँ</translation>

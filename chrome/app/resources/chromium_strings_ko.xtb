@@ -326,7 +326,6 @@
 <translation id="5496810170689441661">Chromium에서 비밀번호를 수정하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="5527463683072221100">Chromium에서 PDF 열기</translation>
 <translation id="5568136785038042132">어느 컴퓨터에서나 내 확장 프로그램을 사용하려면 Chromium에 로그인하세요.</translation>
-<translation id="5575418445468216473">비밀번호 및 기타 Chromium 데이터가 Google 계정에 저장되며 이 기기에서 삭제됩니다. 나중에 사용하려면 Chromium에 다시 로그인하세요</translation>
 <translation id="5579324208890605088">시작 오류: 관리자가 아닌 일반 사용자로 설치 프로그램을 실행하세요.</translation>
 <translation id="5596627076506792578">옵션 더보기</translation>
 <translation id="5605834417512968703">이미지 검색으로 검색할 항목을 선택하거나 Esc 키를 눌러 이미지 검색을 종료하세요.</translation>
@@ -477,7 +476,6 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7355355292030546812">파일이 <ph name="USER_EMAIL" /> 등의 개인 및 소셜 네트워크 계정에 피해를 줄 수 있기 때문에 Chromium에서 이 다운로드를 차단했습니다</translation>
 <translation id="7384121030444253939">이 확장 프로그램은 더 이상 지원되지 않습니다. 대신 Chromium에서는 이 프로그램을 삭제할 것을 권장합니다.</translation>
 <translation id="7389750180956889333">Chromium이 양식을 더 잘 이해하고 더 빠르게 자동 완성할 수 있습니다. <ph name="BEGIN_LINK" />Chrome 자동 완성<ph name="END_LINK" /> 자세히 알아보기</translation>
-<translation id="7398989605938454041">Chromium 프로필을 사용하면 모든 Chromium 데이터를 분리할 수 있습니다. 업무용 데이터와 개인용 데이터를 더 쉽게 분리해 보세요.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - 개발자용 Chromium</translation>
 <translation id="7450541714075000668">텍스트 복사됨</translation>
 <translation id="7451052299415159299">이 사이트에서 카메라에 액세스하려면 Chromium에 권한이 필요합니다</translation>
@@ -541,7 +539,6 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8326785589245660814">계정의 Chromium 데이터를 삭제합니다.</translation>
 <translation id="8330519371938183845">로그인하여 모든 기기에서 Chromium을 동기화하고 맞춤설정하세요.</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" />에서 이전에 Chromium을 사용한 적이 있음</translation>
-<translation id="8357820681460164151">모든 기기에서 Chromium 브라우저 데이터에 액세스하려면 로그인한 후 동기화를 사용 설정하세요</translation>
 <translation id="8359544530202147897">Google 계정(<ph name="ACCOUNT_EMAIL" />)의 Chromium 데이터를 계속 사용하려면 Chromium을 업데이트하세요</translation>
 <translation id="8360718212975266891">향후 Chromium 업데이트를 받으려면 Windows 10 이상이 필요합니다. 이 컴퓨터에서는 Windows 8을 사용 중입니다.</translation>
 <translation id="8362914115861174987">도착어</translation>
@@ -592,7 +589,6 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="9022552996538154597">Chromium에 로그인</translation>
 <translation id="904366664621834601">보관 파일에 멀웨어를 숨길 수 있는 다른 파일이 포함되어 있기 때문에 Chromium에서 이 다운로드를 차단했습니다</translation>
 <translation id="9062666675513499497">다른 Google 서비스에 로그인할 때 Chromium에 로그인</translation>
-<translation id="907832235989677238">Chromium에 로그인합니다. 계정에 한 번만 로그인하려면 <ph name="GUEST_LINK_BEGIN" />기기를 게스트로 사용<ph name="GUEST_LINK_END" />하면 됩니다.</translation>
 <translation id="9078733879136747090">Chromium이 자동으로 종료되었습니다</translation>
 <translation id="9089354809943900324">Chromium이 이전 버전임</translation>
 <translation id="9093206154853821181">{0,plural, =1{1시간 후 Chromium이 다시 시작됩니다}other{#시간 후 Chromium이 다시 시작됩니다}}</translation>

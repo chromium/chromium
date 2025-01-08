@@ -104,9 +104,6 @@
 <translation id="5494920125229734069">すべて選択する</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{タブグループ（タブの数: <ph name="TABS_COUNT_ONE" />、色: <ph name="COLOR_NAME" />）を閉じます。}other{タブグループ（タブの数: <ph name="TABS_COUNT_MANY" />、色: <ph name="COLOR_NAME" />）を閉じます。}}</translation>
 <translation id="5556417849629758491">ストア情報を表示、画面上部付近に表示されるオプション</translation>
-<translation id="5615302411300498438">後でタブを追加できるようにこのグループを保持するか、グループから退出します。
-
-退出すると、「<ph name="TITLE_OF_GROUP" />」タブグループに直ちにアクセスできなくなります。</translation>
 <translation id="5627941783489838464">タブの更新はありません</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{タブを復元}other{タブを復元}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome からの <ph name="TABS_COUNT_ONE" /> 件のリンク}other{Chrome からの <ph name="TABS_COUNT_MANY" /> 件のリンク}}</translation>
@@ -117,7 +114,6 @@
 <translation id="6040143037577758943">閉じる</translation>
 <translation id="6051432659151380973">タブグループは自動的に保存されます</translation>
 <translation id="6054741997831917303">このアイテムの価格は最近 <ph name="PREVIOUS_PRICE" /> から <ph name="NEW_PRICE" /> に下がりました</translation>
-<translation id="6082313992897617440">「<ph name="GROUP_NAME" />」タブグループに直ちにアクセスできなくなります</translation>
 <translation id="6109251075362363230">最後に使用したもの以外の重複するすべてのタブもアーカイブされるようになりました。</translation>
 <translation id="6193448654517602979">タブを選択</translation>
 <translation id="6228793724645064692">（ストアの評価）</translation>
@@ -145,9 +141,9 @@
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> が選択されています</translation>
 <translation id="7326879924029668159">返品に関するポリシーなどを確認</translation>
 <translation id="7352298686197644113">開いているタブに値下げされた商品があります</translation>
-<translation id="7421293530411019405">タブグループから退出しますか？</translation>
 <translation id="7452985128687107478">タブグループは自動的に保存され、すべてのデバイスで更新されます</translation>
 <translation id="747459581954555080">すべて復元</translation>
+<translation id="750886945254958667">後でタブを追加できるようにこのグループを保持するか、今後使用しない場合は退出します</translation>
 <translation id="753732157349120914">タブ切り替え機能</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Google による審査 <ph name="REVIEWS_COUNT_ONE" /> 件}other{Google による審査 <ph name="REVIEWS_COUNT_MANY" /> 件}}</translation>
 <translation id="7559245342362162951">グループのタブを全画面グリッドで表示</translation>
@@ -177,9 +173,7 @@
 <translation id="8398929769197326728">新しいフォルダ - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> 個のタブを追加、<ph name="ANY_CLOSED" /> 個のタブを閉じました}other{<ph name="MANY_ADDED" /> 個のタブを追加、<ph name="ANY_CLOSED" /> 個のタブを閉じました}}</translation>
-<translation id="8631711675211020168">全員が「<ph name="GROUP_NAME" />」タブグループに直ちにアクセスできなくなり、すべてのデバイスから削除されます</translation>
 <translation id="8633025649649592204">最近のアクティビティ</translation>
-<translation id="8635399646025169806">タブグループを保持しますか？</translation>
 <translation id="870736955561925754">タブを閉じてグループを削除しますか？</translation>
 <translation id="8714939927607906138">値下げ</translation>
 <translation id="8730621377337864115">完了</translation>

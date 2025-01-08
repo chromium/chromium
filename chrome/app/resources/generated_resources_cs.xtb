@@ -228,7 +228,6 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1151917987301063366">Vždy povolit webu <ph name="HOST" /> přístup k senzorům</translation>
 <translation id="1152346050262092795">Pokud chcete ověřit účet, znovu zadejte heslo.</translation>
 <translation id="1153636665119721804">Program pokročilé ochrany Google</translation>
-<translation id="1155545602507378023">Ne, pouze toto zařízení</translation>
 <translation id="1155816283571436363">Připojování k telefonu</translation>
 <translation id="1157952955648710254">Zavřít boční panel Vyhledávání Google</translation>
 <translation id="1158080958325422608">Změnit na velká písmena</translation>
@@ -1154,7 +1153,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1794791083288629568">Odeslat zpětnou vazbu, která nám pomůže při řešení tohoto problému</translation>
 <translation id="1795214765651529549">Použít klasický motiv</translation>
 <translation id="1795438342141780114">Vrátit kurzor doprostřed</translation>
-<translation id="1795668164971917185">Až Bezpečné prohlížení Google příště odhalí podezřelé stahování, automaticky ho zkontroluje pomocí vámi vybrané <ph name="LINK" /></translation>
 <translation id="1796588414813960292">Funkce vyžadující zvuk nebudou k dispozici</translation>
 <translation id="1797117170091578105">Hrajte na klávesnici Chromebooku. Můžete si nastavit klávesy pro konkrétní akce.</translation>
 <translation id="1798335429200675510">Kliknutím pravým tlačítkem do textového pole vytvoříte koncept nebo vylepšíte stávající text, používá Google AI. Dostupnost je v současné době omezená.</translation>
@@ -1407,7 +1405,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1974043046396539880">Distribuční body seznamu CRL</translation>
 <translation id="1974060860693918893">Rozšířená nastavení</translation>
 <translation id="1974159333077206889">Stejný zvuk na všech reproduktorech</translation>
-<translation id="1974216844776165821">Chrome heslo uložil do tohoto zařízení, ale můžete ho místo toho uložit do svého účtu Google. Když budete přihlášeni, budou pak k dispozici i všechna hesla a přístupové klíče ve vašem účtu Google.</translation>
 <translation id="1975841812214822307">Odstranit</translation>
 <translation id="1976150099241323601">Přihlášení do zabezpečeného zařízení</translation>
 <translation id="1976823515278601587">Velká úspora</translation>
@@ -1657,7 +1654,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2143915448548023856">Nastavení zobrazení</translation>
 <translation id="2144536955299248197">Prohlížeč certifikátů: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Vývoj aplikací Android pro Linux</translation>
-<translation id="2144873026585036769">Používat k ukládání a vyplňování hesel a přístupových klíčů účet Google?</translation>
 <translation id="2145917706968602070">Zkontrolujte, zda je telefon poblíž, zda je odemknutý a zda jsou zapnuté Bluetooth a Wi-Fi</translation>
 <translation id="2146263598007866206">Weby mohou automaticky stahovat související soubory, aby vám ušetřily čas</translation>
 <translation id="2147218225094845757">Skrýt boční panel</translation>
@@ -2118,7 +2114,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2458591546854598341">Token správy zařízení není platný.</translation>
 <translation id="2459703812219683497">Byl zjištěn aktivační kód</translation>
 <translation id="2459706890611560967">Obnovit odesílání karty do zařízení <ph name="DEVICE_NAME" /></translation>
-<translation id="2460356425461033301">Zálohujte si data prohlížeče a používejte je na libovolném zařízení</translation>
 <translation id="2460482211073772897">V jiných složkách</translation>
 <translation id="2460826998961521840">Pokud chcete používat přístupové klíče uložené v účtu Google</translation>
 <translation id="2461045498706592033">Složka <ph name="LOCAL_FOLDER" /> je uložena jen na tomto zařízení. Pokud tuto záložku přesunete do složky <ph name="LOCAL_FOLDER" />, už ji nebudete mít na ostatních zařízeních.</translation>
@@ -6039,7 +6034,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5263656105659419083">Pokud se chcete snadno vrátit na boční panel, klikněte vpravo nahoře na Připnout</translation>
 <translation id="5264148714798105376">Tato akce může chvíli trvat.</translation>
 <translation id="5264252276333215551">Chcete-li aplikaci spustit v režimu veřejného terminálu, připojte se k internetu.</translation>
-<translation id="526539328530966548">vylepšené ochrany</translation>
 <translation id="5265797726250773323">Při instalaci došlo k chybě</translation>
 <translation id="5266113311903163739">Chyba při importu certifikační autority</translation>
 <translation id="526622169288322445">Další akce: <ph name="ADDRESS_SUMMARY" /></translation>
@@ -7361,7 +7355,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6234108445915742946">Smluvní podmínky prohlížeče Chrome se 31. března změní</translation>
 <translation id="6234474535228214774">Čeká se na instalaci</translation>
 <translation id="6235208551686043831">Byl zapnut fotoaparát zařízení. Umístěte před něj QR kód eSIM.</translation>
-<translation id="6237297174664969437">V nastavení Chromu můžete kdykoliv vybrat, která data prohlížeče se mají synchronizovat. V <ph name="LINK_BEGIN" />nastavení zařízení<ph name="LINK_END" /> můžete ovládat synchronizaci webových aplikací nainstalovaných z prohlížeče Chrome. Google může personalizovat Vyhledávání a další služby na základě vaší historie.</translation>
 <translation id="6237474966939441970">Aplikace k psaní poznámek dotykovým perem</translation>
 <translation id="6237481151388361546">Změňte připojení k internetu a zvolte možnost Zkusit znovu. Případně vyberte Otevřít v základním editoru a použijte omezené možnosti zobrazení a úprav.</translation>
 <translation id="623755660902014047">Režim čtení</translation>
@@ -7431,6 +7424,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6278776436938569440">Změnit umístění</translation>
 <translation id="6280215091796946657">Přihlásit se pomocí jiného účtu</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281218688313242284">Spravovat účet &amp;Google</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Překračuje limit 1 listu papíru}few{Překračuje limit {COUNT} listy papíru}many{Překračuje limit {COUNT} listu papíru}other{Překračuje limit {COUNT} listů papíru}}</translation>
 <translation id="6282490239556659745">Odebrat z webu <ph name="SITE" /> web <ph name="EMBEDDED_SITE" /></translation>
 <translation id="6283438600881103103">Teď budete automaticky odhlášeni.
@@ -8046,6 +8040,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6745592621698551453">Aktualizovat</translation>
 <translation id="6746124502594467657">Posunout dolů</translation>
 <translation id="67465227497040338">Zobrazit heslo pro <ph name="DOMAIN" /></translation>
+<translation id="6746834324024491643">Pokud svá hesla a další položky chcete mít na všech svých zařízeních, přihlaste se jako <ph name="EMAIL" /></translation>
 <translation id="6748980958975836188">Přečetl(a) jsem si <ph name="BEGIN_LINK1" />smluvní podmínky společnosti Google<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />dodatečné smluvní podmínky prohlížeče Chrome a systému ChromeOS <ph name="END_LINK2" /> a souhlasím s nimi.</translation>
 <translation id="6749077623962119521">Resetovat oprávnění?</translation>
 <translation id="6749473226660745022">Fotky</translation>
@@ -8823,7 +8818,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="730515362922783851">Výměna dat s libovolným zařízením v lokální síti nebo internetu</translation>
 <translation id="7306521477691455105">Otevřete Nastavení a připojte zařízení <ph name="USB_DEVICE_NAME" /> k zařízení <ph name="USB_VM_NAME" /></translation>
 <translation id="7307129035224081534">Pozastaveno</translation>
-<translation id="7307647374092371434">Když budete přihlášeni, budou hesla a přístupové klíče z účtu Google k dispozici i na tomto zařízení</translation>
 <translation id="7308643132139167865">Jazyky webových stránek</translation>
 <translation id="7309214454733221756">Vytvořit přístupový klíč k přihlašování do aplikace <ph name="APP_NAME" />?</translation>
 <translation id="7311005168897771689">Získejte přístup ke svým souborům na Disku Google i offline</translation>
@@ -9396,6 +9390,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7709152031285164251">Chyba – <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">&amp;Odeslat...</translation>
 <translation id="7711968363685835633">Zakázat personalizované konverze a návrhy a uživatelský slovník</translation>
+<translation id="771220840345868810">Nejsou k dispozici žádné navrhované otázky</translation>
 <translation id="7712739869553853093">Dialogové okno náhledu tisku</translation>
 <translation id="7713139339518499741">Přirozený hlas</translation>
 <translation id="7714307061282548371">Soubory cookie z domény <ph name="DOMAIN" /> byly povoleny</translation>

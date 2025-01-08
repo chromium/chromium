@@ -326,7 +326,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5496810170689441661">Chromium essaie de modifier des mots de passe. Pour autoriser cette action, entrez votre mot de passe Windows.</translation>
 <translation id="5527463683072221100">Ouvrir les PDF dans Chromium</translation>
 <translation id="5568136785038042132">Pour obtenir vos extensions sur tous vos ordinateurs, connectez-vous à Chromium</translation>
-<translation id="5575418445468216473">Vos mots de passe et autres données Chromium sont enregistrés dans votre compte Google et seront retirés de cet appareil. Pour les utiliser ultérieurement, reconnectez-vous à Chromium.</translation>
 <translation id="5579324208890605088">Erreur de démarrage : veuillez exécuter le programme d'installation en tant qu'utilisateur normal et non en tant qu'administrateur.</translation>
 <translation id="5596627076506792578">Autres options</translation>
 <translation id="5605834417512968703">Sélectionner un élément à rechercher avec la recherche d'images ou appuyer sur Échap pour quitter la recherche d'images</translation>
@@ -477,7 +476,6 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="7355355292030546812">Chromium a bloqué ce téléchargement, car le fichier peut endommager vos comptes personnels et de réseaux sociaux, notamment <ph name="USER_EMAIL" /></translation>
 <translation id="7384121030444253939">Cette extension n'est plus prise en charge. Chromium vous recommande de la retirer.</translation>
 <translation id="7389750180956889333">Chromium comprend mieux les formulaires et peut les remplir automatiquement plus rapidement pour vous. En savoir plus sur le <ph name="BEGIN_LINK" />remplissage automatique de Chrome<ph name="END_LINK" /></translation>
-<translation id="7398989605938454041">Utilisez les profils Chromium pour dissocier toutes vos données Chromium. Cette façon de faire facilite la distinction entre le travail et le divertissement.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium pour les concepteurs</translation>
 <translation id="7450541714075000668">Texte copié</translation>
 <translation id="7451052299415159299">Chromium a besoin de votre autorisation pour accéder à votre appareil photo pour ce site</translation>
@@ -541,7 +539,6 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="8326785589245660814">effacez les données Chromium de votre compte</translation>
 <translation id="8330519371938183845">Se connecter pour synchroniser et personnaliser Chromium sur vos appareils</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> utilisait précédemment Chromium</translation>
-<translation id="8357820681460164151">Pour accéder à vos données de navigation Chromium sur tous vos appareils, connectez-vous et activez la synchronisation</translation>
 <translation id="8359544530202147897">Mettez à jour Chromium pour continuer à utiliser les données Chromium dans votre compte Google, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8360718212975266891">Pour recevoir les futures mises à jour de Chromium, vous devrez disposer de Windows 10 ou d'une version ultérieure. Cet ordinateur fonctionne sous Windows 8.</translation>
 <translation id="8362914115861174987">Langue cible</translation>
@@ -592,7 +589,6 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="9022552996538154597">Connexion à Chromium</translation>
 <translation id="904366664621834601">Chromium a bloqué ce téléchargement, car le fichier d'archive comprend d'autres fichiers qui pourraient cacher des logiciels malveillants</translation>
 <translation id="9062666675513499497">Vous connecter à Chromium lorsque vous vous connectez à d'autres services Google</translation>
-<translation id="907832235989677238">Connectez-vous à Chromium. Si vous ne souhaitez vous connecter qu'une seule fois à un compte, vous pouvez <ph name="GUEST_LINK_BEGIN" />utiliser l'appareil en tant qu'invité<ph name="GUEST_LINK_END" />.</translation>
 <translation id="9078733879136747090">Chromium a été automatiquement fermé</translation>
 <translation id="9089354809943900324">Chromium n'est pas à jour</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium redémarrera dans une heure}one{Chromium redémarrera dans # heure}other{Chromium redémarrera dans # heures}}</translation>

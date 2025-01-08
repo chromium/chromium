@@ -274,6 +274,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1908992311423394684">Jauna instalācija</translation>
 <translation id="1915307458270490472">Pārtraukt</translation>
 <translation id="1918022425394817322">Kamera pārnesta uz labo augšējo stūri</translation>
+<translation id="1920390473494685033">Kontaktpersonas</translation>
 <translation id="1923539912171292317">Automātiskie klikšķi</translation>
 <translation id="1925320505152357008">mazāk nekā 1 min</translation>
 <translation id="1928739107511554905">Lai iegūtu atjauninājumu, izmantojiet skārienekrānu, lai ar pievienoto tastatūru restartētu Chromebook datoru.</translation>
@@ -884,6 +885,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="4042660782729322247">Jūs šobrīd kopīgojat savu ekrānu</translation>
 <translation id="404437169852192935">Atjauninājumi vairs nav pieejami</translation>
 <translation id="4049230407053723315">Ātrie iestatījumi</translation>
+<translation id="4054070260844648638">Redzams visiem</translation>
 <translation id="4057003836560082631"><ph name="INDEX" />. pārlūkprogrammas cilne no <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4059696795118403455">Lai skatītu personalizētus ieteikumus par nākamajām darbībām, nospiediet kopsavilkuma taustiņu.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Izsl. lietotnē}zero{Izsl. # lietotnēs}one{Izsl. # lietotnē}other{Izsl. # lietotnēs}}</translation>
@@ -1407,7 +1409,6 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="5727460725221669831">Ja aizmirsāt paroli vai nesen mainījāt Google konta paroli, mēģiniet atkopt šo lietotāja profilu.</translation>
 <translation id="5733630091161562207">Sveiciena paziņojums</translation>
 <translation id="573413375004481890">Šajā ierīcē nevarēja atbalstīt visus jūsu displejus, tādējādi tika pārtraukts savienojums ar vienu no tiem.</translation>
-<translation id="5740328398383587084">Kopīgošana tuvumā</translation>
 <translation id="574392208103952083">Vidējs</translation>
 <translation id="5744083938413354016">Vilkšana pieskaroties</translation>
 <translation id="5745612484876805746">Nakts režīms tiek automātiski ieslēgts saulrietā.</translation>
@@ -1484,6 +1485,7 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="5990992855591814753">Sekojiet savam mērķim ar personalizētiem atskaņošanas sarakstiem uzmanības koncentrēšanai. Iegūstiet YouTube Music un YouTube bez reklāmām, izmantojot YouTube Premium trīs mēnešus bez maksas. Ir spēkā noteikumi.</translation>
 <translation id="5998374579424866922">Izslēgt spēļu vadīklas</translation>
 <translation id="6000279412553873020">Taustiņi, pogas u.c.</translation>
+<translation id="6002122790816966947">Jūsu ierīces</translation>
 <translation id="6012623610530968780"><ph name="SELECTED_PAGE" />. lapa no <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Plauktā atzīmēt nākamo vienumu</translation>
 <translation id="6015573907265691211">Atzīmēt kā pabeigtu</translation>

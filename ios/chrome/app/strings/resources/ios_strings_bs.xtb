@@ -287,7 +287,7 @@
 <translation id="2214453882118345682">Kupujte, prevodite i prepoznajte ono što vidite pomoću kamere.</translation>
 <translation id="2220529011494928058">Prijavite problem</translation>
 <translation id="2223461067862937305">Kreiraj QR kôd</translation>
-<translation id="2229345671837147090">Daljinska rešetka kartice</translation>
+<translation id="2229345671837147090">Mreža udaljenih kartica</translation>
 <translation id="2230173723195178503">Web lokacija je učitana</translation>
 <translation id="2236949375853147973">Moja aktivnost</translation>
 <translation id="2240256190924001613">Dostupan je profil konfiguracije</translation>
@@ -654,7 +654,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="3992684624889376114">O ovoj stranici</translation>
 <translation id="3994422733891749358">Odaberite koja obavještenja želite primati</translation>
 <translation id="3994522032746736727">Prijavite se kao <ph name="EMAIL" /></translation>
-<translation id="3994911892367422121">SHVAĆAM</translation>
+<translation id="3994911892367422121">RAZUMIJEM</translation>
 <translation id="3995521777587992544">Traka napretka učitavanja stranice, učitano <ph name="EMAIL" />.</translation>
 <translation id="3997522473364371632">Dijeljenje lozinke je onemogućio administrator.</translation>
 <translation id="4002066346123236978">Naslov</translation>
@@ -804,7 +804,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="4651927776207937667">{count,plural, =1{Sakrij nakon 1 minute}one{Sakrij nakon {count} minute}few{Sakrij nakon {count} minute}other{Sakrij nakon {count} minuta}}</translation>
 <translation id="4652817563047461855">Osigurajte da lozinke budu na sigurnom, saznajte ako su ugrožene i dobijte savjet o tome kako se zaštititi online. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Sačuvaj</translation>
-<translation id="466307903888586355">Spremanje datoteka blokirala je vaša organizacija</translation>
+<translation id="466307903888586355">Organizacija je blokirala pohranjivanje fajlova</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Vaša organizacija zahtijeva da pregledate privatno. Grupe kartica se ne sinhroniziraju u anonimnom načinu rada.
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
@@ -1279,7 +1279,7 @@ Web lokacije ne mogu koristiti kolačiće da vide vašu aktivnost pregledanja na
 <translation id="6641465290890659327">Podijelite kopiju lozinke</translation>
 <translation id="6642362222295953972">Prelazak na postojeću karticu</translation>
 <translation id="6644512095122093795">Ponuda za čuvanje lozinki</translation>
-<translation id="664573288952458293">Rešetka obične kartice</translation>
+<translation id="664573288952458293">Mreža običnih kartica</translation>
 <translation id="6645899968535965230">QR kôd: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">URL-ovi koje posjetite šalju se Googleu radi predviđanja koje web lokacije ćete možda posjetiti sljedeće</translation>
 <translation id="6657585470893396449">Lozinka</translation>
@@ -1671,7 +1671,7 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="8407669440184693619">Nije pronađena nijedna lozinka za ovu web lokaciju</translation>
 <translation id="8407831512155324054">Vaše lozinke izgledaju jake</translation>
 <translation id="842523302461531262">Postavljanje kao zadanog u postavkama…</translation>
-<translation id="8425826545759040372">Rešetka anonimne kartice</translation>
+<translation id="8425826545759040372">Mreža anonimnih kartica</translation>
 <translation id="8428045167754449968">Grad/mjesto</translation>
 <translation id="8428213095426709021">Postavke</translation>
 <translation id="8428634594422941299">Razumijem</translation>

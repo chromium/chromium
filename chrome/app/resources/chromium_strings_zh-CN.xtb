@@ -133,6 +133,7 @@
 <translation id="277338894894732084">之后，Chromium 会询问您是否要使用已保存的信息自动填写表单</translation>
 <translation id="2785438272836277133">此扩展程序包含恶意软件，所以不安全。请将其从 Chromium 中移除，这样它便无法再查看和更改您在所访问的网站上的数据，包括您的个人信息。</translation>
 <translation id="2799223571221894425">重新启动</translation>
+<translation id="2803971713792056305">您的 Chromium</translation>
 <translation id="2806241689335397269">Chromium 会询问您是否要保存表单信息，例如生日、年龄和护照号码</translation>
 <translation id="2837693172913560447">这样做会为 <ph name="USER_EMAIL_ADDRESS" /> 创建一份新的 Chromium 个人资料</translation>
 <translation id="2841525013647267359">源语言</translation>
@@ -143,6 +144,7 @@
 <translation id="2910007522516064972">关于 Chromium(&amp;C)</translation>
 <translation id="2915996080311180594">暂不重启</translation>
 <translation id="2928420929544864228">安装完毕。</translation>
+<translation id="2933336679234709858">数据已使用口令加密。请输入该口令，以便使用 Chromium 数据并将其保存在您的 Google 账号中。</translation>
 <translation id="2945997411976714835">安装时出错：安装程序进程未能启动。</translation>
 <translation id="2970426615109535079">贵组织负责管理 Chromium</translation>
 <translation id="2977470724722393594">Chromium 已是最新版本</translation>
@@ -293,6 +295,7 @@
 <translation id="5123973130450702873">Chromium 需要获得权限，才能跟踪您的手部动作</translation>
 <translation id="5174969993834422967">您通常会屏蔽通知。要允许此网站向您发送通知，请点击位置栏右侧的通知图标。</translation>
 <translation id="5187123684706427865">Chromium 账号需要重新验证身份</translation>
+<translation id="5203572811198011329">如要使用 Chromium 数据并将其保存在您的 Google 账号中，请输入 <ph name="ACCOUNT_EMAIL" /> 的口令</translation>
 <translation id="5224391634244552924">尚未保存任何密码。您需要先保存密码才能使用 Chromium 的密码检查功能。</translation>
 <translation id="5231355151045086930">退出 Chromium</translation>
 <translation id="5234764350956374838">关闭</translation>
@@ -322,7 +325,6 @@
 <translation id="5496810170689441661">Chromium 正在尝试修改密码。请输入您的 Windows 密码以允许此操作。</translation>
 <translation id="5527463683072221100">在 Chromium 中打开 PDF 文件</translation>
 <translation id="5568136785038042132">若要在所有计算机上使用您的扩展程序，请登录 Chromium</translation>
-<translation id="5575418445468216473">您的密码和其他 Chromium 数据已保存在您的 Google 账号中，并将从此设备中移除。如需日后使用这些数据，请重新登录 Chromium。</translation>
 <translation id="5579324208890605088">启动错误：请以普通用户身份（非管理员身份）运行安装程序。</translation>
 <translation id="5596627076506792578">更多选项</translation>
 <translation id="5605834417512968703">选择任意内容即可使用图片搜索功能进行搜索，按 Esc 键可退出图片搜索功能</translation>
@@ -473,7 +475,6 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="7355355292030546812">Chromium 阻止了此项下载操作，因为该文件可能会危害您的个人和社交网络账号，包括 <ph name="USER_EMAIL" /></translation>
 <translation id="7384121030444253939">此扩展程序已不再受支持。Chromium 建议您移除它。</translation>
 <translation id="7389750180956889333">Chromium 可以更好地理解表单，并更快地为您自动填充表单。详细了解 <ph name="BEGIN_LINK" />Chrome 自动填充功能<ph name="END_LINK" /></translation>
-<translation id="7398989605938454041">通过使用多份 Chromium 个人资料，您可将自己的所有 Chromium 信息分门别类，从而更轻松地将工作和娱乐分开。</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium 开发者版</translation>
 <translation id="7450541714075000668">文本已复制</translation>
 <translation id="7451052299415159299">Chromium 需要获得相应权限，才能允许此网站使用您的摄像头</translation>
@@ -537,7 +538,6 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8326785589245660814">清除您账号中的 Chromium 数据</translation>
 <translation id="8330519371938183845">登录即可在您的所有设备上同步并个性化设置 Chromium</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> 之前使用的是 Chromium</translation>
-<translation id="8357820681460164151">如需在您的所有设备上访问自己的 Chromium 浏览器信息，请登录您的账号，然后开启同步功能</translation>
 <translation id="8359544530202147897">请更新 Chromium，以便继续使用 Google 账号 <ph name="ACCOUNT_EMAIL" /> 中的 Chromium 数据</translation>
 <translation id="8360718212975266891">若要接收后续 Chromium 更新，您需使用 Windows 10 或更高版本。此计算机目前使用的是 Windows 8。</translation>
 <translation id="8362914115861174987">目标语言</translation>
@@ -551,6 +551,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8453117565092476964">安装程序归档损坏或无效。请重新下载 Chromium。</translation>
 <translation id="8458614432758743027">Chromium 仅支持 Windows 10 或更高版本的操作系统。</translation>
 <translation id="8463672209299734063">可选：自动向 Google 发送诊断数据和使用情况数据，协助改进 Chromium 操作系统的功能和性能。</translation>
+<translation id="8471947159125090285">如要使用 Chromium 数据并将其保存在您的 Google 账号中，请验证是您本人在操作</translation>
 <translation id="8493179195440786826">Chromium版本太旧</translation>
 <translation id="8522801943730206384">您需要先保存密码，然后才能使用 Chromium 的密码检查功能</translation>
 <translation id="8550334526674375523">此工作资料与您的个人资料是完全分开的。</translation>
@@ -587,7 +588,6 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="9022552996538154597">登录 Chromium</translation>
 <translation id="904366664621834601">Chromium 阻止了此项下载操作，因为归档文件包含可能隐藏恶意软件的其他文件</translation>
 <translation id="9062666675513499497">登录其他 Google 服务时登录 Chromium</translation>
-<translation id="907832235989677238">登录 Chromium。如果您只想登录账号一次，可考虑<ph name="GUEST_LINK_BEGIN" />以访客身份使用设备<ph name="GUEST_LINK_END" />。</translation>
 <translation id="9078733879136747090">Chromium 已自动关闭</translation>
 <translation id="9089354809943900324">Chromium版本太旧</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium 将在 1 小时后重新启动}other{Chromium 将在 # 小时后重新启动}}</translation>

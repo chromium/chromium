@@ -104,9 +104,6 @@ Jika anda memadamkan kumpulan, semua orang akan kehilangan akses kepada kumpulan
 <translation id="5494920125229734069">Pilih semua</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Tutup kumpulan tab dengan <ph name="TABS_COUNT_ONE" /> tab, warna <ph name="COLOR_NAME" />.}other{Tutup kumpulan tab dengan <ph name="TABS_COUNT_MANY" /> tab, warna <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Lihat maklumat kedai, pilihan tersedia berhampiran bahagian atas skrin</translation>
-<translation id="5615302411300498438">Simpan kumpulan ini untuk menambahkan tab kemudian atau tinggalkan.
-
-Jika anda tinggalkan, anda akan kehilangan akses kepada kumpulan tab "<ph name="TITLE_OF_GROUP" />" dengan serta-merta.</translation>
 <translation id="5627941783489838464">Tiada kemaskinian tab</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Pulihkan tab}other{Pulihkan tab}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> pautan daripada Chrome}other{<ph name="TABS_COUNT_MANY" /> pautan daripada Chrome}}</translation>
@@ -117,7 +114,6 @@ Jika anda tinggalkan, anda akan kehilangan akses kepada kumpulan tab "<ph name="
 <translation id="6040143037577758943">Tutup</translation>
 <translation id="6051432659151380973">Tab kumpulan anda disimpan secara automatik</translation>
 <translation id="6054741997831917303">Baru-baru ini harga item ini jatuh daripada <ph name="PREVIOUS_PRICE" /> kepada <ph name="NEW_PRICE" /></translation>
-<translation id="6082313992897617440">Anda akan kehilangan akses kepada kumpulan tab <ph name="GROUP_NAME" /> dengan serta-merta</translation>
 <translation id="6109251075362363230">Kini semua tab pendua akan turut diarkibkan kecuali salinan yang digunakan baru-baru ini.</translation>
 <translation id="6193448654517602979">Pilih tab</translation>
 <translation id="6228793724645064692">(rating kedai)</translation>
@@ -145,9 +141,9 @@ Jika anda tinggalkan, anda akan kehilangan akses kepada kumpulan tab "<ph name="
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> Dipilih</translation>
 <translation id="7326879924029668159">Lihat dasar pemulangan dan pelbagai lagi</translation>
 <translation id="7352298686197644113">Lihat item yang lebih murah dalam tab yang terbuka</translation>
-<translation id="7421293530411019405">Tinggalkan kumpulan tab?</translation>
 <translation id="7452985128687107478">Kumpulan tab disimpan dan dikemaskinikan secara automatik merentas semua peranti anda</translation>
 <translation id="747459581954555080">Pulihkan semua</translation>
+<translation id="750886945254958667">Simpan kumpulan ini untuk menambahkan tab kemudian atau keluar daripada kumpulan ini jika anda tidak mahu akses kepada kumpulan ini lagi</translation>
 <translation id="753732157349120914">Penukar Tab</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> ulasan daripada Google}other{<ph name="REVIEWS_COUNT_MANY" /> ulasan daripada Google}}</translation>
 <translation id="7559245342362162951">Tunjukkan tab kumpulan dalam grid skrin penuh</translation>
@@ -177,9 +173,7 @@ Jika anda tinggalkan, anda akan kehilangan akses kepada kumpulan tab "<ph name="
 <translation id="8398929769197326728">Folder Baharu - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Tetapan</translation>
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tab ditambahkan, <ph name="ANY_CLOSED" /> ditutup}other{<ph name="MANY_ADDED" /> tab ditambahkan, <ph name="ANY_CLOSED" /> ditutup}}</translation>
-<translation id="8631711675211020168">Semua orang akan kehilangan akses kepada kumpulan tab <ph name="GROUP_NAME" /> dengan serta-merta dan kumpulan tab akan dipadamkan daripada semua peranti</translation>
 <translation id="8633025649649592204">Aktiviti baru-baru ini</translation>
-<translation id="8635399646025169806">Simpan kumpulan tab?</translation>
 <translation id="870736955561925754">Tutup tab dan padamkan kumpulan?</translation>
 <translation id="8714939927607906138">Lebih murah</translation>
 <translation id="8730621377337864115">Selesai</translation>

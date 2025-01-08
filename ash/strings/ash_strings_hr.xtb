@@ -274,6 +274,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1908992311423394684">Novo instaliranje</translation>
 <translation id="1915307458270490472">Prekini vezu</translation>
 <translation id="1918022425394817322">Kamera je poravnata s gornjim desnim kutom</translation>
+<translation id="1920390473494685033">Kontakti</translation>
 <translation id="1923539912171292317">Automatski klikovi</translation>
 <translation id="1925320505152357008">manje od 1 min</translation>
 <translation id="1928739107511554905">Da biste preuzeli ažuriranje, ponovo pokrenite Chromebook pomoću dodirnog zaslona dok je tipkovnica priključena.</translation>
@@ -886,6 +887,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="4042660782729322247">Dijelite zaslon</translation>
 <translation id="404437169852192935">Ažuriranja su završila</translation>
 <translation id="4049230407053723315">Brze postavke</translation>
+<translation id="4054070260844648638">Vidljivo svima</translation>
 <translation id="4057003836560082631">Kartica preglednika <ph name="INDEX" /> od <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4059696795118403455">Da biste vidjeli personalizirane prijedloge za sljedeće zadatke, pritisnite tipku za pregled prozora</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Isk. za 1 apl.}one{Isk. za # apl.}few{Iskl. za # apl.}other{Isk. za # apl.}}</translation>
@@ -1409,7 +1411,6 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="5727460725221669831">Ako ste zaboravili zaporku ili ste nedavno promijenili zaporku Google računa, pokušajte oporaviti korisnika.</translation>
 <translation id="5733630091161562207">Obavijest dobrodošlice</translation>
 <translation id="573413375004481890">Uređaj ne podržava sve vaše zaslone, pa je s jednim prekinuta veza.</translation>
-<translation id="5740328398383587084">Dijeljenje u blizini</translation>
 <translation id="574392208103952083">Srednje</translation>
 <translation id="5744083938413354016">Povlačenje dodirom</translation>
 <translation id="5745612484876805746">Noćno svjetlo automatski se uključuje u suton</translation>
@@ -1486,6 +1487,7 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="5990992855591814753">Ostanite usredotočeni uz personalizirane playliste za koncentraciju. Nabavite YouTube Music i YouTube bez oglasa uz tri mjeseca YouTube Premiuma bez dodatnih troškova. Primjenjuju se uvjeti.</translation>
 <translation id="5998374579424866922">Isključite kontrole igre</translation>
 <translation id="6000279412553873020">Tipke, gumbi i ostalo</translation>
+<translation id="6002122790816966947">Vaši uređaji</translation>
 <translation id="6012623610530968780"><ph name="SELECTED_PAGE" />. stranica od <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Isticanje sljedeće stavke na traci</translation>
 <translation id="6015573907265691211">Označi kao dovršeno</translation>

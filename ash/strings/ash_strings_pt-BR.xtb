@@ -274,6 +274,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1908992311423394684">Nova instalação</translation>
 <translation id="1915307458270490472">Desligar</translation>
 <translation id="1918022425394817322">Câmera alinhada ao canto direito de cima</translation>
+<translation id="1920390473494685033">Contatos</translation>
 <translation id="1923539912171292317">Cliques automáticos</translation>
 <translation id="1925320505152357008">menos de 1min</translation>
 <translation id="1928739107511554905">Para receber a atualização, use a touchscreen para reiniciar o Chromebook com o teclado conectado.</translation>
@@ -884,6 +885,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="4042660782729322247">Você está compartilhando sua tela</translation>
 <translation id="404437169852192935">Atualizações encerradas</translation>
 <translation id="4049230407053723315">Configurações rápidas</translation>
+<translation id="4054070260844648638">Visível para todos</translation>
 <translation id="4057003836560082631">Guia <ph name="INDEX" /> de <ph name="TOTAL_COUNT" /> do navegador. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4059696795118403455">Para ver sugestões personalizadas do que fazer em seguida, pressione a tecla Visão geral</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Desat p/ um app}one{Desat p/ # app}other{Desat p/ # apps}}</translation>
@@ -1407,7 +1409,6 @@ Nenhum dispositivo conectado.</translation>
 <translation id="5727460725221669831">Se você esqueceu a senha do dispositivo ou mudou a da sua Conta do Google recentemente, tente recuperar o usuário.</translation>
 <translation id="5733630091161562207">Notificação de boas-vindas</translation>
 <translation id="573413375004481890">Este dispositivo não é compatível com essa quantidade de telas. Por isso, uma delas foi desconectada</translation>
-<translation id="5740328398383587084">Compartilhar por proximidade</translation>
 <translation id="574392208103952083">Médio</translation>
 <translation id="5744083938413354016">Arrastar com toque</translation>
 <translation id="5745612484876805746">O Modo noturno será ativado automaticamente ao pôr do sol</translation>
@@ -1484,6 +1485,7 @@ Nenhum dispositivo conectado.</translation>
 <translation id="5990992855591814753">Mantenha o foco com playlists personalizadas. Tenha 3 meses de Premium sem custo financeiro para aproveitar o YouTube Music e o YouTube sem anúncios. Oferta sujeita aos termos.</translation>
 <translation id="5998374579424866922">Desativar controles de jogo</translation>
 <translation id="6000279412553873020">Teclas, botões e muito mais</translation>
+<translation id="6002122790816966947">Seus dispositivos</translation>
 <translation id="6012623610530968780">Página <ph name="SELECTED_PAGE" /> de <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Destacar próximo item na estante</translation>
 <translation id="6015573907265691211">Marcar como concluída</translation>

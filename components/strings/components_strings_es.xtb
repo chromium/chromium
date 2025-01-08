@@ -597,7 +597,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2040894699575719559">Ubicación bloqueada</translation>
 <translation id="2041788246978549610">Usar micrófonos disponibles (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Bandeja 7</translation>
-<translation id="204357726431741734">Inicia sesión para poder usar las contraseñas guardadas en tu cuenta de Google</translation>
 <translation id="2045871135676061132">Sobre personal</translation>
 <translation id="2046951263634619614">Librerías</translation>
 <translation id="2048261947532620704">Traduciendo página</translation>
@@ -1366,7 +1365,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="343474037147570563">Los archivos que subas o adjuntes se enviarán a Google Cloud o a terceros para que se analicen. Por ejemplo, puede que se analicen para buscar datos sensibles o software malicioso, que se almacenen de acuerdo con las políticas de la empresa y que tu administrador pueda verlos.</translation>
 <translation id="3435557549311968410">Impresión continua (corta)</translation>
 <translation id="3435738964857648380">Seguridad</translation>
-<translation id="3438829137925142401">Usar las contraseñas guardadas en tu cuenta de Google</translation>
 <translation id="3440783957068352691">cuadrada</translation>
 <translation id="3441653493275994384">Pantalla</translation>
 <translation id="3443504041532578451">Disco óptico (satinado)</translation>
@@ -3910,6 +3908,7 @@ Más información:
 <translation id="7975858430722947486">Añadido a la comparación</translation>
 <translation id="7976214039405368314">Demasiadas solicitudes</translation>
 <translation id="7977538094055660992">Dispositivo de salida</translation>
+<translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{Hace <ph name="TIME_COUNT" /> min}=1{Hace <ph name="TIME_COUNT" /> h}other{Hace <ph name="TIME_COUNT" /> días}}</translation>
 <translation id="7979595116210197019">Hostelería</translation>
 <translation id="798134797138789862">Puede solicitar permiso para utilizar dispositivos y datos de realidad virtual</translation>
 <translation id="7982789257301363584">Red</translation>
@@ -4270,7 +4269,6 @@ Más información:
 <translation id="861775596732816396">Tamaño 4</translation>
 <translation id="8620276786115098679">Sobre Kaku 7</translation>
 <translation id="8622864575115813231">Contactando con tu entidad financiera...</translation>
-<translation id="8623885649813806493">No hay contraseñas que coincidan. Mostrar todas las contraseñas guardadas.</translation>
 <translation id="8624354461147303341">Conseguir descuentos</translation>
 <translation id="8634957317623797170">54x86 mm</translation>
 <translation id="8637362707224133343">Chrome tiene funciones de seguridad integradas para protegerte mientras navegas (como Navegación segura de Google, que <ph name="BEGIN_LINK" />recientemente ha detectado phishing<ph name="END_LINK" /> en el sitio que has intentado visitar). Los sitios de phishing se hacen pasar por otros sitios para engañarte.<ph name="NEW_LINE" />En ocasiones, los atacantes vulneran sitios que normalmente son seguros. Si crees que se ha producido un error y que este sitio no es peligroso, <ph name="BEGIN_ERROR_LINK" />indícanoslo<ph name="END_ERROR_LINK" />.</translation>
@@ -4602,7 +4600,6 @@ Más información:
 <translation id="937885410143139026">Datos enviados a la consola de administración</translation>
 <translation id="939736085109172342">Nueva carpeta</translation>
 <translation id="940524522703752213">La subida de archivos a <ph name="CLOUD_PROVIDER" /> empezará dentro de <ph name="MINUTES" /> minutos</translation>
-<translation id="944540589955480312">Usar contraseñas y llaves de acceso guardadas en tu cuenta de Google</translation>
 <translation id="944578681290094302">Muestra las recompensas y ventajas disponibles para tus tarjetas al tramitar una compra. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Más información sobre las ventajas de las tarjetas<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945646848072568856">Chrome impide que los sitios usen cookies de terceros para hacer un seguimiento de tu actividad mientras navegas.</translation>
 <translation id="945855313015696284">Comprueba la información que aparece a continuación y elimina las tarjetas no válidas</translation>

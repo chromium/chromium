@@ -274,6 +274,7 @@
 <translation id="1908992311423394684">ติดตั้งใหม่</translation>
 <translation id="1915307458270490472">วางซ้อนไว้ด้านบน</translation>
 <translation id="1918022425394817322">จัดกล้องพอดีกับมุมขวาบนแล้ว</translation>
+<translation id="1920390473494685033">รายชื่อติดต่อ</translation>
 <translation id="1923539912171292317">การคลิกอัตโนมัติ</translation>
 <translation id="1925320505152357008">น้อยกว่า 1 นาที</translation>
 <translation id="1928739107511554905">หากต้องการรับอัปเดต ให้ใช้หน้าจอสัมผัสเพื่อรีสตาร์ท Chromebook ในขณะที่ยังเชื่อมต่อกับแป้นพิมพ์</translation>
@@ -882,6 +883,7 @@
 <translation id="4042660782729322247">คุณกำลังแชร์หน้าจอ</translation>
 <translation id="404437169852192935">การอัปเดตสิ้นสุดแล้ว</translation>
 <translation id="4049230407053723315">การตั้งค่าด่วน</translation>
+<translation id="4054070260844648638">ปรากฏแก่ทุกคน</translation>
 <translation id="4057003836560082631">แท็บที่ <ph name="INDEX" /> จาก <ph name="TOTAL_COUNT" /> ของเบราว์เซอร์ <ph name="SITE_TITLE" /> <ph name="SITE_URL" /></translation>
 <translation id="4059696795118403455">กดแป้นภาพรวมเพื่อดูคำแนะนำที่ปรับเปลี่ยนในแบบของคุณสำหรับสิ่งที่ต้องทำต่อไป</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{ปิดไว้ 1 แอป}other{ปิดไว้ # แอป}}</translation>
@@ -1404,7 +1406,6 @@
 <translation id="5727460725221669831">หากคุณลืมรหัสผ่านหรือเปลี่ยนรหัสผ่านของบัญชี Google เมื่อเร็วๆ นี้ ให้ลองกู้คืนผู้ใช้รายนี้</translation>
 <translation id="5733630091161562207">การแจ้งเตือนต้อนรับ</translation>
 <translation id="573413375004481890">อุปกรณ์นี้รองรับจอแสดงผลทั้งหมดไม่ได้ ระบบจึงยกเลิกการเชื่อมต่อจอแสดงผลจอหนึ่ง</translation>
-<translation id="5740328398383587084">การแชร์ใกล้เคียง</translation>
 <translation id="574392208103952083">ปานกลาง</translation>
 <translation id="5744083938413354016">การแตะลาก</translation>
 <translation id="5745612484876805746">แสงตอนกลางคืนจะเปิดโดยอัตโนมัติเมื่อพระอาทิตย์ตก</translation>
@@ -1481,6 +1482,7 @@
 <translation id="5990992855591814753">ทำสิ่งต่างๆ ได้ตามแผนที่วางไว้ด้วยเพลย์ลิสต์เพื่อการมีสมาธิจดจ่อที่ปรับเปลี่ยนในแบบของคุณ รับ YouTube Music และ YouTube แบบไม่มีโฆษณาด้วย YouTube Premium ฟรี 3 เดือน เป็นไปตามข้อกำหนด</translation>
 <translation id="5998374579424866922">ปิดการควบคุมเกม</translation>
 <translation id="6000279412553873020">แป้น ปุ่ม และอื่นๆ</translation>
+<translation id="6002122790816966947">อุปกรณ์ของคุณ</translation>
 <translation id="6012623610530968780">หน้า <ph name="SELECTED_PAGE" /> จาก <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">ไฮไลต์รายการถัดไปบนแถบ</translation>
 <translation id="6015573907265691211">ทำเครื่องหมายว่าเสร็จแล้ว</translation>

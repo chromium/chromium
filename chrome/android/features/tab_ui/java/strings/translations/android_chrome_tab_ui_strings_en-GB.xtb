@@ -104,9 +104,6 @@ If you delete it, everyone will immediately lose access to the '<ph name="TITLE_
 <translation id="5494920125229734069">Select all</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Close tab group with <ph name="TABS_COUNT_ONE" /> tab, colour <ph name="COLOR_NAME" />.}other{Close tab group with <ph name="TABS_COUNT_MANY" /> tabs, colour <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">View shop info, option available near top of the screen</translation>
-<translation id="5615302411300498438">Keep this group to add tabs later, or leave.
-
-If you leave, you will immediately lose access to the '<ph name="TITLE_OF_GROUP" />' tab group.</translation>
 <translation id="5627941783489838464">No tab updates</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Restore tab}other{Restore tabs}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link from Chrome}other{<ph name="TABS_COUNT_MANY" /> links from Chrome}}</translation>
@@ -117,7 +114,6 @@ If you leave, you will immediately lose access to the '<ph name="TITLE_OF_GROUP"
 <translation id="6040143037577758943">Close</translation>
 <translation id="6051432659151380973">Your tab groups automatically save</translation>
 <translation id="6054741997831917303">The price of this item recently dropped from <ph name="PREVIOUS_PRICE" /> to <ph name="NEW_PRICE" /></translation>
-<translation id="6082313992897617440">You'll immediately lose access to the <ph name="GROUP_NAME" /> tab group</translation>
 <translation id="6109251075362363230">All duplicate tabs will now also be archived, with the exception of the most recently used copy.</translation>
 <translation id="6193448654517602979">Select tabs</translation>
 <translation id="6228793724645064692">(store rating)</translation>
@@ -145,9 +141,9 @@ If you leave, you will immediately lose access to the '<ph name="TITLE_OF_GROUP"
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> selected</translation>
 <translation id="7326879924029668159">See return policy and more</translation>
 <translation id="7352298686197644113">See which item in your open tabs has a lower price</translation>
-<translation id="7421293530411019405">Leave tab group?</translation>
 <translation id="7452985128687107478">Tab groups automatically save and update across all your devices</translation>
 <translation id="747459581954555080">Restore all</translation>
+<translation id="750886945254958667">Keep this group to add tabs later, or leave it if you no longer want access to it</translation>
 <translation id="753732157349120914">Tab Switcher</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> review from Google}other{<ph name="REVIEWS_COUNT_MANY" /> reviews from Google}}</translation>
 <translation id="7559245342362162951">Show group's tabs in full-screen grid</translation>
@@ -177,9 +173,7 @@ If you leave, you will immediately lose access to the '<ph name="TITLE_OF_GROUP"
 <translation id="8398929769197326728">New folder – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Settings</translation>
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tab added, <ph name="ANY_CLOSED" /> closed}other{<ph name="MANY_ADDED" /> tabs added, <ph name="ANY_CLOSED" /> closed}}</translation>
-<translation id="8631711675211020168">Everyone will immediately lose access to the <ph name="GROUP_NAME" /> tab group, and it will be deleted from all devices</translation>
 <translation id="8633025649649592204">Recent activity</translation>
-<translation id="8635399646025169806">Keep tab group?</translation>
 <translation id="870736955561925754">Close tab and delete group?</translation>
 <translation id="8714939927607906138">Lower price</translation>
 <translation id="8730621377337864115">Done</translation>

@@ -274,6 +274,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1908992311423394684">Nuwe installasie</translation>
 <translation id="1915307458270490472">Sit neer</translation>
 <translation id="1918022425394817322">Kamera is geglip na hoek bo regs</translation>
+<translation id="1920390473494685033">Kontakte</translation>
 <translation id="1923539912171292317">Outomatiese klikke</translation>
 <translation id="1925320505152357008">minder as 1 min.</translation>
 <translation id="1928739107511554905">Vir 'n opdatering van jou sleutelbord moet jy die raakskerm gebruik om jou Chromebook met die sleutelbord aangeheg, te herbegin.</translation>
@@ -530,6 +531,7 @@ Anders sal die ingeboude raakpaneel binne <ph name="TIMEOUT_SECONDS" /> geherakt
 <translation id="2847759467426165163">Saai uit na</translation>
 <translation id="2848120746144143659">Druk Enter om volle skermskoot vas te vang</translation>
 <translation id="2849936225196189499">Kritiek</translation>
+<translation id="2850207700020959936">Apps kan toegang tot kamera kry</translation>
 <translation id="2860184359326882502">Beste passing</translation>
 <translation id="2865888419503095837">Netwerkinligting</translation>
 <translation id="2869095047958348710">Hierdie afgelope <ph name="DAY_OF_WEEK" /></translation>
@@ -584,6 +586,7 @@ Anders sal die ingeboude raakpaneel binne <ph name="TIMEOUT_SECONDS" /> geherakt
 <translation id="304417730895741346">Jou vasgespelde en geopende apps is op die rak. Regsklik ’n app of tik met twee vingers op jou raakpaneel om ’n app op die rak vas te speld.</translation>
 <translation id="3045488863354895414">Goeiemiddag</translation>
 <translation id="3047761520276763270">Probeer die volgende sê:</translation>
+<translation id="3053407068093039599">Skakel kameratoegang aan/af</translation>
 <translation id="3055162170959710888">Jy het hierdie toestel vandag <ph name="USED_TIME" /> lank gebruik</translation>
 <translation id="3062298103034426069">Nie gesteun nie</translation>
 <translation id="3068622547379332530">Weergawe <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -885,6 +888,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4042660782729322247">Jy deel tans jou skerm</translation>
 <translation id="404437169852192935">Opdaterings het geëindig</translation>
 <translation id="4049230407053723315">Kitsinstellings</translation>
+<translation id="4054070260844648638">Sigbaar vir almal</translation>
 <translation id="4057003836560082631">Blaaieroortjie <ph name="INDEX" /> van <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4059696795118403455">Druk die Oorsig-sleutel om gepersonaliseerde voorstelle te sien vir dinge om volgende te doen</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Af vir program}other{Af vir # prog.'e}}</translation>
@@ -1408,7 +1412,6 @@ Geen toestelle is gekoppel nie.</translation>
 <translation id="5727460725221669831">As jy jou wagwoord vergeet het of jou Google-rekeningwagwoord onlangs verander het, kan jy probeer om hierdie gebruiker terug te stel.</translation>
 <translation id="5733630091161562207">Verwelkomingkennisgewing</translation>
 <translation id="573413375004481890">Hierdie toestel kon nie al jou skerms steun nie en daarom is een ontkoppel</translation>
-<translation id="5740328398383587084">Nabydeling</translation>
 <translation id="574392208103952083">Medium</translation>
 <translation id="5744083938413354016">Tiksleep</translation>
 <translation id="5745612484876805746">Aandbeligting skakel met sondsondergang outomaties aan</translation>
@@ -1485,6 +1488,7 @@ Geen toestelle is gekoppel nie.</translation>
 <translation id="5990992855591814753">Bly op hoogte met gepersonaliseerde fokusspeellyste. Kry YouTube Music en YouTube, advertensievry, met 3 maande YouTube Premium teen geen koste nie. Bepalings geld.</translation>
 <translation id="5998374579424866922">Skakel speletjiekontroles af</translation>
 <translation id="6000279412553873020">Sleutels, knoppies en nog meer</translation>
+<translation id="6002122790816966947">Jou toestelle</translation>
 <translation id="6012623610530968780">Bladsy <ph name="SELECTED_PAGE" /> van <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Merk volgende item op rak</translation>
 <translation id="6015573907265691211">Merk as voltooi</translation>
@@ -1801,6 +1805,7 @@ Nuwe installasie</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> wil die <ph name="DEVICE_NAME" /> gebruik. Skakel jou toestel se fisieke <ph name="DEVICE_NAME" />-skakelaar aan.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistent</translation>
 <translation id="7042322267639375032">Vou statusarea in</translation>
+<translation id="7042593542151411225">Apps kan nie toegang tot kamera kry nie</translation>
 <translation id="7045033600005038336">Vervang templaat?</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> het ontkoppel</translation>
 <translation id="7055910611768509537">Stilus is meer as 'n week lank nie gebruik nie</translation>
@@ -2376,6 +2381,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="9074432941673450836">Gebruik apps om alles wat nodig is op jou <ph name="PRODUCT_NAME" /> te doen. Jy kan jou apps in die Lanseerder kry. Jy kan ook die Lanseerder-sleutel (bo die linkerkantse Shift-sleutel) op die sleutelbord druk.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9077515519330855811">Mediakontroles; speel nou <ph name="MEDIA_TITLE" /></translation>
+<translation id="9079012373317704997">Kan nie kameratoegang vanaf ’n afstand aanskakel nie</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">Kamera is geglip na hoek bo links</translation>
 <translation id="9080132581049224423">Swiep op om na die tuisskerm toe te gaan</translation>

@@ -274,6 +274,7 @@
 <translation id="1908992311423394684">కొత్తగా ఇన్‌స్టాల్ చేయబడింది</translation>
 <translation id="1915307458270490472">కాల్‌ను ముగించు</translation>
 <translation id="1918022425394817322">కెమెరా ఎగువ కుడి మూలకు స్నాప్ చేయబడింది</translation>
+<translation id="1920390473494685033">కాంటాక్ట్‌లు</translation>
 <translation id="1923539912171292317">ఆటోమేటిక్‌ క్లిక్‌లు</translation>
 <translation id="1925320505152357008">1 నిమి. కంటే తక్కువ</translation>
 <translation id="1928739107511554905">అప్‌డేట్‌ను పొందడానికి, కీబోర్డ్‌ను అలానే జోడించి ఉంచి మీ Chromebookను పునఃప్రారంభించడం కోసం టచ్‌స్క్రీన్‌ను ఉపయోగించండి.</translation>
@@ -887,6 +888,7 @@
 <translation id="4042660782729322247">మీరు మీ స్క్రీన్‌ను షేర్ చేస్తున్నారు</translation>
 <translation id="404437169852192935">అప్‌డేట్‌లు ముగిశాయి</translation>
 <translation id="4049230407053723315">క్విక్ సెట్టింగ్‌లు</translation>
+<translation id="4054070260844648638">ప్రతిఒక్కరికీ కనిపిస్తుంది</translation>
 <translation id="4057003836560082631"><ph name="TOTAL_COUNT" />లో <ph name="INDEX" />వ బ్రౌజర్ ట్యాబ్. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4059696795118403455">తర్వాత చేయవలసిన పనుల కోసం వ్యక్తిగతీకరించిన సూచనలను చూడటానికి, ఓవర్‌వ్యూ కీని నొక్కండి</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{ఒక యాప్‌కు ఆఫ్}other{# యాప్‌లకు ఆఫ్}}</translation>
@@ -1410,7 +1412,6 @@
 <translation id="5727460725221669831">మీరు మీ పాస్‌వర్డ్‌ను మరిచిపోతే లేదా ఇటీవల మీ Google ఖాతా పాస్‌వర్డ్‌ను మార్చినట్లయితే, ఈ యూజర్‌ను రికవర్ చేయడానికి ట్రై చేయండి.</translation>
 <translation id="5733630091161562207">స్వాగత నోటిఫికేషన్</translation>
 <translation id="573413375004481890">ఈ పరికరం మీ అన్ని ప్రదర్శన స్క్రీన్‌లకు మద్దతు ఇవ్వలేదు, కాబట్టి ఒకటి డిస్‌కనెక్ట్ చేయబడింది</translation>
-<translation id="5740328398383587084">సమీప షేరింగ్</translation>
 <translation id="574392208103952083">మధ్యస్థం</translation>
 <translation id="5744083938413354016">నొక్కి లాగండి</translation>
 <translation id="5745612484876805746">సూర్యాస్తమయ సమయానికి రాత్రి కాంతి ఆటోమేటిక్‌గా ఆన్ అవుతుంది</translation>
@@ -1487,6 +1488,7 @@
 <translation id="5990992855591814753">వ్యక్తిగతీకరించిన ఫోకస్ ప్లేలిస్ట్‌లను ట్రాక్ చేస్తూ ఉండండి. ఎటువంటి ఛార్జీ లేకుండా 3 నెలల పాటు YouTube Premiumతో యాడ్స్-లేని YouTube Music, YouTubeలను పొందండి. నియమాలు వర్తిస్తాయి.</translation>
 <translation id="5998374579424866922">గేమ్ కంట్రోల్స్‌ను ఆఫ్ చేయండి</translation>
 <translation id="6000279412553873020">కీలు, బటన్‌లు అలాగే మరిన్ని</translation>
+<translation id="6002122790816966947">మీ పరికరాలు</translation>
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" />లో <ph name="SELECTED_PAGE" />వ పేజీ</translation>
 <translation id="601304062528754300">షెల్ఫ్‌లో తర్వాతి ఐటెమ్‌ను హైలైట్ చేయండి</translation>
 <translation id="6015573907265691211">పూర్తయిందని మార్క్ చేయండి</translation>

@@ -274,6 +274,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1908992311423394684">Nouvelle installation</translation>
 <translation id="1915307458270490472">Raccrocher</translation>
 <translation id="1918022425394817322">Caméra alignée sur le coin supérieur droit</translation>
+<translation id="1920390473494685033">Contacts</translation>
 <translation id="1923539912171292317">Clics automatiques</translation>
 <translation id="1925320505152357008">Moins de 1 min</translation>
 <translation id="1928739107511554905">Pour télécharger la mise à jour, utilisez l'écran tactile pour redémarrer votre Chromebook avec le clavier associé.</translation>
@@ -884,6 +885,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4042660782729322247">Vous partagez votre écran</translation>
 <translation id="404437169852192935">Mises à jour terminées</translation>
 <translation id="4049230407053723315">Paramètres rapides</translation>
+<translation id="4054070260844648638">Visible par tous</translation>
 <translation id="4057003836560082631">Onglet de navigateur <ph name="INDEX" /> sur <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4059696795118403455">Pour obtenir des suggestions personnalisées sur d'autres choses à faire, appuyez sur la touche Aperçu</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Désactivées pour une appli}one{Désactivées pour # appli}other{Désactivées pour # applis}}</translation>
@@ -1406,7 +1408,6 @@ Aucun appareil n'est connecté.</translation>
 <translation id="5727460725221669831">Si vous avez oublié votre mot de passe ou modifié le mot de passe de votre compte Google récemment, essayez de récupérer cet utilisateur.</translation>
 <translation id="5733630091161562207">Notification de bienvenue</translation>
 <translation id="573413375004481890">Cet appareil ne prend pas en charge tous vos écrans, alors l'un d'eux a été déconnecté</translation>
-<translation id="5740328398383587084">Partage à proximité</translation>
 <translation id="574392208103952083">Moyenne</translation>
 <translation id="5744083938413354016">Déplacement tactile</translation>
 <translation id="5745612484876805746">La fonction Éclairage nocturne s'active automatiquement au coucher du soleil</translation>
@@ -1483,6 +1484,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="5990992855591814753">Restez sur la bonne voie avec des listes de lecture personnalisées pour la concentration. Obtenez YouTube Music et YouTube, sans annonces, avec trois mois de YouTube Premium sans frais. Des conditions s'appliquent.</translation>
 <translation id="5998374579424866922">Désactiver les commandes de jeu</translation>
 <translation id="6000279412553873020">Touches, boutons et plus</translation>
+<translation id="6002122790816966947">Vos appareils</translation>
 <translation id="6012623610530968780">Page <ph name="SELECTED_PAGE" /> sur <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Mettre en évidence l'article suivant sur l'étagère</translation>
 <translation id="6015573907265691211">Marquer comme terminée</translation>

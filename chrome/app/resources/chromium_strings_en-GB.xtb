@@ -328,7 +328,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5496810170689441661">Chromium is trying to edit passwords. Type your Windows password to allow this.</translation>
 <translation id="5527463683072221100">Open PDFs in Chromium</translation>
 <translation id="5568136785038042132">To get your extensions on all your computers, sign in to Chromium</translation>
-<translation id="5575418445468216473">Your passwords and other Chromium data are saved in your Google Account, and will be removed from this device. To use them in the future, sign back in to Chromium.</translation>
 <translation id="5579324208890605088">Startup error: Please run the installer as a regular user, not as administrator.</translation>
 <translation id="5596627076506792578">More options</translation>
 <translation id="5605834417512968703">Select anything to search with image search or press escape to exit image search</translation>
@@ -479,7 +478,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7355355292030546812">Chromium blocked this download because the file can harm your personal and social network accounts, including <ph name="USER_EMAIL" /></translation>
 <translation id="7384121030444253939">This extension is no longer supported. Chromium recommends that you remove it instead.</translation>
 <translation id="7389750180956889333">Chromium understands forms better and can autofill them faster for you. Learn more about <ph name="BEGIN_LINK" />Chrome autofill<ph name="END_LINK" /></translation>
-<translation id="7398989605938454041">With Chromium profiles, you can separate all of your Chromium things. This makes it easier to split between work and fun.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7450541714075000668">Text copied</translation>
 <translation id="7451052299415159299">Chromium needs permission to access your camera for this site</translation>
@@ -543,7 +541,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8326785589245660814">clear the Chromium data in your account</translation>
 <translation id="8330519371938183845">Sign in to sync and personalise Chromium across your devices</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> was previously using Chromium</translation>
-<translation id="8357820681460164151">To access your Chromium browser across all your devices, sign in, then turn on sync</translation>
 <translation id="8359544530202147897">Update Chromium to keeping using the Chromium data in your Google Account, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8360718212975266891">To get future Chromium updates, you'll need Windows 10 or later. This computer is using Windows 8.</translation>
 <translation id="8362914115861174987">Translate to</translation>
@@ -594,7 +591,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="9022552996538154597">Sign in to Chromium</translation>
 <translation id="904366664621834601">Chromium blocked this download because the archive file includes other files that may hide malware</translation>
 <translation id="9062666675513499497">Sign in to Chromium when you sign in to other Google services</translation>
-<translation id="907832235989677238">Sign in to Chromium If you'd just like to sign in an account once, you can <ph name="GUEST_LINK_BEGIN" />use the device as guest<ph name="GUEST_LINK_END" />.</translation>
 <translation id="9078733879136747090">Chromium was automatically closed</translation>
 <translation id="9089354809943900324">Chromium is out of date</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium will relaunch in an hour}other{Chromium will relaunch in # hours}}</translation>

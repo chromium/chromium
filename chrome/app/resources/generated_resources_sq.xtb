@@ -228,7 +228,6 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1151917987301063366">Lejo gjithmonë që <ph name="HOST" /> të qaset te sensorët</translation>
 <translation id="1152346050262092795">Fut përsëri fjalëkalimin për të verifikuar llogarinë tënde.</translation>
 <translation id="1153636665119721804">Programi i "Mbrojtjes së përparuar" të Google</translation>
-<translation id="1155545602507378023">Jo, vetëm në këtë pajisje</translation>
 <translation id="1155816283571436363">Po lidhet me telefonin tënd</translation>
 <translation id="1157952955648710254">Mbyll panelin anësor të "Kërko në Google"</translation>
 <translation id="1158080958325422608">Bëj me shkronja të mëdha</translation>
@@ -1149,7 +1148,6 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1794791083288629568">Dërgo komente për të na ndihmuar ta rregullojmë këtë problem.</translation>
 <translation id="1795214765651529549">Përdor temën klasike</translation>
 <translation id="1795438342141780114">Rivendose kursorin në qendër</translation>
-<translation id="1795668164971917185">Herën tjetër kur "Shfletimi i sigurt i Google" të gjejë një shkarkim të dyshimtë, ai do ta skanojë automatikisht atë si pjesë e <ph name="LINK" /> që ke zgjedhur</translation>
 <translation id="1796588414813960292">Veçoritë që kanë nevojë për tingujt nuk do të funksionojnë</translation>
 <translation id="1797117170091578105">Luaj duke përdorur tastierën e Chromebook. Mund t'i personalizosh tastet për veprime specifike.</translation>
 <translation id="1798335429200675510">Kliko me butonin djathtas në një kuti teksti për të krijuar një draft ose për të rafinuar një punë ekzistuese, mundësuar nga inteligjenca artificiale e Google Aktualisht ka disponueshmëri të kufizuar.</translation>
@@ -1402,7 +1400,6 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1974043046396539880">Pikat e shpërndarjes së CRL-së</translation>
 <translation id="1974060860693918893">Të përparuara</translation>
 <translation id="1974159333077206889">E njëjta audio me të gjithë altoparlantët</translation>
-<translation id="1974216844776165821">Chrome e ruajti fjalëkalimin tënd në këtë pajisje, por mund ta ruash më mirë në "Llogarinë tënde të Google". Më pas, të gjitha fjalëkalimet dhe çelësat e kalimit në "Llogarinë tënde të Google" do të ofrohen gjithashtu ndërkohë që je i identifikuar.</translation>
 <translation id="1975841812214822307">Hiq...</translation>
 <translation id="1976150099241323601">Identifikohu në pajisjen e sigurisë</translation>
 <translation id="1976823515278601587">Kursime të mëdha</translation>
@@ -1652,7 +1649,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2143915448548023856">Cilësimet e pamjes</translation>
 <translation id="2144536955299248197">Paraqitësi i certifikatës: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Zhvillimi i aplikacionit Android për Linux</translation>
-<translation id="2144873026585036769">Të përdoret "Llogaria jote e Google" për të ruajtur dhe plotësuar fjalëkalimet dhe çelësat e kalimit?</translation>
 <translation id="2145917706968602070">Sigurohu që telefoni yt të jetë në afërsi, i shkyçur dhe që Bluetooth-i dhe Wi-Fi të jenë aktivizuar</translation>
 <translation id="2146263598007866206">Sajtet mund të shkarkojnë automatikisht skedarë përkatës së bashku për të të kursyer kohë</translation>
 <translation id="2147218225094845757">Fshihe panelin anësor</translation>
@@ -2114,7 +2110,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2458591546854598341">Kodi i menaxhimit të pajisjes është i pavlefshëm.</translation>
 <translation id="2459703812219683497">U zbulua kod aktivizimi</translation>
 <translation id="2459706890611560967">Vazhdo transmetimin e skedës te <ph name="DEVICE_NAME" /></translation>
-<translation id="2460356425461033301">Rezervo gjërat e shfletuesit dhe përdori në çdo pajisje</translation>
 <translation id="2460482211073772897">Në dosje të tjera</translation>
 <translation id="2460826998961521840">Për të përdorur çelësat e kalimit nga "Llogaria e Google"</translation>
 <translation id="2461045498706592033">"<ph name="LOCAL_FOLDER" />" është ruajtur vetëm në këtë pajisje. Nëse e zhvendos këtë faqeshënues te "<ph name="LOCAL_FOLDER" />", nuk do ta marrësh më në pajisjet e tua të tjera.</translation>
@@ -6036,7 +6031,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5263656105659419083">Për t'u kthyer me lehtësi te paneli anësor, kliko te "Gozhdo" në këndin e sipërm djathtas</translation>
 <translation id="5264148714798105376">Kjo mund të zgjasë një minutë ose pak më shumë.</translation>
 <translation id="5264252276333215551">Lidhu me internetin për të nisur aplikacionin tënd në modalitetin kioskë.</translation>
-<translation id="526539328530966548">mbrojtjes së përmirësuar</translation>
 <translation id="5265797726250773323">Gabim gjatë instalimit</translation>
 <translation id="5266113311903163739">Gabim në importimin e Autoritetit të Certifikimit</translation>
 <translation id="526622169288322445">Më shumë veprime për "<ph name="ADDRESS_SUMMARY" />"</translation>
@@ -7361,7 +7355,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="6234108445915742946">Kushtet e shërbimit të Chrome ndryshojnë më 31 mars</translation>
 <translation id="6234474535228214774">Instalimi në pritje</translation>
 <translation id="6235208551686043831">Kamera e pajisjes është aktivizuar. Vendose kodin QR të kartës eSIM përpara kamerës.</translation>
-<translation id="6237297174664969437">Mund të zgjedhësh gjithmonë se çfarë të dhënash të shfletuesit do të sinkronizosh te cilësimet e Chrome. Te <ph name="LINK_BEGIN" />cilësimet e pajisjes<ph name="LINK_END" />, mund të kontrollosh sinkronizimin për aplikacionet e uebit të instaluara nga shfletuesi Chrome. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
 <translation id="6237474966939441970">Aplikacioni për marrjen e shënimeve me stilolaps</translation>
 <translation id="6237481151388361546">Ndrysho lidhjen tënde të internetit dhe zgjidh "Provo përsëri", ose zgjidh "Hape në modifikuesin bazë" për të përdorur opsionet e kufizuara të shikimit dhe modifikimit.</translation>
 <translation id="623755660902014047">Modaliteti i leximit</translation>
@@ -8818,7 +8811,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="730515362922783851">Shkëmbe të dhëna me çdo pajisje në rrjetin lokal ose në internet</translation>
 <translation id="7306521477691455105">Hap "Cilësimet" për të lidhur <ph name="USB_DEVICE_NAME" /> me <ph name="USB_VM_NAME" /></translation>
 <translation id="7307129035224081534">Në pauzë</translation>
-<translation id="7307647374092371434">Fjalëkalimet dhe çelësat e kalimit nga "Llogaria jote e Google" do të ofrohen gjithashtu në këtë pajisje ndërkohë që je i identifikuar.</translation>
 <translation id="7308643132139167865">Gjuhët e faqeve të internetit</translation>
 <translation id="7309214454733221756">Të krijohet një çelës kalimi për t'u identifikuar në <ph name="APP_NAME" />?</translation>
 <translation id="7311005168897771689">Qasu te skedarët e tu të "Diskut të Google" kur je offline</translation>

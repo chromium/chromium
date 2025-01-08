@@ -274,6 +274,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1908992311423394684">Nova instalação</translation>
 <translation id="1915307458270490472">Desligar</translation>
 <translation id="1918022425394817322">Câmara ajustada ao canto superior direito</translation>
+<translation id="1920390473494685033">Contactos</translation>
 <translation id="1923539912171292317">Cliques automáticos</translation>
 <translation id="1925320505152357008">menos de 1 min</translation>
 <translation id="1928739107511554905">Para obter a atualização, utilize o ecrã tátil para reiniciar o Chromebook com o teclado ligado.</translation>
@@ -886,6 +887,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="4042660782729322247">Está a partilhar o seu ecrã</translation>
 <translation id="404437169852192935">As atualizações terminaram</translation>
 <translation id="4049230407053723315">Definições rápidas</translation>
+<translation id="4054070260844648638">Visível para todas as pessoas</translation>
 <translation id="4057003836560082631">Separador do navegador <ph name="INDEX" /> de <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4059696795118403455">Para ver sugestões personalizadas de coisas a fazer a seguir, prima a tecla Vista geral</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Desa. p/ 1 ap.}other{Desa. p/ # ap.}}</translation>
@@ -1409,7 +1411,6 @@ Nenhum dispositivo ligado.</translation>
 <translation id="5727460725221669831">Se se esqueceu da palavra-passe ou alterou a palavra-passe da sua Conta Google recentemente, experimente recuperar este utilizador.</translation>
 <translation id="5733630091161562207">Notificação de boas-vindas</translation>
 <translation id="573413375004481890">Este dispositivo não conseguiu suportar todos os seus ecrãs, pelo que um foi desligado.</translation>
-<translation id="5740328398383587084">Partilhar na proximidade</translation>
 <translation id="574392208103952083">Médio</translation>
 <translation id="5744083938413354016">Arrastamento através do toque</translation>
 <translation id="5745612484876805746">A Luz noturna ativa-se automaticamente ao pôr do sol</translation>
@@ -1486,6 +1487,7 @@ Nenhum dispositivo ligado.</translation>
 <translation id="5990992855591814753">Mantenha o foco com playlists de concentração personalizadas. Usufrua do YouTube Music e do YouTube sem anúncios com 3 meses de YouTube Premium sem custo financeiro. Aplicam-se termos.</translation>
 <translation id="5998374579424866922">Desative os controlos de jogos</translation>
 <translation id="6000279412553873020">Teclas, botões e muito mais</translation>
+<translation id="6002122790816966947">Os seus dispositivos</translation>
 <translation id="6012623610530968780">Página <ph name="SELECTED_PAGE" /> de <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Realçar o item seguinte na prateleira</translation>
 <translation id="6015573907265691211">Marcar como concluída</translation>

@@ -228,7 +228,6 @@
 <translation id="1151917987301063366"><ph name="HOST" />কে সর্বদা সেন্সর অ্যাক্সেস করতে অনুমতি দিন</translation>
 <translation id="1152346050262092795">আপনার অ্যাকাউন্ট যাচাই করতে আপনার পাসওয়ার্ড আবার লিখুন।</translation>
 <translation id="1153636665119721804">Google উন্নত সুরক্ষা প্রোগ্রাম</translation>
-<translation id="1155545602507378023">না, শুধুমাত্র এই ডিভাইস</translation>
 <translation id="1155816283571436363">আপনার ফোনের সাথে কানেক্ট করা হচ্ছে</translation>
 <translation id="1157952955648710254">Google Search সাইড প্যানেল বন্ধ করুন</translation>
 <translation id="1158080958325422608">বড় হাতের অক্ষরে লিখুন</translation>
@@ -1163,7 +1162,6 @@
 <translation id="1794791083288629568">এই সমস্যা সমাধানে আমাদের সাহায্য করতে প্রতিবার্তা পাঠান।</translation>
 <translation id="1795214765651529549">ক্লাসিক ব্যবহার করুন</translation>
 <translation id="1795438342141780114">কার্সর স্ক্রিনের মাঝখানে রিসেট করা</translation>
-<translation id="1795668164971917185">পরের বার Google Safe Browsing একটি সন্দেহজনক ডাউনলোড শনাক্ত করলে, যেহেতু আপনি <ph name="LINK" /> বেছে নিয়েছেন, তাই এটি অটোমেটিক স্ক্যান করবে</translation>
 <translation id="1796588414813960292">যেসব ফিচার ব্যবহার করার জন্য সাউন্ড প্রয়োজন সেগুলি কাজ করবে না</translation>
 <translation id="1797117170091578105">আপনার Chromebook কীবোর্ডের সাহায্যে খেলুন। নির্দিষ্ট অ্যাকশনের জন্য আপনি 'কী' কাস্টমাইজ করতে পারবেন।</translation>
 <translation id="1798335429200675510">Google AI দ্বারা পরিচালিত, কোনও ড্রাফ্ট তৈরি বা আগে থাকা কাজ রিফাইন করতে, টেক্সট বক্সে ডানদিকের বোতামে ক্লিক করুন। বর্তমানে সীমিত উপলভ্যতা আছে।</translation>
@@ -1417,7 +1415,6 @@
 <translation id="1974043046396539880">CRL বিতরণ পয়েন্টস</translation>
 <translation id="1974060860693918893">উন্নত</translation>
 <translation id="1974159333077206889">সমস্ত স্পিকার থেকে একই অডিও শোনা যাবে (মোনো অডিও)</translation>
-<translation id="1974216844776165821">Chrome আপনার পাসওয়ার্ড এই ডিভাইসে সেভ করেছে, তবে এর পরিবর্তে আপনি এটি Google অ্যাকাউন্টেও সেভ করতে পারবেন। এরপর, সাইন-ইন করাকালীন আপনার Google অ্যাকাউন্টে সেভ করা সব পাসওয়ার্ড ও পাসকীও উপলভ্য হবে।</translation>
 <translation id="1975841812214822307">সরান...</translation>
 <translation id="1976150099241323601">সিকিউরিটি ডিভাইসে সাইন-ইন করুন</translation>
 <translation id="1976823515278601587">বেশি পরিমাণে সেভ করা</translation>
@@ -1667,7 +1664,6 @@
 <translation id="2143915448548023856">প্রদর্শন সেটিংস</translation>
 <translation id="2144536955299248197">সার্টিফিকেট দর্শনকারী: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Linux Android অ্যাপ উন্নত করা</translation>
-<translation id="2144873026585036769">পাসওয়ার্ড ও পাসকী সেভ এবং পূরণ করতে আপনার Google অ্যাকাউন্ট ব্যবহার করবেন?</translation>
 <translation id="2145917706968602070">আপনার ফোন কাছাকাছি, আনলক অবস্থায় রয়েছে এবং তাতে ব্লুটুথ আর ওয়াই-ফাই চালু আছে কিনা তা ভালো করে দেখে নিন</translation>
 <translation id="2146263598007866206">আপনার সময় বাঁচাতে, সাইট এই সম্পর্কিত ফাইলগুলি অটোমেটিক ডাউনলোড করতে পারে</translation>
 <translation id="2147218225094845757">সাইড প্যানেল লুকান</translation>
@@ -2131,7 +2127,6 @@
 <translation id="2458591546854598341">ডিভাইস পরিচালনার টোকেনটি সঠিক নয়।</translation>
 <translation id="2459703812219683497">অ্যাক্টিভেশন কোড শনাক্ত করা হয়েছে</translation>
 <translation id="2459706890611560967"><ph name="DEVICE_NAME" />-এ ট্যাব কাস্ট করা আবার চালু করুন</translation>
-<translation id="2460356425461033301">আপনার ব্রাউজ করা জিনিসের ব্যাক-আপ নিন এবং যেকোনও ডিভাইসে তা ব্যবহার করুন</translation>
 <translation id="2460482211073772897">অন্যান্য ফোল্ডারে</translation>
 <translation id="2460826998961521840">আপনার Google অ্যাকাউন্টে সেভ করা পাসকী ব্যবহার করতে পারবেন</translation>
 <translation id="2461045498706592033"><ph name="LOCAL_FOLDER" /> শুধুমাত্র এই ডিভাইসে সেভ করা আছে। আপনি এই বুকমার্ক <ph name="LOCAL_FOLDER" />-এ সরিয়ে দিলে, আর আপনার ডিভাইসে এটি পাবেন না।</translation>
@@ -6058,7 +6053,6 @@
 <translation id="5263656105659419083">সহজেই সাইড প্যানেলে ফিরে যেতে, ডানদিকে সবচেয়ে উপরে 'পিন করুন' বিকল্পে ক্লিক করুন</translation>
 <translation id="5264148714798105376">মিনিটখানেক সময় লাগতে পারে।</translation>
 <translation id="5264252276333215551">কিয়স্ক মোডে আপনার অ্যাপ লঞ্চ করতে অনুগ্রহ করে ইন্টারনেটের সাথে সংযোগ করুন৷</translation>
-<translation id="526539328530966548">উন্নত সুরক্ষা</translation>
 <translation id="5265797726250773323">ইনস্টল করার সময় সমস্যা</translation>
 <translation id="5266113311903163739">শংসাকরণ কর্তৃপক্ষ আমদানি ত্রুটি</translation>
 <translation id="526622169288322445"><ph name="ADDRESS_SUMMARY" />-এর জন্য আরও অ্যাকশন</translation>
@@ -7387,7 +7381,6 @@
 <translation id="6234108445915742946">৩১ মার্চ থেকে Chrome-এর 'পরিষেবার শর্তাবলী'-তে পরিবর্তন হতে চলেছে</translation>
 <translation id="6234474535228214774">এখনও ইনস্টল করা সম্পূর্ণ হয়নি</translation>
 <translation id="6235208551686043831">ডিভাইসের ক্যামেরা চালু করা হয়েছে। ক্যামেরার সামনে আপনার ই-সিম (eSIM) QR কোডটি দেখান।</translation>
-<translation id="6237297174664969437">কী ধরনের ব্রাউজার ডেটা সিঙ্ক করবেন তা আপনি সবসময় Chrome সেটিংস থেকে বেছে নিতে পারবেন। Chrome ব্রাউজার ব্যবহার করে ইনস্টল করা ওয়েব অ্যাপ সিঙ্কের সুবিধা <ph name="LINK_BEGIN" />ডিভাইস সেটিংস<ph name="LINK_END" /> থেকে নিয়ন্ত্রণ করতে পারবেন। আপনার ইতিহাসের ভিত্তিতে, সার্চ ও অন্যান্য পরিষেবা পছন্দমতো করে তুলতে Google এই ডেটা ব্যবহার করতে পারে।</translation>
 <translation id="6237474966939441970">স্টাইলাস ব্যবহার করে নোট নেওয়া যাবে এমন অ্যাপ</translation>
 <translation id="6237481151388361546">আপনার ডিভাইসে ইন্টারনেট কানেকশন পরিবর্তন করুন এবং "আবার চেষ্টা করুন" বিকল্পটি বেছে নিন অথবা সীমিত ভিউ এবং এডিটিং বিকল্প ব্যবহার করার জন্য "প্রাথমিক এডিটরে খুলুন" বিকল্পটি বেছে নিন।</translation>
 <translation id="623755660902014047">Reading mode</translation>
@@ -7457,6 +7450,7 @@
 <translation id="6278776436938569440">লোকেশন পরিবর্তন করুন</translation>
 <translation id="6280215091796946657">অন্য একটি অ্যাকাউন্ট দিয়ে সাইন-ইন করুন</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281218688313242284">আপনার Google অ্যাকাউন্ট ম্যানেজ করুন</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{১ শিট কাগজের বেশি হয়ে গেছে}one{{COUNT} শিট কাগজের বেশি হয়ে গেছে}other{{COUNT} শিট কাগজের বেশি হয়ে গেছে}}</translation>
 <translation id="6282490239556659745"><ph name="SITE" /> থেকে <ph name="EMBEDDED_SITE" /> সরান</translation>
 <translation id="6283438600881103103">আপনি এখনই অটোমেটিক সাইন-আউট হয়ে যাবেন।
@@ -8070,6 +8064,7 @@
 <translation id="6745592621698551453">এখনই আপডেট করুন</translation>
 <translation id="6746124502594467657">নিচে যান</translation>
 <translation id="67465227497040338"><ph name="DOMAIN" />-এর পাসওয়ার্ড দেখান</translation>
+<translation id="6746834324024491643">আপনার সব ডিভাইসে পাসওয়ার্ড ও আরও অনেক কিছু পেতে, <ph name="EMAIL" /> হিসেবে সাইন-ইন করুন</translation>
 <translation id="6748980958975836188">আমি <ph name="BEGIN_LINK1" />Google পরিষেবার শর্তাবলী<ph name="END_LINK1" /> এবং <ph name="BEGIN_LINK2" />Chrome ও ChromeOS-এর অতিরিক্ত পরিষেবার শর্তাবলী<ph name="END_LINK2" /> পড়েছি ও সেগুলিতে সম্মতি জানাচ্ছি।</translation>
 <translation id="6749077623962119521">অনুমতি রিসেট করবেন?</translation>
 <translation id="6749473226660745022">ফটো</translation>
@@ -8847,7 +8842,6 @@
 <translation id="730515362922783851">স্থানীয় নেটওয়ার্ক বা ইন্টারনেটে যে কোনো ডিভাইসের সাথে ডেটা বিনিময় করুন</translation>
 <translation id="7306521477691455105"><ph name="USB_DEVICE_NAME" />-কে <ph name="USB_VM_NAME" />-এর সাথে কানেক্ট করার জন্য 'সেটিংস' খুলুন</translation>
 <translation id="7307129035224081534">থামানো হয়েছে</translation>
-<translation id="7307647374092371434">আপনি সাইন-ইন করে থাকাকালীন এই ডিভাইসে থাকা আপনার Google অ্যাকাউন্টের পাসওয়ার্ড ও পাসকীও উপলভ্য থাকবে</translation>
 <translation id="7308643132139167865">ওয়েবসাইটের ভাষা</translation>
 <translation id="7309214454733221756"><ph name="APP_NAME" /> অ্যাপে সাইন-ইন করার জন্য পাসকী তৈরি করবেন?</translation>
 <translation id="7311005168897771689">অফলাইন থাকাকালীন আপনার Google Drive ফাইল অ্যাক্সেস করুন</translation>
@@ -9421,6 +9415,7 @@
 <translation id="7709152031285164251">ব্যর্থ হয়েছে - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">&amp;কাস্ট করুন...</translation>
 <translation id="7711968363685835633">ব্যবহারকারী অভিধান সহ পছন্দমতো রূপান্তর ও সাজেশনগুলি বন্ধ করুন</translation>
+<translation id="771220840345868810">সাজেস্ট করা কোনও প্রশ্ন উপলভ্য নেই</translation>
 <translation id="7712739869553853093">প্রিন্ট প্রিভিউ ডায়ালগ</translation>
 <translation id="7713139339518499741">খুব ভাল কোয়ালিটির ভয়েস</translation>
 <translation id="7714307061282548371"><ph name="DOMAIN" /> এর কুকি ব্যবহার করার অনুমতি দেওয়া হয়েছে</translation>

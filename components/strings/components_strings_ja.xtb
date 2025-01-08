@@ -597,7 +597,6 @@
 <translation id="2040894699575719559">位置情報がブロックされています</translation>
 <translation id="2041788246978549610">利用可能なマイクの使用（<ph name="MICS_COUNT" />）</translation>
 <translation id="2042213636306070719">トレイ 7</translation>
-<translation id="204357726431741734">Google アカウントに保存したパスワードを使用するには、ログインしてください</translation>
 <translation id="2045871135676061132">6 3/4 封筒</translation>
 <translation id="2046951263634619614">書籍販売</translation>
 <translation id="2048261947532620704">ページを翻訳しています</translation>
@@ -1366,7 +1365,6 @@
 <translation id="343474037147570563">アップロードまたは添付したファイルは分析のため Google Cloud または第三者に送信されます。たとえば、機密データやマルウェアがないかスキャンされ、会社のポリシーに基づいて保存され、管理者に公開されます。</translation>
 <translation id="3435557549311968410">連続（短尺）</translation>
 <translation id="3435738964857648380">セキュリティ</translation>
-<translation id="3438829137925142401">Google アカウントに保存したパスワードを使用する</translation>
 <translation id="3440783957068352691">スクエア</translation>
 <translation id="3441653493275994384">画面</translation>
 <translation id="3443504041532578451">光ディスク（サテン）</translation>
@@ -1695,6 +1693,7 @@
 <translation id="3990532701115075684">ハンド トラッキング</translation>
 <translation id="3992684624889376114">このページについて</translation>
 <translation id="3995639283717357522">ポリシーを適用</translation>
+<translation id="3996683183117168945">引用 <ph name="CURRENT_CITATION" />/<ph name="MAX_CITATIONS" />、<ph name="PRODUCT_NAME" />、<ph name="URL" />。<ph name="PAGE_TITLE" />。<ph name="PAGE_PREVIEW" />。</translation>
 <translation id="399754345297554962">共通テスト、入学試験</translation>
 <translation id="3999173941208168054">ホラー映画</translation>
 <translation id="4000598935132966791">管理対象ブラウザのサイト制限の詳細</translation>
@@ -3911,6 +3910,7 @@
 <translation id="7975858430722947486">比較表に追加しました</translation>
 <translation id="7976214039405368314">リクエストが多すぎます</translation>
 <translation id="7977538094055660992">出力デバイス</translation>
+<translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> 分前}=1{<ph name="TIME_COUNT" /> 時間前}other{<ph name="TIME_COUNT" /> 日前}}</translation>
 <translation id="7979595116210197019">飲食業</translation>
 <translation id="798134797138789862">バーチャル リアリティ デバイスとデータの使用を要求できる</translation>
 <translation id="7982789257301363584">ネットワーク</translation>
@@ -4272,7 +4272,6 @@
 <translation id="861775596732816396">サイズ 4</translation>
 <translation id="8620276786115098679">角形 7 号封筒</translation>
 <translation id="8622864575115813231">金融機関に問い合わせています...</translation>
-<translation id="8623885649813806493">一致するパスワードがありません。保存したパスワードをすべて表示します。</translation>
 <translation id="8624354461147303341">割引情報を取得</translation>
 <translation id="8634957317623797170">54x86 mm</translation>
 <translation id="8637362707224133343">Chrome には、ブラウジング中のユーザーを保護する安全機能が組み込まれています。その一部である Google セーフ ブラウジングにより、アクセスしようとしたサイトで<ph name="BEGIN_LINK" />最近フィッシングが検出<ph name="END_LINK" />されました。フィッシング サイトは、他のサイトになりすましてユーザーを騙そうとするサイトです。<ph name="NEW_LINE" />通常は安全なサイトであっても、攻撃者によって侵害されることがあります。この情報が間違いで、このサイトに危険がないと思われる場合は、<ph name="BEGIN_ERROR_LINK" />Google までお知らせください<ph name="END_ERROR_LINK" />。</translation>
@@ -4603,7 +4602,6 @@
 <translation id="937885410143139026">データを管理コンソールに送信しました</translation>
 <translation id="939736085109172342">新しいフォルダ</translation>
 <translation id="940524522703752213"><ph name="CLOUD_PROVIDER" /> へのファイルのアップロードは <ph name="MINUTES" /> 分後に開始されます</translation>
-<translation id="944540589955480312">Google アカウントに保存したパスワードとパスキーを使用</translation>
 <translation id="944578681290094302">購入手続きの際にカードでご利用いただける特典とメリットを表示します。<ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />カードのメリットの詳細<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945646848072568856">Chrome では、サードパーティ Cookie の使用を制限し、ブラウジング中のユーザーをトラッキングできないようにしています。</translation>
 <translation id="945855313015696284">下記の情報を確認し、無効なカードがあれば削除してください</translation>

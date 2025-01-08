@@ -13,7 +13,6 @@
 <translation id="110877069173485804">‏این Chrome شماست</translation>
 <translation id="1125124144982679672">‏چه‌کسی از Chrome استفاده می‌کند؟</translation>
 <translation id="1142745911746664600">‏به‌روزرسانی Chrome امکان‌پذیر نیست</translation>
-<translation id="1149651794389918149">‏به سیستم Chrome وارد شوید. اگر فقط یک‌بار می‌خواهید به سیستم حساب وارد شوید، می‌توانید <ph name="GUEST_LINK_BEGIN" />به‌عنوان مهمان از دستگاه استفاده کنید<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">‏درباره ChromeOS</translation>
 <translation id="1154147086299354128">‏&amp;باز کردن در Chrome</translation>
 <translation id="1157985233335035034">زبان‌های اخیر</translation>
@@ -99,7 +98,6 @@
 <translation id="2216543877350048334">‏برای برداشتن «حساب Google» خود از Chrome، از سیستم خارج شوید</translation>
 <translation id="2236949375853147973">فعالیت من</translation>
 <translation id="223889379102603431">‏اطلاعات مربوط به اینکه Chrome چگونه گواهینامه‌های ریشه‌اش را مدیریت می‌کند</translation>
-<translation id="2258103955319320201">‏برای دسترسی به چیزهایتان در مرورگر Chrome در همه دستگاه‌هایتان، به سیستم وارد شوید، سپس همگام‌سازی را روشن کنید</translation>
 <translation id="2290014774651636340">‏کلیدهای Google API وجود ندارد. برخی از عملکردهای Google Chrome از کار خواهد افتاد.</translation>
 <translation id="2290095356545025170">‏آیا می‌خواهید Google Chrome را غیر فعال کنید؟</translation>
 <translation id="2309047409763057870">‏این نصب ثانویه Google Chrome است و نمی‌تواند مرورگر پیش‌فرضتان شود.</translation>
@@ -611,7 +609,6 @@
 <translation id="8550334526674375523">این نمایه کاری کاملاً مجزا از نمایه شخصی‌تان است.</translation>
 <translation id="8555465886620020932">خطای سرویس: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">جستجوی فهرست زبان‌ها</translation>
-<translation id="8571790202382503603">‏با نمایه‌های Chrome می‌توانید همه‌چیزتان را در Chrome جدا کنید. با این کار، راحت‌تر می‌توان کار و سرگرمی را ازهم جدا کرد.</translation>
 <translation id="8601359445272098721">جدید! با انتخاب دکمه «ترجمه کردن صفحه‌نمایش»، می‌توانید هم نوشتار و هم تصاویر روی صفحه‌نمایش را ترجمه کنید</translation>
 <translation id="8614913330719544658">‏Google Chrome پاسخ نمی‌دهد. مجدداً راه‌اندازی شود؟</translation>
 <translation id="861702415419836452">‏Chrome برای دسترسی به دوربین به اجازه نیاز دارد تا بتواند نقشه سه‌بعدی محیط شما را ایجاد کند</translation>
@@ -621,7 +618,6 @@
 <translation id="8669527147644353129">‏راهنمای Google Chrome</translation>
 <translation id="8679801911857917785">‏این برنامه همچنین صفحه‌ای را که هنگام راه‌اندازی Chrome نشان داده می‌شود، کنترل می‌کند.</translation>
 <translation id="8686817260976772516">‏با نمایه‌های Chrome می‌توانید همه چیزتان را در Chrome جدا کنید. برای دوستان و اعضای خانواده‌تان نمایه ایجاد کنید، یا کار و سرگرمی را ازهم جدا کنید.</translation>
-<translation id="8708721325840166640">‏گذرواژه‌های شما و دیگر داده‌های Chrome در «حساب Google» شما ذخیره شده است و از این دستگاه برداشته خواهد شد. برای استفاده کردن از آن‌ها در آینده، دوباره به سیستم Chrome وارد شوید.</translation>
 <translation id="8712767363896337380">‏تقریباً به‌روزرسانی شده است! برای تکمیل به‌روزرسانی، Chrome را راه‌اندازی مجدد کنید.</translation>
 <translation id="8718062187489036808">‏ثبت خروج از Chrome</translation>
 <translation id="873133009373065397">‏Google Chrome نمی‌تواند مرورگر پیش‌فرض را تعیین یا تنظیم کند</translation>

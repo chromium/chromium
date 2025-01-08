@@ -597,7 +597,6 @@
 <translation id="2040894699575719559">Доступ до геоданих заблоковано</translation>
 <translation id="2041788246978549610">Використовувати доступні мікрофони (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Лоток 7</translation>
-<translation id="204357726431741734">Увійдіть, щоб користуватися паролями, збереженими в обліковому записі Google</translation>
 <translation id="2045871135676061132">Конверт особистий</translation>
 <translation id="2046951263634619614">Книжкові крамниці</translation>
 <translation id="2048261947532620704">Переклад сторінки</translation>
@@ -1366,7 +1365,6 @@
 <translation id="343474037147570563">Файли, які ви додаєте або долучаєте, надсилаються на аналіз у Google Cloud або стороннім сервісам. Наприклад, їх можуть сканувати на наявність конфіденційних даних або зловмисного програмного забезпечення, а також зберігати відповідно до правил компанії. Крім того, їх може переглядати адміністратор.</translation>
 <translation id="3435557549311968410">Безперервний друк (короткий)</translation>
 <translation id="3435738964857648380">Безпека</translation>
-<translation id="3438829137925142401">Використовувати паролі, збережені в обліковому записі Google</translation>
 <translation id="3440783957068352691">квадрат</translation>
 <translation id="3441653493275994384">Екран</translation>
 <translation id="3443504041532578451">Оптичний диск (сатиновий)</translation>
@@ -1695,6 +1693,7 @@
 <translation id="3990532701115075684">Відстежувати ваші руки</translation>
 <translation id="3992684624889376114">Про цю сторінку</translation>
 <translation id="3995639283717357522">Застосувати правила</translation>
+<translation id="3996683183117168945">Посилання <ph name="CURRENT_CITATION" /> з <ph name="MAX_CITATIONS" /> (<ph name="PRODUCT_NAME" />, <ph name="URL" />). <ph name="PAGE_TITLE" />. <ph name="PAGE_PREVIEW" />.</translation>
 <translation id="399754345297554962">Стандартизовані й вступні тести</translation>
 <translation id="3999173941208168054">Фільми жахів</translation>
 <translation id="4000598935132966791">Докладніше про обмеження для сайтів у керованих веб-переглядачах</translation>
@@ -4272,7 +4271,6 @@
 <translation id="861775596732816396">Розмір 4</translation>
 <translation id="8620276786115098679">Конверт Kaku 7</translation>
 <translation id="8622864575115813231">З’єднання з фінансовою установою…</translation>
-<translation id="8623885649813806493">Пароль для цього сайту не знайдено. Показати всі збережені паролі.</translation>
 <translation id="8624354461147303341">Отримувати знижки</translation>
 <translation id="8634957317623797170">54 x 86 мм</translation>
 <translation id="8637362707224133343">Chrome має вбудовані функції безпеки, що захищають вас під час вебперегляду, як-от Безпечний перегляд Google. Зокрема, ця функція <ph name="BEGIN_LINK" />нещодавно виявила фішинг<ph name="END_LINK" /> на сайті, який ви намагалися відвідати. Фішингові сайти видають себе за інші сайти, щоб обманювати вас.<ph name="NEW_LINE" />Іноді зловмисники зламують навіть зазвичай безпечні сайти. Якщо ви вважаєте, що сталася помилка й цей сайт не становить небезпеки, <ph name="BEGIN_ERROR_LINK" />повідомте нас<ph name="END_ERROR_LINK" />.</translation>
@@ -4604,7 +4602,6 @@
 <translation id="937885410143139026">Дані надіслано в Консоль адміністратора</translation>
 <translation id="939736085109172342">Нова папка</translation>
 <translation id="940524522703752213">Завантаження файлів у сервіс <ph name="CLOUD_PROVIDER" /> почнеться через <ph name="MINUTES" /> хв</translation>
-<translation id="944540589955480312">Використовувати паролі й ключі доступу, збережені в обліковому записі Google</translation>
 <translation id="944578681290094302">Показувати, які бонуси й переваги доступні для ваших карток під час оплати. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Докладніше про переваги карток.<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945646848072568856">Chrome забороняє сайтам використовувати сторонні файли cookie, щоб відстежувати ваші дії в Інтернеті.</translation>
 <translation id="945855313015696284">Перевірте дані нижче й видаліть недійсні картки.</translation>

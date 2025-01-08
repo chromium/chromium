@@ -597,7 +597,6 @@
 <translation id="2040894699575719559">Lieu bloqué</translation>
 <translation id="2041788246978549610">Utiliser les microphones accessibles (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Bac 7</translation>
-<translation id="204357726431741734">Connectez-vous pour utiliser les mots de passe enregistrés dans votre compte Google</translation>
 <translation id="2045871135676061132">Enveloppe Personal</translation>
 <translation id="2046951263634619614">Librairies</translation>
 <translation id="2048261947532620704">Traduction de la page en cours…</translation>
@@ -1366,7 +1365,6 @@
 <translation id="343474037147570563">Les fichiers que vous téléversez ou joignez sont envoyés à Google Cloud ou à des tiers afin d'être analysés. Par exemple, ils peuvent être analysés pour déterminer s'ils contiennent des données confidentielles ou des logiciels malveillants et peuvent être stockés en fonction des politiques de l'entreprise et être visibles pour votre administrateur.</translation>
 <translation id="3435557549311968410">Continu (court)</translation>
 <translation id="3435738964857648380">Sécurité</translation>
-<translation id="3438829137925142401">Utiliser les mots de passe enregistrés dans votre compte Google</translation>
 <translation id="3440783957068352691">carrée</translation>
 <translation id="3441653493275994384">Écran</translation>
 <translation id="3443504041532578451">Disque optique (satiné)</translation>
@@ -4269,7 +4267,6 @@ Détails supplémentaires :
 <translation id="861775596732816396">Taille 4</translation>
 <translation id="8620276786115098679">Enveloppe Kaku nᵒ 7</translation>
 <translation id="8622864575115813231">Communication avec votre institution financière en cours…</translation>
-<translation id="8623885649813806493">Aucun mot de passe correspondant. Afficher tous les mots de passe enregistrés.</translation>
 <translation id="8624354461147303341">Obtenir des rabais</translation>
 <translation id="8634957317623797170">54 mm x 86 mm</translation>
 <translation id="8637362707224133343">Chrome dispose de fonctionnalités de sécurité intégrées pour vous protéger pendant votre navigation, comme la Navigation sécurisée Google, qui a <ph name="BEGIN_LINK" />récemment détecté de l'hameçonnage<ph name="END_LINK" /> sur le site que vous avez essayé de visiter. Les sites d'hameçonnage se font passer pour d'autres sites pour vous tromper.<ph name="NEW_LINE" />Même les sites normalement sûrs sont parfois compromis par des pirates informatiques. <ph name="BEGIN_ERROR_LINK" />Indiquez-nous<ph name="END_ERROR_LINK" /> si vous pensez qu'il y a eu une erreur et que ce site ne présente aucun danger.</translation>
@@ -4403,7 +4400,7 @@ Détails supplémentaires :
 <translation id="8871485335898060555">Antiquités et objets de collection</translation>
 <translation id="8871553383647848643">Personnaliser le style de votre navigateur</translation>
 <translation id="8874790741333031443">Essayez d'autoriser temporairement les témoins tiers, ce qui signifie que la navigation est moins protégée, mais que les fonctionnalités des sites sont plus susceptibles de fonctionner comme prévu.</translation>
-<translation id="8874824191258364635">Entrez un numéro de carte valide</translation>
+<translation id="8874824191258364635">Veuillez entrer un numéro de carte valide</translation>
 <translation id="8877780815363510165">Pêche</translation>
 <translation id="888117890813270681">« <ph name="DATA_CONTROLS_RESTRICTION" /> » ne peut pas être défini sur « <ph name="DATA_CONTROLS_LEVEL" /> »</translation>
 <translation id="8884537526797090108">Impossible d'enregistrer du contenu confidentiel</translation>
@@ -4600,7 +4597,6 @@ Détails supplémentaires :
 <translation id="937885410143139026">Données envoyées à la console d'administrateur</translation>
 <translation id="939736085109172342">Nouveau dossier</translation>
 <translation id="940524522703752213">Le téléversement de votre fichier vers <ph name="CLOUD_PROVIDER" /> commencera dans <ph name="MINUTES" /> minutes</translation>
-<translation id="944540589955480312">Utiliser les mots de passe et les clés d'accès enregistrés dans votre compte Google</translation>
 <translation id="944578681290094302">Affichez les récompenses et les avantages disponibles pour vos cartes lors du paiement <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />En savoir plus sur les avantages des cartes<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945646848072568856">Chrome empêche les sites d'utiliser des témoins tiers pour vous suivre pendant votre navigation.</translation>
 <translation id="945855313015696284">Vérifiez les renseignements ci-dessous et supprimez les cartes incorrectes</translation>

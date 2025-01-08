@@ -25,6 +25,7 @@
 <translation id="1081932398873105675">{count,plural, =1{{count} раздел}other{{count} раздела}}</translation>
 <translation id="1084365883616172403">Публикацията във Facebook е завършена.</translation>
 <translation id="1085677983426914530">Файлът „<ph name="FILENAME" />“ не бе отворен</translation>
+<translation id="1086468407802688066">Профилът <ph name="USER_EMAIL" /> се управлява от организацията <ph name="HOSTED_DOMAIN" />, която може да преглежда определена информация. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="1096992026380844478">Настройките ви за синхронизиране ще бъдат възстановени въз основа на най-скорошното ви резервно копие. <ph name="BEGIN_LINK" />Вижте какво можете да синхронизирате<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Винаги да се превежда от <ph name="LANGUAGE" /></translation>
 <translation id="1108938384783527433">Синхронизиране на историята</translation>
@@ -83,6 +84,7 @@
 <translation id="1335767868357998043">Избиране на позиция на адресната лента</translation>
 <translation id="1347468774581902829">Управление на активността</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
+<translation id="1358106883354237005">Управляван профил</translation>
 <translation id="1358214951266274152">Посещаване на копираната връзка</translation>
 <translation id="1360432990279830238">Изход и изключване на синхронизирането?</translation>
 <translation id="1363028406613469049">Запис</translation>
@@ -384,6 +386,7 @@
 <translation id="2640733327287333451">Няма потребителско име ••••••</translation>
 <translation id="264215785133931186">Проверено току-що</translation>
 <translation id="2647434099613338025">Добавяне на език</translation>
+<translation id="2649592894792404568">Напът сте да изтриете данните си в Google Мениджър на пароли</translation>
 <translation id="2652129567809778422">Изберете парола</translation>
 <translation id="2658056020748144467">Файлът не може да се отвори</translation>
 <translation id="2661809266906115479"><ph name="TITLE" />, <ph name="STATE" />, само на това устройство, <ph name="URL" /></translation>
@@ -697,6 +700,7 @@
 <translation id="4183350924949589798">Искате по-високо ниво на сигурност?</translation>
 <translation id="4184063163998877398">{count,plural, =1{{count} ненадеждна парола}other{{count} ненадеждни пароли}}</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} елемент ще се запази само на това устройство. За да го използвате на другите си устройства, запазете го в профила си в Google ({email}).}other{{count} елемента ще се запазят само на това устройство. За да ги използвате на другите си устройства, запазете ги в профила си в Google ({email}).}}</translation>
+<translation id="4207873326995387292">Информация за браузъра</translation>
 <translation id="421070604241073551">Когато настройката е включена, данните се запазват в профила ви в Google. Когато е изключена, те се запазват само на това устройство.</translation>
 <translation id="4224534474590365556">Искате ли да затворите над 99 неактивни раздела?</translation>
 <translation id="422474357428465195">Имате няколко проблема с паролите, които могат да представляват риск за сигурността ви.</translation>
@@ -764,6 +768,7 @@
 <translation id="4495516234578759322">Търсене на следващото</translation>
 <translation id="4502423230170890588">Премахване от това устройство</translation>
 <translation id="4508750114462689118">Затваряне на подканата за вход</translation>
+<translation id="4517684186578051919">Информация за устройството</translation>
 <translation id="4520798012560649652">Научете повече за режим „инкогнито“</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} отметка}other{{count} отметки}}</translation>
 <translation id="4525629404718770519">Показване на визуализациите на връзки</translation>
@@ -972,6 +977,7 @@
 <translation id="5444892875087332195">Отметки</translation>
 <translation id="5452354193031718372">Използвайте надеждна парола:</translation>
 <translation id="5454211924362324495">За да не използват други хора паролата ви, <ph name="BEGIN_LINK" />променете я на адрес <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
+<translation id="5454723301413569630">Профилът <ph name="USER_EMAIL" /> се управлява от организацията <ph name="HOSTED_DOMAIN" />, която може да преглежда определена информация, включително</translation>
 <translation id="5457082343331641453">Добавете към търсенето си</translation>
 <translation id="5457226814769348910">Отваряне на офлайн версията</translation>
 <translation id="5478327362747197944">Създавайте събития от календара директно, като кликнете върху дата в уеб страница.</translation>
@@ -1375,6 +1381,7 @@
 <translation id="7102005569666697658">Изтегля се… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Меню → Настройки → Начини на плащане</translation>
 <translation id="7108338896283013870">Скриване</translation>
+<translation id="7128693485119315539">Може да е необходимо организацията ви да вижда и управлява данните за сърфиране, свързани с управлявания ви профил, като например историята на сърфиране и паролите ви.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Няма достъп до камерата</translation>
 <translation id="7141960840225504692">Разделите ви ще бъдат затворени, а данните за сърфирането – изтрити</translation>
@@ -1769,6 +1776,7 @@
 <translation id="8813277370772331957">Напомняне по-късно</translation>
 <translation id="8814719628147284151">Напред</translation>
 <translation id="8820817407110198400">Отметки</translation>
+<translation id="8822421075653507124">За да се обезпечи безопасното използване на това устройство, може да е необходимо организацията ви да вижда информация за операционната система, браузъра и настройките му, както и какъв софтуер е инсталиран на устройството.</translation>
 <translation id="8825562130641217944">Получете отметките, паролите си и др.</translation>
 <translation id="8827154289515190290">Любимият ви браузър вече и за устройства с iOS</translation>
 <translation id="8831208860914609320">Затваряне на всички неактивни</translation>

@@ -228,7 +228,6 @@
 <translation id="1151917987301063366">始终允许 <ph name="HOST" /> 使用传感器</translation>
 <translation id="1152346050262092795">请再次输入您的密码以验证您的账号。</translation>
 <translation id="1153636665119721804">Google 高级保护计划</translation>
-<translation id="1155545602507378023">否，仅限此设备</translation>
 <translation id="1155816283571436363">正在连接到您的手机</translation>
 <translation id="1157952955648710254">关闭 Google 搜索侧边栏</translation>
 <translation id="1158080958325422608">转换为大写</translation>
@@ -460,6 +459,7 @@
 <translation id="1306606229401759371">更改设置</translation>
 <translation id="1307165550267142340">您的 PIN 码已创建完毕</translation>
 <translation id="1307431692088049276">不再询问</translation>
+<translation id="130744661532298792">为了确保您可以一直使用 Google 账号中的密码，请验证是您本人在操作</translation>
 <translation id="1307559529304613120">糟糕！系统无法为该设备存储长期的 API 访问令牌。</translation>
 <translation id="1308548450293664112">此文件是我创建的，单选按钮分组，第 1 个，共 3 个</translation>
 <translation id="131112695174432497">对广告个性化有影响的数据会被删除</translation>
@@ -1147,7 +1147,6 @@
 <translation id="1794791083288629568">发送反馈，以协助我们解决此问题。</translation>
 <translation id="1795214765651529549">使用经典主题背景</translation>
 <translation id="1795438342141780114">将光标重置为居中</translation>
-<translation id="1795668164971917185">当 Google 安全浏览功能下次发现可疑的下载内容时，会自动根据您选择的<ph name="LINK" />扫描该内容</translation>
 <translation id="1796588414813960292">所有需要使用声音的功能都将无法正常运行</translation>
 <translation id="1797117170091578105">使用 Chromebook 键盘玩游戏。您可以为特定操作自定义按键。</translation>
 <translation id="1798335429200675510">右键点击文本框即可创建草稿或润色现有作品，此功能由 Google AI 赋能。目前仅面向部分用户提供。</translation>
@@ -1398,7 +1397,6 @@
 <translation id="1974043046396539880">CRL 分发点</translation>
 <translation id="1974060860693918893">高级</translation>
 <translation id="1974159333077206889">所有音响设备播放相同的音频</translation>
-<translation id="1974216844776165821">Chrome 已将您的密码保存到此设备，但您可改为将其保存到自己的 Google 账号。这样一来，在登录后，您也能获取您 Google 账号中保存的所有密码和通行密钥。</translation>
 <translation id="1975841812214822307">移除…</translation>
 <translation id="1976150099241323601">登录安全设备</translation>
 <translation id="1976823515278601587">节省大量内存</translation>
@@ -1648,7 +1646,6 @@
 <translation id="2143915448548023856">显示设备设置</translation>
 <translation id="2144536955299248197">证书查看者：<ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Linux Android 应用开发</translation>
-<translation id="2144873026585036769">要使用 Google 账号保存和填充密码和通行密钥吗？</translation>
 <translation id="2145917706968602070">请确保手机就在附近、处于解锁状态，且已开启蓝牙和 Wi-Fi</translation>
 <translation id="2146263598007866206">网站可能会自动将相关文件一起下载，从而为您节省时间</translation>
 <translation id="2147218225094845757">隐藏侧边栏</translation>
@@ -2109,7 +2106,6 @@
 <translation id="2458591546854598341">设备管理令牌无效。</translation>
 <translation id="2459703812219683497">检测到激活码</translation>
 <translation id="2459706890611560967">继续将标签页投放到“<ph name="DEVICE_NAME" />”</translation>
-<translation id="2460356425461033301">备份您的浏览器资料，在任何设备上使用</translation>
 <translation id="2460482211073772897">在其他文件夹中</translation>
 <translation id="2460826998961521840">使用您 Google 账号中保存的通行密钥</translation>
 <translation id="2461045498706592033">“<ph name="LOCAL_FOLDER" />”仅会保存到此设备上。如果您将此书签移至“<ph name="LOCAL_FOLDER" />”，您将无法再在其他设备上获取它。</translation>
@@ -2811,6 +2807,7 @@
 <translation id="2953210795988451570">安全更新已终止。请升级为新款 Chromebook。</translation>
 <translation id="2953218713108551165">不允许 <ph name="SITE" /> 传送通知。当您下次访问时，系统会再次询问您。</translation>
 <translation id="2956070239128776395">有区段嵌套在分组中：<ph name="ERROR_LINE" /></translation>
+<translation id="2957124229512318478">开启开发者模式即可使用此扩展程序，但请注意，Chrome 应用商店无法审核此扩展程序。</translation>
 <translation id="2958721676848865875">打包扩展程序警告</translation>
 <translation id="2959127025785722291">出了点问题。无法完成扫描。请重试。</translation>
 <translation id="2959474507964749987">此加密文件可能是病毒或恶意软件。<ph name="LINE_BREAK" />若要确定它是否安全，您可将此文件及密码发送到 Google 安全浏览功能进行检查。扫描通常需要几秒钟的时间。<ph name="LINE_BREAK" />若要扫描，请添加此文件的密码。</translation>
@@ -4306,6 +4303,7 @@
 <translation id="4001540981461989979">在鼠标光标移动时突出显示它</translation>
 <translation id="4002347779798688515">如果移动网络提供商已锁定，您可能无法使用下载的个人资料。请向您的提供商寻求支持。</translation>
 <translation id="4002440992267487163">PIN 码设置</translation>
+<translation id="4003617970184602156">如要使用密码并将其保存在您的 Google 账号中，请验证是您本人在操作</translation>
 <translation id="4005817994523282006">时区检测方法</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{此操作会将该分组从您的设备中永久删除。}other{此操作会将这些分组从您的设备中永久删除。}}</translation>
 <translation id="4010036441048359843">开启突出显示功能</translation>
@@ -6029,7 +6027,6 @@
 <translation id="5263656105659419083">如需轻松返回侧边栏，请点击右上角的“固定”</translation>
 <translation id="5264148714798105376">这可能需要 1 分钟左右。</translation>
 <translation id="5264252276333215551">请先连接到互联网，然后在自助服务终端模式下启动您的应用。</translation>
-<translation id="526539328530966548">增强型保护</translation>
 <translation id="5265797726250773323">安装时出错</translation>
 <translation id="5266113311903163739">证书授权中心导入错误</translation>
 <translation id="526622169288322445">显示可对“<ph name="ADDRESS_SUMMARY" />”执行的更多操作</translation>
@@ -6934,6 +6931,7 @@
 <translation id="5932224571077948991">网站展示过侵扰性或误导性广告</translation>
 <translation id="59324397759951282">由<ph name="MANUFACTURER_NAME" />生产的 USB 设备</translation>
 <translation id="5932441198730183141">您没有足够的可用许可来注册此 Google Meet 设备。请与销售代表联系，以购买更多许可。如果您认为自己不该看到这条消息，请与支持人员联系。</translation>
+<translation id="593271375210025655">开启开发者模式即可使用此扩展程序，但请务必确认您信任此扩展程序。它可能包含实验性功能，且尚未经过 Chrome 应用商店的审核。</translation>
 <translation id="5932881020239635062">序列号</translation>
 <translation id="5933376509899483611">时区</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> 正在使用您的摄像头和麦克风</translation>
@@ -6961,6 +6959,7 @@
 <translation id="5948476936444935795">取消导入</translation>
 <translation id="5948536763493709626">您可以连接一个键盘或鼠标，也可以继续使用触摸屏进行设置。如果您使用的是蓝牙设备，请确保您的设备已准备好进行配对。</translation>
 <translation id="5949544233750246342">无法解析文件</translation>
+<translation id="5949795028157144515">开发者模式已关闭，某些扩展程序已停用。</translation>
 <translation id="594993197557058302">按 1-4 个辅助键（ctrl、alt、shift、搜索键或启动器键）和另外 1 个键。您也可选择单个键。</translation>
 <translation id="5950762317146173294">此文件可能是病毒或恶意软件</translation>
 <translation id="5951303645598168883"><ph name="ORIGIN" /> 想使用本地字体</translation>
@@ -7351,7 +7350,6 @@
 <translation id="6234108445915742946">Chrome 的《服务条款》将于 3 月 31 日变更</translation>
 <translation id="6234474535228214774">正等待安装</translation>
 <translation id="6235208551686043831">设备的摄像头已开启。请将摄像头对准您的 eSIM 卡二维码。</translation>
-<translation id="6237297174664969437">您可随时在 Chrome 设置中选择要同步的浏览器数据。对于通过 Chrome 浏览器安装的 Web 应用，您可以在<ph name="LINK_BEGIN" />设备设置<ph name="LINK_END" />中控制这些应用的同步情况。Google 可能会根据您的历史记录在 Google 搜索及其他服务中为您提供个性化的体验。</translation>
 <translation id="6237474966939441970">触控笔记事应用</translation>
 <translation id="6237481151388361546">请更改互联网连接并选择“重试”，或者选择“在基本编辑器中打开”以便使用有限的查看和编辑选项。</translation>
 <translation id="623755660902014047">朗读模式</translation>
@@ -7421,6 +7419,7 @@
 <translation id="6278776436938569440">更改位置</translation>
 <translation id="6280215091796946657">使用其他账号登录</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281218688313242284">管理您的 Google 账号(&amp;G)</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{超出了 1 张纸的上限}other{超出了 {COUNT} 张纸的上限}}</translation>
 <translation id="6282490239556659745">从 <ph name="SITE" /> 中移除 <ph name="EMBEDDED_SITE" />？</translation>
 <translation id="6283438600881103103">您将立即自动退出。
@@ -8032,6 +8031,7 @@
 <translation id="6745592621698551453">立即更新</translation>
 <translation id="6746124502594467657">下移</translation>
 <translation id="67465227497040338">显示 <ph name="DOMAIN" /> 的密码</translation>
+<translation id="6746834324024491643">如需将您的密码等信息同步到您的所有设备上，请以 <ph name="EMAIL" /> 的身份登录</translation>
 <translation id="6748980958975836188">我已阅读并同意接受 <ph name="BEGIN_LINK1" />Google 服务条款<ph name="END_LINK1" />以及 <ph name="BEGIN_LINK2" />Chrome 和 Chrome 操作系统附加服务条款<ph name="END_LINK2" />。</translation>
 <translation id="6749077623962119521">重置权限？</translation>
 <translation id="6749473226660745022">照片</translation>
@@ -8361,7 +8361,7 @@
 <translation id="6970480684834282392">启动类型</translation>
 <translation id="6970543303783413625">无法导入密码。您一次最多只能导入 <ph name="COUNT" /> 个密码。</translation>
 <translation id="6970856801391541997">打印特定页面</translation>
-<translation id="6970861306198150268">请确保您保存的是您目前用于此网站的密码</translation>
+<translation id="6970861306198150268">请确保您保存的是此网站当前的密码</translation>
 <translation id="6971184043765343932">您上传的图片</translation>
 <translation id="6971570759801670426">修改以下用户名的<ph name="CREDENTIAL_TYPE" />：<ph name="USER_EMAIL" /></translation>
 <translation id="6972754398087986839">开始使用</translation>
@@ -8809,7 +8809,6 @@
 <translation id="730515362922783851">与本地网络或互联网中的任何设备交换数据</translation>
 <translation id="7306521477691455105">请打开“设置”以将 <ph name="USB_DEVICE_NAME" /> 连接到 <ph name="USB_VM_NAME" /></translation>
 <translation id="7307129035224081534">已暂停</translation>
-<translation id="7307647374092371434">登录后，您在此设备上也能获取您 Google 账号中保存的密码和通行密钥</translation>
 <translation id="7308643132139167865">网站语言</translation>
 <translation id="7309214454733221756">要创建通行密钥以便登录“<ph name="APP_NAME" />”吗？</translation>
 <translation id="7311005168897771689">在离线状态下访问您的 Google 云端硬盘文件</translation>
@@ -9383,6 +9382,7 @@
 <translation id="7709152031285164251">失败 - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">投放(&amp;C)…</translation>
 <translation id="7711968363685835633">停用个性化转换功能、建议功能以及用户字典</translation>
+<translation id="771220840345868810">没有建议的问题</translation>
 <translation id="7712739869553853093">“打印预览”对话框</translation>
 <translation id="7713139339518499741">自然语音</translation>
 <translation id="7714307061282548371">已允许来自 <ph name="DOMAIN" /> 的 Cookie</translation>

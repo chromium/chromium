@@ -274,6 +274,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1908992311423394684">Nuova installazione</translation>
 <translation id="1915307458270490472">Chiudi</translation>
 <translation id="1918022425394817322">Fotocamera allineata all'angolo in alto a destra</translation>
+<translation id="1920390473494685033">Contatti</translation>
 <translation id="1923539912171292317">Clic automatici</translation>
 <translation id="1925320505152357008">meno di 1 min</translation>
 <translation id="1928739107511554905">Per scaricare l'aggiornamento, utilizza il touchscreen e riavvia il Chromebook con la tastiera collegata.</translation>
@@ -530,6 +531,7 @@ In caso contrario, il touchpad integrato verrà riattivato dopo <ph name="TIMEOU
 <translation id="2847759467426165163">Trasmetti a</translation>
 <translation id="2848120746144143659">Premi invio per acquisire uno screenshot a schermo intero</translation>
 <translation id="2849936225196189499">Critica</translation>
+<translation id="2850207700020959936">Le app possono accedere alla fotocamera</translation>
 <translation id="2860184359326882502">Risultato migliore</translation>
 <translation id="2865888419503095837">Informazioni di rete</translation>
 <translation id="2869095047958348710">Lo scorso <ph name="DAY_OF_WEEK" /></translation>
@@ -584,6 +586,7 @@ In caso contrario, il touchpad integrato verrà riattivato dopo <ph name="TIMEOU
 <translation id="304417730895741346">Le app bloccate e aperte si trovano nella barra delle app. Per bloccare un'app sulla barra delle app, fai clic con il tasto destro del mouse su un'app o tocca il touchpad con due dita.</translation>
 <translation id="3045488863354895414">Buon pomeriggio,</translation>
 <translation id="3047761520276763270">Prova a dire:</translation>
+<translation id="3053407068093039599">Attiva/disattiva l'accesso alla fotocamera</translation>
 <translation id="3055162170959710888">Oggi hai utilizzato questo dispositivo per <ph name="USED_TIME" /></translation>
 <translation id="3062298103034426069">Non supportate</translation>
 <translation id="3068622547379332530">Versione <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -881,6 +884,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="4042660782729322247">Stai condividendo lo schermo</translation>
 <translation id="404437169852192935">Aggiornamenti terminati</translation>
 <translation id="4049230407053723315">Impostazioni rapide</translation>
+<translation id="4054070260844648638">Visibile a tutti</translation>
 <translation id="4057003836560082631">Scheda del browser <ph name="INDEX" /> di <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4059696795118403455">Per vedere suggerimenti personalizzati su cosa fare dopo, premi il tasto Panoramica</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Off per un'app}other{Off per # app}}</translation>
@@ -1404,7 +1408,6 @@ Nessun dispositivo connesso.</translation>
 <translation id="5727460725221669831">Se hai dimenticato la password o hai modificato la password del tuo Account Google di recente, prova a recuperare questo utente.</translation>
 <translation id="5733630091161562207">Notifica di benvenuto</translation>
 <translation id="573413375004481890">Questo dispositivo non può supportare tutti i tuoi display, pertanto uno è stato scollegato</translation>
-<translation id="5740328398383587084">Condivisione nelle vicinanze</translation>
 <translation id="574392208103952083">Medio</translation>
 <translation id="5744083938413354016">Trascinamento al tocco</translation>
 <translation id="5745612484876805746">La funzione Luminosità notturna viene attivata automaticamente al tramonto</translation>
@@ -1481,6 +1484,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="5990992855591814753">Tieni tutto sotto controllo con playlist personalizzate per la concentrazione. YouTube Music e YouTube senza annunci con 3 mesi di YouTube Premium senza costi. Si applicano termini.</translation>
 <translation id="5998374579424866922">Disattiva i controlli di gioco</translation>
 <translation id="6000279412553873020">Tasti, pulsanti e altro</translation>
+<translation id="6002122790816966947">I tuoi dispositivi</translation>
 <translation id="6012623610530968780">Pagina <ph name="SELECTED_PAGE" /> di <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Evidenzia l'elemento successivo nella barra delle app</translation>
 <translation id="6015573907265691211">Segna come completata</translation>
@@ -1797,6 +1801,7 @@ Nuova installazione</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> vuole usare <ph name="DEVICE_NAME" />. Attiva l'interruttore fisico (<ph name="DEVICE_NAME" />) del dispositivo.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Assistente Google</translation>
 <translation id="7042322267639375032">Comprimi area di stato</translation>
+<translation id="7042593542151411225">Le app non possono accedere alla fotocamera</translation>
 <translation id="7045033600005038336">Vuoi sostituire il modello?</translation>
 <translation id="7051244143160304048">Disconnessione di <ph name="DEVICE_NAME" /> effettuata</translation>
 <translation id="7055910611768509537">Lo stilo non viene usato da più di una settimana</translation>
@@ -2371,6 +2376,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="9074432941673450836">Usa le app per fare tutto ciò che ti serve sul tuo <ph name="PRODUCT_NAME" />. Puoi trovare le tue app in Avvio app. Puoi anche premere il tasto Avvio app (sopra il tasto Maiusc sinistro) sulla tastiera.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9077515519330855811">Controlli multimediali, ora in riproduzione: <ph name="MEDIA_TITLE" /></translation>
+<translation id="9079012373317704997">Impossibile attivare l'accesso alla fotocamera da remoto</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">Fotocamera allineata all'angolo in alto a sinistra</translation>
 <translation id="9080132581049224423">Scorri verso l'alto per andare alla Home page</translation>

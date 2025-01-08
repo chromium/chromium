@@ -25,6 +25,7 @@
 <translation id="1081932398873105675">{count,plural, =1{{count} pestana}other{{count} pestanas}}</translation>
 <translation id="1084365883616172403">Completouse a publicación de Facebook.</translation>
 <translation id="1085677983426914530">"<ph name="FILENAME" />" non se puido abrir</translation>
+<translation id="1086468407802688066"><ph name="HOSTED_DOMAIN" /> xestiona a conta <ph name="USER_EMAIL" /> e pode ver parte da información. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="1096992026380844478">Restaurarase a configuración de sincronización en función da última copia de seguranza. <ph name="BEGIN_LINK" />Consulta o que podes sincronizar<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Traducir sempre o <ph name="LANGUAGE" /></translation>
 <translation id="1108938384783527433">Sincronización do historial</translation>
@@ -83,6 +84,7 @@
 <translation id="1335767868357998043">Escolle a posición da barra de enderezos</translation>
 <translation id="1347468774581902829">Xestionar actividade</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
+<translation id="1358106883354237005">Conta xestionada</translation>
 <translation id="1358214951266274152">Visitar ligazón que copiaches</translation>
 <translation id="1360432990279830238">Queres pechar sesión?</translation>
 <translation id="1363028406613469049">Número de seguimento</translation>
@@ -697,6 +699,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4183350924949589798">Queres aumentar a seguranza?</translation>
 <translation id="4184063163998877398">{count,plural, =1{{count} contrasinal pouco seguro}other{{count} contrasinais pouco seguros}}</translation>
 <translation id="4197456013861852807">{count,plural, =1{Hai {count} elemento gardado só neste dispositivo. Para usalo noutros aparellos, gárdao na túa Conta de Google ({email}).}other{Hai {count} elementos gardados só neste dispositivo. Para usalos noutros aparellos, gárdaos na túa Conta de Google ({email}).}}</translation>
+<translation id="4207873326995387292">Información do navegador</translation>
 <translation id="421070604241073551">Cando a opción está activada, os datos gárdanse na túa Conta de Google. Cando está desactivada, os datos gárdanse só no dispositivo.</translation>
 <translation id="4224534474590365556">Queres pechar máis de 99 pestanas inactivas?</translation>
 <translation id="422474357428465195">Tes varios problemas cos contrasinais que poderían poñer en perigo a túa seguranza.</translation>
@@ -764,6 +767,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4495516234578759322">Buscar seguinte</translation>
 <translation id="4502423230170890588">Quitar deste dispositivo</translation>
 <translation id="4508750114462689118">Pecha a promoción de inicio de sesión</translation>
+<translation id="4517684186578051919">Información do dispositivo</translation>
 <translation id="4520798012560649652">Máis información sobre o modo de incógnito</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} marcador}other{{count} marcadores}}</translation>
 <translation id="4525629404718770519">Mostrar vistas previas das ligazóns</translation>
@@ -972,6 +976,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="5444892875087332195">Marcadores</translation>
 <translation id="5452354193031718372">Usa este contrasinal seguro:</translation>
 <translation id="5454211924362324495">Para evitar que outras persoas usen o teu contrasinal, <ph name="BEGIN_LINK" />cámbiao en <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
+<translation id="5454723301413569630"><ph name="HOSTED_DOMAIN" /> xestiona a conta <ph name="USER_EMAIL" /> e pode ver parte da información como, por exemplo,</translation>
 <translation id="5457082343331641453">Engade unha consulta á busca</translation>
 <translation id="5457226814769348910">Abrir versión sen conexión</translation>
 <translation id="5478327362747197944">Fai clic nunha data dunha páxina web para crear directamente eventos no calendario.</translation>
@@ -1375,6 +1380,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7102005569666697658">Descargando… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menú → Configuración → Métodos de pago</translation>
 <translation id="7108338896283013870">Ocultar</translation>
+<translation id="7128693485119315539">É posible que a túa organización necesite consultar e administrar os datos de navegación asociados á túa conta xestionada, como o teu historial de navegación e os contrasinais.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">A cámara non está dispoñible</translation>
 <translation id="7141960840225504692">Pecharanse as pestanas e eliminaranse os datos de navegación</translation>
@@ -1769,6 +1775,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8813277370772331957">Lembrarmo máis tarde</translation>
 <translation id="8814719628147284151">Continuar</translation>
 <translation id="8820817407110198400">Marcadores</translation>
+<translation id="8822421075653507124">Para garantir que este dispositivo se use de maneira segura, é posible que a túa organización necesite consultar a información sobre o seu sistema operativo, o navegador e a configuración, así como o software instalado no aparello.</translation>
 <translation id="8825562130641217944">Accede aos teus marcadores ou aos contrasinais, entre outras cousas.</translation>
 <translation id="8827154289515190290">Goza en iOS do navegador que tanto che gusta</translation>
 <translation id="8831208860914609320">Pechar todas as pestanas inactivas</translation>

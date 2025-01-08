@@ -228,7 +228,6 @@
 <translation id="1151917987301063366">همیشه اجازه دسترسی به حسگرها به <ph name="HOST" /> داده شود</translation>
 <translation id="1152346050262092795">برای به‌تأیید رساندن حساب، گذرواژه‌تان را دوباره وارد کنید.</translation>
 <translation id="1153636665119721804">‏برنامه محافظت پیشرفته Google</translation>
-<translation id="1155545602507378023">نه، فقط این دستگاه</translation>
 <translation id="1155816283571436363">درحال اتصال به تلفن</translation>
 <translation id="1157952955648710254">‏بستن پانل کناری «جستجوی Google»</translation>
 <translation id="1158080958325422608">تبدیل به حروف بزرگ</translation>
@@ -1160,7 +1159,6 @@
 <translation id="1794791083288629568">برای کمک به ما در رفع این مشکل بازخورد ارسال کنید.</translation>
 <translation id="1795214765651529549">استفاده از کلاسیک</translation>
 <translation id="1795438342141780114">بازنشانی کردن مکان‌نما در مرکز</translation>
-<translation id="1795668164971917185">‏دفعه بعدی که «مرور ایمن Google» بارگیری مشکوکی پیدا کند، آن را به‌صورت خودکار و به‌عنوان بخشی از <ph name="LINK" /> که انتخاب کرده‌اید اسکن خواهد کرد</translation>
 <translation id="1796588414813960292">ویژگی‌هایی که به صدا نیاز دارند کار نخواهند کرد</translation>
 <translation id="1797117170091578105">‏بااستفاده از صفحه‌کلید Chromebook بازی کنید. می‌توانید کلیدها را برای کنش‌های خاصی سفارشی کنید.</translation>
 <translation id="1798335429200675510">‏برای تهیه پیش‌نویس یا پالایش کار موجود با بهره‌گیری از هوش مصنوعی Google، در چارگوش نوشتاری کلیک راست کنید. درحال‌حاضر دسترسی به آن محدود است.</translation>
@@ -1413,7 +1411,6 @@
 <translation id="1974043046396539880">‏نقاط توزیع CRL</translation>
 <translation id="1974060860693918893">پیشرفته</translation>
 <translation id="1974159333077206889">صدای یکسان با همه بلندگوها</translation>
-<translation id="1974216844776165821">‏‫Chrome گذرواژه‌تان را در این دستگاه ذخیره کرده است، اما به‌جای دستگاه می‌توانید آن را در «حساب Google» خود ذخیره کنید. بدین‌ترتیب، هرگاه به سیستم وارد شده باشید، همه گذرواژه‌ها و گذرکلیدهای ذخیره‌شده در «حساب Google» شما نیز دردسترس خواهد بود.</translation>
 <translation id="1975841812214822307">حذف...</translation>
 <translation id="1976150099241323601">ورود به سیستم دستگاه امنیتی</translation>
 <translation id="1976823515278601587">صرفه‌جویی‌های زیاد</translation>
@@ -1663,7 +1660,6 @@
 <translation id="2143915448548023856">تنظیمات نمایش</translation>
 <translation id="2144536955299248197">نمایشگر گواهی: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">‏تولید برنامه Android در Linux</translation>
-<translation id="2144873026585036769">‏برای ذخیره و درج گذرواژه‌ها و گذرکلیدها از «حساب Google» شما استفاده شود؟</translation>
 <translation id="2145917706968602070">‏مطمئن شوید تلفنتان همین اطراف باشد و قفل آن باز و بلوتوث و Wi-Fi در آن روشن باشد</translation>
 <translation id="2146263598007866206">سایت‌ها شاید به‌طور خودکار فایل‌های مرتبط را با هم بارگیری کنند تا در زمان صرفه‌جویی شود</translation>
 <translation id="2147218225094845757">پنهان کردن پانل کناری</translation>
@@ -2127,7 +2123,6 @@
 <translation id="2458591546854598341">کد مدیریت دستگاه نامعتبر است.</translation>
 <translation id="2459703812219683497">کد فعال‌سازی شناسایی شد</translation>
 <translation id="2459706890611560967">ازسر گرفتن پخش محتوای برگه در <ph name="DEVICE_NAME" /></translation>
-<translation id="2460356425461033301">از داده‌های مرورگرتان پشتیبان‌گیری کنید و در هر دستگاهی از آن‌ها استفاده کنید</translation>
 <translation id="2460482211073772897">در پوشه‌های دیگر</translation>
 <translation id="2460826998961521840">‏برای استفاده از گذرکلیدهای ذخیره‌شده در «حساب Google»</translation>
 <translation id="2461045498706592033">‫<ph name="LOCAL_FOLDER" /> فقط در این دستگاه ذخیره می‌شود. اگر این نشانک را به <ph name="LOCAL_FOLDER" /> منتقل کنید، دیگر آن را در دستگاه‌های دیگرتان نخواهید داشت.</translation>
@@ -6054,7 +6049,6 @@
 <translation id="5263656105659419083">برای بازگشت آسان به پانل کناری، روی «سنجاق» در گوشه چپ بالا کلیک کنید</translation>
 <translation id="5264148714798105376">ممکن است یک دقیقه یا بیشتر طول بکشد.</translation>
 <translation id="5264252276333215551">برای راه‌اندازی برنامه‌تان در حالت کیوسک لطفاً به اینترنت متصل شوید.</translation>
-<translation id="526539328530966548">محافظت بهبودیافته</translation>
 <translation id="5265797726250773323">هنگام نصب خطایی روی داد</translation>
 <translation id="5266113311903163739">خطای ورود ارائه دهنده مجوز</translation>
 <translation id="526622169288322445">کنش‌های بیشتر برای <ph name="ADDRESS_SUMMARY" /></translation>
@@ -7382,7 +7376,6 @@
 <translation id="6234108445915742946">‏«شرایط خدمات Chrome» در تاریخ ۳۱ مارس تغییر می‌کند</translation>
 <translation id="6234474535228214774">نصب درانتظار</translation>
 <translation id="6235208551686043831">دوربین دستگاه روشن شده است. لطفاً رمزینه پاسخ‌سریع سیم‌کارت داخلی را مقابل دوربین قرار دهید.</translation>
-<translation id="6237297174664969437">‏هرزمان بخواهید می‌توانید در تنظیمات Chrome انتخاب کنید که کدام داده‌های مرورگر همگام‌سازی شود. در <ph name="LINK_BEGIN" />تنظیمات دستگاه<ph name="LINK_END" />، می‌توانید همگام‌سازی را برای برنامه‌های وب نصب‌شده از مرورگر Chrome کنترل کنید. Google ممکن است «جستجو» و سرویس‌های دیگر را براساس سابقه‌تان شخصی کند.</translation>
 <translation id="6237474966939441970">برنامه یادداشت‌برداری قلم</translation>
 <translation id="6237481151388361546">اتصال اینترنت را تغییر دهید و «امتحان مجدد» را انتخاب کنید، یا برای استفاده از نمای محدود و گزینه‌های ویرایش، «باز کردن در ویرایشگر پایه» را انتخاب کنید.</translation>
 <translation id="623755660902014047">حالت خواندن</translation>
@@ -7452,6 +7445,7 @@
 <translation id="6278776436938569440">تغییر مکان</translation>
 <translation id="6280215091796946657">ورود به سیستم با حساب دیگر</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281218688313242284">‏مدیریت «حساب Google»</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{از تعداد مجاز ۱ برگ کاغذ بیشتر شده است}one{از تعداد مجاز {COUNT} برگ کاغذ بیشتر شده است}other{از تعداد مجاز {COUNT} برگ کاغذ بیشتر شده است}}</translation>
 <translation id="6282490239556659745">برداشتن <ph name="EMBEDDED_SITE" /> از <ph name="SITE" /></translation>
 <translation id="6283438600881103103">اکنون به‌طور خودکار از سیستم خارج خواهید شد.
@@ -8065,6 +8059,7 @@
 <translation id="6745592621698551453">اکنون به‌روز کردن</translation>
 <translation id="6746124502594467657">انتقال به پایین</translation>
 <translation id="67465227497040338">نشان دادن گذرواژه <ph name="DOMAIN" /></translation>
+<translation id="6746834324024491643">برای دریافت گذرواژه‌ها و موارد دیگر در همه دستگاه‌هایتان، با <ph name="EMAIL" /> به سیستم وارد شوید</translation>
 <translation id="6748980958975836188">‏<ph name="BEGIN_LINK1" />شرایط خدمات Google<ph name="END_LINK1" /> و <ph name="BEGIN_LINK2" />شرایط خدمات تکمیلی Chrome و ChromeOS<ph name="END_LINK2" /> را خوانده‌ام و با آن‌ها موافقت می‌کنم.</translation>
 <translation id="6749077623962119521">اجازه‌ها بازنشانی شوند؟</translation>
 <translation id="6749473226660745022">Photos</translation>
@@ -8842,7 +8837,6 @@
 <translation id="730515362922783851">تبادل داده با هر دستگاهی در شبکه محلی یا اینترنت</translation>
 <translation id="7306521477691455105">برای اتصال <ph name="USB_DEVICE_NAME" /> به <ph name="USB_VM_NAME" />، «تنظیمات» را باز کنید</translation>
 <translation id="7307129035224081534">موقتاً متوقف شد</translation>
-<translation id="7307647374092371434">‏وقتی به سیستم وارد شده باشید، گذرواژه‌ها و گذرکلیدهای ذخیره‌شده در «حساب Google» شما در این دستگاه نیز دردسترس خواهد بود</translation>
 <translation id="7308643132139167865">زبان‌های وب‌سایت</translation>
 <translation id="7309214454733221756">برای ورود به سیستم <ph name="APP_NAME" />، گذرکلید ایجاد شود؟</translation>
 <translation id="7311005168897771689">‏زمانی‌که آفلاین هستید به فایل‌های Google Drive خود دسترسی داشته باشید</translation>
@@ -9416,6 +9410,7 @@
 <translation id="7709152031285164251">انجام نشد - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">&amp;ارسال محتوا…</translation>
 <translation id="7711968363685835633">غیرفعال کردن تبدیل‌های شخصی و پیشنهادها و فرهنگ لغت کاربر</translation>
+<translation id="771220840345868810">هیچ سؤال پیشنهادی وجود ندارد</translation>
 <translation id="7712739869553853093">کادر گفتگوی پیش‌نمایش چاپ</translation>
 <translation id="7713139339518499741">صدای طبیعی</translation>
 <translation id="7714307061282548371">کوکی‌های <ph name="DOMAIN" /> مجاز است</translation>

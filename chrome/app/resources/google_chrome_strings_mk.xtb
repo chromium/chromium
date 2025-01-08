@@ -15,7 +15,6 @@
 <translation id="110877069173485804">Ова е вашиот Chrome</translation>
 <translation id="1125124144982679672">Кој користи Chrome?</translation>
 <translation id="1142745911746664600">Не може да се ажурира Chrome</translation>
-<translation id="1149651794389918149">Најавете се на Chrome. Ако сакате да најавите сметка само еднократно, може <ph name="GUEST_LINK_BEGIN" />да го користите уредот како гостин<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">Повеќе за ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Отвори во Chrome</translation>
 <translation id="1157985233335035034">Неодамнешни јазици</translation>
@@ -102,7 +101,6 @@
 <translation id="2216543877350048334">Одјавете се за да се отстрани вашата сметка на Google од Chrome</translation>
 <translation id="2236949375853147973">Моја активност</translation>
 <translation id="223889379102603431">Информации за тоа како Chrome управува со своите сертификати за администраторски права</translation>
-<translation id="2258103955319320201">За да пристапувате до вашите работи на прелистувачот Chrome на сите уреди, најавете се и вклучете ја синхронизацијата</translation>
 <translation id="2290014774651636340">Клучевите Google API недостасуваат. Некои функции на Google Chrome ќе бидат оневозможени.</translation>
 <translation id="2290095356545025170">Дали сте сигурни дека сакате да го деинсталирате Google Chrome?</translation>
 <translation id="2309047409763057870">Ова е второстепена инсталација на Google Chrome и затоа не може да биде стандарден прелистувач.</translation>
@@ -617,7 +615,6 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="8550334526674375523">Овој работен профил е целосно одделен од вашиот личен профил.</translation>
 <translation id="8555465886620020932">Грешка на услугата: <ph name="SERVICE_ERROR" /></translation>
 <translation id="856656450041460113">Пребарајте го списокот со јазици</translation>
-<translation id="8571790202382503603">Со профилите на Chrome може да ги одделите сите ваши работи на Chrome. Со ова е полесно да се одделат работата и забавата.</translation>
 <translation id="8601359445272098721">Ново! Може да ги преведувате и текстот и сликите на екранот така што ќе го изберете копчето „Преведи го екранот“</translation>
 <translation id="8614913330719544658">Google Chrome не реагира. Да се рестартира сега?</translation>
 <translation id="861702415419836452">На Chrome му треба дозвола за да пристапи до камерата и да создаде 3D-карта од вашето опкружување</translation>
@@ -627,7 +624,6 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">Контролира и која страница се прикажува кога ќе стартувате Chrome.</translation>
 <translation id="8686817260976772516">Со профилите на Chrome може да ги одделите сите ваши работи на Chrome. Создајте профили за пријателите и семејството или поделете ги помеѓу работа и забава.</translation>
-<translation id="8708721325840166640">Вашите лозинки и други податоци од Chrome се зачувани во вашата сметка на Google и ќе се отстранат од уредов. За да ги користите во иднина, најавете се повторно на Chrome.</translation>
 <translation id="8712767363896337380">Речиси сте готови! Рестартирајте го Chrome за да заврши ажурирањето.</translation>
 <translation id="8718062187489036808">Одјави се од Chrome</translation>
 <translation id="873133009373065397">Google Chrome не може да го одреди или постави стандардниот прелистувач</translation>

@@ -13,7 +13,6 @@
 <translation id="110877069173485804">‏זה ה-Chrome שלך</translation>
 <translation id="1125124144982679672">‏מי משתמש/ת ב-Chrome?</translation>
 <translation id="1142745911746664600">‏לא ניתן לעדכן את Chrome</translation>
-<translation id="1149651794389918149">‏יש להיכנס אל Chrome. אם רוצים להיכנס לחשבון באופן חד-פעמי בלבד, אפשר <ph name="GUEST_LINK_BEGIN" />להשתמש במכשיר כאורח<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">‏מידע על ChromeOS</translation>
 <translation id="1154147086299354128">‏&amp;פתיחה ב-Chrome</translation>
 <translation id="1157985233335035034">שפות אחרונות</translation>
@@ -98,7 +97,6 @@
 <translation id="2216543877350048334">‏כדי להסיר את החשבון שלך ב-Google מ-Chrome, צריך לצאת מהחשבון</translation>
 <translation id="2236949375853147973">הפעילות שלי</translation>
 <translation id="223889379102603431">‏מידע על האופן שבו Chrome מנהל את אישורי הבסיס שלו</translation>
-<translation id="2258103955319320201">‏כדי לקבל גישה אל הפריטים שלך בדפדפן Chrome בכל המכשירים, צריך להיכנס לחשבון ולהפעיל את הסנכרון</translation>
 <translation id="2290014774651636340">‏המפתחות של Google API חסרים. פונקציונליות מסוימת של Google Chrome תהיה מושבתת.</translation>
 <translation id="2290095356545025170">‏ברצונך באמת להסיר את Google Chrome?</translation>
 <translation id="2309047409763057870">‏זוהי התקנה משנית של Google Chrome, ולא ניתן להפוך אותו לדפדפן ברירת המחדל שלך.</translation>
@@ -609,7 +607,6 @@
 <translation id="8550334526674375523">פרופיל העבודה שלך נפרד לחלוטין מהפרופיל האישי שלך.</translation>
 <translation id="8555465886620020932">שגיאה בשירות: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">רשימת שפות לחיפוש</translation>
-<translation id="8571790202382503603">‏בעזרת פרופילים ב-Chrome, אפשר להפריד בין הפריטים ששומרים ב-Chrome. באופן הזה קל יותר להפריד בין עבודה לפנאי.</translation>
 <translation id="8601359445272098721">חדש! אפשר לתרגם טקסט ותמונות במסך באמצעות לחיצה על הלחצן 'תרגום המסך'</translation>
 <translation id="8614913330719544658">‏Google Chrome אינו מגיב. להפעיל מחדש עכשיו?</translation>
 <translation id="861702415419836452">‏Chrome זקוק להרשאת גישה למצלמה כדי ליצור מפה תלת-ממדית של הסביבה שלך</translation>
@@ -619,7 +616,6 @@
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">‏הגדרה זו גם קובעת איזה דף מוצג כשמפעילים את Chrome.</translation>
 <translation id="8686817260976772516">‏בעזרת פרופילים ב-Chrome, אפשר להפריד בין הפריטים ששומרים ב-Chrome. יוצרים פרופילים המיועדים לחברים ולבני משפחה או פרופילים נפרדים לעבודה ולבילויים בשעות הפנאי.</translation>
-<translation id="8708721325840166640">‏הסיסמאות ונתונים אחרים מ-Chrome נשמרים בחשבון שלך ב-Google, ויוסרו מהמכשיר הזה. כדי להשתמש בהם בעתיד, צריך להיכנס שוב ל-Chrome.</translation>
 <translation id="8712767363896337380">‏העדכון כמעט הושלם. כדי להשלים את העדכון, עליך להפעיל את Chrome מחדש.</translation>
 <translation id="8718062187489036808">‏צא מ-Chrome:</translation>
 <translation id="873133009373065397">‏Google Chrome אינו יכול לקבוע או להגדיר את דפדפן ברירת המחדל</translation>

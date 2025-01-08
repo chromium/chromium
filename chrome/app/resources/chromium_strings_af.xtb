@@ -136,6 +136,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="277338894894732084">Chromium sal jou later vra of jy gestoorde inligting wil gebruik om vorms outomaties in te vul</translation>
 <translation id="2785438272836277133">Hierdie uitbreiding bevat wanware en is onveilig. Verwyder dit uit Chromium sodat dit nie meer jou data, insluitend jou persoonlike inligting, op werwe wat jy besoek kan sien en verander nie.</translation>
 <translation id="2799223571221894425">Begin weer</translation>
+<translation id="2803971713792056305">Jou Chromium</translation>
 <translation id="2806241689335397269">Chromium sal jou vra of jy vorminligting wil stoor, soos jou geboortedatum, ouderdom en paspoortnommer</translation>
 <translation id="2837693172913560447">Dit sal 'n nuwe Chromium-profiel vir <ph name="USER_EMAIL_ADDRESS" /> skep</translation>
 <translation id="2841525013647267359">Vertaal uit</translation>
@@ -296,6 +297,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="5123973130450702873">Chromium benodig toestemming om jou hande na te spoor</translation>
 <translation id="5174969993834422967">Jy blokkeer gewoonlik kennisgewings. Klik die kennisgewing-ikoon in die regter hoek van jou liggingbalk sodat dié werf jou in kennis kan stel.</translation>
 <translation id="5187123684706427865">Chromium-rekening vereis herstawing</translation>
+<translation id="5203572811198011329">Voer jou wagfrase, <ph name="ACCOUNT_EMAIL" />, in om Chromium-data in jou Google-rekening te gebruik en te stoor</translation>
 <translation id="5224391634244552924">Geen gestoorde wagwoorde nie. Chromium kan jou wagwoorde nagaan wanneer jy hulle stoor.</translation>
 <translation id="5231355151045086930">Meld af uit Chromium</translation>
 <translation id="5234764350956374838">Verwerp</translation>
@@ -325,7 +327,6 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="5496810170689441661">Chromium probeer tans om wagwoorde te wysig. Tik jou Windows-wagwoord in om dit toe te laat.</translation>
 <translation id="5527463683072221100">Maak PDF's in Chromium oop</translation>
 <translation id="5568136785038042132">Meld aan by Chromium om jou uitbreidings op al jou rekenaars te kry</translation>
-<translation id="5575418445468216473">Jou wagwoorde en ander Chromium-data word in jou Google-rekening gestoor en sal van hierdie toestel af verwyder word. Meld weer by Chromium aan om hulle in die toekoms te gebruik.</translation>
 <translation id="5579324208890605088">Aanskakelingfout: laat loop die installeerder as ’n gereelde gebruiker, nie as administrateur nie.</translation>
 <translation id="5596627076506792578">Meer opsies</translation>
 <translation id="5605834417512968703">Kies enigiets om met Prentsoektog te soek of druk Escape om uit Prentsoektog te gaan</translation>
@@ -476,7 +477,6 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="7355355292030546812">Chromium het hierdie aflaai geblokkeer omdat die lêer jou persoonlike en sosialenetwerkrekeninge kan beskadig, insluitend <ph name="USER_EMAIL" /></translation>
 <translation id="7384121030444253939">Hierdie uitbreiding word nie meer gesteun nie. Chromium beveel aan dat jy dit eerder verwyder.</translation>
 <translation id="7389750180956889333">Chromium verstaan vorms beter en kan hulle vir jou vinniger outovul. Kry meer inligting oor <ph name="BEGIN_LINK" />Chrome-outovul<ph name="END_LINK" /></translation>
-<translation id="7398989605938454041">Met Chromium-profiele kan jy al jou Chromium-goed skei. Dit maak dit makliker om tussen werk en pret te verdeel.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7450541714075000668">Teks gekopieer</translation>
 <translation id="7451052299415159299">Chromium het toestemming nodig om toegang te kry tot jou kamera vir hierdie werf</translation>
@@ -540,7 +540,6 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="8326785589245660814">vee die Chromium-data in jou rekening uit</translation>
 <translation id="8330519371938183845">Meld aan om Chromium op al jou toestelle te sinkroniseer en personaliseer</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> het voorheen Chromium gebruik</translation>
-<translation id="8357820681460164151">Meld aan en skakel dan sinkronisering aan om op al jou toestelle toegang tot jou Chromium-blaaiergoed te kry.</translation>
 <translation id="8359544530202147897">Dateer Chromium op om aan te hou om die Chromium-data in jou Google-rekening, <ph name="ACCOUNT_EMAIL" />, te gebruik</translation>
 <translation id="8360718212975266891">Jy het Windows 10 of nuwer nodig om in die toekoms Chromium-opdaterings te kry. Hierdie rekenaar gebruik Windows 8.</translation>
 <translation id="8362914115861174987">Vertaal in</translation>
@@ -554,6 +553,7 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="8453117565092476964">Die installeerderargief is korrup of ongeldig. Laai Chromium asseblief weer af.</translation>
 <translation id="8458614432758743027">Chromium vereis Windows 10 of nuwer.</translation>
 <translation id="8463672209299734063">Opsioneel: Help om Chromium-bedryfstelsel se kenmerke en werkverrigting beter te maak deur outomaties diagnostiese en gebruiksdata na Google toe te stuur.</translation>
+<translation id="8471947159125090285">Verifieer dis jy om Chromium-data in jou Google-rekening te gebruik en te stoor</translation>
 <translation id="8493179195440786826">Chromium is verouderd</translation>
 <translation id="8522801943730206384">Chromium kan jou wagwoorde nagaan wanneer jy hulle stoor</translation>
 <translation id="8550334526674375523">Hierdie werkprofiel is heeltemal apart van jou persoonlike profiel.</translation>
@@ -590,7 +590,6 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="9022552996538154597">Meld by Chromium aan</translation>
 <translation id="904366664621834601">Chromium het hierdie aflaai geblokkeer omdat die argieflêer ander lêers insluit wat wanware kan versteek</translation>
 <translation id="9062666675513499497">Meld aan by Chromium wanneer jy by ander Google-dienste aanmeld</translation>
-<translation id="907832235989677238">Meld by Chromium aan. As jy ’n rekening net een keer wil aanmeld, kan jy <ph name="GUEST_LINK_BEGIN" />die toestel as gas gebruik<ph name="GUEST_LINK_END" />.</translation>
 <translation id="9078733879136747090">Chromium is outomaties toegemaak</translation>
 <translation id="9089354809943900324">Chromium is verouderd</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium sal oor 'n uur herbegin}other{Chromium sal oor # uur herbegin}}</translation>

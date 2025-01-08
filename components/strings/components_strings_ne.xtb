@@ -597,7 +597,6 @@
 <translation id="2040894699575719559">लोकेसन हेर्न रोक लगाइएको छ</translation>
 <translation id="2041788246978549610">उपलब्ध माइक्रोफोन (<ph name="MICS_COUNT" /> वटा) प्रयोग गर्न</translation>
 <translation id="2042213636306070719">ट्रे ७</translation>
-<translation id="204357726431741734">आफ्नो Google खातामा सुरक्षित गरिएका पासवर्डहरू प्रयोग गर्न साइन इन गर्नुहोस्</translation>
 <translation id="2045871135676061132">Envelope Personal</translation>
 <translation id="2046951263634619614">पुस्तकका खुद्रा बिक्रेताहरू</translation>
 <translation id="2048261947532620704">पेज अनुवाद गरिँदै छ</translation>
@@ -1363,7 +1362,6 @@
 <translation id="343474037147570563">तपाईंले अपलोड वा एट्याच गर्ने फाइलहरू विश्लेषण गर्ने प्रयोजनका लागि Google क्लाउडमा वा तेस्रो पक्षकहाँ पठाइन्छ। उदाहरणका लागि, ती फाइलमा संवेदनशील डेटा वा मालवेयर छन् कि छैनन् भनी जाँच गरिन सक्छ र कम्पनीका नीतिका आधारमा फाइल भण्डारण गरिन सक्छ र ती फाइलहरू एडमिनले हेर्न मिल्छ।</translation>
 <translation id="3435557549311968410">कन्टिन्युअस (सर्ट)</translation>
 <translation id="3435738964857648380">सुरक्षा</translation>
-<translation id="3438829137925142401">आफ्नो Google खातामा सुरक्षित गरिएका पासवर्डहरू प्रयोग गर्नुहोस्</translation>
 <translation id="3440783957068352691">वर्गाकार पेज</translation>
 <translation id="3441653493275994384">स्क्रिन</translation>
 <translation id="3443504041532578451">अप्टिकल डिस्क (स्याटिन)</translation>
@@ -1692,6 +1690,7 @@
 <translation id="3990532701115075684">तपाईंका हातहरू ट्र्याक गर्न</translation>
 <translation id="3992684624889376114">यो पेजका बारेमा</translation>
 <translation id="3995639283717357522">नीतिहरू लागू गर्नुहोस्</translation>
+<translation id="3996683183117168945"><ph name="MAX_CITATIONS" /> मध्ये <ph name="CURRENT_CITATION" /> औँ उद्धरण, <ph name="PRODUCT_NAME" />, <ph name="URL" />। <ph name="PAGE_TITLE" />। <ph name="PAGE_PREVIEW" />।</translation>
 <translation id="399754345297554962">सीप परीक्षण तथा प्रवेश परीक्षाहरू</translation>
 <translation id="3999173941208168054">तर्साउने चलचित्रहरू</translation>
 <translation id="4000598935132966791">व्यवस्थापन गरिएका ब्राउजरहरूमा साइटमाथि लगाइने प्रतिबन्धका बारेमा थप जान्नुहोस्</translation>
@@ -4267,7 +4266,6 @@
 <translation id="861775596732816396">आकार ४</translation>
 <translation id="8620276786115098679">Envelope Kaku 7</translation>
 <translation id="8622864575115813231">तपाईंको वित्तीय संस्थामा सम्पर्क गरिँदै छ...</translation>
-<translation id="8623885649813806493">मिल्दो पासवर्ड फेला परेन। सुरक्षित गरिएका सबै पासवर्डहरू देखाउनुहोस्।</translation>
 <translation id="8624354461147303341">छुट प्राप्त गर्नुहोस्</translation>
 <translation id="8634957317623797170">५४ x ८६ मिलिमिटर</translation>
 <translation id="8637362707224133343">तपाईंले ब्राउज गर्दै गर्दा तपाईंलाई सुरक्षित राख्न Chrome मा "Google सुरक्षित ब्राउजिङ" लगायतका सुरक्षासम्बन्धी अन्तर्निर्मित सुविधाहरू उपलब्ध छन्। "Google सुरक्षित ब्राउजिङ" ले हालसालै तपाईंले खोल्न खोज्नुभएको साइटमा <ph name="BEGIN_LINK" />फिसिङ<ph name="END_LINK" /> पत्ता लगाएको छ। तपाईंलाई झुक्याउने उद्देश्यले फिसिङ साइटहरू अन्य साइटहरू जस्तै देखिन्छन्।<ph name="NEW_LINE" />ह्याकरहरूले कहिलेकाहीँ सामान्यतया सुरक्षित मानिने साइटहरू पनि ह्याक गर्छन्। तपाईंलाई कुनै त्रुटि भएको छ र यो साइटबाट कुनै पनि खतरा छैन भन्ने लाग्छ भने <ph name="BEGIN_ERROR_LINK" />हामीलाई बताउनुहोस्<ph name="END_ERROR_LINK" />।</translation>
@@ -4599,7 +4597,6 @@
 <translation id="937885410143139026">डेटा एड्मिन कन्सोलमा पठाइएको छ</translation>
 <translation id="939736085109172342">नयाँ फोल्डर</translation>
 <translation id="940524522703752213">तपाईंको फाइल <ph name="CLOUD_PROVIDER" /> मा अपलोड गर्ने प्रक्रिया <ph name="MINUTES" /> मिनेटमा सुरु हुने छ</translation>
-<translation id="944540589955480312">आफ्नो Google खातामा सेभ गरिएका पासवर्ड तथा पासकीहरू प्रयोग गर्नुहोस्</translation>
 <translation id="944578681290094302">चेकआउट गर्दा तपाईंका कार्डका कुन कुन रिवार्ड तथा लाभ उपलब्ध छन् भन्ने कुरा देखाउनुहोस्। <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />कार्डका लाभहरूका बारेमा थप जान्नुहोस्<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945646848072568856">Chrome ले साइटहरूलाई तपाईंले ब्राउज गरिरहेका बेला तपाईंलाई ट्र्याक गर्ने प्रयोजनका लागि तेस्रो पक्षीय कुकीहरू प्रयोग गर्न दिँदैन।</translation>
 <translation id="945855313015696284">तल दिइएको जानकारीको जाँच गर्नुहोस् र सबै अमान्य कार्ड मेट्नुहोस्</translation>

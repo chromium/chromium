@@ -274,6 +274,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1908992311423394684">Instal·lació nova</translation>
 <translation id="1915307458270490472">Penja</translation>
 <translation id="1918022425394817322">La càmera s'ha ajustat a l'extrem superior dret</translation>
+<translation id="1920390473494685033">Contactes</translation>
 <translation id="1923539912171292317">Clics automàtics</translation>
 <translation id="1925320505152357008">menys d'1 minut</translation>
 <translation id="1928739107511554905">Per obtenir l'actualització, utilitza la pantalla tàctil per reiniciar Chromebook amb el teclat connectat.</translation>
@@ -886,6 +887,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="4042660782729322247">Estàs compartint la pantalla</translation>
 <translation id="404437169852192935">Les actualitzacions han finalitzat</translation>
 <translation id="4049230407053723315">Configuració ràpida</translation>
+<translation id="4054070260844648638">Visible per a tothom</translation>
 <translation id="4057003836560082631">Pestanya <ph name="INDEX" /> de <ph name="TOTAL_COUNT" /> del navegador. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4059696795118403455">Per veure suggeriments personalitzats de coses a fer a continuació, prem la tecla de visió general</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{No en una app}other{No en # apps}}</translation>
@@ -1409,7 +1411,6 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="5727460725221669831">Si has oblidat la contrasenya o has canviat la contrasenya del Compte de Google fa poc, prova de recuperar aquest usuari.</translation>
 <translation id="5733630091161562207">Notificació de benvinguda</translation>
 <translation id="573413375004481890">Com que aquest dispositiu no ha pogut admetre totes les pantalles, se n'ha desconnectat una</translation>
-<translation id="5740328398383587084">Compartició Nearby</translation>
 <translation id="574392208103952083">Mitja</translation>
 <translation id="5744083938413354016">Toca i arrossega</translation>
 <translation id="5745612484876805746">La funció Llum nocturna s'activa automàticament al vespre</translation>
@@ -1486,6 +1487,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="5990992855591814753">Mantén el ritme amb llistes de reproducció personalitzades per concentrar-se. Obtén YouTube Music i YouTube sense anuncis amb 3 mesos de YouTube Premium sense cost econòmic. S'hi apliquen condicions.</translation>
 <translation id="5998374579424866922">Desactiva els controls del joc</translation>
 <translation id="6000279412553873020">Tecles, botons i més</translation>
+<translation id="6002122790816966947">Els teus dispositius</translation>
 <translation id="6012623610530968780">Pàgina <ph name="SELECTED_PAGE" /> de <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Marca l'element següent al prestatge</translation>
 <translation id="6015573907265691211">Marca com a completada</translation>

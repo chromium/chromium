@@ -104,9 +104,6 @@ Se lo elimini, tutti perderanno immediatamente l'accesso al gruppo di schede "<p
 <translation id="5494920125229734069">Seleziona tutto</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Chiudi il gruppo di schede con <ph name="TABS_COUNT_ONE" /> scheda, colore <ph name="COLOR_NAME" />.}other{Chiudi il gruppo di schede con <ph name="TABS_COUNT_MANY" /> schede, colore <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Visualizza informazioni sul negozio, opzione disponibile nella parte superiore dello schermo</translation>
-<translation id="5615302411300498438">Mantieni questo gruppo per aggiungere schede in un secondo momento o esci.
-
-Se esci, perderai immediatamente l'accesso al gruppo di schede "<ph name="TITLE_OF_GROUP" />".</translation>
 <translation id="5627941783489838464">Nessun aggiornamento della scheda</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Ripristina la scheda}other{Ripristina le schede}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link da Chrome}other{<ph name="TABS_COUNT_MANY" /> link da Chrome}}</translation>
@@ -117,7 +114,6 @@ Se esci, perderai immediatamente l'accesso al gruppo di schede "<ph name="TITLE_
 <translation id="6040143037577758943">Chiudi</translation>
 <translation id="6051432659151380973">I gruppi di schede vengono salvati automaticamente</translation>
 <translation id="6054741997831917303">Il prezzo di questo articolo è recentemente sceso da <ph name="PREVIOUS_PRICE" /> a <ph name="NEW_PRICE" /></translation>
-<translation id="6082313992897617440">Perderai immediatamente l'accesso al gruppo di schede <ph name="GROUP_NAME" /></translation>
 <translation id="6109251075362363230">Ora verranno archiviate anche tutte le schede duplicate, fatta eccezione per la copia utilizzata più di recente.</translation>
 <translation id="6193448654517602979">Seleziona schede</translation>
 <translation id="6228793724645064692">(valutazione del negozio)</translation>
@@ -145,9 +141,9 @@ Se esci, perderai immediatamente l'accesso al gruppo di schede "<ph name="TITLE_
 <translation id="731648547091221002">Colore <ph name="COLOR_NAME" /> selezionato</translation>
 <translation id="7326879924029668159">Visualizza le norme sui resi e non solo</translation>
 <translation id="7352298686197644113">Scopri quale articolo nelle schede aperte ha un prezzo più basso</translation>
-<translation id="7421293530411019405">Uscire dal gruppo di schede?</translation>
 <translation id="7452985128687107478">I gruppi di schede vengono automaticamente salvati e aggiornati su tutti i tuoi dispositivi</translation>
 <translation id="747459581954555080">Ripristina tutto</translation>
+<translation id="750886945254958667">Mantieni questo gruppo per aggiungere schede in un secondo momento o esci se non vuoi più accedervi</translation>
 <translation id="753732157349120914">Selettore di schede</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> recensione da Google}other{<ph name="REVIEWS_COUNT_MANY" /> recensioni da Google}}</translation>
 <translation id="7559245342362162951">Mostra le schede del gruppo in una griglia a schermo intero</translation>
@@ -177,9 +173,7 @@ Se esci, perderai immediatamente l'accesso al gruppo di schede "<ph name="TITLE_
 <translation id="8398929769197326728">Nuova cartella - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Impostazioni</translation>
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> scheda aggiunta, <ph name="ANY_CLOSED" /> chiusa}other{<ph name="MANY_ADDED" /> schede aggiunte, <ph name="ANY_CLOSED" /> chiuse}}</translation>
-<translation id="8631711675211020168">Tutte le persone perderanno immediatamente l'accesso al gruppo di schede <ph name="GROUP_NAME" />, che verrà eliminato da tutti i dispositivi</translation>
 <translation id="8633025649649592204">Attività recente</translation>
-<translation id="8635399646025169806">Mantenere il gruppo di schede?</translation>
 <translation id="870736955561925754">Chiudere la scheda ed eliminare il gruppo?</translation>
 <translation id="8714939927607906138">Prezzo più basso</translation>
 <translation id="8730621377337864115">Fine</translation>

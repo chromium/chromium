@@ -274,6 +274,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1908992311423394684">Nová inštalácia</translation>
 <translation id="1915307458270490472">Zložiť</translation>
 <translation id="1918022425394817322">Kamera bola prichytená do pravého horného rohu</translation>
+<translation id="1920390473494685033">Kontakty</translation>
 <translation id="1923539912171292317">Automatické kliknutia</translation>
 <translation id="1925320505152357008">menej ako 1 minúta</translation>
 <translation id="1928739107511554905">Ak chcete získať aktualizáciu, reštartuje Chromebook s pripojenou klávesnicou pomocou dotykovej obrazovky.</translation>
@@ -884,6 +885,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="4042660782729322247">Zdieľate svoju obrazovku</translation>
 <translation id="404437169852192935">Aktualizácie boli ukončené</translation>
 <translation id="4049230407053723315">Rýchle nastavenia</translation>
+<translation id="4054070260844648638">Viditeľné pre všetkých</translation>
 <translation id="4057003836560082631">Karta prehliadača: <ph name="INDEX" />. z <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4059696795118403455">Ak chcete zobraziť prispôsobené návrhy pre ďalšie úlohy, stlačte kláves Prehľad</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Vyp. pre apl.}few{Vyp. pre # apl.}many{Off for # apps}other{Vyp. pre # apl.}}</translation>
@@ -1407,7 +1409,6 @@ Nie sú pripojené žiadne zariadenia.</translation>
 <translation id="5727460725221669831">Ak ste zabudli heslo alebo ste nedávno zmenili heslo účtu Google, skúste tohto používateľa obnoviť.</translation>
 <translation id="5733630091161562207">Uvítacie upozornenie</translation>
 <translation id="573413375004481890">Toto zariadenie nedokázalo podporovať všetky vaše obrazovky, takže jedna bola odpojená</translation>
-<translation id="5740328398383587084">Zdieľanie nablízku</translation>
 <translation id="574392208103952083">Stredné</translation>
 <translation id="5744083938413354016">Presunutie klepnutím</translation>
 <translation id="5745612484876805746">Nočný režim sa automaticky zapína pri západe slnka</translation>
@@ -1484,6 +1485,7 @@ Nie sú pripojené žiadne zariadenia.</translation>
 <translation id="5990992855591814753">Zostaňte na správnej ceste vďaka prispôsobeným zoznamom skladieb na sústredenie. Získajte YouTube Music a YouTube bez reklám s odberom YouTube Premium na tri mesiace bez peňažného poplatku. Na ponuku sa vzťahujú zmluvné podmienky.</translation>
 <translation id="5998374579424866922">Vypnúť ovládanie hry</translation>
 <translation id="6000279412553873020">Klávesy, tlačidlá a ďalšie položky</translation>
+<translation id="6002122790816966947">Vaše zariadenia</translation>
 <translation id="6012623610530968780">Stránka <ph name="SELECTED_PAGE" /> z <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Zvýraznenie nasledujúcej položke na poličke</translation>
 <translation id="6015573907265691211">Označiť ako dokončenú</translation>

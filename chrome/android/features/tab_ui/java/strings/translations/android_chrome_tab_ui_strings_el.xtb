@@ -104,9 +104,6 @@
 <translation id="5494920125229734069">Επιλογή όλων</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Κλείσιμο ομάδας καρτελών με <ph name="TABS_COUNT_ONE" /> καρτέλα, χρώμα <ph name="COLOR_NAME" />.}other{Κλείσιμο ομάδας καρτελών με <ph name="TABS_COUNT_MANY" /> καρτέλες, χρώμα <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Δείτε πληροφορίες καταστήματος, η επιλογή είναι διαθέσιμη στο επάνω μέρος της οθόνης</translation>
-<translation id="5615302411300498438">Διατηρήστε αυτή την ομάδα, για να προσθέσετε καρτέλες αργότερα. Εναλλακτικά, αποχωρήστε.
-
-Εάν αποχωρήσετε, θα χάσετε αμέσως την πρόσβαση στην ομάδα καρτελών <ph name="TITLE_OF_GROUP" />.</translation>
 <translation id="5627941783489838464">Δεν υπάρχουν ενημερώσεις καρτελών</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Επαναφορά καρτέλας}other{Επαναφορά καρτελών}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> σύνδεσμος από το Chrome}other{<ph name="TABS_COUNT_MANY" /> σύνδεσμοι από το Chrome}}</translation>
@@ -117,7 +114,6 @@
 <translation id="6040143037577758943">Κλείσιμο</translation>
 <translation id="6051432659151380973">Οι ομάδες καρτελών σας αποθηκεύονται αυτόματα</translation>
 <translation id="6054741997831917303">Η τιμή αυτού του στοιχείου μειώθηκε πρόσφατα από <ph name="PREVIOUS_PRICE" /> σε <ph name="NEW_PRICE" /></translation>
-<translation id="6082313992897617440">Θα χάσετε αμέσως την πρόσβαση στην ομάδα καρτελών <ph name="GROUP_NAME" /></translation>
 <translation id="6109251075362363230">Από εδώ και στο εξής, όλες οι διπλότυπες καρτέλες θα αρχειοθετούνται, με εξαίρεση το αντίγραφο που χρησιμοποιήθηκε πιο πρόσφατα.</translation>
 <translation id="6193448654517602979">Επιλογή καρτελών</translation>
 <translation id="6228793724645064692">(αξιολόγηση καταστήματος)</translation>
@@ -145,9 +141,9 @@
 <translation id="731648547091221002">Επιλέχθηκε το <ph name="COLOR_NAME" /></translation>
 <translation id="7326879924029668159">Δείτε την πολιτική επιστροφής και άλλα.</translation>
 <translation id="7352298686197644113">Δείτε ποιο στοιχείο στις ανοικτές καρτέλες σας έχει τη χαμηλότερη τιμή.</translation>
-<translation id="7421293530411019405">Αποχώρηση από την ομάδα καρτελών;</translation>
 <translation id="7452985128687107478">Οι ομάδες καρτελών αποθηκεύονται και ενημερώνονται αυτόματα σε όλες τις συσκευές σας</translation>
 <translation id="747459581954555080">Επαναφορά όλων</translation>
+<translation id="750886945254958667">Διατηρήστε αυτή την ομάδα, για να προσθέσετε καρτέλες αργότερα, ή αποχωρήστε, αν δεν θέλετε πλέον να έχετε πρόσβαση σε αυτή</translation>
 <translation id="753732157349120914">Εναλλαγή καρτελών</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> έλεγχος από την Google}other{<ph name="REVIEWS_COUNT_MANY" /> έλεγχοι από την Google}}</translation>
 <translation id="7559245342362162951">Εμφάνιση καρτελών ομάδας σε πλέγμα πλήρους οθόνης</translation>
@@ -177,9 +173,7 @@
 <translation id="8398929769197326728">Νέος φάκελος - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Ρυθμίσεις</translation>
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{Προστέθηκε <ph name="ONE_ADDED" /> καρτέλα, έκλεισαν <ph name="ANY_CLOSED" />}other{Προστέθηκαν <ph name="MANY_ADDED" /> καρτέλες, έκλεισαν <ph name="ANY_CLOSED" />}}</translation>
-<translation id="8631711675211020168">Όλοι θα χάσουν αμέσως την πρόσβαση στην ομάδα καρτελών <ph name="GROUP_NAME" /> και θα διαγραφεί από όλες τις συσκευές</translation>
 <translation id="8633025649649592204">Πρόσφατη δραστηριότητα</translation>
-<translation id="8635399646025169806">Να διατηρηθεί η ομάδα καρτελών;</translation>
 <translation id="870736955561925754">Να κλείσει η καρτέλα και να διαγραφεί η ομάδα;</translation>
 <translation id="8714939927607906138">Χαμηλότερη τιμή</translation>
 <translation id="8730621377337864115">Ολοκληρώθηκε</translation>

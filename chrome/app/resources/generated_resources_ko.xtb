@@ -228,7 +228,6 @@
 <translation id="1151917987301063366"><ph name="HOST" />에서 센서에 액세스하도록 항상 허용</translation>
 <translation id="1152346050262092795">비밀번호를 다시 입력하여 계정을 인증하세요</translation>
 <translation id="1153636665119721804">Google 고급 보호 프로그램</translation>
-<translation id="1155545602507378023">아니요, 이 기기에만 저장</translation>
 <translation id="1155816283571436363">휴대전화에 연결하는 중</translation>
 <translation id="1157952955648710254">Google 검색 측면 패널 닫기</translation>
 <translation id="1158080958325422608">Make Uppercase(대문자로 표시)</translation>
@@ -1162,7 +1161,6 @@
 <translation id="1794791083288629568">이 문제를 해결하는 데 도움이 되도록 의견 전송</translation>
 <translation id="1795214765651529549">기본 테마 사용</translation>
 <translation id="1795438342141780114">중앙으로 커서 재설정</translation>
-<translation id="1795668164971917185">다음번에 Google 세이프 브라우징에서 의심스러운 다운로드를 발견하면 선택한 <ph name="LINK" />의 일부로 해당 다운로드를 자동으로 스캔합니다.</translation>
 <translation id="1796588414813960292">소리가 필요한 기능이 작동하지 않습니다</translation>
 <translation id="1797117170091578105">Chromebook 키보드를 사용하여 플레이합니다. 특정 작업에 맞게 키를 맞춤설정할 수 있습니다.</translation>
 <translation id="1798335429200675510">텍스트 상자를 마우스 오른쪽 버튼으로 클릭하여 Google AI를 기반으로 초안을 작성하거나 기존 작업물을 다듬어 보세요. 현재는 제한적으로만 이용할 수 있습니다.</translation>
@@ -1417,7 +1415,6 @@
 <translation id="1974043046396539880">CRL 배포 지점</translation>
 <translation id="1974060860693918893">고급</translation>
 <translation id="1974159333077206889">모든 스피커에서 동일한 오디오</translation>
-<translation id="1974216844776165821">Chrome에서 비밀번호를 이 기기에 저장했으나, 기기가 아닌 Google 계정에 저장해도 됩니다. 그렇게 하면 로그인한 상태에서 Google 계정에 저장된 모든 비밀번호 및 패스키를 사용할 수도 있습니다.</translation>
 <translation id="1975841812214822307">삭제...</translation>
 <translation id="1976150099241323601">보안 장치 로그인</translation>
 <translation id="1976823515278601587">메모리 대폭 절약</translation>
@@ -1667,7 +1664,6 @@
 <translation id="2143915448548023856">디스플레이 설정</translation>
 <translation id="2144536955299248197">인증서 뷰어: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Linux Android 앱 개발</translation>
-<translation id="2144873026585036769">Google 계정을 사용하여 비밀번호와 패스키를 저장하고 채우시겠습니까?</translation>
 <translation id="2145917706968602070">휴대전화가 근처에 있고 잠금 해제되어 있으며, 블루투스와 Wi-Fi가 켜져 있는지 확인하세요.</translation>
 <translation id="2146263598007866206">시간 절약을 위해 사이트에서 자동으로 여러 관련 파일을 한꺼번에 다운로드할 수 있습니다.</translation>
 <translation id="2147218225094845757">측면 패널 숨기기</translation>
@@ -2132,7 +2128,6 @@
 <translation id="2458591546854598341">기기 관리 토큰이 잘못되었습니다.</translation>
 <translation id="2459703812219683497">활성화 코드 감지됨</translation>
 <translation id="2459706890611560967"><ph name="DEVICE_NAME" /> 기기로 탭 전송 재개</translation>
-<translation id="2460356425461033301">브라우저 콘텐츠를 백업하고 어느 기기에서나 사용하세요</translation>
 <translation id="2460482211073772897">다른 폴더 내</translation>
 <translation id="2460826998961521840">Google 계정에 저장된 패스키를 사용하려면</translation>
 <translation id="2461045498706592033"><ph name="LOCAL_FOLDER" /> 폴더가 이 기기에만 저장됩니다. 이 북마크를 <ph name="LOCAL_FOLDER" /> 폴더로 이동하면 다른 기기에서 더 이상 액세스할 수 없습니다</translation>
@@ -6058,7 +6053,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5263656105659419083">측면 패널로 손쉽게 돌아가려면 오른쪽 상단의 고정을 클릭하세요</translation>
 <translation id="5264148714798105376">1분 정도 소요될 수 있습니다.</translation>
 <translation id="5264252276333215551">앱을 키오스크 모드로 실행하려면 인터넷에 연결하세요.</translation>
-<translation id="526539328530966548">향상된 보호 모드</translation>
 <translation id="5265797726250773323">설치 중 오류 발생</translation>
 <translation id="5266113311903163739">인증 기관 가져오기 오류</translation>
 <translation id="526622169288322445"><ph name="ADDRESS_SUMMARY" />의 작업 메뉴 더보기</translation>
@@ -7386,7 +7380,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6234108445915742946">3월 31일부터 Chrome의 서비스 약관이 변경됩니다</translation>
 <translation id="6234474535228214774">설치 대기 중</translation>
 <translation id="6235208551686043831">기기 카메라가 켜졌습니다. 카메라 앞에 eSIM QR 코드를 두세요.</translation>
-<translation id="6237297174664969437">Chrome 설정에서 언제든지 동기화할 브라우저 데이터를 선택할 수 있습니다. <ph name="LINK_BEGIN" />기기 설정<ph name="LINK_END" />에서 Chrome 브라우저에서 설치된 웹 앱의 동기화를 제어할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다.</translation>
 <translation id="6237474966939441970">스타일러스 메모 앱</translation>
 <translation id="6237481151388361546">인터넷 연결을 변경하고 '다시 시도'를 선택하거나 '기본 편집기에서 열기'를 선택하여 제한된 보기 및 수정 옵션을 사용하세요.</translation>
 <translation id="623755660902014047">읽기 모드</translation>
@@ -8844,7 +8837,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="730515362922783851">로컬 네트워크 또는 인터넷의 모든 기기와 데이터 교환</translation>
 <translation id="7306521477691455105">설정을 열어 <ph name="USB_DEVICE_NAME" /> 기기를 <ph name="USB_VM_NAME" />에 연결하세요.</translation>
 <translation id="7307129035224081534">일시중지됨</translation>
-<translation id="7307647374092371434">로그인한 상태라면 이 기기에서도 Google 계정의 비밀번호와 패스키를 사용할 수 있습니다.</translation>
 <translation id="7308643132139167865">웹사이트 언어</translation>
 <translation id="7309214454733221756"><ph name="APP_NAME" /> 로그인에 사용할 패스키를 생성할까요?</translation>
 <translation id="7311005168897771689">오프라인 상태에서 Google Drive 파일에 액세스</translation>
@@ -9417,6 +9409,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7709152031285164251">실패 - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">전송(&amp;C)...</translation>
 <translation id="7711968363685835633">맞춤 변환, 추천 및 사용자 사전 사용 중지</translation>
+<translation id="771220840345868810">추천 질문을 사용할 수 없음</translation>
 <translation id="7712739869553853093">인쇄 미리보기 대화상자</translation>
 <translation id="7713139339518499741">자연 음성</translation>
 <translation id="7714307061282548371"><ph name="DOMAIN" />의 쿠키를 허용함</translation>

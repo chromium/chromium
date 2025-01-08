@@ -274,6 +274,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1908992311423394684">Uus installimine</translation>
 <translation id="1915307458270490472">Lõpeta kõne</translation>
 <translation id="1918022425394817322">Kaamera kinnitati paremasse ülanurka</translation>
+<translation id="1920390473494685033">Kontaktid</translation>
 <translation id="1923539912171292317">Automaatsed klikid</translation>
 <translation id="1925320505152357008">alla ühe min</translation>
 <translation id="1928739107511554905">Värskenduse hankimiseks kasutage puuteekraani, et oma Chromebook koos ühendatud klaviatuuriga taaskäivitada.</translation>
@@ -885,6 +886,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4042660782729322247">Jagate oma ekraanikuva</translation>
 <translation id="404437169852192935">Värskenduste pakkumine on lõppenud</translation>
 <translation id="4049230407053723315">Kiirseaded</translation>
+<translation id="4054070260844648638">Nähtav kõigile</translation>
 <translation id="4057003836560082631">Brauseri vaheleht <ph name="INDEX" />/<ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4059696795118403455">Selleks et näha järgmiste tegevuste kohta isikupärastatud soovitusi, vajutage ülevaateklahvi</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Rak. puhul väljas}other{# rak. puhul väljas}}</translation>
@@ -1408,7 +1410,6 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="5727460725221669831">Kui unustasite parooli või muutsite hiljuti oma Google'i konto parooli, proovige konto taastada.</translation>
 <translation id="5733630091161562207">Tervitusmärguanne</translation>
 <translation id="573413375004481890">See seade ei saanud kõiki teie ekraane toetada, seetõttu ühe ühendus katkestati</translation>
-<translation id="5740328398383587084">Läheduses jagamine</translation>
 <translation id="574392208103952083">Keskmine</translation>
 <translation id="5744083938413354016">Puudutusega lohistamine</translation>
 <translation id="5745612484876805746">Öövalgus lülitub päikeseloojangul automaatselt sisse</translation>
@@ -1485,6 +1486,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="5990992855591814753">Isikupärastatud esitusloendid toetavad keskendumist. Hankige YouTube Premiumiga reklaamideta YouTube Music ja YouTube 3 kuuks ilma maksekohustuseta. Kehtivad tingimused.</translation>
 <translation id="5998374579424866922">Lülita mängu juhtnupud välja</translation>
 <translation id="6000279412553873020">Võtmed, nupud ja palju muud</translation>
+<translation id="6002122790816966947">Teie seadmed</translation>
 <translation id="6012623610530968780">Leht <ph name="SELECTED_PAGE" />/<ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Riiulil järgmise üksuse esiletõstmine</translation>
 <translation id="6015573907265691211">Märgi tehtuks</translation>

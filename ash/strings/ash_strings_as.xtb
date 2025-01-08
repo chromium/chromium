@@ -274,6 +274,7 @@
 <translation id="1908992311423394684">নতুনকৈ ইনষ্টল কৰা</translation>
 <translation id="1915307458270490472">কল শেষ কৰক</translation>
 <translation id="1918022425394817322">কেমেৰা ওপৰৰ সোঁফালৰ কোণলৈ স্নেপ কৰা হৈছে</translation>
+<translation id="1920390473494685033">সম্পৰ্কসূচী</translation>
 <translation id="1923539912171292317">স্বয়ংক্ৰিয় ক্লিক</translation>
 <translation id="1925320505152357008">১ মিনিটতকৈ কম</translation>
 <translation id="1928739107511554905">আপডে’টটো পাবলৈ কীব’ৰ্ড সংলগ্ন থকা Chromebook ৰিষ্টাৰ্ট কৰিবলৈ টাচ্‌স্ক্ৰীনখন ব্যৱহাৰ কৰক।</translation>
@@ -884,6 +885,7 @@
 <translation id="4042660782729322247">আপুনি নিজৰ স্ক্রীণখন শ্বেয়াৰ কৰি আছে</translation>
 <translation id="404437169852192935">আপডে’ট সমাপ্ত হৈছে</translation>
 <translation id="4049230407053723315">ক্ষিপ্ৰ ছেটিং</translation>
+<translation id="4054070260844648638">সকলোৰে বাবে দৃশ্যমান</translation>
 <translation id="4057003836560082631"><ph name="TOTAL_COUNT" /> টাৰ ভিতৰত <ph name="INDEX" /> নম্বৰ ব্ৰাউজাৰ টেব। <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4059696795118403455">ইয়াৰ পাছত কৰিব লগা কামৰ ব্যক্তিগতকৃত পৰামৰ্শ দেখা পাবলৈ ৰূপৰেখাৰ কীটোত টিপক</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{এটা এপৰ বাবে অফ}one{#টা এপৰ বাবে অফ}other{#টা এপৰ বাবে অফ}}</translation>
@@ -1407,7 +1409,6 @@
 <translation id="5727460725221669831">যদি আপুনি আপোনাৰ পাছৱৰ্ড পাহৰিছে অথবা শেহতীয়াকৈ আপোনাৰ Google একাউণ্টৰ পাছৱৰ্ড সলনি কৰিছে, তেন্তে এই ব্যৱহাৰকাৰীক পুনৰুদ্ধাৰ কৰিবলৈ চেষ্টা কৰক।</translation>
 <translation id="5733630091161562207">স্বাগতমৰ জাননী</translation>
 <translation id="573413375004481890">আপোনাৰ সকলো ডিছপ্লে’ এই ডিভাইচটোৱে সমৰ্থন কৰিব নোৱাৰিলে, সেয়েহে এটাৰ সংযোগ বিচ্ছিন্ন কৰা হৈছে</translation>
-<translation id="5740328398383587084">Nearby Share</translation>
 <translation id="574392208103952083">মধ্যমীয়া</translation>
 <translation id="5744083938413354016">টিপি ধৰি টানি অনা সুবিধা</translation>
 <translation id="5745612484876805746">সূৰ্যাস্ত হ’লে ৰাতিৰ পোহৰ স্বয়ংক্রিয়ভাৱে অন হয়</translation>
@@ -1484,6 +1485,7 @@
 <translation id="5990992855591814753">ব্যক্তিগতকৃতভাৱে ফ’কাছ কৰা প্লে’লিষ্টেৰে ট্ৰেকত থাকক। কোনো মাচুল অবিহনে ৩ মাহ YouTube Premiumৰ সৈতে, বিজ্ঞাপনহীনকৈ YouTube Music আৰু YouTube পাওক। চৰ্তাৱলী প্ৰযোজ্য।</translation>
 <translation id="5998374579424866922">গে’মৰ নিয়ন্ত্ৰণসমূহ অফ কৰক</translation>
 <translation id="6000279412553873020">কী, বুটাম আৰু অধিক</translation>
+<translation id="6002122790816966947">আপোনাৰ ডিভাইচ</translation>
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" />ৰ <ph name="SELECTED_PAGE" /> পৃষ্ঠা</translation>
 <translation id="601304062528754300">শ্বেল্ফত থকা পৰৱৰ্তী বস্তুটো হাইলাইট কৰক</translation>
 <translation id="6015573907265691211">সম্পূৰ্ণ হৈছে বুলি চিহ্নিত কৰক</translation>

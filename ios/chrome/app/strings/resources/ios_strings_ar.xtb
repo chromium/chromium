@@ -25,6 +25,7 @@
 <translation id="1081932398873105675">{count,plural, =1{علامة تبويب واحدة ({count})}zero{‫{count} علامة تبويب}two{علامتا تبويب ({count})}few{‫{count} علامات تبويب}many{‫{count} علامة تبويب}other{‫{count} علامة تبويب}}</translation>
 <translation id="1084365883616172403">‏اكتمل النشر على Facebook.</translation>
 <translation id="1085677983426914530">تعذَّر فتح ملف <ph name="FILENAME" /></translation>
+<translation id="1086468407802688066">يتولّى النطاق <ph name="HOSTED_DOMAIN" /> إدارة الحساب <ph name="USER_EMAIL" />، ويمكنه الاطّلاع على بعض بيانات الحساب. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="1096992026380844478">ستتم استعادة إعدادات المزامنة استنادًا إلى آخر نسخة احتياطية. <ph name="BEGIN_LINK" />التعرُّف على أنواع البيانات التي يمكنك مزامنتها<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">ترجمة اللغة <ph name="LANGUAGE" /> دائمًا</translation>
 <translation id="1108938384783527433">مزامنة السجلّ</translation>
@@ -83,6 +84,7 @@
 <translation id="1335767868357998043">اختيار موضع شريط العناوين</translation>
 <translation id="1347468774581902829">إدارة النشاط</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
+<translation id="1358106883354237005">حساب مُدار</translation>
 <translation id="1358214951266274152">الانتقال إلى الرابط الذي نسخته</translation>
 <translation id="1360432990279830238">هل تريد تسجيل الخروج وإيقاف المزامنة؟</translation>
 <translation id="1363028406613469049">تتبّع</translation>
@@ -697,6 +699,7 @@
 <translation id="4183350924949589798">هل تريد الحصول على مزيد من الأمان؟</translation>
 <translation id="4184063163998877398">{count,plural, =1{هناك كلمة مرور واحدة ({count}) ضعيفة}zero{هناك {count} كلمة مرور ضعيفة}two{هناك كلمتا مرور ({count}) ضعيفتان}few{هناك {count} كلمات مرور ضعيفة}many{هناك {count} كلمة مرور ضعيفة}other{هناك {count} كلمة مرور ضعيفة}}</translation>
 <translation id="4197456013861852807">{count,plural, =1{‏تم حفظ عنصر واحد ({count}) على هذا الجهاز فقط. لاستخدامه على أجهزتك الأخرى، يمكنك حفظه في حسابك على Google، {email}.}zero{‏تم حفظ {count} عنصر على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يمكنك حفظها في حسابك على Google، {email}.}two{‏تم حفظ عنصرَين ({count}) على هذا الجهاز فقط. لاستخدامهما على أجهزتك الأخرى، يمكنك حفظهما في حسابك على Google، {email}.}few{‏تم حفظ {count} عناصر على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يمكنك حفظها في حسابك على Google، {email}.}many{‏تم حفظ {count} عنصرًا على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يمكنك حفظها في حسابك على Google، {email}.}other{‏تم حفظ {count} عنصر على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يمكنك حفظها في حسابك على Google، {email}.}}</translation>
+<translation id="4207873326995387292">معلومات المتصفِّح</translation>
 <translation id="421070604241073551">‏عند تفعيل هذا الخيار، يتم حفظ البيانات في حسابك على Google. وعند إيقافه، سيتم حفظ البيانات على هذا الجهاز فقط.</translation>
 <translation id="4224534474590365556">هل تريد إغلاق أكثر من 99 علامة تبويب غير نشطة؟</translation>
 <translation id="422474357428465195">هناك العديد من المشاكل المتعلقة بكلمات المرور، والتي قد تعرّضك لمخاطر أمنية.</translation>
@@ -764,6 +767,7 @@
 <translation id="4495516234578759322">العثور على النتيجة التالية</translation>
 <translation id="4502423230170890588">إزالة من هذا الجهاز</translation>
 <translation id="4508750114462689118">إغلاق عرض ترويجي لتسجيل الدخول</translation>
+<translation id="4517684186578051919">معلومات الجهاز</translation>
 <translation id="4520798012560649652">مزيد من المعلومات حول وضع التصفّح المتخفي</translation>
 <translation id="452503091941773389">{count,plural, =1{إشارة مرجعية واحدة ({count})}zero{{count} إشارة مرجعية}two{إشارتان مرجعيتان ({count})}few{{count} إشارات مرجعية}many{{count} إشارةً مرجعيةً}other{{count} إشارة مرجعية}}</translation>
 <translation id="4525629404718770519">عرض معاينات الروابط</translation>
@@ -972,6 +976,7 @@
 <translation id="5444892875087332195">الإشارات المرجعية</translation>
 <translation id="5452354193031718372">ننصحك باستخدام كلمة مرور قوية كما يلي:</translation>
 <translation id="5454211924362324495">لمنع الآخرين من استخدام كلمة مرورك، <ph name="BEGIN_LINK" />عليك تغييرها من خلال<ph name="WEBSITE" /><ph name="END_LINK" />.</translation>
+<translation id="5454723301413569630">يتولّى النطاق <ph name="HOSTED_DOMAIN" /> إدارة الحساب <ph name="USER_EMAIL" />، ويمكنه الاطّلاع على بعض البيانات، بما في ذلك:</translation>
 <translation id="5457082343331641453">إضافة نص إلى طلب البحث</translation>
 <translation id="5457226814769348910">فتح نسخة بلا إنترنت</translation>
 <translation id="5478327362747197944">‏يمكنك إنشاء أحداث في "تقويم Google" مباشرةً من خلال النقر على تاريخ في إحدى صفحات الويب.</translation>
@@ -1373,6 +1378,7 @@
 <translation id="7102005569666697658">جارٍ تنزيل… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">"القائمة" ← "الإعدادات" ← "طُرق الدفع"</translation>
 <translation id="7108338896283013870">إخفاء</translation>
+<translation id="7128693485119315539">قد تحتاج مؤسستك إلى الاطّلاع على بيانات التصفّح المرتبطة بحسابك المُدار وإدارتها، مثل سجلّ التصفُّح وكلمات المرور.</translation>
 <translation id="713215255510512027">‫<ph name="FILENAME" />‏ (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">الكاميرا غير متاحة</translation>
 <translation id="7141960840225504692">سيتم إغلاق علامات التبويب وحذف بيانات التصفُّح</translation>
@@ -1769,6 +1775,7 @@
 <translation id="8813277370772331957">تذكيري لاحقًا</translation>
 <translation id="8814719628147284151">متابعة</translation>
 <translation id="8820817407110198400">الإشارات المرجعية</translation>
+<translation id="8822421075653507124">للتأكُّد من إمكانية استخدام هذا الجهاز بأمان، قد تحتاج مؤسستك إلى الاطّلاع على معلومات حول نظام التشغيل والمتصفّح والإعدادات والبرامج المثبَّتة على الجهاز.</translation>
 <translation id="8825562130641217944">الحصول على الإشارات المرجعية وكلمات المرور وإعدادات أخرى</translation>
 <translation id="8827154289515190290">‏المتصفِّح المفضّل لك متوفّر الآن على نظام التشغيل iOS</translation>
 <translation id="8831208860914609320">إغلاق جميع علامات التبويب غير النشطة</translation>

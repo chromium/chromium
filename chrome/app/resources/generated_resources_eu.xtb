@@ -228,7 +228,6 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="1151917987301063366">Eman beti sentsoreak erabiltzeko baimena <ph name="HOST" /> ostalariari</translation>
 <translation id="1152346050262092795">Idatzi pasahitza berriro kontua egiaztatzeko.</translation>
 <translation id="1153636665119721804">Google-ren Babes aurreratua programa</translation>
-<translation id="1155545602507378023">Ez; gailu honetan soilik</translation>
 <translation id="1155816283571436363">Telefonora konektatzen</translation>
 <translation id="1157952955648710254">Itxi Google Bilaketa zerbitzuaren alboko panela</translation>
 <translation id="1158080958325422608">Ezarri maiuskulaz</translation>
@@ -1152,7 +1151,6 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1794791083288629568">Bidali informazioa arazoa konpon dezagun.</translation>
 <translation id="1795214765651529549">Erabili Klasikoa</translation>
 <translation id="1795438342141780114">Kurtsorea erdira berrezartzea</translation>
-<translation id="1795668164971917185">Google-ren Arakatze segurua eginbideak deskarga susmagarriren bat aurkitzen duen hurrengoan, automatikoki eskaneatuko du aukeratu duzun <ph name="LINK" /> barnean</translation>
 <translation id="1796588414813960292">Soinua behar duten eginbideek ez dute funtzionatuko</translation>
 <translation id="1797117170091578105">Jokatu Chromebook-aren teklatua erabilita. Teklak pertsonaliza ditzakezu ekintza jakin batzuk egin ditzaten.</translation>
 <translation id="1798335429200675510">Egin klik eskuineko botoiarekin testu-koadro batean zirriborro bat sortzeko edo jadanik badaukazun testu bat hobetzeko, Google-ren AA bidez. Oraingoz, erabilgarritasun mugatua du.</translation>
@@ -1405,7 +1403,6 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1974043046396539880">CRL banaketa-puntuak</translation>
 <translation id="1974060860693918893">Aurreratuak</translation>
 <translation id="1974159333077206889">Audio bera bozgorailu guztietatik</translation>
-<translation id="1974216844776165821">Chrome-k gailu honetan gorde du pasahitza, baina Google-ko kontuan gorde dezakezu, bestela. Horrela, Google-ko kontuko pasahitz eta sarbide-gako guztiak ere erabilgarri egongo dira saioa hasita daukazunean.</translation>
 <translation id="1975841812214822307">Kendu…</translation>
 <translation id="1976150099241323601">Hasi saioa segurtasun-gailuan</translation>
 <translation id="1976823515278601587">Aurrezte handia</translation>
@@ -1655,7 +1652,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2143915448548023856">Bistaratze-ezarpenak</translation>
 <translation id="2144536955299248197">Ziurtagiri-ikustailea: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Linux-en Android-erako aplikazioen garapena</translation>
-<translation id="2144873026585036769">Google-ko kontua erabili nahi duzu pasahitzak eta sarbide-gakoak gordetzeko eta eremuak automatikoki betetzeko?</translation>
 <translation id="2145917706968602070">Ziurtatu telefonoa hurbil eta desblokeatuta dagoela, eta Bluetootha eta wifia aktibatuta dauzkala</translation>
 <translation id="2146263598007866206">Baliteke webguneek erlazionatutako fitxategiak automatikoki deskargatzea, denbora aurrezteko</translation>
 <translation id="2147218225094845757">Ezkutatu alboko panela</translation>
@@ -2116,7 +2112,6 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2458591546854598341">Gailu-kudeaketaren tokenak ez du balio.</translation>
 <translation id="2459703812219683497">Hauteman da aktibazio-kodea</translation>
 <translation id="2459706890611560967">Berrekin pantaila <ph name="DEVICE_NAME" /> gailura igortzeari</translation>
-<translation id="2460356425461033301">Egin zure arakatzaileko gauzen babeskopiak, edozein gailutan erabil ditzazun</translation>
 <translation id="2460482211073772897">Beste karpeta batzuetan</translation>
 <translation id="2460826998961521840">Google-ko kontuan gordetako sarbide-gakoak erabiltzeko</translation>
 <translation id="2461045498706592033"><ph name="LOCAL_FOLDER" /> gailu honetan soilik dago gordeta. Laster-marka hau <ph name="LOCAL_FOLDER" /> karpetara eramaten baduzu, aurrerantzean ez duzu izango beste gailuetan.</translation>
@@ -6038,7 +6033,6 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5263656105659419083">Alboko panelera erraz itzultzeko, sakatu goiko eskuineko Ainguratu aukera</translation>
 <translation id="5264148714798105376">Minutu bat inguru beharko da.</translation>
 <translation id="5264252276333215551">Konektatu Internetera aplikazioa kiosko moduan exekutatzeko.</translation>
-<translation id="526539328530966548">babes hobetuaren</translation>
 <translation id="5265797726250773323">Errore bat gertatu da instalatzean</translation>
 <translation id="5266113311903163739">Errore bat gertatu da autoritate ziurtagiri-emailea inportatzean</translation>
 <translation id="526622169288322445"><ph name="ADDRESS_SUMMARY" /> enpresa-profilean egin daitezkeen ekintza gehiago</translation>
@@ -7360,7 +7354,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="6234108445915742946">Chrome-ren Zerbitzu-baldintzak martxoaren 31n aldatuko dira</translation>
 <translation id="6234474535228214774">Instalatzeke</translation>
 <translation id="6235208551686043831">Gailuaren kamera aktibatu duzu. Jarri eSIMaren QR kodea kameraren aurrean.</translation>
-<translation id="6237297174664969437">Sinkronizatu nahi dituzun arakatze-datuak aukeratzeko, joan Chrome-ren ezarpenetara. <ph name="LINK_BEGIN" />Gailuaren ezarpenetan<ph name="LINK_END" />, Chrome arakatzailearen bidez instalatutako sareko aplikazioen sinkronizazioa kontrola dezakezu. Baliteke Google-k Bilaketa eta beste zerbitzu batzuk pertsonalizatzea zure historiaren arabera.</translation>
 <translation id="6237474966939441970">Arkatzarekin oharrak hartzeko aplikazioa</translation>
 <translation id="6237481151388361546">Aldatu Interneteko konexioa eta aukeratu "Saiatu berriro" edo, ikusteko eta editatzeko aukera mugatuak erabiltzeko, aukeratu "Ireki oinarrizko editorean".</translation>
 <translation id="623755660902014047">Irakurtzeko modua</translation>
@@ -8817,7 +8810,6 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="730515362922783851">Tokiko sarera edo Internetera konektatutako edozein gailurekin datuak trukatu.</translation>
 <translation id="7306521477691455105">Ireki Ezarpenak <ph name="USB_DEVICE_NAME" /> <ph name="USB_VM_NAME" />-era konektatzeko</translation>
 <translation id="7307129035224081534">Pausatuta</translation>
-<translation id="7307647374092371434">Google-ko kontuko pasahitzak eta sarbide-gakoak gailu honetan ere egongo dira erabilgarri saioa hasita daukazunean</translation>
 <translation id="7308643132139167865">Webguneen hizkuntzak</translation>
 <translation id="7309214454733221756"><ph name="APP_NAME" /> aplikazioan saioa hasteko sarbide-gako bat sortu nahi duzu?</translation>
 <translation id="7311005168897771689">Atzitu Google Drive-ko fitxategiak Interneteko konexiorik ez daukazunean</translation>

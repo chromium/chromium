@@ -597,7 +597,6 @@
 <translation id="2040894699575719559">स्थान ब्लॉक केले</translation>
 <translation id="2041788246978549610">उपलब्ध मायक्रोफोन वापरा (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">ट्रे ७</translation>
-<translation id="204357726431741734">तुमच्या Google खाते मध्ये सेव्ह केलेले पासवर्ड वापरण्यासाठी साइन इन करा</translation>
 <translation id="2045871135676061132">एन्व्हलप पर्सनल</translation>
 <translation id="2046951263634619614">पुस्तकांचे रिटेल विक्रेते</translation>
 <translation id="2048261947532620704">पेजचे भाषांतर करत आहे</translation>
@@ -1366,7 +1365,6 @@
 <translation id="343474037147570563">तुम्ही अपलोड किंवा अटॅच केलेल्या फाइल विश्लेषणासाठी Google Cloud किंवा तृतीय पक्षांकडे पाठवल्या जातात. उदाहरणार्थ, त्या संवेदनशील डेटा किंवा मालवेअरसाठी स्कॅन केल्या जाऊ शकतात आणि कंपनीच्या धोरणांच्या आधारावर स्टोअर केल्या जाऊ शकतात व तुमच्या अ‍ॅडमिनिस्ट्रेटरला दृश्यमान असू शकतात.</translation>
 <translation id="3435557549311968410">कंटिन्युअस (शॉर्ट)</translation>
 <translation id="3435738964857648380">सुरक्षितता</translation>
-<translation id="3438829137925142401">तुमच्या Google खाते मध्ये सेव्ह केलेले पासवर्ड वापरा</translation>
 <translation id="3440783957068352691">चौरस</translation>
 <translation id="3441653493275994384">तपासा</translation>
 <translation id="3443504041532578451">ऑप्टिकल डिस्क (सॅटिन)</translation>
@@ -1694,6 +1692,7 @@
 <translation id="3990532701115075684">तुमचे हात ट्रॅक करा</translation>
 <translation id="3992684624889376114">या पेजबद्दल</translation>
 <translation id="3995639283717357522">धोरणे लागू करा</translation>
+<translation id="3996683183117168945"><ph name="MAX_CITATIONS" /> पैकी <ph name="CURRENT_CITATION" /> संदर्भ, <ph name="PRODUCT_NAME" />, <ph name="URL" /> <ph name="PAGE_TITLE" />. <ph name="PAGE_PREVIEW" />.</translation>
 <translation id="399754345297554962">मानक आणि प्रवेश परीक्षा</translation>
 <translation id="3999173941208168054">भयपट</translation>
 <translation id="4000598935132966791">व्यवस्थापित ब्राउझरमध्ये साइट निर्बंधांबद्दल अधिक जाणून घ्या</translation>
@@ -4271,7 +4270,6 @@
 <translation id="861775596732816396">आकार ४</translation>
 <translation id="8620276786115098679">एन्व्हलप काकू ७</translation>
 <translation id="8622864575115813231">तुमच्या आर्थिक संस्थेशी संपर्क साधत आहे...</translation>
-<translation id="8623885649813806493">जुळणारे कोणतेही पासवर्ड नाहीत. सेव्ह केलेले सर्व पासवर्ड दाखवा.</translation>
 <translation id="8624354461147303341">सवलती मिळवा</translation>
 <translation id="8634957317623797170">५४ x ८६ मिमी</translation>
 <translation id="8637362707224133343">तुम्ही ब्राउझ करत असताना तुमचे संरक्षण करण्यासाठी Chrome मध्ये बिल्ट-इन सुरक्षितता वैशिष्‍ट्ये आहेत — जसे की Google सुरक्षित ब्राउझिंग, ज्याला तुम्ही भेट देण्याचा प्रयत्न केलेल्या साइटवर <ph name="BEGIN_LINK" />अलीकडे फिशिंग आढळले आहे<ph name="END_LINK" />. फिशिंग साइट तुमची फसवणूक करण्यासाठी इतर साइट असल्याचे भासवतात. <ph name="NEW_LINE" />साधारणपणे सुरक्षित असलेल्या साइटदेखील काहीवेळा हल्लेखोरांमुळे धोक्यात येऊ शकतात. एखादी चूक झाली आहे आणि या साइटला धोका नाही असे तुम्हाला वाटत असल्यास, <ph name="BEGIN_ERROR_LINK" />आम्हाला कळवा<ph name="END_ERROR_LINK" />.</translation>
@@ -4603,7 +4601,6 @@
 <translation id="937885410143139026">डेटा ॲडमिन कन्सोलला पाठवला</translation>
 <translation id="939736085109172342">नवीन फोल्‍डर</translation>
 <translation id="940524522703752213">तुमचा <ph name="CLOUD_PROVIDER" /> मधील फाइल अपलोड <ph name="MINUTES" /> मिनिटांनी सुरू होईल</translation>
-<translation id="944540589955480312">तुमच्या Google खाते मध्ये सेव्ह केलेले पासवर्ड आणि पासकी वापरा</translation>
 <translation id="944578681290094302">चेकआउट करताना तुमच्या कार्डसाठी कोणते रिवॉर्ड आणि फायदे उपलब्ध आहेत हे दाखवा. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />कार्डच्या फायद्यांबद्दल जाणून घ्या<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945646848072568856">तुम्ही ब्राउझ करत असताना तुम्हाला ट्रॅक करण्यासाठी Chrome साइटला तृतीय पक्ष कुकी वापरण्यापासून ब्लॉक करते.</translation>
 <translation id="945855313015696284">खालील माहिती तपासा आणि कोणतीही चुकीची कार्डे हटवा</translation>

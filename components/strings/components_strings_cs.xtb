@@ -597,7 +597,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2040894699575719559">Místo bylo zablokováno</translation>
 <translation id="2041788246978549610">Používat dostupné mikrofony (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Přihrádka 7</translation>
-<translation id="204357726431741734">Chcete-li používat hesla uložená v účtu Google, přihlaste se</translation>
 <translation id="2045871135676061132">Obálka osobní</translation>
 <translation id="2046951263634619614">Knižní maloobchod</translation>
 <translation id="2048261947532620704">Překlad stránky</translation>
@@ -1363,7 +1362,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="343474037147570563">Soubory, které nahrajete nebo připojíte, se odesílají k analýze do služby Google Cloud nebo třetím stranám. Může se u nich například kontrolovat přítomnost citlivých údajů nebo malwaru, mohou být uchovávány v souladu se zásadami společnosti a může k nim mít přístup váš administrátor.</translation>
 <translation id="3435557549311968410">Nepřetržité (spojené kratšími okraji)</translation>
 <translation id="3435738964857648380">Zabezpečení</translation>
-<translation id="3438829137925142401">Použít hesla uložená v účtu Google</translation>
 <translation id="3440783957068352691">čtverec</translation>
 <translation id="3441653493275994384">Obrazovka</translation>
 <translation id="3443504041532578451">Optický disk (saténový)</translation>
@@ -1691,6 +1689,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3990532701115075684">Sledování rukou</translation>
 <translation id="3992684624889376114">O této stránce</translation>
 <translation id="3995639283717357522">Uplatnit zásady</translation>
+<translation id="3996683183117168945">Citace <ph name="CURRENT_CITATION" /> z <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" />. <ph name="PAGE_TITLE" />. <ph name="PAGE_PREVIEW" />.</translation>
 <translation id="399754345297554962">Standardizované a přijímací testy</translation>
 <translation id="3999173941208168054">Horory</translation>
 <translation id="4000598935132966791">Další informace o omezeních webů ve spravovaných prohlížečích</translation>
@@ -3904,6 +3903,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7975858430722947486">Přidáno do srovnání</translation>
 <translation id="7976214039405368314">Příliš mnoho požadavků</translation>
 <translation id="7977538094055660992">Výstupní zařízení</translation>
+<translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{Před <ph name="TIME_COUNT" /> min}=1{Před <ph name="TIME_COUNT" /> h}few{Před <ph name="TIME_COUNT" /> dny}many{Před <ph name="TIME_COUNT" /> dne}other{Před <ph name="TIME_COUNT" /> dny}}</translation>
 <translation id="7979595116210197019">Kulinářský průmysl</translation>
 <translation id="798134797138789862">Může žádat o použití zařízení a dat pro virtuální realitu</translation>
 <translation id="7982789257301363584">Síť</translation>
@@ -4265,7 +4265,6 @@ Další podrobnosti:
 <translation id="861775596732816396">Velikost 4</translation>
 <translation id="8620276786115098679">Obálka Kaku 7</translation>
 <translation id="8622864575115813231">Kontaktování vaší finanční instituce…</translation>
-<translation id="8623885649813806493">Nebyla nalezena žádná odpovídající hesla. Zobrazit všechna uložená hesla.</translation>
 <translation id="8624354461147303341">Získat slevy</translation>
 <translation id="8634957317623797170">54 × 86 mm</translation>
 <translation id="8637362707224133343">V Chromu jsou vestavěné bezpečnostní funkce, které vás při procházení chrání – například Bezpečné prohlížení Google, které <ph name="BEGIN_LINK" />nedávno odhalilo phishing<ph name="END_LINK" /> na webu, který jste se pokusili navštívit. Phishingové weby se vydávají za jiné weby, aby vás oklamaly.<ph name="NEW_LINE" />Někdy mohou útočníci číhat dokonce i na webech, které jsou běžně bezpečné. Pokud se domníváte, že došlo k chybě a že tento web nepředstavuje nebezpečí, <ph name="BEGIN_ERROR_LINK" />dejte nám vědět<ph name="END_ERROR_LINK" />.</translation>
@@ -4596,7 +4595,6 @@ Další podrobnosti:
 <translation id="937885410143139026">Data byla odeslána do administrátorské konzole</translation>
 <translation id="939736085109172342">Nová složka</translation>
 <translation id="940524522703752213">Nahrávání vašeho souboru do <ph name="CLOUD_PROVIDER" /> začne za <ph name="MINUTES" /> minut</translation>
-<translation id="944540589955480312">Používat hesla a přístupové klíče uložené v účtu Google</translation>
 <translation id="944578681290094302">Při placení ukázat, jaké odměny a výhody jsou pro vaše karty k dispozici. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Další informace o výhodách karet<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945646848072568856">Chrome brání webům v používání souborů cookie třetích stran ke sledování vašeho procházení.</translation>
 <translation id="945855313015696284">Zkontrolujte níže uvedené informace a vymažte neplatné karty</translation>

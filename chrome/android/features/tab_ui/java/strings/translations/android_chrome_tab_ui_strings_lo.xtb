@@ -104,9 +104,6 @@
 <translation id="5494920125229734069">ເລືອກ​ທັງ​ຫມົດ</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{ປິດກຸ່ມແຖບດ້ວຍ <ph name="TABS_COUNT_ONE" /> ແຖບ, ສີ <ph name="COLOR_NAME" />.}other{ປິດກຸ່ມແຖບດ້ວຍ <ph name="TABS_COUNT_MANY" /> ແຖບ, ສີ <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">ເບິ່ງຂໍ້ມູນຮ້ານຄ້າ, ມີຕົວເລືອກຢູ່ເທິງສຸດຂອງໜ້າຈໍ</translation>
-<translation id="5615302411300498438">ເກັບກຸ່ມໄວ້ເພື່ອເພີ່ມແຖບໃນພາຍຫຼັງ ຫຼື ອອກ.
-
-ຫາກທ່ານອອກ, ທ່ານຈະເສຍສິດເຂົ້າເຖິງກຸ່ມແຖບ "<ph name="TITLE_OF_GROUP" />" ທັນທີ.</translation>
 <translation id="5627941783489838464">ບໍ່ມີການອັບເດດແຖບ</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{ກູ້ຄືນແຖບ}other{ກູ້ຄືນແຖບ}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ລິ້ງຈາກ Chrome}other{<ph name="TABS_COUNT_MANY" /> ລິ້ງຈາກ Chrome}}</translation>
@@ -117,7 +114,6 @@
 <translation id="6040143037577758943">ປິດ</translation>
 <translation id="6051432659151380973">ກຸ່ມແຖບຂອງທ່ານຈະບັນທຶກໂດຍອັດຕະໂນມັດ</translation>
 <translation id="6054741997831917303">ລາຄາຂອງສິນຄ້ານນີ້ຫຼຸດລົງຈາກ <ph name="PREVIOUS_PRICE" /> ເປັນ <ph name="NEW_PRICE" /> ເມື່ອບໍ່ດົນມານີ້</translation>
-<translation id="6082313992897617440">ທ່ານຈະສູນເສຍສິດເຂົ້າເຖິງກຸ່ມແຖບ <ph name="GROUP_NAME" /> ທັນທີ</translation>
 <translation id="6109251075362363230">ຕອນນີ້ລະບົບຍັງຈະເກັບແຖບທີ່ຊ້ຳກັນທັງໝົດໄວ້ໃນແຟ້ມນຳ, ຍົກເວັ້ນສຳເນົາທີ່ໃຊ້ຫຼ້າສຸດ.</translation>
 <translation id="6193448654517602979">ເລືອກແຖບ</translation>
 <translation id="6228793724645064692">(ຄະແນນຮ້ານຄ້າ)</translation>
@@ -145,9 +141,9 @@
 <translation id="731648547091221002">ເລືອກ <ph name="COLOR_NAME" /> ແລ້ວ</translation>
 <translation id="7326879924029668159">ເບິ່ງນະໂຍບາຍການສົ່ງຄືນ ແລະ ອື່ນໆ</translation>
 <translation id="7352298686197644113">ເບິ່ງວ່າລາຍການໃດໃນແຖບທີ່ເປີດຢູ່ຂອງທ່ານມີລາຄາຕໍ່າກວ່າ</translation>
-<translation id="7421293530411019405">ອອກຈາກກຸ່ມແຖບບໍ?</translation>
 <translation id="7452985128687107478">ກຸ່ມແຖບຈະບັນທຶກ ແລະ ອັບເດດໃນທຸກອຸປະກອນຂອງທ່ານໂດຍອັດຕະໂນມັດ</translation>
 <translation id="747459581954555080">ກູ້ຄືນທັງໝົດ</translation>
+<translation id="750886945254958667">ເກັບກຸ່ມນີ້ໄວ້ເພື່ອເພີ່ມແຖບໃນພາຍຫຼັງ ຫຼື ອອກຈາກກຸ່ມຫາກທ່ານບໍ່ຕ້ອງການເຂົ້າເຖິງກຸ່ມແລ້ວ</translation>
 <translation id="753732157349120914">ຕົວປ່ຽນແຖບ</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> ຄຳຕິຊົມຈາກ Google}other{<ph name="REVIEWS_COUNT_MANY" /> ຄຳຕິຊົມຈາກ Google}}</translation>
 <translation id="7559245342362162951">ສະແດງແຖບຂອງກຸ່ມໃນຕາໜ່າງແບບເຕັມຈໍ</translation>
@@ -177,9 +173,7 @@
 <translation id="8398929769197326728">ໂຟນເດີໃໝ່ - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">ການ​ຕັ້ງຄ່າ</translation>
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{ເພີ່ມ <ph name="ONE_ADDED" /> ແຖບ, ປິດ <ph name="ANY_CLOSED" /> ແຖບແລ້ວ}other{ເພີ່ມ <ph name="MANY_ADDED" /> ແຖບ, ປິດ <ph name="ANY_CLOSED" /> ແຖບແລ້ວ}}</translation>
-<translation id="8631711675211020168">ທຸກຄົນຈະສູນເສຍສິດເຂົ້າເຖິງກຸ່ມແຖບ <ph name="GROUP_NAME" /> ທັນທີ ແລະ ລະບົບຈະລຶບກຸ່ມດັ່ງກ່າວອອກຈາກອຸປະກອນທັງໝົດ</translation>
 <translation id="8633025649649592204">ການເຄື່ອນໄຫວຫຼ້າສຸດ</translation>
-<translation id="8635399646025169806">ເກັບກຸ່ມແຖບໄວ້ບໍ?</translation>
 <translation id="870736955561925754">ປິດແຖບ ແລະ ລຶບກຸ່ມບໍ?</translation>
 <translation id="8714939927607906138">ລາຄາຕໍ່າກວ່າ</translation>
 <translation id="8730621377337864115">ສໍາເລັດ</translation>

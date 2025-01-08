@@ -104,9 +104,6 @@ Ak ju odstránite, všetci okamžite stratia prístup k skupine kariet <ph name
 <translation id="5494920125229734069">Vybrať všetko</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Zavrite skupinu kariet vo farbe <ph name="COLOR_NAME" /> s <ph name="TABS_COUNT_ONE" /> kartou.}few{Zavrite skupinu kariet vo farbe <ph name="COLOR_NAME" /> s <ph name="TABS_COUNT_MANY" /> kartami.}many{Close tab group with <ph name="TABS_COUNT_MANY" /> tabs, color <ph name="COLOR_NAME" />.}other{Zavrite skupinu kariet vo farbe <ph name="COLOR_NAME" /> s <ph name="TABS_COUNT_MANY" /> kartami.}}</translation>
 <translation id="5556417849629758491">Zobraziť informácie o obchode, možnosť je k dispozícii v dolnej časti obrazovky</translation>
-<translation id="5615302411300498438">Ponechajte si túto skupinu, aby ste mohli neskôr pridať karty, alebo ju opustite.
-
-Ak ju opustíte, okamžite stratíte prístup k skupine kariet <ph name="TITLE_OF_GROUP" />.</translation>
 <translation id="5627941783489838464">Žiadne aktualizácie kariet</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Obnoviť kartu}few{Obnoviť karty}many{Restore tabs}other{Obnoviť karty}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> odkaz z Chromu}few{<ph name="TABS_COUNT_MANY" /> odkazy z Chromu}many{<ph name="TABS_COUNT_MANY" /> links from Chrome}other{<ph name="TABS_COUNT_MANY" /> odkazov z Chromu}}</translation>
@@ -117,7 +114,6 @@ Ak ju opustíte, okamžite stratíte prístup k skupine kariet <ph name="TITLE_
 <translation id="6040143037577758943">Zavrieť</translation>
 <translation id="6051432659151380973">Skupiny kariet sa ukladajú automaticky</translation>
 <translation id="6054741997831917303">Cena tejto položky nedávno klesla z <ph name="PREVIOUS_PRICE" /> na <ph name="NEW_PRICE" /></translation>
-<translation id="6082313992897617440">Okamžite stratíte prístup k skupine kariet <ph name="GROUP_NAME" /></translation>
 <translation id="6109251075362363230">Všetky duplicitné karty s výnimkou naposledy použitej kópie budú odteraz archivované.</translation>
 <translation id="6193448654517602979">Vyberte karty</translation>
 <translation id="6228793724645064692">(hodnotenie obchodu)</translation>
@@ -145,9 +141,9 @@ Ak ju opustíte, okamžite stratíte prístup k skupine kariet <ph name="TITLE_
 <translation id="731648547091221002"><ph name="COLOR_NAME" />, vybrané</translation>
 <translation id="7326879924029668159">Prečítajte si pravidlá vrátenia tovaru a ďalšie dokumenty</translation>
 <translation id="7352298686197644113">Zistite, ktorá položka na vašich otvorených kartách má nižšiu cenu</translation>
-<translation id="7421293530411019405">Chcete opustiť skupinu kariet?</translation>
 <translation id="7452985128687107478">Skupiny kariet sa automaticky ukladajú a aktualizujú vo všetkých vašich zariadeniach</translation>
 <translation id="747459581954555080">Obnoviť všetko</translation>
+<translation id="750886945254958667">Ponechajte si túto skupinu, aby ste mohli neskôr pridať karty, alebo ju opustite, keď už k nej nechcete mať prístup</translation>
 <translation id="753732157349120914">Prepínač kariet</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> recenzia od Googlu}few{<ph name="REVIEWS_COUNT_MANY" /> recenzie od Googlu}many{<ph name="REVIEWS_COUNT_MANY" /> reviews from Google}other{<ph name="REVIEWS_COUNT_MANY" /> recenzií od Googlu}}</translation>
 <translation id="7559245342362162951">Zobraziť karty skupiny v mriežke na celú obrazovku</translation>
@@ -177,9 +173,7 @@ Ak ju opustíte, okamžite stratíte prístup k skupine kariet <ph name="TITLE_
 <translation id="8398929769197326728">Nový priečinok – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Nastavenia</translation>
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> karta bola pridaná, zavreté: <ph name="ANY_CLOSED" />}few{<ph name="MANY_ADDED" /> karty boli pridané, zavreté: <ph name="ANY_CLOSED" />}many{<ph name="MANY_ADDED" /> tabs added, <ph name="ANY_CLOSED" /> closed}other{<ph name="MANY_ADDED" /> kariet bolo pridaných, zavreté: <ph name="ANY_CLOSED" />}}</translation>
-<translation id="8631711675211020168">Všetci okamžite stratia prístup k skupine kariet <ph name="GROUP_NAME" />. Daná skupina bude odstránená zo všetkých zariadení.</translation>
 <translation id="8633025649649592204">Nedávna aktivita</translation>
-<translation id="8635399646025169806">Chcete skupinu kariet ponechať?</translation>
 <translation id="870736955561925754">Chcete zavrieť kartu a odstrániť skupinu?</translation>
 <translation id="8714939927607906138">Nižšia cena</translation>
 <translation id="8730621377337864115">Hotovo</translation>

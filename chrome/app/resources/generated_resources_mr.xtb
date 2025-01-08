@@ -228,7 +228,6 @@
 <translation id="1151917987301063366"><ph name="HOST" /> ला नेहमी सेन्सर ॲक्सेस करू द्या</translation>
 <translation id="1152346050262092795">तुमच्या खात्याची पडताळणी करण्यासाठी तुमचा पासवर्ड पुन्हा एंटर करा.</translation>
 <translation id="1153636665119721804">Google प्रगत संरक्षण प्रोग्राम</translation>
-<translation id="1155545602507378023">नाही, फक्त या डिव्हाइसवर</translation>
 <translation id="1155816283571436363">तुमच्या फोनशी कनेक्ट करत आहे</translation>
 <translation id="1157952955648710254">Google Search साइड पॅनल बंद करा</translation>
 <translation id="1158080958325422608">अप्परकेस करा</translation>
@@ -1161,7 +1160,6 @@
 <translation id="1794791083288629568">या समस्येचे निराकरण करण्यात आम्हाला मदत करण्यासाठी अभिप्राय पाठवा.</translation>
 <translation id="1795214765651529549">क्लासिक वापरा</translation>
 <translation id="1795438342141780114">कर्सर मध्यभागी रीसेट करा</translation>
-<translation id="1795668164971917185">पुढील वेळी Google सुरक्षित ब्राउझिंग ला संशयास्पद डाउनलोड आढळल्यास, ते तुम्ही निवडलेल्या <ph name="LINK" /> चा भाग म्हणून ते आपोआप स्कॅन करेल</translation>
 <translation id="1796588414813960292">साउंडची आवश्यकता असलेली वैशिष्ट्ये काम करणार नाहीत</translation>
 <translation id="1797117170091578105">तुमच्या Chromebook चा कीबोर्ड वापरून प्ले करा. तुम्ही विशिष्ट कृतींसाठी की कस्टमाइझ करू शकता.</translation>
 <translation id="1798335429200675510">Google AI वापरून मसुदा तयार करणे किंवा सध्याचे काम सुधारित करणे यासाठी टेक्स्ट बॉक्सवर राइट-क्लिक करा. सध्या मर्यादित उपलब्धता आहे.</translation>
@@ -1415,7 +1413,6 @@
 <translation id="1974043046396539880">CRL वितरण बिंदू</translation>
 <translation id="1974060860693918893">प्रगत</translation>
 <translation id="1974159333077206889">सर्व स्पीकरसाठी सारखा ऑडिओ</translation>
-<translation id="1974216844776165821">Chrome ने तुमचा पासवर्ड या डिव्‍हाइसवर सेव्‍ह केला आहे, पण तुम्‍ही तो त्‍याऐवजी तुमच्‍या Google खाते मध्ये सेव्‍ह करू शकता. त्यानंतर, तुम्ही साइन इन केल्यावर तुमच्या Google खाते मधीलदेखील सर्व पासवर्ड आणि पासकी उपलब्ध होतील.</translation>
 <translation id="1975841812214822307">काढून टाका...</translation>
 <translation id="1976150099241323601">सुरक्षा डिव्हाइसमध्ये साइन इन करा</translation>
 <translation id="1976823515278601587">मोठ्या बचती</translation>
@@ -1665,7 +1662,6 @@
 <translation id="2143915448548023856">प्रदर्शन सेटिंग्ज</translation>
 <translation id="2144536955299248197">सर्टिफिकेट दर्शक: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Linux Android अ‍ॅप डेव्हलपमेंट</translation>
-<translation id="2144873026585036769">पासवर्ड आणि पासकी सेव्ह करण्यासाठी आणि भरण्यासाठी तुमचे Google खाते वापरायचे आहे का?</translation>
 <translation id="2145917706968602070">तुमचा फोन जवळपास असल्याची, अनलॉक केलेला असल्याची आणि त्याचे ब्लूटूथ व वाय-फाय सुरू असल्याची खात्री करा</translation>
 <translation id="2146263598007866206">तुमचा वेळ वाचवण्यासाठी साइट संबंधित फाइल आपोआप एकत्रितपणे डाउनलोड करू शकतात</translation>
 <translation id="2147218225094845757">साइड पॅनल लपवा</translation>
@@ -2129,7 +2125,6 @@
 <translation id="2458591546854598341">डिव्हाइस व्यवस्थापन टोकन चुकीचे आहे.</translation>
 <translation id="2459703812219683497">अ‍ॅक्टिव्हेशन कोड सापडला</translation>
 <translation id="2459706890611560967"><ph name="DEVICE_NAME" /> वर टॅब कास्ट करणे पुन्हा सुरू करा</translation>
-<translation id="2460356425461033301">तुमच्या ब्राउझर डेटाचा बॅकअप घ्या आणि तो कोणत्याही डिव्हाइसवर वापरा</translation>
 <translation id="2460482211073772897">इतर फोल्डरमध्ये</translation>
 <translation id="2460826998961521840">तुमच्या Google खाते मध्ये सेव्ह केलेल्या पासकी वापरण्यासाठी</translation>
 <translation id="2461045498706592033"><ph name="LOCAL_FOLDER" /> फक्त या डिव्हाइसवर सेव्ह केला आहे. तुम्ही हा बुकमार्क <ph name="LOCAL_FOLDER" /> मध्ये हलवल्यास, तुम्हाला तो आता तुमच्या इतर डिव्हाइसवर मिळणार नाही.</translation>
@@ -6054,7 +6049,6 @@
 <translation id="5263656105659419083">साइड पॅनलवर सहजपणे परत जाण्यासाठी, सर्वात वर उजवीकडे पिन करा वर क्लिक करा</translation>
 <translation id="5264148714798105376">यास मिनिटभर किंवा त्‍याहून अधिक वेळ लागू शकतो.</translation>
 <translation id="5264252276333215551">कृपया कियोस्क मोडमध्ये तुमचा ॲप लाँच करण्यासाठी इंटरनेटशी कनेक्ट करा.</translation>
-<translation id="526539328530966548">वर्धित संरक्षण</translation>
 <translation id="5265797726250773323">इंस्टॉल करताना एरर आली</translation>
 <translation id="5266113311903163739">सर्टिफिकेशन ऑथोरेटी इंपोर्ट एरर</translation>
 <translation id="526622169288322445"><ph name="ADDRESS_SUMMARY" /> साठी आणखी कृती</translation>
@@ -7385,7 +7379,6 @@ I feel - विटांची इमारत</translation>
 <translation id="6234108445915742946">Chrome च्या सेवा अटी ३१ मार्च रोजी बदलणार आहेत</translation>
 <translation id="6234474535228214774">इंस्टॉल करणे प्रलंबित आहे</translation>
 <translation id="6235208551686043831">डिव्हाइसचा कॅमेरा सुरू झाला आहे. कृपया तुमच्या eSIM चा QR कोड कॅमेरासमोर ठेवा.</translation>
-<translation id="6237297174664969437">Chrome सेटिंग्जमध्ये कोणता ब्राउझर डेटा सिंक करायचा हे तुम्ही कधीही निवडू शकता. <ph name="LINK_BEGIN" />डिव्हाइस सेटिंग्ज<ph name="LINK_END" /> मध्ये, तुम्ही Chrome ब्राउझरवरून इंस्टॉल केलेल्या वेब ॲप्ससाठी सिंक नियंत्रित करू शकता. Google तुमच्या इतिहासाच्या आधारे Search आणि इतर सेवा पर्सनलाइझ करू शकते.</translation>
 <translation id="6237474966939441970">स्टायलस टिपा घेण्याचे अ‍ॅप</translation>
 <translation id="6237481151388361546">तुमचे इंटरनेट कनेक्शन बदला आणि "पुन्हा प्रयत्न करा" निवडा किंवा मर्यादित दृश्य व संपादनाशी संबंधित पर्याय वापरण्यासाठी "मूळ संपादकामध्ये उघडा" निवडा.</translation>
 <translation id="623755660902014047">वाचन मोड</translation>
@@ -7455,6 +7448,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6278776436938569440">स्थान बदला</translation>
 <translation id="6280215091796946657">एका भिन्न खात्याने साइन इन करा</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281218688313242284">तुमचे Google खाते व्यवस्थापित करा</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{कागदाच्या एका पत्रकाची मर्यादा ओलांडली}other{कागदाच्या {COUNT} पत्रकांची मर्यादा ओलांडली}}</translation>
 <translation id="6282490239556659745"><ph name="SITE" /> मधून <ph name="EMBEDDED_SITE" /> काढून टाका</translation>
 <translation id="6283438600881103103">तुम्हाला आता आपोआप साइन आउट केले जाईल.
@@ -8066,6 +8060,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6745592621698551453">आता अपडेट करा</translation>
 <translation id="6746124502594467657">खाली हलवा</translation>
 <translation id="67465227497040338"><ph name="DOMAIN" /> चा पासवर्ड दाखवा</translation>
+<translation id="6746834324024491643">तुमच्या सर्व डिव्हाइसवर तुमचे पासवर्ड आणि आणखी बऱ्याच गोष्टी मिळवण्यासाठी, <ph name="EMAIL" /> म्हणून साइन इन करा</translation>
 <translation id="6748980958975836188">मी <ph name="BEGIN_LINK1" />Google सेवा अटी<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome आणि ChromeOS अतिरिक्त सेवा अटी<ph name="END_LINK2" /> वाचल्या आहेत व सहमती दर्शवत आहे.</translation>
 <translation id="6749077623962119521">परवानग्या रीसेट करायच्या आहेत का?</translation>
 <translation id="6749473226660745022">फोटो</translation>
@@ -8843,7 +8838,6 @@ I feel - विटांची इमारत</translation>
 <translation id="730515362922783851">स्थानिक नेटवर्क किंवा इंटरनेटवरील कोणत्याही डिव्हाइससह डेटा अदलाबदल करा</translation>
 <translation id="7306521477691455105"><ph name="USB_DEVICE_NAME" /> ला <ph name="USB_VM_NAME" /> शी कनेक्ट करण्यासाठी सेटिंग्ज उघडा</translation>
 <translation id="7307129035224081534">थांबवले</translation>
-<translation id="7307647374092371434">तुमच्या Google खाते मधील पासवर्ड आणि पासकी तुम्ही साइन इन केलेले असताना या डिव्हाइसवरदेखील उपलब्ध असतील</translation>
 <translation id="7308643132139167865">वेबसाइटच्या भाषा</translation>
 <translation id="7309214454733221756"><ph name="APP_NAME" /> मध्ये साइन इन करण्यासाठी पासकी तयार करायची आहे का?</translation>
 <translation id="7311005168897771689">तुम्ही ऑफलाइन असताना तुमच्या Google Drive फाइल अ‍ॅक्सेस करा</translation>

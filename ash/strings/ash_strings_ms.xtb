@@ -274,6 +274,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1908992311423394684">Pemasangan baharu</translation>
 <translation id="1915307458270490472">Tamatkan panggilan</translation>
 <translation id="1918022425394817322">Kamera diautojajar ke penjuru kanan sebelah atas</translation>
+<translation id="1920390473494685033">Kenalan</translation>
 <translation id="1923539912171292317">Klik automatik</translation>
 <translation id="1925320505152357008">kurang 1 min</translation>
 <translation id="1928739107511554905">Untuk mendapatkan kemas kini, gunakan skrin sentuh untuk memulakan semula Chromebook anda dengan papan kekunci yang dipasang.</translation>
@@ -530,6 +531,7 @@ Jika tidak, pad sentuh terbina dalam akan didayakan semula selepas <ph name="TIM
 <translation id="2847759467426165163">Hantar ke</translation>
 <translation id="2848120746144143659">Tekan kekunci enter untuk menangkap tangkapan skrin bagi skrin penuh</translation>
 <translation id="2849936225196189499">Kritikal</translation>
+<translation id="2850207700020959936">Apl dapat mengakses kamera</translation>
 <translation id="2860184359326882502">Padanan Terbaik</translation>
 <translation id="2865888419503095837">Maklumat rangkaian</translation>
 <translation id="2869095047958348710"><ph name="DAY_OF_WEEK" /> yang lalu</translation>
@@ -584,6 +586,7 @@ Jika tidak, pad sentuh terbina dalam akan didayakan semula selepas <ph name="TIM
 <translation id="304417730895741346">Apl anda yang disematkan dan dibuka berada pada rak. Untuk menyematkan apl pada rak, klik kanan apl atau ketik pad sentuh menggunakan dua jari.</translation>
 <translation id="3045488863354895414">Selamat tengah hari,</translation>
 <translation id="3047761520276763270">Cuba sebut:</translation>
+<translation id="3053407068093039599">Hidupkan/matikan akses kamera</translation>
 <translation id="3055162170959710888">Anda menggunakan peranti ini selama <ph name="USED_TIME" /> hari ini</translation>
 <translation id="3062298103034426069">Tidak disokong</translation>
 <translation id="3068622547379332530">Versi <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -885,6 +888,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4042660782729322247">Anda berkongsi skrin anda</translation>
 <translation id="404437169852192935">Kemaskinian tamat</translation>
 <translation id="4049230407053723315">Tetapan Pantas</translation>
+<translation id="4054070260844648638">Kelihatan kepada semua orang</translation>
 <translation id="4057003836560082631">Tab penyemak imbas <ph name="INDEX" /> daripada <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4059696795118403455">Untuk melihat cadangan diperibadikan bagi aktiviti yang boleh dilakukan seterusnya, tekan kekunci Ikhtisar</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Mati, satu apl}other{Mati, # apl}}</translation>
@@ -1407,7 +1411,6 @@ Tiada peranti disambungkan.</translation>
 <translation id="5727460725221669831">Jika anda terlupa kata laluan anda atau menukar kata laluan Google Account anda baru-baru ini, cuba pulihkan pengguna ini.</translation>
 <translation id="5733630091161562207">Pemberitahuan alu-aluan</translation>
 <translation id="573413375004481890">Peranti ini tidak dapat menyokong semua paparan anda, oleh itu, satu paparan telah diputuskan sambungan</translation>
-<translation id="5740328398383587084">Kongsi Berdekatan</translation>
 <translation id="574392208103952083">Sederhana</translation>
 <translation id="5744083938413354016">Penyeretan ketik</translation>
 <translation id="5745612484876805746">Cahaya Malam akan dihidupkan secara automatik pada waktu matahari terbenam</translation>
@@ -1484,6 +1487,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="5990992855591814753">Kekal fokus dengan senarai main untuk fokus yang diperibadikan. Dapatkan YouTube Music dan YouTube, tanpa iklan, dengan 3 bulan YouTube Premium tanpa kos. Bersyarat.</translation>
 <translation id="5998374579424866922">Matikan kawalan permainan</translation>
 <translation id="6000279412553873020">Kunci, butang dan pelbagai lagi</translation>
+<translation id="6002122790816966947">Peranti anda</translation>
 <translation id="6012623610530968780">Halaman <ph name="SELECTED_PAGE" /> daripada <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Serlahkan item seterusnya pada rak</translation>
 <translation id="6015573907265691211">Tandai sebagai selesai</translation>
@@ -1800,6 +1804,7 @@ Pemasangan baharu</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> mahu menggunakan <ph name="DEVICE_NAME" />. Hidupkan suis <ph name="DEVICE_NAME" /> fizikal peranti anda.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
 <translation id="7042322267639375032">Runtuhkan area status</translation>
+<translation id="7042593542151411225">Apl tidak dapat mengakses kamera</translation>
 <translation id="7045033600005038336">Gantikan templat?</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> terputus sambungan</translation>
 <translation id="7055910611768509537">Stilus sudah tidak digunakan lebih daripada seminggu</translation>
@@ -2375,6 +2380,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="9074432941673450836">Gunakan apl untuk melakukan semua yang diperlukan pada <ph name="PRODUCT_NAME" /> anda. Anda boleh menemukan apl anda dalam Pelancar. Anda juga boleh menekan kekunci Pelancar (di atas kekunci Shift kiri) pada papan kekunci.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9077515519330855811">Kawalan media, sedang memainkan <ph name="MEDIA_TITLE" /></translation>
+<translation id="9079012373317704997">Tidak dapat menghidupkan akses kamera dari jauh</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">Kamera diautojajar ke penjuru kiri sebelah atas</translation>
 <translation id="9080132581049224423">Leret ke atas untuk mencapai laman utama</translation>

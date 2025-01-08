@@ -597,7 +597,6 @@
 <translation id="2040894699575719559">Accesul la locație a fost blocat</translation>
 <translation id="2041788246978549610">Folosește microfoanele disponibile (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Tava 7</translation>
-<translation id="204357726431741734">Conectează-te pentru a folosi parolele salvate în Contul Google</translation>
 <translation id="2045871135676061132">Plic personal</translation>
 <translation id="2046951263634619614">Vânzători de carte</translation>
 <translation id="2048261947532620704">Se traduce pagina</translation>
@@ -1366,7 +1365,6 @@
 <translation id="343474037147570563">Fișierele pe care le încarci sau atașezi sunt trimise la Google Cloud sau la terți spre analiză. De exemplu, se pot căuta date sensibile sau programe malware și pot să fie stocate conform politicilor companiei și să fie vizibile pentru administrator.</translation>
 <translation id="3435557549311968410">Continuu (scurt)</translation>
 <translation id="3435738964857648380">Securitate</translation>
-<translation id="3438829137925142401">Folosește parolele salvate în Contul tău Google</translation>
 <translation id="3440783957068352691">pătrată</translation>
 <translation id="3441653493275994384">Ecran</translation>
 <translation id="3443504041532578451">Disc optic (satin)</translation>
@@ -1695,6 +1693,7 @@
 <translation id="3990532701115075684">Să-ți urmărească mâinile</translation>
 <translation id="3992684624889376114">Despre această pagină</translation>
 <translation id="3995639283717357522">Aplică politicile</translation>
+<translation id="3996683183117168945">Citarea <ph name="CURRENT_CITATION" /> din <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" />. <ph name="PAGE_TITLE" />. <ph name="PAGE_PREVIEW" />.</translation>
 <translation id="399754345297554962">Teste standardizate și pentru admitere</translation>
 <translation id="3999173941208168054">Filme horror</translation>
 <translation id="4000598935132966791">Află mai multe despre restricțiile pentru site-uri din browserele gestionate</translation>
@@ -3910,6 +3909,7 @@ Detalii suplimentare:
 <translation id="7975858430722947486">S-a adăugat la Comparație</translation>
 <translation id="7976214039405368314">Prea multe solicitări</translation>
 <translation id="7977538094055660992">Dispozitiv de ieșire</translation>
+<translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{Acum <ph name="TIME_COUNT" /> min.}=1{Acum <ph name="TIME_COUNT" /> h}few{Acum <ph name="TIME_COUNT" /> zile}other{Acum <ph name="TIME_COUNT" /> de zile}}</translation>
 <translation id="7979595116210197019">Servicii alimentare</translation>
 <translation id="798134797138789862">Poate solicita permisiunea de a folosi dispozitive de realitate virtuală și date conexe</translation>
 <translation id="7982789257301363584">Rețea</translation>
@@ -4271,7 +4271,6 @@ Detalii suplimentare:
 <translation id="861775596732816396">Mărimea 4</translation>
 <translation id="8620276786115098679">Plic Kaku 7</translation>
 <translation id="8622864575115813231">Se contactează instituția financiară...</translation>
-<translation id="8623885649813806493">Parolele nu corespund. Afișează toate parolele salvate.</translation>
 <translation id="8624354461147303341">Primește reduceri</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
 <translation id="8637362707224133343">Chrome are funcții de siguranță încorporate pentru a te proteja în timp ce navighezi, cum ar fi Navigarea sigură Google, care <ph name="BEGIN_LINK" />a detectat recent activități de phishing<ph name="END_LINK" /> pe site-ul pe care ai încercat să-l accesezi. Site-urile de phishing falsifică alte site-uri pentru a te înșela.<ph name="NEW_LINE" />Chiar și site-urile care sunt de obicei sigure sunt uneori compromise de atacatori. <ph name="BEGIN_ERROR_LINK" />Anunță-ne<ph name="END_ERROR_LINK" /> dacă ești de părere că este o greșeală și că acest site nu reprezintă un pericol.</translation>
@@ -4603,7 +4602,6 @@ Detalii suplimentare:
 <translation id="937885410143139026">Datele au fost trimise la consola de administrare</translation>
 <translation id="939736085109172342">Dosar nou</translation>
 <translation id="940524522703752213">Încărcarea fișierelor în <ph name="CLOUD_PROVIDER" /> va începe în <ph name="MINUTES" /> minute</translation>
-<translation id="944540589955480312">Folosește parolele și cheile de acces salvate în Contul Google</translation>
 <translation id="944578681290094302">Arată ce recompense și beneficii sunt disponibile pentru carduri la finalizarea achiziției <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Află despre beneficiile cardurilor<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945646848072568856">Chrome împiedică site-urile să folosească cookie-uri terță parte pentru a te urmări în timp ce navighezi.</translation>
 <translation id="945855313015696284">Verifică informațiile de mai jos și șterge cardurile nevalide</translation>

@@ -597,7 +597,6 @@
 <translation id="2040894699575719559">Доступ к местоположению закрыт</translation>
 <translation id="2041788246978549610">Использование доступных микрофонов (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Лоток 7</translation>
-<translation id="204357726431741734">Войти, чтобы использовать пароли, сохраненные в аккаунте Google</translation>
 <translation id="2045871135676061132">Конверт Personal</translation>
 <translation id="2046951263634619614">Книжные магазины</translation>
 <translation id="2048261947532620704">Перевод страницы…</translation>
@@ -1365,7 +1364,6 @@
 <translation id="343474037147570563">Загруженные или прикрепленные вами файлы отправляются в Google Cloud или сторонние сервисы для анализа. В частности, файлы могут быть просканированы на наличие конфиденциальных данных или вредоносного ПО. Также они могут быть доступны вашему администратору и храниться на основании правил компании.</translation>
 <translation id="3435557549311968410">Непрерывная печать (по короткому краю)</translation>
 <translation id="3435738964857648380">Безопасность</translation>
-<translation id="3438829137925142401">Использовать пароли, сохраненные в аккаунте Google</translation>
 <translation id="3440783957068352691">квадрат</translation>
 <translation id="3441653493275994384">Экран</translation>
 <translation id="3443504041532578451">Оптический диск (сатин)</translation>
@@ -3909,6 +3907,7 @@
 <translation id="7975858430722947486">Добавлено для сравнения</translation>
 <translation id="7976214039405368314">слишком много запросов</translation>
 <translation id="7977538094055660992">Устройство вывода</translation>
+<translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> минут назад}=1{<ph name="TIME_COUNT" /> час назад}one{<ph name="TIME_COUNT" /> день назад}few{<ph name="TIME_COUNT" /> дня назад}many{<ph name="TIME_COUNT" /> дней назад}other{<ph name="TIME_COUNT" /> дня назад}}</translation>
 <translation id="7979595116210197019">Общественное питание</translation>
 <translation id="798134797138789862">Разрешено отправлять запрос на использование устройств и данных виртуальной реальности</translation>
 <translation id="7982789257301363584">Сеть</translation>
@@ -4269,7 +4268,6 @@
 <translation id="861775596732816396">Размер: 4</translation>
 <translation id="8620276786115098679">Конверт Kaku 7</translation>
 <translation id="8622864575115813231">Устанавливаем связь с вашим финансовым учреждением…</translation>
-<translation id="8623885649813806493">Нет подходящих паролей. Показать все сохраненные пароли.</translation>
 <translation id="8624354461147303341">Разрешить</translation>
 <translation id="8634957317623797170">54 x 86 мм</translation>
 <translation id="8637362707224133343">В Chrome есть функции, защищающие вас при работе в браузере. К ним относится Google Безопасный просмотр. Недавно он обнаружил, что сайт, который вы попытались открыть, <ph name="BEGIN_LINK" />является фишинговым<ph name="END_LINK" />. Такие сайты похожи на знакомые вам страницы, но создаются с целью обмана.<ph name="NEW_LINE" />Помните, что злоумышленники могут взламывать даже защищенные ресурсы. Если вы считаете, что переход заблокирован по ошибке и сайт не представляет опасности, <ph name="BEGIN_ERROR_LINK" />сообщите нам об этом<ph name="END_ERROR_LINK" />.</translation>
@@ -4318,7 +4316,7 @@
 <translation id="8725066075913043281">Повторить попытку</translation>
 <translation id="8726549941689275341">Размер страницы:</translation>
 <translation id="8730621377337864115">Готово</translation>
-<translation id="8731268612289859741">Защитный код</translation>
+<translation id="8731268612289859741">CVC-код</translation>
 <translation id="8731917264694569036">Завершите покупку с помощью устройства.</translation>
 <translation id="8733345475331865475">Автострахование</translation>
 <translation id="8733764070897080460">Вы можете заблокировать темы, которыми не хотите делиться с сайтами. Кроме того, Chrome автоматически удаляет темы, добавленные более четырех недель назад. Подробнее…</translation>
@@ -4601,7 +4599,6 @@
 <translation id="937885410143139026">Данные переданы в консоль администратора</translation>
 <translation id="939736085109172342">Новая папка</translation>
 <translation id="940524522703752213">Загрузка файлов в сервис <ph name="CLOUD_PROVIDER" /> начнется через <ph name="MINUTES" /> мин.</translation>
-<translation id="944540589955480312">Использовать пароли и ключи доступа, сохраненные в аккаунте Google</translation>
 <translation id="944578681290094302">При оформлении покупок показывать, какие бонусы и преимущества дают карты. Подробнее <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />о преимуществах карт<ph name="CARD_BENEFIT_HELP_LINK_END" />…</translation>
 <translation id="945646848072568856">Chrome запрещает сайтам использовать сторонние файлы cookie для отслеживания ваших действий в интернете.</translation>
 <translation id="945855313015696284">Проверьте данные и удалите недействительные карты.</translation>

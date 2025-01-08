@@ -239,7 +239,6 @@
 <translation id="2088833076121753253">Чтобы завершить настройку автозаполнения, перезапустите Chrome. Ваши вкладки откроются снова автоматически.</translation>
 <translation id="2091863218454846791">Включен компактный вид</translation>
 <translation id="2093731487903423814">за последние 15 минут</translation>
-<translation id="2096012225669085171">Синхронизация и персонализация данных на всех устройствах</translation>
 <translation id="2100273922101894616">Автоматический вход</translation>
 <translation id="2109384632594340939">фото профиля</translation>
 <translation id="2111511281910874386">Перейти на страницу</translation>
@@ -979,7 +978,6 @@
 <translation id="5492637351392383067">Шифрование на устройстве</translation>
 <translation id="549660026907543296">Присоединиться как <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5503125329065007089">Экран "Пароли на всех ваших устройствах" открыт наполовину</translation>
-<translation id="5514904542973294328">Отключено администратором устройства</translation>
 <translation id="5515439363601853141">Чтобы увидеть пароль, разблокируйте экран</translation>
 <translation id="5517095782334947753">Вам доступны закладки, история, пароли и другие настройки из аккаунта <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5517326820028369152">Нижний экран недавних действий</translation>
@@ -1739,7 +1737,7 @@
 <translation id="8712637175834984815">OK</translation>
 <translation id="8723453889042591629">Быстро перевести текст на странице. Чтобы изменить функцию кнопки, нажмите и удерживайте ее.</translation>
 <translation id="8725066075913043281">Повторить попытку</translation>
-<translation id="8731268612289859741">Защитный код</translation>
+<translation id="8731268612289859741">CVC-код</translation>
 <translation id="8746155870861185046">Поделиться выделенным</translation>
 <translation id="8748850008226585750">Содержимое скрыто</translation>
 <translation id="8754448020583829686">Скопировать без ссылки</translation>

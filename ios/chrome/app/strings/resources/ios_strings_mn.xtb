@@ -25,6 +25,7 @@
 <translation id="1081932398873105675">{count,plural, =1{{count} таб}other{{count} таб}}</translation>
 <translation id="1084365883616172403">Facebook дээр постолж дууслаа.</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" />-г нээж чадсангүй</translation>
+<translation id="1086468407802688066"><ph name="USER_EMAIL" /> бүртгэлийг <ph name="HOSTED_DOMAIN" />-с удирддаг бөгөөд энэ нь зарим мэдээллийг харах боломжтой. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="1096992026380844478">Таны синк хийх тохиргоог сүүлийн нөөцлөлтөд тань тулгуурлан сэргээнэ. <ph name="BEGIN_LINK" />Юу синк хийж болохоо хараарай<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" />-ийг үргэлж орчуулах</translation>
 <translation id="1108938384783527433">Түүхийг синк хийх</translation>
@@ -83,6 +84,7 @@
 <translation id="1335767868357998043">Хаяг оруулах хэсгийн байрлалыг сонгох</translation>
 <translation id="1347468774581902829">Үйл ажиллагааг удирдах</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
+<translation id="1358106883354237005">Тохиргоо хийгдсэн бүртгэл</translation>
 <translation id="1358214951266274152">Хуулсан холбоосондоо зочлох</translation>
 <translation id="1360432990279830238">Гараад синк хийхийг унтраах уу?</translation>
 <translation id="1363028406613469049">Бичлэг</translation>
@@ -697,6 +699,7 @@
 <translation id="4183350924949589798">Илүү аюулгүй байдал?</translation>
 <translation id="4184063163998877398">{count,plural, =1{Сул {count} нууц үг}other{Сул {count} нууц үг}}</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} зүйлийг зөвхөн энэ төхөөрөмжид хадгалдаг. Үүнийг бусад төхөөрөмждөө ашиглахын тулд {email} Google Бүртгэлдээ хадгална уу.}other{{count} зүйлийг зөвхөн энэ төхөөрөмжид хадгалсан. Эдгээрийг бусад төхөөрөмждөө ашиглахын тулд {email} Google Бүртгэлдээ хадгална уу.}}</translation>
+<translation id="4207873326995387292">Хөтчийн мэдээлэл</translation>
 <translation id="421070604241073551">Асаалттай байхад өгөгдлийг таны Google Бүртгэлд хадгалдаг. Унтраалттай байхад өгөгдлийг зөвхөн энэ төхөөрөмжид хадгалдаг.</translation>
 <translation id="4224534474590365556">Идэвхгүй 99+ табыг хаах уу?</translation>
 <translation id="422474357428465195">Танд аюулгүй байдлыг тань эрсдэлд оруулж болох нууц үгний хэд хэдэн асуудал байна.</translation>
@@ -764,6 +767,7 @@
 <translation id="4495516234578759322">Дараагийн тохирох мөрийг олох</translation>
 <translation id="4502423230170890588">Энэ төхөөрөмжөөс хасах</translation>
 <translation id="4508750114462689118">Нэвтрэх сурталчилгааг хаах</translation>
+<translation id="4517684186578051919">Төхөөрөмжийн мэдээлэл</translation>
 <translation id="4520798012560649652">Нууцлалын горимын талаар нэмэлт мэдээлэл авах</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} хавчуурга}other{{count} хавчуурга}}</translation>
 <translation id="4525629404718770519">Холбоосны урьдчилан үзэлтийг харуулах</translation>
@@ -972,6 +976,7 @@
 <translation id="5444892875087332195">Хавчуурга</translation>
 <translation id="5452354193031718372">Сайн нууц үг ашиглана уу:</translation>
 <translation id="5454211924362324495">Бусад хүнийг таны нууц үгийг ашиглахыг зогсоохын тулд <ph name="BEGIN_LINK" />үүнийг <ph name="WEBSITE" />-д өөрчилнө үү<ph name="END_LINK" /></translation>
+<translation id="5454723301413569630"><ph name="USER_EMAIL" /> бүртгэлийг <ph name="HOSTED_DOMAIN" />-с удирддаг бөгөөд энэ нь зарим мэдээллийг харах боломжтой. Үүнд:</translation>
 <translation id="5457082343331641453">Хайлтдаа нэмэх</translation>
 <translation id="5457226814769348910">Офлайн хувилбарыг нээх</translation>
 <translation id="5478327362747197944">Веб хуудасны огноог товшсоноор Календарийн үйл явдлууд шууд үүсгээрэй.</translation>
@@ -1375,6 +1380,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7102005569666697658">Татаж байна… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Цэс → Тохиргоо → Төлбөрийн хэрэгсэл</translation>
 <translation id="7108338896283013870">Нуух</translation>
+<translation id="7128693485119315539">Танай байгууллага таны хөтчийн түүх, нууц үг зэрэг таны удирддаг бүртгэлтэй холбоотой интернэтээр үзсэн өгөгдлийг харж, удирдах шаардлагатай байж магадгүй.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Камер боломжгүй</translation>
 <translation id="7141960840225504692">Таны табуудыг хаах бөгөөд интернэтээр үзсэн өгөгдлийг устгана</translation>
@@ -1769,6 +1775,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8813277370772331957">Надад дараа сануулах</translation>
 <translation id="8814719628147284151">Үргэлжлүүлэх</translation>
 <translation id="8820817407110198400">Хавчуургууд</translation>
+<translation id="8822421075653507124">Энэ төхөөрөмжийг аюулгүй ашиглах боломжтой эсэхийг нягтлахын тулд танай байгууллага үйлдлийн систем, хөтөч, тохиргоог нь болон төхөөрөмж дээр суулгасан программ хангамжийн талаарх мэдээллийг харах шаардлагатай байж магадгүй.</translation>
 <translation id="8825562130641217944">Хавчуурга, нууц үг болон бусад зүйлээ авна уу.</translation>
 <translation id="8827154289515190290">Таны дуртай хөтөч одоо iOS дээр боломжтой боллоо</translation>
 <translation id="8831208860914609320">Бүх идэвхгүй табыг хаах</translation>

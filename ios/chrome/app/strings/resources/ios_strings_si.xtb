@@ -285,6 +285,7 @@
 <translation id="2214453882118345682">ඔබේ කැමරාවෙන් ඔබ දකින දේ සාප්පු යන්න, පරිවර්තනය කරන්න, සහ හඳුනා ගන්න.</translation>
 <translation id="2220529011494928058">ගැටළුවක් වාර්තා කරන්න...</translation>
 <translation id="2223461067862937305">QR කේතයක් සාදන්න</translation>
+<translation id="2229345671837147090">දුරස්ථ පටිත්ත ජාලකය</translation>
 <translation id="2230173723195178503">වෙබ් පිටුව පූරණය කරන ලදී</translation>
 <translation id="2236949375853147973">මගේ ක්‍රියාකාරකම්</translation>
 <translation id="2240256190924001613">වින්‍යාසකරණ පැතිකඩක් ලබා ගත හැක</translation>
@@ -651,6 +652,7 @@
 <translation id="3992684624889376114">මෙම පිටුව පිළිබඳ</translation>
 <translation id="3994422733891749358">ඔබට ලැබීමට අවශ්‍ය දැනුම්දීම් තෝරා ගන්න</translation>
 <translation id="3994522032746736727"><ph name="EMAIL" /> ලෙස පුරන්න</translation>
+<translation id="3994911892367422121">තේරුණා</translation>
 <translation id="3995521777587992544">පිටු පූරණ ප්‍රගති තීරුව, <ph name="EMAIL" /> පූරණ කළා.</translation>
 <translation id="3997522473364371632">ඔබේ පරිපාලක විසින් මුරපද බෙදා ගැනීම අබල කර ඇත.</translation>
 <translation id="4002066346123236978">සිරස්තලය</translation>
@@ -798,6 +800,7 @@
 <translation id="4651927776207937667">{count,plural, =1{මිනිත්තු 1කට පසු සඟවන්න}one{මිනිත්තු {count}කට පසු සඟවන්න}other{මිනිත්තු {count}කට පසු සඟවන්න}}</translation>
 <translation id="4652817563047461855">ඔබේ මුරපද සුරක්ෂිත බවට වග බලා ගන්න, ඒවා අවදානමට ලක් වී තිබේ දැයි සොයා බලන්න, සහ සබැඳිව ඔබව ආරක්ෂා කර ගැනීමට උපදෙස් ලබා ගන්න. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">සුරකින්න</translation>
+<translation id="466307903888586355">ඔබේ සංවිධානය විසින් ගොනු සුරැකීම අවහිර කර ඇත</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">ඔබේ සංවිධානයට ඔබ පෞද්ගලිකව බ්‍රවුස් කිරීම අවශ්‍ය වේ. අප්‍රසිද්ධ ප්‍රකාරය තුළ පටිති සමූහ සමමුහූර්ත කෙරේ.
 <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
@@ -1271,6 +1274,7 @@
 <translation id="6641465290890659327">ඔබේ මුරපදයෙහි පිටපතක් බෙදා ගන්න</translation>
 <translation id="6642362222295953972">පවතින පටිත්තට මාරු වන්න</translation>
 <translation id="6644512095122093795">මුරපද සුරැකීමට පිරිනමන්න</translation>
+<translation id="664573288952458293">සාමාන්‍ය පටිත්ත ජාලකය</translation>
 <translation id="6645899968535965230">QR කේතය: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">ඔබ පිවිසෙන URL ඔබ මීළඟට පිවිසිය හැකි අඩවි මොනවාදැයි පුරෝකථනය කිරීමට Google වෙත යවනු ලැබේ</translation>
 <translation id="6657585470893396449">මුරපදය</translation>
@@ -1661,6 +1665,7 @@
 <translation id="8407669440184693619">මෙම වෙබ් අඩවිය සඳහා මුරපද කිසිවක් හමු නොවිය</translation>
 <translation id="8407831512155324054">ඔබේ මුරපද ශක්තිමත් බව පෙනේ</translation>
 <translation id="842523302461531262">සැකසීම් තුළ පෙරනිමි බවට පත් කරන්න…</translation>
+<translation id="8425826545759040372">අප්‍රකට පටිත්ත ජාලකය</translation>
 <translation id="8428045167754449968">නගරය / පුරවරය</translation>
 <translation id="8428213095426709021">සැකසුම්</translation>
 <translation id="8428634594422941299">තේරුණා</translation>

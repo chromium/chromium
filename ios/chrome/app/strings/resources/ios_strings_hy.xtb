@@ -287,6 +287,7 @@
 <translation id="2214453882118345682">Գտեք ապրանքներ, թարգմանեք տեքստեր և ստացեք տեղեկություններ ձեզ շրջապատող օբյեկտների մասին՝ օգտագործելով տեսախցիկը։</translation>
 <translation id="2220529011494928058">Հաղորդել խնդրի մասին</translation>
 <translation id="2223461067862937305">Ստեղծել QR կոդ</translation>
+<translation id="2229345671837147090">Հեռակա ներդիրի ցանց</translation>
 <translation id="2230173723195178503">Կայքէջը բեռնվեց</translation>
 <translation id="2236949375853147973">Իմ գործողությունները</translation>
 <translation id="2240256190924001613">Կազմաձևման պրոֆիլ է հասանելի</translation>
@@ -653,6 +654,7 @@
 <translation id="3992684624889376114">Այս էջի մասին</translation>
 <translation id="3994422733891749358">Ընտրեք, թե ինչ ծանուցումներ եք ուզում ստանալ</translation>
 <translation id="3994522032746736727">Մուտք գործել որպես <ph name="EMAIL" /></translation>
+<translation id="3994911892367422121">ՊԱՐԶ Է</translation>
 <translation id="3995521777587992544">Էջի բեռնման ընթացագոտի, կատարված է <ph name="EMAIL" />։</translation>
 <translation id="3997522473364371632">Ադմինիստրատորն արգելել է գաղտնաբառերի փոխանցումը</translation>
 <translation id="4002066346123236978">Վերնագիր</translation>
@@ -802,6 +804,7 @@
 <translation id="4651927776207937667">{count,plural, =1{Թաքցնել 1 րոպեից}one{Թաքցնել {count} րոպեից}other{Թաքցնել {count} րոպեից}}</translation>
 <translation id="4652817563047461855">Համոզվեք, որ ձեր գաղտնաբառերը վտանգված չեն, պարզեք՝ արդյոք դրանք չեն կոտրվել, և ստացեք խորհուրդներ, որոնք կօգնեն ձեզ պաշտպանվել համացանցում։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Պահել</translation>
+<translation id="466307903888586355">Ձեր կազմակերպությունը թույլ չի տալիս ֆայլեր պահել</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Ձեր կազմակերպության կանոնների համաձայն՝ դուք պետք է օգտագործեք ինկոգնիտո ռեժիմը։ Ինկոգնիտո ռեժիմում բացված ներդիրների խմբերը չեն համաժամացվում։
 <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
@@ -1276,6 +1279,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6641465290890659327">Տրամադրեք ձեր գաղտնաբառի պատճենը</translation>
 <translation id="6642362222295953972">Անցնել մինչ այդ բացած ներդիր</translation>
 <translation id="6644512095122093795">Առաջարկել պահել գաղտնաբառերը</translation>
+<translation id="664573288952458293">Սովորական ներդիրի ցանց</translation>
 <translation id="6645899968535965230">QR կոդ՝ <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">Ձեր այցելած էջերի URL-ներն ուղարկվում են Google-ին՝ կանխատեսելու, թե հաջորդիվ ինչ կայքեր կարող եք այցելել։</translation>
 <translation id="6657585470893396449">Գաղտնաբառ</translation>
@@ -1667,6 +1671,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8407669440184693619">Այս կայքի համար գաղտնաբառեր չեն գտնվել</translation>
 <translation id="8407831512155324054">Ձեր գաղտնաբառերը հուսալի են</translation>
 <translation id="842523302461531262">Կարգավորումներում ընտրել որպես կանխադրված…</translation>
+<translation id="8425826545759040372">Ինկոգնիտո ներդիրի ցանց</translation>
 <translation id="8428045167754449968">Քաղաք</translation>
 <translation id="8428213095426709021">Կարգավորումներ</translation>
 <translation id="8428634594422941299">Պարզ է</translation>

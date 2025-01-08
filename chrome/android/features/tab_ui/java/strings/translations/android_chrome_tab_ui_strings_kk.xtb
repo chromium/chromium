@@ -104,9 +104,6 @@
 <translation id="5494920125229734069">Барлығын таңдау</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> қойындысы бар <ph name="COLOR_NAME" /> түсті қойындылар тобын жабу.}other{<ph name="TABS_COUNT_MANY" /> қойындысы бар <ph name="COLOR_NAME" /> түсті қойындылар тобын жабу.}}</translation>
 <translation id="5556417849629758491">Дүкен туралы ақпаратты көру (опция экранның жоғарғы жағында орналасқан)</translation>
-<translation id="5615302411300498438">Бұл топты кейінірек қойындылар қосу үшін сақтап қойыңыз. Одан шығып кетуге болады.
-
-Шығып кетсеңіз, "<ph name="TITLE_OF_GROUP" />" қойындылар тобын пайдалану рұқсатынан бірден айырылып қаласыз.</translation>
 <translation id="5627941783489838464">Қойындыларда өзгеріс жоқ.</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Қойындыны қалпына келтіру}other{Қойындыларды қалпына келтіру}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome-нан <ph name="TABS_COUNT_ONE" /> сілтеме}other{Chrome-нан <ph name="TABS_COUNT_MANY" /> сілтеме}}</translation>
@@ -117,7 +114,6 @@
 <translation id="6040143037577758943">Жабу</translation>
 <translation id="6051432659151380973">Қойындылар топтары автоматты түрде сақталады.</translation>
 <translation id="6054741997831917303">Бұл тауардың бағасы жақында түсті. Ескі бағасы: <ph name="PREVIOUS_PRICE" />, жаңа бағасы: <ph name="NEW_PRICE" /></translation>
-<translation id="6082313992897617440">Сіз <ph name="GROUP_NAME" /> қойындылар тобын пайдалану рұқсатынан бірден айырылып қаласыз.</translation>
 <translation id="6109251075362363230">Ең соңғы қолданылған көшірмені есепке алмағанда, барлық қайталанатын қойынды да мұрағатталады.</translation>
 <translation id="6193448654517602979">Қойындыларды таңдау</translation>
 <translation id="6228793724645064692">(дүкен рейтингісі)</translation>
@@ -145,9 +141,9 @@
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> таңдалды</translation>
 <translation id="7326879924029668159">Қайтару саясаты мен басқа да ақпаратты көріңіз.</translation>
 <translation id="7352298686197644113">Ашық тұрған қойындылардағы қай тауардың бағасы арзан екенін көріңіз.</translation>
-<translation id="7421293530411019405">Қойындылар тобынан шығу қажет пе?</translation>
 <translation id="7452985128687107478">Қойындылар топтары барлық құрылғыңызда автоматты түрде сақталып, жаңарады.</translation>
 <translation id="747459581954555080">Барлығын қалпына келтіру</translation>
+<translation id="750886945254958667">Бұл топты кейінірек қойындылар қосу үшін сақтаңыз. Қажет болмаса, шығыңыз.</translation>
 <translation id="753732157349120914">Қойынды ауыстырғышы</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Google-дан <ph name="REVIEWS_COUNT_ONE" /> пікір}other{Google-дан <ph name="REVIEWS_COUNT_MANY" /> пікір}}</translation>
 <translation id="7559245342362162951">Топ қойындыларын толық экранда тор түрінде көрсету</translation>
@@ -177,9 +173,7 @@
 <translation id="8398929769197326728">Жаңа қалта – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Параметрлер</translation>
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> қойынды қосылды, <ph name="ANY_CLOSED" /> жабылды.}other{<ph name="MANY_ADDED" /> қойынды қосылды, <ph name="ANY_CLOSED" /> жабылды.}}</translation>
-<translation id="8631711675211020168">Барлығы <ph name="GROUP_NAME" /> қойындылар тобын пайдалану рұқсатынан бірден айырылып қалады. Бұл топ барлық құрылғыдан жойылады.</translation>
 <translation id="8633025649649592204">Соңғы іс-әрекеттер</translation>
-<translation id="8635399646025169806">Қойындылар тобын қалдыру керек пе?</translation>
 <translation id="870736955561925754">Қойындыны жауып, топты жою қажет пе?</translation>
 <translation id="8714939927607906138">Арзанырақ</translation>
 <translation id="8730621377337864115">Дайын</translation>

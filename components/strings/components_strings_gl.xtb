@@ -597,7 +597,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2040894699575719559">Bloqueouse a localización</translation>
 <translation id="2041788246978549610">Usar os micrófonos dispoñibles (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Bandexa 7</translation>
-<translation id="204357726431741734">Iniciar sesión para utilizar contrasinais gardados na túa Conta de Google</translation>
 <translation id="2045871135676061132">Sobre persoal</translation>
 <translation id="2046951263634619614">Librarías</translation>
 <translation id="2048261947532620704">Traducindo páxina</translation>
@@ -1366,7 +1365,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="343474037147570563">Os ficheiros que cargues ou anexes enviaranse a Google Cloud ou a terceiros para a súa análise. Por exemplo, poderían examinarse para ver se conteñen datos confidenciais ou software malicioso, e almacenarse en función das políticas da empresa. Tamén podería velos a persoa administradora.</translation>
 <translation id="3435557549311968410">Continuo (curto)</translation>
 <translation id="3435738964857648380">Seguranza</translation>
-<translation id="3438829137925142401">Utilizar contrasinais gardados na túa Conta de Google</translation>
 <translation id="3440783957068352691">cadrado</translation>
 <translation id="3441653493275994384">Pantalla</translation>
 <translation id="3443504041532578451">Disco óptico (satinado)</translation>
@@ -3909,6 +3907,7 @@ Detalles adicionais:
 <translation id="7975858430722947486">Engadiuse á comparación</translation>
 <translation id="7976214039405368314">Hai demasiadas solicitudes</translation>
 <translation id="7977538094055660992">Dispositivo de saída</translation>
+<translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{Hai <ph name="TIME_COUNT" /> min}=1{Hai <ph name="TIME_COUNT" /> h}other{Hai <ph name="TIME_COUNT" /> d}}</translation>
 <translation id="7979595116210197019">Servizo de comida</translation>
 <translation id="798134797138789862">Pode pedirche permiso para usar datos e dispositivos de realidade virtual</translation>
 <translation id="7982789257301363584">Rede</translation>
@@ -4269,7 +4268,6 @@ Detalles adicionais:
 <translation id="861775596732816396">Tamaño 4</translation>
 <translation id="8620276786115098679">Sobre Kaku-7</translation>
 <translation id="8622864575115813231">Contactando coa túa entidade financeira...</translation>
-<translation id="8623885649813806493">Non tes ningún contrasinal para este sitio. Mostrar todos os contrasinais gardados.</translation>
 <translation id="8624354461147303341">Obter descontos</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
 <translation id="8637362707224133343">Chrome inclúe funcións de seguranza para protexerte cando navegas, como, por exemplo, Navegación segura de Google, que <ph name="BEGIN_LINK" />detectou hai pouco phishing<ph name="END_LINK" /> no sitio ao que tentaches acceder. Os sitios de phishing fanse pasar por outros sitios para enganarte.<ph name="NEW_LINE" />Ás veces, mesmo os sitios que adoitan ser seguros poden verse vulnerados por atacantes. <ph name="BEGIN_ERROR_LINK" />Infórmanos<ph name="END_ERROR_LINK" /> se consideras que se cometeu un erro e que o sitio non representa ningún perigo.</translation>
@@ -4601,7 +4599,6 @@ Detalles adicionais:
 <translation id="937885410143139026">Datos enviados á consola de administración</translation>
 <translation id="939736085109172342">Cartafol novo</translation>
 <translation id="940524522703752213">A carga de ficheiros en <ph name="CLOUD_PROVIDER" /> comezará dentro de <ph name="MINUTES" /> minutos</translation>
-<translation id="944540589955480312">Utilizar contrasinais e claves de acceso gardados na túa Conta de Google</translation>
 <translation id="944578681290094302">Mostra que recompensas e beneficios ofrecen as túas tarxetas ao tramitar as compras. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Máis información sobre os beneficios das tarxetas<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945646848072568856">Chrome evita que os sitios usen cookies de terceiros para facer un seguimento da túa actividade mentres navegas.</translation>
 <translation id="945855313015696284">Comproba a información que aparece a continuación e elimina as tarxetas non válidas</translation>

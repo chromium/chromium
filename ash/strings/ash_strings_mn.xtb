@@ -274,6 +274,7 @@
 <translation id="1908992311423394684">Шинээр суулгасан</translation>
 <translation id="1915307458270490472">Таслах</translation>
 <translation id="1918022425394817322">Камерыг баруун дээд булан руу зэрэгцүүлсэн</translation>
+<translation id="1920390473494685033">Харилцагчид</translation>
 <translation id="1923539912171292317">Автомат даралтууд</translation>
 <translation id="1925320505152357008">1 минутаас бага</translation>
 <translation id="1928739107511554905">Хавсаргасан гараар Chromebook ээ дахин эхлүүлэхийн тулд мэдрэгч дэлгэцийг ашиглан шинэчлэлт авна уу.</translation>
@@ -530,6 +531,7 @@
 <translation id="2847759467426165163">руу дамжуул</translation>
 <translation id="2848120746144143659">Бүтэн дэлгэцийн агшин авахын тулд enter дээр дарна уу</translation>
 <translation id="2849936225196189499">Аюултай</translation>
+<translation id="2850207700020959936">Аппууд камерт хандах боломжтой</translation>
 <translation id="2860184359326882502">Хамгийн сайн тохирол</translation>
 <translation id="2865888419503095837">Сүлжээний мэдээлэл</translation>
 <translation id="2869095047958348710">Энэ өнгөрсөн <ph name="DAY_OF_WEEK" /></translation>
@@ -584,6 +586,7 @@
 <translation id="304417730895741346">Таны бэхэлсэн болон нээсэн аппууд тавиурт байна. Тавиурт апп бэхлэхийн тулд апп дээр хулганын баруун талыг товших эсвэл хоёр хуруугаараа мэдрэгч самбарыг товшино уу.</translation>
 <translation id="3045488863354895414">Өдрийн мэнд,</translation>
 <translation id="3047761520276763270">Дараахыг хэлж үзнэ үү:</translation>
+<translation id="3053407068093039599">Камерын хандалтыг асаах/унтраах</translation>
 <translation id="3055162170959710888">Та энэ төхөөрөмжийг өнөөдөр <ph name="USED_TIME" /> ашигласан</translation>
 <translation id="3062298103034426069">Дэмждэггүй</translation>
 <translation id="3068622547379332530">Хувилбар <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -885,6 +888,7 @@
 <translation id="4042660782729322247">Та дэлгэцээ хуваалцаж байна</translation>
 <translation id="404437169852192935">Шинэчлэлтүүд дууссан</translation>
 <translation id="4049230407053723315">Шуурхай тохиргоо</translation>
+<translation id="4054070260844648638">Бүх хүнд харагдана</translation>
 <translation id="4057003836560082631">Хөтчийн таб <ph name="TOTAL_COUNT" />-н <ph name="INDEX" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4059696795118403455">Дараа хийх зүйлсийн талаар хувийн болгосон зөвлөмж харахын тулд Тоймлон харуулах товчлуурыг дарна уу</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Аппад идэвхгүй}other{# аппад ид.гүй}}</translation>
@@ -1408,7 +1412,6 @@
 <translation id="5727460725221669831">Хэрэв та нууц үгээ мартсан эсвэл Google Бүртгэлийн нууц үгээ саяхан өөрчилсөн бол энэ хэрэглэгчийг сэргээхээр оролдоно уу.</translation>
 <translation id="5733630091161562207">Угтан авах мэдэгдэл</translation>
 <translation id="573413375004481890">Энэ төхөөрөмж нь таны бүх дэлгэцийг дэмжих боломжгүй байсан тул тэдний нэгийг нь салгасан</translation>
-<translation id="5740328398383587084">Ойролцоо хуваалцах</translation>
 <translation id="574392208103952083">Дунд зэрэг</translation>
 <translation id="5744083938413354016">Чирэлтийг товших</translation>
 <translation id="5745612484876805746">Шөнийн гэрэл нь нар жаргахад автоматаар асдаг</translation>
@@ -1485,6 +1488,7 @@
 <translation id="5990992855591814753">Төвлөрөхдөө сонсох хувийн болгосон тоглуулах жагсаалтаар төлөвлөгөөнийхөө дагуу байгаарай. YouTube Premium-н 3 сарын эрхээр зар сурталчилгаагүй YouTube Music, YouTube-г ямар ч зардалгүйгээр аваарай. Нөхцөл хэрэгжинэ.</translation>
 <translation id="5998374579424866922">Тоглоомын тохиргоог унтраах</translation>
 <translation id="6000279412553873020">Түлхүүр, товчлуур болон бусад</translation>
+<translation id="6002122790816966947">Таны төхөөрөмжүүд</translation>
 <translation id="6012623610530968780">Хуудас <ph name="TOTAL_PAGE_NUM" />-н <ph name="SELECTED_PAGE" /></translation>
 <translation id="601304062528754300">Тавиурын дараагийн зүйлийг тодруулах</translation>
 <translation id="6015573907265691211">Дууссан гэж тэмдэглэсэн</translation>
@@ -1801,6 +1805,7 @@
 <translation id="7034025838182392395"><ph name="APP_NAME" /> <ph name="DEVICE_NAME" />-г ашиглах хүсэлтэй байна. Төхөөрөмжийнхөө биет <ph name="DEVICE_NAME" />-н унтраалгыг асаана уу.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Туслах</translation>
 <translation id="7042322267639375032">Төлөв байдал илэрхийлэгчийг буулгах</translation>
+<translation id="7042593542151411225">Аппууд камерт хандах боломжгүй</translation>
 <translation id="7045033600005038336">Загварыг солих уу?</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> салсан</translation>
 <translation id="7055910611768509537">Мэдрэгч үзгийг долоо хоног гаруй ашиглаагүй байна</translation>
@@ -2377,6 +2382,7 @@
 <translation id="9074432941673450836">Хэрэгтэй бүх зүйлээ <ph name="PRODUCT_NAME" /> дээрээ хийхэд аппуудыг ашиглана уу. Та аппуудаа Эхлүүлэгчээс олох боломжтой. Та мөн гарын Эхлүүлэгчийн товчлуурыг (зүүн талын Shift товчлуурын дээр байх) дарах боломжтой.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9077515519330855811">Медиа хяналт, одоо <ph name="MEDIA_TITLE" />-г тоглуулж байна</translation>
+<translation id="9079012373317704997">Камерын хандалтыг алсын зайнаас асаах боломжгүй</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">Камерыг зүүн дээд булан руу зэрэгцүүлсэн</translation>
 <translation id="9080132581049224423">Нүүр хуудас руу очихын тулд дээш шударна уу</translation>

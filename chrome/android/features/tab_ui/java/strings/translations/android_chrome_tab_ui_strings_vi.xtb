@@ -104,9 +104,6 @@ Nếu bạn xoá, mọi người sẽ lập tức mất quyền truy cập vào 
 <translation id="5494920125229734069">Chọn tất cả</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Đóng nhóm thẻ có <ph name="TABS_COUNT_ONE" /> thẻ, màu <ph name="COLOR_NAME" />.}other{Đóng nhóm thẻ có <ph name="TABS_COUNT_MANY" /> thẻ, màu <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Xem thông tin cửa hàng, tùy chọn này nằm ở gần đầu màn hình</translation>
-<translation id="5615302411300498438">Giữ lại nhóm này để thêm thẻ vào lúc khác hoặc thoát.
-
-Nếu bạn thoát, bạn sẽ lập tức mất quyền truy cập vào nhóm thẻ "<ph name="TITLE_OF_GROUP" />".</translation>
 <translation id="5627941783489838464">Không có thông tin cập nhật về thẻ</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Khôi phục thẻ}other{Khôi phục các thẻ}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> đường liên kết từ Chrome}other{<ph name="TABS_COUNT_MANY" /> đường liên kết từ Chrome}}</translation>
@@ -117,7 +114,6 @@ Nếu bạn thoát, bạn sẽ lập tức mất quyền truy cập vào nhóm t
 <translation id="6040143037577758943">Đóng</translation>
 <translation id="6051432659151380973">Các nhóm thẻ của bạn sẽ tự động lưu</translation>
 <translation id="6054741997831917303">Mức giá của mặt hàng này gần đây đã giảm từ <ph name="PREVIOUS_PRICE" /> xuống còn <ph name="NEW_PRICE" /></translation>
-<translation id="6082313992897617440">Bạn sẽ mất ngay quyền truy cập vào nhóm thẻ <ph name="GROUP_NAME" /></translation>
 <translation id="6109251075362363230">Giờ đây, tất cả các thẻ trùng lặp cũng sẽ được lưu trữ, ngoại trừ thẻ trùng lặp được sử dụng gần đây nhất.</translation>
 <translation id="6193448654517602979">Chọn các thẻ</translation>
 <translation id="6228793724645064692">(điểm xếp hạng cửa hàng)</translation>
@@ -145,9 +141,9 @@ Nếu bạn thoát, bạn sẽ lập tức mất quyền truy cập vào nhóm t
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> đang được chọn</translation>
 <translation id="7326879924029668159">Xem chính sách trả lại hàng và các thông tin khác</translation>
 <translation id="7352298686197644113">Xem mặt hàng giảm giá trong các thẻ mà bạn đang mở</translation>
-<translation id="7421293530411019405">Rời khỏi nhóm thẻ?</translation>
 <translation id="7452985128687107478">Các nhóm thẻ tự động lưu và cập nhật trên mọi thiết bị của bạn</translation>
 <translation id="747459581954555080">Khôi phục tất cả</translation>
+<translation id="750886945254958667">Giữ lại nhóm này để thêm thẻ sau hoặc rời khỏi nhóm nếu bạn không còn muốn truy cập vào nhóm</translation>
 <translation id="753732157349120914">Trình chuyển đổi thẻ</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> bài đánh giá trên Google}other{<ph name="REVIEWS_COUNT_MANY" /> bài đánh giá trên Google}}</translation>
 <translation id="7559245342362162951">Hiển thị các thẻ của nhóm trong lưới toàn màn hình</translation>
@@ -177,9 +173,7 @@ Nếu bạn thoát, bạn sẽ lập tức mất quyền truy cập vào nhóm t
 <translation id="8398929769197326728">Thư mục mới – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Cài đặt</translation>
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{Đã thêm <ph name="ONE_ADDED" /> thẻ, đã đóng <ph name="ANY_CLOSED" /> thẻ}other{Đã thêm <ph name="MANY_ADDED" /> thẻ, đã đóng <ph name="ANY_CLOSED" /> thẻ}}</translation>
-<translation id="8631711675211020168">Mọi người sẽ mất ngay quyền truy cập vào nhóm thẻ <ph name="GROUP_NAME" /> và nhóm thẻ này sẽ bị xoá khỏi mọi thiết bị</translation>
 <translation id="8633025649649592204">Hoạt động gần đây</translation>
-<translation id="8635399646025169806">Giữ lại nhóm thẻ?</translation>
 <translation id="870736955561925754">Bạn muốn đóng thẻ và xoá nhóm?</translation>
 <translation id="8714939927607906138">Giá thấp hơn</translation>
 <translation id="8730621377337864115">Xong</translation>

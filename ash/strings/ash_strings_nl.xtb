@@ -274,6 +274,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1908992311423394684">Nieuwe installatie</translation>
 <translation id="1915307458270490472">Ophangen</translation>
 <translation id="1918022425394817322">Camera uitgelijnd op de rechterbovenhoek</translation>
+<translation id="1920390473494685033">Contacten</translation>
 <translation id="1923539912171292317">Automatische klikken</translation>
 <translation id="1925320505152357008">minder dan 1 min</translation>
 <translation id="1928739107511554905">Als je de update wilt downloaden, sluit je het toetsenbord aan en start je je Chromebook opnieuw op via het touchscreen.</translation>
@@ -886,6 +887,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="4042660782729322247">Je deelt je scherm</translation>
 <translation id="404437169852192935">Updates beëindigd</translation>
 <translation id="4049230407053723315">Snelle instellingen</translation>
+<translation id="4054070260844648638">Zichtbaar voor iedereen</translation>
 <translation id="4057003836560082631">Browsertabblad <ph name="INDEX" /> van <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4059696795118403455">Druk op de Overzichtstoets om gepersonaliseerde suggesties te bekijken voor wat je daarna kunt doen</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Uit voor een app}other{Uit voor # apps}}</translation>
@@ -1409,7 +1411,6 @@ Geen apparaten verbonden.</translation>
 <translation id="5727460725221669831">Als je je wachtwoord bent vergeten of onlangs het wachtwoord van je Google-account hebt gewijzigd, probeer je deze gebruiker te herstellen.</translation>
 <translation id="5733630091161562207">Welkomstmelding</translation>
 <translation id="573413375004481890">Dit apparaat kan niet al je schermen ondersteunen, dus één scherm is ontkoppeld</translation>
-<translation id="5740328398383587084">Dichtbij delen</translation>
 <translation id="574392208103952083">Gemiddeld</translation>
 <translation id="5744083938413354016">Tikken en slepen</translation>
 <translation id="5745612484876805746">Nachtverlichting wordt automatisch aangezet bij zonsondergang</translation>
@@ -1486,6 +1487,7 @@ Geen apparaten verbonden.</translation>
 <translation id="5990992855591814753">Blijf op schema met gepersonaliseerde focusplaylists. Neem YouTube Music en YouTube zonder advertenties en krijg YouTube Premium 3 maanden zonder kosten. Er zijn voorwaarden van toepassing.</translation>
 <translation id="5998374579424866922">Gamebediening uitzetten</translation>
 <translation id="6000279412553873020">Toetsen, knoppen en meer</translation>
+<translation id="6002122790816966947">Je apparaten</translation>
 <translation id="6012623610530968780">Pagina <ph name="SELECTED_PAGE" /> van <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Het volgende item op de plank markeren</translation>
 <translation id="6015573907265691211">Markeren als klaar</translation>

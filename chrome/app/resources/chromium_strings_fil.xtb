@@ -328,7 +328,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5496810170689441661">Sinusubukan ng Chromium na i-edit ang mga password. I-type ang iyong password sa Windows para payagan ito.</translation>
 <translation id="5527463683072221100">Magbukas ng mga PDF sa Chromium</translation>
 <translation id="5568136785038042132">Para makuha ang iyong mga extension sa lahat ng computer mo, mag-sign in sa Chromium</translation>
-<translation id="5575418445468216473">Sine-save sa Google Account mo ang iyong mga password at iba pang data sa Chromium, at aalisin ang mga ito sa device na ito. Para magamit ang mga ito sa hinaharap, mag-sign in ulit sa Chromium.</translation>
 <translation id="5579324208890605088">Nagkaroon ng error sa startup: patakbuhin ang installer bilang karaniwang user, hindi bilang administrator.</translation>
 <translation id="5596627076506792578">Higit pang opsyon</translation>
 <translation id="5605834417512968703">Pumili ng kahit anong bagay na hahanapin gamit ang Paghahanap ng Larawan o pindutin ang escape para lumabas sa Paghahanap ng Larawan</translation>
@@ -479,7 +478,6 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="7355355292030546812">Na-block ng Chromium ang pag-download na ito dahil puwedeng mapinsala ng file ang iyong mga personal na account at account sa social network, kabilang ang <ph name="USER_EMAIL" /></translation>
 <translation id="7384121030444253939">Hindi na sinusuportahan ang extension na ito. Inirerekomenda ng Chromium na alisin mo na lang ito.</translation>
 <translation id="7389750180956889333">Mas naiintindihan ng Chromium ang mga form at mas mabilis nitong mao-autofill ang mga ito para sa iyo. Matuto pa tungkol sa <ph name="BEGIN_LINK" />Autofill ng Chrome<ph name="END_LINK" /></translation>
-<translation id="7398989605938454041">Gamit ang mga profile sa Chromium, magagawa mong paghiwalayin ang lahat ng iyong bagay-bagay sa Chromium. Pinapadali nitong mapaghiwalay ang trabaho at kasiyahan.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7450541714075000668">Nakopya ang text</translation>
 <translation id="7451052299415159299">Kailangan ng Chromium ng pahintulot na i-access ang iyong camera para sa site na ito</translation>
@@ -543,7 +541,6 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="8326785589245660814">i-clear ang data sa Chromium sa iyong account</translation>
 <translation id="8330519371938183845">Mag-sign in para i-sync at i-personalize ang Chromium sa lahat ng iyong device</translation>
 <translation id="8340674089072921962">Chromium ang dating ginagamit ng <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="8357820681460164151">Para ma-access ang iyong mga bagay sa Chromium browser sa lahat ng device mo, mag-sign in, pagkatapos ay i-on ang pag-sync</translation>
 <translation id="8359544530202147897">I-update ang Chromium para patuloy na magamit ang data sa Chromium sa iyong Google Account, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8360718212975266891">Para makatanggap ng mga update sa Chromium sa hinaharap, kakailanganin mo ng Windows 10 o mas bago. Gumagamit ng Windows 8 ang computer na ito.</translation>
 <translation id="8362914115861174987">Isalin sa</translation>
@@ -594,7 +591,6 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="9022552996538154597">Mag-sign in sa Chromium</translation>
 <translation id="904366664621834601">Na-block ng Chromium ang pag-download na ito dahil naglalaman ang naka-archive na file ng iba pang file na posibleng nagtatago ng malware</translation>
 <translation id="9062666675513499497">Mag-sign in sa Chromium kapag nag-sign in ka sa iba pang serbisyo ng Google</translation>
-<translation id="907832235989677238">Mag-sign in sa Chromium. Kung isang beses mo lang gustong i-sign in ang isang account, puwede mong <ph name="GUEST_LINK_BEGIN" />gamitin ang device bilang bisita<ph name="GUEST_LINK_END" />.</translation>
 <translation id="9078733879136747090">Awtomatikong isinara ang Chromium</translation>
 <translation id="9089354809943900324">Luma na ang Chromium</translation>
 <translation id="9093206154853821181">{0,plural, =1{Muling ilulunsad ang Chromium sa loob ng isang oras}one{Muling ilulunsad ang Chromium sa loob ng # oras}other{Muling ilulunsad ang Chromium sa loob ng # na oras}}</translation>

@@ -274,6 +274,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1908992311423394684">Kaka-install lang</translation>
 <translation id="1915307458270490472">Ibaba</translation>
 <translation id="1918022425394817322">Nag-snap ang camera sa kanang sulok sa itaas</translation>
+<translation id="1920390473494685033">Mga Contact</translation>
 <translation id="1923539912171292317">Mga awtomatikong pag-click</translation>
 <translation id="1925320505152357008">wala pang 1 min</translation>
 <translation id="1928739107511554905">Para makuha ang update, gamitin ang touchscreen para i-restart ang iyong Chromebook nang nakakabit ang keyboard.</translation>
@@ -530,6 +531,7 @@ Kung hindi naman, ie-enable ulit ang naka-built in na touchpad sa loob ng <ph na
 <translation id="2847759467426165163">I-cast sa</translation>
 <translation id="2848120746144143659">Pindutin ang enter para mag-capture screenshot ng full screen</translation>
 <translation id="2849936225196189499">Kritikal</translation>
+<translation id="2850207700020959936">Maa-access ng mga app ang camera</translation>
 <translation id="2860184359326882502">Pinakatumutugma</translation>
 <translation id="2865888419503095837">Impormasyon ng network</translation>
 <translation id="2869095047958348710">Nitong nakalipas na <ph name="DAY_OF_WEEK" /></translation>
@@ -584,6 +586,7 @@ Kung hindi naman, ie-enable ulit ang naka-built in na touchpad sa loob ng <ph na
 <translation id="304417730895741346">Nasa shelf ang iyong mga naka-pin at nakabukas na app. Para mag-pin ng app sa shelf, mag-right click sa isang app o i-tap ang iyong touchpad gamit ang dalawang daliri.</translation>
 <translation id="3045488863354895414">Magandang hapon,</translation>
 <translation id="3047761520276763270">Subukang sabihin ang:</translation>
+<translation id="3053407068093039599">I-on/i-off ang access sa camera</translation>
 <translation id="3055162170959710888">Ginamit mo ang device na ito nang <ph name="USED_TIME" /> ngayong araw</translation>
 <translation id="3062298103034426069">Hindi sinusuportahan</translation>
 <translation id="3068622547379332530">Bersyon <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -884,6 +887,7 @@ Isaksak ang iyong device.</translation>
 <translation id="4042660782729322247">Ibinabahagi mo ang iyong screen</translation>
 <translation id="404437169852192935">Natapos na ang mga update</translation>
 <translation id="4049230407053723315">Mga Mabilisang Setting</translation>
+<translation id="4054070260844648638">Makikita ng lahat ng tao</translation>
 <translation id="4057003836560082631">Tab ng browser na <ph name="INDEX" /> sa <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4059696795118403455">Para makakita ng mga naka-personalize na suhestyon para sa mga susunod na puwedeng gawin, pindutin ang Overview key</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Off sa isa app}one{Off sa # app}other{Off sa # na app}}</translation>
@@ -1407,7 +1411,6 @@ Walang nakakonektang device.</translation>
 <translation id="5727460725221669831">Kung nakalimutan mo ang iyong password o pinalitan mo ang iyong password ng Google Account kamakailan, subukang i-recover ang user na ito.</translation>
 <translation id="5733630091161562207">Notification ng pagbati</translation>
 <translation id="573413375004481890">Hindi masuportahan ng device na ito ang lahat ng iyong display kaya may isang nadiskonekta</translation>
-<translation id="5740328398383587084">Nearby Share</translation>
 <translation id="574392208103952083">Katamtaman</translation>
 <translation id="5744083938413354016">Pag-tap upang mag-drag</translation>
 <translation id="5745612484876805746">Awtomatikong nag-o-on ang Night Light sa paglubog ng araw</translation>
@@ -1484,6 +1487,7 @@ Walang nakakonektang device.</translation>
 <translation id="5990992855591814753">Tuloy lang sa ginagawa mo gamit ang mga naka-personalize na playlist para sa pag-focus. Kunin ang YouTube Music at YouTube, na walang ad, at may 3 buwang YouTube Premium na libre. May mga nalalapat na tuntunin.</translation>
 <translation id="5998374579424866922">I-off ang mga kontrol ng laro</translation>
 <translation id="6000279412553873020">Mga key, button, at higit pa</translation>
+<translation id="6002122790816966947">Ang iyong mga device</translation>
 <translation id="6012623610530968780">Page <ph name="SELECTED_PAGE" /> ng <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">I-highlight ang susunod na item sa shelf</translation>
 <translation id="6015573907265691211">Markahang nakumpleto na</translation>
@@ -1800,6 +1804,7 @@ Kaka-install lang</translation>
 <translation id="7034025838182392395">Gustong gamitin ng <ph name="APP_NAME" /> ang <ph name="DEVICE_NAME" />. I-on ang pisikal na switch ng <ph name="DEVICE_NAME" /> ng iyong device.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
 <translation id="7042322267639375032">I-collapse ang lugar ng status</translation>
+<translation id="7042593542151411225">Hindi maa-access ng mga app ang camera</translation>
 <translation id="7045033600005038336">Palitan ang template?</translation>
 <translation id="7051244143160304048">Nadiskonekta ang <ph name="DEVICE_NAME" /></translation>
 <translation id="7055910611768509537">Hindi nagamit ang stylus sa loob ng mahigit isang linggo</translation>
@@ -2373,6 +2378,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="9074432941673450836">Gumamit ng mga app para gawin ang lahat ng kailangan mong gawin sa iyong <ph name="PRODUCT_NAME" />. Makikita mo ang iyong mga app sa Launcher. Puwede mo ring pindutin ang Launcher key (sa itaas ng kaliwang Shift key) sa keyboard.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9077515519330855811">Mga kontrol ng media, nagpe-play ngayon ng <ph name="MEDIA_TITLE" /></translation>
+<translation id="9079012373317704997">Hindi ma-on ang access sa camera nang malayuan</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">Nag-snap ang camera sa kaliwang sulok sa itaas</translation>
 <translation id="9080132581049224423">Mag-swipe pataas para pumunta sa home</translation>

@@ -228,7 +228,6 @@
 <translation id="1151917987301063366">לאפשר תמיד ל-<ph name="HOST" /> לגשת אל חיישנים</translation>
 <translation id="1152346050262092795">יש להזין שוב את הסיסמה שלך כדי לאמת את החשבון.</translation>
 <translation id="1153636665119721804">‏תוכנית ההגנה המתקדמת של Google</translation>
-<translation id="1155545602507378023">לא, רק במכשיר הזה</translation>
 <translation id="1155816283571436363">מתבצע חיבור לטלפון שלך</translation>
 <translation id="1157952955648710254">‏סגירת החלונית הצדדית של חיפוש Google</translation>
 <translation id="1158080958325422608">שינוי לאותיות גדולות</translation>
@@ -519,7 +518,7 @@
 <translation id="1348966090521113558">ההגדרות בנושא נגישות של העכבר</translation>
 <translation id="1350962700620017446">'<ph name="EXTENSION_NAME" />' מבקש למצוא סורקי מסמכים ולגשת אליהם.</translation>
 <translation id="1352834119074414157">יכול להיות שהחבילה הזו לא תקינה או שהיא משובשת. צריך לסגור את החלון הזה ולהוריד אותה שוב</translation>
-<translation id="1353275871123211385">‏כדי להגדיר אמצעי בקרת הורים כמו אישור אפליקציות או הגבלות זמן מסך, לילד או לילדה צריך להיות חשבון Google שמנוהל על ידי הורה. אפשר להוסיף חשבון בית ספרי במועד מאוחר יותר, לשימוש בכלים כמו Google Classroom.</translation>
+<translation id="1353275871123211385">‏כדי להגדיר אמצעי בקרת הורים כמו אישור אפליקציות או מגבלות זמן מסך, לילד או לילדה צריך להיות חשבון Google שמנוהל על ידי הורה. אפשר להוסיף חשבון בית ספרי במועד מאוחר יותר, לשימוש בכלים כמו Google Classroom.</translation>
 <translation id="135389172849514421">פועלת אופליין</translation>
 <translation id="1353980523955420967">‏אי אפשר למצוא קובץ PPD. יש לוודא כי ה-Chromebook מחובר לרשת ולנסות שוב.</translation>
 <translation id="1354045473509304750">זה בסדר, אפשר להמשיך להרשות ל-<ph name="HOST" /> להשתמש במצלמה ולהזיז אותה</translation>
@@ -1160,7 +1159,6 @@
 <translation id="1794791083288629568">שליחת משוב שיעזור לנו לפתור את הבעיה.</translation>
 <translation id="1795214765651529549">שימוש בעיצוב קלאסי</translation>
 <translation id="1795438342141780114">איפוס הסמן למרכז</translation>
-<translation id="1795668164971917185">‏בפעם הבאה שהגלישה הבטוחה של Google תזהה הורדה חשודה, היא תסרוק את הקובץ באופן אוטומטי כחלק מ<ph name="LINK" /> שבחרת</translation>
 <translation id="1796588414813960292">תכונות שצריכות צלילים לא יפעלו</translation>
 <translation id="1797117170091578105">‏אפשר לשחק באמצעות המקלדת של Chromebook. ניתן להתאים אישית את המקשים לפעולות ספציפיות.</translation>
 <translation id="1798335429200675510">‏לוחצים לחיצה ימנית בתיבת הטקסט כדי ליצור טיוטה או לשפר טקסט קיים. הכלי מבוסס על AI מבית Google. הזמינות מוגבלת כרגע.</translation>
@@ -1414,7 +1412,6 @@
 <translation id="1974043046396539880">‏נקודות הפצה של CRL</translation>
 <translation id="1974060860693918893">מתקדם</translation>
 <translation id="1974159333077206889">אותו אודיו בכל הרמקולים</translation>
-<translation id="1974216844776165821">‏Chrome שמר את הסיסמה שלך במכשיר הזה, אבל יש לך אפשרות לשמור אותה בחשבון Google במקום. באופן זה, כל הסיסמאות ומפתחות הגישה שבחשבון Google שלך יהיו זמינים גם אחרי הכניסה לחשבון.</translation>
 <translation id="1975841812214822307">הסרה...</translation>
 <translation id="1976150099241323601">צריך להיכנס אל התקן אבטחה</translation>
 <translation id="1976823515278601587">חיסכון של נפח גדול</translation>
@@ -1664,7 +1661,6 @@
 <translation id="2143915448548023856">הגדרות תצוגה</translation>
 <translation id="2144536955299248197">מציג האישורים: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">‏פיתוח אפליקציות ל-Android ב-Linux</translation>
-<translation id="2144873026585036769">‏להשתמש בחשבון Google שלך כדי לשמור ולמלא סיסמאות ומפתחות גישה?</translation>
 <translation id="2145917706968602070">‏צריך לוודא שהטלפון נמצא בקרבת מקום ושהוא לא נעול. בנוסף, צריך לוודא שה-Bluetooth וה-Wi-Fi מופעלים</translation>
 <translation id="2146263598007866206">כדי לחסוך זמן, אתרים עשויים להוריד קבצים קשורים יחד, באופן אוטומטי</translation>
 <translation id="2147218225094845757">הסתרת החלונית הצדדית</translation>
@@ -2128,7 +2124,6 @@
 <translation id="2458591546854598341">טוקן ניהול המכשיר אינו חוקי.</translation>
 <translation id="2459703812219683497">זוהה קוד הפעלה</translation>
 <translation id="2459706890611560967">המשך ההעברה של הכרטיסייה אל <ph name="DEVICE_NAME" /></translation>
-<translation id="2460356425461033301">כדאי לגבות את נתוני הדפדפן כדי להשתמש בהם בכל מכשיר</translation>
 <translation id="2460482211073772897">בתיקיות אחרות</translation>
 <translation id="2460826998961521840">‏כדי להשתמש במפתחות הגישה ששמורים בחשבון שלך ב-Google</translation>
 <translation id="2461045498706592033">התיקייה '<ph name="LOCAL_FOLDER" />' שמורה רק במכשיר הזה. אם הסימנייה הזו תועבר אל <ph name="LOCAL_FOLDER" />, היא לא תהיה זמינה יותר במכשירים האחרים שלך.</translation>
@@ -6054,7 +6049,6 @@
 <translation id="5263656105659419083">כדי לחזור בקלות לחלונית הצדדית, לוחצים על 'הצמדה' בפינה השמאלית העליונה</translation>
 <translation id="5264148714798105376">הפעולה יכולה להימשך כדקה.</translation>
 <translation id="5264252276333215551">יש להתחבר לאינטרנט כדי להפעיל את היישום במצב קיוסק.</translation>
-<translation id="526539328530966548">הגנה משופרת</translation>
 <translation id="5265797726250773323">קרתה שגיאה במהלך ההתקנה</translation>
 <translation id="5266113311903163739">שגיאת ייבוא של רשות אישורים</translation>
 <translation id="526622169288322445">עוד פעולות לגבי <ph name="ADDRESS_SUMMARY" /></translation>
@@ -7380,7 +7374,6 @@
 <translation id="6234108445915742946">‏התנאים וההגבלות של Chrome ישתנו ב-31 במרץ</translation>
 <translation id="6234474535228214774">ההתקנה בהמתנה</translation>
 <translation id="6235208551686043831">‏המצלמה של המכשיר פועלת. צריך למקם את קוד ה-QR של ה-eSIM מול המצלמה.</translation>
-<translation id="6237297174664969437">‏תמיד אפשר לבחור אילו נתוני דפדפן יסונכרנו בהגדרות Chrome. ב<ph name="LINK_BEGIN" />הגדרות המכשיר<ph name="LINK_END" /> אפשר לשלוט בסנכרון של אפליקציות אינטרנט שהותקנו מדפדפן Chrome. Google עשויה להתאים אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
 <translation id="6237474966939441970">אפליקציה לכתיבת הערות בעזרת סטיילוס</translation>
 <translation id="6237481151388361546">צריך לשנות את החיבור לאינטרנט ולבחור באפשרות 'ניסיון חוזר', או לבחור באפשרות 'פתיחה בכלי לעריכה בסיסית' כדי להשתמש באפשרויות מוגבלות לתצוגה ולעריכה.</translation>
 <translation id="623755660902014047">מצב קריאה</translation>
@@ -8842,7 +8835,6 @@
 <translation id="730515362922783851">החלפת נתונים עם כל מכשיר המחובר לרשת המקומית או לאינטרנט</translation>
 <translation id="7306521477691455105">יש להיכנס להגדרות כדי לחבר את <ph name="USB_DEVICE_NAME" /> אל <ph name="USB_VM_NAME" /></translation>
 <translation id="7307129035224081534">מושהה</translation>
-<translation id="7307647374092371434">‏הסיסמאות ומפתחות הגישה מחשבון Google יהיו זמינים גם במכשיר הזה, כל עוד הוא מחובר לחשבון שלך</translation>
 <translation id="7308643132139167865">שפות לאתרים</translation>
 <translation id="7309214454733221756">ליצור מפתח גישה כדי להיכנס לחשבון ב-<ph name="APP_NAME" />?</translation>
 <translation id="7311005168897771689">‏גישה לקבצים ב-Google Drive במצב אופליין</translation>
@@ -8925,7 +8917,7 @@
 <translation id="7364796246159120393">בחירת קובץ</translation>
 <translation id="7365076891350562061">גודל צג</translation>
 <translation id="7365995455115045224"><ph name="WINDOW_TITLE" /> – הכרטיסייה מוצמדת</translation>
-<translation id="7366316827772164604">מתבצעת סריקה לאיתור מכשירים בקרבת מקום...</translation>
+<translation id="7366316827772164604">מתבצעת סריקה לאיתור מכשירים קרובים…</translation>
 <translation id="7366415735885268578">הוספת אתר</translation>
 <translation id="7366909168761621528">נתוני גלישה</translation>
 <translation id="7367714965999718019">‏מחולל קוד QR</translation>

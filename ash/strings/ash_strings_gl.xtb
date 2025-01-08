@@ -274,6 +274,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1908992311423394684">Instalada recentemente</translation>
 <translation id="1915307458270490472">Deter</translation>
 <translation id="1918022425394817322">Cámara axustada á esquina superior dereita</translation>
+<translation id="1920390473494685033">Contactos</translation>
 <translation id="1923539912171292317">Clics automáticos</translation>
 <translation id="1925320505152357008">menos de 1 min</translation>
 <translation id="1928739107511554905">Se queres recibir a actualización, usa a pantalla táctil para reiniciar o dispositivo Chromebook co teclado conectado.</translation>
@@ -530,6 +531,7 @@ Se non o fas, o panel táctil volverá activarse dentro de <ph name="TIMEOUT_SEC
 <translation id="2847759467426165163">Emitir a</translation>
 <translation id="2848120746144143659">Premer Introducir para facer captura de pantalla completa</translation>
 <translation id="2849936225196189499">Esencial</translation>
+<translation id="2850207700020959936">As aplicacións poden acceder á cámara</translation>
 <translation id="2860184359326882502">Do mellor resultado ao peor</translation>
 <translation id="2865888419503095837">Información da rede</translation>
 <translation id="2869095047958348710">O <ph name="DAY_OF_WEEK" /> pasado</translation>
@@ -584,6 +586,7 @@ Se non o fas, o panel táctil volverá activarse dentro de <ph name="TIMEOUT_SEC
 <translation id="304417730895741346">As túas aplicacións fixadas e abertas están no andel. Para fixar unha aplicación no andel, fai clic nela co botón dereito ou toca o panel táctil con dous dedos.</translation>
 <translation id="3045488863354895414">Boas tardes!</translation>
 <translation id="3047761520276763270">Proba a dicir:</translation>
+<translation id="3053407068093039599">Activar ou desactivar acceso á cámara</translation>
 <translation id="3055162170959710888">Hoxe utilizaches este dispositivo durante <ph name="USED_TIME" /></translation>
 <translation id="3062298103034426069">Función non admitida</translation>
 <translation id="3068622547379332530">Versión <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />), <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -885,6 +888,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4042660782729322247">Estás compartindo a pantalla</translation>
 <translation id="404437169852192935">Non haberá máis actualizacións</translation>
 <translation id="4049230407053723315">Configuración rápida</translation>
+<translation id="4054070260844648638">Visible para todos</translation>
 <translation id="4057003836560082631">Pestana <ph name="INDEX" /> (dun total de <ph name="TOTAL_COUNT" />) do navegador. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4059696795118403455">Para ver suxestións personalizadas sobre cousas que podes facer a continuación, preme a tecla de visión xeral</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Non para 1 app}other{Non para # apps}}</translation>
@@ -1408,7 +1412,6 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="5727460725221669831">Se esqueciches o contrasinal ou cambiaches o da Conta de Google recentemente, proba a recuperar este usuario.</translation>
 <translation id="5733630091161562207">Notificación de benvida</translation>
 <translation id="573413375004481890">Este dispositivo non puido admitir todas as túas liñas de braille, así que se desconectou unha</translation>
-<translation id="5740328398383587084">Compartir por Nearby</translation>
 <translation id="574392208103952083">Medio</translation>
 <translation id="5744083938413354016">Acción de tocar e arrastrar</translation>
 <translation id="5745612484876805746">A opción Luz nocturna activarase automaticamente ao anoitecer</translation>
@@ -1485,6 +1488,7 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="5990992855591814753">Concéntrate con listas de reprodución personalizadas. Desfruta de YouTube Music e YouTube, sen anuncios, con 3 meses de YouTube Premium sen custo económico. Aplícanse condicións.</translation>
 <translation id="5998374579424866922">Desactivar os controis de xogo</translation>
 <translation id="6000279412553873020">Teclas, botóns e moito máis</translation>
+<translation id="6002122790816966947">Os teus dispositivos</translation>
 <translation id="6012623610530968780">Páxina <ph name="SELECTED_PAGE" /> de <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Destaca o elemento seguinte no andel</translation>
 <translation id="6015573907265691211">Marcar como finalizada</translation>
@@ -1801,6 +1805,7 @@ Nova instalación</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> quere usar o dispositivo <ph name="DEVICE_NAME" />. Activa o interruptor físico (<ph name="DEVICE_NAME" />) no teu dispositivo.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Asistente de Google</translation>
 <translation id="7042322267639375032">Contraer área de estado</translation>
+<translation id="7042593542151411225">As aplicacións non poden acceder á cámara</translation>
 <translation id="7045033600005038336">Queres substituír o modelo?</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> (desconectado)</translation>
 <translation id="7055910611768509537">O lapis óptico non se usou desde hai máis dunha semana</translation>
@@ -2376,6 +2381,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="9074432941673450836">Usa as aplicacións para facer todo o que necesites no teu dispositivo <ph name="PRODUCT_NAME" />. Podes atopalas no menú de aplicacións. Tamén podes premer a tecla do menú de aplicacións (encima da tecla Maiúsculas que está á esquerda) no teclado.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9077515519330855811">Controis multimedia, reproducindo <ph name="MEDIA_TITLE" /></translation>
+<translation id="9079012373317704997">Non se pode activar o acceso á cámara de forma remota</translation>
 <translation id="9079731690316798640">Wifi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">Cámara axustada á esquina superior esquerda</translation>
 <translation id="9080132581049224423">Pasa o dedo cara arriba para ir á pantalla de inicio</translation>

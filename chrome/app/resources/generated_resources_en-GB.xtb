@@ -228,7 +228,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1151917987301063366">Always allow <ph name="HOST" /> to access sensors</translation>
 <translation id="1152346050262092795">Enter your password again to verify your account.</translation>
 <translation id="1153636665119721804">Google Advanced Protection programme</translation>
-<translation id="1155545602507378023">No, this device only</translation>
 <translation id="1155816283571436363">Connecting to your phone</translation>
 <translation id="1157952955648710254">Close Google Search side panel</translation>
 <translation id="1158080958325422608">Make Upper Case</translation>
@@ -1162,7 +1161,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1794791083288629568">Send feedback to help us fix this issue.</translation>
 <translation id="1795214765651529549">Use Classic</translation>
 <translation id="1795438342141780114">Reset cursor to centre</translation>
-<translation id="1795668164971917185">The next time that Google Safe Browsing finds a suspicious download, it will automatically scan it as part of the <ph name="LINK" /> that you chose</translation>
 <translation id="1796588414813960292">Features that need sound won't work</translation>
 <translation id="1797117170091578105">Play using your Chromebook keyboard. You can customise keys to specific actions.</translation>
 <translation id="1798335429200675510">Right-click in a text box to create a draft or refine existing work, powered by Google AI. Currently has limited availability.</translation>
@@ -1416,7 +1414,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1974043046396539880">CRL Distribution Points</translation>
 <translation id="1974060860693918893">Advanced</translation>
 <translation id="1974159333077206889">Same audio with all speakers</translation>
-<translation id="1974216844776165821">Chrome saved your password to this device, but you can save it to your Google Account instead. Then, all passwords and passkeys in your Google Account will also be available while you're signed in.</translation>
 <translation id="1975841812214822307">Remove...</translation>
 <translation id="1976150099241323601">Sign in to Security Device</translation>
 <translation id="1976823515278601587">Large savings</translation>
@@ -1666,7 +1663,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2143915448548023856">Display settings</translation>
 <translation id="2144536955299248197">Certificate Viewer: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Linux Android app development</translation>
-<translation id="2144873026585036769">Use your Google Account to save and fill passwords and passkeys?</translation>
 <translation id="2145917706968602070">Make sure that your phone is nearby, unlocked and that Bluetooth and Wi-Fi are turned on</translation>
 <translation id="2146263598007866206">Sites might automatically download related files together to save you time</translation>
 <translation id="2147218225094845757">Hide side panel</translation>
@@ -2130,7 +2126,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2458591546854598341">Device management token is invalid.</translation>
 <translation id="2459703812219683497">Activation code detected</translation>
 <translation id="2459706890611560967">Resume casting tab to <ph name="DEVICE_NAME" /></translation>
-<translation id="2460356425461033301">Back up your browser stuff and use it on any device</translation>
 <translation id="2460482211073772897">In other folders</translation>
 <translation id="2460826998961521840">To use passkeys saved in your Google Account</translation>
 <translation id="2461045498706592033"><ph name="LOCAL_FOLDER" /> is saved only to this device. If you move this bookmark to <ph name="LOCAL_FOLDER" />, you'll no longer get it on your other devices.</translation>
@@ -6057,7 +6052,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5263656105659419083">To easily get back to the side panel, click Pin at the top right</translation>
 <translation id="5264148714798105376">This may take a minute or so.</translation>
 <translation id="5264252276333215551">Please connect to the Internet to launch your app in kiosk mode.</translation>
-<translation id="526539328530966548">enhanced protection</translation>
 <translation id="5265797726250773323">Error while installing</translation>
 <translation id="5266113311903163739">Certification Authority Import Error</translation>
 <translation id="526622169288322445">More actions for <ph name="ADDRESS_SUMMARY" /></translation>
@@ -7385,7 +7379,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6234108445915742946">Chrome's Terms of Service are changing on 31 March</translation>
 <translation id="6234474535228214774">Install pending</translation>
 <translation id="6235208551686043831">Device camera has turned on. Please place your eSIM QR code in front of the camera.</translation>
-<translation id="6237297174664969437">You can always choose what browser data to sync in Chrome settings. In <ph name="LINK_BEGIN" />device settings<ph name="LINK_END" />, you can control sync for web apps installed from Chrome browser. Google may personalise Search and other services based on your history.</translation>
 <translation id="6237474966939441970">Stylus note-taking app</translation>
 <translation id="6237481151388361546">Change your Internet connection and choose 'Try again', or choose 'Open in basic editor' to use limited view and editing options.</translation>
 <translation id="623755660902014047">Reading mode</translation>
@@ -8845,7 +8838,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="730515362922783851">Exchange data with any device on the local network or Internet</translation>
 <translation id="7306521477691455105">Open Settings to connect <ph name="USB_DEVICE_NAME" /> to <ph name="USB_VM_NAME" /></translation>
 <translation id="7307129035224081534">Paused</translation>
-<translation id="7307647374092371434">Passwords and passkeys in your Google Account will also be available on this device while you're signed in</translation>
 <translation id="7308643132139167865">Website languages</translation>
 <translation id="7309214454733221756">Create a passkey to sign in to <ph name="APP_NAME" />?</translation>
 <translation id="7311005168897771689">Access your Google Drive files when you're offline</translation>

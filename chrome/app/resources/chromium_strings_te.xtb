@@ -145,6 +145,7 @@
 <translation id="2910007522516064972">&amp;Chromium గురించి</translation>
 <translation id="2915996080311180594">తర్వాత రీస్టార్ట్ చేయండి</translation>
 <translation id="2928420929544864228">ఇన్‌స్టాలేషన్ పూర్తయింది.</translation>
+<translation id="2933336679234709858">మీ రహస్య పదబంధంతో మీ డేటా ఎన్‌క్రిప్ట్ చేయబడింది. మీ Google ఖాతాలో Chromium డేటాను ఉపయోగించడానికి, సేవ్ చేయడానికి దాన్ని ఎంటర్ చేయండి.</translation>
 <translation id="2945997411976714835">ఇన్‌స్టలేషన్ ఎర్రర్: ఇన్‌స్టాలర్ ప్రాసెస్‌ను ప్రారంభించడంలో విఫలమైంది.</translation>
 <translation id="2970426615109535079">మీ సంస్థ Chromiumను మేనేజ్ చేస్తుంది</translation>
 <translation id="2977470724722393594">Chromium తాజాగా ఉంది</translation>
@@ -323,7 +324,6 @@
 <translation id="5496810170689441661">పాస్‌వర్డ్‌లను ఎడిట్ చేయడానికి Chromium ప్రయత్నిస్తోంది. దీన్ని అనుమతించడానికి మీ Windows పాస్‌వర్డ్‌ను టైప్ చేయండి.</translation>
 <translation id="5527463683072221100">Chromiumలో PDFలను తెరవండి</translation>
 <translation id="5568136785038042132">మీ అన్ని కంప్యూటర్‌ల్లో మీ ఎక్స్‌టెన్షన్‌లను పొందడానికి, Chromiumకు సైన్ ఇన్ చేయండి</translation>
-<translation id="5575418445468216473">మీ పాస్‌వర్డ్‌లు, ఇతర Chromium డేటా మీ Google ఖాతాలో సేవ్ చేయబడ్డాయి, అలాగే ఈ పరికరం నుండి తీసివేయబడతాయి. భవిష్యత్తులో వాటిని ఉపయోగించడానికి, Chromiumకి తిరిగి సైన్ ఇన్ చేయండి.</translation>
 <translation id="5579324208890605088">స్టార్టప్ ఎర్రర్: దయచేసి ఇన్‌స్టాలర్‌ను అడ్మినిస్ట్రేటర్‌గా కాకుండా ఒక సాధారణ యూజర్‌గా రన్ చేయండి.</translation>
 <translation id="5596627076506792578">మరిన్ని ఆప్షన్‌లు</translation>
 <translation id="5605834417512968703">ఇమేజ్ సెర్చ్‌తో సెర్చ్ చేయడానికి ఏదైనా ఎంచుకోండి లేదా ఇమేజ్ సెర్చ్ నుండి ఎగ్జిట్ అవ్వడానికి Escapeను నొక్కండి</translation>
@@ -472,7 +472,6 @@
 <translation id="7355355292030546812">ఈ డౌన్‌లోడ్‌ను Chromium బ్లాక్ చేసింది, ఎందుకంటే <ph name="USER_EMAIL" />‌తో సహా మీ వ్యక్తిగత, సోషల్ నెట్‌వర్క్ ఖాతాలకు ఆ ఫైల్ హాని కలిగించగలదు</translation>
 <translation id="7384121030444253939">ఈ ఎక్స్‌టెన్షన్ ఇకపై సపోర్ట్ చేయదు. బదులుగా దాన్ని తీసివేయమని Chromium సిఫార్సు చేస్తోంది.</translation>
 <translation id="7389750180956889333">Chromium ఫారమ్‌లను బాగా అర్థం చేసుకుంటుంది, మీ కోసం వాటిని వేగంగా ఆటోఫిల్ చేయగలదు. <ph name="BEGIN_LINK" />Chrome ఆటోఫిల్<ph name="END_LINK" /> గురించి మరింత తెలుసుకోండి</translation>
-<translation id="7398989605938454041">మీ మొత్తం Chromium అంశాలను, మీరు Chromium ప్రొఫైళ్లతో వేరు చేయండి. ఇలా చేయడం వలన ఆఫీస్, వినోదాన్ని వేర్వేరుగా ఉంచవచ్చు.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7450541714075000668">టెక్స్ట్ కాపీ చేయబడింది</translation>
 <translation id="7451052299415159299">ఈ సైట్ కోసం మీ కెమెరాను యాక్సెస్ చేయడానికి Chromiumకు అనుమతి అవసరం</translation>
@@ -536,7 +535,6 @@
 <translation id="8326785589245660814">మీ ఖాతాలో Chromium డేటాను క్లియర్ చేయండి</translation>
 <translation id="8330519371938183845">మీ పరికరాల అంతటా Chromiumను సింక్ చేయడానికి, వ్యక్తిగతీకరించడానికి సైన్ ఇన్ చేయండి</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> మునుపు Chromiumని ఉపయోగించింది</translation>
-<translation id="8357820681460164151">మీ అన్ని పరికరాలలో మీ Chromium బ్రౌజర్ సంబంధిత అంశాలను యాక్సెస్ చేయడానికి, సైన్ ఇన్ చేసి, ఆపై సింక్‌ను ఆన్ చేయండి</translation>
 <translation id="8359544530202147897">మీ Google ఖాతా <ph name="ACCOUNT_EMAIL" />‌లోని Chromium డేటాను ఉపయోగించేందుకు Chromiumను అప్‌డేట్ చేయండి</translation>
 <translation id="8360718212975266891">భవిష్యత్తు Chromium అప్‌డేట్‌లను పొందడానికి, మీకు Windows 10 లేదా ఆ తర్వాత వచ్చిన ఏదైనా వెర్షన్ అవసరం అవుతుంది. ఈ కంప్యూటర్ Windows 8ను ఉపయోగిస్తోంది.</translation>
 <translation id="8362914115861174987">ఈ భాషలోకి అనువదించండి</translation>
@@ -587,7 +585,6 @@
 <translation id="9022552996538154597">Chromiumకు సైన్ ఇన్ చేయండి</translation>
 <translation id="904366664621834601">ఈ డౌన్‌లోడ్‌ను Chromium బ్లాక్ చేసింది, ఎందుకంటే ఆ ఆర్కైవ్ ఫైల్‌లో మాల్‌వేర్‌ను దాచి ఉంచగల ఇతర ఫైల్స్ ఉన్నాయి</translation>
 <translation id="9062666675513499497">మీరు ఇతర Google సర్వీస్‌లకు సైన్ ఇన్ చేసినప్పుడు Chromiumకి సైన్ ఇన్ చేయండి</translation>
-<translation id="907832235989677238">Chromiumకు సైన్ ఇన్ చేయండి. మీరు ఒకసారి మాత్రమే ఖాతాకు సైన్ ఇన్ చేయాలనుకుంటే, <ph name="GUEST_LINK_BEGIN" />పరికరాన్ని గెస్ట్‌గా ఉపయోగించవచ్చు<ph name="GUEST_LINK_END" />.</translation>
 <translation id="9078733879136747090">Chromium ఆటోమేటిక్‌గా మూసివేయబడింది</translation>
 <translation id="9089354809943900324">Chromium కాలం చెల్లినది</translation>
 <translation id="9093206154853821181">{0,plural, =1{ఒక గంటలో Chromium తిరిగి ప్రారంభించబడుతుంది}other{# గంటల్లో Chromium తిరిగి ప్రారంభించబడుతుంది}}</translation>

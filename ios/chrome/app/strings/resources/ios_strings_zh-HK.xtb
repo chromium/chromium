@@ -25,6 +25,7 @@
 <translation id="1081932398873105675">{count,plural, =1{{count} 個分頁}other{{count} 個分頁}}</translation>
 <translation id="1084365883616172403">已在 Facebook 上發佈。</translation>
 <translation id="1085677983426914530">無法開啟「<ph name="FILENAME" />」</translation>
+<translation id="1086468407802688066">帳戶 <ph name="USER_EMAIL" /> 由 <ph name="HOSTED_DOMAIN" /> 管理，管理員可以查看某些資料。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="1096992026380844478">系統會根據上次的備份還原同步處理設定。<ph name="BEGIN_LINK" />查看你可同步處理的內容<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">永遠翻譯<ph name="LANGUAGE" /></translation>
 <translation id="1108938384783527433">同步處理記錄</translation>
@@ -83,6 +84,7 @@
 <translation id="1335767868357998043">選擇網址列位置</translation>
 <translation id="1347468774581902829">管理活動</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
+<translation id="1358106883354237005">受管帳戶</translation>
 <translation id="1358214951266274152">前往您複製的連結</translation>
 <translation id="1360432990279830238">要登出並停用同步功能嗎？</translation>
 <translation id="1363028406613469049">曲目</translation>
@@ -697,6 +699,7 @@
 <translation id="4183350924949589798">想增強安全性嗎？</translation>
 <translation id="4184063163998877398">{count,plural, =1{{count} 個安全度低的密碼}other{{count} 個安全度低的密碼}}</translation>
 <translation id="4197456013861852807">{count,plural, =1{這 {count} 個項目只會儲存至此裝置。如要在其他裝置上使用，請儲存至 Google 帳戶 ({email})。}other{這 {count} 個項目只會儲存至此裝置。如要在其他裝置上使用，請儲存至 Google 帳戶 ({email})。}}</translation>
+<translation id="4207873326995387292">瀏覽器資料</translation>
 <translation id="421070604241073551">如果開啟，資料就會儲存至你的 Google 帳戶。關閉後，資料只會儲存至此裝置。</translation>
 <translation id="4224534474590365556">要關閉超過 99 個閒置分頁嗎？</translation>
 <translation id="422474357428465195">你有多個密碼問題，可能導致安全風險。</translation>
@@ -764,6 +767,7 @@
 <translation id="4495516234578759322">尋找下一個</translation>
 <translation id="4502423230170890588">從此裝置中移除</translation>
 <translation id="4508750114462689118">閂登入宣傳元素</translation>
+<translation id="4517684186578051919">裝置資訊</translation>
 <translation id="4520798012560649652">進一步瞭解無痕模式</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} 個書籤}other{{count} 個書籤}}</translation>
 <translation id="4525629404718770519">顯示連結預覽</translation>
@@ -972,6 +976,7 @@
 <translation id="5444892875087332195">書籤</translation>
 <translation id="5452354193031718372">使用安全度高的密碼：</translation>
 <translation id="5454211924362324495">如要防止其他人使用你的密碼，請<ph name="BEGIN_LINK" />前往 <ph name="WEBSITE" /> 變更密碼<ph name="END_LINK" /></translation>
+<translation id="5454723301413569630">帳戶 <ph name="USER_EMAIL" /> 由 <ph name="HOSTED_DOMAIN" /> 管理，管理員可以查看某些資料，包括</translation>
 <translation id="5457082343331641453">加入更多搜尋字詞</translation>
 <translation id="5457226814769348910">開啟離線版本</translation>
 <translation id="5478327362747197944">按一下網頁上的日期，即可直接建立日曆活動。</translation>
@@ -1375,6 +1380,7 @@
 <translation id="7102005569666697658">正在下載…<ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">選單 → 設定 → 付款方法</translation>
 <translation id="7108338896283013870">隱藏</translation>
+<translation id="7128693485119315539">機構可能要查看和管理與受管帳戶關聯的瀏覽資料 (例如瀏覽記錄和密碼)。</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">無法使用相機</translation>
 <translation id="7141960840225504692">系統將關閉分頁並刪除瀏覽資料</translation>
@@ -1769,6 +1775,7 @@
 <translation id="8813277370772331957">稍後提醒我</translation>
 <translation id="8814719628147284151">繼續</translation>
 <translation id="8820817407110198400">書籤</translation>
+<translation id="8822421075653507124">為確保可安全使用此裝置，機構可能要查看裝置的作業系統、瀏覽器和設定的相關資料，以及裝置上安裝的軟件。</translation>
 <translation id="8825562130641217944">取得書籤、密碼和其他資料。</translation>
 <translation id="8827154289515190290">你現可將喜愛的瀏覽器設定為 iOS 預設瀏覽器</translation>
 <translation id="8831208860914609320">關閉所有閒置分頁</translation>

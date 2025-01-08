@@ -598,7 +598,6 @@
 <translation id="2040894699575719559">লোকেশন ব্লক করা হয়েছে</translation>
 <translation id="2041788246978549610">উপলভ্য মাইক্রোফোন ব্যবহার করুন (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">ট্রে ৭</translation>
-<translation id="204357726431741734">আপনার Google অ্যাকাউন্টে সেভ করা পাসওয়ার্ড ব্যবহার করতে সাইন-ইন করুন</translation>
 <translation id="2045871135676061132">এনভেলপ পার্সোনাল</translation>
 <translation id="2046951263634619614">বইয়ের খুচরো বিক্রেতা</translation>
 <translation id="2048261947532620704">পৃষ্ঠাটি অনুবাদ করা হচ্ছে</translation>
@@ -1367,7 +1366,6 @@
 <translation id="343474037147570563">আপনার আপলোড বা অ্যাটাচ করা ফাইল Google Cloud-এ বা থার্ড-পার্টির কাছে বিশ্লেষণ করার জন্য পাঠানো হয়। যেমন, সংবেদনশীল ব্যক্তিগত তথ্য বা ম্যালওয়্যার রয়েছে কিনা তা জানার জন্য সেগুলি স্ক্যান করা হতে পারে এবং কোম্পানির নীতির উপরে ভিত্তি করে সেভ করা হতে পারে ও আপনার অ্যাডমিনিস্ট্রেটর সেগুলি দেখতে পেতে পারেন।</translation>
 <translation id="3435557549311968410">কন্টিনিউআস (শর্ট)</translation>
 <translation id="3435738964857648380">নিরাপত্তা</translation>
-<translation id="3438829137925142401">আপনার Google অ্যাকাউন্টে সেভ করা পাসওয়ার্ড ব্যবহার করুন</translation>
 <translation id="3440783957068352691">বর্গাকার</translation>
 <translation id="3441653493275994384">বাছাই করুন</translation>
 <translation id="3443504041532578451">অপটিকাল (স্যাটিন)</translation>
@@ -1696,6 +1694,7 @@
 <translation id="3990532701115075684">হ্যান্ড ট্র্যাক করার অনুমতি দিন</translation>
 <translation id="3992684624889376114">এই পৃষ্ঠা সম্পর্কে</translation>
 <translation id="3995639283717357522">নীতি প্রয়োগ করুন</translation>
+<translation id="3996683183117168945"><ph name="MAX_CITATIONS" />-টির মধ্যে উদ্ধৃতি <ph name="CURRENT_CITATION" />, <ph name="PRODUCT_NAME" />, <ph name="URL" />। <ph name="PAGE_TITLE" />। <ph name="PAGE_PREVIEW" />।</translation>
 <translation id="399754345297554962">স্ট্যান্ডার্ড ও অ্যাডমিশন পরীক্ষা</translation>
 <translation id="3999173941208168054">ভূতের সিনেমা</translation>
 <translation id="4000598935132966791">ম্যানেজ করা ব্রাউজারে সাইট সীমাবদ্ধতা সম্পর্কে আরও জানুন</translation>
@@ -3910,6 +3909,7 @@
 <translation id="7975858430722947486">'তুলনা' করার জন্য যোগ করা হয়েছে</translation>
 <translation id="7976214039405368314">অত্যধিক অনুরোধ</translation>
 <translation id="7977538094055660992">আউটপুট ডিভাইস</translation>
+<translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> মিনিট আগে}=1{<ph name="TIME_COUNT" /> ঘণ্টা আগে}one{<ph name="TIME_COUNT" /> দিন আগে}other{<ph name="TIME_COUNT" /> দিন আগে}}</translation>
 <translation id="7979595116210197019">খাদ্য পরিষেবা</translation>
 <translation id="798134797138789862">ভার্চুয়াল রিয়েলিটি ডিভাইস ও ডেটা ব্যবহার করতে অনুমতি চাইতে পারে</translation>
 <translation id="7982789257301363584">নেটওয়ার্ক</translation>
@@ -4270,7 +4270,6 @@
 <translation id="861775596732816396">সাইজ ৪</translation>
 <translation id="8620276786115098679">এনভেলপ কাকু ৭</translation>
 <translation id="8622864575115813231">আপনার আর্থিক সংস্থার সাথে যোগাযোগ করা হচ্ছে...</translation>
-<translation id="8623885649813806493">পাসওয়ার্ড ম্যাচ করছে না। সেভ করা সমস্ত পাসওয়ার্ড ম্যানেজ করুন।</translation>
 <translation id="8624354461147303341">ছাড় পান</translation>
 <translation id="8634957317623797170">৫৪ x ৮৬ মিমি</translation>
 <translation id="8637362707224133343">নিরাপদ ব্রাউজিংয়ের জন্য Chrome-এ Google Safe Browsing-এর মতো বিভিন্ন নিরাপত্তা ফিচার দেওয়া আছে। আপনি যে সাইট ভিজিট করতে চেষ্টা করেছেন, তাতে এই ফিচার <ph name="BEGIN_LINK" />সম্প্রতি ফিশিংয়ের উদাহরণ খুঁজে পেয়েছে<ph name="END_LINK" />। ব্যবহারকারীর সাথে প্রতারণা করার জন্য ফিশিং সাইট অন্য সাইটের মতো করে নিজেকে তুলে ধরে।<ph name="NEW_LINE" />সাধারণত সুরক্ষিত থাকে, এমন সাইটও কখনও কখনও আক্রমণকারীদের কাছে হ্যাক হয়ে যায়। আপনি যদি মনে করেন যে এই সাইটটি বিপজ্জনক নয় এবং ভুলবশত এটিকে ফ্ল্যাগ করা হয়েছে, তাহলে <ph name="BEGIN_ERROR_LINK" />আমাদের জানান<ph name="END_ERROR_LINK" />।</translation>
@@ -4602,7 +4601,6 @@
 <translation id="937885410143139026">অ্যাডমিন কনসোলে ডেটা পাঠানো হয়েছে</translation>
 <translation id="939736085109172342">নতুন ফোল্ডার</translation>
 <translation id="940524522703752213"><ph name="CLOUD_PROVIDER" />-এ আপনার ফাইল আপলোড <ph name="MINUTES" /> মিনিটে শুরু হবে</translation>
-<translation id="944540589955480312">আপনার Google অ্যাকাউন্টে সেভ করা পাসওয়ার্ড ও পাসকী ব্যবহার করুন</translation>
 <translation id="944578681290094302">চেক-আউটের সময় আপনার কার্ডের জন্য কোন সুবিধা ও পুরস্কার উপলভ্য আছে তা দেখুন। <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />কার্ডের সুবিধা সম্পর্কে জানুন<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945646848072568856">ব্রাউজ করার সময় আপনার অ্যাক্টিভিটি ট্র্যাক করতে সাইট যেসব থার্ড-পার্টি কুকি ব্যবহার করে, Chrome তা ব্লক করে দেয়।</translation>
 <translation id="945855313015696284">নিচে দেওয়া তথ্য পরীক্ষা করুন এবং কোনও ভুল কার্ড থাকলে তা মুছে ফেলুন</translation>

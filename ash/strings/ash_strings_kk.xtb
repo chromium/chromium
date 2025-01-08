@@ -274,6 +274,7 @@
 <translation id="1908992311423394684">Жаңадан орнатылған</translation>
 <translation id="1915307458270490472">Жабу</translation>
 <translation id="1918022425394817322">Камера жоғарғы оң жақ бұрышқа ауыстырылды.</translation>
+<translation id="1920390473494685033">Контактілер</translation>
 <translation id="1923539912171292317">Автоматты басу әрекеттері</translation>
 <translation id="1925320505152357008">1 минуттан аз</translation>
 <translation id="1928739107511554905">Жаңартылған нұсқаны алу үшін, пернетақта жалғанған күйі Chromebook ноутбугын сенсорлық экран арқылы қайта қосыңыз.</translation>
@@ -530,6 +531,7 @@
 <translation id="2847759467426165163">Трансляциялау</translation>
 <translation id="2848120746144143659">Толық экранды скриншот түсіру үшін "Enter" пернесін басыңыз</translation>
 <translation id="2849936225196189499">Маңызды</translation>
+<translation id="2850207700020959936">Қолданбалар камераны пайдалана алады.</translation>
 <translation id="2860184359326882502">Үздік сәйкестік</translation>
 <translation id="2865888419503095837">Желі ақпараты</translation>
 <translation id="2869095047958348710">Осы аптадағы өткен <ph name="DAY_OF_WEEK" /></translation>
@@ -584,6 +586,7 @@
 <translation id="304417730895741346">Бекітілген және ашық қолданбалар сөреде орналасқан. Қолданбаны сөреге бекіту үшін қолданбаны тінтуірдің оң жақ түймесімен басыңыз немесе сенсорлық тақтаны екі саусақпен түртіңіз.</translation>
 <translation id="3045488863354895414">Қайырлы күн!</translation>
 <translation id="3047761520276763270">Былай айтып көріңіз:</translation>
+<translation id="3053407068093039599">Камераны пайдалану рұқсатын қосу/өшіру</translation>
 <translation id="3055162170959710888">Бүгін бұл құрылғыны <ph name="USED_TIME" /> рет пайдаландыңыз</translation>
 <translation id="3062298103034426069">Қолдау көрсетілмейді</translation>
 <translation id="3068622547379332530"><ph name="VERSION_NAME" />-нұсқа (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -884,6 +887,7 @@
 <translation id="4042660782729322247">Экранды бөлісудесіз</translation>
 <translation id="404437169852192935">Жаңартулар аяқталды</translation>
 <translation id="4049230407053723315">Жылдам параметрлер</translation>
+<translation id="4054070260844648638">Барлығына көрсетіледі</translation>
 <translation id="4057003836560082631">Браузер қойындысы: <ph name="INDEX" />/<ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4059696795118403455">Әрі қарай не істеуге болатыны туралы жекелендірілген ұсыныстарды көру үшін жалпы шолу пернесін басыңыз.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Өшірулі}other{# үшін өшірулі}}</translation>
@@ -1407,7 +1411,6 @@
 <translation id="5727460725221669831">Құпия сөзіңізді ұмытып қалсаңыз немесе Google аккаунты құпия сөзін жақында өзгертсеңіз, осы пайдаланушыны қалпына келтіріп көріңіз.</translation>
 <translation id="5733630091161562207">Сәлемдесу хабарландыруы</translation>
 <translation id="573413375004481890">Бұл құрылғы барлық дисплейлерді бірдей қолдамайтындықтан, бір дисплей ажыратылды.</translation>
-<translation id="5740328398383587084">Nearby Share</translation>
 <translation id="574392208103952083">Орташа</translation>
 <translation id="5744083938413354016">Түртіп сүйреу</translation>
 <translation id="5745612484876805746">Күн батқанда, Night Light режимі автоматты түрде іске қосылады</translation>
@@ -1484,6 +1487,7 @@
 <translation id="5990992855591814753">Зейін қоюға арналған жекелендірілген ойнату тізімдерімен тренділерден қалыспаңыз. YouTube Premium-ді 3 ай тегін пайдаланып, YouTube Music пен YouTube-ті жарнамасыз тамашалаңыз. Шарттары бар.</translation>
 <translation id="5998374579424866922">Ойынның басқару элементтерін өшіру</translation>
 <translation id="6000279412553873020">Пернелер, түймелер және т.б.</translation>
+<translation id="6002122790816966947">Құрылғыларыңыз</translation>
 <translation id="6012623610530968780"><ph name="SELECTED_PAGE" />/<ph name="TOTAL_PAGE_NUM" /> бет</translation>
 <translation id="601304062528754300">Сөредегі келесі элементті ерекшелеу</translation>
 <translation id="6015573907265691211">Орындалған деп белгілеу</translation>
@@ -1800,6 +1804,7 @@
 <translation id="7034025838182392395"><ph name="APP_NAME" /> қолданбасы <ph name="DEVICE_NAME" /> құрылғысын пайдалануды қалайды. Құрылғының физикалық <ph name="DEVICE_NAME" /> ауыстырғышын қосыңыз.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
 <translation id="7042322267639375032">Күй аумағын жию</translation>
+<translation id="7042593542151411225">Қолданбалар камераны пайдалана алмайды.</translation>
 <translation id="7045033600005038336">Үлгі ауыстырылсын ба?</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> ажыратылды.</translation>
 <translation id="7055910611768509537">Стилус бір аптадан астам уақытта қолданылмады.</translation>
@@ -2375,6 +2380,7 @@
 <translation id="9074432941673450836"><ph name="PRODUCT_NAME" /> құрылғысында қажет нәрсенің барлығын істеу үшін қолданбаларды пайдаланыңыз. Қолданбаларыңызды іске қосу тақтасынан таба аласыз. Сондай-ақ пернетақтадағы іске қосу пернесін (сол жақ Shift пернесінің үстінде) басуға болады.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9077515519330855811">Медиафайлдарды басқару құралдары, қазір <ph name="MEDIA_TITLE" /> ойнатылуда</translation>
+<translation id="9079012373317704997">Камераны пайдалану рұқсатын қашықтан қосу мүмкін емес.</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">Камера жоғарғы сол жақ бұрышқа ауыстырылды.</translation>
 <translation id="9080132581049224423">Негізгі экранға өту үшін жоғары қарай сипаңыз.</translation>

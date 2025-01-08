@@ -104,9 +104,6 @@
 <translation id="5494920125229734069">모두 선택</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" />개의 <ph name="COLOR_NAME" /> 탭이 포함된 탭 그룹을 닫습니다.}other{<ph name="TABS_COUNT_MANY" />개의 <ph name="COLOR_NAME" /> 탭이 포함된 탭 그룹을 닫습니다.}}</translation>
 <translation id="5556417849629758491">스토어 정보 보기, 화면 상단에 옵션 있음</translation>
-<translation id="5615302411300498438">나중에 탭을 추가하려면 이 그룹을 유지하세요. 그렇지 않으면 그룹에서 나가세요.
-
-그룹에서 나가면 '<ph name="TITLE_OF_GROUP" />' 탭 그룹에 대한 액세스 권한을 즉시 잃게 됩니다.</translation>
 <translation id="5627941783489838464">탭 업데이트 없음</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{탭 복원}other{탭 복원}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome 링크 <ph name="TABS_COUNT_ONE" />개}other{Chrome 링크 <ph name="TABS_COUNT_MANY" />개}}</translation>
@@ -117,7 +114,6 @@
 <translation id="6040143037577758943">닫기</translation>
 <translation id="6051432659151380973">탭 그룹이 자동으로 저장됩니다.</translation>
 <translation id="6054741997831917303">상품 가격이 최근 인하됨, 기존 가격: <ph name="PREVIOUS_PRICE" />, 인하된 가격: <ph name="NEW_PRICE" /></translation>
-<translation id="6082313992897617440"><ph name="GROUP_NAME" /> 탭 그룹에 대한 액세스 권한을 즉시 잃게 됩니다.</translation>
 <translation id="6109251075362363230">이제 가장 최근에 사용한 사본을 제외한 모든 중복 탭도 보관처리됩니다.</translation>
 <translation id="6193448654517602979">탭 선택</translation>
 <translation id="6228793724645064692">(매장 평점)</translation>
@@ -145,9 +141,9 @@
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> 선택됨</translation>
 <translation id="7326879924029668159">반품 정책 등 확인하기</translation>
 <translation id="7352298686197644113">열려 있는 탭의 상품 중 가격이 더 낮은 상품을 확인합니다.</translation>
-<translation id="7421293530411019405">탭 그룹에서 나가시겠습니까?</translation>
 <translation id="7452985128687107478">탭 그룹이 모든 기기에서 자동으로 저장되고 업데이트됩니다.</translation>
 <translation id="747459581954555080">모두 복원</translation>
+<translation id="750886945254958667">나중에 탭을 추가하려면 이 그룹을 유지하고, 더 이상 액세스할 필요가 없으면 그룹에서 나가세요.</translation>
 <translation id="753732157349120914">탭 전환 도구</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Google에서 찾은 리뷰 <ph name="REVIEWS_COUNT_ONE" />개}other{Google에서 찾은 리뷰 <ph name="REVIEWS_COUNT_MANY" />개}}</translation>
 <translation id="7559245342362162951">그룹 탭을 전체화면 그리드로 표시</translation>
@@ -177,9 +173,7 @@
 <translation id="8398929769197326728">새 폴더: <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">설정</translation>
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{탭 <ph name="ONE_ADDED" />개 추가됨, <ph name="ANY_CLOSED" />개 닫힘}other{탭 <ph name="MANY_ADDED" />개 추가됨, <ph name="ANY_CLOSED" />개 닫힘}}</translation>
-<translation id="8631711675211020168">모든 사용자가 <ph name="GROUP_NAME" /> 탭 그룹에 대한 액세스 권한을 즉시 잃게 되며 탭 그룹이 모든 기기에서 삭제됩니다.</translation>
 <translation id="8633025649649592204">최근 활동</translation>
-<translation id="8635399646025169806">탭 그룹을 유지하시겠습니까?</translation>
 <translation id="870736955561925754">탭을 닫고 그룹을 삭제하시겠습니까?</translation>
 <translation id="8714939927607906138">더 낮은 가격</translation>
 <translation id="8730621377337864115">완료</translation>

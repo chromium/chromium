@@ -228,7 +228,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1151917987301063366"><ph name="HOST" /> immer den Zugriff auf Sensoren erlauben</translation>
 <translation id="1152346050262092795">Gib das Passwort noch einmal ein, um dein Konto zu bestätigen.</translation>
 <translation id="1153636665119721804">Erweitertes Sicherheitsprogramm von Google</translation>
-<translation id="1155545602507378023">Nein, nur auf diesem Gerät</translation>
 <translation id="1155816283571436363">Verbindung zu deinem Smartphone wird hergestellt</translation>
 <translation id="1157952955648710254">Seitenleiste der Google Suche schließen</translation>
 <translation id="1158080958325422608">Großschreibung verwenden</translation>
@@ -460,6 +459,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1306606229401759371">Einstellungen ändern</translation>
 <translation id="1307165550267142340">Deine PIN wurde erstellt</translation>
 <translation id="1307431692088049276">Nicht mehr fragen</translation>
+<translation id="130744661532298792">Bestätige deine Identität, damit du jederzeit die Passwörter in deinem Google-Konto verwenden kannst</translation>
 <translation id="1307559529304613120">Hoppla! Das System konnte das langfristig gültige API-Zugriffstoken für das Gerät nicht speichern.</translation>
 <translation id="1308548450293664112">Ich habe diese Datei erstellt, Optionsfeldgruppe, 1 von 3</translation>
 <translation id="131112695174432497">Daten, die sich auf personalisierte Werbung auswirken, werden gelöscht</translation>
@@ -1149,7 +1149,6 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1794791083288629568">Hilf uns, dieses Problem zu beheben, indem du uns Feedback sendest.</translation>
 <translation id="1795214765651529549">Klassisches Design verwenden</translation>
 <translation id="1795438342141780114">Cursor in die Mitte verschieben</translation>
-<translation id="1795668164971917185">Wenn Google Safe Browsing das nächste Mal einen verdächtigen Download findet, wird dieser automatisch als Teil des von dir ausgewählten <ph name="LINK" /> gescannt</translation>
 <translation id="1796588414813960292">Funktionen, die Ton erfordern, funktionieren dann nicht</translation>
 <translation id="1797117170091578105">Du kannst zum Spielen deine Chromebook-Tastatur verwenden und Tasten bestimmte Aktionen zuweisen.</translation>
 <translation id="1798335429200675510">Klicke mit der rechten Maustaste in ein Textfeld, um Vorschläge zu erstellen oder vorhandene Texte zu optimieren, die auf Google AI basieren. Derzeit nur eingeschränkt verfügbar.</translation>
@@ -1402,7 +1401,6 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1974043046396539880">CRL-Verteilungspunkte</translation>
 <translation id="1974060860693918893">Erweitert</translation>
 <translation id="1974159333077206889">Audio auf allen Lautsprechern gleich</translation>
-<translation id="1974216844776165821">Chrome hat dein Passwort auf diesem Gerät gespeichert, du kannst es aber stattdessen auch in deinem Google-Konto speichern lassen. Dann sind alle Passwörter und Passkeys aus deinem Google-Konto verfügbar, solange du angemeldet bist.</translation>
 <translation id="1975841812214822307">Entfernen...</translation>
 <translation id="1976150099241323601">In Sicherheitsgerät anmelden</translation>
 <translation id="1976823515278601587">Große Einsparungen</translation>
@@ -1652,7 +1650,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2143915448548023856">Display-Einstellungen</translation>
 <translation id="2144536955299248197">Zertifikats-Viewer: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Android-App-Entwicklung in Linux</translation>
-<translation id="2144873026585036769">Dein Google-Konto verwenden, um Passwörter und Passkeys zu speichern und automatisch auszufüllen?</translation>
 <translation id="2145917706968602070">Dein Smartphone muss sich in der Nähe befinden, entsperrt sein und Bluetooth und WLAN müssen aktiviert sein</translation>
 <translation id="2146263598007866206">Websites laden zusammengehörende Dateien möglicherweise automatisch gemeinsam herunter, damit du Zeit sparst</translation>
 <translation id="2147218225094845757">Seitenleiste ausblenden</translation>
@@ -2113,7 +2110,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2458591546854598341">Das Geräteverwaltungstoken ist ungültig.</translation>
 <translation id="2459703812219683497">Aktivierungscode erkannt</translation>
 <translation id="2459706890611560967">Streamen des Tabs an „<ph name="DEVICE_NAME" />“ fortsetzen</translation>
-<translation id="2460356425461033301">Möchtest du deine Browserdaten sichern und auf jedem Gerät verwenden?</translation>
 <translation id="2460482211073772897">In anderen Ordnern</translation>
 <translation id="2460826998961521840">Um Passkeys aus deinem Google-Konto zu nutzen</translation>
 <translation id="2461045498706592033">„<ph name="LOCAL_FOLDER" />“ ist nur auf diesem Gerät gespeichert. Wenn du dieses Lesezeichen in den Ordner „<ph name="LOCAL_FOLDER" />“ verschiebst, ist es auf deinen anderen Geräten nicht mehr verfügbar.</translation>
@@ -2816,6 +2812,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="2953210795988451570">Dieses Chromebook erhält keine Sicherheitsupdates mehr. Wir empfehlen, auf ein neues umzusteigen.</translation>
 <translation id="2953218713108551165">Benachrichtigungen sind für <ph name="SITE" /> nicht zulässig. Du wirst bei deinem nächsten Besuch noch einmal gefragt.</translation>
 <translation id="2956070239128776395">In Gruppe verschachtelter Abschnitt: <ph name="ERROR_LINE" /></translation>
+<translation id="2957124229512318478">Aktiviere den Entwicklermodus, um diese Erweiterung zu verwenden. Sie kann nicht vom Chrome Web Store überprüft werden.</translation>
 <translation id="2958721676848865875">Erweiterung packen: Warnung</translation>
 <translation id="2959127025785722291">Ein Fehler ist aufgetreten. Der Scan konnte nicht durchgeführt werden. Bitte versuche es noch einmal.</translation>
 <translation id="2959474507964749987">Diese verschlüsselte Datei könnte ein Virus oder Malware sein.<ph name="LINE_BREAK" />Um zu prüfen, ob sie unsicher ist, kannst du die Datei und das Passwort an Google Safe Browsing senden. Die Prüfung dauert in der Regel einige Sekunden.<ph name="LINE_BREAK" />Füge zum Prüfen das Passwort der Datei hinzu.</translation>
@@ -4312,6 +4309,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4001540981461989979">Cursor beim Bewegen hervorheben</translation>
 <translation id="4002347779798688515">Das heruntergeladene Profil kann möglicherweise nicht verwendet werden, wenn der Mobilfunkanbieter gesperrt ist. Wende dich an deinen Anbieter, um Support zu erhalten.</translation>
 <translation id="4002440992267487163">PIN einrichten</translation>
+<translation id="4003617970184602156">Bestätige deine Identität, um Passwörter in deinem Google-Konto zu verwenden und zu speichern</translation>
 <translation id="4005817994523282006">Methode zur Zeitzonenerkennung</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{Dadurch wird die Gruppe endgültig von deinem Gerät gelöscht.}other{Dadurch werden die Gruppen endgültig von deinem Gerät gelöscht.}}</translation>
 <translation id="4010036441048359843">Hervorheben aktivieren</translation>
@@ -6035,7 +6033,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5263656105659419083">Klicke rechts oben auf „Anpinnen“, um ganz einfach zur Seitenleiste zurückzukehren</translation>
 <translation id="5264148714798105376">Dies kann etwa eine Minute dauern.</translation>
 <translation id="5264252276333215551">Stelle eine Internetverbindung her, um die App im Kioskmodus zu starten.</translation>
-<translation id="526539328530966548">erweiterten Schutzes</translation>
 <translation id="5265797726250773323">Fehler bei der Installation</translation>
 <translation id="5266113311903163739">Zertifizierungsstelle - Fehler beim Import</translation>
 <translation id="526622169288322445">Weitere Aktionen für <ph name="ADDRESS_SUMMARY" /></translation>
@@ -6940,6 +6937,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5932224571077948991">Website zeigt aufdringliche oder irreführende Werbung an</translation>
 <translation id="59324397759951282">USB-Gerät von <ph name="MANUFACTURER_NAME" /></translation>
 <translation id="5932441198730183141">Du hast nicht genügend Lizenzen zum Registrieren dieses Google Meet-Hardware-Geräts. Weitere Lizenzen kannst du beim Vertriebsteam erwerben. Wenn du glaubst, dass du diese Meldung fälschlicherweise erhalten hast, kontaktiere bitte den Support.</translation>
+<translation id="593271375210025655">Aktiviere den Entwicklermodus, um diese Erweiterung zu verwenden – aber nur, wenn du der Erweiterung vertraust. Sie kann experimentelle Funktionen enthalten und wurde nicht vom Chrome Web Store überprüft.</translation>
 <translation id="5932881020239635062">Seriennummer</translation>
 <translation id="5933376509899483611">Zeitzone</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> verwendet deine Kamera und dein Mikrofon</translation>
@@ -6967,6 +6965,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5948476936444935795">Import abbrechen</translation>
 <translation id="5948536763493709626">Verbinde eine Tastatur oder Maus oder fahre über den Touchscreen mit der Einrichtung fort. Achte bei Verwendung eines Bluetooth-Geräts darauf, ob es bereit zur Kopplung ist.</translation>
 <translation id="5949544233750246342">Datei kann nicht geparst werden</translation>
+<translation id="5949795028157144515">Entwicklermodus deaktiviert. Einige Erweiterungen wurden deaktiviert.</translation>
 <translation id="594993197557058302">Drücke 1–4 Modifikatortasten (Strg, Alt, Umschalt-, Such- oder Launcher-Taste) und eine weitere Taste. Du kannst auch eine einzelne Taste auswählen.</translation>
 <translation id="5950762317146173294">Bei dieser Datei handelt es sich möglicherweise um einen Virus oder Malware</translation>
 <translation id="5951303645598168883"><ph name="ORIGIN" /> möchte lokale Schriftarten verwenden</translation>
@@ -7357,7 +7356,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6234108445915742946">Neue Nutzungsbedingungen für Chrome ab dem 31. März</translation>
 <translation id="6234474535228214774">Installation ausstehend</translation>
 <translation id="6235208551686043831">Die Gerätekamera wurde aktiviert. Bitte halte deinen eSIM-QR-Code in die Kamera.</translation>
-<translation id="6237297174664969437">In den Chrome-Einstellungen kannst du jederzeit festlegen, welche Browserdaten synchronisiert werden sollen. In den <ph name="LINK_BEGIN" />Geräteeinstellungen<ph name="LINK_END" /> kannst du die Synchronisierung von Web-Apps steuern, die über den Chrome-Browser installiert werden. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
 <translation id="6237474966939441970">Notizen-App für Eingabestift</translation>
 <translation id="6237481151388361546">Verbinde dich mit einem anderen Netzwerk und wähle „Noch einmal versuchen“ aus. Du kannst auch „Im Basiseditor öffnen“ auswählen, um eingeschränkte Optionen zum Ansehen und Bearbeiten zu verwenden.</translation>
 <translation id="623755660902014047">Lesemodus</translation>
@@ -8815,7 +8813,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="730515362922783851">Daten mit einem beliebigen Gerät im lokalen Netzwerk oder Internet austauschen</translation>
 <translation id="7306521477691455105">Bitte die Einstellungenöffnen, um <ph name="USB_DEVICE_NAME" /> mit <ph name="USB_VM_NAME" /> zu verbinden</translation>
 <translation id="7307129035224081534">Pausiert</translation>
-<translation id="7307647374092371434">Die Passwörter und Passkeys aus deinem Google-Konto sind auch auf diesem Gerät verfügbar, solange du angemeldet bist</translation>
 <translation id="7308643132139167865">Websitesprachen</translation>
 <translation id="7309214454733221756">Einen Passkey zur Anmeldung in <ph name="APP_NAME" /> erstellen?</translation>
 <translation id="7311005168897771689">Offline auf Google Drive-Dateien zugreifen</translation>
@@ -9389,6 +9386,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7709152031285164251">Fehler – <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">&amp;Streamen...</translation>
 <translation id="7711968363685835633">Personalisierte Konvertierungen und Vorschläge sowie mein Wörterbuch deaktivieren</translation>
+<translation id="771220840345868810">Keine vorgeschlagenen Fragen verfügbar</translation>
 <translation id="7712739869553853093">Dialogfeld zur Druckvorschau</translation>
 <translation id="7713139339518499741">Natürliche Stimme</translation>
 <translation id="7714307061282548371">Cookies von <ph name="DOMAIN" /> zugelassen</translation>

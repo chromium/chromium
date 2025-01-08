@@ -274,6 +274,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1908992311423394684">Yangi oʻrnatilgan</translation>
 <translation id="1915307458270490472">Tugatish</translation>
 <translation id="1918022425394817322">Kamera yuqori oʻng burchakka joylandi</translation>
+<translation id="1920390473494685033">Kontaktlar</translation>
 <translation id="1923539912171292317">Avtomatik bosishlar</translation>
 <translation id="1925320505152357008">1 daqiqadan kamroq</translation>
 <translation id="1928739107511554905">Yangilanishni o‘rnatish uchun Chromebook qurilmangizni klaviaturani uzmasdan sensor paneli orqali o‘chirib yoqing.</translation>
@@ -886,6 +887,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="4042660782729322247">Ekraningiz namoyish qilinmoqda</translation>
 <translation id="404437169852192935">Yangilanishlar tugadi.</translation>
 <translation id="4049230407053723315">Tezkor sozlamalar</translation>
+<translation id="4054070260844648638">Hammaga koʻrinadi</translation>
 <translation id="4057003836560082631">Brauzerdagi <ph name="INDEX" />-varaq, jami <ph name="TOTAL_COUNT" /> ta. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4059696795118403455">Keyingi qadamlar haqida moslangan tavsiyalarni olish uchun Umumiy tugmasini bosing</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Oʻchiq, 1 ta ilova}other{Oʻchiq, # ta ilova}}</translation>
@@ -1409,7 +1411,6 @@ Hech qanday qurilma ulanmagan.</translation>
 <translation id="5727460725221669831">Parolni unutsangiz yoki Google hisobi parolini yaqinda almashtirgan boʻlsangiz, bu foydalanuvchini tiklang.</translation>
 <translation id="5733630091161562207">Salomlashuv bildirishnomasi</translation>
 <translation id="573413375004481890">Bu qurilma barcha displeylaringiz bilan mos emasligi sababli bittasidan uzildi</translation>
-<translation id="5740328398383587084">Nearby Share</translation>
 <translation id="574392208103952083">O‘rtacha</translation>
 <translation id="5744083938413354016">Teginib tortish</translation>
 <translation id="5745612484876805746">Tungi rejim quyosh botishi bilan avtomatik yoqiladi</translation>
@@ -1486,6 +1487,7 @@ Hech qanday qurilma ulanmagan.</translation>
 <translation id="5990992855591814753">Diqqatni jamlashga moslangan pleylistlardan foydalaning. YouTube Premium obunasi bilan YouTube Music va YouTube xizmatlariga reklamasiz ruxsat oling. Dastlabki 3 oy bepul. Shartlar amal qiladi.</translation>
 <translation id="5998374579424866922">Oʻyin kontrollerini faolsizlantirish</translation>
 <translation id="6000279412553873020">Kalitlar, tugmalar va boshqalar</translation>
+<translation id="6002122790816966947">Qurilmalaringiz</translation>
 <translation id="6012623610530968780">Sahifa: <ph name="SELECTED_PAGE" /> / <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Paneldagi keyingi elementni ajratish koʻrsatish</translation>
 <translation id="6015573907265691211">Bajarildi deb belgilash</translation>

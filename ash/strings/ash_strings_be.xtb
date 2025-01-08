@@ -274,6 +274,7 @@
 <translation id="1908992311423394684">Усталявана нядаўна</translation>
 <translation id="1915307458270490472">Закрыць</translation>
 <translation id="1918022425394817322">Акно перадпрагляду камеры прывязана да правага верхняга вугла</translation>
+<translation id="1920390473494685033">Кантакты</translation>
 <translation id="1923539912171292317">Аўтаматычныя націсканні</translation>
 <translation id="1925320505152357008">менш за 1 хв</translation>
 <translation id="1928739107511554905">Для абнаўлення падключыце клавіятуру і перазапусціце Chromebook, выкарыстоўваючы сэнсарны экран.</translation>
@@ -884,6 +885,7 @@
 <translation id="4042660782729322247">Вы абагульваеце экран</translation>
 <translation id="404437169852192935">Ваша прылада больш не будзе атрымліваць абнаўленні</translation>
 <translation id="4049230407053723315">Хуткія налады</translation>
+<translation id="4054070260844648638">Бачнасць для ўсіх</translation>
 <translation id="4057003836560082631">Укладка браўзера <ph name="INDEX" /> з <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4059696795118403455">Каб атрымаць персаналізаваныя прапановы далейшых дзеянняў, націсніце клавішу "Агляд"</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Выключана для адной праграмы}one{Выключана для # праграмы}few{Выключана для # праграм}many{Выключана для # праграм}other{Выключана для # праграмы}}</translation>
@@ -1407,7 +1409,6 @@
 <translation id="5727460725221669831">Калі вы забылі пароль або нядаўна мянялі пароль Уліковага запісу Google, паспрабуйце аднавіць доступ для гэтага карыстальніка.</translation>
 <translation id="5733630091161562207">Вітальнае апавяшчэнне</translation>
 <translation id="573413375004481890">Гэта прылада не можа падтрымліваць усе вашы дысплэі, таму адзін з іх быў адключаны</translation>
-<translation id="5740328398383587084">Абагульванне паблізу</translation>
 <translation id="574392208103952083">Сярэдні</translation>
 <translation id="5744083938413354016">Перацягванне дотыкам</translation>
 <translation id="5745612484876805746">Начная падсветка ўключаецца аўтаматычна пасля захаду сонца</translation>
@@ -1484,6 +1485,7 @@
 <translation id="5990992855591814753">Персаналізаваныя плэй-лісты для канцэнтрацыі ўвагі дапамогуць засяродзіцца на важных справах. Аформіце падпіску на YouTube Music і YouTube без рэкламы і атрымайце тры месяцы бясплатнага выкарыстання YouTube Premium. Дзейнічаюць умовы.</translation>
 <translation id="5998374579424866922">Выключыць гульнявы кантролер</translation>
 <translation id="6000279412553873020">Клавішы, кнопкі і іншае</translation>
+<translation id="6002122790816966947">Вашы прылады</translation>
 <translation id="6012623610530968780">Старонка <ph name="SELECTED_PAGE" /> з <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Вылучыць наступны элемент на панэлі доступу</translation>
 <translation id="6015573907265691211">Пазначыць як выкананае</translation>

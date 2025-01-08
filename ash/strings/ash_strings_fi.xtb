@@ -274,6 +274,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1908992311423394684">Uusi asennus</translation>
 <translation id="1915307458270490472">Katkaise puhelu</translation>
 <translation id="1918022425394817322">Kamera kohdistettu oikeaan yläkulmaan</translation>
+<translation id="1920390473494685033">Yhteystiedot</translation>
 <translation id="1923539912171292317">Automaattiset klikkaukset</translation>
 <translation id="1925320505152357008">alle 1 min</translation>
 <translation id="1928739107511554905">Voit asentaa päivityksen käynnistämällä Chromebookisi uudelleen kosketusnäytön avulla niin, että näppäimistö on kytkettynä.</translation>
@@ -530,6 +531,7 @@ Muussa tapauksessa sisäänrakennettu kosketuslevy otetaan käyttöön, kun <ph 
 <translation id="2847759467426165163">Lähetä laitteelle</translation>
 <translation id="2848120746144143659">Ota koko näytön kuvakaappaus painamalla Enter</translation>
 <translation id="2849936225196189499">Kriittinen</translation>
+<translation id="2850207700020959936">Sovelluksilla on pääsy kameraan</translation>
 <translation id="2860184359326882502">Paras osuma</translation>
 <translation id="2865888419503095837">Verkon tiedot</translation>
 <translation id="2869095047958348710">Viime <ph name="DAY_OF_WEEK" /></translation>
@@ -584,6 +586,7 @@ Muussa tapauksessa sisäänrakennettu kosketuslevy otetaan käyttöön, kun <ph 
 <translation id="304417730895741346">Kiinnitetyt ja avoimet sovellukset näkyvät hyllyssä. Voit kiinnittää sovelluksen hyllyyn klikkaamalla sovellusta kakkospainikkeella tai napauttamalla sitä kosketuslevyllä kahdella sormella.</translation>
 <translation id="3045488863354895414">Hyvää päivää</translation>
 <translation id="3047761520276763270">Kokeile sanoa:</translation>
+<translation id="3053407068093039599">Laita kameran pääsyoikeus päälle tai pois päältä</translation>
 <translation id="3055162170959710888">Olet käyttänyt tätä laitetta tänään <ph name="USED_TIME" /></translation>
 <translation id="3062298103034426069">Ei tuettu</translation>
 <translation id="3068622547379332530">Versio <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -884,6 +887,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="4042660782729322247">Jaat näyttösi</translation>
 <translation id="404437169852192935">Päivitykset ovat päättyneet</translation>
 <translation id="4049230407053723315">Pika-asetukset</translation>
+<translation id="4054070260844648638">Näkyy kaikille</translation>
 <translation id="4057003836560082631">Selaimen välilehti <ph name="INDEX" />/<ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4059696795118403455">Jos haluat nähdä personoituja ehdotuksia jatkotoimista, paina Yleiskatsaus-näppäintä</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Pois, 1 sovellus}other{Pois, # sovellusta}}</translation>
@@ -1407,7 +1411,6 @@ Ei liitettyjä laitteita.</translation>
 <translation id="5727460725221669831">Jos olet unohtanut salasanasi tai vaihtanut äskettäin Google-tilisi salasanan, kokeile palauttaa kyseinen käyttäjä.</translation>
 <translation id="5733630091161562207">Tervetuloilmoitus</translation>
 <translation id="573413375004481890">Tämä laite ei voinut tukea kaikkia näyttöjäsi, joten yhden yhteys on katkaistu</translation>
-<translation id="5740328398383587084">Lähijakaminen</translation>
 <translation id="574392208103952083">Keskivahva</translation>
 <translation id="5744083938413354016">Napauttamalla vetäminen</translation>
 <translation id="5745612484876805746">Yövalo käynnistyy automaattisesti, kun aurinko laskee</translation>
@@ -1484,6 +1487,7 @@ Ei liitettyjä laitteita.</translation>
 <translation id="5990992855591814753">Pidä tilanne hallussa personoitujen, keskittymiseen tarkoitettujen soittolistojen avulla. YouTube Music ja YouTube ilman mainoksia – 3 kuukautta YouTube Premiumia maksutta. Huomioi ehdot.</translation>
 <translation id="5998374579424866922">Laita peliohjaimet pois päältä</translation>
 <translation id="6000279412553873020">Näppäimet, painikkeet ja muuta</translation>
+<translation id="6002122790816966947">Omat laitteet</translation>
 <translation id="6012623610530968780">Sivu <ph name="SELECTED_PAGE" />/<ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Korosta seuraava kohde hyllyssä</translation>
 <translation id="6015573907265691211">Merkitse valmiiksi</translation>
@@ -1800,6 +1804,7 @@ Uusi asennus</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> haluaa käyttää tätä: <ph name="DEVICE_NAME" />. Laita laitteen (<ph name="DEVICE_NAME" />) fyysinen kytkin päälle.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
 <translation id="7042322267639375032">Tiivistä tila-alue</translation>
+<translation id="7042593542151411225">Sovellukset eivät voi käyttää kameraa</translation>
 <translation id="7045033600005038336">Korvataanko malli?</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> ei ole yhdistetty</translation>
 <translation id="7055910611768509537">Näyttökynää ei ole käytetty yli viikkoon</translation>
@@ -2374,6 +2379,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="9074432941673450836">Sovellusten avulla <ph name="PRODUCT_NAME" /> voi tehdä kaiken tarvittavan. Löydät sovellukset käynnistysohjelmasta. Voit myös painaa näppäimistön käynnistysohjelmanäppäintä (vaihto-näppäimen yläpuolelta).</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9077515519330855811">Mediaohjaimet, nyt soi <ph name="MEDIA_TITLE" /></translation>
+<translation id="9079012373317704997">Kameran pääsyä ei voi laittaa päälle etänä</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">Kamera kohdistettu vasempaan yläkulmaan</translation>
 <translation id="9080132581049224423">Siirry aloitusnäytölle pyyhkäisemällä ylös</translation>

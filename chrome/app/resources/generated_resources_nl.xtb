@@ -228,7 +228,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1151917987301063366"><ph name="HOST" /> altijd toegang tot sensoren geven</translation>
 <translation id="1152346050262092795">Geef je wachtwoord opnieuw op om je account te verifiëren.</translation>
 <translation id="1153636665119721804">Het Google-programma 'Geavanceerde beveiliging'</translation>
-<translation id="1155545602507378023">Nee, alleen dit apparaat</translation>
 <translation id="1155816283571436363">Verbinding maken met je telefoon</translation>
 <translation id="1157952955648710254">Zijvenster van Google Zoeken sluiten</translation>
 <translation id="1158080958325422608">Hoofdletters van maken</translation>
@@ -1153,7 +1152,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1794791083288629568">Feedback sturen om ons te helpen dit probleem op te lossen.</translation>
 <translation id="1795214765651529549">Klassiek thema gebruiken</translation>
 <translation id="1795438342141780114">Cursor resetten naar midden</translation>
-<translation id="1795668164971917185">De volgende keer dat Google Safe Browsing een verdachte download vindt, wordt deze automatisch gescand als onderdeel van de <ph name="LINK" /> die je hebt gekozen</translation>
 <translation id="1796588414813960292">Functies die afhankelijk zijn van geluid, werken niet</translation>
 <translation id="1797117170091578105">Speel met het toetsenbord van je Chromebook. Je kunt toetsen aan specifieke acties toewijzen.</translation>
 <translation id="1798335429200675510">Klik met de rechtermuisknop in een tekstvak om een concept te maken of bestaand werk te verfijnen, mogelijk gemaakt door AI van Google. Deze functie is op dit moment beperkt beschikbaar.</translation>
@@ -1406,7 +1404,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1974043046396539880">CRL-distributiepunten</translation>
 <translation id="1974060860693918893">Geavanceerd</translation>
 <translation id="1974159333077206889">Dezelfde audio voor alle speakers</translation>
-<translation id="1974216844776165821">Chrome heeft je wachtwoord opgeslagen op dit apparaat, maar in plaats daarvan kun je het wachtwoord ook opslaan in je Google-account. Dan zijn alle wachtwoorden en toegangssleutels in je Google-account ook beschikbaar als je bent ingelogd.</translation>
 <translation id="1975841812214822307">Verwijderen...</translation>
 <translation id="1976150099241323601">Inloggen bij beveiligingsapparaat</translation>
 <translation id="1976823515278601587">Grote besparingen</translation>
@@ -1656,7 +1653,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2143915448548023856">Weergave-instellingen</translation>
 <translation id="2144536955299248197">Certificaatweergave: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Android-app-ontwikkeling voor Linux</translation>
-<translation id="2144873026585036769">Je Google-account gebruiken om wachtwoorden en toegangssleutels op te slaan en in te vullen?</translation>
 <translation id="2145917706968602070">Zorg dat je telefoon in de buurt en ontgrendeld is en dat bluetooth en wifi aanstaan.</translation>
 <translation id="2146263598007866206">Sites kunnen gerelateerde bestanden automatisch samen downloaden om tijd te besparen</translation>
 <translation id="2147218225094845757">Zijvenster verbergen</translation>
@@ -2117,7 +2113,6 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="2458591546854598341">Token voor apparaatbeheer is ongeldig.</translation>
 <translation id="2459703812219683497">Activeringscode waargenomen</translation>
 <translation id="2459706890611560967">Tabblad casten naar <ph name="DEVICE_NAME" /> hervatten</translation>
-<translation id="2460356425461033301">Maak een back-up van je browsergegevens en gebruik deze op elk apparaat.</translation>
 <translation id="2460482211073772897">In andere mappen</translation>
 <translation id="2460826998961521840">Om toegangssleutels te gebruiken die zijn opgeslagen in je Google-account</translation>
 <translation id="2461045498706592033"><ph name="LOCAL_FOLDER" /> is alleen op dit apparaat opgeslagen. Als je deze bookmark naar <ph name="LOCAL_FOLDER" /> verplaatst, krijg je deze niet meer op je andere apparaten.</translation>
@@ -6040,7 +6035,6 @@ Zichtbaar als <ph name="DEVICE_TYPE" />…</translation>
 <translation id="5263656105659419083">Klik rechtsboven op Vastzetten zodat je makkelijk kunt teruggaan naar het zijvenster</translation>
 <translation id="5264148714798105376">Dit kan een minuut duren.</translation>
 <translation id="5264252276333215551">Maak verbinding met internet om je app te openen in de kiosmodus.</translation>
-<translation id="526539328530966548">geoptimaliseerde beveiliging</translation>
 <translation id="5265797726250773323">Fout bij het installeren</translation>
 <translation id="5266113311903163739">Fout bij het importeren van de certificeringsinstantie</translation>
 <translation id="526622169288322445">Meer acties voor <ph name="ADDRESS_SUMMARY" /></translation>
@@ -7364,7 +7358,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="6234108445915742946">De Servicevoorwaarden van Chrome veranderen op 31 maart</translation>
 <translation id="6234474535228214774">Installatie in behandeling</translation>
 <translation id="6235208551686043831">De camera van het apparaat staat aan. Houd de QR-code van je e-simkaart voor de camera.</translation>
-<translation id="6237297174664969437">Je kunt in de Chrome-instellingen altijd kiezen welke browsergegevens je wilt synchroniseren. In de <ph name="LINK_BEGIN" />apparaatinstellingen<ph name="LINK_END" /> kun je de synchronisatie beheren voor web-apps die zijn geïnstalleerd vanuit de Chrome-browser. Google kan Zoeken en andere services personaliseren op basis van je geschiedenis.</translation>
 <translation id="6237474966939441970">App voor notities met stylus</translation>
 <translation id="6237481151388361546">Wijzig je internetverbinding en kies Opnieuw proberen. Als je beperkte weergave- en bewerkingsopties wilt gebruiken, kies je Openen in basiseditor.</translation>
 <translation id="623755660902014047">Leesmodus</translation>
@@ -7434,6 +7427,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="6278776436938569440">Locatie wijzigen</translation>
 <translation id="6280215091796946657">Inloggen met een ander account</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281218688313242284">Je &amp;Google-account beheren</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Overschrijdt de limiet van 1 vel papier}other{Overschrijdt de limiet van {COUNT} vellen papier}}</translation>
 <translation id="6282490239556659745"><ph name="EMBEDDED_SITE" /> verwijderen uit <ph name="SITE" /></translation>
 <translation id="6283438600881103103">Je wordt nu automatisch uitgelogd.
@@ -8045,6 +8039,7 @@ Als <ph name="SUPERVISED_USER_NAME" /> hulp nodig heeft bij het lezen, laat je k
 <translation id="6745592621698551453">Nu updaten</translation>
 <translation id="6746124502594467657">Omlaag</translation>
 <translation id="67465227497040338">Wachtwoord tonen voor <ph name="DOMAIN" /></translation>
+<translation id="6746834324024491643">Log in als <ph name="EMAIL" /> om onder andere je wachtwoorden op al je apparaten te gebruiken</translation>
 <translation id="6748980958975836188">Ik heb de <ph name="BEGIN_LINK1" />Servicevoorwaarden van Google<ph name="END_LINK1" /> en de <ph name="BEGIN_LINK2" />Aanvullende servicevoorwaarden van Chrome en Chrome OS<ph name="END_LINK2" /> gelezen en ga ermee akkoord.</translation>
 <translation id="6749077623962119521">Rechten resetten?</translation>
 <translation id="6749473226660745022">Foto's</translation>
@@ -8822,7 +8817,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="730515362922783851">Gegevens uitwisselen met elk apparaat op het lokale netwerk of internet</translation>
 <translation id="7306521477691455105">Open Instellingen om <ph name="USB_DEVICE_NAME" /> te verbinden met <ph name="USB_VM_NAME" /></translation>
 <translation id="7307129035224081534">Onderbroken</translation>
-<translation id="7307647374092371434">Wachtwoorden en toegangssleutels in je Google-account zijn ook beschikbaar op dit apparaat als je bent ingelogd</translation>
 <translation id="7308643132139167865">Websitetalen</translation>
 <translation id="7309214454733221756">Een toegangssleutel maken om in te loggen bij <ph name="APP_NAME" />?</translation>
 <translation id="7311005168897771689">Toegang krijgen tot je Google Drive-bestanden als je offline bent</translation>

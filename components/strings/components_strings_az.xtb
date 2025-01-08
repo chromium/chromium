@@ -597,7 +597,6 @@
 <translation id="2040894699575719559">Məkan blok edildi</translation>
 <translation id="2041788246978549610">Əlçatan mikrofonları istifadə edin (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Qab 7</translation>
-<translation id="204357726431741734">Google Hesabınızda saxlanılan parollardan istifadə etmək üçün daxil olun</translation>
 <translation id="2045871135676061132">Zərf Fərdi</translation>
 <translation id="2046951263634619614">Kitab mağazaları</translation>
 <translation id="2048261947532620704">Səhifə tərcümə edilir</translation>
@@ -1364,7 +1363,6 @@
 <translation id="343474037147570563">Yüklədiyiniz və ya əlavə etdiyiniz fayllar təhlil üçün Google Cloud və ya üçüncü tərəflərə göndərilir. Onlar həssas data və ya zərərli proqram ilə bağlı skanlana, şirkət siyasətinə əsasən saxlana və administratora görünə bilər.</translation>
 <translation id="3435557549311968410">Davamlı (qısa)</translation>
 <translation id="3435738964857648380">Təhlükəsizlik</translation>
-<translation id="3438829137925142401">Google Hesabınızda saxlanılan parollardan istifadə edin</translation>
 <translation id="3440783957068352691">kvadrat</translation>
 <translation id="3441653493275994384">Ekran</translation>
 <translation id="3443504041532578451">Optik disk (hamar)</translation>
@@ -3905,6 +3903,7 @@
 <translation id="7975858430722947486">Müqayisəyə əlavə edildi</translation>
 <translation id="7976214039405368314">Həddən çox sorğu var</translation>
 <translation id="7977538094055660992">Çıxış cihazı</translation>
+<translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> dəq əvvəl}=1{<ph name="TIME_COUNT" /> saat əvvəl}other{<ph name="TIME_COUNT" /> gün əvvəl}}</translation>
 <translation id="7979595116210197019">Qida xidməti</translation>
 <translation id="798134797138789862">Saytlar virtual reallıq cihazları və datadan istifadə üçün icazə istəyə bilər</translation>
 <translation id="7982789257301363584">Şəbəkə</translation>
@@ -4265,7 +4264,6 @@
 <translation id="861775596732816396">Ölçü 4</translation>
 <translation id="8620276786115098679">Zərf Kaku 7</translation>
 <translation id="8622864575115813231">Maliyyə qurumunuzla əlaqə saxlanılır...</translation>
-<translation id="8623885649813806493">Uyğun parol yoxdur. Yadda saxlanmış bütün parolları göstərin.</translation>
 <translation id="8624354461147303341">Endirim əldə edin</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
 <translation id="8637362707224133343">Chrome axtarış zamanı sizi qoruyan daxili güvənlik funksiyalarına malikdir. Daxil olmağa cəhd etdiyiniz saytda <ph name="BEGIN_LINK" />bu yaxınlarda fişinq tapan<ph name="END_LINK" /> Google güvənli baxış buna misaldır. Fişinq saytları sizi aldatmaq üçün özlərini digər saytlar kimi təqdim edir.<ph name="NEW_LINE" />Bəzən hücumçular təhlükəsiz saytları da ələ keçirir. Yanlışlıq olduğunu və saytın təhlükəli olmadığını düşünürsünüzsə, <ph name="BEGIN_ERROR_LINK" />bizə bildirin<ph name="END_ERROR_LINK" />.</translation>
@@ -4597,7 +4595,6 @@
 <translation id="937885410143139026">Data admin konsoluna göndərildi</translation>
 <translation id="939736085109172342">Yeni qovluq</translation>
 <translation id="940524522703752213"><ph name="CLOUD_PROVIDER" /> üzrə fayl yüklənməsi <ph name="MINUTES" /> dəqiqə sonra başlayacaq</translation>
-<translation id="944540589955480312">Google Hesabında yadda saxlanan parol və giriş açarlarından istifadə edin</translation>
 <translation id="944578681290094302">Kassada kartlarınız üçün əlçatan olan mükafat və imtiyazları göstərin. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Kart imtiyazları haqqında ətraflı məlumat<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945646848072568856">Chrome saytların baxış zamanı sizi izləmək üçün üçüncü tərəf kukilərindən istifadəsini bloklayır.</translation>
 <translation id="945855313015696284">Aşağıdakı məlumatı yoxlayın və yanlış kartları silin</translation>

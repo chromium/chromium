@@ -228,7 +228,6 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1151917987301063366">Zawsze zezwalaj witrynie <ph name="HOST" /> na dostęp do czujników</translation>
 <translation id="1152346050262092795">Ponownie wpisz hasło, aby potwierdzić, że konto należy do Ciebie.</translation>
 <translation id="1153636665119721804">Program Ochrony zaawansowanej Google</translation>
-<translation id="1155545602507378023">Nie, zapisz tylko na urządzeniu</translation>
 <translation id="1155816283571436363">Łączę z Twoim telefonem</translation>
 <translation id="1157952955648710254">Zamknij panel boczny wyszukiwarki Google</translation>
 <translation id="1158080958325422608">Wielkimi literami</translation>
@@ -1155,7 +1154,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1794791083288629568">Wyślij opinię, by pomóc nam rozwiązać ten problem.</translation>
 <translation id="1795214765651529549">Użyj motywu klasycznego</translation>
 <translation id="1795438342141780114">Przywróć kursor do środka</translation>
-<translation id="1795668164971917185">Gdy następnym razem Bezpieczne przeglądanie Google znajdzie podejrzany pobrany plik, automatycznie go przeskanuje w ramach wybranej przez Ciebie <ph name="LINK" /></translation>
 <translation id="1796588414813960292">Funkcje, które wymagają dźwięku, nie będą działać</translation>
 <translation id="1797117170091578105">Graj przy użyciu klawiatury Chromebooka. Możesz dostosować klawisze do konkretnych działań.</translation>
 <translation id="1798335429200675510">Kliknij prawym przyciskiem myszy w polu tekstowym, aby utworzyć wersję roboczą lub dopracować już istniejącą pracę z wykorzystaniem AI od Google. Obecnie dostępność jest ograniczona.</translation>
@@ -1408,7 +1406,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1974043046396539880">Punkty dystrybucji listy CRL</translation>
 <translation id="1974060860693918893">Zaawansowane</translation>
 <translation id="1974159333077206889">Ten sam dźwięk na wszystkich głośnikach</translation>
-<translation id="1974216844776165821">Przeglądarka Chrome zapisała Twoje hasło na tym urządzeniu, ale jeśli wolisz, możesz je zamiast tego zapisać na swoim koncie Google. Jeśli to zrobisz, po zalogowaniu się będziesz mieć dostęp do wszystkich haseł i kluczy dostępu ze swojego konta Google.</translation>
 <translation id="1975841812214822307">Usuń...</translation>
 <translation id="1976150099241323601">Zaloguj się do urządzenia zabezpieczającego</translation>
 <translation id="1976823515278601587">Duża oszczędność</translation>
@@ -1657,7 +1654,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2143915448548023856">Ustawienia wyświetlacza</translation>
 <translation id="2144536955299248197">Przeglądarka certyfikatów: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Programowanie aplikacji Linux na Androida</translation>
-<translation id="2144873026585036769">Czy chcesz używać konta Google do zapisywania i wypełniania haseł oraz kluczy dostępu?</translation>
 <translation id="2145917706968602070">Sprawdź, czy telefon jest w pobliżu, jest odblokowany i ma włączone Bluetooth oraz Wi-Fi</translation>
 <translation id="2146263598007866206">Strony mogą automatycznie pobierać powiązane pliki, by zaoszczędzić Twój czas</translation>
 <translation id="2147218225094845757">Ukryj panel boczny</translation>
@@ -2107,7 +2103,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2458591546854598341">Token zarządzania urządzeniem jest nieprawidłowy.</translation>
 <translation id="2459703812219683497">Wykryto kod aktywacyjny</translation>
 <translation id="2459706890611560967">Wznów przesyłanie karty na urządzenie <ph name="DEVICE_NAME" /></translation>
-<translation id="2460356425461033301">Twórz kopie zapasowe danych z przeglądarki i używaj ich na dowolnym urządzeniu.</translation>
 <translation id="2460482211073772897">W innych folderach</translation>
 <translation id="2460826998961521840">Aby używać kluczy dostępu z konta Google</translation>
 <translation id="2461045498706592033">Folder <ph name="LOCAL_FOLDER" /> został zapisany tylko na tym urządzeniu. Jeśli przeniesiesz tę zakładkę do folderu <ph name="LOCAL_FOLDER" />, nie będzie ona już dostępna na innych urządzeniach.</translation>
@@ -6027,7 +6022,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5263656105659419083">Aby łatwo wrócić do panelu bocznego, kliknij Przypnij w prawym górnym rogu</translation>
 <translation id="5264148714798105376">To może potrwać około minuty.</translation>
 <translation id="5264252276333215551">Aby uruchomić aplikację w trybie kiosku, połącz się z internetem.</translation>
-<translation id="526539328530966548">silniejszej ochrony</translation>
 <translation id="5265797726250773323">Błąd podczas instalowania</translation>
 <translation id="5266113311903163739">Błąd importowania urzędu certyfikacji</translation>
 <translation id="526622169288322445">Więcej działań dotyczących: <ph name="ADDRESS_SUMMARY" /></translation>
@@ -7353,7 +7347,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="6234108445915742946">31 marca zmienią się Warunki korzystania z Chrome</translation>
 <translation id="6234474535228214774">Oczekiwanie na instalację</translation>
 <translation id="6235208551686043831">Aparat urządzenia został włączony. Umieść kod QR eSIM przed jego obiektywem.</translation>
-<translation id="6237297174664969437">W ustawieniach Chrome możesz wybrać, które dane przeglądarki chcesz synchronizować. W <ph name="LINK_BEGIN" />ustawieniach urządzenia<ph name="LINK_END" /> możesz kontrolować synchronizację aplikacji internetowych zainstalowanych z przeglądarki Chrome. Google może korzystać z Twojej historii, aby dostosowywać działanie wyszukiwarki i innych usług.</translation>
 <translation id="6237474966939441970">Aplikacja do robienia notatek rysikiem</translation>
 <translation id="6237481151388361546">Sprawdź połączenie z internetem i wybierz „Spróbuj ponownie”. Możesz też kliknąć „Otwórz w podstawowym edytorze”, aby skorzystać z ograniczonych opcji wyświetlania i edytowania.</translation>
 <translation id="623755660902014047">Tryb czytania</translation>
@@ -8813,7 +8806,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="730515362922783851">Wymiana danych z dowolnym urządzeniem w sieci lokalnej lub internecie</translation>
 <translation id="7306521477691455105">Otwórz Ustawienia, by połączyć urządzenie <ph name="USB_DEVICE_NAME" /> z: <ph name="USB_VM_NAME" /></translation>
 <translation id="7307129035224081534">Wstrzymano</translation>
-<translation id="7307647374092371434">Gdy się zalogujesz, uzyskasz na tym urządzeniu dostęp także do haseł i kluczy dostępu ze swojego konta Google</translation>
 <translation id="7308643132139167865">Języki wyświetlania stron internetowych</translation>
 <translation id="7309214454733221756">Utworzyć klucz dostępu do logowania w aplikacji <ph name="APP_NAME" />?</translation>
 <translation id="7311005168897771689">Korzystaj z plików na Dysku Google także offline</translation>

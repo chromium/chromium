@@ -145,6 +145,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="2910007522516064972">Om &amp;Chromium</translation>
 <translation id="2915996080311180594">Genstart senere</translation>
 <translation id="2928420929544864228">Installationen er fuldført.</translation>
+<translation id="2933336679234709858">Dine data krypteres med din adgangssætning. Angiv adgangssætningen for at bruge og gemme Chromium-data på din Google-konto.</translation>
 <translation id="2945997411976714835">Installationsfejl: Installationsprocessen kunne ikke startes.</translation>
 <translation id="2970426615109535079">Din organisation administrerer Chromium</translation>
 <translation id="2977470724722393594">Chromium er opdateret</translation>
@@ -325,7 +326,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5496810170689441661">Chromium forsøger at redigere adgangskoder. Angiv din Windows-adgangskode for at tillade dette.</translation>
 <translation id="5527463683072221100">Åbn PDF-filer i Chromium</translation>
 <translation id="5568136785038042132">Log ind i Chromium for at få dine udvidelser på alle dine computere</translation>
-<translation id="5575418445468216473">Dine adgangskoder og andre Chromium-data gemmes på din Google-konto og fjernes fra denne enhed. Hvis du vil bruge dem på et senere tidspunkt, skal du logge ind i Chromium igen.</translation>
 <translation id="5579324208890605088">Opstartsfejl: Kør installationsprogrammet som almindelig bruger, ikke som administrator.</translation>
 <translation id="5596627076506792578">Flere valgmuligheder</translation>
 <translation id="5605834417512968703">Vælg det, du vil søge efter med billedsøgning, eller tryk på Escape for at lukke billedsøgning</translation>
@@ -476,7 +476,6 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="7355355292030546812">Chromium har blokeret denne download, fordi filen kan skade dine personlige konti og dine konti på sociale netværk, herunder <ph name="USER_EMAIL" /></translation>
 <translation id="7384121030444253939">Denne udvidelse understøttes ikke længere. Chromium anbefaler, at du fjerner den.</translation>
 <translation id="7389750180956889333">Chromium forstår formularer bedre og kan udfylde dem automatisk for dig. Få flere oplysninger om <ph name="BEGIN_LINK" />autofyld i Chrome<ph name="END_LINK" /></translation>
-<translation id="7398989605938454041">Du kan organisere alle dine ting i Chromium ved hjælp af Chromium-profiler. Når du har flere profiler, kan du nemmere adskille arbejde og fornøjelse.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium for udviklere</translation>
 <translation id="7450541714075000668">Teksten blev kopieret</translation>
 <translation id="7451052299415159299">Chromium skal have tilladelse til at bruge dit kamera på dette website</translation>
@@ -540,7 +539,6 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="8326785589245660814">rydde Chromium-dataene på din konto</translation>
 <translation id="8330519371938183845">Log ind for at synkronisere og personligt tilpasse Chromium på alle dine enheder</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> brugte tidligere Chromium</translation>
-<translation id="8357820681460164151">Log ind, og aktivér derefter synkronisering for at få adgang til dine Chromium-ting på alle dine enheder</translation>
 <translation id="8359544530202147897">Opdater Chromium for at fortsætte med at bruge Chromium-dataene på din Google-konto, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8360718212975266891">Hvis du vil have fremtidige Chromium-opdateringer, skal du have Windows 10 eller nyere. Denne computer har Windows 8.</translation>
 <translation id="8362914115861174987">Oversæt til</translation>
@@ -591,7 +589,6 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="9022552996538154597">Log ind på Chromium</translation>
 <translation id="904366664621834601">Chromium har blokeret denne download, fordi arkivfilen indeholder andre filer, der muligvis skjuler malware</translation>
 <translation id="9062666675513499497">Log ind i Chromium, når du logger ind i andre Google-tjenester</translation>
-<translation id="907832235989677238">Log ind på Chromium. Hvis du kun vil logge ind på en konto én gang, kan du <ph name="GUEST_LINK_BEGIN" />bruge enheden som gæst<ph name="GUEST_LINK_END" />.</translation>
 <translation id="9078733879136747090">Chromium blev automatisk lukket</translation>
 <translation id="9089354809943900324">Chromium er forældet</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium genstarter om en time}one{Chromium genstarter om # time}other{Chromium genstarter om # timer}}</translation>

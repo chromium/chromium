@@ -228,7 +228,6 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1151917987301063366">Sentiasa benarkan <ph name="HOST" /> mengakses penderia</translation>
 <translation id="1152346050262092795">Masukkan kata laluan sekali lagi untuk mengesahkan akaun anda.</translation>
 <translation id="1153636665119721804">Program Perlindungan Lanjutan Google</translation>
-<translation id="1155545602507378023">Tidak, peranti ini sahaja</translation>
 <translation id="1155816283571436363">Menyambung kepada telefon anda</translation>
 <translation id="1157952955648710254">Tutup panel sisi Google Search</translation>
 <translation id="1158080958325422608">Jadikan Huruf Besar</translation>
@@ -1162,7 +1161,6 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1794791083288629568">Hantar maklum balas untuk membantu kami menyelesaikan isu ini.</translation>
 <translation id="1795214765651529549">Gunakan Klasik</translation>
 <translation id="1795438342141780114">Tetapkan semula kursor kepada bahagian tengah</translation>
-<translation id="1795668164971917185">Apabila Penyemakan Imbas Selamat Google mendapati muat turun yang mencurigakan selepas ini, Penyemakan Imbas Selamat Google akan mengimbas muat turun tersebut secara automatik sebagai sebahagian daripada <ph name="LINK" /> yang dipilih</translation>
 <translation id="1796588414813960292">Ciri yang memerlukan bunyi tidak akan berfungsi</translation>
 <translation id="1797117170091578105">Main menggunakan papan kekunci Chromebook anda. Anda boleh menyesuaikan kekunci kepada tindakan tertentu.</translation>
 <translation id="1798335429200675510">Klik kanan dalam kotak teks untuk membuat draf atau memperhalus kerja sedia ada, dikuasakan oleh Google AI. Ketersediaan ciri ini terhad pada masa ini.</translation>
@@ -1416,7 +1414,6 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1974043046396539880">Titik Pengedaran CRL</translation>
 <translation id="1974060860693918893">Lanjutan</translation>
 <translation id="1974159333077206889">Audio yang sama pada semua pembesar suara</translation>
-<translation id="1974216844776165821">Chrome menyimpan kata laluan anda pada peranti ini tetapi anda juga boleh menyimpan kata laluan pada Google Account anda. Kemudian, semua kata laluan dan kunci laluan dalam Google Account anda juga akan tersedia semasa anda log masuk.</translation>
 <translation id="1975841812214822307">Alih keluar...</translation>
 <translation id="1976150099241323601">Log masuk ke Peranti Keselamatan</translation>
 <translation id="1976823515278601587">Penjimatan Besar</translation>
@@ -1666,7 +1663,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2143915448548023856">Tetapan paparan</translation>
 <translation id="2144536955299248197">Pemapar Sijil: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Pembangunan apl Android Linux</translation>
-<translation id="2144873026585036769">Gunakan Google Account anda untuk menyimpan dan mengisi kata laluan dan kunci laluan?</translation>
 <translation id="2145917706968602070">Pastikan telefon anda berada berdekatan, dibuka kunci dan Bluetooth serta Wi-Fi dihidupkan</translation>
 <translation id="2146263598007866206">Tapak mungkin memuat turun beberapa fail yang berkaitan bersama-sama secara automatik untuk menjimatkan masa anda</translation>
 <translation id="2147218225094845757">Sembunyikan panel sisi</translation>
@@ -2130,7 +2126,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2458591546854598341">Token pengurusan peranti tidak sah.</translation>
 <translation id="2459703812219683497">Kod pengaktifan dikesan</translation>
 <translation id="2459706890611560967">Sambung semula penghantaran tab pada <ph name="DEVICE_NAME" /></translation>
-<translation id="2460356425461033301">Sandarkan bahan penyemak imbas anda dan gunakan bahan itu pada mana-mana peranti</translation>
 <translation id="2460482211073772897">Dalam folder lain</translation>
 <translation id="2460826998961521840">Untuk menggunakan kunci laluan yang telah disimpan dalam Google Account anda</translation>
 <translation id="2461045498706592033"><ph name="LOCAL_FOLDER" /> disimpan pada peranti ini sahaja. Jika anda tidak mengalihkan penanda halaman ini kepada <ph name="LOCAL_FOLDER" />, anda tidak akan menemukan penanda halaman tersebut pada peranti anda yang lain.</translation>
@@ -6057,7 +6052,6 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5263656105659419083">Untuk kembali kepada panel sisi dengan mudah, klik Pin pada bahagian atas sebelah kanan</translation>
 <translation id="5264148714798105376">Proses ini mungkin mengambil masa seminit atau lebih.</translation>
 <translation id="5264252276333215551">Sila sambung ke Internet untuk melancarkan apl anda dalam mod kios.</translation>
-<translation id="526539328530966548">perlindungan dipertingkat</translation>
 <translation id="5265797726250773323">Ralat semasa pemasangan</translation>
 <translation id="5266113311903163739">Ralat Import Pihak Berkuasa Pensijilan</translation>
 <translation id="526622169288322445">Lagi tindakan untuk <ph name="ADDRESS_SUMMARY" /></translation>
@@ -7385,7 +7379,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6234108445915742946">Syarat Perkhidmatan Chrome akan berubah pada 31 Mac</translation>
 <translation id="6234474535228214774">Pemasangan belum selesai</translation>
 <translation id="6235208551686043831">Kamera peranti telah dihidupkan. Sila letakkan Kod QR eSIM anda di hadapan kamera.</translation>
-<translation id="6237297174664969437">Anda boleh memilih data penyemak imbas yang mahu disegerakkan dalam tetapan Chrome pada bila-bila masa. Dalam <ph name="LINK_BEGIN" />tetapan peranti<ph name="LINK_END" />, anda boleh mengawal penyegerakkan untuk apl web yang dipasang daripada penyemak imbas Chrome. Google mungkin memeribadikan Search dan perkhidmatan lain berdasarkan sejarah anda.</translation>
 <translation id="6237474966939441970">Apl pengambilan nota stilus</translation>
 <translation id="6237481151388361546">Ubah sambungan Internet anda dan pilih "Cuba lagi" atau pilih "Buka dalam editor asas" untuk menggunakan pilihan paparan dan pengeditan terhad.</translation>
 <translation id="623755660902014047">Mod membaca</translation>
@@ -7455,6 +7448,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6278776436938569440">Tukar lokasi</translation>
 <translation id="6280215091796946657">Log masuk dengan akaun lain</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281218688313242284">Urus &amp;Google Account anda</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Melebihi had 1 helai kertas}other{Melebihi had {COUNT} helai kertas}}</translation>
 <translation id="6282490239556659745">Alih keluar <ph name="EMBEDDED_SITE" /> daripada <ph name="SITE" /></translation>
 <translation id="6283438600881103103">Anda akan dilog keluar secara automatik sekarang.
@@ -8066,6 +8060,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6745592621698551453">Kemas kini sekarang</translation>
 <translation id="6746124502594467657">Alihkan ke bawah</translation>
 <translation id="67465227497040338">Tunjukkan kata laluan untuk <ph name="DOMAIN" /></translation>
+<translation id="6746834324024491643">Untuk mendapatkan kata laluan dan pelbagai lagi pada semua peranti anda, log masuk sebagai <ph name="EMAIL" /></translation>
 <translation id="6748980958975836188">Saya telah membaca dan bersetuju menerima <ph name="BEGIN_LINK1" />Syarat Perkhidmatan Google<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />Syarat Perkhidmatan Tambahan Chrome dan OS Chrome<ph name="END_LINK2" />.</translation>
 <translation id="6749077623962119521">Tetapkan semula kebenaran?</translation>
 <translation id="6749473226660745022">Foto</translation>
@@ -8843,7 +8838,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="730515362922783851">Bertukar data dengan mana-mana peranti pada rangkaian tempatan atau internet</translation>
 <translation id="7306521477691455105">Buka tetapan untuk menyambungkan <ph name="USB_DEVICE_NAME" /> kepada <ph name="USB_VM_NAME" /></translation>
 <translation id="7307129035224081534">Dijeda</translation>
-<translation id="7307647374092371434">Kata laluan dan kunci laluan dalam Google Account anda juga akan tersedia pada peranti ini apabila anda log masuk</translation>
 <translation id="7308643132139167865">Bahasa laman web</translation>
 <translation id="7309214454733221756">Buat kunci laluan untuk log masuk ke <ph name="APP_NAME" />?</translation>
 <translation id="7311005168897771689">Akses fail Google Drive anda dengan mudah apabila anda berstatus luar talian</translation>
@@ -9417,6 +9411,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7709152031285164251">Gagal - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">&amp;Cast...</translation>
 <translation id="7711968363685835633">Lumpuhkan penukaran peribadi dan cadangan serta kamus pengguna</translation>
+<translation id="771220840345868810">Tiada pertanyaan yang dicadangkan tersedia</translation>
 <translation id="7712739869553853093">Dialog pratonton cetakan</translation>
 <translation id="7713139339518499741">Suara semula jadi</translation>
 <translation id="7714307061282548371">Kuki daripada <ph name="DOMAIN" /> dibenarkan</translation>

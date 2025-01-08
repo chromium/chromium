@@ -104,9 +104,6 @@
 <translation id="5494920125229734069">सबै चयन गर्नुहोस्</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब भएको <ph name="COLOR_NAME" /> रङको ट्याब समूह बन्द गर्नुहोस्।}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब भएको <ph name="COLOR_NAME" /> रङको ट्याब समूह बन्द गर्नुहोस्।}}</translation>
 <translation id="5556417849629758491">स्क्रिनको सिरानको नजिक रहेको 'स्टोरसम्बन्धी जानकारी हेर्नुहोस्' नामक विकल्प</translation>
-<translation id="5615302411300498438">ट्याबहरू पछि हाल्न यो समूह राखिराख्नुहोस् वा यसबाट बाहिरिनुहोस्।
-
-तपाईं यो समूहबाट बाहिरिनुभयो भने तपाईं तत्कालै <ph name="TITLE_OF_GROUP" /> नामक ट्याब समूहको एक्सेस गुमाउनु हुने छ।</translation>
 <translation id="5627941783489838464">ट्याबसम्बन्धी कुनै पनि नयाँ जानकारी छैन</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{ट्याब रिस्टोर गर्नुहोस्}other{ट्याबहरू रिस्टोर गर्नुहोस्}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome को <ph name="TABS_COUNT_ONE" /> लिंक}other{Chrome का <ph name="TABS_COUNT_MANY" /> वटा लिंक}}</translation>
@@ -117,7 +114,6 @@
 <translation id="6040143037577758943">बन्द गर्नुहोस्</translation>
 <translation id="6051432659151380973">तपाईंका ट्याब समूहहरू स्वतः सेभ हुन्छन्</translation>
 <translation id="6054741997831917303">यो वस्तुको मूल्य हालसालै घटेर <ph name="PREVIOUS_PRICE" /> बाट <ph name="NEW_PRICE" /> भएको छ</translation>
-<translation id="6082313992897617440">तपाईं तत्कालै <ph name="GROUP_NAME" /> नामक ट्याब समूहको एक्सेस गुमाउनु हुने छ</translation>
 <translation id="6109251075362363230">सबैभन्दा हालसालै प्रयोग गरिएको दोहोरिएको ट्याबबाहेक दोहोरिएका सबै ट्याबहरू अब अभिलेखमा राखिने छन्।</translation>
 <translation id="6193448654517602979">ट्याबहरू चयन गर्नुहोस्</translation>
 <translation id="6228793724645064692">(स्टोरको रेटिङ)</translation>
@@ -145,9 +141,9 @@
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> चयन गरिएको छ</translation>
 <translation id="7326879924029668159">सामान फिर्ता गर्नेसम्बन्धी नीतिका साथै थप जानकारी हेर्नुहोस्</translation>
 <translation id="7352298686197644113">तपाईंले खोल्नुभएका ट्याबहरूमा भएको कुन चाहिँ वस्तुको मूल्य कम छ भन्ने कुरा हेर्नुहोस्</translation>
-<translation id="7421293530411019405">यो ट्याब समूह छाड्ने हो?</translation>
 <translation id="7452985128687107478">ट्याब समूहहरू स्वतः सेभ गरिन्छ र तपाईंका सबै डिभाइसहरूमा अपडेट गरिन्छ</translation>
 <translation id="747459581954555080">सबैलाई पुनर्स्थापना गर्नुहोस्</translation>
+<translation id="750886945254958667">ट्याबहरू पछि हाल्न यो समूह राखिराख्नुहोस् वा तपाईं अबदेखि यो एक्सेस गर्न चाहनुहुन्न भने यसबाट बाहिरिनुहोस्</translation>
 <translation id="753732157349120914">ट्याब स्विचर</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Google बाट प्राप्त <ph name="REVIEWS_COUNT_ONE" /> वटा समीक्षा}other{Google बाट प्राप्त <ph name="REVIEWS_COUNT_MANY" /> वटा समीक्षा}}</translation>
 <translation id="7559245342362162951">समूहका ट्याबहरूलाई फुल स्क्रिन ग्रिडमा देखाउनुहोस्</translation>
@@ -177,9 +173,7 @@
 <translation id="8398929769197326728">नयाँ फोल्डर - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">सेटिङहरू</translation>
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> वटा ट्याब हालियो, <ph name="ANY_CLOSED" /> वटा ट्याब बन्द गरिए}other{<ph name="MANY_ADDED" /> वटा ट्याब हालिए, <ph name="ANY_CLOSED" /> वटा ट्याब बन्द गरिए}}</translation>
-<translation id="8631711675211020168">सबै जना तत्कालै <ph name="GROUP_NAME" /> नामक ट्याब समूहको एक्सेस गुमाउने छन् र यसलाई सबै डिभाइसहरूबाट मेटाइने छ</translation>
 <translation id="8633025649649592204">हालसालैको क्रियाकलाप</translation>
-<translation id="8635399646025169806">ट्याब समूह राखिराख्न चाहनुहुन्छ?</translation>
 <translation id="870736955561925754">ट्याब बन्द गर्ने र समूह मेटाउने हो?</translation>
 <translation id="8714939927607906138">अझ कम मूल्य</translation>
 <translation id="8730621377337864115">गरियो</translation>

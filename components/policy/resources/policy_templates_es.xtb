@@ -8520,6 +8520,17 @@ Nota: Si vas a usar esta política para resolver la zona horaria automáticament
 
       Si se le asigna el valor "Falso", los usuarios, las aplicaciones y las extensiones no podrán acceder al modo de pantalla completa.</translation>
 <translation id="718126088895133062">Esta política especifica el ID de usuario de licencias de <ph name="PLUGIN_VM_NAME" /> para este dispositivo.</translation>
+<translation id="7184152751828902217">El estado de la batería puede verse afectado por factores como las cargas completas frecuentes y las duraciones de carga prolongadas. Esta política ofrece tres opciones para optimizar el comportamiento de carga y mitigar estos factores, lo que, en última instancia, prolonga la vida útil de la batería.
+
+Si se asigna el valor 1 (Estándar) a la política o no se define, la batería se cargará con normalidad hasta el 100 %. Se inhabilita Carga inteligente y la carga limitada.
+
+Si se asigna el valor 2 (Adaptativa) a la política, el dispositivo aprende tus hábitos de carga y retrasa la carga al 100 % hasta que sea necesario. Esto ayuda a prolongar el estado de la batería.
+
+Si se asigna el valor 3 (Limitada), la batería solo se cargará hasta el 80 % aproximadamente para maximizar su vida útil.
+
+Esta política anula la política <ph name="DEVICE_POWER_ADAPTIVE_CHARGING_ENABLED_POLICY_NAME" />.
+
+Las políticas <ph name="DEVICE_POWER_BATTERY_CHARGING_OPTIMIZATION_POLICY_NAME" /> y <ph name="DEVICE_POWER_ADAPTIVE_CHARGING_ENABLED_POLICY_NAME" /> siempre tienen prioridad sobre la configuración del usuario.</translation>
 <translation id="7185078796915954712">TLS 1.3</translation>
 <translation id="7185630966939835143">Utilizar un servicio web de Google para ayudar a corregir errores ortográficos</translation>
 <translation id="7187248416163189586">Inhabilitar los informes sobre la retroiluminación del dispositivo</translation>
@@ -10591,6 +10602,15 @@ Esta política no se aplica si se ha inhabilitado el teclado virtual (por ejempl
 <translation id="8827275450034266143">La cadena user-agent bloqueará la versión principal en la 99 e incluirá la versión principal del navegador en la posición secundaria.</translation>
 <translation id="8827366480126575426">El protocolo del controlador de protocolos.</translation>
 <translation id="8827417642396462482">Permitir tipos de consultas de DNS adicionales</translation>
+<translation id="8829335556009496455">Especifica si se permite que el modelo de Carga inteligente suspenda el proceso de carga para prolongar la duración de la batería.
+
+Cuando el dispositivo está conectado a la red eléctrica, el modelo de Carga inteligente evalúa si se debe suspender el proceso de carga para aumentar la duración de la batería. Si el modelo de Carga inteligente suspende el proceso de carga, mantendrá la batería a un determinado nivel (por ejemplo, al 80 %) y, después, cargará el dispositivo al 100 % cuando el usuario lo necesite.
+
+Si se asigna el valor True a esta política, se habilitará el modelo de Carga inteligente y se permitirá que suspenda el proceso de carga para ampliar la duración de la batería.
+
+Si se le asigna el valor False o no se le asigna ningún valor, el modelo de Carga inteligente no influirá en el proceso de carga.
+
+Nota: Esta política no tendrá efecto si se establece la política DevicePowerBatteryChargingOptimization.</translation>
 <translation id="8830717323204407209">Permite que se muestre la promoción de extensión de proveedor de credenciales a los usuarios</translation>
 <translation id="8832829916385857156">La página Nueva pestaña mostrará tarjetas si hay contenido disponible</translation>
 <translation id="8833109046074170275">Autenticación a través del flujo de GAIA predeterminado</translation>

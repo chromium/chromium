@@ -597,7 +597,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2040894699575719559">Location blocked</translation>
 <translation id="2041788246978549610">Use available microphones (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Tray 7</translation>
-<translation id="204357726431741734">Sign in to use passwords saved in your Google Account</translation>
 <translation id="2045871135676061132">Envelope Personal</translation>
 <translation id="2046951263634619614">Book Retailers</translation>
 <translation id="2048261947532620704">Translating page</translation>
@@ -1366,7 +1365,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="343474037147570563">Files you upload or attach are sent to Google Cloud or third parties for analysis. For example, they might be scanned for sensitive data or malware and might be stored based on company policies and visible to your administrator.</translation>
 <translation id="3435557549311968410">Continuous (short)</translation>
 <translation id="3435738964857648380">Security</translation>
-<translation id="3438829137925142401">Use passwords saved in your Google Account</translation>
 <translation id="3440783957068352691">square</translation>
 <translation id="3441653493275994384">Screen</translation>
 <translation id="3443504041532578451">Optical disc (satin)</translation>
@@ -4272,7 +4270,6 @@ Additional details:
 <translation id="861775596732816396">Size 4</translation>
 <translation id="8620276786115098679">Envelope Kaku 7</translation>
 <translation id="8622864575115813231">Contacting your financial institution…</translation>
-<translation id="8623885649813806493">No matching passwords. Show all saved passwords.</translation>
 <translation id="8624354461147303341">Get discounts</translation>
 <translation id="8634957317623797170">54 mm x 86 mm</translation>
 <translation id="8637362707224133343">Chrome has built-in safety features to protect you while you browse – like Google Safe Browsing, which <ph name="BEGIN_LINK" />recently found phishing<ph name="END_LINK" /> on the site that you tried visiting. Phishing sites pretend to be other sites to trick you.<ph name="NEW_LINE" />Even sites that are normally safe are sometimes compromised by attackers. <ph name="BEGIN_ERROR_LINK" />Let us know<ph name="END_ERROR_LINK" /> if you think that there's been a mistake and that this site doesn't pose a danger.</translation>
@@ -4604,7 +4601,6 @@ Additional details:
 <translation id="937885410143139026">Data sent to Admin console</translation>
 <translation id="939736085109172342">New folder</translation>
 <translation id="940524522703752213">Your file upload to <ph name="CLOUD_PROVIDER" /> will begin in <ph name="MINUTES" /> minutes</translation>
-<translation id="944540589955480312">Use passwords and passkeys saved in your Google Account</translation>
 <translation id="944578681290094302">Show which rewards and benefits are available for your cards at checkout. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Learn about card benefits<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945646848072568856">Chrome blocks sites from using third-party cookies to track you as you browse.</translation>
 <translation id="945855313015696284">Check the info below and delete any invalid cards</translation>

@@ -325,7 +325,6 @@
 <translation id="5496810170689441661">Chromium се обидува да измени лозинки. Внесете ја својата лозинка за Windows за да го дозволите ова.</translation>
 <translation id="5527463683072221100">Отворај PDF-формат во Chromium</translation>
 <translation id="5568136785038042132">За да ги добиете екстензиите на сите ваши компјутери, најавете се на Chromium</translation>
-<translation id="5575418445468216473">Вашите лозинки и други податоци од Chromium се зачувани во вашата сметка на Google и ќе се отстранат од уредов. За да ги користите во иднина, најавете се повторно на Chromium.</translation>
 <translation id="5579324208890605088">Грешка при стартување: активирајте го инсталаторот како обичен корисник, не како администратор.</translation>
 <translation id="5596627076506792578">Повеќе опции</translation>
 <translation id="5605834417512968703">Изберете што било за да пребарувате со „Пребарување со слики“ или притиснете го копчето Escape за да излезете од „Пребарување со слики“</translation>
@@ -476,7 +475,6 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="7355355292030546812">Chromium го блокираше преземањево бидејќи датотеката може да им наштети на вашите лични сметки и на вашите сметки на друштвените мрежи, меѓу кои и <ph name="USER_EMAIL" /></translation>
 <translation id="7384121030444253939">Екстензијава веќе не е поддржана. Затоа, Chromium препорачува да ја отстраните.</translation>
 <translation id="7389750180956889333">Chromium подобро ги разбира формуларите и може да ги пополнува автоматски побрзо за вас. Дознајте повеќе за <ph name="BEGIN_LINK" />Автоматското пополнување на Chrome<ph name="END_LINK" /></translation>
-<translation id="7398989605938454041">Со профилите на Chromium може да ги одделите сите ваши работи на Chromium. Со ова е полесно да се одделат работата и забавата.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7450541714075000668">Текстот е копиран</translation>
 <translation id="7451052299415159299">На Chromium му треба дозвола за да пристапи до камерата за сајтов</translation>
@@ -540,7 +538,6 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="8326785589245660814">избришете ги податоците од Chromium во вашата сметка</translation>
 <translation id="8330519371938183845">Најавете се за да го синхронизирате и персонализирате Chromium на сите ваши уреди</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> претходно користеше Chromium</translation>
-<translation id="8357820681460164151">За да пристапувате до вашите работи на прелистувачот Chromium на сите уреди, најавете се и вклучете ја синхронизацијата</translation>
 <translation id="8359544530202147897">Ажурирајте го Chromium за да продолжите да ги користите податоците од Chromium во вашата сметка на Google <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8360718212975266891">За да добивате идни ажурирања на Chromium, потребен ви е Windows 10 или понова верзија. Компјутеров користи Windows 8.</translation>
 <translation id="8362914115861174987">Преведи на</translation>
@@ -590,7 +587,6 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="9022552996538154597">Најавете се на Chromium</translation>
 <translation id="904366664621834601">Chromium го блокираше преземањево бидејќи архивираната датотека содржи други датотеки што може да кријат злонамерен софтвер</translation>
 <translation id="9062666675513499497">Најавете се на Chromium при најавување на други услуги на Google</translation>
-<translation id="907832235989677238">Најавете се на Chromium. Ако сакате да најавите сметка само еднократно, може <ph name="GUEST_LINK_BEGIN" />да го користите уредот како гостин<ph name="GUEST_LINK_END" />.</translation>
 <translation id="9078733879136747090">Chromium се затвори автоматски</translation>
 <translation id="9089354809943900324">Chromium е застарен</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium ќе се рестартира по еден час}one{Chromium ќе се рестартира по # час}other{Chromium ќе се рестартира по # часа}}</translation>

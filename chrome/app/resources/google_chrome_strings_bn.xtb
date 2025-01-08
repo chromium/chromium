@@ -13,7 +13,6 @@
 <translation id="110877069173485804">এটি হল আপনার Chrome</translation>
 <translation id="1125124144982679672">Chrome কে ব্যবহার করছেন?</translation>
 <translation id="1142745911746664600">Chrome আপডেট করা যাচ্ছে না</translation>
-<translation id="1149651794389918149">Chrome-এ সাইন-ইন করুন। আপনি যদি একটি অ্যাকাউন্টে শুধুমাত্র একবার সাইন-ইন করতে চান তবে আপনি <ph name="GUEST_LINK_BEGIN" />ডিভাইসটি গেস্ট হিসেবে ব্যবহার করতে পারেন<ph name="GUEST_LINK_END" />।</translation>
 <translation id="1152920704813762236">ChromeOS সম্পর্কে</translation>
 <translation id="1154147086299354128">&amp;Chrome এ খুলুন</translation>
 <translation id="1157985233335035034">সাম্প্রতিক ভাষা</translation>
@@ -101,7 +100,6 @@
 <translation id="2216543877350048334">Chrome থেকে আপনার Google অ্যাকাউন্ট সরিয়ে দিতে, সাইন-আউট করুন</translation>
 <translation id="2236949375853147973">আমার অ্যাক্টিভিটি</translation>
 <translation id="223889379102603431">Chrome কীভাবে মূল সার্টিফিকেট ম্যানেজ করে সেই বিষয়ে তথ্য</translation>
-<translation id="2258103955319320201">সব ডিভাইস জুড়ে Chrome ব্রাউজারে থাকা ডেটা অ্যাক্সেস করতে, প্রথমে সাইন-ইন করে সিঙ্ক চালু করুন।</translation>
 <translation id="2290014774651636340">Google এপিআই কীগুলি অনুপস্থিত৷ Google Chrome-এর কিছু বৈশিষ্ট্য নিষ্ক্রিয় হয়ে যাবে৷</translation>
 <translation id="2290095356545025170">আপনি কি Google Chrome আনইনস্টল করার ব্যাপারে নিষ্চিত ?</translation>
 <translation id="2309047409763057870">এটা Google Chrome-এর সেকেন্ডারি ইনস্টলেশন এবং একে আপনার ডিফল্ট ব্রাউজার করা যাবে না।</translation>
@@ -615,7 +613,6 @@
 <translation id="8550334526674375523">এই অফিস প্রোফাইল আপনার ব্যক্তিগত প্রোফাইল থেকে সম্পূর্ণ আলাদা।</translation>
 <translation id="8555465886620020932">পরিষেবায় সমস্যা হয়েছে: <ph name="SERVICE_ERROR" />।</translation>
 <translation id="856656450041460113">ভাষার তালিকা সার্চ করুন</translation>
-<translation id="8571790202382503603">Chrome প্রোফাইলের সাহায্যে আপনি সব Chrome-এ থাকা ডেটা আলাদা করতে পারবেন। এর ফলে সহজেই অফিস এবং বিনোদনের প্রোফাইল আলাদা করা যায়।</translation>
 <translation id="8601359445272098721">নতুন! "স্ক্রিন অনুবাদ করুন" বোতাম বেছে নিয়ে আপনি স্ক্রিনে টেক্সট ও ছবি দুটিই অনুবাদ করতে পারেন</translation>
 <translation id="8614913330719544658">Google Chrome প্রতিক্রিয়া করছে না৷ এখনই পুনঃলঞ্চ করবেন?</translation>
 <translation id="861702415419836452">আপনার আশেপাশের 3D ম্যাপ তৈরি করতে এই সাইটটির জন্য Chrome-কে আপনার ক্যামেরা অ্যাক্সেস করার অনুমতি দিতে হবে</translation>
@@ -625,7 +622,6 @@
 <translation id="8669527147644353129">Google Chrome সহায়তাকারী</translation>
 <translation id="8679801911857917785">আপনি Chrome শুরু করলে কোন পৃষ্ঠাটি দেখানো হবে তাও এটি নিয়ন্ত্রণ করে।</translation>
 <translation id="8686817260976772516">Chrome প্রোফাইলের সাহায্যে আপনি সব Chrome স্টাফ আলাদা করতে পারবেন। বন্ধু এবং পরিবারের জন্য প্রোফাইল তৈরি করুন অথবা অফিস এবং বিনোদনের প্রোফাইল আলাদা আলাদা রাখুন।</translation>
-<translation id="8708721325840166640">আপনার পাসওয়ার্ড ও Chrome-এর অন্যান্য ডেটা আপনার Google অ্যাকাউন্টে সেভ করা আছে এবং এই ডিভাইস থেকে সরিয়ে দেওয়া হবে। ভবিষ্যতে এগুলি ব্যবহার করতে, Chrome-এ আবার সাইন-ইন করুন।</translation>
 <translation id="8712767363896337380">প্রায় আপডেট হয়ে গেছে! আপডেট প্রসেস সম্পূর্ণ করতে, Chrome আবার চালু করুন।</translation>
 <translation id="8718062187489036808">Chrome থেকে প্রস্থান করুন করুন</translation>
 <translation id="873133009373065397">Google Chrome ডিফল্ট ব্রাউজার নির্ধারণ বা সেট করতে পারছে না</translation>

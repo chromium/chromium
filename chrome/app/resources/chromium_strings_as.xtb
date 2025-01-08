@@ -327,7 +327,6 @@
 <translation id="5496810170689441661">Chromiumএ পাছৱর্ডসমূহ সম্পাদনা কৰিবলৈ চেষ্টা কৰি আছে। এই কার্যৰ বাবে অনুমতি দিবলৈ আপোনাৰ Windowsৰ পাছৱৰ্ডটো টাইপ কৰক।</translation>
 <translation id="5527463683072221100">Chromiumত PDF খোলক</translation>
 <translation id="5568136785038042132">আপোনাৰ আটাইবোৰ কম্পিউটাৰতে নিজৰ এক্সটেনশ্বনসমূহ পাবলৈ, Chromiumত ছাইন ইন কৰক</translation>
-<translation id="5575418445468216473">আপোনাৰ পাছৱৰ্ড আৰু অন্য Chromium ডেটা আপোনাৰ Google একাউণ্টত ছেভ কৰা হৈছে আৰু এই ডিভাইচটোৰ পৰা আঁতৰোৱা হ’ব। ভৱিষ্যতে সেইসমূহ ব্যৱহাৰ কৰিবলৈ, Chromiumত পুনৰ ছাইন ইন কৰক।</translation>
 <translation id="5579324208890605088">ষ্টাৰ্টআপ সম্পৰ্কীয় আসোঁৱাহ: অনুগ্ৰহ কৰি ইনষ্টলাৰটো এগৰাকী নিয়মীয়া ব্যৱহাৰকাৰী হিচাপে চলাওক, প্ৰশাসক হিচাপে নহয়।</translation>
 <translation id="5596627076506792578">অধিক বিকল্প</translation>
 <translation id="5605834417512968703">প্ৰতিচ্ছবিৰ সন্ধান সুবিধাটোৰ জৰিয়তে সন্ধান কৰিবলৈ যিকোনো বস্তু বাছনি কৰক বা প্ৰতিচ্ছবিৰ সন্ধান সুবিধাটোৰ পৰা বাহিৰ ওলাবলৈ এস্কে’প টিপক</translation>
@@ -478,7 +477,6 @@ Chromiumএ আপোনাৰ ছেটিংসমূহ পুনৰুদ্
 <translation id="7355355292030546812">ফাইলটোৱে <ph name="USER_EMAIL" />কে ধৰি আপোনাৰ ব্যক্তিগত আৰু সামাজিক নেটৱৰ্কৰ একাউণ্টসমূহৰ ক্ষতি কৰিব পাৰে বাবে Chromiumএ এই ডাউনল’ডটো অৱৰোধ কৰিছে</translation>
 <translation id="7384121030444253939">এই এক্সটেনশ্বনটো আৰু সমৰ্থিত নহয়। Chromiumএ তাৰ পৰিৱৰ্তে আপুনি এইটো আঁতৰোৱাটো চুপাৰিছ কৰে।</translation>
 <translation id="7389750180956889333">Chromiumএ ফৰ্মসমূহ ভালদৰে বুজি পায় আৰু আপোনাৰ বাবে সেয়া দ্ৰুততাৰে স্বয়ংক্ৰিয়ভাৱে পূৰ কৰিব পাৰে। <ph name="BEGIN_LINK" />Chromeৰ স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সুবিধা<ph name="END_LINK" />ৰ বিষয়ে অধিক জানক</translation>
-<translation id="7398989605938454041">Chromiumৰ প্ৰ’ফাইলৰ জৰিয়তে আপুনি নিজৰ আটাইবোৰ Chromiumৰ বস্তু পৃথক কৰিব পাৰে। এইটোৱে কৰ্মস্থান আৰু মনোৰঞ্জনৰ মাজত বিভাজন কৰাটো অধিক সহজ কৰি তোলে।</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7450541714075000668">পাঠৰ প্ৰতিলিপি কৰা হ’ল</translation>
 <translation id="7451052299415159299">এই ছাইটটোৰ বাবে আপোনাৰ কেমেৰালৈ এক্সেছ পাবলৈ Chromiumক অনুমতিৰ আৱশ্যক</translation>
@@ -542,7 +540,6 @@ Chromiumএ আপোনাৰ ছেটিংসমূহ পুনৰুদ্
 <translation id="8326785589245660814">আপোনাৰ একাউণ্টৰ Chromiumৰ ডেটা মচক</translation>
 <translation id="8330519371938183845">Chromiumক আপোনাৰ সকলো ডিভাইচতে ছিংক আৰু ব্যক্তিকৃত কৰিবলৈ ছাইন ইন কৰক</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" />এ আগতে Chromium ব্যৱহাৰ কৰি আছিল</translation>
-<translation id="8357820681460164151">আপোনাৰ আটাইবোৰ ডিভাইচত আপোনাৰ Chromium ব্ৰাউজাৰৰ বস্তু এক্সেছ কৰিবলৈ, ছাইন ইন কৰি তাৰ পাছত ছিংক অন কৰক</translation>
 <translation id="8359544530202147897">আপোনাৰ Google একাউণ্টত Chromiumৰ ডেটা ব্যৱহাৰ কৰি থাকিবলৈ Chromium আপডে'ট কৰক, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8360718212975266891">Chromiumৰ ভৱিষ্যতৰ আপডে’টসমূহ পাবলৈ আপোনাক Windows 10 অথবা তাৰ পাছৰ সংস্কৰণৰ আৱশ্যক হ’ব। এই কম্পিউটাৰটোৱে Windows 8 ব্যৱহাৰ কৰি আছে।</translation>
 <translation id="8362914115861174987">এই ভাষাটোলৈ অনুবাদ কৰক</translation>
@@ -593,7 +590,6 @@ Chromiumএ আপোনাৰ ছেটিংসমূহ পুনৰুদ্
 <translation id="9022552996538154597">Chromiumত ছাইন ইন কৰক</translation>
 <translation id="904366664621834601">আৰ্কাইভ কৰা ফাইলটোত অন্য ফাইল আছে, যিবোৰে মালৱেৰ লুকুৱাই ৰাখিব পাৰে বাবে Chromiumএ এই ডাউনল’ডটো অৱৰোধ কৰিছে</translation>
 <translation id="9062666675513499497">আপুনি অন্য Google সেৱাসমূহত ছাইন ইন কৰাৰ সময়ত Chromiumত ছাইন ইন কৰক</translation>
-<translation id="907832235989677238">Chromiumত ছাইন ইন কৰক। আপুনি যদি এটা একাউণ্টত কেৱল এবাৰ ছাইন ইন কৰিবলৈ বিচাৰে, <ph name="GUEST_LINK_BEGIN" />আপুনি ডিভাইচটো অতিথি হিচাপে ব্যৱহাৰ কৰিব পাৰে<ph name="GUEST_LINK_END" />।</translation>
 <translation id="9078733879136747090">Chromium স্বয়ংক্ৰিয়ভাৱে বন্ধ কৰা হ’ল</translation>
 <translation id="9089354809943900324">Chromiumটো অতি পুৰণি</translation>
 <translation id="9093206154853821181">{0,plural, =1{এঘণ্টাৰ Chromium ভিতৰত পুনৰ লঞ্চ হ’ব}one{# ঘণ্টাৰ Chromium ভিতৰত পুনৰ লঞ্চ হ’ব}other{# ঘণ্টাৰ Chromium ভিতৰত পুনৰ লঞ্চ হ’ব}}</translation>

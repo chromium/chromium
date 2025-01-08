@@ -274,6 +274,7 @@
 <translation id="1908992311423394684">Нова инсталација</translation>
 <translation id="1915307458270490472">Спушти</translation>
 <translation id="1918022425394817322">Камерата е поставена во горниот десен агол</translation>
+<translation id="1920390473494685033">Контакти</translation>
 <translation id="1923539912171292317">Автоматско кликнување</translation>
 <translation id="1925320505152357008">помалку од 1 мин.</translation>
 <translation id="1928739107511554905">За да го добиете ажурирањето, користете го екранот на допир за да го рестартирате Chromebook додека тастатурата е прикачена.</translation>
@@ -885,6 +886,7 @@
 <translation id="4042660782729322247">Го споделувате екранот</translation>
 <translation id="404437169852192935">Ажурирањата завршија</translation>
 <translation id="4049230407053723315">Брзи поставки</translation>
+<translation id="4054070260844648638">Видлив за сите</translation>
 <translation id="4057003836560082631">Картичка <ph name="INDEX" /> од <ph name="TOTAL_COUNT" /> во прелистувачот. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4059696795118403455">За да видите персонализирани предлози за работи што може да ги направите следно, притиснете го копчето Overview</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Искл. за 1 апл.}one{Искл. за # апл.}other{Искл. за # апл.}}</translation>
@@ -1408,7 +1410,6 @@
 <translation id="5727460725221669831">Ако сте ја заборавиле лозинката или неодамна сте ја промениле лозинката за сметката на Google, обидете се да го вратите корисников.</translation>
 <translation id="5733630091161562207">Известување за добредојде</translation>
 <translation id="573413375004481890">Уредов не може да ги поддржува сите ваши екрани, па затоа исклучивме еден</translation>
-<translation id="5740328398383587084">Споделување во близина</translation>
 <translation id="574392208103952083">Медиум</translation>
 <translation id="5744083938413354016">Влечење со допир</translation>
 <translation id="5745612484876805746">„Ноќното светло“ се вклучува автоматски на зајдисонце</translation>
@@ -1485,6 +1486,7 @@
 <translation id="5990992855591814753">Бидете во тек со персонализираните плејлисти за „Режим за концентрација“. Добијте YouTube Music и YouTube, без реклами, со YouTube Premium во период од 3 месеци бесплатно. Важат „Условите“.</translation>
 <translation id="5998374579424866922">Исклучете ги контролите за игри</translation>
 <translation id="6000279412553873020">Клучеви, копчиња и друго</translation>
+<translation id="6002122790816966947">Ваши уреди</translation>
 <translation id="6012623610530968780">Страница <ph name="SELECTED_PAGE" /> од <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Нагласете ја следната ставка на полицата</translation>
 <translation id="6015573907265691211">Означи како завршено</translation>

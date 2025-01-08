@@ -104,9 +104,6 @@ Si lo borras, todos los usuarios perderán de inmediato el acceso al grupo de pe
 <translation id="5494920125229734069">Seleccionar todo</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Cerrar el grupo de pestañas con <ph name="TABS_COUNT_ONE" /> pestaña, en color <ph name="COLOR_NAME" />.}other{Cerrar el grupo de pestañas con <ph name="TABS_COUNT_MANY" /> pestañas, en color <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Ver información de la tienda (la opción está disponible cerca de la parte superior de la pantalla)</translation>
-<translation id="5615302411300498438">Conserva este grupo para agregar pestañas más tarde o abandónalo.
-
-Si abandonas el grupo, perderás de inmediato el acceso al grupo de pestañas "<ph name="TITLE_OF_GROUP" />".</translation>
 <translation id="5627941783489838464">No hay actualizaciones de pestañas</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Restablecer pestaña}other{Restablecer pestañas}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> vínculo de Chrome}other{<ph name="TABS_COUNT_MANY" /> vínculos de Chrome}}</translation>
@@ -117,7 +114,6 @@ Si abandonas el grupo, perderás de inmediato el acceso al grupo de pestañas "<
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="6051432659151380973">Tus grupos de pestañas se guardan automáticamente</translation>
 <translation id="6054741997831917303">El precio de este artículo recientemente bajó de <ph name="PREVIOUS_PRICE" /> a <ph name="NEW_PRICE" /></translation>
-<translation id="6082313992897617440">Perderás de inmediato el acceso al grupo de pestañas <ph name="GROUP_NAME" /></translation>
 <translation id="6109251075362363230">Ahora también se archivarán todas las pestañas duplicadas, excepto la copia más reciente.</translation>
 <translation id="6193448654517602979">Seleccionar pestañas</translation>
 <translation id="6228793724645064692">(calificación de la tienda)</translation>
@@ -145,9 +141,9 @@ Si abandonas el grupo, perderás de inmediato el acceso al grupo de pestañas "<
 <translation id="731648547091221002">Se seleccionó <ph name="COLOR_NAME" /></translation>
 <translation id="7326879924029668159">Consulta la política de devoluciones y más.</translation>
 <translation id="7352298686197644113">Consulta qué artículo de los que se muestran en las pestañas abiertas tiene el precio más bajo.</translation>
-<translation id="7421293530411019405">¿Quieres abandonar el grupo de pestañas?</translation>
 <translation id="7452985128687107478">Los grupos de pestañas se guardan y actualizan automáticamente en todos tus dispositivos</translation>
 <translation id="747459581954555080">Restaurar todo</translation>
+<translation id="750886945254958667">Conserva este grupo para agregar pestañas más tarde o abandónalo si ya no quieres acceder a él</translation>
 <translation id="753732157349120914">Alternador de pestañas</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> opinión de Google}other{<ph name="REVIEWS_COUNT_MANY" /> opiniones de Google}}</translation>
 <translation id="7559245342362162951">Muestra las pestañas del grupo en la cuadrícula de pantalla completa</translation>
@@ -177,9 +173,7 @@ Si abandonas el grupo, perderás de inmediato el acceso al grupo de pestañas "<
 <translation id="8398929769197326728">Nueva carpeta - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{Pestañas agregadas: <ph name="ONE_ADDED" />; pestañas cerradas: <ph name="ANY_CLOSED" />}other{Pestañas agregadas: <ph name="MANY_ADDED" />; pestañas cerradas: <ph name="ANY_CLOSED" />}}</translation>
-<translation id="8631711675211020168">Todos los usuarios perderán de inmediato el acceso al grupo de pestañas <ph name="GROUP_NAME" /> y se borrará de todos los dispositivos</translation>
 <translation id="8633025649649592204">Actividad reciente</translation>
-<translation id="8635399646025169806">¿Quieres conservar el grupo de pestañas?</translation>
 <translation id="870736955561925754">¿Quieres cerrar la pestaña y borrar el grupo?</translation>
 <translation id="8714939927607906138">Precio más bajo</translation>
 <translation id="8730621377337864115">Listo</translation>

@@ -274,6 +274,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1908992311423394684">Nowa instalacja</translation>
 <translation id="1915307458270490472">Rozłącz</translation>
 <translation id="1918022425394817322">Podgląd z kamery został przyciągnięty do prawego górnego rogu</translation>
+<translation id="1920390473494685033">Kontakty</translation>
 <translation id="1923539912171292317">Automatyczne kliknięcia</translation>
 <translation id="1925320505152357008">mniej niż 1 min</translation>
 <translation id="1928739107511554905">Aby pobrać aktualizację, użyj ekranu dotykowego, by uruchomić Chromebooka ponownie z podłączoną klawiaturą.</translation>
@@ -884,6 +885,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="4042660782729322247">Udostępniasz ekran</translation>
 <translation id="404437169852192935">Zakończono aktualizacje</translation>
 <translation id="4049230407053723315">Szybkie ustawienia</translation>
+<translation id="4054070260844648638">Widoczne dla każdego</translation>
 <translation id="4057003836560082631">Karta <ph name="INDEX" /> z <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4059696795118403455">Aby zobaczyć spersonalizowane sugestie dotyczące kolejnych czynności, naciśnij klawisz Przegląd</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Wyłączono (1 aplikacja)}few{Wyłączono (# aplikacje)}many{Wyłączono (# aplikacji)}other{Wyłączono (# aplikacji)}}</translation>
@@ -1407,7 +1409,6 @@ Brak połączonych urządzeń.</translation>
 <translation id="5727460725221669831">Jeśli nie pamiętasz hasła lub od niedawna masz nowe hasło do konta Google, spróbuj przywrócić konto tego użytkownika.</translation>
 <translation id="5733630091161562207">Powiadomienie powitalne</translation>
 <translation id="573413375004481890">To urządzenie nie może obsługiwać wszystkich Twoich wyświetlaczy, dlatego jeden z nich został odłączony</translation>
-<translation id="5740328398383587084">Udostępnianie w pobliżu</translation>
 <translation id="574392208103952083">Średni</translation>
 <translation id="5744083938413354016">Przeciąganie dotykiem</translation>
 <translation id="5745612484876805746">Podświetlenie nocne włącza się automatycznie o zachodzie słońca</translation>
@@ -1484,6 +1485,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="5990992855591814753">Skup się dzięki spersonalizowanym playlistom. Korzystaj z YouTube Premium, w tym YouTube Music i YouTube bez reklam, bezpłatnie przez 3 miesiące. Obowiązują warunki.</translation>
 <translation id="5998374579424866922">Wyłącz sterowanie grą</translation>
 <translation id="6000279412553873020">Klawisze, przyciski i inne elementy</translation>
+<translation id="6002122790816966947">Twoje urządzenia</translation>
 <translation id="6012623610530968780">Strona <ph name="SELECTED_PAGE" /> z <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Podświetl następny element na półce</translation>
 <translation id="6015573907265691211">Oznacz jako ukończone</translation>

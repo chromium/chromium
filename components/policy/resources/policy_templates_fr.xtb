@@ -3054,6 +3054,14 @@ Si cette règle n'est pas configurée, le nouveau comportement sera utilisé tou
       Utilisez le caractère générique "*" pour remplacer des caractères arbitraires (zéro ou plus). Le caractère d'échappement est "\". Pour représenter les caractères "*", ou "\" proprement dits, le caractère d'échappement "\" doit les précéder.
 
       Si cette règle n'est pas configurée, tous les comptes Google présents sur l'appareil seront visibles dans <ph name="PRODUCT_NAME" />.</translation>
+<translation id="3245558640643744331">Si cette règle est activée, la règle cloud prévaut en cas de conflit avec la règle de plate-forme.
+
+Si cette règle est désactivée ou si elle n'est pas configurée, la règle de plate-forme prévaut en cas de conflit avec la règle cloud.
+
+Cette règle obligatoire a une incidence sur les règles cloud s'appliquant à l'ordinateur.
+
+Cette règle est spécifique à <ph name="PRODUCT_NAME" /> et n'affecte pas <ph name="GOOGLE_UPDATE_NAME" />, car ce sont des applications indépendantes.
+<ph name="GOOGLE_UPDATE_NAME" /> comporte une règle distincte portant le même nom.</translation>
 <translation id="3246606090306814894">Contrôle le raccourci utilisé pour déclencher F12</translation>
 <translation id="3248019773260441802">Autoriser une page à afficher des pop-up pendant son déchargement</translation>
 <translation id="3251500716404598358">Configurer les règles pour passer d'un navigateur à l'autre.
@@ -3907,6 +3915,13 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
 <translation id="3897860452756794695">Le nouveau comportement offsetParent sera utilisé.</translation>
 <translation id="3898345958122666461">Désactiver NTLMv2</translation>
 <translation id="3898795800259311780">Autoriser ou interdire la capture d'écran</translation>
+<translation id="3901722051566830469">Si cette règle est activée, les règles associées à un compte géré prévalent en cas de conflit avec les règles de navigateur <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Si cette règle est désactivée ou si elle n'est pas configurée, les règles cloud utilisateur prévalent par défaut.
+
+Seules les règles provenant d'utilisateurs sécurisés peuvent être prioritaires. Un utilisateur sécurisé est affilié à une organisation qui gère son navigateur en utilisant <ph name="CHROME_ENTERPRISE_CORE_NAME" />. Toutes les autres règles utilisateur prévalent par défaut.
+
+Cette règle peut être combinée avec <ph name="POLICY_CLOUD_POLICY_OVERRIDES_PLATFORM_POLICY_POLICY_NAME" />. Si les deux règles sont activées, les règles cloud utilisateurs prévalent aussi sur les règles de la plate-forme en conflit.</translation>
 <translation id="390296766888987595">Le clavier à l'écran n'est affiché que si l'utilisateur ou l'application le demande.</translation>
 <translation id="3903313632842363082">Désactiver les rapports sur les utilisateurs de l'appareil</translation>
 <translation id="3904304709151553598">Désactiver les rapports sur les ventilateurs de l'appareil</translation>
@@ -8478,6 +8493,17 @@ Remarque : Si vous utilisez cette règle pour résoudre automatiquement le fuse
 
       Si cette règle est définie sur "False", les utilisateurs, les applications et les extensions ne peuvent pas utiliser ce mode.</translation>
 <translation id="718126088895133062">Cette règle définit l'ID utilisateur attribuant des licences <ph name="PLUGIN_VM_NAME" /> pour cet appareil.</translation>
+<translation id="7184152751828902217">L'état de la batterie peut être affecté par des facteurs comme les recharges complètes fréquentes et les recharges prolongées. Cette règle propose trois options pour optimiser la recharge, atténuer ces facteurs et prolonger ainsi la durée de vie de la batterie.
+
+Si vous définissez cette règle sur "1 - Standard" ou que vous ne la configurez pas, la batterie se recharge normalement à 100 %. Cela désactive les recharges adaptative et limitée.
+
+Si vous définissez cette règle sur "2 - Adaptative", l'appareil apprend vos habitudes de recharge et retarde la recharge à 100 % jusqu'à ce que cela soit nécessaire. Cela contribue à prolonger la durée de vie de la batterie.
+
+Si vous définissez cette règle sur "3 - Limitée", la batterie ne se recharge qu'à environ 80 % pour maximiser sa durée de vie.
+
+Cette règle remplace <ph name="DEVICE_POWER_ADAPTIVE_CHARGING_ENABLED_POLICY_NAME" />.
+
+Les règles <ph name="DEVICE_POWER_BATTERY_CHARGING_OPTIMIZATION_POLICY_NAME" /> et <ph name="DEVICE_POWER_ADAPTIVE_CHARGING_ENABLED_POLICY_NAME" /> prévalent toujours sur les paramètres utilisateur.</translation>
 <translation id="7185078796915954712">TLS 1.3</translation>
 <translation id="7185630966939835143">Utiliser un service Web Google pour corriger les fautes d'orthographe</translation>
 <translation id="7187248416163189586">Désactiver les rapports sur le rétroéclairage de l'appareil</translation>
@@ -8983,6 +9009,13 @@ On attend de cette règle qu'elle soit utilisée dans le cadre de la modificatio
       Si cette règle est désactivée, chaque fois que l'utilisateur effectue une action qui devrait entraîner l'ouverture d'une boîte de dialogue de sélection de fichiers (par exemple, pour enregistrer des liens, ou importer des favoris ou des fichiers), un message s'affiche à la place. L'utilisateur est supposé avoir cliqué sur "Annuler" dans la boîte de dialogue de sélection de fichiers.</translation>
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">Autoriser l'utilisation des notifications système</translation>
+<translation id="7642740497103044368">Si cette règle est activée, les règles associées à un compte géré sont autorisées à fusionner avec des règles au niveau de l'ordinateur.
+
+Si cette règle est désactivée ou si elle n'est pas configurée, les règles cloud utilisateur ne peuvent pas être fusionnées avec les règles provenant d'autres sources.
+
+Seules les règles provenant d'utilisateurs sécurisés peuvent être prioritaires. Un utilisateur sécurisé est affilié à une organisation qui gère son navigateur en utilisant <ph name="CHROME_ENTERPRISE_CORE_NAME" />. Toutes les autres règles utilisateur prévalent par défaut.
+
+Les règles à fusionner doivent aussi être définies dans <ph name="POLICY_LIST_MULTIPLE_SOURCE_MERGE_LIST_POLICY_NAME" /> ou <ph name="POLICY_DICTIONARY_MULTIPLE_SOURCE_MERGE_LIST_POLICY_NAME" />. Cette règle sera ignorée si aucune des règles mentionnées ci-dessus n'est configurée.</translation>
 <translation id="7643151458117317518">Règle permettant de décider si le paramètre de mesure des performances des annonces de <ph name="PRIVACY_SANDBOX_NAME" /> peut être désactivé pour vos utilisateurs.
 
 Si cette règle est désactivée, il sera désactivé pour vos utilisateurs.
@@ -10532,6 +10565,15 @@ Cette règle ne s'applique pas si le clavier virtuel est désactivé (par exempl
 <translation id="8827275450034266143">La chaîne user-agent figera la version principale sur la version 99 et indiquera la version majeure du navigateur en seconde position.</translation>
 <translation id="8827366480126575426">Protocole du gestionnaire de protocoles.</translation>
 <translation id="8827417642396462482">Autorise les autres types de requêtes DNS</translation>
+<translation id="8829335556009496455">Indique si un modèle de recharge adaptative est autorisé à suspendre le cycle de recharge pour prolonger l'autonomie de la batterie.
+
+Lorsque l'appareil est branché sur secteur, le modèle de recharge adaptative évalue si le cycle de recharge doit être suspendu pour prolonger l'autonomie de la batterie. Si le modèle de recharge adaptative suspend le cycle de recharge, il maintient la batterie à un certain niveau (par ex., 80 %), puis recharge l'appareil à 100 % quand l'utilisateur en a besoin.
+
+Si cette règle est définie sur "True", le modèle de recharge adaptative est activé et autorisé à suspendre le cycle de recharge pour prolonger l'autonomie de la batterie.
+
+Si cette règle est définie sur "False" ou n'est pas configurée, le modèle de recharge adaptative n'a pas d'incidence sur le cycle de recharge.
+
+Remarque : Cette règle n'a aucun effet si la règle DevicePowerBatteryChargingOptimization est configurée.</translation>
 <translation id="8830717323204407209">Permet aux utilisateurs de voir la promo concernant l'extension du fournisseur d'informations d'identification</translation>
 <translation id="8832829916385857156">Fiches affichées sur la page Nouvel onglet si du contenu est disponible</translation>
 <translation id="8833109046074170275">Authentification via le flux GAIA par défaut</translation>
@@ -10688,6 +10730,9 @@ Cette règle ne contrôle que <ph name="ARC_VM" /> sur <ph name="PRODUCT_OS_FLEX
       Cette règle concerne les utilisateurs authentifiés via GAIA sans SAML.
 
       La valeur de cette règle doit être indiquée en jours.</translation>
+<translation id="8931076230631115330">Si cette règle est configurée, <ph name="PRODUCT_NAME" /> tente de s'enregistrer auprès de la gestion des navigateurs <ph name="CHROME_ENTERPRISE_CORE_NAME" />. Elle a pour valeur un jeton d'inscription que vous pouvez récupérer dans la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+Pour en savoir plus, consultez https://support.google.com/chrome/a/answer/9301891.</translation>
 <translation id="8931555638815157255">Si cette règle est activée ou qu'elle n'est pas configurée, les appareils enregistrés communiquent régulièrement la version de leur système d'exploitation et celle du micrologiciel.
 
       Si cette règle est désactivée, les appareils enregistrés ne communiquent pas d'informations sur les versions.</translation>
@@ -11123,6 +11168,11 @@ La valeur par défaut est "RollbackDisabled".</translation>
       Si vous la configurez, les utilisateurs ne peuvent pas la modifier dans les paramètres du navigateur. Si vous ne la configurez pas, le mode arrière-plan est désactivé d'office, mais les utilisateurs peuvent l'activer.</translation>
 <translation id="981245424658084931">Activer la pulsation d'activité de l'appareil</translation>
 <translation id="981346395360763138">Services de localisation Google</translation>
+<translation id="982192230088110287">Si cette règle est activée, l'enregistrement du navigateur à <ph name="CHROME_ENTERPRISE_CORE_NAME" /> est obligatoire. En cas d'échec, le processus de lancement de <ph name="PRODUCT_NAME" /> est bloqué.
+
+Si cette règle est désactivée ou si elle n'est pas configurée, l'enregistrement du navigateur à <ph name="CHROME_ENTERPRISE_CORE_NAME" /> est facultative. En cas d'échec, le processus de lancement de <ph name="PRODUCT_NAME" /> n'est pas bloqué.
+
+Cette règle est utilisée pour l'enregistrement de la règle cloud s'appliquant aux ordinateurs de bureau. Pour en savoir plus, consultez https://support.google.com/chrome/a/answer/9301891.</translation>
 <translation id="982195863867062122">Activer <ph name="DBSC_FEATURE_NAME" />.</translation>
 <translation id="982497069985795632">Activer la vérification orthographique</translation>
 <translation id="983256325512298435">Établir la liste des protocoles pouvant lancer une application externe à partir d'origines répertoriées sans afficher d'invite</translation>

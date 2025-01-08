@@ -285,6 +285,7 @@
 <translation id="2214453882118345682">Thenga, uhumushe, futhi uhlonze okubonayo ngekhamera yakho.</translation>
 <translation id="2220529011494928058">Bika inkinga</translation>
 <translation id="2223461067862937305">Sungula Ikhodi ye-QR</translation>
+<translation id="2229345671837147090">Igridi yethebhu lerimothi</translation>
 <translation id="2230173723195178503">Ikhasi lewebhu lilayishiwe</translation>
 <translation id="2236949375853147973">Umsebenzi Wami</translation>
 <translation id="2240256190924001613">Iphrofayela lokulungiselela liyatholakala</translation>
@@ -651,6 +652,7 @@ Bona imiyalelo yenjini yakho yokusesha yokusula umlando wakho wosesho, uma kuseb
 <translation id="3992684624889376114">Mayelana naleli khasi</translation>
 <translation id="3994422733891749358">Khetha izaziso ofuna ukuzithola</translation>
 <translation id="3994522032746736727">Ngena ngemvume njengo-<ph name="EMAIL" /></translation>
+<translation id="3994911892367422121">NGIYEZWA</translation>
 <translation id="3995521777587992544">Ibha yenqubo yokulayisha ikhasi, i-<ph name="EMAIL" /> ilayishiwe.</translation>
 <translation id="3997522473364371632">Ukwabelana ngephasiwedi kukhutshazwe umlawuli wakho.</translation>
 <translation id="4002066346123236978">Isihloko</translation>
@@ -798,6 +800,7 @@ Bona imiyalelo yenjini yakho yokusesha yokusula umlando wakho wosesho, uma kuseb
 <translation id="4651927776207937667">{count,plural, =1{Fihla ngemva komzuzu o-1}one{Fihla ngemva kwemizuzu engu-{count}}other{Fihla ngemva kwemizuzu engu-{count}}}</translation>
 <translation id="4652817563047461855">Qinisekisa ukuthi amaphasiwedi akho aphephile, thola ukuthi asengozini yini, futhi uthole izeluleko ezizokusiza uzivikele ku-inthanethi. <ph name="BEGIN_LINK" />Funda kabanzi<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Londoloza</translation>
+<translation id="466307903888586355">Ukulondoloza amafayela kuvinjelwe inhlangano yakho</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Inhlangano yakho idinga ukuthi ubhrawuze ngokuyimfihlo. Amathebhu amaqembu awavunyelanisiwe kumodi ye-Incognito.
 <ph name="BEGIN_LINK" />Funda kabanzi<ph name="END_LINK" /></translation>
@@ -1271,6 +1274,7 @@ Amasayithi awakwazi ukusebenzisa amakhukhi ukubona umsebenzi wakho wokuphequlula
 <translation id="6641465290890659327">Yabelana ngekhophi yephasiwedi yakho</translation>
 <translation id="6642362222295953972">Shintshela kuthebhu ekhona</translation>
 <translation id="6644512095122093795">Nikezela ngokulondoloza amaphasiwedi</translation>
+<translation id="664573288952458293">Igridi yethebhu ejwayelekile</translation>
 <translation id="6645899968535965230">Ikhodi ye-QR: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">Ama-URL owavakashelayo athunyelwa ku-Google ukuze ibikezele ukuthi yimaphi amasayithi ongase uwavakashele ngokulandelayo</translation>
 <translation id="6657585470893396449">Igama lokungena</translation>
@@ -1661,6 +1665,7 @@ Amasayithi angasebenzisa amakhukhi ukubona umsebenzi wakho wokuphequlula kumasay
 <translation id="8407669440184693619">Awekho amaphasiwedi atholakele waleli sayithi</translation>
 <translation id="8407831512155324054">Amaphasiwedi akho abukeka eqinile</translation>
 <translation id="842523302461531262">Yenza okuzenzakalelayo kumasethingi…</translation>
+<translation id="8425826545759040372">Igridi yethebhu ye-incognito</translation>
 <translation id="8428045167754449968">Idolobhakazi / Idolobha</translation>
 <translation id="8428213095426709021">Izilungiselelo</translation>
 <translation id="8428634594422941299">Ngiyezwa</translation>

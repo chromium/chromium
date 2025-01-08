@@ -3050,6 +3050,14 @@ Als je dit beleid niet instelt, wordt het nieuwe gedrag gebruikt, net als bij de
       Gebruik het jokerteken '*' voor overeenkomsten met nul of meer willekeurige tekens. Het escape-teken is '\'. Als je dus naar overeenkomsten zoekt met de feitelijke tekens '*', '?' of '\', kun je er een '\' voor zetten.
 
       Als dit beleid niet is ingesteld, zijn alle Google-accounts op het apparaat zichtbaar in <ph name="PRODUCT_NAME" />.</translation>
+<translation id="3245558640643744331">Als je het beleid toepast, krijgt het cloudbeleid voorrang bij een conflict met het platformbeleid.
+
+Als je het beleid niet toepast of niet instelt, krijgt het platformbeleid voorrang bij een conflict met het cloudbeleid.
+
+Dit verplichte beleid heeft gevolgen voor cloudbeleid op machineniveau.
+
+Dit beleid is specifiek voor <ph name="PRODUCT_NAME" /> en heeft geen invloed op <ph name="GOOGLE_UPDATE_NAME" />, omdat dit onafhankelijke apps zijn.
+<ph name="GOOGLE_UPDATE_NAME" /> heeft een afzonderlijk beleid met dezelfde naam.</translation>
 <translation id="3246606090306814894">De sneltoets beheren die wordt gebruikt om F12 te activeren</translation>
 <translation id="3248019773260441802">Hiermee wordt toegestaan dat een pagina pop-ups toont tijdens het unloaden</translation>
 <translation id="3251500716404598358">Configureer de beleidsregels om te schakelen tussen browsers.
@@ -3901,6 +3909,13 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 <translation id="3897860452756794695">Het nieuwe offsetParent-gedrag wordt gebruikt.</translation>
 <translation id="3898345958122666461">NTLMv2 uitzetten</translation>
 <translation id="3898795800259311780">Screenshots toestaan of weigeren</translation>
+<translation id="3901722051566830469">Als je het beleid toepast, krijgen beleidsregels die zijn gekoppeld aan een beheerd account voorrang als er een conflict is met <ph name="CHROME_ENTERPRISE_CORE_NAME" />-browserbeleidsregels.
+
+Als je het beleid niet toepast of niet instelt, krijgen cloudbeleidsregels op gebruikersniveau een standaardprioriteit.
+
+Alleen beleidsregels die afkomstig zijn van beveiligde gebruikers kunnen voorrang krijgen. Een beveiligde gebruiker is aangesloten bij de organisatie die de browser van de gebruiker beheert via <ph name="CHROME_ENTERPRISE_CORE_NAME" />. Alle andere beleidsregels op gebruikersniveau hebben een standaardvoorrang.
+
+Het beleid kan worden gecombineerd met <ph name="POLICY_CLOUD_POLICY_OVERRIDES_PLATFORM_POLICY_POLICY_NAME" />. Als beide beleidsregels worden toegepast, krijgen cloudbeleidsregels voor gebruikers ook voorrang als er een conflict is met platformbeleid.</translation>
 <translation id="390296766888987595">Het schermtoetsenbord alleen tonen als de gebruiker of app hier om vraagt.</translation>
 <translation id="3903313632842363082">Rapportage voor gebruikers van apparaat uitzetten</translation>
 <translation id="3904304709151553598">Rapportage van ventilatorinformatie van apparaat uitzetten</translation>
@@ -8944,6 +8959,13 @@ Als je geen beleid opgeeft, zijn er geen uitzonderingen toegestaan op <ph name="
       Als je het beleid niet toepast, wordt er in plaats daarvan altijd een bericht getoond als gebruikers acties uitvoeren die een dialoogvenster voor het selecteren van bestanden aanroepen, zoals bookmarks importeren, bestanden uploaden en links opslaan. Er wordt vanuit gegaan dat de gebruiker op Annuleren heeft geklikt in het dialoogvenster voor het selecteren van bestanden.</translation>
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">Systeemmeldingen toestaan</translation>
+<translation id="7642740497103044368">Als je dit beleid toepast, kunnen beleidsregels die zijn gekoppeld aan een beheerd account worden samengevoegd in beleidsregels op machineniveau.
+
+Als je het beleid niet toepast of niet instelt, kunnen cloudbeleidsregels op gebruikersniveau niet worden samengevoegd met beleidsregels van andere bronnen.
+
+Alleen beleidsregels die afkomstig zijn van beveiligde gebruikers kunnen voorrang krijgen. Een beveiligde gebruiker is aangesloten bij de organisatie die de browser van de gebruiker beheert via <ph name="CHROME_ENTERPRISE_CORE_NAME" />. Alle andere beleidsregels op gebruikersniveau hebben een standaardvoorrang.
+
+Beleidsregels die moeten worden samengevoegd, moeten ook worden ingesteld in <ph name="POLICY_LIST_MULTIPLE_SOURCE_MERGE_LIST_POLICY_NAME" /> of <ph name="POLICY_DICTIONARY_MULTIPLE_SOURCE_MERGE_LIST_POLICY_NAME" />. Dit beleid wordt genegeerd als geen van de twee eerder genoemde beleidsregels is ingesteld.</translation>
 <translation id="7643151458117317518">Beleid om te bepalen of de <ph name="PRIVACY_SANDBOX_NAME" />-instelling voor advertentiemeting kan worden uitgezet voor je gebruikers.
 
 Als je dit beleid niet toepast, wordt de instelling voor advertentiemeting uitgezet voor je gebruikers.
@@ -10654,6 +10676,9 @@ Dit beleid bepaalt alleen <ph name="ARC_VM" /> op <ph name="PRODUCT_OS_FLEX_NAME
       Dit beleid is van toepassing op gebruikers die zijn geverifieerd via GAIA zonder SAML.
 
       De beleidswaarde moet worden opgegeven in dagen.</translation>
+<translation id="8931076230631115330">Als je het beleid toepast, probeert <ph name="PRODUCT_NAME" /> zichzelf te registreren bij <ph name="CHROME_ENTERPRISE_CORE_NAME" />-browserbeheer. De waarde van dit beleid is een token voor inschrijving die je kunt ophalen uit de <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+Zie https://support.google.com/chrome/a/answer/9301891 voor meer informatie.</translation>
 <translation id="8931555638815157255">Als je dit beleid toepast of niet instelt, rapporteren ingeschreven apparaten periodiek hun OS- en firmwareversie.
 
       Als je het beleid niet toepast, rapporteren ingeschreven apparaten de versiegegevens niet.</translation>
@@ -11089,6 +11114,11 @@ Als je het beleid niet toepast, staat de achtergrondmodus uit.
 Als je het beleid instelt, kunnen gebruikers dit niet aanpassen in de browserinstellingen. Als je het niet instelt, staat de achtergrondmodus aanvankelijk uit, maar kunnen gebruikers dit aanpassen.</translation>
 <translation id="981245424658084931">Hartslag voor apparaatactiviteit aanzetten</translation>
 <translation id="981346395360763138">Locatieservices van Google staan uit</translation>
+<translation id="982192230088110287">Als je dit beleid toepast, wordt <ph name="CHROME_ENTERPRISE_CORE_NAME" />-browserinschrijving verplicht en wordt het startproces van <ph name="PRODUCT_NAME" /> geblokkeerd als dit mislukt.
+
+Als je het beleid niet toepast of niet instelt, wordt <ph name="CHROME_ENTERPRISE_CORE_NAME" />-browserinschrijving optioneel en wordt het startproces van <ph name="PRODUCT_NAME" /> niet geblokkeerd als het mislukt.
+
+Dit beleid wordt gebruikt door cloud-beleidsinschrijving voor machinebereik op desktop. Zie https://support.google.com/chrome/a/answer/9301891 voor meer informatie.</translation>
 <translation id="982195863867062122"><ph name="DBSC_FEATURE_NAME" /> aanzetten.</translation>
 <translation id="982497069985795632">Spellingcontrole aanzetten</translation>
 <translation id="983256325512298435">Een lijst definiëren met protocollen die een externe app waarvan de herkomst in een lijst wordt vermeld, kunnen starten zonder prompt aan de gebruiker</translation>

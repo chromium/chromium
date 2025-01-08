@@ -104,9 +104,6 @@ Se o eliminar, todas as pessoas vão perder imediatamente o acesso ao grupo de s
 <translation id="5494920125229734069">Selecionar tudo</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Feche o grupo de separadores com <ph name="TABS_COUNT_ONE" /> separador, cor <ph name="COLOR_NAME" />.}other{Feche o grupo de separadores com <ph name="TABS_COUNT_MANY" /> separadores, cor <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Veja informações da loja, opção disponível junto à parte superior do ecrã</translation>
-<translation id="5615302411300498438">Mantenha este grupo para adicionar separadores mais tarde ou saia do grupo.
-
-Se sair, vai perder imediatamente o acesso ao grupo de separadores "<ph name="TITLE_OF_GROUP" />".</translation>
 <translation id="5627941783489838464">Nenhuma atualização de separadores</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Restaurar separador}other{Restaurar separadores}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link do Chrome}other{<ph name="TABS_COUNT_MANY" /> links do Chrome}}</translation>
@@ -117,7 +114,6 @@ Se sair, vai perder imediatamente o acesso ao grupo de separadores "<ph name="TI
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="6051432659151380973">Os seus grupos de separadores são guardados automaticamente</translation>
 <translation id="6054741997831917303">O preço deste artigo desceu recentemente de <ph name="PREVIOUS_PRICE" /> para <ph name="NEW_PRICE" /></translation>
-<translation id="6082313992897617440">Vai perder imediatamente o acesso ao grupo de separadores <ph name="GROUP_NAME" /></translation>
 <translation id="6109251075362363230">Agora, todos os separadores duplicados também vão ser arquivados, com exceção da cópia usada mais recentemente.</translation>
 <translation id="6193448654517602979">Selecione separadores</translation>
 <translation id="6228793724645064692">(classificação da loja)</translation>
@@ -145,9 +141,9 @@ Se sair, vai perder imediatamente o acesso ao grupo de separadores "<ph name="TI
 <translation id="731648547091221002">Cor <ph name="COLOR_NAME" /> selecionada</translation>
 <translation id="7326879924029668159">Veja a Política de Devolução e muito mais</translation>
 <translation id="7352298686197644113">Veja qual dos itens nos seus separadores abertos tem um preço mais baixo.</translation>
-<translation id="7421293530411019405">Sair do grupo de separadores?</translation>
 <translation id="7452985128687107478">Os grupos de separadores são guardados e atualizados automaticamente em todos os seus dispositivos</translation>
 <translation id="747459581954555080">Restaurar tudo</translation>
+<translation id="750886945254958667">Mantenha este grupo para adicionar separadores mais tarde ou saia do grupo se já não quiser aceder a este</translation>
 <translation id="753732157349120914">Comutador de separadores</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> crítica da Google}other{<ph name="REVIEWS_COUNT_MANY" /> críticas da Google}}</translation>
 <translation id="7559245342362162951">Mostrar os separadores do grupo numa grelha em ecrã inteiro</translation>
@@ -177,9 +173,7 @@ Se sair, vai perder imediatamente o acesso ao grupo de separadores "<ph name="TI
 <translation id="8398929769197326728">Nova pasta – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Definições</translation>
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> separador adicionado, <ph name="ANY_CLOSED" /> fechado(s)}other{<ph name="MANY_ADDED" /> separadores adicionados, <ph name="ANY_CLOSED" /> fechado(s)}}</translation>
-<translation id="8631711675211020168">Todas as pessoas vão perder imediatamente o acesso ao grupo de separadores <ph name="GROUP_NAME" /> e este vai ser eliminado de todos os dispositivos</translation>
 <translation id="8633025649649592204">Atividade recente</translation>
-<translation id="8635399646025169806">Manter o grupo de separadores?</translation>
 <translation id="870736955561925754">Fechar o separador e eliminar o grupo?</translation>
 <translation id="8714939927607906138">Preço mais baixo</translation>
 <translation id="8730621377337864115">Concluído</translation>

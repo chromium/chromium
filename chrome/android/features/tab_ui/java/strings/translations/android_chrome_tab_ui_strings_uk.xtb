@@ -104,9 +104,6 @@
 <translation id="5494920125229734069">Вибрати все</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Закрити групу з <ph name="TABS_COUNT_ONE" /> вкладкою; колір: <ph name="COLOR_NAME" />.}one{Закрити групу з <ph name="TABS_COUNT_MANY" /> вкладкою; колір: <ph name="COLOR_NAME" />.}few{Закрити групу з <ph name="TABS_COUNT_MANY" /> вкладками; колір: <ph name="COLOR_NAME" />.}many{Закрити групу з <ph name="TABS_COUNT_MANY" /> вкладками; колір: <ph name="COLOR_NAME" />.}other{Закрити групу з <ph name="TABS_COUNT_MANY" /> вкладки; колір: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Переглянути інформацію про магазин. Опція доступна вгорі екрана.</translation>
-<translation id="5615302411300498438">Збережіть цю групу, щоб додавати вкладки пізніше, або залиште її.
-
-Якщо ви вийдете з групи вкладок "<ph name="TITLE_OF_GROUP" />", то відразу втратите доступ до неї.</translation>
 <translation id="5627941783489838464">Немає оновлень щодо вкладок</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Відновити вкладку}one{Відновити вкладки}few{Відновити вкладки}many{Відновити вкладки}other{Відновити вкладки}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> посилання з Chrome}one{<ph name="TABS_COUNT_MANY" /> посилання з Chrome}few{<ph name="TABS_COUNT_MANY" /> посилання з Chrome}many{<ph name="TABS_COUNT_MANY" /> посилань із Chrome}other{<ph name="TABS_COUNT_MANY" /> посилання з Chrome}}</translation>
@@ -117,7 +114,6 @@
 <translation id="6040143037577758943">Закрити</translation>
 <translation id="6051432659151380973">Групи вкладок зберігаються автоматично</translation>
 <translation id="6054741997831917303">Ціна на цей товар нещодавно знизилася з <ph name="PREVIOUS_PRICE" /> до <ph name="NEW_PRICE" /></translation>
-<translation id="6082313992897617440">Ви відразу втратите доступ до групи вкладок "<ph name="GROUP_NAME" />"</translation>
 <translation id="6109251075362363230">Тепер також архівуватимуться всі повторювані вкладки, за винятком тієї, що використовувалась останньою.</translation>
 <translation id="6193448654517602979">Виберіть вкладки</translation>
 <translation id="6228793724645064692">(оцінка магазину)</translation>
@@ -145,9 +141,9 @@
 <translation id="731648547091221002">Вибрано: <ph name="COLOR_NAME" /></translation>
 <translation id="7326879924029668159">Переглянути правила повернення й інше</translation>
 <translation id="7352298686197644113">Дізнайтеся, який товар на відкритих вкладках дешевший</translation>
-<translation id="7421293530411019405">Вийти з групи вкладок?</translation>
 <translation id="7452985128687107478">Групи вкладок автоматично зберігаються й синхронізуються з усіма вашими пристроями</translation>
 <translation id="747459581954555080">Відновити все</translation>
+<translation id="750886945254958667">Збережіть цю групу, щоб додавати вкладки пізніше, або вийдіть із неї, якщо вона вам більше не потрібна</translation>
 <translation id="753732157349120914">Перемикач вкладок</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> відгук із Google}one{<ph name="REVIEWS_COUNT_MANY" /> відгук із Google}few{<ph name="REVIEWS_COUNT_MANY" /> відгуки з Google}many{<ph name="REVIEWS_COUNT_MANY" /> відгуків із Google}other{<ph name="REVIEWS_COUNT_MANY" /> відгуку з Google}}</translation>
 <translation id="7559245342362162951">Показувати вкладки групи в повноекранній сітці</translation>
@@ -177,9 +173,7 @@
 <translation id="8398929769197326728">Нова папка – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Налаштування</translation>
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> вкладку додано, <ph name="ANY_CLOSED" /> закрито}one{<ph name="MANY_ADDED" /> вкладку додано, <ph name="ANY_CLOSED" /> закрито}few{<ph name="MANY_ADDED" /> вкладки додано, <ph name="ANY_CLOSED" /> закрито}many{<ph name="MANY_ADDED" /> вкладок додано, <ph name="ANY_CLOSED" /> закрито}other{<ph name="MANY_ADDED" /> вкладки додано, <ph name="ANY_CLOSED" /> закрито}}</translation>
-<translation id="8631711675211020168">Усі користувачі відразу втратять доступ до групи вкладок "<ph name="GROUP_NAME" />", і її буде видалено з усіх пристроїв</translation>
 <translation id="8633025649649592204">Останні дії</translation>
-<translation id="8635399646025169806">Зберегти групу вкладок?</translation>
 <translation id="870736955561925754">Закрити вкладку й видалити групу?</translation>
 <translation id="8714939927607906138">Дешевше</translation>
 <translation id="8730621377337864115">Готово</translation>
