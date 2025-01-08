@@ -254,6 +254,35 @@ class PageContentProtoProviderBrowserTestSiteIsolation
   }
 };
 
+IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestSiteIsolation,
+                       LatencyMetrics) {
+  base::HistogramTester tester;
+
+  LoadPage(https_server()->GetURL(
+      "a.com",
+      base::StringPrintf("/paragraph_iframe_partially_offscreen.html%s",
+                         QueryParam())));
+  ASSERT_EQ(page_content().root_node().children_nodes().size(), 1);
+  content::FetchHistogramsFromChildProcesses();
+
+  constexpr char kMainFrame[] =
+      "OptimizationGuide.AIPageContent.RendererLatency.MainFrame";
+  constexpr char kRemoteSubframe[] =
+      "OptimizationGuide.AIPageContent.RendererLatency.RemoteSubFrame";
+  constexpr char kTotal[] = "OptimizationGuide.AIPageContent.TotalLatency";
+
+  tester.ExpectTotalCount(kMainFrame, 1);
+  tester.ExpectTotalCount(kTotal, 1);
+
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/384585933): Enable this assert on Android.
+  if (EnableCrossSiteFrames()) {
+    return;
+  }
+#endif
+  tester.ExpectTotalCount(kRemoteSubframe, EnableCrossSiteFrames() ? 1 : 0);
+}
+
 // Ensure that clip from an ancestor frame is included in visible rect
 // computation.
 IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestSiteIsolation,

@@ -5,6 +5,7 @@
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 
 #include "base/functional/concurrent_closures.h"
+#include "base/metrics/histogram_macros.h"
 #include "components/optimization_guide/content/browser/page_content_proto_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -48,6 +49,7 @@ std::optional<optimization_guide::RenderFrameInfo> GetRenderFrameInfo(
 }
 
 void OnGotAIPageContentForAllFrames(
+    base::TimeTicks start_time,
     content::GlobalRenderFrameHostToken main_frame_token,
     std::unique_ptr<optimization_guide::AIPageContentMap> page_content_map,
     OnAIPageContentDone done_callback) {
@@ -55,6 +57,8 @@ void OnGotAIPageContentForAllFrames(
   if (optimization_guide::ConvertAIPageContentToProto(
           main_frame_token, *page_content_map,
           base::BindRepeating(&GetRenderFrameInfo), &proto)) {
+    UMA_HISTOGRAM_TIMES("OptimizationGuide.AIPageContent.TotalLatency",
+                        base::TimeTicks::Now() - start_time);
     std::move(done_callback).Run(std::move(proto));
     return;
   }
@@ -113,7 +117,7 @@ void GetAIPageContent(content::WebContents* web_contents,
 
   std::move(concurrent)
       .Done(base::BindOnce(
-          &OnGotAIPageContentForAllFrames,
+          &OnGotAIPageContentForAllFrames, base::TimeTicks::Now(),
           web_contents->GetPrimaryMainFrame()->GetGlobalFrameToken(),
           std::move(page_content_map), std::move(done_callback)));
 }

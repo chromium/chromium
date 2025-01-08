@@ -28,6 +28,11 @@ chromium-metrics-reviews@google.com.
   <variant name="Unknown" summary="Unknown"/>
 </variants>
 
+<variants name="FrameType">
+  <variant name="MainFrame" summary="Outermost primary main frame"/>
+  <variant name="RemoteSubFrame" summary="Remote subframes"/>
+</variants>
+
 <variants name="ModelExecutionFeature">
   <variant name="Compose" summary="Compose"/>
   <variant name="FormsAnnotations" summary="Forms Annotations"/>
@@ -369,6 +374,29 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the result of an OAuth access token request. Recorded every time a
     request was made for allowed request contexts for on-demand hints.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.AIPageContent.RendererLatency.{FrameType}"
+    units="ms" expires_after="2025-12-15">
+  <owner>khushalsagar@chromium.org</owner>
+  <owner>abigailbklein@google.com</owner>
+  <summary>
+    Records the duration for extracting the AIPageContent from a LocalFrame tree
+    in the renderer. Recorded once for each extraction in the renderer process.
+    The metric is split for main frames vs remote subframes.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.AIPageContent.TotalLatency" units="ms"
+    expires_after="2025-12-15">
+  <owner>khushalsagar@chromium.org</owner>
+  <owner>abigailbklein@google.com</owner>
+  <summary>
+    Records the duration for extracting the AIPageContent for a WebContents.
+    This includes the latency for extracting the content from each renderer
+    process across all frames for the Document displayed by the primary main
+    frame.
   </summary>
 </histogram>
 

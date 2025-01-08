@@ -429,6 +429,7 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::GetAIPageContentSync()
   auto& document = *frame->GetDocument();
   mojom::blink::AIPageContentPtr page_content =
       mojom::blink::AIPageContent::New();
+  const auto start_time = base::TimeTicks::Now();
 
   // Disallow throttling so content from offscreen frames is updated.
   LocalFrameView::DisallowThrottlingScope disallow_throttling(*document.View());
@@ -464,6 +465,17 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::GetAIPageContentSync()
 
   WalkChildren(*layout_view, *root_node, *document_style);
   page_content->root_node = std::move(root_node);
+
+  const auto latency = base::TimeTicks::Now() - start_time;
+  if (frame->IsOutermostMainFrame()) {
+    UMA_HISTOGRAM_TIMES(
+        "OptimizationGuide.AIPageContent.RendererLatency.MainFrame", latency);
+  } else {
+    UMA_HISTOGRAM_TIMES(
+        "OptimizationGuide.AIPageContent.RendererLatency.RemoteSubFrame",
+        latency);
+  }
+
   return page_content;
 }
 
