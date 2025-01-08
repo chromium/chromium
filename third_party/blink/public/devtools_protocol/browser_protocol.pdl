@@ -11295,23 +11295,23 @@ domain Target
     parameters
       # The initial URL the page will be navigated to. An empty string indicates about:blank.
       string url
-      # Frame left origin in DIP (headless chrome only).
+      # Frame left origin in DIP (requires newWindow to be true or headless shell).
       experimental optional integer left
-      # Frame top origin in DIP (headless chrome only).
+      # Frame top origin in DIP (requires newWindow to be true or headless shell).
       experimental optional integer top
-      # Frame width in DIP (headless chrome only).
+      # Frame width in DIP (requires newWindow to be true or headless shell).
       optional integer width
-      # Frame height in DIP (headless chrome only).
+      # Frame height in DIP (requires newWindow to be true or headless shell).
       optional integer height
       # The browser context to create the page in.
       experimental optional Browser.BrowserContextID browserContextId
-      # Whether BeginFrames for this target will be controlled via DevTools (headless chrome only,
+      # Whether BeginFrames for this target will be controlled via DevTools (headless shell only,
       # not supported on MacOS yet, false by default).
       experimental optional boolean enableBeginFrameControl
-      # Whether to create a new Window or Tab (chrome-only, false by default).
+      # Whether to create a new Window or Tab (false by default, not supported by headless shell).
       optional boolean newWindow
-      # Whether to create the target in background or foreground (chrome-only,
-      # false by default).
+      # Whether to create the target in background or foreground (false by default, not supported
+      # by headless shell).
       optional boolean background
       # Whether to create the target of type "tab".
       experimental optional boolean forTab
