@@ -676,6 +676,7 @@
 -external/wpt/html/canvas/element/filters/2d.filter.canvasFilterObject.gaussianBlur.tentative.html
 -external/wpt/html/canvas/element/filters/2d.filter.layers.dropShadow.tentative.html
 -external/wpt/html/canvas/element/filters/2d.filter.layers.gaussianBlur.tentative.html
+-external/wpt/html/canvas/element/manual/fill-and-stroke-styles/canvas_colorsandstyles_createlineargradient_001.htm
 -external/wpt/html/canvas/element/manual/filters/svg-filter-lh-rlh.html
 -external/wpt/html/canvas/element/manual/filters/tentative/canvas-filter-object-turbulence.html
 -external/wpt/html/canvas/element/text/direction-inherit-rtl.html
@@ -712,6 +713,7 @@
 -external/wpt/html/canvas/offscreen/filters/2d.filter.layers.dropShadow.tentative.w.html
 -external/wpt/html/canvas/offscreen/filters/2d.filter.layers.gaussianBlur.tentative.html
 -external/wpt/html/canvas/offscreen/filters/2d.filter.layers.gaussianBlur.tentative.w.html
+-external/wpt/html/canvas/offscreen/manual/filter/offscreencanvas.filter.w.html
 -external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.getcontext.html
 -external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.getcontext.worker.html
 -external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.resize.html
