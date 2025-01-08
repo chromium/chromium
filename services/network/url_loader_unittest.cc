@@ -5994,6 +5994,7 @@ TEST_F(URLLoaderTest, RawResponseCookiesRedirect) {
         loader_client.CreateRemote());
 
     loader_client.RunUntilRedirectReceived();
+    devtools_observer.WaitUntilRawResponse(1u);
 
     ASSERT_TRUE(devtools_observer.raw_response_headers());
     EXPECT_NE(devtools_observer.raw_response_headers()->find(
