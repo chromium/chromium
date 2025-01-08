@@ -530,6 +530,7 @@
 <translation id="2847759467426165163">Выберите устройство</translation>
 <translation id="2848120746144143659">Нажмите Ввод, чтобы сделать скриншот всего экрана</translation>
 <translation id="2849936225196189499">Критическое</translation>
+<translation id="2850207700020959936">У приложений есть доступ к камере.</translation>
 <translation id="2860184359326882502">Лучшие результаты</translation>
 <translation id="2865888419503095837">Информация о сети</translation>
 <translation id="2869095047958348710">Прошедший день недели: <ph name="DAY_OF_WEEK" /></translation>
@@ -584,6 +585,7 @@
 <translation id="304417730895741346">Открытые приложения находятся на панели запуска. Там их можно закрепить. Для этого нажмите на приложение правой кнопкой мыши или коснитесь двумя пальцами сенсорной панели.</translation>
 <translation id="3045488863354895414">Добрый день!</translation>
 <translation id="3047761520276763270">Скажите:</translation>
+<translation id="3053407068093039599">Разрешить/запретить доступ к камере</translation>
 <translation id="3055162170959710888">Сегодня вы уже использовали это устройство <ph name="USED_TIME" />.</translation>
 <translation id="3062298103034426069">Не поддерживается</translation>
 <translation id="3068622547379332530">Версия <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />), <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -1800,6 +1802,7 @@
 <translation id="7034025838182392395">Приложению "<ph name="APP_NAME" />" нужно разрешение (<ph name="DEVICE_NAME" />). Чтобы дать разрешение (<ph name="DEVICE_NAME" />), используйте физический переключатель.</translation>
 <translation id="703425375924687388">Запрос "<ph name="QUERY_NAME" />" для Google Ассистента</translation>
 <translation id="7042322267639375032">Свернуть панель состояния</translation>
+<translation id="7042593542151411225">У приложений нет доступа к камере.</translation>
 <translation id="7045033600005038336">Заменить шаблон?</translation>
 <translation id="7051244143160304048">Устройство "<ph name="DEVICE_NAME" />" отключено.</translation>
 <translation id="7055910611768509537">Стилус не использовался больше недели</translation>
@@ -2375,6 +2378,7 @@
 <translation id="9074432941673450836">Выполняйте разные задачи на устройстве (<ph name="PRODUCT_NAME" />) с помощью приложений. Чтобы их найти, откройте панель запуска. Для этого также можно использовать специальную клавишу на клавиатуре – она располагается над Shift слева.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9077515519330855811">Элементы управления медиафайлами, сейчас играет "<ph name="MEDIA_TITLE" />"</translation>
+<translation id="9079012373317704997">Не удается предоставить доступ к камере удаленно.</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">Окно предварительного просмотра камеры привязано к левому верхнему углу</translation>
 <translation id="9080132581049224423">Чтобы перейти на главный экран, проведите вверх.</translation>

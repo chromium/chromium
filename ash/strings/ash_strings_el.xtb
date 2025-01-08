@@ -530,6 +530,7 @@
 <translation id="2847759467426165163">Μετάδοση σε</translation>
 <translation id="2848120746144143659">Πατήστε Enter για λήψη στιγμιότυπου πλήρους οθόνης</translation>
 <translation id="2849936225196189499">Κρίσιμη</translation>
+<translation id="2850207700020959936">Οι εφαρμογές μπορούν να αποκτήσουν πρόσβαση στην κάμερα</translation>
 <translation id="2860184359326882502">Βέλτιστη αντιστοίχιση</translation>
 <translation id="2865888419503095837">Πληροφορίες δικτύου</translation>
 <translation id="2869095047958348710"><ph name="DAY_OF_WEEK" /> που πέρασε</translation>
@@ -584,6 +585,7 @@
 <translation id="304417730895741346">Οι καρφιτσωμένες και ανοιχτές εφαρμογές σας βρίσκονται στο ράφι. Για να καρφιτσώσετε μια εφαρμογή στο ράφι, κάντε δεξί κλικ σε μια εφαρμογή ή πατήστε την επιφάνεια αφής με δύο δάχτυλα.</translation>
 <translation id="3045488863354895414">Καλό απόγευμα,</translation>
 <translation id="3047761520276763270">Δοκιμάστε να πείτε το εξής:</translation>
+<translation id="3053407068093039599">Ενεργοποίηση/απενεργοποίηση πρόσβασης στην κάμερα</translation>
 <translation id="3055162170959710888">Χρησιμοποιήσατε αυτήν τη συσκευή για <ph name="USED_TIME" /> σήμερα</translation>
 <translation id="3062298103034426069">Δεν υποστηρίζεται</translation>
 <translation id="3068622547379332530">Έκδοση <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -1800,6 +1802,7 @@
 <translation id="7034025838182392395">Η εφαρμογή <ph name="APP_NAME" /> θέλει να χρησιμοποιήσει τη συσκευή <ph name="DEVICE_NAME" />. Ενεργοποιήστε τον φυσικό διακόπτη της συσκευής <ph name="DEVICE_NAME" />.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Βοηθός Google</translation>
 <translation id="7042322267639375032">Σύμπτυξη περιοχής κατάστασης</translation>
+<translation id="7042593542151411225">Οι εφαρμογές δεν μπορούν να αποκτήσουν πρόσβαση στην κάμερα</translation>
 <translation id="7045033600005038336">Αντικατάσταση προτύπου;</translation>
 <translation id="7051244143160304048">Η συσκευή <ph name="DEVICE_NAME" /> αποσυνδέθηκε.</translation>
 <translation id="7055910611768509537">Η γραφίδα δεν χρησιμοποιήθηκε για περισσότερο από μία εβδομάδα.</translation>
@@ -2375,6 +2378,7 @@
 <translation id="9074432941673450836">Χρησιμοποιήστε εφαρμογές για να κάνετε ό,τι χρειάζεστε στο <ph name="PRODUCT_NAME" />. Μπορείτε να βρείτε τις εφαρμογές σας στη Λειτουργία εκκίνησης εφαρμογών. Μπορείτε επίσης να πατήσετε το πλήκτρο της Λειτουργίας εκκίνησης εφαρμογών (πάνω από το αριστερό πλήκτρο Shift) στο πληκτρολόγιο.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9077515519330855811">Στοιχεία ελέγχου μέσων, γίνεται αναπαραγωγή <ph name="MEDIA_TITLE" /></translation>
+<translation id="9079012373317704997">Δεν είναι δυνατή η απομακρυσμένη ενεργοποίηση της πρόσβασης στην κάμερα</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">Η προεπισκόπηση κάμερας τοποθετήθηκε στην επάνω αριστερή γωνία</translation>
 <translation id="9080132581049224423">Σύρετε προς τα επάνω για να μεταβείτε στην Αρχική σελίδα.</translation>

@@ -17,6 +17,7 @@
 <translation id="5441504010984421144">La llista de credencials que s'emplenaran amb un toc s'ha obert a alçada completa.</translation>
 <translation id="5591247451101092906">Vols utilitzar la contrasenya o la clau d'accés desades?</translation>
 <translation id="5624120631404540903">Gestiona les contrasenyes</translation>
+<translation id="592182999816790476">La contrasenya de <ph name="USERNAME" /> s'ha desat per a <ph name="WEBSITE" /></translation>
 <translation id="6560306912274274630">Clau d'accés per a <ph name="USERNAME" />; utilitza el bloqueig de pantalla</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Contrasenya nova per a aquest lloc web}other{Contrasenyes noves per a aquest lloc web}}</translation>
 <translation id="7286867818472074330">Selecciona la clau d'accés</translation>

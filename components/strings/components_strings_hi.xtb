@@ -1313,7 +1313,6 @@
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">10 सेकंड फिर से चलाएं</translation>
 <translation id="3352881017886802007">स्पोर्ट्स गेम</translation>
-<translation id="3354508510846323339"><ph name="MAX_CITATIONS" /> में से <ph name="CURRENT_CITATION" /> उद्धरण, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">प्रॉक्सी सेटिंग बदलें...</translation>
 <translation id="335809815767823">एक्सपोर्ट की गईं</translation>
 <translation id="3359565626472459400">शादी</translation>
@@ -3911,6 +3910,7 @@
 <translation id="7975858430722947486">तुलना करने के लिए जोड़ा गया</translation>
 <translation id="7976214039405368314">बहुत सारे अनुरोध</translation>
 <translation id="7977538094055660992">आउटपुट डिवाइस</translation>
+<translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> मिनट पहले}=1{<ph name="TIME_COUNT" /> घंटा पहले}one{<ph name="TIME_COUNT" /> दिन पहले}other{<ph name="TIME_COUNT" /> दिन पहले}}</translation>
 <translation id="7979595116210197019">खान-पान से जुड़ी सेवा</translation>
 <translation id="798134797138789862">साइट, वर्चुअल रिएलिटी डिवाइस और डेटा का इस्तेमाल करने की अनुमति मांग सकती है</translation>
 <translation id="7982789257301363584">नेटवर्क</translation>

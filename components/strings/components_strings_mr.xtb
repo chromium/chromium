@@ -1313,7 +1313,6 @@
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">१० सेकंद रीप्ले करा</translation>
 <translation id="3352881017886802007">क्रीडा सामने</translation>
-<translation id="3354508510846323339">संदर्भ <ph name="MAX_CITATIONS" /> पैकी <ph name="CURRENT_CITATION" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">प्रॉक्सी सेटिंग्ज बदला...</translation>
 <translation id="335809815767823">एक्सपोर्ट केली</translation>
 <translation id="3359565626472459400">विवाह</translation>
@@ -1695,6 +1694,7 @@
 <translation id="3990532701115075684">तुमचे हात ट्रॅक करा</translation>
 <translation id="3992684624889376114">या पेजबद्दल</translation>
 <translation id="3995639283717357522">धोरणे लागू करा</translation>
+<translation id="3996683183117168945"><ph name="MAX_CITATIONS" /> पैकी <ph name="CURRENT_CITATION" /> संदर्भ, <ph name="PRODUCT_NAME" />, <ph name="URL" /> <ph name="PAGE_TITLE" />. <ph name="PAGE_PREVIEW" />.</translation>
 <translation id="399754345297554962">मानक आणि प्रवेश परीक्षा</translation>
 <translation id="3999173941208168054">भयपट</translation>
 <translation id="4000598935132966791">व्यवस्थापित ब्राउझरमध्ये साइट निर्बंधांबद्दल अधिक जाणून घ्या</translation>
@@ -3911,6 +3911,7 @@
 <translation id="7975858430722947486">तुलना मध्ये जोडले आहे</translation>
 <translation id="7976214039405368314">खूप जास्त विनंत्या</translation>
 <translation id="7977538094055660992">आउटपुट डिव्हाइस</translation>
+<translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" />m ago}=1{<ph name="TIME_COUNT" />तासापूर्वी}other{<ph name="TIME_COUNT" /> दिवसांपूर्वी}}</translation>
 <translation id="7979595116210197019">खाद्यपदर्थांसंबंधित सेवा</translation>
 <translation id="798134797138789862">आभासी वास्तविकता डिव्हाइस आणि डेटा वापरण्याची विनंती करू शकते</translation>
 <translation id="7982789257301363584">नेटवर्क</translation>

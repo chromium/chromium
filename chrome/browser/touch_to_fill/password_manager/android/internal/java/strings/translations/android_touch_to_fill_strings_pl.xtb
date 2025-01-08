@@ -17,6 +17,7 @@
 <translation id="5441504010984421144">Lista uprawnień do wypełnienia po kliknięciu jest otwarta na całą wysokość.</translation>
 <translation id="5591247451101092906">Użyć zapisanego hasła lub klucza?</translation>
 <translation id="5624120631404540903">Zarządzaj hasłami</translation>
+<translation id="592182999816790476">Hasło do witryny <ph name="WEBSITE" /> zapisane dla użytkownika <ph name="USERNAME" /></translation>
 <translation id="6560306912274274630">Klucz dostępu dla użytkownika <ph name="USERNAME" />. Użyj blokady ekranu</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Nowe hasło do tej witryny}few{Nowe hasła do tej witryny}many{Nowe hasła do tej witryny}other{Nowe hasła do tej witryny}}</translation>
 <translation id="7286867818472074330">Wybierz klucz dostępu</translation>

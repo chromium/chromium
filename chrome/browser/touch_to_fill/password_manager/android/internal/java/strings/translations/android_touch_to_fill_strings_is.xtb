@@ -17,6 +17,7 @@
 <translation id="5441504010984421144">Listi yfir innskráningarupplýsingar sem eru færðar inn við snertingu opinn í fullri hæð.</translation>
 <translation id="5591247451101092906">Nota vistað aðgangsorð eða aðgangslykil?</translation>
 <translation id="5624120631404540903">Stjórna aðgangsorðum</translation>
+<translation id="592182999816790476">Aðgangsorð fyrir „<ph name="USERNAME" />“ vistað fyrir „<ph name="WEBSITE" />“</translation>
 <translation id="6560306912274274630">Aðgangslykill fyrir <ph name="USERNAME" />, notaðu skjálásinn</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Nýtt aðgangsorð fyrir þetta vefsvæði}one{Ný aðgangsorð fyrir þetta vefsvæði}other{Ný aðgangsorð fyrir þetta vefsvæði}}</translation>
 <translation id="7286867818472074330">Velja aðgangslykil</translation>

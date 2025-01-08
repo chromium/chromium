@@ -530,6 +530,7 @@
 <translation id="2847759467426165163">Төмөнкүгө чыгаруу</translation>
 <translation id="2848120746144143659">Толук экрандын скриншотун тартып алуу үчүн "Enter" баскычын басыңыз</translation>
 <translation id="2849936225196189499">Олуттуу</translation>
+<translation id="2850207700020959936">Колдонмолор камераны колдоно алышат</translation>
 <translation id="2860184359326882502">Дал келди</translation>
 <translation id="2865888419503095837">Тармак маалыматы</translation>
 <translation id="2869095047958348710">Өткөн <ph name="DAY_OF_WEEK" /></translation>
@@ -584,6 +585,7 @@
 <translation id="304417730895741346">Кадалган жана ачык колдонмолоруңуз текчеде болот. Колдонмону текчеге кадап коюу үчүн колдонмону оң баскыч менен чыкылдатып же сенсордук тактаны эки манжаңыз менен таптап коюңуз.</translation>
 <translation id="3045488863354895414">Кутман күнүңүз менен,</translation>
 <translation id="3047761520276763270">Мындай деп көрүңүз:</translation>
+<translation id="3053407068093039599">Камераны колдонуу мүмкүнчүлүгүн күйгүзүү/өчүрүү</translation>
 <translation id="3055162170959710888">Бүгүн бул түзмөктү <ph name="USED_TIME" /> колдондуңуз</translation>
 <translation id="3062298103034426069">Колдоого алынбайт</translation>
 <translation id="3068622547379332530"><ph name="VERSION_NAME" /> версиясы (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -1800,6 +1802,7 @@
 <translation id="7034025838182392395"><ph name="APP_NAME" /> төмөнкүнү колдонгону жатат: <ph name="DEVICE_NAME" />. Түзмөктөгү кадимки <ph name="DEVICE_NAME" /> которгучун күйгүзүңүз.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Жардамчы</translation>
 <translation id="7042322267639375032">Статус аймагын жыйыштыруу</translation>
+<translation id="7042593542151411225">Колдонмолор камераны колдоно алышпайт</translation>
 <translation id="7045033600005038336">Үлгүнү алмаштырасызбы?</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> ажыратылды</translation>
 <translation id="7055910611768509537">Стилус бир аптадан ашуун колдонулган жок</translation>
@@ -2375,6 +2378,7 @@
 <translation id="9074432941673450836">Колдонмолор аркылуу <ph name="PRODUCT_NAME" /> түзмөгүңүздө каалаган нерселерди аткарыңыз. Колдонмолоруңуз Жүргүзгүчтө жеткиликтүү. Ошондой эле баскычтоптогу Жүргүзгүч баскычын (сол Shift баскычынын үстүндө) бассаңыз болот.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9077515519330855811">Медианы башкаруу элементтери, азыр <ph name="MEDIA_TITLE" /> ойноп жатат</translation>
+<translation id="9079012373317704997">Камераны колдонуу мүмкүнчүлүгүн алыстан күйгүзүүгө болбойт</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">Камера жогорку сол бурчка кадалды</translation>
 <translation id="9080132581049224423">Башкы бетке өтүү үчүн экранды сүрүп коюңуз</translation>

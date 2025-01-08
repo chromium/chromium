@@ -25,6 +25,7 @@
 <translation id="1081932398873105675">{count,plural, =1{{count} tab}other{{count} tabs}}</translation>
 <translation id="1084365883616172403">Facebook post completed.</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> couldn't be opened</translation>
+<translation id="1086468407802688066">The account <ph name="USER_EMAIL" /> is managed by <ph name="HOSTED_DOMAIN" />, which can view some information. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="1096992026380844478">Your sync settings will be restored based on your last backup. <ph name="BEGIN_LINK" />See what you can sync<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Always translate <ph name="LANGUAGE" /></translation>
 <translation id="1108938384783527433">History sync</translation>
@@ -83,6 +84,7 @@
 <translation id="1335767868357998043">Choose address bar position</translation>
 <translation id="1347468774581902829">Manage activity</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
+<translation id="1358106883354237005">Managed account</translation>
 <translation id="1358214951266274152">Visit link that you copied</translation>
 <translation id="1360432990279830238">Sign out and turn off sync?</translation>
 <translation id="1363028406613469049">Track</translation>
@@ -285,6 +287,7 @@
 <translation id="2214453882118345682">Shop, translate and identify what you see with your camera.</translation>
 <translation id="2220529011494928058">Report an issue</translation>
 <translation id="2223461067862937305">Create a QR code</translation>
+<translation id="2229345671837147090">Remote tab grid</translation>
 <translation id="2230173723195178503">Web page loaded</translation>
 <translation id="2236949375853147973">My Activity</translation>
 <translation id="2240256190924001613">Configuration profile available</translation>
@@ -383,6 +386,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2640733327287333451">No username ••••••</translation>
 <translation id="264215785133931186">Checked just now</translation>
 <translation id="2647434099613338025">Add language</translation>
+<translation id="2649592894792404568">You're about to delete your Google Password Manager data</translation>
 <translation id="2652129567809778422">Select password</translation>
 <translation id="2658056020748144467">Unable to open file</translation>
 <translation id="2661809266906115479"><ph name="TITLE" />, <ph name="STATE" />, only on this device, <ph name="URL" /></translation>
@@ -651,6 +655,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3992684624889376114">About this page</translation>
 <translation id="3994422733891749358">Choose the notifications that you want to receive</translation>
 <translation id="3994522032746736727">Sign in as <ph name="EMAIL" /></translation>
+<translation id="3994911892367422121">GOT IT</translation>
 <translation id="3995521777587992544">Page load progress bar, <ph name="EMAIL" /> loaded.</translation>
 <translation id="3997522473364371632">Password sharing is disabled by your administrator.</translation>
 <translation id="4002066346123236978">Title</translation>
@@ -695,6 +700,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4183350924949589798">More security?</translation>
 <translation id="4184063163998877398">{count,plural, =1{{count} weak password}other{{count} weak passwords}}</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} item is saved only to this device. To use it on your other devices, save it in your Google Account, {email}.}other{{count} items are saved only to this device. To use them on your other devices, save them in your Google Account, {email}.}}</translation>
+<translation id="4207873326995387292">Browser information</translation>
 <translation id="421070604241073551">When on, data is saved in your Google Account. When off, data is saved only to this device.</translation>
 <translation id="4224534474590365556">Close 99+ inactive tabs?</translation>
 <translation id="422474357428465195">You have several password issues that could put your security at risk.</translation>
@@ -762,6 +768,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4495516234578759322">Find next</translation>
 <translation id="4502423230170890588">Remove from this device</translation>
 <translation id="4508750114462689118">Close sign-in promo</translation>
+<translation id="4517684186578051919">Device information</translation>
 <translation id="4520798012560649652">Learn more about Incognito mode</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} bookmark}other{{count} bookmarks}}</translation>
 <translation id="4525629404718770519">Show link previews</translation>
@@ -798,6 +805,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4651927776207937667">{count,plural, =1{Hide after 1 minute}other{Hide after {count} minutes}}</translation>
 <translation id="4652817563047461855">Make sure that your passwords are safe, find out if they've been compromised and get advice to help protect yourself online. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Save</translation>
+<translation id="466307903888586355">Saving files is blocked by your organisation</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Your organisation requires you to browse privately. Tab groups aren't synced in Incognito mode.
 <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
@@ -969,6 +977,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="5444892875087332195">Bookmarks</translation>
 <translation id="5452354193031718372">Use strong password:</translation>
 <translation id="5454211924362324495">To stop others from using your password, <ph name="BEGIN_LINK" />change it on <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
+<translation id="5454723301413569630">The account <ph name="USER_EMAIL" /> is managed by <ph name="HOSTED_DOMAIN" />, which can view some information, including</translation>
 <translation id="5457082343331641453">Add to your search</translation>
 <translation id="5457226814769348910">Open offline version</translation>
 <translation id="5478327362747197944">Create calendar events directly by clicking on a date in a web page.</translation>
@@ -1271,6 +1280,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="6641465290890659327">Share a copy of your password</translation>
 <translation id="6642362222295953972">Switch to existing tab</translation>
 <translation id="6644512095122093795">Offer to save passwords</translation>
+<translation id="664573288952458293">Regular tab grid</translation>
 <translation id="6645899968535965230">QR code: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">URLs that you visit are sent to Google to predict what sites you might visit next</translation>
 <translation id="6657585470893396449">Password</translation>
@@ -1371,6 +1381,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7102005569666697658">Downloading… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menu → Settings → Payment methods</translation>
 <translation id="7108338896283013870">Hide</translation>
+<translation id="7128693485119315539">Your organisation may need to see and manage browsing data tied to your managed account, such as your browsing history and passwords.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Camera is unavailable</translation>
 <translation id="7141960840225504692">Your tabs will be closed and browsing data will be deleted</translation>
@@ -1661,6 +1672,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8407669440184693619">No passwords found for this site</translation>
 <translation id="8407831512155324054">Your passwords look strong</translation>
 <translation id="842523302461531262">Make default in settings…</translation>
+<translation id="8425826545759040372">Incognito tab grid</translation>
 <translation id="8428045167754449968">City / Town</translation>
 <translation id="8428213095426709021">Settings</translation>
 <translation id="8428634594422941299">Got it</translation>
@@ -1764,6 +1776,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8813277370772331957">Remind me later</translation>
 <translation id="8814719628147284151">Continue</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
+<translation id="8822421075653507124">To make sure that this device can be used safely, your organisation may need to see information about its operating system, browser, settings and what software is installed on the device.</translation>
 <translation id="8825562130641217944">Get your bookmarks, passwords and more.</translation>
 <translation id="8827154289515190290">The browser that you love, now on iOS</translation>
 <translation id="8831208860914609320">Close all inactive</translation>

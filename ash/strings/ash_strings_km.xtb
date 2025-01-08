@@ -530,6 +530,7 @@
 <translation id="2847759467426165163">ខាសទៅ</translation>
 <translation id="2848120746144143659">ចុច enter ដើម្បីថតរូប​អេក្រង់​ពេញ​អេក្រង់</translation>
 <translation id="2849936225196189499">សំខាន់</translation>
+<translation id="2850207700020959936">កម្មវិធីអាចចូលប្រើកាមេរ៉ាបាន</translation>
 <translation id="2860184359326882502">ត្រូវគ្នាបំផុត</translation>
 <translation id="2865888419503095837">ព័ត៌មាន​បណ្តាញ</translation>
 <translation id="2869095047958348710">កាលពីថ្ងៃ<ph name="DAY_OF_WEEK" />កន្លងទៅនេះ</translation>
@@ -584,6 +585,7 @@
 <translation id="304417730895741346">កម្មវិធី​ដែលបើក និង​បានខ្ទាស់​របស់អ្នក​នៅលើធ្នើរ។ ដើម្បី​ខ្ទាស់កម្មវិធី​ទៅធ្នើរ សូមចុចម៉ៅស៍ខាងស្ដាំ​លើកម្មវិធី ឬចុច​ផ្ទាំងប៉ះ​របស់អ្នក​ដោយប្រើ​ម្រាមដៃពីរ។</translation>
 <translation id="3045488863354895414">ទិវា​សួស្ដី</translation>
 <translation id="3047761520276763270">សាកល្បង​និយាយ​ថា៖</translation>
+<translation id="3053407068093039599">បើក/បិទសិទ្ធិចូលប្រើកាមេរ៉ា</translation>
 <translation id="3055162170959710888">អ្នកបានប្រើឧបករណ៍នេះរយៈពេល <ph name="USED_TIME" /> នៅថ្ងៃនេះ</translation>
 <translation id="3062298103034426069">មិន​អាច​ប្រើបាន</translation>
 <translation id="3068622547379332530">កំណែ <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -1800,6 +1802,7 @@
 <translation id="7034025838182392395"><ph name="APP_NAME" /> ចង់ប្រើ<ph name="DEVICE_NAME" />។ សូម​បើក​ប៊ូតុងបិទបើក​នៅលើ<ph name="DEVICE_NAME" />នៃ​ឧបករណ៍របស់​អ្នក។</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google ជំនួយការ</translation>
 <translation id="7042322267639375032">បង្រួម​តំបន់​ស្ថានភាព</translation>
+<translation id="7042593542151411225">កម្មវិធីមិនអាចចូលប្រើកាមេរ៉ាបានទេ</translation>
 <translation id="7045033600005038336">ប្ដូរទម្រង់គំរូឬ?</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> បានដាច់</translation>
 <translation id="7055910611768509537">មិនបានប្រើប៊ិកជាងមួយសប្ដាហ៍ហើយ</translation>
@@ -2374,6 +2377,7 @@
 <translation id="9074432941673450836">ប្រើកម្មវិធី ដើម្បី​ធ្វើអ្វីៗគ្រប់យ៉ាង​ដែលអ្នកត្រូវការ​នៅលើ <ph name="PRODUCT_NAME" /> របស់អ្នក។ អ្នកអាច​ស្វែងរក​កម្មវិធី​របស់អ្នក​នៅក្នុង​កម្មវិធី​ចាប់ផ្ដើម។ អ្នកក៏អាច​ចុចគ្រាប់ចុច​បើកដំណើរការ (ខាងលើគ្រាប់ចុច Shift ខាងឆ្វេង) នៅលើ​ក្ដារចុច​បានផងដែរ។</translation>
 <translation id="9074739597929991885">ប៊្លូធូស</translation>
 <translation id="9077515519330855811">ការគ្រប់គ្រងមេឌៀ ឥឡូវនេះកំពុងចាក់ <ph name="MEDIA_TITLE" /></translation>
+<translation id="9079012373317704997">មិនអាចបើកសិទ្ធិចូលប្រើកាមេរ៉ាពីចម្ងាយបានទេ</translation>
 <translation id="9079731690316798640">Wi-Fi ៖ <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">បានតម្រៀប​កាមេរ៉ាទៅ​ជ្រុងខាងឆ្វេង​ផ្នែកខាងលើ</translation>
 <translation id="9080132581049224423">អូស​ឡើង​លើ ​ដើម្បី​ចូលអេក្រង់ដើម</translation>

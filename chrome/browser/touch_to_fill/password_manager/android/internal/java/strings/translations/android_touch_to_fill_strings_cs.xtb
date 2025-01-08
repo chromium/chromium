@@ -17,6 +17,7 @@
 <translation id="5441504010984421144">Seznam identifikačních údajů k vyplnění při klepnutí je otevřený na celou výšku.</translation>
 <translation id="5591247451101092906">Použít uložené heslo nebo přístupový klíč?</translation>
 <translation id="5624120631404540903">Spravovat hesla</translation>
+<translation id="592182999816790476">Heslo uživatele <ph name="USERNAME" /> uložené pro web <ph name="WEBSITE" /></translation>
 <translation id="6560306912274274630">Přístupový klíč pro uživatele <ph name="USERNAME" />, použijte zámek obrazovky.</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Nové heslo pro tento web}few{Nová hesla pro tento web}many{Nová hesla pro tento web}other{Nová hesla pro tento web}}</translation>
 <translation id="7286867818472074330">Vybrat přístupový klíč</translation>

@@ -17,6 +17,7 @@
 <translation id="5441504010984421144">'ట‌చ్ చేసి నింపాల్సిన ఆధారాల లిస్ట్‌' పూర్తి ఎత్తులో తెరవబడింది.</translation>
 <translation id="5591247451101092906">సేవ్ చేసిన పాస్‌వర్డ్ లేదా పాస్‌కీని ఉపయోగించాలా?</translation>
 <translation id="5624120631404540903">పాస్‌వర్డ్‌లను నిర్వహించండి</translation>
+<translation id="592182999816790476"><ph name="USERNAME" /> పాస్‌వర్డ్ <ph name="WEBSITE" />‌లో సేవ్ అయింది</translation>
 <translation id="6560306912274274630"><ph name="USERNAME" />‌కు సంబంధించిన పాస్-కీ కోసం, మీ స్క్రీన్ లాక్‌ను ఉపయోగించండి</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{ఈ సైట్ కోసం కొత్త పాస్‌వర్డ్}other{ఈ సైట్ కోసం కొత్త పాస్‌వర్డ్‌లు}}</translation>
 <translation id="7286867818472074330">పాస్-కీని ఎంచుకోండి</translation>

@@ -530,6 +530,7 @@ Otherwise, the built-in touchpad will be re-enabled in <ph name="TIMEOUT_SECONDS
 <translation id="2847759467426165163">Cast to</translation>
 <translation id="2848120746144143659">Press enter to capture full-screen screenshot</translation>
 <translation id="2849936225196189499">Critical</translation>
+<translation id="2850207700020959936">Apps can access camera</translation>
 <translation id="2860184359326882502">Best match</translation>
 <translation id="2865888419503095837">Network info</translation>
 <translation id="2869095047958348710">This past <ph name="DAY_OF_WEEK" /></translation>
@@ -584,6 +585,7 @@ Otherwise, the built-in touchpad will be re-enabled in <ph name="TIMEOUT_SECONDS
 <translation id="304417730895741346">Your pinned and open apps are on the shelf. To pin an app to the shelf, right-click an app or tap your touchpad with two fingers.</translation>
 <translation id="3045488863354895414">Good afternoon,</translation>
 <translation id="3047761520276763270">Try saying:</translation>
+<translation id="3053407068093039599">Turn on/off camera access</translation>
 <translation id="3055162170959710888">You used this device for <ph name="USED_TIME" /> today</translation>
 <translation id="3062298103034426069">Not supported</translation>
 <translation id="3068622547379332530">Version <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -1800,6 +1802,7 @@ New install</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> wants to use the <ph name="DEVICE_NAME" />. Turn on your device's physical <ph name="DEVICE_NAME" /> switch.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
 <translation id="7042322267639375032">Collapse status area</translation>
+<translation id="7042593542151411225">Apps can't access camera</translation>
 <translation id="7045033600005038336">Replace template?</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> disconnected</translation>
 <translation id="7055910611768509537">Stylus has not been used in over a week</translation>
@@ -2375,6 +2378,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="9074432941673450836">Use apps to do everything that you need on your <ph name="PRODUCT_NAME" />. You can find your apps in the Launcher. You can also press the Launcher key (above the left shift key) on the keyboard.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9077515519330855811">Media controls, now playing <ph name="MEDIA_TITLE" /></translation>
+<translation id="9079012373317704997">Can't turn on camera access remotely</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">Camera snapped to the top-left corner</translation>
 <translation id="9080132581049224423">Swipe up to go home</translation>

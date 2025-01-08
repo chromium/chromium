@@ -1313,7 +1313,6 @@
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">Επανάληψη 10 δευτερόλεπτα</translation>
 <translation id="3352881017886802007">Αθλητικά παιχνίδια</translation>
-<translation id="3354508510846323339">Αναφορά <ph name="CURRENT_CITATION" /> από <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Αλλαγή ρυθμίσεων διακομιστή μεσολάβησης...</translation>
 <translation id="335809815767823">Έγινε εξαγωγή</translation>
 <translation id="3359565626472459400">Γάμος</translation>
@@ -3913,6 +3912,7 @@
 <translation id="7975858430722947486">Προστέθηκε στη σύγκριση</translation>
 <translation id="7976214039405368314">Πάρα πολλά αιτήματα</translation>
 <translation id="7977538094055660992">Συσκευή εξόδου</translation>
+<translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{Πριν από <ph name="TIME_COUNT" /> λ.}=1{Πριν από <ph name="TIME_COUNT" /> ω.}other{Πριν από <ph name="TIME_COUNT" /> η.}}</translation>
 <translation id="7979595116210197019">Υπηρεσίες φαγητού</translation>
 <translation id="798134797138789862">Μπορεί να ζητά να χρησιμοποιεί συσκευές και δεδομένα εικονικής πραγματικότητας.</translation>
 <translation id="7982789257301363584">Δίκτυο</translation>

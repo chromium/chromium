@@ -530,6 +530,7 @@
 <translation id="2847759467426165163">Предаване към</translation>
 <translation id="2848120746144143659">Натиснете Enter за създаване на екранна снимка на целия екран</translation>
 <translation id="2849936225196189499">Критично</translation>
+<translation id="2850207700020959936">Приложенията могат да осъществяват достъп до камерата</translation>
 <translation id="2860184359326882502">Най-добро съответствие</translation>
 <translation id="2865888419503095837">Информация за мрежата</translation>
 <translation id="2869095047958348710">Миналият/миналата <ph name="DAY_OF_WEEK" /></translation>
@@ -584,6 +585,7 @@
 <translation id="304417730895741346">Фиксираните и отворените от вас приложения са в лентата. За да фиксирате приложение в лентата, кликнете с десния бутон върху иконата му или докоснете сензорния панел с два пръста.</translation>
 <translation id="3045488863354895414">Добър ден,</translation>
 <translation id="3047761520276763270">Опитайте да кажете:</translation>
+<translation id="3053407068093039599">Включване/изключване на достъпа до камерата</translation>
 <translation id="3055162170959710888">Днес използвахте това устройство <ph name="USED_TIME" /></translation>
 <translation id="3062298103034426069">Не се поддържа</translation>
 <translation id="3068622547379332530">Версия <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />), <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -1800,6 +1802,7 @@
 <translation id="7034025838182392395"><ph name="APP_NAME" /> иска да използва <ph name="DEVICE_NAME" />. Включете физическия превключвател за <ph name="DEVICE_NAME" /> на устройството си.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Асистент</translation>
 <translation id="7042322267639375032">Свиване на лентата на състоянието</translation>
+<translation id="7042593542151411225">Приложенията нямат достъп до камерата</translation>
 <translation id="7045033600005038336">Да се замени ли шаблонът?</translation>
 <translation id="7051244143160304048">Връзката с(ъс) <ph name="DEVICE_NAME" /> е прекратена</translation>
 <translation id="7055910611768509537">Писалката не е използвана от повече от една седмица</translation>
@@ -2375,6 +2378,7 @@
 <translation id="9074432941673450836">Използвайте приложения, за да правите всичко необходимо на своя <ph name="PRODUCT_NAME" />. Можете да намерите приложенията си в стартовия панел. Също така имате възможност да натиснете клавиша „стартов панел“ (над левия клавиш Shift) на клавиатурата.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9077515519330855811">Контроли за мултимедия, сега слушате <ph name="MEDIA_TITLE" /></translation>
+<translation id="9079012373317704997">Достъпът до камерата не може да се включи отдалечено</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">Картината от камерата е прилепена към горния ляв ъгъл</translation>
 <translation id="9080132581049224423">Прекарайте пръст нагоре, за да отворите началния екран</translation>

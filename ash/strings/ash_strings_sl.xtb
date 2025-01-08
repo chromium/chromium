@@ -530,6 +530,7 @@ V nasprotnem primeru bo vgrajena sledilna ploščica znova omogočena čez <ph n
 <translation id="2847759467426165163">Predvajanje v napravi</translation>
 <translation id="2848120746144143659">Pritisnite Enter, če želite zajeti posnetek zaslona v celozaslonskem načinu</translation>
 <translation id="2849936225196189499">Kritično</translation>
+<translation id="2850207700020959936">Aplikacije imajo dostop do kamere</translation>
 <translation id="2860184359326882502">Najboljše ujemanje</translation>
 <translation id="2865888419503095837">Podatki o omrežju</translation>
 <translation id="2869095047958348710">Pretekli/-a <ph name="DAY_OF_WEEK" /></translation>
@@ -584,6 +585,7 @@ V nasprotnem primeru bo vgrajena sledilna ploščica znova omogočena čez <ph n
 <translation id="304417730895741346">Pripete in odprte aplikacije so na polici. Če želite aplikacijo pripeti na polico, z desnim gumbom kliknite aplikacijo ali se dotaknite sledilne ploščice z dvema prstoma.</translation>
 <translation id="3045488863354895414">Dober dan,</translation>
 <translation id="3047761520276763270">Recite:</translation>
+<translation id="3053407068093039599">Vklop/izklop dostopa do kamere</translation>
 <translation id="3055162170959710888">To napravo si danes uporabljal <ph name="USED_TIME" /></translation>
 <translation id="3062298103034426069">Ni podprto</translation>
 <translation id="3068622547379332530">Različica <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -1800,6 +1802,7 @@ Nova namestitev</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> želi uporabljati napravo <ph name="DEVICE_NAME" />. Vklopite fizično stikalo naprave <ph name="DEVICE_NAME" />.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Pomočnik Google</translation>
 <translation id="7042322267639375032">Strnitev območja stanja</translation>
+<translation id="7042593542151411225">Aplikacije nimajo dostopa do kamere</translation>
 <translation id="7045033600005038336">Želite zamenjati predlogo?</translation>
 <translation id="7051244143160304048">Povezava z napravo <ph name="DEVICE_NAME" /> je prekinjena.</translation>
 <translation id="7055910611768509537">Pisala niste uporabljali več kot en teden.</translation>
@@ -2375,6 +2378,7 @@ Nova namestitev</translation>
 <translation id="9074432941673450836">Za vse, kar morate opraviti v napravi <ph name="PRODUCT_NAME" />, lahko uporabite aplikacije. Aplikacije so na voljo v zaganjalniku. Pritisnete lahko tudi tipko za zaganjalnik (nad levo tipko Shift) na tipkovnici.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9077515519330855811">Kontrolniki predstavnosti – zdaj se predvaja <ph name="MEDIA_TITLE" /></translation>
+<translation id="9079012373317704997">Dostopa do kamere ni mogoče vklopiti na daljavo</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">Fotoaparat je pripet v zgornji levi kot</translation>
 <translation id="9080132581049224423">Povlecite navzgor za začetni zaslon</translation>

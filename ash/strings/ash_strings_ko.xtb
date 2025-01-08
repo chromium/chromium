@@ -530,6 +530,7 @@
 <translation id="2847759467426165163">전송할 기기</translation>
 <translation id="2848120746144143659">전체 화면 스크린샷을 캡처하려면 Enter를 누르세요</translation>
 <translation id="2849936225196189499">중요</translation>
+<translation id="2850207700020959936">앱이 카메라에 액세스할 수 있음</translation>
 <translation id="2860184359326882502">가장 일치하는 결과</translation>
 <translation id="2865888419503095837">네트워크 정보</translation>
 <translation id="2869095047958348710">지난 <ph name="DAY_OF_WEEK" /></translation>
@@ -584,6 +585,7 @@
 <translation id="304417730895741346">앱 표시줄에서 고정된 앱과 열려 있는 앱을 확인할 수 있습니다. 앱 표시줄에 앱을 고정하려면 앱을 마우스 오른쪽 버튼으로 클릭하거나 두 손가락으로 터치패드를 탭합니다.</translation>
 <translation id="3045488863354895414">즐거운 오후 보내세요</translation>
 <translation id="3047761520276763270">다음과 같이 말해 보세요.</translation>
+<translation id="3053407068093039599">카메라 액세스 사용 설정/중지</translation>
 <translation id="3055162170959710888">오늘 이 기기를 <ph name="USED_TIME" /> 동안 사용했습니다.</translation>
 <translation id="3062298103034426069">지원되지 않음</translation>
 <translation id="3068622547379332530">버전 <ph name="VERSION_NAME" />(<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /><ph name="PROCESSOR_VARIATION" /></translation>
@@ -1800,6 +1802,7 @@
 <translation id="7034025838182392395"><ph name="APP_NAME" />에서 <ph name="DEVICE_NAME" /> 기기를 사용하려고 합니다. 기기의 물리적 <ph name="DEVICE_NAME" /> 스위치를 켜세요.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google 어시스턴트</translation>
 <translation id="7042322267639375032">상태 영역 접기</translation>
+<translation id="7042593542151411225">앱이 카메라에 액세스할 수 없음</translation>
 <translation id="7045033600005038336">템플릿을 교체하시겠습니까?</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> 연결 해제됨</translation>
 <translation id="7055910611768509537">1주일 넘게 스타일러스가 사용되지 않았습니다.</translation>
@@ -2375,6 +2378,7 @@
 <translation id="9074432941673450836">앱을 사용하여 <ph name="PRODUCT_NAME" />에서 필요한 모든 작업을 수행해 보세요. 런처에서 앱을 찾을 수 있습니다. 키보드의 왼쪽 Shift 키 위에 있는 런처 키를 누를 수도 있습니다.</translation>
 <translation id="9074739597929991885">블루투스</translation>
 <translation id="9077515519330855811">미디어 제어 기능, 현재 <ph name="MEDIA_TITLE" /> 재생 중</translation>
+<translation id="9079012373317704997">카메라 액세스를 원격으로 사용 설정할 수 없음</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">카메라 미리보기가 왼쪽 상단으로 맞춰졌습니다</translation>
 <translation id="9080132581049224423">위로 스와이프하여 홈으로 이동</translation>

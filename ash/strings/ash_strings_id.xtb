@@ -530,6 +530,7 @@ Jika tidak, touchpad bawaan akan diaktifkan kembali dalam <ph name="TIMEOUT_SECO
 <translation id="2847759467426165163">Transmisikan ke</translation>
 <translation id="2848120746144143659">Tekan Enter untuk mengambil screenshot layar penuh</translation>
 <translation id="2849936225196189499">Kritis</translation>
+<translation id="2850207700020959936">Aplikasi dapat mengakses kamera</translation>
 <translation id="2860184359326882502">Paling Cocok</translation>
 <translation id="2865888419503095837">Info jaringan</translation>
 <translation id="2869095047958348710"><ph name="DAY_OF_WEEK" /> yang lalu</translation>
@@ -584,6 +585,7 @@ Jika tidak, touchpad bawaan akan diaktifkan kembali dalam <ph name="TIMEOUT_SECO
 <translation id="304417730895741346">Aplikasi yang disematkan dan terbuka ada di rak. Untuk menyematkan aplikasi ke rak, klik kanan aplikasi atau ketuk touchpad menggunakan dua jari.</translation>
 <translation id="3045488863354895414">Selamat siang,</translation>
 <translation id="3047761520276763270">Coba ucapkan:</translation>
+<translation id="3053407068093039599">Aktifkan/nonaktifkan akses kamera</translation>
 <translation id="3055162170959710888">Anda menggunakan perangkat ini selama <ph name="USED_TIME" /> hari ini</translation>
 <translation id="3062298103034426069">Tidak didukung</translation>
 <translation id="3068622547379332530">Versi <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -1800,6 +1802,7 @@ Baru diinstal</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> ingin menggunakan <ph name="DEVICE_NAME" />. Aktifkan tombol <ph name="DEVICE_NAME" /> fisik perangkat.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Asisten Google</translation>
 <translation id="7042322267639375032">Ciutkan area status</translation>
+<translation id="7042593542151411225">Aplikasi tidak dapat mengakses kamera</translation>
 <translation id="7045033600005038336">Ganti template?</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> terputus</translation>
 <translation id="7055910611768509537">Stilus tidak digunakan lebih dari seminggu</translation>
@@ -2375,6 +2378,7 @@ Untuk mematikan perangkat, tekan lama tombol daya di perangkat lagi.</translatio
 <translation id="9074432941673450836">Gunakan aplikasi untuk melakukan semua hal yang Anda perlukan di <ph name="PRODUCT_NAME" />. Anda dapat menemukan aplikasi di Peluncur. Anda juga dapat menekan tombol Peluncur (di atas tombol Shift kiri) di keyboard.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9077515519330855811">Kontrol media, sedang memutar <ph name="MEDIA_TITLE" /></translation>
+<translation id="9079012373317704997">Tidak dapat mengaktifkan akses kamera dari jarak jauh</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">Kamera dipaskan ke pojok kiri atas</translation>
 <translation id="9080132581049224423">Geser ke atas untuk membuka beranda</translation>

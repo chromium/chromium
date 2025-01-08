@@ -530,6 +530,7 @@
 <translation id="2847759467426165163">Транслювати на</translation>
 <translation id="2848120746144143659">Щоб зробити знімок усього екрана, натисніть клавішу Enter</translation>
 <translation id="2849936225196189499">Вирішальні</translation>
+<translation id="2850207700020959936">Додатки мають доступ до камери</translation>
 <translation id="2860184359326882502">Найвідповідніші</translation>
 <translation id="2865888419503095837">Інформація про мережу</translation>
 <translation id="2869095047958348710"><ph name="DAY_OF_WEEK" /> цього тижня</translation>
@@ -584,6 +585,7 @@
 <translation id="304417730895741346">Закріплені й відкриті додатки відображаються на панелі запуску. Щоб закріпити додаток на цій панелі, натисніть його правою кнопкою миші або торкніться сенсорної панелі двома пальцями.</translation>
 <translation id="3045488863354895414">Доброго дня!</translation>
 <translation id="3047761520276763270">Спробуйте сказати:</translation>
+<translation id="3053407068093039599">Надати/скасувати доступ до камери</translation>
 <translation id="3055162170959710888">Сьогодні цей пристрій працював <ph name="USED_TIME" /></translation>
 <translation id="3062298103034426069">Не підтримується</translation>
 <translation id="3068622547379332530">Версія <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />), <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -1800,6 +1802,7 @@
 <translation id="7034025838182392395">Додаток <ph name="APP_NAME" /> хоче використовувати цей пристрій: <ph name="DEVICE_NAME" />. Увімкніть фізичний перемикач на пристрої (<ph name="DEVICE_NAME" />).</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Асистент</translation>
 <translation id="7042322267639375032">Згорнути панель стану</translation>
+<translation id="7042593542151411225">Додатки не мають доступу до камери</translation>
 <translation id="7045033600005038336">Замінити шаблон?</translation>
 <translation id="7051244143160304048">Пристрій <ph name="DEVICE_NAME" /> від’єднано</translation>
 <translation id="7055910611768509537">Стилус не використовувався більше ніж тиждень</translation>
@@ -2375,6 +2378,7 @@
 <translation id="9074432941673450836">Виконуйте різні завдання за допомогою додатків на <ph name="PRODUCT_NAME" />. Їх можна знайти на Панелі запуску. Ви також можете натиснути клавішу Панелі запуску (над лівою клавішею Shift) на клавіатурі.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9077515519330855811">Елементи керування медіа, зараз грає <ph name="MEDIA_TITLE" /></translation>
+<translation id="9079012373317704997">Не вдалося надати доступ до камери через віддалене керування</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">Зображення з камери прикріплено у верхньому лівому куті</translation>
 <translation id="9080132581049224423">Щоб перейти на головний екран, проведіть пальцем угору</translation>

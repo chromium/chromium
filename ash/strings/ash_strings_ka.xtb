@@ -530,6 +530,7 @@
 <translation id="2847759467426165163">ტრანსლირება</translation>
 <translation id="2848120746144143659">ეკრანის სრული ანაბეჭდის აღსაბეჭდად დააჭირეთ Enter-ს</translation>
 <translation id="2849936225196189499">კრიტიკული</translation>
+<translation id="2850207700020959936">აპებს აქვს კამერაზე წვდომა</translation>
 <translation id="2860184359326882502">საუკეთესო დამთხვევა</translation>
 <translation id="2865888419503095837">ქსელის ინფორმაცია</translation>
 <translation id="2869095047958348710">გასული <ph name="DAY_OF_WEEK" /></translation>
@@ -584,6 +585,7 @@
 <translation id="304417730895741346">თქვენ მიერ ჩამაგრებული და გახსნილი აპები თაროზეა. აპი თაროზე რომ ჩაამაგროთ, მარჯვენა ღილაკით დააწკაპუნეთ აპს, ან შეეხეთ სენსორულ პანელს ორი თითით.</translation>
 <translation id="3045488863354895414">შუადღე მშვიდობის,</translation>
 <translation id="3047761520276763270">ცადეთ, თქვათ:</translation>
+<translation id="3053407068093039599">კამერაზე წვდომის ჩართვა/გამორთვა</translation>
 <translation id="3055162170959710888">ამ მოწყობილობას დღეს <ph name="USED_TIME" /> იყენებდით</translation>
 <translation id="3062298103034426069">მხარდაუჭერელია</translation>
 <translation id="3068622547379332530">ვერსია <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -1800,6 +1802,7 @@
 <translation id="7034025838182392395"><ph name="APP_NAME" />-ს სურს, გამოიყენოს <ph name="DEVICE_NAME" />. ჩართეთ მოწყობილობის ფიზიკური გადამრთველი, რომლითაც რეგულირდება <ph name="DEVICE_NAME" />.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google ასისტენტი</translation>
 <translation id="7042322267639375032">სტატუსის არის ჩაკეცვა</translation>
+<translation id="7042593542151411225">აპებს არ აქვს კამერაზე წვდომა</translation>
 <translation id="7045033600005038336">გსურთ, ჩაანაცვლოთ შაბლონი?</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> გათიშულია</translation>
 <translation id="7055910611768509537">სტილუსი არ გამოგიყენებიათ ერთ კვირაზე მეტი ხნის განმავლობაში</translation>
@@ -2375,6 +2378,7 @@
 <translation id="9074432941673450836">გამოიყენეთ აპები, რომლებიც <ph name="PRODUCT_NAME" />-ზე ყველაფრის შესრულებაში დაგეხმარებათ. თქვენი აპების პოვნა შეგიძლიათ გამშვებში. გარდა ამისა, შეგიძლიათ კლავიატურაზე დააჭიროთ გამშვების კლავიშს (ის მოცემულია მარცხენა shift კლავიშის თავზე).</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9077515519330855811">მედიის მართვის საშუალებები, ახლა უკრავს <ph name="MEDIA_TITLE" /></translation>
+<translation id="9079012373317704997">შეუძლებელია კამერაზე წვდომის დისტანციურად ჩართვა</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">კამერა მიზიდულია ზედა მარცხენა კუთხეში</translation>
 <translation id="9080132581049224423">მთავარ გვერდზე გადასასვლელად გადაფურცლეთ ზემოთ</translation>

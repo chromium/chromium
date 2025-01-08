@@ -530,6 +530,7 @@
 <translation id="2847759467426165163">投放到</translation>
 <translation id="2848120746144143659">按 Enter 键即可截取整个屏幕</translation>
 <translation id="2849936225196189499">关键</translation>
+<translation id="2850207700020959936">应用可以使用摄像头</translation>
 <translation id="2860184359326882502">最匹配</translation>
 <translation id="2865888419503095837">网络信息</translation>
 <translation id="2869095047958348710">上个<ph name="DAY_OF_WEEK" /></translation>
@@ -584,6 +585,7 @@
 <translation id="304417730895741346">您已固定的应用和已打开的应用会显示在任务栏上。若要将某个应用固定到任务栏，请右键点击该应用或用双指点按触控板。</translation>
 <translation id="3045488863354895414">下午好！</translation>
 <translation id="3047761520276763270">试着说：</translation>
+<translation id="3053407068093039599">开启/关闭摄像头使用权限</translation>
 <translation id="3055162170959710888">您今天的设备使用时长：<ph name="USED_TIME" /></translation>
 <translation id="3062298103034426069">不支持</translation>
 <translation id="3068622547379332530">版本 <ph name="VERSION_NAME" />（<ph name="OFFICIAL_STATUS" />）<ph name="CHANNEL_NAME" /><ph name="PROCESSOR_VARIATION" /></translation>
@@ -1798,6 +1800,7 @@
 <translation id="7034025838182392395"><ph name="APP_NAME" />想使用<ph name="DEVICE_NAME" />。请开启您设备的物理<ph name="DEVICE_NAME" />开关。</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />，Google 助理</translation>
 <translation id="7042322267639375032">收起状态区</translation>
+<translation id="7042593542151411225">应用无法使用摄像头</translation>
 <translation id="7045033600005038336">替换此模板？</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" />已断开连接</translation>
 <translation id="7055910611768509537">触控笔已被闲置不止 1 周了</translation>
@@ -2373,6 +2376,7 @@
 <translation id="9074432941673450836">您可在 <ph name="PRODUCT_NAME" /> 上使用应用完成各种任务。可以在启动器中查找相关应用。也可按一下键盘上的启动器键（位于左侧 Shift 键上方）。</translation>
 <translation id="9074739597929991885">蓝牙</translation>
 <translation id="9077515519330855811">媒体控件，正在播放《<ph name="MEDIA_TITLE" />》</translation>
+<translation id="9079012373317704997">无法远程开启摄像头使用权限</translation>
 <translation id="9079731690316798640">Wi-Fi：<ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">相机已对准左上角</translation>
 <translation id="9080132581049224423">向上滑动可转到主屏幕</translation>

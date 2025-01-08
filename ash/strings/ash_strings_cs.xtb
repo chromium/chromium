@@ -530,6 +530,7 @@ Když to neuděláte, vestavěný touchpad se za <ph name="TIMEOUT_SECONDS" /> z
 <translation id="2847759467426165163">Odesílat do</translation>
 <translation id="2848120746144143659">Stisknutím klávesy Enter zachytíte snímek celé obrazovky</translation>
 <translation id="2849936225196189499">Kritické</translation>
+<translation id="2850207700020959936">Aplikace mají přístup k fotoaparátu</translation>
 <translation id="2860184359326882502">Nejlepší shoda</translation>
 <translation id="2865888419503095837">Informace o síti</translation>
 <translation id="2869095047958348710">Poslední <ph name="DAY_OF_WEEK" /></translation>
@@ -584,6 +585,7 @@ Když to neuděláte, vestavěný touchpad se za <ph name="TIMEOUT_SECONDS" /> z
 <translation id="304417730895741346">Vaše připnuté a otevřené aplikace jsou na poličce. Aplikaci na poličku připnete tak, že na ni klepnete pravým tlačítkem nebo že klepnete dvěma prsty na touchpad.</translation>
 <translation id="3045488863354895414">Dobré odpoledne,</translation>
 <translation id="3047761520276763270">Řekněte:</translation>
+<translation id="3053407068093039599">Zapnout/vypnout přístup k fotoaparátu</translation>
 <translation id="3055162170959710888">Toto zařízení jsi dnes používal(a) <ph name="USED_TIME" /></translation>
 <translation id="3062298103034426069">Nepodporováno</translation>
 <translation id="3068622547379332530">Verze <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -1800,6 +1802,7 @@ Nová instalace</translation>
 <translation id="7034025838182392395">Aplikace <ph name="APP_NAME" /> chce použít tento hardware: <ph name="DEVICE_NAME" />. Zapněte na zařízení fyzický vypínač hardwarové komponenty <ph name="DEVICE_NAME" />.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Asistent Google</translation>
 <translation id="7042322267639375032">Sbalit stavovou oblast</translation>
+<translation id="7042593542151411225">Aplikace nemají přístup k fotoaparátu</translation>
 <translation id="7045033600005038336">Nahradit šablonu?</translation>
 <translation id="7051244143160304048">Zařízení <ph name="DEVICE_NAME" /> je odpojeno</translation>
 <translation id="7055910611768509537">Dotykové pero nebylo použito více než týden</translation>
@@ -2373,6 +2376,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="9074432941673450836">Pomocí aplikací můžete na zařízení <ph name="PRODUCT_NAME" /> dělat vše, co potřebujete. Své aplikace najdete ve Spouštěči. Můžete také stisknout klávesu Spouštěče na klávesnici (nad levou klávesou Shift).</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9077515519330855811">Ovládací prvky médií, probíhá přehrávání <ph name="MEDIA_TITLE" /></translation>
+<translation id="9079012373317704997">Přístup k fotoaparátu nelze zapnout vzdáleně</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">Kamera byl připnuta do levého horního rohu</translation>
 <translation id="9080132581049224423">Přejetím nahoru se vrátíte na plochu</translation>

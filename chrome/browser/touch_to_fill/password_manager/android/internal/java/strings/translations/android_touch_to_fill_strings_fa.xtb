@@ -17,6 +17,7 @@
 <translation id="5441504010984421144">فهرست اطلاعات کاربری که باید با لمس کردن تکمیل شود کاملاً باز شد.</translation>
 <translation id="5591247451101092906">از گذرواژه یا گذرکلید ذخیره‌شده استفاده شود؟</translation>
 <translation id="5624120631404540903">مدیریت گذرواژه‌ها</translation>
+<translation id="592182999816790476">گذرواژه <ph name="USERNAME" /> برای <ph name="WEBSITE" /> ذخیره شد</translation>
 <translation id="6560306912274274630">گذرکلید برای <ph name="USERNAME" />، از قفل صفحه استفاده کنید</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{گذرواژه جدید برای این سایت}one{گذرواژه جدید برای این سایت}other{گذرواژه‌های جدید برای این سایت}}</translation>
 <translation id="7286867818472074330">انتخاب گذرکلید</translation>

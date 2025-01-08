@@ -530,6 +530,7 @@ Annars aktiveras den inbyggda styrplattan igen om <ph name="TIMEOUT_SECONDS" />.
 <translation id="2847759467426165163">Casta till</translation>
 <translation id="2848120746144143659">Tryck på retur för att ta en skärmbild av hela skärmen</translation>
 <translation id="2849936225196189499">Kritiskt</translation>
+<translation id="2850207700020959936">Appar har åtkomst till kameran</translation>
 <translation id="2860184359326882502">Bästa träffen</translation>
 <translation id="2865888419503095837">Nätverksinformation</translation>
 <translation id="2869095047958348710">I <ph name="DAY_OF_WEEK" />s</translation>
@@ -584,6 +585,7 @@ Annars aktiveras den inbyggda styrplattan igen om <ph name="TIMEOUT_SECONDS" />.
 <translation id="304417730895741346">Dina fästa och öppna appar finns på hyllan. Om du vill fästa en app på hyllan kan du högerklicka på appen eller trycka på styrplattan med två fingrar.</translation>
 <translation id="3045488863354895414">Hej!</translation>
 <translation id="3047761520276763270">Testa att säga detta:</translation>
+<translation id="3053407068093039599">Aktivera/inaktivera kameraåtkomst</translation>
 <translation id="3055162170959710888">Du har använt den här enheten i <ph name="USED_TIME" /> i dag</translation>
 <translation id="3062298103034426069">Stöds inte</translation>
 <translation id="3068622547379332530">Version <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -1800,6 +1802,7 @@ Nyligen installerad</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> vill använda <ph name="DEVICE_NAME" />. Aktivera det fysiska reglaget för <ph name="DEVICE_NAME" /> på enheten.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistent</translation>
 <translation id="7042322267639375032">Komprimera statusfält</translation>
+<translation id="7042593542151411225">Appar har inte åtkomst till kameran</translation>
 <translation id="7045033600005038336">Vill du ersätta mallen?</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> har kopplats från</translation>
 <translation id="7055910611768509537">E-pennan har inte använts på över en vecka.</translation>
@@ -2375,6 +2378,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="9074432941673450836">Använd appar för att göra allt du behöver på din <ph name="PRODUCT_NAME" />. Du hittar dina appar i Appstartaren. Du kan även trycka på tangenten för Appstartaren (ovanför den vänstra Skift-tangenten) på tangentbordet.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9077515519330855811">Uppspelningskontroller, nu spelas <ph name="MEDIA_TITLE" /></translation>
+<translation id="9079012373317704997">Det gick inte att fjärraktivera kameraåtkomst</translation>
 <translation id="9079731690316798640">wifi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">Kameran har fästs i det övre vänstra hörnet</translation>
 <translation id="9080132581049224423">Svep uppåt för att öppna startsidan</translation>

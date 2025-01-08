@@ -1312,7 +1312,6 @@
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">10 സെക്കൻഡ് വീണ്ടും പ്ലേ ചെയ്യുക</translation>
 <translation id="3352881017886802007">സ്പോർട്‌സ് ഗെയിമുകൾ</translation>
-<translation id="3354508510846323339">അവലംബം <ph name="MAX_CITATIONS" />-ൽ <ph name="CURRENT_CITATION" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">പ്രോക്സി ക്രമീകരണങ്ങള്‍ മാറ്റുക...</translation>
 <translation id="335809815767823">എക്സ്പോർട്ട് ചെയ്തു</translation>
 <translation id="3359565626472459400">വിവാഹം</translation>
@@ -1695,6 +1694,7 @@
 <translation id="3990532701115075684">നിങ്ങളുടെ കൈകൾ ട്രാക്ക് ചെയ്യാൻ</translation>
 <translation id="3992684624889376114">ഈ പേജിനെക്കുറിച്ച്</translation>
 <translation id="3995639283717357522">നയങ്ങൾ ബാധകമാക്കുക</translation>
+<translation id="3996683183117168945">അവലംബം <ph name="MAX_CITATIONS" />-ൽ <ph name="CURRENT_CITATION" />-ാമത്തേത്, <ph name="PRODUCT_NAME" />, <ph name="URL" /> <ph name="PAGE_TITLE" />. <ph name="PAGE_PREVIEW" />.</translation>
 <translation id="399754345297554962">ഏകീകൃത, പ്രവേശന ടെസ്റ്റുകൾ</translation>
 <translation id="3999173941208168054">ഹൊറർ സിനിമകൾ</translation>
 <translation id="4000598935132966791">മാനേജ് ചെയ്യപ്പെടുന്ന ബ്രൗസറുകളിലെ സൈറ്റ് നിയന്ത്രണങ്ങളെക്കുറിച്ച് കൂടുതലറിയുക</translation>
@@ -3908,6 +3908,7 @@
 <translation id="7975858430722947486">'താരതമ്യത്തിലേക്ക്' ചേർത്തു</translation>
 <translation id="7976214039405368314">നിരവധി അഭ്യർത്ഥനകൾ</translation>
 <translation id="7977538094055660992">ഔട്ട്പുട്ട് ഉപകരണം</translation>
+<translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> മിനിറ്റ് മുമ്പ്}=1{<ph name="TIME_COUNT" /> മണിക്കൂർ മുമ്പ്}other{<ph name="TIME_COUNT" /> ദിവസം മുമ്പ്}}</translation>
 <translation id="7979595116210197019">ഭക്ഷണ സേവനം</translation>
 <translation id="798134797138789862">വെർച്വൽ റിയാലിറ്റി ഉപകരണങ്ങളും ഡാറ്റയും ഉപയോഗിക്കാൻ ആവശ്യപ്പെടാം</translation>
 <translation id="7982789257301363584">നെറ്റ്‌വർക്ക്</translation>

@@ -1310,7 +1310,6 @@
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">10 வினாடிகளை மீண்டும் பிளே செய்</translation>
 <translation id="3352881017886802007">ஸ்போர்ட்ஸ் கேம்கள்</translation>
-<translation id="3354508510846323339">மேற்கோள் <ph name="CURRENT_CITATION" /> / <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">ப்ராக்ஸி அமைப்புகளை மாற்றுக...</translation>
 <translation id="335809815767823">பதிவேற்றப்பட்டது</translation>
 <translation id="3359565626472459400">திருமணம்</translation>
@@ -1692,6 +1691,7 @@
 <translation id="3990532701115075684">கை அசைவை டிராக் செய்தல்</translation>
 <translation id="3992684624889376114">இந்தப் பக்கம் - ஓர் அறிமுகம்</translation>
 <translation id="3995639283717357522">கொள்கைகளைப் பயன்படுத்து</translation>
+<translation id="3996683183117168945">மேற்கோள் <ph name="CURRENT_CITATION" />/<ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" />. <ph name="PAGE_TITLE" />. <ph name="PAGE_PREVIEW" />.</translation>
 <translation id="399754345297554962">நிலையான மற்றும் சேர்க்கைகளுக்கான தேர்வுகள்</translation>
 <translation id="3999173941208168054">பேய் திரைப்படங்கள்</translation>
 <translation id="4000598935132966791">நிர்வகிக்கப்பட்ட உலாவிகளில் தளக் கட்டுப்பாடுகள் குறித்து மேலும் தெரிந்துகொள்ளலாம்</translation>
@@ -3906,6 +3906,7 @@
 <translation id="7975858430722947486">ஒப்பீட்டிற்குச் சேர்க்கப்பட்டது</translation>
 <translation id="7976214039405368314">அளவுக்கு அதிகமான கோரிக்கைகள்</translation>
 <translation id="7977538094055660992">அவுட்புட் சாதனம்</translation>
+<translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" />நி முன்பு}=1{<ph name="TIME_COUNT" />ம.நே முன்பு}other{<ph name="TIME_COUNT" />நா முன்பு}}</translation>
 <translation id="7979595116210197019">உணவுச் சேவை</translation>
 <translation id="798134797138789862">விர்ச்சுவல் ரியாலிட்டி சாதனங்களையும் தரவையும் பயன்படுத்த முயலும்போது அனுமதி கேட்க வேண்டும்</translation>
 <translation id="7982789257301363584">நெட்வொர்க்</translation>

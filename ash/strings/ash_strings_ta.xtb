@@ -530,6 +530,7 @@
 <translation id="2847759467426165163">இதற்கு அலைபரப்பு</translation>
 <translation id="2848120746144143659">முழுத்திரையை ஸ்கிரீன்ஷாட் எடுக்க Enter பட்டனை அழுத்தவும்</translation>
 <translation id="2849936225196189499">சிக்கலான</translation>
+<translation id="2850207700020959936">ஆப்ஸால் கேமராவை அணுக முடியும்</translation>
 <translation id="2860184359326882502">சிறப்பாகப் பொருந்துபவை</translation>
 <translation id="2865888419503095837">நெட்வொர்க் தகவல்</translation>
 <translation id="2869095047958348710">கடந்த <ph name="DAY_OF_WEEK" /></translation>
@@ -584,6 +585,7 @@
 <translation id="304417730895741346">பின் செய்யப்பட்டுள்ள ஆப்ஸும் திறந்துள்ள ஆப்ஸும் ஷெல்ஃபில் உள்ளன. ஓர் ஆப்ஸை ஷெல்ஃபில் பின் செய்ய, ஆப்ஸின் மீது வலது கிளிக் செய்யவும் அல்லது டச்பேடை இரண்டு விரல்களால் தட்டவும்.</translation>
 <translation id="3045488863354895414">மதிய வணக்கம்,</translation>
 <translation id="3047761520276763270">இதைக் கூறி முயலவும்:</translation>
+<translation id="3053407068093039599">கேமரா அணுகலை இயக்கு/முடக்கு</translation>
 <translation id="3055162170959710888">இந்தச் சாதனத்தை இன்று <ph name="USED_TIME" /> பயன்படுத்தியுள்ளீர்கள்</translation>
 <translation id="3062298103034426069">ஆதரிக்கப்படவில்லை</translation>
 <translation id="3068622547379332530">பதிப்பு <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -1800,6 +1802,7 @@
 <translation id="7034025838182392395"><ph name="APP_NAME" /> ஆப்ஸ் உங்கள் <ph name="DEVICE_NAME" /> ஐப் பயன்படுத்த விரும்புகிறது. உங்கள் சாதனத்தின் <ph name="DEVICE_NAME" /> சுவிட்ச்சை இயக்கவும்.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google அசிஸ்டண்ட்</translation>
 <translation id="7042322267639375032">நிலைப் பகுதியை சுருக்கும்</translation>
+<translation id="7042593542151411225">ஆப்ஸால் கேமராவை அணுக முடியவில்லை</translation>
 <translation id="7045033600005038336">டெம்ப்ளேட்டை மாற்றியமைக்கவா?</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> துண்டிக்கப்பட்டது</translation>
 <translation id="7055910611768509537">ஒரு வாரத்திற்கும் மேலாக ஸ்டைலஸ் பயன்படுத்தப்படவில்லை</translation>
@@ -2375,6 +2378,7 @@
 <translation id="9074432941673450836"><ph name="PRODUCT_NAME" /> சாதனத்தில் உங்களுக்குத் தேவையான அனைத்தையும் செய்ய ஆப்ஸைப் பயன்படுத்தலாம். ஆப்ஸை தொடக்கியில் பார்க்கலாம். கீபோர்டில் தொடக்கி பட்டனை (இடது Shift பட்டனுக்கு மேலே உள்ளது) அழுத்தியும் பார்க்கலாம்.</translation>
 <translation id="9074739597929991885">புளூடூத்</translation>
 <translation id="9077515519330855811">மீடியா கட்டுப்பாடுகள், இப்போது பிளேயாவது: <ph name="MEDIA_TITLE" /></translation>
+<translation id="9079012373317704997">கேமரா அணுகலைத் தொலைவிலிருந்து இயக்க முடியாது</translation>
 <translation id="9079731690316798640">வைஃபை: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">கேமரா மாதிரிக்காட்சி மேல் இடது மூலையில் பொருத்தப்பட்டது</translation>
 <translation id="9080132581049224423">முகப்புக்குச் செல்ல மேலே ஸ்வைப் செய்யவும்</translation>

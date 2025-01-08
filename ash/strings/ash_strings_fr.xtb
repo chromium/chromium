@@ -530,6 +530,7 @@ Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS
 <translation id="2847759467426165163">Caster sur</translation>
 <translation id="2848120746144143659">Appuyez sur Entrée pour faire une capture de tout l'écran</translation>
 <translation id="2849936225196189499">Essentielle</translation>
+<translation id="2850207700020959936">Les applis peuvent accéder à la caméra</translation>
 <translation id="2860184359326882502">Meilleure correspondance</translation>
 <translation id="2865888419503095837">Informations réseau</translation>
 <translation id="2869095047958348710"><ph name="DAY_OF_WEEK" /> dernier</translation>
@@ -584,6 +585,7 @@ Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS
 <translation id="304417730895741346">Vos applis épinglées et ouvertes se trouvent sur l'étagère. Pour épingler une appli à l'étagère, effectuez un clic droit sur l'appli ou appuyez sur le pavé tactile avec deux doigts.</translation>
 <translation id="3045488863354895414">Bonjour,</translation>
 <translation id="3047761520276763270">Essayez de dire :</translation>
+<translation id="3053407068093039599">Activer/Désactiver l'accès à la caméra</translation>
 <translation id="3055162170959710888">Vous avez utilisé l'appareil pendant <ph name="USED_TIME" /> aujourd'hui</translation>
 <translation id="3062298103034426069">Non compatible</translation>
 <translation id="3068622547379332530">Version <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -1800,6 +1802,7 @@ Nouvelle installation</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> souhaite utiliser <ph name="DEVICE_NAME" />. Activez <ph name="DEVICE_NAME" /> à l'aide du bouton physique.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Assistant Google</translation>
 <translation id="7042322267639375032">Réduire la zone d'état</translation>
+<translation id="7042593542151411225">Les applis ne peuvent pas accéder à la caméra</translation>
 <translation id="7045033600005038336">Remplacer le modèle ?</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> déconnecté(s)</translation>
 <translation id="7055910611768509537">Stylet inutilisé depuis plus d'une semaine</translation>
@@ -2375,6 +2378,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="9074432941673450836">Utilisez des applis pour tout ce dont vous avez besoin sur votre <ph name="PRODUCT_NAME" />. Vous trouverez vos applis dans le Lanceur d'applications. Vous pouvez également appuyer sur la touche Lanceur d'applications (au-dessus de la touche Maj gauche) du clavier.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9077515519330855811">Commandes multimédias sélectionnées. Vous écoutez actuellement <ph name="MEDIA_TITLE" /></translation>
+<translation id="9079012373317704997">Impossible d'activer l'accès à la caméra à distance</translation>
 <translation id="9079731690316798640">Wi-Fi : <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">Appareil photo aligné sur l'angle supérieur gauche</translation>
 <translation id="9080132581049224423">Balayer l'écran vers le haut pour revenir à l'accueil</translation>
