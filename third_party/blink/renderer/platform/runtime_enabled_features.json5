@@ -2349,6 +2349,10 @@
       implied_by: ["SignatureBasedIntegrity"]
     },
     {
+      name: "ImageDataPixelFormat",
+      status: "experimental",
+    },
+    {
       name: "ImplicitRootScroller",
       public: true,
       settable_from_internals: true,

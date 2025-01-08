@@ -43,6 +43,6 @@ typedef (Uint8ClampedArray or Uint16Array or Float32Array) ImageDataArray;
     readonly attribute unsigned long width;
     readonly attribute unsigned long height;
     readonly attribute PredefinedColorSpace colorSpace;
-    [RuntimeEnabled=CanvasFloatingPoint] readonly attribute ImageDataStorageFormat storageFormat;
+    [RuntimeEnabled=ImageDataPixelFormat] readonly attribute ImageDataStorageFormat storageFormat;
     readonly attribute ImageDataArray data;
 };

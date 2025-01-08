@@ -22,7 +22,7 @@ enum class ImageSerializationTag : uint32_t {
   // both should not be specified).
   kPredefinedColorSpaceTag = 1,
   // followed by a SerializedPixelFormat enum, used only for ImageBitmap.
-  kCanvasPixelFormatTag = 2,
+  kImageBitmapPixelFormatTag = 2,
   // followed by a SerializedImageDataStorageFormat enum, used only for
   // ImageData.
   kImageDataStorageFormatTag = 3,
@@ -64,7 +64,8 @@ enum class SerializedPredefinedColorSpace : uint32_t {
   kLast = kSRGBLinear,
 };
 
-// This enumeration specifies the values used to serialize CanvasPixelFormat.
+// This enumeration specifies the values used to serialize the SkColorType used
+// by an ImageBitmap.
 enum class SerializedPixelFormat : uint32_t {
   // This is to preserve legacy object when Native was a possible enum state
   // this will be resolved as either a RGB or BGR pixel format for

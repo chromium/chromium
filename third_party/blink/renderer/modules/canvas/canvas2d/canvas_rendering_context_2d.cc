@@ -163,12 +163,12 @@ BASE_FEATURE(kAdjustCanCreateCanvas2dResourceProvider,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Convert from a PredefinedColorSpace to a V8PredefinedColorSpace.
-V8CanvasPixelFormat CanvasPixelFormatToV8(CanvasPixelFormat pixel_format) {
+V8CanvasColorType CanvasPixelFormatToV8(CanvasPixelFormat pixel_format) {
   switch (pixel_format) {
     case CanvasPixelFormat::kF16:
-      return V8CanvasPixelFormat(V8CanvasPixelFormat::Enum::kFloat16);
+      return V8CanvasColorType(V8CanvasColorType::Enum::kFloat16);
     case CanvasPixelFormat::kUint8:
-      return V8CanvasPixelFormat(V8CanvasPixelFormat::Enum::kUint8);
+      return V8CanvasColorType(V8CanvasColorType::Enum::kUnorm8);
   }
   NOTREACHED();
 }
@@ -978,8 +978,7 @@ CanvasRenderingContext2D::getContextAttributes() const {
   settings->setAlpha(CreationAttributes().alpha);
   settings->setColorSpace(PredefinedColorSpaceToV8(color_params_.ColorSpace()));
   if (RuntimeEnabledFeatures::CanvasFloatingPointEnabled()) {
-    settings->setPixelFormat(
-        CanvasPixelFormatToV8(color_params_.PixelFormat()));
+    settings->setColorType(CanvasPixelFormatToV8(color_params_.PixelFormat()));
   }
   settings->setDesynchronized(Host()->LowLatencyEnabled());
   switch (CreationAttributes().will_read_frequently) {
