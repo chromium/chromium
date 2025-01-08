@@ -16,6 +16,8 @@
 
 // Browser tests for indicators shown at various phases of an immersive session.
 
+// TODO(https://crbug.com/381000093): Fix tests on Android
+#if !BUILDFLAG(IS_ANDROID)
 namespace vr {
 
 namespace {
@@ -219,3 +221,4 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(
 }
 
 }  // namespace vr
+#endif  // if !BUILDFLAG(IS_ANDROID)

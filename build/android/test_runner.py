@@ -428,13 +428,18 @@ def AddGTestOptions(parser):
       help="Path to executable's dist directory for native"
            " (non-apk) tests.")
   parser.add_argument(
-      '--extract-test-list-from-filter',
+      '--deploy-mock-openxr-runtime',
       action='store_true',
-      help='When a test filter is specified, and the list of '
-           'tests can be determined from it, skip querying the '
-           'device for the list of all tests. Speeds up local '
-           'development, but is not safe to use on bots ('
-           'http://crbug.com/549214')
+      help=('Prepares the device by deploying a mock OpenXR runtime to use for '
+            'testing. Note that this *may* override a runtime specialization '
+            'already present on the device.'))
+  parser.add_argument('--extract-test-list-from-filter',
+                      action='store_true',
+                      help='When a test filter is specified, and the list of '
+                      'tests can be determined from it, skip querying the '
+                      'device for the list of all tests. Speeds up local '
+                      'development, but is not safe to use on bots ('
+                      'http://crbug.com/549214')
   parser.add_argument(
       '--gs-test-artifacts-bucket',
       help=('If present, test artifacts will be uploaded to this Google '
@@ -560,10 +565,11 @@ def AddInstrumentationTestOptions(parser):
       type=os.path.realpath,
       help='Directory in which to place all generated '
       'Jacoco coverage files.')
-  parser.add_argument(
-      '--disable-dalvik-asserts',
-      dest='set_asserts', action='store_false', default=True,
-      help='Removes the dalvik.vm.enableassertions property')
+  parser.add_argument('--disable-dalvik-asserts',
+                      dest='set_asserts',
+                      action='store_false',
+                      default=True,
+                      help='Removes the dalvik.vm.enableassertions property')
   parser.add_argument(
       '--proguard-mapping-path',
       help='.mapping file to use to Deobfuscate java stack traces in test '

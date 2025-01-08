@@ -33,6 +33,8 @@ IN_PROC_MULTI_CLASS_BROWSER_TEST_F1(WebXrVrOpenXrBrowserTestWebXrDisabled,
 
 // Tests that window.requestAnimationFrame continues to fire when we have a
 // non-immersive WebXR session.
+// TODO(https://crbug.com/381000093): Fix tests on Android
+#if !BUILDFLAG(IS_ANDROID)
 WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(
     TestWindowRafFiresDuringNonImmersiveSession) {
   t->LoadFileAndAwaitInitialization(
@@ -85,6 +87,7 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestNonImmersiveStopsDuringImmersive) {
   t->ExecuteStepAndWait("stepAfterImmersive()");
   t->EndTest();
 }
+#endif  // if !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_OPENXR)
 // Tests that WebXR session ends when certain events are received.
@@ -117,6 +120,8 @@ IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrBrowserTest, TestInsanceLost) {
       this, device_test::mojom::EventType::kInstanceLost);
 }
 
+// TODO(https://crbug.com/381000093): Fix tests on Android
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrBrowserTest, TestSessionExited) {
   // Set the device up to reject the session request. This should translate to
   // immediately translating the device to the "Exited" state.
@@ -159,6 +164,7 @@ IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrBrowserTest, TestVisibilityChanged) {
   this->RunJavaScriptOrFail("done()");
   this->EndTest();
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // BUILDFLAG(ENABLE_OPENXR)
 
 }  // namespace vr

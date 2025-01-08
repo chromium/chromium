@@ -8,6 +8,10 @@
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "components/webxr/android/openxr_device_provider.h"
+#endif
+
 // TODO(crbug.com/41418750): Remove these conversion functions as part of
 // the switch to only mojom types.
 device_test::mojom::ControllerRole DeviceToMojoControllerRole(
@@ -74,15 +78,21 @@ device_test::mojom::ControllerFrameDataPtr DeviceToMojoControllerFrameData(
 
 MockXRDeviceHookBase::MockXRDeviceHookBase()
     : tracked_classes_{
-          device_test::mojom::TrackedDeviceClass::kTrackedDeviceInvalid} {
+          device_test::mojom::TrackedDeviceClass::kTrackedDeviceHmd} {
+  // TODO(https://crbug.com/381913614): Instead of this pattern, consider
+  // spinning up/holding onto and setting the test hook on the XrRuntimeManager,
+  // which could pass on to providers.
+#if BUILDFLAG(IS_WIN)
   content::GetXRDeviceServiceForTesting()->BindTestHook(
       service_test_hook_.BindNewPipeAndPassReceiver());
 
   mojo::ScopedAllowSyncCallForTesting scoped_allow_sync;
-  // For now, always have the HMD connected.
-  tracked_classes_[0] =
-      device_test::mojom::TrackedDeviceClass::kTrackedDeviceHmd;
   service_test_hook_->SetTestHook(receiver_.BindNewPipeAndPassRemote());
+#elif BUILDFLAG(IS_ANDROID)
+  mojo::ScopedAllowSyncCallForTesting scoped_allow_sync;
+  webxr::OpenXrDeviceProvider::SetTestHook(
+      receiver_.BindNewPipeAndPassRemote());
+#endif
 }
 
 MockXRDeviceHookBase::~MockXRDeviceHookBase() {

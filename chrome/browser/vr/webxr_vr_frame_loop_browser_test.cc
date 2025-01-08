@@ -66,6 +66,8 @@ void MyXRMock::OnFrameSubmitted(
 
 }  // namespace
 
+// TODO(https://crbug.com/381000093): Fix tests on Android
+#if !BUILDFLAG(IS_ANDROID)
 WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestNoStalledFrameLoop) {
   MyXRMock my_mock;
 
@@ -85,6 +87,7 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestNoStalledFrameLoop) {
 
   t->AssertNoJavaScriptErrors();
 }
+#endif  // if !BUILDFLAG(IS_ANDROID)
 
 WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestLateSetOfBaseLayer) {
   MyXRMock my_mock;
