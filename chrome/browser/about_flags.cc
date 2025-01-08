@@ -2042,25 +2042,6 @@ const FeatureEntry::FeatureVariation
          nullptr},
 };
 
-#if !BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kPerformanceInterventionStringVersion1[] = {
-    {"intervention_dialog_version", "1"}};
-const FeatureEntry::FeatureParam kPerformanceInterventionStringVersion2[] = {
-    {"intervention_dialog_version", "2"}};
-const FeatureEntry::FeatureParam kPerformanceInterventionStringVersion3[] = {
-    {"intervention_dialog_version", "3"}};
-
-const FeatureEntry::FeatureVariation
-    kPerformanceInterventionStringVariations[] = {
-        {"String version 1", kPerformanceInterventionStringVersion1,
-         std::size(kPerformanceInterventionStringVersion1), nullptr},
-        {"String version 2", kPerformanceInterventionStringVersion2,
-         std::size(kPerformanceInterventionStringVersion2), nullptr},
-        {"String version 3", kPerformanceInterventionStringVersion3,
-         std::size(kPerformanceInterventionStringVersion3), nullptr},
-};
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::FeatureParam kContextualSearchSuppressShortViewWith300Dp[] =
@@ -10834,20 +10815,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"canvas-2d-hibernation", flag_descriptions::kCanvasHibernationName,
      flag_descriptions::kCanvasHibernationDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kCanvas2DHibernation)},
-#if !BUILDFLAG(IS_ANDROID)
-    {"performance-intervention-ui",
-     flag_descriptions::kPerformanceInterventionUiName,
-     flag_descriptions::kPerformanceInterventionUiDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         performance_manager::features::kPerformanceInterventionUI,
-         kPerformanceInterventionStringVariations,
-         "PerformanceInterventionUI")},
-    {"performance-intervention-demo-mode",
-     flag_descriptions::kPerformanceInterventionDemoModeName,
-     flag_descriptions::kPerformanceInterventionDemoModeDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         performance_manager::features::kPerformanceInterventionDemoMode)},
-#endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     {"sync-enable-bookmarks-in-transport-mode",

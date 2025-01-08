@@ -6827,22 +6827,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "performance-intervention-demo-mode",
-    "owners": [
-      "stluong@chromium.org",
-      "chrome-performance-ui-team@google.com"
-    ],
-    "expiry_milestone": 133
-  },
-  {
-    "name": "performance-intervention-ui",
-    "owners": [
-      "stluong@chromium.org",
-      "chrome-performance-ui-team@google.com"
-    ],
-    "expiry_milestone": 133
-  },
-  {
     "name": "permission-predictions-v3",
     "owners": [
       "elklm@chromium.org",
