@@ -199,18 +199,36 @@ std::string SerializeDerivedComponent(const GURL& request_url,
 
 }  // namespace
 
-std::vector<mojom::SRIMessageSignaturePtr> ParseSRIMessageSignaturesFromHeaders(
+mojom::SRIMessageSignaturesPtr ParseSRIMessageSignaturesFromHeaders(
     const net::HttpResponseHeaders& headers) {
-  std::vector<mojom::SRIMessageSignaturePtr> parsed_headers;
+  auto parsed_headers = mojom::SRIMessageSignatures::New();
+
+  std::string signature_header =
+      headers.GetNormalizedHeader("Signature").value_or("");
+  std::string signature_input_header =
+      headers.GetNormalizedHeader("Signature-Input").value_or("");
+  if (signature_header.empty() && signature_input_header.empty()) {
+    // Neither `Signature` nor `Signature-Input` is present, punt on validation
+    // without any errors.
+    return parsed_headers;
+  } else if (signature_header.empty() && !signature_input_header.empty()) {
+    parsed_headers->parsing_errors.emplace_back(
+        "A `Signature-Input` header was delivered without a corresponding "
+        "`Signature` header. No signature validation was possible.");
+    return parsed_headers;
+  } else if (signature_input_header.empty() && !signature_header.empty()) {
+    parsed_headers->parsing_errors.emplace_back(
+        "A `Signature` header was delivered without a corresponding "
+        "`Signature-Input` header. No signature validation was possible.");
+    return parsed_headers;
+  }
 
   // Exit early if either the `Signature` or `Signature-Input` headers are
   // missing, or if they can't be parsed as structured field Dictionaries.
   std::optional<net::structured_headers::Dictionary> signature_dictionary =
-      net::structured_headers::ParseDictionary(
-          headers.GetNormalizedHeader("Signature").value_or(""));
+      net::structured_headers::ParseDictionary(signature_header);
   std::optional<net::structured_headers::Dictionary> input_dictionary =
-      net::structured_headers::ParseDictionary(
-          headers.GetNormalizedHeader("Signature-Input").value_or(""));
+      net::structured_headers::ParseDictionary(signature_input_header);
   if (!signature_dictionary || !input_dictionary) {
     return parsed_headers;
   }
@@ -322,7 +340,7 @@ std::vector<mojom::SRIMessageSignaturePtr> ParseSRIMessageSignaturesFromHeaders(
           SerializeSignatureParams(input_entry);
 
       // Otherwise, we're good! Save the signature and move on.
-      parsed_headers.push_back(std::move(message_signature));
+      parsed_headers->signatures.push_back(std::move(message_signature));
     }
   }
 
@@ -494,9 +512,10 @@ MaybeBlockResponseForSRIMessageSignature(
   if (!response.headers || !request_url.is_valid()) {
     return std::nullopt;
   }
-  auto signatures = ParseSRIMessageSignaturesFromHeaders(*response.headers);
-  if (!signatures.size() || ValidateSRIMessageSignaturesOverHeaders(
-                                signatures, request_url, *response.headers)) {
+  auto parsed_headers = ParseSRIMessageSignaturesFromHeaders(*response.headers);
+  if (!parsed_headers->signatures.size() ||
+      ValidateSRIMessageSignaturesOverHeaders(parsed_headers->signatures,
+                                              request_url, *response.headers)) {
     return std::nullopt;
   }
   return mojom::BlockedByResponseReason::kSRIMessageSignatureMismatch;

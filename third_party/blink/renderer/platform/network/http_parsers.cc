@@ -315,6 +315,13 @@ blink::SRIMessageSignaturePtr ConvertToBlink(const SRIMessageSignaturePtr& in) {
       ConvertToBlink(in->tag), ConvertToBlink(in->serialized_signature_params));
 }
 
+blink::SRIMessageSignaturesPtr ConvertToBlink(
+    const SRIMessageSignaturesPtr& in) {
+  DCHECK(in);
+  return blink::SRIMessageSignatures::New(ConvertToBlink(in->signatures),
+                                          ConvertToBlink(in->parsing_errors));
+}
+
 blink::ParsedHeadersPtr ConvertToBlink(const ParsedHeadersPtr& in) {
   DCHECK(in);
   return blink::ParsedHeaders::New(
@@ -1049,7 +1056,7 @@ ParseContentSecurityPolicyHeaders(
   return parsed_csps;
 }
 
-Vector<network::mojom::blink::SRIMessageSignaturePtr>
+network::mojom::blink::SRIMessageSignaturesPtr
 ParseSRIMessageSignaturesFromHeaders(const String& raw_headers) {
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>(
       net::HttpUtil::AssembleRawHeaders(raw_headers.Latin1()));

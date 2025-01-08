@@ -333,7 +333,7 @@ bool SubresourceIntegrity::CheckSignaturesImpl(
   //       one of the key digests in `parsed_metadata.signatures` matches at
   //       least one of the signatures we parsed from |raw_headers|.)
   Vector<network::mojom::blink::SRIMessageSignaturePtr> signatures =
-      ParseSRIMessageSignaturesFromHeaders(raw_headers);
+      std::move(ParseSRIMessageSignaturesFromHeaders(raw_headers)->signatures);
 
   // This would be caught below, but we'll exit early for unsigned resources
   // so we can provide a better error message in the console.

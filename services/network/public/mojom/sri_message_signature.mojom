@@ -65,3 +65,11 @@ struct SRIMessageSignature {
   // the response headers).
   string serialized_signature_params;
 };
+
+// Contains the set of valid message signatures for a given response, along with
+// any parsing errors which were handled while processing `Signature-Input` and
+// `Signature` headers.
+struct SRIMessageSignatures {
+  array<SRIMessageSignature> signatures;
+  array<string> parsing_errors;
+};
