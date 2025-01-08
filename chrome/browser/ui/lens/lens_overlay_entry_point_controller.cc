@@ -245,6 +245,11 @@ void LensOverlayEntryPointController::UpdatePageActionState() {
     return;
   }
 
+  if (!features::IsOmniboxEntryPointEnabled()) {
+    page_action_controller->Hide(page_action_id);
+    return;
+  }
+
   if (!features::IsOmniboxEntrypointAlwaysVisible() &&
       !location_bar_->HasFocus()) {
     page_action_controller->Hide(page_action_id);
