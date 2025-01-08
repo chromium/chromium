@@ -68,7 +68,7 @@ void SearchAggregatorSuggestionsService::
           data: "The query string from the omnibox."
           destination: GOOGLE_OWNED_SERVICE
           internal {
-            contacts { email: "test-spark-integration@google.com" }
+            contacts { email: "chrome-desktop-search@google.com" }
           }
           last_reviewed: "2025-01-07"
         }
