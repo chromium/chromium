@@ -758,6 +758,43 @@ Called by update_autofill_enums.py.-->
       label="(Obsolete) Includes UPI-VPA type hint (removed 04/2024)"/>
 </enum>
 
+<enum name="AutofillDynamicElementType">
+  <int value="0" label="ButtonButton"/>
+  <int value="1" label="ButtonSubmit"/>
+  <int value="2" label="ButtonReset"/>
+  <int value="3" label="ButtonPopover"/>
+  <int value="4" label="Fieldset"/>
+  <int value="5" label="InputButton"/>
+  <int value="6" label="InputCheckbox"/>
+  <int value="7" label="InputColor"/>
+  <int value="8" label="InputDate"/>
+  <int value="9" label="InputDatetimeLocal"/>
+  <int value="10" label="InputEmail"/>
+  <int value="11" label="InputFile"/>
+  <int value="12" label="InputHidden"/>
+  <int value="13" label="InputImage"/>
+  <int value="14" label="InputMonth"/>
+  <int value="15" label="InputNumber"/>
+  <int value="16" label="InputPassword"/>
+  <int value="17" label="InputRadio"/>
+  <int value="18" label="InputRange"/>
+  <int value="19" label="InputReset"/>
+  <int value="20" label="InputSearch"/>
+  <int value="21" label="InputSubmit"/>
+  <int value="22" label="InputTelephone"/>
+  <int value="23" label="InputText"/>
+  <int value="24" label="InputTime"/>
+  <int value="25" label="InputUrl"/>
+  <int value="26" label="InputWeek"/>
+  <int value="27" label="Output"/>
+  <int value="28" label="SelectOne"/>
+  <int value="29" label="SelectMultiple"/>
+  <int value="30" label="TextArea"/>
+  <int value="31" label="Form"/>
+  <int value="32" label="Other"/>
+  <int value="33" label="Null"/>
+</enum>
+
 <enum name="AutofilledFieldUserEditingStatus">
   <int value="0" label="Edited"/>
   <int value="1" label="Accepted"/>

@@ -415,7 +415,10 @@ class AutofillAgent : public content::RenderFrameObserver,
   // avoid memory allocation for the OnceCallback state. Allocation and
   // destruction of this callback in the hot path (when timer is already
   // running) is expensive.
-  void ExtractFormsAndNotifyPasswordAutofillAgent(base::OneShotTimer& timer);
+  // Called when `element` is added/reassociated dynamically in the DOM.
+  void ExtractFormsAndNotifyPasswordAutofillAgent(
+      base::OneShotTimer& timer,
+      const blink::WebElement& element);
 
   void ExtractFormsUnthrottled(base::OnceCallback<void(bool)> callback,
                                const CallTimerState& timer_state);
