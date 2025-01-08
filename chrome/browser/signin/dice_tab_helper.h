@@ -78,6 +78,10 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
     return state_.on_signin_header_received_callback;
   }
 
+  void SetAccessPoint(signin_metrics::AccessPoint access_point) {
+    state_.signin_access_point = access_point;
+  }
+
   // Initializes the DiceTabHelper for a new signin flow. Must be called once
   // per signin flow happening in the tab, when the signin URL is being loaded.
   // The `redirect_url` is used after enabling Sync or in case of errors ; it is

@@ -524,6 +524,11 @@ void SigninViewController::ShowDiceSigninTab(
             dice_tab_index,
             TabStripUserGestureDetails(
                 TabStripUserGestureDetails::GestureType::kOther));
+
+        // Update the access point of the signin tab, so that the next signin
+        // is recorded from the latest access point.
+        DiceTabHelper::FromWebContents(tab_strip->GetActiveTab()->GetContents())
+            ->SetAccessPoint(access_point);
       }
       // Do not create a new signin tab, because there is already one.
       return;

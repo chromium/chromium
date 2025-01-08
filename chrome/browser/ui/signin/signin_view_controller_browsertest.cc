@@ -16,6 +16,7 @@
 #include "chrome/browser/signin/dice_tab_helper.h"
 #include "chrome/browser/signin/logout_tab_helper.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
+#include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/signin/chrome_signout_confirmation_prompt.h"
@@ -123,7 +124,9 @@ class SigninViewControllerBrowserTestBase : public SigninBrowserTestBase {
     return confirmation_prompt->widget_delegate()->AsDialogDelegate();
   }
 
-  bool IsSigninTab(content::WebContents* tab) const {
+  bool IsSigninTab(
+      content::WebContents* tab,
+      signin_metrics::AccessPoint access_point = kTestAccessPoint) const {
     DiceTabHelper* dice_tab_helper = DiceTabHelper::FromWebContents(tab);
     if (!dice_tab_helper) {
       return false;
@@ -133,7 +136,7 @@ class SigninViewControllerBrowserTestBase : public SigninBrowserTestBase {
       ADD_FAILURE();
       return false;
     }
-    if (dice_tab_helper->signin_access_point() != kTestAccessPoint) {
+    if (dice_tab_helper->signin_access_point() != access_point) {
       ADD_FAILURE();
       return false;
     }
@@ -559,6 +562,29 @@ IN_PROC_BROWSER_TEST_F(
   browser()->signin_view_controller()->MaybeShowChromeSigninDialogForExtensions(
       kTestExtensionName, future.GetCallback());
   EXPECT_TRUE(future.IsReady());
+}
+
+IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
+                       UpdateAccessPointOfSignInTab) {
+  // Request a sign in tab, which will open a new tab.
+  browser()->signin_view_controller()->ShowDiceAddAccountTab(
+      signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE, std::string());
+  EXPECT_TRUE(
+      IsSigninTab(browser()->tab_strip_model()->GetActiveWebContents(),
+                  signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE));
+
+  // Request a sign in tab with a different access point, which will update the
+  // existing sign in tab's access point.
+  browser()->signin_view_controller()->ShowDiceAddAccountTab(
+      signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE, std::string());
+  EXPECT_TRUE(
+      IsSigninTab(browser()->tab_strip_model()->GetActiveWebContents(),
+                  signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE));
+
+  EXPECT_TRUE(signin_ui_util::GetSignInTabWithAccessPoint(
+      browser(), signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE));
+  EXPECT_FALSE(signin_ui_util::GetSignInTabWithAccessPoint(
+      browser(), signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE));
 }
 
 IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
