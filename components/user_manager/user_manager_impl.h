@@ -32,10 +32,13 @@ class PrefRegistrySimple;
 
 namespace ash {
 class CrosSettings;
+class FakeChromeUserManager;
 class UserManagerTest;
 }  // namespace ash
 
 namespace user_manager {
+
+class FakeUserManager;
 
 // Feature that removes deprecated ARC kiosk users.
 USER_MANAGER_EXPORT
@@ -379,6 +382,11 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
   UserList lru_logged_in_users_;
 
  private:
+  // TODO(crbug.com/278643115): allows access to private members to support
+  // fake features for transition period.
+  friend class FakeUserManager;
+  friend class ash::FakeChromeUserManager;
+
   // Loads |users_| from Local State if the list has not been loaded yet.
   // Subsequent calls have no effect. Must be called on the UI thread.
   void EnsureUsersLoaded();
@@ -426,13 +434,6 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
 
   // Notifies observers that merge session state had changed.
   void NotifyMergeSessionStateChanged();
-
-  // Processes log-in for each type of users.
-  void RegularUserLoggedIn(const AccountId& account_id,
-                           const UserType user_type);
-  void GuestUserLoggedIn();
-  void PublicAccountUserLoggedIn(User* user);
-  void KioskAppLoggedIn(User* user);
 
   // Insert |user| at the front of the LRU user list.
   void SetLRUUser(User* user);

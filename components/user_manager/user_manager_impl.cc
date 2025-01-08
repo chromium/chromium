@@ -336,44 +336,77 @@ void UserManagerImpl::UserLoggedIn(const AccountId& account_id,
     return;
   }
 
+  // Ensure User is there.
   switch (user_type) {
     case UserType::kRegular:
-      [[fallthrough]];
     case UserType::kChild:
       if (account_id != GetOwnerAccountId() && !user &&
           (IsEphemeralAccountId(account_id) || browser_restart)) {
-        RegularUserLoggedInAsEphemeral(account_id, user_type);
+        user = AddEphemeralUser(account_id, user_type);
+        SetIsCurrentUserNew(true);
+        is_current_user_ephemeral_regular_user_ = true;
+      } else if (user) {
+        KnownUser known_user(local_state_.get());
+        // There already is a registered User, update the type as needed.
+        if (user->GetType() != user_type) {
+          user->SetType(user_type);
+          SaveUserType(user);
+          // Clear information about profile policy requirements to enforce
+          // setting it again for the new account type.
+          known_user.ClearProfileRequiresPolicy(account_id);
+        }
+        known_user.SetIsEphemeralUser(user->GetAccountId(), false);
       } else {
-        RegularUserLoggedIn(account_id, user_type);
+        // Ensure User is created.
+        user = AddGaiaUser(account_id, user_type);
+        SetIsCurrentUserNew(true);
       }
       break;
 
     case UserType::kGuest:
-      GuestUserLoggedIn();
+      CHECK(!user);
+      user = AddGuestUser();
       break;
 
     case UserType::kPublicAccount:
       if (!user) {
         user = AddPublicAccountUser(account_id);
       }
-      PublicAccountUserLoggedIn(user);
+      SetIsCurrentUserNew(true);
       break;
 
     case UserType::kKioskApp:
     case UserType::kWebKioskApp:
     case UserType::kKioskIWA:
-      KioskAppLoggedIn(user);
+      // Do nothing. User should be already there.
       break;
 
     default:
       NOTREACHED() << "Unhandled usert type " << user_type;
   }
 
-  DCHECK(active_user_);
+  CHECK(user);
+  active_user_ = user;
   active_user_->set_is_logged_in(true);
   active_user_->set_is_active(true);
   active_user_->set_username_hash(username_hash);
 
+  if (active_user_->HasGaiaAccount()) {
+    // Move the user to the front of the list.
+    auto it = base::ranges::find(users_, account_id,
+                                 [](auto& ptr) { return ptr->GetAccountId(); });
+    if (it != users_.end()) {
+      std::rotate(users_.begin(), it, it + 1);
+      ScopedListPrefUpdate prefs_users_update(local_state_.get(),
+                                              prefs::kRegularUsersPref);
+      prefs_users_update->clear();
+      for (const User* u : users_) {
+        if (u->HasGaiaAccount()) {
+          prefs_users_update->Append(u->GetAccountId().GetUserEmail());
+        }
+      }
+    }
+  }
   logged_in_users_.push_back(active_user_.get());
   SetLRUUser(active_user_);
 
@@ -399,6 +432,7 @@ void UserManagerImpl::UserLoggedIn(const AccountId& account_id,
   local_state_->SetString(
       prefs::kLastLoggedInGaiaUser,
       active_user_->HasGaiaAccount() ? account_id.GetUserEmail() : "");
+  local_state_->CommitPendingWrite();
 
   delegate_->CheckProfileOnLogin(*active_user_);
   NotifyOnLogin();
@@ -1496,81 +1530,6 @@ User* UserManagerImpl::AddPublicAccountUser(const AccountId& account_id) {
   user_storage_.emplace_back(user);
 
   return user;
-}
-
-void UserManagerImpl::RegularUserLoggedIn(const AccountId& account_id,
-                                          const UserType user_type) {
-
-  auto* user = FindUserAndModify(account_id);
-  if (user) {
-    KnownUser known_user(local_state_.get());
-    // There already is a registered User, update the type as needed.
-    if (user->GetType() != user_type) {
-      user->SetType(user_type);
-      SaveUserType(user);
-      // Clear information about profile policy requirements to enforce setting
-      // it again for the new account type.
-      known_user.ClearProfileRequiresPolicy(account_id);
-    }
-    known_user.SetIsEphemeralUser(user->GetAccountId(), false);
-  } else {
-    // Ensure User is created.
-    user = AddGaiaUser(account_id, user_type);
-    SetIsCurrentUserNew(true);
-  }
-
-  CHECK(user);
-  active_user_ = user;
-  {
-    // Move the user to the front of the list.
-    auto it = base::ranges::find(users_, account_id,
-                                 [](auto& ptr) { return ptr->GetAccountId(); });
-    CHECK(it != users_.end());
-    std::rotate(users_.begin(), it, it + 1);
-    ScopedListPrefUpdate prefs_users_update(local_state_.get(),
-                                            prefs::kRegularUsersPref);
-    prefs_users_update->clear();
-    for (const User* u : users_) {
-      if (u->HasGaiaAccount()) {
-        prefs_users_update->Append(u->GetAccountId().GetUserEmail());
-      }
-    }
-  }
-
-  // Make sure that new data is persisted to Local State.
-  local_state_->CommitPendingWrite();
-}
-
-void UserManagerImpl::RegularUserLoggedInAsEphemeral(
-    const AccountId& account_id,
-    const UserType user_type) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto* user = AddEphemeralUser(account_id, user_type);
-  SetIsCurrentUserNew(true);
-
-  is_current_user_ephemeral_regular_user_ = true;
-
-  active_user_ = user;
-}
-
-void UserManagerImpl::GuestUserLoggedIn() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto* user = AddGuestUser();
-
-  active_user_ = user;
-}
-
-void UserManagerImpl::PublicAccountUserLoggedIn(user_manager::User* user) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  SetIsCurrentUserNew(true);
-
-  active_user_ = user;
-}
-
-void UserManagerImpl::KioskAppLoggedIn(user_manager::User* user) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  active_user_ = user;
 }
 
 bool UserManagerImpl::OnUserProfileCreated(const AccountId& account_id,
