@@ -750,16 +750,15 @@
                   '|services/resource_coordinator/',
     },
     'chrome_intelligence': {
-      'filepath': 'autofill_prediction_improvements'\
-                  '|history_clusters'\
+      'filepath': 'history_clusters'\
                   '|history_embeddings'\
                   '|image_service'\
                   '|ios/chrome/browser/text_selection'\
-                  '|manta'\
                   '|model_execution'\
                   '|optimization_guide'\
                   '|optimization_hints'\
                   '|page_content_annotations'\
+                  '|passage_embeddings'\
                   '|services/on_device_model'\
                   '|third_party/eigen3'\
                   '|third_party/farmhash'\
