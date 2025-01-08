@@ -1157,6 +1157,103 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageMergeSyncTest,
             updated_value);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+
+class SingleClientPreferencesWithMigrateAccountPrefsEnabledSyncTest
+    : public SingleClientPreferencesWithAccountStorageSyncTest {
+ public:
+  SingleClientPreferencesWithMigrateAccountPrefsEnabledSyncTest()
+      : feature_list_(syncer::kMigrateAccountPrefs) {}
+
+  base::FilePath AccountPreferencesFilePath() const {
+    return GetProfile(0)->GetPath().Append(chrome::kAccountPreferencesFilename);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientPreferencesWithMigrateAccountPrefsEnabledSyncTest,
+    ShouldNotCreateAccountPrefsFile) {
+  ASSERT_TRUE(SetupClients());
+  // Register `sync_preferences::kSyncablePrefForTesting`.
+  GetRegistry(GetProfile(0))
+      ->RegisterStringPref(sync_preferences::kSyncablePrefForTesting, "",
+                           user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  InjectPreferenceToFakeServer(syncer::PREFERENCES,
+                               sync_preferences::kSyncablePrefForTesting,
+                               base::Value("account value"));
+
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  EXPECT_EQ(GetPrefs(0)->GetString(sync_preferences::kSyncablePrefForTesting),
+            "account value");
+
+  CommitToDiskAndWait();
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  EXPECT_FALSE(base::PathExists(AccountPreferencesFilePath()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientPreferencesWithMigrateAccountPrefsEnabledSyncTest,
+    ShouldDownloadAccountPrefsWithInitialSync) {
+  ASSERT_TRUE(SetupClients());
+  // Register `sync_preferences::kSyncablePrefForTesting`.
+  GetRegistry(GetProfile(0))
+      ->RegisterStringPref(sync_preferences::kSyncablePrefForTesting, "",
+                           user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  InjectPreferenceToFakeServer(syncer::PREFERENCES,
+                               sync_preferences::kSyncablePrefForTesting,
+                               base::Value("account value"));
+
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  EXPECT_EQ(GetPrefs(0)->GetString(sync_preferences::kSyncablePrefForTesting),
+            "account value");
+
+  CommitToDiskAndWait();
+
+  std::optional<base::Value::Dict> account_pref_values_on_disk =
+      ReadValuesFromFile(
+          GetProfile(0)->GetPath().Append(chrome::kPreferencesFilename),
+          chrome_prefs::kAccountPreferencesPrefix);
+  ASSERT_TRUE(account_pref_values_on_disk.has_value());
+  std::string* value = account_pref_values_on_disk->FindStringByDottedPath(
+      sync_preferences::kSyncablePrefForTesting);
+  ASSERT_TRUE(value);
+  EXPECT_EQ(*value, "account value");
+
+  GetClient(0)->SignOutPrimaryAccount();
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  ASSERT_FALSE(
+      GetPrefs(0)->GetUserPrefValue(sync_preferences::kSyncablePrefForTesting));
+  CommitToDiskAndWait();
+  account_pref_values_on_disk = ReadValuesFromFile(
+      GetProfile(0)->GetPath().Append(chrome::kPreferencesFilename),
+      chrome_prefs::kAccountPreferencesPrefix);
+  ASSERT_TRUE(account_pref_values_on_disk.has_value());
+  EXPECT_TRUE(account_pref_values_on_disk->empty());
+}
+
+// TODO(crbug.com/346508597): Add a test
+// ShouldDownloadAccountPrefsFromSavedSyncData to test that account data is
+// loaded from the sync's copy upon startup. This test has not been added due to
+// lack of support for PRE_ tests in Android.
+
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Preference tracking is not required on android and chromeos.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
