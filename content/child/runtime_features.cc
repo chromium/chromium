@@ -196,8 +196,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            raw_ref(blink::features::kBoundaryEventDispatchTracksNodeRemoval)},
           {wf::EnableCompositeBGColorAnimation,
            raw_ref(features::kCompositeBGColorAnimation)},
-          {wf::EnableCooperativeScheduling,
-           raw_ref(features::kCooperativeScheduling)},
           {wf::EnableDigitalGoods, raw_ref(features::kDigitalGoodsApi),
            kSetOnlyIfOverridden},
           {wf::EnableDocumentPolicyNegotiation,

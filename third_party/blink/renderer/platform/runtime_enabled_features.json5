@@ -912,11 +912,6 @@
       base_feature: "none",
     },
     {
-      name: "CooperativeScheduling",
-      base_feature: "none",
-      public: true,
-    },
-    {
       name: "CoopRestrictProperties",
       origin_trial_feature_name: "CoopRestrictProperties",
       base_feature: "none",

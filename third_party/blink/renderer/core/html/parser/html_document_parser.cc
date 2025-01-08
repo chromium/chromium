@@ -74,7 +74,6 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/scheduler/public/cooperative_scheduling_manager.h"
 #include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
@@ -1261,9 +1260,6 @@ void HTMLDocumentParser::NotifyScriptLoaded() {
                          "parser", (void*)this);
   DCHECK(script_runner_);
   DCHECK(!IsExecutingScript());
-
-  scheduler::CooperativeSchedulingManager::AllowedStackScope
-      allowed_stack_scope(scheduler::CooperativeSchedulingManager::Instance());
 
   if (IsStopped()) {
     return;

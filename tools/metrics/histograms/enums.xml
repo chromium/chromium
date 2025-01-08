@@ -18230,7 +18230,6 @@ from previous Chrome versions.
   <int value="-888336510" label="NtpSingleRowShortcuts:enabled"/>
   <int value="-887094098" label="ForcedColors:enabled"/>
   <int value="-886912558" label="ChromeHomePromo:enabled"/>
-  <int value="-886898803" label="CooperativeScheduling:enabled"/>
   <int value="-886593945" label="AutofillSharedStorageServerCardData:disabled"/>
   <int value="-886509859" label="DefaultChromeAppUninstallSync:enabled"/>
   <int value="-886296821"
@@ -24059,7 +24058,6 @@ from previous Chrome versions.
   <int value="1436115897" label="OsSettingsSearchFeedback:enabled"/>
   <int value="1436409565" label="FedCmWithoutThirdPartyCookies:enabled"/>
   <int value="1436454450" label="InterestFeedV2:disabled"/>
-  <int value="1437413720" label="CooperativeScheduling:disabled"/>
   <int value="1437544855" label="SafetyHubMagicStack:disabled"/>
   <int value="1438157693" label="BlockTelephonyDevicePhoneMute:disabled"/>
   <int value="1438182104" label="PasswordGenerationSoftNudge:disabled"/>

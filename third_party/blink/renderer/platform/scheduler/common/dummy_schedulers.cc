@@ -82,7 +82,6 @@ class DummyFrameScheduler : public FrameScheduler {
     return &page_scheduler_->GetAgentGroupScheduler();
   }
 
-  void SetPreemptedForCooperativeScheduling(Preempted) override {}
   void SetFrameVisible(bool) override {}
   bool IsFrameVisible() const override { return true; }
   void SetVisibleAreaLarge(bool) override {}

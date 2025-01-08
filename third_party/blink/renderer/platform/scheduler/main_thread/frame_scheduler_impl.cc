@@ -195,11 +195,6 @@ FrameSchedulerImpl::FrameSchedulerImpl(
                        "FrameScheduler.ThrottlingType",
                        &tracing_controller_,
                        ThrottlingTypeToString),
-      preempted_for_cooperative_scheduling_(
-          false,
-          "FrameScheduler.PreemptedForCooperativeScheduling",
-          &tracing_controller_,
-          YesNoStateToString),
       aggressive_throttling_opt_out_count_(0),
       opted_out_from_aggressive_throttling_(
           false,
@@ -952,7 +947,6 @@ void FrameSchedulerImpl::UpdateQueuePolicy(
   DCHECK(parent_page_scheduler_);
   bool queue_disabled = false;
   queue_disabled |= frame_paused_ && queue->CanBePaused();
-  queue_disabled |= preempted_for_cooperative_scheduling_;
   // Per-frame freezable task queues will be frozen after 5 mins in background
   // on Android, and if the browser freezes the page in the background. They
   // will be resumed when the page is visible.
@@ -1484,13 +1478,6 @@ FrameSchedulerImpl::ForegroundOnlyTaskQueueTraits() {
 MainThreadTaskQueue::QueueTraits
 FrameSchedulerImpl::CanRunWhenVirtualTimePausedTaskQueueTraits() {
   return QueueTraits().SetCanRunWhenVirtualTimePaused(true);
-}
-
-void FrameSchedulerImpl::SetPreemptedForCooperativeScheduling(
-    Preempted preempted) {
-  DCHECK_NE(preempted.value(), preempted_for_cooperative_scheduling_);
-  preempted_for_cooperative_scheduling_ = preempted.value();
-  UpdatePolicy();
 }
 
 MainThreadTaskQueue::QueueTraits FrameSchedulerImpl::LoadingTaskQueueTraits() {

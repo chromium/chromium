@@ -238,11 +238,6 @@ BASE_FEATURE(kDevToolsPrivacyUI,
              "DevToolsPrivacyUI",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables Blink cooperative scheduling.
-BASE_FEATURE(kCooperativeScheduling,
-             "CooperativeScheduling",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables deferring the creation of the speculative RFH when the navigation
 // starts. The creation of a speculative RFH consumes about 2ms and is blocking
 // the network request. With this feature the creation will be deferred until

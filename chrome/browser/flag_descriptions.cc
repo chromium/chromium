@@ -1077,10 +1077,6 @@ const char kDynamicColorGamutDescription[] =
     "Displays in wide color when the content is wide. When the content is "
     "not wide, displays sRGB";
 
-const char kCooperativeSchedulingName[] = "Cooperative Scheduling";
-const char kCooperativeSchedulingDescription[] =
-    "Enables cooperative scheduling in Blink.";
-
 const char kDarkenWebsitesCheckboxInThemesSettingName[] =
     "Darken websites checkbox in themes setting";
 const char kDarkenWebsitesCheckboxInThemesSettingDescription[] =

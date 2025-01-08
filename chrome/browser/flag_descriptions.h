@@ -635,9 +635,6 @@ extern const char kForceColorProfileDescription[];
 extern const char kDynamicColorGamutName[];
 extern const char kDynamicColorGamutDescription[];
 
-extern const char kCooperativeSchedulingName[];
-extern const char kCooperativeSchedulingDescription[];
-
 extern const char kDarkenWebsitesCheckboxInThemesSettingName[];
 extern const char kDarkenWebsitesCheckboxInThemesSettingDescription[];
 

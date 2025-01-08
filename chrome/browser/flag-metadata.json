@@ -2645,11 +2645,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "enable-cooperative-scheduling",
-    "owners": [ "keishi@chromium.org" ],
-    "expiry_milestone": 85
-  },
-  {
     "name": "enable-cros-autocorrect-by-default",
     "owners": [ "curtismcmullan@chromium.org", "essential-inputs-team@google.com" ],
     "expiry_milestone": 130

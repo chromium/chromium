@@ -892,30 +892,6 @@ TEST_F(FrameSchedulerImplTest, PauseAndResume) {
   EXPECT_EQ(5, counter);
 }
 
-TEST_F(FrameSchedulerImplTest, PauseAndResumeForCooperativeScheduling) {
-  EXPECT_TRUE(LoadingTaskQueue()->IsQueueEnabled());
-  EXPECT_TRUE(ThrottleableTaskQueue()->IsQueueEnabled());
-  EXPECT_TRUE(DeferrableTaskQueue()->IsQueueEnabled());
-  EXPECT_TRUE(PausableTaskQueue()->IsQueueEnabled());
-  EXPECT_TRUE(UnpausableTaskQueue()->IsQueueEnabled());
-
-  frame_scheduler_->SetPreemptedForCooperativeScheduling(
-      FrameOrWorkerScheduler::Preempted(true));
-  EXPECT_FALSE(LoadingTaskQueue()->IsQueueEnabled());
-  EXPECT_FALSE(ThrottleableTaskQueue()->IsQueueEnabled());
-  EXPECT_FALSE(DeferrableTaskQueue()->IsQueueEnabled());
-  EXPECT_FALSE(PausableTaskQueue()->IsQueueEnabled());
-  EXPECT_FALSE(UnpausableTaskQueue()->IsQueueEnabled());
-
-  frame_scheduler_->SetPreemptedForCooperativeScheduling(
-      FrameOrWorkerScheduler::Preempted(false));
-  EXPECT_TRUE(LoadingTaskQueue()->IsQueueEnabled());
-  EXPECT_TRUE(ThrottleableTaskQueue()->IsQueueEnabled());
-  EXPECT_TRUE(DeferrableTaskQueue()->IsQueueEnabled());
-  EXPECT_TRUE(PausableTaskQueue()->IsQueueEnabled());
-  EXPECT_TRUE(UnpausableTaskQueue()->IsQueueEnabled());
-}
-
 namespace {
 
 // A task that re-posts itself with a delay in order until it has run

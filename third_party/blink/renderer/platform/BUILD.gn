@@ -238,9 +238,6 @@ declare_args() {
   # Enable TRACE_EVENT instrumentation for Blink bindings.
   # Disabled by default as it increases binary size.
   enable_blink_bindings_tracing = extended_tracing_enabled
-
-  # Enable cooperating scheduling hooks in auto-generated Blink bindings code.
-  enable_blink_bindings_cooperating_scheduling = false
 }
 
 # ZSTD compression support has a binary size cost, don't include it on
@@ -259,7 +256,6 @@ buildflag_header("bindings_buildflags") {
   flags = [
     "RCS_COUNT_EVERYTHING=$runtime_call_stats_count_everything",
     "BLINK_BINDINGS_TRACE_ENABLED=$enable_blink_bindings_tracing",
-    "BLINK_BINDINGS_COOPERATIVE_SCHEDULING_ENABLED=$enable_blink_bindings_cooperating_scheduling",
     "HAS_ZSTD_COMPRESSION=$has_zstd_compression",
   ]
 }
@@ -463,7 +459,6 @@ component("platform") {
     "bindings/callback_interface_base.h",
     "bindings/callback_method_retriever.cc",
     "bindings/callback_method_retriever.h",
-    "bindings/cooperative_scheduling_helpers.h",
     "bindings/cross_thread_copier.h",
     "bindings/dictionary_base.cc",
     "bindings/dictionary_base.h",

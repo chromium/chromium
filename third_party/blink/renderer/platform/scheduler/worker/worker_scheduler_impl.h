@@ -72,7 +72,6 @@ class PLATFORM_EXPORT WorkerSchedulerImpl : public WorkerScheduler {
       SchedulingAffectingFeatureHandle* handle) override;
   base::WeakPtr<FrameOrWorkerScheduler> GetFrameOrWorkerSchedulerWeakPtr()
       override;
-  void SetPreemptedForCooperativeScheduling(Preempted) override {}
   std::unique_ptr<WebSchedulingTaskQueue> CreateWebSchedulingTaskQueue(
       WebSchedulingQueueType,
       WebSchedulingPriority) override;

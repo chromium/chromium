@@ -8047,11 +8047,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(media::kGlobalMediaControlsUpdatedUI)},
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-    {"enable-cooperative-scheduling",
-     flag_descriptions::kCooperativeSchedulingName,
-     flag_descriptions::kCooperativeSchedulingDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kCooperativeScheduling)},
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     {"enable-network-service-sandbox",
      flag_descriptions::kEnableNetworkServiceSandboxName,
