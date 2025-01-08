@@ -643,7 +643,8 @@ crosapi::mojom::ProbeTelemetryInfoPtr UncheckedConvertPtr(
       ConvertProbePtr(std::move(input->tpm_result)),
       ConvertProbePtr(std::move(input->audio_result)),
       ConvertProbePtr(std::move(input->bus_result)),
-      ConvertProbePtr(std::move(input->display_result)));
+      ConvertProbePtr(std::move(input->display_result)),
+      ConvertProbePtr(std::move(input->thermal_result)));
 }
 
 }  // namespace unchecked
