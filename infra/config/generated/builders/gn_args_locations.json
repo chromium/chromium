@@ -155,7 +155,6 @@
     "ToTAndroid x64": "ci/ToTAndroid x64/gn-args.json",
     "ToTAndroid x86": "ci/ToTAndroid x86/gn-args.json",
     "ToTAndroid64": "ci/ToTAndroid64/gn-args.json",
-    "ToTAndroidASan": "ci/ToTAndroidASan/gn-args.json",
     "ToTAndroidCoverage x86": "ci/ToTAndroidCoverage x86/gn-args.json",
     "ToTAndroidOfficial": "ci/ToTAndroidOfficial/gn-args.json",
     "ToTChromeOS": "ci/ToTChromeOS/gn-args.json",

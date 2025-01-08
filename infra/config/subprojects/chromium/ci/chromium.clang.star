@@ -603,67 +603,6 @@ ci.builder(
 )
 
 ci.builder(
-    name = "ToTAndroidASan",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "clang_tot",
-                "android",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "clang_tot_android_asan",
-            apply_configs = ["mb"],
-            build_config = builder_config.build_config.RELEASE,
-            target_arch = builder_config.target_arch.ARM,
-            target_bits = 32,
-            target_platform = builder_config.target_platform.ANDROID,
-        ),
-        android_config = builder_config.android_config(config = "asan_symbolize"),
-        build_gs_bucket = "chromium-clang-archive",
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "android_builder_without_codecs",
-            "clang_tot",
-            "asan",
-            "debug_builder",
-            "strip_debug_info",
-            "arm",
-        ],
-    ),
-    targets = targets.bundle(
-        targets = [
-            "clang_tot_gtests",
-        ],
-        additional_compile_targets = [
-            "all",
-        ],
-        mixins = [
-            targets.mixin(
-                swarming = targets.swarming(
-                    dimensions = {
-                        "device_os": "MMB29Q",
-                        "device_type": "bullhead",
-                        "os": "Android",
-                    },
-                ),
-            ),
-            "has_native_resultdb_integration",
-        ],
-    ),
-    targets_settings = targets.settings(
-        os_type = targets.os_type.ANDROID,
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "ToT Android",
-        short_name = "asn",
-    ),
-    contact_team_email = "lexan@google.com",
-)
-
-ci.builder(
     name = "ToTAndroidOfficial",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
