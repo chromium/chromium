@@ -7675,11 +7675,6 @@
     "expiry_milestone": 136
   },
   {
-    "name": "safety-hub-abusive-notification-revocation",
-    "owners": ["skrakowi@chromium.org", "chrome-counter-abuse-alerts@google.com"],
-    "expiry_milestone": 130
-  },
-  {
     "name": "safety-hub-android-survey",
     "owners": [
       "zalmashni@google.com",
