@@ -851,15 +851,16 @@ TEST_F(WebSocketBasicStreamSocketChunkedReadTest,
   EXPECT_TRUE(frames.empty());
 }
 
+const char kMultiplePongFrames[] = {
+    '\x8A', '\x05', 'P', 'o', 'n', 'g', '1',  // "Pong1".
+    '\x8A', '\x05', 'P', 'o', 'n', 'g', '2'   // "Pong2".
+};
+
+constexpr size_t kMultiplePongFramesSize = sizeof(kMultiplePongFrames);
+
 // Test to ensure multiple control frames with different payloads are handled
 // properly.
 TEST_F(WebSocketBasicStreamSocketTest, MultipleControlFramesInOneRead) {
-  const char kMultiplePongFrames[] = {
-      '\x8A', '\x05', 'P', 'o', 'n', 'g', '1',  // "Pong1".
-      '\x8A', '\x05', 'P', 'o', 'n', 'g', '2'   // "Pong2".
-  };
-
-  constexpr size_t kMultiplePongFramesSize = sizeof(kMultiplePongFrames);
   std::vector<std::unique_ptr<WebSocketFrame>> frames;
 
   MockRead reads[] = {
@@ -876,6 +877,33 @@ TEST_F(WebSocketBasicStreamSocketTest, MultipleControlFramesInOneRead) {
   EXPECT_EQ(WebSocketFrameHeader::kOpCodePong, frames[1]->header.opcode);
   EXPECT_EQ(5U, frames[1]->header.payload_length);
   EXPECT_EQ(base::as_string_view(frames[1]->payload), "Pong2");
+}
+
+// This is a repro for https://crbug.com/issues/377318323
+TEST_F(WebSocketBasicStreamSocketTest, SplitControlFrameAfterAnotherFrame) {
+  std::vector<std::unique_ptr<WebSocketFrame>> frames;
+
+  MockRead reads[] = {
+      MockRead(ASYNC, kMultiplePongFrames, kMultiplePongFramesSize - 2u),
+      MockRead(SYNCHRONOUS, kMultiplePongFrames + kMultiplePongFramesSize - 2,
+               2u)};
+  CreateStream(reads, base::span<MockWrite>());
+
+  TestCompletionCallback cb1;
+  EXPECT_THAT(stream_->ReadFrames(&frames, cb1.callback()),
+              IsError(ERR_IO_PENDING));
+  EXPECT_THAT(cb1.WaitForResult(), IsOk());
+  // ReadFrames() returns after the first read that returns at least 1 complete
+  // frame, so this call only returns the first pong.
+  ASSERT_EQ(1U, frames.size());
+  EXPECT_EQ(base::as_string_view(frames[0]->payload), "Pong1");
+
+  frames.clear();
+
+  TestCompletionCallback cb2;
+  EXPECT_THAT(stream_->ReadFrames(&frames, cb2.callback()), IsOk());
+  ASSERT_EQ(1U, frames.size());
+  EXPECT_EQ(base::as_string_view(frames[0]->payload), "Pong2");
 }
 
 // In the synchronous case, ReadFrames assembles the whole control frame before

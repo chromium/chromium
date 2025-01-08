@@ -404,6 +404,11 @@ int WebSocketBasicStream::ConvertChunksToFrames(
     auto frame_result = chunk_assembler_.HandleChunk(std::move(chunk));
 
     if (!frame_result.has_value()) {
+      net::Error error = frame_result.error();
+      if (error == ERR_IO_PENDING) {
+        // We just need more data.
+        continue;
+      }
       return frame_result.error();
     }
 
