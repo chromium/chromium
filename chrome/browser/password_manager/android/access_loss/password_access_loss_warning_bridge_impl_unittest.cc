@@ -151,3 +151,26 @@ TEST_F(PasswordAccessLossWarningBridgeImplTest,
   EXPECT_TRUE(bridge()->ShouldShowAccessLossNoticeSheet(
       pref_service(), /*called_at_startup=*/false));
 }
+
+TEST_F(PasswordAccessLossWarningBridgeImplTest,
+       ShouldNotShowIfLoginDbDeprecationStarted) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {password_manager::features::
+           kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning,
+       password_manager::features::kLoginDbDeprecationAndroid},
+      {});
+
+  // Create all the conditions necessary for the sheet to show to verify that
+  // the reason it doesn't show is the login DB deprecation being enabled.
+  pref_service()->SetTime(
+      password_manager::prefs::kPasswordAccessLossWarningShownTimestamp,
+      base::Time::Now());
+  pref_service()->SetTime(password_manager::prefs::
+                              kPasswordAccessLossWarningShownAtStartupTimestamp,
+                          base::Time::Now());
+  task_env()->FastForwardBy(base::Days(2));
+
+  EXPECT_FALSE(bridge()->ShouldShowAccessLossNoticeSheet(
+      pref_service(), /*called_at_startup=*/false));
+}
