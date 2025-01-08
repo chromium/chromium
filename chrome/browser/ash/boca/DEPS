@@ -35,6 +35,8 @@ include_rules = [
   "+chrome/browser/ui/browser_list_observer.h",
   "+chrome/browser/ui/browser_navigator.h",
   "+chrome/browser/ui/browser_window.h",
+  "+chrome/browser/ui/exclusive_access/exclusive_access_manager.h",
+  "+chrome/browser/ui/exclusive_access/fullscreen_controller.h",
   "+chrome/browser/ui/tabs/tab_enums.h",
   "+chrome/browser/ui/tabs/tab_strip_model_delegate.h",
   "+chrome/browser/ui/tabs/tab_strip_model_observer.h",

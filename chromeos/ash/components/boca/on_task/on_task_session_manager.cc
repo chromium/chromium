@@ -9,6 +9,7 @@
 
 #include "ash/constants/notifier_catalogs.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
@@ -225,9 +226,12 @@ void OnTaskSessionManager::OnAppReloaded() {
   system_web_app_manager_->PrepareSystemWebAppWindowForOnTask(
       window_id, /*close_bundle_content=*/false);
 
-  // Only restore tabs and set up window tracker if there is an active session.
-  // This ensures we do not inadvertently block URLs.
+  // Only restore tabs, lock window or set up window tracker if there is an
+  // active session. This ensures we do not inadvertently block URLs or lock the
+  // user into a fullscreen window.
   if (!active_session_id_.has_value()) {
+    system_web_app_launch_helper_->SetPinStateForActiveSWAWindow(
+        /*pinned=*/false, base::DoNothing());
     return;
   }
 

@@ -779,6 +779,22 @@ TEST_F(OnTaskSessionManagerTest, LockWindowOnAppReload) {
   session_manager_->OnAppReloaded();
 }
 
+TEST_F(OnTaskSessionManagerTest, UnpinWindowWhenNoActiveSessionOnAppReload) {
+  const SessionID kWindowId = SessionID::NewUnique();
+  Sequence s;
+  EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
+      .WillRepeatedly(Return(kWindowId));
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              PrepareSystemWebAppWindowForOnTask(kWindowId, _))
+      .Times(1)
+      .InSequence(s);
+  EXPECT_CALL(*system_web_app_manager_ptr_, SetPinStateForSystemWebAppWindow(
+                                                /*pinned=*/false, kWindowId))
+      .Times(1)
+      .InSequence(s);
+  session_manager_->OnAppReloaded();
+}
+
 TEST_F(OnTaskSessionManagerTest,
        ShouldAddToProviderUrlTabIdsMapWhenTabIsAdded) {
   const SessionID kWindowId = SessionID::NewUnique();

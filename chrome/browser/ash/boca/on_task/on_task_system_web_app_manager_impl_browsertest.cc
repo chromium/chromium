@@ -17,6 +17,8 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/boca/on_task/on_task_session_manager.h"
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
@@ -173,6 +175,32 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   system_web_app_manager.SetPinStateForSystemWebAppWindow(
       /*pinned=*/false, boca_app_browser->session_id());
   content::RunAllTasksUntilIdle();
+  EXPECT_FALSE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
+  EXPECT_FALSE(chromeos::wm::CanFloatWindow(
+      boca_app_browser->window()->GetNativeWindow()));
+}
+
+IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
+                       UnpinSystemWebAppWindowWhenInFullscreenMode) {
+  // Launch Boca app and pin it for testing purposes.
+  OnTaskSystemWebAppManagerImpl system_web_app_manager(profile());
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager.LaunchSystemWebAppAsync(launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+
+  // Toggle fullscreen mode but do not pin the window.
+  auto* const fullscreen_controller =
+      boca_app_browser->exclusive_access_manager()->fullscreen_controller();
+  fullscreen_controller->ToggleBrowserFullscreenMode(/*user_initiated=*/false);
+  ASSERT_TRUE(fullscreen_controller->IsFullscreenForBrowser());
+
+  // Attempt to unpin the Boca app and verify result.
+  system_web_app_manager.SetPinStateForSystemWebAppWindow(
+      /*pinned=*/false, boca_app_browser->session_id());
+  content::RunAllTasksUntilIdle();
+  EXPECT_FALSE(fullscreen_controller->IsFullscreenForBrowser());
   EXPECT_FALSE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
   EXPECT_FALSE(chromeos::wm::CanFloatWindow(
       boca_app_browser->window()->GetNativeWindow()));

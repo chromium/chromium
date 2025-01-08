@@ -20,6 +20,8 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chromeos/ash/components/boca/on_task/activity/active_tab_tracker.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -123,6 +125,16 @@ void OnTaskSystemWebAppManagerImpl::SetPinStateForSystemWebAppWindow(
   Browser* const browser = GetBrowserWindowWithID(window_id);
   if (!browser) {
     return;
+  }
+
+  // Exit fullscreen mode if necessary. This is especially needed for certain
+  // cases where the web app window is in fullscreen mode but not pinned, like
+  // on session restore.
+  auto* const fullscreen_controller =
+      browser->exclusive_access_manager()->fullscreen_controller();
+  if (fullscreen_controller->IsFullscreenForBrowser() && !pinned) {
+    fullscreen_controller->ToggleBrowserFullscreenMode(
+        /*user_initiated=*/false);
   }
   aura::Window* const native_window = browser->window()->GetNativeWindow();
   bool currently_pinned = IsWindowPinned(native_window);
