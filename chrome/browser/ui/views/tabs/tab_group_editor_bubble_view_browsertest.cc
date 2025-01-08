@@ -135,8 +135,14 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest, Ungroup) {
   histogram_tester.ExpectTotalCount("TabGroups.TabGroupBubble.TabCount", 0);
 }
 
+// TODO(crbug.com/388544209): Flaky on linux-win-cross-rel.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_MoveGroupToNewWindow DISABLED_MoveGroupToNewWindow
+#else
+#define MAYBE_MoveGroupToNewWindow MoveGroupToNewWindow
+#endif
 IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
-                       MoveGroupToNewWindow) {
+                       MAYBE_MoveGroupToNewWindow) {
   // Add a tab so theres more than just the group in the tabstrip
   InProcessBrowserTest::AddBlankTabAndShow(browser());
 
