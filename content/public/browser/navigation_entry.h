@@ -110,16 +110,18 @@ class NavigationEntry : public base::SupportsUserData {
   virtual void SetTitle(std::u16string title) = 0;
   virtual const std::u16string& GetTitle() = 0;
 
-  // The app title as set by the page. SetAppTitle gets called only if page has
-  // an app-title meta tag. For all other pages, the app_title will not be set.
-  // This information is provided by an experimental meta tag. See:
-  // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/DocumentSubtitle/explainer.md
-  virtual void SetAppTitle(const std::u16string& app_title) = 0;
+  // The application title as set by the page. SetApplicationTitle gets called
+  // only if page has an app-title meta tag. For all other pages, the
+  // application-title will not be set. This information is provided by an
+  // experimental meta tag. See:
+  // 'https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/DocumentSubtitle/explainer.md'
+  virtual void SetApplicationTitle(const std::u16string& application_title) = 0;
 
-  // If app-title meta tag is set by the page, GetAppTitle will return the
-  // value set by the page, including empty string. If the page does not have an
-  // app-title meta tag, GetAppTitle will return a nullopt.
-  virtual const std::optional<std::u16string>& GetAppTitle() = 0;
+  // If application-title meta tag is set by the page, GetApplicationTitle will
+  // return the value set by the page, including empty string. If the page does
+  // not have an application-title meta tag, GetApplicationTitle will return a
+  // nullopt.
+  virtual const std::optional<std::u16string>& GetApplicationTitle() = 0;
 
   // Page state is an opaque blob created by Blink that represents the state of
   // the page. This includes form entries and scroll position for each frame.

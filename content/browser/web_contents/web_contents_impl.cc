@@ -2455,8 +2455,8 @@ const std::u16string& WebContentsImpl::GetTitle() {
   return GetNavigationEntryForTitle()->GetTitleForDisplay();
 }
 
-const std::optional<std::u16string>& WebContentsImpl::GetAppTitle() {
-  return GetNavigationEntryForTitle()->GetAppTitle();
+const std::optional<std::u16string>& WebContentsImpl::GetApplicationTitle() {
+  return GetNavigationEntryForTitle()->GetApplicationTitle();
 }
 
 SiteInstanceImpl* WebContentsImpl::GetSiteInstance() {
@@ -9326,11 +9326,12 @@ void WebContentsImpl::UpdateTitle(RenderFrameHostImpl* render_frame_host,
   }
 }
 
-void WebContentsImpl::UpdateAppTitle(RenderFrameHostImpl* render_frame_host,
-                                     const std::u16string& app_title) {
+void WebContentsImpl::UpdateApplicationTitle(
+    RenderFrameHostImpl* render_frame_host,
+    const std::u16string& application_title) {
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::UpdateTitle",
-                        "render_frame_host", render_frame_host, "app_title",
-                        app_title);
+                        "render_frame_host", render_frame_host,
+                        "application_title", application_title);
   // Same logic as UpdateTitle() above.
   NavigationEntryImpl* entry =
       render_frame_host->frame_tree()->controller().GetEntryWithUniqueID(
@@ -9345,14 +9346,15 @@ void WebContentsImpl::UpdateAppTitle(RenderFrameHostImpl* render_frame_host,
     entry =
         render_frame_host->frame_tree()->controller().GetLastCommittedEntry();
   }
-  std::u16string final_app_title;
-  base::TrimWhitespace(app_title, base::TRIM_ALL, &final_app_title);
+  std::u16string final_application_title;
+  base::TrimWhitespace(application_title, base::TRIM_ALL,
+                       &final_application_title);
 
-  if (final_app_title == entry->GetAppTitle()) {
+  if (final_application_title == entry->GetApplicationTitle()) {
     return;
   }
 
-  entry->SetAppTitle(final_app_title);
+  entry->SetApplicationTitle(final_application_title);
   NotifyNavigationStateChanged(INVALIDATE_TYPE_TITLE);
 }
 

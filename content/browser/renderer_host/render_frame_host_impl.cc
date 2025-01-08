@@ -7564,9 +7564,10 @@ void RenderFrameHostImpl::UpdateTitle(
   delegate_->UpdateTitle(this, received_title, title_direction);
 }
 
-// Update app title.
-void RenderFrameHostImpl::UpdateAppTitle(const ::std::u16string& app_title) {
-  delegate_->UpdateAppTitle(this, app_title);
+// Update application title.
+void RenderFrameHostImpl::UpdateApplicationTitle(
+    const ::std::u16string& application_title) {
+  delegate_->UpdateApplicationTitle(this, application_title);
 }
 
 void RenderFrameHostImpl::DidInferColorScheme(

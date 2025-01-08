@@ -140,8 +140,8 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   const GURL& GetVirtualURL() override;
   void SetTitle(std::u16string title) override;
   const std::u16string& GetTitle() override;
-  void SetAppTitle(const std::u16string& app_title) override;
-  const std::optional<std::u16string>& GetAppTitle() override;
+  void SetApplicationTitle(const std::u16string& application_title) override;
+  const std::optional<std::u16string>& GetApplicationTitle() override;
   void SetPageState(const blink::PageState& state,
                     NavigationEntryRestoreContext* context) override;
   blink::PageState GetPageState() override;
@@ -546,11 +546,11 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   GURL virtual_url_;
   bool update_virtual_url_with_url_;
   std::u16string title_;
-  // The app title is optional and may be empty. If set to a non-empty value, a
-  // web app displayed in an app window may use this string instead of the
-  // regular title. See
+  // The application title is optional and may be empty. If set to a non-empty
+  // value, a web app displayed in an app window may use this string instead of
+  // the regular title. See
   // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/DocumentSubtitle/explainer.md
-  std::optional<std::u16string> app_title_;
+  std::optional<std::u16string> application_title_;
   FaviconStatus favicon_;
   SSLStatus ssl_;
   ui::PageTransition transition_type_;

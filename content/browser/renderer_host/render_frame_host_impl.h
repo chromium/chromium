@@ -2434,7 +2434,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void NavigateEventHandlerPresenceChanged(bool present) override;
   void UpdateTitle(const std::optional<::std::u16string>& title,
                    base::i18n::TextDirection title_direction) override;
-  void UpdateAppTitle(const ::std::u16string& app_title) override;
+  void UpdateApplicationTitle(
+      const ::std::u16string& application_title) override;
   void UpdateUserActivationState(
       blink::mojom::UserActivationUpdateType update_type,
       blink::mojom::UserActivationNotificationType notification_type) override;

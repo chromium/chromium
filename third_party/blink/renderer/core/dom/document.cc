@@ -7614,7 +7614,7 @@ std::optional<Color> Document::ThemeColor() {
   return std::nullopt;
 }
 
-void Document::UpdateAppTitle() {
+void Document::UpdateApplicationTitle() {
   auto* root_element = documentElement();
   if (!root_element) {
     return;
@@ -7622,15 +7622,16 @@ void Document::UpdateAppTitle() {
 
   for (HTMLMetaElement& meta_element :
        Traversal<HTMLMetaElement>::DescendantsOf(*root_element)) {
-    if (EqualIgnoringASCIICase(meta_element.GetName(), "app-title")) {
-      GetFrame()->GetLocalFrameHostRemote().UpdateAppTitle(
+    if (EqualIgnoringASCIICase(meta_element.GetName(), "application-title")) {
+      GetFrame()->GetLocalFrameHostRemote().UpdateApplicationTitle(
           meta_element.Content().GetString());
       return;
     }
   }
 
-  // Handle case of meta tag being removed by setting app title to empty string.
-  GetFrame()->GetLocalFrameHostRemote().UpdateAppTitle(g_empty_string);
+  // Handle case of meta tag being removed by setting application title to empty
+  // string.
+  GetFrame()->GetLocalFrameHostRemote().UpdateApplicationTitle(g_empty_string);
 }
 
 void Document::ColorSchemeMetaChanged() {

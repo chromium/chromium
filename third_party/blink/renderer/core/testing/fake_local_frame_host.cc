@@ -110,7 +110,8 @@ void FakeLocalFrameHost::UpdateTitle(
     const WTF::String& title,
     base::i18n::TextDirection title_direction) {}
 
-void FakeLocalFrameHost::UpdateAppTitle(const WTF::String& app_title) {}
+void FakeLocalFrameHost::UpdateApplicationTitle(
+    const WTF::String& application_title) {}
 
 void FakeLocalFrameHost::UpdateUserActivationState(
     mojom::blink::UserActivationUpdateType update_type,

@@ -2080,8 +2080,9 @@ class CORE_EXPORT Document : public ContainerNode,
     return disabled_fieldset_count_;
   }
 
-  // Updates app title based to the latest app title meta tag value.
-  void UpdateAppTitle();
+  // Updates application title based to the latest application title meta tag
+  // value.
+  void UpdateApplicationTitle();
 
   void ResetAgent(Agent& agent);
 

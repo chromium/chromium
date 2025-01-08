@@ -693,11 +693,10 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   virtual void UpdateTitleForEntry(NavigationEntry* entry,
                                    const std::u16string& title) = 0;
 
-  // Returns app title of the current navigation entry. The apptitle is
-  // an alternative title text that can be used by app windows.
-  // See
+  // Returns application title of the current navigation entry. The application
+  // title is an alternative title text that can be used by app windows. See
   // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/DocumentSubtitle/explainer.md
-  virtual const std::optional<std::u16string>& GetAppTitle() = 0;
+  virtual const std::optional<std::u16string>& GetApplicationTitle() = 0;
 
   // Returns the SiteInstance associated with the current page.
   virtual SiteInstance* GetSiteInstance() = 0;
