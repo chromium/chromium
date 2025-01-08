@@ -205,6 +205,17 @@ bool CanAccessTarget(const PermissionsData& permissions,
                      std::set<int>* frame_ids_out,
                      std::string* error_out);
 
+// Executes script with `sources` in the frames identified by `frame_ids`
+void ExecuteScript(const ExtensionId& extension_id,
+                   std::vector<mojom::JSSourcePtr> sources,
+                   mojom::ExecutionWorld execution_world,
+                   ScriptExecutor* script_executor,
+                   ScriptExecutor::FrameScope frame_scope,
+                   std::set<int> frame_ids,
+                   bool inject_immediately,
+                   bool user_gesture,
+                   ScriptExecutor::ScriptFinishedCallback callback);
+
 }  // namespace extensions::scripting
 
 #endif  // EXTENSIONS_BROWSER_SCRIPTING_UTILS_H_

@@ -77,6 +77,18 @@ bool IsValidWorldId(std::optional<std::string>& world_id,
   return true;
 }
 
+mojom::ExecutionWorld ConvertExecutionWorld(
+    api::user_scripts::ExecutionWorld world) {
+  switch (world) {
+    // Execution world defaults to `kUserScript` when it's not provided.
+    case api::user_scripts::ExecutionWorld::kNone:
+    case api::user_scripts::ExecutionWorld::kUserScript:
+      return mojom::ExecutionWorld::kUserScript;
+    case api::user_scripts::ExecutionWorld::kMain:
+      return mojom::ExecutionWorld::kMain;
+  }
+}
+
 scripting::InjectionTarget ConvertToInternalInjectionTarget(
     api::user_scripts::InjectionTarget injection_target) {
   scripting::InjectionTarget internal_injection_target;
@@ -656,7 +668,7 @@ ExtensionFunction::ResponseAction UserScriptsExecuteFunction::Run() {
 
   injection_ = std::move(params->injection);
 
-  // Validate injection script.
+  // Validate injection source.
   if (injection_.js.empty()) {
     return RespondNow(Error(kEmptySourceErrorWithoutIdError));
   }
@@ -680,8 +692,67 @@ ExtensionFunction::ResponseAction UserScriptsExecuteFunction::Run() {
     return RespondNow(Error(std::move(error)));
   }
 
-  // TODO(crbug.com/326657581): Execute script with the given parameters.
-  return RespondNow(NoArguments());
+  // Convert script sources to js sources.
+  std::vector<mojom::JSSourcePtr> sources;
+  for (api::user_scripts::ScriptSource& source : injection_.js) {
+    // TODO(crbug.com/326657581): Handle files. For now we exit early, since
+    // we are only handling code.
+    if (source.file) {
+      return RespondNow(NoArguments());
+    }
+
+    CHECK(source.code);
+    sources.push_back(mojom::JSSource::New(std::move(*source.code), GURL()));
+  }
+
+  mojom::ExecutionWorld execution_world =
+      ConvertExecutionWorld(injection_.world);
+  // TODO(crbug.com/326657581): Add world id to UserScriptInjection.
+
+  scripting::ExecuteScript(
+      extension()->id(), std::move(sources), execution_world, script_executor,
+      frame_scope, frame_ids, injection_.inject_immediately.value_or(false),
+      user_gesture(),
+      base::BindOnce(&UserScriptsExecuteFunction::OnScriptExecuted, this));
+
+  return RespondLater();
+}
+
+void UserScriptsExecuteFunction::OnScriptExecuted(
+    std::vector<ScriptExecutor::FrameResult> frame_results) {
+  // If only a single frame was included and the injection failed, respond with
+  // an error.
+  if (frame_results.size() == 1 && !frame_results[0].error.empty()) {
+    Respond(Error(std::move(frame_results[0].error)));
+    return;
+  }
+
+  // Otherwise, respond successfully. We currently just skip over individual
+  // frames that failed. In the future, we can bubble up these error messages
+  // to the extension.
+  std::vector<api::user_scripts::InjectionResult> injection_results;
+  for (auto& result : frame_results) {
+    if (!result.error.empty()) {
+      continue;
+    }
+    api::user_scripts::InjectionResult injection_result;
+    injection_result.result = std::move(result.value);
+    injection_result.frame_id = result.frame_id;
+    if (result.document_id) {
+      injection_result.document_id = result.document_id.ToString();
+    }
+
+    // Put the top frame first; otherwise, any order.
+    if (result.frame_id == ExtensionApiFrameIdMap::kTopFrameId) {
+      injection_results.insert(injection_results.begin(),
+                               std::move(injection_result));
+    } else {
+      injection_results.push_back(std::move(injection_result));
+    }
+  }
+
+  Respond(ArgumentList(
+      api::user_scripts::Execute::Results::Create(injection_results)));
 }
 
 ExtensionFunction::ResponseAction

@@ -394,4 +394,35 @@ bool CanAccessTarget(const PermissionsData& permissions,
   return true;
 }
 
+void ExecuteScript(const ExtensionId& extension_id,
+                   std::vector<mojom::JSSourcePtr> sources,
+                   mojom::ExecutionWorld execution_world,
+                   ScriptExecutor* script_executor,
+                   ScriptExecutor::FrameScope frame_scope,
+                   std::set<int> frame_ids,
+                   bool inject_immediately,
+                   bool user_gesture,
+                   ScriptExecutor::ScriptFinishedCallback callback) {
+  // Extensions can specify that the script should be injected "immediately".
+  // In this case, we specify kDocumentStart as the injection time. Due to
+  // inherent raciness between tab creation and load and this function
+  // execution, there is no guarantee that it will actually happen at
+  // document start, but the renderer will appropriately inject it
+  // immediately if document start has already passed.
+  mojom::RunLocation run_location = inject_immediately
+                                        ? mojom::RunLocation::kDocumentStart
+                                        : mojom::RunLocation::kDocumentIdle;
+  script_executor->ExecuteScript(
+      mojom::HostID(mojom::HostID::HostType::kExtensions, extension_id),
+      mojom::CodeInjection::NewJs(mojom::JSInjection::New(
+          std::move(sources), execution_world, /*world_id=*/std::nullopt,
+          blink::mojom::WantResultOption::kWantResult,
+          user_gesture ? blink::mojom::UserActivationOption::kActivate
+                       : blink::mojom::UserActivationOption::kDoNotActivate,
+          blink::mojom::PromiseResultOption::kAwait)),
+      frame_scope, frame_ids, mojom::MatchOriginAsFallbackBehavior::kAlways,
+      run_location, ScriptExecutor::DEFAULT_PROCESS,
+      /*webview_src=*/GURL(), std::move(callback));
+}
+
 }  // namespace extensions::scripting

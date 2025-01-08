@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {findDocumentIdWithHostname, findFrameIdWithHostname, getFramesInTab, openTab} from '/_test_resources/test_util/tabs_util.js';
+import {findDocumentIdWithHostname, findFrameIdWithHostname, getFramesInTab, getInjectedElementIds, openTab} from '/_test_resources/test_util/tabs_util.js';
 
 // Navigates to an url requested by the extension and returns the opened tab.
 async function navigateToRequestedUrl() {
@@ -18,6 +18,14 @@ async function navigateToNotRequestedUrl() {
   let tab = await openTab(url);
   return tab;
 }
+
+const injectDivScript = `var div = document.createElement('div');
+div.id = 'injected_code_1';
+document.body.appendChild(div);`;
+
+const injectDivScript2 = `var div = document.createElement('div');
+div.id = 'injected_code_2';
+document.body.appendChild(div);`;
 
 chrome.test.runTests([
   // Tests that an error is returned if the user script source list is empty.
@@ -187,4 +195,38 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
+  // Tests that a script with a code source and a valid target is injected.
+  async function executeCode() {
+    await chrome.userScripts.unregister();
+
+    const tab = await navigateToRequestedUrl();
+    const script = {js: [{code: injectDivScript}], target: {tabId: tab.id}};
+    await chrome.userScripts.execute(script);
+
+    // Verify script was injected.
+    chrome.test.assertEq(
+        ['injected_code_1'], await getInjectedElementIds(tab.id));
+
+    chrome.test.succeed();
+  },
+
+  // Tests that a script with multiple code sources and a valid target is
+  // injected.
+  async function executeCode_MultipleSources() {
+    await chrome.userScripts.unregister();
+
+    const tab = await navigateToRequestedUrl();
+    const script = {
+      js: [{code: injectDivScript}, {code: injectDivScript2}],
+      target: {tabId: tab.id}
+    };
+    await chrome.userScripts.execute(script);
+
+    // Verify script was injected.
+    chrome.test.assertEq(
+        ['injected_code_1', 'injected_code_2'],
+        await getInjectedElementIds(tab.id));
+
+    chrome.test.succeed();
+  },
 ])

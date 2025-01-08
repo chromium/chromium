@@ -114,6 +114,9 @@ class UserScriptsExecuteFunction : public ExtensionFunction {
  private:
   ~UserScriptsExecuteFunction() override = default;
 
+  // Invoked when script execution is complete.
+  void OnScriptExecuted(std::vector<ScriptExecutor::FrameResult> frame_results);
+
   api::user_scripts::UserScriptInjection injection_;
 };
 
