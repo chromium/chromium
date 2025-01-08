@@ -762,10 +762,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sTabGroupCreationDialogAndroid =
             newCachedFlag(TAB_GROUP_CREATION_DIALOG_ANDROID, true);
     public static final CachedFlag sTabGroupPaneAndroid =
-            newCachedFlag(
-                    TAB_GROUP_PANE_ANDROID,
-                    /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
+            newCachedFlag(TAB_GROUP_PANE_ANDROID, /* defaultValue= */ true);
     public static final CachedFlag sTabResumptionModuleAndroid =
             newCachedFlag(
                     TAB_RESUMPTION_MODULE_ANDROID,
@@ -787,10 +784,7 @@ public abstract class ChromeFeatureList {
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sTabStripGroupCollapse =
-            newCachedFlag(
-                    TAB_STRIP_GROUP_COLLAPSE,
-                    /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
+            newCachedFlag(TAB_STRIP_GROUP_COLLAPSE, /* defaultValue= */ true);
     public static final CachedFlag sTabWindowManagerIndexReassignmentActivityFinishing =
             newCachedFlag(TAB_WINDOW_MANAGER_INDEX_REASSIGNMENT_ACTIVITY_FINISHING, true);
     public static final CachedFlag sTabWindowManagerIndexReassignmentActivityInSameTask =
