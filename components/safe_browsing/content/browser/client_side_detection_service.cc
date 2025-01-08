@@ -749,9 +749,7 @@ void ClientSideDetectionService::ClassifyPhishingThroughThresholds(
 
     const TfLiteModelMetadata::Threshold& thresholds = result->second;
 
-    if (base::FeatureList::IsEnabled(
-            kSafeBrowsingPhishingClassificationESBThreshold) &&
-        delegate_ && delegate_->GetPrefs() &&
+    if (delegate_ && delegate_->GetPrefs() &&
         IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
       if (verdict->tflite_model_scores().at(i).value() >=
           thresholds.esb_threshold()) {
