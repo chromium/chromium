@@ -219,21 +219,15 @@ TEST(CredentialManagerTypeConvertersTest,
       blink::mojom::blink::AuthenticationExtensionsClientOutputs::New();
   mojo_type->payment =
       blink::mojom::blink::AuthenticationExtensionsPaymentResponse::New(
-          /*browser_bound_signatures=*/Vector<Vector<uint8_t>>{{1, 2, 3},
-                                                               {4, 5, 6}});
+          /*browser_bound_signature=*/Vector<uint8_t>{1, 2, 3});
 
   auto* blink_type =
       ConvertTo<blink::AuthenticationExtensionsClientOutputs*>(mojo_type);
 
   EXPECT_TRUE(blink_type->hasPayment());
-  EXPECT_TRUE(blink_type->payment()->hasBrowserBoundSignatures());
-  ASSERT_EQ(blink_type->payment()->browserBoundSignatures().size(), 2u);
-  EXPECT_THAT(
-      blink_type->payment()->browserBoundSignatures()[0]->signatureOutput(),
-      DOMArrayBufferEqualTo(Vector<uint8_t>{1, 2, 3}));
-  EXPECT_THAT(
-      blink_type->payment()->browserBoundSignatures()[1]->signatureOutput(),
-      DOMArrayBufferEqualTo(Vector<uint8_t>{4, 5, 6}));
+  EXPECT_TRUE(blink_type->payment()->hasBrowserBoundSignature());
+  EXPECT_THAT(blink_type->payment()->browserBoundSignature()->signatureOutput(),
+              DOMArrayBufferEqualTo(Vector<uint8_t>{1, 2, 3}));
 }
 
 TEST(CredentialManagerTypeConvertersTest,

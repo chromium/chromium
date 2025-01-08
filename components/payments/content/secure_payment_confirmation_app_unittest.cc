@@ -39,7 +39,6 @@ namespace {
 
 using ::base::test::RunOnceCallback;
 using ::testing::_;
-using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::Eq;
 using ::testing::Field;
@@ -222,10 +221,10 @@ TEST_F(SecurePaymentConfirmationAppTest, AddsBrowserBoundKeyAndSignature) {
   EXPECT_THAT(
       payment_response->get_assertion_authenticator_response->extensions
           ->payment,
-      Pointee(Field("browser_bound_signatures",
+      Pointee(Field("browser_bound_signature",
                     &blink::mojom::AuthenticationExtensionsPaymentResponse::
-                        browser_bound_signatures,
-                    ElementsAre(ElementsAreArray(signature)))));
+                        browser_bound_signature,
+                    ElementsAreArray(signature))));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

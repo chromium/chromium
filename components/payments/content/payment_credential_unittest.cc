@@ -25,7 +25,6 @@
 namespace payments {
 
 using ::testing::_;
-using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::Pointee;
@@ -109,10 +108,10 @@ static testing::Matcher<::blink::mojom::MakeCredentialAuthenticatorResponsePtr>
 AuthenticatorResponseWithBrowserBoundSignature(std::vector<uint8_t> signature) {
   return Pointee(Field(
       "payment", &::blink::mojom::MakeCredentialAuthenticatorResponse::payment,
-      Pointee(Field("browser_bound_signatures",
+      Pointee(Field("browser_bound_signature",
                     &::blink::mojom::AuthenticationExtensionsPaymentResponse::
-                        browser_bound_signatures,
-                    ElementsAre(signature)))));
+                        browser_bound_signature,
+                    Eq(signature)))));
 }
 
 TEST_F(PaymentCredentialTest, MakePaymentCredentialAddsBrowserBoundKey) {

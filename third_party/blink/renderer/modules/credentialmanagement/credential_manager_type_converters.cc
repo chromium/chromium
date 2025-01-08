@@ -301,20 +301,12 @@ TypeConverter<blink::AuthenticationExtensionsPaymentOutputs*,
             payment_response) {
   auto* payment_outputs =
       blink::AuthenticationExtensionsPaymentOutputs::Create();
-  if (!payment_response->browser_bound_signatures.empty()) {
-    blink::HeapVector<blink::Member<
-        blink::AuthenticationExtensionsPaymentBrowserBoundSignature>>
-        signatures;
-    signatures.reserve(payment_response->browser_bound_signatures.size());
-    for (const auto& mojo_signature :
-         payment_response->browser_bound_signatures) {
-      auto* browser_bound_signature =
-          blink::AuthenticationExtensionsPaymentBrowserBoundSignature::Create();
-      browser_bound_signature->setSignatureOutput(
-          blink::DOMArrayBuffer::Create(std::move(mojo_signature)));
-      signatures.push_back(std::move(browser_bound_signature));
-    }
-    payment_outputs->setBrowserBoundSignatures(signatures);
+  if (!payment_response->browser_bound_signature.empty()) {
+    auto* browser_bound_signature =
+        blink::AuthenticationExtensionsPaymentBrowserBoundSignature::Create();
+    browser_bound_signature->setSignatureOutput(blink::DOMArrayBuffer::Create(
+        std::move(payment_response->browser_bound_signature)));
+    payment_outputs->setBrowserBoundSignature(browser_bound_signature);
   }
   return payment_outputs;
 }

@@ -191,8 +191,7 @@ void PaymentCredential::OnAuthenticatorMakeCredential(
           browser_bound_key->Sign(response->info->client_data_json);
       response->payment =
           blink::mojom::AuthenticationExtensionsPaymentResponse::New();
-      response->payment->browser_bound_signatures.push_back(
-          std::move(signature_output));
+      response->payment->browser_bound_signature = std::move(signature_output);
       web_data_service_->SetBrowserBoundKey(
           response->info->raw_id, std::move(relying_party),
           std::move(*browser_bound_key_id), this);

@@ -4,7 +4,7 @@
 
 // Outputs related to the payment extension.
 dictionary AuthenticationExtensionsPaymentOutputs {
-  // A sequence of signatures corresponding to the browser bound public keys in
+  // A signature corresponding to the browser bound public key in
   // clientDataJson.
-  sequence<AuthenticationExtensionsPaymentBrowserBoundSignature> browser_bound_signatures;
+  AuthenticationExtensionsPaymentBrowserBoundSignature browser_bound_signature;
 };

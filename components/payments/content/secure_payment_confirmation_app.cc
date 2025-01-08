@@ -251,15 +251,12 @@ SecurePaymentConfirmationApp::SetAppSpecificResponseFields(
           response_->extensions.Clone());
 #if BUILDFLAG(IS_ANDROID)
   if (browser_bound_key_) {
-    std::vector<std::vector<uint8_t>> signatures;
-    signatures.emplace_back(
-        browser_bound_key_->Sign(response_->info->client_data_json));
     if (assertion_response->extensions->payment.is_null()) {
       assertion_response->extensions->payment =
           blink::mojom::AuthenticationExtensionsPaymentResponse::New();
     }
-    assertion_response->extensions->payment->browser_bound_signatures =
-        std::move(signatures);
+    assertion_response->extensions->payment->browser_bound_signature =
+        browser_bound_key_->Sign(response_->info->client_data_json);
   }
 #endif  // BUILDFLAG(IS_ANDROID)
   response->get_assertion_authenticator_response =

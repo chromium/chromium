@@ -109,9 +109,9 @@ struct SupplementalPubKeysResponse {
 
 // The `payment` extension response.
 struct AuthenticationExtensionsPaymentResponse {
-  // The signatures of the browser bound key corresponding to public keys in the
-  // payment portion of the clientDataJson.
-  array<array<uint8>> browser_bound_signatures;
+  // The signature of the browser bound key corresponding to the public key in
+  // the payment portion of the clientDataJson.
+  array<uint8> browser_bound_signature;
 };
 
 // The public key and attestation returned by Authenticator::MakeCredential.
