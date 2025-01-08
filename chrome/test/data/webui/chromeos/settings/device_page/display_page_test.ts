@@ -4,7 +4,8 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {CrA11yAnnouncerElement, CrLinkRowElement, CrSliderElement, CrToggleElement, DevicePageBrowserProxyImpl, DisplayLayoutElement, displaySettingsProviderMojom, GeolocationAccessLevel, NightLightScheduleType, Router, routes, setDisplayApiForTesting, setDisplaySettingsProviderForTesting, SettingsDisplayElement, SettingsDropdownMenuElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {DisplayLayoutElement, NightLightScheduleType, SettingsDisplayElement} from 'chrome://os-settings/lazy_load.js';
+import {CrA11yAnnouncerElement, CrLinkRowElement, CrSliderElement, CrToggleElement, DevicePageBrowserProxyImpl, displaySettingsProviderMojom, GeolocationAccessLevel, Router, routes, setDisplayApiForTesting, setDisplaySettingsProviderForTesting, SettingsDropdownMenuElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';

@@ -22,7 +22,6 @@ import '../os_settings_page/os_settings_subpage.js';
 import './input_device_settings_shared.css.js';
 import './per_device_app_installed_row.js';
 import './per_device_install_row.js';
-import './per_device_keyboard_remap_keys.js';
 import './per_device_subsection_header.js';
 import 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
 

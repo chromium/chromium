@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 import 'chrome://os-settings/os_settings.js';
+import 'chrome://os-settings/lazy_load.js';
 
-import {ControlledRadioButtonElement, CrIconButtonElement, crosAudioConfigMojom, CrSliderElement, CrToggleElement, DevicePageBrowserProxyImpl, fakeCrosAudioConfig, fakeGraphicsTablets, FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakePointingSticks, fakeTouchpads, Route, Router, routes, setCrosAudioConfigForTesting, setDisplayApiForTesting, setInputDeviceSettingsProviderForTesting, SettingsAudioElement, SettingsDevicePageElement, SettingsPerDeviceKeyboardElement, SettingsRadioGroupElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {SettingsAudioElement, SettingsPerDeviceKeyboardElement} from 'chrome://os-settings/lazy_load.js';
+import {ControlledRadioButtonElement, CrIconButtonElement, crosAudioConfigMojom, CrSliderElement, CrToggleElement, DevicePageBrowserProxyImpl, fakeCrosAudioConfig, fakeGraphicsTablets, FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakePointingSticks, fakeTouchpads, Route, Router, routes, setCrosAudioConfigForTesting, setDisplayApiForTesting, setInputDeviceSettingsProviderForTesting, SettingsDevicePageElement, SettingsRadioGroupElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';

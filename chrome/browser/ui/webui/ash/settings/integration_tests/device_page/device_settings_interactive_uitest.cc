@@ -450,6 +450,8 @@ IN_PROC_BROWSER_TEST_F(DeviceSettingsInteractiveUiTest, TopRow) {
       LaunchSettingsApp(
           webcontents_id_,
           chromeos::settings::mojom::kPerDeviceKeyboardSubpagePath),
+      Log("Waiting for Keyboard subpage to exist"),
+      WaitForElementExists(webcontents_id_, kTopRowAreFkeysToggleQuery),
       Log("Enabling 'Treat top-row keys as function keys' setting"),
       ClickElement(webcontents_id_, kTopRowAreFkeysToggleQuery),
       WaitForStateChange(webcontents_id_, top_row_are_fkeys),
