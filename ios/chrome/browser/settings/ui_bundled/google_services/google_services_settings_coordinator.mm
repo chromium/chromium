@@ -12,6 +12,7 @@
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signout_action_sheet/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/google_services_settings_command_handler.h"
@@ -284,12 +285,9 @@ using signin_metrics::PromoAction;
   DCHECK(completion);
   [self.googleServicesSettingsViewController preventUserInteraction];
   __weak GoogleServicesSettingsCoordinator* weakSelf = self;
-  self.authService->SignOut(
-      signin_metrics::ProfileSignout::kUserClickedSignoutSettings,
-      /*force_clear_browsing_data=*/NO, ^{
-        if (!weakSelf) {
-          return;
-        }
+  signin::MultiProfileSignOut(
+      self.browser, signin_metrics::ProfileSignout::kUserClickedSignoutSettings,
+      /*force_clear_data=*/false, /*force_snackbar_over_toolbar=*/false, nil, ^{
         [weakSelf.googleServicesSettingsViewController allowUserInteraction];
         completion(YES);
       });

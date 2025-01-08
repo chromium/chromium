@@ -56,6 +56,7 @@ source_set("google_services") {
     "//ios/chrome/browser/authentication/ui_bundled/cells",
     "//ios/chrome/browser/authentication/ui_bundled/enterprise:enterprise_utils",
     "//ios/chrome/browser/authentication/ui_bundled/history_sync",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
     "//ios/chrome/browser/authentication/ui_bundled/signout_action_sheet",
     "//ios/chrome/browser/commerce/model:model",
     "//ios/chrome/browser/net/model:crurl",
