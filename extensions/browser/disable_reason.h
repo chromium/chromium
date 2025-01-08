@@ -58,8 +58,13 @@ enum DisableReason {
   // Disabled because the extension is a "developer extension" (for example, an
   // unpacked extension) while the developer mode is OFF.
   DISABLE_UNSUPPORTED_DEVELOPER_EXTENSION = 1 << 24,
+  // Disabled because of an unknown reason. This can happen when newer versions
+  // of the browser sync reasons which are not known to the current version. We
+  // never actually write this to prefs. This is used to indicate (at runtime)
+  // that unknown reasons are present in the prefs.
+  DISABLE_UNKNOWN = 1 << 25,
   // This should always be the last value.
-  DISABLE_REASON_LAST = 1LL << 25,
+  DISABLE_REASON_LAST = 1LL << 26,
 };
 
 static_assert(DISABLE_REASON_LAST - 1 <= std::numeric_limits<int>::max(),

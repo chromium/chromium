@@ -148,6 +148,7 @@ chromium-metrics-reviews@google.com.
   <int value="4194304" label="DISABLE_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY"/>
   <int value="8388608" label="DISABLE_UNSUPPORTED_MANIFEST_VERSION"/>
   <int value="16777216" label="DISABLE_UNSUPPORTED_DEVELOPER_EXTENSION"/>
+  <int value="33554432" label="DISABLE_UNKNOWN"/>
 </enum>
 
 <enum name="ExtensionEvents">
