@@ -206,6 +206,7 @@ void LogPredictionMetrics(
                                        form, *field, metric_type);
     LogEmailFieldPredictionMetrics(*field);
     LogShadowPredictionComparison(*field, GetActiveHeuristicSource());
+    LogFieldPredictionOverlapMetrics(*field);
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
     // If ML predictions are the active heuristic source, don't record samples
     // as these would be redundant to the ".Heuristic" sub-metric of
