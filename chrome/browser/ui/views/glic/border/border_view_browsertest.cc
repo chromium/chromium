@@ -2,8 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#define _USE_MATH_DEFINES  // To get M_PI on Windows.
+
 #include "chrome/browser/ui/views/glic/border/border_view.h"
 
+#include <math.h>
+
+#include "cc/test/pixel_test_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_features.h"
@@ -15,6 +20,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/canvas.h"
 
 namespace glic {
 
@@ -31,6 +37,34 @@ class BorderViewBrowserTest : public InProcessBrowserTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII(switches::kGlicGuestURL,
                                     url::kAboutBlankURL);
+  }
+
+  static SkBitmap ConstructExpectedBitmap(const gfx::Size& size,
+                                          SkColor border_color,
+                                          SkColor center_color,
+                                          int border_width,
+                                          float alpha) {
+    SkBitmap bitmap;
+    SkImageInfo info =
+        SkImageInfo::Make(size.width(), size.height(), kRGBA_8888_SkColorType,
+                          kUnpremul_SkAlphaType);
+    bitmap.allocPixels(info);
+    bitmap.eraseColor(center_color);
+    SkCanvas canvas(bitmap, SkSurfaceProps{});
+    SkPaint border;
+    border.setColor(border_color);
+    border.setStyle(SkPaint::Style::kStroke_Style);
+    border.setStrokeWidth(border_width);
+    border.setAlphaf(alpha);
+    canvas.drawRect(SkRect::MakeXYWH(0, 0, size.width(), size.height()),
+                    border);
+    return bitmap;
+  }
+
+  static gfx::Rect GetContentsRectForWindow(Browser* browser) {
+    auto* tab_strip_model = browser->tab_strip_model();
+    EXPECT_TRUE(tab_strip_model->ContainsIndex(0));
+    return tab_strip_model->GetTabAtIndex(0)->GetContents()->GetViewBounds();
   }
 
  protected:
@@ -81,6 +115,119 @@ IN_PROC_BROWSER_TEST_F(BorderViewBrowserTest, Visibility) {
   EXPECT_TRUE(border->GetVisible());
   border->CancelAnimation();
   EXPECT_FALSE(border->GetVisible());
+}
+
+// Ensures that the border width is correct in various timestamps during the
+// animation.
+IN_PROC_BROWSER_TEST_F(BorderViewBrowserTest, AnimationSteps) {
+  auto* browser_view = browser()->window()->AsBrowserView();
+  auto* border = browser_view->contents_web_view()->glic_border();
+  gfx::Rect capture_rect = GetContentsRectForWindow(browser());
+  SkColor background_color = SkColors::kBlack.toSkColor();
+  SkColor border_color =
+      browser()->GetBrowserView().GetColorProvider()->GetColor(
+          ui::kColorSysPrimary);
+
+  border->StartAnimation();
+
+  // Manually stepping the animation code to mimic the behavior of the
+  // compositor. As a part of crbug.com/384712084, testing via requesting
+  // screenshot from the browser window was explored however, was failed due to
+  // test falkiness (crbug.com/387386303).
+
+  base::TimeTicks timestamp = base::TimeTicks::Now();
+
+  // Note: the following is based on having the animation duration = 2 seconds.
+  // timestamp = 0 (now).
+  {
+    border->OnAnimationStep(timestamp);
+    gfx::Canvas canvas(capture_rect.size(), /*image_scale=*/1.0f,
+                       /*is_opaque=*/true);
+    canvas.DrawColor(background_color);
+    border->OnPaint(&canvas);
+    SkBitmap actual_bitmap = canvas.GetBitmap();
+
+    SkBitmap expected_bitmap = ConstructExpectedBitmap(
+        capture_rect.size(),
+        /*border_color=*/border_color,
+        /*center_color=*/background_color, /*border_width=*/2, /*alpha=*/0);
+
+    EXPECT_TRUE(cc::MatchesBitmap(actual_bitmap, expected_bitmap,
+                                  cc::ExactPixelComparator()));
+  }
+
+  // timestamp = 0.5 seconds.
+  {
+    timestamp += base::Seconds(0.5);
+    border->OnAnimationStep(timestamp);
+    gfx::Canvas canvas(capture_rect.size(), /*image_scale=*/1.0f,
+                       /*is_opaque=*/true);
+    canvas.DrawColor(background_color);
+    border->OnPaint(&canvas);
+    SkBitmap actual_bitmap = canvas.GetBitmap();
+
+    // The sin input is calculated as:
+    // (since_first_frame * M_PI) / (`kAnimationDuration` * 2)
+    // At timestamp = 0.5 and with kAnimationDuration = 2,
+    // we have: (0.5 * M_PI) / (2 * 2) = 0.125 * M_PI.
+    float progress = sin(0.125 * M_PI);
+
+    // The border width is calculated as:
+    // `kBorderWidthMin` + ((`kBorderWidthMax` - `kBorderWidthMin`) *
+    // `progress`).
+    float border_width = 2 + (8 * progress);
+    SkBitmap expected_bitmap = ConstructExpectedBitmap(
+        capture_rect.size(),
+        /*border_color=*/border_color,
+        /*center_color=*/background_color, /*border_width=*/border_width,
+        /*alpha=*/progress);
+
+    EXPECT_TRUE(cc::MatchesBitmap(actual_bitmap, expected_bitmap,
+                                  cc::ExactPixelComparator()));
+  }
+
+  // timestamp = 2 seconds.
+  {
+    timestamp += base::Seconds(1.5);
+    border->OnAnimationStep(timestamp);
+    gfx::Canvas canvas(capture_rect.size(), /*image_scale=*/1.0f,
+                       /*is_opaque=*/true);
+    canvas.DrawColor(background_color);
+    border->OnPaint(&canvas);
+    SkBitmap actual_bitmap = canvas.GetBitmap();
+
+    float progress = sin(0.5 * M_PI);
+    float border_width = 2 + (8 * progress);
+    SkBitmap expected_bitmap = ConstructExpectedBitmap(
+        capture_rect.size(),
+        /*border_color=*/border_color,
+        /*center_color=*/background_color, /*border_width=*/border_width,
+        /*alpha=*/progress);
+
+    EXPECT_TRUE(cc::MatchesBitmap(actual_bitmap, expected_bitmap,
+                                  cc::ExactPixelComparator()));
+  }
+
+  // timestamp = 4 seconds; stable state.
+  {
+    timestamp += base::Seconds(2);
+    border->OnAnimationStep(timestamp);
+    gfx::Canvas canvas(capture_rect.size(), /*image_scale=*/1.0f,
+                       /*is_opaque=*/true);
+    canvas.DrawColor(background_color);
+    border->OnPaint(&canvas);
+    SkBitmap actual_bitmap = canvas.GetBitmap();
+
+    SkBitmap expected_bitmap = ConstructExpectedBitmap(
+        capture_rect.size(),
+        /*border_color=*/border_color,
+        /*center_color=*/background_color, /*border_width=*/10, /*alpha=*/1);
+
+    EXPECT_TRUE(cc::MatchesBitmap(actual_bitmap, expected_bitmap,
+                                  cc::ExactPixelComparator()));
+  }
+
+  border->CancelAnimation();
 }
 
 namespace {

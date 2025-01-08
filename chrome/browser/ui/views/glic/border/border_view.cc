@@ -2,18 +2,38 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#define _USE_MATH_DEFINES  // To get M_PI on Windows.
+
 #include "chrome/browser/ui/views/glic/border/border_view.h"
+
+#include <math.h>
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/view_class_properties.h"
 
 namespace glic {
+
+// Note: |           |           |
+//       |<-- 5px -->|<-- 5px -->|
+//       |  outside  |  visible  |
+//
+// So only half of the full width are inside the visible viewport.
+constexpr static int kBorderWidthMin = 2;
+constexpr static int kBorderWidthMax = 10;
+
+constexpr static base::TimeDelta kAnimationDuration = base::Seconds(2);
+
+// Maps `progress` in [0, 1] to its radian value in [0, M_PI/2].
+float GetProgressInRadian(base::TimeDelta since_first_frame) {
+  return (since_first_frame / kAnimationDuration) * (M_PI / 2);
+}
 
 // static
 BorderView* BorderView::FindBorderForWebContents(
@@ -50,15 +70,20 @@ BorderView::BorderView() = default;
 BorderView::~BorderView() = default;
 
 void BorderView::OnPaint(gfx::Canvas* canvas) {
-  // TODO(baranerf): Modify this to a variable width when adding animation.
-  constexpr static int kBorderWidth = 5;
+  if (!compositor_) {
+    return;
+  }
+
+  int border_width =
+      kBorderWidthMin + ((kBorderWidthMax - kBorderWidthMin) * progress_);
 
   views::View::OnPaint(canvas);
   cc::PaintFlags flags;
   flags.setStyle(cc::PaintFlags::kStroke_Style);
   flags.setColor(GetColorProvider()->GetColor(ui::kColorSysPrimary));
-  flags.setStrokeWidth(kBorderWidth);
-  canvas->DrawRect(GetContentsBounds(), flags);
+  flags.setStrokeWidth(border_width);
+  flags.setAlphaf(progress_);
+  canvas->DrawRect(gfx::RectF(bounds()), flags);
 }
 
 void BorderView::OnChildViewAdded(views::View* observed_view,
@@ -79,33 +104,61 @@ void BorderView::OnViewBoundsChanged(views::View* observed_view) {
 }
 
 void BorderView::OnAnimationStep(base::TimeTicks timestamp) {
-  // Update the border style based on`timestamp` and the motion curve(s).
+  if (first_frame_time_.is_null()) {
+    first_frame_time_ = timestamp;
+  }
+
+  base::TimeDelta since_first_frame = timestamp - first_frame_time_;
+  float progress_in_radian = GetProgressInRadian(since_first_frame);
+
+  if (progress_in_radian > M_PI / 2) {
+    progress_ = 1;
+    return;
+  }
+
+  progress_ = sin(progress_in_radian);
+
+  SchedulePaint();
 }
 
-void BorderView::OnCompositingShuttingDown(ui::Compositor* compositor) {}
+void BorderView::OnCompositingShuttingDown(ui::Compositor* compositor) {
+  CancelAnimation();
+}
 
 void BorderView::StartAnimation() {
-  if (animation_ongoing_) {
+  if (compositor_) {
     // The user can click on the glic icon after the window is shown. The
     // animation is already playing at that time.
     return;
   }
+
   if (!parent()) {
     base::debug::DumpWithoutCrashing();
     return;
   }
-  animation_ongoing_ = true;
+
   SetBoundsRect(parent()->bounds());
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   SetVisible(true);
+
+  ui::Compositor* compositor = layer()->GetCompositor();
+  if (!compositor) {
+    base::debug::DumpWithoutCrashing();
+    return;
+  }
+  compositor_ = compositor;
+  compositor_->AddAnimationObserver(this);
 }
 
 void BorderView::CancelAnimation() {
-  if (!animation_ongoing_) {
+  if (!compositor_) {
     return;
   }
-  animation_ongoing_ = false;
+
+  compositor_->RemoveAnimationObserver(this);
+  compositor_ = nullptr;
+
   // `DestroyLayer()` schedules another paint to repaint the affected area by
   // the destroyed layer.
   DestroyLayer();

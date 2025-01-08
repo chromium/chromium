@@ -69,7 +69,14 @@ class BorderView : public views::View,
   // coexist with the TabSharing border.
   bool reorder_in_progress_ = false;
 
-  bool animation_ongoing_ = false;
+  raw_ptr<ui::Compositor> compositor_ = nullptr;
+
+  // Records the animation progress, starting from 0 to 1.f.
+  float progress_ = 0.f;
+
+  // Stores the first frame timestamp to be used for calculating the animation
+  // progress.
+  base::TimeTicks first_frame_time_;
 };
 
 }  // namespace glic
