@@ -80,7 +80,8 @@ VideoEncoderImpl::VideoEncoderImpl(
   } else if (codec == VideoCodec::kUnknown &&
              video_config.video_codec_params.value()
                  .enable_fake_codec_for_tests) {
-    encoder_ = std::make_unique<FakeSoftwareVideoEncoder>(video_config);
+    encoder_ = std::make_unique<FakeSoftwareVideoEncoder>(
+        video_config, std::move(metrics_provider));
 #if BUILDFLAG(ENABLE_LIBAOM)
   } else if (codec == VideoCodec::kAV1) {
     encoder_ =

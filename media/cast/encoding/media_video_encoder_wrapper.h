@@ -15,6 +15,7 @@
 
 namespace media {
 
+class GpuVideoAcceleratorFactories;
 class VideoEncoderMetricsProvider;
 class VideoFrame;
 
@@ -31,7 +32,7 @@ class MediaVideoEncoderWrapper final : public media::cast::VideoEncoder {
       std::unique_ptr<VideoEncoderMetricsProvider> metrics_provider,
       StatusChangeCallback status_change_cb,
       FrameEncodedCallback output_cb,
-      const CreateVideoEncodeAcceleratorCallback& create_vea_cb);
+      GpuVideoAcceleratorFactories* gpu_factories);
 
   MediaVideoEncoderWrapper(const MediaVideoEncoderWrapper&) = delete;
   MediaVideoEncoderWrapper& operator=(const MediaVideoEncoderWrapper&) = delete;
@@ -39,7 +40,7 @@ class MediaVideoEncoderWrapper final : public media::cast::VideoEncoder {
   ~MediaVideoEncoderWrapper() final;
 
   // media::cast::VideoEncoder implementation.
-  bool EncodeVideoFrame(scoped_refptr<media::VideoFrame> video_frame,
+  bool EncodeVideoFrame(scoped_refptr<VideoFrame> video_frame,
                         base::TimeTicks reference_time) final;
   void SetBitRate(int new_bit_rate) final;
   void GenerateKeyFrame() final;
@@ -79,18 +80,33 @@ class MediaVideoEncoderWrapper final : public media::cast::VideoEncoder {
   // Posts a task to update the encoder options, such as whether a key frame
   // is requested.
   void UpdateEncoderOptions();
+  void OnOptionsUpdated(EncoderStatus status);
+
+  // We currently manage the threads used for interacting with the encoder
+  // manually. Hardware encoding demands posting to the "accelerator thread"
+  // which is the same as the dedicated VIDEO thread. Software encoding makes no
+  // such demands, but should not be ran on the MAIN thread in order to avoid
+  // blocking.
+  //
+  // In order to avoid creating a third thread purely for the accelerator class,
+  // and then trampolining calls from MAIN -> VIDEO -> ACCELERATOR, this private
+  // method is used to ensure we invoke the encoder method on the correct
+  // thread. Any usage of `encoder_` should be wrapped in this method.
+  void CallEncoderOnCorrectThread(base::OnceClosure closure);
 
   // Callback generators. Intended to be called on the VIDEO thread and post
   // back to the MAIN thread.
   media::VideoEncoder::EncoderInfoCB GetInfoCB();
   media::VideoEncoder::EncoderStatusCB GetDoneCB();
   media::VideoEncoder::OutputCB GetOutputCB();
+  media::VideoEncoder::EncoderStatusCB GetOptionsUpdateDoneCB();
 
   // Properties set directly from arguments passed at construction.
   scoped_refptr<CastEnvironment> cast_environment_;
   const std::unique_ptr<VideoEncoderMetricsProvider> metrics_provider_;
   StatusChangeCallback status_change_cb_;
   FrameEncodedCallback output_cb_;
+  raw_ptr<GpuVideoAcceleratorFactories> gpu_factories_;
   const bool is_hardware_encoder_;
   const VideoCodec codec_;
 
@@ -106,6 +122,10 @@ class MediaVideoEncoderWrapper final : public media::cast::VideoEncoder {
 
   // These options are for the entire encoder.
   media::VideoEncoder::Options options_;
+
+  // If true, we are currently updating options, and any enqueued frames will
+  // be rejected.
+  bool is_updating_options_ = false;
 
   // These options are intended to be per frame.
   media::VideoEncoder::EncodeOptions encode_options_;

@@ -18,6 +18,7 @@
 namespace media {
 
 class VideoEncoderMetricsProvider;
+class GpuVideoAcceleratorFactories;
 
 namespace cast {
 
@@ -46,7 +47,8 @@ class VideoEncoder {
       std::unique_ptr<VideoEncoderMetricsProvider> metrics_provider,
       StatusChangeCallback status_change_cb,
       FrameEncodedCallback output_cb,
-      const CreateVideoEncodeAcceleratorCallback& create_vea_cb);
+      const CreateVideoEncodeAcceleratorCallback& create_vea_cb,
+      media::GpuVideoAcceleratorFactories* gpu_factories);
 
   virtual ~VideoEncoder() {}
 

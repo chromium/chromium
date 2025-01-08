@@ -10,6 +10,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "media/base/async_destroy_video_encoder.h"
 #include "media/base/encoder_status.h"
@@ -37,6 +39,17 @@
 
 namespace media::cast {
 namespace {
+
+std::unique_ptr<media::VideoEncoder> CreateHardwareEncoder(
+    media::GpuVideoAcceleratorFactories& gpu_factories,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+  // TODO(crbug.com/282984511): consider providing a non-null MediaLog.
+  return std::make_unique<
+      media::AsyncDestroyVideoEncoder<media::VideoEncodeAcceleratorAdapter>>(
+      std::make_unique<media::VideoEncodeAcceleratorAdapter>(
+          &gpu_factories, std::make_unique<media::NullMediaLog>(),
+          std::move(task_runner)));
+}
 
 // TODO(crbug.com/282984511): consider adding support for H264 here, using
 // the media::OpenH264VideoEncoder.
@@ -74,16 +87,14 @@ VideoCodecProfile ToProfile(VideoCodec codec) {
   }
 }
 
-void InitializeEncoderOnEncoderThread(
-    const scoped_refptr<CastEnvironment>& environment,
-    media::VideoEncoder& encoder,
-    VideoCodecProfile profile,
-    const media::VideoEncoder::Options& options,
-    media::VideoEncoder::EncoderInfoCB info_cb,
-    media::VideoEncoder::OutputCB output_cb,
-    media::VideoEncoder::EncoderStatusCB done_cb) {
-  CHECK(environment->CurrentlyOn(CastEnvironment::VIDEO));
-
+// Must be called on the ENCODER thread, which resolves to VIDEO for hardware
+// encoding, and MAIN for software encoding.
+void CallInitializeEncoder(media::VideoEncoder& encoder,
+                           VideoCodecProfile profile,
+                           const media::VideoEncoder::Options& options,
+                           media::VideoEncoder::EncoderInfoCB info_cb,
+                           media::VideoEncoder::OutputCB output_cb,
+                           media::VideoEncoder::EncoderStatusCB done_cb) {
   encoder.Initialize(profile, options, std::move(info_cb), std::move(output_cb),
                      std::move(done_cb));
 
@@ -92,14 +103,39 @@ void InitializeEncoderOnEncoderThread(
   encoder.DisablePostedCallbacks();
 }
 
-void EncodeVideoFrameOnEncoderThread(
-    scoped_refptr<CastEnvironment> environment,
+// Must be called on the ENCODER thread, which resolves to VIDEO for hardware
+// encoding, and MAIN for software encoding.
+void CallEncodeVideoFrame(
     media::VideoEncoder& encoder,
     scoped_refptr<media::VideoFrame> video_frame,
     const media::VideoEncoder::EncodeOptions& encode_options,
     media::VideoEncoder::EncoderStatusCB done_cb) {
-  CHECK(environment->CurrentlyOn(CastEnvironment::VIDEO));
   encoder.Encode(std::move(video_frame), encode_options, std::move(done_cb));
+}
+
+// Must be called on the ENCODER thread, which resolves to VIDEO for hardware
+// encoding, and MAIN for software encoding.
+//
+// NOTE: since this call depends on a successful flush, `flush_result` is
+// checked before the encoder is accessed.
+void CallChangeOptions(media::VideoEncoder& encoder,
+                       media::VideoEncoder::Options options,
+                       media::VideoEncoder::OutputCB output_cb,
+                       media::VideoEncoder::EncoderStatusCB done_cb,
+                       EncoderStatus flush_result) {
+  if (!flush_result.is_ok()) {
+    std::move(done_cb).Run(flush_result);
+    return;
+  }
+  encoder.ChangeOptions(std::move(options), std::move(output_cb),
+                        std::move(done_cb));
+}
+
+// Must be called on the ENCODER thread, which resolves to VIDEO for hardware
+// encoding, and MAIN for software encoding.
+void CallFlush(media::VideoEncoder& encoder,
+               media::VideoEncoder::EncoderStatusCB done_cb) {
+  encoder.Flush(std::move(done_cb));
 }
 
 // TODO(crbug.com/282984511): just use EncoderStatus directly once we remove
@@ -135,15 +171,17 @@ MediaVideoEncoderWrapper::MediaVideoEncoderWrapper(
     std::unique_ptr<VideoEncoderMetricsProvider> metrics_provider,
     StatusChangeCallback status_change_cb,
     FrameEncodedCallback output_cb,
-    const CreateVideoEncodeAcceleratorCallback& create_vea_cb)
+    media::GpuVideoAcceleratorFactories* gpu_factories)
     : cast_environment_(std::move(cast_environment)),
       metrics_provider_(std::move(metrics_provider)),
       status_change_cb_(std::move(status_change_cb)),
       output_cb_(std::move(output_cb)),
+      gpu_factories_(gpu_factories),
       is_hardware_encoder_(video_config.use_hardware_encoder),
       codec_(video_config.video_codec()) {
   CHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
   CHECK(cast_environment_->HasVideoThread());
+  CHECK(metrics_provider_);
   CHECK(status_change_cb_);
   CHECK(output_cb_);
 
@@ -151,14 +189,15 @@ MediaVideoEncoderWrapper::MediaVideoEncoderWrapper(
   options_.bitrate = Bitrate::ConstantBitrate(
       base::checked_cast<uint32_t>(video_config.start_bitrate));
 
-  // NOTE: since we don't actually know the frame size until the first frame,
-  // the encoder will not get created until the first call to
+  // NOTE: since we don't actually know the frame size until the first
+  // frame, the encoder will not get created until the first call to
   // `EncodeVideoFrame`. However, it is ready to start receiving frames.
   status_change_cb_.Run(STATUS_INITIALIZED);
 }
 
 MediaVideoEncoderWrapper::~MediaVideoEncoderWrapper() {
   CHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
+
   if (encoder_) {
     cast_environment_->GetTaskRunner(CastEnvironment::VIDEO)
         ->DeleteSoon(FROM_HERE, encoder_.release());
@@ -171,6 +210,13 @@ bool MediaVideoEncoderWrapper::EncodeVideoFrame(
     base::TimeTicks reference_time) {
   CHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
   CHECK(!video_frame->visible_rect().IsEmpty());
+
+  // TODO(crbug.com/282984511): consider adding optimization to store frames
+  // that are queued for encoding and sending them once updating options is
+  // complete.
+  if (is_updating_options_) {
+    return false;
+  }
 
   // Construct and initialize the encoder on the first call to this method.
   const gfx::Size frame_size = video_frame->visible_rect().size();
@@ -198,12 +244,11 @@ bool MediaVideoEncoderWrapper::EncodeVideoFrame(
   }
   last_frame_timestamp_ = video_frame->timestamp();
 
-  cast_environment_->PostTask(
-      CastEnvironment::VIDEO, FROM_HERE,
-      base::BindOnce(&EncodeVideoFrameOnEncoderThread, cast_environment_,
-                     std::ref(*encoder_), std::move(video_frame),
-                     encode_options_, GetDoneCB()));
+  CallEncoderOnCorrectThread(
+      base::BindOnce(&CallEncodeVideoFrame, std::ref(*encoder_),
+                     std::move(video_frame), encode_options_, GetDoneCB()));
   encode_options_.key_frame = false;
+
   return true;
 }
 
@@ -216,6 +261,7 @@ void MediaVideoEncoderWrapper::SetBitRate(int new_bit_rate) {
   // If this method is called before the encoder_ is constructed, the bitrate
   // will be set as part of construction.
   if (encoder_) {
+    // If we have an encoder, we need to update its options.
     UpdateEncoderOptions();
   }
 }
@@ -230,6 +276,7 @@ void MediaVideoEncoderWrapper::OnEncodedFrame(
     VideoEncoderOutput output,
     std::optional<media::VideoEncoder::CodecDescription> description) {
   CHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
+
   const CachedMetadata& metadata = recent_metadata_.front();
   auto encoded_frame = std::make_unique<SenderEncodedFrame>();
   encoded_frame->is_key_frame = output.key_frame;
@@ -269,11 +316,15 @@ void MediaVideoEncoderWrapper::OnEncoderStatus(EncoderStatus error) {
   CHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
   if (!last_recorded_status_ || error != last_recorded_status_.value()) {
     last_recorded_status_ = error;
-    status_change_cb_.Run(ToOperationalStatus(error));
 
     if (!error.is_ok()) {
+      CHECK(metrics_provider_);
       metrics_provider_->SetError(std::move(error));
     }
+
+    // Running the status change callback may delete `this`, so this should be
+    // done last.
+    status_change_cb_.Run(ToOperationalStatus(error));
   }
 }
 
@@ -289,8 +340,10 @@ void MediaVideoEncoderWrapper::ConstructEncoder() {
   // TODO(crbug.com/282984511): consider adding a fake software encoder for
   // testing.
   if (is_hardware_encoder_) {
-    // TODO(crbug.com/282984511): write a GVAF impl for components/mirroring.
-    NOTREACHED();
+    CHECK(gpu_factories_);
+    encoder_ = CreateHardwareEncoder(
+        *gpu_factories_,
+        cast_environment_->GetTaskRunner(CastEnvironment::MAIN));
   } else {
     encoder_ = CreateSoftwareEncoder(codec_);
   }
@@ -299,11 +352,10 @@ void MediaVideoEncoderWrapper::ConstructEncoder() {
   const VideoCodecProfile profile = ToProfile(codec_);
   metrics_provider_->Initialize(profile, options_.frame_size,
                                 is_hardware_encoder_);
-  cast_environment_->PostTask(
-      CastEnvironment::VIDEO, FROM_HERE,
-      base::BindOnce(&InitializeEncoderOnEncoderThread, cast_environment_,
-                     std::ref(*encoder_), profile, options_, GetInfoCB(),
-                     GetOutputCB(), GetDoneCB()));
+
+  CallEncoderOnCorrectThread(
+      base::BindOnce(&CallInitializeEncoder, std::ref(*encoder_), profile,
+                     options_, GetInfoCB(), GetOutputCB(), GetDoneCB()));
 }
 
 base::TimeDelta MediaVideoEncoderWrapper::GetFrameDuration(
@@ -322,61 +374,83 @@ base::TimeDelta MediaVideoEncoderWrapper::GetFrameDuration(
   return std::clamp(duration, min_duration, max_duration);
 }
 
+// The VideoEncoder API requires you to Flush() and wait before calling
+// ChangeOptions(). This results in this annoying set of nested callbacks.
 void MediaVideoEncoderWrapper::UpdateEncoderOptions() {
   CHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
-  cast_environment_->PostTask(
-      CastEnvironment::VIDEO, FROM_HERE,
-      base::BindOnce(
-          [](media::VideoEncoder& encoder, media::VideoEncoder::Options options,
-             media::VideoEncoder::OutputCB output_cb,
-             media::VideoEncoder::EncoderStatusCB done_cb) {
-            encoder.ChangeOptions(std::move(options), std::move(output_cb),
-                                  std::move(done_cb));
-          },
-          // NOTE: Raw reference here is safe because the encoder is deleted in
-          // a task posted to the video thread.
-          std::ref(*encoder_), options_, GetOutputCB(), GetDoneCB()));
+  CHECK(!is_updating_options_);
+  is_updating_options_ = true;
+
+  // Once the Flush() call is complete, we can safely call ChangeOptions() on
+  // the encoder.
+  auto flush_done_callback = base::BindOnce(
+      &CallChangeOptions,
+      // NOTE: Here and below, raw reference is safe because the encoder is
+      // deleted in a task posted to the video thread.
+      std::ref(*encoder_), options_, GetOutputCB(), GetOptionsUpdateDoneCB());
+
+  // Call Flush on the correct thread.
+  CallEncoderOnCorrectThread(base::BindOnce(&CallFlush, std::ref(*encoder_),
+                                            std::move(flush_done_callback)));
+}
+
+void MediaVideoEncoderWrapper::CallEncoderOnCorrectThread(
+    base::OnceClosure closure) {
+  CHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
+
+  // If hardware, let the encoder do the post to the accelerator / VIDEO thread
+  // on its own.
+  if (is_hardware_encoder_) {
+    std::move(closure).Run();
+
+    // If software, manually post it to the VIDEO thread to not block MAIN.
+  } else {
+    cast_environment_->PostTask(CastEnvironment::VIDEO, FROM_HERE,
+                                std::move(closure));
+  }
 }
 
 media::VideoEncoder::EncoderInfoCB MediaVideoEncoderWrapper::GetInfoCB() {
   CHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
-  return base::BindRepeating(
-      [](base::WeakPtr<MediaVideoEncoderWrapper> weak_ptr,
-         scoped_refptr<CastEnvironment> environment,
-         const VideoEncoderInfo& encoder_info) {
-        environment->PostTask(
-            CastEnvironment::MAIN, FROM_HERE,
-            base::BindOnce(&MediaVideoEncoderWrapper::OnEncoderInfo, weak_ptr,
-                           encoder_info));
-      },
-      weak_factory_.GetWeakPtr(), cast_environment_);
+  return base::BindPostTask(
+      cast_environment_->GetTaskRunner(CastEnvironment::MAIN),
+      base::BindRepeating(&MediaVideoEncoderWrapper::OnEncoderInfo,
+                          weak_factory_.GetWeakPtr()));
 }
 
 media::VideoEncoder::OutputCB MediaVideoEncoderWrapper::GetOutputCB() {
   CHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
-  return base::BindRepeating(
-      [](base::WeakPtr<MediaVideoEncoderWrapper> weak_ptr,
-         scoped_refptr<CastEnvironment> environment, VideoEncoderOutput output,
-         std::optional<media::VideoEncoder::CodecDescription> description) {
-        environment->PostTask(
-            CastEnvironment::MAIN, FROM_HERE,
-            base::BindOnce(&MediaVideoEncoderWrapper::OnEncodedFrame, weak_ptr,
-                           std::move(output), std::move(description)));
-      },
-      weak_factory_.GetWeakPtr(), cast_environment_);
+  return base::BindPostTask(
+      cast_environment_->GetTaskRunner(CastEnvironment::MAIN),
+      base::BindRepeating(&MediaVideoEncoderWrapper::OnEncodedFrame,
+                          weak_factory_.GetWeakPtr()));
 }
 
 media::VideoEncoder::EncoderStatusCB MediaVideoEncoderWrapper::GetDoneCB() {
   CHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
-  return base::BindOnce(
-      [](base::WeakPtr<MediaVideoEncoderWrapper> weak_ptr,
-         scoped_refptr<CastEnvironment> environment, EncoderStatus status) {
-        environment->PostTask(
-            CastEnvironment::MAIN, FROM_HERE,
-            base::BindOnce(&MediaVideoEncoderWrapper::OnEncoderStatus, weak_ptr,
-                           status));
-      },
-      weak_factory_.GetWeakPtr(), cast_environment_);
+  return base::BindPostTask(
+      cast_environment_->GetTaskRunner(CastEnvironment::MAIN),
+      base::BindOnce(&MediaVideoEncoderWrapper::OnEncoderStatus,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void MediaVideoEncoderWrapper::OnOptionsUpdated(EncoderStatus status) {
+  CHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
+  // Now that we are done updating options we can begin encoding frames
+  // again.
+  is_updating_options_ = false;
+
+  // Call the more generic encode status method as well.
+  OnEncoderStatus(status);
+}
+
+media::VideoEncoder::EncoderStatusCB
+MediaVideoEncoderWrapper::GetOptionsUpdateDoneCB() {
+  CHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
+  return base::BindPostTask(
+      cast_environment_->GetTaskRunner(CastEnvironment::MAIN),
+      base::BindOnce(&MediaVideoEncoderWrapper::OnOptionsUpdated,
+                     weak_factory_.GetWeakPtr()));
 }
 
 }  //  namespace media::cast

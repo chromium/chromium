@@ -4,9 +4,12 @@ include_rules = [
   "+components/mirroring/mojom",
   "+components/mirroring/service",
   "+components/openscreen_platform",
+  "+components/viz/common",
   "+crypto",
+  "+gpu/command_buffer",
   "+gpu/config",
   "+gpu/ipc/client",
+  "+gpu/ipc/common",
   # Required by Open Screen API.
   "+third_party/jsoncpp/source/include/json",
   "+net",
@@ -18,6 +21,7 @@ include_rules = [
   "+third_party/openscreen/src/cast/common/public",
   "+third_party/openscreen/src/platform/api",
   "+third_party/openscreen/src/platform/base",
+  "+third_party/skia/include",
   "+ui/base",
   "+ui/gfx/geometry",
 ]

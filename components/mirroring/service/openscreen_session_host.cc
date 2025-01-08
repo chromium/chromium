@@ -255,7 +255,7 @@ class OpenscreenSessionHost::AudioCapturingCallback final
       : audio_data_callback_(std::move(audio_data_callback)),
         error_callback_(std::move(error_callback)),
         logger_("AudioCapturingCallback", observer) {
-    DCHECK(!audio_data_callback_.is_null());
+    CHECK(!audio_data_callback_.is_null());
   }
 
   AudioCapturingCallback(const AudioCapturingCallback&) = delete;
@@ -322,7 +322,7 @@ OpenscreenSessionHost::OpenscreenSessionHost(
                     std::move(outbound_channel),
                     std::move(inbound_channel)),
       logger_(kLogPrefix, observer_) {
-  DCHECK(resource_provider_);
+  CHECK(resource_provider_);
 
   openscreen_platform::EventTraceLoggingPlatform::EnsureInstance();
 
@@ -426,7 +426,7 @@ void OpenscreenSessionHost::OnNegotiated(
   if (last_offered_audio_config_ && senders.audio_sender) {
     base::UmaHistogramEnumeration("CastStreaming.Sender.Audio.NegotiatedCodec",
                                   audio_codec);
-    DCHECK_EQ(last_offered_audio_config_->audio_codec(), audio_codec);
+    CHECK_EQ(last_offered_audio_config_->audio_codec(), audio_codec);
     audio_config = last_offered_audio_config_;
   }
 
@@ -442,7 +442,7 @@ void OpenscreenSessionHost::OnNegotiated(
         video_config = config;
       }
     }
-    DCHECK(video_config);
+    CHECK(video_config);
 
     // Ultimately used by the video encoder that executes on
     // `video_encode_thread_` to determine how many threads should be used to
@@ -462,19 +462,20 @@ void OpenscreenSessionHost::OnNegotiated(
         base::SingleThreadTaskRunnerThreadMode::DEDICATED);
     video_encode_thread_ = base::ThreadPool::CreateSingleThreadTaskRunner(
         {base::TaskPriority::USER_BLOCKING,
-         base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+         base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
+         base::WithBaseSyncPrimitives(), base::MayBlock()},
         base::SingleThreadTaskRunnerThreadMode::DEDICATED);
   }
 
-  cast_environment_ = new media::cast::CastEnvironment(
+  cast_environment_ = base::MakeRefCounted<media::cast::CastEnvironment>(
       base::DefaultTickClock::GetInstance(),
       base::SingleThreadTaskRunner::GetCurrentDefault(), audio_encode_thread_,
       video_encode_thread_);
 
   if (state_ == State::kRemoting) {
-    DCHECK(media_remoter_);
-    DCHECK(!audio_config || audio_config->is_remoting());
-    DCHECK(!video_config || video_config->is_remoting());
+    CHECK(media_remoter_);
+    CHECK(!audio_config || audio_config->is_remoting());
+    CHECK(!video_config || video_config->is_remoting());
 
     media_remoter_->StartRpcMessaging(
         cast_environment_, std::move(senders.audio_sender),
@@ -507,6 +508,17 @@ void OpenscreenSessionHost::OnNegotiated(
         metrics_provider_pending_remote;
     resource_provider_->GetVideoEncoderMetricsProvider(
         metrics_provider_pending_remote.InitWithNewPipeAndPassReceiver());
+
+    media::GpuVideoAcceleratorFactories* gpu_factories = nullptr;
+    if (video_config->use_hardware_encoder) {
+      gpu_factories_factory_ = std::make_unique<MirroringGpuFactoriesFactory>(
+          cast_environment_, *gpu_,
+          base::BindRepeating(
+              &OpenscreenSessionHost::OnVideoEncoderStatus,
+              weak_factory_.GetWeakPtr(), *video_config,
+              media::cast::OperationalStatus::STATUS_CODEC_RUNTIME_ERROR));
+      gpu_factories = &gpu_factories_factory_->GetInstance();
+    }
     auto video_sender = std::make_unique<media::cast::VideoSender>(
         cast_environment_, *video_config,
         base::BindRepeating(&OpenscreenSessionHost::OnVideoEncoderStatus,
@@ -527,7 +539,8 @@ void OpenscreenSessionHost::OnNegotiated(
         // the video sender instance.
         base::BindRepeating(&OpenscreenSessionHost::GetSuggestedVideoBitrate,
                             base::Unretained(this), video_config->min_bitrate,
-                            video_config->max_bitrate));
+                            video_config->max_bitrate),
+        gpu_factories);
     video_stream_ = std::make_unique<VideoRtpStream>(
         std::move(video_sender), weak_factory_.GetWeakPtr(),
         mirror_settings_.refresh_interval());
@@ -590,13 +603,13 @@ void OpenscreenSessionHost::OnNegotiated(
 void OpenscreenSessionHost::OnCapabilitiesDetermined(
     const openscreen::cast::SenderSession* session,
     openscreen::cast::RemotingCapabilities capabilities) {
-  DCHECK_EQ(session_.get(), session);
+  CHECK_EQ(session_.get(), session);
 
   // This method should only be called once, in order to avoid issues with
   // multiple media remoters getting instantiated and attempting to fulfill the
   // mojom interface. Generally speaking, receivers do not update their remoting
   // capabilities during a single session.
-  DCHECK(!media_remoter_);
+  CHECK(!media_remoter_);
   if (state_ == State::kStopped) {
     return;
   }
@@ -650,7 +663,7 @@ void OpenscreenSessionHost::RequestRefreshFrame() {
 
 void OpenscreenSessionHost::CreateVideoEncodeAccelerator(
     media::cast::ReceiveVideoEncodeAcceleratorCallback callback) {
-  DCHECK_NE(state_, State::kInitializing);
+  CHECK_NE(state_, State::kInitializing);
   if (callback.is_null()) {
     return;
   }
@@ -687,8 +700,8 @@ void OpenscreenSessionHost::ConnectToRemotingSource(
 }
 
 void OpenscreenSessionHost::RequestRemotingStreaming() {
-  DCHECK(media_remoter_);
-  DCHECK_EQ(State::kMirroring, state_);
+  CHECK(media_remoter_);
+  CHECK_EQ(State::kMirroring, state_);
   StopStreaming();
   state_ = State::kRemoting;
   Negotiate();
@@ -723,7 +736,7 @@ void OpenscreenSessionHost::SwitchSourceTab() {
     return;
   }
 
-  DCHECK_EQ(state_, State::kMirroring);
+  CHECK_EQ(state_, State::kMirroring);
 
   // Switch video source tab.
   if (video_capture_client_) {
@@ -753,7 +766,7 @@ void OpenscreenSessionHost::OnAsyncInitialized(
     supported_profiles_ = profiles;
   }
 
-  DCHECK_EQ(state_, State::kInitializing);
+  CHECK_EQ(state_, State::kInitializing);
   state_ = State::kMirroring;
 
   Negotiate();
@@ -794,6 +807,12 @@ void OpenscreenSessionHost::StopStreaming() {
   PauseCapturingVideo();
   audio_stream_.reset();
   video_stream_.reset();
+  gpu_factories_factory_.reset();
+
+  // The factory should be deleted on the VIDEO thread to ensure it is not
+  // deleted before BindOnVideoThread() can be called.
+  video_encode_thread_->DeleteSoon(FROM_HERE,
+                                   std::move(gpu_factories_factory_));
 
   // Since the environment and its properties are ref-counted, this call to
   // release it may not immediately close any of its resources.
@@ -1138,7 +1157,7 @@ void OpenscreenSessionHost::NegotiateMirroring() {
     }
   }
 
-  DCHECK(!audio_configs.empty() || !video_configs.empty());
+  CHECK(!audio_configs.empty() || !video_configs.empty());
   session_->Negotiate(audio_configs, video_configs);
 
   if (observer_) {

@@ -47,6 +47,10 @@ class FakeVideoEncodeAcceleratorFactory {
   void CreateVideoEncodeAccelerator(
       ReceiveVideoEncodeAcceleratorCallback callback);
 
+  // Synchronous method to create a fake VEA.
+  std::unique_ptr<media::VideoEncodeAccelerator>
+  CreateVideoEncodeAcceleratorSync();
+
   // Runs the |callback| provided to the last call to
   // CreateVideoEncodeAccelerator() with the new VideoEncodeAccelerator
   // instance.

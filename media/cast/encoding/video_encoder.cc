@@ -12,6 +12,7 @@
 #include "media/cast/encoding/external_video_encoder.h"
 #include "media/cast/encoding/media_video_encoder_wrapper.h"
 #include "media/cast/encoding/video_encoder_impl.h"
+#include "media/video/gpu_video_accelerator_factories.h"
 
 namespace media::cast {
 
@@ -22,7 +23,15 @@ std::unique_ptr<VideoEncoder> VideoEncoder::Create(
     std::unique_ptr<VideoEncoderMetricsProvider> metrics_provider,
     StatusChangeCallback status_change_cb,
     FrameEncodedCallback output_cb,
-    const CreateVideoEncodeAcceleratorCallback& create_vea_cb) {
+    const CreateVideoEncodeAcceleratorCallback& create_vea_cb,
+    media::GpuVideoAcceleratorFactories* gpu_factories) {
+  // Use the media::VideoEncoder wrapper, if the feature is enabled.
+  if (base::FeatureList::IsEnabled(media::kCastStreamingMediaVideoEncoder)) {
+    return std::make_unique<MediaVideoEncoderWrapper>(
+        cast_environment, video_config, std::move(metrics_provider),
+        std::move(status_change_cb), std::move(output_cb), gpu_factories);
+  }
+
   // If the system provides a hardware-accelerated encoder, use it.
   if (video_config.use_hardware_encoder) {
     return std::make_unique<SizeAdaptableExternalVideoEncoder>(
@@ -30,17 +39,8 @@ std::unique_ptr<VideoEncoder> VideoEncoder::Create(
         std::move(status_change_cb), std::move(output_cb), create_vea_cb);
   }
 
-  // Use the media::VideoEncoder wrapper, if the feature is enabled.
-  // TODO(crbug.com/282984511): once hardware encoder support has landed, move
-  // this above the `use_hardware_encoder` check above.
-  if (base::FeatureList::IsEnabled(media::kCastStreamingMediaVideoEncoder)) {
-    return std::make_unique<MediaVideoEncoderWrapper>(
-        cast_environment, video_config, std::move(metrics_provider),
-        std::move(status_change_cb), std::move(output_cb), create_vea_cb);
-  }
-
   // Otherwise we must have a software configuration.
-  DCHECK(encoding_support::IsSoftwareEnabled(video_config.video_codec()));
+  CHECK(encoding_support::IsSoftwareEnabled(video_config.video_codec()));
   return std::make_unique<VideoEncoderImpl>(
       cast_environment, video_config, std::move(metrics_provider),
       status_change_cb, std::move(output_cb));

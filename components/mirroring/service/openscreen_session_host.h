@@ -16,6 +16,7 @@
 #include "components/mirroring/mojom/session_parameters.mojom.h"
 #include "components/mirroring/service/media_remoter.h"
 #include "components/mirroring/service/mirror_settings.h"
+#include "components/mirroring/service/mirroring_gpu_factories_factory.h"
 #include "components/mirroring/service/mirroring_logger.h"
 #include "components/mirroring/service/openscreen_message_port.h"
 #include "components/mirroring/service/openscreen_stats_client.h"
@@ -41,7 +42,6 @@ class OneShotTimer;
 
 namespace media {
 class AudioInputDevice;
-
 }  // namespace media
 
 namespace viz {
@@ -329,6 +329,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
   std::unique_ptr<viz::Gpu> gpu_;
   SupportedProfiles supported_profiles_;
   mojo::Remote<media::mojom::VideoEncodeAcceleratorProvider> vea_provider_;
+  std::unique_ptr<MirroringGpuFactoriesFactory> gpu_factories_factory_;
 
   // Called when the session host has fully initialized.
   AsyncInitializedCallback initialized_cb_;

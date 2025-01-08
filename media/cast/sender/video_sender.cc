@@ -113,7 +113,8 @@ VideoSender::VideoSender(
         encoder_metrics_provider,
     PlayoutDelayChangeCB playout_delay_change_cb,
     media::VideoCaptureFeedbackCB feedback_cb,
-    FrameSender::GetSuggestedVideoBitrateCB get_bitrate_cb)
+    FrameSender::GetSuggestedVideoBitrateCB get_bitrate_cb,
+    media::GpuVideoAcceleratorFactories* gpu_factories)
     : frame_sender_(FrameSender::Create(cast_environment,
                                         video_config,
                                         std::move(sender),
@@ -130,12 +131,8 @@ VideoSender::VideoSender(
       cast_environment_, video_config, std::move(encoder_metrics_provider),
       status_change_cb,
       base::BindRepeating(&VideoSender::OnEncodedVideoFrame, AsWeakPtr()),
-      create_vea_cb);
-  if (!video_encoder_) {
-    cast_environment_->PostTask(
-        CastEnvironment::MAIN, FROM_HERE,
-        base::BindOnce(std::move(status_change_cb), STATUS_UNSUPPORTED_CODEC));
-  }
+      create_vea_cb, gpu_factories);
+  CHECK(video_encoder_);
 }
 
 VideoSender::~VideoSender() {

@@ -25,6 +25,7 @@ class Sender;
 namespace media {
 class VideoEncoderMetricsProvider;
 class VideoFrame;
+class GpuVideoAcceleratorFactories;
 }  // namespace media
 
 namespace media::cast {
@@ -41,9 +42,8 @@ using PlayoutDelayChangeCB = base::RepeatingCallback<void(base::TimeDelta)>;
 // timeouts.
 class VideoSender : public FrameSender::Client {
  public:
-  // New way of instantiating using an openscreen::cast::Sender. Since the
-  // |Sender| instance is destroyed when renegotiation is complete, |this|
-  // is also invalid and should be immediately torn down.
+  // NOTE: Since the `Sender` instance is destroyed when renegotiation is
+  // complete, `this` is also invalid and should be immediately torn down.
   VideoSender(scoped_refptr<CastEnvironment> cast_environment,
               const FrameSenderConfig& video_config,
               StatusChangeCallback status_change_cb,
@@ -53,14 +53,15 @@ class VideoSender : public FrameSender::Client {
                   encoder_metrics_provider,
               PlayoutDelayChangeCB playout_delay_change_cb,
               media::VideoCaptureFeedbackCB feedback_cb,
-              FrameSender::GetSuggestedVideoBitrateCB get_bitrate_cb);
+              FrameSender::GetSuggestedVideoBitrateCB get_bitrate_cb,
+              media::GpuVideoAcceleratorFactories* gpu_factories);
 
   VideoSender(const VideoSender&) = delete;
   VideoSender& operator=(const VideoSender&) = delete;
 
   ~VideoSender() override;
 
-  // Note: It is not guaranteed that |video_frame| will actually be encoded and
+  // Note: It is not guaranteed that `video_frame` will actually be encoded and
   // sent, if VideoSender detects too many frames in flight.  Therefore, clients
   // should be careful about the rate at which this method is called.
   virtual void InsertRawVideoFrame(scoped_refptr<media::VideoFrame> video_frame,
@@ -80,7 +81,7 @@ class VideoSender : public FrameSender::Client {
   base::TimeDelta GetEncoderBacklogDuration() const final;
 
  private:
-  // Called by the |video_encoder_| with the next EncodedFrame to send.
+  // Called by the `video_encoder_` with the next EncodedFrame to send.
   void OnEncodedVideoFrame(std::unique_ptr<SenderEncodedFrame> encoded_frame);
 
   // The backing frame sender implementation.
@@ -99,7 +100,7 @@ class VideoSender : public FrameSender::Client {
   // The duration of video queued for encoding, but not yet sent.
   base::TimeDelta duration_in_encoder_;
 
-  // The timestamp of the frame that was last enqueued in |video_encoder_|.
+  // The timestamp of the frame that was last enqueued in `video_encoder_`.
   RtpTimeTicks last_enqueued_frame_rtp_timestamp_;
   base::TimeTicks last_enqueued_frame_reference_time_;
 
