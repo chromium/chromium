@@ -89,15 +89,9 @@ IN_PROC_BROWSER_TEST_F(FedCmCUJTest, SelectAccount) {
                   PressButton(kFedCmAccountChooserDialogAccountElementId), );
 }
 
-// TODO(https://crbug.com/382867817): Fix this on windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_BubbleHidesWhenModalUIShown DISABLED_BubbleHidesWhenModalUIShown
-#else
-#define MAYBE_BubbleHidesWhenModalUIShown BubbleHidesWhenModalUIShown
-#endif
 // Shows the bubble account picker. It should hide when a modal UI is shown. It
 // should re-show when the modal UI goes away.
-IN_PROC_BROWSER_TEST_F(FedCmCUJTest, MAYBE_BubbleHidesWhenModalUIShown) {
+IN_PROC_BROWSER_TEST_F(FedCmCUJTest, BubbleHidesWhenModalUIShown) {
   RunTestSequence(
       OpenAccountsBubble(),
       WaitForShow(kFedCmAccountChooserDialogAccountElementId), ShowTabModalUI(),
