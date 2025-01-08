@@ -97,21 +97,28 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     }
   }
 
-  glicBrowserWebClientInitialized() {
+  async glicBrowserWebClientCreated() {
     this.receiver = new WebClientReceiver(new WebClientImpl(this.sender));
-    this.handler.webClientInitialized(
+    const {initialState} = await this.handler.webClientCreated(
         this.receiver.$.bindNewPipeAndPassRemote());
+    const chromeVersion = initialState.chromeVersion.components;
+
+    return {
+      panelState: panelStateToClient(initialState.panelState),
+      microphonePermissionEnabled: initialState.microphonePermissionEnabled,
+      locationPermissionEnabled: initialState.locationPermissionEnabled,
+      tabContextPermissionEnabled: initialState.tabContextPermissionEnabled,
+      chromeVersion: {
+        major: chromeVersion[0] || 0,
+        minor: chromeVersion[1] || 0,
+        build: chromeVersion[2] || 0,
+        patch: chromeVersion[3] || 0,
+      },
+    };
   }
 
-  async glicBrowserGetChromeVersion() {
-    const response = await this.handler.getChromeVersion();
-    const c = response.version.components;
-    return {
-      major: c[0] || 0,
-      minor: c[1] || 0,
-      build: c[2] || 0,
-      patch: c[3] || 0,
-    };
+  glicBrowserWebClientInitialized() {
+    this.handler.webClientInitialized();
   }
 
   async glicBrowserCreateTab(request: {

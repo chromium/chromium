@@ -48,18 +48,30 @@ struct UserProfileInfo {
   string email;
 };
 
+// The result of `WebClientCreated()`. Contains information that needs to be
+// available before the web client is initialized.
+struct WebClientInitialState {
+  PanelState panel_state;
+  bool microphone_permission_enabled;
+  bool location_permission_enabled;
+  bool tab_context_permission_enabled;
+  mojo_base.mojom.Version chrome_version;
+};
+
 // Access to the browser from the web client by proxy through the WebUI.
 // A single WebClientHandler will provide access to the browser for only
 // a single web client. If the webview navigates or refreshes, a new
 // WebClientHandler is created.
 interface WebClientHandler {
+  // Called just before the web client initialize() call. Provides the initial
+  // state of any values that can be queried.
+  WebClientCreated(pending_remote<WebClient> web_client)
+      => (WebClientInitialState initial_state);
+
   // Called when the web client loads and successfully returns from
   // initialize(), indicating that it will support Chrome. `web_client` may
   // be used to communicate with the client.
-  WebClientInitialized(pending_remote<WebClient> web_client);
-
-  // Returns the Chrome version.
-  GetChromeVersion() => (mojo_base.mojom.Version version);
+  WebClientInitialized();
 
   // Creates a new tab. `url` must have a http or https protocol.
   // `tab_data` is null if the tab could not be created, which may happen if the

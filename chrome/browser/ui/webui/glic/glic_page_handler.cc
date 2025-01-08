@@ -33,18 +33,21 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         pref_service_(profile_->GetPrefs()),
         receiver_(this, std::move(receiver)) {}
 
-  ~GlicWebClientHandler() override { Uninstall(); }
+  ~GlicWebClientHandler() override {
+    if (web_client_) {
+      Uninstall();
+    }
+  }
 
   // glic::mojom::WebClientHandler implementation.
-  void WebClientInitialized(
-      ::mojo::PendingRemote<glic::mojom::WebClient> web_client) override {
+  void WebClientCreated(
+      ::mojo::PendingRemote<glic::mojom::WebClient> web_client,
+      WebClientCreatedCallback callback) override {
     web_client_.Bind(std::move(web_client));
     web_client_.set_disconnect_handler(base::BindOnce(
         &GlicWebClientHandler::WebClientDisconnected, base::Unretained(this)));
-    glic_service_->window_controller().AddStateObserver(this);
-    web_client_->NotifyPanelStateChange(
-        glic_service_->window_controller().GetPanelState().Clone());
-    // Configure the pref_change_registrar to listen for changes to the prefs
+
+    // Listen for changes to prefs.
     pref_change_registrar_.Init(pref_service_);
     pref_change_registrar_.Add(
         prefs::kGlicMicrophoneEnabled,
@@ -58,15 +61,24 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         prefs::kGlicTabContextEnabled,
         base::BindRepeating(&GlicWebClientHandler::OnPrefChanged,
                             base::Unretained(this)));
+    glic_service_->window_controller().AddStateObserver(this);
 
-    // Communicate initial permission values to web client.
-    SendPermissionsToWebClient();
-    installed_ = true;
+    auto state = mojom::WebClientInitialState::New();
+    state->chrome_version = version_info::GetVersion();
+    state->microphone_permission_enabled =
+        pref_service_->GetBoolean(prefs::kGlicMicrophoneEnabled);
+    state->location_permission_enabled =
+        pref_service_->GetBoolean(prefs::kGlicGeolocationEnabled);
+    state->tab_context_permission_enabled =
+        pref_service_->GetBoolean(prefs::kGlicTabContextEnabled);
+
+    state->panel_state =
+        glic_service_->window_controller().GetPanelState().Clone();
+
+    std::move(callback).Run(std::move(state));
   }
 
-  void GetChromeVersion(GetChromeVersionCallback callback) override {
-    std::move(callback).Run(version_info::GetVersion());
-  }
+  void WebClientInitialized() override {}
 
   void CreateTab(const ::GURL& url,
                  bool open_in_background,
@@ -159,13 +171,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void Uninstall() {
-    if (!installed_) {
-      return;
-    }
-
     pref_change_registrar_.Reset();
     glic_service_->window_controller().RemoveStateObserver(this);
-    installed_ = false;
   }
 
   void SyncCookies(SyncCookiesCallback callback) override {
@@ -188,22 +195,12 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     }
   }
 
-  void SendPermissionsToWebClient() {
-    web_client_->NotifyMicrophonePermissionStateChanged(
-        pref_service_->GetBoolean(prefs::kGlicMicrophoneEnabled));
-    web_client_->NotifyLocationPermissionStateChanged(
-        pref_service_->GetBoolean(prefs::kGlicGeolocationEnabled));
-    web_client_->NotifyTabContextPermissionStateChanged(
-        pref_service_->GetBoolean(prefs::kGlicTabContextEnabled));
-  }
-
   PrefChangeRegistrar pref_change_registrar_;
   raw_ptr<Profile> profile_;
   raw_ptr<GlicKeyedService> glic_service_;
   raw_ptr<PrefService> pref_service_;
   mojo::Receiver<glic::mojom::WebClientHandler> receiver_;
   mojo::Remote<glic::mojom::WebClient> web_client_;
-  bool installed_ = false;
 };
 
 GlicPageHandler::GlicPageHandler(

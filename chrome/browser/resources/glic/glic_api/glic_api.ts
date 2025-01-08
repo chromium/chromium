@@ -65,8 +65,7 @@ export declare interface GlicWebClient {
  */
 export declare interface GlicBrowserHost {
   // Returns Chrome's version.
-  getChromeVersion():
-      Promise<{major: number, minor: number, build: number, patch: number}>;
+  getChromeVersion(): Promise<ChromeVersion>;
 
   // Sets the size of the glic window to the specified dimensions. Returns the
   // resulting width and height of the window.
@@ -279,6 +278,12 @@ export declare interface UserProfileInfo {
   email: string;
 }
 
+export declare interface ChromeVersion {
+  major: number;
+  minor: number;
+  build: number;
+  patch: number;
+}
 
 //
 // Types used in the boot process.

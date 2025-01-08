@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {DraggableArea, ErrorWithReason, GlicBrowserHost, GlicHostRegistry, GlicWebClient, Observable, PanelState, Subscriber, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
-import {GetTabContextErrorReason, PanelStateKind} from '../glic_api/glic_api.js';
+import type {ChromeVersion, DraggableArea, ErrorWithReason, GlicBrowserHost, GlicHostRegistry, GlicWebClient, Observable, PanelState, Subscriber, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
+import {GetTabContextErrorReason} from '../glic_api/glic_api.js';
 
 import {PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
 import type {RgbaImage, TabContextResultPrivate, TabDataPrivate, WebClientRequestTypes} from './request_types.js';
@@ -18,6 +18,7 @@ export class GlicHostRegistryImpl implements GlicHostRegistry {
 
   async registerWebClient(webClient: GlicWebClient): Promise<void> {
     const host = new GlicBrowserHostImpl(webClient, this.windowProxy);
+    await host.webClientCreated();
     await webClient.initialize(host);
     host.webClientInitialized();
   }
@@ -83,11 +84,11 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   private receiver: PostMessageRequestReceiver;
   private handlerFunctionNames: Set<string> = new Set();
   private webClientMessageHandler: WebClientMessageHandler;
-  private panelState =
-      new ObservableValue<PanelState>({kind: PanelStateKind.HIDDEN});
-  private permissionStateMicrophone = new ObservableValue<boolean>(false);
-  private permissionStateLocation = new ObservableValue<boolean>(false);
-  private permissionStateTabContext = new ObservableValue<boolean>(false);
+  private chromeVersion?: ChromeVersion;
+  private panelState?: ObservableValue<PanelState>;
+  private permissionStateMicrophone?: ObservableValue<boolean>;
+  private permissionStateLocation?: ObservableValue<boolean>;
+  private permissionStateTabContext?: ObservableValue<boolean>;
 
   constructor(private webClient: GlicWebClient, windowProxy: WindowProxy) {
     this.sender = new PostMessageRequestSender(windowProxy, 'chrome://glic');
@@ -106,6 +107,19 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
 
   destroy() {
     this.receiver.destroy();
+  }
+
+  async webClientCreated() {
+    const state = await this.sender.requestWithResponse(
+        'glicBrowserWebClientCreated', {});
+    this.panelState = new ObservableValue<PanelState>(state.panelState);
+    this.permissionStateMicrophone =
+        new ObservableValue(state.microphonePermissionEnabled);
+    this.permissionStateLocation =
+        new ObservableValue(state.locationPermissionEnabled);
+    this.permissionStateTabContext =
+        new ObservableValue(state.tabContextPermissionEnabled);
+    this.chromeVersion = state.chromeVersion;
   }
 
   webClientInitialized() {
@@ -129,8 +143,8 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
 
   // GlicBrowserHost implementation.
 
-  getChromeVersion() {
-    return this.sender.requestWithResponse('glicBrowserGetChromeVersion', {});
+  async getChromeVersion() {
+    return this.chromeVersion!;
   }
 
   async createTab(
@@ -184,19 +198,19 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   }
 
   getPanelState(): ObservableValue<PanelState> {
-    return this.panelState;
+    return this.panelState!;
   }
 
   getMicrophonePermissionState(): ObservableValue<boolean> {
-    return this.permissionStateMicrophone;
+    return this.permissionStateMicrophone!;
   }
 
   getLocationPermissionState(): ObservableValue<boolean> {
-    return this.permissionStateLocation;
+    return this.permissionStateLocation!;
   }
 
   getTabContextPermissionState(): ObservableValue<boolean> {
-    return this.permissionStateTabContext;
+    return this.permissionStateTabContext!;
   }
 
   setMicrophonePermissionState(enabled: boolean): Promise<void> {

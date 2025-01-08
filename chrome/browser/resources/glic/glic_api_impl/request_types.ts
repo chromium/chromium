@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {DraggableArea, GetTabContextErrorReason, PanelState, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
+import type {ChromeVersion, DraggableArea, GetTabContextErrorReason, PanelState, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
 
 /*
 This file defines messages sent over postMessage in-between the Glic WebUI
@@ -25,20 +25,23 @@ readability, and ensures that each name is unique.
 
 // Types of requests to the host (Chrome).
 export declare interface HostRequestTypes {
+  // This message is sent just before calling initialize() on the web client.
+  // It is not part of the GlicBrowserHost public API.
+  glicBrowserWebClientCreated: {
+    request: {},
+    response: {
+      microphonePermissionEnabled: boolean,
+      locationPermissionEnabled: boolean,
+      tabContextPermissionEnabled: boolean,
+      panelState: PanelState,
+      chromeVersion: ChromeVersion,
+    },
+  };
   // This message is sent after the client returns successfully from
   // initialize(). It is not part of the GlicBrowserHost public API.
   glicBrowserWebClientInitialized: {
     request: {},
     response: void,
-  };
-  glicBrowserGetChromeVersion: {
-    request: {},
-    response: {
-      major: number,
-      minor: number,
-      build: number,
-      patch: number,
-    },
   };
   glicBrowserCreateTab: {
     request: {
