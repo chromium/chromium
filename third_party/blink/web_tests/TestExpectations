@@ -8907,8 +8907,7 @@ crbug.com/374978346 [ Linux ] virtual/document-isolation-policy/external/wpt/htm
 crbug.com/374856213 external/wpt/digital-credentials/allow-attribute.https.html [ Failure Timeout ]
 
 # Gardener 2024-10-29
-# TODO(crbug.com/376320405): Fails inconsistently on Win10.
-crbug.com/376320405 external/wpt/css/css-sizing/keyword-sizes-for-intrinsic-contributions.tentative.html [ Failure Pass ]
+crbug.com/376320405 [ Win10.20h2 ] external/wpt/css/css-sizing/keyword-sizes-for-intrinsic-contributions.tentative.html [ Failure Pass ]
 
 # Fail or Crash after enable swiftshader on headless shell
 crbug.com/339041663 external/wpt/css/geometry/DOMMatrix2DInit-validate-fixup.html [ Failure Pass ]
@@ -9089,3 +9088,6 @@ crbug.com/386349197 external/wpt/css/css-masking/clip-path/clip-path-inline-005.
 # Gardener 2025-01-07
 crbug.com/388188842 external/wpt/html/semantics/forms/the-select-element/customizable-select/select-home-end-pagedown-pageup-detailed.optional.html [ Failure Pass Timeout ]
 crbug.com/388188842 external/wpt/html/semantics/forms/the-select-element/customizable-select/select-home-end-pagedown-pageup.tentative.html [ Failure Pass Timeout ]
+
+# Gardener 2025-01-08
+crbug.com/376320405 [ Debug Linux ] external/wpt/css/css-sizing/keyword-sizes-for-intrinsic-contributions.tentative.html [ Failure ]
