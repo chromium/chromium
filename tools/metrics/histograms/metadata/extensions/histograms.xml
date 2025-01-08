@@ -3216,13 +3216,16 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.InstallFrictionDialogAction"
-    enum="ExtensionInstallFrictionDialogAction" expires_after="2024-11-17">
+    enum="ExtensionInstallFrictionDialogAction" expires_after="2025-12-01">
   <owner>jeffcyr@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Action taken in the extension install friction dialog displayed to Enhanced
     Safe Browsing users before installing an extension that is not included in
     the Safe Browsing CRX allowlist.
+
+    Warning: this histogram was expired from 2024-11-17 to 2025-01-07; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -5463,18 +5466,21 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.WebStoreInstall.EsbAllowlistParameter"
-    enum="WebStoreInstallAllowlistParameter" expires_after="2024-02-04">
+    enum="WebStoreInstallAllowlistParameter" expires_after="2025-12-01">
   <owner>jeffcyr@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Reports the Safe Browsing CRX allowlist state received from Chrome Web Store
     when a user presses on &quot;Add to Chrome&quot; in Chrome Web Store.
+
+    Warning: this histogram was expired from 2024-02-04 to 2025-01-07; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram
     name="Extensions.WebStoreInstall.NotAllowlistedInstalledWithFriction"
-    enum="Boolean" expires_after="2024-04-28">
+    enum="Boolean" expires_after="2025-12-01">
   <owner>jeffcyr@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -5482,12 +5488,15 @@ This is emitted for two scenarios when a worker may be unregistered:
     extension that is not included in the Safe Browsing CRX allowlist. 'True' if
     the install dialog is accepted or 'False' if the friction dialog or install
     dialog is canceled.
+
+    Warning: this histogram was expired from 2024-04-28 to 2025-01-07; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram
     name="Extensions.WebStoreInstall.NotAllowlistedInstalledWithoutFriction"
-    enum="Boolean" expires_after="2024-04-28">
+    enum="Boolean" expires_after="2025-12-01">
   <owner>jeffcyr@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -5495,6 +5504,9 @@ This is emitted for two scenarios when a worker may be unregistered:
     an extension that is not included in the Safe Browsing CRX allowlist. 'True'
     if the install dialog is accepted or 'False' if the install dialog is
     canceled.
+
+    Warning: this histogram was expired from 2024-04-28 to 2025-01-07; data may
+    be missing.
   </summary>
 </histogram>
 
