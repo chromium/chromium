@@ -98,3 +98,32 @@ void crbug_383424943() {
   // Using sizeof was causing buf to be rewritten.
   memset(buf, 'x', sizeof(buf));
 }
+
+// Expected rewrite:
+// void c_ptr_param(base::span<int> ptr)
+void c_ptr_param(int* ptr) {
+  ptr[0] = 0;
+}
+
+// Expected rewrite:
+// void c_array_param(base::span<int, 1 + 2> arr)
+void c_array_param(int arr[1 + 2]) {
+  arr[0] = 0;
+}
+
+// Expected rewrite:
+// void c_array_nosize_param(base::span<int> arr)
+void c_array_nosize_param(int arr[]) {
+  arr[0] = 0;
+}
+
+void test_func_params() {
+  // Expected rewrite:
+  // auto arr = std::to_array<int>({1, 2, 3});
+  int arr[] = {1, 2, 3};
+  arr[0] = 0;
+
+  c_ptr_param(arr);
+  c_array_param(arr);
+  c_array_nosize_param(arr);
+}
