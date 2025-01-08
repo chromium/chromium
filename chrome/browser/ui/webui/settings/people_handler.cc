@@ -603,10 +603,7 @@ base::Value PeopleHandler::GetProfileAvatar() {
   }
 
   return base::Value(webui::GetBitmapDataUrl(
-      entry
-          ->GetAvatarIcon(profiles::kAvatarIconSize,
-                          /*use_high_res_file=*/true, {.has_padding = false})
-          .AsBitmap()));
+      entry->GetAvatarIcon(profiles::kAvatarIconSize).AsBitmap()));
 }
 
 base::Value::List PeopleHandler::GetStoredAccountsList() {
