@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_SUPERVISED_USER_COORDINATOR_PARENT_ACCESS_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_SUPERVISED_USER_COORDINATOR_PARENT_ACCESS_COORDINATOR_H_
 
+#import <WebKit/WebKit.h>
+
 #import "components/supervised_user/core/common/supervised_user_constants.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
@@ -15,7 +17,7 @@ typedef void (^ParentAccessCallbackCompletion)(
 // to approve website navigation requests from a supervised user.
 // This will be presented within the same browser session where the supervised
 // user is signed in.
-@interface ParentAccessCoordinator : ChromeCoordinator
+@interface ParentAccessCoordinator : ChromeCoordinator <WKScriptMessageHandler>
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
