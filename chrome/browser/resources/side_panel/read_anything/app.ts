@@ -855,6 +855,7 @@ export class AppElement extends AppElementBase {
     if (shouldRehighlightCurrentNodes && originallyHadHighlights) {
       this.highlightCurrentGranularity(chrome.readingMode.getCurrentText());
     }
+    this.loadImages_();
   }
 
   protected updateImages_() {
