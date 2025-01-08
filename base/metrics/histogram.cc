@@ -1223,7 +1223,8 @@ class CustomHistogram::Factory : public Histogram::Factory {
     ranges.push_back(0);  // Ensure we have a zero value.
     ranges.push_back(HistogramBase::kSampleType_MAX);
     ranges::sort(ranges);
-    ranges.erase(ranges::unique(ranges), ranges.end());
+    auto removed = std::ranges::unique(ranges);
+    ranges.erase(removed.begin(), removed.end());
 
     BucketRanges* bucket_ranges = new BucketRanges(ranges.size());
     for (size_t i = 0; i < ranges.size(); i++) {

@@ -537,17 +537,14 @@ StatisticsRecorder::Histograms StatisticsRecorder::WithName(
     query_string = lowercase_query.c_str();
   }
 
-  histograms.erase(
-      ranges::remove_if(
-          histograms,
-          [query_string, case_sensitive](const HistogramBase* const h) {
-            return !strstr(
-                case_sensitive
-                    ? h->histogram_name()
-                    : base::ToLowerASCII(h->histogram_name()).c_str(),
-                query_string);
-          }),
-      histograms.end());
+  auto removed = std::ranges::remove_if(
+      histograms, [query_string, case_sensitive](const HistogramBase* const h) {
+        return !strstr(case_sensitive
+                           ? h->histogram_name()
+                           : base::ToLowerASCII(h->histogram_name()).c_str(),
+                       query_string);
+      });
+  histograms.erase(removed.begin(), removed.end());
   return histograms;
 }
 

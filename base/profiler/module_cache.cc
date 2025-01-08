@@ -110,22 +110,20 @@ void ModuleCache::UpdateNonNativeModules(
   //
   // stable_partition is O(m*log(r)) where m is the number of current modules
   // and r is the number of modules to remove. insert and erase are both O(r).
-  auto first_module_defunct_modules = ranges::stable_partition(
+  auto defunct_modules_subrange = std::ranges::stable_partition(
       non_native_modules_,
       [&defunct_modules_set](const std::unique_ptr<const Module>& module) {
         return defunct_modules_set.find(module.get()) ==
                defunct_modules_set.end();
       });
   // All modules requested to be removed should have been found.
-  DCHECK_EQ(
-      static_cast<ptrdiff_t>(defunct_modules.size()),
-      std::distance(first_module_defunct_modules, non_native_modules_.end()));
+  DCHECK_EQ(defunct_modules.size(), defunct_modules_subrange.size());
   inactive_non_native_modules_.insert(
       inactive_non_native_modules_.end(),
-      std::make_move_iterator(first_module_defunct_modules),
-      std::make_move_iterator(non_native_modules_.end()));
-  non_native_modules_.erase(first_module_defunct_modules,
-                            non_native_modules_.end());
+      std::make_move_iterator(defunct_modules_subrange.begin()),
+      std::make_move_iterator(defunct_modules_subrange.end()));
+  non_native_modules_.erase(defunct_modules_subrange.begin(),
+                            defunct_modules_subrange.end());
 
   // Insert the modules to be added. This operation is O((m + a) + a*log(a))
   // where m is the number of current modules and a is the number of modules to

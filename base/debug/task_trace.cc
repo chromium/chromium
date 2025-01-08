@@ -100,9 +100,10 @@ size_t TaskTrace::GetAddresses(span<const void*> addresses) const {
     return count;
   }
   span<const void* const> current_addresses = stack_trace_->addresses();
-  ranges::copy_n(current_addresses.begin(),
-                 std::min(current_addresses.size(), addresses.size()),
-                 addresses.begin());
+  std::ranges::copy_n(current_addresses.begin(),
+                      static_cast<ptrdiff_t>(
+                          std::min(current_addresses.size(), addresses.size())),
+                      addresses.begin());
   return current_addresses.size();
 }
 

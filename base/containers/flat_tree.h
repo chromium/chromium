@@ -1151,10 +1151,10 @@ size_t EraseIf(
     base::internal::flat_tree<Key, GetKeyFromValue, KeyCompare, Container>&
         container,
     Predicate pred) {
-  auto it = ranges::remove_if(container, pred);
-  size_t removed = std::distance(it, container.end());
-  container.erase(it, container.end());
-  return removed;
+  auto removed = std::ranges::remove_if(container, pred);
+  size_t num_removed = removed.size();
+  container.erase(removed.begin(), removed.end());
+  return num_removed;
 }
 
 }  // namespace base
