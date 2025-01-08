@@ -7303,11 +7303,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabDragDropDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTabDragDropAndroid)},
 
-    {"enable-delay-temp-strip-removal",
-     flag_descriptions::kDelayTempStripRemovalName,
-     flag_descriptions::kDelayTempStripRemovalDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kDelayTempStripRemoval)},
-
     {"enable-most-visited-tiles-reselect",
      flag_descriptions::kMostVisitedTilesReselectName,
      flag_descriptions::kMostVisitedTilesReselectDescription, kOsAndroid,

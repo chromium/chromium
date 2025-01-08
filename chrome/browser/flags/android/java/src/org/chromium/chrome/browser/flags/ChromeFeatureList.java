@@ -311,7 +311,6 @@ public abstract class ChromeFeatureList {
     public static final String DATA_SHARING_JOIN_ONLY_FOR_TESTING = "DataSharingJoinOnly";
     public static final String DEFAULT_BROWSER_PROMO_ANDROID = "DefaultBrowserPromoAndroid";
     public static final String DEFAULT_BROWSER_PROMO_ANDROID2 = "DefaultBrowserPromoAndroid2";
-    public static final String DELAY_TEMP_STRIP_REMOVAL = "DelayTempStripRemoval";
     public static final String DEVICE_AUTHENTICATOR_ANDROIDX = "DeviceAuthenticatorAndroidx";
     public static final String DETAILED_LANGUAGE_SETTINGS = "DetailedLanguageSettings";
     public static final String DISABLE_INSTANCE_LIMIT = "DisableInstanceLimit";
@@ -657,8 +656,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(COMMAND_LINE_ON_NON_ROOTED, false);
     public static final CachedFlag sCrossDeviceTabPaneAndroid =
             newCachedFlag(CROSS_DEVICE_TAB_PANE_ANDROID, false);
-    public static final CachedFlag sDelayTempStripRemoval =
-            newCachedFlag(DELAY_TEMP_STRIP_REMOVAL, false);
     public static final CachedFlag sDisableInstanceLimit =
             newCachedFlag(DISABLE_INSTANCE_LIMIT, false);
     public static final CachedFlag sDownloadsMigrateToJobsAPI =
@@ -850,7 +847,6 @@ public abstract class ChromeFeatureList {
                     sCollectAndroidFrameTimelineMetrics,
                     sCommandLineOnNonRooted,
                     sCrossDeviceTabPaneAndroid,
-                    sDelayTempStripRemoval,
                     sDisableInstanceLimit,
                     sDownloadsMigrateToJobsAPI,
                     sDrawKeyNativeEdgeToEdge,
@@ -1132,9 +1128,6 @@ public abstract class ChromeFeatureList {
                     newIntCachedFeatureParam(
                             COLLECT_ANDROID_FRAME_TIMELINE_METRICS, "delayed_start_ms", 3000);
 
-    public static final IntCachedFeatureParam sDelayTempStripRemovalTimeoutMs =
-            newIntCachedFeatureParam(DELAY_TEMP_STRIP_REMOVAL, "timeout_ms", 1000);
-
     /** Cached param whether we disable e2e on the recent tabs page. */
     public static final BooleanCachedFeatureParam sDrawKeyNativeEdgeToEdgeDisableRecentTabsE2e =
             newBooleanCachedFeatureParam(
@@ -1303,7 +1296,6 @@ public abstract class ChromeFeatureList {
                     sCctResizableForThirdPartiesDefaultPolicy,
                     sClankStartupLatencyInjectionAmountMs,
                     sCollectAndroidFrameTimelineMetricsJankTrackerDelayedStartMs,
-                    sDelayTempStripRemovalTimeoutMs,
                     sDrawKeyNativeEdgeToEdgeDisableRecentTabsE2e,
                     sDrawKeyNativeEdgeToEdgeDisableCctMediaViewerE2e,
                     sDrawKeyNativeEdgeToEdgeDisableHubE2e,

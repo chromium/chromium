@@ -4,13 +4,11 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import android.content.Context;
 import android.os.Build;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.Locale;
 import java.util.Set;
@@ -32,15 +30,6 @@ public class TabUiFeatureUtilities {
     /** Whether the longpress entry for TabListEditor is enabled. Currently only in tests. */
     public static boolean isTabListEditorLongPressEntryEnabled() {
         return sTabListEditorLongPressEntryEnabled;
-    }
-
-    /**
-     * @return Whether we should delay the placeholder tab strip removal on startup.
-     * @param context The activity context.
-     */
-    public static boolean isDelayTempStripRemovalEnabled(Context context) {
-        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
-                && ChromeFeatureList.sDelayTempStripRemoval.isEnabled();
     }
 
     /** Returns whether the Grid Tab Switcher UI should use list mode. */

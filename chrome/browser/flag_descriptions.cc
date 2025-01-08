@@ -4925,12 +4925,6 @@ const char kTabSwitcherFullNewTabButtonName[] = "Tab Switcher New Tab Button";
 const char kTabSwitcherFullNewTabButtonDescription[] =
     "Modifies the visual behavior of the new tab button in the tab switcher.";
 
-const char kDelayTempStripRemovalName[] =
-    "Delay temp tab strip removal on startup";
-const char kDelayTempStripRemovalDescription[] =
-    "By delaying the removal of the placeholder tab strip, we mitigate the "
-    "jank seen as tabs are being restored on startup.";
-
 const char kUseHardwareBufferUsageFlagsFromVulkanName[] =
     "Use recommended AHardwareBuffer usage flags from Vulkan";
 const char kUseHardwareBufferUsageFlagsFromVulkanDescription[] =

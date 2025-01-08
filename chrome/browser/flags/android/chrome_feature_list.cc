@@ -254,7 +254,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kContextualSearchSuppressShortView,
     &kControlsVisibilityFromNavigations,
     &kCrossDeviceTabPaneAndroid,
-    &kDelayTempStripRemoval,
     &kDeviceAuthenticatorAndroidx,
     &kDrawKeyNativeEdgeToEdge,
     &kEdgeToEdgeBottomChin,
@@ -746,10 +745,6 @@ BASE_FEATURE(kDefaultBrowserPromoAndroid,
 
 BASE_FEATURE(kDefaultBrowserPromoAndroid2,
              "DefaultBrowserPromoAndroid2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kDelayTempStripRemoval,
-             "DelayTempStripRemoval",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // The feature is a no-op, it replaces android.hardware.biometrics library on

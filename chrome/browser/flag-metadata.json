@@ -2767,11 +2767,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-delay-temp-strip-removal",
-    "owners": [ "skavuluru@google.com", "nemco@google.com", "clank-app-team@google.com" ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "enable-delegated-compositing",
     "owners": [ "petermcneeley@chromium.org" ],
     "expiry_milestone": 140

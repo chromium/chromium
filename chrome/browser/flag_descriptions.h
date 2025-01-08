@@ -2151,9 +2151,6 @@ extern const char kTearOffWebAppAppTabOpensWebAppWindowDescription[];
 extern const char kTabResumptionModuleAndroidName[];
 extern const char kTabResumptionModuleAndroidDescription[];
 
-extern const char kDelayTempStripRemovalName[];
-extern const char kDelayTempStripRemovalDescription[];
-
 extern const char kTextBasedAudioDescriptionName[];
 extern const char kTextBasedAudioDescriptionDescription[];
 
