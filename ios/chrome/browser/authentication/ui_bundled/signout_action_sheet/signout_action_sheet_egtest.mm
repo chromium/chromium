@@ -81,6 +81,13 @@ void ClickSignOutInAccountSettings() {
     // correctly dismissing the view when the primary account is removed.
     config.features_disabled.push_back(kIdentityDiscAccountMenu);
   }
+  if ([self
+          isRunningTest:@selector(testSignoutConfirmationForManagedIdentity)] ||
+      [self isRunningTest:@selector(testCancelSignoutForManagedIdentity)]) {
+    // When kSeparateProfilesForManagedAccounts is enabled, there will be no
+    // need to show the data-delete dialog.
+    config.features_disabled.push_back(kSeparateProfilesForManagedAccounts);
+  }
   return config;
 }
 

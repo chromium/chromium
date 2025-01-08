@@ -48,8 +48,8 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
   // diplayed.
   SignedInUserStateWithNotSyncingAndReplaceSyncWithSignin,
   // Sign-in with UNO, where the user is managed, and was migrated from the
-  // syncing state. In this state, data needs to be cleared on signout, similar
-  // to SignedInUserStateWithManagedAccountAndSyncing.
+  // syncing state. In this state, data needs to be cleared on signout only when
+  // kSeparateProfilesForManagedAccounts is disabled.
   SignedInUserStateWithManagedAccountAndMigratedFromSyncing,
   // Sign-in with a managed account and sync is turned on.
   SignedInUserStateWithManagedAccountAndSyncing,
@@ -63,7 +63,8 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
   // forced sign-in policy is enabled.
   SignedInUserStateWithForcedSigninInfoRequired,
   // Signed in with managed account with the ClearDeviceDataOnSignoutForManaged
-  // user feature enabled.
+  // user feature enabled. In this state, data needs to be cleared on signout
+  // only when kSeparateProfilesForManagedAccounts is disabled.
   SignedInUserStateWithManagedAccountClearsDataOnSignout
 };
 
@@ -127,6 +128,12 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
       break;
     case SignedInUserStateWithManagedAccountClearsDataOnSignout:
     case SignedInUserStateWithManagedAccountAndMigratedFromSyncing:
+      if (base::FeatureList::IsEnabled(kSeparateProfilesForManagedAccounts)) {
+        [self checkForUnsyncedDataAndSignOut];
+      } else {
+        [self startActionSheetCoordinatorForSignout];
+      }
+      break;
     case SignedInUserStateWithManagedAccountAndSyncing:
     case SignedInUserStateWithManagedAccountAndNotSyncing:
     case SignedInUserStateWithNonManagedAccountAndSyncing:
@@ -206,6 +213,11 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
 
   if (self.authenticationService->HasPrimaryIdentityManaged(
           signin::ConsentLevel::kSignin)) {
+    // SignedInUserStateWithManagedAccountAndNotSyncing and
+    // SignedInUserStateWithManagedAccountAndSyncing are not possible if
+    // kSeparateProfilesForManagedAccounts is enabled.
+    CHECK(!(base::FeatureList::IsEnabled(kSeparateProfilesForManagedAccounts)),
+          base::NotFatalUntil::M140);
     return syncEnabled ? SignedInUserStateWithManagedAccountAndSyncing
                        : SignedInUserStateWithManagedAccountAndNotSyncing;
   }

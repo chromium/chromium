@@ -148,10 +148,16 @@ void ClearRelevantData() {
   if ([self isRunningTest:@selector
             (testManagedAccountClearsDataForSignedInPeriod)]) {
     config.features_disabled.push_back(kIdentityDiscAccountMenu);
+    // When kSeparateProfilesForManagedAccounts is enabled, there will be no
+    // need to show the data-delete dialog.
+    config.features_disabled.push_back(kSeparateProfilesForManagedAccounts);
   }
   if ([self isRunningTest:@selector
             (testManagedAccountClearsDataAndTabsForSignedInPeriod)]) {
     config.features_enabled.push_back(kIdentityDiscAccountMenu);
+    // When kSeparateProfilesForManagedAccounts is enabled, there will be no
+    // need to show the data-delete dialog.
+    config.features_disabled.push_back(kSeparateProfilesForManagedAccounts);
   }
 
   return config;
