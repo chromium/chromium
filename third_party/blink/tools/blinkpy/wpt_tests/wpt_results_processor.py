@@ -281,11 +281,15 @@ class WPTResult(Result):
         if all(result.statuses <= {Status.PASS}
                for result in self.testharness_results):
             return make_all_pass_baseline(header)
+        # Add an extra newline to baselines generated from this test result.
+        # This avoids spurious failures if the test is run later with
+        # `run_web_tests.py`, which checks `content_shell` output against
+        # `-expected.txt` byte-for-byte.
         return format_testharness_baseline([
             TestharnessLine(header),
             *self.testharness_results,
             TestharnessLine(LineType.FOOTER),
-        ])
+        ]) + '\n'
 
     def summarize(self, product: str) -> Optional[str]:
         """Generate a summary of this test result as sanitized HTML.
@@ -899,7 +903,7 @@ class WPTResultsProcessor:
 
         expected_text = self.port.expected_text(result.name)
         if expected_text:
-            expected_text = expected_text.decode().strip() + '\n'
+            expected_text = expected_text.decode()
             artifacts.CreateArtifact('expected_text', expected_subpath,
                                      expected_text.encode())
 

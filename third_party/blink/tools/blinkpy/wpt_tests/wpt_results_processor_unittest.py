@@ -391,6 +391,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
                 This is a testharness.js-based test.
                 [FAIL] fail
                 Harness: the test ran to completion.
+
                 """))
 
     def test_report_subtest_unexpected_fail(self):
@@ -600,6 +601,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
                 [PRECONDITION_FAILED] subtest
                   actual-message
                 Harness: the test ran to completion.
+
                 """))
         self.assertEqual(
             self.fs.read_text_file(
@@ -611,6 +613,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
                 [FAIL] subtest
                   expected-message
                 Harness: the test ran to completion.
+
                 """))
         diff_lines = self.fs.read_text_file(
             self.fs.join('/mock-checkout', 'out', 'Default',
@@ -634,6 +637,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
                 This is a testharness.js-based test.
                 [FAIL] subtest
                 Harness: the test ran to completion.
+
                 """))
         with self.fs.patch_builtins():
             self._event(
@@ -654,6 +658,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
                 This is a testharness.js-based test.
                 Harness Error. harness_status.status = 1 , harness_status.message = Uncaught SyntaxError: Unexpected token ')'
                 Harness: the test ran to completion.
+
                 """))
         self.assertEqual(
             self.fs.read_text_file(
@@ -664,6 +669,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
                 This is a testharness.js-based test.
                 [FAIL] subtest
                 Harness: the test ran to completion.
+
                 """))
 
     def test_extract_text_all_pass(self):
