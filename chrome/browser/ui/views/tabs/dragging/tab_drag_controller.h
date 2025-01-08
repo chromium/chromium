@@ -198,9 +198,13 @@ class TabDragController : public views::WidgetObserver,
   bool started_drag() const { return current_state_ != DragState::kNotStarted; }
 
   // Returns the tab group being dragged, if any. Will only return a value if
-  // the user is dragging a tab group header, not an individual tab or tabs from
-  // a group.
-  const std::optional<tab_groups::TabGroupId>& group() const { return group_; }
+  // the user is dragging a tab group header, not an individual tab or tabs
+  // from a group.
+  const std::optional<tab_groups::TabGroupId> group() const {
+    return group_drag_data_.has_value()
+               ? std::make_optional(group_drag_data_.value().group)
+               : std::nullopt;
+  }
 
   bool IsRemovingLastTabForRevert() const {
     return is_removing_last_tab_for_revert_;
@@ -319,6 +323,21 @@ class TabDragController : public views::WidgetObserver,
 
     // The caller should continue.
     DRAG_BROWSER_RESULT_CONTINUE,
+  };
+
+  struct GroupDragData {
+    // The group that is being dragged.
+    tab_groups::TabGroupId group;
+
+    // The index of the tab within the group, if any, that was active when the
+    // drag began. Defaults to 0 if the active tab was outside the group, as we
+    // should fall back on activating the first tab during/after the drag.
+    int active_tab_index_within_group;
+
+    GroupDragData(tab_groups::TabGroupId group,
+                  int active_tab_index_within_group)
+        : group(group),
+          active_tab_index_within_group(active_tab_index_within_group) {}
   };
 
   // Stores the date associated with a single tab that is being dragged.
@@ -546,7 +565,8 @@ class TabDragController : public views::WidgetObserver,
   // Returns the number of Tab views currently dragging.
   // Excludes the TabGroupHeader view, if any.
   int num_dragging_tabs() {
-    return header_drag_ ? drag_data_.size() - 1 : drag_data_.size();
+    return group_drag_data_.has_value() ? drag_data_.size() - 1
+                                        : drag_data_.size();
   }
 
   // Returns true if currently dragging a tab with |contents|.
@@ -554,7 +574,7 @@ class TabDragController : public views::WidgetObserver,
 
   // Returns the index of the first Tab, since the first dragging view may
   // instead be a TabGroupHeader.
-  int first_tab_index() { return header_drag_ ? 1 : 0; }
+  int first_tab_index() { return group_drag_data_.has_value() ? 1 : 0; }
 
   // Returns the Widget of the currently attached TabDragContext's
   // BrowserView.
@@ -709,12 +729,10 @@ class TabDragController : public views::WidgetObserver,
   // The attached views. Also found in |drag_data_|, but cached for convenience.
   std::vector<raw_ptr<TabSlotView, VectorExperimental>> attached_views_;
 
-  // Whether the drag originated from a group header.
-  bool header_drag_;
-
-  // The group that is being dragged. Only set if the drag originated from a
-  // group header, indicating that the entire group is being dragged together.
-  std::optional<tab_groups::TabGroupId> group_;
+  // Data related to the dragged tab group, if any. This is only set if the
+  // drag originated from a group header, indicating that the entire group is
+  // being dragged together.
+  std::optional<GroupDragData> group_drag_data_;
 
   // Used to pause observation of all open SavedTabGroups when a drag is
   // occurring. This object is assigned when MaybePauseTrackingSavedTabGroup()
