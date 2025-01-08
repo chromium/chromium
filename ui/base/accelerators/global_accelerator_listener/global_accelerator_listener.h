@@ -71,6 +71,8 @@ class GlobalAcceleratorListener {
                                  const CommandMap& commands,
                                  Observer* observer) {}
 
+  virtual bool IsRegistrationHandledExternally() const;
+
  protected:
   GlobalAcceleratorListener();
 

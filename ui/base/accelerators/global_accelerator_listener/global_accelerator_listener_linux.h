@@ -94,7 +94,7 @@ class GlobalAcceleratorListenerLinux : public GlobalAcceleratorListener {
       const ui::Accelerator& accelerator) override;
   void StopListeningForAccelerator(const ui::Accelerator& accelerator) override;
   void UnregisterAccelerators(Observer* observer);
-  bool IsRegistrationHandledExternally() const;
+  bool IsRegistrationHandledExternally() const override;
   void OnCommandsChanged(const std::string& accelerator_group_id,
                          const std::string& profile_id,
                          const ui::CommandMap& commands,

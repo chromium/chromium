@@ -75,6 +75,10 @@ std::vector<ui::Accelerator> GlobalAcceleratorListener::UnregisterAccelerators(
   return removed_accelerators;
 }
 
+bool GlobalAcceleratorListener::IsRegistrationHandledExternally() const {
+  return false;
+}
+
 void GlobalAcceleratorListener::NotifyKeyPressed(
     const ui::Accelerator& accelerator) {
   auto iter = accelerator_map_.find(accelerator);

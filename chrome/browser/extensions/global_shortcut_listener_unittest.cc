@@ -8,6 +8,7 @@
 
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/event_constants.h"
@@ -40,6 +41,13 @@ class BaseGlobalShortcutListenerForTesting final
       const ui::Accelerator& accelerator) override {
     registered_accelerators_.erase(accelerator);
   }
+
+  MOCK_CONST_METHOD0(IsRegistrationHandledExternally, bool());
+  MOCK_METHOD4(OnCommandsChanged,
+               void(const std::string&,
+                    const std::string&,
+                    const ui::CommandMap&,
+                    Observer*));
 
  private:
   std::set<ui::Accelerator> registered_accelerators_;
@@ -92,6 +100,10 @@ class ExtensionsGlobalShortcutListenerTest : public testing::Test {
 
   GlobalShortcutListener* GetListener() { return extensions_listener_.get(); }
 
+  BaseGlobalShortcutListenerForTesting* GetUIListener() {
+    return ui_listener_.get();
+  }
+
  private:
   std::unique_ptr<GlobalShortcutListener> extensions_listener_;
   std::unique_ptr<BaseGlobalShortcutListenerForTesting> ui_listener_;
@@ -133,6 +145,28 @@ TEST_F(ExtensionsGlobalShortcutListenerTest, SuspendsShortcutHandling) {
 
   // Clean up registration.
   listener->UnregisterAccelerator(accelerator_b, GetObserver());
+}
+
+TEST_F(ExtensionsGlobalShortcutListenerTest, IsRegistrationHandledExternally) {
+  GlobalShortcutListener* listener = GetListener();
+  BaseGlobalShortcutListenerForTesting* ui_listener = GetUIListener();
+
+  EXPECT_CALL(*ui_listener, IsRegistrationHandledExternally())
+      .WillOnce(testing::Return(true));
+  EXPECT_TRUE(listener->IsRegistrationHandledExternally());
+}
+
+TEST_F(ExtensionsGlobalShortcutListenerTest, OnCommandsChanged) {
+  GlobalShortcutListener* listener = GetListener();
+  BaseGlobalShortcutListenerForTesting* ui_listener = GetUIListener();
+
+  const std::string kAcceleratorGroupId = "group_id";
+  const std::string kProfileId = "profile_id";
+  const ui::CommandMap kCommands;
+  EXPECT_CALL(*ui_listener, OnCommandsChanged(kAcceleratorGroupId, kProfileId,
+                                              testing::_, testing::_));
+  listener->OnCommandsChanged(kAcceleratorGroupId, kProfileId, kCommands,
+                              GetObserver());
 }
 
 }  // namespace
