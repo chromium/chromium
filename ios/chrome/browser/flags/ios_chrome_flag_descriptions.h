@@ -670,11 +670,6 @@ extern const char kManagedProfileCreationUpdatedScreenDescription[];
 extern const char kMetrickitNonCrashReportName[];
 extern const char kMetrickitNonCrashReportDescription[];
 
-// Title and description for the flag to migrate syncing users to the signed-in
-// non-syncing state.
-extern const char kMigrateSyncingUserToSignedInName[];
-extern const char kMigrateSyncingUserToSignedInDescription[];
-
 // TODO(crbug.com/40148908): Remove this flag after the refactoring work is
 // finished.
 // Title and description for the flag used to test the newly
@@ -1106,11 +1101,6 @@ extern const char kTabResumption2ReasonDescription[];
 // Resumption.
 extern const char kTabResumptionImagesName[];
 extern const char kTabResumptionImagesDescription[];
-
-// Title and description for the flag to undo the migration of syncing users to
-// the signed-in non-syncing state.
-extern const char kUndoMigrationOfSyncingUserToSignedInName[];
-extern const char kUndoMigrationOfSyncingUserToSignedInDescription[];
 
 // Title and description for the flag to update the sequence of the FRE screens.
 extern const char kUpdatedFRESequenceName[];
