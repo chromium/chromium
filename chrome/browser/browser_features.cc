@@ -192,7 +192,7 @@ BASE_FEATURE(kReadAnythingPermanentAccessibility,
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 BASE_FEATURE(kRegisterOsUpdateHandlerWin,
              "RegisterOsUpdateHandlerWin",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 // When this feature is enabled, the network service will restart unsandboxed if
