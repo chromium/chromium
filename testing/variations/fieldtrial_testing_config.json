@@ -9221,12 +9221,7 @@
         {
             "platforms": [
                 "android",
-                "chromeos",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
+                "ios"
             ],
             "experiments": [
                 {
