@@ -58,6 +58,17 @@ namespace {
 base::LazyInstance<TaskManagerImpl>::Leaky lazy_task_manager_instance =
     LAZY_INSTANCE_INITIALIZER;
 
+TaskId ComputeRootTaskId(const Task* task) {
+  CHECK(task);
+
+  // Walk up the tree to find the epoch task.
+  const Task* curr = task;
+  while (curr->HasParentTask()) {
+    curr = curr->GetParentTask().get();
+  }
+  return curr->task_id();
+}
+
 }  // namespace
 
 TaskManagerImpl::TaskManagerImpl()
@@ -256,6 +267,12 @@ const base::ProcessHandle& TaskManagerImpl::GetProcessHandle(
 
 const base::ProcessId& TaskManagerImpl::GetProcessId(TaskId task_id) const {
   return GetTaskGroupByTaskId(task_id)->process_id();
+}
+
+TaskId TaskManagerImpl::GetRootTaskId(TaskId task_id) const {
+  const auto* task = GetTaskByTaskId(task_id);
+  CHECK(task);
+  return ComputeRootTaskId(task);
 }
 
 Task::Type TaskManagerImpl::GetType(TaskId task_id) const {

@@ -74,6 +74,7 @@ class TaskManagerImpl : public TaskManagerInterface,
   const gfx::ImageSkia& GetIcon(TaskId task_id) const override;
   const base::ProcessHandle& GetProcessHandle(TaskId task_id) const override;
   const base::ProcessId& GetProcessId(TaskId task_id) const override;
+  TaskId GetRootTaskId(TaskId task_id) const override;
   Task::Type GetType(TaskId task_id) const override;
   Task::SubType GetSubType(TaskId task_id) const override;
   SessionID GetTabId(TaskId task_id) const override;

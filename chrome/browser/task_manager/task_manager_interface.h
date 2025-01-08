@@ -142,6 +142,9 @@ class TaskManagerInterface {
   virtual const base::ProcessHandle& GetProcessHandle(TaskId task_id) const = 0;
   virtual const base::ProcessId& GetProcessId(TaskId task_id) const = 0;
 
+  // Returns the task id of the process which spawned |task_id|.
+  virtual TaskId GetRootTaskId(TaskId task_id) const = 0;
+
   // Returns the type of the task with |task_id|.
   virtual Task::Type GetType(TaskId task_id) const = 0;
 

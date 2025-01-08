@@ -100,6 +100,10 @@ const base::ProcessId& TestTaskManager::GetProcessId(TaskId task_id) const {
   return pid_;
 }
 
+TaskId TestTaskManager::GetRootTaskId(TaskId task_id) const {
+  return 0;
+}
+
 Task::Type TestTaskManager::GetType(TaskId task_id) const {
   return Task::UNKNOWN;
 }

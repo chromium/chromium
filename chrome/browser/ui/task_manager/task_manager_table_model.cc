@@ -734,6 +734,7 @@ void TaskManagerTableModel::GetRowsGroupRange(size_t row_index,
 
 void TaskManagerTableModel::FilterTaskList(std::vector<TaskId>& tasks) {
   std::erase_if(tasks, [this](const TaskId& task_id) {
+    // Remove each node whose root doesn't match the Type criteria.
     return !ShouldKeepTask(task_id);
   });
 }
@@ -1018,9 +1019,7 @@ std::optional<size_t> TaskManagerTableModel::GetRowForActiveTask() {
 
 void TaskManagerTableModel::StartUpdating() {
   TaskManagerInterface::GetTaskManager()->AddObserver(this);
-  tasks_ = observed_task_manager()->GetTaskIdsList();
-  FilterTaskList(tasks_);
-  OnRefresh();
+  OnTasksRefreshed(observed_task_manager()->GetTaskIdsList());
 
   // In order for the scrollbar of the TableView to work properly on startup of
   // the task manager, we must invoke TableModelObserver::OnModelChanged() which
@@ -1064,8 +1063,11 @@ bool TaskManagerTableModel::ShouldKeepTask(TaskId task_id) const {
     return true;
   }
 
-  const Task::Type type = observed_task_manager()->GetType(task_id);
-  const Task::SubType subtype = observed_task_manager()->GetSubType(task_id);
+  // Keep any TaskId iff the task that spawned it (root node) has a type that
+  // matches the current category.
+  const TaskId trunk = observed_task_manager()->GetRootTaskId(task_id);
+  const Task::Type type = observed_task_manager()->GetType(trunk);
+  const Task::SubType subtype = observed_task_manager()->GetSubType(trunk);
 
   switch (display_category_) {
     case DisplayCategory::kTabs:
