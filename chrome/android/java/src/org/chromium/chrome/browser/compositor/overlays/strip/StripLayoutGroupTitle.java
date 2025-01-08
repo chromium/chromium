@@ -97,6 +97,8 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     public static final float REORDER_BACKGROUND_PADDING_END = 10.f;
     public static final float REORDER_BACKGROUND_CORNER_RADIUS = 12.f;
 
+    public static final int TOTAL_MARGIN_HEIGHT = MARGIN_TOP_DP + MARGIN_BOTTOM_DP;
+
     // External influences.
     private final StripLayoutGroupTitleDelegate mDelegate;
 
