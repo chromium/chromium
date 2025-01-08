@@ -2395,10 +2395,14 @@ class Reset3pcCategoryPermissionTest
       public testing::WithParamInterface<bool> {
  public:
   Reset3pcCategoryPermissionTest() {
+    std::vector<base::test::FeatureRef> enabled_features;
+    enabled_features.push_back(
+        privacy_sandbox::kTrackingProtectionContentSettingUbControl);
     if (GetParam()) {
-      feature_list_.InitAndEnableFeature(
+      enabled_features.push_back(
           privacy_sandbox::kTrackingProtectionContentSettingInSettings);
     }
+    feature_list_.InitWithFeatures(enabled_features, {});
   }
 
  private:
