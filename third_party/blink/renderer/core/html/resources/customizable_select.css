@@ -99,7 +99,7 @@ select:not(:-internal-list-box):not([multiple]) option {
   padding-inline: -internal-appearance-auto-base-select(2px, 0.5em);
   padding-block-end: -internal-appearance-auto-base-select(1px, 0);
   display: -internal-appearance-auto-base-select(block, flex);
-  place-items: center;
+  align-items: center;
   gap: 0.5em;
 }
 
