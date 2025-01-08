@@ -736,15 +736,18 @@ void DrawingBuffer::MailboxReleasedSoftware(RegisteredBitmap registered,
 scoped_refptr<StaticBitmapImage> DrawingBuffer::TransferToStaticBitmapImage() {
   ScopedStateRestorer scoped_state_restorer(this);
 
+  gpu::SyncToken sync_token;
   scoped_refptr<gpu::ClientSharedImage> client_si;
-  viz::TransferableResource transferable_resource;
   viz::ReleaseCallback release_callback;
 
-  if (CheckForDestructionAndChangeAndResolveIfNeeded(kDiscardAllowed) !=
-          kContentsResolvedIfNeeded ||
-      !FinishPrepareTransferableResourceGpu(&transferable_resource, &client_si,
-                                            &release_callback)) {
-    // If we can't get a mailbox, return an transparent black ImageBitmap.
+  if (CheckForDestructionAndChangeAndResolveIfNeeded(kDiscardAllowed) ==
+      kContentsResolvedIfNeeded) {
+    client_si = ExportSharedImageFromBackBuffer(sync_token, &release_callback);
+  }
+
+  if (!client_si) {
+    // If we couldn't resolve the contents or couldn't produce a SharedImage
+    // out of them, return an transparent black ImageBitmap.
     // The only situation in which this could happen is when two or more calls
     // to transferToImageBitmap are made back-to-back, or when the context gets
     // lost. We intentionally leave the transparent black image in legacy color
@@ -759,17 +762,9 @@ scoped_refptr<StaticBitmapImage> DrawingBuffer::TransferToStaticBitmapImage() {
     return UnacceleratedStaticBitmapImage::Create(black_image);
   }
 
-  CHECK(client_si);
   DCHECK(release_callback);
   DCHECK_EQ(size_.width(), client_si->size().width());
   DCHECK_EQ(size_.height(), client_si->size().height());
-
-  // Use the sync token generated after producing the mailbox. Waiting for this
-  // before trying to use the mailbox with some other context will ensure it is
-  // valid. We wouldn't need to wait for the consume done in this function
-  // because the texture id it generated would only be valid for the
-  // DrawingBuffer's context anyways.
-  const auto& sk_image_sync_token = transferable_resource.sync_token();
 
   auto sk_color_type = viz::ToClosestSkColorType(
       /*gpu_compositing=*/true, client_si->format());
@@ -783,7 +778,7 @@ scoped_refptr<StaticBitmapImage> DrawingBuffer::TransferToStaticBitmapImage() {
   bool is_overlay_candidate =
       client_si->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
   return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
-      std::move(client_si), sk_image_sync_token,
+      std::move(client_si), sync_token,
       /* shared_image_texture_id = */ 0, sk_image_info,
       context_provider_->GetWeakPtr(), base::PlatformThread::CurrentRef(),
       ThreadScheduler::Current()->CleanupTaskRunner(),
