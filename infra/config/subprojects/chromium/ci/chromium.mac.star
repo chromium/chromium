@@ -733,6 +733,9 @@ ci.thin_tester(
             "browser_tests": targets.mixin(
                 ci_only = True,
                 swarming = targets.swarming(
+                    dimensions = {
+                        "cores": "12",
+                    },
                     # crbug.com/1361887
                     shards = 20,
                 ),
