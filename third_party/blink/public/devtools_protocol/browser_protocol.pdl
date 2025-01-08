@@ -10260,7 +10260,6 @@ experimental domain Storage
   # Enum of possible storage types.
   type StorageType extends string
     enum
-      appcache
       cookies
       file_systems
       indexeddb
