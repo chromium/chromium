@@ -8612,13 +8612,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "third-party-cookie-deprecation-trial",
-    "owners": [
-      "//chrome/browser/tpcd/OWNERS"
-    ],
-    "expiry_milestone": 133
-  },
-  {
     "name": "third-party-profile-management",
     "owners": [ "igorruvinov@chromium.org", "ydago@chromium.org", "zmin@chromium.org" ],
     "expiry_milestone": 135
@@ -8679,13 +8672,6 @@
     // exposed in chrome://flags to allow QA and UXers to verify touch-related
     // behavior without access to touch devices.
     "expiry_milestone": -1
-  },
-  {
-    "name": "top-level-third-party-cookie-deprecation-trial",
-    "owners": [
-      "//chrome/browser/tpcd/OWNERS"
-    ],
-    "expiry_milestone": 133
   },
   {
     "name": "top-toolbar-theme-color",

@@ -8961,16 +8961,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTpcdMetadataGrantsDescription, kOsAll,
      FEATURE_VALUE_TYPE(net::features::kTpcdMetadataGrants)},
 
-    {"third-party-cookie-deprecation-trial",
-     flag_descriptions::kTpcdTrialSettingsName,
-     flag_descriptions::kTpcdTrialSettingsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(net::features::kTpcdTrialSettings)},
-
-    {"top-level-third-party-cookie-deprecation-trial",
-     flag_descriptions::kTopLevelTpcdTrialSettingsName,
-     flag_descriptions::kTopLevelTpcdTrialSettingsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(net::features::kTopLevelTpcdTrialSettings)},
-
 #if BUILDFLAG(IS_CHROMEOS)
     {kBackgroundListeningName, flag_descriptions::kBackgroundListeningName,
      flag_descriptions::kBackgroundListeningDescription, kOsCrOS,

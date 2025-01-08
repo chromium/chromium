@@ -3850,26 +3850,6 @@ const char kTpcdMetadataGrantsDescription[] =
     "Provides a control for enabling/disabling Third-Party Cookie Deprecation "
     "Metadata Grants (WRT its default state) for testing.";
 
-const char kTpcdTrialSettingsName[] =
-    "Third-Party Cookie Deprecation Trial Grants for Testing";
-const char kTpcdTrialSettingsDescription[] =
-    "Controls creation of cookie access grants for the Third-Party Cookies "
-    "Deprecation Trial. Please note that, even if enabled, this will still "
-    "require #tracking-protection-3pcd to be enabled and a pref to be set, for "
-    "it to have an effect. See "
-    "https://developer.chrome.com/blog/cookie-countdown-2023oct/ for more "
-    "details.";
-
-const char kTopLevelTpcdTrialSettingsName[] =
-    "Top-Level Third-Party Cookie Deprecation Trial Grants for Testing";
-const char kTopLevelTpcdTrialSettingsDescription[] =
-    "Controls creation of cookie access grants for the Top-Level Third-Party "
-    "Cookies Deprecation Trial. Please note that, even if enabled, this will "
-    "still require #tracking-protection-3pcd to be enabled and a pref to be "
-    "set, for it to have an effect. See "
-    "https://developer.chrome.com/blog/cookie-countdown-2023oct/ for more "
-    "details.";
-
 const char kTrackingProtection3pcdName[] = "Tracking Protection for 3PCD";
 const char kTrackingProtection3pcdDescription[] =
     "Enables the tracking protection UI + prefs that will be used for the 3PCD "
