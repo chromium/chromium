@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
@@ -196,6 +197,17 @@ public class ToolbarSwipeLayout extends Layout {
 
     @Override
     public void doneHiding() {
+        // Native pages already had thumbnails captured in `show()` so repeat work can be bypassed
+        // by hiding the tab early. This also fixes a blank NTP from being captured after Feed
+        // memory optimizations.
+        Tab currentTab = mTabModelSelector.getCurrentTab();
+        if (currentTab != null && currentTab.isNativePage()) {
+            // Use type CHANGED_TABS here as it triggers side-effects in observers that we want to
+            // maintain. This is the type that would be set in `selectTabById` after thumbnail
+            // capture.
+            currentTab.hide(TabHidingType.CHANGED_TABS);
+        }
+
         TabModelUtils.selectTabById(mTabModelSelector, mNextTabId, TabSelectionType.FROM_USER);
         super.doneHiding();
     }
