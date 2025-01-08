@@ -342,6 +342,7 @@ try_.builder(
     main_list_view = "try",
     # The size of the testing pool is limited.
     max_concurrent_builds = 2,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     #use_orchestrator_pool = True,
