@@ -45,7 +45,7 @@ commerce::MerchantTrustSignalsV2 CreateValidProto() {
   proto.set_merchant_star_rating(3.8);
   proto.set_merchant_count_rating(45);
   proto.set_merchant_details_page_url("https://page_url.com");
-  proto.set_reviews_summary(kTestSummary);
+  proto.set_shopper_voice_summary(kTestSummary);
   return proto;
 }
 

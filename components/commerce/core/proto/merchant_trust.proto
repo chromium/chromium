@@ -33,5 +33,5 @@ message MerchantTrustSignalsV2 {
   optional bool proactive_message_disabled = 7;
 
   // Summary of shoppers' reviews.
-  optional string reviews_summary = 8;
+  optional string shopper_voice_summary = 8;
 }

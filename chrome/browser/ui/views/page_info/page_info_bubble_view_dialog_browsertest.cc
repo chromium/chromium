@@ -137,7 +137,7 @@ optimization_guide::OptimizationMetadata GetMerchantTrustMetadata() {
   metadata.set_merchant_star_rating(3.5);
   metadata.set_merchant_count_rating(23);
   metadata.set_merchant_details_page_url("https://reviews.test");
-  metadata.set_reviews_summary("Test summary");
+  metadata.set_shopper_voice_summary("Test summary");
 
   optimization_metadata.SetAnyMetadataForTesting(metadata);
   return optimization_metadata;

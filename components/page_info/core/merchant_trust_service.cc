@@ -128,8 +128,8 @@ MerchantTrustService::GetMerchantDataFromProto(
       }
     }
 
-    if (merchant_proto.has_reviews_summary()) {
-      merchant_data->reviews_summary = merchant_proto.reviews_summary();
+    if (merchant_proto.has_shopper_voice_summary()) {
+      merchant_data->reviews_summary = merchant_proto.shopper_voice_summary();
     }
   }
 
