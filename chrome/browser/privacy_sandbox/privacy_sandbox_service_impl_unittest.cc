@@ -2785,7 +2785,7 @@ TEST_P(LearnMoreTest, DidLearnMoreActionUpdateNoticeStorage) {
   // Pref
   auto actual =
       notice_storage_->ReadNoticeData(prefs(), GetParam().notice_name);
-  EXPECT_EQ(privacy_sandbox::NoticeActionTaken::kLearnMore,
+  EXPECT_EQ(privacy_sandbox::NoticeActionTaken::kNotSet,
             actual->notice_action_taken);
 
   // Histogram
@@ -2794,16 +2794,6 @@ TEST_P(LearnMoreTest, DidLearnMoreActionUpdateNoticeStorage) {
       base::StrCat({"PrivacySandbox.Notice.NoticeStartupState.",
                     GetParam().notice_name}),
       privacy_sandbox::NoticeStartupState::kPromptWaiting, 1);
-
-  histogram_tester_.ExpectTotalCount(
-      base::StrCat({"PrivacySandbox.Notice.FirstShownToInteractedDuration.",
-                    GetParam().notice_name, "_LearnMore"}),
-      1);
-
-  histogram_tester_.ExpectTotalCount(
-      base::StrCat({"PrivacySandbox.Notice.LastShownToInteractedDuration.",
-                    GetParam().notice_name, "_LearnMore"}),
-      1);
 }
 
 base::test::FeatureRefAndParams ConsentFeature() {

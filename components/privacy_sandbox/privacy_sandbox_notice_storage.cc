@@ -256,6 +256,17 @@ void PrivacySandboxNoticeStorage::SetNoticeActionTaken(
     return;
   }
 
+  // Emitting histograms.
+  base::UmaHistogramEnumeration(
+      base::StrCat({"PrivacySandbox.Notice.NoticeAction.", notice}),
+      notice_action_taken);
+
+  // Don't store LearnMore action in prefs since this doesn't affect the prompt
+  // flow.
+  if (notice_action_taken == NoticeActionTaken::kLearnMore) {
+    return;
+  }
+
   update.Get().SetByDottedPath(
       CreatePrefPath(notice, kPrivacySandboxNoticeActionTaken),
       static_cast<int>(notice_action_taken));
@@ -266,11 +277,6 @@ void PrivacySandboxNoticeStorage::SetNoticeActionTaken(
       base::StrCat(
           {"PrivacySandbox.Notice.NoticeActionTakenBehavior.", notice}),
       NoticeActionBehavior::kSuccess);
-
-  // Emitting histograms.
-  base::UmaHistogramEnumeration(
-      base::StrCat({"PrivacySandbox.Notice.NoticeAction.", notice}),
-      notice_action_taken);
 
   std::string notice_action_str = GetNoticeActionString(notice_action_taken);
   // First shown to interacted duration.
