@@ -4445,6 +4445,11 @@ bool LayoutObject::GetImageAnimationPolicy(
   return true;
 }
 
+InterpolationQuality LayoutObject::GetSpeculativeDecodeQuality() const {
+  NOT_DESTROYED();
+  return StyleRef().GetInterpolationQuality();
+}
+
 void LayoutObject::ImageChanged(ImageResourceContent* image,
                                 CanDeferInvalidation defer) {
   NOT_DESTROYED();

@@ -169,6 +169,9 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
     return false;
   }
 
+  // ImageResourceObserver
+  gfx::Size GetSpeculativeDecodeSize() const override;
+
   // Computes a rect, relative to the element's content's natural size, that
   // should be used as the content source when rendering this element. This
   // value is used as the input for object-fit/object-position during painting.

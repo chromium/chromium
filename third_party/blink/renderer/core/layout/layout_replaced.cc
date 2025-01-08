@@ -462,6 +462,11 @@ PositionWithAffinity LayoutReplaced::PositionForPoint(
   return LayoutBox::PositionForPoint(point);
 }
 
+gfx::Size LayoutReplaced::GetSpeculativeDecodeSize() const {
+  NOT_DESTROYED();
+  return ReplacedContentRect().PixelSnappedSize();
+}
+
 PhysicalRect LayoutReplaced::LocalSelectionVisualRect() const {
   NOT_DESTROYED();
   if (GetSelectionState() == SelectionState::kNone ||
