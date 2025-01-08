@@ -673,6 +673,13 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         // so long as the tab is actually becoming part of a tab group.
         mIsUndoing = isChangingGroups;
 
+        // Notify that the tab will be removed from its current group.
+        if (isTabInTabGroup(tab)) {
+            for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
+                observer.willMoveTabOutOfGroup(tab, originalRootId);
+            }
+        }
+
         setBothGroupIds(tab, originalRootId, originalTabGroupId);
         if (isChangingIndex) {
             if (currentIndex < originalIndex) originalIndex++;
@@ -686,7 +693,6 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
 
         // If undoing results in restoring a tab into a different group then notify observers it was
         // added.
-        // TODO(b/b/339480464): Emit a matching willMergeTabToGroup somewhere upstream.
         if (isChangingGroups && isTabInTabGroup(tab)) {
             TabGroup group = mRootIdToGroupMap.get(originalRootId);
             // Last shown tab IDs are not preserved across an undo.
