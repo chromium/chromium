@@ -281,6 +281,10 @@ void ExtractXdgActivationTokenFromCmdLine(base::CommandLine& cmd_line) {
   }
 }
 
+void SetActivationToken(std::string token) {
+  GetXdgActivationToken() = std::move(token);
+}
+
 std::optional<std::string> TakeXdgActivationToken() {
   auto token = GetXdgActivationToken();
   GetXdgActivationToken().reset();

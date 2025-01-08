@@ -27,6 +27,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/nix/xdg_util.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -74,6 +75,7 @@ const char kMethodGetCapabilities[] = "GetCapabilities";
 const char kMethodNotify[] = "Notify";
 
 // DBus signals.
+const char kSignalActivationToken[] = "ActivationToken";
 const char kSignalActionInvoked[] = "ActionInvoked";
 const char kSignalNotificationClosed[] = "NotificationClosed";
 const char kSignalNotificationReplied[] = "NotificationReplied";
@@ -514,9 +516,15 @@ class NotificationPlatformBridgeLinuxImpl
     DCHECK(!connect_signals_in_progress_);
     connect_signals_in_progress_ = true;
     connected_signals_barrier_ = base::BarrierClosure(
-        3, base::BindOnce(&NotificationPlatformBridgeLinuxImpl::
+        4, base::BindOnce(&NotificationPlatformBridgeLinuxImpl::
                               OnConnectionInitializationFinishedOnTaskRunner,
                           this, ConnectionInitializationStatusCode::SUCCESS));
+    notification_proxy_->ConnectToSignal(
+        kFreedesktopNotificationsName, kSignalActivationToken,
+        base::BindRepeating(
+            &NotificationPlatformBridgeLinuxImpl::OnActivationToken, this),
+        base::BindOnce(&NotificationPlatformBridgeLinuxImpl::OnSignalConnected,
+                       this));
     notification_proxy_->ConnectToSignal(
         kFreedesktopNotificationsName, kSignalActionInvoked,
         base::BindRepeating(
@@ -920,6 +928,20 @@ class NotificationPlatformBridgeLinuxImpl
                        data->notification_type, data->origin_url,
                        data->notification_id, action_index, by_user, reply,
                        data->profile_id, data->is_incognito));
+  }
+
+  void OnActivationToken(dbus::Signal* signal) {
+    DCHECK(task_runner_->RunsTasksInCurrentSequence());
+    dbus::MessageReader reader(signal);
+    uint32_t dbus_id;
+    if (!reader.PopUint32(&dbus_id) || !dbus_id) {
+      return;
+    }
+    std::string activation_token;
+    if (!reader.PopString(&activation_token)) {
+      return;
+    }
+    base::nix::SetActivationToken(activation_token);
   }
 
   void OnActionInvoked(dbus::Signal* signal) {

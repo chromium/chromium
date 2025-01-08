@@ -135,6 +135,10 @@ BASE_EXPORT std::optional<std::string> ExtractXdgActivationTokenFromEnv(
 BASE_EXPORT void ExtractXdgActivationTokenFromCmdLine(
     base::CommandLine& cmd_line);
 
+// Sets the global activation token not received from the command line or as
+// an environment variable, e.g. from notification D-BUS API.
+BASE_EXPORT void SetActivationToken(std::string token);
+
 // Transfers ownership of the currently set global activation token if set.
 BASE_EXPORT std::optional<std::string> TakeXdgActivationToken();
 
