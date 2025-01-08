@@ -5466,7 +5466,7 @@ Called by update_autofill_enums.py.-->
   <int value="60" label="Edit Autofill AI information"/>
   <int value="61" label="Bnpl entry"/>
   <int value="62" label="Save and fill credit card entry"/>
-  <int value="63" label="Adress suggestion displayed when typing"/>
+  <int value="63" label="Address suggestion displayed when typing"/>
 </enum>
 
 <enum name="TouchToFill.CreditCard.Outcome">
