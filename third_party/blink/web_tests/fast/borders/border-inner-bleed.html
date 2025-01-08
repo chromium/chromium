@@ -6,7 +6,7 @@
   anti-aliasing artifacts.
 
   Trivial bleed diffs are fine to ignore/rebaseline.  Improvements are welcome.
-  Regressions (moar red) are not.
+  Regressions (more non-green area showing through) are not.
 -->
 <style>
 div {
@@ -15,8 +15,11 @@ div {
   overflow: hidden;
   width: 100px;
   height: 100px;
-  background-color: red;
   margin: 20px;
+}
+
+td {
+  background-color: lightblue;
 }
 
 .rounded {
@@ -29,6 +32,10 @@ div {
 </style>
 
 <table>
+<tr align="center">
+<td>PNG</td><td>SVG</td><td>PNG</td><td>SVG</td>
+</tr>
+
 <tr>
 <td><div>
   <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAIAAAD/gAIDAAAAnklEQVR42u3QMQEAAAgDoGlyo1vBzwciUJlw1ApkyZIlS5YsBbJkyZIlS5YCWbJkyZIlS4EsWbJkyZKlQJYsWbJkyVIgS5YsWbJkKZAlS5YsWbIUyJIlS5YsWQpkyZIlS5YsBbJkyZIlS5YCWbJkyZIlS4EsWbJkyZKlQJYsWbJkyVIgS5YsWbJkKZAlS5YsWbIUyJIlS5YsWQpkyfq2MosBSIeKONMAAAAASUVORK5CYII=">
@@ -65,6 +72,3 @@ div {
 </div></td>
 </tr>
 
-<tr align="center">
-<td>PNG</td><td>SVG</td><td>PNG</td><td>SVG</td>
-</tr>
