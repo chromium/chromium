@@ -21,8 +21,6 @@ include_rules = [
   "+components/dom_distiller/content/renderer",
   "+components/dom_distiller/core",
   "+components/embedder_support/android/common",
-  "+components/facilitated_payments/content/renderer",
-  "+components/facilitated_payments/core/features",
   "+components/feed/content/renderer",
   "+components/feed/feed_feature_list.h",
   "+components/fingerprinting_protection_filter/browser",

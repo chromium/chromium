@@ -155,8 +155,6 @@ static_library("renderer") {
     "//components/continuous_search/renderer",
     "//components/country_codes",
     "//components/dom_distiller/content/renderer",
-    "//components/facilitated_payments/content/renderer",
-    "//components/facilitated_payments/core/features",
     "//components/feed:feature_list",
     "//components/feed/content/renderer:feed_renderer",
     "//components/fingerprinting_protection_filter/browser",

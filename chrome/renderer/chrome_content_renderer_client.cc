@@ -185,8 +185,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/renderer/sandbox_status_extension_android.h"
 #include "chrome/renderer/wallet/boarding_pass_extractor.h"
-#include "components/facilitated_payments/content/renderer/facilitated_payments_agent.h"
-#include "components/facilitated_payments/core/features/features.h"
 #include "components/feed/content/renderer/rss_link_reader.h"
 #include "components/feed/feed_feature_list.h"
 #else
@@ -714,15 +712,6 @@ void ChromeContentRendererClient::RenderFrameCreated(
          UsesKeyboardAccessoryForSuggestions(BUILDFLAG(IS_ANDROID))},
         std::move(password_autofill_agent),
         std::move(password_generation_agent), associated_interfaces);
-
-#if BUILDFLAG(IS_ANDROID)
-    if (render_frame->IsMainFrame() &&
-        base::FeatureList::IsEnabled(
-            payments::facilitated::kEnablePixDetection)) {
-      new payments::facilitated::FacilitatedPaymentsAgent(
-          render_frame, associated_interfaces);
-    }
-#endif
   }
 
   if (content_capture::features::IsContentCaptureEnabled()) {
