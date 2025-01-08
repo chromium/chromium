@@ -42,6 +42,7 @@
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -1496,7 +1497,8 @@ class CopyOrMoveIOTaskWithDLPTest : public testing::Test {
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(features::kNewFilesPolicyUX);
 
-    AccountId account_id = AccountId::FromUserEmailGaiaId(kEmailId, kGaiaId);
+    AccountId account_id =
+        AccountId::FromUserEmailGaiaId(kEmailId, GaiaId(kGaiaId));
     profile_->SetIsNewProfile(true);
     user_manager::User* user =
         fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(

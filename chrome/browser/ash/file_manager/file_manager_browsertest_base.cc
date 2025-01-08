@@ -195,6 +195,7 @@
 #include "extensions/browser/api/test/test_api_observer.h"
 #include "extensions/browser/api/test/test_api_observer_registry.h"
 #include "extensions/common/extension_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -1025,7 +1026,7 @@ std::optional<AccountId> AccountIdFor(TestAccountType test_account_type) {
                       "LoggedInUserFilesAppBrowserTest";
     case kGoogler:
       return AccountId::FromUserEmailGaiaId(
-          "user@google.com", FakeGaiaMixin::kEnterpriseUser1GaiaId);
+          "user@google.com", GaiaId(FakeGaiaMixin::kEnterpriseUser1GaiaId));
     case kChild:
     case kEnterprise:
     case kNonManaged:
@@ -2511,7 +2512,7 @@ bool FileManagerBrowserTestBase::SetUpUserDataDirectory() {
 AccountId FileManagerBrowserTestBase::GetAccountId() {
   return AccountId::FromUserEmailGaiaId(
       drive::FakeDriveFsHelper::kDefaultUserEmail,
-      drive::FakeDriveFsHelper::kDefaultGaiaId);
+      GaiaId(drive::FakeDriveFsHelper::kDefaultGaiaId));
 }
 
 void FileManagerBrowserTestBase::SetUpInProcessBrowserTestFixture() {
