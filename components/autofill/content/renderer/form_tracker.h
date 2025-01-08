@@ -93,8 +93,9 @@ class FormTracker : public content::RenderFrameObserver,
   // Same methods as those in blink::WebAutofillClient, but invoked by
   // AutofillAgent.
   void AjaxSucceeded();
-  void TextFieldDidChange(const blink::WebFormControlElement& element);
-  void SelectControlDidChange(const blink::WebFormControlElement& element);
+  void TextFieldValueChanged(const blink::WebFormControlElement& element);
+  void SelectControlSelectionChanged(
+      const blink::WebFormControlElement& element);
   virtual void ElementDisappeared(const blink::WebElement& element);
 
   // Tells the tracker to track the autofilled `element`. Since autofilling a

@@ -244,7 +244,7 @@ void ProactiveNudgeTracker::OnAfterFocusOnFormField(
   ResetState();
 }
 
-void ProactiveNudgeTracker::OnAfterTextFieldDidChange(
+void ProactiveNudgeTracker::OnAfterTextFieldValueChanged(
     autofill::AutofillManager& manager,
     autofill::FormGlobalId form,
     autofill::FieldGlobalId field,

@@ -413,19 +413,20 @@ class AutofillAgent::DeferringAutofillDriver : public mojom::AutofillDriver {
     DeferMsg(&mojom::AutofillDriver::CaretMovedInFormField, form, field_id,
              caret_bounds);
   }
-  void TextFieldDidChange(const FormData& form,
-                          FieldRendererId field_id,
-                          base::TimeTicks timestamp) override {
-    DeferMsg(&mojom::AutofillDriver::TextFieldDidChange, form, field_id,
+  void TextFieldValueChanged(const FormData& form,
+                             FieldRendererId field_id,
+                             base::TimeTicks timestamp) override {
+    DeferMsg(&mojom::AutofillDriver::TextFieldValueChanged, form, field_id,
              timestamp);
   }
   void TextFieldDidScroll(const FormData& form,
                           FieldRendererId field_id) override {
     DeferMsg(&mojom::AutofillDriver::TextFieldDidScroll, form, field_id);
   }
-  void SelectControlDidChange(const FormData& form,
-                              FieldRendererId field_id) override {
-    DeferMsg(&mojom::AutofillDriver::SelectControlDidChange, form, field_id);
+  void SelectControlSelectionChanged(const FormData& form,
+                                     FieldRendererId field_id) override {
+    DeferMsg(&mojom::AutofillDriver::SelectControlSelectionChanged, form,
+             field_id);
   }
   void SelectFieldOptionsDidChange(const FormData& form) override {
     DeferMsg(&mojom::AutofillDriver::SelectFieldOptionsDidChange, form);
@@ -813,8 +814,9 @@ void AutofillAgent::TextFieldDidEndEditing(const WebInputElement& element) {
   }
 }
 
-void AutofillAgent::TextFieldDidChange(const WebFormControlElement& element) {
-  form_tracker_->TextFieldDidChange(element);
+void AutofillAgent::TextFieldValueChanged(
+    const WebFormControlElement& element) {
+  form_tracker_->TextFieldValueChanged(element);
 }
 
 void AutofillAgent::ContentEditableDidChange(const WebElement& element) {
@@ -825,13 +827,14 @@ void AutofillAgent::ContentEditableDidChange(const WebElement& element) {
           form_util::FindFormForContentEditable(element)) {
     CHECK_EQ(form->fields().size(), 1u);
     if (auto* autofill_driver = unsafe_autofill_driver()) {
-      autofill_driver->TextFieldDidChange(
+      autofill_driver->TextFieldValueChanged(
           *form, form->fields().front().renderer_id(), base::TimeTicks::Now());
     }
   }
 }
 
-void AutofillAgent::OnTextFieldDidChange(const WebFormControlElement& element) {
+void AutofillAgent::OnTextFieldValueChanged(
+    const WebFormControlElement& element) {
   DCHECK(form_util::MaybeWasOwnedByFrame(element, unsafe_render_frame()));
   // TODO(crbug.com/40286232): Add throttling to avoid sending this event for
   // rapid changes.
@@ -859,23 +862,23 @@ void AutofillAgent::OnTextFieldDidChange(const WebFormControlElement& element) {
 
   if (input_element) {
     ShowSuggestions(element,
-                    AutofillSuggestionTriggerSource::kTextFieldDidChange);
+                    AutofillSuggestionTriggerSource::kTextFieldValueChanged);
   }
 
   if (std::optional<FormAndField> form_and_field =
           FindFormAndFieldForFormControlElement(
               element, field_data_manager(),
-              GetCallTimerState(kOnTextFieldDidChange),
+              GetCallTimerState(kOnTextFieldValueChanged),
               MaybeExtractDatalist({form_util::ExtractOption::kBounds}))) {
     auto& [form, field] = *form_and_field;
     if (auto* autofill_driver = unsafe_autofill_driver()) {
-      autofill_driver->TextFieldDidChange(form, field->renderer_id(),
-                                          base::TimeTicks::Now());
+      autofill_driver->TextFieldValueChanged(form, field->renderer_id(),
+                                             base::TimeTicks::Now());
     }
   }
 }
 
-void AutofillAgent::OnSelectControlDidChange(
+void AutofillAgent::OnSelectControlSelectionChanged(
     const WebFormControlElement& element) {
   DCHECK(form_util::MaybeWasOwnedByFrame(element, unsafe_render_frame()));
   if (std::optional<FormAndField> form_and_field =
@@ -885,7 +888,8 @@ void AutofillAgent::OnSelectControlDidChange(
               MaybeExtractDatalist({form_util::ExtractOption::kBounds}))) {
     auto& [form, field] = *form_and_field;
     if (auto* autofill_driver = unsafe_autofill_driver()) {
-      autofill_driver->SelectControlDidChange(form, field->renderer_id());
+      autofill_driver->SelectControlSelectionChanged(form,
+                                                     field->renderer_id());
     }
   }
 }
@@ -939,7 +943,7 @@ void AutofillAgent::BatchDataListOptionChange(FieldRendererId element_id) {
   if (!element || !element.GetDocument()) {
     return;
   }
-  OnTextFieldDidChange(element);
+  OnTextFieldValueChanged(element);
 }
 
 void AutofillAgent::UserGestureObserved() {
@@ -1650,7 +1654,7 @@ void AutofillAgent::DidReceiveLeftMouseDownOrGestureTapInNode(
 #endif
 }
 
-void AutofillAgent::SelectControlDidChange(
+void AutofillAgent::SelectControlSelectionChanged(
     const WebFormControlElement& element) {
   if (WebDocument document = GetDocument();
       !document || !document.GetFrame() ||
@@ -1662,7 +1666,7 @@ void AutofillAgent::SelectControlDidChange(
     // element.
     return;
   }
-  form_tracker_->SelectControlDidChange(element);
+  form_tracker_->SelectControlSelectionChanged(element);
 }
 
 // Notifies the AutofillDriver about changes in the <select>
@@ -1912,11 +1916,11 @@ void AutofillAgent::OnProvisionallySaveForm(
       break;
     case FormTracker::SaveFormReason::kTextFieldChanged:
       update_submission_data_on_user_edit();
-      OnTextFieldDidChange(element);
+      OnTextFieldValueChanged(element);
       break;
     case FormTracker::SaveFormReason::kSelectChanged:
       update_submission_data_on_user_edit();
-      OnSelectControlDidChange(element);
+      OnSelectControlSelectionChanged(element);
       break;
   }
 }

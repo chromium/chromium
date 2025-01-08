@@ -1607,7 +1607,7 @@ TEST_F(FormFillerTest, TrackFillingOriginOnEditedField) {
 
   // Simulate editing the first field.
   test_api(filled_form).field(0).set_value(u"");
-  browser_autofill_manager_->OnTextFieldDidChange(
+  browser_autofill_manager_->OnTextFieldValueChanged(
       filled_form, filled_form.fields()[0].global_id(), base::TimeTicks::Now());
 
   ASSERT_TRUE(form_structure->field(0)->previously_autofilled());

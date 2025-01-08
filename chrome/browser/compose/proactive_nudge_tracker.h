@@ -170,10 +170,10 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
                                     const autofill::FieldGlobalId& field,
                                     const std::u16string& selection,
                                     const gfx::Rect& caret_bounds) override;
-  void OnAfterTextFieldDidChange(autofill::AutofillManager& manager,
-                                 autofill::FormGlobalId form,
-                                 autofill::FieldGlobalId field,
-                                 const std::u16string& text_value) override;
+  void OnAfterTextFieldValueChanged(autofill::AutofillManager& manager,
+                                    autofill::FormGlobalId form,
+                                    autofill::FieldGlobalId field,
+                                    const std::u16string& text_value) override;
 
  private:
   class EngagementTracker;

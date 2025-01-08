@@ -53,11 +53,11 @@ void TestBrowserAutofillManager::OnCaretMovedInFormField(
   ASSERT_TRUE(waiter_.Wait(0));
 }
 
-void TestBrowserAutofillManager::OnTextFieldDidChange(
+void TestBrowserAutofillManager::OnTextFieldValueChanged(
     const FormData& form,
     const FieldGlobalId& field_id,
     const base::TimeTicks timestamp) {
-  AutofillManager::OnTextFieldDidChange(form, field_id, timestamp);
+  AutofillManager::OnTextFieldValueChanged(form, field_id, timestamp);
   ASSERT_TRUE(waiter_.Wait(0));
 }
 
@@ -68,10 +68,10 @@ void TestBrowserAutofillManager::OnTextFieldDidScroll(
   ASSERT_TRUE(waiter_.Wait(0));
 }
 
-void TestBrowserAutofillManager::OnSelectControlDidChange(
+void TestBrowserAutofillManager::OnSelectControlSelectionChanged(
     const FormData& form,
     const FieldGlobalId& field_id) {
-  AutofillManager::OnSelectControlDidChange(form, field_id);
+  AutofillManager::OnSelectControlSelectionChanged(form, field_id);
   ASSERT_TRUE(waiter_.Wait(0));
 }
 

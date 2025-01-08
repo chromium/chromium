@@ -354,21 +354,21 @@ void AutofillManager::OnCaretMovedInFormField(const FormData& form,
                     field_id, field.selected_text(), caret_bounds)));
 }
 
-void AutofillManager::OnTextFieldDidChange(const FormData& form,
-                                           const FieldGlobalId& field_id,
-                                           const base::TimeTicks timestamp) {
+void AutofillManager::OnTextFieldValueChanged(const FormData& form,
+                                              const FieldGlobalId& field_id,
+                                              const base::TimeTicks timestamp) {
   if (!IsValidFormData(form)) {
     return;
   }
   const FormFieldData& field = CHECK_DEREF(form.FindFieldByGlobalId(field_id));
-  NotifyObservers(&Observer::OnBeforeTextFieldDidChange, form.global_id(),
+  NotifyObservers(&Observer::OnBeforeTextFieldValueChanged, form.global_id(),
                   field_id);
-  ParseFormAsync(form,
-                 ParsingCallback(&AutofillManager::OnTextFieldDidChangeImpl,
-                                 field_id, timestamp)
-                     .Then(NotifyObserversCallback(
-                         &Observer::OnAfterTextFieldDidChange, form.global_id(),
-                         field_id, field.value())));
+  ParseFormAsync(
+      form, ParsingCallback(&AutofillManager::OnTextFieldValueChangedImpl,
+                            field_id, timestamp)
+                .Then(NotifyObserversCallback(
+                    &Observer::OnAfterTextFieldValueChanged, form.global_id(),
+                    field_id, field.value())));
 }
 
 void AutofillManager::OnTextFieldDidScroll(const FormData& form,
@@ -385,19 +385,20 @@ void AutofillManager::OnTextFieldDidScroll(const FormData& form,
                                         form.global_id(), field_id)));
 }
 
-void AutofillManager::OnSelectControlDidChange(const FormData& form,
-                                               const FieldGlobalId& field_id) {
+void AutofillManager::OnSelectControlSelectionChanged(
+    const FormData& form,
+    const FieldGlobalId& field_id) {
   if (!IsValidFormData(form)) {
     return;
   }
-  NotifyObservers(&Observer::OnBeforeSelectControlDidChange, form.global_id(),
-                  field_id);
+  NotifyObservers(&Observer::OnBeforeSelectControlSelectionChanged,
+                  form.global_id(), field_id);
   ParseFormAsync(
-      form,
-      ParsingCallback(&AutofillManager::OnSelectControlDidChangeImpl, field_id)
-          .Then(
-              NotifyObserversCallback(&Observer::OnAfterSelectControlDidChange,
-                                      form.global_id(), field_id)));
+      form, ParsingCallback(
+                &AutofillManager::OnSelectControlSelectionChangedImpl, field_id)
+                .Then(NotifyObserversCallback(
+                    &Observer::OnAfterSelectControlSelectionChanged,
+                    form.global_id(), field_id)));
 }
 
 void AutofillManager::OnAskForValuesToFill(

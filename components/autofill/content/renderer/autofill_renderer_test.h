@@ -53,7 +53,7 @@ class MockAutofillDriver : public mojom::AutofillDriver {
                const gfx::Rect& caret_bounds),
               (override));
   MOCK_METHOD(void,
-              TextFieldDidChange,
+              TextFieldValueChanged,
               (const FormData& form,
                FieldRendererId field_id,
                base::TimeTicks timestamp),
@@ -63,7 +63,7 @@ class MockAutofillDriver : public mojom::AutofillDriver {
               (const FormData& form, FieldRendererId field_id),
               (override));
   MOCK_METHOD(void,
-              SelectControlDidChange,
+              SelectControlSelectionChanged,
               (const FormData& form, FieldRendererId field_id),
               (override));
   MOCK_METHOD(void,

@@ -147,10 +147,11 @@ class AutofillMetricsBaseTest {
     field.set_is_autofilled(false);
     field.set_value(new_value);
     if (field.IsSelectElement()) {
-      autofill_manager().OnSelectControlDidChange(form, field.global_id());
+      autofill_manager().OnSelectControlSelectionChanged(form,
+                                                         field.global_id());
     } else {
-      autofill_manager().OnTextFieldDidChange(form, field.global_id(),
-                                              timestamp);
+      autofill_manager().OnTextFieldValueChanged(form, field.global_id(),
+                                                 timestamp);
     }
   }
 

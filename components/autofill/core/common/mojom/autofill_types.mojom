@@ -587,7 +587,7 @@ enum AutofillSuggestionTriggerSource {
   // contenteditable element rather than a form control element.
   kContentEditableClicked = 3,
   // Suggestions triggered by modifying the content of a text input.
-  kTextFieldDidChange = 4,
+  kTextFieldValueChanged = 4,
   // Suggestions triggered by pressing the down key on a text input. This auto
   // selects the first suggestion.
   kTextFieldDidReceiveKeyDown = 5,

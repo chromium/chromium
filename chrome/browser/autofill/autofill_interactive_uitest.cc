@@ -1007,10 +1007,10 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ModifyTextNotifiesObserver) {
   BrowserAutofillManager* autofill_manager = GetBrowserAutofillManager();
   autofill_manager->AddObserver(&observer);
 
-  // OnAfterTextFieldDidChange will eventually be called with the final text
+  // OnAfterTextFieldValueChanged will eventually be called with the final text
   // "Montreal".
   EventWaiter<bool> waiter({true});
-  EXPECT_CALL(observer, OnAfterTextFieldDidChange(_, _, _, _))
+  EXPECT_CALL(observer, OnAfterTextFieldValueChanged(_, _, _, _))
       .WillRepeatedly([&](AutofillManager&, FormGlobalId, FieldGlobalId,
                           std::u16string text_value) {
         if (text_value == u"Montreal") {
@@ -1051,7 +1051,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
   autofill_manager->AddObserver(&observer);
 
   EventWaiter<bool> waiter({true});
-  EXPECT_CALL(observer, OnAfterTextFieldDidChange(_, _, _, _))
+  EXPECT_CALL(observer, OnAfterTextFieldValueChanged(_, _, _, _))
       .WillRepeatedly([&](AutofillManager&, FormGlobalId, FieldGlobalId,
                           std::u16string text_value) {
         if (text_value == u"My Address") {
@@ -3306,10 +3306,10 @@ class AutofillInteractiveFormSubmissionTest
    private:
     TestAutofillManagerWaiter text_field_change_waiter_{
         *this,
-        {AutofillManagerEvent::kTextFieldDidChange}};
+        {AutofillManagerEvent::kTextFieldValueChanged}};
     TestAutofillManagerWaiter select_field_change_waiter_{
         *this,
-        {AutofillManagerEvent::kSelectControlDidChange}};
+        {AutofillManagerEvent::kSelectControlSelectionChanged}};
   };
 
   MockAutofillManager* autofill_manager() {

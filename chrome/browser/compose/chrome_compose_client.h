@@ -65,10 +65,11 @@ class ChromeComposeClient
     // TODO(b/40286232): Throttling of this event may be added in the future, in
     // which case this implementation would no longer adhere to a strict event
     // count.
-    void OnAfterTextFieldDidChange(autofill::AutofillManager& manager,
-                                   autofill::FormGlobalId form,
-                                   autofill::FieldGlobalId field,
-                                   const std::u16string& text_value) override;
+    void OnAfterTextFieldValueChanged(
+        autofill::AutofillManager& manager,
+        autofill::FormGlobalId form,
+        autofill::FieldGlobalId field,
+        const std::u16string& text_value) override;
     // Used to reset the field content changes count when a new suggestions UI
     // is shown.
     void OnSuggestionsShown(autofill::AutofillManager& manager) override;
@@ -85,8 +86,8 @@ class ChromeComposeClient
 
     raw_ptr<content::WebContents> web_contents_;
     // Current count of change events fired on the current focused text field,
-    // as recorded by `OnAfterTextFieldDidChange`.
-    unsigned int text_field_change_event_count_ = 0;
+    // as recorded by `OnAfterTextFieldValueChanged`.
+    unsigned int text_field_value_change_event_count_ = 0;
 
     autofill::ScopedAutofillManagersObservation autofill_managers_observation_{
         this};

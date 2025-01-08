@@ -145,13 +145,13 @@ chromium-metrics-reviews@google.com.
 
 <enum name="AutofillSuggestionTriggerSource">
   <int value="0" label="Unknown"/>
-  <int value="1" label="Form control elemnt clicked"/>
+  <int value="1" label="Form control element clicked"/>
   <int value="2" label="Textarea focused without click"/>
   <int value="3" label="Content editable clicked"/>
-  <int value="4" label="Text field did change"/>
-  <int value="5" label="Text field did receive keydown,"/>
+  <int value="4" label="Text field's value did change"/>
+  <int value="5" label="Text field did receive keydown"/>
   <int value="6" label="Open text data list chooser"/>
-  <int value="7" label="Show cards fromaccount"/>
+  <int value="7" label="Show cards from account"/>
   <int value="8" label="Password manager"/>
   <int value="9" label="iOS"/>
   <int value="10" label="Manual fallback address"/>
@@ -160,7 +160,7 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="(Deprecated in M133) Manual fallback plus addresses"/>
   <int value="14" label="Show prompt after dialog closed non manual fallback"/>
   <int value="15" label="Compose dialog lost focus"/>
-  <int value="16" label="Compose elayed proactive nudge"/>
+  <int value="16" label="Compose delayed proactive nudge"/>
   <int value="17" label="Password manager processed focused field"/>
 </enum>
 

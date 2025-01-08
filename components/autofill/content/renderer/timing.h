@@ -28,7 +28,7 @@ struct CallTimerState {
     kJavaScriptChangedValue,
     kNotifyPasswordManagerAboutClearedForm,
     kOnProvisionallySaveForm,
-    kOnTextFieldDidChange,
+    kOnTextFieldValueChanged,
     kQueryAutofillSuggestions,
     kShowSuggestionPopup,
     kUpdateFormCache,

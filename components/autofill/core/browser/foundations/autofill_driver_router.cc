@@ -248,7 +248,7 @@ void AutofillDriverRouter::CaretMovedInFormField(
   callback(CHECK_DEREF(target), browser_form, field_id, caret_bounds);
 }
 
-void AutofillDriverRouter::TextFieldDidChange(
+void AutofillDriverRouter::TextFieldValueChanged(
     RoutedCallback<const FormData&, const FieldGlobalId&, base::TimeTicks>
         callback,
     AutofillDriver& source,
@@ -296,7 +296,7 @@ void AutofillDriverRouter::TextFieldDidScroll(
   callback(CHECK_DEREF(target), browser_form, field_id);
 }
 
-void AutofillDriverRouter::SelectControlDidChange(
+void AutofillDriverRouter::SelectControlSelectionChanged(
     RoutedCallback<const FormData&, const FieldGlobalId&> callback,
     AutofillDriver& source,
     FormData form,

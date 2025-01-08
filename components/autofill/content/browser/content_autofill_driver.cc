@@ -551,11 +551,11 @@ void ContentAutofillDriver::CaretMovedInFormField(
                  caret_bounds);
 }
 
-void ContentAutofillDriver::TextFieldDidChange(const FormData& form,
-                                               FieldRendererId field_id,
-                                               base::TimeTicks timestamp) {
-  RouteToManager(*this, router(), &AutofillDriverRouter::TextFieldDidChange,
-                 &AutofillManager::OnTextFieldDidChange, form, field_id,
+void ContentAutofillDriver::TextFieldValueChanged(const FormData& form,
+                                                  FieldRendererId field_id,
+                                                  base::TimeTicks timestamp) {
+  RouteToManager(*this, router(), &AutofillDriverRouter::TextFieldValueChanged,
+                 &AutofillManager::OnTextFieldValueChanged, form, field_id,
                  timestamp);
 }
 
@@ -565,10 +565,12 @@ void ContentAutofillDriver::TextFieldDidScroll(const FormData& form,
                  &AutofillManager::OnTextFieldDidScroll, form, field_id);
 }
 
-void ContentAutofillDriver::SelectControlDidChange(const FormData& form,
-                                                   FieldRendererId field_id) {
-  RouteToManager(*this, router(), &AutofillDriverRouter::SelectControlDidChange,
-                 &AutofillManager::OnSelectControlDidChange, form, field_id);
+void ContentAutofillDriver::SelectControlSelectionChanged(
+    const FormData& form,
+    FieldRendererId field_id) {
+  RouteToManager(
+      *this, router(), &AutofillDriverRouter::SelectControlSelectionChanged,
+      &AutofillManager::OnSelectControlSelectionChanged, form, field_id);
 }
 
 void ContentAutofillDriver::AskForValuesToFill(

@@ -1142,8 +1142,8 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
   if (!ContainsFocusableField(form, fieldIdentifier)) {
     return;
   }
-  driver->TextFieldDidChange(form, {form.host_frame(), fieldIdentifier},
-                             base::TimeTicks::Now());
+  driver->TextFieldValueChanged(form, {form.host_frame(), fieldIdentifier},
+                                base::TimeTicks::Now());
 }
 
 // Helper method to create icons for payment cards.

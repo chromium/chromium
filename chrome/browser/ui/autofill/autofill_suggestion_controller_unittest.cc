@@ -420,7 +420,7 @@ TEST_F(AutofillSuggestionControllerTest,
   ShowSuggestions(manager(), {SuggestionType::kAutocompleteEntry});
   EXPECT_CALL(client().popup_controller(manager()), Hide).Times(0);
   manager().NotifyObservers(
-      &AutofillManager::Observer::OnBeforeTextFieldDidChange, FormGlobalId(),
+      &AutofillManager::Observer::OnBeforeTextFieldValueChanged, FormGlobalId(),
       FieldGlobalId());
   Mock::VerifyAndClearExpectations(&client().popup_controller(manager()));
 }

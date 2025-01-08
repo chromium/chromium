@@ -246,7 +246,7 @@ class AutofillAgent : public content::RenderFrameObserver,
   void TrackAutofilledElement(const blink::WebFormControlElement& element);
 
   // Function that should be called whenever the value of `element` changes due
-  // to user input. This is separate from OnTextFieldDidChange() as that
+  // to user input. This is separate from OnTextFieldValueChanged() as that
   // function may trigger UI and should only be called when other UI won't be
   // shown.
   void UpdateStateForTextChange(const blink::WebFormControlElement& element,
@@ -322,7 +322,8 @@ class AutofillAgent : public content::RenderFrameObserver,
   // blink::WebAutofillClient:
   void TextFieldCleared(const blink::WebFormControlElement&) override;
   void TextFieldDidEndEditing(const blink::WebInputElement& element) override;
-  void TextFieldDidChange(const blink::WebFormControlElement& element) override;
+  void TextFieldValueChanged(
+      const blink::WebFormControlElement& element) override;
   void ContentEditableDidChange(const blink::WebElement& element) override;
   void TextFieldDidReceiveKeyDown(
       const blink::WebInputElement& element,
@@ -339,7 +340,7 @@ class AutofillAgent : public content::RenderFrameObserver,
       const blink::WebNode& node) override;
   void SelectFieldOptionsChanged(
       const blink::WebFormControlElement& element) override;
-  void SelectControlDidChange(
+  void SelectControlSelectionChanged(
       const blink::WebFormControlElement& element) override;
   bool ShouldSuppressKeyboard(
       const blink::WebFormControlElement& element) override;
@@ -365,8 +366,9 @@ class AutofillAgent : public content::RenderFrameObserver,
   void HandleFocusChangeComplete(bool focused_node_was_last_clicked);
 
   // TODO(crbug.com/376628389): Remove.
-  void OnTextFieldDidChange(const blink::WebFormControlElement& element);
-  void OnSelectControlDidChange(const blink::WebFormControlElement& element);
+  void OnTextFieldValueChanged(const blink::WebFormControlElement& element);
+  void OnSelectControlSelectionChanged(
+      const blink::WebFormControlElement& element);
 
   void DidChangeScrollOffsetImpl(FieldRendererId element_id);
 

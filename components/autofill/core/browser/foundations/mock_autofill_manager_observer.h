@@ -44,12 +44,12 @@ class MockAutofillManagerObserver : public AutofillManager::Observer {
               (override));
 
   MOCK_METHOD(void,
-              OnBeforeTextFieldDidChange,
+              OnBeforeTextFieldValueChanged,
               (AutofillManager&, FormGlobalId, FieldGlobalId),
               (override));
   MOCK_METHOD(
       void,
-      OnAfterTextFieldDidChange,
+      OnAfterTextFieldValueChanged,
       (AutofillManager&, FormGlobalId, FieldGlobalId, const std::u16string&),
       (override));
 
@@ -63,11 +63,11 @@ class MockAutofillManagerObserver : public AutofillManager::Observer {
               (override));
 
   MOCK_METHOD(void,
-              OnBeforeSelectControlDidChange,
+              OnBeforeSelectControlSelectionChanged,
               (AutofillManager&, FormGlobalId, FieldGlobalId),
               (override));
   MOCK_METHOD(void,
-              OnAfterSelectControlDidChange,
+              OnAfterSelectControlSelectionChanged,
               (AutofillManager&, FormGlobalId, FieldGlobalId),
               (override));
 

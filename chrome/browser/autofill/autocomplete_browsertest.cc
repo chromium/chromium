@@ -79,7 +79,7 @@ class AutocompleteTest : public InProcessBrowserTest {
    private:
     TestAutofillManagerWaiter text_field_change_waiter_{
         *this,
-        {AutofillManagerEvent::kTextFieldDidChange}};
+        {AutofillManagerEvent::kTextFieldValueChanged}};
     TestAutofillManagerWaiter forms_seen_waiter_{
         *this,
         {AutofillManagerEvent::kFormsSeen}};

@@ -327,9 +327,9 @@ class BrowserAutofillManager : public AutofillManager {
   void OnCaretMovedInFormFieldImpl(const FormData& form,
                                    const FieldGlobalId& field_id,
                                    const gfx::Rect& caret_bounds) override {}
-  void OnTextFieldDidChangeImpl(const FormData& form,
-                                const FieldGlobalId& field_id,
-                                const base::TimeTicks timestamp) override;
+  void OnTextFieldValueChangedImpl(const FormData& form,
+                                   const FieldGlobalId& field_id,
+                                   const base::TimeTicks timestamp) override;
   void OnTextFieldDidScrollImpl(const FormData& form,
                                 const FieldGlobalId& field_id) override {}
   void OnAskForValuesToFillImpl(
@@ -337,8 +337,9 @@ class BrowserAutofillManager : public AutofillManager {
       const FieldGlobalId& field_id,
       const gfx::Rect& caret_bounds,
       AutofillSuggestionTriggerSource trigger_source) override;
-  void OnSelectControlDidChangeImpl(const FormData& form,
-                                    const FieldGlobalId& field_id) override;
+  void OnSelectControlSelectionChangedImpl(
+      const FormData& form,
+      const FieldGlobalId& field_id) override;
   bool ShouldParseForms() override;
   void OnBeforeProcessParsedForms() override;
   void OnFormProcessed(const FormData& form,

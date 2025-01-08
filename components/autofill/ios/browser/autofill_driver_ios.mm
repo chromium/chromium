@@ -501,9 +501,9 @@ void AutofillDriverIOS::CaretMovedInFormField(const FormData& form,
   GetAutofillManager().OnCaretMovedInFormField(form, field_id, caret_bounds);
 }
 
-void AutofillDriverIOS::TextFieldDidChange(const FormData& form,
-                                           const FieldGlobalId& field_id,
-                                           base::TimeTicks timestamp) {
+void AutofillDriverIOS::TextFieldValueChanged(const FormData& form,
+                                              const FieldGlobalId& field_id,
+                                              base::TimeTicks timestamp) {
   auto callback = [&](AutofillDriver& driver, const FormData& form,
                       const FieldGlobalId& field_global_id,
                       base::TimeTicks timestamp) {
@@ -511,11 +511,12 @@ void AutofillDriverIOS::TextFieldDidChange(const FormData& form,
         /*form_data=*/form,
         /*formless_field=*/form.renderer_id() ? FieldRendererId()
                                               : field_global_id.renderer_id);
-    driver.GetAutofillManager().OnTextFieldDidChange(form, field_id, timestamp);
+    driver.GetAutofillManager().OnTextFieldValueChanged(form, field_id,
+                                                        timestamp);
   };
 
   if (IsAcrossIframesEnabled()) {
-    router_->TextFieldDidChange(callback, *this, form, field_id, timestamp);
+    router_->TextFieldValueChanged(callback, *this, form, field_id, timestamp);
   } else {
     callback(*this, form, field_id, timestamp);
   }

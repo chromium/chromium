@@ -36,16 +36,16 @@ class AutofillProvider : public content::WebContentsUserData<AutofillProvider> {
       const FormData& form,
       const FormFieldData& field,
       AutofillSuggestionTriggerSource trigger_source) = 0;
-  virtual void OnTextFieldDidChange(AndroidAutofillManager* manager,
-                                    const FormData& form,
-                                    const FormFieldData& field,
-                                    const base::TimeTicks timestamp) = 0;
+  virtual void OnTextFieldValueChanged(AndroidAutofillManager* manager,
+                                       const FormData& form,
+                                       const FormFieldData& field,
+                                       const base::TimeTicks timestamp) = 0;
   virtual void OnTextFieldDidScroll(AndroidAutofillManager* manager,
                                     const FormData& form,
                                     const FormFieldData& field) = 0;
-  virtual void OnSelectControlDidChange(AndroidAutofillManager* manager,
-                                        const FormData& form,
-                                        const FormFieldData& field) = 0;
+  virtual void OnSelectControlSelectionChanged(AndroidAutofillManager* manager,
+                                               const FormData& form,
+                                               const FormFieldData& field) = 0;
   virtual void OnFormSubmitted(AndroidAutofillManager* manager,
                                const FormData& form,
                                mojom::SubmissionSource source) = 0;

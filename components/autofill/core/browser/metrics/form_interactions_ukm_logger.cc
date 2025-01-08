@@ -122,7 +122,7 @@ void FormInteractionsUkmLogger::LogEditedAutofilledFieldAtSubmission(
       .Record(autofill_client_->GetUkmRecorder());
 }
 
-void FormInteractionsUkmLogger::LogTextFieldDidChange(
+void FormInteractionsUkmLogger::LogTextFieldValueChanged(
     ukm::SourceId ukm_source_id,
     const FormStructure& form,
     const AutofillField& field) {

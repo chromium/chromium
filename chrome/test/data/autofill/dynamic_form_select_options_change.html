@@ -43,7 +43,7 @@ function CountryChanged() {
 
   if (is_async) {
     // Update 'state' <select> asynchronously so that
-    // AutofillAgent::SelectControlDidChange() triggers the refill not
+    // AutofillAgent::SelectControlSelectionChanged() triggers the refill not
     // AutofillAgent::TriggerRefillIfNeeded().
     window.setTimeout(CountryChangedImpl, 0);
     return;

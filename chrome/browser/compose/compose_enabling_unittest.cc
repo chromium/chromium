@@ -504,7 +504,7 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupDefaultTest) {
 
   // The saved state nudge is enabled by default.
   EXPECT_TRUE(compose_enabling_->ShouldTriggerSavedStatePopup(
-      autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange));
+      autofill::AutofillSuggestionTriggerSource::kTextFieldValueChanged));
 
   // The proactive nudge is disabled by default.
   EXPECT_FALSE(compose_enabling_
@@ -526,7 +526,7 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupDisabledTest) {
   std::string autocomplete_attribute;
 
   EXPECT_FALSE(compose_enabling_->ShouldTriggerSavedStatePopup(
-      autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange));
+      autofill::AutofillSuggestionTriggerSource::kTextFieldValueChanged));
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerPopupLanguageTests) {
@@ -542,7 +542,7 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupLanguageTests) {
   SetLanguage("eo");
 
   EXPECT_TRUE(compose_enabling_->ShouldTriggerSavedStatePopup(
-      autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange));
+      autofill::AutofillSuggestionTriggerSource::kTextFieldValueChanged));
 
   EXPECT_FALSE(compose_enabling_
                    ->ShouldTriggerNoStatePopup(
@@ -557,7 +557,7 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupLanguageTests) {
   SetLanguage("en");
 
   EXPECT_TRUE(compose_enabling_->ShouldTriggerSavedStatePopup(
-      autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange));
+      autofill::AutofillSuggestionTriggerSource::kTextFieldValueChanged));
 
   EXPECT_TRUE(compose_enabling_
                   ->ShouldTriggerNoStatePopup(
@@ -572,7 +572,7 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupLanguageTests) {
   SetLanguage("und");
 
   EXPECT_TRUE(compose_enabling_->ShouldTriggerSavedStatePopup(
-      autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange));
+      autofill::AutofillSuggestionTriggerSource::kTextFieldValueChanged));
 
   EXPECT_TRUE(compose_enabling_
                   ->ShouldTriggerNoStatePopup(
@@ -595,7 +595,7 @@ TEST_F(ComposeEnablingTest, ShouldNotTriggerProactivePopupAutocompleteOffTest) {
 
   // The autocomplete attribute is ignored with saved state.
   EXPECT_TRUE(compose_enabling_->ShouldTriggerSavedStatePopup(
-      autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange));
+      autofill::AutofillSuggestionTriggerSource::kTextFieldValueChanged));
 
   // The autocomplete attribute is checked for the proactive nudge.
   auto should_trigger = compose_enabling_->ShouldTriggerNoStatePopup(
@@ -654,7 +654,7 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupWithSavedStateTest) {
     EXPECT_EQ(
         saved_state_nudge,
         compose_enabling_->ShouldTriggerSavedStatePopup(
-            autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange));
+            autofill::AutofillSuggestionTriggerSource::kTextFieldValueChanged));
 
     EXPECT_EQ(proactive_nudge,
               compose_enabling_
@@ -702,7 +702,7 @@ TEST_F(ComposeEnablingTest,
 
   // Nudge still works, even if Saved State Notification is disabled.
   EXPECT_TRUE(compose_enabling_->ShouldTriggerSavedStatePopup(
-      autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange));
+      autofill::AutofillSuggestionTriggerSource::kTextFieldValueChanged));
 
   // Saved state notification is disabled.
   EXPECT_FALSE(compose_enabling_->ShouldTriggerSavedStatePopup(
@@ -730,7 +730,7 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupIncorrectSchemeTest) {
 
   // Use URL with incorrect scheme is not checked when there is previous state.
   EXPECT_TRUE(compose_enabling_->ShouldTriggerSavedStatePopup(
-      autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange));
+      autofill::AutofillSuggestionTriggerSource::kTextFieldValueChanged));
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerPopupCrossOrigin) {
@@ -894,7 +894,7 @@ TEST_F(ComposeEnablingTest, ShouldTriggerDisableComposeByPolicyTest) {
 
   // The saved state is not disabled.
   EXPECT_TRUE(compose_enabling_->ShouldTriggerSavedStatePopup(
-      autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange));
+      autofill::AutofillSuggestionTriggerSource::kTextFieldValueChanged));
 
   // Verify the metrics reflect the decision not to show the page.
   histogram_tester.ExpectUniqueSample(
@@ -940,7 +940,7 @@ TEST_F(ComposeEnablingTest, ShouldTriggerDisableNudgeByPolicy) {
 
   // The saved state nudge is not disabled.
   EXPECT_TRUE(compose_enabling_->ShouldTriggerSavedStatePopup(
-      autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange));
+      autofill::AutofillSuggestionTriggerSource::kTextFieldValueChanged));
 
   // Check that the proactive nudge is disabled.
   EXPECT_FALSE(compose_enabling_

@@ -64,17 +64,18 @@ void AutofillObserverImpl::OnFormSubmitted(autofill::AutofillManager&,
   OnFormInteraction();
 }
 
-void AutofillObserverImpl::OnAfterSelectControlDidChange(
+void AutofillObserverImpl::OnAfterSelectControlSelectionChanged(
     autofill::AutofillManager&,
     autofill::FormGlobalId,
     autofill::FieldGlobalId) {
   OnFormInteraction();
 }
 
-void AutofillObserverImpl::OnAfterTextFieldDidChange(autofill::AutofillManager&,
-                                                     autofill::FormGlobalId,
-                                                     autofill::FieldGlobalId,
-                                                     const std::u16string&) {
+void AutofillObserverImpl::OnAfterTextFieldValueChanged(
+    autofill::AutofillManager&,
+    autofill::FormGlobalId,
+    autofill::FieldGlobalId,
+    const std::u16string&) {
   OnFormInteraction();
 }
 

@@ -59,7 +59,7 @@ class MockAutofillManager : public AutofillManager {
                const gfx::Rect& caret_bounds),
               (override));
   MOCK_METHOD(void,
-              OnTextFieldDidChangeImpl,
+              OnTextFieldValueChangedImpl,
               (const FormData& form,
                const FieldGlobalId& field_id,
                const base::TimeTicks timestamp),
@@ -80,7 +80,7 @@ class MockAutofillManager : public AutofillManager {
               (const FormData& form, const FieldGlobalId& field_id),
               (override));
   MOCK_METHOD(void,
-              OnSelectControlDidChangeImpl,
+              OnSelectControlSelectionChangedImpl,
               (const FormData& form, const FieldGlobalId& field_id),
               (override));
   MOCK_METHOD(bool, ShouldParseForms, (), (override));

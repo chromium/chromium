@@ -376,7 +376,7 @@ bool IsTriggerSourceOnlyRelevantForCompose(
     case AutofillSuggestionTriggerSource::kUnspecified:
     case AutofillSuggestionTriggerSource::kFormControlElementClicked:
     case AutofillSuggestionTriggerSource::kContentEditableClicked:
-    case AutofillSuggestionTriggerSource::kTextFieldDidChange:
+    case AutofillSuggestionTriggerSource::kTextFieldValueChanged:
     case AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown:
     case AutofillSuggestionTriggerSource::kOpenTextDataListChooser:
     case AutofillSuggestionTriggerSource::kShowCardsFromAccount:
@@ -1005,7 +1005,7 @@ void BrowserAutofillManager::LogSubmissionMetrics(
   }
 }
 
-void BrowserAutofillManager::OnTextFieldDidChangeImpl(
+void BrowserAutofillManager::OnTextFieldValueChangedImpl(
     const FormData& form,
     const FieldGlobalId& field_id,
     const base::TimeTicks timestamp) {
@@ -1027,7 +1027,7 @@ void BrowserAutofillManager::OnTextFieldDidChangeImpl(
 
   if (!metrics_->user_did_type || autofill_field->is_autofilled()) {
     metrics_->user_did_type = true;
-    client().GetFormInteractionsUkmLogger().LogTextFieldDidChange(
+    client().GetFormInteractionsUkmLogger().LogTextFieldValueChanged(
         driver().GetPageUkmSourceId(), *form_structure, *autofill_field);
   }
 
@@ -1879,7 +1879,7 @@ void BrowserAutofillManager::OnFocusOnFormFieldImpl(
           : mojom::AutofillSuggestionAvailability::kNoSuggestions);
 }
 
-void BrowserAutofillManager::OnSelectControlDidChangeImpl(
+void BrowserAutofillManager::OnSelectControlSelectionChangedImpl(
     const FormData& form,
     const FieldGlobalId& field_id) {
   if (!base::FeatureList::IsEnabled(

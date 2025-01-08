@@ -1082,7 +1082,7 @@ class BrowserAutofillManagerTest : public testing::Test {
       const FormData& form,
       const FormFieldData& field,
       AutofillSuggestionTriggerSource trigger_source =
-          AutofillSuggestionTriggerSource::kTextFieldDidChange) {
+          AutofillSuggestionTriggerSource::kTextFieldValueChanged) {
     manager().OnAskForValuesToFill(form, field.global_id(),
                                    GetFakeCaretBounds(field), trigger_source);
   }
@@ -1101,7 +1101,7 @@ class BrowserAutofillManagerTest : public testing::Test {
         form, field.global_id(), GetFakeCaretBounds(field),
         form_element_was_clicked
             ? AutofillSuggestionTriggerSource::kFormControlElementClicked
-            : AutofillSuggestionTriggerSource::kTextFieldDidChange);
+            : AutofillSuggestionTriggerSource::kTextFieldValueChanged);
   }
 
   void FormsSeen(const std::vector<FormData>& forms) {
@@ -2836,8 +2836,8 @@ TEST_P(BrowserAutofillManagerLogAblationTest, TestLogging) {
 
   // Simulate user typing into field (due to the ablation we would not fill).
   field.set_value(u"Unknown User");
-  manager().OnTextFieldDidChange(form, field.global_id(),
-                                 base::TimeTicks::Now());
+  manager().OnTextFieldValueChanged(form, field.global_id(),
+                                    base::TimeTicks::Now());
 
   if (params.second_query_for_suggestions_with_typed_prefix) {
     // Do another lookup. We won't have any suggestions because they would not
@@ -3730,8 +3730,8 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtUserTypingInField) {
   FormFieldData& field = test_api(form).field(0);
   // Simulate editing the first field.
   field.set_value(u"Michael");
-  manager().OnTextFieldDidChange(form, field.global_id(),
-                                 base::TimeTicks::Now());
+  manager().OnTextFieldValueChanged(form, field.global_id(),
+                                    base::TimeTicks::Now());
 
   // Simulate form submission.
   FormSubmitted(response_data);
@@ -4783,7 +4783,7 @@ TEST_F(BrowserAutofillManagerTest, TestExternalDelegate) {
 
 // Test that unfocusing a filled form sends an upload with types matching the
 // fields.
-TEST_F(BrowserAutofillManagerTest, OnTextFieldDidChangeAndUnfocus_Upload) {
+TEST_F(BrowserAutofillManagerTest, OnTextFieldValueChangedAndUnfocus_Upload) {
   // Set up our form data (it's already filled out with user data).
   FormData form;
   form.set_name(u"MyForm");
@@ -4825,8 +4825,8 @@ TEST_F(BrowserAutofillManagerTest, OnTextFieldDidChangeAndUnfocus_Upload) {
   test_api(form).field(1).set_value(u"Presley");
   test_api(form).field(2).set_value(u"theking@gmail.com");
   // Simulate editing a field.
-  manager().OnTextFieldDidChange(form, form.fields().front().global_id(),
-                                 base::TimeTicks::Now());
+  manager().OnTextFieldValueChanged(form, form.fields().front().global_id(),
+                                    base::TimeTicks::Now());
 
   // Simulate lost of focus on the form.
   manager().OnFocusOnNonFormField();
@@ -4834,7 +4834,8 @@ TEST_F(BrowserAutofillManagerTest, OnTextFieldDidChangeAndUnfocus_Upload) {
 
 // Test that navigating with a filled form sends an upload with types matching
 // the fields.
-TEST_F(BrowserAutofillManagerTest, OnTextFieldDidChangeAndNavigation_Upload) {
+TEST_F(BrowserAutofillManagerTest,
+       OnTextFieldValueChangedAndNavigation_Upload) {
   // Set up our form data (it's already filled out with user data).
   FormData form;
   form.set_name(u"MyForm");
@@ -4876,8 +4877,8 @@ TEST_F(BrowserAutofillManagerTest, OnTextFieldDidChangeAndNavigation_Upload) {
   test_api(form).field(1).set_value(u"Presley");
   test_api(form).field(2).set_value(u"theking@gmail.com");
   // Simulate editing a field.
-  manager().OnTextFieldDidChange(form, form.fields().front().global_id(),
-                                 base::TimeTicks::Now());
+  manager().OnTextFieldValueChanged(form, form.fields().front().global_id(),
+                                    base::TimeTicks::Now());
 
   // Simulate a navigation so that the pending form is uploaded.
   test_api(client().GetAutofillDriverFactory()).Reset(driver());
@@ -6581,7 +6582,7 @@ TEST_F(BrowserAutofillManagerTest, ComposeSuggestionsAreQueriedForTextareas) {
       GetSuggestion(
           _,
           Property(&FormFieldData::global_id, Eq(form.fields()[0].global_id())),
-          AutofillSuggestionTriggerSource::kTextFieldDidChange))
+          AutofillSuggestionTriggerSource::kTextFieldValueChanged))
       .WillOnce(Return(
           Suggestion(u"Help me write", SuggestionType::kComposeResumeNudge)));
   OnAskForValuesToFill(form, form.fields()[0]);
@@ -7175,8 +7176,8 @@ class BrowserAutofillManagerVotingTest : public BrowserAutofillManagerTest {
 
   void SimulateTypingFirstNameIntoFirstField() {
     test_api(form_).field(0).set_value(u"Elvis");
-    manager().OnTextFieldDidChange(form_, form_.fields()[0].global_id(),
-                                   base::TimeTicks::Now());
+    manager().OnTextFieldValueChanged(form_, form_.fields()[0].global_id(),
+                                      base::TimeTicks::Now());
   }
 
  protected:
@@ -7211,8 +7212,8 @@ TEST_F(BrowserAutofillManagerVotingTest, DynamicFormSubmission) {
 
   // 3. Simulate typing into second field
   test_api(form_).field(1).set_value(u"Presley");
-  manager().OnTextFieldDidChange(form_, form_.fields()[1].global_id(),
-                                 base::TimeTicks::Now());
+  manager().OnTextFieldValueChanged(form_, form_.fields()[1].global_id(),
+                                    base::TimeTicks::Now());
 
   // 4. Simulate removing the focus from the form, which generates a second blur
   // vote which should be sent.

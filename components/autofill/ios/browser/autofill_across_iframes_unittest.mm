@@ -306,7 +306,7 @@ class TestAutofillManager : public BrowserAutofillManager {
     return ask_for_filldata_forms_waiter_.Wait(min_num_awaited_calls);
   }
 
-  [[nodiscard]] testing::AssertionResult WaitOnTextFieldDidChange(
+  [[nodiscard]] testing::AssertionResult WaitOnTextFieldValueChanged(
       int min_num_awaited_calls) {
     return text_field_did_change_forms_waiter_.Wait(min_num_awaited_calls);
   }
@@ -342,11 +342,11 @@ class TestAutofillManager : public BrowserAutofillManager {
                                                  trigger_source);
   }
 
-  void OnTextFieldDidChange(const FormData& form,
-                            const FieldGlobalId& field_id,
-                            const base::TimeTicks timestamp) override {
+  void OnTextFieldValueChanged(const FormData& form,
+                               const FieldGlobalId& field_id,
+                               const base::TimeTicks timestamp) override {
     text_field_did_change_forms_.emplace_back(form);
-    BrowserAutofillManager::OnTextFieldDidChange(form, field_id, timestamp);
+    BrowserAutofillManager::OnTextFieldValueChanged(form, field_id, timestamp);
   }
 
   const std::vector<FormData>& seen_forms() { return seen_forms_; }
@@ -395,7 +395,7 @@ class TestAutofillManager : public BrowserAutofillManager {
 
   TestAutofillManagerWaiter text_field_did_change_forms_waiter_{
       *this,
-      {AutofillManagerEvent::kTextFieldDidChange}};
+      {AutofillManagerEvent::kTextFieldValueChanged}};
 };
 
 // A mock child frame registrar observer.
@@ -1312,12 +1312,12 @@ TEST_F(AutofillAcrossIframesTest, TextChangeOnMultiFrameForm) {
   FormFieldData* name_field =
       GetFieldWithPlaceholder(kNamePlaceholder, &fields);
 
-  main_frame_driver()->TextFieldDidChange(form, name_field->global_id(),
-                                          base::TimeTicks::Now());
+  main_frame_driver()->TextFieldValueChanged(form, name_field->global_id(),
+                                             base::TimeTicks::Now());
 
   // Wait on the main frame form to report itself as having fill data for the
   // entire browser form, across frames.
-  ASSERT_TRUE(main_frame_manager().WaitOnTextFieldDidChange(1));
+  ASSERT_TRUE(main_frame_manager().WaitOnTextFieldValueChanged(1));
   ASSERT_EQ(main_frame_manager().text_filled_did_change_forms().size(), 1u);
 
   // Verify that the form that we ask fill data for represents the browser form

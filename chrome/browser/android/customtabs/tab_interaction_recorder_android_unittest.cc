@@ -39,10 +39,11 @@ using ::autofill::test::CreateTestAddressFormData;
 using ::testing::_;
 using ::testing::NiceMock;
 
-void OnTextFieldDidChangeForAutofillManager(AutofillManager& autofill_manager) {
+void OnTextFieldValueChangedForAutofillManager(
+    AutofillManager& autofill_manager) {
   FormData form = CreateTestAddressFormData();
-  autofill_manager.OnTextFieldDidChange(form, form.fields().front().global_id(),
-                                        base::TimeTicks::Now());
+  autofill_manager.OnTextFieldValueChanged(
+      form, form.fields().front().global_id(), base::TimeTicks::Now());
 }
 
 void OnFormsSeenForAutofillManager(AutofillManager& autofill_manager,
@@ -88,11 +89,11 @@ TEST_F(AutofillObserverImplTest, TestFormInteraction) {
   AutofillObserverImpl observer(id, &autofill_manager(), callback.Get());
 
   EXPECT_CALL(callback, Run(id));
-  OnTextFieldDidChangeForAutofillManager(autofill_manager());
+  OnTextFieldValueChangedForAutofillManager(autofill_manager());
 
   // Observer should no longer get notified after the first interaction.
   EXPECT_CALL(callback, Run(id)).Times(0);
-  OnTextFieldDidChangeForAutofillManager(autofill_manager());
+  OnTextFieldValueChangedForAutofillManager(autofill_manager());
 }
 
 TEST_F(AutofillObserverImplTest, TestNoFormInteraction) {
@@ -168,7 +169,7 @@ TEST_F(TabInteractionRecorderAndroidTest, HadFormInteraction) {
   EXPECT_FALSE(helper->has_form_interactions_in_session());
   EXPECT_EQ(nullptr, FormInteractionData::GetForCurrentDocument(
                    contents->GetPrimaryMainFrame()));
-  OnTextFieldDidChangeForAutofillManager(autofill_manager());
+  OnTextFieldValueChangedForAutofillManager(autofill_manager());
   EXPECT_TRUE(helper->has_form_interactions_in_session());
   EXPECT_TRUE(FormInteractionData::GetForCurrentDocument(
                   contents->GetPrimaryMainFrame())
@@ -186,7 +187,7 @@ TEST_F(TabInteractionRecorderAndroidTest, HadFormInteractionThenNavigation) {
   EXPECT_FALSE(helper->has_form_interactions_in_session());
   EXPECT_EQ(nullptr, FormInteractionData::GetForCurrentDocument(
                          contents->GetPrimaryMainFrame()));
-  OnTextFieldDidChangeForAutofillManager(autofill_manager());
+  OnTextFieldValueChangedForAutofillManager(autofill_manager());
   EXPECT_TRUE(helper->has_form_interactions_in_session());
   EXPECT_TRUE(FormInteractionData::GetForCurrentDocument(
                   contents->GetPrimaryMainFrame())
@@ -254,7 +255,7 @@ TEST_F(TabInteractionRecorderAndroidTest, ResetInteractions) {
   helper->DidGetUserInteraction(blink::WebTouchEvent());
   EXPECT_EQ(nullptr, FormInteractionData::GetForCurrentDocument(
                    contents->GetPrimaryMainFrame()));
-  OnTextFieldDidChangeForAutofillManager(autofill_manager());
+  OnTextFieldValueChangedForAutofillManager(autofill_manager());
   EXPECT_TRUE(FormInteractionData::GetForCurrentDocument(
                   contents->GetPrimaryMainFrame())
                   ->FormInteractionData::GetHasFormInteractionData());

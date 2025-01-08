@@ -158,9 +158,9 @@ class AutofillDriverIOS final : public AutofillDriver,
   void CaretMovedInFormField(const FormData& form,
                              const FieldGlobalId& field_id,
                              const gfx::Rect& caret_bounds);
-  void TextFieldDidChange(const FormData& form,
-                          const FieldGlobalId& field_id,
-                          base::TimeTicks timestamp);
+  void TextFieldValueChanged(const FormData& form,
+                             const FieldGlobalId& field_id,
+                             base::TimeTicks timestamp);
 
   // AutofillDriverIOS:
 

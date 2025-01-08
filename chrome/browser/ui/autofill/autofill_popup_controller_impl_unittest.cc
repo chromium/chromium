@@ -268,7 +268,7 @@ TEST_F(
   };
 
   ShowSuggestions(manager(), {SuggestionType::kAddressEntry},
-                  AutofillSuggestionTriggerSource::kTextFieldDidChange);
+                  AutofillSuggestionTriggerSource::kTextFieldValueChanged);
   assert_popup_interaction_metrics_are_empty();
 
   ShowSuggestions(

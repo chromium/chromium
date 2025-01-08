@@ -380,7 +380,7 @@ TEST_P(ContentPasswordManagerDriverTest, LogFilledFieldTypeMetric) {
 
   driver->FillField(
       u"password",
-      autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange);
+      autofill::AutofillSuggestionTriggerSource::kTextFieldValueChanged);
   histogram_tester.ExpectUniqueSample("Autofill.FilledFieldType.Password",
                                       field_part_of_password_form, 1);
 
@@ -391,7 +391,7 @@ TEST_P(ContentPasswordManagerDriverTest, LogFilledFieldTypeMetric) {
   driver->FillSuggestionById(
       autofill::FieldRendererId(), autofill::FieldRendererId(), u"username",
       u"password",
-      autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange);
+      autofill::AutofillSuggestionTriggerSource::kTextFieldValueChanged);
   histogram_tester.ExpectUniqueSample("Autofill.FilledFieldType.Password",
                                       field_part_of_password_form, 3);
 

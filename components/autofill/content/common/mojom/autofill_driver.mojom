@@ -39,7 +39,9 @@ interface AutofillDriver {
                         FieldRendererId field_id,
                         gfx.mojom.Rect caret_bounds);
 
-  // Notification that a form field's value has changed by a user edit.
+  // Notification that a form field's value has changed by a user edit only
+  // (meaning that JavaScript-triggered changes of values of text fields do not
+  // result in calling this method).
   //
   // Similarly to JavaScript's "input" event, and unlike JavaScript's "change"
   // event, it's fired for each individual alteration of the field.
@@ -49,9 +51,9 @@ interface AutofillDriver {
   //
   // `field_id` must identify a field of `form`. This is enforced by
   // ContentAutofillDriver.
-  TextFieldDidChange(FormData form,
-                     FieldRendererId field_id,
-                     mojo_base.mojom.TimeTicks timestamp);
+  TextFieldValueChanged(FormData form,
+                        FieldRendererId field_id,
+                        mojo_base.mojom.TimeTicks timestamp);
 
   // Notification that editing a text-type input element ended.
   //
@@ -69,10 +71,15 @@ interface AutofillDriver {
 
   // Notification that a form select control has changed.
   //
+  // Fired when the selection in a select control changes because either:
+  // - A user selected a different option.
+  // - JavaScript changed the selected option in a frame with transient user
+  //   activation (see blink::LocalFrame::HasTransientUserActivation).
+  //
   // `field_id` must identify a field of `form`. This is enforced by
   // ContentAutofillDriver.
-  SelectControlDidChange(FormData form,
-                         FieldRendererId field_id);
+  SelectControlSelectionChanged(FormData form,
+                                FieldRendererId field_id);
 
   // Notification that a select element's options were modified.
   SelectFieldOptionsDidChange(FormData form);

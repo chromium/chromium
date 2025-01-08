@@ -848,8 +848,8 @@ bool PasswordAutofillAgent::TextDidChangeInTextField(
     const WebInputElement& element) {
   CHECK(element);
   // Show the popup with the list of available usernames.
-  return ShowSuggestions(element,
-                         AutofillSuggestionTriggerSource::kTextFieldDidChange);
+  return ShowSuggestions(
+      element, AutofillSuggestionTriggerSource::kTextFieldValueChanged);
 }
 
 // LINT.IfChange

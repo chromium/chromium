@@ -88,16 +88,16 @@ class AndroidAutofillProvider : public AutofillProvider,
       const FormData& form,
       const FormFieldData& field,
       AutofillSuggestionTriggerSource /*unused_trigger_source*/) override;
-  void OnTextFieldDidChange(AndroidAutofillManager* manager,
-                            const FormData& form,
-                            const FormFieldData& field,
-                            const base::TimeTicks timestamp) override;
+  void OnTextFieldValueChanged(AndroidAutofillManager* manager,
+                               const FormData& form,
+                               const FormFieldData& field,
+                               const base::TimeTicks timestamp) override;
   void OnTextFieldDidScroll(AndroidAutofillManager* manager,
                             const FormData& form,
                             const FormFieldData& field) override;
-  void OnSelectControlDidChange(AndroidAutofillManager* manager,
-                                const FormData& form,
-                                const FormFieldData& field) override;
+  void OnSelectControlSelectionChanged(AndroidAutofillManager* manager,
+                                       const FormData& form,
+                                       const FormFieldData& field) override;
   void OnFormSubmitted(AndroidAutofillManager* manager,
                        const FormData& form,
                        mojom::SubmissionSource source) override;

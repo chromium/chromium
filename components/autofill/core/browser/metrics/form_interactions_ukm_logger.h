@@ -109,9 +109,9 @@ class FormInteractionsUkmLogger {
       const FormStructure& form,
       const AutofillField& field,
       std::optional<CreditCard::RecordType> record_type = std::nullopt);
-  void LogTextFieldDidChange(ukm::SourceId ukm_source_id,
-                             const FormStructure& form,
-                             const AutofillField& field);
+  void LogTextFieldValueChanged(ukm::SourceId ukm_source_id,
+                                const FormStructure& form,
+                                const AutofillField& field);
   void LogEditedAutofilledFieldAtSubmission(ukm::SourceId ukm_source_id,
                                             const FormStructure& form,
                                             const AutofillField& field);

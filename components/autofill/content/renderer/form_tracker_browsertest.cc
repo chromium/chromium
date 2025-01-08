@@ -90,7 +90,7 @@ TEST_P(FormTrackerTest, FormlessXHRThenHide) {
   GetMainFrame()->NotifyUserActivation(
       blink::mojom::UserActivationNotificationType::kTest);
   ExecuteJavaScriptForTests("document.getElementById('input1').focus();");
-  form_tracker().TextFieldDidChange(input1);
+  form_tracker().TextFieldValueChanged(input1);
 
   task_environment_.RunUntilIdle();
 
@@ -121,7 +121,7 @@ TEST_P(FormTrackerTest, FormlessHideThenXhr) {
   GetMainFrame()->NotifyUserActivation(
       blink::mojom::UserActivationNotificationType::kTest);
   ExecuteJavaScriptForTests("document.getElementById('input1').focus();");
-  form_tracker().TextFieldDidChange(input1);
+  form_tracker().TextFieldValueChanged(input1);
   task_environment_.RunUntilIdle();
 
   ExecuteJavaScriptForTests(

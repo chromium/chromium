@@ -186,7 +186,7 @@ class TestAndroidAutofillManager : public AndroidAutofillManager {
     gfx::Rect caret_bounds(gfx::Point(p.x(), p.y()), gfx::Size(0, 10));
     OnAskForValuesToFillImpl(
         form, field.global_id(), caret_bounds,
-        AutofillSuggestionTriggerSource::kTextFieldDidChange);
+        AutofillSuggestionTriggerSource::kTextFieldValueChanged);
   }
 
   void SimulateOnFocusOnFormField(const FormData& form,
@@ -199,9 +199,10 @@ class TestAndroidAutofillManager : public AndroidAutofillManager {
     OnFormSubmittedImpl(form, source);
   }
 
-  void SimulateOnTextFieldDidChange(const FormData& form,
-                                    const FormFieldData& field) {
-    OnTextFieldDidChangeImpl(form, field.global_id(), base::TimeTicks::Now());
+  void SimulateOnTextFieldValueChanged(const FormData& form,
+                                       const FormFieldData& field) {
+    OnTextFieldValueChangedImpl(form, field.global_id(),
+                                base::TimeTicks::Now());
   }
 
   void SimulateOnTextFieldDidScroll(const FormData& form,
@@ -553,7 +554,7 @@ TEST_F(AndroidAutofillProviderTest, OnAskForValuesToFillOnSameForm) {
 
 // Tests that value changes in the form of the Autofill session are propagated
 // to Java and to the state that `AndroidAutofillProvider` keeps.
-TEST_F(AndroidAutofillProviderTest, OnTextFieldDidChange) {
+TEST_F(AndroidAutofillProviderTest, OnTextFieldValueChanged) {
   FormData form = CreateFormDataForFrame(
       CreateTestPersonalInformationFormData(), main_frame_token());
   android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
@@ -566,8 +567,8 @@ TEST_F(AndroidAutofillProviderTest, OnTextFieldDidChange) {
   EXPECT_CALL(provider_bridge(),
               OnFormFieldDidChange(EqualsFieldInfo(/*index=*/1)));
   test_api(form).field(1).set_value(form.fields()[1].value() + u"x");
-  android_autofill_manager().SimulateOnTextFieldDidChange(form,
-                                                          form.fields()[1]);
+  android_autofill_manager().SimulateOnTextFieldValueChanged(form,
+                                                             form.fields()[1]);
   // The `FormDataAndroid` object owned by the provider is also updated.
   ASSERT_TRUE(test_api(autofill_provider()).form());
   EXPECT_EQ(test_api(autofill_provider()).form()->form().fields()[1].value(),
@@ -576,7 +577,7 @@ TEST_F(AndroidAutofillProviderTest, OnTextFieldDidChange) {
 
 // Tests that value changes in a form that is not part of the current Autofill
 // session are ignored.
-TEST_F(AndroidAutofillProviderTest, OnTextFieldDidChangeInUnrelatedForm) {
+TEST_F(AndroidAutofillProviderTest, OnTextFieldValueChangedInUnrelatedForm) {
   FormData form1 = CreateFormDataForFrame(
       CreateTestPersonalInformationFormData(), main_frame_token());
   FormData form2 = CreateFormDataForFrame(
@@ -591,8 +592,8 @@ TEST_F(AndroidAutofillProviderTest, OnTextFieldDidChangeInUnrelatedForm) {
   // Simulate a value change in a different form.
   EXPECT_CALL(provider_bridge(), OnFormFieldDidChange).Times(0);
   test_api(form2).field(1).set_value(form2.fields()[1].value() + u"x");
-  android_autofill_manager().SimulateOnTextFieldDidChange(form2,
-                                                          form2.fields()[1]);
+  android_autofill_manager().SimulateOnTextFieldValueChanged(form2,
+                                                             form2.fields()[1]);
 }
 
 // Tests that scrolling events in the form of the Autofill session are

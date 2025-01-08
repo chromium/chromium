@@ -241,7 +241,7 @@ TEST_F(AutofillManagerTest, UpdateAndRemoveSameForms) {
 // Tests that events update the form cache. Since there are so many events and
 // so many properties of forms that may change, the test only covers a small
 // fraction:
-// - Events: OnFormsSeen(), OnTextFieldDidChange(), OnFocusOnFormField()
+// - Events: OnFormsSeen(), OnTextFieldValueChanged(), OnFocusOnFormField()
 // - Properties: AutofillField::value(ValueSemantics::kCurrent)
 TEST_F(AutofillManagerTest, FormCacheUpdatesValue) {
   base::test::ScopedFeatureList scoped_feature_list(
@@ -278,13 +278,13 @@ TEST_F(AutofillManagerTest, FormCacheUpdatesValue) {
 
   // Triggers no reparse.
   test_api(form).field(0).set_value(u"first changed value");
-  manager().OnTextFieldDidChange(form, form.fields()[0].global_id(), {});
+  manager().OnTextFieldValueChanged(form, form.fields()[0].global_id(), {});
   ASSERT_TRUE(waiter.Wait());
   EXPECT_EQ(current_cached_value(), u"first changed value");
 
   // Triggers no reparse.
   test_api(form).field(0).set_value(u"second changed value");
-  manager().OnTextFieldDidChange(form, form.fields()[0].global_id(), {});
+  manager().OnTextFieldValueChanged(form, form.fields()[0].global_id(), {});
   ASSERT_TRUE(waiter.Wait());
   EXPECT_EQ(current_cached_value(), u"second changed value");
 
@@ -335,12 +335,12 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   EXPECT_CALL(observer, OnAfterLanguageDetermined).Times(0);
   EXPECT_CALL(observer, OnBeforeFormsSeen).Times(0);
   EXPECT_CALL(observer, OnAfterFormsSeen).Times(0);
-  EXPECT_CALL(observer, OnBeforeTextFieldDidChange).Times(0);
-  EXPECT_CALL(observer, OnAfterTextFieldDidChange).Times(0);
+  EXPECT_CALL(observer, OnBeforeTextFieldValueChanged).Times(0);
+  EXPECT_CALL(observer, OnAfterTextFieldValueChanged).Times(0);
   EXPECT_CALL(observer, OnBeforeTextFieldDidScroll).Times(0);
   EXPECT_CALL(observer, OnAfterTextFieldDidScroll).Times(0);
-  EXPECT_CALL(observer, OnBeforeSelectControlDidChange).Times(0);
-  EXPECT_CALL(observer, OnAfterSelectControlDidChange).Times(0);
+  EXPECT_CALL(observer, OnBeforeSelectControlSelectionChanged).Times(0);
+  EXPECT_CALL(observer, OnAfterSelectControlSelectionChanged).Times(0);
   EXPECT_CALL(observer, OnBeforeDidFillAutofillFormData).Times(0);
   EXPECT_CALL(observer, OnAfterDidFillAutofillFormData).Times(0);
   EXPECT_CALL(observer, OnBeforeAskForValuesToFill).Times(0);
@@ -365,11 +365,11 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   EXPECT_CALL(manager(), OnJavaScriptChangedAutofilledValueImpl)
       .Times(AtLeast(0));
   EXPECT_CALL(manager(), OnFormSubmittedImpl).Times(AtLeast(0));
-  EXPECT_CALL(manager(), OnTextFieldDidChangeImpl).Times(AtLeast(0));
+  EXPECT_CALL(manager(), OnTextFieldValueChangedImpl).Times(AtLeast(0));
   EXPECT_CALL(manager(), OnTextFieldDidScrollImpl).Times(AtLeast(0));
   EXPECT_CALL(manager(), OnAskForValuesToFillImpl).Times(AtLeast(0));
   EXPECT_CALL(manager(), OnFocusOnFormFieldImpl).Times(AtLeast(0));
-  EXPECT_CALL(manager(), OnSelectControlDidChangeImpl).Times(AtLeast(0));
+  EXPECT_CALL(manager(), OnSelectControlSelectionChangedImpl).Times(AtLeast(0));
   EXPECT_CALL(manager(), OnBeforeProcessParsedForms).Times(AtLeast(0));
   EXPECT_CALL(manager(), OnFormProcessed).Times(AtLeast(0));
 
@@ -424,10 +424,11 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   test_api(form).field(-1).set_renderer_id(test::MakeFieldRendererId());
 
   // The form was just changed, which causes a reparse. The reparse is
-  // asynchronous, so OnAfterTextFieldDidChange() is asynchronous, too.
-  EXPECT_CALL(observer, OnBeforeTextFieldDidChange(m, f, ff));
-  manager().OnTextFieldDidChange(form, field.global_id(), {});
-  EXPECT_CALL(observer, OnAfterTextFieldDidChange(m, f, ff, std::u16string()));
+  // asynchronous, so OnAfterTextFieldValueChanged() is asynchronous, too.
+  EXPECT_CALL(observer, OnBeforeTextFieldValueChanged(m, f, ff));
+  manager().OnTextFieldValueChanged(form, field.global_id(), {});
+  EXPECT_CALL(observer,
+              OnAfterTextFieldValueChanged(m, f, ff, std::u16string()));
   EXPECT_CALL(observer, OnFieldTypesDetermined(m, f, heuristics));
   task_environment_.RunUntilIdle();
 

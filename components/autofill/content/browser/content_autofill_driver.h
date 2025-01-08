@@ -280,15 +280,15 @@ class ContentAutofillDriver : public AutofillDriver,
                                         FieldRendererId field_id,
                                         const std::u16string& old_value,
                                         bool formatting_only) override;
-  void SelectControlDidChange(const FormData& form,
-                              FieldRendererId field_id) override;
+  void SelectControlSelectionChanged(const FormData& form,
+                                     FieldRendererId field_id) override;
   void SelectFieldOptionsDidChange(const FormData& form) override;
   void CaretMovedInFormField(const FormData& form,
                              FieldRendererId field_id,
                              const gfx::Rect& caret_bounds) override;
-  void TextFieldDidChange(const FormData& form,
-                          FieldRendererId field_id,
-                          base::TimeTicks timestamp) override;
+  void TextFieldValueChanged(const FormData& form,
+                             FieldRendererId field_id,
+                             base::TimeTicks timestamp) override;
   void TextFieldDidScroll(const FormData& form,
                           FieldRendererId field_id) override;
 

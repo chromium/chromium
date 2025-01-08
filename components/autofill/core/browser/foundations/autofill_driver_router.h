@@ -170,7 +170,7 @@ class AutofillDriverRouter {
       FormData form,
       const FieldGlobalId& field_id,
       const gfx::Rect& caret_bounds);
-  void TextFieldDidChange(
+  void TextFieldValueChanged(
       RoutedCallback<const FormData&, const FieldGlobalId&, base::TimeTicks>
           callback,
       AutofillDriver& source,
@@ -182,7 +182,7 @@ class AutofillDriverRouter {
       AutofillDriver& source,
       FormData form,
       const FieldGlobalId& field_id);
-  void SelectControlDidChange(
+  void SelectControlSelectionChanged(
       RoutedCallback<const FormData&, const FieldGlobalId&> callback,
       AutofillDriver& source,
       FormData form,

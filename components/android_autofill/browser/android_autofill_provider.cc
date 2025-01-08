@@ -394,7 +394,7 @@ void AndroidAutofillProvider::OnShowBottomSheetResult(
   }
 }
 
-void AndroidAutofillProvider::OnTextFieldDidChange(
+void AndroidAutofillProvider::OnTextFieldValueChanged(
     AndroidAutofillManager* manager,
     const FormData& form,
     const FormFieldData& field,
@@ -421,7 +421,7 @@ void AndroidAutofillProvider::OnTextFieldDidScroll(
   bridge_->OnTextFieldDidScroll(field_info);
 }
 
-void AndroidAutofillProvider::OnSelectControlDidChange(
+void AndroidAutofillProvider::OnSelectControlSelectionChanged(
     AndroidAutofillManager* manager,
     const FormData& form,
     const FormFieldData& field) {
