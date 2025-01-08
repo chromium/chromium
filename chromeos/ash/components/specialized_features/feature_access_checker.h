@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/variations/service/variations_service.h"
 
@@ -17,22 +18,22 @@ namespace specialized_features {
 
 // FeatureAccessFailures are the types of failures returned by a
 // FeatureAccessChecker. They indicate which configured checks failed.
-enum class COMPONENT_EXPORT(
-    CHROMEOS_ASH_COMPONENTS_SPECIALIZED_FEATURES) FeatureAccessFailure {
-  kMinValue = 0,
-  kConsentNotAccepted = kMinValue,  // User consent not given
-  kDisabledInSettings,              // Settings toggle is off
-  kFeatureFlagDisabled,             // The feature flag disabled.
-  kFeatureManagementCheckFailed,    // FeatureManagement flag was not enabled.
-  kSecretKeyCheckFailed,            // Secret key required and was not valid.
-  kMantaAccountCapabilitiesCheckFailed,  // Does not have account capabilities
-                                         // for manta, which is a proxy to check
-                                         // user requirements such as the user
-                                         // inferred not to be a minor.
-  kCountryCheckFailed,                   // Device's country is not authorised
-                                         // to use this feature.
-  kMaxValue = kCountryCheckFailed,
-};
+enum class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SPECIALIZED_FEATURES)
+    FeatureAccessFailure {
+      kMinValue = 0,
+      kConsentNotAccepted = kMinValue,  // User consent not given
+      kDisabledInSettings,              // Settings toggle is off
+      kFeatureFlagDisabled,             // The feature flag disabled.
+      kFeatureManagementCheckFailed,  // FeatureManagement flag was not enabled.
+      kSecretKeyCheckFailed,          // Secret key required and was not valid.
+      kAccountCapabilitiesCheckFailed,  // Does not have required account
+                                        // capabilities, which is a proxy to
+                                        // check user requirements such as the
+                                        // user inferred not to be a minor.
+      kCountryCheckFailed,              // Device's country is not authorised
+                                        // to use this feature.
+      kMaxValue = kCountryCheckFailed,
+    };
 
 // EnumSet containing FeatureAccessFailures.
 using FeatureAccessFailureSet = base::EnumSet<FeatureAccessFailure,
@@ -81,13 +82,18 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SPECIALIZED_FEATURES)
   std::optional<SecretKey> secret_key;
   // Allow googlers to override the secret_key check.
   bool allow_google_accounts_skip_secret_key = false;
-  // If set to true, will check if the account has manta account capabilities.
-  // This is used as a proxy to check user capability requirements such as
-  // whether the user is NOT inferred to be a minor.
+  // If not null, it will check if the account has the required account
+  // capabilities. This is used as a proxy to check user capability requirements
+  // such as whether the user is NOT inferred to be a minor.
   // FeatureAccessChecker::Check() will return
-  // kMantaAccountCapabilitiesCheckFailed if this value is set and the secret
-  // key check fails.
-  bool requires_manta_account_capabilities = false;
+  // kAccountCapabilitiesCheckFailed if the return value is not
+  // signin::Tribool::kTrue.
+  // Example usage:
+  // config.capability_func = [](AccountCapabilities capabilities) {
+  //   return capabilities.can_use_manta_service();
+  // };
+  signin::Tribool (*capability_func)(AccountCapabilities capabilities) =
+      nullptr;
 };
 
 // Creates a class to check different dependencies for specialized features.
@@ -95,9 +101,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SPECIALIZED_FEATURES)
     FeatureAccessChecker {
  public:
   // The config determines which dependencies to check.
-  // Buffers referred to by string_views and raw_span in `config` and instance
-  // referred to by `prefs` and `identity_manager` should not be destroyed
-  // before this class is destroyed.
+  // The following objects should not be destroyed before this class is
+  // destroyed:
+  // - Buffers referred to by string_views and raw_span in `config`
+  // - Function pointers in `config`
+  // - The instance referred to by `prefs` and `identity_manager`
   FeatureAccessChecker(FeatureAccessConfig config,
                        PrefService* prefs,
                        signin::IdentityManager* identity_manager,

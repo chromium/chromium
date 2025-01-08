@@ -77,15 +77,15 @@ FeatureAccessFailureSet FeatureAccessChecker::Check() const {
     }
   }
 
-  if (config_.requires_manta_account_capabilities) {
+  if (config_.capability_func != nullptr) {
     if (identity_manager_ == nullptr ||
-        identity_manager_
-                ->FindExtendedAccountInfoByAccountId(
-                    identity_manager_->GetPrimaryAccountId(
-                        signin::ConsentLevel::kSignin))
-                .capabilities.can_use_manta_service() !=
-            signin::Tribool::kTrue) {
-      failures.Put(kMantaAccountCapabilitiesCheckFailed);
+        (config_.capability_func(identity_manager_
+                                     ->FindExtendedAccountInfoByAccountId(
+                                         identity_manager_->GetPrimaryAccountId(
+                                             signin::ConsentLevel::kSignin))
+                                     .capabilities) !=
+         signin::Tribool::kTrue)) {
+      failures.Put(kAccountCapabilitiesCheckFailed);
     }
   }
 

@@ -18,6 +18,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -322,7 +323,9 @@ TEST_F(FeatureAccessCheckerTest, MantaAccountCapabilitiesCheckPass) {
   signin::UpdateAccountInfoForAccount(
       identity_test_environment_.identity_manager(), account);
   FeatureAccessConfig config;
-  config.requires_manta_account_capabilities = true;
+  config.capability_func = [](AccountCapabilities capabilities) {
+    return capabilities.can_use_manta_service();
+  };
 
   EXPECT_THAT(
       base::ToVector(FeatureAccessChecker(config, &pref_, GetIdentityManager(),
@@ -337,26 +340,30 @@ TEST_F(FeatureAccessCheckerTest, MantaAccountCapabilitiesCheckFailIfFalse) {
   AccountCapabilitiesTestMutator mutator(&account.capabilities);
   mutator.set_can_use_manta_service(false);
   FeatureAccessConfig config;
-  config.requires_manta_account_capabilities = true;
+  config.capability_func = [](AccountCapabilities capabilities) {
+    return capabilities.can_use_manta_service();
+  };
 
   EXPECT_THAT(
       base::ToVector(FeatureAccessChecker(config, &pref_, GetIdentityManager(),
                                           variations_service_.get())
                          .Check()),
-      ElementsAre(kMantaAccountCapabilitiesCheckFailed));
+      ElementsAre(kAccountCapabilitiesCheckFailed));
 }
 
 TEST_F(FeatureAccessCheckerTest, MantaAccountCapabilitiesCheckFailIfUnset) {
   identity_test_environment_.MakePrimaryAccountAvailable(
       "someone@gmail.com", signin::ConsentLevel::kSignin);
   FeatureAccessConfig config;
-  config.requires_manta_account_capabilities = true;
+  config.capability_func = [](AccountCapabilities capabilities) {
+    return capabilities.can_use_manta_service();
+  };
 
   EXPECT_THAT(
       base::ToVector(FeatureAccessChecker(config, &pref_, GetIdentityManager(),
                                           variations_service_.get())
                          .Check()),
-      ElementsAre(kMantaAccountCapabilitiesCheckFailed));
+      ElementsAre(kAccountCapabilitiesCheckFailed));
 }
 
 TEST_F(FeatureAccessCheckerTest,
@@ -368,13 +375,15 @@ TEST_F(FeatureAccessCheckerTest,
   signin::UpdateAccountInfoForAccount(
       identity_test_environment_.identity_manager(), account);
   FeatureAccessConfig config;
-  config.requires_manta_account_capabilities = true;
+  config.capability_func = [](AccountCapabilities capabilities) {
+    return capabilities.can_use_manta_service();
+  };
 
   EXPECT_THAT(base::ToVector(FeatureAccessChecker(config, &pref_,
                                                   /*identity_manager=*/nullptr,
                                                   variations_service_.get())
                                  .Check()),
-              ElementsAre(kMantaAccountCapabilitiesCheckFailed));
+              ElementsAre(kAccountCapabilitiesCheckFailed));
 }
 
 TEST_F(FeatureAccessCheckerTest, CountryCodeCheckPassIfNothingInList) {
