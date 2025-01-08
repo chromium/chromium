@@ -22810,6 +22810,25 @@
             ]
         }
     ],
+    "TabstripComboButton": [
+        {
+            "platforms": [
+                "chromeos",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TabstripComboButton"
+                    ]
+                }
+            ]
+        }
+    ],
     "TabstripDeclutter": [
         {
             "platforms": [
