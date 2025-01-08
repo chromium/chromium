@@ -9,6 +9,9 @@ if (is_linux) {
   import("//build/linux/strip_binary.gni")
 }
 import("//build/util/lastchange.gni")
+if (is_win) {
+  import("//build/util/process_version.gni")
+}
 import("//testing/test.gni")
 import("//third_party/ffmpeg/ffmpeg_options.gni")
 import("//ui/webui/resources/tools/minify_js.gni")
@@ -451,6 +454,10 @@ if (is_linux) {
     if (is_mac && is_component_ffmpeg) {
       ldflags = [ "-Wl,-rpath,@executable_path/." ]
     }
+
+    if (is_win) {
+      deps += [ ":chromedriver_server_version" ]
+    }
   }
 }
 
@@ -458,6 +465,19 @@ if (is_mac) {
   buildflag_header("buildflags") {
     header = "buildflags.h"
     flags = [ "CHROMEDRIVER_DISCLAIM_RESPONSIBILITY=$chromedriver_disclaim_responsibility" ]
+  }
+}
+
+if (is_win) {
+  process_version("chromedriver_server_version") {
+    output = "$target_gen_dir/chromedriver_server_version.rc"
+    sources = [
+      "//chrome/VERSION",
+      "chromedriver_server_exe.ver",
+      "constants/BRANDING",
+      lastchange_file,
+    ]
+    template_file = "//chrome/app/chrome_version.rc.version"
   }
 }
 
