@@ -99,7 +99,8 @@ CREATE PERFETTO TABLE chrome_event_latencies(
   buffer_available_timestamp LONG,
   -- Timestamp of the BufferReadyToLatch substage.
   buffer_ready_timestamp LONG,
-  -- Timestamp of the LatchToSwapEnd substage.
+  -- Timestamp of the LatchToSwapEnd substage (or LatchToPresentation as a
+  -- fallback).
   latch_timestamp LONG,
   -- Timestamp of the SwapEndToPresentationCompositorFrame substage.
   swap_end_timestamp LONG,
@@ -129,7 +130,10 @@ SELECT
     AS buffer_available_timestamp,
   _descendant_slice_begin(slice.id, 'BufferReadyToLatch')
     AS buffer_ready_timestamp,
-  _descendant_slice_begin(slice.id, 'LatchToSwapEnd') AS latch_timestamp,
+  COALESCE(
+    _descendant_slice_begin(slice.id, 'LatchToSwapEnd'),
+    _descendant_slice_begin(slice.id, 'LatchToPresentation')
+  ) AS latch_timestamp,
   _descendant_slice_begin(slice.id, 'SwapEndToPresentationCompositorFrame')
     AS swap_end_timestamp,
   _get_presentation_timestamp(slice.id) AS presentation_timestamp

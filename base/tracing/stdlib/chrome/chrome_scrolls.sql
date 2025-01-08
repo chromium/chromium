@@ -361,7 +361,6 @@ SELECT
   chrome_event_latency.buffer_available_timestamp,
   chrome_event_latency.buffer_ready_timestamp,
   chrome_event_latency.latch_timestamp,
-  chrome_event_latency.swap_end_timestamp,
   chrome_event_latency.presentation_timestamp
 FROM _chrome_scroll_update_refs refs
 LEFT JOIN chrome_event_latencies chrome_event_latency
@@ -490,12 +489,10 @@ CREATE PERFETTO TABLE chrome_scroll_update_frame_info(
   viz_swap_buffers_to_latch_dur DURATION,
   -- Timestamp for `EventLatency`'s `LatchToSwapEnd` step.
   latch_timestamp TIMESTAMP,
-  -- Duration of `EventLatency`'s `LatchToSwapEnd` step.
-  viz_latch_to_swap_end_dur DURATION,
-  -- Timestamp for `EventLatency`'s `SwapEndToPresentationCompositorFrame` step.
-  swap_end_timestamp TIMESTAMP,
-  -- Duration of `EventLatency`'s `SwapEndToPresentationCompositorFrame` step.
-  swap_end_to_presentation_dur DURATION,
+  -- Duration of either `EventLatency`'s `LatchToSwapEnd` +
+  -- `SwapEndToPresentationCompositorFrame` steps or its `LatchToPresentation`
+  -- step.
+  viz_latch_to_presentation_dur DURATION,
   -- Presentation timestamp for the frame.
   presentation_timestamp TIMESTAMP
 ) AS
@@ -556,7 +553,6 @@ processed_timestamps_and_metadata AS (
     -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
     -- Timestamps
     latch_timestamp,
-    swap_end_timestamp,
     presentation_timestamp
   FROM _scroll_update_frame_timestamps_and_metadata
 )
@@ -621,10 +617,7 @@ SELECT
   latch_timestamp - viz_swap_buffers_end_ts AS viz_swap_buffers_to_latch_dur,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   latch_timestamp,
-  swap_end_timestamp - latch_timestamp AS viz_latch_to_swap_end_dur,
-  -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-  swap_end_timestamp,
-  presentation_timestamp - swap_end_timestamp AS swap_end_to_presentation_dur,
+  presentation_timestamp - latch_timestamp AS viz_latch_to_presentation_dur,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   presentation_timestamp
 FROM processed_timestamps_and_metadata;
@@ -847,12 +840,10 @@ CREATE PERFETTO TABLE chrome_scroll_update_info(
   viz_swap_buffers_to_latch_dur DURATION,
   -- Timestamp for `EventLatency`'s `LatchToSwapEnd` step.
   latch_timestamp TIMESTAMP,
-  -- Duration of `EventLatency`'s `LatchToSwapEnd` step.
-  viz_latch_to_swap_end_dur DURATION,
-  -- Timestamp for `EventLatency`'s `SwapEndToPresentationCompositorFrame` step.
-  swap_end_timestamp TIMESTAMP,
-  -- Duration of `EventLatency`'s `SwapEndToPresentationCompositorFrame` step.
-  swap_end_to_presentation_dur DURATION,
+  -- Duration of either `EventLatency`'s `LatchToSwapEnd` +
+  -- `SwapEndToPresentationCompositorFrame` steps or its `LatchToPresentation`
+  -- step.
+  viz_latch_to_presentation_dur DURATION,
   -- Presentation timestamp for the frame.
   presentation_timestamp TIMESTAMP)
 AS
@@ -967,10 +958,7 @@ SELECT
   frame.viz_swap_buffers_to_latch_dur,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   frame.latch_timestamp,
-  frame.viz_latch_to_swap_end_dur,
-  -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-  frame.swap_end_timestamp,
-  frame.swap_end_to_presentation_dur,
+  frame.viz_latch_to_presentation_dur,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   frame.presentation_timestamp
 FROM chrome_scroll_update_input_info AS input
@@ -1078,14 +1066,9 @@ AS (
     'viz_swap_buffers_to_latch_dur'
   ),
   (
-    'VizLatchToSwapEnd',
+    'VizLatchToPresentation',
     'latch_timestamp',
-    'viz_latch_to_swap_end_dur'
-  ),
-  (
-    'VizSwapEndToPresentation',
-    'swap_end_timestamp',
-    'swap_end_to_presentation_dur'
+    'viz_latch_to_presentation_dur'
   ),
   (
     'Presentation',
