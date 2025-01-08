@@ -172,6 +172,13 @@ PerformanceManagerImpl::~PerformanceManagerImpl() {
 }
 
 // static
+GraphImpl* PerformanceManagerImpl::GetGraphImpl() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK(g_pm_is_available);
+  return &g_performance_manager->graph_;
+}
+
+// static
 void PerformanceManagerImpl::CallOnGraphImpl(const base::Location& from_here,
                                              base::OnceClosure callback) {
   DCHECK(callback);

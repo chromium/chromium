@@ -27,6 +27,11 @@ PerformanceManager::PerformanceManager() = default;
 PerformanceManager::~PerformanceManager() = default;
 
 // static
+Graph* PerformanceManager::GetGraph() {
+  return PerformanceManagerImpl::GetGraphImpl();
+}
+
+// static
 void PerformanceManager::CallOnGraph(const base::Location& from_here,
                                      base::OnceClosure callback) {
   DCHECK(callback);

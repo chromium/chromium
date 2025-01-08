@@ -54,6 +54,9 @@ class PerformanceManagerImpl : public PerformanceManager {
 
   ~PerformanceManagerImpl() override;
 
+  // Same as GetGraph(), but returns a GraphImpl*.
+  static GraphImpl* GetGraphImpl();
+
   // Posts a callback that will run on the PM sequence. Valid to call from any
   // sequence.
   //
