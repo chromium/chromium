@@ -414,6 +414,10 @@ void AppTestHelper::FirstTaskRun() {
                       WithSystemScope(Wrap(&RegisterAppByValue)))},
           {"check_for_update",
            (WithSwitch("app_id", WithSystemScope(Wrap(&CheckForUpdate))))},
+          {"expect_check_for_update_opposite_scope_fails",
+           (WithSwitch("app_id",
+                       WithSystemScope(
+                           Wrap(&ExpectCheckForUpdateOppositeScopeFails))))},
           {"update_all", WithSystemScope(Wrap(&UpdateAll))},
           {"get_app_states", WithSwitch("expected_app_states",
                                         WithSystemScope(Wrap(&GetAppStates)))},

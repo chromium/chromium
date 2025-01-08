@@ -240,6 +240,11 @@ void Update(UpdaterScope scope,
 // app.
 void CheckForUpdate(UpdaterScope scope, const std::string& app_id);
 
+// Invokes UpdateService::CheckForUpdate (via RPC) for the opposite scope of the
+// given `scope` and `app_id`.
+void ExpectCheckForUpdateOppositeScopeFails(UpdaterScope scope,
+                                            const std::string& app_id);
+
 // Invokes the active instance's UpdateService::UpdateAll (via RPC).
 void UpdateAll(UpdaterScope scope);
 

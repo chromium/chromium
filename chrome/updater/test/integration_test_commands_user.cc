@@ -297,6 +297,12 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::CheckForUpdate(updater_scope_, app_id);
   }
 
+  void ExpectCheckForUpdateOppositeScopeFails(
+      const std::string& app_id) const override {
+    updater::test::ExpectCheckForUpdateOppositeScopeFails(updater_scope_,
+                                                          app_id);
+  }
+
   void Update(const std::string& app_id,
               const std::string& install_data_index) const override {
     updater::test::Update(updater_scope_, app_id, install_data_index);

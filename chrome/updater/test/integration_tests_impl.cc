@@ -902,6 +902,26 @@ void CheckForUpdate(UpdaterScope scope, const std::string& app_id) {
   loop.Run();
 }
 
+void ExpectCheckForUpdateOppositeScopeFails(UpdaterScope scope,
+                                            const std::string& app_id) {
+  scoped_refptr<UpdateService> update_service = CreateUpdateServiceProxy(
+      IsSystemInstall(scope) ? UpdaterScope::kUser : UpdaterScope::kSystem);
+  base::RunLoop loop;
+  UpdateService::Result result = UpdateService::Result::kSuccess;
+  update_service->CheckForUpdate(
+      app_id, UpdateService::Priority::kForeground,
+      UpdateService::PolicySameVersionUpdate::kNotAllowed,
+      /*language=*/{}, base::DoNothing(),
+      base::BindLambdaForTesting([&](UpdateService::Result result_param) {
+        result = result_param;
+        loop.Quit();
+      }));
+  loop.Run();
+  ASSERT_TRUE(result == UpdateService::Result::kServiceFailed ||
+              result == UpdateService::Result::kIPCConnectionFailed)
+      << "result == " << result;
+}
+
 void Update(UpdaterScope scope,
             const std::string& app_id,
             const std::string& install_data_index) {

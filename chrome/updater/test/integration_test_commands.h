@@ -143,6 +143,8 @@ class IntegrationTestCommands
 
   virtual void RegisterApp(const RegistrationRequest& registration) const = 0;
   virtual void CheckForUpdate(const std::string& app_id) const = 0;
+  virtual void ExpectCheckForUpdateOppositeScopeFails(
+      const std::string& app_id) const = 0;
   virtual void Update(const std::string& app_id,
                       const std::string& install_data_index) const = 0;
   virtual void UpdateAll() const = 0;

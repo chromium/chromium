@@ -375,6 +375,12 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     RunCommand("check_for_update", {Param("app_id", app_id)});
   }
 
+  void ExpectCheckForUpdateOppositeScopeFails(
+      const std::string& app_id) const override {
+    RunCommand("expect_check_for_update_opposite_scope_fails",
+               {Param("app_id", app_id)});
+  }
+
   void Update(const std::string& app_id,
               const std::string& install_data_index) const override {
     RunCommand("update", {Param("app_id", app_id),
