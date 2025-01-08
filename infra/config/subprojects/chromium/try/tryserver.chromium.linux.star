@@ -866,9 +866,6 @@ try_.builder(
     ssd = True,
     contact_team_email = "chrome-build-team@google.com",
     execution_timeout = 6 * time.hour,
-    properties = {
-        "siso_args": ["-k", "0"],
-    },
 )
 
 try_.builder(
