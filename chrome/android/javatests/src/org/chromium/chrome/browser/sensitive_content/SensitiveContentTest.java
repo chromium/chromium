@@ -31,7 +31,6 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
-import org.chromium.base.test.util.DisableIf;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -44,6 +43,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -157,13 +157,10 @@ public class SensitiveContentTest {
                 getContentViewOfCurrentTab().getContentSensitivity(),
                 View.CONTENT_SENSITIVITY_SENSITIVE);
 
-        PageStation page =
-                mPage.loadPageProgrammatically(
-                        mTestServer.getURL(SENSITIVE_FILE), WebPageStation.newBuilder());
+        PageStation page = mPage.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
         waitForContentSensitivity(getContentViewOfCurrentTab(), View.CONTENT_SENSITIVITY_SENSITIVE);
 
-        page.loadPageProgrammatically(
-                mTestServer.getURL(NOT_SENSITIVE_FILE), WebPageStation.newBuilder());
+        page.loadWebPageProgrammatically(mTestServer.getURL(NOT_SENSITIVE_FILE));
         waitForContentSensitivity(
                 getContentViewOfCurrentTab(), View.CONTENT_SENSITIVITY_NOT_SENSITIVE);
     }
@@ -186,23 +183,18 @@ public class SensitiveContentTest {
         ThreadUtils.runOnUiThreadBlocking(() -> client.addObserver(observer));
 
         assertFalse(observer.getContentSensitivity());
-        PageStation page =
-                mPage.loadPageProgrammatically(
-                        mTestServer.getURL(SENSITIVE_FILE), WebPageStation.newBuilder());
+        PageStation page = mPage.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
         waitForContentSensitivity(getContentViewOfCurrentTab(), View.CONTENT_SENSITIVITY_SENSITIVE);
         assertTrue(observer.getContentSensitivity());
 
-        page =
-                page.loadPageProgrammatically(
-                        mTestServer.getURL(NOT_SENSITIVE_FILE), WebPageStation.newBuilder());
+        page = page.loadWebPageProgrammatically(mTestServer.getURL(NOT_SENSITIVE_FILE));
         waitForContentSensitivity(
                 getContentViewOfCurrentTab(), View.CONTENT_SENSITIVITY_NOT_SENSITIVE);
         assertFalse(observer.getContentSensitivity());
 
         // After observation is removed, the observer will not be notified anymore.
         ThreadUtils.runOnUiThreadBlocking(() -> client.removeObserver(observer));
-        page.loadPageProgrammatically(
-                mTestServer.getURL(SENSITIVE_FILE), WebPageStation.newBuilder());
+        page.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
         waitForContentSensitivity(getContentViewOfCurrentTab(), View.CONTENT_SENSITIVITY_SENSITIVE);
         assertFalse(observer.getContentSensitivity());
     }
@@ -210,8 +202,7 @@ public class SensitiveContentTest {
     @Test
     @MediumTest
     public void testSwapViewAndroidDelegate() {
-        mPage.loadPageProgrammatically(
-                mTestServer.getURL(SENSITIVE_FILE), WebPageStation.newBuilder());
+        mPage.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
         pollUiThread(
                 () ->
                         getContentViewOfCurrentTab().getContentSensitivity()
@@ -255,14 +246,11 @@ public class SensitiveContentTest {
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
         assertFalse(tab.getTabHasSensitiveContent());
 
-        PageStation page =
-                mPage.loadPageProgrammatically(
-                        mTestServer.getURL(SENSITIVE_FILE), WebPageStation.newBuilder());
+        PageStation page = mPage.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
         waitForContentSensitivity(getContentViewOfCurrentTab(), View.CONTENT_SENSITIVITY_SENSITIVE);
         assertTrue(tab.getTabHasSensitiveContent());
 
-        page.loadPageProgrammatically(
-                mTestServer.getURL(NOT_SENSITIVE_FILE), WebPageStation.newBuilder());
+        page.loadWebPageProgrammatically(mTestServer.getURL(NOT_SENSITIVE_FILE));
         waitForContentSensitivity(
                 getContentViewOfCurrentTab(), View.CONTENT_SENSITIVITY_NOT_SENSITIVE);
         assertFalse(tab.getTabHasSensitiveContent());
@@ -280,9 +268,7 @@ public class SensitiveContentTest {
         PageStation page = mPage.openNewTabFast();
         final Tab secondTab = page.getLoadedTab();
         // Load sensitive content only into the second tab.
-        page =
-                page.loadPageProgrammatically(
-                        mTestServer.getURL(SENSITIVE_FILE), WebPageStation.newBuilder());
+        page = page.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
         pollUiThread(() -> secondTab.getTabHasSensitiveContent());
         // Open the tab switcher.
         RegularTabSwitcherStation regularTabSwitcher = page.openRegularTabSwitcher();
@@ -324,9 +310,7 @@ public class SensitiveContentTest {
         page = page.openNewIncognitoTabFast();
         final Tab secondIncognitoTab = page.getLoadedTab();
         // Load sensitive content only into the second incognito tab.
-        page =
-                page.loadPageProgrammatically(
-                        mTestServer.getURL(SENSITIVE_FILE), WebPageStation.newBuilder());
+        page = page.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
         pollUiThread(() -> secondIncognitoTab.getTabHasSensitiveContent());
         // Open the incognito tab switcher.
         IncognitoTabSwitcherStation incognitoTabSwitcher = page.openIncognitoTabSwitcher();
@@ -362,9 +346,7 @@ public class SensitiveContentTest {
         PageStation page = mPage.openNewTabFast();
         final Tab secondTab = page.getLoadedTab();
         // Load sensitive content only into the second tab.
-        page =
-                page.loadPageProgrammatically(
-                        mTestServer.getURL(SENSITIVE_FILE), WebPageStation.newBuilder());
+        page = page.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
         pollUiThread(() -> secondTab.getTabHasSensitiveContent());
         // Group the tabs.
         TabUiTestHelper.createTabGroup(
@@ -391,9 +373,7 @@ public class SensitiveContentTest {
         page = page.openNewIncognitoTabFast();
         final Tab secondIncognitoTab = page.getLoadedTab();
         // Load sensitive content only into the second incognito tab.
-        page =
-                page.loadPageProgrammatically(
-                        mTestServer.getURL(SENSITIVE_FILE), WebPageStation.newBuilder());
+        page = page.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
         pollUiThread(() -> secondIncognitoTab.getTabHasSensitiveContent());
         // Group the incognito tabs.
         TabUiTestHelper.createTabGroup(
@@ -422,9 +402,7 @@ public class SensitiveContentTest {
                 HistogramWatcher.newSingleRecordWatcher(histogram, /* contentIsSensitive= */ true);
         // Load sensitive content only into the first tab.
         final Tab firstTab = mPage.getLoadedTab();
-        PageStation page =
-                mPage.loadPageProgrammatically(
-                        mTestServer.getURL(SENSITIVE_FILE), WebPageStation.newBuilder());
+        PageStation page = mPage.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
         pollUiThread(() -> firstTab.getTabHasSensitiveContent());
         // Open a second tab.
         page = page.openNewTabFast();
@@ -461,9 +439,7 @@ public class SensitiveContentTest {
         page = page.openNewTabFast();
         final Tab thirdTab = page.getLoadedTab();
         // Load sensitive content into the third tab.
-        page =
-                page.loadPageProgrammatically(
-                        mTestServer.getURL(SENSITIVE_FILE), WebPageStation.newBuilder());
+        page = page.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
         pollUiThread(() -> thirdTab.getTabHasSensitiveContent());
         // Open a fourth tab.
         page.openNewTabFast();
@@ -601,9 +577,7 @@ public class SensitiveContentTest {
         // Create a new tab.
         PageStation page = mPage.openNewTabFast();
         final Tab secondTabBeforeFreeze = page.getLoadedTab();
-        page =
-                page.loadPageProgrammatically(
-                        mTestServer.getURL(SENSITIVE_FILE), WebPageStation.newBuilder());
+        page = page.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
         pollUiThread(() -> secondTabBeforeFreeze.getTabHasSensitiveContent());
 
         // Save the state of the second tab (the only tab with sensitive content).
