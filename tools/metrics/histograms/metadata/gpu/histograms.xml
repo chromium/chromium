@@ -646,16 +646,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="GPU.DirectComposition.DcompDeviceCreateSurface" enum="Hresult"
-    expires_after="2024-11-03">
-  <owner>magchen@chromium.org</owner>
-  <owner>zmo@chromium.org</owner>
-  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
-  <summary>
-    HRESULT return value of IDCompositionDevice2::CreateSurface.
-  </summary>
-</histogram>
-
 <histogram name="GPU.DirectComposition.HardwareOverlaysSupported"
     enum="BooleanOverlaySupported" expires_after="2025-06-08">
   <owner>magchen@chromium.org</owner>

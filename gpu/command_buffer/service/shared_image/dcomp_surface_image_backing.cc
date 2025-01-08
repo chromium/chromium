@@ -200,8 +200,7 @@ std::unique_ptr<DCompSurfaceImageBacking> DCompSurfaceImageBacking::Create(
       SkAlphaTypeIsOpaque(alpha_type) ? DXGI_ALPHA_MODE_IGNORE
                                       : DXGI_ALPHA_MODE_PREMULTIPLIED,
       &dcomp_surface);
-  base::UmaHistogramSparse("GPU.DirectComposition.DcompDeviceCreateSurface",
-                           hr);
+
   if (FAILED(hr)) {
     DLOG(ERROR) << "CreateSurface failed: "
                 << logging::SystemErrorCodeToString(hr);
