@@ -85,6 +85,14 @@ bool PLATFORM_EXPORT
 ApproximatelyEqualSkColorSpaces(sk_sp<SkColorSpace> src_color_space,
                                 sk_sp<SkColorSpace> dst_color_space);
 
+// Temporary utility while converting canvas code to use gfx::ColorSpace.
+// TODO(crbug.com/371227617): Remove this once conversion is complete.
+inline gfx::ColorSpace SkColorSpaceToGfxColorSpace(
+    sk_sp<SkColorSpace> sk_color_space) {
+  return sk_color_space ? gfx::ColorSpace(*sk_color_space)
+                        : gfx::ColorSpace::CreateSRGB();
+}
+
 // Skia has problems when passed infinite, etc floats, filter them to 0.
 inline SkScalar WebCoreFloatToSkScalar(float f) {
   return SkFloatToScalar(std::isfinite(f) ? f : 0);

@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
+#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/instrumentation/canvas_memory_dump_provider.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
@@ -103,12 +104,6 @@ namespace {
 BASE_FEATURE(kCanvasAllowCRPSharedBitmapWithGPUCompositing,
              "CanvasAllowCRPSharedBitmapWithGPUCompositing",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-gfx::ColorSpace SkColorSpaceToGfxColorSpace(
-    sk_sp<SkColorSpace> sk_color_space) {
-  return sk_color_space ? gfx::ColorSpace(*sk_color_space)
-                        : gfx::ColorSpace::CreateSRGB();
-}
 
 bool IsGMBAllowed(gfx::Size size,
                   viz::SharedImageFormat format,
