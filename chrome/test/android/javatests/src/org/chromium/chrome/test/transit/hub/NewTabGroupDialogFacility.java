@@ -83,7 +83,7 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
 
     @Override
     public void declareElements(Elements.Builder elements) {
-        elements.declareView(DIALOG);
+        elements.declareView(DIALOG, ViewElement.displayingAtLeastOption(80));
         elements.declareView(DIALOG_TITLE);
 
         String inputElementId = "Tab group title input showing " + mTitle;
