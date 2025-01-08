@@ -3610,6 +3610,7 @@ EXPORTS
     ?RawSetStderrThreshold@log_internal@absl@@YAXW4LogSeverityAtLeast@2@@Z
     ?Read1To3@MixingHashState@hash_internal@absl@@CAIPBEI@Z
     ?Read4To8@MixingHashState@hash_internal@absl@@CA_KPBEI@Z
+    ?Read8@MixingHashState@hash_internal@absl@@CA_KPBE@Z
     ?Read9To16@MixingHashState@hash_internal@absl@@CA?AU?$pair@_K_K@__Cr@std@@PBEI@Z
     ?Read@CordRepBtreeNavigator@cord_internal@absl@@QAE?AUReadResult@123@II@Z
     ?Read@CordRepBtreeReader@cord_internal@absl@@QAE?AV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@IIAAPAUCordRep@23@@Z

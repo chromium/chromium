@@ -330,7 +330,8 @@ class ABSL_ATTRIBUTE_VIEW Span {
   //
   // Returns a reference to the i'th element of this span.
   constexpr reference operator[](size_type i) const noexcept {
-    return ABSL_HARDENING_ASSERT(i < size()), ptr_[i];
+    ABSL_HARDENING_ASSERT(i < size());
+    return ptr_[i];
   }
 
   // Span::at()
@@ -349,7 +350,8 @@ class ABSL_ATTRIBUTE_VIEW Span {
   // Returns a reference to the first element of this span. The span must not
   // be empty.
   constexpr reference front() const noexcept {
-    return ABSL_HARDENING_ASSERT(size() > 0), *data();
+    ABSL_HARDENING_ASSERT(size() > 0);
+    return *data();
   }
 
   // Span::back()
@@ -357,7 +359,8 @@ class ABSL_ATTRIBUTE_VIEW Span {
   // Returns a reference to the last element of this span. The span must not
   // be empty.
   constexpr reference back() const noexcept {
-    return ABSL_HARDENING_ASSERT(size() > 0), *(data() + size() - 1);
+    ABSL_HARDENING_ASSERT(size() > 0);
+    return *(data() + size() - 1);
   }
 
   // Span::begin()
@@ -727,8 +730,8 @@ constexpr Span<T> MakeSpan(absl::Nullable<T*> ptr, size_t size) noexcept {
 
 template <int&... ExplicitArgumentBarrier, typename T>
 Span<T> MakeSpan(absl::Nullable<T*> begin, absl::Nullable<T*> end) noexcept {
-  return ABSL_HARDENING_ASSERT(begin <= end),
-         Span<T>(begin, static_cast<size_t>(end - begin));
+  ABSL_HARDENING_ASSERT(begin <= end);
+  return Span<T>(begin, static_cast<size_t>(end - begin));
 }
 
 template <int&... ExplicitArgumentBarrier, typename C>
@@ -775,7 +778,8 @@ constexpr Span<const T> MakeConstSpan(absl::Nullable<T*> ptr,
 template <int&... ExplicitArgumentBarrier, typename T>
 Span<const T> MakeConstSpan(absl::Nullable<T*> begin,
                             absl::Nullable<T*> end) noexcept {
-  return ABSL_HARDENING_ASSERT(begin <= end), Span<const T>(begin, end - begin);
+  ABSL_HARDENING_ASSERT(begin <= end);
+  return Span<const T>(begin, end - begin);
 }
 
 template <int&... ExplicitArgumentBarrier, typename C>

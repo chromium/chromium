@@ -281,4 +281,26 @@ ABSL_NAMESPACE_END
 #define ABSL_NULLABILITY_COMPATIBLE
 #endif
 
+// ABSL_NONNULL
+// ABSL_NULLABLE
+// ABSL_NULLABILITY_UNKNOWN
+//
+// These macros are analogues of the alias template nullability annotations
+// above.
+//
+// Example:
+// int* ABSL_NULLABLE foo;
+// Is equivalent to:
+// absl::Nullable<int*> foo;
+#if defined(__clang__) && !defined(__OBJC__) && \
+    ABSL_HAVE_FEATURE(nullability_on_classes)
+#define ABSL_NONNULL _Nonnull
+#define ABSL_NULLABLE _Nullable
+#define ABSL_NULLABILITY_UNKNOWN _Null_unspecified
+#else
+#define ABSL_NONNULL
+#define ABSL_NULLABLE
+#define ABSL_NULLABILITY_UNKNOWN
+#endif
+
 #endif  // ABSL_BASE_NULLABILITY_H_

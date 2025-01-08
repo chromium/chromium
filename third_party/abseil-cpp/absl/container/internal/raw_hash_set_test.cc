@@ -2478,6 +2478,10 @@ TYPED_TEST(SooTest, IterationOrderChangesByInstance) {
 }
 
 TYPED_TEST(SooTest, IterationOrderChangesOnRehash) {
+#ifdef ABSL_HAVE_ADDRESS_SANITIZER
+  GTEST_SKIP() << "Hash quality is lower in asan mode, causing flakiness.";
+#endif
+
   // We test different sizes with many small numbers, because small table
   // resize has a different codepath.
   // Note: iteration order for size() <= 1 is always the same.
@@ -3719,6 +3723,16 @@ TEST(Table, MovedFromCallsFail) {
     // NOLINTNEXTLINE(bugprone-use-after-move)
     EXPECT_DEATH_IF_SUPPORTED(t1.contains(1), "moved-from");
     t1.clear();  // Clearing a moved-from table is allowed.
+  }
+  {
+    // Test that using a table (t3) that was moved-to from a moved-from table
+    // (t1) fails.
+    ABSL_ATTRIBUTE_UNUSED IntTable t1, t2, t3;
+    t1.insert(1);
+    t2 = std::move(t1);
+    // NOLINTNEXTLINE(bugprone-use-after-move)
+    t3 = std::move(t1);
+    EXPECT_DEATH_IF_SUPPORTED(t3.contains(1), "moved-from");
   }
 }
 

@@ -192,6 +192,8 @@ set(ABSL_INTERNAL_DLL_FILES
   "log/internal/proto.cc"
   "log/internal/strip.h"
   "log/internal/structured.h"
+  "log/internal/structured_proto.cc"
+  "log/internal/structured_proto.h"
   "log/internal/vlog_config.cc"
   "log/internal/vlog_config.h"
   "log/internal/voidify.h"

@@ -202,6 +202,31 @@ absl_source_set("structured") {
   ]
 }
 
+absl_source_set("structured_proto") {
+  testonly = true
+  sources = [ "structured_proto.cc" ]
+  public = [ "structured_proto.h" ]
+  visibility = [ "//third_party/abseil-cpp/absl/log/*" ]
+  deps = [
+    ":proto",
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/strings",
+    "//third_party/abseil-cpp/absl/types:span",
+    "//third_party/abseil-cpp/absl/types:variant",
+  ]
+}
+
+absl_test("structured_proto_test") {
+  sources = [ "structured_proto_test.cc" ]
+  deps = [
+    ":structured_proto",
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/strings:string_view",
+    "//third_party/abseil-cpp/absl/types:span",
+    "//third_party/abseil-cpp/absl/utility",
+  ]
+}
+
 absl_source_set("test_actions") {
   testonly = true
   sources = [ "test_actions.cc" ]
