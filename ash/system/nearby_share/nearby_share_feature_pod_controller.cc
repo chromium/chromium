@@ -178,6 +178,11 @@ void NearbyShareFeaturePodController::OnHighVisibilityEnabledChanged(
   UpdateButton(enabled);
 }
 
+void NearbyShareFeaturePodController::OnNearbyShareEnabledChanged(
+    bool enabled) {
+  UpdateQSv2Button();
+}
+
 void NearbyShareFeaturePodController::OnVisibilityChanged(
     ::nearby_share::mojom::Visibility visibility) {
   UpdateQSv2Button();

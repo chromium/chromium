@@ -44,6 +44,7 @@ class MockSettingsOpener : public NearbyShareDelegateImpl::SettingsOpener {
 class MockNearbyShareController : public ash::NearbyShareController {
  public:
   MOCK_METHOD(void, HighVisibilityEnabledChanged, (bool), (override));
+  MOCK_METHOD(void, NearbyShareEnabledChanged, (bool), (override));
   MOCK_METHOD(void,
               VisibilityChanged,
               (::nearby_share::mojom::Visibility),
@@ -75,6 +76,10 @@ class NearbyShareDelegateImplTest : public ::testing::Test {
       high_visibility_on_ = high_visibility_on;
       delegate_->OnHighVisibilityChanged(high_visibility_on);
     }
+  }
+
+  void SetNearbyShareEnabled(bool enabled) {
+    delegate_->OnEnabledChanged(enabled);
   }
 
   void SetUp() override {
@@ -230,6 +235,17 @@ TEST_F(NearbyShareDelegateImplTest, ShowNearbyShareSettings) {
   EXPECT_CALL(*settings_opener_, ShowSettingsPage(_));
 
   delegate_->ShowNearbyShareSettings();
+}
+
+TEST_F(NearbyShareDelegateImplTest,
+       ExpectControllerObservation_OnNearbyShareToggled) {
+  EXPECT_CALL(controller_, NearbyShareEnabledChanged(true));
+  settings()->SetEnabled(true);
+  SetNearbyShareEnabled(true);
+
+  EXPECT_CALL(controller_, NearbyShareEnabledChanged(false));
+  settings()->SetEnabled(false);
+  SetNearbyShareEnabled(false);
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

@@ -136,9 +136,9 @@ void NearbyShareDelegateImpl::SetNearbyShareSettingsForTest(
 }
 
 // In Quick Share v1, not used.
-// In Quick Share v2, Quick Share should always be 'enabled', though visibility
-// may be set to Hidden.
-void NearbyShareDelegateImpl::OnEnabledChanged(bool enabled) {}
+void NearbyShareDelegateImpl::OnEnabledChanged(bool enabled) {
+  nearby_share_controller_->NearbyShareEnabledChanged(enabled);
+}
 
 void NearbyShareDelegateImpl::OnFastInitiationNotificationStateChanged(
     ::nearby_share::mojom::FastInitiationNotificationState state) {}

@@ -76,6 +76,10 @@ class NearbyShareFeaturePodControllerTest : public NoSessionAshTestBase {
 
   void PressLabel() { pod_controller_->OnLabelPressed(); }
 
+  void UpdateNearbyShareEnabledState(bool enabled) {
+    pod_controller_->OnNearbyShareEnabledChanged(enabled);
+  }
+
   void UpdateVisibilityAndNotify(::nearby_share::mojom::Visibility visibility) {
     test_delegate_->set_visibility(visibility);
     nearby_share_controller_->VisibilityChanged(visibility);
@@ -290,6 +294,23 @@ TEST_F(NearbyShareFeaturePodControllerTest,
   PressIcon();
   EXPECT_FALSE(IsButtonToggled());
   EXPECT_FALSE(test_delegate_->IsEnabled());
+}
+
+TEST_F(NearbyShareFeaturePodControllerTest,
+       QuickShareV2_ButtonToggles_OnQuickShareToggled) {
+  EnableQuickShareV2();
+  SimulateUserLogin(kDefaultUserEmail);
+  test_delegate_->SetEnabled(true);
+  SetUpButton();
+  EXPECT_TRUE(IsButtonToggled());
+
+  test_delegate_->SetEnabled(false);
+  UpdateNearbyShareEnabledState(/*enabled=*/false);
+  EXPECT_FALSE(IsButtonToggled());
+
+  test_delegate_->SetEnabled(true);
+  UpdateNearbyShareEnabledState(/*enabled=*/true);
+  EXPECT_TRUE(IsButtonToggled());
 }
 
 }  // namespace ash
