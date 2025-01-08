@@ -143,6 +143,10 @@ if (HEADLESS === 'true') {
   log('Running WPT in headful mode...');
 }
 
+// Mapper starts new instance of browser for each test, which sometimes takes
+// time and causes timeout exception. Retry unexpected mapper tests once.
+const RETRY_UNEXPECTED = CHROMEDRIVER === 'true' ? 0 : 1;
+
 const wptBinary = resolve(join('wpt', 'wpt'));
 
 let runResult = undefined;
@@ -174,6 +178,8 @@ if (RUN_TESTS === 'true') {
     THIS_CHUNK,
     '--chunk-type',
     'hash',
+    '--retry-unexpected',
+    RETRY_UNEXPECTED,
   ];
 
   if (VERBOSE === 'true') {
