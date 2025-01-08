@@ -52,7 +52,6 @@ import './device_page/storage_external_entry.js';
 import './device_page/stylus.js';
 import './multidevice_page/multidevice_page.js';
 import './nearby_share_page/nearby_share_high_visibility_page.js';
-import './os_files_page/google_drive_subpage.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 
@@ -232,7 +231,6 @@ export {SettingsBluetoothPairingDialogElement} from './os_bluetooth_page/os_blue
 export {SettingsBluetoothSummaryElement} from './os_bluetooth_page/os_bluetooth_summary.js';
 export {FastPairSavedDevice, FastPairSavedDevicesOptInStatus} from './os_bluetooth_page/settings_fast_pair_constants.js';
 export {GoogleDriveBrowserProxy, GoogleDrivePageCallbackRouter, GoogleDrivePageHandlerRemote, GoogleDrivePageRemote, Stage} from './os_files_page/google_drive_browser_proxy.js';
-export {ConfirmationDialogType, SettingsGoogleDriveSubpageElement} from './os_files_page/google_drive_subpage.js';
 export {OneDriveBrowserProxy, OneDrivePageCallbackRouter, OneDrivePageHandlerRemote, OneDrivePageRemote} from './os_files_page/one_drive_browser_proxy.js';
 export {createPageAvailability as createPageAvailabilityForTesting, OsPageAvailability} from './os_page_availability.js';
 export {AccountManagerSettingsCardElement} from './os_people_page/account_manager_settings_card.js';

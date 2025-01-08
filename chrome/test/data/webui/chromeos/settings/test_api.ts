@@ -5,8 +5,8 @@
 import 'chrome://os-settings/os_settings.js';
 import 'chrome://os-settings/lazy_load.js';
 
-import {SettingsRadioGroupElement} from 'chrome://os-settings/lazy_load.js';
-import {CrButtonElement, SettingsGoogleDriveSubpageElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {SettingsGoogleDriveSubpageElement, SettingsRadioGroupElement} from 'chrome://os-settings/lazy_load.js';
+import {CrButtonElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
