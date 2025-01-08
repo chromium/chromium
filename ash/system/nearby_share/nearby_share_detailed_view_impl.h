@@ -70,6 +70,8 @@ class ASH_EXPORT NearbyShareDetailedViewImpl : public NearbyShareDetailedView,
 
   void SetCheckCircle(const bool in_high_visibility);
 
+  const std::u16string user_email_;
+
   raw_ptr<views::Button> settings_button_ = nullptr;
   raw_ptr<RoundedContainer> is_enabled_container_ = nullptr;
   raw_ptr<HoverHighlightView> toggle_row_ = nullptr;

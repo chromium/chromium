@@ -452,8 +452,38 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_BUTTON_LABEL" desc="The shorter label used for the button in the status tray to toggle Nearby Share high visibility mode, which makes the device visible to all nearby devices for file sharing.">
         Nearby visibility
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_DETAILED_VIEW_CONTACTS_SUBLABEL" desc="The sublabel in the Contacts visibility row.">
+        Only your contacts with a Google Account
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_DETAILED_VIEW_EVERYONE_LABEL" desc="The label in the Everyone visibility toggle row.">
+        Visible to everyone
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_DETAILED_VIEW_EVERYONE_SUBLABEL" desc="The sublabel in the Everyone visibility toggle row.">
+        For 10 min
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_DETAILED_VIEW_HIDDEN_SUBLABEL" desc="The sublabel in the Hidden visibility row.">
+        No one can share with you
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_DETAILED_VIEW_YOUR_DEVICES_SUBLABEL" desc="The sublabel in the Your devices visibility row.">
+        Only devices signed into <ph name="EMAIL">$1<ex>test@gmail.com</ex></ph>
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL" desc="The shorter label used for the feature tile in the status tray to toggle Nearby Share high visibility mode, which makes the device visible to all nearby devices for file sharing.">
-        Nearby Share
+        Quick Share
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL_CONTACTS" desc="Quick Share quick settings tile label indicates device is in Contacts visibility.">
+        Contacts
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL_HIDDEN" desc="Quick Share quick settings tile label indicates device is in Hidden visibility.">
+        Hidden
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL_OFF" desc="Quick Share quick settings tile label indicates Quick Share is disabled.">
+        Off
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL_ON" desc="Quick Share quick settings tile label indicates Quick Share is enabled.">
+        On
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL_YOUR_DEVICES" desc="Quick Share quick settings tile sublabel indicates device is in Your devices visibility.">
+        Your devices
       </message>
       <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL_PH" desc="Feature name placeholder: The shorter label used for the feature tile in the status tray to toggle Nearby Share high visibility mode, which makes the device visible to all nearby devices for file sharing.">
         <ph name="FEATURE_NAME">$1<ex>Nearby Share</ex></ph>

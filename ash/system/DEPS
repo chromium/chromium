@@ -7,6 +7,7 @@ include_rules = [
   "+components/global_media_controls",
   "+components/live_caption",
   "+components/prefs",
+  "+components/signin/public/identity_manager/identity_manager.h",
   "+grit/ui_chromeos_resources.h",
   "+google_apis/common",
 ]

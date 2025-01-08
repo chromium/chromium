@@ -3292,6 +3292,7 @@ component("ash") {
     "//ash/public/cpp",
     "//ash/public/cpp/app_list/vector_icons:vector_icons",
     "//ash/public/cpp/resources:ash_public_unscaled_resources",
+    "//ash/quick_pair/common:common",
     "//ash/resources/vector_icons",
     "//ash/strings",
     "//chromeos/ash/components/osauth/impl",
