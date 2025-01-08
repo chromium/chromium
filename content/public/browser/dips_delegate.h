@@ -10,11 +10,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/browsing_data_remover.h"
 
-class DIPSService;
-
 namespace content {
-
-class BrowserContext;
 
 // DipsDelegate is an interface that lets the //content layer
 // provide embedder specific configuration for DIPS (Bounce Tracking
@@ -41,12 +37,6 @@ class CONTENT_EXPORT DipsDelegate {
       content::BrowsingDataRemover::DATA_TYPE_DEVICE_BOUND_SESSIONS;
 
   virtual ~DipsDelegate();
-
-  // Called once for each DIPSService instance when it's created.
-  // DIPSService::Get() is guaranteed to return the given instance if called
-  // i.e., DIPSService::Get(browser_context) == dips_service.
-  virtual void OnDipsServiceCreated(BrowserContext* browser_context,
-                                    DIPSService* dips_service) = 0;
 
   // Get the `remove_mask` that DIPS will pass to BrowsingDataRemover::Remove()
   // to delete storage for a site. This allows DIPS to clear types of storage

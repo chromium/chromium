@@ -71,6 +71,8 @@
 #include "chrome/browser/device_api/device_service_impl.h"
 #include "chrome/browser/device_api/managed_configuration_service.h"
 #include "chrome/browser/dips/chrome_dips_delegate.h"
+#include "chrome/browser/dips/dips_browser_signin_detector.h"
+#include "chrome/browser/dips/stateful_bounce_counter.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -8553,6 +8555,14 @@ bool ShouldBrowserContextEnableDips(content::BrowserContext* browser_context) {
   DUMP_WILL_BE_CHECK(!result || result == profile)
       << "ApplyProfileSelection() returned a different profile";
   return result == profile;
+}
+
+void ChromeContentBrowserClient::OnDipsServiceCreated(
+    content::BrowserContext* browser_context,
+    DIPSService* dips_service) {
+  // Create DIPSBrowserSigninDetector.
+  CHECK(DIPSBrowserSigninDetector::Get(browser_context));
+  dips::StatefulBounceCounter::CreateFor(dips_service);
 }
 
 bool ChromeContentBrowserClient::ShouldSuppressAXLoadComplete(

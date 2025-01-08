@@ -32,7 +32,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/dips_delegate.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/shared_worker_service.h"
 #include "content/public/common/content_client.h"
@@ -113,18 +112,6 @@ BrowserContextImpl::BrowserContextImpl(BrowserContext* self) : self_(self) {
 
   background_sync_scheduler_ = base::MakeRefCounted<BackgroundSyncScheduler>();
 
-  // TODO: crbug.com/382509288 - don't allow null clients here, even in tests.
-  if (GetContentClient()) {
-    if (GetContentClient()->browser()) {
-      dips_delegate_ = GetContentClient()->browser()->CreateDipsDelegate();
-    } else {
-      CHECK_IS_TEST() << "Attempted to create BrowserContext without a "
-                         "ContentBrowserClient";
-    }
-  } else {
-    CHECK_IS_TEST()
-        << "Attempted to create BrowserContext without a ContentClient";
-  }
   // Run MaybeCleanupDips() very soon. We can't call it right now because it
   // calls a virtual function (BrowserContext::IsOffTheRecord()), which causes
   // undefined behavior since we're called by the BrowserContext constructor
@@ -432,9 +419,8 @@ DIPSServiceImpl* BrowserContextImpl::GetDipsService() {
     }
     dips_service_ = std::make_unique<DIPSServiceImpl>(
         base::PassKey<BrowserContextImpl>(), self_);
-    if (dips_delegate_) {
-      dips_delegate_->OnDipsServiceCreated(self_, dips_service_.get());
-    }
+    GetContentClient()->browser()->OnDipsServiceCreated(self_,
+                                                        dips_service_.get());
   }
 
   return dips_service_.get();

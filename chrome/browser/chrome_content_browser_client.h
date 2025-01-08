@@ -1083,6 +1083,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   std::unique_ptr<content::DipsDelegate> CreateDipsDelegate() override;
   bool ShouldEnableDips(content::BrowserContext* browser_context) override;
+  void OnDipsServiceCreated(content::BrowserContext* browser_context,
+                            DIPSService* dips_service) override;
 
   bool ShouldSuppressAXLoadComplete(content::RenderFrameHost* rfh) override;
 

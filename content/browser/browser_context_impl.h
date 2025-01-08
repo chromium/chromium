@@ -15,7 +15,6 @@
 #include "build/build_config.h"
 #include "content/browser/dips/dips_service_impl.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/dips_delegate.h"
 #include "content/public/browser/resource_context.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
 
@@ -171,8 +170,6 @@ class CONTENT_EXPORT BrowserContextImpl {
   std::unique_ptr<media::VideoDecodePerfHistory> video_decode_perf_history_;
   std::unique_ptr<media::WebrtcVideoPerfHistory> webrtc_video_perf_history_;
 
-  // A cached instance of the DIPS delegate created by the browser client.
-  std::unique_ptr<DipsDelegate> dips_delegate_;
   // Manages DIPS for all WebContentses using this browser context.
   std::unique_ptr<DIPSServiceImpl> dips_service_;
   // If DIPS is disabled, any existing database file is asynchronously deleted

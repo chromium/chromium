@@ -113,6 +113,7 @@ class SiteForCookies;
 class IsolationInfo;
 }  // namespace net
 
+class DIPSService;
 class GURL;
 
 // TODO(ellyjones): This synonym shouldn't need to exist - call sites should get
@@ -3062,6 +3063,12 @@ class CONTENT_EXPORT ContentBrowserClient {
   // DIPS will be enabled in browser contexts for which this returns true. The
   // default implementation returns true for all contexts.
   virtual bool ShouldEnableDips(BrowserContext* browser_context);
+
+  // Called once for each DIPSService instance when it's created.
+  // DIPSService::Get() is guaranteed to return the given instance if called
+  // i.e., DIPSService::Get(browser_context) == dips_service.
+  virtual void OnDipsServiceCreated(BrowserContext* browser_context,
+                                    DIPSService* dips_service) {}
 
   // Allows the embedder to suppress the firing of the AXLoadComplete event.
   // Currently, this is only respected on Mac. Since VoiceOver on Mac will
