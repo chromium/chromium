@@ -911,9 +911,9 @@ export class NetworkRequest {
       headersSize: computeHeadersSize(headers),
       bodySize: this.#bodySize,
       // TODO: populate
-      destination: '',
+      destination: this.#getDestination(),
       // TODO: populate
-      initiatorType: null,
+      initiatorType: this.#getInitiatorType(),
       timings: this.#timings,
     };
 
@@ -922,7 +922,75 @@ export class NetworkRequest {
       'goog:postData': this.#request.info?.request?.postData,
       'goog:hasPostData': this.#request.info?.request?.hasPostData,
       'goog:resourceType': this.#request.info?.type,
+      'goog:resourceInitiator': this.#request.info?.initiator,
     } as Network.RequestData;
+  }
+
+  /**
+   * Heuristic trying to guess the destination.
+   * Specification: https://fetch.spec.whatwg.org/#concept-request-destination.
+   * Specified values: "audio", "audioworklet", "document", "embed", "font", "frame",
+   * "iframe", "image", "json", "manifest", "object", "paintworklet", "report", "script",
+   * "serviceworker", "sharedworker", "style", "track", "video", "webidentity", "worker",
+   * "xslt".
+   */
+  #getDestination(): string {
+    switch (this.#request.info?.type) {
+      case 'Script':
+        return 'script';
+      case 'Stylesheet':
+        return 'style';
+      case 'Image':
+        return 'image';
+      case 'Document':
+        // If request to document is initiated by parser, assume it is expected to
+        // arrive in an iframe. Otherwise, fallback to empty string.
+        return this.#request.info?.initiator.type === 'parser' ? 'iframe' : '';
+      default:
+        return '';
+    }
+  }
+
+  /**
+   * Heuristic trying to guess the initiator type.
+   * Specification: https://fetch.spec.whatwg.org/#request-initiator-type.
+   * Specified values: "audio", "beacon", "body", "css", "early-hints", "embed", "fetch",
+   * "font", "frame", "iframe", "image", "img", "input", "link", "object", "ping",
+   * "script", "track", "video", "xmlhttprequest", "other".
+   */
+  #getInitiatorType(): null | string {
+    if (this.#request.info?.initiator.type === 'parser') {
+      switch (this.#request.info?.type) {
+        case 'Document':
+          // The request to document is initiated by the parser. Assuming it's an iframe.
+          return 'iframe';
+        case 'Font':
+          // If the document's url is not the parser's url, assume the resource is loaded
+          // from css. Otherwise, it's a `font` element.
+          return this.#request.info?.initiator?.url ===
+            this.#request.info?.documentURL
+            ? 'font'
+            : 'css';
+        case 'Image':
+          // If the document's url is not the parser's url, assume the resource is loaded
+          // from css. Otherwise, it's a `img` element.
+          return this.#request.info?.initiator?.url ===
+            this.#request.info?.documentURL
+            ? 'img'
+            : 'css';
+        case 'Script':
+          return 'script';
+        case 'Stylesheet':
+          return 'link';
+        default:
+          return null;
+      }
+    }
+    if (this.#request?.info?.type === 'Fetch') {
+      return 'fetch';
+    }
+
+    return null;
   }
 
   #getBeforeRequestEvent(): Network.BeforeRequestSent {
@@ -933,9 +1001,7 @@ export class NetworkRequest {
       params: {
         ...this.#getBaseEventParams(Network.InterceptPhase.BeforeRequestSent),
         initiator: {
-          type: NetworkRequest.#getInitiatorType(
-            this.#request.info.initiator.type,
-          ),
+          type: NetworkRequest.#getInitiator(this.#request.info.initiator.type),
           columnNumber: this.#request.info.initiator.columnNumber,
           lineNumber: this.#request.info.initiator.lineNumber,
           stackTrace: this.#request.info.initiator.stack,
@@ -999,7 +1065,7 @@ export class NetworkRequest {
     return overrideHeaders;
   }
 
-  static #getInitiatorType(
+  static #getInitiator(
     initiatorType: Protocol.Network.Initiator['type'],
   ): Network.Initiator['type'] {
     switch (initiatorType) {

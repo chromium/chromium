@@ -59,7 +59,9 @@ async def test_network_before_request_sent_event_emitted(
                 "cookies": [],
                 "headersSize": ANY_NUMBER,
                 "bodySize": 0,
-                "timings": ANY_DICT
+                "timings": ANY_DICT,
+                "initiatorType": None,
+                "destination": "",
             },
             "initiator": {
                 "type": "other"
@@ -116,7 +118,9 @@ async def test_network_before_request_sent_event_emitted_with_url_fragment(
                 "cookies": [],
                 "headersSize": ANY_NUMBER,
                 "bodySize": 0,
-                "timings": ANY_DICT
+                "timings": ANY_DICT,
+                "initiatorType": None,
+                "destination": "",
             },
             "initiator": {
                 "type": "other"
@@ -217,7 +221,9 @@ async def test_network_before_request_sent_event_with_cookies_emitted(
                 ], []),
                 "headersSize": ANY_NUMBER,
                 "bodySize": 0,
-                "timings": ANY_DICT
+                "timings": ANY_DICT,
+                "initiatorType": None,
+                "destination": "",
             },
             "initiator": {
                 "type": "other"
@@ -411,7 +417,9 @@ async def test_network_before_request_sent_event_with_data_url_emitted(
                 "cookies": ANY_LIST,
                 "headersSize": 0,
                 "bodySize": 0,
-                "timings": ANY_DICT
+                "timings": ANY_DICT,
+                "initiatorType": None,
+                "destination": "",
             },
             "initiator": {
                 "type": "other"
@@ -474,7 +482,9 @@ async def test_network_sends_only_included_cookies(websocket, context_id,
                 "cookies": [],
                 "headersSize": ANY_NUMBER,
                 "bodySize": 0,
-                "timings": ANY_DICT
+                "timings": ANY_DICT,
+                "initiatorType": None,
+                "destination": "",
             },
             "initiator": {
                 "type": "other"
@@ -521,7 +531,9 @@ async def test_network_should_not_block_queue_shared_workers_with_data_url(
                 "cookies": [],
                 "headersSize": ANY_NUMBER,
                 "bodySize": 0,
-                "timings": ANY_DICT
+                "timings": ANY_DICT,
+                "initiatorType": None,
+                "destination": "script",
             },
             "initiator": {
                 "type": "other"
