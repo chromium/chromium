@@ -3676,10 +3676,10 @@ chromium-metrics-reviews@google.com.
   <summary>
     A demo session starts when a user signs in using the policy-configured
     public account. It stops when the user signs out, either manually or after
-    an idle timeout. Session length is the duration between the start and stop
-    events. It is recorded during signing out and reported on the next chrome
-    run. This metric tracks the recorded session length rounded down to the
-    nearest minute and is capped at 2 hours.
+    an idle timeout. Session length is the duration between the first user
+    activity and the end of the session. It is recorded during signing out and
+    reported on the next chrome run. This metric tracks the recorded session
+    length rounded down to the nearest minute and is capped at 2 hours.
   </summary>
 </histogram>
 
