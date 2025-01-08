@@ -14,5 +14,6 @@ specific_include_rules = {
     "+components/autofill/core/common",
     "+components/ukm",
     "+components/sync/test/test_sync_service.h",
+    "+google_apis/gaia/gaia_id.h",
   ],
 }

@@ -27,6 +27,7 @@
 #include "components/optimization_guide/core/mock_optimization_guide_decider.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/test/test_sync_service.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -39,7 +40,7 @@ namespace {
 CoreAccountInfo CreateLoggedInAccountInfo() {
   CoreAccountInfo account;
   account.email = "foo@bar.com";
-  account.gaia = "foo-gaia-id";
+  account.gaia = GaiaId("foo-gaia-id");
   account.account_id = CoreAccountId::FromGaiaId(account.gaia);
   return account;
 }
