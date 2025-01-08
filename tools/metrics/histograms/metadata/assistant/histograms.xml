@@ -129,6 +129,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Assistant.NewEntryPoint.Eligibility"
+    enum="AssistantNewEntryPointEligibility" expires_after="2025-10-28">
+  <owner>yawano@google.com</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Records result of the new entry point eligibility check every time it's
+    checked. For non-eligible case, a reason or an error is recorded.
+  </summary>
+</histogram>
+
 <histogram name="Assistant.OptInFlow.GetSettingsRequestTime" units="ms"
     expires_after="2025-02-16">
   <owner>updowndota@chromium.org</owner>

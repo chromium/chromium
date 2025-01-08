@@ -225,6 +225,8 @@ TEST_F(AcceleratorTest, AssistantKeyWithNewEntryPointDisabled) {
             ui_controller->GetModel()->visibility());
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "VoiceInteraction.Started.Assistant"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "Assistant.NewEntryPoint.AssistantKey"));
 }
 
 class AcceleratorNewEntryPointTest : public AcceleratorTest {
@@ -250,6 +252,8 @@ TEST_F(AcceleratorNewEntryPointTest, AssistantKeyWithNewEntryPointEnabled) {
   EXPECT_TRUE(open_new_entry_point_future.Wait());
   EXPECT_EQ(0, user_action_tester.GetActionCount(
                    "VoiceInteraction.Started.Assistant"));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "Assistant.NewEntryPoint.AssistantKey"));
 }
 
 TEST_F(AcceleratorNewEntryPointTest, NoSearchPlusAWithNewEntryPointEnabled) {

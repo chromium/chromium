@@ -720,6 +720,18 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="4" label="kMultiDeviceHotwordLoss"/>
 </enum>
 
+<!-- LINT.IfChange(AssistantNewEntryPointEligibility) -->
+
+<enum name="AssistantNewEntryPointEligibility">
+  <int value="0" label="kEligible"/>
+  <int value="1" label="kErrorProfileNotReady"/>
+  <int value="2" label="kErrorWebProviderNotReady"/>
+  <int value="3" label="kNotEligibleFlagOff"/>
+  <int value="4" label="kNotEligibleNotInstalled"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/ui/ash/assistant/assistant_browser_delegate_impl.cc:AssistantNewEntryPointEligibility) -->
+
 <enum name="AssistantOptInFlowStatus">
   <int value="0" label="kFlowStarted"/>
   <int value="1" label="kActivityControlShown"/>

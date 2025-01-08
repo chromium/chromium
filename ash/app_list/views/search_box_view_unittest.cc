@@ -1401,6 +1401,8 @@ TEST_P(AssistantNewEntryPointTest, NewEntryPointButtonOpensNewEntryPoint) {
   scoped_assistant_browser_delegate_.SetOpenNewEntryPointClosure(
       open_new_entry_point_future.GetCallback());
 
+  base::UserActionTester user_action_tester;
+
   GetAppListTestHelper()->ShowAppList();
   views::ImageButton* new_entry_point_button =
       GetAppListTestHelper()
@@ -1421,6 +1423,8 @@ TEST_P(AssistantNewEntryPointTest, NewEntryPointButtonOpensNewEntryPoint) {
 
   EXPECT_TRUE(open_new_entry_point_future.Wait())
       << "Expect OpenNewEntryPoint to be called";
+  EXPECT_EQ(
+      1, user_action_tester.GetActionCount("Assistant.NewEntryPoint.Launcher"));
 }
 
 class AssistantNewEntryPointDisabledTest

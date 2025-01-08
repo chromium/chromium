@@ -41,6 +41,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/strings/strcat.h"
 #include "base/system/sys_info.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
@@ -160,6 +161,8 @@ void RecordCycleForwardMru(const ui::Accelerator& accelerator) {
 
 void RecordToggleAssistant(const ui::Accelerator& accelerator) {
   if (assistant::features::IsNewEntryPointEnabled()) {
+    base::RecordAction(
+        base::UserMetricsAction("Assistant.NewEntryPoint.AssistantKey"));
     return;
   }
 

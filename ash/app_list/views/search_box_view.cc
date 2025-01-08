@@ -1253,6 +1253,10 @@ void SearchBoxView::AssistantNewEntryPointButtonPressed() {
   assistant::AssistantBrowserDelegate* delegate =
       assistant::AssistantBrowserDelegate::Get();
   CHECK(delegate);
+
+  base::RecordAction(
+      base::UserMetricsAction("Assistant.NewEntryPoint.Launcher"));
+
   delegate->OpenNewEntryPoint();
 }
 

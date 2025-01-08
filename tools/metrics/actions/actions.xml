@@ -4254,6 +4254,25 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Assistant.NewEntryPoint.AssistantKey">
+  <owner>yawano@google.com</owner>
+  <owner>assistive-eng@google.com</owner>
+  <description>
+    User has pressed Assistant key to open Assistant new entry point. Note that
+    there can be a chance that the actual key combo is not Assistant key as this
+    shortcut is configurable for now: https://crbug.com/387507743.
+  </description>
+</action>
+
+<action name="Assistant.NewEntryPoint.Launcher">
+  <owner>yawano@google.com</owner>
+  <owner>assistive-eng@google.com</owner>
+  <description>
+    User has opened the new entry point by activating a button in the launcher
+    (app list).
+  </description>
+</action>
+
 <action name="AutoDetectChange">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

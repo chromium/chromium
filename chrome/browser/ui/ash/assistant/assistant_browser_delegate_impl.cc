@@ -18,6 +18,7 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
@@ -63,12 +64,75 @@
 
 namespace {
 
+using AssistantBrowserDelegate = ash::assistant::AssistantBrowserDelegate;
+
 Profile* GetActiveUserProfile() {
   user_manager::User* active_user =
       user_manager::UserManager::Get()->GetActiveUser();
   CHECK(active_user);
 
   return ash::ProfileHelper::Get()->GetProfileByUser(active_user);
+}
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. If any value is added, please update
+// `AssistantNewEntryPointEligibility` in `enums.xml`
+// LINT.IfChange(AssistantNewEntryPointEligibility)
+enum class AssistantNewEntryPointEligibility {
+  // A profile is eligible for the new entry point.
+  kEligible = 0,
+  // A profile is not ready for eligibility check. This can be both permanent
+  // error (e.g., guest session) and transient error (e.g., queried before user
+  // session started).
+  kErrorProfileNotReady = 1,
+  // Web provider is not ready for eligibility check. The eligibility check
+  // waits for external managers synchornization of `WebAppProvider`.
+  kErrorWebProviderNotReady = 2,
+  // Not eligible because the new entry point flag is off.
+  kNotEligibleFlagOff = 3,
+  // Not eligible because the new entry point is not installed.
+  kNotEligibleNotInstalled = 4,
+  kMaxValue = kNotEligibleNotInstalled,
+};
+// LINT.ThenChange(/tools/metrics/histograms/enums.xml:AssistantNewEntryPointEligibility)
+
+AssistantNewEntryPointEligibility ToHistogramEnum(
+    base::expected<const web_app::WebApp*, AssistantBrowserDelegate::Error>
+        maybe_web_app) {
+  if (maybe_web_app.has_value()) {
+    return AssistantNewEntryPointEligibility::kEligible;
+  }
+
+  switch (maybe_web_app.error()) {
+    case AssistantBrowserDelegate::Error::kProfileNotReady:
+      return AssistantNewEntryPointEligibility::kErrorProfileNotReady;
+    case AssistantBrowserDelegate::Error::kWebAppProviderNotReadyToRead:
+      return AssistantNewEntryPointEligibility::kErrorWebProviderNotReady;
+    case AssistantBrowserDelegate::Error::kNewEntryPointNotEnabled:
+      return AssistantNewEntryPointEligibility::kNotEligibleFlagOff;
+    case AssistantBrowserDelegate::Error::kNewEntryPointNotFound:
+      return AssistantNewEntryPointEligibility::kNotEligibleNotInstalled;
+  }
+
+  CHECK(false) << "Invalid error value is specified";
+}
+
+base::expected<bool, AssistantBrowserDelegate::Error> ToEligibilityBool(
+    base::expected<const web_app::WebApp*, AssistantBrowserDelegate::Error>
+        maybe_web_app) {
+  if (maybe_web_app.has_value()) {
+    return true;
+  }
+
+  static constexpr auto non_transient_error =
+      base::MakeFixedFlatSet<AssistantBrowserDelegate::Error>(
+          {AssistantBrowserDelegate::Error::kNewEntryPointNotEnabled,
+           AssistantBrowserDelegate::Error::kNewEntryPointNotFound});
+  if (non_transient_error.contains(maybe_web_app.error())) {
+    return false;
+  }
+
+  return base::unexpected(maybe_web_app.error());
 }
 
 }  // namespace
@@ -237,22 +301,20 @@ void AssistantBrowserDelegateImpl::OpenUrl(GURL url) {
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
-base::expected<const web_app::WebAppRegistrar*,
-               ash::assistant::AssistantBrowserDelegate::Error>
+base::expected<const web_app::WebAppRegistrar*, AssistantBrowserDelegate::Error>
 AssistantBrowserDelegateImpl::GetWebAppRegistrarForNewEntryPoint() {
   if (!profile_for_new_entry_point_) {
-    return base::unexpected(
-        ash::assistant::AssistantBrowserDelegate::Error::kProfileNotReady);
+    return base::unexpected(AssistantBrowserDelegate::Error::kProfileNotReady);
   }
 
   if (!on_is_new_entry_point_eligible_ready_.is_signaled()) {
-    return base::unexpected(ash::assistant::AssistantBrowserDelegate::Error::
-                                kWebAppProviderNotReadyToRead);
+    return base::unexpected(
+        AssistantBrowserDelegate::Error::kWebAppProviderNotReadyToRead);
   }
 
   if (!ash::assistant::features::IsNewEntryPointEnabled()) {
-    return base::unexpected(ash::assistant::AssistantBrowserDelegate::Error::
-                                kNewEntryPointNotEnabled);
+    return base::unexpected(
+        AssistantBrowserDelegate::Error::kNewEntryPointNotEnabled);
   }
 
   web_app::WebAppProvider* provider =
@@ -263,8 +325,7 @@ AssistantBrowserDelegateImpl::GetWebAppRegistrarForNewEntryPoint() {
   return &(provider->registrar_unsafe());
 }
 
-base::expected<const web_app::WebApp*,
-               ash::assistant::AssistantBrowserDelegate::Error>
+base::expected<const web_app::WebApp*, AssistantBrowserDelegate::Error>
 AssistantBrowserDelegateImpl::ResolveNewEntryPointIfEligible() {
   ASSIGN_OR_RETURN(const web_app::WebAppRegistrar* web_app_registrar,
                    GetWebAppRegistrarForNewEntryPoint());
@@ -274,8 +335,8 @@ AssistantBrowserDelegateImpl::ResolveNewEntryPointIfEligible() {
                            : entry_point_id_for_testing_;
   const web_app::WebApp* web_app = web_app_registrar->GetAppById(app_id);
   if (!web_app) {
-    return base::unexpected(ash::assistant::AssistantBrowserDelegate::Error::
-                                kNewEntryPointNotFound);
+    return base::unexpected(
+        AssistantBrowserDelegate::Error::kNewEntryPointNotFound);
   }
 
   return web_app;
@@ -285,27 +346,14 @@ void AssistantBrowserDelegateImpl::OnExternalManagersSynchronized() {
   on_is_new_entry_point_eligible_ready_.Signal();
 }
 
-base::expected<bool, ash::assistant::AssistantBrowserDelegate::Error>
+base::expected<bool, AssistantBrowserDelegate::Error>
 AssistantBrowserDelegateImpl::IsNewEntryPointEligibleForPrimaryProfile() {
-  // TODO(crbug.com/382561528): add metrics for has_value and error.
-  base::expected<const web_app::WebApp*,
-                 ash::assistant::AssistantBrowserDelegate::Error>
+  base::expected<const web_app::WebApp*, AssistantBrowserDelegate::Error>
       maybe_web_app = ResolveNewEntryPointIfEligible();
-  if (maybe_web_app.has_value()) {
-    return true;
-  }
 
-  auto non_transient_error =
-      base::MakeFixedFlatSet<ash::assistant::AssistantBrowserDelegate::Error>(
-          {ash::assistant::AssistantBrowserDelegate::Error::
-               kNewEntryPointNotEnabled,
-           ash::assistant::AssistantBrowserDelegate::Error::
-               kNewEntryPointNotFound});
-  if (non_transient_error.contains(maybe_web_app.error())) {
-    return false;
-  }
-
-  return base::unexpected(maybe_web_app.error());
+  base::UmaHistogramEnumeration("Assistant.NewEntryPoint.Eligibility",
+                                ToHistogramEnum(maybe_web_app));
+  return ToEligibilityBool(maybe_web_app);
 }
 
 void AssistantBrowserDelegateImpl::OpenNewEntryPoint() {
