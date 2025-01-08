@@ -706,6 +706,11 @@ def create_tarball(install_root: str, arch: str) -> None:
     banner("Creating tarball " + tarball_path)
     command = [
         "tar",
+        "--owner=0",
+        "--group=0",
+        "--numeric-owner",
+        "--sort=name",
+        "--no-xattrs",
         "-I",
         "xz -z9 -T0 --lzma2='dict=256MiB'",
         "-cf",
