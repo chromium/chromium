@@ -64,8 +64,9 @@ class CollaborationControllerTest : public testing::Test {
     std::unique_ptr<MockCollaborationControllerDelegate> delegate =
         std::make_unique<MockCollaborationControllerDelegate>();
     delegate_ = delegate.get();
-    EXPECT_CALL(*delegate_, PrepareFlowUI(IsNotNullCallback()))
-        .WillOnce(MoveArg<0>(&prepare_ui_callback_));
+    EXPECT_CALL(*delegate_,
+                PrepareFlowUI(IsNotNullCallback(), IsNotNullCallback()))
+        .WillOnce(MoveArg<1>(&prepare_ui_callback_));
     controller_ = std::make_unique<CollaborationController>(
         flow, collaboration_service_.get(), data_sharing_service_.get(),
         tab_group_sync_service_.get(), sync_service_.get(), std::move(delegate),

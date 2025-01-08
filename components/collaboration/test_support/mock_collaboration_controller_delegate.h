@@ -16,7 +16,10 @@ class MockCollaborationControllerDelegate
   MockCollaborationControllerDelegate();
   ~MockCollaborationControllerDelegate() override;
 
-  MOCK_METHOD(void, PrepareFlowUI, (ResultCallback result), (override));
+  MOCK_METHOD(void,
+              PrepareFlowUI,
+              (base::OnceCallback<void()> exit_callback, ResultCallback result),
+              (override));
   MOCK_METHOD(void,
               ShowError,
               (const ErrorInfo& error, ResultCallback result),

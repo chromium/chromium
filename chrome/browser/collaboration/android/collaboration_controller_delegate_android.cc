@@ -51,6 +51,7 @@ CollaborationControllerDelegateAndroid::
 }
 
 void CollaborationControllerDelegateAndroid::PrepareFlowUI(
+    base::OnceCallback<void()> exit_callback,
     ResultCallback result) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_CollaborationControllerDelegateImpl_prepareFlowUI(

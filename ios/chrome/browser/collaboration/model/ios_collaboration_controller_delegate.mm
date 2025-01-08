@@ -68,7 +68,9 @@ IOSCollaborationControllerDelegate::IOSCollaborationControllerDelegate(
 IOSCollaborationControllerDelegate::~IOSCollaborationControllerDelegate() {}
 
 // CollaborationControllerDelegate.
-void IOSCollaborationControllerDelegate::PrepareFlowUI(ResultCallback result) {
+void IOSCollaborationControllerDelegate::PrepareFlowUI(
+    base::OnceCallback<void()> exit_callback,
+    ResultCallback result) {
   std::move(result).Run(CollaborationControllerDelegate::Outcome::kSuccess);
   // TODO(crbug.com/377306986): Implement this.
 }

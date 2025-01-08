@@ -33,7 +33,8 @@ class IOSCollaborationControllerDelegate
   ~IOSCollaborationControllerDelegate() override;
 
   // CollaborationControllerDelegate.
-  void PrepareFlowUI(ResultCallback result) override;
+  void PrepareFlowUI(base::OnceCallback<void()> exit_callback,
+                     ResultCallback result) override;
   void ShowError(const ErrorInfo& error, ResultCallback result) override;
   void Cancel(ResultCallback result) override;
   void ShowAuthenticationUi(ResultCallback result) override;

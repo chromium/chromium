@@ -57,7 +57,8 @@ class CollaborationControllerDelegate {
   using ResultCallback = base::OnceCallback<void(Outcome)>;
 
   // Request to initialize UI.
-  virtual void PrepareFlowUI(ResultCallback result) = 0;
+  virtual void PrepareFlowUI(base::OnceCallback<void()> exit_callback,
+                             ResultCallback result) = 0;
 
   // Request to show the error page/dialog.
   virtual void ShowError(const ErrorInfo& error, ResultCallback result) = 0;

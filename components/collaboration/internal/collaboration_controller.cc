@@ -114,12 +114,17 @@ namespace {
 
 class PendingState : public ControllerState {
  public:
-  PendingState(StateId id, CollaborationController* controller)
-      : ControllerState(id, controller) {}
+  PendingState(StateId id,
+               CollaborationController* controller,
+               CollaborationController::FinishCallback exit_callback)
+      : ControllerState(id, controller),
+        exit_callback_(std::move(exit_callback)) {}
 
   void OnEnter(const ErrorInfo& error) override {
-    controller->delegate()->PrepareFlowUI(base::BindOnce(
-        &PendingState::ProcessOutcome, weak_ptr_factory_.GetWeakPtr()));
+    controller->delegate()->PrepareFlowUI(
+        std::move(exit_callback_),
+        base::BindOnce(&PendingState::ProcessOutcome,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 
   void OnProcessingFinishedWithSuccess() override {
@@ -141,6 +146,10 @@ class PendingState : public ControllerState {
 
     controller->TransitionTo(StateId::kCheckingFlowRequirements);
   }
+
+ private:
+  //  Will be invalid after OnEnter() is called.
+  CollaborationController::FinishCallback exit_callback_;
 };
 
 class AuthenticatingState : public ControllerState,
@@ -448,7 +457,10 @@ CollaborationController::CollaborationController(
       sync_service_(sync_service),
       delegate_(std::move(delegate)),
       finish_and_delete_(std::move(finish_and_delete)) {
-  current_state_ = std::make_unique<PendingState>(StateId::kPending, this);
+  current_state_ = std::make_unique<PendingState>(
+      StateId::kPending, this,
+      base::BindOnce(&CollaborationController::Exit,
+                     weak_ptr_factory_.GetWeakPtr()));
   current_state_->OnEnter(ErrorInfo(ErrorInfo::Type::kUnknown));
 }
 
@@ -492,7 +504,7 @@ std::unique_ptr<ControllerState> CollaborationController::CreateStateObject(
     StateId state) {
   switch (state) {
     case StateId::kPending:
-      return std::make_unique<PendingState>(state, this);
+      return std::make_unique<PendingState>(state, this, base::DoNothing());
     case StateId::kAuthenticating:
       return std::make_unique<AuthenticatingState>(state, this);
     case StateId::kCheckingFlowRequirements:
