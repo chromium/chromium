@@ -30,6 +30,7 @@
 #include "components/cbor/writer.h"
 #include "content/public/test/shared_storage_test_utils.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/public/cpp/auction_worklet_features.h"
 #include "content/services/auction_worklet/public/cpp/cbor_test_util.h"
 #include "content/services/auction_worklet/public/cpp/real_time_reporting.h"
 #include "content/services/auction_worklet/public/mojom/auction_network_events_handler.mojom.h"
@@ -994,11 +995,11 @@ class SellerWorkletMultiThreadingTest
   explicit SellerWorkletMultiThreadingTest() {
     if (PrepareContexts()) {
       feature_list_.InitAndEnableFeatureWithParameters(
-          blink::features::kFledgePrepareSellerContextsInAdvance,
+          features::kFledgePrepareSellerContextsInAdvance,
           {{"MaxSellerContextsPerThread", "4"}});
     } else {
       feature_list_.InitAndDisableFeature(
-          blink::features::kFledgePrepareSellerContextsInAdvance);
+          features::kFledgePrepareSellerContextsInAdvance);
     }
   }
 
@@ -4189,7 +4190,7 @@ TEST_F(SellerWorkletTest, ReportResultLoadCompletionOrder) {
 TEST_P(SellerWorkletMultiThreadingTest, ScriptIsolation) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
-      blink::features::kFledgeAlwaysReuseSellerContext);
+      features::kFledgeAlwaysReuseSellerContext);
   // Use arrays so that all values are references, to catch both the case where
   // variables are persisted, and the case where what they refer to is
   // persisted, but variables are overwritten between runs.
@@ -4299,7 +4300,7 @@ TEST_F(SellerWorkletTest,
        ContextIsReusedIfFledgeAlwaysReuseSellerContextEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      blink::features::kFledgeAlwaysReuseSellerContext);
+      features::kFledgeAlwaysReuseSellerContext);
   AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
                         R"(
         // Globally scoped variable.
@@ -4399,7 +4400,7 @@ TEST_F(
     OneWorklet_ContextIsReusedInSameThreadIfFledgeAlwaysReuseSellerContextEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      blink::features::kFledgeAlwaysReuseSellerContext);
+      features::kFledgeAlwaysReuseSellerContext);
   AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
                         R"(
         // Globally scoped variable.
@@ -4505,7 +4506,7 @@ TEST_F(
     TwoWorklets_ContextIsReusedInSameThreadIfFledgeAlwaysReuseSellerContextEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      blink::features::kFledgeAlwaysReuseSellerContext);
+      features::kFledgeAlwaysReuseSellerContext);
   AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
                         R"(
         // Globally scoped variable.
@@ -4624,7 +4625,7 @@ TEST_F(SellerWorkletTwoThreadsTest,
        TrustedScoringSignalsTaskTriggersNextThreadIndexCallback) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      blink::features::kFledgeAlwaysReuseSellerContext);
+      features::kFledgeAlwaysReuseSellerContext);
   AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
                         R"(
         // Globally scoped variable.
@@ -4704,7 +4705,7 @@ TEST_F(SellerWorkletTwoThreadsTest,
 TEST_F(SellerWorkletTest, ContextReuseDoesNotCrashLazyFiller) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      blink::features::kFledgeAlwaysReuseSellerContext);
+      features::kFledgeAlwaysReuseSellerContext);
   AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
                         R"(
         scoreAd = function(adMetadata, bid, auctionConfig){

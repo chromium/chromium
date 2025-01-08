@@ -537,8 +537,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeSampleDebugReports);
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeSplitTrustedSignalsFetchingURL);
-
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
                                                kFledgeDebugReportLockout);
 // Prevent ad techs who accidentally call the API repeatedly for all users,
@@ -576,39 +574,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     int,
     kFledgeCustomMaxAuctionAdComponentsValue);
 
-// If kFledgeNumberBidderWorkletGroupByOriginContextsToKeep is enabled,
-// kFledgeNumberBidderWorkletGroupByOriginContextsToKeepValue sets the number of
-// previously-used group-by-origin contexts to keep in case they can be reused
-// in a bidder worklet. Defaulted to 1.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kFledgeNumberBidderWorkletGroupByOriginContextsToKeep);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    int,
-    kFledgeNumberBidderWorkletGroupByOriginContextsToKeepValue);
-
-// Reuse a single V8 context to generate all bids in a bidder worklet.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeAlwaysReuseBidderContext);
-// Reuse a single V8 context to score all ads in a seller worklet.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeAlwaysReuseSellerContext);
-
-// Prepare bidder contexts, including running top level scripts, before
-// we're ready to generate a worklet's first bid.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgePrepareBidderContextsInAdvance);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    int,
-    kFledgeMaxBidderContextsPerThreadInAdvance);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
-                                               kFledgeBidderContextsDivisor);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
-                                               kFledgeBidderContextsMultiplier);
-
-// Prepare seller contexts, including running top level scripts, before
-// we're ready to score a worklet's first ad.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgePrepareSellerContextsInAdvance);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    int,
-    kFledgeMaxSellerContextsPerThreadInAdvance);
-
 // Feature params for feature kFledgeRealTimeReporting.
 // Epsilon of FLEDGE real time reporting's Rappor noise algorithm.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(double,
@@ -634,10 +599,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kFledgeEnforcePermissionPolicyContributeOnEvent);
-
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeNoWasmLazyCompilation);
-
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeEagerJSCompilation);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kForceWebContentsDarkMode);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(ForceDarkInversionMethod,

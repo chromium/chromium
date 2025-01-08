@@ -44,6 +44,7 @@
 #include "content/services/auction_worklet/for_debugging_only_bindings.h"
 #include "content/services/auction_worklet/private_aggregation_bindings.h"
 #include "content/services/auction_worklet/public/cpp/auction_network_events_delegate.h"
+#include "content/services/auction_worklet/public/cpp/auction_worklet_features.h"
 #include "content/services/auction_worklet/public/cpp/private_aggregation_reporting.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-shared.h"
@@ -278,10 +279,9 @@ std::vector<mojom::BidderWorkletBidPtr> ClassifyBidsAndApplyComponentAdLimits(
 
 size_t GetNumberOfGroupByOriginContextsToKeep() {
   if (base::FeatureList::IsEnabled(
-          blink::features::
-              kFledgeNumberBidderWorkletGroupByOriginContextsToKeep)) {
-    return blink::features::
-        kFledgeNumberBidderWorkletGroupByOriginContextsToKeepValue.Get();
+          features::kFledgeNumberBidderWorkletGroupByOriginContextsToKeep)) {
+    return features::kFledgeNumberBidderWorkletGroupByOriginContextsToKeepValue
+        .Get();
   }
   return 1;
 }
@@ -290,11 +290,10 @@ size_t CalculateNumberOfContextsToPreparePerThread(
     size_t max_expected_required_contexts,
     size_t threads) {
   return fmin(
-      blink::features::kFledgeMaxBidderContextsPerThreadInAdvance.Get(),
+      features::kFledgeMaxBidderContextsPerThreadInAdvance.Get(),
       fmax(1, (max_expected_required_contexts *
-               blink::features::kFledgeBidderContextsMultiplier.Get()) /
-                  (threads *
-                   blink::features::kFledgeBidderContextsDivisor.Get())));
+               features::kFledgeBidderContextsMultiplier.Get()) /
+                  (threads * features::kFledgeBidderContextsDivisor.Get())));
 }
 
 // Check if trusted bidding signals, if any, are same-origin or cross-origin.
@@ -1435,7 +1434,7 @@ BidderWorklet::V8State::RunGenerateBidOnce(
     case blink::mojom::InterestGroup::ExecutionMode::kFrozenContext:
       execution_mode_string = "frozen-context";
       if (!base::FeatureList::IsEnabled(
-              blink::features::kFledgeAlwaysReuseBidderContext)) {
+              features::kFledgeAlwaysReuseBidderContext)) {
         should_deep_freeze = true;
       }
       if (context_recycler_for_frozen_context_) {
@@ -1515,7 +1514,7 @@ BidderWorklet::V8State::RunGenerateBidOnce(
 
     // Save the context for next time (if applicable).
     if (base::FeatureList::IsEnabled(
-            blink::features::kFledgeAlwaysReuseBidderContext)) {
+            features::kFledgeAlwaysReuseBidderContext)) {
       context_recycler_for_always_reuse_feature_ =
           std::move(fresh_context_recycler);
     } else {
@@ -2211,10 +2210,9 @@ void BidderWorklet::RunReadyTasks() {
 
 void BidderWorklet::MaybePrepareContexts() {
   if (!base::FeatureList::IsEnabled(
-          blink::features::kFledgePrepareBidderContextsInAdvance) ||
+          features::kFledgePrepareBidderContextsInAdvance) ||
       generate_bid_tasks_.empty() || !IsCodeReady() ||
-      base::FeatureList::IsEnabled(
-          blink::features::kFledgeAlwaysReuseBidderContext)) {
+      base::FeatureList::IsEnabled(features::kFledgeAlwaysReuseBidderContext)) {
     return;
   }
 

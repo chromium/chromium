@@ -35,6 +35,7 @@
 #include "build/build_config.h"
 #include "content/services/auction_worklet/auction_v8_devtools_agent.h"
 #include "content/services/auction_worklet/debug_command_queue.h"
+#include "content/services/auction_worklet/public/cpp/auction_worklet_features.h"
 #include "gin/array_buffer.h"
 #include "gin/converter.h"
 #include "gin/gin_features.h"
@@ -67,8 +68,7 @@ void InitV8() {
 #endif
 
   std::string js_command_line_flags = "";
-  if (base::FeatureList::IsEnabled(
-          blink::features::kFledgeNoWasmLazyCompilation)) {
+  if (base::FeatureList::IsEnabled(features::kFledgeNoWasmLazyCompilation)) {
     js_command_line_flags = "--no-wasm-lazy-compilation";
   }
   gin::IsolateHolder::Initialize(gin::IsolateHolder::kNonStrictMode,
@@ -544,7 +544,7 @@ v8::MaybeLocal<v8::UnboundScript> AuctionV8Helper::Compile(
       src_string.ToLocalChecked(),
       v8::ScriptOrigin(origin_string.ToLocalChecked()));
   v8::ScriptCompiler::CompileOptions compile_options =
-      base::FeatureList::IsEnabled(blink::features::kFledgeEagerJSCompilation)
+      base::FeatureList::IsEnabled(features::kFledgeEagerJSCompilation)
           ? v8::ScriptCompiler::kEagerCompile
           : v8::ScriptCompiler::kNoCompileOptions;
   auto result = v8::ScriptCompiler::CompileUnboundScript(

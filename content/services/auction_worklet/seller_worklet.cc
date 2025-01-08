@@ -40,6 +40,7 @@
 #include "content/services/auction_worklet/for_debugging_only_bindings.h"
 #include "content/services/auction_worklet/private_aggregation_bindings.h"
 #include "content/services/auction_worklet/public/cpp/auction_network_events_delegate.h"
+#include "content/services/auction_worklet/public/cpp/auction_worklet_features.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
@@ -634,9 +635,9 @@ void SellerWorklet::ScoreAd(
       direct_from_seller_auction_signals_header_ad_slot;
 
   if (base::FeatureList::IsEnabled(
-          blink::features::kFledgePrepareSellerContextsInAdvance) &&
+          features::kFledgePrepareSellerContextsInAdvance) &&
       !base::FeatureList::IsEnabled(
-          blink::features::kFledgeAlwaysReuseSellerContext) &&
+          features::kFledgeAlwaysReuseSellerContext) &&
       IsCodeReady()) {
     score_ad_task->context_prep_task_id = cancelable_task_tracker_.PostTask(
         v8_runners_[score_ad_task->thread].get(), FROM_HERE,
@@ -917,7 +918,7 @@ void SellerWorklet::V8State::PrepareContextRecycler(uint64_t trace_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
   if (unused_context_recyclers_.size() >=
       static_cast<std::size_t>(
-          blink::features::kFledgeMaxSellerContextsPerThreadInAdvance.Get())) {
+          features::kFledgeMaxSellerContextsPerThreadInAdvance.Get())) {
     return;
   }
 
@@ -1274,8 +1275,7 @@ void SellerWorklet::V8State::ScoreAd(
   }
 
   if (!context_recycler_for_context_reuse_ &&
-      base::FeatureList::IsEnabled(
-          blink::features::kFledgeAlwaysReuseSellerContext)) {
+      base::FeatureList::IsEnabled(features::kFledgeAlwaysReuseSellerContext)) {
     context_recycler_for_context_reuse_ = std::move(fresh_context_recycler);
   }
 

@@ -33,6 +33,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/shared_storage_test_utils.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/public/cpp/auction_worklet_features.h"
 #include "content/services/auction_worklet/public/cpp/cbor_test_util.h"
 #include "content/services/auction_worklet/public/cpp/real_time_reporting.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
@@ -9183,10 +9184,10 @@ TEST_P(BidderWorkletMultiThreadingTest, UsesPremadeContextIfEnabled) {
     base::test::ScopedFeatureList scoped_feature_list;
     if (feature_enabled) {
       scoped_feature_list.InitAndEnableFeature(
-          blink::features::kFledgePrepareBidderContextsInAdvance);
+          features::kFledgePrepareBidderContextsInAdvance);
     } else {
       scoped_feature_list.InitAndDisableFeature(
-          blink::features::kFledgePrepareBidderContextsInAdvance);
+          features::kFledgePrepareBidderContextsInAdvance);
     }
     // We should be able to use a premade context for any execution mode.
     for (auto execution_mode :
@@ -9285,7 +9286,7 @@ TEST_P(BidderWorkletMultiThreadingTest,
        DoesNotUsePremadeContextIfSignalsComeBeforeScript) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      blink::features::kFledgePrepareBidderContextsInAdvance);
+      features::kFledgePrepareBidderContextsInAdvance);
   interest_group_trusted_bidding_signals_url_ = GURL("https://signals.test/");
   const GURL kFullSignalsUrl(
       "https://signals.test/?hostname=top.window.test&interestGroupNames=Fred");
@@ -9324,7 +9325,7 @@ TEST_P(BidderWorkletMultiThreadingTest,
        DoesNotMakeMorePremadeContextsAfterFirstGenerateBid) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      blink::features::kFledgePrepareBidderContextsInAdvance);
+      features::kFledgePrepareBidderContextsInAdvance);
   interest_group_trusted_bidding_signals_url_ = GURL("https://signals.test/");
   const GURL kFullSignalsUrl(
       "https://signals.test/?hostname=top.window.test&interestGroupNames=Fred");
@@ -9369,7 +9370,7 @@ TEST_P(BidderWorkletMultiThreadingTest,
 TEST_P(BidderWorkletMultiThreadingTest, CreatesCorrectNumberOfPremadeContexts) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      blink::features::kFledgePrepareBidderContextsInAdvance,
+      features::kFledgePrepareBidderContextsInAdvance,
       {{"BidderContextsDivisor", "2"},
        {"BidderContextsMultiplier", "1"},
        {"MaxBidderContextsPerThread", "4"}});
@@ -10310,7 +10311,7 @@ TEST_F(BidderWorkletTest, ExecutionModeGroupByOrigin) {
 TEST_F(BidderWorkletTest, ExecutionModeGroupByOriginSaveMultipleGroups) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      blink::features::kFledgeNumberBidderWorkletGroupByOriginContextsToKeep,
+      features::kFledgeNumberBidderWorkletGroupByOriginContextsToKeep,
       {{"GroupByOriginContextLimit", "2"},
        {"IncludeFacilitatedTestingGroups", "true"}});
 
@@ -10513,7 +10514,7 @@ TEST_F(BidderWorkletTest, ExecutionModeFrozenContextFails) {
 TEST_F(BidderWorkletTest, AlwaysReuseBidderContext) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      blink::features::kFledgeAlwaysReuseBidderContext);
+      features::kFledgeAlwaysReuseBidderContext);
   const char kScript[] = R"(
     const incrementer = (function() {
            let a = 1;
@@ -10572,7 +10573,7 @@ TEST_F(BidderWorkletTest, AlwaysReuseBidderContext) {
 TEST_F(BidderWorkletTwoThreadsTest, AlwaysReuseBidderContext) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      blink::features::kFledgeAlwaysReuseBidderContext);
+      features::kFledgeAlwaysReuseBidderContext);
   const char kScript[] = R"(
     const incrementer = (function() {
            let a = 1;

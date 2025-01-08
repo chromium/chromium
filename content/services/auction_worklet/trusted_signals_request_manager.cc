@@ -30,6 +30,7 @@
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/cpp/auction_network_events_delegate.h"
+#include "content/services/auction_worklet/public/cpp/auction_worklet_features.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/trusted_kvv2_signals.h"
@@ -534,7 +535,7 @@ void TrustedSignalsRequestManager::StartBatchedTrustedSignalsRequest() {
 
   std::unique_ptr<TrustedSignalsUrlBuilder> url_builder;
   bool split_fetch = base::FeatureList::IsEnabled(
-      blink::features::kFledgeSplitTrustedSignalsFetchingURL);
+      features::kFledgeSplitTrustedSignalsFetchingURL);
   if (type_ == Type::kBiddingSignals) {
     url_builder = std::make_unique<TrustedBiddingSignalsUrlBuilder>(
         top_level_origin_.host(), trusted_signals_url_, experiment_group_id_,

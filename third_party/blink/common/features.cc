@@ -961,60 +961,11 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "fledge_enable_filtering_debug_report_starting_from",
                    base::Milliseconds(0));
 
-BASE_FEATURE(kFledgeSplitTrustedSignalsFetchingURL,
-             "FledgeSplitTrustedSignalsFetchingURL",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE_PARAM(int,
                    kFledgeCustomMaxAuctionAdComponentsValue,
                    &kFledgeCustomMaxAuctionAdComponents,
                    "FledgeAdComponentLimit",
                    40);
-
-BASE_FEATURE(kFledgeNumberBidderWorkletGroupByOriginContextsToKeep,
-             "FledgeBidderWorkletGroupByOriginContextsToKeep",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(int,
-                   kFledgeNumberBidderWorkletGroupByOriginContextsToKeepValue,
-                   &kFledgeNumberBidderWorkletGroupByOriginContextsToKeep,
-                   "GroupByOriginContextLimit",
-                   10);
-
-BASE_FEATURE(kFledgeAlwaysReuseBidderContext,
-             "FledgeAlwaysReuseBidderContext",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kFledgeAlwaysReuseSellerContext,
-             "FledgeAlwaysReuseSellerContext",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kFledgePrepareBidderContextsInAdvance,
-             "FledgePrepareBidderContextsInAdvance",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(int,
-                   kFledgeMaxBidderContextsPerThreadInAdvance,
-                   &kFledgePrepareBidderContextsInAdvance,
-                   "MaxBidderContextsPerThread",
-                   10);
-BASE_FEATURE_PARAM(int,
-                   kFledgeBidderContextsDivisor,
-                   &kFledgePrepareBidderContextsInAdvance,
-                   "BidderContextsDivisor",
-                   2);
-BASE_FEATURE_PARAM(int,
-                   kFledgeBidderContextsMultiplier,
-                   &kFledgePrepareBidderContextsInAdvance,
-                   "BidderContextsMultiplier",
-                   1);
-
-BASE_FEATURE(kFledgePrepareSellerContextsInAdvance,
-             "FledgePrepareSellerContextsInAdvance",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(int,
-                   kFledgeMaxSellerContextsPerThreadInAdvance,
-                   &kFledgePrepareSellerContextsInAdvance,
-                   "MaxSellerContextsPerThread",
-                   10);
 
 BASE_FEATURE_PARAM(int,
                    kFledgeRealTimeReportingNumBuckets,
@@ -1046,14 +997,6 @@ BASE_FEATURE_PARAM(int,
 // privateAggregation.contributeToHistogramOnEvent.
 BASE_FEATURE(kFledgeEnforcePermissionPolicyContributeOnEvent,
              "FledgeEnforcePermissionPolicyContributeOnEvent",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kFledgeNoWasmLazyCompilation,
-             "FledgeNoWasmLazyCompilation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kFledgeEagerJSCompilation,
-             "FledgeEagerJSCompilation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kForceHighPerformanceGPUForWebGL,
