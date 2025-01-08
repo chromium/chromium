@@ -10,8 +10,8 @@
  * 1. This file should not import top-level pages. They should be imported into
  *    the main entry point file `os_settings.ts` instead.
  * 2. This file should import all subpages.
- * 3. Components used within subpages should be imported directly in the
- *    component that renders it.
+ * 3. Components used within subpages (e.g. dialogs) should be imported directly
+ *    in the component that renders it.
  */
 
 import '/strings.m.js';
@@ -29,6 +29,8 @@ import './internet_page/internet_known_networks_subpage.js';
 import './internet_page/internet_subpage.js';
 import './internet_page/passpoint_subpage.js';
 import './kerberos_page/kerberos_accounts_subpage.js';
+import './multidevice_page/multidevice_subpage.js';
+import './nearby_share_page/nearby_share_subpage.js';
 import './os_a11y_page/ax_annotations_section.js';
 import './os_a11y_page/chromevox_subpage.js';
 import './os_a11y_page/cursor_and_touchpad_page.js';
@@ -93,8 +95,6 @@ import './guest_os/guest_os_shared_paths.js';
 import './guest_os/guest_os_shared_usb_devices.js';
 import './guest_os/guest_os_shared_usb_devices_add_dialog.js';
 import './keyboard_shortcut_banner/keyboard_shortcut_banner.js';
-import './nearby_share_page/nearby_share_receive_dialog.js';
-import './nearby_share_page/nearby_share_subpage.js';
 import './os_languages_page/app_languages_page.js';
 import './os_languages_page/input_method_options_page.js';
 import './os_languages_page/input_page.js';

@@ -50,8 +50,6 @@ import './device_page/storage.js';
 import './device_page/storage_external.js';
 import './device_page/storage_external_entry.js';
 import './device_page/stylus.js';
-import './multidevice_page/multidevice_page.js';
-import './nearby_share_page/nearby_share_high_visibility_page.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 
