@@ -3789,7 +3789,9 @@ public class StripLayoutHelper
     }
 
     void stopReorderMode() {
-        mReorderDelegate.stopReorderMode(mStripGroupTitles, mStripTabs);
+        if (mReorderDelegate.getInReorderMode()) {
+            mReorderDelegate.stopReorderMode(mStripGroupTitles, mStripTabs);
+        }
     }
 
     private void setCompositorButtonsVisible(boolean visible) {
@@ -4328,7 +4330,7 @@ public class StripLayoutHelper
         if (isSourceStrip) {
             dragActiveClickedTabOutOfStrip();
         } else if (mIncognito == draggedTabIncognito) {
-            mReorderDelegate.stopReorderMode(mStripGroupTitles, mStripTabs);
+            stopReorderMode();
         }
     }
 
@@ -4404,7 +4406,7 @@ public class StripLayoutHelper
 
         // Store reorder state, then exit reorder mode.
         mReorderDelegate.setDragLastOffsetX(draggedTab.getOffsetX());
-        mReorderDelegate.stopReorderMode(mStripGroupTitles, mStripTabs);
+        stopReorderMode();
 
         finishAnimationsAndPushTabUpdates();
 
