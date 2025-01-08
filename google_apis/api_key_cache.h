@@ -17,8 +17,6 @@ namespace google_apis {
 
 struct DefaultApiKeys;
 
-COMPONENT_EXPORT(GOOGLE_APIS) BASE_DECLARE_FEATURE(kOverrideAPIKeyFeature);
-
 // This is used as a lazy instance to determine keys once and cache them.
 class COMPONENT_EXPORT(GOOGLE_APIS) ApiKeyCache {
  public:
