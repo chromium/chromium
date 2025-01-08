@@ -949,6 +949,61 @@ def verify_library_deps(install_root: str) -> None:
         raise Exception(f"Missing libraries: {missing_libs}")
 
 
+def strip_sections(install_root: str):
+    """
+    Strips all sections from ELF files except for dynamic linking and
+    essential sections. Skips static libraries (.a) and object files (.o).
+    """
+    PRESERVED_SECTIONS = {
+        ".dynamic",
+        ".dynstr",
+        ".dynsym",
+        ".gnu.version",
+        ".gnu.version_d",
+        ".gnu.version_r",
+        ".hash",
+        ".note.ABI-tag",
+        ".note.gnu.build-id",
+    }
+
+    for root, _, files in os.walk(install_root):
+        for file in files:
+            file_path = os.path.join(root, file)
+
+            if (os.access(file, os.X_OK) or file.endswith((".a", ".o"))
+                    or os.path.islink(file_path)):
+                continue
+
+            # Verify this is an ELF file
+            with open(file_path, "rb") as f:
+                magic = f.read(4)
+                if magic != b"\x7fELF":
+                    continue
+
+            # Get section headers
+            objdump_cmd = ["objdump", "-h", file_path]
+            result = subprocess.run(objdump_cmd,
+                                    check=True,
+                                    text=True,
+                                    capture_output=True)
+            section_lines = result.stdout.splitlines()
+
+            # Parse section names
+            sections = set()
+            for line in section_lines:
+                parts = line.split()
+                if len(parts) > 1 and parts[0].isdigit():
+                    sections.add(parts[1])
+
+            sections_to_remove = sections - PRESERVED_SECTIONS
+            if sections_to_remove:
+                objcopy_cmd = (["objcopy"] + [
+                    f"--remove-section={section}"
+                    for section in sections_to_remove
+                ] + [file_path])
+                subprocess.run(objcopy_cmd, check=True, stderr=subprocess.PIPE)
+
+
 def build_sysroot(arch: str) -> None:
     install_root = os.path.join(BUILD_DIR, f"{RELEASE}_{arch}_staging")
     clear_install_dir(install_root)
@@ -957,6 +1012,7 @@ def build_sysroot(arch: str) -> None:
     hacks_and_patches(install_root, SCRIPT_DIR, arch)
     cleanup_jail_symlinks(install_root)
     verify_library_deps(install_root)
+    strip_sections(install_root)
     create_tarball(install_root, arch)
 
 
