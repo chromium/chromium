@@ -20,8 +20,6 @@ static_library("test_support") {
     "mock_dlp_content_manager.h",
     "mock_dlp_content_observer.cc",
     "mock_dlp_content_observer.h",
-    "mock_dlp_crosapi.cc",
-    "mock_dlp_crosapi.h",
     "mock_dlp_rules_manager.cc",
     "mock_dlp_rules_manager.h",
   ]
@@ -33,7 +31,6 @@ static_library("test_support") {
     "//chrome/browser/chromeos/policy/dlp/dialogs",
     "//chrome/browser/enterprise/data_controls",
     "//chrome/test:test_support",
-    "//chromeos/crosapi/mojom",
     "//components/user_manager",
     "//content/test:test_support",
     "//testing/gmock",
