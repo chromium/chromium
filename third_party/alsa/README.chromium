@@ -2,7 +2,7 @@ Name: Alsa
 URL: https://github.com/alsa-project/alsa-lib
 Version: 1.2.7.2
 Revision: 27cfa707e3e5597241e6137df4cc15fc5454caf9
-License: LGPLv2+
+License: LGPL-2.1
 License File: LICENSE
 Security Critical: no
 Shipped: no
