@@ -107945,6 +107945,19 @@
        {}
       ]
      ],
+     "container-iframe-resize-events.html": [
+      "883aa3f1eb16f6fbe8fb3e8f81c894e35abac87e",
+      [
+       null,
+       [
+        [
+         "/css/css-contain/container-iframe-resize-events-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "content-visibility": {
       "content-visibility-001.html": [
        "b6b10164e81115e09342345c61d5c19ab5a75304",
@@ -328624,6 +328637,10 @@
       "feef9209f5c19f51233a2025108b66c63b58f34c",
       []
      ],
+     "container-iframe-resize-events-ref.html": [
+      "bde2f0040c8f2ec60d3732f8efaf5640e5745b79",
+      []
+     ],
      "container-queries": {
       "DIR_METADATA": [
        "b7dc9730f956fd4eda032aeeef33e920110545ee",
@@ -329311,6 +329328,10 @@
       ],
       "blue50wBy46h.png": [
        "303d0404548724666f12860b8c37350244753a7d",
+       []
+      ],
+      "count-resizes.html": [
+       "bc59a5c7379215807d131871d0b02748e2841bcb",
        []
       ],
       "pattern-gg-gr-100x100.png": [
@@ -345384,7 +345405,7 @@
        []
       ],
       "clip-path-interpolation-shape-expected.txt": [
-       "09ebb939637be4748da9c25403f4ecc806e096b3",
+       "5c4d43b11f61be7bdb1ac2bc422bcda999662fe4",
        []
       ],
       "mask-border-outset-composition-expected.txt": [
@@ -352244,11 +352265,11 @@
        []
       ],
       "shape-function-computed.tentative-expected.txt": [
-       "ead9e77dbd55d77f221dc988b2559b913eeff031",
+       "bc0dd481c2610ba9ca69e1d762c7536f075da30e",
        []
       ],
       "shape-function-valid.tentative-expected.txt": [
-       "5b38a70386b5e2e768aaf8e42c9a4b1f1417f5be",
+       "4d135f553e5af55a296922c5c0bed157f921e942",
        []
       ],
       "xywh-function-computed-expected.txt": [
