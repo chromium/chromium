@@ -497,8 +497,6 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
     std::optional<std::string> plus_address_email_override,
     bool is_off_the_record,
     const std::string& app_locale) {
-  // TODO(crbug.com/40274514): Remove when launching
-  // AutofillGranularFillingAvailable.
   if (profiles.empty()) {
     return {};
   }
