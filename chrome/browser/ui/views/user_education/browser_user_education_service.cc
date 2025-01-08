@@ -1652,14 +1652,6 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
                                "Shown in app and web context menus.")));
 
   registry.RegisterFeature(user_education::NewBadgeSpecification(
-      autofill::features::kAutofillForUnclassifiedFieldsAvailable,
-      user_education::Metadata(
-          125, "vidhanj@google.com",
-          "Shown in the autofill section of the context menu for address and "
-          "credit card autofill entries when autofill for unclassified fields "
-          "is enabled.")));
-
-  registry.RegisterFeature(user_education::NewBadgeSpecification(
       plus_addresses::features::kPlusAddressFallbackFromContextMenu,
       user_education::Metadata(
           128, "jkeitel@google.com",

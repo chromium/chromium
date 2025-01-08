@@ -123,18 +123,6 @@ auto PopupOpenArgsAre(
                Field(&PopupOpenArgs::trigger_source, trigger_source));
 }
 
-// TODO(crbug.com/40285811): Unify existing `MockCreditCardAccessManager`s in a
-// separate file.
-class MockCreditCardAccessManager : public CreditCardAccessManager {
- public:
-  using CreditCardAccessManager::CreditCardAccessManager;
-  MOCK_METHOD(void,
-              FetchCreditCard,
-              (const CreditCard*,
-               CreditCardAccessManager::OnCreditCardFetchedCallback),
-              (override));
-};
-
 class MockAutofillDriver : public TestAutofillDriver {
  public:
   using TestAutofillDriver::TestAutofillDriver;
@@ -254,11 +242,7 @@ class MockAutofillClient : public TestAutofillClient {
 class MockBrowserAutofillManager : public TestBrowserAutofillManager {
  public:
   explicit MockBrowserAutofillManager(AutofillDriver* driver)
-      : TestBrowserAutofillManager(driver) {
-    test_api(*this).set_credit_card_access_manager(
-        std::make_unique<NiceMock<MockCreditCardAccessManager>>(
-            this, test_api(*this).credit_card_form_event_logger()));
-  }
+      : TestBrowserAutofillManager(driver) {}
   MockBrowserAutofillManager(const MockBrowserAutofillManager&) = delete;
   MockBrowserAutofillManager& operator=(const MockBrowserAutofillManager&) =
       delete;
@@ -419,10 +403,6 @@ class AutofillExternalDelegateTest : public testing::Test {
         driver().GetAutofillManager());
   }
   PersonalDataManager& pdm() { return client().GetPersonalDataManager(); }
-  MockCreditCardAccessManager& cc_access_manager() {
-    return static_cast<MockCreditCardAccessManager&>(
-        manager().GetCreditCardAccessManager());
-  }
 
   const FormData& queried_form() {
     CHECK(!queried_form_.fields().empty());

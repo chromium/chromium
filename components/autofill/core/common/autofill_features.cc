@@ -500,45 +500,6 @@ BASE_FEATURE(kAutofillStructuredFieldsDisableAddressLines,
              "AutofillStructuredFieldsDisableAddressLines",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether granular filling will be available in the autofill popup.
-// TODO(crbug.com/40274514): Clean up when launched.
-BASE_FEATURE(kAutofillGranularFillingAvailable,
-             "AutofillGranularFillingAvailable",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// This variation controls whether more suggestive suggestion labels are shown
-// or not.
-// The feature variation exists to separate the granular filling feature into
-// multiple sub-features. Thus, metrics can be evaluated separately for each
-// sub-feature.
-// TODO(crbug.com/40274514): Clean up when launched.
-const base::FeatureParam<bool>
-    kAutofillGranularFillingAvailableWithImprovedLabelsParam{
-        &kAutofillGranularFillingAvailable,
-        "autofill_granular_filling_with_improved_labels", true};
-
-// This variation controls whether the expand children suggestions control is
-// hidden for non-selected/non-expanded suggestions (and the control shows up
-// when any part of the suggestion row is selected/hovered).
-// This adjustment in behavior is not a part of the originally approved
-// functionality and only exists to investigate one of the hypothesises of
-// the acceptance rate drop reasons, namely, user's potential confusion due to
-// the newly introduced UI pattern.
-// TODO(crbug.com/40274514): Clean up when launched.
-const base::FeatureParam<bool>
-    kAutofillGranularFillingAvailableWithExpandControlVisibleOnSelectionOnly{
-        &kAutofillGranularFillingAvailable,
-        "autofill_granular_filling_with_expand_control_visible_on_selection_"
-        "only",
-        false};
-
-// Controls whether field filling through the context menu will be available for
-// the unclassified fields.
-// TODO(crbug.com/40285811): Clean up when launched.
-BASE_FEATURE(kAutofillForUnclassifiedFieldsAvailable,
-             "AutofillForUnclassifiedFieldsAvailable",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Allows silent profile updates even when the profile import requirements are
 // not met.
 BASE_FEATURE(kAutofillSilentProfileUpdateForInsufficientImport,

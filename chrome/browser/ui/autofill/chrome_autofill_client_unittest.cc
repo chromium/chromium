@@ -371,12 +371,11 @@ TEST_F(ChromeAutofillClientTest, TriggerUserPerceptionOfAutofillAddressSurvey) {
   EXPECT_CALL(*mock_hats_service, CanShowAnySurvey)
       .WillRepeatedly(Return(true));
 
-  SurveyBitsData expected_bits = {{"granular filling available", false}};
   const SurveyStringData field_filling_stats_data;
   EXPECT_CALL(*mock_hats_service,
               LaunchDelayedSurveyForWebContents(
-                  kHatsSurveyTriggerAutofillAddressUserPerception, _, _,
-                  expected_bits, Ref(field_filling_stats_data), _, _, _, _, _));
+                  kHatsSurveyTriggerAutofillAddressUserPerception, _, _, _,
+                  Ref(field_filling_stats_data), _, _, _, _, _));
 
   client()->TriggerUserPerceptionOfAutofillSurvey(FillingProduct::kAddress,
                                                   field_filling_stats_data);

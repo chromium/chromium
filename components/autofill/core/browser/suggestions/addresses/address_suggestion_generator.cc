@@ -523,9 +523,6 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
   std::vector<Suggestion> suggestions;
   std::vector<std::vector<Suggestion::Text>> labels = CreateSuggestionLabels(
       profiles, field_types, trigger_field_type, app_locale);
-  // This will be used to check if suggestions should be supported with icons.
-  // TODO(crbug.com/40285811): Consider simplifying this to be any address
-  // field.
   const bool contains_profile_related_fields =
       base::ranges::count_if(field_types, [](FieldType field_type) {
         FieldTypeGroup field_type_group = GroupTypeOfFieldType(field_type);
@@ -570,8 +567,7 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
           std::optional(trigger_field_type);
     }
     // We add an icon to the address (profile) suggestion if there is more than
-    // one profile related field in the form or the user triggered address
-    // filling on on a non address field (manual fallbacks). For email fields,
+    // one profile related field in the form. For email fields,
     // the email icon is used unconditionally to create consistency with plus
     // address suggestions.
     if (GroupTypeOfFieldType(trigger_field_type) == FieldTypeGroup::kEmail) {

@@ -768,10 +768,7 @@ void ChromeAutofillClient::TriggerUserPerceptionOfAutofillSurvey(
     // with the feature.
     hats_service->LaunchDelayedSurveyForWebContents(
         kHatsSurveyTriggerAutofillAddressUserPerception, web_contents(),
-        /*timeout_ms=*/5000, /*product_specific_bits_data=*/
-        {{"granular filling available",
-          base::FeatureList::IsEnabled(
-              features::kAutofillGranularFillingAvailable)}},
+        /*timeout_ms=*/5000, /*product_specific_bits_data=*/{},
         field_filling_stats_data);
   } else {
     hats_service->LaunchDelayedSurveyForWebContents(
