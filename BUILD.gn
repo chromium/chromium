@@ -1123,6 +1123,14 @@ if (use_blink && !is_cronet_build) {
       ":blink_wpt_tests",
       "//third_party/blink/public:all_blink",
     ]
+
+    if (!is_chromeos_ash && !is_ios && !is_fuchsia && !is_android &&
+        !is_castos) {
+      deps += [
+        ":chrome_wpt_tests",
+        ":headless_shell_wpt",
+      ]
+    }
   }
 
   # Options shared by all script test targets that call `run_web_tests.py` or
@@ -1172,6 +1180,7 @@ if (use_blink && !is_cronet_build) {
   }
 
   if (!is_chromeos_ash && !is_ios && !is_fuchsia && !is_android && !is_castos) {
+    # https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/run_web_platform_tests.md
     script_test("chrome_wpt_tests") {
       script = "//third_party/blink/tools/run_wpt_tests.py"
       args = _common_web_test_options + [ "--product=chrome" ]
@@ -1194,6 +1203,8 @@ if (use_blink && !is_cronet_build) {
         "//third_party/blink/tools:wpt_tests_isolate",
       ]
     }
+
+    # https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/run_web_platform_tests.md
     script_test("headless_shell_wpt") {
       script = "//third_party/blink/tools/run_wpt_tests.py"
       args = _common_web_test_options + [
@@ -1552,6 +1563,7 @@ if (use_blink && !is_cronet_build) {
     }
   }
 
+  # https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_tests.md
   script_test("blink_wpt_tests") {
     script = _common_web_test_script
 

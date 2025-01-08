@@ -23,12 +23,12 @@ implemented entirely in Blink.
 
 ### Running Tests Locally
 
-First, you will need to build one of the following targets to get all needed
-binaries:
+First, you will need to build the `blink_tests` target as you were running web tests
+before. This will build `headless_shell`, `chrome`, `chromedriver`, `content_shell`
+and all other needed binaries to run web tests and WPTs.
 
 ```bash
-autoninja -C out/Default chrome_wpt_tests     # For testing with `chrome`
-autoninja -C out/Default headless_shell_wpt   # For testing with `headless_shell`
+autoninja -C out/Default blink_tests
 ```
 
 Once the build is done, running tests is very similar to how you would run
