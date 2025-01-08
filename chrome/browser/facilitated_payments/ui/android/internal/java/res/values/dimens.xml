@@ -33,7 +33,7 @@ found in the LICENSE file.
     <dimen name="facilitated_payments_error_screen_description_top_margin">8dp</dimen>
     <dimen name="facilitated_payments_error_screen_button_height">48dp</dimen>
     <dimen name="facilitated_payments_error_screen_button_vertical_margin">18dp</dimen>
-    <dimen name="facilitated_payments_continue_button_height">40dp</dimen>
+    <dimen name="facilitated_payments_continue_button_min_height">48dp</dimen>
     <dimen name="facilitated_payments_continue_button_margin_bottom">24dp</dimen>
     <dimen name="facilitated_payments_fop_selector_description_text_margin_top">4dp</dimen>
     <dimen name="facilitated_payments_fop_selector_title_margin_top">16dp</dimen>
