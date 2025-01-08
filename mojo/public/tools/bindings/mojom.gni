@@ -356,15 +356,10 @@ if (enable_scrambled_message_ids) {
 #       correct dependency order. Note that this only has an effect if
 #       the |enable_mojom_closure_compile| global arg is set to |true| as well.
 #
-#   generate_webui_js_bindings (optional)
-#       Generate WebUI bindings in JavaScript rather than TypeScript. Defaults
-#       to false. ChromeOS only parameter.
-#
 #   generate_legacy_js_bindings (optional)
 #       Generate js_data_deps target containing legacy JavaScript bindings files
 #       for Blink tests and other non-WebUI users when generating TypeScript
-#       bindings for WebUI. Ignored if generate_webui_js_bindings is set to
-#       true.
+#       bindings for WebUI.
 #
 #   js_generate_struct_deserializers (optional)
 #       Generates JS deerialize methods for structs.
@@ -390,9 +385,6 @@ if (enable_scrambled_message_ids) {
 #       be added to one of the lists in ui/webui/resources/mojo/BUILD.gn,
 #       at which point they will be made available to all WebUI pages at the
 #       given URL.
-#
-#       Note: WebUI module bindings are generated in TypeScript by default,
-#       unless |generate_webui_js_bindings| is specified as true.
 #
 #   generate_rust (optional, experimental)
 #       Generate experimental Rust bindings. Do not use outside of tests or
@@ -862,13 +854,6 @@ template("mojom") {
           "--add-module-metadata",
           "webui_module_path=${invoker.webui_module_path}",
         ]
-        if (defined(invoker.generate_webui_js_bindings) &&
-            invoker.generate_webui_js_bindings) {
-          args += [
-            "--add-module-metadata",
-            "generate_webui_js=True",
-          ]
-        }
       }
     }
 
@@ -2096,15 +2081,7 @@ template("mojom") {
     }
   }
 
-  if (defined(invoker.generate_webui_js_bindings)) {
-    assert(is_chromeos_ash,
-           "generate_webui_js_bindings can only be used on ChromeOS Ash")
-    assert(invoker.generate_webui_js_bindings,
-           "generate_webui_js_bindings should be set to true or removed")
-  }
-
-  use_typescript_for_target = defined(invoker.webui_module_path) &&
-                              !defined(invoker.generate_webui_js_bindings)
+  use_typescript_for_target = defined(invoker.webui_module_path)
 
   generate_legacy_js = !use_typescript_for_target ||
                        (defined(invoker.generate_legacy_js_bindings) &&
@@ -2249,56 +2226,6 @@ template("mojom") {
       }
     } else {
       group(js_library_for_compile_target_name) {
-      }
-    }
-
-    # WebUI specific closure targets, not needed by targets that are generating
-    # TypeScript WebUI bindings or by legacy-only targets.
-    if (defined(invoker.webui_module_path) && !use_typescript_for_target) {
-      webui_js_target_name = "${target_name}_webui_js"
-      if (sources_list != []) {
-        js_library(webui_js_target_name) {
-          extra_public_deps = [ ":$generator_js_target_name" ]
-          sources = []
-          foreach(base_path, output_file_base_paths) {
-            sources += [ "$root_gen_dir/mojom-webui/${base_path}-webui.js" ]
-          }
-          externs_list = [
-            "${externs_path}/mojo_core.js",
-            "${externs_path}/pending.js",
-          ]
-          if (defined(invoker.disallow_native_types) &&
-              invoker.disallow_native_types) {
-            deps = []
-          } else {
-            deps = [ "//mojo/public/js:bindings_uncompiled" ]
-          }
-          foreach(d, all_deps) {
-            full_name = get_label_info(d, "label_no_toolchain")
-            deps += [ "${full_name}_webui_js" ]
-          }
-        }
-      } else {
-        group(webui_js_target_name) {
-        }
-      }
-
-      webui_grdp_target_name = "${target_name}_webui_grdp"
-      out_grd = "$target_gen_dir/${target_name}_webui_resources.grdp"
-      grd_prefix = "${target_name}_webui"
-      generate_grd(webui_grdp_target_name) {
-        grd_prefix = grd_prefix
-        out_grd = out_grd
-
-        deps = [ ":$webui_js_target_name" ]
-
-        input_files = []
-        foreach(base_path, output_file_base_paths) {
-          input_files += [ "${base_path}-webui.js" ]
-        }
-
-        input_files_base_dir =
-            rebase_path("$root_gen_dir/mojom-webui", "$root_build_dir")
       }
     }
   }
