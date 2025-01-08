@@ -1541,60 +1541,6 @@ const FeatureEntry::FeatureVariation
 };
 
 #if BUILDFLAG(IS_ANDROID)
-constexpr FeatureEntry::FeatureParam kOmniboxActionsInSuggestTreatment1[] = {
-    {OmniboxFieldTrial::kActionsInSuggestPromoteEntitySuggestion.name, "true"},
-    {OmniboxFieldTrial::kActionsInSuggestPromoteReviewsAction.name, "true"},
-    {OmniboxFieldTrial::kActionsInSuggestRemoveActionTypes.name, ""}};
-constexpr FeatureEntry::FeatureParam kOmniboxActionsInSuggestTreatment2[] = {
-    {OmniboxFieldTrial::kActionsInSuggestPromoteEntitySuggestion.name, "false"},
-    {OmniboxFieldTrial::kActionsInSuggestPromoteReviewsAction.name, "true"},
-    {OmniboxFieldTrial::kActionsInSuggestRemoveActionTypes.name, ""}};
-constexpr FeatureEntry::FeatureParam kOmniboxActionsInSuggestTreatment3[] = {
-    {OmniboxFieldTrial::kActionsInSuggestPromoteEntitySuggestion.name, "true"},
-    {OmniboxFieldTrial::kActionsInSuggestPromoteReviewsAction.name, "false"},
-    {OmniboxFieldTrial::kActionsInSuggestRemoveActionTypes.name, ""}};
-constexpr FeatureEntry::FeatureParam kOmniboxActionsInSuggestTreatment4[] = {
-    {OmniboxFieldTrial::kActionsInSuggestPromoteEntitySuggestion.name, "true"},
-    {OmniboxFieldTrial::kActionsInSuggestPromoteReviewsAction.name, "true"},
-    {OmniboxFieldTrial::kActionsInSuggestRemoveActionTypes.name, "reviews"}};
-constexpr FeatureEntry::FeatureParam kOmniboxActionsInSuggestTreatment5[] = {
-    {OmniboxFieldTrial::kActionsInSuggestPromoteEntitySuggestion.name, "true"},
-    {OmniboxFieldTrial::kActionsInSuggestPromoteReviewsAction.name, "true"},
-    {OmniboxFieldTrial::kActionsInSuggestRemoveActionTypes.name, "call"}};
-constexpr FeatureEntry::FeatureParam kOmniboxActionsInSuggestTreatment6[] = {
-    {OmniboxFieldTrial::kActionsInSuggestPromoteEntitySuggestion.name, "true"},
-    {OmniboxFieldTrial::kActionsInSuggestPromoteReviewsAction.name, "true"},
-    {OmniboxFieldTrial::kActionsInSuggestRemoveActionTypes.name, "directions"}};
-constexpr FeatureEntry::FeatureParam kOmniboxActionsInSuggestTreatment7[] = {
-    {OmniboxFieldTrial::kActionsInSuggestPromoteEntitySuggestion.name, "true"},
-    {OmniboxFieldTrial::kActionsInSuggestPromoteReviewsAction.name, "false"},
-    {OmniboxFieldTrial::kActionsInSuggestRemoveActionTypes.name, "call"}};
-constexpr FeatureEntry::FeatureParam kOmniboxActionsInSuggestTreatment8[] = {
-    {OmniboxFieldTrial::kActionsInSuggestPromoteEntitySuggestion.name, "false"},
-    {OmniboxFieldTrial::kActionsInSuggestPromoteReviewsAction.name, "false"},
-    {OmniboxFieldTrial::kActionsInSuggestRemoveActionTypes.name, "call"}};
-
-constexpr FeatureEntry::FeatureVariation kOmniboxActionsInSuggestVariants[] = {
-    {"T1: Promote, Reviews, Directions, Calls",
-     kOmniboxActionsInSuggestTreatment1,
-     std::size(kOmniboxActionsInSuggestTreatment1), "t3366528"},
-    {"T2: Reviews, Directions, Calls", kOmniboxActionsInSuggestTreatment2,
-     std::size(kOmniboxActionsInSuggestTreatment2), "t3366528"},
-    {"T3: Promote, Calls, Directions, Reviews",
-     kOmniboxActionsInSuggestTreatment3,
-     std::size(kOmniboxActionsInSuggestTreatment3), "t3366528"},
-    {"T4: Promote, Directions, Calls", kOmniboxActionsInSuggestTreatment4,
-     std::size(kOmniboxActionsInSuggestTreatment4), "t3366528"},
-    {"T5: Promote, Reviews, Directions", kOmniboxActionsInSuggestTreatment5,
-     std::size(kOmniboxActionsInSuggestTreatment5), "t3366528"},
-    {"T6: Promote, Reviews, Calls", kOmniboxActionsInSuggestTreatment6,
-     std::size(kOmniboxActionsInSuggestTreatment6), "t3366528"},
-    {"T7: Promote, Directions, Reviews", kOmniboxActionsInSuggestTreatment7,
-     std::size(kOmniboxActionsInSuggestTreatment7), "t3366528"},
-    {"T8: Directions, Reviews", kOmniboxActionsInSuggestTreatment8,
-     std::size(kOmniboxActionsInSuggestTreatment8), "t3366528"},
-};
-
 constexpr FeatureEntry::FeatureParam kOmniboxAnswerActionsCounterfactual[] = {
     {OmniboxFieldTrial::kAnswerActionsCounterfactual.name, "true"}};
 constexpr FeatureEntry::FeatureParam kOmniboxAnswerActionsTreatment1[] = {
@@ -6452,12 +6398,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAnimateSuggestionsListAppearanceDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kAnimateSuggestionsListAppearance)},
-    {"omnibox-actions-in-suggest",
-     flag_descriptions::kOmniboxActionsInSuggestName,
-     flag_descriptions::kOmniboxActionsInSuggestDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kActionsInSuggest,
-                                    kOmniboxActionsInSuggestVariants,
-                                    "OmniboxBundledExperimentV1")},
 
     {"omnibox-answer-actions", flag_descriptions::kOmniboxAnswerActionsName,
      flag_descriptions::kOmniboxAnswerActionsDescription, kOsAndroid,

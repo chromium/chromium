@@ -1484,9 +1484,6 @@ extern const char kOriginKeyedProcessesByDefaultDescription[];
 extern const char kOmitCorsClientCertName[];
 extern const char kOmitCorsClientCertDescription[];
 
-extern const char kOmniboxActionsInSuggestName[];
-extern const char kOmniboxActionsInSuggestDescription[];
-
 extern const char kOmniboxAdaptiveSuggestionsCountName[];
 extern const char kOmniboxAdaptiveSuggestionsCountDescription[];
 

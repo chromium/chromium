@@ -702,28 +702,6 @@ constexpr base::FeatureParam<int> kIpadZPSLimit(
 // <- ML Relevance Scoring
 // ---------------------------------------------------------
 // Actions In Suggest ->
-//
-// When set to true, permits Entity suggestion with associated Actions to be
-// promoted over the Escape Hatch.
-constexpr base::FeatureParam<bool> kActionsInSuggestPromoteEntitySuggestion(
-    &omnibox::kActionsInSuggest,
-    "PromoteEntitySuggestion",
-    (!!BUILDFLAG(IS_ANDROID) || !!BUILDFLAG(IS_IOS)));
-
-// Specifies which actions in suggest will be offered to users.
-constexpr base::FeatureParam<omnibox::ActionInfo::ActionType>::Option
-    kActionsInSuggestRemoveActionTypesVariants[] = {
-        {{}, ""},
-        {omnibox::ActionInfo_ActionType_CALL, "call"},
-        {omnibox::ActionInfo_ActionType_DIRECTIONS, "directions"},
-        {omnibox::ActionInfo_ActionType_REVIEWS, "reviews"},
-};
-constexpr base::FeatureParam<omnibox::ActionInfo::ActionType>
-    kActionsInSuggestRemoveActionTypes(
-        &omnibox::kActionsInSuggest,
-        "RemoveActionTypes",
-        {},
-        &kActionsInSuggestRemoveActionTypesVariants);
 
 constexpr base::FeatureParam<bool> kAnswerActionsCounterfactual(
     &omnibox::kOmniboxAnswerActions,
@@ -744,13 +722,6 @@ constexpr base::FeatureParam<bool> kAnswerActionsShowRichCard(
     "ShowRichCard",
     false);
 
-// Controls the placement of Reviews and Call actions position.
-// false => Call, Directions, Reviews.
-// true  => Reviews, Directions, Call.
-constexpr base::FeatureParam<bool> kActionsInSuggestPromoteReviewsAction(
-    &omnibox::kActionsInSuggest,
-    "PromoteReviewsAction",
-    false);
 // <- Actions In Suggest
 // ---------------------------------------------------------
 // Touch Down Trigger For Prefetch ->

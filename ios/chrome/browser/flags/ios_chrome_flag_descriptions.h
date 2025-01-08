@@ -696,10 +696,6 @@ extern const char kNewSyncOptInIllustrationDescription[];
 extern const char kNTPViewHierarchyRepairName[];
 extern const char kNTPViewHierarchyRepairDescription[];
 
-// Title and description for the flag to enable actions in suggest.
-extern const char kOmniboxActionsInSuggestName[];
-extern const char kOmniboxActionsInSuggestDescription[];
-
 // Title and description for the flag to enable Omnibox HTTPS upgrades for
 // schemeless navigations.
 extern const char kOmniboxHttpsUpgradesName[];

@@ -292,11 +292,6 @@ BASE_FEATURE(kUrlScoringModel,
              "UrlScoringModel",
              enable_if(!IS_ANDROID && !IS_IOS));
 
-// Actions in Suggest is a data-driven feature; it's considered enabled when the
-// data is available.
-// The feature flag below helps us tune feature behaviors.
-BASE_FEATURE(kActionsInSuggest, "OmniboxActionsInSuggest", ENABLED);
-
 BASE_FEATURE(kAnimateSuggestionsListAppearance,
              "AnimateSuggestionsListAppearance",
              DISABLED);

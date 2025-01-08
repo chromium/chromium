@@ -2955,40 +2955,24 @@ TEST_F(AutocompleteResultTest, Android_UndedupTopSearch) {
 
   struct UndedupTestData {
     std::string test_name;
-    bool promote_entities;
     std::vector<AutocompleteMatch> input;
     std::vector<AutocompleteMatch> expected_result;
   } test_cases[]{
-      {"no op with no matches", true, {}, {}},
-      {"no op with no entities / 1", true, {what_you_typed}, {what_you_typed}},
+      {"no op with no matches", {}, {}},
+      {"no op with no entities / 1", {what_you_typed}, {what_you_typed}},
       {"no op with no entities / 2",
-       true,
        {what_you_typed, search},
        {what_you_typed, search}},
       {"no op with entities with no actions",
-       true,
        {what_you_typed, entity_without_action},
        {what_you_typed, entity_without_action}},
       {"no op with entities with actions at low positions",
-       true,
        {what_you_typed, entity_with_action},
        {what_you_typed, entity_with_action}},
-
-      // Undedup and possibly rotate eligible cases.
-      {"no rotation when promotion is disabled with no actions at top position",
-       false,
-       {entity_without_action},
-       {search, entity_without_action}},
       {"no rotation when promotion is enabled with no actions at top position",
-       true,
        {entity_without_action},
        {search, entity_without_action}},
-      {"no rotation when promotion is disabled with actions at top position",
-       false,
-       {entity_with_action},
-       {search, entity_with_action}},
       {"rotation when promotion is enabled with actions at top position",
-       true,
        {entity_with_action},
        {entity_with_action, search}},
   };
@@ -3000,11 +2984,6 @@ TEST_F(AutocompleteResultTest, Android_UndedupTopSearch) {
   // matches we want to see.
   for (const auto& test_case : test_cases) {
     auto result = test_case.input;
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeatureWithParameters(
-        omnibox::kActionsInSuggest,
-        {{OmniboxFieldTrial::kActionsInSuggestPromoteEntitySuggestion.name,
-          test_case.promote_entities ? "true" : "false"}});
     AutocompleteResult::UndedupTopSearchEntityMatch(&result);
 
     EXPECT_EQ(result.size(), test_case.expected_result.size());

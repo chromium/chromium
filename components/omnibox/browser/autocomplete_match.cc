@@ -1670,24 +1670,20 @@ void AutocompleteMatch::FilterAndSortActionsInSuggest() {
   }
 
   // Sort: Call -> Directions -> Reviews, or Reviews -> Directions -> Call.
-  bool sort_descending =
-      OmniboxFieldTrial::kActionsInSuggestPromoteReviewsAction.Get();
-  auto less_comparator = [sort_descending](auto k1, auto k2) -> bool {
+  auto less_comparator = [](auto k1, auto k2) -> bool {
     bool is_less_ascending = (k1 == omnibox::ActionInfo_ActionType_CALL) ||
                              (k2 == omnibox::ActionInfo_ActionType_REVIEWS);
-    return is_less_ascending ^ sort_descending;
+    return is_less_ascending;
   };
   std::multimap<omnibox::ActionInfo::ActionType, scoped_refptr<OmniboxAction>,
                 decltype(less_comparator)>
       actions_in_suggest_to_reinsert(less_comparator);
 
   // Collect all Actions in Suggest.
-  omnibox::ActionInfo::ActionType remove_action_type =
-      OmniboxFieldTrial::kActionsInSuggestRemoveActionTypes.Get();
-  std::erase_if(actions, [&actions_in_suggest_to_reinsert, remove_action_type](
+  std::erase_if(actions, [&actions_in_suggest_to_reinsert](
                              const scoped_refptr<OmniboxAction>& action) {
     auto* ais = OmniboxActionInSuggest::FromAction(action.get());
-    if (ais != nullptr && ais->Type() != remove_action_type) {
+    if (ais != nullptr) {
       actions_in_suggest_to_reinsert.emplace(ais->Type(), action);
     }
     return ais != nullptr;

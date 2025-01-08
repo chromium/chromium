@@ -6306,11 +6306,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "omnibox-actions-in-suggest",
-    "owners": [ "ender@google.com", "chrome-mobile-search@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "omnibox-answer-actions",
     "owners": [ "pnoland@chromium.org", "chrome-mobile-search@google.com" ],
     "expiry_milestone": 135

@@ -1064,8 +1064,7 @@ bool AutocompleteResult::UndedupTopSearchEntityMatch(ACMatches* matches) {
           return action->ActionId() == OmniboxActionId::ACTION_IN_SUGGEST;
         });
 
-    if (top_match_has_actions &&
-        OmniboxFieldTrial::kActionsInSuggestPromoteEntitySuggestion.Get()) {
+    if (top_match_has_actions) {
       matches->insert(std::next(matches->begin()),
                       std::move(non_entity_match_copy));
     } else {
