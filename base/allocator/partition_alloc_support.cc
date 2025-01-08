@@ -1190,18 +1190,6 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
         ->EnableLargeEmptySlotSpanRing();
   }
 
-  if (process_type == "" &&
-      base::FeatureList::IsEnabled(
-          base::features::kPartitionAllocSchedulerLoopQuarantine)) {
-    // `ReconfigureAfterTaskRunnerInit()` is called on the UI thread.
-    const size_t capacity_in_bytes = static_cast<size_t>(
-        base::features::kPartitionAllocSchedulerLoopQuarantineBrowserUICapacity
-            .Get());
-    allocator_shim::internal::PartitionAllocMalloc::Allocator()
-        ->SetSchedulerLoopQuarantineThreadLocalBranchCapacity(
-            capacity_in_bytes);
-  }
-
 #if PA_BUILDFLAG( \
     ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT)
   bool enable_pa_with_advanced_checks =

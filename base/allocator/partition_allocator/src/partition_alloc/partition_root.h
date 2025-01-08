@@ -893,14 +893,6 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     return GetSchedulerLoopQuarantineBranch();
   }
 
-  void SetSchedulerLoopQuarantineThreadLocalBranchCapacity(
-      size_t capacity_in_bytes) {
-    ThreadCache* thread_cache = this->GetOrCreateThreadCache();
-    PA_CHECK(ThreadCache::IsValid(thread_cache));
-    thread_cache->GetSchedulerLoopQuarantineBranch().SetCapacityInBytes(
-        capacity_in_bytes);
-  }
-
   const internal::PartitionFreelistDispatcher* get_freelist_dispatcher() {
 #if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
     if (settings.use_pool_offset_freelists) {

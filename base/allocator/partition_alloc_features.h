@@ -95,10 +95,6 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocSchedulerLoopQuarantine);
 // Scheduler Loop Quarantine's per-thread capacity in bytes.
 extern const BASE_EXPORT base::FeatureParam<int>
     kPartitionAllocSchedulerLoopQuarantineBranchCapacity;
-// Scheduler Loop Quarantine's capacity for the UI thread in bytes.
-// TODO(https://crbug.com/387470567): Support more thread types.
-extern const BASE_EXPORT base::FeatureParam<int>
-    kPartitionAllocSchedulerLoopQuarantineBrowserUICapacity;
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocZappingByFreeFlags);
 
