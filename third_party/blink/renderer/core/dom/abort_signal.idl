@@ -26,7 +26,10 @@
 
     readonly attribute boolean aborted;
     [CallWith=ScriptState] readonly attribute any reason;
-    [MeasureAs=AbortSignalThrowIfAborted] void throwIfAborted();
+    [
+        CallWith=Isolate,
+        MeasureAs=AbortSignalThrowIfAborted
+    ] void throwIfAborted();
 
     attribute EventHandler onabort;
 };
