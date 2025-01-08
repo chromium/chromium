@@ -18,6 +18,11 @@ using enum FeatureAccessFailure;
 
 FeatureAccessConfig::FeatureAccessConfig() = default;
 FeatureAccessConfig::~FeatureAccessConfig() = default;
+FeatureAccessConfig::FeatureAccessConfig(const FeatureAccessConfig&) = default;
+FeatureAccessConfig& FeatureAccessConfig::operator=(
+    const FeatureAccessConfig&) = default;
+FeatureAccessConfig& FeatureAccessConfig::operator=(FeatureAccessConfig&&) =
+    default;
 
 FeatureAccessChecker::FeatureAccessChecker(
     FeatureAccessConfig config,

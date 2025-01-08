@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_SPECIALIZED_FEATURES_FEATURE_ACCESS_CHECKER_H_
 #define CHROMEOS_ASH_COMPONENTS_SPECIALIZED_FEATURES_FEATURE_ACCESS_CHECKER_H_
 
+#include <vector>
+
 #include "base/component_export.h"
 #include "base/containers/enum_set.h"
 #include "base/feature_list.h"
@@ -44,9 +46,9 @@ using FeatureAccessFailureSet = base::EnumSet<FeatureAccessFailure,
 struct COMPONENT_EXPORT(
     CHROMEOS_ASH_COMPONENTS_SPECIALIZED_FEATURES) SecretKey {
   // Name of the flag.
-  std::string_view flag;
+  std::string flag;
   // The hashed value of the key.
-  std::string_view sha1_hashed_key_value;
+  std::string sha1_hashed_key_value;
 };
 
 // This configures the FeatureAccessChecker for different types of common
@@ -55,25 +57,37 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SPECIALIZED_FEATURES)
     FeatureAccessConfig {
   FeatureAccessConfig();
   ~FeatureAccessConfig();
+  FeatureAccessConfig(const FeatureAccessConfig&);
+  FeatureAccessConfig& operator=(const FeatureAccessConfig&);
+  FeatureAccessConfig& operator=(FeatureAccessConfig&&);
+
   // The preference that determines whether the feature is enabled via settings.
   // The FeatureAccessChecker::Check() verifies if its value is true in the
   // given prefs, and returns kDisabledInSettings if not.
-  std::optional<std::string_view> settings_toggle_pref;
+  std::optional<std::string> settings_toggle_pref;
   // The preference that deterimines whether the features legal consent
   // disclaimer has been accepted. The FeatureAccessChecker::Check() verifies
   // if its value is true in the given prefs, and returns kConsentNotAccepted if
   // not.
-  std::optional<std::string_view> consent_accepted_pref;
+  std::optional<std::string> consent_accepted_pref;
   // The main feature flag that is used to enable/disable the feature itself.
   // The FeatureAccessChecker::Check() verifies if its value is true and returns
   // kFeatureFlagDisabled if not.
+  // Since feature flags are not copyable, we have to use a pointer.
+  // This is safe for feature flags declared by `BASE_FEATURE` and
+  // `BASE_DECLARE_FEATURE` since they are created-module level and never
+  // destroyed.
   raw_ptr<const base::Feature> feature_flag = nullptr;
   // This is for the feature flag that is related to the ChromeOS feature
   // management system. The FeatureAccessChecker::Check() verifies if its value
   // is true and returns kFeatureManagementCheckFailed if not.
+  // Since feature flags are not copyable, we have to use a pointer.
+  // This is safe for feature flags declared by `BASE_FEATURE` and
+  // `BASE_DECLARE_FEATURE` since they are created-module level and never
+  // destroyed.
   raw_ptr<const base::Feature> feature_management_flag = nullptr;
   // Only these country codes are allowed. If empty, allows all country codes.
-  base::raw_span<std::string_view> country_codes;
+  std::vector<std::string> country_codes;
   // Special key used to guard users from accessing the feature.
   // FeatureAccessChecker::Check() only checks this special key if the optional
   // value is set since secret keys could be removed.
@@ -103,9 +117,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SPECIALIZED_FEATURES)
   // The config determines which dependencies to check.
   // The following objects should not be destroyed before this class is
   // destroyed:
-  // - Buffers referred to by string_views and raw_span in `config`
-  // - Function pointers in `config`
-  // - The instance referred to by `prefs` and `identity_manager`
+  // - prefs
+  // - identity_manager
+  // - variation_service
+  // If any checks require the above dependency and it is destroy, the check
+  // will return a failure.
   FeatureAccessChecker(FeatureAccessConfig config,
                        PrefService* prefs,
                        signin::IdentityManager* identity_manager,

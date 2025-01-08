@@ -224,7 +224,8 @@ TEST_F(FeatureAccessCheckerTest, SecretKeyCheckPass) {
                                                             key_val);
   FeatureAccessConfig config;
   std::string hashed = base::SHA1HashString(key_val);
-  config.secret_key = {.flag = kSecretKeyFlag, .sha1_hashed_key_value = hashed};
+  config.secret_key = {.flag = std::string(kSecretKeyFlag),
+                       .sha1_hashed_key_value = hashed};
 
   EXPECT_THAT(
       base::ToVector(FeatureAccessChecker(config, &pref_, GetIdentityManager(),
@@ -238,7 +239,8 @@ TEST_F(FeatureAccessCheckerTest, SecretKeyCheckFail) {
                                                             "nothunter2atall");
   FeatureAccessConfig config;
   std::string hashed = base::SHA1HashString("hunter2");
-  config.secret_key = {.flag = kSecretKeyFlag, .sha1_hashed_key_value = hashed};
+  config.secret_key = {.flag = std::string(kSecretKeyFlag),
+                       .sha1_hashed_key_value = hashed};
 
   EXPECT_THAT(
       base::ToVector(FeatureAccessChecker(config, &pref_, GetIdentityManager(),
@@ -252,7 +254,8 @@ TEST_F(FeatureAccessCheckerTest, SecretKeyCheckFailIfNoIdentityManager) {
                                                             "nothunter2atall");
   FeatureAccessConfig config;
   std::string hashed = base::SHA1HashString("hunter2");
-  config.secret_key = {.flag = kSecretKeyFlag, .sha1_hashed_key_value = hashed};
+  config.secret_key = {.flag = std::string(kSecretKeyFlag),
+                       .sha1_hashed_key_value = hashed};
 
   EXPECT_THAT(base::ToVector(FeatureAccessChecker(config, &pref_,
                                                   /*identity_manager=*/nullptr,
@@ -269,7 +272,8 @@ TEST_F(FeatureAccessCheckerTest,
                                                             "nothunter2atall");
   FeatureAccessConfig config;
   std::string hashed = base::SHA1HashString("hunter2");
-  config.secret_key = {.flag = kSecretKeyFlag, .sha1_hashed_key_value = hashed};
+  config.secret_key = {.flag = std::string(kSecretKeyFlag),
+                       .sha1_hashed_key_value = hashed};
 
   EXPECT_THAT(
       base::ToVector(FeatureAccessChecker(config, &pref_, GetIdentityManager(),
@@ -286,7 +290,8 @@ TEST_F(FeatureAccessCheckerTest,
                                                             "nothunter2atall");
   FeatureAccessConfig config;
   std::string hashed = base::SHA1HashString("hunter2");
-  config.secret_key = {.flag = kSecretKeyFlag, .sha1_hashed_key_value = hashed};
+  config.secret_key = {.flag = std::string(kSecretKeyFlag),
+                       .sha1_hashed_key_value = hashed};
   config.allow_google_accounts_skip_secret_key = true;
 
   EXPECT_THAT(
@@ -305,7 +310,8 @@ TEST_F(
                                                             "nothunter2atall");
   FeatureAccessConfig config;
   std::string hashed = base::SHA1HashString("hunter2");
-  config.secret_key = {.flag = kSecretKeyFlag, .sha1_hashed_key_value = hashed};
+  config.secret_key = {.flag = std::string(kSecretKeyFlag),
+                       .sha1_hashed_key_value = hashed};
   config.allow_google_accounts_skip_secret_key = true;
 
   EXPECT_THAT(
@@ -390,8 +396,6 @@ TEST_F(FeatureAccessCheckerTest, CountryCodeCheckPassIfNothingInList) {
   FeatureAccessConfig config;
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       variations::switches::kVariationsOverrideCountry, "fr");
-  std::vector<std::string_view> country_codes;
-  config.country_codes = country_codes;
 
   EXPECT_THAT(
       base::ToVector(FeatureAccessChecker(config, &pref_, GetIdentityManager(),
@@ -404,8 +408,7 @@ TEST_F(FeatureAccessCheckerTest, CountryCodeCheckPassIfExactMatch) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       variations::switches::kVariationsOverrideCountry, "us");
   FeatureAccessConfig config;
-  std::string_view country_codes[] = {"us"};
-  config.country_codes = country_codes;
+  config.country_codes = {"us"};
 
   EXPECT_THAT(
       base::ToVector(FeatureAccessChecker(config, &pref_, GetIdentityManager(),
@@ -418,8 +421,7 @@ TEST_F(FeatureAccessCheckerTest, CountryCodeCheckPassOneOfMany) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       variations::switches::kVariationsOverrideCountry, "jp");
   FeatureAccessConfig config;
-  std::string_view country_codes[] = {"us", "fr", "jp"};
-  config.country_codes = country_codes;
+  config.country_codes = {"us", "fr", "jp"};
 
   EXPECT_THAT(
       base::ToVector(FeatureAccessChecker(config, &pref_, GetIdentityManager(),
@@ -432,8 +434,7 @@ TEST_F(FeatureAccessCheckerTest, CountryCodeCheckFailCountryNotInList) {
   FeatureAccessConfig config;
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       variations::switches::kVariationsOverrideCountry, "fr");
-  std::string_view country_codes[] = {"us"};
-  config.country_codes = country_codes;
+  config.country_codes = {"us"};
 
   EXPECT_THAT(
       base::ToVector(FeatureAccessChecker(config, &pref_, GetIdentityManager(),
@@ -446,8 +447,7 @@ TEST_F(FeatureAccessCheckerTest, CountryCodeCheckFailNoVariationsService) {
   FeatureAccessConfig config;
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       variations::switches::kVariationsOverrideCountry, "fr");
-  std::string_view country_codes[] = {"us"};
-  config.country_codes = country_codes;
+  config.country_codes = {"us"};
 
   EXPECT_THAT(
       base::ToVector(FeatureAccessChecker(config, &pref_, GetIdentityManager(),
