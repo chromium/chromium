@@ -2786,8 +2786,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, DOMStorageIsolation) {
 // This is also a regression test for https://crbug.com/802278 (setting of
 // a guestview as an opener should not leak any memory).
 IN_PROC_BROWSER_TEST_P(WebViewTest, FindabilityIsolation) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   GURL navigate_to_url = embedded_test_server()->GetURL(
@@ -3633,8 +3631,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, DISABLED_GeolocationRequestGone) {
 // filesystem access from main thread of the guest.
 // FileSystemAPIRequestFromMainThread* test 1 of 3
 IN_PROC_BROWSER_TEST_P(WebViewTest, FileSystemAPIRequestFromMainThreadAllow) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testAllow", "web_view/filesystem/main", NEEDS_TEST_SERVER);
 }
 
@@ -4212,8 +4208,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, SetPropertyOnDocumentInteractive) {
 
 IN_PROC_BROWSER_TEST_P(WebViewSpeechAPITest,
                        SpeechRecognitionAPI_HasPermissionAllow) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   ASSERT_TRUE(RunExtensionTest(
       "platform_apps/web_view/speech_recognition_api",
       {.custom_arg = "allowTest", .launch_as_platform_app = true}))
@@ -4222,8 +4216,6 @@ IN_PROC_BROWSER_TEST_P(WebViewSpeechAPITest,
 
 IN_PROC_BROWSER_TEST_P(WebViewSpeechAPITest,
                        SpeechRecognitionAPI_HasPermissionDeny) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   ASSERT_TRUE(RunExtensionTest(
       "platform_apps/web_view/speech_recognition_api",
       {.custom_arg = "denyTest", .launch_as_platform_app = true}))
@@ -4232,8 +4224,6 @@ IN_PROC_BROWSER_TEST_P(WebViewSpeechAPITest,
 
 IN_PROC_BROWSER_TEST_P(WebViewSpeechAPITest,
                        SpeechRecognitionAPI_NoPermission) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   ASSERT_TRUE(
       RunExtensionTest("platform_apps/web_view/common",
                        {.custom_arg = "speech_recognition_api_no_permission",
@@ -5267,15 +5257,11 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, LoadWebviewInaccessibleResource) {
 // webview even if the webview commits an app frame.
 IN_PROC_BROWSER_TEST_P(WebViewTest,
                        LoadAccessibleSubresourceInAppWebviewFrame) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testLoadAccessibleSubresourceInAppWebviewFrame",
              "web_view/load_webview_accessible_resource", NEEDS_TEST_SERVER);
 }
 IN_PROC_BROWSER_TEST_P(WebViewTest,
                        InaccessibleResourceDoesNotLoadInAppWebviewFrame) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testInaccessibleResourceDoesNotLoadInAppWebviewFrame",
              "web_view/load_webview_accessible_resource", NEEDS_TEST_SERVER);
 }
@@ -5345,8 +5331,6 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
 // script context for the iframe. See crbug.com/788914
 IN_PROC_BROWSER_TEST_P(WebViewTestNoDomAutomationController,
                        LoadWebviewInsideIframe) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testLoadWebviewInsideIframe",
              "web_view/load_webview_inside_iframe", NEEDS_TEST_SERVER);
 
@@ -5960,8 +5944,6 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
 // that had loaded it previously, which would result in renderer kills. See
 // https://crbug.com/751916 and https://crbug.com/751920.
 IN_PROC_BROWSER_TEST_P(IsolatedOriginWebViewTest, IsolatedOriginInWebview) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   LoadAppWithGuest("web_view/simple");
   guest_view::GuestViewBase* guest = GetGuestView();
 
@@ -6212,8 +6194,6 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
 // app testing infrastructure. Other similar tests that do not require that
 // infrastructure live in PrivateNetworkAccessBrowserTest.*
 IN_PROC_BROWSER_TEST_P(PrivateNetworkAccessWebViewTest, ClassificationInGuest) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   LoadAppWithGuest("web_view/simple");
   content::RenderFrameHost* guest_frame_host = GetGuestRenderFrameHost();
   ASSERT_TRUE(guest_frame_host);
@@ -7085,8 +7065,6 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, ContentScript) {
 #define MAYBE_ContentScriptInOOPIF ContentScriptInOOPIF
 #endif
 IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, MAYBE_ContentScriptInOOPIF) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   ASSERT_TRUE(StartEmbeddedTestServer());
   // Load an app with a <webview> guest that starts at a data: URL.
   LoadAppWithGuest("web_view/simple");
@@ -7521,14 +7499,10 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          WebViewUsbTest::DescribeParams);
 
 IN_PROC_BROWSER_TEST_P(WebViewUsbTest, Shim_TestCannotRequestUsb) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testCannotRequestUsb", "web_view/shim", NEEDS_TEST_SERVER);
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewUsbTest, Shim_TestCannotReuseUsbPairedInTab) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   // We start the test server here, instead of in TestHelper, because we need
   // to know the origin used in both the tab and webview before running the rest
   // of the test.
@@ -7627,8 +7601,6 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
 
 IN_PROC_BROWSER_TEST_P(WebViewSerialTest,
                        Shim_TestEnabledInTabButNotInWebView) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   // We start the test server here, instead of in TestHelper, because we need
   // to know the origin used in both the tab and webview.
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -7719,8 +7691,6 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
 
 IN_PROC_BROWSER_TEST_P(WebViewBluetoothTest,
                        Shim_TestEnabledInTabButNotInWebView) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   // We start the test server here, instead of in TestHelper, because we
   // need to know the origin used in the tab.
   ASSERT_TRUE(StartEmbeddedTestServer());
