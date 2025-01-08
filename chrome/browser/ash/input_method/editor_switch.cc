@@ -11,6 +11,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/generative_ai_country_restrictions.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "base/containers/extend.h"
 #include "base/containers/fixed_flat_set.h"
@@ -108,30 +109,6 @@ manta::FeatureSupportStatus FetchOrcaAccountCapabilityFromMantaService(
   }
 
   return manta::FeatureSupportStatus::kUnknown;
-}
-
-bool IsCountryAllowed(std::string_view country_code) {
-  constexpr auto kCountryAllowlist = base::MakeFixedFlatSet<std::string_view>(
-      {"ae", "ag", "ai", "am", "ao", "aq", "ar", "as", "at", "au", "aw", "az",
-       "bb", "bd", "be", "bf", "bg", "bh", "bi", "bj", "bl", "bm", "bn", "bo",
-       "bq", "br", "bs", "bt", "bw", "bz", "ca", "cc", "cd", "cf", "cg", "ch",
-       "ci", "ck", "cl", "cm", "co", "cr", "cv", "cw", "cx", "cy", "cz", "de",
-       "dj", "dk", "dm", "do", "dz", "ec", "ee", "eg", "eh", "er", "es", "et",
-       "fi", "fj", "fk", "fm", "fr", "ga", "gb", "gd", "ge", "gg", "gh", "gi",
-       "gm", "gn", "gq", "gr", "gs", "gt", "gu", "gw", "gy", "hm", "hn", "hr",
-       "ht", "hu", "id", "ie", "il", "im", "in", "io", "iq", "is", "it", "je",
-       "jm", "jo", "jp", "ke", "kg", "kh", "ki", "km", "kn", "kr", "kw", "ky",
-       "kz", "la", "lb", "lc", "li", "lk", "lr", "ls", "lt", "lu", "lv", "ly",
-       "ma", "mg", "mh", "ml", "mn", "mp", "mr", "ms", "mt", "mu", "mv", "mw",
-       "mx", "my", "mz", "na", "nc", "ne", "nf", "ng", "ni", "nl", "no", "np",
-       "nr", "nu", "nz", "om", "pa", "pe", "pg", "ph", "pk", "pl", "pm", "pn",
-       "pr", "ps", "pt", "pw", "py", "qa", "ro", "rw", "sa", "sb", "sc", "sd",
-       "se", "sg", "sh", "si", "sk", "sl", "sn", "so", "sr", "ss", "st", "sv",
-       "sz", "tc", "td", "tg", "th", "tj", "tk", "tl", "tm", "tn", "to", "tr",
-       "tt", "tv", "tw", "tz", "ug", "um", "us", "uy", "uz", "vc", "ve", "vg",
-       "vi", "vn", "vu", "wf", "ws", "ye", "za", "zm", "zw"});
-
-  return kCountryAllowlist.contains(country_code);
 }
 
 bool IsInputTypeAllowed(ui::TextInputType type) {
@@ -258,7 +235,7 @@ bool IsAllowedForUseInDemoMode(std::string_view country_code) {
   return base::FeatureList::IsEnabled(chromeos::features::kOrca) &&
          base::FeatureList::IsEnabled(
              chromeos::features::kFeatureManagementOrca) &&
-         IsCountryAllowed(country_code);
+         IsGenerativeAiAllowedForCountry(country_code);
 }
 
 bool IsAllowedForUseInNonDemoMode(Profile* profile,
@@ -266,7 +243,7 @@ bool IsAllowedForUseInNonDemoMode(Profile* profile,
   if (!base::FeatureList::IsEnabled(chromeos::features::kOrca) ||
       !base::FeatureList::IsEnabled(
           chromeos::features::kFeatureManagementOrca) ||
-      !IsCountryAllowed(country_code) ||
+      !IsGenerativeAiAllowedForCountry(country_code) ||
       (base::FeatureList::IsEnabled(
            ash::features::kOrcaUseAccountCapabilities) &&
        FetchOrcaAccountCapabilityFromMantaService(profile) !=
@@ -364,7 +341,7 @@ std::vector<EditorBlockedReason> EditorSwitch::GetBlockedReasons() const {
   std::vector<EditorBlockedReason> blocked_reasons;
 
   if (base::FeatureList::IsEnabled(chromeos::features::kOrca)) {
-    if (!IsCountryAllowed(context_->active_country_code())) {
+    if (!IsGenerativeAiAllowedForCountry(context_->active_country_code())) {
       blocked_reasons.push_back(
           EditorBlockedReason::kBlockedByUnsupportedRegion);
     }
