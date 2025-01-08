@@ -121,6 +121,16 @@ void WaitForImageCapturedForSearch(PerformCaptureType expected_capture_type) {
   EXPECT_TRUE(image_captured_future.Wait());
 }
 
+// Waits for capture mode widgets to become visible. This is necessary in some
+// tests which need capture mode widgets to be reshown after performing capture
+// for text detection.
+void WaitForCaptureModeWidgetsVisible() {
+  CaptureModeSessionTestApi session_test_api(
+      CaptureModeController::Get()->capture_mode_session());
+  views::test::WidgetVisibleWaiter(session_test_api.GetCaptureLabelWidget())
+      .Wait();
+}
+
 FakeScannerProfileScopedDelegate* GetFakeScannerProfileScopedDelegate(
     ScannerController& scanner_controller) {
   return static_cast<FakeScannerProfileScopedDelegate*>(
@@ -1065,6 +1075,7 @@ TEST_F(SunfishTest, DismissButtonsOnSourceChange) {
   auto* generator = GetEventGenerator();
   SelectCaptureModeRegion(generator, gfx::Rect(10, 10, 200, 200),
                           /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForCaptureModeWidgetsVisible();
   auto* container_widget = session_test_api.GetActionContainerWidget();
   ASSERT_TRUE(container_widget->IsVisible());
   ASSERT_EQ(session_test_api.GetActionButtons().size(), 1u);
@@ -1093,6 +1104,7 @@ TEST_F(SunfishTest, DismissButtonsOnSourceChange) {
   CaptureModeTestApi().SetUserSelectedRegion(gfx::Rect());
   SelectCaptureModeRegion(generator, gfx::Rect(10, 10, 200, 200),
                           /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForCaptureModeWidgetsVisible();
   EXPECT_TRUE(container_widget->IsVisible());
   EXPECT_EQ(session_test_api.GetActionButtons().size(), 1u);
   search_button =
@@ -1116,6 +1128,7 @@ TEST_F(SunfishTest, DismissButtonsOnSourceChange) {
   CaptureModeTestApi().SetUserSelectedRegion(gfx::Rect());
   SelectCaptureModeRegion(generator, gfx::Rect(10, 10, 50, 50),
                           /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForCaptureModeWidgetsVisible();
   EXPECT_TRUE(container_widget->IsVisible());
   EXPECT_EQ(session_test_api.GetActionButtons().size(), 1u);
   EXPECT_TRUE(
@@ -1182,6 +1195,7 @@ TEST_F(SunfishTest, ShowSearchButtonOnRegionAdjusted) {
 
   SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
                           /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForCaptureModeWidgetsVisible();
   auto* session =
       static_cast<CaptureModeSession*>(controller->capture_mode_session());
   CaptureModeSessionTestApi session_test_api(session);
@@ -1203,6 +1217,7 @@ TEST_F(SunfishTest, ShowSearchButtonOnRegionAdjusted) {
 
   // Release the drag. Test the buttons are re-shown.
   event_generator->ReleaseLeftButton();
+  WaitForCaptureModeWidgetsVisible();
   EXPECT_NE(controller->user_capture_region(), old_region);
   EXPECT_EQ(container_widget->GetLayer()->GetTargetOpacity(), 1.f);
   ASSERT_EQ(session_test_api.GetActionButtons().size(), 1u);
@@ -1219,6 +1234,7 @@ TEST_F(SunfishTest, ShowSearchButtonOnRegionAdjusted) {
 
   // Release the drag. Test the buttons are re-shown.
   event_generator->ReleaseLeftButton();
+  WaitForCaptureModeWidgetsVisible();
   EXPECT_NE(controller->user_capture_region(), old_region);
   EXPECT_EQ(container_widget->GetLayer()->GetTargetOpacity(), 1.f);
   ASSERT_EQ(session_test_api.GetActionButtons().size(), 1u);
@@ -1241,6 +1257,7 @@ TEST_F(SunfishTest, SearchActionButton) {
   controller->SetSource(CaptureModeSource::kRegion);
   SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
                           /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForCaptureModeWidgetsVisible();
   ASSERT_EQ(session_test_api.GetActionButtons().size(), 1u);
   EXPECT_TRUE(
       session_test_api.GetButtonWithViewID(ActionButtonViewID::kSearchButton));
@@ -1289,6 +1306,7 @@ TEST_F(SunfishTest, SendMultimodalSearch) {
 
   // Open the search results panel to end the session.
   SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500));
+  WaitForCaptureModeWidgetsVisible();
   CaptureModeSessionTestApi session_test_api(
       controller->capture_mode_session());
   ASSERT_EQ(session_test_api.GetActionButtons().size(), 1u);
@@ -1321,6 +1339,7 @@ TEST_F(SunfishTest, SearchBoxInDefaultMode) {
 
   // Open the search results panel.
   SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500));
+  WaitForCaptureModeWidgetsVisible();
   CaptureModeSessionTestApi session_test_api(session);
   ASSERT_EQ(session_test_api.GetActionButtons().size(), 1u);
   LeftClickOn(session_test_api.GetActionButtons()[0]);
@@ -1569,6 +1588,7 @@ TEST_F(SunfishTest, RecordSearchButtonShownAndPressed) {
   // Select a region, which should show the search button.
   SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
                           /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForCaptureModeWidgetsVisible();
   auto* session =
       static_cast<CaptureModeSession*>(controller->capture_mode_session());
   CaptureModeSessionTestApi session_test_api(session);
@@ -1605,6 +1625,7 @@ TEST_F(SunfishTest, RecordSearchResultsPanelEntryType) {
   SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
                           /*release_mouse=*/true, /*verify_region=*/true);
   WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
+  WaitForCaptureModeWidgetsVisible();
   ASSERT_TRUE(controller->GetSearchResultsPanel());
 
   histogram_tester.ExpectBucketCount(
@@ -1622,6 +1643,7 @@ TEST_F(SunfishTest, RecordSearchResultsPanelEntryType) {
   // button appear.
   SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(50, 50, 600, 500),
                           /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForCaptureModeWidgetsVisible();
   auto* session =
       static_cast<CaptureModeSession*>(controller->capture_mode_session());
   CaptureModeSessionTestApi session_test_api(session);
@@ -1965,6 +1987,7 @@ TEST_F(SunfishTest, PanelStackingOrder) {
   SelectCaptureModeRegion(generator, gfx::Rect(50, 50, 400, 400),
                           /*release_mouse=*/true, /*verify_region=*/true);
   WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
+  WaitForCaptureModeWidgetsVisible();
   auto* panel_widget = controller->search_results_panel_widget();
   ASSERT_TRUE(panel_widget);
   aura::Window* panel_window = panel_widget->GetNativeWindow();
@@ -1992,6 +2015,7 @@ TEST_F(SunfishTest, PanelStackingOrder) {
   test_api.SetUserSelectedRegion(gfx::Rect());
   SelectCaptureModeRegion(generator, gfx::Rect(50, 50, 400, 400),
                           /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForCaptureModeWidgetsVisible();
   CaptureModeSessionTestApi session_test_api(
       controller->capture_mode_session());
   LeftClickOn(
@@ -2094,6 +2118,40 @@ TEST_F(SunfishTest, RestartDefaultModeReShowsActionButton) {
       session_test_api.GetButtonWithViewID(ActionButtonViewID::kSearchButton);
   ASSERT_TRUE(search_button);
   EXPECT_TRUE(search_button->GetVisible());
+}
+
+// Tests that the copy text button is shown in default capture mode if text is
+// detected in the selected region.
+TEST_F(SunfishTest, CopyTextButtonShownForDetectedText) {
+  auto* controller = CaptureModeController::Get();
+  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  base::test::TestFuture<OnTextDetectionComplete> detect_text_future;
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  EXPECT_CALL(*test_delegate, DetectTextInImage)
+      .WillOnce(WithArg<1>(InvokeFuture(detect_text_future)));
+
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  detect_text_future.Take().Run("detected text");
+
+  const CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  // Copy text button should have been created.
+  const ActionButtonView* copy_text_button =
+      session_test_api.GetButtonWithViewID(ActionButtonViewID::kCopyTextButton);
+  ASSERT_TRUE(copy_text_button);
+  // Clipboard should currently be empty.
+  std::u16string clipboard_data;
+  ui::Clipboard::GetForCurrentThread()->ReadText(
+      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &clipboard_data);
+  EXPECT_EQ(clipboard_data, u"");
+  // Clicking on the button should copy text to clipboard and show a toast.
+  LeftClickOn(copy_text_button);
+  ui::Clipboard::GetForCurrentThread()->ReadText(
+      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &clipboard_data);
+  EXPECT_EQ(clipboard_data, u"detected text");
+  EXPECT_TRUE(ToastManager::Get()->IsToastShown(kCaptureModeTextCopiedToastId));
 }
 
 using SunfishMultiDisplayTest = SunfishTest;

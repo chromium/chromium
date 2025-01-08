@@ -3377,9 +3377,7 @@ bool IsCaptureModeEducationBypassLimitsEnabled() {
 }
 
 bool IsCaptureModeOnDeviceOcrEnabled() {
-  // TODO(crbug.com/384793763): Also enable on-device OCR for the Sunfish
-  // feature.
-  return IsScannerEnabled() &&
+  return (IsScannerEnabled() || IsSunfishFeatureEnabled()) &&
          base::FeatureList::IsEnabled(kCaptureModeOnDeviceOcr);
 }
 
