@@ -79,6 +79,7 @@ static_library("main_extra_parts") {
     "//chrome/browser/ui/ash/wallpaper",
     "//chrome/browser/ui/ash/web_view",
     "//chrome/browser/ui/ash/wm",
+    "//chrome/browser/ui/chromeos/screen_orientation",
     "//chrome/browser/ui/views/select_file_dialog_extension",
     "//chrome/browser/ui/webui/ash/settings:settings",
     "//chromeos/ash/components/boca",

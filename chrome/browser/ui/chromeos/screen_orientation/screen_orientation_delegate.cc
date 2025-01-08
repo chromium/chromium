@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/screen_orientation_delegate_chromeos.h"
+#include "chrome/browser/ui/chromeos/screen_orientation/screen_orientation_delegate.h"
 
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/shell.h"

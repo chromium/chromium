@@ -9,11 +9,6 @@ import("//chromeos/ash/components/assistant/assistant.gni")
 assert(is_chromeos)
 
 static_library("ash") {
-  sources = [
-    "screen_orientation_delegate_chromeos.cc",
-    "screen_orientation_delegate_chromeos.h",
-  ]
-
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [

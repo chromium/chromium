@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_SCREEN_ORIENTATION_DELEGATE_CHROMEOS_H_
-#define CHROME_BROWSER_UI_ASH_SCREEN_ORIENTATION_DELEGATE_CHROMEOS_H_
+#ifndef CHROME_BROWSER_UI_CHROMEOS_SCREEN_ORIENTATION_SCREEN_ORIENTATION_DELEGATE_H_
+#define CHROME_BROWSER_UI_CHROMEOS_SCREEN_ORIENTATION_SCREEN_ORIENTATION_DELEGATE_H_
 
 #include "content/public/browser/screen_orientation_delegate.h"
 
@@ -30,4 +30,4 @@ class ScreenOrientationDelegateChromeos
   void Unlock(content::WebContents* web_contents) override;
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_SCREEN_ORIENTATION_DELEGATE_CHROMEOS_H_
+#endif  // CHROME_BROWSER_UI_CHROMEOS_SCREEN_ORIENTATION_SCREEN_ORIENTATION_DELEGATE_H_

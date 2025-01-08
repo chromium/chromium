@@ -1,0 +1,10 @@
+include_rules = [
+  "-ash",
+  "-chrome",
+]
+
+specific_include_rules = {
+  ".*test.*": [
+    "+chrome/test",
+  ],
+}
