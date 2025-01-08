@@ -88,7 +88,6 @@ browser_exposed_mojom_targets = [
   "//components/dom_distiller/content/common/mojom:mojom",
   "//components/dom_distiller/core/mojom:mojom",
   "//components/download/public/common:interfaces",
-  "//components/facilitated_payments/core/mojom:facilitated_payments_agent_mojom",
   "//components/facilitated_payments/core/mojom:pix_code_validator_mojom",
   "//components/feed/mojom:mojo_bindings",
   "//components/fingerprinting_protection_filter/mojom:mojom",

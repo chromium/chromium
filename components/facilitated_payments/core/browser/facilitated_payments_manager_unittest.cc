@@ -73,12 +73,6 @@ class MockFacilitatedPaymentsDriver : public FacilitatedPaymentsDriver {
       : FacilitatedPaymentsDriver(std::move(manager),
                                   std::move(ewallet_manager)) {}
   ~MockFacilitatedPaymentsDriver() override = default;
-
-  MOCK_METHOD(void,
-              TriggerPixCodeDetection,
-              (base::OnceCallback<void(mojom::PixCodeDetectionResult,
-                                       const std::string&)>),
-              (override));
 };
 
 class FacilitatedPaymentsManagerTest : public testing::Test {

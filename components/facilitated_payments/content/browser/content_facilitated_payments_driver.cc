@@ -38,16 +38,6 @@ ContentFacilitatedPaymentsDriver::ContentFacilitatedPaymentsDriver(
 
 ContentFacilitatedPaymentsDriver::~ContentFacilitatedPaymentsDriver() = default;
 
-void ContentFacilitatedPaymentsDriver::TriggerPixCodeDetection(
-    base::OnceCallback<void(mojom::PixCodeDetectionResult, const std::string&)>
-        callback) {
-  content::RenderFrameHost* render_frame_host =
-      content::RenderFrameHost::FromID(render_frame_host_id_);
-  if (render_frame_host && render_frame_host->IsActive()) {
-    GetAgent(render_frame_host)->TriggerPixCodeDetection(std::move(callback));
-  }
-}
-
 // TODO(crbug.com/40280186): Add test for this method once FPManager refactoring
 // is done.
 void ContentFacilitatedPaymentsDriver::HandlePaymentLink(const GURL& url) {
@@ -72,15 +62,6 @@ void ContentFacilitatedPaymentsDriver::SetPaymentLinkHandlerReceiver(
     receiver_.reset();
   }
   receiver_.Bind(std::move(pending_receiver));
-}
-
-const mojo::AssociatedRemote<mojom::FacilitatedPaymentsAgent>&
-ContentFacilitatedPaymentsDriver::GetAgent(
-    content::RenderFrameHost* render_frame_host) {
-  if (!agent_.is_bound()) {
-    render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(&agent_);
-  }
-  return agent_;
 }
 
 }  // namespace payments::facilitated

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
-#include "components/facilitated_payments/core/mojom/facilitated_payments_agent.mojom.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 class GURL;
@@ -18,12 +17,10 @@ namespace payments::facilitated {
 class EwalletManager;
 class FacilitatedPaymentsManager;
 
-// A cross-platform interface which is a gateway for all PIX payments related
-// communication from the browser code to the DOM (`FacilitatedPaymentsAgent`).
-// Also, it receives notifications when payment links are detected from renderer
-// process during DOM construction . There can be one instance for each
-// outermost main frame. It is only created if the main frame is active at the
-// time of load.
+// A cross-platform interface which is a gateway for all Facilitated Payments
+// related communication between the browser and the DOM. There can be one
+// instance for each outermost main frame. It is only created if the main frame
+// is active at the time of load.
 //
 // TODO(crbug.com/371059457): `FacilitatedPaymentsDriver` is currently an
 // abstract class. Considering migrating it to a pure interface and use delegate
@@ -42,12 +39,6 @@ class FacilitatedPaymentsDriver {
   // away from the currently displayed page. It is invoked only for the primary
   // main frame by the platform-specific implementation.
   void DidNavigateToOrAwayFromPage() const;
-
-  // Trigger PIX code detection on the page. The `callback` is called after
-  // running PIX code detection.
-  virtual void TriggerPixCodeDetection(
-      base::OnceCallback<void(mojom::PixCodeDetectionResult,
-                              const std::string&)> callback) = 0;
 
   // Inform the `FacilitatedPaymentsManager` about `copied_text` being copied to
   // the clipboard. It is invoked only for the primary main frame.
