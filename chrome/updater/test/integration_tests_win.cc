@@ -35,6 +35,7 @@
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/cstring_view.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -548,7 +549,7 @@ bool BuildTestAppInstaller(const base::FilePath& installer_script,
 void RunOfflineInstallWithManifest(UpdaterScope scope,
                                    bool is_legacy_install,
                                    bool is_silent_install,
-                                   const std::string& manifest_format,
+                                   base::cstring_view platform,
                                    int string_resource_id_to_find,
                                    bool expect_success) {
   static constexpr wchar_t kTestAppID[] =
@@ -636,9 +637,31 @@ void RunOfflineInstallWithManifest(UpdaterScope scope,
   base::FilePath manifest_path = offline_dir.Append(manifest_filename);
   std::optional<int64_t> app_installer_size = base::GetFileSize(app_installer);
   ASSERT_TRUE(app_installer_size.has_value());
-  const std::string manifest = base::StringPrintfNonConstexpr(
-      manifest_format.c_str(), kTestAppID, /*pv=*/"", kAppInstallerName,
-      app_installer_size.value(), kAppInstallerName);
+  static constexpr char kManifestFormat[] =
+      R"(<?xml version="1.0" encoding="UTF-8"?>
+<response protocol="3.0">
+  <systemrequirements platform="%s"/>
+  <app appid="%ls" status="ok">
+    <updatecheck status="ok">
+      <manifest version="%s">
+        <packages>
+          <package hash_sha256="sha256hash_foobar"
+            name="%s" required="true" size="%)" PRId64 R"("/>
+        </packages>
+        <actions>
+          <action event="install"
+            run="%s"/>
+        </actions>
+      </manifest>
+    </updatecheck>
+    <data index="verboselogging" name="install" status="ok">
+      {"distribution": { "verbose_logging": true}}
+    </data>
+  </app>
+</response>)";
+  const std::string manifest = base::StringPrintf(
+      kManifestFormat, platform.c_str(), kTestAppID, /*pv=*/"",
+      kAppInstallerName, app_installer_size.value(), kAppInstallerName);
   EXPECT_TRUE(base::WriteFile(manifest_path, manifest));
 
   // Trigger offline install.
@@ -2043,61 +2066,17 @@ void UninstallApp(UpdaterScope scope, const std::string& app_id) {
 void RunOfflineInstall(UpdaterScope scope,
                        bool is_legacy_install,
                        bool is_silent_install) {
-  static constexpr char kManifestFormat[] =
-      R"(<?xml version="1.0" encoding="UTF-8"?>
-<response protocol="3.0">
-  <systemrequirements platform="win"/>
-  <app appid="%ls" status="ok">
-    <updatecheck status="ok">
-      <manifest version="%s">
-        <packages>
-          <package hash_sha256="sha256hash_foobar"
-            name="%s" required="true" size="%)" PRId64 R"("/>
-        </packages>
-        <actions>
-          <action event="install"
-            run="%s"/>
-        </actions>
-      </manifest>
-    </updatecheck>
-    <data index="verboselogging" name="install" status="ok">
-      {"distribution": { "verbose_logging": true}}
-    </data>
-  </app>
-</response>)";
   RunOfflineInstallWithManifest(scope, is_legacy_install, is_silent_install,
-                                kManifestFormat,
-                                IDS_BUNDLE_INSTALLED_SUCCESSFULLY_BASE, true);
+                                "win", IDS_BUNDLE_INSTALLED_SUCCESSFULLY_BASE,
+                                true);
 }
 
 void RunOfflineInstallOsNotSupported(UpdaterScope scope,
                                      bool is_legacy_install,
                                      bool is_silent_install) {
-  static constexpr char kManifestFormat[] =
-      R"(<?xml version="1.0" encoding="UTF-8"?>
-<response protocol="3.0">
-  <systemrequirements platform="minix"/>
-  <app appid="%ls" status="ok">
-    <updatecheck status="ok">
-      <manifest version="%s">
-        <packages>
-          <package hash_sha256="sha256hash_foobar"
-            name="%s" required="true" size="%)" PRId64 R"("/>
-        </packages>
-        <actions>
-          <action event="install"
-            run="%s"/>
-        </actions>
-      </manifest>
-    </updatecheck>
-    <data index="verboselogging" name="install" status="ok">
-      {"distribution": { "verbose_logging": true}}
-    </data>
-  </app>
-</response>)";
   RunOfflineInstallWithManifest(scope, is_legacy_install, is_silent_install,
-                                kManifestFormat,
-                                IDS_UPDATER_OS_NOT_SUPPORTED_BASE, false);
+                                "minix", IDS_UPDATER_OS_NOT_SUPPORTED_BASE,
+                                false);
 }
 
 base::CommandLine MakeElevated(base::CommandLine command_line) {
