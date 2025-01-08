@@ -798,6 +798,8 @@
 -external/wpt/html/semantics/forms/the-option-element/dynamic-content-change-rendering.html
 -external/wpt/html/semantics/forms/the-select-element/customizable-select/appearance-base-select-other-elements.tentative.html
 -external/wpt/html/semantics/forms/the-select-element/customizable-select/select-events.tentative.html
+-external/wpt/html/semantics/forms/the-select-element/customizable-select/select-home-end-pagedown-pageup-detailed.optional.html
+-external/wpt/html/semantics/forms/the-select-element/customizable-select/select-home-end-pagedown-pageup.tentative.html
 -external/wpt/html/semantics/forms/the-select-element/customizable-select/select-mouse-behavior.tentative.html
 -external/wpt/html/semantics/forms/the-select-element/customizable-select/select-size-multiple-new-content.tentative.html
 -external/wpt/html/semantics/forms/the-select-element/customizable-select/switch-picker-appearance.tentative.html
