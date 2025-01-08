@@ -713,7 +713,7 @@
   {
     "name": "autofill-enable-vcn-3ds-authentication",
     "owners": ["vinnypersky@google.com", "payments-autofill-team@google.com"],
-    "expiry_milestone": 135
+    "expiry_milestone": 145
   },
   {
     "name": "autofill-enable-vcn-enroll-loading-and-confirmation",
