@@ -11,10 +11,10 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
-// This proto contains metadata about the version of a specific collaboration.
-// Each CollaborationGroupVersion should be mapped to a specific
-// CollaborationGroup, though the mapping happens outside of Chrome Sync.
-message CollaborationGroupVersion {
+// This proto contains metadata about the specific collaboration. Each
+// CollaborationGroupMetadata should be mapped to a specific CollaborationGroup,
+// though the mapping happens outside of Chrome Sync.
+message CollaborationGroupMetadata {
   // The current version of a collaboration group. This is used for ensuring
   // that old and new clients can enable or disable functionality based on:
   // (1) The value of this field.
