@@ -115,17 +115,13 @@ class QueryNode;
 struct TraceEvent {
   // ProcessThreadID contains a Process ID and Thread ID.
   struct ProcessThreadID {
-    ProcessThreadID() : process_id(0), thread_id(0) {}
+    ProcessThreadID() = default;
     ProcessThreadID(int process_id, int thread_id)
         : process_id(process_id), thread_id(thread_id) {}
-    bool operator<(const ProcessThreadID& rhs) const {
-      if (process_id != rhs.process_id) {
-        return process_id < rhs.process_id;
-      }
-      return thread_id < rhs.thread_id;
-    }
-    int process_id;
-    int thread_id;
+    auto operator<=>(const ProcessThreadID&) const = default;
+    bool operator==(const ProcessThreadID&) const = default;
+    int process_id = 0;
+    int thread_id = 0;
   };
 
   TraceEvent();
@@ -133,10 +129,6 @@ struct TraceEvent {
   ~TraceEvent();
 
   [[nodiscard]] bool SetFromJSON(const base::Value* event_value);
-
-  bool operator<(const TraceEvent& rhs) const {
-    return timestamp < rhs.timestamp;
-  }
 
   TraceEvent& operator=(TraceEvent&& rhs);
 

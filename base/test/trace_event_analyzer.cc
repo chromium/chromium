@@ -837,7 +837,7 @@ bool TraceAnalyzer::SetEvents(const std::string& json_events) {
   if (!ParseEventsFromJson(json_events, &raw_events_)) {
     return false;
   }
-  base::ranges::stable_sort(raw_events_);
+  base::ranges::stable_sort(raw_events_, {}, &TraceEvent::timestamp);
   ParseMetadata();
   return true;
 }
