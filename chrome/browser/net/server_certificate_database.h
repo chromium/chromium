@@ -68,6 +68,11 @@ class ServerCertificateDatabase {
   // The underlying SQL database.
   sql::Database db_ GUARDED_BY_CONTEXT(sequence_checker_);
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // If the DB was successfully initialized. This is used to ensure that we
+  // don't crash if the DB is unable to be initialized (e.g if Chrome is being
+  // run from a read-only volume).
+  bool db_initialized_ = false;
 };
 
 }  // namespace net
