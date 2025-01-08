@@ -28,7 +28,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -49,6 +48,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.listmenu.ListMenuTestUtils;
 import org.chromium.ui.test.util.ViewUtils;
 import org.chromium.url.GURL;
 
@@ -111,8 +111,6 @@ public class TileGroupTest {
     @MediumTest
     @Feature({"NewTabPage"})
     @Restriction({DeviceFormFactor.PHONE})
-    // Disable the feature due to lack of good list menu testing support.
-    @Features.DisableFeatures(ChromeFeatureList.TILE_CONTEXT_MENU_REFACTOR)
     public void testDismissTileWithContextMenu_Phones() throws Exception {
         testDismissTileWithContextMenuImpl();
     }
@@ -121,8 +119,6 @@ public class TileGroupTest {
     @MediumTest
     @Feature({"NewTabPage"})
     @Restriction({DeviceFormFactor.TABLET})
-    // Disable the feature due to lack of good list menu testing support.
-    @Features.DisableFeatures(ChromeFeatureList.TILE_CONTEXT_MENU_REFACTOR)
     public void testDismissTileWithContextMenu_Tablets() throws Exception {
         testDismissTileWithContextMenuImpl();
     }
@@ -133,7 +129,7 @@ public class TileGroupTest {
         final View tileView = getNonNullTileViewFor(siteToDismiss);
 
         // Dismiss the tile using the context menu.
-        invokeContextMenu(tileView, ContextMenuManager.ContextMenuItemId.REMOVE);
+        removeTileFromContextMenu(tileView);
         Assert.assertTrue(mMostVisitedSites.isUrlBlocklisted(new GURL(mSiteSuggestionUrls[0])));
 
         // Ensure that the removal is reflected in the ui.
@@ -151,8 +147,6 @@ public class TileGroupTest {
     @MediumTest
     @Feature({"NewTabPage"})
     @Restriction({DeviceFormFactor.PHONE})
-    // Disable the feature due to lack of good list menu testing support.
-    @Features.DisableFeatures(ChromeFeatureList.TILE_CONTEXT_MENU_REFACTOR)
     public void testDismissTileUndo_Phones() throws Exception {
         testDismissTileUndoImpl();
     }
@@ -161,8 +155,6 @@ public class TileGroupTest {
     @MediumTest
     @Feature({"NewTabPage"})
     @Restriction({DeviceFormFactor.TABLET})
-    // Disable the feature due to lack of good list menu testing support.
-    @Features.DisableFeatures(ChromeFeatureList.TILE_CONTEXT_MENU_REFACTOR)
     public void testDismissTileUndo_Tablets() throws Exception {
         testDismissTileUndoImpl();
     }
@@ -176,7 +168,7 @@ public class TileGroupTest {
         Assert.assertEquals(3, tileContainer.getChildCount());
 
         // Dismiss the tile using the context menu.
-        invokeContextMenu(tileView, ContextMenuManager.ContextMenuItemId.REMOVE);
+        removeTileFromContextMenu(tileView);
 
         // Ensure that the removal update goes through.
         ThreadUtils.runOnUiThreadBlocking(
@@ -234,6 +226,15 @@ public class TileGroupTest {
                 InstrumentationRegistry.getInstrumentation()
                         .invokeContextMenuAction(
                                 sActivityTestRule.getActivity(), contextMenuItemId, 0));
+    }
+
+    private void removeTileFromContextMenu(View view) throws ExecutionException {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TILE_CONTEXT_MENU_REFACTOR)) {
+            ListMenuTestUtils.longClickAndWaitForListMenu(view);
+            ListMenuTestUtils.invokeMenuItem("Remove");
+        } else {
+            invokeContextMenu(view, ContextMenuManager.ContextMenuItemId.REMOVE);
+        }
     }
 
     /** Wait for the snackbar associated to a tile dismissal to be shown and returns its button. */
