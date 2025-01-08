@@ -35,6 +35,7 @@ class DeletionDialogController {
     UngroupSingle,
     RemoveTabAndDelete,
     CloseTabAndDelete,
+    LeaveGroup,
   };
 
   // Encapsulates metadata required to determine which strings should be
@@ -52,6 +53,7 @@ class DeletionDialogController {
     DialogType type;
     int closing_group_count = 0;
     bool closing_multiple_tabs = false;
+    std::optional<std::u16string> title_of_closing_group;
   };
 
   // State object that represents the current dialog that is being shown.

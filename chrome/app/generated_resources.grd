@@ -12281,6 +12281,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_DATA_SHARING_LEAVE_DIALOG_BODY" desc="The body for the leave group dialog.">
           You’ll immediately lose access to the “<ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>” tab group, and it will be deleted from all your devices
         </message>
+        <message name="IDS_DATA_SHARING_LEAVE_DIALOG_BODY_NO_GROUP_TITLE" desc="The body for the leave group dialog when the group does not have a title.">
+          You’ll immediately lose access to this tab group, and it will be deleted from all your devices
+        </message>
         <message name="IDS_DATA_SHARING_LEAVE_DIALOG_CONFIRM" desc="The text for the confirmation button for the leave group dialog.">
           Leave
         </message>
