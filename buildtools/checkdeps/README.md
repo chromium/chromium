@@ -106,10 +106,10 @@ only lowercase.
 `include_rules` entry on a directory. To do so, use:
 
 ```
-new_usages_require_reviews = True
+new_usages_require_review = True
 ```
 
-For example, if `//foo/bar/DEPS` sets `new_usages_require_reviews=True`, then:
+For example, if `//foo/bar/DEPS` sets `new_usages_require_review=True`, then:
 
 1) `include_rules` for `//foo` will not allow includes for files in `//foo/bar`
 2) A `PRESUBMIT.py` check will enforce that an `OWNER` of `//foo/bar` must +1
