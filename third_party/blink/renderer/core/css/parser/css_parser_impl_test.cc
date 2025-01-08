@@ -1154,7 +1154,7 @@ TEST(CSSParserImplTest, CSSFunction) {
   test::TaskEnvironment task_environment;
 
   String sheet_text = R"CSS(
-    @function --foo(): color {
+    @function --foo() returns <color> {
       @return red;
     }
   )CSS";

@@ -298,6 +298,16 @@ std::optional<CSSSyntaxDefinition> CSSSyntaxDefinition::Consume(
   return CSSSyntaxDefinition(std::move(syntax_components));
 }
 
+std::optional<CSSSyntaxDefinition> CSSSyntaxDefinition::ConsumeComponent(
+    CSSParserTokenStream& stream) {
+  if (std::optional<CSSSyntaxComponent> syntax_component =
+          ConsumeSyntaxComponent(stream)) {
+    Vector<CSSSyntaxComponent> syntax_components(1u, syntax_component.value());
+    return CSSSyntaxDefinition(std::move(syntax_components));
+  }
+  return std::nullopt;
+}
+
 const CSSValue* CSSSyntaxDefinition::Parse(StringView text,
                                            const CSSParserContext& context,
                                            bool is_animation_tainted,

@@ -1945,5 +1945,8 @@
     // Used as functions in calc()
     "sibling-count",
     "sibling-index",
+
+    // @function
+    "returns",
   ],
 }

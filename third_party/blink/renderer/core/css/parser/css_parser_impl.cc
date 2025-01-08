@@ -2249,16 +2249,23 @@ StyleRulePositionTry* CSSParserImpl::ConsumePositionTryRule(
                                 context_->GetDocument()));
 }
 
-// Parse a type for CSS Functions; e.g. length, color, etc..
-// These are being converted to the syntax used by registered custom properties.
-// The parameter is assumed to be a single ident token.
-static std::optional<CSSSyntaxDefinition> ParseFunctionType(
-    StringView type_name) {
-  if (type_name == "any") {
-    return CSSSyntaxStringParser("*").Parse();
-  } else {
-    return CSSSyntaxStringParser("<" + type_name.ToString() + ">").Parse();
+// Consume a type for CSS Functions; e.g. <length>, <color>, etc..
+//
+// https://drafts.csswg.org/css-mixins-1/#typedef-css-type
+static std::optional<CSSSyntaxDefinition> ConsumeFunctionType(
+    CSSParserTokenStream& stream) {
+  // The <syntax> must generally be wrapped in type().
+  if (stream.Peek().FunctionId() == CSSValueID::kType) {
+    CSSParserTokenStream::RestoringBlockGuard guard(stream);
+    stream.ConsumeWhitespace();
+    std::optional<CSSSyntaxDefinition> type =
+        CSSSyntaxDefinition::Consume(stream);
+    if (type.has_value() && guard.Release()) {
+      return type;
+    }
   }
+  // However, a lone <syntax-component> may appear unwrapped.
+  return CSSSyntaxDefinition::ConsumeComponent(stream);
 }
 
 StyleRuleFunction* CSSParserImpl::ConsumeFunctionRule(
@@ -2285,25 +2292,17 @@ StyleRuleFunction* CSSParserImpl::ConsumeFunctionRule(
   }
   stream.ConsumeWhitespace();
 
-  // Parse the return type.
-  if (stream.Peek().GetType() != kColonToken) {
-    ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleFunction);
-    return nullptr;
+  std::optional<CSSSyntaxDefinition> return_type;
+  if (stream.Peek().Id() == CSSValueID::kReturns) {
+    stream.ConsumeIncludingWhitespace();  // kReturns
+    return_type = ConsumeFunctionType(stream);
+    if (!return_type.has_value()) {
+      ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleFunction);
+      return nullptr;
+    }
+  } else {
+    return_type = CSSSyntaxDefinition::CreateUniversal();
   }
-  stream.ConsumeIncludingWhitespace();
-
-  if (stream.Peek().GetType() != kIdentToken) {
-    ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleFunction);
-    return nullptr;
-  }
-  StringView return_type_name = stream.Peek().Value();
-  std::optional<CSSSyntaxDefinition> return_type =
-      ParseFunctionType(return_type_name);
-  if (!return_type) {
-    ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleFunction);
-    return nullptr;  // Invalid type name.
-  }
-  stream.ConsumeIncludingWhitespace();
 
   if (!ConsumeEndOfPreludeForAtRuleWithBlock(stream,
                                              CSSAtRuleID::kCSSAtRuleFunction)) {
@@ -2435,22 +2434,11 @@ CSSParserImpl::ConsumeFunctionParameters(CSSParserTokenStream& stream) {
     }
     stream.ConsumeIncludingWhitespace();
 
-    if (stream.Peek().GetType() != kColonToken) {
-      return {};
-    }
-    stream.ConsumeIncludingWhitespace();
+    CSSSyntaxDefinition type = ConsumeFunctionType(stream).value_or(
+        CSSSyntaxDefinition::CreateUniversal());
 
-    if (stream.Peek().GetType() != kIdentToken) {
-      return {};
-    }
-    StringView type_name = stream.Peek().Value();
-    std::optional<CSSSyntaxDefinition> type = ParseFunctionType(type_name);
-    if (!type) {
-      return {};  // Invalid type name.
-    }
-    stream.ConsumeIncludingWhitespace();
     parameters.push_back(
-        StyleRuleFunction::Parameter{parameter_name, std::move(*type)});
+        StyleRuleFunction::Parameter{parameter_name, std::move(type)});
     if (stream.Peek().GetType() == kRightParenthesisToken) {
       // No more arguments.
       break;

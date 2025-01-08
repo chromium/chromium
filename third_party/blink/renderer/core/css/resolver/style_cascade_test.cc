@@ -4304,7 +4304,7 @@ TEST_F(StyleCascadeTest, SubstitutingLhCycles) {
 
 TEST_F(StyleCascadeTest, CSSFunctionTrivial) {
   AppendSheet(R"HTML(
-     @function --foo(): color {
+     @function --foo() returns <color> {
        @return red;
      }
     )HTML");
@@ -4319,7 +4319,7 @@ TEST_F(StyleCascadeTest, CSSFunctionTrivial) {
 
 TEST_F(StyleCascadeTest, CSSFunctionWithArgument) {
   AppendSheet(R"HTML(
-     @function --foo(--a: length): length {
+     @function --foo(--a <length>) returns <length> {
        @return calc(arg(--a) * 2);
      }
     )HTML");
@@ -4334,7 +4334,7 @@ TEST_F(StyleCascadeTest, CSSFunctionWithArgument) {
 
 TEST_F(StyleCascadeTest, CSSFunctionWithTwoArguments) {
   AppendSheet(R"HTML(
-     @function --foo(--a: integer, --b: integer): integer {
+     @function --foo(--a <integer>, --b <integer>) returns <integer> {
        @return calc(arg(--a) * arg(--b));
      }
     )HTML");
@@ -4349,10 +4349,10 @@ TEST_F(StyleCascadeTest, CSSFunctionWithTwoArguments) {
 
 TEST_F(StyleCascadeTest, CSSFunctionCallingOtherFunction) {
   AppendSheet(R"HTML(
-     @function --foo(--a: length): length {
+     @function --foo(--a <length>) returns <length> {
        @return calc(arg(--a) * 2);
      }
-     @function --bar(--b: length): length {
+     @function --bar(--b <length>) returns <length> {
        @return calc(--foo(arg(--b)) * 3);
      }
     )HTML");
@@ -4367,13 +4367,16 @@ TEST_F(StyleCascadeTest, CSSFunctionCallingOtherFunction) {
 
 TEST_F(StyleCascadeTest, CSSFunctionReturnTypeCoercion) {
   AppendSheet(R"HTML(
-     @function --returning-any(): any {
+     @function --returning-any() returns type(*) {
        @return var(--v);
      }
-     @function --returning-length(): length {
+     @function --returning-any-implicit() {
        @return var(--v);
      }
-     @function --returning-color(): color {
+     @function --returning-length() returns <length> {
+       @return var(--v);
+     }
+     @function --returning-color() returns <color> {
        @return var(--v);
      }
     )HTML");
@@ -4382,18 +4385,40 @@ TEST_F(StyleCascadeTest, CSSFunctionReturnTypeCoercion) {
 
   cascade.Add("--v", "10.00px");
   cascade.Add("--any", "--returning-any()");
+  cascade.Add("--any-implicit", "--returning-any-implicit()");
   cascade.Add("--length", "--returning-length()");
   cascade.Add("--color", "--returning-color()");
   cascade.Apply();
 
   EXPECT_EQ("10.00px", cascade.ComputedValue("--any"));
+  EXPECT_EQ("10.00px", cascade.ComputedValue("--any-implicit"));
   EXPECT_EQ("10px", cascade.ComputedValue("--length"));
   EXPECT_EQ(nullptr, cascade.ComputedValue("--color"));
 }
 
-TEST_F(StyleCascadeTest, CSSFunctionImplicitCalc) {
+TEST_F(StyleCascadeTest, CSSFunctionAdvancedType) {
   AppendSheet(R"HTML(
-     @function --foo(--x: number): number {
+     @function --returning-length() returns type(<length> | auto) {
+       @return 10px;
+     }
+     @function --returning-auto() returns type(<length> | auto) {
+       @return auto;
+     }
+    )HTML");
+
+  TestCascade cascade(GetDocument());
+
+  cascade.Add("--length", "--returning-length()");
+  cascade.Add("--auto", "--returning-auto()");
+  cascade.Apply();
+
+  EXPECT_EQ("10px", cascade.ComputedValue("--length"));
+  EXPECT_EQ("auto", cascade.ComputedValue("--auto"));
+}
+
+TEST_F(StyleCascadeTest, CSSFunctionExplicitCalc) {
+  AppendSheet(R"HTML(
+     @function --foo(--x <number>) returns <number> {
        @return calc(arg(--x) * 2);
      }
     )HTML");
@@ -4408,7 +4433,7 @@ TEST_F(StyleCascadeTest, CSSFunctionImplicitCalc) {
 
 TEST_F(StyleCascadeTest, AffectedByCSSFunction) {
   AppendSheet(R"HTML(
-     @function --red(): color {
+     @function --red() returns <color> {
        @return red;
      }
     )HTML");
