@@ -15,6 +15,15 @@ CONSOLE MESSAGE:     getter reason
 CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE:     method throwIfAborted
 CONSOLE MESSAGE:     setter onabort
+CONSOLE MESSAGE: interface AsyncDisposableStack
+CONSOLE MESSAGE:     attribute @@toStringTag
+CONSOLE MESSAGE:     getter disposed
+CONSOLE MESSAGE:     method Symbol(Symbol.asyncDispose)
+CONSOLE MESSAGE:     method adopt
+CONSOLE MESSAGE:     method defer
+CONSOLE MESSAGE:     method disposeAsync
+CONSOLE MESSAGE:     method move
+CONSOLE MESSAGE:     method use
 CONSOLE MESSAGE: interface ByteLengthQueuingStrategy
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter highWaterMark
@@ -61,6 +70,15 @@ CONSOLE MESSAGE:     getter code
 CONSOLE MESSAGE:     getter message
 CONSOLE MESSAGE:     getter name
 CONSOLE MESSAGE:     method constructor
+CONSOLE MESSAGE: interface DisposableStack
+CONSOLE MESSAGE:     attribute @@toStringTag
+CONSOLE MESSAGE:     getter disposed
+CONSOLE MESSAGE:     method Symbol(Symbol.dispose)
+CONSOLE MESSAGE:     method adopt
+CONSOLE MESSAGE:     method defer
+CONSOLE MESSAGE:     method dispose
+CONSOLE MESSAGE:     method move
+CONSOLE MESSAGE:     method use
 CONSOLE MESSAGE: interface ErrorEvent : Event
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter colno
@@ -192,6 +210,10 @@ CONSOLE MESSAGE:     method complete
 CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE:     method error
 CONSOLE MESSAGE:     method next
+CONSOLE MESSAGE: interface SuppressedError : Error
+CONSOLE MESSAGE:     attribute message
+CONSOLE MESSAGE:     attribute name
+CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE: interface TransformStream
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter readable

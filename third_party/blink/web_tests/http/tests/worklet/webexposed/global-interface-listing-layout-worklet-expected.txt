@@ -1,5 +1,14 @@
 CONSOLE MESSAGE: This test logs exposed APIs from LayoutWorkletGlobalScope
 CONSOLE MESSAGE: [INTERFACES]
+CONSOLE MESSAGE: interface AsyncDisposableStack
+CONSOLE MESSAGE:     attribute @@toStringTag
+CONSOLE MESSAGE:     getter disposed
+CONSOLE MESSAGE:     method Symbol(Symbol.asyncDispose)
+CONSOLE MESSAGE:     method adopt
+CONSOLE MESSAGE:     method defer
+CONSOLE MESSAGE:     method disposeAsync
+CONSOLE MESSAGE:     method move
+CONSOLE MESSAGE:     method use
 CONSOLE MESSAGE: interface ByteLengthQueuingStrategy
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter highWaterMark
@@ -219,6 +228,15 @@ CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter highWaterMark
 CONSOLE MESSAGE:     getter size
 CONSOLE MESSAGE:     method constructor
+CONSOLE MESSAGE: interface DisposableStack
+CONSOLE MESSAGE:     attribute @@toStringTag
+CONSOLE MESSAGE:     getter disposed
+CONSOLE MESSAGE:     method Symbol(Symbol.dispose)
+CONSOLE MESSAGE:     method adopt
+CONSOLE MESSAGE:     method defer
+CONSOLE MESSAGE:     method dispose
+CONSOLE MESSAGE:     method move
+CONSOLE MESSAGE:     method use
 CONSOLE MESSAGE: interface IntrinsicSizes
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter maxContentSize
@@ -317,6 +335,10 @@ CONSOLE MESSAGE:     method getAll
 CONSOLE MESSAGE:     method has
 CONSOLE MESSAGE:     method keys
 CONSOLE MESSAGE:     method values
+CONSOLE MESSAGE: interface SuppressedError : Error
+CONSOLE MESSAGE:     attribute message
+CONSOLE MESSAGE:     attribute name
+CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE: interface TransformStream
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter readable
@@ -386,6 +408,15 @@ CONSOLE MESSAGE:     attribute globalThis
 CONSOLE MESSAGE:     method gc
 CONSOLE MESSAGE:     method registerLayout
 CONSOLE MESSAGE: [INTERFACES]
+CONSOLE MESSAGE: interface AsyncDisposableStack
+CONSOLE MESSAGE:     attribute @@toStringTag
+CONSOLE MESSAGE:     getter disposed
+CONSOLE MESSAGE:     method Symbol(Symbol.asyncDispose)
+CONSOLE MESSAGE:     method adopt
+CONSOLE MESSAGE:     method defer
+CONSOLE MESSAGE:     method disposeAsync
+CONSOLE MESSAGE:     method move
+CONSOLE MESSAGE:     method use
 CONSOLE MESSAGE: interface ByteLengthQueuingStrategy
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter highWaterMark
@@ -605,6 +636,15 @@ CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter highWaterMark
 CONSOLE MESSAGE:     getter size
 CONSOLE MESSAGE:     method constructor
+CONSOLE MESSAGE: interface DisposableStack
+CONSOLE MESSAGE:     attribute @@toStringTag
+CONSOLE MESSAGE:     getter disposed
+CONSOLE MESSAGE:     method Symbol(Symbol.dispose)
+CONSOLE MESSAGE:     method adopt
+CONSOLE MESSAGE:     method defer
+CONSOLE MESSAGE:     method dispose
+CONSOLE MESSAGE:     method move
+CONSOLE MESSAGE:     method use
 CONSOLE MESSAGE: interface IntrinsicSizes
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter maxContentSize
@@ -703,6 +743,10 @@ CONSOLE MESSAGE:     method getAll
 CONSOLE MESSAGE:     method has
 CONSOLE MESSAGE:     method keys
 CONSOLE MESSAGE:     method values
+CONSOLE MESSAGE: interface SuppressedError : Error
+CONSOLE MESSAGE:     attribute message
+CONSOLE MESSAGE:     attribute name
+CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE: interface TransformStream
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter readable
