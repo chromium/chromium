@@ -79,8 +79,6 @@ public class DeferredIMEWindowInsetApplicationCallbackTest {
         WindowInsetsCompat modifiedInsets = mCallback.onApplyWindowInsets(mView, windowInsets);
 
         assertEquals(Insets.NONE, modifiedInsets.getInsets(WindowInsetsCompat.Type.ime()));
-        assertEquals(
-                Insets.NONE, modifiedInsets.getInsets(WindowInsetsCompat.Type.navigationBars()));
         verify(mUpdateRunnable, never()).run();
 
         mCallback.onEnd(mAnimation);

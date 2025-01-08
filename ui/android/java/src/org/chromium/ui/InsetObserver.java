@@ -100,7 +100,7 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
             InsetConsumerSource.APP_HEADER_COORDINATOR_CAPTION,
             InsetConsumerSource.EDGE_TO_EDGE_CONTROLLER_IMPL,
             InsetConsumerSource.EDGE_TO_EDGE_LAYOUT_COORDINATOR,
-            InsetConsumerSource.APP_HEADER_COORDINATOR_BOTTOM,
+            InsetConsumerSource.APP_HEADER_COORDINATOR_IME,
             InsetConsumerSource.COUNT
         })
         @Retention(RetentionPolicy.SOURCE)
@@ -112,7 +112,7 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
             int APP_HEADER_COORDINATOR_CAPTION = 2;
             int EDGE_TO_EDGE_CONTROLLER_IMPL = 3;
             int EDGE_TO_EDGE_LAYOUT_COORDINATOR = 4;
-            int APP_HEADER_COORDINATOR_BOTTOM = 5;
+            int APP_HEADER_COORDINATOR_IME = 5;
 
             // Update this whenever a consumer source is added or removed.
             int COUNT = 6;

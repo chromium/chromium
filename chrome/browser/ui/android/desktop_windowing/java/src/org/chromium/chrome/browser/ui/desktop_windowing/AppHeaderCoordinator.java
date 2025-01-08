@@ -79,7 +79,6 @@ public class AppHeaderCoordinator
             DesktopWindowHeuristicResult.UNKNOWN;
     private @WindowingMode int mWindowingMode = WindowingMode.UNKNOWN;
     private int mKeyboardInset;
-    private int mNavBarInset;
 
     /**
      * Instantiate the coordinator to handle drawing the tab strip into the captionBar area.
@@ -111,7 +110,7 @@ public class AppHeaderCoordinator
         mRootView = rootView;
         mBrowserControlsVisibilityDelegate = browserControlsVisibilityDelegate;
         mInsetObserver = insetObserver;
-        mInsetObserver.addInsetsConsumer(this, InsetConsumerSource.APP_HEADER_COORDINATOR_BOTTOM);
+        mInsetObserver.addInsetsConsumer(this, InsetConsumerSource.APP_HEADER_COORDINATOR_IME);
         mInsetsController = mRootView.getWindowInsetsController();
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mActivityLifecycleDispatcher.register(this);
@@ -314,10 +313,7 @@ public class AppHeaderCoordinator
     private boolean maybeUpdateRootViewBottomPadding() {
         int rootViewBottomPadding = mRootView.getPaddingBottom();
         // Pad the root view with IME bottom insets only if E2E is active.
-        int bottomInset =
-                FALSE.equals(mEdgeToEdgeStateProvider.get())
-                        ? 0
-                        : Math.max(mKeyboardInset, mNavBarInset);
+        int bottomInset = FALSE.equals(mEdgeToEdgeStateProvider.get()) ? 0 : mKeyboardInset;
 
         // If the root view is padded as needed already, return early.
         if (rootViewBottomPadding == bottomInset) return bottomInset != 0;
@@ -362,15 +358,12 @@ public class AppHeaderCoordinator
     public WindowInsetsCompat onApplyWindowInsets(
             @NonNull View view, @NonNull WindowInsetsCompat windowInsetsCompat) {
         mKeyboardInset = windowInsetsCompat.getInsets(WindowInsetsCompat.Type.ime()).bottom;
-        mNavBarInset =
-                windowInsetsCompat.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
         boolean resizedRootView = maybeUpdateRootViewBottomPadding();
         if (!resizedRootView) return windowInsetsCompat;
 
         // Consume IME insets if the root view has been adjusted.
         return new WindowInsetsCompat.Builder(windowInsetsCompat)
                 .setInsets(WindowInsetsCompat.Type.ime(), Insets.NONE)
-                .setInsets(WindowInsetsCompat.Type.navigationBars(), Insets.NONE)
                 .build();
     }
 }

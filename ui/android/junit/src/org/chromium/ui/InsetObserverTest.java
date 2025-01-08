@@ -144,7 +144,7 @@ public class InsetObserverTest {
     public void applyInsets_withMultipleInsetConsumers() {
         // Add consumers in reverse order of priority.
         mInsetObserver.addInsetsConsumer(
-                mInsetsConsumer1, InsetConsumerSource.APP_HEADER_COORDINATOR_BOTTOM);
+                mInsetsConsumer1, InsetConsumerSource.APP_HEADER_COORDINATOR_IME);
         mInsetObserver.addInsetsConsumer(
                 mInsetsConsumer2,
                 InsetConsumerSource.DEFERRED_IME_WINDOW_INSET_APPLICATION_CALLBACK);
