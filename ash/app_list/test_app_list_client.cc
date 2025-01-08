@@ -160,4 +160,9 @@ void TestAppListClient::GetAssistantNewEntryPointEligibility(
   std::move(callback).Run(ash::assistant::features::IsNewEntryPointEnabled());
 }
 
+std::optional<std::string> TestAppListClient::GetAssistantNewEntryPointName() {
+  // TODO(crbug.com/388361414): update the string
+  return "New entry point";
+}
+
 }  // namespace ash

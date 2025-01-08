@@ -2079,7 +2079,17 @@ int AppListControllerImpl::GetFullscreenLauncherContainerId() const {
 
 void AppListControllerImpl::OnAssistantNewEntryPointEligibilityReady(
     bool eligible) {
-  GetSearchModel()->search_box()->SetShowAssistantNewEntryPointButton(eligible);
+  if (eligible) {
+    std::optional<std::string> name = client_->GetAssistantNewEntryPointName();
+    CHECK(name.has_value()) << "New entry point name must be available "
+                               "if new entry point is available";
+
+    GetSearchModel()->search_box()->SetShowAssistantNewEntryPointButton(
+        true, name.value());
+  } else {
+    GetSearchModel()->search_box()->SetShowAssistantNewEntryPointButton(
+        false, /*name=*/std::string());
+  }
 }
 
 int AppListControllerImpl::GetPreferredBubbleWidth(

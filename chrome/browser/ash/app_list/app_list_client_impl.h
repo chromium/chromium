@@ -24,6 +24,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
@@ -126,6 +127,7 @@ class AppListClientImpl
   bool HasReordered() override;
   void GetAssistantNewEntryPointEligibility(
       GetAssistantNewEntryPointEligibilityCallback callback) override;
+  std::optional<std::string> GetAssistantNewEntryPointName() override;
 
   // user_manager::UserManager::UserSessionStateObserver:
   void ActiveUserChanged(user_manager::User* active_user) override;
@@ -237,6 +239,13 @@ class AppListClientImpl
   void OnAssistantNewEntryPointEligibilityReady(
       Profile* profile,
       GetAssistantNewEntryPointEligibilityCallback callback);
+
+  // Returns `AssistantBrowserDelegate` for the purpose of new entry point. This
+  // checks if the current profile is a primary profile or not as the new entry
+  // point is available only for a primary profile. `nullptr` is returned if
+  // it's not available, e.g., non-primary profile.
+  ash::assistant::AssistantBrowserDelegate*
+  GetAssistantBrowserDelegateForNewEntryPoint();
 
   // Unowned pointer to the associated profile. May change if SetProfile is
   // called.

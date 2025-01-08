@@ -1442,8 +1442,7 @@ TEST_P(AssistantNewEntryPointDisabledTest, NewEntryPointButtonHidden) {
       GetAppListTestHelper()
           ->GetSearchBoxView()
           ->assistant_new_entry_point_button();
-  ASSERT_TRUE(new_entry_point_button);
-  EXPECT_FALSE(new_entry_point_button->GetVisible());
+  EXPECT_FALSE(new_entry_point_button);
 }
 
 class SunfishLauncherButtonTest : public AshTestBase,

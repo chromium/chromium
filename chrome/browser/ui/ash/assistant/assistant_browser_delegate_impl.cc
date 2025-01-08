@@ -237,9 +237,9 @@ void AssistantBrowserDelegateImpl::OpenUrl(GURL url) {
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
-base::expected<const web_app::WebApp*,
+base::expected<const web_app::WebAppRegistrar*,
                ash::assistant::AssistantBrowserDelegate::Error>
-AssistantBrowserDelegateImpl::ResolveNewEntryPointIfEligible() {
+AssistantBrowserDelegateImpl::GetWebAppRegistrarForNewEntryPoint() {
   if (!profile_for_new_entry_point_) {
     return base::unexpected(
         ash::assistant::AssistantBrowserDelegate::Error::kProfileNotReady);
@@ -260,11 +260,19 @@ AssistantBrowserDelegateImpl::ResolveNewEntryPointIfEligible() {
   CHECK(provider) << "WebAppProvider must be available if "
                      "on_is_new_entry_point_eligible_ready_ is signaled";
 
+  return &(provider->registrar_unsafe());
+}
+
+base::expected<const web_app::WebApp*,
+               ash::assistant::AssistantBrowserDelegate::Error>
+AssistantBrowserDelegateImpl::ResolveNewEntryPointIfEligible() {
+  ASSIGN_OR_RETURN(const web_app::WebAppRegistrar* web_app_registrar,
+                   GetWebAppRegistrarForNewEntryPoint());
+
   std::string app_id = entry_point_id_for_testing_.empty()
                            ? chromeos::assistant::kEntryPointId
                            : entry_point_id_for_testing_;
-  const web_app::WebApp* web_app =
-      provider->registrar_unsafe().GetAppById(app_id);
+  const web_app::WebApp* web_app = web_app_registrar->GetAppById(app_id);
   if (!web_app) {
     return base::unexpected(ash::assistant::AssistantBrowserDelegate::Error::
                                 kNewEntryPointNotFound);
@@ -326,6 +334,19 @@ void AssistantBrowserDelegateImpl::OpenNewEntryPoint() {
 
 int AssistantBrowserDelegateImpl::GetNewEntryPointIconResourceId() {
   return chromeos::assistant::kIconResourceId;
+}
+
+std::optional<std::string>
+AssistantBrowserDelegateImpl::GetNewEntryPointName() {
+  ASSIGN_OR_RETURN(
+      const web_app::WebApp* web_app, ResolveNewEntryPointIfEligible(),
+      [](auto) -> std::optional<std::string> { return std::nullopt; });
+  ASSIGN_OR_RETURN(
+      const web_app::WebAppRegistrar* web_app_registrar,
+      GetWebAppRegistrarForNewEntryPoint(),
+      [](auto) -> std::optional<std::string> { return std::nullopt; });
+
+  return web_app_registrar->GetAppShortName(web_app->app_id());
 }
 
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)

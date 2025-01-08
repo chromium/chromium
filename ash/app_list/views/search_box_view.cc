@@ -80,6 +80,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/image/image_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -574,16 +575,8 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
   assistant_button->SetTooltipText(assistant_button_label);
   SetShowAssistantButton(search_box_model->show_assistant_button());
 
-  views::ImageButton* assistant_new_entry_point_button =
-      CreateAssistantNewEntryPointButton(base::BindRepeating(
-          &SearchBoxView::AssistantNewEntryPointButtonPressed,
-          base::Unretained(this)));
-  assistant_new_entry_point_button->SetFlipCanvasOnPaintForRTLUI(false);
-  // TODO(crbug.com/380089265): update tooltip text and set a11y name.
-  assistant_new_entry_point_button->SetTooltipText(
-      u"Assistant New Entry Point");
-  SetShowAssistantNewEntryPointButton(
-      search_box_model->show_assistant_new_entry_point_button());
+  // Create Assistant new entry point button in this method if eligibile.
+  SearchBoxView::ShowAssistantNewEntryPointChanged();
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kTextField);
   UpdateAccessibleValue();
@@ -830,7 +823,7 @@ void SearchBoxView::OnThemeChanged() {
           chromeos::kAssistantIcon, button_icon_color, GetSearchBoxIconSize()));
 
   // Image model of `assistant_new_entry_point_button()` is set in
-  // `SearchBoxViewBase::SetShowAssistantNewEntryPointButton`.
+  // `SearchBoxView::ShowAssistantNewEntryPointChanged`.
 
   if (filter_button()) {
     filter_button()->SetImageModel(
@@ -1730,11 +1723,49 @@ void SearchBoxView::ShowAssistantChanged() {
 }
 
 void SearchBoxView::ShowAssistantNewEntryPointChanged() {
-  SetShowAssistantNewEntryPointButton(
-      AppListModelProvider::Get()
-          ->search_model()
-          ->search_box()
-          ->show_assistant_new_entry_point_button());
+  const bool show = AppListModelProvider::Get()
+                        ->search_model()
+                        ->search_box()
+                        ->show_assistant_new_entry_point_button();
+
+  if (show && !assistant_new_entry_point_button()) {
+    views::ImageButton* assistant_new_entry_point_button =
+        CreateAssistantNewEntryPointButton(base::BindRepeating(
+            &SearchBoxView::AssistantNewEntryPointButtonPressed,
+            base::Unretained(this)));
+    assistant_new_entry_point_button->SetFlipCanvasOnPaintForRTLUI(false);
+
+    // `AssistantBrowserDelegate::Get` has `DCHECK`. It's not allowed to call if
+    // `AssistantBrowserDelegate` is not available, and that is the case for
+    // some tests. `AssistantBrowserDelegate` should be available if visibility
+    // is determined to be eligible (i.e., show=true) as querying visibility
+    // requires access to the delegate.
+    assistant::AssistantBrowserDelegate* assistant_browser_delegate =
+        assistant::AssistantBrowserDelegate::Get();
+    CHECK(assistant_browser_delegate);
+
+    // Assistant new entry point icon includes margins. Use button size
+    // instead of search box icon size, which contains margins, to avoid
+    // having duplicated margins.
+    assistant_new_entry_point_button->SetImageModel(
+        views::ImageButton::STATE_NORMAL,
+        ui::ImageModel::FromImage(gfx::ResizedImage(
+            ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+                assistant_browser_delegate->GetNewEntryPointIconResourceId()),
+            assistant_new_entry_point_button->GetPreferredSize())));
+
+    std::string name = AppListModelProvider::Get()
+                           ->search_model()
+                           ->search_box()
+                           ->assistant_new_entry_point_name();
+    CHECK(!name.empty())
+        << "New entry point name must be set if a profile is eligible for the "
+           "new entry point";
+    assistant_new_entry_point_button->SetTooltipText(base::UTF8ToUTF16(name));
+    assistant_new_entry_point_button->GetViewAccessibility().SetName(name);
+  }
+
+  SetShowAssistantNewEntryPointButton(show);
 }
 
 void SearchBoxView::ShowSunfishChanged() {

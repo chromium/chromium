@@ -187,3 +187,23 @@ TEST_F(AssistantBrowserDelegateImplTest, NotEligibleBecauseOfNoEntryPointApp) {
       delegate_->IsNewEntryPointEligibleForPrimaryProfile().has_value());
   EXPECT_FALSE(delegate_->IsNewEntryPointEligibleForPrimaryProfile().value());
 }
+
+TEST_F(AssistantBrowserDelegateImplTest, NewEntryPointName) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      ash::assistant::features::kEnableNewEntryPoint);
+
+  InstallNewEntryPointApp();
+  web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
+
+  EXPECT_EQ("test app", delegate_->GetNewEntryPointName());
+}
+
+TEST_F(AssistantBrowserDelegateImplTest,
+       NoEntryPointNameBecauseOfNoEntryPointApp) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      ash::assistant::features::kEnableNewEntryPoint);
+
+  web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
+
+  EXPECT_EQ(std::nullopt, delegate_->GetNewEntryPointName());
+}

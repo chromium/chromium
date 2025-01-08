@@ -166,6 +166,12 @@ class ASH_PUBLIC_EXPORT AppListClient {
   virtual void GetAssistantNewEntryPointEligibility(
       GetAssistantNewEntryPointEligibilityCallback callback) = 0;
 
+  // Queries the name of Assistant new entry point, which can be used as tooltip
+  // text or a11y name. Returns `std::nullptr` for any error case, e.g., profile
+  // is not eligible, new entry point not installed. You should query the name
+  // only if `GetAssistantNewEntryPointEligibility` returns eligible.
+  virtual std::optional<std::string> GetAssistantNewEntryPointName() = 0;
+
  protected:
   virtual ~AppListClient() = default;
 };

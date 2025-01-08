@@ -73,6 +73,7 @@ class TestAppListClient : public AppListClient {
   bool HasReordered() override;
   void GetAssistantNewEntryPointEligibility(
       GetAssistantNewEntryPointEligibilityCallback callback) override;
+  std::optional<std::string> GetAssistantNewEntryPointName() override;
 
   int start_zero_state_search_count() const {
     return start_zero_state_search_count_;

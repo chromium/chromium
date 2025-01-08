@@ -4,6 +4,9 @@
 
 #include "chromeos/ash/services/assistant/test_support/scoped_assistant_browser_delegate.h"
 
+#include <optional>
+#include <string>
+
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "base/types/expected.h"
@@ -68,6 +71,11 @@ int ScopedAssistantBrowserDelegate::GetNewEntryPointIconResourceId() {
   // A placeholder resource id. Use resource id in //ash to avoid having a
   // dependency to //chrome.
   return IDR_SETTINGS_LOGO_192;
+}
+
+std::optional<std::string>
+ScopedAssistantBrowserDelegate::GetNewEntryPointName() {
+  return "New entry point";
 }
 
 }  // namespace ash::assistant

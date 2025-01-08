@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <utility>
 #include <vector>
@@ -739,31 +740,29 @@ bool AppListClientImpl::HasReordered() {
 
 void AppListClientImpl::GetAssistantNewEntryPointEligibility(
     GetAssistantNewEntryPointEligibilityCallback callback) {
-  if (profile_ == nullptr) {
-    std::move(callback).Run(false);
-    return;
-  }
-
-  // Assistant new entry point is supported only for a primary profile.
-  bool is_primary_profile = user_manager::UserManager::Get()->IsPrimaryUser(
-      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile_));
-  if (!is_primary_profile) {
-    std::move(callback).Run(false);
-    return;
-  }
-
   ash::assistant::AssistantBrowserDelegate* delegate =
-      ash::assistant::AssistantBrowserDelegate::Get();
+      GetAssistantBrowserDelegateForNewEntryPoint();
   if (!delegate) {
     std::move(callback).Run(false);
     return;
   }
 
+  CHECK(profile_) << "Profile must be set if the delegate is obtained";
   delegate->is_new_entry_point_eligible_for_primary_profile_ready().Post(
       FROM_HERE,
       base::BindOnce(
           &AppListClientImpl::OnAssistantNewEntryPointEligibilityReady,
           weak_ptr_factory_.GetWeakPtr(), profile_, std::move(callback)));
+}
+
+std::optional<std::string> AppListClientImpl::GetAssistantNewEntryPointName() {
+  ash::assistant::AssistantBrowserDelegate* delegate =
+      GetAssistantBrowserDelegateForNewEntryPoint();
+  if (!delegate) {
+    return std::nullopt;
+  }
+
+  return delegate->GetNewEntryPointName();
 }
 
 std::unique_ptr<ash::ScopedIphSession>
@@ -1005,7 +1004,7 @@ void AppListClientImpl::OnAssistantNewEntryPointEligibilityReady(
   }
 
   ash::assistant::AssistantBrowserDelegate* delegate =
-      ash::assistant::AssistantBrowserDelegate::Get();
+      GetAssistantBrowserDelegateForNewEntryPoint();
   if (!delegate) {
     std::move(callback).Run(false);
     return;
@@ -1018,6 +1017,22 @@ void AppListClientImpl::OnAssistantNewEntryPointEligibilityReady(
          "There should be no error.";
 
   std::move(callback).Run(eligibility.value());
+}
+
+ash::assistant::AssistantBrowserDelegate*
+AppListClientImpl::GetAssistantBrowserDelegateForNewEntryPoint() {
+  if (profile_ == nullptr) {
+    return nullptr;
+  }
+
+  // Assistant new entry point is supported only for a primary profile.
+  bool is_primary_profile = user_manager::UserManager::Get()->IsPrimaryUser(
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile_));
+  if (!is_primary_profile) {
+    return nullptr;
+  }
+
+  return ash::assistant::AssistantBrowserDelegate::Get();
 }
 
 std::optional<bool> AppListClientImpl::IsNewUser(

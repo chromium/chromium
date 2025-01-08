@@ -15,6 +15,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/ui/ash/assistant/device_actions.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
 #include "chromeos/ash/services/assistant/service.h"
@@ -72,6 +73,7 @@ class AssistantBrowserDelegateImpl
   IsNewEntryPointEligibleForPrimaryProfile() override;
   void OpenNewEntryPoint() override;
   int GetNewEntryPointIconResourceId() override;
+  std::optional<std::string> GetNewEntryPointName() override;
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
   void RequestLibassistantService(
       mojo::PendingReceiver<ash::libassistant::mojom::LibassistantService>
@@ -81,6 +83,13 @@ class AssistantBrowserDelegateImpl
   void OverrideEntryPointIdForTesting(const std::string& test_entry_point_id);
 
  private:
+  // Gets `web_app::WebAppRegistrar` for querying information about new entry
+  // point. Use a pointer instead of a reference as `base::expected` is
+  // incompatible with a reference.
+  base::expected<const web_app::WebAppRegistrar*,
+                 ash::assistant::AssistantBrowserDelegate::Error>
+  GetWebAppRegistrarForNewEntryPoint();
+
   // Resolves new entry point if a device or a profile is eligible. Note that
   // it's guaranteed that the value is non-nullptr if provided.
   base::expected<const web_app::WebApp*,
