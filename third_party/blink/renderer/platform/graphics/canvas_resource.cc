@@ -302,16 +302,16 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSharedBitmap::Bitmap() {
   // the SkImage is destroyed.
   SkImageInfo image_info = CreateSkImageInfo();
   auto scoped_mapping = shared_image_->Map();
-  base::span<uint8_t> bytes = scoped_mapping->GetMemoryForPlane(0);
-  CHECK_GE(bytes.size(), image_info.computeByteSize(image_info.minRowBytes()));
-  SkPixmap pixmap(image_info, bytes.data(), image_info.minRowBytes());
-  AddRef();
-  sk_sp<SkImage> sk_image = SkImages::RasterFromPixmap(
-      pixmap,
-      [](const void*, SkImages::ReleaseContext resource_to_unref) {
-        static_cast<CanvasResourceSharedBitmap*>(resource_to_unref)->Release();
-      },
-      this);
+
+  auto sk_image = SkImages::RasterFromPixmapCopy(
+      scoped_mapping->GetSkPixmapForPlane(0, CreateSkImageInfo()));
+
+  // Unmap the underlying buffer.
+  scoped_mapping.reset();
+  if (!sk_image) {
+    return nullptr;
+  }
+
   auto image = UnacceleratedStaticBitmapImage::Create(sk_image);
   image->SetOriginClean(OriginClean());
   return image;
