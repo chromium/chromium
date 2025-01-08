@@ -20,6 +20,14 @@
     },
     "types": [
       {
+        "id": "FolderType",
+        "type": "string",
+        "enum": ["bookmarks-bar", "other", "mobile", "managed"],
+        // TODO: crbug.com/383970322 - Remove once API naming is finalized.
+        "nodoc": true,
+        "description": "Indicates the type of folder. <ul><li>bookmarks-bar: The folder whose contents is displayed at the top of the browser window<li>other: Bookmarks which are displayed in the full list of bookmarks on all platforms<li>mobile: bookmarks generally available on the user's mobile devices, but modifiable by extension or in the bookmarks manager<li>managed: a top-level folder that may be present if the system administrator or the custodian of a supervised user has configured bookmarks.</ul>"
+      },
+      {
         "id": "BookmarkTreeNodeUnmodifiable",
         "type": "string",
         "enum": ["managed"],
@@ -69,6 +77,13 @@
             "type": "number",
             "optional": true,
             "description": "When the contents of this folder last changed, in milliseconds since the epoch."
+          },
+          "folderType": {
+            "$ref": "FolderType",
+            "optional": true,
+            // TODO: crbug.com/383970322 - Remove once API naming is finalized.
+            "nodoc": true,
+            "description": "If present, this is a folder that is added by the browser and that cannot be modified by the user or the extension. Child nodes may be modified, if this node does not have the <code>unmodifiable</code> property set. Omitted if the node can be modified by the user and the extension (default).<p>There may be zero, one or multiple nodes of each folder type. A folder may be added or removed by the browser, but not via the extensions API."
           },
           "unmodifiable": {
             "$ref": "BookmarkTreeNodeUnmodifiable",

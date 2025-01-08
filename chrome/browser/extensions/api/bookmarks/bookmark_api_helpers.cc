@@ -14,6 +14,7 @@
 #include "chrome/browser/extensions/bookmarks/bookmarks_error_constants.h"
 #include "chrome/common/extensions/api/bookmarks.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
@@ -85,6 +86,20 @@ void PopulateBookmarkTreeNode(
   if (!node->date_added().is_null()) {
     out_bookmark_tree_node->date_added =
         node->date_added().InMillisecondsSinceUnixEpoch();
+  }
+
+  if (node->type() == BookmarkNode::Type::BOOKMARK_BAR) {
+    out_bookmark_tree_node->folder_type =
+        api::bookmarks::FolderType::kBookmarksBar;
+  } else if (node->type() == BookmarkNode::Type::OTHER_NODE) {
+    out_bookmark_tree_node->folder_type =
+        api::bookmarks::FolderType::kOther;
+  } else if (node->type() == BookmarkNode::Type::MOBILE) {
+    out_bookmark_tree_node->folder_type =
+        api::bookmarks::FolderType::kMobile;
+  } else if (node == managed->managed_node()) {
+    out_bookmark_tree_node->folder_type =
+        api::bookmarks::FolderType::kManaged;
   }
 
   if (bookmarks::IsDescendantOf(node, managed->managed_node())) {

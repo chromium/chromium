@@ -20,7 +20,9 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
+#include "components/sync/base/features.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using bookmarks::BookmarkModel;
@@ -29,8 +31,20 @@ using bookmarks::BookmarkNode;
 namespace extensions {
 
 using api::bookmarks::BookmarkTreeNode;
+using ::testing::Eq;
+using ::testing::ExplainMatchResult;
 
 namespace bookmark_api_helpers {
+
+// Matches a BookmarkTreeNode that represents a folder node with the given
+// `expected_type` and `expected_unmodifiable`.
+MATCHER_P2(MatchesFolder, expected_type, expected_unmodifiable, "") {
+  return ExplainMatchResult(Eq(expected_type), arg.folder_type,
+                            result_listener) &&
+         ExplainMatchResult(Eq(expected_unmodifiable), arg.unmodifiable,
+                            result_listener) &&
+         ExplainMatchResult(Eq(std::nullopt), arg.url, result_listener);
+}
 
 class ExtensionBookmarksTest : public testing::Test {
  public:
@@ -70,6 +84,14 @@ class ExtensionBookmarksTest : public testing::Test {
     model_->AddURL(folder_, 0, u"CNet", GURL("http://cnet.com"));
   }
 
+  // A simple wrapper to get a single BookmarkTreeNode from a BookmarkNode (with
+  // no recursion).
+  BookmarkTreeNode GetSingleBookmarkTreeNode(const BookmarkNode* node) {
+    return GetBookmarkTreeNode(managed_, node,
+                               /*recurse=*/false,
+                               /*only_folders=*/false);
+  }
+
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   raw_ptr<bookmarks::ManagedBookmarkService> managed_;
@@ -80,13 +102,20 @@ class ExtensionBookmarksTest : public testing::Test {
 };
 
 TEST_F(ExtensionBookmarksTest, GetFullTreeFromRoot) {
+  BookmarkTreeNode tree = GetBookmarkTreeNode(managed_, model_->root_node(),
+                                              true,    // Recurse.
+                                              false);  // Not only folders.
+  ASSERT_EQ(2U, tree.children->size());
+}
+
+TEST_F(ExtensionBookmarksTest, GetTreeFromOtherPermanentNode) {
   BookmarkTreeNode tree = GetBookmarkTreeNode(managed_, model_->other_node(),
                                               true,    // Recurse.
                                               false);  // Not only folders.
   ASSERT_EQ(3U, tree.children->size());
 }
 
-TEST_F(ExtensionBookmarksTest, GetFoldersOnlyFromRoot) {
+TEST_F(ExtensionBookmarksTest, GetFoldersOnlyFromOtherPermanentNode) {
   BookmarkTreeNode tree = GetBookmarkTreeNode(managed_, model_->other_node(),
                                               true,   // Recurse.
                                               true);  // Only folders.
@@ -120,6 +149,7 @@ TEST_F(ExtensionBookmarksTest, GetModifiableNode) {
   EXPECT_EQ("http://www.reddit.com/", *tree.url);
   EXPECT_EQ(api::bookmarks::BookmarkTreeNodeUnmodifiable::kNone,
             tree.unmodifiable);
+  EXPECT_EQ(api::bookmarks::FolderType::kNone, tree.folder_type);
 }
 
 TEST_F(ExtensionBookmarksTest, GetManagedNode) {
@@ -133,6 +163,45 @@ TEST_F(ExtensionBookmarksTest, GetManagedNode) {
   EXPECT_EQ("http://www.chromium.org/", *tree.url);
   EXPECT_EQ(api::bookmarks::BookmarkTreeNodeUnmodifiable::kManaged,
             tree.unmodifiable);
+  EXPECT_EQ(api::bookmarks::FolderType::kNone, tree.folder_type);
+}
+
+TEST_F(ExtensionBookmarksTest, GetLocalPermanentAndManagedFolders) {
+  EXPECT_THAT(
+      GetSingleBookmarkTreeNode(model_->bookmark_bar_node()),
+      MatchesFolder(api::bookmarks::FolderType::kBookmarksBar,
+                    api::bookmarks::BookmarkTreeNodeUnmodifiable::kNone));
+  EXPECT_THAT(
+      GetSingleBookmarkTreeNode(model_->other_node()),
+      MatchesFolder(api::bookmarks::FolderType::kOther,
+                    api::bookmarks::BookmarkTreeNodeUnmodifiable::kNone));
+  EXPECT_THAT(
+      GetSingleBookmarkTreeNode(model_->mobile_node()),
+      MatchesFolder(api::bookmarks::FolderType::kMobile,
+                    api::bookmarks::BookmarkTreeNodeUnmodifiable::kNone));
+  EXPECT_THAT(
+      GetSingleBookmarkTreeNode(managed_->managed_node()),
+      MatchesFolder(api::bookmarks::FolderType::kManaged,
+                    api::bookmarks::BookmarkTreeNodeUnmodifiable::kManaged));
+}
+
+TEST_F(ExtensionBookmarksTest, GetAccountPermanentNodes) {
+  base::test::ScopedFeatureList features{
+      syncer::kSyncEnableBookmarksInTransportMode};
+  model_->CreateAccountPermanentFolders();
+
+  EXPECT_THAT(
+      GetSingleBookmarkTreeNode(model_->account_bookmark_bar_node()),
+      MatchesFolder(api::bookmarks::FolderType::kBookmarksBar,
+                    api::bookmarks::BookmarkTreeNodeUnmodifiable::kNone));
+  EXPECT_THAT(
+      GetSingleBookmarkTreeNode(model_->account_other_node()),
+      MatchesFolder(api::bookmarks::FolderType::kOther,
+                    api::bookmarks::BookmarkTreeNodeUnmodifiable::kNone));
+  EXPECT_THAT(
+      GetSingleBookmarkTreeNode(model_->account_mobile_node()),
+      MatchesFolder(api::bookmarks::FolderType::kMobile,
+                    api::bookmarks::BookmarkTreeNodeUnmodifiable::kNone));
 }
 
 TEST_F(ExtensionBookmarksTest, RemoveNodeInvalidId) {
