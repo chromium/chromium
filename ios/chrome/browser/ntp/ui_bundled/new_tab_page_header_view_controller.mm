@@ -201,7 +201,7 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
   self.headerView.searchHintLabel.alpha = 1;
   self.headerView.voiceSearchButton.alpha = 1;
   if (finalPosition == UIViewAnimatingPositionEnd &&
-      (self.delegate.scrolledToMinimumHeight || IsIOSLargeFakeboxEnabled())) {
+      (self.delegate.scrolledToMinimumHeight)) {
     // Check to see if the collection are still scrolled to the top --
     // it's possible (and difficult) to unfocus the omnibox and initiate a
     // -shiftTilesDownForOmniboxDefocus before the animation here completes.

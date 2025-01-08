@@ -185,20 +185,14 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, shrunkDoodleFrameIPhone) {
 
 TEST_F(ContentSuggestionsCollectionUtilsTest, fakeOmniboxHeight) {
   EXPECT_EQ(50, FakeOmniboxHeight());
-  base::test::ScopedFeatureList scoped_feature_list(kIOSLargeFakebox);
-  EXPECT_EQ(65, FakeOmniboxHeight());
 }
 
 TEST_F(ContentSuggestionsCollectionUtilsTest, pinnedFakeOmniboxHeight) {
   EXPECT_EQ(36, PinnedFakeOmniboxHeight());
-  base::test::ScopedFeatureList scoped_feature_list(kIOSLargeFakebox);
-  EXPECT_EQ(48, PinnedFakeOmniboxHeight());
 }
 
 TEST_F(ContentSuggestionsCollectionUtilsTest, fakeToolbarHeight) {
   EXPECT_EQ(50, FakeToolbarHeight());
-  base::test::ScopedFeatureList scoped_feature_list(kIOSLargeFakebox);
-  EXPECT_EQ(62, FakeToolbarHeight());
 }
 
 }  // namespace content_suggestions
