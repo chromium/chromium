@@ -16,7 +16,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -31,7 +30,7 @@ import org.chromium.net.test.EmbeddedTestServer;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@MinAndroidSdkLevel(VERSION_CODES.S)
+@MinAndroidSdkLevel(VERSION_CODES.VANILLA_ICE_CREAM)
 public class PdfPageTest {
     private static final long TIMEOUT_MS = 8000;
     private static final long POLLING_INTERVAL_MS = 500;
@@ -46,7 +45,6 @@ public class PdfPageTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/388185951")
     public void testLoadPdfUrl() {
         EmbeddedTestServer testServer = mActivityTestRule.getTestServer();
         final String url = testServer.getURL("/pdf/test/data/hello_world2.pdf");
