@@ -350,6 +350,7 @@ bool PepperGraphics2DHost::BindToInstance(
   }
 
   cached_bitmap_ = nullptr;
+  cached_bitmap_shared_image_ = nullptr;
   composited_output_modified_ = true;
 
   bound_instance_ = new_instance;
@@ -435,6 +436,7 @@ gfx::Size PepperGraphics2DHost::Size() const {
 
 void PepperGraphics2DHost::ClearCache() {
   cached_bitmap_ = nullptr;
+  cached_bitmap_shared_image_ = nullptr;
 }
 
 int32_t PepperGraphics2DHost::OnHostMsgPaintImageData(
