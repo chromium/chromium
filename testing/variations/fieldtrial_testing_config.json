@@ -392,6 +392,21 @@
             ]
         }
     ],
+    "AndroidFallbackToNextSlot": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidFallbackToNextSlot"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidHatsNext": [
         {
             "platforms": [

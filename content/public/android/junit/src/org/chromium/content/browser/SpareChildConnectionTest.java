@@ -48,7 +48,8 @@ public class SpareChildConnectionTest {
                     /* serviceCount= */ 3,
                     /* bindToCaller= */ false,
                     /* bindAsExternalService= */ false,
-                    /* useStrongBinding= */ false);
+                    /* useStrongBinding= */ false,
+                    /* fallbackToNextSlot= */ false);
 
     // The allocator used to allocate the actual connection.
     private ChildConnectionAllocator mConnectionAllocator;
@@ -108,7 +109,8 @@ public class SpareChildConnectionTest {
                         /* serviceCount= */ 5,
                         /* bindToCaller= */ false,
                         /* bindAsExternalService= */ false,
-                        /* useStrongBinding= */ false);
+                        /* useStrongBinding= */ false,
+                        /* fallbackToNextSlot= */ false);
         mConnectionAllocator.setConnectionFactoryForTesting(mTestConnectionFactory);
         mSpareConnection =
                 new SpareChildConnection(

@@ -467,7 +467,7 @@ public final class ChildProcessLauncherHelperImpl {
                             sBindingManager =
                                     new BindingManager(
                                             context,
-                                            allocator.getNumberOfServices(),
+                                            allocator.getMaxNumberOfAllocations(),
                                             sSandboxedChildConnectionRanking);
                         }
                         ChildProcessConnectionMetrics.getInstance()
@@ -558,6 +558,8 @@ public final class ChildProcessLauncherHelperImpl {
 
         if (!sandboxed) {
             if (sPrivilegedChildConnectionAllocator == null) {
+                boolean fallbackToNextSlot =
+                        ContentFeatureMap.isEnabled(ContentFeatures.ANDROID_FALLBACK_TO_NEXT_SLOT);
                 sPrivilegedChildConnectionAllocator =
                         ChildConnectionAllocator.create(
                                 context,
@@ -568,7 +570,8 @@ public final class ChildProcessLauncherHelperImpl {
                                 NUM_PRIVILEGED_SERVICES_KEY,
                                 bindToCaller,
                                 bindAsExternalService,
-                                /* useStrongBinding= */ true);
+                                /* useStrongBinding= */ true,
+                                fallbackToNextSlot);
             }
             return sPrivilegedChildConnectionAllocator;
         }
@@ -606,7 +609,8 @@ public final class ChildProcessLauncherHelperImpl {
                                 sSandboxedServicesCountForTesting,
                                 bindToCaller,
                                 bindAsExternalService,
-                                /* useStrongBinding= */ false);
+                                /* useStrongBinding= */ false,
+                                /* fallbackToNextSlot= */ false);
             } else if (ChildProcessConnection.supportVariableConnections()) {
                 connectionAllocator =
                         ChildConnectionAllocator.createVariableSize(
@@ -629,7 +633,8 @@ public final class ChildProcessLauncherHelperImpl {
                                 NUM_SANDBOXED_SERVICES_KEY,
                                 bindToCaller,
                                 bindAsExternalService,
-                                /* useStrongBinding= */ false);
+                                /* useStrongBinding= */ false,
+                                /* fallbackToNextSlot= */ false);
             }
             if (sSandboxedServiceFactoryForTesting != null) {
                 connectionAllocator.setConnectionFactoryForTesting(
@@ -641,7 +646,7 @@ public final class ChildProcessLauncherHelperImpl {
             } else {
                 sSandboxedChildConnectionRanking =
                         new ChildProcessRanking(
-                                sSandboxedChildConnectionAllocator.getNumberOfServices());
+                                sSandboxedChildConnectionAllocator.getMaxNumberOfAllocations());
             }
         }
         return sSandboxedChildConnectionAllocator;

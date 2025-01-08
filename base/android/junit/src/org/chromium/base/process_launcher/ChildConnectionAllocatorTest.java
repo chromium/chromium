@@ -58,6 +58,7 @@ public class ChildConnectionAllocatorTest {
 
     static class TestConnectionFactory implements ChildConnectionAllocator.ConnectionFactory {
         private ComponentName mLastServiceName;
+        private ComponentName mLastFallbackServiceName;
         private String mLastInstanceName;
 
         private ChildProcessConnection mConnection;
@@ -74,6 +75,7 @@ public class ChildConnectionAllocatorTest {
                 Bundle serviceBundle,
                 String instanceName) {
             mLastServiceName = serviceName;
+            mLastFallbackServiceName = fallbackServiceName;
             mLastInstanceName = instanceName;
             if (mConnection == null) {
                 mConnection = mock(ChildProcessConnection.class);
@@ -98,6 +100,12 @@ public class ChildConnectionAllocatorTest {
             ComponentName serviceName = mLastServiceName;
             mLastServiceName = null;
             return serviceName;
+        }
+
+        public ComponentName getAndResetLastFallbackServiceName() {
+            ComponentName fallbackServiceName = mLastFallbackServiceName;
+            mLastFallbackServiceName = null;
+            return fallbackServiceName;
         }
 
         public String getAndResetLastInstanceName() {
@@ -164,7 +172,8 @@ public class ChildConnectionAllocatorTest {
                         MAX_CONNECTION_NUMBER,
                         /* bindToCaller= */ true,
                         /* bindAsExternalService= */ false,
-                        /* useStrongBinding= */ false);
+                        /* useStrongBinding= */ false,
+                        /* fallbackToNextSlot= */ false);
         mAllocator.setConnectionFactoryForTesting(mTestConnectionFactory);
 
         mVariableSizeAllocator =
@@ -196,7 +205,7 @@ public class ChildConnectionAllocatorTest {
     @Feature({"ProcessManagement"})
     public void testPlainAllocate() {
         assertFalse(mAllocator.anyConnectionAllocated());
-        assertEquals(MAX_CONNECTION_NUMBER, mAllocator.getNumberOfServices());
+        assertEquals(MAX_CONNECTION_NUMBER, mAllocator.getMaxNumberOfAllocations());
 
         ChildProcessConnection connection =
                 mAllocator.allocate(
@@ -244,7 +253,8 @@ public class ChildConnectionAllocatorTest {
                         1,
                         /* bindToCaller= */ true,
                         /* bindAsExternalService= */ false,
-                        /* useStrongBinding= */ false);
+                        /* useStrongBinding= */ false,
+                        /* fallbackToNextSlot= */ false);
         doTestQueueAllocation(mAllocator, freeConnectionCallback);
     }
 
@@ -340,13 +350,69 @@ public class ChildConnectionAllocatorTest {
                             MAX_CONNECTION_NUMBER,
                             /* bindToCaller= */ true,
                             /* bindAsExternalService= */ false,
-                            useStrongBinding);
+                            useStrongBinding,
+                            /* fallbackToNextSlot= */ false);
             allocator.setConnectionFactoryForTesting(mTestConnectionFactory);
             ChildProcessConnection connection =
                     allocator.allocate(
                             /* context= */ null, /* serviceBundle= */ null, mServiceCallback);
             verify(connection, times(0)).start(useStrongBinding, mServiceCallback);
         }
+    }
+
+    @Test
+    @Feature({"ProcessManagement"})
+    public void testFixedSizeAllocatorFallback() {
+        ChildConnectionAllocator.FixedSizeAllocatorImpl allocator =
+                ChildConnectionAllocator.createFixedForTesting(
+                        null,
+                        TEST_PACKAGE_NAME,
+                        "AllocatorTest",
+                        /* serviceCount= */ 4,
+                        /* bindToCaller= */ true,
+                        /* bindAsExternalService= */ false,
+                        /* useStrongBinding= */ true,
+                        /* fallbackToNextSlot= */ true);
+
+        assertEquals(2, allocator.getMaxNumberOfAllocations());
+        assertEquals(0, allocator.allocatedConnectionsCountForTesting());
+        assertEquals(true, allocator.isFreeConnectionAvailable());
+        assertEquals(false, allocator.anyConnectionAllocated());
+
+        TestConnectionFactory connection1Factory = new TestConnectionFactory();
+        allocator.setConnectionFactoryForTesting(connection1Factory);
+        ChildProcessConnection connection1 =
+                allocator.allocate(
+                        /* context= */ null, /* serviceBundle= */ null, mServiceCallback);
+        assertEquals(1, allocator.allocatedConnectionsCountForTesting());
+        assertEquals(true, allocator.isFreeConnectionAvailable());
+        assertEquals(true, allocator.anyConnectionAllocated());
+        assertEquals(connection1, allocator.getChildProcessConnectionAtSlotForTesting(0));
+        assertNotNull(connection1Factory.getAndResetLastFallbackServiceName());
+
+        TestConnectionFactory connection2Factory = new TestConnectionFactory();
+        allocator.setConnectionFactoryForTesting(connection2Factory);
+        ChildProcessConnection connection2 =
+                allocator.allocate(
+                        /* context= */ null, /* serviceBundle= */ null, mServiceCallback);
+        assertEquals(2, allocator.allocatedConnectionsCountForTesting());
+        assertEquals(false, allocator.isFreeConnectionAvailable());
+        assertEquals(true, allocator.anyConnectionAllocated());
+        assertEquals(connection2, allocator.getChildProcessConnectionAtSlotForTesting(2));
+        assertNotNull(connection2Factory.getAndResetLastFallbackServiceName());
+
+        connection2Factory.simulateServiceProcessDying();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertEquals(1, allocator.allocatedConnectionsCountForTesting());
+        assertEquals(true, allocator.isFreeConnectionAvailable());
+        assertEquals(true, allocator.anyConnectionAllocated());
+
+        connection1Factory.simulateServiceProcessDying();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertEquals(2, allocator.getMaxNumberOfAllocations());
+        assertEquals(0, allocator.allocatedConnectionsCountForTesting());
+        assertEquals(true, allocator.isFreeConnectionAvailable());
+        assertEquals(false, allocator.anyConnectionAllocated());
     }
 
     /**

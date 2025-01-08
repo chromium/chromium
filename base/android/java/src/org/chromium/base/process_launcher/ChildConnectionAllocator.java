@@ -30,6 +30,8 @@ import org.chromium.build.annotations.Nullable;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Queue;
 
 /**
@@ -135,7 +137,8 @@ public abstract class ChildConnectionAllocator {
             String numChildServicesManifestKey,
             boolean bindToCaller,
             boolean bindAsExternalService,
-            boolean useStrongBinding) {
+            boolean useStrongBinding,
+            boolean fallbackToNextSlot) {
         int numServices = -1;
         PackageManager packageManager = context.getPackageManager();
         try {
@@ -162,6 +165,7 @@ public abstract class ChildConnectionAllocator {
                 bindToCaller,
                 bindAsExternalService,
                 useStrongBinding,
+                fallbackToNextSlot,
                 numServices);
     }
 
@@ -230,7 +234,8 @@ public abstract class ChildConnectionAllocator {
             int serviceCount,
             boolean bindToCaller,
             boolean bindAsExternalService,
-            boolean useStrongBinding) {
+            boolean useStrongBinding,
+            boolean fallbackToNextSlot) {
         return new FixedSizeAllocatorImpl(
                 new Handler(),
                 freeSlotCallback,
@@ -239,6 +244,7 @@ public abstract class ChildConnectionAllocator {
                 bindToCaller,
                 bindAsExternalService,
                 useStrongBinding,
+                fallbackToNextSlot,
                 serviceCount);
     }
 
@@ -404,7 +410,7 @@ public abstract class ChildConnectionAllocator {
     }
 
     /** May return -1 if size is not fixed. */
-    public abstract int getNumberOfServices();
+    public abstract int getMaxNumberOfAllocations();
 
     @VisibleForTesting
     public abstract boolean anyConnectionAllocated();
@@ -438,6 +444,8 @@ public abstract class ChildConnectionAllocator {
         // The list of free (not bound) service indices.
         private final ArrayList<Integer> mFreeConnectionIndices;
 
+        private final @Nullable Map<ChildProcessConnection, Integer> mFallbackSlots;
+
         private FixedSizeAllocatorImpl(
                 Handler launcherHandler,
                 @Nullable Runnable freeSlotCallback,
@@ -446,6 +454,7 @@ public abstract class ChildConnectionAllocator {
                 boolean bindToCaller,
                 boolean bindAsExternalService,
                 boolean useStrongBinding,
+                boolean fallbackToNextSlot,
                 int numChildServices) {
             super(
                     launcherHandler,
@@ -463,6 +472,12 @@ public abstract class ChildConnectionAllocator {
             for (int i = 0; i < numChildServices; i++) {
                 mFreeConnectionIndices.add(i);
             }
+
+            if (fallbackToNextSlot) {
+                mFallbackSlots = new HashMap<>();
+            } else {
+                mFallbackSlots = null;
+            }
         }
 
         @Override
@@ -475,10 +490,20 @@ public abstract class ChildConnectionAllocator {
                 Log.w(TAG, "Ran out of services to allocate.");
                 return null;
             }
+            if (mFallbackSlots != null && mFreeConnectionIndices.size() < 2) {
+                Log.w(TAG, "Ran out of services for fallback.");
+                return null;
+            }
             int slot = mFreeConnectionIndices.remove(0);
             assert mChildProcessConnections[slot] == null;
             ComponentName serviceName = new ComponentName(mPackageName, mServiceClassName + slot);
+            int fallbackSlot = -1;
             ComponentName fallbackServiceName = null;
+            if (mFallbackSlots != null) {
+                fallbackSlot = mFreeConnectionIndices.remove(0);
+                fallbackServiceName =
+                        new ComponentName(mPackageName, mServiceClassName + fallbackSlot);
+            }
 
             ChildProcessConnection connection =
                     mConnectionFactory.createConnection(
@@ -490,11 +515,15 @@ public abstract class ChildConnectionAllocator {
                             serviceBundle,
                             /* instanceName= */ null);
             mChildProcessConnections[slot] = connection;
+            if (mFallbackSlots != null) {
+                mFallbackSlots.put(connection, fallbackSlot);
+            }
             Log.d(
                     TAG,
-                    "Allocator allocated and bound a connection, name: %s, slot: %d",
+                    "Allocator allocated and bound a connection, name: %s, slot: %d fallback:%d",
                     mServiceClassName,
-                    slot);
+                    slot,
+                    fallbackSlot);
             connection.start(mUseStrongBinding, serviceCallback);
             return connection;
         }
@@ -511,11 +540,19 @@ public abstract class ChildConnectionAllocator {
                 mChildProcessConnections[slot] = null;
                 assert !mFreeConnectionIndices.contains(slot);
                 mFreeConnectionIndices.add(slot);
+
+                int fallbackSlot = -1;
+                if (mFallbackSlots != null) {
+                    fallbackSlot = mFallbackSlots.remove(connection);
+                    assert !mFreeConnectionIndices.contains(fallbackSlot);
+                    mFreeConnectionIndices.add(fallbackSlot);
+                }
                 Log.d(
                         TAG,
-                        "Allocator freed a connection, name: %s, slot: %d",
+                        "Allocator freed a connection, name: %s, slot: %d fallback:%d",
                         mServiceClassName,
-                        slot);
+                        slot,
+                        fallbackSlot);
             }
         }
 
@@ -525,13 +562,21 @@ public abstract class ChildConnectionAllocator {
         }
 
         @Override
-        public int getNumberOfServices() {
-            return mChildProcessConnections.length;
+        public int getMaxNumberOfAllocations() {
+            if (mFallbackSlots != null) {
+                return mChildProcessConnections.length / 2;
+            } else {
+                return mChildProcessConnections.length;
+            }
         }
 
         @Override
         public int allocatedConnectionsCountForTesting() {
-            return mChildProcessConnections.length - mFreeConnectionIndices.size();
+            if (mFallbackSlots != null) {
+                return (mChildProcessConnections.length - mFreeConnectionIndices.size()) / 2;
+            } else {
+                return mChildProcessConnections.length - mFreeConnectionIndices.size();
+            }
         }
 
         public @Nullable ChildProcessConnection getChildProcessConnectionAtSlotForTesting(
@@ -637,7 +682,7 @@ public abstract class ChildConnectionAllocator {
         }
 
         @Override
-        public int getNumberOfServices() {
+        public int getMaxNumberOfAllocations() {
             return -1;
         }
 
@@ -732,7 +777,7 @@ public abstract class ChildConnectionAllocator {
         }
 
         @Override
-        public int getNumberOfServices() {
+        public int getMaxNumberOfAllocations() {
             return -1;
         }
 
