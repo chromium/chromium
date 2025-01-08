@@ -150,7 +150,8 @@ public final class MultiprocessTestClientLauncher {
                             /* bindToCaller= */ false,
                             /* bindAsExternalService= */ false,
                             /* useStrongBinding= */ false,
-                            /* fallbackToNextSlot= */ false);
+                            /* fallbackToNextSlot= */ false,
+                            /* isSandboxedForHistograms= */ false);
         }
 
         mLauncher =

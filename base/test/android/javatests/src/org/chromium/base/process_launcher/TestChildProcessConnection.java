@@ -67,7 +67,8 @@ public class TestChildProcessConnection extends ChildProcessConnection {
                         return new MockChildServiceConnection();
                     }
                 },
-                /* instanceName= */ null);
+                /* instanceName= */ null,
+                /* isSandboxedForHistograms= */ false);
     }
 
     public void setPid(int pid) {

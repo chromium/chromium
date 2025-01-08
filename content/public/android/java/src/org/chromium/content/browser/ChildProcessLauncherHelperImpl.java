@@ -571,7 +571,8 @@ public final class ChildProcessLauncherHelperImpl {
                                 bindToCaller,
                                 bindAsExternalService,
                                 /* useStrongBinding= */ true,
-                                fallbackToNextSlot);
+                                fallbackToNextSlot,
+                                sandboxed);
             }
             return sPrivilegedChildConnectionAllocator;
         }
@@ -610,7 +611,8 @@ public final class ChildProcessLauncherHelperImpl {
                                 bindToCaller,
                                 bindAsExternalService,
                                 /* useStrongBinding= */ false,
-                                /* fallbackToNextSlot= */ false);
+                                /* fallbackToNextSlot= */ false,
+                                sandboxed);
             } else if (ChildProcessConnection.supportVariableConnections()) {
                 connectionAllocator =
                         ChildConnectionAllocator.createVariableSize(
@@ -621,7 +623,8 @@ public final class ChildProcessLauncherHelperImpl {
                                 ChildProcessCreationParamsImpl.getSandboxedServicesName(),
                                 bindToCaller,
                                 bindAsExternalService,
-                                /* useStrongBinding= */ false);
+                                /* useStrongBinding= */ false,
+                                sandboxed);
             } else {
                 connectionAllocator =
                         ChildConnectionAllocator.create(
@@ -634,7 +637,8 @@ public final class ChildProcessLauncherHelperImpl {
                                 bindToCaller,
                                 bindAsExternalService,
                                 /* useStrongBinding= */ false,
-                                /* fallbackToNextSlot= */ false);
+                                /* fallbackToNextSlot= */ false,
+                                sandboxed);
             }
             if (sSandboxedServiceFactoryForTesting != null) {
                 connectionAllocator.setConnectionFactoryForTesting(

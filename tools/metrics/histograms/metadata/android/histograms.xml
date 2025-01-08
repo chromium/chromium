@@ -1001,6 +1001,19 @@ chromium-metrics-reviews@google.com.
       variants="ChildProcessConnectionMetricsBindingState"/>
 </histogram>
 
+<histogram name="Android.ChildProcessConectionEventCounts"
+    enum="AndroidChildProcessConnectionEvents" expires_after="M143">
+  <owner>boliu@chromium.org</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    Record events in ChildProcessConnection. Recorded when the specific events
+    happen. Note individual counts may or may not be independent or mutually
+    exclusive; thus total count is meaningless. Counts can be compared with each
+    other, or need to be normalized with something else (eg number of child
+    process launches).
+  </summary>
+</histogram>
+
 <histogram name="Android.ChildProcessStartTimeV2{type}" units="ms"
     expires_after="2023-02-22">
   <owner>cduvall@chromium.org</owner>

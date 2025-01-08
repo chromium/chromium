@@ -73,7 +73,8 @@ public class ChildConnectionAllocatorTest {
                 boolean bindToCaller,
                 boolean bindAsExternalService,
                 Bundle serviceBundle,
-                String instanceName) {
+                String instanceName,
+                boolean isSandboxedForHistograms) {
             mLastServiceName = serviceName;
             mLastFallbackServiceName = fallbackServiceName;
             mLastInstanceName = instanceName;
@@ -173,7 +174,8 @@ public class ChildConnectionAllocatorTest {
                         /* bindToCaller= */ true,
                         /* bindAsExternalService= */ false,
                         /* useStrongBinding= */ false,
-                        /* fallbackToNextSlot= */ false);
+                        /* fallbackToNextSlot= */ false,
+                        /* isSandboxedForHistograms= */ false);
         mAllocator.setConnectionFactoryForTesting(mTestConnectionFactory);
 
         mVariableSizeAllocator =
@@ -254,7 +256,8 @@ public class ChildConnectionAllocatorTest {
                         /* bindToCaller= */ true,
                         /* bindAsExternalService= */ false,
                         /* useStrongBinding= */ false,
-                        /* fallbackToNextSlot= */ false);
+                        /* fallbackToNextSlot= */ false,
+                        /* isSandboxedForHistograms= */ false);
         doTestQueueAllocation(mAllocator, freeConnectionCallback);
     }
 
@@ -351,7 +354,8 @@ public class ChildConnectionAllocatorTest {
                             /* bindToCaller= */ true,
                             /* bindAsExternalService= */ false,
                             useStrongBinding,
-                            /* fallbackToNextSlot= */ false);
+                            /* fallbackToNextSlot= */ false,
+                            /* isSandboxedForHistograms= */ false);
             allocator.setConnectionFactoryForTesting(mTestConnectionFactory);
             ChildProcessConnection connection =
                     allocator.allocate(
@@ -372,7 +376,8 @@ public class ChildConnectionAllocatorTest {
                         /* bindToCaller= */ true,
                         /* bindAsExternalService= */ false,
                         /* useStrongBinding= */ true,
-                        /* fallbackToNextSlot= */ true);
+                        /* fallbackToNextSlot= */ true,
+                        /* isSandboxedForHistograms= */ false);
 
         assertEquals(2, allocator.getMaxNumberOfAllocations());
         assertEquals(0, allocator.allocatedConnectionsCountForTesting());

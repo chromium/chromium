@@ -54,7 +54,8 @@ public abstract class ChildConnectionAllocator {
                 boolean bindToCaller,
                 boolean bindAsExternalService,
                 Bundle serviceBundle,
-                @Nullable String instanceName);
+                @Nullable String instanceName,
+                boolean isSandboxedForHistograms);
     }
 
     /** Default implementation of the ConnectionFactory that creates actual connections. */
@@ -67,7 +68,8 @@ public abstract class ChildConnectionAllocator {
                 boolean bindToCaller,
                 boolean bindAsExternalService,
                 Bundle serviceBundle,
-                @Nullable String instanceName) {
+                @Nullable String instanceName,
+                boolean isSandboxedForHistograms) {
             return new ChildProcessConnection(
                     context,
                     serviceName,
@@ -75,7 +77,8 @@ public abstract class ChildConnectionAllocator {
                     bindToCaller,
                     bindAsExternalService,
                     serviceBundle,
-                    instanceName);
+                    instanceName,
+                    isSandboxedForHistograms);
         }
     }
 
@@ -102,6 +105,8 @@ public abstract class ChildConnectionAllocator {
     /* package */ final boolean mBindToCaller;
     /* package */ final boolean mBindAsExternalService;
     /* package */ final boolean mUseStrongBinding;
+    // This has no functional change and is used only for logging histograms.
+    /* package */ final boolean mIsSandboxedForHistograms;
 
     /* package */ ConnectionFactory mConnectionFactory = new ConnectionFactoryImpl();
 
@@ -138,7 +143,8 @@ public abstract class ChildConnectionAllocator {
             boolean bindToCaller,
             boolean bindAsExternalService,
             boolean useStrongBinding,
-            boolean fallbackToNextSlot) {
+            boolean fallbackToNextSlot,
+            boolean isSandboxedForHistograms) {
         int numServices = -1;
         PackageManager packageManager = context.getPackageManager();
         try {
@@ -166,7 +172,8 @@ public abstract class ChildConnectionAllocator {
                 bindAsExternalService,
                 useStrongBinding,
                 fallbackToNextSlot,
-                numServices);
+                numServices,
+                isSandboxedForHistograms);
     }
 
     public static ChildConnectionAllocator createVariableSize(
@@ -177,7 +184,8 @@ public abstract class ChildConnectionAllocator {
             String serviceClassName,
             boolean bindToCaller,
             boolean bindAsExternalService,
-            boolean useStrongBinding) {
+            boolean useStrongBinding,
+            boolean isSandboxedForHistograms) {
         checkServiceExists(context, packageName, serviceClassName);
 
         // OnePlus devices are having trouble with app zygote in combination with dynamic
@@ -201,7 +209,8 @@ public abstract class ChildConnectionAllocator {
                         bindToCaller,
                         bindAsExternalService,
                         useStrongBinding,
-                        MAX_VARIABLE_ALLOCATED);
+                        MAX_VARIABLE_ALLOCATED,
+                        isSandboxedForHistograms);
             }
         }
         // On low end devices, we do not expect to have many renderers. As a consequence, the fixed
@@ -220,7 +229,8 @@ public abstract class ChildConnectionAllocator {
                 bindToCaller,
                 bindAsExternalService,
                 useStrongBinding,
-                MAX_VARIABLE_ALLOCATED);
+                MAX_VARIABLE_ALLOCATED,
+                isSandboxedForHistograms);
     }
 
     /**
@@ -235,7 +245,8 @@ public abstract class ChildConnectionAllocator {
             boolean bindToCaller,
             boolean bindAsExternalService,
             boolean useStrongBinding,
-            boolean fallbackToNextSlot) {
+            boolean fallbackToNextSlot,
+            boolean isSandboxedForHistograms) {
         return new FixedSizeAllocatorImpl(
                 new Handler(),
                 freeSlotCallback,
@@ -245,7 +256,8 @@ public abstract class ChildConnectionAllocator {
                 bindAsExternalService,
                 useStrongBinding,
                 fallbackToNextSlot,
-                serviceCount);
+                serviceCount,
+                isSandboxedForHistograms);
     }
 
     public static VariableSizeAllocatorImpl createVariableSizeForTesting(
@@ -266,7 +278,8 @@ public abstract class ChildConnectionAllocator {
                 bindToCaller,
                 bindAsExternalService,
                 useStrongBinding,
-                maxAllocated);
+                maxAllocated,
+                /* isSandboxedForHistograms= */ false);
     }
 
     public static Android10WorkaroundAllocatorImpl createWorkaroundForTesting(
@@ -286,7 +299,8 @@ public abstract class ChildConnectionAllocator {
                 bindToCaller,
                 bindAsExternalService,
                 useStrongBinding,
-                maxAllocated);
+                maxAllocated,
+                /* isSandboxedForHistograms= */ false);
     }
 
     private ChildConnectionAllocator(
@@ -297,7 +311,8 @@ public abstract class ChildConnectionAllocator {
             @Nullable String fallbackServiceClassName,
             boolean bindToCaller,
             boolean bindAsExternalService,
-            boolean useStrongBinding) {
+            boolean useStrongBinding,
+            boolean isSandboxedForHistograms) {
         mLauncherHandler = launcherHandler;
         assert isRunningOnLauncherThread();
         mFreeSlotCallback = freeSlotCallback;
@@ -307,6 +322,7 @@ public abstract class ChildConnectionAllocator {
         mBindToCaller = bindToCaller;
         mBindAsExternalService = bindAsExternalService;
         mUseStrongBinding = useStrongBinding;
+        mIsSandboxedForHistograms = isSandboxedForHistograms;
     }
 
     /**
@@ -455,7 +471,8 @@ public abstract class ChildConnectionAllocator {
                 boolean bindAsExternalService,
                 boolean useStrongBinding,
                 boolean fallbackToNextSlot,
-                int numChildServices) {
+                int numChildServices,
+                boolean isSandboxedForHistograms) {
             super(
                     launcherHandler,
                     freeSlotCallback,
@@ -464,7 +481,8 @@ public abstract class ChildConnectionAllocator {
                     null,
                     bindToCaller,
                     bindAsExternalService,
-                    useStrongBinding);
+                    useStrongBinding,
+                    isSandboxedForHistograms);
 
             mChildProcessConnections = new ChildProcessConnection[numChildServices];
 
@@ -513,7 +531,8 @@ public abstract class ChildConnectionAllocator {
                             mBindToCaller,
                             mBindAsExternalService,
                             serviceBundle,
-                            /* instanceName= */ null);
+                            /* instanceName= */ null,
+                            mIsSandboxedForHistograms);
             mChildProcessConnections[slot] = connection;
             if (mFallbackSlots != null) {
                 mFallbackSlots.put(connection, fallbackSlot);
@@ -606,7 +625,8 @@ public abstract class ChildConnectionAllocator {
                 boolean bindToCaller,
                 boolean bindAsExternalService,
                 boolean useStrongBinding,
-                int maxAllocated) {
+                int maxAllocated,
+                boolean isSandboxedForHistograms) {
             super(
                     launcherHandler,
                     freeSlotCallback,
@@ -615,7 +635,8 @@ public abstract class ChildConnectionAllocator {
                     fallbackServiceClassName,
                     bindToCaller,
                     bindAsExternalService,
-                    useStrongBinding);
+                    useStrongBinding,
+                    isSandboxedForHistograms);
             assert maxAllocated > 0;
             mMaxAllocated = maxAllocated;
         }
@@ -666,7 +687,8 @@ public abstract class ChildConnectionAllocator {
                             mBindToCaller,
                             mBindAsExternalService,
                             serviceBundle,
-                            instanceName);
+                            instanceName,
+                            mIsSandboxedForHistograms);
             assert connection != null;
             return connection;
         }
@@ -719,7 +741,8 @@ public abstract class ChildConnectionAllocator {
                 boolean bindToCaller,
                 boolean bindAsExternalService,
                 boolean useStrongBinding,
-                int maxAllocated) {
+                int maxAllocated,
+                boolean isSandboxedForHistograms) {
             super(
                     launcherHandler,
                     freeSlotCallback,
@@ -728,7 +751,8 @@ public abstract class ChildConnectionAllocator {
                     null,
                     bindToCaller,
                     bindAsExternalService,
-                    useStrongBinding);
+                    useStrongBinding,
+                    isSandboxedForHistograms);
             mZygoteAllocator =
                     new VariableSizeAllocatorImpl(
                             launcherHandler,
@@ -739,7 +763,8 @@ public abstract class ChildConnectionAllocator {
                             bindToCaller,
                             bindAsExternalService,
                             useStrongBinding,
-                            maxAllocated);
+                            maxAllocated,
+                            isSandboxedForHistograms);
             mNonZygoteAllocator =
                     new VariableSizeAllocatorImpl(
                             launcherHandler,
@@ -750,7 +775,8 @@ public abstract class ChildConnectionAllocator {
                             bindToCaller,
                             bindAsExternalService,
                             useStrongBinding,
-                            maxAllocated);
+                            maxAllocated,
+                            isSandboxedForHistograms);
         }
 
         @Override

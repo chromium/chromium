@@ -57,14 +57,16 @@ public class ChildProcessLauncherIntegrationTest {
                 boolean bindToCaller,
                 boolean bindAsExternalService,
                 Bundle serviceBundle,
-                String instanceName) {
+                String instanceName,
+                boolean isSandboxedForHistograms) {
             TestChildProcessConnection connection =
                     new TestChildProcessConnection(
                             context,
                             serviceName,
                             bindToCaller,
                             bindAsExternalService,
-                            serviceBundle);
+                            serviceBundle,
+                            isSandboxedForHistograms);
             mConnections.add(connection);
             return connection;
         }
@@ -82,7 +84,8 @@ public class ChildProcessLauncherIntegrationTest {
                 ComponentName serviceName,
                 boolean bindToCaller,
                 boolean bindAsExternalService,
-                Bundle childProcessCommonParameters) {
+                Bundle childProcessCommonParameters,
+                boolean isSandboxedForHistograms) {
             super(
                     context,
                     serviceName,
@@ -90,7 +93,8 @@ public class ChildProcessLauncherIntegrationTest {
                     bindToCaller,
                     bindAsExternalService,
                     childProcessCommonParameters,
-                    /* instanceName= */ null);
+                    /* instanceName= */ null,
+                    isSandboxedForHistograms);
         }
 
         @Override
@@ -262,13 +266,15 @@ public class ChildProcessLauncherIntegrationTest {
                 ComponentName serviceName,
                 boolean bindToCaller,
                 boolean bindAsExternalService,
-                Bundle childProcessCommonParameters) {
+                Bundle childProcessCommonParameters,
+                boolean isSandboxedForHistograms) {
             super(
                     context,
                     serviceName,
                     bindToCaller,
                     bindAsExternalService,
-                    childProcessCommonParameters);
+                    childProcessCommonParameters,
+                    isSandboxedForHistograms);
         }
 
         @Override
@@ -334,7 +340,8 @@ public class ChildProcessLauncherIntegrationTest {
                 boolean bindToCaller,
                 boolean bindAsExternalService,
                 Bundle serviceBundle,
-                String instanceName) {
+                String instanceName,
+                boolean isSandboxedForHistograms) {
             if (mCrashConnection == null) {
                 mCrashConnection =
                         new CrashOnLaunchChildProcessConnection(
@@ -342,7 +349,8 @@ public class ChildProcessLauncherIntegrationTest {
                                 serviceName,
                                 bindToCaller,
                                 bindAsExternalService,
-                                serviceBundle);
+                                serviceBundle,
+                                isSandboxedForHistograms);
                 return mCrashConnection;
             }
             return super.createConnection(
@@ -352,7 +360,8 @@ public class ChildProcessLauncherIntegrationTest {
                     bindToCaller,
                     bindAsExternalService,
                     serviceBundle,
-                    instanceName);
+                    instanceName,
+                    isSandboxedForHistograms);
         }
 
         public CrashOnLaunchChildProcessConnection getCrashConnection() {

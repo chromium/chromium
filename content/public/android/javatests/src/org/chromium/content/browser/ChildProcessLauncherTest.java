@@ -117,7 +117,8 @@ public class ChildProcessLauncherTest {
                                         /* bindToCaller= */ false,
                                         /* bindAsExternalService= */ false,
                                         /* useStrongBinding= */ false,
-                                        /* fallbackToNextSlot= */ false);
+                                        /* fallbackToNextSlot= */ false,
+                                        /* isSandboxedForHistograms= */ false);
                             }
                         });
     }
@@ -378,7 +379,8 @@ public class ChildProcessLauncherTest {
                                         /* bindToCaller= */ false,
                                         /* bindAsExternalService= */ false,
                                         /* useStrongBinding= */ false,
-                                        /* fallbackToNextSlot= */ false);
+                                        /* fallbackToNextSlot= */ false,
+                                        /* isSandboxedForHistograms= */ false);
                             }
                         });
         Assert.assertFalse(badConnectionAllocator.anyConnectionAllocated());

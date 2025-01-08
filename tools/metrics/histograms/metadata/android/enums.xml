@@ -86,6 +86,13 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Site settings exception list"/>
 </enum>
 
+<enum name="AndroidChildProcessConnectionEvents">
+  <int value="0" label="SCHEDULE_TIMEOUT_SANDBOXED"/>
+  <int value="1" label="SCHEDULE_TIMEOUT_UNSANDBOXED"/>
+  <int value="2" label="FALLBACK_ON_TIMEOUT_SANDBOXED"/>
+  <int value="3" label="FALLBACK_ON_TIMEOUT_UNSANDBOXED"/>
+</enum>
+
 <enum name="AndroidDefaultBrowserPromoOutcomeType">
   <int value="0" label="No Default"/>
   <int value="1" label="Other Default"/>
