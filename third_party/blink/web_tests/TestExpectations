@@ -9091,3 +9091,6 @@ crbug.com/388188842 external/wpt/html/semantics/forms/the-select-element/customi
 
 # Gardener 2025-01-08
 crbug.com/376320405 [ Debug Linux ] external/wpt/css/css-sizing/keyword-sizes-for-intrinsic-contributions.tentative.html [ Failure ]
+crbug.com/388428511 [ Linux ] external/wpt/wasm/core/simd/simd_f32x4_pmin_pmax.wast.js.html [ Failure Pass ]
+crbug.com/388428511 [ Linux ] external/wpt/wasm/core/simd/simd_f64x2_pmin_pmax.wast.js.html [ Failure Pass ]
+crbug.com/388428511 [ Linux ] external/wpt/webrtc/protocol/crypto-suite.https.html [ Failure Pass ]
