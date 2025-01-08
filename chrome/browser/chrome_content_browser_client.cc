@@ -8551,8 +8551,7 @@ bool ChromeContentBrowserClient::ShouldEnableDips(
 bool ShouldBrowserContextEnableDips(content::BrowserContext* browser_context) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
   Profile* result = GetHumanProfileSelections().ApplyProfileSelection(profile);
-  // TODO: crbug.com/358137275 - Use CHECK() once we know it's safe.
-  DUMP_WILL_BE_CHECK(!result || result == profile)
+  CHECK(!result || result == profile)
       << "ApplyProfileSelection() returned a different profile";
   return result == profile;
 }
