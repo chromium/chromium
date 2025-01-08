@@ -46,6 +46,11 @@ void FacilitatedPaymentsDriver::TriggerEwalletPushPayment(
   ewallet_manager_->TriggerEwalletPushPayment(payment_link_url, page_url);
 }
 
+void FacilitatedPaymentsDriver::SetFacilitatedPaymentsManagerForTesting(
+    std::unique_ptr<FacilitatedPaymentsManager> manager) {
+  manager_ = std::move(manager);
+}
+
 void FacilitatedPaymentsDriver::SetEwalletManagerForTesting(
     std::unique_ptr<EwalletManager> ewallet_manager) {
   ewallet_manager_ = std::move(ewallet_manager);

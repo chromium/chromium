@@ -52,6 +52,8 @@ class FacilitatedPaymentsDriver {
   virtual void TriggerEwalletPushPayment(const GURL& payment_link_url,
                                          const GURL& page_url);
 
+  virtual void SetFacilitatedPaymentsManagerForTesting(
+      std::unique_ptr<FacilitatedPaymentsManager> manager);
   virtual void SetEwalletManagerForTesting(
       std::unique_ptr<EwalletManager> ewallet_manager);
 
