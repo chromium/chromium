@@ -535,6 +535,7 @@ void MahiManagerImpl::OnContextMenuClicked(
                         : gfx::Rect());
       return;
     case MahiContextMenuActionType::kQA:
+      current_selected_text_ = std::nullopt;
       OpenMahiPanel(context_menu_request->display_id,
                     context_menu_request->mahi_menu_bounds.has_value()
                         ? context_menu_request->mahi_menu_bounds.value()
