@@ -16,11 +16,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/screen_manager.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 class DisplayMediaAccessHandlerTest
     : public testing::WithParamInterface<bool>,
       public WebRtcTestBase,
@@ -32,15 +27,6 @@ class DisplayMediaAccessHandlerTest
   DisplayMediaAccessHandlerTest(const DisplayMediaAccessHandlerTest&) = delete;
   DisplayMediaAccessHandlerTest& operator=(
       const DisplayMediaAccessHandlerTest&) = delete;
-
-  bool ShouldSkip() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    chromeos::LacrosService* service = chromeos::LacrosService::Get();
-    return !service->IsSupported<crosapi::mojom::ScreenManager>();
-#else
-    return false;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  }
 
   void SetSystemAudioSetting(bool enabled) {
     content::WebContents* web_contents =
@@ -70,9 +56,6 @@ class DisplayMediaAccessHandlerTest
 
 // Verify that the display media picker will show up by default.
 IN_PROC_BROWSER_TEST_F(DisplayMediaAccessHandlerTest, ShowPickerByDefault) {
-  if (ShouldSkip()) {
-    GTEST_SKIP();
-  }
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Navigate to an empty page.
@@ -101,9 +84,6 @@ IN_PROC_BROWSER_TEST_F(DisplayMediaAccessHandlerTest, ShowPickerByDefault) {
 // Verify that the request will be rejected when the video stream is not
 // requested by default.
 IN_PROC_BROWSER_TEST_F(DisplayMediaAccessHandlerTest, RejectNoVideoByDefault) {
-  if (ShouldSkip()) {
-    GTEST_SKIP();
-  }
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Navigate to an empty page.
@@ -131,9 +111,6 @@ IN_PROC_BROWSER_TEST_F(DisplayMediaAccessHandlerTest, RejectNoVideoByDefault) {
 // the display media selection dialog can be bypassed and the system audio track
 // will be available by default.
 IN_PROC_BROWSER_TEST_F(DisplayMediaAccessHandlerTest, ForceSystemAudio) {
-  if (ShouldSkip()) {
-    GTEST_SKIP();
-  }
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL("chrome://version")));
 
@@ -159,9 +136,6 @@ IN_PROC_BROWSER_TEST_F(DisplayMediaAccessHandlerTest, ForceSystemAudio) {
 // when the system audio is excluded and the request should be rejected.
 IN_PROC_BROWSER_TEST_F(DisplayMediaAccessHandlerTest,
                        ForceSystemAudioButExcluded) {
-  if (ShouldSkip()) {
-    GTEST_SKIP();
-  }
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Navigate to an empty page.
@@ -190,9 +164,6 @@ IN_PROC_BROWSER_TEST_F(DisplayMediaAccessHandlerTest,
 // behavior.
 IN_PROC_BROWSER_TEST_F(DisplayMediaAccessHandlerTest,
                        ForceSystemAudioWithVideoStream) {
-  if (ShouldSkip()) {
-    GTEST_SKIP();
-  }
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Navigate to an empty page.

@@ -171,8 +171,6 @@ static_library("crosapi") {
     "resource_manager_ash.h",
     "screen_ai_downloader_ash.cc",
     "screen_ai_downloader_ash.h",
-    "screen_manager_ash.cc",
-    "screen_manager_ash.h",
     "search_controller_ash.cc",
     "search_controller_ash.h",
     "search_provider_ash.cc",
@@ -680,7 +678,6 @@ source_set("browser_tests") {
     "media_ui_ash_browsertest.cc",
     "power_ash_apitest.cc",
     "print_preview_ash_browsertest.cc",
-    "screen_manager_ash_browsertest.cc",
     "suggestion_service_ash_browsertest.cc",
     "video_conference_ash_browsertest.cc",
   ]

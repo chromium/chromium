@@ -148,9 +148,6 @@ specific_include_rules = {
     # For remote support functionality.
     "+remoting/host/chromeos",
   ],
-  "screen_manager_ash\.cc": [
-    "+services/video_capture/ash",
-  ],
   "select_file_ash\.cc": [
     # For Chrome OS-specific file manager parameters.
     "+chrome/browser/ui/views/select_file_dialog_extension/select_file_dialog_extension.h",

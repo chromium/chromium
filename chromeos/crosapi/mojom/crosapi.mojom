@@ -80,7 +80,6 @@ import "chromeos/crosapi/mojom/probe_service.mojom";
 import "chromeos/crosapi/mojom/remoting.mojom";
 import "chromeos/crosapi/mojom/resource_manager.mojom";
 import "chromeos/crosapi/mojom/screen_ai_downloader.mojom";
-import "chromeos/crosapi/mojom/screen_manager.mojom";
 import "chromeos/crosapi/mojom/smart_reader.mojom";
 import "chromeos/crosapi/mojom/structured_metrics_service.mojom";
 import "chromeos/crosapi/mojom/suggestion_service.mojom";
@@ -517,10 +516,7 @@ interface Crosapi {
   [MinVersion=110]
   BindScreenAIDownloader@113(pending_receiver<ScreenAIDownloader> receiver);
 
-  // Binds the ScreenManager interface for interacting with windows, screens and
-  // displays.
-  // Added in M86.
-  BindScreenManager@1(pending_receiver<ScreenManager> receiver);
+  // BindScreenManager@1 was removed.
 
   // Binds the SensorHalClient interface for IIO sensors' data.
   // Added in M90.
