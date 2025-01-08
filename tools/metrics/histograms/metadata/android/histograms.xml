@@ -4328,6 +4328,30 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Android.PredictiveNavigationTransition.CaptureNativeViewResult"
+    enum="CaptureNativeViewResult" expires_after="2025-06-08">
+  <owner>lazzzis@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Record the result of capturing a screenshot of a native page view. This
+    screenshot will be saved for back forward transition and used a preview when
+    user navigating back to native page. Record when user navigates away from a
+    native view page.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.PredictiveNavigationTransition.NavigateBetweenNativePages"
+    enum="Boolean" expires_after="2025-06-08">
+  <owner>lazzzis@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Record whether a navigation is about to start from a chrome native page to
+    another chrome native page. Record right before such navigation starts.
+  </summary>
+</histogram>
+
+<histogram
     name="Android.PredictiveNavigationTransition.NTPFeedRestorationDuration"
     units="ms" expires_after="2025-06-08">
   <owner>lazzzis@google.com</owner>

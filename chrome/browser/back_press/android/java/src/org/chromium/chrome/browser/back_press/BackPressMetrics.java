@@ -50,6 +50,29 @@ public class BackPressMetrics {
         int NUM_ENTRIES = 3;
     }
 
+    /**
+     * Used to record when trying to capture a screenshot of native page view used for back forward
+     * transition.
+     *
+     * <p>These values are persisted to logs. Entries should not be renumbered and numeric values
+     * should never be reused.
+     */
+    @IntDef({
+        CaptureNativeViewResult.NULL_WINDOW_ANDROID,
+        CaptureNativeViewResult.VIEW_NOT_LAID_OUT,
+        CaptureNativeViewResult.BETWEEN_NATIVE_PAGES,
+        CaptureNativeViewResult.CAPTURE_SCREENSHOT
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface CaptureNativeViewResult {
+        int NULL_WINDOW_ANDROID = 0;
+        int VIEW_NOT_LAID_OUT = 1;
+        int BETWEEN_NATIVE_PAGES = 2;
+        int CAPTURE_SCREENSHOT = 3;
+
+        int NUM_ENTRIES = 4;
+    }
+
     @IntDef({
         NavigationDirection.FORWARD,
         NavigationDirection.BACKWARD,
@@ -182,6 +205,26 @@ public class BackPressMetrics {
     public static void recordNTPSmoothTransitionMethod(boolean byFallback) {
         RecordHistogram.recordBooleanHistogram(
                 "Android.PredictiveNavigationTransition.NTPSmoothTransitionByFallback", byFallback);
+    }
+
+    /**
+     * @param betweenNativePages True if this navigation is from a chrome native page to another
+     *     native page.
+     */
+    public static void recordNavigateBetweenChromeNativePages(boolean betweenNativePages) {
+        RecordHistogram.recordBooleanHistogram(
+                "Android.PredictiveNavigationTransition.NavigateBetweenNativePages",
+                betweenNativePages);
+    }
+
+    /**
+     * @param reason The reason why a fallback ux should be used during capturing a native page.
+     */
+    public static void recordCaptureNativeViewResult(@CaptureNativeViewResult int reason) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.PredictiveNavigationTransition.CaptureNativeViewResult",
+                reason,
+                CaptureNativeViewResult.NUM_ENTRIES);
     }
 
     /**

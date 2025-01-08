@@ -308,6 +308,15 @@ public class UrlUtilities {
     }
 
     /**
+     * @param url The URL to check whether it is for the Chrome native pages.
+     * @return Whether the passed in URL is used to render a chrome native page.
+     */
+    public static boolean isChromeNativeUrl(GURL url) {
+        if (!url.isValid() || !isInternalScheme(url)) return false;
+        return TextUtils.equals(UrlConstants.CHROME_NATIVE_SCHEME, url.getScheme());
+    }
+
+    /**
      * Returns whether the url matches an NTP URL exactly. This is used to support features showing
      * the omnibox before native is loaded. Prefer using {@see #isNtpUrl(GURL gurl)} when native is
      * loaded.

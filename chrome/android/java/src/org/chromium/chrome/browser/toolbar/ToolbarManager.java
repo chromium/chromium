@@ -1196,6 +1196,10 @@ public class ToolbarManager
                             Tab tab, NavigationHandle navigationHandle) {
                         assert tab == mLocationBarModel.getTab();
                         mStartNavDuringOngoingGesture |= mBackGestureInProgress;
+                        BackPressMetrics.recordNavigateBetweenChromeNativePages(
+                                UrlUtilities.isChromeNativeUrl(tab.getUrl())
+                                        && UrlUtilities.isChromeNativeUrl(
+                                                navigationHandle.getUrl()));
                         onBackPressStateChanged();
                         mLocationBarModel.notifyDidStartNavigation(
                                 navigationHandle.isSameDocument());

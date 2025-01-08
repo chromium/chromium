@@ -778,6 +778,13 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Neither Multi-Window nor Edge-to-Edge"/>
 </enum>
 
+<enum name="CaptureNativeViewResult">
+  <int value="0" label="Not captured: Null WindowAndroid"/>
+  <int value="1" label="Not captured: View not laid out"/>
+  <int value="2" label="Not catpured: Between native pages"/>
+  <int value="3" label="Will capture a screenshot"/>
+</enum>
+
 <enum name="ChromeActivityType">
   <int value="0" label="Tabbed Chrome"/>
   <int value="1" label="Custom Tab"/>
