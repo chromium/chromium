@@ -90,6 +90,8 @@ void EdgeToEdgeBottomChinSceneLayer::SetContentTree(
 
   if (!content_tree->layer()->parent() ||
       (content_tree->layer()->parent()->id() != layer_->id())) {
+    // The content tree changes. Remove all the children.
+    layer_->RemoveAllChildren();
     layer_->AddChild(content_tree->layer());
     layer_->AddChild(view_container_);
   }
