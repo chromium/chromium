@@ -1007,4 +1007,99 @@ TEST_F(EwalletManagerTest,
       .OnTransactionResult(PurchaseActionResult::kResultCanceled);
 }
 
+TEST_F(EwalletManagerTest,
+       OnEwalletPaymentPromptResult_HistogramLogged_SingleBound) {
+  base::HistogramTester histogram_tester;
+  payments_data_manager_.AddEwalletForTest(
+      autofill::Ewallet(/*instrument_id=*/100, u"nickname",
+                        /*display_icon_url=*/GURL("http://www.example.com"),
+                        u"ewallet_name", u"account_display_name",
+                        /*supported_payment_link_uris=*/
+                        {u"^shopeepay:\\/\\/shopeepay\\.com\\.my\\?code=.*$",
+                         u"^tngd:\\/\\/tngdigital\\.com\\.my\\?code=.*$"},
+                        /*is_fido_enrolled=*/true));
+  GURL supportedPaymentLink(
+      "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
+      "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd");
+
+  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_));
+
+  ewallet_manager_->TriggerEwalletPushPayment(supportedPaymentLink,
+                                              GURL("https://www.example.com"));
+  test_api(*ewallet_manager_)
+      .OnEwalletPaymentPromptResult(/*is_prompt_accepted=*/true,
+                                    /*selected_instrument_id=*/100L);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.FopSelector.UserAction.SingleBoundEwallet",
+      /*sample=*/FopSelectorAction::kFopSelected,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(EwalletManagerTest,
+       OnEwalletPaymentPromptResult_HistogramLogged_SingleUnboundEwallet) {
+  base::HistogramTester histogram_tester;
+  payments_data_manager_.AddEwalletForTest(
+      autofill::Ewallet(/*instrument_id=*/100, u"nickname",
+                        /*display_icon_url=*/GURL("http://www.example.com"),
+                        u"ewallet_name", u"account_display_name",
+                        /*supported_payment_link_uris=*/
+                        {u"^shopeepay:\\/\\/shopeepay\\.com\\.my\\?code=.*$",
+                         u"^tngd:\\/\\/tngdigital\\.com\\.my\\?code=.*$"},
+                        /*is_fido_enrolled=*/false));
+  GURL supportedPaymentLink(
+      "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
+      "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd");
+
+  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_));
+
+  ewallet_manager_->TriggerEwalletPushPayment(supportedPaymentLink,
+                                              GURL("https://www.example.com"));
+  test_api(*ewallet_manager_)
+      .OnEwalletPaymentPromptResult(/*is_prompt_accepted=*/true,
+                                    /*selected_instrument_id=*/100L);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.FopSelector.UserAction.SingleUnboundEwallet",
+      /*sample=*/FopSelectorAction::kFopSelected,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(EwalletManagerTest,
+       OnEwalletPaymentPromptResult_HistogramLogged_MultipleEwallets) {
+  base::HistogramTester histogram_tester;
+  payments_data_manager_.AddEwalletForTest(
+      autofill::Ewallet(/*instrument_id=*/100, u"nickname1",
+                        /*display_icon_url=*/GURL("http://www.example.com"),
+                        u"ewallet_name1", u"account_display_name1",
+                        /*supported_payment_link_uris=*/
+                        {u"^shopeepay:\\/\\/shopeepay\\.com\\.my\\?code=.*$",
+                         u"^tngd:\\/\\/tngdigital\\.com\\.my\\?code=.*$"},
+                        /*is_fido_enrolled=*/false));
+  payments_data_manager_.AddEwalletForTest(
+      autofill::Ewallet(/*instrument_id=*/101, u"nickname2",
+                        /*display_icon_url=*/GURL("http://www.example.com"),
+                        u"ewallet_name2", u"account_display_name2",
+                        /*supported_payment_link_uris=*/
+                        {u"^shopeepay:\\/\\/shopeepay\\.com\\.my\\?code=.*$",
+                         u"^tngd:\\/\\/tngdigital\\.com\\.my\\?code=.*$"},
+                        /*is_fido_enrolled=*/false));
+  GURL supportedPaymentLink(
+      "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
+      "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd");
+
+  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_));
+
+  ewallet_manager_->TriggerEwalletPushPayment(supportedPaymentLink,
+                                              GURL("https://www.example.com"));
+  test_api(*ewallet_manager_)
+      .OnEwalletPaymentPromptResult(/*is_prompt_accepted=*/true,
+                                    /*selected_instrument_id=*/100L);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.FopSelector.UserAction.MultipleEwallets",
+      /*sample=*/FopSelectorAction::kFopSelected,
+      /*expected_bucket_count=*/1);
+}
+
 }  // namespace payments::facilitated

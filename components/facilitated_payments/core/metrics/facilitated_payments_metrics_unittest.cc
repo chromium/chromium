@@ -26,15 +26,44 @@ TEST(FacilitatedPaymentsMetricsTest, LogPixCodeCopied) {
                                       /*expected_bucket_count=*/1);
 }
 
-TEST(FacilitatedPaymentsMetricsTest, LogFopSelected) {
+TEST(FacilitatedPaymentsMetricsTest, LogPixFopSelected) {
   base::HistogramTester histogram_tester;
 
-  LogFopSelected();
+  LogPixFopSelected();
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.FopSelector.UserAction",
       /*sample=*/FopSelectorAction::kFopSelected,
       /*expected_bucket_count=*/1);
+}
+
+TEST(FacilitatedPaymentsMetricsTest, LogEwalletFopSelected) {
+  for (AvailableEwalletsConfiguration type :
+       {AvailableEwalletsConfiguration::kSingleBoundEwallet,
+        AvailableEwalletsConfiguration::kSingleUnboundEwallet,
+        AvailableEwalletsConfiguration::kMultipleEwallets}) {
+    base::HistogramTester histogram_tester;
+
+    LogEwalletFopSelected(type);
+
+    std::string type_string;
+    switch (type) {
+      case AvailableEwalletsConfiguration::kSingleBoundEwallet:
+        type_string = "SingleBoundEwallet";
+        break;
+      case AvailableEwalletsConfiguration::kSingleUnboundEwallet:
+        type_string = "SingleUnboundEwallet";
+        break;
+      case AvailableEwalletsConfiguration::kMultipleEwallets:
+        type_string = "MultipleEwallets";
+        break;
+    }
+    histogram_tester.ExpectUniqueSample(
+        base::StrCat({"FacilitatedPayments.Ewallet.FopSelector.UserAction.",
+                      type_string}),
+        /*sample=*/FopSelectorAction::kFopSelected,
+        /*expected_bucket_count=*/1);
+  }
 }
 
 TEST(FacilitatedPaymentsMetricsTest,

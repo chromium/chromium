@@ -196,7 +196,7 @@ void FacilitatedPaymentsManager::OnPixPaymentPromptResult(
     // The metric for the reason of this early-return is logged in `OnUiEvent`.
     return;
   }
-  LogFopSelected();
+  LogPixFopSelected();
   LogFopSelectorResultUkm(/*accepted=*/true, ukm_source_id_);
   ShowProgressScreen();
 

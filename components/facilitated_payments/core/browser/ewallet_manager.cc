@@ -166,6 +166,9 @@ void EwalletManager::OnEwalletPaymentPromptResult(
   if (!is_prompt_accepted) {
     return;
   }
+
+  LogEwalletFopSelected(GetAvailableEwalletsConfiguration());
+
   ShowProgressScreen();
 
   initiate_payment_request_details_->instrument_id_ = selected_instrument_id;
@@ -334,6 +337,16 @@ void EwalletManager::ShowProgressScreen() {
 void EwalletManager::ShowErrorScreen() {
   ui_state_ = UiState::kErrorScreen;
   client_->ShowErrorScreen();
+}
+
+AvailableEwalletsConfiguration
+EwalletManager::GetAvailableEwalletsConfiguration() {
+  if (supported_ewallets_.size() == 1) {
+    return supported_ewallets_[0].payment_instrument().is_fido_enrolled()
+               ? AvailableEwalletsConfiguration::kSingleBoundEwallet
+               : AvailableEwalletsConfiguration::kSingleUnboundEwallet;
+  }
+  return AvailableEwalletsConfiguration::kMultipleEwallets;
 }
 
 }  // namespace payments::facilitated

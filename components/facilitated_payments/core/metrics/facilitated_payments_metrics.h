@@ -25,6 +25,17 @@ enum class FacilitatedPaymentsType {
   kPix = 1,
 };
 
+// Available ewallet accounts type for this current profile. Indicates the count
+// of available eWallets and whether they’re device bound or not.
+enum class AvailableEwalletsConfiguration {
+  // Only one eWallet is available, and it is already bound to the device.
+  kSingleBoundEwallet = 0,
+  // Only one eWallet is available, and it’s not bound to the device.
+  kSingleUnboundEwallet = 1,
+  // Mutilple eWallets are available..
+  kMultipleEwallets = 2,
+};
+
 // Reasons for why the eWallet payflow was exited early. These only include the
 // reasons after the renderer has detected a valid payment link and sent the
 // signal to the browser process.
@@ -118,8 +129,11 @@ void LogFopSelectorShownUkm(ukm::SourceId ukm_source_id);
 // selector UI and selects a FoP to use.
 void LogFopSelectorResultUkm(bool accepted, ukm::SourceId ukm_source_id);
 
-// Log when user selects a FOP to pay with.
-void LogFopSelected();
+// Log when user selects a Pix FOP to pay with.
+void LogPixFopSelected();
+
+// Log when user selects an eWallet FOP to pay with.
+void LogEwalletFopSelected(AvailableEwalletsConfiguration type);
 
 // Log the result and latency for validating a payment code using
 // `data_decoder::DataDecoder`.

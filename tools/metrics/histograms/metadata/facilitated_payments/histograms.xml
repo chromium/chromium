@@ -42,6 +42,33 @@ reviewer.
 </variants>
 
 <histogram
+    name="FacilitatedPayments.Ewallet.FopSelector.UserAction.{AvailableEwalletsConfiguration}"
+    enum="FacilitatedPayments.FopSelectorAction" expires_after="2025-07-01">
+  <owner>junhuihe@google.com</owner>
+  <owner>qihuizhao@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    On a webpage that is eligible for eWallet transactions on Chrome, this
+    histogram logs user actions on the eWallet FOP selector. FOP selector UI
+    will be different according to the {AvailableEwalletsConfiguration}, which
+    might affect user behaviors. {AvailableEwalletsConfiguration} infers the
+    available eWallet accounts for this profile. [Frequency] Logged once per
+    eWallet payflow. eWallet payflow is triggered at most once per page load.
+    [Trigger] User interacts with the eWallet FOP selector.
+  </summary>
+  <token key="AvailableEwalletsConfiguration">
+    <variant name="MultipleEwallets"
+        summary="Mutilple eWallets are available."/>
+    <variant name="SingleBoundEwallet"
+        summary="Only one eWallet is available, and it's bound to the device."/>
+    <variant name="SingleUnboundEwallet"
+        summary="Only one eWallet is available, and it’s not bound to the
+                 device."/>
+  </token>
+</histogram>
+
+<histogram
     name="FacilitatedPayments.Ewallet.FopSelectorShown.LatencyAfterDetectingPaymentLink"
     units="ms" expires_after="2025-07-01">
   <owner>junhuihe@google.com</owner>

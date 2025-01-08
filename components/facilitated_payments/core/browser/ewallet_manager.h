@@ -34,6 +34,7 @@ namespace payments::facilitated {
 
 class FacilitatedPaymentsClient;
 class FacilitatedPaymentsInitiatePaymentResponseDetails;
+enum class AvailableEwalletsConfiguration;
 
 // A cross-platform interface that manages the eWallet push payment flow. It is
 // owned by `FacilitatedPaymentsDriver`.
@@ -126,6 +127,9 @@ class EwalletManager {
 
   // Updates the `ui_state_` value and triggers showing the error screen.
   void ShowErrorScreen();
+
+  // Returns the `AvailableEwalletsConfiguration` for this user profile.
+  AvailableEwalletsConfiguration GetAvailableEwalletsConfiguration();
 
   // A list of eWallets that support the payment link provided in
   // TriggerEwalletPushPayment().

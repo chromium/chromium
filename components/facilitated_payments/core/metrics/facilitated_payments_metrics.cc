@@ -28,6 +28,18 @@ std::string GetInitiatePurchaseActionResultString(PurchaseActionResult result) {
   }
 }
 
+std::string AvailableEwalletsConfigurationToString(
+    AvailableEwalletsConfiguration ewallet_type) {
+  switch (ewallet_type) {
+    case AvailableEwalletsConfiguration::kSingleBoundEwallet:
+      return "SingleBoundEwallet";
+    case AvailableEwalletsConfiguration::kSingleUnboundEwallet:
+      return "SingleUnboundEwallet";
+    case AvailableEwalletsConfiguration::kMultipleEwallets:
+      return "MultipleEwallets";
+  }
+}
+
 std::string PaymentTypeToString(FacilitatedPaymentsType payment_type) {
   switch (payment_type) {
     case FacilitatedPaymentsType::kPix:
@@ -88,11 +100,20 @@ void LogFopSelectorResultUkm(bool accepted, ukm::SourceId ukm_source_id) {
       .Record(ukm::UkmRecorder::Get());
 }
 
-void LogFopSelected() {
+void LogPixFopSelected() {
   // The histogram name should be in sync with
   // `FacilitatedPaymentsPaymentMethodsMediator.FOP_SELECTOR_USER_ACTION_HISTOGRAM`.
   base::UmaHistogramEnumeration(
       "FacilitatedPayments.Pix.FopSelector.UserAction",
+      FopSelectorAction::kFopSelected);
+}
+
+void LogEwalletFopSelected(AvailableEwalletsConfiguration type) {
+  // The histogram name should be in sync with
+  // `FacilitatedPaymentsPaymentMethodsMediator.FOP_SELECTOR_USER_ACTION_HISTOGRAM`.
+  base::UmaHistogramEnumeration(
+      base::StrCat({"FacilitatedPayments.Ewallet.FopSelector.UserAction.",
+                    AvailableEwalletsConfigurationToString(type)}),
       FopSelectorAction::kFopSelected);
 }
 
