@@ -686,8 +686,6 @@ class CardBenefitFormEventMetricsTest
     scoped_feature_list_.InitWithFeatureStates(
         /*feature_states=*/
         {{features::kAutofillEnableCardBenefitsSync, true},
-         {features::kAutofillEnableCardBenefitsForCapitalOne,
-          card_benefits_are_enabled()},
          {features::kAutofillEnableCardBenefitsForAmericanExpress,
           card_benefits_are_enabled()}});
   }

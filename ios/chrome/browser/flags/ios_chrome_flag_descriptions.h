@@ -48,11 +48,6 @@ extern const char kAutofillEnableCardBenefitsForAmericanExpressDescription[];
 extern const char kAutofillEnableCardBenefitsForBmoName[];
 extern const char kAutofillEnableCardBenefitsForBmoDescription[];
 
-// Title and description for the flag to enable Capital One card benefits for
-// autofill Payments UI.
-extern const char kAutofillEnableCardBenefitsForCapitalOneName[];
-extern const char kAutofillEnableCardBenefitsForCapitalOneDescription[];
-
 // Title and description for the flag to enable syncing card benefits from
 // the Payments server for Payments Autofill.
 extern const char kAutofillEnableCardBenefitsSyncName[];

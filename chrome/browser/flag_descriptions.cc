@@ -564,12 +564,6 @@ const char kAutofillEnableCardBenefitsForBmoDescription[] =
     "When enabled, card benefits offered by BMO will be shown in Autofill "
     "suggestions.";
 
-const char kAutofillEnableCardBenefitsForCapitalOneName[] =
-    "Enable showing card benefits for Capital One cards";
-const char kAutofillEnableCardBenefitsForCapitalOneDescription[] =
-    "When enabled, card benefits offered by Capital One will be shown in "
-    "Autofill suggestions.";
-
 const char kAutofillEnableCardBenefitsIphName[] =
     "Enable showing in-process help UI for card benefits";
 const char kAutofillEnableCardBenefitsIphDescription[] =

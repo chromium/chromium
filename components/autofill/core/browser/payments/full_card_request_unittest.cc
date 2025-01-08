@@ -818,8 +818,6 @@ class FullCardRequestCardBenefitsTest
   void SetUp() override {
     scoped_feature_list_.InitWithFeatureStates(
         {{features::kAutofillEnableCardBenefitsForAmericanExpress,
-          IsCreditCardBenefitsEnabled()},
-         {features::kAutofillEnableCardBenefitsForCapitalOne,
           IsCreditCardBenefitsEnabled()}});
 
     card_ = test::GetMaskedServerCard();
@@ -851,7 +849,7 @@ INSTANTIATE_TEST_SUITE_P(
                           &test::GetActiveCreditCardCategoryBenefit,
                           &test::GetActiveCreditCardMerchantBenefit),
         ::testing::Bool(),
-        ::testing::Values("amex", "capitalone")));
+        ::testing::Values("amex")));
 
 // Checks that ClientBehaviorConstants::kShowingCardBenefits is populated as a
 // signal if a card benefit was shown when unmasking a credit card suggestion

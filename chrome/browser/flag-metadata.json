@@ -579,11 +579,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "autofill-enable-card-benefits-for-capital-one",
-    "owners": [ "alexandertekle@google.com"],
-    "expiry_milestone": 135
-  },
-  {
     "name": "autofill-enable-card-benefits-iph",
     "owners": [ "viplavkadam@google.com"],
     "expiry_milestone": 145

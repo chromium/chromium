@@ -1666,24 +1666,6 @@
             ]
         }
     ],
-    "AutofillEnableCardBenefitsForCapitalOne": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnableCardBenefitsForCapitalOne"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillEnableCardBenefitsIph": [
         {
             "platforms": [

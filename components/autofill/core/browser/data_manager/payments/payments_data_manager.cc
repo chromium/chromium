@@ -955,19 +955,14 @@ void PaymentsDataManager::NotifyObservers() {
 
 bool PaymentsDataManager::IsCardEligibleForBenefits(
     const CreditCard& card) const {
-  return (card.issuer_id() == kAmexCardIssuerId &&
+  return card.issuer_id() == kAmexCardIssuerId &&
           base::FeatureList::IsEnabled(
-              features::kAutofillEnableCardBenefitsForAmericanExpress)) ||
-         (card.issuer_id() == kCapitalOneCardIssuerId &&
-          base::FeatureList::IsEnabled(
-              features::kAutofillEnableCardBenefitsForCapitalOne));
+              features::kAutofillEnableCardBenefitsForAmericanExpress);
 }
 
 bool PaymentsDataManager::IsCardBenefitsFeatureEnabled() {
   return base::FeatureList::IsEnabled(
-             features::kAutofillEnableCardBenefitsForAmericanExpress) ||
-         base::FeatureList::IsEnabled(
-             features::kAutofillEnableCardBenefitsForCapitalOne);
+             features::kAutofillEnableCardBenefitsForAmericanExpress);
 }
 
 bool PaymentsDataManager::IsCardBenefitsPrefEnabled() const {
