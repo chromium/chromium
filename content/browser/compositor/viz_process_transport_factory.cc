@@ -19,6 +19,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/mojo_embedder/async_layer_tree_frame_sink.h"
@@ -336,6 +337,54 @@ void VizProcessTransportFactory::OnGpuProcessLost() {
   ConnectHostFrameSinkManager();
 }
 
+scoped_refptr<gpu::GpuChannelHost>
+VizProcessTransportFactory::GetGpuChannelHostForSoftwareCompositing() {
+  scoped_refptr<gpu::GpuChannelHost> gpu_channel_host;
+
+  // The browser UI thread may have not received child process disconnect signal
+  // yet. Manually remove it before EstablishGpuChannel again. More in
+  // crbug.com/322909915.
+  auto* gpu_process_host = GpuProcessHost::Get();
+  if (gpu_process_host) {
+    gpu_process_host->GpuProcessHost::ForceShutdown();
+  }
+
+  // Keep retrying for 3 seconds with 150ms each time before letting it
+  // crash. If UMA shows the first retry has already worked or the loop of
+  // retries does not help when the first retry fails, the loop can be removed.
+  constexpr int kMaxRetriesAllowed = 20;
+  int num_of_retries = 0;
+  while (!gpu_channel_host) {
+    ++num_of_retries;
+    gpu_channel_host =
+        gpu_channel_establish_factory_->EstablishGpuChannelSync();
+
+    // Record how many retries it takes before successfully establishing gpu
+    // channel.
+    if (gpu_channel_host || num_of_retries >= kMaxRetriesAllowed) {
+      // Reserve the last number "21" for no success at all in retries.
+      int retries =
+          gpu_channel_host ? num_of_retries : (kMaxRetriesAllowed + 1);
+      UMA_HISTOGRAM_EXACT_LINEAR("GPU.EstablishGpuChannelSyncRetry.Software",
+                                 retries,
+                                 /*exclusive_max=*/(kMaxRetriesAllowed + 2));
+    }
+
+    if (!gpu_channel_host) {
+      if (num_of_retries < kMaxRetriesAllowed) {
+        // Wait for 150ms and retry later.
+        base::PlatformThread::Sleep(base::Milliseconds(150));
+      } else {
+        // Just let it crash after no success in retries.
+        CHECK(false) << "Fails to Establish GpuChannel for Software "
+                        "Compositing after retries.";
+      }
+    }
+  }
+
+  return gpu_channel_host;
+}
+
 void VizProcessTransportFactory::OnEstablishedGpuChannel(
     base::WeakPtr<ui::Compositor> compositor_weak_ptr,
     scoped_refptr<gpu::GpuChannelHost> gpu_channel_host) {
@@ -358,6 +407,12 @@ void VizProcessTransportFactory::OnEstablishedGpuChannel(
       DisableGpuCompositing(compositor);
       gpu_compositing = false;
     }
+  }
+
+  if (!gpu_compositing && !gpu_channel_host) {
+    // gpu_channel_host is needed for creating ClientSharedImageInterface in the
+    // software compositing mode.
+    gpu_channel_host = GetGpuChannelHostForSoftwareCompositing();
   }
 
   scoped_refptr<viz::RasterContextProvider> context_provider;
@@ -450,11 +505,9 @@ void VizProcessTransportFactory::OnEstablishedGpuChannel(
   params.pipes.compositor_frame_sink_associated_remote = std::move(sink_remote);
   params.pipes.client_receiver = std::move(client_receiver);
 
-  scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface;
-  if (gpu_channel_host) {
-    shared_image_interface =
-        gpu_channel_host->CreateClientSharedImageInterface();
-  }
+  scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface =
+      gpu_channel_host->CreateClientSharedImageInterface();
+
   auto frame_sink =
       std::make_unique<cc::mojo_embedder::AsyncLayerTreeFrameSink>(
           std::move(context_provider),
