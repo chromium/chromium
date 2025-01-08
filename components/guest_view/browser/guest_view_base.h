@@ -466,6 +466,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   void GuestOpenURL(const content::OpenURLParams& params,
                     base::OnceCallback<void(content::NavigationHandle&)>
                         navigation_handle_callback) override;
+  void GuestClose() override;
 
   // WebContentsDelegate implementation.
   void ActivateContents(content::WebContents* contents) final;

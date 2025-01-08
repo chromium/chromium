@@ -222,10 +222,7 @@ WebContents* ExtensionOptionsGuest::OpenURLFromTab(
 
 void ExtensionOptionsGuest::CloseContents(WebContents* source) {
   CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
-
-  DispatchEventToView(std::make_unique<GuestViewEvent>(
-      api::extension_options_internal::OnClose::kEventName,
-      base::Value::Dict()));
+  GuestClose();
 }
 
 bool ExtensionOptionsGuest::GuestHandleContextMenu(
@@ -235,6 +232,12 @@ bool ExtensionOptionsGuest::GuestHandleContextMenu(
   return extension_options_guest_delegate_ &&
          extension_options_guest_delegate_->HandleContextMenu(render_frame_host,
                                                               params);
+}
+
+void ExtensionOptionsGuest::GuestClose() {
+  DispatchEventToView(std::make_unique<GuestViewEvent>(
+      api::extension_options_internal::OnClose::kEventName,
+      base::Value::Dict()));
 }
 
 bool ExtensionOptionsGuest::HandleContextMenu(

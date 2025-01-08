@@ -95,6 +95,9 @@ class GuestPageHolder : public base::SupportsUserData {
                               base::OnceCallback<void(NavigationHandle&)>
                                   navigation_handle_callback) = 0;
 
+    // Close the current window.
+    virtual void GuestClose() = 0;
+
     // TODO(40202416): Guest implementations need to be informed of several
     // other events that they currently get through primary main frame specific
     // WebContentsObserver methods (e.g.

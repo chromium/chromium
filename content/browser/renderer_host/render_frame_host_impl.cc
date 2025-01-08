@@ -6852,7 +6852,7 @@ void RenderFrameHostImpl::ClosePage(ClosePageSource source) {
   // handlers and prepare for page close.
   //
   // This should only be called on outermost main frames. If this
-  // RenderFrameHost is no longer a primary main frame (e.g., if it was placed
+  // RenderFrameHost is no longer an active main frame (e.g., if it was placed
   // into back-forward cache or became pending deletion just before getting
   // here), we should not close the active tab if the request to close came from
   // the renderer, so return early in that case. We proceed with closing
@@ -6860,7 +6860,7 @@ void RenderFrameHostImpl::ClosePage(ClosePageSource source) {
   // avoid closing via navigation.
   DCHECK(is_main_frame());
   DCHECK(IsOutermostMainFrame());
-  if (!IsInPrimaryMainFrame() && source == ClosePageSource::kRenderer) {
+  if (!IsActive() && source == ClosePageSource::kRenderer) {
     return;
   }
 
@@ -6897,19 +6897,19 @@ void RenderFrameHostImpl::ClosePageIgnoringUnloadEvents(
         PrerenderCancellationReason(PrerenderFinalStatus::kWindowClosed));
   }
 
-  // If this RenderFrameHost is no longer the primary main frame (e.g., if it
+  // If this RenderFrameHost is no longer active (e.g., if it
   // was replaced by another frame while waiting for the ClosePage ACK or
   // timeout), there's no need to close the active tab if the request to close
   // came from the renderer, so return early in that case. We proceed with
   // closing regardless if the request came from the browser so that renderers
   // can't avoid closing via navigation.
-  if (!IsInPrimaryMainFrame() && source == ClosePageSource::kRenderer) {
+  if (!IsActive() && source == ClosePageSource::kRenderer) {
     page_close_state_ = PageCloseState::kNotClosing;
     return;
   }
 
   page_close_state_ = PageCloseState::kReadyToBeClosed;
-  delegate_->Close();
+  delegate_->Close(this);
 }
 
 bool RenderFrameHostImpl::IsPageReadyToBeClosed() {

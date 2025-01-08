@@ -678,6 +678,7 @@ class CONTENT_EXPORT WebContentsImpl
                            JavaScriptDialogType dialog_type,
                            bool disable_third_party_subframe_suppresion,
                            JavaScriptDialogCallback response_callback) override;
+  void Close(RenderFrameHostImpl* render_frame_host) override;
   void RunBeforeUnloadConfirm(
       RenderFrameHostImpl* render_frame_host,
       bool is_reload,

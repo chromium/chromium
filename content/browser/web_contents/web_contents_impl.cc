@@ -8459,6 +8459,17 @@ void WebContentsImpl::NotifyOnJavaScriptDialogDismiss(
   javascript_dialog_dismiss_notifier_->NotifyOnDismiss(std::move(callback));
 }
 
+void WebContentsImpl::Close(RenderFrameHostImpl* render_frame_host) {
+  if (GuestPageHolderImpl* guest_holder =
+          GuestPageHolderImpl::FromRenderFrameHost(*render_frame_host)) {
+    if (auto* guest_delegate = guest_holder->delegate()) {
+      guest_delegate->GuestClose();
+    }
+    return;
+  }
+  Close();
+}
+
 void WebContentsImpl::RunBeforeUnloadConfirm(
     RenderFrameHostImpl* render_frame_host,
     bool is_reload,

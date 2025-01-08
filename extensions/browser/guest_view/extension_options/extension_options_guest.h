@@ -49,6 +49,7 @@ class ExtensionOptionsGuest
   // GuestpageHolder::Delegate implementation.
   bool GuestHandleContextMenu(content::RenderFrameHost& render_frame_host,
                               const content::ContextMenuParams& params) final;
+  void GuestClose() final;
 
   // content::WebContentsDelegate implementation.
   content::WebContents* AddNewContents(

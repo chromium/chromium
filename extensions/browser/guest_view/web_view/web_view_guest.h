@@ -235,6 +235,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   void GuestOpenURL(const content::OpenURLParams& params,
                     base::OnceCallback<void(content::NavigationHandle&)>
                         navigation_handle_callback) final;
+  void GuestClose() final;
 
   // GuestpageHolder::Delegate implementation.
   bool GuestHandleContextMenu(content::RenderFrameHost& render_frame_host,

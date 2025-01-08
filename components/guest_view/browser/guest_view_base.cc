@@ -709,6 +709,8 @@ void GuestViewBase::GuestOpenURL(
     base::OnceCallback<void(content::NavigationHandle&)>
         navigation_handle_callback) {}
 
+void GuestViewBase::GuestClose() {}
+
 void GuestViewBase::LoadProgressChanged(double progress) {
   if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
     // The load state of the embedder does not affect the load state of the

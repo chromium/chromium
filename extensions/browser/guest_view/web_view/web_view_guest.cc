@@ -750,10 +750,7 @@ void WebViewGuest::GuestZoomChanged(double old_zoom_level,
 
 void WebViewGuest::CloseContents(WebContents* source) {
   CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
-
-  base::Value::Dict args;
-  DispatchEventToView(
-      std::make_unique<GuestViewEvent>(webview::kEventClose, std::move(args)));
+  GuestClose();
 }
 
 void WebViewGuest::FindReply(WebContents* source,
@@ -873,6 +870,12 @@ void WebViewGuest::GuestOpenURL(
         navigation_handle_callback) {
   OpenURLFromTab(owner_web_contents(), params,
                  std::move(navigation_handle_callback));
+}
+
+void WebViewGuest::GuestClose() {
+  base::Value::Dict args;
+  DispatchEventToView(
+      std::make_unique<GuestViewEvent>(webview::kEventClose, std::move(args)));
 }
 
 void WebViewGuest::CreateNewGuestWebViewWindow(
