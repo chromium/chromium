@@ -152,19 +152,10 @@ class DiscardsDetailsProviderImpl : public discards::mojom::DetailsProvider {
           ::mojom::LifecycleUnitDiscardReason::PROACTIVE, &discard_details);
       info->cannot_discard_reasons = discard_details.GetFailureReasonStrings();
 
-      // When the "RunPerformanceManagerOnMainThreadSync" feature is enabled,
-      // the Performance Manager runs on the main thread and it is valid to call
-      // `performance_manager::freezing::GetCannotFreezeReasonsForPageNode`
-      // synchronously from here to get freezing info.
-      //
-      // Since the "RunPerformanceManagerOnMainThreadSync" feature will be
-      // enabled everywhere in the near term, no effort is made to provide
-      // freezing info when the feature is disabled.
-      base::WeakPtr<performance_manager::PageNode> page_node;
-      if (base::FeatureList::IsEnabled(
-              performance_manager::features::kRunOnMainThreadSync) &&
-          (page_node = performance_manager::PerformanceManager::
-               GetPrimaryPageNodeForWebContents(contents))) {
+      base::WeakPtr<performance_manager::PageNode> page_node =
+          performance_manager::PerformanceManager::
+              GetPrimaryPageNodeForWebContents(contents);
+      if (page_node) {
         info->cannot_freeze_reasons = base::ToVector(
             performance_manager::freezing::GetCannotFreezeReasonsForPageNode(
                 page_node.get()));

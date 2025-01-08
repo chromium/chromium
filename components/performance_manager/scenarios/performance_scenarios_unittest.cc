@@ -10,8 +10,6 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/gmock_callback_support.h"
-#include "base/test/scoped_feature_list.h"
-#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/performance_manager.h"
@@ -59,15 +57,9 @@ class MockPerformanceScenarioObserver
 using StrictMockPerformanceScenarioObserver =
     ::testing::StrictMock<MockPerformanceScenarioObserver>;
 
-class PerformanceScenariosTest : public PerformanceManagerTestHarness,
-                                 public ::testing::WithParamInterface<bool> {
+class PerformanceScenariosTest : public PerformanceManagerTestHarness {
  public:
-  PerformanceScenariosTest() {
-    // Run with and without PM on main thread, since this can affect whether
-    // setting a scenario needs to post a task.
-    scoped_feature_list_.InitWithFeatureState(features::kRunOnMainThreadSync,
-                                              GetParam());
-  }
+  PerformanceScenariosTest() = default;
 
   void SetUp() override {
     PerformanceManagerTestHarness::SetUp();
@@ -96,14 +88,9 @@ class PerformanceScenariosTest : public PerformanceManagerTestHarness,
     });
     return process_region;
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All, PerformanceScenariosTest, ::testing::Bool());
-
-TEST_P(PerformanceScenariosTest, SetWithoutSharedMemory) {
+TEST_F(PerformanceScenariosTest, SetWithoutSharedMemory) {
   // Can't set up the blink scenario observer without mapped memory.
   EXPECT_FALSE(
       PerformanceScenarioObserverList::GetForScope(ScenarioScope::kGlobal));
@@ -117,7 +104,7 @@ TEST_P(PerformanceScenariosTest, SetWithoutSharedMemory) {
             LoadingScenario::kNoPageLoading);
 }
 
-TEST_P(PerformanceScenariosTest, SetWithSharedMemory) {
+TEST_F(PerformanceScenariosTest, SetWithSharedMemory) {
   base::WeakPtr<ProcessNode> process_node =
       PerformanceManager::GetProcessNodeForRenderProcessHost(process());
   StrictMockPerformanceScenarioObserver mock_observer;
@@ -180,7 +167,7 @@ TEST_P(PerformanceScenariosTest, SetWithSharedMemory) {
 #else
 #define MAYBE_SetFromPMSequence SetFromPMSequence
 #endif
-TEST_P(PerformanceScenariosTest, MAYBE_SetFromPMSequence) {
+TEST_F(PerformanceScenariosTest, MAYBE_SetFromPMSequence) {
   base::WeakPtr<ProcessNode> process_node =
       PerformanceManager::GetProcessNodeForRenderProcessHost(process());
 

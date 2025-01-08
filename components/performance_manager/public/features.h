@@ -15,10 +15,6 @@
 
 namespace performance_manager::features {
 
-// If enabled, the PM runs on the main (UI) thread *and* tasks posted to the PM
-// TaskRunner from the main (UI) thread run synchronously.
-BASE_DECLARE_FEATURE(kRunOnMainThreadSync);
-
 #if !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_LINUX)

@@ -7,10 +7,8 @@
 #include <memory>
 
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
-#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/render_process_user_data.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
@@ -49,13 +47,9 @@ void PostProcessNodePriority(content::RenderProcessHost* rph,
 }
 
 // Tests ProcessPriorityPolicy in different threading configurations.
-class ProcessPriorityPolicyTest : public PerformanceManagerTestHarness,
-                                  public ::testing::WithParamInterface<bool> {
+class ProcessPriorityPolicyTest : public PerformanceManagerTestHarness {
  public:
-  ProcessPriorityPolicyTest() {
-    scoped_feature_list_.InitWithFeatureState(features::kRunOnMainThreadSync,
-                                              GetParam());
-  }
+  ProcessPriorityPolicyTest() = default;
 
   ProcessPriorityPolicyTest(const ProcessPriorityPolicyTest&) = delete;
   ProcessPriorityPolicyTest(ProcessPriorityPolicyTest&&) = delete;
@@ -107,15 +101,12 @@ class ProcessPriorityPolicyTest : public PerformanceManagerTestHarness,
     quit_closure_.Run();
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::RepeatingClosure quit_closure_ = task_environment()->QuitClosure();
 };
 
-INSTANTIATE_TEST_SUITE_P(, ProcessPriorityPolicyTest, ::testing::Bool());
-
 }  // namespace
 
-TEST_P(ProcessPriorityPolicyTest, GraphReflectedToRenderProcessHost) {
+TEST_F(ProcessPriorityPolicyTest, GraphReflectedToRenderProcessHost) {
   // Set the active contents in the RenderViewHostTestHarness.
   SetContents(CreateTestWebContents());
   auto* rvh = web_contents()->GetPrimaryMainFrame()->GetRenderViewHost();
