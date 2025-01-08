@@ -2227,6 +2227,74 @@ TEST_F(SunfishMultiDisplayTest, SelectNewRegionAndPanelRoot) {
   EXPECT_FALSE(controller->search_results_panel_widget());
 }
 
+using SunfishDisplayMetricsTest = SunfishTest;
+
+TEST_F(SunfishDisplayMetricsTest, RefreshPanelBoundsInDefaultMode) {
+  // Start default mode, select a region and press "Search" to show the panel.
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  auto* search_button =
+      session_test_api.GetButtonWithViewID(ActionButtonViewID::kSearchButton);
+  ASSERT_TRUE(search_button);
+  LeftClickOn(search_button);
+  WaitForImageCapturedForSearch(PerformCaptureType::kSearch);
+  ASSERT_FALSE(controller->IsActive());
+  auto* panel = controller->GetSearchResultsPanel();
+  ASSERT_TRUE(panel);
+  const gfx::Rect initial_panel_bounds(panel->GetBoundsInScreen());
+
+  // Zoom in until the panel is cropped to fit within the work area.
+  display::Screen* screen = display::Screen::GetScreen();
+  do {
+    PressAndReleaseKey(ui::VKEY_OEM_PLUS,
+                       ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+    // Test the panel stays within the display work area bounds.
+    const gfx::Rect display_bounds(screen->GetPrimaryDisplay().work_area());
+    EXPECT_TRUE(display_bounds.Contains(panel->GetBoundsInScreen()));
+  } while (initial_panel_bounds.size() == panel->GetBoundsInScreen().size());
+
+  // Zoom out. Test the panel returns to its preferred size instead of being
+  // cropped to fit.
+  PressAndReleaseKey(ui::VKEY_OEM_MINUS,
+                     ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+  EXPECT_EQ(initial_panel_bounds.size(), panel->GetBoundsInScreen().size());
+}
+
+TEST_F(SunfishDisplayMetricsTest, RefreshPanelBoundsInSunfishMode) {
+  // Start sunfish mode, select a region and wait to show the panel.
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
+  ASSERT_TRUE(controller->IsActive());
+  auto* panel = controller->GetSearchResultsPanel();
+  ASSERT_TRUE(panel);
+  const gfx::Rect initial_panel_bounds(panel->GetBoundsInScreen());
+
+  // Zoom in until the panel is cropped to fit within the work area.
+  display::Screen* screen = display::Screen::GetScreen();
+  do {
+    PressAndReleaseKey(ui::VKEY_OEM_PLUS,
+                       ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+    // Test the panel stays within the display work area bounds.
+    const gfx::Rect display_bounds(screen->GetPrimaryDisplay().work_area());
+    EXPECT_TRUE(display_bounds.Contains(panel->GetBoundsInScreen()));
+  } while (initial_panel_bounds.size() == panel->GetBoundsInScreen().size());
+
+  // Zoom out. Test the panel returns to its preferred size instead of being
+  // cropped to fit.
+  PressAndReleaseKey(ui::VKEY_OEM_MINUS,
+                     ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+  EXPECT_EQ(initial_panel_bounds.size(), panel->GetBoundsInScreen().size());
+}
+
 class ScannerTest : public AshTestBase {
  public:
   ScannerTest()

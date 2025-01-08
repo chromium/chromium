@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/wm/system_panel_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/display/display_observer.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 
@@ -25,7 +26,8 @@ class SunfishSearchBoxView;
 
 // Container for the search results view and other UI such as the search box,
 // close button, etc.
-class ASH_EXPORT SearchResultsPanel : public SystemPanelView {
+class ASH_EXPORT SearchResultsPanel : public SystemPanelView,
+                                      public display::DisplayObserver {
   METADATA_HEADER(SearchResultsPanel, SystemPanelView)
 
  public:
@@ -55,13 +57,25 @@ class ASH_EXPORT SearchResultsPanel : public SystemPanelView {
   // SystemPanelView:
   bool HasFocus() const override;
 
+  // display::DisplayObserver:
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
+  void OnDisplayMetricsChanged(const display::Display& display,
+                               uint32_t metrics) override;
+
  private:
   void OnCloseButtonPressed();
+
+  // Refreshes the panel bounds to fit within the display work area. Note the
+  // captured region and panel root and display must be updated prior to this.
+  void RefreshPanelBounds();
 
   // Owned by the views hierarchy.
   raw_ptr<SunfishSearchBoxView> search_box_view_;
   raw_ptr<AshWebView> search_results_view_;
   raw_ptr<views::Button> close_button_;
+
+  // Observes display and metrics changes.
+  display::ScopedDisplayObserver display_observer_{this};
 
   base::WeakPtrFactory<SearchResultsPanel> weak_ptr_factory_{this};
 };

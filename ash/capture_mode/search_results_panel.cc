@@ -4,6 +4,7 @@
 
 #include "ash/capture_mode/search_results_panel.h"
 
+#include "ash/capture_mode/base_capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/constants/ash_features.h"
@@ -22,6 +23,7 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
@@ -29,6 +31,7 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/shadow_types.h"
 
 namespace ash {
@@ -284,10 +287,51 @@ bool SearchResultsPanel::HasFocus() const {
   return Contains(focused_view);
 }
 
+void SearchResultsPanel::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  if (display::IsTabletStateChanging(state)) {
+    return;
+  }
+  RefreshPanelBounds();
+}
+
+void SearchResultsPanel::OnDisplayMetricsChanged(
+    const display::Display& display,
+    uint32_t metrics) {
+  if (!(metrics &
+        (DISPLAY_METRIC_BOUNDS | DISPLAY_METRIC_ROTATION |
+         DISPLAY_METRIC_DEVICE_SCALE_FACTOR | DISPLAY_METRIC_WORK_AREA))) {
+    return;
+  }
+  RefreshPanelBounds();
+}
+
 void SearchResultsPanel::OnCloseButtonPressed() {
   CHECK(GetWidget());
   GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kCloseButtonClicked);
+}
+
+void SearchResultsPanel::RefreshPanelBounds() {
+  views::Widget* widget = GetWidget();
+
+  // First attempt to restore the preferred size. This is needed because when
+  // the display is zoomed in, the widget may be cropped to fit within the
+  // screen. On zoom out, the widget should return to its preferred size.
+  gfx::Rect widget_bounds_in_screen(
+      widget->GetWindowBoundsInScreen().origin(),
+      gfx::Size(capture_mode::kSearchResultsPanelWidth,
+                capture_mode::kSearchResultsPanelHeight));
+
+  // Adjust the preferred size and bounds based on the current display.
+  const display::Display display =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(
+          widget->GetNativeWindow());
+  const gfx::Rect work_area_in_screen(display.work_area());
+  if (!work_area_in_screen.Contains(widget_bounds_in_screen)) {
+    widget_bounds_in_screen.AdjustToFit(work_area_in_screen);
+  }
+  widget->SetBounds(widget_bounds_in_screen);
 }
 
 BEGIN_METADATA(SearchResultsPanel)
