@@ -385,3 +385,28 @@
 # TODO(crbug.com/381917887): This test has been failing since
 # https://crrev.com/c/6038336.
 -SharedPasswordControllerTest.PasswordManagerIsNotifiedAboutModelPredictions
+
+# TODO(crbug.com/388135869): This test has been failing since
+# https://crrev.com/c/6143155.
+-LocalStorageImplStaleDeletionTest.StaleStorageAreaDeletion/0
+-LocalStorageImplStaleDeletionTest.StaleStorageAreaDeletion/0
+-LocalStorageImplStaleDeletionTest.StaleStorageAreaDeletion/1
+-LocalStorageImplStaleDeletionTest.StaleStorageAreaDeletion/1
+-LocalStorageImplStaleDeletionTest.StaleStorageAreaDeletion/2
+-LocalStorageImplStaleDeletionTest.StaleStorageAreaDeletion/3
+-LocalStorageImplStaleDeletionTest.StaleStorageAreaDeletion/3
+-LocalStorageImplTest.Basic
+-LocalStorageImplTest.Basic
+-LocalStorageImplTest.DeleteStorageNotifiesWrapper
+-LocalStorageImplTest.DeleteStorageNotifiesWrapper
+-LocalStorageImplTest.DeleteStorageWithPendingWrites
+-LocalStorageImplTest.DeleteStorageWithoutConnection
+-LocalStorageImplTest.GetStorageUsage_Data
+-LocalStorageImplTest.GetStorageUsage_Data
+-LocalStorageImplTest.MetaDataClearedOnDelete
+-LocalStorageImplTest.OpeningWrappersPurgesInactiveWrappers
+-LocalStorageImplTest.OpeningWrappersPurgesInactiveWrappers
+-LocalStorageImplTest.ShutdownClearsData
+-LocalStorageImplTest.StorageKeysAreIndependent
+-LocalStorageImplTest.StorageKeysAreIndependent
+-LocalStorageImplTest.WrapperOutlivesMojoConnection
