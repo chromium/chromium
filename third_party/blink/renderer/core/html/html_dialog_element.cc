@@ -488,7 +488,12 @@ void HTMLDialogElement::SetCloseWatcherEnabledState() {
 }
 
 void HTMLDialogElement::CreateCloseWatcher() {
-  CHECK(!close_watcher_);
+  if (close_watcher_) {
+    // See crbug.com/384549097. It is possible to try to create a close watcher
+    // when one already exists, due to the event handlers that get fired as part
+    // of closing a dialog.
+    return;
+  }
   LocalDOMWindow* window = GetDocument().domWindow();
   if (!window) {
     return;
