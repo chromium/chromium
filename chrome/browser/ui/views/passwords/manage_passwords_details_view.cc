@@ -398,7 +398,8 @@ std::unique_ptr<views::View> CreateEditUsernameRow(
           DISTANCE_CONTENT_LIST_VERTICAL_SINGLE));
   username_with_error_label_view->SetProperty(
       views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kPreferred,
                                views::MaximumFlexSizeRule::kUnbounded));
   *textfield = username_with_error_label_view->AddChildView(
       std::make_unique<views::Textfield>());
@@ -442,7 +443,8 @@ std::unique_ptr<views::View> CreateEditNoteRow(
           DISTANCE_CONTENT_LIST_VERTICAL_SINGLE));
   note_with_error_label_view->SetProperty(
       views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kPreferred,
                                views::MaximumFlexSizeRule::kUnbounded));
 
   *textarea = note_with_error_label_view->AddChildView(
