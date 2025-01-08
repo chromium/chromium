@@ -2100,7 +2100,7 @@ clang_mac_builder(
             "use_clang_coverage",
             "minimal_symbols",
             "release",
-            "x64",
+            "arm64",
         ],
     ),
     cores = None,
