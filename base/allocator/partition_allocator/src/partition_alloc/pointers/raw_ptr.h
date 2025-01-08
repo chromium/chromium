@@ -1255,6 +1255,36 @@ struct pointer_traits<::raw_ptr<T, Traits>> {
   }
 };
 
+// Mark `raw_ptr<T>` and `T*` as having a common reference type (the type to
+// which both can be converted or bound) of `T*`. This makes them satisfy
+// `std::equality_comparable`, which allows usage like:
+// ```
+//   std::vector<raw_ptr<T>> v;
+//   T* e;
+//   auto it = std::ranges::find(v, e);
+// ```
+// Without this, the `find()` call above would fail to compile with a cryptic
+// error about being unable to invoke `std::ranges::equal_to()`.
+template <typename T,
+          base::RawPtrTraits Traits,
+          template <typename>
+          typename TQ,
+          template <typename>
+          typename UQ>
+struct std::basic_common_reference<raw_ptr<T, Traits>, T*, TQ, UQ> {
+  using type = T*;
+};
+
+template <typename T,
+          base::RawPtrTraits Traits,
+          template <typename>
+          typename TQ,
+          template <typename>
+          typename UQ>
+struct std::basic_common_reference<T*, raw_ptr<T, Traits>, TQ, UQ> {
+  using type = T*;
+};
+
 }  // namespace std
 
 #endif  // PARTITION_ALLOC_POINTERS_RAW_PTR_H_
