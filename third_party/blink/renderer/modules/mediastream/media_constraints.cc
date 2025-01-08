@@ -374,6 +374,8 @@ MediaTrackConstraintSetPlatform::MediaTrackConstraintSetPlatform()
       sample_rate("sampleRate"),
       sample_size("sampleSize"),
       echo_cancellation("echoCancellation"),
+      auto_gain_control("autoGainControl"),
+      noise_suppression("noiseSuppression"),
       voice_isolation("voiceIsolation"),
       latency("latency"),
       channel_count("channelCount"),
@@ -401,14 +403,6 @@ MediaTrackConstraintSetPlatform::MediaTrackConstraintSetPlatform()
       face_framing("faceFraming"),
       media_stream_source("mediaStreamSource"),
       render_to_associated_sink("chromeRenderToAssociatedSink"),
-      goog_echo_cancellation("googEchoCancellation"),
-      goog_experimental_echo_cancellation("googExperimentalEchoCancellation"),
-      auto_gain_control("autoGainControl"),
-      noise_suppression("noiseSuppression"),
-      goog_highpass_filter("googHighpassFilter"),
-      goog_experimental_noise_suppression("googExperimentalNoiseSuppression"),
-      goog_audio_mirroring("googAudioMirroring"),
-      goog_da_echo_cancellation("googDAEchoCancellation"),
       goog_noise_reduction("googNoiseReduction") {}
 
 Vector<const BaseConstraint*> MediaTrackConstraintSetPlatform::AllConstraints()
@@ -423,6 +417,9 @@ Vector<const BaseConstraint*> MediaTrackConstraintSetPlatform::AllConstraints()
           &sample_rate,
           &sample_size,
           &echo_cancellation,
+          &auto_gain_control,
+          &noise_suppression,
+          &voice_isolation,
           &latency,
           &channel_count,
           &device_id,
@@ -449,15 +446,6 @@ Vector<const BaseConstraint*> MediaTrackConstraintSetPlatform::AllConstraints()
           &eye_gaze_correction,
           &face_framing,
           &render_to_associated_sink,
-          &goog_echo_cancellation,
-          &goog_experimental_echo_cancellation,
-          &auto_gain_control,
-          &noise_suppression,
-          &voice_isolation,
-          &goog_highpass_filter,
-          &goog_experimental_noise_suppression,
-          &goog_audio_mirroring,
-          &goog_da_echo_cancellation,
           &goog_noise_reduction};
 }
 

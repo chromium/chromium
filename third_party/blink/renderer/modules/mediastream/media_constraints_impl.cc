@@ -98,12 +98,6 @@ const char kMediaStreamRenderToAssociatedSink[] =
 // RenderToAssociatedSink will be going away some time.
 const char kEchoCancellation[] = "echoCancellation";
 const char kDisableLocalEcho[] = "disableLocalEcho";
-const char kGoogAutoGainControl[] = "googAutoGainControl";
-const char kGoogNoiseSuppression[] = "googNoiseSuppression";
-const char kGoogHighpassFilter[] = "googHighpassFilter";
-const char kGoogAudioMirroring[] = "googAudioMirroring";
-// Audio constraints.
-const char kDAEchoCancellation[] = "googDAEchoCancellation";
 // Google-specific constraint keys for a local video source (getUserMedia).
 const char kNoiseReduction[] = "googNoiseReduction";
 
@@ -211,16 +205,6 @@ static void ParseOldStyleNames(
       // Should give TypeError when it's not parseable.
       // https://crbug.com/576582
       result.render_to_associated_sink.SetExact(ToBoolean(constraint.value_));
-    } else if (constraint.name_ == kGoogAutoGainControl) {
-      result.auto_gain_control.SetExact(ToBoolean(constraint.value_));
-    } else if (constraint.name_ == kGoogNoiseSuppression) {
-      result.noise_suppression.SetExact(ToBoolean(constraint.value_));
-    } else if (constraint.name_ == kGoogHighpassFilter) {
-      result.goog_highpass_filter.SetExact(ToBoolean(constraint.value_));
-    } else if (constraint.name_ == kGoogAudioMirroring) {
-      result.goog_audio_mirroring.SetExact(ToBoolean(constraint.value_));
-    } else if (constraint.name_ == kDAEchoCancellation) {
-      result.goog_da_echo_cancellation.SetExact(ToBoolean(constraint.value_));
     } else if (constraint.name_ == kNoiseReduction) {
       result.goog_noise_reduction.SetExact(ToBoolean(constraint.value_));
     }

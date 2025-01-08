@@ -7409,21 +7409,24 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1944" label="MediaStreamConstraintsMediaStreamSourceVideo"/>
   <int value="1945" label="MediaStreamConstraintsRenderToAssociatedSink"/>
   <int value="1946" label="MediaStreamConstraintsHotwordEnabled"/>
-  <int value="1947" label="MediaStreamConstraintsGoogEchoCancellation"/>
+  <int value="1947"
+      label="OBSOLETE_MediaStreamConstraintsGoogEchoCancellation"/>
   <int value="1948"
-      label="MediaStreamConstraintsGoogExperimentalEchoCancellation"/>
-  <int value="1949" label="MediaStreamConstraintsGoogAutoGainControl"/>
+      label="OBSOLETE_MediaStreamConstraintsGoogExperimentalEchoCancellation"/>
+  <int value="1949" label="MediaStreamConstraintsAutoGainControl"/>
   <int value="1950"
-      label="MediaStreamConstraintsGoogExperimentalAutoGainControl"/>
-  <int value="1951" label="MediaStreamConstraintsGoogNoiseSuppression"/>
-  <int value="1952" label="MediaStreamConstraintsGoogHighpassFilter"/>
-  <int value="1953" label="MediaStreamConstraintsGoogTypingNoiseDetection"/>
+      label="OBSOLETE_MediaStreamConstraintsGoogExperimentalAutoGainControl"/>
+  <int value="1951" label="MediaStreamConstraintsNoiseSuppression"/>
+  <int value="1952" label="OBSOLETE_MediaStreamConstraintsGoogHighpassFilter"/>
+  <int value="1953"
+      label="OBSOLETE_MediaStreamConstraintsGoogTypingNoiseDetection"/>
   <int value="1954"
-      label="MediaStreamConstraintsGoogExperimentalNoiseSuppression"/>
-  <int value="1955" label="MediaStreamConstraintsGoogBeamforming"/>
-  <int value="1956" label="MediaStreamConstraintsGoogArrayGeometry"/>
-  <int value="1957" label="MediaStreamConstraintsGoogAudioMirroring"/>
-  <int value="1958" label="MediaStreamConstraintsGoogDAEchoCancellation"/>
+      label="OBSOLETE_MediaStreamConstraintsGoogExperimentalNoiseSuppression"/>
+  <int value="1955" label="OBSOLETE_MediaStreamConstraintsGoogBeamforming"/>
+  <int value="1956" label="OBSOLETE_MediaStreamConstraintsGoogArrayGeometry"/>
+  <int value="1957" label="OBSOLETE_MediaStreamConstraintsGoogAudioMirroring"/>
+  <int value="1958"
+      label="OBSOLETE_MediaStreamConstraintsGoogDAEchoCancellation"/>
   <int value="1959" label="MediaStreamConstraintsGoogNoiseReduction"/>
   <int value="1960" label="MediaStreamConstraintsGoogPowerLineFrequency"/>
   <int value="1961" label="ViewportFixedPositionUnderFilter"/>

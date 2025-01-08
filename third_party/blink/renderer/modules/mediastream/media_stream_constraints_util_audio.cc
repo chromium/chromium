@@ -455,7 +455,7 @@ class EchoCancellationContainer {
         ToEchoCancellationTypes(ec_allowed_values_));
 
     // Finally, if this container is empty, fail due to contradiction of the
-    // resulting allowed values for goog_ec, ec, and/or ec_type.
+    // resulting allowed values for ec and/or ec_type.
     return IsEmpty() ? constraint_set.echo_cancellation.GetName() : nullptr;
   }
 
@@ -628,7 +628,7 @@ class AutoGainControlContainer {
   const char* ApplyConstraintSet(const ConstraintSet& constraint_set) {
     BoolSet agc_set = blink::media_constraints::BoolSetFromConstraint(
         constraint_set.auto_gain_control);
-    // Apply autoGainControl/googAutoGainControl constraint.
+    // Apply autoGainControl constraint.
     allowed_values_ = allowed_values_.Intersection(agc_set);
     return IsEmpty() ? constraint_set.auto_gain_control.GetName() : nullptr;
   }

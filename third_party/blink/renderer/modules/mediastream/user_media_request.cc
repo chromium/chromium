@@ -191,6 +191,14 @@ void CountAudioConstraintUses(ExecutionContext* context,
           constraints, &MediaTrackConstraintSetPlatform::echo_cancellation)) {
     counter.Count(WebFeature::kMediaStreamConstraintsEchoCancellation);
   }
+  if (RequestUsesDiscreteConstraint(
+          constraints, &MediaTrackConstraintSetPlatform::auto_gain_control)) {
+    counter.Count(WebFeature::kMediaStreamConstraintsAutoGainControl);
+  }
+  if (RequestUsesDiscreteConstraint(
+          constraints, &MediaTrackConstraintSetPlatform::noise_suppression)) {
+    counter.Count(WebFeature::kMediaStreamConstraintsNoiseSuppression);
+  }
   if (RequestUsesNumericConstraint(constraints,
                                    &MediaTrackConstraintSetPlatform::latency)) {
     counter.Count(WebFeature::kMediaStreamConstraintsLatency);
@@ -219,50 +227,6 @@ void CountAudioConstraintUses(ExecutionContext* context,
           constraints,
           &MediaTrackConstraintSetPlatform::render_to_associated_sink)) {
     counter.Count(WebFeature::kMediaStreamConstraintsRenderToAssociatedSink);
-  }
-  if (RequestUsesDiscreteConstraint(
-          constraints,
-          &MediaTrackConstraintSetPlatform::goog_echo_cancellation)) {
-    counter.CountDeprecation(
-        WebFeature::kMediaStreamConstraintsGoogEchoCancellation);
-  }
-  if (RequestUsesDiscreteConstraint(constraints,
-                                    &MediaTrackConstraintSetPlatform::
-                                        goog_experimental_echo_cancellation)) {
-    counter.CountDeprecation(
-        WebFeature::kMediaStreamConstraintsGoogExperimentalEchoCancellation);
-  }
-  if (RequestUsesDiscreteConstraint(
-          constraints, &MediaTrackConstraintSetPlatform::auto_gain_control)) {
-    counter.Count(WebFeature::kMediaStreamConstraintsGoogAutoGainControl);
-  }
-  if (RequestUsesDiscreteConstraint(
-          constraints, &MediaTrackConstraintSetPlatform::noise_suppression)) {
-    counter.Count(WebFeature::kMediaStreamConstraintsGoogNoiseSuppression);
-  }
-  if (RequestUsesDiscreteConstraint(
-          constraints,
-          &MediaTrackConstraintSetPlatform::goog_highpass_filter)) {
-    counter.CountDeprecation(
-        WebFeature::kMediaStreamConstraintsGoogHighpassFilter);
-  }
-  if (RequestUsesDiscreteConstraint(constraints,
-                                    &MediaTrackConstraintSetPlatform::
-                                        goog_experimental_noise_suppression)) {
-    counter.CountDeprecation(
-        WebFeature::kMediaStreamConstraintsGoogExperimentalNoiseSuppression);
-  }
-  if (RequestUsesDiscreteConstraint(
-          constraints,
-          &MediaTrackConstraintSetPlatform::goog_audio_mirroring)) {
-    counter.CountDeprecation(
-        WebFeature::kMediaStreamConstraintsGoogAudioMirroring);
-  }
-  if (RequestUsesDiscreteConstraint(
-          constraints,
-          &MediaTrackConstraintSetPlatform::goog_da_echo_cancellation)) {
-    counter.CountDeprecation(
-        WebFeature::kMediaStreamConstraintsGoogDAEchoCancellation);
   }
 
   UseCounter::Count(context, WebFeature::kMediaStreamConstraintsAudio);
