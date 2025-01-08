@@ -10,6 +10,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/glic/glic.mojom.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
@@ -90,8 +91,9 @@ class GlicWindowController : public views::WidgetObserver {
   // views::WidgetObserver implementation, monitoring the GlicView.
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
 
- private:
   GlicView* GetGlicView();
+
+ private:
   // Determines the correct position for the glic window when attached to a
   // browser window.
   gfx::Point GetTopRightPositionForAttachedGlicWindow(
@@ -157,8 +159,14 @@ class GlicWindowController : public views::WidgetObserver {
   void NotifyIfPanelStateChanged();
   mojom::PanelState ComputePanelState() const;
 
+  // When the attached browser is closed, this is invoked so we can clean up.
+  void AttachedBrowserDidClose(BrowserWindowInterface* browser);
+
   AttachedTargetWidgetObserver attached_target_widget_observer_{this};
   base::WeakPtr<Browser> attached_browser_;
+
+  // Used for observing closing of the pinned browser.
+  std::optional<base::CallbackListSubscription> browser_close_subscription_;
 
   // Notifies subscribers of a change to the window activation.
   void NotifyWindowActivationChanged(bool active);
@@ -170,7 +178,7 @@ class GlicWindowController : public views::WidgetObserver {
   std::unique_ptr<views::Widget> holder_widget_;
 
   const raw_ptr<Profile> profile_;
-  views::UniqueWidgetPtr glic_window_widget_;
+  std::unique_ptr<views::Widget> glic_window_widget_;
   bool glic_window_widget_visible_ = false;
 
   // Used to monitor key and mouse events from native window.

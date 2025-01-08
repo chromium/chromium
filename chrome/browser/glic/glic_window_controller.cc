@@ -170,6 +170,11 @@ gfx::Point GlicWindowController::GetTopRightPositionForDetachedGlicWindow() {
   return top_right_bounds;
 }
 
+void GlicWindowController::AttachedBrowserDidClose(
+    BrowserWindowInterface* browser) {
+  Close();
+}
+
 void GlicWindowController::AttachToBrowser(Browser* browser,
                                            views::Widget* target_widget) {
   // Makes the glic widget a child view of the given widget's browser.
@@ -182,6 +187,9 @@ void GlicWindowController::AttachToBrowser(Browser* browser,
     NotifyIfPanelStateChanged();
 
     glic_window_widget_->SetZOrderLevel(ui::ZOrderLevel::kNormal);
+    browser_close_subscription_ = browser->RegisterBrowserDidClose(
+        base::BindRepeating(&GlicWindowController::AttachedBrowserDidClose,
+                            base::Unretained(this)));
   }
 }
 
@@ -221,6 +229,7 @@ void GlicWindowController::Close() {
       views::Widget::ClosedReason::kCloseButtonClicked);
   glic_widget_observer_.reset();
   window_event_observer_.reset();
+  browser_close_subscription_.reset();
   glic_window_widget_.reset();
   NotifyIfPanelStateChanged();
 }
@@ -327,6 +336,7 @@ void GlicWindowController::MovePositionToBrowserGlicButton(Browser* browser,
 
 void GlicWindowController::MaybeCreateHolderWindowAndReparent() {
   attached_target_widget_observer_.SetAttachedTargetWidget(nullptr);
+  browser_close_subscription_.reset();
   attached_browser_ = nullptr;
   if (!holder_widget_) {
     holder_widget_ = std::make_unique<views::Widget>();

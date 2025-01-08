@@ -21,6 +21,7 @@ source_set("glic") {
     "//chrome/browser/content_extraction:content_extraction",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_list",
+    "//chrome/browser/ui/browser_window:browser_window",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//chrome/browser/ui/webui/glic:mojo_bindings",
     "//components/prefs",
@@ -115,5 +116,19 @@ source_set("browser_tests") {
     "//content/test:test_support",
     "//extensions/browser",
     "//ui/events:test_support",
+  ]
+}
+
+source_set("interactive_ui_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "glic_window_controller_ui_test.cc" ]
+  deps = [
+    ":glic",
+    "//chrome/browser",
+    "//chrome/browser/ui",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
   ]
 }

@@ -8,6 +8,7 @@
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -19,6 +20,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/events/event_observer.h"
 #include "ui/views/event_monitor.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 namespace glic {
@@ -26,6 +28,7 @@ namespace glic {
 GlicView::GlicView(Profile* profile, const gfx::Size& initial_size) {
   profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
       profile, ProfileKeepAliveOrigin::kGlicView);
+  SetProperty(views::kElementIdentifierKey, kGlicViewElementId);
   auto web_view = std::make_unique<GlicWebView>(profile);
   web_view_ = web_view.get();
   web_view->SetSize(initial_size);
@@ -37,8 +40,9 @@ GlicView::GlicView(Profile* profile, const gfx::Size& initial_size) {
 GlicView::~GlicView() = default;
 
 // static
-views::UniqueWidgetPtr GlicView::CreateWidget(Profile* profile,
-                                              const gfx::Rect& initial_bounds) {
+std::unique_ptr<views::Widget> GlicView::CreateWidget(
+    Profile* profile,
+    const gfx::Rect& initial_bounds) {
   views::Widget::InitParams params(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
@@ -50,7 +54,7 @@ views::UniqueWidgetPtr GlicView::CreateWidget(Profile* profile,
   params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
   params.bounds = initial_bounds;
 
-  views::UniqueWidgetPtr widget =
+  std::unique_ptr<views::Widget> widget =
       std::make_unique<views::Widget>(std::move(params));
 
   widget->SetContentsView(
