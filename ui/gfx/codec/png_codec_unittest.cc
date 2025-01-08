@@ -884,14 +884,19 @@ TEST_P(PNGCodecTest, DecodeGamma) {
 
   struct SourceFile {
     double gamma;
-    uint8_t corrected;
+    uint8_t min;
+    uint8_t max;
     std::string filename;
   };
-
   const SourceFile kSourceFiles[] = {
-      {1.0, 188, "checkerboard.gamma1dot0.png"},
-      {1.8, 146, "checkerboard.gamma1dot8.png"},
-      {2.2, 129, "checkerboard.gamma2dot2.png"},
+      {1.0, 188, 188, "checkerboard.gamma1dot0.png"},
+      {1.8, 146, 146, "checkerboard.gamma1dot8.png"},
+
+      // This testcase allows both 128 and 129 to reflect that `SkPngRustCodec`
+      // matches the behavior of `blink::PNGImageDecoder` for PNGs with `gAMA`
+      // chunk set to 1/2.2 and with no other color-profile-related chunks.  See
+      // https://crbug.com/388025081 for more details.
+      {2.2, 128, 129, "checkerboard.gamma2dot2.png"},
   };
 
   for (const auto& sf : kSourceFiles) {
@@ -907,7 +912,10 @@ TEST_P(PNGCodecTest, DecodeGamma) {
     ASSERT_TRUE(output);
     ASSERT_GT(output->output.size(), 0u);
 
-    EXPECT_EQ(output->output[0], sf.corrected) << "gamma: " << sf.gamma;
+    // TODO(https://crbug.com/363052758): Go back to equality-based comparisons
+    // when the `base::Feature` is removed.
+    EXPECT_LE(sf.min, output->output[0]) << "gamma: " << sf.gamma;
+    EXPECT_LE(output->output[0], sf.max) << "gamma: " << sf.gamma;
   }
 }
 
