@@ -112,7 +112,7 @@ class ExtensionMessagePort : public MessagePort {
   void NotifyResponsePending() override;
 
  private:
-  class FrameTracker;
+  class ContextTracker;
   struct IPCTarget;
 
   // Registers a frame as a receiver / sender.
@@ -207,7 +207,7 @@ class ExtensionMessagePort : public MessagePort {
 
   // Used in IncrementLazyKeepaliveCount
   raw_ptr<ExtensionHost, DanglingUntriaged> background_host_ptr_ = nullptr;
-  std::unique_ptr<FrameTracker> frame_tracker_;
+  std::unique_ptr<ContextTracker> context_tracker_;
 
   // The set of PortContexts for which we're waiting on a response to
   // OnConnectResponse().
