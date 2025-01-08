@@ -94,6 +94,13 @@ enum class TipsNotificationType;
 // framework (should only be used by performance tests)
 + (void)primesTakeMemorySnapshot:(NSString*)eventName;
 
+#pragma mark - Profile Utilities (EG2)
+
+// Returns the name (as in `ProfileIOS::GetProfileName()`) of the current
+// profile, more precisely the profile associated with the foreground active
+// scene.
++ (NSString*)currentProfileName;
+
 #pragma mark - Tab Utilities (EG2)
 
 // Selects tab with given index in current mode (incognito or main

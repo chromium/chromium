@@ -272,6 +272,13 @@ NSString* SerializedValue(const base::Value* value) {
   ios::provider::PrimesTakeMemorySnapshot(eventName);
 }
 
+#pragma mark - Profile Utilities (EG2)
+
++ (NSString*)currentProfileName {
+  return base::SysUTF8ToNSString(
+      chrome_test_util::GetOriginalProfile()->GetProfileName());
+}
+
 #pragma mark - Tab Utilities (EG2)
 
 + (void)selectTabAtIndex:(NSUInteger)index {
