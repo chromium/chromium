@@ -482,6 +482,7 @@ void CollaborationController::PromoteCurrentSession() {
 
 void CollaborationController::Exit() {
   current_state_->OnExit();
+  delegate_->OnFlowFinished();
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(finish_and_delete_)));
 }

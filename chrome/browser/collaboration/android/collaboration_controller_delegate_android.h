@@ -37,6 +37,7 @@ class CollaborationControllerDelegateAndroid
   void PromoteTabGroup(const data_sharing::GroupId& group_id,
                        ResultCallback result) override;
   void PromoteCurrentScreen() override;
+  void OnFlowFinished() override;
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() override;
 

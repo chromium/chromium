@@ -49,6 +49,7 @@ class IOSCollaborationControllerDelegate
   void PromoteTabGroup(const data_sharing::GroupId& group_id,
                        ResultCallback result) override;
   void PromoteCurrentScreen() override;
+  void OnFlowFinished() override;
 
  private:
   // Called when the authentication ui flow is complete.

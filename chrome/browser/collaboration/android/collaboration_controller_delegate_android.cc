@@ -129,6 +129,11 @@ void CollaborationControllerDelegateAndroid::PromoteCurrentScreen() {
   Java_CollaborationControllerDelegateImpl_promoteCurrentScreen(env, java_obj_);
 }
 
+void CollaborationControllerDelegateAndroid::OnFlowFinished() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_CollaborationControllerDelegateImpl_onFlowFinished(env, java_obj_);
+}
+
 ScopedJavaLocalRef<jobject>
 CollaborationControllerDelegateAndroid::GetJavaObject() {
   return ScopedJavaLocalRef<jobject>(java_obj_);

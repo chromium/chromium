@@ -208,6 +208,7 @@ TEST_F(CollaborationControllerTest, FullFlowAllStates) {
   EXPECT_EQ(controller_->GetStateForTesting(), StateId::kOpeningLocalTabGroup);
 
   // Upon successfully promoting the tab group, the flow ends and exit.
+  EXPECT_CALL(*delegate_, OnFlowFinished());
   std::move(promote_ui_callback).Run(Outcome::kSuccess);
   run_loop.Run();
 }
@@ -229,6 +230,7 @@ TEST_F(CollaborationControllerTest, UrlHandlingError) {
   EXPECT_EQ(controller_->GetStateForTesting(), StateId::kError);
 
   //  Simulate exiting the flow.
+  EXPECT_CALL(*delegate_, OnFlowFinished());
   std::move(error_ui_callback).Run(Outcome::kSuccess);
   run_loop.Run();
 }
@@ -249,6 +251,7 @@ TEST_F(CollaborationControllerTest, DelegateOutcomeError) {
   EXPECT_EQ(controller_->GetStateForTesting(), StateId::kError);
 
   //  Simulate exiting the flow.
+  EXPECT_CALL(*delegate_, OnFlowFinished());
   std::move(error_ui_callback).Run(Outcome::kSuccess);
   run_loop.Run();
 }
@@ -284,6 +287,7 @@ TEST_F(CollaborationControllerTest, AuthenticationError) {
   EXPECT_EQ(controller_->GetStateForTesting(), StateId::kError);
 
   //  Simulate exiting the flow.
+  EXPECT_CALL(*delegate_, OnFlowFinished());
   std::move(error_ui_callback).Run(Outcome::kSuccess);
   run_loop.Run();
 }

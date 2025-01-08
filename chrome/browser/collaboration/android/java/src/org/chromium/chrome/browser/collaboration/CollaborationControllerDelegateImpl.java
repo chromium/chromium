@@ -132,6 +132,10 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
     @CalledByNative
     void promoteCurrentScreen() {}
 
+    /** Called when the flow is finished. */
+    @CalledByNative
+    void onFlowFinished() {}
+
     @CalledByNative
     private void clearNativePtr() {
         mNativePtr = 0;

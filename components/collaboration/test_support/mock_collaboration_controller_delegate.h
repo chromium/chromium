@@ -48,6 +48,7 @@ class MockCollaborationControllerDelegate
               (const data_sharing::GroupId& group_id, ResultCallback result),
               (override));
   MOCK_METHOD(void, PromoteCurrentScreen, (), (override));
+  MOCK_METHOD(void, OnFlowFinished, (), (override));
 #if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(base::android::ScopedJavaLocalRef<jobject>,
               GetJavaObject,

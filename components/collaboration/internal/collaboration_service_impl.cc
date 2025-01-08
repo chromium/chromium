@@ -76,6 +76,8 @@ void CollaborationServiceImpl::StartJoinFlow(
     return;
   }
 
+  ExitConflictingFlows();
+
   metrics::RecordJoinEvent(metrics::CollaborationServiceJoinEvent::kStarted);
 
   // Invalid url parsing will start a new join flow with empty GroupToken. This
@@ -97,6 +99,8 @@ void CollaborationServiceImpl::StartShareOrManageFlow(
     it->second->delegate()->PromoteCurrentScreen();
     return;
   }
+
+  ExitConflictingFlows();
 
   // Invalid url parsing will start a new join flow with empty GroupToken. This
   // is needed in order to show the url parsing error message to the user.
@@ -255,6 +259,15 @@ void CollaborationServiceImpl::RefreshServiceStatus() {
     current_status_ = new_status;
     observers_.Notify(&CollaborationService::Observer::OnServiceStatusChanged,
                       update);
+  }
+}
+
+void CollaborationServiceImpl::ExitConflictingFlows() {
+  for (const auto& [token, controller] : join_controllers_) {
+    controller->Exit();
+  }
+  for (const auto& [id, controller] : share_controllers_) {
+    controller->Exit();
   }
 }
 

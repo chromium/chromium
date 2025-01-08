@@ -94,6 +94,10 @@ class CollaborationControllerDelegate {
   // Focus the UI screen associated with the current delegate instance.
   virtual void PromoteCurrentScreen() = 0;
 
+  // Called when the flow is finished so the delegate instance can clean up
+  // itself.
+  virtual void OnFlowFinished() = 0;
+
 #if BUILDFLAG(IS_ANDROID)
   // Returns the Java object of the CollaborationControllerDelegate.
   virtual base::android::ScopedJavaLocalRef<jobject> GetJavaObject();

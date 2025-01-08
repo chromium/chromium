@@ -270,6 +270,10 @@ void IOSCollaborationControllerDelegate::PromoteCurrentScreen() {
   // TODO(crbug.com/377306986): Implement this.
 }
 
+void IOSCollaborationControllerDelegate::OnFlowFinished() {
+  // TODO(crbug.com/377306986): Implement this.
+}
+
 void IOSCollaborationControllerDelegate::OnAuthenticationComplete(
     ResultCallback result,
     SigninCoordinatorResult sign_in_result,

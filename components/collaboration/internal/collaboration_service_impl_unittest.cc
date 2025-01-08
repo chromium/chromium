@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/collaboration/internal/collaboration_controller.h"
@@ -142,28 +143,34 @@ TEST_F(CollaborationServiceImplTest, StartJoinFlow) {
                                ParseUrlStatus::kHostOrPathMismatchFailure)));
 
   // Invalid url parsing starts a join flow with empty GroupToken.
-  service_->StartJoinFlow(
-      std::make_unique<MockCollaborationControllerDelegate>(), url);
+  std::unique_ptr<MockCollaborationControllerDelegate> mock_delegate_invalid =
+      std::make_unique<MockCollaborationControllerDelegate>();
+  EXPECT_CALL(*mock_delegate_invalid, OnFlowFinished());
+  service_->StartJoinFlow(std::move(mock_delegate_invalid), url);
   const std::map<data_sharing::GroupToken,
                  std::unique_ptr<CollaborationController>>& join_flows =
       service_->GetJoinControllersForTesting();
   EXPECT_EQ(join_flows.size(), 1u);
   EXPECT_TRUE(join_flows.find(data_sharing::GroupToken()) != join_flows.end());
 
-  // New join flow will be appended with a valid url parsing.
+  // New join flow will be appended with a valid url parsing and will stop all
+  // conflicting flows.
   EXPECT_CALL(mock_data_sharing_service_, ParseDataSharingUrl(url))
       .WillRepeatedly(Return(base::ok(token)));
   std::unique_ptr<MockCollaborationControllerDelegate> mock_delegate =
       std::make_unique<MockCollaborationControllerDelegate>();
   EXPECT_CALL(*mock_delegate, PromoteCurrentScreen());
   service_->StartJoinFlow(std::move(mock_delegate), url);
-  EXPECT_EQ(service_->GetJoinControllersForTesting().size(), 2u);
+
+  // Wait for post tasks.
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return service_->GetJoinControllersForTesting().size() == 1; }));
 
   // Existing join flow should not start a new flow and should promote the
   // existing flow's delegate.
   service_->StartJoinFlow(
       std::make_unique<MockCollaborationControllerDelegate>(), url);
-  EXPECT_EQ(service_->GetJoinControllersForTesting().size(), 2u);
+  EXPECT_EQ(service_->GetJoinControllersForTesting().size(), 1u);
 }
 
 TEST_F(CollaborationServiceImplTest, SyncStatusChanges) {
