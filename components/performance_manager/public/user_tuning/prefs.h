@@ -120,11 +120,6 @@ void MigrateMemorySaverModePref(PrefService* pref_service);
 // KEnabled.
 void MigrateMultiStateMemorySaverModePref(PrefService* pref_service);
 
-// This function migrates the old, list tab discarding exceptions preference to
-// the new, dictionary one that includes the time of the last edit of the
-// preference. This is done once at startup.
-void MigrateTabDiscardingExceptionsPref(PrefService* pref_service);
-
 // Returns if the given site is in the discard exception list
 bool IsSiteInTabDiscardExceptionsList(PrefService* pref_service,
                                       const std::string& site);

@@ -2686,12 +2686,6 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kBorealisVmTokenHash);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if !BUILDFLAG(IS_ANDROID)
-  // Added 1/2024.
-  performance_manager::user_tuning::prefs::MigrateTabDiscardingExceptionsPref(
-      profile_prefs);
-#endif
-
   // Added 01/2024.
   profile_prefs->ClearPref(kNtpShownPage);
   profile_prefs->ClearPref(kNtpAppPageNames);
