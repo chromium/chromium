@@ -142,6 +142,11 @@ const base::FeatureParam<int>
     kPartitionAllocSchedulerLoopQuarantineBranchCapacity{
         &kPartitionAllocSchedulerLoopQuarantine,
         "PartitionAllocSchedulerLoopQuarantineBranchCapacity", 0};
+// Scheduler Loop Quarantine's capacity for the UI thread in bytes.
+const base::FeatureParam<int>
+    kPartitionAllocSchedulerLoopQuarantineBrowserUICapacity{
+        &kPartitionAllocSchedulerLoopQuarantine,
+        "PartitionAllocSchedulerLoopQuarantineBrowserUICapacity", 0};
 
 BASE_FEATURE(kPartitionAllocZappingByFreeFlags,
              "PartitionAllocZappingByFreeFlags",
