@@ -29,6 +29,11 @@ class EdgeToEdgeBottomChinProperties {
     static final WritableObjectPropertyKey<OffsetTag> OFFSET_TAG =
             new WritableObjectPropertyKey<>();
 
+    /** Whether there are constraint added for the bottom chin to disable its scrolling. */
+    static final WritableBooleanPropertyKey HAS_CONSTRAINT = new WritableBooleanPropertyKey();
+
     static final PropertyKey[] ALL_KEYS =
-            new PropertyKey[] {Y_OFFSET, HEIGHT, CAN_SHOW, COLOR, DIVIDER_COLOR, OFFSET_TAG};
+            new PropertyKey[] {
+                Y_OFFSET, HEIGHT, CAN_SHOW, COLOR, DIVIDER_COLOR, OFFSET_TAG, HAS_CONSTRAINT
+            };
 }
