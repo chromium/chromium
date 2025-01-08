@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/interactive_test_utils.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/test/shell_surface_builder.h"
 #include "components/exo/wm_helper.h"
@@ -389,8 +388,9 @@ IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, MultiBrowser) {
 IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, FullScreenBrowser) {
   // Initializes the position of mouse. Makes the mouse away from the tabstrip
   // to prevent any interference on this test.
-  ASSERT_TRUE(ui_test_utils::SendMouseMoveSync(
-      gfx::Point(0, browser()->window()->GetBounds().height())));
+  auto event_generator = CreateEventGenerator(browser());
+  event_generator->MoveMouseTo(
+      gfx::Point(0, browser()->window()->GetBounds().height()));
   AddTabs(browser(), 6);
   browser()->tab_strip_model()->ActivateTabAt(4);
 
