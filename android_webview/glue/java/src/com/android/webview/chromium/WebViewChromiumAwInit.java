@@ -71,6 +71,8 @@ import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ResourceBundle;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * Class controlling the Chromium initialization for WebView. We hold on to most static objects used
  * by WebView here. This class is shared between the webkit glue layer and the support library glue
@@ -180,19 +182,16 @@ public class WebViewChromiumAwInit {
     // it shouldn't be accessed from anywhere else.
     /* package */ final Object mLock = new Object();
 
-    // mInitState should only transition INIT_NOT_STARTED -> INIT_STARTED -> INIT_FINISHED
+    final Object mThreadSettingLock = new Object();
+
+    @GuardedBy("mThreadSettingLock")
+    private boolean mThreadIsSet;
+
+    // mInitState should only transition INIT_NOT_STARTED -> INIT_FINISHED
     private static final int INIT_NOT_STARTED = 0;
-    private static final int INIT_STARTED = 1;
-    private static final int INIT_FINISHED = 2;
-    // We do not need to hold `mLock` to read it but we need to hold `mLock` to write into it.
-    // For example, we should write `INIT_FINISHED` into it only when Chromium startup has fully
-    // completed with `mLock` held.
-    // We are not guarding the read by `mLock` to prevent the need for us to hold the lock when the
-    // state is accessed, i.e. if we wanted to read the init state when `startChromiumLocked` is
-    // running, we will have had to wait till the function completes, which is not performant.
-    // A value of `INIT_FINISHED` means that all the fields that are updated in
-    // `startChromiumLocked` are written into.
-    private volatile int mInitState;
+    private static final int INIT_FINISHED = 1;
+
+    private final AtomicInteger mInitState = new AtomicInteger(INIT_NOT_STARTED);
 
     private final WebViewChromiumFactoryProvider mFactory;
     private final WebViewStartUpDiagnostics mWebViewStartUpDiagnostics =
@@ -277,7 +276,7 @@ public class WebViewChromiumAwInit {
             // return paths. (Other threads will not wake-up until we release |mLock|, whatever).
             mLock.notifyAll();
 
-            if (mInitState == INIT_FINISHED) {
+            if (mInitState.get() == INIT_FINISHED) {
                 return;
             }
 
@@ -406,11 +405,12 @@ public class WebViewChromiumAwInit {
                                     AwFeatureMap.isEnabled(
                                             AwFeatures.WEBVIEW_SEPARATE_RESOURCE_CONTEXT)));
 
-            // This runs all the pending tasks queued for after Chromium init is finished,
-            // so should be the last thing that happens in startChromiumLocked.
-            mFactory.getRunQueue().notifyChromiumStarted();
-
             AwCrashyClassUtils.maybeCrashIfEnabled();
+            // Must happen right after Chromium initialization is complete.
+            mInitState.set(INIT_FINISHED);
+            // This runs all the pending tasks queued for after Chromium init is finished,
+            // so should run after `mInitState` is `INIT_FINISHED`.
+            mFactory.getRunQueue().notifyChromiumStarted();
         }
         long totalTimeTaken = SystemClock.uptimeMillis() - startTime;
         mWebViewStartUpDiagnostics.setTotalTimeUiThreadChromiumInitMillis(totalTimeTaken);
@@ -427,8 +427,6 @@ public class WebViewChromiumAwInit {
                 totalTimeTaken,
                 /* callSite= */ callSite,
                 /* fromUIThread= */ triggeredFromUIThread);
-        // Must happen right after Chromium initialization is complete.
-        mInitState = INIT_FINISHED;
     }
 
     /**
@@ -476,7 +474,7 @@ public class WebViewChromiumAwInit {
     }
 
     boolean isChromiumInitialized() {
-        return mInitState == INIT_FINISHED;
+        return mInitState.get() == INIT_FINISHED;
     }
 
     void startYourEngines(boolean fromThreadSafeFunction) {
@@ -492,14 +490,14 @@ public class WebViewChromiumAwInit {
             boolean fromThreadSafeFunction, @CallSite int callSite) {
         assert Thread.holdsLock(mLock);
         ensureChromiumStartupHappensSoon(fromThreadSafeFunction, callSite);
-        if (mInitState == INIT_FINISHED) { // Early-out for the common case.
+        if (mInitState.get() == INIT_FINISHED) { // Early-out for the common case.
             return;
         }
         try (ScopedSysTraceEvent event =
                 ScopedSysTraceEvent.scoped("WebViewChromiumAwInit.waitForUIThreadInit")) {
             long startTime = SystemClock.uptimeMillis();
             // Wait for the UI thread to finish init.
-            while (mInitState != INIT_FINISHED) {
+            while (mInitState.get() != INIT_FINISHED) {
                 try {
                     mLock.wait();
                 } catch (InterruptedException e) {
@@ -519,17 +517,11 @@ public class WebViewChromiumAwInit {
             boolean fromThreadSafeFunction, @CallSite int callSite) {
         assert Thread.holdsLock(mLock);
 
-        if (mInitState == INIT_FINISHED) { // Early-out for the common case.
+        if (mInitState.get() == INIT_FINISHED) { // Early-out for the common case.
             return;
         }
 
-        if (mInitState == INIT_NOT_STARTED) {
-            // If we're the first thread to enter ensureChromiumStartedLocked, we need to determine
-            // which thread will be the UI thread; declare init has started so that no other thread
-            // will try to do this.
-            mInitState = INIT_STARTED;
-            setChromiumUiThreadLocked(fromThreadSafeFunction);
-        }
+        maybeSetChromiumUiThread(fromThreadSafeFunction);
 
         if (ThreadUtils.runningOnUiThread()) {
             mWebViewStartUpDiagnostics.setSynchronousChromiumInitLocation(
@@ -556,23 +548,28 @@ public class WebViewChromiumAwInit {
                 });
     }
 
-    private void setChromiumUiThreadLocked(boolean fromThreadSafeFunction) {
-        // If we're being started from a function that's allowed to be called on any thread,
-        // then we can't just assume the current thread is the UI thread; instead we assume the
-        // process's main looper will be the UI thread, because that's the case for almost all
-        // Android apps.
-        //
-        // If we're being started from a function that must be called from the UI
-        // thread, then by definition the current thread is the UI thread whether it's the main
-        // looper or not.
-        Looper looper = fromThreadSafeFunction ? Looper.getMainLooper() : Looper.myLooper();
-        Log.v(
-                TAG,
-                "Binding Chromium to "
-                        + (Looper.getMainLooper().equals(looper) ? "main" : "background")
-                        + " looper "
-                        + looper);
-        ThreadUtils.setUiThread(looper);
+    private void maybeSetChromiumUiThread(boolean fromThreadSafeFunction) {
+        synchronized (mThreadSettingLock) {
+            if (!mThreadIsSet) {
+                // If we're being started from a function that's allowed to be called on any thread,
+                // then we can't just assume the current thread is the UI thread; instead we assume
+                // the process's main looper will be the UI thread, because that's the case for
+                // almost all Android apps.
+                //
+                // If we're being started from a function that must be called from the UI
+                // thread, then by definition the current thread is the UI thread whether it's the
+                // main looper or not.
+                Looper looper = fromThreadSafeFunction ? Looper.getMainLooper() : Looper.myLooper();
+                Log.v(
+                        TAG,
+                        "Binding Chromium to "
+                                + (Looper.getMainLooper().equals(looper) ? "main" : "background")
+                                + " looper "
+                                + looper);
+                ThreadUtils.setUiThread(looper);
+                mThreadIsSet = true;
+            }
+        }
     }
 
     private void initPlatSupportLibrary() {
