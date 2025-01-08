@@ -267,11 +267,11 @@ CanvasResourceSharedBitmap::CanvasResourceSharedBitmap(
     return;
   }
 
-  auto shared_image_mapping = shared_image_interface->CreateSharedImage(
-      {viz::SinglePlaneFormat::kBGRA_8888, size, gfx::ColorSpace(),
-       gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, "CanvasResourceSharedBitmap"});
-  shared_image_ = std::move(shared_image_mapping.shared_image);
-  shared_mapping_ = std::move(shared_image_mapping.mapping);
+  shared_image_ =
+      shared_image_interface->CreateSharedImageForSoftwareCompositor(
+          {viz::SinglePlaneFormat::kBGRA_8888, size, gfx::ColorSpace(),
+           gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
+           "CanvasResourceSharedBitmap"});
   sync_token_ = shared_image_interface->GenVerifiedSyncToken();
 }
 
@@ -301,7 +301,8 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSharedBitmap::Bitmap() {
   // canvas resource that owns the shared memory stays alive at least until
   // the SkImage is destroyed.
   SkImageInfo image_info = CreateSkImageInfo();
-  base::span<uint8_t> bytes(shared_mapping_);
+  auto scoped_mapping = shared_image_->Map();
+  base::span<uint8_t> bytes = scoped_mapping->GetMemoryForPlane(0);
   CHECK_GE(bytes.size(), image_info.computeByteSize(image_info.minRowBytes()));
   SkPixmap pixmap(image_info, bytes.data(), image_info.minRowBytes());
   AddRef();
@@ -344,7 +345,8 @@ void CanvasResourceSharedBitmap::UploadSoftwareRenderingResults(
   }
 
   SkImageInfo image_info = CreateSkImageInfo();
-  base::span<uint8_t> bytes(shared_mapping_);
+  auto scoped_mapping = shared_image_->Map();
+  base::span<uint8_t> bytes = scoped_mapping->GetMemoryForPlane(0);
   CHECK_GE(bytes.size(), image_info.computeByteSize(image_info.minRowBytes()));
   bool read_pixels_successful = image->readPixels(
       image_info, bytes.data(), image_info.minRowBytes(), 0, 0);
