@@ -180,6 +180,8 @@
 #import "ios/chrome/browser/web_state_list/model/session_metrics.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/browser/window_activities/model/window_activity_helpers.h"
+#import "ios/chrome/browser/youtube_incognito/coordinator/youtube_incognito_coordinator.h"
+#import "ios/chrome/browser/youtube_incognito/coordinator/youtube_incognito_coordinator_delegate.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/signin/choice_api.h"
@@ -346,7 +348,8 @@ void OnListFamilyMembersResponse(
                                SceneUIProvider,
                                SceneURLLoadingServiceDelegate,
                                TabGridCoordinatorDelegate,
-                               WebStateListObserving> {
+                               WebStateListObserving,
+                               YoutubeIncognitoCoordinatorDelegate> {
   std::unique_ptr<WebStateListObserverBridge> _webStateListForwardingObserver;
   std::unique_ptr<PolicyWatcherBrowserAgentObserverBridge>
       _policyWatcherObserverBridge;
@@ -457,6 +460,9 @@ void OnListFamilyMembersResponse(
 
 // The state of the scene controlled by this object.
 @property(nonatomic, weak, readonly) SceneState* sceneState;
+
+@property(nonatomic, strong)
+    YoutubeIncognitoCoordinator* youtubeIncognitoCoordinator;
 
 @end
 
@@ -1483,6 +1489,66 @@ void OnListFamilyMembersResponse(
 
   return authenticationService->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin);
+}
+
+- (void)showYoutubeIncognitoWithUrlLoadParams:
+    (const UrlLoadParams&)urlLoadParams {
+  self.youtubeIncognitoCoordinator = [[YoutubeIncognitoCoordinator alloc]
+      initWithBaseViewController:self.activeViewController
+                         browser:self.currentInterface.browser];
+  self.youtubeIncognitoCoordinator.delegate = self;
+  self.youtubeIncognitoCoordinator.tabOpener = self;
+  self.youtubeIncognitoCoordinator.urlLoadParams = urlLoadParams;
+  [self.youtubeIncognitoCoordinator start];
+}
+
+- (void)handleModalsDismissalWithMode:(ApplicationModeForTabOpening)targetMode
+                        urlLoadParams:(const UrlLoadParams&)urlLoadParams
+                           completion:(ProceduralBlock)completion {
+  PrefService* prefs = GetApplicationContext()->GetLocalState();
+  BOOL canShowIncognitoInterstitial =
+      prefs->GetBoolean(prefs::kIncognitoInterstitialEnabled);
+  BOOL canShowYoutubeIncognito =
+      base::FeatureList::IsEnabled(kChromeStartupParametersAsync) &&
+      base::FeatureList::IsEnabled(kYoutubeIncognito);
+
+  UrlLoadParams copyOfUrlLoadParams = urlLoadParams;
+
+  if (canShowIncognitoInterstitial &&
+      (targetMode == ApplicationModeForTabOpening::UNDETERMINED ||
+       targetMode == ApplicationModeForTabOpening::APP_SWITCHER_INCOGNITO)) {
+    [self showIncognitoInterstitialWithUrlLoadParams:copyOfUrlLoadParams];
+    completion();
+  } else {
+    ApplicationModeForTabOpening tabOpeningMode =
+        (targetMode == ApplicationModeForTabOpening::APP_SWITCHER_INCOGNITO)
+            ? ApplicationModeForTabOpening::INCOGNITO
+            : targetMode;
+    [self openSelectedTabInMode:tabOpeningMode
+              withUrlLoadParams:copyOfUrlLoadParams
+                     completion:completion];
+    if (canShowYoutubeIncognito &&
+        targetMode == ApplicationModeForTabOpening::APP_SWITCHER_INCOGNITO) {
+      [self showYoutubeIncognitoWithUrlLoadParams:copyOfUrlLoadParams];
+    }
+  }
+}
+
+- (void)handleModelsDismissalWithReauthAgent:
+            (IncognitoReauthSceneAgent*)reauthAgent
+                     dismissModalsCompletion:
+                         (ProceduralBlock)dismissModalsCompletion
+                                  completion:(ProceduralBlock)completion {
+  [reauthAgent authenticateIncognitoContentWithCompletionBlock:^(BOOL success) {
+    if (success) {
+      dismissModalsCompletion();
+    } else {
+      // Do not open the tab, but still call completion.
+      if (completion) {
+        completion();
+      }
+    }
+  }];
 }
 
 #pragma mark - ApplicationCommands
@@ -2975,54 +3041,46 @@ using UserFeedbackDataCallback =
                                      (const UrlLoadParams&)urlLoadParams
                                     dismissOmnibox:(BOOL)dismissOmnibox
                                         completion:(ProceduralBlock)completion {
-  // Fallback to NORMAL or INCOGNITO mode if the Incognito interstitial is not
-  // available.
-  if (targetMode == ApplicationModeForTabOpening::UNDETERMINED) {
     PrefService* prefs = GetApplicationContext()->GetLocalState();
     BOOL canShowIncognitoInterstitial =
         prefs->GetBoolean(prefs::kIncognitoInterstitialEnabled);
-    if (!canShowIncognitoInterstitial) {
-      targetMode = [self isIncognitoForced]
-                       ? ApplicationModeForTabOpening::INCOGNITO
-                       : ApplicationModeForTabOpening::NORMAL;
-    }
-  }
 
-  UrlLoadParams copyOfUrlLoadParams = urlLoadParams;
-
-  __weak SceneController* weakSelf = self;
-  void (^dismissModalsCompletion)() = ^{
-    if (targetMode == ApplicationModeForTabOpening::UNDETERMINED) {
-      [weakSelf showIncognitoInterstitialWithUrlLoadParams:copyOfUrlLoadParams];
-      completion();
-    } else {
-      [weakSelf openSelectedTabInMode:targetMode
-                    withUrlLoadParams:copyOfUrlLoadParams
-                           completion:completion];
+    if ([self isIncognitoForced]) {
+      targetMode = ApplicationModeForTabOpening::INCOGNITO;
+    } else if (!canShowIncognitoInterstitial &&
+               targetMode == ApplicationModeForTabOpening::UNDETERMINED) {
+      // Fallback to NORMAL mode if the Incognito interstitial is not
+      // available.
+      targetMode = ApplicationModeForTabOpening::NORMAL;
     }
-  };
 
-  // Wrap the post-dismiss-modals action with the incognito auth check.
-  if (targetMode == ApplicationModeForTabOpening::INCOGNITO) {
-    IncognitoReauthSceneAgent* reauthAgent =
-        [IncognitoReauthSceneAgent agentFromScene:self.sceneState];
-    if (reauthAgent.authenticationRequired) {
-      void (^wrappedDismissModalCompletion)() = dismissModalsCompletion;
-      dismissModalsCompletion = ^{
-        [reauthAgent
-            authenticateIncognitoContentWithCompletionBlock:^(BOOL success) {
-              if (success) {
-                wrappedDismissModalCompletion();
-              } else {
-                // Do not open the tab, but still call completion.
-                if (completion) {
-                  completion();
-                }
-              }
-            }];
-      };
+    UrlLoadParams copyOfUrlLoadParams = urlLoadParams;
+
+    __weak SceneController* weakSelf = self;
+    void (^dismissModalsCompletion)() = ^{
+      [weakSelf handleModalsDismissalWithMode:targetMode
+                                urlLoadParams:copyOfUrlLoadParams
+                                   completion:completion];
+    };
+
+    if (targetMode == ApplicationModeForTabOpening::APP_SWITCHER_INCOGNITO) {
+      targetMode = ApplicationModeForTabOpening::INCOGNITO;
     }
-  }
+
+    // Wrap the post-dismiss-modals action with the incognito auth check.
+    if (targetMode == ApplicationModeForTabOpening::INCOGNITO) {
+      IncognitoReauthSceneAgent* reauthAgent =
+          [IncognitoReauthSceneAgent agentFromScene:self.sceneState];
+      if (reauthAgent.authenticationRequired) {
+        void (^wrappedDismissModalCompletion)() = dismissModalsCompletion;
+        dismissModalsCompletion = ^{
+          [weakSelf
+              handleModelsDismissalWithReauthAgent:reauthAgent
+                           dismissModalsCompletion:wrappedDismissModalCompletion
+                                        completion:completion];
+        };
+      }
+    }
 
   [self dismissModalDialogsWithCompletion:dismissModalsCompletion
                            dismissOmnibox:dismissOmnibox];
@@ -3279,6 +3337,8 @@ using UserFeedbackDataCallback =
             withUrlLoadParams:(const UrlLoadParams&)urlLoadParams
                    completion:(ProceduralBlock)completion {
   DCHECK(tabOpeningTargetMode != ApplicationModeForTabOpening::UNDETERMINED);
+  DCHECK(tabOpeningTargetMode !=
+         ApplicationModeForTabOpening::APP_SWITCHER_INCOGNITO);
   // Update the snapshot before opening a new tab. This ensures that the
   // snapshot is correct when tabs are openned via the dispatcher.
   [self updateActiveWebStateSnapshot];
@@ -3880,6 +3940,16 @@ using UserFeedbackDataCallback =
 #pragma mark - PasswordManagerReauthenticationDelegate
 
 - (void)dismissPasswordManagerAfterFailedReauthentication {
+  [self closePresentedViews];
+}
+
+#pragma mark - YoutubeIncognitoCoordinatorDelegate
+
+- (void)shouldStopYoutubeIncognitoCoordinator:
+    (YoutubeIncognitoCoordinator*)youtubeIncognitoCoordinator {
+  DCHECK(youtubeIncognitoCoordinator == self.youtubeIncognitoCoordinator);
+  [self.youtubeIncognitoCoordinator stop];
+  self.youtubeIncognitoCoordinator = nil;
   [self closePresentedViews];
 }
 

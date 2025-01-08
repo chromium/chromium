@@ -39,6 +39,7 @@ CGFloat const kAnimationScalFactor = 0.5;
 }
 
 - (void)viewDidLoad {
+  self.actionHandler = self;
   self.showDismissBarButton = NO;
   self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
   self.aboveTitleView = [self animatedTitleView];

@@ -27,15 +27,7 @@ CGFloat const kHalfSheetCornerRadius = 20;
 - (void)start {
   // TODO(crbug.com/374935670): Add the the case when incognito is unavailable
   // and show toast when the view was presented already.
-  __weak YoutubeIncognitoCoordinator* weakSelf = self;
-  [self.tabOpener
-      dismissModalsAndMaybeOpenSelectedTabInMode:ApplicationModeForTabOpening::
-                                                     INCOGNITO
-                               withUrlLoadParams:self.urlLoadParams
-                                  dismissOmnibox:YES
-                                      completion:^{
-                                        [weakSelf presentViewController];
-                                      }];
+  [self presentViewController];
 }
 
 - (void)stop {
@@ -62,6 +54,7 @@ CGFloat const kHalfSheetCornerRadius = 20;
 // Presents the YoutubeIncognitoCoordinator's view controller.
 - (void)presentViewController {
   _viewController = [[YoutubeIncognitoSheet alloc] init];
+  _viewController.delegate = self;
   _viewController.sheetPresentationController.detents = @[
     [UISheetPresentationControllerDetent mediumDetent],
     [UISheetPresentationControllerDetent largeDetent]

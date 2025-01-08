@@ -51,9 +51,7 @@
     _externalURL = externalURL;
     _completeURL = completeURL;
     _applicationMode = mode;
-    _applicationModeRequestStatus =
-        forceApplicationMode ? ApplicationModeRequestStatus::kAvailable
-                             : ApplicationModeRequestStatus::kUnavailable;
+    _applicationModeRequestStatus = ApplicationModeRequestStatus::kAvailable;
     _forceApplicationMode = forceApplicationMode;
   }
   return self;
@@ -220,6 +218,7 @@
       CHECK(!_pendingBlocks);
       _pendingBlocks = [[NSMutableArray alloc] init];
       [_pendingBlocks addObject:block];
+      _applicationModeRequestStatus = ApplicationModeRequestStatus::kRequested;
       __weak __typeof(self) weakSelf = self;
       auto callback = base::BindOnce(
           [](AppStartupParameters* startupParams, bool isAppSwitcherIncognito) {
