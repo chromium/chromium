@@ -4761,7 +4761,7 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4314815835985389558">Gestionar sincronización</translation>
 <translation id="4316850752623536204">Sitio web del desarrollador</translation>
 <translation id="43176328751044557">{NUM_SITES,plural, =1{Se han eliminado los permisos de 1 sitio}other{Se han eliminado los permisos de {NUM_SITES} sitios}}</translation>
-<translation id="4317733381297736564">Compras en aplicaciones</translation>
+<translation id="4317733381297736564">Compras en la aplicación</translation>
 <translation id="4317820549299924617">No se ha podido verificar</translation>
 <translation id="4319441675152393296">Haz clic en el icono de esta extensión para leer y modificar <ph name="HOST" /></translation>
 <translation id="4320177379694898372">No hay conexión a Internet</translation>

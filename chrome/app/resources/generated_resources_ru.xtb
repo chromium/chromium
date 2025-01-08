@@ -10902,7 +10902,7 @@
 <translation id="8729133765463465108">Использовать камеру для сканирования QR-кода</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8731029916209785242">Разрешения (<ph name="FORMATTED_ORIGIN" />)</translation>
-<translation id="8731268612289859741">Защитный код</translation>
+<translation id="8731268612289859741">CVC-код</translation>
 <translation id="8731629443331803108">Сайт <ph name="SITE_NAME" /> запрашивает следующее разрешение: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">Номер порта</translation>
 <translation id="8732030010853991079">Активируйте расширение, нажав на этот значок.</translation>

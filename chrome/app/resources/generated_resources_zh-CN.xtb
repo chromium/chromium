@@ -8390,7 +8390,7 @@
 <translation id="6970480684834282392">启动类型</translation>
 <translation id="6970543303783413625">无法导入密码。您一次最多只能导入 <ph name="COUNT" /> 个密码。</translation>
 <translation id="6970856801391541997">打印特定页面</translation>
-<translation id="6970861306198150268">请确保您保存的是您目前用于此网站的密码</translation>
+<translation id="6970861306198150268">请确保您保存的是此网站当前的密码</translation>
 <translation id="6971184043765343932">您上传的图片</translation>
 <translation id="6971570759801670426">修改以下用户名的<ph name="CREDENTIAL_TYPE" />：<ph name="USER_EMAIL" /></translation>
 <translation id="6972754398087986839">开始使用</translation>
