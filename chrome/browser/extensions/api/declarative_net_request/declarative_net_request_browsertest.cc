@@ -8320,7 +8320,7 @@ using DeclarativeNetRequestAllowChromeURLsBrowserTest =
     DeclarativeNetRequestBrowserTest;
 
 // Ensure that an extension can block requests that it initiated, but not
-// requests that other extensions initiated, unless the
+// non-navigation requests that other extensions initiated, unless the
 // --extensions-on-chrome-urls switch is used.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestAllowChromeURLsBrowserTest,
                        CrossExtensionRequestBlocking) {
@@ -8439,6 +8439,91 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestAllowChromeURLsBrowserTest,
               GetMatchedRuleCount(extension_1->id(), std::nullopt /* tab_id */,
                                   start_time));
   }
+}
+
+// Ensure that extensions can block main_frame navigation requests that other
+// extensions initiated, but not sub_frame requests unless the
+// --extensions-on-chrome-urls switch is used.
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestAllowChromeURLsBrowserTest,
+                       CrossExtensionNavigationRequestBlocking) {
+  set_config_flags(ConfigFlag::kConfig_HasBackgroundScript |
+                   ConfigFlag::kConfig_HasFeedbackPermission |
+                   ConfigFlag::kConfig_HasManifestSandbox);
+
+  DeclarativeNetRequestGetMatchedRulesFunction::
+      set_disable_throttling_for_tests(true);
+
+  // Extension 1 - Blocks navigation requests to example.com.
+  TestRule blocking_rule = CreateGenericRule(kMinValidID);
+  blocking_rule.id = 1;
+  blocking_rule.action->type = "block";
+  blocking_rule.condition->url_filter = "example.com";
+  blocking_rule.condition->resource_types =
+      std::vector<std::string>({"main_frame", "sub_frame"});
+
+  ASSERT_NO_FATAL_FAILURE(
+      LoadExtensionWithRules({std::move(blocking_rule)}, "test_extension_1",
+                             {URLPattern::kAllUrlsPattern}));
+  const Extension* extension_1 = last_loaded_extension();
+
+  // Extension 2 - Doesn't block any requests.
+  ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(
+      {}, "test_extension_2", {URLPattern::kAllUrlsPattern}));
+  const Extension* extension_2 = last_loaded_extension();
+
+  // Initiate main_frame and sub_frame requests via an extension page.
+  base::Time start_time = base::Time::Now();
+  GURL extension_page_url = extension_2->GetResourceURL("/manifest.json");
+  GURL main_frame_url = embedded_test_server()->GetURL("example.com", "/");
+  GURL sub_frame_url =
+      embedded_test_server()->GetURL("example.com", "/child_frame.html");
+
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_page_url));
+  content::RenderFrameHost* extension_page = GetPrimaryMainFrame();
+
+  content::TestNavigationObserver navigation_observer(main_frame_url);
+  navigation_observer.StartWatchingNewWebContents();
+
+  constexpr char kNavigationRequestsTemplate[] = R"(
+      const frame = document.createElement('iframe');
+      frame.src = '%s';
+      document.body.appendChild(frame);
+
+      window.open('%s');
+  )";
+
+  ASSERT_TRUE(content::ExecJs(
+      extension_page, base::StringPrintf(kNavigationRequestsTemplate,
+                                         sub_frame_url.spec().c_str(),
+                                         main_frame_url.spec().c_str())));
+  navigation_observer.Wait();
+
+  // The main_frame request should be blocked.
+  content::RenderFrameHost* main_frame = GetPrimaryMainFrame();
+  EXPECT_FALSE(WasFrameWithScriptLoaded(main_frame));
+  EXPECT_FALSE(navigation_observer.last_navigation_succeeded());
+  EXPECT_EQ(navigation_observer.last_net_error_code(),
+            net::ERR_BLOCKED_BY_CLIENT);
+
+  // The sub_frame request shouldn't be blocked, unless the the
+  // --extensions-on-chrome-urls switch is used.
+  bool should_iframe_navigation_succeed = !GetAllowChromeURLs();
+  content::RenderFrameHost* sub_frame =
+      content::ChildFrameAt(extension_page, 0);
+  ASSERT_TRUE(sub_frame);
+  EXPECT_EQ(sub_frame_url, sub_frame->GetLastCommittedURL());
+  content::WaitForLoadStop(
+      content::WebContents::FromRenderFrameHost(sub_frame));
+  EXPECT_EQ(should_iframe_navigation_succeed,
+            WasFrameWithScriptLoaded(sub_frame));
+
+  // The rule should have matched once (the main_frame request), or twice (both
+  // sub_frame and main_frame requests) if the switch was used.
+  std::string expected_match_count =
+      base::NumberToString(should_iframe_navigation_succeed ? 1 : 2);
+  EXPECT_EQ(expected_match_count,
+            GetMatchedRuleCount(extension_1->id(), std::nullopt /* tab_id */,
+                                start_time));
 }
 
 // A derivative of DeclarativeNetRequestBrowserTest which allows the test to

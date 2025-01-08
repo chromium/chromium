@@ -514,12 +514,15 @@ bool RulesetManager::ShouldEvaluateRulesetForRequest(
     const WebRequestInfo& request,
     bool is_incognito_context,
     PageAccess& host_permission_access) const {
-  // Extensions should not generally have access to requests initiated by other
-  // extensions, though the --extensions-on-chrome-urls switch overrides that
-  // restriction.
+  // Extensions should not generally have access to non-main-frame requests
+  // initiated by other extensions, though the --extensions-on-chrome-urls
+  // switch overrides that restriction.
+  // Note: For discussions regarding handling of extension initiated navigations
+  //       see https://crbug.com/918137 and https://crbug.com/382670035.
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kExtensionsOnChromeURLs) &&
-      request.initiator) {
+      request.initiator &&
+      request.web_request_type != WebRequestResourceType::MAIN_FRAME) {
     // Checking the precursor is necessary here since requests initiated by
     // manifest sandbox pages have an opaque initiator origin, but still
     // originate from an extension.
