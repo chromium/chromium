@@ -35,12 +35,14 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
+import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
+import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -51,6 +53,7 @@ public final class FeedActionDelegateImplTest {
 
     @Mock private WebFeedBridge.Natives mWebFeedBridgeJniMock;
 
+    @Mock private SyncConsentActivityLauncher mMockSyncConsentActivityLauncher;
     @Mock private SigninAndHistorySyncActivityLauncher mMockSigninLauncher;
 
     @Mock private SigninAndHistorySyncActivityLauncher mMockSigninAndHistorySyncActivityLauncher;
@@ -79,6 +82,7 @@ public final class FeedActionDelegateImplTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
+        SyncConsentActivityLauncherImpl.setLauncherForTest(mMockSyncConsentActivityLauncher);
         SigninAndHistorySyncActivityLauncherImpl.setLauncherForTest(
                 mMockSigninAndHistorySyncActivityLauncher);
         mFeedActionDelegateImpl =
@@ -93,6 +97,22 @@ public final class FeedActionDelegateImplTest {
         WebFeedBridgeJni.setInstanceForTesting(mWebFeedBridgeJniMock);
 
         when(mWebFeedBridgeJniMock.isCormorantEnabledForLocale()).thenReturn(true);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.FEED_SHOW_SIGN_IN_COMMAND)
+    public void testShowSyncConsentActivity_shownWhenFlagEnabled() {
+        mFeedActionDelegateImpl.showSyncConsentActivity(SigninAccessPoint.NTP_FEED_TOP_PROMO);
+        verify(mMockSyncConsentActivityLauncher)
+                .launchActivityIfAllowed(any(), eq(SigninAccessPoint.NTP_FEED_TOP_PROMO));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.FEED_SHOW_SIGN_IN_COMMAND)
+    public void testShowSyncConsentActivity_dontShowWhenFlagDisabled() {
+        mFeedActionDelegateImpl.showSyncConsentActivity(SigninAccessPoint.NTP_FEED_TOP_PROMO);
+        verify(mMockSyncConsentActivityLauncher, never())
+                .launchActivityIfAllowed(any(), eq(SigninAccessPoint.NTP_FEED_TOP_PROMO));
     }
 
     @Test
@@ -132,12 +152,12 @@ public final class FeedActionDelegateImplTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-    public void testShowSigninInterstitial() {
+    public void testShowSigninInterstitial_replaceSyncPromosWithSignInPromosEnabled() {
         when(mMockSigninAndHistorySyncActivityLauncher.createBottomSheetSigninIntentOrShowError(
                         any(), any(), any(), eq(SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO)))
                 .thenReturn(mSigninIntent);
         mFeedActionDelegateImpl.showSignInInterstitial(
-                SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO, null);
+                SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO, null, null);
 
         ArgumentCaptor<BottomSheetSigninAndHistorySyncConfig> configCaptor =
                 ArgumentCaptor.forClass(BottomSheetSigninAndHistorySyncConfig.class);
