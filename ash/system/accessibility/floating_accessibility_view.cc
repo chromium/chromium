@@ -100,7 +100,6 @@ std::string GetDescriptionForMovedToPosition(FloatingMenuPosition position) {
 
 bool IsKioskImeButtonEnabled() {
   return Shell::Get()->session_controller()->IsRunningInAppMode() &&
-         base::FeatureList::IsEnabled(features::kKioskEnableImeButton) &&
          Shell::Get()->ime_controller()->GetVisibleImes().size() > 1;
 }
 

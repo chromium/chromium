@@ -22,7 +22,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
@@ -48,11 +47,6 @@ class FloatingAccessibilityControllerTest : public AshTestBase {
 
   AccessibilityController* accessibility_controller() {
     return Shell::Get()->accessibility_controller();
-  }
-
-  void TearDown() override {
-    AshTestBase::TearDown();
-    features_.Reset();
   }
 
   FloatingAccessibilityController* controller() {
@@ -213,18 +207,7 @@ class FloatingAccessibilityControllerTest : public AshTestBase {
   std::u16string GetAccessibleNameForBubble() {
     return controller()->GetAccessibleNameForBubble();
   }
-
- protected:
-  base::test::ScopedFeatureList features_;
 };
-
-TEST_F(FloatingAccessibilityControllerTest, ImeButtonNotShowWhenDisabled) {
-  features_.InitAndDisableFeature(features::kKioskEnableImeButton);
-
-  SetUpVisibleMenu();
-
-  EXPECT_FALSE(IsButtonVisible(FloatingAccessibilityView::ButtonId::kIme));
-}
 
 TEST_F(FloatingAccessibilityControllerTest, ImeButtonShownWhenEnabled) {
   SetUpVisibleMenu();
