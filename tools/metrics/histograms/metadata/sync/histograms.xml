@@ -1293,6 +1293,7 @@ chromium-metrics-reviews@google.com.
     Note that only invalidations received during the current browser session are
     considered.
   </summary>
+  <token key="SyncDataType" variants="SyncDataType"/>
 </histogram>
 
 <histogram name="Sync.OutgoingPassordSharingInvitation.CommitError"
