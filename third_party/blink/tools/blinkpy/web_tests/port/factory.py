@@ -314,13 +314,13 @@ def add_results_options_group(parser: argparse.ArgumentParser,
         help=('Path to a test_expectations file that will override previous '
               'expectations. Specify multiple times for multiple sets of '
               'overrides.'))
+    results_group.add_argument(
+        '--ignore-default-expectations',
+        action='store_true',
+        help='Do not use the default set of TestExpectations files.')
     results_group.add_argument('--driver-name',
                                help='Alternative driver binary to use')
     if rwt:
-        results_group.add_argument(
-            '--ignore-default-expectations',
-            action='store_true',
-            help='Do not use the default set of TestExpectations files.')
         results_group.add_argument(
             '--no-expectations',
             action='store_true',
