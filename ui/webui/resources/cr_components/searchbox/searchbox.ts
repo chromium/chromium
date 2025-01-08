@@ -855,6 +855,11 @@ export class SearchboxElement extends SearchboxElementBase {
         this.isDeletingInput_ || this.pastedInInput_ || caretNotAtEnd;
     this.pageHandler_.queryAutocomplete(
         mojoString16(input), preventInlineAutocomplete);
+
+    this.dispatchEvent(new CustomEvent('query-autocomplete', {
+      bubbles: true,
+      composed: true,
+    }));
   }
 
   /**
