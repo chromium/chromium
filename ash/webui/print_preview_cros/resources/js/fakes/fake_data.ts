@@ -14,7 +14,10 @@ import {ColorModel, DuplexMode, MarginType, MediaSize, PageRange, PreviewTicket,
 export function getFakePreviewTicket(requestId: number = 1): PreviewTicket {
   const previewTicket: PreviewTicket = {
     requestId: requestId,
-    printPreviewId: new UnguessableToken(),
+    printPreviewId: {
+      high: 0n,
+      low: 0n,
+    },
     destinationId: 'Default Printer',
     collate: true,
     color: ColorModel.COLOR,

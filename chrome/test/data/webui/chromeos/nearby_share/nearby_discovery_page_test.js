@@ -11,7 +11,6 @@ import {ShareType} from 'chrome://nearby/shared/nearby_share_share_type.mojom-we
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {ShareTargetType} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_target_types.mojom-webui.js';
-import {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {keyEventOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 
@@ -32,8 +31,8 @@ suite('DiscoveryPageTest', function() {
 
   /**
    * Compares two unguessable tokens.
-   * @param {!UnguessableToken} a
-   * @param {!UnguessableToken} b
+   * @param {*} a
+   * @param {*} b
    */
   function assertTokensEqual(a, b) {
     assertEquals(a.high, b.high);

@@ -5,9 +5,10 @@
 /** @fileoverview Contains fake implementations of mojo interfaces. */
 
 import {DiscoveryObserverRemote, SelectShareTargetResult, ShareTargetListenerRemote, StartDiscoveryResult, TransferUpdateListenerPendingReceiver, TransferUpdateListenerRemote} from 'chrome://nearby/shared/nearby_share.mojom-webui.js';
-import {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
 import {TestBrowserProxy} from '../test_browser_proxy.js';
+
+/** @typedef {*} UnguessableToken */
 
 /**
  * @implements {ConfirmationManagerInterface}

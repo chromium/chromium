@@ -30,7 +30,10 @@ export const FAKE_PRINT_REQUEST_FAILURE_INVALID_SETTINGS_ERROR:
 const CANCEL_METHOD = 'cancel';
 const START_SESSION_METHOD = 'startSession';
 export const FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL: SessionContext = {
-  printPreviewToken: new UnguessableToken(),
+  printPreviewToken: {
+    high: 0n,
+    low: 0n,
+  },
   isModifiable: true,
   hasSelection: true,
 };

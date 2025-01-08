@@ -11,7 +11,6 @@ import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {PromiseResolver} from 'chrome://resources/ash/common/promise_resolver.js';
 import {AlwaysOnVpnMode, ApnState, FilterType, InhibitReason, NO_LIMIT, StartConnectResult} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
 /** @typedef {*} AlwaysOnVpnProperties */
 /** @typedef {*} ApnProperties */
@@ -26,6 +25,7 @@ import {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-we
 /** @typedef {*} NetworkCertificate */
 /** @typedef {*} NetworkFilter */
 /** @typedef {*} NetworkStateProperties */
+/** @typedef {*} Time */
 /** @typedef {*} TrafficCounter */
 /** @typedef {*} UInt32Value */
 /** @typedef {*} VpnProvider */
