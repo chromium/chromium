@@ -4,6 +4,8 @@
 
 source_set("ui") {
   sources = [
+    "youtube_incognito_enterprise_sheet.h",
+    "youtube_incognito_enterprise_sheet.mm",
     "youtube_incognito_sheet.h",
     "youtube_incognito_sheet.mm",
     "youtube_incognito_sheet_delegate.h",

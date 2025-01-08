@@ -1,0 +1,102 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/browser/youtube_incognito/ui/youtube_incognito_enterprise_sheet.h"
+
+#import <UIKit/UIKit.h>
+
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/youtube_incognito/ui/youtube_incognito_sheet_delegate.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
+
+namespace {
+
+CGFloat const kVerticalSpacing = 20;
+CGFloat const kTitleContainerCornerRadius = 15;
+CGFloat const kTitleContainerTopPadding = 33;
+CGFloat const kTitleContainerViewSize = 64;
+CGFloat const kIconSize = 32;
+
+}  // namespace
+
+@implementation YoutubeIncognitoEnterpriseSheet
+
+- (instancetype)init {
+  self = [super init];
+  return self;
+}
+
+- (void)viewDidLoad {
+  self.actionHandler = self;
+  self.showDismissBarButton = NO;
+  self.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
+  self.aboveTitleView = [self enterpriseTitleView];
+
+  // TODO(crbug.com/374935670): Add a11y strings.
+  self.titleString = @"TODO Incognito Mode Is Unavailable";
+  self.secondaryTitleString =
+      @"TODO Your organization turned off private browsing.";
+  self.subtitleString = @"TODO add the URL to open";
+  self.primaryActionString = @"TODO Open Site Anyway";
+  self.secondaryActionString = @"TODO cancel";
+  self.customSpacing = kVerticalSpacing;
+  self.titleTextStyle = UIFontTextStyleTitle3;
+  self.scrollEnabled = YES;
+
+  [self displayGradientView:YES];
+
+  [super viewDidLoad];
+}
+
+- (void)customizeSecondaryTitle:(UITextView*)secondaryTitle {
+  secondaryTitle.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  secondaryTitle.textColor = [UIColor colorNamed:kTextSecondaryColor];
+}
+
+- (void)customizeSubtitle:(UITextView*)subtitle {
+  subtitle.font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
+}
+
+#pragma mark - ConfirmationAlertActionHandler
+
+- (void)confirmationAlertPrimaryAction {
+  [self.delegate didTapPrimaryActionButton];
+}
+
+#pragma mark - Private
+
+- (UIView*)enterpriseTitleView {
+  UIView* iconContainerView = [[UIView alloc] init];
+  iconContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+  iconContainerView.layer.cornerRadius = kTitleContainerCornerRadius;
+  iconContainerView.backgroundColor = [UIColor colorNamed:kGrey400Color];
+
+  UIImageView* icon = [[UIImageView alloc]
+      initWithImage:CustomSymbolWithPointSize(kEnterpriseSymbol, kIconSize)];
+  icon.translatesAutoresizingMaskIntoConstraints = NO;
+  icon.tintColor = [UIColor colorNamed:kSolidWhiteColor];
+  [iconContainerView addSubview:icon];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [iconContainerView.widthAnchor
+        constraintEqualToConstant:kTitleContainerViewSize],
+    [iconContainerView.heightAnchor
+        constraintEqualToConstant:kTitleContainerViewSize],
+  ]];
+  AddSameCenterConstraints(iconContainerView, icon);
+
+  // Padding for the icon container view.
+  UIView* outerView = [[UIView alloc] init];
+  [outerView addSubview:iconContainerView];
+  AddSameCenterXConstraint(outerView, iconContainerView);
+  AddSameConstraintsToSidesWithInsets(
+      iconContainerView, outerView, LayoutSides::kTop | LayoutSides::kBottom,
+      NSDirectionalEdgeInsetsMake(kTitleContainerTopPadding, 0, 0, 0));
+
+  return outerView;
+}
+
+@end
