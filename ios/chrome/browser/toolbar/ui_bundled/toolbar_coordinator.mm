@@ -619,10 +619,6 @@
   if (!NTPHelper || !NTPHelper->IsActive()) {
     return OmniboxFocusTrigger::kOther;
   }
-  if (IsIOSLargeFakeboxEnabled()) {
-    return _fakeboxPinned ? OmniboxFocusTrigger::kPinnedLargeFakebox
-                          : OmniboxFocusTrigger::kUnpinnedLargeFakebox;
-  }
   return _fakeboxPinned ? OmniboxFocusTrigger::kPinnedFakebox
                         : OmniboxFocusTrigger::kUnpinnedFakebox;
 }

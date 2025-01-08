@@ -509,10 +509,6 @@ BASE_FEATURE(kContentNotificationDeliveredNAU,
 
 const char kDeliveredNAUMaxPerSession[] = "DeliveredNAUMaxPerSession";
 
-BASE_FEATURE(kIOSLargeFakebox,
-             "IOSLargeFakebox",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kFullscreenImprovement,
              "FullscreenImprovement",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -802,10 +798,6 @@ bool IsContentPushNotificationsProvisionalRegistrationOnly() {
 bool IsContentPushNotificationsSetUpListRegistrationOnly() {
   return (ContentNotificationsExperimentTypeEnabled() ==
           NotificationsExperimentTypeSetUpListsRegistrationOnly);
-}
-
-bool IsIOSLargeFakeboxEnabled() {
-  return base::FeatureList::IsEnabled(kIOSLargeFakebox);
 }
 
 bool IsKeyboardAccessoryUpgradeEnabled() {

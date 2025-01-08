@@ -1047,10 +1047,6 @@ extern const char kTFLiteLanguageDetectionDescription[];
 extern const char kThemeColorInTopToolbarName[];
 extern const char kThemeColorInTopToolbarDescription[];
 
-// Title and description for the flag to enable the iOS Large Fakebox feature
-extern const char kIOSLargeFakeboxName[];
-extern const char kIOSLargeFakeboxDescription[];
-
 // Title and description for the flag to enable using Lens to search using
 // copied images in the omnibox.
 extern const char kEnableLensInOmniboxCopiedImageName[];

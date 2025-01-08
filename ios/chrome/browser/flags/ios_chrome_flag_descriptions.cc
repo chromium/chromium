@@ -1177,11 +1177,6 @@ const char kThemeColorInTopToolbarDescription[] =
     "When enabled with bottom omnibox, the top toolbar background color is the "
     "page's theme color. Disabled when a dynamic color flag is enabled.";
 
-const char kIOSLargeFakeboxName[] = "Enable Large Fakebox on Home";
-const char kIOSLargeFakeboxDescription[] =
-    "When enabled, the Fakebox on Home appears larger and has an updated "
-    "design.";
-
 const char kEnableLensInOmniboxCopiedImageName[] =
     "Enable Google Lens in the Omnibox for Copied Images";
 const char kEnableLensInOmniboxCopiedImageDescription[] =

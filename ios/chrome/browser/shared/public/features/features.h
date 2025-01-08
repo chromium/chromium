@@ -525,9 +525,6 @@ BASE_DECLARE_FEATURE(kContentNotificationDeliveredNAU);
 // Parameter value for the max number of delivered NAUs to be sent per session.
 extern const char kDeliveredNAUMaxPerSession[];
 
-// Feature flag to enable the Large Fakebox design changes.
-BASE_DECLARE_FEATURE(kIOSLargeFakebox);
-
 // Feature flag to enable a more stable fullscreen.
 BASE_DECLARE_FEATURE(kFullscreenImprovement);
 
@@ -685,9 +682,6 @@ bool IsContentPushNotificationsProvisionalRegistrationOnly();
 // YES when the Content Push Notifications Set Up List is registered with no UI
 // change.
 bool IsContentPushNotificationsSetUpListRegistrationOnly();
-
-// Returns true when the IOSLargeFakebox feature is enabled.
-bool IsIOSLargeFakeboxEnabled();
 
 // Whether or not the kIOSKeyboardAccessoryUpgrade feature is enabled.
 bool IsKeyboardAccessoryUpgradeEnabled();

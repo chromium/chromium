@@ -301,16 +301,8 @@
     // Use UIView animateWithDuration instead of UIViewPropertyAnimator to
     // avoid UIKit bug. See https://crbug.com/856155.
     self.inProgressAnimationCount += 1;
-    if (IsIOSLargeFakeboxEnabled()) {
-      // Set the location bar height to the default.
-      [self.toolbarAnimatee setLocationBarHeightExpanded];
-    }
     [self.toolbarAnimatee setToolbarFaded:NO];
     switch (_trigger) {
-      case OmniboxFocusTrigger::kPinnedLargeFakebox:
-        [self.toolbarAnimatee setLocationBarHeightToMatchFakeOmnibox];
-        break;
-      case OmniboxFocusTrigger::kUnpinnedLargeFakebox:
       case OmniboxFocusTrigger::kUnpinnedFakebox:
         [self.toolbarAnimatee setToolbarFaded:YES];
         break;
@@ -412,15 +404,9 @@
                                   trigger:_trigger
                                  animated:NO
                                completion:_completion];
-  } else {
-    if (_completion) {
-      _completion();
-      _completion = nil;
-    }
-    if (IsIOSLargeFakeboxEnabled()) {
-      // Reset the location bar height back to the default.
-      [self.toolbarAnimatee setLocationBarHeightExpanded];
-    }
+  } else if (_completion) {
+    _completion();
+    _completion = nil;
   }
   [self.locationBarAnimatee clearFakeboxButtonsSnapshot];
   self.stateChangedDuringAnimation = NO;
@@ -433,10 +419,6 @@
   [self.toolbarAnimatee expandLocationBar];
   [self.toolbarAnimatee showCancelButton];
   switch (_trigger) {
-    case OmniboxFocusTrigger::kPinnedLargeFakebox:
-      [self.toolbarAnimatee setLocationBarHeightExpanded];
-      break;
-    case OmniboxFocusTrigger::kUnpinnedLargeFakebox:
     case OmniboxFocusTrigger::kUnpinnedFakebox:
       [self.toolbarAnimatee setToolbarFaded:NO];
       break;
@@ -448,21 +430,16 @@
 // Visually contracts the location bar for defocus.
 - (void)contraction {
   [self.toolbarAnimatee contractLocationBar];
-  if (_trigger == OmniboxFocusTrigger::kPinnedLargeFakebox) {
-    [self.toolbarAnimatee setLocationBarHeightToMatchFakeOmnibox];
-  }
 }
 
 // Returns YES if the focus event was triggered by the NTP Fakebox in its
 // unpinned state.
 - (BOOL)isTriggerUnpinnedFakebox {
   switch (_trigger) {
-    case OmniboxFocusTrigger::kUnpinnedLargeFakebox:
     case OmniboxFocusTrigger::kUnpinnedFakebox:
       return YES;
     case OmniboxFocusTrigger::kOther:
     case OmniboxFocusTrigger::kPinnedFakebox:
-    case OmniboxFocusTrigger::kPinnedLargeFakebox:
       return NO;
   }
 }
@@ -472,10 +449,8 @@
 - (BOOL)isTriggerPinnedFakebox {
   switch (_trigger) {
     case OmniboxFocusTrigger::kPinnedFakebox:
-    case OmniboxFocusTrigger::kPinnedLargeFakebox:
       return YES;
     case OmniboxFocusTrigger::kOther:
-    case OmniboxFocusTrigger::kUnpinnedLargeFakebox:
     case OmniboxFocusTrigger::kUnpinnedFakebox:
       return NO;
   }
