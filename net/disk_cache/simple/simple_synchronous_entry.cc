@@ -246,15 +246,15 @@ int GetSimpleCacheTrailerPrefetchSize(int hint_size) {
   return kSimpleCacheTrailerPrefetchSpeculativeBytes.Get();
 }
 
-SimpleEntryStat::SimpleEntryStat(base::Time last_used,
-                                 base::Time last_modified,
-                                 const int32_t data_size[],
-                                 const int32_t sparse_data_size)
+SimpleEntryStat::SimpleEntryStat(
+    base::Time last_used,
+    base::Time last_modified,
+    const std::array<int32_t, kSimpleEntryStreamCount>& data_size,
+    const int32_t sparse_data_size)
     : last_used_(last_used),
       last_modified_(last_modified),
-      sparse_data_size_(sparse_data_size) {
-  memcpy(data_size_, data_size, sizeof(data_size_));
-}
+      data_size_(data_size),
+      sparse_data_size_(sparse_data_size) {}
 
 // These size methods all assume the presence of the SHA256 on stream zero,
 // since this version of the cache always writes it. In the read case, it may

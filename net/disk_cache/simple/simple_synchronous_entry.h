@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef NET_DISK_CACHE_SIMPLE_SIMPLE_SYNCHRONOUS_ENTRY_H_
 #define NET_DISK_CACHE_SIMPLE_SIMPLE_SYNCHRONOUS_ENTRY_H_
 
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <map>
 #include <memory>
 #include <optional>
@@ -65,7 +61,7 @@ class NET_EXPORT_PRIVATE SimpleEntryStat {
  public:
   SimpleEntryStat(base::Time last_used,
                   base::Time last_modified,
-                  const int32_t data_size[],
+                  const std::array<int32_t, kSimpleEntryStreamCount>& data_size,
                   const int32_t sparse_data_size);
 
   int GetOffsetInFile(size_t key_length, int offset, int stream_index) const;
@@ -93,7 +89,7 @@ class NET_EXPORT_PRIVATE SimpleEntryStat {
  private:
   base::Time last_used_;
   base::Time last_modified_;
-  int32_t data_size_[kSimpleEntryStreamCount];
+  std::array<int32_t, kSimpleEntryStreamCount> data_size_;
   int32_t sparse_data_size_;
 };
 

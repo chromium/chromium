@@ -4263,7 +4263,7 @@ TEST_F(DiskCacheEntryTest, SimpleCacheStream1SizeChanges) {
                          base::File::FLAG_READ | base::File::FLAG_OPEN);
   ASSERT_TRUE(entry_file0.IsValid());
 
-  int data_size[disk_cache::kSimpleEntryStreamCount] = {kSize, stream1_size, 0};
+  auto data_size = std::to_array<int32_t>({kSize, stream1_size, 0});
   int sparse_data_size = 0;
   disk_cache::SimpleEntryStat entry_stat(
       base::Time::Now(), base::Time::Now(), data_size, sparse_data_size);

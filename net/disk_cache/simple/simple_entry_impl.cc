@@ -154,13 +154,13 @@ SimpleEntryImpl::SimpleEntryImpl(
                                       net::NetLogSourceType::DISK_CACHE_ENTRY)),
       stream_0_data_(base::MakeRefCounted<net::GrowableIOBuffer>()),
       entry_priority_(entry_priority) {
-  static_assert(std::extent<decltype(data_size_)>() ==
+  static_assert(std::tuple_size<decltype(data_size_)>() ==
                     std::extent<decltype(crc32s_end_offset_)>(),
                 "arrays should be the same size");
-  static_assert(
-      std::extent<decltype(data_size_)>() == std::extent<decltype(crc32s_)>(),
-      "arrays should be the same size");
-  static_assert(std::extent<decltype(data_size_)>() ==
+  static_assert(std::tuple_size<decltype(data_size_)>() ==
+                    std::extent<decltype(crc32s_)>(),
+                "arrays should be the same size");
+  static_assert(std::tuple_size<decltype(data_size_)>() ==
                     std::extent<decltype(have_written_)>(),
                 "arrays should be the same size");
   ResetEntry();
@@ -661,7 +661,7 @@ void SimpleEntryImpl::ResetEntry() {
   std::memset(crc32s_end_offset_, 0, sizeof(crc32s_end_offset_));
   std::memset(crc32s_, 0, sizeof(crc32s_));
   std::memset(have_written_, 0, sizeof(have_written_));
-  std::memset(data_size_, 0, sizeof(data_size_));
+  std::ranges::fill(data_size_, 0);
 }
 
 void SimpleEntryImpl::ReturnEntryToCaller() {
