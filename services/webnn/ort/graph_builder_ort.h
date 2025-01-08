@@ -126,6 +126,10 @@ class GraphBuilderOrt {
   // with the given constant from WebNN.
   void AddInitializer(uint64_t constant_id);
 
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr>
+  AddBatchNormalizationOperation(
+      const mojom::BatchNormalization& batch_normalization);
+
   template <typename T>
   void AddBinaryOperation(const T& operation, std::string op_type);
 

@@ -56,7 +56,7 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*constant=*/SupportedDataTypes::All(),
        /*arg_min_max_input=*/{},
        /*arg_min_max_output=*/{},
-       /*batch_normalization_input=*/{},
+       /*batch_normalization_input=*/DataTypeConstraint::kFloat16To32,
        /*cast_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
        /*clamp_input=*/DataTypeConstraint::kFloat16To32,
        /*concat_inputs=*/{},

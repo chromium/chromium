@@ -23,6 +23,8 @@ namespace webnn {
 
 namespace {
 
+constexpr char kOpTypeBatchNormalization[] = "BatchNormalization";
+
 // Element-wise binary
 constexpr char kOpTypeAdd[] = "Add";
 constexpr char kOpTypeSub[] = "Sub";
@@ -332,6 +334,105 @@ void GraphBuilderOrt::AddInitializer(uint64_t constant_id) {
   CHECK(result_->id_to_operand_info
             .try_emplace(constant_id, std::move(operand_info))
             .second);
+}
+
+[[nodiscard]] base::expected<void, mojom::ErrorPtr>
+GraphBuilderOrt::AddBatchNormalizationOperation(
+    const mojom::BatchNormalization& batch_normalization) {
+  const OperandDataType input_data_type =
+      GetOperand(batch_normalization.output_operand_id).descriptor.data_type();
+
+  const std::string input_name =
+      GetOperandName(batch_normalization.input_operand_id);
+  std::vector<const char*> input_names = {input_name.c_str()};
+
+  const std::vector<uint32_t>& input_shape =
+      GetOperand(batch_normalization.input_operand_id).descriptor.shape();
+  // TODO: Support NHWC layout-
+  // https://github.com/shiyi9801/chromium/issues/77
+  if (batch_normalization.axis != 1) {
+    return NewNotSupportedError(
+        "Unsupported axis since BatchNormalization only supports NCHW layout "
+        "currently. ");
+  }
+  uint32_t input_channel = input_shape[1];
+  std::vector<uint32_t> constant_dims = {input_channel};
+
+  std::string scale_name, bias_name;
+  // ONNX requires scale and bias inputs.
+  if (batch_normalization.scale_operand_id) {
+    scale_name = GetOperandName(batch_normalization.scale_operand_id.value());
+    input_names.push_back(scale_name.c_str());
+  } else {
+    switch (input_data_type) {
+      case OperandDataType::kFloat16: {
+        std::vector<uint16_t> scale_data_fp16(input_channel,
+                                              fp16_ieee_from_fp32_value(1.0f));
+        scale_name = CreateInitializer<uint16_t>(constant_dims, scale_data_fp16,
+                                                 input_data_type);
+        break;
+      }
+      case OperandDataType::kFloat32: {
+        std::vector<float> scale_data(input_channel, 1.0f);
+        scale_name = CreateInitializer<float>(constant_dims, scale_data,
+                                              input_data_type);
+        break;
+      }
+      default:
+        NOTREACHED() << "[WebNN] BatchNormalization only supports float32 "
+                        "and float16 data type.";
+    }
+
+    input_names.push_back(scale_name.c_str());
+  }
+
+  if (batch_normalization.bias_operand_id) {
+    bias_name = GetOperandName(batch_normalization.bias_operand_id.value());
+    input_names.push_back(bias_name.c_str());
+  } else {
+    switch (input_data_type) {
+      case OperandDataType::kFloat16: {
+        std::vector<uint16_t> bias_data_fp16(input_channel,
+                                             fp16_ieee_from_fp32_value(0.0f));
+        bias_name = CreateInitializer<uint16_t>(constant_dims, bias_data_fp16,
+                                                input_data_type);
+        break;
+      }
+      case OperandDataType::kFloat32: {
+        std::vector<float> bias_data(input_channel, 0.0f);
+        bias_name =
+            CreateInitializer<float>(constant_dims, bias_data, input_data_type);
+        break;
+      }
+      default:
+        NOTREACHED() << "[WebNN] BatchNormalization only supports float32 "
+                        "and float16 data type.";
+    }
+
+    input_names.push_back(bias_name.c_str());
+  }
+
+  const std::string mean_name =
+      GetOperandName(batch_normalization.mean_operand_id);
+  input_names.push_back(mean_name.c_str());
+
+  const std::string variance_name =
+      GetOperandName(batch_normalization.variance_operand_id);
+  input_names.push_back(variance_name.c_str());
+
+  ScopedOrtOpAttrPtr attr_epsilon;
+  model_builder_.CreateAttribute(attr_epsilon, /*name=*/"epsilon",
+                                 batch_normalization.epsilon);
+  std::array<OrtOpAttr*, 1> attributes = {attr_epsilon};
+
+  const std::string node_name = GetNodeName(batch_normalization.label);
+  const std::string output_name =
+      GetOperandName(batch_normalization.output_operand_id);
+  std::array<const char*, 1> output_names = {output_name.c_str()};
+  model_builder_.AddNode(kOpTypeBatchNormalization, node_name, input_names,
+                         output_names, attributes);
+
+  return base::ok();
 }
 
 template <typename T>
@@ -1202,6 +1303,11 @@ GraphBuilderOrt::BuildModel() {
   // Add operations.
   for (const mojom::OperationPtr& operation : graph_info_->operations) {
     switch (operation->which()) {
+      case mojom::Operation::Tag::kBatchNormalization: {
+        RETURN_IF_ERROR(AddBatchNormalizationOperation(
+            *operation->get_batch_normalization()));
+        break;
+      }
       case mojom::Operation::Tag::kClamp: {
         AddClampOperation(*operation->get_clamp());
         break;
@@ -1273,7 +1379,6 @@ GraphBuilderOrt::BuildModel() {
         break;
       }
       case mojom::Operation::Tag::kArgMinMax:
-      case mojom::Operation::Tag::kBatchNormalization:
       case mojom::Operation::Tag::kConcat:
       case mojom::Operation::Tag::kCumulativeSum:
       case mojom::Operation::Tag::kDequantizeLinear:
