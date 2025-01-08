@@ -11,7 +11,7 @@
   const issue = dp.Audits.onceIssueAdded();
 
   await session.evaluate(`
-    document.body.innerHTML = '<img attributionsrc="wss://example.com/">'
+    document.body.innerHTML = '<img attributionsrc="wss://devtools.test:8443/">'
   `);
 
   testRunner.log((await issue).params.issue, 'Issue reported: ', ['violatingNodeId']);

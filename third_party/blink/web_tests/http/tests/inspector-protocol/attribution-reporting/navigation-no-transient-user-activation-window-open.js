@@ -14,7 +14,7 @@
   // result of the expression as JSON, which is not possible for the WindowProxy
   // returned by `open` itself.
   await session.evaluate(
-      `window.open('https://a.com', '_blank', 'attributionsrc').name`);
+      `window.open('https://devtools.test:8443/', '_blank', 'attributionsrc').name`);
 
   testRunner.log((await issue).params.issue, 'Issue reported: ');
   testRunner.completeTest();

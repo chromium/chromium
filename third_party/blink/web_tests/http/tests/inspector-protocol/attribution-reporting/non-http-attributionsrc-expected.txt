@@ -3,7 +3,7 @@ Issue reported: {
     code : AttributionReportingIssue
     details : {
         attributionReportingIssueDetails : {
-            invalidParameter : wss://example.com
+            invalidParameter : wss://devtools.test:8443
             violatingNodeId : <number>
             violationType : UntrustworthyReportingOrigin
         }

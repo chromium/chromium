@@ -9,7 +9,7 @@
   await dp.Audits.enable();
 
   await session.evaluate(`
-    document.body.innerHTML = '<a href="https://a.com" attributionsrc target="_blank">Link</a>'
+    document.body.innerHTML = '<a href="https://devtools.test:8443/" attributionsrc target="_blank">Link</a>'
   `);
 
   const issue = dp.Audits.onceIssueAdded();
