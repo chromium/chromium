@@ -4,8 +4,6 @@
 
 source_set("model") {
   sources = [
-    "chrome_lens_overlay_result_impl.h",
-    "chrome_lens_overlay_result_impl.mm",
     "lens_overlay_navigation_manager.h",
     "lens_overlay_navigation_manager.mm",
     "lens_overlay_navigation_mutator.h",

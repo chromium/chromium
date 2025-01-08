@@ -29,11 +29,6 @@ class WebState;
 /// Called when an URL needs to be opened in a new tab.
 - (void)lensResultPageOpenURLInNewTabRequsted:(GURL)URL;
 
-/// Called when a URL that is not an LRP is loaded in the bottom sheet.
-/// This can happen in cases like user pressing on a "related search" chip.
-- (void)lensResultPageWillLoadNonLensSRP:(NSString*)queryText
-                                     url:(const GURL&)destinationURL;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_LENS_OVERLAY_COORDINATOR_LENS_RESULT_PAGE_MEDIATOR_DELEGATE_H_

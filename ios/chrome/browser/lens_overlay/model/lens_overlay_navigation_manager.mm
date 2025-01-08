@@ -6,7 +6,6 @@
 
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/lens_overlay/model/chrome_lens_overlay_result_impl.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_navigation_mutator.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/public/provider/chrome/browser/lens/lens_overlay_result.h"
@@ -77,19 +76,6 @@ void LensOverlayNavigationManager::LensOverlayDidGenerateResult(
     lens_navigation_items_.push_back(std::move(item_ptr));
     [mutator_ loadLensResult:result];
   }
-}
-
-void LensOverlayNavigationManager::RegisterRelatedSearchNavigation(
-    const GURL& destination_url,
-    const std::u16string& omnibox_text) {
-  ChromeLensOverlayResultImpl* result = [[ChromeLensOverlayResultImpl alloc]
-      initWithResultURL:destination_url
-           previewImage:nil
-         suggestSignals:nil
-        isTextSelection:NO
-              queryText:base::SysUTF16ToNSString(omnibox_text)
-          selectionRect:CGRectZero];
-  lens_navigation_items_.push_back(std::make_unique<LensResultItem>(result));
 }
 
 void LensOverlayNavigationManager::LoadUnimodalOmniboxNavigation(
