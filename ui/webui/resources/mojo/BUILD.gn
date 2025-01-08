@@ -20,6 +20,7 @@ mojo_ts_files = [
   "ui/gfx/range/mojom/range.mojom-webui.ts",
   "ui/gfx/geometry/mojom/geometry.mojom-webui.ts",
   "url/mojom/origin.mojom-webui.ts",
+  "url/mojom/url.mojom-webui.ts",
 ]
 
 if (is_ios) {
@@ -44,7 +45,6 @@ if (is_chromeos) {
     "mojo/public/mojom/base/unguessable_token.mojom-webui.js",
     "mojo/public/mojom/base/uuid.mojom-webui.js",
     "mojo/public/mojom/base/values.mojom-webui.js",
-    "url/mojom/url.mojom-webui.js",
   ]
 
   mojo_ts_files += [
@@ -90,7 +90,6 @@ if (is_chromeos) {
     "mojo/public/mojom/base/unguessable_token.mojom-webui.ts",
     "mojo/public/mojom/base/uuid.mojom-webui.ts",
     "mojo/public/mojom/base/values.mojom-webui.ts",
-    "url/mojom/url.mojom-webui.ts",
   ]
 }
 
@@ -110,6 +109,7 @@ preprocess_if_expr("copy_mojo_ts") {
     "//ui/gfx/geometry/mojom:mojom_ts__generator",
     "//ui/gfx/image/mojom:mojom_ts__generator",
     "//ui/gfx/range/mojom:mojom_ts__generator",
+    "//url/mojom:url_mojom_gurl_ts__generator",
     "//url/mojom:url_mojom_origin_ts__generator",
   ]
 
@@ -135,10 +135,7 @@ preprocess_if_expr("copy_mojo_ts") {
       "//ui/latency/mojom:mojom_ts__generator",
     ]
   } else {
-    deps += [
-      "//mojo/public/mojom/base:base_ts__generator",
-      "//url/mojom:url_mojom_gurl_ts__generator",
-    ]
+    deps += [ "//mojo/public/mojom/base:base_ts__generator" ]
   }
 }
 
@@ -151,10 +148,7 @@ if (is_chromeos) {
     out_folder = "$target_gen_dir/preprocessed"
     in_files = mojo_js_files
 
-    deps = [
-      "//mojo/public/mojom/base:base_js__generator",
-      "//url/mojom:url_mojom_gurl_js__generator",
-    ]
+    deps = [ "//mojo/public/mojom/base:base_js__generator" ]
   }
 }
 

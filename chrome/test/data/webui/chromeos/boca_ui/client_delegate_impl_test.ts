@@ -9,12 +9,15 @@ import {assertDeepEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_a
 
 class MockRemoteHandler extends PageHandlerRemote {
   override getWindowsTabsList(): Promise<{windowList: Window[]}> {
-    const url1 = new Url();
-    url1.url = 'http://foo1';
-    const url2 = new Url();
-    url2.url = 'http://foo2';
-    const url3 = new Url();
-    url3.url = 'http://foo3';
+    const url1: Url = {
+      url: 'http://foo1',
+    };
+    const url2: Url = {
+      url: 'http://foo2',
+    };
+    const url3: Url = {
+      url: 'http://foo3',
+    };
     return Promise.resolve({
       windowList: [
         {
