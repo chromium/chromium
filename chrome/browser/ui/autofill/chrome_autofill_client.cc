@@ -700,12 +700,6 @@ base::span<const Suggestion> ChromeAutofillClient::GetAutofillSuggestions()
                                 : base::span<const Suggestion>();
 }
 
-void ChromeAutofillClient::PinAutofillSuggestions() {
-  if (suggestion_controller_.get()) {
-    suggestion_controller_->PinView();
-  }
-}
-
 std::optional<AutofillClient::PopupScreenLocation>
 ChromeAutofillClient::GetPopupScreenLocation() const {
   return suggestion_controller_

@@ -300,24 +300,12 @@ void AutofillPopupControllerImpl::UpdateDataListValues(
   }
 }
 
-void AutofillPopupControllerImpl::PinView() {
-  is_view_pinned_ = true;
-}
-
 bool AutofillPopupControllerImpl::IsViewVisibilityAcceptingThresholdEnabled()
     const {
   return !disable_threshold_for_testing_;
 }
 
 void AutofillPopupControllerImpl::Hide(SuggestionHidingReason reason) {
-  // If the reason for hiding is only stale data or a user interacting with
-  // native Chrome UI (kFocusChanged/kEndEditing), the popup might be kept open.
-  if (is_view_pinned_ && (reason == SuggestionHidingReason::kStaleData ||
-                          reason == SuggestionHidingReason::kFocusChanged ||
-                          reason == SuggestionHidingReason::kEndEditing)) {
-    return;  // Don't close the popup while waiting for an update.
-  }
-
   if ((reason == SuggestionHidingReason::kFocusChanged ||
        reason == SuggestionHidingReason::kEndEditing) &&
       view_ && view_->HasFocus()) {

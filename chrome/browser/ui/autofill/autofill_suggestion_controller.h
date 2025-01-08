@@ -100,11 +100,6 @@ class AutofillSuggestionController : public AutofillPopupViewDelegate {
   // Updates the data list values currently shown.
   virtual void UpdateDataListValues(base::span<const SelectOption> options) = 0;
 
-  // Informs the controller that the suggestions may not be hidden by stale data
-  // or interactions with native Chrome UI. This state remains active until the
-  // view is destroyed.
-  virtual void PinView() = 0;
-
  protected:
   ~AutofillSuggestionController() override = default;
 };

@@ -198,10 +198,6 @@ void AndroidAutofillClient::UpdateAutofillDataListValues(
   // APIs.
 }
 
-void AndroidAutofillClient::PinAutofillSuggestions() {
-  NOTIMPLEMENTED();
-}
-
 void AndroidAutofillClient::HideAutofillSuggestions(
     autofill::SuggestionHidingReason reason) {
   // TODO(321950502): Analyze hiding the datalist popup here.

@@ -114,7 +114,6 @@ class MockAutofillPopupController : public AutofillPopupController {
               UpdateDataListValues,
               (base::span<const SelectOption>),
               (override));
-  MOCK_METHOD(void, PinView, (), (override));
   MOCK_METHOD(void, SetFilter, (std::optional<SuggestionFilter>), (override));
   MOCK_METHOD(void, OnPopupPainted, (), (override));
   MOCK_METHOD(bool,

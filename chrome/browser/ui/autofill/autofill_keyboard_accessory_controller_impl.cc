@@ -135,13 +135,6 @@ AutofillKeyboardAccessoryControllerImpl::
 
 void AutofillKeyboardAccessoryControllerImpl::Hide(
     SuggestionHidingReason reason) {
-  // If the reason for hiding is only stale data or a user interacting with
-  // native Chrome UI (kFocusChanged/kEndEditing), the popup might be kept open.
-  if (is_view_pinned_ && (reason == SuggestionHidingReason::kStaleData ||
-                          reason == SuggestionHidingReason::kFocusChanged ||
-                          reason == SuggestionHidingReason::kEndEditing)) {
-    return;  // Don't close the popup while waiting for an update.
-  }
   // For tests, keep open when hiding is due to external stimuli.
   if (keep_popup_open_for_testing_ &&
       (reason == SuggestionHidingReason::kWidgetChanged ||
@@ -522,10 +515,6 @@ void AutofillKeyboardAccessoryControllerImpl::UpdateDataListValues(
   } else {
     Hide(SuggestionHidingReason::kNoSuggestions);
   }
-}
-
-void AutofillKeyboardAccessoryControllerImpl::PinView() {
-  is_view_pinned_ = true;
 }
 
 bool AutofillKeyboardAccessoryControllerImpl::HasSuggestions() const {

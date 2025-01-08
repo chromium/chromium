@@ -237,10 +237,6 @@ void WebViewAutofillClientIOS::UpdateAutofillDataListValues(
   // No op. ios/web_view does not support display datalist.
 }
 
-void WebViewAutofillClientIOS::PinAutofillSuggestions() {
-  NOTIMPLEMENTED();
-}
-
 void WebViewAutofillClientIOS::HideAutofillSuggestions(
     SuggestionHidingReason reason) {
   [bridge_ hideAutofillPopup];

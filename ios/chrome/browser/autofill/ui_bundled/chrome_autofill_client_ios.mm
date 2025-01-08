@@ -346,10 +346,6 @@ void ChromeAutofillClientIOS::UpdateAutofillDataListValues(
   // No op. ios/web_view does not support display datalist.
 }
 
-void ChromeAutofillClientIOS::PinAutofillSuggestions() {
-  NOTIMPLEMENTED();
-}
-
 void ChromeAutofillClientIOS::HideAutofillSuggestions(
     SuggestionHidingReason reason) {
   [bridge_ hideAutofillPopup];

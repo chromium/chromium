@@ -228,7 +228,6 @@ class MockAutofillClient : public autofill::TestAutofillClient {
               (const autofill::AutofillClient::PopupOpenArgs& open_args,
                base::WeakPtr<autofill::AutofillSuggestionDelegate> delegate),
               (override));
-  MOCK_METHOD(void, PinAutofillSuggestions, (), (override));
   MOCK_METHOD(void,
               UpdateAutofillSuggestions,
               (const std::vector<Suggestion>&,

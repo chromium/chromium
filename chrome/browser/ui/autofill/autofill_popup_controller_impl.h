@@ -93,7 +93,6 @@ class AutofillPopupControllerImpl : public AutofillPopupController,
   std::optional<UiSessionId> GetUiSessionId() const override;
   void SetKeepPopupOpenForTesting(bool keep_popup_open_for_testing) override;
   void UpdateDataListValues(base::span<const SelectOption> options) override;
-  void PinView() override;
   bool IsViewVisibilityAcceptingThresholdEnabled() const override;
 
   // AutofillPopupController:
@@ -210,10 +209,6 @@ class AutofillPopupControllerImpl : public AutofillPopupController,
   // during tests that cannot mock time (e.g. the autofill interactive
   // browsertests).
   bool disable_threshold_for_testing_ = false;
-
-  // If set to true, the popup will never be hidden because of stale data or if
-  // the user interacts with native UI.
-  bool is_view_pinned_ = false;
 
   // If `filter_` set, it contains suggestions from `non_filtered_suggestions_`
   // that matches the filter.  Otherwise, the list is empty

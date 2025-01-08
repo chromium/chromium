@@ -86,7 +86,6 @@ class AutofillKeyboardAccessoryControllerImpl
   std::optional<UiSessionId> GetUiSessionId() const override;
   void SetKeepPopupOpenForTesting(bool keep_popup_open_for_testing) override;
   void UpdateDataListValues(base::span<const SelectOption> options) override;
-  void PinView() override;
 
   // AutofillKeyboardAccessoryController:
   std::vector<std::vector<Suggestion::Text>> GetSuggestionLabelsAt(
@@ -154,10 +153,6 @@ class AutofillKeyboardAccessoryControllerImpl
   // during tests that cannot mock time (e.g. the autofill interactive
   // browsertests).
   bool disable_threshold_for_testing_ = false;
-
-  // If set to true, the popup will never be hidden because of stale data or if
-  // the user interacts with native UI.
-  bool is_view_pinned_ = false;
 
   // If set to true, the popup will stay open regardless of external changes on
   // the machine that would normally cause the popup to be hidden.

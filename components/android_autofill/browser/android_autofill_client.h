@@ -116,7 +116,6 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
       base::WeakPtr<autofill::AutofillSuggestionDelegate> delegate) final;
   void UpdateAutofillDataListValues(
       base::span<const autofill::SelectOption> datalist) final;
-  void PinAutofillSuggestions() final;
   void HideAutofillSuggestions(autofill::SuggestionHidingReason reason) final;
   bool IsAutofillEnabled() const final;
   bool IsAutofillProfileEnabled() const final;

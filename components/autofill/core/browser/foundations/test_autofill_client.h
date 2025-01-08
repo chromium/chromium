@@ -292,8 +292,6 @@ class TestAutofillClientTemplate : public T {
     return suggestions_;
   }
 
-  void PinAutofillSuggestions() override {}
-
   void UpdateAutofillSuggestions(
       const std::vector<Suggestion>& suggestions,
       FillingProduct main_filling_product,
