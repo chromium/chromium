@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 #include "components/safe_browsing/content/renderer/phishing_classifier/murmurhash3_util.h"
-#include "third_party/smhasher/src/MurmurHash3.h"
+
+#include "third_party/smhasher/src/src/MurmurHash3.h"
 
 namespace safe_browsing {
 

@@ -20,7 +20,7 @@ config("nearby_include_config") {
     "//third_party",
 
     # For bloom filter.
-    "//third_party/smhasher",
+    "//third_party/smhasher/src",
   ]
 }
 

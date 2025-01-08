@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "base/check_op.h"
-#include "third_party/smhasher/src/MurmurHash3.h"
+#include "third_party/smhasher/src/src/MurmurHash3.h"
 
 namespace optimization_guide {
 

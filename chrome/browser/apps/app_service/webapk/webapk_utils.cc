@@ -21,7 +21,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
-#include "third_party/smhasher/src/MurmurHash2.h"
+#include "third_party/smhasher/src/src/MurmurHash2.h"
 #include "url/gurl.h"
 
 // TODO(crbug.com/40199484): Consolidate logic with apps::WebApkInstallTask.
