@@ -364,6 +364,7 @@ void LensOverlaySidePanelCoordinator::OnTextFinderLookupComplete(
     return;
   }
 
+  std::vector<std::string> text_directives;
   for (auto pair : lookup_results) {
     // If any of the text fragments are not found, then open in a new tab.
     if (!pair.second) {
@@ -372,6 +373,7 @@ void LensOverlaySidePanelCoordinator::OnTextFinderLookupComplete(
           ->OpenGURL(nav_url, WindowOpenDisposition::NEW_FOREGROUND_TAB);
       return;
     }
+    text_directives.push_back(pair.first);
   }
 
   // Delete any existing `TextHighlighterManager` on the page. Without this, any
@@ -383,13 +385,12 @@ void LensOverlaySidePanelCoordinator::OnTextFinderLookupComplete(
     companion::TextHighlighterManager::DeleteForPage(page);
   }
 
-  // TODO(crbug.com/387318456): Add support for multiple text directives to
-  // TextHighlighterManager. If every text fragment was found, then
-  // create a text highlighter manager to render the text highlights.
+  // If every text fragment was found, then create a text highlighter manager to
+  // render the text highlights.
   companion::TextHighlighterManager* text_highlighter_manager =
       companion::TextHighlighterManager::GetOrCreateForPage(page);
-  text_highlighter_manager->CreateTextHighlighterAndRemoveExistingInstance(
-      lookup_results[0].first);
+  text_highlighter_manager->CreateTextHighlightersAndRemoveExisting(
+      text_directives);
 }
 
 void LensOverlaySidePanelCoordinator::OpenURLInBrowser(

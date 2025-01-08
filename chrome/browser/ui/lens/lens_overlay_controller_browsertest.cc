@@ -2367,7 +2367,7 @@ IN_PROC_BROWSER_TEST_F(
   fake_controller->ResetSidePanelTracking();
 
   std::string relative_url =
-      std::string(kDocumentWithNamedElement) + "#:~:text=select";
+      std::string(kDocumentWithNamedElement) + "#:~:text=select&text=element";
   const GURL nav_url = embedded_test_server()->GetURL(relative_url);
 
   // There should be no text highlighter manager for the main web contents at
@@ -2399,8 +2399,10 @@ IN_PROC_BROWSER_TEST_F(
   // It should not open a new tab as this only renders text highlights.
   EXPECT_EQ(tabs, browser()->tab_strip_model()->count());
   EXPECT_TRUE(manager);
-  EXPECT_THAT(manager->get_text_highlighter_for_testing()->GetTextDirective(),
-              "select");
+  for (const auto& highlighter : manager->get_text_highlighters_for_testing()) {
+    EXPECT_TRUE(highlighter->GetTextDirective() == "select" ||
+                highlighter->GetTextDirective() == "element");
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
