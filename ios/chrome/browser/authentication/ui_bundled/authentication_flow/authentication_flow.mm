@@ -78,33 +78,6 @@ enum class CancelationReason {
   kFailed,
 };
 
-// Returns YES if the `identity.gaiaID` is in one of the AccountInfo of
-// `account_infos`.
-BOOL IsIdentityInAccountInfos(id<SystemIdentity> identity,
-                              const std::vector<AccountInfo>& account_infos) {
-  std::string gaia_id = base::SysNSStringToUTF8(identity.gaiaID);
-  for (const auto& account_info : account_infos) {
-    if (account_info.gaia == gaia_id) {
-      return YES;
-    }
-  }
-  return NO;
-}
-
-// Returns YES if the `identity.gaiaID` is in one of the CoreAccountInfo of
-// `core_account_infos`.
-BOOL IsIdentityInCoreAccountInfos(
-    id<SystemIdentity> identity,
-    const std::vector<CoreAccountInfo>& core_account_infos) {
-  std::string gaia_id = base::SysNSStringToUTF8(identity.gaiaID);
-  for (const auto& core_account_info : core_account_infos) {
-    if (core_account_info.gaia == gaia_id) {
-      return YES;
-    }
-  }
-  return NO;
-}
-
 }  // namespace
 
 @interface AuthenticationFlow ()
@@ -420,10 +393,16 @@ BOOL IsIdentityInCoreAccountInfos(
   BOOL isValidIdentityInProfile = NO;
   BOOL isValidIdentityOnDevice = NO;
   if (AreSeparateProfilesForManagedAccountsEnabled()) {
-    isValidIdentityOnDevice = IsIdentityInAccountInfos(
-        _identityToSignIn, identityManager->GetAccountsOnDevice());
-    isValidIdentityInProfile = IsIdentityInCoreAccountInfos(
-        _identityToSignIn, identityManager->GetAccountsWithRefreshTokens());
+    std::vector<AccountInfo> accountInfos =
+        identityManager->GetAccountsOnDevice();
+    isValidIdentityOnDevice = base::Contains(
+        accountInfos, base::SysNSStringToUTF8(_identityToSignIn.gaiaID),
+        &AccountInfo::gaia);
+    std::vector<CoreAccountInfo> coreAccountInfos =
+        identityManager->GetAccountsWithRefreshTokens();
+    isValidIdentityInProfile = base::Contains(
+        coreAccountInfos, base::SysNSStringToUTF8(_identityToSignIn.gaiaID),
+        &CoreAccountInfo::gaia);
   } else {
     isValidIdentityOnDevice = isValidIdentityInProfile =
         accountManagerService->IsValidIdentity(_identityToSignIn);
@@ -689,8 +668,11 @@ BOOL IsIdentityInCoreAccountInfos(
   ProfileIOS* profile = [self originalProfile];
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForProfile(profile);
-  CHECK(IsIdentityInCoreAccountInfos(
-      _identityToSignIn, identityManager->GetAccountsWithRefreshTokens()));
+  std::vector<CoreAccountInfo> coreAccountInfos =
+      identityManager->GetAccountsWithRefreshTokens();
+  CHECK(base::Contains(coreAccountInfos,
+                       base::SysNSStringToUTF8(_identityToSignIn.gaiaID),
+                       &CoreAccountInfo::gaia));
   [_performer signInIdentity:_identityToSignIn
                atAccessPoint:self.accessPoint
               currentProfile:profile];
