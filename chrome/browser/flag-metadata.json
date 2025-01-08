@@ -5955,7 +5955,7 @@
   {
     "name": "mutation-events",
     "owners": [ "masonf@chromium.org" ],
-    "expiry_milestone": 134
+    "expiry_milestone": 138
   },
   {
     "name": "mute-notification-snooze-action",
