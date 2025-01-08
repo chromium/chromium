@@ -4,7 +4,6 @@
 
 #include "content/browser/navigation_transitions/physics_model.h"
 
-#include <algorithm>
 #include <numbers>
 #include <vector>
 
@@ -16,9 +15,8 @@
 // TODO(liuwilliam): The velocity and positions should have the same direction.
 //
 // Notes:
-// - Directions: for offsets/positions and the velocity of the cancel spring,
-//   the right edge direction is "+" and the left is "-"; for commit pending and
-//   invoke spring velocities, the right edge direction for is "-" and the left
+// - Directions: for offsets/positions, the right edge direction is "+" and the
+//   left is "-"; for velocities, the right edge direction is "-" and the left
 //   is "+".
 // - The physics model internally operates in the normalized viewport space
 //   while takes/returns physical pixel values as input/output. The spacial
@@ -466,7 +464,7 @@ float PhysicsModel::FingerDragCurve(float movement_viewport) {
          kTargetCommitPendingRatio * movement_viewport;
 }
 
-float PhysicsModel::CalculateVelocity(base::TimeTicks time) {
+float PhysicsModel::CalculateVelocity() {
   float velocity = 0;
 
   std::vector<float> timestamps;
@@ -474,11 +472,20 @@ float PhysicsModel::CalculateVelocity(base::TimeTicks time) {
   timestamps.reserve(touch_points_history_.size());
   positions.reserve(touch_points_history_.size());
   for (const auto& p : touch_points_history_) {
-    timestamps.push_back((time - p.timestamp).InMillisecondsF());
+    timestamps.push_back(
+        (base::TimeTicks::Now() - p.timestamp).InMillisecondsF());
     positions.push_back(p.position_viewport);
   }
   SolveLeastSquare(timestamps, positions, &velocity);
-  return velocity;
+
+  const float sign = velocity >= 0.f ? 1.f : -1.f;
+  velocity = std::abs(velocity);
+
+  velocity = std::max(velocity, 1.0f);
+  velocity = std::min(velocity, 2.5f);
+  velocity = std::max(velocity, 0.3f);
+
+  return velocity * sign;
 }
 
 void PhysicsModel::RecordCommitPendingAccelerationStartIfNeeded(
@@ -511,13 +518,15 @@ void PhysicsModel::AdvanceToNextAnimationDriver(
       // We can only reach here for once, and once only.
       CHECK(last_request_animation_frame_.is_null());
       StartAnimating(request_animation_frame);
-      float finger_vel = CalculateVelocity(request_animation_frame);
+      float finger_vel = CalculateVelocity();
       if (navigation_state_ == NavigationState::kCancelled ||
           navigation_state_ == NavigationState::kBeforeUnloadShown) {
         animation_driver_ = Driver::kSpringCancel;
-        // The sign of the velocities from the drag curve and the cancel spring
-        // have opposite semantics, so we need to multiply by -1.
-        spring_cancel_->set_initial_velocity(-finger_vel);
+        // TODO(crbug.com/40945408): Least square can interpolate the
+        // velocity in the wrong direction if the user swipes to the invoke
+        // direction in the "cancel region" of the screen. For now, just use a
+        // constant velocity.
+        spring_cancel_->set_initial_velocity(1.f);
       } else if (navigation_state_ == NavigationState::kCommitted) {
         animation_driver_ = Driver::kSpringInvoke;
         spring_invoke_->set_initial_velocity(finger_vel);
@@ -621,7 +630,7 @@ void PhysicsModel::AdvanceToNextAnimationDriver(
     spring_commit_pending_->set_initial_velocity(0.f);
   }
   if (!IsValidVelocity(spring_cancel_->initial_velocity())) {
-    spring_cancel_->set_initial_velocity(-1.f);
+    spring_cancel_->set_initial_velocity(1.f);
   }
 }
 

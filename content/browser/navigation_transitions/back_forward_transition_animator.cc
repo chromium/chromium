@@ -7,7 +7,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/ranges.h"
-#include "base/time/time.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/solid_color_layer.h"
 #include "cc/slim/surface_layer.h"
@@ -29,11 +28,8 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/android/window_android.h"
-#include "ui/base/prediction/linear_resampling.h"
-#include "ui/base/prediction/one_euro_filter.h"
 #include "ui/display/screen.h"
 #include "ui/events/back_gesture_event.h"
-#include "ui/gfx/geometry/point_f.h"
 
 namespace content {
 
@@ -54,13 +50,6 @@ static constexpr char kAnimationAbortedReason[] =
     "Navigation.GestureTransition.AnimationAbortReason";
 
 static constexpr base::TimeDelta kDismissScreenshotAfter = base::Seconds(4);
-
-static constexpr double kOneEuroFilterMincutoff =
-    ui::OneEuroFilter::kDefaultMincutoff;
-// Beta is in a different scale than the default because the filter for the
-// animator deals with small values (0 to 1.0).
-static constexpr double kOneEuroFilterBeta =
-    ui::OneEuroFilter::kDefaultBeta * 100.;
 
 void ResetTransformForLayer(cc::slim::Layer* layer) {
   CHECK(layer);
@@ -436,7 +425,7 @@ BackForwardTransitionAnimator::~BackForwardTransitionAnimator() {
 BackForwardTransitionAnimator::BackForwardTransitionAnimator(
     WebContentsViewAndroid* web_contents_view_android,
     NavigationControllerImpl* controller,
-    const ui::BackGestureEvent& first_gesture,
+    const ui::BackGestureEvent& gesture,
     NavigationDirection nav_direction,
     SwipeEdge initiating_edge,
     NavigationEntryImpl* destination_entry,
@@ -454,9 +443,7 @@ BackForwardTransitionAnimator::BackForwardTransitionAnimator(
                                ->GetDipScale()),
       physics_model_(GetViewportWidthPx(),
                      web_contents_view_android->GetNativeView()->GetDipScale()),
-      input_predictor_(std::make_unique<ui::LinearResampling>()),
-      input_filter_(std::make_unique<ui::OneEuroFilter>(kOneEuroFilterMincutoff,
-                                                        kOneEuroFilterBeta)) {
+      latest_progress_gesture_(gesture) {
   if (ShouldUseFallbackScreenshot(animation_manager_, destination_entry)) {
     fallback_ux_ = {
         .color_config = animation_manager_->web_contents_view_android()
@@ -468,7 +455,7 @@ BackForwardTransitionAnimator::BackForwardTransitionAnimator(
     };
   }
   state_ = State::kStarted;
-  SetupForScreenshotPreview(std::move(embedder_content), first_gesture);
+  SetupForScreenshotPreview(std::move(embedder_content));
   ProcessState();
 }
 
@@ -482,17 +469,18 @@ void BackForwardTransitionAnimator::OnGestureProgressed(
   // swiped.
   CHECK(IsGreaterThanOrEqual(gesture.progress(), 0.f));
   CHECK(IsLessThanOrEqual(gesture.progress(), 1.f));
-  gfx::PointF progress_position(gesture.progress(), 0.f);
-  ui::InputPredictor::InputData input(progress_position, gesture.time());
-  input_predictor_->Update(input);
-  if (input_predictor_->HasPrediction()) {
-    animation_manager_->web_contents_view_android()
-        ->GetTopLevelNativeWindow()
-        ->SetNeedsAnimate();
-  } else {
-    // Animate the layers now for a new trajectory.
-    OnAnimateGestureProgressed(gesture);
-  }
+
+  float progress_delta =
+      gesture.progress() - latest_progress_gesture_.progress();
+  const float movement = progress_delta * GetViewportWidthPx();
+  latest_progress_gesture_ = gesture;
+
+  const PhysicsModel::Result result =
+      physics_model_.OnGestureProgressed(movement, base::TimeTicks::Now());
+  CHECK(!result.done);
+  // The gesture animations are never considered "finished".
+  bool animations_finished = SetLayerTransformationAndTickEffect(result);
+  CHECK(!animations_finished);
 }
 
 void BackForwardTransitionAnimator::OnGestureCancelled() {
@@ -569,15 +557,6 @@ void BackForwardTransitionAnimator::OnAnimate(
   bool animation_finished = false;
 
   switch (state_) {
-    case State::kStarted:
-      // This state of the animation is purely driven by the progress of the
-      // user gesture.
-      if (auto input = input_predictor_->GeneratePrediction(frame_begin_time)) {
-        input_filter_->Filter(input->time_stamp, &input->pos);
-        OnAnimateGestureProgressed(
-            ui::BackGestureEvent(input->pos.x(), input->time_stamp));
-      }
-      break;
     case State::kDisplayingCancelAnimation: {
       PhysicsModel::Result result = physics_model_.OnAnimate(frame_begin_time);
       std::ignore = SetLayerTransformationAndTickEffect(result);
@@ -615,6 +594,7 @@ void BackForwardTransitionAnimator::OnAnimate(
       animation_finished = effect_.keyframe_models().empty();
       break;
     }
+    case State::kStarted:
     case State::kWaitingForBeforeUnloadUserInteraction:
     case State::kWaitingForNewRendererToDraw:
     case State::kWaitingForContentForNavigationEntryShown:
@@ -1430,8 +1410,6 @@ void BackForwardTransitionAnimator::
         },
         this, effect_);
   }
-  // The effect is assumed to start at time zero.
-  effect_.Tick(base::TimeTicks());
 }
 
 void BackForwardTransitionAnimator::InitializeEffectForCrossfadeAnimation() {
@@ -1440,20 +1418,6 @@ void BackForwardTransitionAnimator::InitializeEffectForCrossfadeAnimation() {
   CHECK(effect_.keyframe_models().empty());
 
   AddLinearModelToEffect(kCrossFadeAnimation, this, effect_);
-}
-
-// Called by OnAnimate when the user is still executing the gesture.
-void BackForwardTransitionAnimator::OnAnimateGestureProgressed(
-    const ui::BackGestureEvent& gesture) {
-  float progress = std::clamp(gesture.progress(), 0.f, 1.f);
-  const float movement = (progress - latest_progress_) * GetViewportWidthPx();
-  latest_progress_ = progress;
-  const PhysicsModel::Result result =
-      physics_model_.OnGestureProgressed(movement, gesture.time());
-  CHECK(!result.done);
-  // The gesture animations are never considered "finished".
-  bool animations_finished = SetLayerTransformationAndTickEffect(result);
-  CHECK(!animations_finished);
 }
 
 void BackForwardTransitionAnimator::AdvanceAndProcessState(State state) {
@@ -1608,8 +1572,7 @@ void BackForwardTransitionAnimator::ProcessState() {
 }
 
 void BackForwardTransitionAnimator::SetupForScreenshotPreview(
-    SkBitmap embedder_content,
-    const ui::BackGestureEvent& first_gesture) {
+    SkBitmap embedder_content) {
   NavigationControllerImpl* nav_controller =
       animation_manager_->navigation_controller();
   int entry_index =
@@ -1690,7 +1653,7 @@ void BackForwardTransitionAnimator::SetupForScreenshotPreview(
 
   // Calling `OnGestureProgressed` manually. This will ask the physics model to
   // move the layers to their respective initial positions.
-  OnGestureProgressed(first_gesture);
+  OnGestureProgressed(latest_progress_gesture_);
 }
 
 void BackForwardTransitionAnimator::SetupProgressBar() {
