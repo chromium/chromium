@@ -63,5 +63,9 @@
     ]
   },
   "builder_group": "tryserver.chromium.linux",
-  "recipe": "chromium_trybot"
+  "recipe": "chromium_trybot",
+  "siso_args": [
+    "-k",
+    "0"
+  ]
 }

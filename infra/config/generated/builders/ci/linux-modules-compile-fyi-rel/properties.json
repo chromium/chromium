@@ -72,5 +72,9 @@
     ]
   },
   "builder_group": "chromium.linux",
-  "recipe": "chromium"
+  "recipe": "chromium",
+  "siso_args": [
+    "-k",
+    "0"
+  ]
 }
