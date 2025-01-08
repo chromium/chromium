@@ -449,8 +449,7 @@ bool ShoppingServiceAndroid::IsDiscountEligibleToShowOnNavigation(
     const JavaParamRef<jobject>& obj) {
   CHECK(shopping_service_);
 
-  return commerce::IsDiscountEligibleToShowOnNavigation(
-      shopping_service_->GetAccountChecker());
+  return shopping_service_->IsDiscountEligibleToShowOnNavigation();
 }
 
 }  // namespace commerce

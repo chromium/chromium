@@ -18,8 +18,6 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_types.h"
-#include "components/commerce/core/feature_utils.h"
-#include "components/commerce/core/mock_account_checker.h"
 #include "components/commerce/core/mock_shopping_service.h"
 #include "components/commerce/core/test_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -75,10 +73,8 @@ class DiscountsInteractiveTest : public InteractiveBrowserTest,
       enabled_features.emplace_back(GetParam().enabled_feature.value());
     }
 
-    feature_list_.InitWithFeaturesAndParameters(
-        enabled_features,
-        /*disabled_features=*/{commerce::kPriceInsights,
-                               commerce::kProductSpecifications});
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                /*disabled_features=*/{});
   }
   void SetUp() override {
     set_open_about_blank_on_browser_launch(true);
@@ -123,12 +119,7 @@ class DiscountsInteractiveTest : public InteractiveBrowserTest,
 
  private:
   void SetUpTabHelperAndShoppingService() {
-    mock_account_checker_ = std::make_unique<commerce::MockAccountChecker>();
-    commerce::SetUpDiscountEligibilityForAccount(mock_account_checker_.get(),
-                                                 true);
-    ASSERT_TRUE(commerce::IsDiscountEligibleToShowOnNavigation(
-        mock_account_checker_.get()));
-    ShoppingService()->SetAccountChecker(mock_account_checker_.get());
+    ShoppingService()->SetIsDiscountEligibleToShowOnNavigation(true);
 
     std::string detail =
         "10% off on laptop stands, valid for purchase of $40 or more";
@@ -149,7 +140,6 @@ class DiscountsInteractiveTest : public InteractiveBrowserTest,
   base::test::ScopedFeatureList feature_list_;
   base::CallbackListSubscription create_services_subscription_;
   commerce::DiscountInfo discount_info_;
-  std::unique_ptr<commerce::MockAccountChecker> mock_account_checker_;
   base::WeakPtrFactory<DiscountsInteractiveTest> weak_ptr_factory_{this};
 };
 

@@ -53,8 +53,7 @@ class PriceInsightsIconViewInteractiveTest
             UseDefaultTrackerAllowingPromos(std::move(iph_features))) {
     test_features_.InitWithFeatures(
         /*enabled_features=*/{commerce::kPriceInsights},
-        /*disabled_features=*/{commerce::kEnableDiscountInfoApi,
-                               commerce::kProductSpecifications});
+        /*disabled_features*/ {});
   }
 
   void SetUp() override {
@@ -129,6 +128,7 @@ class PriceInsightsIconViewInteractiveTest
     mock_account_checker_->SetAnonymizedUrlDataCollectionEnabled(true);
     ASSERT_TRUE(commerce::IsPriceInsightsEligible(mock_account_checker_.get()));
     mock_shopping_service_->SetIsShoppingListEligible(false);
+    mock_shopping_service_->SetIsDiscountEligibleToShowOnNavigation(false);
 
     MockGetProductInfoForUrlResponse();
     MockGetPriceInsightsInfoForUrlResponse();
