@@ -24,6 +24,9 @@
 // pile.
 - (void)setFacePileViewController:(UIViewController*)facePileViewController;
 
+// Sets the text to the activity summary cell.
+- (void)setActivitySummaryCellText:(NSString*)text;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GRID_TAB_GROUPS_TAB_GROUP_CONSUMER_H_

@@ -24,6 +24,9 @@
 // View delegate is informed of user interactions in the grid UI.
 @property(nonatomic, weak) id<GridViewDelegate> viewDelegate;
 
+// The text in the activity summary cell.
+@property(nonatomic, copy) NSString* activitySummaryCellText;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GRID_GRID_TAB_GROUP_GRID_VIEW_CONTROLLER_H_

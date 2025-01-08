@@ -315,6 +315,10 @@ constexpr CGFloat kFacePileHeight = 44;
   [self configureNavigationBarItems];
 }
 
+- (void)setActivitySummaryCellText:(NSString*)text {
+  _gridViewController.activitySummaryCellText = text;
+}
+
 #pragma mark - Private
 
 // The plus button has been tapped.
