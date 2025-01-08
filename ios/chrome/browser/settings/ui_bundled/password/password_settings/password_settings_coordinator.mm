@@ -317,11 +317,13 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
 
 - (void)startDeletionFlow {
   CredentialCounts counts = [_mediator passwordAndPasskeyCounts];
+
   NSString* alertDescription = base::SysUTF16ToNSString(
       base::i18n::MessageFormatter::FormatWithNamedArgs(
           l10n_util::GetStringUTF16(
               IDS_IOS_PASSWORD_SETTINGS_DELETE_ALL_CREDENTIALS_DESCRIPTION),
           "password", counts.passwordCounts, "passkey", counts.passkeyCounts));
+
   UIAlertController* deletionConfirmation = [UIAlertController
       alertControllerWithTitle:
           l10n_util::GetNSString(
@@ -340,7 +342,7 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_DELETE_ACTION_TITLE)
                 style:UIAlertActionStyleDestructive
               handler:^(UIAlertAction* action) {
-                [weakSelf onStartDeletionFlowConfirmed];
+                [weakSelf showReauthDialogForDeletion];
               }];
 
   [deletionConfirmation addAction:deleteAction];
@@ -803,7 +805,7 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
 // Starts the deletion all credentials flow after the user confirmed the
 // corresponding alerts.
 - (void)onStartDeletionFlowConfirmed {
-  // TODO(crbug.com/383851476): implement this.
+  [_mediator userDidStartDeleteFlow];
 }
 
 // Starts the export passwords flow after the user confirmed the corresponding
@@ -840,6 +842,36 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
           base::BindOnce(^(NSError* error) {
             [weakSelf updateGPMPinFinishedWithError:error];
           }));
+}
+
+- (void)showReauthDialogForDeletion {
+  if (![_reauthModule canAttemptReauth]) {
+    [self
+        showSetPasscodeDialogWithContent:
+            l10n_util::GetNSString(
+                IDS_IOS_SETTINGS_DELETE_ALL_CREDENTIALS_SET_UP_PASSCODE_CONTENT)];
+  } else {
+    [self startAuthentication];
+  }
+}
+
+- (void)startAuthentication {
+  __weak __typeof(self) weakSelf = self;
+  void (^onReauthFinished)(ReauthenticationResult) =
+      ^(ReauthenticationResult result) {
+        // Reauth can't be skipped for this flow.
+        CHECK_NE(result, ReauthenticationResult::kSkipped);
+
+        if (result == ReauthenticationResult::kSuccess) {
+          [weakSelf onStartDeletionFlowConfirmed];
+        }
+      };
+
+  [_reauthModule
+      attemptReauthWithLocalizedReason:
+          l10n_util::GetNSString(IDS_IOS_SETTINGS_DELETE_ALL_CREDENTIALS)
+                  canReusePreviousAuth:NO
+                               handler:onReauthFinished];
 }
 
 @end

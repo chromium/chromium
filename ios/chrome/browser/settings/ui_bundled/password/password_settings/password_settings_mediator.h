@@ -64,6 +64,9 @@ struct CredentialCounts {
 // Move the user's local passwords to the account store.
 - (void)userDidStartBulkMoveLocalPasswordsToAccountFlow;
 
+// Indicates that the user triggered the deletion flow.
+- (void)userDidStartDeleteFlow;
+
 // Indicates that the user triggered the export flow.
 - (void)userDidStartExportFlow;
 

@@ -212,6 +212,10 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
   [self showMovedToAccountSnackbarWithPasswordCount:localPasswordsCount];
 }
 
+- (void)userDidStartDeleteFlow {
+  _savedPasswordsPresenter->DeleteAllData(base::DoNothing());
+}
+
 - (void)userDidStartExportFlow {
   // Use GetSavedCredentials, rather than GetSavedPasswords, because the latter
   // can return duplicate passwords that shouldn't be included in the export.
