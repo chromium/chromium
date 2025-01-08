@@ -3630,30 +3630,15 @@ const flags_ui::FeatureEntry::FeatureVariation
 
 #if BUILDFLAG(IS_ANDROID)
 
-const char kReplaceSyncPromosWithSignInPromosFeatures[] =
-    "ReplaceSyncPromosWithSignInPromos,"
-    "SyncEnableContactInfoDataTypeInTransportMode,"
-    "SyncEnableContactInfoDataTypeForCustomPassphraseUsers,"
-    "SyncEnableWalletMetadataInTransportMode,"
-    "SyncEnableWalletOfferInTransportMode,"
-    "EnableBatchUploadFromSettings";
-
-// The ones above + UnoPhase2FollowUp.
+// UnoPhase2FollowUp flags.
 const char kFastFollowFeatures[] =
-    "ReplaceSyncPromosWithSignInPromos,"
-    "SyncEnableContactInfoDataTypeInTransportMode,"
-    "SyncEnableContactInfoDataTypeForCustomPassphraseUsers,"
-    "SyncEnableWalletMetadataInTransportMode,"
-    "SyncEnableWalletOfferInTransportMode,"
-    "EnableBatchUploadFromSettings,"
-    "UnoPhase2FollowUp";
+    "UnoPhase2FollowUp,"
+    "UseHostedDomainForManagementCheckOnSignin";
 
 const FeatureEntry::Choice kReplaceSyncPromosWithSignInPromosChoices[] = {
     {"Default", "", ""},
-    {"Disabled", "disable-features",
-     kReplaceSyncPromosWithSignInPromosFeatures},
-    {"Enabled", "enable-features", kReplaceSyncPromosWithSignInPromosFeatures},
-    {"Enabled with follow-ups", "enable-features", kFastFollowFeatures},
+    {"Follow-ups disabled", "disable-features", kFastFollowFeatures},
+    {"Follow-ups enabled", "enable-features", kFastFollowFeatures},
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 
