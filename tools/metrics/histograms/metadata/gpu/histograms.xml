@@ -1224,26 +1224,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.Nvidia{Extension}.{State}.SetStreamExt" enum="Hresult"
-    expires_after="2024-09-15">
-  <owner>magchen@chromium.org</owner>
-  <owner>zmo@chromium.org</owner>
-  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
-  <summary>
-    Records HRESULT when setting the video processor stream extension for Nvidia
-    {Extension} to {State}. This metric is recorded every frame when processing
-    video streams in DirectComposition.
-  </summary>
-  <token key="Extension">
-    <variant name="VpSuperResolution" summary="RTX SuperResolution"/>
-    <variant name="VpTrueHDR" summary="RTX TrueHDR"/>
-  </token>
-  <token key="State">
-    <variant name="Off" summary="off"/>
-    <variant name="On" summary="on"/>
-  </token>
-</histogram>
-
 <histogram name="GPU.OopRaster.GlyphCacheMiss"
     enum="OopRasterGlyphCacheMissType" expires_after="2023-04-23">
   <owner>khushalsagar@chromium.org</owner>

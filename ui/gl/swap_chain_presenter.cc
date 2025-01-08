@@ -252,10 +252,6 @@ HRESULT ToggleNvidiaVpSuperResolution(ID3D11VideoContext* video_context,
       video_processor, 0, &kNvidiaPPEInterfaceGUID,
       sizeof(stream_extension_info), &stream_extension_info);
 
-  base::UmaHistogramSparse(enable
-                               ? "GPU.NvidiaVpSuperResolution.On.SetStreamExt"
-                               : "GPU.NvidiaVpSuperResolution.Off.SetStreamExt",
-                           hr);
   if (FAILED(hr)) {
     DLOG(ERROR) << "VideoProcessorSetStreamExtension failed with error 0x"
                 << std::hex << hr;
@@ -341,9 +337,6 @@ HRESULT ToggleNvidiaVpTrueHDR(bool driver_supports_vp_auto_hdr,
       video_processor, 0, &kNvidiaTrueHDRInterfaceGUID,
       sizeof(stream_extension_info), &stream_extension_info);
 
-  base::UmaHistogramSparse(enable ? "GPU.NvidiaVpTrueHDR.On.SetStreamExt"
-                                  : "GPU.NvidiaVpTrueHDR.Off.SetStreamExt",
-                           hr);
   if (FAILED(hr)) {
     DLOG(ERROR) << "VideoProcessorSetStreamExtension failed with error 0x"
                 << std::hex << hr;
