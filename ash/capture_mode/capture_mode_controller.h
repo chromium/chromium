@@ -177,7 +177,9 @@ class ASH_EXPORT CaptureModeController
   // Returns true if the camera preview is visible, false otherwise.
   bool IsShowingCameraPreview() const;
 
-  bool IsEventOnSearchResultsPanel(const gfx::Point& screen_location) const;
+  // Returns true if the panel should handle the event.
+  bool IsEventOnSearchResultsPanel(const ui::LocatedEvent& event,
+                                   const gfx::Point& screen_location);
 
   // Returns true if the panel is visible.
   bool IsSearchResultsPanelVisible() const;

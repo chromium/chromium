@@ -814,14 +814,17 @@ bool CaptureModeController::IsShowingCameraPreview() const {
 }
 
 bool CaptureModeController::IsEventOnSearchResultsPanel(
-    const gfx::Point& screen_location) const {
+    const ui::LocatedEvent& event,
+    const gfx::Point& screen_location) {
   // We check if the panel contains the event location, not just as the event
   // target, because the panel may not be the target of certain events (e.g.
   // right clicks), and lose focus, after which the panel will no longer be able
   // to be targeted (b/377019438).
   return IsSearchResultsPanelVisible() &&
          (search_results_panel_widget_->GetWindowBoundsInScreen().Contains(
-             screen_location));
+              screen_location) ||
+          capture_mode_util::IsEventTargetedOnWidget(
+              event, search_results_panel_widget_.get()));
 }
 
 bool CaptureModeController::IsSearchResultsPanelVisible() const {
