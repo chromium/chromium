@@ -155,7 +155,7 @@ void ImageResourceContent::AddObserver(ImageResourceObserver* observer) {
   if (info_->IsCacheValidator())
     return;
 
-  if (image_ && !image_->IsNull()) {
+  if (image_) {
     observer->ImageChanged(this, CanDeferInvalidation::kNo);
   }
 
@@ -503,9 +503,9 @@ ImageResourceContent::UpdateImageResult ImageResourceContent::UpdateImage(
       // As per spec, zero intrinsic size SVG is a valid image so do not
       // consider such an image as DecodeError.
       // https://www.w3.org/TR/SVG/struct.html#SVGElementWidthAttribute
-      if (!image_ ||
-          (image_->IsNull() && (!IsA<SVGImage>(image_.get()) ||
-                                size_available_ == Image::kSizeUnavailable))) {
+      if (!image_ || (image_->Size().IsEmpty() &&
+                      (!IsA<SVGImage>(image_.get()) ||
+                       size_available_ == Image::kSizeUnavailable))) {
         ClearImage();
         return UpdateImageResult::kShouldDecodeError;
       }
@@ -656,7 +656,7 @@ ResourceStatus ImageResourceContent::GetContentStatus() const {
 }
 
 bool ImageResourceContent::IsAnimatedImage() const {
-  return image_ && !image_->IsNull() && image_->MaybeAnimated();
+  return image_ && image_->MaybeAnimated();
 }
 
 bool ImageResourceContent::IsPaintedFirstFrame() const {

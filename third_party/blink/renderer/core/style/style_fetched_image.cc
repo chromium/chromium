@@ -114,7 +114,7 @@ CSSValue* StyleFetchedImage::ComputedCSSValue(const ComputedStyle&,
 }
 
 bool StyleFetchedImage::CanRender() const {
-  return !image_->ErrorOccurred() && !image_->GetImage()->IsNull();
+  return image_->HasImage() && !image_->ErrorOccurred();
 }
 
 bool StyleFetchedImage::IsLoaded() const {

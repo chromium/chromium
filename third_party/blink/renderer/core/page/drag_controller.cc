@@ -1084,8 +1084,9 @@ bool CanDragImage(const Element& element) {
     return false;
   const ImageResourceContent* image_content = layout_image->CachedImage();
   if (!image_content || image_content->ErrorOccurred() ||
-      image_content->GetImage()->IsNull())
+      !image_content->HasImage()) {
     return false;
+  }
   scoped_refptr<const SharedBuffer> buffer = image_content->ResourceBuffer();
   if (!buffer || !buffer->size())
     return false;

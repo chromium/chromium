@@ -436,7 +436,8 @@ Image* HitTestResult::GetImage(const Node* node) {
   }
   const ImageResourceContent* image_content =
       layout_image_resource ? layout_image_resource->CachedImage() : nullptr;
-  if (image_content && !image_content->ErrorOccurred()) {
+  if (image_content && !image_content->ErrorOccurred() &&
+      image_content->HasImage()) {
     return image_content->GetImage();
   }
   return nullptr;

@@ -636,9 +636,7 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
           GURL(HitTestResult::AbsoluteImageURL(potential_image_node));
       data.media_type = mojom::blink::ContextMenuDataMediaType::kImage;
       data.media_flags |= ContextMenuData::kMediaCanPrint;
-      data.has_image_contents =
-          HitTestResult::GetImage(potential_image_node) &&
-          !HitTestResult::GetImage(potential_image_node)->IsNull();
+      data.has_image_contents = HitTestResult::GetImage(potential_image_node);
     }
   }
   // If it's not a link, an image, a media element, or an image/media link,
