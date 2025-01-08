@@ -1572,7 +1572,7 @@ TEST_F(CookieControlsUserBypassTest, SubresourceBlocked) {
       fingerprinting_protection_filter::features::
           kEnableFingerprintingProtectionFilter);
   CreateFingerprintingProtectionWebContentsHelper(
-      web_contents(), /*pref_service=*/nullptr,
+      web_contents(), /*pref_service=*/nullptr, /*content_settings=*/nullptr,
       /*tracking_protection_settings=*/nullptr, /*is_incognito=*/false);
 
   NavigateAndCommit(GURL("https://example.com"));
@@ -1603,7 +1603,7 @@ TEST_F(CookieControlsUserBypassTest, SubresourceBlockedInIncognito) {
       fingerprinting_protection_filter::features::
           kEnableFingerprintingProtectionFilterInIncognito);
   CreateFingerprintingProtectionWebContentsHelper(
-      web_contents(), /*pref_service=*/nullptr,
+      web_contents(), /*pref_service=*/nullptr, /*content_settings=*/nullptr,
       /*tracking_protection_settings=*/nullptr, /*is_incognito=*/true);
 
   NavigateAndCommit(GURL("https://example.com"));

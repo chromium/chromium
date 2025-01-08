@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/subresource_filter/core/browser/verified_ruleset_dealer.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom-shared.h"
@@ -100,6 +101,7 @@ class FingerprintingProtectionWebContentsHelper
   static void CreateForWebContents(
       content::WebContents* web_contents,
       PrefService* pref_service,
+      HostContentSettingsMap* content_settings,
       privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
       subresource_filter::VerifiedRulesetDealer::Handle* dealer_handle,
       bool is_incognito);
@@ -149,11 +151,13 @@ class FingerprintingProtectionWebContentsHelper
   privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings() {
     return tracking_protection_settings_;
   }
+  HostContentSettingsMap* content_settings() { return content_settings_; }
 
  protected:
   explicit FingerprintingProtectionWebContentsHelper(
       content::WebContents* web_contents,
       PrefService* pref_service,
+      HostContentSettingsMap* content_settings,
       privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
       subresource_filter::VerifiedRulesetDealer::Handle* dealer_handle,
       bool is_incognito);
@@ -200,6 +204,8 @@ class FingerprintingProtectionWebContentsHelper
       observer_list_;
 
   raw_ptr<PrefService> pref_service_;
+
+  raw_ptr<HostContentSettingsMap> content_settings_;
 
   raw_ptr<privacy_sandbox::TrackingProtectionSettings>
       tracking_protection_settings_;

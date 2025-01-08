@@ -163,7 +163,7 @@ void ThrottleManager::MaybeAppendNavigationThrottles(
     // Attempt to create root throttles.
     throttles->push_back(
         std::make_unique<FingerprintingProtectionPageActivationThrottle>(
-            navigation_handle,
+            navigation_handle, web_contents_helper_->content_settings(),
             web_contents_helper_->tracking_protection_settings(),
             web_contents_helper_->pref_service(), is_incognito_));
     auto activation_throttle =

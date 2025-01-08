@@ -359,6 +359,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
           IsFingerprintingProtectionFeatureEnabled()) {
     CreateFingerprintingProtectionWebContentsHelper(
         web_contents, profile->GetPrefs(),
+        HostContentSettingsMapFactory::GetForProfile(profile),
         TrackingProtectionSettingsFactory::GetForProfile(profile),
         profile->IsIncognitoProfile());
   }

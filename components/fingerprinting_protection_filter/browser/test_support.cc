@@ -12,7 +12,7 @@
 
 namespace fingerprinting_protection_filter {
 
-scoped_refptr<HostContentSettingsMap> TestSupport::InitializePrefs() {
+void TestSupport::InitializePrefsAndContentSettings() {
   HostContentSettingsMap::RegisterProfilePrefs(prefs()->registry());
   privacy_sandbox::tracking_protection::RegisterProfilePrefs(
       prefs()->registry());
@@ -27,20 +27,23 @@ scoped_refptr<HostContentSettingsMap> TestSupport::InitializePrefs() {
       ::prefs::kCookieControlsMode,
       static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
 
-  return base::MakeRefCounted<HostContentSettingsMap>(
+  host_content_settings_map_ = base::MakeRefCounted<HostContentSettingsMap>(
       prefs(), /*is_off_the_record=*/false, /*store_last_modified=*/false,
-      /*restore_session=*/false, /*should_record_metrics=*/false);
+      /*restore_session=*/false,
+      /*should_record_metrics=*/false);
 }
 
-TestSupport::TestSupport()
-    : host_content_settings_map_(InitializePrefs()),
-      tracking_protection_settings_(prefs(),
-                                    host_content_settings_map_.get(),
-                                    /*is_incognito=*/false) {}
+TestSupport::TestSupport() {
+  InitializePrefsAndContentSettings();
+  tracking_protection_settings_ =
+      std::make_unique<privacy_sandbox::TrackingProtectionSettings>(
+          prefs(), host_content_settings_map_.get(),
+          /*is_incognito=*/false);
+}
 
 TestSupport::~TestSupport() {
+  tracking_protection_settings_->Shutdown();
   host_content_settings_map_->ShutdownOnUIThread();
-  tracking_protection_settings_.Shutdown();
 }
 
 }  // namespace fingerprinting_protection_filter

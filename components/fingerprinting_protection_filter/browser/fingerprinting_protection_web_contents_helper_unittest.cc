@@ -197,6 +197,7 @@ TEST_P(CreateForWebContentsHelperTest, CreateForWebContents) {
 
   FingerprintingProtectionWebContentsHelper::CreateForWebContents(
       RenderViewHostTestHarness::web_contents(), test_support_.prefs(),
+      test_support_.content_settings(),
       test_support_.tracking_protection_settings(),
       /*dealer=*/nullptr,
       /*is_incognito=*/test_case.is_incognito_profile);
@@ -235,6 +236,7 @@ TEST_F(FingerprintingProtectionNotifyOnBlockedSubresourceTest,
       features::kEnableFingerprintingProtectionFilter);
   FingerprintingProtectionWebContentsHelper::CreateForWebContents(
       RenderViewHostTestHarness::web_contents(), test_support_.prefs(),
+      test_support_.content_settings(),
       test_support_.tracking_protection_settings(),
       /*dealer=*/nullptr,
       /*is_incognito=*/false);
@@ -257,6 +259,7 @@ TEST_F(FingerprintingProtectionNotifyOnBlockedSubresourceTest,
       features::kEnableFingerprintingProtectionFilter);
   FingerprintingProtectionWebContentsHelper::CreateForWebContents(
       RenderViewHostTestHarness::web_contents(), test_support_.prefs(),
+      test_support_.content_settings(),
       test_support_.tracking_protection_settings(),
       /*dealer=*/nullptr,
       /*is_incognito=*/false);
@@ -280,6 +283,7 @@ TEST_F(
       features::kEnableFingerprintingProtectionFilter);
   FingerprintingProtectionWebContentsHelper::CreateForWebContents(
       RenderViewHostTestHarness::web_contents(), test_support_.prefs(),
+      test_support_.content_settings(),
       test_support_.tracking_protection_settings(),
       /*dealer=*/nullptr,
       /*is_incognito=*/false);
@@ -313,6 +317,7 @@ TEST_F(
       features::kEnableFingerprintingProtectionFilter);
   FingerprintingProtectionWebContentsHelper::CreateForWebContents(
       RenderViewHostTestHarness::web_contents(), test_support_.prefs(),
+      test_support_.content_settings(),
       test_support_.tracking_protection_settings(),
       /*dealer=*/nullptr,
       /*is_incognito=*/false);
@@ -345,6 +350,7 @@ TEST_F(FingerprintingProtectionNotifyOnBlockedSubresourceTest,
       features::kEnableFingerprintingProtectionFilter);
   FingerprintingProtectionWebContentsHelper::CreateForWebContents(
       RenderViewHostTestHarness::web_contents(), test_support_.prefs(),
+      test_support_.content_settings(),
       test_support_.tracking_protection_settings(),
       /*dealer=*/nullptr,
       /*is_incognito=*/false);
@@ -407,6 +413,7 @@ class MockWCHForRefreshCountTests
   static void CreateForWebContents(
       WebContents* web_contents,
       PrefService* pref_service,
+      HostContentSettingsMap* content_settings,
       TrackingProtectionSettings* tracking_protection_settings,
       VerifiedRulesetDealer::Handle* dealer_handle,
       bool is_incognito) {
@@ -417,7 +424,7 @@ class MockWCHForRefreshCountTests
     }
 
     content::WebContentsUserData<MockWCHForRefreshCountTests>::
-        CreateForWebContents(web_contents, pref_service,
+        CreateForWebContents(web_contents, pref_service, content_settings,
                              tracking_protection_settings, dealer_handle,
                              is_incognito);
   }
@@ -431,11 +438,13 @@ class MockWCHForRefreshCountTests
   explicit MockWCHForRefreshCountTests(
       WebContents* web_contents,
       PrefService* pref_service,
+      HostContentSettingsMap* content_settings,
       TrackingProtectionSettings* tracking_protection_settings,
       VerifiedRulesetDealer::Handle* dealer_handle,
       bool is_incognito)
       : FingerprintingProtectionWebContentsHelper(web_contents,
                                                   pref_service,
+                                                  content_settings,
                                                   tracking_protection_settings,
                                                   dealer_handle,
                                                   is_incognito) {}
@@ -465,6 +474,7 @@ class FingerprintingProtectionRefreshCountMetricsTest
   void InitializeWebContentsHelper(bool is_incognito) {
     MockWCHForRefreshCountTests::CreateForWebContents(
         RenderViewHostTestHarness::web_contents(), test_support_.prefs(),
+        test_support_.content_settings(),
         test_support_.tracking_protection_settings(),
         /*dealer_handle=*/nullptr, is_incognito);
   }
@@ -883,6 +893,7 @@ class FingerprintingProtectionRefreshCountExceptionTest
   void InitializeWebContentsHelper(bool is_incognito) {
     MockWCHForRefreshCountTests::CreateForWebContents(
         RenderViewHostTestHarness::web_contents(), test_support_.prefs(),
+        test_support_.content_settings(),
         test_support_.tracking_protection_settings(),
         /*dealer_handle=*/nullptr, is_incognito);
   }

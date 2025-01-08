@@ -9,6 +9,7 @@ source_set("fingerprinting_protection") {
   ]
   deps = [
     "//chrome/browser:browser_process",
+    "//components/content_settings/core/browser",
     "//components/fingerprinting_protection_filter/browser",
     "//components/prefs",
     "//components/privacy_sandbox:tracking_protection_settings",

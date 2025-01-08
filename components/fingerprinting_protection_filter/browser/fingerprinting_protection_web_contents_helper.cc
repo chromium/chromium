@@ -138,6 +138,7 @@ void RefreshMetricsManager::LogMetrics() const {
 void FingerprintingProtectionWebContentsHelper::CreateForWebContents(
     content::WebContents* web_contents,
     PrefService* pref_service,
+    HostContentSettingsMap* content_settings,
     privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
     VerifiedRulesetDealer::Handle* dealer_handle,
     bool is_incognito) {
@@ -152,7 +153,7 @@ void FingerprintingProtectionWebContentsHelper::CreateForWebContents(
   }
 
   content::WebContentsUserData<FingerprintingProtectionWebContentsHelper>::
-      CreateForWebContents(web_contents, pref_service,
+      CreateForWebContents(web_contents, pref_service, content_settings,
                            tracking_protection_settings, dealer_handle,
                            is_incognito);
 }
@@ -162,6 +163,7 @@ FingerprintingProtectionWebContentsHelper::
     FingerprintingProtectionWebContentsHelper(
         content::WebContents* web_contents,
         PrefService* pref_service,
+        HostContentSettingsMap* content_settings,
         privacy_sandbox::TrackingProtectionSettings*
             tracking_protection_settings,
         VerifiedRulesetDealer::Handle* dealer_handle,
@@ -170,6 +172,7 @@ FingerprintingProtectionWebContentsHelper::
           *web_contents),
       content::WebContentsObserver(web_contents),
       pref_service_(pref_service),
+      content_settings_(content_settings),
       tracking_protection_settings_(tracking_protection_settings),
       dealer_handle_(dealer_handle),
       is_incognito_(is_incognito) {}

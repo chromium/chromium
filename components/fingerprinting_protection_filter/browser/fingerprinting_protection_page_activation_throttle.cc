@@ -9,12 +9,14 @@
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_web_contents_helper.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_breakage_exception.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_constants.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/subresource_filter/content/shared/browser/utils.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
 #include "components/subresource_filter/core/common/scoped_timers.h"
@@ -37,11 +39,13 @@ using ::subresource_filter::mojom::ActivationState;
 FingerprintingProtectionPageActivationThrottle::
     FingerprintingProtectionPageActivationThrottle(
         content::NavigationHandle* handle,
+        HostContentSettingsMap* content_settings,
         privacy_sandbox::TrackingProtectionSettings*
             tracking_protection_settings,
         PrefService* prefs,
         bool is_incognito)
     : NavigationThrottle(handle),
+      content_settings_(content_settings),
       tracking_protection_settings_(tracking_protection_settings),
       prefs_(prefs),
       is_incognito_(is_incognito) {}
@@ -124,12 +128,11 @@ FingerprintingProtectionPageActivationThrottle::GetActivation() const {
     }
   }
 
-  // If we have a reference to TrackingProtectionSettings, use it to check for
-  // a URL-level exclusion.
-  if (tracking_protection_settings_ != nullptr &&
-      tracking_protection_settings_->HasTrackingProtectionException(
-          navigation_handle()->GetURL())) {
-    // FP disabled by a Tracking Protection exception for the current URL.
+  // Check for a tracking protection exception. When UB is not available, also
+  // check for a COOKIES exception for the top-level site.
+  if ((!base::FeatureList::IsEnabled(privacy_sandbox::kActUserBypassUx) &&
+       HasContentSettingsCookieException()) ||
+      HasTrackingProtectionException()) {
     return {.level = ActivationLevel::kDisabled,
             .decision = ActivationDecision::URL_ALLOWLISTED};
   }
@@ -179,6 +182,47 @@ void FingerprintingProtectionPageActivationThrottle::LogMetricsOnChecksComplete(
   UMA_HISTOGRAM_ENUMERATION(ActivationLevelHistogramName, level);
   UMA_HISTOGRAM_ENUMERATION(ActivationDecisionHistogramName, decision,
                             ActivationDecision::ACTIVATION_DECISION_MAX);
+}
+
+namespace {
+
+bool ShouldMeasurePerformance(double performance_measurement_rate) {
+  return base::ThreadTicks::IsSupported() &&
+         (performance_measurement_rate == 1 ||
+          base::RandDouble() < performance_measurement_rate);
+}
+
+}  // namespace
+
+bool FingerprintingProtectionPageActivationThrottle::
+    GetEnablePerformanceMeasurements(bool is_incognito) const {
+  // Performance measurement rate may differ between incognito and
+  // non-incognito modes.
+  double performance_measurement_rate = GetFieldTrialParamByFeatureAsDouble(
+      is_incognito ? features::kEnableFingerprintingProtectionFilterInIncognito
+                   : features::kEnableFingerprintingProtectionFilter,
+      features::kPerformanceMeasurementRateParam, 0.0);
+  return ShouldMeasurePerformance(performance_measurement_rate);
+}
+
+bool FingerprintingProtectionPageActivationThrottle::
+    HasContentSettingsCookieException() const {
+  if (content_settings_ == nullptr) {
+    return false;
+  }
+  content_settings::SettingInfo setting_info;
+  auto setting = content_settings_->GetContentSetting(
+      GURL(), navigation_handle()->GetURL(), ContentSettingsType::COOKIES,
+      &setting_info);
+  return setting == ContentSetting::CONTENT_SETTING_ALLOW &&
+         setting_info.secondary_pattern != ContentSettingsPattern::Wildcard();
+}
+
+bool FingerprintingProtectionPageActivationThrottle::
+    HasTrackingProtectionException() const {
+  return tracking_protection_settings_ != nullptr &&
+         tracking_protection_settings_->HasTrackingProtectionException(
+             navigation_handle()->GetURL());
 }
 
 }  // namespace fingerprinting_protection_filter
