@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/shell.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -37,8 +37,10 @@ IN_PROC_BROWSER_TEST_F(EventLatencyMetricsTest,
             content::EvalJs(tab, "document.getElementById('text_id').value;"));
   ASSERT_TRUE(
       content::ExecJs(tab, "document.getElementById('text_id').focus();"));
-  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_A, false,
-                                              false, false, false));
+
+  ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());
+  generator.PressKey(ui::VKEY_A, 0);
+
   EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
                   ->GetWidget()
                   ->GetCompositor());
