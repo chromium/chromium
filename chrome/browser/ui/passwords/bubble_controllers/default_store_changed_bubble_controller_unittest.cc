@@ -19,8 +19,10 @@
 using testing::Return;
 
 namespace {
-constexpr char kContinueHistogram[] =
-    "PasswordBubble.DefaultStoreChangedBubble.ContinueButtonInBubbleClicked";
+using password_manager::metrics_util::UIDismissalReason;
+
+constexpr char kDismissalReasonHistogram[] =
+    "PasswordManager.UIDismissalReason";
 }
 
 class DefaultStoreChangedBubbleControllerTest : public ::testing::Test {
@@ -83,7 +85,7 @@ TEST_F(DefaultStoreChangedBubbleControllerTest, Destroy) {
 
   EXPECT_CALL(*delegate(), OnBubbleHidden());
   controller()->OnBubbleClosing();
-  histograms.ExpectUniqueSample(kContinueHistogram, false, 1);
+  histograms.ExpectUniqueSample(kDismissalReasonHistogram, UIDismissalReason::NO_DIRECT_INTERACTION, 1);
 }
 
 TEST_F(DefaultStoreChangedBubbleControllerTest, DestroyImplicictly) {
@@ -109,7 +111,7 @@ TEST_F(DefaultStoreChangedBubbleControllerTest, SettingsLinkClick) {
   EXPECT_CALL(*delegate(), OnBubbleHidden());
   controller()->OnNavigateToSettingsButtonClicked();
   controller()->OnBubbleClosing();
-  histograms.ExpectUniqueSample(kContinueHistogram, false, 1);
+  histograms.ExpectUniqueSample(kDismissalReasonHistogram, UIDismissalReason::CLICKED_MANAGE, 1);
 }
 
 TEST_F(DefaultStoreChangedBubbleControllerTest, ContinueButtonClick) {
@@ -119,5 +121,5 @@ TEST_F(DefaultStoreChangedBubbleControllerTest, ContinueButtonClick) {
   EXPECT_CALL(*delegate(), OnBubbleHidden());
   controller()->OnContinueButtonClicked();
   controller()->OnBubbleClosing();
-  histograms.ExpectUniqueSample(kContinueHistogram, true, 1);
+  histograms.ExpectUniqueSample(kDismissalReasonHistogram, UIDismissalReason::CLICKED_ACCEPT , 1);
 }
