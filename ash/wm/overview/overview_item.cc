@@ -982,6 +982,10 @@ void OverviewItem::OnWindowParentChanged(aura::Window* window,
         /*restack=*/true, /*use_spawn_animation=*/true);
     window_destruction_delegate_->OnOverviewItemWindowDestroying(
         this, /*reposition=*/true);
+  } else if (parent != item_widget_->GetNativeWindow()->parent()) {
+    // The window may stay on the same root, but changed parent by changing
+    // desks. Move `item_widget_` so it has the same parent as `window`.
+    parent->AddChild(item_widget_->GetNativeWindow());
   }
 }
 

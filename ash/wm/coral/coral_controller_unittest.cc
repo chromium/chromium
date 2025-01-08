@@ -244,6 +244,40 @@ TEST_F(CoralControllerTest, RemoveInSessionChipAfterClicking) {
       0u);
 }
 
+// Tests that visible on all desk window overview items are parented to the
+// active desk container once a coral group is launched. Regression test for
+// crbug.com/383892354.
+TEST_F(CoralControllerTest, VisibleOnAllDeskWindows) {
+  // Create two apps with the same app id's as the test coral group. Set one to
+  // be visible on all desks.
+  auto window1 = CreateAppWindow();
+  window1->SetProperty(kAppIDKey,
+                       std::string("odknhmnlageboeamepcngndbggdpaobj"));
+  window1->SetProperty(aura::client::kWindowWorkspaceKey,
+                       aura::client::kWindowWorkspaceVisibleOnAllWorkspaces);
+  auto window2 = CreateAppWindow();
+  window2->SetProperty(kAppIDKey,
+                       std::string("fkiggjmkendpmbegkagpmagjepfkpmeb"));
+  CreateTestGroup({{"Settings", "odknhmnlageboeamepcngndbggdpaobj"},
+                   {"Files", "fkiggjmkendpmbegkagpmagjepfkpmeb"}},
+                  "Coral Group");
+
+  Shell::Get()->overview_controller()->StartOverview(
+      OverviewStartAction::kTests);
+
+  ClickFirstCoralButton();
+  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
+  ASSERT_EQ(DesksController::Get()->GetNumberOfDesks(), 2);
+
+  // Both items should be parented to the active desk container.
+  OverviewItemBase* item1 = GetOverviewItemForWindow(window1.get());
+  OverviewItemBase* item2 = GetOverviewItemForWindow(window2.get());
+  EXPECT_TRUE(desks_util::IsActiveDeskContainer(
+      item1->item_widget()->GetNativeWindow()->parent()));
+  EXPECT_TRUE(desks_util::IsActiveDeskContainer(
+      item2->item_widget()->GetNativeWindow()->parent()));
+}
+
 // Tests that there is no crash when removing a coral chip by user.
 TEST_F(CoralControllerTest, NoCrashOnRemovingChipByUser) {
   Shell::Get()->overview_controller()->StartOverview(

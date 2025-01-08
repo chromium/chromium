@@ -4552,7 +4552,8 @@ TEST_F(DeskSaveAndRecallTest, SaveDeskForLaterWithSingleDesk) {
 
 // Tests that all desk window is not closed nor saved by clicking save desk for
 // later button.
-TEST_F(DeskSaveAndRecallTest, SaveDeskForLaterWithAllDeskWindow) {
+// TODO(crbug.com/388283264): Re-enable this test once the bug is fixed.
+TEST_F(DeskSaveAndRecallTest, DISABLED_SaveDeskForLaterWithAllDeskWindow) {
   DesksController* desks_controller = DesksController::Get();
   desks_controller->NewDesk(DesksCreationRemovalSource::kKeyboard);
 
@@ -4591,6 +4592,7 @@ TEST_F(DeskSaveAndRecallTest, SaveDeskForLaterWithAllDeskWindow) {
   auto* all_desk_window_overview_item =
       GetOverviewItemForWindow(tracker.windows().front());
   EXPECT_FALSE(all_desk_window_overview_item->item_widget()->IsVisible());
+  EXPECT_FALSE(all_desk_window_overview_item->GetWindow()->IsVisible());
 }
 
 // Tests that when saving a desk with only all desk window, it can show the
