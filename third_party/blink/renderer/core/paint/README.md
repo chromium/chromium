@@ -82,7 +82,7 @@ are treated in different ways during painting:
     *   [grid items](http://www.w3.org/TR/css-grid-1/#z-order)
     *   custom scrollbar parts
 
-    They are painted by `ObjectPainter::paintAllPhasesAtomically()` which
+    They are painted by `ObjectPainter::PaintAllPhasesAtomically()` which
     executes all of the steps of the painting algorithm explained in the
     documentation, except ignores any descendants which are positioned or have
     non-auto z-index (which is achieved by skipping descendants with
@@ -92,22 +92,18 @@ are treated in different ways during painting:
 
 ### Other glossaries
 
-*   Paint container: the parent of an object for painting, as defined by
-    [CSS2.1 spec for painting]((http://www.w3.org/TR/CSS21/zindex.html)). For
-    regular objects, this is the parent in the DOM. For stacked objects, it's
-    the containing stacking context-inducing object.
+*   [`PaintLayer`](paint_layer.h): an old implementation detail of Blink.
+    It represents some layout objects to handle a lot of operations about
+    painting and hit-testing. We would like to remove this class in the future.
+    See the documentation of the class for more details.
 
-*   Paint container chain: the chain of paint ancestors between an element and
-    the root of the page.
+*   Painting container: the parent of a `PaintLayer` in paint order.
+    For a stacked `PaintLayer`, it's the containing stacking-context-inducing
+    ancestor, otherwise it's the parent.
 
-*   Compositing container: an implementation detail of Blink, which uses
-    `PaintLayer`s to represent some layout objects. It is the ancestor along the
-    paint ancestor chain which has a PaintLayer. Implemented in
-    `PaintLayer::compositingContainer()`. Think of it as skipping intermediate
-    normal objects and going directly to the containing stacked object.
-
-*   Compositing container chain: same as paint chain, but for compositing
-    container.
+*   Painting container chain: the chain of painting containers between a
+    `PaintLayer` and the root of the frame or the page, depending on whether
+    we want to cross the frame boundaries.
 
 *   Visual rect: the bounding box of all pixels that will be painted by a
     for a [display item](../../platform/graphics/paint/README.md#display-items)
@@ -243,7 +239,7 @@ is created for the root `LayoutView`. During the tree walk, one
 `PaintInvalidatorContext` passed from the parent object. It tracks the painting
 layer which will initiate painting of the current object.
 
-[`PaintInvalidator`](PaintInvalidator.h) initializes `PaintInvalidatorContext`
+[`PaintInvalidator`](paint_invalidator.h) initializes `PaintInvalidatorContext`
 for the current object, then calls `LayoutObject::InvalidatePaint()` which
 calls the object's paint invalidator (e.g. `BoxPaintInvalidator`) to complete
 paint invalidation of the object.

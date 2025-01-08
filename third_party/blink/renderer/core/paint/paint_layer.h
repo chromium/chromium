@@ -113,16 +113,10 @@ enum class LayerPositionVisibility : uint8_t {
 // The class is central to painting and hit-testing. That's because it handles
 // a lot of tasks (we included ones done by associated satellite objects for
 // historical reasons):
+// - Stacking management (with PaintLayerStackingNode),
 // - Complex painting operations (opacity, clipping, filters, reflections, ...).
-// - hardware acceleration (through PaintLayerCompositor).
 // - scrolling (through PaintLayerScrollableArea).
-// - some performance optimizations.
-//
-// The compositing code is also based on PaintLayer. The entry to it is the
-// PaintLayerCompositor, which fills |composited_layer_mapping| for hardware
-// accelerated layers.
-//
-// TODO(jchaffraix): Expand the documentation about hardware acceleration.
+// - etc. (see LayoutBoxModelObject::LayerTypeRequired() implementations).
 //
 //
 // ***** SELF-PAINTING LAYER *****
@@ -198,10 +192,10 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   PaintLayer* FirstChild() const { return first_.Get(); }
   PaintLayer* LastChild() const { return last_.Get(); }
 
-  // TODO(wangxianzhu): Find a better name for it. 'paintContainer' might be
-  // good but we can't use it for now because it conflicts with
-  // PaintInfo::paintContainer.
-  PaintLayer* CompositingContainer() const;
+  // Returns the parent layer in paint order. The layer will iterate this layer
+  // as a child in PaintLayerPaintOrderIterator.
+  PaintLayer* PaintingContainer() const;
+
   PaintLayer* AncestorStackingContext() const;
 
   void AddChild(PaintLayer* new_child, PaintLayer* before_child = nullptr);
@@ -659,7 +653,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
                                        const ComputedStyle* old_style,
                                        const ComputedStyle& new_style);
 
-  void MarkCompositingContainerChainForNeedsRepaint();
+  void MarkPaintingContainerChainForNeedsRepaint();
 
   void MergeNeedsPaintPhaseFlagsFrom(const PaintLayer& layer) {
     needs_paint_phase_descendant_outlines_ |=

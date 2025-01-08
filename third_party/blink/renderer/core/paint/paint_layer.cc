@@ -585,7 +585,7 @@ PaintLayer* PaintLayer::ContainingLayer() const {
   return Parent();
 }
 
-PaintLayer* PaintLayer::CompositingContainer() const {
+PaintLayer* PaintLayer::PaintingContainer() const {
   if (IsReplacedNormalFlowStacking())
     return Parent();
   if (!GetLayoutObject().IsStacked()) {
@@ -683,10 +683,11 @@ void PaintLayer::AddChild(PaintLayer* child, PaintLayer* before_child) {
 
   MarkAncestorChainForFlagsUpdate();
 
-  if (child->SelfNeedsRepaint())
-    MarkCompositingContainerChainForNeedsRepaint();
-  else
+  if (child->SelfNeedsRepaint()) {
+    MarkPaintingContainerChainForNeedsRepaint();
+  } else {
     child->SetNeedsRepaint();
+  }
 
   if (child->NeedsCullRectUpdate()) {
     SetDescendantNeedsCullRectUpdate();
@@ -700,7 +701,7 @@ void PaintLayer::RemoveChild(PaintLayer* old_child) {
   DCHECK(layer_list_mutation_allowed_);
 #endif
 
-  old_child->MarkCompositingContainerChainForNeedsRepaint();
+  old_child->MarkPaintingContainerChainForNeedsRepaint();
 
   if (old_child->PreviousSibling())
     old_child->PreviousSibling()->SetNextSibling(old_child->NextSibling());
@@ -1991,9 +1992,9 @@ void PaintLayer::UpdateSelfPaintingLayer() {
   // descendants of this layer because of the self painting status change.
   SetNeedsRepaint();
   is_self_painting_layer_ = is_self_painting_layer;
-  // Self-painting change can change the compositing container chain;
+  // Self-painting change can change the painting container chain;
   // invalidate the new chain in addition to the old one.
-  MarkCompositingContainerChainForNeedsRepaint();
+  MarkPaintingContainerChainForNeedsRepaint();
 
   if (is_self_painting_layer)
     SetNeedsVisualOverflowRecalc();
@@ -2112,11 +2113,12 @@ void PaintLayer::StyleDidChange(StyleDifference diff,
   }
 
   if (PaintLayerStackingNode::StyleDidChange(*this, old_style)) {
-    // The compositing container (see: |PaintLayer::CompositingContainer()|) may
-    // have changed so we need to ensure |descendant_needs_repaint_| is
-    // propagated up the new compositing chain.
-    if (SelfOrDescendantNeedsRepaint())
-      MarkCompositingContainerChainForNeedsRepaint();
+    // The PaintingContainer may have changed so we need to ensure
+    // `descendant_needs_repaint_` is propagated up the new PaintingContainer
+    // chain.
+    if (SelfOrDescendantNeedsRepaint()) {
+      MarkPaintingContainerChainForNeedsRepaint();
+    }
 
     MarkAncestorChainForFlagsUpdate();
   }
@@ -2363,7 +2365,7 @@ void PaintLayer::SetNeedsRepaint() {
   self_needs_repaint_ = true;
   // Invalidate as a display item client.
   static_cast<DisplayItemClient*>(this)->Invalidate();
-  MarkCompositingContainerChainForNeedsRepaint();
+  MarkPaintingContainerChainForNeedsRepaint();
 
   // If this layer is a descendant of a canvas then it may be part of a placed
   // element subtree and the canvas itself needs to be invalidated.
@@ -2376,23 +2378,23 @@ void PaintLayer::SetDescendantNeedsRepaint() {
   if (descendant_needs_repaint_)
     return;
   descendant_needs_repaint_ = true;
-  MarkCompositingContainerChainForNeedsRepaint();
+  MarkPaintingContainerChainForNeedsRepaint();
 }
 
-void PaintLayer::MarkCompositingContainerChainForNeedsRepaint() {
+void PaintLayer::MarkPaintingContainerChainForNeedsRepaint() {
   PaintLayer* layer = this;
   while (true) {
     // For a non-self-painting layer having self-painting descendant, the
     // descendant will be painted through this layer's Parent() instead of
-    // this layer's Container(), so in addition to the CompositingContainer()
-    // chain, we also need to mark NeedsRepaint for Parent().
-    // TODO(crbug.com/828103): clean up this.
+    // this layer's PaintingContainer(), so in addition to the
+    // PaintingContainer() chain, we also need to mark NeedsRepaint for
+    // Parent().
     if (layer->Parent() && !layer->IsSelfPaintingLayer())
       layer->Parent()->SetNeedsRepaint();
 
     // Don't mark across frame boundary here. LocalFrameView::PaintTree() will
     // propagate child frame NeedsRepaint flag into the owning frame.
-    PaintLayer* container = layer->CompositingContainer();
+    PaintLayer* container = layer->PaintingContainer();
     if (!container || container->descendant_needs_repaint_)
       break;
 
