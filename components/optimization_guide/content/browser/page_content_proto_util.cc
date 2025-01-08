@@ -71,8 +71,7 @@ optimization_guide::proto::AnnotatedRole ConvertAnnotatedRole(
     case blink::mojom::AIPageContentAnnotatedRole::kFooter:
       return optimization_guide::proto::ANNOTATED_ROLE_FOOTER;
     case blink::mojom::AIPageContentAnnotatedRole::kContentHidden:
-      // TODO(crbug.com/383541963): Wire up to the proto format.
-      return optimization_guide::proto::ANNOTATED_ROLE_UNKNOWN;
+      return optimization_guide::proto::ANNOTATED_ROLE_CONTENT_HIDDEN;
   }
   NOTREACHED();
 }
