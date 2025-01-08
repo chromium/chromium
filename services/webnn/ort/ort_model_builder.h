@@ -59,6 +59,16 @@ class OrtModelBuilder final {
                       base::span<const uint8_t> data,
                       ONNXTensorElementDataType data_type);
 
+  void AddInitializerAsRawData(std::string_view name,
+                               base::span<const int64_t> shape,
+                               base::span<const uint8_t> data,
+                               ONNXTensorElementDataType data_type);
+
+  void AddInitializerAsExternalData(std::string_view name,
+                                    base::span<const int64_t> shape,
+                                    base::span<const uint8_t> data,
+                                    ONNXTensorElementDataType data_type);
+
   using OrtOpAttrData = absl::variant<int64_t,
                                       float,
                                       std::string_view,

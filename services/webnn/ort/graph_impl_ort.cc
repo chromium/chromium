@@ -96,9 +96,12 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
     base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
     scoped_refptr<AllocatorOrt> allocator) {
+  const mojom::CreateContextOptions::Device device_type =
+      context_options->device;
+
   ASSIGN_OR_RETURN(std::unique_ptr<GraphBuilderOrt::Result> result,
                    GraphBuilderOrt::CreateAndBuild(
-                       *graph_info, std::move(context_properties),
+                       device_type, *graph_info, std::move(context_properties),
                        std::move(constant_operands), allocator));
 
   OrtSessionOptions* session_options;
@@ -110,8 +113,13 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
   CHECK_STATUS(ort_api->SetSessionGraphOptimizationLevel(
       session_options, GraphOptimizationLevel::ORT_ENABLE_BASIC));
 
+  // TODO(https://github.com/shiyi9801/chromium/issues/72): Investigate if there
+  // is another way to dump the model for OpenVINO EP.
+  // OpenVINO EP doesn't support dumping the optimized model since it contains
+  // compiled nodes which cannnot be serialized.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kWebNNOrtDumpModel)) {
+          switches::kWebNNOrtDumpModel) &&
+      device_type == mojom::CreateContextOptions::Device::kCpu) {
     static uint64_t dump_count = 0;
     base::FilePath dump_directory =
         base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
@@ -126,8 +134,46 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
     // supports it.
   }
 
-  // TODO(https://github.com/shiyi9801/chromium/issues/46): Append OpenVINO EP
-  // for GPU and NPU devices.
+  // Select the execution provider.
+  switch (device_type) {
+    case mojom::CreateContextOptions::Device::kCpu: {
+      // TODO(https://github.com/shiyi9801/chromium/issues/58): Investigate how
+      // to apply layout optimizations (ORT_ENABLE_ALL).
+      // https://onnxruntime.ai/docs/performance/model-optimizations/graph-optimizations.html#layout-optimizations
+      CHECK_STATUS(ort_api->SetSessionGraphOptimizationLevel(
+          session_options, GraphOptimizationLevel::ORT_ENABLE_BASIC));
+      break;
+    }
+    case mojom::CreateContextOptions::Device::kGpu:
+    case mojom::CreateContextOptions::Device::kNpu: {
+      // It is recommended to disable the graph optimization for OpenVINO
+      // backend.
+      // https://onnxruntime.ai/docs/execution-providers/OpenVINO-ExecutionProvider.html#other-configuration-settings
+      CHECK_STATUS(ort_api->SetSessionGraphOptimizationLevel(
+          session_options, GraphOptimizationLevel::ORT_DISABLE_ALL));
+
+      std::string openvino_device_type =
+          device_type == mojom::CreateContextOptions::Device::kGpu ? "GPU"
+                                                                   : "NPU";
+      OrtOpenVINOProviderOptions openvino_options;
+      openvino_options.device_type = openvino_device_type.c_str();
+
+      // TODO(https://github.com/shiyi9801/chromium/issues/74): Fail early when
+      // creating the context if the OpenVINO EP is not supported.
+      OrtStatus* append_openvino_status =
+          ort_api->SessionOptionsAppendExecutionProvider_OpenVINO(
+              session_options, &openvino_options);
+      if (append_openvino_status != NULL) {
+        std::string_view msg = ort_api->GetErrorMessage(append_openvino_status);
+        LOG(ERROR) << "[WebNN] Ort Status: " << msg;
+        ort_api->ReleaseStatus(append_openvino_status);
+        return base::unexpected(
+            mojom::Error::New(mojom::Error::Code::kUnknownError,
+                              "OnnxRuntime OpenVINO EP is not supported."));
+      }
+      break;
+    }
+  }
 
   OrtSession* session;
   const OrtEnv* env = allocator->env();
@@ -136,14 +182,14 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
   ort_api->ReleaseSessionOptions(session_options);
 
   if (status != NULL) {
-    std::string msg = ort_api->GetErrorMessage(status);
+    std::string_view msg = ort_api->GetErrorMessage(status);
+    LOG(ERROR) << "[WebNN] Ort Status: " << msg;
     ort_api->ReleaseStatus(status);
-    LOG(ERROR) << "[WebNN] Ort Status " << msg;
     return base::unexpected(mojom::Error::New(mojom::Error::Code::kUnknownError,
                                               "Failed to create ORT session."));
   }
 
-  LOG(ERROR) << "Running on ORT=============";
+  LOG(ERROR) << "========= Running on ORT =============";
 
   return base::WrapUnique(new GraphImplOrt::Session(
       session, std::move(result->model_info->external_data)));

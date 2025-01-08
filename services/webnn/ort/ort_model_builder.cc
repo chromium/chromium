@@ -70,34 +70,57 @@ void OrtModelBuilder::AddInitializer(std::string_view name,
                                      base::span<const int64_t> shape,
                                      base::span<const uint8_t> data,
                                      ONNXTensorElementDataType data_type) {
-  ScopedOrtValuePtr initializer;
   bool data_is_external = data.size() >= kMinExternalDataSize;
   if (data_is_external) {
-    auto weight = base::HeapArray<uint8_t>::CopiedFrom(data);
-    model_info_->external_data.push_back(std::move(weight));
-    // TODO(https://github.com/shiyi9801/chromium/issues/45): Use
-    // `CreateTensorWithDataAndDeleterAsOrtValue()`.
-    CHECK_STATUS(GetOrtApi()->CreateTensorWithDataAsOrtValue(
-        allocator_->memory_info(), model_info_->external_data.back().data(),
-        model_info_->external_data.back().size(), shape.data(), shape.size(),
-        data_type, initializer.GetAddressOf()));
+    AddInitializerAsExternalData(name, shape, data, data_type);
   } else {
-    CHECK_STATUS(GetOrtApi()->CreateTensorAsOrtValue(
-        allocator_->allocator(), shape.data(), shape.size(), data_type,
-        initializer.GetAddressOf()));
-
-    void* ort_tensor_raw_data = nullptr;
-    CHECK_STATUS(
-        GetOrtApi()->GetTensorMutableData(initializer, &ort_tensor_raw_data));
-    CHECK(ort_tensor_raw_data);
-    UNSAFE_BUFFERS(
-        base::span(static_cast<uint8_t*>(ort_tensor_raw_data), data.size()))
-        .copy_from(data);
+    AddInitializerAsRawData(name, shape, data, data_type);
   }
+}
+
+void OrtModelBuilder::AddInitializerAsRawData(
+    std::string_view name,
+    base::span<const int64_t> shape,
+    base::span<const uint8_t> data,
+    ONNXTensorElementDataType data_type) {
+  ScopedOrtValuePtr initializer;
+
+  CHECK_STATUS(GetOrtApi()->CreateTensorAsOrtValue(
+      allocator_->allocator(), shape.data(), shape.size(), data_type,
+      initializer.GetAddressOf()));
+
+  void* ort_tensor_raw_data = nullptr;
+  CHECK_STATUS(
+      GetOrtApi()->GetTensorMutableData(initializer, &ort_tensor_raw_data));
+  CHECK(ort_tensor_raw_data);
+  UNSAFE_BUFFERS(
+      base::span(static_cast<uint8_t*>(ort_tensor_raw_data), data.size()))
+      .copy_from(data);
 
   // Graph will own the initializer.
   CHECK_STATUS(GetOrtModelBuilderApi()->AddInitializerToGraph(
-      graph_, name.data(), initializer.Release(), data_is_external));
+      graph_, name.data(), initializer.Release(), /*data_is_external=*/false));
+}
+
+void OrtModelBuilder::AddInitializerAsExternalData(
+    std::string_view name,
+    base::span<const int64_t> shape,
+    base::span<const uint8_t> data,
+    ONNXTensorElementDataType data_type) {
+  ScopedOrtValuePtr initializer;
+
+  auto weight = base::HeapArray<uint8_t>::CopiedFrom(data);
+  model_info_->external_data.push_back(std::move(weight));
+  // TODO(https://github.com/shiyi9801/chromium/issues/45): Use
+  // `CreateTensorWithDataAndDeleterAsOrtValue()`.
+  CHECK_STATUS(GetOrtApi()->CreateTensorWithDataAsOrtValue(
+      allocator_->memory_info(), model_info_->external_data.back().data(),
+      model_info_->external_data.back().size(), shape.data(), shape.size(),
+      data_type, initializer.GetAddressOf()));
+
+  // Graph will own the initializer.
+  CHECK_STATUS(GetOrtModelBuilderApi()->AddInitializerToGraph(
+      graph_, name.data(), initializer.Release(), /*data_is_external=*/true));
 }
 
 void OrtModelBuilder::CreateAttribute(ScopedOrtOpAttrPtr& attribute,

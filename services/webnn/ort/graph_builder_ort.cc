@@ -183,12 +183,14 @@ const GraphBuilderOrt::OperandInfo& GraphBuilderOrt::Result::GetOperandInfo(
 // static
 base::expected<std::unique_ptr<GraphBuilderOrt::Result>, mojom::ErrorPtr>
 GraphBuilderOrt::CreateAndBuild(
+    mojom::CreateContextOptions::Device device_type,
     const mojom::GraphInfo& graph_info,
     ContextProperties context_properties,
     base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
     scoped_refptr<AllocatorOrt> allocator) {
-  GraphBuilderOrt graph_builder(graph_info, std::move(context_properties),
+  GraphBuilderOrt graph_builder(device_type, graph_info,
+                                std::move(context_properties),
                                 std::move(constant_operands), allocator);
 
   RETURN_IF_ERROR(graph_builder.BuildModel());
@@ -196,12 +198,14 @@ GraphBuilderOrt::CreateAndBuild(
 }
 
 GraphBuilderOrt::GraphBuilderOrt(
+    mojom::CreateContextOptions::Device device_type,
     const mojom::GraphInfo& graph_info,
     ContextProperties context_properties,
     base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
     scoped_refptr<AllocatorOrt> allocator)
-    : graph_info_(graph_info),
+    : device_type_(device_type),
+      graph_info_(graph_info),
       constant_operands_(std::move(constant_operands)),
       context_properties_(std::move(context_properties)),
       model_builder_(OrtModelBuilder(std::move(allocator))),
@@ -259,8 +263,15 @@ std::string GraphBuilderOrt::CreateInitializer(base::span<const uint32_t> shape,
     byte_span = base::as_byte_span(data);
   }
 
-  model_builder_.AddInitializer(name, operand_info.int64_shape, byte_span,
-                                operand_info.onnx_data_type);
+  // TODO(https://github.com/shiyi9801/chromium/issues/70): Remove this
+  // workaround for OpenVINO EP once the invalid external data issue is fixed.
+  if (device_type_ == mojom::CreateContextOptions::Device::kCpu) {
+    model_builder_.AddInitializer(name, operand_info.int64_shape, byte_span,
+                                  operand_info.onnx_data_type);
+  } else {
+    model_builder_.AddInitializerAsRawData(
+        name, operand_info.int64_shape, byte_span, operand_info.onnx_data_type);
+  }
 
   CHECK(result_->id_to_operand_info
             .try_emplace(next_operand_id_, std::move(operand_info))
@@ -305,9 +316,18 @@ void GraphBuilderOrt::AddInitializer(uint64_t constant_id) {
 
   OperandInfo operand_info{name, operand.descriptor().data_type(),
                            operand.descriptor().shape()};
-  model_builder_.AddInitializer(name, operand_info.int64_shape,
-                                operand.ByteSpan(),
-                                operand_info.onnx_data_type);
+
+  // TODO(https://github.com/shiyi9801/chromium/issues/70): Remove this
+  // workaround for OpenVINO EP once the invalid external data issue is fixed.
+  if (device_type_ == mojom::CreateContextOptions::Device::kCpu) {
+    model_builder_.AddInitializer(name, operand_info.int64_shape,
+                                  operand.ByteSpan(),
+                                  operand_info.onnx_data_type);
+  } else {
+    model_builder_.AddInitializerAsRawData(name, operand_info.int64_shape,
+                                           operand.ByteSpan(),
+                                           operand_info.onnx_data_type);
+  }
 
   CHECK(result_->id_to_operand_info
             .try_emplace(constant_id, std::move(operand_info))
