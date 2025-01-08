@@ -437,9 +437,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.BlocklistEntriesApplied" enum="GpuBlocklistEntry"
+    expires_after="never">
+<!-- expires-never: For monitoring GPU blocklist entries. -->
+
+  <owner>vmiura@chromium.org</owner>
+  <owner>kylechar@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    One or more entries are recorded to this histogram after each succesful GPU
+    process launch. Each GPU blocklist entry, contained in
+    software_rendering_list.json, that applies has the entry id recorded.
+    Additionally the value 0, which doesn't correspond to a blocklist entry, is
+    always recorded once to provide a denominator to calculate percentages.
+  </summary>
+</histogram>
+
 <histogram name="GPU.BlocklistFeatureTestResults.{GPUBlocklistPerFeature}"
     enum="GPUBlocklistFeatureTestResults" expires_after="2025-05-11">
   <owner>vmiura@chromium.org</owner>
+  <owner>kylechar@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Counts number of browser invocations for which a GPU feature is
@@ -453,19 +470,6 @@ chromium-metrics-reviews@google.com.
     <variant name="Webgl2" summary="Webgl2"/>
     <variant name="Webgpu" summary="Webgpu"/>
   </token>
-</histogram>
-
-<histogram name="GPU.BlocklistTestResultsPerEntry"
-    enum="GPUBlocklistTestResultPerEntry" expires_after="2025-01-05">
-  <owner>vmiura@chromium.org</owner>
-  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
-  <summary>
-    Counts number of browser invocations for which the GPU process is blocked
-    due to a blocklist entry match.
-
-    Warning: this histogram was expired from 2022-07-03 to 2023-12-20; data may
-    be missing.
-  </summary>
 </histogram>
 
 <histogram name="GPU.CanvasOopRaster.OopRasterAndGpuAcceleration"

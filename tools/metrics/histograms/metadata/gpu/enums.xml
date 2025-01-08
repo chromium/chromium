@@ -438,16 +438,7 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="kGLImplementationEGLANGLE"/>
 </enum>
 
-<enum name="GPUBlocklistFeatureTestResults">
-  <summary>
-    Results of testing against a GPU feature being allowed/blocklisted/disabled.
-  </summary>
-  <int value="0" label="Allowed"/>
-  <int value="1" label="Blocklisted"/>
-  <int value="2" label="User-disabled"/>
-</enum>
-
-<enum name="GPUBlocklistTestResultPerEntry">
+<enum name="GpuBlocklistEntry">
   <summary>Results of testing against the GPU blocklist entries.</summary>
   <int value="0" label="TotalCount"/>
   <int value="1" label="Mac/ATI/Radeon X1900"/>
@@ -529,6 +520,15 @@ chromium-metrics-reviews@google.com.
   <int value="73" label="Mac10.7-/NVIDIA-GT330M-9400-9400M/WebGL"/>
   <int value="74" label="Win/Microsoft/all"/>
   <int value="75" label="Win/AMD_switchable/Texture_sharing"/>
+</enum>
+
+<enum name="GPUBlocklistFeatureTestResults">
+  <summary>
+    Results of testing against a GPU feature being allowed/blocklisted/disabled.
+  </summary>
+  <int value="0" label="Allowed"/>
+  <int value="1" label="Blocklisted"/>
+  <int value="2" label="User-disabled"/>
 </enum>
 
 <enum name="GpuDriverBugWorkaroundEntry">

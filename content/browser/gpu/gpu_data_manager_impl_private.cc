@@ -266,6 +266,8 @@ void RecordCanvasAcceleratedOopRasterHistogram(
 
 // Send UMA histograms about the enabled features and GPU properties.
 void UpdateFeatureStats(const gpu::GpuFeatureInfo& gpu_feature_info) {
+  constexpr char kGpuBlocklistHistogram[] = "GPU.BlocklistEntriesApplied";
+
   // Update applied entry stats.
   std::unique_ptr<gpu::GpuBlocklist> blocklist(gpu::GpuBlocklist::Create());
   DCHECK(blocklist.get() && blocklist->max_entry_id() > 0);
@@ -274,8 +276,7 @@ void UpdateFeatureStats(const gpu::GpuFeatureInfo& gpu_feature_info) {
   // was recorded in this histogram in order to have a convenient
   // denominator to compute blocklist percentages for the rest of the
   // entries.
-  UMA_HISTOGRAM_EXACT_LINEAR("GPU.BlocklistTestResultsPerEntry", 0,
-                             max_entry_id + 1);
+  base::UmaHistogramSparse(kGpuBlocklistHistogram, 0);
   if (!gpu_feature_info.applied_gpu_blocklist_entries.empty()) {
     std::vector<uint32_t> entry_ids = blocklist->GetEntryIDsFromIndices(
         gpu_feature_info.applied_gpu_blocklist_entries);
@@ -283,8 +284,7 @@ void UpdateFeatureStats(const gpu::GpuFeatureInfo& gpu_feature_info) {
               entry_ids.size());
     for (auto id : entry_ids) {
       DCHECK_GE(max_entry_id, id);
-      UMA_HISTOGRAM_EXACT_LINEAR("GPU.BlocklistTestResultsPerEntry", id,
-                                 max_entry_id + 1);
+      base::UmaHistogramSparse(kGpuBlocklistHistogram, id);
     }
   }
 
