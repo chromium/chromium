@@ -472,7 +472,6 @@ CONSOLE: css/css-values/viewport-units-css2-001.html
 CONSOLE: css/css-writing-modes/orthogonal-parent-shrink-to-fit-001*.html
 CONSOLE: css/css-writing-modes/tools/generators/template.html
 CONSOLE: bluetooth/characteristic/readValue/characteristic-is-removed.https.window.js
-CONSOLE: bluetooth/resources/bluetooth-test.js
 
 TRAILING WHITESPACE: css/css-fonts/support/fonts/gsubtest-lookup3.ufo/features.fea
 
