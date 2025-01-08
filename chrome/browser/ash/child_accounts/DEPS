@@ -28,8 +28,6 @@ include_rules = [
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
   "+chrome/browser/supervised_user",
-  "+chrome/browser/ui/browser_list.h",
-  "+chrome/browser/ui/browser_window.h",
   "+chrome/common/chrome_features.h",
   "+chrome/common/chrome_switches.h",
   "+chrome/common/extensions",
@@ -50,6 +48,7 @@ specific_include_rules = {
     "+chrome/browser/extensions/extension_service.h",
     "+chrome/browser/prefs",
     "+chrome/browser/ui/browser.h",
+    "+chrome/browser/ui/browser_list.h",
 
     "+chrome/browser/ui/ash/shelf",
 
