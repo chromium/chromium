@@ -97,7 +97,7 @@ class PageActionViewTest : public ChromeViewsTestBase {
   std::unique_ptr<views::ActionViewController> action_view_controller_;
   raw_ptr<actions::ActionItem> action_item_;
 
-  MockIconLabelViewDelegate icon_label_view_delegate_;
+  testing::NiceMock<MockIconLabelViewDelegate> icon_label_view_delegate_;
 
   std::unique_ptr<PinnedToolbarActionsModel> pinned_actions_model_;
   std::unique_ptr<TestingProfile> profile_;
