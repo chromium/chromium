@@ -21,6 +21,7 @@ class TabStripModel;
 class ToastController;
 class ToastService;
 class DataSharingOpenGroupHelper;
+class DownloadToolbarUIController;
 
 namespace extensions {
 class ExtensionSidePanelManager;
@@ -153,6 +154,10 @@ class BrowserWindowFeatures {
     return data_sharing_open_group_helper_.get();
   }
 
+  DownloadToolbarUIController* download_toolbar_ui_controller() {
+    return download_toolbar_ui_controller_.get();
+  }
+
  protected:
   BrowserWindowFeatures();
 
@@ -199,6 +204,8 @@ class BrowserWindowFeatures {
   std::unique_ptr<DataSharingOpenGroupHelper> data_sharing_open_group_helper_;
 
   std::unique_ptr<media_router::CastBrowserController> cast_browser_controller_;
+
+  std::unique_ptr<DownloadToolbarUIController> download_toolbar_ui_controller_;
 
 #if BUILDFLAG(ENABLE_GLIC)
   std::unique_ptr<glic::GlicTabIndicatorHelper> glic_tab_indicator_helper_;

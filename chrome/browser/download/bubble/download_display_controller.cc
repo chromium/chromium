@@ -195,17 +195,17 @@ void DownloadDisplayController::HandleButtonPressed() {
 }
 
 void DownloadDisplayController::ShowToolbarButton() {
-  if (!display_->IsShowing()) {
-    display_->Enable();
-    display_->Show();
-  }
+  // If toolbar pinning is enabled Show should be called regardless of whether
+  // the toolbar button is showing because it may be already showing due to
+  // being pinned and should remain showing even if unpinned until
+  // HideToolbarButton is called.
+  display_->Enable();
+  display_->Show();
 }
 
 void DownloadDisplayController::HideToolbarButton() {
   // TODO(chlily): This should only hide the bubble/button when it is not open.
-  if (display_->IsShowing()) {
-    display_->Hide();
-  }
+  display_->Hide();
 }
 
 void DownloadDisplayController::HideBubble() {

@@ -25,6 +25,8 @@ source_set("download") {
     "bubble/download_bubble_started_animation_views.h",
     "bubble/download_dialog_view.cc",
     "bubble/download_dialog_view.h",
+    "bubble/download_toolbar_ui_controller.cc",
+    "bubble/download_toolbar_ui_controller.h",
     "download_danger_prompt_views.cc",
     "download_in_progress_dialog_view.cc",
     "download_in_progress_dialog_view.h",
@@ -65,6 +67,7 @@ source_set("download") {
     "//chrome/browser/themes:themes",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:browser_list",
+    "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/hats:hats",
@@ -77,4 +80,8 @@ source_set("download") {
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//ui/strings:ui_strings_grit",
   ]
+
+  if (is_chromeos) {
+    deps += [ "//chromeos/components/kiosk" ]
+  }
 }

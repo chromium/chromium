@@ -163,6 +163,7 @@ source_set("toolbar") {
     "//ui/menus",
     "//ui/native_theme",
   ]
+  allow_circular_includes_from = [ "//chrome/browser/ui/views/download" ]
   if (enable_webui_tab_strip) {
     sources += [
       "webui_tab_counter_button.cc",

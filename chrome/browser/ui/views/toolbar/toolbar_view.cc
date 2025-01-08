@@ -290,7 +290,9 @@ void ToolbarView::Init() {
   size_animation_.Reset(1);
 
   std::unique_ptr<DownloadToolbarButtonView> download_button;
-  if (download::IsDownloadBubbleEnabled()) {
+  if (download::IsDownloadBubbleEnabled() &&
+      (!features::IsToolbarPinningEnabled() ||
+       !base::FeatureList::IsEnabled(features::kPinnableDownloadsButton))) {
     download_button =
         std::make_unique<DownloadToolbarButtonView>(browser_view_);
   }

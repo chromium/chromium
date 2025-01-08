@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/devtools/devtools_window.h"
+#include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -34,6 +35,7 @@
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/media_router/cast_browser_controller.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
@@ -502,6 +504,23 @@ void BrowserActions::InitializeBrowserActions() {
               kActionRouteMedia, IDS_MEDIA_ROUTER_MENU_ITEM_TITLE,
               IDS_MEDIA_ROUTER_ICON_TOOLTIP_TEXT, kCastChromeRefreshIcon)
               .SetEnabled(chrome::CanRouteMedia(browser))
+              .Build());
+    }
+
+    if (base::FeatureList::IsEnabled(features::kPinnableDownloadsButton) &&
+        download::IsDownloadBubbleEnabled()) {
+      root_action_item_->AddChild(
+          ChromeMenuAction(base::BindRepeating(
+                               [](Browser* browser, actions::ActionItem* item,
+                                  actions::ActionInvocationContext context) {
+                                 browser->GetFeatures()
+                                     .download_toolbar_ui_controller()
+                                     ->InvokeUI();
+                               },
+                               base::Unretained(browser)),
+                           kActionShowDownloads, IDS_SHOW_DOWNLOADS,
+                           IDS_TOOLTIP_DOWNLOAD_ICON,
+                           kDownloadToolbarButtonChromeRefreshIcon)
               .Build());
     }
 
