@@ -102,16 +102,18 @@ targets.legacy_basic_suite(
     name = "chromeos_chrome_all_tast_tests",
     tests = {
         "chrome_all_tast_tests": targets.legacy_test_config(
-            # `tast_expr` must be a non-empty string to run the tast tests. But the value of
-            # would be overridden by `tast_arrt_expr` defined in chromeos/BUILD.gn, so that we
-            # put the stub string here.
-            tast_expr = "STUB_STRING_TO_RUN_TAST_TESTS",
-            # Temporary increases the maximum retries due to the unstable cloudbots (b/377616158)
-            test_level_retries = 2,
-            # Timeout including DUT privisioning.
-            timeout_sec = 14400,
-            # Number of shards. Might be overriden for slower boards.
-            shards = 15,
+            skylab = targets.skylab(
+                # `tast_expr` must be a non-empty string to run the tast tests. But the value of
+                # would be overridden by `tast_arrt_expr` defined in chromeos/BUILD.gn, so that we
+                # put the stub string here.
+                tast_expr = "STUB_STRING_TO_RUN_TAST_TESTS",
+                # Temporary increases the maximum retries due to the unstable cloudbots (b/377616158)
+                test_level_retries = 2,
+                # Number of shards. Might be overriden for slower boards.
+                shards = 15,
+                # Timeout including DUT privisioning.
+                timeout_sec = 14400,
+            ),
         ),
     },
 )
@@ -121,15 +123,17 @@ targets.legacy_basic_suite(
     name = "chromeos_chrome_criticalstaging_tast_tests",
     tests = {
         "chrome_criticalstaging_tast_tests": targets.legacy_test_config(
-            # `tast_expr` must be a non-empty string to run the tast tests. But the value of
-            # would be overridden by `tast_arrt_expr` defined in chromeos/BUILD.gn, so that we
-            # put the stub string here.
-            tast_expr = "STUB_STRING_TO_RUN_TAST_TESTS",
-            test_level_retries = 2,
             ci_only = True,
-            timeout_sec = 14400,
+            skylab = targets.skylab(
+                # `tast_expr` must be a non-empty string to run the tast tests. But the value of
+                # would be overridden by `tast_arrt_expr` defined in chromeos/BUILD.gn, so that we
+                # put the stub string here.
+                tast_expr = "STUB_STRING_TO_RUN_TAST_TESTS",
+                test_level_retries = 2,
+                shards = 3,
+                timeout_sec = 14400,
+            ),
             experiment_percentage = 100,
-            shards = 3,
         ),
     },
 )
@@ -140,15 +144,17 @@ targets.legacy_basic_suite(
     name = "chromeos_chrome_disabled_tast_tests",
     tests = {
         "chrome_disabled_tast_tests": targets.legacy_test_config(
-            # `tast_expr` must be a non-empty string to run the tast tests. But the value of
-            # would be overridden by `tast_arrt_expr` defined in chromeos/BUILD.gn, so that we
-            # put the stub string here.
-            tast_expr = "STUB_STRING_TO_RUN_TAST_TESTS",
-            test_level_retries = 1,
             ci_only = True,
-            timeout_sec = 14400,
+            skylab = targets.skylab(
+                # `tast_expr` must be a non-empty string to run the tast tests. But the value of
+                # would be overridden by `tast_arrt_expr` defined in chromeos/BUILD.gn, so that we
+                # put the stub string here.
+                tast_expr = "STUB_STRING_TO_RUN_TAST_TESTS",
+                test_level_retries = 1,
+                shards = 2,
+                timeout_sec = 14400,
+            ),
             experiment_percentage = 100,
-            shards = 2,
         ),
     },
 )

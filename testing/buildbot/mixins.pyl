@@ -621,15 +621,6 @@
       '${ISOLATED_OUTDIR}',
     ],
   },
-  'shards-20': {
-    'shards': 20,
-  },
-  'shards-30': {
-    'shards': 30,
-  },
-  'shards-50': {
-    'shards': 50,
-  },
   'skia_gold_test': {
     'args': [
       '--git-revision=${got_revision}',
@@ -639,6 +630,15 @@
       '--gerrit-patchset=${patch_set}',
       '--buildbucket-id=${buildbucket_build_id}',
     ],
+  },
+  'skylab-shards-20': {
+    'shards': 20,
+  },
+  'skylab-shards-30': {
+    'shards': 30,
+  },
+  'skylab-shards-50': {
+    'shards': 50,
   },
   'swarming_containment_auto': {
     'fail_if_unused': False,
