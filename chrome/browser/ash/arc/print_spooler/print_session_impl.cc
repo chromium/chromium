@@ -398,9 +398,13 @@ void PrintSessionImpl::StartPrintAfterPluginIsLoaded() {
 }
 
 void PrintSessionImpl::StartPrintNow() {
-  printing::StartPrint(web_contents_.get(),
-                       print_renderer_receiver_.BindNewEndpointAndPassRemote(),
-                       false, false);
+  VLOG(1) << "Starting print preview.";
+  if (!printing::StartPrint(
+          web_contents_.get(),
+          print_renderer_receiver_.BindNewEndpointAndPassRemote(), false,
+          false)) {
+    LOG(ERROR) << "Failed to start print preview.";
+  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PrintSessionImpl);
