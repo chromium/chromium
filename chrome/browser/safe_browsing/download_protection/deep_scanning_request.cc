@@ -716,9 +716,6 @@ void DeepScanningRequest::OnConsumerScanComplete(
     PromptForPassword(item_);
     download_result = DownloadCheckResult::PROMPT_FOR_SCANNING;
     LogDeepScanEvent(item_, DeepScanEvent::kIncorrectPassword);
-    base::UmaHistogramBoolean(
-        "SBClientDownload.DeepScan.IncorrectPasswordVerdictIsLocal",
-        result == BinaryUploadService::Result::FILE_ENCRYPTED);
   } else {
     download_result = DownloadCheckResult::DEEP_SCANNED_FAILED;
     LogDeepScanEvent(item_, DeepScanEvent::kScanFailed);
