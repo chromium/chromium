@@ -39,7 +39,6 @@
 #include "ui/gfx/image/image_unittest_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_decoder.h"
@@ -54,6 +53,7 @@
 #include "chrome/grit/component_extension_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "components/services/app_service/public/cpp/features.h"
 #endif
 

@@ -1,0 +1,21 @@
+include_rules = [
+  # Allows to include files in the directory.
+  "+chromeos/ash/experiences/arc",
+
+  "+ash/public/cpp",
+  "+components/keyed_service",
+  "+components/strings/grit",
+  "+components/vector_icons",
+
+  # TODO(crbug.com/386148857): For transition period, it is allowed to refer
+  # files between ash/components/arc and chromeos/ash/experiences/arc.
+  "+ash/components/arc",
+]
+
+specific_include_rules = {
+  ".*_unittest.cc": [
+    "+components/user_prefs/test/test_browser_context_with_prefs.h",
+    "+content/public/test/browser_task_environment.h",
+  ],
+}
+

@@ -255,8 +255,10 @@ mojom("mojom") {
           cpp = "::ash::AudioDeviceType"
         },
       ]
-      traits_headers = [ "//ash/components/arc/audio/audio_mojom_traits.h" ]
-      traits_sources = [ "//ash/components/arc/audio/audio_mojom_traits.cc" ]
+      traits_headers =
+          [ "//chromeos/ash/experiences/arc/audio/audio_mojom_traits.h" ]
+      traits_sources =
+          [ "//chromeos/ash/experiences/arc/audio/audio_mojom_traits.cc" ]
     },
   ]
 }

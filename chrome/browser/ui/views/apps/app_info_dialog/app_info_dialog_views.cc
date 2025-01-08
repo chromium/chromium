@@ -45,12 +45,12 @@
 #include "ui/views/window/dialog_delegate.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "ash/components/arc/app/arc_app_constants.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ui/views/apps/app_info_dialog/arc_app_info_links_panel.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #endif
 
 namespace {

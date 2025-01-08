@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_ARC_APP_ARC_APP_CONSTANTS_H_
-#define ASH_COMPONENTS_ARC_APP_ARC_APP_CONSTANTS_H_
+#ifndef CHROMEOS_ASH_EXPERIENCES_ARC_APP_ARC_APP_CONSTANTS_H_
+#define CHROMEOS_ASH_EXPERIENCES_ARC_APP_ARC_APP_CONSTANTS_H_
 
 namespace arc {
 
@@ -38,4 +38,4 @@ inline constexpr char kYoutubeMusicWebApkAppId[] =
 
 }  // namespace arc
 
-#endif  // ASH_COMPONENTS_ARC_APP_ARC_APP_CONSTANTS_H_
+#endif  // CHROMEOS_ASH_EXPERIENCES_ARC_APP_ARC_APP_CONSTANTS_H_

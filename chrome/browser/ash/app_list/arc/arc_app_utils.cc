@@ -10,7 +10,6 @@
 #include <tuple>
 #include <utility>
 
-#include "ash/components/arc/app/arc_app_launch_notifier.h"
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
@@ -51,6 +50,7 @@
 #include "chrome/browser/ui/ash/shelf/arc_shelf_spinner_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_launch_notifier.h"
 #include "components/app_restore/app_restore_utils.h"
 #include "components/app_restore/features.h"
 #include "components/language/core/browser/pref_names.h"

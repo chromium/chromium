@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/arc/appfuse/arc_appfuse_bridge.h"
+#include "chromeos/ash/experiences/arc/appfuse/arc_appfuse_bridge.h"
 
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "base/memory/raw_ptr.h"

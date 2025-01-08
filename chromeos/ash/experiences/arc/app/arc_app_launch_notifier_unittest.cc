@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/arc/app/arc_app_launch_notifier.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_launch_notifier.h"
 
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"

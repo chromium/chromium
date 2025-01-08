@@ -6,16 +6,20 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
+# TODO(crbug.com/386148857): This file temporarily refer files under //ash/components/arc
+# and //chromeos/ash/experiences/arc for transition period.
+
 static_library("arc") {
   sources = [
-    "app/arc_app_launch_notifier.cc",
-    "app/arc_app_launch_notifier.h",
-    "appfuse/arc_appfuse_bridge.cc",
-    "appfuse/arc_appfuse_bridge.h",
-    "arc_dlc_install_notification/arc_dlc_install_notification_manager.cc",
-    "arc_dlc_install_notification/arc_dlc_install_notification_manager.h",
-    "audio/arc_audio_bridge.cc",
-    "audio/arc_audio_bridge.h",
+    "//chromeos/ash/experiences/arc/app/arc_app_launch_notifier.cc",
+    "//chromeos/ash/experiences/arc/app/arc_app_launch_notifier.h",
+    "//chromeos/ash/experiences/arc/app/arc_playstore_search_request_state.h",
+    "//chromeos/ash/experiences/arc/appfuse/arc_appfuse_bridge.cc",
+    "//chromeos/ash/experiences/arc/appfuse/arc_appfuse_bridge.h",
+    "//chromeos/ash/experiences/arc/audio/arc_audio_bridge.cc",
+    "//chromeos/ash/experiences/arc/audio/arc_audio_bridge.h",
+    "//chromeos/ash/experiences/arc/dlc_install_notification/arc_dlc_install_notification_manager.cc",
+    "//chromeos/ash/experiences/arc/dlc_install_notification/arc_dlc_install_notification_manager.h",
     "bluetooth/bluetooth_type_converters.cc",
     "bluetooth/bluetooth_type_converters.h",
     "camera/arc_camera_bridge.cc",
@@ -416,7 +420,7 @@ static_library("arc_test_support") {
 }
 
 static_library("arc_app_constants") {
-  sources = [ "app/arc_app_constants.h" ]
+  sources = [ "//chromeos/ash/experiences/arc/app/arc_app_constants.h" ]
 }
 
 source_set("arc_metrics_constants") {
@@ -426,12 +430,12 @@ source_set("arc_metrics_constants") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "app/arc_app_launch_notifier_unittest.cc",
-    "appfuse/arc_appfuse_bridge_unittest.cc",
-    "arc_dlc_install_notification/arc_dlc_install_notification_manager_unittest.cc",
+    "//chromeos/ash/experiences/arc/app/arc_app_launch_notifier_unittest.cc",
+    "//chromeos/ash/experiences/arc/appfuse/arc_appfuse_bridge_unittest.cc",
+    "//chromeos/ash/experiences/arc/audio/arc_audio_bridge_unittest.cc",
+    "//chromeos/ash/experiences/arc/dlc_install_notification/arc_dlc_install_notification_manager_unittest.cc",
     "arc_features_parser_unittest.cc",
     "arc_util_unittest.cc",
-    "audio/arc_audio_bridge_unittest.cc",
     "bluetooth/bluetooth_mojom_traits_unittest.cc",
     "bluetooth/bluetooth_type_converters_unittest.cc",
     "camera/arc_camera_bridge_unittest.cc",

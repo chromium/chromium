@@ -33,6 +33,10 @@ include_rules = [
   "+ui/events",
   "+ui/gfx/geometry",
   "+ui/gfx/range/range.h",
+
+  # TODO(crbug.com/386148857): Temporarily allow to include from
+  # chromeos/ash/experiences/arc for transition period.
+  "+chromeos/ash/experiences/arc",
 ]
 
 specific_include_rules = {

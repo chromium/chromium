@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_item_factory.h"
 
-#include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_item.h"
 #include "ash/public/cpp/shelf_types.h"
@@ -16,6 +15,7 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/types_util.h"

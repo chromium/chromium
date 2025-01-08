@@ -22,7 +22,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
 #include "ash/components/arc/mojom/app.mojom.h"
@@ -155,6 +154,7 @@
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
 #include "components/exo/shell_surface_util.h"

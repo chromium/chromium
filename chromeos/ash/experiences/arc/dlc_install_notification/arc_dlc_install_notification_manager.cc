@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/arc/arc_dlc_install_notification/arc_dlc_install_notification_manager.h"
+#include "chromeos/ash/experiences/arc/dlc_install_notification/arc_dlc_install_notification_manager.h"
 
 #include <memory>
 #include <optional>

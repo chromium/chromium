@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_ARC_ARC_DLC_INSTALL_NOTIFICATION_DELEGATE_IMPL_H_
 #define CHROME_BROWSER_ASH_ARC_ARC_DLC_INSTALL_NOTIFICATION_DELEGATE_IMPL_H_
 
-#include "ash/components/arc/arc_dlc_install_notification/arc_dlc_install_notification_manager.h"
 #include "base/memory/raw_ptr.h"
+#include "chromeos/ash/experiences/arc/dlc_install_notification/arc_dlc_install_notification_manager.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 // Forward declaration of Profile.

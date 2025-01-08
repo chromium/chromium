@@ -7,11 +7,8 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/arc/app/arc_app_launch_notifier.h"
-#include "ash/components/arc/appfuse/arc_appfuse_bridge.h"
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_util.h"
-#include "ash/components/arc/audio/arc_audio_bridge.h"
 #include "ash/components/arc/camera/arc_camera_bridge.h"
 #include "ash/components/arc/chrome_feature_flags/arc_chrome_feature_flags_bridge.h"
 #include "ash/components/arc/compat_mode/arc_resize_lock_manager.h"
@@ -107,6 +104,9 @@
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/common/channel_info.h"
 #include "chromeos/ash/components/memory/swap_configuration.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_launch_notifier.h"
+#include "chromeos/ash/experiences/arc/appfuse/arc_appfuse_bridge.h"
+#include "chromeos/ash/experiences/arc/audio/arc_audio_bridge.h"
 #include "components/prefs/pref_member.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 

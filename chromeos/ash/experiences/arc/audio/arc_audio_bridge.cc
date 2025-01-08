@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/arc/audio/arc_audio_bridge.h"
+#include "chromeos/ash/experiences/arc/audio/arc_audio_bridge.h"
 
 #include <utility>
 
@@ -63,8 +63,9 @@ ArcAudioBridge::ArcAudioBridge(content::BrowserContext* context,
 }
 
 ArcAudioBridge::~ArcAudioBridge() {
-  if (ash::CrasAudioHandler::Get())  // for unittests
+  if (ash::CrasAudioHandler::Get()) {  // for unittests
     cras_audio_handler_->RemoveAudioObserver(this);
+  }
   arc_bridge_service_->audio()->RemoveObserver(this);
   arc_bridge_service_->audio()->SetHost(nullptr);
 }
@@ -87,13 +88,15 @@ void ArcAudioBridge::ShowVolumeControls() {
 }
 
 void ArcAudioBridge::OnSystemVolumeUpdateRequest(int32_t percent) {
-  if (percent < 0 || percent > 100)
+  if (percent < 0 || percent > 100) {
     return;
+  }
   cras_audio_handler_->SetOutputVolumePercent(percent);
   bool is_muted =
       percent <= cras_audio_handler_->GetOutputDefaultVolumeMuteThreshold();
-  if (cras_audio_handler_->IsOutputMuted() != is_muted)
+  if (cras_audio_handler_->IsOutputMuted() != is_muted) {
     cras_audio_handler_->SetOutputMute(is_muted);
+  }
 }
 
 void ArcAudioBridge::OnAudioNodesChanged() {
@@ -154,22 +157,26 @@ void ArcAudioBridge::SendSwitchState(bool headphone_inserted,
   }
 
   DVLOG(1) << "Send switch state " << switch_state;
-  if (!available_)
+  if (!available_) {
     return;
+  }
   mojom::AudioInstance* audio_instance = ARC_GET_INSTANCE_FOR_METHOD(
       arc_bridge_service_->audio(), NotifySwitchState);
-  if (audio_instance)
+  if (audio_instance) {
     audio_instance->NotifySwitchState(switch_state);
+  }
 }
 
 void ArcAudioBridge::SendVolumeState() {
   DVLOG(1) << "Send volume " << volume_ << " muted " << muted_;
-  if (!available_)
+  if (!available_) {
     return;
+  }
   mojom::AudioInstance* audio_instance = ARC_GET_INSTANCE_FOR_METHOD(
       arc_bridge_service_->audio(), NotifyVolumeState);
-  if (audio_instance)
+  if (audio_instance) {
     audio_instance->NotifyVolumeState(volume_, muted_);
+  }
 }
 
 void ArcAudioBridge::SendSpatialAudioState() {

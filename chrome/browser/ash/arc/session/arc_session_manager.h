@@ -11,7 +11,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/arc/arc_dlc_install_notification/arc_dlc_install_notification_manager.h"
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/session/arc_session_runner.h"
 #include "ash/components/arc/session/arc_stop_reason.h"
@@ -35,6 +34,7 @@
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/experiences/arc/dlc_install_notification/arc_dlc_install_notification_manager.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"

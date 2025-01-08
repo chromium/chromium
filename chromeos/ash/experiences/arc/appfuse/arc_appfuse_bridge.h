@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_ARC_APPFUSE_ARC_APPFUSE_BRIDGE_H_
-#define ASH_COMPONENTS_ARC_APPFUSE_ARC_APPFUSE_BRIDGE_H_
+#ifndef CHROMEOS_ASH_EXPERIENCES_ARC_APPFUSE_ARC_APPFUSE_BRIDGE_H_
+#define CHROMEOS_ASH_EXPERIENCES_ARC_APPFUSE_ARC_APPFUSE_BRIDGE_H_
 
 #include <stdint.h>
 
@@ -57,4 +57,4 @@ class ArcAppfuseBridge : public KeyedService, public mojom::AppfuseHost {
 
 }  // namespace arc
 
-#endif  // ASH_COMPONENTS_ARC_APPFUSE_ARC_APPFUSE_BRIDGE_H_
+#endif  // CHROMEOS_ASH_EXPERIENCES_ARC_APPFUSE_ARC_APPFUSE_BRIDGE_H_

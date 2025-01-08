@@ -17,7 +17,6 @@
 #include "extensions/common/constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "ash/user_education/user_education_util.h"
@@ -26,6 +25,7 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {

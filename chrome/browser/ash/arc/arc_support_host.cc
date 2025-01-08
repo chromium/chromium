@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/hash/sha1.h"
@@ -32,6 +31,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"

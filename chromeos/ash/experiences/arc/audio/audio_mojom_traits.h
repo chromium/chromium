@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_ARC_AUDIO_AUDIO_MOJOM_TRAITS_H_
-#define ASH_COMPONENTS_ARC_AUDIO_AUDIO_MOJOM_TRAITS_H_
+#ifndef CHROMEOS_ASH_EXPERIENCES_ARC_AUDIO_AUDIO_MOJOM_TRAITS_H_
+#define CHROMEOS_ASH_EXPERIENCES_ARC_AUDIO_AUDIO_MOJOM_TRAITS_H_
 
 #include "ash/components/arc/mojom/audio.mojom-shared.h"
 #include "chromeos/ash/components/audio/audio_device.h"
@@ -20,4 +20,4 @@ struct EnumTraits<arc::mojom::AudioDeviceType, ash::AudioDeviceType> {
 
 }  // namespace mojo
 
-#endif  // ASH_COMPONENTS_ARC_AUDIO_AUDIO_MOJOM_TRAITS_H_
+#endif  // CHROMEOS_ASH_EXPERIENCES_ARC_AUDIO_AUDIO_MOJOM_TRAITS_H_

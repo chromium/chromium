@@ -4,11 +4,11 @@
 
 #include "chromeos/ash/components/default_pinned_apps/default_pinned_apps.h"
 
-#include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_factory.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/browser_context.h"
 

@@ -7,8 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/arc/app/arc_app_constants.h"
-#include "ash/components/arc/arc_dlc_install_notification/arc_dlc_install_notification_manager.h"
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
@@ -72,6 +70,8 @@
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/memory/swap_configuration.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
+#include "chromeos/ash/experiences/arc/dlc_install_notification/arc_dlc_install_notification_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/exo/wm_helper.h"
 #include "components/prefs/pref_service.h"

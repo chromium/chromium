@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "ash/components/arc/audio/arc_audio_bridge.h"
 #include "ash/components/arc/intent_helper/arc_intent_helper_package.h"
 #include "ash/components/arc/intent_helper/control_camera_app_delegate.h"
 #include "ash/components/arc/intent_helper/intent_constants.h"
@@ -25,6 +24,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "chromeos/ash/experiences/arc/audio/arc_audio_bridge.h"
 #include "components/url_formatter/url_fixer.h"
 #include "net/base/url_util.h"
 #include "url/url_constants.h"

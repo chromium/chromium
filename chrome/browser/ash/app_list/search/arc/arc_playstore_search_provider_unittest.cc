@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/arc/app/arc_playstore_search_request_state.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -22,6 +21,7 @@
 #include "chrome/browser/ash/arc/icon_decode_request.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/experiences/arc/app/arc_playstore_search_request_state.h"
 #include "extensions/common/extension_builder.h"
 
 namespace app_list::test {

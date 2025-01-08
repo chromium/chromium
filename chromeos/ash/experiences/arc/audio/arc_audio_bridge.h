@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_ARC_AUDIO_ARC_AUDIO_BRIDGE_H_
-#define ASH_COMPONENTS_ARC_AUDIO_ARC_AUDIO_BRIDGE_H_
+#ifndef CHROMEOS_ASH_EXPERIENCES_ARC_AUDIO_ARC_AUDIO_BRIDGE_H_
+#define CHROMEOS_ASH_EXPERIENCES_ARC_AUDIO_ARC_AUDIO_BRIDGE_H_
 
 #include "ash/components/arc/mojom/audio.mojom.h"
 #include "ash/components/arc/session/connection_observer.h"
@@ -76,4 +76,4 @@ class ArcAudioBridge : public KeyedService,
 
 }  // namespace arc
 
-#endif  // ASH_COMPONENTS_ARC_AUDIO_ARC_AUDIO_BRIDGE_H_
+#endif  // CHROMEOS_ASH_EXPERIENCES_ARC_AUDIO_ARC_AUDIO_BRIDGE_H_
