@@ -9188,8 +9188,6 @@ test("unit_tests") {
 
   if (safe_browsing_mode > 0) {
     sources += [
-      "../browser/safe_browsing/chrome_enterprise_url_lookup_service_factory_unittest.cc",
-      "../browser/safe_browsing/chrome_enterprise_url_lookup_service_unittest.cc",
       "../browser/safe_browsing/chrome_password_protection_service_unittest.cc",
       "../browser/safe_browsing/chrome_ui_manager_delegate_unittest.cc",
       "../browser/safe_browsing/chrome_user_population_helper_unittest.cc",
@@ -9203,6 +9201,13 @@ test("unit_tests") {
       "//components/safe_browsing/core/browser:token_fetcher",
       "//components/safe_browsing/core/browser:token_fetcher_testing_helper",
     ]
+
+    if (enterprise_cloud_content_analysis) {
+      sources += [
+        "../browser/safe_browsing/chrome_enterprise_url_lookup_service_factory_unittest.cc",
+        "../browser/safe_browsing/chrome_enterprise_url_lookup_service_unittest.cc",
+      ]
+    }
   }
 
   if (safe_browsing_mode == 1) {

@@ -23,8 +23,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
-#include "chrome/browser/enterprise/connectors/connectors_service.h"
-#include "chrome/browser/enterprise/connectors/reporting/extension_telemetry_event_router.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -45,6 +43,7 @@
 #include "chrome/browser/safe_browsing/extension_telemetry/tabs_execute_script_signal_processor.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/pref_names.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
@@ -64,6 +63,11 @@
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/common/switches.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/connectors/reporting/extension_telemetry_event_router.h"
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
 namespace safe_browsing {
 
@@ -405,11 +409,13 @@ extensions::ExtensionSet CollectCommandLineExtensionInfo() {
   return commandline_extensions;
 }
 
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 // Retrieves the ExtensionTelemetryEventRouter associated with the profile.
 enterprise_connectors::ExtensionTelemetryEventRouter*
 GetExtensionTelemetryEventRouter(Profile* profile) {
   return enterprise_connectors::ExtensionTelemetryEventRouter::Get(profile);
 }
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
 // Returns true if the signal type should be collected for enterprise telemetry.
 bool CollectForEnterprise(ExtensionSignalType type) {
@@ -457,6 +463,7 @@ ExtensionTelemetryService::ExtensionTelemetryService(
   // Set initial enable/disable state for ESB.
   SetEnabledForESB(IsEnhancedProtectionEnabled(*pref_service_));
 
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   if (base::FeatureList::IsEnabled(kExtensionTelemetryForEnterprise)) {
     // Register for enterprise policy changes.
     auto* connector_service =
@@ -470,6 +477,7 @@ ExtensionTelemetryService::ExtensionTelemetryService(
     SetEnabledForEnterprise(
         GetExtensionTelemetryEventRouter(profile_)->IsPolicyEnabled());
   }
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 }
 
 void ExtensionTelemetryService::RecordSignalType(
@@ -493,8 +501,12 @@ void ExtensionTelemetryService::OnEnterprisePolicyChanged() {
     return;
   }
 
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   SetEnabledForEnterprise(
       GetExtensionTelemetryEventRouter(profile_)->IsPolicyEnabled());
+#else
+  SetEnabledForEnterprise(false);
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 }
 
 // Telemetry features for ESB include:
@@ -751,8 +763,10 @@ void ExtensionTelemetryService::CreateAndSendEnterpriseReport() {
       CreateReportForEnterprise();
   if (enterprise_report) {
     RecordEnterpriseReportSize(enterprise_report->ByteSizeLong());
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
     GetExtensionTelemetryEventRouter(profile_)->UploadTelemetryReport(
         std::move(enterprise_report));
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   } else {
     DLOG(WARNING) << "Upload skipped due to empty enterprise report.";
   }
