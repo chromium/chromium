@@ -3740,9 +3740,9 @@ chromium-metrics-reviews@google.com.
   <owner>wanghaifan@google.com</owner>
   <owner>cros-demo-mode-eng@google.com</owner>
   <summary>
-    The failure reason of the demo mode setup process error. It is recorded when
-    there is a failure during the demo mode setup process (both the enrollment
-    and the component download and install).
+    The failure reason of the demo mode setup process. This includes both the
+    intial and retry attemp, as well as both the component loading and
+    enterprise enrollment process.
   </summary>
 </histogram>
 
