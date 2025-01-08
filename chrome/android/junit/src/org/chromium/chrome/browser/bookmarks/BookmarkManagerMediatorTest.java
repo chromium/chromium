@@ -88,7 +88,6 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
-import org.chromium.chrome.browser.ui.signin.SyncPromoController.SyncPromoState;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
@@ -1350,18 +1349,18 @@ public class BookmarkManagerMediatorTest {
 
     @Test
     public void testPromoHeader() {
-        BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.PROMO_FOR_SIGNED_IN_STATE);
+        BookmarkPromoHeader.forcePromoVisibilityForTesting(true);
         mMediator.getPromoHeaderManager().syncStateChanged();
         finishLoading();
         mMediator.openFolder(mFolderId1);
 
         verifyCurrentViewTypes(
                 ViewType.SEARCH_BOX,
-                ViewType.PERSONALIZED_SYNC_PROMO,
+                ViewType.SIGNIN_PROMO,
                 ViewType.IMPROVED_BOOKMARK_COMPACT,
                 ViewType.IMPROVED_BOOKMARK_COMPACT);
 
-        BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.NO_PROMO);
+        BookmarkPromoHeader.forcePromoVisibilityForTesting(false);
         mMediator.getPromoHeaderManager().syncStateChanged();
 
         verifyCurrentViewTypes(

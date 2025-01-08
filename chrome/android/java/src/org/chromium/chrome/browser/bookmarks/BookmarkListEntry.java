@@ -24,9 +24,7 @@ public final class BookmarkListEntry {
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({
         ViewType.INVALID,
-        ViewType.PERSONALIZED_SIGNIN_PROMO,
-        ViewType.PERSONALIZED_SYNC_PROMO,
-        ViewType.SYNC_PROMO,
+        ViewType.SIGNIN_PROMO,
         ViewType.DIVIDER,
         ViewType.SECTION_HEADER,
         ViewType.IMPROVED_BOOKMARK_VISUAL,
@@ -37,16 +35,14 @@ public final class BookmarkListEntry {
     })
     public @interface ViewType {
         int INVALID = -1;
-        int PERSONALIZED_SIGNIN_PROMO = 0;
-        int PERSONALIZED_SYNC_PROMO = 1;
-        int SYNC_PROMO = 2;
-        int DIVIDER = 3;
-        int SECTION_HEADER = 4;
-        int IMPROVED_BOOKMARK_VISUAL = 5;
-        int IMPROVED_BOOKMARK_COMPACT = 6;
-        int SEARCH_BOX = 7;
-        int EMPTY_STATE = 8;
-        int BATCH_UPLOAD_CARD = 9;
+        int SIGNIN_PROMO = 0;
+        int DIVIDER = 1;
+        int SECTION_HEADER = 2;
+        int IMPROVED_BOOKMARK_VISUAL = 3;
+        int IMPROVED_BOOKMARK_COMPACT = 4;
+        int SEARCH_BOX = 5;
+        int EMPTY_STATE = 6;
+        int BATCH_UPLOAD_CARD = 7;
     }
 
     /** Contains data used by section header in bookmark UI. */
@@ -102,9 +98,7 @@ public final class BookmarkListEntry {
      * @param viewType The view type of the sync promo header.
      */
     static BookmarkListEntry createSyncPromoHeader(@ViewType int viewType) {
-        assert viewType == ViewType.PERSONALIZED_SIGNIN_PROMO
-                || viewType == ViewType.PERSONALIZED_SYNC_PROMO
-                || viewType == ViewType.SYNC_PROMO;
+        assert viewType == ViewType.SIGNIN_PROMO;
         return new BookmarkListEntry(
                 viewType,
                 /* bookmarkItem= */ null,

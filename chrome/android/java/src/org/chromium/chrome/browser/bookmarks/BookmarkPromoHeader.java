@@ -13,9 +13,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.LegacySyncPromoView;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
@@ -27,12 +24,10 @@ import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObse
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController;
-import org.chromium.chrome.browser.ui.signin.SyncPromoController.SyncPromoState;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountsChangeObserver;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
 
@@ -45,10 +40,7 @@ public class BookmarkPromoHeader
                 SignInStateObserver,
                 ProfileDataCache.Observer,
                 AccountsChangeObserver {
-    // TODO(kkimlabs): Figure out the optimal number based on UMA data.
-    private static final int MAX_SIGNIN_AND_SYNC_PROMO_SHOW_COUNT = 10;
-
-    private static @Nullable @SyncPromoState Integer sPromoStateForTests;
+    private static @Nullable Boolean sShouldShowPromoForTests;
 
     private final Context mContext;
     private final SigninManager mSigninManager;
@@ -57,7 +49,7 @@ public class BookmarkPromoHeader
 
     private @Nullable ProfileDataCache mProfileDataCache;
     private final @Nullable SyncPromoController mSyncPromoController;
-    private @SyncPromoState int mPromoState = SyncPromoState.NO_PROMO;
+    private boolean mShouldShowPromo;
     private final @Nullable SyncService mSyncService;
     private final Profile mProfile;
 
@@ -115,11 +107,10 @@ public class BookmarkPromoHeader
     }
 
     /**
-     * @return The current state of the promo.
+     * @return Whether the promo should be shown or not.
      */
-    @SyncPromoState
-    int getPromoState() {
-        return mPromoState;
+    boolean shouldShowPromo() {
+        return mShouldShowPromo;
     }
 
     /** Returns personalized signin promo header {@link View}. */
@@ -146,75 +137,37 @@ public class BookmarkPromoHeader
 
     /** Saves that the personalized signin promo was declined and updates the UI. */
     private void setPersonalizedSigninPromoDeclined() {
-        mPromoState = calculatePromoState();
+        mShouldShowPromo = calculateShouldShowPromo();
         triggerPromoUpdate();
     }
 
-    /**
-     * @return Whether the personalized signin promo should be shown to user.
-     */
-    private boolean shouldShowBookmarkSigninPromo() {
-        return mSigninManager.isSyncOptInAllowed()
-                && mSyncPromoController != null
-                && mSyncPromoController.canShowSyncPromo();
-    }
-
-    private @SyncPromoState int calculatePromoState() {
-        if (sPromoStateForTests != null) {
-            return sPromoStateForTests;
+    private boolean calculateShouldShowPromo() {
+        if (sShouldShowPromoForTests != null) {
+            return sShouldShowPromoForTests;
         }
 
         if (mSyncService == null) {
             // |mSyncService| will remain null until the next browser startup, so no sense in
             // offering any promo.
-            return SyncPromoState.NO_PROMO;
+            return false;
         }
 
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-            return shouldShowBookmarkSigninPromo()
-                    ? SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE
-                    : SyncPromoState.NO_PROMO;
-        } else if (!mSigninManager.getIdentityManager().hasPrimaryAccount(ConsentLevel.SYNC)) {
-            if (!shouldShowBookmarkSigninPromo()) {
-                return SyncPromoState.NO_PROMO;
-            }
-
-            return mSigninManager.getIdentityManager().hasPrimaryAccount(ConsentLevel.SIGNIN)
-                    ? SyncPromoState.PROMO_FOR_SIGNED_IN_STATE
-                    : SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE;
-        }
-
-        boolean impressionLimitNotReached =
-                ChromeSharedPreferences.getInstance()
-                                .readInt(ChromePreferenceKeys.SIGNIN_AND_SYNC_PROMO_SHOW_COUNT)
-                        < MAX_SIGNIN_AND_SYNC_PROMO_SHOW_COUNT;
-        if (mSyncService.getSelectedTypes().isEmpty() && impressionLimitNotReached) {
-            return SyncPromoState.PROMO_FOR_SYNC_TURNED_OFF_STATE;
-        }
-        return SyncPromoState.NO_PROMO;
+        return mSigninManager.isSyncOptInAllowed()
+                && mSyncPromoController != null
+                && mSyncPromoController.canShowSyncPromo();
     }
 
     private void updatePromoState() {
-        final @SyncPromoState int newState = calculatePromoState();
-        if (newState == mPromoState) return;
+        final boolean shouldShowPromo = calculateShouldShowPromo();
+        if (shouldShowPromo == mShouldShowPromo) return;
 
-        // PROMO_SYNC state and it's impression counts is not tracked by SyncPromoController.
-        final boolean hasSyncPromoStateChangedtoShown =
-                (mPromoState == SyncPromoState.NO_PROMO
-                                || mPromoState == SyncPromoState.PROMO_FOR_SYNC_TURNED_OFF_STATE)
-                        && (newState == SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE
-                                || newState == SyncPromoState.PROMO_FOR_SIGNED_IN_STATE);
-        if (hasSyncPromoStateChangedtoShown) {
+        final boolean hasPromoVisibilityChangedtoShown = !mShouldShowPromo && shouldShowPromo;
+        if (hasPromoVisibilityChangedtoShown) {
             if (mSyncPromoController != null) {
                 mSyncPromoController.increasePromoShowCount();
             }
         }
-        if (newState == SyncPromoState.PROMO_FOR_SYNC_TURNED_OFF_STATE) {
-            ChromeSharedPreferences.getInstance()
-                    .incrementInt(ChromePreferenceKeys.SIGNIN_AND_SYNC_PROMO_SHOW_COUNT);
-        }
-        mPromoState = newState;
+        mShouldShowPromo = shouldShowPromo;
     }
 
     // SyncService.SyncStateChangedListener implementation.
@@ -255,12 +208,13 @@ public class BookmarkPromoHeader
     }
 
     /**
-     * Forces the promo state to a particular value for testing purposes.
+     * Forces the promo visibility to a particular value for testing purposes.
      *
-     * @param promoState The promo state to which the header will be set to.
+     * @param shouldShowPromo Whether the promo should be forced to show or forced to hide. A null
+     *     value indicates that the promo's visibility is not overridden.
      */
-    public static void forcePromoStateForTesting(@Nullable @SyncPromoState Integer promoState) {
-        sPromoStateForTests = promoState;
-        ResettersForTesting.register(() -> sPromoStateForTests = null);
+    public static void forcePromoVisibilityForTesting(@Nullable Boolean shouldShowPromo) {
+        sShouldShowPromoForTests = shouldShowPromo;
+        ResettersForTesting.register(() -> sShouldShowPromoForTests = null);
     }
 }

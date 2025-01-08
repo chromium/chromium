@@ -136,6 +136,7 @@ public class DeprecatedChromePreferenceKeys {
                 "displayed_data_reduction_promo_version",
                 "displayed_data_reduction_snackbar_promo_saved_bytes",
                 "darken_websites_enabled",
+                "enhanced_bookmark_signin_promo_show_count",
                 "first_run_signin_complete",
                 "fre_promo_opt_out",
                 "grid_tab_switcher_enabled",

@@ -101,7 +101,7 @@ public class BookmarkPersonalizedSigninPromoTest {
     public void tearDown() {
         ChromeSharedPreferences.getInstance()
                 .removeKey(ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT);
-        BookmarkPromoHeader.forcePromoStateForTesting(null);
+        BookmarkPromoHeader.forcePromoVisibilityForTesting(null);
     }
 
     @Test

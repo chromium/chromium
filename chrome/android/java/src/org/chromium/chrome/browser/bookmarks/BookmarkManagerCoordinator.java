@@ -272,7 +272,7 @@ public class BookmarkManagerCoordinator
                                     mMediator::onPromoVisibilityChange,
                                     this::openSettings));
             dragReorderableRecyclerViewAdapter.registerType(
-                    ViewType.PERSONALIZED_SIGNIN_PROMO,
+                    ViewType.SIGNIN_PROMO,
                     mSigninPromoCoordinator::buildPromoView,
                     // SigninPromoCoordinator owns the model and keys for the promo inside it.
                     // The PropertyModel and BookmarkManagerProperties key passed to this binder
@@ -285,17 +285,9 @@ public class BookmarkManagerCoordinator
         } else {
             mSigninPromoCoordinator = null;
             dragReorderableRecyclerViewAdapter.registerType(
-                    ViewType.PERSONALIZED_SIGNIN_PROMO,
+                    ViewType.SIGNIN_PROMO,
                     this::buildPersonalizedPromoView,
                     BookmarkManagerViewBinder::bindPersonalizedPromoView);
-            dragReorderableRecyclerViewAdapter.registerType(
-                    ViewType.PERSONALIZED_SYNC_PROMO,
-                    this::buildPersonalizedPromoView,
-                    BookmarkManagerViewBinder::bindPersonalizedPromoView);
-            dragReorderableRecyclerViewAdapter.registerType(
-                    ViewType.SYNC_PROMO,
-                    this::buildLegacyPromoView,
-                    BookmarkManagerViewBinder::bindLegacyPromoView);
         }
         dragReorderableRecyclerViewAdapter.registerType(
                 ViewType.SECTION_HEADER,

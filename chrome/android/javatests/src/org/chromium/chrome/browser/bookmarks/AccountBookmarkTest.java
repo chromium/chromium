@@ -35,7 +35,6 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.sync.SyncTestRule;
-import org.chromium.chrome.browser.ui.signin.SyncPromoController.SyncPromoState;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.BookmarkTestRule;
@@ -58,7 +57,7 @@ public class AccountBookmarkTest {
     @Before
     public void setUp() throws Exception {
         // Auto form factors are very small, disable the promo to leave room for bookmarks.
-        BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.NO_PROMO);
+        BookmarkPromoHeader.forcePromoVisibilityForTesting(false);
         mBookmarkModel =
                 runOnUiThreadBlocking(
                         () ->

@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.DimenRes;
-import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
@@ -79,30 +78,6 @@ public class SyncPromoController {
          */
         String getTextForPrimaryButton(
                 Context context, @Nullable DisplayableProfileData profileData);
-    }
-
-    /** Specifies the various states of sync promo. */
-    // TODO(crbug.com/343908771): Revise SyncPromoState after launching
-    //     ReplaceSyncPromosWithSignInPromos.
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({
-        SyncPromoState.NO_PROMO,
-        SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE,
-        SyncPromoState.PROMO_FOR_SIGNED_IN_STATE,
-        SyncPromoState.PROMO_FOR_SYNC_TURNED_OFF_STATE,
-    })
-    public @interface SyncPromoState {
-        /** Promo is hidden. */
-        int NO_PROMO = 0;
-
-        /** Promo is shown when a user is signed out. */
-        int PROMO_FOR_SIGNED_OUT_STATE = 1;
-
-        /** Promo is shown when a user is signed in without sync consent. */
-        int PROMO_FOR_SIGNED_IN_STATE = 2;
-
-        /** Promo is shown when a user is signed in with sync consent but has turned off sync. */
-        int PROMO_FOR_SYNC_TURNED_OFF_STATE = 3;
     }
 
     /** Receives notifications when user clicks close button in the promo. */

@@ -742,10 +742,6 @@ public final class ChromePreferenceKeys {
     /** SyncPromo total shown count preference across all access points. */
     public static final String SYNC_PROMO_TOTAL_SHOW_COUNT = "Chrome.SyncPromo.TotalShowCount";
 
-    /** Generic signin and sync promo preferences. */
-    public static final String SIGNIN_AND_SYNC_PROMO_SHOW_COUNT =
-            "enhanced_bookmark_signin_promo_show_count";
-
     public static final String SIGNIN_PROMO_LAST_SHOWN_ACCOUNT_NAMES =
             "signin_promo_last_shown_account_names";
     public static final String SIGNIN_PROMO_LAST_SHOWN_MAJOR_VERSION =
