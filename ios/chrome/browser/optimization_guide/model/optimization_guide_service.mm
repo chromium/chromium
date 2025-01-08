@@ -191,9 +191,8 @@ OptimizationGuideService::OptimizationGuideService(
                 on_device_model_state_manager_->GetWeakPtr());
     model_execution_manager_ =
         std::make_unique<optimization_guide::ModelExecutionManager>(
-            url_loader_factory, local_state, identity_manager,
-            std::move(on_device_model_service_controller), this,
-            on_device_model_state_manager_->GetWeakPtr(),
+            url_loader_factory, identity_manager,
+            std::move(on_device_model_service_controller),
             optimization_guide_logger_.get(), nullptr);
   }
 #endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
