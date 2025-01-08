@@ -326,6 +326,17 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Renewal failed"/>
 </enum>
 
+<enum name="WebAuthenticationPinRenewalFailureCause">
+  <int value="1" label="Renewal failed while downloading XML files"/>
+  <int value="2" label="Renewal failed getting access token"/>
+  <int value="3" label="Renewal failed during enclave request (1)"/>
+  <int value="4" label="Renewal failed during enclave request (2)"/>
+  <int value="5" label="Renewal failed parsing enclave response (1)"/>
+  <int value="6" label="Renewal failed parsing enclave response (2)"/>
+  <int value="7" label="Renewal failed uploading to recovery key store"/>
+  <int value="8" label="Renewal failed joining the PIN to the domain"/>
+</enum>
+
 <enum name="WebAuthenticationRequestMode">
   <int value="0" label="WebAuthn Modal Request"/>
   <int value="1" label="WebAuthn Conditional UI Request"/>

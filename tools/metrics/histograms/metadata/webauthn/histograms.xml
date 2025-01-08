@@ -457,6 +457,17 @@ chromium-metrics-reviews@google.com.
   <summary>Records events related to GPM PIN renewals</summary>
 </histogram>
 
+<histogram name="WebAuthentication.PinRenewalFailureCause"
+    enum="WebAuthenticationPinRenewalFailureCause" expires_after="2025-05-11">
+  <owner>agl@google.com</owner>
+  <owner>kenrb@chromium.org</owner>
+  <summary>
+    Records the reason why a GPM PIN renewal attempt failed. (See the
+    &quot;Renewal failed&quot; case in
+    &quot;WebAuthentication.PinRenewalEvent&quot;.)
+  </summary>
+</histogram>
+
 <histogram
     name="WebAuthentication.SignalAllAcceptedCredentialsRemovedGPMPasskey"
     enum="SignalAllAcceptedCredentialsResult" expires_after="2025-09-17">

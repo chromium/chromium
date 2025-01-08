@@ -204,8 +204,27 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
 // This prefix is the protobuf encoding for a 32-byte value with tag 1024.
 // This means that, with the hash appended, the serialised state file is still a
-// valid protobuf, which is handly for debugging.
+// valid protobuf, which is handy for debugging.
 static const uint8_t kHashPrefix[] = {0x82, 0x40, 32};
+
+// These values are detailed failure reasons. They are emitted whenever
+// PinRenewal::kFailure is emitted and give more detailed information about
+// why the attempt failed.
+enum class PinRenewalFailureCause {
+  kDuringDownload = 1,
+  kGettingAccessToken = 2,
+  kEnclaveRequest1 = 3,
+  kEnclaveRequest2 = 4,
+  kEnclaveResponse1 = 5,
+  kEnclaveResponse2 = 6,
+  kRKSUpload = 7,
+  kJoiningToDomain = 8,
+
+  kMaxValue = kJoiningToDomain,
+};
+
+static const char kPinRenewalFailureHistogram[] =
+    "WebAuthentication.PinRenewalFailureCause";
 
 // Since protobuf maps `bytes` to `std::string` (rather than
 // `std::vector<uint8_t>`), functions for jumping between these representations
@@ -2014,6 +2033,10 @@ class EnclaveManager::StateMachine {
     if (!cert_xml_ || !sig_xml_) {
       // One (or both) fetches failed.
       state_ = State::kStop;
+      if (is_pin_renewal_) {
+        base::UmaHistogramEnumeration(kPinRenewalFailureHistogram,
+                                      PinRenewalFailureCause::kDuringDownload);
+      }
       return;
     }
 
@@ -2027,6 +2050,11 @@ class EnclaveManager::StateMachine {
     access_token_fetcher_.reset();
     if (absl::holds_alternative<Failure>(event)) {
       FIDO_LOG(ERROR) << "Failed to get access token for enclave";
+      if (is_pin_renewal_) {
+        base::UmaHistogramEnumeration(
+            kPinRenewalFailureHistogram,
+            PinRenewalFailureCause::kGettingAccessToken);
+      }
       state_ = State::kStop;
       return;
     }
@@ -2167,6 +2195,10 @@ class EnclaveManager::StateMachine {
     const auto* status =
         absl::get_if<trusted_vault::UpdateRecoveryKeyStoreStatus>(&event);
     if (*status != trusted_vault::UpdateRecoveryKeyStoreStatus::kSuccess) {
+      if (is_pin_renewal_) {
+        base::UmaHistogramEnumeration(kPinRenewalFailureHistogram,
+                                      PinRenewalFailureCause::kRKSUpload);
+      }
       FIDO_LOG(ERROR) << "Failed to upload to recovery key store";
       state_ = State::kStop;
       return;
@@ -2273,6 +2305,10 @@ class EnclaveManager::StateMachine {
     success_ =
         status == trusted_vault::TrustedVaultRegistrationStatus::kSuccess;
     if (!success_) {
+      if (is_pin_renewal_) {
+        base::UmaHistogramEnumeration(kPinRenewalFailureHistogram,
+                                      PinRenewalFailureCause::kJoiningToDomain);
+      }
       return;
     }
 
@@ -2330,12 +2366,16 @@ class EnclaveManager::StateMachine {
 
     state_ = State::kStop;
     if (absl::holds_alternative<Failure>(event)) {
+      base::UmaHistogramEnumeration(kPinRenewalFailureHistogram,
+                                    PinRenewalFailureCause::kEnclaveRequest1);
       return;
     }
 
     cbor::Value response =
         std::move(absl::get_if<EnclaveResponse>(&event)->value());
     if (!IsAllOk(response, 1)) {
+      base::UmaHistogramEnumeration(kPinRenewalFailureHistogram,
+                                    PinRenewalFailureCause::kEnclaveRequest2);
       FIDO_LOG(ERROR) << "PIN renewal resulted in error response: "
                       << cbor::DiagnosticWriter::Write(response);
       return;
@@ -2400,6 +2440,11 @@ class EnclaveManager::StateMachine {
             .find(cbor::Value(enclave::kResponseSuccessKey))
             ->second;
     if (!response_value.is_map()) {
+      if (is_pin_renewal_) {
+        base::UmaHistogramEnumeration(
+            kPinRenewalFailureHistogram,
+            PinRenewalFailureCause::kEnclaveResponse1);
+      }
       FIDO_LOG(ERROR) << "response was not a map";
       return false;
     }
@@ -2409,6 +2454,11 @@ class EnclaveManager::StateMachine {
         result = ParseVaultAndMemberResponse(key_version, pin_metadata,
                                              response_value.GetMap());
     if (!result) {
+      if (is_pin_renewal_) {
+        base::UmaHistogramEnumeration(
+            kPinRenewalFailureHistogram,
+            PinRenewalFailureCause::kEnclaveResponse2);
+      }
       return false;
     }
     std::tie(vault_, member_keys_source_) = std::move(*result);
