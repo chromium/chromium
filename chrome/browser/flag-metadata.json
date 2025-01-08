@@ -5480,7 +5480,7 @@
   {
       "name": "ipp-first-setup-for-usb-printers",
       "owners": [ "pawliczek@chromium.org", "project-bolton@google.com" ],
-      "expiry_milestone": 133
+      "expiry_milestone": 140
   },
   {
     "name": "isolate-origins",
