@@ -1762,19 +1762,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.PreFreeze2.Gpu.PrivateMemoryFootprint.{Timing}"
-    units="MiB" expires_after="2025-02-01">
-  <owner>thiabaud@google.com</owner>
-  <owner>lizeb@google.com</owner>
-  <summary>
-    Deprecated in favor of
-    &quot;Memory.PreFreeze2.GPU.PrivateMemoryFootprint.*&quot;.
-  </summary>
-  <token key="Timing" variants="RecordedTiming"/>
-</histogram>
-
 <histogram name="Memory.PreFreeze2.RecordMetricsFailureType"
-    enum="PreFreezeMetricsFailureType" expires_after="2025-02-01">
+    enum="PreFreezeMetricsFailureType" expires_after="2025-06-08">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@google.com</owner>
   <summary>
