@@ -47,8 +47,8 @@ class WebAppOriginAssociationParser {
   std::vector<mojom::AssociatedWebAppPtr> ParseAssociatedWebApps(
       const base::Value::Dict& root_dict,
       const url::Origin& origin);
-  std::optional<GURL> ParseExtendedScope(const base::Value::Dict& app_dict,
-                                         const url::Origin& origin);
+  std::optional<GURL> ParseExtendedScope(const base::Value::Dict&,
+                                         const url::Origin&);
   void AddErrorInfo(const std::string& error_msg,
                     int error_line = 0,
                     int error_column = 0);

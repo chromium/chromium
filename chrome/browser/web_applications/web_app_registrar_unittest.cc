@@ -1334,17 +1334,22 @@ TEST_F(WebAppRegistrarTest_ScopeExtensions, IsUrlInAppExtendedScope) {
   auto web_app = test::CreateWebApp(GURL("https://example.com/start"));
   webapps::AppId app_id = web_app->app_id();
 
-  auto extended_scope_url = GURL("https://example.app");
-  auto extended_scope_origin = url::Origin::Create(extended_scope_url);
+  // Limit scope to https://example.app/extended_scope
+  auto associate_url = GURL("https://example.app");
+  auto associate_extended_scope = GURL(associate_url.spec() + "extended_scope");
 
   // Manifest entry {"origin": "https://*.example.co"}.
-  auto extended_scope_url2 = GURL("https://example.co");
-  auto extended_scope_origin2 = url::Origin::Create(extended_scope_url2);
+  auto associate_url2 = GURL("https://example.co");
+
+  // Full scope
+  auto associate_url3 = GURL("https://example.co.uk");
+  auto associate_extended_scope3 = GURL(associate_url3.spec());
 
   web_app->SetValidatedScopeExtensions(
-      {ScopeExtensionInfo(extended_scope_origin),
-       ScopeExtensionInfo(extended_scope_origin2,
-                          /*has_origin_wildcard=*/true)});
+      {ScopeExtensionInfo::CreateForScope(associate_extended_scope),
+       ScopeExtensionInfo::CreateForScope(associate_url2,
+                                          /*has_origin_wildcard=*/true),
+       ScopeExtensionInfo::CreateForScope(associate_extended_scope3)});
   RegisterAppUnsafe(std::move(web_app));
 
   EXPECT_EQ(
@@ -1368,7 +1373,10 @@ TEST_F(WebAppRegistrarTest_ScopeExtensions, IsUrlInAppExtendedScope) {
             0);
 
   EXPECT_GT(registrar().GetAppExtendedScopeScore(
-                GURL("https://example.app/start"), app_id),
+                GURL("https://example.app/extended_scope"), app_id),
+            0);
+  EXPECT_GT(registrar().GetAppExtendedScopeScore(GURL("https://example.co.uk"),
+                                                 app_id),
             0);
 
   // Scope is extended to the example.app domain but not to the sub-domain

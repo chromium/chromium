@@ -60,8 +60,8 @@ ScopeExtensions ChromeOsWebAppExperiments::GetScopeExtensions(
 
   if (GetScopeExtensionsOverrideForTesting()) {
     for (const auto* origin : *GetScopeExtensionsOverrideForTesting()) {
-      extensions.insert(
-          ScopeExtensionInfo{.origin = url::Origin::Create(GURL(origin))});
+      extensions.insert(ScopeExtensionInfo::CreateForOrigin(
+          url::Origin::Create(GURL(origin))));
     }
     return extensions;
   }
@@ -76,7 +76,7 @@ ScopeExtensions ChromeOsWebAppExperiments::GetScopeExtensions(
       continue;
     }
     extensions.insert(
-        ScopeExtensionInfo{.origin = url::Origin::Create(GURL(url))});
+        ScopeExtensionInfo::CreateForOrigin(url::Origin::Create(GURL(url))));
   }
   const auto microsoft365_scope_extension_domains = GetListFromFinchParam(
       chromeos::features::kMicrosoft365ScopeExtensionsDomains.Get());
@@ -88,8 +88,8 @@ ScopeExtensions ChromeOsWebAppExperiments::GetScopeExtensions(
           << url_string;
       continue;
     }
-    extensions.insert(ScopeExtensionInfo{
-        .origin = url::Origin::Create(GURL(url)), .has_origin_wildcard = true});
+    extensions.insert(ScopeExtensionInfo::CreateForOrigin(
+        url::Origin::Create(GURL(url)), /*has_origin_wildcard*/ true));
   }
   return extensions;
 }

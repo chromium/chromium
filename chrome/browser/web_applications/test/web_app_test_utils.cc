@@ -292,11 +292,18 @@ ScopeExtensions CreateRandomScopeExtensions(uint32_t suffix,
     std::string suffix_str =
         base::NumberToString(suffix) + base::NumberToString(i);
 
-    ScopeExtensionInfo scope_extension;
-    scope_extension.origin =
-        url::Origin::Create(GURL("https://app-" + suffix_str + ".com/"));
-    scope_extension.has_origin_wildcard = random.next_bool();
-    scope_extensions.insert(std::move(scope_extension));
+    if (random.next_bool()) {
+      auto scope_extension = ScopeExtensionInfo::CreateForOrigin(
+          url::Origin::Create(GURL("https://app-" + suffix_str + ".com/")),
+          /*has_origin_wildcard*/ random.next_bool());
+      scope_extensions.insert(std::move(scope_extension));
+    } else {
+      std::string random_scope = base::NumberToString(random.next_uint());
+      auto scope_extension = ScopeExtensionInfo::CreateForScope(
+          GURL("https://app-" + suffix_str + ".com/" + random_scope),
+          /*has_origin_wildcard*/ random.next_bool());
+      scope_extensions.insert(std::move(scope_extension));
+    }
   }
 
   return scope_extensions;

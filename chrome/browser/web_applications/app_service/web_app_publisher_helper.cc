@@ -374,6 +374,7 @@ apps::IntentFilterPtr CreateMimeTypeShareFilter(
 
 apps::IntentFilterPtr CreateIntentFilterFromOrigin(
     const url::Origin& origin,
+    const GURL& extended_scope,
     bool add_subdomain_wildcard) {
   CHECK(!origin.opaque());
 
@@ -397,7 +398,8 @@ apps::IntentFilterPtr CreateIntentFilterFromOrigin(
       add_subdomain_wildcard ? apps::PatternMatchType::kSuffix
                              : apps::PatternMatchType::kLiteral);
 
-  intent_filter->AddSingleValueCondition(apps::ConditionType::kPath, "",
+  intent_filter->AddSingleValueCondition(apps::ConditionType::kPath,
+                                         extended_scope.path(),
                                          apps::PatternMatchType::kPrefix);
 
   return intent_filter;
@@ -406,14 +408,15 @@ apps::IntentFilterPtr CreateIntentFilterFromOrigin(
 apps::IntentFilters CreateIntentFiltersFromScopeExtensionInfo(
     const web_app::ScopeExtensionInfo& scope_extension_info) {
   apps::IntentFilters filters;
-  filters.push_back(
-      CreateIntentFilterFromOrigin(scope_extension_info.origin,
-                                   /*add_subdomain_wildcard=*/false));
+  filters.push_back(CreateIntentFilterFromOrigin(
+      scope_extension_info.origin, scope_extension_info.scope,
+      /*add_subdomain_wildcard=*/false));
   if (scope_extension_info.has_origin_wildcard) {
     // In addition to matching the exact same origin, the wildcard should match
     // subdomains.
     filters.push_back(CreateIntentFilterFromOrigin(
-        scope_extension_info.origin, /*add_subdomain_wildcard=*/true));
+        scope_extension_info.origin, scope_extension_info.scope,
+        /*add_subdomain_wildcard=*/true));
   }
   return filters;
 }

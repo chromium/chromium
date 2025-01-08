@@ -307,23 +307,29 @@
    "scope": "https://example.com/scope1234/",
    "scope_extensions": [ {
       "has_origin_wildcard": true,
-      "origin": "https://app-30111629020.com"
+      "origin": "https://app-30111629020.com",
+      "scope": "https://app-30111629020.com/"
    }, {
       "has_origin_wildcard": true,
-      "origin": "https://app-30111629021.com"
+      "origin": "https://app-30111629021.com",
+      "scope": "https://app-30111629021.com/"
    }, {
       "has_origin_wildcard": true,
-      "origin": "https://app-30111629022.com"
+      "origin": "https://app-30111629022.com",
+      "scope": "https://app-30111629022.com/"
    } ],
    "scope_extensions_validated": [ {
       "has_origin_wildcard": true,
-      "origin": "https://app-30111629020.com"
+      "origin": "https://app-30111629020.com",
+      "scope": "https://app-30111629020.com/"
    }, {
       "has_origin_wildcard": true,
-      "origin": "https://app-30111629021.com"
+      "origin": "https://app-30111629021.com",
+      "scope": "https://app-30111629021.com/"
    }, {
       "has_origin_wildcard": true,
-      "origin": "https://app-30111629022.com"
+      "origin": "https://app-30111629022.com",
+      "scope": "https://app-30111629022.com/"
    } ],
    "share_target": {
       "action": "https://example.com/path/target/986688382",

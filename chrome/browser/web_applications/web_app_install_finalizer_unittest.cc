@@ -528,15 +528,15 @@ TEST_F(WebAppInstallFinalizerUnitTest, IsolationDataSetInWebAppDB) {
 }
 
 TEST_F(WebAppInstallFinalizerUnitTest, ValidateOriginAssociationsApproved) {
-  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
-      GURL("https://foo.example"));
+  GURL start_url("https://foo.example");
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
   info->title = u"Foo Title";
   WebAppInstallFinalizer::FinalizeOptions options(
       webapps::WebappInstallSource::INTERNAL_DEFAULT);
 
-  ScopeExtensionInfo scope_extension =
-      ScopeExtensionInfo(url::Origin::Create(GURL("https://foo.example")),
-                         /*has_origin_wildcard=*/true);
+  auto scope_extension =
+      ScopeExtensionInfo::CreateForScope(start_url,
+                                         /*has_origin_wildcard=*/true);
   CHECK(!scope_extension.origin.opaque());
   info->scope_extensions = {scope_extension};
 
@@ -558,15 +558,15 @@ TEST_F(WebAppInstallFinalizerUnitTest, ValidateOriginAssociationsApproved) {
 }
 
 TEST_F(WebAppInstallFinalizerUnitTest, ValidateOriginAssociationsDenied) {
-  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
-      GURL("https://foo.example"));
+  GURL start_url("https://foo.example");
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
   info->title = u"Foo Title";
   WebAppInstallFinalizer::FinalizeOptions options(
       webapps::WebappInstallSource::INTERNAL_DEFAULT);
 
-  ScopeExtensionInfo scope_extension =
-      ScopeExtensionInfo(url::Origin::Create(GURL("https://foo.example")),
-                         /*has_origin_wildcard=*/true);
+  auto scope_extension =
+      ScopeExtensionInfo::CreateForScope(start_url,
+                                         /*has_origin_wildcard=*/true);
   info->scope_extensions = {scope_extension};
 
   // Set data such that scope_extension will not be returned in validated data.

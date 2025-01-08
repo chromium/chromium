@@ -84,8 +84,10 @@ void WebAppOriginAssociationManager::Task::OnAssociationParsed(
   }
 
   auto& scope_extension = GetCurrentScopeExtension();
-  for (auto& associated_app : association->apps) {
+  for (webapps::mojom::AssociatedWebAppPtr& associated_app :
+       association->apps) {
     if (associated_app->web_app_identity == web_app_identity_) {
+      scope_extension.scope = associated_app->scope;
       result_.insert(scope_extension);
       scope_extension.Reset();
       // Only information in the first valid app is saved.

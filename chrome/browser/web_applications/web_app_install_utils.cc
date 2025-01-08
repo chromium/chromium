@@ -337,10 +337,8 @@ ScopeExtensions ToWebAppScopeExtensions(
   ScopeExtensions apps_scope_extensions;
   for (const auto& scope_extension : scope_extensions) {
     DCHECK(scope_extension);
-    ScopeExtensionInfo new_scope_extension;
-    new_scope_extension.origin = scope_extension->origin;
-    new_scope_extension.has_origin_wildcard =
-        scope_extension->has_origin_wildcard;
+    auto new_scope_extension = ScopeExtensionInfo::CreateForOrigin(
+        scope_extension->origin, scope_extension->has_origin_wildcard);
     apps_scope_extensions.insert(std::move(new_scope_extension));
   }
   return apps_scope_extensions;

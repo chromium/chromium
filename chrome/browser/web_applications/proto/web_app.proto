@@ -51,9 +51,12 @@ message WebAppProtocolHandler {
   optional string url = 2;       // Required.
 }
 
+// Represents a parsed and validated scope extension defined in the web app's
+// manifest. The `scope` field is a full URL, not only the path.
 message WebAppScopeExtensionProto {
   optional string origin = 1;             // Required.
   optional bool has_origin_wildcard = 2;  // Required.
+  optional string scope = 3;              // Required.
 }
 
 // A set to track simultaneous installs and uninstalls from multiple install

@@ -422,8 +422,10 @@ int WebAppRegistrar::GetAppExtendedScopeScore(
 
   std::optional<std::string> origin_str;
 
-  for (const auto& scope_extension : GetValidatedScopeExtensions(app_id)) {
-    if (origin.IsSameOriginWith(scope_extension.origin)) {
+  for (const ScopeExtensionInfo& scope_extension :
+       GetValidatedScopeExtensions(app_id)) {
+    if (base::StartsWith(url.spec(), scope_extension.scope.spec(),
+                         base::CompareCase::SENSITIVE) > 0) {
       return origin.host().size();
     }
 

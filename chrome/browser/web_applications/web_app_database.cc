@@ -736,6 +736,7 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
     WebAppScopeExtensionProto* scope_extension_proto =
         local_data->add_scope_extensions();
     scope_extension_proto->set_origin(scope_extension.origin.Serialize());
+    scope_extension_proto->set_scope(scope_extension.scope.spec());
     scope_extension_proto->set_has_origin_wildcard(
         scope_extension.has_origin_wildcard);
   }
@@ -744,6 +745,8 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
     WebAppScopeExtensionProto* scope_extension_proto =
         local_data->add_scope_extensions_validated();
     scope_extension_proto->set_origin(valid_extension.origin.Serialize());
+    CHECK(valid_extension.scope.is_valid());
+    scope_extension_proto->set_scope(valid_extension.scope.spec());
     scope_extension_proto->set_has_origin_wildcard(
         valid_extension.has_origin_wildcard);
   }
@@ -1450,18 +1453,25 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
       DLOG(ERROR) << "WebApp Scope Extension Info proto parse error";
       return nullptr;
     }
-    ScopeExtensionInfo scope_extension;
-
     url::Origin origin =
         url::Origin::Create(GURL(scope_extension_proto.origin()));
     if (origin.opaque()) {
-      DLOG(ERROR) << "WebApp ScopeExtension proto url parse error: "
-                  << origin.GetDebugString();
+      DLOG(ERROR) << "WebAppScopeExtensionProto's `origin` is opaque: "
+                  << scope_extension_proto.origin();
       return nullptr;
     }
-    scope_extension.origin = std::move(origin);
-    scope_extension.has_origin_wildcard =
-        scope_extension_proto.has_origin_wildcard();
+    if (origin == url::Origin()) {
+      DLOG(ERROR) << "WebAppScopeExtensionProto's `origin` is empty";
+      return nullptr;
+    }
+    if (!GURL(scope_extension_proto.scope()).is_valid()) {
+      DLOG(ERROR) << "WebAppScopeExtensionProto's `scope` url is invalid: "
+                  << scope_extension_proto.scope();
+      return nullptr;
+    }
+
+    auto scope_extension =
+        ScopeExtensionInfo::CreateForProto(scope_extension_proto);
 
     scope_extensions.insert(std::move(scope_extension));
   }
@@ -1470,18 +1480,29 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   base::flat_set<ScopeExtensionInfo> valid_scope_extensions;
   for (const auto& scope_extension_proto :
        local_data.scope_extensions_validated()) {
-    ScopeExtensionInfo scope_extension;
-
     url::Origin origin =
         url::Origin::Create(GURL(scope_extension_proto.origin()));
     if (origin.opaque()) {
-      DLOG(ERROR) << "WebApp ScopeExtension proto url parse error: "
-                  << origin.GetDebugString();
+      DLOG(ERROR) << "WebAppScopeExtensionProto's `origin` is opaque: "
+                  << scope_extension_proto.origin();
       return nullptr;
     }
-    scope_extension.origin = std::move(origin);
-    scope_extension.has_origin_wildcard =
-        scope_extension_proto.has_origin_wildcard();
+    if (origin == url::Origin()) {
+      DLOG(ERROR) << "WebAppScopeExtensionProto's `origin` is empty";
+      return nullptr;
+    }
+    if (!GURL(scope_extension_proto.scope()).is_valid()) {
+      DLOG(ERROR) << "WebAppScopeExtensionProto's `scope` url is invalid: "
+                  << scope_extension_proto.scope();
+      return nullptr;
+    }
+
+    auto scope_extension =
+        ScopeExtensionInfo::CreateForProto(scope_extension_proto);
+
+    if (!scope_extension.origin.IsSameOriginWith(scope_extension.scope)) {
+      return nullptr;
+    }
 
     valid_scope_extensions.insert(std::move(scope_extension));
   }

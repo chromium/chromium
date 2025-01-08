@@ -2676,9 +2676,9 @@ class WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText
     web_app_info->display_mode = web_app::DisplayMode::kStandalone;
     web_app_info->user_display_mode =
         web_app::mojom::UserDisplayMode::kStandalone;
-    web_app::ScopeExtensionInfo scope_extension;
-    scope_extension.origin = url::Origin::Create(extension_url());
-    scope_extension.has_origin_wildcard = false;
+    auto scope_extension = web_app::ScopeExtensionInfo::CreateForOrigin(
+        url::Origin::Create(extension_url()),
+        /*has_origin_wildcard*/ false);
     web_app_info->scope_extensions = {std::move(scope_extension)};
     helper()->InstallAndLaunchCustomWebApp(browser(), std::move(web_app_info),
                                            app_url());
