@@ -1089,9 +1089,8 @@ std::vector<DIPSRedirectInfoPtr> MakeServerRedirects(
     DIPSDataAccessType access_type = DIPSDataAccessType::kReadWrite) {
   std::vector<DIPSRedirectInfoPtr> redirects;
   for (const auto& url : urls) {
-    redirects.push_back(std::make_unique<DIPSRedirectInfo>(
+    redirects.push_back(DIPSRedirectInfo::CreateForServer(
         /*url=*/MakeUrlAndId(url),
-        /*redirect_type=*/DIPSRedirectType::kServer,
         /*access_type=*/access_type,
         /*time=*/base::Time::Now(),
         /*was_response_cached=*/false,
@@ -1106,9 +1105,8 @@ DIPSRedirectInfoPtr MakeClientRedirect(
     DIPSDataAccessType access_type = DIPSDataAccessType::kReadWrite,
     bool has_sticky_activation = false,
     bool has_web_authn_assertion = false) {
-  return std::make_unique<DIPSRedirectInfo>(
+  return DIPSRedirectInfo::CreateForClient(
       /*url=*/MakeUrlAndId(url),
-      /*redirect_type=*/DIPSRedirectType::kClient,
       /*access_type=*/access_type,
       /*time=*/base::Time::Now(),
       /*client_bounce_delay=*/base::Seconds(1),

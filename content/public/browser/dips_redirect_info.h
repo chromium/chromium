@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_DIPS_REDIRECT_INFO_H_
 #define CONTENT_PUBLIC_BROWSER_DIPS_REDIRECT_INFO_H_
 
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -72,35 +73,22 @@ struct CONTENT_EXPORT DIPSRedirectChainInfo {
 // Properties of one URL within a redirect chain.
 struct CONTENT_EXPORT DIPSRedirectInfo {
  public:
-  // TODO: crbug.com/384523557 - Use factory functions to create instances and
-  // hide the (probably one) constructor.
-  //
-  // Constructor for server-side redirects.
-  DIPSRedirectInfo(const UrlAndSourceId& url,
-                   DIPSRedirectType redirect_type,
-                   DIPSDataAccessType access_type,
-                   base::Time time,
-                   bool was_response_cached,
-                   int response_code,
-                   base::TimeDelta server_bounce_delay);
-  // Constructor for client-side redirects.
-  DIPSRedirectInfo(const UrlAndSourceId& url,
-                   DIPSRedirectType redirect_type,
-                   DIPSDataAccessType access_type,
-                   base::Time time,
-                   base::TimeDelta client_bounce_delay,
-                   bool has_sticky_activation,
-                   bool web_authn_assertion_request_succeeded);
-  DIPSRedirectInfo(const UrlAndSourceId& url,
-                   DIPSRedirectType redirect_type,
-                   DIPSDataAccessType access_type,
-                   base::Time time,
-                   base::TimeDelta client_bounce_delay,
-                   bool has_sticky_activation,
-                   bool web_authn_assertion_request_succeeded,
-                   bool was_response_cached,
-                   int response_code,
-                   base::TimeDelta server_bounce_delay);
+  static std::unique_ptr<DIPSRedirectInfo> CreateForServer(
+      const UrlAndSourceId& url,
+      DIPSDataAccessType access_type,
+      base::Time time,
+      bool was_response_cached,
+      int response_code,
+      base::TimeDelta server_bounce_delay);
+
+  static std::unique_ptr<DIPSRedirectInfo> CreateForClient(
+      const UrlAndSourceId& url,
+      DIPSDataAccessType access_type,
+      base::Time time,
+      base::TimeDelta client_bounce_delay,
+      bool has_sticky_activation,
+      bool web_authn_assertion_request_succeeded);
+
   DIPSRedirectInfo(const DIPSRedirectInfo&);
   ~DIPSRedirectInfo();
 
@@ -137,6 +125,18 @@ struct CONTENT_EXPORT DIPSRedirectInfo {
   const bool was_response_cached;
   const int response_code;
   const base::TimeDelta server_bounce_delay;
+
+ private:
+  DIPSRedirectInfo(const UrlAndSourceId& url,
+                   DIPSRedirectType redirect_type,
+                   DIPSDataAccessType access_type,
+                   base::Time time,
+                   base::TimeDelta client_bounce_delay,
+                   bool has_sticky_activation,
+                   bool web_authn_assertion_request_succeeded,
+                   bool was_response_cached,
+                   int response_code,
+                   base::TimeDelta server_bounce_delay);
 };
 
 // a movable DIPSRedirectInfo, essentially

@@ -57,10 +57,9 @@ bool Has3pcException(content::BrowserContext* browser_context,
                      const GURL& url,
                      const GURL& initial_url,
                      const GURL& final_url) {
-  auto redirect = std::make_unique<DIPSRedirectInfo>(
-      UrlAndSourceId(url, ukm::kInvalidSourceId), DIPSRedirectType::kServer,
-      DIPSDataAccessType::kWrite, base::Time::Now(), false, net::HTTP_FOUND,
-      base::TimeDelta());
+  DIPSRedirectInfoPtr redirect = DIPSRedirectInfo::CreateForServer(
+      UrlAndSourceId(url, ukm::kInvalidSourceId), DIPSDataAccessType::kWrite,
+      base::Time::Now(), false, net::HTTP_FOUND, base::TimeDelta());
   dips::Populate3PcExceptions(browser_context, web_contents, initial_url,
                               final_url, base::span_from_ref(redirect));
   return redirect->has_3pc_exception.value();
@@ -332,9 +331,8 @@ TEST_F(DIPSServiceStateRemovalTest,
   RedirectChainCounter chain_counter(GetService());
 
   std::vector<DIPSRedirectInfoPtr> complete_redirects;
-  complete_redirects.push_back(std::make_unique<DIPSRedirectInfo>(
+  complete_redirects.push_back(DIPSRedirectInfo::CreateForServer(
       /*url=*/MakeUrlAndId("http://b.test/"),
-      /*redirect_type=*/DIPSRedirectType::kServer,
       /*access_type=*/DIPSDataAccessType::kNone,
       /*time=*/Now(),
       /*was_response_cached=*/false,
@@ -362,9 +360,8 @@ TEST_F(DIPSServiceStateRemovalTest,
   RedirectChainCounter chain_counter(GetService());
 
   std::vector<DIPSRedirectInfoPtr> partial_redirects;
-  partial_redirects.push_back(std::make_unique<DIPSRedirectInfo>(
+  partial_redirects.push_back(DIPSRedirectInfo::CreateForServer(
       /*url=*/MakeUrlAndId("http://b.test/"),
-      /*redirect_type=*/DIPSRedirectType::kServer,
       /*access_type=*/DIPSDataAccessType::kNone,
       /*time=*/Now(),
       /*was_response_cached=*/false,
@@ -1053,17 +1050,15 @@ TEST_F(DIPSServiceHistogramTest, ServerBounceDelay) {
 
   content::DipsRedirectChainObserver observer(service, GURL());
   std::vector<DIPSRedirectInfoPtr> redirects;
-  redirects.push_back(std::make_unique<DIPSRedirectInfo>(
+  redirects.push_back(DIPSRedirectInfo::CreateForServer(
       first_redirect_url,
-      /*redirect_type=*/DIPSRedirectType::kServer,
       /*access_type=*/DIPSDataAccessType::kNone,
       /*time=*/base::Time::Now(),
       /*was_response_cached=*/true,
       /*response_code=*/net::HTTP_MOVED_PERMANENTLY,
       /*server_bounce_delay=*/base::Milliseconds(100)));
-  redirects.push_back(std::make_unique<DIPSRedirectInfo>(
+  redirects.push_back(DIPSRedirectInfo::CreateForServer(
       second_redirect_url,
-      /*redirect_type=*/DIPSRedirectType::kServer,
       /*access_type=*/DIPSDataAccessType::kNone,
       /*time=*/base::Time::Now(),
       /*was_response_cached=*/false,
@@ -1120,17 +1115,15 @@ TEST_F(DIPSServiceUkmTest, BothChainBeginAndChainEnd) {
 
   DipsRedirectChainObserver observer(service, final_url.url);
   std::vector<DIPSRedirectInfoPtr> redirects;
-  redirects.push_back(std::make_unique<DIPSRedirectInfo>(
+  redirects.push_back(DIPSRedirectInfo::CreateForServer(
       redirect_url1,
-      /*redirect_type=*/DIPSRedirectType::kServer,
       /*access_type=*/DIPSDataAccessType::kNone,
       /*time=*/base::Time::Now(),
       /*was_response_cached=*/false,
       /*response_code=*/net::HTTP_FOUND,
       /*server_bounce_delay=*/base::TimeDelta()));
-  redirects.push_back(std::make_unique<DIPSRedirectInfo>(
+  redirects.push_back(DIPSRedirectInfo::CreateForServer(
       redirect_url2,
-      /*redirect_type=*/DIPSRedirectType::kServer,
       /*access_type=*/DIPSDataAccessType::kNone,
       /*time=*/base::Time::Now(),
       /*was_response_cached=*/false,
@@ -1183,9 +1176,8 @@ TEST_F(DIPSServiceUkmTest, InitialAndFinalSitesSame_True) {
 
   DipsRedirectChainObserver observer(service, final_url.url);
   std::vector<DIPSRedirectInfoPtr> redirects;
-  redirects.push_back(std::make_unique<DIPSRedirectInfo>(
+  redirects.push_back(DIPSRedirectInfo::CreateForServer(
       redirect_url,
-      /*redirect_type=*/DIPSRedirectType::kServer,
       /*access_type=*/DIPSDataAccessType::kNone,
       /*time=*/base::Time::Now(),
       /*was_response_cached=*/false,
@@ -1251,9 +1243,8 @@ TEST_F(DIPSServiceUkmTest, DontReportChainBeginIfInvalidSourceId) {
 
   DipsRedirectChainObserver observer(service, final_url.url);
   std::vector<DIPSRedirectInfoPtr> redirects;
-  redirects.push_back(std::make_unique<DIPSRedirectInfo>(
+  redirects.push_back(DIPSRedirectInfo::CreateForServer(
       redirect_url,
-      /*redirect_type=*/DIPSRedirectType::kServer,
       /*access_type=*/DIPSDataAccessType::kNone,
       /*time=*/base::Time::Now(),
       /*was_response_cached=*/false,
@@ -1288,9 +1279,8 @@ TEST_F(DIPSServiceUkmTest, DontReportChainEndIfInvalidSourceId) {
 
   DipsRedirectChainObserver observer(service, GURL());
   std::vector<DIPSRedirectInfoPtr> redirects;
-  redirects.push_back(std::make_unique<DIPSRedirectInfo>(
+  redirects.push_back(DIPSRedirectInfo::CreateForServer(
       redirect_url,
-      /*redirect_type=*/DIPSRedirectType::kServer,
       /*access_type=*/DIPSDataAccessType::kNone,
       /*time=*/base::Time::Now(),
       /*was_response_cached=*/false,

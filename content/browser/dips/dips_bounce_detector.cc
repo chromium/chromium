@@ -721,9 +721,8 @@ void DIPSBounceDetector::DidStartNavigation(
   // immediately, because we don't know if the navigation will commit. We must
   // wait until DidFinishNavigation() is triggered.
   server_bounce_detection_state->navigation_start =
-      std::make_unique<DIPSRedirectInfo>(
+      DIPSRedirectInfo::CreateForClient(
           /*url=*/delegate_->GetLastCommittedURL(),
-          /*redirect_type=*/DIPSRedirectType::kClient,
           /*access_type=*/client_detection_state_->site_data_access_type,
           /*time=*/clock_->Now(),
           /*client_bounce_delay=*/client_bounce_delay,
@@ -1096,11 +1095,10 @@ void DIPSBounceDetector::DidFinishNavigation(
     //
     // TODO(crbug.com/371802472): Add back the checks removed during
     // crrev.com/c/5912983 after investigating why the checks fail on Windows.
-    redirects.push_back(std::make_unique<DIPSRedirectInfo>(
+    redirects.push_back(DIPSRedirectInfo::CreateForServer(
         /*url=*/UrlAndSourceId(
             navigation_handle->GetRedirectChain()[i + offset],
             navigation_handle->GetRedirectSourceId(i + offset)),
-        /*redirect_type=*/DIPSRedirectType::kServer,
         /*access_type=*/access_types[i + offset],
         /*time=*/clock_->Now(),
         /*was_response_cached=*/
@@ -1120,10 +1118,9 @@ void DIPSBounceDetector::DidFinishNavigation(
     // For uncommitted navigations, treat the last URL visited as a server
     // redirect, so it is considered a potential tracker.
     const size_t i = access_types.size() - 1;
-    redirects.push_back(std::make_unique<DIPSRedirectInfo>(
+    redirects.push_back(DIPSRedirectInfo::CreateForServer(
         /*url=*/UrlAndSourceId(navigation_handle->GetRedirectChain()[i],
                                navigation_handle->GetRedirectSourceId(i)),
-        /*redirect_type=*/DIPSRedirectType::kServer,
         /*access_type=*/access_types[i],
         /*time=*/clock_->Now(),
         /*was_response_cached=*/navigation_handle->WasResponseCached(),
