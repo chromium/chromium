@@ -238,6 +238,9 @@ disable a test, your Owners-Override on the CL is not enough. You also need
 either another committer to LGTM the CL or, for clean reverts, a `Bot-Commit:
 +1` from the [rubber-stamper bot](#automated-code_review).
 
+When setting Owners-Override it is your responsibility to confirm that every
+file (and line) in the patch has been appropriately reviewed.
+
 ## Mechanical changes
 
 ### Global Approvals
