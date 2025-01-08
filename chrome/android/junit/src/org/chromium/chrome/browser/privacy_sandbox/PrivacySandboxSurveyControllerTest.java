@@ -394,6 +394,35 @@ public class PrivacySandboxSurveyControllerTest {
         ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY
                 + ":app-id/com.google.android.googlequicksearchbox"
     })
+    public void surveyControllerEmitsInvalidSurveyConfigHistogramForEeaAccepted() {
+        // Ensure that we use the default null config for testing.
+        setSurveyConfigForceUsingTestingConfig(true);
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "PrivacySandbox.Surveys.CctAdsNoticeSurvey.Failures",
+                        PrivacySandboxSurveyController.CctAdsNoticeSurveyFailures
+                                .INVALID_EEA_ACCEPTED_SURVEY_CONFIG);
+        PrivacySandboxSurveyController controller =
+                PrivacySandboxSurveyController.initialize(
+                        mTabModelSelector,
+                        mActivityLifecycleDispatcher,
+                        mActivity,
+                        mMessageDispatcher,
+                        mActivityTabProvider,
+                        mProfile);
+        when(mPrefService.getBoolean(Pref.PRIVACY_SANDBOX_M1_CONSENT_DECISION_MADE))
+                .thenReturn(true);
+        when(mPrefService.getBoolean(Pref.PRIVACY_SANDBOX_M1_TOPICS_ENABLED)).thenReturn(true);
+        controller.scheduleAdsCctTreatmentSurveyLaunch("com.google.android.googlequicksearchbox");
+        verify(mSurveyClient, times(0)).showSurvey(any(), any(), any(), any());
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @Features.EnableFeatures({
+        ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY
+                + ":app-id/com.google.android.googlequicksearchbox"
+    })
     public void surveyControllerLaunchsAdsCctSurveyForEeaDeclined() {
         setTestSurveyConfigForTrigger(
                 CCT_ADS_NOTICE_EEA_DECLINED_TRIGGER,
@@ -417,6 +446,35 @@ public class PrivacySandboxSurveyControllerTest {
                         mActivityLifecycleDispatcher,
                         Collections.emptyMap(),
                         Collections.emptyMap());
+    }
+
+    @Test
+    @Features.EnableFeatures({
+        ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY
+                + ":app-id/com.google.android.googlequicksearchbox"
+    })
+    public void surveyControllerEmitsInvalidSurveyConfigHistogramForEeaDeclined() {
+        // Ensure that we use the default null config for testing.
+        setSurveyConfigForceUsingTestingConfig(true);
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "PrivacySandbox.Surveys.CctAdsNoticeSurvey.Failures",
+                        PrivacySandboxSurveyController.CctAdsNoticeSurveyFailures
+                                .INVALID_EEA_DECLINED_SURVEY_CONFIG);
+        PrivacySandboxSurveyController controller =
+                PrivacySandboxSurveyController.initialize(
+                        mTabModelSelector,
+                        mActivityLifecycleDispatcher,
+                        mActivity,
+                        mMessageDispatcher,
+                        mActivityTabProvider,
+                        mProfile);
+        when(mPrefService.getBoolean(Pref.PRIVACY_SANDBOX_M1_CONSENT_DECISION_MADE))
+                .thenReturn(true);
+        when(mPrefService.getBoolean(Pref.PRIVACY_SANDBOX_M1_TOPICS_ENABLED)).thenReturn(false);
+        controller.scheduleAdsCctTreatmentSurveyLaunch("com.google.android.googlequicksearchbox");
+        verify(mSurveyClient, times(0)).showSurvey(any(), any(), any(), any());
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -453,6 +511,34 @@ public class PrivacySandboxSurveyControllerTest {
         ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY
                 + ":app-id/com.google.android.googlequicksearchbox"
     })
+    public void surveyControllerEmitsInvalidSurveyConfigHistogramForRowAcknowledged() {
+        // Ensure that we use the default null config for testing.
+        setSurveyConfigForceUsingTestingConfig(true);
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "PrivacySandbox.Surveys.CctAdsNoticeSurvey.Failures",
+                        PrivacySandboxSurveyController.CctAdsNoticeSurveyFailures
+                                .INVALID_ROW_ACKNOWLEDGED_SURVEY_CONFIG);
+        PrivacySandboxSurveyController controller =
+                PrivacySandboxSurveyController.initialize(
+                        mTabModelSelector,
+                        mActivityLifecycleDispatcher,
+                        mActivity,
+                        mMessageDispatcher,
+                        mActivityTabProvider,
+                        mProfile);
+        when(mPrefService.getBoolean(Pref.PRIVACY_SANDBOX_M1_ROW_NOTICE_ACKNOWLEDGED))
+                .thenReturn(true);
+        controller.scheduleAdsCctTreatmentSurveyLaunch("com.google.android.googlequicksearchbox");
+        verify(mSurveyClient, times(0)).showSurvey(any(), any(), any(), any());
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @Features.EnableFeatures({
+        ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY
+                + ":app-id/com.google.android.googlequicksearchbox"
+    })
     public void surveyControllerLaunchsAdsCctSurveyForEeaControl() {
         setTestSurveyConfigForTrigger(
                 CCT_ADS_NOTICE_EEA_CONTROL_TRIGGER,
@@ -474,6 +560,33 @@ public class PrivacySandboxSurveyControllerTest {
                         mActivityLifecycleDispatcher,
                         Collections.emptyMap(),
                         Collections.emptyMap());
+    }
+
+    @Test
+    @Features.EnableFeatures({
+        ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY
+                + ":app-id/com.google.android.googlequicksearchbox"
+    })
+    public void surveyControllerEmitsInvalidSurveyConfigHistogramForEeaControl() {
+        // Ensure that we use the default null config for testing.
+        setSurveyConfigForceUsingTestingConfig(true);
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "PrivacySandbox.Surveys.CctAdsNoticeSurvey.Failures",
+                        PrivacySandboxSurveyController.CctAdsNoticeSurveyFailures
+                                .INVALID_EEA_CONTROL_SURVEY_CONFIG);
+        PrivacySandboxSurveyController controller =
+                PrivacySandboxSurveyController.initialize(
+                        mTabModelSelector,
+                        mActivityLifecycleDispatcher,
+                        mActivity,
+                        mMessageDispatcher,
+                        mActivityTabProvider,
+                        mProfile);
+        controller.scheduleAdsCctControlSurveyLaunch(
+                "com.google.android.googlequicksearchbox", PromptType.M1_CONSENT);
+        verify(mSurveyClient, times(0)).showSurvey(any(), any(), any(), any());
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -509,7 +622,39 @@ public class PrivacySandboxSurveyControllerTest {
         ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY
                 + ":app-id/com.google.android.googlequicksearchbox"
     })
+    public void surveyControllerEmitsInvalidSurveyConfigHistogramForRowControl() {
+        // Ensure that we use the default null config for testing.
+        setSurveyConfigForceUsingTestingConfig(true);
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "PrivacySandbox.Surveys.CctAdsNoticeSurvey.Failures",
+                        PrivacySandboxSurveyController.CctAdsNoticeSurveyFailures
+                                .INVALID_ROW_CONTROL_SURVEY_CONFIG);
+        PrivacySandboxSurveyController controller =
+                PrivacySandboxSurveyController.initialize(
+                        mTabModelSelector,
+                        mActivityLifecycleDispatcher,
+                        mActivity,
+                        mMessageDispatcher,
+                        mActivityTabProvider,
+                        mProfile);
+        controller.scheduleAdsCctControlSurveyLaunch(
+                "com.google.android.googlequicksearchbox", PromptType.M1_NOTICE_ROW);
+        verify(mSurveyClient, times(0)).showSurvey(any(), any(), any(), any());
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @Features.EnableFeatures({
+        ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY
+                + ":app-id/com.google.android.googlequicksearchbox"
+    })
     public void surveyControllerDoesNotLaunchsAdsCctSurveyForPromptTypeNone() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "PrivacySandbox.Surveys.CctAdsNoticeSurvey.Failures",
+                        PrivacySandboxSurveyController.CctAdsNoticeSurveyFailures
+                                .INVALID_PROMPT_TYPE);
         PrivacySandboxSurveyController controller =
                 PrivacySandboxSurveyController.initialize(
                         mTabModelSelector,
@@ -521,6 +666,7 @@ public class PrivacySandboxSurveyControllerTest {
         controller.scheduleAdsCctControlSurveyLaunch(
                 "com.google.android.googlequicksearchbox", PromptType.NONE);
         verify(mSurveyClient, times(0)).showSurvey(any(), any(), any(), any());
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -529,6 +675,11 @@ public class PrivacySandboxSurveyControllerTest {
                 + ":app-id/com.google.android.googlequicksearchbox"
     })
     public void surveyControllerDoesNotLaunchsAdsCctSurveyForPromptTypeNoticeRestricted() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "PrivacySandbox.Surveys.CctAdsNoticeSurvey.Failures",
+                        PrivacySandboxSurveyController.CctAdsNoticeSurveyFailures
+                                .INVALID_PROMPT_TYPE);
         PrivacySandboxSurveyController controller =
                 PrivacySandboxSurveyController.initialize(
                         mTabModelSelector,
@@ -540,6 +691,7 @@ public class PrivacySandboxSurveyControllerTest {
         controller.scheduleAdsCctControlSurveyLaunch(
                 "com.google.android.googlequicksearchbox", PromptType.M1_NOTICE_RESTRICTED);
         verify(mSurveyClient, times(0)).showSurvey(any(), any(), any(), any());
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -548,6 +700,11 @@ public class PrivacySandboxSurveyControllerTest {
                 + ":app-id/com.google.android.googlequicksearchbox"
     })
     public void surveyControllerDoesNotLaunchsAdsCctSurveyForPromptTypeNoticeEea() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "PrivacySandbox.Surveys.CctAdsNoticeSurvey.Failures",
+                        PrivacySandboxSurveyController.CctAdsNoticeSurveyFailures
+                                .INVALID_PROMPT_TYPE);
         PrivacySandboxSurveyController controller =
                 PrivacySandboxSurveyController.initialize(
                         mTabModelSelector,
@@ -559,6 +716,7 @@ public class PrivacySandboxSurveyControllerTest {
         controller.scheduleAdsCctControlSurveyLaunch(
                 "com.google.android.googlequicksearchbox", PromptType.M1_NOTICE_EEA);
         verify(mSurveyClient, times(0)).showSurvey(any(), any(), any(), any());
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -595,6 +753,11 @@ public class PrivacySandboxSurveyControllerTest {
                 + ":app-id/com.google.android.googlequicksearchbox"
     })
     public void surveyControllerDoesNotLaunchsAdsCctSurveyWithNoConsentOrNoticeInteraction() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "PrivacySandbox.Surveys.CctAdsNoticeSurvey.Failures",
+                        PrivacySandboxSurveyController.CctAdsNoticeSurveyFailures
+                                .USER_INTERACTION_NOT_FOUND);
         PrivacySandboxSurveyController controller =
                 PrivacySandboxSurveyController.initialize(
                         mTabModelSelector,
@@ -603,10 +766,9 @@ public class PrivacySandboxSurveyControllerTest {
                         mMessageDispatcher,
                         mActivityTabProvider,
                         mProfile);
-        // TODO(crbug.com/379930582): Assert that the histogram detailing that we found no
-        // consent/notice interactions happened.
         controller.scheduleAdsCctTreatmentSurveyLaunch("com.google.android.googlequicksearchbox");
         verify(mSurveyClient, times(0)).showSurvey(any(), any(), any(), any());
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -615,6 +777,10 @@ public class PrivacySandboxSurveyControllerTest {
                 + ":app-id/com.google.android.googlequicksearchbox"
     })
     public void surveyControllerDoesNotLaunchAdsCctTreatmentSurveyWithMismatchedAppId() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "PrivacySandbox.Surveys.CctAdsNoticeSurvey.Failures",
+                        PrivacySandboxSurveyController.CctAdsNoticeSurveyFailures.APP_ID_MISMATCH);
         PrivacySandboxSurveyController controller =
                 PrivacySandboxSurveyController.initialize(
                         mTabModelSelector,
@@ -623,15 +789,19 @@ public class PrivacySandboxSurveyControllerTest {
                         mMessageDispatcher,
                         mActivityTabProvider,
                         mProfile);
-        // TODO(crbug.com/379930582): Assert that the histogram detailing mismatching app-id is
-        // emitted.
         controller.scheduleAdsCctTreatmentSurveyLaunch("mismatched-appid");
         verify(mSurveyClient, times(0)).showSurvey(any(), any(), any(), any());
+        histogramWatcher.assertExpected();
     }
 
     @Test
     @Features.DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY)
     public void surveyControllerDoesNotLaunchAdsCctTreatmentSurveyWithDisabledFeature() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "PrivacySandbox.Surveys.CctAdsNoticeSurvey.Failures",
+                        PrivacySandboxSurveyController.CctAdsNoticeSurveyFailures
+                                .FEATURE_NOT_ENABLED);
         PrivacySandboxSurveyController controller =
                 PrivacySandboxSurveyController.initialize(
                         mTabModelSelector,
@@ -640,10 +810,9 @@ public class PrivacySandboxSurveyControllerTest {
                         mMessageDispatcher,
                         mActivityTabProvider,
                         mProfile);
-        // TODO(crbug.com/379930582): Assert that the histogram detailing feature was disable was
-        // emitted.
         controller.scheduleAdsCctTreatmentSurveyLaunch("com.google.android.googlequicksearchbox");
         verify(mSurveyClient, times(0)).showSurvey(any(), any(), any(), any());
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -652,6 +821,10 @@ public class PrivacySandboxSurveyControllerTest {
                 + ":app-id/com.google.android.googlequicksearchbox"
     })
     public void surveyControllerDoesNotLaunchAdsCctControlSurveyWithMismatchedAppId() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "PrivacySandbox.Surveys.CctAdsNoticeSurvey.Failures",
+                        PrivacySandboxSurveyController.CctAdsNoticeSurveyFailures.APP_ID_MISMATCH);
         PrivacySandboxSurveyController controller =
                 PrivacySandboxSurveyController.initialize(
                         mTabModelSelector,
@@ -660,15 +833,19 @@ public class PrivacySandboxSurveyControllerTest {
                         mMessageDispatcher,
                         mActivityTabProvider,
                         mProfile);
-        // TODO(crbug.com/379930582): Assert that the histogram detailing mismatching app-id is
-        // emitted.
         controller.scheduleAdsCctControlSurveyLaunch("mismatched-appid", PromptType.M1_CONSENT);
         verify(mSurveyClient, times(0)).showSurvey(any(), any(), any(), any());
+        histogramWatcher.assertExpected();
     }
 
     @Test
     @Features.DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY)
     public void surveyControllerDoesNotLaunchAdsCctControlSurveyWithDisabledFeature() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "PrivacySandbox.Surveys.CctAdsNoticeSurvey.Failures",
+                        PrivacySandboxSurveyController.CctAdsNoticeSurveyFailures
+                                .FEATURE_NOT_ENABLED);
         PrivacySandboxSurveyController controller =
                 PrivacySandboxSurveyController.initialize(
                         mTabModelSelector,
@@ -677,10 +854,9 @@ public class PrivacySandboxSurveyControllerTest {
                         mMessageDispatcher,
                         mActivityTabProvider,
                         mProfile);
-        // TODO(crbug.com/379930582): Assert that the histogram detailing feature was disable was
-        // emitted.
         controller.scheduleAdsCctControlSurveyLaunch(
                 "com.google.android.googlequicksearchbox", PromptType.M1_CONSENT);
         verify(mSurveyClient, times(0)).showSurvey(any(), any(), any(), any());
+        histogramWatcher.assertExpected();
     }
 }

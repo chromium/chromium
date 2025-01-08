@@ -29818,6 +29818,22 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="Downloaded"/>
 </enum>
 
+<!-- LINT.IfChange(PrivacySandboxCctAdsNoticeSurveyFailures) -->
+
+<enum name="PrivacySandboxCctAdsNoticeSurveyFailures">
+  <int value="0" label="Feature not enabled"/>
+  <int value="1" label="App ID mismatch"/>
+  <int value="2" label="No notice interaction found"/>
+  <int value="3" label="Invalid prompt type found"/>
+  <int value="4" label="Failed to find survey config for EEA accepted"/>
+  <int value="5" label="Failed to find survey config for EEA declined"/>
+  <int value="6" label="Failed to find survey config for EEA control"/>
+  <int value="7" label="Failed to find survey config for ROW acknowledged"/>
+  <int value="8" label="Failed to find survey config for ROW control"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/android/java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSurveyController.java:PrivacySandboxCctAdsNoticeSurveyFailures) -->
+
 <!-- LINT.IfChange(PrivacySandboxNoticeAction) -->
 
 <enum name="PrivacySandboxNoticeAction">
@@ -29951,7 +29967,7 @@ Called by update_net_error_codes.py.-->
 
 <!-- LINT.ThenChange(/chrome/browser/privacy_sandbox/privacy_sandbox_service.h:FakeNoticePromptSuppressionReason) -->
 
-<!-- LINT.IfChange(NewTabPageActionEnum) -->
+<!-- LINT.IfChange(PrivacySandboxSentimentSurveyStatus) -->
 
 <enum name="PrivacySandboxSentimentSurveyStatus">
   <int value="0" label="Survey was successfully launched"/>
