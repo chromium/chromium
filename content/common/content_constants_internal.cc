@@ -11,14 +11,6 @@ namespace content {
 // 20MiB
 const size_t kMaxLengthOfDataURLString = 1024 * 1024 * 20;
 
-const int kTraceEventBrowserProcessSortIndex = -6;
-const int kTraceEventRendererProcessSortIndex = -5;
-const int kTraceEventPpapiProcessSortIndex = -3;
-const int kTraceEventPpapiBrokerProcessSortIndex = -2;
-const int kTraceEventGpuProcessSortIndex = -1;
-
-const int kTraceEventRendererMainThreadSortIndex = -1;
-
 #if BUILDFLAG(ENABLE_AV1_DECODER)
 const char kFrameAcceptHeaderValue[] =
     "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,"

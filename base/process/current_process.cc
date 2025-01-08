@@ -190,9 +190,6 @@ void CurrentProcess::SetProcessNameAndType(const std::string& process_name,
     process_type_.store(static_cast<CurrentProcessType>(process_type),
                         std::memory_order_relaxed);
   }
-#if BUILDFLAG(ENABLE_BASE_TRACING)
-  trace_event::TraceLog::GetInstance()->OnSetProcessName(process_name);
-#endif
 }
 
 }  // namespace base
