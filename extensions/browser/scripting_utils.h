@@ -11,6 +11,8 @@
 #include "base/functional/callback_forward.h"
 #include "base/strings/utf_string_conversions.h"
 #include "extensions/browser/extension_user_script_loader.h"
+#include "extensions/browser/script_executor.h"
+#include "extensions/common/api/scripts_internal.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_resource.h"
@@ -22,6 +24,22 @@ class BrowserContext;
 }  // namespace content
 
 namespace extensions::scripting {
+
+// Details specifying the target into which to inject the script.
+struct InjectionTarget {
+  InjectionTarget();
+  InjectionTarget(InjectionTarget&& other);
+  ~InjectionTarget();
+
+  // Whether the script should inject into all frames within the tab.
+  std::optional<bool> all_frames;
+  // The IDs of specific documentIds to inject into.
+  std::optional<std::vector<std::string>> document_ids;
+  // The IDs of specific frames to inject into.
+  std::optional<std::vector<int>> frame_ids;
+  // The ID of the tab into which to inject.
+  int tab_id;
+};
 
 // Appends the prefix corresponding to the dynamic script `source` to
 // `script_id`.
@@ -173,6 +191,19 @@ using ValidateScriptsResult =
 ValidateScriptsResult ValidateParsedScriptsOnFileThread(
     ExtensionResource::SymlinkPolicy symlink_policy,
     UserScriptList scripts);
+
+// Returns whether the `target` can be accessed with the given `permissions`.
+// If the target can be accessed, populates `script_executor_out`,
+// `frame_scope_out`, and `frame_ids_out` with the appropriate values;
+// if the target cannot be accessed, populates `error_out`.
+bool CanAccessTarget(const PermissionsData& permissions,
+                     const scripting::InjectionTarget& target,
+                     content::BrowserContext* browser_context,
+                     bool include_incognito_information,
+                     ScriptExecutor** script_executor_out,
+                     ScriptExecutor::FrameScope* frame_scope_out,
+                     std::set<int>* frame_ids_out,
+                     std::string* error_out);
 
 }  // namespace extensions::scripting
 

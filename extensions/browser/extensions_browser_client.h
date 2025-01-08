@@ -21,6 +21,7 @@
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/extension_prefs_observer.h"
 #include "extensions/browser/extensions_browser_api_provider.h"
+#include "extensions/browser/script_executor.h"
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/view_type.mojom.h"
@@ -443,12 +444,23 @@ class ExtensionsBrowserClient {
   // Protection policy.
   virtual bool IsScreenshotRestricted(content::WebContents* web_contents) const;
 
-  // Returns true if the given |tab_id| exists.
-  virtual bool IsValidTabId(content::BrowserContext* context, int tab_id) const;
+  // Returns true if `tab_id` exists on `browser_context`.
+  // TODO(emiliapaz): Migrate callers to use IsValidTabId() with all the
+  // parameters.
+  virtual bool IsValidTabId(content::BrowserContext* browser_context,
+                            int tab_id) const;
+  virtual bool IsValidTabId(content::BrowserContext* browser_context,
+                            int tab_id,
+                            bool include_incognito,
+                            content::WebContents** web_contents) const;
 
   // Returns true if chrome extension telemetry service is enabled.
   virtual bool IsExtensionTelemetryServiceEnabled(
       content::BrowserContext* context) const;
+
+  // Returns the script executor for `web_contents`.
+  virtual ScriptExecutor* GetScriptExecutorForTab(
+      content::WebContents& web_contents);
 
   // TODO(anunoy): This is a temporary implementation of notifying the
   // extension telemetry service of the tabs.executeScript API invocation

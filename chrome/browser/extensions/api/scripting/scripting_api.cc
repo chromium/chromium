@@ -92,6 +92,17 @@ mojom::ExecutionWorld ConvertExecutionWorld(
   return execution_world;
 }
 
+scripting::InjectionTarget ConvertToInternalInjectionTarget(
+    api::scripting::InjectionTarget injection_target) {
+  scripting::InjectionTarget internal_injection_target;
+  internal_injection_target.all_frames = injection_target.all_frames;
+  internal_injection_target.document_ids =
+      std::move(injection_target.document_ids);
+  internal_injection_target.frame_ids = std::move(injection_target.frame_ids);
+  internal_injection_target.tab_id = std::move(injection_target.tab_id);
+  return internal_injection_target;
+}
+
 std::string InjectionKeyForCode(const mojom::HostID& host_id,
                                 const std::string& code) {
   return ScriptExecutor::GenerateInjectionKey(host_id, /*script_url=*/GURL(),
@@ -247,198 +258,6 @@ bool CheckAndLoadFiles(std::vector<std::string> files,
       script_parsing::GetMaxScriptLength(),
       base::BindOnce(&CheckLoadedResources, std::move(files),
                      std::move(callback)));
-  return true;
-}
-
-// Returns an error message string for when an extension cannot access a page it
-// is attempting to.
-std::string GetCannotAccessPageErrorMessage(const PermissionsData& permissions,
-                                            const GURL& url) {
-  if (permissions.HasAPIPermission(mojom::APIPermissionID::kTab)) {
-    return ErrorUtils::FormatErrorMessage(
-        manifest_errors::kCannotAccessPageWithUrl, url.spec());
-  }
-  return manifest_errors::kCannotAccessPage;
-}
-
-// Returns true if the `permissions` allow for injection into the given `frame`.
-// If false, populates `error`.
-bool HasPermissionToInjectIntoFrame(const PermissionsData& permissions,
-                                    int tab_id,
-                                    content::RenderFrameHost* frame,
-                                    std::string* error) {
-  GURL committed_url = frame->GetLastCommittedURL();
-  if (committed_url.is_empty()) {
-    if (!frame->IsInPrimaryMainFrame()) {
-      // We can't check the pending URL for subframes from the //chrome layer.
-      // Assume the injection is allowed; the renderer has additional checks
-      // later on.
-      return true;
-    }
-    // Unknown URL, e.g. because no load was committed yet. In this case we look
-    // for any pending entry on the NavigationController associated with the
-    // WebContents for the frame.
-    content::WebContents* web_contents =
-        content::WebContents::FromRenderFrameHost(frame);
-    content::NavigationEntry* pending_entry =
-        web_contents->GetController().GetPendingEntry();
-    if (!pending_entry) {
-      *error = manifest_errors::kCannotAccessPage;
-      return false;
-    }
-    GURL pending_url = pending_entry->GetURL();
-    if (pending_url.SchemeIsHTTPOrHTTPS() &&
-        !permissions.CanAccessPage(pending_url, tab_id, error)) {
-      // This catches the majority of cases where an extension tried to inject
-      // on a newly-created navigating tab, saving us a potentially-costly IPC
-      // and, maybe, slightly reducing (but not by any stretch eliminating) an
-      // attack surface.
-      *error = GetCannotAccessPageErrorMessage(permissions, pending_url);
-      return false;
-    }
-
-    // Otherwise allow for now. The renderer has additional checks and will
-    // fail the injection if needed.
-    return true;
-  }
-
-  // TODO(devlin): Add more schemes here, in line with
-  // https://crbug.com/55084.
-  if (committed_url.SchemeIs(url::kAboutScheme) ||
-      committed_url.SchemeIs(url::kDataScheme)) {
-    url::Origin origin = frame->GetLastCommittedOrigin();
-    const url::SchemeHostPort& tuple_or_precursor_tuple =
-        origin.GetTupleOrPrecursorTupleIfOpaque();
-    if (!tuple_or_precursor_tuple.IsValid()) {
-      *error = GetCannotAccessPageErrorMessage(permissions, committed_url);
-      return false;
-    }
-
-    committed_url = tuple_or_precursor_tuple.GetURL();
-  }
-
-  return permissions.CanAccessPage(committed_url, tab_id, error);
-}
-
-// Collects the frames for injection. Method will return false if an error is
-// encountered.
-bool CollectFramesForInjection(const api::scripting::InjectionTarget& target,
-                               content::WebContents* tab,
-                               std::set<int>& frame_ids,
-                               std::set<content::RenderFrameHost*>& frames,
-                               std::string* error_out) {
-  if (target.document_ids) {
-    for (const auto& id : *target.document_ids) {
-      ExtensionApiFrameIdMap::DocumentId document_id =
-          ExtensionApiFrameIdMap::DocumentIdFromString(id);
-
-      if (!document_id) {
-        *error_out = base::StringPrintf("Invalid document id %s", id.c_str());
-        return false;
-      }
-
-      content::RenderFrameHost* frame =
-          ExtensionApiFrameIdMap::Get()->GetRenderFrameHostByDocumentId(
-              document_id);
-
-      // If the frame was not found or it matched another tab reject this
-      // request.
-      if (!frame || content::WebContents::FromRenderFrameHost(frame) != tab) {
-        *error_out =
-            base::StringPrintf("No document with id %s in tab with id %d",
-                               id.c_str(), target.tab_id);
-        return false;
-      }
-
-      // Convert the documentId into a frameId since the content will be
-      // injected synchronously.
-      frame_ids.insert(ExtensionApiFrameIdMap::GetFrameId(frame));
-      frames.insert(frame);
-    }
-  } else {
-    if (target.frame_ids) {
-      frame_ids.insert(target.frame_ids->begin(), target.frame_ids->end());
-    } else {
-      frame_ids.insert(ExtensionApiFrameIdMap::kTopFrameId);
-    }
-
-    for (int frame_id : frame_ids) {
-      content::RenderFrameHost* frame =
-          ExtensionApiFrameIdMap::GetRenderFrameHostById(tab, frame_id);
-      if (!frame) {
-        *error_out = base::StringPrintf("No frame with id %d in tab with id %d",
-                                        frame_id, target.tab_id);
-        return false;
-      }
-      frames.insert(frame);
-    }
-  }
-  return true;
-}
-
-// Returns true if the `target` can be accessed with the given `permissions`.
-// If the target can be accessed, populates `script_executor_out`,
-// `frame_scope_out`, and `frame_ids_out` with the appropriate values;
-// if the target cannot be accessed, populates `error_out`.
-bool CanAccessTarget(const PermissionsData& permissions,
-                     const api::scripting::InjectionTarget& target,
-                     content::BrowserContext* browser_context,
-                     bool include_incognito_information,
-                     ScriptExecutor** script_executor_out,
-                     ScriptExecutor::FrameScope* frame_scope_out,
-                     std::set<int>* frame_ids_out,
-                     std::string* error_out) {
-  content::WebContents* tab = nullptr;
-  TabHelper* tab_helper = nullptr;
-  if (!ExtensionTabUtil::GetTabById(target.tab_id, browser_context,
-                                    include_incognito_information, &tab) ||
-      !(tab_helper = TabHelper::FromWebContents(tab))) {
-    // TODO(devlin): Add a constant for this in a centrally-consumable location.
-    *error_out = base::StringPrintf("No tab with id: %d", target.tab_id);
-    return false;
-  }
-
-  if ((target.all_frames && *target.all_frames == true) &&
-      (target.frame_ids || target.document_ids)) {
-    *error_out =
-        "Cannot specify 'allFrames' if either 'frameIds' or 'documentIds' is "
-        "specified.";
-    return false;
-  }
-
-  if (target.frame_ids && target.document_ids) {
-    *error_out = "Cannot specify both 'frameIds' and 'documentIds'.";
-    return false;
-  }
-
-  ScriptExecutor* script_executor = tab_helper->script_executor();
-  DCHECK(script_executor);
-
-  ScriptExecutor::FrameScope frame_scope =
-      target.all_frames && *target.all_frames == true
-          ? ScriptExecutor::INCLUDE_SUB_FRAMES
-          : ScriptExecutor::SPECIFIED_FRAMES;
-
-  std::set<int> frame_ids;
-  std::set<content::RenderFrameHost*> frames;
-  if (!CollectFramesForInjection(target, tab, frame_ids, frames, error_out))
-    return false;
-
-  // TODO(devlin): If `allFrames` is true, we error out if the extension
-  // doesn't have access to the top frame (even if it may inject in child
-  // frames). This is inconsistent with content scripts (which can execute on
-  // child frames), but consistent with the old tabs.executeScript() API.
-  for (content::RenderFrameHost* frame : frames) {
-    DCHECK_EQ(content::WebContents::FromRenderFrameHost(frame), tab);
-    if (!HasPermissionToInjectIntoFrame(permissions, target.tab_id, frame,
-                                        error_out)) {
-      return false;
-    }
-  }
-
-  *frame_ids_out = std::move(frame_ids);
-  *frame_scope_out = frame_scope;
-  *script_executor_out = script_executor;
   return true;
 }
 
@@ -663,12 +482,15 @@ void ScriptingExecuteScriptFunction::DidLoadResources(
 bool ScriptingExecuteScriptFunction::Execute(
     std::vector<mojom::JSSourcePtr> sources,
     std::string* error) {
+  scripting::InjectionTarget internal_injection_target =
+      ConvertToInternalInjectionTarget(std::move(injection_.target));
   ScriptExecutor* script_executor = nullptr;
   ScriptExecutor::FrameScope frame_scope = ScriptExecutor::SPECIFIED_FRAMES;
   std::set<int> frame_ids;
-  if (!CanAccessTarget(*extension()->permissions_data(), injection_.target,
-                       browser_context(), include_incognito_information(),
-                       &script_executor, &frame_scope, &frame_ids, error)) {
+  if (!scripting::CanAccessTarget(
+          *extension()->permissions_data(), internal_injection_target,
+          browser_context(), include_incognito_information(), &script_executor,
+          &frame_scope, &frame_ids, error)) {
     return false;
   }
 
@@ -802,12 +624,15 @@ void ScriptingInsertCSSFunction::DidLoadResources(
 bool ScriptingInsertCSSFunction::Execute(
     std::vector<mojom::CSSSourcePtr> sources,
     std::string* error) {
+  scripting::InjectionTarget internal_injection_target =
+      ConvertToInternalInjectionTarget(std::move(injection_.target));
   ScriptExecutor* script_executor = nullptr;
   ScriptExecutor::FrameScope frame_scope = ScriptExecutor::SPECIFIED_FRAMES;
   std::set<int> frame_ids;
-  if (!CanAccessTarget(*extension()->permissions_data(), injection_.target,
-                       browser_context(), include_incognito_information(),
-                       &script_executor, &frame_scope, &frame_ids, error)) {
+  if (!scripting::CanAccessTarget(
+          *extension()->permissions_data(), internal_injection_target,
+          browser_context(), include_incognito_information(), &script_executor,
+          &frame_scope, &frame_ids, error)) {
     return false;
   }
   DCHECK(script_executor);
@@ -852,13 +677,16 @@ ExtensionFunction::ResponseAction ScriptingRemoveCSSFunction::Run() {
     return RespondNow(Error(kExactlyOneOfCssAndFilesError));
   }
 
+  scripting::InjectionTarget internal_injection_target =
+      ConvertToInternalInjectionTarget(std::move(injection.target));
   ScriptExecutor* script_executor = nullptr;
   ScriptExecutor::FrameScope frame_scope = ScriptExecutor::SPECIFIED_FRAMES;
   std::set<int> frame_ids;
   std::string error;
-  if (!CanAccessTarget(*extension()->permissions_data(), injection.target,
-                       browser_context(), include_incognito_information(),
-                       &script_executor, &frame_scope, &frame_ids, &error)) {
+  if (!scripting::CanAccessTarget(
+          *extension()->permissions_data(), internal_injection_target,
+          browser_context(), include_incognito_information(), &script_executor,
+          &frame_scope, &frame_ids, &error)) {
     return RespondNow(Error(std::move(error)));
   }
   DCHECK(script_executor);

@@ -49,6 +49,7 @@
 #include "chrome/browser/extensions/favicon/favicon_util.h"
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/browser/extensions/pref_mapping.h"
+#include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/extensions/updater/chrome_update_client_config.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
@@ -768,6 +769,21 @@ bool ChromeExtensionsBrowserClient::IsValidTabId(
     int tab_id) const {
   return ExtensionTabUtil::GetTabById(
       tab_id, context, true /* include_incognito */, nullptr /* contents */);
+}
+
+bool ChromeExtensionsBrowserClient::IsValidTabId(
+    content::BrowserContext* context,
+    int tab_id,
+    bool include_incognito,
+    content::WebContents** web_contents) const {
+  return ExtensionTabUtil::GetTabById(tab_id, context, include_incognito,
+                                      web_contents);
+}
+
+ScriptExecutor* ChromeExtensionsBrowserClient::GetScriptExecutorForTab(
+    content::WebContents& web_contents) {
+  TabHelper* tab_helper = TabHelper::FromWebContents(&web_contents);
+  return tab_helper ? tab_helper->script_executor() : nullptr;
 }
 
 void ChromeExtensionsBrowserClient::NotifyExtensionApiTabExecuteScript(

@@ -8,6 +8,10 @@
     "type": "module"
   },
   "permissions": [
-    "userScripts"
+    "userScripts",
+    "webNavigation"
+  ],
+  "host_permissions": [
+    "*://*.requested.com/*"
   ]
 }

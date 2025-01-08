@@ -190,8 +190,14 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
       content::WebContents* web_contents) const override;
   bool IsValidTabId(content::BrowserContext* context,
                     int tab_id) const override;
+  bool IsValidTabId(content::BrowserContext* context,
+                    int tab_id,
+                    bool include_incognito,
+                    content::WebContents** web_contents) const override;
   bool IsExtensionTelemetryServiceEnabled(
       content::BrowserContext* context) const override;
+  ScriptExecutor* GetScriptExecutorForTab(
+      content::WebContents& web_contents) override;
   void NotifyExtensionApiTabExecuteScript(
       content::BrowserContext* context,
       const ExtensionId& extension_id,

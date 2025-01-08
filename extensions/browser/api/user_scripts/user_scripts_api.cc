@@ -42,11 +42,6 @@ constexpr char kInvalidSourceWithoutIdError[] =
     "User script must specify exactly one of 'code' or 'file' as a js source.";
 constexpr char kMatchesMissingError[] =
     "User script with ID '*' must specify 'matches'.";
-constexpr char kInvalidAllFramesError[] =
-    "User script must not specify injection to 'all frames' when it has a "
-    "specific set of 'frameIds' to inject into.";
-constexpr char kInvalidInjectionTargetIdsError[] =
-    "User script must not specify both 'documentIds' and 'frameIds'.";
 
 // Sanitizes the given `world_id`, updating it if necessary.
 // Returns true on success; on failure, returns false and populates `error_out`.
@@ -78,6 +73,17 @@ bool IsValidWorldId(std::optional<std::string>& world_id,
 
   // Valid world ID!
   return true;
+}
+
+scripting::InjectionTarget ConvertToInternalInjectionTarget(
+    api::user_scripts::InjectionTarget injection_target) {
+  scripting::InjectionTarget internal_injection_target;
+  internal_injection_target.all_frames = injection_target.all_frames;
+  internal_injection_target.document_ids =
+      std::move(injection_target.document_ids);
+  internal_injection_target.frame_ids = std::move(injection_target.frame_ids);
+  internal_injection_target.tab_id = std::move(injection_target.tab_id);
+  return internal_injection_target;
 }
 
 api::scripts_internal::SerializedUserScript
@@ -648,18 +654,24 @@ ExtensionFunction::ResponseAction UserScriptsExecuteFunction::Run() {
 
   injection_ = std::move(params->injection);
 
+  // Validate injection script.
   if ((injection_.js.code && injection_.js.file) ||
       (!injection_.js.code && !injection_.js.file)) {
     return RespondNow(Error(kInvalidSourceWithoutIdError));
   }
 
-  if (injection_.target.frame_ids &&
-      injection_.target.all_frames.value_or(false)) {
-    return RespondNow(Error(kInvalidAllFramesError));
-  }
-
-  if (injection_.target.document_ids && injection_.target.frame_ids) {
-    return RespondNow(Error(kInvalidInjectionTargetIdsError));
+  // Validate injection target.
+  scripting::InjectionTarget internal_injection_target =
+      ConvertToInternalInjectionTarget(std::move(injection_.target));
+  ScriptExecutor* script_executor = nullptr;
+  ScriptExecutor::FrameScope frame_scope = ScriptExecutor::SPECIFIED_FRAMES;
+  std::set<int> frame_ids;
+  std::string error;
+  if (!scripting::CanAccessTarget(
+          *extension()->permissions_data(), internal_injection_target,
+          browser_context(), include_incognito_information(), &script_executor,
+          &frame_scope, &frame_ids, &error)) {
+    return RespondNow(Error(std::move(error)));
   }
 
   // TODO(crbug.com/326657581): Execute script with the given parameters.

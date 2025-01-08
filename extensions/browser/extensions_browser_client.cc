@@ -142,6 +142,19 @@ bool ExtensionsBrowserClient::IsValidTabId(content::BrowserContext* context,
   return false;
 }
 
+bool ExtensionsBrowserClient::IsValidTabId(
+    content::BrowserContext* browser_context,
+    int tab_id,
+    bool include_incognito,
+    content::WebContents** web_contents) const {
+  return false;
+}
+
+ScriptExecutor* ExtensionsBrowserClient::GetScriptExecutorForTab(
+    content::WebContents& web_contents) {
+  return nullptr;
+}
+
 void ExtensionsBrowserClient::NotifyExtensionApiTabExecuteScript(
     content::BrowserContext* context,
     const ExtensionId& extension_id,
