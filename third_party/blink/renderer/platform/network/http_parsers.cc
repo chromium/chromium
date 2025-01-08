@@ -159,21 +159,21 @@ HashMap<OutKey, OutValue> ConvertToBlink(
 
 // ===== Converters from non-Blink to Blink variant of Mojo structs =====
 blink::CSPSourcePtr ConvertToBlink(const CSPSourcePtr& in) {
-  DCHECK(in);
+  CHECK(in);
   return blink::CSPSource::New(
       ConvertToBlink(in->scheme), ConvertToBlink(in->host), in->port,
       ConvertToBlink(in->path), in->is_host_wildcard, in->is_port_wildcard);
 }
 
 blink::CSPHashSourcePtr ConvertToBlink(const CSPHashSourcePtr& in) {
-  DCHECK(in);
+  CHECK(in);
   Vector<uint8_t> hash_value = ConvertToBlink(in->value);
 
   return blink::CSPHashSource::New(in->algorithm, std::move(hash_value));
 }
 
 blink::CSPSourceListPtr ConvertToBlink(const CSPSourceListPtr& source_list) {
-  DCHECK(source_list);
+  CHECK(source_list);
 
   Vector<blink::CSPSourcePtr> sources = ConvertToBlink(source_list->sources);
   Vector<String> nonces = ConvertToBlink(source_list->nonces);
@@ -191,7 +191,7 @@ blink::CSPSourceListPtr ConvertToBlink(const CSPSourceListPtr& source_list) {
 
 blink::ContentSecurityPolicyHeaderPtr ConvertToBlink(
     const ContentSecurityPolicyHeaderPtr& in) {
-  DCHECK(in);
+  CHECK(in);
   return blink::ContentSecurityPolicyHeader::New(
       ConvertToBlink(in->header_value), in->type, in->source);
 }
@@ -205,7 +205,7 @@ blink::CSPTrustedTypesPtr ConvertToBlink(const CSPTrustedTypesPtr& in) {
 
 blink::ContentSecurityPolicyPtr ConvertToBlink(
     const ContentSecurityPolicyPtr& in) {
-  DCHECK(in);
+  CHECK(in);
   return blink::ContentSecurityPolicy::New(
       ConvertToBlink(in->self_origin), ConvertToBlink(in->raw_directives),
       ConvertToBlink(in->directives), in->upgrade_insecure_requests,
@@ -233,7 +233,7 @@ blink::AllowCSPFromHeaderValuePtr ConvertToBlink(
 }
 
 blink::LinkHeaderPtr ConvertToBlink(const LinkHeaderPtr& in) {
-  DCHECK(in);
+  CHECK(in);
   return blink::LinkHeader::New(
       ConvertToBlink(in->href),
       // TODO(dcheng): Make these use ConvertToBlink
@@ -301,13 +301,13 @@ blink::SRIMessageSignatureComponent::Parameter ConvertToBlink(
 
 blink::SRIMessageSignatureComponentPtr ConvertToBlink(
     const SRIMessageSignatureComponentPtr& in) {
-  DCHECK(in);
+  CHECK(in);
   return blink::SRIMessageSignatureComponent::New(ConvertToBlink(in->name),
                                                   ConvertToBlink(in->params));
 }
 
 blink::SRIMessageSignaturePtr ConvertToBlink(const SRIMessageSignaturePtr& in) {
-  DCHECK(in);
+  CHECK(in);
   return blink::SRIMessageSignature::New(
       ConvertToBlink(in->label), ConvertToBlink(in->signature),
       ConvertToBlink(in->components), in->created, in->expires,
@@ -317,13 +317,13 @@ blink::SRIMessageSignaturePtr ConvertToBlink(const SRIMessageSignaturePtr& in) {
 
 blink::SRIMessageSignaturesPtr ConvertToBlink(
     const SRIMessageSignaturesPtr& in) {
-  DCHECK(in);
+  CHECK(in);
   return blink::SRIMessageSignatures::New(ConvertToBlink(in->signatures),
                                           ConvertToBlink(in->parsing_errors));
 }
 
 blink::ParsedHeadersPtr ConvertToBlink(const ParsedHeadersPtr& in) {
-  DCHECK(in);
+  CHECK(in);
   return blink::ParsedHeaders::New(
       ConvertToBlink(in->content_security_policy),
       ConvertToBlink(in->allow_csp_from), in->cross_origin_embedder_policy,
