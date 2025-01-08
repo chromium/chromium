@@ -4,6 +4,8 @@
 
 static_library("passage_embeddings") {
   sources = [
+    "passage_embedder_model_observer.cc",
+    "passage_embedder_model_observer.h",
     "passage_embeddings_features.cc",
     "passage_embeddings_features.h",
     "passage_embeddings_service_controller.cc",

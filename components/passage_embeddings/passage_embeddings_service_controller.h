@@ -18,10 +18,6 @@ class PassageEmbeddingsServiceController {
   PassageEmbeddingsServiceController();
   virtual ~PassageEmbeddingsServiceController();
 
-  // Launches the passage embeddings service, and bind `cpu_logger_` to the
-  // service process.
-  virtual void LaunchService() = 0;
-
   // Updates the paths and the metadata needed for executing the passage
   // embeddings model. The original paths and metadata will be erased regardless
   // of the validity of the new model paths. Returns true if the given paths are
@@ -48,6 +44,10 @@ class PassageEmbeddingsServiceController {
   EmbedderMetadata GetEmbedderMetadata();
 
  protected:
+  // Launches the passage embeddings service, and bind `cpu_logger_` to the
+  // service process.
+  virtual void LaunchService() = 0;
+
   // Reset both service_remote_ and embedder_remote_.
   virtual void ResetRemotes();
 
