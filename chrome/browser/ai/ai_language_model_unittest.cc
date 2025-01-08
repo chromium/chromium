@@ -6,6 +6,8 @@
 
 #include <optional>
 
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -25,6 +27,7 @@
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-shared.h"
 #include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom-forward.h"
+#include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-shared.h"
 
 using testing::_;
 using testing::ReturnRef;
@@ -380,6 +383,81 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
                    /*should_overflow_context=*/false);
   }
 
+  void TestSessionDestroy(
+      base::OnceCallback<void(
+          mojo::Remote<blink::mojom::AILanguageModel> mock_session,
+          AITestUtils::MockModelStreamingResponder& mock_responder)> callback) {
+    SetupMockOptimizationGuideKeyedService();
+    base::OnceClosure size_in_token_callback;
+    EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
+        .WillOnce(
+            [&](optimization_guide::ModelBasedCapabilityKey feature,
+                const std::optional<optimization_guide::SessionConfigParams>&
+                    config_params) {
+              auto session = std::make_unique<
+                  testing::NiceMock<optimization_guide::MockSession>>();
+
+              SetUpMockSession(*session, /*use_prompt_api_proto=*/true,
+                               /*is_streaming_chunk_by_chunk=*/true);
+              ON_CALL(*session, GetExecutionInputSizeInTokens(_, _))
+                  .WillByDefault(
+                      [&](const google::protobuf::MessageLite& request_metadata,
+                          optimization_guide::
+                              OptimizationGuideModelSizeInTokenCallback
+                                  callback) {
+                        size_in_token_callback =
+                            base::BindOnce(std::move(callback),
+                                           ToString(request_metadata).size());
+                      });
+
+              // The model should not be executed.
+              EXPECT_CALL(*session, ExecuteModel(_, _)).Times(0);
+              return session;
+            });
+
+    mojo::Remote<blink::mojom::AILanguageModel> mock_session;
+    AITestUtils::MockCreateLanguageModelClient
+        mock_create_language_model_client;
+    base::RunLoop creation_run_loop;
+    EXPECT_CALL(mock_create_language_model_client, OnResult(_, _))
+        .WillOnce([&](mojo::PendingRemote<blink::mojom::AILanguageModel>
+                          language_model,
+                      blink::mojom::AILanguageModelInfoPtr info) {
+          EXPECT_TRUE(language_model);
+          mock_session = mojo::Remote<blink::mojom::AILanguageModel>(
+              std::move(language_model));
+          creation_run_loop.Quit();
+        });
+
+    mojo::Remote<blink::mojom::AIManager> mock_remote = GetAIManagerRemote();
+
+    mock_remote->CreateLanguageModel(
+        mock_create_language_model_client.BindNewPipeAndPassRemote(),
+        blink::mojom::AILanguageModelCreateOptions::New());
+    creation_run_loop.Run();
+
+    AITestUtils::MockModelStreamingResponder mock_responder;
+
+    base::RunLoop responder_run_loop;
+    std::string response = std::string(kTestResponse);
+
+    EXPECT_CALL(mock_responder, OnError(_))
+        .WillOnce(testing::Invoke(
+            [&](blink::mojom::ModelStreamingResponseStatus status) {
+              EXPECT_EQ(status, blink::mojom::ModelStreamingResponseStatus::
+                                    kErrorSessionDestroyed);
+              responder_run_loop.Quit();
+            }));
+
+    std::move(callback).Run(std::move(mock_session), mock_responder);
+    // Defers the `size_in_token_callback` until the testing callback which
+    // destroys the session is run.
+    if (size_in_token_callback) {
+      std::move(size_in_token_callback).Run();
+    }
+    responder_run_loop.Run();
+  }
+
  private:
   optimization_guide::OptimizationGuideModelStreamingExecutionResult
   CreateExecutionResult(const std::string& output, bool is_complete) {
@@ -587,6 +665,30 @@ TEST_P(AILanguageModelTest, PromptSessionWithContextOverflow) {
   RunPromptTest({.prompt_input = kTestPrompt,
                  .expected_prompt = kExpectedFormattedTestPrompt,
                  .should_overflow_context = true});
+}
+
+// Tests that sending `Prompt()` after destroying the session won't make a real
+// call to the model.
+TEST_P(AILanguageModelTest, PromptAfterDestroy) {
+  TestSessionDestroy(base::BindOnce(
+      [](mojo::Remote<blink::mojom::AILanguageModel> mock_session,
+         AITestUtils::MockModelStreamingResponder& mock_responder) {
+        mock_session->Destroy();
+        mock_session->Prompt(kTestPrompt,
+                             mock_responder.BindNewPipeAndPassRemote());
+      }));
+}
+
+// Tests that sending `Prompt()` right before destroying the session won't make
+// a real call to the model.
+TEST_P(AILanguageModelTest, PromptBeforeDestroy) {
+  TestSessionDestroy(base::BindOnce(
+      [](mojo::Remote<blink::mojom::AILanguageModel> mock_session,
+         AITestUtils::MockModelStreamingResponder& mock_responder) {
+        mock_session->Prompt(kTestPrompt,
+                             mock_responder.BindNewPipeAndPassRemote());
+        mock_session->Destroy();
+      }));
 }
 
 // Tests `AILanguageModel::Context` creation without initial prompts.

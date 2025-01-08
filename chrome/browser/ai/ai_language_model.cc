@@ -369,6 +369,12 @@ void AILanguageModel::PromptGetInputSizeCompletion(
     mojo::RemoteSetElementId responder_id,
     PromptApiRequest request,
     uint32_t number_of_tokens) {
+  if (!session_) {
+    // If the session is destroyed before this callback is invoked, we should
+    // not do anything further.
+    return;
+  }
+
   blink::mojom::ModelStreamingResponder* responder =
       responder_set_.Get(responder_id);
   if (!responder) {
