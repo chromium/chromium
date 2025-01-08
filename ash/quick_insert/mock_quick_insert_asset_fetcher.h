@@ -20,9 +20,11 @@ class ASH_EXPORT MockQuickInsertAssetFetcher : public QuickInsertAssetFetcher {
 
   // QuickInsertAssetFetcher:
   void FetchGifFromUrl(const GURL& url,
+                       size_t rank,
                        QuickInsertGifFetchedCallback callback) override;
   void FetchGifPreviewImageFromUrl(
       const GURL& url,
+      size_t rank,
       QuickInsertImageFetchedCallback callback) override;
   void FetchFileThumbnail(const base::FilePath& path,
                           const gfx::Size& size,

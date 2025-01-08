@@ -111,8 +111,28 @@ void DownloadGifMediaToString(
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
 }
 
-base::TimeDelta GetRetryJitter() {
-  return base::RandTimeDelta(base::Milliseconds(100), base::Seconds(1));
+void RunImmediatelyOrWithDelay(base::OnceClosure closure,
+                               base::TimeDelta delay) {
+  if (delay.is_zero()) {
+    std::move(closure).Run();
+  } else {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, std::move(closure), delay);
+  }
+}
+
+// Returns the delay for the request with `rank`.
+// The delay should increase with `rank` to encourage lower rank requests to
+// finish first and avoid congestion.
+base::TimeDelta GetRequestDelay(size_t rank) {
+  // The top 4 results should be fetched instantly, since they are likely to be
+  // visible above the fold.
+  if (rank < 4) {
+    return base::Seconds(0);
+  }
+  // The remaining results can be fetched later since they are likely to be
+  // below the fold.
+  return base::Milliseconds(200) + rank * base::Milliseconds(100);
 }
 
 }  // namespace
@@ -125,49 +145,27 @@ QuickInsertAssetFetcherImpl::~QuickInsertAssetFetcherImpl() = default;
 
 void QuickInsertAssetFetcherImpl::FetchGifFromUrl(
     const GURL& url,
+    size_t rank,
     QuickInsertGifFetchedCallback callback) {
-  if (pending_network_requests_ >= kMaxPendingNetworkRequests) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&QuickInsertAssetFetcherImpl::FetchGifFromUrl,
-                       weak_ptr_factory_.GetWeakPtr(), url,
-                       std::move(callback)),
-        GetRetryJitter());
-    return;
-  }
-
-  ++pending_network_requests_;
-  DownloadGifMediaToString(
-      url, delegate_->GetSharedURLLoaderFactory(),
-      base::BindOnce(
-          &image_util::DecodeAnimationData,
-          std::move(callback).Then(base::BindOnce(
-              &QuickInsertAssetFetcherImpl::OnNetworkRequestCompleted,
-              weak_ptr_factory_.GetWeakPtr()))));
+  RunImmediatelyOrWithDelay(
+      base::BindOnce(&DownloadGifMediaToString, url,
+                     delegate_->GetSharedURLLoaderFactory(),
+                     base::BindOnce(&image_util::DecodeAnimationData,
+                                    std::move(callback))),
+      GetRequestDelay(rank) + base::Milliseconds(500));
 }
 
 void QuickInsertAssetFetcherImpl::FetchGifPreviewImageFromUrl(
     const GURL& url,
+    size_t rank,
     QuickInsertImageFetchedCallback callback) {
-  if (pending_network_requests_ >= kMaxPendingNetworkRequests) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(
-            &QuickInsertAssetFetcherImpl::FetchGifPreviewImageFromUrl,
-            weak_ptr_factory_.GetWeakPtr(), url, std::move(callback)),
-        GetRetryJitter());
-    return;
-  }
-
-  ++pending_network_requests_;
-  DownloadGifMediaToString(
-      url, delegate_->GetSharedURLLoaderFactory(),
+  RunImmediatelyOrWithDelay(
       base::BindOnce(
-          &image_util::DecodeImageData,
-          std::move(callback).Then(base::BindOnce(
-              &QuickInsertAssetFetcherImpl::OnNetworkRequestCompleted,
-              weak_ptr_factory_.GetWeakPtr())),
-          data_decoder::mojom::ImageCodec::kDefault));
+          &DownloadGifMediaToString, url,
+          delegate_->GetSharedURLLoaderFactory(),
+          base::BindOnce(&image_util::DecodeImageData, std::move(callback),
+                         data_decoder::mojom::ImageCodec::kDefault)),
+      GetRequestDelay(rank));
 }
 
 void QuickInsertAssetFetcherImpl::FetchFileThumbnail(
@@ -175,10 +173,6 @@ void QuickInsertAssetFetcherImpl::FetchFileThumbnail(
     const gfx::Size& size,
     FetchFileThumbnailCallback callback) {
   delegate_->FetchFileThumbnail(path, size, std::move(callback));
-}
-
-void QuickInsertAssetFetcherImpl::OnNetworkRequestCompleted() {
-  --pending_network_requests_;
 }
 
 }  // namespace ash

@@ -268,10 +268,11 @@ QuickInsertSectionView::CreateItemFromResult(
             auto gif_view = std::make_unique<QuickInsertGifView>(
                 base::BindRepeating(&QuickInsertAssetFetcher::FetchGifFromUrl,
                                     base::Unretained(asset_fetcher),
-                                    data.preview_url),
+                                    data.preview_url, data.rank),
                 base::BindRepeating(
                     &QuickInsertAssetFetcher::FetchGifPreviewImageFromUrl,
-                    base::Unretained(asset_fetcher), data.preview_image_url),
+                    base::Unretained(asset_fetcher), data.preview_image_url,
+                    data.rank),
                 data.preview_dimensions);
             return std::make_unique<QuickInsertImageItemView>(
                 std::move(gif_view), data.content_description,

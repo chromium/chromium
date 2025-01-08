@@ -41,14 +41,20 @@ class ASH_EXPORT QuickInsertAssetFetcher {
   // Fetches and decodes a gif from `url`. If successful, the decoded gif frames
   // will be returned via `callback`. Otherwise, `callback` is run with an empty
   // vector of frames.
+  // `rank` is the index of the GIF in the results. The lower the rank, the
+  // higher its priority.
   virtual void FetchGifFromUrl(const GURL& url,
+                               size_t rank,
                                QuickInsertGifFetchedCallback callback) = 0;
 
   // Fetches and decodes a gif preview image from `url`. If successful, the
   // decoded gif preview image will be returned via `callback`. Otherwise,
   // `callback` is run with an empty ImageSkia.
+  // `rank` is the index of the GIF in the results. The lower the rank, the
+  // higher its priority.
   virtual void FetchGifPreviewImageFromUrl(
       const GURL& url,
+      size_t rank,
       QuickInsertImageFetchedCallback callback) = 0;
 
   // Fetches the thumbnail for a file and calls `callback` with the result.

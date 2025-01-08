@@ -16,10 +16,12 @@ MockQuickInsertAssetFetcher::~MockQuickInsertAssetFetcher() = default;
 
 void MockQuickInsertAssetFetcher::FetchGifFromUrl(
     const GURL& url,
+    size_t rank,
     QuickInsertGifFetchedCallback callback) {}
 
 void MockQuickInsertAssetFetcher::FetchGifPreviewImageFromUrl(
     const GURL& url,
+    size_t rank,
     QuickInsertImageFetchedCallback callback) {}
 
 void MockQuickInsertAssetFetcher::FetchFileThumbnail(

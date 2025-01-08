@@ -126,16 +126,17 @@ std::vector<QuickInsertSearchResult> ConvertGifResponse(
     return {};
   }
 
-  std::vector<QuickInsertGifResult> gif_results;
+  size_t rank = 0;
   return base::ToVector(
-      (*response)->results, [](const tenor::mojom::GifResponsePtr& result) {
+      (*response)->results,
+      [&rank](const tenor::mojom::GifResponsePtr& result) {
         CHECK(result);
         const tenor::mojom::GifUrlsPtr& urls = result->url;
         CHECK(urls);
         return QuickInsertSearchResult(QuickInsertGifResult(
             urls->preview, urls->preview_image, result->preview_size,
             urls->full, result->full_size,
-            base::UTF8ToUTF16(result->content_description)));
+            base::UTF8ToUTF16(result->content_description), rank++));
       });
 }
 

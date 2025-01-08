@@ -27,23 +27,20 @@ class ASH_EXPORT QuickInsertAssetFetcherImpl : public QuickInsertAssetFetcher {
       delete;
   ~QuickInsertAssetFetcherImpl() override;
 
-  static constexpr size_t kMaxPendingNetworkRequests = 5;
-
   // QuickInsertAssetFetcher:
   void FetchGifFromUrl(const GURL& url,
+                       size_t rank,
                        QuickInsertGifFetchedCallback callback) override;
   void FetchGifPreviewImageFromUrl(
       const GURL& url,
+      size_t rank,
       QuickInsertImageFetchedCallback callback) override;
   void FetchFileThumbnail(const base::FilePath& path,
                           const gfx::Size& size,
                           FetchFileThumbnailCallback callback) override;
 
  private:
-  void OnNetworkRequestCompleted();
-
   raw_ptr<QuickInsertAssetFetcherImplDelegate> delegate_;
-  size_t pending_network_requests_ = 0;
   base::WeakPtrFactory<QuickInsertAssetFetcherImpl> weak_ptr_factory_{this};
 };
 
