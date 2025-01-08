@@ -708,6 +708,9 @@ void SearchBoxViewBase::OnEnabledChanged() {
     close_button_->SetEnabled(enabled);
   if (assistant_button_)
     assistant_button_->SetEnabled(enabled);
+  if (sunfish_button_) {
+    sunfish_button_->SetEnabled(enabled);
+  }
   if (assistant_new_entry_point_button_) {
     assistant_new_entry_point_button_->SetEnabled(enabled);
   }
