@@ -29,6 +29,7 @@
 #include "bidding_and_auction_server_key_fetcher.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
+#include "content/browser/renderer_host/private_network_access_util.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/cpp/auction_downloader.h"
 #include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
@@ -42,7 +43,9 @@
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
+#include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "services/network/public/mojom/url_loader_completion_status.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/boringssl/src/include/openssl/hpke.h"
@@ -341,6 +344,7 @@ TrustedSignalsFetcher::~TrustedSignalsFetcher() = default;
 void TrustedSignalsFetcher::FetchBiddingSignals(
     network::mojom::URLLoaderFactory* url_loader_factory,
     const url::Origin& main_frame_origin,
+    network::mojom::IPAddressSpace ip_address_space,
     base::UnguessableToken network_partition_nonce,
     const url::Origin& script_origin,
     const GURL& trusted_bidding_signals_url,
@@ -348,8 +352,9 @@ void TrustedSignalsFetcher::FetchBiddingSignals(
     const std::map<int, std::vector<BiddingPartition>>& compression_groups,
     Callback callback) {
   EncryptRequestBodyAndStart(
-      url_loader_factory, main_frame_origin, network_partition_nonce,
-      script_origin, trusted_bidding_signals_url, bidding_and_auction_key,
+      url_loader_factory, main_frame_origin, ip_address_space,
+      network_partition_nonce, script_origin, trusted_bidding_signals_url,
+      bidding_and_auction_key,
       BuildSignalsRequestBody(main_frame_origin.host(), compression_groups),
       std::move(callback));
 }
@@ -357,6 +362,7 @@ void TrustedSignalsFetcher::FetchBiddingSignals(
 void TrustedSignalsFetcher::FetchScoringSignals(
     network::mojom::URLLoaderFactory* url_loader_factory,
     const url::Origin& main_frame_origin,
+    network::mojom::IPAddressSpace ip_address_space,
     base::UnguessableToken network_partition_nonce,
     const url::Origin& script_origin,
     const GURL& trusted_scoring_signals_url,
@@ -364,8 +370,9 @@ void TrustedSignalsFetcher::FetchScoringSignals(
     const std::map<int, std::vector<ScoringPartition>>& compression_groups,
     Callback callback) {
   EncryptRequestBodyAndStart(
-      url_loader_factory, main_frame_origin, network_partition_nonce,
-      script_origin, trusted_scoring_signals_url, bidding_and_auction_key,
+      url_loader_factory, main_frame_origin, ip_address_space,
+      network_partition_nonce, script_origin, trusted_scoring_signals_url,
+      bidding_and_auction_key,
       BuildSignalsRequestBody(main_frame_origin.host(), compression_groups),
       std::move(callback));
 }
@@ -373,6 +380,7 @@ void TrustedSignalsFetcher::FetchScoringSignals(
 void TrustedSignalsFetcher::EncryptRequestBodyAndStart(
     network::mojom::URLLoaderFactory* url_loader_factory,
     const url::Origin& main_frame_origin,
+    network::mojom::IPAddressSpace ip_address_space,
     base::UnguessableToken network_partition_nonce,
     const url::Origin& script_origin,
     const GURL& trusted_signals_url,
@@ -425,8 +433,16 @@ void TrustedSignalsFetcher::EncryptRequestBodyAndStart(
       /*frame_origin=*/main_frame_origin, net::SiteForCookies(),
       network_partition_nonce);
 
-  // TODO(crbug.com/333445540): Set reasonable client security state and select
-  // reasonable maximum body size. Also hook up to devtools.
+  auto client_security_state = network::mojom::ClientSecurityState::New();
+  client_security_state->ip_address_space = ip_address_space;
+  client_security_state->is_web_secure_context = true;
+  // This call is needed to respect the various features that affect the policy.
+  client_security_state->private_network_request_policy =
+      DerivePrivateNetworkRequestPolicy(
+          ip_address_space, /*is_web_secure_context=*/true,
+          PrivateNetworkRequestContext::kSubresource);
+  resource_request->trusted_params->client_security_state =
+      std::move(client_security_state);
 
   simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), kTrafficAnnotation);

@@ -48,6 +48,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
+#include "services/network/public/mojom/ip_address_space.mojom-forward.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/interest_group/ad_auction_service.mojom.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
@@ -493,6 +494,7 @@ class CONTENT_EXPORT InterestGroupAuction
   InterestGroupAuction(
       auction_worklet::mojom::KAnonymityBidMode kanon_mode,
       const url::Origin& main_frame_origin,
+      network::mojom::IPAddressSpace ip_address_space,
       const blink::AuctionConfig* config,
       const InterestGroupAuction* parent,
       AuctionMetricsRecorder* auction_metrics_recorder,
@@ -568,6 +570,10 @@ class CONTENT_EXPORT InterestGroupAuction
   // Takes ownership of the `auction_config`, so that the reporter can outlive
   // other auction-related classes. This also means that various method on
   // `this` that use the configuration should not be called past this point.
+  //
+  // TODO(https://crbug.com/385152122): Consider switching to using
+  // IPAddressSpace instead of ClientSecurityState here and elsewhere, to
+  // protect against leaks.
   std::unique_ptr<InterestGroupAuctionReporter> CreateReporter(
       BrowserContext* browser_context,
       PrivateAggregationManager* private_aggregation_manager,
@@ -1342,6 +1348,7 @@ class CONTENT_EXPORT InterestGroupAuction
   const auction_worklet::mojom::KAnonymityBidMode kanon_mode_;
 
   const url::Origin main_frame_origin_;
+  const network::mojom::IPAddressSpace ip_address_space_;
 
   const raw_ptr<AuctionMetricsRecorder> auction_metrics_recorder_;
   const raw_ptr<AuctionWorkletManager> auction_worklet_manager_;

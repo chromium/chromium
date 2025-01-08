@@ -25,6 +25,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
@@ -33,6 +34,7 @@
 #include "base/values.h"
 #include "components/cbor/writer.h"
 #include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/services/auction_worklet/public/cpp/auction_downloader.h"
 #include "content/services/auction_worklet/public/cpp/cbor_test_util.h"
@@ -49,7 +51,13 @@
 #include "net/third_party/quiche/src/quiche/oblivious_http/common/oblivious_http_header_key_config.h"
 #include "net/third_party/quiche/src/quiche/oblivious_http/oblivious_http_gateway.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "services/network/public/cpp/cross_origin_embedder_policy.h"
+#include "services/network/public/cpp/document_isolation_policy.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
+#include "services/network/public/mojom/document_isolation_policy.mojom.h"
+#include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -267,7 +275,8 @@ class TrustedSignalsFetcherTest : public testing::Test {
     TrustedSignalsFetcher trusted_signals_fetcher;
     trusted_signals_fetcher.FetchBiddingSignals(
         url_loader_factory_.get(), kDefaultMainFrameOrigin,
-        network_partition_nonce_, GetScriptOrigin(), url,
+        network::mojom::IPAddressSpace::kPublic, network_partition_nonce_,
+        GetScriptOrigin(), url,
         BiddingAndAuctionServerKey{
             std::string(reinterpret_cast<const char*>(kTestPublicKey),
                         sizeof(kTestPublicKey)),
@@ -297,7 +306,8 @@ class TrustedSignalsFetcherTest : public testing::Test {
     TrustedSignalsFetcher trusted_signals_fetcher;
     trusted_signals_fetcher.FetchScoringSignals(
         url_loader_factory_.get(), kDefaultMainFrameOrigin,
-        network_partition_nonce_, GetScriptOrigin(), url,
+        network::mojom::IPAddressSpace::kPublic, network_partition_nonce_,
+        GetScriptOrigin(), url,
         BiddingAndAuctionServerKey{
             std::string(reinterpret_cast<const char*>(kTestPublicKey),
                         sizeof(kTestPublicKey)),
@@ -2358,7 +2368,8 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsIsolationInfo) {
   network::TestURLLoaderFactory url_loader_factory;
   TrustedSignalsFetcher trusted_signals_fetcher;
   trusted_signals_fetcher.FetchBiddingSignals(
-      &url_loader_factory, kDefaultMainFrameOrigin, network_partition_nonce_,
+      &url_loader_factory, kDefaultMainFrameOrigin,
+      network::mojom::IPAddressSpace::kPublic, network_partition_nonce_,
       GetScriptOrigin(), TrustedBiddingSignalsUrl(),
       BiddingAndAuctionServerKey{
           std::string(reinterpret_cast<const char*>(kTestPublicKey),
@@ -2394,7 +2405,8 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsIsolationInfo) {
   network::TestURLLoaderFactory url_loader_factory;
   TrustedSignalsFetcher trusted_signals_fetcher;
   trusted_signals_fetcher.FetchScoringSignals(
-      &url_loader_factory, kDefaultMainFrameOrigin, network_partition_nonce_,
+      &url_loader_factory, kDefaultMainFrameOrigin,
+      network::mojom::IPAddressSpace::kPublic, network_partition_nonce_,
       GetScriptOrigin(), TrustedScoringSignalsUrl(),
       BiddingAndAuctionServerKey{
           std::string(reinterpret_cast<const char*>(kTestPublicKey),
@@ -2417,6 +2429,94 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsIsolationInfo) {
       net::IsolationInfo::RequestType::kOther, kDefaultMainFrameOrigin,
       kDefaultMainFrameOrigin, net::SiteForCookies(),
       network_partition_nonce_)));
+}
+
+// Tests that IPAddressInfo is passed through, and the rest of the
+// ClientSecurityState is generated correctly.
+TEST_F(TrustedSignalsFetcherTest, ScoringSignalsClientSecurityState) {
+  for (bool enable_blocking : {false, true}) {
+    SCOPED_TRACE(enable_blocking);
+    base::test::ScopedFeatureList feature_list;
+    if (enable_blocking) {
+      feature_list.InitAndEnableFeature(
+          features::kPrivateNetworkAccessRespectPreflightResults);
+    } else {
+      feature_list.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{
+              features::kPrivateNetworkAccessRespectPreflightResults,
+              features::kPrivateNetworkAccessSendPreflights});
+    }
+
+    for (network::mojom::IPAddressSpace ip_address_space :
+         {network::mojom::IPAddressSpace::kLocal,
+          network::mojom::IPAddressSpace::kPrivate,
+          network::mojom::IPAddressSpace::kPublic}) {
+      SCOPED_TRACE(static_cast<int>(ip_address_space));
+
+      // Unlike other tests, use a TestURLLoaderFactory, which intercepts
+      // requests and lets their fields be examined directly, rather than a
+      // TestSharedURLLoaderFactory, which makes real requests. This allows
+      // directly inspecting passed in arguments. Validating them based on
+      // actual returned results is, unfortunately, just too difficult to be
+      // practical.
+      network::TestURLLoaderFactory url_loader_factory;
+      TrustedSignalsFetcher trusted_signals_fetcher;
+      trusted_signals_fetcher.FetchScoringSignals(
+          &url_loader_factory, kDefaultMainFrameOrigin, ip_address_space,
+          network_partition_nonce_, GetScriptOrigin(),
+          TrustedScoringSignalsUrl(),
+          BiddingAndAuctionServerKey{
+              std::string(reinterpret_cast<const char*>(kTestPublicKey),
+                          sizeof(kTestPublicKey)),
+              kKeyId},
+          CreateBasicScoringSignalsRequest(),
+          base::BindLambdaForTesting(
+              [](TrustedSignalsFetcher::SignalsFetchResult result) {
+                ADD_FAILURE() << "This callback should not be invoked";
+              }));
+
+      url_loader_factory.WaitForRequest(TrustedScoringSignalsUrl());
+      ASSERT_EQ(url_loader_factory.NumPending(), 1);
+      const auto* request = url_loader_factory.GetPendingRequest(0);
+      EXPECT_EQ(request->request.url, TrustedScoringSignalsUrl());
+
+      ASSERT_TRUE(request->request.trusted_params);
+      auto* client_security_state =
+          request->request.trusted_params->client_security_state.get();
+      ASSERT_TRUE(client_security_state);
+
+      EXPECT_EQ(client_security_state->ip_address_space, ip_address_space);
+      EXPECT_EQ(
+          client_security_state->private_network_request_policy,
+          enable_blocking
+              ? network::mojom::PrivateNetworkRequestPolicy::kPreflightBlock
+              : network::mojom::PrivateNetworkRequestPolicy::kAllow);
+      EXPECT_EQ(client_security_state->is_web_secure_context, true);
+
+      // These should all be defaults, per the spec.
+
+      EXPECT_EQ(client_security_state->cross_origin_embedder_policy.value,
+                network::mojom::CrossOriginEmbedderPolicyValue::kNone);
+      EXPECT_FALSE(client_security_state->cross_origin_embedder_policy
+                       .reporting_endpoint.has_value());
+      EXPECT_EQ(
+          client_security_state->cross_origin_embedder_policy.report_only_value,
+          network::mojom::CrossOriginEmbedderPolicyValue::kNone);
+      EXPECT_FALSE(client_security_state->cross_origin_embedder_policy
+                       .report_only_reporting_endpoint.has_value());
+
+      EXPECT_EQ(client_security_state->document_isolation_policy.value,
+                network::mojom::DocumentIsolationPolicyValue::kNone);
+      EXPECT_FALSE(client_security_state->document_isolation_policy
+                       .reporting_endpoint.has_value());
+      EXPECT_EQ(
+          client_security_state->document_isolation_policy.report_only_value,
+          network::mojom::DocumentIsolationPolicyValue::kNone);
+      EXPECT_FALSE(client_security_state->document_isolation_policy
+                       .report_only_reporting_endpoint.has_value());
+    }
+  }
 }
 
 // Test that the request timeout (which should use the value of
@@ -2454,6 +2554,7 @@ TEST(TrustedSignalsFetcherTimeoutTest, BiddingSignalsTimeout) {
   TrustedSignalsFetcher trusted_signals_fetcher;
   trusted_signals_fetcher.FetchBiddingSignals(
       &url_loader_factory, /*main_frame_origin=*/kSignalsOrigin,
+      network::mojom::IPAddressSpace::kPublic,
       /*network_partition_nonce=*/base::UnguessableToken::Create(),
       kSignalsOrigin, kSignalsUrl,
       BiddingAndAuctionServerKey{

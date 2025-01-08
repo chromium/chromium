@@ -57,6 +57,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/message_pipe.h"
+#include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -542,7 +543,8 @@ class AuctionProcessManagerTest
         trusted_signals_handle =
             trusted_signals_cache_.RequestTrustedBiddingSignals(
                 url::Origin::Create(GURL("https://main-frame-origin.test")),
-                origin, "Interest Group Name",
+                network::mojom::IPAddressSpace::kPublic, origin,
+                "Interest Group Name",
                 blink::InterestGroup::ExecutionMode::kCompatibilityMode,
                 url::Origin::Create(GURL("https://joinin-origin.test")),
                 GURL("https://trusted-signals-url/"),
@@ -554,7 +556,8 @@ class AuctionProcessManagerTest
         trusted_signals_handle =
             trusted_signals_cache_.RequestTrustedScoringSignals(
                 url::Origin::Create(GURL("https://main-frame-origin.test")),
-                origin, GURL("https://trusted-signals-url/"),
+                network::mojom::IPAddressSpace::kPublic, origin,
+                GURL("https://trusted-signals-url/"),
                 url::Origin::Create(GURL("https://coordinator.test")),
                 url::Origin::Create(GURL("https://bidder.test")),
                 url::Origin::Create(GURL("https://joining-origin.test")),

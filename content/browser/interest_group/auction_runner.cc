@@ -557,6 +557,7 @@ AuctionRunner::AuctionRunner(
       promise_fields_in_auction_config_(owned_auction_config_->NumPromises()),
       auction_(kanon_mode_,
                main_frame_origin,
+               client_security_state_->ip_address_space,
                owned_auction_config_.get(),
                /*parent=*/nullptr,
                auction_metrics_recorder,

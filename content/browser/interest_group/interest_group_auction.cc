@@ -92,6 +92,7 @@
 #include "net/third_party/quiche/src/quiche/oblivious_http/buffers/oblivious_http_response.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
+#include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
@@ -2310,9 +2311,9 @@ class InterestGroupAuction::BuyerHelper
     bid_state.bidding_signals_handle =
         auction_->interest_group_manager_->trusted_signals_cache()
             ->RequestTrustedBiddingSignals(
-                auction_->main_frame_origin_, interest_group.owner,
-                interest_group.name, interest_group.execution_mode,
-                bid_state.bidder->joining_origin,
+                auction_->main_frame_origin_, auction_->ip_address_space_,
+                interest_group.owner, interest_group.name,
+                interest_group.execution_mode, bid_state.bidder->joining_origin,
                 *interest_group.trusted_bidding_signals_url,
                 *interest_group.trusted_bidding_signals_coordinator,
                 interest_group.trusted_bidding_signals_keys,
@@ -3001,6 +3002,7 @@ class InterestGroupAuction::BuyerHelper
 InterestGroupAuction::InterestGroupAuction(
     auction_worklet::mojom::KAnonymityBidMode kanon_mode,
     const url::Origin& main_frame_origin,
+    network::mojom::IPAddressSpace ip_address_space,
     const blink::AuctionConfig* config,
     const InterestGroupAuction* parent,
     AuctionMetricsRecorder* auction_metrics_recorder,
@@ -3017,6 +3019,7 @@ InterestGroupAuction::InterestGroupAuction(
       trace_id_(base::trace_event::GetNextGlobalTraceId()),
       kanon_mode_(kanon_mode),
       main_frame_origin_(main_frame_origin),
+      ip_address_space_(ip_address_space),
       auction_metrics_recorder_(auction_metrics_recorder),
       auction_worklet_manager_(auction_worklet_manager),
       auction_nonce_manager_(auction_nonce_manager),
@@ -3064,7 +3067,8 @@ InterestGroupAuction::InterestGroupAuction(
     component_auctions_.emplace(
         child_pos,
         std::make_unique<InterestGroupAuction>(
-            kanon_mode_, main_frame_origin, &component_auction_config,
+            kanon_mode_, main_frame_origin, ip_address_space,
+            &component_auction_config,
             /*parent=*/this, auction_metrics_recorder_, auction_worklet_manager,
             auction_nonce_manager, interest_group_manager,
             get_data_decoder_callback_, auction_start_time_,
@@ -5545,7 +5549,7 @@ void InterestGroupAuction::ScoreBid(std::unique_ptr<Bid> bid) {
     cache_handle =
         interest_group_manager_->trusted_signals_cache()
             ->RequestTrustedScoringSignals(
-                main_frame_origin_, config_->seller,
+                main_frame_origin_, ip_address_space_, config_->seller,
                 *config_->trusted_scoring_signals_url,
                 *config_->non_shared_params.trusted_scoring_signals_coordinator,
                 bid->interest_group->owner,

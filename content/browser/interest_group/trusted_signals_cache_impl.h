@@ -26,6 +26,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/ip_address_space.mojom-forward.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -206,6 +207,7 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
   // over the network after a post task.
   scoped_refptr<Handle> RequestTrustedBiddingSignals(
       const url::Origin& main_frame_origin,
+      network::mojom::IPAddressSpace ip_address_space,
       const url::Origin& interest_group_owner,
       const std::string& interest_group_name,
       blink::mojom::InterestGroup_ExecutionMode execution_mode,
@@ -238,6 +240,7 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
   // origin} triplet.
   scoped_refptr<TrustedSignalsCacheImpl::Handle> RequestTrustedScoringSignals(
       const url::Origin& main_frame_origin,
+      network::mojom::IPAddressSpace ip_address_space,
       const url::Origin& seller,
       const GURL& trusted_signals_url,
       const url::Origin& coordinator,
@@ -319,6 +322,7 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
     // scoring signals fetches, it's the seller origin (component or top-level,
     // depending on which seller will be receiving the signals).
     FetchKey(const url::Origin& main_frame_origin,
+             network::mojom::IPAddressSpace ip_address_space,
              SignalsType signals_type,
              const url::Origin& script_origin,
              const GURL& trusted_signals_url,
@@ -354,6 +358,8 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
     url::Origin main_frame_origin;
 
     url::Origin coordinator;
+
+    network::mojom::IPAddressSpace ip_address_space;
   };
 
   // A pending or live network request. May be for bidding signals or scoring
@@ -406,6 +412,7 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
                     const GURL& trusted_signals_url,
                     const url::Origin& coordinator,
                     const url::Origin& main_frame_origin,
+                    network::mojom::IPAddressSpace ip_address_space,
                     const url::Origin& joining_origin,
                     base::Value::Dict additional_params);
 
@@ -461,6 +468,7 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
                     const GURL& trusted_signals_url,
                     const url::Origin& coordinator,
                     const url::Origin& main_frame_origin,
+                    network::mojom::IPAddressSpace ip_address_space,
                     const url::Origin& interest_group_owner,
                     const url::Origin& joining_origin,
                     const GURL& render_url,

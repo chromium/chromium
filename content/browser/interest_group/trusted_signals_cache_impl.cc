@@ -38,6 +38,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -124,6 +125,7 @@ TrustedSignalsCacheImpl::FetchKey::FetchKey() = default;
 
 TrustedSignalsCacheImpl::FetchKey::FetchKey(
     const url::Origin& main_frame_origin,
+    network::mojom::IPAddressSpace ip_address_space,
     SignalsType signals_type,
     const url::Origin& script_origin,
     const GURL& trusted_signals_url,
@@ -132,7 +134,8 @@ TrustedSignalsCacheImpl::FetchKey::FetchKey(
                                   signals_type,
                                   trusted_signals_url),
       main_frame_origin(main_frame_origin),
-      coordinator(coordinator) {}
+      coordinator(coordinator),
+      ip_address_space(ip_address_space) {}
 
 TrustedSignalsCacheImpl::FetchKey::FetchKey(const FetchKey&) = default;
 TrustedSignalsCacheImpl::FetchKey::FetchKey(FetchKey&&) = default;
@@ -145,9 +148,10 @@ TrustedSignalsCacheImpl::FetchKey& TrustedSignalsCacheImpl::FetchKey::operator=(
 TrustedSignalsCacheImpl::FetchKey::~FetchKey() = default;
 
 bool TrustedSignalsCacheImpl::FetchKey::operator<(const FetchKey& other) const {
-  return std::tie(network_partition_nonce_key, main_frame_origin, coordinator) <
+  return std::tie(network_partition_nonce_key, main_frame_origin, coordinator,
+                  ip_address_space) <
          std::tie(other.network_partition_nonce_key, other.main_frame_origin,
-                  other.coordinator);
+                  other.coordinator, other.ip_address_space);
 }
 
 struct TrustedSignalsCacheImpl::Fetch {
@@ -223,10 +227,12 @@ TrustedSignalsCacheImpl::BiddingCacheKey::BiddingCacheKey(
     const GURL& trusted_signals_url,
     const url::Origin& coordinator,
     const url::Origin& main_frame_origin,
+    network::mojom::IPAddressSpace ip_address_space,
     const url::Origin& joining_origin,
     base::Value::Dict additional_params)
     : interest_group_name(std::move(interest_group_name)),
       fetch_key(main_frame_origin,
+                ip_address_space,
                 SignalsType::kBidding,
                 interest_group_owner,
                 trusted_signals_url,
@@ -347,6 +353,7 @@ TrustedSignalsCacheImpl::ScoringCacheKey::ScoringCacheKey(
     const GURL& trusted_signals_url,
     const url::Origin& coordinator,
     const url::Origin& main_frame_origin,
+    network::mojom::IPAddressSpace ip_address_space,
     const url::Origin& interest_group_owner,
     const url::Origin& joining_origin,
     const GURL& render_url,
@@ -356,6 +363,7 @@ TrustedSignalsCacheImpl::ScoringCacheKey::ScoringCacheKey(
       component_render_urls(component_render_urls.begin(),
                             component_render_urls.end()),
       fetch_key(main_frame_origin,
+                ip_address_space,
                 SignalsType::kScoring,
                 seller,
                 trusted_signals_url,
@@ -651,6 +659,7 @@ TrustedSignalsCacheImpl::CreateRemote(SignalsType signals_type,
 scoped_refptr<TrustedSignalsCacheImpl::Handle>
 TrustedSignalsCacheImpl::RequestTrustedBiddingSignals(
     const url::Origin& main_frame_origin,
+    network::mojom::IPAddressSpace ip_address_space,
     const url::Origin& interest_group_owner,
     const std::string& interest_group_name,
     blink::mojom::InterestGroup_ExecutionMode execution_mode,
@@ -664,12 +673,12 @@ TrustedSignalsCacheImpl::RequestTrustedBiddingSignals(
   bool is_group_by_origin =
       execution_mode ==
       blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
-  BiddingCacheKey cache_key(interest_group_owner,
-                            is_group_by_origin
-                                ? std::nullopt
-                                : std::make_optional(interest_group_name),
-                            trusted_signals_url, coordinator, main_frame_origin,
-                            joining_origin, std::move(additional_params));
+  BiddingCacheKey cache_key(
+      interest_group_owner,
+      is_group_by_origin ? std::nullopt
+                         : std::make_optional(interest_group_name),
+      trusted_signals_url, coordinator, main_frame_origin, ip_address_space,
+      joining_origin, std::move(additional_params));
 
   BiddingCacheEntryMap::iterator cache_entry_it =
       bidding_cache_entries_.find(cache_key);
@@ -755,6 +764,7 @@ TrustedSignalsCacheImpl::RequestTrustedBiddingSignals(
 scoped_refptr<TrustedSignalsCacheImpl::Handle>
 TrustedSignalsCacheImpl::RequestTrustedScoringSignals(
     const url::Origin& main_frame_origin,
+    network::mojom::IPAddressSpace ip_address_space,
     const url::Origin& seller,
     const GURL& trusted_signals_url,
     const url::Origin& coordinator,
@@ -764,10 +774,10 @@ TrustedSignalsCacheImpl::RequestTrustedScoringSignals(
     const std::vector<GURL>& component_render_urls,
     base::Value::Dict additional_params,
     int& partition_id) {
-  ScoringCacheKey cache_key(seller, trusted_signals_url, coordinator,
-                            main_frame_origin, interest_group_owner,
-                            joining_origin, render_url, component_render_urls,
-                            std::move(additional_params));
+  ScoringCacheKey cache_key(
+      seller, trusted_signals_url, coordinator, main_frame_origin,
+      ip_address_space, interest_group_owner, joining_origin, render_url,
+      component_render_urls, std::move(additional_params));
 
   ScoringCacheEntryMap::iterator cache_entry_it =
       scoring_cache_entries_.find(cache_key);
@@ -1049,6 +1059,7 @@ void TrustedSignalsCacheImpl::StartBiddingSignalsFetch(
   }
   fetch->fetcher->FetchBiddingSignals(
       url_loader_factory_.get(), fetch_key->main_frame_origin,
+      fetch_key->ip_address_space,
       GetNetworkPartitionNonce(fetch_key->network_partition_nonce_key),
       fetch_key->script_origin(), fetch_key->trusted_signals_url(),
       *fetch->coordinator_key, bidding_partition_map,
@@ -1094,6 +1105,7 @@ void TrustedSignalsCacheImpl::StartScoringSignalsFetch(
   }
   fetch->fetcher->FetchScoringSignals(
       url_loader_factory_.get(), fetch_key->main_frame_origin,
+      fetch_key->ip_address_space,
       GetNetworkPartitionNonce(fetch_key->network_partition_nonce_key),
       fetch_key->script_origin(), fetch_key->trusted_signals_url(),
       *fetch->coordinator_key, scoring_partition_map,

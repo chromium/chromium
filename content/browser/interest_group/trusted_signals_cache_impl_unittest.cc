@@ -53,6 +53,8 @@ const char kRequestCancelledError[] = "Request cancelled";
 // duplicating a lot of code.
 struct BiddingParams {
   url::Origin main_frame_origin;
+  network::mojom::IPAddressSpace ip_address_space =
+      network::mojom::IPAddressSpace::kPublic;
   // The bidder / interest group owner.
   url::Origin script_origin;
 
@@ -74,6 +76,8 @@ struct BiddingParams {
 // Struct with input parameters for RequestTrustedScoringSignals().
 struct ScoringParams {
   url::Origin main_frame_origin;
+  network::mojom::IPAddressSpace ip_address_space =
+      network::mojom::IPAddressSpace::kPublic;
   // The seller.
   url::Origin script_origin;
   GURL trusted_signals_url;
@@ -125,6 +129,7 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
       GURL trusted_signals_url;
       BiddingAndAuctionServerKey bidding_and_auction_key;
       url::Origin main_frame_origin;
+      network::mojom::IPAddressSpace ip_address_space;
       base::UnguessableToken network_partition_nonce;
       url::Origin script_origin;
       std::map<int, std::vector<FetcherBiddingPartitionArgs>>
@@ -140,6 +145,7 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
       GURL trusted_signals_url;
       BiddingAndAuctionServerKey bidding_and_auction_key;
       url::Origin main_frame_origin;
+      network::mojom::IPAddressSpace ip_address_space;
       base::UnguessableToken network_partition_nonce;
       url::Origin script_origin;
       std::map<int, std::vector<FetcherScoringPartitionArgs>>
@@ -160,6 +166,7 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
     void FetchBiddingSignals(
         network::mojom::URLLoaderFactory* /*unused_url_loader_factory*/,
         const url::Origin& main_frame_origin,
+        network::mojom::IPAddressSpace ip_address_space,
         base::UnguessableToken network_partition_nonce,
         const url::Origin& script_origin,
         const GURL& trusted_signals_url,
@@ -187,7 +194,7 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
 
       cache_->OnPendingBiddingSignalsFetch(PendingBiddingSignalsFetch(
           trusted_signals_url, bidding_and_auction_key, main_frame_origin,
-          network_partition_nonce, script_origin,
+          ip_address_space, network_partition_nonce, script_origin,
           std::move(compression_groups_copy), std::move(callback),
           weak_ptr_factory_.GetWeakPtr()));
     }
@@ -195,6 +202,7 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
     void FetchScoringSignals(
         network::mojom::URLLoaderFactory* /*unused_url_loader_factory*/,
         const url::Origin& main_frame_origin,
+        network::mojom::IPAddressSpace ip_address_space,
         base::UnguessableToken network_partition_nonce,
         const url::Origin& script_origin,
         const GURL& trusted_signals_url,
@@ -222,7 +230,7 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
 
       cache_->OnPendingScoringSignalsFetch(PendingScoringSignalsFetch(
           trusted_signals_url, bidding_and_auction_key, main_frame_origin,
-          network_partition_nonce, script_origin,
+          ip_address_space, network_partition_nonce, script_origin,
           std::move(compression_groups_copy), std::move(callback),
           weak_ptr_factory_.GetWeakPtr()));
     }
@@ -468,6 +476,7 @@ void ValidateFetchParams(const FetcherFetchType& fetch,
                          int expected_compression_group_id,
                          int expected_partition_id) {
   EXPECT_EQ(fetch.main_frame_origin, params.main_frame_origin);
+  EXPECT_EQ(fetch.ip_address_space, params.ip_address_space);
   EXPECT_EQ(fetch.trusted_signals_url, params.trusted_signals_url);
   EXPECT_EQ(fetch.script_origin, params.script_origin);
   EXPECT_EQ(fetch.bidding_and_auction_key.key, params.coordinator.Serialize());
@@ -779,6 +788,7 @@ class TrustedSignalsCacheTest : public testing::Test {
   BiddingParams CreateDefaultBiddingParams() const {
     BiddingParams out;
     out.main_frame_origin = kMainFrameOrigin;
+    out.ip_address_space = network::mojom::IPAddressSpace::kPublic;
     out.script_origin = kBidder;
     out.interest_group_names = {kInterestGroupName};
     out.execution_mode =
@@ -793,6 +803,7 @@ class TrustedSignalsCacheTest : public testing::Test {
   ScoringParams CreateDefaultScoringParams() const {
     ScoringParams out;
     out.main_frame_origin = kMainFrameOrigin;
+    out.ip_address_space = network::mojom::IPAddressSpace::kPublic;
     out.script_origin = kSeller;
     out.trusted_signals_url = kTrustedScoringSignalsUrl;
     out.coordinator = kCoordinator;
@@ -985,6 +996,17 @@ class TrustedSignalsCacheTest : public testing::Test {
       out.back().request_relation = RequestRelation::kDifferentFetches;
       out.back().params2.coordinator =
           url::Origin::Create(GURL("https://other.coordinator.test"));
+
+      // Different IP address spaces. Nonce is shared, because merging nonces in
+      // the case that a more local and less local frame are running auctions at
+      // the same time would only leak data to hosts on the more-local network,
+      // the leak doesn't include much data, and the situation is very unlikely
+      // to occur in practice.
+      out.emplace_back(CreateDefaultTestCase());
+      out.back().description = "Different IP address spaces";
+      out.back().request_relation = RequestRelation::kDifferentFetches;
+      out.back().params2.ip_address_space =
+          network::mojom::IPAddressSpace::kLocal;
     }
 
     if constexpr (std::is_same<ParamsType, ScoringParams>::value) {
@@ -1069,6 +1091,17 @@ class TrustedSignalsCacheTest : public testing::Test {
       out.back().request_relation = RequestRelation::kDifferentFetches;
       out.back().params2.coordinator =
           url::Origin::Create(GURL("https://other.coordinator.test"));
+
+      // Different IP address spaces. Nonce is shared, because merging nonces in
+      // the case that a more local and less local frame are running auctions at
+      // the same time would only leak data to hosts on the more-local network,
+      // the leak doesn't include much data, and the situation is very unlikely
+      // to occur in practice.
+      out.emplace_back(CreateDefaultTestCase());
+      out.back().description = "Different IP address spaces";
+      out.back().request_relation = RequestRelation::kDifferentFetches;
+      out.back().params2.ip_address_space =
+          network::mojom::IPAddressSpace::kLocal;
     }
 
     return out;
@@ -1083,6 +1116,8 @@ class TrustedSignalsCacheTest : public testing::Test {
     // `trusted_bidding_signals_keys` may be different.
     EXPECT_EQ(bidding_params1.main_frame_origin,
               bidding_params2.main_frame_origin);
+    EXPECT_EQ(bidding_params1.ip_address_space,
+              bidding_params2.ip_address_space);
     EXPECT_EQ(bidding_params1.script_origin, bidding_params2.script_origin);
     EXPECT_EQ(bidding_params1.execution_mode, bidding_params2.execution_mode);
     EXPECT_EQ(bidding_params1.joining_origin, bidding_params2.joining_origin);
@@ -1094,6 +1129,7 @@ class TrustedSignalsCacheTest : public testing::Test {
 
     BiddingParams merged_bidding_params{
         bidding_params1.main_frame_origin,
+        bidding_params1.ip_address_space,
         bidding_params1.script_origin,
         bidding_params1.interest_group_names,
         bidding_params1.execution_mode,
@@ -1142,7 +1178,8 @@ class TrustedSignalsCacheTest : public testing::Test {
     // solely for the ValidateFetchParams family of methods.
     CHECK_EQ(1u, bidding_params.interest_group_names.size());
     auto handle = trusted_signals_cache_->RequestTrustedBiddingSignals(
-        bidding_params.main_frame_origin, bidding_params.script_origin,
+        bidding_params.main_frame_origin, bidding_params.ip_address_space,
+        bidding_params.script_origin,
         *bidding_params.interest_group_names.begin(),
         bidding_params.execution_mode, bidding_params.joining_origin,
         bidding_params.trusted_signals_url, bidding_params.coordinator,
@@ -1166,10 +1203,11 @@ class TrustedSignalsCacheTest : public testing::Test {
                         bool start_fetch = true) {
     int partition_id = -1;
     auto handle = trusted_signals_cache_->RequestTrustedScoringSignals(
-        scoring_params.main_frame_origin, scoring_params.script_origin,
-        scoring_params.trusted_signals_url, scoring_params.coordinator,
-        scoring_params.interest_group_owner, scoring_params.joining_origin,
-        scoring_params.render_url, scoring_params.component_render_urls,
+        scoring_params.main_frame_origin, scoring_params.ip_address_space,
+        scoring_params.script_origin, scoring_params.trusted_signals_url,
+        scoring_params.coordinator, scoring_params.interest_group_owner,
+        scoring_params.joining_origin, scoring_params.render_url,
+        scoring_params.component_render_urls,
         scoring_params.additional_params.Clone(), partition_id);
 
     // The call should never fail.
