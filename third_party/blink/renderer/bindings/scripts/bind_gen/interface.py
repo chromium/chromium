@@ -4402,21 +4402,15 @@ def bind_installer_local_vars(code_node, cg_context):
               ("v8::Local<v8::FunctionTemplate> "
                "${interface_function_template} = "
                "${interface_template}.As<v8::FunctionTemplate>();")),
-            S("instance_object_template",
-              ("v8::Local<v8::ObjectTemplate> ${instance_object_template} = "
-               "${interface_function_template}->InstanceTemplate();")),
             S("instance_template",
-              ("v8::Local<v8::Template> ${instance_template} = "
-               "${instance_object_template};")),
-            S("prototype_object_template",
-              ("v8::Local<v8::ObjectTemplate> ${prototype_object_template} = "
-               "${interface_function_template}->PrototypeTemplate();")),
+              ("v8::Local<v8::ObjectTemplate> ${instance_template} = "
+               "${interface_function_template}->InstanceTemplate();")),
             S("prototype_template",
-              ("v8::Local<v8::Template> ${prototype_template} = "
-               "${prototype_object_template};")),
-            S("signature", ("v8::Local<v8::Signature> ${signature} = "
-                            "v8::Signature::New(${isolate}, "
-                            "${interface_function_template});")),
+              ("v8::Local<v8::ObjectTemplate> ${prototype_template} = "
+               "${interface_function_template}->PrototypeTemplate();")),
+            S("signature",
+              ("v8::Local<v8::Signature> ${signature} = "
+               "v8::Local<v8::Signature>::Cast(${interface_template});")),
         ])
     elif cg_context.namespace:
         local_vars.extend([
@@ -4425,9 +4419,9 @@ def bind_installer_local_vars(code_node, cg_context):
                "${namespace_object_template} = "
                "${interface_template}.As<v8::ObjectTemplate>();")),
             S("instance_template",
-              "v8::Local<v8::Template> ${instance_template};"),
+              "v8::Local<v8::ObjectTemplate> ${instance_template};"),
             S("prototype_template",
-              "v8::Local<v8::Template> ${prototype_template};"),
+              "v8::Local<v8::ObjectTemplate> ${prototype_template};"),
             S("signature", "v8::Local<v8::Signature> ${signature};"),
         ])
     elif cg_context.callback_interface:
@@ -4437,9 +4431,9 @@ def bind_installer_local_vars(code_node, cg_context):
                "${interface_function_template} = "
                "${interface_template}.As<v8::FunctionTemplate>();")),
             S("instance_template",
-              "v8::Local<v8::Template> ${instance_template};"),
+              "v8::Local<v8::ObjectTemplate> ${instance_template};"),
             S("prototype_template",
-              "v8::Local<v8::Template> ${prototype_template};"),
+              "v8::Local<v8::ObjectTemplate> ${prototype_template};"),
             S("signature", "v8::Local<v8::Signature> ${signature};"),
         ])
 
@@ -5348,7 +5342,7 @@ ${prototype_object}->Delete(
 // installed only per v8::Template (via
 // v8::Template::SetIntrinsicDataProperty). So the property installation
 // logic is reversed in this case like below.
-//   1. Unconditionally install the properties on prototype_object_template
+//   1. Unconditionally install the properties on prototype_template
 //      per V8 isolate in ${class_name}::InstallInterfaceTemplate.
 //   2. Conditionally remove the properties from prototype_object per V8
 //      context if they're not enabled.
@@ -5498,8 +5492,8 @@ def make_install_interface_template(cg_context, function_name, class_name,
         body.extend([
             T("bindings::SetupIDLInterfaceTemplate("
               "${isolate}, ${wrapper_type_info}, "
-              "${instance_object_template}, "
-              "${prototype_object_template}, "
+              "${instance_template}, "
+              "${prototype_template}, "
               "${interface_function_template}, "
               "${parent_interface_template});"),
             EmptyNode(),
@@ -5541,8 +5535,8 @@ def make_install_interface_template(cg_context, function_name, class_name,
             FormatNode(
                 "bindings::SetupIDLIteratorTemplate("
                 "${isolate}, ${wrapper_type_info}, "
-                "${instance_object_template}, "
-                "${prototype_object_template}, "
+                "${instance_template}, "
+                "${prototype_template}, "
                 "${interface_function_template}, "
                 "{parent_intrinsic_prototype}, "
                 "\"{class_string}\");",
@@ -5604,8 +5598,8 @@ def make_install_interface_template(cg_context, function_name, class_name,
             T("""\
 // HTMLAllCollection-specific settings
 // https://html.spec.whatwg.org/C/#the-htmlallcollection-interface
-${instance_object_template}->SetCallAsFunctionHandler(ItemOperationCallback);
-${instance_object_template}->MarkAsUndetectable();
+${instance_template}->SetCallAsFunctionHandler(ItemOperationCallback);
+${instance_template}->MarkAsUndetectable();
 """))
 
     if class_like.identifier == "Location":
@@ -5634,8 +5628,8 @@ ${instance_template}->Set(
         v8::ReadOnly | v8::DontEnum | v8::DontDelete));
 // 7.7.4.2 [[SetPrototypeOf]] ( V )
 // https://html.spec.whatwg.org/C/#location-setprototypeof
-${instance_object_template}->SetImmutableProto();
-${prototype_object_template}->SetImmutableProto();
+${instance_template}->SetImmutableProto();
+${prototype_template}->SetImmutableProto();
 """))
 
     if (interface and interface.indexed_and_named_properties
@@ -5670,7 +5664,7 @@ ${prototype_template}->SetIntrinsicDataProperty(
                 attribute=None,
                 body=[
                     TextNode("// [IsCodeLike]"),
-                    TextNode("${instance_object_template}->SetCodeLike();"),
+                    TextNode("${instance_template}->SetCodeLike();"),
                 ]))
 
     if "Global" in class_like.extended_attributes:
@@ -5679,8 +5673,8 @@ ${prototype_template}->SetIntrinsicDataProperty(
 // [Global]
 // 3.7.1. [[SetPrototypeOf]]
 // https://webidl.spec.whatwg.org/#platform-object-setprototypeof
-${instance_object_template}->SetImmutableProto();
-${prototype_object_template}->SetImmutableProto();
+${instance_template}->SetImmutableProto();
+${prototype_template}->SetImmutableProto();
 """))
     elif interface and any("Global" in derived.extended_attributes
                            for derived in interface.subclasses):
@@ -5689,7 +5683,7 @@ ${prototype_object_template}->SetImmutableProto();
 // [Global] - prototype object in the prototype chain of global objects
 // 3.7.1. [[SetPrototypeOf]]
 // https://webidl.spec.whatwg.org/#platform-object-setprototypeof
-${prototype_object_template}->SetImmutableProto();
+${prototype_template}->SetImmutableProto();
 """))
 
     func_call_pattern = ("{}(${isolate}, ${world}, ${instance_template}, "
@@ -5763,8 +5757,8 @@ def make_install_properties(cg_context, function_name, class_name,
         arg_decls = [
             "v8::Isolate* isolate",
             "const DOMWrapperWorld& world",
-            "v8::Local<v8::Template> instance_template",
-            "v8::Local<v8::Template> prototype_template",
+            "v8::Local<v8::ObjectTemplate> instance_template",
+            "v8::Local<v8::ObjectTemplate> prototype_template",
             "v8::Local<v8::Template> interface_template",
         ]
         arg_names = [
@@ -5900,12 +5894,12 @@ ${instance_object} = ${v8_context}->Global()->GetPrototype().As<v8::Object>();\
             body.append(EmptyNode())
         for conditional, entries in conditional_to_entries.items():
             body.append(
-                CxxUnlikelyIfNode(cond=conditional,
-                                  attribute=None,
-                                  body=[
-                                      make_table_func(table_name, entries),
-                                      TextNode(installer_call_text),
-                                  ]))
+                CxxLikelyIfNode(cond=conditional,
+                                attribute=None,
+                                body=[
+                                    make_table_func(table_name, entries),
+                                    TextNode(installer_call_text),
+                                ]))
         body.append(EmptyNode())
 
     if is_per_context_install:
@@ -6073,9 +6067,9 @@ def make_indexed_and_named_property_callbacks_and_install_node(cg_context):
             "NamedPropertyEnumeratorCallback"))
 
     if cg_context.class_like.identifier == "WindowProperties":
-        interceptor_template = "${prototype_object_template}"
+        interceptor_template = "${prototype_template}"
     else:
-        interceptor_template = "${instance_object_template}"
+        interceptor_template = "${instance_template}"
 
     if props.named_getter and "Global" not in interface.extended_attributes:
         impl_bridge = v8_bridge_class_name(
@@ -6331,7 +6325,7 @@ def make_cross_origin_property_callbacks_and_install_node(
 
     text = """\
 // Cross origin properties
-${instance_object_template}->SetAccessCheckCallbackAndHandler(
+${instance_template}->SetAccessCheckCallbackAndHandler(
     CrossOriginAccessCheckCallback,
     v8::NamedPropertyHandlerConfiguration(
         CrossOriginNamedGetterCallback,
@@ -6802,8 +6796,8 @@ def _make_v8_context_snapshot_install_props_per_isolate_function(
     arg_decls = [
         "v8::Isolate* isolate",
         "const DOMWrapperWorld& world",
-        "v8::Local<v8::Template> instance_template",
-        "v8::Local<v8::Template> prototype_template",
+        "v8::Local<v8::ObjectTemplate> instance_template",
+        "v8::Local<v8::ObjectTemplate> prototype_template",
         "v8::Local<v8::Template> interface_template",
     ]
     arg_names = [

@@ -80,14 +80,14 @@ class PLATFORM_EXPORT V8InterfaceBridgeBase {
   using InstallUnconditionalPropertiesFuncType =
       void (*)(v8::Isolate* isolate,
                const DOMWrapperWorld& world,
-               v8::Local<v8::Template> instance_template,
-               v8::Local<v8::Template> prototype_template,
+               v8::Local<v8::ObjectTemplate> instance_template,
+               v8::Local<v8::ObjectTemplate> prototype_template,
                v8::Local<v8::Template> interface_template);
   using InstallContextIndependentPropertiesFuncType =
       void (*)(v8::Isolate* isolate,
                const DOMWrapperWorld& world,
-               v8::Local<v8::Template> instance_template,
-               v8::Local<v8::Template> prototype_template,
+               v8::Local<v8::ObjectTemplate> instance_template,
+               v8::Local<v8::ObjectTemplate> prototype_template,
                v8::Local<v8::Template> interface_template);
   using InstallContextDependentPropertiesFuncType =
       void (*)(v8::Local<v8::Context> context,
