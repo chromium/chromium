@@ -30,7 +30,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
-import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.data_sharing.ui.recent_activity.RecentActivityListCoordinator.AvatarProvider;
 import org.chromium.chrome.browser.data_sharing.ui.recent_activity.RecentActivityListCoordinator.FaviconProvider;
@@ -53,8 +52,10 @@ public class RecentActivityListMediatorUnitTest {
     private static final String TEST_COLLABORATION_ID1 = "collaboration1";
     private static final String USER_DISPLAY_NAME1 = "User 1";
     private static final String USER_DISPLAY_NAME2 = "User 2";
-    private static final String TEST_DESCRIPTION_1 = "www.foo.com • 1 day ago";
-    private static final String TEST_DESCRIPTION_2 = "user2@gmail.com • 1 day ago";
+    private static final String TEST_DESCRIPTION_1 = "www.foo.com";
+    private static final String TEST_TIMESTAMP_1 = "1 day ago";
+    private static final String TEST_DESCRIPTION_2 = "user2@gmail.com";
+    private static final String TEST_TIMESTAMP_2 = "1 day ago";
     private static final String TAB_URL1 = "https://google.com";
     private static final int TAB_ID1 = 5;
 
@@ -103,6 +104,7 @@ public class RecentActivityListMediatorUnitTest {
         logItem.collaborationEvent = collaborationEvent;
         logItem.titleText = USER_DISPLAY_NAME1 + " changed a tab";
         logItem.descriptionText = TEST_DESCRIPTION_1;
+        logItem.timeDeltaText = TEST_TIMESTAMP_1;
         GroupMember triggeringUser = new GroupMember(null, null, null, MemberRole.OWNER, null, "");
         logItem.activityMetadata = new MessageAttribution();
         logItem.activityMetadata.triggeringUser = triggeringUser;
@@ -117,7 +119,7 @@ public class RecentActivityListMediatorUnitTest {
         logItem.collaborationEvent = collaborationEvent;
         logItem.titleText = USER_DISPLAY_NAME2 + " removed a tab";
         logItem.descriptionText = TEST_DESCRIPTION_2;
-        logItem.timeDeltaMs = TimeUtils.MILLISECONDS_PER_DAY;
+        logItem.timeDeltaText = TEST_TIMESTAMP_1;
         GroupMember affectedUser = new GroupMember(null, null, null, MemberRole.OWNER, null, "");
         logItem.activityMetadata = new MessageAttribution();
         logItem.activityMetadata.affectedUser = affectedUser;
@@ -140,36 +142,25 @@ public class RecentActivityListMediatorUnitTest {
         Assert.assertEquals(2, mModelList.size());
 
         String titleText1 = mModelList.get(0).model.get(RecentActivityListProperties.TITLE_TEXT);
-        String descriptionText1 =
-                mModelList.get(0).model.get(RecentActivityListProperties.DESCRIPTION_TEXT);
+        DescriptionAndTimestamp descriptionAndTimestamp1 =
+                mModelList
+                        .get(0)
+                        .model
+                        .get(RecentActivityListProperties.DESCRIPTION_AND_TIMESTAMP_TEXT);
         String titleText2 = mModelList.get(1).model.get(RecentActivityListProperties.TITLE_TEXT);
-        String descriptionText2 =
-                mModelList.get(1).model.get(RecentActivityListProperties.DESCRIPTION_TEXT);
+        DescriptionAndTimestamp descriptionAndTimestamp2 =
+                mModelList
+                        .get(1)
+                        .model
+                        .get(RecentActivityListProperties.DESCRIPTION_AND_TIMESTAMP_TEXT);
 
-        // TODO(crbug.com/387304832): Verify timestamp separately after separating timestamp view.
         Assert.assertEquals("User 1 changed a tab", titleText1);
-        Assert.assertEquals("www.foo.com • 1 day ago", descriptionText1);
+        Assert.assertEquals("www.foo.com", descriptionAndTimestamp1.description);
+        Assert.assertEquals("1 day ago", descriptionAndTimestamp1.timestamp);
 
         Assert.assertEquals("User 2 removed a tab", titleText2);
-        Assert.assertEquals("user2@gmail.com • 1 day ago", descriptionText2);
-    }
-
-    @Test
-    public void testDescriptionContainsTimestampOnly() {
-        // Expected description: "8 minutes ago".
-        ActivityLogItem logItem1 = createLog1(CollaborationEvent.TAB_UPDATED);
-        logItem1.descriptionText = "";
-        logItem1.timeDeltaText = "8 minutes ago";
-        mTestItems.add(logItem1);
-
-        // Show UI and verify.
-        mMediator.requestShowUI(TEST_COLLABORATION_ID1, mCallback1);
-        Assert.assertEquals(1, mModelList.size());
-
-        // TODO(crbug.com/387304832): Uncomment this after separating timestamp view.
-        // String descriptionText1 =
-        //         mModelList.get(0).model.get(RecentActivityListProperties.DESCRIPTION_TEXT);
-        // Assert.assertEquals("8 min ago", descriptionText1);
+        Assert.assertEquals("user2@gmail.com", descriptionAndTimestamp2.description);
+        Assert.assertEquals("1 day ago", descriptionAndTimestamp2.timestamp);
     }
 
     @Test

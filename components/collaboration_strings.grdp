@@ -45,6 +45,12 @@
       other {<ph name="TIME_COUNT">$1<ex>2</ex></ph>d ago}
     }
   </message>
+  <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_SEPARATOR" desc="The separator string on a recent activity bottom sheet row that connects two halfs: an URL or email or group name on first half, and a relative time duration on the second half." formatter_data="android_java">
+    \u0020\u2022\u0020
+  </message>
+  <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_DESCRIPTION_FULL" desc="The description text on a recent activity bottom sheet row that has three parts: an URL or email or group name on first half, a separator, and a relative time duration on the second half." formatter_data="android_java">
+    <ph name="DESCRIPTION">%1$s<ex>google.com</ex></ph><ph name="SEPARATOR">%2$s<ex> . </ex></ph><ph name="TIMESTMAP">%3$s<ex>8h ago</ex></ph>
+  </message>
   <!-- Recent Activity -->
 
 </grit-part>

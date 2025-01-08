@@ -99,13 +99,22 @@ class RecentActivityListMediator {
             PropertyModel propertyModel =
                     new PropertyModel.Builder(RecentActivityListProperties.ALL_KEYS)
                             .with(RecentActivityListProperties.TITLE_TEXT, logItem.titleText)
-                            .with(
-                                    RecentActivityListProperties.DESCRIPTION_TEXT,
-                                    logItem.descriptionText)
                             .build();
             propertyModel.set(
                     RecentActivityListProperties.ON_CLICK_LISTENER,
                     createActivityLogItemOnClickListener(logItem));
+
+            DescriptionAndTimestamp descriptionAndTimestamp = new DescriptionAndTimestamp();
+            descriptionAndTimestamp.description = logItem.descriptionText;
+            descriptionAndTimestamp.timestamp = logItem.timeDeltaText;
+            descriptionAndTimestamp.separator =
+                    mContext.getString(R.string.data_sharing_recent_activity_separator);
+            descriptionAndTimestamp.descriptionFullTextResId =
+                    R.string.data_sharing_recent_activity_description_full;
+
+            propertyModel.set(
+                    RecentActivityListProperties.DESCRIPTION_AND_TIMESTAMP_TEXT,
+                    descriptionAndTimestamp);
 
             // Set favicon provider if favicon should be shown.
             if (logItem.showFavicon) {

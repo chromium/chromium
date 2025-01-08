@@ -111,6 +111,7 @@ if (is_android) {
     resources_package =
         "org.chromium.chrome.browser.data_sharing.ui.recent_activity"
     sources = [
+      "android/java/src/org/chromium/chrome/browser/data_sharing/ui/recent_activity/DescriptionAndTimestamp.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/ui/recent_activity/RecentActivityActionHandler.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/ui/recent_activity/RecentActivityBottomSheetContent.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/ui/recent_activity/RecentActivityListCoordinator.java",
@@ -128,6 +129,7 @@ if (is_android) {
       "//components/browser_ui/widget/android:java_resources",
       "//components/collaboration/public:messaging_java",
       "//components/data_sharing/public:public_java",
+      "//components/strings:components_strings_grd",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_recyclerview_recyclerview_java",
       "//ui/android:ui_full_java",
