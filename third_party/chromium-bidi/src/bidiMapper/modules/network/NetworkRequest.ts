@@ -153,9 +153,9 @@ export class NetworkRequest {
       this.#request.paused?.request.urlFragment ??
       '';
     const url =
-      this.#response.info?.url ??
       this.#response.paused?.request.url ??
       this.#requestOverrides?.url ??
+      this.#response.info?.url ??
       this.#request.auth?.request.url ??
       this.#request.info?.request.url ??
       this.#request.paused?.request.url ??

@@ -419,4 +419,32 @@ describe('NetworkStorage', () => {
       });
     });
   });
+
+  describe('overrides', () => {
+    it('should show correct URL for response', async () => {
+      const request = new MockCdpNetworkEvents(cdpClient);
+      const overrideUrl = `${request.url}/override`;
+      networkStorage.addIntercept({
+        urlPatterns: NetworkProcessor.parseUrlPatterns([
+          {type: 'string', pattern: request.url},
+        ]),
+        phases: [Network.InterceptPhase.BeforeRequestSent],
+      });
+      request.requestWillBeSentRedirect();
+      request.responseReceivedExtraInfoRedirect();
+      request.requestPaused();
+      const networkRequest = networkStorage.getRequestById(request.requestId)!;
+      await networkRequest.continueRequest({
+        url: overrideUrl,
+      });
+      request.responseReceived();
+      request.responseReceivedExtraInfo();
+
+      const event = await getEvent('network.responseCompleted');
+
+      expect(event).to.deep.nested.include({
+        'response.url': overrideUrl,
+      });
+    });
+  });
 });
