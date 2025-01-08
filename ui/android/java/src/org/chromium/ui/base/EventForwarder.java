@@ -26,7 +26,6 @@ import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.MotionEventUtils;
 
@@ -543,7 +542,6 @@ public class EventForwarder {
      * @param event {@link DragEvent} instance.
      * @param containerView A view on which the drag event is taking place.
      */
-    @NullUnmarked
     public boolean onDragEvent(DragEvent event, View containerView) {
         ClipDescription clipDescription = event.getClipDescription();
         // Do not forward chrome/tab events to native eventForwarder.

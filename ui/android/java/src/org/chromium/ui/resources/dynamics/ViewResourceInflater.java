@@ -162,7 +162,7 @@ public class ViewResourceInflater {
     }
 
     /** Destroy the instance. */
-    @NullUnmarked
+    @NullUnmarked // Nulls out non-null fields.
     public void destroy() {
         if (mView == null) return;
 

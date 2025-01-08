@@ -12,7 +12,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskRunner;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.resources.Resource;
 import org.chromium.ui.resources.ResourceLoader;
@@ -110,14 +109,13 @@ public class AsyncPreloadResourceLoader extends ResourceLoader {
         mOutstandingLoads.remove(resourceId);
     }
 
-    private class AsyncLoadTask extends AsyncTask<Resource> {
+    private class AsyncLoadTask extends AsyncTask<@Nullable Resource> {
         private final int mResourceId;
 
         public AsyncLoadTask(int resourceId) {
             mResourceId = resourceId;
         }
 
-        @NullUnmarked
         @Override
         protected @Nullable Resource doInBackground() {
             return createResource(mResourceId);

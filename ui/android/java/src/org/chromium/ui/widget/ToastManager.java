@@ -15,7 +15,6 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.util.Iterator;
@@ -146,7 +145,7 @@ public class ToastManager {
         mToastEvent.onCancel();
     }
 
-    private class ToastEventPreR implements ToastEvent {
+    private static class ToastEventPreR implements ToastEvent {
         private final Handler mHandler = new Handler();
         private final Runnable mPostToastRunnable;
 
@@ -154,11 +153,10 @@ public class ToastManager {
             mPostToastRunnable = finishRunnable;
         }
 
-        @NullUnmarked
         @Override
         public void onShow(Toast toast) {
             int durationMs =
-                    (mToast.getDuration() == Toast.LENGTH_SHORT)
+                    (toast.getDuration() == Toast.LENGTH_SHORT)
                             ? DURATION_SHORT_MS
                             : DURATION_LONG_MS;
             mHandler.postDelayed(mPostToastRunnable, durationMs);

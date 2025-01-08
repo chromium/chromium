@@ -6,6 +6,7 @@ package org.chromium.ui.modelutil;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.ui.ViewProvider;
 
 import java.util.HashSet;
@@ -82,6 +83,7 @@ public class LazyConstructionPropertyMcp<M extends PropertyObservable<P>, V, P>
                 viewBinder);
     }
 
+    @RequiresNonNull("mView")
     private void flushPendingUpdates() {
         boolean pendingVisibilityUpdate = false;
         for (P property : mPendingProperties) {

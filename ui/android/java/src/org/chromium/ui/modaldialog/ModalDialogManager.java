@@ -4,6 +4,8 @@
 
 package org.chromium.ui.modaldialog;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.util.SparseArray;
 import android.view.View;
 
@@ -14,8 +16,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.UiSwitches;
@@ -133,6 +135,7 @@ public class ModalDialogManager {
         protected static String getContentDescription(PropertyModel model) {
             String description = model.get(ModalDialogProperties.CONTENT_DESCRIPTION);
             if (description == null) description = model.get(ModalDialogProperties.TITLE);
+            assert description != null;
             return description;
         }
 
@@ -382,6 +385,7 @@ public class ModalDialogManager {
     /**
      * @return Whether a dialog is currently showing.
      */
+    @EnsuresNonNullIf("mCurrentPresenter")
     public boolean isShowing() {
         return mCurrentPresenter != null;
     }
@@ -552,10 +556,10 @@ public class ModalDialogManager {
 
     /**
      * Dismiss the dialog currently shown and remove all pending dialogs.
+     *
      * @param dismissalCause The {@link DialogDismissalCause} that describes why the dialogs are
-     *                       dismissed.
+     *     dismissed.
      */
-    @NullUnmarked
     public void dismissAllDialogs(@DialogDismissalCause int dismissalCause) {
         for (@ModalDialogType int dialogType = ModalDialogType.RANGE_MIN;
                 dialogType <= ModalDialogType.RANGE_MAX;
@@ -582,14 +586,13 @@ public class ModalDialogManager {
     /**
      * Dismiss the dialog currently shown if it is of the specified type.
      *
-     * Any pending dialogs will then be shown.
+     * <p>Any pending dialogs will then be shown.
      *
      * @param dialogType The specified type of dialog.
      * @param dismissalCause The {@link DialogDismissalCause} that describes why the dialogs are
-     *                       dismissed.
+     *     dismissed.
      * @return true if a dialog was showing and was dismissed.
      */
-    @NullUnmarked
     public boolean dismissActiveDialogOfType(
             @ModalDialogType int dialogType, @DialogDismissalCause int dismissalCause) {
         if (isShowing() && dialogType == mCurrentType) {
@@ -617,15 +620,14 @@ public class ModalDialogManager {
      * Suspend all dialogs of the specified type, including the one currently shown. The currently
      * shown dialog would be suspended if its priority is not VERY_HIGH.
      *
-     * These dialogs will be prevented from showing unless {@link #resumeType(int, int)} is called
-     * after the suspension. If the current dialog is suspended, it will be moved back to the first
-     * dialog in the pending list. Any dialogs of the specified type in the pending list will be
-     * skipped.
+     * <p>These dialogs will be prevented from showing unless {@link #resumeType(int, int)} is
+     * called after the suspension. If the current dialog is suspended, it will be moved back to the
+     * first dialog in the pending list. Any dialogs of the specified type in the pending list will
+     * be skipped.
      *
      * @param dialogType The specified type of dialogs to be suspended.
      * @return A token to use when resuming the suspended type.
      */
-    @NullUnmarked
     public int suspendType(@ModalDialogType int dialogType) {
         mSuspendedTypes.add(dialogType);
         if (isShowing()
@@ -634,18 +636,18 @@ public class ModalDialogManager {
             suspendCurrentDialog();
             showNextDialog();
         }
-        return mTokenHolders.get(dialogType).acquireToken();
+        return assumeNonNull(mTokenHolders.get(dialogType)).acquireToken();
     }
 
     /**
      * Resume the specified type of dialogs after suspension. This method does not resume showing
      * the dialog until after all held tokens are released.
+     *
      * @param dialogType The specified type of dialogs to be resumed.
      * @param token The token generated from suspending the dialog type.
      */
-    @NullUnmarked
     public void resumeType(@ModalDialogType int dialogType, int token) {
-        mTokenHolders.get(dialogType).releaseToken(token);
+        assumeNonNull(mTokenHolders.get(dialogType)).releaseToken(token);
     }
 
     public long getOrCreateNativeBridge() {
@@ -663,15 +665,13 @@ public class ModalDialogManager {
      *
      * @param dialogType The specified type of dialogs to be resumed.
      */
-    @NullUnmarked
     private void resumeTypeInternal(@ModalDialogType int dialogType) {
-        if (mTokenHolders.get(dialogType).hasTokens()) return;
+        if (assumeNonNull(mTokenHolders.get(dialogType)).hasTokens()) return;
         mSuspendedTypes.remove(dialogType);
         if (!isShowing()) showNextDialog();
     }
 
     /** Hide the current dialog and put it back to the front of the pending list. */
-    @NullUnmarked
     private void suspendCurrentDialog() {
         assert isShowing();
         PropertyModel dialogView = mCurrentPresenter.getDialogModel();
@@ -723,8 +723,7 @@ public class ModalDialogManager {
         return mPresenters.get(dialogType);
     }
 
-    @NullUnmarked
-    public Presenter getCurrentPresenterForTest() {
+    public @Nullable Presenter getCurrentPresenterForTest() {
         return mCurrentPresenter;
     }
 }

@@ -6,7 +6,6 @@ package org.chromium.ui.modelutil;
 
 import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 
 import java.util.Collection;
 
@@ -25,10 +24,11 @@ public abstract class PropertyObservable<T> {
     public interface PropertyObserver<T> {
         /**
          * Notifies that the given {@code property} of the observed {@code source} has changed.
+         *
          * @param source The object whose property has changed
          * @param propertyKey The key of the property that has changed.
          */
-        void onPropertyChanged(PropertyObservable<T> source, @Nullable T propertyKey);
+        void onPropertyChanged(PropertyObservable<T> source, T propertyKey);
     }
 
     private final ObserverList<PropertyObserver<T>> mObservers = new ObserverList<>();

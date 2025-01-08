@@ -16,7 +16,6 @@ import android.view.Surface;
 import androidx.annotation.RequiresApi;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.util.List;
@@ -317,7 +316,7 @@ public class DisplayAndroid {
     }
 
     /** Update the display to the provided parameters. Null values leave the parameter unchanged. */
-    @NullUnmarked
+    @SuppressWarnings("NullAway") // https://github.com/uber/NullAway/issues/98
     protected void update(
             @Nullable String name,
             @Nullable Rect bounds,

@@ -4,6 +4,8 @@
 
 package org.chromium.ui.dragdrop;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.ClipData;
 import android.content.ClipData.Item;
 import android.content.ClipDescription;
@@ -33,7 +35,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
 import org.chromium.ui.accessibility.AccessibilityState;
@@ -109,13 +110,12 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
      * @param dragObjRectWidth The width of the drag object.
      * @param dragObjRectHeight The height of the drag object.
      */
-    @NullUnmarked
     @Override
     public boolean startDragAndDrop(
             View containerView,
             Bitmap shadowImage,
             DropDataAndroid dropData,
-            @Nullable Context context,
+            Context context,
             int cursorOffsetX,
             int cursorOffsetY,
             int dragObjRectWidth,
@@ -239,7 +239,6 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
      * @param dropData The data to be dropped.
      * @return ClipData based on the dropData type.
      */
-    @NullUnmarked
     protected @Nullable ClipData buildClipData(DropDataAndroid dropData) {
         @DragTargetType int type = getDragTargetType(dropData);
         switch (type) {
@@ -276,6 +275,7 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
                 }
                 return ClipData.newPlainText(null, getTextForLinkData(dropData));
             case DragTargetType.BROWSER_CONTENT:
+                assumeNonNull(mDragAndDropBrowserDelegate);
                 return mDragAndDropBrowserDelegate.buildClipData(dropData);
             case DragTargetType.INVALID:
                 return null;

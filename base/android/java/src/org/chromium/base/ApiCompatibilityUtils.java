@@ -26,7 +26,6 @@ import android.view.Display;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -60,7 +59,7 @@ public class ApiCompatibilityUtils {
      *     AppCompatResources} to parse drawable to prevent fail on {@link VectorDrawable}.
      *     (http://crbug.com/792129)
      */
-    public static @Nullable Drawable getDrawable(Resources res, int id) throws NotFoundException {
+    public static Drawable getDrawable(Resources res, int id) throws NotFoundException {
         return getDrawableForDensity(res, id, 0);
     }
 
@@ -68,16 +67,20 @@ public class ApiCompatibilityUtils {
      * @see android.content.res.Resources#getDrawableForDensity(int id, int density).
      */
     @SuppressWarnings("deprecation")
-    public static @Nullable Drawable getDrawableForDensity(Resources res, int id, int density) {
+    public static Drawable getDrawableForDensity(Resources res, int id, int density) {
         StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskReads();
         try {
             // For Android Oreo+, Resources.getDrawable(id, null) delegates to
             // Resources.getDrawableForDensity(id, 0, null), but before that the two functions are
             // independent. This check can be removed after Oreo becomes the minimum supported API.
+            Drawable ret;
             if (density == 0) {
-                return res.getDrawable(id, null);
+                ret = res.getDrawable(id, null);
+            } else {
+                ret = res.getDrawableForDensity(id, density, null);
             }
-            return res.getDrawableForDensity(id, density, null);
+            assert ret != null : "Drawable " + id;
+            return ret;
         } finally {
             StrictMode.setThreadPolicy(oldPolicy);
         }

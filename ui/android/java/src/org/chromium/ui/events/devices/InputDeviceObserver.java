@@ -4,6 +4,8 @@
 
 package org.chromium.ui.events.devices;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.hardware.input.InputManager;
 import android.hardware.input.InputManager.InputDeviceListener;
@@ -18,7 +20,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 
 /**
@@ -100,10 +101,10 @@ public class InputDeviceObserver implements InputDeviceListener {
         }
     }
 
-    @NullUnmarked
     private void detachObserver() {
         assert mObserversCounter > 0;
         if (--mObserversCounter == 0) {
+            assumeNonNull(mInputManager);
             mInputManager.unregisterInputDeviceListener(this);
             mInputManager = null;
         }

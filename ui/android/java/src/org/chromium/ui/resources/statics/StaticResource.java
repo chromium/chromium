@@ -13,7 +13,6 @@ import android.graphics.drawable.Drawable;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.resources.Resource;
 import org.chromium.ui.resources.ResourceFactory;
@@ -109,7 +108,6 @@ public class StaticResource implements Resource {
         return convertedBitmap;
     }
 
-    @NullUnmarked
     private static @Nullable Bitmap decodeDrawable(
             Resources resources, int resId, int fitWidth, int fitHeight) {
         try {

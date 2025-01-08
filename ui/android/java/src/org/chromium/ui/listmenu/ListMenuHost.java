@@ -18,6 +18,7 @@ import android.view.ViewParent;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
 import org.chromium.ui.widget.AnchoredPopupWindow;
@@ -26,6 +27,7 @@ import org.chromium.ui.widget.AnchoredPopupWindow;
  * The host class that makes a view capable of triggering list menu. The core logic is extracted
  * from ListMenuButton.
  */
+@NullMarked
 public class ListMenuHost implements AnchoredPopupWindow.LayoutObserver {
     /** A listener that is notified when the popup menu is shown or dismissed. */
     @FunctionalInterface
@@ -47,7 +49,7 @@ public class ListMenuHost implements AnchoredPopupWindow.LayoutObserver {
         AnchoredPopupWindow injectPopupMenu(@Nullable AnchoredPopupWindow menu);
     }
 
-    private static ListMenuHost.PopupMenuHelper sPopupMenuHelperForTesting;
+    private static ListMenuHost.@Nullable PopupMenuHelper sPopupMenuHelperForTesting;
 
     private final View mView;
     private final boolean mMenuVerticalOverlapAnchor;

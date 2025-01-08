@@ -51,7 +51,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.ui.InsetObserver;
@@ -965,7 +964,6 @@ public class WindowAndroid
         // returning to the default optimized state.
         animation.addListener(
                 new AnimatorListenerAdapter() {
-                    @NullUnmarked
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         animation.removeListener(this);
@@ -1148,7 +1146,6 @@ public class WindowAndroid
         window.setAttributes(params);
     }
 
-    @NullUnmarked
     @SuppressLint("NewApi")
     // mSupportedRefreshRateModes should only be set if Display.Mode is available.
     @RequiresNonNull("mSupportedRefreshRateModes")
@@ -1167,7 +1164,7 @@ public class WindowAndroid
             }
         }
 
-        if (preferredModeDelta > MAX_REFRESH_RATE_DELTA) {
+        if (preferredMode == null || preferredModeDelta > MAX_REFRESH_RATE_DELTA) {
             Log.e(TAG, "Refresh rate not supported : " + preferredRefreshRate);
             return 0;
         }
