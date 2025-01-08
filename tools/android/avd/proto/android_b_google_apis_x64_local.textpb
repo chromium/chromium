@@ -6,18 +6,18 @@
 
 emulator_package {
   package_name: "chromium/third_party/android_sdk/public/emulator"
-  version: "XS__KK27esI_4qZkc_Ybb_ooYjPfcIQ7DDOPUZGYW5wC"  # 35.1.21 (Stable)
+  version: "PwE-fhnGAi9WQGkO2khXwvg9MhB2ROmJRBCvQhwkn3kC"  # 35.2.10 (Stable)
 }
 
 system_image_package {
   package_name: "chromium/third_party/android_sdk/public/system-images/android-baklava/google_apis/x86_64"
-  version: "wq34gQIMDJGNbjOINMMK-4D5HN8kLeUcTmrqjeouvBwC"  # (v1) BP21.241018.010
+    version: "4Hz6NKLpNeRQgUbzHhpArXl4xhQySAbE406KXvgBj7YC"  # (v2) BP21.241121.010
 }
 system_image_name: "system-images;android-Baklava;google_apis;x86_64"
 
 avd_package {
   package_name: "chromium/third_party/android_sdk/public/avds/android-baklava/google_apis/x86_64"
-  version: "yKze_DgVDVUFHHk9WkJ0Ba6FFAdVWWZxAQlaZSBthHkC"
+  version: "vvxgAC7ifxXS96BMN3GOl0CGQcziiV3kZr_VeGa0VLIC"
 }
 avd_name: "android_b_google_apis_x64"
 
