@@ -3620,16 +3620,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "enable-pix-detection",
-    "owners": [ "vishwasuppoor@google.com", "rouslan@chromium.org", "chrome-payments-team@google.com" ],
-    "expiry_milestone": 140
-  },
-  {
-    "name": "enable-pix-detection-on-dom-content-loaded",
-    "owners": [ "vishwasuppoor@google.com", "rouslan@chromium.org", "siashah@chromium.org", "chrome-payments-team@google.com" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "enable-pix-payments",
     "owners": [ "siashah@google.com", "chrome-payments-team@google.com", "payments-autofill-team@google.com" ],
     "expiry_milestone": 140

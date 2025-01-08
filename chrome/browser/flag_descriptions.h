@@ -2622,12 +2622,6 @@ extern const char kEducationalTipModuleDescription[];
 extern const char kEnableCommandLineOnNonRootedName[];
 extern const char kEnableCommandLineOnNoRootedDescription[];
 
-extern const char kEnablePixDetectionName[];
-extern const char kEnablePixDetectionDescription[];
-
-extern const char kEnablePixDetectionOnDomContentLoadedName[];
-extern const char kEnablePixDetectionOnDomContentLoadedDescription[];
-
 extern const char kEnableClipboardDataControlsAndroidName[];
 extern const char kEnableClipboardDataControlsAndroidDescription[];
 
