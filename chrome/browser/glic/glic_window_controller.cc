@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#pragma clang optimize off
-
 #include "chrome/browser/glic/glic_window_controller.h"
 
 #include "chrome/browser/profiles/profile_manager.h"
