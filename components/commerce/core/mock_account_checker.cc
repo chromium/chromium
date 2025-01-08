@@ -19,8 +19,6 @@ MockAccountChecker::MockAccountChecker()
   SetAnonymizedUrlDataCollectionEnabled(true);
   SetIsSubjectToParentalControls(false);
   SetCanUseModelExecutionFeatures(true);
-  SetCountry("us");
-  SetLocale("en-us");
   // Default pref service can be overwritten by SetPrefs below.
   default_pref_service_ = std::make_unique<TestingPrefServiceSimple>();
   RegisterCommercePrefs(default_pref_service_->registry());
