@@ -84,6 +84,9 @@ const CGFloat kMessageLeadingTrailingPadding = 20;
         constraintLessThanOrEqualToAnchor:self.trailingAnchor
                                  constant:-kMessageLeadingTrailingPadding]
   ]];
+
+  self.isAccessibilityElement = YES;
+  self.accessibilityLabel = _message;
 }
 
 @end
