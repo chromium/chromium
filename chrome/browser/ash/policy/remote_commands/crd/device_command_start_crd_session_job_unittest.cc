@@ -46,7 +46,6 @@ using base::test::IsJson;
 using base::test::TestFuture;
 using chromeos::network_config::mojom::NetworkType;
 using chromeos::network_config::mojom::OncSource;
-using remoting::features::kEnableCrdAdminRemoteAccess;
 using remoting::features::kEnableCrdAdminRemoteAccessV2;
 using remoting::features::kEnableCrdFileTransferForKiosk;
 using test::TestSessionType;
@@ -853,10 +852,7 @@ TEST_F(DeviceCommandStartCrdSessionJobTest,
 class DeviceCommandStartCrdSessionJobRemoteAccessTest
     : public DeviceCommandStartCrdSessionJobTest {
  public:
-  void SetUp() override {
-    EnableFeature(kEnableCrdAdminRemoteAccess);
-    DeviceCommandStartCrdSessionJobTest::SetUp();
-  }
+  void SetUp() override { DeviceCommandStartCrdSessionJobTest::SetUp(); }
 
   void EnableFeature(const base::Feature& feature) {
     feature_.Reset();
@@ -1035,28 +1031,6 @@ TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
     EXPECT_ERROR(result,
                  StartCrdSessionResultCode::FAILURE_UNSUPPORTED_USER_TYPE);
   }
-}
-
-TEST_F(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
-       ShouldUseRemoteSupportIfFeatureIsDisabled) {
-  DisableFeature(kEnableCrdAdminRemoteAccess);
-
-  LogInAsKioskUser();
-
-  EXPECT_SUCCESS(RunJobAndWaitForResult());
-  EXPECT_FALSE(delegate().session_parameters().curtain_local_user_session);
-}
-
-TEST_F(DeviceCommandStartCrdSessionJobRemoteAccessTest,
-       ShouldRejectCrdSessionTypeInPayloadIfFeatureIsDisabled) {
-  DisableFeature(kEnableCrdAdminRemoteAccess);
-
-  DeviceCommandStartCrdSessionJob job{CreateJob()};
-  bool success = InitializeJob(
-      job,
-      Payload().Set("crdSessionType", CrdSessionType::REMOTE_ACCESS_SESSION));
-
-  EXPECT_FALSE(success);
 }
 
 TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,

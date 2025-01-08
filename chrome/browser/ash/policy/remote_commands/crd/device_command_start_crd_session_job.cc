@@ -213,14 +213,6 @@ bool DeviceCommandStartCrdSessionJob::ParseCommandPayload(
   curtain_local_user_session_ =
       (crd_session_type == CrdSessionType::REMOTE_ACCESS_SESSION);
 
-  if (curtain_local_user_session_ &&
-      !base::FeatureList::IsEnabled(
-          remoting::features::kEnableCrdAdminRemoteAccess)) {
-    LOG(WARNING) << "Rejecting CRD session type as CRD remote access feature "
-                    "is not enabled";
-    return false;
-  }
-
   return true;
 }
 
