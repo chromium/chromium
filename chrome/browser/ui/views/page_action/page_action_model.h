@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_MODEL_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_MODEL_H_
 
+#include <string>
+
 #include "base/observer_list.h"
 #include "base/types/pass_key.h"
+#include "ui/base/models/image_model.h"
 
 namespace page_actions {
 
@@ -25,12 +28,33 @@ class PageActionModel {
   void RemoveObserver(PageActionModelObserver* observer);
 
   void SetShowRequested(base::PassKey<PageActionController>, bool requested);
+  void SetActionItemEnabled(base::PassKey<PageActionController>, bool enabled);
+  void SetActionItemVisible(base::PassKey<PageActionController>, bool visible);
+  // The model distills all visibility properties into a single result.
+  bool GetVisible() const;
 
-  bool show_requested() const { return show_requested_; }
+  void SetImage(const ui::ImageModel& image);
+  const ui::ImageModel& GetImage() const;
+
+  void SetText(const std::u16string& text);
+  const std::u16string GetText() const;
+
+  void SetTooltipText(const std::u16string& tooltip);
+  const std::u16string GetTooltipText() const;
 
  private:
+  // Notifies observers of a model change.
+  void NotifyChange();
+
   // Represents whether a feature requested to show this page action.
   bool show_requested_ = false;
+
+  // Properties taken from ActionItem.
+  bool action_item_enabled_ = false;
+  bool action_item_visible_ = false;
+  std::u16string text_;
+  std::u16string tooltip_;
+  ui::ImageModel action_item_image_;
 
   base::ObserverList<PageActionModelObserver> observer_list_;
 };

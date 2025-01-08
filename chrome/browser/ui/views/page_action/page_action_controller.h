@@ -15,6 +15,14 @@
 
 class PinnedToolbarActionsModel;
 
+namespace actions {
+class ActionItem;
+}
+
+namespace base {
+class CallbackListSubscription;
+}
+
 namespace page_actions {
 
 class PageActionModel;
@@ -46,11 +54,19 @@ class PageActionController {
       base::ScopedObservation<PageActionModel, PageActionModelObserver>&
           observation);
 
+  // Subscribes this controller to updates in the supplied ActionItem, and
+  // returns the created subscription. This allows the subscription to be
+  // managed by something other than the controller (eg. a view).
+  base::CallbackListSubscription CreateActionItemSubscription(
+      actions::ActionItem* action_item);
+
  private:
   using PageActionModelsMap =
       std::map<actions::ActionId, std::unique_ptr<PageActionModel>>;
 
   PageActionModel& FindPageActionModel(actions::ActionId action_id) const;
+
+  void ActionItemChanged(const actions::ActionItem* action_item);
 
   PageActionModelsMap page_actions_;
 

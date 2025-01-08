@@ -51,10 +51,6 @@ class PageActionViewTest : public ChromeViewsTestBase {
         actions::ActionItem::Builder().SetActionId(0).SetImage(image).Build());
     page_action_view_ = std::make_unique<PageActionView>(
         action_item_, &icon_label_view_delegate_);
-    action_view_controller_ = std::make_unique<views::ActionViewController>();
-    action_view_controller_->CreateActionViewRelationship(
-        page_action_view_.get(), action_item_->GetAsWeakPtr());
-
     profile_ = std::make_unique<TestingProfile>();
     pinned_actions_model_ =
         std::make_unique<PinnedToolbarActionsModel>(profile_.get());
@@ -62,7 +58,6 @@ class PageActionViewTest : public ChromeViewsTestBase {
 
   void TearDown() override {
     ChromeViewsTestBase::TearDown();
-    action_view_controller_.reset();
     page_action_view_.reset();
     action_item_ = nullptr;
     actions::ActionManager::Get().ResetActions();
@@ -77,11 +72,6 @@ class PageActionViewTest : public ChromeViewsTestBase {
     return controller;
   }
 
-  void RegisterActionViewRelationship() {
-    action_view_controller_->CreateActionViewRelationship(
-        page_action_view_.get(), action_item_->GetAsWeakPtr());
-  }
-
   int GetViewImageWidth() {
     return page_action_view()
         ->GetImageModel(views::Button::STATE_NORMAL)
@@ -94,7 +84,6 @@ class PageActionViewTest : public ChromeViewsTestBase {
 
  private:
   std::unique_ptr<PageActionView> page_action_view_;
-  std::unique_ptr<views::ActionViewController> action_view_controller_;
   raw_ptr<actions::ActionItem> action_item_;
 
   testing::NiceMock<MockIconLabelViewDelegate> icon_label_view_delegate_;
@@ -143,9 +132,8 @@ TEST_F(PageActionViewTest, ViewRespondsToActionItemUpdates) {
   actions::ActionItem* item = action_item();
   PageActionView* view = page_action_view();
 
-  item->SetVisible(true);
-  item->SetEnabled(true);
-  EXPECT_FALSE(view->GetVisible());  // No active controller yet.
+  // View defaults to invisible.
+  EXPECT_FALSE(view->GetVisible());
 
   view->OnNewActiveController(controller.get());
   controller->Show(0);
@@ -215,15 +203,18 @@ TEST_F(PageActionViewTest, OnThemeChangedUpdatesIconImage) {
   // If the default size is the intended icon size, this test is useless.
   EXPECT_GT(required_icon_size, kDefaultIconSize);
 
+  auto controller = NewPageActionController();
+  page_action_view()->OnNewActiveController(controller.get());
+  action_item()->SetEnabled(true);
+  action_item()->SetVisible(true);
+  controller->Show(0);
+
+  // When binding to a controller, model state is pushed into the view, so icon
+  // should be correct size.
   EXPECT_EQ(GetViewImageWidth(), required_icon_size);
 
-  // Icon maintains its size across a theme change.
+  // Icon resizes on theme change.
   page_action_view()->OnThemeChanged();
-  EXPECT_EQ(GetViewImageWidth(), required_icon_size);
-
-  // Icon maintains its size across an ActionItem update.
-  page_action_view()->GetActionViewInterface()->ActionItemChangedImpl(
-      action_item());
   EXPECT_EQ(GetViewImageWidth(), required_icon_size);
 }
 

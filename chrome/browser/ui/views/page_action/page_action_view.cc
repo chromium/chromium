@@ -15,14 +15,6 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/ink_drop.h"
 
-namespace {
-bool ShouldShow(base::WeakPtr<actions::ActionItem> action_item,
-                page_actions::PageActionModel* model) {
-  return action_item.get() && action_item->GetEnabled() &&
-         action_item->GetVisible() && model && model->show_requested();
-}
-}  // namespace
-
 namespace page_actions {
 
 PageActionView::PageActionView(actions::ActionItem* action_item,
@@ -35,25 +27,38 @@ PageActionView::PageActionView(actions::ActionItem* action_item,
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
 
   UpdateBorder();
+  SetVisible(false);
 }
 
 PageActionView::~PageActionView() = default;
 
 void PageActionView::OnNewActiveController(PageActionController* controller) {
   observation_.Reset();
+  action_item_controller_subscription_ = {};
   if (controller) {
     controller->AddObserver(action_item_->GetActionId().value(), observation_);
+    // TODO(crbug.com/388524315): Have the controller manage its own ActionItem
+    // observation. See bug for more explanation.
+    action_item_controller_subscription_ =
+        controller->CreateActionItemSubscription(action_item_.get());
+  } else {
+    SetVisible(false);
   }
-  SetVisible(ShouldShow(action_item_, observation_.GetSource()));
 }
 
 void PageActionView::OnPageActionModelChanged(PageActionModel* model) {
-  SetVisible(ShouldShow(action_item_, model));
+  SetEnabled(model->GetVisible());
+  SetVisible(model->GetVisible());
+  SetText(model->GetText());
+  SetTooltipText(model->GetTooltipText());
+
+  UpdateIconImage();
   UpdateBorder();
 }
 
 void PageActionView::OnPageActionModelWillBeDeleted(PageActionModel* model) {
   observation_.Reset();
+  action_item_controller_subscription_ = {};
   SetVisible(false);
 }
 
@@ -117,16 +122,21 @@ bool PageActionView::ShouldUpdateInkDropOnClickCanceled() const {
 }
 
 void PageActionView::UpdateIconImage() {
+  if (observation_.GetSource() == nullptr ||
+      observation_.GetSource()->GetImage().IsEmpty()) {
+    return;
+  }
+
   // Icon default size may be different from the size used in the location bar.
   const int icon_size = GetLayoutConstant(LOCATION_BAR_TRAILING_ICON_SIZE);
-  const auto icon_image = action_item_->GetImage();
+  const auto& icon_image = observation_.GetSource()->GetImage();
   if (icon_image.Size() == gfx::Size(icon_size, icon_size)) {
     return;
   }
 
-  const gfx::ImageSkia image = gfx::CreateVectorIcon(
-      *action_item_->GetImage().GetVectorIcon().vector_icon(), icon_size,
-      GetForegroundColor());
+  const gfx::ImageSkia image =
+      gfx::CreateVectorIcon(*icon_image.GetVectorIcon().vector_icon(),
+                            icon_size, GetForegroundColor());
 
   if (!image.isNull()) {
     SetImageModel(ui::ImageModel::FromImageSkia(image));
@@ -146,9 +156,10 @@ PageActionViewInterface::~PageActionViewInterface() = default;
 
 void PageActionViewInterface::ActionItemChangedImpl(
     actions::ActionItem* action_item) {
-  views::LabelButtonActionViewInterface::ActionItemChangedImpl(action_item);
-  action_view_->SetVisible(ShouldShow(action_item->GetAsWeakPtr(), model_));
-  action_view_->UpdateIconImage();
+  // This method does nothing, because all ActionItem state is plumbed through
+  // PageActionController and PageActionModel. Doing so saves having to deal
+  // with conflicts (eg. ActionItem sets visibility, but PageActionController
+  // overrides it).
 }
 
 }  // namespace page_actions

@@ -63,6 +63,11 @@ class PageActionView : public IconLabelBubbleView,
   base::WeakPtr<actions::ActionItem> action_item_ = nullptr;
   base::ScopedObservation<PageActionModel, PageActionModelObserver>
       observation_{this};
+
+  // The view creates and holds the current controller's subscription to
+  // ActionItem updates. This ensures that updates aren't unnecessarily
+  // propagated to every tab's controller.
+  base::CallbackListSubscription action_item_controller_subscription_;
 };
 
 class PageActionViewInterface : public views::LabelButtonActionViewInterface {

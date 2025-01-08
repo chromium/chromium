@@ -18,22 +18,40 @@
 namespace page_actions {
 namespace {
 
+using ::actions::ActionItem;
+
+using TestPageActionModelObservation =
+    ::base::ScopedObservation<PageActionModel, PageActionModelObserver>;
+
 class PageActionTestObserver : public PageActionModelObserver {
  public:
   PageActionTestObserver() = default;
   ~PageActionTestObserver() override = default;
 
   void OnPageActionModelChanged(PageActionModel* model) override {
-    ++model_changed_;
-    show_requested_ = model->show_requested();
+    ++model_change_count_;
+
+    visible_ = model->GetVisible();
+    text_ = model->GetText();
+    tooltip_text_ = model->GetTooltipText();
+    image_ = model->GetImage();
   }
 
-  bool show_requested() const { return show_requested_; }
-  int model_changed() const { return model_changed_; }
+  int model_change_count() const { return model_change_count_; }
+
+  bool visible() const { return visible_; }
+  const std::u16string& text() const { return text_; }
+  const std::u16string& tooltip_text() const { return tooltip_text_; }
+  const ui::ImageModel& image() const { return image_; }
 
  private:
-  bool show_requested_ = false;
-  int model_changed_ = 0;
+  // Model data.
+  bool visible_ = false;
+  std::u16string text_;
+  std::u16string tooltip_text_;
+  ui::ImageModel image_;
+
+  int model_change_count_ = 0;
 };
 
 class PageActionControllerTest : public ::testing::Test {
@@ -54,9 +72,17 @@ class PageActionControllerTest : public ::testing::Test {
     profile_.reset();
   }
 
-  PageActionController* page_action_controller() { return controller_.get(); }
+  PageActionController* controller() { return controller_.get(); }
   PinnedToolbarActionsModel* pinned_actions_model() {
     return pinned_actions_model_.get();
+  }
+
+  std::unique_ptr<ActionItem> BuildActionItem(int action_id) {
+    return ActionItem::Builder()
+        .SetActionId(action_id)
+        .SetVisible(true)
+        .SetEnabled(true)
+        .Build();
   }
 
  private:
@@ -64,46 +90,49 @@ class PageActionControllerTest : public ::testing::Test {
   std::unique_ptr<PageActionController> controller_;
   std::unique_ptr<PinnedToolbarActionsModel> pinned_actions_model_;
   std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<ActionItem> action_item_;
 };
 
 // Tests adding/removing observers.
 TEST_F(PageActionControllerTest, AddAndRemoveObserver) {
   auto observer = PageActionTestObserver();
-  base::ScopedObservation<PageActionModel, PageActionModelObserver> observation(
-      &observer);
-  PageActionController* controller = page_action_controller();
-  controller->Register(0);
-  controller->AddObserver(0, observation);
+  TestPageActionModelObservation observation(&observer);
+  controller()->Register(0);
+  controller()->AddObserver(0, observation);
+  auto action_item = BuildActionItem(0);
+  base::CallbackListSubscription subscription =
+      controller()->CreateActionItemSubscription(action_item.get());
 
-  controller->Show(0);
-  EXPECT_TRUE(observer.show_requested());
+  controller()->Show(0);
+  EXPECT_TRUE(observer.visible());
 
   observation.Reset();
-  controller->Hide(0);
-  EXPECT_TRUE(observer.show_requested());
+  controller()->Hide(0);
+  EXPECT_TRUE(observer.visible());
 }
 
-// Tests that calling Show/HidePageAction will show/hide updates the model.
+// Tests that calling Show/HidePageAction is reflected in the model.
 TEST_F(PageActionControllerTest, ShowAndHidePageAction) {
   auto observer = PageActionTestObserver();
-  base::ScopedObservation<PageActionModel, PageActionModelObserver> observation(
-      &observer);
-  PageActionController* controller = page_action_controller();
-  controller->Register(0);
-  controller->AddObserver(0, observation);
+  TestPageActionModelObservation observation(&observer);
+  controller()->Register(0);
+  auto action_item = BuildActionItem(0);
+  base::CallbackListSubscription subscription =
+      controller()->CreateActionItemSubscription(action_item.get());
+  controller()->AddObserver(0, observation);
 
-  EXPECT_EQ(0, observer.model_changed());
-  controller->Show(0);
-  EXPECT_EQ(1, observer.model_changed());
-  EXPECT_TRUE(observer.show_requested());
+  EXPECT_EQ(0, observer.model_change_count());
+  controller()->Show(0);
+  EXPECT_EQ(1, observer.model_change_count());
+  EXPECT_TRUE(observer.visible());
 
-  controller->Show(0);
-  EXPECT_EQ(1, observer.model_changed());
-  EXPECT_TRUE(observer.show_requested());
+  controller()->Show(0);
+  EXPECT_EQ(1, observer.model_change_count());
+  EXPECT_TRUE(observer.visible());
 
-  controller->Hide(0);
-  EXPECT_EQ(2, observer.model_changed());
-  EXPECT_FALSE(observer.show_requested());
+  controller()->Hide(0);
+  EXPECT_EQ(2, observer.model_change_count());
+  EXPECT_FALSE(observer.visible());
 }
 
 // Tests that calling Show/HidePageAction will show/hide update the correct
@@ -111,52 +140,73 @@ TEST_F(PageActionControllerTest, ShowAndHidePageAction) {
 TEST_F(PageActionControllerTest, ShowAndHidePageActionUpdatesCorrectModel) {
   auto observer_a = PageActionTestObserver();
   auto observer_b = PageActionTestObserver();
-  base::ScopedObservation<PageActionModel, PageActionModelObserver>
-      observation_a(&observer_a);
-  base::ScopedObservation<PageActionModel, PageActionModelObserver>
-      observation_b(&observer_b);
-  PageActionController* controller = page_action_controller();
+  TestPageActionModelObservation observation_a(&observer_a);
+  TestPageActionModelObservation observation_b(&observer_b);
 
-  controller->Initialize({0, 1});
-  controller->AddObserver(0, observation_a);
-  controller->AddObserver(1, observation_b);
+  controller()->Initialize({0, 1});
 
-  controller->Show(0);
-  EXPECT_TRUE(observer_a.show_requested());
-  EXPECT_FALSE(observer_b.show_requested());
+  auto action_item_a = BuildActionItem(0);
+  base::CallbackListSubscription subscription_a =
+      controller()->CreateActionItemSubscription(action_item_a.get());
+  auto action_item_b = BuildActionItem(1);
+  base::CallbackListSubscription subscription_b =
+      controller()->CreateActionItemSubscription(action_item_b.get());
 
-  controller->Show(1);
-  EXPECT_TRUE(observer_a.show_requested());
-  EXPECT_TRUE(observer_b.show_requested());
+  controller()->AddObserver(0, observation_a);
+  controller()->AddObserver(1, observation_b);
 
-  controller->Hide(0);
-  EXPECT_FALSE(observer_a.show_requested());
-  EXPECT_TRUE(observer_b.show_requested());
+  controller()->Show(0);
+  EXPECT_TRUE(observer_a.visible());
+  EXPECT_FALSE(observer_b.visible());
+
+  controller()->Show(1);
+  EXPECT_TRUE(observer_a.visible());
+  EXPECT_TRUE(observer_b.visible());
+
+  controller()->Hide(0);
+  EXPECT_FALSE(observer_a.visible());
+  EXPECT_TRUE(observer_b.visible());
+}
+
+TEST_F(PageActionControllerTest, ActionItemPropertiesUpdateModel) {
+  auto observer = PageActionTestObserver();
+  TestPageActionModelObservation observation(&observer);
+  controller()->Register(0);
+  auto action_item = BuildActionItem(0);
+  base::CallbackListSubscription subscription =
+      controller()->CreateActionItemSubscription(action_item.get());
+  controller()->AddObserver(0, observation);
+
+  action_item->SetText(u"Text");
+  action_item->SetTooltipText(u"Tooltip");
+
+  EXPECT_EQ(observer.text(), u"Text");
+  EXPECT_EQ(observer.tooltip_text(), u"Tooltip");
 }
 
 TEST_F(PageActionControllerTest, ShowIfNotPinned) {
-  actions::ActionManager::Get().AddAction(
-      actions::ActionItem::Builder().SetActionId(0).Build());
-  PinnedToolbarActionsModel* pinned_actions = pinned_actions_model();
-
   auto observer = PageActionTestObserver();
-  base::ScopedObservation<PageActionModel, PageActionModelObserver> observation(
-      &observer);
-  PageActionController* controller = page_action_controller();
-  controller->Register(0);
-  controller->AddObserver(0, observation);
+  TestPageActionModelObservation observation(&observer);
+  controller()->Register(0);
+  controller()->AddObserver(0, observation);
+
+  auto action_item = BuildActionItem(0);
+  base::CallbackListSubscription subscription =
+      controller()->CreateActionItemSubscription(action_item.get());
+  PinnedToolbarActionsModel* pinned_actions = pinned_actions_model();
+  EXPECT_EQ(2, observer.model_change_count());
 
   // Pin the action item. Nothing should happen.
   pinned_actions->UpdatePinnedState(0, true);
-  EXPECT_FALSE(controller->ShowIfNotPinned(0));
-  EXPECT_EQ(0, observer.model_changed());
-  EXPECT_FALSE(observer.show_requested());
+  EXPECT_FALSE(controller()->ShowIfNotPinned(0));
+  EXPECT_FALSE(observer.visible());
+  EXPECT_EQ(2, observer.model_change_count());
 
   // Unpin the action item. `ShowIfNotPinned` should take effect.
   pinned_actions->UpdatePinnedState(0, false);
-  EXPECT_TRUE(controller->ShowIfNotPinned(0));
-  EXPECT_EQ(1, observer.model_changed());
-  EXPECT_TRUE(observer.show_requested());
+  EXPECT_TRUE(controller()->ShowIfNotPinned(0));
+  EXPECT_EQ(3, observer.model_change_count());
+  EXPECT_TRUE(observer.visible());
 
   actions::ActionManager::Get().ResetForTesting();
 }
