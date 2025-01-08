@@ -1017,7 +1017,13 @@ TEST_F(LocalStorageImplTest, CorruptionOnDisk) {
   EXPECT_EQ(value, result);
 }
 
-TEST_F(LocalStorageImplTest, RecreateOnCommitFailure) {
+// TODO(crbug.com/388544206): Flaky on Mac13.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_RecreateOnCommitFailure DISABLED_RecreateOnCommitFailure
+#else
+#define MAYBE_RecreateOnCommitFailure RecreateOnCommitFailure
+#endif
+TEST_F(LocalStorageImplTest, MAYBE_RecreateOnCommitFailure) {
   std::optional<base::RunLoop> open_loop;
   std::optional<base::RunLoop> destruction_loop;
   size_t num_database_open_requests = 0;
