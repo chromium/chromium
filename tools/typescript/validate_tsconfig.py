@@ -165,6 +165,7 @@ def validateJavaScriptAllowed(source_dir, out_dir, is_ios):
       # remove exception.
       'chrome/test/data/webui/chromeos/shimless_rma',
       'chrome/test/data/webui/cr_components/chromeos',
+      'components/gcm_driver/resources',
       # TODO(crbug.com/373951324): Migrate offline dino game to TypeScript.
       'components/neterror/resources',
       'components/net_log/resources',

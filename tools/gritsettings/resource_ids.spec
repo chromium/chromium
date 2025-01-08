@@ -1011,6 +1011,10 @@
     "META": {"sizes": {"includes": [10]}},
     "includes": [7340],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/components/gcm_driver/resources/resources.grd": {
+    "META": {"sizes": {"includes": [5]}},
+    "includes": [7350],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/components/history_clusters/history_clusters_internals/resources/resources.grd": {
     "META": {"sizes": {"includes": [10]}},
     "includes": [7360],

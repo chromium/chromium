@@ -19,11 +19,13 @@
 #include "components/gcm_driver/gcm_internals_constants.h"
 #include "components/gcm_driver/gcm_internals_helper.h"
 #include "components/gcm_driver/gcm_profile_service.h"
-#include "components/grit/dev_ui_components_resources.h"
+#include "components/grit/gcm_internals_resources.h"
+#include "components/grit/gcm_internals_resources_map.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
+#include "ui/webui/webui_util.h"
 
 GCMInternalsUIConfig::GCMInternalsUIConfig()
     : DefaultWebUIConfig(content::kChromeUIScheme,
@@ -170,14 +172,9 @@ GCMInternalsUI::GCMInternalsUI(content::WebUI* web_ui)
       content::WebUIDataSource::CreateAndAdd(Profile::FromWebUI(web_ui),
                                              chrome::kChromeUIGCMInternalsHost);
 
-  html_source->UseStringsJs();
-
   // Add required resources.
-  html_source->AddResourcePath(gcm_driver::kGcmInternalsCSS,
-                               IDR_GCM_DRIVER_GCM_INTERNALS_CSS);
-  html_source->AddResourcePath(gcm_driver::kGcmInternalsJS,
-                               IDR_GCM_DRIVER_GCM_INTERNALS_JS);
-  html_source->SetDefaultResource(IDR_GCM_DRIVER_GCM_INTERNALS_HTML);
+  webui::SetupWebUIDataSource(html_source, kGcmInternalsResources,
+                              IDR_GCM_INTERNALS_GCM_INTERNALS_HTML);
 
   web_ui->AddMessageHandler(std::make_unique<GcmInternalsUIMessageHandler>());
 }
