@@ -689,9 +689,22 @@ void BookmarkMenuDelegate::WillRemoveBookmarks(
 // the last item being removed from it.
 void BookmarkMenuDelegate::RemoveBookmarkNode(const BookmarkNode* node,
                                               MenuItemView* menu) {
+  CHECK(!node->is_root());
   // Remove any descendants of the removed nodes.
   for (auto i = node_to_menu_map_.begin(); i != node_to_menu_map_.end();) {
-    if (!i->first->HasAncestor(node)) {
+    const BookmarkFolderOrURL current_node(i->first);
+    auto underlying_nodes =
+        current_node.GetUnderlyingNodes(GetBookmarkMergedSurfaceService());
+    if (underlying_nodes.size() != 1) {
+      // This menu represents more than one node, this is possible for permanent
+      // nodes. Given that:
+      // - Root node can't be removed
+      // - Only one node is removed (not all underlying nodes)
+      // This menu shouldn't be removed.
+      continue;
+    }
+
+    if (!underlying_nodes[0]->HasAncestor(node)) {
       ++i;
       continue;
     }
