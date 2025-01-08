@@ -95,28 +95,52 @@ StyleShape::Segment ShapeCommandToShapeSegment(
     const cssvalue::CSSShapeCommand& command,
     const StyleResolverState& state) {
   // TODO(crbug.com/384870259): support other segment types.
-  return StyleShape::Segment{
-      .type = StyleShape::Segment::kLine,
-      .end_point_origin =
-          command.GetOrigin() ==
-                  cssvalue::CSSShapeCommand::PointOrigin::kReferenceBox
-              ? StyleShape::Segment::kReferenceBox
-              : StyleShape::Segment::kPreviousSegment,
-      .end_point =
-          StyleBuilderConverter::ConvertPosition(state, command.GetEndPoint())};
+  switch (command.GetType()) {
+    case blink::cssvalue::CSSShapeCommand::Type::kMove:
+      return StyleShape::Segment{
+          .type = StyleShape::Segment::kMove,
+          .end_point_origin =
+              command.GetOrigin() ==
+                      cssvalue::CSSShapeCommand::PointOrigin::kReferenceBox
+                  ? StyleShape::Segment::kReferenceBox
+                  : StyleShape::Segment::kPreviousSegment,
+          .end_point = StyleBuilderConverter::ConvertPosition(
+              state, command.GetEndPoint())};
+    case blink::cssvalue::CSSShapeCommand::Type::kLine:
+      return StyleShape::Segment{
+          .type = StyleShape::Segment::kLine,
+          .end_point_origin =
+              command.GetOrigin() ==
+                      cssvalue::CSSShapeCommand::PointOrigin::kReferenceBox
+                  ? StyleShape::Segment::kReferenceBox
+                  : StyleShape::Segment::kPreviousSegment,
+          .end_point = StyleBuilderConverter::ConvertPosition(
+              state, command.GetEndPoint())};
+  }
 }
 
 const cssvalue::CSSShapeCommand* ShapeSegmentToShapeCommand(
     const StyleShape::Segment& segment,
     float zoom) {
   // TODO(crbug.com/384870259): support other segment types.
-  return MakeGarbageCollected<const cssvalue::CSSShapeCommand>(
-      cssvalue::CSSShapeCommand::Type::kLine,
-      segment.end_point_origin ==
-              StyleShape::Segment::PointOrigin::kReferenceBox
-          ? cssvalue::CSSShapeCommand::PointOrigin::kReferenceBox
-          : cssvalue::CSSShapeCommand::PointOrigin::kPreviousCommand,
-      LengthPointToCSSValue(segment.end_point, zoom));
+  switch (segment.type) {
+    case blink::StyleShape::Segment::Type::kMove:
+      return MakeGarbageCollected<const cssvalue::CSSShapeCommand>(
+          cssvalue::CSSShapeCommand::Type::kMove,
+          segment.end_point_origin ==
+                  StyleShape::Segment::PointOrigin::kReferenceBox
+              ? cssvalue::CSSShapeCommand::PointOrigin::kReferenceBox
+              : cssvalue::CSSShapeCommand::PointOrigin::kPreviousCommand,
+          LengthPointToCSSValue(segment.end_point, zoom));
+    case blink::StyleShape::Segment::Type::kLine:
+      return MakeGarbageCollected<const cssvalue::CSSShapeCommand>(
+          cssvalue::CSSShapeCommand::Type::kLine,
+          segment.end_point_origin ==
+                  StyleShape::Segment::PointOrigin::kReferenceBox
+              ? cssvalue::CSSShapeCommand::PointOrigin::kReferenceBox
+              : cssvalue::CSSShapeCommand::PointOrigin::kPreviousCommand,
+          LengthPointToCSSValue(segment.end_point, zoom));
+  }
 }
 
 static CSSValue* ValueForCenterCoordinate(

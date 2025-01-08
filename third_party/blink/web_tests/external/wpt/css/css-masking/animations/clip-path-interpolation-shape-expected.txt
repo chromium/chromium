@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 620 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 532 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] CSS Transitions: property <clip-path> from neutral to [shape(from -5px 5px, line to 20px 20%)] at (-0.3) should be [shape(from 8px 5px, line to 7px 7%)]
   assert_equals: expected "shape ( from 8px 5px , line to 7px 7 % ) " but got "shape ( from - 5px 5px , line to 20px 20 % ) "
 [FAIL] CSS Transitions: property <clip-path> from neutral to [shape(from -5px 5px, line to 20px 20%)] at (0) should be [shape(from 5px 5px, line to 10px 10%)]
@@ -29,45 +29,37 @@ Found 620 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Web Animations: property <clip-path> from neutral to [shape(from -5px 5px, line to 20px 20%)] at (1.5) should be [shape(from -10px 5px, line to 25px 25%)]
   assert_equals: expected "shape ( from - 10px 5px , line to 25px 25 % ) " but got "shape ( from - 5px 5px , line to 20px 20 % ) "
 [FAIL] CSS Transitions: property <clip-path> from [inherit] to [shape(from 15% 15px, move to 20% -10px)] at (-0.3) should be [shape(from calc(-4.5% - 6.5px) 2px, move to 0.5% 4.3px)]
-  assert_true: 'to' value should be supported expected true got false
+  assert_equals: expected "shape ( from calc ( - 4.5 % - 6.5px ) 2px , move to 0.5 % 4.3px ) " but got "shape ( from 15 % 15px , move to 20 % - 10px ) "
 [FAIL] CSS Transitions: property <clip-path> from [inherit] to [shape(from 15% 15px, move to 20% -10px)] at (0) should be [shape(from calc(0% - 5px) 5px, move to 5% 1px)]
-  assert_true: 'to' value should be supported expected true got false
+  assert_equals: expected "shape ( from calc ( 0 % - 5px ) 5px , move to 5 % 1px ) " but got "shape ( from 15 % 15px , move to 20 % - 10px ) "
 [FAIL] CSS Transitions: property <clip-path> from [inherit] to [shape(from 15% 15px, move to 20% -10px)] at (0.5) should be [shape(from calc(7.5% - 2.5px) 10px, move to 12.5% -4.5px)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Transitions: property <clip-path> from [inherit] to [shape(from 15% 15px, move to 20% -10px)] at (1) should be [shape(from 15% 15px, move to 20% -10px]
-  assert_true: 'to' value should be supported expected true got false
+  assert_equals: expected "shape ( from calc ( 7.5 % - 2.5px ) 10px , move to 12.5 % - 4.5px ) " but got "shape ( from 15 % 15px , move to 20 % - 10px ) "
 [FAIL] CSS Transitions: property <clip-path> from [inherit] to [shape(from 15% 15px, move to 20% -10px)] at (1.5) should be [shape(from calc(22.5% + 2.5px) 20px, move to 27.5% -15.5px)]
-  assert_true: 'to' value should be supported expected true got false
+  assert_equals: expected "shape ( from calc ( 22.5 % + 2.5px ) 20px , move to 27.5 % - 15.5px ) " but got "shape ( from 15 % 15px , move to 20 % - 10px ) "
 [FAIL] CSS Transitions with transition: all: property <clip-path> from [inherit] to [shape(from 15% 15px, move to 20% -10px)] at (-0.3) should be [shape(from calc(-4.5% - 6.5px) 2px, move to 0.5% 4.3px)]
-  assert_true: 'to' value should be supported expected true got false
+  assert_equals: expected "shape ( from calc ( - 4.5 % - 6.5px ) 2px , move to 0.5 % 4.3px ) " but got "shape ( from 15 % 15px , move to 20 % - 10px ) "
 [FAIL] CSS Transitions with transition: all: property <clip-path> from [inherit] to [shape(from 15% 15px, move to 20% -10px)] at (0) should be [shape(from calc(0% - 5px) 5px, move to 5% 1px)]
-  assert_true: 'to' value should be supported expected true got false
+  assert_equals: expected "shape ( from calc ( 0 % - 5px ) 5px , move to 5 % 1px ) " but got "shape ( from 15 % 15px , move to 20 % - 10px ) "
 [FAIL] CSS Transitions with transition: all: property <clip-path> from [inherit] to [shape(from 15% 15px, move to 20% -10px)] at (0.5) should be [shape(from calc(7.5% - 2.5px) 10px, move to 12.5% -4.5px)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Transitions with transition: all: property <clip-path> from [inherit] to [shape(from 15% 15px, move to 20% -10px)] at (1) should be [shape(from 15% 15px, move to 20% -10px]
-  assert_true: 'to' value should be supported expected true got false
+  assert_equals: expected "shape ( from calc ( 7.5 % - 2.5px ) 10px , move to 12.5 % - 4.5px ) " but got "shape ( from 15 % 15px , move to 20 % - 10px ) "
 [FAIL] CSS Transitions with transition: all: property <clip-path> from [inherit] to [shape(from 15% 15px, move to 20% -10px)] at (1.5) should be [shape(from calc(22.5% + 2.5px) 20px, move to 27.5% -15.5px)]
-  assert_true: 'to' value should be supported expected true got false
+  assert_equals: expected "shape ( from calc ( 22.5 % + 2.5px ) 20px , move to 27.5 % - 15.5px ) " but got "shape ( from 15 % 15px , move to 20 % - 10px ) "
 [FAIL] CSS Animations: property <clip-path> from [inherit] to [shape(from 15% 15px, move to 20% -10px)] at (-0.3) should be [shape(from calc(-4.5% - 6.5px) 2px, move to 0.5% 4.3px)]
-  assert_true: 'to' value should be supported expected true got false
+  assert_equals: expected "shape ( from calc ( - 4.5 % - 6.5px ) 2px , move to 0.5 % 4.3px ) " but got "shape ( from - 5px 5px , move to 5 % 1px ) "
 [FAIL] CSS Animations: property <clip-path> from [inherit] to [shape(from 15% 15px, move to 20% -10px)] at (0) should be [shape(from calc(0% - 5px) 5px, move to 5% 1px)]
-  assert_true: 'to' value should be supported expected true got false
+  assert_equals: expected "shape ( from calc ( 0 % - 5px ) 5px , move to 5 % 1px ) " but got "shape ( from - 5px 5px , move to 5 % 1px ) "
 [FAIL] CSS Animations: property <clip-path> from [inherit] to [shape(from 15% 15px, move to 20% -10px)] at (0.5) should be [shape(from calc(7.5% - 2.5px) 10px, move to 12.5% -4.5px)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Animations: property <clip-path> from [inherit] to [shape(from 15% 15px, move to 20% -10px)] at (1) should be [shape(from 15% 15px, move to 20% -10px]
-  assert_true: 'to' value should be supported expected true got false
+  assert_equals: expected "shape ( from calc ( 7.5 % - 2.5px ) 10px , move to 12.5 % - 4.5px ) " but got "shape ( from 15 % 15px , move to 20 % - 10px ) "
 [FAIL] CSS Animations: property <clip-path> from [inherit] to [shape(from 15% 15px, move to 20% -10px)] at (1.5) should be [shape(from calc(22.5% + 2.5px) 20px, move to 27.5% -15.5px)]
-  assert_true: 'to' value should be supported expected true got false
+  assert_equals: expected "shape ( from calc ( 22.5 % + 2.5px ) 20px , move to 27.5 % - 15.5px ) " but got "shape ( from 15 % 15px , move to 20 % - 10px ) "
 [FAIL] Web Animations: property <clip-path> from [inherit] to [shape(from 15% 15px, move to 20% -10px)] at (-0.3) should be [shape(from calc(-4.5% - 6.5px) 2px, move to 0.5% 4.3px)]
-  assert_true: 'to' value should be supported expected true got false
+  assert_equals: expected "shape ( from calc ( - 4.5 % - 6.5px ) 2px , move to 0.5 % 4.3px ) " but got "shape ( from - 5px 5px , move to 5 % 1px ) "
 [FAIL] Web Animations: property <clip-path> from [inherit] to [shape(from 15% 15px, move to 20% -10px)] at (0) should be [shape(from calc(0% - 5px) 5px, move to 5% 1px)]
-  assert_true: 'to' value should be supported expected true got false
+  assert_equals: expected "shape ( from calc ( 0 % - 5px ) 5px , move to 5 % 1px ) " but got "shape ( from - 5px 5px , move to 5 % 1px ) "
 [FAIL] Web Animations: property <clip-path> from [inherit] to [shape(from 15% 15px, move to 20% -10px)] at (0.5) should be [shape(from calc(7.5% - 2.5px) 10px, move to 12.5% -4.5px)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] Web Animations: property <clip-path> from [inherit] to [shape(from 15% 15px, move to 20% -10px)] at (1) should be [shape(from 15% 15px, move to 20% -10px]
-  assert_true: 'to' value should be supported expected true got false
+  assert_equals: expected "shape ( from calc ( 7.5 % - 2.5px ) 10px , move to 12.5 % - 4.5px ) " but got "shape ( from 15 % 15px , move to 20 % - 10px ) "
 [FAIL] Web Animations: property <clip-path> from [inherit] to [shape(from 15% 15px, move to 20% -10px)] at (1.5) should be [shape(from calc(22.5% + 2.5px) 20px, move to 27.5% -15.5px)]
-  assert_true: 'to' value should be supported expected true got false
+  assert_equals: expected "shape ( from calc ( 22.5 % + 2.5px ) 20px , move to 27.5 % - 15.5px ) " but got "shape ( from 15 % 15px , move to 20 % - 10px ) "
 [FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [unset] to [shape(from 10px 10px, close)] at (-0.3) should be [unset]
   assert_true: 'to' value should be supported expected true got false
 [FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [unset] to [shape(from 10px 10px, close)] at (0) should be [unset]
@@ -237,89 +229,89 @@ Found 620 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Web Animations: property <clip-path> from [none] to [shape(from 10px 10px, close)] at (1.5) should be [shape(from 10px 10px, close)]
   assert_true: 'to' value should be supported expected true got false
 [FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (-0.3) should be [shape(from 10px 10px, move to 10% 10%)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_true: 'to' value should be supported expected true got false
 [FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (0) should be [shape(from 10px 10px, move to 10% 10%)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_true: 'to' value should be supported expected true got false
 [FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (0.3) should be [shape(from 10px 10px, move to 10% 10%)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_true: 'to' value should be supported expected true got false
 [FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (0.5) should be [shape(from 10px 10px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_true: 'to' value should be supported expected true got false
 [FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (0.6) should be [shape(from 10px 10px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_true: 'to' value should be supported expected true got false
 [FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (1) should be [shape(from 10px 10px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_true: 'to' value should be supported expected true got false
 [FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (1.5) should be [shape(from 10px 10px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_true: 'to' value should be supported expected true got false
 [FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (-0.3) should be [shape(from 10px 10px, move to 10% 10%)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_true: 'to' value should be supported expected true got false
 [FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (0) should be [shape(from 10px 10px, move to 10% 10%)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_true: 'to' value should be supported expected true got false
 [FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (0.3) should be [shape(from 10px 10px, move to 10% 10%)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_true: 'to' value should be supported expected true got false
 [FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (0.5) should be [shape(from 10px 10px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_true: 'to' value should be supported expected true got false
 [FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (0.6) should be [shape(from 10px 10px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_true: 'to' value should be supported expected true got false
 [FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (1) should be [shape(from 10px 10px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_true: 'to' value should be supported expected true got false
 [FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (1.5) should be [shape(from 10px 10px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_true: 'to' value should be supported expected true got false
 [FAIL] CSS Transitions: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (-0.3) should be [shape(from 10px 10px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_true: 'to' value should be supported expected true got false
 [FAIL] CSS Transitions: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (0) should be [shape(from 10px 10px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_true: 'to' value should be supported expected true got false
 [FAIL] CSS Transitions: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (0.3) should be [shape(from 10px 10px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_true: 'to' value should be supported expected true got false
 [FAIL] CSS Transitions: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (0.5) should be [shape(from 10px 10px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_true: 'to' value should be supported expected true got false
 [FAIL] CSS Transitions: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (0.6) should be [shape(from 10px 10px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_true: 'to' value should be supported expected true got false
 [FAIL] CSS Transitions: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (1) should be [shape(from 10px 10px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_true: 'to' value should be supported expected true got false
 [FAIL] CSS Transitions: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (1.5) should be [shape(from 10px 10px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_true: 'to' value should be supported expected true got false
 [FAIL] CSS Transitions with transition: all: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (-0.3) should be [shape(from 10px 10px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_true: 'to' value should be supported expected true got false
 [FAIL] CSS Transitions with transition: all: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (0) should be [shape(from 10px 10px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_true: 'to' value should be supported expected true got false
 [FAIL] CSS Transitions with transition: all: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (0.3) should be [shape(from 10px 10px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_true: 'to' value should be supported expected true got false
 [FAIL] CSS Transitions with transition: all: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (0.5) should be [shape(from 10px 10px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_true: 'to' value should be supported expected true got false
 [FAIL] CSS Transitions with transition: all: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (0.6) should be [shape(from 10px 10px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_true: 'to' value should be supported expected true got false
 [FAIL] CSS Transitions with transition: all: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (1) should be [shape(from 10px 10px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_true: 'to' value should be supported expected true got false
 [FAIL] CSS Transitions with transition: all: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (1.5) should be [shape(from 10px 10px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_true: 'to' value should be supported expected true got false
 [FAIL] CSS Animations: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (-0.3) should be [shape(from 10px 10px, move to 10% 10%)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_true: 'to' value should be supported expected true got false
 [FAIL] CSS Animations: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (0) should be [shape(from 10px 10px, move to 10% 10%)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_true: 'to' value should be supported expected true got false
 [FAIL] CSS Animations: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (0.3) should be [shape(from 10px 10px, move to 10% 10%)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_true: 'to' value should be supported expected true got false
 [FAIL] CSS Animations: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (0.5) should be [shape(from 10px 10px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_true: 'to' value should be supported expected true got false
 [FAIL] CSS Animations: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (0.6) should be [shape(from 10px 10px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_true: 'to' value should be supported expected true got false
 [FAIL] CSS Animations: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (1) should be [shape(from 10px 10px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_true: 'to' value should be supported expected true got false
 [FAIL] CSS Animations: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (1.5) should be [shape(from 10px 10px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_true: 'to' value should be supported expected true got false
 [FAIL] Web Animations: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (-0.3) should be [shape(from 10px 10px, move to 10% 10%)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_true: 'to' value should be supported expected true got false
 [FAIL] Web Animations: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (0) should be [shape(from 10px 10px, move to 10% 10%)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_true: 'to' value should be supported expected true got false
 [FAIL] Web Animations: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (0.3) should be [shape(from 10px 10px, move to 10% 10%)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_true: 'to' value should be supported expected true got false
 [FAIL] Web Animations: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (0.5) should be [shape(from 10px 10px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_true: 'to' value should be supported expected true got false
 [FAIL] Web Animations: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (0.6) should be [shape(from 10px 10px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_true: 'to' value should be supported expected true got false
 [FAIL] Web Animations: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (1) should be [shape(from 10px 10px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_true: 'to' value should be supported expected true got false
 [FAIL] Web Animations: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (1.5) should be [shape(from 10px 10px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_true: 'to' value should be supported expected true got false
 [FAIL] CSS Transitions: property <clip-path> from [shape(from 5% 5px, hline to 5%, vline to -5px, close)] to [shape(from 15% 15px, hline to 25%, vline to -15px, close)] at (-0.3) should be [shape(from 2% 2px, hline to -1%, vline to -2px, close)]
   assert_true: 'from' value should be supported expected true got false
 [FAIL] CSS Transitions: property <clip-path> from [shape(from 5% 5px, hline to 5%, vline to -5px, close)] to [shape(from 15% 15px, hline to 25%, vline to -15px, close)] at (0) should be [shape(from 5% 5px, hline to 5%, vline to -5px, close)]
@@ -608,90 +600,6 @@ Found 620 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_true: 'from' value should be supported expected true got false
 [FAIL] Web Animations: property <clip-path> from [shape(from 5px -5%, hline to 10px, vline by 10rem, hline by 8.25px, close, vline by 3pt)] to [shape(from -5px 5px, hline to 20px, vline by 10%, hline by 1em, close, vline by 6pt)] at (1.5) should be [shape(from -10px calc(2.5% + 7.5px), hline to 25px, vline by calc(15% - 80px), hline by 19.88px, close, vline by 10px)]
   assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [path("M10 10 z")] at (-0.3) should be [shape(from 10px 10px, move to 10% 10%)]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [path("M10 10 z")] at (0) should be [shape(from 10px 10px, move to 10% 10%)]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [path("M10 10 z")] at (0.3) should be [shape(from 10px 10px, move to 10% 10%)]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [path("M10 10 z")] at (0.5) should be [path("M10 10 z")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [path("M10 10 z")] at (0.6) should be [path("M10 10 z")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [path("M10 10 z")] at (1) should be [path("M10 10 z")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [path("M10 10 z")] at (1.5) should be [path("M10 10 z")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [path("M10 10 z")] at (-0.3) should be [shape(from 10px 10px, move to 10% 10%)]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [path("M10 10 z")] at (0) should be [shape(from 10px 10px, move to 10% 10%)]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [path("M10 10 z")] at (0.3) should be [shape(from 10px 10px, move to 10% 10%)]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [path("M10 10 z")] at (0.5) should be [path("M10 10 z")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [path("M10 10 z")] at (0.6) should be [path("M10 10 z")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [path("M10 10 z")] at (1) should be [path("M10 10 z")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [path("M10 10 z")] at (1.5) should be [path("M10 10 z")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [path("M10 10 z")] at (-0.3) should be [path("M10 10 z")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [path("M10 10 z")] at (0) should be [path("M10 10 z")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [path("M10 10 z")] at (0.3) should be [path("M10 10 z")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [path("M10 10 z")] at (0.5) should be [path("M10 10 z")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [path("M10 10 z")] at (0.6) should be [path("M10 10 z")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [path("M10 10 z")] at (1) should be [path("M10 10 z")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [path("M10 10 z")] at (1.5) should be [path("M10 10 z")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition: all: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [path("M10 10 z")] at (-0.3) should be [path("M10 10 z")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition: all: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [path("M10 10 z")] at (0) should be [path("M10 10 z")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition: all: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [path("M10 10 z")] at (0.3) should be [path("M10 10 z")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition: all: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [path("M10 10 z")] at (0.5) should be [path("M10 10 z")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition: all: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [path("M10 10 z")] at (0.6) should be [path("M10 10 z")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition: all: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [path("M10 10 z")] at (1) should be [path("M10 10 z")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition: all: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [path("M10 10 z")] at (1.5) should be [path("M10 10 z")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Animations: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [path("M10 10 z")] at (-0.3) should be [shape(from 10px 10px, move to 10% 10%)]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Animations: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [path("M10 10 z")] at (0) should be [shape(from 10px 10px, move to 10% 10%)]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Animations: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [path("M10 10 z")] at (0.3) should be [shape(from 10px 10px, move to 10% 10%)]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Animations: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [path("M10 10 z")] at (0.5) should be [path("M10 10 z")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Animations: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [path("M10 10 z")] at (0.6) should be [path("M10 10 z")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Animations: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [path("M10 10 z")] at (1) should be [path("M10 10 z")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Animations: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [path("M10 10 z")] at (1.5) should be [path("M10 10 z")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] Web Animations: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [path("M10 10 z")] at (-0.3) should be [shape(from 10px 10px, move to 10% 10%)]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] Web Animations: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [path("M10 10 z")] at (0) should be [shape(from 10px 10px, move to 10% 10%)]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] Web Animations: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [path("M10 10 z")] at (0.3) should be [shape(from 10px 10px, move to 10% 10%)]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] Web Animations: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [path("M10 10 z")] at (0.5) should be [path("M10 10 z")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] Web Animations: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [path("M10 10 z")] at (0.6) should be [path("M10 10 z")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] Web Animations: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [path("M10 10 z")] at (1) should be [path("M10 10 z")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] Web Animations: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [path("M10 10 z")] at (1.5) should be [path("M10 10 z")]
-  assert_true: 'from' value should be supported expected true got false
 [FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [path("M10 10 M10 10")] to [shape(from 10px 10px, close)] at (-0.3) should be [path("M10 10 M10 10")]
   assert_true: 'to' value should be supported expected true got false
 [FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [path("M10 10 M10 10")] to [shape(from 10px 10px, close)] at (0) should be [path("M10 10 M10 10")]
@@ -860,90 +768,6 @@ Found 620 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_true: 'to' value should be supported expected true got false
 [FAIL] Web Animations: property <clip-path> from [path("M10 10 h 5")] to [shape(from 10px 10px, hline to 5px)] at (1.5) should be [shape(from 10px 10px, hline to 5px)]
   assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [shape(nonzero from 10px 10px, move to 10% 10%)] to [path(evenodd, "M0 0 M20 20")] at (-0.3) should be [shape(nonzero from 10px 10px, move to 10% 10%)]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [shape(nonzero from 10px 10px, move to 10% 10%)] to [path(evenodd, "M0 0 M20 20")] at (0) should be [shape(nonzero from 10px 10px, move to 10% 10%)]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [shape(nonzero from 10px 10px, move to 10% 10%)] to [path(evenodd, "M0 0 M20 20")] at (0.3) should be [shape(nonzero from 10px 10px, move to 10% 10%)]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [shape(nonzero from 10px 10px, move to 10% 10%)] to [path(evenodd, "M0 0 M20 20")] at (0.5) should be [path(evenodd, "M0 0 M20 20")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [shape(nonzero from 10px 10px, move to 10% 10%)] to [path(evenodd, "M0 0 M20 20")] at (0.6) should be [path(evenodd, "M0 0 M20 20")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [shape(nonzero from 10px 10px, move to 10% 10%)] to [path(evenodd, "M0 0 M20 20")] at (1) should be [path(evenodd, "M0 0 M20 20")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [shape(nonzero from 10px 10px, move to 10% 10%)] to [path(evenodd, "M0 0 M20 20")] at (1.5) should be [path(evenodd, "M0 0 M20 20")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [shape(nonzero from 10px 10px, move to 10% 10%)] to [path(evenodd, "M0 0 M20 20")] at (-0.3) should be [shape(nonzero from 10px 10px, move to 10% 10%)]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [shape(nonzero from 10px 10px, move to 10% 10%)] to [path(evenodd, "M0 0 M20 20")] at (0) should be [shape(nonzero from 10px 10px, move to 10% 10%)]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [shape(nonzero from 10px 10px, move to 10% 10%)] to [path(evenodd, "M0 0 M20 20")] at (0.3) should be [shape(nonzero from 10px 10px, move to 10% 10%)]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [shape(nonzero from 10px 10px, move to 10% 10%)] to [path(evenodd, "M0 0 M20 20")] at (0.5) should be [path(evenodd, "M0 0 M20 20")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [shape(nonzero from 10px 10px, move to 10% 10%)] to [path(evenodd, "M0 0 M20 20")] at (0.6) should be [path(evenodd, "M0 0 M20 20")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [shape(nonzero from 10px 10px, move to 10% 10%)] to [path(evenodd, "M0 0 M20 20")] at (1) should be [path(evenodd, "M0 0 M20 20")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [shape(nonzero from 10px 10px, move to 10% 10%)] to [path(evenodd, "M0 0 M20 20")] at (1.5) should be [path(evenodd, "M0 0 M20 20")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions: property <clip-path> from [shape(nonzero from 10px 10px, move to 10% 10%)] to [path(evenodd, "M0 0 M20 20")] at (-0.3) should be [path(evenodd, "M0 0 M20 20")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions: property <clip-path> from [shape(nonzero from 10px 10px, move to 10% 10%)] to [path(evenodd, "M0 0 M20 20")] at (0) should be [path(evenodd, "M0 0 M20 20")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions: property <clip-path> from [shape(nonzero from 10px 10px, move to 10% 10%)] to [path(evenodd, "M0 0 M20 20")] at (0.3) should be [path(evenodd, "M0 0 M20 20")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions: property <clip-path> from [shape(nonzero from 10px 10px, move to 10% 10%)] to [path(evenodd, "M0 0 M20 20")] at (0.5) should be [path(evenodd, "M0 0 M20 20")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions: property <clip-path> from [shape(nonzero from 10px 10px, move to 10% 10%)] to [path(evenodd, "M0 0 M20 20")] at (0.6) should be [path(evenodd, "M0 0 M20 20")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions: property <clip-path> from [shape(nonzero from 10px 10px, move to 10% 10%)] to [path(evenodd, "M0 0 M20 20")] at (1) should be [path(evenodd, "M0 0 M20 20")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions: property <clip-path> from [shape(nonzero from 10px 10px, move to 10% 10%)] to [path(evenodd, "M0 0 M20 20")] at (1.5) should be [path(evenodd, "M0 0 M20 20")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition: all: property <clip-path> from [shape(nonzero from 10px 10px, move to 10% 10%)] to [path(evenodd, "M0 0 M20 20")] at (-0.3) should be [path(evenodd, "M0 0 M20 20")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition: all: property <clip-path> from [shape(nonzero from 10px 10px, move to 10% 10%)] to [path(evenodd, "M0 0 M20 20")] at (0) should be [path(evenodd, "M0 0 M20 20")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition: all: property <clip-path> from [shape(nonzero from 10px 10px, move to 10% 10%)] to [path(evenodd, "M0 0 M20 20")] at (0.3) should be [path(evenodd, "M0 0 M20 20")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition: all: property <clip-path> from [shape(nonzero from 10px 10px, move to 10% 10%)] to [path(evenodd, "M0 0 M20 20")] at (0.5) should be [path(evenodd, "M0 0 M20 20")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition: all: property <clip-path> from [shape(nonzero from 10px 10px, move to 10% 10%)] to [path(evenodd, "M0 0 M20 20")] at (0.6) should be [path(evenodd, "M0 0 M20 20")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition: all: property <clip-path> from [shape(nonzero from 10px 10px, move to 10% 10%)] to [path(evenodd, "M0 0 M20 20")] at (1) should be [path(evenodd, "M0 0 M20 20")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition: all: property <clip-path> from [shape(nonzero from 10px 10px, move to 10% 10%)] to [path(evenodd, "M0 0 M20 20")] at (1.5) should be [path(evenodd, "M0 0 M20 20")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Animations: property <clip-path> from [shape(nonzero from 10px 10px, move to 10% 10%)] to [path(evenodd, "M0 0 M20 20")] at (-0.3) should be [shape(nonzero from 10px 10px, move to 10% 10%)]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Animations: property <clip-path> from [shape(nonzero from 10px 10px, move to 10% 10%)] to [path(evenodd, "M0 0 M20 20")] at (0) should be [shape(nonzero from 10px 10px, move to 10% 10%)]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Animations: property <clip-path> from [shape(nonzero from 10px 10px, move to 10% 10%)] to [path(evenodd, "M0 0 M20 20")] at (0.3) should be [shape(nonzero from 10px 10px, move to 10% 10%)]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Animations: property <clip-path> from [shape(nonzero from 10px 10px, move to 10% 10%)] to [path(evenodd, "M0 0 M20 20")] at (0.5) should be [path(evenodd, "M0 0 M20 20")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Animations: property <clip-path> from [shape(nonzero from 10px 10px, move to 10% 10%)] to [path(evenodd, "M0 0 M20 20")] at (0.6) should be [path(evenodd, "M0 0 M20 20")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Animations: property <clip-path> from [shape(nonzero from 10px 10px, move to 10% 10%)] to [path(evenodd, "M0 0 M20 20")] at (1) should be [path(evenodd, "M0 0 M20 20")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Animations: property <clip-path> from [shape(nonzero from 10px 10px, move to 10% 10%)] to [path(evenodd, "M0 0 M20 20")] at (1.5) should be [path(evenodd, "M0 0 M20 20")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] Web Animations: property <clip-path> from [shape(nonzero from 10px 10px, move to 10% 10%)] to [path(evenodd, "M0 0 M20 20")] at (-0.3) should be [shape(nonzero from 10px 10px, move to 10% 10%)]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] Web Animations: property <clip-path> from [shape(nonzero from 10px 10px, move to 10% 10%)] to [path(evenodd, "M0 0 M20 20")] at (0) should be [shape(nonzero from 10px 10px, move to 10% 10%)]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] Web Animations: property <clip-path> from [shape(nonzero from 10px 10px, move to 10% 10%)] to [path(evenodd, "M0 0 M20 20")] at (0.3) should be [shape(nonzero from 10px 10px, move to 10% 10%)]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] Web Animations: property <clip-path> from [shape(nonzero from 10px 10px, move to 10% 10%)] to [path(evenodd, "M0 0 M20 20")] at (0.5) should be [path(evenodd, "M0 0 M20 20")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] Web Animations: property <clip-path> from [shape(nonzero from 10px 10px, move to 10% 10%)] to [path(evenodd, "M0 0 M20 20")] at (0.6) should be [path(evenodd, "M0 0 M20 20")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] Web Animations: property <clip-path> from [shape(nonzero from 10px 10px, move to 10% 10%)] to [path(evenodd, "M0 0 M20 20")] at (1) should be [path(evenodd, "M0 0 M20 20")]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] Web Animations: property <clip-path> from [shape(nonzero from 10px 10px, move to 10% 10%)] to [path(evenodd, "M0 0 M20 20")] at (1.5) should be [path(evenodd, "M0 0 M20 20")]
-  assert_true: 'from' value should be supported expected true got false
 [FAIL] CSS Transitions: property <clip-path> from [shape(from 5px 5px, hline to 5px, vline to -5px, close)] to [path("M 15 15 H 25 V -15 Z")] at (-0.3) should be [shape(from 2px 2px, hline to -1px, vline to -2px, close)]
   assert_true: 'from' value should be supported expected true got false
 [FAIL] CSS Transitions: property <clip-path> from [shape(from 5px 5px, hline to 5px, vline to -5px, close)] to [path("M 15 15 H 25 V -15 Z")] at (0) should be [shape(from 5px 5px, hline to 5px, vline to -5px, close)]

@@ -22,7 +22,7 @@ namespace cssvalue {
 // Each command’s starting point is the previous command’s ending point.
 class CSSShapeCommand : public GarbageCollected<CSSShapeCommand> {
  public:
-  enum class Type { kLine };
+  enum class Type { kMove, kLine };
 
   // See https://drafts.csswg.org/css-shapes-2/#typedef-shape-command-end-point
   // https://drafts.csswg.org/css-shapes-2/#valdef-shape-to is relative to the

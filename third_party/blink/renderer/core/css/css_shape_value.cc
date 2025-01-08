@@ -16,6 +16,11 @@ namespace blink::cssvalue {
 String CSSShapeCommand::CSSText() const {
   StringBuilder builder;
   switch (type_) {
+    case Type::kMove:
+      builder.Append("move");
+      builder.Append(origin_ == PointOrigin::kReferenceBox ? " to " : " by ");
+      builder.Append(end_point_->CssText());
+      break;
     case Type::kLine:
       builder.Append("line");
       builder.Append(origin_ == PointOrigin::kReferenceBox ? " to " : " by ");

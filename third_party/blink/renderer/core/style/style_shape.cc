@@ -32,12 +32,24 @@ void StyleShape::ResolvePath(Path& path, const gfx::SizeF& box_size) const {
 
   for (const Segment& segment : segments_) {
     // TODO(crbug.com/384870259): support other segment types.
-    builder.EmitSegment(
-        {.command =
-             segment.end_point_origin == Segment::PointOrigin::kReferenceBox
-                 ? SVGPathSegType::kPathSegLineToAbs
-                 : SVGPathSegType::kPathSegLineToRel,
-         .target_point = PointForLengthPoint(segment.end_point, box_size)});
+    switch (segment.type) {
+      case Segment::Type::kMove:
+        builder.EmitSegment(
+            {.command =
+                 segment.end_point_origin == Segment::PointOrigin::kReferenceBox
+                     ? SVGPathSegType::kPathSegMoveToAbs
+                     : SVGPathSegType::kPathSegMoveToRel,
+             .target_point = PointForLengthPoint(segment.end_point, box_size)});
+        break;
+      case Segment::Type::kLine:
+        builder.EmitSegment(
+            {.command =
+                 segment.end_point_origin == Segment::PointOrigin::kReferenceBox
+                     ? SVGPathSegType::kPathSegLineToAbs
+                     : SVGPathSegType::kPathSegLineToRel,
+             .target_point = PointForLengthPoint(segment.end_point, box_size)});
+        break;
+    }
   }
 }
 

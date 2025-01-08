@@ -6717,13 +6717,32 @@ CSSValuePair* ConsumeCoordinatePair(CSSParserTokenStream& args,
   }
 }
 
+using cssvalue::CSSShapeCommand;
+using cssvalue::CSSShapeValue;
+
+/// https://drafts.csswg.org/css-shapes-2/#typedef-shape-command-end-point
+// <command-end-point> = [ to <position> | by <coordinate-pair> ]
+const CSSValuePair* ConsumeShapeCommandEndPoint(
+    CSSParserTokenStream& args,
+    const CSSParserContext& context,
+    CSSShapeCommand::PointOrigin& point_origin) {
+  switch (args.ConsumeIncludingWhitespace().Id()) {
+    case CSSValueID::kTo:
+      point_origin = CSSShapeCommand::PointOrigin::kReferenceBox;
+      return ConsumePosition(args, context, UnitlessQuirk::kForbid,
+                             std::nullopt);
+    case CSSValueID::kBy:
+      point_origin = CSSShapeCommand::PointOrigin::kPreviousCommand;
+      return ConsumeCoordinatePair(args, context);
+    default:
+      return nullptr;
+  }
+}
+
 // https://drafts.csswg.org/css-shapes-2/#funcdef-shape
 cssvalue::CSSShapeValue* ConsumeBasicShapeShape(
     CSSParserTokenStream& args,
     const CSSParserContext& context) {
-  using cssvalue::CSSShapeCommand;
-  using cssvalue::CSSShapeValue;
-
   CHECK(RuntimeEnabledFeatures::CSSShapeFunctionEnabled());
 
   // shape() = shape( <'fill-rule'>? ...
@@ -6756,32 +6775,28 @@ cssvalue::CSSShapeValue* ConsumeBasicShapeShape(
   // <shape-command>#
   HeapVector<Member<const CSSShapeCommand>> commands;
   while (!args.AtEnd()) {
-    // https://drafts.csswg.org/css-shapes-2/#typedef-shape-line-command
-    // <line-command> = line <command-end-point>
-    if (args.Peek().Id() != CSSValueID::kLine) {
-      return nullptr;
-    }
-
-    args.ConsumeIncludingWhitespace();
-    /// https://drafts.csswg.org/css-shapes-2/#typedef-shape-command-end-point
-    // <command-end-point> = [ to <position> | by <coordinate-pair> ]
+    CSSShapeCommand::PointOrigin end_point_origin;
     switch (args.ConsumeIncludingWhitespace().Id()) {
-      case CSSValueID::kTo: {
-        if (CSSValuePair* end_point = ConsumePosition(
-                args, context, UnitlessQuirk::kForbid, std::nullopt)) {
+      case CSSValueID::kMove: {
+        // https://drafts.csswg.org/css-shapes-2/#typedef-shape-move-command
+        // <move-command> = move <command-end-point>
+        if (const CSSValuePair* end_point =
+                ConsumeShapeCommandEndPoint(args, context, end_point_origin)) {
           commands.push_back(MakeGarbageCollected<CSSShapeCommand>(
-              CSSShapeCommand::Type::kLine,
-              CSSShapeCommand::PointOrigin::kReferenceBox, *end_point));
+              CSSShapeCommand::Type::kMove, end_point_origin, *end_point));
         } else {
           return nullptr;
         }
         break;
       }
-      case CSSValueID::kBy: {
-        if (CSSValuePair* end_point = ConsumeCoordinatePair(args, context)) {
+      case CSSValueID::kLine: {
+        // https://drafts.csswg.org/css-shapes-2/#typedef-shape-line-command
+        // <line-command> = line <command-end-point>
+        if (const CSSValuePair* end_point =
+                ConsumeShapeCommandEndPoint(args, context, end_point_origin)) {
           commands.push_back(MakeGarbageCollected<CSSShapeCommand>(
-              CSSShapeCommand::Type::kLine,
-              CSSShapeCommand::PointOrigin::kPreviousCommand, *end_point));
+              CSSShapeCommand::Type::kLine, end_point_origin, *end_point));
+
         } else {
           return nullptr;
         }

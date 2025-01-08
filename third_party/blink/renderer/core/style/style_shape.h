@@ -22,7 +22,7 @@ namespace blink {
 class StyleShape final : public BasicShape {
  public:
   struct Segment {
-    enum Type { kLine };
+    enum Type { kMove, kLine };
 
     bool operator==(const Segment& other) const = default;
 
