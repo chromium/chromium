@@ -8,12 +8,12 @@
 
   await dp.Audits.enable();
 
-  const issue = dp.Audits.onceIssueAdded();
-
-  await session.evaluate(`
+  session.evaluate(`
     document.body.innerHTML = '<img attributionsrc="https://devtools.test:8443/inspector-protocol/attribution-reporting/resources/redirect-to-insecure-origin-and-register-trigger.php">'
   `);
 
-  testRunner.log((await issue).params.issue, 'Issue reported: ', ['request']);
+  const issue = await dp.Audits.onceIssueAdded();
+
+  testRunner.log(issue.params.issue, 'Issue reported: ', ['request']);
   testRunner.completeTest();
 })

@@ -8,12 +8,12 @@
 
   await dp.Audits.enable();
 
-  const issue = dp.Audits.onceIssueAdded();
-
-  await session.evaluate(`
+  session.evaluate(`
     document.body.innerHTML = '<img attributionsrc="wss://devtools.test:8443/">'
   `);
 
-  testRunner.log((await issue).params.issue, 'Issue reported: ', ['violatingNodeId']);
+  const issue = await dp.Audits.onceIssueAdded();
+
+  testRunner.log(issue.params.issue, 'Issue reported: ', ['violatingNodeId']);
   testRunner.completeTest();
 })

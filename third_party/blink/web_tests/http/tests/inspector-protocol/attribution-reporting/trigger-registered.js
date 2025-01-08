@@ -9,7 +9,7 @@
   await dp.Storage.setAttributionReportingLocalTestingMode({enabled: true});
   await dp.Storage.setAttributionReportingTracking({enable: true});
 
-  await session.evaluateAsync(`
+  session.evaluateAsync(`
     fetch('/inspector-protocol/attribution-reporting/resources/register-complete-trigger.php')
   `);
 

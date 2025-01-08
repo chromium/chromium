@@ -8,14 +8,14 @@
 
   await dp.Audits.enable();
 
-  const issue = dp.Audits.onceIssueAdded();
-
   // The `.name` is irrelevant for the test, but `evaluate` serializes the
   // result of the expression as JSON, which is not possible for the WindowProxy
   // returned by `open` itself.
-  await session.evaluate(
+  session.evaluate(
       `window.open('https://devtools.test:8443/', '_blank', 'attributionsrc').name`);
 
-  testRunner.log((await issue).params.issue, 'Issue reported: ');
+  const issue = await dp.Audits.onceIssueAdded();
+
+  testRunner.log(issue.params.issue, 'Issue reported: ');
   testRunner.completeTest();
 })

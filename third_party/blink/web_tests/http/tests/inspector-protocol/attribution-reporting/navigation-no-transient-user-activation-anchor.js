@@ -12,11 +12,10 @@
     document.body.innerHTML = '<a href="https://devtools.test:8443/" attributionsrc target="_blank">Link</a>'
   `);
 
-  const issue = dp.Audits.onceIssueAdded();
+  session.evaluate(`document.querySelector('a').click()`);
 
-  await session.evaluate(`document.querySelector('a').click()`);
+  const issue = await dp.Audits.onceIssueAdded();
 
-  testRunner.log(
-      (await issue).params.issue, 'Issue reported: ', ['violatingNodeId']);
+  testRunner.log(issue.params.issue, 'Issue reported: ', ['violatingNodeId']);
   testRunner.completeTest();
 })

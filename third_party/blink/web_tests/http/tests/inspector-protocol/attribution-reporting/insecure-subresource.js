@@ -8,12 +8,12 @@
 
   await dp.Audits.enable();
 
-  const issue = dp.Audits.onceIssueAdded();
-
-  await session.evaluate(`
+  session.evaluate(`
     document.body.innerHTML = '<img src="http://devtools.test:8000/inspector-protocol/attribution-reporting/resources/register-trigger.php">'
   `);
 
-  testRunner.log((await issue).params.issue, 'Issue reported: ', ['request']);
+  const issue = await dp.Audits.onceIssueAdded();
+
+  testRunner.log(issue.params.issue, 'Issue reported: ', ['request']);
   testRunner.completeTest();
 })

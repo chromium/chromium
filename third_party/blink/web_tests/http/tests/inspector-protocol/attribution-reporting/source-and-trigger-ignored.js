@@ -8,10 +8,7 @@
 
   await dp.Audits.enable();
 
-  const issue1 = dp.Audits.onceIssueAdded();
-  const issue2 = dp.Audits.onceIssueAdded();
-
-  await session.evaluateAsync(`
+  session.evaluateAsync(`
     fetch('/inspector-protocol/attribution-reporting/resources/register-source-and-trigger.php',
         {attributionReporting: {
           eventSourceEligible: false,
@@ -19,7 +16,10 @@
         }})
   `);
 
-  testRunner.log((await issue1).params.issue, 'Issue 1 reported: ', ['request']);
-  testRunner.log((await issue2).params.issue, 'Issue 2 reported: ', ['request']);
+  const issue1 = await dp.Audits.onceIssueAdded();
+  const issue2 = await dp.Audits.onceIssueAdded();
+
+  testRunner.log(issue1.params.issue, 'Issue 1 reported: ', ['request']);
+  testRunner.log(issue2.params.issue, 'Issue 2 reported: ', ['request']);
   testRunner.completeTest();
 })

@@ -9,12 +9,11 @@
 
   await dp.Audits.enable();
 
-  await session.evaluateAsyncWithUserGesture(
-      `document.querySelector('a').click()`);
+  session.evaluateAsyncWithUserGesture(`document.querySelector('a').click()`);
 
   const issue = await dp.Audits.onceIssueAdded();
 
-  testRunner.log((await issue).params.issue, 'Issue reported: ', ['request']);
+  testRunner.log(issue.params.issue, 'Issue reported: ', ['request']);
 
   testRunner.completeTest();
 });

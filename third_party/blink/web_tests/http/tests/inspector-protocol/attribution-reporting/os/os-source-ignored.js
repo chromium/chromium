@@ -8,13 +8,13 @@
 
   await dp.Audits.enable();
 
-  const issue = dp.Audits.onceIssueAdded();
-
-  await session.evaluateAsync(`
+  session.evaluateAsync(`
     fetch('/inspector-protocol/attribution-reporting/resources/register-os-source.php',
         {keepalive: true})
   `);
 
-  testRunner.log((await issue).params.issue, 'Issue reported: ', ['request']);
+  const issue = await dp.Audits.onceIssueAdded();
+
+  testRunner.log(issue.params.issue, 'Issue reported: ', ['request']);
   testRunner.completeTest();
 })

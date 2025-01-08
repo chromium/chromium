@@ -9,7 +9,7 @@
   await dp.Storage.setAttributionReportingLocalTestingMode({enabled: true});
   await dp.Storage.setAttributionReportingTracking({enable: true});
 
-  await session.evaluate(`
+  session.evaluate(`
     document.body.innerHTML = '<img attributionsrc="https://devtools.test:8443/inspector-protocol/attribution-reporting/resources/register-source-filter-data-and-agg-keys.php">'
   `);
 

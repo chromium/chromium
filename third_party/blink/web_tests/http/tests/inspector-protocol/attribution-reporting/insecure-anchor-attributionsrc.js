@@ -12,11 +12,11 @@
     document.body.innerHTML = '<a id="adlink" href="/" attributionsrc="http://devtools.test:8000/" target="_blank">Link</a>';
   `);
 
-  const issue = dp.Audits.onceIssueAdded();
-
-  await session.evaluateAsyncWithUserGesture(
+  session.evaluateAsyncWithUserGesture(
       `document.getElementById('adlink').click()`);
 
-  testRunner.log((await issue).params.issue, 'Issue reported: ', ['violatingNodeId']);
+  const issue = await dp.Audits.onceIssueAdded();
+
+  testRunner.log(issue.params.issue, 'Issue reported: ', ['violatingNodeId']);
   testRunner.completeTest();
 })
