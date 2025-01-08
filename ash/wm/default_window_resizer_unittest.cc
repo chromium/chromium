@@ -164,7 +164,7 @@ TEST_F(DefaultWindowResizerTest, WindowDragWithAspectRatioVertical) {
 // This is a regression test for b/322282313.
 TEST_F(DefaultWindowResizerTest, WindowResizeWithAspectRationWithoutMaxLimit) {
   // Remove the limit of the maximum size.
-  delegate_.set_maximum_size(gfx::Size(0, 0));
+  delegate_.set_maximum_size(std::nullopt);
 
   aspect_ratio_window_->SetProperty(aura::client::kAspectRatio,
                                     new gfx::SizeF(1.0, 1.0));
