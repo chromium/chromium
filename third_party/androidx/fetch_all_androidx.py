@@ -22,6 +22,7 @@ import pathlib
 import re
 import shutil
 import stat
+import sys
 import subprocess
 import tempfile
 import urllib
@@ -29,12 +30,23 @@ from urllib import request
 
 _ANDROIDX_PATH = os.path.normpath(os.path.join(__file__, '..'))
 _CIPD_PATH = os.path.join(_ANDROIDX_PATH, 'cipd')
+_SRC_PATH = os.path.normpath(os.path.join(_ANDROIDX_PATH, '..', '..'))
+
+sys.path.insert(1, os.path.join(_SRC_PATH, 'third_party', 'depot_tools'))
+import gclient_eval
 
 _FETCH_ALL_PATH = os.path.normpath(
     os.path.join(_ANDROIDX_PATH, '..', 'android_deps', 'fetch_all.py'))
 
 # URL to BUILD_INFO in latest androidx snapshot.
 _ANDROIDX_LATEST_SNAPSHOT_BUILD_INFO_URL = 'https://androidx.dev/snapshots/latest/artifacts/BUILD_INFO'
+# URL to BUILD_INFO in a specific androidx snapshot.
+_ANDROIDX_VERSIONED_BUILD_INFO_URL = 'https://androidx.dev/snapshots/builds/{{version}}/artifacts/BUILD_INFO'
+
+# Path to package listed in //DEPS
+_DEPS_PACKAGE = 'src/third_party/androidx/cipd'
+# CIPD package name
+_CIPD_PACKAGE = 'chromium/third_party/androidx'
 
 # Snapshot repository URL with {{version}} placeholder.
 _SNAPSHOT_REPOSITORY_URL = 'https://androidx.dev/snapshots/builds/{{version}}/artifacts/repository'
@@ -92,30 +104,81 @@ def _build_dir():
         shutil.rmtree(dirname)
 
 
-def _download_and_parse_build_info():
+def _get_latest_androidx_version():
+    androidx_build_info_response = request.urlopen(
+        _ANDROIDX_LATEST_SNAPSHOT_BUILD_INFO_URL)
+    # Get the versioned url from the redirect destination.
+    androidx_build_info_url = androidx_build_info_response.url
+    androidx_build_info_response.close()
+    logging.info('URL for the latest build info: %s', androidx_build_info_url)
+    # Strip '/repository' from pattern.
+    resolved_snapshot_repository_url_pattern = (
+        _build_snapshot_repository_url('([0-9]*)').rsplit('/', 1)[0])
+    version = re.match(resolved_snapshot_repository_url_pattern,
+                       androidx_build_info_url).group(1)
+    return version
+
+
+def _query_cipd_tags(version):
+    cipd_output = subprocess.check_output(
+        ['cipd', 'describe', _CIPD_PACKAGE, '-version', version],
+        encoding='utf-8')
+    # Output looks like:
+    # Package:       chromium/third_party/androidx
+    # Instance ID:   gUjEawxv5mQO8yfbuC8W-rx4V3zYE-4LTWggXpZHI4sC
+    # Registered by: user:chromium-cipd-builder@chops-service-accounts.iam.gserviceaccount.com
+    # Registered at: 2025-01-06 17:54:48.034135 +0000 UTC
+    # Refs:
+    #   latest
+    # Tags:
+    #   details0:version-cr-012873390
+    #   version:cr-012873390
+    lines = cipd_output.split('\n')
+    tags = {}
+    parsing_tags = False
+    for line in lines:
+        if not line.strip():
+            continue
+        if line.startswith('Tags:'):
+            parsing_tags = True
+            continue
+        if parsing_tags:
+            tag, value = line.strip().split(':', 1)
+            tags[tag] = value
+    return tags
+
+
+def _get_current_cipd_instance():
+    with open(os.path.join(_SRC_PATH, 'DEPS'), 'rt') as f:
+        gclient_dict = gclient_eval.Exec(f.read())
+        return gclient_eval.GetCIPD(gclient_dict, _DEPS_PACKAGE, _CIPD_PACKAGE)
+
+
+def _get_current_androidx_version():
+    cipd_instance = _get_current_cipd_instance()
+    cipd_tags = _query_cipd_tags(cipd_instance)
+    version_string = cipd_tags['version']
+    version = version_string[len('cr-0'):]
+    return version
+
+
+def _download_and_parse_build_info(version):
     """Downloads and parses BUILD_INFO file."""
     with _build_dir() as build_dir:
-        androidx_build_info_response = request.urlopen(
-            _ANDROIDX_LATEST_SNAPSHOT_BUILD_INFO_URL)
-        androidx_build_info_url = androidx_build_info_response.geturl()
-        logging.info('URL for the latest build info: %s',
-                     androidx_build_info_url)
+        androidx_build_info_url = _ANDROIDX_VERSIONED_BUILD_INFO_URL.replace(
+            '{{version}}', version)
+        androidx_build_info_response = request.urlopen(androidx_build_info_url)
+
         androidx_build_info_path = os.path.join(build_dir, 'BUILD_INFO')
+        build_info_contents = androidx_build_info_response.read().decode(
+            'utf-8')
         with open(androidx_build_info_path, 'w') as f:
-            f.write(androidx_build_info_response.read().decode('utf-8'))
+            f.write(build_info_contents)
 
-        # Strip '/repository' from pattern.
-        resolved_snapshot_repository_url_pattern = (
-            _build_snapshot_repository_url('([0-9]*)').rsplit('/', 1)[0])
-
-        version = re.match(resolved_snapshot_repository_url_pattern,
-                           androidx_build_info_url).group(1)
-
-        with open(androidx_build_info_path, 'r') as f:
-            build_info_dict = json.loads(f.read())
+        build_info_dict = json.loads(build_info_contents)
         dir_list = build_info_dict['target']['dir_list']
 
-        return dir_list, version
+        return dir_list
 
 
 def _create_local_dir_list(repo_path):
@@ -224,15 +287,16 @@ def main():
     parser.add_argument('--local-repo',
                         help='Path to a locally androidx maven repo to use '
                         'instead of fetching the latest.')
+    parser.add_argument(
+        '--no-roll',
+        action='store_true',
+        help='If passed then we will not try rolling the '
+        'latest androidx but use the currently rolled version.')
     args = parser.parse_args()
 
     logging.basicConfig(
         level=logging.WARNING - 10 * args.verbose_count,
         format='%(levelname).1s %(relativeCreated)6d %(message)s')
-
-    if os.path.exists(_CIPD_PATH):
-        shutil.rmtree(_CIPD_PATH)
-    os.mkdir(_CIPD_PATH)
 
     if args.local_repo:
         version = 'local'
@@ -240,11 +304,22 @@ def main():
         androidx_snapshot_repository_url = ('file://' +
                                             os.path.abspath(args.local_repo))
     else:
-        dir_list, version = _download_and_parse_build_info()
+        if args.no_roll:
+            version = _get_current_androidx_version()
+            logging.info('Resolved current androidx version to %s', version)
+        else:
+            version = _get_latest_androidx_version()
+            logging.info('Resolved latest androidx version to %s', version)
+
+        dir_list = _download_and_parse_build_info(version)
         androidx_snapshot_repository_url = _build_snapshot_repository_url(
             version)
         # Prepend '0' to version to avoid conflicts with previous version format.
         version = 'cr-0' + version
+
+    if os.path.exists(_CIPD_PATH):
+        shutil.rmtree(_CIPD_PATH)
+    os.mkdir(_CIPD_PATH)
 
     dependency_version_map = _parse_dir_list(dir_list)
     _process_build_gradle(
@@ -263,7 +338,10 @@ def main():
     if not args.local_repo:
         for subpath, url in _OVERRIDES:
             fetch_all_cmd += ['--override-artifact', f'{subpath}:{url}']
-    subprocess.run(fetch_all_cmd, check=True)
+    env = os.environ.copy()
+    # Silence the --local warning in fetch_all.py that is not applicable here.
+    env['SWARMING_TASK_ID'] = '1'
+    subprocess.run(fetch_all_cmd, check=True, env=env)
 
     version_txt_path = os.path.join(_CIPD_PATH, 'VERSION.txt')
     with open(version_txt_path, 'w') as f:
