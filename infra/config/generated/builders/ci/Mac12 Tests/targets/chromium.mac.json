@@ -195,7 +195,6 @@
         "name": "browser_tests",
         "swarming": {
           "dimensions": {
-            "cores": 12,
             "cpu": "x86-64",
             "os": "Mac-12"
           },
