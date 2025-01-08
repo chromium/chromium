@@ -22,12 +22,12 @@ namespace blink {
 class StyleShape final : public BasicShape {
  public:
   struct Segment {
-    enum Type { kMove, kLine };
+    enum Type { kLine, kMove };
+    enum PointOrigin { kReferenceBox, kPreviousSegment };
 
     bool operator==(const Segment& other) const = default;
 
     Type type;
-    enum PointOrigin { kReferenceBox, kPreviousSegment };
     PointOrigin end_point_origin;
     LengthPoint end_point;
   };

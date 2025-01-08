@@ -8,6 +8,7 @@
 
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
+#include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -22,31 +23,30 @@ namespace cssvalue {
 // Each command’s starting point is the previous command’s ending point.
 class CSSShapeCommand : public GarbageCollected<CSSShapeCommand> {
  public:
-  enum class Type { kMove, kLine };
-
-  // See https://drafts.csswg.org/css-shapes-2/#typedef-shape-command-end-point
-  // https://drafts.csswg.org/css-shapes-2/#valdef-shape-to is relative to the
-  // reference box, https://drafts.csswg.org/css-shapes-2/#valdef-shape-by is
-  // relative to the end of the previous command.
-  enum class PointOrigin { kReferenceBox, kPreviousCommand };
-
-  Type GetType() const { return type_; }
-  PointOrigin GetOrigin() const { return origin_; }
-  const CSSValue& GetEndPoint() const { return *end_point_.Get(); }
+  CSSValueID GetType() const { return type_; }
+  CSSValueID GetEndPointOrigin() const { return end_point_origin_; }
+  const CSSValue& GetEndPoint() const { return *end_point_; }
 
   String CSSText() const;
   bool operator==(const CSSShapeCommand& other) const;
   void Trace(Visitor* visitor) const { visitor->Trace(end_point_); }
 
-  explicit CSSShapeCommand(Type type,
-                           PointOrigin origin,
-                           const CSSValuePair& end_point)
-      : type_(type), origin_(origin), end_point_(end_point) {}
+  explicit CSSShapeCommand(CSSValueID type,
+                           CSSValueID origin,
+                           const CSSValue& end_point)
+      : type_(type), end_point_origin_(origin), end_point_(end_point) {}
 
  private:
-  Type type_;
-  PointOrigin origin_;
-  Member<const CSSValuePair> end_point_;
+  // Either kMove or kLine.
+  CSSValueID type_;
+
+  // Either kBy or kTo.
+  // See https://drafts.csswg.org/css-shapes-2/#typedef-shape-command-end-point
+  // https://drafts.csswg.org/css-shapes-2/#valdef-shape-to is relative to the
+  // reference box, https://drafts.csswg.org/css-shapes-2/#valdef-shape-by is
+  // relative to the end of the previous command.
+  CSSValueID end_point_origin_;
+  Member<const CSSValue> end_point_;
 };
 
 class CSSShapeValue : public CSSValue {

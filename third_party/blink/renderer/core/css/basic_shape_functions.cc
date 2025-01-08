@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
+#include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/style/basic_shapes.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/style_ray.h"
@@ -91,31 +92,41 @@ const CSSValuePair& LengthPointToCSSValue(const LengthPoint& point,
       CSSValuePair::IdenticalValuesPolicy::kKeepIdenticalValues);
 }
 
+constexpr CSSValueID ShapeSegmentOriginToCSSValueID(
+    StyleShape::Segment::PointOrigin origin) {
+  return origin == StyleShape::Segment::PointOrigin::kPreviousSegment
+             ? CSSValueID::kBy
+             : CSSValueID::kTo;
+}
+
+constexpr StyleShape::Segment::PointOrigin CSSValueIDToShapeSegmentOrigin(
+    CSSValueID id) {
+  return id == CSSValueID::kBy
+             ? StyleShape::Segment::PointOrigin::kPreviousSegment
+             : StyleShape::Segment::PointOrigin::kReferenceBox;
+}
+
 StyleShape::Segment ShapeCommandToShapeSegment(
     const cssvalue::CSSShapeCommand& command,
     const StyleResolverState& state) {
   // TODO(crbug.com/384870259): support other segment types.
   switch (command.GetType()) {
-    case blink::cssvalue::CSSShapeCommand::Type::kMove:
+    case CSSValueID::kMove:
       return StyleShape::Segment{
           .type = StyleShape::Segment::kMove,
           .end_point_origin =
-              command.GetOrigin() ==
-                      cssvalue::CSSShapeCommand::PointOrigin::kReferenceBox
-                  ? StyleShape::Segment::kReferenceBox
-                  : StyleShape::Segment::kPreviousSegment,
+              CSSValueIDToShapeSegmentOrigin(command.GetEndPointOrigin()),
           .end_point = StyleBuilderConverter::ConvertPosition(
               state, command.GetEndPoint())};
-    case blink::cssvalue::CSSShapeCommand::Type::kLine:
+    case CSSValueID::kLine:
       return StyleShape::Segment{
           .type = StyleShape::Segment::kLine,
           .end_point_origin =
-              command.GetOrigin() ==
-                      cssvalue::CSSShapeCommand::PointOrigin::kReferenceBox
-                  ? StyleShape::Segment::kReferenceBox
-                  : StyleShape::Segment::kPreviousSegment,
+              CSSValueIDToShapeSegmentOrigin(command.GetEndPointOrigin()),
           .end_point = StyleBuilderConverter::ConvertPosition(
               state, command.GetEndPoint())};
+    default:
+      NOTREACHED();
   }
 }
 
@@ -126,19 +137,13 @@ const cssvalue::CSSShapeCommand* ShapeSegmentToShapeCommand(
   switch (segment.type) {
     case blink::StyleShape::Segment::Type::kMove:
       return MakeGarbageCollected<const cssvalue::CSSShapeCommand>(
-          cssvalue::CSSShapeCommand::Type::kMove,
-          segment.end_point_origin ==
-                  StyleShape::Segment::PointOrigin::kReferenceBox
-              ? cssvalue::CSSShapeCommand::PointOrigin::kReferenceBox
-              : cssvalue::CSSShapeCommand::PointOrigin::kPreviousCommand,
+          CSSValueID::kMove,
+          ShapeSegmentOriginToCSSValueID(segment.end_point_origin),
           LengthPointToCSSValue(segment.end_point, zoom));
     case blink::StyleShape::Segment::Type::kLine:
       return MakeGarbageCollected<const cssvalue::CSSShapeCommand>(
-          cssvalue::CSSShapeCommand::Type::kLine,
-          segment.end_point_origin ==
-                  StyleShape::Segment::PointOrigin::kReferenceBox
-              ? cssvalue::CSSShapeCommand::PointOrigin::kReferenceBox
-              : cssvalue::CSSShapeCommand::PointOrigin::kPreviousCommand,
+          CSSValueID::kLine,
+          ShapeSegmentOriginToCSSValueID(segment.end_point_origin),
           LengthPointToCSSValue(segment.end_point, zoom));
   }
 }

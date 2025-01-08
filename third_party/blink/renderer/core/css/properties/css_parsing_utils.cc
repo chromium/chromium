@@ -6722,17 +6722,15 @@ using cssvalue::CSSShapeValue;
 
 /// https://drafts.csswg.org/css-shapes-2/#typedef-shape-command-end-point
 // <command-end-point> = [ to <position> | by <coordinate-pair> ]
-const CSSValuePair* ConsumeShapeCommandEndPoint(
-    CSSParserTokenStream& args,
-    const CSSParserContext& context,
-    CSSShapeCommand::PointOrigin& point_origin) {
-  switch (args.ConsumeIncludingWhitespace().Id()) {
+const CSSValuePair* ConsumeShapeCommandEndPoint(CSSParserTokenStream& args,
+                                                const CSSParserContext& context,
+                                                CSSValueID& point_origin) {
+  point_origin = args.ConsumeIncludingWhitespace().Id();
+  switch (point_origin) {
     case CSSValueID::kTo:
-      point_origin = CSSShapeCommand::PointOrigin::kReferenceBox;
       return ConsumePosition(args, context, UnitlessQuirk::kForbid,
                              std::nullopt);
     case CSSValueID::kBy:
-      point_origin = CSSShapeCommand::PointOrigin::kPreviousCommand;
       return ConsumeCoordinatePair(args, context);
     default:
       return nullptr;
@@ -6775,28 +6773,19 @@ cssvalue::CSSShapeValue* ConsumeBasicShapeShape(
   // <shape-command>#
   HeapVector<Member<const CSSShapeCommand>> commands;
   while (!args.AtEnd()) {
-    CSSShapeCommand::PointOrigin end_point_origin;
-    switch (args.ConsumeIncludingWhitespace().Id()) {
-      case CSSValueID::kMove: {
-        // https://drafts.csswg.org/css-shapes-2/#typedef-shape-move-command
-        // <move-command> = move <command-end-point>
-        if (const CSSValuePair* end_point =
-                ConsumeShapeCommandEndPoint(args, context, end_point_origin)) {
-          commands.push_back(MakeGarbageCollected<CSSShapeCommand>(
-              CSSShapeCommand::Type::kMove, end_point_origin, *end_point));
-        } else {
-          return nullptr;
-        }
-        break;
-      }
+    CSSValueID end_point_origin;
+    CSSValueID command_type = args.ConsumeIncludingWhitespace().Id();
+    switch (command_type) {
+      // https://drafts.csswg.org/css-shapes-2/#typedef-shape-move-command
+      // <move-command> = move <command-end-point>
+      // https://drafts.csswg.org/css-shapes-2/#typedef-shape-line-command
+      // <line-command> = line <command-end-point>
+      case CSSValueID::kMove:
       case CSSValueID::kLine: {
-        // https://drafts.csswg.org/css-shapes-2/#typedef-shape-line-command
-        // <line-command> = line <command-end-point>
         if (const CSSValuePair* end_point =
                 ConsumeShapeCommandEndPoint(args, context, end_point_origin)) {
-          commands.push_back(MakeGarbageCollected<CSSShapeCommand>(
-              CSSShapeCommand::Type::kLine, end_point_origin, *end_point));
-
+          commands.push_back(MakeGarbageCollected<const CSSShapeCommand>(
+              command_type, end_point_origin, *end_point));
         } else {
           return nullptr;
         }

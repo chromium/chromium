@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "third_party/blink/renderer/core/css/css_value.h"
+#include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
@@ -16,23 +17,25 @@ namespace blink::cssvalue {
 String CSSShapeCommand::CSSText() const {
   StringBuilder builder;
   switch (type_) {
-    case Type::kMove:
+    case CSSValueID::kMove:
       builder.Append("move");
-      builder.Append(origin_ == PointOrigin::kReferenceBox ? " to " : " by ");
+      builder.Append(end_point_origin_ == CSSValueID::kTo ? " to " : " by ");
       builder.Append(end_point_->CssText());
       break;
-    case Type::kLine:
+    case CSSValueID::kLine:
       builder.Append("line");
-      builder.Append(origin_ == PointOrigin::kReferenceBox ? " to " : " by ");
+      builder.Append(end_point_origin_ == CSSValueID::kTo ? " to " : " by ");
       builder.Append(end_point_->CssText());
       break;
+    default:
+      NOTREACHED();
   }
 
   return builder.ReleaseString();
 }
 
 bool CSSShapeCommand::operator==(const CSSShapeCommand& other) const {
-  return type_ == other.type_ && origin_ == other.origin_ &&
+  return type_ == other.type_ && end_point_origin_ == other.end_point_origin_ &&
          base::ValuesEquivalent(end_point_, other.end_point_);
 }
 
