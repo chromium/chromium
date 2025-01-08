@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayerJni;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -217,6 +218,24 @@ public class NewTabAnimationLayoutUnitTest {
                 /* originY= */ 0f);
         assertEquals(
                 mAnimationHostView.getContentSensitivity(), View.CONTENT_SENSITIVITY_SENSITIVE);
+        assertFalse(mNewTabAnimationLayout.isStartingToHide());
+    }
+
+    @Test
+    public void testOnTabCreated_FromCollaborationBackgroundInGroup() {
+        when(mNewTab.getLaunchType())
+                .thenReturn(TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP);
+
+        mNewTabAnimationLayout.onTabCreated(
+                FAKE_TIME,
+                NEW_TAB_ID,
+                /* index= */ 1,
+                CURRENT_TAB_ID,
+                /* newIsIncognito= */ false,
+                /* background= */ true,
+                /* originX= */ 0f,
+                /* originY= */ 0f);
+        assertTrue(mNewTabAnimationLayout.isStartingToHide());
     }
 
     // TODO(crbug.com/40282469): Tests for forceAnimationToFinish, updateLayout, and

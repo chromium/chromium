@@ -166,6 +166,8 @@ public class NewTabAnimationLayout extends Layout {
         Tab newTab = mTabModelSelector.getModel(newIsIncognito).getTabById(id);
         if (newTab != null
                 && newTab.getLaunchType() == TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP) {
+            mNextTabId = sourceId;
+            startHiding();
             return;
         }
 

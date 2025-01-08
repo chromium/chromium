@@ -187,6 +187,8 @@ public class SimpleAnimationLayout extends Layout {
             if (tab != null
                     && tab.getLaunchType()
                             == TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP) {
+                mNextTabId = sourceId;
+                startHiding();
                 return;
             }
         }
