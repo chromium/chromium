@@ -153,12 +153,6 @@ void IOSCollaborationControllerDelegate::ShowJoinDialog(
   config.token = token;
   config.baseViewController = base_view_controller_;
   auto completion_block = base::CallbackToBlock(std::move(result));
-  config.completionBlock = ^(BOOL completion_result) {
-    CollaborationControllerDelegate::Outcome outcome =
-        completion_result ? CollaborationControllerDelegate::Outcome::kSuccess
-                          : CollaborationControllerDelegate::Outcome::kFailure;
-    completion_block(outcome);
-  };
   config.completion = ^(ShareKitFlowOutcome outcome) {
     completion_block(ConvertOutcome(outcome));
   };
@@ -206,12 +200,6 @@ void IOSCollaborationControllerDelegate::ShowShareDialog(
   config.applicationHandler =
       HandlerForProtocol(browser_->GetCommandDispatcher(), ApplicationCommands);
   auto completion_block = base::CallbackToBlock(std::move(result));
-  config.completionBlock = ^(BOOL completion_result) {
-    CollaborationControllerDelegate::Outcome outcome =
-        completion_result ? CollaborationControllerDelegate::Outcome::kSuccess
-                          : CollaborationControllerDelegate::Outcome::kFailure;
-    completion_block(outcome);
-  };
   config.completion = ^(ShareKitFlowOutcome outcome) {
     completion_block(ConvertOutcome(outcome));
   };
@@ -240,12 +228,6 @@ void IOSCollaborationControllerDelegate::ShowManageDialog(
   config.applicationHandler =
       HandlerForProtocol(browser_->GetCommandDispatcher(), ApplicationCommands);
   auto completion_block = base::CallbackToBlock(std::move(result));
-  config.completionBlock = ^(BOOL completion_result) {
-    CollaborationControllerDelegate::Outcome outcome =
-        completion_result ? CollaborationControllerDelegate::Outcome::kSuccess
-                          : CollaborationControllerDelegate::Outcome::kFailure;
-    completion_block(outcome);
-  };
   config.completion = ^(ShareKitFlowOutcome outcome) {
     completion_block(ConvertOutcome(outcome));
   };

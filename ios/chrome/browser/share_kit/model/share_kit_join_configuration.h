@@ -20,10 +20,6 @@ enum class ShareKitFlowOutcome;
 // The token used to join the group, containing the collab ID and the secret.
 @property(nonatomic, assign) data_sharing::GroupToken token;
 
-// Executed when the join flow ended. The `result` parameter indicates whether
-// the user successfully joined the group.
-@property(nonatomic, copy) void (^completionBlock)(BOOL result);
-
 // Executed when the join flow ended.
 @property(nonatomic, copy) void (^completion)(ShareKitFlowOutcome outcome);
 

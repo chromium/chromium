@@ -23,9 +23,6 @@ enum class ShareKitFlowOutcome;
 @property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
 
 // Executed when the manage flow ended.
-@property(nonatomic, copy) void (^completionBlock)(BOOL succeeded);
-
-// Executed when the manage flow ended.
 @property(nonatomic, copy) void (^completion)(ShareKitFlowOutcome outcome);
 
 @end
