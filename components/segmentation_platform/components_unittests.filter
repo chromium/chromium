@@ -27,6 +27,7 @@
 *FeatureAggregatorImplTest.*
 *FeatureListQueryProcessorNoDbCacheTest.*
 *FeatureListQueryProcessorTest.*
+*FedCmUserModelTest.*
 *FeedUserModelTest.*
 *FieldTrialRecorderTest.*
 *FrequentFeatureUserModelTest.*

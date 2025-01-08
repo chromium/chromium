@@ -140,6 +140,8 @@ std::string GetStringNameForOptimizationTarget(
       return "ModelExecutionFeatureScamDetection";
     case proto::OPTIMIZATION_TARGET_EXPERIMENTAL_EMBEDDER:
       return "ExperimentalEmbedder";
+    case proto::OPTIMIZATION_TARGET_SEGMENTATION_FEDCM_USER:
+      return "SegmentationFedCmUser";
       // Whenever a new value is added, make sure to add it to the OptTarget
       // variant list in
       // //tools/metrics/histograms/metadata/optimization/histograms.xml.

@@ -240,6 +240,8 @@ enum OptimizationTarget {
   OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_SCAM_DETECTION = 55;
   // Target for assessing embedding model performance.
   OPTIMIZATION_TARGET_EXPERIMENTAL_EMBEDDER = 57;
+  // Target for segmentation: FedCM user.
+  OPTIMIZATION_TARGET_SEGMENTATION_FEDCM_USER = 58;
 }
 
 // The model engine versions that can be used to do model inference.

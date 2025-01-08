@@ -108,6 +108,7 @@ chromium-metrics-reviews@google.com.
   <variant name="SegmentationDeviceSwitcher"
       summary="Segmentation: Device switcher"/>
   <variant name="SegmentationDummyFeature" summary="Dummy feature"/>
+  <variant name="SegmentationFedCmUser" summary="Segmentation: FedCM user"/>
   <variant name="SegmentationFeedUser"
       summary="Segmentation: Feed usage in Chrome"/>
   <variant name="SegmentationIosModuleRanker"

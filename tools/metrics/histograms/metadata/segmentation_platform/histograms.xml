@@ -80,6 +80,7 @@ chromium-metrics-reviews@google.com.
   <variant name="DeviceTier"/>
   <variant name="DummyFeature"/>
   <variant name="EphemeralHomeModuleBackend"/>
+  <variant name="FedcmUser"/>
   <variant name="FeedUserSegment"/>
   <variant name="FrequentFeatureUser"/>
   <variant name="IntentionalUser"/>
@@ -114,6 +115,7 @@ chromium-metrics-reviews@google.com.
   <variant name="DeviceTierSegment"/>
   <variant name="Dummy"/>
   <variant name="EphemeralHomeModuleBackend"/>
+  <variant name="FedcmUser"/>
   <variant name="FeedUser"/>
   <variant name="FrequentFeatureUserSegment"/>
   <variant name="IntentionalUserSegment"/>

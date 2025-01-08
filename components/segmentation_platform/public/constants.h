@@ -112,6 +112,10 @@ const char kComposePromotionUmaName[] = "ComposePromotion";
 
 const char kEphemeralHomeModuleBackendKey[] = "ephemeral_home_module_backend";
 
+// The key is used to decide whether the user would use FedCM.
+const char kFedCmUserKey[] = "fedcm_user";
+const char kFedCmUserUmaName[] = "FedCmUser";
+
 // SEGMENTATION_CLIENT_KEYS_END
 
 // Please keep the UMA names for keys in sync with SegmentationKey variant in

@@ -31401,6 +31401,7 @@ Called by update_net_error_codes.py.-->
   <int value="45" label="ComposePromotion"/>
   <int value="46" label="UrlVisitResumptionRanker"/>
   <int value="50" label="MetricsClustering"/>
+  <int value="58" label="FedCmUser"/>
 </enum>
 
 <enum name="SegmentationPlatformTrainingDataCollectionEvent">

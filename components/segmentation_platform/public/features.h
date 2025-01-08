@@ -160,6 +160,9 @@ extern const base::FeatureParam<int> kMaxTabGroupCardImpressions;
 // the user.
 extern const base::FeatureParam<int> kMaxTabGroupSyncCardImpressions;
 
+// Feature flag for enabling FedCM user segment.
+BASE_DECLARE_FEATURE(kSegmentationPlatformFedCmUser);
+
 }  // namespace segmentation_platform::features
 
 #endif  // COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_FEATURES_H_
