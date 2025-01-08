@@ -9,19 +9,19 @@ import 'chrome://resources/js/ios/web_ui.js';
 import '/strings.m.js';
 
 import {addWebUiListener} from 'chrome://resources/js/cr.js';
-import {$} from 'chrome://resources/js/util.js';
+import {$, getRequiredElement} from 'chrome://resources/js/util.js';
 
-let isRecording = false;
+let isRecording: boolean = false;
 let keyPressState = 0;
 
 /**
  * If the info dictionary has property prop, then set the text content of
  * element to the value of this property. Otherwise clear the content.
- * @param {!Object} info A dictionary of device infos to be displayed.
- * @param {string} prop Name of the property.
- * @param {string} elementId The id of a HTML element.
+ * @param info A dictionary of device infos to be displayed.
+ * @param prop Name of the property.
  */
-function setIfExists(info, prop, elementId) {
+function setIfExists(
+    info: Record<string, string>, prop: string, elementId: string) {
   const element = $(elementId);
   if (!element) {
     return;
@@ -37,11 +37,11 @@ function setIfExists(info, prop, elementId) {
 /**
  * Sets the registeredAppIds from |info| to the element identified by
  * |elementId|. The list will have duplicates counted and visually shown.
- * @param {!Object} info A dictionary of device infos to be displayed.
- * @param {string} prop Name of the property.
- * @param {string} elementId The id of a HTML element.
+ * @param info A dictionary of device infos to be displayed.
+ * @param prop Name of the property.
  */
-function setRegisteredAppIdsIfExists(info, prop, elementId) {
+function setRegisteredAppIdsIfExists(
+    info: Record<string, string>, prop: string, elementId: string) {
   const element = $(elementId);
   if (!element) {
     return;
@@ -67,9 +67,9 @@ function setRegisteredAppIdsIfExists(info, prop, elementId) {
 
 /**
  * Display device information.
- * @param {!Object} info A dictionary of device infos to be displayed.
+ * @param info A dictionary of device infos to be displayed.
  */
-function displayDeviceInfo(info) {
+function displayDeviceInfo(info: Record<string, string>) {
   setIfExists(info, 'androidId', 'android-id');
   setIfExists(info, 'androidSecret', 'android-secret');
   setIfExists(info, 'profileServiceCreated', 'profile-service-created');
@@ -88,9 +88,8 @@ function displayDeviceInfo(info) {
 
 /**
  * Remove all the child nodes of the element.
- * @param {HTMLElement} element A HTML element.
  */
-function removeAllChildNodes(element) {
+function removeAllChildNodes(element: HTMLElement) {
   element.textContent = '';
 }
 
@@ -98,22 +97,22 @@ function removeAllChildNodes(element) {
  * For each item in line, add a row to the table. Each item is actually a list
  * of sub-items; each of which will have a corresponding cell created in that
  * row, and the sub-item will be displayed in the cell.
- * @param {HTMLElement} table A HTML tbody element.
- * @param {!Object} list A list of list of item.
+ * @param table A HTML tbody element.
+ * @param list A list of list of item.
  */
-function addRows(table, list) {
-  for (let i = 0; i < list.length; ++i) {
+function addRows(table: HTMLElement, list: ItemInfo[]) {
+  for (const info of list) {
     const row = document.createElement('tr');
 
     // The first element is always a timestamp.
     let cell = document.createElement('td');
-    const d = new Date(list[i][0]);
-    cell.textContent = d;
+    const d = new Date(info[0]);
+    cell.textContent = d.toString();
     row.appendChild(cell);
 
-    for (let j = 1; j < list[i].length; ++j) {
+    for (let j = 1; j < info.length; ++j) {
       cell = document.createElement('td');
-      cell.textContent = list[i][j];
+      cell.textContent = info[j] as string;
       row.appendChild(cell);
     }
     table.appendChild(row);
@@ -144,10 +143,10 @@ function clearLogs() {
 
 function initialize() {
   addWebUiListener('set-gcm-internals-info', setGcmInternalsInfo);
-  $('recording').disabled = true;
-  $('refresh').onclick = refreshAll;
-  $('recording').onclick = setRecording;
-  $('clear-logs').onclick = clearLogs;
+  getRequiredElement<HTMLButtonElement>('recording').disabled = true;
+  getRequiredElement('refresh').onclick = refreshAll;
+  getRequiredElement('recording').onclick = setRecording;
+  getRequiredElement('clear-logs').onclick = clearLogs;
   chrome.send('getGcmInternalsInfo', [false]);
 
   // Recording defaults to on.
@@ -161,17 +160,16 @@ function initialize() {
  * the local connection info, but we also need to be careful to make sure that
  * users don't share this value by accident. Therefore we require a secret
  * phrase to be typed into the page for making it visible.
- *
- * @param {!Event} event The keypress event handler.
  */
-function handleKeyPress(event) {
+function handleKeyPress(event: KeyboardEvent) {
   const PHRASE = 'secret';
   if (PHRASE.charCodeAt(keyPressState) === event.keyCode) {
     if (++keyPressState < PHRASE.length) {
       return;
     }
 
-    $('android-secret-container').classList.remove('invisible');
+    getRequiredElement('android-secret-container')
+        .classList.remove('invisible');
   }
 
   keyPressState = 0;
@@ -180,10 +178,9 @@ function handleKeyPress(event) {
 /**
  * Refresh the log html table by clearing it first. If data is not empty, then
  * it will be used to populate the table.
- * @param {string} tableId ID of the log html table.
- * @param {!Object} data A list of list of data items.
+ * @param data A list of list of data items.
  */
-function refreshLogTable(tableId, data) {
+function refreshLogTable(tableId: string, data: ItemInfo[]|undefined) {
   const element = $(tableId);
   if (!element) {
     return;
@@ -195,18 +192,28 @@ function refreshLogTable(tableId, data) {
   }
 }
 
+type ItemInfo = [number, ...string[]];
+
+interface GcmInternalsInfo {
+  deviceInfo: Record<string, string>;
+  isRecording: boolean;
+  checkinInfo?: ItemInfo[];
+  connectionInfo?: ItemInfo[];
+  decryptionFailureInfo?: ItemInfo[];
+  receiveInfo?: ItemInfo[];
+  registrationInfo?: ItemInfo[];
+  sendInfo?: ItemInfo[];
+}
+
 /**
  * Callback function accepting a dictionary of info items to be displayed.
- * @param {!Object} infos A dictionary of info items to be displayed.
+ * @param infos A dictionary of info items to be displayed.
  */
-function setGcmInternalsInfo(infos) {
-  isRecording = infos.isRecording;
-  if (isRecording) {
-    $('recording').textContent = 'Stop Recording';
-  } else {
-    $('recording').textContent = 'Start Recording';
-  }
-  $('recording').disabled = false;
+function setGcmInternalsInfo(infos: GcmInternalsInfo) {
+  const recordingEl = getRequiredElement<HTMLButtonElement>('recording');
+  recordingEl.textContent =
+      infos.isRecording ? 'Stop Recording' : 'Start Recording';
+  recordingEl.disabled = false;
   if (infos.deviceInfo !== undefined) {
     displayDeviceInfo(infos.deviceInfo);
   }
