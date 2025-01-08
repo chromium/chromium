@@ -527,6 +527,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
                         /* thumbnailSize= */ null,
                         /* useFallbackAnimation= */ false));
 
+        assert mCurrentAnimationRunner == null;
         mCurrentAnimationRunner =
                 HubLayoutAnimationRunnerFactory.createHubLayoutAnimationRunner(animatorProvider);
         mCurrentAnimationRunner.addListener(
