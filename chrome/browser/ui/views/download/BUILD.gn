@@ -8,6 +8,7 @@ source_set("download") {
   sources = [
     "bubble/download_bubble_contents_view.cc",
     "bubble/download_bubble_contents_view.h",
+    "bubble/download_bubble_navigation_handler.h",
     "bubble/download_bubble_partial_view.cc",
     "bubble/download_bubble_partial_view.h",
     "bubble/download_bubble_password_prompt_view.cc",
