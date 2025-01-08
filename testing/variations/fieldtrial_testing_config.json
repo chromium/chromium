@@ -10800,6 +10800,28 @@
             ]
         }
     ],
+    "HappinessTrackingSurveysForHistoryEmbeddings": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "TKWU6DjUi0ugnJ3q1cK0Z69WFqDB",
+                        "probability": "0.5"
+                    },
+                    "enable_features": [
+                        "HappinessTrackingSurveysForHistoryEmbeddings"
+                    ]
+                }
+            ]
+        }
+    ],
     "HappinessTrackingSystemBatteryLife": [
         {
             "platforms": [
