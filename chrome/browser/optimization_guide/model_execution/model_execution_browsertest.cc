@@ -661,8 +661,16 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
       0);
 }
 
+// TODO(crbug.com/388544208): Flaky on linux-win-cross-rel.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_GetOnDeviceModelEligibilityModelNotEligible \
+  DISABLED_GetOnDeviceModelEligibilityModelNotEligible
+#else
+#define MAYBE_GetOnDeviceModelEligibilityModelNotEligible \
+  GetOnDeviceModelEligibilityModelNotEligible
+#endif
 IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
-                       GetOnDeviceModelEligibilityModelNotEligible) {
+                       MAYBE_GetOnDeviceModelEligibilityModelNotEligible) {
   EXPECT_EQ(GetOnDeviceModelEligibility(ModelBasedCapabilityKey::kCompose),
             OnDeviceModelEligibilityReason::kModelNotEligible);
 }
