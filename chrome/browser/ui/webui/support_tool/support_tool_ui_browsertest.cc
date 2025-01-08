@@ -49,9 +49,7 @@ class SupportToolUIBrowserTest
     : public InProcessBrowserTest,
       public testing::WithParamInterface<OpenSupportToolTestParam> {
  public:
-  SupportToolUIBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kSupportTool);
-  }
+  SupportToolUIBrowserTest() = default;
 
  protected:
   base::HistogramTester histogram_tester_;

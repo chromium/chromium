@@ -1228,10 +1228,6 @@ BASE_FEATURE(kTPMFirmwareUpdate,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_ANDROID)
-// Enables the demo version of the Support Tool. The tool will be available in
-// chrome://support-tool. See go/support-tool-v1-design for more details.
-BASE_FEATURE(kSupportTool, "SupportTool", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the Support Tool to include a screenshot in the exported support tool
 // packet.
 BASE_FEATURE(kSupportToolScreenshot,

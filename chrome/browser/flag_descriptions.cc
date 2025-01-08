@@ -3626,11 +3626,6 @@ const char kStrictOriginIsolationDescription[] =
     "Controls whether site isolation should use origins instead of scheme and "
     "eTLD+1.";
 
-const char kSupportTool[] = "Support Tool";
-const char kSupportToolDescription[] =
-    "Support Tool collects and exports logs to help debugging the issues. It's"
-    " available in chrome://support-tool.";
-
 const char kSupportToolScreenshot[] = "Support Tool Screenshot";
 const char kSupportToolScreenshotDescription[] =
     "Enables the Support Tool to capture and include a screenshot in the "

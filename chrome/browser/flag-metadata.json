@@ -8302,11 +8302,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "support-tool",
-    "owners": [ "//chrome/browser/support_tool/OWNERS" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "support-tool-screenshot",
     "owners": [ "//chrome/browser/support_tool/OWNERS" ],
     "expiry_milestone": 140

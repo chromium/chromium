@@ -59,8 +59,7 @@
 bool SupportToolUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  return base::FeatureList::IsEnabled(features::kSupportTool) &&
-         SupportToolUI::IsEnabled(profile);
+  return SupportToolUI::IsEnabled(profile);
 }
 
 namespace {

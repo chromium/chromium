@@ -2082,9 +2082,6 @@ extern const char kStorageAccessHeadersDescription[];
 extern const char kStrictOriginIsolationName[];
 extern const char kStrictOriginIsolationDescription[];
 
-extern const char kSupportTool[];
-extern const char kSupportToolDescription[];
-
 extern const char kSupportToolScreenshot[];
 extern const char kSupportToolScreenshotDescription[];
 
