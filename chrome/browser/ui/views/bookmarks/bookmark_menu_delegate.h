@@ -153,6 +153,15 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
     explicit BookmarkFolderOrURL(const bookmarks::BookmarkNode* node);
     ~BookmarkFolderOrURL();
 
+    BookmarkFolderOrURL(const BookmarkFolderOrURL& other);
+    BookmarkFolderOrURL& operator=(const BookmarkFolderOrURL& other);
+
+    friend bool operator==(const BookmarkFolderOrURL&,
+                           const BookmarkFolderOrURL&) = default;
+
+    friend auto operator<=>(const BookmarkFolderOrURL&,
+                            const BookmarkFolderOrURL&) = default;
+
     const BookmarkParentFolder* GetIfBookmarkFolder() const;
 
     const bookmarks::BookmarkNode* GetIfBookmarkURL() const;
@@ -168,8 +177,7 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
                         raw_ptr<const bookmarks::BookmarkNode>>
     GetFromNode(const bookmarks::BookmarkNode* node);
 
-    const std::variant<BookmarkParentFolder,
-                       raw_ptr<const bookmarks::BookmarkNode>>
+    std::variant<BookmarkParentFolder, raw_ptr<const bookmarks::BookmarkNode>>
         folder_or_url_;
   };
 

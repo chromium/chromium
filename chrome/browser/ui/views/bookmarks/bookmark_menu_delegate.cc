@@ -174,6 +174,13 @@ BookmarkMenuDelegate::BookmarkFolderOrURL::BookmarkFolderOrURL(
 
 BookmarkMenuDelegate::BookmarkFolderOrURL::~BookmarkFolderOrURL() = default;
 
+BookmarkMenuDelegate::BookmarkFolderOrURL::BookmarkFolderOrURL(
+    const BookmarkFolderOrURL& other) = default;
+
+BookmarkMenuDelegate::BookmarkFolderOrURL&
+BookmarkMenuDelegate::BookmarkFolderOrURL::operator=(
+    const BookmarkFolderOrURL& other) = default;
+
 const BookmarkParentFolder*
 BookmarkMenuDelegate::BookmarkFolderOrURL::GetIfBookmarkFolder() const {
   if (folder_or_url_.index() == 0) {
