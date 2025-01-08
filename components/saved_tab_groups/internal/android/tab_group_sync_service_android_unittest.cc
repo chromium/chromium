@@ -247,6 +247,24 @@ TEST_F(TabGroupSyncServiceAndroidTest, MakeTabGroupShared) {
       env, j_test_, j_collaboration_id);
 }
 
+TEST_F(TabGroupSyncServiceAndroidTest, AboutToUnShareTabGroup) {
+  JNIEnv* env = AttachCurrentThread();
+
+  EXPECT_CALL(tab_group_sync_service_,
+              AboutToUnShareTabGroup(Eq(test_tab_group_id_), _));
+  Java_TabGroupSyncServiceAndroidUnitTest_testAboutToUnShareTabGroup(env,
+                                                                     j_test_);
+}
+
+TEST_F(TabGroupSyncServiceAndroidTest, OnTabGroupUnShareComplete) {
+  JNIEnv* env = AttachCurrentThread();
+
+  EXPECT_CALL(tab_group_sync_service_,
+              OnTabGroupUnShareComplete(Eq(test_tab_group_id_), _));
+  Java_TabGroupSyncServiceAndroidUnitTest_testOnTabGroupUnShareComplete(
+      env, j_test_);
+}
+
 TEST_F(TabGroupSyncServiceAndroidTest, AddTab) {
   auto* env = AttachCurrentThread();
 

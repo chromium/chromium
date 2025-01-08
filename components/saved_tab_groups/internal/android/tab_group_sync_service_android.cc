@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/android/callback_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
@@ -23,6 +24,8 @@ using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF16;
 using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaParamRef;
+using base::android::RunBooleanCallbackAndroid;
+using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace tab_groups {
@@ -178,6 +181,32 @@ void TabGroupSyncServiceAndroid::MakeTabGroupShared(
   std::string collaboration_id =
       ConvertJavaStringToUTF8(env, j_collaboration_id);
   tab_group_sync_service_->MakeTabGroupShared(tab_group_id, collaboration_id);
+}
+
+void TabGroupSyncServiceAndroid::AboutToUnShareTabGroup(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_caller,
+    const JavaParamRef<jobject>& j_group_id,
+    const JavaParamRef<jobject>& j_callback) {
+  LocalTabGroupID tab_group_id =
+      TabGroupSyncConversionsBridge::FromJavaTabGroupId(env, j_group_id);
+  tab_group_sync_service_->AboutToUnShareTabGroup(
+      tab_group_id, base::BindOnce(
+                        [](const jni_zero::JavaRef<jobject>& j_callback) {
+                          base::android::RunBooleanCallbackAndroid(j_callback,
+                                                                   true);
+                        },
+                        ScopedJavaGlobalRef<jobject>(j_callback)));
+}
+
+void TabGroupSyncServiceAndroid::OnTabGroupUnShareComplete(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_caller,
+    const JavaParamRef<jobject>& j_group_id,
+    const jboolean j_success) {
+  LocalTabGroupID tab_group_id =
+      TabGroupSyncConversionsBridge::FromJavaTabGroupId(env, j_group_id);
+  tab_group_sync_service_->OnTabGroupUnShareComplete(tab_group_id, j_success);
 }
 
 void TabGroupSyncServiceAndroid::AddTab(JNIEnv* env,

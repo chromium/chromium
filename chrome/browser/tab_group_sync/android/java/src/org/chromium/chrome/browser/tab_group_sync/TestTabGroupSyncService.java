@@ -8,6 +8,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.Callback;
 import org.chromium.components.tab_group_sync.ClosingSource;
 import org.chromium.components.tab_group_sync.EventDetails;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -69,6 +70,12 @@ class TestTabGroupSyncService implements TabGroupSyncService {
 
     @Override
     public void makeTabGroupShared(LocalTabGroupId tabGroupId, @NonNull String collaborationId) {}
+
+    @Override
+    public void aboutToUnShareTabGroup(LocalTabGroupId tabGroupId, Callback<Boolean> callback) {}
+
+    @Override
+    public void onTabGroupUnShareComplete(LocalTabGroupId tabGroupId, boolean success) {}
 
     @Override
     public String[] getAllGroupIds() {

@@ -67,6 +67,16 @@ class TabGroupSyncServiceAndroid : public base::SupportsUserData::Data,
                           const JavaParamRef<jobject>& j_group_id,
                           const JavaParamRef<jstring>& j_collaboration_id);
 
+  void AboutToUnShareTabGroup(JNIEnv* env,
+                              const JavaParamRef<jobject>& j_caller,
+                              const JavaParamRef<jobject>& j_group_id,
+                              const JavaParamRef<jobject>& j_callback);
+
+  void OnTabGroupUnShareComplete(JNIEnv* env,
+                                 const JavaParamRef<jobject>& j_caller,
+                                 const JavaParamRef<jobject>& j_group_id,
+                                 const jboolean j_success);
+
   // Mutator methods that result in tab metadata mutation.
   void AddTab(JNIEnv* env,
               const JavaParamRef<jobject>& j_caller,

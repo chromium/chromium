@@ -10,6 +10,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.url.GURL;
 
@@ -86,6 +87,22 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
         assert tabGroupId != null;
         TabGroupSyncServiceImplJni.get()
                 .makeTabGroupShared(mNativePtr, this, tabGroupId, collaborationId);
+    }
+
+    @Override
+    public void aboutToUnShareTabGroup(LocalTabGroupId tabGroupId, Callback<Boolean> callback) {
+        if (mNativePtr == 0) return;
+        assert tabGroupId != null;
+        TabGroupSyncServiceImplJni.get()
+                .aboutToUnShareTabGroup(mNativePtr, this, tabGroupId, callback);
+    }
+
+    @Override
+    public void onTabGroupUnShareComplete(LocalTabGroupId tabGroupId, boolean success) {
+        if (mNativePtr == 0) return;
+        assert tabGroupId != null;
+        TabGroupSyncServiceImplJni.get()
+                .onTabGroupUnShareComplete(mNativePtr, this, tabGroupId, success);
     }
 
     @Override
@@ -297,6 +314,18 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
                 TabGroupSyncServiceImpl caller,
                 LocalTabGroupId tabGroupId,
                 String collaborationId);
+
+        void aboutToUnShareTabGroup(
+                long nativeTabGroupSyncServiceAndroid,
+                TabGroupSyncServiceImpl caller,
+                LocalTabGroupId tabGroupId,
+                Callback<Boolean> callback);
+
+        void onTabGroupUnShareComplete(
+                long nativeTabGroupSyncServiceAndroid,
+                TabGroupSyncServiceImpl caller,
+                LocalTabGroupId tabGroupId,
+                boolean success);
 
         void addTab(
                 long nativeTabGroupSyncServiceAndroid,

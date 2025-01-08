@@ -166,6 +166,16 @@ public class TabGroupSyncServiceAndroidUnitTest {
     }
 
     @CalledByNative
+    public void testAboutToUnShareTabGroup() {
+        mService.aboutToUnShareTabGroup(LOCAL_TAB_GROUP_ID_1, null);
+    }
+
+    @CalledByNative
+    public void testOnTabGroupUnShareComplete() {
+        mService.onTabGroupUnShareComplete(LOCAL_TAB_GROUP_ID_1, true);
+    }
+
+    @CalledByNative
     public void testAddTab() {
         mService.addTab(
                 LOCAL_TAB_GROUP_ID_1,
