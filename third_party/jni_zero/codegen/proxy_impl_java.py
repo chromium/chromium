@@ -50,7 +50,7 @@ public {return_type_str} {native.name}({sig_params})""")
       sb(f'assert {native.params[0].name} != 0;\n')
     for p in native.params:
       if not p.java_type.is_primitive() and not p.java_type.nullable:
-        sb(f'assert {p.name} != null;\n')
+        sb(f'assert {p.name} != null : "Parameter \\"{p.name}\\" was null. Add @Nullable to it?";\n')
     with sb.statement():
       if not native.return_type.is_void():
         sb(f'return ({return_type_str}) ')
