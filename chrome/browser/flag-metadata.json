@@ -9239,11 +9239,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "web-app-universal-install",
-    "owners": [ "dmurph@chromium.org", "pwa-team@google.com" ],
-    "expiry_milestone": 132
-  },
-  {
     "name": "web-app-user-display-mode-sync-browser-mitigation",
     "owners": [ "alancutter@chromium.org", "pwa-team@google.com" ],
     "expiry_milestone": 132
