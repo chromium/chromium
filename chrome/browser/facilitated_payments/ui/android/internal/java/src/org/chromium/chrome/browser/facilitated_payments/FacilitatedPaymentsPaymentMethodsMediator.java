@@ -19,8 +19,10 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.EwalletProperties.ON_EWALLET_CLICK_ACTION;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.FopSelectorProperties.SCREEN_ITEMS;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.DESCRIPTION_ID;
-import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
-import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.TITLE_ID;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.PRODUCT_ICON_DRAWABLE_ID;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.PRODUCT_ICON_HEIGHT;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.SECURITY_CHECK_DRAWABLE_ID;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.TITLE;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.BANK_ACCOUNT;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.CONTINUE_BUTTON;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.EWALLET;
@@ -97,7 +99,7 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                 == Configuration.ORIENTATION_LANDSCAPE;
     }
 
-    void showSheet(List<BankAccount> bankAccounts) {
+    void showSheetForPix(List<BankAccount> bankAccounts) {
         mInputProtector.markShowTime();
         if (bankAccounts == null || bankAccounts.isEmpty()) {
             return;
@@ -117,7 +119,7 @@ class FacilitatedPaymentsPaymentMethodsMediator {
 
         maybeShowContinueButton(screenItems, BANK_ACCOUNT);
 
-        screenItems.add(0, buildHeader());
+        screenItems.add(0, buildPixHeader(mContext));
         screenItems.add(buildFooter());
 
         mModel.set(VISIBLE_STATE, SHOWN);
@@ -125,9 +127,9 @@ class FacilitatedPaymentsPaymentMethodsMediator {
     }
 
     // TODO(crbug.com/40280186): Implement the content of eWallet FOP selector.
-    void showSheetForEwallet(List<Ewallet> eWallets) {
+    void showSheetForEwallet(List<Ewallet> ewallets) {
         mInputProtector.markShowTime();
-        if (eWallets == null || eWallets.isEmpty()) {
+        if (ewallets == null || ewallets.isEmpty()) {
             return;
         }
 
@@ -136,12 +138,14 @@ class FacilitatedPaymentsPaymentMethodsMediator {
         ModelList screenItems = mModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
         screenItems.clear();
 
-        for (Ewallet ewallet : eWallets) {
+        for (Ewallet ewallet : ewallets) {
             final PropertyModel model = createEwalletModel(mContext, ewallet);
             screenItems.add(new ListItem(EWALLET, model));
         }
 
         maybeShowContinueButton(screenItems, EWALLET);
+
+        screenItems.add(0, buildEwalletHeader(mContext, ewallets));
 
         mModel.set(VISIBLE_STATE, SHOWN);
         mInputProtector.markShowTime();
@@ -186,14 +190,74 @@ class FacilitatedPaymentsPaymentMethodsMediator {
         mDelegate.onUiEvent(uiEvent);
     }
 
-    private ListItem buildHeader() {
+    @VisibleForTesting
+    ListItem buildPixHeader(Context context) {
+        String title =
+                context.getString(
+                        R.string.facilitated_payments_payment_methods_bottom_sheet_detailed_title,
+                        context.getString(R.string.settings_manage_other_financial_accounts_pix));
+
+        int productIconHeight =
+                (int)
+                        context.getResources()
+                                .getDimension(R.dimen.facilitated_payments_product_icon_height);
+
         return new ListItem(
                 FacilitatedPaymentsPaymentMethodsProperties.ItemType.HEADER,
                 new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
                         .with(DESCRIPTION_ID, R.string.pix_payment_methods_bottom_sheet_description)
-                        .with(IMAGE_DRAWABLE_ID, R.drawable.gpay_pix_logo)
-                        .with(TITLE_ID, R.string.pix_payment_methods_bottom_sheet_title)
+                        .with(PRODUCT_ICON_DRAWABLE_ID, R.drawable.gpay_pix_logo)
+                        .with(PRODUCT_ICON_HEIGHT, productIconHeight)
+                        .with(TITLE, title)
                         .build());
+    }
+
+    @VisibleForTesting
+    ListItem buildEwalletHeader(Context context, List<Ewallet> ewallets) {
+        // This will contain the shared ewallet name if all eWallets have the same name;
+        // otherwise, it will contain `null`.
+        Optional<String> sharedEwalletName = Optional.of(ewallets.get(0).getEwalletName());
+        for (Ewallet ewallet : ewallets) {
+            if (!sharedEwalletName.get().equals(ewallet.getEwalletName())) {
+                sharedEwalletName = Optional.empty();
+                break;
+            }
+        }
+
+        String title;
+        if (sharedEwalletName.isPresent()) {
+            title =
+                    context.getString(
+                            R.string
+                                    .facilitated_payments_payment_methods_bottom_sheet_detailed_title,
+                            sharedEwalletName.get());
+        } else {
+            title =
+                    context.getString(
+                            R.string
+                                    .facilitated_payments_payment_methods_bottom_sheet_generic_title);
+        }
+
+        int productIconHeight =
+                (int)
+                        context.getResources()
+                                .getDimension(R.dimen.facilitated_payments_gpay_icon_header_height);
+
+        PropertyModel.Builder headerBuilder =
+                new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
+                        .with(PRODUCT_ICON_DRAWABLE_ID, R.drawable.google_pay)
+                        .with(PRODUCT_ICON_HEIGHT, productIconHeight)
+                        .with(TITLE, title);
+
+        if (ewallets.size() == 1 && !ewallets.get(0).getIsFidoEnrolled()) {
+            headerBuilder.with(SECURITY_CHECK_DRAWABLE_ID, R.drawable.security_check_illustration);
+            headerBuilder.with(
+                    DESCRIPTION_ID,
+                    R.string.ewallet_first_time_check_payment_methods_bottom_sheet_description);
+        }
+
+        return new ListItem(
+                FacilitatedPaymentsPaymentMethodsProperties.ItemType.HEADER, headerBuilder.build());
     }
 
     private ListItem buildFooter() {
@@ -252,26 +316,26 @@ class FacilitatedPaymentsPaymentMethodsMediator {
     }
 
     @VisibleForTesting
-    PropertyModel createEwalletModel(Context context, Ewallet eWallet) {
-        PropertyModel.Builder eWalletModelBuilder =
+    PropertyModel createEwalletModel(Context context, Ewallet ewallet) {
+        PropertyModel.Builder ewalletModelBuilder =
                 new PropertyModel.Builder(EwalletProperties.NON_TRANSFORMING_KEYS)
-                        .with(EWALLET_NAME, eWallet.getEwalletName())
-                        .with(ACCOUNT_DISPLAY_NAME, eWallet.getAccountDisplayName())
-                        .with(ON_EWALLET_CLICK_ACTION, () -> this.onEwalletSelected(eWallet));
-        Optional<Bitmap> eWalletIconOptional = Optional.empty();
-        if (eWallet.getDisplayIconUrl() != null && eWallet.getDisplayIconUrl().isValid()) {
-            eWalletIconOptional =
+                        .with(EWALLET_NAME, ewallet.getEwalletName())
+                        .with(ACCOUNT_DISPLAY_NAME, ewallet.getAccountDisplayName())
+                        .with(ON_EWALLET_CLICK_ACTION, () -> this.onEwalletSelected(ewallet));
+        Optional<Bitmap> ewalletIconOptional = Optional.empty();
+        if (ewallet.getDisplayIconUrl() != null && ewallet.getDisplayIconUrl().isValid()) {
+            ewalletIconOptional =
                     PersonalDataManagerFactory.getForProfile(mProfile)
                             .getCustomImageForAutofillSuggestionIfAvailable(
-                                    eWallet.getDisplayIconUrl(),
+                                    ewallet.getDisplayIconUrl(),
                                     AutofillUiUtils.CardIconSpecs.create(context, ImageSize.LARGE));
         }
-        if (eWalletIconOptional.isPresent()) {
-            eWalletModelBuilder.with(EWALLET_ICON_BITMAP, eWalletIconOptional.get());
+        if (ewalletIconOptional.isPresent()) {
+            ewalletModelBuilder.with(EWALLET_ICON_BITMAP, ewalletIconOptional.get());
         } else {
-            eWalletModelBuilder.with(EWALLET_DRAWABLE_ID, R.drawable.ic_account_balance);
+            ewalletModelBuilder.with(EWALLET_DRAWABLE_ID, R.drawable.ic_account_balance);
         }
-        return eWalletModelBuilder.build();
+        return ewalletModelBuilder.build();
     }
 
     public void onBankAccountSelected(BankAccount bankAccount) {
@@ -279,9 +343,9 @@ class FacilitatedPaymentsPaymentMethodsMediator {
         mDelegate.onBankAccountSelected(bankAccount.getInstrumentId());
     }
 
-    public void onEwalletSelected(Ewallet eWallet) {
+    public void onEwalletSelected(Ewallet ewallet) {
         if (!mInputProtector.shouldInputBeProcessed()) return;
-        mDelegate.onEwalletSelected(eWallet.getInstrumentId());
+        mDelegate.onEwalletSelected(ewallet.getInstrumentId());
     }
 
     private void onManagePaymentMethodsOptionSelected() {

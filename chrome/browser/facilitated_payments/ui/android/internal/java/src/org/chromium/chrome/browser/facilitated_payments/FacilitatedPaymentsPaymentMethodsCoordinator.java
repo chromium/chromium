@@ -53,8 +53,8 @@ public class FacilitatedPaymentsPaymentMethodsCoordinator
     }
 
     @Override
-    public void showSheet(List<BankAccount> bankAccounts) {
-        mMediator.showSheet(bankAccounts);
+    public void showSheetForPix(List<BankAccount> bankAccounts) {
+        mMediator.showSheetForPix(bankAccounts);
     }
 
     @Override

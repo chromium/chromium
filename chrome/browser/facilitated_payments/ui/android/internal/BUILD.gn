@@ -66,6 +66,7 @@ android_resources("java_resources") {
     "java/res/drawable/facilitated_payments_fop_icon_background.xml",
     "java/res/drawable/gpay_pix_logo.xml",
     "java/res/drawable/lock_icon.xml",
+    "java/res/drawable/security_check_illustration.xml",
     "java/res/layout/bank_account_item.xml",
     "java/res/layout/ewallet_item.xml",
     "java/res/layout/facilitated_payments_continue_button.xml",
