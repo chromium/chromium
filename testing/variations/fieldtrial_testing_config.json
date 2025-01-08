@@ -12322,9 +12322,9 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithDBPromoFirstAndSignInRemoved",
+                    "name": "EnabledWithDBPromoFirst",
                     "params": {
-                        "updated-first-run-sequence-param": "3"
+                        "updated-first-run-sequence-param": "1"
                     },
                     "enable_features": [
                         "UpdatedFirstRunSequence"
