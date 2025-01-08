@@ -116,8 +116,9 @@ namespace userScripts {
     // prior to page load, as the page may have already loaded by the time the
     // script reaches the target.
     boolean? injectImmediately;
-    // The script source to inject into the target.
-    ScriptSource js;
+    // The list of ScriptSource objects defining sources of scripts to be
+    // injected into the target.
+    ScriptSource[] js;
     // Details specifying the target into which to inject the script.
     InjectionTarget target;
     // The JavaScript "world" to run the script in. The default is

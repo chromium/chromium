@@ -35,6 +35,8 @@ namespace {
 
 constexpr char kEmptySourceError[] =
     "User script with ID '*' must specify at least one js source.";
+constexpr char kEmptySourceErrorWithoutIdError[] =
+    "User script must specify at least one js source.";
 constexpr char kInvalidSourceError[] =
     "User script with ID '*' must specify exactly one of 'code' or 'file' as a "
     "js source.";
@@ -655,9 +657,13 @@ ExtensionFunction::ResponseAction UserScriptsExecuteFunction::Run() {
   injection_ = std::move(params->injection);
 
   // Validate injection script.
-  if ((injection_.js.code && injection_.js.file) ||
-      (!injection_.js.code && !injection_.js.file)) {
-    return RespondNow(Error(kInvalidSourceWithoutIdError));
+  if (injection_.js.empty()) {
+    return RespondNow(Error(kEmptySourceErrorWithoutIdError));
+  }
+  for (const api::user_scripts::ScriptSource& source : injection_.js) {
+    if ((source.code && source.file) || (!source.code && !source.file)) {
+      return RespondNow(Error(kInvalidSourceWithoutIdError));
+    }
   }
 
   // Validate injection target.

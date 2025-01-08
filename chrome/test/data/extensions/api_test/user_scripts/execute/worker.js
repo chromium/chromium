@@ -20,13 +20,27 @@ async function navigateToNotRequestedUrl() {
 }
 
 chrome.test.runTests([
-  // Test that an error is returned if the user script source is not specified.
-  async function invalidScriptSource_EmptyJs() {
+  // Tests that an error is returned if the user script source list is empty.
+  async function invalidScriptSource_EmptySourceList() {
     await chrome.userScripts.unregister();
 
     const tab = await navigateToRequestedUrl();
 
-    const script = {js: {}, target: {tabId: tab.id}};
+    const script = {js: [], target: {tabId: tab.id}};
+    await chrome.test.assertPromiseRejects(
+        chrome.userScripts.execute(script),
+        `Error: User script must specify at least one js source.`);
+
+    chrome.test.succeed();
+  },
+
+  // Tests that an error is returned if the user script source is empty.
+  async function invalidScriptSource_EmptySource() {
+    await chrome.userScripts.unregister();
+
+    const tab = await navigateToRequestedUrl();
+
+    const script = {js: [{}], target: {tabId: tab.id}};
     await chrome.test.assertPromiseRejects(
         chrome.userScripts.execute(script),
         `Error: User script must specify exactly one of 'code' or 'file' as ` +
@@ -42,7 +56,10 @@ chrome.test.runTests([
 
     const tab = await navigateToRequestedUrl();
 
-    const script = {js: {file: 'script.js', code: ''}, target: {tabId: tab.id}};
+    const script = {
+      js: [{file: 'script.js', code: ''}],
+      target: {tabId: tab.id}
+    };
     await chrome.test.assertPromiseRejects(
         chrome.userScripts.execute(script),
         `Error: User script must specify exactly one of 'code' or 'file' as ` +
@@ -59,7 +76,7 @@ chrome.test.runTests([
     const tab = await navigateToRequestedUrl();
 
     const script = {
-      js: {file: 'script.js'},
+      js: [{file: 'script.js'}],
       target: {allFrames: true, frameIds: [456], tabId: tab.id}
     };
     await chrome.test.assertPromiseRejects(
@@ -78,7 +95,7 @@ chrome.test.runTests([
     const tab = await navigateToRequestedUrl();
 
     const script = {
-      js: {file: 'script.js'},
+      js: [{file: 'script.js'}],
       target: {documentIds: ['documentId'], frameIds: [456], tabId: tab.id}
     };
     await chrome.test.assertPromiseRejects(
@@ -103,7 +120,7 @@ chrome.test.runTests([
 
     await chrome.test.assertPromiseRejects(
         chrome.userScripts.execute({
-          js: {code: `console.log('hello world')`},
+          js: [{code: `console.log('hello world')`}],
           target: {
             tabId: tab.id,
             documentIds: documentIds,
@@ -130,7 +147,7 @@ chrome.test.runTests([
 
     await chrome.test.assertPromiseRejects(
         chrome.userScripts.execute({
-          js: {code: `console.log('hello world')`},
+          js: [{code: `console.log('hello world')`}],
           target: {
             tabId: tab.id,
             frameIds: frameIds,
@@ -148,7 +165,7 @@ chrome.test.runTests([
     await chrome.userScripts.unregister();
 
     const tabId = 999;
-    const script = {js: {file: 'script.js'}, target: {tabId: tabId}};
+    const script = {js: [{file: 'script.js'}], target: {tabId: tabId}};
     await chrome.test.assertPromiseRejects(
         chrome.userScripts.execute(script), `Error: No tab with id: ${tabId}`);
 
@@ -161,7 +178,7 @@ chrome.test.runTests([
     await chrome.userScripts.unregister();
 
     const tab = await navigateToNotRequestedUrl();
-    const script = {js: {file: 'script.js'}, target: {tabId: tab.id}};
+    const script = {js: [{file: 'script.js'}], target: {tabId: tab.id}};
     await chrome.test.assertPromiseRejects(
         chrome.userScripts.execute(script),
         `Error: Cannot access contents of the page. Extension manifest must ` +
