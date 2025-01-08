@@ -23,7 +23,6 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/facilitated_payments/core/browser/ewallet_manager.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
-#include "components/facilitated_payments/core/browser/facilitated_payments_driver.h"
 #include "components/facilitated_payments/core/browser/mock_facilitated_payments_api_client.h"
 #include "components/facilitated_payments/core/browser/mock_facilitated_payments_client.h"
 #include "components/facilitated_payments/core/browser/network_api/mock_facilitated_payments_network_interface.h"
@@ -65,16 +64,6 @@ CoreAccountInfo CreateLoggedInAccountInfo() {
 
 }  // namespace
 
-class MockFacilitatedPaymentsDriver : public FacilitatedPaymentsDriver {
- public:
-  explicit MockFacilitatedPaymentsDriver(
-      std::unique_ptr<FacilitatedPaymentsManager> manager,
-      std::unique_ptr<EwalletManager> ewallet_manager)
-      : FacilitatedPaymentsDriver(std::move(manager),
-                                  std::move(ewallet_manager)) {}
-  ~MockFacilitatedPaymentsDriver() override = default;
-};
-
 class FacilitatedPaymentsManagerTest : public testing::Test {
  public:
   base::test::TaskEnvironment task_environment_{
@@ -83,11 +72,10 @@ class FacilitatedPaymentsManagerTest : public testing::Test {
   void SetUp() override {
     optimization_guide_decider_ =
         std::make_unique<optimization_guide::MockOptimizationGuideDecider>();
-    driver_ = std::make_unique<MockFacilitatedPaymentsDriver>(nullptr, nullptr);
     client_ = std::make_unique<MockFacilitatedPaymentsClient>();
 
     manager_ = std::make_unique<FacilitatedPaymentsManager>(
-        driver_.get(), client_.get(), /*api_client_creator=*/
+        client_.get(), /*api_client_creator=*/
         base::BindOnce(&MockFacilitatedPaymentsApiClient::CreateApiClient),
         optimization_guide_decider_.get());
 
@@ -123,7 +111,6 @@ class FacilitatedPaymentsManagerTest : public testing::Test {
  protected:
   std::unique_ptr<optimization_guide::MockOptimizationGuideDecider>
       optimization_guide_decider_;
-  std::unique_ptr<MockFacilitatedPaymentsDriver> driver_;
   std::unique_ptr<MockFacilitatedPaymentsClient> client_;
   std::unique_ptr<FacilitatedPaymentsManager> manager_;
   std::unique_ptr<PrefService> pref_service_;

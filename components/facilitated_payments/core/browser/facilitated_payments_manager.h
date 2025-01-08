@@ -19,7 +19,6 @@
 #include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
-#include "components/facilitated_payments/core/browser/facilitated_payments_driver.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_request_details.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_response_details.h"
 #include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
@@ -34,7 +33,6 @@ class GURL;
 namespace payments::facilitated {
 
 class FacilitatedPaymentsClient;
-class FacilitatedPaymentsDriver;
 
 // A cross-platform interface that manages the flow of payments for non-form
 // based form-of-payments between the browser and the Payments platform. It is
@@ -44,7 +42,6 @@ class FacilitatedPaymentsDriver;
 class FacilitatedPaymentsManager {
  public:
   FacilitatedPaymentsManager(
-      FacilitatedPaymentsDriver* driver,
       FacilitatedPaymentsClient* client,
       FacilitatedPaymentsApiClientCreator api_client_creator,
       optimization_guide::OptimizationGuideDecider* optimization_guide_decider);
@@ -265,9 +262,6 @@ class FacilitatedPaymentsManager {
   // Dismisses the FacilitatedPayments bottom sheet if the progress screen is
   // being shown.
   void DismissProgressScreen();
-
-  // Owner.
-  const raw_ref<FacilitatedPaymentsDriver> driver_;
 
   // Indirect owner.
   const raw_ref<FacilitatedPaymentsClient> client_;

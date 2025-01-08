@@ -31,12 +31,10 @@ static constexpr FacilitatedPaymentsType kPaymentsType =
 }  // namespace
 
 FacilitatedPaymentsManager::FacilitatedPaymentsManager(
-    FacilitatedPaymentsDriver* driver,
     FacilitatedPaymentsClient* client,
     FacilitatedPaymentsApiClientCreator api_client_creator,
     optimization_guide::OptimizationGuideDecider* optimization_guide_decider)
-    : driver_(CHECK_DEREF(driver)),
-      client_(CHECK_DEREF(client)),
+    : client_(CHECK_DEREF(client)),
       api_client_creator_(std::move(api_client_creator)),
       optimization_guide_decider_(optimization_guide_decider),
       initiate_payment_request_details_(

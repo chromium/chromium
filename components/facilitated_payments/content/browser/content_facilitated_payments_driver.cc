@@ -23,7 +23,6 @@ ContentFacilitatedPaymentsDriver::ContentFacilitatedPaymentsDriver(
     content::RenderFrameHost* render_frame_host,
     std::unique_ptr<SecurityChecker> security_checker)
     : FacilitatedPaymentsDriver(std::make_unique<FacilitatedPaymentsManager>(
-                                    /*driver=*/this,
                                     client,
                                     GetFacilitatedPaymentsApiClientCreator(
                                         render_frame_host->GetGlobalId()),
