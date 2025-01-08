@@ -1299,7 +1299,6 @@ void MediaControlsImpl::UpdateOverflowMenuWanted() const {
 
   // The video controls are more than one row so we need to allocate vertical
   // room and hide the overlay play button if there is not enough room.
-  LOG(ERROR) << "AVDA: " << __func__ << " size: " << controls_size.ToString();
   if (ShouldShowVideoControls()) {
     // Allocate vertical room for overlay play button if necessary.
     if (overlay_play_button_) {
