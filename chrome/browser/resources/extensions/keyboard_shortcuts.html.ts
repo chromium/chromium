@@ -27,12 +27,13 @@ export function getHtml(this: KeyboardShortcutsElement) {
                 data-extension-id="${item.id}"
                 data-command-name="${command.name}"
                 aria-label="${this.computeScopeAriaLabel_(item, command)}"
-                ?disabled="${this.computeScopeDisabled_(command)}"
-                .value="${command.scope}">
-              <option value="${chrome.developerPrivate.CommandScope.CHROME}">
+                ?disabled="${this.computeScopeDisabled_(command)}">
+              <option value="${chrome.developerPrivate.CommandScope.CHROME}"
+                  ?selected="${this.isChromeScopeSelected_(command)}">
                 $i18n{shortcutScopeInChrome}
               </option>
-              <option value="${chrome.developerPrivate.CommandScope.GLOBAL}">
+              <option value="${chrome.developerPrivate.CommandScope.GLOBAL}"
+                  ?selected="${this.isGlobalScopeSelected_(command)}">
                 $i18n{shortcutScopeGlobal}
               </option>
             </select>
