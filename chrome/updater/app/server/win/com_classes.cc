@@ -32,6 +32,7 @@
 #include "chrome/updater/app/server/win/com_classes_util.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/update_service.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util/win_util.h"
 
@@ -209,6 +210,7 @@ STDMETHODIMP CompleteStatusImpl::get_statusMessage(BSTR* message) {
 
 UpdaterImpl::UpdaterImpl()
     : DynamicIIDsMultImpl<IUpdater, IUpdater2>(
+          GetUpdaterScope(),
           {IID_MAP_ENTRY_USER(IUpdater), IID_MAP_ENTRY_USER(IUpdater2)},
           {IID_MAP_ENTRY_SYSTEM(IUpdater), IID_MAP_ENTRY_SYSTEM(IUpdater2)}) {}
 

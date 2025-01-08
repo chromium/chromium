@@ -126,8 +126,6 @@ class DynamicIIDsImpl : public internal::WrlRuntimeClass<Interface> {
             << ": scope: " << scope;
   }
 
-  DynamicIIDsImpl() : DynamicIIDsImpl(GetUpdaterScope()) {}
-
   IFACEMETHODIMP QueryInterface(REFIID riid, void** object) override {
     return internal::WrlRuntimeClass<Interface>::QueryInterface(
         riid == (IsSystemInstall(scope_) ? iid_system : iid_user)
@@ -136,7 +134,7 @@ class DynamicIIDsImpl : public internal::WrlRuntimeClass<Interface> {
         object);
   }
 
- private:
+ protected:
   const UpdaterScope scope_;
 };
 
@@ -151,9 +149,10 @@ template <typename... Interface>
 class DynamicIIDsMultImpl : public internal::WrlRuntimeClass<Interface...> {
  public:
   DynamicIIDsMultImpl(
+      UpdaterScope scope,
       const base::flat_map<IID, IID, IidComparator>& user_iid_map,
       const base::flat_map<IID, IID, IidComparator>& system_iid_map)
-      : iid_map_(IsSystemInstall() ? system_iid_map : user_iid_map) {}
+      : iid_map_(IsSystemInstall(scope) ? system_iid_map : user_iid_map) {}
 
   IFACEMETHODIMP QueryInterface(REFIID riid, void** object) override {
     const auto find_iid = iid_map_.find(riid);

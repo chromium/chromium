@@ -14,6 +14,7 @@
 #include "chrome/updater/app/server/win/updater_idl.h"
 #include "chrome/updater/app/server/win/updater_internal_idl.h"
 #include "chrome/updater/update_service.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/win_util.h"
 
 namespace updater {
@@ -25,7 +26,8 @@ namespace updater {
 class UpdateStateImpl : public DYNAMICIIDSIMPL(IUpdateState) {
  public:
   explicit UpdateStateImpl(const UpdateService::UpdateState& update_state)
-      : update_state_(update_state) {}
+      : DYNAMICIIDSIMPL(IUpdateState)(GetUpdaterScope()),
+        update_state_(update_state) {}
   UpdateStateImpl(const UpdateStateImpl&) = delete;
   UpdateStateImpl& operator=(const UpdateStateImpl&) = delete;
 
@@ -53,7 +55,9 @@ class UpdateStateImpl : public DYNAMICIIDSIMPL(IUpdateState) {
 class CompleteStatusImpl : public DYNAMICIIDSIMPL(ICompleteStatus) {
  public:
   CompleteStatusImpl(int code, const std::wstring& message)
-      : code_(code), message_(message) {}
+      : DYNAMICIIDSIMPL(ICompleteStatus)(GetUpdaterScope()),
+        code_(code),
+        message_(message) {}
   CompleteStatusImpl(const CompleteStatusImpl&) = delete;
   CompleteStatusImpl& operator=(const CompleteStatusImpl&) = delete;
 
@@ -172,7 +176,8 @@ class UpdaterImpl : public DynamicIIDsMultImpl<IUpdater, IUpdater2> {
 // object.
 class UpdaterInternalImpl : public DYNAMICIIDSIMPL(IUpdaterInternal) {
  public:
-  UpdaterInternalImpl() = default;
+  UpdaterInternalImpl()
+      : DYNAMICIIDSIMPL(IUpdaterInternal)(GetUpdaterScope()) {}
   UpdaterInternalImpl(const UpdaterInternalImpl&) = delete;
   UpdaterInternalImpl& operator=(const UpdaterInternalImpl&) = delete;
 
