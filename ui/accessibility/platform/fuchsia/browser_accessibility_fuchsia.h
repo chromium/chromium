@@ -49,6 +49,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityFuchsia : public Browser
   AXPlatformNode* GetAXPlatformNode() const override;
   bool AccessibilityPerformAction(const AXActionData& action_data) override;
 
+  void OnScrollChanged();
+
   // Returns this object's AXUniqueID as a uint32_t.
   uint32_t GetFuchsiaNodeID() const;
 
