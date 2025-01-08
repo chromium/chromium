@@ -237,12 +237,6 @@ void MockShoppingService::SetGetAllShoppingBookmarksValue(
       .WillByDefault(testing::Return(bookmarks));
 }
 
-void MockShoppingService::SetIsDiscountEligibleToShowOnNavigation(
-    bool is_eligible) {
-  ON_CALL(*this, IsDiscountEligibleToShowOnNavigation)
-      .WillByDefault(testing::Return(is_eligible));
-}
-
 void MockShoppingService::SetResponseForGetDiscountInfoForUrl(
     const std::vector<DiscountInfo>& infos) {
   ON_CALL(*this, GetDiscountInfoForUrl)

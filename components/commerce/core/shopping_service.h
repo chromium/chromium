@@ -369,14 +369,6 @@ class ShoppingService : public KeyedService,
   // enabled country and locale.
   virtual bool IsMerchantViewerEnabled();
 
-  // This is a feature check for "show discounts on navigation", which will
-  // return true if the user has the feature flag enabled, is signed-in and
-  // synced, has MSBB enabled, and (if applicable) is in an eligible country and
-  // locale. The value returned by this method can change at runtime, so it
-  // should not be used when deciding whether to create critical,
-  // feature-related infrastructure.
-  virtual bool IsDiscountEligibleToShowOnNavigation();
-
   // Check if parcel tracking is eligible for use. This not only checks the
   // feature flag, but also checks user's sign in state, country code, etc. The
   // value returned here can change during runtime so it should not be used

@@ -186,7 +186,6 @@ class PriceTrackingIconViewInteractiveTest : public InteractiveBrowserTest {
     mock_shopping_service_->SetResponseForGetProductInfoForUrl(product_info_);
 
     mock_shopping_service_->SetIsShoppingListEligible(true);
-    mock_shopping_service_->SetIsDiscountEligibleToShowOnNavigation(false);
   }
 
   base::WeakPtrFactory<PriceTrackingIconViewInteractiveTest> weak_ptr_factory_{
@@ -543,7 +542,8 @@ class PriceTrackingIconViewErrorHandelingTest
     test_features_.InitWithFeaturesAndParameters(
         {{commerce::kShoppingList,
           {{commerce::kRevertIconOnFailureParam, "true"}}}},
-        {commerce::kPriceInsights});
+        {commerce::kPriceInsights, commerce::kEnableDiscountInfoApi,
+         commerce::kProductSpecifications});
   }
 
  private:

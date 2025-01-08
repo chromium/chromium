@@ -116,7 +116,6 @@ class MockShoppingService : public commerce::ShoppingService {
               (base::OnceCallback<void(ShoppingService*)>),
               (override));
   MOCK_METHOD(bool, IsMerchantViewerEnabled, (), (override));
-  MOCK_METHOD(bool, IsDiscountEligibleToShowOnNavigation, (), (override));
   MOCK_METHOD(bool, IsParcelTrackingEligible, (), (override));
   MOCK_METHOD(void,
               GetDiscountInfoForUrl,
@@ -174,7 +173,6 @@ class MockShoppingService : public commerce::ShoppingService {
       std::vector<const bookmarks::BookmarkNode*> bookmarks);
   void SetGetAllShoppingBookmarksValue(
       std::vector<const bookmarks::BookmarkNode*> bookmarks);
-  void SetIsDiscountEligibleToShowOnNavigation(bool is_eligible);
   void SetResponseForGetDiscountInfoForUrl(
       const std::vector<DiscountInfo>& infos);
   void SetIsParcelTrackingEligible(bool is_eligible);

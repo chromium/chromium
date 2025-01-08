@@ -88,6 +88,17 @@ void SetUpPriceInsightsEligibility(base::test::ScopedFeatureList* feature_list,
                                    MockAccountChecker* account_checker,
                                    bool is_eligible);
 
+// Set up discount eligibility for testing.
+void SetUpDiscountEligibility(base::test::ScopedFeatureList* feature_list,
+                              MockAccountChecker* account_checker,
+                              bool is_eligible);
+
+// Set up `account_checker` to be `eligible` for discount testing. Please note
+// that this API does not change feature setup. Tests that want to set up their
+// own features should use this API.
+void SetUpDiscountEligibilityForAccount(MockAccountChecker* account_checker,
+                                        bool is_eligible);
+
 std::optional<PriceInsightsInfo> CreateValidPriceInsightsInfo(
     bool has_price_range_data = false,
     bool has_price_history_data = false,
