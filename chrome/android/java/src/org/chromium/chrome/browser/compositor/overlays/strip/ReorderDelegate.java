@@ -84,12 +84,33 @@ public class ReorderDelegate {
         int DRAG_OUT_OF_STRIP = 3;
     }
 
+    // Strip update delegate.
+    interface StripUpdateDelegate {
+
+        /**
+         * Update strip - resize all views on tab strip.
+         *
+         * @param animate Whether to animate the resize.
+         * @param tabToAnimate Tab to additionally animate. Must be null if animate is false.
+         * @param animateTabAdded Run tab added animation on tabToAnimate if true. Run tab closed
+         *     animation if false.
+         */
+        void resizeTabStrip(boolean animate, StripLayoutTab tabToAnimate, boolean animateTabAdded);
+
+        /**
+         * Requests an update to strip (view properties etc) based on current state (eg: reorder,
+         * scroll). Updated properties won't be available immediately.
+         */
+        void refresh();
+    }
+
     // Tab State.
     private TabGroupModelFilter mTabGroupModelFilter;
     private TabModel mModel;
 
     // Tab Strip State.
     private AnimationHost mAnimationHost;
+    private StripUpdateDelegate mStripUpdateDelegate;
     private ScrollDelegate mScrollDelegate;
     private ObservableSupplierImpl<Integer> mGroupIdToHideSupplier;
     private View mContainerView;
@@ -192,6 +213,7 @@ public class ReorderDelegate {
      * instantiation.
      *
      * @param animationHost The {@link AnimationHost} for triggering animations.
+     * @param stripUpdateDelegate The {@link StripUpdateDelegate} for refreshing all strip views.
      * @param tabGroupModelFilter The {@link TabGroupModelFilter} for accessing tab state.
      * @param scrollDelegate The {@link ScrollDelegate} for updating scroll offset. actions, such as
      *     delete and ungroup.
@@ -203,6 +225,7 @@ public class ReorderDelegate {
      */
     void initialize(
             AnimationHost animationHost,
+            StripUpdateDelegate stripUpdateDelegate,
             TabGroupModelFilter tabGroupModelFilter,
             ScrollDelegate scrollDelegate,
             TabDragSource tabDragSource,
@@ -210,6 +233,7 @@ public class ReorderDelegate {
             ObservableSupplierImpl<Integer> groupIdToHideSupplier,
             View containerView) {
         mAnimationHost = animationHost;
+        mStripUpdateDelegate = stripUpdateDelegate;
         mTabGroupModelFilter = tabGroupModelFilter;
         mScrollDelegate = scrollDelegate;
         mTabWidthSupplier = tabWidthSupplier;
@@ -264,7 +288,9 @@ public class ReorderDelegate {
         // beginning of the drag. It accumulates the delta X until a threshold is crossed and then
         // the event gets processed.
         float accumulatedDeltaX = endX - getLastReorderX();
-        if (Math.abs(accumulatedDeltaX) < 1.f) return;
+        if (reorderType == ReorderType.DRAG_WITHIN_STRIP && Math.abs(accumulatedDeltaX) < 1.f) {
+            return;
+        }
         // Update reorder scroll state / reorderX.
         updateReorderState(endX, deltaX);
         mActiveStrategy.updateReorderPosition(
@@ -282,7 +308,6 @@ public class ReorderDelegate {
      * @param stripWidth The width of tab-strip. Used to compute auto-scroll speed.
      * @param leftMargin The start margin in tab-strip. Used to compute auto-scroll speed.
      * @param rightMargin The end margin in tab-strip. Used to compute auto-scroll speed.
-     * @param onUpdate Callback to update strip during auto-scroll.
      */
     void updateReorderPositionAutoScroll(
             StripLayoutView[] stripViews,
@@ -291,8 +316,7 @@ public class ReorderDelegate {
             long time,
             float stripWidth,
             float leftMargin,
-            float rightMargin,
-            Runnable onUpdate) {
+            float rightMargin) {
         assert mActiveStrategy != null && getInReorderMode()
                 : "Attempted to update reorder without an active Strategy.";
         float scrollOffsetDelta =
@@ -310,7 +334,7 @@ public class ReorderDelegate {
                         deltaX,
                         ReorderType.DRAG_WITHIN_STRIP);
             }
-            onUpdate.run();
+            mStripUpdateDelegate.refresh();
         }
     }
 

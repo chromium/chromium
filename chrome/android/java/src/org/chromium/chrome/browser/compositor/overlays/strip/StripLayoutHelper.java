@@ -67,6 +67,7 @@ import org.chromium.chrome.browser.compositor.layouts.components.CompositorButto
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
 import org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller;
 import org.chromium.chrome.browser.compositor.overlays.strip.ReorderDelegate.ReorderType;
+import org.chromium.chrome.browser.compositor.overlays.strip.ReorderDelegate.StripUpdateDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle.StripLayoutGroupTitleDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnClickHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripTabModelActionListener.ActionType;
@@ -136,6 +137,7 @@ import java.util.Set;
 public class StripLayoutHelper
         implements StripLayoutGroupTitleDelegate,
                 StripLayoutViewOnClickHandler,
+                StripUpdateDelegate,
                 AnimationHost,
                 TabListNotificationHandler {
     private static final String TAG = "StripLayoutHelper";
@@ -1038,6 +1040,7 @@ public class StripLayoutHelper
         Profile profile = tabGroupModelFilter.getTabModel().getProfile();
         mReorderDelegate.initialize(
                 /* animationHost= */ this,
+                /* stripUpdateDelegate= */ this,
                 mTabGroupModelFilter,
                 mScrollDelegate,
                 mTabDragSource,
@@ -3214,6 +3217,24 @@ public class StripLayoutHelper
         }
     }
 
+    @Override
+    public void refresh() {
+        mUpdateHost.requestUpdate();
+    }
+
+    @Override
+    public void resizeTabStrip(
+            boolean animate, StripLayoutTab tabToAnimate, boolean tabAddedAnimation) {
+        if (tabToAnimate != null && !tabAddedAnimation) {
+            assert animate;
+            mMultiStepTabCloseAnimRunning = true;
+            // Resize the tab strip accordingly.
+            resizeStripOnTabClose(getTabById(tabToAnimate.getTabId()));
+        } else {
+            resizeTabStrip(animate, false, animate);
+        }
+    }
+
     private List<Animator> resizeTabStrip(boolean animate, boolean delay, boolean deferAnimations) {
         List<Animator> animationList = null;
 
@@ -3849,8 +3870,7 @@ public class StripLayoutHelper
                 time,
                 mWidth,
                 mLeftMargin,
-                mRightMargin,
-                () -> mUpdateHost.requestUpdate());
+                mRightMargin);
     }
 
     private Tab getTabById(int tabId) {
