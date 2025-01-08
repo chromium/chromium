@@ -152,7 +152,6 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
         mTab1 = TabUiUnitTestUtils.prepareTab(TAB1_ID, TAB1_TITLE);
         mProfileProviderSupplier.set(mProfileProvider);
         when(mProfile.isOffTheRecord()).thenReturn(false);
-        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
 
         when(mTabModelSelector.getTabGroupModelFilterProvider())

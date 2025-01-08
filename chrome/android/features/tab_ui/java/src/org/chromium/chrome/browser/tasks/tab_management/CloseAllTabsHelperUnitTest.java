@@ -21,9 +21,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.TabArchiver;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
@@ -43,12 +40,8 @@ public class CloseAllTabsHelperUnitTest {
     @Mock private TabGroupModelFilter mIncognitoTabGroupModelFilter;
     @Mock private TabModel mRegularTabModel;
     @Mock private TabModel mIncognitoTabModel;
-    @Mock private TabModel mArchivedTabModel;
     @Mock private TabRemover mRegularTabRemover;
     @Mock private TabRemover mIncognitoTabRemover;
-    @Mock private Profile mProfile;
-    @Mock private ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
-    @Mock private TabArchiver mTabArchiver;
 
     @Before
     public void setUp() {
@@ -62,14 +55,6 @@ public class CloseAllTabsHelperUnitTest {
         when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
         when(mRegularTabModel.getTabRemover()).thenReturn(mRegularTabRemover);
         when(mIncognitoTabModel.getTabRemover()).thenReturn(mIncognitoTabRemover);
-
-        // Setup deps for tab archiving.
-        when(mTabModelSelector.getCurrentModel()).thenReturn(mRegularTabModel);
-        when(mRegularTabModel.getProfile()).thenReturn(mProfile);
-        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
-        when(mArchivedTabModelOrchestrator.getTabArchiver()).thenReturn(mTabArchiver);
-        when(mArchivedTabModelOrchestrator.getTabModel()).thenReturn(mArchivedTabModel);
-        ArchivedTabModelOrchestrator.setInstanceForTesting(mArchivedTabModelOrchestrator);
     }
 
     @Test

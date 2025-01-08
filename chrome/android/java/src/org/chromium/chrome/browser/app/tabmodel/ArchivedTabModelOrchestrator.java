@@ -69,7 +69,6 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     }
 
     private static ProfileKeyedMap<ArchivedTabModelOrchestrator> sProfileMap;
-    private static ArchivedTabModelOrchestrator sInstanceForTesting;
 
     // TODO(crbug.com/333572160): Rely on PKM destroy infra when it's working.
     @VisibleForTesting
@@ -142,10 +141,6 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
      * @return The corresponding {@link ArchivedTabModelOrchestrator}.
      */
     public static ArchivedTabModelOrchestrator getForProfile(Profile profile) {
-        if (sInstanceForTesting != null) {
-            return sInstanceForTesting;
-        }
-
         if (sProfileMap == null) {
             ThreadUtils.assertOnUiThread();
             sProfileMap =
@@ -533,9 +528,5 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     protected void setSkipSaveTabListSupplierForTesting( // IN-TEST
             ObservableSupplierImpl<Boolean> skipSaveTabListSupplier) {
         mSkipSaveTabListSupplier = skipSaveTabListSupplier;
-    }
-
-    public static void setInstanceForTesting(ArchivedTabModelOrchestrator instance) {
-        sInstanceForTesting = instance;
     }
 }

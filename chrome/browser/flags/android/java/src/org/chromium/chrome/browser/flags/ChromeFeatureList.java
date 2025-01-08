@@ -919,7 +919,7 @@ public abstract class ChromeFeatureList {
     public static final MutableFlagWithSafeDefault sAndroidBookmarkBar =
             newMutableFlagWithSafeDefault(ANDROID_BOOKMARK_BAR, false);
     public static final MutableFlagWithSafeDefault sAndroidTabDeclutter =
-            newMutableFlagWithSafeDefault(ANDROID_TAB_DECLUTTER, true);
+            newMutableFlagWithSafeDefault(ANDROID_TAB_DECLUTTER, false);
     public static final MutableFlagWithSafeDefault sAndroidTabDeclutterArchiveAllButActiveTab =
             newMutableFlagWithSafeDefault(ANDROID_TAB_DECLUTTER_ARCHIVE_ALL_BUT_ACTIVE, false);
     public static final MutableFlagWithSafeDefault sAndroidTabDeclutterArchiveDuplicateTabs =
@@ -1339,7 +1339,7 @@ public abstract class ChromeFeatureList {
             sAndroidTabDeclutter.newBooleanParam("android_tab_declutter_archive_enabled", true);
     public static final MutableIntParamWithSafeDefault sAndroidTabDeclutterArchiveTimeDeltaHours =
             sAndroidTabDeclutter.newIntParam(
-                    "android_tab_declutter_archive_time_delta_hours", 21 * 24);
+                    "android_tab_declutter_archive_time_delta_hours", 7 * 24);
     public static final MutableBooleanParamWithSafeDefault sAndroidTabDeclutterAutoDeleteEnabled =
             sAndroidTabDeclutter.newBooleanParam(
                     "android_tab_declutter_auto_delete_enabled", false);

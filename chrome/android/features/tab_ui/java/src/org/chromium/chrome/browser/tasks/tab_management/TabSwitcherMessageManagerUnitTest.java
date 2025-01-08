@@ -120,7 +120,6 @@ public class TabSwitcherMessageManagerUnitTest {
         doNothing().when(mTabGroupModelFilter).addObserver(mTabModelObserverCaptor.capture());
         doReturn(mTabModel).when(mTabGroupModelFilter).getTabModel();
         doReturn(mProfile).when(mTabModel).getProfile();
-        doReturn(mProfile).when(mProfile).getOriginalProfile();
         mCurrentTabGroupModelFilterSupplier.set(mTabGroupModelFilter);
 
         mActivityScenarioRule.getScenario().onActivity(this::onActivityReady);
