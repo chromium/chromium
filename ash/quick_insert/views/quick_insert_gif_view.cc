@@ -50,12 +50,14 @@ QuickInsertGifView::QuickInsertGifView(
       .BuildChildren();
 
   fetch_frames_start_time_ = base::TimeTicks::Now();
-  std::move(preview_image_fetcher)
-      .Run(base::BindOnce(&QuickInsertGifView::OnPreviewImageFetched,
-                          weak_factory_.GetWeakPtr()));
-  std::move(frames_fetcher)
-      .Run(base::BindOnce(&QuickInsertGifView::OnFramesFetched,
-                          weak_factory_.GetWeakPtr()));
+  preview_request_ =
+      std::move(preview_image_fetcher)
+          .Run(base::BindOnce(&QuickInsertGifView::OnPreviewImageFetched,
+                              weak_factory_.GetWeakPtr()));
+  frames_request_ =
+      std::move(frames_fetcher)
+          .Run(base::BindOnce(&QuickInsertGifView::OnFramesFetched,
+                              weak_factory_.GetWeakPtr()));
 }
 
 QuickInsertGifView::~QuickInsertGifView() = default;

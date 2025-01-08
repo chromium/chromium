@@ -43,8 +43,10 @@ class GifAssetFetcher {
 
   QuickInsertGifView::FramesFetcher GetFramesFetcher() {
     return base::BindLambdaForTesting(
-        [this](QuickInsertGifView::FramesFetchedCallback callback) {
+        [this](QuickInsertGifView::FramesFetchedCallback callback)
+            -> std::unique_ptr<network::SimpleURLLoader> {
           frames_fetched_callback_ = std::move(callback);
+          return nullptr;
         });
   }
 
@@ -55,8 +57,10 @@ class GifAssetFetcher {
 
   QuickInsertGifView::PreviewImageFetcher GetPreviewImageFetcher() {
     return base::BindLambdaForTesting(
-        [this](QuickInsertGifView::PreviewImageFetchedCallback callback) {
+        [this](QuickInsertGifView::PreviewImageFetchedCallback callback)
+            -> std::unique_ptr<network::SimpleURLLoader> {
           preview_image_fetched_callback_ = std::move(callback);
+          return nullptr;
         });
   }
 

@@ -24,6 +24,7 @@
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -128,7 +129,8 @@ TEST_F(QuickInsertAssetFetcherImplTest,
   QuickInsertAssetFetcherImpl asset_fetcher(&mock_delegate);
 
   base::test::TestFuture<std::vector<image_util::AnimationFrame>> future;
-  asset_fetcher.FetchGifFromUrl(kGifUrl, /*rank=*/0, future.GetCallback());
+  std::unique_ptr<network::SimpleURLLoader> loader =
+      asset_fetcher.FetchGifFromUrl(kGifUrl, /*rank=*/0, future.GetCallback());
 
   EXPECT_TRUE(future.Get().empty());
 }
@@ -148,8 +150,10 @@ TEST_F(QuickInsertAssetFetcherImplTest, FetchesGifPreviewImageFromTenorUrl) {
   QuickInsertAssetFetcherImpl asset_fetcher(&mock_delegate);
 
   base::test::TestFuture<const gfx::ImageSkia&> future;
-  asset_fetcher.FetchGifPreviewImageFromUrl(kGifPreviewImageUrl,
-                                            /*rank=*/0, future.GetCallback());
+  std::unique_ptr<network::SimpleURLLoader> loader =
+      asset_fetcher.FetchGifPreviewImageFromUrl(kGifPreviewImageUrl,
+                                                /*rank=*/0,
+                                                future.GetCallback());
 
   EXPECT_FALSE(future.Get().isNull());
   EXPECT_EQ(future.Get().size(), kGifPreviewImageDimensions);
@@ -169,8 +173,9 @@ TEST_F(QuickInsertAssetFetcherImplTest,
   QuickInsertAssetFetcherImpl asset_fetcher(&mock_delegate);
 
   base::test::TestFuture<const gfx::ImageSkia&> future;
-  asset_fetcher.FetchGifPreviewImageFromUrl(kNonTenorUrl, /*rank=*/0,
-                                            future.GetCallback());
+  std::unique_ptr<network::SimpleURLLoader> loader =
+      asset_fetcher.FetchGifPreviewImageFromUrl(kNonTenorUrl, /*rank=*/0,
+                                                future.GetCallback());
 
   EXPECT_TRUE(future.Get().isNull());
 }
@@ -219,8 +224,10 @@ TEST_F(QuickInsertAssetFetcherImplTest, DelaysRequestsWithLargeRank) {
   QuickInsertAssetFetcherImpl asset_fetcher(&mock_delegate);
 
   base::test::TestFuture<const gfx::ImageSkia&> future;
-  asset_fetcher.FetchGifPreviewImageFromUrl(kGifPreviewImageUrl,
-                                            /*rank=*/10, future.GetCallback());
+  std::unique_ptr<network::SimpleURLLoader> loader =
+      asset_fetcher.FetchGifPreviewImageFromUrl(kGifPreviewImageUrl,
+                                                /*rank=*/10,
+                                                future.GetCallback());
 
   EXPECT_EQ(url_loader_factory->GetTotalRequests(), 0u);
   // The request should be processed eventually.

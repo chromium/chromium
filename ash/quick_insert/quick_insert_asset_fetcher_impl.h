@@ -12,6 +12,10 @@
 
 class GURL;
 
+namespace network {
+class SimpleURLLoader;
+}
+
 namespace ash {
 
 class QuickInsertAssetFetcherImplDelegate;
@@ -28,10 +32,11 @@ class ASH_EXPORT QuickInsertAssetFetcherImpl : public QuickInsertAssetFetcher {
   ~QuickInsertAssetFetcherImpl() override;
 
   // QuickInsertAssetFetcher:
-  void FetchGifFromUrl(const GURL& url,
-                       size_t rank,
-                       QuickInsertGifFetchedCallback callback) override;
-  void FetchGifPreviewImageFromUrl(
+  std::unique_ptr<network::SimpleURLLoader> FetchGifFromUrl(
+      const GURL& url,
+      size_t rank,
+      QuickInsertGifFetchedCallback callback) override;
+  std::unique_ptr<network::SimpleURLLoader> FetchGifPreviewImageFromUrl(
       const GURL& url,
       size_t rank,
       QuickInsertImageFetchedCallback callback) override;
