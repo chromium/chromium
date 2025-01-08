@@ -6,15 +6,19 @@
 selection_test(
   [
     '<div contenteditable>',
-      '<dl><a href="#"><b>foo</b>|</a></dl>',
+      '<ul><li style="display: inline-block;">',
+        'hello |world',
+      '</li></ul>',
     '</div>',
   ],
   'insertParagraph',
   [
     '<div contenteditable>',
-      '<dl><a href="#"><b>foo</b></a><br>|<br></dl>',
+      '<ul><li style="display: inline-block;">',
+        'hello <br>|world',
+      '</li></ul>',
     '</div>',
   ],
-  'InsertParagraph in the list item anchor not crash'
+  'InsertParagraph in the inline list item'
 );
 </script>
