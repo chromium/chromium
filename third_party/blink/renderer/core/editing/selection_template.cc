@@ -431,12 +431,6 @@ SelectionInFlatTree ConvertToSelectionInFlatTree(
   return builder.Build();
 }
 
-template <typename Strategy>
-void SelectionTemplate<Strategy>::InvalidSelectionResetter::Trace(
-    blink::Visitor* visitor) const {
-  visitor->Trace(document_);
-}
-
 template class CORE_TEMPLATE_EXPORT SelectionTemplate<EditingStrategy>;
 template class CORE_TEMPLATE_EXPORT
     SelectionTemplate<EditingInFlatTreeStrategy>;

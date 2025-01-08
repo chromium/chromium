@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/memory/stack_allocated.h"
 #include "third_party/blink/renderer/core/css/anchor_evaluator.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
@@ -60,6 +61,8 @@ class CSSToLengthConversionDataTest : public PageTestBase {
   }
 
   struct DataOptions {
+    STACK_ALLOCATED();
+   public:
     // The zoom to apply to :root.
     std::optional<float> css_zoom;
     // The zoom to pass to the CSSToLengthConversionData constructor.

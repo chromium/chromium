@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/invalidation/rule_invalidation_data_visitor.h"
 
+#include "base/memory/stack_allocated.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/css/style_scope.h"
 #include "third_party/blink/renderer/core/inspector/invalidation_set_to_selector_map.h"
@@ -1265,6 +1266,9 @@ void RuleInvalidationDataVisitor<VisitorType>::
 template <RuleInvalidationDataVisitorType VisitorType>
 struct RuleInvalidationDataVisitor<VisitorType>::
     AddFeaturesToInvalidationSetsForLogicalCombinationInHasContext {
+  STACK_ALLOCATED();
+
+ public:
   bool needs_skip_adding_features;
   bool needs_update_features;
   const CSSSelector* last_compound_in_adjacent_chain;

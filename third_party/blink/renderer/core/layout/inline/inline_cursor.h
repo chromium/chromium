@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
+#include "base/memory/stack_allocated.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
@@ -44,6 +45,8 @@ struct PhysicalSize;
 // 2. Allows to save |Current()|, and can move back later. Moving to |Position|
 // is faster than moving to |FragmentItem|.
 class CORE_EXPORT InlineCursorPosition {
+  STACK_ALLOCATED();
+
  public:
   using ItemsSpan = FragmentItems::Span;
 

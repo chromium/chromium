@@ -32,23 +32,6 @@ v8::Local<v8::Module> ModuleTestBase::CompileModule(ScriptState* script_state,
                                TextPosition::MinimumPosition());
 }
 
-class SaveResultFunction final
-    : public ThenCallable<IDLAny, SaveResultFunction> {
- public:
-  SaveResultFunction() = default;
-
-  v8::Local<v8::Value> GetResult() {
-    EXPECT_TRUE(result_);
-    EXPECT_FALSE(result_->IsEmpty());
-    return result_->V8Value();
-  }
-
-  void React(ScriptState*, ScriptValue value) { *result_ = value; }
-
- private:
-  ScriptValue* result_ = nullptr;
-};
-
 class ExpectNotReached final : public ThenCallable<IDLAny, ExpectNotReached> {
  public:
   ExpectNotReached() = default;
@@ -65,18 +48,8 @@ v8::Local<v8::Value> ModuleTestBase::GetResult(ScriptState* script_state,
 
   ScriptPromise<IDLAny> script_promise = result.GetPromise(script_state);
   v8::Local<v8::Promise> promise = script_promise.V8Promise();
-  if (promise->State() == v8::Promise::kFulfilled) {
-    return promise->Result();
-  }
-
-  auto* resolve_function = MakeGarbageCollected<SaveResultFunction>();
-  script_promise.Then(script_state, resolve_function,
-                      MakeGarbageCollected<ExpectNotReached>());
-
-  script_state->GetContext()->GetMicrotaskQueue()->PerformCheckpoint(
-      script_state->GetIsolate());
-
-  return resolve_function->GetResult();
+  CHECK_EQ(promise->State(), v8::Promise::kFulfilled);
+  return promise->Result();
 }
 
 v8::Local<v8::Value> ModuleTestBase::GetException(
@@ -87,18 +60,8 @@ v8::Local<v8::Value> ModuleTestBase::GetException(
 
   ScriptPromise<IDLAny> script_promise = result.GetPromise(script_state);
   v8::Local<v8::Promise> promise = script_promise.V8Promise();
-  if (promise->State() == v8::Promise::kRejected) {
-    return promise->Result();
-  }
-
-  auto* reject_function = MakeGarbageCollected<SaveResultFunction>();
-  script_promise.Then(script_state, MakeGarbageCollected<ExpectNotReached>(),
-                      reject_function);
-
-  script_state->GetContext()->GetMicrotaskQueue()->PerformCheckpoint(
-      script_state->GetIsolate());
-
-  return reject_function->GetResult();
+  CHECK_EQ(promise->State(), v8::Promise::kRejected);
+  return promise->Result();
 }
 
 }  // namespace blink

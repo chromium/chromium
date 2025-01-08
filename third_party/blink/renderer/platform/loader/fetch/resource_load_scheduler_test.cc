@@ -12,6 +12,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/loader/fetch/console_logger.h"
 #include "third_party/blink/renderer/platform/loader/fetch/loading_behavior_observer.h"
@@ -27,9 +28,7 @@ class MockClient final : public GarbageCollected<MockClient>,
                          public ResourceLoadSchedulerClient {
  public:
   // A delegate that can be used to determine the order clients were run in.
-  class MockClientDelegate {
-    DISALLOW_NEW();
-
+  class MockClientDelegate : public GarbageCollected<MockClientDelegate> {
    public:
     MockClientDelegate() = default;
     ~MockClientDelegate() = default;
@@ -62,6 +61,7 @@ class MockClient final : public GarbageCollected<MockClient>,
   void Trace(Visitor* visitor) const override {
     ResourceLoadSchedulerClient::Trace(visitor);
     visitor->Trace(console_logger_);
+    visitor->Trace(delegate_);
   }
 
  private:
@@ -71,7 +71,7 @@ class MockClient final : public GarbageCollected<MockClient>,
   // there is no benefit to using a raw_ptr, only cost.
   // TODO(crbug.com/348793154): Remove once clang plugin no longer enforces
   // those.
-  RAW_PTR_EXCLUSION MockClientDelegate* delegate_;
+  Member<MockClientDelegate> delegate_;
   bool was_run_ = false;
 };
 
@@ -483,13 +483,14 @@ TEST_F(ResourceLoadSchedulerTest, AllowedRequestsRunInPriorityOrder) {
       scheduler::SchedulingLifecycleState::kStopped);
   Scheduler()->SetOutstandingLimitForTesting(0);
 
-  MockClient::MockClientDelegate delegate;
+  MockClient::MockClientDelegate* delegate =
+      MakeGarbageCollected<MockClient::MockClientDelegate>();
   // Push two requests.
   MockClient* client1 = MakeGarbageCollected<MockClient>();
   MockClient* client2 = MakeGarbageCollected<MockClient>();
 
-  client1->SetDelegate(&delegate);
-  client2->SetDelegate(&delegate);
+  client1->SetDelegate(delegate);
+  client2->SetDelegate(delegate);
 
   ResourceLoadScheduler::ClientId id1 = ResourceLoadScheduler::kInvalidClientId;
   Scheduler()->Request(client1, ThrottleOption::kStoppable,
@@ -519,7 +520,7 @@ TEST_F(ResourceLoadSchedulerTest, AllowedRequestsRunInPriorityOrder) {
   EXPECT_TRUE(Release(id2));
 
   // Verify high priority request ran first.
-  auto& order = delegate.client_order();
+  auto& order = delegate->client_order();
   EXPECT_EQ(order[0], client2);
   EXPECT_EQ(order[1], client1);
 }

@@ -8,6 +8,7 @@
 #include <unicode/uscript.h>
 
 #include "base/check.h"
+#include "base/memory/stack_allocated.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item.h"
 
 namespace blink {
@@ -49,6 +50,7 @@ inline bool MaybeIdeograph(UScriptCode script, StringView text) {
 // should be added to the end of the previous item. This class keeps the
 // previous item's `shape_result_` for this purpose.
 class SpacingApplier {
+  STACK_ALLOCATED();
  public:
   void SetSpacing(const Vector<wtf_size_t, 16>& offsets,
                   const InlineItem* current_item,
