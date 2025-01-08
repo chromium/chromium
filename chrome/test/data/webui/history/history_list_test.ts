@@ -741,8 +741,8 @@ suite('HistoryListTest', function() {
     // Scroll to just under the threshold to make sure more results don't load.
     app.scrollTarget.scrollTop =
         app.scrollTarget.scrollHeight - app.scrollTarget.offsetHeight - 600;
-    // Wait longer than scroll debounce.
-    await new Promise(resolve => setTimeout(resolve, 10));
+    // Wait for the scroll observer to trigger.
+    await eventToPromise('scroll-timeout-for-test', element);
     assertEquals(0, testService.getCallCount('queryHistoryContinuation'));
 
     // Set up more results.

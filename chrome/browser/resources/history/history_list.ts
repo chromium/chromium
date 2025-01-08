@@ -708,6 +708,7 @@ export class HistoryListElement extends HistoryListElementBase {
     if (lowerScroll < 500) {
       this.onScrollToBottom_();
     }
+    this.fire_('scroll-timeout-for-test');
   }
 
   private computeIsEmpty_() {

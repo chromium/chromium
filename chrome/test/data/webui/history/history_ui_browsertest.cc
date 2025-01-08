@@ -171,8 +171,7 @@ IN_PROC_BROWSER_TEST_F(HistoryListTest, AnnouncesExactMatches) {
   RunTestCase("AnnouncesExactMatches");
 }
 
-// TODO(crbug.com/387491448): Test is flaky
-IN_PROC_BROWSER_TEST_F(HistoryListTest, DISABLED_ScrollingLoadsMore) {
+IN_PROC_BROWSER_TEST_F(HistoryListTest, ScrollingLoadsMore) {
   RunTestCase("ScrollingLoadsMore");
 }
 
