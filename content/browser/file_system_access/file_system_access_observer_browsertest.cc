@@ -296,21 +296,6 @@ class FileSystemAccessObserverBrowserTestBase : public ContentBrowserTest {
   GURL test_url_;
 };
 
-class FileSystemAccessObserverDefaultBrowserTest
-    : public FileSystemAccessObserverBrowserTestBase {};
-
-IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverDefaultBrowserTest,
-                       DisabledByDefault) {
-  EXPECT_TRUE(NavigateToURL(shell(), test_url_));
-
-  auto result =
-      EvalJs(shell(),
-             "(async () => {"
-             "const observer = new FileSystemObserver(() => {}); })()");
-  EXPECT_TRUE(result.error.find("not defined") != std::string::npos)
-      << result.error;
-}
-
 class FileSystemAccessObserveWithFlagBrowserTest
     : public FileSystemAccessObserverBrowserTestBase {
  public:
