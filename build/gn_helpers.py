@@ -30,6 +30,7 @@ import sys
 _CHROMIUM_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir))
 
+ARGS_GN_FILENAME = 'args.gn'
 BUILD_VARS_FILENAME = 'build_vars.json'
 IMPORT_RE = re.compile(r'^import\("//(\S+)"\)')
 
@@ -542,6 +543,15 @@ def ReadBuildVars(output_directory):
   """Parses $output_directory/build_vars.json into a dict."""
   with open(os.path.join(output_directory, BUILD_VARS_FILENAME)) as f:
     return json.load(f)
+
+
+def ReadArgsGN(output_directory):
+  """Parses $output_directory/args.gn into a dict."""
+  fname = os.path.join(output_directory, ARGS_GN_FILENAME)
+  if not os.path.exists(fname):
+    return {}
+  with open(fname) as f:
+    return FromGNArgs(f.read())
 
 
 def CreateBuildCommand(output_directory):
