@@ -378,6 +378,7 @@ defaults = args.defaults(
     siso_remote_linking = None,
     siso_output_local_strategy = None,
     siso_limits = None,
+    siso_keep_going = None,
     health_spec = None,
     builder_config_settings = None,
 
@@ -480,6 +481,7 @@ def builder(
         siso_output_local_strategy = args.DEFAULT,
         siso_remote_linking = args.DEFAULT,
         siso_limits = args.DEFAULT,
+        siso_keep_going = args.DEFAULT,
         skip_profile_upload = args.DEFAULT,
         health_spec = args.DEFAULT,
         shadow_builderless = args.DEFAULT,
@@ -700,6 +702,7 @@ def builder(
             builtin RBE client instead of Reclient. Relevant configs and GN args
             will be adjusted accordingly.
         siso_limits: a string to override sito limits.
+        siso_keep_going: Integer flag passed to '-k' option in siso.
         health_spec: a health spec instance describing the threshold for when
             the builder should be considered unhealthy.
         shadow_builderless: If set to True, then led builds created for this
@@ -932,6 +935,10 @@ def builder(
             "experiments": defaults.get_value("siso_experiments", siso_experiments),
             "project": rbe_project,
         }
+        siso_keep_going = defaults.get_value("siso_keep_going", siso_keep_going)
+        if siso_keep_going != None:
+            siso["keep_going"] = siso_keep_going
+
         remote_jobs = defaults.get_value("siso_remote_jobs", siso_remote_jobs)
         if remote_jobs:
             siso["remote_jobs"] = remote_jobs
