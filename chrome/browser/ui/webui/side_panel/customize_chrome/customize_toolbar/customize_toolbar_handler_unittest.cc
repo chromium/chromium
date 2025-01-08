@@ -129,6 +129,7 @@ class CustomizeToolbarHandlerTest : public BrowserWithTestWindowTest {
     pinned_toolbar_actions_model_observer_ = nullptr;
     handler_.reset();
     mock_pinned_toolbar_actions_model_ = nullptr;
+    actions::ActionIdMap::ResetMapsForTesting();
 
     BrowserWithTestWindowTest::TearDown();
   }
