@@ -263945,6 +263945,19 @@
        {}
       ]
      ],
+     "sideways-lr-main-axis.html": [
+      "b939508df1568e5c06e9c4e4cbd301b330f80da6",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/reference/sideways-lr-main-axis-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "sizing-orthog-htb-in-vlr-001.xht": [
       "8a65a38d50525486e7014602946bcfc555024bda",
       [
@@ -345405,7 +345418,7 @@
        []
       ],
       "clip-path-interpolation-shape-expected.txt": [
-       "5c4d43b11f61be7bdb1ac2bc422bcda999662fe4",
+       "f95ad898019c31be95295b6d84762881a4289bda",
        []
       ],
       "mask-border-outset-composition-expected.txt": [
@@ -346345,7 +346358,7 @@
        []
       ],
       "clip-path-shape-parsing-expected.txt": [
-       "778e24034e2ba19980cdcbac81f3fa1eab19014b",
+       "ac0e4951e22a94beeaa1ade342439caf3a54f750",
        []
       ],
       "mask-valid.sub-expected.txt": [
@@ -365830,6 +365843,10 @@
       ],
       "scrollbar-vertical-rl-ref.html": [
        "2ee601d16d25ba50e002cfba66fe79c4a13ad9ed",
+       []
+      ],
+      "sideways-lr-main-axis-ref.html": [
+       "00999acf88d5c06a1f13d8acbe36499ad3734506",
        []
       ],
       "svg-aliasing-001-ref.html": [
@@ -506130,7 +506147,7 @@
       ]
      ],
      "attr-all-types.html": [
-      "56b87c92035117779449e91d84d0e53898f10c2c",
+      "47378b4cf436ac55fdc7be8d9fe17ff2a75e7c9a",
       [
        null,
        {}
@@ -809299,7 +809316,7 @@
          ]
         ],
         "before_request_sent_cached.py": [
-         "a042e7510b4914b4b2f07294eac6e45d1ec8170c",
+         "9483a707eab1d4caa561a193d641611cf92ffa2e",
          [
           null,
           {}
@@ -809542,7 +809559,7 @@
          ]
         ],
         "response_completed_cached.py": [
-         "0a624dcfaedb72ff9c72a0e67700b9bbfaf258e4",
+         "5b1e3592e09e4dda83ddcd49bdc692f3f9c6c941",
          [
           null,
           {}
@@ -809558,7 +809575,7 @@
          ]
         ],
         "response_started_cached.py": [
-         "db0a2514c9322776d19a9861cf3f905cdf4157f8",
+         "57db04a3afe7ccc09dc771ad11e5d896c4535f6a",
          [
           null,
           {}
