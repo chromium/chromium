@@ -72,6 +72,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
       bookmarksService: {type: Object},
       toggleExpand: {type: Boolean},
       updatedElementIds: {type: Array},
+      canDrag: {type: Boolean},
     };
   }
 
@@ -92,6 +93,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
   imageUrls: {[key: string]: string} = {};
   updatedElementIds: string[] = [];
   isPriceTracked: boolean = false;
+  canDrag: boolean = true;
 
   listItemSize: CrUrlListItemSize = CrUrlListItemSize.COMPACT;
   bookmarksService: PowerBookmarksService;

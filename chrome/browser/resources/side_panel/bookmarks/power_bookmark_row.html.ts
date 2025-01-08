@@ -96,6 +96,8 @@ if (this.shouldExpand_()) {
           .imageUrls="${this.imageUrls}"
           .shoppingCollectionFolderId="${this.shoppingCollectionFolderId}"
           .bookmarksService="${this.bookmarksService}"
+          .draggable="${this.canDrag}"
+          .can-drag="${this.canDrag}"
           .contextMenuBookmark="${this.contextMenuBookmark}">
       </power-bookmark-row>
     `)}`: ''

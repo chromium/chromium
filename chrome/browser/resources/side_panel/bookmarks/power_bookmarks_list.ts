@@ -444,6 +444,10 @@ export class PowerBookmarksListElement extends PolymerElement {
     // If the new parent folder is visible, notify to ensure its displayed
     // child count is updated.
     this.notifyPathIfVisible_(newParent.id, 'children');
+    // If compact and tree view is active, we must resize open folders
+    if (this.bookmarksTreeViewEnabled_ && this.compact_) {
+      this.notifyBookmarksListResize_();
+    }
   }
 
   onBookmarkRemoved(bookmark: chrome.bookmarks.BookmarkTreeNode) {
@@ -493,6 +497,13 @@ export class PowerBookmarksListElement extends PolymerElement {
 
   /** PowerBookmarksDragDelegate */
   getFallbackBookmark(): chrome.bookmarks.BookmarkTreeNode {
+    // Returning other bookmarks folder in tree view allow moving bookmarks to
+    // the root folder
+    if (this.bookmarksTreeViewEnabled_ && this.compact_) {
+      return this.bookmarksService_.findBookmarkWithId(
+          loadTimeData.getString('otherBookmarksId'))!;
+    }
+
     return this.getParentFolder_();
   }
 
