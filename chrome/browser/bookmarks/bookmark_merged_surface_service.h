@@ -51,6 +51,9 @@ struct BookmarkParentFolder {
   friend bool operator==(const BookmarkParentFolder&,
                          const BookmarkParentFolder&) = default;
 
+  friend auto operator<=>(const BookmarkParentFolder&,
+                          const BookmarkParentFolder&) = default;
+
   // Returns `true` if `this` hols a non-permanent folder.
   bool HoldsNonPermanentFolder() const;
 
