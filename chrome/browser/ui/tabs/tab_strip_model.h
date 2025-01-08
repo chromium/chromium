@@ -574,6 +574,7 @@ class TabStripModel : public TabGroupController {
     CommandAddToReadLater,
     CommandAddToNewGroup,
     CommandAddToExistingGroup,
+    CommandAddToNewGroupFromMenuItem,
     CommandRemoveFromGroup,
     CommandMoveToExistingWindow,
     CommandMoveTabsToNewWindow,
@@ -874,6 +875,9 @@ class TabStripModel : public TabGroupController {
   void AddToExistingGroupImpl(const std::vector<int>& indices,
                               const tab_groups::TabGroupId& group,
                               const bool add_to_end = false);
+
+  // Adds all selected indices provided by `context_index` into a new tab group.
+  void AddToNewGroupFromContextIndex(int context_index);
 
   // Implementation of MoveTabsAndSetGroupImpl. Moves the set of tabs in
   // |indices| to the |destination_index| and updates the tabs to the

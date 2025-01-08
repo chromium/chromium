@@ -43015,10 +43015,33 @@ should be able to be added at any place in this file.
 
 <action
     name="TabGroups_SavedTabGroups_CreateNewGroupTriggeredFromEverythingMenu">
+  <obsolete>
+    Replaced with
+    &quot;TabGroups_SavedTabGroups_CreateNewGroupTriggeredFromEverythingMenu_2&quot;.
+  </obsolete>
   <owner>dljames@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <description>
     User pressed &quot;Create New Tab Group&quot; from the Everything menu.
+  </description>
+</action>
+
+<action
+    name="TabGroups_SavedTabGroups_CreateNewGroupTriggeredFromEverythingMenu_2">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    User pressed &quot;Create New Tab Group&quot; from the Everything menu in
+    the bookmarks bar.
+  </description>
+</action>
+
+<action
+    name="TabGroups_SavedTabGroups_CreateNewGroupTriggeredFromTabGroupsAppMenu">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    User pressed &quot;Create New Tab Group&quot; from the TabGroups app menu.
   </description>
 </action>
 
@@ -43067,11 +43090,33 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="TabGroups_SavedTabGroups_OpenedFromEverythingMenu">
+  <obsolete>
+    Replaced with
+    &quot;TabGroups_SavedTabGroups_OpenedFromEverythingMenu_2&quot;.
+  </obsolete>
   <owner>dljames@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <description>
     User opened a SavedTabGroup by clicking a menu item from the Everything
     menu.
+  </description>
+</action>
+
+<action name="TabGroups_SavedTabGroups_OpenedFromEverythingMenu_2">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    User opened a SavedTabGroup by clicking a menu item from the Everything menu
+    in the bookmarks bar.
+  </description>
+</action>
+
+<action name="TabGroups_SavedTabGroups_OpenedFromTabGroupsAppMenu">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    User opened a SavedTabGroup by clicking the open group submenu item from the
+    tab groups app menu.
   </description>
 </action>
 

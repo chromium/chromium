@@ -362,7 +362,7 @@ void STGEverythingMenu::ExecuteCommand(int command_id, int event_flags) {
     switch (type) {
       case Action::Type::OPEN_IN_BROWSER: {
         base::RecordAction(base::UserMetricsAction(
-            "TabGroups_SavedTabGroups_OpenedFromEverythingMenu"));
+            "TabGroups_SavedTabGroups_OpenedFromTabGroupsAppMenu"));
         TabGroupSyncService* tab_group_service =
             tab_groups::SavedTabGroupUtils::GetServiceForProfile(
                 browser_->profile());
@@ -398,12 +398,20 @@ void STGEverythingMenu::ExecuteCommand(int command_id, int event_flags) {
         break;
     }
   } else if (command_id == IDC_CREATE_NEW_TAB_GROUP) {
-    base::RecordAction(base::UserMetricsAction(
-        "TabGroups_SavedTabGroups_CreateNewGroupTriggeredFromEverythingMenu"));
+    if (show_submenu_) {
+      base::RecordAction(base::UserMetricsAction(
+          "TabGroups_SavedTabGroups_"
+          "CreateNewGroupTriggeredFromTabGroupsAppMenu"));
+    } else {
+      base::RecordAction(base::UserMetricsAction(
+          "TabGroups_SavedTabGroups_CreateNewGroupTriggeredFromEverythingMenu_"
+          "2"));
+    }
+
     browser_->command_controller()->ExecuteCommand(command_id);
   } else {
     base::RecordAction(base::UserMetricsAction(
-        "TabGroups_SavedTabGroups_OpenedFromEverythingMenu"));
+        "TabGroups_SavedTabGroups_OpenedFromEverythingMenu_2"));
     const auto group_id = GetTabGroupIdFromCommandId(command_id);
     TabGroupSyncService* tab_group_service =
         tab_groups::SavedTabGroupUtils::GetServiceForProfile(

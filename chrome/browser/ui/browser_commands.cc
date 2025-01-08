@@ -1277,7 +1277,7 @@ void CreateNewTabGroup(Browser* browser) {
   NewTab(browser);
   browser->tab_strip_model()->ExecuteContextMenuCommand(
       browser->tab_strip_model()->active_index(),
-      TabStripModel::ContextMenuCommand::CommandAddToNewGroup);
+      TabStripModel::ContextMenuCommand::CommandAddToNewGroupFromMenuItem);
 }
 
 void MuteSite(Browser* browser) {

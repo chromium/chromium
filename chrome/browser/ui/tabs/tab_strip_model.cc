@@ -1629,26 +1629,7 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       }
 
       base::RecordAction(UserMetricsAction("TabContextMenu_AddToNewGroup"));
-
-      std::vector<int> indices_to_add = GetIndicesForCommand(context_index);
-      std::vector<tab_groups::TabGroupId> groups_to_delete =
-          GetGroupsDestroyedFromRemovingIndices(indices_to_add);
-      MarkTabGroupsForClosing(groups_to_delete);
-
-      base::OnceCallback<void()> callback = base::BindOnce(
-          [](TabStripModel* model, std::vector<int> indices) {
-            std::optional<tab_groups::TabGroupId> new_group_id =
-                model->AddToNewGroup(indices);
-            model->OpenTabGroupEditor(new_group_id.value());
-          },
-          base::Unretained(this), indices_to_add);
-
-      if (!groups_to_delete.empty()) {
-        return delegate_->OnRemovingAllTabsFromGroups(groups_to_delete,
-                                                      std::move(callback));
-      } else {
-        std::move(callback).Run();
-      }
+      AddToNewGroupFromContextIndex(context_index);
       break;
     }
 
@@ -1774,9 +1755,40 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
                                        /*delete_groups=*/true);
       break;
     }
+    case CommandAddToNewGroupFromMenuItem: {
+      if (!group_model_) {
+        break;
+      }
 
-    default:
+      AddToNewGroupFromContextIndex(context_index);
+      break;
+    }
+    case CommandFirst:
+    case CommandAddNote:
+    case CommandLast:
       NOTREACHED();
+  }
+}
+
+void TabStripModel::AddToNewGroupFromContextIndex(int context_index) {
+  std::vector<int> indices_to_add = GetIndicesForCommand(context_index);
+  std::vector<tab_groups::TabGroupId> groups_to_delete =
+      GetGroupsDestroyedFromRemovingIndices(indices_to_add);
+  MarkTabGroupsForClosing(groups_to_delete);
+
+  base::OnceCallback<void()> callback = base::BindOnce(
+      [](TabStripModel* model, std::vector<int> indices) {
+        std::optional<tab_groups::TabGroupId> new_group_id =
+            model->AddToNewGroup(indices);
+        model->OpenTabGroupEditor(new_group_id.value());
+      },
+      base::Unretained(this), indices_to_add);
+
+  if (groups_to_delete.empty()) {
+    std::move(callback).Run();
+  } else {
+    delegate_->OnRemovingAllTabsFromGroups(groups_to_delete,
+                                           std::move(callback));
   }
 }
 
