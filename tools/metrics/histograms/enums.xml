@@ -10976,6 +10976,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5238" label="CanvasTextDirectionSet"/>
   <int value="5239" label="CanvasTextDirectionSetInherit"/>
   <int value="5240" label="TopicsAPIImg"/>
+  <int value="5241" label="MediaSessionEnterPictureInPicture"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
