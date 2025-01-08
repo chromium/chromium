@@ -31,6 +31,7 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerImpl {
   // Valid AccountId must be used, otherwise DCHECKed.
   static std::string GetFakeUsernameHash(const AccountId& account_id);
 
+  // DEPRECATED. Please use UserManagerImpl's Add*User family.
   // Create and add a new user. Created user is not affiliated with the domain,
   // that owns the device.
   User* AddUser(const AccountId& account_id);
@@ -41,10 +42,6 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerImpl {
   // The same as AddUser() but allows to specify user affiliation with the
   // domain, that owns the device.
   User* AddUserWithAffiliation(const AccountId& account_id, bool is_affiliated);
-
-  // Create and add a new public account. Created user is not affiliated with
-  // the domain, that owns the device.
-  user_manager::User* AddPublicAccountUser(const AccountId& account_id);
 
   void LogoutAllUsers();
 
@@ -107,6 +104,10 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerImpl {
                          bool is_affiliated) override {}
 
   // Just make it public for tests.
+  using UserManagerImpl::AddEphemeralUser;
+  using UserManagerImpl::AddGaiaUser;
+  using UserManagerImpl::AddGuestUser;
+  using UserManagerImpl::AddPublicAccountUser;
   using UserManagerImpl::ResetOwnerId;
   using UserManagerImpl::SetEphemeralModeConfig;
   using UserManagerImpl::SetOwnerId;

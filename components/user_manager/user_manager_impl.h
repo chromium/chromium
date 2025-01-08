@@ -280,6 +280,21 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
   ash::CrosSettings* cros_settings() { return cros_settings_; }
   const ash::CrosSettings* cros_settings() const { return cros_settings_; }
 
+  // Add a new regular user with a Gaia account. Returns the created user.
+  // `user_type` must be kRegular or kChild, which can hold a Gaia account.
+  // The added user is persisted in `local_state_`.
+  User* AddGaiaUser(const AccountId& account_id, UserType user_type);
+
+  // Add a new ephemeral user.
+  // Unlike AddGaiaUser, the created user will not be persisted.
+  User* AddEphemeralUser(const AccountId& account_id, UserType user_type);
+
+  // Add a new guest user.
+  User* AddGuestUser();
+
+  // Add a public account user.
+  User* AddPublicAccountUser(const AccountId& account_id);
+
   // Returns true if user may be removed.
   virtual bool CanUserBeRemoved(const User* user) const;
 
@@ -405,21 +420,6 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
 
   // Same as FindUserInList but returns non-const pointer to User object.
   User* FindUserInListAndModify(const AccountId& account_id);
-
-  // Add a new regular user with a Gaia account. Returns the created user.
-  // `user_type` must be kRegular or kChild, which can hold a Gaia account.
-  // The added user is persisted in `local_state_`.
-  User* AddGaiaUser(const AccountId& account_id, UserType user_type);
-
-  // Add a new ephemeral user.
-  // Unlike AddGaiaUser, the created user will not be persisted.
-  User* AddEphemeralUser(const AccountId& account_id, UserType user_type);
-
-  // Add a new guest user.
-  User* AddGuestUser();
-
-  // Add a public account user.
-  User* AddPublicAccountUser(const AccountId& account_id);
 
   // Reads user's oauth token status from local state preferences.
   User::OAuthTokenStatus LoadUserOAuthStatus(const AccountId& account_id) const;

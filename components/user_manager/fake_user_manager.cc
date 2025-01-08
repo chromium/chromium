@@ -73,13 +73,6 @@ User* FakeUserManager::AddUserWithAffiliation(const AccountId& account_id,
   return user;
 }
 
-User* FakeUserManager::AddPublicAccountUser(const AccountId& account_id) {
-  User* user = User::CreatePublicAccountUserForTesting(account_id);
-  user_storage_.emplace_back(user);
-  users_.push_back(user);
-  return user;
-}
-
 UserList FakeUserManager::GetUsersAllowedForMultiUserSignIn() const {
   UserList result;
   for (UserList::const_iterator it = users_.begin(); it != users_.end(); ++it) {
