@@ -5,10 +5,12 @@
 #ifndef CHROME_BROWSER_BOOKMARKS_BOOKMARK_MERGED_SURFACE_SERVICE_H_
 #define CHROME_BROWSER_BOOKMARKS_BOOKMARK_MERGED_SURFACE_SERVICE_H_
 
+#include <functional>
 #include <variant>
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/functional/overloaded.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
@@ -68,12 +70,29 @@ struct BookmarkParentFolder {
   bool HasDirectChildNode(const bookmarks::BookmarkNode* node) const;
 
  private:
+  friend struct std::hash<BookmarkParentFolder>;
   explicit BookmarkParentFolder(
       std::variant<PermanentFolderType, raw_ptr<const bookmarks::BookmarkNode>>
           parent);
 
   std::variant<PermanentFolderType, raw_ptr<const bookmarks::BookmarkNode>>
       bookmark_;
+};
+
+template <>
+struct std::hash<BookmarkParentFolder> {
+  size_t operator()(const BookmarkParentFolder& obj) const {
+    return std::visit(
+        base::Overloaded{
+            [](const BookmarkParentFolder::PermanentFolderType& folder) {
+              return std::hash<BookmarkParentFolder::PermanentFolderType>{}(
+                  folder);
+            },
+            [](const bookmarks::BookmarkNode* node) {
+              return std::hash<const bookmarks::BookmarkNode*>{}(node);
+            }},
+        obj.bookmark_);
+  }
 };
 
 // Used in UI surfaces that combines local and account bookmarks in a merged

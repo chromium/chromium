@@ -87,6 +87,7 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
   }
   const bookmarks::BookmarkModel* GetBookmarkModel() const;
   bookmarks::ManagedBookmarkService* GetManagedBookmarkService();
+  BookmarkMergedSurfaceService* GetBookmarkMergedSurfaceService();
 
   // Returns the menu.
   views::MenuItemView* menu() { return menu_; }
@@ -171,6 +172,10 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
     std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
     GetUnderlyingNodes(
         BookmarkMergedSurfaceService* bookmark_merged_service) const;
+
+    struct Hash {
+      size_t operator()(const BookmarkFolderOrURL& obj) const;
+    };
 
    private:
     static std::variant<BookmarkParentFolder,
