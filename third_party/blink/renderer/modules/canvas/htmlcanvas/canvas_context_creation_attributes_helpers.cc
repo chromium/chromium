@@ -30,11 +30,11 @@ bool ToCanvasContextCreationAttributes(
 #else
   result.desynchronized = attrs->desynchronized();
 #endif
-  switch (attrs->colorType().AsEnum()) {
-    case V8CanvasColorType::Enum::kUnorm8:
+  switch (attrs->pixelFormat().AsEnum()) {
+    case V8CanvasPixelFormat::Enum::kUint8:
       result.pixel_format = CanvasPixelFormat::kUint8;
       break;
-    case V8CanvasColorType::Enum::kFloat16:
+    case V8CanvasPixelFormat::Enum::kFloat16:
       result.pixel_format = CanvasPixelFormat::kF16;
       break;
   }

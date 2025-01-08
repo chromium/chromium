@@ -490,7 +490,7 @@ bool V8ScriptValueSerializer::WriteDOMObject(ScriptWrappable* wrappable,
               kSerializedParametricColorSpaceLength);
     for (const auto& value : bitmap_settings.GetSerializedSkColorSpace())
       WriteDouble(value);
-    WriteUint32Enum(ImageSerializationTag::kImageBitmapPixelFormatTag);
+    WriteUint32Enum(ImageSerializationTag::kCanvasPixelFormatTag);
     WriteUint32Enum(bitmap_settings.GetSerializedPixelFormat());
     WriteUint32Enum(ImageSerializationTag::kCanvasOpacityModeTag);
     WriteUint32Enum(bitmap_settings.GetSerializedOpacityMode());

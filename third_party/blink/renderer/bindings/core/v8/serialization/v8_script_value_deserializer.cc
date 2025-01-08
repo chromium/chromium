@@ -381,7 +381,7 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
                   return nullptr;
               }
               break;
-            case ImageSerializationTag::kImageBitmapPixelFormatTag:
+            case ImageSerializationTag::kCanvasPixelFormatTag:
               if (!ReadUint32Enum<SerializedPixelFormat>(&canvas_pixel_format))
                 return nullptr;
               break;
@@ -468,7 +468,7 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
                       &image_data_storage_format))
                 return nullptr;
               break;
-            case ImageSerializationTag::kImageBitmapPixelFormatTag:
+            case ImageSerializationTag::kCanvasPixelFormatTag:
             case ImageSerializationTag::kOriginCleanTag:
             case ImageSerializationTag::kIsPremultipliedTag:
             case ImageSerializationTag::kCanvasOpacityModeTag:
