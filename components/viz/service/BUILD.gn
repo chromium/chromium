@@ -465,6 +465,8 @@ viz_component("service") {
       "display_embedder/skia_output_device_dcomp.h",
       "display_embedder/software_output_device_win.cc",
       "display_embedder/software_output_device_win.h",
+      "display_embedder/software_output_device_win_base.cc",
+      "display_embedder/software_output_device_win_base.h",
       "frame_sinks/external_begin_frame_source_win.cc",
       "frame_sinks/external_begin_frame_source_win.h",
       "gl/info_collection_gpu_service_impl.cc",
