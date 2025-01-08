@@ -1,13 +1,22 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>backdrop-filter: Clipping should work when browser zoom is not 100%</title>
+<title>backdrop-filter: Clip the filter at border box of element</title>
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel="help" href="https://drafts.fxtf.org/filter-effects-2/#BackdropFilterProperty">
+<link rel="match"  href="backdrop-filter-clip-rect-zoom-ref.html">
+
 <div class="box"></div>
 <div class="navbar">
   <div class="menu"></div>
   <div class="menu2"></div>
 </div>
-
 <style>
+html {
+  zoom:5;
+}
+body {
+  overflow: hidden;
+}
 div {
   position: absolute;
 }
@@ -42,8 +51,7 @@ div {
   border: 2px solid red;
 }
 </style>
+
 <script>
-  if (window.testRunner)
-    testRunner.setPageZoomFactor(1.5);
+  window.scrollTo(0,700);
 </script>
-</html>
