@@ -345,12 +345,6 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
   }
 }
 
-SkColorInfo CanvasRenderingContextHost::GetRenderingContextSkColorInfo() const {
-  return SkColorInfo(GetRenderingContextSkColorType(),
-                     GetRenderingContextAlphaType(),
-                     GetRenderingContextSkColorSpace());
-}
-
 SkAlphaType CanvasRenderingContextHost::GetRenderingContextAlphaType() const {
   return RenderingContext() ? RenderingContext()->GetAlphaType()
                             : kPremul_SkAlphaType;

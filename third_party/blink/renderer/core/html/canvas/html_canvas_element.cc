@@ -625,8 +625,9 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContextInternal(
   if (!IsRenderingContext2D())
     SetNeedsCompositingUpdate();
 
-  SetOpacityMode(GetRenderingContextSkColorInfo().isOpaque() ? kOpaque
-                                                             : kNonOpaque);
+  SetOpacityMode(SkAlphaTypeIsOpaque(GetRenderingContextAlphaType())
+                     ? kOpaque
+                     : kNonOpaque);
 
   return context_.Get();
 }
