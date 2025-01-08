@@ -18,7 +18,6 @@
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/back_forward_transition_animation_manager.h"
 #include "content/public/browser/eye_dropper.h"
 #include "content/public/browser/fullscreen_types.h"
 #include "content/public/browser/invalidate_type.h"
@@ -45,6 +44,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
+#include "content/public/browser/back_forward_transition_animation_manager.h"
 #endif
 
 class GURL;

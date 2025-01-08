@@ -19,6 +19,7 @@
 #include "content/public/browser/web_ui.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/webui/web_ui_util.h"
 
 namespace signin {
