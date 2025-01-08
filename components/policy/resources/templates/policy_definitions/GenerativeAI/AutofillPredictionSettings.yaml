@@ -25,7 +25,7 @@ items:
   name: Disabled
   value: 2
 owners:
-- file://components/autofill_prediction_improvements/OWNERS
+- file://components/autofill_ai/OWNERS
 - file://components/optimization_guide/OWNERS
 schema:
   enum:
