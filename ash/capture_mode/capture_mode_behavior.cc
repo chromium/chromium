@@ -120,12 +120,21 @@ class DefaultBehavior : public CaptureModeBehavior {
   }
   bool CanShowActionButtons() const override { return true; }
   void OnRegionSelectedOrAdjusted() override {
-    if (ShouldShowDefaultActionButtonsAfterRegionSelected() &&
-        features::IsScannerEnabled()) {
-      // Perform text detection to determine whether the copy text and scanner
-      // actions buttons should be shown.
-      CaptureModeController::Get()->PerformCapture(
-          PerformCaptureType::kTextDetection);
+    if (ShouldShowDefaultActionButtonsAfterRegionSelected()) {
+      auto* capture_mode_controller = CaptureModeController::Get();
+      if (features::IsCaptureModeOnDeviceOcrEnabled()) {
+        // Perform text detection to determine whether the copy text and smart
+        // actions buttons should be shown.
+        capture_mode_controller->PerformCapture(
+            PerformCaptureType::kTextDetection);
+      } else if (features::IsScannerEnabled()) {
+        // Show the smart actions button regardless of whether there is text
+        // in the selected area or not.
+        BaseCaptureModeSession* session =
+            capture_mode_controller->capture_mode_session();
+        CHECK(session);
+        session->AddSmartActionsButton();
+      }
     }
   }
 };

@@ -353,6 +353,12 @@ BASE_FEATURE(kCaptureModeEducationBypassLimits,
              "CaptureModeEducationBypassLimits",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables on-device OCR functionality in capture mode, used as part of the
+// Scanner and Sunfish features.
+BASE_FEATURE(kCaptureModeOnDeviceOcr,
+             "CaptureModeOnDeviceOcr",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // If enabled, allow eSIM installation bypass the non-cellular internet
 // connectivity check.
 BASE_FEATURE(kCellularBypassESimInstallationConnectivityCheck,
@@ -3368,6 +3374,13 @@ bool IsCaptureModeEducationEnabled() {
 
 bool IsCaptureModeEducationBypassLimitsEnabled() {
   return base::FeatureList::IsEnabled(kCaptureModeEducationBypassLimits);
+}
+
+bool IsCaptureModeOnDeviceOcrEnabled() {
+  // TODO(crbug.com/384793763): Also enable on-device OCR for the Sunfish
+  // feature.
+  return IsScannerEnabled() &&
+         base::FeatureList::IsEnabled(kCaptureModeOnDeviceOcr);
 }
 
 bool IsCheckPasswordsAgainstCryptohomeHelperEnabled() {

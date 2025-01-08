@@ -187,14 +187,13 @@ class ASH_EXPORT BaseCaptureModeSession : public ui::LayerOwner,
       ActionButtonRank rank,
       ActionButtonViewID id) = 0;
 
+  // Adds an action button that can be clicked to fetch smart actions.
+  virtual void AddSmartActionsButton() = 0;
+
   // Called when Scanner actions have been fetched. This will add action buttons
   // corresponding to `scanner_actions` and stop loading animations if needed.
   virtual void OnScannerActionsFetched(
       std::vector<ScannerActionViewModel> scanner_actions) = 0;
-
-  // Called when text has been detected in the selected region during an active
-  // session.
-  virtual void OnTextDetected() = 0;
 
   // ShellObserver:
   void OnRootWindowWillShutdown(aura::Window* root_window) override;

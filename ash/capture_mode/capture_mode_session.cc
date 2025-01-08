@@ -1436,7 +1436,7 @@ ActionButtonView* CaptureModeSession::AddActionButton(
   return new_action_button_ptr;
 }
 
-void CaptureModeSession::OnTextDetected() {
+void CaptureModeSession::AddSmartActionsButton() {
   if (active_behavior_->CanShowSmartActionsButton()) {
     RecordScannerFeatureUserState(
         ScannerFeatureUserState::kScreenCaptureModeScannerButtonShown);

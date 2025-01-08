@@ -518,7 +518,7 @@ BehaviorType ToBehaviorType(CaptureModeEntryType entry_type) {
 // Returns true if text detection should be performed on a captured image with
 // the given `capture_type`.
 bool ShouldPerformTextDetection(PerformCaptureType capture_type) {
-  return Shell::Get()->scanner_controller() &&
+  return features::IsCaptureModeOnDeviceOcrEnabled() &&
          (capture_type == PerformCaptureType::kSunfish ||
           capture_type == PerformCaptureType::kTextDetection);
 }
@@ -2003,7 +2003,7 @@ void CaptureModeController::OnTextDetectionComplete(
       ActionButtonRank{ActionButtonType::kCopyText, /*weight=*/0},
       ActionButtonViewID::kCopyTextButton);
 
-  capture_mode_session_->OnTextDetected();
+  capture_mode_session_->AddSmartActionsButton();
 }
 
 void CaptureModeController::OnCopyTextButtonClicked(

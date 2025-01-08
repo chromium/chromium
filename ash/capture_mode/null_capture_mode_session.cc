@@ -133,10 +133,10 @@ ActionButtonView* NullCaptureModeSession::AddActionButton(
   return nullptr;
 }
 
+void NullCaptureModeSession::AddSmartActionsButton() {}
+
 void NullCaptureModeSession::OnScannerActionsFetched(
     std::vector<ScannerActionViewModel> scanner_actions) {}
-
-void NullCaptureModeSession::OnTextDetected() {}
 
 void NullCaptureModeSession::InitInternal() {
   layer()->SetName("NullCaptureModeSession");

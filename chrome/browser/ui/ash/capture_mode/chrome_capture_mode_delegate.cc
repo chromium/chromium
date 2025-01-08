@@ -476,7 +476,7 @@ void ChromeCaptureModeDelegate::DetectTextInImage(
     const SkBitmap& image,
     ash::OnTextDetectionComplete callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(ash::features::IsScannerEnabled());
+  CHECK(ash::features::IsCaptureModeOnDeviceOcrEnabled());
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
   if (!profile) {

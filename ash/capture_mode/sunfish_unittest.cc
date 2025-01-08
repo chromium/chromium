@@ -2817,6 +2817,51 @@ TEST_F(ScannerTest, SmartActionsButtonShownForDetectedText) {
                         ActionButtonIsCollapsed())));
 }
 
+// Tests that the smart actions button is shown after region selection if
+// on-device OCR is disabled. In this scenario, the smart actions button is
+// shown regardless of whether the selected area contains text or not.
+TEST_F(ScannerTest, SmartActionsButtonShownWhenOnDeviceOcrDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kCaptureModeOnDeviceOcr);
+
+  auto* controller = CaptureModeController::Get();
+  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+
+  const CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  ASSERT_THAT(
+      session_test_api.GetActionButtons(),
+      ElementsAre(ActionButtonIdIs(ActionButtonViewID::kSmartActionsButton)));
+
+  // Click the smart actions button.
+  base::test::TestFuture<manta::ScannerProvider::ScannerProtoResponseCallback>
+      fetch_actions_future;
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+              FetchActionsForImage)
+      .WillOnce(WithArg<1>(InvokeFuture(fetch_actions_future)));
+  LeftClickOn(session_test_api.GetButtonWithViewID(
+      ActionButtonViewID::kSmartActionsButton));
+  WaitForImageCapturedForSearch(PerformCaptureType::kScanner);
+
+  // Smart actions button should have been removed.
+  EXPECT_THAT(session_test_api.GetActionButtons(), IsEmpty());
+
+  // Simulate a single fetched Scanner action.
+  auto output = std::make_unique<manta::proto::ScannerOutput>();
+  manta::proto::ScannerObject& objects = *output->add_objects();
+  objects.add_actions()->mutable_new_event()->set_title("Event");
+  fetch_actions_future.Take().Run(std::move(output), manta::MantaStatus());
+
+  // Check for a Scanner action button.
+  EXPECT_THAT(
+      session_test_api.GetActionButtons(),
+      ElementsAre(ActionButtonIdIs(ActionButtonViewID::kScannerButton)));
+}
+
 TEST_F(ScannerTest, SmartActionsButtonShownForDetectedTextRecordsHistogram) {
   base::HistogramTester histogram_tester;
   auto* controller = CaptureModeController::Get();
