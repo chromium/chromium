@@ -2641,7 +2641,7 @@ BASE_FEATURE(kBlinkSchedulerDiscreteInputMatchesResponsivenessMetrics,
 
 BASE_FEATURE(kThreadedScrollPreventRenderingStarvation,
              "ThreadedScrollPreventRenderingStarvation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, the usage of unload handlers causes a blocklisted reason for
 // BFCache. The purpose is to capture their source location.

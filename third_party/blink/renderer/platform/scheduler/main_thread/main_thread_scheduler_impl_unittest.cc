@@ -3580,7 +3580,7 @@ TEST_F(MainThreadSchedulerImplTest, RenderBlockingStarvationPrevention) {
 }
 
 TEST_F(MainThreadSchedulerImplTest,
-       RenderBlockingStarvationPreventionDoesNotAffectCompositorGestures) {
+       RenderBlockingStarvationPreventionAffectsCompositorGestures) {
   SimulateEnteringCompositorGestureUseCase();
   SimulateRenderBlockingTask(
       MainThreadSchedulerImpl::kRenderBlockingStarvationThreshold);
@@ -3593,7 +3593,7 @@ TEST_F(MainThreadSchedulerImplTest,
   PostTestTasks(&run_order, "D1 R1 CM1 R2 R3");
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(UseCase::kCompositorGesture, CurrentUseCase());
-  EXPECT_THAT(run_order, testing::ElementsAre("R1", "R2", "R3", "D1", "CM1"));
+  EXPECT_THAT(run_order, testing::ElementsAre("R1", "CM1", "R2", "R3", "D1"));
 }
 
 TEST_F(MainThreadSchedulerImplTest, DetachRunningTaskQueue) {
