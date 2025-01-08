@@ -10326,9 +10326,8 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="WebDatabase.AutofillAccountStorageWithReason"
-    enum="WebDatabaseAutofillAccountStorageWithReason"
-    expires_after="2025-04-12">
+<histogram name="WebDatabase.AutofillAccountStorage"
+    enum="WebDatabaseAutofillAccountStorageResult" expires_after="2025-04-12">
   <owner>mastiz@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
