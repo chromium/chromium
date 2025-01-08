@@ -1511,27 +1511,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.VideoProcessorBlt.{Extension}.{State}" enum="Hresult"
-    expires_after="2024-09-15">
-  <owner>magchen@chromium.org</owner>
-  <owner>zmo@chromium.org</owner>
-  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
-  <summary>
-    Records HRESULT for VideoProcessorBlt. This metric is recorded when
-    processing a video stream in DirectComposition with {Extension} {State}.
-  </summary>
-  <token key="Extension">
-    <variant name="VpAutoHDR" summary="Video Processor Auto HDR"/>
-    <variant name="VpSuperResolution"
-        summary="Video Processor Super Resolution"/>
-  </token>
-  <token key="State">
-    <variant name="Off" summary="off"/>
-    <variant name="On" summary="on"/>
-    <variant name="RetryOffAfterError" summary="retry off after blt error"/>
-  </token>
-</histogram>
-
 <histogram name="GPU.Vulkan.ExtMemoryBudgetSupported" enum="BooleanSupported"
     expires_after="2024-06-30">
   <owner>vikassoni@chromium.org</owner>
