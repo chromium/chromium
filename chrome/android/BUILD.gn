@@ -4077,7 +4077,6 @@ chrome_common_shared_library("libchromefortest") {
     ":browser_test_support",
     ":chrome_test_util",
     "//base/test:test_support",
-    "//chrome:chrome_android_core",
     "//chrome/browser/android/metrics:ukm_utils_for_test",
     "//chrome/browser/password_manager/android:test_support",
     "//chrome/browser/subresource_filter:android_test_support",
