@@ -145,9 +145,12 @@ void SavedTabGroupUtils::UngroupSavedGroup(const Browser* browser,
       browser, group->local_group_id().value());
 
   if (tab_groups::IsTabGroupsSaveV2Enabled()) {
+    const bool closing_multiple_tabs = group->saved_tabs().size() > 1;
+    DeletionDialogController::DialogMetadata dialog_metadata(
+        DeletionDialogController::DialogType::UngroupSingle,
+        /*closing_group_count=*/1, closing_multiple_tabs);
     browser->tab_group_deletion_dialog_controller()->MaybeShowDialog(
-        tab_groups::DeletionDialogController::DialogType::UngroupSingle,
-        std::move(ungroup_callback), group->saved_tabs().size(), 1);
+        dialog_metadata, std::move(ungroup_callback));
   } else {
     std::move(ungroup_callback).Run();
   }
@@ -194,9 +197,12 @@ void SavedTabGroupUtils::DeleteSavedGroup(const Browser* browser,
       browser, saved_group_guid);
 
   if (tab_groups::IsTabGroupsSaveV2Enabled()) {
+    DeletionDialogController::DialogMetadata dialog_metadata(
+        DeletionDialogController::DialogType::DeleteSingle,
+        /*closing_group_count=*/1,
+        /*closing_multiple_tabs=*/group->saved_tabs().size() > 1);
     browser->tab_group_deletion_dialog_controller()->MaybeShowDialog(
-        tab_groups::DeletionDialogController::DialogType::DeleteSingle,
-        std::move(close_callback), group->saved_tabs().size(), 1);
+        dialog_metadata, std::move(close_callback));
   } else {
     std::move(close_callback).Run();
   }
@@ -230,7 +236,7 @@ void SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
   // Check to see if any of the groups are saved. If so then show the dialog,
   // else, just perform the callback. Also count the number of group and tabs.
   int num_saved_tabs = 0;
-  int num_saved_groups = 0;
+  int closing_group_count = 0;
   for (const auto& group : group_ids) {
     const std::optional<SavedTabGroup> saved_group =
         tab_group_service->GetGroup(group);
@@ -239,12 +245,14 @@ void SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
     }
 
     num_saved_tabs += saved_group->saved_tabs().size();
-    ++num_saved_groups;
+    ++closing_group_count;
   }
 
-  if (num_saved_groups > 0) {
-    dialog_controller->MaybeShowDialog(type, std::move(callback),
-                                       num_saved_tabs, num_saved_groups);
+  if (closing_group_count > 0) {
+    DeletionDialogController::DialogMetadata dialog_metadata(
+        type, closing_group_count,
+        /*closing_multiple_tabs=*/num_saved_tabs > 1);
+    dialog_controller->MaybeShowDialog(dialog_metadata, std::move(callback));
     return;
   }
 }

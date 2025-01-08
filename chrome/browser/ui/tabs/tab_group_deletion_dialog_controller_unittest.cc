@@ -15,12 +15,14 @@
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/test/test_dialog_model_host.h"
 
+using DeletionDialogController = tab_groups::DeletionDialogController;
+
 class DeletionDialogControllerUnitTest : public testing::Test {
  public:
   void SetUp() override {
     TestingProfile::Builder profile_builder;
     profile_ = profile_builder.Build();
-    controller_ = std::make_unique<tab_groups::DeletionDialogController>(
+    controller_ = std::make_unique<DeletionDialogController>(
         profile_.get(),
         base::BindRepeating(&DeletionDialogControllerUnitTest::ShowDialogFn,
                             base::Unretained(this)));
@@ -35,13 +37,14 @@ class DeletionDialogControllerUnitTest : public testing::Test {
 
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<ui::TestDialogModelHost> dialog_host_;
-  std::unique_ptr<tab_groups::DeletionDialogController> controller_;
+  std::unique_ptr<DeletionDialogController> controller_;
 };
 
 TEST_F(DeletionDialogControllerUnitTest, OnWidgetDestroyedDestroysState) {
   controller_->MaybeShowDialog(
-      tab_groups::DeletionDialogController::DialogType::DeleteSingle,
-      base::DoNothing(), 1, 1);
+      DeletionDialogController::DialogMetadata(
+          DeletionDialogController::DialogType::DeleteSingle),
+      base::DoNothing());
   EXPECT_TRUE(controller_->IsShowingDialog());
 
   // Force the host to kill the DialogModel.
