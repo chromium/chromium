@@ -89,7 +89,7 @@ public class CastWebContentsComponentTest {
     }
 
     @Test
-    @Config(minSdk = VERSION_CODES.R)
+    @Config(sdk = VERSION_CODES.R)
     public void testStartStartsWebContentsActivityWithDisplayId() {
         ContextWrapper context =
                 Mockito.spy(new ContextWrapper(ContextUtils.getApplicationContext()) {

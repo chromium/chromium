@@ -266,4 +266,10 @@
     <property name="format" value="ontext\(?\)?\s*\.getResources\(\)\s*\.getString\("/>
     <property name="message" value="Use Context.getString() rather than Context.getResources().getString()."/>
   </module>
+  <module name="RegexpMultiline">
+    <property name="id" value="RobolecticMinSdk"/>
+    <property name="severity" value="warning"/>
+    <property name="format" value="@Config\([^)]*minSdk\s*="/>
+    <property name="message" value="@Config(minSdk=...) parameterizes tests across every SDK level >= the given one. Use @Config(sdk=Build.VERSION_CODES.FOO) or @Config(sdk='{'Build.VERSION_CODES.A, Build.VERSION_CODES.B, ...})"/>
+  </module>
 </module>

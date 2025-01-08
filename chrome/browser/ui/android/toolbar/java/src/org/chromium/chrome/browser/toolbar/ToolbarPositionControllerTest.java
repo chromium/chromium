@@ -311,7 +311,7 @@ public class ToolbarPositionControllerTest {
     }
 
     @Test
-    @Config(qualifiers = "sw400dp", minSdk = android.os.Build.VERSION_CODES.R)
+    @Config(qualifiers = "sw400dp", sdk = android.os.Build.VERSION_CODES.R)
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
     public void testIsToolbarPositionCustomizationEnabled_foldable() {
         ShadowPackageManager shadowPackageManager = Shadows.shadowOf(mContext.getPackageManager());

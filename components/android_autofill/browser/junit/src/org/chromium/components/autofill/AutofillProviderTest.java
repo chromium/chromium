@@ -245,7 +245,7 @@ public class AutofillProviderTest {
     }
 
     @Test
-    @Config(minSdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void testSendingPrefillRequestUsesCorrectHints() {
         FormFieldDataBuilder field1Builder = new FormFieldDataBuilder();
@@ -265,7 +265,7 @@ public class AutofillProviderTest {
     }
 
     @Test
-    @Config(minSdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void testStartSessionWithPrefillRequestWithShowingBottomSheet() {
         int focus = 1;
@@ -296,7 +296,7 @@ public class AutofillProviderTest {
     }
 
     @Test
-    @Config(minSdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void testStartSessionWithPrefillRequestWithoutShowingBottomSheet() {
         int focus = 1;
@@ -328,7 +328,7 @@ public class AutofillProviderTest {
     }
 
     @Test
-    @Config(minSdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void
             testStartSessionWithPrefillRequestWithoutShowingBottomSheetAndNoAutofillStructure() {
@@ -360,7 +360,7 @@ public class AutofillProviderTest {
     }
 
     @Test
-    @Config(minSdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void testStartSessionWithDifferentSessionIdThanPrefillRequest() {
         int focus = 1;

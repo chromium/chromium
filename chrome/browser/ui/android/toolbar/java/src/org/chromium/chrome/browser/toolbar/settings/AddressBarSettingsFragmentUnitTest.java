@@ -149,7 +149,7 @@ public class AddressBarSettingsFragmentUnitTest {
 
     @Test
     @SmallTest
-    @Config(minSdk = android.os.Build.VERSION_CODES.R)
+    @Config(sdk = android.os.Build.VERSION_CODES.R)
     public void testFoldable() {
         ShadowPackageManager shadowPackageManager =
                 Shadows.shadowOf(ContextUtils.getApplicationContext().getPackageManager());
