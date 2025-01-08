@@ -21,6 +21,7 @@ class GURL;
 class Profile;
 
 class RecentActivityRowView;
+class RecentActivityRowImageView;
 
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kRecentActivityBubbleDialogId);
 
@@ -59,6 +60,8 @@ class RecentActivityRowView : public views::View {
                         Profile* profile);
   ~RecentActivityRowView() override;
 
+  RecentActivityRowImageView* image_view() const { return image_view_; }
+
   const std::u16string& activity_text() const { return activity_text_; }
 
   const std::u16string& metadata_text() const { return metadata_text_; }
@@ -66,6 +69,7 @@ class RecentActivityRowView : public views::View {
  private:
   std::u16string activity_text_;
   std::u16string metadata_text_;
+  raw_ptr<RecentActivityRowImageView> image_view_ = nullptr;
 };
 
 // View containing the avatar image and, if the event refers to a tab, the
@@ -78,14 +82,28 @@ class RecentActivityRowImageView : public views::View {
                              Profile* profile);
   ~RecentActivityRowImageView() override;
 
+  // Returns whether there is an avatar image to show.
+  bool ShouldShowAvatar() const { return !avatar_image_.isNull(); }
+
+  // Returns whether there is a favicon image to show.
+  bool ShouldShowFavicon() const { return !resized_favicon_image_.isNull(); }
+
  private:
+  // views::View
+  void OnPaint(gfx::Canvas* canvas) override;
+
   // Perform the avatar fetch, calling |SetAvatar| when complete.
   void FetchAvatar();
   void SetAvatar(const gfx::Image& avatar);
 
-  raw_ptr<views::ImageView> avatar_image_ = nullptr;
-  base::CancelableTaskTracker cancelable_task_tracker_;
+  // Perform the favicon fetch, calling |SetFavicon| when complete.
+  void FetchFavicon();
+  void SetFavicon(const favicon_base::FaviconImageResult& favicon);
+  void PaintFavicon(gfx::Canvas* canvas, gfx::Rect avatar_bounds);
 
+  base::CancelableTaskTracker favicon_fetching_task_tracker_;
+  gfx::ImageSkia avatar_image_;
+  gfx::ImageSkia resized_favicon_image_;
   collaboration::messaging::ActivityLogItem item_;
   const raw_ptr<Profile> profile_ = nullptr;
 };

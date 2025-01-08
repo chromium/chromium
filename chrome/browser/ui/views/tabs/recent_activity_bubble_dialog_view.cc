@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/tabs/recent_activity_bubble_dialog_view.h"
 
 #include "base/i18n/message_formatter.h"
+#include "base/i18n/rtl.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -28,32 +30,27 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
+#include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/view_utils.h"
 
 using collaboration::messaging::ActivityLogItem;
-using collaboration::messaging::ActivityLogQueryParams;
-using collaboration::messaging::CollaborationEvent;
-using collaboration::messaging::MessagingBackendServiceFactory;
 
 namespace {
 
 // Unicode value for a bullet point.
 constexpr std::u16string kBulletPoint = u"\u2022";
-
-// Gets the string for the activity line to describe an event.
-std::u16string GetActivityText(ActivityLogItem item) {
-  return item.title_text;
-}
 
 // Returns the correct user that should be used for a given log item.
 // Sometimes the string should describe the user that triggered an event
@@ -125,7 +122,7 @@ RecentActivityBubbleDialogView::RecentActivityBubbleDialogView(
   // Activity log should never be empty. This bubble dialog is triggered
   // by an entrypoint that only exists if a message was delivered.
   CHECK(!activity_log.empty());
-  auto num_rows =
+  const auto num_rows =
       std::min(static_cast<int>(activity_log.size()), kMaxNumberRows);
   for (int i = 0; i < num_rows; i++) {
     auto item = activity_log.at(i);
@@ -151,13 +148,14 @@ RecentActivityRowView::RecentActivityRowView(ActivityLogItem item,
   SetProperty(views::kMarginsKey, ChromeLayoutProvider::Get()->GetInsetsMetric(
                                       INSETS_RECENT_ACTIVITY_ROW_MARGIN));
 
-  AddChildView(std::make_unique<RecentActivityRowImageView>(item, profile));
+  image_view_ =
+      AddChildView(std::make_unique<RecentActivityRowImageView>(item, profile));
 
   auto* label_container = AddChildView(std::make_unique<views::View>());
   label_container->SetLayoutManager(
       std::make_unique<views::BoxLayout>(views::LayoutOrientation::kVertical));
 
-  activity_text_ = GetActivityText(item);
+  activity_text_ = item.title_text;
   auto* activity_label =
       label_container->AddChildView(std::make_unique<views::Label>());
   activity_label->SetText(activity_text_);
@@ -182,17 +180,36 @@ RecentActivityRowImageView::RecentActivityRowImageView(ActivityLogItem item,
     : item_(item), profile_(profile) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal));
-
   SetProperty(views::kMarginsKey, ChromeLayoutProvider::Get()->GetInsetsMetric(
                                       INSETS_RECENT_ACTIVITY_IMAGE_MARGIN));
-  int size = ChromeLayoutProvider::Get()->GetDistanceMetric(
+
+  const int avatar_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_RECENT_ACTIVITY_AVATAR_SIZE);
-  SetPreferredSize(gfx::Size(size, size));
+  const int favicon_container_radius =
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          DISTANCE_RECENT_ACTIVITY_FAVICON_CONTAINER_RADIUS);
+  const int favicon_container_offset =
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          DISTANCE_RECENT_ACTIVITY_FAVICON_CONTAINER_OFFSET_FROM_AVATAR);
 
-  avatar_image_ = AddChildView(std::make_unique<views::ImageView>());
+  // The favicon container hangs halfway off the avatar image less the
+  // container offset, which moves the container towards the avatar image.
+  const int favicon_container_x_overhang =
+      favicon_container_radius - favicon_container_offset;
+
+  // The favicon container aligns at the bottom of the avatar before
+  // being moved down by the container offset.
+  const int favicon_container_y_overhang = favicon_container_offset;
+
+  // The complete dimensions for the avatar/favicon include the avatar
+  // image diameter plus the overhang of the favicon container.
+  SetPreferredSize(gfx::Size(avatar_size + favicon_container_x_overhang,
+                             avatar_size + favicon_container_y_overhang));
+
   FetchAvatar();
-
-  // TODO(crbug.com/384466393): Add favicon to RecentActivity dialog
+  if (item.show_favicon) {
+    FetchFavicon();
+  }
 }
 
 RecentActivityRowImageView::~RecentActivityRowImageView() = default;
@@ -226,7 +243,141 @@ void RecentActivityRowImageView::FetchAvatar() {
 }
 
 void RecentActivityRowImageView::SetAvatar(const gfx::Image& avatar) {
-  avatar_image_->SetImage(ui::ImageModel::FromImage(avatar));
+  avatar_image_ = avatar.AsImageSkia();
+  SchedulePaint();
+}
+
+void RecentActivityRowImageView::FetchFavicon() {
+  if (auto tab_metadata = item_.activity_metadata.tab_metadata) {
+    if (auto url = tab_metadata->last_known_url) {
+      // Note: Favicons are only loaded if they exist in the favicon
+      // database, i.e. you've visited this site before.
+      // TODO(crbug.com/386766083): Fallback to host for loading favicons
+      favicon::FaviconService* favicon_service =
+          FaviconServiceFactory::GetForProfile(
+              profile_, ServiceAccessType::EXPLICIT_ACCESS);
+
+      favicon_service->GetFaviconImageForPageURL(
+          GURL(url.value()),
+          base::BindOnce(&RecentActivityRowImageView::SetFavicon,
+                         base::Unretained(this)),
+          &favicon_fetching_task_tracker_);
+    }
+  }
+}
+
+void RecentActivityRowImageView::SetFavicon(
+    const favicon_base::FaviconImageResult& favicon) {
+  const int favicon_container_radius =
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          DISTANCE_RECENT_ACTIVITY_FAVICON_CONTAINER_RADIUS);
+  const int favicon_container_padding =
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          DISTANCE_RECENT_ACTIVITY_FAVICON_CONTAINER_PADDING);
+
+  // Diameter of the favicon after resizing to fit the container.
+  const int resized_favicon_size =
+      (favicon_container_radius - favicon_container_padding) * 2;
+
+  // Resize the favicon image to fit in the circle.
+  resized_favicon_image_ = gfx::ImageSkiaOperations::CreateResizedImage(
+      favicon.image.AsImageSkia(),
+      skia::ImageOperations::ResizeMethod::RESIZE_GOOD,
+      gfx::Size(resized_favicon_size, resized_favicon_size));
+
+  SchedulePaint();
+}
+
+void RecentActivityRowImageView::PaintFavicon(gfx::Canvas* canvas,
+                                              gfx::Rect avatar_bounds) {
+  const int favicon_container_radius =
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          DISTANCE_RECENT_ACTIVITY_FAVICON_CONTAINER_RADIUS);
+  const int favicon_container_border_width =
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          DISTANCE_RECENT_ACTIVITY_FAVICON_CONTAINER_BORDER_WIDTH);
+  const int favicon_container_padding =
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          DISTANCE_RECENT_ACTIVITY_FAVICON_CONTAINER_PADDING);
+  const int favicon_container_offset =
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          DISTANCE_RECENT_ACTIVITY_FAVICON_CONTAINER_OFFSET_FROM_AVATAR);
+
+  // Radius of the favicon to fit the container.
+  const int resized_favicon_radius =
+      favicon_container_radius - favicon_container_padding;
+
+  // Diameter of the favicon.
+  const int resized_favicon_size = resized_favicon_radius * 2;
+
+  // The favicon container, its border, and the favicon image all center
+  // around this point.
+  gfx::Point favicon_center = base::i18n::IsRTL()
+                                  ? avatar_bounds.bottom_left()
+                                  : avatar_bounds.bottom_right();
+
+  // Offset favicon center so avatar and favicon container align at bottom edge.
+  favicon_center.Offset(0, -favicon_container_radius);
+
+  // Additional favicon container offset from avatar.
+  favicon_center.Offset(
+      // Move x value toward avatar center (rtl: toward right, ltr: toward
+      // left).
+      base::i18n::IsRTL() ? favicon_container_offset
+                          : -favicon_container_offset,
+      // Move y value away from avatar.
+      favicon_container_offset);
+
+  // Clear a circle in the avatar to fit the favicon container with an
+  // empty border.
+  cc::PaintFlags clear_flags;
+  clear_flags.setAntiAlias(true);
+  clear_flags.setBlendMode(SkBlendMode::kClear);
+  canvas->DrawCircle(favicon_center,
+                     favicon_container_radius + favicon_container_border_width,
+                     clear_flags);
+
+  // Draw the favicon container with a background.
+  cc::PaintFlags indicator_flags;
+  indicator_flags.setColor(GetColorProvider()->GetColor(
+      kColorSharingRecentActivityDialogFaviconContainer));
+  indicator_flags.setAntiAlias(true);
+  canvas->DrawCircle(favicon_center, favicon_container_radius, indicator_flags);
+
+  // Set the bounds of the favicon based off the center point.
+  gfx::Rect resized_favicon_bounds(favicon_center.x() - resized_favicon_radius,
+                                   favicon_center.y() - resized_favicon_radius,
+                                   resized_favicon_size, resized_favicon_size);
+
+  // Draw the resized favicon image.
+  canvas->DrawImageInt(
+      resized_favicon_image_, 0, 0, resized_favicon_size, resized_favicon_size,
+      resized_favicon_bounds.x(), resized_favicon_bounds.y(),
+      resized_favicon_bounds.width(), resized_favicon_bounds.height(), false);
+}
+
+void RecentActivityRowImageView::OnPaint(gfx::Canvas* canvas) {
+  if (!ShouldShowAvatar()) {
+    // Nothing should be painted as the avatar is loading.
+    return;
+  }
+
+  gfx::Rect contents_bounds = GetContentsBounds();
+  const int avatar_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_RECENT_ACTIVITY_AVATAR_SIZE);
+
+  // Set the bounds of the avatar based off the container.
+  gfx::Rect avatar_bounds(contents_bounds.x(), contents_bounds.y(), avatar_size,
+                          avatar_size);
+
+  // Draw the avatar image.
+  canvas->DrawImageInt(avatar_image_, 0, 0, avatar_size, avatar_size,
+                       avatar_bounds.x(), avatar_bounds.y(),
+                       avatar_bounds.width(), avatar_bounds.height(), false);
+
+  if (ShouldShowFavicon()) {
+    PaintFavicon(canvas, avatar_bounds);
+  }
 }
 
 BEGIN_METADATA(RecentActivityRowImageView)

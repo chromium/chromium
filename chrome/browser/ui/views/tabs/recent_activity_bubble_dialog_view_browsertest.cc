@@ -141,7 +141,7 @@ std::vector<ActivityLogItem> CreateMockActivityLog(int n) {
 }
 }  // namespace
 
-class RecentActivityBubbleDialogViewUnitTest : public DialogBrowserTest {
+class RecentActivityBubbleDialogViewBrowserTest : public DialogBrowserTest {
  public:
   void ShowUi(const std::string& name) override {
     std::vector<ActivityLogItem> activity_log;
@@ -196,22 +196,23 @@ class RecentActivityBubbleDialogViewUnitTest : public DialogBrowserTest {
   std::unique_ptr<RecentActivityBubbleCoordinator> bubble_coordinator_;
 };
 
-IN_PROC_BROWSER_TEST_F(RecentActivityBubbleDialogViewUnitTest,
+IN_PROC_BROWSER_TEST_F(RecentActivityBubbleDialogViewBrowserTest,
                        InvokeUi_WithOneItem) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(RecentActivityBubbleDialogViewUnitTest,
+IN_PROC_BROWSER_TEST_F(RecentActivityBubbleDialogViewBrowserTest,
                        InvokeUi_WithFullList) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(RecentActivityBubbleDialogViewUnitTest,
+IN_PROC_BROWSER_TEST_F(RecentActivityBubbleDialogViewBrowserTest,
                        InvokeUi_WithTooManyItems) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(RecentActivityBubbleDialogViewUnitTest, ShowsAllTypes) {
+IN_PROC_BROWSER_TEST_F(RecentActivityBubbleDialogViewBrowserTest,
+                       ShowsAllTypes) {
   auto activity_log = CreateMockActivityLogWithAllTypes();
   ShowLog(activity_log);
 

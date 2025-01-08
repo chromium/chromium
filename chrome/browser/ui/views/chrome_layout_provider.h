@@ -151,6 +151,17 @@ enum ChromeDistanceMetric {
   DISTANCE_TOAST_BUBBLE_BROWSER_WINDOW_MARGIN,
   // Size to use for avatars in the Recent Activity dialog.
   DISTANCE_RECENT_ACTIVITY_AVATAR_SIZE,
+  // Size to use for favicon containers in the Recent Activity dialog.
+  DISTANCE_RECENT_ACTIVITY_FAVICON_CONTAINER_RADIUS,
+  // Width of the empty border around favicon containers in the Recent Activity
+  // dialog.
+  DISTANCE_RECENT_ACTIVITY_FAVICON_CONTAINER_BORDER_WIDTH,
+  // Width of the padding inside favicon containers in the Recent Activity
+  // dialog.
+  DISTANCE_RECENT_ACTIVITY_FAVICON_CONTAINER_PADDING,
+  // Distance to offset favicon containers from the avatar in the Recent
+  // Activity dialog.
+  DISTANCE_RECENT_ACTIVITY_FAVICON_CONTAINER_OFFSET_FROM_AVATAR,
 };
 
 class ChromeLayoutProvider : public views::LayoutProvider {
