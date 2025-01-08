@@ -111,7 +111,7 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*hard_sigmoid_input=*/{},
        /*hard_swish_input=*/{},
        /*instance_normalization_input=*/DataTypeConstraint::kFloat16To32,
-       /*layer_normalization_input=*/{},
+       /*layer_normalization_input=*/DataTypeConstraint::kFloat16To32,
        /*leaky_relu_input=*/{},
        /*linear_input=*/{},
        /*lstm_input=*/{},

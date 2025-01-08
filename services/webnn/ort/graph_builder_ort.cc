@@ -4,6 +4,8 @@
 
 #include "services/webnn/ort/graph_builder_ort.h"
 
+#include <numeric>
+
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -61,6 +63,7 @@ constexpr char kOpTypeConv2d[] = "Conv";
 constexpr char kOpTypeExpand[] = "Expand";
 constexpr char kOpTypeGemm[] = "Gemm";
 constexpr char kOpTypeInstanceNormalization[] = "InstanceNormalization";
+constexpr char kOpTypeLayerNormalization[] = "LayerNormalization";
 constexpr char kOpTypeMatMul[] = "MatMul";
 
 // Pooling operations
@@ -733,6 +736,146 @@ GraphBuilderOrt::AddInstanceNormalizationOperation(
   return base::ok();
 }
 
+[[nodiscard]] base::expected<void, mojom::ErrorPtr>
+GraphBuilderOrt::AddLayerNormalizationOperation(
+    const mojom::LayerNormalization& layer_normalization) {
+  const OperandDataType input_data_type =
+      GetOperand(layer_normalization.input_operand_id).descriptor.data_type();
+
+  const std::string input_name =
+      GetOperandName(layer_normalization.input_operand_id);
+  std::vector<const char*> input_names = {input_name.c_str()};
+  const std::vector<uint32_t>& input_shape =
+      GetOperand(layer_normalization.input_operand_id).descriptor.shape();
+
+  const std::string node_name = GetNodeName(layer_normalization.label);
+  const std::string output_name =
+      GetOperandName(layer_normalization.output_operand_id);
+  std::array<const char*, 1> output_names = {output_name.c_str()};
+
+  auto axes = layer_normalization.axes;
+  // ONNX doesn't support empty axes. When axes is empty, the mean equals to
+  // input, output = bias + (scale * 0)
+  if (axes.empty()) {
+    if (layer_normalization.bias_operand_id) {
+      base::CheckedNumeric<uint32_t> checked_input_size =
+          std::accumulate(input_shape.begin(), input_shape.end(),
+                          base::CheckedNumeric<uint32_t>(1), std::multiplies());
+      if (!checked_input_size.IsValid()) {
+        return NewNotSupportedError("The size of input is too large.");
+      }
+      std::string zero_name;
+      switch (input_data_type) {
+        case OperandDataType::kFloat16: {
+          std::vector<uint16_t> zero_data_fp16(checked_input_size.ValueOrDie(),
+                                               fp16_ieee_from_fp32_value(0.0f));
+          zero_name = CreateInitializer<uint16_t>(input_shape, zero_data_fp16,
+                                                  input_data_type);
+          break;
+        }
+        case OperandDataType::kFloat32: {
+          std::vector<float> zero_data(checked_input_size.ValueOrDie(), 0.0f);
+          zero_name =
+              CreateInitializer<float>(input_shape, zero_data, input_data_type);
+          break;
+        }
+        default:
+          NOTREACHED() << "[WebNN] InstanceNormalization only supports float32 "
+                          "and float16 data type.";
+      }
+      const std::string bias_name =
+          GetOperandName(layer_normalization.bias_operand_id.value());
+      std::array<const char*, 2> binary_input_names = {bias_name.c_str(),
+                                                       zero_name.c_str()};
+      model_builder_.AddNode(kOpTypeAdd, node_name, binary_input_names,
+                             output_names);
+    } else {
+      std::array<const char*, 2> binary_input_names = {input_name.c_str(),
+                                                       input_name.c_str()};
+      model_builder_.AddNode(kOpTypeSub, node_name, binary_input_names,
+                             output_names);
+    }
+    return base::ok();
+  }
+
+  // TODO: crbug.com/356905058: Figure out if unordered axes should be allowed.
+  if (!base::ranges::is_sorted(axes)) {
+    return NewNotSupportedError("Axes must be ordered for layerNormalization.");
+  }
+  const auto axes_size = axes.size();
+  // Here we only check beginning and ending of the ascending sorted axes,
+  // because the blink validation code ensures axes not having duplicated
+  // values.
+  // TODO: support inconsecutive axes by emulation -
+  // https://github.com/shiyi9801/chromium/issues/69.
+  if (axes[axes_size - 1] != input_shape.size() - 1 ||
+      axes[0] != input_shape.size() - axes_size) {
+    return NewNotSupportedError(
+        "ONNX LayerNormalization only supports last consecutive dimensions "
+        "as axes.");
+  }
+  uint32_t axis = axes[0];
+  std::string scale_name;
+  base::CheckedNumeric<uint32_t> checked_scale_size =
+      std::accumulate(input_shape.begin() + axis, input_shape.end(),
+                      base::CheckedNumeric<uint32_t>(1), std::multiplies());
+  if (!checked_scale_size.IsValid()) {
+    return NewNotSupportedError("The size of scale is too large.");
+  }
+
+  std::vector<uint32_t> scale_dims;
+  scale_dims.reserve(axes_size);
+  base::ranges::transform(
+      axes, std::back_inserter(scale_dims),
+      [&input_shape](uint32_t axis) { return input_shape[axis]; });
+
+  if (layer_normalization.scale_operand_id) {
+    scale_name = GetOperandName(layer_normalization.scale_operand_id.value());
+    input_names.push_back(scale_name.c_str());
+  } else {
+    switch (input_data_type) {
+      case OperandDataType::kFloat16: {
+        std::vector<uint16_t> scale_data_fp16(checked_scale_size.ValueOrDie(),
+                                              fp16_ieee_from_fp32_value(1.0f));
+        scale_name = CreateInitializer<uint16_t>(scale_dims, scale_data_fp16,
+                                                 input_data_type);
+        break;
+      }
+      case OperandDataType::kFloat32: {
+        std::vector<float> scale_data(checked_scale_size.ValueOrDie(), 1.0f);
+        scale_name =
+            CreateInitializer<float>(scale_dims, scale_data, input_data_type);
+        break;
+      }
+      default:
+        NOTREACHED() << "[WebNN] LayerNormalization only supports float32 "
+                        "and float16 data type.";
+    }
+
+    input_names.push_back(scale_name.c_str());
+  }
+
+  std::string bias_name;
+  if (layer_normalization.bias_operand_id) {
+    bias_name = GetOperandName(layer_normalization.bias_operand_id.value());
+    input_names.push_back(bias_name.c_str());
+  }
+
+  ScopedOrtOpAttrPtr attr_axis;
+  model_builder_.CreateAttribute(attr_axis, /*name=*/"axis",
+                                 base::checked_cast<int64_t>(axis));
+  ScopedOrtOpAttrPtr attr_epsilon;
+  model_builder_.CreateAttribute(attr_epsilon, /*name=*/"epsilon",
+                                 layer_normalization.epsilon);
+
+  std::array<OrtOpAttr*, 2> attributes = {attr_axis, attr_epsilon};
+
+  model_builder_.AddNode(kOpTypeLayerNormalization, node_name, input_names,
+                         output_names, attributes);
+
+  return base::ok();
+}
+
 void GraphBuilderOrt::AddLogicalNotOperation(
     const mojom::ElementWiseUnary& logical_not) {}
 
@@ -1068,6 +1211,11 @@ GraphBuilderOrt::BuildModel() {
             *operation->get_instance_normalization()));
         break;
       }
+      case mojom::Operation::Tag::kLayerNormalization: {
+        RETURN_IF_ERROR(AddLayerNormalizationOperation(
+            *operation->get_layer_normalization()));
+        break;
+      }
       case mojom::Operation::Tag::kMatmul: {
         AddMatMulOperation(*operation->get_matmul());
         break;
@@ -1118,7 +1266,6 @@ GraphBuilderOrt::BuildModel() {
       case mojom::Operation::Tag::kGruCell:
       case mojom::Operation::Tag::kHardSigmoid:
       case mojom::Operation::Tag::kHardSwish:
-      case mojom::Operation::Tag::kLayerNormalization:
       case mojom::Operation::Tag::kLeakyRelu:
       case mojom::Operation::Tag::kLinear:
       case mojom::Operation::Tag::kLstm:

@@ -142,6 +142,9 @@ class GraphBuilderOrt {
   [[nodiscard]] base::expected<void, mojom::ErrorPtr>
   AddInstanceNormalizationOperation(
       const mojom::InstanceNormalization& instance_normalization);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr>
+  AddLayerNormalizationOperation(
+      const mojom::LayerNormalization& layer_normalization);
   void AddLogicalNotOperation(const mojom::ElementWiseUnary& logical_not);
   void AddMatMulOperation(const mojom::Matmul& matmul);
   void AddPool2dOperation(const mojom::Pool2d& pool2d);
