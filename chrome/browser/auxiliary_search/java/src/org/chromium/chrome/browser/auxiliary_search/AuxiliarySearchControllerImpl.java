@@ -46,7 +46,6 @@ public class AuxiliarySearchControllerImpl
     private @NonNull ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private boolean mHasDeletingTask;
     private int mTaskFinishedCount;
-    private boolean mSharedTabsWithOsState;
 
     @VisibleForTesting
     public AuxiliarySearchControllerImpl(
@@ -66,10 +65,6 @@ public class AuxiliarySearchControllerImpl
                 sAndroidAppIntegrationWithFaviconZeroStateFaviconNumber.getValue();
         mDefaultFaviconSize = AuxiliarySearchUtils.getFaviconSize(mContext.getResources());
 
-        mSharedTabsWithOsState = AuxiliarySearchUtils.isShareTabsWithOsEnabled();
-        if (mSharedTabsWithOsState) {
-            initDonor();
-        }
         AuxiliarySearchConfigManager.getInstance().addListener(this);
     }
 
@@ -86,7 +81,7 @@ public class AuxiliarySearchControllerImpl
                 context,
                 profile,
                 new AuxiliarySearchProvider(context, profile, tabModelSelector),
-                new AuxiliarySearchDonor(context),
+                AuxiliarySearchDonor.getInstance(),
                 new FaviconHelper());
     }
 
@@ -101,8 +96,6 @@ public class AuxiliarySearchControllerImpl
 
     @Override
     public void onResumeWithNative() {
-        if (!mSharedTabsWithOsState) return;
-
         deleteAllTabs();
     }
 
@@ -119,9 +112,7 @@ public class AuxiliarySearchControllerImpl
             mActivityLifecycleDispatcher.unregister(this);
             mActivityLifecycleDispatcher = null;
         }
-        if (mDonor != null) {
-            mDonor.destroy();
-        }
+
         mFaviconHelper.destroy();
     }
 
@@ -131,7 +122,7 @@ public class AuxiliarySearchControllerImpl
             @NonNull Map<Integer, Bitmap> tabIdToFaviconMap,
             @NonNull Callback<Boolean> callback,
             long startTimeMillis) {
-        assert mSharedTabsWithOsState;
+        if (!mDonor.canDonate()) return;
 
         mDonor.donateFavicons(
                 tabs,
@@ -146,22 +137,12 @@ public class AuxiliarySearchControllerImpl
     // AuxiliarySearchConfigManager.ShareTabsWithOsStateListener implementations.
     @Override
     public void onConfigChanged(boolean enabled) {
-        if (mSharedTabsWithOsState == enabled) return;
-
-        mSharedTabsWithOsState = enabled;
-        AuxiliarySearchUtils.setSharedTabsWithOs(enabled);
-        if (enabled) {
-            // Initializes the session now.
-            initDonor();
-        } else {
-            // When disabled, remove all shared Tabs and closes the session.
-            deleteAllTabs();
-            mDonor.destroy();
-        }
+        long startTimeMs = TimeUtils.uptimeMillis();
+        mDonor.onConfigChanged(enabled, (success) -> onAllTabDeleted(success, startTimeMs));
     }
 
     private void tryDonateTabs() {
-        if (mHasDeletingTask || !mSharedTabsWithOsState) return;
+        if (mHasDeletingTask || !mDonor.canDonate()) return;
 
         long startTime = TimeUtils.uptimeMillis();
         mAuxiliarySearchProvider.getTabsSearchableDataProtoAsync(
@@ -255,18 +236,24 @@ public class AuxiliarySearchControllerImpl
         long startTimeMs = TimeUtils.uptimeMillis();
 
         mHasDeletingTask = true;
-        mDonor.deleteAllTabs(
+        if (!mDonor.deleteAllTabs(
                 (success) -> {
-                    mHasDeletingTask = false;
-                    AuxiliarySearchMetrics.recordDeleteTime(
-                            TimeUtils.uptimeMillis() - startTimeMs, AuxiliarySearchDataType.TAB);
-                    AuxiliarySearchMetrics.recordDeletionRequestStatus(
-                            success ? RequestStatus.SUCCESSFUL : RequestStatus.UNSUCCESSFUL,
-                            AuxiliarySearchDataType.TAB);
-                });
+                    onAllTabDeleted(success, startTimeMs);
+                })) {
+            mHasDeletingTask = false;
+        }
     }
 
-    private void initDonor() {
-        mDonor.createSessionAndInit();
+    private void onAllTabDeleted(boolean success, long startTimeMs) {
+        mHasDeletingTask = false;
+        AuxiliarySearchMetrics.recordDeleteTime(
+                TimeUtils.uptimeMillis() - startTimeMs, AuxiliarySearchDataType.TAB);
+        AuxiliarySearchMetrics.recordDeletionRequestStatus(
+                success ? RequestStatus.SUCCESSFUL : RequestStatus.UNSUCCESSFUL,
+                AuxiliarySearchDataType.TAB);
+    }
+
+    public boolean getHasDeletingTaskForTesting() {
+        return mHasDeletingTask;
     }
 }

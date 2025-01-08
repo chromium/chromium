@@ -6,12 +6,10 @@ package org.chromium.chrome.browser.auxiliary_search;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -85,12 +83,6 @@ public class AuxiliarySearchControllerImplUnitTest {
     public void setUp() {
         when(mContext.getResources()).thenReturn(mResources);
 
-        when(mHooks.isEnabled()).thenReturn(true);
-        when(mHooks.isSettingDefaultEnabledByOs()).thenReturn(true);
-        AuxiliarySearchControllerFactory.getInstance().setHooksForTesting(mHooks);
-        assertTrue(AuxiliarySearchControllerFactory.getInstance().isSettingDefaultEnabledByOs());
-        assertTrue(AuxiliarySearchUtils.isShareTabsWithOsEnabled());
-
         mAuxiliarySearchControllerImpl =
                 new AuxiliarySearchControllerImpl(
                         mContext,
@@ -146,7 +138,9 @@ public class AuxiliarySearchControllerImplUnitTest {
                         mFaviconHelper);
         mAuxiliarySearchControllerImpl.onResumeWithNative();
 
-        verify(mAuxiliarySearchDonor, never()).deleteAllTabs(any(Callback.class));
+        verify(mAuxiliarySearchDonor).deleteAllTabs(any(Callback.class));
+        assertFalse(mAuxiliarySearchControllerImpl.getHasDeletingTaskForTesting());
+
         AuxiliarySearchUtils.resetSharedPreferenceForTesting();
     }
 
@@ -157,6 +151,7 @@ public class AuxiliarySearchControllerImplUnitTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecord("Search.AuxiliarySearch.QueryTime.Tabs", timeDelta)
                         .build();
+        when(mAuxiliarySearchDonor.canDonate()).thenReturn(true);
         mAuxiliarySearchControllerImpl.onPauseWithNative();
 
         verify(mAuxiliarySearchProvider).getTabsSearchableDataProtoAsync(mCallbackCaptor.capture());
@@ -168,7 +163,7 @@ public class AuxiliarySearchControllerImplUnitTest {
 
     @Test
     public void testOnPauseWithNative_Disabled() {
-        AuxiliarySearchConfigManager.getInstance().notifyShareTabsStateChanged(false);
+        when(mAuxiliarySearchDonor.canDonate()).thenReturn(false);
         mAuxiliarySearchControllerImpl.onPauseWithNative();
 
         verify(mAuxiliarySearchProvider, never())
@@ -183,7 +178,6 @@ public class AuxiliarySearchControllerImplUnitTest {
         mAuxiliarySearchControllerImpl.destroy();
 
         verify(mActivityLifecycleDispatcher).unregister(eq(mAuxiliarySearchControllerImpl));
-        verify(mAuxiliarySearchDonor).destroy();
 
         verify(mFaviconHelper).destroy();
 
@@ -217,10 +211,20 @@ public class AuxiliarySearchControllerImplUnitTest {
 
         long now = TimeUtils.uptimeMillis();
         int timeDelta = 20;
+
+        // Verifies that Donor won't donate if it can't.
+        when(mAuxiliarySearchDonor.canDonate()).thenReturn(false);
+        mAuxiliarySearchControllerImpl.onBackgroundTaskStart(
+                entries, map, Mockito.mock(Callback.class), now);
+
+        verify(mAuxiliarySearchDonor, never()).donateFavicons(any(), eq(map), any(Callback.class));
+
+        // Verifies that Donor will donate if it can.
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord("Search.AuxiliarySearch.Schedule.DonateTime", timeDelta)
                         .build();
+        when(mAuxiliarySearchDonor.canDonate()).thenReturn(true);
         mAuxiliarySearchControllerImpl.onBackgroundTaskStart(
                 entries, map, Mockito.mock(Callback.class), now);
 
@@ -307,16 +311,10 @@ public class AuxiliarySearchControllerImplUnitTest {
 
     @Test
     public void testOnConfigChanged() {
-        assertTrue(AuxiliarySearchUtils.isShareTabsWithOsEnabled());
-        verify(mAuxiliarySearchDonor).createSessionAndInit();
-
         mAuxiliarySearchControllerImpl.onConfigChanged(false);
-        assertFalse(AuxiliarySearchUtils.isShareTabsWithOsEnabled());
-        verify(mAuxiliarySearchDonor).deleteAllTabs(any(Callback.class));
-        verify(mAuxiliarySearchDonor).destroy();
+        verify(mAuxiliarySearchDonor).onConfigChanged(eq(false), any(Callback.class));
 
         mAuxiliarySearchControllerImpl.onConfigChanged(true);
-        assertTrue(AuxiliarySearchUtils.isShareTabsWithOsEnabled());
-        verify(mAuxiliarySearchDonor, times(2)).createSessionAndInit();
+        verify(mAuxiliarySearchDonor).onConfigChanged(eq(true), any(Callback.class));
     }
 }
