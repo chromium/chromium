@@ -379,6 +379,12 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
       mojom::blink::PolicyDisposition,
       const std::optional<String>& reporting_endpoint,
       const String& message = g_empty_string) const {}
+  virtual void ReportPotentialPermissionsPolicyViolation(
+      mojom::blink::PermissionsPolicyFeature,
+      mojom::blink::PolicyDisposition,
+      const std::optional<String>& reporting_endpoint,
+      const String& message = g_empty_string,
+      const String& allow_attribute = g_empty_string) const {}
   virtual void ReportDocumentPolicyViolation(
       mojom::blink::DocumentPolicyFeature,
       mojom::blink::PolicyDisposition,

@@ -3316,6 +3316,10 @@
       status: "stable",
     },
     {
+      name: "PotentialPermissionsPolicyReporting",
+      status: "experimental",
+    },
+    {
       name: "PreciseMemoryInfo",
       base_feature: "none",
       public: true,

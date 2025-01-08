@@ -12,6 +12,9 @@ void PermissionsPolicyViolationReportBody::BuildJSONValue(
   builder.AddString("featureId", featureId());
   builder.AddString("disposition", disposition());
   builder.AddStringOrNull("message", message());
+  if (!allowAttribute().empty()) {
+    builder.AddString("allowAttribute", allowAttribute());
+  }
 }
 
 }  // namespace blink

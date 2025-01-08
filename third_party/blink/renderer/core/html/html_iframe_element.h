@@ -61,6 +61,8 @@ class CORE_EXPORT HTMLIFrameElement : public HTMLFrameElementBase,
 
   bool Credentialless() const override { return credentialless_; }
 
+  void CheckPotentialPermissionsPolicyViolation() override;
+
  private:
   void SetCollapsed(bool) override;
 

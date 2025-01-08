@@ -24,6 +24,8 @@ struct CORE_EXPORT ReportType {
       "document-policy-violation";
   static constexpr const char kPermissionsPolicyViolation[] =
       "permissions-policy-violation";
+  static constexpr const char kPotentialPermissionsPolicyViolation[] =
+      "potential-permissions-policy-violation";
   static constexpr const char kIntervention[] = "intervention";
 };
 

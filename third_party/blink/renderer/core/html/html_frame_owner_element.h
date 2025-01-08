@@ -212,6 +212,10 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
       const;
   void ReportFallbackResourceTimingIfNeeded();
 
+  // Check for potential Permissions Policy violation based on the combination
+  // of Permissions Policy and an allow attribute.
+  virtual void CheckPotentialPermissionsPolicyViolation() {}
+
  protected:
   bool is_swapping_frames() const { return is_swapping_frames_; }
 

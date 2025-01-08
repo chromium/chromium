@@ -256,6 +256,14 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
   bool IsFeatureEnabledByInheritedPolicy(
       mojom::PermissionsPolicyFeature feature) const;
 
+  // Returns the inherited policy of the given feature.
+  static bool InheritedValueForFeature(
+      const url::Origin& origin,
+      const PermissionsPolicy* parent_policy,
+      std::pair<mojom::PermissionsPolicyFeature,
+                PermissionsPolicyFeatureDefault> feature,
+      const ParsedPermissionsPolicy& container_policy);
+
  private:
   friend class ResourceRequest;
   friend class PermissionsPolicyTest;
@@ -331,14 +339,6 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
   bool IsFeatureEnabledForSubresourceRequestAssumingOptIn(
       mojom::PermissionsPolicyFeature feature,
       const url::Origin& origin) const;
-
-  // Returns the inherited policy of the given feature.
-  static bool InheritedValueForFeature(
-      const url::Origin& origin,
-      const PermissionsPolicy* parent_policy,
-      std::pair<mojom::PermissionsPolicyFeature,
-                PermissionsPolicyFeatureDefault> feature,
-      const ParsedPermissionsPolicy& container_policy);
 
   // If the feature is in the declared policy, returns whether the given origin
   // exists in its declared allowlist; otherwise, returns the value from

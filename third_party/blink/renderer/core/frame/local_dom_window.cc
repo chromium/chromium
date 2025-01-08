@@ -645,6 +645,45 @@ void LocalDOMWindow::ReportPermissionsPolicyViolation(
   }
 }
 
+void LocalDOMWindow::ReportPotentialPermissionsPolicyViolation(
+    mojom::blink::PermissionsPolicyFeature feature,
+    mojom::blink::PolicyDisposition disposition,
+    const std::optional<String>& reporting_endpoint,
+    const String& message,
+    const String& allow_attribute) const {
+  CHECK(GetFrame());
+
+  // Construct the potential permissions policy violation report.
+  bool is_isolated_context =
+      GetExecutionContext() && GetExecutionContext()->IsIsolatedContext();
+  const String& feature_name = GetNameForFeature(feature, is_isolated_context);
+  const String& disp_str =
+      (disposition == mojom::blink::PolicyDisposition::kReport ? "report"
+                                                               : "enforce");
+
+  PermissionsPolicyViolationReportBody* body =
+      MakeGarbageCollected<PermissionsPolicyViolationReportBody>(
+          feature_name, message, disp_str, allow_attribute);
+
+  Report* report = MakeGarbageCollected<Report>(
+      ReportType::kPotentialPermissionsPolicyViolation, Url().GetString(),
+      body);
+
+  // Send the potential permissions policy violation report to the specified
+  // endpoint if one exists, as well as any ReportingObservers.
+  if (reporting_endpoint) {
+    ReportingContext::From(this)->QueueReport(report, {*reporting_endpoint});
+  } else {
+    ReportingContext::From(this)->QueueReport(report);
+  }
+
+  if (disposition == mojom::blink::PolicyDisposition::kEnforce) {
+    GetFrame()->Console().AddMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kViolation,
+        mojom::blink::ConsoleMessageLevel::kError, body->message()));
+  }
+}
+
 void LocalDOMWindow::ReportDocumentPolicyViolation(
     mojom::blink::DocumentPolicyFeature feature,
     mojom::blink::PolicyDisposition disposition,

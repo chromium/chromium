@@ -137,7 +137,8 @@ void ReportingContext::CountReport(Report* report) {
 
   if (type == ReportType::kDeprecation) {
     feature = WebFeature::kDeprecationReport;
-  } else if (type == ReportType::kPermissionsPolicyViolation) {
+  } else if (type == ReportType::kPermissionsPolicyViolation ||
+             type == ReportType::kPotentialPermissionsPolicyViolation) {
     feature = WebFeature::kFeaturePolicyReport;
   } else if (type == ReportType::kIntervention) {
     feature = WebFeature::kInterventionReport;
@@ -187,6 +188,7 @@ void ReportingContext::SendToReportingAPI(Report* report,
   if (!(type == ReportType::kCSPViolation || type == ReportType::kCSPHash ||
         type == ReportType::kDeprecation ||
         type == ReportType::kPermissionsPolicyViolation ||
+        type == ReportType::kPotentialPermissionsPolicyViolation ||
         type == ReportType::kIntervention ||
         type == ReportType::kDocumentPolicyViolation)) {
     return;
@@ -230,6 +232,13 @@ void ReportingContext::SendToReportingAPI(Report* report,
     GetReportingService()->QueuePermissionsPolicyViolationReport(
         url, endpoint, body->featureId(), body->disposition(), body->message(),
         body->sourceFile(), line_number, column_number);
+  } else if (type == ReportType::kPotentialPermissionsPolicyViolation) {
+    // Send the potential permissions policy violation report.
+    const PermissionsPolicyViolationReportBody* body =
+        static_cast<PermissionsPolicyViolationReportBody*>(report->body());
+    GetReportingService()->QueuePotentialPermissionsPolicyViolationReport(
+        url, endpoint, body->featureId(), body->disposition(), body->message(),
+        body->allowAttribute(), body->sourceFile(), line_number, column_number);
   } else if (type == ReportType::kIntervention) {
     // Send the intervention report.
     const InterventionReportBody* body =
