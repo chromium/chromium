@@ -249,7 +249,8 @@ class FakeV4L2Impl::OpenedDevice {
     if (format->type != V4L2_BUF_TYPE_VIDEO_CAPTURE ||
         format->fmt.pix.width > kMaxWidth ||
         format->fmt.pix.height > kMaxHeight || format->fmt.pix.width == 0 ||
-        format->fmt.pix.height == 0) {
+        format->fmt.pix.height == 0 || format->fmt.pix.width % 2 == 1 ||
+        format->fmt.pix.height % 2 == 1) {
       return Error(EINVAL);
     }
     v4l2_pix_format& pix_format = format->fmt.pix;
