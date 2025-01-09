@@ -101,7 +101,7 @@ WebAppLaunchProcess::WebAppLaunchProcess(
 content::WebContents* WebAppLaunchProcess::Run() {
   if (Browser::GetCreationStatusForProfile(&profile_.get()) !=
           Browser::CreationStatus::kOk ||
-      registrar_->IsNotInRegistrar(params_->app_id)) {
+      !registrar_->IsInRegistrar(params_->app_id)) {
     return nullptr;
   }
 

@@ -420,7 +420,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
   EXPECT_NE(sub_app_id, standalone_app_id);
 
   CallRemove({kSubAppPath});
-  EXPECT_TRUE(provider().registrar_unsafe().IsNotInRegistrar(sub_app_id));
+  EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(sub_app_id));
   EXPECT_EQ(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
             provider().registrar_unsafe().GetInstallState(standalone_app_id));
 
@@ -452,7 +452,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
   EXPECT_NE(sub_app_id2, standalone_app_id2);
 
   CallRemove({kSubAppPath2});
-  EXPECT_TRUE(provider().registrar_unsafe().IsNotInRegistrar(sub_app_id2));
+  EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(sub_app_id2));
   EXPECT_EQ(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
             provider().registrar_unsafe().GetInstallState(standalone_app_id2));
 }
@@ -860,10 +860,10 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
   UninstallParentApp();
 
   // Verify that both parent app and sub-apps are no longer installed.
-  EXPECT_TRUE(provider().registrar_unsafe().IsNotInRegistrar(parent_app_id_));
-  EXPECT_TRUE(provider().registrar_unsafe().IsNotInRegistrar(sub_app_id_1));
-  EXPECT_TRUE(provider().registrar_unsafe().IsNotInRegistrar(sub_app_id_2));
-  EXPECT_TRUE(provider().registrar_unsafe().IsNotInRegistrar(sub_app_id_3));
+  EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(parent_app_id_));
+  EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(sub_app_id_1));
+  EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(sub_app_id_2));
+  EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(sub_app_id_3));
 }
 
 // Verify that uninstalling one source of the parent app which has multiple
@@ -958,7 +958,7 @@ IN_PROC_BROWSER_TEST_F(
   UninstallParentApp();
 
   // Verify that the second sub-app is uninstalled.
-  EXPECT_TRUE(provider().registrar_unsafe().IsNotInRegistrar(sub_app_id));
+  EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(sub_app_id));
 
   // Verify that previous standalone is still installed.
   EXPECT_EQ(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
@@ -1129,7 +1129,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, RemoveOneApp) {
       SingleRemoveResultMojo(kSubAppPath, SubAppsServiceResultCode::kSuccess),
       CallRemove({kSubAppPath}));
   EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
-  EXPECT_TRUE(provider().registrar_unsafe().IsNotInRegistrar(app_id));
+  EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(app_id));
   EXPECT_TRUE(UninstallNotificationShown());
 }
 
@@ -1162,9 +1162,9 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, RemoveListOfApps) {
 
   webapps::ManifestId sub_app_id_1 = GetURLFromPath(kSubAppPath);
   webapps::ManifestId sub_app_id_2 = GetURLFromPath(kSubAppPath2);
-  EXPECT_TRUE(provider().registrar_unsafe().IsNotInRegistrar(
+  EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(
       GenerateAppIdFromManifestId(sub_app_id_1, parent_manifest_id())));
-  EXPECT_TRUE(provider().registrar_unsafe().IsNotInRegistrar(
+  EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(
       GenerateAppIdFromManifestId(sub_app_id_2, parent_manifest_id())));
 
   std::optional<message_center::Notification> uninstall_notification =
