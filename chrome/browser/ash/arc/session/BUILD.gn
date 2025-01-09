@@ -191,6 +191,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/ash/login:test_support",
     "//chrome/browser/ui/ash/multi_user",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper:browser_context_helper",
     "//chromeos/ash/components/dbus/arc",
     "//chromeos/ash/components/dbus/concierge",
     "//chromeos/ash/components/dbus/resourced",
@@ -199,8 +200,10 @@ source_set("unit_tests") {
     "//chromeos/ash/components/memory",
     "//chromeos/ash/components/mojo_service_manager:fake_mojo_service_manager",
     "//chromeos/ash/services/cros_healthd/public/cpp:fakes",
+    "//components/strings:components_strings_grit",
     "//content/test:test_support",
     "//testing/gtest",
+    "//ui/base",
   ]
 }
 

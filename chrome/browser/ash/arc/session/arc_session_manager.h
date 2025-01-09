@@ -354,6 +354,10 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
     android_management_checker_factory_ = android_management_checker_factory;
   }
 
+  // Invoking OnEnableArcOnReven() only for testing
+  void OnEnableArcOnRevenForTesting(std::deque<JobDesc> jobs,
+                                    bool is_compatible);
+
   // Returns whether the Play Store app is requested to be launched by this
   // class. Should be used only for tests.
   bool IsPlaystoreLaunchRequestedForTesting() const;
@@ -407,9 +411,22 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
     hardware_checker_ = std::move(hardware_checker);
   }
 
+  // The unit test will inject an ArcDlcInstallNotificationManager for
+  // testing.
+  void SetArcDlcInstallNotificationManagerForTesting(
+      std::unique_ptr<ArcDlcInstallNotificationManager>
+          arc_dlc_install_notification_manager) {
+    arc_dlc_install_notification_manager_ =
+        std::move(arc_dlc_install_notification_manager);
+  }
+
  private:
   // Reports statuses of OptIn flow to UMA.
   class ScopedOptInFlowTracker;
+
+  // Sends out a pending notification for DLC installation when the user profile
+  // is set.
+  void MaybeShowDlcInstallNotification(NotificationType type);
 
   // Handles the completion of the hardware compatibility check for ARC on a
   // reven device. If the device is compatible with ARC, the DLC service client
@@ -538,6 +555,9 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
 
   std::unique_ptr<ArcDlcInstallNotificationManager>
       arc_dlc_install_notification_manager_;
+
+  // Stores any pending notifications for DLC installation.
+  std::vector<NotificationType> dlc_install_pending_notifications_;
 
   // Whether ArcSessionManager is requested to enable (starting to run ARC
   // instance) or not.

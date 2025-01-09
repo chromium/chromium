@@ -862,12 +862,18 @@ void ArcSessionManager::Initialize() {
   }
 
   if (const AccountId* account_id = ash::AnnotatedAccountId::Get(profile_)) {
-    auto delegate =
-        std::make_unique<arc::ArcDlcInstallNotificationManagerDelegateImpl>(
-            profile_);
-    arc_dlc_install_notification_manager_ =
-        std::make_unique<arc::ArcDlcInstallNotificationManager>(
-            std::move(delegate), *account_id);
+    if (!arc_dlc_install_notification_manager_) {
+      auto delegate =
+          std::make_unique<arc::ArcDlcInstallNotificationManagerDelegateImpl>(
+              profile_);
+      arc_dlc_install_notification_manager_ =
+          std::make_unique<arc::ArcDlcInstallNotificationManager>(
+              std::move(delegate), *account_id);
+    }
+    for (const auto& notification : dlc_install_pending_notifications_) {
+      arc_dlc_install_notification_manager_->Show(notification);
+    }
+    dlc_install_pending_notifications_.clear();
   } else {
     // TODO to clean up later.
     CHECK_IS_TEST();
@@ -1958,6 +1964,14 @@ void ArcSessionManager::EmitLoginPromptVisibleCalled() {
   }
 }
 
+void ArcSessionManager::MaybeShowDlcInstallNotification(NotificationType type) {
+  if (arc_dlc_install_notification_manager_) {
+    arc_dlc_install_notification_manager_->Show(type);
+    return;
+  }
+  dlc_install_pending_notifications_.push_back(type);
+}
+
 void ArcSessionManager::ExpandPropertyFilesAndReadSalt() {
   VLOG(1) << "Started expanding *.prop files";
 
@@ -1990,6 +2004,11 @@ void ArcSessionManager::ExpandPropertyFilesAndReadSalt() {
   }
 }
 
+void ArcSessionManager::OnEnableArcOnRevenForTesting(std::deque<JobDesc> jobs,
+                                                     bool is_compatible) {
+  OnEnableArcOnReven(jobs, is_compatible);
+}
+
 void ArcSessionManager::OnEnableArcOnReven(std::deque<JobDesc> jobs,
                                            bool is_compatible) {
   if (is_compatible) {
@@ -2000,10 +2019,7 @@ void ArcSessionManager::OnEnableArcOnReven(std::deque<JobDesc> jobs,
     // arc_dlc_install_notification_manager_ will be available only after the
     // primary user has logged in. arc_vm preload will start during a reboot or
     // when the Chrome session is restarted.
-    if (arc_dlc_install_notification_manager_) {
-      arc_dlc_install_notification_manager_->Show(
-          NotificationType::kArcVmPreloadStarted);
-    }
+    MaybeShowDlcInstallNotification(NotificationType::kArcVmPreloadStarted);
     ash::DlcserviceClient::Get()->Install(
         install_request,
         base::BindOnce(&ArcSessionManager::OnDlcInstalled,
@@ -2024,10 +2040,7 @@ void ArcSessionManager::OnDlcInstalled(
     // primary user has logged in. A notification will be sent requesting the
     // user to log out and log back in to use the VPN apps on Flex once the
     // installation is complete.
-    if (arc_dlc_install_notification_manager_) {
-      arc_dlc_install_notification_manager_->Show(
-          NotificationType::kArcVmPreloadSucceeded);
-    }
+    MaybeShowDlcInstallNotification(NotificationType::kArcVmPreloadSucceeded);
     jobs.emplace_front(JobDesc{
         kArcvmBindMountDlcPath, UpstartOperation::JOB_STOP_AND_START, {}});
     ConfigureUpstartJobs(
@@ -2039,10 +2052,7 @@ void ArcSessionManager::OnDlcInstalled(
     // arc_dlc_install_notification_manager_ will be available only after the
     // primary user has logged in. An error notification will be sent if the DLC
     // preload fails.
-    if (arc_dlc_install_notification_manager_) {
-      arc_dlc_install_notification_manager_->Show(
-          NotificationType::kArcVmPreloadFailed);
-    }
+    MaybeShowDlcInstallNotification(NotificationType::kArcVmPreloadFailed);
     OnExpandPropertyFilesAndReadSalt(
         ArcSessionManager::ExpansionResult{{}, false});
   }
