@@ -147,9 +147,6 @@ bool IsImprovedSettingsUIOnDesktopEnabled() {
 }
 
 #if BUILDFLAG(IS_IOS)
-BASE_FEATURE(kEnableClearCut,
-             "EnableClearcut",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRemoveSignedInAccountsDialog,
              "RemoveSignedInAccountsDialog",
