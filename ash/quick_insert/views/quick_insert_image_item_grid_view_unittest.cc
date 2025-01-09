@@ -339,7 +339,7 @@ TEST_F(QuickInsertImageItemGridViewTest, ItemNotInGridHasNoItemRightOf) {
   EXPECT_EQ(item_grid.GetItemRightOf(item_not_in_grid.get()), nullptr);
 }
 
-TEST_F(QuickInsertImageItemGridViewTest, TabFocusTraversesInOrderAdded) {
+TEST_F(QuickInsertImageItemGridViewTest, TabFocusesFirstItemOnly) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   QuickInsertImageItemGridView* item_grid = widget->SetContentsView(
@@ -349,57 +349,17 @@ TEST_F(QuickInsertImageItemGridViewTest, TabFocusTraversesInOrderAdded) {
       item_grid->AddImageItem(CreateGifItem(gfx::Size(100, 100)));
   QuickInsertItemView* item2 =
       item_grid->AddImageItem(CreateGifItem(gfx::Size(100, 110)));
-  QuickInsertItemView* item3 =
-      item_grid->AddImageItem(CreateGifItem(gfx::Size(100, 120)));
-  QuickInsertItemView* item4 =
-      item_grid->AddImageItem(CreateGifItem(gfx::Size(100, 130)));
 
   views::FocusManager* focus_manager = item_grid->GetFocusManager();
   ASSERT_TRUE(focus_manager);
+  EXPECT_TRUE(item1->IsFocusable());
+  EXPECT_FALSE(item2->IsFocusable());
   EXPECT_EQ(focus_manager->GetNextFocusableView(
-                item1, widget.get(), /*reverse=*/false, /*dont_loop*/ true),
-            item2);
-  EXPECT_EQ(focus_manager->GetNextFocusableView(
-                item2, widget.get(), /*reverse=*/false, /*dont_loop*/ true),
-            item3);
-  EXPECT_EQ(focus_manager->GetNextFocusableView(
-                item3, widget.get(), /*reverse=*/false, /*dont_loop*/ true),
-            item4);
-  EXPECT_EQ(focus_manager->GetNextFocusableView(
-                item4, widget.get(), /*reverse=*/false, /*dont_loop*/ true),
+                item1, widget.get(), /*reverse=*/false, /*dont_loop=*/true),
             nullptr);
-}
-
-TEST_F(QuickInsertImageItemGridViewTest,
-       ReverseTabFocusTraversesInReverseOrderAdded) {
-  std::unique_ptr<views::Widget> widget =
-      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-  QuickInsertImageItemGridView* item_grid = widget->SetContentsView(
-      std::make_unique<QuickInsertImageItemGridView>(kDefaultGridWidth));
-
-  QuickInsertItemView* item1 =
-      item_grid->AddImageItem(CreateGifItem(gfx::Size(100, 100)));
-  QuickInsertItemView* item2 =
-      item_grid->AddImageItem(CreateGifItem(gfx::Size(100, 110)));
-  QuickInsertItemView* item3 =
-      item_grid->AddImageItem(CreateGifItem(gfx::Size(100, 120)));
-  QuickInsertItemView* item4 =
-      item_grid->AddImageItem(CreateGifItem(gfx::Size(100, 130)));
-
-  views::FocusManager* focus_manager = item_grid->GetFocusManager();
-  ASSERT_TRUE(focus_manager);
   EXPECT_EQ(focus_manager->GetNextFocusableView(
                 item1, widget.get(), /*reverse=*/true, /*dont_loop*/ true),
             nullptr);
-  EXPECT_EQ(focus_manager->GetNextFocusableView(
-                item2, widget.get(), /*reverse=*/true, /*dont_loop*/ true),
-            item1);
-  EXPECT_EQ(focus_manager->GetNextFocusableView(
-                item3, widget.get(), /*reverse=*/true, /*dont_loop*/ true),
-            item2);
-  EXPECT_EQ(focus_manager->GetNextFocusableView(
-                item4, widget.get(), /*reverse=*/true, /*dont_loop*/ true),
-            item3);
 }
 
 }  // namespace
