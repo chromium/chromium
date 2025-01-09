@@ -484,13 +484,7 @@ TEST_F(VectorMathTest, Vsvesq) {
   }
 }
 
-// TODO(crbug.com/388437275): Failing on Mac ASAN.
-#if BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)
-#define MAYBE_Zvmul DISABLED_Zvmul
-#else
-#define MAYBE_Zvmul Zvmul
-#endif
-TEST_F(VectorMathTest, MAYBE_Zvmul) {
+TEST_F(VectorMathTest, Zvmul) {
   constexpr float kMax = std::numeric_limits<float>::max();
   Vector<Vector<float>> sources(4u);
   for (size_t i = 0u; i < sources.size(); ++i) {
