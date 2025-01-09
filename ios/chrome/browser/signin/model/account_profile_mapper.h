@@ -94,6 +94,10 @@ class AccountProfileMapper {
   // ProfileAttributesStorageIOS.
   std::string GetPersonalProfileName();
 
+  // Returns whether the profile assigned to `gaia_id` has been fully
+  // initialized.
+  bool IsProfileForGaiaIDFullyInitialized(std::string_view gaia_id);
+
   // Marks the personal profile as managed, attaches the given `gaia_id`, and
   // moves all personal accounts to a new empty personal profile. Deletes the
   // managed profile to which `gaia_id` was attached. That profile must not be

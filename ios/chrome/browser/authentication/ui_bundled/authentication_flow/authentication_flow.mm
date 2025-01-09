@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_switch.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -308,14 +309,7 @@ enum class CancelationReason {
       return;
 
     case SHOW_MANAGED_CONFIRMATION: {
-      [_performer
-          showManagedConfirmationForHostedDomain:_identityToSignInHostedDomain
-                                       userEmail:_identityToSignIn.userEmail
-                                  viewController:_presentingViewController
-                                         browser:_browser
-                       skipBrowsingDataMigration:_accessPoint ==
-                                                 signin_metrics::AccessPoint::
-                                                     ACCESS_POINT_START_PAGE];
+      [self showManagedConfirmationStep];
       return;
     }
 
@@ -678,6 +672,38 @@ enum class CancelationReason {
               currentProfile:profile];
   _didSignIn = YES;
   [self continueFlow];
+}
+
+- (void)showManagedConfirmationStep {
+  // This value is not used if
+  // `AreSeparateProfilesForManagedAccountsEnabled()` is false.
+  BOOL skipBrowsingDataMigration = NO;
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    // Skip browsing data migration if we are at the first run screen or if
+    // there is already a profile that exists with the account we are trying
+    // to signin with.
+    skipBrowsingDataMigration =
+        [self shouldSkipBrowsingDataMigration:_accessPoint
+                                      gaia_id:_identityToSignIn.gaiaID];
+  }
+  [_performer
+      showManagedConfirmationForHostedDomain:_identityToSignInHostedDomain
+                                   userEmail:_identityToSignIn.userEmail
+                              viewController:_presentingViewController
+                                     browser:_browser
+                   skipBrowsingDataMigration:skipBrowsingDataMigration];
+}
+
+// Returns true if we are at the FRE step of it there is already a profile that
+// has been fully initialized for `gaia_id`.
+- (BOOL)shouldSkipBrowsingDataMigration:
+            (signin_metrics::AccessPoint)access_point
+                                gaia_id:(NSString*)gaia_id {
+  return access_point == signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE ||
+         GetApplicationContext()
+             ->GetAccountProfileMapper()
+             ->IsProfileForGaiaIDFullyInitialized(
+                 base::SysNSStringToUTF8(gaia_id));
 }
 
 #pragma mark - Used for testing

@@ -147,6 +147,7 @@ class AccountProfileMapper::Assigner : public SystemIdentityManagerObserver {
 
   std::string GetPersonalProfileName();
 
+  bool IsProfileForGaiaIDFullyInitialized(std::string_view gaia_id);
   void MakePersonalProfileManagedWithGaiaID(std::string_view gaia_id);
 
   // SystemIdentityManagerObserver implementation.
@@ -257,8 +258,24 @@ AccountProfileMapper::Assigner::FindProfileNameForGaiaID(
   return std::nullopt;
 }
 
+bool AccountProfileMapper::Assigner::IsProfileForGaiaIDFullyInitialized(
+    std::string_view gaia_id) {
+  CHECK(profile_manager_);
+  const std::optional<std::string> profile_name =
+      FindProfileNameForGaiaID(gaia_id);
+  if (!profile_name) {
+    return false;
+  }
+
+  ProfileAttributesStorageIOS* storage = GetProfileAttributesStorage();
+  CHECK(storage);
+  return storage->GetAttributesForProfileWithName(*profile_name)
+      .IsFullyInitialized();
+}
+
 void AccountProfileMapper::Assigner::MakePersonalProfileManagedWithGaiaID(
     std::string_view managed_gaia_id) {
+  CHECK(!IsProfileForGaiaIDFullyInitialized(managed_gaia_id));
   CHECK(profile_manager_);
 
   ProfileAttributesStorageIOS* storage = GetProfileAttributesStorage();
@@ -582,6 +599,11 @@ void AccountProfileMapper::IterateOverAllIdentitiesOnDevice(
 
 std::string AccountProfileMapper::GetPersonalProfileName() {
   return assigner_->GetPersonalProfileName();
+}
+
+bool AccountProfileMapper::IsProfileForGaiaIDFullyInitialized(
+    std::string_view gaia_id) {
+  return assigner_->IsProfileForGaiaIDFullyInitialized(gaia_id);
 }
 
 void AccountProfileMapper::MakePersonalProfileManagedWithGaiaID(
