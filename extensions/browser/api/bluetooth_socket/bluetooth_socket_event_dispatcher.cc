@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/browser/api/bluetooth_socket/bluetooth_socket_event_dispatcher.h"
 
 #include <utility>
 
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "content/public/browser/browser_thread.h"
@@ -205,7 +201,8 @@ void BluetoothSocketEventDispatcher::ReceiveCallback(
   // Dispatch "onReceive" event.
   bluetooth_socket::ReceiveInfo receive_info;
   receive_info.socket_id = params.socket_id;
-  receive_info.data.assign(io_buffer->data(), io_buffer->data() + bytes_read);
+  receive_info.data = base::ToVector(
+      io_buffer->span().subspan(0u, static_cast<size_t>(bytes_read)));
   auto args = bluetooth_socket::OnReceive::Create(receive_info);
   std::unique_ptr<Event> event(
       new Event(events::BLUETOOTH_SOCKET_ON_RECEIVE,

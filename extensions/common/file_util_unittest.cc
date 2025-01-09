@@ -363,8 +363,8 @@ TEST_F(FileUtilTest, CheckIllegalFilenamesOnlyReserved) {
   static const auto folders = std::to_array<const base::FilePath::CharType*>(
       {kLocaleFolder, kPlatformSpecificFolder});
 
-  for (size_t i = 0; i < std::size(folders); i++) {
-    base::FilePath src_path = temp.GetPath().Append(folders[i]);
+  for (const auto* folder : folders) {
+    base::FilePath src_path = temp.GetPath().Append(folder);
     ASSERT_TRUE(base::CreateDirectory(src_path));
   }
 
@@ -709,11 +709,10 @@ TEST_F(FileUtilTest, CheckInvisibleIconFilePacked) {
 
 TEST_F(FileUtilTest, ExtensionURLToRelativeFilePath) {
 #define URL_PREFIX "chrome-extension://extension-id/"
-  struct TestCase {
+  static constexpr struct {
     const char* url;
     const char* expected_relative_path;
-  };
-  auto test_cases = std::to_array<TestCase>({
+  } test_cases[] = {
       {URL_PREFIX "simple.html", "simple.html"},
       {URL_PREFIX "directory/to/file.html", "directory/to/file.html"},
       {URL_PREFIX "escape%20spaces.html", "escape spaces.html"},
@@ -735,13 +734,13 @@ TEST_F(FileUtilTest, ExtensionURLToRelativeFilePath) {
       // This is a UTF-8 lock icon, which is unsafe to display in the omnibox,
       // but is a valid, if unusual, file name.
       {URL_PREFIX "%F0%9F%94%93.html", "\xF0\x9F\x94\x93.html"},
-  });
+  };
 #undef URL_PREFIX
 
-  for (size_t i = 0; i < std::size(test_cases); ++i) {
-    GURL url(test_cases[i].url);
+  for (const auto& test_case : test_cases) {
+    GURL url(test_case.url);
     base::FilePath expected_path =
-        base::FilePath::FromUTF8Unsafe(test_cases[i].expected_relative_path);
+        base::FilePath::FromUTF8Unsafe(test_case.expected_relative_path);
     base::FilePath actual_path = file_util::ExtensionURLToRelativeFilePath(url);
     EXPECT_FALSE(actual_path.IsAbsolute()) <<
       " For the path " << actual_path.value();
