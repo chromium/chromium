@@ -476,7 +476,8 @@ class FormStructure {
   GURL source_url_;
 
   // The full source URL including query parameters and fragment identifiers.
-  // This value should be set only for password forms.
+  // If `kAutofillIncludeUrlInCrowdsourcing` is disabled, this value should only
+  // be set for password forms.
   GURL full_source_url_;
 
   // The target URL.
