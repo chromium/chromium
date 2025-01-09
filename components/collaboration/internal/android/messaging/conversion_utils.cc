@@ -99,7 +99,8 @@ ScopedJavaLocalRef<jobject> MessageAttributionToJava(
       env, j_collaboration_id, j_local_tab_group_id, j_sync_tab_group_id,
       j_last_known_tab_group_title, j_last_known_tab_group_color,
       j_local_tab_id, j_sync_tab_id, j_last_known_tab_title,
-      j_last_known_tab_url, j_affected_user, j_triggering_user);
+      j_last_known_tab_url, j_affected_user, attribution.affected_user_is_self,
+      j_triggering_user, attribution.triggering_user_is_self);
 }
 
 // Helper method to provide a consistent way to create a PersistentMessage

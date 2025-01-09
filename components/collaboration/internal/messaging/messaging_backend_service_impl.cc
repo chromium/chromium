@@ -824,6 +824,8 @@ void MessagingBackendServiceImpl::OnGroupMemberAdded(
     for (const data_sharing::GroupMember& member : group_data.members) {
       if (member.gaia_id == member_gaia_id) {
         instant_message.attribution.affected_user = member;
+        instant_message.attribution.affected_user_is_self =
+            IsMemberCurrentUser(identity_manager_, member_gaia_id);
         break;
       }
     }
@@ -997,6 +999,10 @@ MessagingBackendServiceImpl::ConvertMessageToActivityLogItem(
       // We are guaranteed to have a value for `last_known_url`.
       GURL url = GURL(*item.activity_metadata.tab_metadata->last_known_url);
       item.activity_metadata.triggering_user = group_member;
+      if (gaia_id) {
+        item.activity_metadata.triggering_user_is_self =
+            IsMemberCurrentUser(identity_manager_, *gaia_id);
+      }
 
       item.description_text =
           url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
@@ -1006,6 +1012,10 @@ MessagingBackendServiceImpl::ConvertMessageToActivityLogItem(
     }
     case MessageCategory::kTabGroup: {
       item.activity_metadata.triggering_user = group_member;
+      if (gaia_id) {
+        item.activity_metadata.triggering_user_is_self =
+            IsMemberCurrentUser(identity_manager_, *gaia_id);
+      }
       item.activity_metadata.tab_group_metadata =
           CreateTabGroupMessageMetadataFromMessageOrTabGroup(message,
                                                              std::nullopt);
@@ -1024,6 +1034,8 @@ MessagingBackendServiceImpl::ConvertMessageToActivityLogItem(
       item.activity_metadata.affected_user = group_member;
       if (group_member) {
         item.description_text = base::UTF8ToUTF16(group_member->email);
+        item.activity_metadata.affected_user_is_self =
+            IsMemberCurrentUser(identity_manager_, *gaia_id);
       }
       break;
     default:
@@ -1322,9 +1334,11 @@ MessagingBackendServiceImpl::CreateMessageAttributionForTabUpdates(
   attribution.tab_metadata = CreateTabMessageMetadataFromMessageOrTab(
       message,
       tab.has_value() ? tab : GetTabFromGroup(message, stack_tab_group));
+  GaiaId trigger_user_gaia_id(message.triggering_user_gaia_id());
   attribution.triggering_user = GetGroupMemberFromGaiaId(
-      data_sharing::GroupId(message.collaboration_id()),
-      GaiaId(message.triggering_user_gaia_id()));
+      data_sharing::GroupId(message.collaboration_id()), trigger_user_gaia_id);
+  attribution.triggering_user_is_self =
+      IsMemberCurrentUser(identity_manager_, trigger_user_gaia_id);
   return attribution;
 }
 

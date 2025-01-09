@@ -45,7 +45,9 @@ class ConversionUtils {
             @Nullable String lastKnownTabTitle,
             @Nullable String lastKnownTabUrl,
             @Nullable GroupMember affectedUser,
-            GroupMember triggeringUser) {
+            boolean affectedUserIsSelf,
+            GroupMember triggeringUser,
+            boolean triggeringUserIsSelf) {
         MessageAttribution attribution = new MessageAttribution();
         attribution.collaborationId = collaborationId;
         if (localTabGroupId != null
@@ -73,7 +75,9 @@ class ConversionUtils {
             attribution.tabMetadata.lastKnownUrl = lastKnownTabUrl;
         }
         attribution.affectedUser = affectedUser;
+        attribution.affectedUserIsSelf = affectedUserIsSelf;
         attribution.triggeringUser = triggeringUser;
+        attribution.triggeringUserIsSelf = triggeringUserIsSelf;
         return attribution;
     }
 

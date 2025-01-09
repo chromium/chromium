@@ -149,11 +149,17 @@ struct MessageAttribution {
   // CollaborationEvent::COLLABORATION_MEMBER_REMOVED, otherwise std::nullopt.
   std::optional<data_sharing::GroupMember> affected_user;
 
+  // Whether the affected user is same as the currently signed in user.
+  bool affected_user_is_self = false;
+
   // The user who performed the related action and caused the message (if any).
   // This is not set for CollaborationEvent::COLLABORATION_MEMBER_ADDED and
   // CollaborationEvent::COLLABORATION_MEMBER_REMOVED since we do not have a way
   // to know how the change was triggered.
   std::optional<data_sharing::GroupMember> triggering_user;
+
+  // Whether the triggering user is same as the currently signed in user.
+  bool triggering_user_is_self = false;
 };
 
 // An instant notification that the UI to show something to the user
