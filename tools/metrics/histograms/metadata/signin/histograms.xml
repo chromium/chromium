@@ -2439,6 +2439,23 @@ OAuth Multilogin call. -->
   </token>
 </histogram>
 
+<histogram name="Signin.SignInPromo.{UserAction}" enum="SigninAccessPoint"
+    expires_after="2025-07-09">
+  <owner>amelies@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the access point associated with the sign in promo. Recorded when
+    the promo is {UserAction} by the user.
+  </summary>
+  <token key="UserAction">
+    <variant name="Accepted" summary="accepted"/>
+    <variant name="DismissedCloseButton"
+        summary="dismissed using the Close button"/>
+    <variant name="DismissedEscapeKey"
+        summary="dismissed using the Escape key"/>
+  </token>
+</histogram>
+
 <histogram name="Signin.SigninStartedAccessPoint" enum="SigninAccessPoint"
     expires_after="2025-05-11">
   <owner>msarda@chromium.org</owner>
@@ -2863,6 +2880,7 @@ should be kept for as long as we store refresh tokens in an SQLite DB. -->
     via {AccessPoint}. The value is recorded when signing in to Chrome.
   </summary>
   <token key="AccessPoint">
+    <variant name="AddressSigninPromo" summary="the Address Sign-in promo"/>
     <variant name="PasswordSigninPromo" summary="the Password Sign-in promo"/>
     <variant name="ProfileMenu" summary="the Profile Menu"/>
   </token>

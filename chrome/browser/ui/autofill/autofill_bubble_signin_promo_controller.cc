@@ -52,6 +52,9 @@ void AutofillBubbleSignInPromoController::OnSignInToChromeClicked(
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   CHECK(switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
 
+  base::UmaHistogramEnumeration("Signin.SignInPromo.Accepted", access_point_,
+                                signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+
   Profile* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
   // TODO(crbug.com/367263145): If a sign in tab already exists, it should
