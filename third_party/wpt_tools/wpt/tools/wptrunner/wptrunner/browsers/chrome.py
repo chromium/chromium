@@ -132,6 +132,13 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data, subsuite
     chrome_options["args"].append("--disable-infobars")
     # For WebNN tests.
     chrome_options["args"].append("--enable-features=WebMachineLearningNeuralNetwork")
+    # For Web Speech API tests.
+    chrome_options["args"].append("--enable-features=" + ",".join([
+        "InstallOnDeviceSpeechRecognition",
+        "OnDeviceWebSpeechAvailable",
+        "OnDeviceWebSpeech",
+        "MediaStreamTrackWebSpeech",
+    ]))
 
     # Classify `http-private`, `http-public` and https variants in the
     # appropriate IP address spaces.
@@ -206,6 +213,11 @@ def update_properties():
     return (["debug", "os", "processor"], {"os": ["version"], "processor": ["bits"]})
 
 class ChromeBrowser(WebDriverBrowser):
+
+    # Chrome browser's default startup timeout is 60 seconds. Use 65 seconds here
+    # to allow error message be displayed if that happens.
+    init_timeout: float = 65
+
     def __init__(self,
                  logger: StructuredLogger,
                  leak_check: bool = False,
