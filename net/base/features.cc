@@ -502,6 +502,12 @@ BASE_FEATURE(kEnableSchemeBoundCookies,
              "EnableSchemeBoundCookies",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Disallows cookies to have non ascii values in their name or value.
+NET_EXPORT BASE_DECLARE_FEATURE(kDisallowNonAsciiCookies);
+BASE_FEATURE(kDisallowNonAsciiCookies,
+             "kDisallowNonAsciiCookies",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kTimeLimitedInsecureCookies,
              "TimeLimitedInsecureCookies",
              base::FEATURE_DISABLED_BY_DEFAULT);

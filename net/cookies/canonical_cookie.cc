@@ -459,6 +459,14 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
       parsed_cookie.IsHttpOnly(), samesite, parsed_cookie.Priority(),
       cookie_partition_key, source_scheme, source_port, source_type);
 
+  // Check if name or value contains any non-ascii values, exclude if they do.
+  if (base::FeatureList::IsEnabled(features::kDisallowNonAsciiCookies)) {
+    if (!base::IsStringASCII(cc->Name()) || !base::IsStringASCII(cc->Value())) {
+      status->AddExclusionReason(
+          CookieInclusionStatus::EXCLUDE_DISALLOWED_CHARACTER);
+    }
+  }
+
   // TODO(chlily): Log metrics.
   if (!cc->IsCanonical()) {
     status->AddExclusionReason(
@@ -469,7 +477,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
   RecordCookieSameSiteAttributeValueHistogram(samesite_string);
 
   // These metrics capture whether or not a cookie has a Non-ASCII character in
-  // it.
+  // it, except if kDisallowNonAsciiCookies is enabled.
   UMA_HISTOGRAM_BOOLEAN("Cookie.HasNonASCII.Name",
                         !base::IsStringASCII(cc->Name()));
   UMA_HISTOGRAM_BOOLEAN("Cookie.HasNonASCII.Value",
@@ -522,6 +530,14 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
     // but any other control characters will just get URL-encoded below.
     status->AddExclusionReason(
         net::CookieInclusionStatus::EXCLUDE_DISALLOWED_CHARACTER);
+  }
+
+  // Check if name or value contains any non-ascii values, exclude if they do.
+  if (base::FeatureList::IsEnabled(features::kDisallowNonAsciiCookies)) {
+    if (!base::IsStringASCII(name) || !base::IsStringASCII(value)) {
+      status->AddExclusionReason(
+          CookieInclusionStatus::EXCLUDE_DISALLOWED_CHARACTER);
+    }
   }
 
   // Validate name and value against character set and size limit constraints.
@@ -945,6 +961,13 @@ bool CanonicalCookie::IsCanonicalForFromStorage() const {
 
   if (!last_access_date_.is_null() && CreationDate().is_null()) {
     return false;
+  }
+
+  // Check if name or value contains any non-ascii values, fail if they do.
+  if (base::FeatureList::IsEnabled(features::kDisallowNonAsciiCookies)) {
+    if (!base::IsStringASCII(Name()) || !base::IsStringASCII(Value())) {
+      return false;
+    }
   }
 
   url::CanonHostInfo canon_host_info;

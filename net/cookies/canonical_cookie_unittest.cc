@@ -336,6 +336,169 @@ TEST(CanonicalCookieTest, CreateInvalidUrl) {
       CookieInclusionStatus::ExclusionReason::EXCLUDE_FAILURE_TO_STORE));
 }
 
+// Test that when net feature kDisallowNonAsciiCookies is enabled a cookie with
+// a non-ascii value in its name or value is properly excluded.
+TEST(CanonicalCookieTest, CreateNonAsciiCookieNameAndValue) {
+  base::Time creation_time = base::Time::Now();
+  std::optional<base::Time> server_time = std::nullopt;
+  CookieInclusionStatus status;
+  std::unique_ptr<CanonicalCookie> cc;
+
+  // Feature is not enabled yet so cookie with non-ascii name or value should
+  // still be included.
+  cc = CanonicalCookie::Create(GURL("https://www.foo.com/path"), "€=2",
+                               creation_time, server_time,
+                               /*cookie_partition_key=*/std::nullopt,
+                               CookieSourceType::kUnknown, &status);
+  EXPECT_TRUE(cc.get());
+  EXPECT_TRUE(status.IsInclude());
+  cc = CanonicalCookie::Create(GURL("https://www.foo.com/path"), "A=€",
+                               creation_time, server_time,
+                               /*cookie_partition_key=*/std::nullopt,
+                               CookieSourceType::kUnknown, &status);
+  EXPECT_TRUE(cc.get());
+  EXPECT_TRUE(status.IsInclude());
+
+  cc = CanonicalCookie::Create(GURL("https://www.foo.com/path"), "€=€",
+                               creation_time, server_time,
+                               /*cookie_partition_key=*/std::nullopt,
+                               CookieSourceType::kUnknown, &status);
+  EXPECT_TRUE(cc.get());
+  EXPECT_TRUE(status.IsInclude());
+
+  // Since feature is not enabled this should be true.
+  EXPECT_TRUE(cc->IsCanonical());
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {net::features::kDisallowNonAsciiCookies}, {});
+
+  // Now that feature is enabled this should return false.
+  EXPECT_FALSE(cc->IsCanonical());
+
+  // Valid cookie which should be included.
+  cc = CanonicalCookie::Create(GURL("https://www.foo.com/path"), "A=2",
+                               creation_time, server_time,
+                               /*cookie_partition_key=*/std::nullopt,
+                               CookieSourceType::kUnknown, &status);
+  EXPECT_TRUE(cc.get());
+  EXPECT_TRUE(status.IsInclude());
+  // Now that feature is enabled this cookie will be excluded.
+  cc = CanonicalCookie::Create(GURL("https://www.foo.com/path"), "€=2",
+                               creation_time, server_time,
+                               /*cookie_partition_key=*/std::nullopt,
+                               CookieSourceType::kUnknown, &status);
+  EXPECT_FALSE(cc.get());
+  EXPECT_TRUE(status.HasExclusionReason(
+      CookieInclusionStatus::EXCLUDE_DISALLOWED_CHARACTER));
+
+  // Now that feature is enabled this cookie will be excluded.
+  cc = CanonicalCookie::Create(GURL("https://www.foo.com/path"), "A=€",
+                               creation_time, server_time,
+                               /*cookie_partition_key=*/std::nullopt,
+                               CookieSourceType::kUnknown, &status);
+  EXPECT_FALSE(cc.get());
+  EXPECT_TRUE(status.HasExclusionReason(
+      CookieInclusionStatus::EXCLUDE_DISALLOWED_CHARACTER));
+
+  // Now that feature is enabled this cookie will be excluded.
+  cc = CanonicalCookie::Create(GURL("https://www.foo.com/path"), "€=€",
+                               creation_time, server_time,
+                               /*cookie_partition_key=*/std::nullopt,
+                               CookieSourceType::kUnknown, &status);
+  EXPECT_FALSE(cc.get());
+  EXPECT_TRUE(status.HasExclusionReason(
+      CookieInclusionStatus::EXCLUDE_DISALLOWED_CHARACTER));
+
+  cc = CanonicalCookie::CreateSanitizedCookie(
+      GURL("https://www.foo.com"), "A", "B", std::string(), "/foo",
+      base::Time(), base::Time(), base::Time(), false /*secure*/,
+      false /*httponly*/, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, std::nullopt /*partition_key*/, &status);
+}
+
+// Test that when net feature kDisallowNonAsciiCookies is enabled a cookie with
+// a non-ascii value in its name or value is properly excluded.
+TEST(CanonicalCookieTest, CreateSanitizedNonAsciiCookieNameAndValue) {
+  CookieInclusionStatus status;
+  std::unique_ptr<CanonicalCookie> cc;
+
+  // Feature is not enabled yet so cookie with non-ascii name or value should
+  // still be included.
+  cc = CanonicalCookie::CreateSanitizedCookie(
+      GURL("https://www.foo.com"), "€", "A", std::string(), "/foo",
+      base::Time(), base::Time(), base::Time(), false /*secure*/,
+      false /*httponly*/, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, std::nullopt /*partition_key*/, &status);
+
+  EXPECT_TRUE(cc.get());
+  EXPECT_TRUE(status.IsInclude());
+
+  cc = CanonicalCookie::CreateSanitizedCookie(
+      GURL("https://www.foo.com"), "A", "€", std::string(), "/foo",
+      base::Time(), base::Time(), base::Time(), false /*secure*/,
+      false /*httponly*/, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, std::nullopt /*partition_key*/, &status);
+  EXPECT_TRUE(cc.get());
+  EXPECT_TRUE(status.IsInclude());
+
+  cc = CanonicalCookie::CreateSanitizedCookie(
+      GURL("https://www.foo.com"), "€", "€", std::string(), "/foo",
+      base::Time(), base::Time(), base::Time(), false /*secure*/,
+      false /*httponly*/, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, std::nullopt /*partition_key*/, &status);
+  EXPECT_TRUE(cc.get());
+  EXPECT_TRUE(status.IsInclude());
+
+  // Since feature is not enabled this should be true.
+  EXPECT_TRUE(cc->IsCanonical());
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {net::features::kDisallowNonAsciiCookies}, {});
+
+  // Now that feature is enabled this should return false.
+  EXPECT_FALSE(cc->IsCanonical());
+
+  // Valid cookie which should be included.
+  cc = CanonicalCookie::CreateSanitizedCookie(
+      GURL("https://www.foo.com"), "A", "B", std::string(), "/foo",
+      base::Time(), base::Time(), base::Time(), false /*secure*/,
+      false /*httponly*/, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, std::nullopt /*partition_key*/, &status);
+  EXPECT_TRUE(cc.get());
+  EXPECT_TRUE(status.IsInclude());
+  // Now that feature is enabled this cookie will be excluded.
+  cc = CanonicalCookie::CreateSanitizedCookie(
+      GURL("https://www.foo.com"), "€", "2", std::string(), "/foo",
+      base::Time(), base::Time(), base::Time(), false /*secure*/,
+      false /*httponly*/, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, std::nullopt /*partition_key*/, &status);
+  EXPECT_FALSE(cc.get());
+  EXPECT_TRUE(status.HasExclusionReason(
+      CookieInclusionStatus::EXCLUDE_DISALLOWED_CHARACTER));
+
+  // Now that feature is enabled this cookie will be excluded.
+  cc = CanonicalCookie::CreateSanitizedCookie(
+      GURL("https://www.foo.com"), "A", "€", std::string(), "/foo",
+      base::Time(), base::Time(), base::Time(), false /*secure*/,
+      false /*httponly*/, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, std::nullopt /*partition_key*/, &status);
+  EXPECT_FALSE(cc.get());
+  EXPECT_TRUE(status.HasExclusionReason(
+      CookieInclusionStatus::EXCLUDE_DISALLOWED_CHARACTER));
+
+  // Now that feature is enabled this cookie will be excluded.
+  cc = CanonicalCookie::CreateSanitizedCookie(
+      GURL("https://www.foo.com"), "€", "€", std::string(), "/foo",
+      base::Time(), base::Time(), base::Time(), false /*secure*/,
+      false /*httponly*/, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, std::nullopt /*partition_key*/, &status);
+  EXPECT_FALSE(cc.get());
+  EXPECT_TRUE(status.HasExclusionReason(
+      CookieInclusionStatus::EXCLUDE_DISALLOWED_CHARACTER));
+}
+
 // Test that a cookie string with an empty domain attribute generates a
 // canonical host cookie.
 TEST(CanonicalCookieTest, CreateHostCookieFromString) {

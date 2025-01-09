@@ -591,7 +591,9 @@ chromium-metrics-reviews@google.com.
     If a cookie's {CookieField} field contains a non-ASCII character.
     Informally, this indicates if the field contains a (non-ASCII) Unicode
     character. Logged whenever a cookie is created via
-    CanonicalCookie::Create().
+    CanonicalCookie::Create(). When kDisallowNonAsciiCookies is enabled and a
+    cookie's {CookieField} field contains a non-ASCII character, this metric
+    will not be recorded.
   </summary>
   <token key="CookieField">
     <variant name="Name"/>

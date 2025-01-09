@@ -541,6 +541,9 @@ NET_EXPORT BASE_DECLARE_FEATURE(kEnablePortBoundCookies);
 // enables domain cookie shadowing protection.
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableSchemeBoundCookies);
 
+// Disallows cookies to have non ascii values in their name or value.
+NET_EXPORT BASE_DECLARE_FEATURE(kDisallowNonAsciiCookies);
+
 // Enables expiration duration limit (3 hours) for cookies on insecure websites.
 // This feature is a no-op unless kEnableSchemeBoundCookies is enabled.
 NET_EXPORT BASE_DECLARE_FEATURE(kTimeLimitedInsecureCookies);
