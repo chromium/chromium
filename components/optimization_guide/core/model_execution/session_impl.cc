@@ -69,6 +69,30 @@ void LogRequest(OptimizationGuideLogger* logger,
   }
 }
 
+void LogRawResponse(OptimizationGuideLogger* logger,
+                    ModelBasedCapabilityKey feature,
+                    const std::string& raw_response) {
+  if (logger && logger->ShouldEnableDebugLogs()) {
+    OPTIMIZATION_GUIDE_LOGGER(
+        optimization_guide_common::mojom::LogSource::MODEL_EXECUTION, logger)
+        << "Model generates raw response with "
+        << std::string(GetStringNameForModelExecutionFeature(feature)) << ":\n"
+        << raw_response;
+  }
+}
+
+void LogRepeatedResponse(OptimizationGuideLogger* logger,
+                         ModelBasedCapabilityKey feature,
+                         const std::string& repeated_response) {
+  if (logger && logger->ShouldEnableDebugLogs()) {
+    OPTIMIZATION_GUIDE_LOGGER(
+        optimization_guide_common::mojom::LogSource::MODEL_EXECUTION, logger)
+        << "Model generates repeated response with "
+        << std::string(GetStringNameForModelExecutionFeature(feature)) << ":\n"
+        << repeated_response;
+  }
+}
+
 void LogResponseHasRepeats(ModelBasedCapabilityKey feature, bool has_repeats) {
   base::UmaHistogramBoolean(
       base::StrCat(
@@ -543,6 +567,8 @@ void SessionImpl::OnResponse(on_device_model::mojom::ResponseChunkPtr chunk) {
     on_device_state_->receiver.reset();
     logged_response->set_has_repeats(true);
     if (features::GetOnDeviceModelRetractRepeats()) {
+      LogRepeatedResponse(on_device_state_->opts.logger.get(), feature_,
+                          on_device_state_->current_response);
       logged_response->set_status(
           proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_RETRACTED);
       CancelPendingResponse(ExecuteModelResult::kResponseHadRepeats,
@@ -692,6 +718,7 @@ void SessionImpl::SendResponse(ResponseCompleteness completeness) {
 
   std::string safe_response = on_device_state_->current_response.substr(
       0, on_device_state_->latest_safe_raw_output.length);
+  LogRawResponse(on_device_state_->opts.logger.get(), feature_, safe_response);
   on_device_state_->MutableLoggedResponse()->set_output_string(safe_response);
   size_t previous_response_pos = on_device_state_->latest_response_pos;
   on_device_state_->latest_response_pos =
