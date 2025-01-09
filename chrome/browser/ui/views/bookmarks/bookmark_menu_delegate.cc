@@ -10,7 +10,6 @@
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/functional/overloaded.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
@@ -223,19 +222,6 @@ BookmarkMenuDelegate::BookmarkFolderOrURL::GetUnderlyingNodes(
   return base::ToVector(nodes, [](const BookmarkNode* node) {
     return raw_ptr<const BookmarkNode, VectorExperimental>(node);
   });
-}
-
-size_t BookmarkMenuDelegate::BookmarkFolderOrURL::Hash::operator()(
-    const BookmarkFolderOrURL& obj) const {
-  return std::visit(
-      base::Overloaded{[](const BookmarkParentFolder& folder) {
-                         return std::hash<BookmarkParentFolder>{}(folder);
-                       },
-                       [](const BookmarkNode* node) {
-                         return std::hash<const bookmarks::BookmarkNode*>{}(
-                             node);
-                       }},
-      obj.folder_or_url_);
 }
 
 // static

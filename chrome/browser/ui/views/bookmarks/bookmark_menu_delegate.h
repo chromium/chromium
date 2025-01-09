@@ -179,10 +179,6 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
     GetUnderlyingNodes(
         const BookmarkMergedSurfaceService* bookmark_merged_service) const;
 
-    struct Hash {
-      size_t operator()(const BookmarkFolderOrURL& obj) const;
-    };
-
    private:
     static std::variant<BookmarkParentFolder,
                         raw_ptr<const bookmarks::BookmarkNode>>
