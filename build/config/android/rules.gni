@@ -4286,7 +4286,7 @@ if (!is_robolectric && enable_java_templates) {
     assert(
         !_scanned_files.has_native_libraries ||
             (_ignore_native_libraries || _extract_native_libraries),
-        "android_aar_prebuilt() contains .so files." +
+        "android_aar_prebuilt(" + target_name + ") contains .so files." +
             " Please set ignore_native_libraries or extract_native_libraries.")
     assert(
         !(_ignore_native_libraries && _extract_native_libraries),
