@@ -223,12 +223,14 @@ void FormEventLoggerBase::OnFormSubmitted(const FormStructure& form) {
   }
 }
 
-void FormEventLoggerBase::OnTypedIntoNonFilledField() {
-  has_logged_typed_into_non_filled_field_ = true;
+void FormEventLoggerBase::OnEditedNonFilledField(FieldGlobalId field_id) {
+  has_logged_edited_non_filled_field_ = true;
+  OnEditedField(field_id);
 }
 
-void FormEventLoggerBase::OnEditedAutofilledField() {
+void FormEventLoggerBase::OnEditedAutofilledField(FieldGlobalId field_id) {
   has_logged_edited_autofilled_field_ = true;
+  OnEditedField(field_id);
 }
 
 void FormEventLoggerBase::OnDestroyed() {
@@ -406,7 +408,7 @@ void FormEventLoggerBase::RecordKeyMetrics() {
         has_logged_form_filling_suggestion_filled_, form_interaction_counts_,
         flow_id_, fast_checkout_run_id_);
   }
-  if (has_logged_typed_into_non_filled_field_ ||
+  if (has_logged_edited_non_filled_field_ ||
       has_logged_form_filling_suggestion_filled_) {
     RecordFormSubmission(logs);
   }
@@ -557,11 +559,10 @@ void FormEventLoggerBase::RecordUndoMetrics() const {
   }
 }
 
-void FormEventLoggerBase::OnTextFieldDidChange(
-    const FieldGlobalId& field_global_id) {
-  if (field_global_id != last_field_global_id_modified_by_user_) {
+void FormEventLoggerBase::OnEditedField(FieldGlobalId field_id) {
+  if (field_id != last_field_global_id_modified_by_user_) {
     ++form_interaction_counts_.form_element_user_modifications;
-    last_field_global_id_modified_by_user_ = field_global_id;
+    last_field_global_id_modified_by_user_ = field_id;
     UpdateFlowId();
   }
 }

@@ -117,7 +117,7 @@ TEST_P(CategoryResolvedKeyMetricsEditTest, kLocalOrSyncable) {
                       CreateProfileOfCategory(
                           AutofillProfileRecordTypeCategory::kLocalOrSyncable));
   if (ShouldEditField()) {
-    SimulateUserChangedTextField(form, form.fields().front());
+    SimulateUserChangedField(form, form.fields().front());
   }
   SubmitForm(form);
 
@@ -144,7 +144,7 @@ TEST_P(CategoryResolvedKeyMetricsEditTest, kAccountChrome) {
                       CreateProfileOfCategory(
                           AutofillProfileRecordTypeCategory::kAccountChrome));
   if (ShouldEditField()) {
-    SimulateUserChangedTextField(form, form.fields().front());
+    SimulateUserChangedField(form, form.fields().front());
   }
   SubmitForm(form);
 
@@ -172,7 +172,7 @@ TEST_P(CategoryResolvedKeyMetricsEditTest, kAccountNonChrome) {
       form, CreateProfileOfCategory(
                 AutofillProfileRecordTypeCategory::kAccountNonChrome));
   if (ShouldEditField()) {
-    SimulateUserChangedTextField(form, form.fields().front());
+    SimulateUserChangedField(form, form.fields().front());
   }
   SubmitForm(form);
 
@@ -215,7 +215,7 @@ TEST_P(CategoryResolvedKeyMetricsEditTest, Mixed) {
                           AutofillProfileRecordTypeCategory::kAccountChrome));
   SubmitForm(form2);
   if (ShouldEditField()) {
-    SimulateUserChangedTextField(form2, form2.fields().front());
+    SimulateUserChangedField(form2, form2.fields().front());
   }
 
   ResetDriverToCommitMetrics();

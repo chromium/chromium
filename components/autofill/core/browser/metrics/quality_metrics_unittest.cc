@@ -754,8 +754,7 @@ TEST_F(QualityMetricsTest, NoSubmission) {
 
   autofill_manager().AddSeenForm(form, heuristic_types, server_types);
   // Changes the name field to match the full name.
-  SimulateUserChangedTextFieldTo(form, form.fields()[0],
-                                 u"Elvis Aaron Presley");
+  SimulateUserChangedFieldTo(form, form.fields()[0], u"Elvis Aaron Presley");
 
   base::HistogramTester histogram_tester;
 

@@ -197,7 +197,7 @@ TEST_F(FormInteractionsUkmLoggerTest, TypeOfEditedAutofilledFieldsUkmLogging) {
 
   base::HistogramTester histogram_tester;
   // Simulate text input in the first and second fields.
-  SimulateUserChangedTextField(form, form.fields()[0]);
+  SimulateUserChangedField(form, form.fields()[0]);
 
   SubmitForm(form);
   ExpectedUkmMetricsRecord name_field_ukm_record{
@@ -355,8 +355,8 @@ TEST_F(FieldLogUkmMetricTest, AddressSubmittedFormLogEvents) {
                                      .begin()
                                      ->second->form_parsed_timestamp();
     // Simulate text input in the first fields.
-    SimulateUserChangedTextFieldTo(form, form.fields()[0], u"United States",
-                                   parse_time + base::Milliseconds(3));
+    SimulateUserChangedFieldTo(form, form.fields()[0], u"United States",
+                               parse_time + base::Milliseconds(3));
     task_environment_.FastForwardBy(base::Milliseconds(1200));
     base::HistogramTester histogram_tester;
     SubmitForm(form);
@@ -762,10 +762,10 @@ TEST_F(FieldLogUkmMetricTest, AutofillFieldInfoMetricsEditedFieldWithoutFill) {
                                    .begin()
                                    ->second->form_parsed_timestamp();
   // Simulate text input in the first and second fields.
-  SimulateUserChangedTextFieldTo(form, form.fields()[0], u"Elvis Aaron Presley",
-                                 parse_time + base::Milliseconds(3));
-  SimulateUserChangedTextFieldTo(form, form.fields()[1], u"buddy@gmail.com",
-                                 parse_time + base::Milliseconds(3));
+  SimulateUserChangedFieldTo(form, form.fields()[0], u"Elvis Aaron Presley",
+                             parse_time + base::Milliseconds(3));
+  SimulateUserChangedFieldTo(form, form.fields()[1], u"buddy@gmail.com",
+                             parse_time + base::Milliseconds(3));
   task_environment_.FastForwardBy(base::Milliseconds(1200));
   base::HistogramTester histogram_tester;
   SubmitForm(form);
@@ -1733,7 +1733,7 @@ TEST_P(LogFocusedComplexFormAtFormRemoveTest, TestEmittedUKM) {
 
   if (GetParam().step_2_typing) {
     task_environment_.FastForwardBy(base::Milliseconds(1000));
-    SimulateUserChangedTextField(form, first_field, base::TimeTicks::Now());
+    SimulateUserChangedField(form, first_field, base::TimeTicks::Now());
   }
   if (GetParam().step_3_autofill) {
     task_environment_.FastForwardBy(base::Milliseconds(1000));
@@ -1760,7 +1760,7 @@ TEST_P(LogFocusedComplexFormAtFormRemoveTest, TestEmittedUKM) {
   }
   if (GetParam().step_4_edit_after_autofill) {
     task_environment_.FastForwardBy(base::Milliseconds(1000));
-    SimulateUserChangedTextField(form, first_field, base::TimeTicks::Now());
+    SimulateUserChangedField(form, first_field, base::TimeTicks::Now());
   }
   if (GetParam().step_5_submit) {
     task_environment_.FastForwardBy(base::Milliseconds(1000));

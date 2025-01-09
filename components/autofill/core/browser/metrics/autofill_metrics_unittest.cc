@@ -314,52 +314,65 @@ TEST_F(AutofillMetricsTest, StoredProfileCountNonAutofillableFormSubmission) {
 
 // Tests the logging of type-specific field-wise correctness.
 TEST_F(AutofillMetricsTest, EditedAutofilledFieldAtSubmission) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillRecordCorrectionOfSelectElements};
   test::FormDescription form_description = {
       .description_for_logging = "NumberOfAutofilledFields",
       .fields = {{.role = NAME_FULL,
                   .value = u"Elvis Aaron Presley",
                   .is_autofilled = true},
+                 {.role = ADDRESS_HOME_COUNTRY,
+                  .value = u"United States",
+                  .form_control_type = FormControlType::kSelectOne,
+                  .is_autofilled = true},
+                 {.role = ADDRESS_HOME_STATE,
+                  .value = u"New York",
+                  .form_control_type = FormControlType::kSelectOne,
+                  .is_autofilled = true},
                  {.role = EMAIL_ADDRESS,
                   .value = u"buddy@gmail.com",
-                  .is_autofilled = true},
-                 {.role = PHONE_HOME_CITY_AND_NUMBER, .is_autofilled = true}},
+                  .is_autofilled = true}},
       .renderer_id = test::MakeFormRendererId(),
       .main_frame_origin = url::Origin::Create(autofill_driver_->url())};
 
   FormData form = GetAndAddSeenForm(form_description);
 
-  base::HistogramTester histogram_tester;
-  // Simulate text input in the first and second fields.
-  SimulateUserChangedTextField(form, form.fields()[0]);
-  SimulateUserChangedTextField(form, form.fields()[1]);
+  // Simulate user changing values in the first and second fields.
+  SimulateUserChangedField(form, form.fields()[0]);
+  SimulateUserChangedField(form, form.fields()[1]);
 
+  base::HistogramTester histogram_tester;
   SubmitForm(form);
 
   // The |NAME_FULL| field was edited (bucket 112).
-  histogram_tester.ExpectBucketCount(
-      "Autofill.EditedAutofilledFieldAtSubmission2.ByFieldType", 112, 1);
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.EditedAutofilledFieldAtSubmission2.ByFieldType"),
+              BucketsAre(
+                  // The |NAME_FULL| field was edited (bucket 112).
+                  Bucket(112, 1),
+                  // The |EMAIL_ADDRESS| field was not edited (bucket 145).
+                  Bucket(145, 1),
+                  // The |ADDRESS_HOME_STATE| field was not edited (bucket 545).
+                  Bucket(545, 1),
+                  // The |ADDRESS_HOME_COUNTRY| field was edited (bucket 576).
+                  Bucket(576, 1)));
 
-  // The |EMAIL_ADDRESS| field was edited (bucket 144).
-  histogram_tester.ExpectBucketCount(
-      "Autofill.EditedAutofilledFieldAtSubmission2.ByFieldType", 144, 1);
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.EditedAutofilledFieldAtSubmission2.Aggregate"),
+              BucketsAre(
+                  // There should be two counts on edited fields.
+                  Bucket(0, 2),
+                  // There should be one count on accepted fields.
+                  Bucket(1, 2)));
 
-  // The |PHONE_HOME_CITY_AND_NUMBER| field was not edited (bucket 209).
-  histogram_tester.ExpectBucketCount(
-      "Autofill.EditedAutofilledFieldAtSubmission2.ByFieldType", 209, 1);
-
-  // The aggregated histogram should have two counts on edited fields.
-  histogram_tester.ExpectBucketCount(
-      "Autofill.EditedAutofilledFieldAtSubmission2.Aggregate", 0, 2);
-
-  // The aggregated histogram should have one count on accepted fields.
-  histogram_tester.ExpectBucketCount(
-      "Autofill.EditedAutofilledFieldAtSubmission2.Aggregate", 1, 1);
-
-  // The autocomplete!=off histogram should have one count on accepted fields.
-  histogram_tester.ExpectBucketCount(
-      "Autofill.Autocomplete.NotOff.EditedAutofilledFieldAtSubmission2."
-      "Address",
-      1, 1);
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.Autocomplete.NotOff."
+                  "EditedAutofilledFieldAtSubmission2.Address"),
+              BucketsAre(
+                  // There should be two counts on edited fields.
+                  Bucket(0, 2),
+                  // There should be one count on accepted fields.
+                  Bucket(1, 2)));
 
   // The autocomplete!=off histogram should have no count on accepted fields.
   histogram_tester.ExpectTotalCount(
@@ -4132,9 +4145,9 @@ TEST_F(AutofillMetricsTest, FormFillDuration) {
                                      ->second->form_parsed_timestamp();
 
     FormData user_filled_form = filled_form;
-    SimulateUserChangedTextField(user_filled_form,
-                                 user_filled_form.fields().front(),
-                                 parse_time + base::Microseconds(3));
+    SimulateUserChangedField(user_filled_form,
+                             user_filled_form.fields().front(),
+                             parse_time + base::Microseconds(3));
     task_environment_.FastForwardBy(base::Microseconds(17));
     SubmitForm(filled_form);
 
@@ -4198,9 +4211,9 @@ TEST_F(AutofillMetricsTest, FormFillDuration) {
 
     FormData mixed_filled_form = test::AsAutofilled(filled_form);
     FillAutofillFormData(mixed_filled_form, parse_time + base::Microseconds(5));
-    SimulateUserChangedTextField(mixed_filled_form,
-                                 mixed_filled_form.fields().front(),
-                                 parse_time + base::Microseconds(3));
+    SimulateUserChangedField(mixed_filled_form,
+                             mixed_filled_form.fields().front(),
+                             parse_time + base::Microseconds(3));
 
     task_environment_.FastForwardBy(base::Microseconds(17));
     SubmitForm(mixed_filled_form);
@@ -4234,9 +4247,9 @@ TEST_F(AutofillMetricsTest, FormFillDuration) {
 
     FormData mixed_filled_form = test::AsAutofilled(filled_form);
     FillAutofillFormData(mixed_filled_form, parse_time + base::Microseconds(5));
-    SimulateUserChangedTextField(mixed_filled_form,
-                                 mixed_filled_form.fields().front(),
-                                 parse_time + base::Microseconds(3));
+    SimulateUserChangedField(mixed_filled_form,
+                             mixed_filled_form.fields().front(),
+                             parse_time + base::Microseconds(3));
 
     task_environment_.FastForwardBy(base::Microseconds(17));
     SubmitForm(mixed_filled_form);
@@ -5093,8 +5106,8 @@ TEST_F(AutofillMetricsTest, AutocompleteOneTimeCodeFormFilledDuration) {
                                      .begin()
                                      ->second->form_parsed_timestamp();
     FillAutofillFormData(form, parse_time + base::Microseconds(5));
-    SimulateUserChangedTextField(form, form.fields().front(),
-                                 parse_time + base::Microseconds(3));
+    SimulateUserChangedField(form, form.fields().front(),
+                             parse_time + base::Microseconds(3));
     task_environment_.FastForwardBy(base::Microseconds(17));
     SubmitForm(form);
 

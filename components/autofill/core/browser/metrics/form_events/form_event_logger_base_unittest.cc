@@ -226,7 +226,7 @@ TEST_F(FormEventLoggerBaseFunnelTest, AblationState) {
                                               form.fields()[0].global_id());
 
   // Don't simulate a suggestion but simulate the user typing.
-  SimulateUserChangedTextField(form, form.fields()[0]);
+  SimulateUserChangedField(form, form.fields()[0]);
 
   SubmitForm(form);
 
@@ -339,8 +339,8 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogNoProfile) {
   autofill_manager().OnAskForValuesToFillTest(form_,
                                               form_.fields()[0].global_id());
 
-  SimulateUserChangedTextField(form_, form_.fields()[0]);
-  SimulateUserChangedTextField(form_, form_.fields()[1]);
+  SimulateUserChangedField(form_, form_.fields()[0]);
+  SimulateUserChangedField(form_, form_.fields()[1]);
   SubmitForm(form_);
 
   FormInteractionsFlowId flow_id =
@@ -382,8 +382,8 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogUserDoesNotAcceptSuggestion) {
                                               form_.fields()[2].global_id());
   DidShowAutofillSuggestions(form_, /*field_index=*/2);
 
-  SimulateUserChangedTextField(form_, form_.fields()[0]);
-  SimulateUserChangedTextField(form_, form_.fields()[1]);
+  SimulateUserChangedField(form_, form_.fields()[0]);
+  SimulateUserChangedField(form_, form_.fields()[1]);
   SubmitForm(form_);
 
   FormInteractionsFlowId flow_id =
@@ -431,7 +431,7 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogUserFixesFilledData) {
   FillTestProfile(form_, /*field_index=*/2);
 
   // Simulate user fixing the address.
-  SimulateUserChangedTextField(form_, form_.fields()[1]);
+  SimulateUserChangedField(form_, form_.fields()[1]);
   SubmitForm(form_);
 
   FormInteractionsFlowId flow_id =
@@ -482,7 +482,7 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest,
   FillTestProfile(form_);
 
   // Simulate user fixing the address.
-  SimulateUserChangedTextField(form_, form_.fields()[1]);
+  SimulateUserChangedField(form_, form_.fields()[1]);
 
   // Don't submit form.
 
