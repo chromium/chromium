@@ -288,8 +288,7 @@ def _skylab(
         tast_expr = None,
         test_level_retries = None,
         timeout_sec = None,
-        shards = None,
-        args = []):
+        shards = None):
     """Define a Skylab test target.
 
     Args:
@@ -321,7 +320,6 @@ def _skylab(
             to skylab tests.
         timeout_sec: The maximum time the test can take to run.
         shards: The number of shards used to run the test.
-        args: The list of test arguments to be added to test CLI.
     """
     return struct(
         cros_board = cros_board,
@@ -339,7 +337,6 @@ def _skylab(
         test_level_retries = test_level_retries,
         timeout_sec = timeout_sec,
         shards = shards,
-        args = args,
     )
 
 def _mixin_values(
