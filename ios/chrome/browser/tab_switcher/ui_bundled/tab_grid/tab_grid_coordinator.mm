@@ -1737,7 +1737,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 - (void)showTabGroupsPanelAnimated:(BOOL)animated {
   CHECK(IsTabGroupSyncEnabled());
   // Return to Normal mode if needed, as Tab Groups panel doesn't support
-  // Search.
+  // Search nor Selection modes.
   [self setActiveMode:TabGridMode::kNormal];
   [self.baseViewController setCurrentPageAndPageControl:TabGridPageTabGroups
                                                animated:animated];
