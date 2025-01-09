@@ -955,8 +955,9 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
       break;
     case signin_util::SignedInState::kSignInPending:
       button_type = ActionableItem::kSigninReauthButton;
-      params.subtitle =
-          l10n_util::GetStringUTF16(IDS_SIGNIN_PAUSED_USER_MENU_VERIFY_MESSAGE);
+      params.subtitle = l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_PENDING_STATE_DESCRIPTION,
+          base::UTF8ToUTF16(primary_account_info.email));
       params.button_text =
           l10n_util::GetStringUTF16(IDS_PROFILES_VERIFY_ACCOUNT_BUTTON);
       params.has_dotted_ring = true;
