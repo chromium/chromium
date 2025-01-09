@@ -4672,7 +4672,7 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4254813446494774748">Idioma de traducción:</translation>
 <translation id="4255016471934258618">Abrir mucho la boca</translation>
 <translation id="425573743389990240">Tasa de descarga de la batería en vatios (si el valor es negativo, significa que la batería se está cargando)</translation>
-<translation id="4255841059940367080">Protección basada en IA en tiempo real (frente a sitios, descargas, y extensiones peligrosos) que se basa en el envío de tus datos de navegación a Google.</translation>
+<translation id="4255841059940367080">Protección basada en IA en tiempo real contra descargas, extensiones y sitios peligrosos, que se basa en el envío de tus datos de navegación a Google.</translation>
 <translation id="4256316378292851214">Gu&amp;ardar vídeo como...</translation>
 <translation id="4258348331913189841">Sistemas de archivos</translation>
 <translation id="4259388776256904261">Este proceso puede tardar un poco</translation>
@@ -8375,7 +8375,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6954910832698269894">Activa la sincronización del dispositivo para restaurar las aplicaciones, los ajustes, las redes Wi-Fi y el fondo de pantalla de tu Chromebook anterior. Puedes hacer cambios en cualquier momento en Configuración &gt; Cuentas.</translation>
 <translation id="6954936693361896459">Enviar esta otra pestaña</translation>
 <translation id="6955446738988643816">Inspeccionar ventana emergente</translation>
-<translation id="6955535239952325894">Este ajuste está inhabilitado en los navegadores administrados</translation>
+<translation id="6955535239952325894">Este ajuste está inhabilitado en los navegadores gestionados</translation>
 <translation id="6955698182324067397">Vas a habilitar las funciones de depuración de ChromeOS, que configurarán el daemon sshd y habilitarán el inicio desde unidades USB.</translation>
 <translation id="6955893174999506273">Asignar 1 interruptor más</translation>
 <translation id="6957044667612803194">Esta llave de seguridad no admite números PIN.</translation>
@@ -10571,7 +10571,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8505669004895429027">Ahorro reducido</translation>
 <translation id="8507227974644337342">Resolución de pantalla</translation>
 <translation id="850763987657366362">No se puede importar el certificado</translation>
-<translation id="8509177919508253835">Restablece las llaves de seguridad y crea los PIN</translation>
+<translation id="8509177919508253835">Restablece llaves de seguridad y crea PINs</translation>
 <translation id="8509646642152301857">Se ha producido un error al descargar el diccionario del corrector ortográfico.</translation>
 <translation id="8509967119010808787">Haz clic aquí para buscar pestañas</translation>
 <translation id="8512476990829870887">Finalizar proceso</translation>

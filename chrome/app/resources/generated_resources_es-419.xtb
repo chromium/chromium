@@ -8374,7 +8374,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6954910832698269894">Activa la sincronización del dispositivo para restablecer las apps, la configuración, las redes Wi-Fi y los fondos de pantalla de tu Chromebook anterior. Puedes realizar cambios cuando quieras en Configuración &gt; Cuentas.</translation>
 <translation id="6954936693361896459">Transmitir esta pestaña en su lugar</translation>
 <translation id="6955446738988643816">Inspeccionar ventana emergente</translation>
-<translation id="6955535239952325894">Esta configuración está inhabilitada en navegadores administrados.</translation>
+<translation id="6955535239952325894">Esta configuración está inhabilitada en navegadores administrados</translation>
 <translation id="6955698182324067397">Estás habilitando las funciones de depuración del ChromeOS que configurarán el daemon sshd y habilitarán el inicio desde unidades USB.</translation>
 <translation id="6955893174999506273">Asignar 1 interruptor más</translation>
 <translation id="6957044667612803194">Esta llave de seguridad no es compatible con los PIN</translation>
@@ -9415,7 +9415,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="769824636077131955">Este documento es demasiado grande para hacer un control de seguridad. Puedes imprimir documentos de hasta 50 MB.</translation>
 <translation id="7698507637739331665">Se bloquearon algunos elementos</translation>
 <translation id="7700516433658473670">Impresoras y escáneres</translation>
-<translation id="7701040980221191251">Ninguna</translation>
+<translation id="7701040980221191251">No hay</translation>
 <translation id="7701869757853594372">A cargo del USUARIO</translation>
 <translation id="7702463352133825032">Detener la transmisión a <ph name="DEVICE_NAME" /></translation>
 <translation id="7704305437604973648">Tarea</translation>

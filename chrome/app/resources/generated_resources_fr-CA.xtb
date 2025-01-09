@@ -2110,7 +2110,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2440604414813129000">Afficher le code s&amp;ource</translation>
 <translation id="244071666433939959">Les applications s'ouvrent dans une fenêtre</translation>
 <translation id="2440823041667407902">Accès à la localisation</translation>
-<translation id="2441719842399509963">Rétablir les valeurs par défaut</translation>
+<translation id="2441719842399509963">Réinitialiser aux valeurs par défaut</translation>
 <translation id="244231003699905658">Adresse incorrecte. Veuillez vérifier l'adresse, puis réessayez.</translation>
 <translation id="2442916515643169563">Ombre du texte</translation>
 <translation id="2443487764245141020">Les sites peuvent également devoir reconnaître votre appareil à l'aide d'un identifiant</translation>
@@ -4764,7 +4764,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4314815835985389558">Gérer la synchronisation</translation>
 <translation id="4316850752623536204">Site Web du développeur</translation>
 <translation id="43176328751044557">{NUM_SITES,plural, =1{Autorisations retirées pour 1 site}one{Autorisations retirées pour {NUM_SITES} site}other{Autorisations retirées pour {NUM_SITES} sites}}</translation>
-<translation id="4317733381297736564">Achats intégrés</translation>
+<translation id="4317733381297736564">Achats au moyen de l'appli</translation>
 <translation id="4317820549299924617">Échec de la vérification</translation>
 <translation id="4319441675152393296">Cliquez sur l'icône de cette extension pour lire et modifier <ph name="HOST" /></translation>
 <translation id="4320177379694898372">Pas de connexion Internet</translation>

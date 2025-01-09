@@ -8,7 +8,7 @@
 <translation id="101823271612280837">Grabatzeari utzi zaio. Ezin da erabili joko-panela tableta moduan.</translation>
 <translation id="1024364763893396229">Gorde <ph name="NAME" /> gailua</translation>
 <translation id="1032891413405719768">Pila agortzen ari zaio arkatzari</translation>
-<translation id="1036073649888683237">Jakinarazpenak kudeatzeko, joan ezarpenetara</translation>
+<translation id="1036073649888683237">Jakinarazpenak kudeatzeko, joan Ezarpenak atalera</translation>
 <translation id="1036348656032585052">Desaktibatu</translation>
 <translation id="1036672894875463507">Google-ren Laguntzailea naiz eta egunean zehar gauzak egiteko laguntza eskainiko dizut.
 Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
@@ -2003,7 +2003,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="7780094051999721182">lasterbideak</translation>
 <translation id="7780159184141939021">Biratu pantaila</translation>
 <translation id="7781829728241885113">Atzo</translation>
-<translation id="7787212146956232129">Sarrera- eta irteera-gailuak ezarrita daude. Aldatzeko, joan ezarpenetara.</translation>
+<translation id="7787212146956232129">Sarrera- eta irteera-gailuak ezarrita daude. Aldatzeko, joan Ezarpenak atalera.</translation>
 <translation id="7792590255364786396">Ikusgai</translation>
 <translation id="7793389284006812057">AA generatiboa esperimentala da, garapen-zikloaren fase goiztiar batean dago eta, oraingoz, erabilgarritasun mugatua du.</translation>
 <translation id="7796735576426975947">Beste jakinarazpen bat ezkutatu da</translation>
@@ -2338,7 +2338,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fitxategi}other{# fitxategi}}</translation>
 <translation id="8936501819958976551">desaktibatuta</translation>
 <translation id="8938800817013097409">USB-C gailua (eskuinaldeko atzeko ataka)</translation>
-<translation id="8939855324412367560">Audio-sarrera "<ph name="INPUT_DEVICE_NAME" />" da, eta audio-irteera, berriz, "<ph name="OUTPUT_DEVICE_NAME" />". Aldatzeko, joan ezarpenetara.</translation>
+<translation id="8939855324412367560">Audio-sarrera "<ph name="INPUT_DEVICE_NAME" />" da, eta audio-irteera, berriz, "<ph name="OUTPUT_DEVICE_NAME" />". Aldatzeko, joan Ezarpenak atalera.</translation>
 <translation id="8940956008527784070">Bateria gutxi (% <ph name="PERCENTAGE" />)</translation>
 <translation id="8945508919180478719">Estudio-estiloko mikrofonoa</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> koadroa ez da markatu.</translation>
