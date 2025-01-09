@@ -13,6 +13,8 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
@@ -74,7 +76,6 @@ public class EnhancedProtectionSettingsFragmentTest {
     }
 
     // TODO(crbug.com/40929404): Add a test to check the openUrlInCCT functionality.
-
     @Test
     @SmallTest
     @Feature({"SafeBrowsing"})
@@ -90,6 +91,8 @@ public class EnhancedProtectionSettingsFragmentTest {
                 () -> {
                     // Check that the learn more label is shown
                     Assert.assertNotNull(mEnhancedProtectionLearnMore);
+                    // Check that password leak detection bullet is visible
+                    Assert.assertTrue(mEnhancedProtectionBulletFive.isVisible());
 
                     EnhancedProtectionSettingsFragment fragment = mTestRule.getFragment();
 
@@ -149,6 +152,25 @@ public class EnhancedProtectionSettingsFragmentTest {
                     Assert.assertEquals(bulletSix, mEnhancedProtectionBulletSix.getSummary());
                     Assert.assertEquals(bulletSeven, mEnhancedProtectionBulletSeven.getSummary());
                     Assert.assertEquals(bulletEight, mEnhancedProtectionBulletEight.getSummary());
+                });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"SafeBrowsing"})
+    @EnableFeatures({ChromeFeatureList.PASSWORD_LEAK_TOGGLE_MOVE})
+    public void testPasswordLeakDetectionBulletGone() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    new SafeBrowsingBridge(ProfileManager.getLastUsedRegularProfile())
+                            .setSafeBrowsingState(SafeBrowsingState.ENHANCED_PROTECTION);
+                });
+        startSettings();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Check that the password leak detection bullet is not visible
+                    Assert.assertFalse(mEnhancedProtectionBulletFive.isVisible());
                 });
     }
 }

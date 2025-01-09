@@ -15,6 +15,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -323,6 +324,7 @@ public class StandardProtectionSettingsFragmentTest {
     @Test
     @SmallTest
     @Feature({"SafeBrowsing"})
+    @DisableFeatures({ChromeFeatureList.PASSWORD_LEAK_TOGGLE_MOVE})
     public void testSafeBrowsingSettingsStandardProtection() {
         setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
         startSettings();
@@ -346,6 +348,9 @@ public class StandardProtectionSettingsFragmentTest {
                             fragment.getContext()
                                     .getString(R.string.passwords_leak_detection_switch_summary);
 
+                    // Check that the password leak toggle is still visible when password leak
+                    // toggle move flag is disabled.
+                    Assert.assertTrue(mPasswordLeakDetectionPreference.isVisible());
                     Assert.assertEquals(
                             standardProtectionSubtitle, mStandardProtectionSubtitle.getTitle());
                     Assert.assertEquals(
@@ -356,6 +361,23 @@ public class StandardProtectionSettingsFragmentTest {
                     Assert.assertEquals(
                             password_leak_detection_summary,
                             mPasswordLeakDetectionPreference.getSummary());
+                });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"SafeBrowsing"})
+    @EnableFeatures({ChromeFeatureList.PASSWORD_LEAK_TOGGLE_MOVE})
+    public void testPasswordLeakDetectionGone() {
+        setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
+        startSettings();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Check that the password leak toggle is not visible when password leak toggle
+                    // move flag is
+                    // enabled.
+                    Assert.assertFalse(mPasswordLeakDetectionPreference.isVisible());
                 });
     }
 

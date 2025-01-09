@@ -68,6 +68,7 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
     private static final String PREF_SECURE_DNS = "secure_dns";
     private static final String PREF_USAGE_STATS = "usage_stats_reporting";
     private static final String PREF_SAFE_BROWSING = "safe_browsing";
+    private static final String PREF_PASSWORD_LEAK_DETECTION = "password_leak_detection";
     private static final String PREF_SYNC_AND_SERVICES_LINK = "sync_and_services_link";
     private static final String PREF_PRIVACY_SANDBOX = "privacy_sandbox";
     private static final String PREF_PRIVACY_GUIDE = "privacy_guide";
@@ -168,6 +169,14 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                 });
 
         setHasOptionsMenu(true);
+
+        ChromeSwitchPreference passwordLeakTogglePref =
+                (ChromeSwitchPreference) findPreference(PREF_PASSWORD_LEAK_DETECTION);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_LEAK_TOGGLE_MOVE)) {
+            passwordLeakTogglePref.setOnPreferenceChangeListener(this);
+        } else {
+            passwordLeakTogglePref.setVisible(false);
+        }
 
         ChromeSwitchPreference canMakePaymentPref =
                 (ChromeSwitchPreference) findPreference(PREF_CAN_MAKE_PAYMENT);
@@ -316,6 +325,9 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
             // TODO(crbug.com/349860796): Remove once new settings are fully rolled out.
             UserPrefs.get(getProfile())
                     .setBoolean(Pref.HTTPS_ONLY_MODE_ENABLED, (boolean) newValue);
+        } else if (PREF_PASSWORD_LEAK_DETECTION.equals(key)) {
+            UserPrefs.get(getProfile())
+                    .setBoolean(Pref.PASSWORD_LEAK_DETECTION_ENABLED, (boolean) newValue);
         }
         return true;
     }
@@ -328,6 +340,16 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
 
     /** Updates the preferences. */
     public void updatePreferences() {
+        ChromeSwitchPreference passwordLeakTogglePref =
+                (ChromeSwitchPreference) findPreference(PREF_PASSWORD_LEAK_DETECTION);
+        if (passwordLeakTogglePref != null && passwordLeakTogglePref.isVisible()) {
+            passwordLeakTogglePref.setEnabled(
+                    !UserPrefs.get(getProfile())
+                            .isManagedPreference(Pref.PASSWORD_LEAK_DETECTION_ENABLED));
+            passwordLeakTogglePref.setChecked(
+                    UserPrefs.get(getProfile()).getBoolean(Pref.PASSWORD_LEAK_DETECTION_ENABLED));
+        }
+
         ChromeSwitchPreference canMakePaymentPref =
                 (ChromeSwitchPreference) findPreference(PREF_CAN_MAKE_PAYMENT);
         if (canMakePaymentPref != null) {
