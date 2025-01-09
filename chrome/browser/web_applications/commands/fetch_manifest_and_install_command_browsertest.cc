@@ -177,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, MultipleInstalls) {
         EXPECT_EQ(
             code,
             webapps::InstallResultCode::kCancelledDueToMainFrameNavigation);
-        EXPECT_TRUE(provider().registrar_unsafe().IsNotInRegistrar(app_id));
+        EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(app_id));
         loop.Quit();
       }),
       FallbackBehavior::kCraftedManifestOnly);
@@ -199,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, InvalidManifest) {
           [&](const webapps::AppId& app_id, webapps::InstallResultCode code) {
             EXPECT_EQ(code,
                       webapps::InstallResultCode::kNotValidManifestForWebApp);
-            EXPECT_TRUE(provider().registrar_unsafe().IsNotInRegistrar(app_id));
+            EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(app_id));
             loop.Quit();
           }),
       FallbackBehavior::kCraftedManifestOnly);
@@ -221,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, UserDeclineInstall) {
       base::BindLambdaForTesting(
           [&](const webapps::AppId& app_id, webapps::InstallResultCode code) {
             EXPECT_EQ(code, webapps::InstallResultCode::kUserInstallDeclined);
-            EXPECT_TRUE(provider().registrar_unsafe().IsNotInRegistrar(app_id));
+            EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(app_id));
             loop.Quit();
           }),
       FallbackBehavior::kCraftedManifestOnly);
@@ -244,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
       base::BindLambdaForTesting(
           [&](const webapps::AppId& app_id, webapps::InstallResultCode code) {
             EXPECT_EQ(code, webapps::InstallResultCode::kWebContentsDestroyed);
-            EXPECT_TRUE(provider().registrar_unsafe().IsNotInRegistrar(app_id));
+            EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(app_id));
             loop.Quit();
           }),
       FallbackBehavior::kCraftedManifestOnly);

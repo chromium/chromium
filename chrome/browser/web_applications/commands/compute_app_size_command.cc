@@ -58,7 +58,7 @@ void ComputeAppSizeCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
   lock_ = std::move(lock);
 
   const WebAppRegistrar& registrar = lock_->registrar();
-  if (registrar.IsNotInRegistrar(app_id_)) {
+  if (!registrar.IsInRegistrar(app_id_)) {
     ReportResultAndDestroy(CommandResult::kFailure);
     return;
   }
@@ -98,7 +98,7 @@ void ComputeAppSizeCommand::OnQuotaModelInfoLoaded(
     const SiteDataSizeCollector::QuotaStorageUsageInfoList&
         quota_storage_info_list) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (lock_->registrar().IsNotInRegistrar(app_id_)) {
+  if (!lock_->registrar().IsInRegistrar(app_id_)) {
     // (crbug/1480755): This crash is not expected as the app is checked for
     // validity when the command is evoked in StartWithLock. We are also still
     // holding the lock so a change to the status of the app throughout is not

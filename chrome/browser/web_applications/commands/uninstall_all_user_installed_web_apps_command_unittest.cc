@@ -226,11 +226,11 @@ TEST_F(UninstallAllUserInstalledWebAppsCommandTest,
           *profile(), future.GetCallback()));
   EXPECT_EQ(future.Get(), std::nullopt);
 
-  EXPECT_TRUE(registrar_unsafe().IsNotInRegistrar(app_id1));
-  EXPECT_TRUE(registrar_unsafe().IsNotInRegistrar(app_id2));
-  EXPECT_TRUE(registrar_unsafe().IsNotInRegistrar(app_id3));
-  EXPECT_TRUE(registrar_unsafe().IsNotInRegistrar(app_id4));
-  EXPECT_TRUE(registrar_unsafe().IsNotInRegistrar(app_id5));
+  EXPECT_FALSE(registrar_unsafe().IsInRegistrar(app_id1));
+  EXPECT_FALSE(registrar_unsafe().IsInRegistrar(app_id2));
+  EXPECT_FALSE(registrar_unsafe().IsInRegistrar(app_id3));
+  EXPECT_FALSE(registrar_unsafe().IsInRegistrar(app_id4));
+  EXPECT_FALSE(registrar_unsafe().IsInRegistrar(app_id5));
 }
 
 class UninstallAllUserInstalledWebAppsCommandWithIconManagerTest
@@ -273,7 +273,7 @@ TEST_F(UninstallAllUserInstalledWebAppsCommandWithIconManagerTest,
           *profile(), future.GetCallback()));
   EXPECT_EQ(future.Get(), app_id + "[Sync]: kError");
 
-  EXPECT_TRUE(registrar_unsafe().IsNotInRegistrar(app_id));
+  EXPECT_FALSE(registrar_unsafe().IsInRegistrar(app_id));
 }
 
 }  // namespace web_app

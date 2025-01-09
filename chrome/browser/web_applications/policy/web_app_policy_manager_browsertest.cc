@@ -351,7 +351,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerGuestModeTest,
   WebAppProvider* guest_provider = WebAppProvider::GetForTest(guest_profile);
   DCHECK(guest_provider);
   test::WaitUntilWebAppProviderAndSubsystemsReady(guest_provider);
-  EXPECT_TRUE(guest_provider->registrar_unsafe().IsNotInRegistrar(app_id));
+  EXPECT_FALSE(guest_provider->registrar_unsafe().IsInRegistrar(app_id));
 #endif
 }
 

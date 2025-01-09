@@ -1325,7 +1325,7 @@ TEST_F(WebAppSyncBridgeTest, CanDeleteNonUserInstallableApps) {
   database_factory().WriteRegistry(registry);
   StartWebAppProvider();
 
-  EXPECT_TRUE(registrar().IsNotInRegistrar(app_id1));
+  EXPECT_FALSE(registrar().IsInRegistrar(app_id1));
   EXPECT_EQ(proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
             registrar().GetInstallState(app_id2));
 }

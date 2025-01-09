@@ -305,7 +305,7 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManager {
             externally_managed_app_manager_impl_->GetNextInstallationLaunchURL(
                 install_url);
         const auto install_source = install_options().install_source;
-        if (provider_->registrar_unsafe().IsNotInRegistrar(*app_id)) {
+        if (!provider_->registrar_unsafe().IsInRegistrar(*app_id)) {
           auto web_app =
               test::CreateWebApp(install_url, WebAppManagement::kPolicy);
           {

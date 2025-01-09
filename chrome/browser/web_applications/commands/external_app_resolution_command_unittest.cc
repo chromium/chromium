@@ -840,7 +840,7 @@ TEST_F(ExternalAppResolutionCommandTest, GetWebAppInstallInfoFailed) {
   EXPECT_EQ(result.code,
             webapps::InstallResultCode::kGetWebAppInstallInfoFailed);
   ASSERT_FALSE(result.app_id.has_value());
-  EXPECT_TRUE(registrar().IsNotInRegistrar(kWebAppId));
+  EXPECT_FALSE(registrar().IsInRegistrar(kWebAppId));
 }
 
 TEST_F(ExternalAppResolutionCommandTest, UpgradeLock) {

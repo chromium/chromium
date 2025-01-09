@@ -42,7 +42,7 @@ void InstallAppLocallyCommand::StartWithLock(
     std::unique_ptr<AppLock> app_lock) {
   app_lock_ = std::move(app_lock);
 
-  if (app_lock_->registrar().IsNotInRegistrar(app_id_)) {
+  if (!app_lock_->registrar().IsInRegistrar(app_id_)) {
     GetMutableDebugValue().Set("command_result", "app_not_in_registry");
     CompleteAndSelfDestruct(CommandResult::kSuccess);
     return;

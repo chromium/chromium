@@ -227,7 +227,7 @@ TEST_F(InstallAppLocallyCommandTest, AppNotInRegistrar) {
   base::test::TestFuture<void> test_future;
   provider().scheduler().InstallAppLocally(app_id, test_future.GetCallback());
   EXPECT_TRUE(test_future.Wait());
-  EXPECT_TRUE(provider().registrar_unsafe().IsNotInRegistrar(app_id));
+  EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(app_id));
 }
 
 }  // namespace

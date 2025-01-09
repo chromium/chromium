@@ -198,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, AbortInstall) {
   content::WebContentsDestroyedWatcher web_contents_destroyed_observer(
       web_contents);
   web_contents_destroyed_observer.Wait();
-  EXPECT_TRUE(provider->registrar_unsafe().IsNotInRegistrar(id));
+  EXPECT_FALSE(provider->registrar_unsafe().IsInRegistrar(id));
 }
 
 }  // namespace
