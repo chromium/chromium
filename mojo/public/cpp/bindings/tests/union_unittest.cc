@@ -288,9 +288,6 @@ TEST(UnionTest, SerializeNotNull) {
 }
 
 TEST(UnionTest, SerializeIsNullInlined) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(kMojoMessageAlwaysUseLatestVersion);
-
   base::MetricsSubSampler::ScopedNeverSampleForTesting no_subsampling_;
   PodUnionPtr pod;
 
