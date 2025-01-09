@@ -317,6 +317,15 @@ void PrivacySandboxNoticeStorage::SetNoticeShown(PrefService* pref_service,
     SetSchemaVersion(pref_service, notice);
     base::UmaHistogramBoolean(
         base::StrCat({"PrivacySandbox.Notice.NoticeShown.", notice}), true);
+    base::UmaHistogramBoolean(
+        base::StrCat(
+            {"PrivacySandbox.Notice.NoticeShownForFirstTime.", notice}),
+        true);
+  } else {
+    base::UmaHistogramBoolean(
+        base::StrCat(
+            {"PrivacySandbox.Notice.NoticeShownForFirstTime.", notice}),
+        false);
   }
 
   // Always set notice last shown.
@@ -325,6 +334,7 @@ void PrivacySandboxNoticeStorage::SetNoticeShown(PrefService* pref_service,
       base::TimeToValue(notice_shown_time));
 }
 
+// TODO(chrstne): Create new histograms for migration.
 void PrivacySandboxNoticeStorage::MigratePrivacySandboxNoticeData(
     PrefService* pref_service,
     const PrivacySandboxNoticeData& input,

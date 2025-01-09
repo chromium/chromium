@@ -1520,6 +1520,17 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
   <token key="PSNotice" variants="PSNotice"/>
 </histogram>
 
+<histogram name="PrivacySandbox.Notice.NoticeShownForFirstTime.{PSNotice}"
+    enum="Boolean" expires_after="2025-06-11">
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records true if a notice {PSNotice} was shown for the first time, false if a
+    notice has been shown before.
+  </summary>
+  <token key="PSNotice" variants="PSNotice"/>
+</histogram>
+
 <histogram name="PrivacySandbox.Notice.NoticeStartupState.{PSNotice}"
     enum="PrivacySandboxNoticeStartupState" expires_after="2025-06-11">
   <owner>chrstne@google.com</owner>
