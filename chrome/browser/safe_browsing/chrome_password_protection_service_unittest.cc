@@ -58,6 +58,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/http/http_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -247,9 +248,9 @@ class MockChromePasswordProtectionService
   void SetAccountInfo(const std::string& username,
                       const std::string& hosted_domain) {
     AccountInfo account_info;
-    account_info.account_id = CoreAccountId::FromGaiaId("gaia");
+    account_info.gaia = GaiaId("gaia");
+    account_info.account_id = CoreAccountId::FromGaiaId(account_info.gaia);
     account_info.email = username;
-    account_info.gaia = "gaia";
     account_info.hosted_domain = hosted_domain;
     account_info_ = account_info;
   }

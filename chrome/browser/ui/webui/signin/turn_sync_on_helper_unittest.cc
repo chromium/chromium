@@ -68,6 +68,7 @@
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -546,7 +547,7 @@ class TurnSyncOnHelperTest : public testing::Test {
   }
 
   void UseInvalidAccount() {
-    account_id_ = CoreAccountId::FromGaiaId("invalid_account_gaia_id");
+    account_id_ = CoreAccountId::FromGaiaId(GaiaId("invalid_account_gaia_id"));
   }
 
   void SetExpectationsForSyncStartupCompleted(Profile* profile) {

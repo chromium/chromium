@@ -41,6 +41,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::test::RunOnceCallback;
@@ -334,7 +335,7 @@ TestingProfile* TpmChallengeKeySubtleTestBase::CreateUserProfile(
       is_managed);
 
   auto test_account =
-      AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId);
+      AccountId::FromUserEmailGaiaId(kTestUserEmail, GaiaId(kTestUserGaiaId));
   fake_user_manager_->AddUserWithAffiliation(test_account, is_affiliated);
 
   return testing_profile;

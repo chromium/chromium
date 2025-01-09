@@ -28,6 +28,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
 #include "content/public/test/web_contents_tester.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -70,7 +71,7 @@ class ManagedUserProfileNoticeHandlerTestBase
         browser()->tab_strip_model()->GetActiveWebContents());
 
     account_info_.email = user_manager::kStubUserEmail;
-    account_info_.gaia = user_manager::kStubUserId;
+    account_info_.gaia = GaiaId(user_manager::kStubUserId);
     account_info_.account_id = CoreAccountId::FromGaiaId(account_info_.gaia);
   }
 

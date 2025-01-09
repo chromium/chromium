@@ -28,6 +28,7 @@
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -71,7 +72,7 @@ class ChromeUserLogsDataCollectorTest : public ::testing::Test {
     std::unique_ptr<user_manager::FakeUserManager> fake_user_manager =
         std::make_unique<user_manager::FakeUserManager>();
     AccountId fake_user_account =
-        AccountId::FromUserEmailGaiaId(kFakeUserEmail, kFakeGaiaId);
+        AccountId::FromUserEmailGaiaId(kFakeUserEmail, GaiaId(kFakeGaiaId));
     fake_user_hash_ =
         user_manager::FakeUserManager::GetFakeUsernameHash(fake_user_account);
     // Add the fake user to `fake_user_manager` and make it primary user by

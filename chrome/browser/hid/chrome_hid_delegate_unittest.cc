@@ -29,6 +29,7 @@
 #include "content/public/test/embedded_worker_instance_test_harness.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/buildflags/buildflags.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/device/public/cpp/test/fake_hid_manager.h"
 #include "services/device/public/cpp/test/hid_test_util.h"
 #include "services/device/public/cpp/test/test_report_descriptors.h"
@@ -215,7 +216,7 @@ class ChromeHidTestHelper {
         std::move(fake_user_manager));
 
     auto account_id =
-        AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId);
+        AccountId::FromUserEmailGaiaId(kTestUserEmail, GaiaId(kTestUserGaiaId));
     const user_manager::User* user = fake_user_manager_ptr->AddUser(account_id);
 
     fake_user_manager_ptr->LoginUser(account_id);

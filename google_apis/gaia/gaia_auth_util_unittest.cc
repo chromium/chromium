@@ -431,7 +431,7 @@ TEST(GaiaAuthUtilTest, ParseBinaryListAccountsDataGaiaId) {
   ASSERT_EQ(1u, accounts.size());
   ASSERT_EQ("u@g.c", accounts[0].email);
   ASSERT_TRUE(accounts[0].valid);
-  ASSERT_EQ("9863", accounts[0].gaia_id);
+  ASSERT_EQ(GaiaId("9863"), accounts[0].gaia_id);
 }
 
 TEST(GaiaAuthUtilTest, ParseBinaryListAccountsWithSignedOutAccounts) {

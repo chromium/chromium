@@ -29,6 +29,7 @@
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "device/fido/features.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/dns/mock_host_resolver.h"
@@ -67,7 +68,7 @@ constexpr char kFakeGaiaId[] = "fake_gaia_id";
 const AccountInfo& FakeAccount() {
   static const base::NoDestructor<AccountInfo> account([]() {
     AccountInfo account;
-    account.gaia = kFakeGaiaId;
+    account.gaia = GaiaId(kFakeGaiaId);
     return account;
   }());
   return *account;

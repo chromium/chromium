@@ -32,6 +32,7 @@
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
 
@@ -151,7 +152,7 @@ class WebAppProfileDeletionBrowserTest : public WebAppBrowserTestBase {
  protected:
   // Use a real domain to avoid policy loading problems.
   const std::string kTestUserName = "test@gmail.com";
-  const std::string kTestUserGaiaId = "9876543210";
+  const GaiaId kTestUserGaiaId = GaiaId("9876543210");
   const AccountId test_account_id_ =
       AccountId::FromUserEmailGaiaId(kTestUserName, kTestUserGaiaId);
 #endif  // BUILDFLAG(IS_CHROMEOS)

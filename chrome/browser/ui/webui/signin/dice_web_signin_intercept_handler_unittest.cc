@@ -35,6 +35,7 @@
 #include "content/public/test/test_web_contents_factory.h"
 #include "content/public/test/test_web_ui.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -64,7 +65,7 @@ struct TestParam {
   signin::Tribool is_supervised = signin::Tribool::kUnknown;
 };
 
-AccountInfo CreateAccount(std::string gaia_id,
+AccountInfo CreateAccount(GaiaId gaia_id,
                           std::string given_name,
                           std::string full_name,
                           std::string email,
@@ -79,14 +80,14 @@ AccountInfo CreateAccount(std::string gaia_id,
 }
 
 const AccountInfo primary_account = CreateAccount(
-    /*gaia_id=*/"primary_ID",
+    /*gaia_id=*/GaiaId("primary_ID"),
     /*given_name=*/"Tessa",
     /*full_name=*/"Tessa Tester",
     /*email=*/"tessa.tester@primary.com",
     /*hosted_domain=*/kNoHostedDomainFound);
 
 AccountInfo intercepted_account = CreateAccount(
-    /*gaia_id=*/"intercepted_ID",
+    /*gaia_id=*/GaiaId("intercepted_ID"),
     /*given_name=*/"Sam",
     /*full_name=*/"Sam Sample",
     /*email=*/"sam.sample@intercepted.com",

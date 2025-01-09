@@ -61,6 +61,7 @@
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "google_apis/gaia/fake_gaia.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"
@@ -160,7 +161,7 @@ class MockInlineSigninHelper : public InlineSigninHelper {
       Profile* profile,
       const GURL& current_url,
       const std::string& email,
-      const std::string& gaia_id,
+      const GaiaId& gaia_id,
       const std::string& password,
       const std::string& auth_code,
       const std::string& signin_scoped_device_id,
@@ -188,7 +189,7 @@ MockInlineSigninHelper::MockInlineSigninHelper(
     Profile* profile,
     const GURL& current_url,
     const std::string& email,
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::string& password,
     const std::string& auth_code,
     const std::string& signin_scoped_device_id,
@@ -215,7 +216,7 @@ class MockSyncStarterInlineSigninHelper : public InlineSigninHelper {
       Profile* profile,
       const GURL& current_url,
       const std::string& email,
-      const std::string& gaia_id,
+      const GaiaId& gaia_id,
       const std::string& password,
       const std::string& auth_code,
       const std::string& signin_scoped_device_id,
@@ -236,7 +237,7 @@ MockSyncStarterInlineSigninHelper::MockSyncStarterInlineSigninHelper(
     Profile* profile,
     const GURL& current_url,
     const std::string& email,
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::string& password,
     const std::string& auth_code,
     const std::string& signin_scoped_device_id,
@@ -340,14 +341,16 @@ IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, OneProcessLimit) {
 }
 
 IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, CanOfferNoProfile) {
-  SigninUIError error = CanOfferSignin(nullptr, "12345", "user@gmail.com");
+  SigninUIError error =
+      CanOfferSignin(nullptr, GaiaId("12345"), "user@gmail.com");
   EXPECT_FALSE(error.IsOk());
   EXPECT_EQ(error, SigninUIError::Other("user@gmail.com"));
 }
 
 IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, CanOffer) {
   EXPECT_TRUE(
-      CanOfferSignin(browser()->profile(), "12345", "user@gmail.com").IsOk());
+      CanOfferSignin(browser()->profile(), GaiaId("12345"), "user@gmail.com")
+          .IsOk());
 }
 
 IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, CanOfferProfileConnected) {
@@ -358,10 +361,12 @@ IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, CanOfferProfileConnected) {
   EnableSigninAllowed(true);
 
   EXPECT_TRUE(
-      CanOfferSignin(browser()->profile(), "12345", "foo@gmail.com").IsOk());
-  EXPECT_TRUE(CanOfferSignin(browser()->profile(), "12345", "foo").IsOk());
+      CanOfferSignin(browser()->profile(), GaiaId("12345"), "foo@gmail.com")
+          .IsOk());
+  EXPECT_TRUE(
+      CanOfferSignin(browser()->profile(), GaiaId("12345"), "foo").IsOk());
   SigninUIError error =
-      CanOfferSignin(browser()->profile(), "12345", "user@gmail.com");
+      CanOfferSignin(browser()->profile(), GaiaId("12345"), "user@gmail.com");
   EXPECT_FALSE(error.IsOk());
   EXPECT_EQ(error, SigninUIError::WrongReauthAccount("user@gmail.com",
                                                      "foo@gmail.com"));
@@ -371,7 +376,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, CanOfferUsernameNotAllowed) {
   SetAllowedUsernamePattern("*.google.com");
 
   SigninUIError error =
-      CanOfferSignin(browser()->profile(), "12345", "foo@gmail.com");
+      CanOfferSignin(browser()->profile(), GaiaId("12345"), "foo@gmail.com");
   EXPECT_FALSE(error.IsOk());
   EXPECT_EQ(error, SigninUIError::UsernameNotAllowedByPatternFromPrefs(
                        "foo@gmail.com"));
@@ -382,7 +387,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, CanOfferNoSigninCookies) {
   EnableSigninAllowed(true);
 
   SigninUIError error =
-      CanOfferSignin(browser()->profile(), "12345", "user@gmail.com");
+      CanOfferSignin(browser()->profile(), GaiaId("12345"), "user@gmail.com");
   EXPECT_FALSE(error.IsOk());
   EXPECT_EQ(error, SigninUIError::Other("user@gmail.com"));
 }
@@ -489,7 +494,7 @@ class InlineLoginHelperBrowserTest : public DialogBrowserTest {
     MockSyncStarterInlineSigninHelper* helper =
         new MockSyncStarterInlineSigninHelper(
             handler.GetWeakPtr(), test_shared_loader_factory(), profile(), url,
-            "foo@gmail.com", "gaiaid-12345", "password", "auth_code",
+            "foo@gmail.com", GaiaId("gaiaid-12345"), "password", "auth_code",
             /*signin_scoped_device_id=*/std::string(),
             /*confirm_untrusted_signin=*/true,
             /*is_force_sign_in_with_usermanager=*/true);
@@ -520,7 +525,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest, WithAuthCode) {
   InlineLoginHandlerImpl handler;
   MockInlineSigninHelper helper(
       handler.GetWeakPtr(), test_shared_loader_factory(), profile(), GURL(),
-      "foo@gmail.com", "gaiaid-12345", "password", "auth_code",
+      "foo@gmail.com", GaiaId("gaiaid-12345"), "password", "auth_code",
       /*signin_scoped_device_id=*/std::string(),
       /*confirm_untrusted_signin=*/false);
   base::RunLoop run_loop;
@@ -554,7 +559,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest,
           profile()
               ->GetDefaultStoragePartition()
               ->GetURLLoaderFactoryForBrowserProcess(),
-          profile(), url, "foo@gmail.com", "gaiaid-12345", "password",
+          profile(), url, "foo@gmail.com", GaiaId("gaiaid-12345"), "password",
           "auth_code", /*signin_scoped_device_id=*/std::string(),
           /*confirm_untrusted_signin=*/false,
           /*is_force_sign_in_with_usermanager=*/false);
@@ -589,7 +594,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest,
   MockSyncStarterInlineSigninHelper* helper =
       new MockSyncStarterInlineSigninHelper(
           handler.GetWeakPtr(), test_shared_loader_factory(), profile(), url,
-          "foo@gmail.com", "gaiaid-12345", "password", "auth_code",
+          "foo@gmail.com", GaiaId("gaiaid-12345"), "password", "auth_code",
           /*signin_scoped_device_id=*/std::string(),
           /*confirm_untrusted_signin=*/false,
           /*is_force_sign_in_with_usermanager=*/false);
@@ -612,7 +617,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest,
   MockSyncStarterInlineSigninHelper* helper =
       new MockSyncStarterInlineSigninHelper(
           handler.GetWeakPtr(), test_shared_loader_factory(), profile(), url,
-          "foo@gmail.com", "gaiaid-12345", "password", "auth_code",
+          "foo@gmail.com", GaiaId("gaiaid-12345"), "password", "auth_code",
           /*signin_scoped_device_id=*/std::string(),
           /*confirm_untrusted_signin=*/true,
           /*is_force_sign_in_with_usermanager=*/true);
@@ -637,7 +642,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest,
   MockSyncStarterInlineSigninHelper* helper =
       new MockSyncStarterInlineSigninHelper(
           handler.GetWeakPtr(), test_shared_loader_factory(), profile(), url,
-          "foo@gmail.com", "gaiaid-12345", "password", "auth_code",
+          "foo@gmail.com", GaiaId("gaiaid-12345"), "password", "auth_code",
           /*signin_scoped_device_id=*/std::string(),
           /*confirm_untrusted_signin=*/true,
           /*is_force_sign_in_with_usermanager=*/true);
@@ -665,7 +670,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest,
   MockSyncStarterInlineSigninHelper* helper =
       new MockSyncStarterInlineSigninHelper(
           handler.GetWeakPtr(), test_shared_loader_factory(), profile(), url,
-          "foo@gmail.com", "gaiaid-12345", "password", "auth_code",
+          "foo@gmail.com", GaiaId("gaiaid-12345"), "password", "auth_code",
           /*signin_scoped_device_id=*/std::string(),
           /*confirm_untrusted_signin=*/false,
           /*is_force_sign_in_with_usermanager=*/false);
@@ -688,7 +693,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest,
   MockSyncStarterInlineSigninHelper* helper =
       new MockSyncStarterInlineSigninHelper(
           handler.GetWeakPtr(), test_shared_loader_factory(), profile(), url,
-          "foo@gmail.com", "gaiaid-12345", "password", "auth_code",
+          "foo@gmail.com", GaiaId("gaiaid-12345"), "password", "auth_code",
           /*signin_scoped_device_id=*/std::string(),
           /*confirm_untrusted_signin=*/false,
           /*is_force_sign_in_with_usermanager=*/true);

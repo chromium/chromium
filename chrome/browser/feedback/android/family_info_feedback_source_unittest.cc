@@ -28,6 +28,7 @@
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -45,12 +46,12 @@ const char kFeedbackTagParentalControlSitesChild[] =
     "Parental_Control_Sites_Child";
 
 kidsmanagement::ListMembersResponse CreateFamilyWithOneMember(
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     kidsmanagement::FamilyRole role) {
   kidsmanagement::ListMembersResponse response;
   kidsmanagement::FamilyMember* member = response.add_members();
 
-  member->set_user_id(gaia_id);
+  member->set_user_id(gaia_id.ToString());
   member->set_role(role);
   member->mutable_profile()->set_display_name("Name");
   member->mutable_profile()->set_email(kTestEmail);

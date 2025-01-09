@@ -41,6 +41,7 @@
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/ash/mock_input_method_manager.h"
 
@@ -70,8 +71,8 @@ class OsSettingsManagerTest : public testing::Test {
     Profile* profile = profile_manager_.CreateTestingProfile(
         TestingProfile::kDefaultProfileUserName);
     // Log in user to ensure ARC PlayStore can be enabled.
-    const AccountId account_id(
-        AccountId::FromUserEmailGaiaId(profile->GetProfileUserName(), "1234"));
+    const AccountId account_id(AccountId::FromUserEmailGaiaId(
+        profile->GetProfileUserName(), GaiaId("1234")));
     fake_user_manager_->AddUser(account_id);
     fake_user_manager_->LoginUser(account_id);
 

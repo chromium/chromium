@@ -67,6 +67,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 #include "crypto/ec_private_key.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/features.h"
@@ -138,7 +139,7 @@ MATCHER_P4(StatusLabelsMatch,
   return true;
 }
 
-std::string GetDefaultUserGaiaID() {
+GaiaId GetDefaultUserGaiaID() {
   return signin::GetTestGaiaIdForEmail(SyncTest::kDefaultUserEmail);
 }
 
