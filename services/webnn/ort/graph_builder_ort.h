@@ -31,6 +31,17 @@ class WebNNConstantOperand;
 
 namespace ort {
 
+namespace internal {
+
+// Supported tensor types for immediate values. The list can be expanded as
+// needed.
+template <typename T, typename... U>
+concept IsAnyOf = (std::same_as<T, U> || ...);
+template <typename T>
+concept IsSupportedTensorType = IsAnyOf<T, float, uint16_t, int64_t>;
+
+}  // namespace internal
+
 class GraphBuilderOrt {
   STACK_ALLOCATED();
 
@@ -41,9 +52,15 @@ class GraphBuilderOrt {
   // created to represent intermediate layers.
   struct OperandInfo {
     OperandInfo();
+
     OperandInfo(std::string name,
                 OperandDataType data_type,
                 base::span<const uint32_t> uint32_shape);
+
+    OperandInfo(std::string name,
+                ONNXTensorElementDataType data_type,
+                base::span<const uint32_t> uint32_shape);
+
     OperandInfo(OperandInfo&);
     OperandInfo(OperandInfo&&);
     ~OperandInfo();
@@ -94,8 +111,12 @@ class GraphBuilderOrt {
   const mojom::Operand& GetOperand(uint64_t operand_id);
   std::string GetOperandName(uint64_t operand_id);
 
-  // Create a new initializer for the graph with the given shape, data and data
-  // type, return the name of the initializer.
+  // Create a new initializer for the graph with the given shape and data,
+  // return the name of the initializer.
+  //
+  // The provided data must match `DataType` according to the ONNX operators'
+  // data type constraints. For example: Provide float data for ONNX float data
+  // type. In particular, we use uint16_t to carry bits of float16.
   //
   // The guidelines recommends using raw data when:
   // 1. The byte size of the data is less than 128.
@@ -112,10 +133,17 @@ class GraphBuilderOrt {
   // 2. Reduce: parameter *axes*.
   // 3. Expand: parameter *shape*.
   // 4. Slice: parameter *starts*, *ends* and *steps*.
-  template <typename T>
+  template <typename DataType>
+    requires internal::IsSupportedTensorType<DataType>
   std::string CreateInitializer(base::span<const uint32_t> shape,
-                                base::span<const T> data,
-                                OperandDataType data_type);
+                                base::span<const DataType> data);
+
+  // A helper method wrapping the `CreateInitializer` above. It creates a
+  // scalar initializer with the given scalar value (tensor of empty shape) to
+  // the graph, returns the name of the initializer.
+  template <typename DataType>
+    requires internal::IsSupportedTensorType<DataType>
+  std::string CreateScalarInitializer(const DataType& value);
 
   void AddInput(uint64_t input_id);
   void AddOutput(uint64_t output_id);
