@@ -9042,11 +9042,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "video-conference",
-    "owners": [ "newcomer@chromium.org", "charleszhao@chromium.org", "jmpollock@chromium.org", "chromeos-camera-eng@google.com" ],
-    "expiry_milestone": 129
-  },
-  {
     "name": "video-picture-in-picture-controls-update-2024",
     "owners": [ "steimel@chromium.org", "media-dev@chromium.org" ],
     "expiry_milestone": 145
