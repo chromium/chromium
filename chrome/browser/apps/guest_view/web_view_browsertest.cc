@@ -7057,9 +7057,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, ContentScript) {
 
 // Checks that content scripts work in an out-of-process iframe in a <webview>
 // tag.
-// TODO(crbug.com/40864752): Fix flakiness on win-rel. The test is also disabled
-// on mac11-arm64-rel using filter.
-#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/40864752): Fix flakiness on win-rel and mac.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_ContentScriptInOOPIF DISABLED_ContentScriptInOOPIF
 #else
 #define MAYBE_ContentScriptInOOPIF ContentScriptInOOPIF
