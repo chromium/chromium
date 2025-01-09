@@ -345,11 +345,9 @@ GpuServiceImpl::GpuServiceImpl(
 #if BUILDFLAG(ENABLE_VULKAN)
       vulkan_implementation_(init_params.vulkan_implementation),
 #endif
-      exit_callback_(std::move(init_params.exit_callback)),
       clear_shader_cache_(base::FeatureList::IsEnabled(
           features::kClearGrShaderDiskCacheOnInvalidPrefix)) {
   DCHECK(!io_runner_->BelongsToCurrentThread());
-  DCHECK(exit_callback_);
 
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   protected_buffer_manager_ = new arc::ProtectedBufferManager();
@@ -1172,7 +1170,6 @@ void GpuServiceImpl::GetIsolationKey(
 }
 
 void GpuServiceImpl::MaybeExitOnContextLost(
-    bool synthetic_loss,
     gpu::error::ContextLostReason context_lost_reason) {
   DCHECK(main_runner_->BelongsToCurrentThread());
 
@@ -1182,13 +1179,10 @@ void GpuServiceImpl::MaybeExitOnContextLost(
     return;
   }
 
-  if (IsExiting() || !exit_callback_)
-    return;
-
   LOG(ERROR) << "Exiting GPU process because some drivers can't recover "
                 "from errors. GPU process will restart shortly.";
-  is_exiting_.Set();
-  std::move(exit_callback_).Run(ExitCode::RESULT_CODE_GPU_EXIT_ON_CONTEXT_LOST);
+  base::Process::TerminateCurrentProcessImmediately(
+      static_cast<int>(ExitCode::RESULT_CODE_GPU_EXIT_ON_CONTEXT_LOST));
 }
 
 bool GpuServiceImpl::IsExiting() const {

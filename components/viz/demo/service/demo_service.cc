@@ -53,8 +53,6 @@ DemoService::DemoService(
     init_params.watchdog_thread = gpu_init_->TakeWatchdogThread();
     init_params.io_runner = io_thread_->task_runner();
     init_params.vulkan_implementation = gpu_init_->vulkan_implementation();
-    init_params.exit_callback =
-        base::BindOnce(&DemoService::ExitProcess, base::Unretained(this));
 
     gpu_service_ = std::make_unique<viz::GpuServiceImpl>(
         gpu_init_->gpu_preferences(), gpu_init_->gpu_info(),
@@ -76,9 +74,5 @@ DemoService::DemoService(
 }
 
 DemoService::~DemoService() = default;
-
-void DemoService::ExitProcess(viz::ExitCode immediate_exit_code) {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
 
 }  // namespace demo

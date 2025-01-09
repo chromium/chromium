@@ -320,7 +320,6 @@ void TestGpuServiceHolder::InitializeOnGpuThread(
 #if BUILDFLAG(ENABLE_VULKAN)
   init_params.vulkan_implementation = vulkan_implementation_.get();
 #endif
-  init_params.exit_callback = base::DoNothing();
 
   if (gpu_preferences.gr_context_type == gpu::GrContextType::kGraphiteDawn) {
 #if BUILDFLAG(SKIA_USE_DAWN)

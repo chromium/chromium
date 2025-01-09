@@ -124,8 +124,6 @@ VizMainImpl::VizMainImpl(Delegate* delegate,
 #if BUILDFLAG(SKIA_USE_DAWN)
   init_params.dawn_context_provider = gpu_init_->TakeDawnContextProvider();
 #endif
-  init_params.exit_callback =
-      base::BindOnce(&VizMainImpl::ExitProcess, base::Unretained(this));
 
   init_params.vulkan_implementation = gpu_init_->vulkan_implementation();
   gpu_service_ = std::make_unique<GpuServiceImpl>(

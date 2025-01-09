@@ -125,7 +125,6 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
 #if BUILDFLAG(SKIA_USE_DAWN)
     std::unique_ptr<gpu::DawnContextProvider> dawn_context_provider;
 #endif
-    base::OnceCallback<void(ExitCode)> exit_callback;
   };
 
   GpuServiceImpl(const gpu::GpuPreferences& gpu_preferences,
@@ -306,12 +305,9 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
                        const std::string& key,
                        const std::string& shader) override;
 
-  // Attempts to atomically shut down the process. Only does so if (a) not
-  // running in host process or (b) the context loss is irrecoverable and an
-  // immediate crash is better than entering a context loss loop. An error
-  // message will be logged.
+  // Attempts to atomically shut down the process. Only does so if not running
+  // in host process. An error message will be logged.
   void MaybeExitOnContextLost(
-      bool synthetic_loss,
       gpu::error::ContextLostReason context_lost_reason) override;
   bool IsExiting() const override;
   gpu::Scheduler* GetGpuScheduler() override;
@@ -670,8 +666,6 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   raw_ptr<const gpu::SharedContextState::GrContextOptionsProvider>
       gr_context_options_provider_ = nullptr;
 
-  // Callback that safely exits GPU process.
-  base::OnceCallback<void(ExitCode)> exit_callback_;
   base::AtomicFlag is_exiting_;
 
   // Used for performing hardware decode acceleration of images. This is shared

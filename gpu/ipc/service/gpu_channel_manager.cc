@@ -1106,7 +1106,7 @@ void GpuChannelManager::OnContextLost(
   // Work around issues with recovery by allowing a new GPU process to launch.
   if (force_restart || gpu_driver_bug_workarounds_.exit_on_context_lost ||
       (shared_context_state_ && !shared_context_state_->GrContextIsGL())) {
-    delegate_->MaybeExitOnContextLost(synthetic_loss, context_lost_reason);
+    delegate_->MaybeExitOnContextLost(context_lost_reason);
   }
 }
 
