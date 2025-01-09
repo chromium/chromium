@@ -35,7 +35,6 @@ class TabGroupSyncService;
 class SavedTabGroupUtils {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDeleteGroupMenuItem);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kLeaveGroupMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMoveGroupToNewWindowMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToggleGroupPinStateMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTabsTitleItem);
@@ -62,8 +61,6 @@ class SavedTabGroupUtils {
   static void UngroupSavedGroup(const Browser* browser,
                                 const base::Uuid& saved_group_guid);
   static void DeleteSavedGroup(const Browser* browser,
-                               const base::Uuid& saved_group_guid);
-  static void LeaveSharedGroup(const Browser* browser,
                                const base::Uuid& saved_group_guid);
 
   // Open the `url` to the end of `browser` tab strip as a new ungrouped tab.
@@ -161,10 +158,6 @@ class SavedTabGroupUtils {
 
   // Returns true if shared tab groups are supported.
   static bool SupportsSharedTabGroups();
-
-  // Returns true if the user is the owner of the shared tab group.
-  static bool IsOwnerOfSharedTabGroup(Profile* profile,
-                                      const base::Uuid& sync_id);
 };
 
 }  // namespace tab_groups

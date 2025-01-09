@@ -345,12 +345,7 @@ void TabGroupEditorBubbleView::RebuildMenuContents() {
 
     menu_items_.push_back(AddChildView(BuildHideGroupButton()));
     AddChildView(BuildSeparator());
-
-    if (OwnsGroup()) {
-      menu_items_.push_back(AddChildView(BuildDeleteGroupButton()));
-    } else {
-      menu_items_.push_back(AddChildView(BuildLeaveGroupButton()));
-    }
+    menu_items_.push_back(AddChildView(BuildDeleteGroupButton()));
 
     if (ShouldShowSavedFooter()) {
       footer_ = AddChildView(std::make_unique<Footer>(browser_));
@@ -502,27 +497,6 @@ TabGroupEditorBubbleView::BuildDeleteGroupButton() {
 }
 
 std::unique_ptr<views::LabelButton>
-TabGroupEditorBubbleView::BuildLeaveGroupButton() {
-  std::unique_ptr<views::LabelButton> leave_group_menu_item = CreateMenuItem(
-      TAB_GROUP_HEADER_CXMENU_LEAVE_GROUP,
-      l10n_util::GetStringUTF16(
-          IDS_DATA_SHARING_MEMBER_DELETE_LAST_TAB_CONFIRM),
-      base::BindRepeating(&TabGroupEditorBubbleView::LeaveGroupPressed,
-                          base::Unretained(this)),
-      ui::ImageModel::FromVectorIcon(kTrashCanRefreshIcon, ui::kColorMenuIcon,
-                                     kDefaultIconSize));
-
-  leave_group_menu_item->SetProperty(views::kElementIdentifierKey,
-                                     kTabGroupEditorBubbleLeaveGroupButtonId);
-  if (ShouldShowSavedFooter()) {
-    leave_group_menu_item->SetProperty(
-        views::kMarginsKey, gfx::Insets::TLBR(0, 0, kSeparatorPadding, 0));
-  }
-
-  return leave_group_menu_item;
-}
-
-std::unique_ptr<views::LabelButton>
 TabGroupEditorBubbleView::BuildMoveGroupToNewWindowButton() {
   return CreateMenuItem(
       TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW,
@@ -661,8 +635,22 @@ bool TabGroupEditorBubbleView::OwnsGroup() const {
     return true;
   }
 
-  return tab_groups::SavedTabGroupUtils::IsOwnerOfSharedTabGroup(
-      browser_->profile(), maybe_saved_group->saved_guid());
+  std::optional<tab_groups::CollaborationId> collaboration_id =
+      maybe_saved_group->collaboration_id();
+  if (!collaboration_id) {
+    return true;
+  }
+
+  collaboration::CollaborationService* collaboration_service =
+      collaboration::CollaborationServiceFactory::GetForProfile(
+          browser_->profile());
+  if (!collaboration_service) {
+    return true;
+  }
+
+  data_sharing::GroupId group_id(collaboration_id->value());
+  return data_sharing::MemberRole::kOwner ==
+         collaboration_service->GetCurrentUserRoleForGroup(group_id);
 }
 
 bool TabGroupEditorBubbleView::IsGroupSaved() const {
@@ -854,23 +842,6 @@ void TabGroupEditorBubbleView::DeleteGroupPressed() {
     DeleteGroupFromTabstrip();
   }
   GetWidget()->Close();
-}
-
-void TabGroupEditorBubbleView::LeaveGroupPressed() {
-  tab_groups::TabGroupSyncService* tab_group_service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser_->profile());
-  if (!tab_group_service) {
-    return;
-  }
-
-  std::optional<tab_groups::SavedTabGroup> saved_group =
-      tab_group_service->GetGroup(group_);
-  if (!saved_group) {
-    return;
-  }
-
-  tab_groups::SavedTabGroupUtils::LeaveSharedGroup(browser_,
-                                                   saved_group->saved_guid());
 }
 
 void TabGroupEditorBubbleView::DeleteGroupFromTabstrip() {

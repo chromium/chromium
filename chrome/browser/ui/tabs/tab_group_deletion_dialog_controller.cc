@@ -145,24 +145,6 @@ DialogText GetDialogText(
           base::i18n::MessageFormatter::FormatWithNumberedArgs(
               l10n_util::GetStringUTF16(kDeleteOkTextId), closing_group_count)};
     }
-
-    case DeletionDialogController::DialogType::LeaveGroup: {
-      const bool title_is_empty =
-          !dialog_metadata.title_of_closing_group.has_value() ||
-          dialog_metadata.title_of_closing_group->empty();
-      std::u16string body_text =
-          title_is_empty
-              ? l10n_util::GetStringUTF16(
-                    IDS_DATA_SHARING_LEAVE_DIALOG_BODY_NO_GROUP_TITLE)
-              : l10n_util::GetStringFUTF16(
-                    IDS_DATA_SHARING_LEAVE_DIALOG_BODY,
-                    dialog_metadata.title_of_closing_group.value());
-
-      return DialogText{
-          l10n_util::GetStringUTF16(IDS_DATA_SHARING_LEAVE_DIALOG_TITLE),
-          body_text,
-          l10n_util::GetStringUTF16(IDS_DATA_SHARING_LEAVE_DIALOG_CONFIRM)};
-    }
   }
 }
 
@@ -189,10 +171,6 @@ bool IsDialogSkippedByUserSettings(Profile* profile,
     case DeletionDialogController::DialogType::CloseTabAndDelete: {
       return pref_service->GetBoolean(
           saved_tab_groups::prefs::kTabGroupsDeletionSkipDialogOnCloseTab);
-    }
-    case DeletionDialogController::DialogType::LeaveGroup: {
-      return pref_service->GetBoolean(
-          saved_tab_groups::prefs::kTabGroupsDeletionSkipDialogOnLeaveGroup);
     }
   }
 }
@@ -224,11 +202,6 @@ void SetSkipDialogForType(Profile* profile,
     case DeletionDialogController::DialogType::CloseTabAndDelete: {
       return pref_service->SetBoolean(
           saved_tab_groups::prefs::kTabGroupsDeletionSkipDialogOnCloseTab,
-          new_value);
-    }
-    case DeletionDialogController::DialogType::LeaveGroup: {
-      return pref_service->SetBoolean(
-          saved_tab_groups::prefs::kTabGroupsDeletionSkipDialogOnLeaveGroup,
           new_value);
     }
   }
