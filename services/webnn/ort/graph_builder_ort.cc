@@ -65,6 +65,7 @@ constexpr char kOpTypeCast[] = "Cast";
 constexpr char kOpTypeClamp[] = "Clip";
 constexpr char kOpTypeConv2d[] = "Conv";
 constexpr char kOpTypeExpand[] = "Expand";
+constexpr char kOpTypeGather[] = "Gather";
 constexpr char kOpTypeGemm[] = "Gemm";
 constexpr char kOpTypeInstanceNormalization[] = "InstanceNormalization";
 constexpr char kOpTypeLayerNormalization[] = "LayerNormalization";
@@ -89,6 +90,7 @@ constexpr char kOpTypeReduceSumSquare[] = "ReduceSumSquare";
 
 constexpr char kOpTypeRelu[] = "Relu";
 constexpr char kOpTypeReshape[] = "Reshape";
+constexpr char kOpTypeSigmoid[] = "Sigmoid";
 constexpr char kOpTypeSlice[] = "Slice";
 constexpr char kOpTypeSoftmax[] = "Softmax";
 constexpr char kOpTypeTranspose[] = "Transpose";
@@ -724,6 +726,27 @@ void GraphBuilderOrt::AddExpandOperation(const mojom::Expand& expand) {
   model_builder_.AddNode(kOpTypeExpand, node_name, input_names, output_names);
 }
 
+void GraphBuilderOrt::AddGatherOperation(const mojom::Gather& gather) {
+  const std::string node_name = GetNodeName(gather.label);
+  const std::string input_name = GetOperandName(gather.input_operand_id);
+  const std::string indices_name = GetOperandName(gather.indices_operand_id);
+  const std::string output_name = GetOperandName(gather.output_operand_id);
+
+  // TODO(https://github.com/shiyi9801/chromium/issues/82): Clamp the indices
+  // operand to ensure it won't be out-of-bound.
+
+  int64_t axis = static_cast<int64_t>(gather.axis);
+  std::array<OrtOpAttr*, 1> attributes = {
+      model_builder_.CreateAttribute(/*name=*/"axis", axis).Release()};
+
+  std::array<const char*, 2> input_names = {input_name.c_str(),
+                                            indices_name.c_str()};
+  std::array<const char*, 1> output_names = {output_name.c_str()};
+
+  model_builder_.AddNode(kOpTypeGather, node_name, input_names, output_names,
+                         attributes);
+}
+
 void GraphBuilderOrt::AddGemmOperation(const mojom::Gemm& gemm) {
   const std::string node_name = GetNodeName(gemm.label);
   const std::string input_a_name = GetOperandName(gemm.a_operand_id);
@@ -1307,6 +1330,10 @@ GraphBuilderOrt::BuildModel() {
         AddExpandOperation(*operation->get_expand());
         break;
       }
+      case mojom::Operation::Tag::kGather: {
+        AddGatherOperation(*operation->get_gather());
+        break;
+      }
       case mojom::Operation::Tag::kGemm: {
         AddGemmOperation(*operation->get_gemm());
         break;
@@ -1341,6 +1368,10 @@ GraphBuilderOrt::BuildModel() {
         AddReshapeOperation(*operation->get_reshape());
         break;
       }
+      case mojom::Operation::Tag::kSigmoid: {
+        AddUnaryOperation(*operation->get_sigmoid(), kOpTypeSigmoid);
+        break;
+      }
       case mojom::Operation::Tag::kSlice: {
         AddSliceOperation(*operation->get_slice());
         break;
@@ -1362,7 +1393,6 @@ GraphBuilderOrt::BuildModel() {
       case mojom::Operation::Tag::kCumulativeSum:
       case mojom::Operation::Tag::kDequantizeLinear:
       case mojom::Operation::Tag::kElu:
-      case mojom::Operation::Tag::kGather:
       case mojom::Operation::Tag::kGatherElements:
       case mojom::Operation::Tag::kGatherNd:
       case mojom::Operation::Tag::kGelu:
@@ -1381,7 +1411,6 @@ GraphBuilderOrt::BuildModel() {
       case mojom::Operation::Tag::kReverse:
       case mojom::Operation::Tag::kScatterElements:
       case mojom::Operation::Tag::kScatterNd:
-      case mojom::Operation::Tag::kSigmoid:
       case mojom::Operation::Tag::kSoftplus:
       case mojom::Operation::Tag::kSoftsign:
       case mojom::Operation::Tag::kSplit:
