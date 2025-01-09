@@ -9414,13 +9414,6 @@ const FeatureEntry kFeatureEntries[] = {
          permissions::features::kPermissionSiteSettingsRadioButton)},
 
 #if BUILDFLAG(IS_ANDROID)
-    {"record-permissions-expiration-timestamp",
-     flag_descriptions::kRecordPermissionExpirationTimestampsName,
-     flag_descriptions::kRecordPermissionExpirationTimestampsDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         permissions::features::kRecordPermissionExpirationTimestamps)},
-
     {"safety-hub-magic-stack", flag_descriptions::kSafetyHubMagicStackName,
      flag_descriptions::kSafetyHubMagicStackDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kSafetyHubMagicStack)},

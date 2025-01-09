@@ -7397,14 +7397,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "record-permissions-expiration-timestamp",
-    "owners": [
-      "rubindl@chromium.org",
-      "chrome-browser-privacy-team@google.com"
-    ],
-    "expiry_milestone": 132
-  },
-  {
     "name": "record-web-app-debug-info",
     "owners": [ "pwa-team@google.com" ],
     // This flag is used for in-the-field debugging of preinstalled web apps on

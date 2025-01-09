@@ -19700,21 +19700,6 @@
             ]
         }
     ],
-    "SafetyHubAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "RecordPermissionExpirationTimestamps"
-                    ]
-                }
-            ]
-        }
-    ],
     "SafetyHubOneOffHats": [
         {
             "platforms": [

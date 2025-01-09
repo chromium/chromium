@@ -3242,14 +3242,6 @@ const char kRecordWebAppDebugInfoDescription[] =
     "Enables recording additional web app related debugging data to be "
     "displayed in: chrome://web-app-internals";
 
-#if BUILDFLAG(IS_ANDROID)
-const char kRecordPermissionExpirationTimestampsName[] =
-    "Record expiration timestamps for permissions";
-const char kRecordPermissionExpirationTimestampsDescription[] =
-    "When enabled, it will record the expiration timestamp for all permissions "
-    "granted through prompts.";
-#endif  // BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_MAC)
 const char kReduceIPAddressChangeNotificationName[] =
     "Reduce IP address change notification";

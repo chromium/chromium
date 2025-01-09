@@ -78,12 +78,6 @@ BASE_FEATURE(kPermissionDedicatedCpssSettingAndroid,
              "PermissionDedicatedCpssSettingAndroid",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, permissions grants with a durable session model will have
-// an expiration date set.
-BASE_FEATURE(kRecordPermissionExpirationTimestamps,
-             "RecordPermissionExpirationTimestamps",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #else
 
 // When enabled, chooser permissions grants will have a last visited timestamp
