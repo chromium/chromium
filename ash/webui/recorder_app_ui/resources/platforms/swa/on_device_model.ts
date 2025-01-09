@@ -16,6 +16,9 @@ import {
   assertExists,
   assertNotReached,
 } from '../../core/utils/assert.js';
+import {
+  chunkContentByWord,
+} from '../../core/utils/utils.js';
 
 import {PlatformHandler} from './handler.js';
 import {
@@ -41,6 +44,13 @@ function parseResponse(res: string): string {
 
 // The minimum transcript token length for title generation and summarization.
 const MIN_TOKEN_LENGTH = 200;
+
+// The maximum content input length for T&S model.
+// Based on tests, 1k input tokens is the most efficient.
+// According to the Gemini tokenizer documentation
+// (https://ai.google.dev/gemini-api/docs/tokens), 100 tokens are roughly
+// equivalent to 60-80 English words, chose 700 since it is average.
+const MAX_TS_MODEL_INPUT_WORD_LENGTH = 700;
 
 abstract class OnDeviceModel<T> implements Model<T> {
   constructor(
@@ -140,17 +150,27 @@ abstract class OnDeviceModel<T> implements Model<T> {
   private async contentIsUnsafe(
     content: string,
     safetyFeature: SafetyFeature,
+    language: LanguageCode,
   ): Promise<boolean> {
-    const {safetyInfo} = await this.remote.classifyTextSafety(content);
-    if (safetyInfo === null) {
-      return false;
+    // Split the content into chunks due to model performance considerations.
+    const contentChunks =
+      chunkContentByWord(content, MAX_TS_MODEL_INPUT_WORD_LENGTH, language);
+    for (const chunk of contentChunks) {
+      const {safetyInfo} = await this.remote.classifyTextSafety(chunk);
+      if (safetyInfo === null) {
+        continue;
+      }
+
+      const {isSafe} = await this.pageRemote.validateSafetyResult(
+        safetyFeature,
+        chunk,
+        safetyInfo,
+      );
+      if (!isSafe) {
+        return true;
+      }
     }
-    const {isSafe} = await this.pageRemote.validateSafetyResult(
-      safetyFeature,
-      content,
-      safetyInfo,
-    );
-    return !isSafe;
+    return false;
   }
 
   close(): void {
@@ -183,20 +203,25 @@ abstract class OnDeviceModel<T> implements Model<T> {
     responseSafetyFeature: SafetyFeature,
     fields: Record<string, string>,
     session: SessionRemote,
+    language: LanguageCode,
   ): Promise<ModelResponse<string>> {
     const prompt = await this.formatInput(formatFeature, fields);
     if (prompt === null) {
       console.error('formatInput returns null, wrong model?');
       return {kind: 'error', error: ModelResponseError.GENERAL};
     }
-    if (await this.contentIsUnsafe(prompt, requestSafetyFeature)) {
+    if (await this.contentIsUnsafe(prompt, requestSafetyFeature, language)) {
       return {kind: 'error', error: ModelResponseError.UNSAFE};
     }
     const response = await this.executeRaw(prompt, session);
     if (response.kind === 'error') {
       return response;
     }
-    if (await this.contentIsUnsafe(response.result, responseSafetyFeature)) {
+    if (await this.contentIsUnsafe(
+          response.result,
+          responseSafetyFeature,
+          language,
+        )) {
       return {kind: 'error', error: ModelResponseError.UNSAFE};
     }
     return {kind: 'success', result: response.result};
@@ -227,6 +252,7 @@ export class SummaryModel extends OnDeviceModel<string> {
         bullet_points_request: bulletPointsRequest,
       },
       session,
+      language,
     );
     // TODO(pihsun): `Result` monadic helper class?
     if (resp.kind === 'error') {
@@ -260,7 +286,7 @@ export class TitleSuggestionModel extends OnDeviceModel<string[]> {
   // For title suggestion, model input only needs transcription.
   override async executeInRemoteSession(
     content: string,
-    _: LanguageCode,
+    language: LanguageCode,
     session: SessionRemote,
   ): Promise<ModelResponse<string[]>> {
     const resp = await this.formatAndExecute(
@@ -269,6 +295,7 @@ export class TitleSuggestionModel extends OnDeviceModel<string[]> {
       SafetyFeature.kAudioTitleResponse,
       {transcription: content},
       session,
+      language,
     );
     if (resp.kind === 'error') {
       return resp;
