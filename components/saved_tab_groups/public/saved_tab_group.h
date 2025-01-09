@@ -221,9 +221,9 @@ class SavedTabGroup {
   void UpdateTabPositionsImpl();
 
   // Removes `saved_tab_guid` from this group. CHECKs that the removed tab is
-  // not the last tab, unless `ignore_empty_groups_for_testing` is true.
+  // not the last tab, unless `allow_empty_groups` is true.
   void RemoveTabImpl(const base::Uuid& saved_tab_guid,
-                     bool ignore_empty_groups_for_testing = false);
+                     bool allow_empty_groups = false);
 
   // Make a copy the saved tab group, keeping fields like title, color, favicon
   // and all the tabs. UUID and local tab and group IDs are not copied.

@@ -1615,4 +1615,54 @@ TEST_F(SavedTabGroupSyncBridgeTest, StoreLocalIdOnRemoteUpdate) {
       kLocalGroupId);
 }
 
+// Verify that deleting the last tab from sync creates a pending NTP which is
+// stored to DB correctly.
+TEST_F(SavedTabGroupSyncBridgeTest,
+       PendingNtpIsCreatedOnDeletionAndStoredToDB) {
+  syncer::EntityChangeList empty_change_list;
+  bridge_->MergeFullSyncData(bridge_->CreateMetadataChangeList(),
+                             std::move(empty_change_list));
+
+  // Create a group with a single tab.
+  SavedTabGroup group(u"Test Title", tab_groups::TabGroupColorId::kBlue, {},
+                      /*position=*/0);
+  SavedTabGroupTab tab_1(GURL("https://website.com"), u"Website Title",
+                         group.saved_guid(), /*position=*/std::nullopt);
+  group.AddTabLocally(tab_1);
+
+  ASSERT_EQ(group.saved_tabs().size(), 1u);
+
+  bridge_->ApplyIncrementalSyncChanges(
+      bridge_->CreateMetadataChangeList(),
+      CreateEntityChangeListFromGroup(
+          group, syncer::EntityChange::ChangeType::ACTION_ADD));
+
+  ASSERT_TRUE(saved_tab_group_model_.Contains(group.saved_guid()));
+  const SavedTabGroup* group_from_model =
+      saved_tab_group_model_.Get(group.saved_guid());
+
+  // Delete the tab from sync. It should result in creating the pending
+  base::Uuid last_tab_id = group.saved_tabs()[0].saved_tab_guid();
+
+  syncer::EntityChangeList delete_tab_change_list;
+  delete_tab_change_list.push_back(CreateEntityChange(
+      SavedTabGroupSyncBridge::SavedTabGroupTabToSpecificsForTest(
+          group.saved_tabs()[0]),
+      syncer::EntityChange::ChangeType::ACTION_DELETE));
+  bridge_->ApplyIncrementalSyncChanges(bridge_->CreateMetadataChangeList(),
+                                       std::move(delete_tab_change_list));
+
+  ASSERT_FALSE(group_from_model->ContainsTab(last_tab_id));
+  EXPECT_EQ(group_from_model->saved_tabs().size(), 1u);
+
+  const SavedTabGroupTab& pending_ntp = group_from_model->saved_tabs()[0];
+  base::Uuid pending_ntp_guid = pending_ntp.saved_tab_guid();
+  EXPECT_TRUE(pending_ntp.is_pending_ntp());
+
+  // Read the pending NTP from storage and verify that it's written correctly.
+  std::optional<proto::SavedTabGroupData> stored_saved_tab_group_data =
+      ReadSavedTabGroupDataFromStore(pending_ntp_guid);
+  ASSERT_TRUE(stored_saved_tab_group_data.has_value());
+}
+
 }  // namespace tab_groups

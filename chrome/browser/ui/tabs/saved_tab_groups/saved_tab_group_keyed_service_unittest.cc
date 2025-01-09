@@ -791,35 +791,6 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, RemoveTabFromSyncRemovesLocalTab) {
 }
 
 TEST_F(SavedTabGroupKeyedServiceUnitTest,
-       RemoveLastTabFromSyncRemovesLocalTabAndLocalGroup) {
-  Browser* const browser = AddBrowser();
-  TabStripModel* const tabstrip = browser->tab_strip_model();
-
-  auto sync_id = AddGroupFromLocal(browser);
-  auto local_id = LocalIDFromSyncID(sync_id);
-
-  const SavedTabGroup* const saved_group = service()->model()->Get(sync_id);
-  // Add an extra tab so closing the grouped tab doesn't close the browser.
-  AddTabToBrowser(browser, 1);
-
-  // Remove the only tab from the saved group.
-  service()->model()->RemoveTabFromGroupFromSync(
-      saved_group->saved_guid(),
-      saved_group->saved_tabs().at(0).saved_tab_guid());
-
-  if (IsTabGroupsSaveV2Enabled()) {
-    // The tab was deleted.
-    EXPECT_EQ(1, tabstrip->count());
-  } else {
-    // The local tab in the group should still be in the tabstrip but no longer
-    // in the group.
-    EXPECT_EQ(2, tabstrip->count());
-  }
-  // The local group should also have been closed, since it's now empty.
-  EXPECT_FALSE(tabstrip->group_model()->ContainsTabGroup(local_id));
-}
-
-TEST_F(SavedTabGroupKeyedServiceUnitTest,
        RemoveGroupFromSyncRemovesLocalTabAndLocalGroup) {
   Browser* const browser = AddBrowser();
   TabStripModel* const tabstrip = browser->tab_strip_model();
@@ -1113,7 +1084,8 @@ class SavedTabGroupKeyedServiceUnitTestV2
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(SavedTabGroupKeyedServiceUnitTestV2, LastTabRemoveFromSyncClosesGroup) {
+TEST_F(SavedTabGroupKeyedServiceUnitTestV2,
+       LastTabRemoveFromSyncDoesNotCloseGroupAndCreatesPendingNTP) {
   Browser* browser = AddBrowser();
 
   tab_groups::SavedTabGroupKeyedService* service =
@@ -1136,9 +1108,11 @@ TEST_F(SavedTabGroupKeyedServiceUnitTestV2, LastTabRemoveFromSyncClosesGroup) {
       saved_group->saved_tabs().at(0).saved_tab_guid());
 
   // The group should have closed along with all of its tabs.
-  EXPECT_EQ(1, tab_strip_model->count());
+  EXPECT_EQ(2, tab_strip_model->count());
   // The local group should also have been closed, since it's now empty.
-  EXPECT_FALSE(tab_strip_model->group_model()->ContainsTabGroup(group_id));
+  EXPECT_TRUE(tab_strip_model->group_model()->ContainsTabGroup(group_id));
+  EXPECT_EQ(1u, saved_group->saved_tabs().size());
+  EXPECT_TRUE(saved_group->saved_tabs()[0].is_pending_ntp());
 }
 
 TEST_F(SavedTabGroupKeyedServiceUnitTestV2,

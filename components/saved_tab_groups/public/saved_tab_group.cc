@@ -280,7 +280,7 @@ SavedTabGroup& SavedTabGroup::RemoveTabLocally(
 SavedTabGroup& SavedTabGroup::RemoveTabFromSync(
     const base::Uuid& saved_tab_guid,
     bool ignore_empty_groups_for_testing) {
-  RemoveTabImpl(saved_tab_guid, ignore_empty_groups_for_testing);
+  RemoveTabImpl(saved_tab_guid, /*allow_empty_groups=*/true);
   SetUpdateTimeWindowsEpochMicros(base::Time::Now());
   return *this;
 }
@@ -432,7 +432,7 @@ bool SavedTabGroup::IsPendingSanitization() const {
 }
 
 void SavedTabGroup::RemoveTabImpl(const base::Uuid& saved_tab_guid,
-                                  bool ignore_empty_groups_for_testing) {
+                                  bool allow_empty_groups) {
   std::optional<size_t> index = GetIndexOfTab(saved_tab_guid);
   CHECK(index.has_value());
   CHECK_GE(index.value(), 0u);
@@ -442,8 +442,7 @@ void SavedTabGroup::RemoveTabImpl(const base::Uuid& saved_tab_guid,
   base::UmaHistogramBoolean(
       "TabGroups.SavedTabGroups.TabRemovedFromGroupWasLastTab",
       saved_tabs_.empty());
-  CHECK(ignore_empty_groups_for_testing || !saved_tabs_.empty(),
-        base::NotFatalUntil::M135);
+  CHECK(allow_empty_groups || !saved_tabs_.empty(), base::NotFatalUntil::M135);
 }
 
 SavedTabGroup SavedTabGroup::CopyBaseFieldsWithTabs() const {

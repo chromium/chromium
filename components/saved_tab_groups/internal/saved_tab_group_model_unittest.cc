@@ -394,14 +394,108 @@ TEST_F(SavedTabGroupModelTest, RemoveTabFromGroup) {
 
 // Tests that a group is removed from the model when the last tab is removed
 // from it.
-TEST_F(SavedTabGroupModelTest, RemoveLastTabFromGroup) {
+TEST_F(SavedTabGroupModelTest, RemoveLastTabFromGroupLocally) {
   const SavedTabGroup* group = saved_tab_group_model_->Get(id_1_);
-  ASSERT_EQ(group->saved_tabs().size(), size_t(1));
+  ASSERT_EQ(1u, group->saved_tabs().size());
 
   saved_tab_group_model_->RemoveTabFromGroupLocally(
       group->saved_guid(), group->saved_tabs()[0].saved_tab_guid());
 
   EXPECT_FALSE(saved_tab_group_model_->Contains(id_1_));
+}
+
+// Tests that last tab deletion from sync creates a pending NTP.
+TEST_F(SavedTabGroupModelTest, PendingNTP_CreatedWhenLastTabRemovedFromSync) {
+  const SavedTabGroup* group = saved_tab_group_model_->Get(id_1_);
+  ASSERT_EQ(1u, group->saved_tabs().size());
+
+  saved_tab_group_model_->RemoveTabFromGroupFromSync(
+      group->saved_guid(), group->saved_tabs()[0].saved_tab_guid());
+
+  // Verify that the group isn't deleted and has a pending NTP.
+  group = saved_tab_group_model_->Get(id_1_);
+  EXPECT_TRUE(group);
+  EXPECT_EQ(1u, group->saved_tabs().size());
+  EXPECT_TRUE(group->saved_tabs()[0].is_pending_ntp());
+}
+
+// Tests that pending NTP commits when it navigates locally.
+TEST_F(SavedTabGroupModelTest,
+       PendingNTP_CommitsWhenPendingTabNavigatesLocally) {
+  const SavedTabGroup* group = saved_tab_group_model_->Get(id_1_);
+  ASSERT_EQ(group->saved_tabs().size(), size_t(1));
+
+  saved_tab_group_model_->RemoveTabFromGroupFromSync(
+      group->saved_guid(), group->saved_tabs()[0].saved_tab_guid());
+
+  // Verify that the group isn't deleted and has a pending NTP.
+  group = saved_tab_group_model_->Get(id_1_);
+  ASSERT_TRUE(group);
+  EXPECT_EQ(1u, group->saved_tabs().size());
+  EXPECT_TRUE(group->saved_tabs()[0].is_pending_ntp());
+}
+
+// Tests that pending NTP commits when another tab is added locally.
+TEST_F(SavedTabGroupModelTest, PendingNTP_CommitsWhenAnotherTabAddedLocally) {
+  const SavedTabGroup* group = saved_tab_group_model_->Get(id_1_);
+  ASSERT_EQ(group->saved_tabs().size(), size_t(1));
+
+  saved_tab_group_model_->RemoveTabFromGroupFromSync(
+      group->saved_guid(), group->saved_tabs()[0].saved_tab_guid());
+
+  // Verify that the group isn't deleted and has a pending NTP.
+  group = saved_tab_group_model_->Get(id_1_);
+  ASSERT_TRUE(group);
+  EXPECT_EQ(1u, group->saved_tabs().size());
+  EXPECT_TRUE(group->saved_tabs()[0].is_pending_ntp());
+
+  // Add a tab locally.
+  SavedTabGroupTab tab2 = test::CreateSavedTabGroupTab(
+      "https://xyz", u"First Tab 4th Group", id_1_, /*position=*/0);
+  saved_tab_group_model_->AddTabToGroupLocally(group->saved_guid(), tab2);
+
+  // Both tabs should be non-pending.
+  group = saved_tab_group_model_->Get(id_1_);
+  ASSERT_TRUE(group);
+  EXPECT_EQ(2u, group->saved_tabs().size());
+  EXPECT_FALSE(group->saved_tabs()[0].is_pending_ntp());
+  EXPECT_FALSE(group->saved_tabs()[1].is_pending_ntp());
+}
+
+// Tests that pending NTP commits when tabs are received from sync.
+TEST_F(SavedTabGroupModelTest,
+       PendingNTP_CommitsWhenIncomingNavigationFromSync) {
+  const SavedTabGroup* group = saved_tab_group_model_->Get(id_1_);
+  ASSERT_EQ(1u, group->saved_tabs().size());
+
+  saved_tab_group_model_->RemoveTabFromGroupFromSync(
+      group->saved_guid(), group->saved_tabs()[0].saved_tab_guid());
+
+  // Verify that the group isn't deleted and has a pending NTP.
+  group = saved_tab_group_model_->Get(id_1_);
+  ASSERT_TRUE(group);
+  EXPECT_EQ(1u, group->saved_tabs().size());
+  EXPECT_TRUE(group->saved_tabs()[0].is_pending_ntp());
+
+  SavedTabGroupTab pending_ntp = group->saved_tabs()[0];
+  LocalTabID local_tab_id_1 = test::GenerateRandomTabID();
+  saved_tab_group_model_->UpdateLocalTabId(id_1_, pending_ntp, local_tab_id_1);
+
+  // Add a tab locally.
+  SavedTabGroupTab tab2 = test::CreateSavedTabGroupTab(
+      "https://xyz", u"First Tab 4th Group", id_1_, /*position=*/0);
+  saved_tab_group_model_->AddTabToGroupFromSync(id_1_, tab2);
+
+  // The incoming tab should replace the pending NTP and have the local tab ID
+  // copied over from the pending NTP.
+  group = saved_tab_group_model_->Get(id_1_);
+  ASSERT_EQ(1u, group->saved_tabs().size());
+  EXPECT_FALSE(group->saved_tabs()[0].is_pending_ntp());
+  EXPECT_EQ(local_tab_id_1, group->saved_tabs()[0].local_tab_id());
+  EXPECT_EQ(tab2.saved_tab_guid(), group->saved_tabs()[0].saved_tab_guid());
+
+  tab2.SetLocalTabID(local_tab_id_1);
+  test::CompareSavedTabGroupTabs(group->saved_tabs(), {tab2});
 }
 
 // Tests updating a tab in a saved group.

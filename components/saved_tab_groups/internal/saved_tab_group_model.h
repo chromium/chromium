@@ -253,6 +253,21 @@ class SavedTabGroupModel {
   void UpdateVisualDataImpl(int index,
                             const tab_groups::TabGroupVisualData* visual_data);
 
+  // Pending NTP related operations. Pending NTP is a placeholder NTP
+  // automatically created when a group from sync reaches zero-tabs state to
+  // make it easier for UI to handle since UI today doesn't support zero-tab tab
+  // groups in any platform. Zero-tab state is a valid transient state since
+  // concurrent tab additions and removals are common in shared tab groups. A
+  // pending NTP exists locally in the model and the UI, but not synced. Any
+  // incoming / outgoing navigations or tab additions will commit this tab to
+  // sync. There can only be one maximum pending NTP in a group and it will be
+  // the only tab in the group.
+  void CreatePendingNtp(SavedTabGroup& group);
+  void StartSyncingPendingNtpIfAny(SavedTabGroup& group);
+  void MergePendingNtpWithIncomingTabIfAny(SavedTabGroup& group,
+                                           const base::Uuid& tab_id);
+  SavedTabGroupTab* FindPendingNtpInGroup(SavedTabGroup& group);
+
   // Obsevers of the model.
   base::ObserverList<SavedTabGroupModelObserver>::Unchecked observers_;
 

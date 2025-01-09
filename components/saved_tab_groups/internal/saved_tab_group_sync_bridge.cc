@@ -329,16 +329,17 @@ void SavedTabGroupSyncBridge::ApplyDisableSyncChanges(
       tabs_to_close_locally.emplace_back(tab.saved_tab_guid());
     }
 
-    for (const base::Uuid& tab_id : tabs_to_close_locally) {
-      model_wrapper_->RemoveTabFromGroup(group_id, tab_id);
-      ongoing_write_batch_->DeleteData(tab_id.AsLowercaseString());
-    }
-
     // The group could have been deleted when the last tab was closed, hence
     // double check before calling RemoveGroup().
     if (model_wrapper_->GetGroup(group_id)) {
       model_wrapper_->RemoveGroup(group_id);
     }
+
+    // Remove the tabs from storage.
+    for (const base::Uuid& tab_id : tabs_to_close_locally) {
+      ongoing_write_batch_->DeleteData(tab_id.AsLowercaseString());
+    }
+
     ongoing_write_batch_->DeleteData(group_id.AsLowercaseString());
   }
 
@@ -414,6 +415,8 @@ void SavedTabGroupSyncBridge::SavedTabGroupAddedLocally(
 
   UpsertEntitySpecific(std::move(group_data), ongoing_write_batch_.get());
   for (size_t i = 0; i < group->saved_tabs().size(); ++i) {
+    // Pending NTP should never be created for locally added groups.
+    CHECK(!group->saved_tabs()[i].is_pending_ntp());
     proto::SavedTabGroupData tab_data =
         SavedTabGroupTabToData(group->saved_tabs()[i]);
     tab_data.mutable_specifics()->mutable_tab()->set_position(i);
@@ -459,9 +462,10 @@ void SavedTabGroupSyncBridge::SavedTabGroupUpdatedLocally(
       RemoveEntitySpecific(tab_guid.value(), ongoing_write_batch_.get());
     } else {
       int tab_index = group->GetIndexOfTab(tab_guid.value()).value();
+      const SavedTabGroupTab& tab = group->saved_tabs()[tab_index];
       UpsertEntitySpecific(
           SavedTabGroupTabToData(group->saved_tabs()[tab_index]),
-          ongoing_write_batch_.get());
+          ongoing_write_batch_.get(), /*send_to_sync=*/!tab.is_pending_ntp());
     }
 
     // There might be an updated user interaction time for the group. Hence
@@ -485,6 +489,9 @@ void SavedTabGroupSyncBridge::SavedTabGroupTabsReorderedLocally(
   DCHECK(group);
 
   for (const SavedTabGroupTab& tab : group->saved_tabs()) {
+    // None of the tabs in the group can be pending NTP since pending NTP can be
+    // the only tab in the group and those groups are never reordered.
+    CHECK(!tab.is_pending_ntp());
     UpsertEntitySpecific(SavedTabGroupTabToData(tab),
                          ongoing_write_batch_.get());
   }
@@ -603,8 +610,17 @@ proto::SavedTabGroupData SavedTabGroupSyncBridge::SavedTabGroupTabToDataForTest(
 void SavedTabGroupSyncBridge::UpsertEntitySpecific(
     const proto::SavedTabGroupData& data,
     syncer::DataTypeStore::WriteBatch* write_batch) {
+  UpsertEntitySpecific(data, write_batch, /*send_to_sync=*/true);
+}
+
+void SavedTabGroupSyncBridge::UpsertEntitySpecific(
+    const proto::SavedTabGroupData& data,
+    syncer::DataTypeStore::WriteBatch* write_batch,
+    bool send_to_sync) {
   write_batch->WriteData(data.specifics().guid(), data.SerializeAsString());
-  SendToSync(data.specifics(), write_batch->GetMetadataChangeList());
+  if (send_to_sync) {
+    SendToSync(data.specifics(), write_batch->GetMetadataChangeList());
+  }
 }
 
 void SavedTabGroupSyncBridge::RemoveEntitySpecific(
