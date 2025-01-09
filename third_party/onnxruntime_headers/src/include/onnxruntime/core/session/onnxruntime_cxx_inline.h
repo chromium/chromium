@@ -2418,10 +2418,8 @@ template <>
 inline void GraphImpl<OrtGraph>::SetInputs(std::vector<ValueInfo>& inputs) {
   std::vector<OrtValueInfo*> inputs_ptrs;
   inputs_ptrs.reserve(inputs.size());
-
-  // Graph takes ownership.
   std::transform(inputs.begin(), inputs.end(), std::back_inserter(inputs_ptrs),
-                 [](ValueInfo& vi) -> OrtValueInfo* { return vi.release(); });
+                 [](ValueInfo& vi) -> OrtValueInfo* { return vi; });
 
   ThrowOnError(GetModelBuilderApi().SetGraphInputs(p_, inputs_ptrs.data(), inputs_ptrs.size()));
 

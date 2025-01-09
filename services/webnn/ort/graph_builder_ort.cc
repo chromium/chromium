@@ -595,10 +595,8 @@ void GraphBuilderOrt::AddCastOperation(const mojom::ElementWiseUnary& cast) {
 
   int64_t to_data_type = static_cast<int64_t>(
       OperandTypeToONNXTensorElementDataType(output_data_type));
-  ScopedOrtOpAttrPtr attr_to;
-  model_builder_.CreateAttribute(attr_to, /*name=*/"to", to_data_type);
-
-  std::array<OrtOpAttr*, 1> attributes = {attr_to};
+  std::array<OrtOpAttr*, 1> attributes = {
+      model_builder_.CreateAttribute(/*name=*/"to", to_data_type).Release()};
 
   model_builder_.AddNode(kOpTypeCast, node_name, input_names, output_names,
                          attributes);
@@ -670,33 +668,32 @@ void GraphBuilderOrt::AddConv2dOperation(const mojom::Conv2d& conv2d) {
   std::array<int64_t, 2> dilations = {
       base::checked_cast<int64_t>(conv2d.dilations->height),
       base::checked_cast<int64_t>(conv2d.dilations->width)};
-  ScopedOrtOpAttrPtr attr_dilations;
-  model_builder_.CreateAttribute(attr_dilations, /*name=*/"dilations",
-                                 dilations);
+  ScopedOrtOpAttrPtr attr_dilations =
+      model_builder_.CreateAttribute(/*name=*/"dilations", dilations);
 
   int64_t group = base::checked_cast<int64_t>(conv2d.groups);
-  ScopedOrtOpAttrPtr attr_group;
-  model_builder_.CreateAttribute(attr_group, /*name=*/"group", group);
+  ScopedOrtOpAttrPtr attr_group =
+      model_builder_.CreateAttribute(/*name=*/"group", group);
 
   std::array<int64_t, 4> pads = {
       base::checked_cast<int64_t>(conv2d.padding->beginning->height),
       base::checked_cast<int64_t>(conv2d.padding->beginning->width),
       base::checked_cast<int64_t>(conv2d.padding->ending->height),
       base::checked_cast<int64_t>(conv2d.padding->ending->width)};
-  ScopedOrtOpAttrPtr attr_pads;
-  model_builder_.CreateAttribute(attr_pads, /*name=*/"pads", pads);
+  ScopedOrtOpAttrPtr attr_pads =
+      model_builder_.CreateAttribute(/*name=*/"pads", pads);
 
   std::array<int64_t, 2> strides = {
       base::checked_cast<int64_t>(conv2d.strides->height),
       base::checked_cast<int64_t>(conv2d.strides->width)};
-  ScopedOrtOpAttrPtr attr_strides;
-  model_builder_.CreateAttribute(attr_strides, /*name=*/"strides", strides);
+  ScopedOrtOpAttrPtr attr_strides =
+      model_builder_.CreateAttribute(/*name=*/"strides", strides);
 
   std::array<OrtOpAttr*, 4> attributes = {
-      attr_dilations,
-      attr_group,
-      attr_pads,
-      attr_strides,
+      attr_dilations.Release(),
+      attr_group.Release(),
+      attr_pads.Release(),
+      attr_strides.Release(),
   };
   model_builder_.AddNode(kOpTypeConv2d, node_name, input_names, output_names,
                          attributes);
@@ -744,21 +741,18 @@ void GraphBuilderOrt::AddGemmOperation(const mojom::Gemm& gemm) {
   }
   std::array<const char*, 1> output_names = {output_name.c_str()};
 
-  ScopedOrtOpAttrPtr attr_alpha;
-  model_builder_.CreateAttribute(attr_alpha, /*name=*/"alpha", gemm.alpha);
-  ScopedOrtOpAttrPtr attr_beta;
-  model_builder_.CreateAttribute(attr_beta, /*name=*/"beta", gemm.beta);
+  ScopedOrtOpAttrPtr attr_alpha =
+      model_builder_.CreateAttribute(/*name=*/"alpha", gemm.alpha);
+  ScopedOrtOpAttrPtr attr_beta =
+      model_builder_.CreateAttribute(/*name=*/"beta", gemm.beta);
+  ScopedOrtOpAttrPtr attr_trans_a = model_builder_.CreateAttribute(
+      /*name=*/"transA", static_cast<int64_t>(gemm.a_transpose));
+  ScopedOrtOpAttrPtr attr_trans_b = model_builder_.CreateAttribute(
+      /*name=*/"transB", static_cast<int64_t>(gemm.b_transpose));
 
-  int64_t trans_a = static_cast<int64_t>(gemm.a_transpose);
-  ScopedOrtOpAttrPtr attr_transA;
-  model_builder_.CreateAttribute(attr_transA, /*name=*/"transA", trans_a);
-
-  int64_t trans_b = static_cast<int64_t>(gemm.b_transpose);
-  ScopedOrtOpAttrPtr attr_transB;
-  model_builder_.CreateAttribute(attr_transB, /*name=*/"transB", trans_b);
-
-  std::array<OrtOpAttr*, 4> attributes = {attr_alpha, attr_beta, attr_transA,
-                                          attr_transB};
+  std::array<OrtOpAttr*, 4> attributes = {
+      attr_alpha.Release(), attr_beta.Release(), attr_trans_a.Release(),
+      attr_trans_b.Release()};
 
   model_builder_.AddNode(kOpTypeGemm, node_name, input_names, output_names,
                          attributes);
@@ -842,10 +836,11 @@ GraphBuilderOrt::AddInstanceNormalizationOperation(
     input_names.push_back(bias_name.c_str());
   }
 
-  ScopedOrtOpAttrPtr attr_epsilon;
-  model_builder_.CreateAttribute(attr_epsilon, /*name=*/"epsilon",
-                                 instance_normalization.epsilon);
-  std::array<OrtOpAttr*, 1> attributes = {attr_epsilon};
+  std::array<OrtOpAttr*, 1> attributes = {
+      model_builder_
+          .CreateAttribute(
+              /*name=*/"epsilon", instance_normalization.epsilon)
+          .Release()};
 
   const std::string node_name = GetNodeName(instance_normalization.label);
   const std::string output_name =
@@ -982,14 +977,13 @@ GraphBuilderOrt::AddLayerNormalizationOperation(
     input_names.push_back(bias_name.c_str());
   }
 
-  ScopedOrtOpAttrPtr attr_axis;
-  model_builder_.CreateAttribute(attr_axis, /*name=*/"axis",
-                                 base::checked_cast<int64_t>(axis));
-  ScopedOrtOpAttrPtr attr_epsilon;
-  model_builder_.CreateAttribute(attr_epsilon, /*name=*/"epsilon",
-                                 layer_normalization.epsilon);
+  ScopedOrtOpAttrPtr attr_axis = model_builder_.CreateAttribute(
+      /*name=*/"axis", base::checked_cast<int64_t>(axis));
+  ScopedOrtOpAttrPtr attr_epsilon = model_builder_.CreateAttribute(
+      /*name=*/"epsilon", layer_normalization.epsilon);
 
-  std::array<OrtOpAttr*, 2> attributes = {attr_axis, attr_epsilon};
+  std::array<OrtOpAttr*, 2> attributes = {attr_axis.Release(),
+                                          attr_epsilon.Release()};
 
   model_builder_.AddNode(kOpTypeLayerNormalization, node_name, input_names,
                          output_names, attributes);
@@ -1017,22 +1011,20 @@ void GraphBuilderOrt::AddPool2dOperation(const mojom::Pool2d& pool2d) {
   std::array<int64_t, 2> dilations = {
       base::checked_cast<int64_t>(pool2d.dilations->height),
       base::checked_cast<int64_t>(pool2d.dilations->width)};
-  ScopedOrtOpAttrPtr attr_dilations;
-  model_builder_.CreateAttribute(attr_dilations, /*name=*/"dilations",
-                                 dilations);
+  ScopedOrtOpAttrPtr attr_dilations =
+      model_builder_.CreateAttribute(/*name=*/"dilations", dilations);
 
   std::array<int64_t, 2> strides = {
       base::checked_cast<int64_t>(pool2d.strides->height),
       base::checked_cast<int64_t>(pool2d.strides->width)};
-  ScopedOrtOpAttrPtr attr_strides;
-  model_builder_.CreateAttribute(attr_strides, /*name=*/"strides", strides);
+  ScopedOrtOpAttrPtr attr_strides =
+      model_builder_.CreateAttribute(/*name=*/"strides", strides);
 
   std::array<int64_t, 2> window_dimensions = {
       base::checked_cast<int64_t>(pool2d.window_dimensions->height),
       base::checked_cast<int64_t>(pool2d.window_dimensions->width)};
-  ScopedOrtOpAttrPtr attr_kernel_shape;
-  model_builder_.CreateAttribute(attr_kernel_shape,
-                                 /*name=*/"kernel_shape", window_dimensions);
+  ScopedOrtOpAttrPtr attr_kernel_shape = model_builder_.CreateAttribute(
+      /*name=*/"kernel_shape", window_dimensions);
 
   // ONNX's pads are [beginning_height, beginning_width, ending_height,
   // ending_width]
@@ -1041,8 +1033,8 @@ void GraphBuilderOrt::AddPool2dOperation(const mojom::Pool2d& pool2d) {
       base::checked_cast<int64_t>(pool2d.padding->beginning->width),
       base::checked_cast<int64_t>(pool2d.padding->ending->height),
       base::checked_cast<int64_t>(pool2d.padding->ending->width)};
-  ScopedOrtOpAttrPtr attr_pads;
-  model_builder_.CreateAttribute(attr_pads, /*name=*/"pads", pads);
+  ScopedOrtOpAttrPtr attr_pads =
+      model_builder_.CreateAttribute(/*name=*/"pads", pads);
 
   // Calculate the ceil_mode.
   const std::vector<uint32_t>& input_shape =
@@ -1059,13 +1051,15 @@ void GraphBuilderOrt::AddPool2dOperation(const mojom::Pool2d& pool2d) {
   CHECK(float_output_height.has_value());
 
   int64_t ceil_mode = float_output_height.value() < output_height ? 1 : 0;
-  ScopedOrtOpAttrPtr attr_ceil_mode;
-  model_builder_.CreateAttribute(attr_ceil_mode, /*name=*/"ceil_mode",
-                                 ceil_mode);
+  ScopedOrtOpAttrPtr attr_ceil_mode =
+      model_builder_.CreateAttribute(/*name=*/"ceil_mode", ceil_mode);
+
+  std::vector<OrtOpAttr*> attributes = {
+      attr_dilations.Release(), attr_strides.Release(),
+      attr_kernel_shape.Release(), attr_pads.Release(),
+      attr_ceil_mode.Release()};
 
   // P value of the Lp norm used to pool over the input data.
-  std::optional<ScopedOrtOpAttrPtr> attr_p;
-  std::optional<int64_t> p;
   std::string op_type;
   switch (pool2d.kind) {
     case mojom::Pool2d::Kind::kAveragePool2d: {
@@ -1078,20 +1072,10 @@ void GraphBuilderOrt::AddPool2dOperation(const mojom::Pool2d& pool2d) {
     }
     case mojom::Pool2d::Kind::kL2Pool2d: {
       op_type = kOpTypeLpPool2d;
-      p = 2;
-      attr_p.emplace();
-      model_builder_.CreateAttribute(attr_p.value(), /*name=*/"p", p.value());
+      attributes.push_back(model_builder_.CreateAttribute(
+          /*name=*/"p", static_cast<int64_t>(2)));
       break;
     }
-  }
-
-  std::vector<OrtOpAttr*> attributes = {attr_dilations, attr_strides,
-                                        attr_kernel_shape, attr_pads,
-                                        attr_ceil_mode};
-  if (op_type == kOpTypeLpPool2d) {
-    CHECK(attr_p.has_value());
-    CHECK(p.has_value());
-    attributes.push_back(attr_p.value());
   }
 
   const std::string node_name = GetNodeName(pool2d.label);
@@ -1121,25 +1105,23 @@ void GraphBuilderOrt::AddReduceOperation(const mojom::Reduce& reduce) {
     input_names.push_back(axes_name.c_str());
   }
 
-  ScopedOrtOpAttrPtr attr_keepdims;
   int64_t keepdims = reduce.keep_dimensions ? 1 : 0;
-  model_builder_.CreateAttribute(attr_keepdims, /*name=*/"keepdims", keepdims);
+  ScopedOrtOpAttrPtr attr_keepdims =
+      model_builder_.CreateAttribute(/*name=*/"keepdims", keepdims);
 
-  ScopedOrtOpAttrPtr attr_noop_with_empty_axes;
   // According to
   // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-reduce, if
   // axes is empty, the operation is a noop, no dimensions are reduced.
   int64_t noop_with_empty_axes = 1;
-  model_builder_.CreateAttribute(attr_noop_with_empty_axes,
-                                 /*name=*/"noop_with_empty_axes",
-                                 noop_with_empty_axes);
+  ScopedOrtOpAttrPtr attr_noop_with_empty_axes = model_builder_.CreateAttribute(
+      /*name=*/"noop_with_empty_axes", noop_with_empty_axes);
 
   const std::string node_name = GetNodeName(reduce.label);
   const std::string output_name = GetOperandName(reduce.output_operand_id);
   std::array<const char*, 1> output_names = {output_name.c_str()};
   std::string reduce_op_type = MapReduceKindToOrtOpType(reduce.kind);
-  std::array<OrtOpAttr*, 2> attributes = {attr_keepdims,
-                                          attr_noop_with_empty_axes};
+  std::array<OrtOpAttr*, 2> attributes = {attr_keepdims.Release(),
+                                          attr_noop_with_empty_axes.Release()};
   model_builder_.AddNode(reduce_op_type, node_name, input_names, output_names,
                          attributes);
 }
@@ -1223,11 +1205,11 @@ void GraphBuilderOrt::AddSoftmaxOperation(const mojom::Softmax& softmax) {
   std::array<const char*, 1> input_names = {input_name.c_str()};
   std::array<const char*, 1> output_names = {output_name.c_str()};
 
-  int64_t axis = static_cast<int64_t>(softmax.axis);
-  ScopedOrtOpAttrPtr attr_axis;
-  model_builder_.CreateAttribute(attr_axis, /*name=*/"axis", axis);
+  std::array<OrtOpAttr*, 1> attributes = {
+      model_builder_
+          .CreateAttribute(/*name=*/"axis", static_cast<int64_t>(softmax.axis))
+          .Release()};
 
-  std::array<OrtOpAttr*, 1> attributes = {attr_axis};
   model_builder_.AddNode(kOpTypeSoftmax, node_name, input_names, output_names,
                          attributes);
 }
@@ -1242,10 +1224,9 @@ void GraphBuilderOrt::AddTransposeOperation(const mojom::Transpose& transpose) {
 
   std::vector<int64_t> permutation(transpose.permutation.begin(),
                                    transpose.permutation.end());
-  ScopedOrtOpAttrPtr attr_perm;
-  model_builder_.CreateAttribute(attr_perm, /*name=*/"perm", permutation);
+  std::array<OrtOpAttr*, 1> attributes = {
+      model_builder_.CreateAttribute(/*name=*/"perm", permutation).Release()};
 
-  std::array<OrtOpAttr*, 1> attributes = {attr_perm};
   model_builder_.AddNode(kOpTypeTranspose, node_name, input_names, output_names,
                          attributes);
 }
@@ -1264,12 +1245,10 @@ void GraphBuilderOrt::AddWhereOperation(const mojom::Where& where) {
     std::array<const char*, 1> cast_output_names = {
         cast_node_output_name.c_str()};
 
-    ScopedOrtOpAttrPtr attr_to;
     int64_t to_data_type =
         static_cast<int64_t>(ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL);
-    model_builder_.CreateAttribute(attr_to, /*name=*/"to", to_data_type);
-
-    std::array<OrtOpAttr*, 1> cast_attributes = {attr_to};
+    std::array<OrtOpAttr*, 1> cast_attributes = {
+        model_builder_.CreateAttribute(/*name=*/"to", to_data_type).Release()};
     model_builder_.AddNode(kOpTypeCast, cast_node_name, cast_input_names,
                            cast_output_names, cast_attributes);
     next_operand_id_++;

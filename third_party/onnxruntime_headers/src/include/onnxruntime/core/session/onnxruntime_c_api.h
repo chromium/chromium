@@ -46,7 +46,7 @@ extern "C" {
 
 //! @}
 // SAL2 Definitions
-#ifndef _WIN32
+#ifndef _MSC_VER
 #define _In_
 #define _In_z_
 #define _In_opt_
@@ -5158,15 +5158,28 @@ struct OrtModelBuilderApi {
    *
    * Two options:
    *
-   * Pre-existing memory:
-   *    Use CreateTensorWithDataAsOrtValue or CreateTensorWithDataAndDeleterAsOrtValue to create an OrtValue
-   *    with a tensor that contains a pointer to the existing data.
-   *    User must keep pointer valid for lifetime of the inference session.
-   *    Set `data_is_external` to true.
-   *
    * Allocated memory:
    *    Use CreateTensorAsOrtValue (allocates memory) and populate the tensor with the data.
    *    Set `data_is_external` to false.
+   *
+   * Pre-existing memory:
+   *    Use CreateTensorWithDataAsOrtValue or CreateTensorWithDataAndDeleterAsOrtValue to create an OrtValue
+   *    with a tensor that contains a pointer to the existing data.
+   *    Set `data_is_external` to true.
+   *
+   *    The pointer must remain valid for the duration of the inference session.
+   *    If using CreateTensorWithDataAsOrtValue you are responsible for freeing the memory after the inference session
+   *    is released.
+   *    If using CreateTensorWithDataAndDeleterAsOrtValue, ORT will free the memory using the provided deleter as
+   *    soon as the OrtValue is no longer in use.
+   *
+   *    NOTE: A tensor containing pre-existing memory MUST have 128 bytes of data or more.
+   *          For smaller tensors use CreateTensorAsOrtValue.
+   *
+   *          ONNX shape inferencing does not support external data. An initializer involved in shape inferencing is
+   *          typically small (a single value or limited by the rank of a tensor) and uses less than 128 bytes of
+   *          memory, so this limit acts as a simple catch-all rule to avoid issues.
+   *          e.g. Reshape's `shape`, Clip's `min` and `max`, various ops `axes`.
    *
    * \param[in] graph The OrtGraph instance to update.
    * \param[in] name The value name for the initializer.

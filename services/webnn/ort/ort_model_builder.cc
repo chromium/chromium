@@ -123,9 +123,9 @@ void OrtModelBuilder::AddInitializerAsExternalData(
       graph_, name.data(), initializer.Release(), /*data_is_external=*/true));
 }
 
-void OrtModelBuilder::CreateAttribute(ScopedOrtOpAttrPtr& attribute,
-                                      std::string_view name,
-                                      OrtOpAttrData data) {
+ScopedOrtOpAttrPtr OrtModelBuilder::CreateAttribute(std::string_view name,
+                                                    OrtOpAttrData data) {
+  ScopedOrtOpAttrPtr attribute;
   if (absl::holds_alternative<int64_t>(data)) {
     CHECK_STATUS(GetOrtApi()->CreateOpAttr(
         name.data(), &absl::get<int64_t>(data), /*len=*/1,
@@ -158,6 +158,7 @@ void OrtModelBuilder::CreateAttribute(ScopedOrtOpAttrPtr& attribute,
         name.data(), strings_data.data(), strings_data.size(),
         OrtOpAttrType::ORT_OP_ATTR_STRINGS, attribute.GetAddressOf()));
   }
+  return attribute;
 }
 
 void OrtModelBuilder::AddNode(std::string_view op_type,

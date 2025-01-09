@@ -75,10 +75,9 @@ class OrtModelBuilder final {
                                       base::span<const int64_t>,
                                       base::span<const float>,
                                       base::span<const char*>>;
-  void CreateAttribute(ScopedOrtOpAttrPtr& attribute,
-                       std::string_view name,
-                       OrtOpAttrData data);
+  ScopedOrtOpAttrPtr CreateAttribute(std::string_view name, OrtOpAttrData data);
 
+  // Node will own attributes.
   void AddNode(std::string_view op_type,
                std::string_view node_name,
                base::span<const char*> input_names,
