@@ -353,7 +353,7 @@ TEST_F(DnsResponseResultExtractorTest, ExtractsMinATtl) {
 }
 
 MATCHER_P(ContainsContiguousElements, elements, "") {
-  return base::ranges::search(arg, elements) != arg.end();
+  return !std::ranges::search(arg, elements).empty();
 }
 
 TEST_F(DnsResponseResultExtractorTest, ExtractsTxtResponses) {

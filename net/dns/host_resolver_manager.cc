@@ -263,12 +263,11 @@ std::vector<IPEndPoint> FilterAddresses(std::vector<IPEndPoint> addresses,
     return addresses;
 
   // Keep only the endpoints that match `want_family`.
-  addresses.erase(
-      base::ranges::remove_if(
-          addresses,
-          [want_family](AddressFamily family) { return family != want_family; },
-          &IPEndPoint::GetFamily),
-      addresses.end());
+  auto removed = std::ranges::remove_if(
+      addresses,
+      [want_family](AddressFamily family) { return family != want_family; },
+      &IPEndPoint::GetFamily);
+  addresses.erase(removed.begin(), removed.end());
   return addresses;
 }
 
