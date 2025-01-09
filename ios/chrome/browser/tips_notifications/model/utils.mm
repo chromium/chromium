@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/tips_notifications/model/utils.h"
 
 #import "base/time/time.h"
+#import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -257,4 +258,28 @@ std::vector<TipsNotificationType> TipsNotificationsTypesOrder(
 int TipsNotificationsDismissLimit() {
   return GetFieldTrialParamByFeatureAsInt(
       kIOSTipsNotifications, kIOSTipsNotificationsDismissLimitParam, 0);
+}
+
+NotificationType NotificationTypeForTipsNotificationType(
+    TipsNotificationType type) {
+  switch (type) {
+    case TipsNotificationType::kDefaultBrowser:
+      return NotificationType::kTipsDefaultBrowser;
+    case TipsNotificationType::kWhatsNew:
+      return NotificationType::kTipsWhatsNew;
+    case TipsNotificationType::kSignin:
+      return NotificationType::kTipsSignin;
+    case TipsNotificationType::kSetUpListContinuation:
+      return NotificationType::kTipsSetUpListContinuation;
+    case TipsNotificationType::kDocking:
+      return NotificationType::kTipsDocking;
+    case TipsNotificationType::kOmniboxPosition:
+      return NotificationType::kTipsOmniboxPosition;
+    case TipsNotificationType::kLens:
+      return NotificationType::kTipsLens;
+    case TipsNotificationType::kEnhancedSafeBrowsing:
+      return NotificationType::kTipsEnhancedSafeBrowsing;
+    default:
+      NOTREACHED();
+  }
 }

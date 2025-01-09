@@ -89,6 +89,20 @@ bool CanSendProvisionalNotifications(
   return auth_status == UNAuthorizationStatusProvisional;
 }
 
+NotificationType NotificationTypeForSafetyCheckNotificationType(
+    SafetyCheckNotificationType type) {
+  switch (type) {
+    case SafetyCheckNotificationType::kPasswords:
+      return NotificationType::kSafetyCheckPasswords;
+    case SafetyCheckNotificationType::kSafeBrowsing:
+      return NotificationType::kSafetyCheckSafeBrowsing;
+    case SafetyCheckNotificationType::kUpdateChrome:
+      return NotificationType::kSafetyCheckUpdateChrome;
+    default:
+      NOTREACHED();
+  }
+}
+
 }  // namespace
 
 SafetyCheckNotificationClient::SafetyCheckNotificationClient(
@@ -555,6 +569,9 @@ void SafetyCheckNotificationClient::LogTriggeredNotifications() {
 
   base::UmaHistogramEnumeration("IOS.Notifications.SafetyCheck.Triggered",
                                 type);
+  base::UmaHistogramEnumeration(
+      "IOS.Notification.Received",
+      NotificationTypeForSafetyCheckNotificationType(type));
 
   local_pref_service->SetInteger(
       prefs::kIosSafetyCheckNotificationsLastTriggered, int(type));

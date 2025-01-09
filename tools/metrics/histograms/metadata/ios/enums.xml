@@ -1184,6 +1184,24 @@ the generic promo launch. -->
   <int value="9" label="Exceeded allocated time for background task"/>
 </enum>
 
+<!-- LINT.IfChange(NotificationType) -->
+
+<enum name="NotificationType">
+  <int value="0" label="Default Browser [Tip]"/>
+  <int value="1" label="Whats New [Tip]"/>
+  <int value="2" label="Sign in [Tip]"/>
+  <int value="4" label="Set Up List Continuation [Tip]"/>
+  <int value="5" label="Docking [Tip]"/>
+  <int value="6" label="Omnibox Position [Tip"/>
+  <int value="7" label="Lens [Tip]"/>
+  <int value="8" label="Enhanced Safe Browsing [Tip]"/>
+  <int value="9" label="Passwords [SafetyCheck]"/>
+  <int value="10" label="Safe Browsing [SafetyCheck]"/>
+  <int value="11" label="Update Chrome [SafetyCheck]"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/push_notification/model/constants.h:NotificationType) -->
+
 <enum name="OmniboxDeviceSwitcherResult">
   <int value="1" label="Unavailable"/>
   <int value="2" label="Top omnibox by default"/>
