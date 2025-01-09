@@ -765,6 +765,26 @@ bool TableView::OnMousePressed(const ui::MouseEvent& event) {
   return true;
 }
 
+void TableView::OnMouseMoved(const ui::MouseEvent& event) {
+  if (!HasFocus()) {
+    return;
+  }
+
+  const std::optional<size_t> previous_hovered_row = hovered_row_;
+  const int row = event.y() / row_height_;
+  const bool in_bounds = row >= 0 && static_cast<size_t>(row) < GetRowCount();
+  hovered_row_ = in_bounds ? std::make_optional<size_t>(row) : std::nullopt;
+
+  if (previous_hovered_row != hovered_row_) {
+    OnHoverChanged(previous_hovered_row, hovered_row_);
+  }
+}
+
+void TableView::OnMouseExited(const ui::MouseEvent& event) {
+  OnHoverChanged(hovered_row_, std::nullopt);
+  hovered_row_ = std::nullopt;
+}
+
 void TableView::OnGestureEvent(ui::GestureEvent* event) {
   if (event->type() != ui::EventType::kGestureTapDown) {
     return;
@@ -1070,13 +1090,19 @@ void TableView::OnPaintImpl(gfx::Canvas* canvas) {
       color_provider->GetColor(selected_text_color_id(HasFocus()));
   const SkColor alternate_bg_color =
       color_provider->GetColor(ui::kColorTableBackgroundAlternate);
+  const SkColor hovered_bg_color =
+      color_provider->GetColor(ui::kColorTableRowHighlight);
   const int cell_margin = GetCellMargin();
   const int cell_element_spacing = GetCellElementSpacing();
   for (size_t i = region.min_row; i < region.max_row; ++i) {
     const size_t model_index = ViewToModel(i);
     const bool is_selected = selection_model_.IsSelected(model_index);
+    const bool is_hovered =
+        hovered_row_.has_value() && hovered_row_.value() == i;
     if (is_selected) {
       canvas->FillRect(GetRowBounds(i), selected_bg_color);
+    } else if (is_hovered) {
+      canvas->FillRect(GetRowBounds(i), hovered_bg_color);
     } else if (alternate_bg_color != default_bg_color && (i % 2)) {
       canvas->FillRect(GetRowBounds(i), alternate_bg_color);
     }
@@ -1426,6 +1452,18 @@ void TableView::SchedulePaintForSelection() {
   } else if (selection_model_.size() > 1) {
     SchedulePaint();
   }
+}
+
+void TableView::OnHoverChanged(std::optional<size_t> previous_hovered_row,
+                               std::optional<size_t> new_hovered_row) {
+  const auto maybe_schedule_paint = [this](std::optional<size_t> row) {
+    if (row.has_value() && row.value() < GetRowCount()) {
+      SchedulePaintInRect(GetRowBounds(row.value()));
+    }
+  };
+
+  maybe_schedule_paint(previous_hovered_row);
+  maybe_schedule_paint(new_hovered_row);
 }
 
 ui::TableColumn TableView::FindColumnByID(int id) const {

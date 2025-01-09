@@ -267,6 +267,8 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
   void OnVisibleBoundsChanged() override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
+  void OnMouseMoved(const ui::MouseEvent& event) override;
+  void OnMouseExited(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   std::u16string GetTooltipText(const gfx::Point& p) const override;
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
@@ -369,6 +371,11 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
 
   // Invokes SchedulePaint() for the selected rows.
   void SchedulePaintForSelection();
+
+  // Invokes SchedulePaintForRect() on the old and new hovered rows.
+  // If either parameter is nullopt, paint is not scheduled for that parameter.
+  void OnHoverChanged(std::optional<size_t> previous_hovered_row,
+                      std::optional<size_t> new_hovered_row);
 
   // Returns the TableColumn matching the specified id.
   ui::TableColumn FindColumnByID(int id) const;
@@ -529,6 +536,9 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
   // optionally the header row. This bool keeps track of whether the active row
   // is the header row, since the selection model doesn't support that.
   bool header_row_is_active_ = false;
+
+  // The row beneath the cursor, if the table is focused.
+  std::optional<size_t> hovered_row_ = std::nullopt;
 
   TableType table_type_ = TableType::kTextOnly;
 
