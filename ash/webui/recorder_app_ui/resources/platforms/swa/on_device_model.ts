@@ -242,7 +242,7 @@ export class SummaryModel extends OnDeviceModel<string> {
       SafetyFeature.kAudioSummaryResponse,
       {
         transcription: content,
-        language: language,
+        language,
         /**
          * Param format is requested by model.
          * See
@@ -293,7 +293,10 @@ export class TitleSuggestionModel extends OnDeviceModel<string[]> {
       FormatFeature.kAudioTitle,
       SafetyFeature.kAudioTitleRequest,
       SafetyFeature.kAudioTitleResponse,
-      {transcription: content},
+      {
+        transcription: content,
+        language,
+      },
       session,
       language,
     );
