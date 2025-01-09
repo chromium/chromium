@@ -315,6 +315,13 @@ void RenderAccessibilityImpl::PerformAction(const ui::AXActionData& data) {
     return;
   }
 
+  // Schedule the next serialization to come immediately after the action is
+  // complete, even if the document is still loading.
+  // Do this scheduling now, because in some cases performing the action
+  // could cause script to run that destroys the frame, which destroys |this|,
+  // and ax_context_ is no longer at a valid memory address.
+  ScheduleImmediateAXUpdate();
+
   // TODO: think about how to handle this without holding onto a plugin tree
   // source.
   std::unique_ptr<ui::AXActionTarget> target =
@@ -395,13 +402,6 @@ void RenderAccessibilityImpl::PerformAction(const ui::AXActionData& data) {
     case ax::mojom::Action::kSuspendMedia:
     case ax::mojom::Action::kLongClick:
       break;
-  }
-
-  // Ensure the next serialization comes immediately after the action is
-  // complete, even if the document is still loading.
-  // Note: the document could close as a result of the action.
-  if (ax_context_ && !GetMainDocument().IsNull()) {
-    ScheduleImmediateAXUpdate();
   }
 }
 
