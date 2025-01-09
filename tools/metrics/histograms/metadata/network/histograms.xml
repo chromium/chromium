@@ -5341,6 +5341,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NetworkService.MaskedDomainList.MatchesTime"
+    units="microseconds" expires_after="2025-06-08">
+  <owner>djmitche@chromium.org</owner>
+  <owner>src/chrome/browser/ip_protection/OWNERS</owner>
+  <summary>
+    Records the time required to call the `Matches` method on the MDL. This is a
+    sync call that accesses a large data structure so it may require additional
+    optimization.
+
+    Note that clients without high-resolution clocks will report 0 for very
+    short times.
+  </summary>
+</histogram>
+
 <histogram
     name="NetworkService.MaskedDomainList.NetworkServiceProxyAllowList.EstimatedMemoryUsageInKB"
     units="KB" expires_after="2025-06-08">

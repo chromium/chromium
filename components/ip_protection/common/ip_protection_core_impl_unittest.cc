@@ -20,6 +20,7 @@
 #include "components/ip_protection/common/ip_protection_proxy_config_manager.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_manager_impl.h"
 #include "components/ip_protection/common/ip_protection_token_manager.h"
+#include "components/ip_protection/common/masked_domain_list_manager.h"
 #include "net/base/features.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/proxy_chain.h"
@@ -31,6 +32,8 @@ namespace {
 
 constexpr char kEmptyTokenCacheHistogram[] =
     "NetworkService.IpProtection.EmptyTokenCache";
+constexpr char kMdlMatchesTimeHistogram[] =
+    "NetworkService.MaskedDomainList.MatchesTime";
 
 constexpr char kMountainViewGeoId[] = "US,US-CA,MOUNTAIN VIEW";
 constexpr char kSunnyvaleGeoId[] = "US,US-CA,SUNNYVALE";
@@ -144,6 +147,16 @@ class IpProtectionCoreImplTest : public testing::Test {
   }
 
   std::unique_ptr<IpProtectionCoreImpl> MakeCore(
+      MaskedDomainListManager* masked_domain_list_manager) {
+    return std::make_unique<IpProtectionCoreImpl>(
+        masked_domain_list_manager,
+        /*ip_protection_proxy_config_manager=*/nullptr,
+        /*ip_protection_token_managers=*/
+        std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>(),
+        /*is_ip_protection_enabled=*/true);
+  }
+
+  std::unique_ptr<IpProtectionCoreImpl> MakeCore(
       std::unique_ptr<IpProtectionProxyConfigManager>
           ip_protection_proxy_config_manager,
       std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>
@@ -185,6 +198,16 @@ class IpProtectionCoreImplTest : public testing::Test {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+// Verify that RequestShouldBeProxied measures the time taken to call Matches().
+TEST_F(IpProtectionCoreImplTest, RequestShouldBeProxiedMeasured) {
+  auto masked_domain_list_manager = MaskedDomainListManager::CreateForTesting(
+      /*first_party_map=*/{});
+  auto ip_protection_core = MakeCore(&masked_domain_list_manager);
+  ip_protection_core->RequestShouldBeProxied(GURL(),
+                                             net::NetworkAnonymizationKey());
+  histogram_tester_.ExpectTotalCount(kMdlMatchesTimeHistogram, 1);
+}
 
 TEST_F(IpProtectionCoreImplTest, AreAuthTokensAvailable_NoProxiesConfigured) {
   // A proxy list is available. This should ensure that the only reason tokens

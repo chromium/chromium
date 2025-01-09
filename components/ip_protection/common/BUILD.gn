@@ -83,6 +83,7 @@ source_set("ip_protection_core_impl_unittest") {
     ":ip_protection_proxy_config_manager",
     ":ip_protection_proxy_config_manager_impl",
     ":ip_protection_token_manager",
+    ":masked_domain_list_manager",
     "//base",
     "//base/test:test_support",
     "//net",

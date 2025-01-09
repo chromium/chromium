@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/task/task_traits.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_manager.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_manager_impl.h"
@@ -92,8 +93,11 @@ bool IpProtectionCoreImpl::IsMdlPopulated() {
 bool IpProtectionCoreImpl::RequestShouldBeProxied(
     const GURL& request_url,
     const net::NetworkAnonymizationKey& network_anonymization_key) {
-  return masked_domain_list_manager_->Matches(request_url,
-                                              network_anonymization_key);
+  base::ElapsedTimer matches_call;
+  bool should_be_proxied = masked_domain_list_manager_->Matches(
+      request_url, network_anonymization_key);
+  Telemetry().MdlMatchesTime(matches_call.Elapsed());
+  return should_be_proxied;
 }
 
 bool IpProtectionCoreImpl::IsIpProtectionEnabled() {

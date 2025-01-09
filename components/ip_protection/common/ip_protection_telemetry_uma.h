@@ -46,6 +46,7 @@ class IpProtectionTelemetryUma final : public IpProtectionTelemetry {
   void AndroidAuthClientGetInitialDataTime(base::TimeDelta duration) override;
   void AndroidAuthClientAuthAndSignTime(base::TimeDelta duration) override;
   void MdlFirstUpdateTime(base::TimeDelta duration) override;
+  void MdlMatchesTime(base::TimeDelta duration) override;
 };
 
 }  // namespace ip_protection

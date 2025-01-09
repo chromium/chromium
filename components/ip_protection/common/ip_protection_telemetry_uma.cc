@@ -264,4 +264,9 @@ void IpProtectionTelemetryUma::MdlFirstUpdateTime(base::TimeDelta duration) {
                           duration);
 }
 
+void IpProtectionTelemetryUma::MdlMatchesTime(base::TimeDelta duration) {
+  base::UmaHistogramMicrosecondsTimes(
+      "NetworkService.MaskedDomainList.MatchesTime", duration);
+}
+
 }  // namespace ip_protection

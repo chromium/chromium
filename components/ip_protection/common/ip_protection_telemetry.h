@@ -182,6 +182,9 @@ class IpProtectionTelemetry {
   // Delay between the MDL manager being created and UpdateMaskedDomainList
   // first being called.
   virtual void MdlFirstUpdateTime(base::TimeDelta duration) = 0;
+
+  // Time taken to for a `MaskedDomainListManager::Matches` call.
+  virtual void MdlMatchesTime(base::TimeDelta duration) = 0;
 };
 
 // Get the singleton instance of this type. This will be implemented by each
