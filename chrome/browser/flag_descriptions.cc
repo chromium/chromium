@@ -5901,9 +5901,6 @@ const char kAudioA2DPAdvancedCodecsName[] = "BT A2DP advanced codecs support";
 const char kAudioA2DPAdvancedCodecsDescription[] =
     "Enable BT A2DP advanced codecs support";
 
-const char kAudioStyleTransferName[] = "Audio style transfer";
-const char kAudioStyleTransferDescription[] = "Enable audio style transfer";
-
 const char kAudioSelectionImprovementName[] =
     "Enable audio selection improvement algorithm";
 const char kAudioSelectionImprovementDescription[] =
