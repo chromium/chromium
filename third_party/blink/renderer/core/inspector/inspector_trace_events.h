@@ -578,6 +578,10 @@ namespace inspector_set_layer_tree_id {
 void Data(perfetto::TracedValue context, LocalFrame* local_root);
 }
 
+namespace inspector_dom_stats {
+void Data(perfetto::TracedValue context, LocalFrame* local_root);
+}
+
 namespace inspector_animation_event {
 void Data(perfetto::TracedValue context, const Animation&);
 }

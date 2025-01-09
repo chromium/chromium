@@ -1162,6 +1162,14 @@ class CORE_EXPORT LocalFrameView final
 
   mojom::blink::ViewportIntersectionState last_intersection_state_;
 
+  // DOM stats can be calculated on every frame update, however the operation
+  // to measure DOM stats is not trivial so we should only do it if we detect
+  // the DOM has changed.
+  //
+  // This field will track the DOM version of the most recent DOM stats event
+  // added to the trace.
+  uint64_t last_dom_stats_version_ = 0;
+
   // True if the frame has deferred commits at least once per document load.
   // We won't defer again for the same document. This is only meaningful for
   // main frames.

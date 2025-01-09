@@ -2388,6 +2388,14 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
   ForAllRemoteFrameViews(
       [](RemoteFrameView& frame_view) { frame_view.UpdateCompositingRect(); });
 
+  uint64_t dom_version = frame_->GetDocument()->DomTreeVersion();
+  if (last_dom_stats_version_ != dom_version) {
+    last_dom_stats_version_ = dom_version;
+    DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT_WITH_CATEGORIES(
+        TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "DOMStats",
+        inspector_dom_stats::Data, frame_.Get());
+  }
+
   DCHECK_EQ(target_state, DocumentLifecycle::kPaintClean);
   RunPaintLifecyclePhase(PaintBenchmarkMode::kNormal);
   DCHECK(ShouldThrottleRendering() || AnyFrameIsPrintingOrPaintingPreview() ||
