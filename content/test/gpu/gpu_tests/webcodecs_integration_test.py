@@ -279,6 +279,11 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                    'codec': codec,
                    'acceleration': acc
                }])
+        yield ('WebCodecs_MixedSourceEncoding_%s_%s' % args,
+               'mixed-source-encoding.html', [{
+                   'codec': codec,
+                   'acceleration': acc
+               }])
 
     for codec in video_codecs:
       for source_type in frame_sources:

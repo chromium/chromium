@@ -374,9 +374,10 @@ class DecoderSource extends FrameSource {
     this.decoder = new VideoDecoder(
         {error: this.onError.bind(this), output: this.onFrame.bind(this)});
     this.decoder.configure(this.decoderConfig);
-    while (chunks.length != 0)
+    while (chunks.length != 0) {
       this.decoder.decode(chunks.shift());
-    this.decoder.flush();
+    }
+    this.decoder.flush().catch((e) => {});
   }
 
   onError(error) {
@@ -398,14 +399,17 @@ class DecoderSource extends FrameSource {
   }
 
   async getNextFrame() {
-    if (this.next)
+    if (this.next) {
       return this.next.promise;
+    }
 
-    if (this.frames.length > 0)
+    if (this.frames.length > 0) {
       return this.frames.shift();
+    }
 
-    if (this.error)
+    if (this.error) {
       throw this.error;
+    }
 
     let next = {};
     this.next = next;
@@ -418,8 +422,9 @@ class DecoderSource extends FrameSource {
   }
 
   close() {
-    if (this.decoder)
+    if (this.decoder) {
       this.decoder.close();
+    }
   }
 }
 

@@ -6983,6 +6983,8 @@ data/gpu/webcodecs/frame-size-change.html
 data/gpu/webcodecs/frame-size-change.js
 data/gpu/webcodecs/manual-svc.html
 data/gpu/webcodecs/manual-svc.js
+data/gpu/webcodecs/mixed-source-encoding.html
+data/gpu/webcodecs/mixed-source-encoding.js
 data/gpu/webcodecs/svc.html
 data/gpu/webcodecs/terminate-worker-worker.js
 data/gpu/webcodecs/terminate-worker.html
