@@ -170,10 +170,6 @@ BASE_DECLARE_FEATURE(kExtensionTelemetryForEnterprise);
 extern const base::FeatureParam<int>
     kExtensionTelemetryEnterpriseReportingIntervalSeconds;
 
-// Enables collection of telemetry signal whenever an extension invokes the
-// tabs.executeScript API call.
-BASE_DECLARE_FEATURE(kExtensionTelemetryTabsExecuteScriptSignal);
-
 // Enables reporting of external app redirects
 BASE_DECLARE_FEATURE(kExternalAppRedirectTelemetry);
 
