@@ -667,7 +667,7 @@ TEST_F(AdditionalBidsUtilTest, MinimalValid) {
   EXPECT_EQ(std::nullopt, bid->ad_cost);
   EXPECT_EQ(blink::AdDescriptor(GURL("https://en.wikipedia.test/wiki/Train")),
             bid->ad_descriptor);
-  EXPECT_EQ(0u, bid->ad_component_descriptors.size());
+  EXPECT_EQ(0u, bid->selected_ad_components.size());
   EXPECT_EQ(std::nullopt, bid->modeling_signals);
   EXPECT_EQ(std::nullopt, bid->aggregate_win_signals);
   EXPECT_EQ(&bid_state->bidder->interest_group, bid->interest_group);
@@ -714,7 +714,7 @@ TEST_F(AdditionalBidsUtilWithSellerNonceTest, MinimalValid) {
   EXPECT_EQ(std::nullopt, bid->ad_cost);
   EXPECT_EQ(blink::AdDescriptor(GURL("https://en.wikipedia.test/wiki/Train")),
             bid->ad_descriptor);
-  EXPECT_EQ(0u, bid->ad_component_descriptors.size());
+  EXPECT_EQ(0u, bid->selected_ad_components.size());
   EXPECT_EQ(std::nullopt, bid->modeling_signals);
   EXPECT_EQ(std::nullopt, bid->aggregate_win_signals);
   EXPECT_EQ(&bid_state->bidder->interest_group, bid->interest_group);
@@ -1025,13 +1025,13 @@ TEST_F(AdditionalBidsUtilTest, ValidAdComponents) {
   ASSERT_TRUE(result->bid_state);
 
   // Components should be both in the ad and the synthesized IG.
-  ASSERT_EQ(2u, result->bid->ad_component_descriptors.size());
+  ASSERT_EQ(2u, result->bid->selected_ad_components.size());
   EXPECT_EQ(
       blink::AdDescriptor(GURL("https://en.wikipedia.test/wiki/Locomotive")),
-      result->bid->ad_component_descriptors[0]);
+      result->bid->selected_ad_components[0].ad_descriptor);
   EXPECT_EQ(blink::AdDescriptor(
                 GURL("https://en.wikipedia.test/wiki/High-speed_rail")),
-            result->bid->ad_component_descriptors[1]);
+            result->bid->selected_ad_components[1].ad_descriptor);
 
   ASSERT_TRUE(
       result->bid_state->bidder->interest_group.ad_components.has_value());
@@ -1043,6 +1043,10 @@ TEST_F(AdditionalBidsUtilTest, ValidAdComponents) {
   EXPECT_EQ("https://en.wikipedia.test/wiki/High-speed_rail",
             result->bid_state->bidder->interest_group.ad_components.value()[1]
                 .render_url());
+  EXPECT_EQ(&result->bid_state->bidder->interest_group.ad_components.value()[0],
+            result->bid->selected_ad_components[0].ad);
+  EXPECT_EQ(&result->bid_state->bidder->interest_group.ad_components.value()[1],
+            result->bid->selected_ad_components[1].ad);
 }
 
 TEST_F(AdditionalBidsUtilTest, ValidAdComponentsEmpty) {
@@ -1060,7 +1064,7 @@ TEST_F(AdditionalBidsUtilTest, ValidAdComponentsEmpty) {
   ASSERT_TRUE(result->bid);
   ASSERT_TRUE(result->bid_state);
 
-  EXPECT_EQ(0u, result->bid->ad_component_descriptors.size());
+  EXPECT_EQ(0u, result->bid->selected_ad_components.size());
   ASSERT_TRUE(
       result->bid_state->bidder->interest_group.ad_components.has_value());
   EXPECT_EQ(0u,

@@ -351,8 +351,8 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
            "' rejected due to invalid aggregateWinSignals."}));
     }
   }
-  std::vector<blink::AdDescriptor> ad_components;
   const base::Value* ad_components_val = bid_dict->Find("adComponents");
+  std::vector<InterestGroupAuction::Bid::ComponentAdInfo> ad_components;
   if (ad_components_val) {
     const base::Value::List* ad_components_list =
         ad_components_val->GetIfList();
@@ -379,10 +379,18 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
             {"Additional bid on auction with seller '", seller.Serialize(),
              "' rejected due to invalid entry in adComponents."}));
       }
-      ad_components.emplace_back(ad_component_url);
-      // TODO(http://crbug.com/1464874): What's the story with dimensions?
+
       synth_interest_group.interest_group.ad_components->emplace_back(
-          std::move(ad_component_url), /*metadata=*/std::nullopt);
+          ad_component_url, /*metadata=*/std::nullopt);
+
+      InterestGroupAuction::Bid::ComponentAdInfo component_ad_info;
+      // TODO(http://crbug.com/40275797): What's the story with dimensions?
+      component_ad_info.ad_descriptor =
+          blink::AdDescriptor(std::move(ad_component_url));
+      // The pointer to InterestGroup::Ad will be filled in below once the IG
+      // is in its final place.
+      component_ad_info.ad = nullptr;
+      ad_components.push_back(std::move(component_ad_info));
     }
   }
 
@@ -462,6 +470,12 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
 
   const blink::InterestGroup::Ad* bid_ad =
       &result.bid_state->bidder->interest_group.ads.value()[0];
+
+  for (size_t i = 0; i < ad_components.size(); ++i) {
+    ad_components[i].ad =
+        &result.bid_state->bidder->interest_group.ad_components.value()[i];
+  }
+
   result.bid = std::make_unique<InterestGroupAuction::Bid>(
       auction_worklet::mojom::BidRole::kBothKAnonModes, ad_metadata, *bid_val,
       /*bid_currency=*/bid_currency,

@@ -362,13 +362,18 @@ class CONTENT_EXPORT InterestGroupAuction
   // duplicates auction_worklet::mojom::BidderWorkletBid, with additional
   // information about the bidder.
   struct CONTENT_EXPORT Bid {
+    struct ComponentAdInfo {
+      blink::AdDescriptor ad_descriptor;
+      raw_ptr<const blink::InterestGroup::Ad> ad = nullptr;
+    };
+
     Bid(auction_worklet::mojom::BidRole bid_role,
         std::string ad_metadata,
         double bid,
         std::optional<blink::AdCurrency> bid_currency,
         std::optional<double> ad_cost,
         blink::AdDescriptor ad_descriptor,
-        std::vector<blink::AdDescriptor> ad_component_descriptors,
+        std::vector<ComponentAdInfo> selected_ad_components,
         std::optional<uint16_t> modeling_signals,
         std::optional<std::string> aggregate_win_signals,
         base::TimeDelta bid_duration,
@@ -390,9 +395,7 @@ class CONTENT_EXPORT InterestGroupAuction
     void BeginTracingForScoring();
     void EndTracingForScoring();
 
-    // Get a vector of ad component urls. For compatible with functions
-    // expecting a vector of `GURL` instead of a vector of
-    // `blink::AdDescriptor`.
+    // Get a vector of ad component urls.
     std::vector<GURL> GetAdComponentUrls() const;
 
     // These getters are necessary for handling the replacements within the
@@ -411,7 +414,9 @@ class CONTENT_EXPORT InterestGroupAuction
     const std::optional<blink::AdCurrency> bid_currency;
     const std::optional<double> ad_cost;
     const blink::AdDescriptor ad_descriptor;
-    const std::vector<blink::AdDescriptor> ad_component_descriptors;
+
+    // Like `bid_ad`, this points within `interest_group`.
+    const std::vector<ComponentAdInfo> selected_ad_components;
     const std::optional<uint16_t> modeling_signals;
     const std::optional<std::string> aggregate_win_signals;
     const base::TimeDelta bid_duration;

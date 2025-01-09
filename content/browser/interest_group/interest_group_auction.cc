@@ -1287,7 +1287,7 @@ InterestGroupAuction::Bid::Bid(
     std::optional<blink::AdCurrency> bid_currency,
     std::optional<double> ad_cost,
     blink::AdDescriptor ad_descriptor,
-    std::vector<blink::AdDescriptor> ad_component_descriptors,
+    std::vector<ComponentAdInfo> selected_ad_components,
     std::optional<uint16_t> modeling_signals,
     std::optional<std::string> aggregate_win_signals,
     base::TimeDelta bid_duration,
@@ -1302,7 +1302,7 @@ InterestGroupAuction::Bid::Bid(
       bid_currency(std::move(bid_currency)),
       ad_cost(std::move(ad_cost)),
       ad_descriptor(std::move(ad_descriptor)),
-      ad_component_descriptors(std::move(ad_component_descriptors)),
+      selected_ad_components(std::move(selected_ad_components)),
       modeling_signals(modeling_signals),
       aggregate_win_signals(std::move(aggregate_win_signals)),
       bid_duration(bid_duration),
@@ -1342,12 +1342,12 @@ void InterestGroupAuction::Bid::EndTracingForScoring() {
 
 std::vector<GURL> InterestGroupAuction::Bid::GetAdComponentUrls() const {
   std::vector<GURL> ad_component_urls;
-  ad_component_urls.reserve(ad_component_descriptors.size());
-  base::ranges::transform(
-      ad_component_descriptors, std::back_inserter(ad_component_urls),
-      [](const blink::AdDescriptor& ad_component_descriptor) {
-        return ad_component_descriptor.url;
-      });
+  ad_component_urls.reserve(selected_ad_components.size());
+  base::ranges::transform(selected_ad_components,
+                          std::back_inserter(ad_component_urls),
+                          [](const ComponentAdInfo& component_info) {
+                            return component_info.ad_descriptor.url;
+                          });
   return ad_component_urls;
 }
 
@@ -1385,7 +1385,9 @@ InterestGroupAuction::Bid::GetComponentAdDescriptorsWithReplacements() {
     local_replacements.emplace_back(replacement.match, replacement.replacement);
   }
 
-  for (auto& ad_component_descriptor : ad_component_descriptors) {
+  for (auto& component_info : selected_ad_components) {
+    const blink::AdDescriptor& ad_component_descriptor =
+        component_info.ad_descriptor;
     GURL url_with_replacements = GURL(SubstituteMappedStrings(
         ad_component_descriptor.url.spec(), local_replacements));
 
@@ -1988,7 +1990,9 @@ class InterestGroupAuction::BuyerHelper
       return nullptr;
     }
 
-    for (const auto& ad_component_descriptor : ad_component_descriptors) {
+    std::vector<Bid::ComponentAdInfo> selected_ad_components;
+    selected_ad_components.reserve(ad_component_descriptors.size());
+    for (auto& ad_component_descriptor : ad_component_descriptors) {
       const blink::InterestGroup::Ad* matching_ad_component = nullptr;
       if (interest_group.ad_components.has_value()) {
         // selected_buyer_and_seller_reporting_id is ignored in ad components
@@ -2002,6 +2006,9 @@ class InterestGroupAuction::BuyerHelper
         // Bid ad components must match the interest group.
         return nullptr;
       }
+      Bid::ComponentAdInfo component_ad_info = {
+          std::move(ad_component_descriptor), matching_ad_component};
+      selected_ad_components.push_back(std::move(component_ad_info));
     }
 
     // 2. Reporting URLs must be okay
@@ -2044,7 +2051,7 @@ class InterestGroupAuction::BuyerHelper
     return std::make_unique<Bid>(
         bid_role, ad_metadata.value_or("null"), bid, bid_currency,
         /*ad_cost=*/std::nullopt, std::move(ad_descriptor),
-        std::move(ad_component_descriptors),
+        std::move(selected_ad_components),
         /*modeling_signals=*/std::nullopt,
         /*aggregate_win_signals=*/std::nullopt,
         /*bid_duration=*/base::Seconds(0),
@@ -2845,7 +2852,7 @@ class InterestGroupAuction::BuyerHelper
         matching_ad->size_group ? mojo_bid->ad_descriptor.size : std::nullopt);
 
     // Validate `ad_component` URLs, if present.
-    std::vector<blink::AdDescriptor> ad_component_descriptors;
+    std::vector<Bid::ComponentAdInfo> selected_ad_components;
     if (mojo_bid->ad_component_descriptors) {
       // Only InterestGroups with ad components should return bids with ad
       // components.
@@ -2878,10 +2885,12 @@ class InterestGroupAuction::BuyerHelper
         }
         // If the matching ad does not have size specified, the bid to be
         // created should not have size specified to fall back to old behavior.
-        ad_component_descriptors.emplace_back(ad_component_descriptor.url,
-                                              matching_ad_component->size_group
-                                                  ? ad_component_descriptor.size
-                                                  : std::nullopt);
+        selected_ad_components.emplace_back(
+            blink::AdDescriptor(ad_component_descriptor.url,
+                                matching_ad_component->size_group
+                                    ? ad_component_descriptor.size
+                                    : std::nullopt),
+            matching_ad_component);
       }
     }
 
@@ -2911,7 +2920,7 @@ class InterestGroupAuction::BuyerHelper
     return std::make_unique<Bid>(
         mojo_bid->bid_role, std::move(mojo_bid->ad), mojo_bid->bid,
         std::move(mojo_bid->bid_currency), mojo_bid->ad_cost,
-        std::move(ad_descriptor), std::move(ad_component_descriptors),
+        std::move(ad_descriptor), std::move(selected_ad_components),
         std::move(mojo_bid->modeling_signals),
         std::move(mojo_bid->aggregate_win_signals), mojo_bid->bid_duration,
         bidding_signals_data_version, matching_ad,
@@ -4537,8 +4546,9 @@ base::flat_set<std::string> InterestGroupAuction::GetKAnonKeysToJoin() const {
     k_anon_keys_to_join.push_back(blink::HashedKAnonKeyForAdNameReporting(
         interest_group, *scored_bid->bid->bid_ad,
         scored_bid->bid->selected_buyer_and_seller_reporting_id));
-    for (const blink::AdDescriptor& ad_component_descriptor :
-         scored_bid->bid->ad_component_descriptors) {
+    for (auto& component_info : scored_bid->bid->selected_ad_components) {
+      const blink::AdDescriptor& ad_component_descriptor =
+          component_info.ad_descriptor;
       k_anon_keys_to_join.push_back(
           blink::HashedKAnonKeyForAdComponentBid(ad_component_descriptor));
     }
@@ -5426,7 +5436,7 @@ InterestGroupAuction::CreateBidFromComponentAuctionWinner(
       modified_bid_params->bid.has_value() ? modified_bid_params->bid_currency
                                            : component_bid->bid_currency,
       component_bid->ad_cost, component_bid->ad_descriptor,
-      component_bid->ad_component_descriptors, component_bid->modeling_signals,
+      component_bid->selected_ad_components, component_bid->modeling_signals,
       component_bid->aggregate_win_signals, component_bid->bid_duration,
       component_bid->bidding_signals_data_version, component_bid->bid_ad,
       component_bid->selected_buyer_and_seller_reporting_id,
