@@ -1564,6 +1564,9 @@ class JniGeneratorSanitizer(BaseActionSanitizer):
                            False)
     self._update_list_arg('--input-file', self._sanitize_filepath)
     self._update_list_arg('--input-file', self._add_location_tag_to_filepath)
+
+    self._delete_value_arg('--package-prefix', throw_if_absent=False)
+    self._delete_value_arg('--package-prefix-filter', throw_if_absent=False)
     if not self.is_test_target and not self._has_arg('--jar-file'):
       # Don't jarjar classes that already exists within the java SDK. The headers generated
       # from those genrule can simply call into the original class as it exists outside
@@ -1671,6 +1674,9 @@ class JniRegistrationGeneratorSanitizer(BaseActionSanitizer):
                            False)
     self._delete_value_arg('--depfile', False)
     self._set_value_arg('--java-sources-file', '$(genDir)/java.sources')
+
+    self._delete_value_arg('--package-prefix', throw_if_absent=False)
+    self._delete_value_arg('--package-prefix-filter', throw_if_absent=False)
     if not self.is_test_target:
       # Only jarjar platform code
       self._append_arg('--package-prefix', 'android.net.connectivity')
