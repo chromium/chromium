@@ -307,10 +307,7 @@ HEADLESS_MODE_PROTOCOL_TEST(PrintToPdfTinyPage,
 
 HEADLESS_MODE_PROTOCOL_TEST(RequestFullscreen, "sanity/request-fullscreen.js")
 
-// This currently fails on Windows and Mac, see https://crbug.com/388310031
-#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
 HEADLESS_MODE_PROTOCOL_TEST(CreateTargetPosition,
                             "sanity/create-target-position.js")
-#endif  // !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
 
 }  // namespace headless

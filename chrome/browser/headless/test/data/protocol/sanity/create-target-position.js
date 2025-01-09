@@ -9,7 +9,7 @@
                        'url': 'about:blank',
                        'left': 100,
                        'top': 200,
-                       'width': 300,
+                       'width': 600,
                        'height': 400,
                        'newWindow': true
                      })).result;
