@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<animated-selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/top" android:state_selected="true"
+        android:drawable="@drawable/toolbar_on_top" />
+    <item android:id="@+id/bottom" android:state_selected="false"
+        android:drawable="@drawable/toolbar_on_bottom" />
+    <transition android:fromId="@+id/top" android:toId="@+id/bottom"
+        android:drawable="@drawable/toolbar_position_top_to_bottom" />
+    <transition android:fromId="@+id/bottom" android:toId="@+id/top"
+        android:drawable="@drawable/toolbar_position_bottom_to_top" />
+</animated-selector>
