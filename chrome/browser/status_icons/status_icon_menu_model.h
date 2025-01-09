@@ -103,7 +103,7 @@ class StatusIconMenuModel : public ui::SimpleMenuModel,
 
   base::ObserverList<Observer>::Unchecked observer_list_;
 
-  raw_ptr<Delegate> delegate_;
+  raw_ptr<Delegate, DanglingUntriaged> delegate_;
 };
 
 #endif  // CHROME_BROWSER_STATUS_ICONS_STATUS_ICON_MENU_MODEL_H_
