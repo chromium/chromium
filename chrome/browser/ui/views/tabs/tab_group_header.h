@@ -55,12 +55,11 @@ class TabGroupHeader : public TabSlotView,
   void OnGestureEvent(ui::GestureEvent* event) override;
   void OnFocus() override;
   void OnThemeChanged() override;
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   TabSlotView::ViewType GetTabSlotViewType() const override;
   TabSizeInfo GetTabSizeInfo() const override;
+  std::u16string GetTooltipText(const gfx::Point& p) const override;
   gfx::Rect GetAnchorBoundsInScreen() const override;
-  void OnGroupChanged() override;
-
-  void UpdateTooltipText();
 
   // views::ContextMenuController:
   void ShowContextMenuForViewImpl(
@@ -91,8 +90,6 @@ class TabGroupHeader : public TabSlotView,
 
  private:
   friend class TabGroupEditorBubbleViewDialogBrowserTest;
-  FRIEND_TEST_ALL_PREFIXES(TabStripBrowsertest,
-                           TabGroupHeaderAccessibleProperties);
   FRIEND_TEST_ALL_PREFIXES(TabStripSaveBrowsertest, AttentionIndicatorIsShown);
   FRIEND_TEST_ALL_PREFIXES(TabContainerTest, TabGroupHeaderTooltipText);
   FRIEND_TEST_ALL_PREFIXES(TabContainerTest,
@@ -110,16 +107,12 @@ class TabGroupHeader : public TabSlotView,
   void UpdateSyncIconView();
   void UpdateAttentionIndicatorView();
   void UpdateIsCollapsed();
-  void UpdateAccessibleName();
 
   // Creates a squircle (cross between a square and a circle).
   void CreateHeaderWithoutTitle();
   // Creates a round rect, similar to the shape of a tab when hovered but not
   // selected.
   void CreateHeaderWithTitle();
-
-  // Callback for tab group visuals changing.
-  void OnTabGroupVisualsChanged();
 
   const raw_ref<TabSlotController> tab_slot_controller_;
 
@@ -185,7 +178,6 @@ class TabGroupHeader : public TabSlotView,
   };
 
   EditorBubbleTracker editor_bubble_tracker_;
-  base::WeakPtrFactory<TabGroupHeader> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_HEADER_H_

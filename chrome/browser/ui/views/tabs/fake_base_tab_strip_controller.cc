@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "components/tab_groups/tab_group_color.h"
@@ -165,11 +164,6 @@ std::optional<int> FakeBaseTabStripController::GetFirstTabInGroup(
   }
 
   return std::nullopt;
-}
-
-TabGroup* FakeBaseTabStripController::GetTabGroup(
-    const tab_groups::TabGroupId& group_id) const {
-  return nullptr;
 }
 
 gfx::Range FakeBaseTabStripController::ListTabsInGroup(

@@ -69,7 +69,8 @@ std::optional<int> GetTabStripIndex(LocalTabID local_tab_id,
   }
 
   // Get the index in the tab strip of the first tab in the group.
-  auto group_offset_in_tabstrip = GetTabStripWithGroup(local_tab_group_id)
+  auto group_offset_in_tabstrip = GetTabStripModelWithGroup(local_tab_group_id)
+                                      ->group_model()
                                       ->GetTabGroup(local_tab_group_id)
                                       ->GetFirstTab();
   if (!group_offset_in_tabstrip.has_value()) {

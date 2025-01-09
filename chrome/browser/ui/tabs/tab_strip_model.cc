@@ -71,9 +71,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
-#include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
@@ -2929,8 +2927,6 @@ void TabStripModel::TabGroupStateChanged(
     // Update the group model.
     AddTabToGroupModel(new_group.value());
   }
-  MaybeUpdateTabGroupHeaderAccessibleName(initial_group);
-  MaybeUpdateTabGroupHeaderAccessibleName(new_group);
 }
 
 void TabStripModel::RemoveTabFromGroupModel(
@@ -2988,16 +2984,6 @@ void TabStripModel::SendMoveNotificationForTab(
   move.to_index = to_position;
   TabStripModelChange change(move);
   OnChange(change, selection_change);
-}
-
-void TabStripModel::MaybeUpdateTabGroupHeaderAccessibleName(
-    std::optional<tab_groups::TabGroupId> group) {
-  if (!group || !group_model_->ContainsTabGroup(group.value())) {
-    return;
-  }
-
-  auto* tab_group = group_model_->GetTabGroup(group.value());
-  tab_group->RunTabGroupVisualsChangedCallback();
 }
 
 void TabStripModel::UpdateSelectionModelForMove(int initial_index,
