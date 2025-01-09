@@ -60,7 +60,7 @@ class MockObject {
 
 class MockRunsTasksInCurrentSequenceTaskRunner : public TestMockTimeTaskRunner {
  public:
-  MockRunsTasksInCurrentSequenceTaskRunner(
+  explicit MockRunsTasksInCurrentSequenceTaskRunner(
       TestMockTimeTaskRunner::Type type =
           TestMockTimeTaskRunner::Type::kStandalone)
       : TestMockTimeTaskRunner(type) {}

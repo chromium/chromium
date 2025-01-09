@@ -6,9 +6,7 @@
 
 #include "base/check_op.h"
 
-namespace base {
-
-namespace internal {
+namespace base::internal {
 
 bool PlatformThreadLocalStorage::AllocTLS(TLSKey* key) {
   return !pthread_key_create(
@@ -25,6 +23,4 @@ void PlatformThreadLocalStorage::SetTLSValue(TLSKey key, void* value) {
   DCHECK_EQ(ret, 0);
 }
 
-}  // namespace internal
-
-}  // namespace base
+}  // namespace base::internal

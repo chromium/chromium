@@ -28,8 +28,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/perfetto_proto_appender.h"
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 
 namespace {
 
@@ -323,5 +322,4 @@ void ConvertableToTraceFormat::Add(
   annotation->set_legacy_json_value(std::move(json));
 }
 
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event

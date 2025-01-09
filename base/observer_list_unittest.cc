@@ -59,13 +59,13 @@ struct PickObserverList<UncheckedBase> {
 template <class Foo>
 class AdderT : public Foo {
  public:
-  explicit AdderT(int scaler) : total(0), scaler_(scaler) {}
+  explicit AdderT(int scaler) : scaler_(scaler) {}
   ~AdderT() override = default;
 
   void Observe(int x) override { total += x * scaler_; }
   int GetValue() const override { return total; }
 
-  int total;
+  int total = 0;
 
  private:
   int scaler_;
@@ -510,8 +510,7 @@ template <class ObserverListType,
           class Foo = typename ObserverListType::value_type>
 class AddInClearObserve : public Foo {
  public:
-  explicit AddInClearObserve(ObserverListType* list)
-      : list_(list), added_(false), adder_(1) {}
+  explicit AddInClearObserve(ObserverListType* list) : list_(list), adder_(1) {}
 
   void Observe(int /* x */) override {
     list_->Clear();
@@ -525,7 +524,7 @@ class AddInClearObserve : public Foo {
  private:
   const raw_ptr<ObserverListType> list_;
 
-  bool added_;
+  bool added_ = false;
   AdderT<Foo> adder_;
 };
 

@@ -11,8 +11,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/perfetto/include/perfetto/test/traced_value_test_support.h"
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 
 namespace {
 
@@ -167,5 +166,4 @@ TEST(TracedValueSupportTest, RawRef) {
   }
 }
 
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event

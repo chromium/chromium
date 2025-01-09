@@ -15,8 +15,7 @@
 #include "base/trace_event/trace_buffer.h"
 #include "base/trace_event/trace_log.h"
 
-namespace base {
-namespace test {
+namespace base::test {
 
 TraceToFile::TraceToFile() : started_(false) {}
 
@@ -110,5 +109,4 @@ void TraceToFile::EndTracingIfNeeded() {
   AppendFileFooter();
 }
 
-}  // namespace test
-}  // namespace base
+}  // namespace base::test

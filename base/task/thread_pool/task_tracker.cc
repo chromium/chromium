@@ -35,8 +35,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 namespace {
 
@@ -708,5 +707,4 @@ void TaskTracker::RunTaskWithShutdownBehavior(Task& task,
   }
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

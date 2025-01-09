@@ -19,8 +19,7 @@
 #include "base/win/scoped_winrt_initializer.h"
 #endif
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 namespace {
 
@@ -659,5 +658,4 @@ void ThreadGroup::IncrementMaxBestEffortTasksLockRequired() {
 ThreadGroup::InitializedInStart::InitializedInStart() = default;
 ThreadGroup::InitializedInStart::~InitializedInStart() = default;
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

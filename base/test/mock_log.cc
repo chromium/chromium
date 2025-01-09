@@ -4,8 +4,7 @@
 
 #include "base/test/mock_log.h"
 
-namespace base {
-namespace test {
+namespace base::test {
 
 // static
 MockLog* MockLog::g_instance_ = nullptr;
@@ -63,5 +62,4 @@ bool MockLog::LogMessageHandler(int severity,
   return g_instance_->Log(severity, file, line, message_start, str);
 }
 
-}  // namespace test
-}  // namespace base
+}  // namespace base::test

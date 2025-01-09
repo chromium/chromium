@@ -72,15 +72,15 @@ struct CallbackTrait : public DefaultSingletonTraits<Type> {
 
 class CallbackSingleton {
  public:
-  CallbackSingleton() : callback_(nullptr) {}
-  CallbackFunc callback_;
+  CallbackSingleton() {}
+  CallbackFunc callback_ = nullptr;
 };
 
 class CallbackSingletonWithNoLeakTrait : public CallbackSingleton {
  public:
   struct Trait : public CallbackTrait<CallbackSingletonWithNoLeakTrait> {};
 
-  CallbackSingletonWithNoLeakTrait() : CallbackSingleton() {}
+  CallbackSingletonWithNoLeakTrait() {}
 
   static CallbackSingletonWithNoLeakTrait* GetInstance() {
     return Singleton<CallbackSingletonWithNoLeakTrait, Trait>::get();
@@ -93,7 +93,7 @@ class CallbackSingletonWithLeakTrait : public CallbackSingleton {
     static const bool kRegisterAtExit = false;
   };
 
-  CallbackSingletonWithLeakTrait() : CallbackSingleton() {}
+  CallbackSingletonWithLeakTrait() {}
 
   static CallbackSingletonWithLeakTrait* GetInstance() {
     return Singleton<CallbackSingletonWithLeakTrait, Trait>::get();
@@ -104,7 +104,7 @@ class CallbackSingletonWithStaticTrait : public CallbackSingleton {
  public:
   struct Trait;
 
-  CallbackSingletonWithStaticTrait() : CallbackSingleton() {}
+  CallbackSingletonWithStaticTrait() {}
 
   static CallbackSingletonWithStaticTrait* GetInstance() {
     return Singleton<CallbackSingletonWithStaticTrait, Trait>::get();

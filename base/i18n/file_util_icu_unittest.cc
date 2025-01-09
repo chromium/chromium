@@ -19,8 +19,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
-namespace base {
-namespace i18n {
+namespace base::i18n {
 
 // file_util winds up using autoreleased objects on the Mac, so this needs
 // to be a PlatformTest
@@ -189,5 +188,4 @@ TEST_F(FileUtilICUTest, NormalizeFileNameEncoding) {
 
 #endif
 
-}  // namespace i18n
-}  // namespace base
+}  // namespace base::i18n

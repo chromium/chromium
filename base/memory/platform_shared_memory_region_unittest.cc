@@ -34,8 +34,7 @@
 #include "base/fuchsia/fuchsia_logging.h"
 #endif
 
-namespace base {
-namespace subtle {
+namespace base::subtle {
 
 const size_t kRegionSize = 1024;
 
@@ -444,5 +443,4 @@ TEST_F(PlatformSharedMemoryRegionTest, UnsafeRegionConvertToUnsafeDeathTest) {
   EXPECT_DEATH_IF_SUPPORTED(region.ConvertToUnsafe(), kErrorRegex);
 }
 
-}  // namespace subtle
-}  // namespace base
+}  // namespace base::subtle

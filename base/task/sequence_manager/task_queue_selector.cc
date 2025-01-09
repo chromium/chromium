@@ -16,9 +16,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/base_tracing.h"
 
-namespace base {
-namespace sequence_manager {
-namespace internal {
+namespace base::sequence_manager::internal {
 
 TaskQueueSelector::TaskQueueSelector(
     scoped_refptr<const AssociatedThreadId> associated_thread,
@@ -286,6 +284,4 @@ TaskQueueSelector::ActivePriorityTracker::HighestActivePriority() const {
       std::countr_zero(active_priorities_));
 }
 
-}  // namespace internal
-}  // namespace sequence_manager
-}  // namespace base
+}  // namespace base::sequence_manager::internal

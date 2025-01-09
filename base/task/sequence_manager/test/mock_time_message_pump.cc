@@ -11,8 +11,7 @@
 #include "base/notreached.h"
 #include "base/test/simple_test_tick_clock.h"
 
-namespace base {
-namespace sequence_manager {
+namespace base::sequence_manager {
 
 MockTimeMessagePump::MockTimeMessagePump(SimpleTestTickClock* clock)
     : clock_(clock) {}
@@ -88,5 +87,4 @@ void MockTimeMessagePump::ScheduleDelayedWork(
   next_wake_up_time_ = next_work_info.delayed_run_time;
 }
 
-}  // namespace sequence_manager
-}  // namespace base
+}  // namespace base::sequence_manager

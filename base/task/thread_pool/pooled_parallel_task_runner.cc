@@ -7,8 +7,7 @@
 #include "base/task/thread_pool/pooled_task_runner_delegate.h"
 #include "base/task/thread_pool/sequence.h"
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 PooledParallelTaskRunner::PooledParallelTaskRunner(
     const TaskTraits& traits,
@@ -35,5 +34,4 @@ bool PooledParallelTaskRunner::PostDelayedTask(const Location& from_here,
       std::move(sequence));
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

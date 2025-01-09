@@ -12,8 +12,7 @@
 #include "power_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace test {
+namespace base::test {
 
 class PowerMonitorTest : public testing::Test {
  public:
@@ -263,5 +262,4 @@ TEST_F(PowerMonitorTest, PowerStateReturnedFromAddObserver) {
   power_monitor->RemovePowerStateObserver(&observer2);
 }
 
-}  // namespace test
-}  // namespace base
+}  // namespace base::test

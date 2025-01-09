@@ -26,8 +26,7 @@
 #include "base/posix/eintr_wrapper.h"
 #endif
 
-namespace base {
-namespace tracing {
+namespace base::tracing {
 namespace {
 
 class TaskDestination {
@@ -204,5 +203,4 @@ TEST_F(PerfettoTaskRunnerTest, FileDescriptorReuse) {
 }
 #endif
 }  // namespace
-}  // namespace tracing
-}  // namespace base
+}  // namespace base::tracing

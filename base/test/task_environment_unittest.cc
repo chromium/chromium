@@ -57,8 +57,7 @@
 #include "base/win/scoped_com_initializer.h"
 #endif
 
-namespace base {
-namespace test {
+namespace base::test {
 
 namespace {
 
@@ -1790,5 +1789,4 @@ TEST_F(TaskEnvironmentTest, RunUntilQuit_MustCallQuitClosureFirst) {
       R"(QuitClosure\(\) not called before RunUntilQuit\(\))");
 }
 
-}  // namespace test
-}  // namespace base
+}  // namespace base::test

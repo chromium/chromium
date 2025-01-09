@@ -316,8 +316,7 @@ class AllocatorThread : public SimpleThread {
                   uint32_t size,
                   uint32_t page_size)
       : SimpleThread(name, Options()),
-        count_(0),
-        iterable_(0),
+
         allocator_(base,
                    size,
                    page_size,
@@ -346,8 +345,8 @@ class AllocatorThread : public SimpleThread {
   unsigned count() { return count_; }
 
  private:
-  unsigned count_;
-  unsigned iterable_;
+  unsigned count_ = 0;
+  unsigned iterable_ = 0;
   PersistentMemoryAllocator allocator_;
 };
 
@@ -442,7 +441,7 @@ class CounterThread : public SimpleThread {
         iterator_(iterator),
         lock_(lock),
         condition_(condition),
-        count_(0),
+
         wake_up_(wake_up) {}
 
   CounterThread(const CounterThread&) = delete;
@@ -479,7 +478,7 @@ class CounterThread : public SimpleThread {
   raw_ptr<PersistentMemoryAllocator::Iterator> iterator_;
   raw_ptr<Lock> lock_;
   raw_ptr<ConditionVariable> condition_;
-  unsigned count_;
+  unsigned count_ = 0;
   raw_ptr<bool> wake_up_;
 };
 

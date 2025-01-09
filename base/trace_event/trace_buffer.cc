@@ -14,8 +14,7 @@
 
 #include "base/functional/bind.h"
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 
 TraceResultBuffer::OutputCallback
 TraceResultBuffer::SimpleOutput::GetCallback() {
@@ -52,5 +51,4 @@ void TraceResultBuffer::Finish() {
   output_callback_.Run("]");
 }
 
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event

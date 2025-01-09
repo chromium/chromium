@@ -98,7 +98,8 @@ class AsyncSafeWaitableEvent {
 // destructor.
 class ScopedEventSignaller {
  public:
-  ScopedEventSignaller(AsyncSafeWaitableEvent* event) : event_(event) {}
+  explicit ScopedEventSignaller(AsyncSafeWaitableEvent* event)
+      : event_(event) {}
   ~ScopedEventSignaller() { event_->Signal(); }
 
  private:
@@ -183,7 +184,7 @@ void CopyStackSignalHandler(int n, siginfo_t* siginfo, void* sigcontext) {
 // Sets the global handler params for the signal handler function.
 class ScopedSetSignalHandlerParams {
  public:
-  ScopedSetSignalHandlerParams(HandlerParams* params) {
+  explicit ScopedSetSignalHandlerParams(HandlerParams* params) {
     g_handler_params.store(params, std::memory_order_release);
   }
 

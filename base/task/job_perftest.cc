@@ -68,7 +68,7 @@ class IndexGenerator {
   explicit IndexGenerator(size_t size) : size_(size) {
     AutoLock auto_lock(lock_);
     pending_indices_.push(0);
-    ranges_to_split_.push({0, size_});
+    ranges_to_split_.emplace(0, size_);
   }
 
   IndexGenerator(const IndexGenerator&) = delete;
@@ -95,10 +95,10 @@ class IndexGenerator {
     // Both sides of the range are added to |ranges_to_split_| so they may be
     // further split if possible.
     if (mid - range.first > 1) {
-      ranges_to_split_.push({range.first, mid});
+      ranges_to_split_.emplace(range.first, mid);
     }
     if (range.second - mid > 1) {
-      ranges_to_split_.push({mid, range.second});
+      ranges_to_split_.emplace(mid, range.second);
     }
     return mid;
   }

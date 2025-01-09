@@ -19,8 +19,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_local.h"
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 namespace {
 
@@ -194,5 +193,4 @@ void CheckedLockImpl::CreateConditionVariableAndEmplace(
   opt.emplace(&lock_);
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

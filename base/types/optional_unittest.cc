@@ -109,7 +109,7 @@ class NonTriviallyDestructible {
 class DeletedDefaultConstructor {
  public:
   DeletedDefaultConstructor() = delete;
-  DeletedDefaultConstructor(int foo) : foo_(foo) {}
+  explicit DeletedDefaultConstructor(int foo) : foo_(foo) {}
 
   int foo() const { return foo_; }
 

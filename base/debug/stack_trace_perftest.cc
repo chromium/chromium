@@ -13,8 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
 
-namespace base {
-namespace debug {
+namespace base::debug {
 
 // Change kTimeLimit to something higher if you need more time to capture a
 // trace.
@@ -34,7 +33,7 @@ perf_test::PerfResultReporter SetUpReporter(const std::string& story_name) {
 
 class StackTracer {
  public:
-  StackTracer(size_t trace_count) : trace_count_(trace_count) {}
+  explicit StackTracer(size_t trace_count) : trace_count_(trace_count) {}
   void Trace() {
     StackTrace st(trace_count_);
     span<const void* const> addresses = st.addresses();
@@ -88,5 +87,4 @@ TEST_P(StackTracePerfTest, MultiObj) {
   MultiObjTest(parm);
 }
 
-}  // namespace debug
-}  // namespace base
+}  // namespace base::debug

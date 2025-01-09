@@ -30,8 +30,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/third_party/icu/icu_utf.h"
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 namespace {
 
@@ -74,8 +73,8 @@ constexpr base_icu::UChar32 kUnicodeReplacementPoint = 0xFFFD;
 // input consists purely of hex digits. I.e. no "0x" nor "OX" prefix is
 // permitted.
 bool UnprefixedHexStringToInt(std::string_view input, int* output) {
-  for (size_t i = 0; i < input.size(); i++) {
-    if (!IsHexDigit(input[i])) {
+  for (char i : input) {
+    if (!IsHexDigit(i)) {
       return false;
     }
   }
@@ -902,5 +901,4 @@ std::string JSONParser::FormatErrorMessage(int line,
   return description;
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

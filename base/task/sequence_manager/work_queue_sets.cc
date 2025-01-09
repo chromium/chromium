@@ -10,9 +10,7 @@
 #include "base/task/sequence_manager/task_order.h"
 #include "base/task/sequence_manager/work_queue.h"
 
-namespace base {
-namespace sequence_manager {
-namespace internal {
+namespace base::sequence_manager::internal {
 
 WorkQueueSets::WorkQueueSets(const char* name,
                              Observer* observer,
@@ -239,6 +237,4 @@ void WorkQueueSets::CollectSkippedOverLowerPriorityTasks(
   }
 }
 
-}  // namespace internal
-}  // namespace sequence_manager
-}  // namespace base
+}  // namespace base::sequence_manager::internal

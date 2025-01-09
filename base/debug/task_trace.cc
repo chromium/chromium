@@ -19,8 +19,7 @@
 #include "base/no_destructor.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
-namespace base {
-namespace debug {
+namespace base::debug {
 namespace {
 #if BUILDFLAG(IS_ANDROID)
 // Android sends stdout and stderr to /dev/null; logging should be done through
@@ -112,5 +111,4 @@ std::ostream& operator<<(std::ostream& os, const TaskTrace& task_trace) {
   return os;
 }
 
-}  // namespace debug
-}  // namespace base
+}  // namespace base::debug

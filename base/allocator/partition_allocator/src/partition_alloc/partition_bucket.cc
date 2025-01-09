@@ -684,7 +684,7 @@ PartitionBucket::AllocNewSlotSpan(PartitionRoot* root,
   for (auto* page = gap_start_page->ToWritable(root);
        page < gap_end_page->ToWritable(root); ++page) {
     PA_DCHECK(!page->is_valid);
-    page->has_valid_span_after_this = 1;
+    page->has_valid_span_after_this = true;
   }
   root->next_partition_page =
       adjusted_next_partition_page + slot_span_reservation_size;

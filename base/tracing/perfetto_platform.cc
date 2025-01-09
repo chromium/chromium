@@ -21,8 +21,7 @@
 #include "third_party/perfetto/include/perfetto/ext/base/thread_task_runner.h"
 #endif
 
-namespace base {
-namespace tracing {
+namespace base::tracing {
 
 namespace {
 constexpr char kProcessNamePrefix[] = "org.chromium-";
@@ -94,5 +93,4 @@ perfetto::base::PlatformThreadId PerfettoPlatform::GetCurrentThreadId() {
   return base::PlatformThread::CurrentId();
 }
 
-}  // namespace tracing
-}  // namespace base
+}  // namespace base::tracing

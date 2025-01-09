@@ -14,8 +14,7 @@
 #include "base/win/pe_image.h"
 #endif  // BUILDFLAG(IS_WIN)
 
-namespace base {
-namespace debug {
+namespace base::debug {
 
 void StartProfiling(const std::string& name) {}
 
@@ -122,5 +121,4 @@ MoveDynamicSymbol GetProfilerMoveDynamicSymbolFunc() {
 
 #endif  // BUILDFLAG(IS_WIN)
 
-}  // namespace debug
-}  // namespace base
+}  // namespace base::debug

@@ -23,8 +23,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace internal {
+namespace base::internal {
 namespace {
 
 constexpr TimeDelta kLongerDelay = Hours(3);
@@ -336,5 +335,4 @@ TEST_F(ThreadPoolDelayedTaskManagerTest, PostTaskDuringStart) {
   service_thread_task_runner_->FastForwardBy(kLongDelay);
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

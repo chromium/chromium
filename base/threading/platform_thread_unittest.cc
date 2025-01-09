@@ -137,8 +137,7 @@ class FunctionTestThread : public PlatformThread::Delegate {
         termination_ready_(WaitableEvent::ResetPolicy::MANUAL,
                            WaitableEvent::InitialState::NOT_SIGNALED),
         terminate_thread_(WaitableEvent::ResetPolicy::MANUAL,
-                          WaitableEvent::InitialState::NOT_SIGNALED),
-        done_(false) {}
+                          WaitableEvent::InitialState::NOT_SIGNALED) {}
 
   FunctionTestThread(const FunctionTestThread&) = delete;
   FunctionTestThread& operator=(const FunctionTestThread&) = delete;
@@ -191,7 +190,7 @@ class FunctionTestThread : public PlatformThread::Delegate {
 
   mutable WaitableEvent termination_ready_;
   WaitableEvent terminate_thread_;
-  bool done_;
+  bool done_ = false;
 };
 
 }  // namespace

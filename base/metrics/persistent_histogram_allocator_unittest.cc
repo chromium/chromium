@@ -217,8 +217,8 @@ TEST_F(PersistentHistogramAllocatorTest, CreateSpareFile) {
   for (size_t pos = 0; pos < temp_size; pos += sizeof(buffer)) {
     ASSERT_EQ(static_cast<int>(sizeof(buffer)),
               file.ReadAtCurrentPos(buffer, sizeof(buffer)));
-    for (size_t i = 0; i < sizeof(buffer); ++i) {
-      EXPECT_EQ(0, buffer[i]);
+    for (char i : buffer) {
+      EXPECT_EQ(0, i);
     }
   }
 }

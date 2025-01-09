@@ -12,8 +12,7 @@
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 namespace {
 ScopedLazyTaskRunnerListForTesting* g_scoped_lazy_task_runner_list_for_testing =
@@ -125,5 +124,4 @@ void ScopedLazyTaskRunnerListForTesting::AddCallback(OnceClosure callback) {
   callbacks_.push_back(std::move(callback));
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

@@ -10,8 +10,7 @@
 #include "base/check_op.h"
 #include "base/sequence_token.h"
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 namespace {
 
@@ -130,5 +129,4 @@ ScopedSetSequenceLocalStorageMapForCurrentThread::
 ScopedSetSequenceLocalStorageMapForCurrentThread::
     ~ScopedSetSequenceLocalStorageMapForCurrentThread() = default;
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

@@ -9,8 +9,7 @@
 #include "third_party/icu/source/common/unicode/uloc.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
-namespace base {
-namespace test {
+namespace base::test {
 
 ScopedRestoreICUDefaultLocale::ScopedRestoreICUDefaultLocale()
     : ScopedRestoreICUDefaultLocale(std::string()) {}
@@ -41,5 +40,4 @@ void InitializeICUForTesting() {
   i18n::InitializeICU();
 }
 
-}  // namespace test
-}  // namespace base
+}  // namespace base::test

@@ -11,8 +11,7 @@
 #include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace legacy {
+namespace base::legacy {
 
 TEST(LegacyHashTest, CityHashV103) {
   constexpr struct {
@@ -35,5 +34,4 @@ TEST(LegacyHashTest, CityHashV103) {
   }
 }
 
-}  // namespace legacy
-}  // namespace base
+}  // namespace base::legacy

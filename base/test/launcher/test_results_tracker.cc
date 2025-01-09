@@ -54,8 +54,7 @@ std::string FormatTimeAsIso8601(Time time) {
 }
 
 struct TestSuiteResultsAggregator {
-  TestSuiteResultsAggregator()
-      : tests(0), failures(0), disabled(0), errors(0) {}
+  TestSuiteResultsAggregator() {}
 
   void Add(const TestResult& result) {
     tests++;
@@ -81,10 +80,10 @@ struct TestSuiteResultsAggregator {
     }
   }
 
-  int tests;
-  int failures;
-  int disabled;
-  int errors;
+  int tests = 0;
+  int failures = 0;
+  int disabled = 0;
+  int errors = 0;
 
   TimeDelta elapsed_time;
 };
@@ -224,7 +223,7 @@ void TestResultsTracker::OnTestIterationStarting() {
 
   // Start with a fresh state for new iteration.
   iteration_++;
-  per_iteration_data_.push_back(PerIterationData());
+  per_iteration_data_.emplace_back();
 }
 
 void TestResultsTracker::AddTest(const std::string& test_name) {
@@ -445,9 +444,7 @@ bool TestResultsTracker::SaveSummaryAsJSON(
     for (const auto& j : per_iteration_data_[i].results) {
       Value::List test_results;
 
-      for (size_t k = 0; k < j.second.test_results.size(); k++) {
-        const TestResult& test_result = j.second.test_results[k];
-
+      for (const auto& test_result : j.second.test_results) {
         Value::Dict test_result_value;
 
         test_result_value.Set("status", test_result.StatusAsString());

@@ -14,8 +14,7 @@
 #include "base/check_op.h"
 #include "base/third_party/icu/icu_utf.h"
 
-namespace base {
-namespace i18n {
+namespace base::i18n {
 
 // UTF8CharIterator ------------------------------------------------------------
 
@@ -134,5 +133,4 @@ void UTF16CharIterator::ReadChar() {
   CBU16_NEXT(str_.data(), next_pos_, str_.length(), char_);
 }
 
-}  // namespace i18n
-}  // namespace base
+}  // namespace base::i18n

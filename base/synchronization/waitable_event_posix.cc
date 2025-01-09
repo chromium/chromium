@@ -100,8 +100,7 @@ class SyncWaiter : public WaitableEvent::Waiter {
   STACK_ALLOCATED();
 
  public:
-  SyncWaiter()
-      : fired_(false), signaling_event_(nullptr), lock_(), cv_(&lock_) {}
+  SyncWaiter() : cv_(&lock_) {}
 
   bool Fire(WaitableEvent* signaling_event) override {
     base::AutoLock locked(lock_);
@@ -147,7 +146,7 @@ class SyncWaiter : public WaitableEvent::Waiter {
   base::ConditionVariable* cv() { return &cv_; }
 
  private:
-  bool fired_;
+  bool fired_ = false;
   WaitableEvent* signaling_event_ = nullptr;  // The WaitableEvent which woke us
   base::Lock lock_;
   base::ConditionVariable cv_;
@@ -238,7 +237,7 @@ size_t WaitableEvent::WaitManyImpl(WaitableEvent** raw_waitables,
   std::vector<std::pair<WaitableEvent*, size_t>> waitables;
   waitables.reserve(count);
   for (size_t i = 0; i < count; ++i) {
-    waitables.push_back(std::make_pair(raw_waitables[i], i));
+    waitables.emplace_back(raw_waitables[i], i);
   }
 
   DCHECK_EQ(count, waitables.size());

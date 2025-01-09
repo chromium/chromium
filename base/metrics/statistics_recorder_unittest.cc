@@ -457,11 +457,7 @@ namespace {
 // CallbackCheckWrapper is simply a convenient way to check and store that
 // a callback was actually run.
 struct CallbackCheckWrapper {
-  CallbackCheckWrapper()
-      : called(false),
-        last_histogram_name(""),
-        last_name_hash(HashMetricName("")),
-        last_histogram_value(0) {}
+  CallbackCheckWrapper() : last_name_hash(HashMetricName("")) {}
 
   void OnHistogramChanged(const char* histogram_name,
                           uint64_t name_hash,
@@ -472,10 +468,10 @@ struct CallbackCheckWrapper {
     last_histogram_value = histogram_value;
   }
 
-  bool called;
-  const char* last_histogram_name;
+  bool called = false;
+  const char* last_histogram_name = "";
   uint64_t last_name_hash;
-  base::HistogramBase::Sample last_histogram_value;
+  base::HistogramBase::Sample last_histogram_value = 0;
 };
 
 }  // namespace

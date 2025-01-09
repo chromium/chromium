@@ -147,7 +147,7 @@ class TaskAnnotatorBacktraceIntegrationTest
   // themselves being ordered.
   Lock on_before_run_task_lock_;
 
-  Location last_posted_from_ = {};
+  Location last_posted_from_;
   std::array<const void*, PendingTask::kTaskBacktraceLength>
       last_task_backtrace_ = {};
 

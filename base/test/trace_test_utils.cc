@@ -7,8 +7,7 @@
 #include "base/trace_event/trace_log.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 
-namespace base {
-namespace test {
+namespace base::test {
 
 TracingEnvironment::TracingEnvironment() {
   trace_event::TraceLog::ResetForTesting();
@@ -18,5 +17,4 @@ TracingEnvironment::~TracingEnvironment() {
   perfetto::Tracing::ResetForTesting();
 }
 
-}  // namespace test
-}  // namespace base
+}  // namespace base::test

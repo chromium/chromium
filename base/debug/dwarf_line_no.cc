@@ -26,8 +26,7 @@
 #include "base/third_party/symbolize/symbolize.h"
 #include "partition_alloc/pointers/raw_ptr.h"
 
-namespace base {
-namespace debug {
+namespace base::debug {
 
 namespace {
 
@@ -1382,8 +1381,7 @@ void GetDwarfCompileUnitOffsets(const void* const* trace,
   }
 }
 
-}  // namespace debug
-}  // namespace base
+}  // namespace base::debug
 
 #else  // USE_SYMBOLIZE
 

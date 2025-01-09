@@ -15,9 +15,7 @@ using testing::ElementsAre;
 using testing::IsNull;
 using testing::NotNull;
 
-namespace base {
-namespace sequence_manager {
-namespace internal {
+namespace base::sequence_manager::internal {
 
 class AtomicFlagSetForTest : public AtomicFlagSet {
  public:
@@ -319,6 +317,4 @@ TEST_F(AtomicFlagSetTest, GroupBecomesEmptyTailOfPartiallyFreeList) {
   EXPECT_EQ(group3->next.get(), nullptr);
 }
 
-}  // namespace internal
-}  // namespace sequence_manager
-}  // namespace base
+}  // namespace base::sequence_manager::internal

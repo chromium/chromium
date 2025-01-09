@@ -134,8 +134,7 @@ typedef std::vector<Pair> PairVector;
 // A class to print a table of numbers in the same style as clang-format.
 class TablePrinter {
  public:
-  explicit TablePrinter(FILE* stream)
-      : stream_(stream), values_on_this_line_(0), current_offset_(0) {}
+  explicit TablePrinter(FILE* stream) : stream_(stream) {}
 
   TablePrinter(const TablePrinter&) = delete;
   TablePrinter& operator=(const TablePrinter&) = delete;
@@ -166,10 +165,10 @@ class TablePrinter {
   raw_ptr<FILE> stream_;
 
   // Number of values so far printed on this line.
-  int values_on_this_line_;
+  int values_on_this_line_ = 0;
 
   // Total values printed so far.
-  int current_offset_;
+  int current_offset_ = 0;
 
   static const int kMaxValuesPerLine = 8;
 };
@@ -271,11 +270,10 @@ void MoveAllCharsToSets(PairVector* pairs) {
 void LogStringSets(const PairVector& pairs) {
   for (const auto& pair_it : pairs) {
     std::string set_as_string;
-    for (auto set_it = pair_it.set.begin(); set_it != pair_it.set.end();
-         ++set_it) {
+    for (const auto& set_it : pair_it.set) {
       set_as_string += base::StringPrintf("[\\x%02x-\\x%02x]",
-                                          static_cast<int>(set_it->from()),
-                                          static_cast<int>(set_it->to()));
+                                          static_cast<int>(set_it.from()),
+                                          static_cast<int>(set_it.to()));
     }
     VLOG(1) << set_as_string;
   }
@@ -322,9 +320,9 @@ uint8_t MakeState(const StringSet& set,
       {0, 1},
       {range.from(), target_state},
       {static_cast<uint8_t>(range.to() + 1), 1}};
-  states->push_back(
-      State(new_state_initializer,
-            new_state_initializer + std::size(new_state_initializer)));
+  states->emplace_back(
+      new_state_initializer,
+      new_state_initializer + std::size(new_state_initializer));
   const uint8_t new_state_number =
       base::checked_cast<uint8_t>(states->size() - 1);
   CHECK(state_map->insert(std::make_pair(set, new_state_number)).second);
@@ -384,9 +382,8 @@ void PrintStates(const std::vector<State>& states, FILE* stream) {
     // bits we can discard and still determine what range a byte lies in. Sadly
     // it appears that ffs() is not portable, so we do it clumsily.
     uint8_t shift = 7;
-    for (auto range_it = state_it.begin(); range_it != state_it.end();
-         ++range_it) {
-      while (shift > 0 && range_it->from % (1 << shift) != 0) {
+    for (const auto& range_it : state_it) {
+      while (shift > 0 && range_it.from % (1 << shift) != 0) {
         --shift;
       }
     }

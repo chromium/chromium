@@ -8,9 +8,7 @@
 #include "base/power_monitor/power_monitor.h"
 #include "base/trace_event/base_tracing.h"
 
-namespace base {
-namespace sequence_manager {
-namespace internal {
+namespace base::sequence_manager::internal {
 
 namespace {
 
@@ -94,6 +92,4 @@ void ThreadControllerPowerMonitor::OnResume() {
   }
 }
 
-}  // namespace internal
-}  // namespace sequence_manager
-}  // namespace base
+}  // namespace base::sequence_manager::internal

@@ -22,8 +22,7 @@
 #include <windows.h>
 #endif
 
-namespace base {
-namespace debug {
+namespace base::debug {
 
 namespace {
 
@@ -107,5 +106,4 @@ void AsanCorruptHeap() {
 #endif  // BUILDFLAG(IS_WIN)
 #endif  // ADDRESS_SANITIZER
 
-}  // namespace debug
-}  // namespace base
+}  // namespace base::debug

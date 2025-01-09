@@ -16,9 +16,7 @@
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 
-namespace base {
-namespace sequence_manager {
-namespace internal {
+namespace base::sequence_manager::internal {
 
 WorkQueue::WorkQueue(TaskQueueImpl* task_queue,
                      const char* name,
@@ -356,6 +354,4 @@ void WorkQueue::CollectTasksOlderThan(TaskOrder reference,
   }
 }
 
-}  // namespace internal
-}  // namespace sequence_manager
-}  // namespace base
+}  // namespace base::sequence_manager::internal

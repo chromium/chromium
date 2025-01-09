@@ -45,8 +45,7 @@
 #include "base/win/scoped_com_initializer.h"
 #endif  // BUILDFLAG(IS_WIN)
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 namespace {
 
@@ -899,5 +898,4 @@ void PooledSingleThreadTaskRunnerManager::ReleaseSharedWorkerThreads() {
   }
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

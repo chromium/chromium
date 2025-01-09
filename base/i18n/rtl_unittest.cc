@@ -20,8 +20,7 @@
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "third_party/icu/source/i18n/unicode/usearch.h"
 
-namespace base {
-namespace i18n {
+namespace base::i18n {
 
 class RTLTest : public PlatformTest {};
 
@@ -588,5 +587,4 @@ TEST_F(SetICULocaleTest, OverlongLocaleId) {
   EXPECT_STREQ(lid.c_str(), icu::Locale::getDefault().getName());
 }
 
-}  // namespace i18n
-}  // namespace base
+}  // namespace base::i18n

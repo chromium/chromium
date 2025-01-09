@@ -132,16 +132,17 @@ class WorkQueue : public PlatformThread::Delegate {
   ConditionVariable no_more_tasks_;         // Task count is zero.
 
   const int thread_count_;
-  int waiting_thread_count_;
+  int waiting_thread_count_ = 0;
   std::unique_ptr<PlatformThreadHandle[]> thread_handles_;
   std::vector<int> assignment_history_;  // Number of assignment per worker.
   std::vector<int> completion_history_;  // Number of completions per worker.
-  int thread_started_counter_;           // Used to issue unique id to workers.
-  int shutdown_task_count_;              // Number of tasks told to shutdown
-  int task_count_;  // Number of assignment tasks waiting to be processed.
-  TimeDelta worker_delay_;    // Time each task takes to complete.
-  bool allow_help_requests_;  // Workers can signal more workers.
-  bool shutdown_;             // Set when threads need to terminate.
+  int thread_started_counter_ = 0;       // Used to issue unique id to workers.
+  int shutdown_task_count_ = 0;          // Number of tasks told to shutdown
+  int task_count_ = 0;                   // Number of assignment tasks waiting
+                                         // to be processed.
+  TimeDelta worker_delay_;               // Time each task takes to complete.
+  bool allow_help_requests_ = false;     // Workers can signal more workers.
+  bool shutdown_ = false;                // Set when threads need to terminate.
 
   DFAKE_MUTEX(locked_methods_);
 };
@@ -487,20 +488,13 @@ TEST_F(ConditionVariableTest, LargeFastTaskTest) {
 //------------------------------------------------------------------------------
 
 WorkQueue::WorkQueue(int thread_count)
-    : lock_(),
-      work_is_available_(&lock_),
+    : work_is_available_(&lock_),
       all_threads_have_ids_(&lock_),
       no_more_tasks_(&lock_),
       thread_count_(thread_count),
-      waiting_thread_count_(0),
       thread_handles_(new PlatformThreadHandle[thread_count]),
       assignment_history_(thread_count),
-      completion_history_(thread_count),
-      thread_started_counter_(0),
-      shutdown_task_count_(0),
-      task_count_(0),
-      allow_help_requests_(false),
-      shutdown_(false) {
+      completion_history_(thread_count) {
   EXPECT_GE(thread_count_, 1);
   ResetHistory();
   SetTaskCount(0);

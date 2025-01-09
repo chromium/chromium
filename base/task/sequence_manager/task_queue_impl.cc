@@ -39,10 +39,7 @@
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 
-namespace base {
-namespace sequence_manager {
-
-namespace internal {
+namespace base::sequence_manager::internal {
 
 // This class outside the anonymous namespace exists to allow being a friend of
 // `SingleThreadTaskRunner::CurrentDefaultHandle` in order to access
@@ -1745,6 +1742,4 @@ TaskQueueImpl::OnTaskPostedCallbackHandleImpl::
   }
 }
 
-}  // namespace internal
-}  // namespace sequence_manager
-}  // namespace base
+}  // namespace base::sequence_manager::internal

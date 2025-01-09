@@ -20,9 +20,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
-namespace base {
-namespace internal {
-namespace test {
+namespace base::internal::test {
 
 namespace {
 
@@ -339,6 +337,4 @@ void ShutdownTaskTracker(TaskTracker* task_tracker) {
   task_tracker->CompleteShutdown();
 }
 
-}  // namespace test
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal::test

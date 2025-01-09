@@ -41,13 +41,13 @@ const test::TaskEnvironment::MainThreadType testing_main_threads[] = {
 
 class Receiver {
  public:
-  Receiver() : count_(0) {}
+  Receiver() {}
   void OnCalled() { count_++; }
   bool WasCalled() { return count_ > 0; }
   int TimesCalled() { return count_; }
 
  private:
-  int count_;
+  int count_ = 0;
 };
 
 // Basic test with same setup as RunTest_OneShotTimers_Cancel below to confirm

@@ -12,8 +12,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 
 // static
 MemoryDumpScheduler* MemoryDumpScheduler::GetInstance() {
@@ -120,5 +119,4 @@ MemoryDumpScheduler::Config::~Config() = default;
 MemoryDumpScheduler::Config::Config(const MemoryDumpScheduler::Config&) =
     default;
 
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event

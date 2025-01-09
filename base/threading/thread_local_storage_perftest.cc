@@ -30,8 +30,7 @@
 #include <pthread.h>
 #endif
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 namespace {
 
@@ -257,5 +256,4 @@ TEST_F(ThreadLocalStoragePerfTest, Cpp11Tls) {
             write, kCount, 4);
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

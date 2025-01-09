@@ -31,9 +31,7 @@
 #include "base/message_loop/message_pump_android.h"
 #endif
 
-namespace base {
-namespace sequence_manager {
-namespace internal {
+namespace base::sequence_manager::internal {
 namespace {
 
 // Returns |next_run_time| capped at 1 day from |lazy_now|. This is used to
@@ -758,6 +756,4 @@ bool ThreadControllerWithMessagePumpImpl::ShouldQuitRunLoopWhenIdle() {
   return ShouldQuitWhenIdle();
 }
 
-}  // namespace internal
-}  // namespace sequence_manager
-}  // namespace base
+}  // namespace base::sequence_manager::internal

@@ -19,8 +19,7 @@
 #include "base/tracing/tracing_tls.h"
 #include "build/build_config.h"
 
-namespace base {
-namespace tracing {
+namespace base::tracing {
 
 PerfettoTaskRunner::PerfettoTaskRunner(
     scoped_refptr<base::SequencedTaskRunner> task_runner)
@@ -128,5 +127,4 @@ PerfettoTaskRunner::FDControllerAndCallback::~FDControllerAndCallback() =
     default;
 #endif  // (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
 
-}  // namespace tracing
-}  // namespace base
+}  // namespace base::tracing

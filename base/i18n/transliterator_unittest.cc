@@ -8,8 +8,7 @@
 #include "third_party/icu/source/common/unicode/ustring.h"
 #include "third_party/icu/source/i18n/unicode/translit.h"
 
-namespace base {
-namespace i18n {
+namespace base::i18n {
 
 TEST(TransliteratorTest, LowerCorrect) {
   UParseError parseErr;
@@ -47,5 +46,4 @@ TEST(TransliteratorTest, LowerLatinASCIICorrect) {
   EXPECT_EQ(base::i18n::UnicodeStringToString16(text), u"internationalization");
 }
 
-}  // namespace i18n
-}  // namespace base
+}  // namespace base::i18n

@@ -11,8 +11,7 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace debug {
+namespace base::debug {
 
 class DumpWithoutCrashingTest : public testing::Test {
  public:
@@ -144,5 +143,4 @@ TEST_F(DumpWithoutCrashingTest, DumpWithoutCrashingWithLocationAndUniqueId) {
                                       DumpWithoutCrashingStatus::kUploaded, 3);
 }
 
-}  // namespace debug
-}  // namespace base
+}  // namespace base::debug

@@ -6,8 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 bool BasicValueConverter<int>::Convert(const base::Value& value,
                                        int* field) const {
@@ -64,5 +63,4 @@ bool BasicValueConverter<bool>::Convert(const base::Value& value,
   return true;
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

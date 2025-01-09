@@ -994,8 +994,8 @@ TEST(TestFeatureVisitor, FeatureHasParams) {
   base::test::ScopedFeatureList initialized_feature_list;
 
   initialized_feature_list.InitFromCommandLine(
-      /*enabled_features=*/"TestFeature<foo.bar:k1/v1/k2/v2",
-      /*disabled_features=*/"");
+      /*enable_features=*/"TestFeature<foo.bar:k1/v1/k2/v2",
+      /*disable_features=*/"");
 
   TestFeatureVisitor visitor;
   base::FeatureList::VisitFeaturesAndParams(visitor);

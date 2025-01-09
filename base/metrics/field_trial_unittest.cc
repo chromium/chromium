@@ -311,13 +311,12 @@ TEST_F(FieldTrialTest, ActiveGroups) {
   FieldTrial::ActiveGroups active_groups;
   FieldTrialList::GetActiveFieldTrialGroups(&active_groups);
   EXPECT_EQ(2U, active_groups.size());
-  for (size_t i = 0; i < active_groups.size(); ++i) {
+  for (auto& group : active_groups) {
     // Order is not guaranteed, so check all values.
-    EXPECT_NE(no_group, active_groups[i].trial_name);
-    EXPECT_TRUE(one_winner != active_groups[i].trial_name ||
-                winner == active_groups[i].group_name);
-    EXPECT_TRUE(multi_group != active_groups[i].trial_name ||
-                multi_group_trial->group_name() == active_groups[i].group_name);
+    EXPECT_NE(no_group, group.trial_name);
+    EXPECT_TRUE(one_winner != group.trial_name || winner == group.group_name);
+    EXPECT_TRUE(multi_group != group.trial_name ||
+                multi_group_trial->group_name() == group.group_name);
   }
 }
 

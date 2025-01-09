@@ -76,7 +76,7 @@ void GlobalDescriptors::Set(Key key,
     }
   }
 
-  descriptors_.push_back(Descriptor(key, fd, region));
+  descriptors_.emplace_back(key, fd, region);
 }
 
 base::MemoryMappedFile::Region GlobalDescriptors::GetRegion(Key key) const {

@@ -140,9 +140,9 @@ struct PathData {
   PathMap cache;                // Cache mappings from path key to path value.
   PathMap overrides;            // Track path overrides.
   raw_ptr<Provider> providers;  // Linked list of path service providers.
-  bool cache_disabled;          // Don't use cache if true;
+  bool cache_disabled = false;  // Don't use cache if true;
 
-  PathData() : cache_disabled(false) {
+  PathData() {
 #if BUILDFLAG(IS_WIN)
     providers = &base_provider_win;
 #elif BUILDFLAG(IS_MAC)

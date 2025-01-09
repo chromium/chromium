@@ -179,10 +179,10 @@ class FakeSequencedTaskSource : public SequencedTaskSource {
                TimeTicks queue_time = TimeTicks()) {
     DCHECK(tasks_.empty() || delayed_run_time.is_null() ||
            tasks_.back().delayed_run_time < delayed_run_time);
-    tasks_.push(
-        Task(PostedTask(nullptr, std::move(task), posted_from, delayed_run_time,
-                        base::subtle::DelayPolicy::kFlexibleNoSooner),
-             EnqueueOrder::FromIntForTesting(13), EnqueueOrder(), queue_time));
+    tasks_.emplace(
+        PostedTask(nullptr, std::move(task), posted_from, delayed_run_time,
+                   base::subtle::DelayPolicy::kFlexibleNoSooner),
+        EnqueueOrder::FromIntForTesting(13), EnqueueOrder(), queue_time);
   }
 
   bool HasPendingHighResolutionTasks() override {

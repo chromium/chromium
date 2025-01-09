@@ -20,8 +20,7 @@
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace base {
-namespace sequence_manager {
+namespace base::sequence_manager {
 
 class TimeDomain;
 
@@ -517,5 +516,4 @@ TEST_F(WorkQueueSetsTest, CompareDelayedAndImmediateTasks) {
 }
 
 }  // namespace internal
-}  // namespace sequence_manager
-}  // namespace base
+}  // namespace base::sequence_manager

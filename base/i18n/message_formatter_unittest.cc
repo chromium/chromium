@@ -18,8 +18,7 @@
 
 typedef testing::Test MessageFormatterTest;
 
-namespace base {
-namespace i18n {
+namespace base::i18n {
 
 class MessageFormatterTest : public testing::Test {
  protected:
@@ -176,5 +175,4 @@ TEST_F(MessageFormatterTest, SelectorSingleOrMultiple) {
   EXPECT_EQ(u"UNUSED", result);
 }
 
-}  // namespace i18n
-}  // namespace base
+}  // namespace base::i18n

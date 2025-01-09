@@ -14,9 +14,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace internal {
-namespace test {
+namespace base::internal::test {
 
 TestTaskFactory::TestTaskFactory(scoped_refptr<TaskRunner> task_runner,
                                  TaskSourceExecutionMode execution_mode)
@@ -113,6 +111,4 @@ void TestTaskFactory::RunTaskCallback(size_t task_index,
   }
 }
 
-}  // namespace test
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal::test

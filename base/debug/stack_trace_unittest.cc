@@ -33,8 +33,7 @@
 #include "base/test/multiprocess_test.h"
 #endif
 
-namespace base {
-namespace debug {
+namespace base::debug {
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 typedef MultiProcessTest StackTraceTest;
@@ -457,5 +456,4 @@ TEST(CheckExitCodeAfterSignalHandlerDeathTest, CheckSIGILL) {
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
 
-}  // namespace debug
-}  // namespace base
+}  // namespace base::debug

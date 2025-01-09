@@ -61,8 +61,7 @@
 // 4. The low 64 bits of the shared memory block GUID.
 // 5. The size of the shared memory segment as a string.
 
-namespace base {
-namespace shared_memory {
+namespace base::shared_memory {
 namespace {
 
 using subtle::PlatformSharedMemoryRegion;
@@ -367,5 +366,4 @@ ReadOnlySharedMemoryRegionFrom(std::string_view switch_value) {
   return ok(std::move(shmem_region));
 }
 
-}  // namespace shared_memory
-}  // namespace base
+}  // namespace base::shared_memory

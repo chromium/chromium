@@ -70,17 +70,17 @@ void SequencedTaskTracker::RunTask(OnceClosure task, int task_i) {
 
 void SequencedTaskTracker::TaskPosted(int i) {
   // Caller must own |lock_|.
-  events_.push_back(TaskEvent(i, TaskEvent::POST));
+  events_.emplace_back(i, TaskEvent::POST);
 }
 
 void SequencedTaskTracker::TaskStarted(int i) {
   AutoLock lock(lock_);
-  events_.push_back(TaskEvent(i, TaskEvent::START));
+  events_.emplace_back(i, TaskEvent::START);
 }
 
 void SequencedTaskTracker::TaskEnded(int i) {
   AutoLock lock(lock_);
-  events_.push_back(TaskEvent(i, TaskEvent::END));
+  events_.emplace_back(i, TaskEvent::END);
   ++task_end_count_;
   task_end_cv_.Signal();
 }

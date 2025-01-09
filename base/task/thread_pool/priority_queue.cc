@@ -11,8 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/types/cxx23_to_underlying.h"
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 // A class combining a TaskSource and the TaskSourceSortKey that determines its
 // position in a PriorityQueue. Instances are only mutable via
@@ -221,5 +220,4 @@ void PriorityQueue::IncrementNumTaskSourcesForPriority(TaskPriority priority) {
   ++num_task_sources_per_priority_[base::to_underlying(priority)];
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

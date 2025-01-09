@@ -32,11 +32,8 @@ using testing::_;
 using testing::ElementsAre;
 using testing::NotNull;
 
-namespace base {
-namespace sequence_manager {
-namespace internal {
 // To avoid symbol collisions in jumbo builds.
-namespace task_queue_selector_unittest {
+namespace base::sequence_manager::internal::task_queue_selector_unittest {
 
 namespace {
 const TaskQueue::QueuePriority kHighestPriority = 0;
@@ -682,7 +679,4 @@ TEST_F(ActivePriorityTrackerTest, HighestActivePriority) {
   EXPECT_FALSE(active_priority_tracker_.HasActivePriority());
 }
 
-}  // namespace task_queue_selector_unittest
-}  // namespace internal
-}  // namespace sequence_manager
-}  // namespace base
+}  // namespace base::sequence_manager::internal::task_queue_selector_unittest

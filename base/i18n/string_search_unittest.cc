@@ -15,8 +15,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/icu/source/i18n/unicode/usearch.h"
 
-namespace base {
-namespace i18n {
+namespace base::i18n {
 
 #define EXPECT_MATCH_IGNORE_CASE(find_this, in_this, ex_start, ex_len)         \
   {                                                                            \
@@ -403,5 +402,4 @@ TEST(StringSearchTest, RepeatingStringSearch) {
   }
 }
 
-}  // namespace i18n
-}  // namespace base
+}  // namespace base::i18n

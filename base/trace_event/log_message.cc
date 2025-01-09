@@ -13,8 +13,7 @@
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 
 LogMessage::LogMessage(const char* file, std::string_view message, int line)
     : file_(file), message_(message), line_number_(line) {}
@@ -38,5 +37,4 @@ bool LogMessage::AppendToProto(ProtoAppender* appender) const {
   NOTREACHED();
 }
 
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event

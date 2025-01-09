@@ -209,7 +209,7 @@ void FatalClosure() {
 
 class QuitWatcher : public BaseWatcher {
  public:
-  QuitWatcher(base::OnceClosure quit_closure)
+  explicit QuitWatcher(base::OnceClosure quit_closure)
       : quit_closure_(std::move(quit_closure)) {}
 
   void OnFileCanReadWithoutBlocking(int /* fd */) override {

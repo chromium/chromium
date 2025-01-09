@@ -35,8 +35,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 namespace {
 
@@ -605,5 +604,4 @@ void ThreadPoolImpl::UpdateCanRunPolicy() {
   single_thread_task_runner_manager_.DidUpdateCanRunPolicy();
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

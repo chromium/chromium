@@ -3,7 +3,3 @@
 // found in the LICENSE file.
 
 #include "base/trace_event/builtin_categories.h"
-
-namespace base {
-namespace trace_event {}  // namespace trace_event
-}  // namespace base

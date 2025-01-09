@@ -11,8 +11,7 @@
 #include "base/notreached.h"
 #include "base/threading/thread_local_storage.h"
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 
 std::atomic<AllocationContextTracker::CaptureMode>
     AllocationContextTracker::capture_mode_{
@@ -98,5 +97,4 @@ void AllocationContextTracker::PopCurrentTaskContext(const char* context) {
   task_contexts_.pop_back();
 }
 
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event

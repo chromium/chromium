@@ -43,7 +43,7 @@ void CycleTest(circular_deque<QueueT>& queue, const Tester& tester) {
 
 class DestructorCounter {
  public:
-  DestructorCounter(int* counter) : counter_(counter) {}
+  explicit DestructorCounter(int* counter) : counter_(counter) {}
   ~DestructorCounter() { ++(*counter_); }
 
  private:

@@ -41,7 +41,7 @@ uint64_t GetExampleValue<uint64_t>(int index) {
 
 template <>
 std::string GetExampleValue<std::string>(int index) {
-  return std::string('a', index);
+  return std::string(index, 'a');
 }
 
 template <typename T, typename U>
@@ -258,7 +258,7 @@ TEST(StrongAliasTest, CanBeDerivedFrom) {
   // those methods without the need to change any other code.
   class CountryCode : public StrongAlias<CountryCode, std::string> {
    public:
-    CountryCode(const std::string& value)
+    explicit CountryCode(const std::string& value)
         : StrongAlias<CountryCode, std::string>::StrongAlias(value) {
       if (value_.length() != 2) {
         // Country code invalid!

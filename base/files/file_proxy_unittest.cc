@@ -36,9 +36,7 @@ class FileProxyTest : public testing::Test {
  public:
   FileProxyTest()
       : task_environment_(test::TaskEnvironment::MainThreadType::IO),
-        file_thread_("FileProxyTestFileThread"),
-        error_(File::FILE_OK),
-        bytes_written_(-1) {}
+        file_thread_("FileProxyTestFileThread") {}
 
   void SetUp() override {
     ASSERT_TRUE(dir_.CreateUniqueTempDir());
@@ -108,11 +106,11 @@ class FileProxyTest : public testing::Test {
   test::TaskEnvironment task_environment_;
   Thread file_thread_;
 
-  File::Error error_;
+  File::Error error_ = File::FILE_OK;
   FilePath path_;
   File::Info file_info_;
   base::HeapArray<char> buffer_;
-  int bytes_written_;
+  int bytes_written_ = -1;
   WeakPtrFactory<FileProxyTest> weak_factory_{this};
 };
 

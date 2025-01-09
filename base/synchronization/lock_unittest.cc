@@ -33,7 +33,7 @@ namespace base {
 
 class BasicLockTestThread : public PlatformThread::Delegate {
  public:
-  explicit BasicLockTestThread(Lock* lock) : lock_(lock), acquired_(0) {}
+  explicit BasicLockTestThread(Lock* lock) : lock_(lock) {}
 
   BasicLockTestThread(const BasicLockTestThread&) = delete;
   BasicLockTestThread& operator=(const BasicLockTestThread&) = delete;
@@ -63,7 +63,7 @@ class BasicLockTestThread : public PlatformThread::Delegate {
 
  private:
   raw_ptr<Lock> lock_;
-  int acquired_;
+  int acquired_ = 0;
 };
 
 TEST(LockTest, Basic) {
@@ -109,7 +109,7 @@ TEST(LockTest, Basic) {
 
 class TryLockTestThread : public PlatformThread::Delegate {
  public:
-  explicit TryLockTestThread(Lock* lock) : lock_(lock), got_lock_(false) {}
+  explicit TryLockTestThread(Lock* lock) : lock_(lock) {}
 
   TryLockTestThread(const TryLockTestThread&) = delete;
   TryLockTestThread& operator=(const TryLockTestThread&) = delete;
@@ -128,7 +128,7 @@ class TryLockTestThread : public PlatformThread::Delegate {
 
  private:
   raw_ptr<Lock> lock_;
-  bool got_lock_;
+  bool got_lock_ = false;
 };
 
 TEST(LockTest, TryLock) {

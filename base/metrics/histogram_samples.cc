@@ -50,11 +50,11 @@ class SampleCountPickleIterator : public SampleCountIterator {
   HistogramBase::Sample min_;
   int64_t max_;
   HistogramBase::Count count_;
-  bool is_done_;
+  bool is_done_ = false;
 };
 
 SampleCountPickleIterator::SampleCountPickleIterator(PickleIterator* iter)
-    : iter_(iter), is_done_(false) {
+    : iter_(iter) {
   Next();
 }
 

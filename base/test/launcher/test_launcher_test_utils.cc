@@ -12,9 +12,7 @@
 #include "base/test/gtest_util.h"
 #include "base/test/launcher/test_result.h"
 
-namespace base {
-
-namespace test_launcher_utils {
+namespace base::test_launcher_utils {
 
 namespace {
 
@@ -166,6 +164,4 @@ std::optional<Value::Dict> ReadSummary(const FilePath& path) {
   return result;
 }
 
-}  // namespace test_launcher_utils
-
-}  // namespace base
+}  // namespace base::test_launcher_utils

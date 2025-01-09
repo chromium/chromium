@@ -189,7 +189,7 @@ ssize_t UnixDomainSocket::RecvMsgWithFlags(int fd,
 
   if (wire_fds) {
     for (size_t i = 0; i < wire_fds_len; ++i) {
-      fds->push_back(ScopedFD(wire_fds[i]));  // TODO(mdempsky): emplace_back
+      fds->emplace_back(wire_fds[i]);
     }
   }
 

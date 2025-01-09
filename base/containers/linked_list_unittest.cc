@@ -23,8 +23,8 @@ class Node : public LinkNode<Node> {
 
 class MultipleInheritanceNodeBase {
  public:
-  MultipleInheritanceNodeBase() : field_taking_up_space_(0) {}
-  int field_taking_up_space_;
+  MultipleInheritanceNodeBase() {}
+  int field_taking_up_space_ = 0;
 };
 
 class MultipleInheritanceNode : public MultipleInheritanceNodeBase,

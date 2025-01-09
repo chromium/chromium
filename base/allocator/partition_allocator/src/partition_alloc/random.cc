@@ -27,7 +27,7 @@ class RandomGenerator {
   }
 
  private:
-  ::partition_alloc::internal::Lock lock_ = {};
+  ::partition_alloc::internal::Lock lock_;
   bool initialized_ PA_GUARDED_BY(lock_) = false;
   union {
     internal::base::InsecureRandomGenerator instance_ PA_GUARDED_BY(lock_);

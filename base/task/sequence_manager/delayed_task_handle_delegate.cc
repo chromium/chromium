@@ -6,9 +6,7 @@
 
 #include "base/task/sequence_manager/task_queue_impl.h"
 
-namespace base {
-namespace sequence_manager {
-namespace internal {
+namespace base::sequence_manager::internal {
 
 DelayedTaskHandleDelegate::DelayedTaskHandleDelegate(TaskQueueImpl* outer)
     : outer_(outer) {}
@@ -66,6 +64,4 @@ void DelayedTaskHandleDelegate::WillRunTask() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
-}  // namespace internal
-}  // namespace sequence_manager
-}  // namespace base
+}  // namespace base::sequence_manager::internal

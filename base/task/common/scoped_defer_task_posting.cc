@@ -95,8 +95,8 @@ void ScopedDeferTaskPosting::DeferTaskPosting(
     const Location& from_here,
     OnceClosure task,
     base::TimeDelta delay) {
-  deferred_tasks_.push_back(
-      {std::move(task_runner), from_here, std::move(task), delay});
+  deferred_tasks_.emplace_back(std::move(task_runner), from_here,
+                               std::move(task), delay);
 }
 
 }  // namespace base

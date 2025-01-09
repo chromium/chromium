@@ -46,8 +46,7 @@
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 
-namespace base {
-namespace sequence_manager {
+namespace base::sequence_manager {
 namespace {
 
 // Whether SequenceManagerImpl records crash keys. Enable via Finch when needed
@@ -1248,5 +1247,4 @@ TaskQueue::QueuePriority SequenceManagerImpl::GetPriorityCount() const {
 constexpr TimeDelta SequenceManagerImpl::kReclaimMemoryInterval;
 
 }  // namespace internal
-}  // namespace sequence_manager
-}  // namespace base
+}  // namespace base::sequence_manager

@@ -39,7 +39,7 @@ namespace {
 // place.
 class AssertReporter : public base::AsserterBase {
  public:
-  AssertReporter() : failed_(false) {}
+  AssertReporter() {}
 
   void warn() override { failed_ = true; }
 
@@ -49,7 +49,7 @@ class AssertReporter : public base::AsserterBase {
   void reset() { failed_ = false; }
 
  private:
-  bool failed_;
+  bool failed_ = false;
 };
 
 }  // namespace

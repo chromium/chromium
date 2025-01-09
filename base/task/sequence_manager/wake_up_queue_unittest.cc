@@ -21,9 +21,7 @@ using testing::_;
 using testing::AnyNumber;
 using testing::Mock;
 
-namespace base {
-namespace sequence_manager {
-namespace internal {
+namespace base::sequence_manager::internal {
 
 class TaskQueueImplForTest : public internal::TaskQueueImpl {
  public:
@@ -520,6 +518,4 @@ TEST_F(WakeUpQueueTest, SetNextWakeUpForQueueInThePast) {
   RunLoop().RunUntilIdle();
 }
 
-}  // namespace internal
-}  // namespace sequence_manager
-}  // namespace base
+}  // namespace base::sequence_manager::internal

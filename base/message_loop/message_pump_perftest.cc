@@ -62,7 +62,7 @@ class JavaHandlerThreadForTest : public android::JavaHandlerThread {
 
 class ScheduleWorkTest : public testing::Test {
  public:
-  ScheduleWorkTest() : counter_(0) {}
+  ScheduleWorkTest() {}
 
   void SetUp() override {
     if (base::ThreadTicks::IsSupported()) {
@@ -211,7 +211,7 @@ class ScheduleWorkTest : public testing::Test {
   std::unique_ptr<base::TimeDelta[]> scheduling_thread_times_;
   std::unique_ptr<base::TimeDelta[]> min_batch_times_;
   std::unique_ptr<base::TimeDelta[]> max_batch_times_;
-  uint64_t counter_;
+  uint64_t counter_ = 0;
 
   static const size_t kTargetTimeSec = 5;
   static const size_t kBatchSize = 1000;

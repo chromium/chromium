@@ -21,8 +21,7 @@
 #include "base/time/time_override.h"
 #include "base/trace_event/base_tracing.h"
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 namespace {
 
@@ -415,5 +414,4 @@ std::optional<Task> JobTaskSource::Clear(TaskSource::Transaction* transaction) {
   return std::nullopt;
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

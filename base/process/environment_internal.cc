@@ -23,8 +23,7 @@
 #include "base/check_op.h"
 #endif
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 namespace {
 
@@ -143,5 +142,4 @@ NativeEnvironmentString AlterEnvironment(const wchar_t* env,
 
 #endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

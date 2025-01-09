@@ -35,8 +35,7 @@
 #include "base/win/current_module.h"
 #endif  // BUILDFLAG(IS_WIN)
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 namespace {
 
@@ -469,7 +468,7 @@ namespace {
 
 class CallJoinFromDifferentThread : public SimpleThread {
  public:
-  CallJoinFromDifferentThread(
+  explicit CallJoinFromDifferentThread(
       PooledSingleThreadTaskRunnerManager* manager_to_join)
       : SimpleThread("PooledSingleThreadTaskRunnerManagerJoinThread"),
         manager_to_join_(manager_to_join) {}
@@ -732,5 +731,4 @@ TEST_F(PooledSingleThreadTaskRunnerManagerStartTest, PostTaskBeforeStart) {
   task_finished.Wait();
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

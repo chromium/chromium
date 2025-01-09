@@ -4,8 +4,7 @@
 
 #include "base/task/thread_pool/task_source_sort_key.h"
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 static_assert(sizeof(TaskSourceSortKey) <= 2 * sizeof(uint64_t),
               "Members in TaskSourceSortKey should be ordered to be compact.");
@@ -37,5 +36,4 @@ bool TaskSourceSortKey::operator<(const TaskSourceSortKey& other) const {
   return ready_time_ > other.ready_time_;
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

@@ -16,8 +16,7 @@
 
 #include "base/memory/raw_ptr.h"
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 
 namespace {
 
@@ -25,7 +24,7 @@ namespace {
 // and can also write to a boolean flag on destruction.
 class MyConvertable : public ConvertableToTraceFormat {
  public:
-  MyConvertable(const char* text, bool* destroy_flag = nullptr)
+  explicit MyConvertable(const char* text, bool* destroy_flag = nullptr)
       : text_(text), destroy_flag_(destroy_flag) {}
   ~MyConvertable() override {
     if (destroy_flag_) {
@@ -208,7 +207,7 @@ TEST(TraceArguments, ConstructorSinglePointer) {
     // Simple class that can set a boolean flag on destruction.
     class Foo {
      public:
-      Foo(bool* destroy_flag) : destroy_flag_(destroy_flag) {}
+      explicit Foo(bool* destroy_flag) : destroy_flag_(destroy_flag) {}
       ~Foo() {
         if (destroy_flag_) {
           *destroy_flag_ = true;
@@ -517,5 +516,4 @@ TEST(TraceArguments, CopyStringsTo_Everything) {
   EXPECT_STREQ(kExtra2, extra2);
 }
 
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event

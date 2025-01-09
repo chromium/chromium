@@ -31,8 +31,7 @@
 #define ALLOW_DEATH_TEST
 #endif
 
-namespace base {
-namespace strings {
+namespace base::strings {
 
 TEST(SafeSPrintfTest, Empty) {
   char buf[2] = {'X', 'X'};
@@ -472,7 +471,7 @@ void PrintLongString(char* buf, size_t sz) {
 #if !defined(NDEBUG)
 class ScopedSafeSPrintfSSizeMaxSetter {
  public:
-  ScopedSafeSPrintfSSizeMaxSetter(size_t sz) {
+  explicit ScopedSafeSPrintfSSizeMaxSetter(size_t sz) {
     old_ssize_max_ = internal::GetSafeSPrintfSSizeMaxForTest();
     internal::SetSafeSPrintfSSizeMaxForTest(sz);
   }
@@ -784,5 +783,4 @@ TEST(SafeSPrintfTest, SpanForms) {
   EXPECT_THAT(buf, testing::ElementsAre('x', '=', '4', '2', '\n', '\0'));
 }
 
-}  // namespace strings
-}  // namespace base
+}  // namespace base::strings

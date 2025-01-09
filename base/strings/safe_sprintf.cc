@@ -50,8 +50,7 @@
   } while (0)
 #endif
 
-namespace base {
-namespace strings {
+namespace base::strings {
 
 // The code in this file is extremely careful to be async-signal-safe.
 //
@@ -119,10 +118,7 @@ class Buffer {
   // to ensure that the buffer is at least one byte in size, so that it fits
   // the trailing NUL that will be added by the destructor. The buffer also
   // must be smaller or equal to kSSizeMax in size.
-  Buffer(char* buffer, size_t size)
-      : buffer_(buffer),
-        size_(size - 1),  // Account for trailing NUL byte
-        count_(0) {
+  Buffer(char* buffer, size_t size) : buffer_(buffer), size_(size - 1) {
 // MSVS2013's standard library doesn't mark max() as constexpr yet. cl.exe
 // supports static_cast but doesn't really implement constexpr yet so it doesn't
 // complain, but clang does.
@@ -284,7 +280,7 @@ class Buffer {
   // Number of bytes that would have been emitted to the buffer, if the buffer
   // was sufficiently big. This number always excludes the trailing NUL byte
   // and it is guaranteed to never grow bigger than kSSizeMax-1.
-  size_t count_;
+  size_t count_ = 0;
 };
 
 bool Buffer::IToASCII(bool sign,
@@ -716,5 +712,4 @@ ssize_t SafeSNPrintf(char* buf, size_t sz, const char* fmt) {
   return buffer.GetCount();
 }
 
-}  // namespace strings
-}  // namespace base
+}  // namespace base::strings

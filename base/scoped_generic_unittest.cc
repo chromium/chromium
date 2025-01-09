@@ -20,7 +20,7 @@ namespace base {
 namespace {
 
 struct IntTraits {
-  IntTraits(std::vector<int>* freed) : freed_ints(freed) {}
+  explicit IntTraits(std::vector<int>* freed) : freed_ints(freed) {}
 
   static int InvalidValue() { return -1; }
   void Free(int value) { freed_ints->push_back(value); }

@@ -9,8 +9,7 @@
 #include "base/at_exit.h"
 #include "base/threading/platform_thread.h"
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 bool NeedsLazyInstance(std::atomic<uintptr_t>& state) {
   // Try to create the instance, if we're the first, will go from 0 to
@@ -66,5 +65,4 @@ void CompleteLazyInstance(std::atomic<uintptr_t>& state,
   }
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

@@ -6,8 +6,7 @@
 
 #include <utility>
 
-namespace base {
-namespace sequence_manager {
+namespace base::sequence_manager {
 
 namespace {
 
@@ -175,5 +174,4 @@ SequenceManager::Settings SequenceManager::Settings::Builder::Build() {
   return std::move(settings_);
 }
 
-}  // namespace sequence_manager
-}  // namespace base
+}  // namespace base::sequence_manager

@@ -9,8 +9,7 @@
 #include "base/task/sequence_manager/enqueue_order.h"
 #include "base/task/sequence_manager/tasks.h"
 
-namespace base {
-namespace sequence_manager {
+namespace base::sequence_manager {
 
 namespace {
 
@@ -87,5 +86,4 @@ bool TaskOrder::operator!=(const TaskOrder& other) const {
   return !(*this == other);
 }
 
-}  // namespace sequence_manager
-}  // namespace base
+}  // namespace base::sequence_manager

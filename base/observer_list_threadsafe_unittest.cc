@@ -44,13 +44,13 @@ class Foo {
 
 class Adder : public Foo {
  public:
-  explicit Adder(int scaler) : total(0), scaler_(scaler) {}
+  explicit Adder(int scaler) : scaler_(scaler) {}
   ~Adder() override = default;
 
   void Observe(int x) override { total += x * scaler_; }
   int GetValue() const override { return total; }
 
-  int total;
+  int total = 0;
 
  private:
   int scaler_;
@@ -59,7 +59,7 @@ class Adder : public Foo {
 class AddInObserve : public Foo {
  public:
   explicit AddInObserve(ObserverListThreadSafe<Foo>* observer_list)
-      : observer_list(observer_list), to_add_() {}
+      : observer_list(observer_list) {}
 
   void SetToAdd(Foo* to_add) { to_add_ = to_add; }
 
@@ -91,7 +91,7 @@ class AddRemoveThread : public Foo {
             {},
             SingleThreadTaskRunnerThreadMode::DEDICATED)),
         removal_task_runner_(std::move(removal_task_runner)),
-        in_list_(false),
+
         start_(Time::Now()),
         do_notifies_(notify) {
     task_runner_->PostTask(
@@ -160,8 +160,8 @@ class AddRemoveThread : public Foo {
   // Optional task runner used to remove observers. This will be the main task
   // runner of a different AddRemoveThread.
   scoped_refptr<SingleThreadTaskRunner> removal_task_runner_;
-  bool in_list_;  // Are we currently registered for notifications.
-                  // in_list_ is only used on |this| thread.
+  bool in_list_ = false;  // Are we currently registered for notifications.
+                          // in_list_ is only used on |this| thread.
   Time start_;    // The time we started the test.
 
   bool do_notifies_;  // Whether these threads should do notifications.

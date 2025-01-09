@@ -12,8 +12,7 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace subtle {
+namespace base::subtle {
 namespace {
 
 class SelfAssign : public base::RefCounted<SelfAssign> {
@@ -804,5 +803,4 @@ TEST_F(RefCountedOverflowTest, ThreadSafeStartFromOne) {
 }
 #endif
 
-}  // namespace subtle
-}  // namespace base
+}  // namespace base::subtle

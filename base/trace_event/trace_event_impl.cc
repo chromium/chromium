@@ -58,8 +58,7 @@ void WriteDebugAnnotation(protos::pbzero::DebugAnnotation* annotation,
 }  // namespace internal
 }  // namespace perfetto
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 
 bool ConvertableToTraceFormat::AppendToProto(ProtoAppender* appender) const {
   return false;
@@ -323,5 +322,4 @@ void TraceEvent::AppendPrettyPrinted(std::ostringstream* out) const {
   }
 }
 
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event

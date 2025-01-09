@@ -58,8 +58,7 @@
 extern char __executable_start;
 #endif
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 
 namespace {
 
@@ -699,10 +698,10 @@ void TraceLog::FlushInternal(const TraceLog::OutputCallback& cb,
     trace_processor_ =
         perfetto::trace_processor::TraceProcessorStorage::CreateInstance(
             processor_config);
-    json_output_writer_.reset(new JsonStringOutputWriter(
+    json_output_writer_ = std::make_unique<JsonStringOutputWriter>(
         use_worker_thread ? SingleThreadTaskRunner::GetCurrentDefault()
                           : nullptr,
-        cb));
+        cb);
   } else {
     proto_output_callback_ = std::move(cb);
   }
@@ -1031,8 +1030,7 @@ void TraceLog::OnStop(const perfetto::DataSourceBase::StopArgs& args) {
   }
 }
 
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event
 
 namespace trace_event_internal {
 

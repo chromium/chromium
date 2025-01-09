@@ -40,16 +40,16 @@ class InjectionTracer : public InjectionDelegate {
 
   bool Duplicate(int* result, int fd) override {
     *result = next_duplicate_++;
-    actions_.push_back(Action(Action::DUPLICATE, *result, fd));
+    actions_.emplace_back(Action::DUPLICATE, *result, fd);
     return true;
   }
 
   bool Move(int src, int dest) override {
-    actions_.push_back(Action(Action::MOVE, src, dest));
+    actions_.emplace_back(Action::MOVE, src, dest);
     return true;
   }
 
-  void Close(int fd) override { actions_.push_back(Action(Action::CLOSE, fd)); }
+  void Close(int fd) override { actions_.emplace_back(Action::CLOSE, fd); }
 
   const std::vector<Action>& actions() const { return actions_; }
 
@@ -69,7 +69,7 @@ TEST(FileDescriptorShuffleTest, Empty) {
 TEST(FileDescriptorShuffleTest, Noop) {
   InjectiveMultimap map;
   InjectionTracer tracer;
-  map.push_back(InjectionArc(0, 0, false));
+  map.emplace_back(0, 0, false);
 
   EXPECT_TRUE(PerformInjectiveMultimap(map, &tracer));
   EXPECT_EQ(0u, tracer.actions().size());
@@ -78,7 +78,7 @@ TEST(FileDescriptorShuffleTest, Noop) {
 TEST(FileDescriptorShuffleTest, NoopAndClose) {
   InjectiveMultimap map;
   InjectionTracer tracer;
-  map.push_back(InjectionArc(0, 0, true));
+  map.emplace_back(0, 0, true);
 
   EXPECT_TRUE(PerformInjectiveMultimap(map, &tracer));
   EXPECT_EQ(0u, tracer.actions().size());
@@ -87,7 +87,7 @@ TEST(FileDescriptorShuffleTest, NoopAndClose) {
 TEST(FileDescriptorShuffleTest, Simple1) {
   InjectiveMultimap map;
   InjectionTracer tracer;
-  map.push_back(InjectionArc(0, 1, false));
+  map.emplace_back(0, 1, false);
 
   EXPECT_TRUE(PerformInjectiveMultimap(map, &tracer));
   ASSERT_EQ(1u, tracer.actions().size());
@@ -97,8 +97,8 @@ TEST(FileDescriptorShuffleTest, Simple1) {
 TEST(FileDescriptorShuffleTest, Simple2) {
   InjectiveMultimap map;
   InjectionTracer tracer;
-  map.push_back(InjectionArc(0, 1, false));
-  map.push_back(InjectionArc(2, 3, false));
+  map.emplace_back(0, 1, false);
+  map.emplace_back(2, 3, false);
 
   EXPECT_TRUE(PerformInjectiveMultimap(map, &tracer));
   ASSERT_EQ(2u, tracer.actions().size());
@@ -109,7 +109,7 @@ TEST(FileDescriptorShuffleTest, Simple2) {
 TEST(FileDescriptorShuffleTest, Simple3) {
   InjectiveMultimap map;
   InjectionTracer tracer;
-  map.push_back(InjectionArc(0, 1, true));
+  map.emplace_back(0, 1, true);
 
   EXPECT_TRUE(PerformInjectiveMultimap(map, &tracer));
   ASSERT_EQ(2u, tracer.actions().size());
@@ -120,8 +120,8 @@ TEST(FileDescriptorShuffleTest, Simple3) {
 TEST(FileDescriptorShuffleTest, Simple4) {
   InjectiveMultimap map;
   InjectionTracer tracer;
-  map.push_back(InjectionArc(10, 0, true));
-  map.push_back(InjectionArc(1, 1, true));
+  map.emplace_back(10, 0, true);
+  map.emplace_back(1, 1, true);
 
   EXPECT_TRUE(PerformInjectiveMultimap(map, &tracer));
   ASSERT_EQ(2u, tracer.actions().size());
@@ -132,8 +132,8 @@ TEST(FileDescriptorShuffleTest, Simple4) {
 TEST(FileDescriptorShuffleTest, Cycle) {
   InjectiveMultimap map;
   InjectionTracer tracer;
-  map.push_back(InjectionArc(0, 1, false));
-  map.push_back(InjectionArc(1, 0, false));
+  map.emplace_back(0, 1, false);
+  map.emplace_back(1, 0, false);
 
   EXPECT_TRUE(PerformInjectiveMultimap(map, &tracer));
   ASSERT_EQ(4u, tracer.actions().size());
@@ -147,8 +147,8 @@ TEST(FileDescriptorShuffleTest, Cycle) {
 TEST(FileDescriptorShuffleTest, CycleAndClose1) {
   InjectiveMultimap map;
   InjectionTracer tracer;
-  map.push_back(InjectionArc(0, 1, true));
-  map.push_back(InjectionArc(1, 0, false));
+  map.emplace_back(0, 1, true);
+  map.emplace_back(1, 0, false);
 
   EXPECT_TRUE(PerformInjectiveMultimap(map, &tracer));
   ASSERT_EQ(4u, tracer.actions().size());
@@ -162,8 +162,8 @@ TEST(FileDescriptorShuffleTest, CycleAndClose1) {
 TEST(FileDescriptorShuffleTest, CycleAndClose2) {
   InjectiveMultimap map;
   InjectionTracer tracer;
-  map.push_back(InjectionArc(0, 1, false));
-  map.push_back(InjectionArc(1, 0, true));
+  map.emplace_back(0, 1, false);
+  map.emplace_back(1, 0, true);
 
   EXPECT_TRUE(PerformInjectiveMultimap(map, &tracer));
   ASSERT_EQ(4u, tracer.actions().size());
@@ -177,8 +177,8 @@ TEST(FileDescriptorShuffleTest, CycleAndClose2) {
 TEST(FileDescriptorShuffleTest, CycleAndClose3) {
   InjectiveMultimap map;
   InjectionTracer tracer;
-  map.push_back(InjectionArc(0, 1, true));
-  map.push_back(InjectionArc(1, 0, true));
+  map.emplace_back(0, 1, true);
+  map.emplace_back(1, 0, true);
 
   EXPECT_TRUE(PerformInjectiveMultimap(map, &tracer));
   ASSERT_EQ(4u, tracer.actions().size());
@@ -192,8 +192,8 @@ TEST(FileDescriptorShuffleTest, CycleAndClose3) {
 TEST(FileDescriptorShuffleTest, Fanout) {
   InjectiveMultimap map;
   InjectionTracer tracer;
-  map.push_back(InjectionArc(0, 1, false));
-  map.push_back(InjectionArc(0, 2, false));
+  map.emplace_back(0, 1, false);
+  map.emplace_back(0, 2, false);
 
   EXPECT_TRUE(PerformInjectiveMultimap(map, &tracer));
   ASSERT_EQ(2u, tracer.actions().size());
@@ -204,8 +204,8 @@ TEST(FileDescriptorShuffleTest, Fanout) {
 TEST(FileDescriptorShuffleTest, FanoutAndClose1) {
   InjectiveMultimap map;
   InjectionTracer tracer;
-  map.push_back(InjectionArc(0, 1, true));
-  map.push_back(InjectionArc(0, 2, false));
+  map.emplace_back(0, 1, true);
+  map.emplace_back(0, 2, false);
 
   EXPECT_TRUE(PerformInjectiveMultimap(map, &tracer));
   ASSERT_EQ(3u, tracer.actions().size());
@@ -217,8 +217,8 @@ TEST(FileDescriptorShuffleTest, FanoutAndClose1) {
 TEST(FileDescriptorShuffleTest, FanoutAndClose2) {
   InjectiveMultimap map;
   InjectionTracer tracer;
-  map.push_back(InjectionArc(0, 1, false));
-  map.push_back(InjectionArc(0, 2, true));
+  map.emplace_back(0, 1, false);
+  map.emplace_back(0, 2, true);
 
   EXPECT_TRUE(PerformInjectiveMultimap(map, &tracer));
   ASSERT_EQ(3u, tracer.actions().size());
@@ -230,8 +230,8 @@ TEST(FileDescriptorShuffleTest, FanoutAndClose2) {
 TEST(FileDescriptorShuffleTest, FanoutAndClose3) {
   InjectiveMultimap map;
   InjectionTracer tracer;
-  map.push_back(InjectionArc(0, 1, true));
-  map.push_back(InjectionArc(0, 2, true));
+  map.emplace_back(0, 1, true);
+  map.emplace_back(0, 2, true);
 
   EXPECT_TRUE(PerformInjectiveMultimap(map, &tracer));
   ASSERT_EQ(3u, tracer.actions().size());
@@ -243,9 +243,9 @@ TEST(FileDescriptorShuffleTest, FanoutAndClose3) {
 TEST(FileDescriptorShuffleTest, DuplicateClash) {
   InjectiveMultimap map;
   InjectionTracer tracer;
-  map.push_back(InjectionArc(0, 1, false));
+  map.emplace_back(0, 1, false);
   // Duplicating 1 puts the fd in the spot it's supposed to go already.
-  map.push_back(InjectionArc(1, kDuplicateBase, false));
+  map.emplace_back(1, kDuplicateBase, false);
 
   EXPECT_TRUE(PerformInjectiveMultimap(map, &tracer));
   ASSERT_EQ(2u, tracer.actions().size());
@@ -260,9 +260,9 @@ TEST(FileDescriptorShuffleTest, DuplicateClash) {
 TEST(FileDescriptorShuffleTest, DuplicateClashBad) {
   InjectiveMultimap map;
   InjectionTracer tracer;
-  map.push_back(InjectionArc(0, 2, false));
-  map.push_back(InjectionArc(1, kDuplicateBase, false));
-  map.push_back(InjectionArc(2, 3, false));
+  map.emplace_back(0, 2, false);
+  map.emplace_back(1, kDuplicateBase, false);
+  map.emplace_back(2, 3, false);
 
   EXPECT_TRUE(PerformInjectiveMultimap(map, &tracer));
   ASSERT_EQ(6u, tracer.actions().size());
@@ -281,9 +281,9 @@ TEST(FileDescriptorShuffleTest, DuplicateClashBad) {
 TEST(FileDescriptorShuffleTest, DuplicateClashBadWithClose) {
   InjectiveMultimap map;
   InjectionTracer tracer;
-  map.push_back(InjectionArc(0, 2, true));
-  map.push_back(InjectionArc(1, kDuplicateBase, true));
-  map.push_back(InjectionArc(2, 3, true));
+  map.emplace_back(0, 2, true);
+  map.emplace_back(1, kDuplicateBase, true);
+  map.emplace_back(2, 3, true);
 
   EXPECT_TRUE(PerformInjectiveMultimap(map, &tracer));
   ASSERT_EQ(8u, tracer.actions().size());
@@ -320,7 +320,7 @@ TEST(FileDescriptorShuffleTest, EmptyWithFailure) {
 TEST(FileDescriptorShuffleTest, NoopWithFailure) {
   InjectiveMultimap map;
   FailingDelegate failing;
-  map.push_back(InjectionArc(0, 0, false));
+  map.emplace_back(0, 0, false);
 
   EXPECT_TRUE(PerformInjectiveMultimap(map, &failing));
 }
@@ -328,7 +328,7 @@ TEST(FileDescriptorShuffleTest, NoopWithFailure) {
 TEST(FileDescriptorShuffleTest, Simple1WithFailure) {
   InjectiveMultimap map;
   FailingDelegate failing;
-  map.push_back(InjectionArc(0, 1, false));
+  map.emplace_back(0, 1, false);
 
   EXPECT_FALSE(PerformInjectiveMultimap(map, &failing));
 }

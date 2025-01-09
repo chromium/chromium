@@ -687,7 +687,7 @@ class SandboxSymbolizeHelper {
  private:
   friend struct DefaultSingletonTraits<SandboxSymbolizeHelper>;
 
-  SandboxSymbolizeHelper() : is_initialized_(false) { Init(); }
+  SandboxSymbolizeHelper() { Init(); }
 
   ~SandboxSymbolizeHelper() {
     UnregisterCallback();
@@ -963,7 +963,7 @@ class SandboxSymbolizeHelper {
   }
 
   // Set to true upon successful initialization.
-  bool is_initialized_;
+  bool is_initialized_ = false;
 
 #if !defined(OFFICIAL_BUILD) || !defined(NO_UNWIND_TABLES)
   // Mapping from file name to file descriptor.  Includes file descriptors

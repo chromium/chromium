@@ -461,7 +461,7 @@ void PrintLongString(char* buf, size_t sz) {
 #if !defined(NDEBUG)
 class ScopedSafeSPrintfSSizeMaxSetter {
  public:
-  ScopedSafeSPrintfSSizeMaxSetter(size_t sz) {
+  explicit ScopedSafeSPrintfSSizeMaxSetter(size_t sz) {
     old_ssize_max_ = internal::GetSafeSPrintfSSizeMaxForTest();
     internal::SetSafeSPrintfSSizeMaxForTest(sz);
   }

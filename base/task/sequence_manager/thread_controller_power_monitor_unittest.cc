@@ -11,9 +11,7 @@
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace sequence_manager {
-namespace internal {
+namespace base::sequence_manager::internal {
 
 class ThreadControllerPowerMonitorTest : public testing::Test {
  public:
@@ -59,6 +57,4 @@ TEST_F(ThreadControllerPowerMonitorTest, IsProcessInPowerSuspendState) {
       thread_controller_power_monitor_->IsProcessInPowerSuspendState());
 }
 
-}  // namespace internal
-}  // namespace sequence_manager
-}  // namespace base
+}  // namespace base::sequence_manager::internal

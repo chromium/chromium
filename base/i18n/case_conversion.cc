@@ -15,8 +15,7 @@
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/common/unicode/ustring.h"
 
-namespace base {
-namespace i18n {
+namespace base::i18n {
 
 namespace {
 
@@ -98,5 +97,4 @@ std::u16string FoldCase(std::u16string_view string) {
   return CaseMap(string, &FoldCaseMapper);
 }
 
-}  // namespace i18n
-}  // namespace base
+}  // namespace base::i18n

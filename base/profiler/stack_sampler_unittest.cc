@@ -51,7 +51,8 @@ class StackSamplerTest : public ::testing::Test {
 
 class TestProfileBuilder : public ProfileBuilder {
  public:
-  TestProfileBuilder(ModuleCache* module_cache) : module_cache_(module_cache) {}
+  explicit TestProfileBuilder(ModuleCache* module_cache)
+      : module_cache_(module_cache) {}
 
   TestProfileBuilder(const TestProfileBuilder&) = delete;
   TestProfileBuilder& operator=(const TestProfileBuilder&) = delete;
@@ -80,8 +81,8 @@ class TestProfileBuilder : public ProfileBuilder {
 // operating on the supplied fake stack.
 class TestStackCopier : public StackCopier {
  public:
-  TestStackCopier(const std::vector<uintptr_t>& fake_stack,
-                  TimeTicks timestamp = TimeTicks())
+  explicit TestStackCopier(const std::vector<uintptr_t>& fake_stack,
+                           TimeTicks timestamp = TimeTicks())
       : fake_stack_(fake_stack), timestamp_(timestamp) {}
 
   bool CopyStack(StackBuffer* stack_buffer,

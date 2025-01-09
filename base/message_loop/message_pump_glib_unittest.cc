@@ -46,7 +46,7 @@ namespace {
 // GLib source runs at the same priority).
 class EventInjector {
  public:
-  EventInjector() : processed_events_(0) {
+  EventInjector() {
     source_ = static_cast<Source*>(g_source_new(&SourceFuncs, sizeof(Source)));
     source_->injector = this;
     g_source_attach(source_, nullptr);
@@ -162,7 +162,7 @@ class EventInjector {
 
   raw_ptr<Source> source_;
   std::vector<Event> events_;
-  int processed_events_;
+  int processed_events_ = 0;
   static GSourceFuncs SourceFuncs;
 };
 
@@ -444,7 +444,7 @@ namespace {
 // Helper class that lets us run the GLib message loop.
 class GLibLoopRunner : public RefCounted<GLibLoopRunner> {
  public:
-  GLibLoopRunner() : quit_(false) {}
+  GLibLoopRunner() {}
 
   void RunGLib() {
     while (!quit_) {
@@ -467,7 +467,7 @@ class GLibLoopRunner : public RefCounted<GLibLoopRunner> {
 
   ~GLibLoopRunner() = default;
 
-  bool quit_;
+  bool quit_ = false;
 };
 
 void TestGLibLoopInternal(EventInjector* injector, OnceClosure done) {

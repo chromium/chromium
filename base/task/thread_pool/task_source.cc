@@ -12,8 +12,7 @@
 #include "base/task/task_features.h"
 #include "base/task/thread_pool/task_tracker.h"
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 ExecutionEnvironment::~ExecutionEnvironment() = default;
 
@@ -221,5 +220,4 @@ TaskSourceAndTransaction TaskSourceAndTransaction::FromTaskSource(
                                   std::move(transaction));
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

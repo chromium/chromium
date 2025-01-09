@@ -26,8 +26,7 @@
 // must avoid dynamic memory allocation or using data structures which rely on
 // dynamic allocation.
 
-namespace base {
-namespace debug {
+namespace base::debug {
 namespace {
 
 // See https://refspecs.linuxbase.org/elf/elf.pdf for the ELF specification.
@@ -159,7 +158,7 @@ std::optional<std::string_view> ReadElfLibraryName(
     const Dyn* dynamic_end = reinterpret_cast<const Dyn*>(
         header.p_vaddr + relocation_offset + header.p_memsz);
     Xword soname_strtab_offset = 0;
-    const char* strtab_addr = 0;
+    const char* strtab_addr = nullptr;
     for (const Dyn* dynamic_iter = dynamic_start; dynamic_iter < dynamic_end;
          ++dynamic_iter) {
       if (dynamic_iter->d_tag == DT_STRTAB) {
@@ -219,5 +218,4 @@ size_t GetRelocationOffset(const void* elf_mapped_base) {
                              reinterpret_cast<uintptr_t>(nullptr));
 }
 
-}  // namespace debug
-}  // namespace base
+}  // namespace base::debug

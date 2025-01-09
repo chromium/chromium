@@ -118,7 +118,7 @@ TEST(UTFOffsetStringConversionsTest, AdjustOffsets) {
       offsets.push_back(t);
     }
     OffsetAdjuster::Adjustments adjustments;
-    adjustments.push_back(OffsetAdjuster::Adjustment(3, 3, 1));
+    adjustments.emplace_back(3, 3, 1);
     OffsetAdjuster::AdjustOffsets(adjustments, &offsets);
     auto expected_1 =
         std::to_array<size_t>({0, 1, 2, 3, kNpos, kNpos, 4, 5, 6, 7});
@@ -135,10 +135,10 @@ TEST(UTFOffsetStringConversionsTest, AdjustOffsets) {
       offsets.push_back(t);
     }
     OffsetAdjuster::Adjustments adjustments;
-    adjustments.push_back(OffsetAdjuster::Adjustment(0, 3, 1));
-    adjustments.push_back(OffsetAdjuster::Adjustment(4, 4, 2));
-    adjustments.push_back(OffsetAdjuster::Adjustment(10, 7, 4));
-    adjustments.push_back(OffsetAdjuster::Adjustment(20, 3, 1));
+    adjustments.emplace_back(0, 3, 1);
+    adjustments.emplace_back(4, 4, 2);
+    adjustments.emplace_back(10, 7, 4);
+    adjustments.emplace_back(20, 3, 1);
     OffsetAdjuster::AdjustOffsets(adjustments, &offsets);
     auto expected_2 = std::to_array<size_t>({
         0,     kNpos, kNpos, 1,     2,     kNpos, kNpos, kNpos,
@@ -158,10 +158,10 @@ TEST(UTFOffsetStringConversionsTest, AdjustOffsets) {
       offsets.push_back(t);
     }
     OffsetAdjuster::Adjustments adjustments;
-    adjustments.push_back(OffsetAdjuster::Adjustment(0, 3, 0));
-    adjustments.push_back(OffsetAdjuster::Adjustment(4, 4, 4));
-    adjustments.push_back(OffsetAdjuster::Adjustment(11, 3, 3));
-    adjustments.push_back(OffsetAdjuster::Adjustment(15, 2, 0));
+    adjustments.emplace_back(0, 3, 0);
+    adjustments.emplace_back(4, 4, 4);
+    adjustments.emplace_back(11, 3, 3);
+    adjustments.emplace_back(15, 2, 0);
     OffsetAdjuster::AdjustOffsets(adjustments, &offsets);
     auto expected_3 = std::to_array<size_t>({
         0,
@@ -200,7 +200,7 @@ TEST(UTFOffsetStringConversionsTest, UnadjustOffsets) {
       offsets.push_back(t);
     }
     OffsetAdjuster::Adjustments adjustments;
-    adjustments.push_back(OffsetAdjuster::Adjustment(3, 3, 1));
+    adjustments.emplace_back(3, 3, 1);
     OffsetAdjuster::UnadjustOffsets(adjustments, &offsets);
     auto expected_1 = std::to_array<size_t>({0, 1, 2, 3, 6, 7, 8, 9});
     EXPECT_EQ(offsets.size(), std::size(expected_1));
@@ -216,10 +216,10 @@ TEST(UTFOffsetStringConversionsTest, UnadjustOffsets) {
       offsets.push_back(t);
     }
     OffsetAdjuster::Adjustments adjustments;
-    adjustments.push_back(OffsetAdjuster::Adjustment(0, 3, 1));
-    adjustments.push_back(OffsetAdjuster::Adjustment(4, 4, 2));
-    adjustments.push_back(OffsetAdjuster::Adjustment(10, 7, 4));
-    adjustments.push_back(OffsetAdjuster::Adjustment(20, 3, 1));
+    adjustments.emplace_back(0, 3, 1);
+    adjustments.emplace_back(4, 4, 2);
+    adjustments.emplace_back(10, 7, 4);
+    adjustments.emplace_back(20, 3, 1);
     OffsetAdjuster::UnadjustOffsets(adjustments, &offsets);
     auto expected_2 = std::to_array<size_t>({
         0,
@@ -251,10 +251,10 @@ TEST(UTFOffsetStringConversionsTest, UnadjustOffsets) {
       offsets.push_back(t);
     }
     OffsetAdjuster::Adjustments adjustments;
-    adjustments.push_back(OffsetAdjuster::Adjustment(0, 3, 0));
-    adjustments.push_back(OffsetAdjuster::Adjustment(4, 4, 4));
-    adjustments.push_back(OffsetAdjuster::Adjustment(11, 3, 3));
-    adjustments.push_back(OffsetAdjuster::Adjustment(15, 2, 0));
+    adjustments.emplace_back(0, 3, 0);
+    adjustments.emplace_back(4, 4, 4);
+    adjustments.emplace_back(11, 3, 3);
+    adjustments.emplace_back(15, 2, 0);
     OffsetAdjuster::UnadjustOffsets(adjustments, &offsets);
     auto expected_3 = std::to_array<size_t>({
         0,  // this could just as easily be 3
@@ -282,10 +282,10 @@ TEST(UTFOffsetStringConversionsTest, MergeSequentialAdjustments) {
   // - remove the "tuv"
   // The resulting string should be ".deghijklmnopqrswxyz".
   OffsetAdjuster::Adjustments first_adjustments;
-  first_adjustments.push_back(OffsetAdjuster::Adjustment(0, 1, 0));
-  first_adjustments.push_back(OffsetAdjuster::Adjustment(1, 2, 1));
-  first_adjustments.push_back(OffsetAdjuster::Adjustment(5, 1, 0));
-  first_adjustments.push_back(OffsetAdjuster::Adjustment(19, 3, 0));
+  first_adjustments.emplace_back(0, 1, 0);
+  first_adjustments.emplace_back(1, 2, 1);
+  first_adjustments.emplace_back(5, 1, 0);
+  first_adjustments.emplace_back(19, 3, 0);
 
   // Set up |adjustments_on_adjusted_string| to
   // - combine the "." character that replaced "bc" with "d" into one character
@@ -296,12 +296,11 @@ TEST(UTFOffsetStringConversionsTest, MergeSequentialAdjustments) {
   // - expand the "z" into two characters (call it "34")
   // The resulting string should be "?12@mnopqrswxy34".
   OffsetAdjuster::Adjustments adjustments_on_adjusted_string;
-  adjustments_on_adjusted_string.push_back(OffsetAdjuster::Adjustment(0, 2, 1));
-  adjustments_on_adjusted_string.push_back(OffsetAdjuster::Adjustment(2, 3, 0));
-  adjustments_on_adjusted_string.push_back(OffsetAdjuster::Adjustment(5, 1, 2));
-  adjustments_on_adjusted_string.push_back(OffsetAdjuster::Adjustment(6, 3, 1));
-  adjustments_on_adjusted_string.push_back(
-      OffsetAdjuster::Adjustment(19, 1, 2));
+  adjustments_on_adjusted_string.emplace_back(0, 2, 1);
+  adjustments_on_adjusted_string.emplace_back(2, 3, 0);
+  adjustments_on_adjusted_string.emplace_back(5, 1, 2);
+  adjustments_on_adjusted_string.emplace_back(6, 3, 1);
+  adjustments_on_adjusted_string.emplace_back(19, 1, 2);
 
   // Now merge the adjustments and check the results.
   OffsetAdjuster::MergeSequentialAdjustments(first_adjustments,

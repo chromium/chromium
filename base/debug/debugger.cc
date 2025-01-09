@@ -13,8 +13,7 @@
 #include "base/test/clang_profiling.h"
 #endif
 
-namespace base {
-namespace debug {
+namespace base::debug {
 
 static bool is_debug_ui_suppressed = false;
 
@@ -53,5 +52,4 @@ bool IsDebugUISuppressed() {
   return is_debug_ui_suppressed;
 }
 
-}  // namespace debug
-}  // namespace base
+}  // namespace base::debug

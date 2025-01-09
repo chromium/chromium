@@ -6,8 +6,7 @@
 
 #include "base/task/sequence_manager/task_order.h"
 
-namespace base {
-namespace sequence_manager {
+namespace base::sequence_manager {
 
 Task::Task(internal::PostedTask posted_task,
            EnqueueOrder sequence_order,
@@ -151,5 +150,4 @@ PostedTask::PostedTask(PostedTask&& move_from) noexcept = default;
 PostedTask::~PostedTask() = default;
 
 }  // namespace internal
-}  // namespace sequence_manager
-}  // namespace base
+}  // namespace base::sequence_manager

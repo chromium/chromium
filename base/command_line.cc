@@ -512,7 +512,7 @@ void CommandLine::AppendArgNative(StringViewType value) {
 #if BUILDFLAG(ENABLE_COMMANDLINE_SEQUENCE_CHECKS)
   sequence_checker_.Check();
 #endif
-  argv_.push_back(StringType(value));
+  argv_.emplace_back(value);
 }
 
 void CommandLine::AppendArguments(const CommandLine& other,

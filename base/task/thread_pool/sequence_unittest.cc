@@ -15,8 +15,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 namespace {
 
@@ -718,5 +717,4 @@ TEST(ThreadPoolSequenceTest, GetDelayedSortKeyDelayedtasks) {
   registered_task_source.DidProcessTask(&sequence_transaction);
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

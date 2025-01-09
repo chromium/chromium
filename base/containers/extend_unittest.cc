@@ -39,9 +39,9 @@ static_assert(std::is_move_constructible_v<NonCopyable>, "");
 static_assert(!std::is_copy_constructible_v<NonCopyable>, "");
 
 struct CopyableMovable {
-  bool copied_;
+  bool copied_ = false;
   char c_;
-  explicit CopyableMovable(char c) : copied_(false), c_(c) {}
+  explicit CopyableMovable(char c) : c_(c) {}
   CopyableMovable(const CopyableMovable& other) : copied_(true), c_(other.c_) {}
 
   CopyableMovable& operator=(const CopyableMovable&) = default;

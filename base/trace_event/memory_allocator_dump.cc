@@ -18,8 +18,7 @@
 #include "third_party/perfetto/protos/perfetto/trace/memory_graph.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/trace_packet.pbzero.h"
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 
 const char MemoryAllocatorDump::kNameSize[] = "size";
 const char MemoryAllocatorDump::kNameObjectCount[] = "object_count";
@@ -192,5 +191,4 @@ void PrintTo(const MemoryAllocatorDump::Entry& entry, std::ostream* out) {
   NOTREACHED();
 }
 
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event

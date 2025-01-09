@@ -4,8 +4,7 @@
 
 #include "base/trace_event/tracing_agent.h"
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 
 TracingAgent::~TracingAgent() = default;
 
@@ -19,5 +18,4 @@ void TracingAgent::RecordClockSyncMarker(
   DCHECK(SupportsExplicitClockSync());
 }
 
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event

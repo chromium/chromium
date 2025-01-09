@@ -7,8 +7,7 @@
 #include "base/atomic_sequence_num.h"
 #include "base/rand_util.h"
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 
 uint64_t GetNextGlobalTraceId() {
   static const uint64_t kPerProcessRandomValue = base::RandUint64();
@@ -16,5 +15,4 @@ uint64_t GetNextGlobalTraceId() {
   return kPerProcessRandomValue ^ static_cast<uint64_t>(counter.GetNext());
 }
 
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event

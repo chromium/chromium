@@ -14,8 +14,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 
-namespace base {
-namespace subtle {
+namespace base::subtle {
 
 namespace {
 
@@ -313,5 +312,4 @@ PlatformSharedMemoryRegion::PlatformSharedMemoryRegion(
     const UnguessableToken& guid)
     : handle_(std::move(handle)), mode_(mode), size_(size), guid_(guid) {}
 
-}  // namespace subtle
-}  // namespace base
+}  // namespace base::subtle

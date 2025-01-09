@@ -41,7 +41,7 @@ class ConstructAndDestructLogger {
 
 class SlowConstructor {
  public:
-  SlowConstructor() : some_int_(0) {
+  SlowConstructor() {
     // Sleep for 1 second to try to cause a race.
     base::PlatformThread::Sleep(base::Seconds(1));
     ++constructed;
@@ -54,7 +54,7 @@ class SlowConstructor {
   static int constructed;
 
  private:
-  int some_int_;
+  int some_int_ = 0;
 };
 
 // static

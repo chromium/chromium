@@ -41,8 +41,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 namespace {
 
@@ -1304,5 +1303,4 @@ TEST(ThreadPoolTaskTrackerWaitAllowedTest, WaitAllowed) {
   wait_allowed_test_thread.Join();
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

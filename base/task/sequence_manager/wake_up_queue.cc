@@ -11,9 +11,7 @@
 #include "base/task/sequence_manager/task_queue_impl.h"
 #include "base/threading/thread_checker.h"
 
-namespace base {
-namespace sequence_manager {
-namespace internal {
+namespace base::sequence_manager::internal {
 
 WakeUpQueue::WakeUpQueue(
     scoped_refptr<const internal::AssociatedThreadId> associated_thread)
@@ -193,6 +191,4 @@ void NonWakingWakeUpQueue::UnregisterQueue(internal::TaskQueueImpl* queue) {
   SetNextWakeUpForQueue(queue, nullptr, std::nullopt);
 }
 
-}  // namespace internal
-}  // namespace sequence_manager
-}  // namespace base
+}  // namespace base::sequence_manager::internal

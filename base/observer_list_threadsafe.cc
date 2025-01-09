@@ -6,8 +6,7 @@
 
 #include "base/compiler_specific.h"
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 constinit thread_local const ObserverListThreadSafeBase::NotificationDataBase*
     current_notification = nullptr;
@@ -25,5 +24,4 @@ ObserverListThreadSafeBase::GetCurrentNotification() {
   return current_notification;
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

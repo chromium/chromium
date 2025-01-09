@@ -33,7 +33,7 @@ class EventLogger {
 
   void AddEvent(std::string_view event) {
     AutoLock guard(lock_);
-    events_.push_back(std::string(event));
+    events_.emplace_back(event);
   }
   std::vector<std::string> TakeEvents() {
     AutoLock guard(lock_);

@@ -18,8 +18,7 @@
 
 using icu::UnicodeString;
 
-namespace base {
-namespace i18n {
+namespace base::i18n {
 namespace {
 UnicodeString UnicodeStringFromStringView(std::string_view str) {
   return UnicodeString::fromUTF8(
@@ -147,5 +146,4 @@ std::u16string MessageFormatter::FormatWithNamedArgs(
   return i18n::UnicodeStringToString16(formatted);
 }
 
-}  // namespace i18n
-}  // namespace base
+}  // namespace base::i18n

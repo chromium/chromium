@@ -179,9 +179,7 @@ bool ImportantFileWriterCleaner::CleanInBackground(
     std::vector<FilePath> directories,
     std::atomic_bool& stop_flag) {
   DCHECK(!directories.empty());
-  for (auto scan = directories.begin(), end = directories.end(); scan != end;
-       ++scan) {
-    const auto& directory = *scan;
+  for (auto& directory : directories) {
     FileEnumerator file_enum(
         directory, /*recursive=*/false, FileEnumerator::FILES,
         FormatTemporaryFileName(FILE_PATH_LITERAL("*")).value());

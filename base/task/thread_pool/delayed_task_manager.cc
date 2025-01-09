@@ -16,8 +16,7 @@
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool/task.h"
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 DelayedTaskManager::DelayedTask::DelayedTask() = default;
 
@@ -237,5 +236,4 @@ void DelayedTaskManager::ScheduleProcessRipeTasksOnServiceThread() {
           process_ripe_tasks_closure_, process_ripe_tasks_time, delay_policy);
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

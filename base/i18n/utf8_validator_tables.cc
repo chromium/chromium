@@ -9,8 +9,7 @@
 
 #include <iterator>
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 const uint8_t kUtf8ValidatorTables[] = {
     // State 0, offset 0x00
@@ -53,5 +52,4 @@ const uint8_t kUtf8ValidatorTables[] = {
 
 const size_t kUtf8ValidatorTablesSize = std::size(kUtf8ValidatorTables);
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

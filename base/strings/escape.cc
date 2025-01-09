@@ -422,7 +422,7 @@ std::string UnescapeURLWithAdjustmentsImpl(
       if (UnescapeUnsignedByteAtIndex(escaped_text, i, &non_utf8_byte)) {
         result.push_back(static_cast<char>(non_utf8_byte));
         if (adjustments) {
-          adjustments->push_back(OffsetAdjuster::Adjustment(i, 3, 1));
+          adjustments->emplace_back(i, 3, 1);
         }
         i += 3;
         continue;
@@ -454,7 +454,7 @@ std::string UnescapeURLWithAdjustmentsImpl(
     result.append(unescaped);
     if (adjustments) {
       for (size_t j = 0; j < unescaped.length(); ++j) {
-        adjustments->push_back(OffsetAdjuster::Adjustment(i + j * 3, 3, 1));
+        adjustments->emplace_back(i + j * 3, 3, 1);
       }
     }
     i += 3 * unescaped.length();

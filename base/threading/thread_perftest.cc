@@ -262,7 +262,7 @@ class ConditionVariableEvent {
  public:
   ConditionVariableEvent(WaitableEvent::ResetPolicy reset_policy,
                          WaitableEvent::InitialState initial_state)
-      : cond_(&lock_), signaled_(false) {
+      : cond_(&lock_) {
     DCHECK_EQ(WaitableEvent::ResetPolicy::AUTOMATIC, reset_policy);
     DCHECK_EQ(WaitableEvent::InitialState::NOT_SIGNALED, initial_state);
   }
@@ -286,7 +286,7 @@ class ConditionVariableEvent {
  private:
   base::Lock lock_;
   base::ConditionVariable cond_;
-  bool signaled_;
+  bool signaled_ = false;
 };
 
 // This is meant to test the absolute minimal context switching time

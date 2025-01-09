@@ -60,8 +60,7 @@
 #include "base/third_party/symbolize/symbolize.h"  // nogncheck
 #endif
 
-namespace base {
-namespace debug {
+namespace base::debug {
 
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_BSD)
 
@@ -350,5 +349,4 @@ void BreakDebuggerAsyncSafe() {
 #endif
 }
 
-}  // namespace debug
-}  // namespace base
+}  // namespace base::debug

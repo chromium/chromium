@@ -27,8 +27,7 @@
 #include "third_party/icu/source/common/unicode/uniset.h"
 #include "third_party/icu/source/i18n/unicode/coll.h"
 
-namespace base {
-namespace i18n {
+namespace base::i18n {
 
 namespace {
 
@@ -323,5 +322,4 @@ void NormalizeFileNameEncoding(FilePath* file_name) {
 #endif
 }
 
-}  // namespace i18n
-}  // namespace base
+}  // namespace base::i18n

@@ -14,9 +14,7 @@
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 
-namespace base {
-
-namespace internal {
+namespace base::internal {
 
 BASE_EXPORT int ThreadTypeToNiceValue(ThreadType thread_type) {
   for (const auto& pair : kThreadTypeToNiceValueMap) {
@@ -62,6 +60,4 @@ int GetCurrentThreadNiceValue() {
 #endif
 }
 
-}  // namespace internal
-
-}  // namespace base
+}  // namespace base::internal

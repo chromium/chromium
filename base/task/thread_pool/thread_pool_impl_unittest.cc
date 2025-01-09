@@ -63,8 +63,7 @@
 #include "base/win/com_init_util.h"
 #endif  // BUILDFLAG(IS_WIN)
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 namespace {
 
@@ -1635,5 +1634,4 @@ INSTANTIATE_TEST_SUITE_P(
         ::testing::ValuesIn(
             GetTraitsExecutionModePairsToCoverAllSchedulingOptions())));
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

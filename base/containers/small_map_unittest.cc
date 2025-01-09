@@ -358,7 +358,7 @@ TEST(SmallMap, EraseReturnsIteratorFollowingRemovedElement) {
 }
 
 TEST(SmallMap, NonHashMap) {
-  small_map<std::map<int, int>, 4, std::equal_to<int>> m;
+  small_map<std::map<int, int>, 4, std::equal_to<>> m;
   EXPECT_TRUE(m.empty());
 
   m[9] = 2;
@@ -370,8 +370,7 @@ TEST(SmallMap, NonHashMap) {
   EXPECT_FALSE(m.empty());
   EXPECT_FALSE(m.UsingFullMap());
 
-  small_map<std::map<int, int>, 4, std::equal_to<int>>::iterator iter(
-      m.begin());
+  small_map<std::map<int, int>, 4, std::equal_to<>>::iterator iter(m.begin());
   ASSERT_TRUE(iter != m.end());
   EXPECT_EQ(iter->first, 9);
   EXPECT_EQ(iter->second, 2);
@@ -457,7 +456,7 @@ class unordered_map_add_item_initializer {
 }  // anonymous namespace
 
 TEST(SmallMap, SubclassInitializationWithFunctionPointer) {
-  small_map<unordered_map_add_item, 4, std::equal_to<int>,
+  small_map<unordered_map_add_item, 4, std::equal_to<>,
             void (&)(unordered_map_add_item*)>
       m(InitMap);
 
@@ -478,7 +477,7 @@ TEST(SmallMap, SubclassInitializationWithFunctionPointer) {
 }
 
 TEST(SmallMap, SubclassInitializationWithFunctionObject) {
-  small_map<unordered_map_add_item, 4, std::equal_to<int>,
+  small_map<unordered_map_add_item, 4, std::equal_to<>,
             unordered_map_add_item_initializer>
       m(unordered_map_add_item_initializer(-1));
 

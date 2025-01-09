@@ -34,7 +34,7 @@ std::atomic<size_t> allocator_byte_count;
 class MadvFreeDiscardableMemoryPosixTester
     : public MadvFreeDiscardableMemoryPosix {
  public:
-  MadvFreeDiscardableMemoryPosixTester(size_t size_in_bytes)
+  explicit MadvFreeDiscardableMemoryPosixTester(size_t size_in_bytes)
       : MadvFreeDiscardableMemoryPosix(size_in_bytes, &allocator_byte_count) {}
 
   using MadvFreeDiscardableMemoryPosix::DiscardPage;

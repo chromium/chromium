@@ -50,10 +50,11 @@ class TestSuspendableThreadDelegate : public SuspendableThreadDelegate {
     bool WasSuccessful() const override { return true; }
   };
 
-  TestSuspendableThreadDelegate(const std::vector<uintptr_t>& fake_stack,
-                                // The register context will be initialized to
-                                // *|thread_context| if non-null.
-                                RegisterContext* thread_context = nullptr)
+  explicit TestSuspendableThreadDelegate(
+      const std::vector<uintptr_t>& fake_stack,
+      // The register context will be initialized to
+      // *|thread_context| if non-null.
+      RegisterContext* thread_context = nullptr)
       : fake_stack_(fake_stack), thread_context_(thread_context) {}
 
   TestSuspendableThreadDelegate(const TestSuspendableThreadDelegate&) = delete;

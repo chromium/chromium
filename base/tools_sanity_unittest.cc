@@ -227,7 +227,7 @@ TEST(ToolsSanityTest, MAYBE_SingleElementDeletedWithBraces) {
 TEST(ToolsSanityTest, DISABLED_AddressSanitizerNullDerefCrashTest) {
   // Intentionally crash to make sure AddressSanitizer is running.
   // This test should not be ran on bots.
-  int* volatile zero = NULL;
+  int* volatile zero = nullptr;
   *zero = 0;
 }
 

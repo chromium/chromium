@@ -69,7 +69,7 @@ namespace {
 
 class Foo : public RefCounted<Foo> {
  public:
-  Foo() : test_count_(0) {}
+  Foo() {}
 
   Foo(const Foo&) = delete;
   Foo& operator=(const Foo&) = delete;
@@ -108,7 +108,7 @@ class Foo : public RefCounted<Foo> {
 
   ~Foo() = default;
 
-  int test_count_;
+  int test_count_ = 0;
   std::string result_;
 };
 
@@ -497,7 +497,7 @@ class SingleThreadTaskExecutorTypedTest
   SingleThreadTaskExecutorTypedTest& operator=(
       const SingleThreadTaskExecutorTypedTest&) = delete;
 
-  ~SingleThreadTaskExecutorTypedTest() = default;
+  ~SingleThreadTaskExecutorTypedTest() override = default;
 
   static std::string ParamInfoToString(
       ::testing::TestParamInfo<MessagePumpType> param_info) {
@@ -1878,8 +1878,7 @@ class MLDestructionObserver : public CurrentThread::DestructionObserver {
  public:
   MLDestructionObserver(bool* task_destroyed, bool* destruction_observer_called)
       : task_destroyed_(task_destroyed),
-        destruction_observer_called_(destruction_observer_called),
-        task_destroyed_before_message_loop_(false) {}
+        destruction_observer_called_(destruction_observer_called) {}
   void WillDestroyCurrentMessageLoop() override {
     task_destroyed_before_message_loop_ = *task_destroyed_;
     *destruction_observer_called_ = true;
@@ -1891,7 +1890,7 @@ class MLDestructionObserver : public CurrentThread::DestructionObserver {
  private:
   raw_ptr<bool> task_destroyed_;
   raw_ptr<bool> destruction_observer_called_;
-  bool task_destroyed_before_message_loop_;
+  bool task_destroyed_before_message_loop_ = false;
 };
 
 }  // namespace
@@ -2119,7 +2118,7 @@ namespace {
 
 class PostTaskOnDestroy {
  public:
-  PostTaskOnDestroy(int times) : times_remaining_(times) {}
+  explicit PostTaskOnDestroy(int times) : times_remaining_(times) {}
 
   PostTaskOnDestroy(const PostTaskOnDestroy&) = delete;
   PostTaskOnDestroy& operator=(const PostTaskOnDestroy&) = delete;

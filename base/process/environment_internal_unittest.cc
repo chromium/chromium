@@ -13,8 +13,7 @@
 
 using EnvironmentInternalTest = PlatformTest;
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 #if BUILDFLAG(IS_WIN)
 
@@ -157,5 +156,4 @@ TEST_F(EnvironmentInternalTest, AlterEnvironment) {
 
 #endif  // BUILDFLAG(IS_WIN)
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

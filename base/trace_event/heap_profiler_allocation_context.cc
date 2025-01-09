@@ -15,8 +15,7 @@
 #include "base/containers/span.h"
 #include "base/hash/hash.h"
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 
 bool operator<(const StackFrame& lhs, const StackFrame& rhs) {
   return lhs.value < rhs.value;
@@ -57,8 +56,7 @@ bool operator!=(const AllocationContext& lhs, const AllocationContext& rhs) {
   return !(lhs == rhs);
 }
 
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event
 
 namespace std {
 

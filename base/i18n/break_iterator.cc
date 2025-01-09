@@ -18,8 +18,7 @@
 #include "third_party/icu/source/common/unicode/uchar.h"
 #include "third_party/icu/source/common/unicode/ustring.h"
 
-namespace base {
-namespace i18n {
+namespace base::i18n {
 
 namespace {
 
@@ -275,5 +274,4 @@ std::u16string_view BreakIterator::GetString() const {
   return string_.substr(prev_, pos_ - prev_);
 }
 
-}  // namespace i18n
-}  // namespace base
+}  // namespace base::i18n

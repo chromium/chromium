@@ -14,8 +14,7 @@
 #include "base/check_op.h"
 #include "third_party/icu/source/i18n/unicode/usearch.h"
 
-namespace base {
-namespace i18n {
+namespace base::i18n {
 
 FixedPatternStringSearch::FixedPatternStringSearch(std::u16string find_this,
                                                    bool case_sensitive)
@@ -162,5 +161,4 @@ bool RepeatingStringSearch::NextMatchResult(int& match_index,
   return true;
 }
 
-}  // namespace i18n
-}  // namespace base
+}  // namespace base::i18n

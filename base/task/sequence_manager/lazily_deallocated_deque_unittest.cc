@@ -7,9 +7,7 @@
 #include "base/test/scoped_mock_clock_override.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace base {
-namespace sequence_manager {
-namespace internal {
+namespace base::sequence_manager::internal {
 
 class LazilyDeallocatedDequeTest : public testing::Test {};
 
@@ -470,7 +468,7 @@ class DestructorTestItem {
  public:
   DestructorTestItem() : v_(-1) {}
 
-  DestructorTestItem(int v) : v_(v) {}
+  explicit DestructorTestItem(int v) : v_(v) {}
 
   ~DestructorTestItem() { destructor_count_++; }
 
@@ -504,6 +502,4 @@ TEST_F(LazilyDeallocatedDequeTest, ExpectedNumberOfDestructorsCalled) {
   EXPECT_EQ(100, DestructorTestItem::destructor_count_);
 }
 
-}  // namespace internal
-}  // namespace sequence_manager
-}  // namespace base
+}  // namespace base::sequence_manager::internal

@@ -56,8 +56,7 @@
 using ProcessSnapshot =
     ::perfetto::protos::pbzero::MemoryTrackerSnapshot_ProcessSnapshot;
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 
 namespace {
 
@@ -565,5 +564,4 @@ MemoryAllocatorDumpGuid ProcessMemoryDump::GetDumpId(
       "%s:%s", process_token().ToString().c_str(), absolute_name.c_str()));
 }
 
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event

@@ -15,8 +15,7 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace i18n {
+namespace base::i18n {
 
 TEST(BreakIteratorTest, BreakWordEmpty) {
   std::u16string empty;
@@ -614,5 +613,4 @@ TEST(BreakIteratorTest, GetWordBreakStatusBreakWord) {
   EXPECT_FALSE(iter.Advance());
 }
 
-}  // namespace i18n
-}  // namespace base
+}  // namespace base::i18n

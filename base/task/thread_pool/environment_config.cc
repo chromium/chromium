@@ -10,8 +10,7 @@
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 namespace {
 
@@ -74,5 +73,4 @@ bool CanUseUtilityThreadTypeForWorkerThread() {
   return can_use_utility_thread_type_for_worker_thread;
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

@@ -6,8 +6,7 @@
 
 #include "base/notreached.h"
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 
 // static
 const char* MemoryDumpTypeToString(const MemoryDumpType& dump_type) {
@@ -62,5 +61,4 @@ MemoryDumpLevelOfDetail StringToMemoryDumpLevelOfDetail(
   NOTREACHED();
 }
 
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event

@@ -453,7 +453,7 @@ TEST(ValuesTest, MoveAssignDictionary) {
 
 TEST(ValuesTest, ConstructDictWithIterators) {
   std::vector<std::pair<std::string, Value>> values;
-  values.emplace_back(std::make_pair("Int", 123));
+  values.emplace_back("Int", 123);
 
   Value blank;
   blank = Value(Value::Dict(std::make_move_iterator(values.begin()),

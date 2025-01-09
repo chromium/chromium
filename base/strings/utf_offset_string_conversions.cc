@@ -220,8 +220,7 @@ bool ConvertUnicode(const SrcChar* src,
     // increment will place it at the right location), so we need to account
     // for that in determining the amount that was read.
     if (adjustments && ((i - original_i + 1) != chars_written)) {
-      adjustments->push_back(OffsetAdjuster::Adjustment(
-          original_i, i - original_i + 1, chars_written));
+      adjustments->emplace_back(original_i, i - original_i + 1, chars_written);
     }
   }
   return success;

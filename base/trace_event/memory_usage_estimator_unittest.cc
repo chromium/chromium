@@ -18,8 +18,7 @@
 #define EXPECT_EQ_32_64(e, _, a) EXPECT_EQ(e, a)
 #endif
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 
 namespace {
 
@@ -134,7 +133,7 @@ TEST(EstimateMemoryUsageTest, Vector) {
   // If vector is not empty, its size should also include memory usages
   // of all elements.
   for (size_t i = 0; i != capacity / 2; ++i) {
-    vector.push_back(Data(i));
+    vector.emplace_back(i);
     expected_size += EstimateMemoryUsage(vector.back());
   }
   EXPECT_EQ(expected_size, EstimateMemoryUsage(vector));
@@ -170,7 +169,7 @@ TEST(EstimateMemoryUsageTest, List) {
   };
   std::list<POD> list;
   for (int i = 0; i != 1000; ++i) {
-    list.push_back(POD());
+    list.emplace_back();
   }
   EXPECT_EQ_32_64(12000u, 24000u, EstimateMemoryUsage(list));
 }
@@ -247,7 +246,7 @@ TEST(EstimateMemoryUsageTest, Deque) {
   // for deque's blocks is small compared to usage of all items.
   constexpr size_t kDataSize = 100000;
   for (int i = 0; i != 1500; ++i) {
-    deque.push_back(Data(kDataSize));
+    deque.emplace_back(kDataSize);
   }
 
   // Compare against a reasonable minimum (i.e. no overhead).
@@ -275,5 +274,4 @@ TEST(EstimateMemoryUsageTest, IsStandardContainerComplexIteratorTest) {
   static_assert(!internal::IsIteratorOfStandardContainer<abstract*>, "");
 }
 
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event

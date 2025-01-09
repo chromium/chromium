@@ -9,8 +9,7 @@
 #include "base/check_op.h"
 #include "base/synchronization/waitable_event.h"
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 OperationsController::OperationsController() = default;
 
@@ -105,5 +104,4 @@ void OperationsController::DecrementBy(uint32_t n) {
   }
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

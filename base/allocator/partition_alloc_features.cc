@@ -20,8 +20,7 @@
 #include "partition_alloc/shim/allocator_shim_dispatch_to_noop_on_free.h"
 #include "partition_alloc/thread_cache.h"
 
-namespace base {
-namespace features {
+namespace base::features {
 
 namespace {
 
@@ -478,5 +477,4 @@ const base::FeatureParam<ShadowMetadataEnabledProcesses>
         &kShadowMetadataEnabledProcessesOptions};
 #endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
 
-}  // namespace features
-}  // namespace base
+}  // namespace base::features

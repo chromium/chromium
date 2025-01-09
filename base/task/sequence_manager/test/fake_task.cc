@@ -4,8 +4,7 @@
 
 #include "base/task/sequence_manager/test/fake_task.h"
 
-namespace base {
-namespace sequence_manager {
+namespace base::sequence_manager {
 
 FakeTask::FakeTask() : FakeTask(0 /* task_type */) {}
 
@@ -31,5 +30,4 @@ FakeTaskTiming::FakeTaskTiming(TimeTicks start, TimeTicks end)
   state_ = State::Finished;
 }
 
-}  // namespace sequence_manager
-}  // namespace base
+}  // namespace base::sequence_manager

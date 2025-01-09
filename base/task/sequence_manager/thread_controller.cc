@@ -20,9 +20,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
 
-namespace base {
-namespace sequence_manager {
-namespace internal {
+namespace base::sequence_manager::internal {
 
 namespace {
 // Enable sample metadata recording in this class, if it's currently disabled.
@@ -736,6 +734,4 @@ const char* ThreadController::RunLevelTracker::TimeKeeper::PhaseToEventName(
   }
 }
 
-}  // namespace internal
-}  // namespace sequence_manager
-}  // namespace base
+}  // namespace base::sequence_manager::internal

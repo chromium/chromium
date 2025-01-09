@@ -89,9 +89,7 @@ using testing::Return;
 using testing::StrictMock;
 using testing::UnorderedElementsAre;
 
-namespace base {
-namespace sequence_manager {
-namespace internal {
+namespace base::sequence_manager::internal {
 
 namespace {
 
@@ -788,14 +786,14 @@ TEST_P(SequenceManagerTest, NonNestableTasksDoesntExecuteInNestedLoop) {
   queue->task_runner()->PostTask(FROM_HERE, BindOnce(&TestTask, 2, &run_order));
 
   std::vector<std::pair<OnceClosure, bool>> tasks_to_post_from_nested_loop;
-  tasks_to_post_from_nested_loop.push_back(
-      std::make_pair(BindOnce(&TestTask, 3, &run_order), false));
-  tasks_to_post_from_nested_loop.push_back(
-      std::make_pair(BindOnce(&TestTask, 4, &run_order), false));
-  tasks_to_post_from_nested_loop.push_back(
-      std::make_pair(BindOnce(&TestTask, 5, &run_order), true));
-  tasks_to_post_from_nested_loop.push_back(
-      std::make_pair(BindOnce(&TestTask, 6, &run_order), true));
+  tasks_to_post_from_nested_loop.emplace_back(
+      BindOnce(&TestTask, 3, &run_order), false);
+  tasks_to_post_from_nested_loop.emplace_back(
+      BindOnce(&TestTask, 4, &run_order), false);
+  tasks_to_post_from_nested_loop.emplace_back(
+      BindOnce(&TestTask, 5, &run_order), true);
+  tasks_to_post_from_nested_loop.emplace_back(
+      BindOnce(&TestTask, 6, &run_order), true);
 
   queue->task_runner()->PostTask(
       FROM_HERE, BindOnce(&PostFromNestedRunloop, queue->task_runner(),
@@ -931,12 +929,12 @@ TEST_P(SequenceManagerTest, TaskQueueDisabledFromNestedLoop) {
 
   std::vector<std::pair<OnceClosure, bool>> tasks_to_post_from_nested_loop;
 
-  tasks_to_post_from_nested_loop.push_back(
-      std::make_pair(BindOnce(&TestTask, 1, &run_order), false));
-  tasks_to_post_from_nested_loop.push_back(
-      std::make_pair(BindOnce(&InsertFenceAndPostTestTask, 2, &run_order,
-                              queue.get(), sequence_manager()),
-                     true));
+  tasks_to_post_from_nested_loop.emplace_back(
+      BindOnce(&TestTask, 1, &run_order), false);
+  tasks_to_post_from_nested_loop.emplace_back(
+      BindOnce(&InsertFenceAndPostTestTask, 2, &run_order, queue.get(),
+               sequence_manager()),
+      true);
 
   queue->task_runner()->PostTask(
       FROM_HERE, BindOnce(&PostFromNestedRunloop, queue->task_runner(),
@@ -1884,8 +1882,8 @@ TEST_P(SequenceManagerTest, PostFromNestedRunloop) {
 
   std::vector<EnqueueOrder> run_order;
   std::vector<std::pair<OnceClosure, bool>> tasks_to_post_from_nested_loop;
-  tasks_to_post_from_nested_loop.push_back(
-      std::make_pair(BindOnce(&TestTask, 1, &run_order), true));
+  tasks_to_post_from_nested_loop.emplace_back(
+      BindOnce(&TestTask, 1, &run_order), true);
 
   queue->task_runner()->PostTask(FROM_HERE, BindOnce(&TestTask, 0, &run_order));
   queue->task_runner()->PostTask(
@@ -2527,12 +2525,10 @@ TEST_P(SequenceManagerTest, ShutdownTaskQueueInNestedLoop) {
   std::vector<std::pair<OnceClosure, bool>> tasks_to_post_from_nested_loop;
 
   // Inside a nested run loop, delete `queue_to_delete`, bookended by Nop tasks.
-  tasks_to_post_from_nested_loop.push_back(
-      std::make_pair(BindOnce(&NopTask), true));
-  tasks_to_post_from_nested_loop.push_back(std::make_pair(
-      BindLambdaForTesting([&] { queue_to_delete.reset(); }), true));
-  tasks_to_post_from_nested_loop.push_back(
-      std::make_pair(BindOnce(&NopTask), true));
+  tasks_to_post_from_nested_loop.emplace_back(BindOnce(&NopTask), true);
+  tasks_to_post_from_nested_loop.emplace_back(
+      BindLambdaForTesting([&] { queue_to_delete.reset(); }), true);
+  tasks_to_post_from_nested_loop.emplace_back(BindOnce(&NopTask), true);
   queue->task_runner()->PostTask(
       FROM_HERE, BindOnce(&PostFromNestedRunloop, queue->task_runner(),
                           Unretained(&tasks_to_post_from_nested_loop)));
@@ -3118,10 +3114,7 @@ class QuadraticTask {
   QuadraticTask(scoped_refptr<TaskRunner> task_runner,
                 TimeDelta delay,
                 Fixture* fixture)
-      : count_(0),
-        task_runner_(task_runner),
-        delay_(delay),
-        fixture_(fixture) {}
+      : task_runner_(task_runner), delay_(delay), fixture_(fixture) {}
 
   void SetShouldExit(RepeatingCallback<bool()> should_exit) {
     should_exit_ = should_exit;
@@ -3142,7 +3135,7 @@ class QuadraticTask {
   int Count() const { return count_; }
 
  private:
-  int count_;
+  int count_ = 0;
   scoped_refptr<TaskRunner> task_runner_;
   TimeDelta delay_;
   raw_ptr<Fixture> fixture_;
@@ -3154,10 +3147,7 @@ class LinearTask {
   LinearTask(scoped_refptr<TaskRunner> task_runner,
              TimeDelta delay,
              Fixture* fixture)
-      : count_(0),
-        task_runner_(task_runner),
-        delay_(delay),
-        fixture_(fixture) {}
+      : task_runner_(task_runner), delay_(delay), fixture_(fixture) {}
 
   void SetShouldExit(RepeatingCallback<bool()> should_exit) {
     should_exit_ = should_exit;
@@ -3176,7 +3166,7 @@ class LinearTask {
   int Count() const { return count_; }
 
  private:
-  int count_;
+  int count_ = 0;
   scoped_refptr<TaskRunner> task_runner_;
   TimeDelta delay_;
   raw_ptr<Fixture> fixture_;
@@ -3350,14 +3340,14 @@ TEST_P(SequenceManagerTest, CurrentlyExecutingTaskQueue_NestedLoop) {
   std::vector<internal::TaskQueueImpl*> task_sources;
   std::vector<std::pair<OnceClosure, TaskQueue*>>
       tasks_to_post_from_nested_loop;
-  tasks_to_post_from_nested_loop.push_back(
-      std::make_pair(BindOnce(&CurrentlyExecutingTaskQueueTestTask,
-                              sequence_manager(), &task_sources),
-                     queue1));
-  tasks_to_post_from_nested_loop.push_back(
-      std::make_pair(BindOnce(&CurrentlyExecutingTaskQueueTestTask,
-                              sequence_manager(), &task_sources),
-                     queue2));
+  tasks_to_post_from_nested_loop.emplace_back(
+      BindOnce(&CurrentlyExecutingTaskQueueTestTask, sequence_manager(),
+               &task_sources),
+      queue1);
+  tasks_to_post_from_nested_loop.emplace_back(
+      BindOnce(&CurrentlyExecutingTaskQueueTestTask, sequence_manager(),
+               &task_sources),
+      queue2);
 
   queue0->task_runner()->PostTask(
       FROM_HERE,
@@ -4790,8 +4780,7 @@ class SMDestructionObserver : public CurrentThread::DestructionObserver {
  public:
   SMDestructionObserver(bool* task_destroyed, bool* destruction_observer_called)
       : task_destroyed_(task_destroyed),
-        destruction_observer_called_(destruction_observer_called),
-        task_destroyed_before_message_loop_(false) {}
+        destruction_observer_called_(destruction_observer_called) {}
   void WillDestroyCurrentMessageLoop() override {
     task_destroyed_before_message_loop_ = *task_destroyed_;
     *destruction_observer_called_ = true;
@@ -4803,7 +4792,7 @@ class SMDestructionObserver : public CurrentThread::DestructionObserver {
  private:
   raw_ptr<bool> task_destroyed_;
   raw_ptr<bool> destruction_observer_called_;
-  bool task_destroyed_before_message_loop_;
+  bool task_destroyed_before_message_loop_ = false;
 };
 
 }  // namespace
@@ -6089,6 +6078,4 @@ TEST(SequenceManagerTest, BindOnDifferentThreadWithActiveVoters) {
   EXPECT_THAT(results, ElementsAre(false, true));
 }
 
-}  // namespace internal
-}  // namespace sequence_manager
-}  // namespace base
+}  // namespace base::sequence_manager::internal

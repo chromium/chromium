@@ -51,8 +51,7 @@
 #include "partition_alloc/partition_alloc_constants.h"  // nogncheck
 #endif
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 
 namespace {
 #if BUILDFLAG(IS_WIN)
@@ -714,5 +713,4 @@ void MemoryDumpPartitionStatsDumper::PartitionsDumpBucketStats(
 }
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC)
 
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event

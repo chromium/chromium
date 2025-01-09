@@ -35,8 +35,7 @@ extern "C" void* __libc_stack_end;
 
 #endif  // BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
 
-namespace base {
-namespace debug {
+namespace base::debug {
 
 namespace {
 
@@ -446,5 +445,4 @@ ScopedStackFrameLinker::~ScopedStackFrameLinker() {
 
 #endif  // BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
 
-}  // namespace debug
-}  // namespace base
+}  // namespace base::debug

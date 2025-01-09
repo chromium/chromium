@@ -15,8 +15,7 @@
 #include "base/task/task_features.h"
 #include "base/time/time.h"
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 namespace {
 
@@ -365,5 +364,4 @@ bool Sequence::IsEmpty() const {
   return queue_.empty() && delayed_queue_.empty();
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

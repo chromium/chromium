@@ -14,13 +14,13 @@
 #include "base/threading/simple_thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace internal {
+namespace base::internal {
 namespace {
 
 class ScopedShutdown {
  public:
-  ScopedShutdown(OperationsController* controller) : controller_(*controller) {}
+  explicit ScopedShutdown(OperationsController* controller)
+      : controller_(*controller) {}
   ~ScopedShutdown() { controller_->ShutdownAndWaitForZeroOperations(); }
 
  private:
@@ -175,5 +175,4 @@ TEST(OperationsControllerTest, BeginsFromMultipleThreads) {
 }
 
 }  // namespace
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

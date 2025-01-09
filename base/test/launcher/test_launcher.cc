@@ -736,10 +736,8 @@ ChildProcessResults DoLaunchChildTestProcess(
   if (redirect_stdio) {
     int output_file_fd = fileno(output_file.get());
     CHECK_LE(0, output_file_fd);
-    options.fds_to_remap.push_back(
-        std::make_pair(output_file_fd, STDOUT_FILENO));
-    options.fds_to_remap.push_back(
-        std::make_pair(output_file_fd, STDERR_FILENO));
+    options.fds_to_remap.emplace_back(output_file_fd, STDOUT_FILENO);
+    options.fds_to_remap.emplace_back(output_file_fd, STDERR_FILENO);
   }
 
 #if !BUILDFLAG(IS_FUCHSIA)
@@ -1011,7 +1009,7 @@ class TestLauncher::TestInfo {
  public:
   TestInfo() = default;
   TestInfo(const TestInfo& other) = default;
-  TestInfo(const TestIdentifier& test_id);
+  explicit TestInfo(const TestIdentifier& test_id);
   ~TestInfo() = default;
 
   // Returns test name excluding DISABLE_ prefix.

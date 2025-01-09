@@ -844,7 +844,7 @@ TEST(StringUtilTest, JoinString) {
   std::vector<std::string> parts;
   EXPECT_EQ(std::string(), JoinString(parts, separator));
 
-  parts.push_back(std::string());
+  parts.emplace_back();
   EXPECT_EQ(std::string(), JoinString(parts, separator));
   parts.clear();
 
@@ -855,7 +855,7 @@ TEST(StringUtilTest, JoinString) {
   parts.push_back("c");
   EXPECT_EQ("a, b, c", JoinString(parts, separator));
 
-  parts.push_back(std::string());
+  parts.emplace_back();
   EXPECT_EQ("a, b, c, ", JoinString(parts, separator));
   parts.push_back(" ");
   EXPECT_EQ("a|b|c|| ", JoinString(parts, "|"));
@@ -866,7 +866,7 @@ TEST(StringUtilTest, JoinString16) {
   std::vector<std::u16string> parts;
   EXPECT_EQ(std::u16string(), JoinString(parts, separator));
 
-  parts.push_back(std::u16string());
+  parts.emplace_back();
   EXPECT_EQ(std::u16string(), JoinString(parts, separator));
   parts.clear();
 
@@ -889,7 +889,7 @@ TEST(StringUtilTest, JoinStringPiece) {
   EXPECT_EQ(std::string(), JoinString(parts, separator));
 
   // Test empty first part (https://crbug.com/698073).
-  parts.push_back(std::string_view());
+  parts.emplace_back();
   EXPECT_EQ(std::string(), JoinString(parts, separator));
   parts.clear();
 
@@ -900,7 +900,7 @@ TEST(StringUtilTest, JoinStringPiece) {
   parts.push_back("c");
   EXPECT_EQ("a, b, c", JoinString(parts, separator));
 
-  parts.push_back(std::string_view());
+  parts.emplace_back();
   EXPECT_EQ("a, b, c, ", JoinString(parts, separator));
   parts.push_back(" ");
   EXPECT_EQ("a|b|c|| ", JoinString(parts, "|"));
@@ -912,7 +912,7 @@ TEST(StringUtilTest, JoinStringPiece16) {
   EXPECT_EQ(std::u16string(), JoinString(parts, separator));
 
   // Test empty first part (https://crbug.com/698073).
-  parts.push_back(std::u16string_view());
+  parts.emplace_back();
   EXPECT_EQ(std::u16string(), JoinString(parts, separator));
   parts.clear();
 
@@ -926,7 +926,7 @@ TEST(StringUtilTest, JoinStringPiece16) {
   parts.push_back(kC);
   EXPECT_EQ(u"a, b, c", JoinString(parts, separator));
 
-  parts.push_back(std::u16string_view());
+  parts.emplace_back();
   EXPECT_EQ(u"a, b, c, ", JoinString(parts, separator));
   const std::u16string kSpace = u" ";
   parts.push_back(kSpace);

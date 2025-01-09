@@ -50,8 +50,7 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace internal {
+namespace base::internal {
 namespace {
 
 constexpr size_t kMaxTasks = 4;
@@ -1677,5 +1676,4 @@ TEST_F(ThreadGroupImplImplStartInBodyTest, RacyCleanup) {
   thread_group_.reset();
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

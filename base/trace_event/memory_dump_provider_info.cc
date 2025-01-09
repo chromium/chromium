@@ -8,8 +8,7 @@
 
 #include "base/task/sequenced_task_runner.h"
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 
 MemoryDumpProviderInfo::MemoryDumpProviderInfo(
     MemoryDumpProvider* dump_provider,
@@ -40,5 +39,4 @@ bool MemoryDumpProviderInfo::Comparator::operator()(
          std::tie(b->task_runner, b->dump_provider);
 }
 
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event

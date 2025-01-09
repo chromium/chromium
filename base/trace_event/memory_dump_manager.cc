@@ -45,8 +45,7 @@
 #include "base/trace_event/address_space_dump_provider.h"
 #endif
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 
 namespace {
 
@@ -551,5 +550,4 @@ MemoryDumpManager::ProcessMemoryDumpAsyncState::ProcessMemoryDumpAsyncState(
 MemoryDumpManager::ProcessMemoryDumpAsyncState::~ProcessMemoryDumpAsyncState() =
     default;
 
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event

@@ -300,7 +300,7 @@ TEST_F(SamplingHeapProfilerTest, MAYBE_MANUAL_SamplerMicroBenchmark) {
 
 class StartStopThread : public SimpleThread {
  public:
-  StartStopThread(WaitableEvent* event)
+  explicit StartStopThread(WaitableEvent* event)
       : SimpleThread("MyThread2"), event_(event) {}
   void Run() override {
     auto* profiler = SamplingHeapProfiler::Get();

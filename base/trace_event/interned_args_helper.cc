@@ -11,8 +11,7 @@
 #include "third_party/perfetto/protos/perfetto/trace/track_event/source_location.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/task_execution.pbzero.h"
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 
 namespace {
 
@@ -153,5 +152,4 @@ void InternedUnsymbolizedSourceLocation::Add(
   msg->set_rel_pc(location.rel_pc);
 }
 
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event

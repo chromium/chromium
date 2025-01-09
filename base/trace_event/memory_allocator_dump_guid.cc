@@ -9,8 +9,7 @@
 #include "base/numerics/byte_conversions.h"
 #include "base/strings/stringprintf.h"
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 
 namespace {
 
@@ -33,5 +32,4 @@ std::string MemoryAllocatorDumpGuid::ToString() const {
   return StringPrintf("%" PRIx64, guid_);
 }
 
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event

@@ -165,7 +165,7 @@ long sys_rt_sigaction(int sig,
 // The motivation for going through all of them is that sa_restorer can leak
 // from parents and help defeat ASLR on buggy kernels.  We reset it to null.
 // See crbug.com/177956.
-void ResetChildSignalHandlersToDefaults(void) {
+void ResetChildSignalHandlersToDefaults() {
   for (int signum = 1;; ++signum) {
     struct kernel_sigaction act = {nullptr};
     long sigaction_get_ret = sys_rt_sigaction(signum, nullptr, &act);
@@ -475,8 +475,8 @@ Process LaunchProcess(const std::vector<std::string>& argv,
     for (size_t i = 0; i < options.fds_to_remap.size(); ++i) {
       const FileHandleMappingVector::value_type& value =
           options.fds_to_remap[i];
-      fd_shuffle1.push_back(InjectionArc(value.first, value.second, false));
-      fd_shuffle2.push_back(InjectionArc(value.first, value.second, false));
+      fd_shuffle1.emplace_back(value.first, value.second, false);
+      fd_shuffle2.emplace_back(value.first, value.second, false);
     }
 
     if (!options.environment.empty() || options.clear_environment) {
@@ -618,10 +618,10 @@ static bool GetAppOutputInternal(const std::vector<std::string>& argv,
         _exit(127);
       }
 
-      fd_shuffle1.push_back(InjectionArc(pipe_fd[1], STDOUT_FILENO, true));
-      fd_shuffle1.push_back(InjectionArc(include_stderr ? pipe_fd[1] : dev_null,
-                                         STDERR_FILENO, true));
-      fd_shuffle1.push_back(InjectionArc(dev_null, STDIN_FILENO, true));
+      fd_shuffle1.emplace_back(pipe_fd[1], STDOUT_FILENO, true);
+      fd_shuffle1.emplace_back(include_stderr ? pipe_fd[1] : dev_null,
+                               STDERR_FILENO, true);
+      fd_shuffle1.emplace_back(dev_null, STDIN_FILENO, true);
       // Adding another element here? Remeber to increase the argument to
       // reserve(), above.
 

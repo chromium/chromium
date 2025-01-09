@@ -8,8 +8,7 @@
 #include "build/build_config.h"
 #include "third_party/perfetto/include/perfetto/base/time.h"
 
-namespace base {
-namespace tracing {
+namespace base::tracing {
 
 int64_t TraceBootTicksNow() {
   // On Windows and Mac, TRACE_TIME_TICKS_NOW() behaves like boottime already.
@@ -24,5 +23,4 @@ int64_t TraceBootTicksNow() {
   return TRACE_TIME_TICKS_NOW().since_origin().InNanoseconds();
 }
 
-}  // namespace tracing
-}  // namespace base
+}  // namespace base::tracing

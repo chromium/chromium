@@ -7,8 +7,7 @@
 #include "base/logging.h"
 #include "base/logging/log_severity.h"
 
-namespace logging {
-namespace internal {
+namespace logging::internal {
 
 BASE_EXPORT void print_rust_log(const char* msg,
                                 const char* file,
@@ -20,5 +19,4 @@ BASE_EXPORT void print_rust_log(const char* msg,
   log_message.stream() << msg;
 }
 
-}  // namespace internal
-}  // namespace logging
+}  // namespace logging::internal

@@ -164,7 +164,7 @@ class NotReachedLogMessage : public LogMessage {
 
 class DCheckLogMessage : public LogMessage {
  public:
-  DCheckLogMessage(const base::Location& location)
+  explicit DCheckLogMessage(const base::Location& location)
       : LogMessage(location.file_name(),
                    location.line_number(),
                    LOGGING_DCHECK),

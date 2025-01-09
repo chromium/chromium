@@ -12,8 +12,7 @@
 #include "base/numerics/checked_math.h"
 #include "base/system/sys_info.h"
 
-namespace base {
-namespace subtle {
+namespace base::subtle {
 
 // static
 PlatformSharedMemoryRegion PlatformSharedMemoryRegion::CreateWritable(
@@ -103,5 +102,4 @@ void PlatformSharedMemoryRegion::Unmap(span<uint8_t> mapping,
   SharedMemorySecurityPolicy::ReleaseReservationForMapping(mapping.size());
 }
 
-}  // namespace subtle
-}  // namespace base
+}  // namespace base::subtle
