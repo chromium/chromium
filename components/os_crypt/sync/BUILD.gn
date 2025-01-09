@@ -159,4 +159,8 @@ source_set("unit_tests") {
       defines += [ "USE_KWALLET" ]
     }
   }
+
+  if ((is_posix && !is_apple && !(is_linux && !is_castos)) || is_fuchsia) {
+    sources += [ "os_crypt_posix_unittest.cc" ]
+  }
 }
