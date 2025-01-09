@@ -569,8 +569,14 @@ def _finalize_swarming(swarming):
         d["named_caches"] = [_finalize_named_cache(c) for c in named_caches]
     if d["shards"] == 1:
         d.pop("shards")
+    all_dimension_sets = [d.get("dimensions", {})]
     if d["optional_dimensions"]:
         d["optional_dimensions"] = {str(k): v for k, v in d["optional_dimensions"].items()}
+        all_dimension_sets.extend(d["optional_dimensions"].values())
+    for dimensions in all_dimension_sets:
+        for v in dimensions.values():
+            if v != None and type(v) != type(""):
+                fail("all dimension values must be None or strings, {} is type {}".format(v, type(v)))
     return {k: v for k, v in d.items() if v != None}
 
 def _finalize_resultdb(resultdb):
