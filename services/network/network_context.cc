@@ -2647,26 +2647,26 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
     builder.SetCookieStore(std::move(cookie_store));
   }
 
-    trust_token_store_ = std::make_unique<PendingTrustTokenStore>();
+  trust_token_store_ = std::make_unique<PendingTrustTokenStore>();
 
-    base::FilePath trust_token_path;
-    if (GetFullDataFilePath(
-            params_->file_paths,
-            &network::mojom::NetworkContextFilePaths::trust_token_database_name,
-            trust_token_path)) {
-      SQLiteTrustTokenPersister::CreateForFilePath(
-          base::ThreadPool::CreateSequencedTaskRunner(
-              {base::MayBlock(), kTrustTokenDatabaseTaskPriority,
-               base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
-          trust_token_path, kTrustTokenWriteBufferingWindow,
-          base::BindOnce(&NetworkContext::FinishConstructingTrustTokenStore,
-                         weak_factory_.GetWeakPtr()));
-    } else {
-      trust_token_store_->OnStoreReady(std::make_unique<TrustTokenStore>(
-          std::make_unique<InMemoryTrustTokenPersister>(),
-          std::make_unique<ExpiryInspectingRecordExpiryDelegate>(
-              network_service()->trust_token_key_commitments())));
-    }
+  base::FilePath trust_token_path;
+  if (GetFullDataFilePath(
+          params_->file_paths,
+          &network::mojom::NetworkContextFilePaths::trust_token_database_name,
+          trust_token_path)) {
+    SQLiteTrustTokenPersister::CreateForFilePath(
+        base::ThreadPool::CreateSequencedTaskRunner(
+            {base::MayBlock(), kTrustTokenDatabaseTaskPriority,
+             base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
+        trust_token_path, kTrustTokenWriteBufferingWindow,
+        base::BindOnce(&NetworkContext::FinishConstructingTrustTokenStore,
+                       weak_factory_.GetWeakPtr()));
+  } else {
+    trust_token_store_->OnStoreReady(std::make_unique<TrustTokenStore>(
+        std::make_unique<InMemoryTrustTokenPersister>(),
+        std::make_unique<ExpiryInspectingRecordExpiryDelegate>(
+            network_service()->trust_token_key_commitments())));
+  }
 
   std::unique_ptr<net::StaticHttpUserAgentSettings> user_agent_settings =
       std::make_unique<net::StaticHttpUserAgentSettings>(
