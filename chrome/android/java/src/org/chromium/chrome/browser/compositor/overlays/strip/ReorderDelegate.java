@@ -445,7 +445,7 @@ public class ReorderDelegate {
         // 1. Set the start margin - margin is applied by updating scrollOffset.
         boolean firstTabIsInGroup =
                 mTabGroupModelFilter.isTabInTabGroup(mModel.getTabById(firstTab.getTabId()));
-        mScrollDelegate.setReorderStartMargin(firstTabIsInGroup ? marginWidth : 0.f);
+        if (firstTabIsInGroup) mScrollDelegate.setReorderStartMargin(marginWidth);
 
         // 2. Set the trailing margin.
         boolean lastTabIsInGroup =
@@ -584,6 +584,7 @@ public class ReorderDelegate {
             // 2. Compute drag position.
             float oldIdealX = mInteractingTab.getIdealX();
             float oldScrollOffset = mScrollDelegate.getScrollOffset();
+            float oldStartMargin = mScrollDelegate.getReorderStartMargin();
             float offset = mInteractingTab.getOffsetX() + deltaX;
 
             // 3. Attempt to move the tab. If successful, update other relevant properties.
@@ -602,6 +603,7 @@ public class ReorderDelegate {
                 if (mLastReorderScrollTime != 0) offset -= deltaX;
                 // 3.d. Group titles can affect minScrollOffset. When scrolled near the end of the
                 // strip, the scrollOffset being clamped can affect the apparent position.
+                oldScrollOffset += oldStartMargin - mScrollDelegate.getReorderStartMargin();
                 offset -=
                         MathUtils.flipSignIf(
                                 (mScrollDelegate.getScrollOffset() - oldScrollOffset), isRtl);
