@@ -20,7 +20,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
-#include "components/exo/shell_surface_util.h"
 #include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
 
@@ -53,13 +52,6 @@ bool IsLacrosEnabled() {
 
 bool IsAshWebBrowserEnabled() {
   return true;
-}
-
-bool IsLacrosWindow(const aura::Window* window) {
-  const std::string* app_id = exo::GetShellApplicationId(window);
-  if (!app_id)
-    return false;
-  return base::StartsWith(*app_id, kLacrosAppIdPrefix);
 }
 
 base::Version GetRootfsLacrosVersionMayBlock(
