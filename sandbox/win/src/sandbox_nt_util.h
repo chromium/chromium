@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef SANDBOX_WIN_SRC_SANDBOX_NT_UTIL_H_
 #define SANDBOX_WIN_SRC_SANDBOX_NT_UTIL_H_
 
@@ -223,14 +218,6 @@ bool IsSupportedRenameCall(FILE_RENAME_INFORMATION* file_info,
 
 // Get the CLIENT_ID from the current TEB.
 CLIENT_ID GetCurrentClientId();
-
-// Version of memset that can be called before the CRT is initialized.
-__forceinline void Memset(void* ptr, int value, size_t num_bytes) {
-  unsigned char* byte_ptr = static_cast<unsigned char*>(ptr);
-  while (num_bytes--) {
-    *byte_ptr++ = static_cast<unsigned char>(value);
-  }
-}
 
 }  // namespace sandbox
 

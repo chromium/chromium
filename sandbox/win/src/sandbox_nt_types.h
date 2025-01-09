@@ -5,6 +5,7 @@
 #ifndef SANDBOX_WIN_SRC_SANDBOX_NT_TYPES_H_
 #define SANDBOX_WIN_SRC_SANDBOX_NT_TYPES_H_
 
+#include "base/compiler_specific.h"
 #include "sandbox/win/src/nt_internals.h"
 
 namespace sandbox {
@@ -43,6 +44,7 @@ struct NtExports {
   strlenFunction                         strlen;
   wcslenFunction                         wcslen;
   memcpyFunction                         memcpy;
+  UNSAFE_BUFFER_USAGE memsetFunction     memset;
 };
 // clang-format on
 
