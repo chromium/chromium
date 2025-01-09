@@ -303,6 +303,24 @@ base::Value OptTabStripToDebugValue(
   return base::Value(std::move(result));
 }
 
+base::Value RelatedApplicationsToDebugValue(
+    const std::vector<blink::Manifest::RelatedApplication>&
+        related_applications) {
+  base::Value::List related_applications_json;
+  for (const auto& related_application : related_applications) {
+    base::Value::Dict related_application_json;
+    related_application_json.Set("platform",
+                                 related_application.platform.value());
+    if (related_application.url.is_valid()) {
+      related_application_json.Set("url", related_application.url.spec());
+    }
+    if (related_application.id.has_value()) {
+      related_application_json.Set("id", related_application.id.value());
+    }
+    related_applications_json.Append(std::move(related_application_json));
+  }
+  return base::Value(std::move(related_applications_json));
+}
 }  // namespace
 
 WebApp::WebApp(const webapps::AppId& app_id)
@@ -759,6 +777,11 @@ void WebApp::SetWasShortcutApp(bool was_shortcut_app) {
   was_shortcut_app_ = was_shortcut_app;
 }
 
+void WebApp::SetRelatedApplications(
+    std::vector<blink::Manifest::RelatedApplication> related_applications) {
+  related_applications_ = std::move(related_applications);
+}
+
 void WebApp::AddPlaceholderInfoToManagementExternalConfigMap(
     WebAppManagement::Type type,
     bool is_placeholder) {
@@ -949,7 +972,8 @@ bool WebApp::operator==(const WebApp& other) const {
         app.supported_links_offer_ignore_count_,
         app.supported_links_offer_dismiss_count_,
         app.is_diy_app_,
-        app.was_shortcut_app_
+        app.was_shortcut_app_,
+        app.related_applications_
         // clang-format on
     );
   };
@@ -1163,6 +1187,9 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
   root.Set("is_diy_app", is_diy_app_);
 
   root.Set("was_shortcut_app", was_shortcut_app_);
+
+  root.Set("related_applications",
+           RelatedApplicationsToDebugValue(related_applications_));
 
   return base::Value(std::move(root));
 }

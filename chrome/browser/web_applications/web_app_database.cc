@@ -34,6 +34,7 @@
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
+#include "chrome/browser/web_applications/proto/web_app_related_applications.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_url_pattern.pb.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -934,6 +935,22 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
 
   local_data->set_was_shortcut_app(web_app.was_shortcut_app());
 
+  for (const auto& related_application : web_app.related_applications()) {
+    proto::RelatedApplications* related_application_proto =
+        local_data->add_related_applications();
+    if (related_application.platform) {
+      related_application_proto->set_platform(
+          base::UTF16ToUTF8(related_application.platform.value()));
+    }
+    CHECK(related_application.url.is_empty() ||
+          related_application.url.is_valid());
+    related_application_proto->set_url(related_application.url.spec());
+    if (related_application.id) {
+      related_application_proto->set_id(
+          base::UTF16ToUTF8(related_application.id.value()));
+    }
+  }
+
   return local_data;
 }
 
@@ -1790,6 +1807,23 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   web_app->SetIsDiyApp(local_data.is_diy_app());
 
   web_app->SetWasShortcutApp(local_data.was_shortcut_app());
+
+  std::vector<blink::Manifest::RelatedApplication> related_applications;
+  for (const auto& related_application_proto :
+       local_data.related_applications()) {
+    blink::Manifest::RelatedApplication related_application;
+    if (related_application_proto.has_platform()) {
+      related_application.platform = std::make_optional(
+          base::UTF8ToUTF16(related_application_proto.platform()));
+    }
+    related_application.url = GURL(related_application_proto.url());
+    if (related_application_proto.has_id()) {
+      related_application.id =
+          std::make_optional(base::UTF8ToUTF16(related_application_proto.id()));
+    }
+    related_applications.push_back(std::move(related_application));
+  }
+  web_app->SetRelatedApplications(std::move(related_applications));
 
   return web_app;
 }

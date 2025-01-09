@@ -1359,6 +1359,13 @@ bool WebAppRegistrar::IsDiyApp(const webapps::AppId& app_id) const {
   return web_app && web_app->is_diy_app();
 }
 
+std::vector<blink::Manifest::RelatedApplication>
+WebAppRegistrar::GetRelatedApplications(const webapps::AppId& app_id) const {
+  const WebApp* web_app = GetAppById(app_id);
+  return web_app ? web_app->related_applications()
+                 : std::vector<blink::Manifest::RelatedApplication>();
+}
+
 std::string WebAppRegistrar::GetAppShortName(
     const webapps::AppId& app_id) const {
   if (base::FeatureList::IsEnabled(

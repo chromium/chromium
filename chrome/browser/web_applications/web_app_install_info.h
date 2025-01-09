@@ -466,6 +466,9 @@ struct WebAppInstallInfo {
   // customize the title, etc.
   bool is_diy_app = false;
 
+  // Apps that are listed as related applications in the manifest.
+  std::vector<blink::Manifest::RelatedApplication> related_applications;
+
  private:
   // Used this method in Clone() method. Use Clone() to deep copy explicitly.
   WebAppInstallInfo(const WebAppInstallInfo& other);

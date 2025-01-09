@@ -575,6 +575,31 @@ std::optional<IsolatedWebAppIntegrityBlockData> CreateIntegrityBlockData(
   return IsolatedWebAppIntegrityBlockData(std::move(signatures));
 }
 
+std::vector<blink::Manifest::RelatedApplication>
+CreateRandomRelatedApplications(RandomHelper& random) {
+  std::vector<blink::Manifest::RelatedApplication> related_applications;
+  const std::array<std::string, 7> platforms = {
+      "chrome_web_store", "play",    "chromeos_play", "webapp",
+      "windows",          "f-droid", "amazon"};
+  for (int i = random.next_uint(4) + 1; i >= 0; --i) {
+    blink::Manifest::RelatedApplication related_application;
+    related_application.platform =
+        base::UTF8ToUTF16(platforms[random.next_uint(platforms.size())]);
+    bool set_url = random.next_bool();
+    bool set_id = !set_url || random.next_bool();
+    if (set_url) {
+      related_application.url =
+          GURL("https://example.com/" + base::NumberToString(i));
+    }
+    if (set_id) {
+      related_application.id =
+          base::UTF8ToUTF16("id" + base::NumberToString(i));
+    }
+    related_applications.push_back(std::move(related_application));
+  }
+  return related_applications;
+}
+
 }  // namespace
 
 std::unique_ptr<WebApp> CreateWebApp(const GURL& start_url,
@@ -1118,6 +1143,8 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
   app->SetIsDiyApp(random.next_bool());
 
   app->SetWasShortcutApp(random.next_bool());
+
+  app->SetRelatedApplications(CreateRandomRelatedApplications(random));
   return app;
 }
 

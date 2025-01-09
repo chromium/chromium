@@ -170,6 +170,14 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   }
 
   {
+    blink::Manifest::RelatedApplication related_app;
+    related_app.platform = u"platform";
+    related_app.url = GURL("http://www.example.com");
+    related_app.id = u"id";
+    manifest.related_applications.push_back(std::move(related_app));
+  }
+
+  {
     // Ensure empty structs are ignored.
     manifest.lock_screen = blink::mojom::ManifestLockScreen::New();
     manifest.note_taking = blink::mojom::ManifestNoteTaking::New();
@@ -280,6 +288,13 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
             declaration.allowed_origins[0].Serialize());
   EXPECT_FALSE(declaration.matches_all_origins);
   EXPECT_FALSE(declaration.matches_opaque_src);
+
+  // Check related applications were updated.
+  ASSERT_EQ(1u, web_app_info.related_applications.size());
+  auto related_app = web_app_info.related_applications[0];
+  EXPECT_EQ(u"platform", related_app.platform);
+  EXPECT_EQ(GURL("http://www.example.com"), related_app.url);
+  EXPECT_EQ(u"id", related_app.id);
 }
 
 TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_EmptyName) {

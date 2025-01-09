@@ -360,6 +360,11 @@ class WebApp {
 
   bool was_shortcut_app() const { return was_shortcut_app_; }
 
+  const std::vector<blink::Manifest::RelatedApplication>& related_applications()
+      const {
+    return related_applications_;
+  }
+
   // A Web App can be installed from multiple sources simultaneously. Installs
   // add a source to the app. Uninstalls remove a source from the app.
   void AddSource(WebAppManagement::Type source);
@@ -459,6 +464,8 @@ class WebApp {
   void SetSupportedLinksOfferDismissCount(int dismiss_count);
   void SetIsDiyApp(bool is_diy_app);
   void SetWasShortcutApp(bool was_shortcut_app);
+  void SetRelatedApplications(
+      std::vector<blink::Manifest::RelatedApplication> related_applications);
 
   void AddPlaceholderInfoToManagementExternalConfigMap(
       WebAppManagement::Type source_type,
@@ -599,6 +606,8 @@ class WebApp {
   bool is_diy_app_ = false;
 
   bool was_shortcut_app_ = false;
+
+  std::vector<blink::Manifest::RelatedApplication> related_applications_;
 
   // New fields must be added to:
   //  - |operator==|

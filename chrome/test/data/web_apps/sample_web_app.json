@@ -303,6 +303,23 @@
       "protocol": "web+test17396056594",
       "url": "https://example.com/17396056594"
    } ],
+   "related_applications": [ {
+      "id": "id3",
+      "platform": "windows",
+      "url": "https://example.com/3"
+   }, {
+      "id": "id2",
+      "platform": "f-droid",
+      "url": "https://example.com/2"
+   }, {
+      "id": "id1",
+      "platform": "chromeos_play",
+      "url": "https://example.com/1"
+   }, {
+      "id": "id0",
+      "platform": "windows",
+      "url": "https://example.com/0"
+   } ],
    "run_on_os_login_mode": "windowed",
    "scope": "https://example.com/scope1234/",
    "scope_extensions": [ {

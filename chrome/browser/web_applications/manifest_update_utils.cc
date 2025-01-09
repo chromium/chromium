@@ -326,6 +326,10 @@ ManifestDataChanges GetManifestDataChanges(
     if (existing_web_app.tab_strip() != new_install_info.tab_strip) {
       return true;
     }
+    if (existing_web_app.related_applications() !=
+        new_install_info.related_applications) {
+      return true;
+    }
     // TODO(crbug.com/40611449): Check more manifest fields.
     return false;
   }();

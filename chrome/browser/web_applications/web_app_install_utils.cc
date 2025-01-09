@@ -815,6 +815,8 @@ void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
   if (HomeTabIconsExistInTabStrip(*web_app_info)) {
     PopulateHomeTabIconsFromHomeTabManifestParams(web_app_info);
   }
+
+  web_app_info->related_applications = manifest.related_applications;
 }
 
 WebAppInstallInfo CreateWebAppInfoFromManifest(
@@ -1183,6 +1185,8 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
   }
 
   web_app.SetIsDiyApp(web_app_info.is_diy_app);
+
+  web_app.SetRelatedApplications(web_app_info.related_applications);
 }
 
 void SetWebAppProductIconFields(const WebAppInstallInfo& web_app_info,

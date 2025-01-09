@@ -33,6 +33,7 @@
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/webapps/common/web_app_id.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "third_party/blink/public/mojom/installedapp/related_application.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 class Profile;
@@ -495,6 +496,9 @@ class WebAppRegistrar {
                                      const webapps::AppId& app_id);
 
   bool IsDiyApp(const webapps::AppId& app_id) const;
+
+  std::vector<blink::Manifest::RelatedApplication> GetRelatedApplications(
+      const webapps::AppId& app_id) const;
 
 #if BUILDFLAG(IS_MAC)
   bool AlwaysShowToolbarInFullscreen(const webapps::AppId& app_id) const;
