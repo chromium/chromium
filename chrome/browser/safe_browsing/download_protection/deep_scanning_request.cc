@@ -435,7 +435,9 @@ DeepScanningRequest::DeepScanningRequest(
 }
 
 DeepScanningRequest::~DeepScanningRequest() {
-  item_->RemoveObserver(this);
+  if (item_) {
+    item_->RemoveObserver(this);
+  }
 }
 
 void DeepScanningRequest::AddObserver(Observer* observer) {
@@ -908,6 +910,7 @@ void DeepScanningRequest::CallbackAndCleanup(DownloadCheckResult result) {
   }
   weak_ptr_factory_.InvalidateWeakPtrs();
   item_->RemoveObserver(this);
+  item_ = nullptr;
   download_service_->RequestFinished(this);
 }
 
