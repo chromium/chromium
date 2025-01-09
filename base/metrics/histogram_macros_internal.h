@@ -184,10 +184,10 @@ struct EnumSizeTraits {
 
 // Similar to the previous macro but intended for enumerations. This delegates
 // the work to the previous macro, but supports scoped enumerations as well by
-// forcing an explicit cast to the HistogramBase::Sample integral type.
+// forcing an explicit cast to the HistogramBase::Sample32 integral type.
 //
 // Note the range checks verify two separate issues:
-// - that the declared enum size isn't out of range of HistogramBase::Sample
+// - that the declared enum size isn't out of range of HistogramBase::Sample32
 // - that the declared enum size is > 0
 //
 // TODO(dcheng): This should assert that the passed in types are actually enum
@@ -206,11 +206,11 @@ struct EnumSizeTraits {
     static_assert(                                                             \
         static_cast<uintmax_t>(boundary) <                                     \
             static_cast<uintmax_t>(                                            \
-                std::numeric_limits<base::HistogramBase::Sample>::max()),      \
-        "|boundary| is out of range of HistogramBase::Sample");                \
+                std::numeric_limits<base::HistogramBase::Sample32>::max()),    \
+        "|boundary| is out of range of HistogramBase::Sample32");              \
     INTERNAL_HISTOGRAM_EXACT_LINEAR_WITH_FLAG(                                 \
-        name, static_cast<base::HistogramBase::Sample>(sample),                \
-        static_cast<base::HistogramBase::Sample>(boundary), flag);             \
+        name, static_cast<base::HistogramBase::Sample32>(sample),              \
+        static_cast<base::HistogramBase::Sample32>(boundary), flag);           \
   } while (0)
 
 #define INTERNAL_HISTOGRAM_SCALED_ENUMERATION_WITH_FLAG(name, sample, count, \
@@ -224,11 +224,11 @@ struct EnumSizeTraits {
     static_assert(                                                           \
         static_cast<uintmax_t>(boundary) <                                   \
             static_cast<uintmax_t>(                                          \
-                std::numeric_limits<base::HistogramBase::Sample>::max()),    \
-        "|boundary| is out of range of HistogramBase::Sample");              \
+                std::numeric_limits<base::HistogramBase::Sample32>::max()),  \
+        "|boundary| is out of range of HistogramBase::Sample32");            \
     INTERNAL_HISTOGRAM_SCALED_EXACT_LINEAR_WITH_FLAG(                        \
-        name, static_cast<base::HistogramBase::Sample>(sample), count,       \
-        static_cast<base::HistogramBase::Sample>(boundary), scale, flag);    \
+        name, static_cast<base::HistogramBase::Sample32>(sample), count,     \
+        static_cast<base::HistogramBase::Sample32>(boundary), scale, flag);  \
   } while (0)
 
 // This is a helper macro used by other macros and shouldn't be used directly.

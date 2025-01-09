@@ -43,9 +43,9 @@ class BASE_EXPORT SampleVectorBase : public HistogramSamples {
   ~SampleVectorBase() override;
 
   // HistogramSamples:
-  void Accumulate(HistogramBase::Sample value,
+  void Accumulate(HistogramBase::Sample32 value,
                   HistogramBase::Count count) override;
-  HistogramBase::Count GetCount(HistogramBase::Sample value) const override;
+  HistogramBase::Count GetCount(HistogramBase::Sample32 value) const override;
   HistogramBase::Count TotalCount() const override;
   std::unique_ptr<SampleCountIterator> Iterator() const override;
   std::unique_ptr<SampleCountIterator> ExtractingIterator() override;
@@ -70,7 +70,7 @@ class BASE_EXPORT SampleVectorBase : public HistogramSamples {
       SampleCountIterator* iter,
       HistogramSamples::Operator op) override;  // |op| is ADD or SUBTRACT.
 
-  virtual size_t GetBucketIndex(HistogramBase::Sample value) const;
+  virtual size_t GetBucketIndex(HistogramBase::Sample32 value) const;
 
   // Gets the destination bucket corresponding to `iter` and its `count` value.
   // Validates that the destination bucket matches the min/max from the iterator

@@ -27,7 +27,7 @@ class DummySampleCountIterator : public SampleCountIterator {
   // SampleCountIterator:
   bool Done() const override { return true; }
   void Next() override { NOTREACHED(); }
-  void Get(HistogramBase::Sample* min,
+  void Get(HistogramBase::Sample32* min,
            int64_t* max,
            HistogramBase::Count* count) override {
     NOTREACHED();
@@ -42,9 +42,9 @@ class DummyHistogramSamples : public HistogramSamples {
   DummyHistogramSamples& operator=(const DummyHistogramSamples&) = delete;
 
   // HistogramSamples:
-  void Accumulate(HistogramBase::Sample value,
+  void Accumulate(HistogramBase::Sample32 value,
                   HistogramBase::Count count) override {}
-  HistogramBase::Count GetCount(HistogramBase::Sample value) const override {
+  HistogramBase::Count GetCount(HistogramBase::Sample32 value) const override {
     return HistogramBase::Count();
   }
   HistogramBase::Count TotalCount() const override {

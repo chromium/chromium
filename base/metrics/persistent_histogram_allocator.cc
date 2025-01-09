@@ -69,7 +69,7 @@ subtle::AtomicWord g_histogram_allocator = 0;
 // which is returned to the caller. A return of nullptr indicates that the
 // passed boundaries are invalid.
 std::unique_ptr<BucketRanges> CreateRangesFromData(
-    HistogramBase::Sample* ranges_data,
+    HistogramBase::Sample32* ranges_data,
     uint32_t ranges_checksum,
     size_t count) {
   // To avoid racy destruction at shutdown, the following may be leaked.
@@ -178,7 +178,7 @@ PersistentSparseHistogramDataManager::GetSampleMapRecordsWhileLocked(
 std::vector<PersistentMemoryAllocator::Reference>
 PersistentSparseHistogramDataManager::LoadRecords(
     PersistentSampleMapRecords* sample_map_records,
-    std::optional<HistogramBase::Sample> until_value) {
+    std::optional<HistogramBase::Sample32> until_value) {
   // DataManager must be locked in order to access the `sample_records_`
   // vectors.
   base::AutoLock auto_lock(lock_);
@@ -200,7 +200,7 @@ PersistentSparseHistogramDataManager::LoadRecords(
     // Get the next sample-record. The iterator will always resume from where
     // it left off even if it previously had nothing further to return.
     uint64_t found_id;
-    HistogramBase::Sample value;
+    HistogramBase::Sample32 value;
     PersistentMemoryAllocator::Reference ref =
         PersistentSampleMap::GetNextPersistentRecord(record_iterator_,
                                                      &found_id, &value);
@@ -256,14 +256,14 @@ PersistentSampleMapRecords::~PersistentSampleMapRecords() = default;
 
 std::vector<PersistentMemoryAllocator::Reference>
 PersistentSampleMapRecords::GetNextRecords(
-    std::optional<HistogramBase::Sample> until_value) {
+    std::optional<HistogramBase::Sample32> until_value) {
   auto references = data_manager_->LoadRecords(this, until_value);
   seen_ += references.size();
   return references;
 }
 
 PersistentMemoryAllocator::Reference PersistentSampleMapRecords::CreateNew(
-    HistogramBase::Sample value) {
+    HistogramBase::Sample32 value) {
   return PersistentSampleMap::CreatePersistentRecord(data_manager_->allocator_,
                                                      sample_map_id_, value);
 }
@@ -414,8 +414,8 @@ std::unique_ptr<HistogramBase> PersistentHistogramAllocator::AllocateHistogram(
       ranges_ref =
           memory_allocator_->Allocate(ranges_bytes, kTypeIdRangesArray);
       if (ranges_ref) {
-        HistogramBase::Sample* ranges_data =
-            memory_allocator_->GetAsArray<HistogramBase::Sample>(
+        HistogramBase::Sample32* ranges_data =
+            memory_allocator_->GetAsArray<HistogramBase::Sample32>(
                 ranges_ref, kTypeIdRangesArray, ranges_count);
         if (ranges_data) {
           for (size_t i = 0; i < bucket_ranges->size(); ++i) {
@@ -595,15 +595,15 @@ std::unique_ptr<HistogramBase> PersistentHistogramAllocator::CreateHistogram(
   uint32_t histogram_ranges_checksum = histogram_data_ptr->ranges_checksum;
 
   size_t allocated_bytes = 0;
-  HistogramBase::Sample* ranges_data =
-      memory_allocator_->GetAsArray<HistogramBase::Sample>(
+  HistogramBase::Sample32* ranges_data =
+      memory_allocator_->GetAsArray<HistogramBase::Sample32>(
           histogram_ranges_ref, kTypeIdRangesArray,
           PersistentMemoryAllocator::kSizeAny, &allocated_bytes);
 
   const uint32_t max_buckets =
-      std::numeric_limits<uint32_t>::max() / sizeof(HistogramBase::Sample);
+      std::numeric_limits<uint32_t>::max() / sizeof(HistogramBase::Sample32);
   size_t required_bytes =
-      (histogram_bucket_count + 1) * sizeof(HistogramBase::Sample);
+      (histogram_bucket_count + 1) * sizeof(HistogramBase::Sample32);
   if (!ranges_data || histogram_bucket_count < 2 ||
       histogram_bucket_count >= max_buckets ||
       allocated_bytes < required_bytes) {

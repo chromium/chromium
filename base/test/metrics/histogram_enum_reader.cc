@@ -53,7 +53,7 @@ std::optional<HistogramEnumEntryMap> ParseEnumFromHistogramsXml(
         success = false;
       }
 
-      HistogramBase::Sample value;
+      HistogramBase::Sample32 value;
       if (has_value && !StringToInt(value_str, &value)) {
         ADD_FAILURE() << "Bad " << enum_name << " enum entry (at index "
                       << entries_index << ", label='" << label

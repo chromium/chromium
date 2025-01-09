@@ -279,7 +279,7 @@ JNI_NativeUmaRecorder_GetHistogramSamplesForTesting(JNIEnv* env,
   std::unique_ptr<HistogramSamples> samples = histogram->SnapshotSamples();
   for (auto sampleCountIterator = samples->Iterator();
        !sampleCountIterator->Done(); sampleCountIterator->Next()) {
-    HistogramBase::Sample min;
+    HistogramBase::Sample32 min;
     int64_t max;
     HistogramBase::Count count;
     sampleCountIterator->Get(&min, &max, &count);

@@ -35,7 +35,7 @@
 namespace base {
 
 typedef HistogramBase::Count Count;
-typedef HistogramBase::Sample Sample;
+typedef HistogramBase::Sample32 Sample32;
 
 namespace {
 
@@ -68,7 +68,7 @@ class SampleVectorIterator : public SampleCountIterator {
     ++index_;
     SkipEmptyBuckets();
   }
-  void Get(HistogramBase::Sample* min,
+  void Get(Sample32* min,
            int64_t* max,
            HistogramBase::Count* count) override {
     DCHECK(!Done());
@@ -131,7 +131,7 @@ SampleVectorBase::SampleVectorBase(uint64_t id,
 
 SampleVectorBase::~SampleVectorBase() = default;
 
-void SampleVectorBase::Accumulate(Sample value, Count count) {
+void SampleVectorBase::Accumulate(Sample32 value, Count count) {
   const size_t bucket_index = GetBucketIndex(value);
 
   // Handle the single-sample case.
@@ -168,7 +168,7 @@ void SampleVectorBase::Accumulate(Sample value, Count count) {
   }
 }
 
-Count SampleVectorBase::GetCount(Sample value) const {
+Count SampleVectorBase::GetCount(Sample32 value) const {
   return GetCountAtIndex(GetBucketIndex(value));
 }
 
@@ -341,7 +341,7 @@ bool SampleVectorBase::AddSubtractImpl(SampleCountIterator* iter,
 size_t SampleVectorBase::GetDestinationBucketIndexAndCount(
     SampleCountIterator& iter,
     HistogramBase::Count* count) {
-  HistogramBase::Sample min;
+  Sample32 min;
   int64_t max;
 
   iter.Get(&min, &max, count);
@@ -371,7 +371,7 @@ size_t SampleVectorBase::GetDestinationBucketIndexAndCount(
 // Uses simple binary search or calculates the index directly if it's an "exact"
 // linear histogram. This is very general, but there are better approaches if we
 // knew that the buckets were linearly distributed.
-size_t SampleVectorBase::GetBucketIndex(Sample value) const {
+size_t SampleVectorBase::GetBucketIndex(Sample32 value) const {
   size_t bucket_count = bucket_ranges_->bucket_count();
   CHECK_GE(value, bucket_ranges_->range(0));
   CHECK_LT(value, bucket_ranges_->range(bucket_count));
@@ -379,8 +379,8 @@ size_t SampleVectorBase::GetBucketIndex(Sample value) const {
   // For "exact" linear histograms, e.g. bucket_count = maximum + 1, their
   // minimum is 1 and bucket sizes are 1. Thus, we don't need to binary search
   // the bucket index. The bucket index for bucket |value| is just the |value|.
-  Sample maximum = bucket_ranges_->range(bucket_count - 1);
-  if (maximum == static_cast<Sample>(bucket_count - 1)) {
+  Sample32 maximum = bucket_ranges_->range(bucket_count - 1);
+  if (maximum == static_cast<Sample32>(bucket_count - 1)) {
     // |value| is in the underflow bucket.
     if (value < 1) {
       return 0;

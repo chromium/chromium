@@ -24,7 +24,6 @@
 namespace base {
 
 typedef HistogramBase::Count Count;
-typedef HistogramBase::Sample Sample;
 
 // static
 HistogramBase* SparseHistogram::FactoryGet(std::string_view name,
@@ -80,7 +79,7 @@ HistogramBase* SparseHistogram::FactoryGet(std::string_view name,
     // Note: Theoretically the below line could be re-entrant if something has
     // gone very wrong, but crashing w/ an infinite recursion seems OK then.
     UmaHistogramSparse("Histogram.MismatchedConstructionArguments",
-                       static_cast<Sample>(HashMetricName(name)));
+                       static_cast<Sample32>(HashMetricName(name)));
     DLOG(ERROR) << "Histogram " << name << " has a mismatched type";
     return DummyHistogram::GetInstance();
   }
@@ -107,18 +106,18 @@ HistogramType SparseHistogram::GetHistogramType() const {
 }
 
 bool SparseHistogram::HasConstructionArguments(
-    Sample expected_minimum,
-    Sample expected_maximum,
+    Sample32 expected_minimum,
+    Sample32 expected_maximum,
     size_t expected_bucket_count) const {
   // SparseHistogram never has min/max/bucket_count limit.
   return false;
 }
 
-void SparseHistogram::Add(Sample value) {
+void SparseHistogram::Add(Sample32 value) {
   AddCount(value, 1);
 }
 
-void SparseHistogram::AddCount(Sample value, int count) {
+void SparseHistogram::AddCount(Sample32 value, int count) {
   if (count <= 0) {
     NOTREACHED();
   }

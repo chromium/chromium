@@ -16,14 +16,14 @@
 namespace base {
 
 using Count = HistogramBase::Count;
-using Sample = HistogramBase::Sample;
+using Sample32 = HistogramBase::Sample32;
 
 SampleMap::SampleMap(uint64_t id)
     : HistogramSamples(id, std::make_unique<LocalMetadata>()) {}
 
 SampleMap::~SampleMap() = default;
 
-void SampleMap::Accumulate(Sample value, Count count) {
+void SampleMap::Accumulate(Sample32 value, Count count) {
   // We do not have to do the following atomically -- if the caller needs
   // thread safety, they should use a lock. And since this is in local memory,
   // if a lock is used, we know the value would not be concurrently modified
@@ -33,7 +33,7 @@ void SampleMap::Accumulate(Sample value, Count count) {
   IncreaseSumAndCount(strict_cast<int64_t>(count) * value, count);
 }
 
-Count SampleMap::GetCount(Sample value) const {
+Count SampleMap::GetCount(Sample32 value) const {
   const auto it = sample_counts_.find(value);
   return (it == sample_counts_.end()) ? 0 : it->second;
 }
@@ -66,7 +66,7 @@ bool SampleMap::IsDefinitelyEmpty() const {
 }
 
 bool SampleMap::AddSubtractImpl(SampleCountIterator* iter, Operator op) {
-  Sample min;
+  Sample32 min;
   int64_t max;
   Count count;
   for (; !iter->Done(); iter->Next()) {

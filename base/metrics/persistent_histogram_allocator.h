@@ -65,7 +65,7 @@ class BASE_EXPORT PersistentSparseHistogramDataManager {
 
   struct ReferenceAndSample {
     PersistentMemoryAllocator::Reference reference;
-    HistogramBase::Sample value;
+    HistogramBase::Sample32 value;
   };
 
   // Gets the vector holding records for a given sample-map id.
@@ -87,7 +87,7 @@ class BASE_EXPORT PersistentSparseHistogramDataManager {
   // `sample_map_records` has seen all its records.
   std::vector<PersistentMemoryAllocator::Reference> LoadRecords(
       PersistentSampleMapRecords* sample_map_records,
-      std::optional<HistogramBase::Sample> until_value);
+      std::optional<HistogramBase::Sample32> until_value);
 
   // Weak-pointer to the allocator used by the sparse histograms.
   raw_ptr<PersistentMemoryAllocator> allocator_;
@@ -134,11 +134,11 @@ class BASE_EXPORT PersistentSampleMapRecords {
   // vector is returned, which definitely means that `this` has seen all its
   // records.
   std::vector<PersistentMemoryAllocator::Reference> GetNextRecords(
-      std::optional<HistogramBase::Sample> until_value);
+      std::optional<HistogramBase::Sample32> until_value);
 
   // Creates a new persistent sample-map record for sample `value` and returns
   // a reference to it.
-  PersistentMemoryAllocator::Reference CreateNew(HistogramBase::Sample value);
+  PersistentMemoryAllocator::Reference CreateNew(HistogramBase::Sample32 value);
 
   // Convenience method that gets the object for a given reference so callers
   // don't have to also keep their own pointer to the appropriate allocator.

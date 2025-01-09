@@ -142,9 +142,9 @@ class BASE_EXPORT HistogramSamples {
   HistogramSamples& operator=(const HistogramSamples&) = delete;
   virtual ~HistogramSamples();
 
-  virtual void Accumulate(HistogramBase::Sample value,
+  virtual void Accumulate(HistogramBase::Sample32 value,
                           HistogramBase::Count count) = 0;
-  virtual HistogramBase::Count GetCount(HistogramBase::Sample value) const = 0;
+  virtual HistogramBase::Count GetCount(HistogramBase::Sample32 value) const = 0;
   virtual HistogramBase::Count TotalCount() const = 0;
 
   bool Add(const HistogramSamples& other);
@@ -228,7 +228,7 @@ class BASE_EXPORT HistogramSamples {
   // Accumulates to the embedded single-sample field if possible. Returns true
   // on success, false otherwise. Sum and redundant-count are also updated in
   // the success case.
-  bool AccumulateSingleSample(HistogramBase::Sample value,
+  bool AccumulateSingleSample(HistogramBase::Sample32 value,
                               HistogramBase::Count count,
                               size_t bucket);
 
@@ -264,7 +264,7 @@ class BASE_EXPORT HistogramSamples {
 
   // Returns a string description of what goes in a given bucket.
   const std::string GetSimpleAsciiBucketRange(
-      HistogramBase::Sample sample) const;
+      HistogramBase::Sample32 sample) const;
 
   Metadata* meta() { return meta_; }
 
@@ -292,10 +292,10 @@ class BASE_EXPORT SampleCountIterator {
   // full int32_t range and bucket max is exclusive, so it needs to support
   // values up to MAXINT32+1.
   // Requires: !Done();
-  virtual void Get(HistogramBase::Sample* min,
+  virtual void Get(HistogramBase::Sample32* min,
                    int64_t* max,
                    HistogramBase::Count* count) = 0;
-  static_assert(std::numeric_limits<HistogramBase::Sample>::max() <
+  static_assert(std::numeric_limits<HistogramBase::Sample32>::max() <
                     std::numeric_limits<int64_t>::max(),
                 "Get() |max| must be able to hold Histogram::Sample max + 1");
 
@@ -307,7 +307,7 @@ class BASE_EXPORT SampleCountIterator {
 
 class BASE_EXPORT SingleSampleIterator : public SampleCountIterator {
  public:
-  SingleSampleIterator(HistogramBase::Sample min,
+  SingleSampleIterator(HistogramBase::Sample32 min,
                        int64_t max,
                        HistogramBase::Count count,
                        size_t bucket_index,
@@ -317,7 +317,7 @@ class BASE_EXPORT SingleSampleIterator : public SampleCountIterator {
   // SampleCountIterator:
   bool Done() const override;
   void Next() override;
-  void Get(HistogramBase::Sample* min,
+  void Get(HistogramBase::Sample32* min,
            int64_t* max,
            HistogramBase::Count* count) override;
 
@@ -326,7 +326,7 @@ class BASE_EXPORT SingleSampleIterator : public SampleCountIterator {
 
  private:
   // Information about the single value to return.
-  const HistogramBase::Sample min_;
+  const HistogramBase::Sample32 min_;
   const int64_t max_;
   const size_t bucket_index_;
   HistogramBase::Count count_;

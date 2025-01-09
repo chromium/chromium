@@ -76,7 +76,7 @@ class BASE_EXPORT StatisticsRecorder {
   using OnSampleCallback =
       base::RepeatingCallback<void(const char* /*=histogram_name*/,
                                    uint64_t /*=name_hash*/,
-                                   HistogramBase::Sample)>;
+                                   HistogramBase::Sample32)>;
 
   // An observer that gets notified whenever a new sample is recorded for a
   // particular histogram. Clients only need to construct it with the histogram
@@ -99,7 +99,7 @@ class BASE_EXPORT StatisticsRecorder {
     // Runs the callback.
     void RunCallback(const char* histogram_name,
                      uint64_t name_hash,
-                     HistogramBase::Sample sample);
+                     HistogramBase::Sample32 sample);
 
     // The name of the histogram to observe.
     const std::string histogram_name_;
@@ -218,7 +218,7 @@ class BASE_EXPORT StatisticsRecorder {
   static void FindAndRunHistogramCallbacks(base::PassKey<HistogramBase>,
                                            const char* histogram_name,
                                            uint64_t name_hash,
-                                           HistogramBase::Sample sample);
+                                           HistogramBase::Sample32 sample);
 
   // Returns the number of known histograms.
   //
@@ -280,7 +280,7 @@ class BASE_EXPORT StatisticsRecorder {
 
   using GlobalSampleCallback = void (*)(const char* /*=histogram_name*/,
                                         uint64_t /*=name_hash*/,
-                                        HistogramBase::Sample);
+                                        HistogramBase::Sample32);
   // Installs a global callback which will be called for every added
   // histogram sample. The given callback is a raw function pointer in order
   // to be accessed lock-free and can be called on any thread.

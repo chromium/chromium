@@ -37,8 +37,8 @@ void SingleSampleMetricsFactory::DeleteFactoryForTesting() {
 std::unique_ptr<SingleSampleMetric>
 DefaultSingleSampleMetricsFactory::CreateCustomCountsMetric(
     const std::string& histogram_name,
-    HistogramBase::Sample min,
-    HistogramBase::Sample max,
+    HistogramBase::Sample32 min,
+    HistogramBase::Sample32 max,
     uint32_t bucket_count) {
   return std::make_unique<DefaultSingleSampleMetric>(
       histogram_name, min, max, bucket_count,
@@ -47,8 +47,8 @@ DefaultSingleSampleMetricsFactory::CreateCustomCountsMetric(
 
 DefaultSingleSampleMetric::DefaultSingleSampleMetric(
     const std::string& histogram_name,
-    HistogramBase::Sample min,
-    HistogramBase::Sample max,
+    HistogramBase::Sample32 min,
+    HistogramBase::Sample32 max,
     uint32_t bucket_count,
     int32_t flags)
     : histogram_(Histogram::FactoryGet(histogram_name,

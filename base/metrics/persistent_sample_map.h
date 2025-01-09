@@ -30,7 +30,7 @@ namespace base {
 class BASE_EXPORT PersistentSampleMap : public HistogramSamples {
  public:
   using SampleToCountMap =
-      std::map<HistogramBase::Sample,
+      std::map<HistogramBase::Sample32,
                raw_ptr<std::atomic<HistogramBase::Count>, CtnExperimental>>;
 
   // Constructs a persistent sample map using a PersistentHistogramAllocator
@@ -45,9 +45,9 @@ class BASE_EXPORT PersistentSampleMap : public HistogramSamples {
   ~PersistentSampleMap() override;
 
   // HistogramSamples:
-  void Accumulate(HistogramBase::Sample value,
+  void Accumulate(HistogramBase::Sample32 value,
                   HistogramBase::Count count) override;
-  HistogramBase::Count GetCount(HistogramBase::Sample value) const override;
+  HistogramBase::Count GetCount(HistogramBase::Sample32 value) const override;
   HistogramBase::Count TotalCount() const override;
   std::unique_ptr<SampleCountIterator> Iterator() const override;
   std::unique_ptr<SampleCountIterator> ExtractingIterator() override;
@@ -60,14 +60,14 @@ class BASE_EXPORT PersistentSampleMap : public HistogramSamples {
   static PersistentMemoryAllocator::Reference GetNextPersistentRecord(
       PersistentMemoryAllocator::Iterator& iterator,
       uint64_t* sample_map_id,
-      HistogramBase::Sample* value);
+      HistogramBase::Sample32* value);
 
   // Creates a new record in an |allocator| storing count information for a
   // specific sample |value| of a histogram with the given |sample_map_id|.
   static PersistentMemoryAllocator::Reference CreatePersistentRecord(
       PersistentMemoryAllocator* allocator,
       uint64_t sample_map_id,
-      HistogramBase::Sample value);
+      HistogramBase::Sample32 value);
 
  protected:
   // Performs arithemetic. |op| is ADD or SUBTRACT.
@@ -96,7 +96,7 @@ class BASE_EXPORT PersistentSampleMap : public HistogramSamples {
   // |until_value| to force the importing of all available samples (null will
   // always be returned in this case).
   std::atomic<HistogramBase::Count>* ImportSamples(
-      std::optional<HistogramBase::Sample> until_value = std::nullopt) const;
+      std::optional<HistogramBase::Sample32> until_value = std::nullopt) const;
 
   // All created/loaded sample values and their associated counts. The storage
   // for the actual Count numbers is owned by the |records_| object and its

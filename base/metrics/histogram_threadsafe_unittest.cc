@@ -36,7 +36,7 @@ char const* GetPermanentName(const std::string& name) {
   return result.first->c_str();
 }
 
-size_t GetBucketIndex(HistogramBase::Sample value, const BucketRanges* ranges) {
+size_t GetBucketIndex(HistogramBase::Sample32 value, const BucketRanges* ranges) {
   size_t bucket_count = ranges->bucket_count();
   EXPECT_GE(bucket_count, 1U);
   for (size_t i = 0; i < bucket_count; ++i) {
@@ -56,7 +56,7 @@ class SnapshotDeltaThread : public SimpleThread {
   SnapshotDeltaThread(const std::string& name,
                       size_t num_emissions,
                       span<HistogramBase*> histograms,
-                      HistogramBase::Sample histogram_max,
+                      HistogramBase::Sample32 histogram_max,
                       subtle::Atomic32* real_total_samples_count,
                       span<subtle::Atomic32> real_bucket_counts,
                       subtle::Atomic32* snapshots_total_samples_count,
@@ -132,7 +132,7 @@ class SnapshotDeltaThread : public SimpleThread {
     subtle::NoBarrier_AtomicIncrement(snapshots_total_samples_count_,
                                       snapshot_samples_count);
     for (auto it = snapshot->Iterator(); !it->Done(); it->Next()) {
-      HistogramBase::Sample min;
+      HistogramBase::Sample32 min;
       int64_t max;
       HistogramBase::Count count;
       it->Get(&min, &max, &count);
@@ -147,7 +147,7 @@ class SnapshotDeltaThread : public SimpleThread {
 
   const size_t num_emissions_;
   raw_span<HistogramBase*> histograms_;
-  const HistogramBase::Sample histogram_max_;
+  const HistogramBase::Sample32 histogram_max_;
   raw_ptr<subtle::Atomic32> real_total_samples_count_;
   raw_span<subtle::Atomic32> real_bucket_counts_;
   raw_ptr<subtle::Atomic32> snapshots_total_samples_count_;
@@ -197,7 +197,7 @@ class HistogramThreadsafeTest : public testing::Test {
   // underlying data as those that live on the persistent memory but are
   // different objects).
   std::vector<HistogramBase*> CreateHistograms(size_t suffix,
-                                               HistogramBase::Sample max,
+                                               HistogramBase::Sample32 max,
                                                size_t bucket_count) {
     // There are 4 ways histograms can store their underlying data:
     // PersistentSampleVector, PersistentSampleMap, SampleVector, and SampleMap.
@@ -381,7 +381,7 @@ TEST_F(HistogramThreadsafeTest, SnapshotDeltaThreadsafe) {
     // The max values of the histograms will alternate between 2 and 50 in order
     // to have coverage of histograms that are being emitted to with a small
     // range of values, and a large range of values.
-    const HistogramBase::Sample kHistogramMax = (iteration % 2 == 0) ? 2 : 50;
+    const HistogramBase::Sample32 kHistogramMax = (iteration % 2 == 0) ? 2 : 50;
     const size_t kBucketCount = (iteration % 2 == 0) ? 3 : 10;
     std::vector<HistogramBase*> histograms =
         CreateHistograms(/*suffix=*/iteration, kHistogramMax, kBucketCount);
@@ -415,7 +415,7 @@ TEST_F(HistogramThreadsafeTest, SnapshotDeltaThreadsafe) {
     ASSERT_EQ(static_cast<size_t>(real_total_samples_count),
               kNumThreads * kNumEmissions * histograms.size());
     ASSERT_EQ(snapshots_total_samples_count, real_total_samples_count);
-    for (HistogramBase::Sample i = 0; i < kHistogramMax; ++i) {
+    for (HistogramBase::Sample32 i = 0; i < kHistogramMax; ++i) {
       ASSERT_EQ(snapshots_bucket_counts[i], real_bucket_counts[i]);
     }
 
@@ -448,7 +448,7 @@ TEST_F(HistogramThreadsafeTest, SnapshotDeltaThreadsafe) {
                 expected_logged_samples_count);
 
       for (auto it = logged_samples->Iterator(); !it->Done(); it->Next()) {
-        HistogramBase::Sample min;
+        HistogramBase::Sample32 min;
         int64_t max;
         HistogramBase::Count count;
         it->Get(&min, &max, &count);
@@ -458,7 +458,7 @@ TEST_F(HistogramThreadsafeTest, SnapshotDeltaThreadsafe) {
       }
     }
     ASSERT_EQ(logged_total_samples_count, real_total_samples_count);
-    for (HistogramBase::Sample i = 0; i < kHistogramMax; ++i) {
+    for (HistogramBase::Sample32 i = 0; i < kHistogramMax; ++i) {
       ASSERT_EQ(logged_bucket_counts[i], real_bucket_counts[i]);
     }
 

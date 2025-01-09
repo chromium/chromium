@@ -27,7 +27,7 @@
 namespace base {
 
 using Count = HistogramBase::Count;
-using Sample = HistogramBase::Sample;
+using Sample32 = HistogramBase::Sample32;
 
 namespace {
 
@@ -42,7 +42,7 @@ struct SampleRecord {
   static constexpr size_t kExpectedInstanceSize = 16;
 
   uint64_t id;               // Unique identifier of owner.
-  Sample value;              // The value for which this record holds a count.
+  Sample32 value;            // The value for which this record holds a count.
   std::atomic<Count> count;  // The count associated with the above value.
 
   // `count` may operate inter-process and so must be lock-free.
@@ -66,7 +66,7 @@ PersistentSampleMap::PersistentSampleMap(
 
 PersistentSampleMap::~PersistentSampleMap() = default;
 
-void PersistentSampleMap::Accumulate(Sample value, Count count) {
+void PersistentSampleMap::Accumulate(Sample32 value, Count count) {
   // We have to do the following atomically, because even if the caller is using
   // a lock, a separate process (that is not aware of this lock) may
   // concurrently modify the value.
@@ -75,7 +75,7 @@ void PersistentSampleMap::Accumulate(Sample value, Count count) {
   IncreaseSumAndCount(int64_t{count} * value, count);
 }
 
-Count PersistentSampleMap::GetCount(Sample value) const {
+Count PersistentSampleMap::GetCount(Sample32 value) const {
   const std::atomic<Count>* const count_pointer = GetSampleCountStorage(value);
   return count_pointer ? count_pointer->load(std::memory_order_relaxed) : 0;
 }
@@ -117,7 +117,7 @@ PersistentMemoryAllocator::Reference
 PersistentSampleMap::GetNextPersistentRecord(
     PersistentMemoryAllocator::Iterator& iterator,
     uint64_t* sample_map_id,
-    Sample* value) {
+    Sample32* value) {
   const SampleRecord* record = iterator.GetNextOfObject<SampleRecord>();
   if (!record) {
     return 0;
@@ -133,7 +133,7 @@ PersistentMemoryAllocator::Reference
 PersistentSampleMap::CreatePersistentRecord(
     PersistentMemoryAllocator* allocator,
     uint64_t sample_map_id,
-    Sample value) {
+    Sample32 value) {
   SampleRecord* record = allocator->New<SampleRecord>();
   if (record) {
     record->id = sample_map_id;
@@ -158,7 +158,7 @@ PersistentSampleMap::CreatePersistentRecord(
 
 bool PersistentSampleMap::AddSubtractImpl(SampleCountIterator* iter,
                                           Operator op) {
-  Sample min;
+  Sample32 min;
   int64_t max;
   Count count;
   for (; !iter->Done(); iter->Next()) {
@@ -181,14 +181,14 @@ bool PersistentSampleMap::AddSubtractImpl(SampleCountIterator* iter,
 }
 
 std::atomic<Count>* PersistentSampleMap::GetSampleCountStorage(
-    Sample value) const {
+    Sample32 value) const {
   // If |value| is already in the map, just return that.
   const auto it = sample_counts_.find(value);
   return (it == sample_counts_.end()) ? ImportSamples(value) : it->second.get();
 }
 
 std::atomic<Count>* PersistentSampleMap::GetOrCreateSampleCountStorage(
-    Sample value) {
+    Sample32 value) {
   // Get any existing count storage.
   std::atomic<Count>* count_pointer = GetSampleCountStorage(value);
   if (count_pointer) {
@@ -236,7 +236,7 @@ PersistentSampleMapRecords* PersistentSampleMap::GetRecords() const {
 }
 
 std::atomic<Count>* PersistentSampleMap::ImportSamples(
-    std::optional<Sample> until_value) const {
+    std::optional<Sample32> until_value) const {
   std::vector<PersistentMemoryAllocator::Reference> refs;
   PersistentSampleMapRecords* records = GetRecords();
   while (!(refs = records->GetNextRecords(until_value)).empty()) {

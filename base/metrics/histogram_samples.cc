@@ -40,14 +40,14 @@ class SampleCountPickleIterator : public SampleCountIterator {
 
   bool Done() const override;
   void Next() override;
-  void Get(HistogramBase::Sample* min,
+  void Get(HistogramBase::Sample32* min,
            int64_t* max,
            HistogramBase::Count* count) override;
 
  private:
   const raw_ptr<PickleIterator> iter_;
 
-  HistogramBase::Sample min_;
+  HistogramBase::Sample32 min_;
   int64_t max_;
   HistogramBase::Count count_;
   bool is_done_ = false;
@@ -70,7 +70,7 @@ void SampleCountPickleIterator::Next() {
   }
 }
 
-void SampleCountPickleIterator::Get(HistogramBase::Sample* min,
+void SampleCountPickleIterator::Get(HistogramBase::Sample32* min,
                                     int64_t* max,
                                     HistogramBase::Count* count) {
   DCHECK(!Done());
@@ -310,7 +310,7 @@ void HistogramSamples::Serialize(Pickle* pickle) const {
   pickle->WriteInt64(sum());
   pickle->WriteInt(redundant_count());
 
-  HistogramBase::Sample min;
+  HistogramBase::Sample32 min;
   int64_t max;
   HistogramBase::Count count;
   for (std::unique_ptr<SampleCountIterator> it = Iterator(); !it->Done();
@@ -322,7 +322,7 @@ void HistogramSamples::Serialize(Pickle* pickle) const {
   }
 }
 
-bool HistogramSamples::AccumulateSingleSample(HistogramBase::Sample value,
+bool HistogramSamples::AccumulateSingleSample(HistogramBase::Sample32 value,
                                               HistogramBase::Count count,
                                               size_t bucket) {
   if (single_sample().Accumulate(bucket, count)) {
@@ -382,10 +382,10 @@ std::string HistogramSamples::GetAsciiBody() const {
   // Determine which bucket has the largest sample count so that we can
   // normalize the graphical bar-width relative to that sample count.
   HistogramBase::Count largest_count = 0;
-  HistogramBase::Sample largest_sample = 0;
+  HistogramBase::Sample32 largest_sample = 0;
   std::unique_ptr<SampleCountIterator> it = Iterator();
   while (!it->Done()) {
-    HistogramBase::Sample min;
+    HistogramBase::Sample32 min;
     int64_t max;
     HistogramBase::Count count;
     it->Get(&min, &max, &count);
@@ -410,7 +410,7 @@ std::string HistogramSamples::GetAsciiBody() const {
   it = Iterator();
   std::string output;
   while (!it->Done()) {
-    HistogramBase::Sample min;
+    HistogramBase::Sample32 min;
     int64_t max;
     HistogramBase::Count count;
     it->Get(&min, &max, &count);
@@ -451,7 +451,7 @@ void HistogramSamples::WriteAsciiBucketValue(HistogramBase::Count current,
 }
 
 const std::string HistogramSamples::GetSimpleAsciiBucketRange(
-    HistogramBase::Sample sample) const {
+    HistogramBase::Sample32 sample) const {
   return StringPrintf("%d", sample);
 }
 
@@ -462,7 +462,7 @@ bool SampleCountIterator::GetBucketIndex(size_t* index) const {
   return false;
 }
 
-SingleSampleIterator::SingleSampleIterator(HistogramBase::Sample min,
+SingleSampleIterator::SingleSampleIterator(HistogramBase::Sample32 min,
                                            int64_t max,
                                            HistogramBase::Count count,
                                            size_t bucket_index,
@@ -490,7 +490,7 @@ void SingleSampleIterator::Next() {
   count_ = 0;
 }
 
-void SingleSampleIterator::Get(HistogramBase::Sample* min,
+void SingleSampleIterator::Get(HistogramBase::Sample32* min,
                                int64_t* max,
                                HistogramBase::Count* count) {
   DCHECK(!Done());

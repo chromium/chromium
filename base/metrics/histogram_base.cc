@@ -83,7 +83,7 @@ HistogramBase::CountAndBucketData::CountAndBucketData(
 HistogramBase::CountAndBucketData& HistogramBase::CountAndBucketData::operator=(
     CountAndBucketData&& other) = default;
 
-const HistogramBase::Sample HistogramBase::kSampleType_MAX = INT_MAX;
+const HistogramBase::Sample32 HistogramBase::kSampleType_MAX = INT_MAX;
 
 HistogramBase::HistogramBase(const char* name)
     : histogram_name_(name), flags_(kNoFlags) {}
@@ -110,7 +110,7 @@ bool HistogramBase::HasFlags(int32_t flags) const {
   return (this->flags() & flags) == flags;
 }
 
-void HistogramBase::AddScaled(Sample value, int count, int scale) {
+void HistogramBase::AddScaled(Sample32 value, int count, int scale) {
   DCHECK_GT(scale, 0);
 
   // Convert raw count and probabilistically round up/down if the remainder
@@ -128,11 +128,11 @@ void HistogramBase::AddScaled(Sample value, int count, int scale) {
   AddCount(value, count_scaled);
 }
 
-void HistogramBase::AddKilo(Sample value, int count) {
+void HistogramBase::AddKilo(Sample32 value, int count) {
   AddScaled(value, count, 1000);
 }
 
-void HistogramBase::AddKiB(Sample value, int count) {
+void HistogramBase::AddKiB(Sample32 value, int count) {
   AddScaled(value, count, 1024);
 }
 
@@ -182,7 +182,7 @@ void HistogramBase::WriteJSON(std::string* output,
   serializer.Serialize(root);
 }
 
-void HistogramBase::FindAndRunCallbacks(HistogramBase::Sample sample) const {
+void HistogramBase::FindAndRunCallbacks(HistogramBase::Sample32 sample) const {
   StatisticsRecorder::GlobalSampleCallback global_sample_callback =
       StatisticsRecorder::global_sample_callback();
   if (global_sample_callback) {
@@ -207,7 +207,7 @@ HistogramBase::CountAndBucketData HistogramBase::GetCountAndBucketData() const {
 
   Value::List buckets;
   while (!it->Done()) {
-    Sample bucket_min;
+    Sample32 bucket_min;
     int64_t bucket_max;
     Count bucket_count;
     it->Get(&bucket_min, &bucket_max, &bucket_count);
@@ -240,7 +240,7 @@ void HistogramBase::WriteAsciiBucketGraph(double x_count,
 }
 
 const std::string HistogramBase::GetSimpleAsciiBucketRange(
-    Sample sample) const {
+    Sample32 sample) const {
   return StringPrintf("%d", sample);
 }
 

@@ -94,11 +94,14 @@ BASE_EXPORT HistogramBase* DeserializeHistogramInfo(base::PickleIterator* iter);
 
 class BASE_EXPORT HistogramBase {
  public:
-  typedef int32_t Sample;                // Used for samples.
+  typedef int32_t Sample32;  // Used for samples.
+  // Temporary alias for backward compatibility.
+  // TODO(crbug.com/40899968): Remove this alias.
+  typedef Sample32 Sample;
   typedef subtle::Atomic32 AtomicCount;  // Used to count samples.
   typedef int32_t Count;  // Used to manipulate counts in temporaries.
 
-  static const Sample kSampleType_MAX;  // INT_MAX
+  static const Sample32 kSampleType_MAX;  // INT_MAX
 
   enum Flags {
     kNoFlags = 0x0,
@@ -173,28 +176,28 @@ class BASE_EXPORT HistogramBase {
   // Whether the histogram has construction arguments as parameters specified.
   // For histograms that don't have the concept of minimum, maximum or
   // bucket_count, this function always returns false.
-  virtual bool HasConstructionArguments(Sample expected_minimum,
-                                        Sample expected_maximum,
+  virtual bool HasConstructionArguments(Sample32 expected_minimum,
+                                        Sample32 expected_maximum,
                                         size_t expected_bucket_count) const = 0;
 
-  virtual void Add(Sample value) = 0;
+  virtual void Add(Sample32 value) = 0;
 
   // In Add function the |value| bucket is increased by one, but in some use
   // cases we need to increase this value by an arbitrary integer. AddCount
   // function increases the |value| bucket by |count|. |count| should be greater
   // than or equal to 1.
-  virtual void AddCount(Sample value, int count) = 0;
+  virtual void AddCount(Sample32 value, int count) = 0;
 
   // Similar to above but divides |count| by the |scale| amount. Probabilistic
   // rounding is used to yield a reasonably accurate total when many samples
   // are added. Methods for common cases of scales 1000 and 1024 are included.
   // The ScaledLinearHistogram (which can also used be for enumerations) may be
   // a better (and faster) solution.
-  void AddScaled(Sample value, int count, int scale);
-  void AddKilo(Sample value, int count);  // scale=1000
-  void AddKiB(Sample value, int count);   // scale=1024
+  void AddScaled(Sample32 value, int count, int scale);
+  void AddKilo(Sample32 value, int count);  // scale=1000
+  void AddKiB(Sample32 value, int count);   // scale=1024
 
-  // Convenient functions that call Add(Sample).
+  // Convenient functions that call Add(Sample32).
   void AddTime(const TimeDelta& time) { AddTimeMillisecondsGranularity(time); }
   void AddTimeMillisecondsGranularity(const TimeDelta& time);
   // Note: AddTimeMicrosecondsGranularity() drops the report if this client
@@ -327,7 +330,7 @@ class BASE_EXPORT HistogramBase {
                              std::string* output) const;
 
   // Return a string description of what goes in a given bucket.
-  const std::string GetSimpleAsciiBucketRange(Sample sample) const;
+  const std::string GetSimpleAsciiBucketRange(Sample32 sample) const;
 
   // Write textual description of the bucket contents (relative to histogram).
   // Output is the count in the buckets, as well as the percentage.
@@ -337,7 +340,7 @@ class BASE_EXPORT HistogramBase {
 
   // Retrieves the registered callbacks for this histogram, if any, and runs
   // them passing |sample| as the parameter.
-  void FindAndRunCallbacks(Sample sample) const;
+  void FindAndRunCallbacks(Sample32 sample) const;
 
   // Gets a permanent string that can be used for histogram objects when the
   // original is not a code constant or held in persistent memory.

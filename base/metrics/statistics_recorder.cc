@@ -65,7 +65,7 @@ StatisticsRecorder::ScopedHistogramSampleObserver::
 void StatisticsRecorder::ScopedHistogramSampleObserver::RunCallback(
     const char* histogram_name,
     uint64_t name_hash,
-    HistogramBase::Sample sample) {
+    HistogramBase::Sample32 sample) {
   callback_.Run(histogram_name, name_hash, sample);
 }
 
@@ -382,7 +382,7 @@ void StatisticsRecorder::FindAndRunHistogramCallbacks(
     base::PassKey<HistogramBase>,
     const char* histogram_name,
     uint64_t name_hash,
-    HistogramBase::Sample sample) {
+    HistogramBase::Sample32 sample) {
   DCHECK_EQ(name_hash, HashMetricName(histogram_name));
 
   const AutoLock auto_lock(GetLock());
