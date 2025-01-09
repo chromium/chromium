@@ -27,6 +27,18 @@ const injectDivScript2 = `var div = document.createElement('div');
 div.id = 'injected_code_2';
 document.body.appendChild(div);`;
 
+// A script that returns "flags" set by scripts in the user script and main
+// worlds. Note: We use '<none>' here because undefined and null values aren't
+// preserved in return results from userScripts.execute() calls.
+const executionWorldFlagsScript = `
+      (() => {
+        return {
+          userScriptWorld: window.userScriptWorldFlag || '<none>',
+          mainWorld: window.mainWorldFlag || '<none>',
+        };
+      })();
+    `
+
 chrome.test.runTests([
   // Tests that an error is returned if the user script source list is empty.
   async function invalidScriptSource_EmptySourceList() {
@@ -226,6 +238,55 @@ chrome.test.runTests([
     chrome.test.assertEq(
         ['injected_code_1', 'injected_code_2'],
         await getInjectedElementIds(tab.id));
+
+    chrome.test.succeed();
+  },
+
+  // Tests that the script is injected in the corresponding execution world.
+  async function executionWorld() {
+    await chrome.userScripts.unregister();
+
+    // Navigate to a page with an html file that sets the main world script
+    // flag.
+    const config = await chrome.test.getConfig();
+    const url = `http://requested.com:${
+        config.testServer.port}/extensions/main_world_script_flag.html`;
+    const tab = await openTab(url);
+
+    // When `world` is unspecified, it defaults to the user script world.
+    const defaultWorldScript = {
+      js: [{code: `window.userScriptWorldFlag = 'from user script world'`}],
+      target: {tabId: tab.id}
+    };
+    await chrome.userScripts.execute(defaultWorldScript);
+
+    // Executing a script in the user script world that retrieves the world
+    // flags should return only the user script world flag (set previously).
+    const userWorldScript = {
+      js: [{code: executionWorldFlagsScript}],
+      target: {tabId: tab.id},
+      world: chrome.userScripts.ExecutionWorld.USER_SCRIPT
+    };
+    let results = await chrome.userScripts.execute(userWorldScript);
+
+    chrome.test.assertEq(1, results.length);
+    chrome.test.assertEq(
+        {userScriptWorld: 'from user script world', mainWorld: '<none>'},
+        results[0].result);
+
+    // Executing a script in the main world that retrieves the world flags
+    // should return only the user script world flag (set by the html file).
+    const mainWorldScript = {
+      js: [{code: executionWorldFlagsScript}],
+      target: {tabId: tab.id},
+      world: chrome.userScripts.ExecutionWorld.MAIN
+    };
+    results = await chrome.userScripts.execute(mainWorldScript);
+
+    chrome.test.assertEq(1, results.length);
+    chrome.test.assertEq(
+        {userScriptWorld: '<none>', mainWorld: 'from main world'},
+        results[0].result);
 
     chrome.test.succeed();
   },
