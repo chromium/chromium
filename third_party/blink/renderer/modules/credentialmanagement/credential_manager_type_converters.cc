@@ -8,9 +8,13 @@
 #include <utility>
 
 #include "base/numerics/safe_conversions.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
+#include "mojo/public/cpp/bindings/type_converter.h"
+#include "third_party/blink/public/common/webid/login_status_options.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-blink.h"
 #include "third_party/blink/public/mojom/webid/digital_identity_request.mojom-blink.h"
+#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
@@ -33,11 +37,13 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_disconnect_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options_context.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options_mode.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_account.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_field.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_request_options_format.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_user_info.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_login_status_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_creation_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_parameters.h"
@@ -53,6 +59,7 @@
 #include "third_party/blink/renderer/modules/credentialmanagement/public_key_credential.h"
 #include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
@@ -85,6 +92,10 @@ using blink::mojom::blink::IdentityProviderRequestOptionsPtr;
 using blink::mojom::blink::IdentityUserInfo;
 using blink::mojom::blink::IdentityUserInfoPtr;
 using blink::mojom::blink::LargeBlobSupport;
+using blink::mojom::blink::LoginStatusAccount;
+using blink::mojom::blink::LoginStatusAccountPtr;
+using blink::mojom::blink::LoginStatusOptions;
+using blink::mojom::blink::LoginStatusOptionsPtr;
 using blink::mojom::blink::PRFValues;
 using blink::mojom::blink::PRFValuesPtr;
 using blink::mojom::blink::PublicKeyCredentialCreationOptionsPtr;
@@ -1178,6 +1189,43 @@ TypeConverter<blink::mojom::blink::PublicKeyCredentialReportOptionsPtr,
       Base64UnpaddedURLDecodeOrCheck(options.userId());
   mojo_options->current_user_details->name = options.name();
   mojo_options->current_user_details->display_name = options.displayName();
+  return mojo_options;
+}
+
+LoginStatusAccountPtr
+TypeConverter<LoginStatusAccountPtr, blink::IdentityProviderAccount>::Convert(
+    const blink::IdentityProviderAccount& account_profile) {
+  auto mojo_profile = blink::mojom::blink::LoginStatusAccount::New();
+
+  mojo_profile->id = account_profile.id();
+  mojo_profile->email = account_profile.email();
+  mojo_profile->name = account_profile.name();
+
+  if (account_profile.hasGivenName()) {
+    mojo_profile->given_name = account_profile.givenName();
+  }
+  if (account_profile.hasPicture()) {
+    mojo_profile->picture = blink::KURL(account_profile.picture());
+  }
+
+  return mojo_profile;
+}
+
+LoginStatusOptionsPtr
+TypeConverter<LoginStatusOptionsPtr, blink::LoginStatusOptions>::Convert(
+    const blink::LoginStatusOptions& options) {
+  auto mojo_options = blink::mojom::blink::LoginStatusOptions::New();
+  if (options.hasAccounts()) {
+    for (const auto& blink_account : options.accounts()) {
+      mojo_options->accounts.push_back(
+          mojo::ConvertTo<LoginStatusAccountPtr>(*blink_account.Get()));
+    }
+  }
+
+  if (options.hasExpiration()) {
+    mojo_options->expiration = base::Milliseconds(options.expiration());
+  }
+
   return mojo_options;
 }
 

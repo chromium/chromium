@@ -10,6 +10,16 @@ enum LoginStatus {
   "logged-out",
 };
 
+dictionary LoginStatusOptions {
+  // A list of account metadata associated with the currently signed-in
+  // sessions for this IdP.
+  sequence<IdentityProviderAccount> accounts;
+  // Duration after which the account metadata associated with this origin
+  // should be cleared. Specified in milliseconds. If not set, account metadata
+  // does not expire. Expiration does not impact the LoginStatus value.
+  unsigned long long expiration;
+};
+
 [
     ImplementedAs=NavigatorLogin
 ]
@@ -25,4 +35,6 @@ partial interface Navigator {
 interface NavigatorLogin {
     [CallWith=ScriptState, MeasureAs=FedCmIdpSigninStatusJsApi]
     Promise<undefined> setStatus(LoginStatus status);
+    [CallWith=ScriptState, MeasureAs=FedCmIdpSigninStatusJsApi, RuntimeEnabled=FedCmLightweightMode]
+    Promise<undefined> setStatus(LoginStatus status, LoginStatusOptions options);
 };

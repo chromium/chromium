@@ -7,6 +7,7 @@ module blink.mojom;
 import "third_party/blink/public/mojom/credentialmanagement/credential_manager.mojom";
 import "url/mojom/url.mojom";
 import "url/mojom/origin.mojom";
+import "mojo/public/mojom/base/time.mojom";
 
 // Implementation of the proposed FedCM API.
 //
@@ -141,6 +142,21 @@ struct IdentityUserInfo {
   string given_name;
   string name;
   string picture;
+};
+
+// Cached user information from a Login Status API call.
+struct LoginStatusAccount {
+  string id;
+  string email;
+  string name;
+  string? given_name;
+  url.mojom.Url? picture;
+};
+
+// List of accounts and the expiration date thereof for a Login Status API call.
+struct LoginStatusOptions {
+  array<LoginStatusAccount> accounts;
+  mojo_base.mojom.TimeDelta? expiration;
 };
 
 // The parameters for a get call for identity provider(s).

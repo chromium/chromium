@@ -733,6 +733,24 @@ mojom("mojom_platform") {
     {
       types = [
         {
+          mojom = "blink.mojom.LoginStatusOptions"
+          cpp = "::blink::common::webid::LoginStatusOptions"
+        },
+        {
+          mojom = "blink.mojom.LoginStatusAccount"
+          cpp = "::blink::common::webid::LoginStatusAccount"
+        },
+      ]
+      traits_headers = [ "//third_party/blink/public/common/webid/federated_auth_request_mojom_traits.h" ]
+      traits_sources = [ "//third_party/blink/common/webid/federated_auth_request_mojom_traits.cc" ]
+      traits_public_deps = [
+        "//third_party/blink/public/common:headers",
+        "//url/mojom:mojom_traits",
+      ]
+    },
+    {
+      types = [
+        {
           mojom = "blink.mojom.DirectFromSellerSignalsSubresource"
           cpp = "::blink::DirectFromSellerSignalsSubresource"
         },

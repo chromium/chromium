@@ -14,6 +14,8 @@
 #include "mojo/public/cpp/bindings/type_converter.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/webid/login_status_account.h"
+#include "third_party/blink/public/common/webid/login_status_options.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-blink.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
@@ -30,13 +32,16 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_supplemental_pub_keys_outputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_cable_authentication_data.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options_context.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_account.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_request_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_login_status_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_remote_desktop_client_override.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -477,6 +482,54 @@ TEST(CredentialManagerTypeConvertersTest, NoClientId) {
       ConvertTo<blink::mojom::blink::IdentityProviderRequestOptionsPtr>(
           *provider);
   EXPECT_EQ(identity_provider->config->client_id, "");
+}
+
+TEST(CredentialManagerTypeConvertersTest, LoginStatusOptions) {
+  auto* blink_account = blink::IdentityProviderAccount::Create();
+  blink_account->setId("some-identifier");
+  blink_account->setEmail("user@example.com");
+  blink_account->setGivenName("User");
+  blink_account->setName("User Fullname");
+  blink_account->setPicture("https://example.com/user.png");
+
+  blink::HeapVector<blink::Member<blink::IdentityProviderAccount>>
+      blink_accounts;
+  blink_accounts.push_back(blink_account);
+
+  auto* blink_options = blink::LoginStatusOptions::Create();
+  blink_options->setExpiration(12345U);
+  blink_options->setAccounts(blink_accounts);
+
+  blink::mojom::blink::LoginStatusOptionsPtr mojo_options =
+      ConvertTo<blink::mojom::blink::LoginStatusOptionsPtr>(*blink_options);
+
+  ASSERT_TRUE(mojo_options->expiration.has_value());
+  ASSERT_EQ(mojo_options->expiration.value().InMilliseconds(), 12345U);
+  ASSERT_EQ(mojo_options->accounts[0]->id, "some-identifier");
+  ASSERT_EQ(mojo_options->accounts[0]->email, "user@example.com");
+  ASSERT_EQ(mojo_options->accounts[0]->name, "User Fullname");
+  ASSERT_EQ(mojo_options->accounts[0]->given_name, "User");
+  ASSERT_TRUE(mojo_options->accounts[0]->picture.has_value());
+  ASSERT_EQ(mojo_options->accounts[0]->picture->GetString(),
+            "https://example.com/user.png");
+}
+
+TEST(CredentialManagerTypeConvertersTest,
+     IdentityProviderAccountNoOptionalFields) {
+  auto* blink_account = blink::IdentityProviderAccount::Create();
+
+  blink_account->setId("some-identifier");
+  blink_account->setEmail("user@example.com");
+  blink_account->setName("User Fullname");
+
+  blink::mojom::blink::LoginStatusAccountPtr mojo_account =
+      ConvertTo<blink::mojom::blink::LoginStatusAccountPtr>(*blink_account);
+
+  ASSERT_EQ(mojo_account->id, "some-identifier");
+  ASSERT_EQ(mojo_account->email, "user@example.com");
+  ASSERT_EQ(mojo_account->name, "User Fullname");
+  ASSERT_TRUE(mojo_account->given_name.IsNull());
+  ASSERT_FALSE(mojo_account->picture.has_value());
 }
 
 }  // namespace mojo
