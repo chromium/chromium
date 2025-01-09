@@ -196,7 +196,9 @@ ThrottleManager* FingerprintingProtectionWebContentsHelper::GetThrottleManager(
   // We should never be requesting the throttle manager for a navigation that
   // moves a page into the primary frame tree (e.g. prerender activation,
   // BFCache restoration).
-  CHECK(!handle.IsPageActivation());
+  if (handle.IsPageActivation()) {
+    return nullptr;
+  }
 
   // TODO(https://crbug.com/40280666): Consider storing pointers to existing
   // throttle managers to enable short-circuiting this function in most cases.
