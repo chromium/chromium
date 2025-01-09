@@ -533,10 +533,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   scoped_refptr<gpu::ClientSharedImage> ExportSharedImageFromBackBuffer(
       gpu::SyncToken& sync_token,
       viz::ReleaseCallback* out_release_callback);
-  bool FinishPrepareTransferableResourceGpu(
-      viz::TransferableResource* out_resource,
-      scoped_refptr<gpu::ClientSharedImage>* client_si,
-      viz::ReleaseCallback* out_release_callback);
   bool FinishPrepareTransferableResourceSoftware(
       viz::TransferableResource* out_resource,
       viz::ReleaseCallback* out_release_callback);

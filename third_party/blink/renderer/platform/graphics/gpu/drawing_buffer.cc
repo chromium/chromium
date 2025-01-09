@@ -435,8 +435,24 @@ bool DrawingBuffer::PrepareTransferableResource(
                                                      out_release_callback);
   }
 
-  return FinishPrepareTransferableResourceGpu(
-      out_resource, /*client_si=*/nullptr, out_release_callback);
+  gpu::SyncToken sync_token;
+  auto shared_image =
+      ExportSharedImageFromBackBuffer(sync_token, out_release_callback);
+  if (!shared_image) {
+    return false;
+  }
+
+  // Populate the output TransferableResource from the SharedImage.
+  *out_resource = viz::TransferableResource::MakeGpu(
+      shared_image, shared_image->GetTextureTarget(), sync_token,
+      shared_image->size(), shared_image->format(),
+      shared_image->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT),
+      viz::TransferableResource::ResourceSource::kDrawingBuffer);
+  out_resource->color_space = shared_image->color_space();
+  out_resource->hdr_metadata = hdr_metadata_;
+  out_resource->origin = shared_image->surface_origin();
+
+  return true;
 }
 
 DrawingBuffer::CheckForDestructionResult
@@ -644,34 +660,6 @@ DrawingBuffer::ExportSharedImageFromBackBuffer(
   }
 
   return color_buffer_for_mailbox->shared_image;
-}
-
-bool DrawingBuffer::FinishPrepareTransferableResourceGpu(
-    viz::TransferableResource* out_resource,
-    scoped_refptr<gpu::ClientSharedImage>* client_si,
-    viz::ReleaseCallback* out_release_callback) {
-  gpu::SyncToken sync_token;
-  auto shared_image =
-      ExportSharedImageFromBackBuffer(sync_token, out_release_callback);
-  if (!shared_image) {
-    return false;
-  }
-
-  if (client_si) {
-    *client_si = shared_image;
-  }
-
-  // Populate the output TransferableResource.
-  *out_resource = viz::TransferableResource::MakeGpu(
-      shared_image, shared_image->GetTextureTarget(), sync_token,
-      shared_image->size(), shared_image->format(),
-      shared_image->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT),
-      viz::TransferableResource::ResourceSource::kDrawingBuffer);
-  out_resource->color_space = shared_image->color_space();
-  out_resource->hdr_metadata = hdr_metadata_;
-  out_resource->origin = shared_image->surface_origin();
-
-  return true;
 }
 
 // static
