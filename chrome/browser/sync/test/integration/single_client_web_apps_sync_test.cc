@@ -408,7 +408,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
 
-  EXPECT_TRUE(registrar_unsafe().IsNotInRegistrar(app_id));
+  EXPECT_FALSE(registrar_unsafe().IsInRegistrar(app_id));
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
@@ -522,7 +522,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest, InvalidStartUrl) {
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
 
-  EXPECT_TRUE(registrar_unsafe().IsNotInRegistrar(app_id));
+  EXPECT_FALSE(registrar_unsafe().IsInRegistrar(app_id));
 
   EXPECT_THAT(histogram_tester.GetAllSamples("WebApp.Sync.InvalidEntity"),
               base::BucketsAre(
@@ -551,7 +551,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest, NoStartUrl) {
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
 
-  EXPECT_TRUE(registrar_unsafe().IsNotInRegistrar(app_id));
+  EXPECT_FALSE(registrar_unsafe().IsInRegistrar(app_id));
 
   std::vector<sync_pb::SyncEntity> server_apps =
       GetFakeServer()->GetSyncEntitiesByDataType(syncer::WEB_APPS);
@@ -585,7 +585,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest, InvalidManifestId) {
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
 
-  EXPECT_TRUE(registrar_unsafe().IsNotInRegistrar(app_id));
+  EXPECT_FALSE(registrar_unsafe().IsInRegistrar(app_id));
 
   std::vector<sync_pb::SyncEntity> server_apps =
       GetFakeServer()->GetSyncEntitiesByDataType(syncer::WEB_APPS);

@@ -356,7 +356,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, NotSynced) {
   // profile 1.
   EXPECT_THAT(GetAllAppIdsForProfile(GetProfile(0)),
               Not(ElementsAreArray(GetAllAppIdsForProfile(GetProfile(1)))));
-  EXPECT_TRUE(GetRegistrar(GetProfile(1)).IsNotInRegistrar(app_id));
+  EXPECT_FALSE(GetRegistrar(GetProfile(1)).IsInRegistrar(app_id));
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, NotSyncedThenSynced) {
