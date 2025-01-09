@@ -965,6 +965,19 @@ void ClientSideDetectionHost::MaybeSendClientPhishingRequest(
     verdict->set_client_side_detection_type(
         safe_browsing::ClientSideDetectionType::FORCE_REQUEST);
     force_request_from_rt_url_lookup = true;
+    if (base::FeatureList::IsEnabled(
+            kClientSideDetectionLlamaForcedTriggerInfoForScamDetection)) {
+      raw_ptr<VerdictCacheManager> cache_manager = delegate_->GetCacheManager();
+
+      if (cache_manager && current_url_.is_valid()) {
+        safe_browsing::LlamaForcedTriggerInfo llama_forced_trigger_info;
+        if (cache_manager->GetCachedRealTimeLlamaForcedTriggerInfo(
+                current_url_, &llama_forced_trigger_info)) {
+          verdict->mutable_llama_forced_trigger_info()->Swap(
+              &llama_forced_trigger_info);
+        }
+      }
+    }
   }
 
   base::UmaHistogramBoolean("SBClientPhishing.RTLookupForceRequest",
@@ -1074,11 +1087,20 @@ void ClientSideDetectionHost::PhishingImageEmbeddingDone(
 void ClientSideDetectionHost::MaybeInquireOnDeviceForScamDetection(
     std::unique_ptr<ClientPhishingRequest> verdict,
     std::optional<bool> did_match_high_confidence_allowlist) {
-  if (IsEnhancedProtectionEnabled(*delegate_->GetPrefs()) &&
+  bool is_keyboard_lock_requested =
       base::FeatureList::IsEnabled(
           kClientSideDetectionBrandAndIntentForScamDetection) &&
       verdict->client_side_detection_type() ==
-          ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED) {
+          ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED;
+
+  bool is_intelligent_scan_requested =
+      base::FeatureList::IsEnabled(
+          kClientSideDetectionLlamaForcedTriggerInfoForScamDetection) &&
+      verdict->has_llama_forced_trigger_info() &&
+      verdict->llama_forced_trigger_info().intelligent_scan();
+
+  if (IsEnhancedProtectionEnabled(*delegate_->GetPrefs()) &&
+      (is_keyboard_lock_requested || is_intelligent_scan_requested)) {
     delegate_->GetInnerText(
         base::BindOnce(&ClientSideDetectionHost::OnInnerTextComplete,
                        weak_factory_.GetWeakPtr(), std::move(verdict),

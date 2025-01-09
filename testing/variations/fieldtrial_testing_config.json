@@ -5432,6 +5432,23 @@
             ]
         }
     ],
+    "ClientSideDetectionLlamaForcedTriggerInfoForScamDetection": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ClientSideDetectionLlamaForcedTriggerInfoForScamDetection"
+                    ]
+                }
+            ]
+        }
+    ],
     "ClientSideDetectionRetryLimit": [
         {
             "platforms": [

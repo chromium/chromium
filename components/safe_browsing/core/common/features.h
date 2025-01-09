@@ -43,6 +43,11 @@ BASE_DECLARE_FEATURE(kClientSideDetectionBrandAndIntentForScamDetection);
 
 BASE_DECLARE_FEATURE(kClientSideDetectionDebuggingMetadataCache);
 
+// Inquire the on device model when the forced llama trigger info in
+// RTLookupResponse asks to scan the page.
+BASE_DECLARE_FEATURE(
+    kClientSideDetectionLlamaForcedTriggerInfoForScamDetection);
+
 // Killswitch for client side phishing detection. Since client side models are
 // run on a large fraction of navigations, crashes due to the model are very
 // impactful, even if only a small fraction of users have a bad version of the
