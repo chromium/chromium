@@ -113,6 +113,8 @@ typedef NS_ENUM(NSInteger, SyncSettingsItemType) {
   BatchUploadButtonItemType,
   // Indicates the items to be uploaded to the account.
   BatchUploadRecommendationItemType,
+  // Open account storage management.
+  ManageAccountStorageType,
 };
 
 // States for Sync Settings page to be in.

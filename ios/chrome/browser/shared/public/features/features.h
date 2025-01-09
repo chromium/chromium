@@ -489,6 +489,9 @@ BASE_DECLARE_FEATURE(kIOSChooseFromDrive);
 // Feature flag enabling a fix for the Download manager mediator.
 BASE_DECLARE_FEATURE(kIOSDownloadNoUIUpdateInBackground);
 
+// Feature flag enabling account storage management.
+BASE_DECLARE_FEATURE(kIOSManageAccountStorage);
+
 // Feature flag to enable feed background refresh.
 // Use IsFeedBackgroundRefreshEnabled() instead of this constant directly.
 BASE_DECLARE_FEATURE(kEnableFeedBackgroundRefresh);

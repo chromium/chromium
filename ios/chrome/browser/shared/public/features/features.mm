@@ -459,6 +459,10 @@ BASE_FEATURE(kIOSDownloadNoUIUpdateInBackground,
              "IOSDownloadNoUIUpdateInBackground",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kIOSManageAccountStorage,
+             "IOSManageAccountStorage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEnableWebChannels,
              "EnableWebChannels",
              base::FEATURE_DISABLED_BY_DEFAULT);

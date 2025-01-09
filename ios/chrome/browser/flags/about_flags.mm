@@ -2271,6 +2271,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableCardBenefitsForBmoDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableCardBenefitsForBmo)},
+    {"ios-manage-account-storage",
+     flag_descriptions::kIOSManageAccountStorageName,
+     flag_descriptions::kIOSManageAccountStorageDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kIOSManageAccountStorage)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

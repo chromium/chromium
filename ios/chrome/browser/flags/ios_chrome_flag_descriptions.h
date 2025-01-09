@@ -515,6 +515,10 @@ extern const char kIOSQuickDeleteDescription[];
 extern const char kIOSChooseFromDriveName[];
 extern const char kIOSChooseFromDriveDescription[];
 
+// Title and description for the flag to allow managing account storage.
+extern const char kIOSManageAccountStorageName[];
+extern const char kIOSManageAccountStorageDescription[];
+
 // Title and description for the flag to enable the Save to Photos feature
 // improvements.
 extern const char kIOSSaveToPhotosImprovementsName[];

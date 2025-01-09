@@ -2195,6 +2195,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_MANAGE_GOOGLE_ACCOUNT_ITEM" desc="Title shown on the manage your Google Account button item. [iOS only]">
         Manage your Google Account
       </message>
+      <message name="IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_MANAGE_STORAGE_ITEM" desc="Title of the button to manage Google Storage. [iOS only]">
+        Manage Google storage
+      </message>
       <message name="IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_ITEM" desc="Title shown on the sign out button item. [iOS only]">
         Sign out
       </message>

@@ -5283,6 +5283,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "ios-manage-account-storage",
+    "owners": [ "olivierrobin@google.com", "bling-squid-squad@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "ios-new-feed-positioning",
     "owners": [ "ginnyhuang@chromium.org", "thegreenfrog@google.com" ],
     "expiry_milestone": 136

@@ -657,6 +657,16 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   [model addItem:item
       toSectionWithIdentifier:ManageAndSignOutSectionIdentifier];
 
+  if (base::FeatureList::IsEnabled(kIOSManageAccountStorage)) {
+    // Manage account storage item.
+    item = [[TableViewTextItem alloc] initWithType:ManageAccountStorageType];
+    item.text =
+        GetNSString(IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_MANAGE_STORAGE_ITEM);
+    item.textColor = [UIColor colorNamed:kBlueColor];
+    [model addItem:item
+        toSectionWithIdentifier:ManageAndSignOutSectionIdentifier];
+  }
+
   // Manage accounts on this device item.
   item = [[TableViewTextItem alloc] initWithType:ManageAccountsItemType];
   item.text = GetNSString(IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_MANAGE_ACCOUNTS_ITEM);
@@ -1199,6 +1209,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
       case AccountErrorMessageItemType:
       case BatchUploadButtonItemType:
       case BatchUploadRecommendationItemType:
+      case ManageAccountStorageType:
         NOTREACHED();
     }
   }
@@ -1268,6 +1279,9 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
       break;
     case BatchUploadButtonItemType:
       [self.commandHandler openBulkUpload];
+      break;
+    case ManageAccountStorageType:
+      [self.commandHandler openAccountStorage];
       break;
     case SyncEverythingItemType:
     case AutofillDataTypeItemType:

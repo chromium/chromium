@@ -609,6 +609,10 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
                baseViewController:self.viewController];
 }
 
+- (void)openAccountStorage {
+  // TODO(crbug.com/388443332): actually open the manage account storage.
+}
+
 #pragma mark - BulkUploadCoordinatorDelegate
 
 - (void)bulkUploadCoordinatorShouldStop:(BulkUploadCoordinator*)coordinator {
