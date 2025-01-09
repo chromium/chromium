@@ -12,9 +12,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/files_scan_data.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -23,8 +23,13 @@
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/base/clipboard/file_info.h"
 
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+
 namespace {
 
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 void CompletionCallback(
     content::DropData drop_data,
     std::unique_ptr<enterprise_connectors::FilesScanData> files_scan_data,
@@ -134,6 +139,7 @@ class HandleDropScanData : public content::WebContentsObserver {
 
   base::WeakPtrFactory<HandleDropScanData> weakptr_factory_{this};
 };
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
 }  // namespace
 
@@ -146,6 +152,7 @@ void HandleOnPerformingDrop(
     std::move(callback).Run(std::move(drop_data));
   };
 
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   enterprise_connectors::ContentAnalysisDelegate::Data data;
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
@@ -205,4 +212,10 @@ void HandleOnPerformingDrop(
         &HandleDropScanData::ScanData, handle_drop_scan_data->GetWeakPtr(),
         std::move(files_scan_data)));
   }
+#else
+  // If content analysis is not available, make sure that the renderer never
+  // forces a default action.
+  drop_data.document_is_handling_drag = true;
+  return;
+#endif  // !BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 }
