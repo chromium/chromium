@@ -9,9 +9,11 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/check_deref.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
@@ -74,6 +76,9 @@ constexpr auto kTrafficAnnotation =
 specialized_features::FeatureAccessConfig CreateFeatureAccessConfig() {
   specialized_features::FeatureAccessConfig config;
   config.settings_toggle_pref = ash::prefs::kSunfishEnabled;
+  if (!base::FeatureList::IsEnabled(ash::features::kScannerDogfood)) {
+    config.feature_management_flag = &ash::features::kFeatureManagementScanner;
+  }
   return config;
 }
 
