@@ -1364,6 +1364,12 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
 delta = "0.7.2 -> 0.7.3"
 notes = "Wrapping math for Fixed type, no new unsafe."
 
+[[audits.font-types]]
+who = "Dominik Röttsches <drott@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
+delta = "0.7.3 -> 0.8.2"
+notes = "No new unsafe, more inlining, checked add. Minor spec compliance issues."
+
 [[audits.getrandom]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -1868,6 +1874,16 @@ Grepped for \"unsafe\", \"crypt\", \"cipher\", \"fs\", \"net\" - there were no h
 For overall `safe-to-deploy` and `does-not-implement-crypto` I am mostly
 relying on certification by the Chromium engineers who work on the library
 (mostly drott@chromium.org).
+"""
+
+[[audits.read-fonts]]
+who = "Dominik Röttsches <drott@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+version = "0.25.3"
+notes = """
+Fixes for hdmx processing (use explicit record size), overflow fixes for packed
+point numbers. Fixes for midpoint computation, and follow-up fix to reinstate
+FreeType equivalence. Feature gating experimential spec features.
 """
 
 [[audits.read-fonts]]
@@ -2631,6 +2647,12 @@ who = "Dominik Röttsches <drott@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "0.24.0 -> 0.24.1"
 notes = "COLRv1 bounds fix, fixes for underflows/overflows."
+
+[[audits.skrifa]]
+who = "Dominik Röttsches <drott@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "0.24.1 -> 0.26.3"
+notes = "Support for fonts that rely on hinting (like FreeType's \"tricky\" font detection). Overflow fixes, cycle detection in autohinting. cff overflow fixes."
 
 [[audits.small_ctor]]
 who = "danakj@chromium.org"
