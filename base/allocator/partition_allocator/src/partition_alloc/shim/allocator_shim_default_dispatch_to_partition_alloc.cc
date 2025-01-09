@@ -26,6 +26,7 @@
 #include "partition_alloc/partition_root.h"
 #include "partition_alloc/partition_stats.h"
 #include "partition_alloc/shim/allocator_dispatch.h"
+#include "partition_alloc/shim/allocator_shim.h"
 #include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc_internal.h"
 #include "partition_alloc/shim/allocator_shim_internals.h"
 
@@ -619,6 +620,7 @@ void ConfigurePartitions(
     size_t scheduler_loop_quarantine_branch_capacity_in_bytes,
     ZappingByFreeFlags zapping_by_free_flags,
     EventuallyZeroFreedMemory eventually_zero_freed_memory,
+    FewerMemoryRegions fewer_memory_regions,
     UsePoolOffsetFreelists use_pool_offset_freelists,
     UseSmallSingleSlotSpans use_small_single_slot_spans) {
   // Calling Get() is actually important, even if the return value isn't
@@ -651,6 +653,9 @@ void ConfigurePartitions(
             eventually_zero_freed_memory
                 ? partition_alloc::PartitionOptions::kEnabled
                 : partition_alloc::PartitionOptions::kDisabled;
+        opts.fewer_memory_regions =
+            fewer_memory_regions ? partition_alloc::PartitionOptions::kEnabled
+                                 : partition_alloc::PartitionOptions::kDisabled;
         opts.scheduler_loop_quarantine =
             scheduler_loop_quarantine
                 ? partition_alloc::PartitionOptions::kEnabled

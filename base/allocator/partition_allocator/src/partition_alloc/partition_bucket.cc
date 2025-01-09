@@ -708,7 +708,7 @@ PartitionBucket::AllocNewSlotSpan(PartitionRoot* root,
     PA_DEBUG_DATA_ON_STACK("spancmt", slot_span_committed_size);
 
     root->RecommitSystemPagesForData(
-        slot_span_start, slot_span_committed_size,
+        slot_span_start, SlotSpanCommittedSize(root),
         PageAccessibilityDisposition::kRequireUpdate,
         slot_size <= kMaxMemoryTaggingSize);
   }
@@ -1588,6 +1588,65 @@ void PartitionBucket::InitializeSlotSpanForGwpAsan(
     SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span,
     PartitionRoot* root) {
   InitializeSlotSpan(slot_span, root);
+}
+
+size_t PartitionBucket::SlotSpanCommittedSize(PartitionRoot* root) const {
+  // With lazy commit, we certainly don't want to commit more than
+  // necessary. This is not reached, but keep the CHECK() as documentation.
+  PA_CHECK(!kUseLazyCommit);
+
+  // Memory is reserved in units of PartitionPage, but a given slot span may be
+  // smaller than the reserved area. For instance (assuming 4k pages), for a
+  // bucket where the slot span size is 40kiB, we reserve 4 PartitionPage = 16 *
+  // 4 = 48kiB, but only ever commit 40kiB out of it.
+  //
+  // This means that the address space then looks like, assuming that the
+  // PartitionPage next to it is committed:
+  //   [SlotSpan range, 40kiB]                       rw-p
+  //   [Unused area in the last PartitionPage, 8kiB] ---p
+  //   [Next PartitionPages, size unknown ]          rw-p
+  //
+  // So we have a "hole" of inaccessible memory, and 3 memory regions. If
+  // instead we commit the full PartitionPages, we get (due to the kernel
+  // merging neighboring regions with uniform permissions):
+  //
+  //   [SlotSpan range, 40kiB + Unused area, 8kiB + next PartitionPages] rw-p
+  //
+  // So 1 memory region rather then 3. This matters, because on Linux kernels,
+  // there is a maximum number of VMAs per process, with the default limit a bit
+  // less than 2^16, and Chromium sometimes hits the limit (see
+  // /proc/sys/vm/max_map_count for the current limit), largely because of
+  // PartitionAlloc contributing thousands of regions. Locally, on a Linux
+  // system, this reduces the number of PartitionAlloc regions by up to ~4x.
+  //
+  // Why is it safe?
+  // The extra memory is not used by anything, so committing it doesn't make a
+  // difference. It makes it accessible though.
+  //
+  // How much does it cost?
+  // Almost nothing. On Linux, "committing" memory merely changes its
+  // permissions, it doesn't cost any memory until the pages are touched, which
+  // they are not. However, mprotect()-ed areas that are writable count towards
+  // the RLIMIT_DATA resource limit, which is used by the sandbox. So, while
+  // this change costs 0 physical memory (and actually saves some, by reducing
+  // the size of the VMA red-black tree in the kernel), it might increase
+  // slightly the cases where we bump into the sandbox memory limit.
+  //
+  // Is it safe to do while running?
+  // Since this is decided through root settings, the value changes at runtime,
+  // so we may decommit memory that was never committed. This is safe onLinux,
+  // since decommitting is just changing permissions back to PROT_NONE, which
+  // the tail end would already have.
+  //
+  // Can we do better?
+  // For simplicity, we do not "fix" the regions that were committed before the
+  // settings are changed (after feature list initialization). This means that
+  // we end up with more regions that we could. The intent is to run a field
+  // experiment, then change the default value, at which point we get the full
+  // impact, so this is only temporary.
+  return root->settings.fewer_memory_regions
+             ? (get_pages_per_slot_span() << PartitionPageShift())
+             : get_bytes_per_span();
 }
 
 }  // namespace partition_alloc::internal

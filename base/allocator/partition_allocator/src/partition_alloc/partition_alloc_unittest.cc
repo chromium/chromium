@@ -93,6 +93,12 @@
 #include <unistd.h>
 #endif
 
+#if PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_ANDROID) || \
+    PA_BUILDFLAG(IS_CHROMEOS)
+#include "partition_alloc/partition_alloc_base/debug/proc_maps_linux.h"
+#endif  // PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_ANDROID) ||
+        // PA_BUILDFLAG(IS_CHROMEOS)
+
 // In the MTE world, the upper bits of a pointer can be decorated with a tag,
 // thus allowing many versions of the same pointer to exist. These macros take
 // that into account when comparing.
@@ -385,6 +391,7 @@ class PartitionAllocTest
     // Requires explicit `FreeFlag` to activate, no effect otherwise.
     opts.zapping_by_free_flags = PartitionOptions::kEnabled;
     opts.eventually_zero_freed_memory = PartitionOptions::kEnabled;
+    opts.fewer_memory_regions = PartitionOptions::kDisabled;
     opts.scheduler_loop_quarantine = PartitionOptions::kEnabled;
     opts.scheduler_loop_quarantine_branch_capacity_in_bytes =
         std::numeric_limits<size_t>::max();
@@ -3859,6 +3866,139 @@ TEST_P(PartitionAllocTest, ZapOnFree) {
   // Make sure the quarantine is empty before the root is reset.
   allocator.root()->GetSchedulerLoopQuarantineBranchForTesting().Purge();
 }
+
+#if PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_ANDROID) || \
+    PA_BUILDFLAG(IS_CHROMEOS)
+
+TEST_P(PartitionAllocTest, InaccessibleRegionAfterSlotSpans) {
+  auto* root = allocator.root();
+  ASSERT_FALSE(root->settings.fewer_memory_regions);
+
+  // Look for an allocation size that matches a bucket which doesn't fill its
+  // last PartitionPage.  Scan through allocation sizes rather than buckets, as
+  // depending on the bucket distribution, some buckets may not be active.
+  PartitionBucket* incomplete_bucket = nullptr;
+  // Only regular buckets, give up if we can't find one (and GTEST_SKIP()
+  // below).
+  for (size_t alloc_size = 0;
+       alloc_size < MaxRegularSlotSpanSize() - ExtraAllocSize(allocator);
+       alloc_size++) {
+    size_t index = SizeToIndex(alloc_size + ExtraAllocSize(allocator));
+    auto& bucket = root->buckets[index];
+    if (bucket.get_bytes_per_span() != bucket.get_pages_per_slot_span()
+                                           << PartitionPageShift()) {
+      incomplete_bucket = &bucket;
+      break;
+    }
+  }
+
+  // Didn't find any bucket that doesn't fill the last PartitionPage. Unlikley,
+  // but so be it.
+  if (!incomplete_bucket) {
+    GTEST_SKIP();
+  }
+
+  // Allocate memory, get the end of the slot span, and check that there is an
+  // inaccessible region starting there.
+  void* ptr =
+      root->Alloc(incomplete_bucket->slot_size - ExtraAllocSize(allocator), "");
+  ASSERT_TRUE(ptr);
+  uintptr_t start = SlotSpanMetadata<MetadataKind::kReadOnly>::ToSlotSpanStart(
+      SlotSpanMetadata<MetadataKind::kReadOnly>::FromAddr(
+          reinterpret_cast<uintptr_t>(ptr)));
+  uintptr_t end = start + incomplete_bucket->get_bytes_per_span();
+
+  std::string proc_maps;
+  std::vector<base::debug::MappedMemoryRegion> regions;
+  ASSERT_TRUE(base::debug::ReadProcMaps(&proc_maps));
+  ASSERT_TRUE(base::debug::ParseProcMaps(proc_maps, &regions));
+  bool found = false;
+  for (const auto& region : regions) {
+    if (region.start == end) {
+      found = true;
+      EXPECT_EQ(region.permissions, base::debug::MappedMemoryRegion::PRIVATE);
+      break;
+    }
+  }
+  EXPECT_TRUE(found);
+
+  root->Free(ptr);
+}
+
+TEST_P(PartitionAllocTest, FewerMemoryRegions) {
+  auto* root = allocator.root();
+  ASSERT_FALSE(root->settings.fewer_memory_regions);
+  root->settings.fewer_memory_regions = true;
+
+  // Look for an allocation size that matches a bucket which doesn't fill its
+  // last PartitionPage.  Scan through allocation sizes rather than buckets, as
+  // depending on the bucket distribution, some buckets may not be active.
+  PartitionBucket* incomplete_bucket = nullptr;
+  // Only regular buckets, give up if we can't find one (and GTEST_SKIP()
+  // below).
+  for (size_t alloc_size = 0;
+       alloc_size < MaxRegularSlotSpanSize() - ExtraAllocSize(allocator);
+       alloc_size++) {
+    size_t index = SizeToIndex(alloc_size + ExtraAllocSize(allocator));
+    auto& bucket = root->buckets[index];
+    if (bucket.get_bytes_per_span() != bucket.get_pages_per_slot_span()
+                                           << PartitionPageShift()) {
+      incomplete_bucket = &bucket;
+      break;
+    }
+  }
+
+  // Didn't find any bucket that doesn't fill the last PartitionPage. Unlikley,
+  // but so be it.
+  if (!incomplete_bucket) {
+    GTEST_SKIP();
+  }
+
+  // Allocate memory, get the end of the slot span, and check that there is an
+  // inaccessible region starting there.
+  void* ptr =
+      root->Alloc(incomplete_bucket->slot_size - ExtraAllocSize(allocator), "");
+  ASSERT_TRUE(ptr);
+  uintptr_t start = SlotSpanMetadata<MetadataKind::kReadOnly>::ToSlotSpanStart(
+      SlotSpanMetadata<MetadataKind::kReadOnly>::FromAddr(
+          reinterpret_cast<uintptr_t>(ptr)));
+  uintptr_t end = start + incomplete_bucket->get_bytes_per_span();
+
+  std::string proc_maps;
+  std::vector<base::debug::MappedMemoryRegion> regions;
+  ASSERT_TRUE(base::debug::ReadProcMaps(&proc_maps));
+  ASSERT_TRUE(base::debug::ParseProcMaps(proc_maps, &regions));
+
+  // Cannot find a region that starts exactly at the end of the incomplete slot
+  // span.
+  bool found = false;
+  for (const auto& region : regions) {
+    if (region.start == end) {
+      found = true;
+      break;
+    }
+  }
+  EXPECT_FALSE(found);
+
+  // The enclosing region has RW permissions.
+  found = false;
+  for (const auto& region : regions) {
+    if (region.start <= end && region.end >= end) {
+      EXPECT_EQ(region.permissions,
+                base::debug::MappedMemoryRegion::READ |
+                    base::debug::MappedMemoryRegion::WRITE |
+                    base::debug::MappedMemoryRegion::PRIVATE);
+      found = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(found);
+
+  root->Free(ptr);
+}
+
+#endif  // PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_ANDROID) ||
+        // PA_BUILDFLAG(IS_CHROMEOS)
 
 TEST_P(PartitionAllocTest, ZeroFreedMemory) {
   auto* root = allocator.root();

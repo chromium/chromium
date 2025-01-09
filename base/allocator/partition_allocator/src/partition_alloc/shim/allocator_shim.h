@@ -150,6 +150,9 @@ using ZappingByFreeFlags =
                                                  bool>;
 using EventuallyZeroFreedMemory = partition_alloc::internal::base::
     StrongAlias<class EventuallyZeroFreedMemoryTag, bool>;
+using FewerMemoryRegions =
+    partition_alloc::internal::base::StrongAlias<class FewerMemoryRegionsTag,
+                                                 bool>;
 using UsePoolOffsetFreelists = partition_alloc::internal::base::
     StrongAlias<class UsePoolOffsetFreelistsTag, bool>;
 
@@ -170,6 +173,7 @@ void ConfigurePartitions(
     size_t scheduler_loop_quarantine_branch_capacity_in_bytes,
     ZappingByFreeFlags zapping_by_free_flags,
     EventuallyZeroFreedMemory eventually_zero_freed_memory,
+    FewerMemoryRegions fewer_memory_regions,
     UsePoolOffsetFreelists use_pool_offset_freelists,
     UseSmallSingleSlotSpans use_small_single_slot_spans);
 
