@@ -80,4 +80,32 @@ void AuctionSharedStorageHost::SharedStorageUpdate(
       ToWebFeature(source_auction_worklet_function));
 }
 
+void AuctionSharedStorageHost::SharedStorageBatchUpdate(
+    std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
+        methods_with_options,
+    const std::optional<std::string>& with_lock,
+    auction_worklet::mojom::AuctionWorkletFunction
+        source_auction_worklet_function) {
+  if (with_lock && with_lock->starts_with('-')) {
+    receiver_set_.ReportBadMessage("Reserved lock name");
+    return;
+  }
+
+  FrameTreeNodeId main_frame_id =
+      receiver_set_.current_context()
+          .auction_runner_rfh->GetOutermostMainFrame()
+          ->GetFrameTreeNodeId();
+
+  storage_partition_->GetSharedStorageRuntimeManager()
+      ->lock_manager()
+      .SharedStorageBatchUpdate(std::move(methods_with_options), with_lock,
+                                receiver_set_.current_context().worklet_origin,
+                                AccessScope::kProtectedAudienceWorklet,
+                                main_frame_id, base::DoNothing());
+
+  GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+      receiver_set_.current_context().auction_runner_rfh,
+      ToWebFeature(source_auction_worklet_function));
+}
+
 }  // namespace content
