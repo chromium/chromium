@@ -1,9 +1,9 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_MEDIA_ROUTER_PROVIDERS_OPENSCREEN_DISCOVERY_OPEN_SCREEN_LISTENER_H_
-#define CHROME_BROWSER_MEDIA_ROUTER_PROVIDERS_OPENSCREEN_DISCOVERY_OPEN_SCREEN_LISTENER_H_
+#ifndef CHROME_BROWSER_MEDIA_ROUTER_PROVIDERS_OPENSCREEN_DISCOVERY_OPEN_SCREEN_LISTENER_DELEGATE_H_
+#define CHROME_BROWSER_MEDIA_ROUTER_PROVIDERS_OPENSCREEN_DISCOVERY_OPEN_SCREEN_LISTENER_DELEGATE_H_
 
 #include <memory>
 #include <string>
@@ -18,38 +18,33 @@
 
 static_assert(
     BUILDFLAG(ENABLE_SERVICE_DISCOVERY),
-    "OpenScreenListener requires enable_service_discovery to be true.");
+    "OpenScreenListenerDelegate requires enable_service_discovery to be true.");
 
 namespace media_router {
 
-// TODO(issuetracker.google.com/383267932): Don't use implementation
-// inheritance!
-class OpenScreenListener
-    : public openscreen::osp::ServiceListener,
+class OpenScreenListenerDelegate
+    : public openscreen::osp::ServiceListener::Delegate,
       local_discovery::ServiceDiscoveryDeviceLister::Delegate {
  public:
-  explicit OpenScreenListener(
+  explicit OpenScreenListenerDelegate(
       scoped_refptr<local_discovery::ServiceDiscoverySharedClient>
           service_discovery_client);
-  OpenScreenListener(const OpenScreenListener&) = delete;
-  OpenScreenListener& operator=(const OpenScreenListener&) = delete;
-  OpenScreenListener(OpenScreenListener&&) = delete;
-  OpenScreenListener& operator=(OpenScreenListener&&) = delete;
-  ~OpenScreenListener() override;
+  OpenScreenListenerDelegate(const OpenScreenListenerDelegate&) = delete;
+  OpenScreenListenerDelegate& operator=(const OpenScreenListenerDelegate&) =
+      delete;
+  OpenScreenListenerDelegate(OpenScreenListenerDelegate&&) = delete;
+  OpenScreenListenerDelegate& operator=(OpenScreenListenerDelegate&&) = delete;
+  ~OpenScreenListenerDelegate() override;
 
-  // ServiceListener overrides.
-  bool Start() override;
-  bool StartAndSuspend() override;
-  bool Stop() override;
-  bool Suspend() override;
-  bool Resume() override;
-  bool SearchNow() override;
-  void AddObserver(
-      openscreen::osp::ServiceListener::Observer& observer) override;
-  void RemoveObserver(
-      openscreen::osp::ServiceListener::Observer& observer) override;
-  const std::vector<openscreen::osp::ServiceInfo>& GetReceivers()
-      const override;
+  // ServiceListener::Delegate overrides.
+  void StartListener(
+      const openscreen::osp::ServiceListener::Config& config) override;
+  void StartAndSuspendListener(
+      const openscreen::osp::ServiceListener::Config& config) override;
+  void StopListener() override;
+  void SuspendListener() override;
+  void ResumeListener() override;
+  void SearchNow(openscreen::osp::ServiceListener::State from) override;
 
   // ServiceDiscoveryDeviceLister::Delegate overrides.
   void OnDeviceChanged(
@@ -77,4 +72,4 @@ class OpenScreenListener
 
 }  // namespace media_router
 
-#endif  // CHROME_BROWSER_MEDIA_ROUTER_PROVIDERS_OPENSCREEN_DISCOVERY_OPEN_SCREEN_LISTENER_H_
+#endif  // CHROME_BROWSER_MEDIA_ROUTER_PROVIDERS_OPENSCREEN_DISCOVERY_OPEN_SCREEN_LISTENER_DELEGATE_H_
