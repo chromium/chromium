@@ -240,12 +240,16 @@ class MojoSteadyPingPongTest : public mojo::core::test::MojoTestBase {
 
 DEFINE_TEST_CLIENT_WITH_PIPE(PingPongClient, MojoSteadyPingPongTest, h) {
   base::test::SingleThreadTaskEnvironment task_environment;
+  base::test::ScopedRunLoopTimeout increased_timeout(
+      FROM_HERE, TestTimeouts::action_max_timeout());
   return RunPingPongClient(h);
 }
 
 TEST_F(MojoSteadyPingPongTest, AsyncPingPong) {
   RunTestClient("PingPongClient", [&](MojoHandle h) {
     base::test::SingleThreadTaskEnvironment task_environment;
+    base::test::ScopedRunLoopTimeout increased_timeout(
+        FROM_HERE, TestTimeouts::action_max_timeout());
     RunPingPongServer(h, "Mojo_CPU_Async", false);
   });
 }
@@ -253,6 +257,8 @@ TEST_F(MojoSteadyPingPongTest, AsyncPingPong) {
 TEST_F(MojoSteadyPingPongTest, SyncPingPong) {
   RunTestClient("PingPongClient", [&](MojoHandle h) {
     base::test::SingleThreadTaskEnvironment task_environment;
+    base::test::ScopedRunLoopTimeout increased_timeout(
+        FROM_HERE, TestTimeouts::action_max_timeout());
     RunPingPongServer(h, "Mojo_CPU_Sync", true);
   });
 }

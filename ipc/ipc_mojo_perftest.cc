@@ -43,6 +43,8 @@
 namespace IPC {
 namespace {
 
+constexpr base::TimeDelta kLongTestTimeout = base::Seconds(80);
+
 class PingPongTestParams {
  public:
   PingPongTestParams(size_t size, int count)
@@ -381,6 +383,8 @@ DEFINE_TEST_CLIENT_WITH_PIPE(InterfacePassingClient,
                              MojoInterfacePassingPerfTest,
                              h) {
   base::test::SingleThreadTaskEnvironment task_environment;
+  base::test::ScopedRunLoopTimeout increased_timeout(FROM_HERE,
+                                                     kLongTestTimeout);
   return RunInterfacePassingClient(h);
 }
 
@@ -416,6 +420,8 @@ using MojoInProcessInterfacePassingPerfTest =
 
 DEFINE_TEST_CLIENT_WITH_PIPE(PingPongClient, MojoInterfacePerfTest, h) {
   base::test::SingleThreadTaskEnvironment task_environment;
+  base::test::ScopedRunLoopTimeout increased_timeout(
+      FROM_HERE, TestTimeouts::action_max_timeout());
   return RunPingPongClient(h);
 }
 
@@ -439,6 +445,8 @@ TEST_F(MojoInterfacePerfTest, MultiprocessSyncPing) {
 TEST_F(MojoInterfacePassingPerfTest, MultiprocessInterfacePassing) {
   RunTestClient("InterfacePassingClient", [&](MojoHandle h) {
     base::test::SingleThreadTaskEnvironment task_environment;
+    base::test::ScopedRunLoopTimeout increased_timeout(FROM_HERE,
+                                                       kLongTestTimeout);
     RunInterfacePassingServer(h, "InterfacePassing", false /* associated */);
   });
 }
@@ -446,6 +454,8 @@ TEST_F(MojoInterfacePassingPerfTest, MultiprocessInterfacePassing) {
 TEST_F(MojoInterfacePassingPerfTest, MultiprocessAssociatedInterfacePassing) {
   RunTestClient("InterfacePassingClient", [&](MojoHandle h) {
     base::test::SingleThreadTaskEnvironment task_environment;
+    base::test::ScopedRunLoopTimeout increased_timeout(
+        FROM_HERE, TestTimeouts::action_max_timeout());
     RunInterfacePassingServer(h, "AssociatedInterfacePassing",
                               true /* associated*/);
   });
@@ -495,6 +505,8 @@ TEST_P(MojoInProcessInterfacePassingPerfTest, MultiThreadInterfacePassing) {
                                 client_handle));
 
   base::test::SingleThreadTaskEnvironment task_environment;
+  base::test::ScopedRunLoopTimeout increased_timeout(
+      FROM_HERE, TestTimeouts::action_max_timeout());
   RunInterfacePassingServer(server_handle, "SingleProcess",
                             false /* associated */);
 }
@@ -511,6 +523,8 @@ TEST_P(MojoInProcessInterfacePassingPerfTest,
                                 client_handle));
 
   base::test::SingleThreadTaskEnvironment task_environment;
+  base::test::ScopedRunLoopTimeout increased_timeout(
+      FROM_HERE, TestTimeouts::action_max_timeout());
   RunInterfacePassingServer(server_handle, "SingleProcess",
                             true /* associated */);
 }
@@ -520,6 +534,8 @@ TEST_P(MojoInProcessInterfacePassingPerfTest, SingleThreadInterfacePassing) {
   CreateMessagePipe(&server_handle, &client_handle);
 
   base::test::SingleThreadTaskEnvironment task_environment;
+  base::test::ScopedRunLoopTimeout increased_timeout(
+      FROM_HERE, TestTimeouts::action_max_timeout());
   mojo::MessagePipeHandle mp_handle(client_handle);
   mojo::ScopedMessagePipeHandle scoped_mp(mp_handle);
   LockThreadAffinity thread_locker(kSharedCore);
@@ -536,6 +552,8 @@ TEST_P(MojoInProcessInterfacePassingPerfTest,
   CreateMessagePipe(&server_handle, &client_handle);
 
   base::test::SingleThreadTaskEnvironment task_environment;
+  base::test::ScopedRunLoopTimeout increased_timeout(
+      FROM_HERE, TestTimeouts::action_max_timeout());
   mojo::MessagePipeHandle mp_handle(client_handle);
   mojo::ScopedMessagePipeHandle scoped_mp(mp_handle);
   LockThreadAffinity thread_locker(kSharedCore);
