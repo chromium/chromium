@@ -373,6 +373,7 @@ void CanvasRenderingContext2DTest::CreateContext(
   String canvas_type("2d");
   CanvasContextCreationAttributesCore attributes;
   attributes.alpha = opacity_mode == kNonOpaque;
+  attributes.desynchronized_specified = kLowLatency;
   attributes.desynchronized = latency_mode == kLowLatency;
   attributes.will_read_frequently = will_read_frequently;
   if (!canvas) {
@@ -1779,8 +1780,7 @@ TEST_P(CanvasRenderingContext2DTest,
   CreateContext(kNonOpaque, kNormalLatency,
                 CanvasContextCreationAttributesCore::WillReadFrequently::kTrue);
   DrawSomething();
-  EXPECT_EQ(Context2D()->getContextAttributes()->willReadFrequently(),
-            V8CanvasWillReadFrequently::Enum::kTrue);
+  EXPECT_TRUE(Context2D()->getContextAttributes()->willReadFrequently());
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
 }
 
@@ -1790,8 +1790,7 @@ TEST_P(CanvasRenderingContext2DTest,
                 CanvasContextCreationAttributesCore::WillReadFrequently::kTrue);
   // No need to set-up the layer bridge when testing low latency mode.
   DrawSomething();
-  EXPECT_EQ(Context2D()->getContextAttributes()->willReadFrequently(),
-            V8CanvasWillReadFrequently::Enum::kTrue);
+  EXPECT_TRUE(Context2D()->getContextAttributes()->willReadFrequently());
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
 }
 
@@ -3152,8 +3151,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, LowLatencyIsNotSingleBuffered) {
   // No need to set-up the layer bridge when testing low latency mode.
   DrawSomething();
   EXPECT_TRUE(Context2D()->getContextAttributes()->desynchronized());
-  EXPECT_EQ(Context2D()->getContextAttributes()->willReadFrequently(),
-            V8CanvasWillReadFrequently::Enum::kUndefined);
+  EXPECT_FALSE(Context2D()->getContextAttributes()->willReadFrequently());
   EXPECT_TRUE(CanvasElement().LowLatencyEnabled());
   EXPECT_FALSE(
       CanvasElement()
@@ -3401,8 +3399,7 @@ TEST_P(CanvasRenderingContext2DTestImageChromium, LowLatencyIsSingleBuffered) {
   // No need to set-up the layer bridge when testing low latency mode.
   DrawSomething();
   EXPECT_TRUE(Context2D()->getContextAttributes()->desynchronized());
-  EXPECT_EQ(Context2D()->getContextAttributes()->willReadFrequently(),
-            V8CanvasWillReadFrequently::Enum::kUndefined);
+  EXPECT_FALSE(Context2D()->getContextAttributes()->willReadFrequently());
   EXPECT_TRUE(CanvasElement().LowLatencyEnabled());
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
   EXPECT_TRUE(CanvasElement()
@@ -3452,8 +3449,7 @@ TEST_P(CanvasRenderingContext2DTestSwapChain, LowLatencyIsSingleBuffered) {
   // No need to set-up the layer bridge when testing low latency mode.
   DrawSomething();
   EXPECT_TRUE(Context2D()->getContextAttributes()->desynchronized());
-  EXPECT_EQ(Context2D()->getContextAttributes()->willReadFrequently(),
-            V8CanvasWillReadFrequently::Enum::kUndefined);
+  EXPECT_FALSE(Context2D()->getContextAttributes()->willReadFrequently());
   EXPECT_TRUE(CanvasElement().LowLatencyEnabled());
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
   EXPECT_TRUE(CanvasElement()

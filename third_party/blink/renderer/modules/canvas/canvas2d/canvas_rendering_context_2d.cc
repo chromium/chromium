@@ -973,25 +973,25 @@ cc::Layer* CanvasRenderingContext2D::CcLayer() const {
 
 CanvasRenderingContext2DSettings*
 CanvasRenderingContext2D::getContextAttributes() const {
+  const auto& attrs = CreationAttributes();
   CanvasRenderingContext2DSettings* settings =
       CanvasRenderingContext2DSettings::Create();
-  settings->setAlpha(CreationAttributes().alpha);
-  settings->setColorSpace(PredefinedColorSpaceToV8(color_params_.ColorSpace()));
+  settings->setAlpha(attrs.alpha);
+  settings->setColorSpace(PredefinedColorSpaceToV8(attrs.color_space));
   if (RuntimeEnabledFeatures::CanvasFloatingPointEnabled()) {
     settings->setPixelFormat(
         CanvasPixelFormatToV8(color_params_.PixelFormat()));
   }
-  settings->setDesynchronized(Host()->LowLatencyEnabled());
-  switch (CreationAttributes().will_read_frequently) {
+  settings->setDesynchronized(attrs.desynchronized_specified);
+
+  switch (attrs.will_read_frequently) {
     case CanvasContextCreationAttributesCore::WillReadFrequently::kTrue:
-      settings->setWillReadFrequently(V8CanvasWillReadFrequently::Enum::kTrue);
+      settings->setWillReadFrequently(true);
       break;
     case CanvasContextCreationAttributesCore::WillReadFrequently::kFalse:
-      settings->setWillReadFrequently(V8CanvasWillReadFrequently::Enum::kFalse);
-      break;
     case CanvasContextCreationAttributesCore::WillReadFrequently::kUndefined:
-      settings->setWillReadFrequently(
-          V8CanvasWillReadFrequently::Enum::kUndefined);
+      settings->setWillReadFrequently(false);
+      break;
   }
   return settings;
 }

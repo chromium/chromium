@@ -24,11 +24,12 @@ bool ToCanvasContextCreationAttributes(
   result.depth = attrs->depth();
   result.fail_if_major_performance_caveat =
       attrs->failIfMajorPerformanceCaveat();
+  result.desynchronized_specified = attrs->desynchronized();
 #if BUILDFLAG(IS_MAC)
   // TODO(crbug.com/945835): enable desynchronized on Mac.
   result.desynchronized = false;
 #else
-  result.desynchronized = attrs->desynchronized();
+  result.desynchronized = result.desynchronized_specified;
 #endif
   switch (attrs->pixelFormat().AsEnum()) {
     case V8CanvasPixelFormat::Enum::kUint8:
