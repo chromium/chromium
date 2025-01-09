@@ -41,7 +41,7 @@ IN_PROC_BROWSER_TEST_F(TabStripComboButtonBrowserTest, BuildsComboButton) {
 
   EXPECT_NE(nullptr, tab_strip_combo_button());
   EXPECT_NE(nullptr, tab_strip_combo_button()->new_tab_button());
-  EXPECT_NE(nullptr, tab_strip_combo_button()->tab_search_container());
+  EXPECT_NE(nullptr, tab_strip_combo_button()->tab_search_button());
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripComboButtonBrowserTest, SeparatorVisibility) {
@@ -58,14 +58,12 @@ IN_PROC_BROWSER_TEST_F(TabStripComboButtonBrowserTest, SeparatorVisibility) {
   EXPECT_TRUE(tab_strip_combo_button()->separator()->IsDrawn());
 
   tab_strip_combo_button()
-      ->tab_search_container()
       ->tab_search_button()
       ->SetState(views::Button::STATE_HOVERED);
 
   EXPECT_FALSE(tab_strip_combo_button()->separator()->IsDrawn());
 
   tab_strip_combo_button()
-      ->tab_search_container()
       ->tab_search_button()
       ->SetState(views::Button::STATE_NORMAL);
 

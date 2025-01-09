@@ -25,7 +25,9 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_nudge_button.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -34,6 +36,8 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/views/controls/button/label_button.h"
+#include "ui/views/view.h"
 
 class FakeTabDeclutterObserver : public TabDeclutterObserver {
  public:
@@ -115,10 +119,14 @@ class TabDeclutterControllerBrowserTest : public InProcessBrowserTest {
     return browser()->browser_window_features()->tab_declutter_controller();
   }
 
-  TabSearchContainer* tab_search_container() {
-    return BrowserView::GetBrowserViewForBrowser(browser())
-        ->tab_strip_region_view()
-        ->GetTabSearchContainer();
+  views::View* nudge_container() {
+    auto* tab_strip_region_view =
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->tab_strip_region_view();
+    if (features::IsTabstripComboButtonEnabled()) {
+      return tab_strip_region_view->GetTabStripActionContainer();
+    }
+    return tab_strip_region_view->tab_search_container_for_testing();
   }
 
  protected:
@@ -285,18 +293,30 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
   // Move time forward by the initial nudge timer interval and check the next
   // valid nudge time.
   task_runner->FastForwardBy(initial_nudge_interval);
-  tab_search_container()->GetWidget()->LayoutRootViewIfNecessary();
+  nudge_container()->GetWidget()->LayoutRootViewIfNecessary();
 
   EXPECT_EQ(initial_nudge_interval,
             tab_declutter_controller()->nudge_timer_interval());
 
-  TabSearchContainer* tab_search_container =
-      BrowserView::GetBrowserViewForBrowser(browser())
-          ->tab_strip_region_view()
-          ->GetTabSearchContainer();
-  EXPECT_TRUE(tab_search_container->tab_declutter_button()->GetVisible());
-  views::LabelButton* close_button =
-      tab_search_container->tab_declutter_button()->close_button_for_testing();
+  views::LabelButton* close_button;
+  if (features::IsTabstripComboButtonEnabled()) {
+    TabStripActionContainer* tab_strip_action_container =
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->tab_strip_region_view()
+            ->GetTabStripActionContainer();
+    EXPECT_TRUE(
+        tab_strip_action_container->tab_declutter_button()->GetVisible());
+    close_button = tab_strip_action_container->tab_declutter_button()
+                       ->close_button_for_testing();
+  } else {
+    TabSearchContainer* tab_search_container =
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->tab_strip_region_view()
+            ->tab_search_container_for_testing();
+    EXPECT_TRUE(tab_search_container->tab_declutter_button()->GetVisible());
+    close_button = tab_search_container->tab_declutter_button()
+                       ->close_button_for_testing();
+  }
 
   // Click the close button.
   close_button->OnMousePressed(

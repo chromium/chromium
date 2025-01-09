@@ -12,7 +12,7 @@
 #include "ui/views/view.h"
 
 class BrowserWindowInterface;
-class TabSearchContainer;
+class TabSearchButton;
 class TabStrip;
 
 class TabStripComboButton : public views::View {
@@ -31,13 +31,13 @@ class TabStripComboButton : public views::View {
 
   views::Button* new_tab_button() { return new_tab_button_; }
 
-  TabSearchContainer* tab_search_container() { return tab_search_container_; }
+  TabSearchButton* tab_search_button() { return tab_search_button_; }
 
   views::Separator* separator() { return separator_; }
 
  private:
   raw_ptr<views::Button> new_tab_button_ = nullptr;
-  raw_ptr<TabSearchContainer> tab_search_container_ = nullptr;
+  raw_ptr<TabSearchButton> tab_search_button_ = nullptr;
   raw_ptr<views::Separator> separator_ = nullptr;
 
   base::TimeTicks new_tab_button_last_pressed_;

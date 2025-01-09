@@ -55,8 +55,7 @@ constexpr char kDeclutterTriggerOutcomeName[] =
     "Tab.Organization.Declutter.Trigger.Outcome";
 constexpr char kDeclutterTriggerBucketedCTRName[] =
     "Tab.Organization.Declutter.Trigger.BucketedCTR";
-constexpr int kSmallSpaceBetweenButtons = 2;
-constexpr int kLargeSpaceBetweenButtons = 4;
+constexpr int kSpaceBetweenButtons = 2;
 
 Edge GetFlatEdge(bool is_search_button, bool tab_search_before_chips) {
   const bool is_rtl = base::i18n::IsRTL();
@@ -228,27 +227,13 @@ TabSearchContainer::TabSearchContainer(
     tab_organization_observation_.Observe(tab_organization_service_);
   }
 
-  std::unique_ptr<TabSearchButton> tab_search_button;
-  if (features::IsTabstripComboButtonEnabled()) {
-    // With backgrounded combo button, edge adjacent to new tab button should
-    // be flat and opposite edge should be rounded with no change on chip
-    // animation.
-    Edge flat_edge = Edge::kNone;
-    if (features::HasTabstripComboButtonWithBackground()) {
-      flat_edge = base::i18n::IsRTL() ? Edge::kRight : Edge::kLeft;
-    }
-    tab_search_button = std::make_unique<TabSearchButton>(
-        tab_strip_controller, browser_window_interface, flat_edge, Edge::kNone,
-        anchor_view ? anchor_view : this, tab_strip);
-    tab_search_button->SetFlatEdgeFactor(1);
-  } else {
-    // Edge adjacent to new tab button should be rounded and opposite edge
-    // should animate to flat on chip show.
-    tab_search_button = std::make_unique<TabSearchButton>(
-        tab_strip_controller, browser_window_interface, Edge::kNone,
-        GetFlatEdge(true, tab_search_before_chips),
-        anchor_view ? anchor_view : this, tab_strip);
-  }
+  // Edge adjacent to new tab button should be rounded and opposite edge
+  // should animate to flat on chip show.
+  std::unique_ptr<TabSearchButton> tab_search_button =
+      std::make_unique<TabSearchButton>(
+          tab_strip_controller, browser_window_interface, Edge::kNone,
+          GetFlatEdge(true, tab_search_before_chips),
+          anchor_view ? anchor_view : this, tab_strip);
   tab_search_button->SetProperty(views::kCrossAxisAlignmentKey,
                                  views::LayoutAlignment::kCenter);
   tab_search_button_ = AddChildView(std::move(tab_search_button));
@@ -290,14 +275,11 @@ TabSearchContainer::~TabSearchContainer() {
 void TabSearchContainer::SetupButtonProperties(TabStripNudgeButton* button,
                                                bool tab_search_before_chips) {
   // Set the margins for the button
-  const int space_between_buttons = features::IsTabstripComboButtonEnabled()
-                                        ? kLargeSpaceBetweenButtons
-                                        : kSmallSpaceBetweenButtons;
   gfx::Insets margin;
   if (tab_search_before_chips) {
-    margin.set_left(space_between_buttons);
+    margin.set_left(kSpaceBetweenButtons);
   } else {
-    margin.set_right(space_between_buttons);
+    margin.set_right(kSpaceBetweenButtons);
   }
   button->SetProperty(views::kMarginsKey, margin);
 
@@ -316,9 +298,7 @@ TabSearchContainer::CreateAutoTabGroupButton(
       base::BindRepeating(&TabSearchContainer::OnAutoTabGroupButtonDismissed,
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(IDS_TAB_ORGANIZE), kAutoTabGroupButtonElementId,
-      features::IsTabstripComboButtonEnabled()
-          ? Edge::kNone
-          : GetFlatEdge(false, tab_search_before_chips));
+      GetFlatEdge(false, tab_search_before_chips));
   button->SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_ORGANIZE));
   button->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_ORGANIZE));
@@ -341,9 +321,7 @@ TabSearchContainer::CreateTabDeclutterButton(
           ? l10n_util::GetStringUTF16(IDS_TAB_DECLUTTER)
           : l10n_util::GetStringUTF16(IDS_TAB_DECLUTTER_NO_DEDUPE),
       kTabDeclutterButtonElementId,
-      features::IsTabstripComboButtonEnabled()
-          ? Edge::kNone
-          : GetFlatEdge(false, tab_search_before_chips));
+      GetFlatEdge(false, tab_search_before_chips));
 
   button->SetTooltipText(
       features::IsTabstripDedupeEnabled()

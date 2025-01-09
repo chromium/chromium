@@ -379,11 +379,11 @@ TabStripRegionView::GetProductSpecificationsButton() {
   return product_specifications_button_;
 }
 
-TabSearchContainer* TabStripRegionView::GetTabSearchContainer() {
+TabSearchButton* TabStripRegionView::GetTabSearchButton() {
   if (features::IsTabstripComboButtonEnabled()) {
-    return tab_strip_combo_button_->tab_search_container();
+    return tab_strip_combo_button_->tab_search_button();
   } else {
-    return tab_search_container_;
+    return tab_search_container_->tab_search_button();
   }
 }
 
@@ -579,21 +579,8 @@ void TabStripRegionView::UpdateButtonBorders() {
   if (tab_strip_combo_button_) {
     tab_strip_combo_button_->new_tab_button()->SetBorder(
         views::CreateEmptyBorder(border_insets));
-    tab_strip_combo_button_->tab_search_container()
-        ->tab_search_button()
-        ->SetBorder(views::CreateEmptyBorder(border_insets));
-    if (tab_strip_combo_button_->tab_search_container()
-            ->auto_tab_group_button()) {
-      tab_strip_combo_button_->tab_search_container()
-          ->auto_tab_group_button()
-          ->SetBorder(views::CreateEmptyBorder(border_insets));
-    }
-    if (tab_strip_combo_button_->tab_search_container()
-            ->tab_declutter_button()) {
-      tab_strip_combo_button_->tab_search_container()
-          ->tab_declutter_button()
-          ->SetBorder(views::CreateEmptyBorder(border_insets));
-    }
+    tab_strip_combo_button_->tab_search_button()->SetBorder(
+        views::CreateEmptyBorder(border_insets));
   } else {
     if (new_tab_button_) {
       new_tab_button_->SetBorder(views::CreateEmptyBorder(border_insets));

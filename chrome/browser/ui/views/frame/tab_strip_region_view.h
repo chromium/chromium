@@ -61,7 +61,7 @@ class TabStripRegionView final : public views::AccessiblePaneView {
 
   views::Button* GetNewTabButton();
 
-  TabSearchContainer* GetTabSearchContainer();
+  TabSearchButton* GetTabSearchButton();
 
   TabStripActionContainer* GetTabStripActionContainer();
 
@@ -77,8 +77,7 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   // access the new tab button inside the combo button.
   views::Button* new_tab_button_for_testing() { return new_tab_button_; }
 
-  // May be nullptr if combo button is enabled. |Use GetTabSearchContainer()|
-  // to access the tab search container inside the combo button.
+  // May be nullptr if combo button is enabled.
   TabSearchContainer* tab_search_container_for_testing() {
     return tab_search_container_;
   }

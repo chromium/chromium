@@ -9,7 +9,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
-#include "chrome/browser/ui/views/tabs/tab_search_container.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_control_button.h"
 #include "chrome/common/chrome_features.h"
@@ -99,18 +98,21 @@ TabStripComboButton::TabStripComboButton(BrowserWindowInterface* browser,
   separator->SetBorderRadius(kSeparatorBorderRadius);
   separator->SetPreferredSize(gfx::Size(kSeparatorWidth, kSeparatorHeight));
 
-  std::unique_ptr<TabSearchContainer> tab_search_container =
-      std::make_unique<TabSearchContainer>(
-          tab_strip->controller(), browser->GetTabStripModel(), true, this,
-          browser, browser->GetFeatures().tab_declutter_controller(), this,
-          tab_strip);
-  tab_search_container->SetProperty(views::kCrossAxisAlignmentKey,
-                                    views::LayoutAlignment::kCenter);
-  subscriptions_.push_back(
-      tab_search_container->tab_search_button()->AddStateChangedCallback(
-          base::BindRepeating(
-              &TabStripComboButton::OnTabSearchButtonStateChanged,
-              base::Unretained(this))));
+  Edge tab_search_button_flat_edge = Edge::kNone;
+  if (features::HasTabstripComboButtonWithBackground()) {
+    tab_search_button_flat_edge =
+        base::i18n::IsRTL() ? Edge::kRight : Edge::kLeft;
+  }
+  std::unique_ptr<TabSearchButton> tab_search_button =
+      std::make_unique<TabSearchButton>(tab_strip->controller(), browser,
+                                        tab_search_button_flat_edge,
+                                        Edge::kNone, this, tab_strip);
+  tab_search_button->SetFlatEdgeFactor(1);
+  tab_search_button->SetProperty(views::kCrossAxisAlignmentKey,
+                                 views::LayoutAlignment::kCenter);
+  subscriptions_.push_back(tab_search_button->AddStateChangedCallback(
+      base::BindRepeating(&TabStripComboButton::OnTabSearchButtonStateChanged,
+                          base::Unretained(this))));
 
   auto* button_container = AddChildView(std::make_unique<views::View>());
   auto* separator_container = AddChildView(std::make_unique<views::View>());
@@ -122,8 +124,8 @@ TabStripComboButton::TabStripComboButton(BrowserWindowInterface* browser,
   separator_container->SetCanProcessEventsWithinSubtree(false);
 
   new_tab_button_ = button_container->AddChildView(std::move(new_tab_button));
-  tab_search_container_ =
-      button_container->AddChildView(std::move(tab_search_container));
+  tab_search_button_ =
+      button_container->AddChildView(std::move(tab_search_button));
   separator_ = separator_container->AddChildView(std::move(separator));
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -149,8 +151,7 @@ void TabStripComboButton::OnNewTabButtonStateChanged() {
 }
 
 void TabStripComboButton::OnTabSearchButtonStateChanged() {
-  if (tab_search_container_->tab_search_button()->GetState() ==
-      views::Button::STATE_PRESSED) {
+  if (tab_search_button_->GetState() == views::Button::STATE_PRESSED) {
     tab_search_button_last_pressed_ = base::TimeTicks::Now();
     base::UmaHistogramEnumeration(kTabSearchAccidentalClickName,
                                   AccidentalClickType::kClick);
@@ -169,7 +170,7 @@ void TabStripComboButton::UpdateSeparatorVisibility() {
   const views::Button::ButtonState new_tab_button_state =
       new_tab_button_->GetState();
   const views::Button::ButtonState tab_search_button_state =
-      tab_search_container_->tab_search_button()->GetState();
+      tab_search_button_->GetState();
   const bool is_visible =
       features::HasTabstripComboButtonWithBackground()
           ? new_tab_button_state != views::Button::STATE_HOVERED &&
