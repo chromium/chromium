@@ -172,12 +172,8 @@ class CreditCardAccessManager
     return *autofill_client().GetPaymentsAutofillClient();
   }
 
-  PersonalDataManager& personal_data_manager() {
-    return autofill_client().GetPersonalDataManager();
-  }
-
   PaymentsDataManager& payments_data_manager() {
-    return personal_data_manager().payments_data_manager();
+    return autofill_client().GetPersonalDataManager().payments_data_manager();
   }
 
   base::WeakPtr<CreditCardAccessManager> GetWeakPtr() {

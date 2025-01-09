@@ -13,7 +13,6 @@
 #include "base/strings/strcat.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
-#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_quality/addresses/profile_token_quality.h"
 #include "components/autofill/core/browser/field_type_utils.h"
@@ -174,7 +173,7 @@ void LogStoredProfileTokenQualityMetrics(
 }
 
 void LogObservationCountBeforeSubmissionMetric(const FormStructure& form,
-                                               const PersonalDataManager& pdm) {
+                                               const AddressDataManager& adm) {
   std::set<const AutofillProfile*> profiles_used;
   // Emit per-type metrics for all autofilled fields.
   for (const std::unique_ptr<AutofillField>& field : form) {
@@ -183,8 +182,7 @@ void LogObservationCountBeforeSubmissionMetric(const FormStructure& form,
       continue;
     }
     if (const AutofillProfile* profile =
-            pdm.address_data_manager().GetProfileByGUID(
-                *field->autofill_source_profile_guid())) {
+            adm.GetProfileByGUID(*field->autofill_source_profile_guid())) {
       profiles_used.insert(profile);
       FieldType field_type = field->Type().GetStorableType();
       base::UmaHistogramExactLinear(
@@ -206,15 +204,14 @@ void LogObservationCountBeforeSubmissionMetric(const FormStructure& form,
 }
 
 void LogProfileTokenQualityScoreMetric(const FormStructure& form,
-                                       const PersonalDataManager& pdm) {
+                                       const AddressDataManager& adm) {
   for (const std::unique_ptr<AutofillField>& field : form) {
     if (!field->autofill_source_profile_guid()) {
       // The field was not autofilled.
       continue;
     }
     if (const AutofillProfile* profile =
-            pdm.address_data_manager().GetProfileByGUID(
-                *field->autofill_source_profile_guid())) {
+            adm.GetProfileByGUID(*field->autofill_source_profile_guid())) {
       FieldTypeSet relevant_types = GetMetricRelevantTypes(*profile);
       FieldType field_type = field->Type().GetStorableType();
       if (!relevant_types.contains(field_type)) {

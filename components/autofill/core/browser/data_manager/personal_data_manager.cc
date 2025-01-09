@@ -33,17 +33,16 @@ PersonalDataManager::PersonalDataManager(
     std::string app_locale,
     std::string variations_country_code)
     : pref_service_(pref_service),
-      app_locale_(std::move(app_locale)),
       history_service_(history_service) {
   address_data_manager_ = std::make_unique<AddressDataManager>(
       profile_database, pref_service, local_state, sync_service,
       identity_manager, strike_database,
-      GeoIpCountryCode(variations_country_code), app_locale_);
+      GeoIpCountryCode(variations_country_code), app_locale);
   payments_data_manager_ = std::make_unique<PaymentsDataManager>(
       profile_database, account_database, image_fetcher,
       std::move(shared_storage_handler), pref_service, sync_service,
       identity_manager, GeoIpCountryCode(std::move(variations_country_code)),
-      app_locale_);
+      std::move(app_locale));
   address_data_manager_observation_.Observe(address_data_manager_.get());
   payments_data_manager_observation_.Observe(payments_data_manager_.get());
 

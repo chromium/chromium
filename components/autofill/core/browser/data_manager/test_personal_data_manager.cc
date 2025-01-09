@@ -27,10 +27,8 @@ TestPersonalDataManager::TestPersonalDataManager()
           /*shared_storage_handler=*/nullptr,
           "en-US",
           "US") {
-  set_address_data_manager(
-      std::make_unique<TestAddressDataManager>(app_locale()));
-  set_payments_data_manager(
-      std::make_unique<TestPaymentsDataManager>(app_locale()));
+  set_address_data_manager(std::make_unique<TestAddressDataManager>("en-US"));
+  set_payments_data_manager(std::make_unique<TestPaymentsDataManager>("en-US"));
 }
 
 TestPersonalDataManager::~TestPersonalDataManager() = default;

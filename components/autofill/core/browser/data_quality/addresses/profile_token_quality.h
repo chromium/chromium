@@ -25,10 +25,10 @@
 
 namespace autofill {
 
+class AddressDataManager;
 class AutofillField;
 class AutofillProfile;
 class FormStructure;
-class PersonalDataManager;
 
 // `ProfileTokenQuality` is associated with one `AutofillProfile` and tracks if
 // the supported types of that profile are accepted or edited after filling.
@@ -119,7 +119,7 @@ class ProfileTokenQuality {
   // TODO(crbug.com/40227496): Get rid of the `form_data` parameter.
   bool AddObservationsForFilledForm(const FormStructure& form_structure,
                                     const FormData& form_data,
-                                    const PersonalDataManager& pdm);
+                                    const AddressDataManager& adm);
 
   // Collects observations using `AddObservationsForFilledForm()` for all
   // profiles that were used to autofill the form.
@@ -127,7 +127,7 @@ class ProfileTokenQuality {
   static void SaveObservationsForFilledFormForAllSubmittedProfiles(
       const FormStructure& form_structure,
       const FormData& form_data,
-      PersonalDataManager& pdm);
+      AddressDataManager& adm);
 
   // Returns all `ObservationType`s available for the `type`. The resulting
   // vector has at most `kMaxNumberOfObservations` items. It can contain

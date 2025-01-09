@@ -92,7 +92,7 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
                      signin::IdentityManager* identity_manager,
                      StrikeDatabaseBase* strike_database,
                      GeoIpCountryCode variation_country_code,
-                     const std::string& app_locale);
+                     std::string app_locale);
 
   ~AddressDataManager() override;
   AddressDataManager(const AddressDataManager&) = delete;

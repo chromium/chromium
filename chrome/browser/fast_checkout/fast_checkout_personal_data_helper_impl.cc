@@ -9,6 +9,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 
@@ -75,14 +76,15 @@ FastCheckoutPersonalDataHelperImpl::GetValidCreditCards() const {
 
 std::vector<const autofill::AutofillProfile*>
 FastCheckoutPersonalDataHelperImpl::GetValidAddressProfiles() const {
-  autofill::PersonalDataManager* pdm = GetPersonalDataManager();
+  const autofill::AddressDataManager& adm =
+      GetPersonalDataManager()->address_data_manager();
   // Trigger only if there is at least 1 complete address profile on file.
   std::vector<const autofill::AutofillProfile*> profiles =
-      pdm->address_data_manager().GetProfilesToSuggest();
+      adm.GetProfilesToSuggest();
 
   std::erase_if(profiles,
-                [&pdm, this](const autofill::AutofillProfile* profile) {
-                  return !IsCompleteAddressProfile(profile, pdm->app_locale());
+                [&adm, this](const autofill::AutofillProfile* profile) {
+                  return !IsCompleteAddressProfile(profile, adm.app_locale());
                 });
   return profiles;
 }

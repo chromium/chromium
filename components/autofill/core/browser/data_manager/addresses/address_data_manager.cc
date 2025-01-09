@@ -85,12 +85,12 @@ AddressDataManager::AddressDataManager(
     signin::IdentityManager* identity_manager,
     StrikeDatabaseBase* strike_database,
     GeoIpCountryCode variation_country_code,
-    const std::string& app_locale)
+    std::string app_locale)
     : variation_country_code_(std::move(variation_country_code)),
       webdata_service_(webdata_service),
       identity_manager_(identity_manager),
       sync_service_(sync_service),
-      app_locale_(app_locale) {
+      app_locale_(std::move(app_locale)) {
   alternative_state_name_map_updater_ =
       std::make_unique<AlternativeStateNameMapUpdater>(local_state, this);
   if (webdata_service_) {

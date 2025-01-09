@@ -564,7 +564,8 @@ void MaybeImportFromSubmittedForm(AutofillClient& client,
   // This intentionally happens prior to `ImportAndProcessFormData()`. See
   // crbug.com/381205586.
   ProfileTokenQuality::SaveObservationsForFilledFormForAllSubmittedProfiles(
-      form_structure, form_data, client.GetPersonalDataManager());
+      form_structure, form_data,
+      client.GetPersonalDataManager().address_data_manager());
 
   if (!autofill_ai_shows_bubble && form_structure.IsAutofillable()) {
     // Update Personal Data with the form's submitted data.

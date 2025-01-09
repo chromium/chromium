@@ -921,15 +921,16 @@ TEST_F(QualityMetricsTest, InferredLabelSourceAtSubmissionMetric) {
   // The `FormFieldData::label_source` of the fields is set manually, since
   // this test doesn't run label inference.
   FormFieldData name_field;
-  name_field.set_value(
-      profile.GetInfo(NAME_FULL, personal_data().app_locale()));
+  name_field.set_value(profile.GetInfo(
+      NAME_FULL, personal_data().address_data_manager().app_locale()));
   name_field.set_label_source(FormFieldData::LabelSource::kUnknown);
   FormFieldData street_field;
   street_field.set_value(u"unknown");
   street_field.set_label_source(FormFieldData::LabelSource::kForId);
   FormFieldData country_field;
   country_field.set_value(
-      profile.GetInfo(ADDRESS_HOME_COUNTRY, personal_data().app_locale()));
+      profile.GetInfo(ADDRESS_HOME_COUNTRY,
+                      personal_data().address_data_manager().app_locale()));
   country_field.set_label_source(FormFieldData::LabelSource::kLabelTag);
   const FormData form = CreateForm({name_field, street_field, country_field});
   autofill_manager().AddSeenForm(

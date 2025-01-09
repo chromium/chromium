@@ -18,7 +18,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_progress_dialog_type.h"
-#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -354,8 +354,7 @@ void CreditCardFidoAuthenticator::MakeCredential(
 void CreditCardFidoAuthenticator::OptChange(
     base::Value::Dict authenticator_response) {
   payments::OptChangeRequestDetails request_details;
-  request_details.app_locale =
-      autofill_client_->GetPersonalDataManager().app_locale();
+  request_details.app_locale = payments_data_manager().app_locale();
 
   switch (current_flow_) {
     case OPT_IN_WITH_CHALLENGE_FLOW:
@@ -567,9 +566,7 @@ CreditCardFidoAuthenticator::ParseCreationOptions(
       relying_party_name ? *relying_party_name : kGooglePaymentsRpName;
 
   const CoreAccountInfo account_info =
-      autofill_client_->GetPersonalDataManager()
-          .payments_data_manager()
-          .GetAccountInfoForPaymentsServer();
+      payments_data_manager().GetAccountInfoForPaymentsServer();
   const std::string& gaia_id_str = account_info.gaia.ToString();
   options->user.id = options->user.id =
       std::vector<uint8_t>(gaia_id_str.begin(), gaia_id_str.end());

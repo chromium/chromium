@@ -255,13 +255,13 @@ PaymentsDataManager::PaymentsDataManager(
     syncer::SyncService* sync_service,
     signin::IdentityManager* identity_manager,
     GeoIpCountryCode variations_country_code,
-    const std::string& app_locale)
+    std::string app_locale)
     : image_fetcher_(image_fetcher),
       shared_storage_handler_(std::move(shared_storage_handler)),
       sync_service_(sync_service),
       identity_manager_(identity_manager),
       variations_country_code_(std::move(variations_country_code)),
-      app_locale_(app_locale) {
+      app_locale_(std::move(app_locale)) {
   database_helper_ = std::make_unique<PaymentsDatabaseHelper>(
       this, profile_database, account_database);
   SetPrefService(pref_service);

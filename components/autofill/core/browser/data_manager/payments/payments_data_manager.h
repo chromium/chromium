@@ -93,7 +93,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
       syncer::SyncService* sync_service,
       signin::IdentityManager* identity_manager,
       GeoIpCountryCode variations_country_code,
-      const std::string& app_locale);
+      std::string app_locale);
 
   PaymentsDataManager(const PaymentsDataManager&) = delete;
   PaymentsDataManager& operator=(const PaymentsDataManager&) = delete;

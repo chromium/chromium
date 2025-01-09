@@ -144,9 +144,6 @@ class PersonalDataManager : public KeyedService,
   // these as a result of this call.
   void Refresh();
 
-  // Returns the |app_locale_| that was provided during construction.
-  const std::string& app_locale() const { return app_locale_; }
-
   // Triggers `OnPersonalDataChanged()` for all `observers_` if no address or
   // payment changes are pending.
   void NotifyPersonalDataObserver();
@@ -174,9 +171,6 @@ class PersonalDataManager : public KeyedService,
 
  private:
   base::ObserverList<PersonalDataManagerObserver>::Unchecked observers_;
-
-  // Stores the |app_locale| supplied on construction.
-  const std::string app_locale_;
 
   // The HistoryService to be observed by the personal data manager. Must
   // outlive this instance. This unowned pointer is retained so the PDM can

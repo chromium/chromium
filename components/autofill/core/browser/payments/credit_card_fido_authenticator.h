@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
 #include "components/autofill/core/browser/payments/full_card_request.h"
@@ -252,6 +253,10 @@ class CreditCardFidoAuthenticator
 
   // Gets or creates Authenticator pointer to facilitate WebAuthn.
   webauthn::InternalAuthenticator* authenticator();
+
+  PaymentsDataManager& payments_data_manager() {
+    return autofill_client_->GetPersonalDataManager().payments_data_manager();
+  }
 
   // Card being unmasked.
   std::optional<CreditCard> card_;
