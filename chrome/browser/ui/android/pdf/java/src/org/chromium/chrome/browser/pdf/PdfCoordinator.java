@@ -270,12 +270,12 @@ public class PdfCoordinator {
         return structuredData;
     }
 
-    boolean getIsPdfLoadedForTesting() {
-        return mIsPdfLoaded;
+    Uri getUri() {
+        return mUri;
     }
 
-    Uri getUriForTesting() {
-        return mUri;
+    boolean getIsPdfLoadedForTesting() {
+        return mIsPdfLoaded;
     }
 
     static void skipLoadPdfForTesting(boolean skipLoadPdfForTesting) {

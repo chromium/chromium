@@ -122,7 +122,7 @@ public class PdfPageUnitTest {
         JSONObject metadata = (JSONObject) jsonObject.get("file_metadata");
         Assert.assertEquals(
                 "File uri should match.",
-                pdfPage.mPdfCoordinator.getUriForTesting().toString(),
+                pdfPage.mPdfCoordinator.getUri().toString(),
                 metadata.get("file_uri"));
         Assert.assertEquals(
                 "File name should match.", pdfPage.getTitle(), metadata.get("file_name"));
@@ -213,7 +213,7 @@ public class PdfPageUnitTest {
         JSONObject metadata = (JSONObject) jsonObject.get("file_metadata");
         Assert.assertEquals(
                 "File uri should match.",
-                pdfPage.mPdfCoordinator.getUriForTesting().toString(),
+                pdfPage.mPdfCoordinator.getUri().toString(),
                 metadata.get("file_uri"));
         Assert.assertEquals(
                 "File name should match.", pdfPage.getTitle(), metadata.get("file_name"));

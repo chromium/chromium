@@ -761,7 +761,7 @@ public class DownloadUtils {
         }
     }
 
-    private static boolean openFileWithExternalApps(
+    public static boolean openFileWithExternalApps(
             String filePath,
             String mimeType,
             String originalUrl,

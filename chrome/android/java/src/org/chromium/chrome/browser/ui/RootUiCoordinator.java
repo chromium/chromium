@@ -68,6 +68,7 @@ import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeToolbarButtonController;
+import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.findinpage.FindToolbarManager;
@@ -199,11 +200,13 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.IntentRequestTracker;
+import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.Toast;
 
 import java.util.Arrays;
 import java.util.List;
@@ -1289,6 +1292,24 @@ public class RootUiCoordinator
             TrackerFactory.getTrackerForProfile(tab.getProfile())
                     .notifyEvent(EventConstants.PAGE_ZOOM_OPENED);
             mPageZoomCoordinator.show(tab.getWebContents());
+        } else if (id == R.id.open_with_id) {
+            Tab tab = mActivityTabProvider.get();
+            assert tab != null && tab.isNativePage() && tab.getNativePage() instanceof PdfPage;
+            Uri uri = ((PdfPage) tab.getNativePage()).getUri();
+            if (uri == null
+                    || !DownloadUtils.openFileWithExternalApps(
+                            uri.toString(),
+                            MimeTypeUtils.PDF_MIME_TYPE,
+                            /* originalUrl= */ null,
+                            /* referrer= */ null,
+                            mActivity)) {
+                Toast.makeText(
+                                mActivity,
+                                mActivity.getString(R.string.download_cant_open_file),
+                                Toast.LENGTH_SHORT)
+                        .show();
+            }
+            return true;
         }
 
         return false;
