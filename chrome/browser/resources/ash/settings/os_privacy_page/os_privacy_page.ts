@@ -306,7 +306,7 @@ export class OsSettingsPrivacyPageElement extends
 
     this.addFocusConfig(routes.ACCOUNTS, '#manageOtherPeopleRow');
     this.addFocusConfig(routes.LOCK_SCREEN, '#lockScreenRow');
-    this.addFocusConfig(routes.SYNC, '#syncSetupRow');
+    this.addFocusConfig(routes.OS_SYNC_SETUP, '#syncSetupRow');
   }
 
   private afterRenderShowDeepLink_(
@@ -368,7 +368,7 @@ export class OsSettingsPrivacyPageElement extends
 
     // Since the sync setup subpage is a shared subpage, so we handle deep links
     // for both this page and the sync setup subpage.
-    if (newRoute === routes.SYNC || newRoute === this.route) {
+    if (newRoute === routes.OS_SYNC_SETUP || newRoute === this.route) {
       this.attemptDeepLink();
     }
   }
@@ -530,7 +530,7 @@ export class OsSettingsPrivacyPageElement extends
 
   // Users can go to sync setup subpage regardless of sync status.
   private onSyncClick_(): void {
-    Router.getInstance().navigateTo(routes.SYNC);
+    Router.getInstance().navigateTo(routes.OS_SYNC_SETUP);
   }
 
   private onPrivacyHubClick_(): void {

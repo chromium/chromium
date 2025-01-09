@@ -59,7 +59,7 @@ suite('Deep linking in old sync page', () => {
     await waitAfterNextRender(privacyPage);
 
     // Load the sync page.
-    Router.getInstance().navigateTo(routes.SYNC);
+    Router.getInstance().navigateTo(routes.OS_SYNC_SETUP);
     await flushTasks();
 
     // Make the sync page configurable.
@@ -134,7 +134,7 @@ suite('Deep linking in old sync page', () => {
     const syncEncryptionOptionsSettingId =
         settingMojom.Setting.kNonSplitSyncEncryptionOptions.toString();
     params.append('settingId', syncEncryptionOptionsSettingId);
-    Router.getInstance().navigateTo(routes.SYNC, params);
+    Router.getInstance().navigateTo(routes.OS_SYNC_SETUP, params);
 
     // Flush to make sure the dropdown expands.
     flush();

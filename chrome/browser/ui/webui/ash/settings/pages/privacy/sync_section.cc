@@ -29,9 +29,9 @@ namespace ash::settings {
 
 namespace mojom {
 using ::chromeos::settings::mojom::kPrivacyAndSecuritySectionPath;
+using ::chromeos::settings::mojom::kSyncControlsSubpagePath;
 using ::chromeos::settings::mojom::kSyncDeprecatedAdvancedSubpagePath;
 using ::chromeos::settings::mojom::kSyncSetupSubpagePath;
-using ::chromeos::settings::mojom::kSyncSubpagePath;
 using ::chromeos::settings::mojom::Section;
 using ::chromeos::settings::mojom::Setting;
 using ::chromeos::settings::mojom::Subpage;
@@ -85,11 +85,11 @@ void AddSyncControlsStrings(content::WebUIDataSource* html_source) {
 base::span<const SearchConcept> GetCategorizedSyncSearchConcepts() {
   static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_SYNC,
-       mojom::kSyncSubpagePath,
+       mojom::kSyncControlsSubpagePath,
        mojom::SearchResultIcon::kSync,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSubpage,
-       {.subpage = mojom::Subpage::kSync}},
+       {.subpage = mojom::Subpage::kSyncControls}},
   });
   return tags;
 }
@@ -191,11 +191,11 @@ void SyncSection::RegisterHierarchy(HierarchyGenerator* generator) const {
 
   // Page with OS-specific sync data types.
   generator->RegisterTopLevelSubpage(
-      IDS_SETTINGS_SYNC_ADVANCED_PAGE_TITLE, mojom::Subpage::kSync,
+      IDS_SETTINGS_SYNC_ADVANCED_PAGE_TITLE, mojom::Subpage::kSyncControls,
       mojom::SearchResultIcon::kSync, mojom::SearchResultDefaultRank::kMedium,
-      mojom::kSyncSubpagePath);
+      mojom::kSyncControlsSubpagePath);
   generator->RegisterNestedSetting(mojom::Setting::kSplitSyncOnOff,
-                                   mojom::Subpage::kSync);
+                                   mojom::Subpage::kSyncControls);
 }
 
 }  // namespace ash::settings

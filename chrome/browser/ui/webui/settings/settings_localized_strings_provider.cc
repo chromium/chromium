@@ -1678,7 +1678,8 @@ void AddBrowserSyncPageStrings(content::WebUIDataSource* html_source) {
 #if BUILDFLAG(IS_CHROMEOS)
   html_source->AddString(
       "osSyncSettingsUrl",
-      chrome::GetOSSettingsUrl(chromeos::settings::mojom::kSyncSubpagePath)
+      chrome::GetOSSettingsUrl(
+          chromeos::settings::mojom::kSyncControlsSubpagePath)
           .spec());
 #endif
 }

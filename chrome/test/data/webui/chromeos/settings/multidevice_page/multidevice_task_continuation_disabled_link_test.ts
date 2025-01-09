@@ -54,6 +54,6 @@ suite('<settings-multidevice-task-continuation-disabled-link>', () => {
     chromeSyncLink.click();
 
     await advancedSyncOpenedPromise;
-    assertNotEquals(Router.getInstance().currentRoute, routes.OS_SYNC);
+    assertNotEquals(Router.getInstance().currentRoute, routes.OS_SYNC_CONTROLS);
   });
 });

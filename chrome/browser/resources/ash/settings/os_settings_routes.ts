@@ -212,7 +212,8 @@ export interface OsSettingsRoutes extends MinimumRoutes {
   OS_LANGUAGES_INPUT_METHOD_OPTIONS: Route;
   OS_LANGUAGES_LANGUAGES: Route;
   OS_PRIVACY: Route;
-  OS_SYNC: Route;
+  OS_SYNC_CONTROLS: Route;
+  OS_SYNC_SETUP: Route;
   OS_PEOPLE: Route;
   PASSPOINT_DETAIL: Route;
   PER_DEVICE_KEYBOARD: Route;
@@ -234,7 +235,6 @@ export interface OsSettingsRoutes extends MinimumRoutes {
   SMB_SHARES: Route;
   STORAGE: Route;
   STYLUS: Route;
-  SYNC: Route;
   SYSTEM_PREFERENCES: Route;
 
   // Internal routes
@@ -621,11 +621,11 @@ export function createRoutes(): OsSettingsRoutes {
   // Sync subpages.
   if (!isGuest()) {
     assert(r.OS_PRIVACY);
-    // TODO(b/305747266) : Disambiguate the names for OS_SYNC and SYNC.
-    r.OS_SYNC = createSubpage(
-        r.OS_PRIVACY, routesMojom.SYNC_SUBPAGE_PATH, Subpage.kSync);
-    r.SYNC = createSubpage(
+    r.OS_SYNC_SETUP = createSubpage(
         r.OS_PRIVACY, routesMojom.SYNC_SETUP_SUBPAGE_PATH, Subpage.kSyncSetup);
+    r.OS_SYNC_CONTROLS = createSubpage(
+        r.OS_SYNC_SETUP, routesMojom.SYNC_CONTROLS_SUBPAGE_PATH,
+        Subpage.kSyncControls);
   }
 
   // Crostini details subpages.

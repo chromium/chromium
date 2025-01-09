@@ -50,6 +50,6 @@ suite('<settings-multidevice-wifi-sync-disabled-link>', () => {
     chromeSyncLink.click();
     flush();
 
-    assertEquals(Router.getInstance().currentRoute, routes.OS_SYNC);
+    assertEquals(Router.getInstance().currentRoute, routes.OS_SYNC_CONTROLS);
   });
 });
