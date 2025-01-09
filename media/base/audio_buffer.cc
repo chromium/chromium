@@ -313,8 +313,10 @@ scoped_refptr<AudioBuffer> AudioBuffer::CopyFrom(
   DCHECK(channel_count);
 
   std::vector<const uint8_t*> data(channel_count);
-  for (int ch = 0; ch < channel_count; ch++)
-    data[ch] = reinterpret_cast<const uint8_t*>(audio_bus->channel(ch));
+  for (int ch = 0; ch < channel_count; ch++) {
+    data[ch] =
+        reinterpret_cast<const uint8_t*>(audio_bus->channel_span(ch).data());
+  }
 
   return CopyFrom(kSampleFormatPlanarF32, channel_layout, channel_count,
                   sample_rate, audio_bus->frames(), data.data(), timestamp,
@@ -511,11 +513,13 @@ void AudioBuffer::ReadFrames(int frames_to_copy,
     return;
   }
 
+  const size_t dest_offset = base::checked_cast<size_t>(dest_frame_offset);
+
   // Note: The conversion steps below will clip values to [1.0, -1.0f].
 
   if (sample_format_ == kSampleFormatPlanarF32) {
     for (int ch = 0; ch < channel_count_; ++ch) {
-      float* dest_data = dest->channel(ch) + dest_frame_offset;
+      auto dest_data = dest->channel_span(ch).subspan(dest_offset);
       const float* source_data =
           reinterpret_cast<const float*>(channel_data_[ch]) +
           source_frame_offset;
@@ -529,7 +533,7 @@ void AudioBuffer::ReadFrames(int frames_to_copy,
     // into output channel data.
     for (int ch = 0; ch < channel_count_; ++ch) {
       const uint8_t* source_data = channel_data_[ch] + source_frame_offset;
-      float* dest_data = dest->channel(ch) + dest_frame_offset;
+      auto dest_data = dest->channel_span(ch).subspan(dest_offset);
       for (int i = 0; i < frames_to_copy; ++i)
         dest_data[i] = UnsignedInt8SampleTypeTraits::ToFloat(source_data[i]);
     }
@@ -543,7 +547,7 @@ void AudioBuffer::ReadFrames(int frames_to_copy,
       const int16_t* source_data =
           reinterpret_cast<const int16_t*>(channel_data_[ch]) +
           source_frame_offset;
-      float* dest_data = dest->channel(ch) + dest_frame_offset;
+      auto dest_data = dest->channel_span(ch).subspan(dest_offset);
       for (int i = 0; i < frames_to_copy; ++i)
         dest_data[i] = SignedInt16SampleTypeTraits::ToFloat(source_data[i]);
     }
@@ -557,7 +561,7 @@ void AudioBuffer::ReadFrames(int frames_to_copy,
       const int32_t* source_data =
           reinterpret_cast<const int32_t*>(channel_data_[ch]) +
           source_frame_offset;
-      float* dest_data = dest->channel(ch) + dest_frame_offset;
+      auto dest_data = dest->channel_span(ch).subspan(dest_offset);
       for (int i = 0; i < frames_to_copy; ++i)
         dest_data[i] = SignedInt32SampleTypeTraits::ToFloat(source_data[i]);
     }

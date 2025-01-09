@@ -194,25 +194,25 @@ FLAC__StreamDecoderWriteStatus FlacAudioHandler::WriteCallbackInternal(
   }
 
   // Get the number of channels and the number of samples per channel.
-  const int num_channels = frame->header.channels;
-  const int num_samples = frame->header.blocksize;
+  const size_t num_channels = frame->header.channels;
+  const size_t num_samples = frame->header.blocksize;
 
   // Avoid the crash happened in `fifo_`.
-  if (num_channels != num_channels_) {
+  if (num_channels != static_cast<size_t>(num_channels_)) {
     return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
   }
 
   // Discard the packet if there are more than the number of `max_blocksize`
   // frames.
-  if (num_samples > bus_->frames()) {
+  if (num_samples > static_cast<size_t>(bus_->frames())) {
     return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
   }
 
-  for (int ch = 0; ch < num_channels; ++ch) {
-    float* channel_data = bus_->channel(ch);
+  for (size_t ch = 0; ch < num_channels; ++ch) {
+    auto channel_data = bus_->channel_span(ch);
     const FLAC__int32* source_data = buffer[ch];
-    for (int s = 0; s < num_samples; ++s, ++channel_data, ++source_data) {
-      *channel_data = SignedInt16SampleTypeTraits::ToFloat(*source_data);
+    for (size_t s = 0; s < num_samples; ++s, ++source_data) {
+      channel_data[s] = SignedInt16SampleTypeTraits::ToFloat(*source_data);
     }
   }
 
