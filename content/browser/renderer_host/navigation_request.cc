@@ -235,15 +235,6 @@ base::TimeDelta g_commit_timeout = kDefaultCommitTimeout;
 constexpr base::TimeDelta kCompositorLockTimeout = base::Milliseconds(150);
 #endif
 
-// crbug.com/954271: This feature is a part of an ablation study which makes
-// history navigations slower.
-// TODO(altimin): Clean this up after the study finishes.
-BASE_FEATURE(kHistoryNavigationDoNotUseCacheAblationStudy,
-             "HistoryNavigationDoNotUseCacheAblationStudy",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-constexpr base::FeatureParam<double> kDoNotUseCacheProbability{
-    &kHistoryNavigationDoNotUseCacheAblationStudy, "probability", 0.0};
-
 const char kSecSharedStorageWritableRequestHeaderKey[] =
     "Sec-Shared-Storage-Writable";
 
@@ -299,10 +290,6 @@ void UpdateLoadFlagsWithCacheFlags(int* load_flags,
       if (is_post) {
         *load_flags |=
             net::LOAD_ONLY_FROM_CACHE | net::LOAD_SKIP_CACHE_VALIDATION;
-      } else if (base::FeatureList::IsEnabled(
-                     kHistoryNavigationDoNotUseCacheAblationStudy) &&
-                 base::RandDouble() < kDoNotUseCacheProbability.Get()) {
-        *load_flags |= net::LOAD_BYPASS_CACHE;
       } else {
         *load_flags |= net::LOAD_SKIP_CACHE_VALIDATION;
       }
