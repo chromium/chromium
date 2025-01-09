@@ -52,11 +52,6 @@ public class StaticResource implements Resource {
     }
 
     @Override
-    public boolean shouldRemoveResourceOnNullBitmap() {
-        return false;
-    }
-
-    @Override
     public Rect getBitmapSize() {
         return mBitmapSize;
     }

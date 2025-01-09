@@ -21,11 +21,6 @@ public class SoftwareDraw implements ViewResourceAdapter.CaptureMechanism {
     private @Nullable Bitmap mBitmap;
 
     @Override
-    public boolean shouldRemoveResourceOnNullBitmap() {
-        return false;
-    }
-
-    @Override
     public void onViewSizeChange(View view, float scale) {}
 
     @Override

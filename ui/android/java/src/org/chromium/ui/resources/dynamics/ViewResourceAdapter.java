@@ -25,17 +25,14 @@ import org.chromium.ui.resources.ResourceFactory;
 /**
  * An adapter that exposes a {@link View} as a {@link DynamicResourceSnapshot}. In order to properly
  * use this adapter {@link ViewResourceAdapter#invalidate(Rect)} must be called when parts of the
- * {@link View} are invalidated.  For {@link ViewGroup}s the easiest way to do this is to override
+ * {@link View} are invalidated. For {@link ViewGroup}s the easiest way to do this is to override
  * {@link ViewGroup#invalidateChildInParent(int[], Rect)}.
  */
 @NullMarked
 public class ViewResourceAdapter
         implements DynamicResource, OnLayoutChangeListener, CaptureObserver {
-    /** Abstraction around the mechanism for actually capturing bitmaps.  */
+    /** Abstraction around the mechanism for actually capturing bitmaps. */
     public interface CaptureMechanism {
-        /** See {@link Resource#shouldRemoveResourceOnNullBitmap()}. */
-        boolean shouldRemoveResourceOnNullBitmap();
-
         /** Called when the size of the view changes. */
         default void onViewSizeChange(View view, float scale) {}
 
@@ -104,12 +101,7 @@ public class ViewResourceAdapter
 
     private void onCapture(Bitmap bitmap) {
         mThreadChecker.assertOnValidThread();
-        Resource resource =
-                new DynamicResourceSnapshot(
-                        bitmap,
-                        mCaptureMechanism.shouldRemoveResourceOnNullBitmap(),
-                        mViewSize,
-                        createNativeResource());
+        Resource resource = new DynamicResourceSnapshot(bitmap, mViewSize, createNativeResource());
         for (Callback<Resource> observer : mOnResourceReadyObservers) observer.onResult(resource);
     }
 
