@@ -29,6 +29,10 @@
 #include "sandbox/linux/services/syscall_wrappers.h"
 #include "sandbox/linux/system_headers/linux_signal.h"
 
+#if defined(LIBC_GLIBC)
+#include <pthread.h>
+#endif
+
 namespace sandbox {
 
 namespace {
