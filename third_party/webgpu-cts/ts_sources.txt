@@ -189,6 +189,7 @@ src/webgpu/api/operation/memory_sync/texture/readonly_depth_stencil.spec.ts
 src/webgpu/api/operation/memory_sync/texture/texture_sync_test.ts
 src/webgpu/api/operation/memory_sync/texture/same_subresource.spec.ts
 src/webgpu/api/operation/pipeline/default_layout.spec.ts
+src/webgpu/api/operation/pipeline/pipeline_layout_created_with_null_bind_group_layout.spec.ts
 src/webgpu/api/operation/queue/writeBuffer.spec.ts
 src/webgpu/api/operation/render_pass/clear_value.spec.ts
 src/webgpu/api/operation/render_pass/resolve.spec.ts
