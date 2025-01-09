@@ -4782,9 +4782,6 @@ targets.bundle(
     targets = [
         targets.bundle(
             targets = "ios_common_tests",
-            mixins = [
-                "mac_14_vm_optional",
-            ],
             variants = [
                 "SIM_IPHONE_14_PLUS_17_5",
                 "SIM_IPHONE_14_PLUS_18_1",
@@ -4818,9 +4815,6 @@ targets.bundle(
         ),
         targets.bundle(
             targets = "ios_screen_size_dependent_tests",
-            mixins = [
-                "mac_14_vm_optional",
-            ],
             variants = [
                 "SIM_IPAD_PRO_6TH_GEN_17_5",
                 "SIM_IPAD_PRO_7TH_GEN_18_1",
