@@ -28,16 +28,6 @@ constexpr base::TimeDelta kHungRendererDelay = base::Seconds(15);
 // The maximum length of string as data url.
 extern const size_t kMaxLengthOfDataURLString;
 
-// Constants used to organize content processes in about:tracing.
-CONTENT_EXPORT extern const int kTraceEventBrowserProcessSortIndex;
-CONTENT_EXPORT extern const int kTraceEventRendererProcessSortIndex;
-CONTENT_EXPORT extern const int kTraceEventPpapiProcessSortIndex;
-CONTENT_EXPORT extern const int kTraceEventPpapiBrokerProcessSortIndex;
-CONTENT_EXPORT extern const int kTraceEventGpuProcessSortIndex;
-
-// Constants used to organize content threads in about:tracing.
-CONTENT_EXPORT extern const int kTraceEventRendererMainThreadSortIndex;
-
 // Accept header used for frame requests.
 CONTENT_EXPORT extern const char kFrameAcceptHeaderValue[];
 

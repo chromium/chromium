@@ -544,10 +544,6 @@ void RenderThreadImpl::Init() {
 
   GetContentClient()->renderer()->PostIOThreadCreated(GetIOTaskRunner().get());
 
-  base::trace_event::TraceLog::GetInstance()->SetThreadSortIndex(
-      base::PlatformThread::CurrentId(),
-      kTraceEventRendererMainThreadSortIndex);
-
 #if BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
   // On Mac and Android Java UI, the select popups are rendered by the browser.
     blink::WebView::SetUseExternalPopupMenus(true);

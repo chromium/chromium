@@ -91,10 +91,6 @@ const base::FilePath::CharType kDefaultProfileName[] =
 
 namespace {
 
-// Keep in sync with content/common/content_constants_internal.h.
-// TODO(skyostil): Add a tracing test for this.
-const int kTraceEventBrowserProcessSortIndex = -6;
-
 HeadlessContentMainDelegate* g_current_headless_content_main_delegate = nullptr;
 
 #if !BUILDFLAG(IS_FUCHSIA)
@@ -450,8 +446,6 @@ HeadlessContentMainDelegate::RunProcess(
 
   base::CurrentProcess::GetInstance().SetProcessType(
       base::CurrentProcessType::PROCESS_BROWSER);
-  base::trace_event::TraceLog::GetInstance()->SetProcessSortIndex(
-      kTraceEventBrowserProcessSortIndex);
 
   std::unique_ptr<content::BrowserMainRunner> browser_runner =
       content::BrowserMainRunner::Create();

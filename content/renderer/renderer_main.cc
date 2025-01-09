@@ -152,8 +152,6 @@ int RendererMain(MainFunctionParams parameters) {
 
   base::CurrentProcess::GetInstance().SetProcessType(
       base::CurrentProcessType::PROCESS_RENDERER);
-  base::trace_event::TraceLog::GetInstance()->SetProcessSortIndex(
-      kTraceEventRendererProcessSortIndex);
 
   const base::CommandLine& command_line = *parameters.command_line;
 
