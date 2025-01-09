@@ -130,6 +130,7 @@ class AppListTestViewDelegate : public AppListViewDelegate,
   AppListTestModel* GetTestModel() { return model_.get(); }
 
   SearchModel* ReleaseTestSearchModel() { return search_model_.release(); }
+  SearchModel* GetTestSearchModel() { return search_model_.get(); }
 
  private:
   void RecordAppLaunched(ash::AppListLaunchedFrom launched_from);
