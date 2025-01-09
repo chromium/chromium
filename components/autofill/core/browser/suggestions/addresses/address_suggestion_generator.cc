@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/suggestions/addresses/address_suggestion_generator.h"
 
+#include <algorithm>
 #include <functional>
 #include <optional>
 #include <string>
@@ -339,14 +340,11 @@ GetPrefixMatchedProfiles(const std::vector<const AutofillProfile*>& profiles,
     if (matched_profiles.size() == kMaxPrefixMatchedProfilesForSuggestion) {
       break;
     }
-    // Don't offer to fill the exact same value again. If detailed suggestions
-    // with different secondary data is available, it would appear to offer
-    // refilling the whole form with something else. E.g. the same name with a
-    // work and a home address would appear twice but a click would be a noop.
-    // TODO(fhorschig): Consider refilling form instead (at least on Android).
 #if BUILDFLAG(IS_ANDROID)
     if (field_is_autofilled &&
-        profile->GetRawInfo(trigger_field_type) == raw_field_contents) {
+        profile->GetRawInfo(trigger_field_type) == raw_field_contents &&
+        !base::FeatureList::IsEnabled(
+            features::kAutofillImproveAddressFieldSwapping)) {
       continue;
     }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -410,7 +408,8 @@ std::vector<Suggestion> GetAddressFooterSuggestions(bool is_autofilled) {
 ProfilesToSuggestOptions GetProfilesToSuggestOptions(
     FieldType trigger_field_type,
     const std::u16string& trigger_field_contents,
-    bool trigger_field_is_autofilled) {
+    bool trigger_field_is_autofilled,
+    SuggestionType suggestion_type) {
   // By default, disused profiles are excluded only if the normalized field
   // value is empty.
   bool should_excluded_disused_addresses =
@@ -422,11 +421,23 @@ ProfilesToSuggestOptions GetProfilesToSuggestOptions(
   // the field with something else, making the prefix matching not useful.
   bool should_prefix_match_suggestions =
       (!trigger_field_is_autofilled || !IsAddressFieldSwappingEnabled());
+  // By default, prefix matching and deduplication are enough filtering
+  // mechanisms for suggestions. However, for field by field filling suggestions
+  // we also wanna remove suggestions that have the same value as the trigger
+  // field, as those suggestions would be useless and thus add visual noise in
+  // the suggestion UI.
+  bool should_remove_profiles_with_equal_value_on_trigger_field =
+      (suggestion_type == SuggestionType::kAddressFieldByFieldFilling &&
+       IsAddressFieldSwappingEnabled() &&
+       base::FeatureList::IsEnabled(
+           features::kAutofillImproveAddressFieldSwapping));
   // TODO(crbug.com/378835293): Cleanup trivial options.
   return ProfilesToSuggestOptions{
       .exclude_disused_addresses = should_excluded_disused_addresses,
       .require_non_empty_value_on_trigger_field = true,
       .prefix_match_suggestions = should_prefix_match_suggestions,
+      .remove_profiles_with_equal_value_on_trigger_field =
+          should_remove_profiles_with_equal_value_on_trigger_field,
       .deduplicate_suggestions = true};
 }
 
@@ -464,13 +475,29 @@ std::vector<AutofillProfile> GetProfilesToSuggest(
   if (options.exclude_disused_addresses) {
     RemoveDisusedSuggestions(profiles_to_suggest);
   }
-  const AutofillProfileComparator comparator(address_data.app_locale());
+  // This filtering logic should not result in removing all address suggestions
+  // but just in reducing the number of suggestions displayed, which is why
+  // filtering is only performed given more than one address stored. It is
+  // assumed that addresses that are filtered with this strategy all have
+  // different values on the trigger field.
+  if (options.remove_profiles_with_equal_value_on_trigger_field &&
+      profiles_to_suggest.size() > 1) {
+    std::erase_if(profiles_to_suggest, [&](const AutofillProfile* profile) {
+      return NormalizeForComparisonForType(field_contents,
+                                           trigger_field_type) ==
+             NormalizeForComparisonForType(
+                 GetProfileSuggestionMainText(
+                     *profile, address_data.app_locale(), trigger_field_type),
+                 trigger_field_type);
+    });
+  }
   // It is important that deduplication is the last filtering strategy to be
-  // executed, otherwise some profiles could be deduplicated in favor of another
-  // profile that is later removed by another filtering strategy.
+  // executed, otherwise some profiles could be deduplicated in favor of
+  // another profile that is later removed by another filtering strategy.
   if (options.deduplicate_suggestions) {
     profiles_to_suggest = DeduplicatedProfilesForSuggestions(
-        profiles_to_suggest, trigger_field_type, field_types, comparator);
+        profiles_to_suggest, trigger_field_type, field_types,
+        AutofillProfileComparator(address_data.app_locale()));
   }
   // Do not show more than `kMaxDisplayedAddressSuggestions` suggestions since
   // it would result in poor UX.
@@ -730,7 +757,8 @@ std::vector<Suggestion> GetSuggestionsForProfiles(
       trigger_field_type, trigger_field.value(), trigger_field.is_autofilled(),
       field_types,
       GetProfilesToSuggestOptions(trigger_field_type, trigger_field.value(),
-                                  trigger_field.is_autofilled()));
+                                  trigger_field.is_autofilled(),
+                                  suggestion_type));
   const std::string gaia_email =
       client.GetIdentityManager()
           ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
@@ -771,12 +799,13 @@ std::vector<AutofillProfile> GetProfilesToSuggestForTest(
     FieldType trigger_field_type,
     const std::u16string& field_contents,
     bool field_is_autofilled,
-    const FieldTypeSet& field_types) {
+    const FieldTypeSet& field_types,
+    SuggestionType suggestion_type) {
   return GetProfilesToSuggest(
       address_data, trigger_field_type, field_contents, field_is_autofilled,
       field_types,
       GetProfilesToSuggestOptions(trigger_field_type, field_contents,
-                                  field_is_autofilled));
+                                  field_is_autofilled, suggestion_type));
 }
 
 std::vector<Suggestion> CreateSuggestionsFromProfilesForTest(

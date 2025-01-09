@@ -188,6 +188,14 @@ BASE_FEATURE(kAutofillAddressFieldSwapping,
              "AutofillAddressFieldSwapping",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, address field swapping suggestions will not include a
+// suggestion matching the field's current value. This decreases noises in the
+// suggestion UI.
+// TODO(crbug.com/381531027): Remove when launched.
+BASE_FEATURE(kAutofillImproveAddressFieldSwapping,
+             "AutofillImproveAddressFieldSwapping",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, Autofill will try to reuse the result of previous form
 // extractions in subsequent functions that needs the form extracted, provided
 // we have guarantees that in the meantime the form couldn't have changed.

@@ -2143,6 +2143,26 @@
             ]
         }
     ],
+    "AutofillImproveAddressFieldSwapping": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillImproveAddressFieldSwapping"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillImproveSubmissionDetectionV2": [
         {
             "platforms": [

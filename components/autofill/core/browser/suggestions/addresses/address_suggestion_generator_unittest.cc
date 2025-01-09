@@ -734,6 +734,55 @@ TEST_F(AddressSuggestionGeneratorTest,
   EXPECT_THAT(address_suggestions, ContainsAddressFooterSuggestions());
 }
 
+// Tests that suggestions are filtered by the triggering field's value.
+TEST_F(
+    AddressSuggestionGeneratorTest,
+    GetSuggestionsForProfiles_RemoveFieldByFieldFillingSuggestionsMatchingFieldContent) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kAutofillAddressFieldSwapping,
+       features::kAutofillImproveAddressFieldSwapping},
+      /*disabled_features=*/{});
+  AutofillProfile profile1 = test::GetFullProfile();
+  AutofillProfile profile2 = test::GetFullProfile2();
+  address_data().AddProfile(profile1);
+  address_data().AddProfile(profile2);
+
+  // Create a triggering field that was autofilled with `profile1`.
+  FormFieldData triggering_field;
+  triggering_field.set_value(profile1.GetRawInfo(NAME_FULL));
+  triggering_field.set_is_autofilled(true);
+
+  // Expect that only the second address yields a suggestion because the first
+  // one would be removed for exactly matching the field's content.
+  EXPECT_THAT(
+      GetSuggestionsForProfiles(
+          *autofill_client(), {NAME_FULL}, triggering_field, NAME_FULL,
+          SuggestionType::kAddressFieldByFieldFilling, std::nullopt),
+      ElementsAre(EqualsSuggestion(SuggestionType::kAddressFieldByFieldFilling,
+                                   profile2.GetRawInfo(NAME_FULL)),
+                  EqualsSuggestion(SuggestionType::kSeparator),
+                  EqualsSuggestion(SuggestionType::kUndoOrClear),
+                  EqualsSuggestion(SuggestionType::kManageAddress)));
+
+  // Remove the second address so that the used-for-filling address becomes the
+  // only address in storage.
+  address_data().RemoveProfile(profile2.guid());
+
+  // Expect here that the first address yields a suggestion regardless, because
+  // otherwise there would be no address suggestions at all and we would not
+  // show the popup, making the user unable to use the footer suggestions.
+  EXPECT_THAT(
+      GetSuggestionsForProfiles(
+          *autofill_client(), {NAME_FULL}, triggering_field, NAME_FULL,
+          SuggestionType::kAddressFieldByFieldFilling, std::nullopt),
+      ElementsAre(EqualsSuggestion(SuggestionType::kAddressFieldByFieldFilling,
+                                   profile1.GetRawInfo(NAME_FULL)),
+                  EqualsSuggestion(SuggestionType::kSeparator),
+                  EqualsSuggestion(SuggestionType::kUndoOrClear),
+                  EqualsSuggestion(SuggestionType::kManageAddress)));
+}
+
 #if !BUILDFLAG(IS_IOS)
 TEST_F(AddressSuggestionGeneratorTest, UndoAutofillOnAddressForm) {
   address_data().AddProfile(test::GetFullProfile());
