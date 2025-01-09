@@ -9,6 +9,7 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -80,7 +81,15 @@ bool IsUserEligibleForAccountStorage(const PrefService* pref_service,
   }
 
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  if (sync_service->GetUserSettings()->IsUsingExplicitPassphrase()) {
+  if (switches::IsImprovedSigninUIOnDesktopEnabled()) {
+    // Do not allow account storage if the user has not entered their
+    // passphrase.
+    // TODO (crbug.com/388511834): Reconsider whether other actionable errors
+    // should restrict account storage eligibility as well.
+    if (sync_service->GetUserSettings()->IsPassphraseRequired()) {
+      return false;
+    }
+  } else if (sync_service->GetUserSettings()->IsUsingExplicitPassphrase()) {
     return false;
   }
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
