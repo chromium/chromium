@@ -239,22 +239,22 @@ TEST_F(SRIMessageSignatureParserTest, MalformedSignatureHeader) {
       "(inner list)",
 
       // Dictionaries with non-byte-sequence values.
-      "key=",
-      "key=1",
-      "key=1.1",
-      "key=\"string\"",
-      "key=token",
-      "key=?0",
-      "key=@12345",
-      "key=%\"display\"",
-      "key=(inner list of tokens)",
+      "signature=",
+      "signature=1",
+      "signature=1.1",
+      "signature=\"string\"",
+      "signature=token",
+      "signature=?0",
+      "signature=@12345",
+      "signature=%\"display\"",
+      "signature=(inner list of tokens)",
 
       // Dictionaries with byte-sequence values of the wrong length:
-      "key=:YQ==:",
+      "signature=:YQ==:",
 
       // Parameterized, but otherwise correct byte-sequence values:
-      ("key=:amDAmvl9bsfIcfA/bIJsBuBvInjJAaxxNIlLOzNI3FkrnG2k52UxXJprz89+2aO"
-       "wEAz3w6KjjZuGkdrOUwxhBQ==:;param=1"),
+      ("signature=:amDAmvl9bsfIcfA/bIJsBuBvInjJAaxxNIlLOzNI3FkrnG2k52UxXJprz89"
+       "+2aOwEAz3w6KjjZuGkdrOUwxhBQ==:;param=1"),
   };
 
   for (const char* test : cases) {
@@ -265,6 +265,7 @@ TEST_F(SRIMessageSignatureParserTest, MalformedSignatureHeader) {
 
     // As these are all malformed, we expect parsing to return no headers.
     EXPECT_EQ(0u, result->signatures.size());
+    EXPECT_EQ(1u, result->parsing_errors.size());
   }
 }
 
