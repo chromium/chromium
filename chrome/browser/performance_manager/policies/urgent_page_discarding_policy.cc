@@ -29,6 +29,8 @@ namespace performance_manager::policies {
 
 namespace {
 
+bool g_disabled_for_testing = false;
+
 #if BUILDFLAG(IS_CHROMEOS)
 std::optional<memory_pressure::ReclaimTarget> GetReclaimTarget() {
   std::optional<memory_pressure::ReclaimTarget> reclaim_target = std::nullopt;
@@ -100,9 +102,17 @@ void UrgentPageDiscardingPolicy::OnReclaimTarget(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+void UrgentPageDiscardingPolicy::DisableForTesting() {
+  g_disabled_for_testing = true;
+}
+
 void UrgentPageDiscardingPolicy::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel new_level) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (g_disabled_for_testing) {
+    return;
+  }
 
   // The Memory Pressure Monitor will send notifications at regular interval,
   // |handling_memory_pressure_notification_| prevents this class from trying to

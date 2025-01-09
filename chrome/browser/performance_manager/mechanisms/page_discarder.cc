@@ -30,8 +30,6 @@ namespace performance_manager {
 namespace mechanism {
 namespace {
 
-bool disabled_for_testing = false;
-
 using WebContentsAndPmf =
     std::pair<base::WeakPtr<content::WebContents>, uint64_t>;
 
@@ -46,8 +44,8 @@ enum class DiscardPageOnUIThreadOutcome {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/tab/enums.xml:DiscardPageOnUIThreadOutcome)
 
-// Discards pages on the UI thread. Returns true if at least 1 page is
-// discarded.
+// Discards pages on the UI thread. Returns a DiscardEvent for each successful
+// discard.
 // TODO(crbug.com/40194498): Returns the remaining reclaim target so
 // UrgentlyDiscardMultiplePages can keep reclaiming until the reclaim target is
 // met or there is no discardable page.
@@ -57,9 +55,6 @@ std::vector<PageDiscarder::DiscardEvent> DiscardPagesOnUIThread(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::vector<PageDiscarder::DiscardEvent> discard_events;
-
-  if (disabled_for_testing)
-    return discard_events;
 
   for (const auto& [contents, memory_footprint_estimate] :
        web_contents_and_pmf) {
@@ -100,12 +95,6 @@ std::vector<PageDiscarder::DiscardEvent> DiscardPagesOnUIThread(
 }
 
 }  // namespace
-
-// static
-void PageDiscarder::DisableForTesting() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  disabled_for_testing = true;
-}
 
 void PageDiscarder::DiscardPageNodes(
     const std::vector<const PageNode*>& page_nodes,

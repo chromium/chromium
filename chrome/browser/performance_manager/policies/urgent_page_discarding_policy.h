@@ -33,6 +33,9 @@ class UrgentPageDiscardingPolicy : public GraphOwned,
   void OnPassedToGraph(Graph* graph) override;
   void OnTakenFromGraph(Graph* graph) override;
 
+  // When invoked, the policy will not discard pages on memory pressure.
+  static void DisableForTesting();
+
  private:
   // SystemNodeObserver:
   void OnMemoryPressure(
