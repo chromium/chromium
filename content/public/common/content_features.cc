@@ -1236,6 +1236,12 @@ BASE_FEATURE(kWebUICodeCache,
              "WebUICodeCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables build-time generated resource-bundled code caches for WebUI pages.
+// See crbug.com/375509504 for details.
+BASE_FEATURE(kWebUIBundledCodeCache,
+             "WebUIBundledCodeCache",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if !BUILDFLAG(IS_ANDROID)
 // Reports WebUI Javascript errors to the crash server on all desktop platforms.
 // Previously, this was only supported on ChromeOS and Linux.
