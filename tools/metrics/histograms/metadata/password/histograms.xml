@@ -2426,14 +2426,14 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.ParsedFormIsOtpForm"
-    enum="PasswordVsOtpFormType" expires_after="2025-06-25">
+<histogram name="PasswordManager.ParsedFormIsOtpForm2"
+    enum="PasswordVsOtpFormType" expires_after="2025-07-01">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
     For a successfully parsed form, records whether a form is an OTP form, a
-    normal multi-use password form, or a combination of both. Recorded when the
-    form is parsed for filling.
+    normal multi-use password form, or a combination of both. Recorded once a
+    form is classified with a clientside model.
   </summary>
 </histogram>
 

@@ -271,6 +271,26 @@ bool ModelPredictionsContainCredentialTypes(
       });
 }
 
+void RecordMetricsForPasswordVsOtpFrequency(
+    const base::flat_map<FieldGlobalId, FieldType>& field_predictions) {
+  PasswordVsOtpFormType type = PasswordVsOtpFormType::kNone;
+  if (std::any_of(field_predictions.begin(), field_predictions.end(),
+                  [](const auto& field) {
+                    return field.second == autofill::PASSWORD;
+                  })) {
+    type |= PasswordVsOtpFormType::kPassword;
+  }
+  if (std::any_of(field_predictions.begin(), field_predictions.end(),
+                  [](const auto& field) {
+                    return field.second == autofill::ONE_TIME_CODE;
+                  })) {
+    type |= PasswordVsOtpFormType::kOtp;
+  }
+  if (type != PasswordVsOtpFormType::kNone) {
+    base::UmaHistogramEnumeration("PasswordManager.ParsedFormIsOtpForm2", type);
+  }
+}
+
 #if BUILDFLAG(IS_ANDROID)
 // Shows an error message that nudges the user to update GMSCore if necessary.
 void MaybeNudgeToUpdateGMSCoreWhenSavingDisabled(
@@ -1550,6 +1570,8 @@ void PasswordManager::ProcessClassificationModelPredictions(
     PasswordManagerDriver* driver,
     const autofill::FormData& form,
     const base::flat_map<FieldGlobalId, FieldType>& field_predictions) {
+  RecordMetricsForPasswordVsOtpFrequency(field_predictions);
+
   auto& predictions_for_form = classifier_model_predictions_[std::make_pair(
       driver, form.renderer_id())] = std::move(field_predictions);
 

@@ -895,17 +895,6 @@ void ParseUsingBaseHeuristics(
   return;
 }
 
-void ReportFormTypeMetric(SignificantFields* result, bool otp_detected) {
-  PasswordVsOtpFormType type = PasswordVsOtpFormType::kNone;
-  if (result->HasPasswords()) {
-    type |= PasswordVsOtpFormType::kPassword;
-  }
-  if (otp_detected) {
-    type |= PasswordVsOtpFormType::kOtp;
-  }
-  base::UmaHistogramEnumeration("PasswordManager.ParsedFormIsOtpForm", type);
-}
-
 // Tries to parse `processed_fields` based on model `predictions'.
 // Iterate over the `processed_fields`, looking up fields in `predictions`,
 // returns true if predictions were available for all the fields in the form.
@@ -917,7 +906,6 @@ bool ParseUsingModelPredictions(
   // Verify that predictions are available for all fields.
   bool predictions_complete = true;
 
-  bool otp_detected = false;
   std::optional<bool> password_field_is_masked;
   std::optional<bool> unrelated_fields_contain_masked_fields;
 
@@ -951,7 +939,6 @@ bool ParseUsingModelPredictions(
         field.is_predicted_as_password = true;
         break;
       case autofill::ONE_TIME_CODE:
-        otp_detected = true;
         break;
       case autofill::UNKNOWN_TYPE:
         unrelated_fields_contain_masked_fields =
@@ -982,8 +969,6 @@ bool ParseUsingModelPredictions(
   }
 
   if (predictions_complete && (mode == FormDataParser::Mode::kFilling)) {
-    ReportFormTypeMetric(result, otp_detected);
-
     if (password_field_is_masked.has_value()) {
       base::UmaHistogramBoolean(
           "PasswordManager.Parsing.PasswordField.IsMasked",
