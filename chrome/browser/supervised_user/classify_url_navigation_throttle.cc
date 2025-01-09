@@ -270,6 +270,29 @@ ClassifyUrlNavigationThrottle::NextNavigationState(
   base::UmaHistogramEnumeration(kClassifyUrlThrottleStatusHistogramName,
                                 status);
 
+  // Final states: Proceed/Resume, CancelDeferredNavigation
+  switch (status) {
+    case ClassifyUrlThrottleStatus::kProceed:
+    case ClassifyUrlThrottleStatus::kResume:
+      base::UmaHistogramEnumeration(
+          kClassifyUrlThrottleFinalStatusHistogramName,
+          ClassifyUrlThrottleFinalStatus::kAllowed);
+      break;
+    case ClassifyUrlThrottleStatus::kCancelDeferredNavigation:
+      base::UmaHistogramEnumeration(
+          kClassifyUrlThrottleFinalStatusHistogramName,
+          ClassifyUrlThrottleFinalStatus::kBlocked);
+      break;
+    case ClassifyUrlThrottleStatus::kContinue:
+    case ClassifyUrlThrottleStatus::kDefer:
+    case ClassifyUrlThrottleStatus::kDeferAndScheduleInterstitial:
+      // Don't handle intermediate states.
+    case ClassifyUrlThrottleStatus::kCancel:
+      // Currently, Cancel is not reachable: the
+      // SupervisedUserGoogleAuthNavigationThrottle class is handling it first.
+      break;
+  }
+
   switch (status) {
     case ClassifyUrlThrottleStatus::kContinue:
     case ClassifyUrlThrottleStatus::kProceed:
@@ -279,6 +302,8 @@ ClassifyUrlNavigationThrottle::NextNavigationState(
       deferred_ = true;
       return NavigationThrottle::DEFER;
     case ClassifyUrlThrottleStatus::kCancel:
+      // Currently, Cancel is not reachable: the
+      // SupervisedUserGoogleAuthNavigationThrottle class is handling it first.
       return NavigationThrottle::CANCEL;
     case ClassifyUrlThrottleStatus::kResume:
       Resume();
@@ -287,6 +312,7 @@ ClassifyUrlNavigationThrottle::NextNavigationState(
       return std::nullopt;
   }
 }
+
 ClassifyUrlNavigationThrottle::ThrottleCheckResult
 ClassifyUrlNavigationThrottle::DeferAndScheduleInterstitial(
     SupervisedUserURLFilter::Result result) {

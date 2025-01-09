@@ -3099,6 +3099,7 @@ if (!is_android) {
       "../browser/subresource_filter/subresource_filter_web_socket_browsertest.cc",
       "../browser/subresource_filter/subresource_filter_worker_browsertest.cc",
       "../browser/supervised_user/advanced_content_restrictions_interactive_uitest.cc",
+      "../browser/supervised_user/classify_url_navigation_throttle_browsertest.cc",
       "../browser/supervised_user/supervised_user_incognito_browsertest.cc",
       "../browser/supervised_user/supervised_user_navigation_throttle_browsertest.cc",
       "../browser/supervised_user/supervised_user_regional_url_filter_browsertest.cc",
