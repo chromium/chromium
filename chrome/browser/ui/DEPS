@@ -14,6 +14,7 @@ include_rules = [
   "+components/enterprise",
   "+components/fingerprinting_protection_filter/browser",
   "+components/infobars/android",
+  "+components/language_detection/core",
   "+components/live_caption",
   "+components/omnibox",
   "+components/page_image_service",

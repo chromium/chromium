@@ -514,6 +514,7 @@ static_library("ui") {
     "//components/keyed_service/core",
     "//components/language/core/browser",
     "//components/language/core/common",
+    "//components/language_detection/core",
     "//components/lens",
     "//components/lens:buildflags",
     "//components/live_caption:constants",
