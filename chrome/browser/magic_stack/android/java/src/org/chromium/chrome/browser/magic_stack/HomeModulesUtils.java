@@ -5,9 +5,13 @@
 package org.chromium.chrome.browser.magic_stack;
 
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.AUXILIARY_SEARCH;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.DEFAULT_BROWSER_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.PRICE_CHANGE;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.QUICK_DELETE;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SAFETY_HUB;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SINGLE_TAB;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUP;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUP_SYNC;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_RESUMPTION;
 
 import android.os.SystemClock;
@@ -22,6 +26,9 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.segmentation_platform.InputContext;
 import org.chromium.components.segmentation_platform.ProcessedValue;
+
+import java.util.Arrays;
+import java.util.HashSet;
 
 /** Utility class for the magic stack. */
 public class HomeModulesUtils {
@@ -38,6 +45,19 @@ public class HomeModulesUtils {
 
     private static final String AUXILIARY_SEARCH_FRESHNESS_INPUT_CONTEXT =
             "auxiliary_search_freshness";
+
+    // List of all educational tip modules.
+    private static final HashSet<Integer> sEducationalTipCardList =
+            new HashSet<>(
+                    Arrays.asList(DEFAULT_BROWSER_PROMO, TAB_GROUP, TAB_GROUP_SYNC, QUICK_DELETE));
+
+    static boolean belongsToEducationalTipModule(@ModuleType int moduleType) {
+        return sEducationalTipCardList.contains(moduleType);
+    }
+
+    static HashSet<Integer> getEducationalTipModuleList() {
+        return sEducationalTipCardList;
+    }
 
     /**
      * Returns the freshness score key used by InputContext for the given module. Remember to update

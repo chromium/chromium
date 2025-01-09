@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.magic_stack;
 
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.DEFAULT_BROWSER_PROMO;
+
 import android.content.Context;
 
 import org.chromium.base.ObserverList;
@@ -168,6 +170,13 @@ public class HomeModulesConfigManager {
             return ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(
                     String.valueOf(ModuleType.TAB_RESUMPTION));
         }
+
+        // All the educational tip modules are controlled by the same preference key.
+        if (HomeModulesUtils.belongsToEducationalTipModule(moduleType)) {
+            return ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(
+                    String.valueOf(DEFAULT_BROWSER_PROMO));
+        }
+
         return ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(String.valueOf(moduleType));
     }
 

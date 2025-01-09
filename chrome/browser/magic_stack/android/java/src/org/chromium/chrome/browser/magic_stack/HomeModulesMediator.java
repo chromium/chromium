@@ -546,7 +546,8 @@ public class HomeModulesMediator {
     void onModuleConfigChanged(@ModuleType int moduleType, boolean isEnabled) {
         // The single tab module and the tab resumption modules are controlled by the same
         // preference key. Once it is turned on or off, both modules will be enabled or disabled.
-
+        // The educational tip modules are also controlled by the same preference key. Once it is
+        // turned on or off, all of the educational tip modules will be enabled or disabled.
         if (isEnabled) {
             // If the mEnabledModuleSet hasn't been initialized yet, skip here.
             if (mEnabledModuleSet != null) {
@@ -554,6 +555,8 @@ public class HomeModulesMediator {
                         || moduleType == ModuleType.TAB_RESUMPTION) {
                     mEnabledModuleSet.add(ModuleType.SINGLE_TAB);
                     mEnabledModuleSet.add(ModuleType.TAB_RESUMPTION);
+                } else if (HomeModulesUtils.belongsToEducationalTipModule(moduleType)) {
+                    mEnabledModuleSet.addAll(HomeModulesUtils.getEducationalTipModuleList());
                 } else {
                     mEnabledModuleSet.add(moduleType);
                 }
@@ -565,6 +568,8 @@ public class HomeModulesMediator {
                         || moduleType == ModuleType.TAB_RESUMPTION) {
                     mEnabledModuleSet.remove(ModuleType.SINGLE_TAB);
                     mEnabledModuleSet.remove(ModuleType.TAB_RESUMPTION);
+                } else if (HomeModulesUtils.belongsToEducationalTipModule(moduleType)) {
+                    mEnabledModuleSet.removeAll(HomeModulesUtils.getEducationalTipModuleList());
                 } else {
                     mEnabledModuleSet.remove(moduleType);
                 }

@@ -129,11 +129,15 @@ public class HomeModulesConfigManagerUnitTest {
         String tabResumptionPreferenceKey =
                 ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(
                         String.valueOf(ModuleType.TAB_RESUMPTION));
+        String defaultBrowserPromoPreferenceKey =
+                ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(
+                        String.valueOf(ModuleType.DEFAULT_BROWSER_PROMO));
         String priceChangePreferenceKey =
                 ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(
                         String.valueOf(ModuleType.PRICE_CHANGE));
 
         assertFalse(TextUtils.equals(tabResumptionPreferenceKey, priceChangePreferenceKey));
+        assertFalse(TextUtils.equals(defaultBrowserPromoPreferenceKey, priceChangePreferenceKey));
 
         // Verifies that the SINGLE_TAB and TAB_RESUMPTION modules are shared with the same
         // preference key.
@@ -143,6 +147,21 @@ public class HomeModulesConfigManagerUnitTest {
         assertEquals(
                 tabResumptionPreferenceKey,
                 mHomeModulesConfigManager.getSettingsPreferenceKey(ModuleType.TAB_RESUMPTION));
+
+        // Verifies that all the educational tip modules are shared with the same preference key.
+        assertEquals(
+                defaultBrowserPromoPreferenceKey,
+                mHomeModulesConfigManager.getSettingsPreferenceKey(
+                        ModuleType.DEFAULT_BROWSER_PROMO));
+        assertEquals(
+                defaultBrowserPromoPreferenceKey,
+                mHomeModulesConfigManager.getSettingsPreferenceKey(ModuleType.TAB_GROUP));
+        assertEquals(
+                defaultBrowserPromoPreferenceKey,
+                mHomeModulesConfigManager.getSettingsPreferenceKey(ModuleType.TAB_GROUP_SYNC));
+        assertEquals(
+                defaultBrowserPromoPreferenceKey,
+                mHomeModulesConfigManager.getSettingsPreferenceKey(ModuleType.QUICK_DELETE));
 
         // Verifies that the PRICE_CHANGE has its own preference key.
         assertEquals(

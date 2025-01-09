@@ -40,12 +40,20 @@ public class HomeModulesConfigSettings extends ChromeBaseSettingsFragment {
                 homeModulesConfigManager.getModuleListShownInSettings();
 
         boolean isTabModuleAdded = false;
+        boolean isEducationalTipModuleAdded = false;
         for (@ModuleType int moduleType : moduleTypeShownInSettings) {
             if (moduleType == SINGLE_TAB || moduleType == TAB_RESUMPTION) {
                 // The SINGLE_TAB and TAB_RESUMPTION modules are controlled by the same preference.
                 if (isTabModuleAdded) continue;
 
                 isTabModuleAdded = true;
+            }
+
+            if (HomeModulesUtils.belongsToEducationalTipModule(moduleType)) {
+                // All the educational tip modules are controlled by the same preference.
+                if (isEducationalTipModuleAdded) continue;
+
+                isEducationalTipModuleAdded = true;
             }
 
             ChromeSwitchPreference currentSwitch =
