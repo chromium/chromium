@@ -60,7 +60,8 @@ const char AddRefreshCountExceptionWallDurationHistogramName[] =
 
 // Console message to be displayed on activation.
 constexpr char kActivationConsoleMessage[] =
-    "Fingerprinting protection active on the current page.";
+    "Fingerprinting protection is active on the current page. Please file bugs "
+    "at https://g-issues.chromium.org/issues?q=componentid:1456351";
 
 // Console message to be displayed on disallowing subframe.
 constexpr char kDisallowChildFrameConsoleMessageFormat[] =
