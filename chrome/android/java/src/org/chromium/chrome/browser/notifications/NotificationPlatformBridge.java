@@ -1154,7 +1154,7 @@ public class NotificationPlatformBridge {
 
     /** Returns whether to set a channel id when building a notification. */
     private static boolean shouldSetChannelId(boolean forWebApk) {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !forWebApk;
+        return !forWebApk;
     }
 
     /**

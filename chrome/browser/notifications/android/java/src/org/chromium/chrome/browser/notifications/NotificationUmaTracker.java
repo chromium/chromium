@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.notifications;
 
 import android.app.Notification;
-import android.os.Build;
 import android.text.format.DateUtils;
 
 import androidx.annotation.IntDef;
@@ -372,11 +371,7 @@ public class NotificationUmaTracker {
             @SystemNotificationType int type, @Nullable Notification notification) {
         if (type == SystemNotificationType.UNKNOWN || notification == null) return;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            logNotificationShown(type, notification.getChannelId());
-        } else {
-            logNotificationShown(type, null);
-        }
+        logNotificationShown(type, notification.getChannelId());
     }
 
     /**

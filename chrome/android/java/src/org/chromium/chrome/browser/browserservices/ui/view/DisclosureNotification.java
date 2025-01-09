@@ -17,7 +17,6 @@ import static org.chromium.chrome.browser.notifications.NotificationConstants.NO
 import android.content.res.Resources;
 
 import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
@@ -88,17 +87,14 @@ public class DisclosureNotification
     private NotificationWrapper createNotification(
             boolean firstTime, String scope, String packageName) {
         int umaType;
-        int preOPriority;
         int notificationId;
         String channelId;
         if (firstTime) {
             umaType = NotificationUmaTracker.SystemNotificationType.TWA_DISCLOSURE_INITIAL;
-            preOPriority = NotificationCompat.PRIORITY_MAX;
             channelId = ChromeChannelDefinitions.ChannelId.WEBAPPS;
             notificationId = NOTIFICATION_ID_TWA_DISCLOSURE_INITIAL;
         } else {
             umaType = NotificationUmaTracker.SystemNotificationType.TWA_DISCLOSURE_SUBSEQUENT;
-            preOPriority = NotificationCompat.PRIORITY_MIN;
             channelId = ChromeChannelDefinitions.ChannelId.WEBAPPS_QUIET;
             notificationId = NOTIFICATION_ID_TWA_DISCLOSURE_SUBSEQUENT;
         }
@@ -135,7 +131,6 @@ public class DisclosureNotification
                 .setSound(null)
                 .setBigTextStyle(text)
                 .setOngoing(!firstTime)
-                .setPriorityBeforeO(preOPriority)
                 .buildNotificationWrapper();
     }
 

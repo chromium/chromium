@@ -20,7 +20,6 @@ import static org.mockito.Mockito.when;
 import android.app.NotificationManager;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.provider.Browser;
 import android.provider.Settings;
 
@@ -119,9 +118,7 @@ public class PriceDropNotificationManagerTest {
 
     @After
     public void tearDown() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            mPriceDropNotificationManager.deleteChannelForTesting();
-        }
+        mPriceDropNotificationManager.deleteChannelForTesting();
         NotificationProxyUtils.setNotificationEnabledForTest(null);
     }
 
@@ -171,23 +168,18 @@ public class PriceDropNotificationManagerTest {
         NotificationProxyUtils.setNotificationEnabledForTest(true);
         assertTrue(mPriceDropNotificationManager.areAppNotificationsEnabled());
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            assertTrue(mPriceDropNotificationManager.canPostNotification());
-            assertTrue(mPriceDropNotificationManager.canPostNotificationWithMetricsRecorded());
-        } else {
-            assertNull(mPriceDropNotificationManager.getNotificationChannel());
-            assertFalse(mPriceDropNotificationManager.canPostNotification());
-            assertFalse(mPriceDropNotificationManager.canPostNotificationWithMetricsRecorded());
+        assertNull(mPriceDropNotificationManager.getNotificationChannel());
+        assertFalse(mPriceDropNotificationManager.canPostNotification());
+        assertFalse(mPriceDropNotificationManager.canPostNotificationWithMetricsRecorded());
 
-            mPriceDropNotificationManager.createNotificationChannel();
-            assertNotNull(mPriceDropNotificationManager.getNotificationChannel());
-            assertEquals(
-                    NotificationManager.IMPORTANCE_DEFAULT,
-                    mPriceDropNotificationManager.getNotificationChannel().getImportance());
+        mPriceDropNotificationManager.createNotificationChannel();
+        assertNotNull(mPriceDropNotificationManager.getNotificationChannel());
+        assertEquals(
+                NotificationManager.IMPORTANCE_DEFAULT,
+                mPriceDropNotificationManager.getNotificationChannel().getImportance());
 
-            assertTrue(mPriceDropNotificationManager.canPostNotification());
-            assertTrue(mPriceDropNotificationManager.canPostNotificationWithMetricsRecorded());
-        }
+        assertTrue(mPriceDropNotificationManager.canPostNotification());
+        assertTrue(mPriceDropNotificationManager.canPostNotificationWithMetricsRecorded());
     }
 
     @Test
@@ -195,20 +187,10 @@ public class PriceDropNotificationManagerTest {
     public void testGetNotificationSettingsIntent_NotificationDisabled() {
         NotificationProxyUtils.setNotificationEnabledForTest(false);
         Intent intent = mPriceDropNotificationManager.getNotificationSettingsIntent();
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            assertEquals(ACTION_APP_NOTIFICATION_SETTINGS, intent.getAction());
-            assertEquals(
-                    ContextUtils.getApplicationContext().getPackageName(),
-                    intent.getStringExtra(EXTRA_APP_PACKAGE));
-            assertEquals(
-                    ContextUtils.getApplicationContext().getApplicationInfo().uid,
-                    intent.getIntExtra(EXTRA_APP_UID, 0));
-        } else {
-            assertEquals(Settings.ACTION_APP_NOTIFICATION_SETTINGS, intent.getAction());
-            assertEquals(
-                    ContextUtils.getApplicationContext().getPackageName(),
-                    intent.getStringExtra(Settings.EXTRA_APP_PACKAGE));
-        }
+        assertEquals(Settings.ACTION_APP_NOTIFICATION_SETTINGS, intent.getAction());
+        assertEquals(
+                ContextUtils.getApplicationContext().getPackageName(),
+                intent.getStringExtra(Settings.EXTRA_APP_PACKAGE));
         assertEquals(Intent.FLAG_ACTIVITY_NEW_TASK, intent.getFlags());
     }
 
@@ -217,23 +199,13 @@ public class PriceDropNotificationManagerTest {
     public void testGetNotificationSettingsIntent_NotificationEnabled() {
         NotificationProxyUtils.setNotificationEnabledForTest(true);
         Intent intent = mPriceDropNotificationManager.getNotificationSettingsIntent();
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            assertEquals(ACTION_APP_NOTIFICATION_SETTINGS, intent.getAction());
-            assertEquals(
-                    ContextUtils.getApplicationContext().getPackageName(),
-                    intent.getStringExtra(EXTRA_APP_PACKAGE));
-            assertEquals(
-                    ContextUtils.getApplicationContext().getApplicationInfo().uid,
-                    intent.getIntExtra(EXTRA_APP_UID, 0));
-        } else {
-            assertEquals(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS, intent.getAction());
-            assertEquals(
-                    ContextUtils.getApplicationContext().getPackageName(),
-                    intent.getStringExtra(Settings.EXTRA_APP_PACKAGE));
-            assertEquals(
-                    ChromeChannelDefinitions.ChannelId.PRICE_DROP_DEFAULT,
-                    intent.getStringExtra(Settings.EXTRA_CHANNEL_ID));
-        }
+        assertEquals(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS, intent.getAction());
+        assertEquals(
+                ContextUtils.getApplicationContext().getPackageName(),
+                intent.getStringExtra(Settings.EXTRA_APP_PACKAGE));
+        assertEquals(
+                ChromeChannelDefinitions.ChannelId.PRICE_DROP_DEFAULT,
+                intent.getStringExtra(Settings.EXTRA_CHANNEL_ID));
         assertEquals(Intent.FLAG_ACTIVITY_NEW_TASK, intent.getFlags());
     }
 

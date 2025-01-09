@@ -8,9 +8,6 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
@@ -55,14 +52,9 @@ public class TracingNotificationManager {
         }
 
         // On Android O and above, the BROWSER channel may have independently been disabled, too.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            return notificationChannelEnabled(ChromeChannelDefinitions.ChannelId.BROWSER);
-        }
-
-        return true;
+        return notificationChannelEnabled(ChromeChannelDefinitions.ChannelId.BROWSER);
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private static boolean notificationChannelEnabled(String channelId) {
         NotificationChannel channel =
                 NotificationManagerProxyImpl.getInstance().getNotificationChannel(channelId);

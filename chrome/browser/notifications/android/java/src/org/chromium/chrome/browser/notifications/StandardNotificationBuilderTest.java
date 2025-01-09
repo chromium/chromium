@@ -14,7 +14,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.os.Build;
 import android.text.SpannableStringBuilder;
 
 import org.junit.After;
@@ -150,13 +149,7 @@ public class StandardNotificationBuilderTest {
 
         // On Android O+ the defaults are ignored as vibrate and silent moved to the notification
         // channel.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Assert.assertEquals(0, notification.defaults);
-        } else {
-            Assert.assertEquals(Notification.DEFAULT_ALL, notification.defaults);
-            Assert.assertEquals(1, notification.vibrate.length);
-            Assert.assertEquals(100L, notification.vibrate[0]);
-        }
+        Assert.assertEquals(0, notification.defaults);
 
         Notification.Action[] actions = NotificationTestUtil.getActions(notification);
         Assert.assertEquals(3, actions.length);

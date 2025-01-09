@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.browserservices.permissiondelegation;
 
-import android.os.Build;
-
 import org.chromium.chrome.browser.notifications.NotificationChannelStatus;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
@@ -26,8 +24,6 @@ public class NotificationChannelPreserver {
 
     /** Deletes the SiteChannel if called on a version of Android that requires it. */
     static void deleteChannelIfNeeded(Origin origin) {
-        if (beforeAndroidO()) return;
-
         SiteChannelsManager siteChannelsManager = SiteChannelsManager.getInstance();
 
         String channelId = siteChannelsManager.getChannelIdForOrigin(origin.toString());
@@ -60,8 +56,6 @@ public class NotificationChannelPreserver {
 
     /** Restores the SiteChannel if called on a version of Android that requires it. */
     static void restoreChannelIfNeeded(Origin origin) {
-        if (beforeAndroidO()) return;
-
         @ContentSettingValues
         Integer settingValue =
                 WebappRegistry.getInstance()
@@ -76,9 +70,5 @@ public class NotificationChannelPreserver {
         boolean enabled = settingValue == ContentSettingValues.ALLOW;
         SiteChannelsManager.getInstance()
                 .createSiteChannel(origin.toString(), System.currentTimeMillis(), enabled);
-    }
-
-    private static boolean beforeAndroidO() {
-        return Build.VERSION.SDK_INT < Build.VERSION_CODES.O;
     }
 }

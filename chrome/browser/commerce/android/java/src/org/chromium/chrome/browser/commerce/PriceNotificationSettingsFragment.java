@@ -8,7 +8,6 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 
@@ -58,12 +57,6 @@ public class PriceNotificationSettingsFragment extends ChromeBaseSettingsFragmen
         mMobileNotificationsText =
                 (TextMessagePreference) findPreference(PREF_MOBILE_NOTIFICATIONS);
         updateMobileNotificationsText();
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            // App settings are only available on O+.
-            getPreferenceScreen().removePreference(mMobileNotificationsText);
-            mMobileNotificationsText = null;
-        }
 
         mEmailNotificationsSwitch =
                 (ChromeSwitchPreference) findPreference(PREF_EMAIL_NOTIFICATIONS);
@@ -153,18 +146,18 @@ public class PriceNotificationSettingsFragment extends ChromeBaseSettingsFragmen
         mMobileNotificationsText.setSummary(SpanApplier.applySpans(settingsFullText, info));
     }
 
-    /** @return True if both app-level and price tracking notifications are enabled. */
+    /**
+     * @return True if both app-level and price tracking notifications are enabled.
+     */
     private boolean arePriceTrackingNotificationsEnabled() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel =
-                    NotificationManagerProxyImpl.getInstance()
-                            .getNotificationChannel(
-                                    ChromeChannelDefinitions.ChannelId.PRICE_DROP_DEFAULT);
-            if (NotificationProxyUtils.areNotificationsEnabled()
-                    && channel != null
-                    && channel.getImportance() != NotificationManager.IMPORTANCE_NONE) {
-                return true;
-            }
+        NotificationChannel channel =
+                NotificationManagerProxyImpl.getInstance()
+                        .getNotificationChannel(
+                                ChromeChannelDefinitions.ChannelId.PRICE_DROP_DEFAULT);
+        if (NotificationProxyUtils.areNotificationsEnabled()
+                && channel != null
+                && channel.getImportance() != NotificationManager.IMPORTANCE_NONE) {
+            return true;
         }
         return false;
     }

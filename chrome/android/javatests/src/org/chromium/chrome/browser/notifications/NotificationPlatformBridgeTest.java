@@ -260,12 +260,8 @@ public class NotificationPlatformBridgeTest {
         // Validate the notification's behavior. On Android O+ the defaults are ignored as vibrate
         // and silent moved to the notification channel. The silent flag is achieved by using a
         // group alert summary.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Assert.assertEquals(0, notification.defaults);
-            Assert.assertEquals(Notification.GROUP_ALERT_ALL, notification.getGroupAlertBehavior());
-        } else {
-            Assert.assertEquals(Notification.DEFAULT_ALL, notification.defaults);
-        }
+        Assert.assertEquals(0, notification.defaults);
+        Assert.assertEquals(Notification.GROUP_ALERT_ALL, notification.getGroupAlertBehavior());
         Assert.assertEquals(Notification.PRIORITY_DEFAULT, notification.priority);
     }
 
@@ -476,10 +472,7 @@ public class NotificationPlatformBridgeTest {
 
         // On Android O+ the defaults are ignored as vibrate and silent moved to the notification
         // channel. The silent flag is achieved by using a group alert summary.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Assert.assertEquals(
-                    Notification.GROUP_ALERT_SUMMARY, notification.getGroupAlertBehavior());
-        }
+        Assert.assertEquals(Notification.GROUP_ALERT_SUMMARY, notification.getGroupAlertBehavior());
     }
 
     private void verifyVibrationNotRequestedWhenDisabledInPrefs(String notificationOptions)
@@ -497,18 +490,7 @@ public class NotificationPlatformBridgeTest {
 
         // On Android O+ the defaults are ignored as vibrate and silent moved to the notification
         // channel.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Assert.assertEquals(0, notification.defaults);
-        } else {
-            // Vibration should not be in the defaults.
-            Assert.assertEquals(
-                    Notification.DEFAULT_ALL & ~Notification.DEFAULT_VIBRATE,
-                    notification.defaults);
-
-            // There should be a custom no-op vibration pattern.
-            Assert.assertEquals(1, notification.vibrate.length);
-            Assert.assertEquals(0L, notification.vibrate[0]);
-        }
+        Assert.assertEquals(0, notification.defaults);
     }
 
     /**
@@ -555,19 +537,7 @@ public class NotificationPlatformBridgeTest {
 
         // On Android O+ the defaults are ignored as vibrate and silent moved to the notification
         // channel.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Assert.assertEquals(0, notification.defaults);
-        } else {
-            // Vibration should not be in the defaults, a custom pattern was provided.
-            Assert.assertEquals(
-                    Notification.DEFAULT_ALL & ~Notification.DEFAULT_VIBRATE,
-                    notification.defaults);
-
-            // The custom pattern should have been passed along.
-            Assert.assertEquals(2, notification.vibrate.length);
-            Assert.assertEquals(0L, notification.vibrate[0]);
-            Assert.assertEquals(42L, notification.vibrate[1]);
-        }
+        Assert.assertEquals(0, notification.defaults);
     }
 
     /**
@@ -665,13 +635,6 @@ public class NotificationPlatformBridgeTest {
         Bitmap generatedIcon =
                 generator.generateIconForUrl(new GURL(mPermissionTestRule.getOrigin()));
         Assert.assertNotNull(generatedIcon);
-        // Starts from Android O MR1, large icon can be downscaled by Android platform code.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            Assert.assertTrue(
-                    generatedIcon.sameAs(
-                            NotificationTestUtil.getLargeIconFromNotification(
-                                    context, notification)));
-        }
     }
 
     /*
