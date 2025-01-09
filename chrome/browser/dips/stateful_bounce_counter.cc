@@ -31,9 +31,10 @@ void StatefulBounceCounter::CreateFor(DIPSService* dips_service) {
 
 void StatefulBounceCounter::OnStatefulBounce(
     content::WebContents* web_contents) {
-  auto* pscs = content_settings::PageSpecificContentSettings::GetForPage(
-      web_contents->GetPrimaryPage());
-  pscs->IncrementStatefulBounceCount();
+  if (auto* pscs = content_settings::PageSpecificContentSettings::GetForPage(
+          web_contents->GetPrimaryPage())) {
+    pscs->IncrementStatefulBounceCount();
+  }
 }
 
 const int StatefulBounceCounter::kUserDataKey;
