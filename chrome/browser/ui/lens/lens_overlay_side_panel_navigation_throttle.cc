@@ -91,6 +91,15 @@ LensOverlaySidePanelNavigationThrottle::HandleSidePanelRequest() {
     return content::NavigationThrottle::CANCEL;
   }
 
+  // If the URL is a valid search results URL and has a text directive, then
+  // the side panel coordinator should handle the navigation and open it either
+  // in a new tab or highlight the text in the current tab if the URL is already
+  // open.
+  if (controller->results_side_panel_coordinator()->MaybeHandleTextDirectives(
+          url)) {
+    return content::NavigationThrottle::CANCEL;
+  }
+
   // If this is a same-site navigation and search URL, we make sure that the URL
   // has the parameters needed to preserve lens overlay features (e.g. framing).
   // If no such parameters were needed, we can just proceed.

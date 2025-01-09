@@ -74,6 +74,12 @@ class LensOverlaySidePanelCoordinator
     return lens_overlay_controller_.get();
   }
 
+  // Handles rendering text highlights on the main browser window based on
+  // navigations from the side panel. Returns true if handled, false otherwise.
+  // `nav_url` refers to the URL that the side panel was set to navigate to. It
+  // is compared to the URL of the current open tab.
+  bool MaybeHandleTextDirectives(const GURL& nav_url);
+
   // Whether the lens overlay entry is currently the active entry in the side
   // panel UI.
   bool IsEntryShowing();
@@ -104,12 +110,6 @@ class LensOverlaySidePanelCoordinator
   // ChromeWebModalDialogManagerDelegate:
   web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
       override;
-
-  // Handles rendering text highlights on the main browser window based on
-  // navigations from the side panel. Returns true if handled, false otherwise.
-  // `nav_url` refers to the URL that the side panel was set to navigate to. It
-  // is compared to the URL of the current open tab.
-  bool MaybeHandleTextDirectives(const GURL& nav_url);
 
   // Whether the side panel should handle the URL differently since it has a
   // text directive and a URL that matches the current page. `nav_url` refers to
