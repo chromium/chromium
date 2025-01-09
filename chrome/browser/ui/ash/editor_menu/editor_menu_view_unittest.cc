@@ -71,18 +71,7 @@ std::u16string_view GetChipLabel(const views::View* chip) {
 using EditorMenuViewTest = ChromeViewsTestBase;
 
 class EditorMenuViewI18nEnabledTest : public EditorMenuViewTest {
- public:
-  void SetUp() override {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kOrca,
-                              chromeos::features::kFeatureManagementOrca,
-                              chromeos::features::kOrcaUseL10nStrings},
-        /*disabled_features=*/{});
-    EditorMenuViewTest::SetUp();
-  }
 
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(EditorMenuViewTest, CreatesChips) {

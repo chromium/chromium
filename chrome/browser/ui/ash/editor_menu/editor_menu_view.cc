@@ -90,7 +90,8 @@ const std::u16string GetEditorMenuAccessibilityName(
       text_and_image_mode == TextAndImageMode::kEditorWriteOnly) {
     return GetEditorMenuWriteCardTitle();
   }
-  if (text_and_image_mode == TextAndImageMode::kLobsterOnly) {
+  if (text_and_image_mode == TextAndImageMode::kLobsterWithNoSelectedText ||
+      text_and_image_mode == TextAndImageMode::kLobsterWithSelectedText) {
     return GetEditorMenuLobsterTitle();
   }
   return u"";
@@ -270,12 +271,13 @@ gfx::Insets EditorMenuView::GetTitleContainerInsets() const {
     case TextAndImageMode::kEditorWriteAndLobster:
       return kTabsTitleContainerInsets;
     case TextAndImageMode::kEditorWriteOnly:
-    case TextAndImageMode::kLobsterOnly:
     case TextAndImageMode::kEditorRewriteOnly:
+    case TextAndImageMode::kLobsterWithNoSelectedText:
+    case TextAndImageMode::kLobsterWithSelectedText:
     case TextAndImageMode::kEditorRewriteAndLobster:
       return kNoTabsTitleContainerInsets;
     case TextAndImageMode::kBlocked:
-    default:
+    case TextAndImageMode::kPromoCard:
       return gfx::Insets();
   }
 }
@@ -311,9 +313,16 @@ void EditorMenuView::AddTitleContainer() {
         GetEditorMenuRewriteCardTitle(), views::style::CONTEXT_DIALOG_TITLE,
         views::style::STYLE_HEADLINE_5));
     title->SetEnabledColorId(ui::kColorSysOnSurface);
-  } else if (text_and_image_mode_ == TextAndImageMode::kLobsterOnly) {
+  } else if (text_and_image_mode_ ==
+             TextAndImageMode::kLobsterWithNoSelectedText) {
     auto* title = title_container_->AddChildView(std::make_unique<views::Label>(
         GetEditorMenuLobsterTitle(), views::style::CONTEXT_DIALOG_TITLE,
+        views::style::STYLE_HEADLINE_5));
+    title->SetEnabledColorId(ui::kColorSysOnSurface);
+  } else if (text_and_image_mode_ ==
+             TextAndImageMode::kLobsterWithSelectedText) {
+    auto* title = title_container_->AddChildView(std::make_unique<views::Label>(
+        GetEditorMenuRewriteCardTitle(), views::style::CONTEXT_DIALOG_TITLE,
         views::style::STYLE_HEADLINE_5));
     title->SetEnabledColorId(ui::kColorSysOnSurface);
   }

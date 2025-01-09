@@ -19,6 +19,8 @@ source_set("utils") {
     "utils/pre_target_handler.h",
     "utils/pre_target_handler_view.cc",
     "utils/pre_target_handler_view.h",
+    "utils/text_and_image_mode.cc",
+    "utils/text_and_image_mode.h",
     "utils/utils.cc",
     "utils/utils.h",
   ]
@@ -43,6 +45,8 @@ source_set("editor_menu") {
     "editor_manager_ash.h",
     "editor_manager_factory.cc",
     "editor_manager_factory.h",
+    "editor_menu_card_context.cc",
+    "editor_menu_card_context.h",
     "editor_menu_controller_impl.cc",
     "editor_menu_controller_impl.h",
     "lobster_manager.cc",

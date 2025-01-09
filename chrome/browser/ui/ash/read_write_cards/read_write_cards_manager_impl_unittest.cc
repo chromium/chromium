@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
+#include "chrome/browser/ui/ash/editor_menu/editor_menu_card_context.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_controller_impl.h"
 #include "chrome/browser/ui/ash/editor_menu/utils/editor_types.h"
 #include "chrome/browser/ui/ash/magic_boost/magic_boost_card_controller.h"
@@ -123,28 +124,34 @@ class ReadWriteCardsManagerImplTest : public ChromeAshTestBase,
     ChromeAshTestBase::TearDown();
   }
 
-  void OnGetEditorContext(editor_menu::FetchControllersCallback callback,
-                          editor_menu::EditorMode editor_mode,
-                          bool editor_consent_status_settled) {
+  void OnGetEditorMenuCardContext(
+      editor_menu::FetchControllersCallback callback,
+      editor_menu::EditorMode editor_mode,
+      bool editor_consent_status_settled) {
     content::ContextMenuParams params;
     params.is_editable = true;
 
-    editor_menu::EditorContext editor_context(
-        editor_mode, /*consent_status_settled=*/editor_consent_status_settled,
-        {});
+    const editor_menu::EditorMenuCardContext editor_menu_card_context =
+        editor_menu::EditorMenuCardContext()
+            .set_consent_status_settled(editor_consent_status_settled)
+            .set_editor_mode(editor_mode)
+            .build();
 
-    manager_->OnGetEditorContext(params, std::move(callback), editor_context);
+    manager_->OnGetEditorMenuCardContext(params, std::move(callback),
+                                         editor_menu_card_context);
   }
 
   std::vector<base::WeakPtr<chromeos::ReadWriteCardController>> GetControllers(
       content::ContextMenuParams params,
       editor_menu::EditorMode editor_mode = editor_menu::EditorMode::kWrite,
       bool editor_consent_status_settled = true) {
-    editor_menu::EditorContext editor_context(
-        editor_mode, /*consent_status_settled=*/editor_consent_status_settled,
-        {});
+    const editor_menu::EditorMenuCardContext editor_menu_card_context =
+        editor_menu::EditorMenuCardContext()
+            .set_consent_status_settled(editor_consent_status_settled)
+            .set_editor_mode(editor_mode)
+            .build();
 
-    return manager_->GetControllers(params, editor_context);
+    return manager_->GetControllers(params, editor_menu_card_context);
   }
 
   QuickAnswersControllerImpl* quick_answers_controller() {
@@ -408,7 +415,7 @@ TEST_P(ReadWriteCardsManagerImplTest,
        OnGetEditorContextSoftBlockedAndConsentStatusAlreadySet) {
   // If no text is selected, editor mode is kSoftBlocked and editor consent
   // status is already set, no card is shown.
-  OnGetEditorContext(
+  OnGetEditorMenuCardContext(
       base::BindOnce(
           &ExpectControllersEqual,
           "Wrong controller is fetched when editor mode is kSoftBlocked",
@@ -426,7 +433,7 @@ TEST_P(ReadWriteCardsManagerImplTest,
 TEST_P(ReadWriteCardsManagerImplTest,
        OnGetEditorContextHardBlockedAndEditorConsentStatusUnset) {
   // If no text is selected and editor mode is kHardBlocked, no card is shown
-  OnGetEditorContext(
+  OnGetEditorMenuCardContext(
       base::BindOnce(
           &ExpectControllersEqual,
           "Wrong controller is fetched when editor mode is kHardBlocked",
@@ -443,7 +450,7 @@ TEST_P(ReadWriteCardsManagerImplTest,
 
 TEST_P(ReadWriteCardsManagerImplTest,
        OnGetEditorContextSoftBlockedAndEditorConsentStatusUnset) {
-  OnGetEditorContext(
+  OnGetEditorMenuCardContext(
       base::BindOnce(
           &ExpectControllersEqual,
           "Wrong controller is fetched when editor mode is kSoftBlocked",
@@ -464,7 +471,7 @@ TEST_P(ReadWriteCardsManagerImplTest,
 }
 
 TEST_P(ReadWriteCardsManagerImplTest, OnGetEditorContextPromoCard) {
-  OnGetEditorContext(
+  OnGetEditorMenuCardContext(
       base::BindOnce(
           &ExpectControllersEqual,
           "Wrong controller is fetched when editor mode is kPromoCard",
@@ -487,7 +494,7 @@ TEST_P(ReadWriteCardsManagerImplTest, OnGetEditorContextPromoCard) {
 }
 
 TEST_P(ReadWriteCardsManagerImplTest, OnGetEditorContextWrite) {
-  OnGetEditorContext(
+  OnGetEditorMenuCardContext(
       base::BindOnce(
           &ExpectControllersEqual,
           "Wrong controller is fetched when editor mode is kWrite",
@@ -496,7 +503,7 @@ TEST_P(ReadWriteCardsManagerImplTest, OnGetEditorContextWrite) {
 }
 
 TEST_P(ReadWriteCardsManagerImplTest, OnGetEditorContextRewrite) {
-  OnGetEditorContext(
+  OnGetEditorMenuCardContext(
       base::BindOnce(
           &ExpectControllersEqual,
           "Wrong controller is fetched when editor mode is kRewrite",
