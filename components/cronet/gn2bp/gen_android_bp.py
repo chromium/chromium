@@ -43,8 +43,10 @@ PARENT_ROOT = os.path.abspath(
 
 sys.path.insert(0, os.path.join(PARENT_ROOT, "license"))
 import license_utils
+import constants as license_constants
 
-ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+REPOSITORY_ROOT = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
 
 CRONET_LICENSE_NAME = "external_cronet_license"
 
@@ -2722,9 +2724,11 @@ def _maybe_create_license_module(path: str) -> Union[Module, None]:
   :param path: Path to check for README.chromium
   :return: Module or None.
   """
-  readme_chromium_file = Path(os.path.join(path, "README.chromium"))
+  readme_relative_path = os.path.join(path, "README.chromium")
+  readme_chromium_file = Path(
+      os.path.join(REPOSITORY_ROOT, path, "README.chromium"))
   if (not readme_chromium_file.exists()
-      or license_utils.is_ignored_readme_chromium(str(readme_chromium_file))):
+      or license_utils.is_ignored_readme_chromium(readme_relative_path)):
     return None
 
   license_module = Module("license", _path_to_name(path), "License-Artificial")
@@ -2732,7 +2736,10 @@ def _maybe_create_license_module(path: str) -> Union[Module, None]:
   # Assume that a LICENSE file always exist as we run the
   # create_android_metadata_license.py script each time we run GN2BP.
   license_module.license_text = {"LICENSE"}
-  metadata = license_utils.parse_chromium_readme_file(str(readme_chromium_file))
+  metadata = license_utils.parse_chromium_readme_file(
+      str(readme_chromium_file),
+      license_constants.POST_PROCESS_OPERATION.get(readme_relative_path,
+                                                   lambda _metadata: _metadata))
   for license in metadata.get_licenses():
     license_module.license_kinds.add(license_utils.get_license_bp_name(license))
   return license_module
@@ -2929,9 +2936,7 @@ def main():
   parser.add_argument(
       '--suffix',
       help='The suffix to the Android.bp filename. Pass "" if no suffix.',
-      default='.gn2bp'
-  )
-  # TODO(crbug.com/378706121): Remove once license generation is fixed.
+      default='.gn2bp')
   group = parser.add_mutually_exclusive_group()
   group.add_argument(
       '--license',
@@ -2969,7 +2974,6 @@ def main():
   tool_name = os.path.relpath(os.path.abspath(__file__), project_root)
 
   final_blueprints = _break_down_blueprint(top_level_blueprint)
-  # TODO(crbug.com/378706121): Remove once license generation is fixed.
   if args.license:
     license_modules = create_license_modules(final_blueprints)
     for (path, module) in license_modules.items():

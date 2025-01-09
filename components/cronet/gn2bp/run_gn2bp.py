@@ -39,12 +39,19 @@ _COPYBARA_PATH = os.path.join(REPOSITORY_ROOT,
 _GENERATE_BUILD_SCRIPT_PATH = os.path.join(
     REPOSITORY_ROOT,
     'components/cronet/gn2bp/generate_build_scripts_output.py')
+_GENERATE_LICENSE_SCRIPT_PATH = os.path.join(
+    REPOSITORY_ROOT,
+    'components/cronet/license/create_android_metadata_license.py')
 _GN2BP_SCRIPT_PATH = os.path.join(REPOSITORY_ROOT,
                                   'components/cronet/gn2bp/gen_android_bp.py')
 _JAVA_HOME = os.path.join(REPOSITORY_ROOT, 'third_party', 'jdk', 'current')
 _JAVA_PATH = os.path.join(_JAVA_HOME, 'bin', 'java')
 _OUT_DIR = os.path.join(REPOSITORY_ROOT, 'out')
 _WORKFLOW_NAME = 'import_cronet_to_aosp_gerrit'
+
+
+def _run_license_generation() -> int:
+  return cronet_utils.run(["python3", _GENERATE_LICENSE_SCRIPT_PATH])
 
 
 def _run_gn2bp(desc_files: Set[tempfile.NamedTemporaryFile],
@@ -66,9 +73,7 @@ def _run_gn2bp(desc_files: Set[tempfile.NamedTemporaryFile],
       # desc_file.name represents the absolute path.
       base_cmd += ['--desc', desc_file.name]
 
-    # TODO(crbug.com/378706121): Remove once license generation is fixed.
-    base_cmd += ['--no-license']
-
+    base_cmd += ["--license"]
     return cronet_utils.run(base_cmd)
 
 def _run_generate_build_scripts(output_path: str) -> int:
@@ -213,15 +218,15 @@ def main():
     }
 
     for (arch, temp_file) in arch_to_temp_desc_file.items():
-        # gn desc behaves completely differently when the output
-        # directory is outside of chromium/src, some paths will
-        # stop having // in the beginning of their labels
-        # eg (//A/B will become A/B), this mostly apply to files
-        # that are generated through actions and not targets.
-        #
-        # This is why the temporary directory has to be generated
-        # beneath the repository root until gn2bp is tweaked to
-        # deal with this small differences.
+      # gn desc behaves completely differently when the output
+      # directory is outside of chromium/src, some paths will
+      # stop having // in the beginning of their labels
+      # eg (//A/B will become A/B), this mostly apply to files
+      # that are generated through actions and not targets.
+      #
+      # This is why the temporary directory has to be generated
+      # beneath the repository root until gn2bp is tweaked to
+      # deal with this small differences.
       with tempfile.TemporaryDirectory(dir=_OUT_DIR) as gn_out_dir:
         cronet_utils.gn(gn_out_dir, cronet_utils.get_gn_args_for_aosp(arch))
         if _write_desc_json(gn_out_dir, temp_file) != 0:
@@ -229,13 +234,13 @@ def main():
           print(f"Failed to generate desc file for arch: {arch}")
           sys.exit(-1)
 
-    res_gn2bp = _run_gn2bp(
-        desc_files=arch_to_temp_desc_file.values(),
-        skip_build_scripts=args.skip_build_scripts)
+    res_license_generation = _run_license_generation()
+    res_gn2bp = _run_gn2bp(desc_files=arch_to_temp_desc_file.values(),
+                           skip_build_scripts=args.skip_build_scripts)
     res_boringssl = _gen_boringssl()
 
     res_copybara = 1
-    if res_gn2bp == 0 and res_boringssl == 0:
+    if res_gn2bp == 0 and res_boringssl == 0 and res_license_generation == 0:
       # Only run Copybara if all build files generated successfully.
       res_copybara = _run_copybara_to_aosp(
           config=args.config,
@@ -252,6 +257,9 @@ def main():
     sys.exit(-1)
   elif res_boringssl != 0:
     print('Failed to execute boringssl!')
+    sys.exit(-1)
+  elif res_license_generation != 0:
+    print('Failed to generate license data!')
     sys.exit(-1)
   elif res_copybara != 0:
     print('Failed to execute copybara!')
