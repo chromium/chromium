@@ -9,6 +9,9 @@ if (is_android) {
   import("//build/config/android/config.gni")
   import("//tools/perf/chrome_telemetry_build/android_browser_types.gni")
 }
+if (is_android || is_fuchsia) {
+  import("//build/symlink.gni")
+}
 
 if (is_chromeos_device) {
   import("//build/config/chromeos/rules.gni")
@@ -24,14 +27,27 @@ if (is_chromeos_device) {
   }
 }
 
+if (is_android || is_fuchsia) {
+  # Create a symlink from root_build_dir -> clang_x64/trace_processor_shell so
+  # the stripped binary is actually included in the isolate.
+  binary_symlink("host_trace_processor_shell") {
+    binary_label = "//third_party/perfetto/src/trace_processor:trace_processor_shell($host_toolchain)"
+    output_name = "host_trace_processor_shell"
+  }
+}
+
 group("telemetry_chrome_test") {
   testonly = true
 
   data_deps = [
     ":telemetry_chrome_test_without_chrome",
-    "//third_party/perfetto/src/trace_processor:trace_processor_shell",
+    "//third_party/perfetto/src/trace_processor:trace_processor_shell($host_toolchain)",
   ]
   data = []
+
+  if (is_android || is_fuchsia) {
+    data_deps += [ ":host_trace_processor_shell" ]
+  }
 
   if (!is_fuchsia && !is_android && !is_castos && !is_ios) {
     data_deps += [ "//chrome" ]
