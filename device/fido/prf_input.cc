@@ -9,6 +9,7 @@
 #include "components/cbor/values.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
+#include "third_party/boringssl/src/include/openssl/sha.h"
 
 namespace device {
 
@@ -18,6 +19,23 @@ bool CBORToPRFValue(const cbor::Value& v, std::array<uint8_t, 32>* out) {
     return false;
   }
   return fido_parsing_utils::ExtractArray(v.GetBytestring(), 0, out);
+}
+
+// HashPRFValue hashes a PRF evaluation point with a fixed prefix in order to
+// separate the set of points that a website can evaluate. See
+// https://w3c.github.io/webauthn/#prf-extension.
+std::array<uint8_t, 32> HashPRFValue(base::span<const uint8_t> value) {
+  constexpr char kPrefix[] = "WebAuthn PRF";
+
+  SHA256_CTX ctx;
+  SHA256_Init(&ctx);
+  // This deliberately includes the terminating NUL.
+  SHA256_Update(&ctx, kPrefix, sizeof(kPrefix));
+  SHA256_Update(&ctx, value.data(), value.size());
+
+  std::array<uint8_t, 32> digest;
+  SHA256_Final(digest.data(), &ctx);
+  return digest;
 }
 }  // namespace
 
@@ -62,6 +80,13 @@ cbor::Value::MapValue PRFInput::ToCBOR() const {
                 std::vector<uint8_t>(this->salt2->begin(), this->salt2->end()));
   }
   return ret;
+}
+
+void PRFInput::HashInputsIntoSalts() {
+  this->salt1 = HashPRFValue(this->input1);
+  if (this->input2) {
+    this->salt2 = HashPRFValue(*(this->input2));
+  }
 }
 
 }  // namespace device

@@ -69,7 +69,6 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
-#include "third_party/boringssl/src/include/openssl/sha.h"
 #include "third_party/boringssl/src/pki/input.h"
 #include "third_party/boringssl/src/pki/parse_values.h"
 #include "third_party/boringssl/src/pki/parser.h"
@@ -398,23 +397,6 @@ std::optional<device::CredProtectRequest> ProtectionPolicyToCredProtect(
   }
 }
 
-// HashPRFValue hashes a PRF evaluation point with a fixed prefix in order to
-// separate the set of points that a website can evaluate. See
-// https://w3c.github.io/webauthn/#prf-extension.
-std::array<uint8_t, 32> HashPRFValue(base::span<const uint8_t> value) {
-  constexpr char kPrefix[] = "WebAuthn PRF";
-
-  SHA256_CTX ctx;
-  SHA256_Init(&ctx);
-  // This deliberately includes the terminating NUL.
-  SHA256_Update(&ctx, kPrefix, sizeof(kPrefix));
-  SHA256_Update(&ctx, value.data(), value.size());
-
-  std::array<uint8_t, 32> digest;
-  SHA256_Final(digest.data(), &ctx);
-  return digest;
-}
-
 std::optional<device::PRFInput> ParsePRFInputForMakeCredential(
     const blink::mojom::PRFValuesPtr& prf_input_from_renderer) {
   // The input cannot be credential-specific because we haven't created the
@@ -425,11 +407,10 @@ std::optional<device::PRFInput> ParsePRFInputForMakeCredential(
 
   device::PRFInput prf_input;
   prf_input.input1 = prf_input_from_renderer->first;
-  prf_input.salt1 = HashPRFValue(prf_input_from_renderer->first);
   if (prf_input_from_renderer->second) {
     prf_input.input2 = prf_input_from_renderer->second;
-    prf_input.salt2 = HashPRFValue(*prf_input_from_renderer->second);
   }
+  prf_input.HashInputsIntoSalts();
 
   return prf_input;
 }
@@ -464,11 +445,10 @@ std::optional<std::vector<device::PRFInput>> ParsePRFInputsForGetAssertion(
     }
 
     prf_input.input1 = prf_input_from_renderer->first;
-    prf_input.salt1 = HashPRFValue(prf_input_from_renderer->first);
     if (prf_input_from_renderer->second) {
       prf_input.input2 = prf_input_from_renderer->second;
-      prf_input.salt2 = HashPRFValue(*prf_input_from_renderer->second);
     }
+    prf_input.HashInputsIntoSalts();
 
     ret.emplace_back(std::move(prf_input));
   }

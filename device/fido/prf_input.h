@@ -29,6 +29,9 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) PRFInput {
 
   cbor::Value::MapValue ToCBOR() const;
 
+  // Hashes the inputs into the corresponding salts.
+  void HashInputsIntoSalts();
+
   std::optional<std::vector<uint8_t>> credential_id;
   // Input values are provided both unhashed (as `input1` and `input2`) and
   // hashed (as `salt1` and `salt2`). Security keys use the hashed values but,
