@@ -194,7 +194,7 @@ BASE_FEATURE(kResourceAttributionIncludeOrigins,
 
 BASE_FEATURE(kSeamlessRenderFrameSwap,
              "SeamlessRenderFrameSwap",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUnimportantFramesPriority,
              "UnimportantFramesPriority",
