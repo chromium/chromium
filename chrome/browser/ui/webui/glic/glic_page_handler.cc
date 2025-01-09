@@ -143,6 +143,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     std::move(callback).Run();
   }
 
+  void SetContextAccessIndicator(bool enabled) override {
+    glic_service_->SetContextAccessIndicator(enabled);
+  }
+
   void GetUserProfileInfo(GetUserProfileInfoCallback callback) override {
     ProfileAttributesEntry* entry =
         g_browser_process->profile_manager()

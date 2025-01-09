@@ -11,6 +11,7 @@
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/common/buildflags.h"
 
 class ChromeAutofillAiClient;
 class LensOverlayController;
@@ -42,6 +43,12 @@ class DataProtectionNavigationController;
 namespace extensions {
 class ExtensionSidePanelManager;
 }  // namespace extensions
+
+#if BUILDFLAG(ENABLE_GLIC)
+namespace glic {
+class GlicTabIndicatorHelper;
+}
+#endif
 
 namespace permissions {
 class PermissionIndicatorsTabData;
@@ -248,6 +255,10 @@ class TabFeatures {
 
   std::unique_ptr<DisconnectFileChooserOnBackgroundController>
       disconnect_file_chooser_on_background_controller_;
+
+#if BUILDFLAG(ENABLE_GLIC)
+  std::unique_ptr<glic::GlicTabIndicatorHelper> glic_tab_indicator_helper_;
+#endif
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

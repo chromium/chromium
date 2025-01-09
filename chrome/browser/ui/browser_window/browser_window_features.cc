@@ -50,10 +50,9 @@
 #include "components/saved_tab_groups/public/features.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_border_view_manager.h"
 #include "chrome/browser/glic/glic_enabling.h"
-#include "chrome/browser/glic/glic_tab_indicator_helper.h"
 #endif
-
 namespace {
 
 // This is the generic entry point for test code to stub out browser window
@@ -127,8 +126,8 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 
 #if BUILDFLAG(ENABLE_GLIC)
     if (GlicEnabling::IsEnabledForProfile(browser->GetProfile())) {
-      glic_tab_indicator_helper_ =
-          std::make_unique<glic::GlicTabIndicatorHelper>(browser);
+      glic_border_view_manager_ =
+          std::make_unique<glic::GlicBorderViewManager>(browser);
     }
 #endif  // BUILDFLAG(ENABLE_GLIC)
   }

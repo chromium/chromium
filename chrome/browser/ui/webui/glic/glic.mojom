@@ -113,6 +113,9 @@ interface WebClientHandler {
   // pref value.
   SetTabContextPermissionState(bool enabled) => ();
 
+  // Set the state of the context access indicator UI effect on the focused tab.
+  SetContextAccessIndicator(bool enabled);
+
   // Returns the user profile information. This should only return null if
   // the profile associated with this webui is invalid, which should only
   // possibly happen during teardown.

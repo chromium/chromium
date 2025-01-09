@@ -138,6 +138,22 @@ export declare interface GlicBrowserHost {
   // circumstances. If this is called while a cookie refresh is already in
   // progress, only one cookie refresh will take place.
   refreshSignInCookies?(): Promise<void>;
+
+  /**
+   * Show or hide the context access indicators on the focused tab.
+   *
+   * The indicators visually signal to the user that the client may request
+   * context from the currently focused tab. The indicators are only displayed
+   * if both the client has enabled them and the host determines that the
+   * focused tab is valid for context extraction.
+   *
+   * The visual effects persist across tab switches and navigations as long as
+   * the focused tab remains valid and the client has not hidden the indicators.
+   * If the user navigates to an invalid page, the host disables the indicators
+   * until navigation back to valid content. The client is responsible for
+   * hiding the indicators when tab context permissions are revoked.
+   */
+  setContextAccessIndicator?(show: boolean): void;
 }
 
 // A panel can be in one of these three states.

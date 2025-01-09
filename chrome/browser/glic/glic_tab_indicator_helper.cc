@@ -69,7 +69,9 @@ class GlicTabIndicatorHelper::PromoHelper {
   ~PromoHelper() = default;
 
  private:
-  BrowserWindowInterface& browser() { return *owner_->browser_; }
+  BrowserWindowInterface& browser() {
+    return *owner_->tab_->GetBrowserWindowInterface();
+  }
 
   void MaybeShowPromo() {
     // Determine that there is a valid active tab we could show the promo for.
@@ -116,20 +118,49 @@ class GlicTabIndicatorHelper::PromoHelper {
 
 // Tab indicator helper implementation:
 
-GlicTabIndicatorHelper::GlicTabIndicatorHelper(BrowserWindowInterface* browser)
-    : browser_(*browser), promo_helper_(std::make_unique<PromoHelper>(*this)) {
+GlicTabIndicatorHelper::GlicTabIndicatorHelper(tabs::TabInterface* tab)
+    : tab_(tab), promo_helper_(std::make_unique<PromoHelper>(*this)) {
   auto* const service = glic::GlicKeyedServiceFactory::GetGlicKeyedService(
-      browser_->GetProfile());
-  SetLastFocusedTab(service->GetFocusedTab());
-  change_subscription_ = service->AddFocusedTabChangedCallback(
+      tab_->GetBrowserWindowInterface()->GetProfile());
+  focus_change_subscription_ = service->AddFocusedTabChangedCallback(
       base::BindRepeating(&GlicTabIndicatorHelper::OnFocusedTabChanged,
                           base::Unretained(this)));
+  indicator_change_subscription_ =
+      service->AddContextAccessIndicatorStatusChangedCallback(
+          base::BindRepeating(&GlicTabIndicatorHelper::OnIndicatorStatusChanged,
+                              base::Unretained(this)));
+  will_detach_subscription_ = tab_->RegisterWillDetach(base::BindRepeating(
+      &GlicTabIndicatorHelper::OnTabWillDetach, base::Unretained(this)));
+  did_insert_subscription_ = tab_->RegisterDidInsert(base::BindRepeating(
+      &GlicTabIndicatorHelper::OnTabDidInsert, base::Unretained(this)));
 }
 
 GlicTabIndicatorHelper::~GlicTabIndicatorHelper() = default;
 
-void GlicTabIndicatorHelper::SetLastFocusedTab(
+void GlicTabIndicatorHelper::MaybeUpdateTab(
     const content::WebContents* contents) {
+  if (!contents) {
+    return;
+  }
+  auto* const model = tab_->GetBrowserWindowInterface()->GetTabStripModel();
+  CHECK(model);
+  const int index = model->GetIndexOfWebContents(contents);
+  if (index == TabStripModel::kNoTab) {
+    return;
+  }
+  model->UpdateWebContentsStateAt(index, TabChangeType::kAll);
+}
+
+void GlicTabIndicatorHelper::OnFocusedTabChanged(
+    const content::WebContents* contents) {
+  if (is_detached_) {
+    return;
+  }
+
+  // TODO(crbug.com/388595318): Simplify this once focus manager changes are
+  // finalized.
+  MaybeUpdateTab(last_focused_tab_.get());
+  MaybeUpdateTab(contents);
   if (contents) {
     // GetWeakPtr() isn't const, but we store a const pointer, so this is
     // safe.
@@ -140,30 +171,22 @@ void GlicTabIndicatorHelper::SetLastFocusedTab(
   }
 }
 
-void GlicTabIndicatorHelper::OnFocusedTabChanged(
-    const content::WebContents* contents) {
-  if (contents == last_focused_tab_.get()) {
+void GlicTabIndicatorHelper::OnIndicatorStatusChanged(bool enabled) {
+  if (context_access_indicator_enabled_ == enabled) {
     return;
   }
-
+  context_access_indicator_enabled_ = enabled;
   MaybeUpdateTab(last_focused_tab_.get());
-  MaybeUpdateTab(contents);
-  SetLastFocusedTab(contents);
 }
 
-// Possibly sends an update for the renderer data for the given tab.
-void GlicTabIndicatorHelper::MaybeUpdateTab(
-    const content::WebContents* contents) {
-  if (!contents) {
-    return;
-  }
-  auto* const model = browser_->GetTabStripModel();
-  CHECK(model);
-  const int index = model->GetIndexOfWebContents(contents);
-  if (index == TabStripModel::kNoTab) {
-    return;
-  }
-  model->UpdateWebContentsStateAt(index, TabChangeType::kAll);
+void GlicTabIndicatorHelper::OnTabWillDetach(
+    tabs::TabInterface* tab,
+    tabs::TabInterface::DetachReason reason) {
+  is_detached_ = true;
+}
+
+void GlicTabIndicatorHelper::OnTabDidInsert(tabs::TabInterface* tab) {
+  is_detached_ = false;
 }
 
 }  // namespace glic

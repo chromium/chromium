@@ -10,8 +10,7 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
-
-class BrowserWindowInterface;
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 
 namespace content {
 class WebContents;
@@ -23,14 +22,11 @@ namespace glic {
 // changes.
 class GlicTabIndicatorHelper {
  public:
-  explicit GlicTabIndicatorHelper(BrowserWindowInterface* browser);
+  explicit GlicTabIndicatorHelper(tabs::TabInterface* tab);
   ~GlicTabIndicatorHelper();
 
  private:
   class PromoHelper;
-
-  // Sets the last focused tab to `contents`.
-  void SetLastFocusedTab(const content::WebContents* contents);
 
   // Updates the given tab if it is in the current tabstrip.
   void MaybeUpdateTab(const content::WebContents* contents);
@@ -38,9 +34,24 @@ class GlicTabIndicatorHelper {
   // Called when the focused tab changes.
   void OnFocusedTabChanged(const content::WebContents* contents);
 
-  const raw_ref<BrowserWindowInterface> browser_;
+  // Called when the client changes the context access indicator status.
+  void OnIndicatorStatusChanged(bool enabled);
+
+  // Called when the tab is detached.
+  void OnTabWillDetach(tabs::TabInterface* tab,
+                       tabs::TabInterface::DetachReason reason);
+
+  // Called when the tab is inserted.
+  void OnTabDidInsert(tabs::TabInterface* tab);
+
+  raw_ptr<tabs::TabInterface> tab_;
+  bool context_access_indicator_enabled_ = false;
+  bool is_detached_ = false;
   base::WeakPtr<const content::WebContents> last_focused_tab_;
-  base::CallbackListSubscription change_subscription_;
+  base::CallbackListSubscription focus_change_subscription_;
+  base::CallbackListSubscription indicator_change_subscription_;
+  base::CallbackListSubscription will_detach_subscription_;
+  base::CallbackListSubscription did_insert_subscription_;
   const std::unique_ptr<PromoHelper> promo_helper_;
 };
 

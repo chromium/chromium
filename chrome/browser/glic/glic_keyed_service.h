@@ -53,11 +53,15 @@ class GlicKeyedService : public KeyedService {
   virtual void ClosePanel();
   std::optional<gfx::Size> ResizePanel(const gfx::Size& size);
   void SetPanelDraggableAreas(const std::vector<gfx::Rect>& draggable_areas);
+  void SetContextAccessIndicator(bool show);
 
   // Callback for changes to focused tab. When there is no focused tab,
   // |WebContents| will be nullptr.
   using FocusedTabChangedCallback =
       base::RepeatingCallback<void(const content::WebContents*)>;
+  // Callback for changes to the context access indicator status.
+  using ContextAccessIndicatorChangedCallback =
+      base::RepeatingCallback<void(bool)>;
 
   // Registers |callback| to be called whenever the focused tab changes. This
   // includes when the active/selected tab for the profile changes (including
@@ -69,8 +73,20 @@ class GlicKeyedService : public KeyedService {
   base::CallbackListSubscription AddFocusedTabChangedCallback(
       FocusedTabChangedCallback callback);
 
+  // Registers a callback to be called any time the context access indicator
+  // status changes. This is used to update UI effects on the focused tab
+  // depending on whether the client has requested the indicators or not.
+  base::CallbackListSubscription AddContextAccessIndicatorStatusChangedCallback(
+      ContextAccessIndicatorChangedCallback callback);
+
   // Returns the currently focused tab or nullptr if there is none.
   content::WebContents* GetFocusedTab();
+
+  // Returns whether the context access indicator should be shown for the web
+  // contents. True iff the web contents is considered focused by
+  // GlicFocusedTabManager and the web client has enabled the context access
+  // indicator.
+  bool IsContextAccessIndicatorShown(const content::WebContents* contents);
 
   void GetContextFromFocusedTab(
       bool include_inner_text,
@@ -85,6 +101,13 @@ class GlicKeyedService : public KeyedService {
  private:
   void OnFocusedTabChanged(const content::WebContents* focused_tab);
 
+  // List of callbacks to be notified when the client requests a change to the
+  // context access indicator status.
+  base::RepeatingCallbackList<void(bool)>
+      context_access_indicator_callback_list_;
+  // The state of the context access indicator as set by the client.
+  bool is_context_access_indicator_enabled_ = false;
+
   raw_ptr<content::BrowserContext> browser_context_;
 
   GlicProfileConfiguration configuration_;
@@ -93,8 +116,6 @@ class GlicKeyedService : public KeyedService {
   GlicCookieSynchronizer cookie_synchronizer_;
   // Unowned
   raw_ptr<GlicProfileManager> profile_manager_;
-
-  base::CallbackListSubscription focused_tab_changed_subscription_;
 
   base::WeakPtrFactory<GlicKeyedService> weak_ptr_factory_{this};
 };

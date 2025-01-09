@@ -20,6 +20,7 @@ source_set("tabs_public") {
   sources = [ "tab_network_state.cc" ]
   public_deps = [
     "//base",
+    "//chrome/common:buildflags",
     "//components/tab_groups:tab_groups",
   ]
   deps = [ "//content/public/browser" ]

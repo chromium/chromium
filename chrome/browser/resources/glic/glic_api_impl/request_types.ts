@@ -108,6 +108,12 @@ export declare interface HostRequestTypes {
     },
     response: void,
   };
+  glicBrowserSetContextAccessIndicator: {
+    request: {
+      show: boolean,
+    },
+    response: void,
+  };
   glicBrowserGetUserProfileInfo: {
     request: {},
     response: {

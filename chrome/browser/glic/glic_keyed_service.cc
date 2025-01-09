@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
-#include "chrome/browser/ui/views/glic/border/border_view.h"
 #include "chrome/browser/ui/webui/glic/glic.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/url_constants.h"
@@ -29,12 +28,7 @@ GlicKeyedService::GlicKeyedService(content::BrowserContext* browser_context,
       focused_tab_manager_(Profile::FromBrowserContext(browser_context),
                            window_controller_),
       cookie_synchronizer_(browser_context, identity_manager),
-
-      profile_manager_(profile_manager) {
-  focused_tab_changed_subscription_ =
-      focused_tab_manager_.AddFocusedTabChangedCallback(base::BindRepeating(
-          &GlicKeyedService::OnFocusedTabChanged, GetWeakPtr()));
-}
+      profile_manager_(profile_manager) {}
 
 GlicKeyedService::~GlicKeyedService() = default;
 
@@ -47,22 +41,19 @@ void GlicKeyedService::LaunchUI(views::View* glic_button_view) {
 
   profile_manager_->OnUILaunching(this);
   window_controller_.Show(glic_button_view);
-
-  auto* web_contents = GetFocusedTab();
-  if (web_contents) {
-    if (BorderView* border =
-            BorderView::FindBorderForWebContents(web_contents)) {
-      border->StartAnimation();
-    }
-  } else {
-    // TODO(crbug.com/384740189): Find out if/how to start the border animation
-    // when web_contents is not available yet.
-  }
+  // TODO(crbug.com/384740189): Find out if/how to start the border animation
+  // when web_contents is not available yet.
 }
 
 base::CallbackListSubscription GlicKeyedService::AddFocusedTabChangedCallback(
     FocusedTabChangedCallback callback) {
   return focused_tab_manager_.AddFocusedTabChangedCallback(callback);
+}
+
+base::CallbackListSubscription
+GlicKeyedService::AddContextAccessIndicatorStatusChangedCallback(
+    ContextAccessIndicatorChangedCallback callback) {
+  return context_access_indicator_callback_list_.Add(std::move(callback));
 }
 
 void GlicKeyedService::CreateTab(
@@ -89,8 +80,7 @@ void GlicKeyedService::CreateTab(
 
 void GlicKeyedService::ClosePanel() {
   window_controller_.Close();
-  BorderView::CancelAllAnimationsForProfile(
-      Profile::FromBrowserContext(browser_context_));
+  SetContextAccessIndicator(false);
 }
 
 std::optional<gfx::Size> GlicKeyedService::ResizePanel(const gfx::Size& size) {
@@ -103,6 +93,14 @@ std::optional<gfx::Size> GlicKeyedService::ResizePanel(const gfx::Size& size) {
 void GlicKeyedService::SetPanelDraggableAreas(
     const std::vector<gfx::Rect>& draggable_areas) {
   window_controller_.SetDraggableAreas(draggable_areas);
+}
+
+void GlicKeyedService::SetContextAccessIndicator(bool show) {
+  if (is_context_access_indicator_enabled_ == show) {
+    return;
+  }
+  is_context_access_indicator_enabled_ = show;
+  context_access_indicator_callback_list_.Notify(show);
 }
 
 void GlicKeyedService::GetContextFromFocusedTab(
@@ -136,24 +134,13 @@ void GlicKeyedService::GetContextFromFocusedTab(
           std::move(fetcher), std::move(callback)));
 }
 
-void GlicKeyedService::OnFocusedTabChanged(
-    const content::WebContents* focused_tab) {
-  CHECK_EQ(focused_tab, GetFocusedTab());
-  // TODO(crbug.com/385382048): We shouldn't cancel and restart the animation.
-  // Instead we should transit the current animation state from the previous
-  // browser window to the currently focused browser window.
-  BorderView::CancelAllAnimationsForProfile(
-      Profile::FromBrowserContext(browser_context_));
-  if (focused_tab && window_controller_.HasWindow()) {
-    if (BorderView* border =
-            BorderView::FindBorderForWebContents(focused_tab)) {
-      border->StartAnimation();
-    }
-  }
-}
-
 content::WebContents* GlicKeyedService::GetFocusedTab() {
   return focused_tab_manager_.GetWebContentsForFocusedTab();
+}
+
+bool GlicKeyedService::IsContextAccessIndicatorShown(
+    const content::WebContents* contents) {
+  return is_context_access_indicator_enabled_ && GetFocusedTab() == contents;
 }
 
 base::WeakPtr<GlicKeyedService> GlicKeyedService::GetWeakPtr() {

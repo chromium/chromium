@@ -264,6 +264,10 @@ class HostMessageHandler implements HostMessageHandlerInterface {
   glicBrowserRefreshSignInCookies(): Promise<{success: boolean}> {
     return this.handler.syncCookies();
   }
+
+  glicBrowserSetContextAccessIndicator(request: {show: boolean}) {
+    this.handler.setContextAccessIndicator(request.show);
+  }
 }
 
 export class GlicApiHost implements PostMessageRequestHandler {

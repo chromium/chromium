@@ -38,7 +38,7 @@ class ProductSpecificationsEntryPointController;
 
 #if BUILDFLAG(ENABLE_GLIC)
 namespace glic {
-class GlicTabIndicatorHelper;
+class GlicBorderViewManager;
 }
 #endif
 
@@ -208,7 +208,7 @@ class BrowserWindowFeatures {
   std::unique_ptr<DownloadToolbarUIController> download_toolbar_ui_controller_;
 
 #if BUILDFLAG(ENABLE_GLIC)
-  std::unique_ptr<glic::GlicTabIndicatorHelper> glic_tab_indicator_helper_;
+  std::unique_ptr<glic::GlicBorderViewManager> glic_border_view_manager_;
 #endif
 };
 

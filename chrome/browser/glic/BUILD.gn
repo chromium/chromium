@@ -4,6 +4,7 @@
 
 source_set("glic") {
   sources = [
+    "glic_border_view_manager.h",
     "glic_cookie_synchronizer.h",
     "glic_focused_tab_manager.h",
     "glic_keyed_service.h",
@@ -33,6 +34,7 @@ source_set("glic") {
 
 source_set("impl") {
   sources = [
+    "glic_border_view_manager.cc",
     "glic_cookie_synchronizer.cc",
     "glic_focused_tab_manager.cc",
     "glic_keyed_service.cc",

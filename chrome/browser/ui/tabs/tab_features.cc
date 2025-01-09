@@ -58,6 +58,10 @@
 #include "components/image_fetcher/core/image_fetcher_service.h"
 #include "components/permissions/permission_indicators_tab_data.h"
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_enabling.h"
+#include "chrome/browser/glic/glic_tab_indicator_helper.h"
+#endif
 namespace tabs {
 
 namespace {
@@ -168,6 +172,14 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     embedder_tab_observer_ =
         std::make_unique<passage_embeddings::EmbedderTabObserver>(
             tab.GetContents());
+
+#if BUILDFLAG(ENABLE_GLIC)
+    if (GlicEnabling::IsEnabledForProfile(
+            tab.GetBrowserWindowInterface()->GetProfile())) {
+      glic_tab_indicator_helper_ =
+          std::make_unique<glic::GlicTabIndicatorHelper>(&tab);
+    }
+#endif  // BUILDFLAG(ENABLE_GLIC)
   }
 
   customize_chrome_side_panel_controller_ =

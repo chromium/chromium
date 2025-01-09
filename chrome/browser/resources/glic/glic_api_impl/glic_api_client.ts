@@ -228,6 +228,11 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
         'glicBrowserSetTabContextPermissionState', {enabled});
   }
 
+  setContextAccessIndicator(show: boolean): void {
+    this.sender.requestWithResponse(
+        'glicBrowserSetContextAccessIndicator', {show});
+  }
+
   async getUserProfileInfo?(): Promise<UserProfileInfo> {
     const {profileInfo} = await this.sender.requestWithResponse(
         'glicBrowserGetUserProfileInfo', {});
