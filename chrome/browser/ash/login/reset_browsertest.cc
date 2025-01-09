@@ -7,6 +7,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/login_screen_test_api.h"
+#include "ash/shell.h"
 #include "base/command_line.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/reset_screen.h"
@@ -33,6 +34,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "ui/events/test/event_generator.h"
 
 namespace ash {
 namespace {
@@ -53,8 +55,9 @@ constexpr char kCancelPowerwashButton[] = "cancelButton";
 constexpr char kRestartButton[] = "restart";
 
 void InvokeResetAccelerator() {
-  ASSERT_TRUE(LoginScreenTestApi::SendAcceleratorNatively(ui::Accelerator(
-      ui::VKEY_R, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN)));
+  ui::test::EventGenerator event_generator(ash::Shell::GetPrimaryRootWindow());
+  event_generator.PressKeyAndModifierKeys(
+      ui::VKEY_R, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN);
 }
 
 void ClickCancelButton() {
