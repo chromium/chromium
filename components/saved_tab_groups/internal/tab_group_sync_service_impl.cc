@@ -180,6 +180,7 @@ TabGroupSyncServiceImpl::~TabGroupSyncServiceImpl() {
   for (auto& observer : observers_) {
     observer.OnWillBeDestroyed();
   }
+  ClearAllUserData();
 }
 
 void TabGroupSyncServiceImpl::SetCoordinator(

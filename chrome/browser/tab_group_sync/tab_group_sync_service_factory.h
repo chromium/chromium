@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_TAB_GROUP_SYNC_TAB_GROUP_SYNC_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_TAB_GROUP_SYNC_TAB_GROUP_SYNC_SERVICE_FACTORY_H_
 
+#include <memory>
+
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace base {
@@ -19,6 +21,7 @@ class BrowserContext;
 class Profile;
 
 namespace tab_groups {
+class SyntheticFieldTrialHelper;
 class TabGroupSyncService;
 
 // A factory to create a unique TabGroupSyncService.
@@ -44,6 +47,8 @@ class TabGroupSyncServiceFactory : public ProfileKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory overrides.
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
+
+  std::unique_ptr<SyntheticFieldTrialHelper> synthetic_field_trial_helper_;
 };
 
 }  // namespace tab_groups

@@ -11,7 +11,7 @@
 class ProfileIOS;
 
 namespace tab_groups {
-
+class SyntheticFieldTrialHelper;
 class TabGroupSyncService;
 
 // Factory for the Tab Group Sync service.
@@ -32,6 +32,20 @@ class TabGroupSyncServiceFactory : public ProfileKeyedServiceFactoryIOS {
 
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
+
+  // Called to report synthetic field trial on whether the client had a sync
+  // tabgroup.
+  static void OnHadSyncedTabGroup(bool had_synced_group);
+
+  // Called to report synthetic field trial on whether the client had a shared
+  // tabgroup.
+  static void OnHadSharedTabGroup(bool had_shared_group);
+
+  // Helper method to register a synthetic field trial.
+  static void RegisterFieldTrial(std::string_view trial_name,
+                                 std::string_view group_name);
+
+  std::unique_ptr<SyntheticFieldTrialHelper> synthetic_field_trial_helper_;
 };
 
 }  // namespace tab_groups
