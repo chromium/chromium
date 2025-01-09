@@ -249,11 +249,6 @@ BASE_DECLARE_FEATURE(kViewsJSAppModalDialog);
 BASE_DECLARE_FEATURE(kUsePortalAccentColor);
 #endif
 
-// This feature introduces a toggle that allows users to switch between the
-// standard UI and a compact version of the UI by right clicking the empty area
-// in the Tabstrip.
-BASE_DECLARE_FEATURE(kCompactMode);
-
 // Controls whether the site-specific data dialog shows a related installed
 // applications section.
 BASE_DECLARE_FEATURE(kPageSpecificDataDialogRelatedInstalledAppsSection);

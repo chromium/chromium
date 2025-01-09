@@ -1086,19 +1086,6 @@ void MoveActiveTabToNewWindow(Browser* browser) {
                       std::vector<int>(selection.begin(), selection.end()));
 }
 
-void ToggleCompactMode(Browser* browser) {
-  const bool current_pref =
-      browser->profile()->GetPrefs()->GetBoolean(prefs::kCompactModeEnabled);
-  browser->profile()->GetPrefs()->SetBoolean(prefs::kCompactModeEnabled,
-                                             !current_pref);
-}
-
-bool ShouldUseCompactMode(Profile* profile) {
-  CHECK(profile);
-  return base::FeatureList::IsEnabled(features::kCompactMode) &&
-         profile->GetPrefs()->GetBoolean(prefs::kCompactModeEnabled);
-}
-
 bool CanMoveTabsToNewWindow(Browser* browser,
                             const std::vector<int>& tab_indices) {
   if (browser->is_type_app()) {

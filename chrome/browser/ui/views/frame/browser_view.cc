@@ -1083,16 +1083,6 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
                           base::Unretained(this), CanFullscreen()));
   UpdateFullscreenAllowedFromPolicy(CanFullscreen());
 
-#if !BUILDFLAG(IS_CHROMEOS)
-  if (base::FeatureList::IsEnabled(features::kCompactMode)) {
-    registrar_.Init(browser_->profile()->GetPrefs());
-    registrar_.Add(prefs::kCompactModeEnabled,
-                   base::BindRepeating(&BrowserView::ToggleCompactModeUI,
-                                       base::Unretained(this)));
-    ToggleCompactModeUI();
-  }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
   WebUIContentsPreloadManager::GetInstance()->WarmupForBrowser(browser_.get());
 
   browser_->GetFeatures().InitPostBrowserViewConstruction(this);
@@ -1102,16 +1092,6 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   if (GetFocusManager()) {
     GetFocusManager()->AddFocusChangeListener(this);
   }
-}
-
-void BrowserView::ToggleCompactModeUI() {
-  if (!browser()->is_type_normal()) {
-    return;
-  }
-
-  bool is_compact_mode = chrome::ShouldUseCompactMode(GetProfile());
-  GetBrowserViewLayout()->set_compact_mode(is_compact_mode);
-  InvalidateLayout();
 }
 
 BrowserView::~BrowserView() {

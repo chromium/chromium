@@ -559,9 +559,6 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_NAME_WINDOW:
       PromptToNameWindow(browser_);
       break;
-    case IDC_COMPACT_MODE:
-      ToggleCompactMode(browser_);
-      break;
 
 #if BUILDFLAG(IS_CHROMEOS)
     case IDC_TOGGLE_MULTITASK_MENU:
@@ -1257,10 +1254,6 @@ void BrowserCommandController::InitCommandState() {
   UpdateTabRestoreCommandState();
   command_updater_.UpdateCommandEnabled(IDC_EXIT, true);
   command_updater_.UpdateCommandEnabled(IDC_NAME_WINDOW, true);
-  if (base::FeatureList::IsEnabled(features::kCompactMode)) {
-    command_updater_.UpdateCommandEnabled(IDC_COMPACT_MODE, true);
-  }
-
   command_updater_.UpdateCommandEnabled(IDC_ORGANIZE_TABS, true);
   command_updater_.UpdateCommandEnabled(IDC_CREATE_NEW_TAB_GROUP, true);
   command_updater_.UpdateCommandEnabled(IDC_DECLUTTER_TABS, true);

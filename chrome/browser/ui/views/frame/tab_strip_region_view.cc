@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -37,7 +36,6 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/vector_icons/vector_icons.h"
@@ -472,13 +470,7 @@ void TabStripRegionView::Layout(PassKey) {
             GetLayoutConstant(TAB_STRIP_PADDING) +
             GetLayoutConstant(NEW_TAB_BUTTON_LEADING_MARGIN);
 
-    if (base::FeatureList::IsEnabled(features::kCompactMode)) {
-      if (profile_->GetPrefs()->GetBoolean(prefs::kCompactModeEnabled)) {
-        x -= GetLayoutConstant(TAB_STRIP_PADDING);
-      }
-    }
     gfx::Point button_new_position = gfx::Point(x, 0);
-
     gfx::Rect button_new_bounds = gfx::Rect(button_new_position, button_size);
 
     // If the tabsearch button is before the tabstrip container, then manually

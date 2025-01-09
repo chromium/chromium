@@ -1181,6 +1181,9 @@ inline constexpr char kAccessibilityCursorColorEnabled[] =
 inline constexpr char kPageContentCollectionEnabled[] =
     "page_content_collection.enabled";
 
+// Deprecated 01/2025.
+inline constexpr char kCompactModeEnabled[] = "compact_mode";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1683,6 +1686,9 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 12/2024.
   registry->RegisterBooleanPref(kPageContentCollectionEnabled, false);
+
+  // Deprecated 01/2025.
+  registry->RegisterBooleanPref(kCompactModeEnabled, false);
 }
 
 }  // namespace
@@ -2449,8 +2455,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   registry->RegisterIntegerPref(prefs::kLensOverlayStartCount, 0);
 
   registry->RegisterDictionaryPref(prefs::kReportingEndpoints);
-
-  registry->RegisterBooleanPref(prefs::kCompactModeEnabled, false);
 }
 
 void RegisterUserProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -3024,6 +3028,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Added 12/2024.
   profile_prefs->ClearPref(kPageContentCollectionEnabled);
+
+  // Added 01/2025.
+  profile_prefs->ClearPref(kCompactModeEnabled);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

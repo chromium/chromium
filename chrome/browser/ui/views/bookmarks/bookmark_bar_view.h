@@ -372,9 +372,6 @@ class BookmarkBarView : public views::AccessiblePaneView,
 
   void OnShowManagedBookmarksPrefChanged();
 
-  // Updates the look and feel of the bookmarks bar based on the pref value.
-  void OnCompactModeChanged();
-
   void LayoutAndPaint() {
     InvalidateLayout();
     SchedulePaint();
@@ -409,10 +406,6 @@ class BookmarkBarView : public views::AccessiblePaneView,
 
   // Needed to react to bookmark bar pref changes.
   PrefChangeRegistrar profile_pref_registrar_;
-
-  // When true denotes if the bookmarks bar view should use the compact mode
-  // layout. Otherwise, layout normally.
-  bool is_compact_mode_ = false;
 
   // Used for opening urls.
   raw_ptr<content::PageNavigator, AcrossTasksDanglingUntriaged>

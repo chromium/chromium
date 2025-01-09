@@ -3643,13 +3643,6 @@ const char kTabGroupsSaveV2Description[] =
     "Enables saving and recalling of tab groups but enhanced. Highly "
     "experimental.";
 
-const char kCompactModeId[] = "compact-mode";
-const char kCompactModeName[] = "Compact mode for the browser - Prototype";
-const char kCompactModeDescription[] =
-    "This feature is a prototype. Reduces the height of the browser controls "
-    "(tabstrip, toolbar, bookmarks bar, etc.) to allow more space for the web "
-    "contents";
-
 const char kTabGroupSyncServiceDesktopMigrationId[] =
     "tab-group-sync-service-desktop-migration";
 const char kTabGroupSyncServiceDesktopMigrationName[] =

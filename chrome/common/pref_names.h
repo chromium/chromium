@@ -28,9 +28,6 @@ namespace prefs {
 // *************** PROFILE PREFS ***************
 // These are attached to the user profile
 
-// This preference determines if the browser will use the Compact Mode UI.
-inline constexpr char kCompactModeEnabled[] = "compact_mode";
-
 // A string property indicating whether default apps should be installed
 // in this profile.  Use the value "install" to enable defaults apps, or
 // "noinstall" to disable them.  This property is usually set in the

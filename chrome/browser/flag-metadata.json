@@ -1483,11 +1483,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "compact-mode",
-    "owners": [ "dljames@chromium.org", "dpenning@chromium.org" ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "compare-confirmation-toast",
     "owners": ["mdjones@chromium.org", "meiliang@chromium.org", "chrome-shopping-eng@google.com"],
     "expiry_milestone": 135

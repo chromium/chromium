@@ -903,11 +903,6 @@ class BrowserView : public BrowserWindow,
   // Shared implementation by cut, copy and paste.
   void CutCopyPaste(int command_id);
 
-  // Toggles the look and feel of the browser. If we are in the standard view
-  // and this function is called we will swap the layout to the compact version.
-  // Vice versa if we start in compact mode.
-  void ToggleCompactModeUI();
-
   // If the browser is in immersive full screen mode, it will reveal the
   // tabstrip for a short duration. This is useful for shortcuts that perform
   // tab navigations and need to give users a visual clue as to what tabs are

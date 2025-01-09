@@ -52,7 +52,6 @@
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -649,13 +648,7 @@ std::u16string BookmarkBarView::CreateToolTipForURLAndTitle(
 gfx::Size BookmarkBarView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   gfx::Size prefsize;
-  // 34 dp = 28 height + 6px center margin
   int preferred_height = GetLayoutConstant(BOOKMARK_BAR_HEIGHT);
-  if (browser_view_ && browser_view_->browser() &&
-      browser_view_->browser()->profile() &&
-      chrome::ShouldUseCompactMode(browser_view_->browser()->profile())) {
-    preferred_height = 30;
-  }
   prefsize.set_height(
       static_cast<int>(preferred_height * size_animation_.GetCurrentValue()));
   return prefsize;
@@ -667,13 +660,7 @@ gfx::Size BookmarkBarView::GetMinimumSize() const {
   // Bookmarks" folder, along with appropriate margins and button padding.
   // It should also contain the Managed Bookmarks folder, if it is visible.
   int width = GetLeadingMargin();
-
   int height = GetLayoutConstant(BOOKMARK_BAR_HEIGHT);
-  if (browser_view_ && browser_view_->browser() &&
-      browser_view_->browser()->profile() &&
-      chrome::ShouldUseCompactMode(browser_view_->browser()->profile())) {
-    height = 30;
-  }
 
   const int bookmark_bar_button_padding =
       GetLayoutConstant(BOOKMARK_BAR_BUTTON_PADDING);
@@ -756,14 +743,8 @@ void BookmarkBarView::Layout(PassKey) {
           ? apps_page_shortcut_->GetPreferredSize()
           : gfx::Size();
 
-  int bookmark_bar_button_padding =
+  const int bookmark_bar_button_padding =
       GetLayoutConstant(BOOKMARK_BAR_BUTTON_PADDING);
-  const bool should_use_compact_mode =
-      browser_view_ &&
-      chrome::ShouldUseCompactMode(browser_view_->browser()->profile());
-  if (should_use_compact_mode) {
-    bookmark_bar_button_padding = 0;
-  }
 
   int max_x = GetLeadingMargin() + width - overflow_pref.width() -
               bookmarks_separator_pref.width();
@@ -844,8 +825,7 @@ void BookmarkBarView::Layout(PassKey) {
                                    ? 0
                                    : kSeparatorPadding;
       saved_tab_groups_separator_view_->UpdateBorderAndPreferredSize(
-          gfx::Insets::TLBR(0, left_padding, 0,
-                            should_use_compact_mode ? 0 : kSeparatorPadding));
+          gfx::Insets::TLBR(0, left_padding, 0, kSeparatorPadding));
 
       // Update the bounds for the separator.
       gfx::Size saved_tab_groups_separator_view_pref =
@@ -1538,14 +1518,6 @@ void BookmarkBarView::Init() {
       base::BindRepeating(&BookmarkBarView::OnShowManagedBookmarksPrefChanged,
                           base::Unretained(this)));
 
-  if (base::FeatureList::IsEnabled(features::kCompactMode)) {
-    profile_pref_registrar_.Add(
-        prefs::kCompactModeEnabled,
-        base::BindRepeating(&BookmarkBarView::OnCompactModeChanged,
-                            base::Unretained(this)));
-    is_compact_mode_ = chrome::ShouldUseCompactMode(browser_->profile());
-  }
-
   apps_page_shortcut_->SetVisible(
       chrome::ShouldShowAppsShortcutInBookmarkBar(browser_->profile()));
 
@@ -2146,10 +2118,6 @@ void BookmarkBarView::OnShowManagedBookmarksPrefChanged() {
   if (UpdateOtherAndManagedButtonsVisibility()) {
     LayoutAndPaint();
   }
-}
-
-void BookmarkBarView::OnCompactModeChanged() {
-  is_compact_mode_ = !is_compact_mode_;
 }
 
 void BookmarkBarView::InsertBookmarkButtonAtIndex(

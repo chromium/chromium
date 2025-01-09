@@ -546,9 +546,6 @@
 // Default browser prompt
 #define IDC_SET_BROWSER_AS_DEFAULT 53300
 
-// Enable / Disable compact mode for the browser
-#define IDC_COMPACT_MODE 53301
-
 // Glic status tray icon menu
 #define IDC_GLIC_STATUS_ICON_MENU_SHOW                        53310
 #define IDC_GLIC_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT 53311

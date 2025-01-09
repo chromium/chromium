@@ -16793,7 +16793,6 @@ from previous Chrome versions.
   <int value="-1466600231" label="WakeOnWifiAllowed:enabled"/>
   <int value="-1466206556" label="ArcDocumentsProviderUnknownSize:enabled"/>
   <int value="-1466100014" label="EchePhoneHubPermissionsOnboarding:disabled"/>
-  <int value="-1466088621" label="CompactMode:enabled"/>
   <int value="-1465172796" label="CCTModule:disabled"/>
   <int value="-1465138299" label="GifRecording:disabled"/>
   <int value="-1464860971" label="BluetoothCoredump:enabled"/>
@@ -22120,7 +22119,6 @@ from previous Chrome versions.
   <int value="664591021" label="EnableContinueReading:enabled"/>
   <int value="664905954" label="CrosBatterySaver:disabled"/>
   <int value="664925558" label="MainThreadCompositingPriority:enabled"/>
-  <int value="665169811" label="CompactMode:disabled"/>
   <int value="665320858" label="WebViewHitTestInBlinkOnTouchStart:disabled"/>
   <int value="665409384"
       label="AutofillToolkitViewsCreditCardDialogsMac:enabled"/>

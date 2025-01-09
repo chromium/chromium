@@ -10242,10 +10242,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chromeos::features::kCloudGamingDevice)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-    {flag_descriptions::kCompactModeId, flag_descriptions::kCompactModeName,
-     flag_descriptions::kCompactModeDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kCompactMode)},
-
     {"content-settings-partitioning",
      flag_descriptions::kContentSettingsPartitioningName,
      flag_descriptions::kContentSettingsPartitioningDescription, kOsAll,
