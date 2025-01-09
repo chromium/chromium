@@ -4820,7 +4820,7 @@ TEST_F(PasswordAutofillAgentTest, RestoresAfterJavaScriptModification) {
   ExecuteJavaScriptForTests(script);
   CheckTextFieldsSuggestedState("", false, kAlicePassword, true);
 
-  password_autofill_agent_->OnDynamicFormsSeen();
+  password_autofill_agent_->OnDynamicFormsSeen(/*form_cache=*/{});
   CheckTextFieldsSuggestedState(kAliceUsername, true, kAlicePassword, true);
 
   EXPECT_FALSE(fake_driver_.called_password_forms_parsed());
@@ -4840,7 +4840,7 @@ TEST_F(PasswordAutofillAgentTest, DoNotRestoreWhenFormStructureWasChanged) {
   ExecuteJavaScriptForTests(add_input_element_script);
   CheckTextFieldsSuggestedState("", false, kAlicePassword, true);
 
-  password_autofill_agent_->OnDynamicFormsSeen();
+  password_autofill_agent_->OnDynamicFormsSeen(/*form_cache=*/{});
   CheckTextFieldsSuggestedState("", false, kAlicePassword, true);
 }
 

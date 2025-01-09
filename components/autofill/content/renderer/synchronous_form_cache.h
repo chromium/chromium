@@ -40,6 +40,8 @@ class SynchronousFormCache {
   explicit SynchronousFormCache(FormData& form);
   SynchronousFormCache(FormRendererId form_id,
                        base::optional_ref<const FormData> form);
+  explicit SynchronousFormCache(
+      const std::map<FormRendererId, FormData>& forms);
   ~SynchronousFormCache();
 
   // Tries to look for the extracted form corresponding to `form_element` in
@@ -61,6 +63,10 @@ class SynchronousFormCache {
   // would allow avoiding a future failing attempt at extraction.
   void insert(FormRendererId form_id, base::optional_ref<const FormData> form);
 
+  // TODO(crbug.com/40947729): Convert to
+  // base::flat_map<FormRendererId, std::unique_ptr<FormData>> for better memory
+  // safety when the class stops being dependent on
+  // `AutofillOptimizeFormExtraction`.
   std::map<FormRendererId, base::optional_ref<const FormData>> cache_;
 };
 

@@ -1397,8 +1397,9 @@ bool PasswordAutofillAgent::FrameCanAccessPasswordManager() {
   return frame->GetSecurityOrigin().CanAccessPasswordManager();
 }
 
-void PasswordAutofillAgent::OnDynamicFormsSeen() {
-  SendPasswordForms(/*only_visible=*/false, /*form_cache=*/{});
+void PasswordAutofillAgent::OnDynamicFormsSeen(
+    const SynchronousFormCache& form_cache) {
+  SendPasswordForms(/*only_visible=*/false, form_cache);
 }
 
 void PasswordAutofillAgent::UserGestureObserved() {

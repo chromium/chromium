@@ -223,8 +223,9 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
                        AutofillSuggestionTriggerSource trigger_source,
                        const SynchronousFormCache& form_cache);
 
-  // Called when new form controls are inserted.
-  void OnDynamicFormsSeen();
+  // Called when new form controls are inserted. `form_cache` can be used to
+  // optimize form extractions occurring synchronously after this function call.
+  void OnDynamicFormsSeen(const SynchronousFormCache& form_cache);
 
   // Called when the user interacts with the page after a load. This is a
   // signal to make autofilled values of password input elements accessible to

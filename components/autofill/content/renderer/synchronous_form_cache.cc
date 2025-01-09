@@ -23,6 +23,12 @@ SynchronousFormCache::SynchronousFormCache(
     base::optional_ref<const FormData> form) {
   insert(form_id, form);
 }
+SynchronousFormCache::SynchronousFormCache(
+    const std::map<FormRendererId, FormData>& forms) {
+  for (const auto& [id, form] : forms) {
+    insert(id, form);
+  }
+}
 SynchronousFormCache::~SynchronousFormCache() = default;
 
 std::optional<FormData> SynchronousFormCache::GetOrExtractForm(

@@ -551,11 +551,8 @@ void AutofillAgent::DidDispatchDOMContentLoadedEvent() {
   timing_.last_dom_content_loaded = base::TimeTicks::Now();
   ExtractFormsUnthrottled(/*callback=*/{},
                           GetCallTimerState(kDidDispatchDomContentLoadedEvent));
-  SynchronousFormCache form_cache;
-  for (const auto& [id, form] : form_cache_.extracted_forms()) {
-    form_cache.insert(form);
-  }
-  password_autofill_agent_->DispatchedDOMContentLoadedEvent(form_cache);
+  password_autofill_agent_->DispatchedDOMContentLoadedEvent(
+      SynchronousFormCache(form_cache_.extracted_forms()));
 }
 
 void AutofillAgent::DidChangeScrollOffset() {
@@ -1584,16 +1581,17 @@ void AutofillAgent::ExtractFormsAndNotifyPasswordAutofillAgent(
       base::BindOnce(
           &AutofillAgent::ExtractFormsUnthrottled, base::Unretained(this),
           base::BindOnce(
-              [](PasswordAutofillAgent* password_autofill_agent, int element_id,
-                 bool success) {
+              [](PasswordAutofillAgent* password_autofill_agent,
+                 FormCache* form_cache, int element_id, bool success) {
                 if (success) {
                   LogElementTypeAndFocusabilityMetric(
                       WebNode::FromDomNodeId(element_id));
-                  password_autofill_agent->OnDynamicFormsSeen();
+                  password_autofill_agent->OnDynamicFormsSeen(
+                      SynchronousFormCache(form_cache->extracted_forms()));
                 }
               },
               base::Unretained(password_autofill_agent_.get()),
-              element.GetDomNodeId()),
+              base::Unretained(&form_cache_), element.GetDomNodeId()),
           GetCallTimerState(kExtractFormsAndNotifyPasswordAutofillAgent)));
 }
 
