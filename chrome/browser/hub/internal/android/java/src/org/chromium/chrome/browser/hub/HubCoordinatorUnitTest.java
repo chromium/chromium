@@ -36,6 +36,7 @@ import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -43,10 +44,14 @@ import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.ui.base.TestActivity;
 
 /** Tests for {@link HubCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+// TabSwitcherSearchTest provides the test coverage for the code
+// when OmniboxFeatureList.ANDROID_HUB_SEARCH is enabled
+@DisableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
 public class HubCoordinatorUnitTest {
     private static final int TAB_ID = 7;
     private static final int INCOGNITO_TAB_ID = 9;

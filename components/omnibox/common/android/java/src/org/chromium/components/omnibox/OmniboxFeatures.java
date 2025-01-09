@@ -111,7 +111,7 @@ public class OmniboxFeatures {
             newFlag(OmniboxFeatureList.RETAIN_OMNIBOX_ON_FOCUS, FeatureState.ENABLED_IN_TEST);
 
     public static final CachedFlag sAndroidHubSearch =
-            newFlag(OmniboxFeatureList.ANDROID_HUB_SEARCH, FeatureState.DISABLED);
+            newFlag(OmniboxFeatureList.ANDROID_HUB_SEARCH, FeatureState.ENABLED_IN_TEST);
 
     public static final CachedFlag sPostDelayedTaskFocusTab =
             newFlag(OmniboxFeatureList.POST_DELAYED_TASK_FOCUS_TAB, FeatureState.ENABLED_IN_PROD);

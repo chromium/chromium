@@ -49,6 +49,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
@@ -804,6 +805,7 @@ public class SearchActivityUnitTest {
     }
 
     @Test
+    @DisableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
     public void finishNativeInitialization_resumeActivityAfterSearchEnginePromoCleared() {
         doNothing().when(mActivity).finishDeferredInitialization();
 

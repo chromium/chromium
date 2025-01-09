@@ -22,7 +22,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.transit.ChromeTabbedActivityPublicTransitEntryPoints;
 import org.chromium.components.cached_flags.CachedFlag;
-import org.chromium.components.omnibox.OmniboxFeatures;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,8 +54,7 @@ public class ChromeCachedFlagsTest {
                     ChromeFeatureList.sDownloadsMigrateToJobsAPI,
                     ChromeFeatureList.sPostGetMyMemoryStateToBackground,
                     ChromeFeatureList.sPrefetchBrowserInitiatedTriggers,
-                    ChromeFeatureList.sSafetyHubMagicStack,
-                    OmniboxFeatures.sAndroidHubSearch);
+                    ChromeFeatureList.sSafetyHubMagicStack);
 
     /**
      * Tests that the |defaultValueForTests| in the CachedFlag declaration matches
