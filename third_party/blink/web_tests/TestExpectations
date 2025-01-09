@@ -2279,16 +2279,6 @@ crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model
 crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/bidi/vertical_lr.html [ Failure ]
 crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/selectors/cue/vertical_text-combine-upright.html [ Failure ]
 
-# Temporary marking Writer/Rewriter API tests as flaky because it will be broken
-# until we get a new prompt. We are running these tests with the Optimization
-# Guide On Device Model only on Mac bots. So marking as flaky only for Mac.
-# Also, these tests pass when they are executed without the models as
-# content_shell uses EchoAIWriter/EchoAIRewriter.
-crbug.com/372099809 [ Mac ] wpt_internal/ai/rewriter-api-slow.https.any.html [ Failure Pass ]
-crbug.com/372099809 [ Mac ] wpt_internal/ai/rewriter-api-slow.https.any.worker.html [ Failure Pass ]
-crbug.com/372099809 [ Mac ] wpt_internal/ai/writer-api-slow.https.any.html [ Failure Pass ]
-crbug.com/372099809 [ Mac ] wpt_internal/ai/writer-api-slow.https.any.worker.html [ Failure Pass ]
-
 # FontFace object failures detected by WPT test
 crbug.com/965409 external/wpt/css/css-font-loading/fontface-descriptor-updates.html [ Failure ]
 
@@ -9017,10 +9007,6 @@ crbug.com/382506777 [ Linux ] external/wpt/scroll-animations/css/animation-inact
 
 crbug.com/383105114 [ Linux ] tables/mozilla/bugs/bug78162.html [ Failure Pass ]
 crbug.com/383105114 [ Win ] tables/mozilla/bugs/bug78162.html [ Failure Pass ]
-
-crbug.com/378549335 [ Mac ] wpt_internal/ai/language-model-api-context-overflow.https.any.html [ Failure Pass Timeout ]
-crbug.com/378549335 [ Mac ] wpt_internal/ai/language-model-api-context-overflow.https.any.worker.html [ Failure Pass Timeout ]
-
 crbug.com/383855460 inspector-protocol/css/css-get-animated-styles.js [ Failure Pass ]
 
 crbug.com/384009732 [ Mac ] fast/mediacapturefromelement/CanvasCaptureMediaStream-offscreencanvas.html [ Failure Pass ]
