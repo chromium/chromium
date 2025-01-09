@@ -45,7 +45,7 @@ namespace blink {
 class LocalDOMWindow;
 class SpeechGrammarList;
 
-class SpeechRecognitionController final
+class MODULES_EXPORT SpeechRecognitionController final
     : public GarbageCollected<SpeechRecognitionController>,
       public Supplement<LocalDOMWindow> {
  public:
@@ -54,13 +54,14 @@ class SpeechRecognitionController final
   explicit SpeechRecognitionController(LocalDOMWindow&);
   virtual ~SpeechRecognitionController();
 
-  // Starts speech recognition. If `audio_forwarder` and `audio_parameters` are
-  // not defined, speech recognition will use audio from the user's default
-  // audio input device instead. `on_device` defines whether on-device speech
-  // recognition should be use. `allow_cloud_fallback` defines whether a
-  // server-based speech recognition service may be used if on-device speech
-  // recognition is not available.
-  void Start(
+  // Builds the speech recognition request params. If `audio_forwarder` and
+  // `audio_parameters` are not defined, speech recognition will use audio from
+  // the user's default audio input device instead. `on_device` defines whether
+  // on-device speech recognition should be used. `allow_cloud_fallback` defines
+  // whether a server-based speech recognition service may be used if on-device
+  // speech recognition is not available.
+  media::mojom::blink::StartSpeechRecognitionRequestParamsPtr
+  BuildStartSpeechRecognitionRequestParams(
       mojo::PendingReceiver<media::mojom::blink::SpeechRecognitionSession>
           session_receiver,
       mojo::PendingRemote<media::mojom::blink::SpeechRecognitionSessionClient>
@@ -77,6 +78,10 @@ class SpeechRecognitionController final
           media::mojom::blink::SpeechRecognitionAudioForwarder>
           audio_forwarder = mojo::NullReceiver(),
       std::optional<media::AudioParameters> audio_parameters = std::nullopt);
+
+  // Starts speech recognition with the given params.
+  void Start(
+      media::mojom::blink::StartSpeechRecognitionRequestParamsPtr params);
 
   void OnDeviceWebSpeechAvailable(const String& language,
                                   base::OnceCallback<void(bool)> callback);
