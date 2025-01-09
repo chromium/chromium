@@ -42,6 +42,7 @@ inline constexpr char kModeParameterKey[] = "udm";
 inline constexpr char kToolbeltModeParameterKey[] = "tbm";
 
 // Query parameter values for the mode.
+inline constexpr char kShoppingModeParameterValue[] = "28";
 inline constexpr char kUnimodalModeParameterValue[] = "26";
 inline constexpr char kMultimodalModeParameterValue[] = "24";
 
@@ -362,6 +363,13 @@ bool IsValidSearchResultsUrl(const GURL& url) {
          net::registry_controlled_domains::SameDomainOrHost(
              results_url, url,
              net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+}
+
+bool ShouldOpenSearchURLInNewTab(const GURL& url) {
+  std::string param_value;
+  net::GetValueForKeyInQuery(url, kModeParameterKey, &param_value);
+  return IsValidSearchResultsUrl(url) &&
+         param_value == kShoppingModeParameterValue;
 }
 
 GURL GetSearchResultsUrlFromRedirectUrl(const GURL& url) {

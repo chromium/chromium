@@ -86,8 +86,11 @@ LensOverlaySidePanelNavigationThrottle::HandleSidePanelRequest() {
   }
 
   // All user clicks to a destination outside of the results search URL
-  // should be handled by the side panel coordinator.
-  if (!lens::IsValidSearchResultsUrl(url)) {
+  // should be handled by the side panel coordinator, or if the search URL is
+  // not supported in the side panel it should also be handled by the side panel
+  // coordinator so it can open in a new tab without changing the
+  // loading/offline state.
+  if (!lens::IsValidSearchResultsUrl(url) || ShouldOpenSearchURLInNewTab(url)) {
     return content::NavigationThrottle::CANCEL;
   }
 

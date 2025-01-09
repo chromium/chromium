@@ -73,6 +73,11 @@ bool HasCommonSearchQueryParameters(const GURL& url);
 // finch configured flag.
 bool IsValidSearchResultsUrl(const GURL& url);
 
+// Returns whether the `url` is a valid lens overlay search URL but contains
+// parameters known not to be supported in the side panel and thus should be
+// opened in a new tab.
+bool ShouldOpenSearchURLInNewTab(const GURL& url);
+
 // Returns whether the given |url| is a valid lens overlay search redirect URL.
 // This could differ from values in common APIs since the search URL is set via
 // a finch configured flag.

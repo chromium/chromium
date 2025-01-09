@@ -286,6 +286,14 @@ void LensOverlaySidePanelCoordinator::DidStartNavigation(
     return;
   }
 
+  // If the search URL should be opened in a new tab, open it here.
+  if (ShouldOpenSearchURLInNewTab(nav_url)) {
+    lens_overlay_controller_->GetTabInterface()
+        ->GetBrowserWindowInterface()
+        ->OpenGURL(nav_url, WindowOpenDisposition::NEW_FOREGROUND_TAB);
+    return;
+  }
+
   // If the query has text directives, return early to allow the navigation
   // throttle to handle the request. Have to check `ShouldHandleTextDirectives`
   // separately in case the navigation happens to be a citation on a valid
