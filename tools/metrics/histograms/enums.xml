@@ -20814,7 +20814,6 @@ from previous Chrome versions.
       label="HappinessTrackingSurveysForDesktopDevToolsIssuesCookiesSameSite:enabled"/>
   <int value="138995035" label="SafeBrowsingAsyncRealTimeCheck:enabled"/>
   <int value="139569991" label="SharingDeviceExpiration:disabled"/>
-  <int value="139603247" label="AudioHFPMicSRToggle:disabled"/>
   <int value="139974547" label="ControlledFrame:enabled"/>
   <int value="140257184" label="ChromeOSAmbientModeNewUrl:enabled"/>
   <int value="140427435" label="OmniboxReportSearchboxStats:enabled"/>
@@ -23610,7 +23609,6 @@ from previous Chrome versions.
   <int value="1257663962" label="CommercePriceTracking:disabled"/>
   <int value="1257980502" label="disable-accelerated-video-decode"/>
   <int value="1258043820" label="AudioFocusEnforcement:enabled"/>
-  <int value="1258586320" label="AudioHFPMicSRToggle:enabled"/>
   <int value="1258747457"
       label="SyncPseudoUSSHistoryDeleteDirectives:disabled"/>
   <int value="1259798038" label="AllowAmbientEQ:disabled"/>

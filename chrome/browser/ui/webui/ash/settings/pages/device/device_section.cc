@@ -1892,9 +1892,6 @@ void DeviceSection::AddDeviceDisplayStrings(
   html_source->AddBoolean("enableForceRespectUiGainsToggle",
                           IsShowForceRespectUiGainsToggleEnabled());
 
-  html_source->AddBoolean("enableAudioHfpMicSRToggle",
-                          features::IsAudioHFPMicSRToggleEnabled());
-
   html_source->AddBoolean("enableSpatialAudioToggle",
                           IsShowSpatialAudioToggleEnabled());
 

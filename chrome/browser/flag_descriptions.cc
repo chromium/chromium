@@ -5901,10 +5901,6 @@ const char kAudioA2DPAdvancedCodecsName[] = "BT A2DP advanced codecs support";
 const char kAudioA2DPAdvancedCodecsDescription[] =
     "Enable BT A2DP advanced codecs support";
 
-const char kAudioHFPMicSRToggleName[] = "Audio toggle for hfp-mic-sr";
-const char kAudioHFPMicSRToggleDescription[] =
-    "Enable the UI to show the toggle for controlling hfp-mic-sr.";
-
 const char kAudioStyleTransferName[] = "Audio style transfer";
 const char kAudioStyleTransferDescription[] = "Enable audio style transfer";
 

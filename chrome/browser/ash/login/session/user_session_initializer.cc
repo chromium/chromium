@@ -360,9 +360,7 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
       CrasAudioHandler::Get()->RefreshForceRespectUiGainsState();
     }
 
-    if (features::IsAudioHFPMicSRToggleEnabled()) {
-      CrasAudioHandler::Get()->RefreshHfpMicSrState();
-    }
+    CrasAudioHandler::Get()->RefreshHfpMicSrState();
 
     if (base::FeatureList::IsEnabled(ash::features::kShowSpatialAudioToggle)) {
       CrasAudioHandler::Get()->RefreshSpatialAudioState();
