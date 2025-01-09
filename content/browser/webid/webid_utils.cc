@@ -314,6 +314,10 @@ std::string GetConsoleErrorMessageFromResult(
     case FederatedAuthRequestResult::kTypeNotMatching: {
       return "The requested IdP type did not match the registered IdP.";
     }
+    case FederatedAuthRequestResult::kUiDismissedNoEmbargo: {
+      return "Prompt dismissed. API exponential cool down not "
+             "triggered.";
+    }
     case FederatedAuthRequestResult::kError: {
       return "Error retrieving a token.";
     }

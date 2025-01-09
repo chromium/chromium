@@ -254,6 +254,7 @@ enum FederatedAuthRequestResult {
   kRelyingPartyOriginIsOpaque,
   kTypeNotMatching,
   kError,
+  kUiDismissedNoEmbargo,
 };
 
 struct FederatedAuthRequestIssueDetails {

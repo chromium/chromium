@@ -6343,7 +6343,8 @@ TEST_F(FederatedAuthRequestImplTest, ActiveFlowDismissLoadingUI) {
   parameters.rp_mode = blink::mojom::RpMode::kActive;
 
   RequestExpectations expectations = {
-      RequestTokenStatus::kError, FederatedAuthRequestResult::kError,
+      RequestTokenStatus::kError,
+      FederatedAuthRequestResult::kUiDismissedNoEmbargo,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
 
@@ -6888,7 +6889,8 @@ TEST_F(FederatedAuthRequestImplTest, IdpSigninStatusClosePopupEmbargo) {
   configuration.idp_signin_status_mismatch_dialog_action =
       IdpSigninStatusMismatchDialogAction::kClosePopup;
   RequestExpectations expectations = {
-      RequestTokenStatus::kError, FederatedAuthRequestResult::kError,
+      RequestTokenStatus::kError,
+      FederatedAuthRequestResult::kUiDismissedNoEmbargo,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
@@ -7545,7 +7547,8 @@ TEST_F(FederatedAuthRequestImplTest, ActiveFlowNotAffectEmbargo) {
   parameters.rp_mode = blink::mojom::RpMode::kActive;
 
   RequestExpectations expectations = {
-      RequestTokenStatus::kError, FederatedAuthRequestResult::kError,
+      RequestTokenStatus::kError,
+      FederatedAuthRequestResult::kUiDismissedNoEmbargo,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
 
@@ -7683,7 +7686,8 @@ class TestDialogControllerWithImmediateDismiss : public TestDialogController {
 // Crash test for crbug.com/328945371.
 TEST_F(FederatedAuthRequestImplTest, ImmediateDismiss) {
   RequestExpectations expectations = {
-      RequestTokenStatus::kError, FederatedAuthRequestResult::kError,
+      RequestTokenStatus::kError,
+      FederatedAuthRequestResult::kUiDismissedNoEmbargo,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
 
@@ -7712,7 +7716,8 @@ TEST_F(FederatedAuthRequestImplTest, FailureDialogImmediateDismiss) {
           configuration));
 
   RequestExpectations expectations = {
-      RequestTokenStatus::kError, FederatedAuthRequestResult::kError,
+      RequestTokenStatus::kError,
+      FederatedAuthRequestResult::kUiDismissedNoEmbargo,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);

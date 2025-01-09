@@ -393,6 +393,9 @@ FederatedAuthRequestResultToProtocol(
     case FederatedAuthRequestResult::kTypeNotMatching: {
       return FederatedAuthRequestIssueReasonEnum::TypeNotMatching;
     }
+    case FederatedAuthRequestResult::kUiDismissedNoEmbargo: {
+      return FederatedAuthRequestIssueReasonEnum::UiDismissedNoEmbargo;
+    }
     case FederatedAuthRequestResult::kSuccess: {
       NOTREACHED();
     }

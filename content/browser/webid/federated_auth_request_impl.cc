@@ -287,6 +287,7 @@ RequestTokenStatus FederatedAuthRequestResultToRequestTokenStatus(
     case FederatedAuthRequestResult::kInvalidFieldsSpecified:
     case FederatedAuthRequestResult::kRelyingPartyOriginIsOpaque:
     case FederatedAuthRequestResult::kTypeNotMatching:
+    case FederatedAuthRequestResult::kUiDismissedNoEmbargo:
     case FederatedAuthRequestResult::kError: {
       return RequestTokenStatus::kError;
     }
@@ -321,6 +322,7 @@ FederatedAuthRequestResultToMetricsEndpointErrorCode(
           kTokenEndpointInvalidResponse;
     }
     case FederatedAuthRequestResult::kShouldEmbargo:
+    case FederatedAuthRequestResult::kUiDismissedNoEmbargo:
     case FederatedAuthRequestResult::kDisabledInFlags:
     case FederatedAuthRequestResult::kDisabledInSettings:
     case FederatedAuthRequestResult::kThirdPartyCookiesBlocked:
@@ -2382,13 +2384,13 @@ void FederatedAuthRequestImpl::OnDismissFailureDialog(
     api_permission_delegate_->RecordDismissAndEmbargo(GetEmbeddingOrigin());
   }
 
-  CompleteRequestWithError(should_embargo
-                               ? FederatedAuthRequestResult::kShouldEmbargo
-                               : FederatedAuthRequestResult::kError,
-                           should_embargo ? TokenStatus::kShouldEmbargo
-                                          : TokenStatus::kNotSignedInWithIdp,
+  CompleteRequestWithError(
+      should_embargo ? FederatedAuthRequestResult::kShouldEmbargo
+                     : FederatedAuthRequestResult::kUiDismissedNoEmbargo,
+      should_embargo ? TokenStatus::kShouldEmbargo
+                     : TokenStatus::kNotSignedInWithIdp,
 
-                           /*should_delay_callback=*/false);
+      /*should_delay_callback=*/false);
 }
 
 void FederatedAuthRequestImpl::OnDismissErrorDialog(
@@ -2472,12 +2474,12 @@ void FederatedAuthRequestImpl::OnDialogDismissed(
   // Reject the promise immediately if the UI is dismissed without selecting
   // an account. Meanwhile, we fuzz the rejection time for other failures to
   // make it indistinguishable.
-  CompleteRequestWithError(should_embargo
-                               ? FederatedAuthRequestResult::kShouldEmbargo
-                               : FederatedAuthRequestResult::kError,
-                           should_embargo ? TokenStatus::kShouldEmbargo
-                                          : TokenStatus::kNotSelectAccount,
-                           /*should_delay_callback=*/false);
+  CompleteRequestWithError(
+      should_embargo ? FederatedAuthRequestResult::kShouldEmbargo
+                     : FederatedAuthRequestResult::kUiDismissedNoEmbargo,
+      should_embargo ? TokenStatus::kShouldEmbargo
+                     : TokenStatus::kNotSelectAccount,
+      /*should_delay_callback=*/false);
 }
 
 void FederatedAuthRequestImpl::ShowModalDialog(DialogType dialog_type,
