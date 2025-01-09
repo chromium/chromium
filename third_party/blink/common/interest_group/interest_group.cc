@@ -158,7 +158,7 @@ InterestGroup::Ad::Ad(base::PassKey<content::InterestGroupStorage>,
                       const std::string& render_url)
     : render_url_(render_url) {}
 InterestGroup::Ad::Ad(
-    GURL render_gurl,
+    const GURL& render_url,
     std::optional<std::string> metadata,
     std::optional<std::string> size_group,
     std::optional<std::string> buyer_reporting_id,
@@ -177,8 +177,8 @@ InterestGroup::Ad::Ad(
       ad_render_id(std::move(ad_render_id)),
       allowed_reporting_origins(std::move(allowed_reporting_origins)),
       creative_scanning_metadata(std::move(creative_scanning_metadata)) {
-  if (render_gurl.is_valid()) {
-    render_url_ = render_gurl.spec();
+  if (render_url.is_valid()) {
+    render_url_ = render_url.spec();
   }
 }
 

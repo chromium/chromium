@@ -57,7 +57,7 @@ struct BLINK_COMMON_EXPORT InterestGroup {
                 std::string&& render_url);
     explicit Ad(base::PassKey<content::InterestGroupStorage>,
                 const std::string& render_url);
-    Ad(GURL render_gurl,
+    Ad(const GURL& render_url,
        std::optional<std::string> metadata,
        std::optional<std::string> size_group = std::nullopt,
        std::optional<std::string> buyer_reporting_id = std::nullopt,
