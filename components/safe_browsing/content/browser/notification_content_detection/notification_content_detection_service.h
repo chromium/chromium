@@ -36,6 +36,7 @@ class NotificationContentDetectionService : public KeyedService {
   virtual void MaybeCheckNotificationContentDetectionModel(
       const blink::PlatformNotificationData& notification_data,
       const GURL& origin,
+      bool is_allowlisted_by_user,
       ModelVerdictCallback model_verdict_callback);
 
  protected:
@@ -48,6 +49,7 @@ class NotificationContentDetectionService : public KeyedService {
       blink::PlatformNotificationData& notification_data,
       const base::TimeTicks start_time,
       const GURL& origin,
+      bool is_allowlisted_by_user,
       ModelVerdictCallback model_verdict_callback,
       bool did_match_allowlist,
       std::optional<SafeBrowsingDatabaseManager::

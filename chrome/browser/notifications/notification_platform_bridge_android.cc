@@ -18,21 +18,27 @@
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
+#include "chrome/browser/notifications/platform_notification_service_factory.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/notifications/notification_constants.h"
 #include "chrome/common/notifications/notification_operation.h"
+#include "chrome/grit/generated_resources.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_constants.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/persistent_notification_status.h"
 #include "third_party/blink/public/common/notifications/platform_notification_data.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/image/image.h"
@@ -272,6 +278,23 @@ void NotificationPlatformBridgeAndroid::SetIsSuspiciousParameterForTesting(
   test_is_suspicious_value_ = is_suspicious;
 }
 
+void NotificationPlatformBridgeAndroid::OnNotificationAlwaysAllowFromOrigin(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& java_object,
+    std::string& origin,
+    std::string& profile_id,
+    jboolean incognito) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  CHECK(profile_manager);
+
+  const GURL& url = GURL(origin);
+  profile_manager->LoadProfile(
+      GetProfileBaseNameFromProfileId(profile_id), incognito,
+      base::BindOnce(
+          &NotificationPlatformBridgeAndroid::AlwaysAllowNotifications,
+          weak_factory_.GetWeakPtr(), url));
+}
+
 void NotificationPlatformBridgeAndroid::Display(
     NotificationHandler::Type notification_type,
     Profile* profile,
@@ -390,6 +413,42 @@ void NotificationPlatformBridgeAndroid::OnNotificationProcessed(
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_NotificationPlatformBridge_onNotificationProcessed(env, java_object_,
                                                           notification_id);
+}
+
+void NotificationPlatformBridgeAndroid::AlwaysAllowNotifications(
+    const GURL& url,
+    Profile* profile) {
+  // Always allow suspicious notifications from `url`.
+  auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile);
+  if (!hcsm) {
+    return;
+  }
+  CHECK(url.is_valid());
+  hcsm->SetWebsiteSettingCustomScope(
+      ContentSettingsPattern::FromURLNoWildcard(url),
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsType::ARE_SUSPICIOUS_NOTIFICATIONS_ALLOWLISTED_BY_USER,
+      base::Value(base::Value::Dict().Set(
+          safe_browsing::kIsAllowlistedByUserKey, true)));
+
+  // Send a new notification to tell the user that Chrome will no longer hide
+  // notifications from `url`.
+  message_center::Notification notification(
+      message_center::NOTIFICATION_TYPE_SIMPLE,
+      base::NumberToString(
+          PlatformNotificationServiceFactory::GetForProfile(profile)
+              ->ReadNextPersistentNotificationId()),
+      l10n_util::GetStringFUTF16(
+          IDS_CHROME_NO_LONGER_SHOW_WARNINGS_NOTIFICATION_TITLE,
+          base::UTF8ToUTF16(url.spec())),
+      u"", ui::ImageModel(), std::u16string(), url,
+      message_center::NotifierId(), message_center::RichNotificationData(),
+      nullptr);
+  // Create new `PersistentNotificationMetadata`, where `is_suspicious` is set
+  // to false by default.
+  auto metadata = std::make_unique<PersistentNotificationMetadata>();
+  Display(NotificationHandler::Type::WEB_PERSISTENT, profile, notification,
+          std::move(metadata));
 }
 
 // static

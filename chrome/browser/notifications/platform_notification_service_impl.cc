@@ -40,6 +40,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_constants.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/browser_thread.h"
@@ -310,6 +311,7 @@ void PlatformNotificationServiceImpl::DisplayPersistentNotification(
               safe_browsing::kShowWarningsForSuspiciousNotifications);
       notification_content_service->MaybeCheckNotificationContentDetectionModel(
           notification_data, origin,
+          AreSuspiciousNotificationsAllowlistedByUser(origin),
           is_show_warnings_for_suspicious_notifications_enabled
               ? base::BindOnce(&PlatformNotificationServiceImpl::
                                    UpdatePersistentMetadataThenDisplay,
@@ -778,4 +780,25 @@ void PlatformNotificationServiceImpl::LogPersistentNotificationShownMetrics(
   permissions::PermissionUmaUtil::RecordPermissionUsage(
       ContentSettingsType::NOTIFICATIONS, profile_, nullptr,
       notification_origin);
+}
+
+bool PlatformNotificationServiceImpl::
+    AreSuspiciousNotificationsAllowlistedByUser(const GURL& origin) {
+  auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile_);
+  if (!hcsm || !origin.is_valid()) {
+    return false;
+  }
+  content_settings::SettingInfo info;
+  base::Value stored_value(hcsm->GetWebsiteSetting(
+      origin, origin,
+      ContentSettingsType::ARE_SUSPICIOUS_NOTIFICATIONS_ALLOWLISTED_BY_USER,
+      &info));
+  if (stored_value.is_none()) {
+    return false;
+  }
+  if (!stored_value.is_dict() || !stored_value.GetDict().contains(
+                                     safe_browsing::kIsAllowlistedByUserKey)) {
+    return false;
+  }
+  return stored_value.GetDict().Find(safe_browsing::kIsAllowlistedByUserKey);
 }

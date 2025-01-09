@@ -8,6 +8,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/platform_notification_service_factory.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_constants.h"
@@ -530,6 +532,38 @@ IN_PROC_BROWSER_TEST_P(
       "SafeBrowsing.NotificationContentDetection."
       "DisplayPersistentNotificationEvent",
       /*kFinished=*/1, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    NotificationContentDetectionShowWarningsEnabledBrowserTest,
+    OriginalNotificationDisplayedWhenUserAllowlistsOrigin) {
+  // Set `ARE_SUSPICIOUS_NOTIFICATIONS_ALLOWLISTED_BY_USER` to true for
+  // `kNonAllowlistedUrl`.
+  HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+      ->SetWebsiteSettingCustomScope(
+          ContentSettingsPattern::FromURLNoWildcard(GURL(kNonAllowlistedUrl)),
+          ContentSettingsPattern::Wildcard(),
+          ContentSettingsType::ARE_SUSPICIOUS_NOTIFICATIONS_ALLOWLISTED_BY_USER,
+          base::Value(base::Value::Dict().Set(kIsAllowlistedByUserKey, true)));
+
+  UpdateNotificationContentDetectionModel();
+  blink::PlatformNotificationData data =
+      CreateNotificationData(u"Non-allowlisted title", u"Hello, world!", {});
+  service()->DisplayPersistentNotification(
+      kNotificationId, GURL() /* service_worker_scope */,
+      GURL(kNonAllowlistedUrl), data, blink::NotificationResources());
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester(),
+      "OptimizationGuide.ModelExecutor.ExecutionStatus."
+      "NotificationContentDetection",
+      1);
+
+  EXPECT_EQ(GetDisplayedPersistentNotifications().size(), 1U);
+  // Notification should never be considered suspicious when the user has
+  // allowlisted the origin.
+  EXPECT_FALSE(
+      IsNotificationSuspicious(GetDisplayedPersistentNotifications()[0]));
 }
 
 }  // namespace safe_browsing

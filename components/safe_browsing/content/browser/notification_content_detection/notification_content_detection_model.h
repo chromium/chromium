@@ -48,17 +48,23 @@ class NotificationContentDetectionModel
 
   // Perform inference on the model with the provided notification contents.
   // Pass `PostprocessCategories` as the `ExecuteModelWithInput` callback. This
-  // method is virtual for testing. The `origin` and `did_match_allowlist`
-  // values are used for logging UKMs.
+  // method is virtual for testing. The `origin`, `is_allowlisted_by_user`, and
+  // `did_match_allowlist` values are used for logging UKMs.
   virtual void Execute(blink::PlatformNotificationData& notification_data,
                        const GURL& origin,
+                       bool is_allowlisted_by_user,
                        bool did_match_allowlist,
                        ModelVerdictCallback model_verdict_callback);
 
  private:
-  // Log UMA metrics, given the `output` result of model inference.
+  // Log UMA and UKM metrics, given the `output` result of model inference,
+  // `origin`, `is_allowlisted_by_user`, and `did_match_allowlist`. Note that
+  // `is_allowlisted_by_user` is based on whether the user taps to always allow
+  // notifications from `origin` and `did_match_allowlist` is whether `origin`
+  // is on the high confidence allowlist. Then, call `model_verdict_callback`.
   void PostprocessCategories(
       const GURL& origin,
+      bool is_allowlisted_by_user,
       bool did_match_allowlist,
       ModelVerdictCallback model_verdict_callback,
       const std::optional<std::vector<tflite::task::core::Category>>& output);

@@ -174,6 +174,10 @@ class PlatformNotificationServiceImpl
       const GURL& origin,
       const GURL& notification_origin);
 
+  // Returns true if the user tapped "Always allow" on a notification warning
+  // for `origin`.
+  bool AreSuspiciousNotificationsAllowlistedByUser(const GURL& origin);
+
   // The profile for this instance or NULL if the initial profile has been
   // shutdown already.
   raw_ptr<Profile> profile_;
