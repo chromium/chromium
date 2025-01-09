@@ -728,9 +728,11 @@ bool TipsNotificationClient::DismissLimitReached() {
 void TipsNotificationClient::OnPermittedPrefChanged(const std::string& name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool newpermitted_ = IsPermitted();
-  if (permitted_ != newpermitted_ && IsSceneLevelForegroundActive()) {
+  if (permitted_ != newpermitted_) {
     ClearAllRequestedNotifications();
-    CheckAndMaybeRequestNotification(base::DoNothing());
+    if (IsSceneLevelForegroundActive()) {
+      CheckAndMaybeRequestNotification(base::DoNothing());
+    }
   }
 }
 
