@@ -1351,6 +1351,9 @@ public abstract class ChromeFeatureList {
     public static final MutableIntParamWithSafeDefault sAndroidTabDeclutterIntervalTimeDeltaHours =
             sAndroidTabDeclutter.newIntParam(
                     "android_tab_declutter_interval_time_delta_hours", 7 * 24);
+    public static final MutableIntParamWithSafeDefault sAndroidTabDeclutterMaxSimultaneousArchives =
+            sAndroidTabDeclutter.newIntParam(
+                    "android_tab_declutter_max_simultaneous_archives", 250);
     public static final MutableIntParamWithSafeDefault
             sAndroidTabDeclutterIphMessageDismissThreshold =
                     sAndroidTabDeclutter.newIntParam(

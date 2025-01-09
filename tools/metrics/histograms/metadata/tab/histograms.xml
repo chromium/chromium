@@ -1830,6 +1830,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tabs.ArchivedTabs.MaxLimitReachedAt" units="count"
+    expires_after="2025-05-04">
+  <owner>wylieb@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    (Android only) Records how many tabs were archived prior to hitting the
+    maximum limit for simultaneous archives.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.ArchiveSettings.ArchiveDuplicateTabsEnabled"
     enum="Boolean" expires_after="2025-06-29">
   <owner>bjfong@google.com</owner>
