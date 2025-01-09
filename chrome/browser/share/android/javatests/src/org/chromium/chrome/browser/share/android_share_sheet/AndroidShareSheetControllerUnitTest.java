@@ -138,6 +138,7 @@ public class AndroidShareSheetControllerUnitTest {
     @Mock Profile mProfile;
     @Mock Tracker mTracker;
     @Mock InsetObserver mInsetObserver;
+    @Mock TabGroupSharingController mTabGroupSharingController;
 
     private TestActivity mActivity;
     private WindowAndroid mWindow;
@@ -180,6 +181,8 @@ public class AndroidShareSheetControllerUnitTest {
                     }
                 });
 
+        doReturn(true).when(mTabGroupSharingController).isAvailableForTab(any());
+
         mActivityScenario.getScenario().onActivity((activity) -> mActivity = activity);
         mActivityScenario.getScenario().moveToState(State.RESUMED);
         mWindow =
@@ -200,6 +203,7 @@ public class AndroidShareSheetControllerUnitTest {
                         () -> mTabModelSelector,
                         () -> mProfile,
                         mPrintCallback::notifyCalled,
+                        mTabGroupSharingController,
                         null);
     }
 
@@ -240,6 +244,7 @@ public class AndroidShareSheetControllerUnitTest {
         } else {
             assertCustomActions(
                     intent,
+                    R.string.collaboration_share_group_title,
                     R.string.sharing_long_screenshot,
                     R.string.print_share_activity_title,
                     R.string.sharing_send_tab_to_self,
@@ -302,6 +307,7 @@ public class AndroidShareSheetControllerUnitTest {
                 () -> mTabModelSelector,
                 () -> mProfile,
                 mPrintCallback::notifyCalled,
+                mTabGroupSharingController,
                 mDeviceLockActivityLauncher);
 
         Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
@@ -325,6 +331,9 @@ public class AndroidShareSheetControllerUnitTest {
         ChromeShareExtras chromeShareExtras =
                 new ChromeShareExtras.Builder().setIsUrlOfVisiblePage(true).build();
 
+        // Disable tab groups when page info is enabled. We do not plan to enable them together.
+        doReturn(false).when(mTabGroupSharingController).isAvailableForTab(any());
+
         PageInfoSharingController mockPageInfoSharingController =
                 Mockito.mock(PageInfoSharingController.class);
         PageInfoSharingControllerImpl.setInstanceForTesting(mockPageInfoSharingController);
@@ -339,6 +348,7 @@ public class AndroidShareSheetControllerUnitTest {
                 () -> mTabModelSelector,
                 () -> mProfile,
                 mPrintCallback::notifyCalled,
+                mTabGroupSharingController,
                 mDeviceLockActivityLauncher);
 
         Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
@@ -367,6 +377,9 @@ public class AndroidShareSheetControllerUnitTest {
                         .setDetailedContentType(DetailedContentType.PAGE_INFO)
                         .build();
 
+        // Disable tab groups when page info is enabled. We do not plan to enable them together.
+        doReturn(false).when(mTabGroupSharingController).isAvailableForTab(any());
+
         PageInfoSharingController mockPageInfoSharingController =
                 Mockito.mock(PageInfoSharingController.class);
         PageInfoSharingControllerImpl.setInstanceForTesting(mockPageInfoSharingController);
@@ -380,6 +393,7 @@ public class AndroidShareSheetControllerUnitTest {
                 () -> mTabModelSelector,
                 () -> mProfile,
                 mPrintCallback::notifyCalled,
+                mTabGroupSharingController,
                 mDeviceLockActivityLauncher);
 
         Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
@@ -647,6 +661,7 @@ public class AndroidShareSheetControllerUnitTest {
                 () -> mTabModelSelector,
                 () -> mProfile,
                 mPrintCallback::notifyCalled,
+                mTabGroupSharingController,
                 mDeviceLockActivityLauncher);
 
         Intent chooserIntent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
@@ -701,6 +716,7 @@ public class AndroidShareSheetControllerUnitTest {
                 () -> mTabModelSelector,
                 () -> mProfile,
                 mPrintCallback::notifyCalled,
+                mTabGroupSharingController,
                 mDeviceLockActivityLauncher);
 
         // Since link to share failed, the content being shared is a plain text.
@@ -842,6 +858,7 @@ public class AndroidShareSheetControllerUnitTest {
         } else {
             assertCustomActions(
                     intent,
+                    R.string.collaboration_share_group_title,
                     R.string.sharing_long_screenshot,
                     R.string.print_share_activity_title,
                     R.string.sharing_send_tab_to_self,

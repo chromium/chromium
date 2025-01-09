@@ -633,7 +633,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                             getTabModelSelectorSupplier(),
                             mTabModelProfileSupplier,
                             new ShareDelegateImpl.ShareSheetDelegate(),
-                            isCustomTab());
+                            isCustomTab(),
+                            mRootUiCoordinator.getDataSharingTabManager());
             mShareDelegateSupplier.set(shareDelegate);
             TabBookmarker tabBookmarker =
                     new TabBookmarker(

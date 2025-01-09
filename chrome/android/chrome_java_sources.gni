@@ -994,6 +994,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/share/ShareDelegateImpl.java",
   "java/src/org/chromium/chrome/browser/share/ShareHelper.java",
   "java/src/org/chromium/chrome/browser/share/ShareUtils.java",
+  "java/src/org/chromium/chrome/browser/share/TabGroupSharingControllerImpl.java",
   "java/src/org/chromium/chrome/browser/sharing/SharingJNIBridge.java",
   "java/src/org/chromium/chrome/browser/sharing/SharingNotificationUtil.java",
   "java/src/org/chromium/chrome/browser/sharing/click_to_call/ClickToCallMessageHandler.java",

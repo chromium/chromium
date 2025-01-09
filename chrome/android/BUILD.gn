@@ -1757,6 +1757,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/commerce/price_tracking/android:java",
       "//chrome/browser/commerce/subscriptions/android:subscriptions_java",
       "//chrome/browser/contextmenu:java",
+      "//chrome/browser/data_sharing:data_sharing_public_java",
       "//chrome/browser/data_sharing:javatests",
       "//chrome/browser/device:java",
       "//chrome/browser/device_reauth/android:java",

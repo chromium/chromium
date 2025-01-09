@@ -267,6 +267,10 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
     protected void initializeFirstPartyOptionsInOrder() {
         maybeAddPageInfoFirstPartyOption();
         maybeAddCopyFirstPartyOption();
+
+        // TODO(386833405): Decide on priority for this option.
+        maybeAddCollaborateFirstPartyOption();
+
         // Only show a limited first party share selection for automotive and PDF pages.
         if (!isAutomotive() && !isPdfTab()) {
             maybeAddLongScreenshotFirstPartyOption();
@@ -280,6 +284,13 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
         FirstPartyOption pageInfoOption = createPageInfoFirstPartyOption();
         if (pageInfoOption != null) {
             mOrderedFirstPartyOptions.add(pageInfoOption);
+        }
+    }
+
+    private void maybeAddCollaborateFirstPartyOption() {
+        FirstPartyOption option = createCollaborateFirstPartyOption();
+        if (option != null) {
+            mOrderedFirstPartyOptions.add(option);
         }
     }
 
@@ -468,4 +479,10 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
      * Create a {@link FirstPartyOption} used for page info sharing. Return null if not supported.
      */
     protected abstract @Nullable FirstPartyOption createPageInfoFirstPartyOption();
+
+    /**
+     * Create a {@link FirstPartyOption} used for sharing as collaboration. Return null if not
+     * supported.
+     */
+    protected abstract @Nullable FirstPartyOption createCollaborateFirstPartyOption();
 }

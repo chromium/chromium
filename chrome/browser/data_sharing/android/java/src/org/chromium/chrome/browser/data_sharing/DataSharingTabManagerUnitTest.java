@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -60,6 +61,7 @@ import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
@@ -161,9 +163,11 @@ public class DataSharingTabManagerUnitTest {
     @Mock private Callback<Boolean> mCreateGroupFinishedCallback;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
+    @Mock private TabGroupModelFilterProvider mTabGroupModelFilterProvider;
     @Mock private TabGroupUiActionHandler mTabGroupUiActionHandler;
     @Mock private TabModel mTabModel;
     @Mock private FaviconHelper mFaviconHelper;
+    @Mock private Tab mTab;
 
     @Captor private ArgumentCaptor<Callback<Integer>> mOutcomeCallbackCaptor;
     @Captor private ArgumentCaptor<Callback<Bitmap>> mTabGroupPreviewCallbackCaptor;
@@ -173,7 +177,7 @@ public class DataSharingTabManagerUnitTest {
     private DataSharingTabManager mDataSharingTabManager;
     private SavedTabGroup mSavedTabGroup;
     private Activity mActivity;
-    private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    private ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier;
     private Supplier<BottomSheetController> mBottomSheetControllerSupplier;
     private ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
     private SyncedGroupTestHelper mSyncedGroupTestHelper;
@@ -548,6 +552,57 @@ public class DataSharingTabManagerUnitTest {
         verify(mTabGroupSyncService, never()).makeTabGroupShared(any(), any());
         verify(mShareDelegate, never())
                 .share(any(), any(), eq(ShareDelegate.ShareOrigin.TAB_GROUP));
+    }
+
+    @Test
+    public void testCreateTabGroupAndShare_withSingleTab() {
+        mDataSharingTabManager
+                .getBulkFaviconUtilForTesting()
+                .setFaviconHelperForTesting(mFaviconHelper);
+        doReturn(mProfile).when(mProfile).getOriginalProfile();
+
+        mTabModelSelectorSupplier.set(mTabModelSelector);
+        doReturn(mTabGroupModelFilterProvider)
+                .when(mTabModelSelector)
+                .getTabGroupModelFilterProvider();
+        doReturn(mTabGroupModelFilter)
+                .when(mTabGroupModelFilterProvider)
+                .getTabGroupModelFilter(anyBoolean());
+        when(mTab.getTabGroupId()).thenReturn(null).thenReturn(LOCAL_ID.tabGroupId);
+
+        mSavedTabGroup.collaborationId = null;
+        doReturn(mSavedTabGroup).when(mTabGroupSyncService).getGroup(LOCAL_ID);
+
+        mDataSharingTabManager.createTabGroupAndShare(
+                mActivity, mTab, mCreateGroupFinishedCallback);
+
+        verify(mTabGroupModelFilter).createSingleTabGroup(eq(mTab), anyBoolean());
+        verify(mDataSharingUiDelegate).showCreateFlow(any());
+    }
+
+    @Test
+    public void testCreateTabGroupAndShare_withExistingTabGroup() {
+        mDataSharingTabManager
+                .getBulkFaviconUtilForTesting()
+                .setFaviconHelperForTesting(mFaviconHelper);
+        doReturn(mProfile).when(mProfile).getOriginalProfile();
+
+        mTabModelSelectorSupplier.set(mTabModelSelector);
+        doReturn(mTabGroupModelFilterProvider)
+                .when(mTabModelSelector)
+                .getTabGroupModelFilterProvider();
+        doReturn(mTabGroupModelFilter)
+                .when(mTabGroupModelFilterProvider)
+                .getTabGroupModelFilter(anyBoolean());
+        doReturn(LOCAL_ID.tabGroupId).when(mTab).getTabGroupId();
+
+        mSavedTabGroup.collaborationId = null;
+        doReturn(mSavedTabGroup).when(mTabGroupSyncService).getGroup(LOCAL_ID);
+
+        mDataSharingTabManager.createTabGroupAndShare(
+                mActivity, mTab, mCreateGroupFinishedCallback);
+
+        verify(mDataSharingUiDelegate).showCreateFlow(any());
     }
 
     @Test

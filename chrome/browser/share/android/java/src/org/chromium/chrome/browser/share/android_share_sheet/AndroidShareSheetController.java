@@ -50,6 +50,7 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
     private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
     private final Supplier<Profile> mProfileSupplier;
     private final Callback<Tab> mPrintCallback;
+    private final TabGroupSharingController mTabGroupSharingController;
     private long mShareStartTime;
 
     private @Nullable LinkToTextCoordinator mLinkToTextCoordinator;
@@ -63,9 +64,10 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
      * @param controller The {@link BottomSheetController} for the current activity.
      * @param tabProvider Supplier for the current activity tab.
      * @param tabModelSelectorSupplier Supplier for the {@link TabModelSelector}. Used to determine
-     * whether incognito mode is selected or not.
+     *     whether incognito mode is selected or not.
      * @param profileSupplier Supplier of the current profile of the User.
      * @param printCallback The callback used to trigger print action.
+     * @param tabGroupSharingController Controller for handling tab group sharing action.
      * @param deviceLockActivityLauncher The launcher to start up the device lock page.
      */
     public static void showShareSheet(
@@ -76,6 +78,7 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
             Supplier<TabModelSelector> tabModelSelectorSupplier,
             Supplier<Profile> profileSupplier,
             Callback<Tab> printCallback,
+            TabGroupSharingController tabGroupSharingController,
             DeviceLockActivityLauncher deviceLockActivityLauncher) {
         var newController =
                 new AndroidShareSheetController(
@@ -84,6 +87,7 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
                         tabModelSelectorSupplier,
                         profileSupplier,
                         printCallback,
+                        tabGroupSharingController,
                         deviceLockActivityLauncher);
         // If the current share is delegated to, once the link generation is complete, the call will
         // routes back to #showShareSheet eventually.
@@ -98,9 +102,10 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
      * @param controller The {@link BottomSheetController} for the current activity.
      * @param tabProvider Supplier for the current activity tab.
      * @param tabModelSelectorSupplier Supplier for the {@link TabModelSelector}. Used to determine
-     * whether incognito mode is selected or not.
+     *     whether incognito mode is selected or not.
      * @param profileSupplier Supplier of the current profile of the User.
      * @param printCallback The callback used to trigger print action.
+     * @param tabGroupSharingController Controller for handling tab group sharing action.
      * @param deviceLockActivityLauncher The launcher to start up the device lock page.
      */
     @VisibleForTesting
@@ -110,12 +115,14 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
             Supplier<TabModelSelector> tabModelSelectorSupplier,
             Supplier<Profile> profileSupplier,
             Callback<Tab> printCallback,
+            TabGroupSharingController tabGroupSharingController,
             DeviceLockActivityLauncher deviceLockActivityLauncher) {
         mController = controller;
         mTabProvider = tabProvider;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mProfileSupplier = profileSupplier;
         mPrintCallback = printCallback;
+        mTabGroupSharingController = tabGroupSharingController;
         mDeviceLockActivityLauncher = deviceLockActivityLauncher;
     }
 
@@ -163,6 +170,7 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
                             mController,
                             params,
                             mPrintCallback,
+                            mTabGroupSharingController,
                             isIncognito,
                             this,
                             TrackerFactory.getTrackerForProfile(profile),

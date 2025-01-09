@@ -190,6 +190,12 @@ public class ChromeProvidedSharingOptionsProvider extends ChromeProvidedSharingO
         return null;
     }
 
+    @Nullable
+    @Override
+    protected FirstPartyOption createCollaborateFirstPartyOption() {
+        return null;
+    }
+
     private void callTargetChosenCallback() {
         ShareParams.TargetChosenCallback callback = mShareParams.getCallback();
         if (callback != null) {

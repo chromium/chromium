@@ -30,7 +30,9 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -197,6 +199,11 @@ public class DataSharingTabManager {
         }
         mSyncObserversList.clear();
         mBulkFaviconUtil.destroy();
+    }
+
+    /** Returns whether the current session supports creating collaborations. */
+    public boolean isCreationEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING);
     }
 
     /**
@@ -579,6 +586,31 @@ public class DataSharingTabManager {
         if (tabGroupSyncService != null) {
             tabGroupSyncService.removeObserver(observer);
         }
+    }
+
+    /**
+     * Create a tab group with the tab and then start the create group flow.
+     *
+     * @param activity The current tabbed activity.
+     * @param tab The tab to create group and share.
+     * @param createGroupFinishedCallback Callback when the UI flow is finished with result.
+     */
+    public void createTabGroupAndShare(
+            Activity activity, Tab tab, Callback<Boolean> createGroupFinishedCallback) {
+        TabGroupModelFilter filter =
+                mTabModelSelectorSupplier
+                        .get()
+                        .getTabGroupModelFilterProvider()
+                        .getTabGroupModelFilter(false);
+        if (tab.getTabGroupId() == null) {
+            boolean showUndoSnackBar = false;
+            filter.createSingleTabGroup(tab, showUndoSnackBar);
+        }
+        createGroupFlow(
+                activity,
+                TabGroupTitleUtils.getDisplayableTitle(activity, filter, tab.getRootId()),
+                new LocalTabGroupId(tab.getTabGroupId()),
+                createGroupFinishedCallback);
     }
 
     /**
