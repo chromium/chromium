@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
 namespace collaboration::messaging {
 
@@ -39,6 +40,7 @@ MessagingBackendServiceFactory::MessagingBackendServiceFactory()
                                     ProfileSelection::kNoInstanceInIncognito) {
   DependsOn(tab_groups::TabGroupSyncServiceFactory::GetInstance());
   DependsOn(data_sharing::DataSharingServiceFactory::GetInstance());
+  DependsOn(IdentityManagerFactory::GetInstance());
 }
 
 MessagingBackendServiceFactory::~MessagingBackendServiceFactory() = default;
@@ -61,6 +63,7 @@ MessagingBackendServiceFactory::BuildServiceInstanceFor(
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
   auto* data_sharing_service =
       data_sharing::DataSharingServiceFactory::GetForProfile(profile);
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   auto tab_group_change_notifier =
       std::make_unique<TabGroupChangeNotifierImpl>(tab_group_sync_service);
   auto data_sharing_change_notifier =
@@ -74,7 +77,7 @@ MessagingBackendServiceFactory::BuildServiceInstanceFor(
       configuration, std::move(tab_group_change_notifier),
       std::move(data_sharing_change_notifier),
       std::move(messaging_backend_store), tab_group_sync_service,
-      data_sharing_service);
+      data_sharing_service, identity_manager);
 }
 
 }  // namespace collaboration::messaging

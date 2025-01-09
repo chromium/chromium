@@ -25,6 +25,7 @@
 #include "components/data_sharing/public/group_data.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/types.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -319,6 +320,17 @@ std::vector<PersistentMessage> CreatePersistentMessagesForTypes(
   return messages;
 }
 
+bool IsMemberCurrentUser(const signin::IdentityManager* identity_manager,
+                         const GaiaId& gaia_id) {
+  CoreAccountInfo account =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  if (account.IsEmpty()) {
+    return false;
+  }
+
+  return account.gaia == gaia_id;
+}
+
 }  // namespace
 
 MessagingBackendServiceImpl::MessagingBackendServiceImpl(
@@ -327,13 +339,15 @@ MessagingBackendServiceImpl::MessagingBackendServiceImpl(
     std::unique_ptr<DataSharingChangeNotifier> data_sharing_change_notifier,
     std::unique_ptr<MessagingBackendStore> messaging_backend_store,
     tab_groups::TabGroupSyncService* tab_group_sync_service,
-    data_sharing::DataSharingService* data_sharing_service)
+    data_sharing::DataSharingService* data_sharing_service,
+    signin::IdentityManager* identity_manager)
     : configuration_(configuration),
       tab_group_change_notifier_(std::move(tab_group_change_notifier)),
       data_sharing_change_notifier_(std::move(data_sharing_change_notifier)),
       store_(std::move(messaging_backend_store)),
       tab_group_sync_service_(tab_group_sync_service),
-      data_sharing_service_(data_sharing_service) {
+      data_sharing_service_(data_sharing_service),
+      identity_manager_(identity_manager) {
   store_->Initialize(
       base::BindOnce(&MessagingBackendServiceImpl::OnStoreInitialized,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -944,9 +958,7 @@ MessagingBackendServiceImpl::ConvertMessageToActivityLogItem(
         GetDisplayNameForUserInGroup(collaboration_group_id, *gaia_id,
                                      std::nullopt, message);
     if (user_name_for_display) {
-      // TODO(crbug.com/380517719): Compare GaiaId with current user in this
-      // profile.
-      bool is_self = false;
+      bool is_self = IsMemberCurrentUser(identity_manager_, *gaia_id);
       std::u16string user_to_show =
           is_self ? l10n_util::GetStringUTF16(
                         IDS_DATA_SHARING_RECENT_ACTIVITY_USER_SELF)

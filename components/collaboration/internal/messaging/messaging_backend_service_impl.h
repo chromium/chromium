@@ -18,6 +18,7 @@
 #include "components/collaboration/public/messaging/message.h"
 #include "components/collaboration/public/messaging/messaging_backend_service.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace collaboration_pb {
 class Message;
@@ -46,7 +47,8 @@ class MessagingBackendServiceImpl : public MessagingBackendService,
       std::unique_ptr<DataSharingChangeNotifier> data_sharing_change_notifier,
       std::unique_ptr<MessagingBackendStore> messaging_backend_store,
       tab_groups::TabGroupSyncService* tab_group_sync_service,
-      data_sharing::DataSharingService* data_sharing_service);
+      data_sharing::DataSharingService* data_sharing_service,
+      signin::IdentityManager* identity_manager);
   ~MessagingBackendServiceImpl() override;
 
   // MessagingBackendService implementation.
@@ -250,6 +252,9 @@ class MessagingBackendServiceImpl : public MessagingBackendService,
 
   // Service providing information about people groups.
   raw_ptr<data_sharing::DataSharingService> data_sharing_service_;
+
+  // Service providing information about sign in.
+  raw_ptr<signin::IdentityManager> identity_manager_;
 
   // The single delegate for when we need to inform the UI about instant
   // (one-off) messages.

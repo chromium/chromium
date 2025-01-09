@@ -12,6 +12,7 @@
 #include "chrome/browser/data_sharing/data_sharing_service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/tab_group_sync/feature_utils.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "components/collaboration/internal/messaging/configuration.h"
@@ -50,6 +51,7 @@ MessagingBackendServiceFactory::MessagingBackendServiceFactory()
               .Build()) {
   DependsOn(tab_groups::TabGroupSyncServiceFactory::GetInstance());
   DependsOn(data_sharing::DataSharingServiceFactory::GetInstance());
+  DependsOn(IdentityManagerFactory::GetInstance());
 }
 
 MessagingBackendServiceFactory::~MessagingBackendServiceFactory() = default;
@@ -74,6 +76,7 @@ MessagingBackendServiceFactory::BuildServiceInstanceForBrowserContext(
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
   auto* data_sharing_service =
       data_sharing::DataSharingServiceFactory::GetForProfile(profile);
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   auto tab_group_change_notifier =
       std::make_unique<TabGroupChangeNotifierImpl>(tab_group_sync_service);
   auto data_sharing_change_notifier =
@@ -91,7 +94,7 @@ MessagingBackendServiceFactory::BuildServiceInstanceForBrowserContext(
       configuration, std::move(tab_group_change_notifier),
       std::move(data_sharing_change_notifier),
       std::move(messaging_backend_store), tab_group_sync_service,
-      data_sharing_service);
+      data_sharing_service, identity_manager);
 
   return std::move(service);
 }

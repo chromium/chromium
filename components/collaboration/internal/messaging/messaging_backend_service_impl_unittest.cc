@@ -24,6 +24,7 @@
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -263,7 +264,8 @@ class MessagingBackendServiceImplTest : public testing::Test {
         configuration, std::move(tab_group_change_notifier),
         std::move(data_sharing_change_notifier),
         std::move(mock_messaging_backend_store),
-        mock_tab_group_sync_service_.get(), mock_data_sharing_service_.get());
+        mock_tab_group_sync_service_.get(), mock_data_sharing_service_.get(),
+        identity_test_env_.identity_manager());
   }
 
   void InitializeService() {
@@ -290,6 +292,7 @@ class MessagingBackendServiceImplTest : public testing::Test {
  protected:
   base::test::SingleThreadTaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  signin::IdentityTestEnvironment identity_test_env_;
 
   // Use default configuration unless we specify something else.
   MessagingBackendConfiguration configuration;
