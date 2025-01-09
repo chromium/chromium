@@ -61,6 +61,7 @@ import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.GaiaId;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
@@ -159,8 +160,9 @@ public class SyncPromoControllerUiTest {
         List<CoreAccountInfo> accounts =
                 List.of(
                         CoreAccountInfo.createFromEmailAndGaiaId(
-                                "test1@" + SyncPromoController.GMAIL_DOMAIN, "unused"),
-                        CoreAccountInfo.createFromEmailAndGaiaId("test2@nongmail.com", "unused"));
+                                "test1@" + SyncPromoController.GMAIL_DOMAIN, new GaiaId("unused")),
+                        CoreAccountInfo.createFromEmailAndGaiaId(
+                                "test2@nongmail.com", new GaiaId("unused")));
 
         Assert.assertTrue(SyncPromoController.existsNonGmailAccount(signinManager, accounts));
     }
@@ -179,9 +181,9 @@ public class SyncPromoControllerUiTest {
         List<CoreAccountInfo> accounts =
                 List.of(
                         CoreAccountInfo.createFromEmailAndGaiaId(
-                                "test1@" + SyncPromoController.GMAIL_DOMAIN, "unused"),
+                                "test1@" + SyncPromoController.GMAIL_DOMAIN, new GaiaId("unused")),
                         CoreAccountInfo.createFromEmailAndGaiaId(
-                                "test2@" + SyncPromoController.GMAIL_DOMAIN, "unused"));
+                                "test2@" + SyncPromoController.GMAIL_DOMAIN, new GaiaId("unused")));
 
         Assert.assertFalse(SyncPromoController.existsNonGmailAccount(signinManager, accounts));
     }

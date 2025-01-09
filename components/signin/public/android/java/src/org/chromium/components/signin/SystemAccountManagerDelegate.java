@@ -34,6 +34,7 @@ import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.externalauth.ExternalAuthUtils;
+import org.chromium.components.signin.base.GaiaId;
 import org.chromium.components.signin.metrics.FetchAccountCapabilitiesFromSystemLibraryResult;
 
 import java.io.IOException;
@@ -216,9 +217,11 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
 
     @Nullable
     @Override
-    public String getAccountGaiaId(String accountEmail) {
+    public GaiaId getAccountGaiaId(String accountEmail) {
         try {
-            return GoogleAuthUtil.getAccountId(ContextUtils.getApplicationContext(), accountEmail);
+            return new GaiaId(
+                    GoogleAuthUtil.getAccountId(
+                            ContextUtils.getApplicationContext(), accountEmail));
         } catch (IOException | GoogleAuthException ex) {
             Log.e(TAG, "SystemAccountManagerDelegate.getAccountGaiaId", ex);
             return null;

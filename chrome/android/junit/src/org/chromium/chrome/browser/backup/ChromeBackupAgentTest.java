@@ -302,7 +302,7 @@ public class ChromeBackupAgentTest {
                         "AndroidDefault." + ChromeBackupAgentImpl.SYNCING_ACCOUNT_KEY,
                         unameBytes.length);
         verify(backupData).writeEntityData(unameBytes, unameBytes.length);
-        byte[] uidBytes = ApiCompatibilityUtils.getBytesUtf8(mAccountInfo.getGaiaId());
+        byte[] uidBytes = ApiCompatibilityUtils.getBytesUtf8(mAccountInfo.getGaiaId().toString());
         verify(backupData)
                 .writeEntityHeader(
                         "AndroidDefault." + ChromeBackupAgentImpl.SIGNED_IN_ACCOUNT_ID_KEY,
@@ -412,7 +412,7 @@ public class ChromeBackupAgentTest {
                 .writeEntityHeader(
                         "AndroidDefault." + ChromeBackupAgentImpl.SYNCING_ACCOUNT_KEY,
                         unameBytes.length);
-        byte[] uidBytes = ApiCompatibilityUtils.getBytesUtf8(mAccountInfo.getGaiaId());
+        byte[] uidBytes = ApiCompatibilityUtils.getBytesUtf8(mAccountInfo.getGaiaId().toString());
         verify(backupData)
                 .writeEntityHeader(
                         "AndroidDefault." + ChromeBackupAgentImpl.SIGNED_IN_ACCOUNT_ID_KEY,
@@ -622,7 +622,7 @@ public class ChromeBackupAgentTest {
         BackupDataInput backupData = mock(BackupDataInput.class);
 
         String syncingUserEmail = hasSyncingUser ? mAccountInfo.getEmail() : "";
-        String signedInUserGaiaId = hasSignedInUser ? mAccountInfo.getGaiaId() : "";
+        String signedInUserGaiaId = hasSignedInUser ? mAccountInfo.getGaiaId().toString() : "";
         ArrayList<Pair<String, byte[]>> keysAndValues =
                 new ArrayList(
                         Arrays.asList(
@@ -1105,7 +1105,7 @@ public class ChromeBackupAgentTest {
                     .migrateGlobalDataTypePrefsToAccount(mPrefService, mAccountInfo.getGaiaId());
         } else {
             verify(mChromeBackupAgentJniMock, never())
-                    .migrateGlobalDataTypePrefsToAccount(any(), anyString());
+                    .migrateGlobalDataTypePrefsToAccount(any(), any());
         }
     }
 

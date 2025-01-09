@@ -20,6 +20,7 @@ import org.mockito.ArgumentCaptor;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
+import org.chromium.components.signin.base.GaiaId;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
@@ -149,8 +150,8 @@ public class MessagingBackendServiceBridgeUnitTestCompanion {
         // MessageAttribution.
         MessageAttribution attribution = message.attribution;
         Assert.assertEquals("my group", attribution.collaborationId);
-        Assert.assertEquals("affected", attribution.affectedUser.gaiaId);
-        Assert.assertEquals("triggering", attribution.triggeringUser.gaiaId);
+        Assert.assertEquals(new GaiaId("affected"), attribution.affectedUser.gaiaId);
+        Assert.assertEquals(new GaiaId("triggering"), attribution.triggeringUser.gaiaId);
 
         // TabGroupMessageMetadata.
         TabGroupMessageMetadata tgmm = attribution.tabGroupMetadata;

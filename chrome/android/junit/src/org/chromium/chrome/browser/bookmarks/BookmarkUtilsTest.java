@@ -49,6 +49,7 @@ import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.GaiaId;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.url.GURL;
@@ -81,7 +82,7 @@ public class BookmarkUtilsTest {
     private Activity mActivity;
     private FakeBookmarkModel mBookmarkModel;
     private CoreAccountInfo mAccountInfo =
-            CoreAccountInfo.createFromEmailAndGaiaId("test@gmail.com", "testGaiaId");
+            CoreAccountInfo.createFromEmailAndGaiaId("test@gmail.com", new GaiaId("testGaiaId"));
 
     @Before
     public void setup() {

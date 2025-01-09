@@ -17,6 +17,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.components.signin.AccountManagerFacade.ChildAccountStatusListener;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.GaiaId;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.TestAccounts;
 
@@ -29,13 +30,16 @@ public class AccountUtilsTest {
     private static final CoreAccountInfo CHILD =
             CoreAccountInfo.createFromEmailAndGaiaId(
                     FakeAccountManagerFacade.generateChildEmail("account@gmail.com"),
-                    "notUsedGaiaId");
+                    new GaiaId("notUsedGaiaId"));
     private static final CoreAccountInfo ADULT_1 =
-            CoreAccountInfo.createFromEmailAndGaiaId("adult.account1@gmail.com", "notUsedGaiaId");
+            CoreAccountInfo.createFromEmailAndGaiaId(
+                    "adult.account1@gmail.com", new GaiaId("notUsedGaiaId"));
     private static final CoreAccountInfo ADULT_2 =
-            CoreAccountInfo.createFromEmailAndGaiaId("adult.account2@gmail.com", "notUsedGaiaId");
+            CoreAccountInfo.createFromEmailAndGaiaId(
+                    "adult.account2@gmail.com", new GaiaId("notUsedGaiaId"));
     private static final CoreAccountInfo EDU =
-            CoreAccountInfo.createFromEmailAndGaiaId("edu.account@gmail.com", "notUsedGaiaId");
+            CoreAccountInfo.createFromEmailAndGaiaId(
+                    "edu.account@gmail.com", new GaiaId("notUsedGaiaId"));
 
     private final FakeAccountManagerFacade mFakeFacade = new FakeAccountManagerFacade();
 

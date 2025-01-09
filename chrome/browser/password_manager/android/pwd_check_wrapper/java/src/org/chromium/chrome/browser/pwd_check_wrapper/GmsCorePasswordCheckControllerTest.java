@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.pwd_check_wrapper.PasswordCheckController.Pas
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.GaiaId;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -99,7 +100,9 @@ public class GmsCorePasswordCheckControllerTest {
         when(mSyncService.isSyncFeatureEnabled()).thenReturn(true);
         when(mSyncService.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.PASSWORDS));
         when(mSyncService.getAccountInfo())
-                .thenReturn(CoreAccountInfo.createFromEmailAndGaiaId(TEST_EMAIL_ADDRESS, "0"));
+                .thenReturn(
+                        CoreAccountInfo.createFromEmailAndGaiaId(
+                                TEST_EMAIL_ADDRESS, new GaiaId("0")));
         when(mPasswordManagerHelperNativeMock.hasChosenToSyncPasswords(mSyncService))
                 .thenReturn(true);
     }

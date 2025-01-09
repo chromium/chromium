@@ -73,6 +73,7 @@ import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.GaiaId;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.base.GoogleServiceAuthError.State;
 import org.chromium.components.sync.DataType;
@@ -2081,7 +2082,9 @@ public class PasswordManagerHelperTest {
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(true);
         when(mSyncServiceMock.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.PASSWORDS));
         when(mSyncServiceMock.getAccountInfo())
-                .thenReturn(CoreAccountInfo.createFromEmailAndGaiaId(TEST_EMAIL_ADDRESS, "0"));
+                .thenReturn(
+                        CoreAccountInfo.createFromEmailAndGaiaId(
+                                TEST_EMAIL_ADDRESS, new GaiaId("0")));
         // Set the adequate PasswordManagerUtilBridge response for shouldUseUpmWiring for a syncing
         // user.
         when(mPasswordManagerUtilBridgeJniMock.shouldUseUpmWiring(mSyncServiceMock, mPrefService))
@@ -2092,7 +2095,9 @@ public class PasswordManagerHelperTest {
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(true);
         when(mSyncServiceMock.getSelectedTypes()).thenReturn(new HashSet<>());
         when(mSyncServiceMock.getAccountInfo())
-                .thenReturn(CoreAccountInfo.createFromEmailAndGaiaId(TEST_EMAIL_ADDRESS, "0"));
+                .thenReturn(
+                        CoreAccountInfo.createFromEmailAndGaiaId(
+                                TEST_EMAIL_ADDRESS, new GaiaId("0")));
     }
 
     private void setUpSuccessfulIntentFetchingForAccount() {

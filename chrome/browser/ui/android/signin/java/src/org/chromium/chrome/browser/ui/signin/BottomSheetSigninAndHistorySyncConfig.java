@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.signin.base.CoreAccountId;
+import org.chromium.components.signin.base.GaiaId;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -136,8 +137,8 @@ public final class BottomSheetSigninAndHistorySyncConfig implements Parcelable {
                 /* selectedCoreAccountId= */ getCoreAccountId(in.readString()));
     }
 
-    private static @Nullable CoreAccountId getCoreAccountId(@Nullable String id) {
-        return id == null ? null : new CoreAccountId(id);
+    private static @Nullable CoreAccountId getCoreAccountId(@Nullable String gaiaId) {
+        return gaiaId == null ? null : new CoreAccountId(new GaiaId(gaiaId));
     }
 
     @Override
@@ -178,7 +179,7 @@ public final class BottomSheetSigninAndHistorySyncConfig implements Parcelable {
         out.writeInt(noAccountSigninMode);
         out.writeInt(withAccountSigninMode);
         out.writeInt(historyOptInMode);
-        String id = selectedCoreAccountId == null ? null : selectedCoreAccountId.getId();
+        String id = selectedCoreAccountId == null ? null : selectedCoreAccountId.getId().toString();
         out.writeString(id);
     }
 

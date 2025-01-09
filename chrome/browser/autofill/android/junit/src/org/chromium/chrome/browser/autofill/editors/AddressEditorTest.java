@@ -82,6 +82,7 @@ import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.FieldType;
 import org.chromium.components.autofill.RecordType;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.GaiaId;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
@@ -181,7 +182,7 @@ public class AddressEditorTest {
     @Captor private ArgumentCaptor<AutofillAddress> mAddressCapture;
 
     private final CoreAccountInfo mAccountInfo =
-            CoreAccountInfo.createFromEmailAndGaiaId(USER_EMAIL, "gaia_id");
+            CoreAccountInfo.createFromEmailAndGaiaId(USER_EMAIL, new GaiaId("gaia_id"));
     // Note: can't initialize this list statically because of how Robolectric
     // initializes Android library dependencies.
     private final List<DropdownKeyValue> mSupportedCountries =

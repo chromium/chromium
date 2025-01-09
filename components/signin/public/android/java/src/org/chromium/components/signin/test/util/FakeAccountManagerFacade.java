@@ -29,6 +29,7 @@ import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.GaiaId;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -361,14 +362,14 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     }
 
     /** Converts an email to a fake gaia Id. */
-    public static String toGaiaId(String email) {
-        return "gaia-id-" + email.replace("@", "_at_");
+    public static GaiaId toGaiaId(String email) {
+        return new GaiaId("gaia-id-" + email.replace("@", "_at_"));
     }
 
     /**
-     * Creates an email used to identify child accounts in tests.
-     * A child-specific prefix will be appended to the base name so that the created account
-     * will be considered a child account in {@link FakeAccountManagerFacade}.
+     * Creates an email used to identify child accounts in tests. A child-specific prefix will be
+     * appended to the base name so that the created account will be considered a child account in
+     * {@link FakeAccountManagerFacade}.
      */
     public static String generateChildEmail(String baseEmail) {
         return CHILD_ACCOUNT_NAME_PREFIX + baseEmail;

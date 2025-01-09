@@ -28,6 +28,7 @@ import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.data_sharing.PeopleGroupActionFailure;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.GaiaId;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -39,7 +40,7 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 public class TabShareUtilsUnitTest {
     private static final int TAB_ID = 34789;
     private static final Token TAB_GROUP_ID = new Token(87493L, 3489L);
-    private static final String GAIA_ID = "asdf";
+    private static final GaiaId GAIA_ID = new GaiaId("asdf");
     private static final String GROUP_ID = "group";
     private static final String DISPLAY_NAME = "display_name";
     private static final String ACCESS_TOKEN = "token";

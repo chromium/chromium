@@ -34,6 +34,7 @@ import org.chromium.components.signin.ConnectionRetry.AuthTask;
 import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.GaiaId;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -81,7 +82,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
 
     private @NonNull Promise<List<AccountInfo>> mAccountsPromise = new Promise<>();
 
-    private @Nullable AsyncTask<List<String>> mFetchGaiaIdsTask;
+    private @Nullable AsyncTask<List<GaiaId>> mFetchGaiaIdsTask;
 
     private int mNumberOfRetries;
     private boolean mDidAccountFetchSucceed;
@@ -369,16 +370,16 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
 
         List<String> emails = getFilteredAccountEmails();
         mFetchGaiaIdsTask =
-                new AsyncTask<List<String>>() {
+                new AsyncTask<List<GaiaId>>() {
                     @Override
-                    public @Nullable List<String> doInBackground() {
+                    public @Nullable List<GaiaId> doInBackground() {
                         final long seedingStartTime = SystemClock.elapsedRealtime();
-                        List<String> gaiaIds = new ArrayList<>();
+                        List<GaiaId> gaiaIds = new ArrayList<>();
                         for (String email : emails) {
                             if (isCancelled()) {
                                 return null;
                             }
-                            final String gaiaId = mDelegate.getAccountGaiaId(email);
+                            final GaiaId gaiaId = mDelegate.getAccountGaiaId(email);
                             if (gaiaId == null) {
                                 // TODO(crbug.com/40275966): Add metrics to check how often we get a
                                 // null gaiaId.
@@ -393,7 +394,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
                     }
 
                     @Override
-                    public void onPostExecute(@Nullable List<String> gaiaIds) {
+                    public void onPostExecute(@Nullable List<GaiaId> gaiaIds) {
                         mFetchGaiaIdsTask = null;
                         if (gaiaIds == null) {
                             fetchGaiaIdsAndUpdateCoreAccountInfos();

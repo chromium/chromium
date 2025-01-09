@@ -57,6 +57,7 @@ import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.power_bookmarks.ShoppingSpecifics;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.GaiaId;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.url.GURL;
 
@@ -91,7 +92,7 @@ public class BookmarkSaveFlowTest {
     private BottomSheetTestSupport mBottomSheetTestSupport;
     private BookmarkModel mBookmarkModel;
     private CoreAccountInfo mAccountInfo =
-            CoreAccountInfo.createFromEmailAndGaiaId("test@gmail.com", "testGaiaId");
+            CoreAccountInfo.createFromEmailAndGaiaId("test@gmail.com", new GaiaId("testGaiaId"));
 
     @Before
     public void setUp() throws ExecutionException {

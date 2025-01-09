@@ -40,6 +40,7 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.GaiaId;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -310,7 +311,9 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         backupNames.add(ANDROID_DEFAULT_PREFIX + SIGNED_IN_ACCOUNT_ID_KEY);
         backupValues.add(
                 ApiCompatibilityUtils.getBytesUtf8(
-                        signedInAccount.get() == null ? "" : signedInAccount.get().getGaiaId()));
+                        signedInAccount.get() == null
+                                ? ""
+                                : signedInAccount.get().getGaiaId().toString()));
 
         BackupState newBackupState = new BackupState(backupNames, backupValues);
 
@@ -367,7 +370,7 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         final ArrayList<byte[]> backupValues = new ArrayList<>();
 
         @Nullable String restoredSyncUserEmail = null;
-        @Nullable String restoredSignedInUserID = null;
+        @Nullable GaiaId restoredSignedInUserID = null;
         while (data.readNextHeader()) {
             String key = data.getKey();
             int dataSize = data.getDataSize();
@@ -376,7 +379,7 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
             if (key.equals(ANDROID_DEFAULT_PREFIX + SYNCING_ACCOUNT_KEY)) {
                 restoredSyncUserEmail = new String(buffer);
             } else if (key.equals(ANDROID_DEFAULT_PREFIX + SIGNED_IN_ACCOUNT_ID_KEY)) {
-                restoredSignedInUserID = new String(buffer);
+                restoredSignedInUserID = new GaiaId(new String(buffer));
             } else {
                 backupNames.add(key);
                 backupValues.add(buffer);
@@ -501,7 +504,7 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
                     final boolean shouldRestoreSelectedTypesAsAccountSettings =
                             syncAccountInfo != null;
                     if (shouldRestoreSelectedTypesAsAccountSettings) {
-                        final String gaiaID =
+                        final GaiaId gaiaID =
                                 syncAccountInfo != null
                                         ? syncAccountInfo.getGaiaId()
                                         : signedInAccountInfo.getGaiaId();
@@ -645,7 +648,7 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
                 });
     }
 
-    private @Nullable CoreAccountInfo getDeviceAccountWithGaiaId(@Nullable String accountGaiaId) {
+    private @Nullable CoreAccountInfo getDeviceAccountWithGaiaId(@Nullable GaiaId accountGaiaId) {
         if (accountGaiaId == null) {
             return null;
         }
@@ -822,7 +825,6 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         // Calls syncer::MigrateGlobalDataTypePrefsToAccount() to migrate global boolean sync prefs
         // to account settings.
         void migrateGlobalDataTypePrefsToAccount(
-                @JniType("PrefService*") PrefService prefService,
-                @JniType("std::string") String gaiaId);
+                @JniType("PrefService*") PrefService prefService, GaiaId gaiaId);
     }
 }

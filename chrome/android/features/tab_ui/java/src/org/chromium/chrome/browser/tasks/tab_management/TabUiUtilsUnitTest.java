@@ -47,6 +47,7 @@ import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.PeopleGroupActionOutcome;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.GaiaId;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
@@ -63,7 +64,7 @@ public class TabUiUtilsUnitTest {
     private static final int ROOT_ID = TAB_ID;
     private static final String GROUP_TITLE = "My Group";
     private static final String COLLABORATION_ID1 = "A";
-    private static final String GAIA_ID = "Z";
+    private static final GaiaId GAIA_ID = new GaiaId("Z");
     private static final String EMAIL = "fake@gmail.com";
     private static final Token TAB_GROUP_TOKEN = Token.createRandom();
 

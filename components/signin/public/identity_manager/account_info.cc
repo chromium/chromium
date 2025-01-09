@@ -199,8 +199,7 @@ base::android::ScopedJavaLocalRef<jobject> ConvertToJavaCoreAccountInfo(
   return signin::Java_CoreAccountInfo_Constructor(
       env, ConvertToJavaCoreAccountId(env, account_info.account_id),
       base::android::ConvertUTF8ToJavaString(env, account_info.email),
-      base::android::ConvertUTF8ToJavaString(env,
-                                             account_info.gaia.ToString()));
+      signin::Java_GaiaId_Constructor(env, account_info.gaia.ToString()));
 }
 
 base::android::ScopedJavaLocalRef<jobject> ConvertToJavaAccountInfo(
@@ -222,7 +221,7 @@ base::android::ScopedJavaLocalRef<jobject> ConvertToJavaAccountInfo(
   return signin::Java_AccountInfo_Constructor(
       env, ConvertToJavaCoreAccountId(env, account_info.account_id),
       base::android::ConvertUTF8ToJavaString(env, account_info.email),
-      base::android::ConvertUTF8ToJavaString(env, account_info.gaia.ToString()),
+      signin::Java_GaiaId_Constructor(env, account_info.gaia.ToString()),
       base::android::ConvertUTF8ToJavaString(env, account_info.full_name),
       base::android::ConvertUTF8ToJavaString(env, account_info.given_name),
       hosted_domain, account_image,
@@ -234,7 +233,7 @@ base::android::ScopedJavaLocalRef<jobject> ConvertToJavaCoreAccountId(
     const CoreAccountId& account_id) {
   CHECK(!account_id.empty());
   return signin::Java_CoreAccountId_Constructor(
-      env, base::android::ConvertUTF8ToJavaString(env, account_id.ToString()));
+      env, signin::Java_GaiaId_Constructor(env, account_id.ToString()));
 }
 
 base::android::ScopedJavaLocalRef<jobject> ConvertToJavaGaiaId(
@@ -251,8 +250,8 @@ CoreAccountInfo ConvertFromJavaCoreAccountInfo(
   CoreAccountInfo account;
   account.account_id = ConvertFromJavaCoreAccountId(
       env, signin::Java_CoreAccountInfo_getId(env, j_core_account_info));
-  account.gaia = GaiaId(base::android::ConvertJavaStringToUTF8(
-      signin::Java_CoreAccountInfo_getGaiaId(env, j_core_account_info)));
+  account.gaia = GaiaId(signin::Java_GaiaId_toString(
+      env, signin::Java_CoreAccountInfo_getGaiaId(env, j_core_account_info)));
   account.email = base::android::ConvertJavaStringToUTF8(
       signin::Java_CoreAccountInfo_getEmail(env, j_core_account_info));
   return account;
@@ -265,8 +264,8 @@ AccountInfo ConvertFromJavaAccountInfo(
   AccountInfo account;
   account.account_id = ConvertFromJavaCoreAccountId(
       env, signin::Java_CoreAccountInfo_getId(env, j_account_info));
-  account.gaia = GaiaId(base::android::ConvertJavaStringToUTF8(
-      signin::Java_CoreAccountInfo_getGaiaId(env, j_account_info)));
+  account.gaia = ConvertFromJavaGaiaId(
+      env, signin::Java_CoreAccountInfo_getGaiaId(env, j_account_info));
   account.email = base::android::ConvertJavaStringToUTF8(
       signin::Java_CoreAccountInfo_getEmail(env, j_account_info));
   account.full_name = base::android::ConvertJavaStringToUTF8(
@@ -285,7 +284,7 @@ CoreAccountId ConvertFromJavaCoreAccountId(
   CHECK(j_core_account_id);
   CoreAccountId id =
       CoreAccountId::FromString(base::android::ConvertJavaStringToUTF8(
-          signin::Java_CoreAccountId_getId(env, j_core_account_id)));
+          signin::Java_CoreAccountId_toString(env, j_core_account_id)));
   return id;
 }
 

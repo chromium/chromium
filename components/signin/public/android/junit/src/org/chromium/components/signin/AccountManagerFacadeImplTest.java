@@ -59,6 +59,7 @@ import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.GaiaId;
 import org.chromium.components.signin.test.util.FakeAccountManagerDelegate;
 
 import java.util.ArrayList;
@@ -79,7 +80,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @LooperMode(LooperMode.Mode.LEGACY)
 public class AccountManagerFacadeImplTest {
     private static final AccountInfo TEST_ACCOUNT =
-            new AccountInfo.Builder("test@gmail.com", "testGaiaId").build();
+            new AccountInfo.Builder("test@gmail.com", new GaiaId("testGaiaId")).build();
 
     private static class ShadowPostTaskImpl implements ShadowPostTask.TestImpl {
         private final List<Runnable> mRunnables = new ArrayList<>();
@@ -327,7 +328,7 @@ public class AccountManagerFacadeImplTest {
     @Test
     public void testGetCoreAccountInfosWhenGaiaIdIsNull() throws Exception {
         final String accountEmail = "test@gmail.com";
-        final String accountGaiaId = FakeAccountManagerDelegate.toGaiaId(accountEmail);
+        final GaiaId accountGaiaId = FakeAccountManagerDelegate.toGaiaId(accountEmail);
         AtomicBoolean accountRemoved = new AtomicBoolean(false);
         doAnswer(
                         invocation -> {
@@ -601,7 +602,7 @@ public class AccountManagerFacadeImplTest {
     private CoreAccountInfo setFeaturesForAccount(String email, String... features) {
         final Account account = AccountUtils.createAccountFromName(email);
         final CoreAccountInfo coreAccountInfo =
-                CoreAccountInfo.createFromEmailAndGaiaId(email, "notUsedGaiaId");
+                CoreAccountInfo.createFromEmailAndGaiaId(email, new GaiaId("notUsedGaiaId"));
         mShadowAccountManager.setFeatures(account, features);
         return coreAccountInfo;
     }

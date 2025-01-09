@@ -10,6 +10,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.components.data_sharing.member_role.MemberRole;
+import org.chromium.components.signin.base.GaiaId;
 import org.chromium.url.GURL;
 
 import java.util.Objects;
@@ -17,7 +18,7 @@ import java.util.Objects;
 /** Information about a member of a group. */
 @JNINamespace("data_sharing")
 public class GroupMember {
-    public final String gaiaId;
+    public final GaiaId gaiaId;
     public final String displayName;
     public final String email;
     public final @MemberRole int role;
@@ -26,7 +27,7 @@ public class GroupMember {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public GroupMember(
-            String gaiaId,
+            GaiaId gaiaId,
             String displayName,
             String email,
             @MemberRole int role,
@@ -42,7 +43,7 @@ public class GroupMember {
 
     @CalledByNative
     private static GroupMember createGroupMember(
-            String gaiaId,
+            GaiaId gaiaId,
             String displayName,
             String email,
             @MemberRole int role,

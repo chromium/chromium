@@ -14,6 +14,7 @@ import org.chromium.base.Promise;
 import org.chromium.components.signin.AccountManagerFacade.ChildAccountStatusListener;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.GaiaId;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -88,7 +89,7 @@ public class AccountUtils {
      * equals the given {@param accountGaiaId}; null if there is no match.
      */
     public static @Nullable CoreAccountInfo findCoreAccountInfoByGaiaId(
-            final List<CoreAccountInfo> coreAccountInfos, String accountGaiaId) {
+            final List<CoreAccountInfo> coreAccountInfos, GaiaId accountGaiaId) {
         for (CoreAccountInfo coreAccountInfo : coreAccountInfos) {
             if (coreAccountInfo.getGaiaId().equals(accountGaiaId)) {
                 return coreAccountInfo;

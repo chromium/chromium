@@ -36,6 +36,7 @@ import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.data_sharing.PeopleGroupActionOutcome;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.GaiaId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -167,7 +168,7 @@ class TabGroupRowMediator {
             return;
         }
 
-        String gaiaId = mCoreAccountInfoSupplier.get().getGaiaId();
+        GaiaId gaiaId = mCoreAccountInfoSupplier.get().getGaiaId();
         @MemberRole int memberRole = TabShareUtils.getSelfMemberRole(groupData, gaiaId);
         if (memberRole == MemberRole.OWNER) {
             mPropertyModel.set(

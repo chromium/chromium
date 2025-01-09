@@ -32,7 +32,7 @@ public class AccountInfo extends CoreAccountInfo {
         private @Nullable Bitmap mAccountImage;
         private AccountCapabilities mAccountCapabilities = new AccountCapabilities(new HashMap<>());
 
-        public Builder(String email, String gaiaId) {
+        public Builder(String email, GaiaId gaiaId) {
             mCoreAccountInfo = CoreAccountInfo.createFromEmailAndGaiaId(email, gaiaId);
         }
 
@@ -105,7 +105,7 @@ public class AccountInfo extends CoreAccountInfo {
     private AccountInfo(
             CoreAccountId id,
             String email,
-            String gaiaId,
+            GaiaId gaiaId,
             String fullName,
             String givenName,
             @Nullable String hostedDomain,

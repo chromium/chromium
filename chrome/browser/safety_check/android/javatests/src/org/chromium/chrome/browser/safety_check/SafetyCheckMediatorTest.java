@@ -95,6 +95,7 @@ import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.GaiaId;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
@@ -218,7 +219,9 @@ public class SafetyCheckMediatorTest {
         when(mSyncService.isEngineInitialized()).thenReturn(true);
         when(mSyncService.hasSyncConsent()).thenReturn(true);
         when(mSyncService.getAccountInfo())
-                .thenReturn(CoreAccountInfo.createFromEmailAndGaiaId(TEST_EMAIL_ADDRESS, "0"));
+                .thenReturn(
+                        CoreAccountInfo.createFromEmailAndGaiaId(
+                                TEST_EMAIL_ADDRESS, new GaiaId("0")));
         when(mPasswordManagerHelperNativeMock.hasChosenToSyncPasswords(mSyncService))
                 .thenReturn(true);
 

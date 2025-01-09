@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.GaiaId;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 
 /** Unit test for {@link MismatchNotificationChecker} */
@@ -120,7 +121,7 @@ public class MismatchNotificationCheckerUnitTest {
             when(mTracker.acquireDisplayLock()).thenReturn(mIphDisplayLock);
 
             mCoreAccountInfo = mock(CoreAccountInfo.class);
-            when(mCoreAccountInfo.getGaiaId()).thenReturn("nice-gaia-id");
+            when(mCoreAccountInfo.getGaiaId()).thenReturn(new GaiaId("nice-gaia-id"));
             mIdentityManager = mock(IdentityManager.class);
             when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(mCoreAccountInfo);
 

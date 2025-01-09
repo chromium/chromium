@@ -286,7 +286,7 @@ public class TrustedVaultClient {
                             .fetchKeysCompleted(
                                     nativeTrustedVaultClientAndroid,
                                     requestId,
-                                    accountInfo.getGaiaId(),
+                                    accountInfo.getGaiaId().toString(),
                                     keys.toArray(new byte[0][]));
                 };
         get().mBackend

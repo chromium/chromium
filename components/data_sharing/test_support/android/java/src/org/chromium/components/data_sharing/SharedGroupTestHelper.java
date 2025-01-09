@@ -13,6 +13,7 @@ import org.mockito.ArgumentCaptor;
 import org.chromium.base.Callback;
 import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
 import org.chromium.components.data_sharing.member_role.MemberRole;
+import org.chromium.components.signin.base.GaiaId;
 
 /**
  * Test helpers for creating data_sharing objects and mocking calls to {@link DataSharingService}.
@@ -21,8 +22,8 @@ public class SharedGroupTestHelper {
     public static final String COLLABORATION_ID1 = "collabId1";
     public static final String COLLABORATION_ID2 = "collabId2";
     public static final String ACCESS_TOKEN1 = "accessToken1";
-    public static final String GAIA_ID1 = "gaiaId1";
-    public static final String GAIA_ID2 = "gaiaId2";
+    public static final GaiaId GAIA_ID1 = new GaiaId("gaiaId1");
+    public static final GaiaId GAIA_ID2 = new GaiaId("gaiaId2");
     public static final String DISPLAY_NAME1 = "Jane Doe";
     public static final String DISPLAY_NAME2 = "John Doe";
     public static final String EMAIL1 = "one@gmail.com";
@@ -47,7 +48,7 @@ public class SharedGroupTestHelper {
 
     /** Creates a new group member. */
     private static GroupMember newGroupMember(
-            String gaiaId,
+            GaiaId gaiaId,
             String displayName,
             String email,
             @MemberRole int memberRole,

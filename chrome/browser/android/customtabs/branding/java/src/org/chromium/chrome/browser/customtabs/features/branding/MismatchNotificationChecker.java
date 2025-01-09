@@ -119,7 +119,9 @@ public class MismatchNotificationChecker {
     @VisibleForTesting
     String getAccountId() {
         CoreAccountInfo account = mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
-        var hash = HashUtil.getMd5Hash(new HashUtil.Params(CoreAccountInfo.getGaiaIdFrom(account)));
+        var hash =
+                HashUtil.getMd5Hash(
+                        new HashUtil.Params(CoreAccountInfo.getGaiaIdFrom(account).toString()));
         return hash.substring(0, 16);
     }
 
