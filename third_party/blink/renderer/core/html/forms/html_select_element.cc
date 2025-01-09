@@ -1799,8 +1799,7 @@ bool HTMLSelectElement::ItemIsDisplayNone(Element& element,
 
 const ComputedStyle* HTMLSelectElement::ItemComputedStyle(
     Element& element) const {
-  return element.GetComputedStyle() ? element.GetComputedStyle()
-                                    : element.EnsureComputedStyle();
+  return element.GetComputedStyle();
 }
 
 LayoutUnit HTMLSelectElement::ClientPaddingLeft() const {

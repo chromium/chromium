@@ -195,8 +195,7 @@ class CORE_EXPORT HTMLSelectElement final
   // Helper functions for popup menu implementations.
   String ItemText(const Element&) const;
   bool ItemIsDisplayNone(Element&, bool ensure_style) const;
-  // itemComputedStyle() returns nullptr only if the owner Document is not
-  // active.  So, It returns a valid object when we open a popup.
+  // ItemComputedStyle() may return nullptr if the element is not rendered.
   const ComputedStyle* ItemComputedStyle(Element&) const;
   // Text starting offset in LTR.
   LayoutUnit ClientPaddingLeft() const;

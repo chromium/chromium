@@ -299,10 +299,11 @@ void ExternalPopupMenu::GetPopupMenuInfo(
       popup_item->checked = To<HTMLOptionElement>(item_element).Selected();
     }
     popup_item->enabled = !item_element.IsDisabledFormControl();
-    const ComputedStyle& style = *owner_element.ItemComputedStyle(item_element);
-    popup_item->text_direction = ToBaseTextDirection(style.Direction());
+    const ComputedStyle* style = owner_element.ItemComputedStyle(item_element);
+    CHECK(style) << "The ItemIsDisplayNone() further up should guard this";
+    popup_item->text_direction = ToBaseTextDirection(style->Direction());
     popup_item->has_text_direction_override =
-        IsOverride(style.GetUnicodeBidi());
+        IsOverride(style->GetUnicodeBidi());
     menu_items->push_back(std::move(popup_item));
   }
 
