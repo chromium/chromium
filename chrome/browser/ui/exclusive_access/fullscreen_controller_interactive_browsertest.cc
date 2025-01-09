@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -878,19 +879,22 @@ class AutomaticFullscreenTest : public FullscreenControllerInteractiveTest,
 
     // Support multiple sites on the test server.
     host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_https_test_server().Start());
 
     if (GetParam()) {
-      embedded_https_test_server().ServeFilesFromSourceDirectory(
-          GetChromeTestDataDir().AppendASCII("web_apps/simple_isolated_app"));
-      ASSERT_TRUE(embedded_https_test_server().Start());
-      auto url_info = web_app::InstallDevModeProxyIsolatedWebApp(
-          browser()->profile(), embedded_https_test_server().GetOrigin());
+      std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
+          web_app::IsolatedWebAppBuilder(
+              web_app::ManifestBuilder().AddPermissionsPolicyWildcard(
+                  blink::mojom::PermissionsPolicyFeature::kFullscreen))
+              .BuildBundle();
+      app->TrustSigningKey();
+      web_app::IsolatedWebAppUrlInfo url_info =
+          app->InstallChecked(browser()->profile());
       allow_automatic_fullscreen(url_info.origin().GetURL());
       auto* frame =
           web_app::OpenIsolatedWebApp(browser()->profile(), url_info.app_id());
       web_contents_ = content::WebContents::FromRenderFrameHost(frame);
     } else {
-      ASSERT_TRUE(embedded_https_test_server().Start());
       GURL url = embedded_https_test_server().GetURL("a.com", "/simple.html");
       allow_automatic_fullscreen(url);
       ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));

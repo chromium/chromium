@@ -15,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -986,17 +988,19 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
   ASSERT_EQ(browsing_data_model->size(), 0u);
 
   Profile* profile = browser()->profile();
-  auto dev_server = web_app::CreateAndStartDevServer(
-      FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
 
-  auto iwa_url_info1 = web_app::InstallDevModeProxyIsolatedWebApp(
-      profile, dev_server->GetOrigin());
+  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app1 =
+      web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder()).BuildBundle();
+  ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo iwa_url_info1,
+                       app1->TrustBundleAndInstall(profile));
   auto* iwa_frame1 =
       web_app::OpenIsolatedWebApp(profile, iwa_url_info1.app_id());
   AddLocalStorageUsage(iwa_frame1, 100);
 
-  auto iwa_url_info2 = web_app::InstallDevModeProxyIsolatedWebApp(
-      profile, dev_server->GetOrigin());
+  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app2 =
+      web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder()).BuildBundle();
+  ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo iwa_url_info2,
+                       app2->TrustBundleAndInstall(profile));
   auto* iwa_frame2 =
       web_app::OpenIsolatedWebApp(profile, iwa_url_info2.app_id());
   AddLocalStorageUsage(iwa_frame2, 500);

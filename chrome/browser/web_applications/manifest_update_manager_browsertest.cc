@@ -30,6 +30,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -50,6 +51,7 @@
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
@@ -2317,25 +2319,22 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerSystemAppBrowserTest,
 
 class ManifestUpdateManagerIsolatedWebAppBrowserTest
     : public IsolatedWebAppBrowserTestHarness {
- public:
-  ManifestUpdateManagerIsolatedWebAppBrowserTest() {
-    isolated_web_app_dev_server_ =
-        CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
-  }
-
  protected:
-  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server_;
   base::HistogramTester histogram_tester_;
 };
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerIsolatedWebAppBrowserTest,
                        CheckUpdateSkipped) {
-  IsolatedWebAppUrlInfo url_info_ = InstallDevModeProxyIsolatedWebApp(
-      isolated_web_app_dev_server_->GetOrigin());
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+      IsolatedWebAppBuilder(ManifestBuilder().SetStartUrl("/index.html"))
+          .AddHtml("/index.html", "<html></html>")
+          .BuildBundle();
+  ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo url_info,
+                       app->TrustBundleAndInstall(profile()));
 
   UpdateCheckResultAwaiter awaiter(
-      url_info_.origin().GetURL().Resolve("/index.html"));
-  EXPECT_TRUE(OpenApp(url_info_.app_id()));
+      url_info.origin().GetURL().Resolve("/index.html"));
+  EXPECT_TRUE(OpenApp(url_info.app_id()));
   EXPECT_EQ(std::move(awaiter).AwaitNextResult(),
             ManifestUpdateResult::kAppIsIsolatedWebApp);
 
