@@ -16,6 +16,18 @@ export function getHtml(this: OnDeviceInternalsModelStatusElement) {
       <div class="cr-padded-text">Foundational model state:
       ${this.pageData_.modelState}</div>
     </div>
+    <div class="cr-row">
+      <div class="cr-padded-text">
+        Model crash count (current/maximum):
+        ${this.pageData_.modelCrashCount}/${this.pageData_.maxModelCrashCount}
+      </div>
+      <cr-button class="cr-button-gap"
+        @click="${this.onResetModelCrashCountClick_}">Reset</cr-button>
+      <span id="needs-restart" class="cr-button-gap"
+        ?hidden="${!this.may_restart_browser_}">
+        You may need to restart the browser for the changes to take effect.
+      </span>
+    </div>
   </div>
   <h3>Foundational model criteria</h3>
   ${

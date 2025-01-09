@@ -59,6 +59,7 @@ class OnDeviceInternalsPageHandler : public mojom::OnDeviceInternalsPageHandler,
       GetOnDeviceInternalsDataCallback callback) override;
   void DecodeBitmap(mojo_base::BigBuffer image_buffer,
                     DecodeBitmapCallback callback) override;
+  void ResetModelCrashCount() override;
 
   // optimization_guide::OptimizationGuideLogger::Observer:
   void OnLogMessageAdded(base::Time event_time,

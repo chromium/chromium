@@ -59,3 +59,7 @@ td {
 .main {
   margin: 20px;
 }
+
+#needs-restart {
+  color: var(--google-yellow-300);
+}

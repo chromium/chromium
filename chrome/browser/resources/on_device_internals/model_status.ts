@@ -23,6 +23,13 @@ export class OnDeviceInternalsModelStatusElement extends CrLitElement {
     return getCss();
   }
 
+  static override get properties() {
+    return {
+      pageData_: {type: Object},
+      may_restart_browser_: {type: Boolean},
+    };
+  }
+
   override render() {
     return getHtml.bind(this)();
   }
@@ -32,7 +39,17 @@ export class OnDeviceInternalsModelStatusElement extends CrLitElement {
     modelState: 'NO STATE',
     registrationCriteria: {},
     suppModels: [],
+    modelCrashCount: 0,
+    maxModelCrashCount: 0,
   };
+
+  protected may_restart_browser_: boolean = false;
+
+  protected async onResetModelCrashCountClick_() {
+    await this.proxy_.handler.resetModelCrashCount();
+    await this.getOnDeviceInternalsData_();
+    this.may_restart_browser_ = true;
+  }
 
   private proxy_: BrowserProxy = BrowserProxy.getInstance();
 

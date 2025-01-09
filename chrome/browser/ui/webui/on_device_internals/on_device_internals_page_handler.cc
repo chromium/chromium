@@ -7,11 +7,14 @@
 #include "base/files/file_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/prediction_manager.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/service_process_host.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
@@ -24,6 +27,10 @@
 #endif
 
 namespace {
+
+using optimization_guide::model_execution::prefs::localstate::
+    kOnDeviceModelCrashCount;
+
 #if !BUILDFLAG(USE_CHROMEOS_MODEL_SERVICE)
 on_device_model::ModelAssets LoadModelAssets(const base::FilePath& model_path) {
   // This WebUI currently provides no way to dynamically configure the expected
@@ -228,6 +235,11 @@ void OnDeviceInternalsPageHandler::GetOnDeviceInternalsData(
     data->supp_models.push_back(std::move(supp_model_mojom));
   }
 
+  PrefService* prefs = g_browser_process->local_state();
+  data->model_crash_count = prefs->GetInteger(kOnDeviceModelCrashCount);
+  data->max_model_crash_count =
+      optimization_guide::features::GetOnDeviceModelCrashCountBeforeDisable();
+
   std::move(callback).Run(std::move(data));
 }
 
@@ -238,4 +250,9 @@ void OnDeviceInternalsPageHandler::DecodeBitmap(
       base::span(image_buffer), data_decoder::mojom::ImageCodec::kDefault,
       /*shrink_to_fit=*/false, data_decoder::kDefaultMaxSizeInBytes,
       /*desired_image_frame_size=*/gfx::Size(), std::move(callback));
+}
+
+void OnDeviceInternalsPageHandler::ResetModelCrashCount() {
+  PrefService* prefs = g_browser_process->local_state();
+  prefs->SetInteger(kOnDeviceModelCrashCount, 0);
 }
