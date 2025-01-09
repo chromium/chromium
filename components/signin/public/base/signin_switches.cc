@@ -148,10 +148,6 @@ bool IsImprovedSettingsUIOnDesktopEnabled() {
 
 #if BUILDFLAG(IS_IOS)
 
-BASE_FEATURE(kRemoveSignedInAccountsDialog,
-             "RemoveSignedInAccountsDialog",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableIdentityInAuthError,
              "EnableIdentityInAuthError",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -118,9 +118,6 @@ bool IsImprovedSettingsUIOnDesktopEnabled();
 
 #if BUILDFLAG(IS_IOS)
 
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kRemoveSignedInAccountsDialog);
-
 // Features to enable identities in auth error (stale token).
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnableIdentityInAuthError);
