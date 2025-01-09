@@ -14,7 +14,6 @@ eugene@chromium.org
 jrummell@chromium.org
 liberato@chromium.org
 mfoltz@chromium.org
-sandersd@chromium.org
 tguilbert@chromium.org
 tmathmeyer@chromium.org
 xhwang@chromium.org
@@ -24,6 +23,3 @@ blundell@chromium.org
 
 # For Fuchsia-specific changes:
 per-file ..._fuchsia*=file://build/fuchsia/OWNERS
-
-# For GpuMemoryBuffer-related changes:
-per-file *gpu_memory_buffer*=dcastagna@chromium.org

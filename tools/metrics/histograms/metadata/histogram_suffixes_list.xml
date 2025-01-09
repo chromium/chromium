@@ -1508,12 +1508,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Media.Controls.CTR"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="MediaDecoderType" separator=".">
-  <suffix name="HW" label="Platform decoder"/>
-  <suffix name="SW" label="Software decoder"/>
-  <affected-histogram name="Media.PepperVideoDecoderOutputPictureCount"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="MediaRebufferingCategories" separator=".">
   <suffix name="Audio.EME" label="Metric for EME media with an audio track."/>
   <suffix name="Audio.MSE" label="Metric for MSE media with an audio track."/>

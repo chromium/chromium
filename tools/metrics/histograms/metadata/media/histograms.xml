@@ -465,7 +465,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.Android.MediaPlayerWatchTime"
     enum="MediaPlayerWatchTimeType" expires_after="2025-05-25">
-  <owner>sandersd@chromium.org</owner>
+  <owner>dalecurtis@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     Wall time of MediaPlayer playbacks. Each count represents one second of
@@ -4033,17 +4033,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.MCVD.ForwardVideoFrameTiming" units="ms"
-    expires_after="2020-10-11">
-  <owner>liberato@chromium.org</owner>
-  <owner>sandersd@chromium.org</owner>
-  <owner>tguilbert@chromium.org</owner>
-  <summary>
-    The time between MediaCodec::dequeueOutputBuffer() and the dispatch of the
-    corresponding VideoFrame from MediaCodecVideoDecoder.
-  </summary>
-</histogram>
-
 <histogram name="Media.MeanTimeBetweenRebuffers" units="ms"
     expires_after="2025-05-11">
   <owner>dalecurtis@chromium.org</owner>
@@ -4622,7 +4611,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.MojoVideoDecoder.ActiveInstances" units="units"
     expires_after="2025-06-08">
-  <owner>sandersd@chromium.org</owner>
+  <owner>dalecurtis@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     Records the number of active MojoVideoDecoderService instances that are
@@ -4847,17 +4836,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The hardware/software decoding behavior used for a PPB_VideoDecoder API
     instance. This UMA is recorded when the PepperVideoDecoderHost is destroyed.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Media.PepperVideoDecoderOutputPictureCount"
-    enum="MediaVideoHeight" expires_after="2020-12-31">
-  <owner>sandersd@chromium.org</owner>
-  <owner>dalecurtis@chromium.org</owner>
-  <summary>
-    Counts every output picture emitted to a PPAPI client, categorized by size
-    and decoder type. Flash will only use platform decoders, but NaCl clients
-    can use either decoder type.
   </summary>
 </histogram>
 
