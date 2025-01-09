@@ -63,6 +63,8 @@ base::Value::Dict LoadGroupPolicies(bool should_take_policy_critical_section) {
     // Only for managed machines, a best effort is made to take the Group Policy
     // critical section. Lock acquisition can take a long time in the worst case
     // scenarios, hence a short timed wait is used.
+    // If the lock cannot be obtained, the code below will still read the
+    // policy.
 
     auto events = base::MakeRefCounted<PolicySectionEvents>();
     leave_policy_section_closure.ReplaceClosure(base::BindOnce(
@@ -72,7 +74,9 @@ base::Value::Dict LoadGroupPolicies(bool should_take_policy_critical_section) {
         events));
 
     base::ThreadPool::PostTask(
-        FROM_HERE, {base::MayBlock(), base::WithBaseSyncPrimitives()},
+        FROM_HERE,
+        {base::MayBlock(), base::WithBaseSyncPrimitives(),
+         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
         base::BindOnce(
             [](scoped_refptr<PolicySectionEvents> events) {
               scoped_hpolicy policy_lock(::EnterCriticalPolicySection(true));
@@ -83,6 +87,8 @@ base::Value::Dict LoadGroupPolicies(bool should_take_policy_critical_section) {
             },
             events));
 
+    // Based on Chrome UMA data, a 15 second timeout is sufficient for 99.9% of
+    // cases.
     if (!events->enter_policy_section.TimedWait(base::Seconds(30))) {
       VLOG(1) << "Timed out trying to get the policy critical section.";
     }

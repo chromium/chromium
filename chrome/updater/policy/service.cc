@@ -176,11 +176,6 @@ void PolicyService::DoFetchPolicies(base::OnceCallback<void(int)> callback,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   static crash_reporter::CrashKeyString<6> crash_key_cbcm("cbcm");
   crash_key_cbcm.Set(is_cbcm_managed ? "true" : "false");
-  if (!is_cbcm_managed) {
-    VLOG(2) << "Device is not CBCM managed, skipped policy fetch.";
-    std::move(callback).Run(0);
-    return;
-  }
 
   if (fetch_policies_callback_) {
     // Combine with existing call.
@@ -195,6 +190,13 @@ void PolicyService::DoFetchPolicies(base::OnceCallback<void(int)> callback,
   }
 
   fetch_policies_callback_ = std::move(callback);
+
+  if (!is_cbcm_managed) {
+    VLOG(2) << "Device is not CBCM managed, skipped policy fetch.";
+    FetchPoliciesDone({}, kErrorOk, {});
+    return;
+  }
+
   scoped_refptr<PolicyFetcher> fetcher =
       CreateInProcessPolicyFetcher(external_constants_->DeviceManagementURL(),
                                    PolicyServiceProxyConfiguration::Get(this),
