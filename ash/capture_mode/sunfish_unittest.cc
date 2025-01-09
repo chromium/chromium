@@ -2229,7 +2229,8 @@ TEST_F(SunfishMultiDisplayTest, SelectNewRegionAndPanelRoot) {
 
 using SunfishDisplayMetricsTest = SunfishTest;
 
-TEST_F(SunfishDisplayMetricsTest, RefreshPanelBoundsInDefaultMode) {
+// TODO(crbug.com/388564694): Enable after resolving flakiness.
+TEST_F(SunfishDisplayMetricsTest, DISABLED_RefreshPanelBoundsInDefaultMode) {
   // Start default mode, select a region and press "Search" to show the panel.
   auto* controller =
       StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
