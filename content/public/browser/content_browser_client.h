@@ -244,7 +244,6 @@ class BrowserURLHandler;
 class ClientCertificateDelegate;
 class ControllerPresentationServiceDelegate;
 class DevToolsManagerDelegate;
-class DipsDelegate;
 class DirectSocketsDelegate;
 class FeatureObserverClient;
 class FontAccessDelegate;
@@ -3061,11 +3060,6 @@ class CONTENT_EXPORT ContentBrowserClient {
       const std::string& label,
       MultiCaptureChanged state);
 
-  // Allows the embedder to return a delegate for DIPS (Bounce Tracking
-  // Mitigations). The default implementation returns nullptr, resulting in
-  // default behavior.
-  virtual std::unique_ptr<DipsDelegate> CreateDipsDelegate();
-
   // DIPS will be enabled in browser contexts for which this returns true. The
   // default implementation returns true for all contexts.
   virtual bool ShouldEnableDips(BrowserContext* browser_context);
@@ -3094,6 +3088,13 @@ class CONTENT_EXPORT ContentBrowserClient {
   // added by embedders. The default implementation returns
   // kDefaultDipsRemoveMask.
   virtual uint64_t GetDipsRemoveMask();
+
+  // DIPS keeps separate records of storage and interactions for relevant sites.
+  // It clears storage records for sites when their cookies are deleted, and
+  // clears interaction records for sites when this method returns true, given
+  // the `remove_mask` that a client passed to BrowsingDataRemover::Remove().
+  // The default implementation returns true when clearing cookies.
+  virtual bool ShouldDipsDeleteInteractionRecords(uint64_t remove_mask);
 
   // Allows the embedder to suppress the firing of the AXLoadComplete event.
   // Currently, this is only respected on Mac. Since VoiceOver on Mac will

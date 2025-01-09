@@ -5,8 +5,6 @@
 #ifndef CONTENT_BROWSER_DIPS_DIPS_BROWSERTEST_UTILS_H_
 #define CONTENT_BROWSER_DIPS_DIPS_BROWSERTEST_UTILS_H_
 
-#include <memory>
-
 #include "base/time/time.h"
 #include "content/browser/dips/dips_test_utils.h"
 #include "content/public/test/content_browser_test_content_browser_client.h"
@@ -26,7 +24,6 @@ class Origin;
 }
 
 namespace content {
-class DipsDelegate;
 class BrowserContext;
 class RenderFrameHost;
 class WebContents;
@@ -47,7 +44,7 @@ class ContentBrowserTestTpcBlockingBrowserClient
                                        base::TimeDelta ttl,
                                        bool ignore_schemes) override;
 
-  std::unique_ptr<DipsDelegate> CreateDipsDelegate() override;
+  bool ShouldDipsDeleteInteractionRecords(uint64_t remove_mask) override;
 
   bool IsPrivacySandboxReportingDestinationAttested(
       BrowserContext* browser_context,

@@ -9,7 +9,6 @@
 #include "base/test/bind.h"
 #include "content/browser/dips/dips_service_impl.h"
 #include "content/public/browser/browsing_data_remover.h"
-#include "content/public/browser/dips_delegate.h"
 #include "content/public/browser/dips_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -405,19 +404,9 @@ void TpcBlockingBrowserClient::GrantCookieAccessDueToHeuristic(
   }
 }
 
-// A DipsDelegate that only differs from the default (i.e., no delegate)
-// behavior in one way: ShouldDeleteInteractionRecords() checks for the
-// DATA_TYPE_HISTORY bit.
-class SimpleDipsDelegate : public content::DipsDelegate {
- public:
-  bool ShouldDeleteInteractionRecords(uint64_t remove_mask) override {
-    return remove_mask & TpcBlockingBrowserClient::DATA_TYPE_HISTORY;
-  }
-};
-
-std::unique_ptr<content::DipsDelegate>
-TpcBlockingBrowserClient::CreateDipsDelegate() {
-  return std::make_unique<SimpleDipsDelegate>();
+bool TpcBlockingBrowserClient::ShouldDipsDeleteInteractionRecords(
+    uint64_t remove_mask) {
+  return remove_mask & TpcBlockingBrowserClient::DATA_TYPE_HISTORY;
 }
 
 void TpcBlockingBrowserClient::AllowThirdPartyCookiesOnSite(const GURL& url) {

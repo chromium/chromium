@@ -1084,11 +1084,11 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       MultiCaptureChanged state) override;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  std::unique_ptr<content::DipsDelegate> CreateDipsDelegate() override;
   bool ShouldEnableDips(content::BrowserContext* browser_context) override;
   void OnDipsServiceCreated(content::BrowserContext* browser_context,
                             DIPSService* dips_service) override;
   uint64_t GetDipsRemoveMask() override;
+  bool ShouldDipsDeleteInteractionRecords(uint64_t remove_mask) override;
 
   bool ShouldSuppressAXLoadComplete(content::RenderFrameHost* rfh) override;
 

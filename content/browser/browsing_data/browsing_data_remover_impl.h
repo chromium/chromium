@@ -32,7 +32,6 @@ namespace content {
 
 class BrowserContext;
 class BrowsingDataFilterBuilder;
-class DipsDelegate;
 class StoragePartition;
 
 class CONTENT_EXPORT BrowsingDataRemoverImpl
@@ -246,8 +245,6 @@ class CONTENT_EXPORT BrowsingDataRemoverImpl
 
   // A delegate to delete the embedder-specific data. Owned by the embedder.
   raw_ptr<BrowsingDataRemoverDelegate, DanglingUntriaged> embedder_delegate_;
-
-  std::unique_ptr<DipsDelegate> dips_delegate_;
 
   // Start time to delete from.
   base::Time delete_begin_;

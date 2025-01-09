@@ -42,7 +42,6 @@
 #include "content/public/browser/browsing_data_remover_delegate.h"
 #include "content/public/browser/client_hints_controller_delegate.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/dips_delegate.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_partition_config.h"
@@ -128,7 +127,6 @@ BrowsingDataRemoverImpl::BrowsingDataRemoverImpl(
       storage_partition_config_(std::nullopt),
       is_removing_(false) {
   DCHECK(browser_context_);
-  dips_delegate_ = GetContentClient()->browser()->CreateDipsDelegate();
 }
 
 BrowsingDataRemoverImpl::~BrowsingDataRemoverImpl() {
@@ -688,14 +686,10 @@ void BrowsingDataRemoverImpl::RemoveImpl(
   DIPSEventRemovalType dips_mask = DIPSEventRemovalType::kNone;
   if ((remove_mask & DATA_TYPE_COOKIES) &&
       !filter_builder->PartitionedCookiesOnly()) {
-    // If there's no delegate, delete everything whenever the user is deleting
-    // cookies.
-    dips_mask |= dips_delegate_ ? DIPSEventRemovalType::kStorage
-                                : DIPSEventRemovalType::kAll;
+    dips_mask |= DIPSEventRemovalType::kStorage;
   }
-  // If there's a delegate, ask it whether to delete DIPS history.
-  if (dips_delegate_ &&
-      dips_delegate_->ShouldDeleteInteractionRecords(remove_mask)) {
+  if (GetContentClient()->browser()->ShouldDipsDeleteInteractionRecords(
+          remove_mask)) {
     dips_mask |= DIPSEventRemovalType::kHistory;
   }
 

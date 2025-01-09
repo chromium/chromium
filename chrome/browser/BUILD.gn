@@ -367,8 +367,6 @@ static_library("browser") {
     "digital_credentials/digital_identity_interstitial_closed_reason.h",
     "digital_credentials/digital_identity_low_risk_origins.cc",
     "digital_credentials/digital_identity_low_risk_origins.h",
-    "dips/chrome_dips_delegate.cc",
-    "dips/chrome_dips_delegate.h",
     "dips/dips_browser_signin_detector.cc",
     "dips/dips_browser_signin_detector.h",
     "dips/dips_browser_signin_detector_factory.cc",

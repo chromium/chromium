@@ -71,7 +71,6 @@
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/device_api/device_service_impl.h"
 #include "chrome/browser/device_api/managed_configuration_service.h"
-#include "chrome/browser/dips/chrome_dips_delegate.h"
 #include "chrome/browser/dips/dips_browser_signin_detector.h"
 #include "chrome/browser/dips/stateful_bounce_counter.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
@@ -346,7 +345,6 @@
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/browser/digital_identity_provider.h"
-#include "content/public/browser/dips_delegate.h"
 #include "content/public/browser/file_url_loader.h"
 #include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/browser/legacy_tech_cookie_issue_details.h"
@@ -8553,12 +8551,6 @@ void ChromeContentBrowserClient::NotifyMultiCaptureStateChanged(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-std::unique_ptr<content::DipsDelegate>
-ChromeContentBrowserClient::CreateDipsDelegate() {
-  return std::make_unique<ChromeDipsDelegate>(
-      base::PassKey<ChromeContentBrowserClient>());
-}
-
 bool ChromeContentBrowserClient::ShouldEnableDips(
     content::BrowserContext* browser_context) {
   return ShouldBrowserContextEnableDips(browser_context);
@@ -8589,6 +8581,11 @@ static_assert(content::ContentBrowserClient::kDefaultDipsRemoveMask ==
 
 uint64_t ChromeContentBrowserClient::GetDipsRemoveMask() {
   return chrome_browsing_data_remover::FILTERABLE_DATA_TYPES;
+}
+
+bool ChromeContentBrowserClient::ShouldDipsDeleteInteractionRecords(
+    uint64_t remove_mask) {
+  return remove_mask & chrome_browsing_data_remover::DATA_TYPE_HISTORY;
 }
 
 bool ChromeContentBrowserClient::ShouldSuppressAXLoadComplete(

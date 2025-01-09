@@ -29,7 +29,6 @@
 #include "content/browser/dips/dips_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/dips_delegate.h"
 #include "content/public/browser/dips_redirect_info.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"

@@ -30,10 +30,10 @@
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_main_parts.h"
+#include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 #include "content/public/browser/digital_identity_provider.h"
-#include "content/public/browser/dips_delegate.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/browser/legacy_tech_cookie_issue_details.h"
 #include "content/public/browser/login_delegate.h"
@@ -1792,16 +1792,17 @@ void ContentBrowserClient::NotifyMultiCaptureStateChanged(
     const std::string& label,
     MultiCaptureChanged state) {}
 
-std::unique_ptr<DipsDelegate> ContentBrowserClient::CreateDipsDelegate() {
-  return nullptr;
-}
-
 bool ContentBrowserClient::ShouldEnableDips(BrowserContext* browser_context) {
   return true;
 }
 
 uint64_t ContentBrowserClient::GetDipsRemoveMask() {
   return kDefaultDipsRemoveMask;
+}
+
+bool ContentBrowserClient::ShouldDipsDeleteInteractionRecords(
+    uint64_t remove_mask) {
+  return remove_mask & BrowsingDataRemover::DATA_TYPE_COOKIES;
 }
 
 bool ContentBrowserClient::ShouldSuppressAXLoadComplete(RenderFrameHost* rfh) {

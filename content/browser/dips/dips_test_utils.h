@@ -307,7 +307,7 @@ class TpcBlockingBrowserClient : public content::ContentBrowserClient {
                                        base::TimeDelta ttl,
                                        bool ignore_schemes) override;
 
-  std::unique_ptr<content::DipsDelegate> CreateDipsDelegate() override;
+  bool ShouldDipsDeleteInteractionRecords(uint64_t remove_mask) override;
 
   void AllowThirdPartyCookiesOnSite(const GURL& url);
   void GrantCookieAccessTo3pSite(const GURL& url);

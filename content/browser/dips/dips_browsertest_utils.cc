@@ -4,8 +4,6 @@
 
 #include "content/browser/dips/dips_browsertest_utils.h"
 
-#include "content/public/browser/dips_delegate.h"
-
 namespace content {
 
 bool ContentBrowserTestTpcBlockingBrowserClient::IsFullCookieAccessAllowed(
@@ -27,9 +25,9 @@ void ContentBrowserTestTpcBlockingBrowserClient::
                                         accessing_site, ttl, ignore_schemes);
 }
 
-std::unique_ptr<content::DipsDelegate>
-ContentBrowserTestTpcBlockingBrowserClient::CreateDipsDelegate() {
-  return impl_.CreateDipsDelegate();
+bool ContentBrowserTestTpcBlockingBrowserClient::
+    ShouldDipsDeleteInteractionRecords(uint64_t remove_mask) {
+  return impl_.ShouldDipsDeleteInteractionRecords(remove_mask);
 }
 
 bool ContentBrowserTestTpcBlockingBrowserClient::

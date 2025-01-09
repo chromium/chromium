@@ -27,7 +27,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/dips_delegate.h"
 #include "content/public/browser/dips_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
