@@ -771,6 +771,10 @@ ci.builder(
         ),
     ),
     gn_args = gn_args.config(
+        args = {
+            # For analyze_includes.py
+            "show_includes": True,
+        },
         configs = [
             "no_remoteexec",
             "linux",
