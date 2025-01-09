@@ -6791,10 +6791,46 @@ cssvalue::CSSShapeValue* ConsumeBasicShapeShape(
         }
         break;
       }
+      // https://drafts.csswg.org/css-shapes-2/#typedef-shape-horizontal-line-command
+      // hline [ to [ <length-percentage> | left | center | right | x-start |
+      // x-end ] | by <length-percentage> ]
+      // https://drafts.csswg.org/css-shapes-2/#typedef-shape-vertical-line-command
+      // vline [ to [ <length-percentage> | top | center | bottom | y-start |
+      // y-end ] | by <length-percentage> ]
+
+      // TODO(crbug.com/388616180): Support x-start/y-start/x-end/y-end in
+      // position component
+      case CSSValueID::kHline:
+      case CSSValueID::kVline: {
+        end_point_origin = args.ConsumeIncludingWhitespace().Id();
+        bool horizontal_edge = command_type == CSSValueID::kVline;
+        bool vertical_edge = !horizontal_edge;
+        const CSSValue* end_point = nullptr;
+        switch (end_point_origin) {
+          case CSSValueID::kTo:
+            end_point =
+                ConsumePositionComponent(args, context, UnitlessQuirk::kForbid,
+                                         horizontal_edge, vertical_edge);
+            break;
+          case CSSValueID::kBy:
+            end_point = ConsumeLengthOrPercent(
+                args, context, CSSPrimitiveValue::ValueRange::kAll);
+            break;
+          default:
+            return nullptr;
+        }
+
+        if (end_point) {
+          commands.push_back(MakeGarbageCollected<const CSSShapeCommand>(
+              command_type, end_point_origin, *end_point));
+        } else {
+          return nullptr;
+        }
+        break;
+      }
       // https://drafts.csswg.org/css-shapes-2/#typedef-shape-close
       case CSSValueID::kClose:
-        commands.push_back(
-            MakeGarbageCollected<const CSSShapeCommand>(CSSValueID::kClose));
+        commands.push_back(CSSShapeCommand::Close());
         break;
       default:
         return nullptr;

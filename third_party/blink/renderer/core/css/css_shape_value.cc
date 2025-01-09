@@ -15,24 +15,17 @@
 namespace blink::cssvalue {
 
 String CSSShapeCommand::CSSText() const {
-  StringBuilder builder;
-  switch (type_) {
-    case CSSValueID::kMove:
-      builder.Append("move");
-      builder.Append(end_point_origin_ == CSSValueID::kTo ? " to " : " by ");
-      builder.Append(end_point_->CssText());
-      break;
-    case CSSValueID::kLine:
-      builder.Append("line");
-      builder.Append(end_point_origin_ == CSSValueID::kTo ? " to " : " by ");
-      builder.Append(end_point_->CssText());
-      break;
-    case CSSValueID::kClose:
-      builder.Append("close");
-      break;
-    default:
-      NOTREACHED();
+  if (type_ == CSSValueID::kClose) {
+    return GetCSSValueNameAs<String>(CSSValueID::kClose);
   }
+
+  StringBuilder builder;
+
+  builder.Append(GetCSSValueNameAs<StringView>(type_));
+  builder.Append(' ');
+  builder.Append(GetCSSValueNameAs<StringView>(end_point_origin_));
+  builder.Append(' ');
+  builder.Append(end_point_->CssText());
 
   return builder.ReleaseString();
 }

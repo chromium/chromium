@@ -32,9 +32,19 @@ class CSSShapeCommand : public GarbageCollected<CSSShapeCommand> {
   void Trace(Visitor* visitor) const { visitor->Trace(end_point_); }
 
   CSSShapeCommand(CSSValueID type, CSSValueID origin, const CSSValue& end_point)
-      : type_(type), end_point_origin_(origin), end_point_(end_point) {}
+      : type_(type), end_point_origin_(origin), end_point_(end_point) {
+    CHECK(type == CSSValueID::kMove || type == CSSValueID::kLine ||
+          type == CSSValueID::kHline || type == CSSValueID::kVline ||
+          type == CSSValueID::kClose);
+    CHECK(origin == CSSValueID::kTo || origin == CSSValueID::kBy);
+  }
 
-  explicit CSSShapeCommand(CSSValueID type) : type_(type) {}
+  static const CSSShapeCommand* Close() {
+    return MakeGarbageCollected<CSSShapeCommand>();
+  }
+
+  // This should be private, but can't because of MakeGarbageCollected.
+  CSSShapeCommand() : type_(CSSValueID::kClose) {}
 
  private:
   // Either kMove or kLine.

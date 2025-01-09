@@ -1,12 +1,4 @@
 This is a testharness.js-based test.
-[FAIL] Property clip-path value 'shape(from 20px 40px, move to 20px 30px, hline to 100px)'
-  assert_true: 'shape(from 20px 40px, move to 20px 30px, hline to 100px)' is a supported value for clip-path. expected true got false
-[FAIL] Property clip-path value 'shape(from 20px 40px, move to 20px 30px, hline by 100%)'
-  assert_true: 'shape(from 20px 40px, move to 20px 30px, hline by 100%)' is a supported value for clip-path. expected true got false
-[FAIL] Property clip-path value 'shape(from 20px 40px, move to 20px 30px, vline to 100px)'
-  assert_true: 'shape(from 20px 40px, move to 20px 30px, vline to 100px)' is a supported value for clip-path. expected true got false
-[FAIL] Property clip-path value 'shape(from 20px 40px, move to 20px 30px, vline by 100%)'
-  assert_true: 'shape(from 20px 40px, move to 20px 30px, vline by 100%)' is a supported value for clip-path. expected true got false
 [FAIL] Property clip-path value 'shape(from 20px 40px, curve by 20px 20px with 10px 30px)'
   assert_true: 'shape(from 20px 40px, curve by 20px 20px with 10px 30px)' is a supported value for clip-path. expected true got false
 [FAIL] Property clip-path value 'shape(from 20px 40px, curve by 20px 20px with 10px 30px / 12px 32px)'

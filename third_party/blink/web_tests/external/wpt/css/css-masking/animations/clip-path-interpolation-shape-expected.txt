@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 364 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 314 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] CSS Transitions: property <clip-path> from neutral to [shape(from -5px 5px, line to 20px 20%)] at (-0.3) should be [shape(from 8px 5px, line to 7px 7%)]
   assert_equals: expected "shape ( from 8px 5px , line to 7px 7 % ) " but got "shape ( from - 5px 5px , line to 20px 20 % ) "
 [FAIL] CSS Transitions: property <clip-path> from neutral to [shape(from -5px 5px, line to 20px 20%)] at (0) should be [shape(from 5px 5px, line to 10px 10%)]
@@ -61,45 +61,33 @@ Found 364 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Web Animations: property <clip-path> from [inherit] to [shape(from 15% 15px, move to 20% -10px)] at (1.5) should be [shape(from calc(22.5% + 2.5px) 20px, move to 27.5% -15.5px)]
   assert_equals: expected "shape ( from calc ( 22.5 % + 2.5px ) 20px , move to 27.5 % - 15.5px ) " but got "shape ( from 15 % 15px , move to 20 % - 10px ) "
 [FAIL] CSS Transitions: property <clip-path> from [shape(from 5% 5px, hline to 5%, vline to -5px, close)] to [shape(from 15% 15px, hline to 25%, vline to -15px, close)] at (-0.3) should be [shape(from 2% 2px, hline to -1%, vline to -2px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from 2 % 2px , hline to - 1 % , vline to - 2px , close ) " but got "shape ( from 15 % 15px , hline to 25 % , vline to - 15px , close ) "
 [FAIL] CSS Transitions: property <clip-path> from [shape(from 5% 5px, hline to 5%, vline to -5px, close)] to [shape(from 15% 15px, hline to 25%, vline to -15px, close)] at (0) should be [shape(from 5% 5px, hline to 5%, vline to -5px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from 5 % 5px , hline to 5 % , vline to - 5px , close ) " but got "shape ( from 15 % 15px , hline to 25 % , vline to - 15px , close ) "
 [FAIL] CSS Transitions: property <clip-path> from [shape(from 5% 5px, hline to 5%, vline to -5px, close)] to [shape(from 15% 15px, hline to 25%, vline to -15px, close)] at (0.5) should be [shape(from 10% 10px, hline to 15% , vline to -10px, close)]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions: property <clip-path> from [shape(from 5% 5px, hline to 5%, vline to -5px, close)] to [shape(from 15% 15px, hline to 25%, vline to -15px, close)] at (1) should be [shape(from 15% 15px, hline to 25%, vline to -15px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from 10 % 10px , hline to 15 % , vline to - 10px , close ) " but got "shape ( from 15 % 15px , hline to 25 % , vline to - 15px , close ) "
 [FAIL] CSS Transitions: property <clip-path> from [shape(from 5% 5px, hline to 5%, vline to -5px, close)] to [shape(from 15% 15px, hline to 25%, vline to -15px, close)] at (1.5) should be [shape(from 20% 20px, hline to 35%, vline to -20px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from 20 % 20px , hline to 35 % , vline to - 20px , close ) " but got "shape ( from 15 % 15px , hline to 25 % , vline to - 15px , close ) "
 [FAIL] CSS Transitions with transition: all: property <clip-path> from [shape(from 5% 5px, hline to 5%, vline to -5px, close)] to [shape(from 15% 15px, hline to 25%, vline to -15px, close)] at (-0.3) should be [shape(from 2% 2px, hline to -1%, vline to -2px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from 2 % 2px , hline to - 1 % , vline to - 2px , close ) " but got "shape ( from 15 % 15px , hline to 25 % , vline to - 15px , close ) "
 [FAIL] CSS Transitions with transition: all: property <clip-path> from [shape(from 5% 5px, hline to 5%, vline to -5px, close)] to [shape(from 15% 15px, hline to 25%, vline to -15px, close)] at (0) should be [shape(from 5% 5px, hline to 5%, vline to -5px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from 5 % 5px , hline to 5 % , vline to - 5px , close ) " but got "shape ( from 15 % 15px , hline to 25 % , vline to - 15px , close ) "
 [FAIL] CSS Transitions with transition: all: property <clip-path> from [shape(from 5% 5px, hline to 5%, vline to -5px, close)] to [shape(from 15% 15px, hline to 25%, vline to -15px, close)] at (0.5) should be [shape(from 10% 10px, hline to 15% , vline to -10px, close)]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition: all: property <clip-path> from [shape(from 5% 5px, hline to 5%, vline to -5px, close)] to [shape(from 15% 15px, hline to 25%, vline to -15px, close)] at (1) should be [shape(from 15% 15px, hline to 25%, vline to -15px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from 10 % 10px , hline to 15 % , vline to - 10px , close ) " but got "shape ( from 15 % 15px , hline to 25 % , vline to - 15px , close ) "
 [FAIL] CSS Transitions with transition: all: property <clip-path> from [shape(from 5% 5px, hline to 5%, vline to -5px, close)] to [shape(from 15% 15px, hline to 25%, vline to -15px, close)] at (1.5) should be [shape(from 20% 20px, hline to 35%, vline to -20px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from 20 % 20px , hline to 35 % , vline to - 20px , close ) " but got "shape ( from 15 % 15px , hline to 25 % , vline to - 15px , close ) "
 [FAIL] CSS Animations: property <clip-path> from [shape(from 5% 5px, hline to 5%, vline to -5px, close)] to [shape(from 15% 15px, hline to 25%, vline to -15px, close)] at (-0.3) should be [shape(from 2% 2px, hline to -1%, vline to -2px, close)]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Animations: property <clip-path> from [shape(from 5% 5px, hline to 5%, vline to -5px, close)] to [shape(from 15% 15px, hline to 25%, vline to -15px, close)] at (0) should be [shape(from 5% 5px, hline to 5%, vline to -5px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from 2 % 2px , hline to - 1 % , vline to - 2px , close ) " but got "shape ( from 5 % 5px , hline to 5 % , vline to - 5px , close ) "
 [FAIL] CSS Animations: property <clip-path> from [shape(from 5% 5px, hline to 5%, vline to -5px, close)] to [shape(from 15% 15px, hline to 25%, vline to -15px, close)] at (0.5) should be [shape(from 10% 10px, hline to 15% , vline to -10px, close)]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Animations: property <clip-path> from [shape(from 5% 5px, hline to 5%, vline to -5px, close)] to [shape(from 15% 15px, hline to 25%, vline to -15px, close)] at (1) should be [shape(from 15% 15px, hline to 25%, vline to -15px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from 10 % 10px , hline to 15 % , vline to - 10px , close ) " but got "shape ( from 15 % 15px , hline to 25 % , vline to - 15px , close ) "
 [FAIL] CSS Animations: property <clip-path> from [shape(from 5% 5px, hline to 5%, vline to -5px, close)] to [shape(from 15% 15px, hline to 25%, vline to -15px, close)] at (1.5) should be [shape(from 20% 20px, hline to 35%, vline to -20px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from 20 % 20px , hline to 35 % , vline to - 20px , close ) " but got "shape ( from 15 % 15px , hline to 25 % , vline to - 15px , close ) "
 [FAIL] Web Animations: property <clip-path> from [shape(from 5% 5px, hline to 5%, vline to -5px, close)] to [shape(from 15% 15px, hline to 25%, vline to -15px, close)] at (-0.3) should be [shape(from 2% 2px, hline to -1%, vline to -2px, close)]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] Web Animations: property <clip-path> from [shape(from 5% 5px, hline to 5%, vline to -5px, close)] to [shape(from 15% 15px, hline to 25%, vline to -15px, close)] at (0) should be [shape(from 5% 5px, hline to 5%, vline to -5px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from 2 % 2px , hline to - 1 % , vline to - 2px , close ) " but got "shape ( from 5 % 5px , hline to 5 % , vline to - 5px , close ) "
 [FAIL] Web Animations: property <clip-path> from [shape(from 5% 5px, hline to 5%, vline to -5px, close)] to [shape(from 15% 15px, hline to 25%, vline to -15px, close)] at (0.5) should be [shape(from 10% 10px, hline to 15% , vline to -10px, close)]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] Web Animations: property <clip-path> from [shape(from 5% 5px, hline to 5%, vline to -5px, close)] to [shape(from 15% 15px, hline to 25%, vline to -15px, close)] at (1) should be [shape(from 15% 15px, hline to 25%, vline to -15px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from 10 % 10px , hline to 15 % , vline to - 10px , close ) " but got "shape ( from 15 % 15px , hline to 25 % , vline to - 15px , close ) "
 [FAIL] Web Animations: property <clip-path> from [shape(from 5% 5px, hline to 5%, vline to -5px, close)] to [shape(from 15% 15px, hline to 25%, vline to -15px, close)] at (1.5) should be [shape(from 20% 20px, hline to 35%, vline to -20px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from 20 % 20px , hline to 35 % , vline to - 20px , close ) " but got "shape ( from 15 % 15px , hline to 25 % , vline to - 15px , close ) "
 [FAIL] CSS Transitions: property <clip-path> from [shape(from 5% 5px, curve to 10% 10px with 0% 80px, curve to 30% 20px with 20% 50px / 25% 70px)] to [shape(from 15% 15px, curve to 20% 0px with 10% 60px, curve to 20% 30px with 30% 40px / -5% 100px)] at (-0.3) should be [shape(from 2% 2px, curve to 7% 13px with -3% 86px, curve to 33% 17px with 17% 53px / 34% 61px)]
   assert_true: 'from' value should be supported expected true got false
 [FAIL] CSS Transitions: property <clip-path> from [shape(from 5% 5px, curve to 10% 10px with 0% 80px, curve to 30% 20px with 20% 50px / 25% 70px)] to [shape(from 15% 15px, curve to 20% 0px with 10% 60px, curve to 20% 30px with 30% 40px / -5% 100px)] at (0) should be [shape(from 5% 5px, curve to 10% 10px with 0% 80px, curve to 30% 20px with 20% 50px / 25% 70px)]
@@ -309,169 +297,81 @@ Found 364 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Web Animations: property <clip-path> from [shape(from 5% 5px, arc to 15% -15px of 10px 20px, arc by 15% -5px of 30px cw rotate 30deg large, arc to 25% 20px of 10px 5px small)] to [shape(from 15% 15px, arc to 5% -25px of 20px 30px, arc by 25% -15px of 20px cw rotate 270deg small, arc to 25% 20px of 10px 5px small cw)] at (1.5) should be [shape(from 20% 20px, arc to 0% -30px of 25px 35px ccw small, arc by 30% -20px of 15px rotate 390deg cw small, arc to 25% 20px of 10px 5px cw small)]
   assert_true: 'from' value should be supported expected true got false
 [FAIL] CSS Transitions: property <clip-path> from [shape(from 5px -5%, hline to 10px, vline by 10rem, hline by 8.25px, close, vline by 3pt)] to [shape(from -5px 5px, hline to 20px, vline by 10%, hline by 1em, close, vline by 6pt)] at (-0.3) should be [shape(from 8px calc(-6.5% - 1.5px), hline to 7px, vline by calc(-3% + 208px), hline by 5.92px, close, vline by 2.8px)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from 8px calc ( - 6.5 % - 1.5px ) , hline to 7px , vline by calc ( - 3 % + 208px ) , hline by 5.92px , close , vline by 2.8px ) " but got "shape ( from - 5px 5px , hline to 20px , vline by 10 % , hline by 16px , close , vline by 8px ) "
 [FAIL] CSS Transitions: property <clip-path> from [shape(from 5px -5%, hline to 10px, vline by 10rem, hline by 8.25px, close, vline by 3pt)] to [shape(from -5px 5px, hline to 20px, vline by 10%, hline by 1em, close, vline by 6pt)] at (0) should be [shape(from 5px -5%, hline to 10px, vline by calc(0% + 160px), hline by 8.25px, close, vline by 4px)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from 5px - 5 % , hline to 10px , vline by calc ( 0 % + 160px ) , hline by 8.25px , close , vline by 4px ) " but got "shape ( from - 5px 5px , hline to 20px , vline by 10 % , hline by 16px , close , vline by 8px ) "
 [FAIL] CSS Transitions: property <clip-path> from [shape(from 5px -5%, hline to 10px, vline by 10rem, hline by 8.25px, close, vline by 3pt)] to [shape(from -5px 5px, hline to 20px, vline by 10%, hline by 1em, close, vline by 6pt)] at (0.6) should be [shape(from -1px calc(-2% + 3px), hline to 16px, vline by calc(6% + 64px), hline by 12.9px, close ,vline by 6.4px)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from - 1px calc ( - 2 % + 3px ) , hline to 16px , vline by calc ( 6 % + 64px ) , hline by 12.9px , close , vline by 6.4px ) " but got "shape ( from - 5px 5px , hline to 20px , vline by 10 % , hline by 16px , close , vline by 8px ) "
 [FAIL] CSS Transitions: property <clip-path> from [shape(from 5px -5%, hline to 10px, vline by 10rem, hline by 8.25px, close, vline by 3pt)] to [shape(from -5px 5px, hline to 20px, vline by 10%, hline by 1em, close, vline by 6pt)] at (1) should be [shape(from -5px calc(0% + 5px), hline to 20px, vline by 10%, hline by 16px, close, vline by 8px)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from - 5px calc ( 0 % + 5px ) , hline to 20px , vline by 10 % , hline by 16px , close , vline by 8px ) " but got "shape ( from - 5px 5px , hline to 20px , vline by 10 % , hline by 16px , close , vline by 8px ) "
 [FAIL] CSS Transitions: property <clip-path> from [shape(from 5px -5%, hline to 10px, vline by 10rem, hline by 8.25px, close, vline by 3pt)] to [shape(from -5px 5px, hline to 20px, vline by 10%, hline by 1em, close, vline by 6pt)] at (1.5) should be [shape(from -10px calc(2.5% + 7.5px), hline to 25px, vline by calc(15% - 80px), hline by 19.88px, close, vline by 10px)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from - 10px calc ( 2.5 % + 7.5px ) , hline to 25px , vline by calc ( 15 % - 80px ) , hline by 19.88px , close , vline by 10px ) " but got "shape ( from - 5px 5px , hline to 20px , vline by 10 % , hline by 16px , close , vline by 8px ) "
 [FAIL] CSS Transitions with transition: all: property <clip-path> from [shape(from 5px -5%, hline to 10px, vline by 10rem, hline by 8.25px, close, vline by 3pt)] to [shape(from -5px 5px, hline to 20px, vline by 10%, hline by 1em, close, vline by 6pt)] at (-0.3) should be [shape(from 8px calc(-6.5% - 1.5px), hline to 7px, vline by calc(-3% + 208px), hline by 5.92px, close, vline by 2.8px)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from 8px calc ( - 6.5 % - 1.5px ) , hline to 7px , vline by calc ( - 3 % + 208px ) , hline by 5.92px , close , vline by 2.8px ) " but got "shape ( from - 5px 5px , hline to 20px , vline by 10 % , hline by 16px , close , vline by 8px ) "
 [FAIL] CSS Transitions with transition: all: property <clip-path> from [shape(from 5px -5%, hline to 10px, vline by 10rem, hline by 8.25px, close, vline by 3pt)] to [shape(from -5px 5px, hline to 20px, vline by 10%, hline by 1em, close, vline by 6pt)] at (0) should be [shape(from 5px -5%, hline to 10px, vline by calc(0% + 160px), hline by 8.25px, close, vline by 4px)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from 5px - 5 % , hline to 10px , vline by calc ( 0 % + 160px ) , hline by 8.25px , close , vline by 4px ) " but got "shape ( from - 5px 5px , hline to 20px , vline by 10 % , hline by 16px , close , vline by 8px ) "
 [FAIL] CSS Transitions with transition: all: property <clip-path> from [shape(from 5px -5%, hline to 10px, vline by 10rem, hline by 8.25px, close, vline by 3pt)] to [shape(from -5px 5px, hline to 20px, vline by 10%, hline by 1em, close, vline by 6pt)] at (0.6) should be [shape(from -1px calc(-2% + 3px), hline to 16px, vline by calc(6% + 64px), hline by 12.9px, close ,vline by 6.4px)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from - 1px calc ( - 2 % + 3px ) , hline to 16px , vline by calc ( 6 % + 64px ) , hline by 12.9px , close , vline by 6.4px ) " but got "shape ( from - 5px 5px , hline to 20px , vline by 10 % , hline by 16px , close , vline by 8px ) "
 [FAIL] CSS Transitions with transition: all: property <clip-path> from [shape(from 5px -5%, hline to 10px, vline by 10rem, hline by 8.25px, close, vline by 3pt)] to [shape(from -5px 5px, hline to 20px, vline by 10%, hline by 1em, close, vline by 6pt)] at (1) should be [shape(from -5px calc(0% + 5px), hline to 20px, vline by 10%, hline by 16px, close, vline by 8px)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from - 5px calc ( 0 % + 5px ) , hline to 20px , vline by 10 % , hline by 16px , close , vline by 8px ) " but got "shape ( from - 5px 5px , hline to 20px , vline by 10 % , hline by 16px , close , vline by 8px ) "
 [FAIL] CSS Transitions with transition: all: property <clip-path> from [shape(from 5px -5%, hline to 10px, vline by 10rem, hline by 8.25px, close, vline by 3pt)] to [shape(from -5px 5px, hline to 20px, vline by 10%, hline by 1em, close, vline by 6pt)] at (1.5) should be [shape(from -10px calc(2.5% + 7.5px), hline to 25px, vline by calc(15% - 80px), hline by 19.88px, close, vline by 10px)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from - 10px calc ( 2.5 % + 7.5px ) , hline to 25px , vline by calc ( 15 % - 80px ) , hline by 19.88px , close , vline by 10px ) " but got "shape ( from - 5px 5px , hline to 20px , vline by 10 % , hline by 16px , close , vline by 8px ) "
 [FAIL] CSS Animations: property <clip-path> from [shape(from 5px -5%, hline to 10px, vline by 10rem, hline by 8.25px, close, vline by 3pt)] to [shape(from -5px 5px, hline to 20px, vline by 10%, hline by 1em, close, vline by 6pt)] at (-0.3) should be [shape(from 8px calc(-6.5% - 1.5px), hline to 7px, vline by calc(-3% + 208px), hline by 5.92px, close, vline by 2.8px)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from 8px calc ( - 6.5 % - 1.5px ) , hline to 7px , vline by calc ( - 3 % + 208px ) , hline by 5.92px , close , vline by 2.8px ) " but got "shape ( from 5px - 5 % , hline to 10px , vline by 160px , hline by 8.25px , close , vline by 4px ) "
 [FAIL] CSS Animations: property <clip-path> from [shape(from 5px -5%, hline to 10px, vline by 10rem, hline by 8.25px, close, vline by 3pt)] to [shape(from -5px 5px, hline to 20px, vline by 10%, hline by 1em, close, vline by 6pt)] at (0) should be [shape(from 5px -5%, hline to 10px, vline by calc(0% + 160px), hline by 8.25px, close, vline by 4px)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from 5px - 5 % , hline to 10px , vline by calc ( 0 % + 160px ) , hline by 8.25px , close , vline by 4px ) " but got "shape ( from 5px - 5 % , hline to 10px , vline by 160px , hline by 8.25px , close , vline by 4px ) "
 [FAIL] CSS Animations: property <clip-path> from [shape(from 5px -5%, hline to 10px, vline by 10rem, hline by 8.25px, close, vline by 3pt)] to [shape(from -5px 5px, hline to 20px, vline by 10%, hline by 1em, close, vline by 6pt)] at (0.6) should be [shape(from -1px calc(-2% + 3px), hline to 16px, vline by calc(6% + 64px), hline by 12.9px, close ,vline by 6.4px)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from - 1px calc ( - 2 % + 3px ) , hline to 16px , vline by calc ( 6 % + 64px ) , hline by 12.9px , close , vline by 6.4px ) " but got "shape ( from - 5px 5px , hline to 20px , vline by 10 % , hline by 16px , close , vline by 8px ) "
 [FAIL] CSS Animations: property <clip-path> from [shape(from 5px -5%, hline to 10px, vline by 10rem, hline by 8.25px, close, vline by 3pt)] to [shape(from -5px 5px, hline to 20px, vline by 10%, hline by 1em, close, vline by 6pt)] at (1) should be [shape(from -5px calc(0% + 5px), hline to 20px, vline by 10%, hline by 16px, close, vline by 8px)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from - 5px calc ( 0 % + 5px ) , hline to 20px , vline by 10 % , hline by 16px , close , vline by 8px ) " but got "shape ( from - 5px 5px , hline to 20px , vline by 10 % , hline by 16px , close , vline by 8px ) "
 [FAIL] CSS Animations: property <clip-path> from [shape(from 5px -5%, hline to 10px, vline by 10rem, hline by 8.25px, close, vline by 3pt)] to [shape(from -5px 5px, hline to 20px, vline by 10%, hline by 1em, close, vline by 6pt)] at (1.5) should be [shape(from -10px calc(2.5% + 7.5px), hline to 25px, vline by calc(15% - 80px), hline by 19.88px, close, vline by 10px)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from - 10px calc ( 2.5 % + 7.5px ) , hline to 25px , vline by calc ( 15 % - 80px ) , hline by 19.88px , close , vline by 10px ) " but got "shape ( from - 5px 5px , hline to 20px , vline by 10 % , hline by 16px , close , vline by 8px ) "
 [FAIL] Web Animations: property <clip-path> from [shape(from 5px -5%, hline to 10px, vline by 10rem, hline by 8.25px, close, vline by 3pt)] to [shape(from -5px 5px, hline to 20px, vline by 10%, hline by 1em, close, vline by 6pt)] at (-0.3) should be [shape(from 8px calc(-6.5% - 1.5px), hline to 7px, vline by calc(-3% + 208px), hline by 5.92px, close, vline by 2.8px)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from 8px calc ( - 6.5 % - 1.5px ) , hline to 7px , vline by calc ( - 3 % + 208px ) , hline by 5.92px , close , vline by 2.8px ) " but got "shape ( from 5px - 5 % , hline to 10px , vline by 160px , hline by 8.25px , close , vline by 4px ) "
 [FAIL] Web Animations: property <clip-path> from [shape(from 5px -5%, hline to 10px, vline by 10rem, hline by 8.25px, close, vline by 3pt)] to [shape(from -5px 5px, hline to 20px, vline by 10%, hline by 1em, close, vline by 6pt)] at (0) should be [shape(from 5px -5%, hline to 10px, vline by calc(0% + 160px), hline by 8.25px, close, vline by 4px)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from 5px - 5 % , hline to 10px , vline by calc ( 0 % + 160px ) , hline by 8.25px , close , vline by 4px ) " but got "shape ( from 5px - 5 % , hline to 10px , vline by 160px , hline by 8.25px , close , vline by 4px ) "
 [FAIL] Web Animations: property <clip-path> from [shape(from 5px -5%, hline to 10px, vline by 10rem, hline by 8.25px, close, vline by 3pt)] to [shape(from -5px 5px, hline to 20px, vline by 10%, hline by 1em, close, vline by 6pt)] at (0.6) should be [shape(from -1px calc(-2% + 3px), hline to 16px, vline by calc(6% + 64px), hline by 12.9px, close ,vline by 6.4px)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from - 1px calc ( - 2 % + 3px ) , hline to 16px , vline by calc ( 6 % + 64px ) , hline by 12.9px , close , vline by 6.4px ) " but got "shape ( from - 5px 5px , hline to 20px , vline by 10 % , hline by 16px , close , vline by 8px ) "
 [FAIL] Web Animations: property <clip-path> from [shape(from 5px -5%, hline to 10px, vline by 10rem, hline by 8.25px, close, vline by 3pt)] to [shape(from -5px 5px, hline to 20px, vline by 10%, hline by 1em, close, vline by 6pt)] at (1) should be [shape(from -5px calc(0% + 5px), hline to 20px, vline by 10%, hline by 16px, close, vline by 8px)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from - 5px calc ( 0 % + 5px ) , hline to 20px , vline by 10 % , hline by 16px , close , vline by 8px ) " but got "shape ( from - 5px 5px , hline to 20px , vline by 10 % , hline by 16px , close , vline by 8px ) "
 [FAIL] Web Animations: property <clip-path> from [shape(from 5px -5%, hline to 10px, vline by 10rem, hline by 8.25px, close, vline by 3pt)] to [shape(from -5px 5px, hline to 20px, vline by 10%, hline by 1em, close, vline by 6pt)] at (1.5) should be [shape(from -10px calc(2.5% + 7.5px), hline to 25px, vline by calc(15% - 80px), hline by 19.88px, close, vline by 10px)]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [path("M10 10 h 5")] to [shape(from 10px 10px, hline to 5px)] at (-0.3) should be [path("M10 10 h 5")]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [path("M10 10 h 5")] to [shape(from 10px 10px, hline to 5px)] at (0) should be [path("M10 10 h 5")]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [path("M10 10 h 5")] to [shape(from 10px 10px, hline to 5px)] at (0.3) should be [path("M10 10 h 5")]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [path("M10 10 h 5")] to [shape(from 10px 10px, hline to 5px)] at (0.5) should be [shape(from 10px 10px, hline to 5px)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [path("M10 10 h 5")] to [shape(from 10px 10px, hline to 5px)] at (0.6) should be [shape(from 10px 10px, hline to 5px)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [path("M10 10 h 5")] to [shape(from 10px 10px, hline to 5px)] at (1) should be [shape(from 10px 10px, hline to 5px)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [path("M10 10 h 5")] to [shape(from 10px 10px, hline to 5px)] at (1.5) should be [shape(from 10px 10px, hline to 5px)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [path("M10 10 h 5")] to [shape(from 10px 10px, hline to 5px)] at (-0.3) should be [path("M10 10 h 5")]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [path("M10 10 h 5")] to [shape(from 10px 10px, hline to 5px)] at (0) should be [path("M10 10 h 5")]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [path("M10 10 h 5")] to [shape(from 10px 10px, hline to 5px)] at (0.3) should be [path("M10 10 h 5")]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [path("M10 10 h 5")] to [shape(from 10px 10px, hline to 5px)] at (0.5) should be [shape(from 10px 10px, hline to 5px)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [path("M10 10 h 5")] to [shape(from 10px 10px, hline to 5px)] at (0.6) should be [shape(from 10px 10px, hline to 5px)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [path("M10 10 h 5")] to [shape(from 10px 10px, hline to 5px)] at (1) should be [shape(from 10px 10px, hline to 5px)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [path("M10 10 h 5")] to [shape(from 10px 10px, hline to 5px)] at (1.5) should be [shape(from 10px 10px, hline to 5px)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Transitions: property <clip-path> from [path("M10 10 h 5")] to [shape(from 10px 10px, hline to 5px)] at (-0.3) should be [shape(from 10px 10px, hline to 5px)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Transitions: property <clip-path> from [path("M10 10 h 5")] to [shape(from 10px 10px, hline to 5px)] at (0) should be [shape(from 10px 10px, hline to 5px)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Transitions: property <clip-path> from [path("M10 10 h 5")] to [shape(from 10px 10px, hline to 5px)] at (0.3) should be [shape(from 10px 10px, hline to 5px)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Transitions: property <clip-path> from [path("M10 10 h 5")] to [shape(from 10px 10px, hline to 5px)] at (0.5) should be [shape(from 10px 10px, hline to 5px)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Transitions: property <clip-path> from [path("M10 10 h 5")] to [shape(from 10px 10px, hline to 5px)] at (0.6) should be [shape(from 10px 10px, hline to 5px)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Transitions: property <clip-path> from [path("M10 10 h 5")] to [shape(from 10px 10px, hline to 5px)] at (1) should be [shape(from 10px 10px, hline to 5px)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Transitions: property <clip-path> from [path("M10 10 h 5")] to [shape(from 10px 10px, hline to 5px)] at (1.5) should be [shape(from 10px 10px, hline to 5px)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Transitions with transition: all: property <clip-path> from [path("M10 10 h 5")] to [shape(from 10px 10px, hline to 5px)] at (-0.3) should be [shape(from 10px 10px, hline to 5px)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Transitions with transition: all: property <clip-path> from [path("M10 10 h 5")] to [shape(from 10px 10px, hline to 5px)] at (0) should be [shape(from 10px 10px, hline to 5px)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Transitions with transition: all: property <clip-path> from [path("M10 10 h 5")] to [shape(from 10px 10px, hline to 5px)] at (0.3) should be [shape(from 10px 10px, hline to 5px)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Transitions with transition: all: property <clip-path> from [path("M10 10 h 5")] to [shape(from 10px 10px, hline to 5px)] at (0.5) should be [shape(from 10px 10px, hline to 5px)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Transitions with transition: all: property <clip-path> from [path("M10 10 h 5")] to [shape(from 10px 10px, hline to 5px)] at (0.6) should be [shape(from 10px 10px, hline to 5px)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Transitions with transition: all: property <clip-path> from [path("M10 10 h 5")] to [shape(from 10px 10px, hline to 5px)] at (1) should be [shape(from 10px 10px, hline to 5px)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Transitions with transition: all: property <clip-path> from [path("M10 10 h 5")] to [shape(from 10px 10px, hline to 5px)] at (1.5) should be [shape(from 10px 10px, hline to 5px)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Animations: property <clip-path> from [path("M10 10 h 5")] to [shape(from 10px 10px, hline to 5px)] at (-0.3) should be [path("M10 10 h 5")]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Animations: property <clip-path> from [path("M10 10 h 5")] to [shape(from 10px 10px, hline to 5px)] at (0) should be [path("M10 10 h 5")]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Animations: property <clip-path> from [path("M10 10 h 5")] to [shape(from 10px 10px, hline to 5px)] at (0.3) should be [path("M10 10 h 5")]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Animations: property <clip-path> from [path("M10 10 h 5")] to [shape(from 10px 10px, hline to 5px)] at (0.5) should be [shape(from 10px 10px, hline to 5px)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Animations: property <clip-path> from [path("M10 10 h 5")] to [shape(from 10px 10px, hline to 5px)] at (0.6) should be [shape(from 10px 10px, hline to 5px)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Animations: property <clip-path> from [path("M10 10 h 5")] to [shape(from 10px 10px, hline to 5px)] at (1) should be [shape(from 10px 10px, hline to 5px)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Animations: property <clip-path> from [path("M10 10 h 5")] to [shape(from 10px 10px, hline to 5px)] at (1.5) should be [shape(from 10px 10px, hline to 5px)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] Web Animations: property <clip-path> from [path("M10 10 h 5")] to [shape(from 10px 10px, hline to 5px)] at (-0.3) should be [path("M10 10 h 5")]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] Web Animations: property <clip-path> from [path("M10 10 h 5")] to [shape(from 10px 10px, hline to 5px)] at (0) should be [path("M10 10 h 5")]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] Web Animations: property <clip-path> from [path("M10 10 h 5")] to [shape(from 10px 10px, hline to 5px)] at (0.3) should be [path("M10 10 h 5")]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] Web Animations: property <clip-path> from [path("M10 10 h 5")] to [shape(from 10px 10px, hline to 5px)] at (0.5) should be [shape(from 10px 10px, hline to 5px)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] Web Animations: property <clip-path> from [path("M10 10 h 5")] to [shape(from 10px 10px, hline to 5px)] at (0.6) should be [shape(from 10px 10px, hline to 5px)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] Web Animations: property <clip-path> from [path("M10 10 h 5")] to [shape(from 10px 10px, hline to 5px)] at (1) should be [shape(from 10px 10px, hline to 5px)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] Web Animations: property <clip-path> from [path("M10 10 h 5")] to [shape(from 10px 10px, hline to 5px)] at (1.5) should be [shape(from 10px 10px, hline to 5px)]
-  assert_true: 'to' value should be supported expected true got false
+  assert_equals: expected "shape ( from - 10px calc ( 2.5 % + 7.5px ) , hline to 25px , vline by calc ( 15 % - 80px ) , hline by 19.88px , close , vline by 10px ) " but got "shape ( from - 5px 5px , hline to 20px , vline by 10 % , hline by 16px , close , vline by 8px ) "
 [FAIL] CSS Transitions: property <clip-path> from [shape(from 5px 5px, hline to 5px, vline to -5px, close)] to [path("M 15 15 H 25 V -15 Z")] at (-0.3) should be [shape(from 2px 2px, hline to -1px, vline to -2px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from 2px 2px , hline to - 1px , vline to - 2px , close ) " but got "path ( \\" M 15 15 H 25 V - 15 Z \\" ) "
 [FAIL] CSS Transitions: property <clip-path> from [shape(from 5px 5px, hline to 5px, vline to -5px, close)] to [path("M 15 15 H 25 V -15 Z")] at (0) should be [shape(from 5px 5px, hline to 5px, vline to -5px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from 5px 5px , hline to 5px , vline to - 5px , close ) " but got "path ( \\" M 15 15 H 25 V - 15 Z \\" ) "
 [FAIL] CSS Transitions: property <clip-path> from [shape(from 5px 5px, hline to 5px, vline to -5px, close)] to [path("M 15 15 H 25 V -15 Z")] at (0.5) should be [shape(from 10px 10px, hline to 15px, vline to -10px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from 10px 10px , hline to 15px , vline to - 10px , close ) " but got "path ( \\" M 15 15 H 25 V - 15 Z \\" ) "
 [FAIL] CSS Transitions: property <clip-path> from [shape(from 5px 5px, hline to 5px, vline to -5px, close)] to [path("M 15 15 H 25 V -15 Z")] at (1) should be [shape(from 15px 15px, hline to 25px, vline to -15px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from 15px 15px , hline to 25px , vline to - 15px , close ) " but got "path ( \\" M 15 15 H 25 V - 15 Z \\" ) "
 [FAIL] CSS Transitions: property <clip-path> from [shape(from 5px 5px, hline to 5px, vline to -5px, close)] to [path("M 15 15 H 25 V -15 Z")] at (1.5) should be [shape(from 20px 20px, hline to 35px, vline to -20px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from 20px 20px , hline to 35px , vline to - 20px , close ) " but got "path ( \\" M 15 15 H 25 V - 15 Z \\" ) "
 [FAIL] CSS Transitions with transition: all: property <clip-path> from [shape(from 5px 5px, hline to 5px, vline to -5px, close)] to [path("M 15 15 H 25 V -15 Z")] at (-0.3) should be [shape(from 2px 2px, hline to -1px, vline to -2px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from 2px 2px , hline to - 1px , vline to - 2px , close ) " but got "path ( \\" M 15 15 H 25 V - 15 Z \\" ) "
 [FAIL] CSS Transitions with transition: all: property <clip-path> from [shape(from 5px 5px, hline to 5px, vline to -5px, close)] to [path("M 15 15 H 25 V -15 Z")] at (0) should be [shape(from 5px 5px, hline to 5px, vline to -5px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from 5px 5px , hline to 5px , vline to - 5px , close ) " but got "path ( \\" M 15 15 H 25 V - 15 Z \\" ) "
 [FAIL] CSS Transitions with transition: all: property <clip-path> from [shape(from 5px 5px, hline to 5px, vline to -5px, close)] to [path("M 15 15 H 25 V -15 Z")] at (0.5) should be [shape(from 10px 10px, hline to 15px, vline to -10px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from 10px 10px , hline to 15px , vline to - 10px , close ) " but got "path ( \\" M 15 15 H 25 V - 15 Z \\" ) "
 [FAIL] CSS Transitions with transition: all: property <clip-path> from [shape(from 5px 5px, hline to 5px, vline to -5px, close)] to [path("M 15 15 H 25 V -15 Z")] at (1) should be [shape(from 15px 15px, hline to 25px, vline to -15px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from 15px 15px , hline to 25px , vline to - 15px , close ) " but got "path ( \\" M 15 15 H 25 V - 15 Z \\" ) "
 [FAIL] CSS Transitions with transition: all: property <clip-path> from [shape(from 5px 5px, hline to 5px, vline to -5px, close)] to [path("M 15 15 H 25 V -15 Z")] at (1.5) should be [shape(from 20px 20px, hline to 35px, vline to -20px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from 20px 20px , hline to 35px , vline to - 20px , close ) " but got "path ( \\" M 15 15 H 25 V - 15 Z \\" ) "
 [FAIL] CSS Animations: property <clip-path> from [shape(from 5px 5px, hline to 5px, vline to -5px, close)] to [path("M 15 15 H 25 V -15 Z")] at (-0.3) should be [shape(from 2px 2px, hline to -1px, vline to -2px, close)]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] CSS Animations: property <clip-path> from [shape(from 5px 5px, hline to 5px, vline to -5px, close)] to [path("M 15 15 H 25 V -15 Z")] at (0) should be [shape(from 5px 5px, hline to 5px, vline to -5px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from 2px 2px , hline to - 1px , vline to - 2px , close ) " but got "shape ( from 5px 5px , hline to 5px , vline to - 5px , close ) "
 [FAIL] CSS Animations: property <clip-path> from [shape(from 5px 5px, hline to 5px, vline to -5px, close)] to [path("M 15 15 H 25 V -15 Z")] at (0.5) should be [shape(from 10px 10px, hline to 15px, vline to -10px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from 10px 10px , hline to 15px , vline to - 10px , close ) " but got "path ( \\" M 15 15 H 25 V - 15 Z \\" ) "
 [FAIL] CSS Animations: property <clip-path> from [shape(from 5px 5px, hline to 5px, vline to -5px, close)] to [path("M 15 15 H 25 V -15 Z")] at (1) should be [shape(from 15px 15px, hline to 25px, vline to -15px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from 15px 15px , hline to 25px , vline to - 15px , close ) " but got "path ( \\" M 15 15 H 25 V - 15 Z \\" ) "
 [FAIL] CSS Animations: property <clip-path> from [shape(from 5px 5px, hline to 5px, vline to -5px, close)] to [path("M 15 15 H 25 V -15 Z")] at (1.5) should be [shape(from 20px 20px, hline to 35px, vline to -20px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from 20px 20px , hline to 35px , vline to - 20px , close ) " but got "path ( \\" M 15 15 H 25 V - 15 Z \\" ) "
 [FAIL] Web Animations: property <clip-path> from [shape(from 5px 5px, hline to 5px, vline to -5px, close)] to [path("M 15 15 H 25 V -15 Z")] at (-0.3) should be [shape(from 2px 2px, hline to -1px, vline to -2px, close)]
-  assert_true: 'from' value should be supported expected true got false
-[FAIL] Web Animations: property <clip-path> from [shape(from 5px 5px, hline to 5px, vline to -5px, close)] to [path("M 15 15 H 25 V -15 Z")] at (0) should be [shape(from 5px 5px, hline to 5px, vline to -5px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from 2px 2px , hline to - 1px , vline to - 2px , close ) " but got "shape ( from 5px 5px , hline to 5px , vline to - 5px , close ) "
 [FAIL] Web Animations: property <clip-path> from [shape(from 5px 5px, hline to 5px, vline to -5px, close)] to [path("M 15 15 H 25 V -15 Z")] at (0.5) should be [shape(from 10px 10px, hline to 15px, vline to -10px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from 10px 10px , hline to 15px , vline to - 10px , close ) " but got "path ( \\" M 15 15 H 25 V - 15 Z \\" ) "
 [FAIL] Web Animations: property <clip-path> from [shape(from 5px 5px, hline to 5px, vline to -5px, close)] to [path("M 15 15 H 25 V -15 Z")] at (1) should be [shape(from 15px 15px, hline to 25px, vline to -15px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from 15px 15px , hline to 25px , vline to - 15px , close ) " but got "path ( \\" M 15 15 H 25 V - 15 Z \\" ) "
 [FAIL] Web Animations: property <clip-path> from [shape(from 5px 5px, hline to 5px, vline to -5px, close)] to [path("M 15 15 H 25 V -15 Z")] at (1.5) should be [shape(from 20px 20px, hline to 35px, vline to -20px, close)]
-  assert_true: 'from' value should be supported expected true got false
+  assert_equals: expected "shape ( from 20px 20px , hline to 35px , vline to - 20px , close ) " but got "path ( \\" M 15 15 H 25 V - 15 Z \\" ) "
 [FAIL] CSS Transitions: property <clip-path> from [shape(from 5% 5px, curve to 10% 10px with 0% 80px, curve to 30% 20px with 20% 50px / 25% 70px)] to [path("M 15 15 Q 10 60 20 0 C 30 40 -5 100 20 30")] at (-0.3) should be [shape(from calc(6.5% - 4.5px) 2px, curve to calc(13% - 6px) 13px with calc(0% - 3px) 86px, curve to calc(39% - 6px) 17px with calc(26% - 9px) 53px / calc(32.5% + 1.5px) 61px)]
   assert_true: 'from' value should be supported expected true got false
 [FAIL] CSS Transitions: property <clip-path> from [shape(from 5% 5px, curve to 10% 10px with 0% 80px, curve to 30% 20px with 20% 50px / 25% 70px)] to [path("M 15 15 Q 10 60 20 0 C 30 40 -5 100 20 30")] at (0) should be [shape(from 5% 5px, curve to 10% 10px with 0% 80px, curve to 30% 20px with 20% 50px / 25% 70px)]

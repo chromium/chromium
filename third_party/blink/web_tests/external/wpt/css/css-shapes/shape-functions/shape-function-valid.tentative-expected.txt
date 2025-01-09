@@ -1,18 +1,6 @@
 This is a testharness.js-based test.
-Found 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] e.style['clip-path'] = "shape(from 20px 40px, move to 20px 30px, hline to 100px)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['clip-path'] = "shape(from 20px 40px, move to 20px 30px, hline by 100%)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['clip-path'] = "shape(from 20px 40px, move to 20px 30px, vline to 100px)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['clip-path'] = "shape(from 20px 40px, move to 20px 30px, vline by 100%)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['clip-path'] = "shape(from 20px 40px, move to 20px 30px, hline to left, hline to center, hline to right)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
+Found 41 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] e.style['clip-path'] = "shape(from 20px 40px, move to 20px 30px, hline to x-start, hline to y-start)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['clip-path'] = "shape(from 20px 40px, move to 20px 30px, vline to top, vline to center, vline to bottom)" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['clip-path'] = "shape(from 20px 40px, move to 20px 30px, vline to y-start, vline to y-end)" should set the property value
   assert_not_equals: property should be set got disallowed value ""

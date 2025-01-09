@@ -125,6 +125,26 @@ StyleShape::Segment ShapeCommandToShapeSegment(
               CSSValueIDToShapeSegmentOrigin(command.GetEndPointOrigin()),
           .end_point = StyleBuilderConverter::ConvertPosition(
               state, command.GetEndPoint())};
+    case CSSValueID::kHline:
+      return StyleShape::Segment{
+          .type = StyleShape::Segment::kHorizontalLine,
+          .end_point_origin =
+              CSSValueIDToShapeSegmentOrigin(command.GetEndPointOrigin()),
+          .end_point = LengthPoint(
+              StyleBuilderConverter::ConvertPositionLength<CSSValueID::kLeft,
+                                                           CSSValueID::kRight>(
+                  state, command.GetEndPoint()),
+              Length::Fixed(0))};
+    case CSSValueID::kVline:
+      return StyleShape::Segment{
+          .type = StyleShape::Segment::kVerticalLine,
+          .end_point_origin =
+              CSSValueIDToShapeSegmentOrigin(command.GetEndPointOrigin()),
+          .end_point = LengthPoint(
+              Length::Fixed(0),
+              StyleBuilderConverter::ConvertPositionLength<CSSValueID::kTop,
+                                                           CSSValueID::kBottom>(
+                  state, command.GetEndPoint()))};
     case CSSValueID::kClose:
       return StyleShape::Segment{.type = StyleShape::Segment::kClose};
     default:
@@ -147,9 +167,18 @@ const cssvalue::CSSShapeCommand* ShapeSegmentToShapeCommand(
           CSSValueID::kLine,
           ShapeSegmentOriginToCSSValueID(segment.end_point_origin),
           LengthPointToCSSValue(segment.end_point, zoom));
-    case blink::StyleShape::Segment::Type::kClose:
+    case blink::StyleShape::Segment::Type::kHorizontalLine:
       return MakeGarbageCollected<const cssvalue::CSSShapeCommand>(
-          CSSValueID::kClose);
+          CSSValueID::kHline,
+          ShapeSegmentOriginToCSSValueID(segment.end_point_origin),
+          *CSSPrimitiveValue::CreateFromLength(segment.end_point.X(), zoom));
+    case blink::StyleShape::Segment::Type::kVerticalLine:
+      return MakeGarbageCollected<const cssvalue::CSSShapeCommand>(
+          CSSValueID::kVline,
+          ShapeSegmentOriginToCSSValueID(segment.end_point_origin),
+          *CSSPrimitiveValue::CreateFromLength(segment.end_point.Y(), zoom));
+    case blink::StyleShape::Segment::Type::kClose:
+      return cssvalue::CSSShapeCommand::Close();
   }
 }
 

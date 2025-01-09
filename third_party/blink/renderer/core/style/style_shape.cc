@@ -49,6 +49,22 @@ void StyleShape::ResolvePath(Path& path, const gfx::SizeF& box_size) const {
                      : SVGPathSegType::kPathSegLineToRel,
              .target_point = PointForLengthPoint(segment.end_point, box_size)});
         break;
+      case Segment::Type::kHorizontalLine:
+        builder.EmitSegment(
+            {.command =
+                 segment.end_point_origin == Segment::PointOrigin::kReferenceBox
+                     ? SVGPathSegType::kPathSegLineToHorizontalAbs
+                     : SVGPathSegType::kPathSegLineToHorizontalRel,
+             .target_point = PointForLengthPoint(segment.end_point, box_size)});
+        break;
+      case Segment::Type::kVerticalLine:
+        builder.EmitSegment(
+            {.command =
+                 segment.end_point_origin == Segment::PointOrigin::kReferenceBox
+                     ? SVGPathSegType::kPathSegLineToVerticalAbs
+                     : SVGPathSegType::kPathSegLineToVerticalRel,
+             .target_point = PointForLengthPoint(segment.end_point, box_size)});
+        break;
       case Segment::Type::kClose:
         builder.EmitSegment({.command = SVGPathSegType::kPathSegClosePath});
         break;
