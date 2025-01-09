@@ -15,16 +15,10 @@
 
 namespace chrome_checker {
 
-enum Disposition {
-  kSkip = 0,  // Do not check for any unsafe operations.
-  kSkipLibc,  // Check for unsafe buffers but not unsafe libc calls.
-  kCheck,     // Check for both unsafe buffers and unsafe libc calls.
-};
-
-// Stores whether the filename (key) should be checked for errors.
-// If the filename is not present, the choice is up to the plugin to
-// determine from the path prefixes control file.
-llvm::StringMap<Disposition> g_checked_files_cache;
+// Stores `true` if the filename (key) should be checked for errors, and `false`
+// if it should not be. If the filename is not present, the choice is up to the
+// plugin to determine from the path prefixes control file.
+llvm::StringMap<bool> g_checked_files_cache;
 
 struct CheckFilePrefixes {
   // `buffer` owns the memory for the strings in `prefix_map`.
@@ -111,13 +105,10 @@ class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
       return;
     }
 
-    const bool is_libc_diagnostic =
-        diag_id == clang::diag::warn_unsafe_buffer_libc_call ||
-        diag_id == clang::diag::note_unsafe_buffer_printf_call;
-
-    if (!(is_libc_diagnostic ||
+    if (!(diag_id == clang::diag::warn_unsafe_buffer_libc_call ||
           diag_id == clang::diag::warn_unsafe_buffer_variable ||
           diag_id == clang::diag::warn_unsafe_buffer_operation ||
+          diag_id == clang::diag::note_unsafe_buffer_printf_call ||
           diag_id == clang::diag::note_unsafe_buffer_operation ||
           diag_id == clang::diag::note_unsafe_buffer_variable_fixit_group ||
           diag_id == clang::diag::note_unsafe_buffer_variable_fixit_together ||
@@ -128,9 +119,10 @@ class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
     // Note that we promote from Remark directly to Error, rather than to
     // Warning, as -Werror will not get applied to whatever we choose here.
     const auto elevated_level =
-        (is_libc_diagnostic ||
+        (diag_id == clang::diag::warn_unsafe_buffer_libc_call ||
          diag_id == clang::diag::warn_unsafe_buffer_variable ||
-         diag_id == clang::diag::warn_unsafe_buffer_operation)
+         diag_id == clang::diag::warn_unsafe_buffer_operation ||
+         diag_id == clang::diag::note_unsafe_buffer_printf_call)
             ? (engine_->getWarningsAsErrors()
                    ? clang::DiagnosticsEngine::Level::Error
                    : clang::DiagnosticsEngine::Level::Warning)
@@ -141,29 +133,26 @@ class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
 
     // -Wunsage-buffer-usage errors are omitted conditionally based on what file
     // they are coming from.
-    auto disposition = FileHasSafeBuffersWarnings(sm, loc);
-    if (disposition == kSkip ||
-        (is_libc_diagnostic && disposition == kSkipLibc)) {
-      return;
+    if (FileHasSafeBuffersWarnings(sm, loc)) {
+      // Elevate the Remark to a Warning, and pass along its Notes without
+      // changing them. Otherwise, do nothing, and the Remark (and its notes)
+      // will not be displayed.
+      //
+      // We don't count warnings/errors in this DiagnosticConsumer, so we don't
+      // call up to the base class here. Instead, whenever we pass through to
+      // the `next_` DiagnosticConsumer, we record its counts.
+      //
+      // Construct the StoredDiagnostic before Clear() or we get bad data from
+      // `diag`.
+      auto stored = clang::StoredDiagnostic(elevated_level, diag);
+      inside_handle_diagnostic_ = true;
+      engine_->Report(stored);
+      if (elevated_level != clang::DiagnosticsEngine::Level::Note) {
+        // For each warning, we inject our own Note as well, pointing to docs.
+        engine_->Report(loc, diag_note_link_);
+      }
+      inside_handle_diagnostic_ = false;
     }
-    // Elevate the Remark to a Warning, and pass along its Notes without
-    // changing them. Otherwise, do nothing, and the Remark (and its notes)
-    // will not be displayed.
-    //
-    // We don't count warnings/errors in this DiagnosticConsumer, so we don't
-    // call up to the base class here. Instead, whenever we pass through to
-    // the `next_` DiagnosticConsumer, we record its counts.
-    //
-    // Construct the StoredDiagnostic before Clear() or we get bad data from
-    // `diag`.
-    auto stored = clang::StoredDiagnostic(elevated_level, diag);
-    inside_handle_diagnostic_ = true;
-    engine_->Report(stored);
-    if (elevated_level != clang::DiagnosticsEngine::Level::Note) {
-      // For each warning, we inject our own Note as well, pointing to docs.
-      engine_->Report(loc, diag_note_link_);
-    }
-    inside_handle_diagnostic_ = false;
   }
 
  private:
@@ -178,8 +167,8 @@ class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
 
   // Depending on where the diagnostic is coming from, we may ignore it or
   // cause it to generate a warning.
-  Disposition FileHasSafeBuffersWarnings(const clang::SourceManager& sm,
-                                         clang::SourceLocation loc) {
+  bool FileHasSafeBuffersWarnings(const clang::SourceManager& sm,
+                                  clang::SourceLocation loc) {
     // ClassifySourceLocation() does not report kMacro as the location unless it
     // happens to be inside a scratch buffer, which not all macro use does. For
     // the unsafe-buffers warning, we want the SourceLocation where the macro is
@@ -199,13 +188,17 @@ class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
         ClassifySourceLocation(instance_->getHeaderSearchOpts(), sm, loc);
     switch (loc_class) {
       case LocationClassification::kSystem:
-        return kSkip;
+        return false;
       case LocationClassification::kGenerated:
-        return kSkip;
+        return false;
       case LocationClassification::kThirdParty:
+        break;
       case LocationClassification::kChromiumThirdParty:
+        break;
       case LocationClassification::kFirstParty:
+        break;
       case LocationClassification::kBlink:
+        break;
       case LocationClassification::kMacro:
         break;
     }
@@ -242,11 +235,11 @@ class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
            cmp_filename.consume_front("../"))
       continue;
 
-    Disposition should_check = kCheck;
+    bool should_check = true;
     while (!cmp_filename.empty()) {
       auto it = check_file_prefixes_.prefix_map.find(cmp_filename);
       if (it != check_file_prefixes_.prefix_map.end()) {
-        should_check = it->second == '+' ? kCheck : kSkip;
+        should_check = (it->second == '+');
         break;
       }
       cmp_filename = llvm::sys::path::parent_path(cmp_filename);
@@ -454,26 +447,7 @@ class AllowUnsafeBuffersPragmaHandler : public clang::PragmaHandler {
         GetFilename(preprocessor.getSourceManager(), introducer.Loc,
                     FilenameLocationType::kExpansionLoc);
     // The pragma opts the file out of checks.
-    g_checked_files_cache.insert({filename, kSkip});
-  }
-};
-
-class AllowUnsafeLibcPragmaHandler : public clang::PragmaHandler {
- public:
-  static constexpr char kName[] = "allow_unsafe_libc_calls";
-
-  AllowUnsafeLibcPragmaHandler() : clang::PragmaHandler(kName) {}
-
-  void HandlePragma(clang::Preprocessor& preprocessor,
-                    clang::PragmaIntroducer introducer,
-                    clang::Token& token) override {
-    // TODO(danakj): It would be an optimization to find a way to avoid creating
-    // a std::string here.
-    std::string filename =
-        GetFilename(preprocessor.getSourceManager(), introducer.Loc,
-                    FilenameLocationType::kExpansionLoc);
-    // The pragma opts the file into checks.
-    g_checked_files_cache.insert({filename, kSkipLibc});
+    g_checked_files_cache.insert({filename, false});
   }
 };
 
@@ -484,9 +458,5 @@ static clang::FrontendPluginRegistry::Add<UnsafeBuffersASTAction> X1(
 static clang::PragmaHandlerRegistry::Add<AllowUnsafeBuffersPragmaHandler> X2(
     AllowUnsafeBuffersPragmaHandler::kName,
     "Avoid reporting unsafe-buffer-usage warnings in the file");
-
-static clang::PragmaHandlerRegistry::Add<AllowUnsafeLibcPragmaHandler> X3(
-    AllowUnsafeLibcPragmaHandler::kName,
-    "Avoid reporting unsafe-libc-call warnings in the file");
 
 }  // namespace chrome_checker
