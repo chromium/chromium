@@ -7,12 +7,8 @@
  * imports all of the necessary modules and custom elements to load the page.
  */
 
-/** Necessary imports to load the app */
 import '/strings.m.js';
 import './os_settings_ui/os_settings_ui.js';
-// TODO(b/263414034) Determine if these imports are needed here at all,
-// or should be moved to lazy_load.ts
-import '/shared/settings/prefs/prefs.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 

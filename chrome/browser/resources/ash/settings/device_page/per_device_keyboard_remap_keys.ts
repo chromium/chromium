@@ -8,7 +8,6 @@
  * allow users to configure their keyboard remapped keys for each keyboard.
  */
 
-import '/shared/settings/prefs/prefs.js';
 import '../icons.html.js';
 import '../settings_shared.css.js';
 import '../controls/settings_dropdown_menu.js';

@@ -19,7 +19,6 @@ import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/ash/common/cr_elements/cros_color_overrides.css.js';
 import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
 import 'chrome://resources/ash/common/cr_elements/md_select.css.js';
-import '/shared/settings/prefs/prefs.js';
 import '../controls/settings_toggle_button.js';
 import './secure_dns_input.js';
 import './secure_dns_dialog.js';
