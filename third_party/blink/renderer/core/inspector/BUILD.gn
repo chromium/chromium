@@ -39,8 +39,6 @@ inspector_protocol_generate("protocol_sources") {
     "inspector/protocol/cache_storage.h",
     "inspector/protocol/css.cc",
     "inspector/protocol/css.h",
-    "inspector/protocol/database.cc",
-    "inspector/protocol/database.h",
     "inspector/protocol/debugger.h",
     "inspector/protocol/device_orientation.cc",
     "inspector/protocol/device_orientation.h",

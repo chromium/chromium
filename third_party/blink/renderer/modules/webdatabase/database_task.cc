@@ -168,26 +168,4 @@ const char* Database::DatabaseTransactionTask::DebugTaskName() const {
 }
 #endif
 
-// *** DatabaseTableNamesTask ***
-// Retrieves a list of all tables in the database - for WebInspector support.
-
-Database::DatabaseTableNamesTask::DatabaseTableNamesTask(
-    Database* database,
-    base::WaitableEvent* complete_event,
-    Vector<String>& names)
-    : DatabaseTask(database, complete_event), table_names_(names) {
-  DCHECK(complete_event);  // A task with output parameters is supposed to be
-                           // synchronous.
-}
-
-void Database::DatabaseTableNamesTask::DoPerformTask() {
-  (*table_names_) = GetDatabase()->PerformGetTableNames();
-}
-
-#if DCHECK_IS_ON()
-const char* Database::DatabaseTableNamesTask::DebugTaskName() const {
-  return "DatabaseTableNamesTask";
-}
-#endif
-
 }  // namespace blink

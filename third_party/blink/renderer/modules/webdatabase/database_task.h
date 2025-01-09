@@ -124,21 +124,6 @@ class Database::DatabaseTransactionTask final : public DatabaseTask {
   CrossThreadPersistent<SQLTransactionBackend> transaction_;
 };
 
-class Database::DatabaseTableNamesTask final : public DatabaseTask {
- public:
-  DatabaseTableNamesTask(Database*,
-                         base::WaitableEvent*,
-                         Vector<String>& names);
-
- private:
-  void DoPerformTask() override;
-#if DCHECK_IS_ON()
-  const char* DebugTaskName() const override;
-#endif
-
-  const raw_ref<Vector<String>> table_names_;
-};
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_DATABASE_TASK_H_
