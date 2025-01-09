@@ -143,7 +143,12 @@ void SpinningMutex::LockSlow() {
 #elif PA_BUILDFLAG(IS_APPLE)
 
 // TODO(verwaest): We should use the constants from the header, but they aren't
-// exposed until macOS 15.
+// exposed until macOS 15. See their definition here:
+// https://github.com/apple-oss-distributions/libplatform/blob/4f6349dfea579c35b8fa838d785644e441d14e0e/private/os/lock_private.h#L265
+//
+// The first flag prevents the runtime from creating more threads in response to
+// contention. The second will spin in the kernel if the lock owner is currently
+// running.
 #define OS_UNFAIR_LOCK_DATA_SYNCHRONIZATION 0x00010000
 #define OS_UNFAIR_LOCK_ADAPTIVE_SPIN 0x00040000
 
