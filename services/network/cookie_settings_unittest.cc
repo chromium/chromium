@@ -28,6 +28,7 @@
 #include "net/cookies/site_for_cookies.h"
 #include "net/cookies/static_cookie_policy.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/tpcd/metadata/manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -2370,13 +2371,6 @@ TEST_F(CookieSettingsTest, GetStorageAccessStatus) {
 }
 
 TEST_F(CookieSettingsTest,
-       StorageAccessHeaderOriginTrialSettingDefaultBlocked) {
-  CookieSettings settings;
-  EXPECT_FALSE(settings.IsStorageAccessHeadersEnabled(
-      GURL(kURL), url::Origin::Create(GURL(kOtherURL))));
-}
-
-TEST_F(CookieSettingsTest,
        StorageAccessHeaderOriginTrialSettingAllowedWhenSet) {
   CookieSettings settings;
   settings.set_content_settings(
@@ -2389,6 +2383,8 @@ TEST_F(CookieSettingsTest,
 
 TEST_F(CookieSettingsTest,
        StorageAccessHeaderOriginTrialSettingUnaffectedByIrrelevantSetting) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(network::features::kStorageAccessHeaders);
   CookieSettings settings;
   settings.set_content_settings(
       ContentSettingsType::STORAGE_ACCESS,
@@ -2401,6 +2397,8 @@ TEST_F(CookieSettingsTest,
 TEST_F(
     CookieSettingsTest,
     StorageAccessHeaderOriginTrialSettingUnaffectedBySettingForDifferentPair) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(network::features::kStorageAccessHeaders);
   CookieSettings settings;
   settings.set_content_settings(
       ContentSettingsType::STORAGE_ACCESS_HEADER_ORIGIN_TRIAL,
