@@ -1425,7 +1425,7 @@ void FidoDeviceAuthenticator::OnHaveLargeBlobArrayForGarbageCollect(
                    large_blob_keys,
                    [&blob](
                        const std::array<uint8_t, kLargeBlobKeyLength>& key) {
-                     return blob->Decrypt(key);
+                     return blob->Decrypt(key).has_value();
                    });
       });
 
