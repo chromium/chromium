@@ -4,8 +4,11 @@
 
 #include "chrome/browser/ui/views/bookmarks/bookmark_menu_controller_views.h"
 
+#include <memory>
+
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_menu_controller_observer.h"
@@ -25,21 +28,22 @@ using bookmarks::BookmarkNode;
 using content::PageNavigator;
 using views::MenuItemView;
 
-BookmarkMenuController::BookmarkMenuController(Browser* browser,
-                                               views::Widget* parent,
-                                               const BookmarkNode* node,
-                                               size_t start_child_index,
-                                               bool for_drop)
+BookmarkMenuController::BookmarkMenuController(
+    Browser* browser,
+    views::Widget* parent,
+    const BookmarkParentFolder& folder,
+    size_t start_child_index,
+    bool for_drop)
     : menu_delegate_(std::make_unique<BookmarkMenuDelegate>(
           browser,
           parent,
           this,
           BookmarkLaunchLocation::kSubfolder)),
-      node_(node),
+      folder_(folder),
       observer_(nullptr),
       for_drop_(for_drop),
       bookmark_bar_(nullptr) {
-  menu_delegate_->SetActiveMenu(node, start_child_index);
+  menu_delegate_->SetActiveMenu(folder, start_child_index);
 
   int run_type = 0;
   if (for_drop) {
@@ -51,7 +55,7 @@ BookmarkMenuController::BookmarkMenuController(Browser* browser,
 
 void BookmarkMenuController::RunMenuAt(BookmarkBarView* bookmark_bar) {
   bookmark_bar_ = bookmark_bar;
-  views::MenuButton* menu_button = bookmark_bar_->GetMenuButtonForNode(node_);
+  views::MenuButton* menu_button = bookmark_bar_->GetMenuButtonForNode(folder_);
   DCHECK(menu_button);
   views::MenuAnchorPosition anchor;
   bookmark_bar_->GetAnchorPositionForButton(menu_button, &anchor);
@@ -177,8 +181,9 @@ views::MenuItemView* BookmarkMenuController::GetSiblingMenu(
     return nullptr;
   }
 
-  menu_delegate_->SetActiveMenu(node, start_index);
-  *button = bookmark_bar_->GetMenuButtonForNode(node);
+  const BookmarkParentFolder folder(BookmarkParentFolder::FromFolderNode(node));
+  menu_delegate_->SetActiveMenu(folder, start_index);
+  *button = bookmark_bar_->GetMenuButtonForNode(folder);
   bookmark_bar_->GetAnchorPositionForButton(*button, anchor);
   *has_mnemonics = false;
   return this->menu();

@@ -306,9 +306,12 @@ BookmarkMenuDelegate::GetBookmarkMergedSurfaceService() {
   return BookmarkMergedSurfaceServiceFactory::GetForProfile(profile_);
 }
 
-void BookmarkMenuDelegate::SetActiveMenu(const BookmarkNode* node,
+void BookmarkMenuDelegate::SetActiveMenu(const BookmarkParentFolder& folder,
                                          size_t start_index) {
   CHECK(!parent_menu_item_);
+  // TODO(crbug.com/369304373): Temporary while the class is being migrated.
+  const BookmarkNode* node =
+      GetBookmarkMergedSurfaceService()->GetUnderlyingNodes(folder)[0];
   if (!node_to_menu_map_[node]) {
     CreateMenu(node, start_index);
   }

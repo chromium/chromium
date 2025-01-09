@@ -5,10 +5,12 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_BOOKMARKS_BOOKMARK_MENU_CONTROLLER_VIEWS_H_
 #define CHROME_BROWSER_UI_VIEWS_BOOKMARKS_BOOKMARK_MENU_CONTROLLER_VIEWS_H_
 
+#include <memory>
 #include <set>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
@@ -41,11 +43,11 @@ class Widget;
 class BookmarkMenuController : public bookmarks::BaseBookmarkModelObserver,
                                public views::MenuDelegate {
  public:
-  // Creates a BookmarkMenuController showing the children of |node| starting
-  // at |start_child_index|.
+  // Creates a BookmarkMenuController showing the children of `folder` starting
+  // at `start_child_index`.
   BookmarkMenuController(Browser* browser,
                          views::Widget* parent,
-                         const bookmarks::BookmarkNode* node,
+                         const BookmarkParentFolder& folder,
                          size_t start_child_index,
                          bool for_drop);
 
@@ -60,7 +62,7 @@ class BookmarkMenuController : public bookmarks::BaseBookmarkModelObserver,
   void Cancel();
 
   // Returns the node the menu is showing for.
-  const bookmarks::BookmarkNode* node() const { return node_; }
+  const BookmarkParentFolder& folder() const { return folder_; }
 
   // Returns the menu.
   views::MenuItemView* menu() const;
@@ -124,8 +126,8 @@ class BookmarkMenuController : public bookmarks::BaseBookmarkModelObserver,
 
   std::unique_ptr<BookmarkMenuDelegate> menu_delegate_;
 
-  // The node we're showing the contents of.
-  raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged> node_;
+  // The folder we're showing the contents of.
+  const BookmarkParentFolder folder_;
 
   // Data for the drop.
   bookmarks::BookmarkNodeData drop_data_;

@@ -69,9 +69,9 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
   // - a folder for mobile nodes, if any
   void BuildFullMenu(views::MenuItemView* parent);
 
-  // Makes the menu for |node| the active menu. |start_index| is the index of
-  // the first child of |node| to show in the menu.
-  void SetActiveMenu(const bookmarks::BookmarkNode* node, size_t start_index);
+  // Makes the menu for `folder` the active menu. `start_index` is the index of
+  // the first child of `folder` to show in the menu.
+  void SetActiveMenu(const BookmarkParentFolder& folder, size_t start_index);
 
   // Updates the start index of the given `node` and updates its menu
   // accordingly.

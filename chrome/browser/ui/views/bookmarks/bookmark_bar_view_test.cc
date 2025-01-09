@@ -25,6 +25,7 @@
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
@@ -1019,7 +1020,8 @@ class BookmarkBarViewTest8 : public BookmarkBarViewDragTestBase {
     const views::View* target_view;
     const auto* controller =
         static_cast<const BookmarkMenuController*>(drop_menu->GetDelegate());
-    if (controller->node() == model_->other_node()) {
+    if (controller->folder().as_permanent_folder() ==
+        BookmarkParentFolder::PermanentFolderType::kOtherNode) {
       // Now drag back over first menu.
       target_view = GetBookmarkButton(0);
     } else {

@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
@@ -37,6 +38,7 @@
 class BookmarkBarViewObserver;
 class BookmarkBarViewTestHelper;
 class BookmarkContextMenu;
+struct BookmarkParentFolder;
 class Browser;
 class BrowserView;
 class Profile;
@@ -120,8 +122,8 @@ class BookmarkBarView : public views::AccessiblePaneView,
       const gfx::Point& loc,
       size_t* model_start_index);
 
-  // Returns the MenuButton for node.
-  views::MenuButton* GetMenuButtonForNode(const bookmarks::BookmarkNode* node);
+  // Returns the MenuButton for folder.
+  views::MenuButton* GetMenuButtonForNode(const BookmarkParentFolder& folder);
 
   // Returns the position to anchor the menu for |button| at.
   void GetAnchorPositionForButton(views::MenuButton* button,
@@ -265,7 +267,7 @@ class BookmarkBarView : public views::AccessiblePaneView,
   void AppsPageShortcutPressed(const ui::Event& event);
   void OnButtonPressed(const bookmarks::BookmarkNode* node,
                        const ui::Event& event);
-  void OnMenuButtonPressed(const bookmarks::BookmarkNode* node,
+  void OnMenuButtonPressed(const BookmarkParentFolder& folder,
                            const ui::Event& event);
 
   // NOTE: unless otherwise stated all methods that take an index are in terms
@@ -324,14 +326,14 @@ class BookmarkBarView : public views::AccessiblePaneView,
   // appropriately.
   void BookmarkNodeChangedImpl(const bookmarks::BookmarkNode* node);
 
-  // Shows the menu used during drag and drop for the specified node.
-  void ShowDropFolderForNode(const bookmarks::BookmarkNode* node);
+  // Shows the menu used during drag and drop for the specified folder.
+  void ShowDropFolderForNode(const BookmarkParentFolder& folder);
 
   // Cancels the timer used to show a drop menu.
   void StopShowFolderDropMenuTimer();
 
-  // Stars the timer used to show a drop menu for node.
-  void StartShowFolderDropMenuTimer(const bookmarks::BookmarkNode* node);
+  // Stars the timer used to show a drop menu for folder.
+  void StartShowFolderDropMenuTimer(const BookmarkParentFolder& folder);
 
   // Calculates the location for the drop in |location|.
   void CalculateDropLocation(const ui::DropTargetEvent& event,

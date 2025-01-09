@@ -16,6 +16,7 @@
 
 #include "base/callback_list.h"
 #include "base/check_op.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -167,6 +168,7 @@ using ::views::Background;
 using ::views::Border;
 using ::views::LabelButtonBorder;
 using ::views::MenuButton;
+using PermanentFolderType = BookmarkParentFolder::PermanentFolderType;
 
 // Used to globally disable rich animations.
 bool animations_enabled = true;
@@ -292,6 +294,10 @@ void RecordAppLaunch(Profile* profile, const GURL& url) {
 
   extensions::RecordAppLaunchType(extension_misc::APP_LAUNCH_BOOKMARK_BAR,
                                   extension->GetType());
+}
+
+BookmarkMergedSurfaceService* GetBookmarkService(Browser* browser) {
+  return BookmarkMergedSurfaceServiceFactory::GetForProfile(browser->profile());
 }
 
 }  // namespace
@@ -545,24 +551,29 @@ const BookmarkNode* BookmarkBarView::GetNodeForButtonAtModelIndex(
   return nullptr;
 }
 
-MenuButton* BookmarkBarView::GetMenuButtonForNode(const BookmarkNode* node) {
-  if (node == managed_->managed_node()) {
+MenuButton* BookmarkBarView::GetMenuButtonForNode(
+    const BookmarkParentFolder& folder) {
+  std::optional<PermanentFolderType> type = folder.as_permanent_folder();
+  if (type == PermanentFolderType::kManagedNode) {
     return managed_bookmarks_button_;
-  }
-  if (node == bookmark_model_->other_node()) {
+  } else if (type == PermanentFolderType::kOtherNode) {
     return all_bookmarks_button_;
-  }
-  if (node == bookmark_model_->bookmark_bar_node()) {
+  } else if (type == PermanentFolderType::kBookmarkBarNode) {
     return overflow_button_;
   }
+
   // TODO: add logic to handle saved groups node(crbug.com/1223929 and
   // crbug.com/1223919)
-  std::optional<size_t> index =
-      bookmark_model_->bookmark_bar_node()->GetIndexOf(node);
-  if (!index.has_value() || !node->is_folder()) {
-    return nullptr;
+
+  // Check if direct child of bookmark bar and is a folder.
+  if (const BookmarkNode* node = folder.as_non_permanent_folder();
+      node && node->is_folder() &&
+      node->parent()->type() == BookmarkNode::Type::BOOKMARK_BAR) {
+    size_t index = GetBookmarkService(browser_)->GetIndexOf(node);
+    return static_cast<MenuButton*>(bookmark_buttons_[index]);
   }
-  return static_cast<MenuButton*>(bookmark_buttons_[index.value()]);
+
+  return nullptr;
 }
 
 void BookmarkBarView::GetAnchorPositionForButton(
@@ -1070,8 +1081,9 @@ int BookmarkBarView::OnDragUpdated(const ui::DropTargetEvent& event) {
       node = bookmark_model_->bookmark_bar_node()
                  ->children()[location.index.value()]
                  .get();
+      CHECK(node->is_folder());
     }
-    StartShowFolderDropMenuTimer(node);
+    StartShowFolderDropMenuTimer(BookmarkParentFolder::FromFolderNode(node));
   }
 
   return static_cast<int>(drop_info_->location.operation);
@@ -1231,9 +1243,14 @@ void BookmarkBarView::BookmarkNodeRemoved(const BookmarkNode* parent,
   InvalidateDrop();
 
   // Close the menu if the menu is showing for the deleted node.
-  if (bookmark_menu_ && bookmark_menu_->node() == node) {
-    bookmark_menu_->Cancel();
+  if (bookmark_menu_) {
+    BookmarkMergedSurfaceService* service = GetBookmarkService(browser_);
+    auto nodes = service->GetUnderlyingNodes(bookmark_menu_->folder());
+    if (nodes.size() == 1u && nodes[0] == node) {
+      bookmark_menu_->Cancel();
+    }
   }
+
   if (BookmarkNodeRemovedImpl(parent, old_index)) {
     LayoutAndPaint();
   }
@@ -1370,25 +1387,32 @@ void BookmarkBarView::OnButtonPressed(const bookmarks::BookmarkNode* node,
       profile_metrics::GetBrowserProfileType(browser_->profile()));
 }
 
-void BookmarkBarView::OnMenuButtonPressed(const bookmarks::BookmarkNode* node,
+void BookmarkBarView::OnMenuButtonPressed(const BookmarkParentFolder& folder,
                                           const ui::Event& event) {
   // Clicking the middle mouse button or clicking with Control/Command key down
   // opens all bookmarks in the folder in new tabs.
   if ((event.flags() & ui::EF_MIDDLE_MOUSE_BUTTON) ||
       (event.flags() & ui::EF_PLATFORM_ACCELERATOR)) {
     RecordBookmarkFolderLaunch(BookmarkLaunchLocation::kAttachedBar);
+    auto nodes = base::ToVector(
+        GetBookmarkService(browser_)->GetUnderlyingNodes(folder),
+        [](const BookmarkNode* node) {
+          return raw_ptr<const BookmarkNode, VectorExperimental>(node);
+        });
+
     chrome::OpenAllIfAllowed(
-        browser_, {node}, ui::DispositionFromEventFlags(event.flags()),
+        browser_, nodes, ui::DispositionFromEventFlags(event.flags()),
         /*add_to_group=*/false,
         page_load_metrics::NavigationHandleUserData::InitiatorLocation::
             kBookmarkBar,
         {{BookmarkLaunchLocation::kAttachedBar, base::TimeTicks::Now()}});
   } else {
     RecordBookmarkFolderOpen(BookmarkLaunchLocation::kAttachedBar);
-    const size_t start_index = (node == bookmark_model_->bookmark_bar_node())
-                                   ? first_hidden_node_idx_
-                                   : 0;
-    bookmark_menu_ = new BookmarkMenuController(browser_, GetWidget(), node,
+    const size_t start_index =
+        (folder.as_permanent_folder() == PermanentFolderType::kBookmarkBarNode)
+            ? first_hidden_node_idx_
+            : 0;
+    bookmark_menu_ = new BookmarkMenuController(browser_, GetWidget(), folder,
                                                 start_index, false);
     bookmark_menu_->set_observer(this);
     bookmark_menu_->RunMenuAt(this);
@@ -1556,7 +1580,7 @@ size_t BookmarkBarView::GetFirstHiddenNodeIndex() const {
 std::unique_ptr<MenuButton> BookmarkBarView::CreateAllBookmarksButton() {
   auto button = std::make_unique<BookmarkFolderButton>(base::BindRepeating(
       [](BookmarkBarView* bar, const ui::Event& event) {
-        bar->OnMenuButtonPressed(bar->bookmark_model_->other_node(), event);
+        bar->OnMenuButtonPressed(BookmarkParentFolder::OtherFolder(), event);
       },
       base::Unretained(this)));
   button->SetID(VIEW_ID_ALL_BOOKMARKS);
@@ -1568,7 +1592,7 @@ std::unique_ptr<MenuButton> BookmarkBarView::CreateManagedBookmarksButton() {
   // Title is set in Loaded.
   auto button = std::make_unique<BookmarkFolderButton>(base::BindRepeating(
       [](BookmarkBarView* bar, const ui::Event& event) {
-        bar->OnMenuButtonPressed(bar->managed_->managed_node(), event);
+        bar->OnMenuButtonPressed(BookmarkParentFolder::ManagedFolder(), event);
       },
       base::Unretained(this)));
   button->SetID(VIEW_ID_MANAGED_BOOKMARKS);
@@ -1579,7 +1603,7 @@ std::unique_ptr<MenuButton> BookmarkBarView::CreateManagedBookmarksButton() {
 std::unique_ptr<MenuButton> BookmarkBarView::CreateOverflowButton() {
   auto button = std::make_unique<BookmarkMenuButtonBase>(base::BindRepeating(
       [](BookmarkBarView* bar, const ui::Event& event) {
-        bar->OnMenuButtonPressed(bar->bookmark_model_->bookmark_bar_node(),
+        bar->OnMenuButtonPressed(BookmarkParentFolder::BookmarkBarFolder(),
                                  event);
       },
       base::Unretained(this)));
@@ -1615,9 +1639,11 @@ std::unique_ptr<views::View> BookmarkBarView::CreateBookmarkButton(
         node->url(), url_formatter::kFormatUrlOmitDefaults,
         base::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
   } else {
+    CHECK(node->is_folder());
     button = std::make_unique<BookmarkFolderButton>(
         base::BindRepeating(&BookmarkBarView::OnMenuButtonPressed,
-                            base::Unretained(this), node),
+                            base::Unretained(this),
+                            BookmarkParentFolder::FromFolderNode(node)),
         node->GetTitle());
   }
   ConfigureButton(node, button.get());
@@ -1810,28 +1836,29 @@ void BookmarkBarView::BookmarkNodeChangedImpl(const BookmarkNode* node) {
   }
 }
 
-void BookmarkBarView::ShowDropFolderForNode(const BookmarkNode* node) {
+void BookmarkBarView::ShowDropFolderForNode(
+    const BookmarkParentFolder& folder) {
   if (bookmark_drop_menu_) {
-    if (bookmark_drop_menu_->node() == node) {
+    if (bookmark_drop_menu_->folder() == folder) {
       // Already showing for the specified node.
       return;
     }
     bookmark_drop_menu_->Cancel();
   }
 
-  MenuButton* menu_button = GetMenuButtonForNode(node);
+  MenuButton* menu_button = GetMenuButtonForNode(folder);
   if (!menu_button) {
     return;
   }
 
   size_t start_index = 0;
-  if (node == bookmark_model_->bookmark_bar_node()) {
+  if (folder.as_permanent_folder() == PermanentFolderType::kBookmarkBarNode) {
     start_index = first_hidden_node_idx_;
   }
 
   drop_info_->is_menu_showing = true;
-  bookmark_drop_menu_ = new BookmarkMenuController(browser_, GetWidget(), node,
-                                                   start_index, true);
+  bookmark_drop_menu_ = new BookmarkMenuController(browser_, GetWidget(),
+                                                   folder, start_index, true);
   bookmark_drop_menu_->set_observer(this);
   bookmark_drop_menu_->RunMenuAt(this);
 
@@ -1842,18 +1869,19 @@ void BookmarkBarView::StopShowFolderDropMenuTimer() {
   show_folder_method_factory_.InvalidateWeakPtrs();
 }
 
-void BookmarkBarView::StartShowFolderDropMenuTimer(const BookmarkNode* node) {
+void BookmarkBarView::StartShowFolderDropMenuTimer(
+    const BookmarkParentFolder& folder) {
   if (!animations_enabled) {
     // So that tests can run as fast as possible disable the delay during
     // testing.
-    ShowDropFolderForNode(node);
+    ShowDropFolderForNode(folder);
     return;
   }
   show_folder_method_factory_.InvalidateWeakPtrs();
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&BookmarkBarView::ShowDropFolderForNode,
-                     show_folder_method_factory_.GetWeakPtr(), node),
+                     show_folder_method_factory_.GetWeakPtr(), folder),
       base::Milliseconds(views::GetMenuShowDelay()));
 }
 
@@ -1952,7 +1980,7 @@ void BookmarkBarView::CalculateDropLocation(
 
   if (location->on) {
     const BookmarkMergedSurfaceService* const bookmark_merged_service =
-        BookmarkMergedSurfaceServiceFactory::GetForProfile(profile);
+        GetBookmarkService(browser_);
 
     const BookmarkParentFolder parent_folder = [&]() -> BookmarkParentFolder {
       if (location->button_type == DROP_ALL_BOOKMARKS_FOLDER) {
