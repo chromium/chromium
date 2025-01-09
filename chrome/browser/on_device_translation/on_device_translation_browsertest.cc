@@ -1917,7 +1917,6 @@ class OnDeviceTranslationOriginTrialBrowserTest : public InProcessBrowserTest {
     }
 
     // We expect to find the detection API but no translate API.
-    EXPECT_TRUE(IsDefinedJs("window.translation.canDetect"));
     EXPECT_FALSE(IsDefinedJs("window.translation.canTranslate"));
     EXPECT_FALSE(IsDefinedJs("window.translation.createTranslator"));
   }

@@ -13213,8 +13213,8 @@
             ],
             "experiments": [
                 {
-                    "name": "Disabled",
-                    "disable_features": [
+                    "name": "Enabled",
+                    "enable_features": [
                         "LanguageDetectionAPI"
                     ]
                 }

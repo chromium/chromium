@@ -2,6 +2,7 @@ This test documents all interface attributes and methods on the global window ob
 [INTERFACES]
 interface AI
     attribute @@toStringTag
+    getter languageDetector
     getter languageModel
     getter rewriter
     getter summarizer
@@ -13,6 +14,21 @@ interface AICreateMonitor : EventTarget
     getter ondownloadprogress
     method constructor
     setter ondownloadprogress
+interface AILanguageDetector
+    attribute @@toStringTag
+    method constructor
+    method destroy
+    method detect
+interface AILanguageDetectorCapabilities
+    attribute @@toStringTag
+    getter available
+    method constructor
+    method languageAvailable
+interface AILanguageDetectorFactory
+    attribute @@toStringTag
+    method capabilities
+    method constructor
+    method create
 interface AILanguageModel : EventTarget
     attribute @@toStringTag
     getter maxTokens
