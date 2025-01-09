@@ -58,7 +58,7 @@ CanvasResource::CanvasResource(base::WeakPtr<CanvasResourceProvider> provider,
                                gfx::Size size,
                                viz::SharedImageFormat format,
                                SkAlphaType alpha_type,
-                               gfx::ColorSpace color_space)
+                               const gfx::ColorSpace& color_space)
     : owning_thread_ref_(base::PlatformThread::CurrentRef()),
       owning_thread_task_runner_(
           ThreadScheduler::Current()->CleanupTaskRunner()),
@@ -249,7 +249,7 @@ CanvasResourceSharedBitmap::CanvasResourceSharedBitmap(
     gfx::Size size,
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
-    gfx::ColorSpace color_space,
+    const gfx::ColorSpace& color_space,
     base::WeakPtr<CanvasResourceProvider> provider,
     base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
         shared_image_interface_provider)
@@ -321,7 +321,7 @@ scoped_refptr<CanvasResourceSharedBitmap> CanvasResourceSharedBitmap::Create(
     gfx::Size size,
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
-    gfx::ColorSpace color_space,
+    const gfx::ColorSpace& color_space,
     base::WeakPtr<CanvasResourceProvider> provider,
     base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
         shared_image_interface_provider) {
@@ -360,7 +360,7 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
     gfx::Size size,
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
-    gfx::ColorSpace color_space,
+    const gfx::ColorSpace& color_space,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceProvider> provider,
     bool is_accelerated,
@@ -461,7 +461,7 @@ scoped_refptr<CanvasResourceSharedImage> CanvasResourceSharedImage::Create(
     gfx::Size size,
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
-    gfx::ColorSpace color_space,
+    const gfx::ColorSpace& color_space,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceProvider> provider,
     bool is_accelerated,
@@ -917,7 +917,7 @@ scoped_refptr<CanvasResourceSwapChain> CanvasResourceSwapChain::Create(
     gfx::Size size,
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
-    gfx::ColorSpace color_space,
+    const gfx::ColorSpace& color_space,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceProvider> provider) {
   TRACE_EVENT0("blink", "CanvasResourceSwapChain::Create");
@@ -1053,7 +1053,7 @@ CanvasResourceSwapChain::CanvasResourceSwapChain(
     gfx::Size size,
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
-    gfx::ColorSpace color_space,
+    const gfx::ColorSpace& color_space,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceProvider> provider)
     : CanvasResource(std::move(provider),

@@ -179,7 +179,7 @@ class PLATFORM_EXPORT CanvasResource
                  gfx::Size size,
                  viz::SharedImageFormat format,
                  SkAlphaType alpha_type,
-                 gfx::ColorSpace color_space);
+                 const gfx::ColorSpace& color_space);
 
   // Returns true if the resource is backed by memory such that it can be used
   // for direct scanout by the display.
@@ -233,7 +233,7 @@ class PLATFORM_EXPORT CanvasResourceSharedBitmap final : public CanvasResource {
       gfx::Size size,
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
-      gfx::ColorSpace color_space,
+      const gfx::ColorSpace& color_space,
       base::WeakPtr<CanvasResourceProvider>,
       base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>);
   ~CanvasResourceSharedBitmap() override;
@@ -264,7 +264,7 @@ class PLATFORM_EXPORT CanvasResourceSharedBitmap final : public CanvasResource {
       gfx::Size size,
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
-      gfx::ColorSpace color_space,
+      const gfx::ColorSpace& color_space,
       base::WeakPtr<CanvasResourceProvider>,
       base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>);
 
@@ -281,7 +281,7 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
       gfx::Size size,
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
-      gfx::ColorSpace color_space,
+      const gfx::ColorSpace& color_space,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       base::WeakPtr<CanvasResourceProvider>,
       bool is_accelerated,
@@ -364,7 +364,7 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   CanvasResourceSharedImage(gfx::Size size,
                             viz::SharedImageFormat format,
                             SkAlphaType alpha_type,
-                            gfx::ColorSpace color_space,
+                            const gfx::ColorSpace& color_space,
                             base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
                             base::WeakPtr<CanvasResourceProvider>,
                             bool is_accelerated,
@@ -470,7 +470,7 @@ class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
       gfx::Size size,
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
-      gfx::ColorSpace color_space,
+      const gfx::ColorSpace& color_space,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       base::WeakPtr<CanvasResourceProvider>);
   ~CanvasResourceSwapChain() override;
@@ -503,7 +503,7 @@ class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
   CanvasResourceSwapChain(gfx::Size size,
                           viz::SharedImageFormat format,
                           SkAlphaType alpha_type,
-                          gfx::ColorSpace color_space,
+                          const gfx::ColorSpace& color_space,
                           base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
                           base::WeakPtr<CanvasResourceProvider>);
 

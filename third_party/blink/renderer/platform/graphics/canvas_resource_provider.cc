@@ -154,7 +154,7 @@ class CanvasResourceProviderBitmap : public CanvasResourceProvider {
   CanvasResourceProviderBitmap(gfx::Size size,
                                SkColorType sk_color_type,
                                SkAlphaType alpha_type,
-                               gfx::ColorSpace color_space,
+                               const gfx::ColorSpace& color_space,
                                CanvasResourceHost* resource_host)
       : CanvasResourceProvider(kBitmap,
                                size,
@@ -1473,7 +1473,7 @@ CanvasResourceProvider::CanvasResourceProvider(
     gfx::Size size,
     SkColorType sk_color_type,
     SkAlphaType alpha_type,
-    gfx::ColorSpace color_space,
+    const gfx::ColorSpace& color_space,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     CanvasResourceHost* resource_host)
     : type_(type),
