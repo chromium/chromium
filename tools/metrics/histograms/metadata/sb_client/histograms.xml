@@ -811,6 +811,19 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.OnDeviceModelInnerTextSize" units="bytes"
+    expires_after="2026-01-09">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs the size (in bytes) of the inner text extracted from the page when the
+    on device model is inquired. We can use this histogram to inform the size of
+    the context window we need. Note that to convert bytes to tokens, we need to
+    estimate the number of letters in a word and the number of tokens in a word.
+    This is logged when the model is inquired.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.OnDeviceModelResponseParseSuccess"
     enum="BooleanSuccess" expires_after="2025-12-02">
   <owner>andysjlim@chromium.org</owner>
