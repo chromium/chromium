@@ -307,7 +307,7 @@ public final class FledgeFragmentTest {
         setFledgePrefEnabled(true);
         mFakePrivacySandboxBridge.setCurrentFledgeSites(SITE_NAME_1, SITE_NAME_2);
         startFledgeSettings();
-        onView(withText(containsString("managing your ad privacy")))
+        onView(withText(containsString("Learn more about site-suggested ads")))
                 .perform(clickOnClickableSpan(0));
         mRenderTestRule.render(getLearnMoreRootView(), "fledge_learn_more_v2");
     }
@@ -635,7 +635,7 @@ public final class FledgeFragmentTest {
     public void openLearnMoreAndVerifyMetrics() {
         startFledgeSettings();
         // Open the Fledge learn more activity
-        onView(withText(containsString("managing your ad privacy")))
+        onView(withText(containsString("Learn more about site-suggested ads")))
                 .perform(clickOnClickableSpan(0));
         onViewWaiting(withText(R.string.settings_fledge_page_learn_more_heading))
                 .check(matches(isDisplayed()));
