@@ -163,6 +163,50 @@ std::vector<url::Origin> GetOrigins(const AttributionData& data) {
       &content::AttributionDataModel::DataKey::reporting_origin);
   return origins;
 }
+
+bool ContainsWrite(DIPSDataAccessType access) {
+  using enum DIPSDataAccessType;
+  return access == kWrite || access == kReadWrite;
+}
+
+// Waits for DIPS to know that a cookie was written by a redirect at
+// `redirect_url`, which must be the last redirect that was performed in the
+// currenly-in-progress redirect chain.
+testing::AssertionResult WaitForRedirectCookieWrite(WebContents* web_contents,
+                                                    const GURL& redirect_url) {
+  RedirectChainDetector* detector =
+      RedirectChainDetector::FromWebContents(web_contents);
+
+  if (detector->CommittedRedirectContext().GetRedirectChainLength() == 0) {
+    return testing::AssertionFailure() << "No redirects detected";
+  }
+
+  // Make sure the last redirect was at the expected URL.
+  const DIPSRedirectInfo& redirect =
+      detector->CommittedRedirectContext()
+          [detector->CommittedRedirectContext().size() - 1];
+  if (redirect.url.url != redirect_url) {
+    return testing::AssertionFailure()
+           << "Expected redirect at " << redirect_url << "; found "
+           << redirect.url.url;
+  }
+
+  if (!ContainsWrite(redirect.access_type)) {
+    // We haven't been notified about the cookie write from the redirect yet.
+    // Wait for it to ensure the bounce is considered stateful.
+    URLCookieAccessObserver(web_contents, redirect_url,
+                            CookieOperation::kChange)
+        .Wait();
+  }
+
+  // Return success if the cookie write was detected.
+  if (ContainsWrite(redirect.access_type)) {
+    return testing::AssertionSuccess();
+  } else {
+    return testing::AssertionFailure() << "Still no cookie write detected";
+  }
+}
+
 }  // namespace
 
 // Keeps a log of DidStartNavigation, OnCookiesAccessed, and DidFinishNavigation
@@ -1460,15 +1504,8 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 
 // Verifies server redirects that occur while opening a link in a new tab are
 // properly detected.
-// TODO(crbug.com/40936579): Flaky on Chrome OS and Linux.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-#define MAYBE_OpenServerRedirectURLInNewTab \
-  DISABLED_OpenServerRedirectURLInNewTab
-#else
-#define MAYBE_OpenServerRedirectURLInNewTab OpenServerRedirectURLInNewTab
-#endif
 IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
-                       MAYBE_OpenServerRedirectURLInNewTab) {
+                       OpenServerRedirectURLInNewTab) {
   WebContents* original_tab = GetActiveWebContents();
   GURL original_tab_url(
       embedded_test_server()->GetURL("a.test", "/title1.html"));
@@ -1484,6 +1521,8 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   EXPECT_NE(new_tab, original_tab);
   ASSERT_EQ(new_tab->GetLastCommittedURL(),
             embedded_test_server()->GetURL("c.test", "/title1.html"));
+
+  ASSERT_TRUE(WaitForRedirectCookieWrite(new_tab, new_tab_url));
 
   std::vector<std::string> redirects;
   RedirectChainDetector* tab_web_contents_observer =
@@ -1540,13 +1579,6 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                    "c.test/title1.html")));
 }
 
-namespace {
-bool ContainsWrite(DIPSDataAccessType access) {
-  using enum DIPSDataAccessType;
-  return access == kWrite || access == kReadWrite;
-}
-}  // namespace
-
 // Verifies the start URL of a redirect chain started by opening a link in a new
 // tab is handled correctly, when that start page has an opaque origin.
 IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
@@ -1566,24 +1598,12 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   ASSERT_EQ(new_tab->GetLastCommittedURL(),
             embedded_test_server()->GetURL("c.test", "/title1.html"));
 
+  ASSERT_TRUE(WaitForRedirectCookieWrite(new_tab, new_tab_url));
+
   std::vector<std::string> redirects;
-  RedirectChainDetector* tab_web_contents_observer =
-      RedirectChainDetector::FromWebContents(new_tab);
-  ASSERT_EQ(tab_web_contents_observer->CommittedRedirectContext()
-                .GetRedirectChainLength(),
-            1u);
-  const DIPSRedirectInfo& redirect =
-      tab_web_contents_observer->CommittedRedirectContext()[0];
-  ASSERT_EQ(redirect.url.url, new_tab_url);
-  if (!ContainsWrite(redirect.access_type)) {
-    // We haven't been notified about the cookie write from the redirect yet.
-    // Wait for it to ensure the bounce is considered stateful.
-    URLCookieAccessObserver(new_tab, new_tab_url, CookieOperation::kChange)
-        .Wait();
-  }
-  ASSERT_TRUE(ContainsWrite(redirect.access_type));
-  tab_web_contents_observer->SetRedirectChainHandlerForTesting(
-      base::BindRepeating(&AppendRedirects, &redirects));
+  RedirectChainDetector::FromWebContents(new_tab)
+      ->SetRedirectChainHandlerForTesting(
+          base::BindRepeating(&AppendRedirects, &redirects));
 
   content::WebContentsDestroyedWatcher watcher(new_tab);
   new_tab->Close();
