@@ -788,6 +788,24 @@ public class DataSharingTabManager {
                                         groupToken.accessToken),
                                 onFinished);
                     }
+
+                    @Override
+                    public void onStopSharingInitiated(Callback<Boolean> readyToStopSharing) {
+                        SavedTabGroup existingGroup =
+                                DataSharingTabGroupUtils.getTabGroupForCollabIdFromSync(
+                                        collaborationId, tabGroupSyncService);
+                        tabGroupSyncService.aboutToUnShareTabGroup(
+                                existingGroup.localId, readyToStopSharing);
+                    }
+
+                    @Override
+                    public void onStopSharingCompleted(boolean success) {
+                        SavedTabGroup existingGroup =
+                                DataSharingTabGroupUtils.getTabGroupForCollabIdFromSync(
+                                        collaborationId, tabGroupSyncService);
+                        tabGroupSyncService.onTabGroupUnShareComplete(
+                                existingGroup.localId, success);
+                    }
                 };
         DataSharingManageUiConfig manageConfig =
                 new DataSharingManageUiConfig.Builder()
