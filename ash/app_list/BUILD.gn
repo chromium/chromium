@@ -104,6 +104,8 @@ source_set("app_list") {
     "views/assistant/assistant_main_view.h",
     "views/assistant/assistant_page_view.cc",
     "views/assistant/assistant_page_view.h",
+    "views/button_focus_skipper.cc",
+    "views/button_focus_skipper.h",
     "views/contents_view.cc",
     "views/contents_view.h",
     "views/continue_section_view.cc",

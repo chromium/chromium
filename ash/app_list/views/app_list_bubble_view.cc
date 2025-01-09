@@ -22,6 +22,7 @@
 #include "ash/app_list/views/app_list_search_view.h"
 #include "ash/app_list/views/apps_grid_view.h"
 #include "ash/app_list/views/assistant/app_list_bubble_assistant_page.h"
+#include "ash/app_list/views/button_focus_skipper.h"
 #include "ash/app_list/views/folder_background_view.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
@@ -159,51 +160,6 @@ const ui::DropTargetEvent GetTranslatedDropTargetEvent(
 }
 
 }  // namespace
-
-// Makes focus traversal skip the assistant button and the hide continue section
-// button when pressing the down arrow key or the up arrow key. Normally views
-// would move focus from the search box to the assistant button on arrow down.
-// However, these buttons are visually to the right, so this feels weird.
-// Likewise, on arrow up from continue tasks it feels better to put focus
-// directly in the search box.
-class ButtonFocusSkipper : public ui::EventHandler {
- public:
-  ButtonFocusSkipper() { Shell::Get()->AddPreTargetHandler(this); }
-
-  ~ButtonFocusSkipper() override { Shell::Get()->RemovePreTargetHandler(this); }
-
-  void AddButton(views::View* button) {
-    DCHECK(button);
-    buttons_.push_back(button);
-  }
-
-  // ui::EventHandler:
-  void OnEvent(ui::Event* event) override {
-    // Don't adjust focus behavior if the user already focused the button.
-    for (views::View* button : buttons_) {
-      if (button->HasFocus()) {
-        return;
-      }
-    }
-
-    bool skip_focus = false;
-    // This class overrides OnEvent() to examine all events so that focus
-    // behavior is restored by mouse events, gesture events, etc.
-    if (event->type() == ui::EventType::kKeyPressed) {
-      ui::KeyboardCode key = event->AsKeyEvent()->key_code();
-      if (key == ui::VKEY_UP || key == ui::VKEY_DOWN) {
-        skip_focus = true;
-      }
-    }
-    for (views::View* button : buttons_) {
-      button->SetFocusBehavior(skip_focus ? views::View::FocusBehavior::NEVER
-                                          : views::View::FocusBehavior::ALWAYS);
-    }
-  }
-
- private:
-  std::vector<raw_ptr<views::View, VectorExperimental>> buttons_;
-};
 
 AppListBubbleView::AppListBubbleView(AppListViewDelegate* view_delegate)
     : view_delegate_(view_delegate) {
