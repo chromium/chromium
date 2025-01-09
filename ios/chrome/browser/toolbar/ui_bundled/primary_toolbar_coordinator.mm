@@ -57,6 +57,7 @@
       self.browser->GetCommandDispatcher(), PopupMenuCommands);
   CHECK(self.viewControllerDelegate);
   self.viewController.delegate = self.viewControllerDelegate;
+  self.viewController.toolbarHeightDelegate = self.toolbarHeightDelegate;
   self.viewController.layoutGuideCenter =
       LayoutGuideCenterForBrowser(self.browser);
 

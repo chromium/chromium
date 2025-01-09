@@ -12,6 +12,7 @@
 
 @protocol PrimaryToolbarViewControllerDelegate;
 @class TabGroupIndicatorView;
+@protocol ToolbarHeightDelegate;
 @class ViewRevealingVerticalPanHandler;
 
 // ViewController for the primary toobar part of the adaptive toolbar. The one
@@ -22,6 +23,9 @@
                                      ToolbarAnimatee>
 
 @property(nonatomic, weak) id<PrimaryToolbarViewControllerDelegate> delegate;
+
+/// Delegate to inform about toolbar height changes.
+@property(nonatomic, weak) id<ToolbarHeightDelegate> toolbarHeightDelegate;
 
 // Whether the omnibox should be hidden on NTP.
 @property(nonatomic, assign) BOOL shouldHideOmniboxOnNTP;

@@ -133,6 +133,10 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
   // toolbar mode.
   NSArray<NSLayoutConstraint*>*
       _bannerPromoBackgroundNonSplitToolbarConstraints;
+
+  // Constraints for the banner promo and related views when the promo is
+  // enabled but hidden.
+  NSArray<NSLayoutConstraint*>* _bannerPromoHiddenConstraints;
 }
 
 @synthesize fakeOmniboxTarget = _fakeOmniboxTarget;
@@ -238,7 +242,38 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
   self.tabGroupIndicatorView.available = isAvailable;
 }
 
-// Calculates the heihgt of the banner promo background when fullscreen is
+- (void)showBannerPromo {
+  _bannerPromoBackground.hidden = NO;
+
+  if (IsSplitToolbarMode(self)) {
+    [NSLayoutConstraint
+        activateConstraints:_bannerPromoBackgroundSplitToolbarConstraints];
+    [NSLayoutConstraint
+        deactivateConstraints:_bannerPromoBackgroundNonSplitToolbarConstraints];
+  } else {
+    [NSLayoutConstraint
+        deactivateConstraints:_bannerPromoBackgroundSplitToolbarConstraints];
+    [NSLayoutConstraint
+        activateConstraints:_bannerPromoBackgroundNonSplitToolbarConstraints];
+  }
+
+  [self invalidateIntrinsicContentSize];
+}
+
+- (void)hideBannerPromo {
+  _bannerPromoBackground.hidden = YES;
+
+  [NSLayoutConstraint
+      deactivateConstraints:_bannerPromoBackgroundSplitToolbarConstraints];
+  [NSLayoutConstraint
+      deactivateConstraints:_bannerPromoBackgroundNonSplitToolbarConstraints];
+
+  [NSLayoutConstraint activateConstraints:_bannerPromoHiddenConstraints];
+
+  [self invalidateIntrinsicContentSize];
+}
+
+// Calculates the height of the banner promo background when fullscreen is
 // active.
 - (CGFloat)bannerPromoBackgroundHeightForFullscreenProgress:(CGFloat)progress {
   if (IsSplitToolbarMode(self)) {
@@ -305,7 +340,7 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
                         self.traitCollection.preferredContentSizeCategory);
   }
 
-  if (IsDefaultBrowserBannerPromoEnabled()) {
+  if (IsDefaultBrowserBannerPromoEnabled() && !_bannerPromoBackground.hidden) {
     height += _bannerPromo.intrinsicContentSize.height;
     if (isTopOmnibox) {
       height += kBannerPromoVerticalSpacing;
@@ -465,6 +500,7 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
   _bannerPromo = [[BannerPromoView alloc] init];
   _bannerPromo.translatesAutoresizingMaskIntoConstraints = NO;
   [_bannerPromoBackground addSubview:_bannerPromo];
+  _bannerPromoBackground.hidden = YES;
 }
 
 // Sets the constraints up.
@@ -556,6 +592,9 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
           constraintEqualToAnchor:self.bottomAnchor],
     ];
 
+    _bannerPromoHiddenConstraints =
+        @[ locationBarContainerLayoutGuideBottomConstraint ];
+
     _bannerPromoBackgroundHeightConstraint =
         [_bannerPromoBackground.heightAnchor
             constraintLessThanOrEqualToConstant:
@@ -575,18 +614,6 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
       [_bannerPromo.bottomAnchor
           constraintEqualToAnchor:_bannerPromoBackground.bottomAnchor],
     ]];
-
-    if (IsSplitToolbarMode(self)) {
-      [NSLayoutConstraint
-          activateConstraints:_bannerPromoBackgroundSplitToolbarConstraints];
-      [NSLayoutConstraint deactivateConstraints:
-                              _bannerPromoBackgroundNonSplitToolbarConstraints];
-    } else {
-      [NSLayoutConstraint
-          deactivateConstraints:_bannerPromoBackgroundSplitToolbarConstraints];
-      [NSLayoutConstraint
-          activateConstraints:_bannerPromoBackgroundNonSplitToolbarConstraints];
-    }
   }
 
   // Trailing StackView constraints.

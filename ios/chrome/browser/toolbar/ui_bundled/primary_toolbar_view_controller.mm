@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/toolbar/ui_bundled/primary_toolbar_view.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/primary_toolbar_view_controller_delegate.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_constants.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_height_delegate.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_utils.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/tab_groups/ui/tab_group_indicator_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
@@ -327,6 +328,16 @@ BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
                                           self.traitCollection
                                               .preferredContentSizeCategory)];
   self.view.matchNTPHeight = NO;
+}
+
+- (void)showBannerPromo {
+  [self.view showBannerPromo];
+  [self.toolbarHeightDelegate toolbarsHeightChanged];
+}
+
+- (void)hideBannerPromo {
+  [self.view hideBannerPromo];
+  [self.toolbarHeightDelegate toolbarsHeightChanged];
 }
 
 #pragma mark - Private

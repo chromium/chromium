@@ -82,6 +82,12 @@
 // Updates the `tabGroupIndicatorView` availability.
 - (void)updateTabGroupIndicatorAvailability;
 
+// Shows the banner promo view.
+- (void)showBannerPromo;
+
+// Hides the banner promo view.
+- (void)hideBannerPromo;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TOOLBAR_UI_BUNDLED_PRIMARY_TOOLBAR_VIEW_H_
