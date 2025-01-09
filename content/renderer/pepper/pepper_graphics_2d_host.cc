@@ -762,10 +762,10 @@ bool PepperGraphics2DHost::PrepareTransferableResource(
   scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface =
       RenderThreadImpl::current()->GetRenderThreadSharedImageInterface();
 
-  if (cached_bitmap_) {
+  if (cached_bitmap_shared_image_) {
     // |shared_image_interface| changes after the gpu channel is lost.
     // Reuse the shared bitmap only when sii remains the same.
-    if (cached_bitmap_->size() == pixel_image_size &&
+    if (cached_bitmap_shared_image_->size() == pixel_image_size &&
         shared_image_interface == cached_bitmap_shared_image_interface_) {
       shared_bitmap = std::move(cached_bitmap_);
       shared_image = std::move(cached_bitmap_shared_image_);
@@ -782,7 +782,7 @@ bool PepperGraphics2DHost::PrepareTransferableResource(
     return false;
   }
 
-  if (!shared_bitmap) {
+  if (!shared_image) {
     auto shared_image_mapping = shared_image_interface->CreateSharedImage(
         {viz::SinglePlaneFormat::kBGRA_8888, pixel_image_size,
          gfx::ColorSpace(), gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
