@@ -790,6 +790,13 @@
       name: "ClickToCapturedPointer",
       status: "experimental",
     },
+    {
+      // Allows top-level sites to restrict collection of high-entropy UA client
+      // hints (from 3Ps, or itself) via the getHighEntropyValues API.
+      // crbug.com/385161047
+      name: "ClientHintUAHighEntropyValuesPermissionPolicy",
+      status: "test",
+    },
     // This ensures that clipboard event fires on a target node which is
     // focused in case no visible selection is present.
     // crbug.com/40735783

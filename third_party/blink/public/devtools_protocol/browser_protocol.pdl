@@ -8247,6 +8247,7 @@ domain Page
       ch-ua
       ch-ua-arch
       ch-ua-bitness
+      ch-ua-high-entropy-values
       ch-ua-platform
       ch-ua-model
       ch-ua-mobile

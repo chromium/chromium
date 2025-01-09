@@ -11117,6 +11117,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="126" label="DirectSocketsPrivate"/>
   <int value="127" label="FencedUnpartitionedStorageRead"/>
   <int value="128" label="DeferredFetchMinimal"/>
+  <int value="129" label="ClientHintUAHighEntropyValues"/>
 </enum>
 
 <enum name="FedCmContinueOnPopupResult">
