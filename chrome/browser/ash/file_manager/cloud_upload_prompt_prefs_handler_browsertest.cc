@@ -8,12 +8,14 @@
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_test.h"
 
 namespace chromeos::cloud_upload {
@@ -28,6 +30,21 @@ class CloudUploadPromptPrefsHandlerTest : public policy::PolicyTest {
         {});
   }
   ~CloudUploadPromptPrefsHandlerTest() override = default;
+
+  void SetUpInProcessBrowserTestFixture() override {
+    policy::PolicyTest::SetUpInProcessBrowserTestFixture();
+    subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(
+                base::BindRepeating([](content::BrowserContext* context) {
+                  SyncServiceFactory::GetInstance()->SetTestingFactory(
+                      context,
+                      base::BindRepeating([](content::BrowserContext*)
+                                              -> std::unique_ptr<KeyedService> {
+                        return std::make_unique<syncer::TestSyncService>();
+                      }));
+                }));
+  }
 
   void SetUpOnMainThread() override {
     policy::PolicyTest::SetUpOnMainThread();
@@ -74,6 +91,7 @@ class CloudUploadPromptPrefsHandlerTest : public policy::PolicyTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  base::CallbackListSubscription subscription_;
 };
 
 IN_PROC_BROWSER_TEST_F(CloudUploadPromptPrefsHandlerTest,
@@ -179,9 +197,6 @@ IN_PROC_BROWSER_TEST_F(CloudUploadPromptPrefsHandlerTest,
                        PrefsNotSyncedIfProfileNotEnterpriseManaged) {
   profile_policy_connector()->OverrideIsManagedForTesting(false);
 
-  SetMicrosoftOfficeCloudUpload(kCloudUploadPolicyAutomated);
-  SetGoogleWorkspaceCloudUpload(kCloudUploadPolicyAutomated);
-
   TestPrefSyncing(
       /*syncable_pref=*/prefs::kOfficeFilesAlwaysMoveToDriveSyncable,
       /*local_pref=*/prefs::kOfficeFilesAlwaysMoveToDrive,
@@ -211,6 +226,28 @@ IN_PROC_BROWSER_TEST_F(CloudUploadPromptPrefsHandlerTest,
       /*local_pref=*/prefs::kOfficeFilesAlwaysMoveToOneDrive,
       /*should_update=*/false);
   ;
+}
+
+// Tests that the kOfficeFilesAlwaysMoveToDrive pref is synced once the
+// GoogleWorkspaceCloudUpload policy becomes "automated".
+IN_PROC_BROWSER_TEST_F(CloudUploadPromptPrefsHandlerTest,
+                       PrefsSyncedWhenCloudUploadBecomesAutomated) {
+  SetMicrosoftOfficeCloudUpload(kCloudUploadPolicyDisallowed);
+  SetGoogleWorkspaceCloudUpload(kCloudUploadPolicyAllowed);
+  // Set the syncable pref before the policy change, but it shouldn't trigger
+  // the sync.
+  TestPrefSyncing(
+      /*syncable_pref=*/prefs::kOfficeFilesAlwaysMoveToDriveSyncable,
+      /*local_pref=*/prefs::kOfficeFilesAlwaysMoveToDrive,
+      /*should_update=*/false);
+
+  SetGoogleWorkspaceCloudUpload(kCloudUploadPolicyAutomated);
+  EXPECT_EQ(
+      profile()->GetPrefs()->GetBoolean(
+          prefs::kOfficeFilesAlwaysMoveToDriveSyncable),
+      profile()->GetPrefs()->GetBoolean(prefs::kOfficeFilesAlwaysMoveToDrive));
+  EXPECT_TRUE(
+      profile()->GetPrefs()->GetBoolean(prefs::kOfficeFilesAlwaysMoveToDrive));
 }
 
 }  // namespace chromeos::cloud_upload

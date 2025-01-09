@@ -6,15 +6,21 @@
 
 #include <memory>
 
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/base/data_type.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 
 namespace chromeos::cloud_upload {
 
@@ -23,6 +29,17 @@ namespace {
 bool IsProfileEnterpriseManaged(Profile* profile) {
   return profile->GetProfilePolicyConnector()->IsManaged() &&
          !profile->IsChild();
+}
+
+bool IsSyncEnabled(Profile* profile) {
+  const syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile);
+  if (!sync_service) {
+    VLOG(1) << "Sync service not available";
+    return false;
+  }
+
+  return sync_service->GetActiveDataTypes().Has(syncer::OS_PREFERENCES);
 }
 
 class CloudUploadPromptPrefsHandler : public KeyedService {
@@ -51,6 +68,7 @@ class CloudUploadPromptPrefsHandler : public KeyedService {
   void OnOfficeFilesAlwaysMoveToDriveSyncableChanged();
   void OnOfficeFilesAlwaysMoveToOneDriveChanged();
   void OnOfficeFilesAlwaysMoveToOneDriveSyncableChanged();
+  void OnCloudUploadPrefChanged();
 
   raw_ptr<Profile> profile_ = nullptr;
 
@@ -107,7 +125,17 @@ CloudUploadPromptPrefsHandler::CloudUploadPromptPrefsHandler(Profile* profile)
                               OnOfficeFilesAlwaysMoveToOneDriveSyncableChanged,
                           base::Unretained(this)));
   // TODO(387268733): Initial sync to syncable prefs if needed.
-  // TODO(387268733): Observe CloudUpload policies changes.
+
+  pref_change_registrar_->Add(
+      prefs::kGoogleWorkspaceCloudUpload,
+      base::BindRepeating(
+          &CloudUploadPromptPrefsHandler::OnCloudUploadPrefChanged,
+          base::Unretained(this)));
+  pref_change_registrar_->Add(
+      prefs::kMicrosoftOfficeCloudUpload,
+      base::BindRepeating(
+          &CloudUploadPromptPrefsHandler::OnCloudUploadPrefChanged,
+          base::Unretained(this)));
 }
 
 void CloudUploadPromptPrefsHandler::OnOfficeFilesAlwaysMoveToDriveChanged() {
@@ -160,6 +188,30 @@ void CloudUploadPromptPrefsHandler::
       prefs::kOfficeFilesAlwaysMoveToOneDriveSyncable);
   profile_->GetPrefs()->SetBoolean(prefs::kOfficeFilesAlwaysMoveToOneDrive,
                                    always_move_syncable);
+}
+
+void CloudUploadPromptPrefsHandler::OnCloudUploadPrefChanged() {
+  DCHECK(IsProfileEnterpriseManaged(profile_));
+
+  const bool google_workspace_automated =
+      IsGoogleWorkspaceCloudUploadAutomated(profile_);
+  const bool microsoft_office_automated =
+      IsMicrosoftOfficeCloudUploadAutomated(profile_);
+  // A special case that is not supposed to happen in production; the agreed
+  // decision is to ignore this setup and act as if both values were set to
+  // `allowed` instead of `automated`.
+  if (google_workspace_automated && microsoft_office_automated) {
+    return;
+  }
+  if (!IsSyncEnabled(profile_)) {
+    return;
+  }
+
+  if (google_workspace_automated) {
+    OnOfficeFilesAlwaysMoveToDriveSyncableChanged();
+  } else if (microsoft_office_automated) {
+    OnOfficeFilesAlwaysMoveToOneDriveSyncableChanged();
+  }
 }
 
 }  // namespace
