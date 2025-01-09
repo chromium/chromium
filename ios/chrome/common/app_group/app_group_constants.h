@@ -49,6 +49,10 @@ extern NSString* const kChromeCapabilitiesPreference;
 // Show default browser promo capability.
 extern NSString* const kChromeShowDefaultBrowserPromoCapability;
 
+// Capability declaring a list of supported bundle IDs that can open incognito
+// links in chrome.
+extern NSString* const kChromeSupportOpenLinksParametersFromCapability;
+
 // The x-callback-url indicating that an application in the group requires a
 // command.
 extern const char kChromeAppGroupXCallbackCommand[];
@@ -193,6 +197,9 @@ extern NSString* const kAccountsOnDevice;
 extern NSString* const kHostedDomain;
 extern NSString* const kPictureUrl;
 extern NSString* const kEmail;
+
+// Supported bundle IDs for opening incognito links in Chrome.
+extern NSString* const kYoutubeBundleID;
 
 // Conversion helpers between keys and OpenExtensionOutcome.
 NSString* KeyForOpenExtensionOutcomeType(OpenExtensionOutcome);

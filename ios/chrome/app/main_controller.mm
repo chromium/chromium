@@ -1288,10 +1288,21 @@ void RunContinuationAtIndex(
   NSUserDefaults* sharedDefaults = app_group::GetCommonGroupUserDefaults();
   NSNumber* supportsShowDefaultBrowserPromo = @YES;
 
-  NSDictionary* capabilities = @{
-    app_group::
-    kChromeShowDefaultBrowserPromoCapability : supportsShowDefaultBrowserPromo
-  };
+  NSMutableDictionary* capabilities = [[NSMutableDictionary alloc] init];
+  [capabilities setObject:supportsShowDefaultBrowserPromo
+                   forKey:app_group::kChromeShowDefaultBrowserPromoCapability];
+
+  if (base::FeatureList::IsEnabled(kYoutubeIncognito) &&
+      base::FeatureList::IsEnabled(kChromeStartupParametersAsync)) {
+    [capabilities
+        setObject:@[ app_group::kYoutubeBundleID ]
+           forKey:app_group::kChromeSupportOpenLinksParametersFromCapability];
+  } else {
+    [capabilities
+        removeObjectForKey:app_group::
+                               kChromeSupportOpenLinksParametersFromCapability];
+  }
+
   [sharedDefaults setObject:capabilities
                      forKey:app_group::kChromeCapabilitiesPreference];
 }

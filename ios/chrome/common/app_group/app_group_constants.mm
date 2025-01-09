@@ -17,6 +17,8 @@ extern NSString* const kChromeCapabilitiesPreference = @"Chrome.Capabilities";
 
 extern NSString* const kChromeShowDefaultBrowserPromoCapability =
     @"ShowDefaultBrowserPromo";
+extern NSString* const kChromeSupportOpenLinksParametersFromCapability =
+    @"SupportOpenLinksParametersFrom";
 
 const char kChromeAppGroupXCallbackCommand[] = "app-group-command";
 
@@ -91,6 +93,8 @@ NSString* const kAccountsOnDevice = @"ios.registered_accounts_on_device";
 NSString* const kHostedDomain = @"hosted_domain";
 NSString* const kPictureUrl = @"picture_url";
 NSString* const kEmail = @"email";
+
+NSString* const kYoutubeBundleID = @"com.google.youtube";
 
 NSString* ApplicationGroup() {
   return [AppGroupHelper applicationGroup];
