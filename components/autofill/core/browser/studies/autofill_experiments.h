@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 
+struct CoreAccountId;
 class PrefService;
 
 namespace syncer {
@@ -69,6 +70,13 @@ bool IsDeviceAuthAvailable(
 
 // Returns true if the Touch To Fill feature is supported by platform.
 bool IsTouchToFillPaymentMethodSupported();
+
+bool IsUserOptedInWalletSyncTransport(const PrefService* prefs,
+                                      const CoreAccountId& account_id);
+
+void SetUserOptedInWalletSyncTransport(PrefService* prefs,
+                                       const CoreAccountId& account_id,
+                                       bool opted_in);
 
 }  // namespace autofill
 

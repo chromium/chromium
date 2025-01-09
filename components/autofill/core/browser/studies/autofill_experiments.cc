@@ -8,6 +8,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -34,6 +35,7 @@
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/strings/grit/components_strings.h"
@@ -43,6 +45,7 @@
 #include "components/sync/service/sync_service_utils.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/variations/variations_associated_data.h"
+#include "crypto/sha2.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
@@ -63,6 +66,18 @@ void LogCardUploadDisabled(LogManager* log_manager, std::string_view context) {
 void LogCardUploadEnabled(LogManager* log_manager) {
   LOG_AF(log_manager) << LoggingScope::kCreditCardUploadStatus
                       << LogMessage::kCreditCardUploadEnabled << CTag{};
+}
+
+// Returns the opt-in bitfield for the specific |account_hash| or 0 if no entry
+// was found.
+int GetSyncTransportOptInBitFieldForAccount(const PrefService* prefs,
+                                            const std::string& account_hash) {
+  const auto& dictionary = prefs->GetDict(prefs::kAutofillSyncTransportOptIn);
+
+  // If there is no entry in the dictionary, it means the account didn't opt-in.
+  // Use 0 because it's the same as not having opted-in to anything.
+  const auto found = dictionary.FindInt(account_hash);
+  return found.value_or(0);
 }
 
 }  // namespace
@@ -305,6 +320,56 @@ bool IsTouchToFillPaymentMethodSupported() {
 #else
   return false;
 #endif
+}
+
+bool IsUserOptedInWalletSyncTransport(const PrefService* prefs,
+                                      const CoreAccountId& account_id) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  // On mobile, no specific opt-in is required.
+  return true;
+#else
+  if (prefs->GetBoolean(::prefs::kExplicitBrowserSignin) &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillRemovePaymentsButterDropdown)) {
+    // Explicit browser signin makes the explicit opt-in unnecessary.
+    return true;
+  }
+
+  // Get the hash of the account id.
+  std::string account_hash =
+      base::Base64Encode(crypto::SHA256HashString(account_id.ToString()));
+
+  // Return whether the wallet opt-in bit is set.
+  return GetSyncTransportOptInBitFieldForAccount(prefs, account_hash) &
+         prefs::sync_transport_opt_in::kWallet;
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+}
+
+void SetUserOptedInWalletSyncTransport(PrefService* prefs,
+                                       const CoreAccountId& account_id,
+                                       bool opted_in) {
+  // Get the hash of the account id. The hashing here is only a secondary bit of
+  // obfuscation. The primary privacy guarantees are handled by clearing this
+  // whenever cookies are cleared.
+  std::string account_hash =
+      base::Base64Encode(crypto::SHA256HashString(account_id.ToString()));
+
+  ScopedDictPrefUpdate update(prefs, prefs::kAutofillSyncTransportOptIn);
+  int value = GetSyncTransportOptInBitFieldForAccount(prefs, account_hash);
+
+  // If the user has opted in, set that bit while leaving the others intact.
+  if (opted_in) {
+    update->Set(account_hash, value | prefs::sync_transport_opt_in::kWallet);
+    return;
+  }
+
+  // Invert the mask in order to reset the Wallet bit while leaving the other
+  // bits intact, or remove the key entirely if the Wallet was the only opt-in.
+  if (value & ~prefs::sync_transport_opt_in::kWallet) {
+    update->Set(account_hash, value & ~prefs::sync_transport_opt_in::kWallet);
+  } else {
+    update->Remove(account_hash);
+  }
 }
 
 }  // namespace autofill
