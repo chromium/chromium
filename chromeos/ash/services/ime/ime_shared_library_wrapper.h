@@ -44,9 +44,9 @@ inline constexpr char kCloseMojoModeFnName[] = "CloseMojoMode";
 typedef void (*CloseMojoModeFn)();
 
 inline constexpr char kInitializeConnectionFactoryFnName[] =
-    "InitializeConnectionFactory";
+    "InitializeConnectionFactoryV2";
 typedef bool (*InitializeConnectionFactoryFn)(
-    uint32_t receiver_connection_factory_handle);
+    uintptr_t receiver_connection_factory_handle);
 
 inline constexpr char kIsInputMethodConnectedFnName[] =
     "IsInputMethodConnected";
