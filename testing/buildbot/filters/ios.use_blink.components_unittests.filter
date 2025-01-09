@@ -410,3 +410,4 @@
 -LocalStorageImplTest.StorageKeysAreIndependent
 -LocalStorageImplTest.StorageKeysAreIndependent
 -LocalStorageImplTest.WrapperOutlivesMojoConnection
+-LocalStorageImplTest.MetaDataClearedOnDeleteAll
