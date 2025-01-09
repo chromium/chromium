@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/check_deref.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
@@ -70,16 +71,22 @@ constexpr auto kTrafficAnnotation =
       }
     )");
 
+specialized_features::FeatureAccessConfig CreateFeatureAccessConfig() {
+  specialized_features::FeatureAccessConfig config;
+  config.settings_toggle_pref = ash::prefs::kSunfishEnabled;
+  return config;
+}
+
 }  // namespace
 
 ScannerKeyedService::ScannerKeyedService(
+    PrefService* pref_service,
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<manta::ScannerProvider> scanner_provider)
     : identity_manager_(identity_manager),
-      // TODO: crbug.com/38176766 - Add checks in this config.
-      access_checker_(specialized_features::FeatureAccessConfig(),
-                      /*prefs=*/nullptr,
+      access_checker_(CreateFeatureAccessConfig(),
+                      /*prefs=*/pref_service,
                       /*identity_manager=*/nullptr,
                       /*variations_service=*/nullptr),
       scanner_provider_(std::move(scanner_provider)) {

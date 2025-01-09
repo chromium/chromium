@@ -41,6 +41,7 @@ class ScannerKeyedService : public ash::ScannerProfileScopedDelegate,
                             public KeyedService {
  public:
   explicit ScannerKeyedService(
+      PrefService* pref_service,
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<manta::ScannerProvider> scanner_provider);
