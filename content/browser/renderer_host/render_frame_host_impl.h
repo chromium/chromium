@@ -1665,12 +1665,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // in a non-loading state.
   void ResetLoadingState();
 
-  // Returns the permissions policy which should be enforced on this
-  // RenderFrame.
-  const blink::PermissionsPolicy* permissions_policy() const {
-    return permissions_policy_.get();
-  }
-
   void ClearFocusedElement();
 
   bool has_focused_editable_element() const {

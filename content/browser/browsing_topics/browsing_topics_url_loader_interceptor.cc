@@ -152,8 +152,7 @@ void BrowsingTopicsURLLoaderInterceptor::PopulateRequestOrRedirectHeaders(
   }
 
   const blink::PermissionsPolicy* permissions_policy =
-      static_cast<RenderFrameHostImpl*>(request_initiator_frame)
-          ->permissions_policy();
+      request_initiator_frame->GetPermissionsPolicy();
 
   if (!permissions_policy->IsFeatureEnabledForSubresourceRequest(
           blink::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin,

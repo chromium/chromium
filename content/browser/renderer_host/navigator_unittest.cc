@@ -1397,7 +1397,7 @@ TEST_F(NavigatorTest, PermissionsPolicySameSiteNavigation) {
 
   // Check the permissions policy before navigation.
   const blink::PermissionsPolicy* original_permissions_policy =
-      main_test_rfh()->permissions_policy();
+      main_test_rfh()->GetPermissionsPolicy();
   ASSERT_TRUE(original_permissions_policy);
 
   // Navigate to the new URL.
@@ -1405,7 +1405,7 @@ TEST_F(NavigatorTest, PermissionsPolicySameSiteNavigation) {
 
   // Check the permissions policy after navigation.
   const blink::PermissionsPolicy* final_permissions_policy =
-      main_test_rfh()->permissions_policy();
+      main_test_rfh()->GetPermissionsPolicy();
   ASSERT_TRUE(final_permissions_policy);
   ASSERT_NE(original_permissions_policy, final_permissions_policy);
 }
@@ -1420,7 +1420,7 @@ TEST_F(NavigatorTest, PermissionsPolicyFragmentNavigation) {
 
   // Check the permissions policy before navigation.
   const blink::PermissionsPolicy* original_permissions_policy =
-      main_test_rfh()->permissions_policy();
+      main_test_rfh()->GetPermissionsPolicy();
   ASSERT_TRUE(original_permissions_policy);
 
   // Navigate to the new URL.
@@ -1428,7 +1428,7 @@ TEST_F(NavigatorTest, PermissionsPolicyFragmentNavigation) {
 
   // Check the permissions policy after navigation.
   const blink::PermissionsPolicy* final_permissions_policy =
-      main_test_rfh()->permissions_policy();
+      main_test_rfh()->GetPermissionsPolicy();
   ASSERT_EQ(original_permissions_policy, final_permissions_policy);
 }
 
@@ -1446,7 +1446,7 @@ TEST_F(NavigatorTest, PermissionsPolicyNewChild) {
   NavigationSimulator::NavigateAndCommitFromDocument(kUrl2, subframe_rfh);
 
   const blink::PermissionsPolicy* subframe_permissions_policy =
-      subframe_rfh->permissions_policy();
+      subframe_rfh->GetPermissionsPolicy();
   ASSERT_TRUE(subframe_permissions_policy);
   ASSERT_FALSE(subframe_permissions_policy->GetOriginForTest().opaque());
 }

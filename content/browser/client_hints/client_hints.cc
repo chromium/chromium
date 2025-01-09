@@ -563,7 +563,7 @@ struct ClientHintsExtendedData {
           frame_tree_node->frame_tree().GetMainFrame();
       main_frame_origin = main_frame->GetLastCommittedOrigin();
       permissions_policy = blink::PermissionsPolicy::CopyStateFrom(
-          main_frame->permissions_policy());
+          main_frame->GetPermissionsPolicy());
     }
 
     const base::TimeTicks start_time = base::TimeTicks::Now();

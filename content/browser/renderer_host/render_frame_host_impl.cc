@@ -656,7 +656,7 @@ DetermineWhetherToForbidTrustTokenOperation(
       // Fenced frames with flexible permissions are allowed to inherit certain
       // permissions from their parent's permissions policy.
       const blink::PermissionsPolicy* parent_policy =
-          frame->GetParentOrOuterDocument()->permissions_policy();
+          frame->GetParentOrOuterDocument()->GetPermissionsPolicy();
       blink::ParsedPermissionsPolicy container_policy =
           commit_params.frame_policy.container_policy;
       subframe_policy = blink::PermissionsPolicy::CreateFlexibleForFencedFrame(
@@ -681,7 +681,7 @@ DetermineWhetherToForbidTrustTokenOperation(
           kPotentiallyPermit;
 
     const blink::PermissionsPolicy* parent_policy =
-        frame->GetParent()->permissions_policy();
+        frame->GetParent()->GetPermissionsPolicy();
     blink::ParsedPermissionsPolicy container_policy =
         commit_params.frame_policy.container_policy;
 
@@ -13170,7 +13170,7 @@ void RenderFrameHostImpl::ResetPermissionsPolicy(
       // Fenced frames with flexible permissions are allowed to inherit certain
       // permissions from their parent's permissions policy.
       const blink::PermissionsPolicy* parent_policy =
-          GetParentOrOuterDocument()->permissions_policy();
+          GetParentOrOuterDocument()->GetPermissionsPolicy();
       blink::ParsedPermissionsPolicy container_policy =
           browsing_context_state_->effective_frame_policy().container_policy;
       permissions_policy_ =
@@ -13209,7 +13209,7 @@ void RenderFrameHostImpl::ResetPermissionsPolicy(
 
   RenderFrameHostImpl* parent_frame_host = GetParent();
   const blink::PermissionsPolicy* parent_policy =
-      parent_frame_host ? parent_frame_host->permissions_policy() : nullptr;
+      parent_frame_host ? parent_frame_host->GetPermissionsPolicy() : nullptr;
   blink::ParsedPermissionsPolicy container_policy =
       browsing_context_state_->effective_frame_policy().container_policy;
 

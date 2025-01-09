@@ -124,7 +124,7 @@ bool IsAdAuctionHeadersEligible(
   }
 
   const blink::PermissionsPolicy* permissions_policy =
-      initiator_rfh.permissions_policy();
+      initiator_rfh.GetPermissionsPolicy();
   if (!permissions_policy->IsFeatureEnabledForSubresourceRequest(
           blink::mojom::PermissionsPolicyFeature::kRunAdAuction,
           url::Origin::Create(resource_request.url), resource_request)) {
@@ -159,7 +159,7 @@ bool IsAdAuctionHeadersEligibleForNavigation(
   }
 
   const blink::PermissionsPolicy* parent_policy =
-      frame.GetParentOrOuterDocument()->permissions_policy();
+      frame.GetParentOrOuterDocument()->GetPermissionsPolicy();
   DCHECK(parent_policy);
   if (!parent_policy->IsFeatureEnabledForOrigin(
           blink::mojom::PermissionsPolicyFeature::kRunAdAuction,
