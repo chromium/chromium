@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/socket/client_socket_pool_manager.h"
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -36,10 +32,10 @@ namespace net {
 namespace {
 
 // Limit of sockets of each socket pool.
-int g_max_sockets_per_pool[] = {
-  256,  // NORMAL_SOCKET_POOL
-  256   // WEBSOCKET_SOCKET_POOL
-};
+auto g_max_sockets_per_pool = std::to_array<int>({
+    256,  // NORMAL_SOCKET_POOL
+    256   // WEBSOCKET_SOCKET_POOL
+});
 
 static_assert(std::size(g_max_sockets_per_pool) ==
                   HttpNetworkSession::NUM_SOCKET_POOL_TYPES,
@@ -53,10 +49,10 @@ static_assert(std::size(g_max_sockets_per_pool) ==
 // than normal other connections. Use a limit of 255, so the limit for wss will
 // be the same as the limit for ws. Also note that Firefox uses a limit of 200.
 // See http://crbug.com/486800
-int g_max_sockets_per_group[] = {
+auto g_max_sockets_per_group = std::to_array<int>({
     6,   // NORMAL_SOCKET_POOL
     255  // WEBSOCKET_SOCKET_POOL
-};
+});
 
 static_assert(std::size(g_max_sockets_per_group) ==
                   HttpNetworkSession::NUM_SOCKET_POOL_TYPES,
@@ -65,10 +61,10 @@ static_assert(std::size(g_max_sockets_per_group) ==
 // The max number of sockets to allow per proxy chain.  This applies both to
 // http and SOCKS proxies.  See http://crbug.com/12066 and
 // http://crbug.com/44501 for details about proxy chain connection limits.
-int g_max_sockets_per_proxy_chain[] = {
+auto g_max_sockets_per_proxy_chain = std::to_array<int>({
     kDefaultMaxSocketsPerProxyChain,  // NORMAL_SOCKET_POOL
     kDefaultMaxSocketsPerProxyChain   // WEBSOCKET_SOCKET_POOL
-};
+});
 
 static_assert(std::size(g_max_sockets_per_proxy_chain) ==
                   HttpNetworkSession::NUM_SOCKET_POOL_TYPES,

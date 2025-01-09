@@ -9,6 +9,8 @@
 
 #include "media/formats/mpeg/mpeg1_audio_stream_parser.h"
 
+#include <array>
+
 #include "media/base/media_log.h"
 
 namespace media {
@@ -20,41 +22,54 @@ constexpr uint32_t kMPEG1StartCodeMask = 0xffe00000;
 // Maps version and layer information in the frame header
 // into an index for the |kBitrateMap|.
 // Derived from: http://mpgedit.org/mpgedit/mpeg_format/MP3Format.html
-constexpr int kVersionLayerMap[4][4] = {
+constexpr std::array<std::array<int, 4>, 4> kVersionLayerMap = {{
     // { reserved, L3, L2, L1 }
     {5, 4, 4, 3},  // MPEG 2.5
     {5, 5, 5, 5},  // reserved
     {5, 4, 4, 3},  // MPEG 2
-    {5, 2, 1, 0}   // MPEG 1
-};
+    {5, 2, 1, 0},  // MPEG 1
+}};
 
 // Maps the bitrate index field in the header and an index
 // from |kVersionLayerMap| to a frame bitrate.
 // Derived from: http://mpgedit.org/mpgedit/mpeg_format/MP3Format.html
-constexpr int kBitrateMap[16][6] = {
+constexpr std::array<std::array<int, 6>, 16> kBitrateMap = {{
     // { V1L1, V1L2, V1L3, V2L1, V2L2 & V2L3, reserved }
-    {0, 0, 0, 0, 0, 0},           {32, 32, 32, 32, 8, 0},
-    {64, 48, 40, 48, 16, 0},      {96, 56, 48, 56, 24, 0},
-    {128, 64, 56, 64, 32, 0},     {160, 80, 64, 80, 40, 0},
-    {192, 96, 80, 96, 48, 0},     {224, 112, 96, 112, 56, 0},
-    {256, 128, 112, 128, 64, 0},  {288, 160, 128, 144, 80, 0},
-    {320, 192, 160, 160, 96, 0},  {352, 224, 192, 176, 112, 0},
-    {384, 256, 224, 192, 128, 0}, {416, 320, 256, 224, 144, 0},
-    {448, 384, 320, 256, 160, 0}, {0, 0, 0, 0, 0}};
+    {0, 0, 0, 0, 0, 0},
+    {32, 32, 32, 32, 8, 0},
+    {64, 48, 40, 48, 16, 0},
+    {96, 56, 48, 56, 24, 0},
+    {128, 64, 56, 64, 32, 0},
+    {160, 80, 64, 80, 40, 0},
+    {192, 96, 80, 96, 48, 0},
+    {224, 112, 96, 112, 56, 0},
+    {256, 128, 112, 128, 64, 0},
+    {288, 160, 128, 144, 80, 0},
+    {320, 192, 160, 160, 96, 0},
+    {352, 224, 192, 176, 112, 0},
+    {384, 256, 224, 192, 128, 0},
+    {416, 320, 256, 224, 144, 0},
+    {448, 384, 320, 256, 160, 0},
+    {0, 0, 0, 0, 0},
+}};
 
 // Maps the sample rate index and version fields from the frame header
 // to a sample rate.
 // Derived from: http://mpgedit.org/mpgedit/mpeg_format/MP3Format.html
-constexpr int kSampleRateMap[4][4] = {
+constexpr std::array<std::array<int, 4>, 4> kSampleRateMap = {{
     // { V2.5, reserved, V2, V1 }
     {11025, 0, 22050, 44100},
     {12000, 0, 24000, 48000},
     {8000, 0, 16000, 32000},
-    {0, 0, 0, 0}};
+    {0, 0, 0, 0},
+}};
 
 // Offset in bytes from the end of the MP3 header to "Xing" or "Info" tags which
 // indicate a frame is silent metadata frame.  Values taken from FFmpeg.
-constexpr int kXingHeaderMap[2][2] = {{32, 17}, {17, 9}};
+constexpr std::array<std::array<int, 2>, 2> kXingHeaderMap = {{
+    {32, 17},
+    {17, 9},
+}};
 
 // Frame header field constants.
 constexpr int kBitrateFree = 0;

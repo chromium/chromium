@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #ifndef UI_GFX_GEOMETRY_SIN_COS_DEGREES_H_
 #define UI_GFX_GEOMETRY_SIN_COS_DEGREES_H_
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <numbers>
 #include <utility>
@@ -49,11 +46,16 @@ inline SinCos SinCosDegrees(double degrees) {
     double n45degrees = degrees / 45.0;
     int octant = static_cast<int>(n45degrees);
     if (octant == n45degrees) {
-      constexpr SinCos kSinCosN45[] = {
-          {0, 1},  {std::numbers::sqrt2 / 2, std::numbers::sqrt2 / 2},
-          {1, 0},  {std::numbers::sqrt2 / 2, -std::numbers::sqrt2 / 2},
-          {0, -1}, {-std::numbers::sqrt2 / 2, -std::numbers::sqrt2 / 2},
-          {-1, 0}, {-std::numbers::sqrt2 / 2, std::numbers::sqrt2 / 2}};
+      constexpr auto kSinCosN45 = std::to_array<SinCos>({
+          {0, 1},
+          {std::numbers::sqrt2 / 2, std::numbers::sqrt2 / 2},
+          {1, 0},
+          {std::numbers::sqrt2 / 2, -std::numbers::sqrt2 / 2},
+          {0, -1},
+          {-std::numbers::sqrt2 / 2, -std::numbers::sqrt2 / 2},
+          {-1, 0},
+          {-std::numbers::sqrt2 / 2, std::numbers::sqrt2 / 2},
+      });
 
       return kSinCosN45[octant & 7];
     }

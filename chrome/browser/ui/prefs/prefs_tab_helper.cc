@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <set>
 #include <string>
 
@@ -95,7 +96,7 @@ void RegisterFontFamilyPrefs(user_prefs::PrefRegistrySyncable* registry,
   // Expand the font concatenated with script name so this stays at RO memory
   // rather than allocated in heap.
   // clang-format off
-  static const char* const kFontFamilyMap[] = {
+  static const auto kFontFamilyMap = std::to_array<const char *>({
 #define EXPAND_SCRIPT_FONT(map_name, script_name) map_name "." script_name,
 
 #include "chrome/common/pref_font_script_names-inl.h"
@@ -108,7 +109,7 @@ ALL_FONT_SCRIPTS(WEBKIT_WEBPREFS_FONTS_SERIF)
 ALL_FONT_SCRIPTS(WEBKIT_WEBPREFS_FONTS_STANDARD)
 
 #undef EXPAND_SCRIPT_FONT
-  };
+  });
   // clang-format on
 
   for (const char* const pref_name : kFontFamilyMap) {
@@ -144,7 +145,7 @@ struct FontDefault {
 // all platforms have fonts for all scripts for all generic families.
 // TODO(falken): add proper defaults when possible for all
 // platforms/scripts/generic families.
-const FontDefault kFontDefaults[] = {
+const auto kFontDefaults = std::to_array<FontDefault>({
     {prefs::kWebKitStandardFontFamily, IDS_STANDARD_FONT_FAMILY},
     {prefs::kWebKitFixedFontFamily, IDS_FIXED_FONT_FAMILY},
     {prefs::kWebKitSerifFontFamily, IDS_SERIF_FONT_FAMILY},
@@ -213,7 +214,7 @@ const FontDefault kFontDefaults[] = {
     {prefs::kWebKitFixedFontFamilyTraditionalHan,
      IDS_FIXED_FONT_FAMILY_TRADITIONAL_HAN},
 #endif
-};
+});
 
 // Returns the script of the font pref |pref_name|.  For example, suppose
 // |pref_name| is "webkit.webprefs.fonts.serif.Hant".  Since the script code for

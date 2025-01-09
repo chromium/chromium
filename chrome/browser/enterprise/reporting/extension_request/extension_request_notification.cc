@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/enterprise/reporting/extension_request/extension_request_notification.h"
 
+#include <array>
 #include <memory>
 
 #include "chrome/browser/notifications/notification_display_service.h"
@@ -39,16 +35,19 @@ constexpr char kChromeWebstoreUrl[] =
 
 // The elements order of array below must match the order in enum
 // ExtensionRequestNotification::NotifyType.
-const char* const kNotificationIds[] = {
-    kApprovedNotificationId, kRejectedNotificationId, kInstalledNotificationId};
-constexpr int kNotificationTitles[] = {
-    IDS_ENTERPRISE_EXTENSION_REQUEST_APPROVED_TITLE,
-    IDS_ENTERPRISE_EXTENSION_REQUEST_REJECTED_TITLE,
-    IDS_ENTERPRISE_EXTENSION_REQUEST_FORCE_INSTALLED_TITLE};
-constexpr int kNotificationBodies[] = {
-    IDS_ENTERPRISE_EXTENSION_REQUEST_CLICK_TO_INSTALL,
-    IDS_ENTERPRISE_EXTENSION_REQUEST_CLICK_TO_VIEW,
-    IDS_ENTERPRISE_EXTENSION_REQUEST_CLICK_TO_VIEW};
+const auto kNotificationIds = std::to_array<const char*>({
+    kApprovedNotificationId,
+    kRejectedNotificationId,
+    kInstalledNotificationId,
+});
+constexpr auto kNotificationTitles = std::to_array<int>(
+    {IDS_ENTERPRISE_EXTENSION_REQUEST_APPROVED_TITLE,
+     IDS_ENTERPRISE_EXTENSION_REQUEST_REJECTED_TITLE,
+     IDS_ENTERPRISE_EXTENSION_REQUEST_FORCE_INSTALLED_TITLE});
+constexpr auto kNotificationBodies =
+    std::to_array<int>({IDS_ENTERPRISE_EXTENSION_REQUEST_CLICK_TO_INSTALL,
+                        IDS_ENTERPRISE_EXTENSION_REQUEST_CLICK_TO_VIEW,
+                        IDS_ENTERPRISE_EXTENSION_REQUEST_CLICK_TO_VIEW});
 
 }  // namespace
 

@@ -2,20 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/services/app_service/public/cpp/icon_info.h"
 
+#include <array>
 #include <utility>
 
 namespace apps {
 
 namespace {
 
-const char* const kPurposeStrings[] = {"kAny", "kMonochrome", "kMaskable"};
+const auto kPurposeStrings =
+    std::to_array<const char*>({"kAny", "kMonochrome", "kMaskable"});
 
 }  // namespace
 

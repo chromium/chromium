@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/vulkan/vulkan_device_queue.h"
 
+#include <array>
 #include <bit>
 #include <cstring>
 #include <unordered_set>
@@ -130,13 +126,13 @@ bool VulkanDeviceQueue::Initialize(
 
   // We prefer to use discrete GPU, integrated GPU is the second, and then
   // others.
-  static constexpr int kDeviceTypeScores[] = {
+  static constexpr auto kDeviceTypeScores = std::to_array<int>({
       0,  // VK_PHYSICAL_DEVICE_TYPE_OTHER
       3,  // VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU
       4,  // VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU
       2,  // VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU
       1,  // VK_PHYSICAL_DEVICE_TYPE_CPU
-  };
+  });
   static_assert(VK_PHYSICAL_DEVICE_TYPE_OTHER == 0, "");
   static_assert(VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU == 1, "");
   static_assert(VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU == 2, "");
@@ -282,9 +278,13 @@ bool VulkanDeviceQueue::Initialize(
       base::StringPrintf("0x%04x", vk_physical_device_properties_.vendorID));
   crash_keys::vulkan_device_id.Set(
       base::StringPrintf("0x%04x", vk_physical_device_properties_.deviceID));
-  static const char* kDeviceTypeNames[] = {
-      "other", "integrated", "discrete", "virtual", "cpu",
-  };
+  static auto kDeviceTypeNames = std::to_array<const char*>({
+      "other",
+      "integrated",
+      "discrete",
+      "virtual",
+      "cpu",
+  });
   uint32_t gpu_type = vk_physical_device_properties_.deviceType;
   if (gpu_type >= std::size(kDeviceTypeNames))
     gpu_type = 0;

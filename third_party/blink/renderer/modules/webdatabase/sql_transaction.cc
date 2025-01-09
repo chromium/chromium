@@ -33,6 +33,8 @@
 
 #include "third_party/blink/renderer/modules/webdatabase/sql_transaction.h"
 
+#include <array>
+
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/modules/webdatabase/database.h"
 #include "third_party/blink/renderer/modules/webdatabase/database_authorizer.h"
@@ -140,7 +142,7 @@ void SQLTransaction::SetBackend(SQLTransactionBackend* backend) {
 
 SQLTransaction::StateFunction SQLTransaction::StateFunctionFor(
     SQLTransactionState state) {
-  static const StateFunction kStateFunctions[] = {
+  static const auto kStateFunctions = std::to_array<StateFunction>({
       &SQLTransaction::UnreachableState,    // 0. illegal
       &SQLTransaction::UnreachableState,    // 1. idle
       &SQLTransaction::UnreachableState,    // 2. acquireLock
@@ -154,8 +156,8 @@ SQLTransaction::StateFunction SQLTransaction::StateFunctionFor(
       &SQLTransaction::DeliverTransactionErrorCallback,  // 9.
       &SQLTransaction::DeliverStatementCallback,         // 10.
       &SQLTransaction::DeliverQuotaIncreaseCallback,     // 11.
-      &SQLTransaction::DeliverSuccessCallback            // 12.
-  };
+      &SQLTransaction::DeliverSuccessCallback,           // 12.
+  });
 
   DCHECK(std::size(kStateFunctions) ==
          static_cast<int>(SQLTransactionState::kNumberOfStates));

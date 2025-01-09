@@ -12,6 +12,7 @@
 #include <va/va.h>
 
 #include <algorithm>
+#include <array>
 #include <numeric>
 
 #include "base/bits.h"
@@ -43,13 +44,13 @@ constexpr uint8_t kScreenMaxQP = kMaxQP;
 // libvpx vp9 rate control, whose range is 0-63.
 // Cited from //third_party/libvpx/source/libvpx/vp9/encoder/vp9_quantize.cc.
 uint8_t QindexToQuantizer(uint8_t q_index) {
-  constexpr uint8_t kQuantizerToQindex[] = {
+  constexpr auto kQuantizerToQindex = std::to_array<uint8_t>({
       0,   4,   8,   12,  16,  20,  24,  28,  32,  36,  40,  44,  48,
       52,  56,  60,  64,  68,  72,  76,  80,  84,  88,  92,  96,  100,
       104, 108, 112, 116, 120, 124, 128, 132, 136, 140, 144, 148, 152,
       156, 160, 164, 168, 172, 176, 180, 184, 188, 192, 196, 200, 204,
       208, 212, 216, 220, 224, 228, 232, 236, 240, 244, 249, 255,
-  };
+  });
 
   for (size_t q = 0; q < std::size(kQuantizerToQindex); ++q) {
     if (kQuantizerToQindex[q] >= q_index)

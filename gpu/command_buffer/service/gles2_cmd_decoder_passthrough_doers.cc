@@ -8,6 +8,7 @@
 #endif
 
 #include <algorithm>
+#include <array>
 #include <memory>
 
 #include "base/bits.h"
@@ -2613,13 +2614,13 @@ error::Error GLES2DecoderPassthroughImpl::DoWritePixelsYUVINTERNAL(
     CHECK(result);
   }
 
-  size_t row_bytes[SkYUVAInfo::kMaxPlanes];
+  std::array<size_t, SkYUVAInfo::kMaxPlanes> row_bytes;
   row_bytes[0] = src_row_bytes_plane1;
   row_bytes[1] = src_row_bytes_plane2;
   row_bytes[2] = src_row_bytes_plane3;
   row_bytes[3] = src_row_bytes_plane4;
 
-  size_t plane_offsets[SkYUVAInfo::kMaxPlanes];
+  std::array<size_t, SkYUVAInfo::kMaxPlanes> plane_offsets;
   plane_offsets[0] = pixels_offset_plane1;
   plane_offsets[1] = pixels_offset_plane2;
   plane_offsets[2] = pixels_offset_plane3;

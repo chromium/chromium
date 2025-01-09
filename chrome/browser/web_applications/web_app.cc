@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "chrome/browser/web_applications/web_app.h"
 
@@ -227,7 +223,8 @@ base::Value OsStatesDebugValue(
 
 base::Value::Dict ImageResourceDebugDict(
     const blink::Manifest::ImageResource& icon) {
-  const char* const kPurposeStrings[] = {"Any", "Monochrome", "Maskable"};
+  const auto kPurposeStrings =
+      std::to_array<const char*>({"Any", "Monochrome", "Maskable"});
 
   base::Value::Dict root;
   root.Set("src", icon.src.spec());

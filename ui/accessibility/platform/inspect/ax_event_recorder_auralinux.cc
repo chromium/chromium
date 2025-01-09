@@ -13,6 +13,8 @@
 #include <atk/atkutil.h>
 #include <atspi/atspi.h>
 
+#include <array>
+
 #include "base/no_destructor.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_util.h"
@@ -232,7 +234,7 @@ void AXEventRecorderAuraLinux::ProcessATKEvent(const char* event,
 // This list is composed of the sorted event names taken from the list provided
 // in the libatspi documentation at:
 // https://developer.gnome.org/libatspi/stable/AtspiEventListener.html#atspi-event-listener-register
-const char* const kEventNames[] = {
+const auto kEventNames = std::to_array<const char*>({
     "document:load-complete",
     "object:active-descendant-changed",
     "object:children-changed",
@@ -279,7 +281,7 @@ const char* const kEventNames[] = {
     "window:restyle",
     "window:shade",
     "window:unshade",
-};
+});
 
 static void OnATSPIEventReceived(AtspiEvent* event, void* data) {
   static_cast<AXEventRecorderAuraLinux*>(data)->ProcessATSPIEvent(event);

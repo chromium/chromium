@@ -9,6 +9,7 @@
 
 #include "media/base/video_util.h"
 
+#include <array>
 #include <cmath>
 
 #include "base/bits.h"
@@ -228,7 +229,7 @@ void ProcessAsyncMappingResult(
   }
 
   const size_t num_planes = VideoFrame::NumPlanes(video_frame->format());
-  uint8_t* plane_addrs[VideoFrame::kMaxPlanes] = {};
+  std::array<uint8_t*, VideoFrame::kMaxPlanes> plane_addrs = {};
   for (size_t i = 0; i < num_planes; i++) {
     plane_addrs[i] = scoped_mapping->Memory(i);
   }
@@ -602,7 +603,7 @@ scoped_refptr<VideoFrame> ConvertToMemoryMappedFrame(
   }
 
   const size_t num_planes = VideoFrame::NumPlanes(video_frame->format());
-  uint8_t* plane_addrs[VideoFrame::kMaxPlanes] = {};
+  std::array<uint8_t*, VideoFrame::kMaxPlanes> plane_addrs = {};
   for (size_t i = 0; i < num_planes; i++)
     plane_addrs[i] = scoped_mapping->Memory(i);
 

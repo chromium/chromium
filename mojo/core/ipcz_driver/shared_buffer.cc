@@ -9,6 +9,7 @@
 
 #include "mojo/core/ipcz_driver/shared_buffer.h"
 
+#include <array>
 #include <cstdint>
 #include <utility>
 
@@ -147,7 +148,7 @@ scoped_refptr<SharedBuffer> SharedBuffer::CreateForMojoWrapper(
     return nullptr;
   }
 
-  PlatformHandle handles[2];
+  std::array<PlatformHandle, 2> handles;
   for (size_t i = 0; i < mojo_platform_handles.size(); ++i) {
     handles[i] =
         PlatformHandle::FromMojoPlatformHandle(&mojo_platform_handles[i]);

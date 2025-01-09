@@ -9,6 +9,7 @@
 
 #include "cc/metrics/frame_sequence_metrics.h"
 
+#include <array>
 #include <memory>
 #include <string>
 #include <utility>
@@ -563,7 +564,8 @@ void FrameSequenceMetrics::TraceData::Advance(base::TimeTicks start_timestamp,
   // Use different names, because otherwise the trace-viewer shows the slices in
   // the same color, and that makes it difficult to tell the traces apart from
   // each other.
-  const char* trace_names[] = {"Frame", "Frame ", "Frame   "};
+  auto trace_names =
+      std::to_array<const char*>({"Frame", "Frame ", "Frame   "});
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
       "cc,benchmark", trace_names[++this->frame_count % 3],
       TRACE_ID_LOCAL(trace_id), start_timestamp);

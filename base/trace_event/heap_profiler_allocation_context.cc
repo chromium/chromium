@@ -10,6 +10,7 @@
 #include "base/trace_event/heap_profiler_allocation_context.h"
 
 #include <algorithm>
+#include <array>
 #include <cstring>
 
 #include "base/containers/span.h"
@@ -69,7 +70,7 @@ size_t hash<StackFrame>::operator()(const StackFrame& frame) const {
 }
 
 size_t hash<Backtrace>::operator()(const Backtrace& backtrace) const {
-  const void* values[Backtrace::kMaxFrameCount];
+  std::array<const void*, Backtrace::kMaxFrameCount> values;
   for (size_t i = 0; i != backtrace.frame_count; ++i) {
     values[i] = backtrace.frames[i].value;
   }

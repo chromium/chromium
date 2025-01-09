@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <utility>
 
@@ -403,10 +399,11 @@ void CloudPolicyValidatorBase::RunChecks() {
 
   // Table of checks we run. These are sorted by descending severity of the
   // error, s.t. the most severe check will determine the validation status.
-  static const struct {
+  struct CheckFunctions {
     int flag;
     Status (CloudPolicyValidatorBase::*checkFunction)();
-  } kCheckFunctions[] = {
+  };
+  static const auto kCheckFunctions = std::to_array<CheckFunctions>({
       {VALIDATE_SIGNATURE, &CloudPolicyValidatorBase::CheckSignature},
       {VALIDATE_INITIAL_KEY, &CloudPolicyValidatorBase::CheckInitialKey},
       {VALIDATE_CACHED_KEY, &CloudPolicyValidatorBase::CheckCachedKey},
@@ -419,7 +416,7 @@ void CloudPolicyValidatorBase::RunChecks() {
       {VALIDATE_TIMESTAMP, &CloudPolicyValidatorBase::CheckTimestamp},
       {VALIDATE_PAYLOAD, &CloudPolicyValidatorBase::CheckPayload},
       {VALIDATE_VALUES, &CloudPolicyValidatorBase::CheckValues},
-  };
+  });
 
   for (size_t i = 0; i < std::size(kCheckFunctions); ++i) {
     if (validation_flags_ & kCheckFunctions[i].flag) {

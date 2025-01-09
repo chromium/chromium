@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // This file was automatically generated from
 // alt_game_images/alt_game_images.cc.template. See README.md for details about
 // how to make changes.
 
+#include <array>
 #include <memory>
 #include <string>
 
@@ -359,21 +355,21 @@ const uint8_t kAltGameImages1xB[] = {
     0x75, 0xcd, 0xc8, 0x20, 0x6f, 0x4c, 0x3b, 0x9,  0xde, 0xd7, 0x8d, 0x9c,
     0xb0, 0xf0, 0xfb, 0x86};
 
-const uint8_t* const kAltGameImages1x[] = {
+const auto kAltGameImages1x = std::to_array<const uint8_t*>({
 
     kAltGameImages1xA,
 
     kAltGameImages1xB,
 
-};
+});
 constexpr int kAltGameImagesCount = std::size(kAltGameImages1x);
-const size_t kAltGameImages1xLength[] = {
+const auto kAltGameImages1xLength = std::to_array<size_t>({
 
     std::size(kAltGameImages1xA),
 
     std::size(kAltGameImages1xB),
 
-};
+});
 static_assert(std::size(kAltGameImages1xLength) == kAltGameImagesCount, "");
 
 const uint8_t kAltGameImages2xA[] = {
@@ -778,21 +774,21 @@ const uint8_t kAltGameImages2xB[] = {
     0x6e, 0x22, 0x5d, 0x2e, 0xf5, 0x31, 0xa7, 0x61, 0xf7, 0x5a, 0x18, 0xef,
     0x96, 0x43, 0x72, 0x1f, 0x8b, 0x34, 0xd8, 0xd8, 0x66, 0x5c, 0x14, 0x69};
 
-const uint8_t* const kAltGameImages2x[] = {
+const auto kAltGameImages2x = std::to_array<const uint8_t*>({
 
     kAltGameImages2xA,
 
     kAltGameImages2xB,
 
-};
+});
 
-const size_t kAltGameImages2xLength[] = {
+const auto kAltGameImages2xLength = std::to_array<size_t>({
 
     std::size(kAltGameImages2xA),
 
     std::size(kAltGameImages2xB),
 
-};
+});
 
 static_assert(std::size(kAltGameImages2x) == kAltGameImagesCount, "");
 static_assert(std::size(kAltGameImages2xLength) == kAltGameImagesCount, "");

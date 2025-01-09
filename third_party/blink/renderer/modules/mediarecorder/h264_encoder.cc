@@ -9,6 +9,7 @@
 
 #include "third_party/blink/renderer/modules/mediarecorder/h264_encoder.h"
 
+#include <array>
 #include <optional>
 #include <utility>
 
@@ -174,7 +175,7 @@ void H264Encoder::EncodeFrame(scoped_refptr<media::VideoFrame> frame,
   std::string data;
   scoped_refptr<media::DecoderBuffer> buffer;
 
-  const uint8_t kNALStartCode[4] = {0, 0, 0, 1};
+  const std::array<uint8_t, 4> kNALStartCode = {0, 0, 0, 1};
   for (int layer = 0; layer < info.iLayerNum; ++layer) {
     const SLayerBSInfo& layerInfo = info.sLayerInfo[layer];
     // Iterate NAL units making up this layer, noting fragments.

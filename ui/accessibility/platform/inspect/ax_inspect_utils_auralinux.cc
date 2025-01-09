@@ -9,6 +9,7 @@
 
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_auralinux.h"
 
+#include <array>
 #include <string>
 #include <utility>
 #include <vector>
@@ -293,7 +294,7 @@ const char* ATSPIRoleToString(AtspiRole role) {
 // a new role and newer versions may have changed the name returned by
 // atk_role_get_name. This table should be kept up to date with newer ATK
 // releases.
-const char* const kRoleNames[] = {
+const auto kRoleNames = std::to_array<const char*>({
     "invalid",  // ATK_ROLE_INVALID.
     "accelerator label",
     "alert",
@@ -419,7 +420,7 @@ const char* const kRoleNames[] = {
     "footnote",           // ATK_ROLE_FOOTNOTE = 122.
     "content deletion",   // ATK_ROLE_CONTENT_DELETION = 123.
     "content insertion",  // ATK_ROLE_CONTENT_DELETION = 124.
-};
+});
 
 const char* AtkRoleToString(AtkRole role) {
   if (role < G_N_ELEMENTS(kRoleNames))

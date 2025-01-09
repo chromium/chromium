@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/tabs/tab_style.h"
+
+#include <array>
 
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/features.h"
@@ -155,25 +152,25 @@ SkColor ChromeRefresh2023TabStyle::GetTabBackgroundColor(
     const ui::ColorProvider& color_provider) const {
   switch (state) {
     case TabStyle::TabSelectionState::kActive: {
-      constexpr ui::ColorId kActiveColorIds[2] = {
+      constexpr std::array<ui::ColorId, 2> kActiveColorIds = {
           kColorTabBackgroundActiveFrameInactive,
           kColorTabBackgroundActiveFrameActive};
       return color_provider.GetColor(kActiveColorIds[frame_active]);
     }
     case TabStyle::TabSelectionState::kSelected: {
-      constexpr ui::ColorId kSelectedColorIds[2][2] = {
-          {kColorTabBackgroundSelectedFrameInactive,
-           kColorTabBackgroundSelectedFrameActive},
-          {kColorTabBackgroundSelectedHoverFrameInactive,
-           kColorTabBackgroundSelectedHoverFrameActive}};
+      constexpr std::array<std::array<ui::ColorId, 2>, 2> kSelectedColorIds = {
+          {{kColorTabBackgroundSelectedFrameInactive,
+            kColorTabBackgroundSelectedFrameActive},
+           {kColorTabBackgroundSelectedHoverFrameInactive,
+            kColorTabBackgroundSelectedHoverFrameActive}}};
       return color_provider.GetColor(kSelectedColorIds[hovered][frame_active]);
     }
     case TabStyle::TabSelectionState::kInactive: {
-      constexpr ui::ColorId kInactiveColorIds[2][2] = {
-          {kColorTabBackgroundInactiveFrameInactive,
-           kColorTabBackgroundInactiveFrameActive},
-          {kColorTabBackgroundInactiveHoverFrameInactive,
-           kColorTabBackgroundInactiveHoverFrameActive}};
+      constexpr std::array<std::array<ui::ColorId, 2>, 2> kInactiveColorIds = {
+          {{kColorTabBackgroundInactiveFrameInactive,
+            kColorTabBackgroundInactiveFrameActive},
+           {kColorTabBackgroundInactiveHoverFrameInactive,
+            kColorTabBackgroundInactiveHoverFrameActive}}};
       return color_provider.GetColor(kInactiveColorIds[hovered][frame_active]);
     }
     default:

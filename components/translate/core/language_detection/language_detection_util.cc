@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/translate/core/language_detection/language_detection_util.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <string_view>
 
 #include "base/containers/fixed_flat_set.h"
@@ -37,12 +33,12 @@ struct SimilarLanguageCode {
   int group;
 };
 
-const SimilarLanguageCode kSimilarLanguageCodes[] = {
-  {"bs", 1},
-  {"hr", 1},
-  {"hi", 2},
-  {"ne", 2},
-};
+const auto kSimilarLanguageCodes = std::to_array<SimilarLanguageCode>({
+    {"bs", 1},
+    {"hr", 1},
+    {"hi", 2},
+    {"ne", 2},
+});
 
 // Checks |kSimilarLanguageCodes| and returns group code.
 int GetSimilarLanguageGroupCode(const std::string& language) {

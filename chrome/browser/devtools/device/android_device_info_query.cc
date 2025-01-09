@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 
+#include <array>
 #include <string_view>
 
 #include "base/functional/bind.h"
@@ -54,48 +50,48 @@ struct BrowserDescriptor {
   const char* display_name;
 };
 
-const BrowserDescriptor kBrowserDescriptors[] = {
-  {
-    "com.google.android.apps.chrome",
-    kChromeDefaultSocket,
-    "Chromium"
-  },
-  {
-    "com.chrome.canary",
-    kChromeDefaultSocket,
-    "Chrome Canary"
-  },
-  {
-    "com.chrome.dev",
-    kChromeDefaultSocket,
-    "Chrome Dev"
-  },
-  {
-    "com.chrome.beta",
-    kChromeDefaultSocket,
-    "Chrome Beta"
-  },
-  {
-    "com.android.chrome",
-    kChromeDefaultSocket,
-    kChromeDefaultName
-  },
-  {
-    "org.chromium.android_webview.shell",
-    "webview_devtools_remote",
-    "WebView Test Shell"
-  },
-  {
-    "org.chromium.content_shell_apk",
-    "content_shell_devtools_remote",
-    "Content Shell"
-  },
-  {
-    "org.chromium.chrome",
-    kChromeDefaultSocket,
-    "Chromium"
-  },
-};
+const auto kBrowserDescriptors = std::to_array<BrowserDescriptor>({
+    {
+        "com.google.android.apps.chrome",
+        kChromeDefaultSocket,
+        "Chromium",
+    },
+    {
+        "com.chrome.canary",
+        kChromeDefaultSocket,
+        "Chrome Canary",
+    },
+    {
+        "com.chrome.dev",
+        kChromeDefaultSocket,
+        "Chrome Dev",
+    },
+    {
+        "com.chrome.beta",
+        kChromeDefaultSocket,
+        "Chrome Beta",
+    },
+    {
+        "com.android.chrome",
+        kChromeDefaultSocket,
+        kChromeDefaultName,
+    },
+    {
+        "org.chromium.android_webview.shell",
+        "webview_devtools_remote",
+        "WebView Test Shell",
+    },
+    {
+        "org.chromium.content_shell_apk",
+        "content_shell_devtools_remote",
+        "Content Shell",
+    },
+    {
+        "org.chromium.chrome",
+        kChromeDefaultSocket,
+        "Chromium",
+    },
+});
 
 const BrowserDescriptor* FindBrowserDescriptor(const std::string& package) {
   size_t count = std::size(kBrowserDescriptors);

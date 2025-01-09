@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/events/ozone/device/udev/device_manager_udev.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <string>
 
@@ -28,10 +24,10 @@ namespace ui {
 
 namespace {
 
-const char* const kSubsystems[] = {
-  "input",
-  "drm",
-};
+const auto kSubsystems = std::to_array<const char*>({
+    "input",
+    "drm",
+});
 
 // Start monitoring input device changes.
 device::ScopedUdevMonitorPtr UdevCreateMonitor(struct udev* udev) {

@@ -9,6 +9,7 @@
 
 #include "components/device_event_log/device_event_log_impl.h"
 
+#include <array>
 #include <cmath>
 #include <list>
 #include <set>
@@ -35,7 +36,8 @@ namespace device_event_log {
 
 namespace {
 
-const char* const kLogLevelName[] = {"Error", "User", "Event", "Debug"};
+const auto kLogLevelName =
+    std::to_array<const char*>({"Error", "User", "Event", "Debug"});
 
 const char kLogTypeNetworkDesc[] = "Network";
 const char kLogTypePowerDesc[] = "Power";
@@ -143,7 +145,8 @@ std::string LogEntryToString(const DeviceEventLogImpl::LogEntry& log_entry,
   if (show_type)
     line += GetLogTypeString(log_entry.log_type) + ": ";
   if (show_level) {
-    const char* kLevelDesc[] = {"ERROR", "USER", "EVENT", "DEBUG"};
+    auto kLevelDesc =
+        std::to_array<const char*>({"ERROR", "USER", "EVENT", "DEBUG"});
     line += std::string(kLevelDesc[log_entry.log_level]);
 #if BUILDFLAG(IS_POSIX)
     if (show_time == ShowTime::kUnix) {

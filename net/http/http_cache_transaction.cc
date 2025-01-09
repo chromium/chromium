@@ -9,6 +9,8 @@
 
 #include "net/http/http_cache_transaction.h"
 
+#include <array>
+
 #include "base/time/time.h"
 #include "build/build_config.h"  // For IS_POSIX
 
@@ -123,10 +125,10 @@ struct ValidationHeaderInfo {
   const char* related_response_header_name;
 };
 
-constexpr ValidationHeaderInfo kValidationHeaders[] = {
+constexpr auto kValidationHeaders = std::to_array<ValidationHeaderInfo>({
     {"if-modified-since", "last-modified"},
     {"if-none-match", "etag"},
-};
+});
 
 // If the request includes one of these request headers, then avoid reusing
 // our cached copy if any.

@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/google/core/common/google_util.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -303,7 +299,7 @@ bool IsGoogleAssociatedDomainUrl(const GURL& url) {
 
   // Some domains don't have international TLD extensions, so testing for them
   // is very straightforward.
-  static const char* kSuffixesToSetHeadersFor[] = {
+  static auto kSuffixesToSetHeadersFor = std::to_array<const char*>({
       ".android.com",
       ".doubleclick.com",
       ".doubleclick.net",
@@ -317,7 +313,7 @@ bool IsGoogleAssociatedDomainUrl(const GURL& url) {
       ".litepages.googlezip.net",
       ".youtubekids.com",
       ".ytimg.com",
-  };
+  });
   const std::string host = url.host();
   for (auto* i : kSuffixesToSetHeadersFor) {
     if (base::EndsWith(host, i, base::CompareCase::INSENSITIVE_ASCII)) {
@@ -326,9 +322,9 @@ bool IsGoogleAssociatedDomainUrl(const GURL& url) {
   }
 
   // Exact hostnames in lowercase to set headers for.
-  static const char* kHostsToSetHeadersFor[] = {
+  static auto kHostsToSetHeadersFor = std::to_array<const char*>({
       "googleweblight.com",
-  };
+  });
   for (auto* i : kHostsToSetHeadersFor) {
     if (base::EqualsCaseInsensitiveASCII(host, i)) {
       return true;

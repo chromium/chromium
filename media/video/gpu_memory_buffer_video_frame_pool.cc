@@ -14,6 +14,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <atomic>
 #include <list>
 #include <memory>
@@ -921,9 +922,11 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CopyRowsToBuffer(
 
       VideoPixelFormat pixel_format = VideoFormat(output_format);
       for (int dst_plane = 0; dst_plane < 3; ++dst_plane) {
-        static constexpr VideoFrame::Plane kSrcPlanes[3] = {
-            VideoFrame::Plane::kY, VideoFrame::Plane::kV,
-            VideoFrame::Plane::kU};
+        constexpr static std::array<VideoFrame::Plane, 3> kSrcPlanes = {
+            VideoFrame::Plane::kY,
+            VideoFrame::Plane::kV,
+            VideoFrame::Plane::kU,
+        };
         VideoFrame::Plane src_plane = kSrcPlanes[dst_plane];
 
         const size_t plane_row_start =

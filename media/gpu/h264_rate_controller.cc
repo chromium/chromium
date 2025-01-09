@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/h264_rate_controller.h"
+
+#include <array>
 
 #include "base/logging.h"
 #include "base/time/time.h"
@@ -49,16 +46,19 @@ constexpr float kRDYIntercept = -6.0f;
 
 // The arrays define line segments in the tradeoff function between FPS and
 // maximum QP .
-constexpr struct {
+struct FPS2QPTradeoffs {
   float fps;
   float qp;
-} kFPS2QPTradeoffs[] = {{0.0f, 51.0f},
-                        {5.0f, 42.0f},
-                        {10.0f, 41.0f},
-                        {15.0f, 40.0f},
-                        {30.0f, 37.0f},
-                        {kFpsMax, 37.0f},
-                        {std::numeric_limits<float>::max(), 20.0f}};
+};
+constexpr auto kFPS2QPTradeoffs = std::to_array<FPS2QPTradeoffs>({
+    {0.0f, 51.0f},
+    {5.0f, 42.0f},
+    {10.0f, 41.0f},
+    {15.0f, 40.0f},
+    {30.0f, 37.0f},
+    {kFpsMax, 37.0f},
+    {std::numeric_limits<float>::max(), 20.0f},
+});
 
 // Window size in number of frames for the Moving Window. The average framerate
 // is based on the last received frames within the window.
@@ -74,8 +74,7 @@ size_t GetRateBudget(float frame_rate, uint32_t avg_bitrate) {
 // Returns the FPS value related to the Max QP value. The function is
 // represented by line segments defined in the array `kFPS2QPTradeoffs`.
 float Fps2MaxQP(float fps) {
-  size_t num_elems = sizeof(kFPS2QPTradeoffs) / sizeof(kFPS2QPTradeoffs[0]);
-  for (size_t i = 0; i < num_elems - 1; ++i) {
+  for (size_t i = 0; i < kFPS2QPTradeoffs.size() - 1; ++i) {
     if (fps >= kFPS2QPTradeoffs[i].fps && fps < kFPS2QPTradeoffs[i + 1].fps) {
       return h264_rate_control_util::ClampedLinearInterpolation(
           fps, kFPS2QPTradeoffs[i].fps, kFPS2QPTradeoffs[i + 1].fps,
@@ -88,8 +87,7 @@ float Fps2MaxQP(float fps) {
 // Returns the FPS value related to the Max QP value. The returned value is
 // a constant value obtained from the `kFPS2QPTradeoffs` array.
 float MaxQP2Fps(int max_qp) {
-  size_t num_elems = sizeof(kFPS2QPTradeoffs) / sizeof(kFPS2QPTradeoffs[0]);
-  for (size_t i = 0; i < num_elems - 1; ++i) {
+  for (size_t i = 0; i < kFPS2QPTradeoffs.size() - 1; ++i) {
     if (max_qp <= kFPS2QPTradeoffs[i].qp &&
         max_qp > kFPS2QPTradeoffs[i + 1].qp) {
       // Do not use linear interpolation to be less aggressive on FPS changes.

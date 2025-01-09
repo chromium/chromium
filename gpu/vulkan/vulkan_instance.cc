@@ -9,6 +9,7 @@
 
 #include "gpu/vulkan/vulkan_instance.h"
 
+#include <array>
 #include <vector>
 
 #include "base/logging.h"
@@ -30,10 +31,10 @@ namespace gpu {
 namespace {
 
 #if DCHECK_IS_ON()
-constexpr const char* kSkippedErrors[] = {
+constexpr auto kSkippedErrors = std::to_array<const char*>({
     // http://anglebug.com/4583
     "VUID-VkGraphicsPipelineCreateInfo-blendEnable-02023",
-};
+});
 
 VKAPI_ATTR VkBool32 VKAPI_CALL
 VulkanErrorCallback(VkDebugReportFlagsEXT flags,
@@ -44,7 +45,7 @@ VulkanErrorCallback(VkDebugReportFlagsEXT flags,
                     const char* layer_prefix,
                     const char* message,
                     void* user_data) {
-  static bool encountered_errors[std::size(kSkippedErrors)];
+  static std::array<bool, std::size(kSkippedErrors)> encountered_errors;
   for (size_t i = 0; i < std::size(kSkippedErrors); ++i) {
     if (strstr(message, kSkippedErrors[i])) {
       if (encountered_errors[i]) {

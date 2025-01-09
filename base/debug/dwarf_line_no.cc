@@ -9,7 +9,6 @@
 
 #include "base/debug/dwarf_line_no.h"
 
-#include "partition_alloc/pointers/raw_ref.h"
 
 #ifdef USE_SYMBOLIZE
 #include <stdlib.h>
@@ -17,6 +16,7 @@
 #include <unistd.h>
 
 #include <algorithm>
+#include <array>
 #include <charconv>
 #include <cstdint>
 #include <limits>
@@ -25,6 +25,7 @@
 #include "base/debug/buffered_dwarf_reader.h"
 #include "base/third_party/symbolize/symbolize.h"
 #include "partition_alloc/pointers/raw_ptr.h"
+#include "partition_alloc/pointers/raw_ref.h"
 
 namespace base::debug {
 
@@ -1338,7 +1339,7 @@ void GetDwarfCompileUnitOffsets(const void* const* trace,
                                 uint64_t* cu_offsets,
                                 size_t num_frames) {
   // LINT.IfChange(max_stack_frames)
-  FrameInfo frame_info[250] = {};
+  std::array<FrameInfo, 250> frame_info = {};
   // LINT.ThenChange(stack_trace.h:max_stack_frames)
   for (size_t i = 0; i < num_frames; i++) {
     // The `cu_offset` also encodes the original sort order.

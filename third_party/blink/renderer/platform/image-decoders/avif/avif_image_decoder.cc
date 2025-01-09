@@ -916,23 +916,24 @@ bool AVIFImageDecoder::UpdateDemuxer() {
   //
   // In the kAxisAngleToOrientation array, the first dimension is axis (with an
   // offset of 1). The second dimension is angle.
-  constexpr ImageOrientationEnum kAxisAngleToOrientation[3][4] = {
-      // No mirroring.
-      {ImageOrientationEnum::kOriginTopLeft,
-       ImageOrientationEnum::kOriginLeftBottom,
-       ImageOrientationEnum::kOriginBottomRight,
-       ImageOrientationEnum::kOriginRightTop},
-      // Top-to-bottom mirroring. Change Top<->Bottom in the first row.
-      {ImageOrientationEnum::kOriginBottomLeft,
-       ImageOrientationEnum::kOriginLeftTop,
-       ImageOrientationEnum::kOriginTopRight,
-       ImageOrientationEnum::kOriginRightBottom},
-      // Left-to-right mirroring. Change Left<->Right in the first row.
-      {ImageOrientationEnum::kOriginTopRight,
-       ImageOrientationEnum::kOriginRightBottom,
-       ImageOrientationEnum::kOriginBottomLeft,
-       ImageOrientationEnum::kOriginLeftTop},
-  };
+  constexpr std::array<std::array<ImageOrientationEnum, 4>, 3>
+      kAxisAngleToOrientation = {{
+          // No mirroring.
+          {ImageOrientationEnum::kOriginTopLeft,
+           ImageOrientationEnum::kOriginLeftBottom,
+           ImageOrientationEnum::kOriginBottomRight,
+           ImageOrientationEnum::kOriginRightTop},
+          // Top-to-bottom mirroring. Change Top<->Bottom in the first row.
+          {ImageOrientationEnum::kOriginBottomLeft,
+           ImageOrientationEnum::kOriginLeftTop,
+           ImageOrientationEnum::kOriginTopRight,
+           ImageOrientationEnum::kOriginRightBottom},
+          // Left-to-right mirroring. Change Left<->Right in the first row.
+          {ImageOrientationEnum::kOriginTopRight,
+           ImageOrientationEnum::kOriginRightBottom,
+           ImageOrientationEnum::kOriginBottomLeft,
+           ImageOrientationEnum::kOriginLeftTop},
+      }};
   orientation_ = kAxisAngleToOrientation[axis + 1][angle];
 
   // Determine whether the image can be decoded to YUV.

@@ -9,6 +9,7 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/rtc_video_encoder.h"
 
+#include <array>
 #include <memory>
 #include <numeric>
 #include <vector>
@@ -270,11 +271,12 @@ webrtc::VideoBitrateAllocation AllocateBitrateForVEAConfig(
     const media::VideoEncodeAccelerator::Config& config) {
   // The same bitrate factors as the software encoder.
   // https://source.chromium.org/chromium/chromium/src/+/main:media/video/vpx_video_encoder.cc;l=131;drc=d383d0b3e4f76789a6de2a221c61d3531f4c59da
-  constexpr double kTemporalLayersBitrateScaleFactors[][3] = {
-      {1.00, 0.00, 0.00},  // For one temporal layer.
-      {0.60, 0.40, 0.00},  // For two temporal layers.
-      {0.50, 0.20, 0.30},  // For three temporal layers.
-  };
+  constexpr auto kTemporalLayersBitrateScaleFactors =
+      std::to_array<std::array<double, 3>>({
+          {1.00, 0.00, 0.00},  // For one temporal layer.
+          {0.60, 0.40, 0.00},  // For two temporal layers.
+          {0.50, 0.20, 0.30},  // For three temporal layers.
+      });
   DCHECK_EQ(config.bitrate.mode(), media::Bitrate::Mode::kConstant);
   webrtc::VideoBitrateAllocation bitrate_allocation;
   bitrate_allocation.SetBitrate(0, 0, config.bitrate.target_bps());

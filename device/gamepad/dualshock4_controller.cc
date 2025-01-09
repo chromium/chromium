@@ -217,15 +217,22 @@ void ProcessAxisButtonData(const ControllerData& controller_data,
   pad->axes[4] = NormalizeAxis(controller_data.axis_right_2);
   pad->axes[5] = NormalizeAxis(controller_data.axis_right_y);
   pad->axes[9] = NormalizeDpad(controller_data.axis_dpad);
-  const bool button_values[] = {
-      controller_data.button_square, controller_data.button_cross,
-      controller_data.button_circle, controller_data.button_triangle,
-      controller_data.button_left_1, controller_data.button_right_1,
-      controller_data.button_left_2, controller_data.button_right_2,
-      controller_data.button_share,  controller_data.button_options,
-      controller_data.button_left_3, controller_data.button_right_3,
-      controller_data.button_ps,     controller_data.button_touch,
-  };
+  const auto button_values = std::to_array<bool>({
+      controller_data.button_square,
+      controller_data.button_cross,
+      controller_data.button_circle,
+      controller_data.button_triangle,
+      controller_data.button_left_1,
+      controller_data.button_right_1,
+      controller_data.button_left_2,
+      controller_data.button_right_2,
+      controller_data.button_share,
+      controller_data.button_options,
+      controller_data.button_left_3,
+      controller_data.button_right_3,
+      controller_data.button_ps,
+      controller_data.button_touch,
+  });
   for (size_t i = 0; i < std::size(button_values); ++i) {
     pad->buttons[i].pressed = button_values[i];
     pad->buttons[i].touched = button_values[i];

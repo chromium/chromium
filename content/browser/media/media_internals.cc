@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <list>
 #include <string>
 #include <string_view>
@@ -69,14 +70,15 @@ std::string EffectsToString(int effects) {
   if (effects == media::AudioParameters::NO_EFFECTS)
     return "NO_EFFECTS";
 
-  struct {
+  struct Flags {
     int flag;
     const char* name;
-  } flags[] = {
+  };
+  auto flags = std::to_array<Flags>({
       {media::AudioParameters::ECHO_CANCELLER, "ECHO_CANCELLER"},
       {media::AudioParameters::DUCKING, "DUCKING"},
       {media::AudioParameters::HOTWORD, "HOTWORD"},
-  };
+  });
 
   std::string ret;
   for (size_t i = 0; i < std::size(flags); ++i) {

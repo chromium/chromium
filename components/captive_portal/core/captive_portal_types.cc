@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/captive_portal/core/captive_portal_types.h"
+
+#include <array>
 
 #include "base/check_op.h"
 
@@ -15,12 +12,12 @@ namespace captive_portal {
 
 namespace {
 
-const char* const kCaptivePortalResultNames[] = {
+const auto kCaptivePortalResultNames = std::to_array<const char*>({
     "InternetConnected",
     "NoResponse",
     "BehindCaptivePortal",
     "NumCaptivePortalResults",
-};
+});
 static_assert(std::size(kCaptivePortalResultNames) == RESULT_COUNT + 1,
               "kCaptivePortalResultNames should have "
               "RESULT_COUNT + 1 elements");

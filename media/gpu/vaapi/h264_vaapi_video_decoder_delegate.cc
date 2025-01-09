@@ -11,6 +11,8 @@
 
 #include <va/va.h>
 
+#include <array>
+
 #include "base/memory/aligned_memory.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/cdm_context.h"
@@ -29,16 +31,18 @@ namespace {
 // from ITU-T REC H.264 spec
 // section 8.5.6
 // "Inverse scanning process for 4x4 transform coefficients and scaling lists"
-static constexpr int kZigzagScan4x4[16] = {0, 1,  4,  8,  5, 2,  3,  6,
-                                           9, 12, 13, 10, 7, 11, 14, 15};
+constexpr std::array<int, 16> kZigzagScan4x4 = {
+    0, 1, 4, 8, 5, 2, 3, 6, 9, 12, 13, 10, 7, 11, 14, 15,
+};
 
 // section 8.5.7
 // "Inverse scanning process for 8x8 transform coefficients and scaling lists"
-static constexpr uint8_t kZigzagScan8x8[64] = {
+constexpr std::array<uint8_t, 64> kZigzagScan8x8 = {
     0,  1,  8,  16, 9,  2,  3,  10, 17, 24, 32, 25, 18, 11, 4,  5,
     12, 19, 26, 33, 40, 48, 41, 34, 27, 20, 13, 6,  7,  14, 21, 28,
     35, 42, 49, 56, 57, 50, 43, 36, 29, 22, 15, 23, 30, 37, 44, 51,
-    58, 59, 52, 45, 38, 31, 39, 46, 53, 60, 61, 54, 47, 55, 62, 63};
+    58, 59, 52, 45, 38, 31, 39, 46, 53, 60, 61, 54, 47, 55, 62, 63,
+};
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 int GetSliceHeaderCounter() {

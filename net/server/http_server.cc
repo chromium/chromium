@@ -9,6 +9,7 @@
 
 #include "net/server/http_server.h"
 
+#include <array>
 #include <string_view>
 #include <utility>
 
@@ -417,7 +418,7 @@ enum HeaderParseStates {
 // from QUICHE, if it doesn't increase the binary size too much.
 
 // State transition table
-constexpr int kParserState[MAX_STATES][MAX_INPUTS] = {
+constexpr std::array<std::array<int, MAX_INPUTS>, MAX_STATES> kParserState = {{
     /* METHOD    */ {ST_URL, ST_ERR, ST_ERR, ST_ERR, ST_METHOD},
     /* URL       */ {ST_PROTO, ST_ERR, ST_ERR, ST_URL, ST_URL},
     /* PROTOCOL  */ {ST_ERR, ST_HEADER, ST_NAME, ST_ERR, ST_PROTO},
@@ -426,7 +427,8 @@ constexpr int kParserState[MAX_STATES][MAX_INPUTS] = {
     /* SEPARATOR */ {ST_SEPARATOR, ST_ERR, ST_ERR, ST_VALUE, ST_ERR},
     /* VALUE     */ {ST_VALUE, ST_HEADER, ST_NAME, ST_VALUE, ST_VALUE},
     /* DONE      */ {ST_ERR, ST_ERR, ST_DONE, ST_ERR, ST_ERR},
-    /* ERR       */ {ST_ERR, ST_ERR, ST_ERR, ST_ERR, ST_ERR}};
+    /* ERR       */ {ST_ERR, ST_ERR, ST_ERR, ST_ERR, ST_ERR},
+}};
 
 // Convert an input character to the parser's input token.
 int CharToInputType(char ch) {

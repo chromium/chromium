@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/no_state_prefetch/common/no_state_prefetch_final_status.h"
+
+#include <array>
 
 #include "base/check_op.h"
 
@@ -15,7 +12,7 @@ namespace prerender {
 
 namespace {
 
-const char* kFinalStatusNames[] = {
+auto kFinalStatusNames = std::to_array<const char*>({
     "Used",
     "Timed Out",
     "Evicted",
@@ -82,7 +79,7 @@ const char* kFinalStatusNames[] = {
     "Link Rel Next Not Allowed",
     "NoStatePrefetch Holdback",
     "Max",
-};
+});
 static_assert(std::size(kFinalStatusNames) == FINAL_STATUS_MAX + 1,
               "status name count mismatch");
 

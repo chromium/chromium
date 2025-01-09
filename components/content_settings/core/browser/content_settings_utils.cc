@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/content_settings/core/browser/content_settings_utils.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -33,14 +29,15 @@ struct ContentSettingsStringMapping {
   ContentSetting content_setting;
   const char* content_setting_str;
 };
-const ContentSettingsStringMapping kContentSettingsStringMapping[] = {
-    {CONTENT_SETTING_DEFAULT, "default"},
-    {CONTENT_SETTING_ALLOW, "allow"},
-    {CONTENT_SETTING_BLOCK, "block"},
-    {CONTENT_SETTING_ASK, "ask"},
-    {CONTENT_SETTING_SESSION_ONLY, "session_only"},
-    {CONTENT_SETTING_DETECT_IMPORTANT_CONTENT, "detect_important_content"},
-};
+const auto kContentSettingsStringMapping =
+    std::to_array<ContentSettingsStringMapping>({
+        {CONTENT_SETTING_DEFAULT, "default"},
+        {CONTENT_SETTING_ALLOW, "allow"},
+        {CONTENT_SETTING_BLOCK, "block"},
+        {CONTENT_SETTING_ASK, "ask"},
+        {CONTENT_SETTING_SESSION_ONLY, "session_only"},
+        {CONTENT_SETTING_DETECT_IMPORTANT_CONTENT, "detect_important_content"},
+    });
 static_assert(std::size(kContentSettingsStringMapping) ==
                   CONTENT_SETTING_NUM_SETTINGS,
               "kContentSettingsToFromString should have "

@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/no_state_prefetch/common/no_state_prefetch_origin.h"
+
+#include <array>
 
 #include "base/metrics/histogram_macros.h"
 
@@ -15,7 +12,7 @@ namespace prerender {
 
 namespace {
 
-const char* kOriginNames[] = {
+auto kOriginNames = std::to_array<const char*>({
     "[Deprecated] Link Rel Prerender (original)",
     "[Deprecated] Omnibox (original)",
     "GWS Prerender",
@@ -35,7 +32,7 @@ const char* kOriginNames[] = {
     "[Deprecated] Isolated Prerender",
     "Speculation Rules Same Origin Prerender",
     "Max",
-};
+});
 static_assert(std::size(kOriginNames) == ORIGIN_MAX + 1,
               "NoStatePrefetch origin name count mismatch");
 

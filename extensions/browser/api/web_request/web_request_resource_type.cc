@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/browser/api/web_request/web_request_resource_type.h"
 
+#include <array>
 #include <string_view>
 
 #include "base/check_op.h"
@@ -20,10 +16,11 @@ namespace extensions {
 
 namespace {
 
-constexpr struct {
+struct ResourceTypes {
   const char* const name;
   const WebRequestResourceType type;
-} kResourceTypes[] = {
+};
+constexpr auto kResourceTypes = std::to_array<ResourceTypes>({
     {"main_frame", WebRequestResourceType::MAIN_FRAME},
     {"sub_frame", WebRequestResourceType::SUB_FRAME},
     {"stylesheet", WebRequestResourceType::STYLESHEET},
@@ -39,7 +36,7 @@ constexpr struct {
     {"webtransport", WebRequestResourceType::WEB_TRANSPORT},
     {"webbundle", WebRequestResourceType::WEBBUNDLE},
     {"other", WebRequestResourceType::OTHER},
-};
+});
 
 constexpr size_t kResourceTypesLength = std::size(kResourceTypes);
 

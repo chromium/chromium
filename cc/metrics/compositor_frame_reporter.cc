@@ -10,6 +10,7 @@
 #include "cc/metrics/compositor_frame_reporter.h"
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <cstdint>
 #include <deque>
@@ -78,8 +79,12 @@ constexpr size_t kMaxOwnedPartialUpdateDependents = 300u;
 
 // Names for CompositorFrameReporter::FrameReportType, which should be
 // updated in case of changes to the enum.
-constexpr const char* kReportTypeNames[]{
-    "", "MissedDeadlineFrame.", "DroppedFrame.", "CompositorOnlyFrame."};
+constexpr auto kReportTypeNames = std::to_array<const char*>({
+    "",
+    "MissedDeadlineFrame.",
+    "DroppedFrame.",
+    "CompositorOnlyFrame.",
+});
 
 static_assert(std::size(kReportTypeNames) == kFrameReportTypeCount,
               "Compositor latency report types has changed.");

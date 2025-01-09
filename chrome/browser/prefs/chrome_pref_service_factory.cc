@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/prefs/chrome_pref_service_factory.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <string>
 #include <utility>
 #include <vector>
@@ -121,7 +117,7 @@ bool g_disable_domain_check_for_testing = false;
 // histogram enum. Each tracked preference must be given a unique reporting ID.
 // See CleanupDeprecatedTrackedPreferences() in pref_hash_filter.cc to remove a
 // deprecated tracked preference.
-const prefs::TrackedPreferenceMetadata kTrackedPrefs[] = {
+const auto kTrackedPrefs = std::to_array<prefs::TrackedPreferenceMetadata>({
     {0, prefs::kShowHomeButton, EnforcementLevel::ENFORCE_ON_LOAD,
      PrefTrackingStrategy::ATOMIC, ValueType::IMPERSONAL},
     {1, prefs::kHomePageIsNewTabPage, EnforcementLevel::ENFORCE_ON_LOAD,
@@ -190,7 +186,7 @@ const prefs::TrackedPreferenceMetadata kTrackedPrefs[] = {
 
     // See note at top, new items added here also need to be added to
     // histograms.xml's TrackedPreference enum.
-};
+});
 
 // One more than the last tracked preferences ID above.
 const size_t kTrackedPrefsReportingIDsCount =

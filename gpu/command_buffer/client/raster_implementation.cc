@@ -17,6 +17,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <limits>
 #include <set>
 #include <sstream>
@@ -1307,7 +1308,7 @@ void RasterImplementation::WritePixelsYUV(const gpu::Mailbox& dest_mailbox,
   memcpy(static_cast<uint8_t*>(address), src_sk_pixmaps[0].addr(),
          src_sk_pixmaps[0].computeByteSize());
 
-  GLuint plane_offsets[SkYUVAInfo::kMaxPlanes] = {};
+  std::array<GLuint, SkYUVAInfo::kMaxPlanes> plane_offsets = {};
   for (int plane = 1; plane < src_yuv_info.numPlanes(); plane++) {
     CHECK(src_sk_pixmaps[plane].addr());
     // Calculate the offset based on previous plane offset and previous plane

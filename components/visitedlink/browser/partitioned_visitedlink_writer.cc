@@ -9,6 +9,8 @@
 
 #include "components/visitedlink/browser/partitioned_visitedlink_writer.h"
 
+#include <array>
+
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -543,20 +545,21 @@ uint32_t PartitionedVisitedLinkWriter::NewTableSizeForCount(
     int32_t item_count) const {
   // These table sizes are selected to be the maximum prime number less than
   // a "convenient" multiple of 1K.
-  static const int table_sizes[] = {
-      16381,      // 16K  = 16384   <- don't shrink below this table size
-                  //                   (should be == default_table_size)
-      32767,      // 32K  = 32768
-      65521,      // 64K  = 65536
-      130051,     // 128K = 131072
-      262127,     // 256K = 262144
-      524269,     // 512K = 524288
-      1048549,    // 1M   = 1048576
-      2097143,    // 2M   = 2097152
-      4194301,    // 4M   = 4194304
-      8388571,    // 8M   = 8388608
-      16777199,   // 16M  = 16777216
-      33554347};  // 32M  = 33554432
+  static const auto table_sizes = std::to_array<int>({
+      16381,     // 16K  = 16384   <- don't shrink below this table size
+                 //                   (should be == default_table_size)
+      32767,     // 32K  = 32768
+      65521,     // 64K  = 65536
+      130051,    // 128K = 131072
+      262127,    // 256K = 262144
+      524269,    // 512K = 524288
+      1048549,   // 1M   = 1048576
+      2097143,   // 2M   = 2097152
+      4194301,   // 4M   = 4194304
+      8388571,   // 8M   = 8388608
+      16777199,  // 16M  = 16777216
+      33554347,
+  });  // 32M  = 33554432
 
   // Try to leave the table 33% full.
   int desired = item_count * 3;

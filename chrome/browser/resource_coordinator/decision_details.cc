@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/resource_coordinator/decision_details.h"
+
+#include <array>
 
 #include "base/check.h"
 
@@ -18,7 +15,7 @@ namespace {
 // These are intended to be human readable descriptions of the various failure
 // reasons. They don't need to be localized as they are for a developer-only
 // WebUI.
-const char* kDecisionFailureReasonStrings[] = {
+auto kDecisionFailureReasonStrings = std::to_array<const char*>({
     "Browser opted out via enterprise policy",
     "Tab opted out via origin trial",
     "Origin is in global disallowlist",
@@ -44,16 +41,16 @@ const char* kDecisionFailureReasonStrings[] = {
     "Tab has notification permission ",
     "Tab is a web application window",
     "Tab is displaying content in picture-in-picture",
-};
+});
 static_assert(std::size(kDecisionFailureReasonStrings) ==
                   static_cast<size_t>(DecisionFailureReason::MAX),
               "kDecisionFailureReasonStrings not up to date with enum");
 
-const char* kDecisionSuccessReasonStrings[] = {
+auto kDecisionSuccessReasonStrings = std::to_array<const char*>({
     "Tab opted in via origin trial",
     "Origin is in global allowlist",
     "Origin has locally been observed to be safe via heuristic logic",
-};
+});
 static_assert(std::size(kDecisionSuccessReasonStrings) ==
                   static_cast<size_t>(DecisionSuccessReason::MAX),
               "kDecisionSuccessReasonStrings not up to date with enum");

@@ -10,6 +10,7 @@
 #include "net/filter/gzip_source_stream.h"
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <utility>
 
@@ -254,8 +255,8 @@ base::expected<size_t, Error> GzipSourceStream::FilterData(
 }
 
 bool GzipSourceStream::InsertZlibHeader() {
-  char dummy_header[] = {0x78, 0x01};
-  char dummy_output[4];
+  auto dummy_header = std::to_array<char>({0x78, 0x01});
+  std::array<char, 4> dummy_output;
 
   inflateReset(zlib_stream_.get());
   zlib_stream_.get()->next_in = reinterpret_cast<Bytef*>(&dummy_header[0]);

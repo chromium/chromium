@@ -12,6 +12,7 @@
 #include <limits.h>
 #include <stddef.h>
 
+#include <array>
 #include <limits>
 #include <memory>
 #include <optional>
@@ -342,10 +343,10 @@ const struct CropEntry kImagesToCrop[] = {
 // be byte-copied directly into the finished DataPack. This should contain the
 // persistent IDs for all themeable image IDs that aren't in kFrameValues,
 // kTabBackgroundMap or kImagesToCrop.
-const BrowserThemePack::PersistentID kPreloadIDs[] = {
+const auto kPreloadIDs = std::to_array<BrowserThemePack::PersistentID>({
     PRS::kNtpBackground,
     PRS::kNtpAttribution,
-};
+});
 
 // Returns a piece of memory with the contents of the file |path|.
 scoped_refptr<base::RefCountedMemory> ReadFileData(const base::FilePath& path) {

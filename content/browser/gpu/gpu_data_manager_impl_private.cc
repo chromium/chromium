@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "content/browser/gpu/gpu_data_manager_impl_private.h"
 
@@ -291,31 +287,32 @@ void UpdateFeatureStats(const gpu::GpuFeatureInfo& gpu_feature_info) {
   // Update feature status stats.
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
-  const gpu::GpuFeatureType kGpuFeatures[] = {
+  const auto kGpuFeatures = std::to_array<gpu::GpuFeatureType>({
       gpu::GPU_FEATURE_TYPE_ACCELERATED_2D_CANVAS,
       gpu::GPU_FEATURE_TYPE_ACCELERATED_GL,
       gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION,
       gpu::GPU_FEATURE_TYPE_ACCELERATED_WEBGL,
       gpu::GPU_FEATURE_TYPE_ACCELERATED_WEBGL2,
-      gpu::GPU_FEATURE_TYPE_ACCELERATED_WEBGPU};
-  const std::string kGpuBlocklistFeatureHistogramNames[] = {
+      gpu::GPU_FEATURE_TYPE_ACCELERATED_WEBGPU,
+  });
+  const auto kGpuBlocklistFeatureHistogramNames = std::to_array<std::string>({
       "GPU.BlocklistFeatureTestResults.Accelerated2dCanvas",
       "GPU.BlocklistFeatureTestResults.GpuCompositing",
       "GPU.BlocklistFeatureTestResults.GpuRasterization",
       "GPU.BlocklistFeatureTestResults.Webgl",
       "GPU.BlocklistFeatureTestResults.Webgl2",
-      "GPU.BlocklistFeatureTestResults.Webgpu"};
-  const bool kGpuFeatureUserFlags[] = {
+      "GPU.BlocklistFeatureTestResults.Webgpu",
+  });
+  const auto kGpuFeatureUserFlags = std::to_array<bool>({
       command_line.HasSwitch(switches::kDisableAccelerated2dCanvas),
       command_line.HasSwitch(switches::kDisableGpu),
       command_line.HasSwitch(switches::kDisableGpuRasterization),
       command_line.HasSwitch(switches::kDisableWebGL),
       (command_line.HasSwitch(switches::kDisableWebGL) ||
        command_line.HasSwitch(switches::kDisableWebGL2)),
-      !command_line.HasSwitch(switches::kEnableUnsafeWebGPU)};
-  const size_t kNumFeatures =
-      sizeof(kGpuFeatures) / sizeof(gpu::GpuFeatureType);
-  for (size_t i = 0; i < kNumFeatures; ++i) {
+      !command_line.HasSwitch(switches::kEnableUnsafeWebGPU),
+  });
+  for (size_t i = 0; i < kGpuFeatures.size(); ++i) {
     // We can't use UMA_HISTOGRAM_ENUMERATION here because the same name is
     // expected if the macro is used within a loop.
     gpu::GpuFeatureStatus value =

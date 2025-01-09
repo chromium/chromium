@@ -9,6 +9,7 @@
 
 #include "ui/gfx/icc_profile.h"
 
+#include <array>
 #include <list>
 #include <set>
 
@@ -68,7 +69,11 @@ void ICCProfile::Internals::Initialize() {
   float wX = m.vals[0][0] + m.vals[0][1] + m.vals[0][2];
   float wY = m.vals[1][0] + m.vals[1][1] + m.vals[1][2];
   float wZ = m.vals[2][0] + m.vals[2][1] + m.vals[2][2];
-  static const float kD50_WhitePoint[3] = { 0.96420f, 1.00000f, 0.82491f };
+  static const std::array<float, 3> kD50_WhitePoint = {
+      0.96420f,
+      1.00000f,
+      0.82491f,
+  };
   if (fabsf(wX - kD50_WhitePoint[0]) > 0.04f ||
       fabsf(wY - kD50_WhitePoint[1]) > 0.04f ||
       fabsf(wZ - kD50_WhitePoint[2]) > 0.04f) {

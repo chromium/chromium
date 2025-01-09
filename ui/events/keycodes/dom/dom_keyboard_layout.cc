@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/events/keycodes/dom/dom_keyboard_layout.h"
+
+#include <array>
 
 #include "base/strings/utf_string_conversion_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -17,16 +14,17 @@ namespace ui {
 
 // Mapping from Unicode combining characters to corresponding printable
 // character.
-const static struct {
+struct CombiningKeyMapping {
   uint16_t combining;
   uint16_t printable;
-} kCombiningKeyMapping[] = {
+};
+const auto kCombiningKeyMapping = std::to_array<CombiningKeyMapping>({
     {0x0300, 0x0060},  // Grave
     {0x0301, 0x0027},  // Acute
     {0x0302, 0x005e},  // Circumflex
     {0x0303, 0x007e},  // Tilde
     {0x0308, 0x00a8},  // Diaeresis
-};
+});
 
 DomKeyboardLayout::DomKeyboardLayout() = default;
 

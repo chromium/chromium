@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/app/content_main_runner_impl.h"
 
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include <array>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -729,14 +725,14 @@ NO_STACK_PROTECTOR int RunOtherNamedProcessTypeMain(
   if (delegate->ShouldHandleConsoleControlEvents())
     InstallConsoleControlHandler(/*is_browser_process=*/false);
 #endif
-  static const MainFunction kMainFunctions[] = {
+  static const auto kMainFunctions = std::to_array<MainFunction>({
 #if BUILDFLAG(ENABLE_PPAPI)
-    {switches::kPpapiPluginProcess, PpapiPluginMain},
+      {switches::kPpapiPluginProcess, PpapiPluginMain},
 #endif  // BUILDFLAG(ENABLE_PPAPI)
-    {switches::kUtilityProcess, UtilityMain},
-    {switches::kRendererProcess, RendererMain},
-    {switches::kGpuProcess, GpuMain},
-  };
+      {switches::kUtilityProcess, UtilityMain},
+      {switches::kRendererProcess, RendererMain},
+      {switches::kGpuProcess, GpuMain},
+  });
 
   // The hang watcher needs to be started once the feature list is available
   // but before the IO thread is started.

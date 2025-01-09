@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
 
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <string>
 #include <utility>
@@ -49,14 +45,14 @@ const size_t kMaxAppsPerSite = 3;
 
 // Dictionary keys to use for the events. Must be kept in sync with
 // AppBannerEvent.
-constexpr const char* kBannerEventKeys[] = {
+constexpr auto kBannerEventKeys = std::to_array<const char*>({
     // clang-format off
     "couldShowBannerEvents",
     "didShowBannerEvent",
     "didBlockBannerEvent",
     "couldShowAmbientBadgeEvent",
     // clang-format on
-};
+});
 
 unsigned int gDaysAfterDismissedToShow = kMinimumBannerBlockedToBannerShown;
 unsigned int gDaysAfterIgnoredToShow = kMinimumDaysBetweenBannerShows;

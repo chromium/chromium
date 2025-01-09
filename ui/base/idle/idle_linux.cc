@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "ui/base/idle/idle.h"
 
@@ -43,11 +39,12 @@ const char kSignalName[] = "ActiveChanged";
 
 // Various names under which the service may be found in different Linux desktop
 // environments.
-struct {
+struct Services {
   const char* service_name;
   const char* object_path;
   const char* interface;
-} constexpr kServices[] = {
+};
+constexpr auto kServices = std::to_array<Services>({
     // ksmserver, light-locker, etc.
     {"org.freedesktop.ScreenSaver", "/org/freedesktop/ScreenSaver",
      "org.freedesktop.ScreenSaver"},
@@ -61,7 +58,7 @@ struct {
     {"org.mate.ScreenSaver", "/org/mate/ScreenSaver", "org.mate.ScreenSaver"},
     // xfce4-screensaver
     {"org.xfce.ScreenSaver", "/org/xfce/ScreenSaver", "org.xfce.ScreenSaver"},
-};
+});
 
 constexpr size_t kServiceCount = sizeof(kServices) / sizeof(kServices[0]);
 

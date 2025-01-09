@@ -12,6 +12,7 @@
 #include <math.h>
 #include <stddef.h>
 
+#include <array>
 #include <cmath>
 
 #include "base/logging.h"
@@ -62,7 +63,12 @@ VideoTransformation VideoTransformation::FromFFmpegDisplayMatrix(
 
 VideoTransformation::VideoTransformation(const int32_t matrix[4]) {
   // Promote to int64_t to avoid abs(int32_min) being undefined.
-  const int64_t matrix64[4] = {matrix[0], matrix[1], matrix[2], matrix[3]};
+  const std::array<int64_t, 4> matrix64 = {
+      matrix[0],
+      matrix[1],
+      matrix[2],
+      matrix[3],
+  };
 
   // Rotation by angle Θ is represented in the matrix as:
   // [ cos(Θ), -sin(Θ)]

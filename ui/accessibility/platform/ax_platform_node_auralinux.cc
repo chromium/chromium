@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/version.h"
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "ui/accessibility/platform/ax_platform_node_auralinux.h"
 
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <optional>
 #include <set>
@@ -30,6 +27,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/version.h"
 #include "build/build_config.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -41,7 +39,6 @@
 #include "ui/accessibility/platform/atk_util_auralinux.h"
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/ax_platform_atk_hyperlink.h"
-#include "ui/accessibility/platform/ax_platform_node_auralinux.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/accessibility/platform/ax_platform_text_boundary.h"
 #include "ui/accessibility/platform/child_iterator.h"
@@ -4538,7 +4535,12 @@ const gchar* AXPlatformNodeAuraLinux::GetDocumentAttributeValue(
 
 AtkAttributeSet* AXPlatformNodeAuraLinux::GetDocumentAttributes() const {
   AtkAttributeSet* attribute_set = nullptr;
-  const gchar* doc_attributes[] = {"DocType", "MimeType", "Title", "URI"};
+  auto doc_attributes = std::to_array<const gchar*>({
+      "DocType",
+      "MimeType",
+      "Title",
+      "URI",
+  });
   const gchar* value = nullptr;
 
   for (unsigned i = 0; i < G_N_ELEMENTS(doc_attributes); i++) {

@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/ssl_errors/error_info.h"
 
 #include <stddef.h>
+
+#include <array>
 
 #include "base/i18n/message_formatter.h"
 #include "base/notreached.h"
@@ -249,7 +246,7 @@ void ErrorInfo::GetErrorsForCertStatus(
     net::CertStatus cert_status,
     const GURL& url,
     std::vector<ErrorInfo>* errors) {
-  const net::CertStatus kErrorFlags[] = {
+  const auto kErrorFlags = std::to_array<net::CertStatus>({
       net::CERT_STATUS_COMMON_NAME_INVALID,
       net::CERT_STATUS_DATE_INVALID,
       net::CERT_STATUS_AUTHORITY_INVALID,
@@ -265,9 +262,9 @@ void ErrorInfo::GetErrorsForCertStatus(
       net::CERT_STATUS_CERTIFICATE_TRANSPARENCY_REQUIRED,
       net::CERT_STATUS_SYMANTEC_LEGACY,
       net::CERT_STATUS_KNOWN_INTERCEPTION_BLOCKED,
-  };
+  });
 
-  const ErrorType kErrorTypes[] = {
+  const auto kErrorTypes = std::to_array<ErrorType>({
       CERT_COMMON_NAME_INVALID,
       CERT_DATE_INVALID,
       CERT_AUTHORITY_INVALID,
@@ -283,7 +280,7 @@ void ErrorInfo::GetErrorsForCertStatus(
       CERTIFICATE_TRANSPARENCY_REQUIRED,
       CERT_SYMANTEC_LEGACY,
       CERT_KNOWN_INTERCEPTION_BLOCKED,
-  };
+  });
   DCHECK(std::size(kErrorFlags) == std::size(kErrorTypes));
 
   for (size_t i = 0; i < std::size(kErrorFlags); ++i) {

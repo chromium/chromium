@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/metrics/process_memory_metrics_emitter.h"
 
+#include <array>
 #include <set>
 #include <string>
 #include <string_view>
@@ -1043,11 +1039,11 @@ void EmitSummedGpuMemory(const GlobalMemoryDump::ProcessDump& pmd,
                          Memory_Experimental* builder,
                          bool record_uma) {
   // Combine several categories together to sum up Chrome-reported gpu memory.
-  static const char* gpu_categories[] = {
+  static auto gpu_categories = std::to_array<const char*>({
       "gpu/gl",
       "gpu/shared_images",
       "skia/gpu_resources",
-  };
+  });
   Metric synthetic_metric = {nullptr,
                              "GpuMemory",
                              MetricSize::kLarge,
