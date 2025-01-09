@@ -52,13 +52,15 @@ class SynchronousFormCache {
       const CallTimerState& timer_state,
       DenseSet<form_util::ExtractOption> extract_options = {}) const;
 
-  void insert(FormRendererId form_id, base::optional_ref<const FormData> form);
+  void insert(const FormData& form) { insert(form.renderer_id(), form); }
 
  private:
   // Stores for a given FormRendererId the last result of trying to extract the
   // FormElement with the given ID. Note that this could be std::nullopt since
   // extraction might fail, and this would still be useful because knowing that
   // would allow avoiding a future failing attempt at extraction.
+  void insert(FormRendererId form_id, base::optional_ref<const FormData> form);
+
   std::map<FormRendererId, base::optional_ref<const FormData>> cache_;
 };
 

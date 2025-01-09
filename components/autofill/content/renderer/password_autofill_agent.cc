@@ -1221,7 +1221,7 @@ bool PasswordAutofillAgent::FindPasswordInfoForElement(
     // If there is a password field, but a request to the store hasn't been sent
     // yet, then do fetch saved credentials now.
     if (!sent_request_to_store_) {
-      SendPasswordForms(false);
+      SendPasswordForms(/*only_visible=*/false, /*form_cache=*/{});
       return false;
     }
 
@@ -1398,7 +1398,7 @@ bool PasswordAutofillAgent::FrameCanAccessPasswordManager() {
 }
 
 void PasswordAutofillAgent::OnDynamicFormsSeen() {
-  SendPasswordForms(false /* only_visible */);
+  SendPasswordForms(/*only_visible=*/false, /*form_cache=*/{});
 }
 
 void PasswordAutofillAgent::UserGestureObserved() {
@@ -1449,7 +1449,9 @@ void PasswordAutofillAgent::AnnotateFormsAndFieldsWithSignatures(
       form_signature, alternative_form_signature);
 }
 
-void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
+void PasswordAutofillAgent::SendPasswordForms(
+    bool only_visible,
+    const SynchronousFormCache& form_cache) {
   std::unique_ptr<RendererSavePasswordProgressLogger> logger;
   if (logging_state_active_) {
     logger = std::make_unique<RendererSavePasswordProgressLogger>(
@@ -1486,11 +1488,13 @@ void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
     logger->LogNumber(Logger::STRING_NUMBER_OF_ALL_FORMS, forms.size());
 
   std::vector<FormData> password_forms_data;
-  for (const WebFormElement& form : forms) {
+  for (const WebFormElement& form_element : forms) {
     if (only_visible) {
-      bool is_form_visible = std::ranges::any_of(
-          form.GetFormControlElements(), &IsWebElementFocusableForAutofill);
-      LogHTMLForm(logger.get(), Logger::STRING_FORM_FOUND_ON_PAGE, form);
+      bool is_form_visible =
+          std::ranges::any_of(form_element.GetFormControlElements(),  // nocheck
+                              &IsWebElementFocusableForAutofill);
+      LogHTMLForm(logger.get(), Logger::STRING_FORM_FOUND_ON_PAGE,
+                  form_element);
       LogBoolean(logger.get(), Logger::STRING_FORM_IS_VISIBLE, is_form_visible);
 
       // If requested, ignore non-rendered forms, e.g., those styled with
@@ -1500,7 +1504,7 @@ void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
     }
 
     std::optional<FormData> form_data(
-        GetFormDataFromWebForm(form, /*form_cache=*/{}));
+        GetFormDataFromWebForm(form_element, form_cache));
     if (!form_data || !IsRendererRecognizedCredentialForm(*form_data)) {
       continue;
     }
@@ -1516,7 +1520,7 @@ void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
     }
 
     std::vector<WebFormControlElement> control_elements =
-        form.GetFormControlElements().ReleaseVector();
+        form_element.GetFormControlElements().ReleaseVector();  // nocheck
     // Sometimes JS can change autofilled forms. In this case we try to restore
     // values for the changed elements.
     TryFixAutofilledForm(control_elements);
@@ -1538,7 +1542,7 @@ void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
 
   if (add_unowned_inputs) {
     std::optional<FormData> form_data(
-        GetFormDataFromUnownedInputElements(/*form_cache=*/{}));
+        GetFormDataFromUnownedInputElements(form_cache));
     if (form_data && IsRendererRecognizedCredentialForm(*form_data)) {
       password_forms_data.push_back(std::move(*form_data));
     }
@@ -1574,8 +1578,9 @@ void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
 #endif
 }
 
-void PasswordAutofillAgent::DidDispatchDOMContentLoadedEvent() {
-  SendPasswordForms(false);
+void PasswordAutofillAgent::DispatchedDOMContentLoadedEvent(
+    const SynchronousFormCache& form_cache) {
+  SendPasswordForms(/*only_visible=*/false, form_cache);
 }
 
 void PasswordAutofillAgent::DidFinishLoad() {
@@ -1583,7 +1588,7 @@ void PasswordAutofillAgent::DidFinishLoad() {
   // which of the loaded frames are actually visible to the user.  This also
   // triggers the "Save password?" infobar if the user just submitted a password
   // form.
-  SendPasswordForms(true);
+  SendPasswordForms(/*only_visible=*/true, /*form_cache=*/{});
 }
 
 void PasswordAutofillAgent::DidCommitProvisionalLoad(

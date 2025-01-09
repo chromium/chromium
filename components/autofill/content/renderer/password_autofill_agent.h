@@ -268,8 +268,12 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // unique origins aren't allowed access.
   virtual bool FrameCanAccessPasswordManager();
 
+  // Called by `AutofillAgent::DidDispatchDOMContentLoadedEvent()`. `form_cache`
+  // can be used to optimize form extractions occurring synchronously after this
+  // function call.
+  void DispatchedDOMContentLoadedEvent(const SynchronousFormCache& form_cache);
+
   // RenderFrameObserver:
-  void DidDispatchDOMContentLoadedEvent() override;
   void DidFinishLoad() override;
   void ReadyToCommitNavigation(
       blink::WebDocumentLoader* document_loader) override;
@@ -425,7 +429,10 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 
   // Scans the given frame for password forms and sends them up to the browser.
   // If `only_visible` is true, only forms visible in the layout are sent.
-  void SendPasswordForms(bool only_visible);
+  // `form_cache` can be used to optimize form extractions occurring
+  // synchronously after this function call.
+  void SendPasswordForms(bool only_visible,
+                         const SynchronousFormCache& form_cache);
 
   // Performs necessary feasibility checks and triggers password suggestions
   // for the current domain on the `element`. `trigger_source` is used to

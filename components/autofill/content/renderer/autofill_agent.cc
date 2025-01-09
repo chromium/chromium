@@ -551,6 +551,11 @@ void AutofillAgent::DidDispatchDOMContentLoadedEvent() {
   timing_.last_dom_content_loaded = base::TimeTicks::Now();
   ExtractFormsUnthrottled(/*callback=*/{},
                           GetCallTimerState(kDidDispatchDomContentLoadedEvent));
+  SynchronousFormCache form_cache;
+  for (const auto& [id, form] : form_cache_.extracted_forms()) {
+    form_cache.insert(form);
+  }
+  password_autofill_agent_->DispatchedDOMContentLoadedEvent(form_cache);
 }
 
 void AutofillAgent::DidChangeScrollOffset() {
