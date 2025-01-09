@@ -3794,7 +3794,9 @@ public class StripLayoutHelper
     }
 
     void stopReorderMode() {
-        if (mReorderDelegate.getInReorderMode()) {
+        // TODO(crbug.com/381285152): Remove getViewBeingDragged check once
+        //  SourceViewDragDropReorderStrategy implementation is complete.
+        if (mReorderDelegate.getInReorderMode() || mReorderDelegate.getViewBeingDragged() != null) {
             mReorderDelegate.stopReorderMode(mStripGroupTitles, mStripTabs);
         }
     }
@@ -4282,8 +4284,7 @@ public class StripLayoutHelper
             }
             dragActiveClickedTabOntoStrip();
         }
-        mReorderDelegate.setViewBeingDragged(null);
-        mReorderDelegate.setDragLastOffsetX(0f);
+        stopReorderMode();
     }
 
     StripLayoutTab getActiveClickedTabForTesting() {
@@ -4291,15 +4292,11 @@ public class StripLayoutHelper
     }
 
     void setLastOffsetXForTesting(float lastOffsetX) {
-        mReorderDelegate.setDragLastOffsetX(lastOffsetX);
+        mReorderDelegate.setDragLastOffsetXForTesting(lastOffsetX); // IN-TEST
     }
 
     float getLastOffsetXForTesting() {
         return mReorderDelegate.getDragLastOffsetXForTesting(); // IN-TEST
-    }
-
-    void setActiveClickedTabAtIndexForTesting(int index) {
-        mReorderDelegate.setViewBeingDragged(mStripTabs[index]);
     }
 
     void startDragAndDropTabForTesting(

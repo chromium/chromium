@@ -191,18 +191,6 @@ public class ReorderDelegate {
         return mSourceViewDragDropReorderStrategy.mViewBeingDragged;
     }
 
-    void setViewBeingDragged(StripLayoutView view) {
-        if (mSourceViewDragDropReorderStrategy == null) return;
-        mSourceViewDragDropReorderStrategy.mViewBeingDragged = view;
-    }
-
-    // TODO(crbug.com/381285152): Remove get/set dragLastOffsetX once DragDropReorderStrategy is
-    // complete.
-    void setDragLastOffsetX(float offsetX) {
-        if (mSourceViewDragDropReorderStrategy == null) return;
-        mSourceViewDragDropReorderStrategy.mLastOffsetX = offsetX;
-    }
-
     // ============================================================================================
     // Initialization
     // ============================================================================================
@@ -1514,5 +1502,10 @@ public class ReorderDelegate {
     float getDragLastOffsetXForTesting() {
         if (mSourceViewDragDropReorderStrategy == null) return 0f;
         return mSourceViewDragDropReorderStrategy.mLastOffsetX;
+    }
+
+    void setDragLastOffsetXForTesting(float offsetX) {
+        if (mSourceViewDragDropReorderStrategy == null) return;
+        mSourceViewDragDropReorderStrategy.mLastOffsetX = offsetX;
     }
 }

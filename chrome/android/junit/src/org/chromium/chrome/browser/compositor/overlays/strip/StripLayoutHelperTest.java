@@ -4387,7 +4387,9 @@ public class StripLayoutHelperTest {
         // Initialize with 10 tabs.
         int selectedIndex = 5;
         initializeTest(false, false, selectedIndex, 10);
-        mStripLayoutHelper.setActiveClickedTabAtIndexForTesting(selectedIndex);
+        setTabDragSourceMock();
+        mStripLayoutHelper.startDragAndDropTabForTesting(
+                mStripLayoutHelper.getStripLayoutTabsForTesting()[selectedIndex], DRAG_START_POINT);
         mStripLayoutHelper.onSizeChanged(
                 SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
         StripLayoutTab draggedTab =
