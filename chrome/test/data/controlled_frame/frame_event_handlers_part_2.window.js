@@ -17,9 +17,10 @@ const FrameEventsPart2 = [
   {
     name: 'newwindow',
     trigger: async (controlledframe) => {
-      controlledframe.executeScript({code: 'window.open("/title2.html");'});
-      // Wait a short time for window to be dropped.
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await new Promise((resolve) => {
+        controlledframe.addEventListener('newwindow', resolve);
+        controlledframe.executeScript({code: 'window.open("/title2.html");'});
+      });
     }
   },
   {
@@ -35,9 +36,25 @@ const FrameEventsPart2 = [
   {
     name: 'zoomchange',
     trigger: async (controlledframe) => {
-      controlledframe.setZoom(0.25325);
-      // Wait a short time for zoom to apply.
-      await new Promise((resolve) => setTimeout(resolve, 50));
+      await new Promise((resolve) => {
+        controlledframe.addEventListener('zoomchange', resolve);
+        controlledframe.setZoom(0.25325);
+      });
+    }
+  },
+  {
+    name: 'sizechanged',
+    trigger: async (controlledframe) => {
+      controlledframe.autosize = true;
+      controlledframe.minwidth = 1;
+      controlledframe.maxwidth = 1;
+      controlledframe.minheight = 1;
+      controlledframe.maxheight = 1;
+
+      await new Promise((resolve) => {
+        controlledframe.addEventListener('sizechanged', resolve);
+        controlledframe.maxwidth = 500;
+      });
     }
   }
 ];
