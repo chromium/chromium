@@ -32,9 +32,9 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
           description:
             "When a user attempts to sign in to a site using a WebAuthn "
             "credential, the site can include a challenge in the request, or "
-            "else a URL from which the challenge can be asynchonously "
+            "else a URL from which the challenge can be asynchronously "
             "fetched. A challenge is a random byte string that protects "
-            "against replay sttacks. This request is the challenge request "
+            "against replay attacks. This request is the challenge request "
             "to the provided URL."
           trigger:
             "A user attempts a Web Authentication sign-in on a web site."
