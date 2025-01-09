@@ -501,7 +501,16 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionServiceWorkerJSTest, Interception) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Test behavior when Ink2 and annotation mode are disabled for the PDF viewer.
 // Don't run this test on Ash, as annotation mode is always enabled there.
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Ink2Disabled) {
+class PDFExtensionJSNoInk2Test : public PDFExtensionJSTest {
+ protected:
+  std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
+    auto disabled = PDFExtensionJSTest::GetDisabledFeatures();
+    disabled.push_back(chrome_pdf::features::kPdfInk2);
+    return disabled;
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSNoInk2Test, Ink2Disabled) {
   RunTestsInJsModule("ink2_disabled_test.js", "test.pdf");
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -590,4 +599,7 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionPacificTimeZoneJSTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionContentSettingJSTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionWebUICodeCacheJSTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionServiceWorkerJSTest);
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionJSNoInk2Test);
+#endif
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionJSInk2Test);
