@@ -440,6 +440,8 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   void DidUpdateScrollsOverflow();
 
   bool SelfNeedsRepaint() const { return self_needs_repaint_; }
+  // Whether any descendant in paint order (not including descendants across
+  // paint-blocking display locks) has SelfNeedsRepaint().
   bool DescendantNeedsRepaint() const { return descendant_needs_repaint_; }
   bool SelfOrDescendantNeedsRepaint() const {
     return self_needs_repaint_ || descendant_needs_repaint_;
@@ -653,6 +655,9 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
                                        const ComputedStyle* old_style,
                                        const ComputedStyle& new_style);
 
+  enum class PaintingContainerType { kParent, kStackingContext };
+  PaintingContainerType GetPaintingContainerType() const;
+
   void MarkPaintingContainerChainForNeedsRepaint();
 
   void MergeNeedsPaintPhaseFlagsFrom(const PaintLayer& layer) {
@@ -691,8 +696,13 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   // in a preserves3D hierarchy. Hint to do 3D-aware hit testing.
   unsigned has3d_transformed_descendant_ : 1;
 
-  unsigned self_needs_repaint_ : 1;
-  unsigned descendant_needs_repaint_ : 1;
+  unsigned self_needs_repaint_ : 1 = false;
+  // This is marked along the PaintingContainer() chain, i.e. the 'descendant'
+  // here is in paint order.
+  unsigned descendant_needs_repaint_ : 1 = false;
+  // This is marked for the layer itself and along the Parent() chain, i.e.
+  // the 'subtree' here is in PaintLayer tree order.
+  unsigned subtree_needs_clear_repaint_flags_ : 1 = false;
 
   unsigned needs_cull_rect_update_ : 1;
   unsigned forces_children_cull_rect_update_ : 1;

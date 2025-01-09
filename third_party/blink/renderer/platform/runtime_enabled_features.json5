@@ -1733,6 +1733,11 @@
       name: "FaceDetector",
       status: "experimental",
     },
+    // Kill switch.
+    {
+      name: "FastClearNeedsRepaint",
+      status: "stable",
+    },
     {
       name: "FastNonCompositedScrollHitTest",
       depends_on: ["HitTestOpaqueness", "RasterInducingScroll"],

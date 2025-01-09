@@ -181,8 +181,6 @@ PaintLayer::PaintLayer(LayoutBoxModelObject* layout_object)
       needs_visual_overflow_recalc_(true),
       has_visible_self_painting_descendant_(false),
       has3d_transformed_descendant_(false),
-      self_needs_repaint_(false),
-      descendant_needs_repaint_(false),
       needs_cull_rect_update_(false),
       forces_children_cull_rect_update_(false),
       descendant_needs_cull_rect_update_(false),
@@ -585,7 +583,28 @@ PaintLayer* PaintLayer::ContainingLayer() const {
   return Parent();
 }
 
+PaintLayer::PaintingContainerType PaintLayer::GetPaintingContainerType() const {
+  DCHECK(RuntimeEnabledFeatures::FastClearNeedsRepaintEnabled());
+  // TODO(crbug.com/40208685): Remove this condition after we make IsStacked()
+  // correct (returning false) for IsReplacedNormalFlowStacking().
+  if (IsReplacedNormalFlowStacking()) {
+    return PaintingContainerType::kParent;
+  }
+  if (GetLayoutObject().IsStacked()) {
+    return PaintingContainerType::kStackingContext;
+  }
+  return PaintingContainerType::kParent;
+}
+
 PaintLayer* PaintLayer::PaintingContainer() const {
+  // We believe the two code paths are equivalent. See comments in
+  // crrev.com/c/6155416, but use the flag (as a killswitch) for safety.
+  if (RuntimeEnabledFeatures::FastClearNeedsRepaintEnabled()) {
+    return GetPaintingContainerType() == PaintingContainerType::kParent
+               ? Parent()
+               : AncestorStackingContext();
+  }
+
   if (IsReplacedNormalFlowStacking())
     return Parent();
   if (!GetLayoutObject().IsStacked()) {
@@ -2382,6 +2401,53 @@ void PaintLayer::SetDescendantNeedsRepaint() {
 }
 
 void PaintLayer::MarkPaintingContainerChainForNeedsRepaint() {
+  if (RuntimeEnabledFeatures::FastClearNeedsRepaintEnabled()) {
+    // Mark descendant_needs_repaint_ along the PaintingContainer() chain,
+    // and subtree_needs_clear_repaint_flags_ along the Parent() chain.
+    // Don't mark across frame boundary here. LocalFrameView::PaintTree() will
+    // propagate child frame NeedsRepaint flag into the owning frame.
+    PaintLayer* layer = this;
+    bool layer_is_container = false;
+    PaintingContainerType next_container_type = GetPaintingContainerType();
+    while (true) {
+      layer->subtree_needs_clear_repaint_flags_ = true;
+      PaintLayer* parent = layer->Parent();
+      // For a non-self-painting layer having self-painting descendant, the
+      // descendant will be painted through this layer's Parent() instead of
+      // this layer's PaintingContainer(), so in addition to the
+      // PaintingContainer() chain, we also need to mark NeedsRepaint for
+      // Parent().
+      if (parent && !layer->IsSelfPaintingLayer() &&
+          (layer == this || layer_is_container)) {
+        parent->SetNeedsRepaint();
+      }
+      if (layer_is_container) {
+        if (layer->descendant_needs_repaint_) {
+          break;
+        }
+        layer->descendant_needs_repaint_ = true;
+        next_container_type = layer->GetPaintingContainerType();
+        layer_is_container = false;
+      }
+      if (!parent) {
+        break;
+      }
+      // If the layer doesn't need painting itself (which means we're
+      // propagating a bit from its children) and it blocks child painting
+      // via display lock, then stop propagating the dirty bit.
+      if (!layer->SelfNeedsRepaint() &&
+          layer->GetLayoutObject().ChildPaintBlockedByDisplayLock()) {
+        break;
+      }
+      layer = parent;
+      if (next_container_type == PaintingContainerType::kParent ||
+          layer->GetLayoutObject().IsStackingContext()) {
+        layer_is_container = true;
+      }
+    }
+    return;
+  }
+
   PaintLayer* layer = this;
   while (true) {
     // For a non-self-painting layer having self-painting descendant, the
@@ -2411,6 +2477,33 @@ void PaintLayer::MarkPaintingContainerChainForNeedsRepaint() {
 }
 
 void PaintLayer::ClearNeedsRepaintRecursively() {
+#if DCHECK_IS_ON()
+  static bool check_no_dirty_flags = false;
+  std::optional<base::AutoReset<bool>> reset_check_no_dirty_flags;
+#endif
+
+  if (RuntimeEnabledFeatures::FastClearNeedsRepaintEnabled()) {
+#if DCHECK_IS_ON()
+    if (check_no_dirty_flags) {
+      DCHECK(!self_needs_repaint_);
+      if (!GetLayoutObject().ChildPaintBlockedByDisplayLock()) {
+        DCHECK(!descendant_needs_repaint_);
+        DCHECK(!subtree_needs_clear_repaint_flags_);
+      }
+    }
+#endif
+
+    if (!subtree_needs_clear_repaint_flags_) {
+      CHECK(!self_needs_repaint_);
+      CHECK(!descendant_needs_repaint_);
+#if DCHECK_IS_ON()
+      reset_check_no_dirty_flags.emplace(&check_no_dirty_flags, true);
+#else
+      return;
+#endif
+    }
+  }
+
   self_needs_repaint_ = false;
 
   // Don't clear dirty bits in a display-locked subtree.
@@ -2420,6 +2513,7 @@ void PaintLayer::ClearNeedsRepaintRecursively() {
   for (PaintLayer* child = FirstChild(); child; child = child->NextSibling())
     child->ClearNeedsRepaintRecursively();
   descendant_needs_repaint_ = false;
+  subtree_needs_clear_repaint_flags_ = false;
 }
 
 void PaintLayer::SetNeedsCullRectUpdate() {
