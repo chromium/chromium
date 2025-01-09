@@ -65,7 +65,7 @@ TopIconAnimationView::TopIconAnimationView(AppsGridView* grid,
   gfx::ImageSkia resized(gfx::ImageSkiaOperations::CreateResizedImage(
       icon, skia::ImageOperations::RESIZE_BEST, icon_size_));
   auto icon_image = std::make_unique<views::ImageView>();
-  icon_image->SetImage(resized);
+  icon_image->SetImage(ui::ImageModel::FromImageSkia(resized));
   icon_ = AddChildView(std::move(icon_image));
   if (icon_background_ && icon_background_->layer()) {
     icon_->SetPaintToLayer();
