@@ -55,6 +55,7 @@ const noArgStringNames = [
   'languagePickerLanguageErrorDescription',
   'languagePickerSelectedLanguageHeader',
   'languagePickerSelectedLanguageNoneLabel',
+  'mainChooseMicNudge',
   'mainRecordingBarLandmarkAriaLabel',
   'mainRecordingsListLandmarkAriaLabel',
   'mainSearchLandmarkAriaLabel',

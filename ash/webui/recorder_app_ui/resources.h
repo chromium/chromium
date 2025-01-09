@@ -70,6 +70,7 @@ const webui::LocalizedString kLocalizedStrings[] = {
      IDS_RECORDER_LANGUAGE_PICKER_SELECTED_LANGUAGE_HEADER},
     {"languagePickerSelectedLanguageNoneLabel",
      IDS_RECORDER_LANGUAGE_PICKER_SELECTED_LANGUAGE_NONE_LABEL},
+    {"mainChooseMicNudge", IDS_RECORDER_MAIN_CHOOSE_MIC_NUDGE},
     {"mainRecordingBarLandmarkAriaLabel",
      IDS_RECORDER_MAIN_RECORDING_BAR_LANDMARK_ARIA_LABEL},
     {"mainRecordingsListLandmarkAriaLabel",

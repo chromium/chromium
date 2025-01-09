@@ -113,6 +113,9 @@
   <message desc="Label of the selected language when there's no selected language in the language picker." name="IDS_RECORDER_LANGUAGE_PICKER_SELECTED_LANGUAGE_NONE_LABEL">
     None
   </message>
+  <message desc="Nudge to choose microphone when the microphone menu hasn't been opened in main page." name="IDS_RECORDER_MAIN_CHOOSE_MIC_NUDGE">
+    Choose your mic
+  </message>
   <message desc="Accessibility label of the landmark for the list of recordings in the main page." name="IDS_RECORDER_MAIN_RECORDINGS_LIST_LANDMARK_ARIA_LABEL">
     List of audio recordings
   </message>

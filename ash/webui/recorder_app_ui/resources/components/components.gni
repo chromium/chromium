@@ -18,6 +18,7 @@ component_files = [
   "cra/cra-tooltip.ts",
   "delete-recording-dialog.ts",
   "directives/with-tooltip.ts",
+  "educational-nudge.ts",
   "expandable-card.ts",
   "export-dialog.ts",
   "export-dialog-section.ts",

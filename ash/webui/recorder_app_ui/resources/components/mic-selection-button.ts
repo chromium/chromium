@@ -32,7 +32,11 @@ import {withTooltip} from './directives/with-tooltip.js';
 export class MicSelectionButton extends ReactiveLitElement {
   static override styles = css`
     :host {
-      display: contents;
+      display: block;
+    }
+
+    cra-icon-dropdown {
+      display: block;
     }
 
     cra-icon-dropdown::part(menu) {

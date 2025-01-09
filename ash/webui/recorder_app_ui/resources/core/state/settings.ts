@@ -147,6 +147,7 @@ export type ExportSettings = Infer<typeof exportSettingsSchema>;
 
 export const settingsSchema = z.object({
   exportSettings: exportSettingsSchema,
+  hasOpenedMicMenu: z.withDefault(z.boolean(), false),
   includeSystemAudio: z.boolean(),
   keepScreenOn: z.withDefault(z.boolean(), false),
   onboardingDone: z.boolean(),
@@ -177,6 +178,7 @@ const defaultSettings: Settings = {
     transcription: false,
     transcriptionFormat: ExportTranscriptionFormat.TXT,
   },
+  hasOpenedMicMenu: false,
   includeSystemAudio: false,
   keepScreenOn: false,
   onboardingDone: false,
