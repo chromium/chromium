@@ -44,6 +44,7 @@ class ASH_EXPORT BirchCoralItem : public BirchItem {
   // The callback function for the press on the given `birch_chip_button`.
   void LaunchGroup(BirchChipButtonBase* birch_chip_button);
 
+  CoralSource source() const { return source_; }
   const base::Token& group_id() const { return group_id_; }
 
   // BirchItem:

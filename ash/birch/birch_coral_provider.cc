@@ -214,18 +214,19 @@ std::unordered_set<coral::mojom::EntityPtr> GetInSessionNonWebAppData() {
   return entities;
 }
 
-// Checks if we should show the response on Glanceables bar.
-bool ShouldShowResponse(CoralResponse* response) {
+// Checks if we should show the in-session response on Glanceables bar.
+bool ShouldShowInSessionResponse(CoralResponse* response) {
   if (!response) {
     return false;
   }
+
+  CHECK_EQ(response->source(), CoralSource::kInSession);
 
   // If we got only one group from an in-session response whose name and content
   // are exactly same as the active desk which was created from a coral group,
   // we won't show it.
   const auto& groups = response->groups();
-  if (response->source() == CoralSource::kPostLogin ||
-      DesksController::Get()->active_desk()->type() != Desk::Type::kCoral ||
+  if (!DesksController::Get()->active_desk()->modified_by_coral() ||
       groups.size() != 1) {
     return true;
   }
@@ -445,8 +446,14 @@ void BirchCoralProvider::RequestBirchDataFetch() {
         fake_response_copy->set_source(CoralSource::kPostLogin);
         break;
     }
+
     fake_response_copy->set_groups(std::move(groups));
-    HandleCoralResponse(std::move(fake_response_copy));
+
+    if (fake_response_copy->source() == CoralSource::kPostLogin) {
+      HandlePostLoginCoralResponse(std::move(fake_response_copy));
+    } else {
+      HandleInSessionCoralResponse(std::move(fake_response_copy));
+    }
     return;
   }
 
@@ -639,8 +646,9 @@ bool BirchCoralProvider::HasValidPostLoginResponse() {
 void BirchCoralProvider::HandlePostLoginCoralResponse(
     std::unique_ptr<CoralResponse> response) {
   // If response_ is not null, it may be a previously arrived post-login or
-  // in-session response. Skip handling the newly arrived response in this case.
+  // in-session response. Handle the existing `response_` in this case.
   if (response_) {
+    HandleCoralResponse(std::move(response_));
     return;
   }
 
@@ -651,9 +659,11 @@ void BirchCoralProvider::HandlePostLoginCoralResponse(
 
 void BirchCoralProvider::HandleInSessionCoralResponse(
     std::unique_ptr<CoralResponse> response) {
-  const bool non_empty = response && response->groups().size();
-  if (HasValidPostLoginResponse() && !non_empty) {
-    HandleCoralResponse(std::move(response_));
+  // Still show current restore groups if there is no valid in-session group to
+  // show.
+  if (!ShouldShowInSessionResponse(response.get())) {
+    HandleCoralResponse(HasValidPostLoginResponse() ? std::move(response_)
+                                                    : nullptr);
     return;
   }
 
@@ -666,7 +676,7 @@ void BirchCoralProvider::HandleCoralResponse(
     std::unique_ptr<CoralResponse> response) {
   std::vector<BirchCoralItem> items;
   response_ = std::move(response);
-  if (!ShouldShowResponse(response_.get())) {
+  if (!response_) {
     windows_observation_.RemoveAllObservations();
     Shell::Get()->birch_model()->SetCoralItems(items);
     return;

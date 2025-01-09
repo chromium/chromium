@@ -540,7 +540,7 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, CloseWindowRemoveTwoChips) {
   birch_data_fetch_waiter.Run();
 
   // The birch bar is created with two coral chips.
-  ASSERT_EQ(GetBirchChipsNum(), 2u);
+  ASSERT_EQ(GetCoralChipsNum(), 2u);
 
   // Closing the first browser with all items in groups.
   SelectFirstBrowser();
@@ -548,7 +548,7 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, CloseWindowRemoveTwoChips) {
   CloseBrowserSynchronously(browser());
 
   // Two chips are removed.
-  EXPECT_EQ(0u, GetBirchChipsNum());
+  EXPECT_EQ(GetCoralChipsNum(), 0u);
 }
 
 // Tests that closing a desk removes all coral chips.
@@ -602,14 +602,14 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, CloseDeskRemoveAllChips) {
   birch_data_fetch_waiter.Run();
 
   // The birch bar is created with two coral chips.
-  ASSERT_EQ(GetBirchChipsNum(), 2u);
+  ASSERT_EQ(GetCoralChipsNum(), 2u);
 
   // Closing the active desk removes all chips.
   RemoveDesk(GetActiveDesk(), DeskCloseType::kCloseAllWindows);
   SimulateWaitForCloseAll();
 
   // Two chips are removed.
-  EXPECT_EQ(0u, GetBirchChipsNum());
+  EXPECT_EQ(GetCoralChipsNum(), 0u);
 }
 
 // Tests that merging a desk removes all coral chips.
@@ -664,7 +664,7 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, MergeDeskRemoveAllChips) {
   birch_data_fetch_waiter.Run();
 
   // The birch bar is created with two coral chips.
-  ASSERT_EQ(GetBirchChipsNum(), 2u);
+  ASSERT_EQ(GetCoralChipsNum(), 2u);
 
   // There are two desks before removing.
   auto* desks_controller = DesksController::Get();
@@ -676,7 +676,7 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, MergeDeskRemoveAllChips) {
   ASSERT_EQ(desks_controller->GetNumberOfDesks(), 1);
 
   // Two chips are removed.
-  EXPECT_EQ(0u, GetBirchChipsNum());
+  EXPECT_EQ(0u, GetCoralChipsNum());
 }
 
 // Tests that moving a window to another desk would update the groups and chips.
@@ -732,7 +732,7 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, MoveWindowToOtherDeskUpdateChip) {
   birch_data_fetch_waiter.Run();
 
   // The birch bar is created with two coral chips.
-  ASSERT_EQ(GetBirchChipsNum(), 2u);
+  ASSERT_EQ(GetCoralChipsNum(), 2u);
 
   // Both groups initially have 4 entities.
   const auto& group_1 =
@@ -770,7 +770,7 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, MoveWindowToOtherDeskUpdateChip) {
   EXPECT_FALSE(desks_controller->BelongsToActiveDesk(file_window));
 
   // The first chip is removed.
-  EXPECT_EQ(GetBirchChipsNum(), 1u);
+  EXPECT_EQ(GetCoralChipsNum(), 1u);
 }
 
 // Tests that the same coral chip will not show up again if we just created a
@@ -882,7 +882,7 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, ConsecutiveLaunchGroups) {
   birch_data_fetch_waiter.Run();
 
   // There should be two chips on the bar.
-  ASSERT_EQ(GetBirchChipsNum(), 2u);
+  ASSERT_EQ(GetCoralChipsNum(), 2u);
 
   // Launch the first group.
   test::Click(GetFirstCoralButton());
@@ -906,7 +906,7 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, ConsecutiveLaunchGroups) {
                   GURL("https://calendar.google.com")));
 
   // Launch the second group.
-  ASSERT_EQ(GetBirchChipsNum(), 1u);
+  ASSERT_EQ(GetCoralChipsNum(), 1u);
   test::Click(GetFirstCoralButton());
 
   // We should have three desks and the new active desk is the third one.
@@ -925,6 +925,95 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, ConsecutiveLaunchGroups) {
                                             GURL("https://drive.google.com"),
                                             GURL("https://mail.google.com"),
                                             GURL("https://meet.google.com")));
+}
+
+// The coral browser tests with the fake backend.
+class CoralFakeBackendBrowserTest : public CoralBrowserTest {
+ public:
+  CoralFakeBackendBrowserTest() = default;
+  CoralFakeBackendBrowserTest(const CoralFakeBackendBrowserTest&) = delete;
+  CoralFakeBackendBrowserTest& operator=(const CoralFakeBackendBrowserTest&) =
+      delete;
+  ~CoralFakeBackendBrowserTest() override = default;
+
+  // CoralBrowserTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kForceBirchFakeCoralBackend);
+  }
+};
+
+// Tests that the second restore chip will retent after restoring the first one.
+IN_PROC_BROWSER_TEST_F(CoralFakeBackendBrowserTest,
+                       PRE_RetentSecondRestoreChip) {
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+
+  // Create a browser with different tabs and urls.
+  test::CreateAndShowBrowser(
+      profile,
+      {GURL("https://youtube.com"), GURL("https://google.com"),
+       GURL("https://docs.google.com"), GURL("https://drive.google.com")});
+
+  // Launch some SWA's.
+  test::InstallSystemAppsForTesting(profile);
+  test::CreateSystemWebApp(profile, SystemWebAppType::FILE_MANAGER);
+  test::CreateSystemWebApp(profile, SystemWebAppType::SETTINGS);
+
+  // Launch some PWA's.
+  test::InstallAndLaunchPWA(profile, GURL("https://maps.google.com/"),
+                            /*launch_in_browser=*/false,
+                            /*app_title=*/u"Google Maps");
+  test::InstallAndLaunchPWA(profile, GURL("https://mail.google.com/"),
+                            /*launch_in_browser=*/false,
+                            /*app_title=*/u"Gmail");
+
+  // Immediate save to full restore file to bypass the 2.5 second throttle.
+  AppLaunchInfoSaveWaiter::Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(CoralFakeBackendBrowserTest, RetentSecondRestoreChip) {
+  ASSERT_TRUE(BrowserList::GetInstance()->empty());
+
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+
+  test::InstallSystemAppsForTesting(profile);
+
+  // Wait until the chip is visible, it may not be visible while data fetch is
+  // underway or the overview animation is still running.
+  EXPECT_TRUE(base::test::RunUntil([]() {
+    BirchChipButtonBase* coral_chip = GetBirchChipButton();
+    return !!coral_chip;
+  }));
+
+  // The fake backend should generate two groups.
+  ASSERT_EQ(GetCoralChipsNum(), 2u);
+  BirchChipButtonBase* coral_chip = GetBirchChipButton();
+  ASSERT_EQ(coral_chip->GetItem()->GetType(), BirchItemType::kCoral);
+  ASSERT_EQ(static_cast<BirchCoralItem*>(coral_chip->GetItem())->source(),
+            CoralSource::kPostLogin);
+
+  // Restore the first chip.
+  test::Click(coral_chip);
+  WaitForOverviewExitAnimation();
+
+  // Set up a callback for a birch data fetch.
+  base::RunLoop birch_data_fetch_waiter;
+  Shell::Get()->birch_model()->SetDataFetchCallbackForTest(
+      birch_data_fetch_waiter.QuitClosure());
+
+  // Re-enter Overview.
+  ToggleOverview();
+  WaitForOverviewEntered();
+
+  // Wait for fetch callback to complete.
+  birch_data_fetch_waiter.Run();
+
+  // There should be only one restore chip on the bar.
+  ASSERT_EQ(GetCoralChipsNum(), 1u);
+  coral_chip = GetBirchChipButton();
+  ASSERT_EQ(coral_chip->GetItem()->GetType(), BirchItemType::kCoral);
+  ASSERT_EQ(static_cast<BirchCoralItem*>(coral_chip->GetItem())->source(),
+            CoralSource::kPostLogin);
 }
 
 }  // namespace ash

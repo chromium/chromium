@@ -236,7 +236,7 @@ TEST_F(CoralControllerTest, RemoveInSessionChipAfterClicking) {
   // Check that we are on the newly created desk now.
   ASSERT_EQ(desks_controller->GetNumberOfDesks(), 2);
   EXPECT_EQ(desks_controller->GetActiveDeskIndex(), 1);
-  ASSERT_EQ(desks_controller->active_desk()->type(), Desk::Type::kCoral);
+  ASSERT_TRUE(desks_controller->active_desk()->modified_by_coral());
 
   // Check that the chip is removed.
   EXPECT_EQ(
@@ -489,9 +489,9 @@ TEST_F(CoralSavedGroupTest, LaunchSavedGroup) {
       GetSavedDeskItemButton(/*index=*/0);
   LeftClickOn(saved_group_launch_button);
 
-  // Test that we create a new desk of type coral.
+  // Test that we create a new desk which is modified by Coral.
   ASSERT_EQ(desks_controller->GetNumberOfDesks(), 2);
-  EXPECT_EQ(desks_controller->desks().back()->type(), Desk::Type::kCoral);
+  EXPECT_TRUE(desks_controller->desks().back()->modified_by_coral());
 }
 
 // Tests that the saved desk library has the expected amount of grid items.

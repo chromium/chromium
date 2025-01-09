@@ -11,6 +11,7 @@
 #include "ash/shell.h"
 #include "ash/wm/overview/birch/birch_chip_button_base.h"
 #include "ash/wm/overview/overview_grid_test_api.h"
+#include "base/containers/flat_tree.h"
 #include "base/run_loop.h"
 #include "components/prefs/pref_service.h"
 
@@ -36,9 +37,12 @@ BirchChipButtonBase* GetBirchChipButton() {
   return test_api.GetBirchChips()[0];
 }
 
-size_t GetBirchChipsNum() {
+size_t GetCoralChipsNum() {
   aura::Window* root = Shell::GetPrimaryRootWindow();
-  return OverviewGridTestApi(root).GetBirchChips().size();
+  return base::ranges::count_if(
+      OverviewGridTestApi(root).GetBirchChips(), [](const auto& chip) {
+        return chip->GetItem()->GetType() == BirchItemType::kCoral;
+      });
 }
 
 void DisableAllDataTypePrefsExcept(std::vector<std::string_view> exceptions) {
