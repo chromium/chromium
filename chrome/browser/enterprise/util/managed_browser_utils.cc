@@ -228,7 +228,7 @@ bool IsEnterpriseBadgingEnabledForToolbar(Profile* profile) {
 }
 
 bool CanShowEnterpriseBadgingForMenu(Profile* profile) {
-  if (!UserAcceptedAccountManagement(profile)) {
+  if (!UserAcceptedAccountManagement(profile) && !profile->IsChild()) {
     return false;
   }
   if (base::FeatureList::IsEnabled(
@@ -240,9 +240,12 @@ bool CanShowEnterpriseBadgingForMenu(Profile* profile) {
     return false;
   }
 
+  // The check for supervised users is here as a precacution since the
+  // kEnterpriseLogoUrlForProfile should be set by policy.
   return !profile->GetPrefs()
               ->GetString(prefs::kEnterpriseLogoUrlForProfile)
-              .empty();
+              .empty() &&
+         !profile->IsChild();
 }
 
 bool CanShowEnterpriseBadgingForAvatar(Profile* profile) {

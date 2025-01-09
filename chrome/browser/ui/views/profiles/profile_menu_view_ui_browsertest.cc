@@ -26,6 +26,7 @@
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/supervised_user/test_support/supervised_user_signin_test_utils.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -70,6 +71,7 @@ enum class ManagementStatus {
   kNonManaged,
   kAccountManaged,
   kBrowserManaged,
+  kSupervisedUser
 };
 
 struct ProfileMenuViewPixelTestParam {
@@ -277,6 +279,35 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
      .profile_menu_uno_redesign =
          ProfileMenuDesignVersion::kExplicitSigninImproved,
      .outline_silhouette_icon = true},
+    {.pixel_test_param = {.test_suffix =
+                              "SignedIn_BrowserSupervised_DarkTheme_Improved",
+                          .use_dark_theme = true},
+     .signin_status = SigninStatusPixelTestParam::kSignedInWithSync,
+     .management_status = ManagementStatus::kSupervisedUser,
+     .profile_menu_uno_redesign =
+         ProfileMenuDesignVersion::kExplicitSigninImproved},
+    {.pixel_test_param =
+         {.test_suffix =
+              "SignInPending_Nosync_BrowserSupervised_DarkTheme_Improved",
+          .use_dark_theme = true},
+     .signin_status = SigninStatusPixelTestParam::kSignInPendingNoSync,
+     .management_status = ManagementStatus::kSupervisedUser,
+     .profile_menu_uno_redesign =
+         ProfileMenuDesignVersion::kExplicitSigninImproved},
+    {.pixel_test_param = {.test_suffix = "SignedIn_BrowserSupervised_Improved",
+                          .use_dark_theme = false},
+     .signin_status = SigninStatusPixelTestParam::kSignedInWithSync,
+     .management_status = ManagementStatus::kSupervisedUser,
+     .profile_menu_uno_redesign =
+         ProfileMenuDesignVersion::kExplicitSigninImproved},
+    {.pixel_test_param = {.test_suffix =
+                              "SignInPending_Nosync_BrowserSupervised_Improved",
+                          .use_dark_theme = false},
+     .signin_status = SigninStatusPixelTestParam::kSignInPendingNoSync,
+     .management_status = ManagementStatus::kSupervisedUser,
+     .profile_menu_uno_redesign =
+         ProfileMenuDesignVersion::kExplicitSigninImproved},
+
 };
 
 }  // namespace
@@ -411,6 +442,57 @@ class ProfileMenuViewPixelTest
       ASSERT_EQ(new_browser, browser());
     }
 
+    AccountInfo account_info;
+    // Configures browser according to desired signin status.
+    switch (GetSigninStatus()) {
+      case SigninStatusPixelTestParam::kSignedOut:
+      case SigninStatusPixelTestParam::kSigninDisallowed:
+        // Nothing to do.
+        break;
+      case SigninStatusPixelTestParam::kWebSignedIn:
+        // Account management is not applied with `kWebSignedIn`.
+        account_info = SignInWithAccount(AccountManagementStatus::kNonManaged,
+                                         std::nullopt);
+        break;
+      case SigninStatusPixelTestParam::kSignedInNoSync:
+        account_info = SignInWithAccount();
+        break;
+      case SigninStatusPixelTestParam::kSignInPendingNoSync:
+        account_info = SignInWithAccount();
+        identity_test_env()->SetInvalidRefreshTokenForPrimaryAccount();
+        break;
+      case SigninStatusPixelTestParam::kSignedInWithSync: {
+        account_info = SignInWithAccount(GetAccountManagementStatus(),
+                                         signin::ConsentLevel::kSync);
+        // Enable sync.
+        syncer::SyncService* sync_service =
+            SyncServiceFactory::GetForProfile(GetProfile());
+        sync_service->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
+            syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
+
+        break;
+      }
+
+      case SigninStatusPixelTestParam::kSignedInSyncPaused: {
+        account_info = SignInWithAccount(GetAccountManagementStatus(),
+                                         signin::ConsentLevel::kSync);
+
+        // Enable sync.
+        syncer::SyncService* sync_paused_service =
+            SyncServiceFactory::GetForProfile(GetProfile());
+        sync_paused_service->GetUserSettings()
+            ->SetInitialSyncFeatureSetupComplete(
+                syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
+
+        identity_test_env()->SetInvalidRefreshTokenForPrimaryAccount();
+        break;
+      }
+      case SigninStatusPixelTestParam::kSignedInSyncNotWorking:
+        account_info = SignInWithAccount(GetAccountManagementStatus(),
+                                         signin::ConsentLevel::kSync);
+        break;
+    }
+
     switch (GetManagementStatus()) {
       case ManagementStatus::kNonManaged:
         break;
@@ -428,55 +510,12 @@ class ProfileMenuViewPixelTest
                 policy::ManagementServiceFactory::GetForProfile(GetProfile()),
                 policy::EnterpriseManagementAuthority::COMPUTER_LOCAL);
         break;
-    }
-
-    // Configures browser according to desired signin status.
-    switch (GetSigninStatus()) {
-      case SigninStatusPixelTestParam::kSignedOut:
-      case SigninStatusPixelTestParam::kSigninDisallowed:
-        // Nothing to do.
-        break;
-      case SigninStatusPixelTestParam::kWebSignedIn:
-        // Account management is not applied with `kWebSignedIn`.
-        SignInWithAccount(AccountManagementStatus::kNonManaged, std::nullopt);
-        break;
-      case SigninStatusPixelTestParam::kSignedInNoSync:
-        SignInWithAccount();
-        break;
-      case SigninStatusPixelTestParam::kSignInPendingNoSync:
-        SignInWithAccount();
-        identity_test_env()->SetInvalidRefreshTokenForPrimaryAccount();
-        break;
-      case SigninStatusPixelTestParam::kSignedInWithSync: {
-        SignInWithAccount(GetAccountManagementStatus(),
-                          signin::ConsentLevel::kSync);
-
-        // Enable sync.
-        syncer::SyncService* sync_service =
-            SyncServiceFactory::GetForProfile(GetProfile());
-        sync_service->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
-            syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
-
-        break;
-      }
-      case SigninStatusPixelTestParam::kSignedInSyncPaused: {
-        SignInWithAccount(GetAccountManagementStatus(),
-                          signin::ConsentLevel::kSync);
-
-        // Enable sync.
-        syncer::SyncService* sync_paused_service =
-            SyncServiceFactory::GetForProfile(GetProfile());
-        sync_paused_service->GetUserSettings()
-            ->SetInitialSyncFeatureSetupComplete(
-                syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
-
-        identity_test_env()->SetInvalidRefreshTokenForPrimaryAccount();
-        break;
-      }
-      case SigninStatusPixelTestParam::kSignedInSyncNotWorking:
-        SignInWithAccount(GetAccountManagementStatus(),
-                          signin::ConsentLevel::kSync);
-        break;
+      case ManagementStatus::kSupervisedUser:
+        if (!account_info.IsEmpty()) {
+          supervised_user::UpdateSupervisionStatusForAccount(
+              account_info, identity_test_env()->identity_manager(), true);
+          break;
+        }
     }
 
     if (ShouldUseMultipleProfiles()) {
