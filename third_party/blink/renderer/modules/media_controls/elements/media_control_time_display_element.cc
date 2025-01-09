@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_time_display_element.h"
 
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_elements_helper.h"
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
 #include "third_party/blink/renderer/modules/media_controls/media_controls_shared_helper.h"
@@ -28,7 +29,7 @@ MediaControlTimeDisplayElement::MediaControlTimeDisplayElement(
     : MediaControlDivElement(media_controls) {
   // Will hide from accessibility tree, because the information is redundant
   // with the info provided on the media scrubber.
-  setAttribute(html_names::kAriaHiddenAttr, AtomicString("true"));
+  setAttribute(html_names::kAriaHiddenAttr, keywords::kTrue);
 }
 
 void MediaControlTimeDisplayElement::SetCurrentValue(double time) {

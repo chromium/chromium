@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
@@ -208,7 +209,7 @@ void HTMLOptGroupElement::AccessKeyAction(
 
 void HTMLOptGroupElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   label_ = MakeGarbageCollected<HTMLDivElement>(GetDocument());
-  label_->setAttribute(html_names::kAriaHiddenAttr, AtomicString("true"));
+  label_->setAttribute(html_names::kAriaHiddenAttr, keywords::kTrue);
   label_->SetShadowPseudoId(shadow_element_names::kIdOptGroupLabel);
   root.AppendChild(label_);
   opt_group_slot_ = MakeGarbageCollected<HTMLSlotElement>(GetDocument());
