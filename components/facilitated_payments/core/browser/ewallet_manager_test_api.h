@@ -36,6 +36,14 @@ class EwalletManagerTestApi {
     ewallet_manager_->scheme_ = scheme;
   }
 
+  void set_is_device_bound(bool is_device_bound) {
+    ewallet_manager_->is_device_bound_for_logging_ = is_device_bound;
+  }
+
+  bool is_device_bound() {
+    return ewallet_manager_->is_device_bound_for_logging_;
+  }
+
   FacilitatedPaymentsApiClient* GetApiClient() {
     return ewallet_manager_->GetApiClient();
   }
@@ -96,8 +104,9 @@ class EwalletManagerTestApi {
 
   void ShowErrorScreen() { ewallet_manager_->ShowErrorScreen(); }
 
-  void OnTransactionResult(PurchaseActionResult result) {
-    ewallet_manager_->OnTransactionResult(result);
+  void OnTransactionResult(base::TimeTicks start_time,
+                           PurchaseActionResult result) {
+    ewallet_manager_->OnTransactionResult(start_time, result);
   }
 
  private:

@@ -172,6 +172,14 @@ void EwalletManager::OnEwalletPaymentPromptResult(
   ShowProgressScreen();
 
   initiate_payment_request_details_->instrument_id_ = selected_instrument_id;
+  auto iter_ewallet = base::ranges::find_if(
+      supported_ewallets_, [&](const autofill::Ewallet& ewallet) {
+        return ewallet.payment_instrument().instrument_id() ==
+               selected_instrument_id;
+      });
+  CHECK(iter_ewallet != supported_ewallets_.end());
+  is_device_bound_for_logging_ =
+      (*iter_ewallet).payment_instrument().is_fido_enrolled();
 
   client_->LoadRiskData(base::BindOnce(&EwalletManager::OnRiskDataLoaded,
                                        weak_ptr_factory_.GetWeakPtr(),
@@ -268,10 +276,11 @@ void EwalletManager::OnInitiatePaymentResponseReceived(
   GetApiClient()->InvokePurchaseAction(
       account_info.value(), response_details->action_token_,
       base::BindOnce(&EwalletManager::OnTransactionResult,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }
 
-void EwalletManager::OnTransactionResult(PurchaseActionResult result) {
+void EwalletManager::OnTransactionResult(base::TimeTicks start_time,
+                                         PurchaseActionResult result) {
   switch (result) {
     case PurchaseActionResult::kCouldNotInvoke:
       ShowErrorScreen();
@@ -282,6 +291,10 @@ void EwalletManager::OnTransactionResult(PurchaseActionResult result) {
       DismissPrompt();
       break;
   }
+
+  LogEwalletInitiatePurchaseActionResultAndLatency(
+      result, base::TimeTicks::Now() - start_time, scheme_,
+      is_device_bound_for_logging_);
 }
 
 void EwalletManager::OnUiEvent(UiEvent ui_event_type) {

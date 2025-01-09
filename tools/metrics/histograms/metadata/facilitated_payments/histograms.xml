@@ -41,6 +41,12 @@ reviewer.
       summary="Facilitate a Pix based payment using Google Pay."/>
 </variants>
 
+<variants name="PurchaseActionResult">
+  <variant name="Abandoned" summary="Abandoned InitiatePurchaseAction call"/>
+  <variant name="Failed" summary="Failed InitiatePurchaseAction call"/>
+  <variant name="Succeeded" summary="Successful InitiatePurchaseAction call"/>
+</variants>
+
 <histogram
     name="FacilitatedPayments.Ewallet.FopSelector.UserAction.{AvailableEwalletsConfiguration}"
     enum="FacilitatedPayments.FopSelectorAction" expires_after="2025-07-01">
@@ -168,6 +174,31 @@ reviewer.
 </histogram>
 
 <histogram
+    name="FacilitatedPayments.Ewallet.InitiatePurchaseAction.{Result}.Latency.{Scheme}.{IsDeviceBound}"
+    units="ms" expires_after="2025-07-01">
+  <owner>junhuihe@google.com</owner>
+  <owner>qihuizhao@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs the latency for the call made to payments platform (client) which
+    faciliates the payment and breaks it down by the result of the call. The
+    result is {Result}. The payment is supported by {Scheme}. Whether the chosen
+    payment FOP is bound to the device: {IsDeviceBound}. [Frequency] Logged at
+    most once per eWallet payflow. [Trigger] User selects a payment instrument
+    from the list of options shown in the eWallet UI.
+  </summary>
+  <token key="Result" variants="PurchaseActionResult"/>
+  <token key="Scheme" variants="EwalletScheme"/>
+  <token key="IsDeviceBound">
+    <variant name="DeviceBound"
+        summary="The chosen payment FOP is bound to the device"/>
+    <variant name="DeviceNotBound"
+        summary="The chosen payment FOP is not bound to the device"/>
+  </token>
+</histogram>
+
+<histogram
     name="FacilitatedPayments.Ewallet.IsApiAvailable.{Result}.Latency.{Scheme}"
     units="ms" expires_after="2025-07-01">
   <owner>junhuihe@google.com</owner>
@@ -292,11 +323,7 @@ reviewer.
     in the Pix UI and the backend returns the instruction to trigger the
     purchase action flow in GMSCore.
   </summary>
-  <token key="Result">
-    <variant name="Abandoned" summary="Abandoned InitiatePurchaseAction call"/>
-    <variant name="Failed" summary="Failed InitiatePurchaseAction call"/>
-    <variant name="Succeeded" summary="Successful InitiatePurchaseAction call"/>
-  </token>
+  <token key="Result" variants="PurchaseActionResult"/>
 </histogram>
 
 <histogram name="FacilitatedPayments.Pix.PayflowExitedReason"

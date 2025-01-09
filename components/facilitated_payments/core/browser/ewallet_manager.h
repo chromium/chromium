@@ -107,8 +107,9 @@ class EwalletManager {
           response_details);
 
   // Called after receiving the `result` of invoking the purchase manager for
-  // payment.
-  void OnTransactionResult(PurchaseActionResult result);
+  // payment. The call to invoke purchase manager was made at `start_time`.
+  void OnTransactionResult(base::TimeTicks start_time,
+                           PurchaseActionResult result);
 
   // Called by the view to communicate UI events.
   void OnUiEvent(UiEvent ui_event_type);
@@ -177,6 +178,10 @@ class EwalletManager {
 
   // Stores the time when eWallet payment flow is triggered.
   base::TimeTicks payment_flow_triggered_timestamp_;
+
+  // True indicates that the eWallet selected by the user is bound to the
+  // device. This field is used for logging purposes.
+  bool is_device_bound_for_logging_ = false;
 
   base::WeakPtrFactory<EwalletManager> weak_ptr_factory_{this};
 };

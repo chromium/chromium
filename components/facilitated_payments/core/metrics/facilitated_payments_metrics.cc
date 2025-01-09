@@ -270,11 +270,29 @@ void LogInitiatePurchaseActionAttempt(
   }
 }
 
-void LogInitiatePurchaseActionResultAndLatency(PurchaseActionResult result,
-                                               base::TimeDelta duration) {
+void LogPixInitiatePurchaseActionResultAndLatency(PurchaseActionResult result,
+                                                  base::TimeDelta duration) {
   base::UmaHistogramLongTimes(
       base::StrCat({"FacilitatedPayments.Pix.InitiatePurchaseAction.",
                     GetInitiatePurchaseActionResultString(result), ".Latency"}),
+      duration);
+}
+
+void LogEwalletInitiatePurchaseActionResultAndLatency(
+    PurchaseActionResult result,
+    base::TimeDelta duration,
+    PaymentLinkValidator::Scheme scheme,
+    bool is_device_bound) {
+  base::UmaHistogramLongTimes(
+      base::StrCat({"FacilitatedPayments.Ewallet.InitiatePurchaseAction.",
+                    GetInitiatePurchaseActionResultString(result), ".Latency",
+                    is_device_bound ? ".DeviceBound" : ".DeviceNotBound"}),
+      duration);
+  base::UmaHistogramLongTimes(
+      base::StrCat({"FacilitatedPayments.Ewallet.InitiatePurchaseAction.",
+                    GetInitiatePurchaseActionResultString(result), ".Latency.",
+                    SchemeToString(scheme),
+                    is_device_bound ? ".DeviceBound" : ".DeviceNotBound"}),
       duration);
 }
 

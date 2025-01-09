@@ -15,6 +15,20 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace payments::facilitated {
+namespace {
+
+std::string GetPurchaseActionResultString(PurchaseActionResult result) {
+  switch (result) {
+    case PurchaseActionResult::kResultOk:
+      return "Succeeded";
+    case PurchaseActionResult::kCouldNotInvoke:
+      return "Failed";
+    case PurchaseActionResult::kResultCanceled:
+      return "Abandoned";
+  }
+}
+
+}  // namespace
 
 TEST(FacilitatedPaymentsMetricsTest, LogPixCodeCopied) {
   base::HistogramTester histogram_tester;
@@ -107,29 +121,72 @@ TEST(FacilitatedPaymentsMetricsTest,
 }
 
 TEST(FacilitatedPaymentsMetricsTest,
-     LogInitiatePurchaseActionResultAndLatency) {
+     LogPixInitiatePurchaseActionResultAndLatency) {
   for (PurchaseActionResult result :
        {PurchaseActionResult::kResultOk, PurchaseActionResult::kCouldNotInvoke,
         PurchaseActionResult::kResultCanceled}) {
     base::HistogramTester histogram_tester;
 
-    LogInitiatePurchaseActionResultAndLatency(result, base::Milliseconds(10));
+    LogPixInitiatePurchaseActionResultAndLatency(result,
+                                                 base::Milliseconds(10));
 
-    std::string result_string;
-    switch (result) {
-      case PurchaseActionResult::kResultOk:
-        result_string = "Succeeded";
-        break;
-      case PurchaseActionResult::kCouldNotInvoke:
-        result_string = "Failed";
-        break;
-      case PurchaseActionResult::kResultCanceled:
-        result_string = "Abandoned";
-        break;
-    }
     histogram_tester.ExpectBucketCount(
         base::StrCat({"FacilitatedPayments.Pix.InitiatePurchaseAction.",
-                      result_string, ".Latency"}),
+                      GetPurchaseActionResultString(result), ".Latency"}),
+        /*sample=*/10,
+        /*expected_count=*/1);
+  }
+}
+
+TEST(FacilitatedPaymentsMetricsTest,
+     LogEwalletInitiatePurchaseActionResultAndLatency_DeviceBound) {
+  for (PurchaseActionResult result :
+       {PurchaseActionResult::kResultOk, PurchaseActionResult::kCouldNotInvoke,
+        PurchaseActionResult::kResultCanceled}) {
+    base::HistogramTester histogram_tester;
+
+    LogEwalletInitiatePurchaseActionResultAndLatency(
+        result, base::Milliseconds(10),
+        PaymentLinkValidator::Scheme::kShopeePay,
+        /*is_device_bound=*/true);
+
+    histogram_tester.ExpectBucketCount(
+        base::StrCat({"FacilitatedPayments.Ewallet.InitiatePurchaseAction.",
+                      GetPurchaseActionResultString(result),
+                      ".Latency.DeviceBound"}),
+        /*sample=*/10,
+        /*expected_count=*/1);
+    histogram_tester.ExpectBucketCount(
+        base::StrCat({"FacilitatedPayments.Ewallet.InitiatePurchaseAction.",
+                      GetPurchaseActionResultString(result),
+                      ".Latency.ShopeePay.DeviceBound"}),
+        /*sample=*/10,
+        /*expected_count=*/1);
+  }
+}
+
+TEST(FacilitatedPaymentsMetricsTest,
+     LogEwalletInitiatePurchaseActionResultAndLatency_DeviceNotBound) {
+  for (PurchaseActionResult result :
+       {PurchaseActionResult::kResultOk, PurchaseActionResult::kCouldNotInvoke,
+        PurchaseActionResult::kResultCanceled}) {
+    base::HistogramTester histogram_tester;
+
+    LogEwalletInitiatePurchaseActionResultAndLatency(
+        result, base::Milliseconds(10),
+        PaymentLinkValidator::Scheme::kShopeePay,
+        /*is_device_bound=*/false);
+
+    histogram_tester.ExpectBucketCount(
+        base::StrCat({"FacilitatedPayments.Ewallet.InitiatePurchaseAction.",
+                      GetPurchaseActionResultString(result),
+                      ".Latency.DeviceNotBound"}),
+        /*sample=*/10,
+        /*expected_count=*/1);
+    histogram_tester.ExpectBucketCount(
+        base::StrCat({"FacilitatedPayments.Ewallet.InitiatePurchaseAction.",
+                      GetPurchaseActionResultString(result),
+                      ".Latency.ShopeePay.DeviceNotBound"}),
         /*sample=*/10,
         /*expected_count=*/1);
   }

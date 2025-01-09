@@ -214,9 +214,17 @@ void LogInitiatePurchaseActionAttempt(
     std::optional<PaymentLinkValidator::Scheme> scheme = std::nullopt);
 
 // Log the result and latency for the InitiatePurchaseAction call made to the
-// payments platform (client).
-void LogInitiatePurchaseActionResultAndLatency(PurchaseActionResult result,
-                                               base::TimeDelta duration);
+// payments platform (client) during Pix payflow.
+void LogPixInitiatePurchaseActionResultAndLatency(PurchaseActionResult result,
+                                                  base::TimeDelta duration);
+
+// Log the result and latency for the InitiatePurchaseAction call made to the
+// payments platform (client) during eWallet payflow.
+void LogEwalletInitiatePurchaseActionResultAndLatency(
+    PurchaseActionResult result,
+    base::TimeDelta duration,
+    PaymentLinkValidator::Scheme scheme,
+    bool is_device_bound);
 
 // Log the UKM for the InitiatePurchaseAction result.
 void LogInitiatePurchaseActionResultUkm(PurchaseActionResult result,

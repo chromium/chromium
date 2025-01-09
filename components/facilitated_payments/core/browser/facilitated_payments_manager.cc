@@ -318,7 +318,7 @@ void FacilitatedPaymentsManager::OnPurchaseActionResult(
       break;
   }
   // Logs the general histograms.
-  LogInitiatePurchaseActionResultAndLatency(
+  LogPixInitiatePurchaseActionResultAndLatency(
       result, base::TimeTicks::Now() - purchase_action_start_time_);
   LogInitiatePurchaseActionResultUkm(result, ukm_source_id_);
 }
