@@ -1326,7 +1326,7 @@ TEST_F(RealTimeUrlLookupServiceTest,
 TEST_F(RealTimeUrlLookupServiceTest,
        TestReferrerChain_FallbackToEventUrlReferrerChain) {
   base::HistogramTester histogram_tester;
-  EnableRealTimeUrlLookup({kSafeBrowsingAsyncRealTimeCheck}, {});
+  EnableRealTimeUrlLookup({}, {});
   GURL url(kTestUrl);
   SetUpRTLookupResponse(RTLookupResponse::ThreatInfo::DANGEROUS,
                         RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING, 60,
@@ -1385,46 +1385,6 @@ TEST_F(RealTimeUrlLookupServiceTest,
       "SafeBrowsing.RT.EventUrlReferrerChainFetchSucceeded",
       /*sample=*/true,
       /*expected_bucket_count=*/1);
-}
-
-TEST_F(
-    RealTimeUrlLookupServiceTest,
-    TestReferrerChain_NoFallbackToEventUrlReferrerChain_AsyncChecksDisabled) {
-  EnableRealTimeUrlLookup({}, {kSafeBrowsingAsyncRealTimeCheck});
-  GURL url(kTestUrl);
-  SetUpRTLookupResponse(RTLookupResponse::ThreatInfo::DANGEROUS,
-                        RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING, 60,
-                        "example.test/",
-                        RTLookupResponse::ThreatInfo::COVERING_MATCH);
-  EXPECT_CALL(*referrer_chain_provider_,
-              IdentifyReferrerChainByPendingEventURL(
-                  url, /*user_gesture_count_limit=*/2, _))
-      .WillOnce(Return(ReferrerChainProvider::NAVIGATION_EVENT_NOT_FOUND));
-  EXPECT_CALL(*referrer_chain_provider_,
-              IdentifyReferrerChainByEventURL(
-                  url, _, /*user_gesture_count_limit=*/2, _))
-      .Times(0);
-
-  base::MockCallback<RTLookupResponseCallback> response_callback;
-  EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ true,
-                                     /* is_cached_response */ false, _));
-  bool request_validated;
-  MustRunInterceptor interceptor(
-      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
-        RTLookupRequest request_proto;
-        ASSERT_TRUE(GetRequestProto(request, &request_proto));
-        // Check no referrer chain is attached.
-        EXPECT_TRUE(request_proto.referrer_chain().empty());
-        request_validated = true;
-      }));
-  test_url_loader_factory_.SetInterceptor(interceptor.GetCallback());
-
-  rt_service()->StartLookup(url, response_callback.Get(),
-                            base::SequencedTaskRunner::GetCurrentDefault(),
-                            SessionID::InvalidValue(),
-                            /*referring_app_info=*/std::nullopt);
-  task_environment_.RunUntilIdle();
-  EXPECT_TRUE(request_validated);
 }
 
 TEST_F(RealTimeUrlLookupServiceTest, TestShutdown_CallbackNotPostedOnShutdown) {

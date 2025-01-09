@@ -1809,9 +1809,7 @@ class ClientSideDetectionRTLookupResponseForceRequestTest
     ClientSideDetectionHostTest::SetUp();
 
     SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
-    SetFeatures({kSafeBrowsingAsyncRealTimeCheck,
-                 kClientSideDetectionAcceptHCAllowlist},
-                {});
+    SetFeatures({kClientSideDetectionAcceptHCAllowlist}, {});
 
     AsyncCheckTracker::CreateForWebContents(
         web_contents(),

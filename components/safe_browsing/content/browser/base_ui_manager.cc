@@ -584,10 +584,7 @@ bool BaseUIManager::PopUnsafeResourceForNavigation(
       base::UmaHistogramBoolean(
           "SafeBrowsing.NavigationIdMatchedInUnsafeResource",
           match_navigation_id);
-      // Add the flag check to ensure no behavioral change when the flag is
-      // disabled.
-      if (match_navigation_id ||
-          !base::FeatureList::IsEnabled(kSafeBrowsingAsyncRealTimeCheck)) {
+      if (match_navigation_id) {
         *resource = it->second;
         unsafe_resources_.erase(it);
         return true;

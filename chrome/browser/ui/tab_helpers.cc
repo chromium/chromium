@@ -508,9 +508,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
         web_contents,
         safe_browsing::TailoredSecurityServiceFactory::GetForProfile(profile));
   }
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kSafeBrowsingAsyncRealTimeCheck) &&
-      g_browser_process->safe_browsing_service()) {
+  if (g_browser_process->safe_browsing_service()) {
     safe_browsing::AsyncCheckTracker::CreateForWebContents(
         web_contents, g_browser_process->safe_browsing_service()->ui_manager(),
         safe_browsing::AsyncCheckTracker::

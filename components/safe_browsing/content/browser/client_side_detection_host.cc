@@ -632,9 +632,7 @@ void ClientSideDetectionHost::RegisterPermissionRequestManager() {
 }
 
 void ClientSideDetectionHost::RegisterAsyncCheckTracker() {
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kSafeBrowsingAsyncRealTimeCheck) &&
-      IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
+  if (IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
     AsyncCheckTracker* tracker =
         AsyncCheckTracker::FromWebContents(web_contents());
     CHECK(tracker);

@@ -64,7 +64,7 @@ struct UnsafeResource {
   // Returns true if this UnsafeResource is a main frame load while the
   // navigation is still pending. Note that a main frame hit may not be
   // blocking, eg. client side detection happens after the load is committed.
-  // Note: If kSafeBrowsingAsyncRealTimeCheck is supported, please call
+  // Note: If async check is enabled, please call
   // AsyncCheckTracker::IsMainPageLoadPending instead.
   static bool IsMainPageLoadPendingWithSyncCheck(
       safe_browsing::SBThreatType threat_type);

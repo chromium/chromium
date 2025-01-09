@@ -7292,10 +7292,6 @@ ChromeContentBrowserClient::GetAsyncCheckTracker(
       contents->IsPrerenderedFrame(frame_tree_node_id)) {
     return nullptr;
   }
-  if (!base::FeatureList::IsEnabled(
-          safe_browsing::kSafeBrowsingAsyncRealTimeCheck)) {
-    return nullptr;
-  }
   return safe_browsing::AsyncCheckTracker::GetOrCreateForWebContents(
       contents, safe_browsing_service_->ui_manager().get(),
       safe_browsing::AsyncCheckTracker::

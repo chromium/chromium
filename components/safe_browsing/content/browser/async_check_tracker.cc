@@ -61,8 +61,7 @@ bool AsyncCheckTracker::IsMainPageLoadPending(
   content::WebContents* web_contents =
       unsafe_resource_util::GetWebContentsForLocator(rfh_locator);
   if (web_contents && AsyncCheckTracker::FromWebContents(web_contents) &&
-      navigation_id.has_value() &&
-      base::FeatureList::IsEnabled(kSafeBrowsingAsyncRealTimeCheck)) {
+      navigation_id.has_value()) {
     // If async check is enabled, whether the main page load is pending cannot
     // be solely determined by the fields in resource. The page load may or may
     // not be pending, depending on when the async check completes.
@@ -79,8 +78,7 @@ AsyncCheckTracker::GetBlockedPageCommittedTimestamp(
   content::WebContents* web_contents =
       unsafe_resource_util::GetWebContentsForResource(resource);
   if (web_contents && AsyncCheckTracker::FromWebContents(web_contents) &&
-      resource.navigation_id.has_value() &&
-      base::FeatureList::IsEnabled(kSafeBrowsingAsyncRealTimeCheck)) {
+      resource.navigation_id.has_value()) {
     return AsyncCheckTracker::FromWebContents(web_contents)
         ->GetNavigationCommittedTimestamp(resource.navigation_id.value());
   }
