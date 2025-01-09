@@ -124,6 +124,7 @@
 <translation id="1076766328672150609">Дете може да користи PIN за откључавање уређаја.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Није успело преузимање речника за проверу правописа за <ph name="LANGUAGE" />. Пробајте поново.</translation>
+<translation id="1078029726086090536">Верификујте лозинку</translation>
 <translation id="1078037449555275327">Подешавања ChromeVox-а</translation>
 <translation id="1079242569060319448">Заборавили сте PIN?</translation>
 <translation id="1079285777677001938">Функције на неким сајтовима можда не раде.</translation>
@@ -4079,6 +4080,7 @@
 <translation id="3848547754896969219">Отвори у &amp;прозору без архивирања</translation>
 <translation id="3850172593216628215">Безбедносна ажурирања су завршена. Уштедите 50 USD или више на новом Chromebook-у.</translation>
 <translation id="385051799172605136">Назад</translation>
+<translation id="3850989673553106152">Лозинка је промењена</translation>
 <translation id="3851428669031642514">Учитавај небезбедне скрипте</translation>
 <translation id="3852215160863921508">Помоћ при уносу</translation>
 <translation id="3853549894831560772"><ph name="DEVICE_NAME" /> је укључена</translation>
@@ -4581,6 +4583,7 @@
 <translation id="421182450098841253">&amp;Прикажи траку са обележивачима</translation>
 <translation id="4211904048067111541">Престани да користиш са Android апликацијама</translation>
 <translation id="42126664696688958">Извези</translation>
+<translation id="4213540068152645535">Проблем са променом лозинке</translation>
 <translation id="42137655013211669">Сервер је забранио приступ овом ресурсу.</translation>
 <translation id="4213918571089943508">Google налог детета</translation>
 <translation id="4214192212360095377">Искључи</translation>
@@ -8306,6 +8309,7 @@
 <translation id="6913051485529944333">Више нећете видети Google календар на овој страници</translation>
 <translation id="6914812290245989348">Не видим никаква упозорења пре одласка на небезбедне сајтове</translation>
 <translation id="6916590542764765824">Управљајте додацима</translation>
+<translation id="6916676294509106572">Outlook календар је скривен</translation>
 <translation id="6917873303492266709">Да бисте делили групе картица, придруживали им се и сарађивали у њима, отворите подешавања и укључите Дозволи пријављивање у Chrome</translation>
 <translation id="6918677045355889289">Потребно је ажурирање Chrome ОС-а</translation>
 <translation id="6918733588290914545">Брзо подешавање помоћу Android телефона</translation>
@@ -10686,6 +10690,7 @@
 <translation id="8625124982056504555">Читање серијских бројева ChromeOS уређаја и компоненти</translation>
 <translation id="862542460444371744">&amp;Додаци</translation>
 <translation id="8625663000550647058">Није им дозвољено да користе микрофон</translation>
+<translation id="8625679025395572221">Налог је можда и даље угрожен.</translation>
 <translation id="8625916342247441948">Не дозвољавај сајтовима да се повезују са HID уређајима</translation>
 <translation id="862727964348362408">Обустављено</translation>
 <translation id="862750493060684461">CSS кеш</translation>

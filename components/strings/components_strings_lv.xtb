@@ -3907,6 +3907,7 @@ Papildu informācija:
 <translation id="7975858430722947486">Pievienots salīdzinājumam</translation>
 <translation id="7976214039405368314">Pārāk daudz pieprasījumu</translation>
 <translation id="7977538094055660992">Izvades ierīce</translation>
+<translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{Pirms <ph name="TIME_COUNT" /> min}=1{Pirms <ph name="TIME_COUNT" /> h}zero{Pirms <ph name="TIME_COUNT" /> d.}one{Pirms <ph name="TIME_COUNT" /> d.}other{Pirms <ph name="TIME_COUNT" /> d.}}</translation>
 <translation id="7979595116210197019">Ēdināšanas nozare</translation>
 <translation id="798134797138789862">Var pieprasīt atļauju izmantot virtuālās realitātes ierīces un datus</translation>
 <translation id="7982789257301363584">Tīkls</translation>
@@ -4556,7 +4557,6 @@ Papildu informācija:
 <translation id="9169664750068251925">Vienmēr bloķēt šajā vietnē</translation>
 <translation id="9169931577761441333">Pievienot lietotni <ph name="APP_NAME" /> sākuma ekrānam</translation>
 <translation id="9170848237812810038">&amp;Atsaukt</translation>
-<translation id="9170906125144697215">Maksājiet ar Pix, nepārslēdzot lietotnes</translation>
 <translation id="9171296965991013597">Vai aizvērt lietotni?</translation>
 <translation id="9173282814238175921">Viens dokuments/jauna lapa</translation>
 <translation id="9173995187295789444">Notiek Bluetooth ierīču meklēšana...</translation>

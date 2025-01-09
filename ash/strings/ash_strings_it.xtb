@@ -1025,6 +1025,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4485506555414638855">Chiudi la configurazione della visualizzazione di app, notifiche, contenuti multimediali e foto recenti dello smartphone</translation>
 <translation id="4491109536499578614">Immagine</translation>
 <translation id="450584155212756404">Canale Dev</translation>
+<translation id="4513044611477939680">Quick Share</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4518404433291145981">Per sbloccare Chromebook, sblocca prima il telefono</translation>
 <translation id="4527045527269911712">Il dispositivo Bluetooth "<ph name="DEVICE_NAME" />" chiede l'autorizzazione per essere accoppiato.</translation>
@@ -1076,6 +1077,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4672539464599646374">Risparmio energetico attivato</translation>
 <translation id="4673427585974421255">Mantieni attivo</translation>
 <translation id="4677040906536311086">Foglio google</translation>
+<translation id="468019262817532242">Nessuno può condividere contenuti con te</translation>
 <translation id="468293128311738995">App dal telefono</translation>
 <translation id="4690510401873698237">Barra delle app in basso</translation>
 <translation id="4696813013609194136">Sblocca con codice genitore</translation>
@@ -1107,6 +1109,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4776917500594043016">Password per <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">L'Assistente Google non è disponibile in una sessione demo.</translation>
+<translation id="4785412405516449976">Solo i tuoi contatti con un Account Google</translation>
 <translation id="4789348252524569426">Impossibile installare file di contenuti vocali. Il dispositivo deve essere aggiornato. Riavvialo e riprova.</translation>
 <translation id="478959186716341421">Trasmissione</translation>
 <translation id="4798403412327076414">La prossima volta che eseguirai l'accesso, vedrai le finestre e le app aperte in precedenza</translation>
@@ -1236,6 +1239,7 @@ Puoi anche utilizzare la scorciatoia da tastiera. Evidenzia il testo, quindi pre
 <translation id="5176318573511391780">Registra schermo parziale</translation>
 <translation id="5187627942836026988">Mostra i dettagli relativi all'hotspot. L'hotspot è stato bloccato dall'amministratore.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5198039720391525849">GIF in primo piano</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> eventi</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> combinata con <ph name="IN_PLACE_APP" /> per creare una nuova cartella.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1557,6 +1561,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="6199775032047436064">Ricarica la pagina corrente</translation>
 <translation id="6200515304866777730">Non supportate dall'app</translation>
 <translation id="6210042900243040400">Connetti il dispositivo <ph name="NAME" />, che è già stato salvato in <ph name="EMAIL" /></translation>
+<translation id="6212580734499190393">Per 10 min</translation>
 <translation id="6213808132343683860">Acquisisci registrazione dello schermo o screenshot parziali</translation>
 <translation id="621606890568890214">Espandi Google Classroom</translation>
 <translation id="6216759484154215561">Hai aperto il link Scopri di più nel browser</translation>
@@ -1950,6 +1955,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7599378375976398913">Inserimento del risultato selezionato in corso…</translation>
 <translation id="7600875258240007829">Visualizza tutte le notifiche</translation>
 <translation id="7601417191446344542">Vuoi attivare l'avviso di microfono spento?</translation>
+<translation id="7602187221150705972">Cerca emoji, GIF e altro</translation>
 <translation id="7607002721634913082">In pausa</translation>
 <translation id="7609951632080598826">Visualizzazione Calendario, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Fotocamera riconnessa.</translation>
@@ -2046,6 +2052,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="7899977217122813285">Le notifiche sono disattivate fino alle ore <ph name="TIME" /> mentre è attiva la modalità Niente distrazioni</translation>
+<translation id="7901010467630324625">Solo i dispositivi che hanno effettuato l'accesso a <ph name="EMAIL" /></translation>
 <translation id="7901190436359881020">Scambia le finestre</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Tocca il sensore di impronte digitali</translation>

@@ -7446,6 +7446,7 @@
 <translation id="6278776436938569440">တည်နေရာပြောင်းရန်</translation>
 <translation id="6280215091796946657">မတူညီသည့်အကောင့်တစ်ခုဖြင့် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281218688313242284">သင့် &amp;Google Account ကို စီမံရန်</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{စာရွက် 1 ရွက်ကန့်သတ်ချက်ထက် ပိုသွားသည်}other{စာရွက် {COUNT} ရွက်ကန့်သတ်ချက်ထက် ပိုသွားသည်}}</translation>
 <translation id="6282490239556659745"><ph name="EMBEDDED_SITE" /> ကို <ph name="SITE" /> မှ ဖယ်ရှားရန်</translation>
 <translation id="6283438600881103103">ယခု သင်အလိုအလျောက် ထွက်သွားပါမည်။
@@ -8055,6 +8056,7 @@
 <translation id="6745592621698551453">ယခု မွမ်းမံပါ</translation>
 <translation id="6746124502594467657">အောက်သို့ရွှေ့ပါ</translation>
 <translation id="67465227497040338"><ph name="DOMAIN" /> အတွက် စကားဝှက်ပြရန်</translation>
+<translation id="6746834324024491643">သင့်စက်အားလုံးတွင် စကားဝှက်နှင့် အခြားအရာများ ရယူရန် <ph name="EMAIL" /> အဖြစ် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="6748980958975836188">ကျွန်ုပ်သည် <ph name="BEGIN_LINK1" />Google ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK1" />၊ <ph name="BEGIN_LINK2" />Chrome နှင့် ChromeOS ထပ်တိုး ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK2" /> ကို ဖတ်ရှုပြီး သဘောတူပါသည်။</translation>
 <translation id="6749077623962119521">ခွင့်ပြုချက်များ ပြင်ဆင်သတ်မှတ်လိုပါသလား။</translation>
 <translation id="6749473226660745022">ဓာတ်ပုံများ</translation>
@@ -9404,6 +9406,7 @@
 <translation id="7709152031285164251">မအောင်မြင်ခဲ့- <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">&amp;ကာစ်...</translation>
 <translation id="7711968363685835633">အသုံးပြုသူ အဘိဓာန်နှင့်အတူ ပုဂ္ဂိုလ်ရေးသီးသန့် ရလဒ်ကောင်းနှင့် အကြံပြုချက်များကို ပိတ်ရန်</translation>
+<translation id="771220840345868810">အကြံပြုထားသောမေးခွန်းများ မရနိုင်ပါ</translation>
 <translation id="7712739869553853093">ပုံနှိပ်ထုတ်ယူမှု အစမ်းကြည့်ရှုခြင်း ဒိုင်ယာလော့ခ်</translation>
 <translation id="7713139339518499741">ပင်ကိုအသံ</translation>
 <translation id="7714307061282548371"><ph name="DOMAIN" /> ထံမှ ကွတ်ကီးများကို ခွင့်ပြုထားသည်</translation>

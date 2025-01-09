@@ -459,6 +459,7 @@
 <translation id="1306606229401759371">Ayarları değiştir</translation>
 <translation id="1307165550267142340">PIN'iniz oluşturuldu</translation>
 <translation id="1307431692088049276">Bunu bir daha sorma</translation>
+<translation id="130744661532298792">Google Hesabınızdaki şifreleri her zaman kullanabildiğinizden emin olmak için kimliğinizi doğrulayın</translation>
 <translation id="1307559529304613120">Hata! Sistem bu cihaza ait uzun vadeli API erişim verisini kaydedemedi.</translation>
 <translation id="1308548450293664112">Bu dosyayı ben oluşturdum, radyo düğmesi grubu, 1/3</translation>
 <translation id="131112695174432497">Reklam kişiselleştirmeyi etkileyen veriler silinir</translation>
@@ -2812,6 +2813,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="2953210795988451570">Artık güvenlik güncellemeleri almayacaksınız. Yeni Chromebook sürümüne geçin.</translation>
 <translation id="2953218713108551165"><ph name="SITE" /> için bildirimlere izin verilmiyor. Bir sonraki ziyaretinizde size tekrar sorulacak.</translation>
 <translation id="2956070239128776395">Grupta iç içe yerleşmiş bölüm: <ph name="ERROR_LINE" /></translation>
+<translation id="2957124229512318478">Chrome Web Mağazası tarafından incelenemeyen bu uzantıyı kullanmak için geliştirici modunu etkinleştirin.</translation>
 <translation id="2958721676848865875">Uzantı paketleme uyarısı</translation>
 <translation id="2959127025785722291">Bir sorun oluştu. Tarama tamamlanamadı. Lütfen tekrar deneyin.</translation>
 <translation id="2959474507964749987">Bu şifrelenmiş dosya, virüs veya kötü amaçlı yazılım olabilir.<ph name="LINE_BREAK" />Güvenli olup olmadığını kontrol etmek için dosyayı ve şifreyi Google Güvenli Tarama'ya gönderebilirsiniz. Taramalar genellikle birkaç saniye sürer.<ph name="LINE_BREAK" />Taramak için dosyanın şifresini ekleyin.</translation>
@@ -4308,6 +4310,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="4001540981461989979">Hareket ederken fare imlecini vurgula</translation>
 <translation id="4002347779798688515">Mobil ağ sağlayıcı kilitliyse indirilen profil kullanılamayabilir. Destek almak için sağlayıcınızla iletişime geçin.</translation>
 <translation id="4002440992267487163">Pin kurulumu</translation>
+<translation id="4003617970184602156">Şifreleri kullanmak ve Google Hesabınıza kaydetmek için kimliğinizi doğrulayın</translation>
 <translation id="4005817994523282006">Saat dilimi algılama yöntemi</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{Bu işlem, grubu cihazınızdan kalıcı olarak siler.}other{Bu işlem, grupları cihazınızdan kalıcı olarak siler.}}</translation>
 <translation id="4010036441048359843">Vurgulamayı aç</translation>
@@ -6939,6 +6942,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5932224571077948991">Site, araya giren veya yanıltıcı reklamlar gösteriyor</translation>
 <translation id="59324397759951282"><ph name="MANUFACTURER_NAME" /> marka USB cihaz</translation>
 <translation id="5932441198730183141">Bu Google Meet hardware cihazını kaydetmek için yeterli kullanılabilir lisansa sahip değilsiniz. Daha fazla lisans satın almak için lütfen satış temsilcisiyle iletişime geçin. Bu mesajın yanlışlıkla görüntülendiğini düşünüyorsanız lütfen destek birimiyle bağlantı kurun.</translation>
+<translation id="593271375210025655">Bu uzantıya güveniyorsanız kullanmak için geliştirici modunu etkinleştirin. Uzantı deneysel özellikler içerebilir ve Chrome Web Mağazası tarafından incelenmemiştir.</translation>
 <translation id="5932881020239635062">Seri numarası</translation>
 <translation id="5933376509899483611">Saat dilimi</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" />, kameranızı ve mikrofonunuzu kullanıyor</translation>
@@ -6966,6 +6970,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5948476936444935795">İçe aktarmayı iptal et</translation>
 <translation id="5948536763493709626">Klavye veya fare bağlayın ya da kuruluma dokunmatik ekranınızı kullanarak devam edin. Bluetooth cihazları kullanıyorsanız cihazlarınızın eşlemeye hazır olduğundan emin olun.</translation>
 <translation id="5949544233750246342">Dosya ayrıştırılamıyor</translation>
+<translation id="5949795028157144515">Geliştirici Modu kapalı. Bazı uzantılar devre dışı bırakıldı.</translation>
 <translation id="594993197557058302">1 ila 4 değiştirici tuşa (ctrl, alt, üst karakter, arama veya başlatıcı) ve 1 tuşa daha basın. Dilerseniz tek bir tuş da seçebilirsiniz.</translation>
 <translation id="5950762317146173294">Bu dosya virüs veya kötü amaçlı yazılım olabilir</translation>
 <translation id="5951303645598168883"><ph name="ORIGIN" /> sitesi yerel fontları kullanmak istiyor</translation>
@@ -9386,6 +9391,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7709152031285164251">Başarısız - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">&amp;Yayınla...</translation>
 <translation id="7711968363685835633">Kişiselleştirilmiş dönüşümleri, önerileri ve kullanıcı sözlüğünü devre dışı bırak</translation>
+<translation id="771220840345868810">Önerilen soru yok</translation>
 <translation id="7712739869553853093">Yazdırma önizleme iletişim kutusu</translation>
 <translation id="7713139339518499741">Doğal ses</translation>
 <translation id="7714307061282548371"><ph name="DOMAIN" /> tarafından gönderilen çerezlere izin veriliyor</translation>

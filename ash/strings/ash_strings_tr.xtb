@@ -531,6 +531,7 @@ Aksi takdirde yerleşik dokunmatik alan <ph name="TIMEOUT_SECONDS" /> sonra yeni
 <translation id="2847759467426165163">Şuraya yayınla</translation>
 <translation id="2848120746144143659">Tam ekran görüntüsü almak için enter tuşuna basın</translation>
 <translation id="2849936225196189499">Önemli</translation>
+<translation id="2850207700020959936">Uygulamalar kameraya erişebilir</translation>
 <translation id="2860184359326882502">En İyi Eşleşme</translation>
 <translation id="2865888419503095837">Ağ bilgisi</translation>
 <translation id="2869095047958348710">Geçtiğimiz <ph name="DAY_OF_WEEK" /></translation>
@@ -585,6 +586,7 @@ Aksi takdirde yerleşik dokunmatik alan <ph name="TIMEOUT_SECONDS" /> sonra yeni
 <translation id="304417730895741346">Sabitlenen ve açık olan uygulamalarınız rafta bulunur. Bir uygulamayı rafa sabitlemek için ilgili uygulamayı sağ tıklayın veya dokunmatik alana iki parmağınızla dokunun.</translation>
 <translation id="3045488863354895414">İyi günler,</translation>
 <translation id="3047761520276763270">Şunu demeyi deneyin:</translation>
+<translation id="3053407068093039599">Kamera erişimini aç/kapat</translation>
 <translation id="3055162170959710888">Bugün bu cihazı <ph name="USED_TIME" /> kullandınız</translation>
 <translation id="3062298103034426069">Desteklenmiyor</translation>
 <translation id="3068622547379332530"><ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /> sürümü</translation>
@@ -1802,6 +1804,7 @@ Yeni yüklenmiş</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" />, <ph name="DEVICE_NAME" /> kullanmak istiyor. Cihazınızın fiziksel <ph name="DEVICE_NAME" /> anahtarını açın.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />`, Google Asistan</translation>
 <translation id="7042322267639375032">Durum alanını daralt</translation>
+<translation id="7042593542151411225">Uygulamalar kameraya erişemiyor</translation>
 <translation id="7045033600005038336">Şablon değiştirilsin mi?</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> cihazının bağlantısı kesildi</translation>
 <translation id="7055910611768509537">Ekran kalemi bir haftadan uzun süredir kullanılmamış</translation>
@@ -2377,6 +2380,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="9074432941673450836">Uygulamaları kullanarak <ph name="PRODUCT_NAME" /> cihazınızda ihtiyacınız olan her şeyi yapın. Uygulamalarınızı Başlatıcı'da bulabilirsiniz. Klavyedeki Başlatıcı tuşuna da (soldaki üst karakter tuşunun üstünde) basabilirsiniz.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9077515519330855811">Medya denetimleri, şimdi çalınan: <ph name="MEDIA_TITLE" /></translation>
+<translation id="9079012373317704997">Kamera erişimi uzaktan etkinleştirilemiyor</translation>
 <translation id="9079731690316798640">Kablosuz: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">Kamera sol üst köşeye tutturuldu</translation>
 <translation id="9080132581049224423">Ana ekrana gitmek için yukarı kaydırın</translation>

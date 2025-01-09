@@ -531,6 +531,7 @@
 <translation id="2847759467426165163">သို့ကက်စ်လုပ်မည်</translation>
 <translation id="2848120746144143659">ဖန်သားပြင်အပြည့် ဖန်သားပြင်ဓာတ်ပုံ ရိုက်ကူးရန် Enter နှိပ်ပါ</translation>
 <translation id="2849936225196189499">အရေးကြီး</translation>
+<translation id="2850207700020959936">အက်ပ်များက ကင်မရာသုံးနိုင်သည်</translation>
 <translation id="2860184359326882502">အနီးစပ်ဆုံး</translation>
 <translation id="2865888419503095837">ကွန်ရက် အချက်အလက်</translation>
 <translation id="2869095047958348710">ပြီးခဲ့သည့် <ph name="DAY_OF_WEEK" /></translation>
@@ -585,6 +586,7 @@
 <translation id="304417730895741346">ပင်ထိုးထားသော၊ ဖွင့်ထားသော အက်ပ်များသည် စင်ပေါ်တွင်ရှိသည်။ အက်ပ်ကို စင်ပေါ်သို့ ပင်ထိုးရန် အက်ပ်တွင် ညာဘက်ခလုတ်ကို နှိပ်ပါ (သို့) တာ့ချ်ပက်ကို လက်နှစ်ချောင်းဖြင့် တို့ပါ။</translation>
 <translation id="3045488863354895414">မင်္ဂလာ နေ့လယ်ခင်းပါ၊</translation>
 <translation id="3047761520276763270">ဤသို့ပြောကြည့်ပါ-</translation>
+<translation id="3053407068093039599">ကင်မရာသုံးခွင့် ဖွင့်/ပိတ်ရန်</translation>
 <translation id="3055162170959710888">သင်သည် ယနေ့အဖို့ ဤစက်ကို <ph name="USED_TIME" /> သုံးထားပါသည်</translation>
 <translation id="3062298103034426069">ပံ့ပိုးမထားပါ</translation>
 <translation id="3068622547379332530">ဗားရှင်း <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -1802,6 +1804,7 @@
 <translation id="7034025838182392395"><ph name="APP_NAME" /> က <ph name="DEVICE_NAME" /> ကို သုံးလိုပါသည်။ သင့်စက်၏ ပကတိ <ph name="DEVICE_NAME" /> ခလုတ်ကို ဖွင့်ပါ။</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />၊ Google Assistant</translation>
 <translation id="7042322267639375032">အခြေအနေပြ နေရာကို ခေါက်ရန်</translation>
+<translation id="7042593542151411225">အက်ပ်များက ကင်မရာသုံး၍မရပါ</translation>
 <translation id="7045033600005038336">နမူနာ ပုံစံကို အစားထိုးမလား။</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> နှင့် ချိတ်ဆက်မှု မရှိပါ</translation>
 <translation id="7055910611768509537">စတိုင်လပ်စ်ကို တစ်ပတ်ကျော် အသုံးပြုမထားပါ</translation>
@@ -2378,6 +2381,7 @@
 <translation id="9074432941673450836"><ph name="PRODUCT_NAME" /> တွင် သင်လိုသမျှအားလုံးပြုလုပ်ရန် အက်ပ်များကိုသုံးပါ။ သင့်အက်ပ်များကို Launcher တွင် တွေ့နိုင်သည်။ ကီးဘုတ်ပေါ်ရှိ (ဘယ်ဘက် Shift ခလုတ် အထက်တွင်ရှိသော) Launcher ခလုတ်ကိုလည်း နှိပ်နိုင်သည်။</translation>
 <translation id="9074739597929991885">ဘလူးတုသ်</translation>
 <translation id="9077515519330855811">မီဒီယာ ထိန်းချုပ်မှုများ၊ <ph name="MEDIA_TITLE" /> ကို ယခုဖွင့်နေသည်</translation>
+<translation id="9079012373317704997">ကင်မရာသုံးခွင့်ကို အဝေးမှ ဖွင့်၍မရပါ</translation>
 <translation id="9079731690316798640">Wi−Fi လိပ်စာ− <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">ကင်မရာကို အပေါ်ဘယ်ဘက်ထောင့်သို့ ကပ်ထားသည်</translation>
 <translation id="9080132581049224423">ပင်မစာမျက်နှာသို့သွားရန် အပေါ်သို့ ပွတ်ဆွဲပါ</translation>

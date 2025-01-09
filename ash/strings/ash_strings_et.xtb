@@ -531,6 +531,7 @@ Muidu lubatakse sisseehitatud puuteplaat uuesti pärast ajavahemikku <ph name="T
 <translation id="2847759467426165163">Ülekandmine seadmesse</translation>
 <translation id="2848120746144143659">Vajutage täisekraani jäädvustamiseks sisestusklahvi</translation>
 <translation id="2849936225196189499">Kriitiline</translation>
+<translation id="2850207700020959936">Rakendused pääsevad kaamerale juurde</translation>
 <translation id="2860184359326882502">Parim vaste</translation>
 <translation id="2865888419503095837">Võrguteave</translation>
 <translation id="2869095047958348710">Eelmine <ph name="DAY_OF_WEEK" /></translation>
@@ -585,6 +586,7 @@ Muidu lubatakse sisseehitatud puuteplaat uuesti pärast ajavahemikku <ph name="T
 <translation id="304417730895741346">Teie kinnitatud ja avatud rakendused on riiulil. Rakenduse riiulile kinnitamiseks paremklõpsake sellel või puudutage kahe sõrmega puuteplaati.</translation>
 <translation id="3045488863354895414">Tere päevast!</translation>
 <translation id="3047761520276763270">Püüdke öelda:</translation>
+<translation id="3053407068093039599">Lülitage kaamera juurdepääs sisse/välja</translation>
 <translation id="3055162170959710888">Kasutasite seda seadet täna <ph name="USED_TIME" /></translation>
 <translation id="3062298103034426069">Ei toetata</translation>
 <translation id="3068622547379332530">Versioon: <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -1803,6 +1805,7 @@ Uus installimine</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> soovib kasutada seadet <ph name="DEVICE_NAME" />. Lülitage seadme <ph name="DEVICE_NAME" /> füüsiline lüliti sisse.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google'i assistent</translation>
 <translation id="7042322267639375032">Ahenda olekuala</translation>
+<translation id="7042593542151411225">Rakendused ei pääse kaamerale juurde</translation>
 <translation id="7045033600005038336">Kas asendada mall?</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> pole ühendatud</translation>
 <translation id="7055910611768509537">Elektronpliiatsit pole kasutatud üle nädala</translation>
@@ -2378,6 +2381,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="9074432941673450836">Rakendused aitavad teha <ph name="PRODUCT_NAME" />is kõike vajalikku. Rakendused leiate käivitajast. Võite ka vajutada klaviatuuril käivitaja klahvi (vasakpoolse tõstuklahvi kohal).</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9077515519330855811">Meedia juhtnupud, hetkel mängimas <ph name="MEDIA_TITLE" /></translation>
+<translation id="9079012373317704997">Kaamerajuurdepääsu ei saa kaugjuhtimisega sisse lülitada</translation>
 <translation id="9079731690316798640">WiFi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">Kaamera kinnitati vasakusse ülanurka</translation>
 <translation id="9080132581049224423">Avalehele liikumiseks pühkige üles</translation>

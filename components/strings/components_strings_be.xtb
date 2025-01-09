@@ -1693,6 +1693,7 @@
 <translation id="3990532701115075684">Адсочваць рухі вашых рук</translation>
 <translation id="3992684624889376114">Пра гэту старонку</translation>
 <translation id="3995639283717357522">Прымяніць правілы</translation>
+<translation id="3996683183117168945">Цытата <ph name="CURRENT_CITATION" /> з <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" />. <ph name="PAGE_TITLE" />. <ph name="PAGE_PREVIEW" />.</translation>
 <translation id="399754345297554962">Стандартызаваныя тэсты і ўступныя выпрабаванні</translation>
 <translation id="3999173941208168054">Фільмы жахаў</translation>
 <translation id="4000598935132966791">Даведацца больш пра абмежаванні сайта ў браўзерах пад кіраваннем</translation>
@@ -3907,6 +3908,7 @@
 <translation id="7975858430722947486">Дададзена да параўнання</translation>
 <translation id="7976214039405368314">Занадта шмат запытаў</translation>
 <translation id="7977538094055660992">Прылада вываду</translation>
+<translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> хв таму}=1{<ph name="TIME_COUNT" /> гадз таму}one{<ph name="TIME_COUNT" /> сут таму}few{<ph name="TIME_COUNT" /> сут таму}many{<ph name="TIME_COUNT" /> сут таму}other{<ph name="TIME_COUNT" /> сут таму}}</translation>
 <translation id="7979595116210197019">Грамадскае харчаванне</translation>
 <translation id="798134797138789862">Сайт можа запытваць дазвол на выкарыстанне даных і прылад віртуальнай рэальнасці</translation>
 <translation id="7982789257301363584">Сетка</translation>
@@ -4556,7 +4558,6 @@
 <translation id="9169664750068251925">Заўсёды блакіраваць на гэтым сайце</translation>
 <translation id="9169931577761441333">Дадайце праграму "<ph name="APP_NAME" />" на галоўны экран</translation>
 <translation id="9170848237812810038">&amp;Адрабіць</translation>
-<translation id="9170906125144697215">Плаціце з дапамогай Pix без пераключэння паміж праграмамі</translation>
 <translation id="9171296965991013597">Выйсці з праграмы?</translation>
 <translation id="9173282814238175921">Адзіны дакумент, новы аркуш</translation>
 <translation id="9173995187295789444">Ідзе пошук прылад Bluetooth...</translation>

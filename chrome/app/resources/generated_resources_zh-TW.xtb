@@ -893,7 +893,7 @@
 <translation id="1611432201750675208">你的裝置已遭到鎖定</translation>
 <translation id="1611649489706141841">往前</translation>
 <translation id="1612019740169791082">你目前的容器設定不允許調整磁碟大小。如要調整 Linux 的預留空間大小，請先備份容器，然後再還原至新容器。</translation>
-<translation id="1612179176000108678">只在電池電量為 <ph name="PERCENT" />% 以下時開啟</translation>
+<translation id="1612179176000108678">只在電量剩 <ph name="PERCENT" />% 以下時開啟</translation>
 <translation id="1613019471223620622">在 <ph name="DOMAIN" /> 上顯示 <ph name="USERNAME" /> 的密碼</translation>
 <translation id="1613149688105334014">2022 年 12 月之後，舊版 Chrome 應用程式將無法開啟。你也可以自行檢查是否有可用的新版本。</translation>
 <translation id="1614511179807650956">你的行動數據配額可能已經用完。造訪 <ph name="NAME" /> 啟用入口網站即可購買更多數據量。</translation>
@@ -2328,7 +2328,7 @@
 <translation id="261114180663074524">請登入 Microsoft 帳戶，然後再試一次</translation>
 <translation id="2611776654555141051">矩形工具</translation>
 <translation id="2612676031748830579">卡號</translation>
-<translation id="261305050785128654">如果網站知道你使用哪些語言，就會盡可能以這些語言顯示內容。</translation>
+<translation id="261305050785128654">網站會盡可能以你使用的語言顯示內容。</translation>
 <translation id="2613210758071148851">禁止 <ph name="RESTRICTED_SITE" /> 的任何擴充功能</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> 將可編輯「<ph name="FILENAME" />」</translation>
 <translation id="2613747923081026172">建立群組</translation>
@@ -7425,6 +7425,7 @@
 <translation id="6278776436938569440">變更位置</translation>
 <translation id="6280215091796946657">以其他帳戶登入</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281218688313242284">管理 Google 帳戶(&amp;G)</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{超出 1 張紙的限制}other{超出 {COUNT} 張紙的限制}}</translation>
 <translation id="6282490239556659745">從 <ph name="SITE" /> 移除 <ph name="EMBEDDED_SITE" /></translation>
 <translation id="6283438600881103103">系統會立即自動將你登出。
@@ -8036,6 +8037,7 @@
 <translation id="6745592621698551453">立即更新</translation>
 <translation id="6746124502594467657">下移</translation>
 <translation id="67465227497040338">顯示 <ph name="DOMAIN" /> 的密碼</translation>
+<translation id="6746834324024491643">如要在裝置上使用你的密碼和其他資料，請登入 <ph name="EMAIL" /></translation>
 <translation id="6748980958975836188">我已詳閱並同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》以及《<ph name="BEGIN_LINK2" />Chrome 和 ChromeOS 附加服務條款<ph name="END_LINK2" />》。</translation>
 <translation id="6749077623962119521">要重設權限嗎？</translation>
 <translation id="6749473226660745022">相片</translation>

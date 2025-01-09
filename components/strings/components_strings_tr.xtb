@@ -3908,6 +3908,7 @@ Ek ayrıntılar:
 <translation id="7975858430722947486">Karşılaştırmaya eklendi</translation>
 <translation id="7976214039405368314">Çok fazla istek var</translation>
 <translation id="7977538094055660992">Çıkış cihazı</translation>
+<translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> dk. önce}=1{<ph name="TIME_COUNT" /> sa. önce}other{<ph name="TIME_COUNT" /> gün önce}}</translation>
 <translation id="7979595116210197019">Gıda Hizmetleri</translation>
 <translation id="798134797138789862">Sanal gerçeklik cihazlarını ve verilerini kullanmak isteyebilir</translation>
 <translation id="7982789257301363584">Ağ</translation>
@@ -4557,7 +4558,6 @@ Ek ayrıntılar:
 <translation id="9169664750068251925">Bu sitede her zaman engelle</translation>
 <translation id="9169931577761441333"><ph name="APP_NAME" /> uygulamasını Ana ekrana ekle</translation>
 <translation id="9170848237812810038">&amp;Geri al</translation>
-<translation id="9170906125144697215">Uygulama değiştirmeden Pix ile ödeme yapın</translation>
 <translation id="9171296965991013597">Uygulamadan çıkılsın mı?</translation>
 <translation id="9173282814238175921">Tek doküman/Yeni sayfa</translation>
 <translation id="9173995187295789444">Bluetooth cihazları taranıyor...</translation>

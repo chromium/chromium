@@ -124,6 +124,7 @@
 <translation id="1076766328672150609">บุตรหลานจะใช้ PIN เพื่อปลดล็อกอุปกรณ์ได้</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">ดาวน์โหลดพจนานุกรมตรวจตัวสะกดสำหรับภาษา<ph name="LANGUAGE" />ไม่ได้ ลองใหม่</translation>
+<translation id="1078029726086090536">ยืนยันรหัสผ่าน</translation>
 <translation id="1078037449555275327">การตั้งค่า ChromeVox</translation>
 <translation id="1079242569060319448">หากลืม PIN</translation>
 <translation id="1079285777677001938">ฟีเจอร์ในบางเว็บไซต์อาจใช้งานไม่ได้</translation>
@@ -4079,6 +4080,7 @@
 <translation id="3848547754896969219">เปิดใน&amp;หน้าต่างที่ไม่ระบุตัวตน</translation>
 <translation id="3850172593216628215">การอัปเดตความปลอดภัยสิ้นสุดแล้ว ประหยัดอย่างน้อย $50 เมื่อซื้อ Chromebook เครื่องใหม่</translation>
 <translation id="385051799172605136">กลับ</translation>
+<translation id="3850989673553106152">เปลี่ยนรหัสผ่านแล้ว</translation>
 <translation id="3851428669031642514">โหลดสคริปต์ที่ไม่ปลอดภัย</translation>
 <translation id="3852215160863921508">ความช่วยเหลือเกี่ยวกับการป้อนข้อมูล</translation>
 <translation id="3853549894831560772">"<ph name="DEVICE_NAME" />" เปิดอยู่</translation>
@@ -4581,6 +4583,7 @@
 <translation id="421182450098841253">&amp;แสดงแถบบุ๊กมาร์ก</translation>
 <translation id="4211904048067111541">หยุดใช้กับแอป Android</translation>
 <translation id="42126664696688958">ส่งออก</translation>
+<translation id="4213540068152645535">ปัญหาในการเปลี่ยนรหัสผ่าน</translation>
 <translation id="42137655013211669">เซิร์ฟเวอร์ได้ห้ามการเข้าถึงทรัพยากรนี้</translation>
 <translation id="4213918571089943508">บัญชี Google ของบุตรหลาน</translation>
 <translation id="4214192212360095377">ปิดเลย</translation>
@@ -7428,6 +7431,7 @@
 <translation id="6278776436938569440">เปลี่ยนสถานที่</translation>
 <translation id="6280215091796946657">ลงชื่อเข้าใช้ด้วยบัญชีอื่น</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281218688313242284">จัดการบัญชี &amp;Google ของคุณ</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{เกินขีดจำกัด 1 แผ่น}other{เกินขีดจำกัด {COUNT} แผ่น}}</translation>
 <translation id="6282490239556659745">นำ <ph name="EMBEDDED_SITE" /> ออกจาก <ph name="SITE" /></translation>
 <translation id="6283438600881103103">คุณจะออกจากระบบโดยอัตโนมัติในตอนนี้
@@ -8039,6 +8043,7 @@
 <translation id="6745592621698551453">อัปเดตเลย</translation>
 <translation id="6746124502594467657">เลื่อนลง</translation>
 <translation id="67465227497040338">แสดงรหัสผ่านสําหรับ <ph name="DOMAIN" /></translation>
+<translation id="6746834324024491643">ลงชื่อเข้าใช้ด้วย <ph name="EMAIL" /> เพื่อเข้าถึงรหัสผ่านและข้อมูลอื่นๆ ในทุกอุปกรณ์</translation>
 <translation id="6748980958975836188">ฉันได้อ่านและยอมรับ<ph name="BEGIN_LINK1" />ข้อกำหนดในการให้บริการของ Google<ph name="END_LINK1" /> รวมถึง<ph name="BEGIN_LINK2" />ข้อกำหนดในการให้บริการเพิ่มเติมของ Chrome และ Chrome OS<ph name="END_LINK2" /></translation>
 <translation id="6749077623962119521">รีเซ็ตสิทธิ์ใช่ไหม</translation>
 <translation id="6749473226660745022">รูปภาพ</translation>
@@ -8296,6 +8301,7 @@
 <translation id="6913051485529944333">คุณจะไม่เห็น Google ปฏิทินในหน้านี้อีก</translation>
 <translation id="6914812290245989348">ไม่เห็นคำเตือนก่อนที่จะไปยังเว็บไซต์ที่ไม่ปลอดภัย</translation>
 <translation id="6916590542764765824">จัดการส่วนขยาย</translation>
+<translation id="6916676294509106572">ปฏิทิน Outlook ซ่อนอยู่</translation>
 <translation id="6917873303492266709">หากต้องการแชร์ เข้าร่วม และทำงานร่วมกันในกลุ่มแท็บ ให้เปิดการตั้งค่าและเปิด "อนุญาตให้ลงชื่อเข้าใช้ Chrome"</translation>
 <translation id="6918677045355889289">ต้องอัปเดต Chrome OS</translation>
 <translation id="6918733588290914545">การตั้งค่าด่วนด้วยโทรศัพท์ Android</translation>
@@ -10675,6 +10681,7 @@
 <translation id="8625124982056504555">อ่านหมายเลขซีเรียลของอุปกรณ์และคอมโพเนนต์ ChromeOS</translation>
 <translation id="862542460444371744">&amp;ส่วนขยาย</translation>
 <translation id="8625663000550647058">ไม่ได้รับอนุญาตให้ใช้ไมโครโฟน</translation>
+<translation id="8625679025395572221">บัญชีของคุณอาจยังมีความเสี่ยง</translation>
 <translation id="8625916342247441948">ไม่อนุญาตให้เว็บไซต์เชื่อมต่ออุปกรณ์ HID</translation>
 <translation id="862727964348362408">ระงับไว้ชั่วคราว</translation>
 <translation id="862750493060684461">แคช CSS</translation>

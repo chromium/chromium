@@ -459,6 +459,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1306606229401759371">Cambiar la configuración</translation>
 <translation id="1307165550267142340">Se creó tu PIN</translation>
 <translation id="1307431692088049276">No volver a preguntarme</translation>
+<translation id="130744661532298792">Para asegurarte de que siempre puedas usar las contraseñas en tu Cuenta de Google, verifica tu identidad</translation>
 <translation id="1307559529304613120">El sistema no pudo obtener un token de acceso a la API a largo plazo para este dispositivo.</translation>
 <translation id="1308548450293664112">Yo creé este archivo, grupo de botones de selección, 1 de 3</translation>
 <translation id="131112695174432497">Se borran los datos que afectan la personalización de anuncios</translation>
@@ -2811,6 +2812,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2953210795988451570">Finalizaron las actualizaciones de seguridad. Obtén una Chromebook nueva.</translation>
 <translation id="2953218713108551165">No se permiten notificaciones para <ph name="SITE" />. Se te volverá a preguntar al respecto en tu próxima visita.</translation>
 <translation id="2956070239128776395">Se anidó la sección en el grupo: <ph name="ERROR_LINE" /></translation>
+<translation id="2957124229512318478">Activa el modo de desarrollador para usar esta extensión, que no puede revisarse en Chrome Web Store.</translation>
 <translation id="2958721676848865875">Advertencia sobre el empaquetado de extensiones</translation>
 <translation id="2959127025785722291">Se produjo un error. No se completó el análisis. Vuelve a intentarlo.</translation>
 <translation id="2959474507964749987">Es posible que este archivo encriptado sea un virus o software malicioso.<ph name="LINE_BREAK" />Para comprobar que no es seguro, puedes enviar el archivo y la contraseña a la Navegación segura de Google. Los análisis suelen tardar unos segundos.<ph name="LINE_BREAK" />Agrega la contraseña del archivo para realizarlos.</translation>
@@ -4309,6 +4311,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4001540981461989979">Destacar el cursor del mouse cuando se mueve</translation>
 <translation id="4002347779798688515">Es posible que el perfil descargado no se pueda utilizar si el operador de red móvil está bloqueado. Comunícate con tu operador para obtener asistencia.</translation>
 <translation id="4002440992267487163">Configuración del PIN</translation>
+<translation id="4003617970184602156">Para usar y guardar contraseñas en tu Cuenta de Google, verifica tu identidad</translation>
 <translation id="4005817994523282006">Método de detección de la zona horaria</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{Esta acción borrará el grupo de tu dispositivo de forma permanente.}other{Esta acción borrará los grupos de tu dispositivo de forma permanente.}}</translation>
 <translation id="4010036441048359843">Activar la función destacar</translation>
@@ -6940,6 +6943,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5932224571077948991">El sitio muestra anuncios intrusivos o engañosos</translation>
 <translation id="59324397759951282">Dispositivo USB de <ph name="MANUFACTURER_NAME" /></translation>
 <translation id="5932441198730183141">No tienes suficientes licencias disponibles para inscribir este dispositivo de hardware de Google Meet. Comunícate con el departamento de ventas para comprar más. Si crees que ves este mensaje por error, comunícate con el servicio de asistencia.</translation>
+<translation id="593271375210025655">Activa el modo de desarrollador para usar esta extensión, pero solo si confías en ella. Es posible que contenga funciones experimentales y que Chrome Web Store no la haya revisado.</translation>
 <translation id="5932881020239635062">Número de serie</translation>
 <translation id="5933376509899483611">Zona horaria</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> está utilizando tu cámara y micrófono.</translation>
@@ -6967,6 +6971,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5948476936444935795">Cancelar la importación</translation>
 <translation id="5948536763493709626">Conecta un teclado o mouse, o continua la configuración con la pantalla táctil. Si usas dispositivos Bluetooth, asegúrate de que estén listos para vincularse.</translation>
 <translation id="5949544233750246342">No se puede analizar el archivo</translation>
+<translation id="5949795028157144515">El Modo de desarrollador está desactivado. Se inhabilitaron algunas extensiones.</translation>
 <translation id="594993197557058302">Presiona entre 1 y 4 teclas modificadoras (Ctrl, Alt, Mayúsculas, Búsqueda o Selector) y 1 tecla más. También puedes seleccionar una sola tecla.</translation>
 <translation id="5950762317146173294">Este archivo puede ser un virus o software malicioso</translation>
 <translation id="5951303645598168883"><ph name="ORIGIN" /> desea usar fuentes locales</translation>
@@ -8338,7 +8343,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6950627417367801484">Restablecer apps</translation>
 <translation id="6954936693361896459">Transmitir esta pestaña en su lugar</translation>
 <translation id="6955446738988643816">Inspeccionar ventana emergente</translation>
-<translation id="6955535239952325894">Esta configuración está inhabilitada en navegadores administrados.</translation>
+<translation id="6955535239952325894">Esta configuración está inhabilitada en navegadores administrados</translation>
 <translation id="6955698182324067397">Estás habilitando las funciones de depuración del ChromeOS que configurarán el daemon sshd y habilitarán el inicio desde unidades USB.</translation>
 <translation id="6955893174999506273">Asignar 1 interruptor más</translation>
 <translation id="6957044667612803194">Esta llave de seguridad no es compatible con los PIN</translation>
@@ -9373,7 +9378,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="769824636077131955">Este documento es demasiado grande para hacer un control de seguridad. Puedes imprimir documentos de hasta 50 MB.</translation>
 <translation id="7698507637739331665">Se bloquearon algunos elementos</translation>
 <translation id="7700516433658473670">Impresoras y escáneres</translation>
-<translation id="7701040980221191251">Ninguna</translation>
+<translation id="7701040980221191251">No hay</translation>
 <translation id="7701869757853594372">A cargo del USUARIO</translation>
 <translation id="7702463352133825032">Detener la transmisión a <ph name="DEVICE_NAME" /></translation>
 <translation id="7704305437604973648">Tarea</translation>
@@ -9388,6 +9393,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7709152031285164251">Error: <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">&amp;Transmitir…</translation>
 <translation id="7711968363685835633">Inhabilitar conversiones y sugerencias personalizadas, además del diccionario del usuario</translation>
+<translation id="771220840345868810">No hay preguntas sugeridas disponibles</translation>
 <translation id="7712739869553853093">Cuadro de diálogo de vista previa de la impresión</translation>
 <translation id="7713139339518499741">Voz natural</translation>
 <translation id="7714307061282548371">Se permiten las cookies de <ph name="DOMAIN" /></translation>

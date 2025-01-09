@@ -1692,6 +1692,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3990532701115075684">pratiti pokrete vaših ruku</translation>
 <translation id="3992684624889376114">Informacije o ovoj stranici</translation>
 <translation id="3995639283717357522">Primijeni pravila</translation>
+<translation id="3996683183117168945">Navod <ph name="CURRENT_CITATION" /> od <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" />. <ph name="PAGE_TITLE" />. <ph name="PAGE_PREVIEW" />.</translation>
 <translation id="399754345297554962">Priprema za standardizirane testove i prijemne ispite</translation>
 <translation id="3999173941208168054">Filmovi strave</translation>
 <translation id="4000598935132966791">Saznajte više o ograničenjima web-lokacija u upravljanim preglednicima</translation>
@@ -4558,7 +4559,6 @@ i netočne vjerodajnice. To može značiti da se neki napadač pokušava predsta
 <translation id="9169664750068251925">Uvijek blokiraj na ovoj web-lokaciji</translation>
 <translation id="9169931577761441333">Dodajte <ph name="APP_NAME" /> na početni zaslon</translation>
 <translation id="9170848237812810038">&amp;Poništi</translation>
-<translation id="9170906125144697215">Plaćanje putem Pixa bez promjene aplikacije</translation>
 <translation id="9171296965991013597">Napustiti aplikaciju?</translation>
 <translation id="9173282814238175921">Jedan dokument/novi list</translation>
 <translation id="9173995187295789444">Traženje Bluetooth uređaja...</translation>

@@ -3391,6 +3391,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="70705239631109039">Your connection is not fully secure</translation>
 <translation id="7075452647191940183">Request is too large</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079699498125013497">\u0020\u2022\u0020</translation>
 <translation id="7081311540357715807">Food and grocery retailers</translation>
 <translation id="7083258188081898530">Tray 9</translation>
 <translation id="7086090958708083563">Upload requested by user</translation>
@@ -4115,6 +4116,7 @@ Additional details:
 <translation id="833262891116910667">Highlight</translation>
 <translation id="8339163506404995330">Pages in <ph name="LANGUAGE" /> will not be translated</translation>
 <translation id="8339275256517065202">Complete your purchase using touch ID</translation>
+<translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Virtual card enrollment opened at full height</translation>
 <translation id="8349305172487531364">Bookmarks bar</translation>
@@ -4559,7 +4561,6 @@ Additional details:
 <translation id="9169664750068251925">Always block on this site</translation>
 <translation id="9169931577761441333">Add <ph name="APP_NAME" /> to Home screen</translation>
 <translation id="9170848237812810038">&amp;Undo</translation>
-<translation id="9170906125144697215">Pay with Pix without switching apps</translation>
 <translation id="9171296965991013597">Leave app?</translation>
 <translation id="9173282814238175921">Single document/New sheet</translation>
 <translation id="9173995187295789444">Scanning for Bluetooth devices...</translation>

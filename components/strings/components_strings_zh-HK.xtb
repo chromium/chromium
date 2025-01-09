@@ -1692,6 +1692,7 @@
 <translation id="3990532701115075684">追蹤你的手部</translation>
 <translation id="3992684624889376114">關於本頁</translation>
 <translation id="3995639283717357522">套用政策</translation>
+<translation id="3996683183117168945">第 <ph name="CURRENT_CITATION" /> 段引文，總共有 <ph name="MAX_CITATIONS" /> 段，<ph name="PRODUCT_NAME" />，<ph name="URL" />。<ph name="PAGE_TITLE" />。<ph name="PAGE_PREVIEW" />。</translation>
 <translation id="399754345297554962">資格試和入學試</translation>
 <translation id="3999173941208168054">恐怖電影</translation>
 <translation id="4000598935132966791">進一步了解受管瀏覽器入面嘅網站限制</translation>
@@ -4556,7 +4557,6 @@
 <translation id="9169664750068251925">永遠禁止在這個網站執行</translation>
 <translation id="9169931577761441333">將「<ph name="APP_NAME" />」新增至主畫面</translation>
 <translation id="9170848237812810038">復原(&amp;U)</translation>
-<translation id="9170906125144697215">透過 Pix 付款而無需切換應用程式</translation>
 <translation id="9171296965991013597">要退出應用程式嗎？</translation>
 <translation id="9173282814238175921">單一文件/新工作表</translation>
 <translation id="9173995187295789444">正在掃瞄藍牙裝置…</translation>

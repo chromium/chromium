@@ -7449,6 +7449,7 @@
 <translation id="6278776436938569440">Αλλαγή τοποθεσίας</translation>
 <translation id="6280215091796946657">Συνδεθείτε με διαφορετικό λογαριασμό</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281218688313242284">Διαχείριση του &amp;Λογαριασμού σας Google</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Υπέρβαση του ορίου 1 φύλλου χαρτιού}other{Υπέρβαση του ορίου {COUNT} φύλλων χαρτιού}}</translation>
 <translation id="6282490239556659745">Κατάργηση <ph name="EMBEDDED_SITE" /> από το <ph name="SITE" /></translation>
 <translation id="6283438600881103103">Τώρα θα αποσυνδεθείτε αυτόματα.
@@ -8060,6 +8061,7 @@
 <translation id="6745592621698551453">Ενημέρωση τώρα</translation>
 <translation id="6746124502594467657">Μετακίνηση προς τα κάτω</translation>
 <translation id="67465227497040338">Εμφάνιση κωδικού πρόσβασης για <ph name="DOMAIN" /></translation>
+<translation id="6746834324024491643">Για να έχετε τους κωδικούς πρόσβασης και άλλα στοιχεία σε όλες τις συσκευές σας, συνδεθείτε ως <ph name="EMAIL" /></translation>
 <translation id="6748980958975836188">Έχω διαβάσει και αποδεχτεί τους <ph name="BEGIN_LINK1" />Όρους Παροχής Υπηρεσιών της Google<ph name="END_LINK1" /> και τους <ph name="BEGIN_LINK2" />Πρόσθετους Όρους Παροχής Υπηρεσιών του Chrome και του ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="6749077623962119521">Επαναφορά αδειών;</translation>
 <translation id="6749473226660745022">Φωτογραφίες</translation>

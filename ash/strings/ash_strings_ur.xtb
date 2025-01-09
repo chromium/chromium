@@ -531,6 +531,7 @@
 <translation id="2847759467426165163">اس پر کاسٹ کریں</translation>
 <translation id="2848120746144143659">پوری اسکرین کا اسکرین شاٹ لینے کے لیے اینٹر دبائیں</translation>
 <translation id="2849936225196189499">اہم</translation>
+<translation id="2850207700020959936">ایپس کیمرا تک رسائی حاصل کر سکتی ہیں</translation>
 <translation id="2860184359326882502">بہترین مماثلت</translation>
 <translation id="2865888419503095837">نیٹ ورک کی معلومات</translation>
 <translation id="2869095047958348710">اس پچھلے <ph name="DAY_OF_WEEK" /> کو</translation>
@@ -585,6 +586,7 @@
 <translation id="304417730895741346">آپ کی پن کردہ اور کھلی ایپس شیلف پر ہیں۔ کسی ایپ کو شیلف میں پن کرنے کے لیے، کسی ایپ پر دائیں کلک کریں یا اپنے ٹچ پیڈ کو دو انگلیوں سے تھپتھپائیں۔</translation>
 <translation id="3045488863354895414">سہ پہر بخیر،</translation>
 <translation id="3047761520276763270">بولنے کی کوشش کریں:</translation>
+<translation id="3053407068093039599">کیمرا تک رسائی کو آن/آف کریں</translation>
 <translation id="3055162170959710888">آپ نے اس آلہ کو آج <ph name="USED_TIME" /> تک استعمال کیا ہے</translation>
 <translation id="3062298103034426069">تعاون یافتہ نہیں ہے</translation>
 <translation id="3068622547379332530">ورژن <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -1801,6 +1803,7 @@
 <translation id="7034025838182392395"><ph name="APP_NAME" /> <ph name="DEVICE_NAME" /> استعمال کرنا چاہتی ہے۔ اپنے آلے کا فزیکل <ph name="DEVICE_NAME" /> سوئچ آن کریں۔</translation>
 <translation id="703425375924687388">‏<ph name="QUERY_NAME" />، Google اسسٹنٹ</translation>
 <translation id="7042322267639375032">اسٹیٹس ایریا کو سکیڑیں</translation>
+<translation id="7042593542151411225">ایپس کیمرا تک رسائی حاصل نہیں کر سکتیں</translation>
 <translation id="7045033600005038336">تمثیل تبدیل کریں؟</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> غیر منسلک ہے</translation>
 <translation id="7055910611768509537">ایک ہفتہ سے اسٹائلس کا استعمال نہیں کیا گیا ہے</translation>
@@ -2376,6 +2379,7 @@
 <translation id="9074432941673450836">اپنے <ph name="PRODUCT_NAME" /> پر اپنی ضرورت کی ہر چیز کرنے کے لیے ایپس کا استعمال کریں۔ آپ لانچر میں اپنی ایپس تلاش کر سکتے ہیں۔ آپ کی بورڈ پر لانچر کی (بائیں طرف کی شفٹ کی کے اوپر) کو بھی دبا سکتے ہیں۔</translation>
 <translation id="9074739597929991885">بلوٹوتھ</translation>
 <translation id="9077515519330855811">میڈیا کنٹرولز، ابھی <ph name="MEDIA_TITLE" /> چل رہا ہے</translation>
+<translation id="9079012373317704997">دور سے کیمرا تک رسائی کو آن نہیں کیا جا سکتا</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">کیمرا اوپری بائیں کونے میں اسنیپ کیا گیا ہے</translation>
 <translation id="9080132581049224423">ہوم پر جانے کے لیے اوپر سوائپ کریں</translation>

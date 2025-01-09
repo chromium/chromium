@@ -1690,6 +1690,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3990532701115075684">Monitorare le tue mani</translation>
 <translation id="3992684624889376114">Informazioni su questa pagina</translation>
 <translation id="3995639283717357522">Applica criteri</translation>
+<translation id="3996683183117168945">Citazione <ph name="CURRENT_CITATION" /> di <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" />. <ph name="PAGE_TITLE" />. <ph name="PAGE_PREVIEW" />.</translation>
 <translation id="399754345297554962">Test di ammissione e standardizzati</translation>
 <translation id="3999173941208168054">Film horror</translation>
 <translation id="4000598935132966791">Scopri di più sulle limitazioni dei siti nei browser gestiti</translation>
@@ -4554,7 +4555,6 @@ Ulteriori dettagli:
 <translation id="9169664750068251925">Blocca sempre su questo sito</translation>
 <translation id="9169931577761441333">Aggiungi <ph name="APP_NAME" /> alla schermata Home</translation>
 <translation id="9170848237812810038">&amp;Annulla</translation>
-<translation id="9170906125144697215">Paga con Pix senza cambiare app</translation>
 <translation id="9171296965991013597">Uscire dall'app?</translation>
 <translation id="9173282814238175921">Documento singolo/Nuovo foglio</translation>
 <translation id="9173995187295789444">Ricerca di dispositivi Bluetooth...</translation>

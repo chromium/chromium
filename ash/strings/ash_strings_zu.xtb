@@ -531,6 +531,7 @@ Uma kungenjalo iphedi yokuthinta eyakhelwe ngaphakathi izonikwa amandla kabusha 
 <translation id="2847759467426165163">Sakaza ku</translation>
 <translation id="2848120746144143659">Cindezela u-enter ukuze uthathe isithombe-skrini sesikrini esigcwele</translation>
 <translation id="2849936225196189499">Bucayi</translation>
+<translation id="2850207700020959936">Ama-app ayakwazi ukufinyelela ikhamera</translation>
 <translation id="2860184359326882502">Okufana kahle</translation>
 <translation id="2865888419503095837">Ulwazi lwenethiwekhi</translation>
 <translation id="2869095047958348710">Ngalo <ph name="DAY_OF_WEEK" /> odlule</translation>
@@ -585,6 +586,7 @@ Uma kungenjalo iphedi yokuthinta eyakhelwe ngaphakathi izonikwa amandla kabusha 
 <translation id="304417730895741346">Ama-app wakho aphiniwe navuliwe aseshelufini. Ukuze uphine i-app eshelufini, chofoza ngakwesokudla i-app noma thepha iphedi yakho yokuthinta ngeminwe emibili.</translation>
 <translation id="3045488863354895414">Sawubona,</translation>
 <translation id="3047761520276763270">Zama ukuthi:</translation>
+<translation id="3053407068093039599">Vula/vala ukufinyelela ikhamera</translation>
 <translation id="3055162170959710888">Usebenzise le divayisi izikhathi ezingu-<ph name="USED_TIME" /> namuhla</translation>
 <translation id="3062298103034426069">Akusekelwe</translation>
 <translation id="3068622547379332530">Uhlobo <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -1802,6 +1804,7 @@ Ukufaka okusha</translation>
 <translation id="7034025838182392395">I-<ph name="APP_NAME" /> ifuna ukusebenzisa i-<ph name="DEVICE_NAME" />. Vula iswishi ye-<ph name="DEVICE_NAME" /> yangempela yedivayisi yakho.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Umsizi we-Google</translation>
 <translation id="7042322267639375032">Indawo yesimo sokugoqa</translation>
+<translation id="7042593542151411225">Ama-app awakwazi ukufinyelela ikhamera</translation>
 <translation id="7045033600005038336">Miselela isifanekiso?</translation>
 <translation id="7051244143160304048">I-<ph name="DEVICE_NAME" /> inqamukile</translation>
 <translation id="7055910611768509537">I-Stylus ayisetshenziswanga ngaphezu kweviki</translation>
@@ -2377,6 +2380,7 @@ Ukuze uvale idivayisi, cindezela futhi ubambe inkinobho yamandla kudivayisi futh
 <translation id="9074432941673450836">Sebenzisa ama-app ukwenza yonke into oyidingayo ku-<ph name="PRODUCT_NAME" /> yakho. Ungathola ama-app akho Kusiqalisi. Ungaphinda ucindezele ukhiye Wesiqalisi (ngenhla kokhiye we-Shift kwesokunxele) kukhibhodi.</translation>
 <translation id="9074739597929991885">I-Bluetooth</translation>
 <translation id="9077515519330855811">Izilawuli zemidiya, okudlala manje i-<ph name="MEDIA_TITLE" /></translation>
+<translation id="9079012373317704997">Awukwazi ukuvula ukufinyelela ikhamera ukude</translation>
 <translation id="9079731690316798640">I-Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">Ikhamera iqondaniswe ekhoneni engaphezulu ngakwesokunxele</translation>
 <translation id="9080132581049224423">Swayiphela phezulu ukuze uye ekhaya</translation>

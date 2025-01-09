@@ -459,6 +459,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1306606229401759371">Ndrysho cilësimet</translation>
 <translation id="1307165550267142340">Kodi yt PIN është krijuar</translation>
 <translation id="1307431692088049276">Mos më pyet përsëri</translation>
+<translation id="130744661532298792">Për t'u siguruar që mund t'i përdorësh gjithmonë fjalëkalimet në "Llogarinë tënde të Google", verifiko që je ti</translation>
 <translation id="1307559529304613120">Mos! Sistemi nuk arriti të ruante kodin afatgjatë të qasjes së API-së për këtë pajisje.</translation>
 <translation id="1308548450293664112">E kam krijuar unë këtë skedar, grupi i butonave të radios, 1 nga 3</translation>
 <translation id="131112695174432497">Të dhënat që ndikojnë në personalizimin e reklamave do të fshihen</translation>
@@ -2812,6 +2813,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2953210795988451570">Përditësimet e sigurisë kanë përfunduar. Përmirësoje me një pajisje të re Chromebook.</translation>
 <translation id="2953218713108551165">Njoftimet nuk lejohen për <ph name="SITE" />. Do të pyetesh përsëri gjatë vizitës sate të radhës.</translation>
 <translation id="2956070239128776395">Seksioni i përfshirë në grup: <ph name="ERROR_LINE" /></translation>
+<translation id="2957124229512318478">Aktivizo modalitetin "si zhvillues" për të përdorur këtë shtesë, e cila nuk mund të shqyrtohet nga "Dyqani i uebit i Chrome".</translation>
 <translation id="2958721676848865875">Paralajmërim i paketimit të shtesës</translation>
 <translation id="2959127025785722291">Ndodhi një gabim. Skanimi nuk mund të përfundohej. Provo përsëri.</translation>
 <translation id="2959474507964749987">Kjo skedar i enkriptuar mund të jetë një virus ose softuer keqdashës.<ph name="LINE_BREAK" />Për ta kontrolluar nëse ai është i pasigurt, mund të dërgosh skedarin dhe fjalëkalimin te "Shfletimi i sigurt i Google". Skanimet zakonisht zgjasin disa sekonda.<ph name="LINE_BREAK" />Për ta skanuar, shto fjalëkalimin e skedarit.</translation>
@@ -4308,6 +4310,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4001540981461989979">Thekso kursorin e miut gjatë lëvizjes</translation>
 <translation id="4002347779798688515">Profili i shkarkuar mund të mos jetë i përdorshëm nëse ofruesi i rrjetit celular është i kyçur. Kontakto me ofruesin për mbështetje.</translation>
 <translation id="4002440992267487163">Konfigurimi i kodit PIN</translation>
+<translation id="4003617970184602156">Për të përdorur dhe për të ruajtur fjalëkalimet në "Llogarinë tënde të Google", verifiko që je ti</translation>
 <translation id="4005817994523282006">Metoda e zbulimit të brezit orar</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{Kjo do të fshijë përgjithmonë grupin nga pajisja jote.}other{Kjo do të fshijë përgjithmonë grupet nga pajisja jote.}}</translation>
 <translation id="4010036441048359843">Aktivizo theksimin</translation>
@@ -6937,6 +6940,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5932224571077948991">Sajti shfaq reklama ndërhyrëse ose mashtruese</translation>
 <translation id="59324397759951282">Pajisje USB nga <ph name="MANUFACTURER_NAME" /></translation>
 <translation id="5932441198730183141">Nuk ke licenca të mjaftueshme të disponueshme për të regjistruar këtë pajisje të harduerit të Google Meet. Kontakto me ekipin e shitjeve për të blerë më shumë. Nëse beson se po e shikon gabimisht këtë mesazh, kontakto me ekipin e mbështetjes.</translation>
+<translation id="593271375210025655">Aktivizo modalitetin "si zhvillues" për të përdorur këtë shtesë, por vetëm nëse i beson shtesës. Ajo mund të përmbajë veçori eksperimentale dhe nuk është shqyrtuar nga "Dyqani i uebit i Chrome".</translation>
 <translation id="5932881020239635062">Numri i serisë</translation>
 <translation id="5933376509899483611">Brezi orar</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> po përdor kamerën dhe mikrofonin tënd.</translation>
@@ -6964,6 +6968,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5948476936444935795">Anulo importimin</translation>
 <translation id="5948536763493709626">Lidh një tastierë ose mi, ose vazhdo me konfigurimin duke përdorur ekranin me prekje. Nëse po përdor pajisjet e tua me Bluetooth, sigurohu që pajisjet e tua janë gati për t'u çiftuar.</translation>
 <translation id="5949544233750246342">Skedari nuk mund të analizohej</translation>
+<translation id="5949795028157144515">Modaliteti "si zhvillues" është joaktiv. Disa shtesa janë çaktivizuar.</translation>
 <translation id="594993197557058302">Shtyp 1-4 taste modifikues (Ctrl, Alt, Shift, kërkimi ose nisësi) dhe 1 tast tjetër. Mund të zgjedhësh po ashtu vetëm një tast.</translation>
 <translation id="5950762317146173294">Ky skedar mund të jetë një virus ose softuer keqdashës</translation>
 <translation id="5951303645598168883"><ph name="ORIGIN" /> dëshiron të përdorë fontet lokale</translation>
@@ -7424,6 +7429,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="6278776436938569440">Ndrysho vendin</translation>
 <translation id="6280215091796946657">Identifikohu me një llogari tjetër</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281218688313242284">Menaxho "&amp;Llogarinë tënde të Google"</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Tejkalon limitin prej 1 flete letre}other{Tejkalon limitin prej {COUNT} fletësh letre}}</translation>
 <translation id="6282490239556659745">Hiqe <ph name="EMBEDDED_SITE" /> nga <ph name="SITE" /></translation>
 <translation id="6283438600881103103">Do të dalësh automatikisht tani.
@@ -8035,6 +8041,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6745592621698551453">Përditësoje tani</translation>
 <translation id="6746124502594467657">Lëviz poshtë</translation>
 <translation id="67465227497040338">Shfaq fjalëkalimin për <ph name="DOMAIN" /></translation>
+<translation id="6746834324024491643">Për t'i marrë fjalëkalimet etj. në të gjitha pajisjet e tua, identifikohu si <ph name="EMAIL" /></translation>
 <translation id="6748980958975836188">Kam lexuar dhe pranoj <ph name="BEGIN_LINK1" />"Kushtet e shërbimit" të Google<ph name="END_LINK1" /> dhe <ph name="BEGIN_LINK2" />"Kushtet shtesë të shërbimit" të Google Chrome dhe të ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="6749077623962119521">Të rivendosen lejet?</translation>
 <translation id="6749473226660745022">Fotografitë</translation>
@@ -9384,6 +9391,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7709152031285164251">Dështoi - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">dhe Transmeto...</translation>
 <translation id="7711968363685835633">Çaktivizo konvertimet dhe sugjerimet e personalizuara, si dhe fjalorin e përdoruesit</translation>
+<translation id="771220840345868810">Nuk ofrohet asnjë pyetje e sugjeruar</translation>
 <translation id="7712739869553853093">Dialogu i pamjes paraprake të printimit</translation>
 <translation id="7713139339518499741">Zë natyral</translation>
 <translation id="7714307061282548371">Kukit nga <ph name="DOMAIN" /> u lejuan</translation>

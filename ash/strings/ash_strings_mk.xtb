@@ -531,6 +531,7 @@
 <translation id="2847759467426165163">Емитувај на</translation>
 <translation id="2848120746144143659">Притиснете Enter за да снимите слика од целиот екран</translation>
 <translation id="2849936225196189499">Критична</translation>
+<translation id="2850207700020959936">Апликациите може да пристапуваат до камерата</translation>
 <translation id="2860184359326882502">Најдобро совпаѓање</translation>
 <translation id="2865888419503095837">Информации за мрежа</translation>
 <translation id="2869095047958348710">Минатиов/ва <ph name="DAY_OF_WEEK" /></translation>
@@ -585,6 +586,7 @@
 <translation id="304417730895741346">Вашите закачени и отворени апликации се на „Полицата“. За да закачите апликација на „Полицата“, кликнете со десното копче на конкретна апликација или допрете ја допирната подлога со два прста.</translation>
 <translation id="3045488863354895414">Добар ден,</translation>
 <translation id="3047761520276763270">Обидете се да кажете:</translation>
+<translation id="3053407068093039599">Вклучете/Исклучете го пристапот до камерата</translation>
 <translation id="3055162170959710888">Денес го користевте уредов <ph name="USED_TIME" /></translation>
 <translation id="3062298103034426069">Не е поддржано</translation>
 <translation id="3068622547379332530">Верзија: <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -1803,6 +1805,7 @@
 <translation id="7034025838182392395"><ph name="APP_NAME" /> сака да користи <ph name="DEVICE_NAME" />. Вклучете го физичкиот прекинувач за <ph name="DEVICE_NAME" /> на вашиот уред.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, „Помошник на Google“</translation>
 <translation id="7042322267639375032">Собери ја статусната област</translation>
+<translation id="7042593542151411225">Апликациите не може да пристапуваат до камерата</translation>
 <translation id="7045033600005038336">Да се замени шаблонот?</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> се исклучи</translation>
 <translation id="7055910611768509537">Пенкалото не е користено подолго од една седмица</translation>
@@ -2378,6 +2381,7 @@
 <translation id="9074432941673450836">Користете апликации за да правите сѐ што е потребно на вашиот уред <ph name="PRODUCT_NAME" />. Вашите апликации може да ги најдете во „Стартерот“. Може и да го притиснете копчето Launcher (над копчето Shift на левата страна) на тастатурата.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9077515519330855811">Контроли за аудиовизуелни содржини. Сега е пуштено <ph name="MEDIA_TITLE" /></translation>
+<translation id="9079012373317704997">Не може да се вклучи пристапот до камерата далечински</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">Камерата е поставена во горниот лев агол</translation>
 <translation id="9080132581049224423">Повлечете нагоре за да појдете на почетен екран</translation>

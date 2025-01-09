@@ -1693,6 +1693,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3990532701115075684">Sledenje potezam dlani</translation>
 <translation id="3992684624889376114">O tej strani</translation>
 <translation id="3995639283717357522">Uporabi pravilnike</translation>
+<translation id="3996683183117168945">Navedek <ph name="CURRENT_CITATION" /> od <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" />. <ph name="PAGE_TITLE" />. <ph name="PAGE_PREVIEW" />.</translation>
 <translation id="399754345297554962">Standardizirani in sprejemni izpiti</translation>
 <translation id="3999173941208168054">Grozljivke</translation>
 <translation id="4000598935132966791">Preberite več o omejitvah spletnega mesta v upravljanih brskalnikih.</translation>
@@ -4558,7 +4559,6 @@ Dodatne podrobnosti:
 <translation id="9169664750068251925">Vedno blokiraj na tem spletnem mestu</translation>
 <translation id="9169931577761441333">Dodajanje aplikacije <ph name="APP_NAME" /> na začetni zaslon</translation>
 <translation id="9170848237812810038">&amp;Razveljavi</translation>
-<translation id="9170906125144697215">Plačujte s storitvijo Pix brez preklapljanja aplikacij</translation>
 <translation id="9171296965991013597">Želite zapustiti aplikacijo?</translation>
 <translation id="9173282814238175921">Enojni dokument/nov list</translation>
 <translation id="9173995187295789444">Iskanje naprav Bluetooth ...</translation>

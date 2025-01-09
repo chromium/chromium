@@ -531,6 +531,7 @@ Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS
 <translation id="2847759467426165163">Diffuser vers</translation>
 <translation id="2848120746144143659">Appuyez sur Entrée pour effectuer une capture plein écran</translation>
 <translation id="2849936225196189499">Essentielle</translation>
+<translation id="2850207700020959936">Les applis peuvent accéder à l'appareil photo</translation>
 <translation id="2860184359326882502">Meilleures correspondances</translation>
 <translation id="2865888419503095837">Information réseau</translation>
 <translation id="2869095047958348710"><ph name="DAY_OF_WEEK" /> dernier</translation>
@@ -585,6 +586,7 @@ Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS
 <translation id="304417730895741346">Vos applications épinglées et ouvertes sont sur l'étagère. Pour épingler une application sur l'étagère, faites un clic droit sur une application ou touchez votre pavé tactile avec deux doigts.</translation>
 <translation id="3045488863354895414">Bon après-midi,</translation>
 <translation id="3047761520276763270">Essayez de dire :</translation>
+<translation id="3053407068093039599">Activer/désactiver l'accès à l'appareil photo</translation>
 <translation id="3055162170959710888">Tu as utilisé cet appareil pendant <ph name="USED_TIME" /> aujourd'hui</translation>
 <translation id="3062298103034426069">Non prise en charge</translation>
 <translation id="3068622547379332530">Version <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -1801,6 +1803,7 @@ Nouvelle installation</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> souhaite utiliser votre <ph name="DEVICE_NAME" />. Mettez votre <ph name="DEVICE_NAME" /> en fonction à l'aide de l'interrupteur.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Assistant Google</translation>
 <translation id="7042322267639375032">Réduire la zone de notifications</translation>
+<translation id="7042593542151411225">Les applis ne peuvent pas accéder à l'appareil photo</translation>
 <translation id="7045033600005038336">Remplacer le modèle?</translation>
 <translation id="7051244143160304048">Appareil <ph name="DEVICE_NAME" /> déconnecté</translation>
 <translation id="7055910611768509537">Le stylet n'a pas été utilisé depuis plus d'une semaine</translation>
@@ -2375,6 +2378,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="9074432941673450836">Utilisez des applications pour faire tout ce dont vous avez besoin sur votre <ph name="PRODUCT_NAME" />. Vous trouverez vos applications dans le lanceur. Vous pouvez également appuyer sur la touche du lanceur (au-dessus de la touche Majuscule de gauche) du clavier.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9077515519330855811">Commandes multimédias, en cours de lecture : <ph name="MEDIA_TITLE" /></translation>
+<translation id="9079012373317704997">Impossible d'activer l'accès à l'appareil photo à distance</translation>
 <translation id="9079731690316798640">Wi-Fi : <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">Caméra alignée sur le coin supérieur gauche</translation>
 <translation id="9080132581049224423">Balayez l'écran vers le haut pour accéder à l'écran d'accueil</translation>

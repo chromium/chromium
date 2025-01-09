@@ -25,6 +25,7 @@
 <translation id="1081932398873105675">{count,plural, =1{{count} өтмөк}other{{count} өтмөк}}</translation>
 <translation id="1084365883616172403">Facebook'ка жайгаштырылды.</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> ачылган жок</translation>
+<translation id="1086468407802688066"><ph name="USER_EMAIL" /> аккаунтун <ph name="HOSTED_DOMAIN" /> тескейт. Ал айрым маалыматтарды көрө алат. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="1096992026380844478">Шайкештирүү параметрлери акыркы жолу сакталган камдык көчүрмөнүн негизинде калыбына келтирилет. <ph name="BEGIN_LINK" />Эмнелерди шайкештире аларыңызды көрүңүз<ph name="END_LINK" />.</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> тилин ар дайым которуу</translation>
 <translation id="1108938384783527433">Таржымалды шайкештирүү</translation>
@@ -83,6 +84,7 @@
 <translation id="1335767868357998043">Дарек тилкесинин ордун тандаңыз</translation>
 <translation id="1347468774581902829">Аракеттерди тескөө</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
+<translation id="1358106883354237005">Башкарылган аккаунт</translation>
 <translation id="1358214951266274152">Көчүрүп алган шилтеме менен өтүңүз</translation>
 <translation id="1360432990279830238">Аккаунттан чыгып, шайкештирүүнү өчүрөсүзбү?</translation>
 <translation id="1363028406613469049">Трек</translation>
@@ -384,6 +386,7 @@
 <translation id="2640733327287333451">Колдонуучунун аты жок ••••••</translation>
 <translation id="264215785133931186">Жаңы эле текшерилди</translation>
 <translation id="2647434099613338025">Тил кошуу</translation>
+<translation id="2649592894792404568">Сырсөздөрдү башкаргычтагы маалыматтарыңызды өчүргөнү жатасыз</translation>
 <translation id="2652129567809778422">Сырсөздү тандоо</translation>
 <translation id="2658056020748144467">Файлды ачуу мүмкүн эмес</translation>
 <translation id="2661809266906115479"><ph name="TITLE" />, <ph name="STATE" />, ушул түзмөктө гана, <ph name="URL" /></translation>
@@ -697,6 +700,7 @@
 <translation id="4183350924949589798">Кошумча коопсуздук керекпи?</translation>
 <translation id="4184063163998877398">{count,plural, =1{{count} начар сырсөз бар}other{{count} начар сырсөз бар}}</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} нерсе ушул түзмөктө гана сакталат. Аны башка түзмөктөрдө колдонуу үчүн Google аккаунтуңузда ({email}) сактаңыз.}other{{count} нерсе ушул түзмөктө гана сакталат. Аларды башка түзмөктөрдө колдонуу үчүн Google аккаунтуңузда ({email}) сактаңыз.}}</translation>
+<translation id="4207873326995387292">Серепчи маалыматы</translation>
 <translation id="421070604241073551">Параметр күйүп турганда, маалымат Google аккаунтуңузга сакталат. Ал эми өчүп турганда ушул түзмөккө гана сакталат.</translation>
 <translation id="4224534474590365556">99 ашуун жигерсиз өтмөктү жабасызбы?</translation>
 <translation id="422474357428465195">Коопсуздугуңузду тобокелге салуучу бир нече сырсөз көйгөйлөрүңүз бар.</translation>
@@ -764,6 +768,7 @@
 <translation id="4495516234578759322">Кийинкисин табуу</translation>
 <translation id="4502423230170890588">Ушул түзмөктөн алып салуу</translation>
 <translation id="4508750114462689118">Кирүүгө үндөгөн жарнама жабылсын</translation>
+<translation id="4517684186578051919">Түзмөк тууралуу маалымат</translation>
 <translation id="4520798012560649652">Жашыруун режим жөнүндө кеңири маалымат</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} кыстарма}other{{count} кыстарма}}</translation>
 <translation id="4525629404718770519">Шилтемелерди карап көрүүлөрдү көрсөтүү</translation>
@@ -972,6 +977,7 @@
 <translation id="5444892875087332195">Кыстармалар</translation>
 <translation id="5452354193031718372">Татаал сырсөздү колдоносузбу?</translation>
 <translation id="5454211924362324495">Башкаларга сырсөзүңүздү колдонууга тыюу салуу үчүн <ph name="BEGIN_LINK" /><ph name="WEBSITE" /> вебсайтында аны өзгөртүңүз<ph name="END_LINK" /></translation>
+<translation id="5454723301413569630"><ph name="USER_EMAIL" /> аккаунтун <ph name="HOSTED_DOMAIN" /> тескейт. Ал айрым маалыматтарды, анын ичинде төмөнкүлөрдү көрө алат:</translation>
 <translation id="5457082343331641453">Издөө сурамына кошуу</translation>
 <translation id="5457226814769348910">Оффлайн версиясын ачуу</translation>
 <translation id="5478327362747197944">Веб-баракчадагы күндү басып, Жылнаамадагы иш-чараны түзүңүз.</translation>
@@ -1375,6 +1381,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7102005569666697658">Жүктөлүп алынууда… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Меню → Тууралоо → Төлөм ыкмалары</translation>
 <translation id="7108338896283013870">Жашыруу</translation>
+<translation id="7128693485119315539">Уюмуңуз башкарылган аккаунтка байланышкан серептөө дайындарын (мисалы, көрүлгөн вебсайттарды жана сырсөздөрдү) көрүп, тескей алат.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Камера жеткиликсиз</translation>
 <translation id="7141960840225504692">Өтмөктөрүңүз жабылып, серептөө дайындарыңыз өчүрлөт</translation>
@@ -1769,6 +1776,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8813277370772331957">Кийинчерээк эскертүү</translation>
 <translation id="8814719628147284151">Улантуу</translation>
 <translation id="8820817407110198400">Кыстармалар</translation>
+<translation id="8822421075653507124">Бул түзмөктү колдонуу коопсуз экенин текшерүү үчүн уюмуңуз анын операциялык тутуму, серепчи, параметрлер жана түзмөккө орнотулган программа тууралуу маалыматты көрүшү керек болот.</translation>
 <translation id="8825562130641217944">Кыстармаларды, сырсөздөрдү жана башкаларды алыңыз</translation>
 <translation id="8827154289515190290">Сизге жаккан серепчи эми iOS'то</translation>
 <translation id="8831208860914609320">Бардык жигерсиз өтмөктөрдү жабуу</translation>

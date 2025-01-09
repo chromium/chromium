@@ -424,6 +424,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="2789552044937754463">{COUNT,plural, =1{Password saved in your Google Account, {EMAIL}}other{Passwords saved in your Google Account, {EMAIL}}}</translation>
 <translation id="2791174088547598693">Add password…</translation>
 <translation id="2797302972324086597">Country code</translation>
+<translation id="2802403747691280910"><ph name="NUMBER_OF_TABS_REMOVED" /> closed</translation>
 <translation id="2816489851009559785">Menu → Settings → Default browser</translation>
 <translation id="2818821771744632548">You were signed out of your account, <ph name="USER_NAME" />, as part of your iPhone reset. To sign back in, tap 'Continue' below.</translation>
 <translation id="2819667972867209401">When on, data is saved in your Google Account. When off, data is saved only to this device and is deleted if you sign out.</translation>
@@ -1574,6 +1575,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="7975036700432177008">Try</translation>
 <translation id="797588153137233716">Menu → History → Delete browsing data</translation>
 <translation id="7977451675950311423">Warns you if you use a password that has been compromised in a data breach.</translation>
+<translation id="7977482887663636093"><ph name="NUMBER_OF_TABS_ADDED" /> new tabs, <ph name="NUMBER_OF_TABS_REMOVED" /> closed</translation>
 <translation id="797824194429476746">The tabs will remain open on this device but the group will be permanently deleted.</translation>
 <translation id="7982789257301363584">Network</translation>
 <translation id="7987685713885608670">For added safety, encrypt passwords on your device before they’re saved to Google Password Manager.</translation>
@@ -1757,6 +1759,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8728922029615312208">Close all</translation>
 <translation id="8730621377337864115">Done</translation>
 <translation id="87371078663613140">Explore the options in the menu bar</translation>
+<translation id="8739706427581741437"><ph name="NUMBER_OF_TABS_ADDED" /> new tabs</translation>
 <translation id="8741627442233023406">{count,plural, =1{Review the tab…}other{Review all tabs…}}</translation>
 <translation id="8741995161408053644">Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Create link</translation>

@@ -461,6 +461,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1306606229401759371">Změnit nastavení</translation>
 <translation id="1307165550267142340">Váš kód PIN byl vytvořen</translation>
 <translation id="1307431692088049276">Příště se neptat</translation>
+<translation id="130744661532298792">Pokud chcete mít vždy možnost použít hesla ve svém účtu Google, ověřte svou totožnost</translation>
 <translation id="1307559529304613120">Jejda! Systému se pro toto zařízení nepodařilo uložit token dlouhodobého přístupu k rozhraní API.</translation>
 <translation id="1308548450293664112">Tenhle soubor jsem vytvořil(a) já, skupina přepínačů, 1 ze 3</translation>
 <translation id="131112695174432497">Budou smazána data ovlivňující personalizaci reklam</translation>
@@ -2816,6 +2817,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="2953210795988451570">Aktualizace zabezpečení skončily. Upgradujte na nový Chromebook.</translation>
 <translation id="2953218713108551165">Oznámení webu <ph name="SITE" /> nejsou povolena. Při příští návštěvě se vám znovu zobrazí dotaz.</translation>
 <translation id="2956070239128776395">Sekce vnořená ve skupině: <ph name="ERROR_LINE" /></translation>
+<translation id="2957124229512318478">Pokud chcete používat toto rozšíření, které Internetový obchod Chrome nemůže zkontrolovat, zapněte režim pro vývojáře.</translation>
 <translation id="2958721676848865875">Upozornění na zabalení rozšíření</translation>
 <translation id="2959127025785722291">Došlo k chybě. Kontrolu nelze dokončit. Zkuste to znovu.</translation>
 <translation id="2959474507964749987">Tento zašifrovaný soubor může být vir nebo malware.<ph name="LINE_BREAK" />Pokud chcete zjistit, zda není bezpečný, můžete tento soubor a heslo odeslat do Bezpečného prohlížení Google. Kontroly obvykle trvají několik sekund.<ph name="LINE_BREAK" />Ke kontrole je potřeba heslo souboru.</translation>
@@ -4311,6 +4313,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4001540981461989979">Při pohybu zvýraznit kurzor myši</translation>
 <translation id="4002347779798688515">Pokud je mobilní operátor uzamčen, stažený profil nemusí být možné použít. Se žádostí o pomoc se obraťte na svého operátora.</translation>
 <translation id="4002440992267487163">Nastavení kódu PIN</translation>
+<translation id="4003617970184602156">Pokud chcete používat a ukládat hesla ve svém účtu Google, ověřte svou totožnost</translation>
 <translation id="4005817994523282006">Metoda zjišťování časového pásma</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{Skupina bude ze zařízení natrvalo smazána.}few{Skupiny budou ze zařízení natrvalo smazány.}many{Skupiny budou ze zařízení natrvalo smazány.}other{Skupiny budou ze zařízení natrvalo smazány.}}</translation>
 <translation id="4010036441048359843">Zapnout zvýraznění</translation>
@@ -6938,6 +6941,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5932224571077948991">Web zobrazuje rušivé nebo zavádějící reklamy</translation>
 <translation id="59324397759951282">Zařízení USB od výrobce <ph name="MANUFACTURER_NAME" /></translation>
 <translation id="5932441198730183141">Nemáte dostatečný počet licencí k registraci tohoto hardwarového zařízení Google Meet. Kontaktujte oddělení prodeje a zakupte další. Pokud se domníváte, že se jedná o chybu, kontaktujte podporu.</translation>
+<translation id="593271375210025655">Pokud toto rozšíření chcete používat, zapněte režim pro vývojáře. Rozšíření ale použijte, jen pokud mu důvěřujete. Může obsahovat experimentální funkce a nebylo zkontrolováno Internetovým obchodem Chrome.</translation>
 <translation id="5932881020239635062">Sériové číslo</translation>
 <translation id="5933376509899483611">Časové pásmo</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> používá vaši kameru a mikrofon.</translation>
@@ -6965,6 +6969,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5948476936444935795">Zrušit import</translation>
 <translation id="5948536763493709626">Připojte klávesnici nebo myš, případně pokračujte s nastavením pomocí dotykové obrazovky. Pokud používáte zařízení Bluetooth, zkontrolujte, zda jsou zařízení připravena ke spárování.</translation>
 <translation id="5949544233750246342">Soubor nelze analyzovat</translation>
+<translation id="5949795028157144515">Režim vývojáře je vypnutý. Některá rozšíření byla zakázána.</translation>
 <translation id="594993197557058302">Stiskněte 1–4 modifikační klávesy (ctrl, alt, shift, hledat nebo spouštěč) a 1 další klávesu. Můžete také vybrat jednu klávesu.</translation>
 <translation id="5950762317146173294">Tento soubor může být vir nebo malware</translation>
 <translation id="5951303645598168883"><ph name="ORIGIN" /> chce používat místní písma</translation>

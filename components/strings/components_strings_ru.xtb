@@ -1692,6 +1692,7 @@
 <translation id="3990532701115075684">Отслеживание рук</translation>
 <translation id="3992684624889376114">Об этой странице</translation>
 <translation id="3995639283717357522">Применить правила</translation>
+<translation id="3996683183117168945">Ссылка на источник <ph name="CURRENT_CITATION" /> из <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" />. <ph name="PAGE_TITLE" />. <ph name="PAGE_PREVIEW" />.</translation>
 <translation id="399754345297554962">Стандартизированные тесты и вступительные экзамены</translation>
 <translation id="3999173941208168054">Фильмы ужасов</translation>
 <translation id="4000598935132966791">Подробнее о доступе к сайтам в управляемых браузерах</translation>
@@ -4557,7 +4558,6 @@
 <translation id="9169664750068251925">Всегда блокировать на этом сайте</translation>
 <translation id="9169931577761441333">Добавить приложение "<ph name="APP_NAME" />" на главный экран</translation>
 <translation id="9170848237812810038">&amp;Отменить</translation>
-<translation id="9170906125144697215">Платите через Pix, не выходя из приложения</translation>
 <translation id="9171296965991013597">Закрыть приложение?</translation>
 <translation id="9173282814238175921">Один документ/новый лист</translation>
 <translation id="9173995187295789444">Поиск устройств Bluetooth…</translation>

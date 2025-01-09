@@ -531,6 +531,7 @@ Nếu không, bàn di chuột tích hợp sẵn sẽ bật lại sau <ph name="T
 <translation id="2847759467426165163">Truyền tới</translation>
 <translation id="2848120746144143659">Nhấn phím Enter để chụp ảnh toàn màn hình</translation>
 <translation id="2849936225196189499">Quan trọng</translation>
+<translation id="2850207700020959936">Các ứng dụng có thể truy cập camera</translation>
 <translation id="2860184359326882502">Kết quả phù hợp nhất</translation>
 <translation id="2865888419503095837">Thông tin mạng</translation>
 <translation id="2869095047958348710"><ph name="DAY_OF_WEEK" /> vừa rồi</translation>
@@ -585,6 +586,7 @@ Nếu không, bàn di chuột tích hợp sẵn sẽ bật lại sau <ph name="T
 <translation id="304417730895741346">Các ứng dụng bạn đang mở và đã ghim sẽ xuất hiện trên kệ. Để ghim một ứng dụng vào kệ, nhấp chuột phải vào ứng dụng đó hoặc dùng hai ngón tay nhấn lên bàn di chuột.</translation>
 <translation id="3045488863354895414">Xin chào!</translation>
 <translation id="3047761520276763270">Thử nói:</translation>
+<translation id="3053407068093039599">Bật/tắt quyền truy cập camera</translation>
 <translation id="3055162170959710888">Bạn đã dùng thiết bị này trong <ph name="USED_TIME" /> hôm nay</translation>
 <translation id="3062298103034426069">Không được hỗ trợ</translation>
 <translation id="3068622547379332530">Phiên bản <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -1802,6 +1804,7 @@ Mới cài đặt</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> muốn sử dụng <ph name="DEVICE_NAME" />. Bật công tắc <ph name="DEVICE_NAME" /> vật lý của thiết bị.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Trợ lý Google</translation>
 <translation id="7042322267639375032">Thu gọn khu vực trạng thái</translation>
+<translation id="7042593542151411225">Các ứng dụng không thể truy cập camera</translation>
 <translation id="7045033600005038336">Bạn muốn thay thế mẫu?</translation>
 <translation id="7051244143160304048">Đã ngắt kết nối <ph name="DEVICE_NAME" /></translation>
 <translation id="7055910611768509537">Bút cảm ứng chưa được sử dụng hơn một tuần nay</translation>
@@ -2377,6 +2380,7 @@ Mới cài đặt</translation>
 <translation id="9074432941673450836">Dùng các ứng dụng để làm mọi việc bạn cần trên <ph name="PRODUCT_NAME" />. Bạn có thể tìm ứng dụng của mình trong Trình chạy. Bạn cũng có thể nhấn phím Trình chạy (phía trên phím Shift bên trái) trên bàn phím.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9077515519330855811">Các tùy chọn điều khiển nội dung nghe nhìn, đang phát <ph name="MEDIA_TITLE" /></translation>
+<translation id="9079012373317704997">Không thể bật quyền truy cập camera từ xa</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">Máy ảnh đang bám theo góc trên bên trái</translation>
 <translation id="9080132581049224423">Vuốt lên để chuyển đến màn hình chính</translation>

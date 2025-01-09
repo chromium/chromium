@@ -124,6 +124,7 @@
 <translation id="1076766328672150609">Tuo figlio può usare il PIN per sbloccare il dispositivo.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Impossibile scaricare il dizionario per il controllo ortografico per la lingua <ph name="LANGUAGE" />. Riprova.</translation>
+<translation id="1078029726086090536">Verifica la tua password</translation>
 <translation id="1078037449555275327">Impostazioni di ChromeVox</translation>
 <translation id="1079242569060319448">Hai dimenticato il PIN?</translation>
 <translation id="1079285777677001938">Le funzionalità su alcuni siti potrebbero non funzionare correttamente.</translation>
@@ -459,6 +460,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1306606229401759371">Modifica impostazioni</translation>
 <translation id="1307165550267142340">Il PIN è stato creato</translation>
 <translation id="1307431692088049276">Non ripetere più la domanda</translation>
+<translation id="130744661532298792">Verifica la tua identità per assicurarti di poter usare sempre le password nel tuo Account Google</translation>
 <translation id="1307559529304613120">Spiacenti, il sistema non è riuscito a memorizzare il token di accesso all'API a lungo termine per questo dispositivo.</translation>
 <translation id="1308548450293664112">Ho creato io questo file, gruppo di pulsanti di opzione, 1 di 3</translation>
 <translation id="131112695174432497">I dati che influiscono sulla personalizzazione degli annunci vengono eliminati</translation>
@@ -2814,6 +2816,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2953210795988451570">Gli aggiornamenti della sicurezza sono terminati. Passa a un nuovo Chromebook.</translation>
 <translation id="2953218713108551165">Notifiche non consentite per <ph name="SITE" />. Ti verrà chiesto di nuovo alla prossima visita.</translation>
 <translation id="2956070239128776395">Sezione nidificata nel gruppo: <ph name="ERROR_LINE" /></translation>
+<translation id="2957124229512318478">Attiva la modalità sviluppatore per utilizzare questa estensione, che non può essere esaminata dal Chrome Web Store.</translation>
 <translation id="2958721676848865875">Avviso sul pacchetto estensione</translation>
 <translation id="2959127025785722291">Si è verificato un problema. Impossibile completare l'analisi. Riprova.</translation>
 <translation id="2959474507964749987">Questo file criptato potrebbe essere un virus o un malware.<ph name="LINE_BREAK" />Per verificare se non è sicuro, puoi inviare il file e la password a Google Navigazione sicura. In genere l'analisi richiede alcuni secondi.<ph name="LINE_BREAK" />Per eseguire la scansione, aggiungi la password del file.</translation>
@@ -3711,7 +3714,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3618647122592024084">Ora <ph name="RECIPIENT_NAME" /> può usare il tuo nome utente e la tua password quando usa Gestore delle password di Google. Per farlo, deve visitare l'indirizzo <ph name="WEBSITE" /> e accedere.</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3619294456800709762">I siti possono attivare automaticamente la modalità Picture in picture</translation>
-<translation id="3620136223548713675">Geolocalizzazione</translation>
+<translation id="3620136223548713675">Localizzazione</translation>
 <translation id="3621202678540785336">Ingresso</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{un'app}other{# app}}</translation>
 <translation id="3622820753353315928">Colore flash dello schermo</translation>
@@ -4079,6 +4082,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="3848547754896969219">Apri l'URL nella finestra di navigazione in &amp;incognito</translation>
 <translation id="3850172593216628215">Gli aggiornamenti della sicurezza sono terminati. Risparmia 50 $ o più su un nuovo Chromebook.</translation>
 <translation id="385051799172605136">Indietro</translation>
+<translation id="3850989673553106152">Password modificata</translation>
 <translation id="3851428669031642514">Carica script non sicuri</translation>
 <translation id="3852215160863921508">Assistenza per l'immissione</translation>
 <translation id="3853549894831560772">La <ph name="DEVICE_NAME" /> è attiva</translation>
@@ -4312,6 +4316,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4001540981461989979">Evidenzia il puntatore del mouse quando si muove</translation>
 <translation id="4002347779798688515">Il profilo scaricato potrebbe non essere utilizzabile se l'operatore di rete mobile è bloccato. Contatta il tuo provider per ricevere assistenza.</translation>
 <translation id="4002440992267487163">Configurazione del PIN</translation>
+<translation id="4003617970184602156">Verifica la tua identità per usare e salvare le password nel tuo Account Google</translation>
 <translation id="4005817994523282006">Metodo di rilevamento del fuso orario</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{Il gruppo verrà eliminato definitivamente dal tuo dispositivo.}other{I gruppi verranno eliminati definitivamente dal tuo dispositivo.}}</translation>
 <translation id="4010036441048359843">Attiva l'evidenziazione</translation>
@@ -4580,6 +4585,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="421182450098841253">&amp;Mostra barra dei preferiti</translation>
 <translation id="4211904048067111541">Non usare più con app per Android</translation>
 <translation id="42126664696688958">Esporta</translation>
+<translation id="4213540068152645535">Problemi con la modifica della password</translation>
 <translation id="42137655013211669">L'accesso a questa risorsa è vietato dal server.</translation>
 <translation id="4213918571089943508">Account Google di tuo figlio</translation>
 <translation id="4214192212360095377">Disattiva ora</translation>
@@ -6940,6 +6946,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5932224571077948991">Il sito mostra annunci invasivi o fuorvianti</translation>
 <translation id="59324397759951282">Dispositivo USB da <ph name="MANUFACTURER_NAME" /></translation>
 <translation id="5932441198730183141">Non disponi di licenze sufficienti per registrare questo dispositivo hardware Google Meet. Contatta il team di vendita per acquistarne altre. Se ritieni di aver visualizzato messaggio per errore, contatta l'assistenza.</translation>
+<translation id="593271375210025655">Attiva la modalità sviluppatore per utilizzare questa estensione, ma solo se ti fidi dell'estensione. Potrebbe contenere funzionalità sperimentali e non è stata esaminata da Chrome Web Store.</translation>
 <translation id="5932881020239635062">Numero di serie</translation>
 <translation id="5933376509899483611">Fuso orario</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> sta usando la videocamera e il microfono</translation>
@@ -6967,6 +6974,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5948476936444935795">Annulla importazione</translation>
 <translation id="5948536763493709626">Collega una tastiera o un mouse oppure continua la configurazione usando il touchscreen. Se usi dispositivi Bluetooth, assicurati che siano pronti per essere accoppiati.</translation>
 <translation id="5949544233750246342">Impossibile analizzare il file</translation>
+<translation id="5949795028157144515">Modalità sviluppatore disattivata. Alcune estensioni sono state disattivate.</translation>
 <translation id="594993197557058302">Premi da 1 a 4 tasti di modifica (Ctrl, Alt, Maiusc, Ricerca o Avvio app) e 1 altro tasto. Puoi anche selezionare una singola chiave.</translation>
 <translation id="5950762317146173294">Questo file potrebbe essere un virus o un malware</translation>
 <translation id="5951303645598168883"><ph name="ORIGIN" /> vuole usare caratteri locali</translation>
@@ -7426,6 +7434,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6278776436938569440">Cambia posizione</translation>
 <translation id="6280215091796946657">Accedi con un altro account</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281218688313242284">Gestisci il tuo Account &amp;Google</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Supera il limite di 1 foglio}other{Supera il limite di {COUNT} fogli}}</translation>
 <translation id="6282490239556659745">Rimuovi <ph name="EMBEDDED_SITE" /> da <ph name="SITE" /></translation>
 <translation id="6283438600881103103">Ora verrà eseguita automaticamente la disconnessione.
@@ -8037,6 +8046,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6745592621698551453">Aggiorna ora</translation>
 <translation id="6746124502594467657">Sposta giù</translation>
 <translation id="67465227497040338">Mostra password per <ph name="DOMAIN" /></translation>
+<translation id="6746834324024491643">Accedi come <ph name="EMAIL" /> per trovare le password e altri dati su tutti i dispositivi</translation>
 <translation id="6748980958975836188">Ho letto e accetto i <ph name="BEGIN_LINK1" />Termini di servizio di Google<ph name="END_LINK1" /> e i <ph name="BEGIN_LINK2" />Termini di servizio aggiuntivi di Chrome e ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="6749077623962119521">Reimpostare le autorizzazioni?</translation>
 <translation id="6749473226660745022">Foto</translation>
@@ -8294,6 +8304,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6913051485529944333">Non rivedrai più Google Calendar in questa pagina</translation>
 <translation id="6914812290245989348">Non visualizzare avvisi prima di visitare i siti non sicuri</translation>
 <translation id="6916590542764765824">Gestisci estensioni</translation>
+<translation id="6916676294509106572">Calendario di Outlook nascosto</translation>
 <translation id="6917873303492266709">Per partecipare e collaborare a gruppi di schede, nonché condividerli, apri le impostazioni e attiva Consenti l'accesso a Chrome</translation>
 <translation id="6918677045355889289">Aggiornamento di ChromeOS richiesto</translation>
 <translation id="6918733588290914545">Configurazione rapida con smartphone Android</translation>
@@ -10674,6 +10685,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8625124982056504555">Lettura dei numeri di serie del dispositivo ChromeOS e dei componenti</translation>
 <translation id="862542460444371744">&amp;Estensioni</translation>
 <translation id="8625663000550647058">Non possono utilizzare il microfono</translation>
+<translation id="8625679025395572221">Il tuo account potrebbe essere a rischio.</translation>
 <translation id="8625916342247441948">Non consentire ai siti di connettersi ai dispositivi HID</translation>
 <translation id="862727964348362408">Sospeso</translation>
 <translation id="862750493060684461">Cache CSS</translation>

@@ -3910,6 +3910,7 @@
 <translation id="7975858430722947486">موازنہ میں شامل کر دیا گیا</translation>
 <translation id="7976214039405368314">بہت زیادہ درخواستیں</translation>
 <translation id="7977538094055660992">آؤٹ پٹ آلہ</translation>
+<translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{‫<ph name="TIME_COUNT" /> منٹ قبل}=1{‫<ph name="TIME_COUNT" /> گھنٹہ قبل}other{‫<ph name="TIME_COUNT" /> دن قبل}}</translation>
 <translation id="7979595116210197019">غذائی سروس</translation>
 <translation id="798134797138789862">سائٹ ورچوئل رئیلٹی آلات اور ڈیٹا استعمال کرنے کیلئے پوچھ سکتی ہے</translation>
 <translation id="7982789257301363584">نیٹ ورک</translation>
@@ -4559,7 +4560,6 @@
 <translation id="9169664750068251925">اس سائٹ پر ہمیشہ مسدود کر دیں</translation>
 <translation id="9169931577761441333"><ph name="APP_NAME" /> کو ہوم اسکرین میں شامل کریں</translation>
 <translation id="9170848237812810038">&amp;کالعدم کریں</translation>
-<translation id="9170906125144697215">‏ایپس کو سوئچ کیے بغیر Pix سے ادائیگی کریں</translation>
 <translation id="9171296965991013597">ایپ بند کریں؟</translation>
 <translation id="9173282814238175921">واحد دستاویز/نئی شیٹ</translation>
 <translation id="9173995187295789444">بلوٹوتھ آلات کیلئے اسکین کیا جا رہا ہے...</translation>
