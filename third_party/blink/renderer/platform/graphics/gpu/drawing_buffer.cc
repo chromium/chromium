@@ -725,15 +725,16 @@ scoped_refptr<StaticBitmapImage> DrawingBuffer::TransferToStaticBitmapImage() {
   ScopedStateRestorer scoped_state_restorer(this);
 
   gpu::SyncToken sync_token;
-  scoped_refptr<gpu::ClientSharedImage> client_si;
+  scoped_refptr<gpu::ClientSharedImage> shared_image;
   viz::ReleaseCallback release_callback;
 
   if (CheckForDestructionAndChangeAndResolveIfNeeded(kDiscardAllowed) ==
       kContentsResolvedIfNeeded) {
-    client_si = ExportSharedImageFromBackBuffer(sync_token, &release_callback);
+    shared_image =
+        ExportSharedImageFromBackBuffer(sync_token, &release_callback);
   }
 
-  if (!client_si) {
+  if (!shared_image) {
     // If we couldn't resolve the contents or couldn't produce a SharedImage
     // out of them, return an transparent black ImageBitmap.
     // The only situation in which this could happen is when two or more calls
@@ -751,11 +752,11 @@ scoped_refptr<StaticBitmapImage> DrawingBuffer::TransferToStaticBitmapImage() {
   }
 
   DCHECK(release_callback);
-  DCHECK_EQ(size_.width(), client_si->size().width());
-  DCHECK_EQ(size_.height(), client_si->size().height());
+  DCHECK_EQ(size_.width(), shared_image->size().width());
+  DCHECK_EQ(size_.height(), shared_image->size().height());
 
   auto sk_color_type = viz::ToClosestSkColorType(
-      /*gpu_compositing=*/true, client_si->format());
+      /*gpu_compositing=*/true, shared_image->format());
 
   const SkImageInfo sk_image_info = SkImageInfo::Make(
       size_.width(), size_.height(), sk_color_type, kPremul_SkAlphaType);
@@ -764,9 +765,9 @@ scoped_refptr<StaticBitmapImage> DrawingBuffer::TransferToStaticBitmapImage() {
   // ImageBitmapRenderingContext's transferFromImageBitmap, and try to use them
   // in DrawingBuffer.
   bool is_overlay_candidate =
-      client_si->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
+      shared_image->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
   return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
-      std::move(client_si), sync_token,
+      std::move(shared_image), sync_token,
       /* shared_image_texture_id = */ 0, sk_image_info,
       context_provider_->GetWeakPtr(), base::PlatformThread::CurrentRef(),
       ThreadScheduler::Current()->CleanupTaskRunner(),
