@@ -647,8 +647,7 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, DevicePagePrintingSettingsCard) {
 }
 
 IN_PROC_BROWSER_TEST_F(OSSettingsDeviceTestPeripheralAndSplitEnabled,
-                       // TODO(crbug.com/388402326): Re-enable this test
-                       DISABLED_DevicePageInputSettings) {
+                       DevicePageInputSettings) {
   RunSettingsTest("device_page/device_page_input_settings_test.js");
 }
 
