@@ -538,6 +538,18 @@ void AuthenticationService::SignOut(
   base::OnceClosure callback_closure =
       completion ? base::BindOnce(completion) : base::DoNothing();
 
+  if (base::FeatureList::IsEnabled(kSeparateProfilesForManagedAccounts) &&
+      is_managed) {
+    // TODO(crbug.com/375605174): Unify the decision to clear data on signout.
+    // Currently, this is done twice: in SignoutActionSheetCoordinator and again
+    // here based on the account state.
+    if (completion) {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(callback_closure));
+    }
+    return;
+  }
+
   if (force_clear_browsing_data ||
       (is_managed && is_initial_sync_feature_setup_complete) ||
       (is_managed && is_migrated_from_syncing)) {
