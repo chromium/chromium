@@ -207,9 +207,9 @@ std::optional<DOMNodeId> GetNodeId(const LayoutObject& object) {
   return DOMNodeIds::IdForNode(node);
 }
 
-bool ShouldSkipContent(const LayoutObject& object) {
+bool IsVisible(const LayoutObject& object) {
   // Don't add content when node is invisible.
-  return object.Style()->Visibility() != EVisibility::kVisible;
+  return object.Style()->Visibility() == EVisibility::kVisible;
 }
 
 bool ShouldSkipSubtree(const LayoutObject& object) {
@@ -252,7 +252,7 @@ void ProcessTextNode(const LayoutText& layout_text,
                      mojom::blink::AIPageContentAttributes& attributes,
                      const ComputedStyle& document_style) {
   attributes.attribute_type = mojom::blink::AIPageContentAttributeType::kText;
-  CHECK(!ShouldSkipContent(layout_text));
+  CHECK(IsVisible(layout_text));
 
   auto text_style = mojom::blink::AIPageContentTextStyle::New();
   text_style->text_size = GetTextSize(*layout_text.Style(), document_style);
@@ -268,7 +268,7 @@ void ProcessImageNode(const LayoutImage& layout_image,
                       mojom::blink::AIPageContentAttributes& attributes,
                       const ComputedStyle& document_style) {
   attributes.attribute_type = mojom::blink::AIPageContentAttributeType::kImage;
-  CHECK(!ShouldSkipContent(layout_image));
+  CHECK(IsVisible(layout_image));
 
   if (DynamicTo<LayoutMedia>(layout_image)) {
     return;
@@ -291,7 +291,7 @@ void ProcessAnchorNode(const HTMLAnchorElement& anchor_element,
                        mojom::blink::AIPageContentAttributes& attributes,
                        const ComputedStyle& document_style) {
   attributes.attribute_type = mojom::blink::AIPageContentAttributeType::kAnchor;
-  if (ShouldSkipContent(*anchor_element.GetLayoutObject())) {
+  if (!IsVisible(*anchor_element.GetLayoutObject())) {
     return;
   }
 
@@ -307,7 +307,7 @@ void ProcessTableNode(const LayoutTable& layout_table,
                       mojom::blink::AIPageContentAttributes& attributes,
                       const ComputedStyle& document_style) {
   attributes.attribute_type = mojom::blink::AIPageContentAttributeType::kTable;
-  if (ShouldSkipContent(layout_table)) {
+  if (!IsVisible(layout_table)) {
     return;
   }
 
@@ -349,7 +349,7 @@ void ProcessTableRowNode(const LayoutTableRow& layout_table_row,
                          const ComputedStyle& document_style) {
   attributes.attribute_type =
       mojom::blink::AIPageContentAttributeType::kTableRow;
-  if (ShouldSkipContent(layout_table_row)) {
+  if (!IsVisible(layout_table_row)) {
     return;
   }
 
@@ -479,20 +479,24 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::GetAIPageContentSync()
   return page_content;
 }
 
-void AIPageContentAgent::WalkChildren(
+bool AIPageContentAgent::WalkChildren(
     const LayoutObject& object,
     mojom::blink::AIPageContentNode& content_node,
     const ComputedStyle& document_style) const {
   if (object.ChildPrePaintBlockedByDisplayLock()) {
-    return;
+    return false;
   }
 
+  bool has_visible_content = false;
   for (auto* child = object.SlowFirstChild(); child;
        child = child->NextSibling()) {
     if (ShouldSkipSubtree(*child)) {
       continue;
     }
 
+    has_visible_content |= IsVisible(*child);
+
+    bool child_has_visible_content = false;
     auto child_content_node = MaybeGenerateContentNode(*child, document_style);
     if (child_content_node &&
         child_content_node->content_attributes->attribute_type ==
@@ -501,18 +505,26 @@ void AIPageContentAgent::WalkChildren(
     } else {
       auto& node_for_child =
           child_content_node ? *child_content_node : content_node;
-      WalkChildren(*child, node_for_child, document_style);
+      child_has_visible_content =
+          WalkChildren(*child, node_for_child, document_style);
+      has_visible_content |= child_has_visible_content;
     }
 
-    if (child_content_node) {
+    const bool should_add_node_for_child =
+        IsVisible(*child) || child_has_visible_content;
+    if (should_add_node_for_child && child_content_node) {
       content_node.children_nodes.emplace_back(std::move(child_content_node));
     }
   }
+
+  return has_visible_content;
 }
 
 void AIPageContentAgent::ProcessIframe(
     const LayoutIFrame& object,
     mojom::blink::AIPageContentNode& content_node) const {
+  CHECK(IsVisible(object));
+
   content_node.content_attributes->attribute_type =
       mojom::blink::AIPageContentAttributeType::kIframe;
 
@@ -532,6 +544,10 @@ void AIPageContentAgent::ProcessIframe(
     auto child_content_node = MaybeGenerateContentNode(
         *child_layout_view, *child_layout_view->Style());
     CHECK(child_content_node);
+
+    // We could consider removing an iframe with no visible content. But this is
+    // likely not common and should be done in the browser so it's consistently
+    // done for local and remote frames.
     WalkChildren(*child_layout_view, *child_content_node,
                  *child_layout_view->Style());
     content_node.children_nodes.emplace_back(std::move(child_content_node));
@@ -551,20 +567,25 @@ mojom::blink::AIPageContentNodePtr AIPageContentAgent::MaybeGenerateContentNode(
   // requires it.
   auto* element = DynamicTo<HTMLElement>(object.GetNode());
   if (const auto* iframe = GetIFrame(object)) {
+    // If the `iframe` is invisible, it's Document can't override this and must
+    // also be invisible.
+    if (!IsVisible(object)) {
+      return nullptr;
+    }
     ProcessIframe(*iframe, *content_node);
   } else if (object.IsLayoutView()) {
     attributes.attribute_type = mojom::blink::AIPageContentAttributeType::kRoot;
   } else if (object.IsText()) {
     // Since text is a leaf node, do not create a content node if should skip
     // content.
-    if (ShouldSkipContent(object)) {
+    if (!IsVisible(object)) {
       return nullptr;
     }
     ProcessTextNode(To<LayoutText>(object), attributes, document_style);
   } else if (object.IsLayoutImage()) {
     // Since image is a leaf node, do not create a content node if should skip
     // content.
-    if (ShouldSkipContent(object)) {
+    if (!IsVisible(object)) {
       return nullptr;
     }
     ProcessImageNode(To<LayoutImage>(object), attributes, document_style);

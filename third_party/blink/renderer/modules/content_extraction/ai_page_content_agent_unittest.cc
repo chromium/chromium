@@ -1596,5 +1596,91 @@ TEST_F(AIPageContentAgentTest, LineBreak) {
       "Ipsum.");
 }
 
+TEST_F(AIPageContentAgentTest, VisibilityHiddenOnSubtree) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <style>"
+      "    header {"
+      "      visibility: hidden"
+      "    }"
+      "  </style>"
+      "  <header>text</header>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
+      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
+  ASSERT_TRUE(agent);
+
+  auto content = agent->GetAIPageContentSync();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& root = *content->root_node;
+  EXPECT_EQ(root.children_nodes.size(), 0u);
+}
+
+TEST_F(AIPageContentAgentTest, VisibilityHiddenOnParentOnly) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <style>"
+      "    #parent {"
+      "      visibility: hidden"
+      "    }"
+      "    #child {"
+      "      visibility: visible"
+      "    }"
+      "  </style>"
+      "  <header id=parent><div id=child>text</div></header>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
+      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
+  ASSERT_TRUE(agent);
+
+  auto content = agent->GetAIPageContentSync();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& root = *content->root_node;
+  EXPECT_EQ(root.children_nodes.size(), 1u);
+
+  const auto& container = *root.children_nodes[0];
+  CheckContainerNode(container);
+  EXPECT_EQ(container.children_nodes.size(), 1u);
+
+  const auto& text_node = *container.children_nodes[0];
+  CheckTextNode(text_node, "text");
+}
+
+TEST_F(AIPageContentAgentTest, VisibilityHiddenOnIframe) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <style>"
+      "    iframe {"
+      "      visibility: hidden;"
+      "    }"
+      "  </style>"
+      "  <iframe srcdoc='<div style='visibility: visible'>hidden "
+      "text</div>'></iframe>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
+      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
+  ASSERT_TRUE(agent);
+
+  auto content = agent->GetAIPageContentSync();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& root = *content->root_node;
+  EXPECT_EQ(root.children_nodes.size(), 0u);
+}
+
 }  // namespace
 }  // namespace blink

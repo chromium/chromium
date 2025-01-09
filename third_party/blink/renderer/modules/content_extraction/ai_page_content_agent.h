@@ -50,7 +50,9 @@ class MODULES_EXPORT AIPageContentAgent final
  private:
   void Bind(mojo::PendingReceiver<mojom::blink::AIPageContentAgent> receiver);
 
-  void WalkChildren(const LayoutObject& object,
+  // Returns true if any descendant of `object` has a computed value of
+  // visible for `visibility`.
+  bool WalkChildren(const LayoutObject& object,
                     mojom::blink::AIPageContentNode& content_node,
                     const ComputedStyle& document_style) const;
   void ProcessIframe(const LayoutIFrame& object,
