@@ -74,6 +74,7 @@ class BASE_EXPORT PoissonAllocationSampler {
   // within the object scope for the current thread.
   // It allows observers to allocate/deallocate memory while holding a lock
   // without a chance to get into reentrancy problems.
+  // The current implementation doesn't support ScopedMuteThreadSamples nesting.
   class BASE_EXPORT ScopedMuteThreadSamples {
    public:
     ScopedMuteThreadSamples();
@@ -83,9 +84,6 @@ class BASE_EXPORT PoissonAllocationSampler {
     ScopedMuteThreadSamples& operator=(const ScopedMuteThreadSamples&) = delete;
 
     static bool IsMuted();
-
-   private:
-    bool was_muted_ = false;
   };
 
   // An instance of this class makes the sampler behave deterministically to
@@ -176,9 +174,6 @@ class BASE_EXPORT PoissonAllocationSampler {
     return profiling_state_.load(std::memory_order_relaxed) &
            ProfilingStateFlag::kHookedSamplesMutedForTesting;
   }
-
-  // Returns the number of allocated bytes that have been observed.
-  static intptr_t GetAccumulatedBytesForTesting();
 
  private:
   // Flags recording the state of the profiler. This does not use enum class so

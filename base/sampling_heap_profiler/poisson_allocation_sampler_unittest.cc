@@ -303,40 +303,6 @@ TEST(PoissonAllocationSamplerTest, MuteHooksWithoutInit) {
   free(p);
 }
 
-TEST(PoissonAllocationSamplerTest, NestedScopedMuteThreadSamples) {
-  PoissonAllocationSampler::ScopedMuteHookedSamplesForTesting mute_hooks;
-
-  EXPECT_FALSE(PoissonAllocationSampler::ScopedMuteThreadSamples::IsMuted());
-  intptr_t accumulated_bytes_snapshot =
-      PoissonAllocationSampler::GetAccumulatedBytesForTesting();
-
-  {
-    PoissonAllocationSampler::ScopedMuteThreadSamples nesting_level1;
-    EXPECT_TRUE(PoissonAllocationSampler::ScopedMuteThreadSamples::IsMuted());
-    // When first muted, `accumulated_bytes` should be swizzled to avoid bias.
-    intptr_t accumulated_bytes =
-        PoissonAllocationSampler::GetAccumulatedBytesForTesting();
-    EXPECT_NE(accumulated_bytes, accumulated_bytes_snapshot);
-
-    {
-      PoissonAllocationSampler::ScopedMuteThreadSamples nesting_level2;
-      EXPECT_TRUE(PoissonAllocationSampler::ScopedMuteThreadSamples::IsMuted());
-      // `accumulated_bytes` should only be modified when the state changes.
-      EXPECT_EQ(PoissonAllocationSampler::GetAccumulatedBytesForTesting(),
-                accumulated_bytes);
-    }
-
-    EXPECT_TRUE(PoissonAllocationSampler::ScopedMuteThreadSamples::IsMuted());
-    EXPECT_EQ(PoissonAllocationSampler::GetAccumulatedBytesForTesting(),
-              accumulated_bytes);
-  }
-
-  // `accumulated_bytes` should be restored when no longer muted.
-  EXPECT_FALSE(PoissonAllocationSampler::ScopedMuteThreadSamples::IsMuted());
-  EXPECT_EQ(PoissonAllocationSampler::GetAccumulatedBytesForTesting(),
-            accumulated_bytes_snapshot);
-}
-
 TEST_F(PoissonAllocationSamplerStateTest, UpdateProfilingState) {
   constexpr int kNumObserverThreads = 100;
   constexpr int kNumRepetitions = 100;
