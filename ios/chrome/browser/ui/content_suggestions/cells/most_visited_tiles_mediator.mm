@@ -157,7 +157,7 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
   // This is used by the content widget.
   content_suggestions_tile_saver::SaveMostVisitedToDisk(
       mostVisited, _mostVisitedAttributesProvider,
-      app_group::ContentWidgetFaviconsFolder());
+      app_group::ShortcutsWidgetFaviconsFolder());
 
   _freshMostVisitedItems = [NSMutableArray array];
   int index = 0;
@@ -185,7 +185,7 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
   // This is used by the content widget.
   content_suggestions_tile_saver::UpdateSingleFavicon(
       siteURL, _mostVisitedAttributesProvider,
-      app_group::ContentWidgetFaviconsFolder());
+      app_group::ShortcutsWidgetFaviconsFolder());
 
   for (ContentSuggestionsMostVisitedItem* item in _mostVisitedConfig
            .mostVisitedItems) {

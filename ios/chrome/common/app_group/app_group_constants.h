@@ -220,9 +220,9 @@ NSURL* LegacyShareExtensionItemsFolder();
 // Gets the shared folder URL containing commands from other applications.
 NSURL* ExternalCommandsItemsFolder();
 
-// Gets the shared folder URL in which favicons used by the content widget are
+// Gets the shared folder URL in which favicons used by the shortcuts widget are
 // stored.
-NSURL* ContentWidgetFaviconsFolder();
+NSURL* ShortcutsWidgetFaviconsFolder();
 
 // Gets the shared folder URL in which favicon attributes used by the credential
 // provider extensions are stored.

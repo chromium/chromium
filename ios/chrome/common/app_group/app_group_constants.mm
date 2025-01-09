@@ -160,7 +160,7 @@ NSURL* ExternalCommandsItemsFolder() {
   return externalCommandsURL;
 }
 
-NSURL* ContentWidgetFaviconsFolder() {
+NSURL* ShortcutsWidgetFaviconsFolder() {
   return [AppGroupHelper widgetsFaviconsFolder];
 }
 
