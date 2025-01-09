@@ -286,6 +286,7 @@ void BocaAppHandler::GetSession(GetSessionCallback callback) {
                 std::move(session), /*dispatch_event=*/true);
           },
           std::move(callback)));
+  get_session_request->set_device_id(BocaAppClient::Get()->GetDeviceId());
   session_client_impl_->GetSession(std::move(get_session_request));
 }
 

@@ -107,6 +107,7 @@ constexpr char kTestGaiaId[] = "123";
 constexpr char kTestUserEmail[] = "cat@gmail.com";
 constexpr char kInitialSessionId[] = "0";
 constexpr int kInitialSessionDurationInSecs = 600;
+constexpr char kDeviceId[] = "myDevice";
 
 class BocaSessionManagerTestBase : public testing::Test {
  public:
@@ -228,6 +229,9 @@ class BocaSessionManagerTest : public BocaSessionManagerTestBase {
           boca_session_manager_->ParseSessionResponse(/*from_polling=*/false,
                                                       std::move(session_1));
         }));
+
+    EXPECT_CALL(*boca_app_client(), GetDeviceId())
+        .WillRepeatedly(Return(kDeviceId));
 
     boca_session_manager_ = std::make_unique<BocaSessionManager>(
         session_client_impl(), account_id, /*is_producer=*/true);
@@ -785,12 +789,10 @@ TEST_F(BocaSessionManagerTest, NotifyAppReloadEvent) {
 }
 
 TEST_F(BocaSessionManagerTest, UpdateTabActivity) {
-  std::string kDeviceId("myDevice");
   std::u16string kTab(u"google.com");
   ::boca::Session session;
   session.set_session_id(kInitialSessionId);
   session.set_session_state(::boca::Session::ACTIVE);
-  EXPECT_CALL(*boca_app_client(), GetDeviceId()).WillOnce(Return(kDeviceId));
 
   EXPECT_CALL(*session_client_impl(), UpdateStudentActivity(_))
       .WillOnce(WithArg<0>(
@@ -813,6 +815,9 @@ TEST_F(BocaSessionManagerTest, UpdateTabActivityWithDummyDeviceId) {
   ::boca::Session session;
   session.set_session_id(kInitialSessionId);
   session.set_session_state(::boca::Session::ACTIVE);
+  boca_session_manager()->UpdateCurrentSession(
+      std::make_unique<::boca::Session>(session), false);
+
   EXPECT_CALL(*boca_app_client(), GetDeviceId()).WillOnce(Return(""));
 
   EXPECT_CALL(*session_client_impl(), UpdateStudentActivity(_))
@@ -826,15 +831,12 @@ TEST_F(BocaSessionManagerTest, UpdateTabActivityWithDummyDeviceId) {
             request->callback().Run(true);
           })));
 
-  boca_session_manager()->UpdateCurrentSession(
-      std::make_unique<::boca::Session>(session), false);
   boca_session_manager()->UpdateTabActivity(kTab);
 }
 
 TEST_F(BocaSessionManagerTest, UpdateTabActivityWithInactiveSession) {
   ::boca::Session session;
   session.set_session_id(kInitialSessionId);
-  EXPECT_CALL(*boca_app_client(), GetDeviceId()).Times(0);
 
   EXPECT_CALL(*session_client_impl(), UpdateStudentActivity(_)).Times(0);
 
@@ -848,7 +850,6 @@ TEST_F(BocaSessionManagerTest, UpdateTabActivityWithSameTabShouldSkip) {
   ::boca::Session session;
   session.set_session_id(kInitialSessionId);
   session.set_session_state(::boca::Session::ACTIVE);
-  EXPECT_CALL(*boca_app_client(), GetDeviceId()).WillOnce(Return(""));
 
   EXPECT_CALL(*session_client_impl(), UpdateStudentActivity(_)).Times(1);
   boca_session_manager()->UpdateCurrentSession(
@@ -1406,6 +1407,8 @@ class BocaSessionManagerNoPollingTest : public BocaSessionManagerTestBase {
               base::unexpected<google_apis::ApiErrorCode>(
                   google_apis::ApiErrorCode::NOT_READY));
         }));
+    EXPECT_CALL(*boca_app_client(), GetDeviceId())
+        .WillRepeatedly(Return(kDeviceId));
     boca_session_manager_ = std::make_unique<BocaSessionManager>(
         session_client_impl(), account_id, /*is_producer=*/true);
   }
@@ -1490,6 +1493,8 @@ class BocaSessionManagerCustomPollingTest : public BocaSessionManagerTestBase {
               base::unexpected<google_apis::ApiErrorCode>(
                   google_apis::ApiErrorCode::NOT_READY));
         }));
+    EXPECT_CALL(*boca_app_client(), GetDeviceId())
+        .WillRepeatedly(Return(kDeviceId));
     boca_session_manager_ = std::make_unique<BocaSessionManager>(
         session_client_impl(), account_id, /*is_producer=*/true);
   }

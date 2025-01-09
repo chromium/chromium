@@ -51,7 +51,7 @@ void GetSessionRequest::OverrideURLForTesting(std::string url) {
 
 GURL GetSessionRequest::GetURL() const {
   auto url = GURL(url_base_).Resolve(base::ReplaceStringPlaceholders(
-      kGetSessionUrlTemplate, {gaia_id_.ToString()}, nullptr));
+      kGetSessionUrlTemplate, {gaia_id_.ToString(), device_id_}, nullptr));
   return url;
 }
 

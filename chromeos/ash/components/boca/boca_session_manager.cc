@@ -177,6 +177,7 @@ void BocaSessionManager::LoadCurrentSession(bool from_polling) {
       session_client_impl_->sender(), is_producer_, account_id_.GetGaiaId(),
       base::BindOnce(&BocaSessionManager::ParseSessionResponse,
                      weak_factory_.GetWeakPtr(), from_polling));
+  request->set_device_id(BocaAppClient::Get()->GetDeviceId());
   session_client_impl_->GetSession(std::move(request));
 }
 
