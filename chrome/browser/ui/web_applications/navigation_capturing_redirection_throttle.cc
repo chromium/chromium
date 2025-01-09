@@ -80,10 +80,15 @@ void ReparentToAppBrowser(content::WebContents* old_web_contents,
 // TODO(crbug.com/371237535): Move to TabInterface once there is support for
 // getting the browser interface for web contents that are in an app window.
 void ReparentWebContentsToTabbedBrowser(content::WebContents* old_web_contents,
-                                        WindowOpenDisposition disposition) {
+                                        WindowOpenDisposition disposition,
+                                        Browser* navigate_params_browser) {
   Browser* source_browser = chrome::FindBrowserWithTab(old_web_contents);
-  Browser* existing_browser_window = chrome::FindTabbedBrowser(
-      source_browser->profile(), /*match_original_profiles=*/false);
+  Browser* existing_browser_window =
+      navigate_params_browser &&
+              !AppBrowserController::IsWebApp(navigate_params_browser)
+          ? navigate_params_browser
+          : chrome::FindTabbedBrowser(source_browser->profile(),
+                                      /*match_original_profiles=*/false);
 
   // Create a new browser window if the navigation was triggered via a
   // shift-click, or if there are no open tabbed browser windows at the moment.
@@ -246,7 +251,8 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleResponse() {
         initial_nav_handling_result ==
             NavigationHandlingInitialResult::kNavigateCapturedNewAppWindow) {
       ReparentWebContentsToTabbedBrowser(web_contents_for_navigation,
-                                         link_click_disposition);
+                                         link_click_disposition,
+                                         navigation_params_browser);
     }
     return content::NavigationThrottle::PROCEED;
   }
@@ -273,7 +279,8 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleResponse() {
       handle_user_data->SetLaunchedAppState(*target_app_id,
                                             /*force_iph_off=*/true);
       ReparentWebContentsToTabbedBrowser(web_contents_for_navigation,
-                                         link_click_disposition);
+                                         link_click_disposition,
+                                         navigation_params_browser);
       return content::NavigationThrottle::PROCEED;
     }
     // standalone-app -> standalone-app.
@@ -385,7 +392,8 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleResponse() {
     if (initial_nav_handling_result ==
         NavigationHandlingInitialResult::kNavigateCapturedNewAppWindow) {
       ReparentWebContentsToTabbedBrowser(web_contents_for_navigation,
-                                         link_click_disposition);
+                                         link_click_disposition,
+                                         navigation_params_browser);
     }
     return content::NavigationThrottle::PROCEED;
   }
