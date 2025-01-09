@@ -29,8 +29,16 @@ BASE_FEATURE(kUseCursorEventHook,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 HWINEVENTHOOK g_cursor_event_hook = nullptr;
-raw_ptr<DesktopNativeCursorManagerWin> g_instance = nullptr;
-raw_ptr<wm::NativeCursorManagerDelegate> g_delegate = nullptr;
+
+raw_ptr<DesktopNativeCursorManagerWin>& GetInstance() {
+  static raw_ptr<DesktopNativeCursorManagerWin> instance = nullptr;
+  return instance;
+}
+
+raw_ptr<wm::NativeCursorManagerDelegate>& GetDelegate() {
+  static raw_ptr<wm::NativeCursorManagerDelegate> delegate = nullptr;
+  return delegate;
+}
 
 bool IsSystemCursorVisible() {
   CURSORINFO cursor_info;
@@ -53,7 +61,7 @@ void CALLBACK CursorEventProc(HWINEVENTHOOK hook,
                               DWORD time) {
   if (hwnd == nullptr && id_object == OBJID_CURSOR &&
       id_child == CHILDID_SELF) {
-    g_instance->OnSystemCursorVisibilityChanged(IsSystemCursorVisible());
+    GetInstance()->OnSystemCursorVisibilityChanged(IsSystemCursorVisible());
   }
 }
 
@@ -66,8 +74,8 @@ DesktopNativeCursorManagerWin::~DesktopNativeCursorManagerWin() {
     UnhookWinEvent(g_cursor_event_hook);
     g_cursor_event_hook = nullptr;
   }
-  g_instance = nullptr;
-  g_delegate = nullptr;
+  GetInstance() = nullptr;
+  GetDelegate() = nullptr;
 }
 
 void DesktopNativeCursorManagerWin::SetSystemCursorSize() {
@@ -80,8 +88,8 @@ void DesktopNativeCursorManagerWin::SetSystemCursorSize() {
   }
 
   // Report cursor size.
-  DCHECK(g_delegate);
-  g_delegate->CommitSystemCursorSize(system_cursor_size_);
+  DCHECK(GetDelegate());
+  GetDelegate()->CommitSystemCursorSize(system_cursor_size_);
 }
 
 void DesktopNativeCursorManagerWin::RegisterCursorRegkeyObserver() {
@@ -104,11 +112,11 @@ void DesktopNativeCursorManagerWin::RegisterCursorRegkeyObserver() {
 
 void DesktopNativeCursorManagerWin::InitSystemCursorObservers(
     wm::NativeCursorManagerDelegate* delegate) {
-  DCHECK(!g_instance);
-  g_instance = this;
+  DCHECK(!GetInstance());
+  GetInstance() = this;
 
-  DCHECK(!g_delegate);
-  g_delegate = delegate;
+  DCHECK(!GetDelegate());
+  GetDelegate() = delegate;
 
   // Register cursor size observer if enabled.
   if (features::IsSystemCursorSizeSupported()) {
@@ -141,8 +149,8 @@ void DesktopNativeCursorManagerWin::OnSystemCursorVisibilityChanged(
   }
 
   system_cursor_visible_ = visible;
-  DCHECK(g_delegate);
-  g_delegate->CommitSystemCursorVisibility(visible);
+  DCHECK(GetDelegate());
+  GetDelegate()->CommitSystemCursorVisibility(visible);
 }
 
 }  // namespace views
