@@ -1,8 +1,8 @@
 /* 7zBuf.h -- Byte Buffer
-2023-03-04 : Igor Pavlov : Public domain */
+2017-04-03 : Igor Pavlov : Public domain */
 
-#ifndef ZIP7_INC_7Z_BUF_H
-#define ZIP7_INC_7Z_BUF_H
+#ifndef __7Z_BUF_H
+#define __7Z_BUF_H
 
 #include "7zTypes.h"
 

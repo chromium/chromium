@@ -1,8 +1,8 @@
 /* Delta.h -- Delta converter
-2023-03-03 : Igor Pavlov : Public domain */
+2013-01-18 : Igor Pavlov : Public domain */
 
-#ifndef ZIP7_INC_DELTA_H
-#define ZIP7_INC_DELTA_H
+#ifndef __DELTA_H
+#define __DELTA_H
 
 #include "7zTypes.h"
 

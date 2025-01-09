@@ -1,8 +1,8 @@
 /* 7z.h -- 7z interface
-2023-04-02 : Igor Pavlov : Public domain */
+2018-07-02 : Igor Pavlov : Public domain */
 
-#ifndef ZIP7_INC_7Z_H
-#define ZIP7_INC_7Z_H
+#ifndef __7Z_H
+#define __7Z_H
 
 #include "7zTypes.h"
 
@@ -98,7 +98,7 @@ typedef struct
 UInt64 SzAr_GetFolderUnpackSize(const CSzAr *p, UInt32 folderIndex);
 
 SRes SzAr_DecodeFolder(const CSzAr *p, UInt32 folderIndex,
-    ILookInStreamPtr stream, UInt64 startPos,
+    ILookInStream *stream, UInt64 startPos,
     Byte *outBuffer, size_t outSize,
     ISzAllocPtr allocMain);
 
@@ -174,7 +174,7 @@ UInt16 *SzArEx_GetFullNameUtf16_Back(const CSzArEx *p, size_t fileIndex, UInt16 
 
 SRes SzArEx_Extract(
     const CSzArEx *db,
-    ILookInStreamPtr inStream,
+    ILookInStream *inStream,
     UInt32 fileIndex,         /* index of file */
     UInt32 *blockIndex,       /* index of solid block */
     Byte **outBuffer,         /* pointer to pointer to output buffer (allocated with allocMain) */
@@ -196,7 +196,7 @@ SZ_ERROR_INPUT_EOF
 SZ_ERROR_FAIL
 */
 
-SRes SzArEx_Open(CSzArEx *p, ILookInStreamPtr inStream,
+SRes SzArEx_Open(CSzArEx *p, ILookInStream *inStream,
     ISzAllocPtr allocMain, ISzAllocPtr allocTemp);
 
 EXTERN_C_END

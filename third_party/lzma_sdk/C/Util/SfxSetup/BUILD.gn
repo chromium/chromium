@@ -3,8 +3,12 @@
 # found in the LICENSE file.
 
 source_set("7zS2_source") {
-  sources = [ "SfxSetup.c" ]
+  sources = [
+    "Precomp.h",
+    "SfxSetup.c",
+  ]
   defines = [
+    "_LZMA_PROB32",
     "_WIN32",
   ]
   include_dirs = [

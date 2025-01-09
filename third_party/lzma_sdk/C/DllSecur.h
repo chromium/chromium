@@ -1,8 +1,8 @@
 /* DllSecur.h -- DLL loading for security
-2023-03-03 : Igor Pavlov : Public domain */
+2018-02-19 : Igor Pavlov : Public domain */
 
-#ifndef ZIP7_INC_DLL_SECUR_H
-#define ZIP7_INC_DLL_SECUR_H
+#ifndef __DLL_SECUR_H
+#define __DLL_SECUR_H
 
 #include "7zTypes.h"
 

@@ -1,8 +1,8 @@
 /* 7zFile.h -- File IO
-2023-03-05 : Igor Pavlov : Public domain */
+2021-02-15 : Igor Pavlov : Public domain */
 
-#ifndef ZIP7_INC_FILE_H
-#define ZIP7_INC_FILE_H
+#ifndef __7Z_FILE_H
+#define __7Z_FILE_H
 
 #ifdef _WIN32
 #define USE_WINDOWS_FILE
@@ -10,8 +10,7 @@
 #endif
 
 #ifdef USE_WINDOWS_FILE
-#include "7zWindows.h"
-
+#include <windows.h>
 #else
 // note: USE_FOPEN mode is limited to 32-bit file size
 // #define USE_FOPEN
