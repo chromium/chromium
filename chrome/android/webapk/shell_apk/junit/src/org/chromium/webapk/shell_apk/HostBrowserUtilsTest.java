@@ -4,7 +4,10 @@
 
 package org.chromium.webapk.shell_apk;
 
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.IntDef;
@@ -244,6 +247,50 @@ public class HostBrowserUtilsTest {
                 packageAndComponent.getComponentName().getClassName());
     }
 
+    /* Tests that {@link #getBrowserLaunchIntentWithoutFlagsAndExtras()} returns an
+     * ACTION_START_WEBAPK intent with the right package name for bound WebAPKs. */
+    @Test
+    public void testBrowserLaunchIntentForBoundWebApk() {
+        Intent intent =
+                HostBrowserUtils.getBrowserLaunchIntentWithoutFlagsAndExtras(
+                        /* hostBrowserIsFromManifest= */ true,
+                        DEFAULT_BROWSER_SUPPORTING_WEBAPKS,
+                        /* hostBrowserComponentName= */ null,
+                        Uri.parse("https://example.com/"));
+
+        Assert.assertEquals(HostBrowserUtils.ACTION_START_WEBAPK, intent.getAction());
+        Assert.assertNull(intent.getComponent());
+        Assert.assertNull(intent.getSelector());
+        Assert.assertEquals(DEFAULT_BROWSER_SUPPORTING_WEBAPKS, intent.getPackage());
+        Assert.assertNull(intent.getData());
+    }
+
+    /* Tests that {@link #getBrowserLaunchIntentWithoutFlagsAndExtras()} returns an
+     * ACTION_VIEW intent with the right ComponentName, Selector, and StartUrl for
+     * unbound WebAPKs. */
+    @Test
+    public void testBrowserLaunchIntentForUnboundWebApk() {
+        Uri startUrl = Uri.parse("https://example.com/");
+        String launchIntentDispatcherClassName =
+                "org.chromium.chrome.browser.LaunchIntentDispatcher";
+        Intent intent =
+                HostBrowserUtils.getBrowserLaunchIntentWithoutFlagsAndExtras(
+                        /* hostBrowserIsFromManifest= */ false,
+                        DEFAULT_BROWSER_SUPPORTING_WEBAPKS,
+                        new ComponentName(
+                                DEFAULT_BROWSER_SUPPORTING_WEBAPKS,
+                                launchIntentDispatcherClassName),
+                        startUrl);
+
+        Assert.assertEquals(Intent.ACTION_VIEW, intent.getAction());
+        Assert.assertEquals(launchIntentDispatcherClassName, intent.getComponent().getClassName());
+        Assert.assertEquals(
+                DEFAULT_BROWSER_SUPPORTING_WEBAPKS, intent.getComponent().getPackageName());
+        assertIntentHasBrowserSelector(intent);
+        Assert.assertNull(intent.getPackage());
+        Assert.assertEquals(startUrl, intent.getData());
+    }
+
     @SafeVarargs
     private static String[] mergeStringArrays(String[]... toMerge) {
         List<String> out = new ArrayList<String>();
@@ -268,5 +315,19 @@ public class HostBrowserUtilsTest {
         bundle.putString(WebApkMetaDataKeys.RUNTIME_HOST, hostBrowserPackage);
         WebApkTestHelper.registerWebApkWithMetaData(
                 mContext.getPackageName(), bundle, /* shareTargetMetaData= */ null);
+    }
+
+    /**
+     * Checks that the passed-in intent contains a Selector which will restrict the set of potential
+     * intent receivers down to actual browsers, and not WebAPKs.
+     */
+    private static void assertIntentHasBrowserSelector(Intent intent) {
+        Intent selector = intent.getSelector();
+        Assert.assertNotNull(selector);
+
+        Intent queryBrowsersIntent = WebApkUtils.getQueryInstalledBrowsersIntent();
+        Assert.assertEquals(selector.getAction(), queryBrowsersIntent.getAction());
+        Assert.assertEquals(selector.getCategories(), queryBrowsersIntent.getCategories());
+        Assert.assertEquals(selector.getData(), queryBrowsersIntent.getData());
     }
 }
