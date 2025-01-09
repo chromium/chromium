@@ -37,9 +37,6 @@ void AvatarFetcher::Fetch(const GURL& avatar_url,
   // filled person icon as the default. So no_silhouette is set to true to
   // enforce an empty image which will be handled by
   // AvatarFetcher::OnImageFetched.
-  // TODO(crbug.com/381288090): Add crop option. `avatar_url` could be legacy or
-  // content. See GetAvatarImageURLWithOptions. It handles legacy and content
-  // urls nicely but missing crop option.
   GURL image_url_with_size = signin::GetAvatarImageURLWithOptions(
       avatar_url, size, /*no_silhouette=*/true,
       signin::AvatarCropType::kCircle);
