@@ -151,6 +151,10 @@ BASE_EXPORT void SetXdgActivationTokenCreator(
 BASE_EXPORT void CreateLaunchOptionsWithXdgActivation(
     XdgActivationLaunchOptionsCallback callback);
 
+// Tries to create an xdg-activation token and invokes the `callback` with the
+// token if available, or an empty string.
+BASE_EXPORT void CreateXdgActivationToken(XdgActivationTokenCallback callback);
+
 // Returns a request path as specified in v0.9 of xdg-desktop-portal:
 // https://flatpak.github.io/xdg-desktop-portal/docs/doc-org.freedesktop.portal.Request.html
 BASE_EXPORT

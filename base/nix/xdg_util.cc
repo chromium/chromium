@@ -315,6 +315,14 @@ void CreateLaunchOptionsWithXdgActivation(
       base::BindOnce(create_token_cb, std::move(callback)));
 }
 
+void CreateXdgActivationToken(XdgActivationTokenCallback callback) {
+  if (!GetXdgActivationTokenCreator()) {
+    std::move(callback).Run({});
+    return;
+  }
+  GetXdgActivationTokenCreator().Run(std::move(callback));
+}
+
 std::string XdgDesktopPortalRequestPath(const std::string& sender,
                                         const std::string& token) {
   // Since version 0.9 of xdg-desktop-portal, the handle will be of the form

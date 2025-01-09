@@ -56,6 +56,10 @@ typedef base::OnceCallback<void(OpenOperationResult)> OpenOperationCallback;
 // Note: On all platforms, the user may be shown additional UI if there is no
 // suitable handler for |full_path|. On Chrome OS, all errors will result in
 // visible error messages iff |callback| is not specified.
+//
+// The |profile| is used to determine the running profile of file manager app in
+// Chrome OS only. |profile| is not used in platforms other than Chrome OS.
+//
 // Must be called on the UI thread.
 void OpenItem(Profile* profile,
               const base::FilePath& full_path,
@@ -63,10 +67,12 @@ void OpenItem(Profile* profile,
               OpenOperationCallback callback);
 
 // Opens the folder containing the item specified by |full_path| in the
-// desktop's default manner. If possible, the item will be selected. The
-// |profile| is used to determine the running profile of file manager app in
-// Chrome OS only. |profile| is not used in platforms other than Chrome OS. Must
-// be called on the UI thread.
+// desktop's default manner. If possible, the item will be selected.
+//
+// The |profile| is used to determine the running profile of file manager app in
+// Chrome OS only. |profile| is not used in platforms other than Chrome OS.
+//
+// Must be called on the UI thread.
 void ShowItemInFolder(Profile* profile, const base::FilePath& full_path);
 
 // Open the given external protocol URL in the desktop's default manner.
