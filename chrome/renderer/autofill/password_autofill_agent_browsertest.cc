@@ -3651,7 +3651,8 @@ TEST_F(PasswordAutofillAgentTest, CanShowSuggestionsAfterManualGeneration) {
 
   // Clear the password field value.
   password_element_.SetValue(WebString());
-  password_generation_->TextDidChangeInTextField(password_element_);
+  password_generation_->TextDidChangeInTextField(password_element_,
+                                                 /*form_cache=*/{});
 
   // Focus the password element again and verify that suggestions are shown to
   // the user.
@@ -5461,20 +5462,25 @@ TEST_F(PasswordAutofillAgentTest, NoFillingFallbackForBannedFields) {
   // Expect filling suggestion on credential forms.
   EXPECT_TRUE(password_autofill_agent_->ShowSuggestions(
       username_field,
-      AutofillSuggestionTriggerSource::kFormControlElementClicked));
+      AutofillSuggestionTriggerSource::kFormControlElementClicked,
+      /*form_cache=*/{}));
   EXPECT_TRUE(password_autofill_agent_->ShowSuggestions(
       password_field,
-      AutofillSuggestionTriggerSource::kFormControlElementClicked));
+      AutofillSuggestionTriggerSource::kFormControlElementClicked,
+      /*form_cache=*/{}));
   // Expect no filling suggestion on credit card forms.
   EXPECT_FALSE(password_autofill_agent_->ShowSuggestions(
       credit_card_full_name_field,
-      AutofillSuggestionTriggerSource::kFormControlElementClicked));
+      AutofillSuggestionTriggerSource::kFormControlElementClicked,
+      /*form_cache=*/{}));
   EXPECT_FALSE(password_autofill_agent_->ShowSuggestions(
       credit_card_number_field,
-      AutofillSuggestionTriggerSource::kFormControlElementClicked));
+      AutofillSuggestionTriggerSource::kFormControlElementClicked,
+      /*form_cache=*/{}));
   EXPECT_FALSE(password_autofill_agent_->ShowSuggestions(
       credit_card_cvc_field,
-      AutofillSuggestionTriggerSource::kFormControlElementClicked));
+      AutofillSuggestionTriggerSource::kFormControlElementClicked,
+      /*form_cache=*/{}));
 }
 
 // Tests that `SubmitChangePasswordForm` fills and submits change password form.

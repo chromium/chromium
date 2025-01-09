@@ -50,10 +50,10 @@ class RenderFrame;
 
 namespace autofill {
 
+class FieldDataManager;
 class FormData;
 class FormFieldData;
-
-class FieldDataManager;
+class SynchronousFormCache;
 
 namespace form_util {
 
@@ -150,13 +150,15 @@ blink::WebFormElement GetOwningForm(
 // Extracts the FormData that represents the form of `element`. If that form
 // cannot be extracted (e.g., because it is too large), falls back to a
 // single-field form that contains `element`. If however `element` is not
-// autofillable, returns nullopt.
+// autofillable, returns nullopt. `form_cache` can be used to optimize form
+// extractions occurring synchronously after this function call.
 std::optional<std::pair<FormData, raw_ref<const FormFieldData>>>
 FindFormAndFieldForFormControlElement(
     const blink::WebFormControlElement& element,
     const FieldDataManager& field_data_manager,
     const CallTimerState& timer_state,
-    DenseSet<ExtractOption> extract_options);
+    DenseSet<ExtractOption> extract_options,
+    const SynchronousFormCache& form_cache);
 
 // Creates a FormData containing a single field out of a contenteditable
 // non-form element. The FormData is synthetic in the sense that it does not

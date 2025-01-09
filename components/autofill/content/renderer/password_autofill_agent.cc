@@ -846,11 +846,13 @@ void PasswordAutofillAgent::PasswordValueGatekeeper::ShowValue(
 }
 
 bool PasswordAutofillAgent::TextDidChangeInTextField(
-    const WebInputElement& element) {
+    const WebInputElement& element,
+    const SynchronousFormCache& form_cache) {
   CHECK(element);
   // Show the popup with the list of available usernames.
   return ShowSuggestions(
-      element, AutofillSuggestionTriggerSource::kTextFieldValueChanged);
+      element, AutofillSuggestionTriggerSource::kTextFieldValueChanged,
+      form_cache);
 }
 
 // LINT.IfChange
@@ -1377,11 +1379,12 @@ bool PasswordAutofillAgent::TryToShowKeyboardReplacingSurface(
 
 bool PasswordAutofillAgent::ShowSuggestions(
     const WebInputElement& element,
-    AutofillSuggestionTriggerSource trigger_source) {
+    AutofillSuggestionTriggerSource trigger_source,
+    const SynchronousFormCache& form_cache) {
   return trigger_source ==
                  AutofillSuggestionTriggerSource::kManualFallbackPasswords
-             ? ShowManualFallbackSuggestions(element)
-             : ShowSuggestionsForDomain(element, trigger_source);
+             ? ShowManualFallbackSuggestions(element, form_cache)
+             : ShowSuggestionsForDomain(element, trigger_source, form_cache);
 }
 
 bool PasswordAutofillAgent::FrameCanAccessPasswordManager() {
@@ -1736,9 +1739,9 @@ void PasswordAutofillAgent::KeyboardReplacingSurfaceClosed(
     // This is limited to the keyboard accessory, as otherwise it would result
     // in a flickering of the popup, due to showing the keyboard at the same
     // time.
-    ShowSuggestions(
-        focused_input,
-        AutofillSuggestionTriggerSource::kFormControlElementClicked);
+    ShowSuggestions(focused_input,
+                    AutofillSuggestionTriggerSource::kFormControlElementClicked,
+                    /*form_cache=*/{});
   }
 }
 
@@ -1837,7 +1840,8 @@ void PasswordAutofillAgent::InformAboutFieldClearing(
 
 bool PasswordAutofillAgent::ShowSuggestionsForDomain(
     const WebInputElement& element,
-    AutofillSuggestionTriggerSource trigger_source) {
+    AutofillSuggestionTriggerSource trigger_source,
+    const SynchronousFormCache& form_cache) {
   WebInputElement username_element;
   WebInputElement password_element;
   PasswordInfo* password_info = nullptr;
@@ -1893,7 +1897,7 @@ bool PasswordAutofillAgent::ShowSuggestionsForDomain(
       }
       username_prefix = element.Value().Utf16();
     }
-    ShowSuggestionPopup(username_prefix, element, trigger_source);
+    ShowSuggestionPopup(username_prefix, element, trigger_source, form_cache);
     return true;
   }
 
@@ -1910,12 +1914,13 @@ bool PasswordAutofillAgent::ShowSuggestionsForDomain(
     return false;
   }
 
-  ShowSuggestionPopup(std::u16string(), element, trigger_source);
+  ShowSuggestionPopup(std::u16string(), element, trigger_source, form_cache);
   return true;
 }
 
 bool PasswordAutofillAgent::ShowManualFallbackSuggestions(
-    const WebInputElement& element) {
+    const WebInputElement& element,
+    const SynchronousFormCache& form_cache) {
   WebInputElement username_element;
   WebInputElement password_element;
   PasswordInfo* password_info = nullptr;
@@ -1936,14 +1941,16 @@ bool PasswordAutofillAgent::ShowManualFallbackSuggestions(
   }
 
   ShowSuggestionPopup(std::u16string(), element,
-                      AutofillSuggestionTriggerSource::kManualFallbackPasswords);
+                      AutofillSuggestionTriggerSource::kManualFallbackPasswords,
+                      form_cache);
   return true;
 }
 
 void PasswordAutofillAgent::ShowSuggestionPopup(
     const std::u16string& typed_username,
     const WebInputElement& user_input,
-    AutofillSuggestionTriggerSource trigger_source) {
+    AutofillSuggestionTriggerSource trigger_source,
+    const SynchronousFormCache& form_cache) {
   base::UmaHistogramEnumeration("PasswordManager.SuggestionPopupTriggerSource",
                                 trigger_source);
   FormData form;
@@ -1953,7 +1960,7 @@ void PasswordAutofillAgent::ShowSuggestionPopup(
               user_input, field_data_manager(),
               autofill_agent_->GetCallTimerState(
                   CallTimerState::CallSite::kShowSuggestionPopup),
-              /*extract_options=*/{})) {
+              /*extract_options=*/{}, form_cache)) {
     form = std::move(form_and_field->first);
     field = *form_and_field->second;
   }

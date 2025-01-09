@@ -13,6 +13,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/autofill/content/renderer/synchronous_form_cache.h"
 #include "components/autofill/content/renderer/test_utils.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_data_validation.h"
@@ -242,7 +243,8 @@ class FormAutofillUtilsTest : public content::RenderViewTest {
       WebFormControlElement control,
       DenseSet<ExtractOption> extract_options = {}) {
     return form_util::FindFormAndFieldForFormControlElement(
-        control, field_data_manager(), kCallTimerStateDummy, extract_options);
+        control, field_data_manager(), kCallTimerStateDummy, extract_options,
+        /*form_cache=*/{});
   }
 
   FieldDataManager& field_data_manager() { return *field_data_manager_; }

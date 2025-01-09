@@ -18,6 +18,7 @@
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/password_autofill_agent.h"
 #include "components/autofill/content/renderer/password_form_conversion_utils.h"
+#include "components/autofill/content/renderer/synchronous_form_cache.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/password_form_generation_data.h"
@@ -375,7 +376,8 @@ void PasswordGenerationAgent::GeneratedPasswordAccepted(
   CHECK(base::Contains(current_generation_item_->password_elements_,
                        current_generation_item_->generation_element_));
 
-  std::optional<FormData> presaved_form_data = CreateFormDataToPresave();
+  std::optional<FormData> presaved_form_data =
+      CreateFormDataToPresave(/*form_cache=*/{});
   const std::u16string generated_password =
       current_generation_item_->generation_element_.Value().Utf16();
   if (presaved_form_data) {
@@ -392,7 +394,7 @@ void PasswordGenerationAgent::GeneratedPasswordAccepted(
     // password with an Autofilled password when saving.
     // https://crbug.com/493455
     password_agent_->autofill_agent().UpdateStateForTextChange(
-        password_element, FieldPropertiesFlags::kUserTyped);
+        password_element, FieldPropertiesFlags::kUserTyped, /*form_cache=*/{});
   }
 }
 
@@ -416,7 +418,8 @@ void PasswordGenerationAgent::FocusNextFieldAfterPasswords() {
   }
 }
 
-std::optional<FormData> PasswordGenerationAgent::CreateFormDataToPresave() {
+std::optional<FormData> PasswordGenerationAgent::CreateFormDataToPresave(
+    const SynchronousFormCache& form_cache) {
   DCHECK(current_generation_item_);
   DCHECK(current_generation_item_->generation_element_);
   // Since the form for presaving should match a form in the browser, create it
@@ -424,9 +427,9 @@ std::optional<FormData> PasswordGenerationAgent::CreateFormDataToPresave() {
   std::unique_ptr<FormData> form_data;
   WebFormElement form =
       form_util::GetOwningForm(current_generation_item_->generation_element_);
-  return form ? password_agent_->GetFormDataFromWebForm(form, /*form_cache=*/{})
-              : password_agent_->GetFormDataFromUnownedInputElements(
-                    /*form_cache=*/{});
+  return form
+             ? password_agent_->GetFormDataFromWebForm(form, form_cache)
+             : password_agent_->GetFormDataFromUnownedInputElements(form_cache);
 }
 
 void PasswordGenerationAgent::FoundFormEligibleForGeneration(
@@ -596,7 +599,8 @@ void PasswordGenerationAgent::TextFieldCleared(
 }
 
 bool PasswordGenerationAgent::TextDidChangeInTextField(
-    const WebInputElement& element) {
+    const WebInputElement& element,
+    const SynchronousFormCache& form_cache) {
   if (!(current_generation_item_ &&
         current_generation_item_->generation_element_ == element)) {
     // Presave the username if it has been changed.
@@ -612,7 +616,8 @@ bool PasswordGenerationAgent::TextDidChangeInTextField(
         // left the generation state.
         PasswordNoLongerGenerated();
       } else {
-        std::optional<FormData> presaved_form_data = CreateFormDataToPresave();
+        std::optional<FormData> presaved_form_data =
+            CreateFormDataToPresave(form_cache);
         if (presaved_form_data) {
           GetPasswordGenerationDriver().PresaveGeneratedPassword(
               *presaved_form_data, generated_password);
@@ -655,7 +660,8 @@ bool PasswordGenerationAgent::TextDidChangeInTextField(
       // Mirror edits to any confirmation password fields.
       CopyElementValueToOtherInputElements(
           &element, &current_generation_item_->password_elements_);
-      std::optional<FormData> presaved_form_data = CreateFormDataToPresave();
+      std::optional<FormData> presaved_form_data =
+          CreateFormDataToPresave(form_cache);
       std::u16string generated_password =
           current_generation_item_->generation_element_.Value().Utf16();
       if (presaved_form_data) {
@@ -670,7 +676,7 @@ bool PasswordGenerationAgent::TextDidChangeInTextField(
     for (const auto& password_element :
          current_generation_item_->password_elements_) {
       password_agent_->autofill_agent().UpdateStateForTextChange(
-          password_element, FieldPropertiesFlags::kUserTyped);
+          password_element, FieldPropertiesFlags::kUserTyped, form_cache);
     }
   }
   return true;
@@ -727,7 +733,8 @@ void PasswordGenerationAgent::ShowEditingPopup() {
   gfx::RectF bounding_box(render_frame()->ConvertViewportToWindow(
       current_generation_item_->generation_element_.BoundsInWidget()));
 
-  std::optional<FormData> form_data = CreateFormDataToPresave();
+  std::optional<FormData> form_data =
+      CreateFormDataToPresave(/*form_cache=*/{});
   DCHECK(form_data);
 
   FieldRendererId generation_element_renderer_id =
@@ -765,7 +772,8 @@ void PasswordGenerationAgent::PasswordNoLongerGenerated() {
     if (current_generation_item_->generation_element_ != element)
       element.SetAutofillValue(blink::WebString());
   }
-  std::optional<FormData> presaved_form_data = CreateFormDataToPresave();
+  std::optional<FormData> presaved_form_data =
+      CreateFormDataToPresave(/*form_cache=*/{});
   if (presaved_form_data)
     GetPasswordGenerationDriver().PasswordNoLongerGenerated(
         *presaved_form_data);

@@ -27,6 +27,7 @@
 namespace autofill {
 
 class PasswordAutofillAgent;
+class SynchronousFormCache;
 
 // This class is responsible for controlling communication for password
 // generation between the browser (which shows the popup and generates
@@ -68,8 +69,11 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
   void FocusNextFieldAfterPasswords() override;
 
   // Returns true if the field being changed is one where a generated password
-  // is being offered. Updates the state of the popup if necessary.
-  bool TextDidChangeInTextField(const blink::WebInputElement& element);
+  // is being offered. Updates the state of the popup if necessary. `form_cache`
+  // can be used to optimize form extractions occurring synchronously after this
+  // function call.
+  bool TextDidChangeInTextField(const blink::WebInputElement& element,
+                                const SynchronousFormCache& form_cache);
 
   // Returns true if the newly focused node caused the generation UI to show.
   bool ShowPasswordGenerationSuggestions(const blink::WebInputElement& element);
@@ -166,8 +170,11 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
 
   // Creates a FormData to presave a generated password. It copies behavior
   // of CreateFromDataFromWebForm/FromUnownedInputElements. If a form
-  // creating is failed, returns an empty unique_ptr.
-  std::optional<FormData> CreateFormDataToPresave();
+  // creating is failed, returns an empty unique_ptr. `form_cache` can be used
+  // to optimize form extractions occurring synchronously after this function
+  // call.
+  std::optional<FormData> CreateFormDataToPresave(
+      const SynchronousFormCache& form_cache);
 
   // Contains the current element where generation is offered at the moment. It
   // can be either automatic or manual password generation.

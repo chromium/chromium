@@ -224,9 +224,11 @@ class AutofillAgent : public content::RenderFrameObserver,
   // Function that should be called whenever the value of `element` changes due
   // to user input. This is separate from OnTextFieldValueChanged() as that
   // function may trigger UI and should only be called when other UI won't be
-  // shown.
+  // shown. `form_cache` can be used to optimize form extractions occurring
+  // synchronously after this function call.
   void UpdateStateForTextChange(const blink::WebFormControlElement& element,
-                                FieldPropertiesFlags flag);
+                                FieldPropertiesFlags flag,
+                                const SynchronousFormCache& form_cache);
 
   bool IsPrerendering() const;
 
@@ -342,18 +344,22 @@ class AutofillAgent : public content::RenderFrameObserver,
   void HandleFocusChangeComplete(bool focused_node_was_last_clicked);
 
   // TODO(crbug.com/376628389): Remove.
-  void OnTextFieldValueChanged(const blink::WebFormControlElement& element);
+  void OnTextFieldValueChanged(const blink::WebFormControlElement& element,
+                               const SynchronousFormCache& form_cache);
   void OnSelectControlSelectionChanged(
-      const blink::WebFormControlElement& element);
+      const blink::WebFormControlElement& element,
+      const SynchronousFormCache& form_cache);
 
   void DidChangeScrollOffsetImpl(FieldRendererId element_id);
 
   // Shows Password Manager, password generation, or Autofill suggestions for
   // `element`. This call is asynchronous and may or may not lead to the showing
   // of a suggestion popup (no popup is shown if there are no available
-  // suggestions).
+  // suggestions). `form_cache` can be used to optimize form extractions
+  // occurring synchronously after this function call.
   void ShowSuggestions(const blink::WebFormControlElement& element,
-                       AutofillSuggestionTriggerSource trigger_source);
+                       AutofillSuggestionTriggerSource trigger_source,
+                       const SynchronousFormCache& form_cache);
 
   // Shows Autofill suggestions for `element` if `element` is a contenteditable.
   void ShowSuggestionsForContentEditable(
@@ -361,9 +367,11 @@ class AutofillAgent : public content::RenderFrameObserver,
       AutofillSuggestionTriggerSource trigger_source);
 
   // Queries the browser for Autocomplete and Autofill suggestions for the given
-  // `element`.
+  // `element`. `form_cache` can be used to optimize form extractions occurring
+  // synchronously after this function call.
   void QueryAutofillSuggestions(const blink::WebFormControlElement& element,
-                                AutofillSuggestionTriggerSource trigger_source);
+                                AutofillSuggestionTriggerSource trigger_source,
+                                const SynchronousFormCache& form_cache);
 
   // Sets the selected value of the the field identified by `field_id` to
   // `suggested_value`.

@@ -586,7 +586,8 @@ void AutofillAgent::DidChangeScrollOffsetImpl(FieldRendererId element_id) {
           FindFormAndFieldForFormControlElement(
               element, field_data_manager(),
               GetCallTimerState(kDidChangeScrollOffsetImpl),
-              MaybeExtractDatalist({form_util::ExtractOption::kBounds}))) {
+              MaybeExtractDatalist({form_util::ExtractOption::kBounds}),
+              /*form_cache=*/{})) {
     auto& [form, field] = *form_and_field;
     if (auto* autofill_driver = unsafe_autofill_driver()) {
       autofill_driver->TextFieldDidScroll(form, field->renderer_id());
@@ -635,7 +636,8 @@ void AutofillAgent::FocusedElementChanged(
             FindFormAndFieldForFormControlElement(
                 control, field_data_manager(),
                 GetCallTimerState(kFocusedElementChanged),
-                MaybeExtractDatalist({form_util::ExtractOption::kBounds}))) {
+                MaybeExtractDatalist({form_util::ExtractOption::kBounds}),
+                /*form_cache=*/{})) {
       auto& [form, field] = *form_and_field;
       if (auto* autofill_driver = unsafe_autofill_driver()) {
         last_queried_element_ = FieldRef(control);
@@ -697,7 +699,8 @@ void AutofillAgent::HandleCaretMovedInFormField(WebElement element,
                   control, self.field_data_manager(),
                   self.GetCallTimerState(kHandleCaretMovedInFormField),
                   self.MaybeExtractDatalist(
-                      {form_util::ExtractOption::kBounds}))) {
+                      {form_util::ExtractOption::kBounds}),
+                  /*form_cache=*/{})) {
         auto& [form, field] = *form_and_field;
         if (auto* autofill_driver = self.unsafe_autofill_driver()) {
           autofill_driver->CaretMovedInFormField(form, field->renderer_id(),
@@ -853,7 +856,8 @@ void AutofillAgent::ContentEditableDidChange(const WebElement& element) {
 }
 
 void AutofillAgent::OnTextFieldValueChanged(
-    const WebFormControlElement& element) {
+    const WebFormControlElement& element,
+    const SynchronousFormCache& form_cache) {
   DCHECK(form_util::MaybeWasOwnedByFrame(element, unsafe_render_frame()));
   // TODO(crbug.com/40286232): Add throttling to avoid sending this event for
   // rapid changes.
@@ -863,17 +867,19 @@ void AutofillAgent::OnTextFieldValueChanged(
   // showing up.
   ClearPreviewedForm();
 
-  UpdateStateForTextChange(element, FieldPropertiesFlags::kUserTyped);
+  UpdateStateForTextChange(element, FieldPropertiesFlags::kUserTyped,
+                           form_cache);
 
   const auto input_element = element.DynamicTo<WebInputElement>();
   if (password_generation_agent_ && input_element &&
-      password_generation_agent_->TextDidChangeInTextField(input_element)) {
+      password_generation_agent_->TextDidChangeInTextField(input_element,
+                                                           form_cache)) {
     is_popup_possibly_visible_ = true;
     return;
   }
 
-  if (input_element &&
-      password_autofill_agent_->TextDidChangeInTextField(input_element)) {
+  if (input_element && password_autofill_agent_->TextDidChangeInTextField(
+                           input_element, form_cache)) {
     is_popup_possibly_visible_ = true;
     last_queried_element_ = FieldRef(element);
     return;
@@ -881,14 +887,16 @@ void AutofillAgent::OnTextFieldValueChanged(
 
   if (input_element) {
     ShowSuggestions(element,
-                    AutofillSuggestionTriggerSource::kTextFieldValueChanged);
+                    AutofillSuggestionTriggerSource::kTextFieldValueChanged,
+                    form_cache);
   }
 
   if (std::optional<FormAndField> form_and_field =
           FindFormAndFieldForFormControlElement(
               element, field_data_manager(),
               GetCallTimerState(kOnTextFieldValueChanged),
-              MaybeExtractDatalist({form_util::ExtractOption::kBounds}))) {
+              MaybeExtractDatalist({form_util::ExtractOption::kBounds}),
+              form_cache)) {
     auto& [form, field] = *form_and_field;
     if (auto* autofill_driver = unsafe_autofill_driver()) {
       autofill_driver->TextFieldValueChanged(form, field->renderer_id(),
@@ -898,13 +906,15 @@ void AutofillAgent::OnTextFieldValueChanged(
 }
 
 void AutofillAgent::OnSelectControlSelectionChanged(
-    const WebFormControlElement& element) {
+    const WebFormControlElement& element,
+    const SynchronousFormCache& form_cache) {
   DCHECK(form_util::MaybeWasOwnedByFrame(element, unsafe_render_frame()));
   if (std::optional<FormAndField> form_and_field =
           FindFormAndFieldForFormControlElement(
               element, field_data_manager(),
               GetCallTimerState(kOnProvisionallySaveForm),
-              MaybeExtractDatalist({form_util::ExtractOption::kBounds}))) {
+              MaybeExtractDatalist({form_util::ExtractOption::kBounds}),
+              form_cache)) {
     auto& [form, field] = *form_and_field;
     if (auto* autofill_driver = unsafe_autofill_driver()) {
       autofill_driver->SelectControlSelectionChanged(form,
@@ -920,14 +930,16 @@ void AutofillAgent::TextFieldDidReceiveKeyDown(const WebInputElement& element,
   if (event.windows_key_code == ui::VKEY_DOWN ||
       event.windows_key_code == ui::VKEY_UP) {
     ShowSuggestions(
-        element, AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown);
+        element, AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown,
+        /*form_cache=*/{});
   }
 }
 
 void AutofillAgent::OpenTextDataListChooser(const WebInputElement& element) {
   DCHECK(form_util::MaybeWasOwnedByFrame(element, unsafe_render_frame()));
   ShowSuggestions(element,
-                  AutofillSuggestionTriggerSource::kOpenTextDataListChooser);
+                  AutofillSuggestionTriggerSource::kOpenTextDataListChooser,
+                  /*form_cache=*/{});
 }
 
 // Notifies the AutofillDriver about changes in the <datalist> options in
@@ -962,7 +974,7 @@ void AutofillAgent::BatchDataListOptionChange(FieldRendererId element_id) {
   if (!element || !element.GetDocument()) {
     return;
   }
-  OnTextFieldValueChanged(element);
+  OnTextFieldValueChanged(element, /*form_cache=*/{});
 }
 
 void AutofillAgent::UserGestureObserved() {
@@ -1118,7 +1130,7 @@ void AutofillAgent::TriggerSuggestions(
   if (WebFormControlElement control_element =
           form_util::GetFormControlByRendererId(field_id)) {
     last_queried_element_ = FieldRef(control_element);
-    ShowSuggestions(control_element, trigger_source);
+    ShowSuggestions(control_element, trigger_source, /*form_cache=*/{});
     return;
   }
   if (trigger_source ==
@@ -1307,7 +1319,8 @@ void AutofillAgent::PreviewPasswordGenerationSuggestion(
 
 void AutofillAgent::ShowSuggestions(
     const WebFormControlElement& element,
-    AutofillSuggestionTriggerSource trigger_source) {
+    AutofillSuggestionTriggerSource trigger_source,
+    const SynchronousFormCache& form_cache) {
   // TODO(crbug.com/40068004): Make this a CHECK.
   DCHECK(form_util::MaybeWasOwnedByFrame(element, unsafe_render_frame()));
   CHECK_NE(trigger_source, AutofillSuggestionTriggerSource::kUnspecified);
@@ -1351,7 +1364,7 @@ void AutofillAgent::ShowSuggestions(
   // Manual fallbacks override any prioritization done based on the field type.
   // TODO(crbug.com/333990908): Test manual fallback on different form types.
   if (IsPlusAddressesManuallyTriggered(trigger_source)) {
-    QueryAutofillSuggestions(element, trigger_source);
+    QueryAutofillSuggestions(element, trigger_source, form_cache);
     return;
   }
 
@@ -1360,7 +1373,7 @@ void AutofillAgent::ShowSuggestions(
           element.DynamicTo<WebInputElement>()) {
     if (IsPasswordsAutofillManuallyTriggered(trigger_source)) {
       is_popup_possibly_visible_ = password_autofill_agent_->ShowSuggestions(
-          input_element, trigger_source);
+          input_element, trigger_source, form_cache);
       return;
     }
     if (password_generation_agent_ &&
@@ -1369,8 +1382,8 @@ void AutofillAgent::ShowSuggestions(
       is_popup_possibly_visible_ = true;
       return;
     }
-    if (password_autofill_agent_->ShowSuggestions(input_element,
-                                                  trigger_source)) {
+    if (password_autofill_agent_->ShowSuggestions(input_element, trigger_source,
+                                                  form_cache)) {
       is_popup_possibly_visible_ = true;
       return;
     }
@@ -1387,7 +1400,7 @@ void AutofillAgent::ShowSuggestions(
     }
   }
 
-  QueryAutofillSuggestions(element, trigger_source);
+  QueryAutofillSuggestions(element, trigger_source, form_cache);
 }
 
 void AutofillAgent::ShowSuggestionsForContentEditable(
@@ -1423,7 +1436,8 @@ void AutofillAgent::GetPotentialLastFourCombinationsForStandaloneCvc(
 
 void AutofillAgent::QueryAutofillSuggestions(
     const WebFormControlElement& element,
-    AutofillSuggestionTriggerSource trigger_source) {
+    AutofillSuggestionTriggerSource trigger_source,
+    const SynchronousFormCache& form_cache) {
   DCHECK(element.DynamicTo<WebInputElement>() ||
          form_util::IsTextAreaElement(element));
 
@@ -1432,7 +1446,8 @@ void AutofillAgent::QueryAutofillSuggestions(
           element, field_data_manager(),
           GetCallTimerState(kQueryAutofillSuggestions),
           {form_util::ExtractOption::kDatalist,
-           form_util::ExtractOption::kBounds});
+           form_util::ExtractOption::kBounds},
+          form_cache);
   if (!form_and_field) {
     return;
   }
@@ -1463,7 +1478,8 @@ void AutofillAgent::DoFillFieldWithValue(std::u16string_view value,
   UpdateStateForTextChange(element,
                            autofill_state == WebAutofillState::kAutofilled
                                ? FieldPropertiesFlags::kAutofilledOnUserTrigger
-                               : FieldPropertiesFlags::kUserTyped);
+                               : FieldPropertiesFlags::kUserTyped,
+                           /*form_cache=*/{});
 }
 
 void AutofillAgent::TriggerFormExtraction() {
@@ -1733,7 +1749,7 @@ void AutofillAgent::BatchSelectOptionChange(FieldRendererId element_id) {
           form_util::FindFormAndFieldForFormControlElement(
               element, field_data_manager(),
               GetCallTimerState(kBatchSelectOptionChange),
-              /*extract_options=*/{})) {
+              /*extract_options=*/{}, /*form_cache=*/{})) {
     auto& [form, field] = *form_and_field;
     if (auto* autofill_driver = unsafe_autofill_driver();
         autofill_driver && !field->options().empty()) {
@@ -1798,14 +1814,16 @@ void AutofillAgent::HandleFocusChangeComplete(
 #endif
       ShowSuggestions(
           focused_control,
-          AutofillSuggestionTriggerSource::kFormControlElementClicked);
+          AutofillSuggestionTriggerSource::kFormControlElementClicked,
+          /*form_cache=*/{});
     } else if (form_util::IsTextAreaElement(focused_control)) {
 #if !BUILDFLAG(IS_ANDROID)
       // Compose reacts to tab area focus even when not triggered by a click -
       // therefore call `ShowSuggestions` with a separate trigger source.
       ShowSuggestions(
           focused_control,
-          AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick);
+          AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick,
+          /*form_cache=*/{});
 #endif
     }
   }
@@ -1881,7 +1899,7 @@ void AutofillAgent::JavaScriptChangedValue(WebFormControlElement element,
           form_util::FindFormAndFieldForFormControlElement(
               element, field_data_manager(),
               GetCallTimerState(kJavaScriptChangedValue),
-              /*extract_options=*/{})) {
+              /*extract_options=*/{}, /*form_cache=*/{})) {
     auto& [form, field] = *form_and_field;
     if (auto* autofill_driver = unsafe_autofill_driver()) {
       autofill_driver->JavaScriptChangedAutofilledValue(
@@ -1944,11 +1962,17 @@ void AutofillAgent::OnProvisionallySaveForm(
       break;
     case FormTracker::SaveFormReason::kTextFieldChanged:
       update_submission_data_on_user_edit();
-      OnTextFieldValueChanged(element);
+      OnTextFieldValueChanged(
+          element,
+          SynchronousFormCache(form_util::GetFormRendererId(form_element),
+                               provisionally_saved_form()));
       break;
     case FormTracker::SaveFormReason::kSelectChanged:
       update_submission_data_on_user_edit();
-      OnSelectControlSelectionChanged(element);
+      OnSelectControlSelectionChanged(
+          element,
+          SynchronousFormCache(form_util::GetFormRendererId(form_element),
+                               provisionally_saved_form()));
       break;
   }
 }
@@ -2003,7 +2027,8 @@ void AutofillAgent::TrackAutofilledElement(
 
 void AutofillAgent::UpdateStateForTextChange(
     const WebFormControlElement& element,
-    FieldPropertiesFlags flag) {
+    FieldPropertiesFlags flag,
+    const SynchronousFormCache& form_cache) {
   const auto input_element = element.DynamicTo<WebInputElement>();
   if (!input_element || !input_element.IsTextField()) {
     return;
@@ -2013,7 +2038,7 @@ void AutofillAgent::UpdateStateForTextChange(
       form_util::GetFieldRendererId(element), element.Value().Utf16(), flag);
 
   password_autofill_agent_->UpdatePasswordStateForTextChange(input_element,
-                                                             /*form_cache=*/{});
+                                                             form_cache);
 }
 
 std::optional<FormData> AutofillAgent::GetSubmittedForm(
