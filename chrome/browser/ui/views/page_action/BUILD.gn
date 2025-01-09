@@ -5,6 +5,8 @@
 assert(!is_android, "Page actions are for desktop platforms only")
 
 source_set("page_action") {
+  friend = [ ":unit_tests" ]
+
   public = [
     "action_ids.h",
     "page_action_container_view.h",
@@ -32,4 +34,21 @@ source_set("page_action") {
   ]
 
   deps = [ "//ui/gfx" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "page_action_container_view_unittest.cc",
+    "page_action_controller_unittest.cc",
+    "page_action_icon_view_unittest.cc",
+    "page_action_view_unittest.cc",
+  ]
+
+  deps = [
+    ":page_action",
+    "//chrome/test:test_support",
+    "//ui/events:test_support",
+  ]
 }
