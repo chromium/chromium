@@ -153,6 +153,7 @@ public abstract class ChromeFeatureList {
 
     // Feature names.
     /* Alphabetical: */
+    public static final String ACT_USER_BYPASS_UX = "ActUserBypassUx";
     public static final String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY =
             "AdaptiveButtonInTopToolbarPageSummary";
     public static final String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2 =
