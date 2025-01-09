@@ -9,32 +9,28 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.robolectric.Shadows.shadowOf;
 
-import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Handler;
-import android.os.Looper;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowContentResolver;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.FakeTimeTestRule;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -47,7 +43,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Optional;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.TimeUnit;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({ChromeFeatureList.PAGE_CONTENT_PROVIDER})
@@ -68,6 +64,9 @@ public class PageContentProviderImplUnitTest {
 
     @Before
     public void setUp() throws Exception {
+        // In production code PageContentProvider must be called from the binder thread, disable
+        // thread checks for these tests.
+        ThreadUtils.hasSubtleSideEffectsSetThreadAssertsDisabledForTesting(true);
         PageContentProviderImpl.clearCachedContent();
         mProvider = new PageContentProvider();
 
@@ -78,9 +77,27 @@ public class PageContentProviderImplUnitTest {
         when(mActivityTabProvider.get()).thenReturn(mTab);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test()
     public void testInvalidUrl() {
-        mProvider.query(Uri.parse("content://com.android.invalid/123456"), null, null, null, null);
+        var result =
+                mProvider.query(
+                        Uri.parse("content://com.android.invalid/123456"), null, null, null, null);
+
+        assertCursorContainsErrorMessage(result, "Invalid URI");
+    }
+
+    @Test()
+    public void testUrlAfterExpiration() throws InterruptedException {
+        var contentUri =
+                PageContentProviderImpl.getContentUriForUrl(
+                        "https://google.com", mActivityTabProvider);
+
+        // Run all delayed tasks to ensure the URI is expired.
+        ShadowLooper.idleMainLooper(1, TimeUnit.HOURS);
+
+        var resultCursor = mProvider.query(Uri.parse(contentUri), null, null, null, null);
+
+        assertCursorContainsErrorMessage(resultCursor, "Invalid ID");
     }
 
     @Test
@@ -93,118 +110,101 @@ public class PageContentProviderImplUnitTest {
 
     @Test
     public void testQueryValidContentUrl() {
+        setInnerTextExtractionResult("Page contents!", 200);
+
         var contentUri =
                 PageContentProviderImpl.getContentUriForUrl(
                         mTab.getUrl().getSpec(), mActivityTabProvider);
         // Wait 300ms between creating URI and querying it.
         mFakeTimeTestRule.advanceMillis(300);
         Cursor resultCursor;
-        // Time between creating URI and querying it should be recorded.
+        // Time between creating URI and querying it should be recorded. As well as the time spent
+        // extracting text and the total time passed.
         try (HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Android.AssistContent.WebPageContentProvider.Latency.CreateToExtractionStart",
-                        300)) {
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.AssistContent.WebPageContentProvider.Latency.CreateToExtractionStart",
+                                300)
+                        .expectIntRecord(
+                                "Android.AssistContent.WebPageContentProvider.Latency.ExtractionStartToEnd",
+                                200)
+                        .expectIntRecord(
+                                "Android.AssistContent.WebPageContentProvider.Latency.TotalLatency",
+                                300 + 200)
+                        .build()) {
             resultCursor = mProvider.query(Uri.parse(contentUri), null, null, null, null);
         }
         assertCursorContainsValues(
-                resultCursor,
-                mTab.getUrl().getSpec(),
-                /* isFinishedLoading= */ false,
-                /* contents= */ "");
+                resultCursor, mTab.getUrl().getSpec(), /* contents= */ "Page contents!");
         verify(mInnerTextNatives).getInnerText(eq(mRenderFrameHost), any());
     }
 
     @Test
-    public void testObserverUpdate() throws TimeoutException {
-        var contentObserverCallbackHelper = new CallbackHelper();
-        ArgumentCaptor<Callback<Optional<String>>> innerTextCallbackCaptor =
-                ArgumentCaptor.forClass(Callback.class);
+    public void testQuery_errorWhileExtracting() {
+        setInnerTextExtractionError(100);
 
         var contentUri =
                 PageContentProviderImpl.getContentUriForUrl(
                         mTab.getUrl().getSpec(), mActivityTabProvider);
-        mFakeTimeTestRule.advanceMillis(250);
-        mProvider.query(Uri.parse(contentUri), null, null, null, null);
-        verify(mInnerTextNatives).getInnerText(any(), innerTextCallbackCaptor.capture());
-
-        ContextUtils.getApplicationContext()
-                .getContentResolver()
-                .registerContentObserver(
-                        Uri.parse(contentUri),
-                        false,
-                        new ContentObserver(new Handler(Looper.getMainLooper())) {
-                            @Override
-                            public void onChange(boolean selfChange) {
-                                contentObserverCallbackHelper.notifyCalled();
-                            }
-                        });
-
-        // Wait 600ms between starting the text extraction process and it completing.
-        mFakeTimeTestRule.advanceMillis(600);
-        // Time it took to extract text should have been recorded.
-        try (var histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Android.AssistContent.WebPageContentProvider.Latency.ExtractionStartToEnd",
-                        600)) {
-            innerTextCallbackCaptor.getValue().onResult(Optional.of("Inner text of page"));
-        }
-        shadowOf(Looper.getMainLooper()).idle();
-
-        contentObserverCallbackHelper.waitForCallback(0);
-    }
-
-    @Test
-    public void testQueryWithLoadedResults() {
-        ArgumentCaptor<Callback<Optional<String>>> innerTextCallbackCaptor =
-                ArgumentCaptor.forClass(Callback.class);
-
-        var contentUri =
-                PageContentProviderImpl.getContentUriForUrl(
-                        mTab.getUrl().getSpec(), mActivityTabProvider);
-        mFakeTimeTestRule.advanceMillis(100);
-        mProvider.query(Uri.parse(contentUri), null, null, null, null);
-        verify(mInnerTextNatives).getInnerText(any(), innerTextCallbackCaptor.capture());
-
-        mFakeTimeTestRule.advanceMillis(200);
-        innerTextCallbackCaptor.getValue().onResult(Optional.of("Inner text of page"));
-
         mFakeTimeTestRule.advanceMillis(300);
-        Cursor secondResultCursor;
-
-        // Time between completing text extraction and second query should be recorded, as well as
-        // the total time passed.
-        try (var histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                "Android.AssistContent.WebPageContentProvider.Latency.ExtractionEndToFinalQuery",
-                                300)
-                        .expectIntRecord(
-                                "Android.AssistContent.WebPageContentProvider.Latency.CreateToFinalQuery",
-                                100 + 200 + 300)
-                        .build()) {
-            secondResultCursor = mProvider.query(Uri.parse(contentUri), null, null, null, null);
-        }
-        assertCursorContainsValues(
-                secondResultCursor,
-                mTab.getUrl().getSpec(),
-                /* isFinishedLoading= */ true,
-                /* contents= */ "Inner text of page");
+        Cursor resultCursor = mProvider.query(Uri.parse(contentUri), null, null, null, null);
+        assertCursorContainsErrorMessage(resultCursor, "Error during extraction");
     }
 
-    private void assertCursorContainsValues(
-            Cursor cursor, String url, boolean isFinishedLoading, String contents) {
+    private void setInnerTextExtractionResult(String result, int resultDelayMs) {
+        doAnswer(
+                        invocationOnMock -> {
+                            Callback<Optional<String>> callback =
+                                    (Callback<Optional<String>>)
+                                            invocationOnMock.getArgument(1, Callback.class);
+                            mFakeTimeTestRule.advanceMillis(resultDelayMs);
+                            callback.onResult(Optional.of(result));
+                            return null;
+                        })
+                .when(mInnerTextNatives)
+                .getInnerText(eq(mRenderFrameHost), any());
+    }
+
+    private void setInnerTextExtractionError(int resultDelayMs) {
+        doAnswer(
+                        invocationOnMock -> {
+                            Callback<Optional<String>> callback =
+                                    (Callback<Optional<String>>)
+                                            invocationOnMock.getArgument(1, Callback.class);
+                            mFakeTimeTestRule.advanceMillis(resultDelayMs);
+                            callback.onResult(Optional.empty());
+                            return null;
+                        })
+                .when(mInnerTextNatives)
+                .getInnerText(eq(mRenderFrameHost), any());
+    }
+
+    private void assertCursorContainsErrorMessage(Cursor cursor, String errorMessage) {
+        assertNotNull(cursor);
         assertEquals(1, cursor.getCount());
         cursor.moveToFirst();
+        var successColumnIndex = cursor.getColumnIndex("success");
+        var errorMessageColumnIndex = cursor.getColumnIndex("error_message");
+        assertNotEquals(-1, successColumnIndex);
+        assertNotEquals(-1, errorMessageColumnIndex);
+
+        assertEquals(0, cursor.getInt(successColumnIndex));
+        assertEquals(errorMessage, cursor.getString(errorMessageColumnIndex));
+    }
+
+    private void assertCursorContainsValues(Cursor cursor, String url, String contents) {
         assertNotNull(cursor);
+        assertEquals(1, cursor.getCount());
+        cursor.moveToFirst();
         var urlColumnIndex = cursor.getColumnIndex("_id");
-        var isLoadedColumnIndex = cursor.getColumnIndex("is_finished_loading");
+        var successColumnIndex = cursor.getColumnIndex("success");
         var contentsColumnIndex = cursor.getColumnIndex("contents");
         assertNotEquals(-1, urlColumnIndex);
-        assertNotEquals(-1, isLoadedColumnIndex);
+        assertNotEquals(-1, successColumnIndex);
         assertNotEquals(-1, contentsColumnIndex);
 
         assertEquals(url, cursor.getString(urlColumnIndex));
-        assertEquals(isFinishedLoading ? 1 : 0, cursor.getInt(isLoadedColumnIndex));
+        assertEquals(1, cursor.getInt(successColumnIndex));
         assertEquals(contents, cursor.getString(contentsColumnIndex));
     }
 }
