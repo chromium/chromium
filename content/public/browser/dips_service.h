@@ -45,16 +45,6 @@ class CONTENT_EXPORT DIPSService : public base::SupportsUserData {
         const DIPSRedirectChainInfoPtr& chain) {}
   };
 
-  static constexpr uint64_t kDefaultRemoveMask =
-      content::BrowsingDataRemover::DATA_TYPE_COOKIES |
-      content::BrowsingDataRemover::DATA_TYPE_DOM_STORAGE |
-      content::BrowsingDataRemover::DATA_TYPE_MEDIA_LICENSES |
-      content::BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX |
-      content::BrowsingDataRemover::DATA_TYPE_CACHE |
-      content::BrowsingDataRemover::DATA_TYPE_DOWNLOADS |
-      content::BrowsingDataRemover::DATA_TYPE_RELATED_WEBSITE_SETS_PERMISSIONS |
-      content::BrowsingDataRemover::DATA_TYPE_DEVICE_BOUND_SESSIONS;
-
   static DIPSService* Get(content::BrowserContext* context);
 
   // Some embedders support the user signing into the browser. In order to

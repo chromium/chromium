@@ -16,8 +16,6 @@ class ChromeDipsDelegate : public content::DipsDelegate {
  public:
   explicit ChromeDipsDelegate(base::PassKey<ChromeContentBrowserClient>);
 
-  uint64_t GetRemoveMask() override;
-
   bool ShouldDeleteInteractionRecords(uint64_t remove_mask) override;
 };
 

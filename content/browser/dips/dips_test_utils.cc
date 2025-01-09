@@ -410,8 +410,6 @@ void TpcBlockingBrowserClient::GrantCookieAccessDueToHeuristic(
 // DATA_TYPE_HISTORY bit.
 class SimpleDipsDelegate : public content::DipsDelegate {
  public:
-  uint64_t GetRemoveMask() override { return DIPSService::kDefaultRemoveMask; }
-
   bool ShouldDeleteInteractionRecords(uint64_t remove_mask) override {
     return remove_mask & TpcBlockingBrowserClient::DATA_TYPE_HISTORY;
   }

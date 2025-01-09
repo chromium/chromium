@@ -33,6 +33,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/allow_service_worker_result.h"
 #include "content/public/browser/auction_result.h"
+#include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/certificate_request_result_type.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/clipboard_types.h"
@@ -3074,6 +3075,25 @@ class CONTENT_EXPORT ContentBrowserClient {
   // i.e., DIPSService::Get(browser_context) == dips_service.
   virtual void OnDipsServiceCreated(BrowserContext* browser_context,
                                     DIPSService* dips_service) {}
+
+  // The default value returned by ContentBrowserClient::GetDipsRemoveMask().
+  // This should contain everything known to //content that can be deleted by
+  // domain or origin.
+  static constexpr uint64_t kDefaultDipsRemoveMask =
+      BrowsingDataRemover::DATA_TYPE_COOKIES |
+      BrowsingDataRemover::DATA_TYPE_DOM_STORAGE |
+      BrowsingDataRemover::DATA_TYPE_MEDIA_LICENSES |
+      BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX |
+      BrowsingDataRemover::DATA_TYPE_CACHE |
+      BrowsingDataRemover::DATA_TYPE_DOWNLOADS |
+      BrowsingDataRemover::DATA_TYPE_RELATED_WEBSITE_SETS_PERMISSIONS |
+      BrowsingDataRemover::DATA_TYPE_DEVICE_BOUND_SESSIONS;
+
+  // Get the `remove_mask` that DIPS will pass to BrowsingDataRemover::Remove()
+  // to delete storage for a site. This allows DIPS to clear types of storage
+  // added by embedders. The default implementation returns
+  // kDefaultDipsRemoveMask.
+  virtual uint64_t GetDipsRemoveMask();
 
   // Allows the embedder to suppress the firing of the AXLoadComplete event.
   // Currently, this is only respected on Mac. Since VoiceOver on Mac will

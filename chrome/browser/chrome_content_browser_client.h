@@ -1088,6 +1088,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool ShouldEnableDips(content::BrowserContext* browser_context) override;
   void OnDipsServiceCreated(content::BrowserContext* browser_context,
                             DIPSService* dips_service) override;
+  uint64_t GetDipsRemoveMask() override;
 
   bool ShouldSuppressAXLoadComplete(content::RenderFrameHost* rfh) override;
 

@@ -25,7 +25,6 @@
 namespace content {
 class BrowserContext;
 class BrowserContextImpl;
-class DipsDelegate;
 }  // namespace content
 
 namespace dips {
@@ -172,7 +171,6 @@ class CONTENT_EXPORT DIPSServiceImpl : public DIPSService {
   std::unique_ptr<dips::PersistentRepeatingTimer> repeating_timer_;
   base::SequenceBound<DIPSStorage> storage_;
   base::ObserverList<Observer> observers_;
-  std::unique_ptr<content::DipsDelegate> dips_delegate_;
 
   std::map<std::string, int> open_sites_;
 

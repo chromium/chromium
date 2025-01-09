@@ -28,6 +28,7 @@
 #include "content/browser/dips/dips_test_utils.h"
 #include "content/browser/dips/dips_utils.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/dips_delegate.h"
 #include "content/public/browser/dips_redirect_info.h"
 #include "content/public/common/content_client.h"
@@ -417,7 +418,7 @@ TEST_F(DIPSServiceStateRemovalTest, DISABLED_BrowsingDataDeletion_Enabled) {
       net::CookiePartitionKeyCollection());
   delegate_.ExpectCall(
       base::Time::Min(), base::Time::Max(),
-      (DIPSService::kDefaultRemoveMask &
+      (content::ContentBrowserClient::kDefaultDipsRemoveMask &
        ~content::BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX) |
           content::BrowsingDataRemover::DATA_TYPE_AVOID_CLOSING_CONNECTIONS,
       content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB |
@@ -798,7 +799,7 @@ TEST_F(DIPSServiceStateRemovalTest, ImmediateEnforcement) {
       net::CookiePartitionKeyCollection());
   delegate_.ExpectCall(
       base::Time::Min(), base::Time::Max(),
-      (DIPSService::kDefaultRemoveMask &
+      (content::ContentBrowserClient::kDefaultDipsRemoveMask &
        ~content::BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX) |
           content::BrowsingDataRemover::DATA_TYPE_AVOID_CLOSING_CONNECTIONS,
       content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB |

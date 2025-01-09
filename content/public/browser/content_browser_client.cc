@@ -1800,6 +1800,10 @@ bool ContentBrowserClient::ShouldEnableDips(BrowserContext* browser_context) {
   return true;
 }
 
+uint64_t ContentBrowserClient::GetDipsRemoveMask() {
+  return kDefaultDipsRemoveMask;
+}
+
 bool ContentBrowserClient::ShouldSuppressAXLoadComplete(RenderFrameHost* rfh) {
   return false;
 }

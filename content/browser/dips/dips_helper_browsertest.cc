@@ -26,6 +26,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_remover.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/dips_delegate.h"
 #include "content/public/browser/dips_service.h"
 #include "content/public/browser/web_contents.h"
@@ -444,7 +445,7 @@ bool ClearBrowsingData(content::BrowsingDataRemover* remover,
   const base::Time now = base::Time::Now();
   remover->RemoveAndReply(
       now - time_period, now,
-      DIPSService::kDefaultRemoveMask |
+      content::ContentBrowserClient::kDefaultDipsRemoveMask |
           TpcBlockingBrowserClient::DATA_TYPE_HISTORY,
       content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB, &observer);
   run_loop.Run();

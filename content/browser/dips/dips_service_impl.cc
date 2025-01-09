@@ -35,7 +35,6 @@
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/dips_delegate.h"
 #include "content/public/browser/dips_redirect_info.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
@@ -277,9 +276,7 @@ DIPSService* DIPSService::Get(content::BrowserContext* context) {
 
 DIPSServiceImpl::DIPSServiceImpl(base::PassKey<content::BrowserContextImpl>,
                                  content::BrowserContext* context)
-    : browser_context_(context),
-      dips_delegate_(
-          content::GetContentClient()->browser()->CreateDipsDelegate()) {
+    : browser_context_(context) {
   DCHECK(base::FeatureList::IsEnabled(features::kDIPS));
   std::optional<base::FilePath> path_to_use;
   base::FilePath dips_path = GetDIPSFilePath(browser_context_);
@@ -689,7 +686,7 @@ void DIPSServiceImpl::RunDeletionTaskOnUIThread(std::vector<std::string> sites,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   uint64_t remove_mask =
-      dips_delegate_ ? dips_delegate_->GetRemoveMask() : kDefaultRemoveMask;
+      content::GetContentClient()->browser()->GetDipsRemoveMask();
 
   StateClearer::DeleteState(browser_context_->GetBrowsingDataRemover(),
                             std::move(sites), remove_mask, std::move(callback));
