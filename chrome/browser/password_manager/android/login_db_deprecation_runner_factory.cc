@@ -40,7 +40,7 @@ LoginDbDeprecationRunnerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
 #if BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
   return nullptr;
-#endif
+#else
   Profile* profile = Profile::FromBrowserContext(context);
   PrefService* prefs = profile->GetPrefs();
 
@@ -64,4 +64,5 @@ LoginDbDeprecationRunnerFactory::BuildServiceInstanceForBrowserContext(
   return std::make_unique<password_manager::LoginDbDeprecationRunner>(
       std::make_unique<password_manager::LoginDbDeprecationPasswordExporter>(
           profile->GetPrefs(), profile->GetPath()));
+#endif  // BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 }
