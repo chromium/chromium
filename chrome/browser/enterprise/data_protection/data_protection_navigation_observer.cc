@@ -120,6 +120,7 @@ void OnRealTimeLookupComplete(
 }
 
 bool IsEnterpriseLookupEnabled(Profile* profile) {
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   // Some tests return a non-null pointer for the enterprise lookup service,
   // so we need to defensively check if enterprise lookup is enabled.
   auto* connectors_service =
@@ -128,6 +129,9 @@ bool IsEnterpriseLookupEnabled(Profile* profile) {
   bool has_valid_dm_token =
       connectors_service &&
       connectors_service->GetDMTokenForRealTimeUrlCheck().has_value();
+#else
+  bool has_valid_dm_token = false;
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   return safe_browsing::RealTimePolicyEngine::CanPerformEnterpriseFullURLLookup(
       profile->GetPrefs(), has_valid_dm_token, profile->IsOffTheRecord(),
       profile->IsGuestSession());
@@ -163,9 +167,13 @@ bool IsScreenshotProtectionEnabled() {
 }
 
 std::string GetIdentifier(content::BrowserContext* browser_context) {
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   return enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
              browser_context)
       ->GetRealTimeUrlCheckIdentifier();
+#else
+  return std::string();
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 }
 
 void LogVerdictSource(

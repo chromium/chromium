@@ -20,7 +20,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/enterprise/signals/signals_utils.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
@@ -58,6 +57,10 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/dbus/constants/dbus_switches.h"
+#endif
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #endif
 
 namespace enterprise_signals {
@@ -251,6 +254,7 @@ void ContextInfoFetcher::Fetch(ContextInfoCallback callback) {
 
   info.browser_affiliation_ids = GetBrowserAffiliationIDs();
   info.profile_affiliation_ids = GetProfileAffiliationIDs();
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   info.on_file_attached_providers =
       GetAnalysisConnectorProviders(enterprise_connectors::FILE_ATTACHED);
   info.on_file_downloaded_providers =
@@ -261,6 +265,7 @@ void ContextInfoFetcher::Fetch(ContextInfoCallback callback) {
       GetAnalysisConnectorProviders(enterprise_connectors::PRINT);
   info.realtime_url_check_mode = GetRealtimeUrlCheckMode();
   info.on_security_event_providers = GetOnSecurityEventProviders();
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   info.browser_version = version_info::GetVersionNumber();
   info.site_isolation_enabled =
       content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites();
@@ -311,6 +316,7 @@ std::vector<std::string> ContextInfoFetcher::GetProfileAffiliationIDs() {
   return {ids.begin(), ids.end()};
 }
 
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 std::vector<std::string> ContextInfoFetcher::GetAnalysisConnectorProviders(
     enterprise_connectors::AnalysisConnector connector) {
   return connectors_service_->GetAnalysisServiceProviderNames(connector);
@@ -324,6 +330,7 @@ ContextInfoFetcher::GetRealtimeUrlCheckMode() {
 std::vector<std::string> ContextInfoFetcher::GetOnSecurityEventProviders() {
   return connectors_service_->GetReportingServiceProviderNames();
 }
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
 SettingValue ContextInfoFetcher::GetOSFirewall() {
 #if BUILDFLAG(IS_LINUX)

@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/web_contents.h"

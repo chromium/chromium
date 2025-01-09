@@ -33,9 +33,11 @@
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
-#include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog.h"
-#include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog_factory.h"
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+#include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog_factory.h"
+#endif  // BUILDFLAG(ENTERPRISE_DATA_PROTECTION)
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/enterprise/data_controls/android_data_controls_dialog.h"
@@ -201,8 +203,10 @@ void PasteIfAllowedByContentAnalysis(
 data_controls::DataControlsDialogFactory* GetDialogFactory() {
 #if BUILDFLAG(IS_ANDROID)
   return data_controls::AndroidDataControlsDialogFactory::GetInstance();
-#else
+#elif BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
   return data_controls::DesktopDataControlsDialogFactory::GetInstance();
+#else
+  return nullptr;
 #endif
 }
 
@@ -272,13 +276,13 @@ void OnDataControlsPasteWarning(
                                  /*bypassed=*/true);
   }
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || !BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
   std::move(callback).Run(std::move(clipboard_paste_data));
 #else
   PasteIfAllowedByContentAnalysis(
       destination.web_contents(), source, destination, metadata,
       std::move(clipboard_paste_data), std::move(callback));
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID) || !BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 }
 
 void PasteIfAllowedByDataControls(
@@ -339,13 +343,13 @@ void PasteIfAllowedByDataControls(
         data_controls::GetLastReplacedClipboardData().clipboard_paste_data;
   }
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || !BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
   std::move(callback).Run(std::move(clipboard_paste_data));
 #else
   PasteIfAllowedByContentAnalysis(
       destination.web_contents(), source, destination, metadata,
       std::move(clipboard_paste_data), std::move(callback));
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID) || !BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 }
 
 #if !BUILDFLAG(IS_ANDROID)

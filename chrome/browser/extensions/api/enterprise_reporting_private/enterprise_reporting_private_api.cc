@@ -464,6 +464,7 @@ EnterpriseReportingPrivateGetContextInfoFunction::
 
 ExtensionFunction::ResponseAction
 EnterpriseReportingPrivateGetContextInfoFunction::Run() {
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   auto* connectors_service =
       enterprise_connectors::ConnectorsServiceFactory::GetInstance()
           ->GetForBrowserContext(browser_context());
@@ -477,6 +478,9 @@ EnterpriseReportingPrivateGetContextInfoFunction::Run() {
       this));
 
   return RespondLater();
+#else
+  return RespondNow(NoArguments());
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 }
 
 void EnterpriseReportingPrivateGetContextInfoFunction::OnContextInfoRetrieved(
@@ -948,6 +952,7 @@ EnterpriseReportingPrivateReportDataMaskingEventFunction::
 
 ExtensionFunction::ResponseAction
 EnterpriseReportingPrivateReportDataMaskingEventFunction::Run() {
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   auto params =
       api::enterprise_reporting_private::ReportDataMaskingEvent::Params::Create(
           args());
@@ -955,6 +960,7 @@ EnterpriseReportingPrivateReportDataMaskingEventFunction::Run() {
 
   enterprise_connectors::ReportDataMaskingEvent(browser_context(),
                                                 std::move(params->event));
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
   return RespondNow(NoArguments());
 }

@@ -10,7 +10,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
-#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/common_signals_decorator.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/context_signals_decorator.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/signals_decorator.h"
@@ -20,6 +19,10 @@
 #include "chrome/browser/enterprise/signals/context_info_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/common/management/management_service.h"
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #include "base/check.h"
@@ -54,9 +57,12 @@ std::unique_ptr<SignalsService> CreateSignalsService(Profile* profile) {
   std::vector<std::unique_ptr<SignalsDecorator>> decorators;
 
   decorators.push_back(std::make_unique<CommonSignalsDecorator>());
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   decorators.push_back(std::make_unique<ContextSignalsDecorator>(
       enterprise_signals::ContextInfoFetcher::CreateInstance(
           profile, ConnectorsServiceFactory::GetForBrowserContext(profile))));
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
