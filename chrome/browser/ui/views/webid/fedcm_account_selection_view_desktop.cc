@@ -555,7 +555,7 @@ void FedCmAccountSelectionView::OnAccountSelected(
       return;
     }
     ShowVerifyingSheet(account);
-    UpdateDialogPositionIfModal();
+    UpdateDialogPosition();
     return;
   }
 
@@ -570,7 +570,7 @@ void FedCmAccountSelectionView::OnAccountSelected(
     // these happen by time the dialog is closed, it means our placeholder
     // assumption is true i.e. the user has closed the tab.
     modal_disclosure_dialog_state_ = DisclosureDialogResult::kDestroy;
-    UpdateDialogPositionIfModal();
+    UpdateDialogPosition();
     return;
   }
 
@@ -580,7 +580,7 @@ void FedCmAccountSelectionView::OnAccountSelected(
   state_ = State::SINGLE_ACCOUNT_PICKER;
   account_selection_view_->ShowSingleAccountConfirmDialog(
       account, /*show_back_button=*/true);
-  UpdateDialogPositionIfModal();
+  UpdateDialogPosition();
 }
 
 void FedCmAccountSelectionView::OnLinkClicked(LinkType link_type,
@@ -606,7 +606,7 @@ void FedCmAccountSelectionView::OnBackButtonClicked() {
     state_ = State::SINGLE_ACCOUNT_PICKER;
     account_selection_view_->ShowSingleAccountConfirmDialog(
         accounts_[0], /*show_back_button=*/false);
-    UpdateDialogPositionIfModal();
+    UpdateDialogPosition();
     return;
   }
   // If the back button was clicked while on the multi account picker, go back
@@ -615,14 +615,14 @@ void FedCmAccountSelectionView::OnBackButtonClicked() {
     state_ = State::SINGLE_RETURNING_ACCOUNT_PICKER;
     account_selection_view_->ShowSingleReturningAccountDialog(accounts_,
                                                               idp_list_);
-    UpdateDialogPositionIfModal();
+    UpdateDialogPosition();
     return;
   }
   ShowMultiAccountPicker(
       accounts_, idp_list_,
       /*show_back_button=*/started_as_single_returning_account_,
       /*is_choose_an_account=*/last_multi_account_is_choose_an_account_);
-  UpdateDialogPositionIfModal();
+  UpdateDialogPosition();
 }
 
 void FedCmAccountSelectionView::OnCloseButtonClicked(const ui::Event& event) {
@@ -788,7 +788,7 @@ void FedCmAccountSelectionView::OnChooseAnAccountClicked() {
   ShowMultiAccountPicker(accounts_, idp_list_,
                          /*show_back_button=*/true,
                          /*is_choose_an_account=*/true);
-  UpdateDialogPositionIfModal();
+  UpdateDialogPosition();
   base::UmaHistogramBoolean("Blink.FedCm.ChooseAnAccountSelected.Desktop",
                             true);
 }
@@ -822,12 +822,6 @@ void FedCmAccountSelectionView::UpdateDialogPosition() {
             account_selection_view_->web_contents())
             ->delegate()
             ->GetWebContentsModalDialogHost());
-  }
-}
-
-void FedCmAccountSelectionView::UpdateDialogPositionIfModal() {
-  if (dialog_type_ == DialogType::MODAL) {
-    UpdateDialogPosition();
   }
 }
 

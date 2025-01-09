@@ -195,9 +195,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // Virtual for testing.
   virtual void UpdateDialogPosition();
 
-  // Same as above, but does nothing if a bubble dialog is showing.
-  void UpdateDialogPositionIfModal();
-
   // Gets the dialog widget from the account selection view, if available.
   // Otherwise, return a nullptr.
   views::Widget* GetDialogWidget();
