@@ -117,6 +117,7 @@ struct LogicalSize;
 enum InvalidationScope { kInvalidateCurrentScope, kInvalidateAllScopes };
 
 using StyleSheetKey = AtomicString;
+using UnorderedTreeScopeSet = HeapHashSet<Member<TreeScope>>;
 
 // The StyleEngine class manages style-related state for the document. There is
 // a 1-1 relationship of Document to StyleEngine. The document calls the
@@ -242,6 +243,18 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   Element* EnsureVTTOriginatingElement();
 
   const ActiveStyleSheetVector ActiveStyleSheetsForInspector();
+
+  // All ShadowRoots in the Document.
+  const UnorderedTreeScopeSet& GetActiveTreeScopes() const {
+    DCHECK_EQ(
+        active_tree_scopes_.end(),
+        std::find_if(active_tree_scopes_.begin(), active_tree_scopes_.end(),
+                     [&, this](const Member<TreeScope>& tree_scope) {
+                       return tree_scope.Get() == document_.Get();
+                     }))
+        << "Document must not appear in active_tree_scopes_";
+    return active_tree_scopes_;
+  }
 
   bool NeedsActiveStyleUpdate() const;
   void SetNeedsActiveStyleUpdate(TreeScope&);
@@ -797,7 +810,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
       const RuleFeatureSet& features,
       const HeapVector<Member<StyleRuleBase>>& rules);
 
-  typedef HeapHashSet<Member<TreeScope>> UnorderedTreeScopeSet;
   bool MediaQueryAffectingValueChanged(const ActiveStyleSheetVector&,
                                        MediaValueChange);
   void MediaQueryAffectingValueChanged(TreeScope&, MediaValueChange);

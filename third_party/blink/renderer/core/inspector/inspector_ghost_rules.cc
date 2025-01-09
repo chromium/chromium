@@ -8,6 +8,8 @@
 #include "third_party/blink/renderer/core/css/css_nested_declarations_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
+#include "third_party/blink/renderer/core/css/resolver/scoped_style_resolver.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 
 namespace blink {
@@ -51,9 +53,60 @@ void InspectorGhostRules::Populate(CSSStyleSheet& sheet) {
   }
 }
 
+void InspectorGhostRules::Activate(Document& document) {
+  ActivateTreeScope(document);
+  for (const Member<TreeScope>& tree_scope :
+       document.GetStyleEngine().GetActiveTreeScopes()) {
+    ActivateTreeScope(*tree_scope);
+  }
+  // TODO(crbug.com/363985597): Handle User stylesheets.
+}
+
+void InspectorGhostRules::ActivateTreeScope(TreeScope& tree_scope) {
+  ScopedStyleResolver* resolver = tree_scope.GetScopedStyleResolver();
+  if (!resolver) {
+    return;
+  }
+  StyleEngine& style_engine = tree_scope.GetDocument().GetStyleEngine();
+  bool any_affected = false;
+  // Build an alternative ActiveStyleSheetVector for the TreeScope,
+  // where the RuleSet of each (affected) entry is replaced with a freshly
+  // created "unconnected" RuleSet. That unconnected RuleSet will contain
+  // any populated ghost rules.
+  ActiveStyleSheetVector alternative_stylesheets;
+  alternative_stylesheets.ReserveInitialCapacity(
+      resolver->GetActiveStyleSheets().size());
+  for (const ActiveStyleSheet& active_stylesheet :
+       resolver->GetActiveStyleSheets()) {
+    CSSStyleSheet* sheet = active_stylesheet.first.Get();
+    if (affected_stylesheets_.Contains(sheet)) {
+      alternative_stylesheets.push_back(ActiveStyleSheet{
+          sheet, style_engine.CreateUnconnectedRuleSet(*sheet)});
+      any_affected = true;
+    } else {
+      alternative_stylesheets.push_back(active_stylesheet);
+    }
+  }
+  // If at least one stylesheet was affected, we swap the active stylesheets.
+  // Otherwise, the vector of alternative sheets is just discarded.
+  if (any_affected) {
+    resolver->QuietlySwapActiveStyleSheets(alternative_stylesheets);
+    // Note that `alternative_stylesheets` contains the original vector at
+    // this point. We keep track of it so we can restore it in the destructor.
+    affected_tree_scopes.insert(&tree_scope,
+                                MakeGarbageCollected<ActiveStyleSheetVector>(
+                                    std::move(alternative_stylesheets)));
+  }
+}
+
 InspectorGhostRules::~InspectorGhostRules() {
   for (const Member<CSSStyleSheet>& style_sheet : affected_stylesheets_) {
     DepopulateSheet(*style_sheet);
+  }
+  // Restore original active stylesheets.
+  for (auto [tree_scope, active_stylesheet_vector] : affected_tree_scopes) {
+    tree_scope->GetScopedStyleResolver()->QuietlySwapActiveStyleSheets(
+        *active_stylesheet_vector);
   }
 }
 
@@ -105,9 +158,9 @@ void InspectorGhostRules::PopulateSheet(
 
       // It's not valid to insert an empty nested decl. rule, so we temporarily
       // insert --dummy, then remove it immediately.
-      rule.insertRule(&execution_context, "--dummy:1", i, ASSERT_NO_EXCEPTION);
+      rule.QuietlyInsertRule(&execution_context, "--dummy:1", i);
       auto* inserted_rule = To<CSSNestedDeclarationsRule>(rule.ItemInternal(i));
-      inserted_rule->style()->removeProperty("--dummy", ASSERT_NO_EXCEPTION);
+      inserted_rule->style()->QuietlyRemoveProperty("--dummy");
       inserted_rules_.insert(inserted_rule);
       inner_rules_.insert(To<CSSStyleRule>(inserted_rule->InnerCSSStyleRule()));
     }
@@ -126,7 +179,7 @@ void InspectorGhostRules::DepopulateSheet(CSSStyleSheet& sheet) {
           DynamicTo<CSSNestedDeclarationsRule>(rule.ItemInternal(i));
       if (nested_declarations_rule &&
           inserted_rules_.Contains(nested_declarations_rule)) {
-        rule.deleteRule(i, ASSERT_NO_EXCEPTION);
+        rule.QuietlyDeleteRule(i);
       }
     }
   });

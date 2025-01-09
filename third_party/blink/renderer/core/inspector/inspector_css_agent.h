@@ -548,10 +548,6 @@ class CORE_EXPORT InspectorCSSAgent final
   HashSet<int> notify_computed_style_updated_node_ids_;
   WeakCellFactory<InspectorCSSAgent> weak_factory_{this};
 
-  // True while InspectorGhostRules is modifying a stylesheet. We don't
-  // need to respond to such mutations, because we're guaranteed to undo them.
-  bool ignore_stylesheet_mutation_ = false;
-
   // Node to be tracked for `ComputedStyleUpdated` events.
   // This is set via `trackComputedStyleUpdatesForNode` call.
   std::optional<int> node_id_for_computed_style_updated_events_;

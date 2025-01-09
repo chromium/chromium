@@ -28,7 +28,6 @@
 #include <optional>
 #include <utility>
 
-#include "base/auto_reset.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/renderer/core/animation/animation_utils.h"
 #include "third_party/blink/renderer/core/animation/css/css_animation.h"
@@ -1354,7 +1353,6 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
   if (!document.IsActive())
     return protocol::Response::ServerError("Document is not active");
 
-  base::AutoReset<bool> ignore_mutation(&ignore_stylesheet_mutation_, true);
   InspectorGhostRules ghost_rules;
 
   // The source text of mutable stylesheets needs to be updated
@@ -1365,6 +1363,10 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
     if (RuntimeEnabledFeatures::InspectorGhostRulesEnabled()) {
       ghost_rules.Populate(*stylesheet->PageStyleSheet());
     }
+  }
+
+  if (RuntimeEnabledFeatures::InspectorGhostRulesEnabled()) {
+    ghost_rules.Activate(document);
   }
 
   CheckPseudoHasCacheScope check_pseudo_has_cache_scope(
@@ -3740,12 +3742,6 @@ void InspectorCSSAgent::DidModifyDOMAttr(Element* element) {
 }
 
 void InspectorCSSAgent::DidMutateStyleSheet(CSSStyleSheet* css_style_sheet) {
-  if (ignore_stylesheet_mutation_) {
-    // The mutation comes from InspectorGhostRules. We don't care about these
-    // mutations, because they'll be reverted when getMatchedStylesForNode
-    // returns.
-    return;
-  }
   auto it = css_style_sheet_to_inspector_style_sheet_.find(css_style_sheet);
   if (it == css_style_sheet_to_inspector_style_sheet_.end())
     return;

@@ -6,6 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_GHOST_RULES_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/active_style_sheets.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
@@ -14,7 +16,9 @@ namespace blink {
 class CSSNestedDeclarationsRule;
 class CSSStyleRule;
 class CSSStyleSheet;
+class Document;
 class ExecutionContext;
+class TreeScope;
 
 // Ghost Rules are style rules that exist only during getMatchedStylesForNode
 // in order to surface the CSSNestedDeclaration rules that *could* be there,
@@ -47,8 +51,18 @@ class CORE_EXPORT InspectorGhostRules {
 
  public:
   // Insert CSSNestedDeclaration rules in any place where they can occur.
-  // Any inserted rules will automatically be removed by the destructor.
+  //
+  // Note that this *quietly* inserts rules (see CSSStyleRule/CSSGroupingRule::
+  // QuietlyInsertRule), which means that no style invalidation will take place
+  // as a result of calling this function. The ghost rules are instead made
+  // available for rule matching by `Activate`.
   void Populate(CSSStyleSheet&);
+
+  // Temporarily make rules inserted by `Populate` available for rule matching.
+  // Like `Populate`, this is a "quiet" process, causing no invalidation.
+  // Any changes made to the StyleEngine are quietly undone by the destructor.
+  void Activate(Document&);
+
   ~InspectorGhostRules();
 
   bool Contains(CSSStyleRule* rule) const {
@@ -59,10 +73,15 @@ class CORE_EXPORT InspectorGhostRules {
   void PopulateSheet(const ExecutionContext&, CSSStyleSheet&);
   void DepopulateSheet(CSSStyleSheet&);
 
+  void ActivateTreeScope(TreeScope&);
+
   HeapHashSet<Member<CSSStyleSheet>> affected_stylesheets_;
   HeapHashSet<Member<CSSNestedDeclarationsRule>> inserted_rules_;
   // The inner CSSStyleRule for each item in `inserted_rules_`.
   HeapHashSet<Member<CSSStyleRule>> inner_rules_;
+
+  HeapHashMap<Member<TreeScope>, Member<ActiveStyleSheetVector>>
+      affected_tree_scopes;
 };
 
 }  // namespace blink
