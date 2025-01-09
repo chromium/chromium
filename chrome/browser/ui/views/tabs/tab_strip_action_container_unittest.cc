@@ -100,17 +100,20 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
     tab_declutter_controller_ = std::make_unique<tabs::TabDeclutterController>(
         browser_window_interface_.get());
 
+    glic_nudge_controller_ = std::make_unique<tabs::GlicNudgeController>();
+
     locked_expansion_view_ = std::make_unique<views::View>();
 
     tab_strip_action_container_ = std::make_unique<TabStripActionContainer>(
         tab_strip_->controller(), locked_expansion_view_.get(),
-        tab_declutter_controller_.get());
+        tab_declutter_controller_.get(), glic_nudge_controller_.get());
   }
 
  protected:
   std::unique_ptr<TabStrip> tab_strip_;
   std::unique_ptr<TabStripModel> tab_strip_model_;
   std::unique_ptr<tabs::TabDeclutterController> tab_declutter_controller_;
+  std::unique_ptr<tabs::GlicNudgeController> glic_nudge_controller_;
   std::unique_ptr<MockBrowserWindowInterface> browser_window_interface_;
   TestTabStripModelDelegate tab_strip_model_delegate_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -142,11 +145,15 @@ TEST_F(TabStripActionContainerTest, OrdersButtonsCorrectly) {
             tab_strip_action_container_->children()[0]);
 
   ASSERT_EQ(tab_strip_action_container_->auto_tab_group_button(),
-            tab_strip_action_container_->children()[1]);
+            tab_strip_action_container_->children()[2]);
 
 #if BUILDFLAG(ENABLE_GLIC)
+
+  ASSERT_EQ(tab_strip_action_container_->glic_nudge_button(),
+            tab_strip_action_container_->children()[1]);
+
   ASSERT_EQ(tab_strip_action_container_->GetGlicButton(),
-            tab_strip_action_container_->children()[2]);
+            tab_strip_action_container_->children()[3]);
 #endif  // BUILDFLAG(ENABLE_GLIC)
 }
 
@@ -163,13 +170,17 @@ TEST_F(TabStripActionContainerTest, OrdersButtonsCorrectlyWithProduct) {
             tab_strip_action_container_->children()[0]);
 
   ASSERT_EQ(tab_strip_action_container_->auto_tab_group_button(),
-            tab_strip_action_container_->children()[1]);
-
-  ASSERT_EQ(tab_strip_action_container_->GetProductSpecificationsButton(),
             tab_strip_action_container_->children()[2]);
 
-#if BUILDFLAG(ENABLE_GLIC)
-  ASSERT_EQ(tab_strip_action_container_->GetGlicButton(),
+  ASSERT_EQ(tab_strip_action_container_->GetProductSpecificationsButton(),
             tab_strip_action_container_->children()[3]);
+
+#if BUILDFLAG(ENABLE_GLIC)
+
+  ASSERT_EQ(tab_strip_action_container_->glic_nudge_button(),
+            tab_strip_action_container_->children()[1]);
+
+  ASSERT_EQ(tab_strip_action_container_->GetGlicButton(),
+            tab_strip_action_container_->children()[4]);
 #endif  // BUILDFLAG(ENABLE_GLIC)
 }

@@ -184,10 +184,12 @@ void TabStripActionContainer::TabStripNudgeAnimationSession::MarkAnimationDone(
 TabStripActionContainer::TabStripActionContainer(
     TabStripController* tab_strip_controller,
     View* locked_expansion_view,
-    tabs::TabDeclutterController* tab_declutter_controller)
+    tabs::TabDeclutterController* tab_declutter_controller,
+    tabs::GlicNudgeController* glic_nudge_controller)
     : AnimationDelegateViews(this),
       locked_expansion_view_(locked_expansion_view),
       tab_declutter_controller_(tab_declutter_controller),
+      glic_nudge_controller_(glic_nudge_controller),
       tab_strip_controller_(tab_strip_controller) {
   mouse_watcher_ = std::make_unique<views::MouseWatcher>(
       std::make_unique<views::MouseWatcherViewHost>(locked_expansion_view,
@@ -211,6 +213,15 @@ TabStripActionContainer::TabStripActionContainer(
     tab_declutter_observation_.Observe(tab_declutter_controller_);
   }
 
+  // `glic_nudge_controller_` will be null if feature is not enabled.
+  if (glic_nudge_controller_) {
+    glic_nudge_button_ =
+        AddChildView(CreateGlicNudgeButton(tab_strip_controller));
+
+    SetupButtonProperties(glic_nudge_button_);
+
+    tab_glic_nudge_observation_.Observe(glic_nudge_controller_);
+  }
   auto_tab_group_button_ =
       AddChildView(CreateAutoTabGroupButton(tab_strip_controller));
 
@@ -255,6 +266,23 @@ TabStripActionContainer::~TabStripActionContainer() {
   if (scoped_tab_strip_modal_ui_) {
     scoped_tab_strip_modal_ui_.reset();
   }
+}
+
+std::unique_ptr<TabStripNudgeButton>
+TabStripActionContainer::CreateGlicNudgeButton(
+    TabStripController* tab_strip_controller) {
+  auto button = std::make_unique<TabStripNudgeButton>(
+      tab_strip_controller,
+      base::BindRepeating(&TabStripActionContainer::OnGlicNudgeButtonClicked,
+                          base::Unretained(this)),
+      base::BindRepeating(&TabStripActionContainer::OnGlicNudgeButtonDismissed,
+                          base::Unretained(this)),
+      l10n_util::GetStringUTF16(IDS_GLIC_PROMO_TITLE),
+      kGlicNudgeButtonElementId, Edge::kNone);
+
+  button->SetProperty(views::kCrossAxisAlignmentKey,
+                      views::LayoutAlignment::kCenter);
+  return button;
 }
 
 std::unique_ptr<TabStripNudgeButton>
@@ -340,10 +368,25 @@ void TabStripActionContainer::OnTabDeclutterButtonDismissed() {
   ExecuteHideTabStripNudge(tab_declutter_button_);
 }
 
+void TabStripActionContainer::OnGlicNudgeButtonClicked() {
+  ExecuteHideTabStripNudge(glic_nudge_button_);
+}
+
+void TabStripActionContainer::OnGlicNudgeButtonDismissed() {
+  ExecuteHideTabStripNudge(glic_nudge_button_);
+}
+
 void TabStripActionContainer::OnTriggerDeclutterUIVisibility() {
   CHECK(tab_declutter_controller_);
 
   ShowTabStripNudge(tab_declutter_button_);
+}
+
+void TabStripActionContainer::OnTriggerGlicNudgeUI(std::string label) {
+  // TODO(crbug.com/388341403) Show custom string in nudge.
+  CHECK(glic_nudge_button_);
+
+  ShowTabStripNudge(glic_nudge_button_);
 }
 
 DeclutterTriggerCTRBucket TabStripActionContainer::GetDeclutterTriggerBucket(

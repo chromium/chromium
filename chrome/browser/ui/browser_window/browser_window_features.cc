@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/extensions/mv2_disabled_dialog_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_opt_in_iph_controller.h"
+#include "chrome/browser/ui/tabs/glic_nudge_controller.h"
 #include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/session_service_tab_group_sync_observer.h"
@@ -41,6 +42,7 @@
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
+#include "chrome/common/chrome_features.h"
 #include "components/collaboration/public/collaboration_service.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/feature_utils.h"
@@ -128,6 +130,9 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
     if (GlicEnabling::IsEnabledForProfile(browser->GetProfile())) {
       glic_border_view_manager_ =
           std::make_unique<glic::GlicBorderViewManager>(browser);
+      if (features::IsTabstripComboButtonEnabled()) {
+        glic_nudge_controller_ = std::make_unique<tabs::GlicNudgeController>();
+      }
     }
 #endif  // BUILDFLAG(ENABLE_GLIC)
   }

@@ -41,6 +41,9 @@ namespace glic {
 class GlicBorderViewManager;
 }
 #endif
+namespace tabs {
+class GlicNudgeController;
+}
 
 namespace lens {
 class LensOverlayEntryPointController;
@@ -129,6 +132,9 @@ class BrowserWindowFeatures {
     return tab_declutter_controller_.get();
   }
 
+  tabs::GlicNudgeController* glic_nudge_controller() {
+    return glic_nudge_controller_.get();
+  }
   TabStripModel* tab_strip_model() { return tab_strip_model_; }
 
   // Returns a pointer to the ToastController for the browser window. This can
@@ -206,6 +212,8 @@ class BrowserWindowFeatures {
   std::unique_ptr<media_router::CastBrowserController> cast_browser_controller_;
 
   std::unique_ptr<DownloadToolbarUIController> download_toolbar_ui_controller_;
+
+  std::unique_ptr<tabs::GlicNudgeController> glic_nudge_controller_;
 
 #if BUILDFLAG(ENABLE_GLIC)
   std::unique_ptr<glic::GlicBorderViewManager> glic_border_view_manager_;
