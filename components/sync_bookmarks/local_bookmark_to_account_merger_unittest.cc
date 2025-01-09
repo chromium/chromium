@@ -19,6 +19,7 @@
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/bookmarks/test/test_matchers.h"
 #include "components/sync/base/features.h"
+#include "components/sync_bookmarks/switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -112,9 +113,22 @@ class FolderBuilder {
   std::optional<base::Uuid> uuid_;
 };
 
-class LocalBookmarkToAccountMergerTest : public testing::Test {
+class LocalBookmarkToAccountMergerTest : public testing::TestWithParam<bool> {
  protected:
   LocalBookmarkToAccountMergerTest() {
+    if (GetParam()) {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/
+          {syncer::kSyncEnableBookmarksInTransportMode,
+           switches::kSyncFastDeletionsDuringBookmarkBatchUpload},
+          /*disabled_features=*/{});
+    } else {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{syncer::kSyncEnableBookmarksInTransportMode},
+          /*disabled_features=*/{
+              switches::kSyncFastDeletionsDuringBookmarkBatchUpload});
+    }
+
     model_->AddObserver(&observer_);
     model_->CreateAccountPermanentFolders();
   }
@@ -144,14 +158,13 @@ class LocalBookmarkToAccountMergerTest : public testing::Test {
                                  children_of_bookmark_bar);
   }
 
-  base::test::ScopedFeatureList feature_list_{
-      syncer::kSyncEnableBookmarksInTransportMode};
+  base::test::ScopedFeatureList feature_list_;
   const std::unique_ptr<bookmarks::BookmarkModel> model_ =
       bookmarks::TestBookmarkClient::CreateModel();
   testing::NiceMock<bookmarks::MockBookmarkModelObserver> observer_;
 };
 
-TEST_F(LocalBookmarkToAccountMergerTest,
+TEST_P(LocalBookmarkToAccountMergerTest,
        ShouldUploadLocalNodesIfNoAccountNodes) {
   const std::u16string kFolder1Title = u"folder1";
   const std::u16string kFolder2Title = u"folder2";
@@ -205,7 +218,7 @@ TEST_F(LocalBookmarkToAccountMergerTest,
                                        IsUrlBookmark(kUrl4Title, kUrl4)))));
 }
 
-TEST_F(LocalBookmarkToAccountMergerTest,
+TEST_P(LocalBookmarkToAccountMergerTest,
        ShouldUploadLocalNodesUnderAllPermanentNodes) {
   const std::u16string kUrl1Title = u"url1";
   const std::u16string kUrl2Title = u"url2";
@@ -252,7 +265,7 @@ TEST_F(LocalBookmarkToAccountMergerTest,
               ElementsAre(IsUrlBookmark(kUrl3Title, kUrl3)));
 }
 
-TEST_F(LocalBookmarkToAccountMergerTest, ShouldIgnoreManagedNodes) {
+TEST_P(LocalBookmarkToAccountMergerTest, ShouldIgnoreManagedNodes) {
   const std::u16string kUrl1Title = u"url1";
   const std::u16string kUrl2Title = u"url2";
 
@@ -300,7 +313,7 @@ TEST_F(LocalBookmarkToAccountMergerTest, ShouldIgnoreManagedNodes) {
               ElementsAre(managed_node->children()[0].get()));
 }
 
-TEST_F(LocalBookmarkToAccountMergerTest, ShouldUploadLocalUuid) {
+TEST_P(LocalBookmarkToAccountMergerTest, ShouldUploadLocalUuid) {
   const std::u16string kUrl1Title = u"url1";
   const GURL kUrl1("http://www.url1.com/");
   const base::Uuid kUrl1Uuid = base::Uuid::GenerateRandomV4();
@@ -328,7 +341,7 @@ TEST_F(LocalBookmarkToAccountMergerTest, ShouldUploadLocalUuid) {
               ElementsAre(IsUrlBookmarkWithUuid(kUrl1Title, kUrl1, kUrl1Uuid)));
 }
 
-TEST_F(LocalBookmarkToAccountMergerTest, ShouldDeduplicateBySemantics) {
+TEST_P(LocalBookmarkToAccountMergerTest, ShouldDeduplicateBySemantics) {
   const std::u16string kFolder1Title = u"folder1";
 
   const std::u16string kUrl1Title = u"url1";
@@ -379,7 +392,7 @@ TEST_F(LocalBookmarkToAccountMergerTest, ShouldDeduplicateBySemantics) {
                                        IsUrlBookmark(kUrl1Title, kUrl1)))));
 }
 
-TEST_F(LocalBookmarkToAccountMergerTest, ShouldNotDeduplicateIfDifferentUrls) {
+TEST_P(LocalBookmarkToAccountMergerTest, ShouldNotDeduplicateIfDifferentUrls) {
   const std::u16string kFolder1Title = u"folder1";
   const std::u16string kFolder2Title = u"folder2";
   const std::u16string kFolder3Title = u"folder3";
@@ -467,7 +480,7 @@ TEST_F(LocalBookmarkToAccountMergerTest, ShouldNotDeduplicateIfDifferentUrls) {
 
 // This tests that truncated titles produced by legacy clients are properly
 // matched.
-TEST_F(LocalBookmarkToAccountMergerTest,
+TEST_P(LocalBookmarkToAccountMergerTest,
        ShouldDedupLocalAndAccountNodesWhenAccountHasLegacyTruncatedTitle) {
   const std::u16string kLocalLongTitle(300, 'A');
   const std::u16string kAccountTruncatedTitle(255, 'A');
@@ -495,7 +508,7 @@ TEST_F(LocalBookmarkToAccountMergerTest,
 
 // This test checks that local node with truncated title will merge with account
 // node which has full title.
-TEST_F(LocalBookmarkToAccountMergerTest,
+TEST_P(LocalBookmarkToAccountMergerTest,
        ShouldMergeLocalAndAccountNodesWhenLocalHasLegacyTruncatedTitle) {
   const std::u16string kAccountFullTitle(300, 'A');
   const std::u16string kLocalTruncatedTitle(255, 'A');
@@ -523,7 +536,7 @@ TEST_F(LocalBookmarkToAccountMergerTest,
               ElementsAre(IsFolder(kLocalTruncatedTitle, IsEmpty())));
 }
 
-TEST_F(LocalBookmarkToAccountMergerTest, ShouldDeduplicateBookmarkByUuid) {
+TEST_P(LocalBookmarkToAccountMergerTest, ShouldDeduplicateBookmarkByUuid) {
   const std::u16string kLocalTitle = u"Title 1";
   const std::u16string kAccountTitle = u"Title 2";
   const GURL kUrl("http://www.foo.com/");
@@ -554,7 +567,7 @@ TEST_F(LocalBookmarkToAccountMergerTest, ShouldDeduplicateBookmarkByUuid) {
               ElementsAre(IsUrlBookmarkWithUuid(kLocalTitle, kUrl, kUuid)));
 }
 
-TEST_F(LocalBookmarkToAccountMergerTest,
+TEST_P(LocalBookmarkToAccountMergerTest,
        ShouldDeduplicateBySemanticsAfterParentMatchedByUuid) {
   const std::u16string kFolder1Title = u"folder1";
   const std::u16string kFolder2Title = u"folder2";
@@ -622,7 +635,7 @@ TEST_F(LocalBookmarkToAccountMergerTest,
                   IsFolder(kFolder1Title, IsEmpty())));
 }
 
-TEST_F(LocalBookmarkToAccountMergerTest,
+TEST_P(LocalBookmarkToAccountMergerTest,
        ShouldDeduplicateBySemanticsAfterNestedParentMatchedByUuid) {
   const std::u16string kFolder1Title = u"folder1";
   const std::u16string kFolder2Title = u"folder2";
@@ -684,7 +697,7 @@ TEST_F(LocalBookmarkToAccountMergerTest,
                   IsFolder(kFolder1Title, IsEmpty())));
 }
 
-TEST_F(LocalBookmarkToAccountMergerTest,
+TEST_P(LocalBookmarkToAccountMergerTest,
        ShouldDeduplicateBySemanticsAfterTwoConsecutiveAncestorsMatchedByUuid) {
   const std::u16string kFolder1Title = u"folder1";
   const std::u16string kFolder2Title = u"folder2";
@@ -761,7 +774,7 @@ TEST_F(LocalBookmarkToAccountMergerTest,
                   IsFolder(kFolder1Title, IsEmpty())));
 }
 
-TEST_F(
+TEST_P(
     LocalBookmarkToAccountMergerTest,
     ShouldDeduplicateBySemanticsAfterTwoNonConsecutiveAncestorsMatchedByUuid) {
   const std::u16string kFolder1Title = u"folder1";
@@ -852,7 +865,7 @@ TEST_F(
                   IsFolder(kFolder1Title, IsEmpty())));
 }
 
-TEST_F(LocalBookmarkToAccountMergerTest,
+TEST_P(LocalBookmarkToAccountMergerTest,
        ShouldMergeBookmarkByUuidDespiteDifferentParent) {
   const std::u16string kFolderTitle = u"Folder Title";
   const std::u16string kLocalTitle = u"Title 1";
@@ -891,7 +904,7 @@ TEST_F(LocalBookmarkToAccountMergerTest,
                                              kLocalTitle, kUrl, kUuid)))));
 }
 
-TEST_F(LocalBookmarkToAccountMergerTest,
+TEST_P(LocalBookmarkToAccountMergerTest,
        ShouldNotMergeBySemanticsIfDifferentParent) {
   const std::u16string kFolder1Title = u"folder1";
   const std::u16string kFolder2Title = u"folder2";
@@ -944,7 +957,7 @@ TEST_F(LocalBookmarkToAccountMergerTest,
                                                     kUrl1Title, kUrl1)))))));
 }
 
-TEST_F(LocalBookmarkToAccountMergerTest,
+TEST_P(LocalBookmarkToAccountMergerTest,
        ShouldMergeFolderByUuidAndNotSemantics) {
   const std::u16string kTitle1 = u"Title 1";
   const std::u16string kTitle2 = u"Title 2";
@@ -984,7 +997,7 @@ TEST_F(LocalBookmarkToAccountMergerTest,
                           IsFolderWithUuid(kTitle1, kUuid1, IsEmpty())));
 }
 
-TEST_F(
+TEST_P(
     LocalBookmarkToAccountMergerTest,
     ShouldIgnoreFolderSemanticsMatchAndLaterMatchByUuidWithSemanticsNodeFirst) {
   const std::u16string kLocalOnlyTitle = u"LocalOnlyTitle";
@@ -1032,7 +1045,7 @@ TEST_F(
                   IsFolderWithUuid(kMatchingTitle, kUuid1, IsEmpty())));
 }
 
-TEST_F(LocalBookmarkToAccountMergerTest,
+TEST_P(LocalBookmarkToAccountMergerTest,
        ShouldIgnoreFolderSemanticsMatchAndLaterMatchByUuidWithUuidNodeFirst) {
   const std::u16string kLocalOnlyTitle = u"LocalOnlyTitle";
   const std::u16string kMatchingTitle = u"MatchingTitle";
@@ -1079,7 +1092,7 @@ TEST_F(LocalBookmarkToAccountMergerTest,
                   IsFolderWithUuid(kMatchingTitle, kUuid1, IsEmpty())));
 }
 
-TEST_F(LocalBookmarkToAccountMergerTest,
+TEST_P(LocalBookmarkToAccountMergerTest,
        ShouldReplaceBookmarkUuidWithConflictingURLs) {
   const std::u16string kTitle = u"Title";
   const GURL kUrl1("http://www.foo.com/");
@@ -1115,7 +1128,7 @@ TEST_F(LocalBookmarkToAccountMergerTest,
                           IsUrlBookmarkWithUuid(kTitle, kUrl1, Ne(kUuid))));
 }
 
-TEST_F(LocalBookmarkToAccountMergerTest,
+TEST_P(LocalBookmarkToAccountMergerTest,
        ShouldReplaceBookmarkUuidWithConflictingTypes) {
   const GURL kUrl1("http://www.foo.com/");
   const std::u16string kTitle = u"Title";
@@ -1150,7 +1163,7 @@ TEST_F(LocalBookmarkToAccountMergerTest,
                           IsUrlBookmarkWithUuid(kTitle, kUrl1, Ne(kUuid))));
 }
 
-TEST_F(LocalBookmarkToAccountMergerTest,
+TEST_P(LocalBookmarkToAccountMergerTest,
        ShouldReplaceBookmarkUuidWithConflictingTypesAndLocalChildren) {
   const std::u16string kFolderTitle = u"Folder Title";
   const std::u16string kUrl1Title = u"url1";
@@ -1193,6 +1206,111 @@ TEST_F(LocalBookmarkToAccountMergerTest,
                               kFolderTitle, Ne(kUuid),
                               ElementsAre(IsUrlBookmark(kUrl1Title, kUrl1)))));
 }
+
+TEST_P(LocalBookmarkToAccountMergerTest, ShouldRemoveOneChildAtArbitraryIndex) {
+  const std::u16string kUrl1Title = u"url1";
+  const std::u16string kUrl2Title = u"url2";
+  const std::u16string kUrl3Title = u"url3";
+  const std::u16string kUrl4Title = u"url4";
+
+  const GURL kUrl1("http://www.url1.com/");
+  const GURL kUrl2("http://www.url2.com/");
+  const GURL kUrl3("http://www.url3.com/");
+  const GURL kUrl4("http://www.url4.com/");
+
+  AddLocalNodes({UrlBuilder(kUrl1Title, kUrl1), UrlBuilder(kUrl2Title, kUrl2),
+                 UrlBuilder(kUrl3Title, kUrl3), UrlBuilder(kUrl4Title, kUrl4)});
+
+  LocalBookmarkToAccountMerger(model_.get())
+      .RemoveChildrenAtForTesting(
+          /*parent=*/model_->bookmark_bar_node(),
+          /*indices_to_remove=*/{2}, FROM_HERE);
+
+  EXPECT_THAT(model_->bookmark_bar_node()->children(),
+              ElementsAre(IsUrlBookmark(kUrl1Title, kUrl1),
+                          IsUrlBookmark(kUrl2Title, kUrl2),
+                          IsUrlBookmark(kUrl4Title, kUrl4)));
+
+  LocalBookmarkToAccountMerger(model_.get())
+      .RemoveChildrenAtForTesting(
+          /*parent=*/model_->bookmark_bar_node(),
+          /*indices_to_remove=*/{0}, FROM_HERE);
+
+  EXPECT_THAT(model_->bookmark_bar_node()->children(),
+              ElementsAre(IsUrlBookmark(kUrl2Title, kUrl2),
+                          IsUrlBookmark(kUrl4Title, kUrl4)));
+
+  LocalBookmarkToAccountMerger(model_.get())
+      .RemoveChildrenAtForTesting(
+          /*parent=*/model_->bookmark_bar_node(),
+          /*indices_to_remove=*/{1}, FROM_HERE);
+
+  EXPECT_THAT(model_->bookmark_bar_node()->children(),
+              ElementsAre(IsUrlBookmark(kUrl2Title, kUrl2)));
+}
+
+TEST_P(LocalBookmarkToAccountMergerTest,
+       ShouldRemoveMultipleChildrenAtArbitraryIndices) {
+  const std::u16string kUrl1Title = u"url1";
+  const std::u16string kUrl2Title = u"url2";
+  const std::u16string kUrl3Title = u"url3";
+  const std::u16string kUrl4Title = u"url4";
+  const std::u16string kUrl5Title = u"url5";
+  const std::u16string kUrl6Title = u"url6";
+
+  const GURL kUrl1("http://www.url1.com/");
+  const GURL kUrl2("http://www.url2.com/");
+  const GURL kUrl3("http://www.url3.com/");
+  const GURL kUrl4("http://www.url4.com/");
+  const GURL kUrl5("http://www.url5.com/");
+  const GURL kUrl6("http://www.url6.com/");
+
+  AddLocalNodes({UrlBuilder(kUrl1Title, kUrl1), UrlBuilder(kUrl2Title, kUrl2),
+                 UrlBuilder(kUrl3Title, kUrl3), UrlBuilder(kUrl4Title, kUrl4),
+                 UrlBuilder(kUrl5Title, kUrl5), UrlBuilder(kUrl6Title, kUrl6)});
+
+  LocalBookmarkToAccountMerger(model_.get())
+      .RemoveChildrenAtForTesting(
+          /*parent=*/model_->bookmark_bar_node(),
+          /*indices_to_remove=*/{0, 2, 3, 5}, FROM_HERE);
+
+  EXPECT_THAT(model_->bookmark_bar_node()->children(),
+              ElementsAre(IsUrlBookmark(kUrl2Title, kUrl2),
+                          IsUrlBookmark(kUrl5Title, kUrl5)));
+}
+
+TEST_P(LocalBookmarkToAccountMergerTest, ShouldRemoveAllChildren) {
+  const std::u16string kUrl1Title = u"url1";
+  const std::u16string kUrl2Title = u"url2";
+  const std::u16string kUrl3Title = u"url3";
+  const std::u16string kUrl4Title = u"url4";
+
+  const GURL kUrl1("http://www.url1.com/");
+  const GURL kUrl2("http://www.url2.com/");
+  const GURL kUrl3("http://www.url3.com/");
+  const GURL kUrl4("http://www.url4.com/");
+
+  AddLocalNodes({UrlBuilder(kUrl1Title, kUrl1), UrlBuilder(kUrl2Title, kUrl2),
+                 UrlBuilder(kUrl3Title, kUrl3), UrlBuilder(kUrl4Title, kUrl4)});
+
+  // When deleting all children, no reordering is expected.
+  EXPECT_CALL(observer_, BookmarkNodeChildrenReordered).Times(0);
+
+  LocalBookmarkToAccountMerger(model_.get())
+      .RemoveChildrenAtForTesting(
+          /*parent=*/model_->bookmark_bar_node(),
+          /*indices_to_remove=*/{0, 1, 2, 3}, FROM_HERE);
+
+  EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
+}
+
+INSTANTIATE_TEST_SUITE_P(Fast,
+                         LocalBookmarkToAccountMergerTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "FastDeletionsEnabled"
+                                             : "FastDeletionsDisabled";
+                         });
 
 }  // namespace
 

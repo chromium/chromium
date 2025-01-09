@@ -977,7 +977,7 @@ void BookmarkModel::ReorderChildren(
     const BookmarkNode* parent,
     const std::vector<const BookmarkNode*>& ordered_nodes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!client_->IsNodeManaged(parent));
+  CHECK(!client_->IsNodeManaged(parent));
 
   // Ensure that all children in `parent` are in `ordered_nodes`.
   CHECK_EQ(parent->children().size(), ordered_nodes.size());

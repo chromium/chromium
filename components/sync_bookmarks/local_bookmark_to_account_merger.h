@@ -39,6 +39,11 @@ class LocalBookmarkToAccountMerger {
   // Merges local bookmarks into account bookmarks.
   void MoveAndMerge();
 
+  // Exposed publicly for testing only.
+  void RemoveChildrenAtForTesting(const bookmarks::BookmarkNode* parent,
+                                  const std::vector<size_t>& indices_to_remove,
+                                  const base::Location& location);
+
  private:
   // Represents a pair of bookmarks, one in local storage one in account
   // storage, that have been matched by UUID. They are guaranteed to have the

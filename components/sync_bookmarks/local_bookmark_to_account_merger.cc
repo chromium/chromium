@@ -4,6 +4,7 @@
 
 #include "components/sync_bookmarks/local_bookmark_to_account_merger.h"
 
+#include <algorithm>
 #include <list>
 #include <optional>
 #include <string>
@@ -11,6 +12,7 @@
 #include <vector>
 
 #include "base/containers/adapters.h"
+#include "base/feature_list.h"
 #include "base/hash/hash.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
@@ -18,6 +20,7 @@
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/sync_bookmarks/bookmark_model_view.h"
 #include "components/sync_bookmarks/bookmark_specifics_conversions.h"
+#include "components/sync_bookmarks/switches.h"
 #include "ui/base/models/tree_node_iterator.h"
 #include "url/gurl.h"
 
@@ -99,6 +102,59 @@ GetLocalAndAccountPermanentNodePairs(const bookmarks::BookmarkModel* model) {
           {model->mobile_node(), model->account_mobile_node()}};
 }
 
+// Reorders children under `parent` such that the indices selected by
+// `selected_indices` are listed last. `selected_indices` must be non-empty and
+// sorted in ascending order.
+void ReorderChildrenByMovingSubsetToLast(
+    bookmarks::BookmarkModel* model,
+    const bookmarks::BookmarkNode* parent,
+    const std::vector<size_t>& selected_indices) {
+  CHECK(model);
+  CHECK(parent);
+  CHECK(!selected_indices.empty());
+
+  const size_t num_children = parent->children().size();
+  CHECK_LE(selected_indices.size(), num_children);
+
+  std::vector<const bookmarks::BookmarkNode*> ordered_children;
+  ordered_children.reserve(num_children);
+
+  // First, add all nodes to `ordered_children` except those selected by
+  // `selected_indices`.
+  size_t old_index = 0;
+  for (size_t selected_index : selected_indices) {
+    CHECK_LT(selected_index, num_children);
+    CHECK_LE(old_index, selected_index);
+    // Append all indices before `selected_index`.
+    while (old_index < selected_index) {
+      ordered_children.push_back(parent->children().at(old_index).get());
+      ++old_index;
+    }
+    // Skip `selected_index`.
+    CHECK_EQ(old_index, selected_index);
+    ++old_index;
+  }
+
+  // Append all indices after the maximum index in `selected_indices`.
+  while (old_index < num_children) {
+    ordered_children.push_back(parent->children().at(old_index).get());
+    ++old_index;
+  }
+
+  // At this point all indices that must NOT be deleted have been added to
+  // `ordered_children`.
+  CHECK_EQ(ordered_children.size() + selected_indices.size(), num_children);
+
+  // Append last nodes selected by `selected_indices`.
+  for (size_t selected_index : selected_indices) {
+    ordered_children.push_back(parent->children().at(selected_index).get());
+  }
+
+  // Trigger the reordering such that the selected nodes are listed last.
+  CHECK_EQ(ordered_children.size(), num_children);
+  model->ReorderChildren(parent, ordered_children);
+}
+
 }  // namespace
 
 LocalBookmarkToAccountMerger::LocalBookmarkToAccountMerger(
@@ -160,6 +216,13 @@ void LocalBookmarkToAccountMerger::MoveAndMerge() {
   model_->EndExtensiveChanges();
 }
 
+void LocalBookmarkToAccountMerger::RemoveChildrenAtForTesting(
+    const bookmarks::BookmarkNode* parent,
+    const std::vector<size_t>& indices_to_remove,
+    const base::Location& location) {
+  RemoveChildrenAt(parent, indices_to_remove, location);
+}
+
 // static
 std::unordered_map<base::Uuid,
                    LocalBookmarkToAccountMerger::GuidMatch,
@@ -209,13 +272,54 @@ void LocalBookmarkToAccountMerger::RemoveChildrenAt(
     const std::vector<size_t>& indices_to_remove,
     const base::Location& location) {
   CHECK(parent);
-  // TODO(crbug.com/332532186): This has quadratic runtime complexity and should
-  // be improved.
-  for (size_t index : base::Reversed(indices_to_remove)) {
+  CHECK(std::ranges::is_sorted(indices_to_remove));
+
+  const size_t num_children = parent->children().size();
+  CHECK_LE(indices_to_remove.size(), num_children);
+
+  if (indices_to_remove.empty()) {
+    // Nothing to do.
+    return;
+  }
+
+  // The single-removal case is trivial and needs no sophisticated optimization.
+  if (indices_to_remove.size() == 1u) {
+    const size_t index = *indices_to_remove.begin();
     const bookmarks::BookmarkNode* child = parent->children().at(index).get();
     // Remove the UUID from the map to avoid dangling pointers.
     uuid_to_match_map_.erase(child->uuid());
     model_->Remove(child, kEditSourceForMetrics, location);
+    return;
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          switches::kSyncFastDeletionsDuringBookmarkBatchUpload)) {
+    for (size_t index : base::Reversed(indices_to_remove)) {
+      const bookmarks::BookmarkNode* child = parent->children().at(index).get();
+      // Remove the UUID from the map to avoid dangling pointers.
+      uuid_to_match_map_.erase(child->uuid());
+      model_->Remove(child, kEditSourceForMetrics, location);
+    }
+    return;
+  }
+
+  // For the complex case of an arbitrary number of deletions, the efficient
+  // approach that avoids quadratic runtime complexity requires reordering
+  // children first, in a way that all children to-be-deleted are placed last.
+  // However, this reordering is pointless if `indices_to_remove` selects all
+  // children.
+  if (indices_to_remove.size() != num_children) {
+    ReorderChildrenByMovingSubsetToLast(model_, parent, indices_to_remove);
+  }
+
+  // Remove all selected nodes, each time starting with the last one, which can
+  // be done in near-constant time (log of tree depth), excluding updates to the
+  // internal indices in BookmarkModel, which can exhibit slower characteristics
+  // depending on the actual content of the nodes, such as the title or the URL.
+  for (size_t i = 0; i < indices_to_remove.size(); ++i) {
+    // Remove the UUID from the map to avoid dangling pointers.
+    uuid_to_match_map_.erase(parent->children().back()->uuid());
+    model_->RemoveLastChild(parent, kEditSourceForMetrics, FROM_HERE);
   }
 }
 
