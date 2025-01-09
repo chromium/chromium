@@ -9,6 +9,7 @@
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 
 @protocol YoutubeIncognitoSheetDelegate;
+@protocol NewTabPageURLLoaderDelegate;
 
 // A `ConfirmationAlertViewController` for the Youtube Incognito interstitial,
 // to be managed by the associated `YoutubeIncognitoCoordinator`.
@@ -17,6 +18,9 @@
 
 // The delegate for interactions in this View Controller.
 @property(nonatomic, weak) id<YoutubeIncognitoSheetDelegate> delegate;
+
+// Some URLs in the controlled view can be loaded.
+@property(nonatomic, weak) id<NewTabPageURLLoaderDelegate> URLLoaderDelegate;
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 

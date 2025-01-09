@@ -69,8 +69,10 @@
     _sourceAppID = [sourceAppID copy];
     _applicationMode = mode;
     _applicationModeRequestStatus =
-        forceApplicationMode ? ApplicationModeRequestStatus::kAvailable
-                             : ApplicationModeRequestStatus::kUnavailable;
+        (forceApplicationMode &&
+         mode == ApplicationModeForTabOpening::INCOGNITO)
+            ? ApplicationModeRequestStatus::kAvailable
+            : ApplicationModeRequestStatus::kUnavailable;
     _forceApplicationMode = forceApplicationMode;
   }
   return self;

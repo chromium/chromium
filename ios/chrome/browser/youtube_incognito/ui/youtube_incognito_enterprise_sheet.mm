@@ -39,12 +39,13 @@ CGFloat const kIconSize = 32;
   self.titleString = @"TODO Incognito Mode Is Unavailable";
   self.secondaryTitleString =
       @"TODO Your organization turned off private browsing.";
-  self.subtitleString = @"TODO add the URL to open";
+  self.subtitleString = self.URLText;
   self.primaryActionString = @"TODO Open Site Anyway";
   self.secondaryActionString = @"TODO cancel";
   self.customSpacing = kVerticalSpacing;
   self.titleTextStyle = UIFontTextStyleTitle3;
   self.scrollEnabled = YES;
+  self.topAlignedLayout = YES;
 
   [self displayGradientView:YES];
 
@@ -64,6 +65,10 @@ CGFloat const kIconSize = 32;
 
 - (void)confirmationAlertPrimaryAction {
   [self.delegate didTapPrimaryActionButton];
+}
+
+- (void)confirmationAlertSecondaryAction {
+  [self.delegate didTapSecondaryActionButton];
 }
 
 #pragma mark - Private

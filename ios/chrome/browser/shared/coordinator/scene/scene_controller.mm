@@ -1499,6 +1499,8 @@ void OnListFamilyMembersResponse(
   self.youtubeIncognitoCoordinator.delegate = self;
   self.youtubeIncognitoCoordinator.tabOpener = self;
   self.youtubeIncognitoCoordinator.urlLoadParams = urlLoadParams;
+  self.youtubeIncognitoCoordinator.incognitoDisabled =
+      [self isIncognitoDisabled];
   [self.youtubeIncognitoCoordinator start];
 }
 
@@ -1511,25 +1513,33 @@ void OnListFamilyMembersResponse(
   BOOL canShowYoutubeIncognito =
       base::FeatureList::IsEnabled(kChromeStartupParametersAsync) &&
       base::FeatureList::IsEnabled(kYoutubeIncognito);
-
-  UrlLoadParams copyOfUrlLoadParams = urlLoadParams;
+  BOOL incognitoDisabled = [self isIncognitoDisabled];
 
   if (canShowIncognitoInterstitial &&
       (targetMode == ApplicationModeForTabOpening::UNDETERMINED ||
        targetMode == ApplicationModeForTabOpening::APP_SWITCHER_INCOGNITO)) {
-    [self showIncognitoInterstitialWithUrlLoadParams:copyOfUrlLoadParams];
+    [self showIncognitoInterstitialWithUrlLoadParams:urlLoadParams];
     completion();
   } else {
-    ApplicationModeForTabOpening tabOpeningMode =
-        (targetMode == ApplicationModeForTabOpening::APP_SWITCHER_INCOGNITO)
-            ? ApplicationModeForTabOpening::INCOGNITO
-            : targetMode;
-    [self openSelectedTabInMode:tabOpeningMode
-              withUrlLoadParams:copyOfUrlLoadParams
-                     completion:completion];
-    if (canShowYoutubeIncognito &&
+    if (incognitoDisabled && canShowYoutubeIncognito &&
         targetMode == ApplicationModeForTabOpening::APP_SWITCHER_INCOGNITO) {
-      [self showYoutubeIncognitoWithUrlLoadParams:copyOfUrlLoadParams];
+      UrlLoadParams params = UrlLoadParams::InNewTab(GURL(kChromeUINewTabURL));
+      [self openSelectedTabInMode:ApplicationModeForTabOpening::NORMAL
+                withUrlLoadParams:params
+                       completion:completion];
+      [self showYoutubeIncognitoWithUrlLoadParams:urlLoadParams];
+    } else {
+      ApplicationModeForTabOpening tabOpeningMode =
+          (targetMode == ApplicationModeForTabOpening::APP_SWITCHER_INCOGNITO)
+              ? ApplicationModeForTabOpening::INCOGNITO
+              : targetMode;
+      [self openSelectedTabInMode:tabOpeningMode
+                withUrlLoadParams:urlLoadParams
+                       completion:completion];
+      if (canShowYoutubeIncognito &&
+          targetMode == ApplicationModeForTabOpening::APP_SWITCHER_INCOGNITO) {
+        [self showYoutubeIncognitoWithUrlLoadParams:urlLoadParams];
+      }
     }
   }
 }

@@ -11,6 +11,7 @@
 @protocol YoutubeIncognitoSheetDelegate <NSObject>
 
 - (void)didTapPrimaryActionButton;
+- (void)didTapSecondaryActionButton;
 
 @end
 

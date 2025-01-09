@@ -18,6 +18,9 @@
 // The delegate for interactions in this View Controller.
 @property(nonatomic, weak) id<YoutubeIncognitoSheetDelegate> delegate;
 
+// URL text to display.
+@property(nonatomic, copy) NSString* URLText;
+
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;

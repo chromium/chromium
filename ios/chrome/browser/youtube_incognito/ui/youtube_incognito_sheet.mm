@@ -64,6 +64,7 @@ CGFloat const kAnimationScalFactor = 0.5;
                  stackViewHorizontalMargin:0
                          stackViewMaxWidth:CGFLOAT_MAX];
   incognitoView.bounces = NO;
+  incognitoView.URLLoaderDelegate = self.URLLoaderDelegate;
   incognitoView.showsHorizontalScrollIndicator = NO;
   incognitoView.translatesAutoresizingMaskIntoConstraints = NO;
   [underTitleView addSubview:incognitoView];
