@@ -3386,6 +3386,58 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   ASSERT_EQ(pool().TotalActiveStreamCount(), 2u);
 }
 
+// Regression test for crbug.com/385296757.
+// If an IP matching SPDY session is created during the stream attempt delay,
+// use that session instead of attempting a new connection after the delay.
+TEST_F(HttpStreamPoolAttemptManagerTest,
+       SpdyMatchingIpSessionStreamAttemptDelayPassed) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+
+  constexpr base::TimeDelta kDelay = base::Milliseconds(10);
+  quic_session_pool()->SetTimeDelayForWaitingJobForTesting(kDelay);
+
+  const IPEndPoint kCommonEndPoint = MakeIPEndPoint("2001:db8::1", 443);
+
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+  endpoint_request
+      ->add_endpoint(
+          ServiceEndpointBuilder().add_ip_endpoint(kCommonEndPoint).endpoint())
+      .set_crypto_ready(true);
+
+  // QUIC task stalls forever.
+  auto quic_data = std::make_unique<MockQuicData>(quic_version());
+  quic_data->AddConnect(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data->AddSocketDataToFactory(socket_factory());
+
+  StreamRequester requester;
+  requester.set_destination("https://example.test")
+      .set_quic_version(quic_version())
+      .RequestStream(pool());
+  ASSERT_FALSE(requester.result().has_value());
+
+  // `endpoint_request` notifies that it has updated endpoints.
+  endpoint_request->CallOnServiceEndpointsUpdated();
+  ASSERT_FALSE(requester.result().has_value());
+
+  // Create a SPDY session for "https://www.example.org" with an IP address
+  // matching the IPv6 address returned by the HostResolver.
+  HttpStreamKey stream_key =
+      StreamKeyBuilder("https://www.example.org").Build();
+  CreateFakeSpdySession(stream_key, kCommonEndPoint);
+
+  // Simulate endpoint resolution complete. The attempt manager performs IP
+  // based matching and should find the existing SPDY session.
+  endpoint_request->CallOnServiceEndpointRequestFinished(OK);
+  // Trigger stream attempt delay timer. The attempt manager should not make
+  // connection attempts but should use the SPDY session.
+  FastForwardBy(kDelay);
+
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
+  EXPECT_EQ(requester.negotiated_protocol(), NextProto::kProtoHTTP2);
+}
+
 TEST_F(HttpStreamPoolAttemptManagerTest,
        ThrottleAttemptForSpdyBlockSecondAttempt) {
   constexpr std::string_view kDestination = "https://a.test";

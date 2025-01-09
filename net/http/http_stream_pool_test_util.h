@@ -31,6 +31,7 @@ class IOBuffer;
 class SSLInfo;
 
 // A fake ServiceEndpointRequest implementation that provides testing harnesses.
+// See the comment of HostResolver::ServiceEndpointRequest for details.
 class FakeServiceEndpointRequest : public HostResolver::ServiceEndpointRequest {
  public:
   FakeServiceEndpointRequest();
@@ -38,27 +39,33 @@ class FakeServiceEndpointRequest : public HostResolver::ServiceEndpointRequest {
 
   void set_start_result(int start_result) { start_result_ = start_result; }
 
+  // Sets the current endpoints to `endpoints`. Previous endpoints are
+  // discarded.
   FakeServiceEndpointRequest& set_endpoints(
       std::vector<ServiceEndpoint> endpoints) {
     endpoints_ = std::move(endpoints);
     return *this;
   }
 
+  // Add `endpoint` to the current endpoints.
   FakeServiceEndpointRequest& add_endpoint(ServiceEndpoint endpoint) {
     endpoints_.emplace_back(std::move(endpoint));
     return *this;
   }
 
+  // Sets the return value of GetDnsAliasResults().
   FakeServiceEndpointRequest& set_aliases(std::set<std::string> aliases) {
     aliases_ = std::move(aliases);
     return *this;
   }
 
+  // Sets the return value of EndpointsCryptoReady().
   FakeServiceEndpointRequest& set_crypto_ready(bool endpoints_crypto_ready) {
     endpoints_crypto_ready_ = endpoints_crypto_ready;
     return *this;
   }
 
+  // Sets the return value of GetResolveErrorInfo().
   FakeServiceEndpointRequest& set_resolve_error_info(
       ResolveErrorInfo resolve_error_info) {
     resolve_error_info_ = resolve_error_info;
@@ -71,10 +78,17 @@ class FakeServiceEndpointRequest : public HostResolver::ServiceEndpointRequest {
     return *this;
   }
 
+  // Make `this` complete synchronously when ServiceEndpointRequest::Start()
+  // is called.
   FakeServiceEndpointRequest& CompleteStartSynchronously(int rv);
 
+  // Calls `delegate_->OnServiceEndpointsUpdated()`. Must not be used after
+  // calling CompleteStartSynchronously() or
+  // CallOnServiceEndpointRequestFinished()
   FakeServiceEndpointRequest& CallOnServiceEndpointsUpdated();
 
+  // Calls `delegate_->OnServiceEndpointRequestFinished()`. Mut not be used
+  // after calling CompleteStartSynchronously().
   FakeServiceEndpointRequest& CallOnServiceEndpointRequestFinished(int rv);
 
   // HostResolver::ServiceEndpointRequest methods:
@@ -108,6 +122,11 @@ class FakeServiceEndpointResolver : public HostResolver {
 
   ~FakeServiceEndpointResolver() override;
 
+  // Create a FakeServiceEndpointRequest that will be used for the next
+  // CreateServiceEndpointRequest() call. Note that
+  // CreateServiceEndpointRequest() consumes the request. You will need to call
+  // this method multiple times when you expect multiple
+  // CreateServiceEndpointRequest() calls.
   FakeServiceEndpointRequest* AddFakeRequest();
 
   // HostResolver methods:

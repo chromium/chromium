@@ -1119,9 +1119,9 @@ void HttpStreamPool::AttemptManager::MaybeAttemptConnection(
     return;
   }
 
-  // TODO(crbug.com/346835898): Ensure that we don't attempt connections when
-  // creating HttpStream on top of a SPDY session.
-  CHECK(!spdy_session_);
+  if (spdy_session_) {
+    return;
+  }
 
   // There might be multiple pending jobs. Make attempts as much as needed
   // and allowed.
