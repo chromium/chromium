@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {getSingleTab} from '/_test_resources/test_util/tabs_util.js';
+import {findDocumentIdWithHostname, findFrameIdWithHostname, findFrameWithHostname, getFramesInTab, getSingleTab} from '/_test_resources/test_util/tabs_util.js';
 
 function injectedFunction() {
   return location.href;
@@ -14,32 +14,6 @@ function getAccessError(url) {
   return `Error: Cannot access contents of url "${url}". ` +
       'Extension manifest must request permission ' +
       'to access this host.';
-}
-
-// Returns all frames in the given tab.
-async function getFramesInTab(tabId) {
-  const frames = await chrome.webNavigation.getAllFrames({tabId: tabId});
-  chrome.test.assertTrue(frames.length > 0);
-  return frames;
-}
-
-// Returns the frame with the given `hostname`.
-function findFrameWithHostname(frames, hostname) {
-  const frame = frames.find(frame => {
-    return (new URL(frame.url)).hostname == hostname;
-  });
-  chrome.test.assertTrue(!!frame, 'No frame with hostname: ' + hostname);
-  return frame;
-}
-
-// Returns the ID of the frame with the given `hostname`.
-function findFrameIdWithHostname(frames, hostname) {
-  return findFrameWithHostname(frames, hostname).frameId;
-}
-
-// Returns the ID of the document with the given `hostname`.
-function findDocumentIdWithHostname(frames, hostname) {
-  return findFrameWithHostname(frames, hostname).documentId;
 }
 
 chrome.test.runTests([
