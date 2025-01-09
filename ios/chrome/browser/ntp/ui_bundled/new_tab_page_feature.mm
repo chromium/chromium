@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ui/base/device_form_factor.h"
 
 #pragma mark - Constants
 
@@ -106,6 +107,7 @@ bool IsiPadFeedGhostCardsEnabled() {
 }
 
 bool IsNewFollowingFeedEntryPointsEnabled() {
-  return IsFollowUIUpdateEnabled() &&
+  return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE &&
+         IsFollowUIUpdateEnabled() &&
          base::FeatureList::IsEnabled(kIOSNewFollowingFeedEntryPoints);
 }
