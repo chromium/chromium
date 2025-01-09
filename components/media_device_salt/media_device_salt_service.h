@@ -24,7 +24,6 @@ class PrefService;
 namespace media_device_salt {
 
 BASE_DECLARE_FEATURE(kMediaDeviceIdPartitioning);
-BASE_DECLARE_FEATURE(kMediaDeviceIdRandomSaltsPerStorageKey);
 
 class MediaDeviceIDSalt;
 

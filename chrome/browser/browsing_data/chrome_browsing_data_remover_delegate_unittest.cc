@@ -4468,9 +4468,7 @@ class ChromeBrowsingDataRemoverDelegateMediaDeviceSaltTest
  public:
   ChromeBrowsingDataRemoverDelegateMediaDeviceSaltTest() {
     feature_list_.InitWithFeatures(
-        {media_device_salt::kMediaDeviceIdPartitioning,
-         media_device_salt::kMediaDeviceIdRandomSaltsPerStorageKey},
-        {});
+        {media_device_salt::kMediaDeviceIdPartitioning}, {});
   }
 
   void SetUp() override {

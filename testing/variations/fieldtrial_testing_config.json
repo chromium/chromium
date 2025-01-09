@@ -13881,8 +13881,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "MediaDeviceIdPartitioning",
-                        "MediaDeviceIdRandomSaltsPerStorageKey"
+                        "MediaDeviceIdPartitioning"
                     ]
                 }
             ]
