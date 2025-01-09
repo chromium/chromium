@@ -503,6 +503,7 @@ void LogoServiceImpl::FetchLogo() {
         })");
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = url;
+  request->site_for_cookies = net::SiteForCookies::FromUrl(url);
   loader_ =
       network::SimpleURLLoader::Create(std::move(request), traffic_annotation);
   loader_->DownloadToString(
