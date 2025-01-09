@@ -968,7 +968,6 @@ ci.builder(
     contact_team_email = "chrome-build-team@google.com",
     execution_timeout = 6 * time.hour,
     notifies = args.ignore_default([]),
-    siso_keep_going = 0,
 )
 
 ci.builder(

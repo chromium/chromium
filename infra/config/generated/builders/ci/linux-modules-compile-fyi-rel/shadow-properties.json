@@ -11,7 +11,6 @@
     "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [],
-    "keep_going": 0,
     "project": "rbe-chromium-untrusted",
     "remote_jobs": 500
   }
