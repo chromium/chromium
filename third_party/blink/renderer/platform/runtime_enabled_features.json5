@@ -2774,12 +2774,6 @@
       status: "stable",
     },
     {
-      // If enabled, meter elements will render with a fallback style when
-      // appearance is set to none.
-      name: "MeterAppearanceNoneFallbackStyle",
-      status: "stable",
-    },
-    {
       // If enabled, the <meter> widget appearance will devolve based on user
       // declared styles as defined in the css-ui-4 spec
       name: "MeterDevolveAppearance",
