@@ -564,7 +564,7 @@ class UpdateServiceProxyImplImpl
     if (FAILED(hr)) {
       return hr;
     }
-    hr = get_interface().CopyTo(IsSystemInstall(scope_)
+    hr = get_interface().CopyTo(IsSystemInstall(scope())
                                     ? __uuidof(IUpdater2System)
                                     : __uuidof(IUpdater2User),
                                 IID_PPV_ARGS_Helper(&interface2_));
