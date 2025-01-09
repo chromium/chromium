@@ -441,8 +441,10 @@ void StatusIconLinuxDbus::OnSecondaryActivate(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender sender) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  // Intentionally ignore secondary activations.  In the future, we may decide
-  // to run the same handler as regular activations.
+  // gnome-shell-extension-appindicator requires a double-click to activate
+  // which is non-obvious, so allow middle-click to activate which is slightly
+  // more obvious.
+  delegate_->OnClick();
   std::move(sender).Run(dbus::Response::FromMethodCall(method_call));
 }
 
