@@ -630,15 +630,6 @@ std::vector<Suggestion> GetSuggestionsOnTypingForProfile(
   // The minimum number of characters a user needs to type to maybe see a
   // suggestion.
   static constexpr size_t kMinNumberCharactersToMatch = 3;
-  // Field types that are made of numbers will use
-  // `kMinNumberCharactersToMatchForNumberTypes`. The hypothesis is that when
-  // two digts of a number are matching, it is likely that the user wants to use
-  // profile data. For example, a user whose name is Bruno Mars, where 2
-  // matching characters is used, could be matched with: Brazil, Brief, Break
-  // etc. On the other hand, assuming their phone number is 563 245 123, there
-  // are fewer scenarios where they would type 56 and finish with something
-  // different than their phone number.
-  static constexpr size_t kMinNumberCharactersToMatchForNumberTypes = 2;
   // This defines the maximum number of characters typed until suggestions are
   // no longer displayed.
   static constexpr size_t kMaxNumberCharactersToMatch = 10;
@@ -647,12 +638,11 @@ std::vector<Suggestion> GetSuggestionsOnTypingForProfile(
   // offered by the feature is higher, by for example not displaying a
   // suggestion to fill "Tomas" when the user typed "Tom", since at this point
   // users are more likely to simply finish typing.
-  static constexpr size_t kMinMissingCharactersNumber = 3;
+  static constexpr size_t kMinMissingCharactersNumber = 5;
   // Field types we are interested in showing suggestions for.
   // TODO(crbug.com/381994105): Add a finch parameter to easily experiment with
   // adding and removing field types.
   static constexpr FieldTypeSet kTypes = {
-      NAME_FIRST,
       NAME_FULL,
       NAME_LAST,
       NAME_LAST_SECOND,
@@ -666,19 +656,21 @@ std::vector<Suggestion> GetSuggestionsOnTypingForProfile(
       ADDRESS_HOME_COUNTRY,
       ADDRESS_HOME_STREET_NAME,
       EMAIL_ADDRESS,
-      PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX,
       PHONE_HOME_CITY_AND_NUMBER,
       PHONE_HOME_WHOLE_NUMBER,
       ADDRESS_HOME_ZIP};
-  static constexpr FieldTypeSet kNumberTypes = {
-      PHONE_HOME_CITY_AND_NUMBER, PHONE_HOME_WHOLE_NUMBER, ADDRESS_HOME_ZIP,
-      PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX};
+  // Some field types require only `kMinNumberCharactersToMatch - 1` matching
+  // characters for a suggestion to be shown. The assumption is that these field
+  // types do not need the same matching prefix length to produce less false
+  // positives.
+  static constexpr FieldTypeSet kTypesWithLessRequiredMatchingCharacters = {
+      ADDRESS_HOME_ZIP};
 
   std::vector<Suggestion> suggestions;
   std::set<std::u16string> suggestions_text;
   // The number of profiles that data will be derived from when generating
   // suggestions.
-  static constexpr size_t kMaxNumberProfilesToUse = 3;
+  static constexpr size_t kMaxNumberProfilesToUse = 2;
   size_t profiles_used_count = 0;
   for (const AutofillProfile* profile : profiles) {
     if (profiles_used_count == kMaxNumberProfilesToUse) {
@@ -688,8 +680,8 @@ std::vector<Suggestion> GetSuggestionsOnTypingForProfile(
 
     for (FieldType type : kTypes) {
       const size_t effective_num_characters_to_match =
-          kNumberTypes.contains(type)
-              ? kMinNumberCharactersToMatchForNumberTypes
+          kTypesWithLessRequiredMatchingCharacters.contains(type)
+              ? kMinNumberCharactersToMatch - 1
               : kMinNumberCharactersToMatch;
 
       const std::u16string normalized_field_contents =
