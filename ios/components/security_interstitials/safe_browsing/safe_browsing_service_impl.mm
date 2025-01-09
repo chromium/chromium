@@ -15,6 +15,7 @@
 #import "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #import "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #import "components/safe_browsing/core/browser/url_checker_delegate.h"
+#import "components/safe_browsing/core/browser/utils/url_loader_factory_params.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/safebrowsing_constants.h"
 #import "components/sessions/core/session_id.h"
@@ -77,14 +78,9 @@ void SafeBrowsingServiceImpl::Initialize(const base::FilePath& user_data_path) {
                      std::move(safe_browsing_data_path),
                      std::move(user_agent)));
 
-  auto url_loader_factory_params =
-      network::mojom::URLLoaderFactoryParams::New();
-  url_loader_factory_params->process_id = network::mojom::kBrowserProcessId;
-  url_loader_factory_params->is_orb_enabled = false;
-  url_loader_factory_params->is_trusted = true;
   network_context_client_->CreateURLLoaderFactory(
       std::move(url_loader_factory_pending_receiver_),
-      std::move(url_loader_factory_params));
+      safe_browsing::GetUrlLoaderFactoryParams());
 }
 
 void SafeBrowsingServiceImpl::OnBrowserStateCreated(
