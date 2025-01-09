@@ -315,7 +315,7 @@ class UpdaterAppStatesCallback
         return E_INVALIDARG;
       }
       Microsoft::WRL::ComPtr<IUpdaterAppState> app_state;
-      const HRESULT hr = dispatch.CopyTo(IsSystemInstall(scope_)
+      const HRESULT hr = dispatch.CopyTo(IsSystemInstall(scope())
                                              ? __uuidof(IUpdaterAppStateSystem)
                                              : __uuidof(IUpdaterAppStateUser),
                                          IID_PPV_ARGS_Helper(&app_state));

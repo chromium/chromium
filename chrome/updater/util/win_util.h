@@ -135,6 +135,9 @@ class DynamicIIDsImpl : public internal::WrlRuntimeClass<Interface> {
   }
 
  protected:
+  UpdaterScope scope() const { return scope_; }
+
+ private:
   const UpdaterScope scope_;
 };
 
