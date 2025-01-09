@@ -3207,6 +3207,11 @@ extern const char kWebRtcAllowWgcWindowCapturerDescription[];
 extern const char kWindows11MicaTitlebarName[];
 extern const char kWindows11MicaTitlebarDescription[];
 
+inline constexpr char kWindowsSystemTracingName[] = "System tracing";
+inline constexpr char kWindowsSystemTracingDescription[] =
+    "When enabled, the system tracing service is started along with Chrome's "
+    "tracing service (if the system tracing service is registered).";
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 extern const char kLaunchWindowsNativeHostsDirectlyName[];
 extern const char kLaunchWindowsNativeHostsDirectlyDescription[];

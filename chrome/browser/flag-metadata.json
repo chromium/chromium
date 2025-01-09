@@ -9422,6 +9422,13 @@
     "expiry_milestone": 135
   },
   {
+    "name": "windows-system-tracing",
+    "owners": [ "etiennep@chromium.org", "grt@chromium.org" ],
+    // This flag allows QA, developers, and users to easily capture Chrometto
+    // traces that include system events.
+    "expiry_milestone": -1
+  },
+  {
     "name": "windows11-mica-titlebar",
     "owners": [ "j@jloeffler.com", "pkasting@chromium.org" ],
     "expiry_milestone": 140

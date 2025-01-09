@@ -347,6 +347,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
+#include "chrome/browser/tracing/tracing_features.h"
 #include "chrome/browser/win/mica_titlebar.h"
 #endif
 
@@ -11610,6 +11611,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableCardBenefitsForBmoName,
      flag_descriptions::kAutofillEnableCardBenefitsForBmoDescription, kOsAll,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableCardBenefitsForBmo)},
+
+#if BUILDFLAG(IS_WIN)
+    {"windows-system-tracing", flag_descriptions::kWindowsSystemTracingName,
+     flag_descriptions::kWindowsSystemTracingDescription, kOsWin,
+     FEATURE_VALUE_TYPE(kWindowsSystemTracing)},
+#endif  // BUILDFLAG(IS_WIN)
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

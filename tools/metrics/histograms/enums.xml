@@ -17546,6 +17546,7 @@ from previous Chrome versions.
   <int value="-1166745977"
       label="BluetoothAggressiveAppearanceFilter:disabled"/>
   <int value="-1166715563" label="ChromeOSAssistant:disabled"/>
+  <int value="-1165284756" label="WindowsSystemTracing:disabled"/>
   <int value="-1165271479"
       label="UnifiedPasswordManagerErrorMessages:disabled"/>
   <int value="-1165112418" label="PwaUpdateDialogForName:enabled"/>
@@ -22179,6 +22180,7 @@ from previous Chrome versions.
   <int value="689903349" label="TreatBootstrapAsDefault:disabled"/>
   <int value="689984419" label="PermissionSiteSettingsRadioButton:enabled"/>
   <int value="690185633" label="NonValidatingReloadOnNormalReload:disabled"/>
+  <int value="690901353" label="WindowsSystemTracing:enabled"/>
   <int value="691020108" label="NTPCondensedTileLayout:disabled"/>
   <int value="691982483" label="WifiConnectMacAddressRandomization:disabled"/>
   <int value="693012666" label="QuickUnlockPin:disabled"/>

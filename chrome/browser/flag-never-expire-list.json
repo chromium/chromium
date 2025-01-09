@@ -159,5 +159,6 @@
   "webrtc-hw-encoding",
   "webtransport-developer-mode",
   "webxr-runtime",
-  "webxr-shared-buffers"
+  "webxr-shared-buffers",
+  "windows-system-tracing"
 ]
