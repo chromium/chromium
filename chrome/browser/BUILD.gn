@@ -360,6 +360,8 @@ static_library("browser") {
     "custom_handlers/protocol_handler_registry_factory.h",
     "data_sharing/data_sharing_navigation_throttle.cc",
     "data_sharing/data_sharing_navigation_throttle.h",
+    "data_sharing/data_sharing_navigation_utils.cc",
+    "data_sharing/data_sharing_navigation_utils.h",
     "data_sharing/data_sharing_service_factory.cc",
     "data_sharing/data_sharing_service_factory.h",
     "defaults.cc",
