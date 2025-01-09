@@ -40,10 +40,10 @@ struct NtExports {
   RtlDestroyHeapFunction                 RtlDestroyHeap;
   RtlFreeHeapFunction                    RtlFreeHeap;
   RtlNtStatusToDosErrorFunction          RtlNtStatusToDosError;
-  _strnicmpFunction                      _strnicmp;
-  strlenFunction                         strlen;
-  wcslenFunction                         wcslen;
-  memcpyFunction                         memcpy;
+  UNSAFE_BUFFER_USAGE _strnicmpFunction  _strnicmp;
+  UNSAFE_BUFFER_USAGE strlenFunction     strlen;
+  UNSAFE_BUFFER_USAGE wcslenFunction     wcslen;
+  UNSAFE_BUFFER_USAGE memcpyFunction     memcpy;
   UNSAFE_BUFFER_USAGE memsetFunction     memset;
 };
 // clang-format on
