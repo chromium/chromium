@@ -327,8 +327,10 @@ CtapGetAssertionRequest::CtapGetAssertionRequest(
     std::string in_rp_id,
     std::string in_client_data_json)
     : rp_id(std::move(in_rp_id)),
-      client_data_json(std::move(in_client_data_json)),
-      client_data_hash(fido_parsing_utils::CreateSHA256Hash(client_data_json)) {
+      client_data_json(std::move(in_client_data_json)) {
+  if (!client_data_json.empty()) {
+    client_data_hash = fido_parsing_utils::CreateSHA256Hash(client_data_json);
+  }
 }
 
 CtapGetAssertionRequest::CtapGetAssertionRequest(
@@ -344,6 +346,12 @@ CtapGetAssertionRequest& CtapGetAssertionRequest::operator=(
     CtapGetAssertionRequest&& other) = default;
 
 CtapGetAssertionRequest::~CtapGetAssertionRequest() = default;
+
+void CtapGetAssertionRequest::SetClientDataJson(
+    std::string in_client_data_json) {
+  client_data_hash = fido_parsing_utils::CreateSHA256Hash(in_client_data_json);
+  client_data_json = std::move(in_client_data_json);
+}
 
 std::pair<CtapRequestCommand, std::optional<cbor::Value>>
 AsCTAPRequestValuePair(const CtapGetAssertionRequest& request) {

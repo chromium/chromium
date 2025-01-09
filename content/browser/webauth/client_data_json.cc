@@ -59,11 +59,12 @@ std::string ToJSONString(std::string_view in) {
 
 }  // namespace
 
-ClientDataJsonParams::ClientDataJsonParams(ClientDataRequestType type,
-                                           url::Origin origin,
-                                           url::Origin top_origin,
-                                           std::vector<uint8_t> challenge,
-                                           bool is_cross_origin_iframe)
+ClientDataJsonParams::ClientDataJsonParams(
+    ClientDataRequestType type,
+    url::Origin origin,
+    url::Origin top_origin,
+    std::optional<std::vector<uint8_t>> challenge,
+    bool is_cross_origin_iframe)
     : type(type),
       origin(std::move(origin)),
       top_origin(std::move(top_origin)),
@@ -75,6 +76,8 @@ ClientDataJsonParams& ClientDataJsonParams::operator=(ClientDataJsonParams&&) =
 ClientDataJsonParams::~ClientDataJsonParams() = default;
 
 std::string BuildClientDataJson(ClientDataJsonParams params) {
+  CHECK(params.challenge.has_value());
+
   std::string ret;
   ret.reserve(128);
 
@@ -91,7 +94,7 @@ std::string BuildClientDataJson(ClientDataJsonParams params) {
   }
 
   ret.append(R"(,"challenge":)");
-  ret.append(ToJSONString(Base64UrlEncodeOmitPadding(params.challenge)));
+  ret.append(ToJSONString(Base64UrlEncodeOmitPadding(*params.challenge)));
 
   ret.append(R"(,"origin":)");
   ret.append(ToJSONString(params.origin.Serialize()));

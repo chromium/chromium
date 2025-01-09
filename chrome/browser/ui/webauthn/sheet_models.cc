@@ -430,6 +430,30 @@ void AuthenticatorInternalUnrecognizedErrorSheetModel::OnAccept() {
   dialog_model()->StartOver();
 }
 
+// AuthenticatorChallengeFetchErrorModel
+// ---------------------------------------------
+
+AuthenticatorChallengeFetchErrorModel::AuthenticatorChallengeFetchErrorModel(
+    AuthenticatorRequestDialogModel* dialog_model)
+    : AuthenticatorSheetModelBase(dialog_model) {
+  vector_illustrations_.emplace(kPasskeyErrorIcon, kPasskeyErrorDarkIcon);
+}
+
+std::u16string AuthenticatorChallengeFetchErrorModel::GetCancelButtonLabel()
+    const {
+  return l10n_util::GetStringUTF16(IDS_CLOSE);
+}
+
+std::u16string AuthenticatorChallengeFetchErrorModel::GetStepTitle() const {
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_ERROR_GENERIC_TITLE);
+}
+
+std::u16string AuthenticatorChallengeFetchErrorModel::GetStepDescription()
+    const {
+  // TODO(https://crbug.com/381219428): Get an approved string for this dialog.
+  return u"An error occurred trying to process this request. (UT)";
+}
+
 // AuthenticatorBlePowerOnManualSheetModel ------------------------------------
 
 AuthenticatorBlePowerOnManualSheetModel::
