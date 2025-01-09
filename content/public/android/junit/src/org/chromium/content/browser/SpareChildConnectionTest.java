@@ -68,6 +68,7 @@ public class SpareChildConnectionTest {
                 boolean bindAsExternalService,
                 Bundle serviceBundle,
                 String instanceName,
+                boolean independentFallback,
                 boolean isSandboxedForHistograms) {
             // We expect to create only one connection in these tests.
             assert mConnection == null;

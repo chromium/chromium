@@ -249,6 +249,10 @@ public class ChildProcessConnection {
     // <service> manifest declaration.
     private final @Nullable String mInstanceName;
 
+    // If true, then this connection fallbacking back does not cause other connections to fallback,
+    // and vice version; essentially ignore `sAlwaysFallback`.
+    private final boolean mIndependentFallback;
+
     // Should not be used for any functional changes as this class should be oblivious to whether
     // this child process is sandboxed or not. Only added here for histogram purposes since it's
     // inconvenient to log some histogram where this information is available.
@@ -316,6 +320,7 @@ public class ChildProcessConnection {
             boolean bindAsExternalService,
             Bundle serviceBundle,
             @Nullable String instanceName,
+            boolean independentFallback,
             boolean isSandboxedForHistograms) {
         this(
                 context,
@@ -326,6 +331,7 @@ public class ChildProcessConnection {
                 serviceBundle,
                 /* connectionFactory= */ null,
                 instanceName,
+                independentFallback,
                 isSandboxedForHistograms);
     }
 
@@ -339,6 +345,7 @@ public class ChildProcessConnection {
             Bundle serviceBundle,
             @Nullable ChildServiceConnectionFactory connectionFactory,
             @Nullable String instanceName,
+            boolean independentFallback,
             boolean isSandboxedForHistograms) {
         mLauncherHandler = new Handler();
         mLauncherExecutor =
@@ -355,6 +362,7 @@ public class ChildProcessConnection {
                 BuildInfo.getInstance().packageName);
         mBindToCaller = bindToCaller;
         mInstanceName = instanceName;
+        mIndependentFallback = independentFallback;
         mIsSandboxedForHistograms = isSandboxedForHistograms;
         // Incremental install does not work with isolatedProcess, and externalService requires
         // isolatedProcess, so both need to be turned off for incremental install.
@@ -406,7 +414,7 @@ public class ChildProcessConnection {
                 };
 
         createBindings(
-                sAlwaysFallback && mFallbackServiceName != null
+                getAlwaysFallback() && mFallbackServiceName != null
                         ? mFallbackServiceName
                         : mServiceName);
     }
@@ -868,8 +876,8 @@ public class ChildProcessConnection {
         assert !mUnbound;
 
         boolean success = bindUsingExistingBindings(useStrongBinding);
-        boolean usedFallback = sAlwaysFallback && mFallbackServiceName != null;
-        boolean canFallback = !sAlwaysFallback && mFallbackServiceName != null;
+        boolean usedFallback = getAlwaysFallback() && mFallbackServiceName != null;
+        boolean canFallback = !getAlwaysFallback() && mFallbackServiceName != null;
         if (!success && !usedFallback && canFallback) {
             // Note this error condition is generally transient so `sAlwaysFallback` is
             // not set in this code path.
@@ -929,7 +937,9 @@ public class ChildProcessConnection {
         if (mUnbound) {
             return;
         }
-        sAlwaysFallback = true;
+        if (!mIndependentFallback) {
+            sAlwaysFallback = true;
+        }
         retireBindingsAndBindFallback();
         if (mIsSandboxedForHistograms) {
             RecordHistogram.recordEnumeratedHistogram(
@@ -1247,6 +1257,10 @@ public class ChildProcessConnection {
     @VisibleForTesting
     protected Handler getLauncherHandler() {
         return mLauncherHandler;
+    }
+
+    private boolean getAlwaysFallback() {
+        return sAlwaysFallback && !mIndependentFallback;
     }
 
     private void onMemoryPressure(@MemoryPressureLevel int pressure) {

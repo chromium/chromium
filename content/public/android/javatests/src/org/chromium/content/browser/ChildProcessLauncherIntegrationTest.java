@@ -58,6 +58,7 @@ public class ChildProcessLauncherIntegrationTest {
                 boolean bindAsExternalService,
                 Bundle serviceBundle,
                 String instanceName,
+                boolean independentFallback,
                 boolean isSandboxedForHistograms) {
             TestChildProcessConnection connection =
                     new TestChildProcessConnection(
@@ -66,6 +67,7 @@ public class ChildProcessLauncherIntegrationTest {
                             bindToCaller,
                             bindAsExternalService,
                             serviceBundle,
+                            independentFallback,
                             isSandboxedForHistograms);
             mConnections.add(connection);
             return connection;
@@ -85,6 +87,7 @@ public class ChildProcessLauncherIntegrationTest {
                 boolean bindToCaller,
                 boolean bindAsExternalService,
                 Bundle childProcessCommonParameters,
+                boolean independentFallback,
                 boolean isSandboxedForHistograms) {
             super(
                     context,
@@ -94,6 +97,7 @@ public class ChildProcessLauncherIntegrationTest {
                     bindAsExternalService,
                     childProcessCommonParameters,
                     /* instanceName= */ null,
+                    independentFallback,
                     isSandboxedForHistograms);
         }
 
@@ -267,6 +271,7 @@ public class ChildProcessLauncherIntegrationTest {
                 boolean bindToCaller,
                 boolean bindAsExternalService,
                 Bundle childProcessCommonParameters,
+                boolean independentFallback,
                 boolean isSandboxedForHistograms) {
             super(
                     context,
@@ -274,6 +279,7 @@ public class ChildProcessLauncherIntegrationTest {
                     bindToCaller,
                     bindAsExternalService,
                     childProcessCommonParameters,
+                    independentFallback,
                     isSandboxedForHistograms);
         }
 
@@ -341,6 +347,7 @@ public class ChildProcessLauncherIntegrationTest {
                 boolean bindAsExternalService,
                 Bundle serviceBundle,
                 String instanceName,
+                boolean independentFallback,
                 boolean isSandboxedForHistograms) {
             if (mCrashConnection == null) {
                 mCrashConnection =
@@ -350,6 +357,7 @@ public class ChildProcessLauncherIntegrationTest {
                                 bindToCaller,
                                 bindAsExternalService,
                                 serviceBundle,
+                                independentFallback,
                                 isSandboxedForHistograms);
                 return mCrashConnection;
             }
@@ -361,6 +369,7 @@ public class ChildProcessLauncherIntegrationTest {
                     bindAsExternalService,
                     serviceBundle,
                     instanceName,
+                    independentFallback,
                     isSandboxedForHistograms);
         }
 

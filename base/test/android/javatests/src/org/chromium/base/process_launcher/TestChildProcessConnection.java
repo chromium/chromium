@@ -68,6 +68,7 @@ public class TestChildProcessConnection extends ChildProcessConnection {
                     }
                 },
                 /* instanceName= */ null,
+                /* independentFallback= */ false,
                 /* isSandboxedForHistograms= */ false);
     }
 

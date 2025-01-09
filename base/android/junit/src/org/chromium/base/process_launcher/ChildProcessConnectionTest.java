@@ -208,6 +208,7 @@ public class ChildProcessConnectionTest {
                 serviceBundle,
                 mServiceConnectionFactory,
                 /* instanceName= */ null,
+                /* independentFallback= */ false,
                 /* isSandboxedForHistograms= */ false);
     }
 

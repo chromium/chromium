@@ -55,6 +55,7 @@ public abstract class ChildConnectionAllocator {
                 boolean bindAsExternalService,
                 Bundle serviceBundle,
                 @Nullable String instanceName,
+                boolean independentFallback,
                 boolean isSandboxedForHistograms);
     }
 
@@ -69,6 +70,7 @@ public abstract class ChildConnectionAllocator {
                 boolean bindAsExternalService,
                 Bundle serviceBundle,
                 @Nullable String instanceName,
+                boolean independentFallback,
                 boolean isSandboxedForHistograms) {
             return new ChildProcessConnection(
                     context,
@@ -78,6 +80,7 @@ public abstract class ChildConnectionAllocator {
                     bindAsExternalService,
                     serviceBundle,
                     instanceName,
+                    independentFallback,
                     isSandboxedForHistograms);
         }
     }
@@ -532,6 +535,7 @@ public abstract class ChildConnectionAllocator {
                             mBindAsExternalService,
                             serviceBundle,
                             /* instanceName= */ null,
+                            /* independentFallback= */ true,
                             mIsSandboxedForHistograms);
             mChildProcessConnections[slot] = connection;
             if (mFallbackSlots != null) {
@@ -688,6 +692,7 @@ public abstract class ChildConnectionAllocator {
                             mBindAsExternalService,
                             serviceBundle,
                             instanceName,
+                            /* independentFallback= */ false,
                             mIsSandboxedForHistograms);
             assert connection != null;
             return connection;

@@ -74,6 +74,7 @@ public class ChildConnectionAllocatorTest {
                 boolean bindAsExternalService,
                 Bundle serviceBundle,
                 String instanceName,
+                boolean independentFallback,
                 boolean isSandboxedForHistograms) {
             mLastServiceName = serviceName;
             mLastFallbackServiceName = fallbackServiceName;
