@@ -9,6 +9,8 @@
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/accessibility/ax_event_generator.h"
+#include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/accessibility/platform/fuchsia/accessibility_bridge_fuchsia.h"
 
@@ -43,6 +45,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerFuchsia
   void FireBlinkEvent(ax::mojom::Event event_type,
                       BrowserAccessibility* node,
                       int action_request_id) override;
+  void FireGeneratedEvent(AXEventGenerator::Event event_type,
+                          const AXNode* node) override;
   void UpdateDeviceScaleFactor() override;
 
   // Sends hit test result to fuchsia.
