@@ -1475,7 +1475,7 @@ BASE_FEATURE_PARAM(int,
 
 BASE_FEATURE(kLCPPLazyLoadImagePreload,
              "LCPPLazyLoadImagePreload",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If true, do not make a preload request.
 BASE_FEATURE_PARAM(bool,
@@ -1495,7 +1495,7 @@ BASE_FEATURE_ENUM_PARAM(LcppPreloadLazyLoadImageType,
                         kLCPCriticalPathPredictorPreloadLazyLoadImageType,
                         &kLCPPLazyLoadImagePreload,
                         "lcpp_preload_lazy_load_image_type",
-                        LcppPreloadLazyLoadImageType::kNone,
+                        LcppPreloadLazyLoadImageType::kNativeLazyLoading,
                         &lcpp_preload_lazy_load_image);
 
 BASE_FEATURE(kPreloadSystemFonts,
