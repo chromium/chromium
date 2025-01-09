@@ -41,7 +41,8 @@ class StatusIconLinuxDbus : public ui::StatusIconLinux,
   StatusIconLinuxDbus& operator=(const StatusIconLinuxDbus&) = delete;
 
   // StatusIcon:
-  void SetIcon(const gfx::ImageSkia& image) override;
+  void SetImage(const gfx::ImageSkia& image) override;
+  void SetIcon(const gfx::VectorIcon& icon) override;
   void SetToolTip(const std::u16string& tool_tip) override;
   void UpdatePlatformContextMenu(ui::MenuModel* model) override;
   void RefreshPlatformContextMenu() override;
@@ -98,7 +99,7 @@ class StatusIconLinuxDbus : public ui::StatusIconLinux,
 
   void UpdateMenuImpl(ui::MenuModel* model, bool send_signal);
 
-  void SetIconImpl(const gfx::ImageSkia& image, bool send_signals);
+  void SetImageImpl(const gfx::ImageSkia& image, bool send_signals);
 
   void OnIconFileWritten(const base::FilePath& icon_file);
 

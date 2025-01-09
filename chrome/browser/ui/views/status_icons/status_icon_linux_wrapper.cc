@@ -80,7 +80,14 @@ StatusIconLinuxWrapper::~StatusIconLinuxWrapper() {
 void StatusIconLinuxWrapper::SetImage(const gfx::ImageSkia& image) {
   image_ = GetBestImageRep(image);
   if (auto* status_icon = GetStatusIcon()) {
-    status_icon->SetIcon(image_);
+    status_icon->SetImage(image_);
+  }
+}
+
+void StatusIconLinuxWrapper::SetIcon(const gfx::VectorIcon& icon) {
+  icon_ = &icon;
+  if (auto* status_icon = GetStatusIcon()) {
+    status_icon->SetIcon(*icon_);
   }
 }
 
@@ -110,6 +117,10 @@ bool StatusIconLinuxWrapper::HasClickAction() {
 
 const gfx::ImageSkia& StatusIconLinuxWrapper::GetImage() const {
   return image_;
+}
+
+const gfx::VectorIcon* StatusIconLinuxWrapper::GetIcon() const {
+  return icon_;
 }
 
 const std::u16string& StatusIconLinuxWrapper::GetToolTip() const {

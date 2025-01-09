@@ -17,6 +17,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/ozone/public/ozone_platform.h"
 
@@ -41,8 +42,12 @@ StatusIconButtonLinux::StatusIconButtonLinux()
 
 StatusIconButtonLinux::~StatusIconButtonLinux() = default;
 
-void StatusIconButtonLinux::SetIcon(const gfx::ImageSkia& image) {
+void StatusIconButtonLinux::SetImage(const gfx::ImageSkia& image) {
   SchedulePaint();
+}
+
+void StatusIconButtonLinux::SetIcon(const gfx::VectorIcon& icon) {
+  SetImage(gfx::CreateVectorIcon(icon, SK_ColorWHITE));
 }
 
 void StatusIconButtonLinux::SetToolTip(const std::u16string& tool_tip) {
@@ -93,7 +98,7 @@ void StatusIconButtonLinux::OnSetDelegate() {
   set_owned_by_client();
 
   SetBorder(nullptr);
-  SetIcon(delegate_->GetImage());
+  SetImage(delegate_->GetImage());
   SetTooltipText(delegate_->GetToolTip());
   set_context_menu_controller(this);
 

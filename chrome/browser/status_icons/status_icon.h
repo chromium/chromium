@@ -14,6 +14,7 @@
 
 namespace gfx {
 class ImageSkia;
+struct VectorIcon;
 }
 
 namespace message_center {
@@ -33,6 +34,7 @@ class StatusIcon {
 
   // Sets the image associated with this status icon.
   virtual void SetImage(const gfx::ImageSkia& image) = 0;
+  virtual void SetIcon(const gfx::VectorIcon& icon);
 
   // Sets the hover text for this status icon. This is also used as the label
   // for the menu item which is created as a replacement for the status icon
