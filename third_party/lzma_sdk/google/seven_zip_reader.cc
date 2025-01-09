@@ -209,7 +209,7 @@ Result SevenZipReaderImpl::Initialize(base::File archive_file) {
   look_stream_buffer_.reset(look_stream_.buf);
 
   look_stream_.bufSize = kStreamBufferSize;
-  LookToRead2_Init(&look_stream_);
+  LookToRead2_INIT(&look_stream_);
 
   // The destructor assumes that `stream_` is valid whenever `db_` is
   // initialized.
