@@ -35,8 +35,6 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerImpl {
   // Create and add a new user. Created user is not affiliated with the domain,
   // that owns the device.
   User* AddUser(const AccountId& account_id);
-  User* AddChildUser(const AccountId& account_id);
-  User* AddGuestUser(const AccountId& account_id);
   User* AddKioskAppUser(const AccountId& account_id);
 
   // The same as AddUser() but allows to specify user affiliation with the

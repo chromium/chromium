@@ -328,24 +328,23 @@ TEST_F(ArcUtilTest, IsArcAllowedForUser) {
   ash::ScopedStubInstallAttributes install_attributes(
       ash::StubInstallAttributes::CreateCloudManaged("test-domain",
                                                      "FAKE_DEVICE_ID"));
+  user_manager::UserManagerImpl::RegisterPrefs(local_state.registry());
   user_manager::TypedScopedUserManager fake_user_manager(
       std::make_unique<user_manager::FakeUserManager>(&local_state));
 
-  EXPECT_TRUE(IsArcAllowedForUser(
-      fake_user_manager->AddUser(AccountId::FromUserEmailGaiaId(
-          "user1@test.com", GaiaId("1234567890-1")))));
-  EXPECT_FALSE(IsArcAllowedForUser(
-      fake_user_manager->AddGuestUser(AccountId::FromUserEmailGaiaId(
-          "user2@test.com", GaiaId("1234567890-2")))));
+  EXPECT_TRUE(IsArcAllowedForUser(fake_user_manager->AddGaiaUser(
+      AccountId::FromUserEmailGaiaId("user1@test.com", GaiaId("1234567890-1")),
+      user_manager::UserType::kRegular)));
+  EXPECT_FALSE(IsArcAllowedForUser(fake_user_manager->AddGuestUser()));
   EXPECT_TRUE(IsArcAllowedForUser(
       fake_user_manager->AddPublicAccountUser(AccountId::FromUserEmailGaiaId(
           "user3@test.com", GaiaId("1234567890-3")))));
   EXPECT_FALSE(IsArcAllowedForUser(
       fake_user_manager->AddKioskAppUser(AccountId::FromUserEmailGaiaId(
           "user4@test.com", GaiaId("1234567890-4")))));
-  EXPECT_TRUE(IsArcAllowedForUser(
-      fake_user_manager->AddChildUser(AccountId::FromUserEmailGaiaId(
-          "user5@test.com", GaiaId("1234567890-5")))));
+  EXPECT_TRUE(IsArcAllowedForUser(fake_user_manager->AddGaiaUser(
+      AccountId::FromUserEmailGaiaId("user5@test.com", GaiaId("1234567890-5")),
+      user_manager::UserType::kChild)));
 
   // An ephemeral user is a logged in user but unknown to UserManager when
   // ephemeral policy is set.

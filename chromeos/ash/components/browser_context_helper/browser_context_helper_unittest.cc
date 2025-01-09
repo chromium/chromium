@@ -172,10 +172,10 @@ TEST_P(BrowserContextHelperAccountIdTest, GetBrowserContextByUser_Guest) {
       user_manager::UserManager::Get());
 
   // Set up a User and its BrowserContext instance.
-  const AccountId account_id = AccountId::FromUserEmail("guest@guest");
+  const user_manager::User* user = fake_user_manager->AddGuestUser();
+  const AccountId& account_id = user->GetAccountId();
   const std::string username_hash =
       user_manager::FakeUserManager::GetFakeUsernameHash(account_id);
-  const user_manager::User* user = fake_user_manager->AddGuestUser(account_id);
   fake_user_manager->UserLoggedIn(account_id, username_hash,
                                   /*browser_restart=*/false,
                                   /*is_child=*/false);

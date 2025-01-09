@@ -776,12 +776,11 @@ class HoldingSpaceKeyedServiceWithExperimentalFeatureForGuestTest
 
   void LogIn(const std::string& email) override {
     CHECK_EQ(email, user_manager::kGuestUserName);
-    auto account_id = user_manager::GuestAccountId();
-
-    user_manager()->AddGuestUser(account_id);
+    auto* user = user_manager()->AddGuestUser();
     user_manager()->UserLoggedIn(
-        account_id,
-        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
+        user->GetAccountId(),
+        user_manager::FakeUserManager::GetFakeUsernameHash(
+            user->GetAccountId()),
         /*browser_restart=*/false,
         /*is_child=*/false);
   }

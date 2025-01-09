@@ -41,20 +41,6 @@ User* FakeUserManager::AddUser(const AccountId& account_id) {
   return AddUserWithAffiliation(account_id, false);
 }
 
-User* FakeUserManager::AddChildUser(const AccountId& account_id) {
-  User* user = User::CreateRegularUser(account_id, UserType::kChild);
-  user_storage_.emplace_back(user);
-  users_.push_back(user);
-  return user;
-}
-
-User* FakeUserManager::AddGuestUser(const AccountId& account_id) {
-  User* user = User::CreateGuestUser(account_id);
-  user_storage_.emplace_back(user);
-  users_.push_back(user);
-  return user;
-}
-
 User* FakeUserManager::AddKioskAppUser(const AccountId& account_id) {
   User* user = User::CreateKioskAppUser(account_id);
   user->set_username_hash(GetFakeUsernameHash(account_id));
@@ -125,18 +111,18 @@ void FakeUserManager::UserLoggedIn(const AccountId& account_id,
                                    bool is_child) {
   // Please keep the implementation in sync with
   // FakeChromeUserManager::UserLoggedIn. We're in process to merge.
-  for (user_manager::User* user : users_) {
+  for (auto& user : user_storage_) {
     if (user->GetAccountId() == account_id) {
       user->set_is_logged_in(true);
       user->set_username_hash(username_hash);
-      logged_in_users_.push_back(user);
+      logged_in_users_.push_back(user.get());
       if (!primary_user_) {
-        primary_user_ = user;
+        primary_user_ = user.get();
       }
       if (active_user_) {
-        NotifyUserAddedToSession(user);
+        NotifyUserAddedToSession(user.get());
       } else {
-        active_user_ = user;
+        active_user_ = user.get();
       }
       break;
     }
