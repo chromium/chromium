@@ -1679,7 +1679,7 @@ void BookmarkBarView::UpdateFirstHiddenNodeIndex() {
   first_hidden_node_idx_ = GetFirstHiddenNodeIndex();
   if (bookmark_menu_ && prev_idx != first_hidden_node_idx_) {
     bookmark_menu_->BookmarkStartIndexChanged(
-        bookmark_model_->bookmark_bar_node(), first_hidden_node_idx_);
+        BookmarkParentFolder::BookmarkBarFolder(), first_hidden_node_idx_);
   }
 }
 

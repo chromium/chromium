@@ -73,9 +73,9 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
   // the first child of `folder` to show in the menu.
   void SetActiveMenu(const BookmarkParentFolder& folder, size_t start_index);
 
-  // Updates the start index of the given `node` and updates its menu
+  // Updates the start index of the given `folder` and updates its menu
   // accordingly.
-  void SetMenuStartIndex(const bookmarks::BookmarkNode* node,
+  void SetMenuStartIndex(const BookmarkParentFolder& folder,
                          size_t start_index);
 
   // Returns the id given to the next menu.

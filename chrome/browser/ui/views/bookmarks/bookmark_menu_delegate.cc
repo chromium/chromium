@@ -318,9 +318,14 @@ void BookmarkMenuDelegate::SetActiveMenu(const BookmarkParentFolder& folder,
   menu_ = node_to_menu_map_[node];
 }
 
-void BookmarkMenuDelegate::SetMenuStartIndex(const BookmarkNode* node,
+void BookmarkMenuDelegate::SetMenuStartIndex(const BookmarkParentFolder& folder,
                                              size_t start_index) {
   CHECK(!parent_menu_item_);
+  BookmarkMergedSurfaceService* service = GetBookmarkMergedSurfaceService();
+  // TODO(crbug.com/369304373): Temporary while the class is being migrated.
+  // `node_start_child_idx_map_` will be migrated to have as a key
+  // `BookmarkParentFolder`.
+  const BookmarkNode* node = service->GetUnderlyingNodes(folder)[0];
   auto node_to_start_idx = node_start_child_idx_map_.find(node);
   const size_t prev_start_idx =
       node_to_start_idx == node_start_child_idx_map_.end()
@@ -337,13 +342,14 @@ void BookmarkMenuDelegate::SetMenuStartIndex(const BookmarkNode* node,
     return;
   }
 
-  CHECK_LE(start_index, node->children().size());
+  CHECK_LE(start_index, service->GetChildrenCount(folder));
   node_start_child_idx_map_[node] = start_index;
   MenuItemView* parent_menu = node_to_menu->second;
 
   // Remove obsolete bookmark menus if the start index increased.
+  const auto& children = service->GetChildren(folder);
   for (size_t idx = prev_start_idx; idx < start_index; ++idx) {
-    const BookmarkNode* child_node = node->children()[idx].get();
+    const BookmarkNode* child_node = children[idx].get();
     if (auto child_node_to_menu = node_to_menu_map_.find(child_node);
         child_node_to_menu != node_to_menu_map_.end()) {
       RemoveBookmarkNode(child_node, child_node_to_menu->second);
@@ -352,7 +358,7 @@ void BookmarkMenuDelegate::SetMenuStartIndex(const BookmarkNode* node,
 
   // Add missing bookmark menus if the start index decreased.
   for (size_t idx = start_index; idx < prev_start_idx; ++idx) {
-    const BookmarkNode* child_node = node->children()[idx].get();
+    const BookmarkNode* child_node = children[idx].get();
     AddBookmarkNode(child_node, parent_menu, idx);
   }
 

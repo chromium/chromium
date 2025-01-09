@@ -203,9 +203,10 @@ void BookmarkMenuController::BookmarkModelChanged() {
   }
 }
 
-void BookmarkMenuController::BookmarkStartIndexChanged(const BookmarkNode* node,
-                                                       size_t new_start_index) {
-  menu_delegate_->SetMenuStartIndex(node, new_start_index);
+void BookmarkMenuController::BookmarkStartIndexChanged(
+    const BookmarkParentFolder& folder,
+    size_t new_start_index) {
+  menu_delegate_->SetMenuStartIndex(folder, new_start_index);
 }
 
 bool BookmarkMenuController::ShouldTryPositioningBesideAnchor() const {

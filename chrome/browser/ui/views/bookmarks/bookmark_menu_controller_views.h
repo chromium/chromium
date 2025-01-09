@@ -21,10 +21,6 @@ class BookmarkMenuControllerObserver;
 class BookmarkMenuDelegate;
 class Browser;
 
-namespace bookmarks {
-class BookmarkNode;
-}
-
 namespace ui {
 class OSExchangeData;
 }
@@ -115,7 +111,7 @@ class BookmarkMenuController : public bookmarks::BaseBookmarkModelObserver,
   // bookmarks::BaseBookmarkModelObserver:
   void BookmarkModelChanged() override;
 
-  void BookmarkStartIndexChanged(const bookmarks::BookmarkNode* node,
+  void BookmarkStartIndexChanged(const BookmarkParentFolder& folder,
                                  size_t new_start_index);
 
  private:
