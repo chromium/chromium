@@ -420,10 +420,10 @@ GraphBuilderOrt::AddBatchNormalizationOperation(
       GetOperandName(batch_normalization.variance_operand_id);
   input_names.push_back(variance_name.c_str());
 
-  ScopedOrtOpAttrPtr attr_epsilon;
-  model_builder_.CreateAttribute(attr_epsilon, /*name=*/"epsilon",
-                                 batch_normalization.epsilon);
-  std::array<OrtOpAttr*, 1> attributes = {attr_epsilon};
+  std::array<OrtOpAttr*, 1> attributes = {
+      model_builder_
+          .CreateAttribute(/*name=*/"epsilon", batch_normalization.epsilon)
+          .Release()};
 
   const std::string node_name = GetNodeName(batch_normalization.label);
   const std::string output_name =
