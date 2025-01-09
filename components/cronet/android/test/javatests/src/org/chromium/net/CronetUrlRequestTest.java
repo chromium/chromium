@@ -31,7 +31,9 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.Log;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.net.CronetTestRule.BoolFlag;
 import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.net.CronetTestRule.Flags;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.CronetTestRule.RequiresMinApi;
@@ -40,6 +42,7 @@ import org.chromium.net.TestUrlRequestCallback.FailureType;
 import org.chromium.net.TestUrlRequestCallback.ResponseStep;
 import org.chromium.net.apihelpers.UploadDataProviders;
 import org.chromium.net.impl.CronetExceptionImpl;
+import org.chromium.net.impl.CronetLibraryLoader;
 import org.chromium.net.impl.CronetUrlRequest;
 import org.chromium.net.impl.NetworkExceptionImpl;
 import org.chromium.net.impl.UrlResponseInfoImpl;
@@ -175,6 +178,18 @@ public class CronetUrlRequestTest {
                 .getEngine()
                 .newUrlRequestBuilder(
                         NativeTestServer.getRedirectURL(), callback, callback.getExecutor());
+    }
+
+    @Test
+    @SmallTest
+    @Flags(
+            boolFlags = {
+                @BoolFlag(
+                        name = CronetLibraryLoader.UPDATE_NETWORK_STATE_ONCE_ON_STARTUP_FLAG_NAME,
+                        value = true)
+            })
+    public void testSimpleGetWithReducedNetworkChangeNotifierExperiment() throws Exception {
+        testSimpleGet();
     }
 
     @Test

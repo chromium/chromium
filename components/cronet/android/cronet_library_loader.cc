@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/cronet/android/cronet_library_loader.h"
+
 #include <jni.h>
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -28,10 +31,10 @@
 #include "build/build_config.h"
 #include "components/cronet/android/cronet_base_feature.h"
 #include "components/cronet/android/cronet_jni_registration_generated.h"
-#include "components/cronet/android/cronet_library_loader.h"
 #include "components/cronet/android/proto/base_feature_overrides.pb.h"
 #include "components/cronet/cronet_global_state.h"
 #include "components/cronet/version.h"
+#include "net/android/network_change_notifier_delegate_android.h"
 #include "net/android/network_change_notifier_factory_android.h"
 #include "net/base/network_change_notifier.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
@@ -136,7 +139,9 @@ void CronetOnUnLoad(JavaVM* jvm, void* reserved) {
   base::android::LibraryLoaderExitHook();
 }
 
-void JNI_CronetLibraryLoader_CronetInitOnInitThread(JNIEnv* env) {
+void JNI_CronetLibraryLoader_CronetInitOnInitThread(
+    JNIEnv* env,
+    jboolean updateNetworkStateFromNative) {
   // Initialize SingleThreadTaskExecutor for init thread.
   DCHECK(!base::CurrentThread::IsSet());
   DCHECK(!g_init_task_executor);
@@ -144,9 +149,15 @@ void JNI_CronetLibraryLoader_CronetInitOnInitThread(JNIEnv* env) {
       new base::SingleThreadTaskExecutor(base::MessagePumpType::JAVA);
 
   DCHECK(!g_network_change_notifier);
+
   if (!net::NetworkChangeNotifier::GetFactory()) {
     net::NetworkChangeNotifier::SetFactory(
-        new net::NetworkChangeNotifierFactoryAndroid());
+        new net::NetworkChangeNotifierFactoryAndroid(
+            updateNetworkStateFromNative
+                ? net::NetworkChangeNotifierDelegateAndroid::
+                      ForceUpdateNetworkState::kEnabled
+                : net::NetworkChangeNotifierDelegateAndroid::
+                      ForceUpdateNetworkState::kDisabled));
   }
   g_network_change_notifier = net::NetworkChangeNotifier::CreateIfNeeded();
   DCHECK(g_network_change_notifier);

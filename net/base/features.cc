@@ -561,10 +561,6 @@ BASE_FEATURE(kPersistDeviceBoundSessions,
              "PersistDeviceBoundSessions",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kStoreConnectionSubtype,
-             "StoreConnectionSubtype",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPartitionProxyChains,
              "PartitionProxyChains",
              base::FEATURE_ENABLED_BY_DEFAULT);
