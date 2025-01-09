@@ -222,6 +222,24 @@ try_.builder(
 )
 
 try_.builder(
+    name = "mac-libfuzzer-asan-rel",
+    # TODO(crbug.com/41492669): Can delete this description when it's
+    # automatically generated.
+    description_html = "Trybot of {}.".format(linkify_builder("ci", "Libfuzzer Upload Mac ASan")),
+    executable = "recipe:chromium/fuzz",
+    mirrors = ["ci/Libfuzzer Upload Mac ASan"],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/Libfuzzer Upload Mac ASan",
+            "dcheck_always_on",
+            "no_symbols",
+            "skip_generate_fuzzer_owners",
+        ],
+    ),
+    contact_team_email = "chrome-deet-core@google.com",
+)
+
+try_.builder(
     name = "mac-lsan-fyi-rel",
     mirrors = [
         "ci/mac-lsan-fyi-rel",

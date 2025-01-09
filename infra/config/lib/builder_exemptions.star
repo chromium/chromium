@@ -1434,7 +1434,6 @@ mega_cq_excluded_builders = [
     "Libfuzzer Upload Linux32 ASan",
     "Libfuzzer Upload Linux32 V8-ARM ASan",
     "Libfuzzer Upload Linux32 V8-ARM ASan Debug",
-    "Libfuzzer Upload Mac ASan",
     "Libfuzzer Upload iOS Catalyst Debug",
     # TODO(crbug.com/40282196): Remove the following as trybots are
     # created for them.

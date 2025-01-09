@@ -10,3 +10,4 @@ ci/Libfuzzer Upload Mac ASan
 ci/Libfuzzer Upload Windows ASan
 ci/Libfuzzer Upload iOS Catalyst Debug
 try/chromeos-libfuzzer-asan-rel
+try/mac-libfuzzer-asan-rel
