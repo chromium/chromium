@@ -87,8 +87,9 @@ found in the LICENSE file.
         android:layout_weight="1"
         android:layout_height="match_parent" />
 
-    <TextView
+    <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/auxiliary_search_first_button"
+        style="@style/TextButton"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:paddingStart="@dimen/auxiliary_search_module_icon_size"
@@ -96,8 +97,7 @@ found in the LICENSE file.
         android:gravity="center_vertical|center_horizontal"
         android:layout_gravity="bottom"
         android:singleLine="true"
-        android:text="@string/auxiliary_search_module_button_go_to_settings"
-        android:textAppearance="@style/TextAppearance.Button.Text.Blue" />
+        android:text="@string/auxiliary_search_module_button_go_to_settings" />
 
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/auxiliary_search_second_button"
@@ -109,7 +109,6 @@ found in the LICENSE file.
         android:layout_marginStart="@dimen/auxiliary_search_module_button_padding_middle"
         android:singleLine="true"
         android:layout_gravity="bottom|end"
-        android:textAppearance="@style/TextAppearance.Button.Text.Filled"
         android:text="@string/auxiliary_search_module_button_got_it" />
 
 </LinearLayout>
