@@ -122,16 +122,16 @@ async def test_browsingContext_navigateWaitNone_navigated(
 
 @pytest.mark.asyncio
 async def test_browsingContext_navigateWaitInteractive_navigated(
-        websocket, context_id, html):
-    url = html("<h2>test</h2>")
+        websocket, context_id, html, url_hang_forever,
+        assert_no_more_messages):
+    url = html(f"<h2>test</h2><img src='{url_hang_forever}'/>")
 
     await subscribe(
         websocket,
         ["browsingContext.domContentLoaded", "browsingContext.load"])
 
-    await send_JSON_command(
+    command_id = await send_JSON_command(
         websocket, {
-            "id": 14,
             "method": "browsingContext.navigate",
             "params": {
                 "url": url,
@@ -157,7 +157,7 @@ async def test_browsingContext_navigateWaitInteractive_navigated(
     # Assert command done.
     resp = await read_JSON_message(websocket)
     assert resp == {
-        "id": 14,
+        "id": command_id,
         "type": "success",
         "result": {
             "navigation": navigation_id,
@@ -165,18 +165,7 @@ async def test_browsingContext_navigateWaitInteractive_navigated(
         }
     }
 
-    # Wait for `browsingContext.load` event.
-    resp = await read_JSON_message(websocket)
-    assert resp == {
-        'type': 'event',
-        "method": "browsingContext.load",
-        "params": {
-            "context": context_id,
-            "navigation": navigation_id,
-            "timestamp": ANY_TIMESTAMP,
-            "url": url
-        }
-    }
+    await assert_no_more_messages()
 
 
 @pytest.mark.asyncio

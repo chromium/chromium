@@ -59,6 +59,21 @@ def local_server_http_another_host() -> Generator[LocalHttpServer, None, None]:
 
 
 @pytest_asyncio.fixture(scope='session')
+def local_server_http_yet_another_host(
+) -> Generator[LocalHttpServer, None, None]:
+    """
+    Returns an instance of a LocalHttpServer without SSL pointing to `::1`
+    """
+    server = LocalHttpServer('::1')
+    yield server
+
+    server.clear()
+    if server.is_running():
+        server.stop()
+        return
+
+
+@pytest_asyncio.fixture(scope='session')
 def local_server_bad_ssl() -> Generator[LocalHttpServer, None, None]:
     """ Returns an instance of a LocalHttpServer with bad SSL certificate. """
     server = LocalHttpServer(protocol='https')
@@ -273,12 +288,12 @@ def url_auth_required(local_server_http):
 
 
 @pytest.fixture
-def url_hang_forever(local_server_http):
+def url_hang_forever(local_server_http_yet_another_host):
     """Return a URL that hangs forever."""
     try:
-        yield local_server_http.url_hang_forever()
+        yield local_server_http_yet_another_host.url_hang_forever()
     finally:
-        local_server_http.hang_forever_stop()
+        local_server_http_yet_another_host.hang_forever_stop()
 
 
 @pytest.fixture(scope="session")

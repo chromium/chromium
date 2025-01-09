@@ -46,7 +46,7 @@ export class NavigationResult {
   }
 }
 
-class NavigationState {
+export class NavigationState {
   readonly navigationId = uuidv4();
   readonly #browsingContextId: string;
 
@@ -57,6 +57,7 @@ class NavigationState {
   #isInitial: boolean;
   #eventManager: EventManager;
   #navigated = false;
+  isFragmentNavigation?: boolean;
 
   get finished(): Promise<NavigationResult> {
     return this.#finished;
@@ -160,10 +161,6 @@ export class NavigationTracker {
 
   // Flags if the initial navigation to `about:blank` is in progress.
   #isInitialNavigation = true;
-
-  navigation = {
-    withinDocument: new Deferred<void>(),
-  };
 
   constructor(
     url: string,
@@ -391,6 +388,8 @@ export class NavigationTracker {
       navigation.loaderId = loaderId;
       this.#loaderIdToNavigationsMap.set(loaderId, navigation);
     }
+
+    navigation.isFragmentNavigation = loaderId === undefined;
 
     if (loaderId === undefined || this.#currentNavigation === navigation) {
       // If the command's navigation is same-document or is already the current one,

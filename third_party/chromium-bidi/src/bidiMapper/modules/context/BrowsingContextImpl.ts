@@ -46,6 +46,7 @@ import type {BrowsingContextStorage} from './BrowsingContextStorage.js';
 import {
   NavigationEventName,
   NavigationResult,
+  type NavigationState,
   NavigationTracker,
 } from './NavigationTracker.js';
 
@@ -814,7 +815,7 @@ export class BrowsingContextImpl {
       throw new InvalidArgumentException(`Invalid URL: ${url}`);
     }
 
-    const commandNavigation =
+    const navigationState =
       this.#navigationTracker.createPendingNavigation(url);
 
     // Navigate and wait for the result. If the navigation fails, the error event is
@@ -831,33 +832,26 @@ export class BrowsingContextImpl {
       if (cdpNavigateResult.errorText) {
         // If navigation failed, no pending navigation is left.
         this.#navigationTracker.failNavigation(
-          commandNavigation,
+          navigationState,
           cdpNavigateResult.errorText,
         );
         throw new UnknownErrorException(cdpNavigateResult.errorText);
       }
 
       this.#navigationTracker.navigationCommandFinished(
-        commandNavigation,
+        navigationState,
         cdpNavigateResult.loaderId,
       );
 
       this.#documentChanged(cdpNavigateResult.loaderId);
     })();
 
-    if (wait === BrowsingContext.ReadinessState.None) {
-      return {
-        navigation: commandNavigation.navigationId,
-        url,
-      };
-    }
-
     // Wait for either the navigation is finished or canceled by another navigation.
     const result = await Promise.race([
       // No `loaderId` means same-document navigation.
-      this.#waitNavigation(wait, cdpNavigatePromise),
+      this.#waitNavigation(wait, cdpNavigatePromise, navigationState),
       // Throw an error if the navigation is canceled.
-      commandNavigation.finished,
+      navigationState.finished,
     ]);
 
     if (result instanceof NavigationResult) {
@@ -872,28 +866,44 @@ export class BrowsingContextImpl {
     }
 
     return {
-      navigation: commandNavigation.navigationId,
+      navigation: navigationState.navigationId,
       // Url can change due to redirects. Get the one from commandNavigation.
-      url: commandNavigation.url,
+      url: navigationState.url,
     };
   }
 
   async #waitNavigation(
     wait: BrowsingContext.ReadinessState,
     cdpCommandPromise: Promise<void>,
+    navigationState: NavigationState,
   ) {
-    switch (wait) {
-      case BrowsingContext.ReadinessState.None:
-        return;
-      case BrowsingContext.ReadinessState.Interactive:
-        await cdpCommandPromise;
-        await this.#lifecycle.DOMContentLoaded;
-        return;
-      case BrowsingContext.ReadinessState.Complete:
-        await cdpCommandPromise;
-        await this.#lifecycle.load;
-        return;
+    if (wait === BrowsingContext.ReadinessState.None) {
+      return;
     }
+
+    await cdpCommandPromise;
+    if (navigationState.isFragmentNavigation === true) {
+      // After the cdp command is finished, the `fragmentNavigation` should be already
+      // settled. If it's the fragment navigation, wait for the `navigationStatus` to be
+      // finished, which happens after the fragment navigation happened. No need to wait for
+      // DOM events.
+      await navigationState.finished;
+      return;
+    }
+
+    if (wait === BrowsingContext.ReadinessState.Interactive) {
+      await this.#lifecycle.DOMContentLoaded;
+      return;
+    }
+
+    if (wait === BrowsingContext.ReadinessState.Complete) {
+      await this.#lifecycle.load;
+      return;
+    }
+
+    throw new InvalidArgumentException(
+      `Wait condition ${wait} is not supported`,
+    );
   }
 
   // TODO: support concurrent navigations analogous to `navigate`.
@@ -905,7 +915,7 @@ export class BrowsingContextImpl {
 
     this.#resetLifecycleIfFinished();
 
-    const commandNavigation = this.#navigationTracker.createPendingNavigation(
+    const navigationState = this.#navigationTracker.createPendingNavigation(
       this.#navigationTracker.url,
     );
 
@@ -919,9 +929,9 @@ export class BrowsingContextImpl {
     // Wait for either the navigation is finished or canceled by another navigation.
     const result = await Promise.race([
       // No `loaderId` means same-document navigation.
-      this.#waitNavigation(wait, cdpReloadPromise),
+      this.#waitNavigation(wait, cdpReloadPromise, navigationState),
       // Throw an error if the navigation is canceled.
-      commandNavigation.finished,
+      navigationState.finished,
     ]);
 
     if (result instanceof NavigationResult) {
@@ -934,9 +944,9 @@ export class BrowsingContextImpl {
     }
 
     return {
-      navigation: commandNavigation.navigationId,
+      navigation: navigationState.navigationId,
       // Url can change due to redirects. Get the one from commandNavigation.
-      url: commandNavigation.url,
+      url: navigationState.url,
     };
   }
 
