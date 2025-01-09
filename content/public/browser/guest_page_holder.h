@@ -78,6 +78,9 @@ class GuestPageHolder : public base::SupportsUserData {
     // The guest was resized.
     virtual void GuestResizeDueToAutoResize(const gfx::Size& new_size) = 0;
 
+    // The guest's preferred size changed.
+    virtual void GuestUpdateWindowPreferredSize(const gfx::Size& pref_size) = 0;
+
     // Return the prospective outer document. Should only be called when
     // unattached.
     virtual RenderFrameHost* GetProspectiveOuterDocument() = 0;

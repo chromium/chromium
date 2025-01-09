@@ -678,7 +678,8 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   virtual void SetWindowRect(const gfx::Rect& new_bounds) {}
 
   // The page's preferred size changed.
-  virtual void UpdateWindowPreferredSize(const gfx::Size& pref_size) {}
+  virtual void UpdateWindowPreferredSize(RenderFrameHostImpl* render_frame_host,
+                                         const gfx::Size& pref_size) {}
 
   // Returns the list of top-level RenderFrameHosts hosting active documents
   // that belong to the same browsing context group as `render_frame_host`.

@@ -457,6 +457,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   void GuestDidChangeLoadProgress(double progress) final;
   void GuestMainFrameProcessGone(base::TerminationStatus status) final;
   void GuestResizeDueToAutoResize(const gfx::Size& new_size) final;
+  void GuestUpdateWindowPreferredSize(const gfx::Size& pref_size) final;
   content::GuestPageHolder* GuestCreateNewWindow(
       WindowOpenDisposition disposition,
       const GURL& url,

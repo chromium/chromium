@@ -8943,8 +8943,18 @@ void WebContentsImpl::SetWindowRect(const gfx::Rect& new_bounds) {
   delegate_->SetContentsBounds(this, bounds);
 }
 
-void WebContentsImpl::UpdateWindowPreferredSize(const gfx::Size& pref_size) {
+void WebContentsImpl::UpdateWindowPreferredSize(
+    RenderFrameHostImpl* render_frame_host,
+    const gfx::Size& pref_size) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::UpdatePreferredSize");
+  if (auto* guest =
+          GuestPageHolderImpl::FromRenderFrameHost(*render_frame_host)) {
+    guest->delegate()->GuestUpdateWindowPreferredSize(pref_size);
+    return;
+  }
+
+  CHECK(render_frame_host->IsInPrimaryMainFrame());
+
   const gfx::Size old_size = GetPreferredSize();
   preferred_size_ = pref_size;
   OnPreferredSizeChanged(old_size);

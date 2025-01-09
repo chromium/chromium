@@ -695,6 +695,15 @@ void GuestViewBase::GuestResizeDueToAutoResize(const gfx::Size& new_size) {
   UpdateGuestSize(new_size, auto_size_enabled_);
 }
 
+void GuestViewBase::GuestUpdateWindowPreferredSize(const gfx::Size& pref_size) {
+  // In theory it's not necessary to check IsPreferredSizeModeEnabled() because
+  // there will only be events if it was enabled in the first place. However,
+  // something else may have turned on preferred size mode, so double check.
+  if (IsPreferredSizeModeEnabled()) {
+    OnPreferredSizeChanged(pref_size);
+  }
+}
+
 content::GuestPageHolder* GuestViewBase::GuestCreateNewWindow(
     WindowOpenDisposition disposition,
     const GURL& url,
@@ -927,14 +936,8 @@ bool GuestViewBase::PreHandleGestureEvent(WebContents* source,
 void GuestViewBase::UpdatePreferredSize(WebContents* target_web_contents,
                                         const gfx::Size& pref_size) {
   CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
-
-  // In theory it's not necessary to check IsPreferredSizeModeEnabled() because
-  // there will only be events if it was enabled in the first place. However,
-  // something else may have turned on preferred size mode, so double check.
   DCHECK_EQ(web_contents(), target_web_contents);
-  if (IsPreferredSizeModeEnabled()) {
-    OnPreferredSizeChanged(pref_size);
-  }
+  GuestUpdateWindowPreferredSize(pref_size);
 }
 
 void GuestViewBase::UpdateTargetURL(WebContents* source, const GURL& url) {

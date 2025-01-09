@@ -6712,10 +6712,11 @@ void RenderFrameHostImpl::ContentsPreferredSizeChanged(
   }
 
   // Ignore the request if we are aren't the outermost main frame.
-  if (GetParentOrOuterDocument())
+  if (GetParentOrOuterDocument()) {
     return;
+  }
 
-  delegate_->UpdateWindowPreferredSize(pref_size);
+  delegate_->UpdateWindowPreferredSize(this, pref_size);
 }
 
 void RenderFrameHostImpl::TextAutosizerPageInfoChanged(

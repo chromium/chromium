@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/guest_view/buildflags/buildflags.gni")
+
 source_set("storage_access_api") {
   sources = [
     "site_pair_cache.cc",
@@ -34,8 +36,13 @@ source_set("storage_access_api") {
     "//components/content_settings/browser",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/browser:cookie_settings",
+    "//components/guest_view/buildflags",
     "//components/origin_trials:browser",
     "//content/public/browser",
     "//services/network/public/mojom",
   ]
+
+  if (enable_guest_view) {
+    deps += [ "//components/guest_view/browser" ]
+  }
 }

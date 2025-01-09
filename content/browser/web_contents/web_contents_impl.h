@@ -892,7 +892,8 @@ class CONTENT_EXPORT WebContentsImpl
       RenderFrameHost::LifecycleState old_state,
       RenderFrameHost::LifecycleState new_state) override;
   void SetWindowRect(const gfx::Rect& new_bounds) override;
-  void UpdateWindowPreferredSize(const gfx::Size& pref_size) override;
+  void UpdateWindowPreferredSize(RenderFrameHostImpl* render_frame_host,
+                                 const gfx::Size& pref_size) override;
   std::vector<RenderFrameHostImpl*>
   GetActiveTopLevelDocumentsInBrowsingContextGroup(
       RenderFrameHostImpl* render_frame_host) override;

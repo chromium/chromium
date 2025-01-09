@@ -1755,7 +1755,8 @@ TEST_F(WebContentsImplTest, CaptureHoldsWakeLock) {
 
 TEST_F(WebContentsImplTest, CapturerOverridesPreferredSize) {
   const gfx::Size original_preferred_size(1024, 768);
-  contents()->UpdateWindowPreferredSize(original_preferred_size);
+  contents()->UpdateWindowPreferredSize(main_test_rfh(),
+                                        original_preferred_size);
 
   // With no capturers, expect the preferred size to be the one propagated into
   // WebContentsImpl via the RenderViewHostDelegate interface.
