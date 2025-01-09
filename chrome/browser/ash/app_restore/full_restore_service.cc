@@ -286,11 +286,17 @@ void FullRestoreService::Init(bool& show_notification) {
     is_update = old_version.IsValid() && current_version > old_version;
   }
 
-  // If the system crashed before reboot, show the restore notification.
   if (ExitTypeService::GetLastSessionExitType(profile_) == ExitType::kCrashed) {
     if (!HasRestorePref(prefs))
       SetDefaultRestorePrefIfNecessary(prefs);
 
+    // TODO(crbug.com/388309832): Determine if we should show a notification for
+    // crashes if always or never restore setting is set for forest.
+    if (features::IsForestFeatureEnabled() && !IsAskEveryTime(prefs)) {
+      return;
+    }
+
+    // If the system crashed before reboot, show the crash notification.
     MaybeShowRestoreNotification(
         InformedRestoreContentsData::DialogType::kCrash, show_notification);
     return;
