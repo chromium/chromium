@@ -10,7 +10,6 @@
 #include <string_view>
 #include <vector>
 
-#include "ash/components/arc/compat_mode/overlay_dialog.h"
 #include "ash/components/arc/net/browser_url_opener.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
@@ -18,6 +17,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/network/network_event_log.h"
+#include "chromeos/ash/experiences/arc/compat_mode/overlay_dialog.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"

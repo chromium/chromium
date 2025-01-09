@@ -2,7 +2,11 @@ include_rules = [
   # Allows to include files in the directory.
   "+chromeos/ash/experiences/arc",
 
+  "+ash/game_dashboard",
   "+ash/public/cpp",
+  "+ash/strings",
+  "+ash/style",
+  "+components/exo",
   "+components/keyed_service",
   "+components/strings/grit",
   "+components/vector_icons",
@@ -18,4 +22,3 @@ specific_include_rules = {
     "+content/public/test/browser_task_environment.h",
   ],
 }
-

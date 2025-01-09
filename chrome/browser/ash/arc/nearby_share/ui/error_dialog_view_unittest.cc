@@ -6,9 +6,9 @@
 
 #include <memory>
 
-#include "ash/components/arc/compat_mode/test/compat_mode_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chromeos/ash/experiences/arc/compat_mode/test/compat_mode_test_base.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 
 namespace arc {

@@ -168,7 +168,7 @@
       'filepath': 'chrome/browser/ash/arc/auth'
     },
     'arc_compat_mode': {
-      'filepath': 'ash/components/arc/compat_mode/|' \
+      'filepath': 'chromeos/ash/experiences/arc/compat_mode/|' \
                   'arc_compat_mode|resize_lock',
     },
     'arc_fileapi': {

@@ -9,11 +9,6 @@
 
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_util.h"
-#include "ash/components/arc/camera/arc_camera_bridge.h"
-#include "ash/components/arc/chrome_feature_flags/arc_chrome_feature_flags_bridge.h"
-#include "ash/components/arc/compat_mode/arc_resize_lock_manager.h"
-#include "ash/components/arc/crash_collector/arc_crash_collector_bridge.h"
-#include "ash/components/arc/disk_space/arc_disk_space_bridge.h"
 #include "ash/components/arc/ime/arc_ime_service.h"
 #include "ash/components/arc/intent_helper/arc_icon_cache_delegate.h"
 #include "ash/components/arc/intent_helper/arc_intent_helper_bridge.h"
@@ -107,6 +102,11 @@
 #include "chromeos/ash/experiences/arc/app/arc_app_launch_notifier.h"
 #include "chromeos/ash/experiences/arc/appfuse/arc_appfuse_bridge.h"
 #include "chromeos/ash/experiences/arc/audio/arc_audio_bridge.h"
+#include "chromeos/ash/experiences/arc/camera/arc_camera_bridge.h"
+#include "chromeos/ash/experiences/arc/chrome_feature_flags/arc_chrome_feature_flags_bridge.h"
+#include "chromeos/ash/experiences/arc/compat_mode/arc_resize_lock_manager.h"
+#include "chromeos/ash/experiences/arc/crash_collector/arc_crash_collector_bridge.h"
+#include "chromeos/ash/experiences/arc/disk_space/arc_disk_space_bridge.h"
 #include "components/prefs/pref_member.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 

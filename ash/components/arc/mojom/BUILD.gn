@@ -127,10 +127,12 @@ mojom("mojom") {
         "//device/bluetooth/public/cpp/bluetooth_uuid.h",
         "//device/bluetooth/bluez/bluetooth_service_attribute_value_bluez.h",
       ]
-      traits_private_headers =
-          [ "//ash/components/arc/bluetooth/bluetooth_mojom_traits.h" ]
-      traits_sources =
-          [ "//ash/components/arc/bluetooth/bluetooth_mojom_traits.cc" ]
+      traits_private_headers = [
+        "//chromeos/ash/experiences/arc/bluetooth/bluetooth_mojom_traits.h",
+      ]
+      traits_sources = [
+        "//chromeos/ash/experiences/arc/bluetooth/bluetooth_mojom_traits.cc",
+      ]
       traits_public_deps = [
         "//device/bluetooth",
         "//device/bluetooth/public/cpp",
@@ -143,10 +145,10 @@ mojom("mojom") {
           cpp = "::storage::WatcherManager::ChangeType"
         },
       ]
-      traits_headers =
-          [ "//ash/components/arc/file_system/file_system_mojom_traits.h" ]
-      traits_sources =
-          [ "//ash/components/arc/file_system/file_system_mojom_traits.cc" ]
+      traits_headers = [
+        "//chromeos/ash/experiences/arc/file_system/file_system_mojom_traits.h",
+      ]
+      traits_sources = [ "//chromeos/ash/experiences/arc/file_system/file_system_mojom_traits.cc" ]
       traits_public_deps = [ "//storage/browser" ]
     },
     {
@@ -402,8 +404,10 @@ mojom("notifications") {
           cpp = "::SkBitmap"
         },
       ]
-      traits_headers = [ "//ash/components/arc/bitmap/bitmap_mojom_traits.h" ]
-      traits_sources = [ "//ash/components/arc/bitmap/bitmap_mojom_traits.cc" ]
+      traits_headers =
+          [ "//chromeos/ash/experiences/arc/bitmap/bitmap_mojom_traits.h" ]
+      traits_sources =
+          [ "//chromeos/ash/experiences/arc/bitmap/bitmap_mojom_traits.cc" ]
       traits_public_deps = [ "//skia" ]
     },
   ]
