@@ -41,6 +41,21 @@ struct InjectionTarget {
   int tab_id;
 };
 
+// Details specifying the read file (either CSS or JS) for the script to be
+// injected.
+struct InjectedFileSource {
+  InjectedFileSource(std::string file_name, std::unique_ptr<std::string> data);
+  InjectedFileSource(InjectedFileSource&&);
+  ~InjectedFileSource();
+
+  std::string file_name;
+  std::unique_ptr<std::string> data;
+};
+
+using ResourcesLoadedCallback =
+    base::OnceCallback<void(std::vector<InjectedFileSource>,
+                            std::optional<std::string>)>;
+
 // Appends the prefix corresponding to the dynamic script `source` to
 // `script_id`.
 std::string AddPrefixToDynamicScriptId(const std::string& script_id,
@@ -204,6 +219,22 @@ bool CanAccessTarget(const PermissionsData& permissions,
                      ScriptExecutor::FrameScope* frame_scope_out,
                      std::set<int>* frame_ids_out,
                      std::string* error_out);
+
+// Checks the specified `files` for validity, and attempts to load and localize
+// them, invoking `callback` with the result. Returns true on success; on
+// failure, populates `error_out`.
+bool CheckAndLoadFiles(std::vector<std::string> files,
+                       const Extension& extension,
+                       bool requires_localization,
+                       ResourcesLoadedCallback callback,
+                       std::string* error_out);
+
+// Checks `files` and populates `resources_out` with the appropriate extension
+// resource. Returns true on success; on failure, populates `error_out`.
+bool GetFileResources(const std::vector<std::string>& files,
+                      const Extension& extension,
+                      std::vector<ExtensionResource>* resources_out,
+                      std::string* error_out);
 
 // Executes script with `sources` in the frames identified by `frame_ids`
 void ExecuteScript(const ExtensionId& extension_id,

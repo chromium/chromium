@@ -53,7 +53,7 @@ export async function getSingleTab(query) {
 }
 
 /**
- * Returns the injected element ids in `tabId`.
+ * Returns the injected element ids in `tabId` by alphabetical order.
  * @param {string} tabId
  * @return {string[]}
  */
@@ -65,6 +65,25 @@ export async function getInjectedElementIds(tabId) {
       for (const child of document.body.children)
         childIds.push(child.id);
       return childIds.sort();
+    }
+  });
+  chrome.test.assertEq(1, injectedElements.length);
+  return injectedElements[0].result;
+};
+
+/**
+ * Returns the injected element ids in `tabId` by injection order.
+ * @param {string} tabId
+ * @return {string[]}
+ */
+export async function getInjectedElementIdsInOrder(tabId) {
+  let injectedElements = await chrome.scripting.executeScript({
+    target: {tabId: tabId},
+    func: () => {
+      let childIds = [];
+      for (const child of document.body.children)
+        childIds.push(child.id);
+      return childIds;
     }
   });
   chrome.test.assertEq(1, injectedElements.length);

@@ -5,6 +5,7 @@
 #include "extensions/browser/api/user_scripts/user_scripts_api.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -25,6 +26,7 @@
 #include "extensions/common/api/scripts_internal/script_serialization.h"
 #include "extensions/common/api/user_scripts.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/mojom/code_injection.mojom-forward.h"
 #include "extensions/common/mojom/execution_world.mojom-shared.h"
 #include "extensions/common/user_script.h"
 #include "extensions/common/utils/content_script_utils.h"
@@ -668,7 +670,7 @@ ExtensionFunction::ResponseAction UserScriptsExecuteFunction::Run() {
 
   injection_ = std::move(params->injection);
 
-  // Validate injection source.
+  // Validate injection sources.
   if (injection_.js.empty()) {
     return RespondNow(Error(kEmptySourceErrorWithoutIdError));
   }
@@ -692,30 +694,96 @@ ExtensionFunction::ResponseAction UserScriptsExecuteFunction::Run() {
     return RespondNow(Error(std::move(error)));
   }
 
-  // Convert script sources to js sources.
-  std::vector<mojom::JSSourcePtr> sources;
+  // Retrieve injection sources in order. Since file sources need to be loaded,
+  // we use a nullopt for placeholder in the source list. After files are
+  // successfully loaded, they should be converted to js source too.
+  std::vector<std::string> file_sources;
+  std::vector<std::optional<mojom::JSSourcePtr>> sources;
   for (api::user_scripts::ScriptSource& source : injection_.js) {
-    // TODO(crbug.com/326657581): Handle files. For now we exit early, since
-    // we are only handling code.
     if (source.file) {
-      return RespondNow(NoArguments());
+      file_sources.push_back(std::move(*source.file));
+      sources.push_back(std::nullopt);
+    } else {
+      CHECK(source.code);
+      sources.push_back(mojom::JSSource::New(std::move(*source.code), GURL()));
     }
-
-    CHECK(source.code);
-    sources.push_back(mojom::JSSource::New(std::move(*source.code), GURL()));
   }
 
-  mojom::ExecutionWorld execution_world =
-      ConvertExecutionWorld(injection_.world);
-  // TODO(crbug.com/326657581): Add world id to UserScriptInjection.
-
-  scripting::ExecuteScript(
-      extension()->id(), std::move(sources), execution_world, script_executor,
-      frame_scope, frame_ids, injection_.inject_immediately.value_or(false),
-      user_gesture(),
-      base::BindOnce(&UserScriptsExecuteFunction::OnScriptExecuted, this));
+  if (!file_sources.empty()) {
+    // JS files don't require localization.
+    constexpr bool kRequiresLocalization = false;
+    scripting::CheckAndLoadFiles(
+        std::move(file_sources), *extension(), kRequiresLocalization,
+        base::BindOnce(&UserScriptsExecuteFunction::DidLoadResources, this,
+                       script_executor, frame_scope, std::move(frame_ids),
+                       std::move(sources)),
+        &error);
+  } else {
+    Execute(std::move(sources), script_executor, frame_scope, frame_ids,
+            &error);
+  }
 
   return RespondLater();
+}
+
+void UserScriptsExecuteFunction::DidLoadResources(
+    ScriptExecutor* script_executor,
+    ScriptExecutor::FrameScope frame_scope,
+    std::set<int> frame_ids,
+    std::vector<std::optional<mojom::JSSourcePtr>> sources,
+    std::vector<scripting::InjectedFileSource> file_sources,
+    std::optional<std::string> load_error) {
+  if (load_error) {
+    Respond(Error(std::move(*load_error)));
+    return;
+  }
+
+  DCHECK(!file_sources.empty());
+
+  // Convert the file sources to js and add them to sources in their
+  // corresponding execution order.
+  int file_index = 0;
+  for (std::optional<mojom::JSSourcePtr>& source : sources) {
+    // Only file sources have a nullopt placeholder value.
+    if (!source.has_value()) {
+      CHECK_LT(file_index, static_cast<int>(file_sources.size()));
+      source = mojom::JSSource::New(
+          std::move(*file_sources[file_index].data),
+          extension()->GetResourceURL(file_sources[file_index].file_name));
+      file_index++;
+    }
+  }
+
+  // Verify all the file sources where properly added to the sources.
+  CHECK_EQ(file_index, static_cast<int>(file_sources.size()));
+
+  std::string error;
+  Execute(std::move(sources), script_executor, frame_scope, frame_ids, &error);
+}
+
+void UserScriptsExecuteFunction::Execute(
+    std::vector<std::optional<mojom::JSSourcePtr>> sources,
+    ScriptExecutor* script_executor,
+    ScriptExecutor::FrameScope frame_scope,
+    std::set<int> frame_ids,
+    std::string* error) {
+  // TODO(crbug.com/326657581): Add world id to UserScriptInjection.
+  mojom::ExecutionWorld execution_world =
+      ConvertExecutionWorld(injection_.world);
+  bool inject_immediately = injection_.inject_immediately.value_or(false);
+
+  std::vector<mojom::JSSourcePtr> js_sources;
+  js_sources.reserve(sources.size());
+  for (std::optional<mojom::JSSourcePtr>& source : sources) {
+    CHECK(source.has_value());
+    js_sources.push_back(std::move(*source));
+  }
+
+  scripting::ExecuteScript(
+      extension()->id(), std::move(js_sources), execution_world,
+      script_executor, frame_scope, frame_ids, inject_immediately,
+      user_gesture(),
+      base::BindOnce(&UserScriptsExecuteFunction::OnScriptExecuted, this));
 }
 
 void UserScriptsExecuteFunction::OnScriptExecuted(

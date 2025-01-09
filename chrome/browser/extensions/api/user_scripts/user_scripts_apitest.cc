@@ -134,6 +134,12 @@ IN_PROC_BROWSER_TEST_F(UserScriptsAPITest, ExecuteUserScripts_Subframes) {
       << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(UserScriptsAPITest, ExecuteUserScripts_SizeLimit) {
+  auto single_scripts_limit_reset =
+      script_parsing::CreateScopedMaxScriptLengthForTesting(700u);
+  ASSERT_TRUE(RunExtensionTest("user_scripts/execute_size_limit")) << message_;
+}
+
 // TODO(crbug.com/335421977): Flaky on "Linux ChromiumOS MSan Tests".
 #if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
 #define MAYBE_ConfigureWorld DISABLED_ConfigureWorld

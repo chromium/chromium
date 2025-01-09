@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {findDocumentIdWithHostname, findFrameIdWithHostname, getFramesInTab, getInjectedElementIds, openTab} from '/_test_resources/test_util/tabs_util.js';
+import {findDocumentIdWithHostname, findFrameIdWithHostname, getFramesInTab, getInjectedElementIds, getInjectedElementIdsInOrder, openTab} from '/_test_resources/test_util/tabs_util.js';
 
 // Navigates to an url requested by the extension and returns the opened tab.
 async function navigateToRequestedUrl() {
@@ -222,22 +222,40 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
-  // Tests that a script with multiple code sources and a valid target is
-  // injected.
-  async function executeCode_MultipleSources() {
+  // Tests that a script with a file source and a valid target is injected.
+  async function executeFile() {
+    await chrome.userScripts.unregister();
+
+    const tab = await navigateToRequestedUrl();
+    const script = {js: [{file: 'inject_element.js'}], target: {tabId: tab.id}};
+    await chrome.userScripts.execute(script);
+
+    // Verify script was injected.
+    chrome.test.assertEq(
+        ['injected_file_1'], await getInjectedElementIds(tab.id));
+
+    chrome.test.succeed();
+  },
+
+  // Tests that a script with multiple sources and a valid target is injected
+  // in the specified order.
+  async function execute_MultipleSources() {
     await chrome.userScripts.unregister();
 
     const tab = await navigateToRequestedUrl();
     const script = {
-      js: [{code: injectDivScript}, {code: injectDivScript2}],
+      js: [
+        {code: injectDivScript}, {file: 'inject_element.js'},
+        {code: injectDivScript2}
+      ],
       target: {tabId: tab.id}
     };
     await chrome.userScripts.execute(script);
 
     // Verify script was injected.
     chrome.test.assertEq(
-        ['injected_code_1', 'injected_code_2'],
-        await getInjectedElementIds(tab.id));
+        ['injected_code_1', 'injected_file_1', 'injected_code_2'],
+        await getInjectedElementIdsInOrder(tab.id));
 
     chrome.test.succeed();
   },

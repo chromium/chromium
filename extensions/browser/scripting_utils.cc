@@ -12,6 +12,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/browser/load_and_localize_file.h"
 #include "extensions/browser/script_executor.h"
 #include "extensions/browser/scripting_constants.h"
 #include "extensions/browser/user_script_manager.h"
@@ -30,6 +31,9 @@ constexpr char kEmptyScriptIdError[] = "Script's ID must not be empty";
 constexpr char kFilesExceededSizeLimitError[] =
     "Scripts could not be loaded because '*' exceeds the maximum script size "
     "or the extension's maximum total script size.";
+constexpr char kCouldNotLoadFileError[] = "Could not load file: '*'.";
+constexpr char kDuplicateFileSpecifiedError[] =
+    "Duplicate file specified: '*'.";
 constexpr char kNonExistentScriptIdError[] = "Nonexistent script ID '*'";
 // Key corresponding to the set of URL patterns from the extension's persistent
 // dynamic content scripts.
@@ -176,6 +180,54 @@ bool HasPermissionToInjectIntoFrame(const PermissionsData& permissions,
   return permissions.CanAccessPage(committed_url, tab_id, error);
 }
 
+// Constructs an array of file sources from the read file `data`.
+std::vector<InjectedFileSource> ConstructFileSources(
+    std::vector<std::unique_ptr<std::string>> data,
+    std::vector<std::string> file_names) {
+  // Note: CHECK (and not DCHECK) because if it fails, we have an out-of-bounds
+  // access.
+  CHECK_EQ(data.size(), file_names.size());
+  const size_t num_sources = data.size();
+  std::vector<InjectedFileSource> sources;
+  sources.reserve(num_sources);
+  for (size_t i = 0; i < num_sources; ++i) {
+    sources.emplace_back(std::move(file_names[i]), std::move(data[i]));
+  }
+
+  return sources;
+}
+
+// Checks the loaded content of extension resources. Invokes `callback` with
+// the constructed file sources on success or with an error on failure.
+void CheckLoadedResources(std::vector<std::string> file_names,
+                          ResourcesLoadedCallback callback,
+                          std::vector<std::unique_ptr<std::string>> file_data,
+                          std::optional<std::string> load_error) {
+  if (load_error) {
+    std::move(callback).Run({}, std::move(load_error));
+    return;
+  }
+
+  std::vector<InjectedFileSource> file_sources =
+      ConstructFileSources(std::move(file_data), std::move(file_names));
+
+  for (const auto& source : file_sources) {
+    DCHECK(source.data);
+    // TODO(devlin): What necessitates this encoding requirement? Is it needed
+    // for blink injection?
+    if (!base::IsStringUTF8(*source.data)) {
+      static constexpr char kBadFileEncodingError[] =
+          "Could not load file '*'. It isn't UTF-8 encoded.";
+      std::string error = ErrorUtils::FormatErrorMessage(kBadFileEncodingError,
+                                                         source.file_name);
+      std::move(callback).Run({}, std::move(error));
+      return;
+    }
+  }
+
+  std::move(callback).Run(std::move(file_sources), std::nullopt);
+}
+
 }  // namespace
 
 InjectionTarget::InjectionTarget() : tab_id(-1) {}
@@ -183,6 +235,12 @@ InjectionTarget::InjectionTarget() : tab_id(-1) {}
 InjectionTarget::InjectionTarget(InjectionTarget&& other) = default;
 
 InjectionTarget::~InjectionTarget() = default;
+
+InjectedFileSource::InjectedFileSource(std::string file_name,
+                                       std::unique_ptr<std::string> data)
+    : file_name(std::move(file_name)), data(std::move(data)) {}
+InjectedFileSource::InjectedFileSource(InjectedFileSource&&) = default;
+InjectedFileSource::~InjectedFileSource() = default;
 
 std::string AddPrefixToDynamicScriptId(const std::string& script_id,
                                        UserScript::Source source) {
@@ -391,6 +449,66 @@ bool CanAccessTarget(const PermissionsData& permissions,
   *frame_ids_out = std::move(frame_ids);
   *frame_scope_out = frame_scope;
   *script_executor_out = script_executor;
+  return true;
+}
+
+bool CheckAndLoadFiles(std::vector<std::string> files,
+                       const Extension& extension,
+                       bool requires_localization,
+                       ResourcesLoadedCallback callback,
+                       std::string* error_out) {
+  std::vector<ExtensionResource> resources;
+  if (!GetFileResources(files, extension, &resources, error_out)) {
+    return false;
+  }
+
+  LoadAndLocalizeResources(
+      extension, resources, requires_localization,
+      script_parsing::GetMaxScriptLength(),
+      base::BindOnce(&CheckLoadedResources, std::move(files),
+                     std::move(callback)));
+  return true;
+}
+
+bool GetFileResources(const std::vector<std::string>& files,
+                      const Extension& extension,
+                      std::vector<ExtensionResource>* resources_out,
+                      std::string* error_out) {
+  if (files.empty()) {
+    static constexpr char kAtLeastOneFileError[] =
+        "At least one file must be specified.";
+    *error_out = kAtLeastOneFileError;
+    return false;
+  }
+
+  std::vector<ExtensionResource> resources;
+  for (const auto& file : files) {
+    ExtensionResource resource = extension.GetResource(file);
+    if (resource.extension_root().empty() || resource.relative_path().empty()) {
+      *error_out = ErrorUtils::FormatErrorMessage(kCouldNotLoadFileError, file);
+      return false;
+    }
+
+    // ExtensionResource doesn't implement an operator==.
+    if (base::Contains(resources, resource.relative_path(),
+                       &ExtensionResource::relative_path)) {
+      // Disallow duplicates. Note that we could allow this, if we wanted (and
+      // there *might* be reason to with JS injection, to perform an operation
+      // twice?). However, this matches content script behavior, and injecting
+      // twice can be done by chaining calls to executeScript() / insertCSS().
+      // This isn't a robust check, and could probably be circumvented by
+      // passing two paths that look different but are the same - but in that
+      // case, we just try to load and inject the script twice, which is
+      // inefficient, but safe.
+      *error_out =
+          ErrorUtils::FormatErrorMessage(kDuplicateFileSpecifiedError, file);
+      return false;
+    }
+
+    resources.push_back(std::move(resource));
+  }
+
+  resources_out->swap(resources);
   return true;
 }
 

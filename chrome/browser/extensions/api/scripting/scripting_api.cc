@@ -47,9 +47,6 @@ namespace extensions {
 
 namespace {
 
-constexpr char kCouldNotLoadFileError[] = "Could not load file: '*'.";
-constexpr char kDuplicateFileSpecifiedError[] =
-    "Duplicate file specified: '*'.";
 constexpr char kEmptyMatchesError[] =
     "Script with ID '*' must specify 'matches'.";
 constexpr char kExactlyOneOfCssAndFilesError[] =
@@ -115,25 +112,9 @@ std::string InjectionKeyForFile(const mojom::HostID& host_id,
                                               /*code=*/std::string());
 }
 
-// Constructs an array of file sources from the read file `data`.
-std::vector<InjectedFileSource> ConstructFileSources(
-    std::vector<std::unique_ptr<std::string>> data,
-    std::vector<std::string> file_names) {
-  // Note: CHECK (and not DCHECK) because if it fails, we have an out-of-bounds
-  // access.
-  CHECK_EQ(data.size(), file_names.size());
-  const size_t num_sources = data.size();
-  std::vector<InjectedFileSource> sources;
-  sources.reserve(num_sources);
-  for (size_t i = 0; i < num_sources; ++i)
-    sources.emplace_back(std::move(file_names[i]), std::move(data[i]));
-
-  return sources;
-}
-
 std::vector<mojom::JSSourcePtr> FileSourcesToJSSources(
     const Extension& extension,
-    std::vector<InjectedFileSource> file_sources) {
+    std::vector<scripting::InjectedFileSource> file_sources) {
   std::vector<mojom::JSSourcePtr> js_sources;
   js_sources.reserve(file_sources.size());
   for (auto& file_source : file_sources) {
@@ -147,7 +128,7 @@ std::vector<mojom::JSSourcePtr> FileSourcesToJSSources(
 
 std::vector<mojom::CSSSourcePtr> FileSourcesToCSSSources(
     const Extension& extension,
-    std::vector<InjectedFileSource> file_sources) {
+    std::vector<scripting::InjectedFileSource> file_sources) {
   mojom::HostID host_id(mojom::HostID::HostType::kExtensions, extension.id());
 
   std::vector<mojom::CSSSourcePtr> css_sources;
@@ -160,105 +141,6 @@ std::vector<mojom::CSSSourcePtr> FileSourcesToCSSSources(
   }
 
   return css_sources;
-}
-
-// Checks `files` and populates `resources_out` with the appropriate extension
-// resource. Returns true on success; on failure, populates `error_out`.
-bool GetFileResources(const std::vector<std::string>& files,
-                      const Extension& extension,
-                      std::vector<ExtensionResource>* resources_out,
-                      std::string* error_out) {
-  if (files.empty()) {
-    static constexpr char kAtLeastOneFileError[] =
-        "At least one file must be specified.";
-    *error_out = kAtLeastOneFileError;
-    return false;
-  }
-
-  std::vector<ExtensionResource> resources;
-  for (const auto& file : files) {
-    ExtensionResource resource = extension.GetResource(file);
-    if (resource.extension_root().empty() || resource.relative_path().empty()) {
-      *error_out = ErrorUtils::FormatErrorMessage(kCouldNotLoadFileError, file);
-      return false;
-    }
-
-    // ExtensionResource doesn't implement an operator==.
-    if (base::Contains(resources, resource.relative_path(),
-                       &ExtensionResource::relative_path)) {
-      // Disallow duplicates. Note that we could allow this, if we wanted (and
-      // there *might* be reason to with JS injection, to perform an operation
-      // twice?). However, this matches content script behavior, and injecting
-      // twice can be done by chaining calls to executeScript() / insertCSS().
-      // This isn't a robust check, and could probably be circumvented by
-      // passing two paths that look different but are the same - but in that
-      // case, we just try to load and inject the script twice, which is
-      // inefficient, but safe.
-      *error_out =
-          ErrorUtils::FormatErrorMessage(kDuplicateFileSpecifiedError, file);
-      return false;
-    }
-
-    resources.push_back(std::move(resource));
-  }
-
-  resources_out->swap(resources);
-  return true;
-}
-
-using ResourcesLoadedCallback =
-    base::OnceCallback<void(std::vector<InjectedFileSource>,
-                            std::optional<std::string>)>;
-
-// Checks the loaded content of extension resources. Invokes `callback` with
-// the constructed file sources on success or with an error on failure.
-void CheckLoadedResources(std::vector<std::string> file_names,
-                          ResourcesLoadedCallback callback,
-                          std::vector<std::unique_ptr<std::string>> file_data,
-                          std::optional<std::string> load_error) {
-  if (load_error) {
-    std::move(callback).Run({}, std::move(load_error));
-    return;
-  }
-
-  std::vector<InjectedFileSource> file_sources =
-      ConstructFileSources(std::move(file_data), std::move(file_names));
-
-  for (const auto& source : file_sources) {
-    DCHECK(source.data);
-    // TODO(devlin): What necessitates this encoding requirement? Is it needed
-    // for blink injection?
-    if (!base::IsStringUTF8(*source.data)) {
-      static constexpr char kBadFileEncodingError[] =
-          "Could not load file '*'. It isn't UTF-8 encoded.";
-      std::string error = ErrorUtils::FormatErrorMessage(kBadFileEncodingError,
-                                                         source.file_name);
-      std::move(callback).Run({}, std::move(error));
-      return;
-    }
-  }
-
-  std::move(callback).Run(std::move(file_sources), std::nullopt);
-}
-
-// Checks the specified `files` for validity, and attempts to load and localize
-// them, invoking `callback` with the result. Returns true on success; on
-// failure, populates `error`.
-bool CheckAndLoadFiles(std::vector<std::string> files,
-                       const Extension& extension,
-                       bool requires_localization,
-                       ResourcesLoadedCallback callback,
-                       std::string* error) {
-  std::vector<ExtensionResource> resources;
-  if (!GetFileResources(files, extension, &resources, error))
-    return false;
-
-  LoadAndLocalizeResources(
-      extension, resources, requires_localization,
-      script_parsing::GetMaxScriptLength(),
-      base::BindOnce(&CheckLoadedResources, std::move(files),
-                     std::move(callback)));
-  return true;
 }
 
 api::scripts_internal::SerializedUserScript
@@ -382,12 +264,6 @@ api::scripting::RegisteredContentScript CreateRegisteredContentScriptInfo(
 
 }  // namespace
 
-InjectedFileSource::InjectedFileSource(std::string file_name,
-                                       std::unique_ptr<std::string> data)
-    : file_name(std::move(file_name)), data(std::move(data)) {}
-InjectedFileSource::InjectedFileSource(InjectedFileSource&&) = default;
-InjectedFileSource::~InjectedFileSource() = default;
-
 ScriptingExecuteScriptFunction::ScriptingExecuteScriptFunction() = default;
 ScriptingExecuteScriptFunction::~ScriptingExecuteScriptFunction() = default;
 
@@ -463,7 +339,7 @@ ExtensionFunction::ResponseAction ScriptingExecuteScriptFunction::Run() {
 }
 
 void ScriptingExecuteScriptFunction::DidLoadResources(
-    std::vector<InjectedFileSource> file_sources,
+    std::vector<scripting::InjectedFileSource> file_sources,
     std::optional<std::string> load_error) {
   if (load_error) {
     Respond(Error(std::move(*load_error)));
@@ -588,7 +464,7 @@ ExtensionFunction::ResponseAction ScriptingInsertCSSFunction::Run() {
 }
 
 void ScriptingInsertCSSFunction::DidLoadResources(
-    std::vector<InjectedFileSource> file_sources,
+    std::vector<scripting::InjectedFileSource> file_sources,
     std::optional<std::string> load_error) {
   if (load_error) {
     Respond(Error(std::move(*load_error)));
@@ -680,8 +556,10 @@ ExtensionFunction::ResponseAction ScriptingRemoveCSSFunction::Run() {
 
   if (injection.files) {
     std::vector<ExtensionResource> resources;
-    if (!GetFileResources(*injection.files, *extension(), &resources, &error))
+    if (!scripting::GetFileResources(*injection.files, *extension(), &resources,
+                                     &error)) {
       return RespondNow(Error(std::move(error)));
+    }
 
     // Note: Since we're just removing the CSS, we don't actually need to load
     // the file here. It's okay for `code` to be empty in this case.
