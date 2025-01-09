@@ -90,7 +90,7 @@ RelatedAppRowView::RelatedAppRowView(
   // facts, we will continue using registrar_unsafe(), and add a sanity check
   // here that the app_id we're trying to make a view for is still in the
   // registrar since we last checked. If it's not, early return an empty view.
-  if (registrar.IsNotInRegistrar(app_id_)) {
+  if (!registrar.IsInRegistrar(app_id_)) {
     return;
   }
   web_app::WebAppIconManager& icon_manager = provider->icon_manager();
