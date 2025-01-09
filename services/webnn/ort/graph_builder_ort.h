@@ -72,8 +72,7 @@ class GraphBuilderOrt {
   //
   // Returns unexpected if it fails.
   [[nodiscard]] static base::expected<std::unique_ptr<Result>, mojom::ErrorPtr>
-  CreateAndBuild(mojom::CreateContextOptions::Device device_type,
-                 const mojom::GraphInfo& graph_info,
+  CreateAndBuild(const mojom::GraphInfo& graph_info,
                  ContextProperties context_properties,
                  base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
                      constant_operands,
@@ -86,7 +85,6 @@ class GraphBuilderOrt {
 
  private:
   GraphBuilderOrt(
-      mojom::CreateContextOptions::Device device_type,
       const mojom::GraphInfo& graph_info,
       ContextProperties context_properties,
       base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
@@ -165,8 +163,6 @@ class GraphBuilderOrt {
 
   // Used for inserting new operands into graph.
   uint64_t next_operand_id_ = 0;
-
-  mojom::CreateContextOptions::Device device_type_;
 
   // A reference to the WebNN compute graph that `this` instance is converting
   // to ONNX model. The creator of `this` must ensure the GraphInfo reference

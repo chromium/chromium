@@ -101,7 +101,7 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
 
   ASSIGN_OR_RETURN(std::unique_ptr<GraphBuilderOrt::Result> result,
                    GraphBuilderOrt::CreateAndBuild(
-                       device_type, *graph_info, std::move(context_properties),
+                       *graph_info, std::move(context_properties),
                        std::move(constant_operands), allocator));
 
   OrtSessionOptions* session_options;
@@ -119,7 +119,8 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
   // compiled nodes which cannnot be serialized.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kWebNNOrtDumpModel) &&
-      device_type == mojom::CreateContextOptions::Device::kCpu) {
+      !base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kWebNNOrtUseOpenvino)) {
     static uint64_t dump_count = 0;
     base::FilePath dump_directory =
         base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
@@ -134,45 +135,54 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
     // supports it.
   }
 
-  // Select the execution provider.
-  switch (device_type) {
-    case mojom::CreateContextOptions::Device::kCpu: {
-      // TODO(https://github.com/shiyi9801/chromium/issues/58): Investigate how
-      // to apply layout optimizations (ORT_ENABLE_ALL).
-      // https://onnxruntime.ai/docs/performance/model-optimizations/graph-optimizations.html#layout-optimizations
-      CHECK_STATUS(ort_api->SetSessionGraphOptimizationLevel(
-          session_options, GraphOptimizationLevel::ORT_ENABLE_BASIC));
-      break;
-    }
-    case mojom::CreateContextOptions::Device::kGpu:
-    case mojom::CreateContextOptions::Device::kNpu: {
-      // It is recommended to disable the graph optimization for OpenVINO
-      // backend.
-      // https://onnxruntime.ai/docs/execution-providers/OpenVINO-ExecutionProvider.html#other-configuration-settings
-      CHECK_STATUS(ort_api->SetSessionGraphOptimizationLevel(
-          session_options, GraphOptimizationLevel::ORT_DISABLE_ALL));
-
-      std::string openvino_device_type =
-          device_type == mojom::CreateContextOptions::Device::kGpu ? "GPU"
-                                                                   : "NPU";
-      OrtOpenVINOProviderOptions openvino_options;
-      openvino_options.device_type = openvino_device_type.c_str();
-
-      // TODO(https://github.com/shiyi9801/chromium/issues/74): Fail early when
-      // creating the context if the OpenVINO EP is not supported.
-      OrtStatus* append_openvino_status =
-          ort_api->SessionOptionsAppendExecutionProvider_OpenVINO(
-              session_options, &openvino_options);
-      if (append_openvino_status != NULL) {
-        std::string_view msg = ort_api->GetErrorMessage(append_openvino_status);
-        LOG(ERROR) << "[WebNN] Ort Status: " << msg;
-        ort_api->ReleaseStatus(append_openvino_status);
-        return base::unexpected(
-            mojom::Error::New(mojom::Error::Code::kUnknownError,
-                              "OnnxRuntime OpenVINO EP is not supported."));
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kWebNNOrtUseOpenvino)) {
+    std::string openvino_device_type;
+    switch (device_type) {
+      case mojom::CreateContextOptions::Device::kCpu: {
+        openvino_device_type = "CPU";
+        break;
       }
-      break;
+      case mojom::CreateContextOptions::Device::kGpu: {
+        openvino_device_type = "GPU";
+        break;
+      }
+      case mojom::CreateContextOptions::Device::kNpu: {
+        openvino_device_type = "NPU";
+        break;
+      }
     }
+
+    // It is recommended to disable the graph optimization for OpenVINO
+    // backend.
+    // https://onnxruntime.ai/docs/execution-providers/OpenVINO-ExecutionProvider.html#other-configuration-settings
+    CHECK_STATUS(ort_api->SetSessionGraphOptimizationLevel(
+        session_options, GraphOptimizationLevel::ORT_DISABLE_ALL));
+
+    OrtOpenVINOProviderOptions openvino_options;
+    openvino_options.device_type = openvino_device_type.c_str();
+
+    // TODO(https://github.com/shiyi9801/chromium/issues/74): Fail early when
+    // creating the context if the OpenVINO EP is not supported.
+    OrtStatus* append_openvino_status =
+        ort_api->SessionOptionsAppendExecutionProvider_OpenVINO(
+            session_options, &openvino_options);
+    if (append_openvino_status != NULL) {
+      std::string_view msg = ort_api->GetErrorMessage(append_openvino_status);
+      LOG(ERROR) << "[WebNN] Ort Status: " << msg;
+      ort_api->ReleaseStatus(append_openvino_status);
+      return base::unexpected(
+          mojom::Error::New(mojom::Error::Code::kUnknownError,
+                            "OnnxRuntime OpenVINO EP is not supported."));
+    }
+  } else {
+    // Use CPU EP by default.
+    //
+    // TODO(https://github.com/shiyi9801/chromium/issues/58): Investigate how
+    // to apply layout optimizations (ORT_ENABLE_ALL).
+    // https://onnxruntime.ai/docs/performance/model-optimizations/graph-optimizations.html#layout-optimizations
+    CHECK_STATUS(ort_api->SetSessionGraphOptimizationLevel(
+        session_options, GraphOptimizationLevel::ORT_ENABLE_BASIC));
   }
 
   OrtSession* session;
