@@ -32,6 +32,9 @@ VideoEffectsServiceImpl::VideoEffectsServiceImpl(
 
 VideoEffectsServiceImpl::~VideoEffectsServiceImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (gpu_channel_host_provider_) {
+    gpu_channel_host_provider_->RemoveObserver(*this);
+  }
 }
 
 void VideoEffectsServiceImpl::CreateEffectsProcessor(
@@ -50,6 +53,7 @@ void VideoEffectsServiceImpl::CreateEffectsProcessor(
   if (!gpu_channel_host_provider_) {
     auto gpu = viz::Gpu::Create(std::move(gpu_remote), io_task_runner_);
     gpu_channel_host_provider_ = new VizGpuChannelHostProvider(std::move(gpu));
+    gpu_channel_host_provider_->AddObserver(*this);
   }
 
   if (device_) {
@@ -75,6 +79,15 @@ void VideoEffectsServiceImpl::CreateEffectsProcessor(
   // pending processors will be created when it is ready.
 }
 
+void VideoEffectsServiceImpl::OnPermanentError(
+    scoped_refptr<GpuChannelHostProvider>) {
+  LOG(WARNING) << "GPU context lost too many times.";
+  Cleanup();
+  // NOTE: We could LOG(FATAL) here as the process is now unusable.  Need to
+  // check that the VideoCaptureDeviceClient handles mojo disconnects correctly
+  // and cleans up any related state.
+}
+
 void VideoEffectsServiceImpl::CreateWebGpuDeviceAndEffectsProcessors() {
   CHECK(!webgpu_device_);
   CHECK(gpu_channel_host_provider_);
@@ -87,6 +100,7 @@ void VideoEffectsServiceImpl::CreateWebGpuDeviceAndEffectsProcessors() {
   // `WebGpuDevice`.
   auto device_lost_cb_on_current_sequence =
       base::BindPostTaskToCurrentDefault(std::move(device_lost_cb));
+
   webgpu_device_ = std::make_unique<WebGpuDevice>(
       gpu_channel_host_provider_->GetWebGpuContextProvider(),
       std::move(device_lost_cb_on_current_sequence));
@@ -115,13 +129,9 @@ void VideoEffectsServiceImpl::OnDeviceError(WebGpuDevice::Error error,
                                             std::string_view msg) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!device_);
-  LOG(ERROR) << "Unable to create wgpu::Device; error = "
-             << base::to_underlying(error) << ": " << msg;
-  // Abandon ship!
-  pending_processors_.clear();
-  webgpu_device_.reset();
-  // NOTE: Call CreateWgpuDeviceAndEffectsProcessors() again if we believe this
-  // was a transient failure?
+  LOG(WARNING) << "Unable to create wgpu::Device; error = "
+               << base::to_underlying(error) << ": " << msg;
+  Cleanup();
 }
 
 void VideoEffectsServiceImpl::OnDeviceLost(wgpu::DeviceLostReason reason,
@@ -129,15 +139,17 @@ void VideoEffectsServiceImpl::OnDeviceLost(wgpu::DeviceLostReason reason,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   LOG(ERROR) << "wgpu::Device was lost; reason = "
              << base::to_underlying(reason) << ": " << msg;
+  Cleanup();
+}
 
+void VideoEffectsServiceImpl::Cleanup() {
   // Abandon all hope, ye who enter here.
   pending_processors_.clear();
   processors_.clear();
   device_ = nullptr;
   webgpu_device_.reset();
-  // NOTE: Possibly attempt to revive current processors with a new
-  // wgpu::Device, either by having them support reinitialization with a new
-  // device, or replacing it with a new processor and re-binding its mojo pipes.
+  gpu_channel_host_provider_->RemoveObserver(*this);
+  gpu_channel_host_provider_ = nullptr;
 }
 
 void VideoEffectsServiceImpl::FinishCreatingEffectsProcessors() {

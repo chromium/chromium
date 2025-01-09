@@ -18,6 +18,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "services/video_effects/gpu_channel_host_provider.h"
 #include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
 #include "services/video_effects/public/mojom/video_effects_service.mojom.h"
 #include "services/video_effects/webgpu_device.h"
@@ -27,9 +28,9 @@
 namespace video_effects {
 
 class VideoEffectsProcessorImpl;
-class GpuChannelHostProvider;
 
-class VideoEffectsServiceImpl : public mojom::VideoEffectsService {
+class VideoEffectsServiceImpl : public mojom::VideoEffectsService,
+                                GpuChannelHostProvider::Observer {
  public:
   // Similarly to `VideoCaptureServiceImpl`, `VideoEfffectsServiceImpl` needs
   // to receive something that returns `gpu::GpuChannelHost` instances in order
@@ -53,6 +54,9 @@ class VideoEffectsServiceImpl : public mojom::VideoEffectsService {
   void SetBackgroundSegmentationModel(base::File model_file) override;
 
  private:
+  // GpuChannelHostProvider::Observer:
+  void OnPermanentError(scoped_refptr<GpuChannelHostProvider>) override;
+
   // Creates `webgpu_device_` and initializes it asynchronously.  On completion,
   // invokes `FinishCreatingEffectsProcessors()`.
   void CreateWebGpuDeviceAndEffectsProcessors();
@@ -75,6 +79,9 @@ class VideoEffectsServiceImpl : public mojom::VideoEffectsService {
   // Helper - used to clean up instances of `VideoEffectsProcessor`s that are
   // no longer functional.
   void RemoveProcessor(const std::string& id);
+
+  // Destroy all processors (pending and live).
+  void Cleanup();
 
   // Holder of wgpu::Device instance.
   std::unique_ptr<WebGpuDevice> webgpu_device_;

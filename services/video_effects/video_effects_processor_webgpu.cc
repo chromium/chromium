@@ -93,7 +93,7 @@ VideoEffectsProcessorWebGpu::VideoEffectsProcessorWebGpu(
 VideoEffectsProcessorWebGpu::~VideoEffectsProcessorWebGpu() = default;
 
 bool VideoEffectsProcessorWebGpu::Initialize() {
-  CreateComputePipeline();
+  compute_pipeline_ = CreateComputePipeline();
   EnsureFlush();
   return true;
 }

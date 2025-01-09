@@ -24,6 +24,9 @@ class TestGpuChannelHostProvider : public GpuChannelHostProvider {
       override;
   scoped_refptr<gpu::ClientSharedImageInterface> GetSharedImageInterface()
       override;
+  void Reset() override;
+  void AddObserver(Observer& observer) override;
+  void RemoveObserver(Observer& observer) override;
 
  protected:
   ~TestGpuChannelHostProvider() override;

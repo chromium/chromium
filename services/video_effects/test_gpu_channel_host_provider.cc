@@ -56,6 +56,10 @@ TestGpuChannelHostProvider::GetSharedImageInterface() {
   return nullptr;
 }
 
+void TestGpuChannelHostProvider::Reset() {}
+void TestGpuChannelHostProvider::AddObserver(Observer&) {}
+void TestGpuChannelHostProvider::RemoveObserver(Observer&) {}
+
 TestGpuChannelHostProvider::~TestGpuChannelHostProvider() = default;
 
 scoped_refptr<gpu::GpuChannelHost>
