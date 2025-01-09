@@ -77,6 +77,11 @@ class TabStripController {
   // |event| is the input event that triggers the tab selection.
   virtual void SelectTab(int index, const ui::Event& event) = 0;
 
+  // Records metrics related to tab selection changes such as if the active tab
+  // is in a tab group.
+  virtual void RecordMetricsOnTabSelectionChange(
+      std::optional<tab_groups::TabGroupId> group) = 0;
+
   // Extends the selection from the anchor to the specified index in the model.
   virtual void ExtendSelectionTo(int index) = 0;
 

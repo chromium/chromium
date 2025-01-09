@@ -73,6 +73,8 @@ class BrowserTabStripController : public TabStripController,
   bool IsTabSelected(int model_index) const override;
   bool IsTabPinned(int model_index) const override;
   void SelectTab(int model_index, const ui::Event& event) override;
+  void RecordMetricsOnTabSelectionChange(
+      std::optional<tab_groups::TabGroupId> group) override;
   void ExtendSelectionTo(int model_index) override;
   void ToggleSelected(int model_index) override;
   void AddSelectionFromAnchorTo(int model_index) override;

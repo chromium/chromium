@@ -42944,6 +42944,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="TabGroups.Shared.SwitchGroupedTab">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    User switched to a tab that belongs to a shared group.
+  </description>
+</action>
+
 <action name="TabGroups.Sync.CreatedNewTab">
   <owner>ckitagawa@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>

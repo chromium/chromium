@@ -57,6 +57,8 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/saved_tab_groups/public/features.h"
+#include "components/saved_tab_groups/public/saved_tab_group.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -325,6 +327,37 @@ void BrowserTabStripController::SelectTab(int model_index,
             // get the peak GPU memory and record a histogram.
           },
           std::move(tracker)));
+}
+
+void BrowserTabStripController::RecordMetricsOnTabSelectionChange(
+    std::optional<tab_groups::TabGroupId> group) {
+  base::UmaHistogramEnumeration("TabStrip.Tab.Views.ActivationAction",
+                                TabActivationTypes::kTab);
+
+  if (!group) {
+    return;
+  }
+
+  base::RecordAction(base::UserMetricsAction("TabGroups_SwitchGroupedTab"));
+
+  if (!tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups()) {
+    return;
+  }
+
+  tab_groups::TabGroupSyncService* tab_group_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+          browser_view_->GetProfile());
+
+  if (!tab_group_service) {
+    return;
+  }
+
+  std::optional<tab_groups::SavedTabGroup> saved_group =
+      tab_group_service->GetGroup(group.value());
+  if (saved_group && saved_group->collaboration_id()) {
+    base::RecordAction(
+        base::UserMetricsAction("TabGroups.Shared.SwitchGroupedTab"));
+  }
 }
 
 void BrowserTabStripController::ExtendSelectionTo(int model_index) {

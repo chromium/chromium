@@ -228,6 +228,9 @@ void FakeBaseTabStripController::SelectTab(int index, const ui::Event& event) {
   SetActiveIndex(index);
 }
 
+void FakeBaseTabStripController::RecordMetricsOnTabSelectionChange(
+    std::optional<tab_groups::TabGroupId> group) {}
+
 void FakeBaseTabStripController::ExtendSelectionTo(int index) {}
 
 void FakeBaseTabStripController::ToggleSelected(int index) {}

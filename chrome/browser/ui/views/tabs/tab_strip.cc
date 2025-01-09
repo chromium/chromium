@@ -1542,12 +1542,7 @@ void TabStrip::SelectTab(Tab* tab, const ui::Event& event) {
   const int model_index = maybe_model_index.value();
 
   if (!tab->IsActive()) {
-    base::UmaHistogramEnumeration("TabStrip.Tab.Views.ActivationAction",
-                                  TabActivationTypes::kTab);
-
-    if (tab->group().has_value()) {
-      base::RecordAction(base::UserMetricsAction("TabGroups_SwitchGroupedTab"));
-    }
+    controller_->RecordMetricsOnTabSelectionChange(tab->group());
   }
 
   controller_->SelectTab(model_index, event);
