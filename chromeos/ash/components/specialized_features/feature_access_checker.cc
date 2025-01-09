@@ -82,14 +82,14 @@ FeatureAccessFailureSet FeatureAccessChecker::Check() const {
     }
   }
 
-  if (config_.capability_func != nullptr) {
+  if (!config_.capability_callback.is_null()) {
     if (identity_manager_ == nullptr ||
-        (config_.capability_func(identity_manager_
-                                     ->FindExtendedAccountInfoByAccountId(
-                                         identity_manager_->GetPrimaryAccountId(
-                                             signin::ConsentLevel::kSignin))
-                                     .capabilities) !=
-         signin::Tribool::kTrue)) {
+        (config_.capability_callback.Run(
+             identity_manager_
+                 ->FindExtendedAccountInfoByAccountId(
+                     identity_manager_->GetPrimaryAccountId(
+                         signin::ConsentLevel::kSignin))
+                 .capabilities) != signin::Tribool::kTrue)) {
       failures.Put(kAccountCapabilitiesCheckFailed);
     }
   }

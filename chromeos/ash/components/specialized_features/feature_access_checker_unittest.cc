@@ -10,6 +10,7 @@
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/feature_list_buildflags.h"
+#include "base/functional/bind.h"
 #include "base/hash/sha1.h"
 #include "base/test/task_environment.h"
 #include "components/metrics/metrics_state_manager.h"
@@ -329,9 +330,10 @@ TEST_F(FeatureAccessCheckerTest, MantaAccountCapabilitiesCheckPass) {
   signin::UpdateAccountInfoForAccount(
       identity_test_environment_.identity_manager(), account);
   FeatureAccessConfig config;
-  config.capability_func = [](AccountCapabilities capabilities) {
-    return capabilities.can_use_manta_service();
-  };
+  config.capability_callback =
+      base::BindRepeating([](AccountCapabilities capabilities) {
+        return capabilities.can_use_manta_service();
+      });
 
   EXPECT_THAT(
       base::ToVector(FeatureAccessChecker(config, &pref_, GetIdentityManager(),
@@ -346,9 +348,10 @@ TEST_F(FeatureAccessCheckerTest, MantaAccountCapabilitiesCheckFailIfFalse) {
   AccountCapabilitiesTestMutator mutator(&account.capabilities);
   mutator.set_can_use_manta_service(false);
   FeatureAccessConfig config;
-  config.capability_func = [](AccountCapabilities capabilities) {
-    return capabilities.can_use_manta_service();
-  };
+  config.capability_callback =
+      base::BindRepeating([](AccountCapabilities capabilities) {
+        return capabilities.can_use_manta_service();
+      });
 
   EXPECT_THAT(
       base::ToVector(FeatureAccessChecker(config, &pref_, GetIdentityManager(),
@@ -361,9 +364,10 @@ TEST_F(FeatureAccessCheckerTest, MantaAccountCapabilitiesCheckFailIfUnset) {
   identity_test_environment_.MakePrimaryAccountAvailable(
       "someone@gmail.com", signin::ConsentLevel::kSignin);
   FeatureAccessConfig config;
-  config.capability_func = [](AccountCapabilities capabilities) {
-    return capabilities.can_use_manta_service();
-  };
+  config.capability_callback =
+      base::BindRepeating([](AccountCapabilities capabilities) {
+        return capabilities.can_use_manta_service();
+      });
 
   EXPECT_THAT(
       base::ToVector(FeatureAccessChecker(config, &pref_, GetIdentityManager(),
@@ -381,9 +385,10 @@ TEST_F(FeatureAccessCheckerTest,
   signin::UpdateAccountInfoForAccount(
       identity_test_environment_.identity_manager(), account);
   FeatureAccessConfig config;
-  config.capability_func = [](AccountCapabilities capabilities) {
-    return capabilities.can_use_manta_service();
-  };
+  config.capability_callback =
+      base::BindRepeating([](AccountCapabilities capabilities) {
+        return capabilities.can_use_manta_service();
+      });
 
   EXPECT_THAT(base::ToVector(FeatureAccessChecker(config, &pref_,
                                                   /*identity_manager=*/nullptr,

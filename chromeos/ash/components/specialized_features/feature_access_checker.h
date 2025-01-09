@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 #include "base/containers/enum_set.h"
 #include "base/feature_list.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
@@ -103,11 +104,12 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SPECIALIZED_FEATURES)
   // kAccountCapabilitiesCheckFailed if the return value is not
   // signin::Tribool::kTrue.
   // Example usage:
-  // config.capability_func = [](AccountCapabilities capabilities) {
-  //   return capabilities.can_use_manta_service();
-  // };
-  signin::Tribool (*capability_func)(AccountCapabilities capabilities) =
-      nullptr;
+  // config.capability_callback =
+  //     base::BindRepeating([](AccountCapabilities capabilities) {
+  //       return capabilities.can_use_manta_service();
+  //     });
+  base::RepeatingCallback<signin::Tribool(AccountCapabilities capabilities)>
+      capability_callback;
 };
 
 // Creates a class to check different dependencies for specialized features.
