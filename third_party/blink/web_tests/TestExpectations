@@ -7617,7 +7617,7 @@ crbug.com/1474670 http/tests/devtools/application-panel/resources-panel-selectio
 crbug.com/1455263 [ Linux ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/default-enabled-features-attribute-change.https.html [ Failure Pass ]
 
 # Gardener 2023-11-16
-crbug.com/1502794 external/wpt/html/semantics/invokers/invoketarget-on-video-behavior.tentative.html [ Failure Pass Timeout ]
+crbug.com/1502794 external/wpt/html/semantics/the-button-element/command-and-commandfor/on-video-behavior.tentative.html [ Failure Pass Timeout ]
 
 # Gardener 2023-11-17
 crbug.com/1503108 [ Mac ] external/wpt/fedcm/fedcm-disconnect.sub.https.html [ Failure Pass Timeout ] # Flaky
@@ -7639,7 +7639,7 @@ crbug.com/1501090 [ Linux ] external/wpt/preload/preload-strict-dynamic.sub.html
 crbug.com/1495671 [ Win ] external/wpt/webmessaging/with-ports/020.html [ Failure Pass ]
 
 # Gardener 2023-11-24
-crbug.com/1503086 external/wpt/html/semantics/invokers/invoketarget-on-audio-behavior.tentative.html [ Failure Pass Timeout ]
+crbug.com/1503086 external/wpt/html/semantics/the-button-element/command-and-commandfor/on-audio-behavior.tentative.html [ Failure Pass Timeout ]
 
 # Tentative allow to fail to roll SwiftShader changes.
 crbug.com/726075 [ Linux ] virtual/gpu/fast/canvas/canvas-imageSmoothing-disabled-scaling-down.html [ Failure ]
@@ -8543,7 +8543,6 @@ crbug.com/338109349 virtual/threaded/external/wpt/css/css-view-transitions/no-cr
 crbug.com/333501264 virtual/fenced-frame-mparch/external/wpt/fenced-frame/setting-null-config-navigates-to-about-blank.https.html [ Failure Pass ]
 crbug.com/338124116 external/wpt/payment-request/payment-request-hasenrolledinstrument-method.tentative.https.html [ Failure Pass ]
 crbug.com/40181907 external/wpt/pointerevents/pointerevent_touch-action-pan-up-css_touch.html [ Failure Pass Timeout ]
-crbug.com/40286318 external/wpt/html/semantics/invokers/invoketarget-on-dialog-behavior.tentative.html [ Failure Pass ]
 crbug.com/333739617 fast/peerconnection/RTCEncodedVideoFrameMetadata-timestamp.html [ Failure Pass Timeout ]
 crbug.com/333395248 [ Mac ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/response/response-clone.any.serviceworker.html [ Failure Pass ]
 crbug.com/329784394 external/wpt/html/browsers/browsing-the-web/history-traversal/persisted-user-state-restoration/scroll-restoration-fragment-scrolling-samedoc.html [ Failure Pass ]
