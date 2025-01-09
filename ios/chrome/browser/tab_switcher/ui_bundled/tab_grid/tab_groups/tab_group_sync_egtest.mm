@@ -27,7 +27,11 @@ using chrome_test_util::RenameGroupButton;
 using chrome_test_util::TabGridCellAtIndex;
 using chrome_test_util::TabGridGroupCellAtIndex;
 using chrome_test_util::TabGridGroupCellWithName;
+using chrome_test_util::TabGridNormalModePageControl;
 using chrome_test_util::TabGridOpenTabsPanelButton;
+using chrome_test_util::TabGridSearchBar;
+using chrome_test_util::TabGridSearchModeToolbar;
+using chrome_test_util::TabGridSearchTabsButton;
 using chrome_test_util::TabGridTabGroupsPanelButton;
 using chrome_test_util::TabGroupBackButton;
 using chrome_test_util::TabGroupCreationView;
@@ -565,6 +569,48 @@ void CloseGroupAtIndex(int group_cell_index) {
       assertWithMatcher:grey_nil()];
   GREYAssertEqual(0, [TabGroupSyncEarlGrey countOfSavedTabGroups],
                   @"The number of saved tab groups should be 0.");
+}
+
+// Tests that Search mode is exited when focusing the Tab Groups panel via the
+// snackbar that appears after closing a group from Search results.
+- (void)testSearchModeExitsWhenOpeningTabGroupsPanelFromSnackbar {
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Create a tab group with an item at 0.
+  CreateTabGroupAtIndex(0, kGroup1Name);
+
+  // Enter search mode.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
+      performAction:grey_tap()];
+
+  // Verify that search mode is active.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchModeToolbar()]
+      assertWithMatcher:grey_notNil()];
+
+  // Search for the group.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
+      performAction:grey_replaceText(kGroup1Name)];
+
+  // Close the group from the search results.
+  CloseGroupAtIndex(0);
+
+  // Verify the tab group is closed in the tab grid.
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellWithName(kGroup1Name, 1)]
+      assertWithMatcher:grey_nil()];
+
+  // Switch over to the third panel by tapping the snackbar action.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabGroupSnackBar(1)];
+  [[EarlGrey selectElementWithMatcher:TabGroupSnackBarAction()]
+      performAction:grey_tap()];
+
+  // Check that the group with `kGroup1Name` still exists.
+  [[EarlGrey
+      selectElementWithMatcher:TabGroupsPanelCellWithName(kGroup1Name, 1)]
+      assertWithMatcher:grey_notNil()];
+
+  // Verify that normal mode is active.
+  [[EarlGrey selectElementWithMatcher:TabGridNormalModePageControl()]
+      assertWithMatcher:grey_notNil()];
 }
 
 @end
