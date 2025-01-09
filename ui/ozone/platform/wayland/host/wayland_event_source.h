@@ -123,7 +123,8 @@ class WaylandEventSource : public PlatformEventSource,
                             wl::EventDispatchPolicy dispatch_policy,
                             bool is_synthesized) override;
   void OnPointerAxisEvent(const gfx::Vector2dF& offset,
-                          base::TimeTicks timestamp) override;
+                          std::optional<base::TimeTicks> timestamp,
+                          bool is_high_resolution) override;
   void OnPointerFrameEvent() override;
   void OnPointerAxisSourceEvent(uint32_t axis_source) override;
   void OnPointerAxisStopEvent(uint32_t axis,
@@ -186,6 +187,7 @@ class WaylandEventSource : public PlatformEventSource,
     float dy = 0.0f;
     base::TimeDelta dt;
     bool is_axis_stop = false;
+    bool is_high_resolution = false;
     std::optional<base::TimeTicks> timestamp;
 
     void DumpState(std::ostream& out) const;

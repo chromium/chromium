@@ -91,6 +91,11 @@ class WaylandPointer {
                              uint32_t axis,
                              int32_t value120);
 
+  void OnAxisImpl(double delta,
+                  uint32_t axis,
+                  std::optional<base::TimeTicks> timestamp,
+                  bool is_high_resolution);
+
   wl::Object<wl_pointer> obj_;
   const raw_ptr<WaylandConnection> connection_;
   const raw_ptr<Delegate> delegate_;
@@ -123,7 +128,8 @@ class WaylandPointer::Delegate {
                                     wl::EventDispatchPolicy dispatch_policy,
                                     bool is_synthesized) = 0;
   virtual void OnPointerAxisEvent(const gfx::Vector2dF& offset,
-                                  base::TimeTicks timestamp) = 0;
+                                  std::optional<base::TimeTicks> timestamp,
+                                  bool is_high_resolution) = 0;
   virtual void OnPointerFrameEvent() = 0;
   virtual void OnPointerAxisSourceEvent(uint32_t axis_source) = 0;
   virtual void OnPointerAxisStopEvent(uint32_t axis,
