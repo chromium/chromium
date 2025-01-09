@@ -20,6 +20,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/drive/service/drive_api_service.h"
@@ -28,6 +29,7 @@
 #include "components/manta/proto/scanner.pb.h"
 #include "components/manta/scanner_provider.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/common/auth_service.h"
@@ -78,6 +80,10 @@ specialized_features::FeatureAccessConfig CreateFeatureAccessConfig() {
   config.settings_toggle_pref = ash::prefs::kSunfishEnabled;
   if (!base::FeatureList::IsEnabled(ash::features::kScannerDogfood)) {
     config.feature_management_flag = &ash::features::kFeatureManagementScanner;
+    config.capability_callback =
+        base::BindRepeating([](AccountCapabilities capabilities) {
+          return capabilities.can_use_manta_service();
+        });
   }
   return config;
 }
@@ -90,10 +96,11 @@ ScannerKeyedService::ScannerKeyedService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<manta::ScannerProvider> scanner_provider)
     : identity_manager_(identity_manager),
-      access_checker_(CreateFeatureAccessConfig(),
-                      /*prefs=*/pref_service,
-                      /*identity_manager=*/nullptr,
-                      /*variations_service=*/nullptr),
+      access_checker_(
+          CreateFeatureAccessConfig(),
+          /*prefs=*/pref_service,
+          /*identity_manager=*/identity_manager_,
+          /*variations_service=*/g_browser_process->variations_service()),
       scanner_provider_(std::move(scanner_provider)) {
   if (identity_manager_ != nullptr) {
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner =
