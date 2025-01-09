@@ -39,7 +39,7 @@ WebDataRequest::WebDataRequest(WebDataRequestManager* manager,
     : task_runner_(base::SequencedTaskRunner::HasCurrentDefault()
                        ? base::SequencedTaskRunner::GetCurrentDefault()
                        : nullptr),
-      atomic_manager_(reinterpret_cast<base::subtle::AtomicWord>(manager)),
+      atomic_manager_(manager),
       consumer_(consumer ? consumer->GetWebDataServiceConsumerWeakPtr()
                          : nullptr),
       handle_(handle) {
@@ -48,8 +48,7 @@ WebDataRequest::WebDataRequest(WebDataRequestManager* manager,
 }
 
 WebDataRequestManager* WebDataRequest::GetManager() {
-  return reinterpret_cast<WebDataRequestManager*>(
-      base::subtle::Acquire_Load(&atomic_manager_));
+  return atomic_manager_.load(std::memory_order_acquire);
 }
 
 WebDataServiceConsumer* WebDataRequest::GetConsumer() {
@@ -61,8 +60,7 @@ scoped_refptr<base::SequencedTaskRunner> WebDataRequest::GetTaskRunner() {
 }
 
 void WebDataRequest::MarkAsInactive() {
-  // Set atomic_manager_ to the equivalent of nullptr;
-  base::subtle::Release_Store(&atomic_manager_, 0);
+  atomic_manager_.store(nullptr, std::memory_order_release);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
