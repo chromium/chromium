@@ -22,7 +22,9 @@ promise_test(async t => {
     if (done) {
       break;
     }
-    result = value;
+    if (value) {
+      result += value;
+    }
   }
-  assert_true(result.length > 0);
+  assert_true(result.length > 0, "The result should not be empty.");
 });
