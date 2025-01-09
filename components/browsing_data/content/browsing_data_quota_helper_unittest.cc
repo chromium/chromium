@@ -115,10 +115,6 @@ class BrowsingDataQuotaHelperTest : public testing::Test {
     mock_quota_client_ptr->AddBucketsData(buckets_data);
   }
 
-  void DeleteHostData(const std::string& host, blink::mojom::StorageType type) {
-    helper_->DeleteHostData(host, type);
-  }
-
   int64_t quota() { return quota_; }
 
  private:
@@ -203,53 +199,5 @@ TEST_F(BrowsingDataQuotaHelperTest, IgnoreExtensionsAndDevTools) {
   expected.insert(QuotaInfo(
       blink::StorageKey::CreateFromStringForTesting("https://example.com"), 10,
       1));
-  EXPECT_TRUE(expected == actual);
-}
-
-TEST_F(BrowsingDataQuotaHelperTest, DeleteHostData) {
-  static const ClientDefaultBucketData kStorageKeys[] = {
-      {"http://example.com/", StorageType::kTemporary, 1},
-      {"https://example.com/", StorageType::kTemporary, 10},
-      {"https://example.com/", StorageType::kSyncable, 1},
-      {"http://example2.com/", StorageType::kTemporary, 1000},
-  };
-  RegisterClient(kStorageKeys);
-
-  DeleteHostData("example.com", StorageType::kSyncable);
-
-  StartFetching();
-  content::RunAllTasksUntilIdle();
-  EXPECT_TRUE(fetching_completed());
-
-  std::set<QuotaInfo> expected, actual;
-  actual.insert(quota_info().begin(), quota_info().end());
-  expected.insert(QuotaInfo(
-      blink::StorageKey::CreateFromStringForTesting("http://example.com"), 1,
-      0));
-  expected.insert(QuotaInfo(
-      blink::StorageKey::CreateFromStringForTesting("http://example2.com"),
-      1000, 0));
-  expected.insert(QuotaInfo(
-      blink::StorageKey::CreateFromStringForTesting("https://example.com"), 10,
-      0));
-  EXPECT_TRUE(expected == actual);
-
-  DeleteHostData("example2.com", StorageType::kTemporary);
-  content::RunAllTasksUntilIdle();
-
-  StartFetching();
-  content::RunAllTasksUntilIdle();
-  EXPECT_TRUE(fetching_completed());
-
-  expected.clear();
-  actual.clear();
-  actual.insert(quota_info().begin(), quota_info().end());
-  expected.insert(QuotaInfo(
-      blink::StorageKey::CreateFromStringForTesting("http://example.com"), 1,
-      0));
-  expected.insert(QuotaInfo(
-      blink::StorageKey::CreateFromStringForTesting("https://example.com"), 10,
-      0));
-
   EXPECT_TRUE(expected == actual);
 }
