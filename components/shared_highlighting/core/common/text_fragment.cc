@@ -39,7 +39,7 @@ bool HasValue(const std::string* str) {
   return str && !str->empty();
 }
 
-const std::string ValueOrDefault(const std::string* str) {
+std::string ValueOrDefault(const std::string* str) {
   return HasValue(str) ? *str : "";
 }
 
@@ -59,11 +59,9 @@ TextFragment::TextFragment(const std::string& text_start,
       prefix_(prefix),
       suffix_(suffix) {}
 
-TextFragment::TextFragment(const TextFragment& other)
-    : TextFragment(other.text_start(),
-                   other.text_end(),
-                   other.prefix(),
-                   other.suffix()) {}
+TextFragment::TextFragment(const TextFragment& other) = default;
+
+TextFragment& TextFragment::operator=(const TextFragment& other) = default;
 
 TextFragment::~TextFragment() = default;
 
@@ -79,14 +77,14 @@ std::optional<TextFragment> TextFragment::FromEscapedString(
   // First, try to extract the optional prefix and suffix params. These have a
   // '-' as their last or first character, respectively, which should not be
   // carried over to the final dict.
-  std::string prefix = "";
+  std::string prefix;
   size_t prefix_delimiter_pos = escaped_string.find("-,");
   if (prefix_delimiter_pos != std::string::npos) {
     prefix = escaped_string.substr(0, prefix_delimiter_pos);
     escaped_string.erase(0, prefix_delimiter_pos + 2);
   }
 
-  std::string suffix = "";
+  std::string suffix;
   size_t suffix_delimiter_pos = escaped_string.rfind(",-");
   if (suffix_delimiter_pos != std::string::npos) {
     suffix = escaped_string.substr(suffix_delimiter_pos + 2);
