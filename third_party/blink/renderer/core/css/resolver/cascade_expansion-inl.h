@@ -48,9 +48,9 @@ void ExpandCascade(const MatchedProperties& matched_properties,
         EncodeMatchResultPosition(matched_properties_index, property_idx++));
 
     if (id == CSSPropertyID::kVariable) {
-      CustomProperty custom(reference.Name().ToAtomicString(), document);
+      CustomProperty custom(reference.CustomPropertyName(), document);
       if (!filter.Rejects(custom)) {
-        custom_property_callback(priority, reference.Name().ToAtomicString());
+        custom_property_callback(priority, reference.CustomPropertyName());
       }
       // Custom properties never have visited counterparts,
       // so no need to check for expand_visited here.
