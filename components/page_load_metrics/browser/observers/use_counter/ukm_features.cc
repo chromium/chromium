@@ -420,6 +420,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kAdScriptInStackOnBluetooth,
           WebFeature::kAdScriptInStackOnMicrophoneRead,
           WebFeature::kAdScriptInStackOnCameraRead,
+          WebFeature::kUpgradeInsecureRequestsUpgradedRequestBlockable,
       }));
   return *opt_in_features;
 }
