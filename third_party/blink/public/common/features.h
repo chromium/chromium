@@ -1641,6 +1641,12 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kServiceWorkerStorageSuppressPostTask);
 
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kServiceWorkerSyntheticResponse);
+
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    std::string,
+    kServiceWorkerSyntheticResponseAllowedUrls);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBoostRenderProcessForLoading);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(

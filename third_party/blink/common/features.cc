@@ -2452,6 +2452,22 @@ BASE_FEATURE(kServiceWorkerStorageSuppressPostTask,
              "ServiceWorkerStorageSuppressPostTask",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// (crbug.com/352578800): Enables building a sysnthetic response by
+// ServiceWorker. For navigation requests, the pre-learned static response
+// header is returned in parallel with dispatching the network request.
+BASE_FEATURE(kServiceWorkerSyntheticResponse,
+             "ServiceWorkerSyntheticResponse",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Define the allowed websites to enable SyntheticResponse. Allowed urls are
+// expected to be passed as a comma separated string.
+// e.g. https://example1.test,https://example2.test/foo?query
+BASE_FEATURE_PARAM(std::string,
+                   kServiceWorkerSyntheticResponseAllowedUrls,
+                   &kServiceWorkerSyntheticResponse,
+                   "allowed_urls",
+                   "");
+
 // If enabled, force renderer process foregrounded from CommitNavigation to
 // DOMContentLoad (crbug/351953350).
 BASE_FEATURE(kBoostRenderProcessForLoading,
