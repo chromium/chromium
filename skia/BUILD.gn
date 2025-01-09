@@ -11,6 +11,7 @@ import("//build/config/sanitizers/sanitizers.gni")
 import("//build/rust/rust_static_library.gni")
 import("//gpu/vulkan/features.gni")
 import("//skia/skia.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 import("//third_party/skia/gn/shared_sources.gni")
 import("//third_party/skia/modules/skcms/skcms.gni")
@@ -1109,6 +1110,17 @@ if (!is_ios) {
       "//build/win:default_exe_manifest",
     ]
   }
+}
+
+fuzzer_test("image_operations_resize_fuzzer") {
+  sources = [ "ext/image_operations_resize_fuzzer.cc" ]
+
+  deps = [
+    ":skia",
+    "//base",
+  ]
+
+  libfuzzer_options = [ "max_len=48" ]
 }
 
 group("fuzzers") {
