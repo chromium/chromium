@@ -61,8 +61,10 @@ TEST_F(QuickInsertSearchFieldViewTest, HasTextFieldRole) {
   QuickInsertSearchFieldView view(base::DoNothing(), base::DoNothing(),
                                   &key_event_handler, &metrics);
 
-  EXPECT_EQ(view.textfield_for_testing().GetAccessibleRole(),
-            ax::mojom::Role::kTextField);
+  ui::AXNodeData node_data;
+  view.textfield_for_testing().GetViewAccessibility().GetAccessibleNodeData(
+      &node_data);
+  EXPECT_EQ(node_data.role, ax::mojom::Role::kTextField);
 }
 
 TEST_F(QuickInsertSearchFieldViewTest, ClearButtonHasTooltip) {
