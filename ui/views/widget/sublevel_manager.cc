@@ -92,8 +92,9 @@ void SublevelManager::OnWidgetChildRemoved(Widget* owner, Widget* child) {
 }
 
 void SublevelManager::OrderChildWidget(Widget* child) {
-  DCHECK_EQ(1, base::ranges::count(children_, child));
-  children_.erase(base::ranges::remove(children_, child), std::end(children_));
+  auto removed = std::ranges::remove(children_, child);
+  DCHECK_EQ(1u, removed.size());
+  children_.erase(removed.begin(), removed.end());
 
   if (ShouldStackAboveParent(child)) {
     child->StackAboveWidget(owner_);
