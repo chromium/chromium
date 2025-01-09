@@ -964,6 +964,10 @@ const int kExpectedExitAnimationCount = 2;
 
 // Called after consent dialog was dismissed and TOS accepted.
 - (void)handleConsentViewControllerDismissed {
+  if (_isExiting || _isStopped) {
+    return;
+  }
+
   CHECK([self termsOfServiceAccepted]);
   [self disableSelectionInteraction:NO];
   [_selectionViewController setTopIconsHidden:NO];
