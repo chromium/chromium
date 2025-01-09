@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_GLIC_GLIC_VIEW_H_
 #define CHROME_BROWSER_GLIC_GLIC_VIEW_H_
 
-#include "chrome/browser/glic/glic_web_view.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
@@ -24,7 +25,7 @@ class ScopedProfileKeepAlive;
 
 namespace glic {
 
-class GlicView : public views::View {
+class GlicView : public views::View, public content::WebContentsDelegate {
  public:
   GlicView(Profile* profile, const gfx::Size& initial_size);
   GlicView(const GlicView&) = delete;
@@ -50,7 +51,17 @@ class GlicView : public views::View {
   void AnimateFrameBounds(const gfx::Rect& bounds);
 
  private:
-  raw_ptr<GlicWebView> web_view_;
+  // content::WebContentsDelegate:
+  bool HandleKeyboardEvent(content::WebContents* source,
+                           const input::NativeWebKeyboardEvent& event) override;
+  void RequestMediaAccessPermission(
+      content::WebContents* web_contents,
+      const content::MediaStreamRequest& request,
+      content::MediaResponseCallback callback) override;
+
+  raw_ptr<views::WebView> web_view_;
+  views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
+
   // Defines the areas of the view from which it can be dragged. These areas can
   // be updated by the glic web client.
   std::vector<gfx::Rect> draggable_areas_;

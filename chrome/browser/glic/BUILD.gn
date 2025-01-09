@@ -16,7 +16,6 @@ source_set("glic") {
     "glic_profile_manager.h",
     "glic_tab_indicator_helper.h",
     "glic_view.h",
-    "glic_web_view.h",
     "glic_window_controller.h",
     "guest_util.h",
   ]
@@ -49,7 +48,6 @@ source_set("impl") {
     "glic_profile_manager.cc",
     "glic_tab_indicator_helper.cc",
     "glic_view.cc",
-    "glic_web_view.cc",
     "glic_window_controller.cc",
     "guest_util.cc",
   ]

@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/glic_view.h"
 
 #include "base/command_line.h"
+#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
@@ -30,11 +31,12 @@ GlicView::GlicView(Profile* profile, const gfx::Size& initial_size) {
   profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
       profile, ProfileKeepAliveOrigin::kGlicView);
   SetProperty(views::kElementIdentifierKey, kGlicViewElementId);
-  auto web_view = std::make_unique<GlicWebView>(profile);
+  auto web_view = std::make_unique<views::WebView>(profile);
   web_view_ = web_view.get();
   web_view->SetSize(initial_size);
   web_view->LoadInitialURL(GURL("chrome://glic"));
   web_view->GetWebContents()->SetPageBaseBackgroundColor(SK_ColorTRANSPARENT);
+  web_view->GetWebContents()->SetDelegate(this);
   AddChildView(std::move(web_view));
 }
 
@@ -86,5 +88,19 @@ void GlicView::AnimateFrameBounds(const gfx::Rect& bounds) {
   bounds_change_animation_ =
       std::make_unique<BrowserFrameBoundsChangeAnimation>(*GetWidget(), bounds);
   bounds_change_animation_->Start();
+}
+
+bool GlicView::HandleKeyboardEvent(content::WebContents* source,
+                                   const input::NativeWebKeyboardEvent& event) {
+  return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
+      event, web_view()->GetFocusManager());
+}
+
+void GlicView::RequestMediaAccessPermission(
+    content::WebContents* web_contents,
+    const content::MediaStreamRequest& request,
+    content::MediaResponseCallback callback) {
+  MediaCaptureDevicesDispatcher::GetInstance()->ProcessMediaAccessRequest(
+      web_contents, request, std::move(callback), nullptr);
 }
 }  // namespace glic
