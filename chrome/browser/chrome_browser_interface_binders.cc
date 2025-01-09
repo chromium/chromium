@@ -896,10 +896,8 @@ void PopulateChromeFrameBinders(
   map->Add<screen_ai::mojom::ScreenAIAnnotator>(
       base::BindRepeating(&BindScreenAIAnnotator));
 
-  if (features::IsReadAnythingWithScreen2xEnabled()) {
-    map->Add<screen_ai::mojom::Screen2xMainContentExtractor>(
-        base::BindRepeating(&BindScreen2xMainContentExtractor));
-  }
+  map->Add<screen_ai::mojom::Screen2xMainContentExtractor>(
+      base::BindRepeating(&BindScreen2xMainContentExtractor));
 #endif
 
 #if BUILDFLAG(IS_WIN)

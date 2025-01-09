@@ -317,27 +317,12 @@ bool IsReadAnythingReadAloudPhraseHighlightingEnabled() {
              ::features::kReadAnythingReadAloudPhraseHighlighting);
 }
 
-BASE_FEATURE(kReadAnythingWithScreen2x,
-             "ReadAnythingWithScreen2x",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-bool IsReadAnythingWithScreen2xEnabled() {
-  return base::FeatureList::IsEnabled(::features::kReadAnythingWithScreen2x);
-}
-
-BASE_FEATURE(kReadAnythingWithAlgorithm,
-             "ReadAnythingWithAlgorithm",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-bool IsReadAnythingWithAlgorithmEnabled() {
-  return base::FeatureList::IsEnabled(::features::kReadAnythingWithAlgorithm);
-}
-
 BASE_FEATURE(kReadAnythingImagesViaAlgorithm,
              "ReadAnythingImagesViaAlgorithm",
              base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsReadAnythingImagesViaAlgorithmEnabled() {
   return base::FeatureList::IsEnabled(
-             ::features::kReadAnythingImagesViaAlgorithm) &&
-         IsReadAnythingWithAlgorithmEnabled();
+      ::features::kReadAnythingImagesViaAlgorithm);
 }
 
 BASE_FEATURE(kReadAnythingDocsIntegration,

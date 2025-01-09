@@ -38,9 +38,9 @@ class MojoUkmRecorder;
 //  A class that distills an AXTreeUpdate. The main API is
 //  AXTreeDistiller::Distill(), which kicks off the distillation. Once a
 //  distilled AXTree is ready, calls a callback.
-//  When |IsReadAnythingWithScreen2xEnabled()|, the distillation is performed
-//  by the Screen2x ML model in the utility process. Otherwise, distillation is
-//  done using rules defined in this file.
+//  If ChromeScreenAI library is available, the distillation is performed by the
+//  Screen2x ML model in the utility process. Otherwise, distillation is done
+//  using rules defined in this file.
 //
 class AXTreeDistiller : public content::RenderFrameObserver {
   using OnAXTreeDistilledCallback = base::RepeatingCallback<void(
@@ -58,7 +58,7 @@ class AXTreeDistiller : public content::RenderFrameObserver {
   // Distills the AXTree. |tree| and |snapshot| are duplicates of each other;
   // the algorithm requires the data in |tree| form while Screen2x requires it
   // in |snapshot| form.
-  // When |IsReadAnythingWithScreen2xEnabled|, this operation is done in the
+  // When ChromeScreenAI library is available, this operation is done in the
   // utility process by Screen2x. Otherwise, it is done by a rules-based
   // algorithm in this process.
   virtual void Distill(const ui::AXTree& tree,

@@ -228,16 +228,6 @@ AX_BASE_EXPORT bool IsReadAnythingReadAloudEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingReadAloudPhraseHighlighting);
 AX_BASE_EXPORT bool IsReadAnythingReadAloudPhraseHighlightingEnabled();
 
-// Use screen2x integration for Read Anything to distill web pages
-// using an ML model.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingWithScreen2x);
-AX_BASE_EXPORT bool IsReadAnythingWithScreen2xEnabled();
-
-// Enable rules based algorithm for distilling content. Should be enabled by
-// default.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingWithAlgorithm);
-AX_BASE_EXPORT bool IsReadAnythingWithAlgorithmEnabled();
-
 // Enable images to be distilled via algorithm. Should be disabled by
 // default.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingImagesViaAlgorithm);

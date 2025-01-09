@@ -77,11 +77,8 @@ class MainContentExtractionTest : public InProcessBrowserTest {
  public:
   MainContentExtractionTest() {
     feature_list_.InitWithFeatures(
-        {
-            features::kScreenAITestMode,
-            features::kReadAnythingWithScreen2x,
-            ax::mojom::features::kScreenAIMainContentExtractionEnabled,
-        },
+        {features::kScreenAITestMode,
+         ax::mojom::features::kScreenAIMainContentExtractionEnabled},
         {});
   }
 

@@ -365,14 +365,12 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
   SetDefaultLanguageCode(prefs_lang);
 
   if (use_screen_ai_service_) {
-    if (features::IsReadAnythingWithScreen2xEnabled()) {
-      screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(profile_)
-          ->GetServiceStateAsync(
-              screen_ai::ScreenAIServiceRouter::Service::kMainContentExtraction,
-              base::BindOnce(&ReadAnythingUntrustedPageHandler::
-                                 OnScreenAIServiceInitialized,
-                             weak_factory_.GetWeakPtr()));
-    }
+    screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(profile_)
+        ->GetServiceStateAsync(
+            screen_ai::ScreenAIServiceRouter::Service::kMainContentExtraction,
+            base::BindOnce(
+                &ReadAnythingUntrustedPageHandler::OnScreenAIServiceInitialized,
+                weak_factory_.GetWeakPtr()));
 #if BUILDFLAG(ENABLE_PDF)
     // PDF searchify feature adds OCR text to images while loading the PDF, so
     // warming up the OCR service is not needed.
@@ -782,7 +780,6 @@ void ReadAnythingUntrustedPageHandler::OnSidePanelControllerDestroyed() {
 
 void ReadAnythingUntrustedPageHandler::OnScreenAIServiceInitialized(
     bool successful) {
-  DCHECK(features::IsReadAnythingWithScreen2xEnabled());
   if (successful) {
     page_->ScreenAIServiceReady();
   }
