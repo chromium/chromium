@@ -3570,10 +3570,6 @@ bool IsFastPairSavedDevicesStrictOptInEnabled() {
   return base::FeatureList::IsEnabled(kFastPairSavedDevicesStrictOptIn);
 }
 
-bool IsFederatedServiceEnabled() {
-  return base::FeatureList::IsEnabled(kFederatedService);
-}
-
 bool IsFederatedStringsServiceEnabled() {
   return base::FeatureList::IsEnabled(kFederatedService) &&
          base::FeatureList::IsEnabled(kFederatedStringsService);

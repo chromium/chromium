@@ -1104,7 +1104,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairSavedDevicesEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairSavedDevicesStrictOptInEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsFastPairDevicesBluetoothSettingsEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFederatedServiceEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFederatedStringsServiceEnabled();
 
 // TODO revisit structure of feature flags w.r.t. gating task scheduling.
