@@ -778,10 +778,6 @@ void XRFrameProvider::SubmitWebGPULayer(XRGPUProjectionLayer* layer,
     return;
   }
 
-  // TODO(crbug.com/359418629): This should be handled somewhere else and only
-  // called when the viewports actually change.
-  UpdateWebGPULayerViewports(layer);
-
   frame_transport_->FramePreImageWebGPU(device->GetDawnControlClient());
 
   if (!frame_transport_->DrawingIntoSharedBuffer()) {
