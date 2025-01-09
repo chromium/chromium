@@ -16,7 +16,6 @@
 #include "base/scoped_observation.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/autofill/autofill_context_menu_manager.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/compose/buildflags.h"
@@ -87,13 +86,11 @@ namespace ui {
 class DataTransferEndpoint;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 namespace ash {
 class SystemWebAppDelegate;
 }
-#endif
 
-#if BUILDFLAG(IS_CHROMEOS)
 namespace chromeos::clipboard_history {
 class ClipboardHistorySubmenuModel;
 }  // namespace chromeos::clipboard_history
@@ -210,11 +207,9 @@ class RenderViewContextMenu
 #endif
 
   // RenderViewContextMenuBase:
-  // If called in Ash when Lacros is the only browser, this open the URL in
-  // Lacros. In that case, only the |url| and some values of |disposition| are
-  // respected - other parameters are ignored. The |initiator| parameter is the
-  // origin that supplied the URL being navigated to; it may be an opaque origin
-  // with no precursor if the URL came from the browser itself or the user.
+  // The |initiator| parameter is the origin that supplied the URL being
+  // navigated to; it may be an opaque origin with no precursor if the URL came
+  // from the browser itself or the user.
   void OpenURLWithExtraHeaders(const GURL& url,
                                const GURL& referring_url,
                                const url::Origin& initiator,
@@ -522,10 +517,10 @@ class RenderViewContextMenu
   std::unique_ptr<ClickToCallContextMenuObserver>
       click_to_call_context_menu_observer_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // The system app (if any) associated with the WebContents we're in.
   raw_ptr<const ash::SystemWebAppDelegate> system_app_ = nullptr;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // A one-time callback that will be called the next time a plugin action is
   // executed from a given render frame.

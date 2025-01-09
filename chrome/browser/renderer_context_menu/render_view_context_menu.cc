@@ -29,7 +29,6 @@
 #include "base/system/sys_info.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
@@ -290,16 +289,6 @@
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/chromeos/arc/open_with_menu.h"
-#include "chrome/browser/chromeos/arc/start_smart_selection_action_menu.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
-#include "chrome/browser/renderer_context_menu/read_write_card_observer.h"
-#include "chromeos/ui/clipboard_history/clipboard_history_submenu_model.h"
-#include "chromeos/ui/clipboard_history/clipboard_history_util.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
@@ -308,17 +297,17 @@
 #include "chrome/browser/ash/arc/intent_helper/arc_intent_helper_mojo_ash.h"
 #include "chrome/browser/ash/input_method/editor_mediator.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
+#include "chrome/browser/chromeos/arc/open_with_menu.h"
+#include "chrome/browser/chromeos/arc/start_smart_selection_action_menu.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
+#include "chrome/browser/renderer_context_menu/read_write_card_observer.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
-#include "ui/aura/window.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/arc/arc_intent_helper_mojo_lacros.h"
-#include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/ui/clipboard_history/clipboard_history_submenu_model.h"
+#include "chromeos/ui/clipboard_history/clipboard_history_util.h"
 #include "ui/aura/window.h"
 #endif
 
@@ -717,7 +706,7 @@ content::WebContents* GetWebContentsToUse(
 
 bool g_custom_id_ranges_initialized = false;
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 void AddAvatarToLastMenuItem(const gfx::Image& icon,
                              ui::SimpleMenuModel* menu) {
   // Don't try to scale too small icons.
@@ -732,7 +721,7 @@ void AddAvatarToLastMenuItem(const gfx::Image& icon,
   menu->SetIcon(menu->GetItemCount() - 1,
                 ui::ImageModel::FromImage(sized_icon));
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 void OnBrowserCreated(const GURL& link_url,
                       url::Origin initiator_origin,
@@ -775,7 +764,7 @@ bool DoesFormControlTypeSupportEmoji(
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // If the link points to a system web app (in |profile|), return its type.
 // Otherwise nullopt.
 std::optional<ash::SystemWebAppType> GetLinkSystemAppType(Profile* profile,
@@ -789,15 +778,11 @@ std::optional<ash::SystemWebAppType> GetLinkSystemAppType(Profile* profile,
 
   return ash::GetSystemWebAppTypeForAppId(profile, *link_app_id);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS)
 
 bool IsCaptivePortalProfile(Profile* profile) {
   return profile->IsOffTheRecord() &&
          profile->GetOTRProfileID().IsCaptivePortal();
 }
-
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 bool IsFrameInPdfViewer(content::RenderFrameHost* rfh) {
@@ -913,11 +898,11 @@ RenderViewContextMenu::RenderViewContextMenu(
   set_content_type(
       ContextMenuContentTypeFactory::Create(&render_frame_host, params));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   system_app_ = GetBrowser() && GetBrowser()->app_controller()
                     ? GetBrowser()->app_controller()->system_app()
                     : nullptr;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   observers_.AddObserver(&autofill_context_menu_manager_);
 }
@@ -1288,16 +1273,8 @@ void RenderViewContextMenu::InitMenu() {
 #if BUILDFLAG(IS_CHROMEOS)
   if (content_type_->SupportsGroup(
           ContextMenuContentType::ITEM_GROUP_SMART_SELECTION)) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     supports_smart_text_selection =
         arc::IsArcPlayStoreEnabledForProfile(GetProfile());
-#else  // BUILDFLAG(IS_CHROMEOS_LACROS)
-    auto* service = chromeos::LacrosService::Get();
-    // AppService and ARC are not supporting non-primary profile.
-    // Also check if Lacros supports ARC.
-    supports_smart_text_selection = GetProfile()->IsMainProfile() && service &&
-                                    service->IsAvailable<crosapi::mojom::Arc>();
-#endif
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
   if (supports_smart_text_selection) {
@@ -1403,15 +1380,6 @@ int RenderViewContextMenu::GetSearchForVideoFrameIdc() const {
 }
 
 const TemplateURL* RenderViewContextMenu::GetImageSearchProvider() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!crosapi::browser_util::IsAshWebBrowserEnabled()) {
-    // If Lacros is the only browser, disable region search in Ash because we
-    // have decided not to support this feature in the system UI so as not to
-    // confuse users by opening an Ash browser window.
-    return nullptr;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
   if (!GetBrowser()) {
     return nullptr;
   }
@@ -1716,7 +1684,6 @@ void RenderViewContextMenu::AppendLinkItems() {
       show_open_link_off_the_record = false;
     }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     const bool in_system_web_dialog =
         ash::SystemWebDialogDelegate::HasInstance(current_url_);
 
@@ -1764,7 +1731,6 @@ void RenderViewContextMenu::AppendLinkItems() {
       show_open_in_new_window = false;
       show_open_link_off_the_record = false;
     }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
     if (show_open_in_new_tab) {
@@ -1821,9 +1787,8 @@ void RenderViewContextMenu::AppendLinkItems() {
     AppendOpenInWebAppLinkItems();
     AppendOpenWithLinkItems();
 
-    // ChromeOS ASH supports multiple profiles, but only one can be open at a
-    // time. With LaCrOS, profile switching is enabled.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+    // ChromeOS supports multiple profiles, but only one can be open at a time.
+#if !BUILDFLAG(IS_CHROMEOS)
     // g_browser_process->profile_manager() is null during unit tests.
     if (g_browser_process->profile_manager() &&
         !GetProfile()->IsOffTheRecord()) {
@@ -1894,7 +1859,7 @@ void RenderViewContextMenu::AppendLinkItems() {
         }
       }
     }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
 
@@ -1947,15 +1912,10 @@ void RenderViewContextMenu::AppendReadWriteCardItems() {
 
 void RenderViewContextMenu::AppendSmartSelectionActionItems() {
 #if BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  using ArcIntentHelperMojoDelegate = arc::ArcIntentHelperMojoAsh;
-#else  // BUILDFLAG(IS_CHROMEOS_LACROS_
-  using ArcIntentHelperMojoDelegate = arc::ArcIntentHelperMojoLacros;
-#endif
   start_smart_selection_action_menu_observer_ =
       std::make_unique<arc::StartSmartSelectionActionMenu>(
           browser_context_, this,
-          std::make_unique<ArcIntentHelperMojoDelegate>());
+          std::make_unique<arc::ArcIntentHelperMojoAsh>());
   observers_.AddObserver(start_smart_selection_action_menu_observer_.get());
 
   if (menu_model_.GetItemCount()) {
@@ -1983,7 +1943,7 @@ void RenderViewContextMenu::AppendOpenInWebAppLinkItems() {
     return;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Don't show "Open link in new app window", if the link points to the
   // current app, and the app would reuse an existing window.
   if (system_app_ &&
@@ -1992,7 +1952,7 @@ void RenderViewContextMenu::AppendOpenInWebAppLinkItems() {
       system_app_->GetWindowForLaunch(profile, params_.link_url) != nullptr) {
     return;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Only applies to apps that open in an app window.
   if (provider->registrar_unsafe().GetAppUserDisplayMode(*link_app_id) ==
@@ -2502,29 +2462,18 @@ void RenderViewContextMenu::AppendOtherEditableItems() {
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
-  bool need_clipboard_history_menu = true;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (auto* service = chromeos::LacrosService::Get();
-      !service || !service->IsAvailable<crosapi::mojom::ClipboardHistory>()) {
-    need_clipboard_history_menu = false;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-  if (need_clipboard_history_menu) {
-    // Insert a submenu of clipboard history descriptors.
-    // `submenu_model_` is a class member. Therefore, it is safe to use `this`
-    // pointer in the callback.
-    submenu_model_ = chromeos::clipboard_history::ClipboardHistorySubmenuModel::
-        CreateClipboardHistorySubmenuModel(
-            crosapi::mojom::ClipboardHistoryControllerShowSource::
-                kRenderViewContextSubmenu,
-            base::BindRepeating(
-                &RenderViewContextMenu::ShowClipboardHistoryMenu,
-                base::Unretained(this)));
-    menu_model_.AddSubMenuWithStringId(IDC_CONTENT_PASTE_FROM_CLIPBOARD,
-                                       IDS_CONTEXT_MENU_PASTE_FROM_CLIPBOARD,
-                                       submenu_model_.get());
-  }
+  // Insert a submenu of clipboard history descriptors.
+  // `submenu_model_` is a class member. Therefore, it is safe to use `this`
+  // pointer in the callback.
+  submenu_model_ = chromeos::clipboard_history::ClipboardHistorySubmenuModel::
+      CreateClipboardHistorySubmenuModel(
+          crosapi::mojom::ClipboardHistoryControllerShowSource::
+              kRenderViewContextSubmenu,
+          base::BindRepeating(&RenderViewContextMenu::ShowClipboardHistoryMenu,
+                              base::Unretained(this)));
+  menu_model_.AddSubMenuWithStringId(IDC_CONTENT_PASTE_FROM_CLIPBOARD,
+                                     IDS_CONTEXT_MENU_PASTE_FROM_CLIPBOARD,
+                                     submenu_model_.get());
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (!has_misspelled_word) {
@@ -2773,7 +2722,7 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
   Browser* const browser = GetBrowser();
   if (browser && platform_util::IsBrowserLockedFullscreen(browser)) {
     bool should_disable_command_for_locked_fullscreen = true;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     if (browser->IsLockedForOnTask()) {
       bool is_page_nav_command =
           (id == IDC_BACK) || (id == IDC_FORWARD) || (id == IDC_RELOAD);
@@ -3061,23 +3010,8 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
       return true;
 
     case IDC_CONTENT_PASTE_FROM_CLIPBOARD:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       return ash::ClipboardHistoryController::Get()->HasAvailableHistoryItems();
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-    {
-      // Disable the clipboard history menu option if:
-      // 1. The clipboard history service is not available, or
-      // 2. The paste menu option is not enabled, or
-      // 3. There are no clipboard history item descriptors to populate a
-      //    submenu when the clipboard history refresh feature is enabled.
-      auto* service = chromeos::LacrosService::Get();
-      if (!service ||
-          !service->IsAvailable<crosapi::mojom::ClipboardHistory>() ||
-          !IsPasteEnabled()) {
-        return false;
-      }
-      return !chromeos::clipboard_history::QueryItemDescriptors().empty();
-    }
 #else
       NOTREACHED() << "Unhandled id: " << id;
 #endif
@@ -4537,7 +4471,7 @@ void RenderViewContextMenu::ExecPrint() {
   }
 
   printing::StartPrint(source_web_contents_,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
                        mojo::NullAssociatedRemote(),
 #endif
                        print_preview_disabled, !params_.selection_text.empty());
@@ -4588,9 +4522,8 @@ void RenderViewContextMenu::ExecPartialTranslate() {
 void RenderViewContextMenu::ExecLanguageSettings(int event_flags) {
 // Open the browser language settings.
 // Exception: On Ash, the browser language settings consists solely of a link to
-// the OS language settings, so just open the OS settings directly (this has the
-// added benefit of also doing the right thing when Lacros is enabled).
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+// the OS language settings, so just open the OS settings directly.
+#if BUILDFLAG(IS_CHROMEOS)
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
       GetProfile(), chromeos::settings::mojom::kLanguagesSubpagePath);
 #else
@@ -4803,19 +4736,9 @@ void RenderViewContextMenu::ShowClipboardHistoryMenu(int event_flags) {
   const ui::mojom::MenuSourceType source_type =
       ui::GetMenuSourceType(event_flags);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ClipboardHistoryController::Get()->ShowMenu(
       gfx::Rect(anchor_point_in_screen, gfx::Size()), source_type,
       crosapi::mojom::ClipboardHistoryControllerShowSource::
           kRenderViewContextMenu);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (auto* service = chromeos::LacrosService::Get();
-      service && service->IsAvailable<crosapi::mojom::ClipboardHistory>()) {
-    service->GetRemote<crosapi::mojom::ClipboardHistory>()->ShowClipboard(
-        gfx::Rect(anchor_point_in_screen, gfx::Size()), source_type,
-        crosapi::mojom::ClipboardHistoryControllerShowSource::
-            kRenderViewContextMenu);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)

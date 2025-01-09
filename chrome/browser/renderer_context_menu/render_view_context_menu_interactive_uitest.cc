@@ -573,9 +573,9 @@ IN_PROC_BROWSER_TEST_F(
   RunTest(test_case);
 }
 
-// "Open Link in Profile" functionality is not available on ChromeOS Ash where
-// there is only one profile.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// "Open Link in Profile" functionality is not available on ChromeOS where there
+// is only one profile.
+#if !BUILDFLAG(IS_CHROMEOS)
 class ContextMenuFencedFrameMutilpleProfilesTest
     : public ContextMenuFencedFrameTest {
  public:
@@ -653,7 +653,7 @@ IN_PROC_BROWSER_TEST_F(
 
   RunTest(test_case);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 class ContextMenuFencedFrameProtocolHandlerTest
     : public ContextMenuFencedFrameTest {
