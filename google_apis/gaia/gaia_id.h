@@ -26,13 +26,13 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaId {
 
   GaiaId() = default;
   // Temporarily allow implicit conversion on iOS to allow splitting code
-  // changes. Also in unit-tests, to allow gradual code changes.
+  // changes.
   // TODO(crbug.com/380416867): Make the constructor explicit on iOS too.
-#if BUILDFLAG(IS_IOS) || defined(UNIT_TEST)
+#if BUILDFLAG(IS_IOS)
   GaiaId(std::string value);
 #else
   explicit GaiaId(std::string value);
-#endif  // BUILDFLAG(IS_IOS) || defined(UNIT_TEST)
+#endif  // BUILDFLAG(IS_IOS)
   GaiaId(const GaiaId&) = default;
   GaiaId(GaiaId&&) noexcept = default;
   ~GaiaId() = default;
@@ -40,7 +40,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaId {
   GaiaId& operator=(const GaiaId&) = default;
   GaiaId& operator=(GaiaId&&) noexcept = default;
 
-#if BUILDFLAG(IS_IOS) || defined(UNIT_TEST)
+#if BUILDFLAG(IS_IOS)
   // Temporary implicit conversion to allow splitting code changes.
   // TODO(crbug.com/380416867): Remove implicit conversions.
   GaiaId(const char gaia_id[]) { id_ = gaia_id; }
@@ -53,7 +53,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaId {
   const char* c_str() const { return id_.c_str(); }
   std::string::const_iterator begin() const { return id_.begin(); }
   std::string::const_iterator end() const { return id_.end(); }
-#endif  // BUILDFLAG(IS_IOS) || defined(UNIT_TEST)
+#endif  // BUILDFLAG(IS_IOS)
 
   // Checks if the ID is valid or not.
   bool empty() const;

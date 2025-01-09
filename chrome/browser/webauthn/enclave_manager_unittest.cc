@@ -64,6 +64,7 @@
 #include "device/fido/json_request.h"
 #include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_params.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_status_code.h"
 #include "services/network/network_service.h"
@@ -472,7 +473,7 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
   mojo::Remote<network::mojom::NetworkContext> network_context_;
   std::unique_ptr<network::NetworkService> network_service_;
   signin::IdentityTestEnvironment identity_test_env_;
-  std::string gaia_id_;
+  GaiaId gaia_id_;
   std::unique_ptr<FakeSecurityDomainService> security_domain_service_;
   std::unique_ptr<FakeRecoveryKeyStore> recovery_key_store_;
   std::unique_ptr<crypto::ScopedMockUnexportableKeyProvider> mock_hw_provider_;
@@ -509,7 +510,7 @@ TEST_F(EnclaveManagerTest, Basic) {
   ASSERT_FALSE(manager_.is_ready());
   EXPECT_TRUE(manager_.local_state_for_testing()
                   .users()
-                  .find(gaia_id_)
+                  .find(gaia_id_.ToString())
                   ->second.identity_key_is_software_backed());
 
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
@@ -595,7 +596,7 @@ TEST_F(EnclaveManagerTest, RegistrationFailureAndRetry) {
   const std::string gaia =
       identity_test_env_.identity_manager()
           ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-          .gaia;
+          .gaia.ToString();
 
   // Override the enclave with port=100, which will cause connection failures.
   {
@@ -632,7 +633,7 @@ TEST_F(EnclaveManagerTest, PrimaryUserChange) {
   const std::string gaia1 =
       identity_test_env_.identity_manager()
           ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-          .gaia;
+          .gaia.ToString();
 
   {
     BoolFuture register_future;
@@ -647,7 +648,7 @@ TEST_F(EnclaveManagerTest, PrimaryUserChange) {
   const std::string gaia2 =
       identity_test_env_.identity_manager()
           ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-          .gaia;
+          .gaia.ToString();
   ASSERT_FALSE(manager_.is_registered());
   {
     BoolFuture register_future;
@@ -670,7 +671,7 @@ TEST_F(EnclaveManagerTest, PrimaryUserChange) {
   const std::string gaia3 =
       identity_test_env_.identity_manager()
           ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-          .gaia;
+          .gaia.ToString();
   EXPECT_THAT(GaiaAccountsInState(), testing::UnorderedElementsAre(gaia3));
 }
 
@@ -679,7 +680,7 @@ TEST_F(EnclaveManagerTest, PrimaryUserChangeDiscardsActions) {
   const std::string gaia1 =
       identity_test_env_.identity_manager()
           ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-          .gaia;
+          .gaia.ToString();
 
   NoArgFuture loaded_future;
   manager_.Load(loaded_future.GetCallback());
@@ -1802,8 +1803,10 @@ TEST_F(EnclaveUVTest, DeferredUVKeyCreation) {
 
   EXPECT_EQ(manager_.uv_key_state(/*platform_has_biometrics=*/false),
             EnclaveManager::UvKeyState::kUsesSystemUIDeferredCreation);
-  const auto& user_state =
-      manager_.local_state_for_testing().users().find(gaia_id_)->second;
+  const auto& user_state = manager_.local_state_for_testing()
+                               .users()
+                               .find(gaia_id_.ToString())
+                               ->second;
   EXPECT_TRUE(user_state.has_deferred_uv_key_creation() &&
               user_state.deferred_uv_key_creation());
   EXPECT_TRUE(user_state.wrapped_uv_private_key().empty());
@@ -1848,8 +1851,10 @@ TEST_F(EnclaveUVTest, UnregisterOnFailedDeferredUVKeyCreation) {
 
   EXPECT_EQ(manager_.uv_key_state(/*platform_has_biometrics=*/false),
             EnclaveManager::UvKeyState::kUsesSystemUIDeferredCreation);
-  const auto& user_state =
-      manager_.local_state_for_testing().users().find(gaia_id_)->second;
+  const auto& user_state = manager_.local_state_for_testing()
+                               .users()
+                               .find(gaia_id_.ToString())
+                               ->second;
   EXPECT_TRUE(user_state.deferred_uv_key_creation());
   EXPECT_TRUE(user_state.wrapped_uv_private_key().empty());
 

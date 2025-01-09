@@ -58,6 +58,7 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_web_contents_factory.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/ssl/ssl_connection_status_flags.h"
@@ -377,7 +378,7 @@ class ScopedWebContentsTestHelper {
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(fake_user_manager));
 
-    constexpr char kTestUserGaiaId[] = "1111111111";
+    const GaiaId kTestUserGaiaId("1111111111");
     auto account_id =
         AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId);
     fake_user_manager_ptr->AddUserWithAffiliation(account_id,

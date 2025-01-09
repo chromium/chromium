@@ -59,6 +59,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/http/http_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/features.h"
@@ -1087,11 +1088,11 @@ class MultiProfileDownloadNotificationTest
   void AddUser(const TestAccountInfo& info, bool log_in) {
     if (log_in) {
       session_manager::SessionManager::Get()->CreateSession(
-          AccountId::FromUserEmailGaiaId(info.email, info.gaia_id), info.hash,
-          false);
+          AccountId::FromUserEmailGaiaId(info.email, GaiaId(info.gaia_id)),
+          info.hash, false);
     }
     user_manager::UserManager::Get()->SaveUserDisplayName(
-        AccountId::FromUserEmailGaiaId(info.email, info.gaia_id),
+        AccountId::FromUserEmailGaiaId(info.email, GaiaId(info.gaia_id)),
         base::UTF8ToUTF16(info.display_name));
     Profile& profile = profiles::testing::CreateProfileSync(
         g_browser_process->profile_manager(),

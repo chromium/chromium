@@ -22,6 +22,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -524,8 +525,8 @@ TEST(DownloadPrefsTest, DownloadDirSanitization) {
   DownloadPrefs prefs(&profile);
   const base::FilePath default_dir =
       prefs.GetDefaultDownloadDirectoryForProfile();
-  AccountId account_id =
-      AccountId::FromUserEmailGaiaId(profile.GetProfileUserName(), "12345");
+  AccountId account_id = AccountId::FromUserEmailGaiaId(
+      profile.GetProfileUserName(), GaiaId("12345"));
   const std::string drivefs_profile_salt = "a";
   base::FilePath removable_media_dir;
   base::FilePath android_files_dir;

@@ -30,6 +30,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
@@ -342,7 +343,7 @@ class DiceWebSigninInterceptionBubblePixelTest
   WebSigninInterceptor::Delegate::BubbleParameters GetTestBubbleParameters() {
     AccountInfo intercepted_account;
     intercepted_account.account_id =
-        CoreAccountId::FromGaiaId("intercepted_ID");
+        CoreAccountId::FromGaiaId(GaiaId("intercepted_ID"));
     intercepted_account.given_name = GivenNameFromNameFormat();
     intercepted_account.full_name = intercepted_account.given_name + " Sample";
     intercepted_account.email = "sam.sample@intercepted.com";
@@ -358,7 +359,8 @@ class DiceWebSigninInterceptionBubblePixelTest
     }
 
     AccountInfo primary_account;
-    primary_account.account_id = CoreAccountId::FromGaiaId("primary_ID");
+    primary_account.account_id =
+        CoreAccountId::FromGaiaId(GaiaId("primary_ID"));
     primary_account.given_name = "Tessa";
     primary_account.full_name = "Tessa Tester";
     primary_account.email = "tessa.tester@primary.com";

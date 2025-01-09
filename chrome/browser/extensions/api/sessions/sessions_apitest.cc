@@ -50,6 +50,7 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/common/extension_builder.h"
+#include "google_apis/gaia/gaia_id.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
@@ -200,7 +201,8 @@ void ExtensionSessionsTest::CreateSessionModels() {
   syncer::DataTypeActivationRequest request;
   request.error_handler = base::DoNothing();
   request.cache_guid = kTestCacheGuid;
-  request.authenticated_account_id = CoreAccountId::FromGaiaId("SomeAccountId");
+  request.authenticated_account_id =
+      CoreAccountId::FromGaiaId(GaiaId("SomeAccountId"));
 
   sync_sessions::SessionSyncService* service =
       SessionSyncServiceFactory::GetForProfile(browser()->profile());

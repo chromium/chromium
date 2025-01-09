@@ -44,6 +44,7 @@
 #include "components/version_info/version_info.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/extension_function_dispatcher.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -1318,7 +1319,7 @@ class UserContextGatedTest : public ExtensionApiUnittest {
                        const device_signals::SignalsAggregationRequest& request,
                        device_signals::SignalsAggregator::GetSignalsCallback
                            callback) {
-              EXPECT_EQ(user_context.user_id, kFakeUserId);
+              EXPECT_EQ(user_context.user_id, GaiaId(kFakeUserId));
               EXPECT_EQ(request.signal_names.size(), 1U);
               std::move(callback).Run(response);
             }));

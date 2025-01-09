@@ -19,6 +19,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/net/network_portal_detector_test_impl.h"
@@ -41,12 +42,12 @@ void OnWillCreateBrowserContextServices(
 }
 
 void SetCookieForGaiaId(
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::string& email,
     bool signed_out,
     signin::IdentityManager* identity_manager,
     network::TestURLLoaderFactory* test_url_loader_factory) {
-  base::flat_map<std::string, signin::CookieParamsForTest> cookies_by_gaia_id;
+  base::flat_map<GaiaId, signin::CookieParamsForTest> cookies_by_gaia_id;
   signin::AccountsInCookieJarInfo cookies =
       identity_manager->GetAccountsInCookieJar();
   for (const gaia::ListedAccount& account :
