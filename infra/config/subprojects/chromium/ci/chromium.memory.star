@@ -96,6 +96,8 @@ linux_memory_builder(
     # to get builder cache.
     cores = 16,
     ssd = True,
+    # TODO(crbug.com/388307198): Re-enable tree closing when the bot is stable.
+    tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "linux|asan lsan",
         short_name = "bld",
