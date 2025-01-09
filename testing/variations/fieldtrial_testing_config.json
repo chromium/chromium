@@ -9827,6 +9827,7 @@
                     "name": "Enabled_20241119_Dogfood",
                     "params": {
                         "activation_level": "enabled",
+                        "enable_console_logging": "true",
                         "enable_only_if_3pc_blocked": "false",
                         "performance_measurement_rate": "1.0"
                     },
