@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_presenter_impl.h"
@@ -1453,10 +1454,17 @@ class SunfishLauncherButtonTest : public AshTestBase,
                                   public testing::WithParamInterface<bool> {
  public:
   SunfishLauncherButtonTest() {
+    std::vector<base::test::FeatureRef> sunfish_features = {
+        features::kSunfishFeature,
+        features::kScannerUpdate,
+        features::kScannerDogfood,
+    };
     if (IsSunfishEnabled()) {
-      scoped_feature_list_.InitAndEnableFeature(features::kSunfishFeature);
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/sunfish_features, /*disabled_features=*/{});
     } else {
-      scoped_feature_list_.InitAndDisableFeature(features::kSunfishFeature);
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{}, /*disabled_features=*/sunfish_features);
     }
   }
   ~SunfishLauncherButtonTest() override = default;
