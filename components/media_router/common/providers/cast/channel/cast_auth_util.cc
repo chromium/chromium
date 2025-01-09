@@ -56,7 +56,7 @@ BASE_FEATURE(kEnforceFallbackCRLRevocationChecking,
 // This flag tracks the changes necessary to fully enforce revocation.
 BASE_FEATURE(kEnforceRevocationChecking,
              "CastCertificateRevocation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 

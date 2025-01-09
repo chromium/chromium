@@ -3872,24 +3872,6 @@
             ]
         }
     ],
-    "CastCertificateRevocation": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CastCertificateRevocation"
-                    ]
-                }
-            ]
-        }
-    ],
     "CastMirroringPlayoutDelayChromeOS": [
         {
             "platforms": [
