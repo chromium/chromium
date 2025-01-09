@@ -670,7 +670,13 @@ class ClientManager {
     /** See {@link PostMessageHandler#reset(WebContents)}. */
     public void resetPostMessageHandlerForSession(
             SessionHolder<?> session, WebContents webContents) {
-        callOnSession(session, params -> params.postMessageHandler.reset(webContents));
+        callOnSession(
+                session,
+                params -> {
+                    if (params.postMessageHandler != null) {
+                        params.postMessageHandler.reset(webContents);
+                    }
+                });
     }
 
     /**
