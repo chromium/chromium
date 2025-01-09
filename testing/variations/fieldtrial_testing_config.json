@@ -9530,6 +9530,21 @@
             ]
         }
     ],
+    "FRESignInSecondaryActionLabelUpdate": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FRESignInSecondaryActionLabelUpdate"
+                    ]
+                }
+            ]
+        }
+    ],
     "FastPairHandshakeLongTermRefactor": [
         {
             "platforms": [
