@@ -341,7 +341,8 @@ class AutofillAgent : public content::RenderFrameObserver,
   void HandleCaretMovedInFormField(blink::WebElement element,
                                    blink::WebDOMEvent event);
 
-  void HandleFocusChangeComplete(bool focused_node_was_last_clicked);
+  void HandleFocusChangeComplete(bool focused_node_was_last_clicked,
+                                 const SynchronousFormCache& form_cache);
 
   // TODO(crbug.com/376628389): Remove.
   void OnTextFieldValueChanged(const blink::WebFormControlElement& element,

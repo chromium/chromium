@@ -613,7 +613,8 @@ void AutofillAgent::FocusedElementChanged(
 
   // This behavior was introduced for to fix http://crbug.com/1105254. It's
   // unclear if this is still needed.
-  auto handle_focus_change = [&] {
+  auto handle_focus_change = [&](base::optional_ref<FormData> extracted_form =
+                                     std::nullopt) {
     if ((config_.uses_keyboard_accessory_for_suggestions ||
          !config_.focus_requires_scroll) &&
         new_focused_element && unsafe_render_frame() &&
@@ -627,7 +628,9 @@ void AutofillAgent::FocusedElementChanged(
               features::kAutofillAndroidDisableSuggestionsOnJSFocus) ||
           !config_.focus_requires_scroll;
       HandleFocusChangeComplete(
-          /*focused_node_was_last_clicked=*/focused_node_was_last_clicked);
+          /*focused_node_was_last_clicked=*/focused_node_was_last_clicked,
+          extracted_form ? SynchronousFormCache(*extracted_form)
+                         : SynchronousFormCache());
     }
   };
 
@@ -642,7 +645,7 @@ void AutofillAgent::FocusedElementChanged(
       if (auto* autofill_driver = unsafe_autofill_driver()) {
         last_queried_element_ = FieldRef(control);
         autofill_driver->FocusOnFormField(form, field->renderer_id());
-        handle_focus_change();
+        handle_focus_change(form);
         return;
       }
     }
@@ -1676,7 +1679,8 @@ void AutofillAgent::DidCompleteFocusChangeInFrame() {
       config_.focus_requires_scroll) {
     HandleFocusChangeComplete(
         /*focused_node_was_last_clicked=*/
-        last_left_mouse_down_or_gesture_tap_in_node_caused_focus_);
+        last_left_mouse_down_or_gesture_tap_in_node_caused_focus_,
+        /*form_cache=*/{});
   }
   last_left_mouse_down_or_gesture_tap_in_node_caused_focus_ = false;
 }
@@ -1689,7 +1693,8 @@ void AutofillAgent::DidReceiveLeftMouseDownOrGestureTapInNode(
       node.Focused() || ((contenteditable = node.RootEditableElement()) &&
                          contenteditable.Focused());
 #if defined(ANDROID)
-  HandleFocusChangeComplete(/*focused_node_was_last_clicked=*/is_focused);
+  HandleFocusChangeComplete(/*focused_node_was_last_clicked=*/is_focused,
+                            /*form_cache=*/{});
 #else
   last_left_mouse_down_or_gesture_tap_in_node_caused_focus_ = is_focused;
 #endif
@@ -1785,7 +1790,8 @@ bool AutofillAgent::IsPrerendering() const {
 }
 
 void AutofillAgent::HandleFocusChangeComplete(
-    bool focused_node_was_last_clicked) {
+    bool focused_node_was_last_clicked,
+    const SynchronousFormCache& form_cache) {
   WebDocument document = GetDocument();
   if (!document) {
     return;
@@ -1815,7 +1821,7 @@ void AutofillAgent::HandleFocusChangeComplete(
       ShowSuggestions(
           focused_control,
           AutofillSuggestionTriggerSource::kFormControlElementClicked,
-          /*form_cache=*/{});
+          form_cache);
     } else if (form_util::IsTextAreaElement(focused_control)) {
 #if !BUILDFLAG(IS_ANDROID)
       // Compose reacts to tab area focus even when not triggered by a click -
@@ -1823,7 +1829,7 @@ void AutofillAgent::HandleFocusChangeComplete(
       ShowSuggestions(
           focused_control,
           AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick,
-          /*form_cache=*/{});
+          form_cache);
 #endif
     }
   }
