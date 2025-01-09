@@ -121,7 +121,6 @@ import org.chromium.ui.widget.RectProvider;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -1044,6 +1043,7 @@ public class StripLayoutHelper
                 mTabGroupModelFilter,
                 mScrollDelegate,
                 mTabDragSource,
+                mActionConfirmationManager,
                 mCachedTabWidthSupplier,
                 mGroupIdToHideSupplier,
                 mToolbarContainerView);
@@ -3225,11 +3225,16 @@ public class StripLayoutHelper
     @Override
     public void resizeTabStrip(
             boolean animate, StripLayoutTab tabToAnimate, boolean tabAddedAnimation) {
-        if (tabToAnimate != null && !tabAddedAnimation) {
+        if (tabToAnimate != null) {
             assert animate;
-            mMultiStepTabCloseAnimRunning = true;
-            // Resize the tab strip accordingly.
-            resizeStripOnTabClose(getTabById(tabToAnimate.getTabId()));
+            if (!tabAddedAnimation) {
+                mMultiStepTabCloseAnimRunning = true;
+                // Resize the tab strip accordingly.
+                resizeStripOnTabClose(getTabById(tabToAnimate.getTabId()));
+            } else {
+                List<Animator> animationList = resizeTabStrip(true, false, true);
+                if (animationList != null) runTabAddedAnimator(animationList, tabToAnimate);
+            }
         } else {
             resizeTabStrip(animate, false, animate);
         }
@@ -4275,7 +4280,7 @@ public class StripLayoutHelper
                     && mActionConfirmationManager.willSkipUngroupTabAttempt()) {
                 mGroupIdToHideSupplier.set(Tab.INVALID_TAB_ID);
             }
-            dragActiveClickedTabOntoStrip(/* x= */ 0.0f, /* startReorder= */ false);
+            dragActiveClickedTabOntoStrip();
         }
         mReorderDelegate.setViewBeingDragged(null);
         mReorderDelegate.setDragLastOffsetX(0f);
@@ -4290,7 +4295,7 @@ public class StripLayoutHelper
     }
 
     float getLastOffsetXForTesting() {
-        return mReorderDelegate.getDragLastOffsetX();
+        return mReorderDelegate.getDragLastOffsetXForTesting(); // IN-TEST
     }
 
     void setActiveClickedTabAtIndexForTesting(int index) {
@@ -4306,7 +4311,14 @@ public class StripLayoutHelper
     void prepareForTabDrop(
             float currX, float lastX, boolean isSourceStrip, boolean draggedTabIncognito) {
         if (isSourceStrip) {
-            dragActiveClickedTabOntoStrip(lastX, /* startReorder= */ true);
+            // Tab drag started reorder - update reorder to handle drag onto strip.
+            mReorderDelegate.updateReorderPosition(
+                    mStripViews,
+                    mStripGroupTitles,
+                    mStripTabs,
+                    lastX,
+                    /* deltaX= */ 0f,
+                    ReorderType.DRAG_ONTO_STRIP);
         } else {
             // Destination strip (ie: view dragged onto another strip)
             // 1. If strip model does not match dragged view's, no-op.
@@ -4328,102 +4340,30 @@ public class StripLayoutHelper
 
     void clearForTabDrop(boolean isSourceStrip, boolean draggedTabIncognito) {
         if (isSourceStrip) {
-            dragActiveClickedTabOutOfStrip();
+            // Tab drag started reorder - update reorder to handle drag out of strip.
+            // endX is inaccurate but unused.
+            mReorderDelegate.updateReorderPosition(
+                    mStripViews,
+                    mStripGroupTitles,
+                    mStripTabs,
+                    /* endX= */ 0f,
+                    /* deltaX= */ 0f,
+                    ReorderType.DRAG_OUT_OF_STRIP);
         } else if (mIncognito == draggedTabIncognito) {
             stopReorderMode();
         }
     }
 
-    private void dragActiveClickedTabOntoStrip(float x, boolean startReorder) {
+    private void dragActiveClickedTabOntoStrip() {
         StripLayoutTab draggedTab = (StripLayoutTab) mReorderDelegate.getViewBeingDragged();
         assert draggedTab != null;
 
         finishAnimationsAndPushTabUpdates();
         draggedTab.setIsDraggedOffStrip(false);
 
-        if (startReorder) {
-            // If we're reordering, bring the tab to the correct position so we can begin reordering
-            // immediately.
-            draggedTab.setOffsetX(mReorderDelegate.getDragLastOffsetX());
-            draggedTab.setOffsetY(0);
-            mReorderDelegate.setDragLastOffsetX(0f);
-            resizeTabStrip(false, false, false);
-            startReorderMode(
-                    x,
-                    /* y= */ 0f,
-                    mReorderDelegate.getViewBeingDragged(),
-                    ReorderType.DRAG_WITHIN_STRIP);
-        } else {
-            // Else, animate the tab translating back up onto the tab strip.
-            draggedTab.setWidth(0.f);
-            List<Animator> animationList = resizeTabStrip(true, false, true);
-            if (animationList != null) runTabAddedAnimator(animationList, draggedTab);
-        }
-    }
-
-    private boolean isTabInCollaboration(int tabId) {
-        @Nullable
-        TabGroupSyncService tabGroupSyncService =
-                TabGroupSyncServiceFactory.getForProfile(
-                        mTabGroupModelFilter.getTabModel().getProfile());
-        @Nullable
-        String collaborationId =
-                TabShareUtils.getCollaborationIdOrNull(
-                        tabId, mTabGroupModelFilter.getTabModel(), tabGroupSyncService);
-        return TabShareUtils.isCollaborationIdValid(collaborationId);
-    }
-
-    private void dragActiveClickedTabOutOfStrip() {
-        StripLayoutTab draggedTab = (StripLayoutTab) mReorderDelegate.getViewBeingDragged();
-        assert draggedTab != null;
-
-        int tabId = draggedTab.getTabId();
-        Tab tab = getTabById(tabId);
-
-        // Show group delete dialog when the last tab in group is being dragged off tab strip.
-        boolean draggingLastTabInGroup =
-                StripLayoutUtils.isLastTabInGroup(mTabGroupModelFilter, tabId);
-        boolean willSkipDialog =
-                mActionConfirmationManager.willSkipUngroupTabAttempt()
-                        && !isTabInCollaboration(tabId);
-        if (draggingLastTabInGroup && !mIncognito && !willSkipDialog) {
-            StripTabModelActionListener listener =
-                    new StripTabModelActionListener(
-                            tab.getRootId(),
-                            ActionType.DRAG_OFF_STRIP,
-                            mGroupIdToHideSupplier,
-                            mToolbarContainerView,
-                            /* beforeSyncDialogRunnable= */ null,
-                            /* onSuccess= */ null);
-            mTabGroupModelFilter
-                    .getTabUngrouper()
-                    .ungroupTabs(
-                            Collections.singletonList(tab),
-                            /* trailing= */ false,
-                            /* allowDialog= */ true,
-                            listener);
-        }
-
-        // Store reorder state, then exit reorder mode.
-        mReorderDelegate.setDragLastOffsetX(draggedTab.getOffsetX());
-        stopReorderMode();
-
-        finishAnimationsAndPushTabUpdates();
-
-        // Skip hiding dragged tab container when tab group delete dialog is showing.
-        if (!draggingLastTabInGroup || willSkipDialog) {
-
-            // Immediately hide the dragged tab container, as if it were being translated off like a
-            // closed tab.
-            draggedTab.setIsDraggedOffStrip(true);
-            draggedTab.setDrawX(draggedTab.getIdealX());
-            draggedTab.setDrawY(mHeight);
-            draggedTab.setOffsetY(mHeight);
-            mMultiStepTabCloseAnimRunning = true;
-
-            // Resize the tab strip accordingly.
-            resizeStripOnTabClose(getTabById(draggedTab.getTabId()));
-        }
+        // Animate the tab translating back up onto the tab strip.
+        draggedTab.setWidth(0.f);
+        resizeTabStrip(/* animate= */ true, draggedTab, /* tabAddedAnimation= */ true);
     }
 
     void sendMoveWindowBroadcast(View view, float startXInView, float startYInView) {

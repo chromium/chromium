@@ -2995,8 +2995,9 @@ public class StripLayoutHelperTest {
     public void testTabGroupDeleteDialog_DragOffStrip_NotLastTab() {
         // Set up resources for testing tab group delete dialog.
         setUpTabGroupForDialog(0, 2);
-        mStripLayoutHelper.setActiveClickedTabAtIndexForTesting(0);
+        setTabDragSourceMock();
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        mStripLayoutHelper.startDragAndDropTabForTesting(tabs[0], DRAG_START_POINT);
 
         // Start dragging tab out of group.
         startDraggingTab(tabs, true, 0);
@@ -3015,8 +3016,9 @@ public class StripLayoutHelperTest {
 
         // Set up resources for testing tab group delete dialog.
         setUpTabGroupForDialog(0, 1);
-        mStripLayoutHelper.setActiveClickedTabAtIndexForTesting(0);
+        setTabDragSourceMock();
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        mStripLayoutHelper.startDragAndDropTabForTesting(tabs[0], DRAG_START_POINT);
 
         // Start dragging tab out of group.
         startDraggingTab(tabs, true, 0);
@@ -3036,8 +3038,9 @@ public class StripLayoutHelperTest {
 
         // Set up resources for testing tab group delete dialog.
         setUpTabGroupForDialog(0, 1);
-        mStripLayoutHelper.setActiveClickedTabAtIndexForTesting(0);
+        setTabDragSourceMock();
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        mStripLayoutHelper.startDragAndDropTabForTesting(tabs[0], DRAG_START_POINT);
         Tab tab = mModel.getTabAt(0);
 
         assertNotNull(tab.getTabGroupId());
@@ -3079,8 +3082,9 @@ public class StripLayoutHelperTest {
     public void testTabGroupDeleteDialog_DragOffStrip_Sync_Positive() {
         // Set up resources for testing tab group delete dialog.
         setUpTabGroupForDialog(0, 1);
-        mStripLayoutHelper.setActiveClickedTabAtIndexForTesting(0);
+        setTabDragSourceMock();
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        mStripLayoutHelper.startDragAndDropTabForTesting(tabs[0], DRAG_START_POINT);
 
         // Start dragging tab out of group.
         startDraggingTab(tabs, true, 0);
@@ -3116,8 +3120,9 @@ public class StripLayoutHelperTest {
     public void testTabGroupDeleteDialog_DragOffStrip_Sync_Negative() {
         // Set up resources for testing tab group delete dialog.
         setUpTabGroupForDialog(0, 1);
-        mStripLayoutHelper.setActiveClickedTabAtIndexForTesting(0);
+        setTabDragSourceMock();
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        mStripLayoutHelper.startDragAndDropTabForTesting(tabs[0], DRAG_START_POINT);
 
         // Start dragging tab out of group.
         startDraggingTab(tabs, true, 0);
@@ -3604,7 +3609,8 @@ public class StripLayoutHelperTest {
             StripLayoutTab[] tabs, boolean draggingTabOffStrip, int tabIndexToDrag) {
         // Start drag tab out of group or drag off strip.
         if (draggingTabOffStrip) {
-            mStripLayoutHelper.startReorderModeAtIndexForTesting(tabIndexToDrag);
+            // Drag onto strip before dragged off.
+            mStripLayoutHelper.prepareForTabDrop(0f, 0f, true, false);
             mStripLayoutHelper.clearForTabDrop(true, false);
         } else {
             float dragDistance =
@@ -4416,10 +4422,12 @@ public class StripLayoutHelperTest {
     public void testDrag_DragActiveClickedTabOntoStrip() {
         // Setup and mark the active clicked tab.
         initializeTest(false, false, 0, 5);
+        setTabDragSourceMock();
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        mStripLayoutHelper.startDragAndDropTabForTesting(tabs[1], DRAG_START_POINT);
 
         // Drag tab back onto strip.
         float expectedOffsetX = 123.45f;
-        mStripLayoutHelper.setActiveClickedTabAtIndexForTesting(0);
         mStripLayoutHelper.setLastOffsetXForTesting(expectedOffsetX);
         mStripLayoutHelper.prepareForTabDrop(0f, 0f, true, false);
 
@@ -4439,14 +4447,16 @@ public class StripLayoutHelperTest {
     @Test
     @Config(sdk = Build.VERSION_CODES.R)
     public void testDrag_DragActiveClickedTabOutOfStrip() {
-        // Setup and mark the active clicked tab.
+        // Setup and start drag.
         initializeTest(false, false, 1, 5);
+        setTabDragSourceMock();
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        mStripLayoutHelper.startDragAndDropTabForTesting(tabs[0], DRAG_START_POINT);
         mStripLayoutHelper.onSizeChanged(
                 SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
 
         // Drag tab out of strip.
         float expectedOffsetX = 123.45f;
-        mStripLayoutHelper.setActiveClickedTabAtIndexForTesting(0);
         mStripLayoutHelper.prepareForTabDrop(0f, 0f, true, false);
         StripLayoutTab draggedTab = mStripLayoutHelper.getInteractingTabForTesting();
         draggedTab.setOffsetX(expectedOffsetX);
@@ -4476,22 +4486,24 @@ public class StripLayoutHelperTest {
     @Test
     @Config(sdk = Build.VERSION_CODES.R)
     public void testDrag2_DragActiveClickedTabOutOfStrip() {
-        // Setup and mark the active clicked tab.
+        // Setup and start drag.
         initializeTest(false, false, 1, 5);
-        mStripLayoutHelper.setActiveClickedTabAtIndexForTesting(1);
+        setTabDragSourceMock();
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        StripLayoutTab draggedTab = tabs[1];
+        mStripLayoutHelper.startDragAndDropTabForTesting(draggedTab, DRAG_START_POINT);
         mStripLayoutHelper.onSizeChanged(
                 SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
 
         // Drag tab out of strip.
-        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
-        mStripLayoutHelper.setTabAtPositionForTesting(tabs[1]);
+        mStripLayoutHelper.setTabAtPositionForTesting(draggedTab);
         mStripLayoutHelper.prepareForTabDrop(0f, 0f, true, false);
         mStripLayoutHelper.clearForTabDrop(true, false);
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         // Verify 3rd, 4th and 5th tab's start divider is visible.
         assertFalse("Start divider should be hidden.", tabs[0].isStartDividerVisible());
-        assertFalse("DraggedTab divider should be hidden.", tabs[1].isStartDividerVisible());
+        assertFalse("DraggedTab divider should be hidden.", draggedTab.isStartDividerVisible());
         assertTrue(
                 "Tab after draggedTab start divider should be visible.",
                 tabs[2].isStartDividerVisible());
