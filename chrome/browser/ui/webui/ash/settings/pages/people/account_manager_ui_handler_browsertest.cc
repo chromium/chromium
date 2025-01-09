@@ -32,7 +32,6 @@
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_web_ui.h"
-#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -69,14 +68,13 @@ std::ostream& operator<<(std::ostream& stream,
 }
 
 DeviceAccountInfo GetGaiaDeviceAccountInfo() {
-  return {
-      signin::GetTestGaiaIdForEmail("primary@example.com").ToString() /*id*/,
-      "primary@example.com" /*email*/,
-      "primary" /*fullName*/,
-      "" /*organization*/,
-      user_manager::UserType::kRegular /*user_type*/,
-      account_manager::AccountType::kGaia /*account_type*/,
-      "device-account-token" /*token*/};
+  return {signin::GetTestGaiaIdForEmail("primary@example.com") /*id*/,
+          "primary@example.com" /*email*/,
+          "primary" /*fullName*/,
+          "" /*organization*/,
+          user_manager::UserType::kRegular /*user_type*/,
+          account_manager::AccountType::kGaia /*account_type*/,
+          "device-account-token" /*token*/};
 }
 
 DeviceAccountInfo GetChildDeviceAccountInfo() {
@@ -184,11 +182,11 @@ class AccountManagerUIHandlerTest
     const user_manager::User* user;
     if (GetDeviceAccountInfo().user_type == user_manager::UserType::kChild) {
       user = user_manager->AddChildUser(AccountId::FromUserEmailGaiaId(
-          GetDeviceAccountInfo().email, GaiaId(GetDeviceAccountInfo().id)));
+          GetDeviceAccountInfo().email, GetDeviceAccountInfo().id));
     } else {
       user = user_manager->AddUserWithAffiliationAndTypeAndProfile(
           AccountId::FromUserEmailGaiaId(GetDeviceAccountInfo().email,
-                                         GaiaId(GetDeviceAccountInfo().id)),
+                                         GetDeviceAccountInfo().id),
           true, GetDeviceAccountInfo().user_type, profile_.get());
     }
     primary_account_id_ = user->GetAccountId();
@@ -217,9 +215,10 @@ class AccountManagerUIHandlerTest
   }
 
   void UpsertAccount(std::string email) {
-    account_manager_->UpsertAccount(::account_manager::AccountKey::FromGaiaId(
-                                        signin::GetTestGaiaIdForEmail(email)),
-                                    email, AccountManager::kInvalidToken);
+    account_manager_->UpsertAccount(
+        ::account_manager::AccountKey{signin::GetTestGaiaIdForEmail(email),
+                                      account_manager::AccountType::kGaia},
+        email, AccountManager::kInvalidToken);
   }
 
   std::vector<::account_manager::Account> GetAccountsFromAccountManager()
@@ -377,7 +376,7 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
 
     AccountInfo expected_account_info =
         identity_manager()->FindExtendedAccountInfoByGaiaId(
-            GaiaId(expected_account.key.id()));
+            expected_account.key.id());
     EXPECT_FALSE(expected_account_info.IsEmpty());
     EXPECT_EQ(expected_account_info.full_name,
               ValueOrEmpty(account.FindString("fullName")));

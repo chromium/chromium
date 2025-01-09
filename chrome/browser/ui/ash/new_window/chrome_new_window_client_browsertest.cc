@@ -25,7 +25,6 @@
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
-#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -69,7 +68,7 @@ using ChromeNewWindowClientBrowserTest = InProcessBrowserTest;
 IN_PROC_BROWSER_TEST_F(ChromeNewWindowClientBrowserTest,
                        DISABLED_NewWindowForActiveWindowProfileTest) {
   CreateAndStartUserSession(
-      AccountId::FromUserEmailGaiaId(kTestUserName1, GaiaId(kTestUser1GaiaId)));
+      AccountId::FromUserEmailGaiaId(kTestUserName1, kTestUser1GaiaId));
   Profile* profile1 = ProfileManager::GetActiveUserProfile();
   Browser* browser1 = CreateBrowser(profile1);
   // The newly created window should be created for the current active profile.
@@ -80,7 +79,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNewWindowClientBrowserTest,
 
   // Login another user and make sure the current active user changes.
   CreateAndStartUserSession(
-      AccountId::FromUserEmailGaiaId(kTestUserName2, GaiaId(kTestUser2GaiaId)));
+      AccountId::FromUserEmailGaiaId(kTestUserName2, kTestUser2GaiaId));
   Profile* profile2 = ProfileManager::GetActiveUserProfile();
   EXPECT_NE(profile1, profile2);
 
@@ -118,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNewWindowClientBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ChromeNewWindowClientBrowserTest, IncognitoDisabled) {
   CreateAndStartUserSession(
-      AccountId::FromUserEmailGaiaId(kTestUserName1, GaiaId(kTestUser2GaiaId)));
+      AccountId::FromUserEmailGaiaId(kTestUserName1, kTestUser2GaiaId));
   Profile* profile = ProfileManager::GetActiveUserProfile();
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 

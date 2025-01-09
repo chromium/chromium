@@ -38,7 +38,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
-#include "google_apis/gaia/gaia_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
@@ -99,11 +98,11 @@ class DiceWebSigninInterceptionBubbleBrowserTest : public InProcessBrowserTest {
   GetTestBubbleParametersWithInterceptType(
       WebSigninInterceptor::SigninInterceptionType intercept_type) {
     AccountInfo account;
-    account.account_id = CoreAccountId::FromGaiaId(GaiaId("ID1"));
+    account.account_id = CoreAccountId::FromGaiaId("ID1");
     AccountInfo primary_account;
     if (intercept_type !=
         WebSigninInterceptor::SigninInterceptionType::kChromeSignin) {
-      primary_account.account_id = CoreAccountId::FromGaiaId(GaiaId("ID2"));
+      primary_account.account_id = CoreAccountId::FromGaiaId("ID2");
     }
 
     ProfileAttributesEntry* entry =

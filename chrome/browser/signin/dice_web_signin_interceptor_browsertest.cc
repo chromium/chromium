@@ -71,7 +71,6 @@
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
-#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -603,7 +602,7 @@ class DiceWebSigninInterceptorWithExplicitSigninEnabledBrowserTest
   // This function is specific to ChromeSigninDecline reprompt logic, as it does
   // not really advance time, but marks the prefs of interest in the past in
   // order to satisfy the `delta` given.
-  void SimulateChromeSigninDeclinedAdvanceTime(const GaiaId& gaia,
+  void SimulateChromeSigninDeclinedAdvanceTime(const std::string& gaia,
                                                base::TimeDelta delta) {
     SigninPrefs signin_prefs(*GetProfile()->GetPrefs());
     std::optional<base::Time> last_bubble_decline_time =
@@ -614,7 +613,7 @@ class DiceWebSigninInterceptorWithExplicitSigninEnabledBrowserTest
     }
   }
 
-  base::TimeDelta time_since_last_reprompt(const GaiaId& gaia) {
+  base::TimeDelta time_since_last_reprompt(const std::string& gaia) {
     return DiceWebSigninInterceptor::
         GetTimeSinceLastChromeSigninDeclineForTesting(
             SigninPrefs(*GetProfile()->GetPrefs()), gaia);

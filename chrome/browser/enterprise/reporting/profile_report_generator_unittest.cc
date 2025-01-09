@@ -29,7 +29,6 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/base/features.h"
 #include "content/public/test/browser_task_environment.h"
-#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -223,7 +222,7 @@ TEST_F(ProfileReportGeneratorTest, SignedInProfile) {
   auto report = GenerateReport();
   EXPECT_TRUE(report->has_chrome_signed_in_user());
   EXPECT_EQ(expected_info.email, report->chrome_signed_in_user().email());
-  EXPECT_EQ(expected_info.gaia.ToString(),
+  EXPECT_EQ(expected_info.gaia,
             report->chrome_signed_in_user().obfuscated_gaia_id());
 }
 
@@ -239,7 +238,7 @@ TEST_F(ProfileReportGeneratorTest,
   auto report = GenerateReport();
   EXPECT_TRUE(report->has_chrome_signed_in_user());
   EXPECT_EQ(expected_info.email, report->chrome_signed_in_user().email());
-  EXPECT_EQ(expected_info.gaia.ToString(),
+  EXPECT_EQ(expected_info.gaia,
             report->chrome_signed_in_user().obfuscated_gaia_id());
 }
 

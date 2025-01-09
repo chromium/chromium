@@ -44,7 +44,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_web_ui.h"
 #include "google_apis/gaia/fake_gaia.h"
-#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -96,7 +95,7 @@ std::ostream& operator<<(std::ostream& stream,
 }
 
 DeviceAccountInfo GetGaiaDeviceAccountInfo() {
-  return {signin::GetTestGaiaIdForEmail("primary@gmail.com").ToString() /*id*/,
+  return {signin::GetTestGaiaIdForEmail("primary@gmail.com") /*id*/,
           "primary@gmail.com" /*email*/,
           user_manager::UserType::kRegular /*user_type*/,
           account_manager::AccountType::kGaia /*account_type*/,
@@ -115,8 +114,7 @@ base::Value GetCompleteLoginArgs(const std::string& email) {
   base::Value::Dict dict;
   dict.Set(kEmailKey, base::Value(email));
   dict.Set(kPasswordKey, base::Value("fake password"));
-  dict.Set(kGaiaIdKey,
-           base::Value(signin::GetTestGaiaIdForEmail(email).ToString()));
+  dict.Set(kGaiaIdKey, base::Value(signin::GetTestGaiaIdForEmail(email)));
   dict.Set(kIsAvailableInArcKey, base::Value(true));
   return base::Value(std::move(dict));
 }
@@ -206,7 +204,7 @@ class InlineLoginHandlerTest
     const user_manager::User* user;
     if (GetDeviceAccountInfo().user_type == user_manager::UserType::kChild) {
       user = user_manager->AddChildUser(AccountId::FromUserEmailGaiaId(
-          GetDeviceAccountInfo().email, GaiaId(GetDeviceAccountInfo().id)));
+          GetDeviceAccountInfo().email, GetDeviceAccountInfo().id));
       profile()->GetPrefs()->SetString(prefs::kSupervisedUserId,
                                        GetDeviceAccountInfo().id);
       // This is required for Child users, otherwise an account cannot be added.
@@ -216,7 +214,7 @@ class InlineLoginHandlerTest
       edu_handler_->RegisterMessages();
     } else {
       user = user_manager->AddUser(AccountId::FromUserEmailGaiaId(
-          GetDeviceAccountInfo().email, GaiaId(GetDeviceAccountInfo().id)));
+          GetDeviceAccountInfo().email, GetDeviceAccountInfo().id));
     }
     primary_account_id_ = user->GetAccountId();
     user_manager->LoginUser(primary_account_id_);

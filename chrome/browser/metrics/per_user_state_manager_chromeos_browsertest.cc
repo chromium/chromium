@@ -43,7 +43,6 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_test.h"
-#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -116,7 +115,7 @@ class ChromeOSPerUserRegularUserTest
 
   ash::LoginManagerMixin login_mixin_{&mixin_host_, {}, &fake_gaia_};
   AccountId account_id_{
-      AccountId::FromUserEmailGaiaId(kTestUser1, GaiaId(kTestUser1GaiaId))};
+      AccountId::FromUserEmailGaiaId(kTestUser1, kTestUser1GaiaId)};
 
  protected:
   void SetUpInProcessBrowserTestFixture() override {
@@ -288,8 +287,8 @@ IN_PROC_BROWSER_TEST_F(ChromeOSPerUserOobeConsentTest,
                        PRE_OwnerConsentAndRegularSecondaryConsent) {
   // Create and login as device owner.
   auto context = ash::LoginManagerMixin::CreateDefaultUserContext(
-      ash::LoginManagerMixin::TestUserInfo(AccountId::FromUserEmailGaiaId(
-          kTestUser1, GaiaId(kTestUser1GaiaId))));
+      ash::LoginManagerMixin::TestUserInfo(
+          AccountId::FromUserEmailGaiaId(kTestUser1, kTestUser1GaiaId)));
   login_manager_mixin_.LoginAsNewRegularUser(context);
   ash::OobeScreenExitWaiter(ash::OobeBaseTest::GetFirstSigninScreen()).Wait();
 
@@ -312,8 +311,8 @@ IN_PROC_BROWSER_TEST_F(ChromeOSPerUserOobeConsentTest,
 IN_PROC_BROWSER_TEST_F(ChromeOSPerUserOobeConsentTest,
                        OwnerConsentAndRegularSecondaryConsent) {
   auto context = ash::LoginManagerMixin::CreateDefaultUserContext(
-      ash::LoginManagerMixin::TestUserInfo(AccountId::FromUserEmailGaiaId(
-          kTestUser2, GaiaId(kTestUser2GaiaId))));
+      ash::LoginManagerMixin::TestUserInfo(
+          AccountId::FromUserEmailGaiaId(kTestUser2, kTestUser2GaiaId)));
   login_manager_mixin_.LoginAsNewRegularUser(context);
   ash::OobeScreenExitWaiter(ash::OobeBaseTest::GetFirstSigninScreen()).Wait();
 
@@ -351,7 +350,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOSPerUserOobeConsentTest,
                        DeviceOwnerDoesNotUsePerUserConsent) {
   auto context = ash::LoginManagerMixin::CreateDefaultUserContext(
       ash::LoginManagerMixin::TestUserInfo(
-          AccountId::FromUserEmailGaiaId(kTestUser1, GaiaId(kTestUser1GaiaId)),
+          AccountId::FromUserEmailGaiaId(kTestUser1, kTestUser1GaiaId),
           ash::test::kDefaultAuthSetup, user_manager::UserType::kRegular));
   login_manager_mixin_.LoginAsNewRegularUser(context);
   ash::OobeScreenExitWaiter(ash::OobeBaseTest::GetFirstSigninScreen()).Wait();
@@ -452,7 +451,7 @@ class ChromeOSPerUserManagedOobeConsentTest
  private:
   FakeGaiaMixin fake_gaia_{&mixin_host_};
   const ash::LoginManagerMixin::TestUserInfo managed_user_{
-      AccountId::FromUserEmailGaiaId(kTestUser1, GaiaId(kTestUser1GaiaId))};
+      AccountId::FromUserEmailGaiaId(kTestUser1, kTestUser1GaiaId)};
   ash::LoginManagerMixin login_mixin_{&mixin_host_,
                                       {managed_user_},
                                       &fake_gaia_};

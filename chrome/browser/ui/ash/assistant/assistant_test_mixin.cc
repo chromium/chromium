@@ -31,7 +31,6 @@
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/account_id/account_id.h"
 #include "components/language/core/browser/pref_names.h"
-#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/events/test/event_generator.h"
@@ -46,7 +45,7 @@ constexpr const char kTestUserGaiaId[] = "test_user_gaia_id";
 
 LoginManagerMixin::TestUserInfo GetTestUserInfo() {
   return LoginManagerMixin::TestUserInfo(
-      AccountId::FromUserEmailGaiaId(kTestUser, GaiaId(kTestUserGaiaId)));
+      AccountId::FromUserEmailGaiaId(kTestUser, kTestUserGaiaId));
 }
 
 // Waiter that blocks in the |Wait| method until a given |AssistantStatus|

@@ -40,6 +40,7 @@ namespace extensions {
 namespace {
 
 constexpr char kTestEmail[] = "test@example.com";
+constexpr char kGaiaId[] = "gaia_id_for_test_example.com";
 constexpr char kFakeRefreshToken[] = "fake-refersh-token";
 
 constexpr char kTestAuthSIDCookie[] = "fake-auth-SID-cookie";
@@ -112,11 +113,11 @@ class GaiaRemoteConsentFlowParamBrowserTest : public InProcessBrowserTest {
     consent_url_ = fake_gaia_test_server()->GetURL("/title1.html");
 
     fake_gaia_.Initialize();
-    fake_gaia_.MapEmailToGaiaId(kTestEmail, kGaiaId);
+    fake_gaia_.MapEmailToGaiaId(kTestEmail, GaiaId(kGaiaId));
 
     FakeGaia::AccessTokenInfo token_info;
     token_info.token = "fake-userinfo-token-1";
-    token_info.id_token = kGaiaId.ToString();
+    token_info.id_token = kGaiaId;
     token_info.audience = GaiaUrls::GetInstance()->oauth2_chrome_client_id();
     token_info.email = kTestEmail;
     token_info.any_scope = true;
@@ -191,8 +192,6 @@ class GaiaRemoteConsentFlowParamBrowserTest : public InProcessBrowserTest {
 
   const GURL& consent_url() { return consent_url_; }
 
-  const GaiaId kGaiaId = GaiaId("gaia_id_for_test_example.com");
-
  private:
   std::unique_ptr<GaiaRemoteConsentFlow> flow_;
   GURL consent_url_;
@@ -245,8 +244,8 @@ IN_PROC_BROWSER_TEST_F(GaiaRemoteConsentFlowParamBrowserTest,
 
   std::string approved_consent = gaia::GenerateOAuth2MintTokenConsentResult(
       /*approved=*/true, "consent_granted", kGaiaId);
-  EXPECT_CALL(mock(),
-              OnGaiaRemoteConsentFlowApproved(approved_consent, kGaiaId));
+  EXPECT_CALL(mock(), OnGaiaRemoteConsentFlowApproved(approved_consent,
+                                                      GaiaId(kGaiaId)));
   SimulateConsentResult(approved_consent);
 }
 

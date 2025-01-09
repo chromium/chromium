@@ -90,7 +90,6 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_handlers/oauth2_manifest_handler.h"
-#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/oauth2_mint_token_flow.h"
 #include "net/cookies/cookie_util.h"
 #include "net/test/embedded_test_server/default_handlers.h"
@@ -406,7 +405,7 @@ class FakeGetAuthTokenFunction : public IdentityGetAuthTokenFunction {
     scope_ui_failure_ = failure;
   }
 
-  void set_remote_consent_gaia_id(const GaiaId& gaia_id) {
+  void set_remote_consent_gaia_id(const std::string& gaia_id) {
     remote_consent_gaia_id_ = gaia_id;
   }
 
@@ -541,7 +540,7 @@ class FakeGetAuthTokenFunction : public IdentityGetAuthTokenFunction {
     return IdentityGetAuthTokenFunction::enable_granular_permissions();
   }
 
-  GaiaId GetSelectedUserId() const {
+  std::string GetSelectedUserId() const {
     return IdentityGetAuthTokenFunction::GetSelectedUserId();
   }
 
@@ -561,7 +560,7 @@ class FakeGetAuthTokenFunction : public IdentityGetAuthTokenFunction {
 
   std::vector<std::string> login_access_tokens_;
 
-  GaiaId remote_consent_gaia_id_;
+  std::string remote_consent_gaia_id_;
 };
 
 class MockQueuedMintRequest : public IdentityMintRequestQueue::Request {
@@ -990,7 +989,7 @@ class GetAuthTokenFunctionTest
     id_api()->token_cache()->SetToken(key, token_data);
   }
 
-  void SetCachedGaiaId(const GaiaId& gaia_id) {
+  void SetCachedGaiaId(const std::string& gaia_id) {
     id_api()->SetGaiaIdForExtension(extension_id_, gaia_id);
   }
 
@@ -1009,7 +1008,7 @@ class GetAuthTokenFunctionTest
     return GetCachedToken(account_info, oauth_scopes_);
   }
 
-  std::optional<GaiaId> GetCachedGaiaId() {
+  std::optional<std::string> GetCachedGaiaId() {
     return id_api()->GetGaiaIdForExtension(extension_id_);
   }
 
@@ -1671,7 +1670,7 @@ IN_PROC_BROWSER_TEST_P(GetAuthTokenFunctionInteractivityTest,
   func->set_extension(extension.get());
   func->set_login_ui_result(true);
   func->push_mint_token_result(TestOAuth2MintTokenFlow::REMOTE_CONSENT_SUCCESS);
-  func->set_remote_consent_gaia_id(GaiaId("gaia_id_for_primary_example.com"));
+  func->set_remote_consent_gaia_id("gaia_id_for_primary_example.com");
   func->push_mint_token_result(TestOAuth2MintTokenFlow::MINT_TOKEN_SUCCESS);
 
   const std::string function_args =
@@ -1727,7 +1726,7 @@ IN_PROC_BROWSER_TEST_P(GetAuthTokenFunctionInteractivityTest,
 
   func->set_extension(extension.get());
   func->push_mint_token_result(TestOAuth2MintTokenFlow::REMOTE_CONSENT_SUCCESS);
-  func->set_remote_consent_gaia_id(GaiaId("gaia_id_for_primary_example.com"));
+  func->set_remote_consent_gaia_id("gaia_id_for_primary_example.com");
   func->push_mint_token_result(TestOAuth2MintTokenFlow::MINT_TOKEN_SUCCESS);
 
   const std::string function_args =
@@ -1996,7 +1995,7 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest, InteractiveQueue) {
   // The real request will start processing, but wait in the queue behind
   // the blocker.
   func->push_mint_token_result(TestOAuth2MintTokenFlow::REMOTE_CONSENT_SUCCESS);
-  func->set_remote_consent_gaia_id(GaiaId("gaia_id_for_primary_example.com"));
+  func->set_remote_consent_gaia_id("gaia_id_for_primary_example.com");
   func->push_mint_token_result(TestOAuth2MintTokenFlow::MINT_TOKEN_SUCCESS);
   RunFunctionAsync(func.get(), "[{\"interactive\": true}]");
   // Verify that we have fetched the login token and run the first flow.
@@ -2266,7 +2265,7 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest, LoginInvalidatesTokenCache) {
   // and we'll hit GAIA for new tokens.
   func->set_login_ui_result(true);
   func->push_mint_token_result(TestOAuth2MintTokenFlow::REMOTE_CONSENT_SUCCESS);
-  func->set_remote_consent_gaia_id(GaiaId("gaia_id_for_primary_example.com"));
+  func->set_remote_consent_gaia_id("gaia_id_for_primary_example.com");
   func->push_mint_token_result(TestOAuth2MintTokenFlow::MINT_TOKEN_SUCCESS);
 
   std::string access_token;
@@ -2899,7 +2898,7 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
   func->set_extension(extension.get());
   func->set_login_ui_result(true);
   func->push_mint_token_result(TestOAuth2MintTokenFlow::REMOTE_CONSENT_SUCCESS);
-  func->set_remote_consent_gaia_id(secondary_account.gaia);
+  func->set_remote_consent_gaia_id(secondary_account.account_id.ToString());
   func->push_mint_token_result(TestOAuth2MintTokenFlow::MINT_TOKEN_SUCCESS);
 
   const char kFunctionParams[] =
@@ -3333,8 +3332,8 @@ class RemoveCachedAuthTokenFunctionTest : public ExtensionBrowserTest {
 
   void SetCachedToken(const IdentityTokenCacheValue& token_data) {
     CoreAccountInfo account_info;
-    account_info.account_id = CoreAccountId::FromGaiaId(GaiaId("test_gaia"));
-    account_info.gaia = GaiaId("test_gaia");
+    account_info.account_id = CoreAccountId::FromGaiaId("test_gaia");
+    account_info.gaia = "test_gaia";
     account_info.email = "test@example.com";
     ExtensionTokenKey key(kExtensionId, account_info,
                           std::set<std::string>({"foo"}));
@@ -3343,8 +3342,8 @@ class RemoveCachedAuthTokenFunctionTest : public ExtensionBrowserTest {
 
   const IdentityTokenCacheValue& GetCachedToken() {
     CoreAccountInfo account_info;
-    account_info.account_id = CoreAccountId::FromGaiaId(GaiaId("test_gaia"));
-    account_info.gaia = GaiaId("test_gaia");
+    account_info.account_id = CoreAccountId::FromGaiaId("test_gaia");
+    account_info.gaia = "test_gaia";
     account_info.email = "test@example.com";
     ExtensionTokenKey key(kExtensionId, account_info,
                           std::set<std::string>({"foo"}));
@@ -3359,8 +3358,8 @@ class GetAuthTokenFunctionSelectedUserIdTest : public GetAuthTokenFunctionTest {
   // The account id specified by the extension is optional.
   void RunNewFunctionAndExpectSelectedUserId(
       const scoped_refptr<const extensions::Extension>& extension,
-      const GaiaId& expected_selected_user_id,
-      const std::optional<GaiaId> requested_account = std::nullopt) {
+      const std::string& expected_selected_user_id,
+      const std::optional<std::string> requested_account = std::nullopt) {
     auto func = base::MakeRefCounted<FakeGetAuthTokenFunction>();
     func->set_extension(extension);
     RunFunctionAndExpectSelectedUserId(func, expected_selected_user_id,
@@ -3369,8 +3368,8 @@ class GetAuthTokenFunctionSelectedUserIdTest : public GetAuthTokenFunctionTest {
 
   void RunFunctionAndExpectSelectedUserId(
       const scoped_refptr<FakeGetAuthTokenFunction>& func,
-      const GaiaId& expected_selected_user_id,
-      const std::optional<GaiaId> requested_account = std::nullopt) {
+      const std::string& expected_selected_user_id,
+      const std::optional<std::string> requested_account = std::nullopt) {
     // Stops the function right before selected_user_id would be used.
     MockQueuedMintRequest queued_request;
     IdentityMintRequestQueue::MintType type =
@@ -3382,8 +3381,7 @@ class GetAuthTokenFunctionSelectedUserIdTest : public GetAuthTokenFunctionTest {
 
     std::string requested_account_arg =
         requested_account.has_value()
-            ? ", \"account\": {\"id\": \"" + requested_account->ToString() +
-                  "\"}"
+            ? ", \"account\": {\"id\": \"" + requested_account.value() + "\"}"
             : "";
     RunFunctionAsync(func.get(),
                      "[{\"interactive\": true" + requested_account_arg + "}]");
@@ -3485,8 +3483,8 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionSelectedUserIdTest,
   auto func = base::MakeRefCounted<FakeGetAuthTokenFunction>();
   func->set_extension(extension);
   func->set_login_ui_result(true);
-  RunFunctionAndExpectSelectedUserId(
-      func, GaiaId(), GaiaId("gaia_id_for_unavailable_example.com"));
+  RunFunctionAndExpectSelectedUserId(func, "",
+                                     "gaia_id_for_unavailable_example.com");
   // The login ui still showed but another account was logged in instead.
   EXPECT_TRUE(func->login_ui_shown());
 
@@ -3512,9 +3510,8 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionSelectedUserIdTest,
   auto func = base::MakeRefCounted<FakeGetAuthTokenFunction>();
   func->set_extension(extension);
   func->set_login_ui_result(true);
-  RunFunctionAndExpectSelectedUserId(
-      func, GaiaId("gaia_id_for_secondary_example.com"),
-      GaiaId("gaia_id_for_secondary_example.com"));
+  RunFunctionAndExpectSelectedUserId(func, "gaia_id_for_secondary_example.com",
+                                     "gaia_id_for_secondary_example.com");
   EXPECT_TRUE(func->login_ui_shown());
 
   histogram_tester()->ExpectUniqueSample(
@@ -4163,9 +4160,8 @@ class ClearAllCachedAuthTokensFunctionTest : public AsyncExtensionBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(ClearAllCachedAuthTokensFunctionTest,
                        EraseCachedGaiaId) {
-  id_api()->SetGaiaIdForExtension(extension()->id(), GaiaId("test_gaia"));
-  EXPECT_EQ(GaiaId("test_gaia"),
-            id_api()->GetGaiaIdForExtension(extension()->id()));
+  id_api()->SetGaiaIdForExtension(extension()->id(), "test_gaia");
+  EXPECT_EQ("test_gaia", id_api()->GetGaiaIdForExtension(extension()->id()));
   ASSERT_TRUE(RunClearAllCachedAuthTokensFunction());
   EXPECT_FALSE(id_api()->GetGaiaIdForExtension(extension()->id()).has_value());
 }

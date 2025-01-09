@@ -18,6 +18,7 @@ namespace extensions {
 const char kResultHistogramName[] =
     "Signin.Extensions.GaiaRemoteConsentFlowResult";
 
+const char kGaiaId[] = "fake_gaia_id";
 const char kConsentResult[] = "CAESCUVOQ1JZUFRFRBoMZmFrZV9nYWlhX2lk";
 
 class FakeWebAuthFlow : public WebAuthFlow {
@@ -75,8 +76,8 @@ class IdentityGaiaRemoteConsentFlowTest : public testing::Test {
   std::unique_ptr<TestGaiaRemoteConsentFlow> CreateTestFlow(
       GaiaRemoteConsentFlow::Delegate* delegate) {
     CoreAccountInfo user_info;
-    user_info.gaia = GaiaId("account_id");
-    user_info.account_id = CoreAccountId::FromGaiaId(user_info.gaia);
+    user_info.account_id = CoreAccountId::FromGaiaId("account_id");
+    user_info.gaia = "account_id";
     user_info.email = "email";
 
     ExtensionTokenKey token_key("extension_id", user_info,
@@ -88,8 +89,6 @@ class IdentityGaiaRemoteConsentFlowTest : public testing::Test {
   }
 
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
-
-  const GaiaId kGaiaId = GaiaId("fake_gaia_id");
 
  protected:
   base::test::TaskEnvironment task_env_;

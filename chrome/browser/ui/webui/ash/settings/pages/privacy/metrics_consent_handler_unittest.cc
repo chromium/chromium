@@ -35,7 +35,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/test_web_ui.h"
-#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -280,7 +279,7 @@ class MetricsConsentHandlerTest : public testing::Test {
 };
 
 TEST_F(MetricsConsentHandlerTest, OwnerCanToggle) {
-  auto owner_id = AccountId::FromUserEmailGaiaId(kOwner, GaiaId("2"));
+  auto owner_id = AccountId::FromUserEmailGaiaId(kOwner, "2");
   std::unique_ptr<TestingProfile> owner = RegisterOwner(owner_id);
 
   // Owner should not use user consent, but local pref.
@@ -316,10 +315,10 @@ TEST_F(MetricsConsentHandlerTest, OwnerCanToggle) {
 }
 
 TEST_F(MetricsConsentHandlerTest, NonOwnerWithUserConsentCanToggle) {
-  auto owner_id = AccountId::FromUserEmailGaiaId(kOwner, GaiaId("2"));
+  auto owner_id = AccountId::FromUserEmailGaiaId(kOwner, "2");
   std::unique_ptr<TestingProfile> owner = RegisterOwner(owner_id);
 
-  auto non_owner_id = AccountId::FromUserEmailGaiaId(kNonOwner, GaiaId("1"));
+  auto non_owner_id = AccountId::FromUserEmailGaiaId(kNonOwner, "1");
   std::unique_ptr<TestingProfile> non_owner =
       CreateUser(kNonOwner, non_owner_keys);
   test_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
@@ -357,10 +356,10 @@ TEST_F(MetricsConsentHandlerTest, NonOwnerWithUserConsentCanToggle) {
 }
 
 TEST_F(MetricsConsentHandlerTest, NonOwnerWithoutUserConsentCannotToggle) {
-  auto owner_id = AccountId::FromUserEmailGaiaId(kOwner, GaiaId("2"));
+  auto owner_id = AccountId::FromUserEmailGaiaId(kOwner, "2");
   std::unique_ptr<TestingProfile> owner = RegisterOwner(owner_id);
 
-  auto non_owner_id = AccountId::FromUserEmailGaiaId(kNonOwner, GaiaId("1"));
+  auto non_owner_id = AccountId::FromUserEmailGaiaId(kNonOwner, "1");
   std::unique_ptr<TestingProfile> non_owner =
       CreateUser(kNonOwner, non_owner_keys);
   test_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
@@ -398,10 +397,10 @@ TEST_F(MetricsConsentHandlerTest, NonOwnerWithoutUserConsentCannotToggle) {
 }
 
 TEST_F(MetricsConsentHandlerTest, ChildUserCannotToggleAsNonOwner) {
-  auto owner_id = AccountId::FromUserEmailGaiaId(kOwner, GaiaId("2"));
+  auto owner_id = AccountId::FromUserEmailGaiaId(kOwner, "2");
   std::unique_ptr<TestingProfile> owner = RegisterOwner(owner_id);
 
-  auto child_id = AccountId::FromUserEmailGaiaId("child@user.com", GaiaId("3"));
+  auto child_id = AccountId::FromUserEmailGaiaId("child@user.com", "3");
   std::unique_ptr<TestingProfile> child =
       CreateUser("child@user.com", non_owner_keys);
   test_user_manager_->set_current_user_child(true);

@@ -59,7 +59,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
-#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -316,7 +315,7 @@ class ProfileManagerTest : public testing::Test {
 
     const std::string user_email = "user_for_transition@example.com";
     const AccountId account_id =
-        AccountId::FromUserEmailGaiaId(user_email, GaiaId("1"));
+        AccountId::FromUserEmailGaiaId(user_email, "1");
     const std::string user_id_hash =
         user_manager::FakeUserManager::GetFakeUsernameHash(account_id);
     const base::FilePath dest_path =
@@ -409,8 +408,10 @@ TEST_F(ProfileManagerTest, LoggedInProfileDir) {
   EXPECT_EQ(expected_default.value(),
             profile_manager->GetInitialProfileDir().value());
 
-  const AccountId test_account_id(AccountId::FromUserEmailGaiaId(
-      "test-user@example.com", GaiaId("0123456789")));
+  constexpr char kTestUserName[] = "test-user@example.com";
+  constexpr char kTestUserGaiaId[] = "0123456789";
+  const AccountId test_account_id(
+      AccountId::FromUserEmailGaiaId(kTestUserName, kTestUserGaiaId));
   auto* user_manager = new ash::FakeChromeUserManager();
   user_manager::ScopedUserManager enabler(base::WrapUnique(user_manager));
 
@@ -445,8 +446,8 @@ TEST_F(ProfileManagerTest, UserProfileLoading) {
       ProfileManager::GetLastUsedProfile()->IsSameOrParent(signin_profile));
 
   // User signs in but user profile loading has not started.
-  const AccountId account_id = AccountId::FromUserEmailGaiaId(
-      "test-user@example.com", GaiaId("0123456789"));
+  const AccountId account_id =
+      AccountId::FromUserEmailGaiaId("test-user@example.com", "0123456789");
   const std::string user_id_hash =
       user_manager::FakeUserManager::GetFakeUsernameHash(account_id);
   user_manager::UserManager::Get()->UserLoggedIn(account_id, user_id_hash,
@@ -726,7 +727,7 @@ TEST_F(ProfileManagerTest,
   params_1.profile_path =
       profile_manager->user_data_dir().AppendASCII("Profile 1");
   params_1.profile_name = u"name_1";
-  params_1.gaia_id = GaiaId("12345");
+  params_1.gaia_id = "12345";
   params_1.is_consented_primary_account = true;
   profile_manager->GetProfileAttributesStorage().AddProfile(
       std::move(params_1));
@@ -1030,21 +1031,21 @@ TEST_F(ProfileManagerTest, AutoloadProfilesWithBackgroundApps) {
   params_1.profile_path =
       profile_manager->user_data_dir().AppendASCII("path_1");
   params_1.profile_name = u"name_1";
-  params_1.gaia_id = GaiaId("12345");
+  params_1.gaia_id = "12345";
   params_1.is_consented_primary_account = true;
   storage.AddProfile(std::move(params_1));
   ProfileAttributesInitParams params_2;
   params_2.profile_path =
       profile_manager->user_data_dir().AppendASCII("path_2");
   params_2.profile_name = u"name_2";
-  params_2.gaia_id = GaiaId("23456");
+  params_2.gaia_id = "23456";
   params_2.is_consented_primary_account = true;
   storage.AddProfile(std::move(params_2));
   ProfileAttributesInitParams params_3;
   params_3.profile_path =
       profile_manager->user_data_dir().AppendASCII("path_3");
   params_3.profile_name = u"name_3";
-  params_3.gaia_id = GaiaId("34567");
+  params_3.gaia_id = "34567";
   params_3.is_consented_primary_account = true;
   storage.AddProfile(std::move(params_3));
 
@@ -1073,14 +1074,14 @@ TEST_F(ProfileManagerTest, DoNotAutoloadProfilesIfBackgroundModeOff) {
   params_1.profile_path =
       profile_manager->user_data_dir().AppendASCII("path_1");
   params_1.profile_name = u"name_1";
-  params_1.gaia_id = GaiaId("12345");
+  params_1.gaia_id = "12345";
   params_1.is_consented_primary_account = true;
   storage.AddProfile(std::move(params_1));
   ProfileAttributesInitParams params_2;
   params_2.profile_path =
       profile_manager->user_data_dir().AppendASCII("path_2");
   params_2.profile_name = u"name_2";
-  params_2.gaia_id = GaiaId("23456");
+  params_2.gaia_id = "23456";
   params_2.is_consented_primary_account = true;
   storage.AddProfile(std::move(params_2));
 
@@ -1255,8 +1256,8 @@ TEST_F(ProfileManagerTest, GetLastUsedProfileAllowedByPolicy) {
   // On CrOS, profile returned by GetLastUsedProfile is a sign-in profile that
   // is forced to be off-the-record. That's why we need to create at least one
   // user to get a regular profile.
-  RegisterUser(AccountId::FromUserEmailGaiaId("test-user@example.com",
-                                              GaiaId("1234567890")));
+  RegisterUser(
+      AccountId::FromUserEmailGaiaId("test-user@example.com", "1234567890"));
 #endif
 
   Profile* profile = profile_manager->GetLastUsedProfileAllowedByPolicy();
@@ -2064,14 +2065,14 @@ TEST_F(ProfileManagerTest, ProfileDisplayNamePreservesSignedInName) {
   ProfileAttributesEntry* entry = storage.GetAllProfilesAttributes()[0];
   // For a signed in profile with a default name we still display
   // IDS_SINGLE_PROFILE_DISPLAY_NAME.
-  entry->SetAuthInfo(GaiaId("12345"), u"user@gmail.com", true);
+  entry->SetAuthInfo("12345", u"user@gmail.com", true);
   EXPECT_EQ(profile_name1, entry->GetName());
   EXPECT_EQ(default_profile_name,
             profiles::GetAvatarNameForProfile(profile1->GetPath()));
 
   // For a signed in profile with a non-default Gaia given name we display the
   // Gaia given name.
-  entry->SetAuthInfo(GaiaId("12345"), u"user@gmail.com", true);
+  entry->SetAuthInfo("12345", u"user@gmail.com", true);
   const std::u16string gaia_given_name(u"given name");
   entry->SetGAIAGivenName(gaia_given_name);
   EXPECT_EQ(gaia_given_name, entry->GetName());
@@ -2125,7 +2126,7 @@ TEST_F(ProfileManagerTest, ProfileDisplayNameIsEmailIfDefaultName) {
       storage.GetProfileAttributesWithPath(profile1->GetPath());
 
   ASSERT_NE(entry, nullptr);
-  entry->SetAuthInfo(GaiaId("12345"), email1, true);
+  entry->SetAuthInfo("12345", email1, true);
   entry->SetGAIAGivenName(std::u16string());
   entry->SetGAIAName(std::u16string());
 
@@ -2139,14 +2140,14 @@ TEST_F(ProfileManagerTest, ProfileDisplayNameIsEmailIfDefaultName) {
   entry->SetLocalProfileName(u"Default Profile", true);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
-  entry->SetAuthInfo(GaiaId("23456"), email2, true);
+  entry->SetAuthInfo("23456", email2, true);
   entry->SetGAIAGivenName(std::u16string());
   entry->SetGAIAName(std::u16string());
 
   entry = storage.GetProfileAttributesWithPath(profile3->GetPath());
   ASSERT_NE(entry, nullptr);
 
-  entry->SetAuthInfo(GaiaId("34567"), email3, true);
+  entry->SetAuthInfo("34567", email3, true);
   entry->SetGAIAGivenName(std::u16string());
   entry->SetGAIAName(std::u16string());
 
@@ -2198,7 +2199,7 @@ TEST_F(ProfileManagerTest, ActiveProfileDeletedNeedsToLoadNextProfile) {
   ProfileAttributesInitParams params;
   params.profile_path = profile_path2;
   params.profile_name = ASCIIToUTF16(profile_basename2);
-  params.gaia_id = GaiaId("23456");
+  params.gaia_id = "23456";
   params.is_consented_primary_account = true;
   storage.AddProfile(std::move(params));
   content::RunAllTasksUntilIdle();
@@ -2257,7 +2258,7 @@ TEST_F(ProfileManagerTest, ActiveProfileDeletedNextProfileDeletedToo) {
   ProfileAttributesInitParams params2;
   params2.profile_path = profile_path2;
   params2.profile_name = ASCIIToUTF16(profile_basename2);
-  params2.gaia_id = GaiaId("23456");
+  params2.gaia_id = "23456";
   params2.user_name = ASCIIToUTF16(profile_basename2);
   params2.is_consented_primary_account = true;
   params2.icon_index = 1;
@@ -2265,7 +2266,7 @@ TEST_F(ProfileManagerTest, ActiveProfileDeletedNextProfileDeletedToo) {
   ProfileAttributesInitParams params3;
   params3.profile_path = profile_path3;
   params3.profile_name = ASCIIToUTF16(profile_basename3);
-  params3.gaia_id = GaiaId("34567");
+  params3.gaia_id = "34567";
   params3.user_name = ASCIIToUTF16(profile_basename3);
   params3.is_consented_primary_account = true;
   params3.icon_index = 2;

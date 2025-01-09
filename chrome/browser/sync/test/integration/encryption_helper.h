@@ -17,7 +17,6 @@
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/test/fake_server.h"
 #include "components/trusted_vault/trusted_vault_client.h"
-#include "google_apis/gaia/gaia_id.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
 namespace encryption_helper {
@@ -30,7 +29,7 @@ namespace encryption_helper {
 // Must be called before `test_server` starts to accept connections.
 // `test_server` must not be null.
 void SetupFakeTrustedVaultPages(
-    const GaiaId& gaia_id,
+    const std::string& gaia_id,
     const std::vector<uint8_t>& trusted_vault_key,
     int trusted_vault_key_version,
     const std::vector<uint8_t>& recovery_method_public_key,

@@ -55,7 +55,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
-#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -317,9 +316,9 @@ class SystemTrayClientEnterpriseAccountTest : public ash::LoginManagerTest {
   }
 
   const ash::LoginManagerMixin::TestUserInfo unmanaged_user_{
-      AccountId::FromUserEmailGaiaId(kNewUser, GaiaId(kNewGaiaID))};
+      AccountId::FromUserEmailGaiaId(kNewUser, kNewGaiaID)};
   const ash::LoginManagerMixin::TestUserInfo managed_user_{
-      AccountId::FromUserEmailGaiaId(kManagedUser, GaiaId(kManagedGaiaID))};
+      AccountId::FromUserEmailGaiaId(kManagedUser, kManagedGaiaID)};
   ash::UserPolicyMixin user_policy_mixin_{&mixin_host_,
                                           managed_user_.account_id};
   ash::LoginManagerMixin login_mixin_{&mixin_host_,

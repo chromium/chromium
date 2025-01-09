@@ -39,7 +39,6 @@
 #include "components/account_id/account_id.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
-#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -177,7 +176,7 @@ class PreinstalledWebAppManagerTest : public testing::Test {
     std::unique_ptr<TestingProfile> profile = CreateProfile();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     const AccountId account_id(AccountId::FromUserEmailGaiaId(
-        profile->GetProfileUserName(), GaiaId("1234567890")));
+        profile->GetProfileUserName(), "1234567890"));
     user_manager()->AddUser(account_id);
     user_manager()->LoginUser(account_id);
 #endif

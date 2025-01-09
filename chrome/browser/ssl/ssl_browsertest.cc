@@ -152,7 +152,6 @@
 #include "content/public/test/url_loader_interceptor.h"
 #include "crypto/sha2.h"
 #include "extensions/browser/event_router.h"
-#include "google_apis/gaia/gaia_id.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -5692,7 +5691,7 @@ class SSLUITestCustomCACerts : public SSLUITestNoCert {
       base::PathService::Get(chrome::DIR_USER_DATA, &user_data_directory);
       session_manager::SessionManager::Get()->CreateSession(
           AccountId::FromUserEmailGaiaId(kSecondProfileAccount,
-                                         GaiaId(kSecondProfileGaiaId)),
+                                         kSecondProfileGaiaId),
           kSecondProfileHash, false);
       // Set up the secondary profile.
       base::FilePath profile_dir = user_data_directory.Append(

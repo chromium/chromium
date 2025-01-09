@@ -46,7 +46,6 @@
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "content/public/test/test_utils.h"
-#include "google_apis/gaia/gaia_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -238,8 +237,7 @@ class QuickInsertClientImplTest : public BrowserWithTestWindowTest {
 
   void LogIn(const std::string& email) override {
     // DriveFS needs the account to have an ID.
-    const AccountId account_id =
-        AccountId::FromUserEmailGaiaId(email, GaiaId(email));
+    const AccountId account_id = AccountId::FromUserEmailGaiaId(email, email);
     user_manager()->AddUser(account_id);
     ash_test_helper()->test_session_controller_client()->AddUserSession(email);
     user_manager()->UserLoggedIn(
@@ -251,7 +249,7 @@ class QuickInsertClientImplTest : public BrowserWithTestWindowTest {
 
   void SwitchActiveUser(const std::string& email) override {
     user_manager()->SwitchActiveUser(
-        AccountId::FromUserEmailGaiaId(email, GaiaId(email)));
+        AccountId::FromUserEmailGaiaId(email, email));
   }
 
  private:

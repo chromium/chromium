@@ -36,7 +36,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
-#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -257,7 +256,7 @@ class SigninUiUtilTest : public BrowserWithTestWindowTest {
 TEST_F(SigninUiUtilTest, EnableSyncWithExistingAccount) {
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
-          GaiaId(kMainGaiaID), kMainEmail, "refresh_token", false,
+          kMainGaiaID, kMainEmail, "refresh_token", false,
           signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
           signin_metrics::SourceForRefreshTokenOperation::kUnknown);
   GetIdentityManager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
@@ -294,7 +293,7 @@ TEST_F(SigninUiUtilTest, EnableSyncWithAccountThatNeedsReauth) {
   AddTab(browser(), GURL("http://example.com"));
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
-          GaiaId(kMainGaiaID), kMainEmail, "refresh_token", false,
+          kMainGaiaID, kMainEmail, "refresh_token", false,
           signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
           signin_metrics::SourceForRefreshTokenOperation::kUnknown);
 
@@ -367,7 +366,7 @@ TEST_F(SigninUiUtilTest, EnableSyncForNewAccountWithNoTabWithExisting) {
   base::UserActionTester user_action_tester;
 
   GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
-      GaiaId(kMainGaiaID), kMainEmail, "refresh_token", false,
+      kMainGaiaID, kMainEmail, "refresh_token", false,
       signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
 
@@ -414,7 +413,7 @@ TEST_F(SigninUiUtilTest, SignInWithAlreadySignedInAccount) {
   AddTab(browser(), GURL("http://example.com"));
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
-          GaiaId(kMainGaiaID), kMainEmail, "refresh_token", false,
+          kMainGaiaID, kMainEmail, "refresh_token", false,
           signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
           signin_metrics::SourceForRefreshTokenOperation::kUnknown);
   GetIdentityManager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
@@ -441,7 +440,7 @@ TEST_F(SigninUiUtilTest, SignInWithAccountThatNeedsReauth) {
   AddTab(browser(), GURL("http://example.com"));
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
-          GaiaId(kMainGaiaID), kMainEmail, "refresh_token", false,
+          kMainGaiaID, kMainEmail, "refresh_token", false,
           signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
           signin_metrics::SourceForRefreshTokenOperation::kUnknown);
 
@@ -527,30 +526,42 @@ TEST_F(SigninUiUtilTest, GetOrderedAccountsForDisplay) {
   std::vector<AccountInfo> accounts =
       GetOrderedAccountsForDisplay(identity_manager, false);
 
-  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail4), accounts[0].gaia);
-  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail3), accounts[1].gaia);
-  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail2), accounts[2].gaia);
-  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail1), accounts[3].gaia);
+  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail4),
+            accounts[0].account_id.ToString());
+  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail3),
+            accounts[1].account_id.ToString());
+  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail2),
+            accounts[2].account_id.ToString());
+  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail1),
+            accounts[3].account_id.ToString());
 
   // Set a primary account.
   identity_test_env.SetPrimaryAccount(kTestEmail3,
                                       signin::ConsentLevel::kSignin);
   accounts = GetOrderedAccountsForDisplay(identity_manager, false);
 
-  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail3), accounts[0].gaia);
-  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail4), accounts[1].gaia);
-  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail2), accounts[2].gaia);
-  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail1), accounts[3].gaia);
+  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail3),
+            accounts[0].account_id.ToString());
+  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail4),
+            accounts[1].account_id.ToString());
+  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail2),
+            accounts[2].account_id.ToString());
+  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail1),
+            accounts[3].account_id.ToString());
 
   // Set a different primary account.
   identity_test_env.SetPrimaryAccount(kTestEmail1,
                                       signin::ConsentLevel::kSignin);
   accounts = GetOrderedAccountsForDisplay(identity_manager, false);
 
-  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail1), accounts[0].gaia);
-  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail4), accounts[1].gaia);
-  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail3), accounts[2].gaia);
-  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail2), accounts[3].gaia);
+  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail1),
+            accounts[0].account_id.ToString());
+  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail4),
+            accounts[1].account_id.ToString());
+  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail3),
+            accounts[2].account_id.ToString());
+  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail2),
+            accounts[3].account_id.ToString());
 
   // Primary account should still be included if not in cookies, other accounts
   // should not.
@@ -559,9 +570,12 @@ TEST_F(SigninUiUtilTest, GetOrderedAccountsForDisplay) {
        {kTestEmail2, signin::GetTestGaiaIdForEmail(kTestEmail2)}});
   accounts = GetOrderedAccountsForDisplay(identity_manager, false);
 
-  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail1), accounts[0].gaia);
-  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail4), accounts[1].gaia);
-  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail2), accounts[2].gaia);
+  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail1),
+            accounts[0].account_id.ToString());
+  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail4),
+            accounts[1].account_id.ToString());
+  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail2),
+            accounts[2].account_id.ToString());
 }
 
 TEST_F(SigninUiUtilTest, MergeDiceSigninTab) {
@@ -644,11 +658,11 @@ TEST_F(SigninUiUtilTest,
 TEST_F(SigninUiUtilTest,
        ShouldShowAnimatedIdentityOnOpeningWindow_ReturnsTrueForMultiSignin) {
   GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
-      GaiaId(kMainGaiaID), kMainEmail, "refresh_token", false,
+      kMainGaiaID, kMainEmail, "refresh_token", false,
       signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
   GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
-      GaiaId(kSecondaryGaiaID), kSecondaryEmail, "refresh_token", false,
+      kSecondaryGaiaID, kSecondaryEmail, "refresh_token", false,
       signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
 
@@ -666,7 +680,7 @@ TEST_F(
     SigninUiUtilTest,
     ShouldShowAnimatedIdentityOnOpeningWindow_ReturnsFalseForSingleProfileSingleSignin) {
   GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
-      GaiaId(kMainGaiaID), kMainEmail, "refresh_token", false,
+      kMainGaiaID, kMainEmail, "refresh_token", false,
       signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
 
@@ -816,7 +830,7 @@ class SigninUiUtilWithUnoDesktopTest : public SigninUiUtilTest {
 TEST_F(SigninUiUtilWithUnoDesktopTest, EnableSyncWithExistingWebOnlyAccount) {
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
-          GaiaId(kMainGaiaID), kMainEmail, "refresh_token", false,
+          kMainGaiaID, kMainEmail, "refresh_token", false,
           signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
           signin_metrics::SourceForRefreshTokenOperation::kUnknown);
 
@@ -875,7 +889,7 @@ TEST_F(SigninUiUtilWithUnoDesktopTest,
 TEST_F(SigninUiUtilWithUnoDesktopTest, SignInWithExistingWebOnlyAccount) {
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
-          GaiaId(kMainGaiaID), kMainEmail, "refresh_token", false,
+          kMainGaiaID, kMainEmail, "refresh_token", false,
           signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
           signin_metrics::SourceForRefreshTokenOperation::kUnknown);
 
@@ -913,7 +927,7 @@ TEST_F(SigninUiUtilWithUnoDesktopTest, ShowExtensionSigninPrompt) {
 TEST_F(SigninUiUtilWithUnoDesktopTest, ShowExtensionSigninPromptReauth) {
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
-          GaiaId(kMainGaiaID), kMainEmail, "refresh_token", false,
+          kMainGaiaID, kMainEmail, "refresh_token", false,
           signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
           signin_metrics::SourceForRefreshTokenOperation::kUnknown);
   GetIdentityManager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
@@ -1152,11 +1166,11 @@ TEST(ShouldShowAnimatedIdentityOnOpeningWindow, ReturnsFalseForNewWindow) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   identity_manager->GetAccountsMutator()->AddOrUpdateAccount(
-      GaiaId(kMainGaiaID), kMainEmail, "refresh_token", false,
+      kMainGaiaID, kMainEmail, "refresh_token", false,
       signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
   identity_manager->GetAccountsMutator()->AddOrUpdateAccount(
-      GaiaId(kSecondaryGaiaID), kSecondaryEmail, "refresh_token", false,
+      kSecondaryGaiaID, kSecondaryEmail, "refresh_token", false,
       signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
   EXPECT_TRUE(ShouldShowAnimatedIdentityOnOpeningWindow(

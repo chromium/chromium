@@ -8,7 +8,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/test/supervised_user/child_account_test_utils.h"
 #include "google_apis/gaia/gaia_constants.h"
-#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -54,7 +53,7 @@ FakeGaiaMixin::FakeGaiaMixin(InProcessBrowserTestMixinHost* host)
 FakeGaiaMixin::~FakeGaiaMixin() = default;
 
 void FakeGaiaMixin::SetupFakeGaiaForLogin(const std::string& user_email,
-                                          const GaiaId& gaia_id,
+                                          const std::string& gaia_id,
                                           const std::string& refresh_token) {
   if (!gaia_id.empty()) {
     fake_gaia_->MapEmailToGaiaId(user_email, gaia_id);
@@ -71,12 +70,12 @@ void FakeGaiaMixin::SetupFakeGaiaForLogin(const std::string& user_email,
 
 void FakeGaiaMixin::SetupFakeGaiaForLoginWithDefaults() {
   SetupFakeGaiaForLogin(FakeGaiaMixin::kFakeUserEmail,
-                        GaiaId(FakeGaiaMixin::kFakeUserGaiaId),
+                        FakeGaiaMixin::kFakeUserGaiaId,
                         FakeGaiaMixin::kFakeRefreshToken);
 }
 
 void FakeGaiaMixin::SetupFakeGaiaForChildUser(const std::string& user_email,
-                                              const GaiaId& gaia_id,
+                                              const std::string& gaia_id,
                                               const std::string& refresh_token,
                                               bool issue_any_scope_token) {
   if (!gaia_id.empty()) {

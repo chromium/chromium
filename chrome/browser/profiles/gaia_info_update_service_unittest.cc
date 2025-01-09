@@ -35,7 +35,6 @@
 #include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
-#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -46,14 +45,14 @@ using ::testing::Return;
 namespace {
 
 AccountInfo GetValidAccountInfo(std::string email,
-                                GaiaId gaia_id,
+                                CoreAccountId account_id,
                                 std::string given_name,
                                 std::string full_name,
                                 std::string hosted_domain) {
   AccountInfo account_info;
   account_info.email = email;
-  account_info.gaia = gaia_id;
-  account_info.account_id = CoreAccountId::FromGaiaId(gaia_id);
+  account_info.gaia = account_id.ToString();
+  account_info.account_id = account_id;
   account_info.given_name = given_name;
   account_info.full_name = full_name;
   account_info.hosted_domain = hosted_domain;
@@ -130,11 +129,11 @@ class GAIAInfoUpdateServiceTest : public testing::Test {
         base::UTF8ToUTF16(name), 0, TestingProfile::TestingFactories());
   }
 
-  bool HasAccountPrefs(const GaiaId& gaia_id) {
+  bool HasAccountPrefs(const std::string& gaia_id) {
     return SigninPrefs(pref_service_).HasAccountPrefs(gaia_id);
   }
 
-  void InitializeAccountPref(const GaiaId& gaia_id) {
+  void InitializeAccountPref(const std::string& gaia_id) {
     // Set any pref value to create the pref container.
     SigninPrefs(pref_service_)
         .SetChromeSigninInterceptionUserChoice(gaia_id,
@@ -155,7 +154,7 @@ TEST_F(GAIAInfoUpdateServiceTest, SyncOnSyncOff) {
   base::RunLoop().RunUntilIdle();
   identity_test_env()->SetPrimaryAccount(info.email,
                                          signin::ConsentLevel::kSync);
-  info = GetValidAccountInfo(info.email, info.gaia, "Pat", "Pat Foo",
+  info = GetValidAccountInfo(info.email, info.account_id, "Pat", "Pat Foo",
                              kNoHostedDomainFound);
   signin::UpdateAccountInfoForAccount(identity_test_env()->identity_manager(),
                                       info);
@@ -189,7 +188,7 @@ TEST_F(GAIAInfoUpdateServiceTest, RevokeSyncConsent) {
   base::RunLoop().RunUntilIdle();
   identity_test_env()->SetPrimaryAccount(info.email,
                                          signin::ConsentLevel::kSync);
-  info = GetValidAccountInfo(info.email, info.gaia, "Pat", "Pat Foo",
+  info = GetValidAccountInfo(info.email, info.account_id, "Pat", "Pat Foo",
                              kNoHostedDomainFound);
   signin::UpdateAccountInfoForAccount(identity_test_env()->identity_manager(),
                                       info);
@@ -221,7 +220,7 @@ TEST_F(GAIAInfoUpdateServiceTest, LogInLogOut) {
       signin::ConsentLevel::kSignin));
   EXPECT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
       signin::ConsentLevel::kSync));
-  info = GetValidAccountInfo(info.email, info.gaia, "Pat", "Pat Foo",
+  info = GetValidAccountInfo(info.email, info.account_id, "Pat", "Pat Foo",
                              kNoHostedDomainFound);
   signin::UpdateAccountInfoForAccount(identity_test_env()->identity_manager(),
                                       info);
@@ -255,7 +254,7 @@ TEST_F(GAIAInfoUpdateServiceTest, LogInLogOutLogIn) {
   AccountInfo info1 =
       identity_test_env()->MakeAccountAvailable(email1, {.set_cookie = true});
   base::RunLoop().RunUntilIdle();
-  info1 = GetValidAccountInfo(info1.email, info1.gaia, "Pat 1",
+  info1 = GetValidAccountInfo(info1.email, info1.account_id, "Pat 1",
                               "Pat Foo The First", kNoHostedDomainFound);
   signin::UpdateAccountInfoForAccount(identity_test_env()->identity_manager(),
                                       info1);
@@ -284,7 +283,7 @@ TEST_F(GAIAInfoUpdateServiceTest, LogInLogOutLogIn) {
   AccountInfo info2 =
       identity_test_env()->MakeAccountAvailable(email2, {.set_cookie = true});
   base::RunLoop().RunUntilIdle();
-  info2 = GetValidAccountInfo(info2.email, info2.gaia, "Pat 2",
+  info2 = GetValidAccountInfo(info2.email, info2.account_id, "Pat 2",
                               "Pat Foo The Second", kChromiumOrgDomain);
   signin::UpdateAccountInfoForAccount(identity_test_env()->identity_manager(),
                                       info2);
@@ -311,10 +310,10 @@ TEST_F(GAIAInfoUpdateServiceTest, MultiLoginAndLogOut) {
   identity_test_env()->SetCookieAccounts(
       {{info1.email, info1.gaia}, {info2.email, info2.gaia}});
   base::RunLoop().RunUntilIdle();
-  info1 = GetValidAccountInfo(info1.email, info1.gaia, "Pat 1",
+  info1 = GetValidAccountInfo(info1.email, info1.account_id, "Pat 1",
                               "Pat Foo The First", kNoHostedDomainFound);
   // Make the second account an enterprise account by setting a hosted domain.
-  info2 = GetValidAccountInfo(info2.email, info2.gaia, "Pat 2",
+  info2 = GetValidAccountInfo(info2.email, info2.account_id, "Pat 2",
                               "Pat Foo The Second", kChromiumOrgDomain);
   signin::UpdateAccountInfoForAccount(identity_test_env()->identity_manager(),
                                       info1);
@@ -373,7 +372,7 @@ TEST_F(GAIAInfoUpdateServiceTest, ClearGaiaInfoOnStartup) {
 TEST_F(GAIAInfoUpdateServiceTest,
        SigninPrefsWithSignedInAccountAndSecondaryAccount) {
   base::HistogramTester histogram_tester;
-  const GaiaId primary_gaia_id("primary_gaia_id");
+  const std::string primary_gaia_id = "primary_gaia_id";
   ASSERT_FALSE(HasAccountPrefs(primary_gaia_id));
 
   AccountInfo primary_info = identity_test_env()->MakeAccountAvailable(
@@ -386,7 +385,7 @@ TEST_F(GAIAInfoUpdateServiceTest,
   EXPECT_TRUE(HasAccountPrefs(primary_gaia_id));
 
   // Add a secondary account.
-  const GaiaId secondary_gaia_id("secondary_gaia_id");
+  const std::string secondary_gaia_id = "secondary_gaia_id";
   ASSERT_FALSE(HasAccountPrefs(secondary_gaia_id));
   AccountInfo secondary_info = identity_test_env()->MakeAccountAvailable(
       "secondary@gmail.com",
@@ -441,7 +440,7 @@ TEST_F(GAIAInfoUpdateServiceTest,
 }
 
 TEST_F(GAIAInfoUpdateServiceTest, SigninPrefsWithSignedInWebOnly) {
-  const GaiaId gaia_id("gaia_id");
+  const std::string gaia_id = "gaia_id";
   ASSERT_FALSE(HasAccountPrefs(gaia_id));
   AccountInfo info = identity_test_env()->MakeAccountAvailable(
       "test@gmail.com", {.set_cookie = true, .gaia_id = gaia_id});
@@ -463,7 +462,7 @@ TEST_F(GAIAInfoUpdateServiceTest, SigninPrefsWithSignedInWebOnly) {
 
 TEST_F(GAIAInfoUpdateServiceTest, SigninPrefsWithGaiaIdNotInChrome) {
   // Use an account in Chrome.
-  const GaiaId gaia_id("gaia_id");
+  const std::string gaia_id = "gaia_id";
   ASSERT_FALSE(HasAccountPrefs(gaia_id));
   AccountInfo info = identity_test_env()->MakeAccountAvailable(
       "test@gmail.com", {.set_cookie = true, .gaia_id = gaia_id});
@@ -474,7 +473,7 @@ TEST_F(GAIAInfoUpdateServiceTest, SigninPrefsWithGaiaIdNotInChrome) {
   ASSERT_TRUE(HasAccountPrefs(gaia_id));
 
   // Use an account that is not in Chrome.
-  const GaiaId gaia_id_not_in_chrome("gaia_id_not_in_chrome");
+  const std::string gaia_id_not_in_chrome = "gaia_id_not_in_chrome";
   ASSERT_FALSE(HasAccountPrefs(gaia_id_not_in_chrome));
 
   // This is possible even if the account is not in Chrome.

@@ -38,7 +38,6 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "crypto/signature_verifier.h"
 #include "google_apis/gaia/core_account_id.h"
-#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -1066,7 +1065,7 @@ TEST_F(DiceResponseHandlerTest, SigninWithTwoAccounts) {
   const auto& account_info_1 = dice_params_1.signin_info->account_info;
   DiceResponseParams dice_params_2 = MakeDiceParams(DiceAction::SIGNIN);
   dice_params_2.signin_info->account_info.email = "other_email";
-  dice_params_2.signin_info->account_info.gaia_id = GaiaId("other_gaia_id");
+  dice_params_2.signin_info->account_info.gaia_id = "other_gaia_id";
   const auto& account_info_2 = dice_params_2.signin_info->account_info;
   CoreAccountId account_id_1 = identity_manager()->PickAccountIdForAccount(
       account_info_1.gaia_id, account_info_1.email);
@@ -1373,7 +1372,7 @@ TEST_F(DiceResponseHandlerTest, SigninSignoutDifferentAccount) {
   DiceResponseParams signin_params_1 = MakeDiceParams(DiceAction::SIGNIN);
   DiceResponseParams signin_params_2 = MakeDiceParams(DiceAction::SIGNIN);
   signin_params_2.signin_info->account_info.email = "other_email";
-  signin_params_2.signin_info->account_info.gaia_id = GaiaId("other_gaia_id");
+  signin_params_2.signin_info->account_info.gaia_id = "other_gaia_id";
   const auto& signin_account_info_1 = signin_params_1.signin_info->account_info;
   const auto& signin_account_info_2 = signin_params_2.signin_info->account_info;
   CoreAccountId account_id_1 = identity_manager()->PickAccountIdForAccount(

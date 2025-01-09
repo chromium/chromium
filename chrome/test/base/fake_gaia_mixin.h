@@ -13,7 +13,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "google_apis/gaia/fake_gaia.h"
-#include "google_apis/gaia/gaia_id.h"
 
 namespace base {
 class CommandLine;
@@ -82,7 +81,7 @@ class FakeGaiaMixin : public InProcessBrowserTestMixin {
   // - Issues a special all-scope access token associated with the test refresh
   //   token;
   void SetupFakeGaiaForLogin(const std::string& user_email,
-                             const GaiaId& gaia_id,
+                             const std::string& gaia_id,
                              const std::string& refresh_token);
 
   // Set up fake gaia for the login code with default values.
@@ -97,7 +96,7 @@ class FakeGaiaMixin : public InProcessBrowserTestMixin {
   //     SetupFakeGaiaForLogin()).
   // *   Initializes fake merge session as needed.
   void SetupFakeGaiaForChildUser(const std::string& user_email,
-                                 const GaiaId& gaia_id,
+                                 const std::string& gaia_id,
                                  const std::string& refresh_token,
                                  bool issue_any_scope_token);
 

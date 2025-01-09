@@ -99,7 +99,6 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/test_management_policy.h"
-#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
@@ -3638,7 +3637,7 @@ class StartupBrowserCreatorPickerTestBase : public InProcessBrowserTest {
       ASSERT_NE(entry, nullptr);
       entry->SetActiveTimeToNow();
       entry->SetAuthInfo(
-          GaiaId(base::StringPrintf("gaia_id_%i", i)),
+          base::StringPrintf("gaia_id_%i", i),
           base::UTF8ToUTF16(base::StringPrintf("user%i@gmail.com", i)),
           /*is_consented_primary_account=*/false);
     }

@@ -18,7 +18,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager_unittest_helpers.h"
-#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/zlib/google/compression_utils.h"
 
@@ -689,7 +688,7 @@ TEST_P(DoesProfileDefaultToLoggingEnabledForUserTypeParametrizedTest,
   std::unique_ptr<TestingProfile> testing_profile = profile_builder.Build();
   auto fake_user_manager_ = std::make_unique<ash::FakeChromeUserManager>();
   // We use a standard Gaia account by default:
-  AccountId account_id = AccountId::FromUserEmailGaiaId("name", GaiaId("id"));
+  AccountId account_id = AccountId::FromUserEmailGaiaId("name", "id");
 
   switch (test_case.user_type) {
     case user_manager::UserType::kRegular:

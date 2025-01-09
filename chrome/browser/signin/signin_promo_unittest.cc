@@ -28,7 +28,6 @@
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/pref_names.h"
 #include "content/public/test/browser_task_environment.h"
-#include "google_apis/gaia/gaia_id.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -181,7 +180,7 @@ class ShowSigninPromoTestExplicitBrowserSignin : public ShowPromoTest {
                               switches::kImprovedSigninUIOnDesktop},
         /*disabled_features=*/{});
   }
-  GaiaId gaia_id() {
+  std::string gaia_id() {
     return identity_manager()
         ->GetPrimaryAccountInfo(ConsentLevel::kSignin)
         .gaia;
@@ -290,7 +289,7 @@ TEST_F(ShowSigninPromoTestExplicitBrowserSignin,
   profile()->GetPrefs()->SetInteger(
       prefs::kAutofillSignInPromoDismissCountPerProfile, 1);
   SigninPrefs prefs(*profile()->GetPrefs());
-  prefs.IncrementAutofillSigninPromoDismissCount(GaiaId("gaia_id"));
+  prefs.IncrementAutofillSigninPromoDismissCount("gaia_id");
 
   EXPECT_TRUE(ShouldShowPasswordSignInPromo(*profile()));
   EXPECT_TRUE(ShouldShowAddressSignInPromo(*profile(), CreateAddress()));

@@ -35,7 +35,7 @@ using testing::Contains;
 using testing::Not;
 
 MATCHER_P(ListedAccountMatchesGaiaId, gaia_id, "") {
-  return arg.gaia_id == GaiaId(gaia_id);
+  return arg.gaia_id == std::string(gaia_id);
 }
 
 const char kTestGaiaId[] = "123";
