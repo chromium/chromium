@@ -148,6 +148,8 @@ constexpr auto kHistogramValue = base::MakeFixedFlatMap<ContentSettingsType,
     {ContentSettingsType::WEB_APP_INSTALLATION, 129},
     {ContentSettingsType::DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS, 130},
     {ContentSettingsType::LEGACY_COOKIE_SCOPE, 131},
+    {ContentSettingsType::ARE_SUSPICIOUS_NOTIFICATIONS_ALLOWLISTED_BY_USER,
+     132},
 
     // As mentioned at the top, please don't forget to update ContentType in
     // enums.xml when you add entries here!

@@ -193,6 +193,8 @@ TEST_F(ControlledFramePermissionsTest, Verify) {
       case ContentSettingsType::STORAGE_ACCESS_HEADER_ORIGIN_TRIAL:
       case ContentSettingsType::DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS:
       case ContentSettingsType::LEGACY_COOKIE_SCOPE:
+      case ContentSettingsType::
+          ARE_SUSPICIOUS_NOTIFICATIONS_ALLOWLISTED_BY_USER:
         break;
 
       default:

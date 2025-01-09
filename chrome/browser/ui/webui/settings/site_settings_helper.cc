@@ -245,6 +245,8 @@ constexpr auto kContentSettingsTypeGroupNames = std::to_array<
     // TODO(crbug.com/368266658): Implement the UI for Direct Sockets PNA.
     {ContentSettingsType::DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS, nullptr},
     {ContentSettingsType::LEGACY_COOKIE_SCOPE, nullptr},
+    {ContentSettingsType::ARE_SUSPICIOUS_NOTIFICATIONS_ALLOWLISTED_BY_USER,
+     nullptr},
 });
 
 static_assert(

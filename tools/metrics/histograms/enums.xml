@@ -3122,6 +3122,7 @@ Called by update_net_error_codes.py.-->
   <int value="129" label="Web App Installation"/>
   <int value="130" label="Direct Sockets Private Network Access"/>
   <int value="131" label="Legacy cookie scope"/>
+  <int value="132" label="Are suspicious notifications allowlisted by user"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/content_settings/core/browser/content_settings_uma_util.cc:kHistogramValue) -->
