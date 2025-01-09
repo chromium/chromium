@@ -265,9 +265,12 @@ export class SettingsSyncAccountControlElement extends
       return false;
     }
 
-    if (this.syncStatus &&
-        this.syncStatus.signedInState === SignedInState.SIGNED_IN_PAUSED &&
-        this.syncStatus.hasError && this.syncStatus.statusText) {
+    if (this.syncStatus.signedInState === SignedInState.SIGNED_IN_PAUSED) {
+      return true;
+    }
+
+    if (this.syncStatus && this.syncStatus.hasError &&
+        this.syncStatus.statusText) {
       return true;
     }
 
@@ -279,7 +282,9 @@ export class SettingsSyncAccountControlElement extends
   }
 
 
-  private getAvatarSubtitleLabel_(accountAwareRowSubtitle: string): string {
+  private getAvatarSubtitleLabel_(
+      accountAwareRowSubtitle: string, pendingStateSubtitle: string,
+      email: string): string {
     if (!loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled')) {
       return '';
     }
@@ -288,8 +293,11 @@ export class SettingsSyncAccountControlElement extends
       return accountAwareRowSubtitle;
     }
 
+    if (this.syncStatus.signedInState === SignedInState.SIGNED_IN_PAUSED) {
+      return loadTimeData.substituteString(pendingStateSubtitle, email);
+    }
+
     if (this.syncStatus &&
-        this.syncStatus.signedInState === SignedInState.SIGNED_IN_PAUSED &&
         this.syncStatus.hasError && this.syncStatus.statusText) {
       return this.syncStatus.statusText;
     }
@@ -365,14 +373,15 @@ export class SettingsSyncAccountControlElement extends
       accountName: string, syncErrorLabel: string,
       syncPasswordsOnlyErrorLabel: string, authErrorLabel: string,
       disabledLabel: string, webOnlySignedInAccountRowTitle: string): string {
-    if (loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled')) {
-      if (this.syncStatus.signedInState === SignedInState.WEB_ONLY_SIGNED_IN) {
-        return webOnlySignedInAccountRowTitle;
-      }
-      if (this.syncStatus.signedInState === SignedInState.SIGNED_IN_PAUSED &&
-          this.syncStatus.hasError) {
-        return accountName;
-      }
+    if (loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled') &&
+        (this.syncStatus.signedInState === SignedInState.WEB_ONLY_SIGNED_IN)) {
+      return webOnlySignedInAccountRowTitle;
+    }
+
+    if (loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled') &&
+        this.syncStatus && this.syncStatus.hasError &&
+        this.syncStatus.statusText) {
+      return accountName;
     }
 
     if (this.syncStatus.disabled) {
@@ -470,6 +479,16 @@ export class SettingsSyncAccountControlElement extends
 
   private shouldShowTurnOffButton_(): boolean {
     return !this.hideButtons && !this.showSetupButtons_ && this.isSyncing_();
+  }
+
+  private getTurnOffSyncLabel_(turnOffSync: string): string {
+    if (loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled') &&
+        this.syncStatus.hasError && this.syncStatus.secondaryButtonActionText &&
+        this.isSyncing_()) {
+      return this.syncStatus.secondaryButtonActionText;
+    }
+
+    return turnOffSync;
   }
 
   private shouldShowErrorActionButton_(): boolean {

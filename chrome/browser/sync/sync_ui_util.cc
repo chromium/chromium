@@ -292,14 +292,17 @@ SyncStatusLabels GetSyncStatusLabelsForSettings(
 
 SyncStatusLabels GetAvatarSyncErrorLabelsForSettings(
     AvatarSyncErrorType error) {
-  // check flag disabled.
   switch (error) {
     case AvatarSyncErrorType::kSyncPaused:
-    // not sure what to return here;
+      return {SyncStatusMessageType::kSyncError, IDS_SYNC_RELOGIN_ERROR,
+              IDS_SYNC_RELOGIN_BUTTON, IDS_SYNC_EMPTY_STRING,
+              SyncStatusActionType::kReauthenticate};
+
     case AvatarSyncErrorType::kTrustedVaultKeyMissingForPasswordsError:
       return {SyncStatusMessageType::kPasswordsOnlySyncError,
               IDS_SETTINGS_ERROR_PASSWORDS_USER_ERROR_DESCRIPTION,
-              IDS_SYNC_STATUS_NEEDS_KEYS_BUTTON, IDS_SYNC_EMPTY_STRING,
+              IDS_SYNC_STATUS_NEEDS_KEYS_BUTTON,
+              IDS_PROFILES_ACCOUNT_REMOVAL_TITLE,
               SyncStatusActionType::kRetrieveTrustedVaultKeys};
 
     case AvatarSyncErrorType::
@@ -307,13 +310,13 @@ SyncStatusLabels GetAvatarSyncErrorLabelsForSettings(
       return {
           SyncStatusMessageType::kPasswordsOnlySyncError,
           IDS_SETTINGS_ERROR_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_USER_ERROR_DESCRIPTION,
-          IDS_SYNC_STATUS_NEEDS_KEYS_BUTTON, IDS_SYNC_EMPTY_STRING,
+          IDS_SYNC_STATUS_NEEDS_KEYS_BUTTON, IDS_PROFILES_ACCOUNT_REMOVAL_TITLE,
           SyncStatusActionType::kRetrieveTrustedVaultKeys};
 
     case AvatarSyncErrorType::kPassphraseError:
       return {SyncStatusMessageType::kSyncError,
               IDS_SETTINGS_ERROR_PASSPHRASE_USER_ERROR_DESCRIPTION,
-              IDS_SYNC_STATUS_NEEDS_PASSWORD_BUTTON, IDS_SYNC_EMPTY_STRING,
+              IDS_SYNC_STATUS_NEEDS_PASSWORD_BUTTON, IDS_PROFILE_MENU_SIGN_OUT,
               SyncStatusActionType::kEnterPassphrase};
 
     case AvatarSyncErrorType::
@@ -321,31 +324,34 @@ SyncStatusLabels GetAvatarSyncErrorLabelsForSettings(
     case AvatarSyncErrorType::kTrustedVaultKeyMissingForEverythingError:
       return {SyncStatusMessageType::kSyncError,
               IDS_SETTINGS_ERROR_TRUSTED_VAULT_USER_ERROR_DESCRIPTION,
-              IDS_SYNC_STATUS_NEEDS_PASSWORD_BUTTON, IDS_SYNC_EMPTY_STRING,
+              IDS_SYNC_STATUS_NEEDS_KEYS_BUTTON,
+              IDS_PROFILES_ACCOUNT_REMOVAL_TITLE,
               SyncStatusActionType::kRetrieveTrustedVaultKeys};
 
     case AvatarSyncErrorType::kUpgradeClientError:
       return {SyncStatusMessageType::kSyncError,
               IDS_SETTINGS_ERROR_UPGRADE_CLIENT_USER_ERROR_DESCRIPTION,
-              IDS_SYNC_UPGRADE_CLIENT_BUTTON, IDS_SYNC_EMPTY_STRING,
+              IDS_SYNC_UPGRADE_CLIENT_BUTTON, IDS_PROFILE_MENU_SIGN_OUT,
               SyncStatusActionType::kUpgradeClient};
 
     case AvatarSyncErrorType::kSettingsUnconfirmedError:
-      return {
-          SyncStatusMessageType::kSyncError, IDS_SYNC_SETTINGS_NOT_CONFIRMED,
-          IDS_SYNC_ERROR_USER_MENU_CONFIRM_SYNC_SETTINGS_BUTTON,
-          IDS_SYNC_EMPTY_STRING, SyncStatusActionType::kConfirmSyncSettings};
+      return {SyncStatusMessageType::kSyncError,
+              IDS_SYNC_SETTINGS_NOT_CONFIRMED,
+              IDS_SYNC_ERROR_USER_MENU_CONFIRM_SYNC_SETTINGS_BUTTON,
+              IDS_PROFILES_ACCOUNT_REMOVAL_TITLE,
+              SyncStatusActionType::kConfirmSyncSettings};
 
     case AvatarSyncErrorType::kManagedUserUnrecoverableError:
       return {SyncStatusMessageType::kSyncError,
               IDS_SYNC_STATUS_UNRECOVERABLE_ERROR_NEEDS_SIGNOUT,
-              IDS_SYNC_RELOGIN_BUTTON, IDS_SYNC_EMPTY_STRING,
+              IDS_SYNC_RELOGIN_BUTTON, IDS_PROFILES_ACCOUNT_REMOVAL_TITLE,
               SyncStatusActionType::kReauthenticate};
 
     case AvatarSyncErrorType::kUnrecoverableError:
       return {SyncStatusMessageType::kSyncError,
               IDS_SYNC_STATUS_UNRECOVERABLE_ERROR, IDS_SYNC_RELOGIN_BUTTON,
-              IDS_SYNC_EMPTY_STRING, SyncStatusActionType::kReauthenticate};
+              IDS_PROFILES_ACCOUNT_REMOVAL_TITLE,
+              SyncStatusActionType::kReauthenticate};
   }
 }
 

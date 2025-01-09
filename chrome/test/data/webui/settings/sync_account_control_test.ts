@@ -344,102 +344,139 @@ suite('SyncAccountControl', function() {
         Router.getInstance().getRoutes().SIGN_OUT);
   });
 
-  test('signed in, has error', function() {
-    testElement.syncStatus = {
-      firstSetupInProgress: false,
-      signedInState: SignedInState.SYNCING,
-      signedInUsername: 'bar@bar.com',
-      hasError: true,
-      hasUnrecoverableError: false,
-      statusAction: StatusAction.CONFIRM_SYNC_SETTINGS,
-      disabled: false,
-    };
-    flush();
-    const userInfo = testElement.shadowRoot!.querySelector('#user-info')!;
 
-    assertTrue(
-        testElement.shadowRoot!
-            .querySelector<HTMLElement>(
-                '#sync-icon-container')!.classList.contains('sync-problem'));
-    assertTrue(!!testElement.shadowRoot!.querySelector(
-        '[icon="settings:sync-problem"]'));
-    let displayedText =
-        userInfo.querySelector<HTMLElement>('div:not([hidden])')!.textContent!;
-    assertFalse(displayedText.includes('barName'));
-    assertFalse(displayedText.includes('fooName'));
-    assertTrue(displayedText.includes('Sync isn\'t working'));
-    // The sync error button is shown to resolve the error.
-    assertTrue(isChildVisible(testElement, '#sync-error-button'));
+  test(
+      'signed in, has error with kImprovedSettingsUIOnDesktopEnabled enabled',
+      function() {
+        loadTimeData.overrideValues(
+            {isImprovedSettingsUIOnDesktopEnabled: true});
 
-    testElement.syncStatus = {
-      firstSetupInProgress: false,
-      signedInState: SignedInState.SYNCING,
-      signedInUsername: 'bar@bar.com',
-      statusAction: StatusAction.NO_ACTION,
-      hasError: false,
-      hasUnrecoverableError: false,
-      disabled: true,
-    };
+        testElement.syncStatus = {
+          firstSetupInProgress: false,
+          signedInState: SignedInState.SYNCING,
+          hasError: true,
+          hasUnrecoverableError: false,
+          statusAction: StatusAction.CONFIRM_SYNC_SETTINGS,
+          statusText: 'error text',
+          disabled: false,
+        };
+        flush();
+        const userInfo = testElement.shadowRoot!.querySelector('#user-info')!;
 
-    assertTrue(
-        testElement.shadowRoot!
-            .querySelector<HTMLElement>(
-                '#sync-icon-container')!.classList.contains('sync-disabled'));
-    assertTrue(!!testElement.shadowRoot!.querySelector('[icon=\'cr:sync\']'));
-    displayedText =
-        userInfo.querySelector<HTMLElement>('div:not([hidden])')!.textContent!;
-    assertFalse(displayedText.includes('barName'));
-    assertFalse(displayedText.includes('fooName'));
-    assertTrue(displayedText.includes('Sync disabled'));
-    assertFalse(isChildVisible(testElement, '#sync-error-button'));
+        assertTrue(testElement.shadowRoot!
+                       .querySelector<HTMLElement>('#sync-icon-container')!
+                       .classList.contains('sync-problem'));
+        assertTrue(!!testElement.shadowRoot!.querySelector(
+            '[icon="settings:sync-problem"]'));
+        const displayedText =
+            userInfo.querySelector<HTMLElement>(
+                        'div:not([hidden])')!.textContent!;
+        assertTrue(displayedText.includes('fooName'));
+        assertTrue(isChildVisible(testElement, '#sync-error-button'));
+        assertTrue(isChildVisible(testElement, '#turn-off'));
+      });
 
-    testElement.syncStatus = {
-      firstSetupInProgress: false,
-      signedInState: SignedInState.SYNCING,
-      signedInUsername: 'bar@bar.com',
-      statusAction: StatusAction.REAUTHENTICATE,
-      hasError: true,
-      hasUnrecoverableError: true,
-      disabled: false,
-    };
-    assertTrue(
-        testElement.shadowRoot!
-            .querySelector<HTMLElement>(
-                '#sync-icon-container')!.classList.contains('sync-problem'));
-    assertTrue(!!testElement.shadowRoot!.querySelector(
-        '[icon="settings:sync-problem"]'));
-    displayedText =
-        userInfo.querySelector<HTMLElement>('div:not([hidden])')!.textContent!;
-    assertFalse(displayedText.includes('barName'));
-    assertFalse(displayedText.includes('fooName'));
-    assertTrue(displayedText.includes('Sync isn\'t working'));
+  test(
+      'signed in, has error with kImprovedSettingsUIOnDesktopEnabled disabled',
+      function() {
+        loadTimeData.overrideValues(
+            {isImprovedSettingsUIOnDesktopEnabled: false});
+        testElement.syncStatus = {
+          firstSetupInProgress: false,
+          signedInState: SignedInState.SYNCING,
+          signedInUsername: 'bar@bar.com',
+          hasError: true,
+          hasUnrecoverableError: false,
+          statusAction: StatusAction.CONFIRM_SYNC_SETTINGS,
+          disabled: false,
+        };
+        flush();
+        const userInfo = testElement.shadowRoot!.querySelector('#user-info')!;
 
-    testElement.syncStatus = {
-      firstSetupInProgress: false,
-      signedInState: SignedInState.SYNCING,
-      signedInUsername: 'bar@bar.com',
-      statusAction: StatusAction.RETRIEVE_TRUSTED_VAULT_KEYS,
-      hasError: true,
-      hasPasswordsOnlyError: true,
-      hasUnrecoverableError: false,
-      disabled: false,
-    };
-    assertTrue(
-        testElement.shadowRoot!
-            .querySelector<HTMLElement>(
-                '#sync-icon-container')!.classList.contains('sync-problem'));
-    assertTrue(!!testElement.shadowRoot!.querySelector(
-        '[icon="settings:sync-problem"]'));
-    displayedText =
-        userInfo.querySelector<HTMLElement>('div:not([hidden])')!.textContent!;
-    assertFalse(displayedText.includes('barName'));
-    assertFalse(displayedText.includes('fooName'));
-    assertFalse(displayedText.includes('Sync isn\'t working'));
-    assertTrue(displayedText.includes('Password sync isn\'t working'));
-    // The sync error button is shown to resolve the error.
-    assertTrue(isChildVisible(testElement, '#sync-error-button'));
-    assertTrue(isChildVisible(testElement, '#turn-off'));
-  });
+        assertTrue(testElement.shadowRoot!
+                       .querySelector<HTMLElement>('#sync-icon-container')!
+                       .classList.contains('sync-problem'));
+        assertTrue(!!testElement.shadowRoot!.querySelector(
+            '[icon="settings:sync-problem"]'));
+        let displayedText =
+            userInfo.querySelector<HTMLElement>(
+                        'div:not([hidden])')!.textContent!;
+        assertFalse(displayedText.includes('barName'));
+        assertFalse(displayedText.includes('fooName'));
+        assertTrue(displayedText.includes('Sync isn\'t working'));
+        // The sync error button is shown to resolve the error.
+        assertTrue(isChildVisible(testElement, '#sync-error-button'));
+
+        testElement.syncStatus = {
+          firstSetupInProgress: false,
+          signedInState: SignedInState.SYNCING,
+          signedInUsername: 'bar@bar.com',
+          statusAction: StatusAction.NO_ACTION,
+          hasError: false,
+          hasUnrecoverableError: false,
+          disabled: true,
+        };
+
+        assertTrue(testElement.shadowRoot!
+                       .querySelector<HTMLElement>('#sync-icon-container')!
+                       .classList.contains('sync-disabled'));
+        assertTrue(
+            !!testElement.shadowRoot!.querySelector('[icon=\'cr:sync\']'));
+        displayedText =
+            userInfo.querySelector<HTMLElement>(
+                        'div:not([hidden])')!.textContent!;
+        assertFalse(displayedText.includes('barName'));
+        assertFalse(displayedText.includes('fooName'));
+        assertTrue(displayedText.includes('Sync disabled'));
+        assertFalse(isChildVisible(testElement, '#sync-error-button'));
+
+        testElement.syncStatus = {
+          firstSetupInProgress: false,
+          signedInState: SignedInState.SYNCING,
+          signedInUsername: 'bar@bar.com',
+          statusAction: StatusAction.REAUTHENTICATE,
+          hasError: true,
+          hasUnrecoverableError: true,
+          disabled: false,
+        };
+        assertTrue(testElement.shadowRoot!
+                       .querySelector<HTMLElement>('#sync-icon-container')!
+                       .classList.contains('sync-problem'));
+        assertTrue(!!testElement.shadowRoot!.querySelector(
+            '[icon="settings:sync-problem"]'));
+        displayedText =
+            userInfo.querySelector<HTMLElement>(
+                        'div:not([hidden])')!.textContent!;
+        assertFalse(displayedText.includes('barName'));
+        assertFalse(displayedText.includes('fooName'));
+        assertTrue(displayedText.includes('Sync isn\'t working'));
+
+        testElement.syncStatus = {
+          firstSetupInProgress: false,
+          signedInState: SignedInState.SYNCING,
+          signedInUsername: 'bar@bar.com',
+          statusAction: StatusAction.RETRIEVE_TRUSTED_VAULT_KEYS,
+          hasError: true,
+          hasPasswordsOnlyError: true,
+          hasUnrecoverableError: false,
+          disabled: false,
+        };
+        assertTrue(testElement.shadowRoot!
+                       .querySelector<HTMLElement>('#sync-icon-container')!
+                       .classList.contains('sync-problem'));
+        assertTrue(!!testElement.shadowRoot!.querySelector(
+            '[icon="settings:sync-problem"]'));
+        displayedText =
+            userInfo.querySelector<HTMLElement>(
+                        'div:not([hidden])')!.textContent!;
+        assertFalse(displayedText.includes('barName'));
+        assertFalse(displayedText.includes('fooName'));
+        assertFalse(displayedText.includes('Sync isn\'t working'));
+        assertTrue(displayedText.includes('Password sync isn\'t working'));
+        // The sync error button is shown to resolve the error.
+        assertTrue(isChildVisible(testElement, '#sync-error-button'));
+        assertTrue(isChildVisible(testElement, '#turn-off'));
+      });
 
   test(
       'user in sync paused state, kImprovedSettingsUIOnDesktop enabled',
