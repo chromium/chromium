@@ -18849,6 +18849,30 @@
             ]
         }
     ],
+    "RedWarningSurvey": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "RedInterstitial_20250108",
+                    "params": {
+                        "RedWarningSurveyDidProceedFilter": "TRUE,FALSE",
+                        "RedWarningSurveyTriggerId": "tk2kQP2nR0ugnJ3q1cK0RSntPR9W",
+                        "probability": "0.5"
+                    },
+                    "enable_features": [
+                        "RedWarningSurvey"
+                    ]
+                }
+            ]
+        }
+    ],
     "ReduceAcceptLanguage": [
         {
             "platforms": [
