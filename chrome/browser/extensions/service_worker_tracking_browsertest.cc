@@ -144,7 +144,8 @@ class ServiceWorkerTrackingBrowserTest : public ExtensionBrowserTest {
                         "<p>page</p>");
     ExtensionTestMessageListener extension_oninstall_listener_fired(
         "installed listener fired");
-    const Extension* extension = LoadExtension(test_dir->UnpackedPath());
+    const Extension* extension = LoadExtension(
+        test_dir->UnpackedPath(), {.wait_for_registration_stored = true});
     test_extension_dirs_.push_back(std::move(test_dir));
     ASSERT_TRUE(extension);
     extension_ = extension;
