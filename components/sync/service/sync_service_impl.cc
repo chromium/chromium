@@ -1569,6 +1569,14 @@ DataTypeSet SyncServiceImpl::GetPreferredDataTypes() const {
   return types;
 }
 
+DataTypeSet SyncServiceImpl::GetDataTypesForTransportOnlyMode() const {
+  if (!data_type_manager_) {
+    return DataTypeSet();
+  }
+
+  return data_type_manager_->GetDataTypesForTransportOnlyMode();
+}
+
 DataTypeSet SyncServiceImpl::GetActiveDataTypes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -2368,8 +2376,8 @@ void SyncServiceImpl::SelectTypeAndMigrateLocalDataItemsWhenActive(
 
   // Move the item as soon as the sync service activates.
   local_data_migration_item_queue_
-      ->TriggerLocalDataMigrationForItemsWhenTypeBecomesActive(data_type,
-                                                               items);
+      ->TriggerLocalDataMigrationForItemsWhenTypeBecomesActive(
+          data_type, std::move(items));
 }
 
 }  // namespace syncer

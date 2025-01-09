@@ -280,6 +280,10 @@ DataTypeSet TestSyncService::GetPreferredDataTypes() const {
   return user_settings_.GetPreferredDataTypes();
 }
 
+DataTypeSet TestSyncService::GetDataTypesForTransportOnlyMode() const {
+  return DataTypeSet::All();
+}
+
 DataTypeSet TestSyncService::GetActiveDataTypes() const {
   if (GetTransportState() != TransportState::ACTIVE) {
     return DataTypeSet();

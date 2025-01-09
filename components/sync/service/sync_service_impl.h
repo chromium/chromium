@@ -126,6 +126,7 @@ class SyncServiceImpl : public SyncService,
       override;
   bool IsSetupInProgress() const override;
   DataTypeSet GetPreferredDataTypes() const override;
+  DataTypeSet GetDataTypesForTransportOnlyMode() const override;
   DataTypeSet GetActiveDataTypes() const override;
   DataTypeSet GetTypesWithPendingDownloadForInitialSync() const override;
   void OnDataTypeRequestsSyncStartup(DataType type) override;

@@ -13,6 +13,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/signin_promo_util.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -26,7 +27,10 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/command_line_switches.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/pref_names.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "components/sync/test/mock_sync_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -88,17 +92,30 @@ TEST(SigninPromoTest, SigninURLForDice) {
 class ShowPromoTest : public testing::Test {
  public:
   ShowPromoTest() {
+    TestingProfile::Builder profile_builder;
+    profile_builder.AddTestingFactory(
+        SyncServiceFactory::GetInstance(),
+        base::BindRepeating([](content::BrowserContext* context) {
+          return static_cast<std::unique_ptr<KeyedService>>(
+              std::make_unique<syncer::MockSyncService>());
+        }));
     profile_ = IdentityTestEnvironmentProfileAdaptor::
-        CreateProfileForIdentityTestEnvironment();
+        CreateProfileForIdentityTestEnvironment(profile_builder);
+
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
+  }
+
+  syncer::MockSyncService* sync_service() {
+    return static_cast<syncer::MockSyncService*>(
+        SyncServiceFactory::GetForProfile(profile()));
   }
 
   IdentityManager* identity_manager() {
     return identity_test_env_adaptor_->identity_test_env()->identity_manager();
   }
 
-  Profile* profile() { return profile_.get(); }
+  TestingProfile* profile() { return profile_.get(); }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -179,7 +196,10 @@ class ShowSigninPromoTestExplicitBrowserSignin : public ShowPromoTest {
         /*enabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop,
                               switches::kImprovedSigninUIOnDesktop},
         /*disabled_features=*/{});
+    ON_CALL(*sync_service(), GetDataTypesForTransportOnlyMode())
+        .WillByDefault(testing::Return(syncer::DataTypeSet::All()));
   }
+
   std::string gaia_id() {
     return identity_manager()
         ->GetPrimaryAccountInfo(ConsentLevel::kSignin)
@@ -239,15 +259,42 @@ TEST_F(ShowSigninPromoTestExplicitBrowserSignin,
 TEST_F(ShowSigninPromoTestExplicitBrowserSignin,
        DoNotShowPromoWithLocalSyncEnabled) {
   ASSERT_TRUE(ShouldShowPasswordSignInPromo(*profile()));
+
   profile()->GetPrefs()->SetBoolean(syncer::prefs::kEnableLocalSyncBackend,
                                     true);
+
   EXPECT_FALSE(ShouldShowPasswordSignInPromo(*profile()));
 }
 
 TEST_F(ShowSigninPromoTestExplicitBrowserSignin,
        DoNotShowPromoWithoutSyncAllowed) {
   ASSERT_TRUE(ShouldShowPasswordSignInPromo(*profile()));
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(syncer::kDisableSync);
+
+  ON_CALL(*sync_service(), GetDisableReasons())
+      .WillByDefault(testing::Return(syncer::SyncService::DisableReasonSet(
+          {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY})));
+
+  EXPECT_FALSE(ShouldShowPasswordSignInPromo(*profile()));
+}
+
+TEST_F(ShowSigninPromoTestExplicitBrowserSignin,
+       DoNotShowPromoWithTypeManagedByPolicy) {
+  ASSERT_TRUE(ShouldShowPasswordSignInPromo(*profile()));
+
+  ON_CALL(*sync_service()->GetMockUserSettings(),
+          IsTypeManagedByPolicy(syncer::UserSelectableType::kPasswords))
+      .WillByDefault(testing::Return(true));
+
+  EXPECT_FALSE(ShouldShowPasswordSignInPromo(*profile()));
+}
+
+TEST_F(ShowSigninPromoTestExplicitBrowserSignin,
+       DoNotShowPromoWithoutTransportOnlyDataType) {
+  ASSERT_TRUE(ShouldShowPasswordSignInPromo(*profile()));
+
+  ON_CALL(*sync_service(), GetDataTypesForTransportOnlyMode())
+      .WillByDefault(testing::Return(syncer::DataTypeSet()));
+
   EXPECT_FALSE(ShouldShowPasswordSignInPromo(*profile()));
 }
 

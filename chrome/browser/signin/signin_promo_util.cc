@@ -29,6 +29,10 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_quality/addresses/profile_requirement_utils.h"
+#include "components/sync/base/data_type.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 
 namespace {
 
@@ -40,11 +44,22 @@ constexpr int kSigninPromoDismissedThreshold = 2;
 // Maps to a subset of `signin_metrics::AccessPoint`.
 enum class AutofillSignInPromoType { kPassword, kAddress };
 
+syncer::DataType GetDataTypeFromAutofillSignInPromoType(
+    AutofillSignInPromoType type) {
+  switch (type) {
+    case AutofillSignInPromoType::kPassword:
+      return syncer::PASSWORDS;
+    case AutofillSignInPromoType::kAddress:
+      return syncer::CONTACT_INFO;
+  }
+}
+
 // Performs base checks for whether the sign in promos should be shown.
 // Needs additional checks depending on the type of the promo (see
 // `ShouldShowAddressSignInPromo` and `ShouldShowPasswordSignInPromo`).
 // `profile` is the profile of the tab the promo would be shown on.
-bool ShouldShowSignInPromoCommon(Profile& profile) {
+bool ShouldShowSignInPromoCommon(Profile& profile,
+                                 AutofillSignInPromoType type) {
   // Don't show the promo if it does not pass the sync base checks.
   if (!signin::ShouldShowSyncPromo(profile)) {
     return false;
@@ -55,8 +70,16 @@ bool ShouldShowSignInPromoCommon(Profile& profile) {
     return false;
   }
 
-  // TODO(crbug.com/386774184): Check for policies which may disallow account
-  // storage.
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(&profile);
+  syncer::DataType data_type = GetDataTypeFromAutofillSignInPromoType(type);
+
+  // Don't show the promo if policies disallow account storage.
+  if (sync_service->GetUserSettings()->IsTypeManagedByPolicy(
+          GetUserSelectableTypeFromDataType(data_type).value()) ||
+      !sync_service->GetDataTypesForTransportOnlyMode().Has(data_type)) {
+    return false;
+  }
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(&profile);
@@ -207,7 +230,8 @@ bool ShouldShowSyncPromo(Profile& profile) {
 bool ShouldShowPasswordSignInPromo(Profile& profile) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-  if (!ShouldShowSignInPromoCommon(profile)) {
+  if (!ShouldShowSignInPromoCommon(profile,
+                                   AutofillSignInPromoType::kPassword)) {
     return false;
   }
 
@@ -230,7 +254,8 @@ bool ShouldShowAddressSignInPromo(Profile& profile,
     return false;
   }
 
-  if (!ShouldShowSignInPromoCommon(profile)) {
+  if (!ShouldShowSignInPromoCommon(profile,
+                                   AutofillSignInPromoType::kAddress)) {
     return false;
   }
 
