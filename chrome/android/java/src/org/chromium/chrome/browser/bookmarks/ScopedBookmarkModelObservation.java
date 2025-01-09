@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -126,7 +127,12 @@ public class ScopedBookmarkModelObservation extends BookmarkModelObserver {
 
     @Override
     public void bookmarkModelChanged() {
-        mObserver.onBookmarkItemsChanged(mId, mModel.getBookmarksForFolder(mFolderId));
+        final List<BookmarkItem> items = new ArrayList<>();
+        for (final BookmarkId itemId : mModel.getChildIds(mFolderId)) {
+            final BookmarkItem item = mModel.getBookmarkById(itemId);
+            if (item != null) items.add(item);
+        }
+        mObserver.onBookmarkItemsChanged(mId, items);
     }
 
     @Override

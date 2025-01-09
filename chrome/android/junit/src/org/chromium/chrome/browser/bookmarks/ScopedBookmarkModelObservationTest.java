@@ -28,6 +28,7 @@ import org.chromium.components.bookmarks.BookmarkItem;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /** Unit tests for {@link ScopedBookmarkModelObservation}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -65,8 +66,9 @@ public class ScopedBookmarkModelObservationTest {
         when(mModel.getBookmarkById(mItemId)).thenReturn(mItem);
         when(mModel.getBookmarkById(mUnobservedFolderId)).thenReturn(mUnobservedFolder);
         when(mModel.getBookmarkById(mUnobservedItemId)).thenReturn(mUnobservedItem);
-        when(mModel.getBookmarksForFolder(mFolderId)).thenReturn(mFolderItems);
-        when(mModel.getBookmarksForFolder(mUnobservedFolderId)).thenReturn(mUnobservedFolderItems);
+        when(mModel.getChildIds(mFolderId)).thenAnswer((i) -> getIds(mFolderItems));
+        when(mModel.getChildIds(mUnobservedFolderId))
+                .thenAnswer((i) -> getIds(mUnobservedFolderItems));
         when(mModel.isBookmarkModelLoaded()).thenReturn(true);
         when(mUnobservedFolder.getId()).thenReturn(mUnobservedFolderId);
         when(mUnobservedItem.getId()).thenReturn(mUnobservedItemId);
@@ -93,6 +95,10 @@ public class ScopedBookmarkModelObservationTest {
         if (resetObserver) {
             reset(mObserver);
         }
+    }
+
+    private static List<BookmarkId> getIds(List<BookmarkItem> items) {
+        return items.stream().map(BookmarkItem::getId).collect(Collectors.toList());
     }
 
     @Test
