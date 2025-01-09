@@ -325,6 +325,11 @@ bool IsDefaultANGLEVulkan() {
   if (active_gpu.driverApiVersion < VK_VERSION_1_1)
     return false;
 
+  // If |dirverId| is 0, the driver lacks VK_KHR_driver_properties.
+  // Consider this driver too old to be usable.
+  if (active_gpu.driverId == 0)
+    return false;
+
 #if BUILDFLAG(IS_ANDROID)
   // Exclude SwiftShader-based Android emulators for now.
   if (active_gpu.driverId == VK_DRIVER_ID_GOOGLE_SWIFTSHADER)
