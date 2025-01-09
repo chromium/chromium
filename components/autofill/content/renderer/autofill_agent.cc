@@ -43,6 +43,7 @@
 #include "components/autofill/content/renderer/password_autofill_agent.h"
 #include "components/autofill/content/renderer/password_generation_agent.h"
 #include "components/autofill/content/renderer/suggestion_properties.h"
+#include "components/autofill/content/renderer/synchronous_form_cache.h"
 #include "components/autofill/content/renderer/timing.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -382,24 +383,6 @@ gfx::Rect GetCaretBounds(content::RenderFrame& frame) {
 }
 
 }  // namespace
-
-OptionalForm::OptionalForm() = default;
-OptionalForm::OptionalForm(const OptionalForm&) = default;
-OptionalForm::OptionalForm(std::nullopt_t) {}
-OptionalForm::OptionalForm(base::optional_ref<FormData> form LIFETIME_BOUND)
-    : form_(form) {}
-OptionalForm::OptionalForm(FormData& form) : form_(form) {}
-OptionalForm::~OptionalForm() = default;
-
-const FormData& OptionalForm::operator*() const LIFETIME_BOUND {
-  CHECK(has_value());
-  return *form_;
-}
-
-bool OptionalForm::has_value() const {
-  return form_.has_value() && base::FeatureList::IsEnabled(
-                                  features::kAutofillOptimizeFormExtraction);
-}
 
 // During prerendering, we do not want the renderer to send messages to the
 // corresponding driver. Since we use a channel associated interface, we still
@@ -1079,7 +1062,7 @@ void AutofillAgent::ApplyFieldsAction(
                                              &FormData::renderer_id);
             form_it != filled_forms.end()) {
           password_autofill_agent_->UpdatePasswordStateForTextChange(
-              input_element, *form_it);
+              input_element, SynchronousFormCache(*form_it));
         }
       }
     }
@@ -1879,7 +1862,9 @@ void AutofillAgent::JavaScriptChangedValue(WebFormControlElement element,
       (input_element.FormControlTypeForAutofill() ==
            blink::mojom::FormControlType::kInputPassword ||
        password_autofill_agent_->IsUsernameInputField(input_element))) {
-    password_autofill_agent_->UpdatePasswordStateForTextChange(input_element);
+    password_autofill_agent_->UpdatePasswordStateForTextChange(
+        input_element,
+        /*form_cache=*/{});
   }
 
   if (!was_autofilled) {
@@ -1945,7 +1930,8 @@ void AutofillAgent::OnProvisionallySaveForm(
       // document the reason, otherwise remove.
       password_autofill_agent_->InformBrowserAboutUserInput(
           form_element, WebInputElement(),
-          OptionalForm(provisionally_saved_form()));
+          SynchronousFormCache(form_util::GetFormRendererId(form_element),
+                               provisionally_saved_form()));
       // TODO(crbug.com/40281981): Figure out if this is still needed, and
       // document the reason, otherwise remove.
       update_submission_data_on_user_edit();
@@ -2026,7 +2012,8 @@ void AutofillAgent::UpdateStateForTextChange(
   field_data_manager_->UpdateFieldDataMap(
       form_util::GetFieldRendererId(element), element.Value().Utf16(), flag);
 
-  password_autofill_agent_->UpdatePasswordStateForTextChange(input_element);
+  password_autofill_agent_->UpdatePasswordStateForTextChange(input_element,
+                                                             /*form_cache=*/{});
 }
 
 std::optional<FormData> AutofillAgent::GetSubmittedForm(

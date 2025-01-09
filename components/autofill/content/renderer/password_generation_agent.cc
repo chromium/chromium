@@ -424,8 +424,9 @@ std::optional<FormData> PasswordGenerationAgent::CreateFormDataToPresave() {
   std::unique_ptr<FormData> form_data;
   WebFormElement form =
       form_util::GetOwningForm(current_generation_item_->generation_element_);
-  return form ? password_agent_->GetFormDataFromWebForm(form)
-              : password_agent_->GetFormDataFromUnownedInputElements();
+  return form ? password_agent_->GetFormDataFromWebForm(form, /*form_cache=*/{})
+              : password_agent_->GetFormDataFromUnownedInputElements(
+                    /*form_cache=*/{});
 }
 
 void PasswordGenerationAgent::FoundFormEligibleForGeneration(
@@ -784,8 +785,10 @@ void PasswordGenerationAgent::MaybeCreateCurrentGenerationItem(
 
   WebFormElement form_element = form_util::GetOwningForm(generation_element);
   std::optional<FormData> form_data =
-      form_element ? password_agent_->GetFormDataFromWebForm(form_element)
-                   : password_agent_->GetFormDataFromUnownedInputElements();
+      form_element ? password_agent_->GetFormDataFromWebForm(form_element,
+                                                             /*form_cache=*/{})
+                   : password_agent_->GetFormDataFromUnownedInputElements(
+                         /*form_cache=*/{});
 
   if (!form_data)
     return;

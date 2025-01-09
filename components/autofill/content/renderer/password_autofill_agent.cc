@@ -40,6 +40,7 @@
 #include "components/autofill/content/renderer/prefilled_values_detector.h"
 #include "components/autofill/content/renderer/renderer_save_password_progress_logger.h"
 #include "components/autofill/content/renderer/suggestion_properties.h"
+#include "components/autofill/content/renderer/synchronous_form_cache.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -900,11 +901,11 @@ void PasswordAutofillAgent::NotifyPasswordManagerAboutFieldModification(
 
 void PasswordAutofillAgent::UpdatePasswordStateForTextChange(
     const WebInputElement& element,
-    OptionalForm extracted_form) {
+    const SynchronousFormCache& form_cache) {
   NotifyPasswordManagerAboutFieldModification(element);
 
   InformBrowserAboutUserInput(form_util::GetOwningForm(element), element,
-                              extracted_form);
+                              form_cache);
 }
 
 // LINT.ThenChange(//components/password_manager/core/browser/password_manager.cc:update_password_state_for_text_change)
@@ -1082,8 +1083,8 @@ void PasswordAutofillAgent::SubmitChangePasswordForm(
   if (!last_element) {
     return;
   }
-  std::optional<FormData> form_data =
-      GetFormDataFromWebForm(form_util::GetOwningForm(last_element));
+  std::optional<FormData> form_data = GetFormDataFromWebForm(
+      form_util::GetOwningForm(last_element), /*form_cache=*/{});
   if (!form_data) {
     return;
   }
@@ -1121,7 +1122,7 @@ void PasswordAutofillAgent::FillPasswordFieldAndSave(
   CHECK(password_input.FormControlTypeForAutofill() == kInputPassword);
   DoFillField(password_input, credential, GetFieldFlags(suggestion_source));
   InformBrowserAboutUserInput(form_util::GetOwningForm(password_input),
-                              password_input);
+                              password_input, /*form_cache=*/{});
 }
 
 void PasswordAutofillAgent::PreviewSuggestion(
@@ -1360,8 +1361,8 @@ bool PasswordAutofillAgent::TryToShowKeyboardReplacingSurface(
                             ? form_util::GetOwningForm(password_element)
                             : form_util::GetOwningForm(username_element);
   std::optional<FormData> form_data =
-      form ? GetFormDataFromWebForm(form)
-           : GetFormDataFromUnownedInputElements();
+      form ? GetFormDataFromWebForm(form, /*form_cache=*/{})
+           : GetFormDataFromUnownedInputElements(/*form_cache=*/{});
 
   GetPasswordManagerDriver().ShowKeyboardReplacingSurface(
       form_data ? CalculateSubmissionReadiness(*form_data, username_element,
@@ -1410,7 +1411,8 @@ void PasswordAutofillAgent::AnnotateFormsAndFieldsWithSignatures(
   }
   WebDocument document = render_frame()->GetWebFrame()->GetDocument();
   for (const WebFormElement& form : forms) {
-    std::optional<FormData> form_data = GetFormDataFromWebForm(form);
+    std::optional<FormData> form_data =
+        GetFormDataFromWebForm(form, /*form_cache=*/{});
     std::string form_signature;
     std::string alternative_form_signature;
     if (form_data) {
@@ -1428,7 +1430,8 @@ void PasswordAutofillAgent::AnnotateFormsAndFieldsWithSignatures(
         form_signature, alternative_form_signature);
   }
 
-  std::optional<FormData> form_data = GetFormDataFromUnownedInputElements();
+  std::optional<FormData> form_data =
+      GetFormDataFromUnownedInputElements(/*form_cache=*/{});
   std::string form_signature;
   std::string alternative_form_signature;
   if (form_data) {
@@ -1493,7 +1496,8 @@ void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
         continue;
     }
 
-    std::optional<FormData> form_data(GetFormDataFromWebForm(form));
+    std::optional<FormData> form_data(
+        GetFormDataFromWebForm(form, /*form_cache=*/{}));
     if (!form_data || !IsRendererRecognizedCredentialForm(*form_data)) {
       continue;
     }
@@ -1530,7 +1534,8 @@ void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
   }
 
   if (add_unowned_inputs) {
-    std::optional<FormData> form_data(GetFormDataFromUnownedInputElements());
+    std::optional<FormData> form_data(
+        GetFormDataFromUnownedInputElements(/*form_cache=*/{}));
     if (form_data && IsRendererRecognizedCredentialForm(*form_data)) {
       password_forms_data.push_back(std::move(*form_data));
     }
@@ -1754,16 +1759,19 @@ void PasswordAutofillAgent::TriggerFormSubmission() {
 #endif
 
 std::optional<FormData> PasswordAutofillAgent::GetFormDataFromWebForm(
-    const WebFormElement& web_form) {
+    const WebFormElement& web_form,
+    const SynchronousFormCache& form_cache) {
   return CreateFormDataFromWebForm(
       web_form, field_data_manager(), &username_detector_cache_,
       &button_titles_cache_,
       autofill_agent_->GetCallTimerState(
-          CallTimerState::CallSite::kGetFormDataFromWebForm));
+          CallTimerState::CallSite::kGetFormDataFromWebForm),
+      form_cache);
 }
 
 std::optional<FormData>
-PasswordAutofillAgent::GetFormDataFromUnownedInputElements() {
+PasswordAutofillAgent::GetFormDataFromUnownedInputElements(
+    const SynchronousFormCache& form_cache) {
   // The element's frame might have been detached in the meantime (see
   // http://crbug.com/585363, comments 5 and 6), in which case `frame` will
   // be null. This was hardly caused by form submission (unless the user is
@@ -1777,7 +1785,8 @@ PasswordAutofillAgent::GetFormDataFromUnownedInputElements() {
   return CreateFormDataFromUnownedInputElements(
       *web_frame, field_data_manager(), &username_detector_cache_,
       autofill_agent_->GetCallTimerState(
-          CallTimerState::CallSite::kGetFormDataFromUnownedInputElements));
+          CallTimerState::CallSite::kGetFormDataFromUnownedInputElements),
+      form_cache);
 }
 
 void PasswordAutofillAgent::InformAboutFormClearing(
@@ -1809,8 +1818,10 @@ void PasswordAutofillAgent::InformAboutFieldClearing(
   WebFormElement form = form_util::GetOwningForm(cleared_element);
   if (!form) {
     // Process password field clearing for fields outside the <form> tag.
-    if (auto unowned_form_data = GetFormDataFromUnownedInputElements())
+    if (std::optional<FormData> unowned_form_data =
+            GetFormDataFromUnownedInputElements(/*form_cache=*/{})) {
       GetPasswordManagerDriver().PasswordFormCleared(*unowned_form_data);
+    }
     return;
   }
   // Process field clearing for a form under a <form> tag.
@@ -1997,30 +2008,22 @@ void PasswordAutofillAgent::CleanupOnDocumentShutdown() {
 void PasswordAutofillAgent::InformBrowserAboutUserInput(
     const WebFormElement& form,
     const WebInputElement& element,
-    OptionalForm extracted_form) {
+    const SynchronousFormCache& form_cache) {
   DCHECK(form || element);
   if (!FrameCanAccessPasswordManager())
     return;
-  auto maybe_inform_browser = [&](const FormData& form_data) {
-    // Notify the browser about user inputs if `form` is recognized as a
-    // credential form in the renderer, or if the browser has parsed `element`
-    // as password-related and provided filling data for it.
-    if (IsRendererRecognizedCredentialForm(form_data) ||
-        (element && web_input_to_password_info_.contains(FieldRef(element)))) {
-      GetPasswordManagerDriver().InformAboutUserInput(form_data);
-    }
-  };
-  if (extracted_form) {
-    FormData form_copy = *extracted_form;
-    ProcessFormDataAfterCreation(form_copy, form, &username_detector_cache_,
-                                 &button_titles_cache_);
-    maybe_inform_browser(std::move(form_copy));
-  } else if (std::optional<FormData> owned_form =
-                 GetFormDataFromWebForm(form)) {
-    maybe_inform_browser(*owned_form);
-  } else if (std::optional<FormData> unowned_form =
-                 GetFormDataFromUnownedInputElements()) {
-    maybe_inform_browser(*unowned_form);
+  std::optional<FormData> form_data =
+      form ? GetFormDataFromWebForm(form, form_cache)
+           : GetFormDataFromUnownedInputElements(form_cache);
+  if (!form_data) {
+    return;
+  }
+  // Notify the browser about user inputs if `form` is recognized as a
+  // credential form in the renderer, or if the browser has parsed `element` as
+  // password-related and provided filling data for it.
+  if (IsRendererRecognizedCredentialForm(*form_data) ||
+      (element && web_input_to_password_info_.contains(FieldRef(element)))) {
+    GetPasswordManagerDriver().InformAboutUserInput(*form_data);
   }
 }
 
@@ -2199,7 +2202,8 @@ void PasswordAutofillAgent::OnFormSubmitted(const WebFormElement& form) {
     return;
   }
 
-  std::optional<FormData> submitted_form_data = GetFormDataFromWebForm(form);
+  std::optional<FormData> submitted_form_data =
+      GetFormDataFromWebForm(form, /*form_cache=*/{});
 
   if (!submitted_form_data || !HasTextInputs(*submitted_form_data)) {
     return;
@@ -2460,8 +2464,8 @@ void PasswordAutofillAgent::MaybeTriggerSuggestionsOnFocusedElement(
     return;
   }
 
-  auto form_data =
-      GetFormDataFromWebForm(form_util::GetOwningForm(focused_element));
+  std::optional<FormData> form_data = GetFormDataFromWebForm(
+      form_util::GetOwningForm(focused_element), /*form_cache=*/{});
   if (form_data && (times_received_fill_data_[form_data->renderer_id()] == 1) &&
 #if BUILDFLAG(IS_ANDROID)
       // Limit showing suggestions on autofocus to WebAuthn forms only, since

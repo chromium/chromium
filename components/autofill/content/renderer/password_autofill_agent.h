@@ -24,6 +24,7 @@
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/form_tracker.h"
 #include "components/autofill/content/renderer/html_based_username_detector.h"
+#include "components/autofill/content/renderer/synchronous_form_cache.h"
 #include "components/autofill/core/common/field_data_manager.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
@@ -178,11 +179,10 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   bool TextDidChangeInTextField(const blink::WebInputElement& element);
 
   // Called from AutofillAgent::UpdateStateForTextChange() to do
-  // password-manager specific work. `extracted_form`, if not null, is the
-  // updated `FormData` objects where `element` exists as a `FormFieldData`.
-  void UpdatePasswordStateForTextChange(
-      const blink::WebInputElement& element,
-      OptionalForm extracted_form = std::nullopt);
+  // password-manager specific work. `form_cache` can be used to optimize form
+  // extractions occurring synchronously after this function call.
+  void UpdatePasswordStateForTextChange(const blink::WebInputElement& element,
+                                        const SynchronousFormCache& form_cache);
 
   // Instructs `autofill_agent_` to track the autofilled `element`.
   void TrackAutofilledElement(const blink::WebFormControlElement& element);
@@ -227,9 +227,11 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   void UserGestureObserved();
 
   std::optional<FormData> GetFormDataFromWebForm(
-      const blink::WebFormElement& web_form);
+      const blink::WebFormElement& web_form,
+      const SynchronousFormCache& form_cache);
 
-  std::optional<FormData> GetFormDataFromUnownedInputElements();
+  std::optional<FormData> GetFormDataFromUnownedInputElements(
+      const SynchronousFormCache& form_cache);
 
   // Notification that form element was cleared by HTMLFormElement::reset()
   // method. This can be used as a signal of a successful submission for change
@@ -249,12 +251,12 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // `form` and `input` are the elements user has just been interacting with
   // before the form save. `form` or `input` can be null but not both at the
   // same time. For example: if the form is unowned, `form` will be null; if the
-  // user has submitted the form, `input` will be null. `extracted_form`, if not
-  // null, is the updated `FormData` objects where `input` exists as a
-  // `FormFieldData`.
+  // user has submitted the form, `input` will be null. `form_cache` can be used
+  // to optimize form extractions occurring synchronously after this function
+  // call.
   void InformBrowserAboutUserInput(const blink::WebFormElement& form,
                                    const blink::WebInputElement& input,
-                                   OptionalForm extracted_form = std::nullopt);
+                                   const SynchronousFormCache& form_cache);
 
   // Determine whether the current frame is allowed to access the password
   // manager. For example, frames with about:blank documents or documents with

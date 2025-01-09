@@ -5137,12 +5137,14 @@ TEST_F(PasswordAutofillAgentTest,
   // Simulate user modifying field values and ensure they are propagated to the
   // browser.
   username_element_.SetValue(WebString::FromUTF8(kAliceUsername));
-  password_autofill_agent_->UpdatePasswordStateForTextChange(username_element_);
+  password_autofill_agent_->UpdatePasswordStateForTextChange(username_element_,
+                                                             /*form_cache=*/{});
   fake_driver_.Flush();
   EXPECT_EQ(fake_driver_.called_inform_about_user_input_count(), 1);
 
   password_element_.SetValue(WebString::FromUTF8(kAlicePassword));
-  password_autofill_agent_->UpdatePasswordStateForTextChange(password_element_);
+  password_autofill_agent_->UpdatePasswordStateForTextChange(password_element_,
+                                                             /*form_cache=*/{});
   fake_driver_.Flush();
   EXPECT_EQ(fake_driver_.called_inform_about_user_input_count(), 2);
 
