@@ -35,6 +35,7 @@
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -3928,13 +3929,7 @@ TEST_F(URLLoaderTest, CertStatusOnResponse) {
 }
 
 // Verifies if URLLoader works well with ResourceScheduler.
-// TODO(crbug.com/333723898): enable this test.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ResourceSchedulerIntegration DISABLED_ResourceSchedulerIntegration
-#else
-#define MAYBE_ResourceSchedulerIntegration ResourceSchedulerIntegration
-#endif
-TEST_F(URLLoaderTest, MAYBE_ResourceSchedulerIntegration) {
+TEST_F(URLLoaderTest, ResourceSchedulerIntegration) {
   // ResourceScheduler limits the number of connections for the same host
   // by 6.
   constexpr int kRepeat = 6;
@@ -3971,12 +3966,12 @@ TEST_F(URLLoaderTest, MAYBE_ResourceSchedulerIntegration) {
     loaders.emplace_back(std::move(url_loader), std::move(loader_remote));
   }
 
-  base::RunLoop().RunUntilIdle();
-  for (const auto& pair : loaders) {
-    URLLoader* loader = pair.first.get();
-    ASSERT_NE(loader, nullptr);
-    EXPECT_EQ(net::LOAD_STATE_WAITING_FOR_RESPONSE, loader->GetLoadState());
-  }
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return std::ranges::all_of(loaders, [](const auto& pair) {
+      return pair.first->GetLoadState() == net::LOAD_STATE_WAITING_FOR_RESPONSE;
+    });
+  })) << "Timeout waiting for all loaders to be in state "
+         "net::LOAD_STATE_WAITING_FOR_RESPONSE";
 
   mojo::PendingRemote<mojom::URLLoader> loader_remote;
   std::unique_ptr<URLLoader> loader = URLLoaderOptions().MakeURLLoader(
