@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/orchestrator/ui_bundled/toolbar_animatee.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_positioner.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/adaptive_toolbar_view_controller.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/primary_toolbar_consumer.h"
 
 @protocol PrimaryToolbarViewControllerDelegate;
 @class TabGroupIndicatorView;
@@ -20,6 +21,7 @@
 @interface PrimaryToolbarViewController
     : AdaptiveToolbarViewController <SharingPositioner,
                                      KeyCommandActions,
+                                     PrimaryToolbarConsumer,
                                      ToolbarAnimatee>
 
 @property(nonatomic, weak) id<PrimaryToolbarViewControllerDelegate> delegate;

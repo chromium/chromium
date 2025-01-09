@@ -330,6 +330,8 @@ BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
   self.view.matchNTPHeight = NO;
 }
 
+#pragma mark - PrimaryToolbarConsumer
+
 - (void)showBannerPromo {
   [self.view showBannerPromo];
   [self.toolbarHeightDelegate toolbarsHeightChanged];

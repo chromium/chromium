@@ -7,9 +7,29 @@
 
 #import "ios/chrome/app/application_delegate/observing_app_state_agent.h"
 
+@class DefaultBrowserBannerPromoAppAgent;
+
+// Protocol for observers that want to know when the default browser banner
+// promo state changes.
+@protocol DefaultBrowserBannerAppAgentObserver <NSObject>
+
+@optional
+
+// Called when the observers should display the promo.
+- (void)displayPromoFromAppAgent:(DefaultBrowserBannerPromoAppAgent*)appAgent;
+
+// Called when the observers should hide the promo.
+- (void)hidePromoFromAppAgent:(DefaultBrowserBannerPromoAppAgent*)appAgent;
+
+@end
+
 // App agent to manage the Default Browser Banner Promo. It observes navigation
 // events in all active web states to determine when to show and hide the promo.
 @interface DefaultBrowserBannerPromoAppAgent : SceneObservingAppAgent
+
+// Observation methods:
+- (void)addObserver:(id<DefaultBrowserBannerAppAgentObserver>)observer;
+- (void)removeObserver:(id<DefaultBrowserBannerAppAgentObserver>)observer;
 
 @end
 

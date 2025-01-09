@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/banner_promo/model/default_browser_banner_promo_app_agent.h"
 
+#import "base/ios/crb_protocol_observers.h"
+#import "components/google/core/common/google_util.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
@@ -15,8 +17,15 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
+
+@interface DefaultBrowserBannerAppAgentObserverList
+    : CRBProtocolObservers <DefaultBrowserBannerAppAgentObserver>
+@end
+@implementation DefaultBrowserBannerAppAgentObserverList
+@end
 
 @interface DefaultBrowserBannerPromoAppAgent () <BrowserListObserver,
                                                  CRWWebStateObserver,
@@ -35,7 +44,11 @@
   // Observer bridge for observing web states.
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
 
-  // Forwarder for
+  // Stores the last URL visited for each web state to track navigations.
+  std::map<web::WebStateID, GURL> _lastNavigatedURLs;
+
+  // Stored observers.
+  DefaultBrowserBannerAppAgentObserverList* _observers;
 }
 
 - (instancetype)init {
@@ -47,8 +60,46 @@
         std::make_unique<WebStateListObserverBridge>(self);
     _webStateObserverBridge =
         std::make_unique<web::WebStateObserverBridge>(self);
+
+    _observers = [DefaultBrowserBannerAppAgentObserverList
+        observersWithProtocol:@protocol(DefaultBrowserBannerAppAgentObserver)];
   }
   return self;
+}
+
+- (void)addObserver:(id<DefaultBrowserBannerAppAgentObserver>)observer {
+  [_observers addObserver:observer];
+}
+
+- (void)removeObserver:(id<DefaultBrowserBannerAppAgentObserver>)observer {
+  [_observers removeObserver:observer];
+}
+
+#pragma mark - Private
+
+- (BOOL)navigationOccuredInWebState:(web::WebState*)webState
+                  navigationContext:(web::NavigationContext*)navigationContext {
+  auto iterator = _lastNavigatedURLs.find(webState->GetUniqueIdentifier());
+  if (iterator == _lastNavigatedURLs.end()) {
+    return YES;
+  }
+  // New url counts as a navigation.
+  return iterator->second != navigationContext->GetUrl().GetWithoutRef() ||
+         !navigationContext->IsSameDocument();
+}
+
+- (void)stopObservingWebState:(web::WebState*)webState {
+  webState->RemoveObserver(_webStateObserverBridge.get());
+  _lastNavigatedURLs.erase(webState->GetUniqueIdentifier());
+}
+
+- (void)startObservingWebState:(web::WebState*)webState {
+  webState->AddObserver(_webStateObserverBridge.get());
+  const GURL& currentURL = webState->GetLastCommittedURL().GetWithoutRef();
+  if (currentURL != GURL()) {
+    _lastNavigatedURLs.insert_or_assign(webState->GetUniqueIdentifier(),
+                                        currentURL);
+  }
 }
 
 #pragma mark - SceneStateObserver
@@ -96,7 +147,7 @@
 
   web::WebState* webState = webStateList->GetActiveWebState();
   if (webState) {
-    webState->AddObserver(_webStateObserverBridge.get());
+    [self startObservingWebState:webState];
   }
 }
 
@@ -107,7 +158,7 @@
 
   web::WebState* webState = webStateList->GetActiveWebState();
   if (webState) {
-    webState->RemoveObserver(_webStateObserverBridge.get());
+    [self stopObservingWebState:webState];
   }
 }
 
@@ -131,18 +182,30 @@
   }
 
   if (status.old_active_web_state) {
-    status.old_active_web_state->RemoveObserver(_webStateObserverBridge.get());
+    [self stopObservingWebState:status.old_active_web_state];
   }
   if (status.new_active_web_state) {
-    status.new_active_web_state->AddObserver(_webStateObserverBridge.get());
+    [self startObservingWebState:status.new_active_web_state];
   }
 }
 
 #pragma mark - CRWWebStateObserver
 
 - (void)webState:(web::WebState*)webState
-    didStartNavigation:(web::NavigationContext*)navigationContext {
-  // TODO(crbug.com/374119252): Handle navigation.
+    didFinishNavigation:(web::NavigationContext*)navigationContext {
+  if (![self navigationOccuredInWebState:webState
+                       navigationContext:navigationContext]) {
+    return;
+  }
+  _lastNavigatedURLs.insert_or_assign(
+      webState->GetUniqueIdentifier(),
+      navigationContext->GetUrl().GetWithoutRef());
+
+  if (google_util::IsGoogleSearchUrl(navigationContext->GetUrl())) {
+    [_observers hidePromoFromAppAgent:self];
+  } else {
+    [_observers displayPromoFromAppAgent:self];
+  }
 }
 
 @end
