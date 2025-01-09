@@ -462,7 +462,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="1306606229401759371">Promijeni postavke</translation>
 <translation id="1307165550267142340">Vaš PIN je kreiran</translation>
 <translation id="1307431692088049276">Ne pitaj me ponovo</translation>
-<translation id="130744661532298792">Da biste uvijek mogli upotrebljavati zaporke na svojem Google računu, potvrdite svoj identitet</translation>
+<translation id="130744661532298792">Da uvijek možete koristiti lozinke na Google računu, potvrdite identitet</translation>
 <translation id="1307559529304613120">Ups!  Sistem nije uspio pohraniti token za dugoročni pristup API-ju za ovaj uređaj.</translation>
 <translation id="1308548450293664112">Potvrda kreiranja ovog fajla. Grupa dugmadi za izbor, 1 od 3</translation>
 <translation id="131112695174432497">Podaci koji utiču na personalizaciju oglasa su izbrisani</translation>
@@ -2832,7 +2832,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="2953210795988451570">Sigurnosna ažuriranja su se završila. Pređite na novi Chromebook.</translation>
 <translation id="2953218713108551165">Obavještenja nisu dozvoljena za <ph name="SITE" />. Pitat ćemo vas ponovo prilikom sljedeće posjete.</translation>
 <translation id="2956070239128776395">Odjeljak je ugniježđen u grupi: <ph name="ERROR_LINE" /></translation>
-<translation id="2957124229512318478">Uključite način rada razvojnog programera da biste upotrebljavali ovo proširenje koje Chrome web-trgovina ne može pregledati.</translation>
+<translation id="2957124229512318478">Uključite način rada za programere da koristite ovu ekstenziju, koju ne može pregledati Chrome Web trgovina.</translation>
 <translation id="2958721676848865875">Upozorenje na ekstenziju paketa</translation>
 <translation id="2959127025785722291">Nešto nije uredu. Dovršavanje skeniranja nije uspjelo. Pokušajte ponovo.</translation>
 <translation id="2959474507964749987">Ovaj šifrirani fajl je možda virus ili zlonamjerni softver.<ph name="LINE_BREAK" />Da provjerite je li fajl nesiguran, možete njega i lozinku poslati Sigurnom pregledanju na Googleu. Skeniranja obično traju nekoliko sekundi.<ph name="LINE_BREAK" />Da skenirate fajl, dodajte njegovu lozinku.</translation>
@@ -4331,7 +4331,7 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="4001540981461989979">Isticanje kursora miša prilikom pomicanja</translation>
 <translation id="4002347779798688515">Preuzeti profil se možda neće moći koristiti ako je mobilni operater zaključan. Kontaktirajte operatera za podršku.</translation>
 <translation id="4002440992267487163">Postavi PIN</translation>
-<translation id="4003617970184602156">Da biste upotrebljavali i spremali zaporke na svojem Google računu, potvrdite svoj identitet</translation>
+<translation id="4003617970184602156">Da koristite i sačuvate lozinke na Google računu, potvrdite identitet</translation>
 <translation id="4005817994523282006">Način prepoznavanja vremenske zone</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{Ovo će trajno izbrisati grupu s uređaja.}one{Ovo će trajno izbrisati grupe s uređaja.}few{Ovo će trajno izbrisati grupe s uređaja.}other{Ovo će trajno izbrisati grupe s uređaja.}}</translation>
 <translation id="4010036441048359843">Uključivanje isticanja</translation>
@@ -6964,7 +6964,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="5932224571077948991">Web lokacija prikazuje ometajuće ili obmanjujuće oglase</translation>
 <translation id="59324397759951282">USB uređaj proizvođača <ph name="MANUFACTURER_NAME" /></translation>
 <translation id="5932441198730183141">Nemate dovoljno dostupnih licenci da prijavite ovaj hardverski uređaj za Google Meet. Kontaktirajte prodaju da kupite još licenci. Ako mislite da vam se ova poruka prikazuje greškom, kontaktirajte podršku.</translation>
-<translation id="593271375210025655">Uključite način rada razvojnog programera da biste upotrebljavali to proširenje samo ako proširenje smatrate pouzdanim. Može sadržavati eksperimentalne značajke i Chrome web-trgovina ju nije pregledala.</translation>
+<translation id="593271375210025655">Uključite način rada za programere da koristite ovu ekstenziju, ali samo ako je smatrate pouzdanom. Možda sadržava eksperimentalne funkcije i Chrome Web trgovina je nije pregledala.</translation>
 <translation id="5932881020239635062">Serijski broj</translation>
 <translation id="5933376509899483611">Vremenska zona</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> koristi vašu kameru i mikrofon.</translation>
@@ -6992,7 +6992,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="5948476936444935795">Otkaži uvoz</translation>
 <translation id="5948536763493709626">Povežite tastaturu ili miš, ili nastavite postavljanje koristeći ekran na dodir. Ako koristite Bluetooth uređaje, vodite računa da su uređaji spremni za uparivanje.</translation>
 <translation id="5949544233750246342">Nije moguće raščlaniti fajl</translation>
-<translation id="5949795028157144515">Isključen je način rada razvojnog programera. Neka su proširenja onemogućena.</translation>
+<translation id="5949795028157144515">Način rada za programere je isključen. Određene ekstenzije su onemogućene.</translation>
 <translation id="594993197557058302">Pritisnite modifikacijske tipke 1 – 4 (ctrl, alt, shift, tipku za pretraživanje ili pokretač) i još 1 tipku. Također možete odabrati samo jednu tipku.</translation>
 <translation id="5950762317146173294">Ovaj fajl je možda virus ili zlonamjerni softver</translation>
 <translation id="5951303645598168883"><ph name="ORIGIN" /> želi koristiti lokalne fontove</translation>

@@ -143,6 +143,7 @@
 <translation id="2910007522516064972">‏حو&amp;ل Chromium</translation>
 <translation id="2915996080311180594">إعادة التشغيل لاحقًا</translation>
 <translation id="2928420929544864228">اكتمل التثبيت.</translation>
+<translation id="2933336679234709858">‏تم تشفير بياناتك باستخدام عبارة المرور. عليك إدخال عبارة المرور لاستخدام بيانات Chromium وحفظها في حسابك على Google.</translation>
 <translation id="2945997411976714835">خطأ في التثبيت: تعذّر بدء عملية التثبيت.</translation>
 <translation id="2970426615109535079">‏تدير مؤسستك متصفِّح Chromium</translation>
 <translation id="2977470724722393594">‏Chromium محدّث</translation>
@@ -214,6 +215,7 @@
 <translation id="391789666908693569">‏تتم إدارة حسابك من قِبَل <ph name="MANAGER_NAME" />. وبإمكان المشرف الاطّلاع على الملف الشخصي لمتصفِّح Chromium وتعديل بياناته، مثل الإشارات المرجعية والسجلّ وكلمات المرور.</translation>
 <translation id="3941890832296813527">خطأ في التثبيت: اسم ملف أداة التثبيت غير صالح أو غير متوافق.</translation>
 <translation id="3945058413678539331">‏يحاول Chromium نسخ كلمات المرور. اكتب كلمة مرور Windows للسماح بذلك.</translation>
+<translation id="3954172517175569325">‏ستتم إزالة كلمات المرور وطرق الدفع والعناوين التي حفظتها في حسابك على Google من هذا الجهاز. ولاستخدامها مرة أخرى في Chromium، عليك تسجيل الدخول مجددًا.</translation>
 <translation id="3962647064319009959">‏تعرّف على الطريقة التي يحافظ بها Chromium على أمانك</translation>
 <translation id="3975724895399328945">‏لمحة عن الإصدار Google Chrome for Testing</translation>
 <translation id="3997429360543082038">‏لمحة عن نظام التشغيل Chromium</translation>
@@ -323,7 +325,6 @@
 <translation id="5496810170689441661">‏يحاول Chromium تعديل كلمات المرور. للسماح بذلك، يُرجى كتابة كلمة مرور Windows الخاصة بك.</translation>
 <translation id="5527463683072221100">‏فتح ملفات PDF في Chromium</translation>
 <translation id="5568136785038042132">‏للحصول على الإضافات على جميع أجهزة الكمبيوتر الخاصة بك، يُرجى تسجيل الدخول إلى Chromium</translation>
-<translation id="5575418445468216473">‏يتمّ حفظ كلمات المرور وبيانات Chromium الأخرى في حسابك على Google، وستتم إزالتها من هذا الجهاز. ولاستخدامها في المستقبل، عليك تسجيل الدخول مجددًا إلى Chromium.</translation>
 <translation id="5579324208890605088">خطأ في بدء التشغيل: يُرجى تشغيل أداة التثبيت بصفتك مستخدمًا عاديًا وليس بصفتك مشرفًا.</translation>
 <translation id="5596627076506792578">خيارات إضافية</translation>
 <translation id="5605834417512968703">‏حدِّد أي محتوى للبحث عنه باستخدام ميزة "البحث بالصور"، أو اضغط على مفتاح Escape للخروج من الميزة</translation>

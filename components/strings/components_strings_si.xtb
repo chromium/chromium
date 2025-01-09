@@ -3909,6 +3909,7 @@
 <translation id="7975858430722947486">සංසන්දනයට එක් කරන ලදි</translation>
 <translation id="7976214039405368314">ඉල්ලීම් ඉතා වැඩිය</translation>
 <translation id="7977538094055660992">ප්‍රතිදාන උපාංගය</translation>
+<translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{මිනි <ph name="TIME_COUNT" />කට පෙර}=1{පැය <ph name="TIME_COUNT" />කට පෙර}one{දින <ph name="TIME_COUNT" />කට පෙර}other{දින <ph name="TIME_COUNT" />කට පෙර}}</translation>
 <translation id="7979595116210197019">ආහාර සේවාව</translation>
 <translation id="798134797138789862">අතථ්‍ය යථාර්ථ උපාංග සහ දත්ත භාවිත කිරීමට ඉල්ලිය හැකිය</translation>
 <translation id="7982789257301363584">ජාලය</translation>

@@ -3905,6 +3905,7 @@
 <translation id="7975858430722947486">କମ୍ପାରିଜନରେ ଯୋଗ କରାଯାଇଛି</translation>
 <translation id="7976214039405368314">ଅନେକଗୁଡ଼ିଏ ଅନୁରୋଧ</translation>
 <translation id="7977538094055660992">ଆଉଟପୁଟ୍ ଡିଭାଇସ୍</translation>
+<translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> ମିନିଟ ପୂର୍ବେ}=1{<ph name="TIME_COUNT" /> ଘଣ୍ଟା ପୂର୍ବେ}other{<ph name="TIME_COUNT" /> ଦିନ ପୂର୍ବେ}}</translation>
 <translation id="7979595116210197019">ଖାଦ୍ୟ ସେବା</translation>
 <translation id="798134797138789862">ଭର୍ଚୁଆଲ୍ ରିଆଲିଟୀ ଡିଭାଇସ୍ ଏବଂ ଡାଟା ବ୍ୟବହାର କରିବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
 <translation id="7982789257301363584">ନେଟୱାର୍କ</translation>

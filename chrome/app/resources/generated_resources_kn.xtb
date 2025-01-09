@@ -5050,7 +5050,7 @@
 <translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> ಅವರು ಈ ವಿಸ್ತರಣೆಯನ್ನು ಬಳಸಲು ಬಯಸುತ್ತಾರೆ:</translation>
 <translation id="4546692474302123343">Google Assistant ಧ್ವನಿ ಇನ್‌ಪುಟ್‌</translation>
 <translation id="4547659257713117923">ಇತರ ಸಾಧನಗಳಿಂದ ಯಾವುದೇ ಟ್ಯಾಬ್‌ಗಳಿಲ್ಲ</translation>
-<translation id="4547672827276975204">ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಹೊಂದಿಸಿ</translation>
+<translation id="4547672827276975204">ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸೆಟ್ ಮಾಡಿ</translation>
 <translation id="4549791035683739768">ನಿಮ್ಮ ಭದ್ರತಾ ಕೀಯಲ್ಲಿ ಯಾವುದೇ ಫಿಂಗರ್‌ಪ್ರಿಂಟ್‌‍ಗಳನ್ನು ಸಂಗ್ರಹಣೆ ಮಾಡಿಲ್ಲ</translation>
 <translation id="4550737096585299960">ಕೆಲವು ನಿಮಿಷಗಳ ನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="4550926046134589611">ಕೆಲವು ಬೆಂಬಲಿಸಿದ ಲಿಂಕ್‌ಗಳು <ph name="APP_NAME" /> ನಲ್ಲಿ ಈಗಲೂ ಲಭ್ಯವಿರುತ್ತವೆ.</translation>
@@ -7447,6 +7447,7 @@
 <translation id="6278776436938569440">ಸ್ಥಳವನ್ನು ಬದಲಾಯಿಸಿ</translation>
 <translation id="6280215091796946657">ಬೇರೆ ಖಾತೆಯೊಂದಿಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281218688313242284">ನಿಮ್ಮ &amp;Google ಖಾತೆಯನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{1 ಶೀಟ್ ಕಾಗದದ ಮಿತಿಯನ್ನು ಮೀರುತ್ತದೆ}one{{COUNT} ಶೀಟ್‌ಗಳ ಕಾಗದದ ಮಿತಿಯನ್ನು ಮೀರುತ್ತದೆ}other{{COUNT} ಶೀಟ್‌ಗಳ ಕಾಗದದ ಮಿತಿಯನ್ನು ಮೀರುತ್ತದೆ}}</translation>
 <translation id="6282490239556659745"><ph name="SITE" /> ನಿಂದ <ph name="EMBEDDED_SITE" /> ಅನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="6283438600881103103">ನಿಮ್ಮನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸೈನ್ ಔಟ್ ಮಾಡಲಾಗುತ್ತದೆ.
@@ -8060,6 +8061,7 @@
 <translation id="6745592621698551453">ಈಗ ಅಪ್‌ಡೇಟ್‌ ಮಾಡು</translation>
 <translation id="6746124502594467657">ಕೆಳಗೆ ಸರಿಸಿ</translation>
 <translation id="67465227497040338"><ph name="DOMAIN" /> ಗಾಗಿ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ತೋರಿಸಿ</translation>
+<translation id="6746834324024491643">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಹೆಚ್ಚಿನದನ್ನು ಪಡೆಯಲು, <ph name="EMAIL" /> ಆಗಿ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="6748980958975836188"><ph name="BEGIN_LINK1" />Google ಸೇವಾ ನಿಯಮಗಳು<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome ಮತ್ತು Chrome OS ಹೆಚ್ಚುವರಿ ಸೇವಾ ನಿಯಮಗಳನ್ನು<ph name="END_LINK2" /> ನಾನು ಓದಿದ್ದೇನೆ ಮತ್ತು ಒಪ್ಪುತ್ತೇನೆ.</translation>
 <translation id="6749077623962119521">ಅನುಮತಿಗಳನ್ನು ರೀಸೆಟ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="6749473226660745022">ಫೋಟೋಗಳು</translation>

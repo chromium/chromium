@@ -1695,6 +1695,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3990532701115075684">Śledzenie Twoich rąk</translation>
 <translation id="3992684624889376114">Informacje o tej stronie</translation>
 <translation id="3995639283717357522">Zastosuj zasady</translation>
+<translation id="3996683183117168945">Cytat <ph name="CURRENT_CITATION" /> z <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" />. <ph name="PAGE_TITLE" /> <ph name="PAGE_PREVIEW" /></translation>
 <translation id="399754345297554962">Testy wstępne i standaryzowane</translation>
 <translation id="3999173941208168054">Horrory</translation>
 <translation id="4000598935132966791">Więcej informacji o ograniczeniach dotyczących stron internetowych w zarządzanych przeglądarkach</translation>
@@ -3910,6 +3911,7 @@ Dodatkowe informacje:
 <translation id="7975858430722947486">Dodano do porównania</translation>
 <translation id="7976214039405368314">Zbyt wiele żądań</translation>
 <translation id="7977538094055660992">Urządzenie wyjściowe</translation>
+<translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> min temu}=1{<ph name="TIME_COUNT" /> godz. temu}few{<ph name="TIME_COUNT" /> d temu}many{<ph name="TIME_COUNT" /> d temu}other{<ph name="TIME_COUNT" /> d temu}}</translation>
 <translation id="7979595116210197019">Branża żywieniowa</translation>
 <translation id="798134797138789862">Może prosić o zgodę na używanie urządzeń i danych rzeczywistości wirtualnej</translation>
 <translation id="7982789257301363584">Sieć</translation>

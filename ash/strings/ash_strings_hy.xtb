@@ -530,6 +530,7 @@
 <translation id="2847759467426165163">Ընտրեք սարքը</translation>
 <translation id="2848120746144143659">Սեղմեք Enter՝ ամբողջ էկրանի սքրինշոթ անելու համար</translation>
 <translation id="2849936225196189499">Վճռական</translation>
+<translation id="2850207700020959936">Տեսախցիկը հասանելի է հավելվածներին</translation>
 <translation id="2860184359326882502">Լավագույն համընկնումը</translation>
 <translation id="2865888419503095837">Տեղեկություններ ցանցի մասին</translation>
 <translation id="2869095047958348710">Անցած <ph name="DAY_OF_WEEK" /></translation>
@@ -584,6 +585,7 @@
 <translation id="304417730895741346">Ձեր կողմից ամրացված և բացված հավելվածները դարակում են։ Դարակում հավելված ամրացնելու համար հավելվածի վրա սեղմեք մկնիկի աջ կոճակը կամ երկու մատով հպեք հպահարթակին։</translation>
 <translation id="3045488863354895414">Բարի օր,</translation>
 <translation id="3047761520276763270">Ասեք՝</translation>
+<translation id="3053407068093039599">Թույլատրել/արգելել տեսախցիկի օգտագործումը</translation>
 <translation id="3055162170959710888">Այս սարքն այսօր օգտագործվել է <ph name="USED_TIME" /></translation>
 <translation id="3062298103034426069">Չի աջակցվում</translation>
 <translation id="3068622547379332530">Տարբերակ <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -1800,6 +1802,7 @@
 <translation id="7034025838182392395"><ph name="APP_NAME" /> հավելվածն ուզում է օգտագործել ձեր <ph name="DEVICE_NAME" />ը։ Միացրեք սարքի <ph name="DEVICE_NAME" />ի ֆիզիկական փոխանջատիչը։</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Օգնական</translation>
 <translation id="7042322267639375032">Ծալել կարգավիճակի տարածքը</translation>
+<translation id="7042593542151411225">Տեսախցիկը հասանելի չէ հավելվածներին</translation>
 <translation id="7045033600005038336">Փոխարինե՞լ ձևանմուշը</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> սարքն անջատված է</translation>
 <translation id="7055910611768509537">Ստիլուսը ավելի քան մեկ շաբաթ չի օգտագործվել</translation>
@@ -2375,6 +2378,7 @@
 <translation id="9074432941673450836">Ձեր <ph name="PRODUCT_NAME" />-ի հավելվածներով կարող եք կատարել մի շարք առաջադրանքներ։ Անհրաժեշտ հավելվածը գտնելու համար բացեք Գործարկիչը։ Դա անելու համար կարող եք նաև սեղմել ստեղնաշարի համապատասխան կոճակը (ձախ Shift ստեղնի վերևում)։</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9077515519330855811">Մեդիա կարգավորումներ, այժմ հնչում է՝ <ph name="MEDIA_TITLE" /></translation>
+<translation id="9079012373317704997">Հնարավոր չէ հեռակա կարգով թույլատրել տեսախցիկի օգտագործումը</translation>
 <translation id="9079731690316798640">Wi-Fi ցանց՝ <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">Տեսախցիկի պատկերն ամրացված է վերևի ձախ անկյունում</translation>
 <translation id="9080132581049224423">Սահեցրեք վերև՝ հիմնական էկրան անցնելու համար</translation>

@@ -530,6 +530,7 @@
 <translation id="2847759467426165163">ইয়াত কাষ্ট কৰক</translation>
 <translation id="2848120746144143659">সম্পূৰ্ণ স্ক্ৰীনৰ স্ক্ৰীনশ্বট ল’বলৈ এণ্টাৰ টিপক</translation>
 <translation id="2849936225196189499">জটিল</translation>
+<translation id="2850207700020959936">এপ্‌সমূহে কেমেৰা এক্সেছ কৰিব পাৰে</translation>
 <translation id="2860184359326882502">আটাইতকৈ ভালদৰে মিলা</translation>
 <translation id="2865888419503095837">নেটৱৰ্কৰ তথ্য</translation>
 <translation id="2869095047958348710">যোৱা <ph name="DAY_OF_WEEK" /></translation>
@@ -584,6 +585,7 @@
 <translation id="304417730895741346">আপোনাৰ পিন কৰি থোৱা আৰু খোলা এপ্‌সমূহ শ্বেল্ফটোত আছে। শ্বেল্ফটোত কোনো এপ্‌ পিন কৰিবলৈ, এটা এপত সোঁফালে ক্লিক কৰক বা দুটা আঙুলিৰে আপোনাৰ টাচ্চপেডত টিপক।</translation>
 <translation id="3045488863354895414">শুভ অপৰাহ্ন,</translation>
 <translation id="3047761520276763270">এইবুলি কৈ চাওক:</translation>
+<translation id="3053407068093039599">কেমেৰাৰ এক্সেছ অন/অফ কৰক</translation>
 <translation id="3055162170959710888">আপুনি আজি ডিভাইচটো <ph name="USED_TIME" /> সময় ব্যৱহাৰ কৰিলে</translation>
 <translation id="3062298103034426069">সমৰ্থিত নহয়</translation>
 <translation id="3068622547379332530">সংস্কৰণ <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -1800,6 +1802,7 @@
 <translation id="7034025838182392395"><ph name="APP_NAME" />এ <ph name="DEVICE_NAME" /> ব্যৱহাৰ কৰিব বিচাৰে। আপোনাৰ ডিভাইচৰ কায়িক <ph name="DEVICE_NAME" /> ছুইচটো অন কৰক।</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
 <translation id="7042322267639375032">বিভিন্ন স্থিতি দেখুওৱা ঠাই সংকোচন কৰক</translation>
+<translation id="7042593542151411225">এপ্‌সমূহে কেমেৰা এক্সেছ কৰিব নোৱাৰে</translation>
 <translation id="7045033600005038336">টেমপ্লে’টটো সলনি কৰিবনে?</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> বিচ্ছিন্ন কৰা হ’ল</translation>
 <translation id="7055910611768509537">এসপ্তাহ ধৰি ষ্টাইলাছ ব্যৱহাৰ কৰা হোৱা নাই</translation>
@@ -2375,6 +2378,7 @@
 <translation id="9074432941673450836">আপোনাৰ <ph name="PRODUCT_NAME" />ত আপুনি বিচৰা আটাইবোৰ কাম কৰিবলৈ এপ্‌সমূহ ব্যৱহাৰ কৰক। লঞ্চাৰটোত আপুনি নিজৰ এপ্‌সমূহ বিচাৰি পাব পাৰে। আপুনি কীব’ৰ্ডত লঞ্চাৰ কীও (বাওঁ Shift কীৰ ওপৰত থকা) টিপিব পাৰে।</translation>
 <translation id="9074739597929991885">ব্লুটুথ</translation>
 <translation id="9077515519330855811">মিডিয়াৰ নিয়ন্ত্ৰণ, এতিয়া <ph name="MEDIA_TITLE" /> প্লে’ হৈ আছে</translation>
+<translation id="9079012373317704997">দূৰৰ পৰা কেমেৰাৰ এক্সেছ অন কৰিব নোৱাৰি</translation>
 <translation id="9079731690316798640">ৱাই-ফাই: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">কেমেৰা ওপৰৰ বাওঁফালৰ কোণলৈ স্নেপ কৰা হৈছে</translation>
 <translation id="9080132581049224423">গৃহ স্ক্ৰীনলৈ যাবলৈ ওপৰৰ ফালে ছোৱাইপ কৰক</translation>

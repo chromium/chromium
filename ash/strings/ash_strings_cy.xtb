@@ -530,6 +530,7 @@ Fel arall bydd y pad cyffwrdd integredig yn cael ei ail-alluogi mewn <ph name="T
 <translation id="2847759467426165163">Castio i</translation>
 <translation id="2848120746144143659">Pwyswch Enter i dynnu sgrinlun sgrîn lawn</translation>
 <translation id="2849936225196189499">Critigol</translation>
+<translation id="2850207700020959936">Gall apiau gael mynediad at gamera</translation>
 <translation id="2860184359326882502">Y Canlyniad Mwyaf Perthnasol</translation>
 <translation id="2865888419503095837">Gwybodaeth am y rhwydwaith</translation>
 <translation id="2869095047958348710"><ph name="DAY_OF_WEEK" /> diwethaf yma</translation>
@@ -584,6 +585,7 @@ Fel arall bydd y pad cyffwrdd integredig yn cael ei ail-alluogi mewn <ph name="T
 <translation id="304417730895741346">Mae eich apiau sydd ar agor ac sydd wedi'u pinio yn ymddangos ar y silff. I binio ap i'r silff, de-gliciwch ap nau tapiwch eich pad cyffwrdd gyda dau fys.</translation>
 <translation id="3045488863354895414">Prynhawn Da,</translation>
 <translation id="3047761520276763270">Rhowch gynnig ar ddweud:</translation>
+<translation id="3053407068093039599">Troi mynediad camera ymlaen/ei ddiffodd</translation>
 <translation id="3055162170959710888">Gwnaethoch ddefnyddio'r ddyfais hon am <ph name="USED_TIME" /> heddiw</translation>
 <translation id="3062298103034426069">Ni chefnogir</translation>
 <translation id="3068622547379332530">Fersiwn <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -1800,6 +1802,7 @@ Gosodiad newydd</translation>
 <translation id="7034025838182392395">Mae <ph name="APP_NAME" /> eisiau defnyddio'r <ph name="DEVICE_NAME" />. Trowch switsh <ph name="DEVICE_NAME" /> corfforol eich dyfais ymlaen.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
 <translation id="7042322267639375032">Crebachu'r ardal statws</translation>
+<translation id="7042593542151411225">Ni all apiau gael mynediad at gamera</translation>
 <translation id="7045033600005038336">Disoli'r templed?</translation>
 <translation id="7051244143160304048">Mae <ph name="DEVICE_NAME" /> wedi’i ddatgysylltu</translation>
 <translation id="7055910611768509537">Nid yw'r pwyntil wedi'i ddefnyddio mewn dros wythnos</translation>
@@ -2375,6 +2378,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="9074432941673450836">Defnyddiwch apiau i wneud popeth sydd ei angen arnoch ar eich <ph name="PRODUCT_NAME" />. Gallwch ddod o hyd i'ch apiau yn y Lansiwr. Gallwch hefyd bwyso'r fysell Lansiwr (uwchben y fysell Shift chwith) ar y bysellfwrdd.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9077515519330855811">Rheolyddion cyfryngau, nawr yn chwarae <ph name="MEDIA_TITLE" /></translation>
+<translation id="9079012373317704997">Methu â throi mynediad camera ymlaen o bell</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">Mae'r camera wedi'i snapio i'r gornel chwith uchaf</translation>
 <translation id="9080132581049224423">Sweipiwch i fyny i fynd i'r dudalen hafan</translation>

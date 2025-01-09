@@ -3179,6 +3179,14 @@ Quando a política é deixada sem definição, o novo comportamento é usado, as
       Use o caractere curinga "*" para fazer a correspondência com zero ou mais caracteres arbitrários. O caractere de escape é "\". Portanto, para fazer a correspondência real de caracteres "*" ou "\", você pode adicionar um "\" antes deles.
 
       Se esta política não for definida, todas as Contas do Google no dispositivo ficarão visíveis no <ph name="PRODUCT_NAME" />.</translation>
+<translation id="3245558640643744331">Se a política for ativada, a política de nuvem terá precedência caso haja um conflito com a da plataforma.
+
+Se a política for desativada ou deixada sem definição, a política da plataforma terá precedência caso haja um conflito com a de nuvem.
+
+Esta política obrigatória afeta as políticas de nuvem no escopo da máquina.
+
+Ela é específica para o <ph name="PRODUCT_NAME" /> e não afeta o <ph name="GOOGLE_UPDATE_NAME" />, porque eles são aplicativos independentes.
+O <ph name="GOOGLE_UPDATE_NAME" /> tem uma política separada com o mesmo nome.</translation>
 <translation id="3246606090306814894">Controlar o atalho usado para acionar F12</translation>
 <translation id="3248019773260441802">Permitir que uma página mostre pop-ups durante o descarregamento</translation>
 <translation id="3251500716404598358">Configura políticas para alternar entre navegadores.
@@ -4053,6 +4061,13 @@ No <ph name="MAC_OS_NAME" />, essa política só está disponível em instância
 <translation id="3897860452756794695">Um novo comportamento de offsetParent vai ser usado.</translation>
 <translation id="3898345958122666461">Desativar NTLMv2</translation>
 <translation id="3898795800259311780">Permitir ou negar captura de tela</translation>
+<translation id="3901722051566830469">Se a política for ativada, políticas associadas a uma conta gerenciada poderão ter precedência se estiverem em conflito com políticas do navegador <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Se ela for desativada ou deixada sem definição, as políticas de nuvem do usuário terão prioridade por padrão.
+
+Apenas políticas originárias de usuários seguros podem ter precedência. Um usuário seguro é afiliado à organização que gerencia o navegador com o <ph name="CHROME_ENTERPRISE_CORE_NAME" />. Todas as outras políticas do usuário terão precedência por padrão.
+
+A política pode ser combinada com <ph name="POLICY_CLOUD_POLICY_OVERRIDES_PLATFORM_POLICY_POLICY_NAME" />. Se ambas as políticas forem ativadas, as políticas de nuvem do usuário também poderão ter precedência sobre as políticas em conflito da plataforma.</translation>
 <translation id="390296766888987595">Mostrar o teclado na tela apenas se o usuário ou aplicativo pedir.</translation>
 <translation id="3903313632842363082">Desativar relatórios sobre os usuários do dispositivo</translation>
 <translation id="3904304709151553598">Desativar relatórios de informações do ventilador do dispositivo</translation>
@@ -9362,6 +9377,13 @@ Se a política não for definida, nenhuma exceção a <ph name="FLOATING_SSO_DOM
       Se a política for definida como "Desativada", sempre que alguma ação do usuário gerar uma caixa de diálogo para seleção de arquivos, como a importação de favoritos, o upload de arquivos ou o salvamento de links, uma mensagem aparecerá no lugar da caixa de diálogo. O navegador responde como se o usuário tivesse clicado em "Cancelar" na caixa de diálogo de seleção de arquivos.</translation>
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">Permitir o uso de notificações do sistema</translation>
+<translation id="7642740497103044368">Se a política for ativada, as políticas associadas a uma conta gerenciada poderão ser mescladas com outras no nível da máquina.
+
+Se ela for desativada ou deixada sem definição, as políticas de nuvem no nível do usuário não poderão ser mescladas com as de outras origens.
+
+Apenas políticas originárias de usuários seguros podem ter precedência. Um usuário seguro é afiliado à organização que gerencia o navegador com o <ph name="CHROME_ENTERPRISE_CORE_NAME" />. Todas as outras políticas do usuário terão precedência por padrão.
+
+As políticas que precisam ser mescladas também precisam ser definidas na <ph name="POLICY_LIST_MULTIPLE_SOURCE_MERGE_LIST_POLICY_NAME" /> ou <ph name="POLICY_DICTIONARY_MULTIPLE_SOURCE_MERGE_LIST_POLICY_NAME" />. Esta política será ignorada se nenhuma das duas mencionadas acima for configurada.</translation>
 <translation id="7643151458117317518">Uma política para controlar se a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> para medição de anúncio pode ser desativada para os usuários.
 
 Se a política for desativada, a configuração de medição de anúncio também vai ser desativada para os usuários.
@@ -11148,6 +11170,9 @@ Esta política só controla a <ph name="ARC_VM" /> no <ph name="PRODUCT_OS_FLEX_
       Esta política afeta usuários que fizeram a autenticação usando GAIA sem SAML.
 
       O valor da política precisa ser especificado em dias.</translation>
+<translation id="8931076230631115330">Se a política for definida, o <ph name="PRODUCT_NAME" /> tentará se registrar com o gerenciamento de navegadores do <ph name="CHROME_ENTERPRISE_CORE_NAME" />. O valor desta política é um token de inscrição que pode ser recuperado pelo <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+Veja mais detalhes em https://support.google.com/chrome/a/answer/9301891.</translation>
 <translation id="8931555638815157255">Se a política for definida como "Ativada" ou não for definida, os dispositivos registrados informarão a versão do SO e do firmware periodicamente.
 
       Se a política for definida como "Desativada", os dispositivos registrados não relatarão as informações de versão.</translation>
@@ -11577,6 +11602,11 @@ A configuração padrão é permitir que o navegador do host faça a renderizaç
       Se a política for definida, os usuários não poderão mudá-la nas configurações do navegador. Se ela for deixada sem definição, o modo de segundo plano ficará desativado, mas os usuários poderão ativá-lo.</translation>
 <translation id="981245424658084931">Ativar sinal de funcionamento da atividade do dispositivo</translation>
 <translation id="981346395360763138">Serviços de localização do Google desativados</translation>
+<translation id="982192230088110287">Se a política for ativada, o navegador <ph name="CHROME_ENTERPRISE_CORE_NAME" /> vai forçar o registro e impedir o processo de inicialização do <ph name="PRODUCT_NAME" /> em caso de erro.
+
+Se ela for desativada ou deixada sem definição, o registro do navegador <ph name="CHROME_ENTERPRISE_CORE_NAME" /> será opcional e não vai impedir o processo de inicialização do <ph name="PRODUCT_NAME" /> em caso de erro.
+
+A inscrição de políticas da nuvem para o escopo da máquina em computadores usa esta política. Veja mais detalhes em https://support.google.com/chrome/a/answer/9301891.</translation>
 <translation id="982195863867062122">Ativar o recurso <ph name="DBSC_FEATURE_NAME" />.</translation>
 <translation id="982497069985795632">Ativar verificação ortográfica</translation>
 <translation id="983256325512298435">Define uma lista de protocolos que podem inicializar um aplicativo externo a partir de origens listadas sem notificar o usuário</translation>

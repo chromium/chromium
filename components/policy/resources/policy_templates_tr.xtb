@@ -8624,6 +8624,17 @@ Not: Bu politikayı, saat dilimini otomatik olarak çözümlemek için kullanıy
 
       Politikayı False (Yanlış) değerine ayarlamak kullanıcıların, uygulamaların ve uzantıların Tam ekran moduna giremeyeceği anlamına gelir.</translation>
 <translation id="718126088895133062">Bu politika, bu cihaz için <ph name="PLUGIN_VM_NAME" /> lisanslama kullanıcı kimliğini belirtmektedir.</translation>
+<translation id="7184152751828902217">Sık sık tam şarj etme ve uzun şarj süreleri gibi faktörler pil sağlığını etkileyebilir. Bu politika, şarj davranışını optimize etmek ve bu faktörlerden kaynaklanan riski azaltarak pil kullanım ömrünü uzatmak için üç seçenek sunar.
+
+Politika, "1 - Standart" değerine ayarlanır veya ayarlanmadan bırakılırsa pil normal şekilde %100 şarj olur. Bu işlem, "Uyarlanabilir" ve "Sınırlı" şarjı devre dışı bırakır.
+
+Politika, "2 - Uyarlanabilir" değerine ayarlandığında cihaz, şarj alışkanlıklarınızı öğrenir ve gerekene kadar %100 şarj etmeyi geciktirir. Bu durum, pil sağlığını korumaya yardımcı olur.
+
+Politika, "3 - Sınırlı" değerine ayarlandığında, pil kullanım ömrünü en üst düzeye çıkarmak için pil yalnızca %80 civarında şarj edilir.
+
+Bu politika, <ph name="DEVICE_POWER_ADAPTIVE_CHARGING_ENABLED_POLICY_NAME" /> politikasını geçersiz kılar.
+
+<ph name="DEVICE_POWER_BATTERY_CHARGING_OPTIMIZATION_POLICY_NAME" /> ve <ph name="DEVICE_POWER_ADAPTIVE_CHARGING_ENABLED_POLICY_NAME" /> politikaları, kullanıcı ayarlarına göre her zaman önceliklidir.</translation>
 <translation id="7185078796915954712">TLS 1.3</translation>
 <translation id="7185630966939835143">Yazım hatalarının düzeltilmesine yardımcı olması için bir Google web hizmeti kullan</translation>
 <translation id="7187248416163189586">Cihazın arka ışık bilgileri raporlamasını devre dışı bırak</translation>
@@ -10722,6 +10733,15 @@ Bu politika, sanal klavye devre dışıysa (ör. <ph name="TOUCH_VIRTUAL_KEYBOAR
 <translation id="8827275450034266143">User-Agent dizesi, ana sürümü 99 olarak dondurur ve tarayıcının ana sürümünü ikincil konuma dahil eder.</translation>
 <translation id="8827366480126575426">Protokol işleyicinin protokolü.</translation>
 <translation id="8827417642396462482">İlave DNS sorgu türlerine izin ver</translation>
+<translation id="8829335556009496455">Uyarlanabilir Şarj modelinin, pil ömrünü uzatmak için şarj sürecini geçici olarak durdurmasına izin verilip verilmeyeceğini belirtir.
+
+      Uyarlanabilir Şarj modeli, cihaz AC gücünde çalışırken pil ömrünü uzatmak için şarj sürecinin geçici olarak durdurulmasına gerek olup olmadığını değerlendirir. Uyarlanabilir şarj modeli ile şarj süreci geçici olarak durdurulursa pil belirli bir seviyede (ör. %80) tutulur, daha sonra kullanıcı ihtiyaç duyduğunda cihaz %100'e kadar şarj edilir.
+
+      Bu politika, Doğru değerine ayarlanırsa uyarlanabilir şarj modeli etkinleştirilir. Böylece pil ömrünü uzatmak için şarj sürecinin geçici olarak durdurulmasına izin verilmiş olur.
+
+Bu politika, Yanlış değerine ayarlanır veya ayarlanmadan bırakılırsa uyarlanabilir şarj modeli şarj sürecini etkilemez.
+
+Not: DevicePowerBatteryChargingOptimization ayarlanmışsa bu politikanın hiçbir etkisi yoktur.</translation>
 <translation id="8830717323204407209">Kullanıcılara Kimlik Bilgisi Sağlayıcı uzantısı promosyonunun gösterilmesine izin verir</translation>
 <translation id="8832829916385857156">Yeni Sekme Sayfası, içerik varsa kartları gösterir</translation>
 <translation id="8833109046074170275">Kimlik doğrulamayı varsayılan GAIA akışıyla yap</translation>

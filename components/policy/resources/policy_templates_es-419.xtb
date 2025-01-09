@@ -8853,6 +8853,17 @@ Nota: Si utilizas esta política para definir la zona horaria de forma automáti
 
       Si la estableces como falsa, los usuarios, las apps y las extensiones no podrán acceder al modo de pantalla completa.</translation>
 <translation id="718126088895133062">Esta política especifica el ID de usuario de la licencia de <ph name="PLUGIN_VM_NAME" /> para este dispositivo.</translation>
+<translation id="7184152751828902217">El estado de la batería puede verse afectado por factores como las cargas completas frecuentes y las duraciones de carga prolongadas. Esta política proporciona tres opciones para optimizar el comportamiento de carga y mitigar estos factores, lo que prolongará la vida útil de la batería.
+
+Si estableces la política en 1 (estándar) o no la estableces, la batería se cargará normalmente al 100%. Se inhabilita la carga adaptable y limitada.
+
+Si estableces la política en 2 (adaptable), el dispositivo aprende tus hábitos de carga y retrasa la carga al 100% hasta que sea necesario. Esto ayuda a prolongar el estado de la batería.
+
+Si estableces la política en 3 (limitada), la batería se carga solo al 80% para maximizar su vida útil.
+
+Esta política anula <ph name="DEVICE_POWER_ADAPTIVE_CHARGING_ENABLED_POLICY_NAME" />.
+
+Las políticas <ph name="DEVICE_POWER_BATTERY_CHARGING_OPTIMIZATION_POLICY_NAME" /> y <ph name="DEVICE_POWER_ADAPTIVE_CHARGING_ENABLED_POLICY_NAME" /> siempre tienen prioridad sobre la configuración del usuario.</translation>
 <translation id="7185078796915954712">TLS 1.3</translation>
 <translation id="7185630966939835143">Usar un servicio web de Google para ayudar a solucionar errores de ortografía</translation>
 <translation id="7187248416163189586">Inhabilitar los informes de la retroiluminación del dispositivo</translation>
@@ -10996,6 +11007,15 @@ Esta política no se aplica si el teclado virtual está inhabilitado (p. ej., me
 <translation id="8827275450034266143">El string usuario-agente bloqueará la versión principal en 99. Además, incluirá la versión principal del navegador en la posición de la versión secundaria.</translation>
 <translation id="8827366480126575426">El protocolo para el controlador de protocolos.</translation>
 <translation id="8827417642396462482">Permitir tipos de consultas de DNS adicionales</translation>
+<translation id="8829335556009496455">Especifica si se permite que un modelo de carga adaptable detenga el proceso de carga para extender la duración de la batería.
+
+Cuando el dispositivo funciona con CA, el modelo de carga adaptable evalúa si el proceso de carga se debe detener para extender la duración de la batería. Si el modelo de carga adaptable detiene el proceso de carga, la batería se mantendrá en cierto nivel (es decir, al 80%) y luego cargará el dispositivo hasta el 100% cuando el usuario lo necesite.
+
+Si estableces esta política como verdadera, se habilitará el modelo de carga adaptable y se podrá detener el proceso de carga para extender la duración de la batería.
+
+Si la estableces como falsa o no la estableces, el modelo de carga adaptable no afectará el proceso de carga.
+
+Nota: Esta política no tiene efecto si se establece DevicePowerBatteryChargingOptimization.</translation>
 <translation id="8830717323204407209">Permitir que se les muestre la promoción para la extensión del Proveedor de credenciales a los usuarios</translation>
 <translation id="8832829916385857156">La página Nueva pestaña mostrará tarjetas si hay contenido disponible</translation>
 <translation id="8833109046074170275">Autenticación mediante el flujo de GAIA predeterminado</translation>

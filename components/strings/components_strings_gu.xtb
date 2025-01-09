@@ -109,7 +109,7 @@
 <translation id="1186201132766001848">પાસવર્ડ ચેક કરો</translation>
 <translation id="1187430513518041110">ઑટોમોબાઇલ અને વાહનો</translation>
 <translation id="1190491977647722791">પેપર (વજનમાં ભારે)</translation>
-<translation id="1194278116501666615">ArcVm ની પહેલેથી લોડ કરવાની પ્રક્રિયાની પ્રગતિની અપડેટ</translation>
+<translation id="1194278116501666615">ArcVmની પહેલેથી લોડ કરવાની પ્રક્રિયાની પ્રગતિની અપડેટ</translation>
 <translation id="1195073053842921378">આ ડિવાઇસમાંથી આ સરનામું ડિલીટ કરવામાં આવશે</translation>
 <translation id="1195558154361252544">તમે જેના માટે મંજૂરી આપી હોય તે સિવાયની બધી સાઇટ માટે નોટિફિકેશનને ઑટોમૅટિક રીતે બ્લૉક કરવામાં આવે છે</translation>
 <translation id="1197088940767939838">નારંગી</translation>
@@ -1695,6 +1695,7 @@
 <translation id="3990532701115075684">તમારા હાથને ટ્રૅક કરો</translation>
 <translation id="3992684624889376114">આ પેજ વિશે</translation>
 <translation id="3995639283717357522">પૉલિસીઓ લાગુ કરો</translation>
+<translation id="3996683183117168945">અવતરણ <ph name="MAX_CITATIONS" />માંથી <ph name="CURRENT_CITATION" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /> <ph name="PAGE_TITLE" />. <ph name="PAGE_PREVIEW" />.</translation>
 <translation id="399754345297554962">પ્રમાણિત અને પ્રવેશ પરીક્ષાઓ</translation>
 <translation id="3999173941208168054">હૉરર મૂવી</translation>
 <translation id="4000598935132966791">મેનેજ કરાયેલા બ્રાઉઝરમાં સાઇટના પ્રતિબંધો વિશે વધુ જાણો</translation>
@@ -2786,7 +2787,7 @@
 <translation id="6001839398155993679">ચાલો જઈએ</translation>
 <translation id="6002122790816966947">તમારા ડિવાઇસ</translation>
 <translation id="6002968396561884726">તાજેતરમાં જોવાયેલી</translation>
-<translation id="6005188329423473970">VPNની બૅકગ્રાઉન્ડ સેવાઓનું ઇન્સ્ટૉલેશન પૂર્ણ થયું. જો તમને VPN ઍપ ન દેખાય, તો કૃપા કરીને લોગ આઉટ કરો અને ફરીથી લોગ ઇન કરો.</translation>
+<translation id="6005188329423473970">VPNની બૅકગ્રાઉન્ડ સેવાઓનું ઇન્સ્ટૉલેશન પૂર્ણ થયું. જો તમને VPN ઍપ ન દેખાય, તો કૃપા કરીને લૉગ આઉટ કરો અને ફરીથી લૉગ ઇન કરો.</translation>
 <translation id="6005659677094197001">સતત</translation>
 <translation id="6005765687956866568">ફોર્મમાંથી ઑટોમૅટિક રીતે ભરેલી માહિતી સાફ કરવામાં આવી</translation>
 <translation id="6006365096047131769">3 x 5 ઇંચ</translation>

@@ -3904,6 +3904,7 @@
 <translation id="7975858430722947486">তুলনাৰ তালিকাত যোগ দিয়া হৈছে</translation>
 <translation id="7976214039405368314">অতি বেছিসংখ্যক অনুৰোধ</translation>
 <translation id="7977538094055660992">আউটপুট ডিভাইচ</translation>
+<translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> মিনিট পূৰ্বে}=1{<ph name="TIME_COUNT" /> ঘণ্টা পূৰ্বে}one{<ph name="TIME_COUNT" /> দিন পূৰ্বে}other{<ph name="TIME_COUNT" /> দিন পূৰ্বে}}</translation>
 <translation id="7979595116210197019">খাদ্য সম্পর্কীয় সেৱা</translation>
 <translation id="798134797138789862">ভাৰ্চুৱেল ৰিয়েলিটি ডিভাইচসমূহ আৰু ডেটা ব্যৱহাৰ কৰিবলৈ বিচাৰিব পাৰে</translation>
 <translation id="7982789257301363584">নেটৱৰ্ক</translation>

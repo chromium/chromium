@@ -530,6 +530,7 @@ W przeciwnym razie za <ph name="TIMEOUT_SECONDS" /> touchpad znowu się włącz
 <translation id="2847759467426165163">Przesyłaj na</translation>
 <translation id="2848120746144143659">Aby zrobić zrzut całego ekranu, naciśnij Enter</translation>
 <translation id="2849936225196189499">Krytyczne</translation>
+<translation id="2850207700020959936">Aplikacje mają dostęp do kamery</translation>
 <translation id="2860184359326882502">Najlepsze dopasowanie</translation>
 <translation id="2865888419503095837">Informacje o sieci</translation>
 <translation id="2869095047958348710">Ostatni(a) <ph name="DAY_OF_WEEK" /></translation>
@@ -584,6 +585,7 @@ W przeciwnym razie za <ph name="TIMEOUT_SECONDS" /> touchpad znowu się włącz
 <translation id="304417730895741346">Przypięte i otwarte aplikacje są widoczne na półce. Aby przypiąć aplikację do półki, kliknij ją prawym przyciskiem myszy lub dotknij touchpada 2 palcami.</translation>
 <translation id="3045488863354895414">Dzień dobry,</translation>
 <translation id="3047761520276763270">Powiedz:</translation>
+<translation id="3053407068093039599">Włącz/wyłącz dostęp do kamery</translation>
 <translation id="3055162170959710888">Urządzenie było dziś przez Ciebie używane przez <ph name="USED_TIME" /></translation>
 <translation id="3062298103034426069">Nieobsługiwana</translation>
 <translation id="3068622547379332530">Wersja <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -1799,6 +1801,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> chce użyć urządzenia <ph name="DEVICE_NAME" />. Włącz je przełącznikiem fizycznym (<ph name="DEVICE_NAME" />).</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Asystent Google</translation>
 <translation id="7042322267639375032">Zwiń pasek stanu</translation>
+<translation id="7042593542151411225">Aplikacje nie mają dostępu do kamery</translation>
 <translation id="7045033600005038336">Zastąpić szablon?</translation>
 <translation id="7051244143160304048">Urządzenie <ph name="DEVICE_NAME" /> zostało odłączone</translation>
 <translation id="7055910611768509537">Rysik nie był używany od ponad tygodnia</translation>
@@ -2374,6 +2377,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="9074432941673450836">Dzięki aplikacjom możesz robić na urządzeniu <ph name="PRODUCT_NAME" /> wszystko, co chcesz. Aplikacje znajdziesz w Menu z aplikacjami. Możesz też nacisnąć klawisz Menu z aplikacjami (nad lewym klawiszem Shift) na klawiaturze.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9077515519330855811">Sterowanie multimediami, teraz odtwarzane: <ph name="MEDIA_TITLE" /></translation>
+<translation id="9079012373317704997">Nie można zdalnie włączyć dostępu do kamery</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">Podgląd z kamery został przyciągnięty do lewego górnego rogu</translation>
 <translation id="9080132581049224423">Aby przejść na ekran główny, przesuń w górę</translation>

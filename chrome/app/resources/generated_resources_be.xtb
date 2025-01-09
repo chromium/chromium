@@ -7440,6 +7440,7 @@
 <translation id="6278776436938569440">Змяніць месцазнаходжанне</translation>
 <translation id="6280215091796946657">Увайсці ў іншы ўліковы запіс</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281218688313242284">Кіраваць &amp;Уліковым запісам Google</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Перавышана абмежаванне ў 1 аркуш паперы}one{Перавышана абмежаванне ў {COUNT} аркуш паперы}few{Перавышана абмежаванне ў {COUNT} аркушы паперы}many{Перавышана абмежаванне ў {COUNT} аркушаў паперы}other{Перавышана абмежаванне ў {COUNT} аркуша паперы}}</translation>
 <translation id="6282490239556659745">Выдаліць <ph name="EMBEDDED_SITE" /> з <ph name="SITE" />.</translation>
 <translation id="6283438600881103103">Зараз вы выйдзеце з уліковага запісу.
@@ -8057,6 +8058,7 @@
 <translation id="6745592621698551453">Абнавіць</translation>
 <translation id="6746124502594467657">Перамясціць ніжэй</translation>
 <translation id="67465227497040338">Паказаць пароль для <ph name="DOMAIN" /></translation>
+<translation id="6746834324024491643">Каб выкарыстоўваць свае паролі і іншыя даныя на ўсіх сваіх прыладах, увайдзіце ў сістэму як <ph name="EMAIL" /></translation>
 <translation id="6748980958975836188">Мною былі прачытаны <ph name="BEGIN_LINK1" />Умовы выкарыстання Google<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />Дадатковыя ўмовы выкарыстання Google Chrome і Chrome OS<ph name="END_LINK2" />, і я згаджаюся з імі.</translation>
 <translation id="6749077623962119521">Скінуць дазволы?</translation>
 <translation id="6749473226660745022">Фота</translation>
@@ -9407,6 +9409,7 @@
 <translation id="7709152031285164251">Памылка: <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">&amp;Трансліраваць...</translation>
 <translation id="7711968363685835633">Адключыць персаналізаваныя пераўтварэнні і прапановы, а таксама карыстальніцкі слоўнік</translation>
+<translation id="771220840345868810">Прапанаваныя пытанні недаступныя</translation>
 <translation id="7712739869553853093">Дыялогавае акно перадпрагляду друку</translation>
 <translation id="7713139339518499741">Натуральны голас</translation>
 <translation id="7714307061282548371">Файлы cookie з дамена <ph name="DOMAIN" /> дазволены</translation>

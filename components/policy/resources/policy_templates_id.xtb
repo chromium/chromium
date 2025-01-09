@@ -3186,6 +3186,14 @@ Jika kebijakan ini tidak disetel, perilaku baru akan digunakan seperti pengguna 
       Gunakan karakter pengganti '*' untuk mencocokkan karakter nol atau yang lebih arbitrer. Karakter escape adalah '\', sehingga agar cocok dengan karakter '*' atau '\', tempatkan '\' di depannya.
 
       Jika kebijakan ini tidak ditetapkan, semua akun Google pada perangkat akan terlihat di <ph name="PRODUCT_NAME" />.</translation>
+<translation id="3245558640643744331">Jika kebijakan ini disetel ke Aktif, kebijakan cloud akan diprioritaskan jika bertentangan dengan kebijakan platform.
+
+Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, kebijakan platform akan diprioritaskan jika bertentangan dengan kebijakan cloud.
+
+Kebijakan wajib ini memengaruhi kebijakan cloud cakupan perangkat.
+
+Kebijakan ini berlaku khusus untuk <ph name="PRODUCT_NAME" /> dan tidak memengaruhi <ph name="GOOGLE_UPDATE_NAME" /> karena keduanya adalah aplikasi independen.
+<ph name="GOOGLE_UPDATE_NAME" /> memiliki kebijakan terpisah dengan nama yang sama.</translation>
 <translation id="3246606090306814894">Mengontrol pintasan yang digunakan untuk memicu F12</translation>
 <translation id="3248019773260441802">Mengizinkan halaman menampilkan pop-up saat menghapus muatannya</translation>
 <translation id="3251500716404598358">Konfigurasikan kebijakan untuk beralih ke browser lain.
@@ -4066,6 +4074,13 @@ Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia di instance yang dike
 <translation id="3897860452756794695">Perilaku baru offsetParent akan digunakan.</translation>
 <translation id="3898345958122666461">Nonaktifkan NTLMv2</translation>
 <translation id="3898795800259311780">Mengizinkan atau menolak tangkapan layar</translation>
+<translation id="3901722051566830469">Jika kebijakan ini disetel ke Aktif, kebijakan yang berkaitan dengan akun terkelola akan diprioritaskan jika bertentangan dengan kebijakan browser <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, kebijakan cloud tingkat pengguna akan memiliki prioritas default.
+
+Hanya kebijakan yang berasal dari pengguna aman yang dapat diprioritaskan. Pengguna aman berafiliasi dengan organisasi yang mengelola browser mereka menggunakan <ph name="CHROME_ENTERPRISE_CORE_NAME" />. Semua kebijakan tingkat pengguna lainnya akan memiliki prioritas default.
+
+Kebijakan ini dapat digabungkan dengan <ph name="POLICY_CLOUD_POLICY_OVERRIDES_PLATFORM_POLICY_POLICY_NAME" />. Jika kedua kebijakan ini disetel ke aktif, kebijakan cloud pengguna juga akan lebih diprioritaskan daripada kebijakan platform yang bertentangan.</translation>
 <translation id="390296766888987595">Hanya tampilkan keyboard virtual jika pengguna atau aplikasi memintanya.</translation>
 <translation id="3903313632842363082">Nonaktifkan pelaporan pengguna perangkat</translation>
 <translation id="3904304709151553598">Nonaktifkan pelaporan info kipas perangkat</translation>
@@ -9389,6 +9404,13 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
       Jika kebijakan disetel ke Nonaktif, pesan akan muncul setiap kali pengguna melakukan tindakan yang memicu dialog pemilihan file, seperti mengimpor bookmark, mengupload file, atau menyimpan link. Pengguna dianggap telah mengklik Batal pada dialog pemilihan file.</translation>
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">Izinkan penggunaan notifikasi sistem</translation>
+<translation id="7642740497103044368">Jika kebijakan ini disetel ke Aktif, kebijakan yang terkait dengan akun terkelola akan diizinkan untuk digabungkan ke kebijakan tingkat perangkat.
+
+Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, kebijakan cloud tingkat pengguna tidak akan digabungkan dengan kebijakan dari sumber lain.
+
+Hanya kebijakan yang berasal dari pengguna aman yang dapat diprioritaskan. Pengguna aman berafiliasi dengan organisasi yang mengelola browser mereka menggunakan <ph name="CHROME_ENTERPRISE_CORE_NAME" />. Semua kebijakan tingkat pengguna lainnya akan memiliki prioritas default.
+
+Kebijakan yang perlu digabungkan juga harus disetel di <ph name="POLICY_LIST_MULTIPLE_SOURCE_MERGE_LIST_POLICY_NAME" /> atau <ph name="POLICY_DICTIONARY_MULTIPLE_SOURCE_MERGE_LIST_POLICY_NAME" />. Kebijakan ini akan diabaikan jika tidak satu pun dari dua kebijakan yang disebutkan sebelumnya dikonfigurasi.</translation>
 <translation id="7643151458117317518">Kebijakan untuk mengontrol apakah setelan Pengukuran iklan <ph name="PRIVACY_SANDBOX_NAME" /> dapat dinonaktifkan untuk pengguna Anda.
 
 Jika Anda menyetel kebijakan ini ke Nonaktif, setelan Pengukuran iklan akan dinonaktifkan untuk pengguna Anda.
@@ -11173,6 +11195,9 @@ Kebijakan ini hanya mengontrol <ph name="ARC_VM" /> di <ph name="PRODUCT_OS_FLEX
       Kebijakan ini memengaruhi pengguna yang diautentikasi menggunakan GAIA tanpa SAML.
 
       Nilai kebijakan harus ditentukan dalam hari.</translation>
+<translation id="8931076230631115330">Jika kebijakan ini disetel, <ph name="PRODUCT_NAME" /> akan mencoba mendaftarkan diri ke pengelolaan browser <ph name="CHROME_ENTERPRISE_CORE_NAME" />. Nilai kebijakan ini adalah token pendaftaran yang dapat Anda ambil dari <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+Lihat https://support.google.com/chrome/a/answer/9301891 untuk mengetahui detail selengkapnya.</translation>
 <translation id="8931555638815157255">Jika kebijakan disetel ke Aktif atau tidak disetel, perangkat yang terdaftar akan melaporkan versi OS dan firmware-nya secara berkala.
 
       Jika kebijakan disetel ke Nonaktif, perangkat yang terdaftar tidak akan melaporkan informasi versi.</translation>
@@ -11601,6 +11626,11 @@ Nilai defaultnya adalah RollbackDisabled.</translation>
       Jika Anda menyetel kebijakan tersebut, pengguna tidak dapat mengubahnya di setelan browser. Jika tidak disetel, mode latar belakang akan nonaktif terlebih dahulu dan pengguna dapat mengubahnya.</translation>
 <translation id="981245424658084931">Aktifkan heartbeat aktivitas perangkat</translation>
 <translation id="981346395360763138">Layanan lokasi Google dinonaktifkan</translation>
+<translation id="982192230088110287">Jika kebijakan ini disetel ke Aktif, pendaftaran browser <ph name="CHROME_ENTERPRISE_CORE_NAME" /> akan diwajibkan dan proses peluncuran <ph name="PRODUCT_NAME" /> akan diblokir jika gagal.
+
+Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, pendaftaran browser <ph name="CHROME_ENTERPRISE_CORE_NAME" /> akan menjadi opsional dan proses peluncuran <ph name="PRODUCT_NAME" /> tidak akan diblokir jika gagal.
+
+Pendaftaran kebijakan cloud cakupan perangkat di desktop menggunakan kebijakan ini. Lihat https://support.google.com/chrome/a/answer/9301891 untuk mengetahui detail selengkapnya.</translation>
 <translation id="982195863867062122">Aktifkan <ph name="DBSC_FEATURE_NAME" />.</translation>
 <translation id="982497069985795632">Aktifkan fitur pemeriksa ejaan</translation>
 <translation id="983256325512298435">Menentukan daftar protokol yang dapat meluncurkan aplikasi eksternal dari asal yang tercantum tanpa meminta izin pengguna</translation>

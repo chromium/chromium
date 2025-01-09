@@ -530,6 +530,7 @@ De lo contrario, el panel táctil integrado se volverá a habilitar dentro de <p
 <translation id="2847759467426165163">Transmitir a</translation>
 <translation id="2848120746144143659">Presiona intro para tomar una captura de pantalla completa</translation>
 <translation id="2849936225196189499">Crítico</translation>
+<translation id="2850207700020959936">Las apps pueden acceder a la cámara</translation>
 <translation id="2860184359326882502">Mejor coincidencia</translation>
 <translation id="2865888419503095837">Información de red</translation>
 <translation id="2869095047958348710">El <ph name="DAY_OF_WEEK" /> pasado</translation>
@@ -584,6 +585,7 @@ De lo contrario, el panel táctil integrado se volverá a habilitar dentro de <p
 <translation id="304417730895741346">Las apps que fijaste y abriste están en la barra. Para fijar una app a la barra, haz clic con el botón derecho en la app o presiona el panel táctil con dos dedos.</translation>
 <translation id="3045488863354895414">Buenas tardes:</translation>
 <translation id="3047761520276763270">Intenta decir:</translation>
+<translation id="3053407068093039599">Activar/desactivar el acceso a la cámara</translation>
 <translation id="3055162170959710888">Hoy usaste este dispositivo durante <ph name="USED_TIME" /></translation>
 <translation id="3062298103034426069">No compatible</translation>
 <translation id="3068622547379332530">Versión <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -1801,6 +1803,7 @@ Nueva instalación</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> quiere usar tu <ph name="DEVICE_NAME" />. Activa el interruptor físico de tu <ph name="DEVICE_NAME" /> en el dispositivo.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Asistente de Google</translation>
 <translation id="7042322267639375032">Contraer el área de estado</translation>
+<translation id="7042593542151411225">Las apps no pueden acceder a la cámara</translation>
 <translation id="7045033600005038336">¿Deseas reemplazar la plantilla?</translation>
 <translation id="7051244143160304048">Se desconectó <ph name="DEVICE_NAME" /></translation>
 <translation id="7055910611768509537">No se usó la pluma stylus en más de una semana</translation>
@@ -2376,6 +2379,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="9074432941673450836">Usa apps para todo lo que quieras hacer en tu <ph name="PRODUCT_NAME" />. Puedes encontrar tus apps en el Selector. También puedes presionar la tecla del Selector (arriba de la tecla Mayúsculas de la izquierda) en el teclado.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9077515519330855811">Controles multimedia, se está reproduciendo <ph name="MEDIA_TITLE" /></translation>
+<translation id="9079012373317704997">No se puede activar el acceso a la cámara de forma remota</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">Se ajustó la cámara a la esquina superior izquierda</translation>
 <translation id="9080132581049224423">Desliza hacia arriba para ir a la pantalla principal</translation>

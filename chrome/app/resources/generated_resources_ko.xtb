@@ -7456,6 +7456,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6278776436938569440">위치 변경</translation>
 <translation id="6280215091796946657">다른 계정으로 로그인</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281218688313242284">Google 계정 관리(&amp;G)</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{용지 1장 제한 초과}other{용지 {COUNT}장 제한 초과}}</translation>
 <translation id="6282490239556659745"><ph name="SITE" />에서 <ph name="EMBEDDED_SITE" /> 삭제</translation>
 <translation id="6283438600881103103">지금 자동으로 로그아웃됩니다.
@@ -8067,6 +8068,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6745592621698551453">지금 업데이트</translation>
 <translation id="6746124502594467657">아래로 이동</translation>
 <translation id="67465227497040338"><ph name="DOMAIN" /> 비밀번호 표시</translation>
+<translation id="6746834324024491643">모든 기기에서 비밀번호와 기타 정보를 받으려면 <ph name="EMAIL" /> 계정으로 로그인하세요</translation>
 <translation id="6748980958975836188"><ph name="BEGIN_LINK1" />Google 서비스 약관<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome 및 ChromeOS 추가 서비스 약관<ph name="END_LINK2" />을 읽었으며 이에 동의합니다.</translation>
 <translation id="6749077623962119521">권한을 재설정하시겠습니까?</translation>
 <translation id="6749473226660745022">사진</translation>

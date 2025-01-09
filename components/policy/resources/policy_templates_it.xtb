@@ -3115,6 +3115,14 @@ Se non viene configurato, verrà utilizzato il nuovo comportamento, esattamente 
       Usa il carattere jolly "*" per rappresentare lo zero e caratteri più arbitrari. Il carattere di escape è "\"; quindi, per rappresentare gli effettivi caratteri "*" o "\", devi farli precedere da un "\".
 
       Se il criterio non è impostato, tutti gli Account Google sul dispositivo saranno visibili in <ph name="PRODUCT_NAME" />.</translation>
+<translation id="3245558640643744331">Se il criterio viene impostato su Attivato, in caso di conflitto il criterio relativo al cloud prevale sul criterio relativo alla piattaforma.
+
+Se il criterio viene impostato su Disattivato o se non viene impostato, in caso di conflitto il criterio relativo alla piattaforma prevale sul criterio relativo al cloud.
+
+Questo criterio obbligatorio interessa i criteri relativi al cloud in ambito macchina.
+
+Questo criterio è specifico di <ph name="PRODUCT_NAME" /> e non influisce su <ph name="GOOGLE_UPDATE_NAME" /> perché si tratta di applicazioni indipendenti.
+<ph name="GOOGLE_UPDATE_NAME" /> ha un criterio separato con lo stesso nome.</translation>
 <translation id="3246606090306814894">Controlla la scorciatoia usata per attivare F12</translation>
 <translation id="3248019773260441802">Consente a una pagina di mostrare i popup durante l'unload</translation>
 <translation id="3251500716404598358">Configura le norme per passare da un browser all'altro.
@@ -3972,6 +3980,13 @@ Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istan
 <translation id="3897860452756794695">Verrà utilizzato il nuovo comportamento offsetParent.</translation>
 <translation id="3898345958122666461">Disattiva NTLMv2</translation>
 <translation id="3898795800259311780">Consenti o nega acquisizione schermo</translation>
+<translation id="3901722051566830469">Se il criterio viene impostato su Attivato, i criteri associati a un account gestito hanno la precedenza in caso di conflitti con i criteri del browser <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Se il criterio viene impostato su Disattivato o non viene impostato, i criteri relativi al cloud a livello di utente hanno la priorità per impostazione predefinita.
+
+Soltanto i criteri derivanti da utenti sicuri possono ottenere la precedenza. Un utente sicuro è affiliato all'organizzazione che gestisce il suo browser usando <ph name="CHROME_ENTERPRISE_CORE_NAME" />. Tutti gli altri criteri a livello di utente avranno la precedenza per impostazione predefinita.
+
+Il criterio può essere combinato con <ph name="POLICY_CLOUD_POLICY_OVERRIDES_PLATFORM_POLICY_POLICY_NAME" />. Se entrambi i criteri vengono attivati, anche i criteri relativi al cloud degli utenti avranno la precedenza sui criteri relativi alla piattaforma in conflitto.</translation>
 <translation id="390296766888987595">Mostra la tastiera sullo schermo solo se richiesto dall'utente o dall'applicazione.</translation>
 <translation id="3903313632842363082">Disattiva i report sugli utenti del dispositivo</translation>
 <translation id="3904304709151553598">Disattiva i report sulle informazioni relative alla ventola del dispositivo</translation>
@@ -8604,6 +8619,17 @@ Nota: se utilizzi questo criterio per risolvere automaticamente il fuso orario, 
 
       Se il criterio è impostato su False, gli utenti, le app e le estensioni non possono utilizzare la modalità a schermo intero.</translation>
 <translation id="718126088895133062">Questo criterio consente di specificare l'ID utente della licenza <ph name="PLUGIN_VM_NAME" /> di questo dispositivo.</translation>
+<translation id="7184152751828902217">L'integrità della batteria può essere influenzata da fattori quali ricariche complete frequenti e ricariche prolungate. Questa policy offre tre opzioni per ottimizzare il comportamento di ricarica e attenuare questi fattori, prolungando così la durata della batteria.
+
+Se la policy viene impostata su 1 - Standard o se non viene configurata, la batteria viene caricata normalmente fino al 100%. Questa operazione disattiva le ricariche adattiva e limitata.
+
+Se la policy viene impostata su 2 - Adaptive, il dispositivo apprende le tue abitudini di ricarica e ritarda la ricarica al 100% fino a quando non è necessario. Questo aiuta a prolungare l'integrità della batteria.
+
+Se la policy viene impostata su 3 - Limited, la batteria si ricarica solo fino a circa l'80% per massimizzare la durata.
+
+Questa policy sostituisce <ph name="DEVICE_POWER_ADAPTIVE_CHARGING_ENABLED_POLICY_NAME" />.
+
+Le policy <ph name="DEVICE_POWER_BATTERY_CHARGING_OPTIMIZATION_POLICY_NAME" /> e <ph name="DEVICE_POWER_ADAPTIVE_CHARGING_ENABLED_POLICY_NAME" /> hanno sempre la precedenza sulle impostazioni utente.</translation>
 <translation id="7185078796915954712">TLS 1.3</translation>
 <translation id="7185630966939835143">Usa un servizio web di Google per correggere gli errori ortografici</translation>
 <translation id="7187248416163189586">Disattiva i report sulle informazioni relative alla retroilluminazione del dispositivo</translation>
@@ -9110,6 +9136,13 @@ Se il criterio viene lasciato vuoto, non sono consentite eccezioni a <ph name="F
       Se il criterio viene impostato su Disattivato, quando gli utenti eseguono delle azioni che comportano l'apertura di una finestra di dialogo di selezione dei file, come importare preferiti, caricare file e salvare link, viene visualizzato un messaggio. Il browser presuppone che l'utente abbia fatto clic su Annulla nella finestra di dialogo di selezione dei file.</translation>
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">Consenti l'uso delle notifiche di sistema</translation>
+<translation id="7642740497103044368">Se il criterio viene impostato su Attivato, è possibile unire i criteri associati a un account gestito ai criteri a livello di macchina.
+
+Se il criterio viene impostato su Disattivato o se non viene impostato, non è possibile unire i criteri relativi al cloud a livello di utente ai criteri di altre fonti.
+
+Soltanto i criteri derivanti da utenti sicuri possono ottenere la precedenza. Un utente sicuro è affiliato all'organizzazione che gestisce il suo browser usando <ph name="CHROME_ENTERPRISE_CORE_NAME" />. Tutti gli altri criteri a livello di utente avranno la precedenza per impostazione predefinita.
+
+I criteri da unire devono essere impostati anche nel criterio <ph name="POLICY_LIST_MULTIPLE_SOURCE_MERGE_LIST_POLICY_NAME" /> o <ph name="POLICY_DICTIONARY_MULTIPLE_SOURCE_MERGE_LIST_POLICY_NAME" />. Questo criterio viene ignorato se non viene configurato nessuno dei due criteri sopra indicati.</translation>
 <translation id="7643151458117317518">Un criterio per stabilire se i tuoi utenti possono o meno disattivare l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa alla misurazione degli annunci.
 
 Se imposti questo criterio su Disabled, l'impostazione relativa alla misurazione degli annunci verrà disattivata per i tuoi utenti.
@@ -10686,6 +10719,15 @@ Questo criterio non si applica se la tastiera virtuale viene disattivata (ad ese
 <translation id="8827275450034266143">La stringa user agent bloccherà la versione principale a 99 e includerà la versione principale del browser nella posizione secondaria.</translation>
 <translation id="8827366480126575426">Il protocollo del gestore di protocollo.</translation>
 <translation id="8827417642396462482">Sono consentiti tipi di query DNS aggiuntivi</translation>
+<translation id="8829335556009496455">Consente di specificare se un modello di ricarica adattiva può sospendere la procedura di ricarica per prolungare la durata della batteria.
+
+Quando per il dispositivo viene usata l'alimentazione CA, il modello di ricarica adattiva valuta se sospendere o meno la procedura di ricarica per prolungare la durata della batteria. Se il modello di ricarica adattiva sospende la procedura di ricarica, mantiene la batteria a un determinato livello (ossia 80%), dopodiché ricarica il dispositivo fino al 100% quando l'utente ne ha bisogno.
+
+Se questa policy viene impostata su True, il modello di ricarica adattiva viene attivato e può sospendere la procedura di ricarica per prolungare la durata della batteria.
+
+Se questa policy viene impostata su False o se non viene configurata, il modello di ricarica adattiva non influisce sulla procedura di ricarica.
+
+Nota: questa policy non ha effetto se viene configurata DevicePowerBatteryChargingOptimization.</translation>
 <translation id="8830717323204407209">Consente agli utenti di visualizzare la promozione dell'estensione fornitore di credenziali</translation>
 <translation id="8832829916385857156">La pagina Nuova scheda mostra le schede se sono disponibili contenuti</translation>
 <translation id="8833109046074170275">Autenticazione tramite il flusso GAIA predefinito</translation>
@@ -10842,6 +10884,9 @@ Questa policy consente di controllare <ph name="ARC_VM" /> soltanto su <ph name=
       Questo criterio viene applicato per gli utenti che si sono autenticati tramite GAIA senza SAML.
 
       Il valore del criterio deve essere specificato in giorni.</translation>
+<translation id="8931076230631115330">Se il criterio viene impostato, <ph name="PRODUCT_NAME" /> cerca di registrarsi con la gestione del browser <ph name="CHROME_ENTERPRISE_CORE_NAME" />. Il valore del criterio è un token di registrazione che puoi recuperare da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+Per maggiori dettagli, vai su https://support.google.com/chrome/a/answer/9301891.</translation>
 <translation id="8931555638815157255">Se il criterio viene impostato su Attivato o se non viene configurato, i dispositivi registrati segnalano periodicamente la versione dei relativi sistemi operativi e firmware.
 
       Se il criterio viene impostato su Disattivato, i dispositivi registrati non segnalano le informazioni sulla versione.</translation>
@@ -11271,6 +11316,11 @@ L'impostazione predefinita è RollbackDisabled.</translation>
       Se viene configurato, gli utenti non possono modificarlo nelle impostazioni del browser. In caso contrario, la modalità in background è disabilitata, ma gli utenti possono abilitarla.</translation>
 <translation id="981245424658084931">Attiva l'heartbeat dell'attività del dispositivo</translation>
 <translation id="981346395360763138">Servizi di geolocalizzazione di Google disabilitati</translation>
+<translation id="982192230088110287">Se il criterio viene impostato su Attivato, è obbligatorio registrare il browser <ph name="CHROME_ENTERPRISE_CORE_NAME" /> e viene bloccato il processo di avvio di <ph name="PRODUCT_NAME" /> in caso di esito negativo.
+
+Se il criterio viene impostato su Disattivato o non viene impostato, la registrazione del browser <ph name="CHROME_ENTERPRISE_CORE_NAME" /> diventa facoltativa e non viene bloccato il processo di avvio di <ph name="PRODUCT_NAME" /> in caso di esito negativo.
+
+Questo criterio viene utilizzato su desktop dalla registrazione con criteri cloud in ambito macchina. Per maggiori dettagli, vai su https://support.google.com/chrome/a/answer/9301891.</translation>
 <translation id="982195863867062122">Attiva <ph name="DBSC_FEATURE_NAME" />.</translation>
 <translation id="982497069985795632">Attiva il controllo ortografico</translation>
 <translation id="983256325512298435">Definisci un elenco di protocolli che possono lanciare un'applicazione esterna dalle origini elencate senza chiedere conferma all'utente</translation>

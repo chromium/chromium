@@ -1695,6 +1695,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3990532701115075684">Käteliigutuste jälgimine</translation>
 <translation id="3992684624889376114">Lisateave selle lehe kohta</translation>
 <translation id="3995639283717357522">Rakenda reeglid</translation>
+<translation id="3996683183117168945">Viide <ph name="CURRENT_CITATION" />/<ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" />. <ph name="PAGE_TITLE" />. <ph name="PAGE_PREVIEW" />.</translation>
 <translation id="399754345297554962">Standard- ja sisseastumistestid</translation>
 <translation id="3999173941208168054">Õudusfilmid</translation>
 <translation id="4000598935132966791">Lisateave hallatud brauserite saidipiirangute kohta</translation>
@@ -3910,6 +3911,7 @@ Lisateave:
 <translation id="7975858430722947486">Lisati võrdlusesse</translation>
 <translation id="7976214039405368314">Liiga palju päringuid</translation>
 <translation id="7977538094055660992">Väljundseade</translation>
+<translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> min tagasi}=1{<ph name="TIME_COUNT" /> h tagasi}other{<ph name="TIME_COUNT" /> p tagasi}}</translation>
 <translation id="7979595116210197019">Toiduvalmistamistööstus</translation>
 <translation id="798134797138789862">Saab küsida luba VR-seadmete ja -andmete kasutamiseks</translation>
 <translation id="7982789257301363584">Võrk</translation>

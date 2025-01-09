@@ -3770,7 +3770,7 @@ Detalles adicionales:
 <translation id="769721561045429135">En este momento, tienes tarjetas que pueden usarse solo en este dispositivo. Haz clic en Continuar para revisar las tarjetas.</translation>
 <translation id="7697837508203274589">Eventos deportivos en vivo</translation>
 <translation id="7698864304447945242">¿Quieres actualizar los Servicios de Google Play para RA?</translation>
-<translation id="7701040980221191251">Ninguna</translation>
+<translation id="7701040980221191251">No hay</translation>
 <translation id="7701486038694690341">Música country</translation>
 <translation id="7701544340847569275">La actualización finalizó con errores</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Continuar a <ph name="SITE" /> (no seguro)<ph name="END_LINK" /></translation>
@@ -3911,6 +3911,7 @@ Detalles adicionales:
 <translation id="7975858430722947486">Se agregó a la comparación</translation>
 <translation id="7976214039405368314">Demasiadas solicitudes</translation>
 <translation id="7977538094055660992">Dispositivo de salida</translation>
+<translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{Hace <ph name="TIME_COUNT" /> min}=1{Hace <ph name="TIME_COUNT" /> h}other{Hace <ph name="TIME_COUNT" /> días}}</translation>
 <translation id="7979595116210197019">Servicio de comida</translation>
 <translation id="798134797138789862">Puede solicitar permiso para usar datos y dispositivos de realidad virtual</translation>
 <translation id="7982789257301363584">Red</translation>

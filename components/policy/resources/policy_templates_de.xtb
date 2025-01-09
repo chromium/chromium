@@ -3052,6 +3052,14 @@ Wenn diese Richtlinie nicht konfiguriert ist, wird genau wie bei den anderen Chr
       Mit dem Platzhalterzeichen "*" kann eine Übereinstimmung mit null oder mehr beliebigen Zeichen erzielt werden. Als Escape-Zeichen wird "\" verwendet. Dieses kannst du vor "*" oder "\" setzen, wenn diese Zeichen – also Sternchen oder umgekehrter Schrägstrich – gemeint sind.
 
       Wenn diese Richtlinie nicht konfiguriert ist, werden alle Google-Konten auf dem Gerät in <ph name="PRODUCT_NAME" /> angezeigt.</translation>
+<translation id="3245558640643744331">Wenn die Richtlinie aktiviert ist, hat die Cloud-Richtlinie Vorrang, wenn sie mit der Plattformrichtlinie in Konflikt steht.
+
+Ist die Richtlinie deaktiviert oder nicht konfiguriert, hat die Plattformrichtlinie Vorrang, wenn sie mit der Cloud-Richtlinie in Konflikt steht.
+
+Diese obligatorische Richtlinie wirkt sich auf Cloud-Richtlinien auf Computern aus.
+
+Diese Richtlinie gilt nur für <ph name="PRODUCT_NAME" /> und hat keine Auswirkungen auf <ph name="GOOGLE_UPDATE_NAME" />, da es sich um unabhängige Anwendungen handelt.
+Für <ph name="GOOGLE_UPDATE_NAME" /> gilt eine separate Richtlinie mit demselben Namen.</translation>
 <translation id="3246606090306814894">Tastenkombination zum Auslösen von F12 verwalten</translation>
 <translation id="3248019773260441802">Erlaubt Seiten während ihres Entfernens Pop-ups einzublenden</translation>
 <translation id="3251500716404598358">Konfiguriere Richtlinien, um zwischen Browsern zu wechseln.
@@ -3909,6 +3917,13 @@ Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 <translation id="3897860452756794695">Das neue „offsetParent“-Verhalten wird verwendet.</translation>
 <translation id="3898345958122666461">NTLMv2 deaktivieren</translation>
 <translation id="3898795800259311780">Bildschirmaufnahme gestatten oder ablehnen</translation>
+<translation id="3901722051566830469">Wenn diese Richtlinie aktiviert ist, haben Richtlinien, die mit einem verwalteten Konto verknüpft sind, Vorrang, wenn sie im Widerspruch zu <ph name="CHROME_ENTERPRISE_CORE_NAME" />-Browserrichtlinien stehen.
+
+Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, werden Cloud-Richtlinien auf Nutzerebene standardmäßig priorisiert.
+
+Nur Richtlinien, die von sicheren Nutzern stammen, dürfen priorisiert werden. Ein sicherer Nutzer ist mit der Organisation verknüpft, die seinen Browser mithilfe von <ph name="CHROME_ENTERPRISE_CORE_NAME" /> verwaltet. Alle anderen Richtlinien auf Nutzerebene haben standardmäßig Vorrang.
+
+Die Richtlinie kann mit <ph name="POLICY_CLOUD_POLICY_OVERRIDES_PLATFORM_POLICY_POLICY_NAME" /> kombiniert werden. Sind beide Richtlinien aktiviert, haben Cloud-Richtlinien auf Nutzerebene auch Vorrang vor widersprüchlichen Plattformrichtlinien.</translation>
 <translation id="390296766888987595">Bildschirmtastatur nur anzeigen, wenn der Nutzer oder die Anwendung sie anfordert.</translation>
 <translation id="3903313632842363082">Melden der Nutzer auf Geräten deaktivieren</translation>
 <translation id="3904304709151553598">Melden der Lüfterinformationen auf Geräten deaktivieren</translation>
@@ -8979,6 +8994,13 @@ Wenn die Richtlinie leer bleibt, sind keine Ausnahmen zu „<ph name="FLOATING_S
       Wird die Richtlinie deaktiviert, erscheint stattdessen eine Meldung, wenn Nutzer mit einer Aktion ein Dialogfeld zur Dateiauswahl öffnen würden, etwa beim Importieren von Lesezeichen, Hochladen von Dateien und Speichern von Links. Es wird angenommen, dass der Nutzer im Dialogfeld zur Dateiauswahl auf „Abbrechen“ geklickt hat.</translation>
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">Verwendung von Systembenachrichtigungen zulassen</translation>
+<translation id="7642740497103044368">Wenn die Richtlinie aktiviert ist, dürfen Richtlinien, die mit einem verwalteten Konto verknüpft sind, zu Richtlinien auf Computerebene zusammengeführt werden.
+
+Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, können Cloud-Richtlinien auf Nutzerebene nicht mit Richtlinien aus anderen Quellen zusammengeführt werden.
+
+Nur Richtlinien, die von sicheren Nutzern stammen, dürfen priorisiert werden. Ein sicherer Nutzer ist mit der Organisation verknüpft, die seinen Browser mithilfe von <ph name="CHROME_ENTERPRISE_CORE_NAME" /> verwaltet. Alle anderen Richtlinien auf Nutzerebene haben standardmäßig Vorrang.
+
+Richtlinien, die zusammengeführt werden müssen, müssen außerdem entweder in <ph name="POLICY_LIST_MULTIPLE_SOURCE_MERGE_LIST_POLICY_NAME" /> oder <ph name="POLICY_DICTIONARY_MULTIPLE_SOURCE_MERGE_LIST_POLICY_NAME" /> eingerichtet sein. Diese Richtlinie wird ignoriert, wenn keine der beiden zuvor erwähnten Richtlinien konfiguriert ist.</translation>
 <translation id="7643151458117317518">Durch diese Richtlinie wird festgelegt, ob die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für die Anzeigenanalyse für Nutzer deaktiviert werden kann.
 
 Wenn die Richtlinie deaktiviert ist, wird die Einstellung für die Anzeigenanalyse für Nutzer deaktiviert.
@@ -10693,6 +10715,9 @@ Mit dieser Richtlinie wird nur <ph name="ARC_VM" /> auf <ph name="PRODUCT_OS_FLE
       Diese Richtlinie betrifft Nutzer, die sich über GAIA ohne SAML authentifizieren.
 
       Denken Sie daran, den Wert der Richtlinie in Tagen anzugeben.</translation>
+<translation id="8931076230631115330">Wenn diese Richtlinie konfiguriert ist, versucht <ph name="PRODUCT_NAME" />, sich bei der <ph name="CHROME_ENTERPRISE_CORE_NAME" />-Browserverwaltung zu registrieren. Der Wert dieser Richtlinie ist ein Registrierungstoken, das über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> abgerufen werden kann.
+
+Weitere Informationen dazu findest du unter https://support.google.com/chrome/a/answer/9301891.</translation>
 <translation id="8931555638815157255">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird über registrierte Geräte von Zeit zu Zeit die Version ihres Betriebssystems und ihrer Firmware gemeldet.
 
       Ist die Richtlinie deaktiviert, melden registrierte Geräte keine Informationen zu der Version.</translation>
@@ -11121,6 +11146,11 @@ Standardwert ist RollbackDisabled.</translation>
       Wenn die Richtlinie konfiguriert ist, kann der Nutzer sie nicht über die Browsereinstellungen ändern. Wird die Richtlinie nicht konfiguriert, ist der Hintergrundmodus zuerst deaktiviert, aber der Nutzer hat die Möglichkeit, das zu ändern.</translation>
 <translation id="981245424658084931">Geräteaktivität-Heartbeat aktivieren</translation>
 <translation id="981346395360763138">Standortdienste von Google deaktiviert</translation>
+<translation id="982192230088110287">Wenn die Richtlinie aktiviert ist, muss der Browser <ph name="CHROME_ENTERPRISE_CORE_NAME" /> registriert werden, und bei Nichterfüllung wird der Startprozess von <ph name="PRODUCT_NAME" /> blockiert.
+
+Bei deaktivierter oder nicht konfigurierter Richtlinie ist die Browserregistrierung für <ph name="CHROME_ENTERPRISE_CORE_NAME" /> optional und bei Nichterfüllung wird der Startprozess von <ph name="PRODUCT_NAME" /> nicht blockiert.
+
+Diese Richtlinie wird im Rahmen der Registrierung von Cloud-Richtlinien auf Computern verwendet. Weitere Informationen dazu findest du unter https://support.google.com/chrome/a/answer/9301891.</translation>
 <translation id="982195863867062122">„<ph name="DBSC_FEATURE_NAME" />“ aktivieren.</translation>
 <translation id="982497069985795632">Rechtschreibprüfung aktivieren</translation>
 <translation id="983256325512298435">Eine Liste mit Protokollen festlegen, über die eine externe App aus aufgeführten Quellen gestartet werden kann, ohne beim Nutzer nachzufragen</translation>

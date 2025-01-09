@@ -530,6 +530,7 @@
 <translation id="2847759467426165163">ଏଥିରେ କାଷ୍ଟ କରନ୍ତୁ</translation>
 <translation id="2848120746144143659">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ ସ୍କ୍ରିନସଟ କ୍ୟାପଚର କରିବା ପାଇଁ Enter ଦବାନ୍ତୁ</translation>
 <translation id="2849936225196189499">ଜଟିଳ</translation>
+<translation id="2850207700020959936">ଆପ୍ସ କେମେରାକୁ ଆକ୍ସେସ କରିପାରିବ</translation>
 <translation id="2860184359326882502">ସର୍ବୋତ୍ତମ ମେଳ</translation>
 <translation id="2865888419503095837">ନେଟ୍‌ୱାର୍କ ସୂଚନା</translation>
 <translation id="2869095047958348710">ଗତ <ph name="DAY_OF_WEEK" /></translation>
@@ -584,6 +585,7 @@
 <translation id="304417730895741346">ଆପଣଙ୍କ ପିନ କରାଯାଇଥିବା ଏବଂ ଖୋଲାଥିବା ଆପ୍ସ ସେଲ୍ଫରେ ଅଛି। କୌଣସି ଆପକୁ ସେଲ୍ଫରେ ପିନ କରିବା ପାଇଁ ଆପରେ ଡାହାଣ-କ୍ଲିକ କରନ୍ତୁ କିମ୍ବା ଦୁଇଟି ଆଙ୍ଗୁଠିରେ ଆପଣଙ୍କ ଟଚପେଡରେ ଟାପ କରନ୍ତୁ।</translation>
 <translation id="3045488863354895414">ଶୁଭ ଅପରାହ୍ନ,</translation>
 <translation id="3047761520276763270">ଏହା କହି ଦେଖନ୍ତୁ:</translation>
+<translation id="3053407068093039599">କେମେରା ଆକ୍ସେସକୁ ଚାଲୁ/ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="3055162170959710888">ଆଜି, ଆପଣ <ph name="USED_TIME" /> ସମୟରେ ଏହି ଡିଭାଇସ୍‌ ବ୍ୟବହାର କଲେ</translation>
 <translation id="3062298103034426069">ସମର୍ଥିତ ନୁହେଁ</translation>
 <translation id="3068622547379332530"><ph name="VERSION_NAME" /> ସଂସ୍କରଣ (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -1799,6 +1801,7 @@
 <translation id="7034025838182392395"><ph name="APP_NAME" /> <ph name="DEVICE_NAME" /> ବ୍ୟବହାର କରିବାକୁ ଚାହେଁ। ଆପଣଙ୍କ ଡିଭାଇସର ଫିଜିକାଲ <ph name="DEVICE_NAME" /> ସ୍ୱିଚକୁ ଚାଲୁ କରନ୍ତୁ।</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
 <translation id="7042322267639375032">ସ୍ଥିତି କ୍ଷେତ୍ର ସଙ୍କୁଚିତ କରନ୍ତୁ</translation>
+<translation id="7042593542151411225">ଆପ୍ସ କେମେରାକୁ ଆକ୍ସେସ କରିପାରିବ ନାହିଁ</translation>
 <translation id="7045033600005038336">ଟେମ୍ପଲେଟକୁ ପରିବର୍ତ୍ତନ କରିବେ?</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" />କୁ ବିଚ୍ଛିନ୍ନ କରାଯାଇଛି</translation>
 <translation id="7055910611768509537">ଷ୍ଟାଇଲସକୁ ଏକ ସପ୍ତାହରୁ ଅଧିକ ସମୟ ଧରି ବ୍ୟବହାର କରାଯାଇନାହିଁ</translation>
@@ -2374,6 +2377,7 @@
 <translation id="9074432941673450836">ଆପଣଙ୍କ <ph name="PRODUCT_NAME" />ରେ ଆପଣ ଆବଶ୍ୟକ କରୁଥିବା ସବୁକିଛି କରିବା ପାଇଁ ଆପ୍ସ ବ୍ୟବହାର କରନ୍ତୁ। ଆପଣ ଲଞ୍ଚରରେ ଆପଣଙ୍କ ଆପ୍ସ ପାଇପାରିବେ। ଆପଣ ମଧ୍ୟ କୀବୋର୍ଡରେ ଲଞ୍ଚର କୀକୁ (ବାମ Shift କୀ ଉପରେ) ଦବାଇ ପାରିବେ।</translation>
 <translation id="9074739597929991885">ବ୍ଲୁଟୁଥ୍</translation>
 <translation id="9077515519330855811">ମିଡିଆ ନିୟନ୍ତ୍ରଣଗୁଡ଼ିକ, ଏବେ <ph name="MEDIA_TITLE" /> ଚାଲୁଛି</translation>
+<translation id="9079012373317704997">କେମେରା ଆକ୍ସେସକୁ ରିମୋଟ ଭାବେ ଚାଲୁ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="9079731690316798640">ୱାଇ-ଫାଇ: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">କ୍ୟାମେରାକୁ ଉପର ବାମପାର୍ଶ୍ୱ କୋଣକୁ ସ୍ନାପ କରାଯାଇଛି</translation>
 <translation id="9080132581049224423">ମୂଳସ୍କ୍ରିନକୁ ଯିବା ପାଇଁ ଉପରକୁ ସ୍ୱାଇପ୍ କରନ୍ତୁ</translation>

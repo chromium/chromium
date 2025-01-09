@@ -358,7 +358,7 @@
 <translation id="2575552334616524665">Aukera hori aktibatzeko, joan ezarpenetara edo <ph name="THREE_DOTS_MENU_ICON" /> menura</translation>
 <translation id="2576253868710695442">2 GB hartuko ditu biltegian</translation>
 <translation id="2584547424703650812">Paisaia distiratsuak</translation>
-<translation id="2584559707064218956">Konfiguratzeko, joan ezarpenetara</translation>
+<translation id="2584559707064218956">Konfiguratzeko, joan Ezarpenak atalera</translation>
 <translation id="2586146417912237930">urdina eta anila</translation>
 <translation id="2589921777872778654">Editatu eta ezabatzeko menua</translation>
 <translation id="2597774443162333062">Google-ra bidaliko dira fitxategiak, bertan araztu ahal izateko</translation>
@@ -1480,7 +1480,7 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="7955587717700691983">Bluetooth bidezko teklatua</translation>
 <translation id="7960831585769876809">Tenperatura</translation>
 <translation id="7971535376154084247">Kontrolatzeko aukera orokorrak</translation>
-<translation id="7977800524392185497"><ph name="NETWORK_NAME" /> sare batean sartzeko, joan ezarpenetara</translation>
+<translation id="7977800524392185497"><ph name="NETWORK_NAME" /> sare batean sartzeko, joan Ezarpenak atalera</translation>
 <translation id="7978412674231730200">Gako pribatua</translation>
 <translation id="7982789257301363584">Sarea</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" automatikoki abiarazi da}other{# aplikazio automatikoki abiarazi dira}}</translation>
@@ -1725,7 +1725,7 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="9108856746036501072">Grabagailuak ahotsak dituzten grabaketen transkripzioak egin ditzake. Hurrengo urratsean, transkripzio-hizkuntza hautatu behar duzu, eta eredua deskargatu (100 MB gehienez).</translation>
 <translation id="9111102763498581341">Desblokeatu</translation>
 <translation id="9122492456897874028">Laburbildu edukia, lortu definizioak eta abar</translation>
-<translation id="9122602430962285795">Berriro konektatzeko, joan ezarpenetara</translation>
+<translation id="9122602430962285795">Berriro konektatzeko, joan Ezarpenak atalera</translation>
 <translation id="9122865513525855321">zen</translation>
 <translation id="9126720536733509015">Gorde hainbat orri PDF bakar batean</translation>
 <translation id="9133772297793293778">Sakatu 1-4 aldatzaileak eta teklatuko beste tekla bat. Editatzeko modutik irteteko, sakatu Alt + Ihes.</translation>

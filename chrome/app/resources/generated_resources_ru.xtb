@@ -7443,6 +7443,7 @@
 <translation id="6278776436938569440">Изменить местоположение</translation>
 <translation id="6280215091796946657">Войти в другой аккаунт</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281218688313242284">Управление аккаунтом &amp;Google</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Превышено ограничение. Можно напечатать не более 1 листа бумаги.}one{Превышено ограничение. Можно напечатать не более {COUNT} листа бумаги.}few{Превышено ограничение. Можно напечатать не более {COUNT} листов бумаги.}many{Превышено ограничение. Можно напечатать не более {COUNT} листов бумаги.}other{Превышено ограничение. Можно напечатать не более {COUNT} листа бумаги.}}</translation>
 <translation id="6282490239556659745">Удалить <ph name="EMBEDDED_SITE" /> с сайта <ph name="SITE" /></translation>
 <translation id="6283438600881103103">Вы автоматически выйдете из системы.
@@ -8060,6 +8061,7 @@
 <translation id="6745592621698551453">Обновить сейчас</translation>
 <translation id="6746124502594467657">Переместить вниз</translation>
 <translation id="67465227497040338">Показать пароль для <ph name="DOMAIN" /></translation>
+<translation id="6746834324024491643">Чтобы синхронизировать пароли и другие данные на всех устройствах, войдите в аккаунт <ph name="EMAIL" /></translation>
 <translation id="6748980958975836188">Я принимаю <ph name="BEGIN_LINK1" />Условия использования<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Дополнительные условия использования Chrome и Chrome OS<ph name="END_LINK2" /></translation>
 <translation id="6749077623962119521">Сбросить разрешения?</translation>
 <translation id="6749473226660745022">Фото</translation>

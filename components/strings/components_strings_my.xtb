@@ -1695,6 +1695,7 @@
 <translation id="3990532701115075684">သင့်လက်များကို စောင့်ကြည့်ခွင့်</translation>
 <translation id="3992684624889376114">ဤစာမျက်နှာ အကြောင်း</translation>
 <translation id="3995639283717357522">မူဝါဒများအတိုင်း လုပ်ဆောင်ရန်</translation>
+<translation id="3996683183117168945">ကိုးကားချက် <ph name="MAX_CITATIONS" /> ခုအနက် <ph name="CURRENT_CITATION" />၊ <ph name="PRODUCT_NAME" />၊ <ph name="URL" />။ <ph name="PAGE_TITLE" />။ <ph name="PAGE_PREVIEW" />။</translation>
 <translation id="399754345297554962">စံပြုလုပ်ထားသည်များ၊ ဝင်ခွင့်စာမေးပွဲ</translation>
 <translation id="3999173941208168054">ထိတ်လန့်စရာရုပ်ရှင်</translation>
 <translation id="4000598935132966791">စီမံထားသည့် ဘရောင်ဇာများရှိ ဝဘ်ဆိုက် ကန့်သတ်ချက်များအကြောင်း ပိုမိုလေ့လာရန်</translation>
@@ -3910,6 +3911,7 @@
 <translation id="7975858430722947486">နှိုင်းယှဉ်မှုတွင် ထည့်လိုက်သည်</translation>
 <translation id="7976214039405368314">တောင်းဆိုမှုများ များလွန်းနေသည်</translation>
 <translation id="7977538094055660992">ထုတ်ယူမည့်စက်</translation>
+<translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{ပြီးခဲ့သော <ph name="TIME_COUNT" /> မိနစ်}=1{ပြီးခဲ့သော <ph name="TIME_COUNT" /> နာရီ}other{ပြီးခဲ့သော <ph name="TIME_COUNT" /> ရက်}}</translation>
 <translation id="7979595116210197019">အစားအသောက် ဝန်ဆောင်မှု</translation>
 <translation id="798134797138789862">ပကတိအသွင် စက်နှင့် ဒေတာများ သုံးရန် ခွင့်တောင်းနိုင်သည်</translation>
 <translation id="7982789257301363584">ကွန်ရက်</translation>

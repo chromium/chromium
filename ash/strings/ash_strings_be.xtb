@@ -530,6 +530,7 @@
 <translation id="2847759467426165163">Трансліраваць на прыладу</translation>
 <translation id="2848120746144143659">Каб зрабіць здымак усяго экрана, націсніце Увод</translation>
 <translation id="2849936225196189499">Крытычна важнае</translation>
+<translation id="2850207700020959936">Праграмы маюць доступ да камеры</translation>
 <translation id="2860184359326882502">Найлепшае супадзенне</translation>
 <translation id="2865888419503095837">Інфармацыя аб сетцы</translation>
 <translation id="2869095047958348710"><ph name="DAY_OF_WEEK" /> (мінулы дзень)</translation>
@@ -584,6 +585,7 @@
 <translation id="304417730895741346">Замацаваныя і адкрытыя праграмы знаходзяцца на панэлі доступу. Каб замацаваць праграму, націсніце на яе правай кнопкі мышы або дакраніцеся двума пальцамі да сэнсарнай панэлі.</translation>
 <translation id="3045488863354895414">Добры дзень,</translation>
 <translation id="3047761520276763270">Паспрабуйце сказаць:</translation>
+<translation id="3053407068093039599">Дазволіць або не дазваляць доступ да камеры</translation>
 <translation id="3055162170959710888">Сёння гэтай прыладай карысталіся <ph name="USED_TIME" /></translation>
 <translation id="3062298103034426069">Не падтрымліваецца</translation>
 <translation id="3068622547379332530">Версія <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -1800,6 +1802,7 @@
 <translation id="7034025838182392395">Праграма "<ph name="APP_NAME" />" спрабуе выкарыстаць наступную прыладу: <ph name="DEVICE_NAME" />. Каб зрабіць гэта магчымым, уключыце прыладу (<ph name="DEVICE_NAME" />), выкарыстаўшы фізічны пераключальнік.</translation>
 <translation id="703425375924687388">Запыт Памочніка Google "<ph name="QUERY_NAME" />"</translation>
 <translation id="7042322267639375032">Згарнуць панэль стану</translation>
+<translation id="7042593542151411225">У праграм няма доступу да камеры</translation>
 <translation id="7045033600005038336">Замяніць шаблон?</translation>
 <translation id="7051244143160304048">Прылада "<ph name="DEVICE_NAME" />" адключана</translation>
 <translation id="7055910611768509537">Пяро не выкарыстоўвалася больш за тыдзень</translation>
@@ -2375,6 +2378,7 @@
 <translation id="9074432941673450836">З дапамогай праграм вы можаце выконваць на сваёй прыладзе (<ph name="PRODUCT_NAME" />) самыя розныя задачы. Знайсці праграмы можна на Панэлі запуску. Вы таксама можаце націснуць клавішу Панэлі запуску на клавіятуры (над клавішай Shift злева).</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9077515519330855811">Элементы кіравання мультымедыя, зараз іграе кампазіцыя "<ph name="MEDIA_TITLE" />"</translation>
+<translation id="9079012373317704997">Не ўдаецца дазволіць доступ да камеры аддалена</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">Акно перадпрагляду камеры прывязана да левага верхняга вугла</translation>
 <translation id="9080132581049224423">Каб перайсці на галоўны экран, правядзіце пальцам уверх</translation>

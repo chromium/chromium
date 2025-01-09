@@ -530,6 +530,7 @@ Caso contrário, o touchpad integrado será reativado em <ph name="TIMEOUT_SECON
 <translation id="2847759467426165163">Transmitir para</translation>
 <translation id="2848120746144143659">Pressione "Enter" para fazer uma captura de tela cheia</translation>
 <translation id="2849936225196189499">Crítico</translation>
+<translation id="2850207700020959936">Os apps podem acessar a câmera</translation>
 <translation id="2860184359326882502">Melhor correspondência</translation>
 <translation id="2865888419503095837">Informações de rede</translation>
 <translation id="2869095047958348710"><ph name="DAY_OF_WEEK" /> anterior</translation>
@@ -584,6 +585,7 @@ Caso contrário, o touchpad integrado será reativado em <ph name="TIMEOUT_SECON
 <translation id="304417730895741346">Os apps fixados e abertos estão na estante. Para fixar um app na estante, clique nele com o botão direito do mouse ou toque no touchpad com dois dedos.</translation>
 <translation id="3045488863354895414">Boa tarde,</translation>
 <translation id="3047761520276763270">Tente dizer:</translation>
+<translation id="3053407068093039599">Ativar/desativar o acesso à câmera</translation>
 <translation id="3055162170959710888">Você usou este dispositivo por <ph name="USED_TIME" /> hoje</translation>
 <translation id="3062298103034426069">Sem suporte</translation>
 <translation id="3068622547379332530">Versão <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -1800,6 +1802,7 @@ Nova instalação</translation>
 <translation id="7034025838182392395">O app <ph name="APP_NAME" /> quer usar o dispositivo <ph name="DEVICE_NAME" />. Ative a chave desse dispositivo (<ph name="DEVICE_NAME" />)</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistente</translation>
 <translation id="7042322267639375032">Recolher área de status</translation>
+<translation id="7042593542151411225">Os apps não podem acessar a câmera</translation>
 <translation id="7045033600005038336">Substituir modelo?</translation>
 <translation id="7051244143160304048">Dispositivo desconectado: <ph name="DEVICE_NAME" /></translation>
 <translation id="7055910611768509537">A stylus não é usada há mais de uma semana</translation>
@@ -2375,6 +2378,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="9074432941673450836">Use apps para fazer tudo o que você precisa no <ph name="PRODUCT_NAME" />. Seus apps estão disponíveis no acesso rápido. Você também pode pressionar a tecla de acesso rápido (acima da tecla Shift esquerda) no teclado.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9077515519330855811">Controles de mídia. Tocando <ph name="MEDIA_TITLE" /></translation>
+<translation id="9079012373317704997">Não é possível ativar o acesso à câmera remotamente</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">Câmera alinhada ao canto esquerdo de cima</translation>
 <translation id="9080132581049224423">Deslize para cima para ir para a tela inicial</translation>
