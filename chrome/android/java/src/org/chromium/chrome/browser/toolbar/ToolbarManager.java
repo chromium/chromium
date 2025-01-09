@@ -13,6 +13,7 @@ import android.content.res.Configuration;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
@@ -183,6 +184,7 @@ import org.chromium.net.NetError;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.BackGestureEventSwipeEdge;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.util.TokenHolder;
@@ -429,6 +431,16 @@ public class ToolbarManager
                 BackPressMetrics.recordPredictiveGestureNav(
                         mHandler != null, PredictiveGestureNavPhase.COMPLETED);
             }
+
+            if (isRightEdgeGoesForwardGestureNavEnabled() && !mBackGestureInProgress) {
+                // When the user swipes semantically backward and canGoBack == false.
+                if (isInvalidSwipeWhenNavigatingBack()) {
+                    return BackPressResult.FAILURE;
+                }
+                // When the user swipes semantically forward with no forward history.
+                return BackPressResult.IGNORED;
+            }
+
             int res = BackPressResult.SUCCESS;
 
             if (mHandler != null) {
@@ -507,10 +519,23 @@ public class ToolbarManager
             mStartNavDuringOngoingGesture = false;
             mBackGestureInProgress = true;
 
-            assert mActivityTabProvider.get().canGoBack()
-                    : String.format(
-                            "Should be able to navigate back; edge %s; gesture mode %s",
-                            backEvent.getSwipeEdge(), mIsGestureMode);
+            if (isRightEdgeGoesForwardGestureNavEnabled()) {
+                assert !(isInvalidSwipeWhenNavigatingForward()
+                                && isInvalidSwipeWhenNavigatingBack())
+                        : "isInvalidSwipeWhenNavigatingForward and isInvalidSwipeWhenNavigatingBack"
+                              + " cannot be true at the same time.";
+                // Do not proceed if: 1. swiping semantically forward with no forward history. 2.
+                // swiping semantically backward and canGoBack == false.
+                if (isInvalidSwipeWhenNavigatingForward() || isInvalidSwipeWhenNavigatingBack()) {
+                    mBackGestureInProgress = false;
+                    return;
+                }
+            } else {
+                assert mActivityTabProvider.get().canGoBack()
+                        : String.format(
+                                "Should be able to navigate back; edge %s; gesture mode %s",
+                                backEvent.getSwipeEdge(), mIsGestureMode);
+            }
 
             // This means the user is pressing a back button in 3-button mode.
             // The transition should only be triggered by swipe rather than a button press.
@@ -550,6 +575,34 @@ public class ToolbarManager
             return navigable
                     && TabOnBackGestureHandler.shouldAnimateNavigationTransition(
                             navigateForward, backEvent.getSwipeEdge());
+        }
+
+        /**
+         * @return Which edge the current gesture was initiated from.
+         */
+        @BackGestureEventSwipeEdge
+        int getInitiatingEdge() {
+            return mInitialEdge;
+        }
+
+        public boolean isInvalidSwipeWhenNavigatingForward() {
+            // If the UI uses an RTL layout, it may be necessary to flip the meaning of each edge so
+            // that the left edge goes forward and the right goes back.
+            int forwardEdge =
+                    LocalizationUtils.shouldMirrorBackForwardGestures()
+                            ? BackEventCompat.EDGE_LEFT
+                            : BackEventCompat.EDGE_RIGHT;
+            return mInitialEdge == forwardEdge && !mActivityTabProvider.get().canGoForward();
+        }
+
+        public boolean isInvalidSwipeWhenNavigatingBack() {
+            // If the UI uses an RTL layout, it may be necessary to flip the meaning of each edge so
+            // that the left edge goes forward and the right goes back.
+            int backEdge =
+                    LocalizationUtils.shouldMirrorBackForwardGestures()
+                            ? BackEventCompat.EDGE_RIGHT
+                            : BackEventCompat.EDGE_LEFT;
+            return mInitialEdge == backEdge && !mActivityTabProvider.get().canGoBack();
         }
     }
 
@@ -2676,7 +2729,13 @@ public class ToolbarManager
 
     private void onBackPressStateChanged() {
         Tab tab = mActivityTabProvider.get();
-        mBackPressStateSupplier.set(tab != null && mToolbarTabController.canGoBack());
+        if (isRightEdgeGoesForwardGestureNavEnabled()) {
+            // Account for both backward and forward navigation.
+            mBackPressStateSupplier.set(
+                    tab != null && (mToolbarTabController.canGoBack() || tab.canGoForward()));
+        } else {
+            mBackPressStateSupplier.set(tab != null && mToolbarTabController.canGoBack());
+        }
     }
 
     private void onBackForwardTransitionAnimationChange() {
@@ -2747,9 +2806,23 @@ public class ToolbarManager
     }
 
     private boolean isForward() {
-        // Gestural navigation navigates backwards from both edges since this is an OS-level
-        // gesture; users expect both edges to take them back.
-        return false;
+        if (isRightEdgeGoesForwardGestureNavEnabled()) {
+            // isForward() returns true when the user swipes from the right edge.
+            OnBackPressHandler onBackPressHandler = (OnBackPressHandler) mBackPressHandler;
+            boolean forward =
+                    onBackPressHandler.getInitiatingEdge() == BackGestureEventSwipeEdge.RIGHT;
+
+            // If the UI uses an RTL layout, it may be necessary to flip the meaning of each edge so
+            // that the left edge goes forward and the right goes back.
+            if (LocalizationUtils.shouldMirrorBackForwardGestures()) {
+                forward = !forward;
+            }
+            return forward;
+        } else {
+            // Gestural navigation navigates backwards from both edges since this is an OS-level
+            // gesture; users expect both edges to take them back.
+            return false;
+        }
     }
 
     /**
@@ -2760,5 +2833,10 @@ public class ToolbarManager
     public void setBookmarkBarHeightSupplier(
             @Nullable ObservableSupplier<Integer> bookmarkBarHeightSupplier) {
         mBookmarkBarHeightSupplier = bookmarkBarHeightSupplier;
+    }
+
+    public static boolean isRightEdgeGoesForwardGestureNavEnabled() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+                && ChromeFeatureList.sRightEdgeGoesForwardGestureNav.isEnabled();
     }
 }
