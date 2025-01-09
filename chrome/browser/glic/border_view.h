@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_GLIC_BORDER_BORDER_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_GLIC_BORDER_BORDER_VIEW_H_
+#ifndef CHROME_BROWSER_GLIC_BORDER_VIEW_H_
+#define CHROME_BROWSER_GLIC_BORDER_VIEW_H_
 
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/compositor_animation_observer.h"
@@ -81,4 +81,4 @@ class BorderView : public views::View,
 
 }  // namespace glic
 
-#endif  // CHROME_BROWSER_UI_VIEWS_GLIC_BORDER_BORDER_VIEW_H_
+#endif  // CHROME_BROWSER_GLIC_BORDER_VIEW_H_

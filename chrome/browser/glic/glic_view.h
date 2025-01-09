@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_GLIC_GLIC_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_GLIC_GLIC_VIEW_H_
+#ifndef CHROME_BROWSER_GLIC_GLIC_VIEW_H_
+#define CHROME_BROWSER_GLIC_GLIC_VIEW_H_
 
-#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
-#include "chrome/browser/ui/views/glic/glic_web_view.h"
+#include "chrome/browser/glic/glic_web_view.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -19,8 +18,9 @@ namespace views {
 class WebView;
 }  // namespace views
 
-class Profile;
 class BrowserFrameBoundsChangeAnimation;
+class Profile;
+class ScopedProfileKeepAlive;
 
 namespace glic {
 
@@ -66,4 +66,4 @@ class GlicView : public views::View {
 
 }  // namespace glic
 
-#endif  // CHROME_BROWSER_UI_VIEWS_GLIC_GLIC_VIEW_H_
+#endif  // CHROME_BROWSER_GLIC_GLIC_VIEW_H_

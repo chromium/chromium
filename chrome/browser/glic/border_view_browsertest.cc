@@ -4,7 +4,7 @@
 
 #define _USE_MATH_DEFINES  // To get M_PI on Windows.
 
-#include "chrome/browser/ui/views/glic/border/border_view.h"
+#include "chrome/browser/glic/border_view.h"
 
 #include <math.h>
 

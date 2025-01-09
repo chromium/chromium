@@ -6,11 +6,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/glic/border_view.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views/glic/border/border_view.h"
 #include "content/public/browser/web_contents.h"
 
 namespace glic {

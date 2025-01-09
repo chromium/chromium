@@ -22,9 +22,9 @@
 #endif
 
 #if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/border_view.h"
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/views/glic/border/border_view.h"
 #endif
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ContentsWebView,

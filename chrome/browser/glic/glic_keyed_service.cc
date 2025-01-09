@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/glic_keyed_service.h"
 
+#include "chrome/browser/glic/border_view.h"
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_focused_tab_manager.h"
 #include "chrome/browser/glic/glic_page_context_fetcher.h"
