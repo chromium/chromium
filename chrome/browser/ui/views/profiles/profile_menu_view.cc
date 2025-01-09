@@ -836,10 +836,11 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
       IdentityManagerFactory::GetForProfile(profile);
   const bool is_sync_feature_enabled =
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
-  CoreAccountInfo primary_account_info =
+  const CoreAccountInfo primary_account_info =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   const AccountInfo primary_extended_account_info =
       identity_manager->FindExtendedAccountInfo(primary_account_info);
+  CoreAccountInfo account_info_for_signin_action = primary_account_info;
 
   IdentitySectionParams params;
   params.title = GetProfileIdentifier(entry.GetLocalProfileName(),
@@ -904,8 +905,10 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
           ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO;
       AccountInfo account_info_for_promos =
           signin_ui_util::GetSingleAccountForPromos(identity_manager);
-      params.subtitle =
-          l10n_util::GetStringUTF16(IDS_PROFILE_MENU_SIGNIN_PROMO_DESCRIPTION);
+      account_info_for_signin_action = account_info_for_promos;
+      params.subtitle = l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_PEOPLE_ACCOUNT_AWARE_SIGNIN_ACCOUNT_ROW_SUBTITLE_WITH_EMAIL,
+          base::UTF8ToUTF16(account_info_for_promos.email));
       params.button_text = l10n_util::GetStringFUTF16(
           IDS_PROFILES_DICE_WEB_ONLY_SIGNIN_BUTTON,
           base::UTF8ToUTF16(!account_info_for_promos.given_name.empty()
@@ -959,7 +962,7 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
   if (!params.button_text.empty()) {
     params.button_action = base::BindRepeating(
         &ProfileMenuView::OnSigninButtonClicked, base::Unretained(this),
-        primary_account_info, button_type, access_point);
+        account_info_for_signin_action, button_type, access_point);
   }
 
   return params;
