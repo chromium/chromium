@@ -66,10 +66,21 @@ struct SRIMessageSignature {
   string serialized_signature_params;
 };
 
+// Possible errors which can occur during parsing and validation:
+enum SRIMessageSignatureError {
+  kMissingSignatureHeader,
+  kMissingSignatureInputHeader,
+  kInvalidSignatureHeader,
+  kInvalidSignatureInputHeader,
+  kSignatureHeaderValueIsNotByteSequence,
+  kSignatureHeaderValueIsParameterized,
+  kSignatureHeaderValueIsIncorrectLength,
+};
+
 // Contains the set of valid message signatures for a given response, along with
-// any parsing errors which were handled while processing `Signature-Input` and
+// any parsing errors which were handled while parsing `Signature-Input` and
 // `Signature` headers.
 struct SRIMessageSignatures {
   array<SRIMessageSignature> signatures;
-  array<string> parsing_errors;
+  array<SRIMessageSignatureError> parsing_errors;
 };

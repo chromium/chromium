@@ -208,22 +208,21 @@ std::string SerializeDerivedComponent(const GURL& request_url,
 // doesn't pass validation, the function will return `false`, and a relevant
 // entry will be added to the list of parsing errors.
 //
-bool ValidateHeaderPresence(const std::string& signature_header,
-                            const std::string& signature_input_header,
-                            std::vector<std::string>& parsing_errors) {
+bool ValidateHeaderPresence(
+    const std::string& signature_header,
+    const std::string& signature_input_header,
+    std::vector<mojom::SRIMessageSignatureError>& parsing_errors) {
   if (signature_header.empty() && signature_input_header.empty()) {
     // Neither `Signature` nor `Signature-Input` is present, punt on validation
     // without any errors.
     return false;
   } else if (signature_header.empty() && !signature_input_header.empty()) {
     parsing_errors.emplace_back(
-        "A `Signature-Input` header was delivered without a corresponding "
-        "`Signature` header. No signature validation was possible.");
+        mojom::SRIMessageSignatureError::kMissingSignatureHeader);
     return false;
   } else if (signature_input_header.empty() && !signature_header.empty()) {
     parsing_errors.emplace_back(
-        "A `Signature` header was delivered without a corresponding "
-        "`Signature-Input` header. No signature validation was possible.");
+        mojom::SRIMessageSignatureError::kMissingSignatureInputHeader);
     return false;
   }
   return true;
@@ -232,17 +231,15 @@ bool ValidateHeaderPresence(const std::string& signature_header,
 bool ValidateDictionaryStructure(
     std::optional<net::structured_headers::Dictionary> signature_dictionary,
     std::optional<net::structured_headers::Dictionary> input_dictionary,
-    std::vector<std::string>& parsing_errors) {
+    std::vector<mojom::SRIMessageSignatureError>& parsing_errors) {
   if (!signature_dictionary) {
     parsing_errors.emplace_back(
-        "The `Signature` header's value is not a valid Structured Field "
-        "dictionary. No signature validation was possible.");
+        mojom::SRIMessageSignatureError::kInvalidSignatureHeader);
     return false;
   }
   if (!input_dictionary) {
     parsing_errors.emplace_back(
-        "The `Signature-Input` header's value is not a valid Structured Field "
-        "dictionary. No signature validation was possible.");
+        mojom::SRIMessageSignatureError::kInvalidSignatureInputHeader);
     return false;
   }
   return true;
@@ -250,30 +247,24 @@ bool ValidateDictionaryStructure(
 
 bool ValidateSignatureValue(
     const net::structured_headers::DictionaryMember& signature_entry,
-    std::vector<std::string>& parsing_errors) {
-  std::string prefix =
-      base::StringPrintf("The `Signature` header contains a member, `%s`, ",
-                         signature_entry.first.c_str());
-  constexpr std::string_view ignored_suffix =
-      " This member was ignored during signature validation.";
-
+    std::vector<mojom::SRIMessageSignatureError>& parsing_errors) {
   // The value must be an unparameterized byte-sequence:
   if (signature_entry.second.member.empty() ||
       signature_entry.second.member_is_inner_list ||
       !signature_entry.second.member[0].item.is_byte_sequence()) {
-    parsing_errors.emplace_back(base::StrCat(
-        {prefix, "whose value is not a byte-sequence.", ignored_suffix}));
+    parsing_errors.emplace_back(mojom::SRIMessageSignatureError::
+                                    kSignatureHeaderValueIsNotByteSequence);
     return false;
   } else if (signature_entry.second.params.size() != 0u) {
-    parsing_errors.emplace_back(base::StrCat(
-        {prefix, "that has unexpected parameters.", ignored_suffix}));
+    parsing_errors.emplace_back(
+        mojom::SRIMessageSignatureError::kSignatureHeaderValueIsParameterized);
     return false;
   }
 
   std::string signature = signature_entry.second.member[0].item.GetString();
   if (signature.size() != kEd25519SigLength) {
-    parsing_errors.emplace_back(base::StrCat(
-        {prefix, "whose value is not 64 bytes long.", ignored_suffix}));
+    parsing_errors.emplace_back(mojom::SRIMessageSignatureError::
+                                    kSignatureHeaderValueIsIncorrectLength);
     return false;
   }
   return true;

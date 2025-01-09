@@ -154,10 +154,8 @@ TEST_F(SRIMessageSignatureParserTest, NoSignatureHeader) {
       ParseSRIMessageSignaturesFromHeaders(*headers);
   EXPECT_EQ(0u, result->signatures.size());
   ASSERT_EQ(1u, result->parsing_errors.size());
-  EXPECT_EQ(
-      "A `Signature-Input` header was delivered without a corresponding "
-      "`Signature` header. No signature validation was possible.",
-      result->parsing_errors[0]);
+  EXPECT_EQ(mojom::SRIMessageSignatureError::kMissingSignatureHeader,
+            result->parsing_errors[0]);
 }
 
 TEST_F(SRIMessageSignatureParserTest, NoSignatureInputHeader) {
@@ -166,10 +164,8 @@ TEST_F(SRIMessageSignatureParserTest, NoSignatureInputHeader) {
       ParseSRIMessageSignaturesFromHeaders(*headers);
   EXPECT_EQ(0u, result->signatures.size());
   ASSERT_EQ(1u, result->parsing_errors.size());
-  EXPECT_EQ(
-      "A `Signature` header was delivered without a corresponding "
-      "`Signature-Input` header. No signature validation was possible.",
-      result->parsing_errors[0]);
+  EXPECT_EQ(mojom::SRIMessageSignatureError::kMissingSignatureInputHeader,
+            result->parsing_errors[0]);
 }
 
 TEST_F(SRIMessageSignatureParserTest, ValidHeaders) {

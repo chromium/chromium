@@ -287,16 +287,17 @@ blink::NoVarySearchWithParseErrorPtr ConvertToBlink(
           no_vary_search->vary_on_key_order));
 }
 
+// `in` is a Mojo enum type, which is type aliased to the same underlying type
+// by both the non-Blink Mojo variant and the Blink Mojo variant.
 blink::SRIMessageSignatureComponent::Parameter ConvertToBlink(
     SRIMessageSignatureComponent::Parameter in) {
-  switch (in) {
-    case SRIMessageSignatureComponent::Parameter::kRequest:
-      return blink::SRIMessageSignatureComponent::Parameter::kRequest;
-    case SRIMessageSignatureComponent::Parameter::
-        kStrictStructuredFieldSerialization:
-      return blink::SRIMessageSignatureComponent::Parameter::
-          kStrictStructuredFieldSerialization;
-  }
+  return in;
+}
+
+// `in` is a Mojo enum type, which is type aliased to the same underlying type
+// by both the non-Blink Mojo variant and the Blink Mojo variant.
+blink::SRIMessageSignatureError ConvertToBlink(SRIMessageSignatureError in) {
+  return in;
 }
 
 blink::SRIMessageSignatureComponentPtr ConvertToBlink(
