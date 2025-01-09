@@ -208,8 +208,8 @@ def BuildInstaller(wix_path, product_name, product_version, appid,
     # Also include the version number since we process version changes as
     # major upgrades.
     msi_product_id = generate_name_based_guid(
-        updater_installer_namespace,
-        'Product %s %s %s' % (product_name, msi_base_name, product_version))
+        updater_installer_namespace, 'Product %s %s %s %s' %
+        (product_name, msi_base_name, product_version, architecture))
     msi_upgradecode_guid = generate_name_based_guid(
         updater_installer_namespace, 'Upgrade ' + product_name)
 
