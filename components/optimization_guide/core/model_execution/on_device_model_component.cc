@@ -32,19 +32,6 @@
 namespace optimization_guide {
 namespace {
 
-const std::optional<OnDeviceBaseModelSpec> ReadBaseModelSpecFromManifest(
-    const base::Value::Dict& manifest) {
-  auto* model_spec = manifest.FindDict("BaseModelSpec");
-  if (model_spec) {
-    auto* name = model_spec->FindString("name");
-    auto* version = model_spec->FindString("version");
-    if (name && version) {
-      return OnDeviceBaseModelSpec{*name, *version};
-    }
-  }
-  return std::nullopt;
-}
-
 base::WeakPtr<OnDeviceModelComponentStateManager>& GetInstance() {
   static base::NoDestructor<base::WeakPtr<OnDeviceModelComponentStateManager>>
       state_manager_instance;
@@ -79,10 +66,6 @@ void LogInstallCriteria(std::string_view event_name,
       criteria_value);
 }
 
-}  // namespace
-
-namespace {
-
 void LogInstallCriteria(
     OnDeviceModelComponentStateManager::RegistrationCriteria& criteria,
     std::string_view event_name) {
@@ -99,6 +82,19 @@ void LogInstallCriteria(
 }
 
 }  // namespace
+
+OnDeviceBaseModelSpec::OnDeviceBaseModelSpec() = default;
+OnDeviceBaseModelSpec::OnDeviceBaseModelSpec(
+    const std::string& model_name,
+    const std::string& model_version,
+    const base::flat_set<proto::OnDeviceModelPerformanceHint>&
+        supported_performance_hints)
+    : model_name(model_name),
+      model_version(model_version),
+      supported_performance_hints(supported_performance_hints) {}
+OnDeviceBaseModelSpec::~OnDeviceBaseModelSpec() = default;
+OnDeviceBaseModelSpec::OnDeviceBaseModelSpec(const OnDeviceBaseModelSpec&) =
+    default;
 
 void OnDeviceModelComponentStateManager::UninstallComplete() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -387,7 +383,7 @@ void OnDeviceModelComponentStateManager::SetReady(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   state_.reset();
 
-  if (auto model_spec = ReadBaseModelSpecFromManifest(manifest)) {
+  if (auto model_spec = ProcessBaseModelSpecFromManifest(manifest)) {
     state_ = base::WrapUnique(new OnDeviceModelComponentState);
     state_->install_dir_ = install_dir;
     // This version refers to the component version specifically, not the model
@@ -413,6 +409,64 @@ void OnDeviceModelComponentStateManager::NotifyOnDeviceEligibleFeatureFirstUsed(
   for (auto& o : observers_) {
     o.OnDeviceEligibleFeatureFirstUsed(feature);
   }
+}
+
+const std::optional<OnDeviceBaseModelSpec>
+OnDeviceModelComponentStateManager::ProcessBaseModelSpecFromManifest(
+    const base::Value::Dict& manifest) {
+  auto* model_spec = manifest.FindDict("BaseModelSpec");
+  if (!model_spec) {
+    return std::nullopt;
+  }
+  auto* name = model_spec->FindString("name");
+  auto* version = model_spec->FindString("version");
+  if (!name || !version) {
+    return std::nullopt;
+  }
+  auto* supported_performance_hints =
+      model_spec->FindList("supported_performance_hints");
+  base::flat_set<proto::OnDeviceModelPerformanceHint>
+      supported_performance_hint_enums =
+          supported_performance_hints
+              ? GetSupportedPerformanceHintsForDeviceFromManifest(
+                    *supported_performance_hints)
+              : base::flat_set<proto::OnDeviceModelPerformanceHint>();
+  return OnDeviceBaseModelSpec(*name, *version,
+                               supported_performance_hint_enums);
+}
+
+base::flat_set<proto::OnDeviceModelPerformanceHint>
+OnDeviceModelComponentStateManager::
+    GetSupportedPerformanceHintsForDeviceFromManifest(
+        const base::Value::List& manifest_performance_hints) const {
+  base::flat_set<proto::OnDeviceModelPerformanceHint>
+      supported_performance_hint_enums;
+  for (const auto& supported_performance_hint_val :
+       manifest_performance_hints) {
+    std::optional<int> supported_performance_hint_int =
+        supported_performance_hint_val.GetIfInt();
+    if (!proto::OnDeviceModelPerformanceHint_IsValid(
+            supported_performance_hint_int.value_or(
+                proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_UNSPECIFIED))) {
+      // Skip values that are not well-formed.
+      continue;
+    }
+    if (*supported_performance_hint_int ==
+        proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_UNSPECIFIED) {
+      // Skip unspecified value.
+      continue;
+    }
+    if (*supported_performance_hint_int ==
+            proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_HIGHEST_QUALITY &&
+        IsLowTierDevice()) {
+      // Low-tier devices do not support highest quality.
+      continue;
+    }
+    supported_performance_hint_enums.insert(
+        static_cast<proto::OnDeviceModelPerformanceHint>(
+            *supported_performance_hint_int));
+  }
+  return supported_performance_hint_enums;
 }
 
 OnDeviceModelComponentState::OnDeviceModelComponentState() = default;

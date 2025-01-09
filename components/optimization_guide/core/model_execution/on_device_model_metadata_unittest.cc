@@ -20,10 +20,8 @@ namespace optimization_guide {
 
 namespace {
 
-const struct OnDeviceBaseModelSpec kModelSpec = {.model_name = "test",
-                                                 .model_version = "0.0.1"};
-const struct OnDeviceBaseModelSpec kModelSpecNew = {.model_name = "test",
-                                                    .model_version = "0.0.2"};
+const struct OnDeviceBaseModelSpec kModelSpec = {"test", "0.0.1", {}};
+const struct OnDeviceBaseModelSpec kModelSpecNew = {"test", "0.0.2", {}};
 
 class OnDeviceModelMetadataTest : public testing::Test {
  public:
