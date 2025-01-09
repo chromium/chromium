@@ -85,6 +85,15 @@ constexpr base::TimeDelta kStartRemotePlaybackTimeOut = base::Seconds(5);
 
 constexpr char kLogPrefix[] = "OpenscreenSessionHost";
 
+// Note: listed in order of priority. Support must also be determined using
+// the encoding_support logic.
+constexpr std::array kSupportedVideoCodecs{
+    media::VideoCodec::kAV1,
+    media::VideoCodec::kVP9,
+    media::VideoCodec::kH264,
+    media::VideoCodec::kVP8,
+};
+
 int NumberOfEncodeThreads() {
   // Do not saturate CPU utilization just for encoding. On a lower-end system
   // with only 1 or 2 cores, use only one thread for encoding. On systems with
@@ -1087,73 +1096,27 @@ void OpenscreenSessionHost::NegotiateMirroring() {
 
   if (session_params_.type != SessionType::AUDIO_ONLY) {
     // First, check if hardware encoders are available and should be offered.
-    const bool should_offer_hardware_vp9 =
-        media::cast::encoding_support::IsHardwareEnabled(
-            media::VideoCodec::kVP9, supported_profiles_);
-    const bool should_offer_hardware_h264 =
-        media::cast::encoding_support::IsHardwareEnabled(
-            media::VideoCodec::kH264, supported_profiles_);
-    const bool should_offer_hardware_vp8 =
-        media::cast::encoding_support::IsHardwareEnabled(
-            media::VideoCodec::kVP8, supported_profiles_);
-    if (should_offer_hardware_vp9) {
-      FrameSenderConfig config =
-          MirrorSettings::GetDefaultVideoConfig(media::VideoCodec::kVP9);
-      UpdateConfigUsingSessionParameters(session_params_, config);
-      config.use_hardware_encoder = true;
-      last_offered_video_configs_.push_back(config);
-      video_configs.push_back(ToOpenscreenVideoConfig(config));
+    for (auto codec : kSupportedVideoCodecs) {
+      if (media::cast::encoding_support::IsHardwareEnabled(
+              codec, supported_profiles_)) {
+        auto config = MirrorSettings::GetDefaultVideoConfig(codec);
+        UpdateConfigUsingSessionParameters(session_params_, config);
+        config.use_hardware_encoder = true;
+        last_offered_video_configs_.push_back(config);
+        video_configs.push_back(ToOpenscreenVideoConfig(config));
+      }
     }
 
-    if (should_offer_hardware_h264) {
-      FrameSenderConfig config =
-          MirrorSettings::GetDefaultVideoConfig(media::VideoCodec::kH264);
-      UpdateConfigUsingSessionParameters(session_params_, config);
-      config.use_hardware_encoder = true;
-      last_offered_video_configs_.push_back(config);
-      video_configs.push_back(ToOpenscreenVideoConfig(config));
-    }
-
-    if (should_offer_hardware_vp8) {
-      FrameSenderConfig config =
-          MirrorSettings::GetDefaultVideoConfig(media::VideoCodec::kVP8);
-      UpdateConfigUsingSessionParameters(session_params_, config);
-      config.use_hardware_encoder = true;
-      last_offered_video_configs_.push_back(config);
-      video_configs.push_back(ToOpenscreenVideoConfig(config));
-    }
-
-    // Then add software AV1 if enabled.
-    if (media::cast::encoding_support::IsSoftwareEnabled(
-            media::VideoCodec::kAV1)) {
-      FrameSenderConfig config =
-          MirrorSettings::GetDefaultVideoConfig(media::VideoCodec::kAV1);
-      UpdateConfigUsingSessionParameters(session_params_, config);
-      last_offered_video_configs_.push_back(config);
-      video_configs.push_back(ToOpenscreenVideoConfig(config));
-    }
-
-    // Then add software VP9 if (1) enabled and (2) did not offer hardware
-    // encoding.
-    if (!should_offer_hardware_vp9 &&
-        media::cast::encoding_support::IsSoftwareEnabled(
-            media::VideoCodec::kVP9)) {
-      FrameSenderConfig config =
-          MirrorSettings::GetDefaultVideoConfig(media::VideoCodec::kVP9);
-      UpdateConfigUsingSessionParameters(session_params_, config);
-      last_offered_video_configs_.push_back(config);
-      video_configs.push_back(ToOpenscreenVideoConfig(config));
-    }
-
-    // Finally, offer software VP8 if hardware VP8 was not offered.
-    if (!should_offer_hardware_vp8 &&
-        media::cast::encoding_support::IsSoftwareEnabled(
-            media::VideoCodec::kVP8)) {
-      FrameSenderConfig config =
-          MirrorSettings::GetDefaultVideoConfig(media::VideoCodec::kVP8);
-      UpdateConfigUsingSessionParameters(session_params_, config);
-      last_offered_video_configs_.push_back(config);
-      video_configs.push_back(ToOpenscreenVideoConfig(config));
+    // Then add any enabled software encoders.
+    for (auto codec : kSupportedVideoCodecs) {
+      if (!media::cast::encoding_support::IsHardwareEnabled(
+              codec, supported_profiles_) &&
+          media::cast::encoding_support::IsSoftwareEnabled(codec)) {
+        auto config = MirrorSettings::GetDefaultVideoConfig(codec);
+        UpdateConfigUsingSessionParameters(session_params_, config);
+        last_offered_video_configs_.push_back(config);
+        video_configs.push_back(ToOpenscreenVideoConfig(config));
+      }
     }
   }
 
