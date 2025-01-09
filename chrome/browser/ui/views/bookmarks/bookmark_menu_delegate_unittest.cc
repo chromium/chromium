@@ -20,11 +20,13 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/views/controls/menu/menu_delegate.h"
@@ -40,6 +42,17 @@ using bookmarks::BookmarkNode;
 
 namespace {
 const char kBasePath[] = "file:///c:/tmp/";
+
+MATCHER_P(BookmarkVariantMatcher, node, "") {
+  if (node->is_url()) {
+    return std::holds_alternative<const BookmarkNode*>(arg) &&
+           std::get<const BookmarkNode*>(arg) == node;
+  } else {
+    return std::get<BookmarkParentFolder>(arg) ==
+           BookmarkParentFolder::FromFolderNode(node);
+  }
+}
+
 }  // namespace
 
 class BookmarkMenuDelegateTest : public BrowserWithTestWindowTest {
@@ -87,8 +100,8 @@ class BookmarkMenuDelegateTest : public BrowserWithTestWindowTest {
 
  protected:
   bool ShouldCloseOnRemove(const bookmarks::BookmarkNode* node) const {
-    const auto folder_or_url = BookmarkMenuDelegate::BookmarkFolderOrURL(node);
-    return bookmark_menu_delegate_->ShouldCloseOnRemove(&folder_or_url);
+    return bookmark_menu_delegate_->ShouldCloseOnRemove(
+        BookmarkMenuDelegate::BookmarkFolderOrURL(node));
   }
 
   // Destroys the delegate. Do this rather than directly deleting
@@ -133,10 +146,20 @@ class BookmarkMenuDelegateTest : public BrowserWithTestWindowTest {
     bookmark_menu_delegate_->BuildFullMenu(root_menu_.get());
   }
 
-  const BookmarkNode* GetNodeForMenuItem(views::MenuItemView* menu) {
+  std::variant<const BookmarkNode*, BookmarkParentFolder> GetNodeForMenuItem(
+      views::MenuItemView* menu) {
     const auto& node_map = bookmark_menu_delegate_->menu_id_to_node_map_;
     auto iter = node_map.find(menu->GetCommand());
-    return (iter == node_map.end()) ? nullptr : iter->second;
+    if (iter == node_map.end()) {
+      return nullptr;
+    }
+
+    if (const BookmarkParentFolder* folder = iter->second.GetIfBookmarkFolder();
+        folder) {
+      return *folder;
+    }
+
+    return iter->second.GetIfBookmarkURL();
   }
 
   int next_menu_id() { return bookmark_menu_delegate_->next_menu_id_; }
@@ -235,10 +258,10 @@ TEST_F(BookmarkMenuDelegateTest, VerifyLazyLoad) {
   ASSERT_EQ(2u, f1_item->GetSubmenu()->GetMenuItems().size());
   const BookmarkNode* f1_node =
       model()->bookmark_bar_node()->children()[1].get();
-  EXPECT_EQ(f1_node->children()[0].get(),
-            GetNodeForMenuItem(f1_item->GetSubmenu()->GetMenuItemAt(0)));
-  EXPECT_EQ(f1_node->children()[1].get(),
-            GetNodeForMenuItem(f1_item->GetSubmenu()->GetMenuItemAt(1)));
+  EXPECT_THAT(GetNodeForMenuItem(f1_item->GetSubmenu()->GetMenuItemAt(0)),
+              BookmarkVariantMatcher(f1_node->children()[0].get()));
+  EXPECT_THAT(GetNodeForMenuItem(f1_item->GetSubmenu()->GetMenuItemAt(1)),
+              BookmarkVariantMatcher(f1_node->children()[1].get()));
 
   // F11 shouldn't have loaded yet.
   views::MenuItemView* f11_item = f1_item->GetSubmenu()->GetMenuItemAt(1);
@@ -256,8 +279,8 @@ TEST_F(BookmarkMenuDelegateTest, VerifyLazyLoad) {
 
   ASSERT_EQ(1u, f11_item->GetSubmenu()->GetMenuItems().size());
   const BookmarkNode* f11_node = f1_node->children()[1].get();
-  EXPECT_EQ(f11_node->children()[0].get(),
-            GetNodeForMenuItem(f11_item->GetSubmenu()->GetMenuItemAt(0)));
+  EXPECT_THAT(GetNodeForMenuItem(f11_item->GetSubmenu()->GetMenuItemAt(0)),
+              BookmarkVariantMatcher(f11_node->children()[0].get()));
 }
 
 // Verifies WillRemoveBookmarks() doesn't attempt to access MenuItemViews that
