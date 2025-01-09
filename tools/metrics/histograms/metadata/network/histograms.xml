@@ -290,7 +290,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Ash.Cellular.Apn.Managed.MigrationType"
-    enum="ManagedApnMigrationType" expires_after="2025-02-20">
+    enum="ManagedApnMigrationType" expires_after="2025-11-20">
   <owner>hsuregan@google.com</owner>
   <owner>nikhilcn@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -366,7 +366,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Ash.Cellular.Apn.Unmanaged.MigrationType"
-    enum="UnmanagedApnMigrationType" expires_after="2025-02-20">
+    enum="UnmanagedApnMigrationType" expires_after="2025-11-20">
   <owner>hsuregan@google.com</owner>
   <owner>nikhilcn@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -378,7 +378,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Ash.Cellular.ConfigurationFailure.Type"
-    enum="CellularConfigurationFailureType" expires_after="2025-02-20">
+    enum="CellularConfigurationFailureType" expires_after="2025-11-20">
   <owner>hsuregan@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -1019,7 +1019,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Cellular.Apn.UseAttachApnOnSave" enum="Boolean"
-    expires_after="2025-02-20">
+    expires_after="2025-11-20">
   <owner>hsuregan@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
