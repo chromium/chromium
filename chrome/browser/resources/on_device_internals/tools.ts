@@ -413,8 +413,12 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
     this.text_ = '';
   }
 
-  private canExecute_(): boolean {
+  private canEnterInput_(): boolean {
     return !this.currentResponse_ && this.model_ !== null;
+  }
+
+  private canExecute_(): boolean {
+    return this.canEnterInput_() && this.text_.length > 0;
   }
 
   private canUploadFile_(): boolean {
