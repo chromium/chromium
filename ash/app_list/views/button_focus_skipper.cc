@@ -4,7 +4,6 @@
 
 #include "ash/app_list/views/button_focus_skipper.h"
 
-#include "ash/shell.h"
 #include "base/check.h"
 #include "ui/events/event.h"
 #include "ui/events/event_target.h"
@@ -14,12 +13,13 @@
 
 namespace ash {
 
-ButtonFocusSkipper::ButtonFocusSkipper() {
-  Shell::Get()->AddPreTargetHandler(this);
+ButtonFocusSkipper::ButtonFocusSkipper(ui::EventTarget* event_target)
+    : event_target_(event_target) {
+  event_target_->AddPreTargetHandler(this);
 }
 
 ButtonFocusSkipper::~ButtonFocusSkipper() {
-  Shell::Get()->RemovePreTargetHandler(this);
+  event_target_->RemovePreTargetHandler(this);
 }
 
 void ButtonFocusSkipper::AddButton(views::View* button) {

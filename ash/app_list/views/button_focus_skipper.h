@@ -12,6 +12,7 @@
 
 namespace ui {
 class Event;
+class EventTarget;
 }
 
 namespace views {
@@ -28,7 +29,7 @@ namespace ash {
 // directly in the search box.
 class ButtonFocusSkipper : public ui::EventHandler {
  public:
-  ButtonFocusSkipper();
+  explicit ButtonFocusSkipper(ui::EventTarget* event_target);
 
   ~ButtonFocusSkipper() override;
 
@@ -39,6 +40,7 @@ class ButtonFocusSkipper : public ui::EventHandler {
 
  private:
   std::vector<raw_ptr<views::View, VectorExperimental>> buttons_;
+  const raw_ptr<ui::EventTarget> event_target_;
 };
 
 }  // namespace ash
