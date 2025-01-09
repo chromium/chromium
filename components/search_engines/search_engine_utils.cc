@@ -9,7 +9,7 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
 
-namespace SearchEngineUtils {
+namespace search_engine_utils {
 
 namespace {
 
@@ -53,4 +53,4 @@ SearchEngineType GetEngineType(const GURL& url) {
   return SEARCH_ENGINE_OTHER;
 }
 
-}  // namespace SearchEngineUtils
+}  // namespace search_engine_utils

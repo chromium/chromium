@@ -35,6 +35,7 @@
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/document_provider.h"
+#include "components/omnibox/browser/inline_autocompletion_util.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -44,7 +45,6 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
-#include "inline_autocompletion_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/omnibox_proto/answer_type.pb.h"
 #include "third_party/omnibox_proto/entity_info.pb.h"
@@ -1114,7 +1114,7 @@ void AutocompleteMatch::LogSearchEngineUsed(
 
   SearchEngineType search_engine_type =
       match.destination_url.is_valid()
-          ? SearchEngineUtils::GetEngineType(match.destination_url)
+          ? search_engine_utils::GetEngineType(match.destination_url)
           : SEARCH_ENGINE_OTHER;
   UMA_HISTOGRAM_ENUMERATION("Omnibox.SearchEngineType", search_engine_type,
                             SEARCH_ENGINE_MAX);
@@ -1760,8 +1760,9 @@ void AutocompleteMatch::SetAllowedToBeDefault(const AutocompleteInput& input) {
       inline_autocompletion =
           inline_autocompletion.substr(whitespace_suffix.size());
       allowed_to_be_default_match = true;
-    } else
+    } else {
       allowed_to_be_default_match = false;
+    }
   }
 }
 

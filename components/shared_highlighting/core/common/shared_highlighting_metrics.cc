@@ -18,7 +18,7 @@ constexpr char kUmaPrefix[] = "SharedHighlights.LinkGenerated";
 
 TextFragmentLinkOpenSource GetLinkSource(const GURL& referrer) {
   bool from_search_engine =
-      referrer.is_valid() && SearchEngineUtils::GetEngineType(referrer) > 0;
+      referrer.is_valid() && search_engine_utils::GetEngineType(referrer) > 0;
   return from_search_engine ? TextFragmentLinkOpenSource::kSearchEngine
                             : TextFragmentLinkOpenSource::kUnknown;
 }
