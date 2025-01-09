@@ -1991,13 +1991,10 @@ void HTMLCanvasElement::ReplaceExistingResourceProviderFor2DContext(
   if (!image) {
     return;
   }
-  std::unique_ptr<Canvas2DLayerBridge> old_layer_bridge =
-      std::move(canvas2d_bridge_);
   std::unique_ptr<MemoryManagedPaintRecorder> recorder =
       old_provider->ReleaseRecorder();
   ResetLayer();
   ReplaceResourceProvider(nullptr);
-  canvas2d_bridge_ = std::make_unique<Canvas2DLayerBridge>(*this);
 
   if (new_provider_for_testing) {
     ReplaceResourceProvider(std::move(new_provider_for_testing));
@@ -2008,7 +2005,6 @@ void HTMLCanvasElement::ReplaceExistingResourceProviderFor2DContext(
       GetOrCreateCanvasResourceProviderFor2DContext(
           canvas2d_bridge_->GetHibernationHandler());
   if (!new_provider) {
-    canvas2d_bridge_ = std::move(old_layer_bridge);
     return;
   }
 

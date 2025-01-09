@@ -2543,8 +2543,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   CanvasElement().DisableAcceleration();
   ASSERT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
 
-  // Verify that running the hibernation task aborts hibernation as
-  // disabling acceleration has caused the hibernation handler to be destroyed.
+  // Verify that running the hibernation task aborts hibernation due to the
+  // switch to software rendering.
   {
     base::HistogramTester histogram_tester;
 
@@ -2558,7 +2558,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
     histogram_tester.ExpectUniqueSample(
         "Blink.Canvas.HibernationEvents",
         CanvasHibernationHandler::HibernationEvent::
-            kHibernationAbortedDueToDestructionWhileHibernatePending,
+            kHibernationAbortedDueToSwitchToUnacceleratedRendering,
         1);
     EXPECT_FALSE(CanvasElement().IsHibernating());
   }
@@ -2566,7 +2566,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 
 TEST_P(
     CanvasRenderingContext2DTestAccelerated,
-    DisablingThenReenablingAccelerationWhileHibernationIsPendingAbortsHibernation) {
+    DisablingThenReenablingAccelerationWhileHibernationIsPendingDoesntAbortHibernation) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
 
@@ -2599,25 +2599,13 @@ TEST_P(
   CanvasElement().EnableAcceleration();
   ASSERT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 
-  // Verify that running the hibernation task aborts hibernation as
-  // disabling acceleration has caused the hibernation handler to be destroyed.
-  {
-    base::HistogramTester histogram_tester;
-
-    // Run the task that initiates hibernation, which has been posted as an idle
-    // task.
-    ThreadScheduler::Current()
-        ->ToMainThreadScheduler()
-        ->StartIdlePeriodForTesting();
-    blink::test::RunPendingTasks();
-
-    histogram_tester.ExpectUniqueSample(
-        "Blink.Canvas.HibernationEvents",
-        CanvasHibernationHandler::HibernationEvent::
-            kHibernationAbortedDueToDestructionWhileHibernatePending,
-        1);
-    EXPECT_FALSE(CanvasElement().IsHibernating());
-  }
+  // The toggle from SW back to HW rendering should be a no-op from the POV of
+  // the pending hibernation, which should still occur when initiated.
+  ThreadScheduler::Current()
+      ->ToMainThreadScheduler()
+      ->StartIdlePeriodForTesting();
+  blink::test::RunPendingTasks();
+  EXPECT_TRUE(CanvasElement().IsHibernating());
 }
 
 TEST_P(CanvasRenderingContext2DTestAccelerated,
