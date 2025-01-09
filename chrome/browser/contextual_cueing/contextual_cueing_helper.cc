@@ -9,7 +9,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/optimization_guide/core/optimization_guide_decider.h"
+#include "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
 #include "components/optimization_guide/proto/icon_view_metadata.pb.h"
 #include "content/public/browser/navigation_handle.h"
@@ -21,11 +21,11 @@ namespace contextual_cueing {
 
 ContextualCueingHelper::ContextualCueingHelper(
     content::WebContents* web_contents,
-    optimization_guide::OptimizationGuideDecider* decider)
+    OptimizationGuideKeyedService* ogks)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<ContextualCueingHelper>(*web_contents),
-      optimization_guide_decider_(decider) {
-  optimization_guide_decider_->RegisterOptimizationTypes(
+      optimization_guide_keyed_service_(ogks) {
+  optimization_guide_keyed_service_->RegisterOptimizationTypes(
       {optimization_guide::proto::OPTIMIZATION_GUIDE_ICON_VIEW});
 }
 
@@ -34,7 +34,7 @@ ContextualCueingHelper::~ContextualCueingHelper() = default;
 // content::WebContentsObserver
 void ContextualCueingHelper::DocumentOnLoadCompletedInPrimaryMainFrame() {
   optimization_guide::OptimizationMetadata metadata;
-  auto decision = optimization_guide_decider_->CanApplyOptimization(
+  auto decision = optimization_guide_keyed_service_->CanApplyOptimization(
       web_contents()->GetLastCommittedURL(),
       optimization_guide::proto::OPTIMIZATION_GUIDE_ICON_VIEW, &metadata);
   if (decision != optimization_guide::OptimizationGuideDecision::kTrue ||
@@ -57,14 +57,16 @@ ContextualCueingHelper::MaybeCreateForWebContents(
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  auto* optimization_guide_decider =
+  auto* optimization_guide_keyed_service_ =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-  if (!optimization_guide_decider) {
+  if (!optimization_guide_keyed_service_ ||
+      !optimization_guide_keyed_service_->GetModelExecutionFeaturesController()
+           ->ShouldModelExecutionBeAllowedForUser()) {
     return nullptr;
   }
 
-  return base::WrapUnique<ContextualCueingHelper>(
-      new ContextualCueingHelper(web_contents, optimization_guide_decider));
+  return base::WrapUnique<ContextualCueingHelper>(new ContextualCueingHelper(
+      web_contents, optimization_guide_keyed_service_));
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ContextualCueingHelper);

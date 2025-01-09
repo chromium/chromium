@@ -9,9 +9,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
-namespace optimization_guide {
-class OptimizationGuideDecider;
-}  // namespace optimization_guide
+class OptimizationGuideKeyedService;
 
 namespace contextual_cueing {
 
@@ -33,10 +31,10 @@ class ContextualCueingHelper
 
  private:
   ContextualCueingHelper(content::WebContents* contents,
-                         optimization_guide::OptimizationGuideDecider* decider);
+                         OptimizationGuideKeyedService* ogks);
 
-  raw_ptr<optimization_guide::OptimizationGuideDecider>
-      optimization_guide_decider_ = nullptr;
+  raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_ =
+      nullptr;
 
   friend WebContentsUserData<ContextualCueingHelper>;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
