@@ -40,7 +40,9 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extension_web_contents_observer.h"
@@ -50,6 +52,7 @@
 #include "extensions/browser/message_tracker.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/process_manager.h"
+#include "extensions/browser/process_manager_factory.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/api/messaging/port_context.h"
 #include "extensions/common/extension.h"
@@ -287,7 +290,13 @@ class MessageServiceFactory
     : public BrowserContextKeyedAPIFactory<MessageService>,
       public MessageServiceApi {
  public:
-  MessageServiceFactory() { MessageServiceApi::SetMessageService(this); }
+  MessageServiceFactory() {
+    DependsOn(ProcessManagerFactory::GetInstance());
+    DependsOn(ExtensionPrefsFactory::GetInstance());
+    DependsOn(ExtensionRegistryFactory::GetInstance());
+
+    MessageServiceApi::SetMessageService(this);
+  }
   ~MessageServiceFactory() override {
     MessageServiceApi::SetMessageService(nullptr);
   }
