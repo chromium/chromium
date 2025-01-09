@@ -2532,6 +2532,11 @@ BASE_FEATURE(kScannerUpdate,
              "ScannerUpdate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables / Disables the scanner feature from the feature management module.
+BASE_FEATURE(kFeatureManagementScanner,
+             "FeatureManagementScanner",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables sea pen feature in the personalization app.
 BASE_FEATURE(kSeaPen, "SeaPen", base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kFeatureManagementSeaPen,
@@ -3647,8 +3652,7 @@ bool IsFocusModeYTMEnabled() {
 
 bool ShouldForceEnableServerSideSpeechRecognition() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return base::FeatureList::IsEnabled(
-      kForceEnableServerSideSpeechRecognition);
+  return base::FeatureList::IsEnabled(kForceEnableServerSideSpeechRecognition);
 #else
   return false;
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING);
