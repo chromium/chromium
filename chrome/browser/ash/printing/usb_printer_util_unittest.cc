@@ -170,6 +170,27 @@ TEST(UsbPrinterUtilTest, SearchDataReplacedForGenericDescriptors) {
   EXPECT_THAT(entry.ppd_search_data.make_and_model, ElementsAre("make model"));
 }
 
+TEST(UsbPrinterUtilTest, SearchDataReplacedForEmptyMakeModel) {
+  UsbDeviceInfo device_info;
+  device_info.vendor_id = 1;
+  device_info.product_id = 2;
+  device_info.serial_number = u"";
+  device_info.manufacturer_name = u"";
+  device_info.product_name = u"";
+
+  PrinterDetector::DetectedPrinter entry;
+  EXPECT_TRUE(UsbDeviceToPrinter(device_info, &entry));
+  entry.ppd_search_data.make_and_model.push_back("");
+
+  chromeos::UsbPrinterId device_id;
+  device_id.set_make("MAKE");
+  device_id.set_model("MODEL");
+  UpdateSearchDataFromDeviceId(device_id, &entry);
+
+  EXPECT_EQ("MAKE MODEL", entry.printer.make_and_model());
+  EXPECT_THAT(entry.ppd_search_data.make_and_model, ElementsAre("make model"));
+}
+
 TEST(UsbPrinterUtilTest, SearchDataAugmentedForNonGenericDescriptors) {
   UsbDeviceInfo device_info;
   device_info.vendor_id = 1;
