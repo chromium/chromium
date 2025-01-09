@@ -113,9 +113,11 @@ void SpeechRecognitionMediaStreamAudioSink::SendAudio(
     std::unique_ptr<media::AudioBus> audio_data,
     media::AudioBusPoolImpl* audio_bus_pool) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  audio_forwarder_->AddAudioFromRenderer(
-      ConvertToAudioDataS16(*audio_data.get(), audio_parameters_.sample_rate(),
-                            audio_parameters_.channel_layout()));
+  if (audio_forwarder_ && audio_forwarder_.is_bound()) {
+    audio_forwarder_->AddAudioFromRenderer(ConvertToAudioDataS16(
+        *audio_data.get(), audio_parameters_.sample_rate(),
+        audio_parameters_.channel_layout()));
+  }
 
   audio_bus_pool->InsertAudioBus(std::move(audio_data));
 }
