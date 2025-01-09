@@ -558,6 +558,8 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
 
   auto pin_input_view = std::make_unique<LoginPinInputView>();
   pin_input_view_ = pin_input_view.get();
+  pin_input_view_->SetPaintToLayer();  // Needed for opacity animation.
+  pin_input_view_->layer()->SetFillsBoundsOpaquely(false);
   pin_input_view->Init(base::BindRepeating(&LoginAuthUserView::OnAuthSubmit,
                                            base::Unretained(this)),
                        base::BindRepeating(&LoginAuthUserView::OnPinTextChanged,
@@ -859,6 +861,7 @@ void LoginAuthUserView::CaptureStateForAnimationPreLayout() {
   // Stop any running animation scheduled in ApplyAnimationPostLayout.
   stop_animation(this);
   stop_animation(password_view_);
+  stop_animation(pin_input_view_);
   stop_animation(pin_view_);
   stop_animation(challenge_response_view_);
   stop_animation(pin_password_toggle_);
