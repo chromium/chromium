@@ -142,7 +142,7 @@ class LicenseParserTest(unittest.TestCase):
     temp_file = self._write_readme_file("")
 
     self.assertRaisesRegex(Exception, "Failed to parse any valid metadata",
-                           lambda: license_utils.parse_chromium_readme_file(
+                         lambda: license_utils.parse_chromium_readme_file(
                                temp_file.name,
                                lambda x: x))
 
@@ -278,6 +278,17 @@ class LicenseParserTest(unittest.TestCase):
                              lambda: create_android_metadata_license.update_license(
                                  temp_directory, {},
                                  verify_only=True))
+
+  def test_transitive_dependency_discovery_mode(self):
+    self.assertEqual(
+        create_android_metadata_license.get_all_readme_through_gn(
+            create_android_metadata_license.REPOSITORY_ROOT,
+            ["//components/cronet/license/tests/target_a:target_a"]),
+        set([
+            "components/cronet/license/tests/target_a/README.chromium",
+            "components/cronet/license/tests/target_b/README.chromium",
+            "components/cronet/license/tests/target_c/README.chromium"
+        ]))
 
   def test_verify_only_mode_missing_license(self):
     with tempfile.TemporaryDirectory() as temp_directory:

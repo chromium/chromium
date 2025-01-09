@@ -1998,6 +1998,7 @@ GN2BP_SOURCES = [
 ]
 
 LICENSE_SOURCES = [
+  "$_gn_path",
   "//components/cronet/license/constants.py",
   "//components/cronet/license/create_android_metadata_license.py",
   "//components/cronet/license/license_type.py",
@@ -2148,6 +2149,7 @@ group("cronet_package_ci") {
     ":generate_build_script_test",
     ":gn2bp_check",
     "//components/cronet/gn2bp/tests/test_rlib_crate:rust_test_targets",
+    "//components/cronet/license/tests/target_a:target_a",
   ]
 }
 

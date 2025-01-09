@@ -30,20 +30,17 @@ sys.path.insert(0, REPOSITORY_ROOT)
 import build.android.gyp.util.build_utils as build_utils  # pylint: disable=wrong-import-position
 import components.cronet.tools.utils as cronet_utils  # pylint: disable=wrong-import-position
 
-_ARCHS = ['x86', 'x64', 'arm', 'arm64', 'riscv64']
 _BORINGSSL_PATH = os.path.join(REPOSITORY_ROOT, 'third_party', 'boringssl')
 _BORINGSSL_SCRIPT = os.path.join('src', 'util', 'generate_build_files.py')
 _COPYBARA_CONFIG_PATH = os.path.join(REPOSITORY_ROOT,
                                      'components/cronet/gn2bp/copy.bara.sky')
 _COPYBARA_PATH = os.path.join(REPOSITORY_ROOT,
                               'tools/copybara/copybara/copybara_deploy.jar')
-_EXTRA_GN_ARGS = 'is_cronet_for_aosp_build=true use_nss_certs=false'
 _GENERATE_BUILD_SCRIPT_PATH = os.path.join(
     REPOSITORY_ROOT,
     'components/cronet/gn2bp/generate_build_scripts_output.py')
 _GN2BP_SCRIPT_PATH = os.path.join(REPOSITORY_ROOT,
                                   'components/cronet/gn2bp/gen_android_bp.py')
-_GN_PATH = os.path.join(REPOSITORY_ROOT, 'buildtools/linux64/gn')
 _JAVA_HOME = os.path.join(REPOSITORY_ROOT, 'third_party', 'jdk', 'current')
 _JAVA_PATH = os.path.join(_JAVA_HOME, 'bin', 'java')
 _OUT_DIR = os.path.join(REPOSITORY_ROOT, 'out')
@@ -87,20 +84,14 @@ def _run_generate_build_scripts(output_path: str) -> int:
       output_path,
   ])
 
-def _get_args_for_aosp(arch: str) -> List[str]:
-  """Get GN args given an architecture."""
-  default_args = cronet_utils.get_android_gn_args(True, arch)
-  default_args.append(_EXTRA_GN_ARGS)
-  return ' '.join(
-      cronet_utils.filter_gn_args(default_args,
-                                  ['use_remoteexec']))
-
 def _write_desc_json(gn_out_dir: str,
                      temp_file: tempfile.NamedTemporaryFile) -> int:
   """Generate desc json files needed by gen_android_bp.py."""
   return cronet_utils.run([
-      _GN_PATH, 'desc', gn_out_dir, '--format=json', '--all-toolchains',
-      '//*'], stdout=temp_file)
+      cronet_utils.GN_PATH, 'desc', gn_out_dir, '--format=json',
+      '--all-toolchains', '//*'
+  ],
+                          stdout=temp_file)
 
 
 def _gen_boringssl() -> int:
@@ -218,7 +209,7 @@ def main():
     # Create empty temp file for each architecture.
     arch_to_temp_desc_file = {
         arch: tempfile.NamedTemporaryFile(mode="w+", encoding='utf-8')
-        for arch in _ARCHS
+        for arch in cronet_utils.ARCHS
     }
 
     for (arch, temp_file) in arch_to_temp_desc_file.items():
@@ -232,7 +223,7 @@ def main():
         # beneath the repository root until gn2bp is tweaked to
         # deal with this small differences.
       with tempfile.TemporaryDirectory(dir=_OUT_DIR) as gn_out_dir:
-        cronet_utils.gn(gn_out_dir, _get_args_for_aosp(arch))
+        cronet_utils.gn(gn_out_dir, cronet_utils.get_gn_args_for_aosp(arch))
         if _write_desc_json(gn_out_dir, temp_file) != 0:
           # Exit if we failed to generate any of the desc.json files.
           print(f"Failed to generate desc file for arch: {arch}")

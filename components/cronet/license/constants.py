@@ -4,7 +4,7 @@
 
 from typing import Callable, Dict, List, Union
 from mapper import Mapper
-
+from license_type import LicenseType
 
 def create_license_post_processing(*args: Mapper) -> Callable:
   def __update_metadata(metadata: Dict[str, Union[str, List[str]]]) -> Dict[
@@ -15,6 +15,37 @@ def create_license_post_processing(*args: Mapper) -> Callable:
 
   return __update_metadata
 
+RAW_LICENSE_TO_FORMATTED_DETAILS = {
+    "BSD": ("BSD", LicenseType.NOTICE, "SPDX-license-identifier-BSD"),
+    "BSD 3-Clause": (
+        "BSD_3_CLAUSE", LicenseType.NOTICE,
+        "SPDX-license-identifier-BSD-3-Clause"),
+    "BSD-3-Clause": (
+        "BSD_3_CLAUSE", LicenseType.NOTICE,
+        "SPDX-license-identifier-BSD-3-Clause"),
+    "Apache 2.0": (
+        "APACHE_2_0", LicenseType.NOTICE, "SPDX-license-identifier-Apache-2.0"),
+    # Different Apache 2.0 format used in Chromium.
+    "Apache-2.0": (
+        "APACHE_2_0", LicenseType.NOTICE, "SPDX-license-identifier-Apache-2.0"),
+    "MIT": ("MIT", LicenseType.NOTICE, "SPDX-license-identifier-MIT"),
+    "Unicode-3.0": (
+        "UNICODE_3_0", LicenseType.NOTICE,
+        "SPDX-license-identifier-Unicode-3.0"),
+    "Unicode-DFS-2016": (
+        "UNICODE", LicenseType.NOTICE,
+        "SPDX-license-identifier-Unicode-DFS-2016"),
+    "ICU": (
+        "ICU", LicenseType.NOTICE,
+        "SPDX-license-identifier-ICU"),
+    "Zlib":
+      ("ZLIB", LicenseType.RECIPROCAL, "SPDX-license-identifier-Zlib"),
+    "MPL 1.1":
+      ("MPL", LicenseType.RECIPROCAL, "SPDX-license-identifier-MPL-1.1"),
+    "unencumbered":
+      ("UNENCUMBERED", LicenseType.UNENCUMBERED,
+       "SPDX-license-identifier-Unlicense"),
+}
 
 # This is relative to the repo_directory passed in |update_license|
 # post-processing is necessary for the cases where the license is not in the
@@ -55,10 +86,6 @@ POST_PROCESS_OPERATION = {
             'Public Domain: United States Government Work under 17 U.S.C. 105'],
                ["unencumbered"]),
         Mapper("License File", "", "N/A")),
-    "third_party/rust/unicode_ident/v1/README.chromium": create_license_post_processing(
-        Mapper("License", [
-            'Apache 2.0 AND Unicode License Agreement - Data Files and Software (2016)'],
-               ["Apache 2.0", "Unicode"])),
 }
 
 # This is relative to the repo_directory passed in |update_license|
@@ -67,6 +94,16 @@ IGNORED_README = {
     "testing/android/native_test/README.chromium",
     # Not a third-party.
     "build/internal/README.chromium",
+    # The real README.chromium lives nested inside each dependency.
+    "third_party/android_deps/README.chromium",
+    # This is not used in AOSP and not imported.
+    "third_party/junit/README.chromium",
+    # The real README.chromium lives nested inside each dependency.
+    "third_party/androidx/README.chromium",
+    # This is not used in AOSP and not imported.
+    "third_party/llvm-libc/README.chromium",
+    # This is not used in AOSP and not imported.
+    "third_party/aosp_dalvik/README.chromium",
     # b/369075726, those crates are missing LICENSE files upstream, once fixed
     # and imported, we will create a README for those.
     "third_party/rust/rstest/v0_17/README.chromium",
