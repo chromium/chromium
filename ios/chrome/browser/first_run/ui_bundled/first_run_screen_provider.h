@@ -14,6 +14,9 @@ class ProfileIOS;
 // The class that provides a list of first run screens.
 @interface FirstRunScreenProvider : ScreenProvider
 
+// Returns a list of the FRE screens in the order they will be presented.
++ (NSArray*)firstRunScreenSequenceForProfile:(ProfileIOS*)profile;
+
 - (instancetype)initForProfile:(ProfileIOS*)profile NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

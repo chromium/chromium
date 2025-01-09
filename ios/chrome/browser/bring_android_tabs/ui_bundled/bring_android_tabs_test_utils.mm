@@ -54,6 +54,10 @@ AppLaunchConfiguration GetConfiguration(BOOL is_android_switcher) {
     config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
     config.additional_args.push_back("AndroidPhone");
   }
+  // TODO(crbug.com/379306137): If feature is not launched, fix
+  // SignInViaFREWithHistorySyncEnabled() by moving the default browser
+  // dismissal to after sign-in and sync.
+  config.additional_args.push_back("--enable-features=UpdatedFirstRunSequence");
   // Relaunch app at each test to rewind the startup state.
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   return config;
@@ -62,14 +66,14 @@ AppLaunchConfiguration GetConfiguration(BOOL is_android_switcher) {
 void SignInViaFREWithHistorySyncEnabled(BOOL enable_history_sync) {
   FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fake_identity];
+  // Default browser promo dismissal.
+  TapPromoStyleButton(kPromoStyleSecondaryActionAccessibilityIdentifier);
   // Sign in.
   TapPromoStyleButton(kPromoStylePrimaryActionAccessibilityIdentifier);
   // Enable history/tab sync if appropriate.
   TapPromoStyleButton(enable_history_sync
                           ? kPromoStylePrimaryActionAccessibilityIdentifier
                           : kPromoStyleSecondaryActionAccessibilityIdentifier);
-  // Default browser promo dismissal.
-  TapPromoStyleButton(kPromoStyleSecondaryActionAccessibilityIdentifier);
   [ChromeEarlGrey
       waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
 }

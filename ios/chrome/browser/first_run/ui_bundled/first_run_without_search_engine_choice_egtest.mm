@@ -72,6 +72,8 @@ id<GREYMatcher> ManageUMALinkMatcher() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.features_enabled.push_back(kNewSyncOptInIllustration);
+  config.additional_args.push_back(
+      "--disable-features=UpdatedFirstRunSequence");
   return config;
 }
 

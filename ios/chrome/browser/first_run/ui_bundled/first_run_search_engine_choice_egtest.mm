@@ -44,6 +44,8 @@
   config.additional_args.push_back(
       "--" + std::string(switches::kForceSearchEngineChoiceScreen));
   config.additional_args.push_back("true");
+  config.additional_args.push_back(
+      "--disable-features=UpdatedFirstRunSequence");
   return config;
 }
 

@@ -91,6 +91,7 @@ source_set("first_run_provider") {
     "first_run_screen_provider.mm",
   ]
   deps = [
+    ":features",
     ":field_trial",
     "//base",
     "//components/search_engines",
@@ -107,6 +108,7 @@ source_set("first_run_provider") {
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model",
     "//ios/public/provider/chrome/browser/signin:choice_api",
   ]
 }
