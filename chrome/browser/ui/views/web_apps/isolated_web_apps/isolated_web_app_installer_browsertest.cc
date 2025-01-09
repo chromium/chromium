@@ -108,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppInstallerBrowserTest,
   ASSERT_TRUE(child_widget);
 
   // App is not installed.
-  ASSERT_TRUE(provider().registrar_unsafe().IsNotInRegistrar(app_id));
+  ASSERT_FALSE(provider().registrar_unsafe().IsInRegistrar(app_id));
 
   AcceptDialogAndAwaitDestruction(child_widget);
 
