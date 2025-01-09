@@ -16591,6 +16591,24 @@
             ]
         }
     ],
+    "PdfInkSignatures": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PdfInk2"
+                    ]
+                }
+            ]
+        }
+    ],
     "PdfOutOfProcessIframe": [
         {
             "platforms": [
