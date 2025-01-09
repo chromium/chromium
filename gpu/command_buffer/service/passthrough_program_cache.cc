@@ -157,22 +157,24 @@ void PassthroughProgramCache::Set(Key&& key,
 
   Trim(max_size_bytes() - value.size());
 
+  {
+    base::AutoLock auto_lock(lock_);
+
     // If callback is set, notify that there was a new/updated blob entry so it
     // can be stored in disk.  Note that this is done before the Put() call as
     // that consumes `value`.
-  if (callback) {
-    // Convert the key and binary to string form.
-    std::string_view key_string(reinterpret_cast<const char*>(key.data()),
-                                key.size());
-    std::string_view value_string(reinterpret_cast<const char*>(value.data()),
-                                  value.size());
-    std::string key_string_64 = base::Base64Encode(key_string);
-    std::string value_string_64 = base::Base64Encode(value_string);
-    callback.Run(key_string_64, value_string_64);
-  }
-
-  {
-    base::AutoLock auto_lock(lock_);
+    CacheProgramCallback callback_with_fallback =
+        callback ? callback : cache_program_callback_;
+    if (callback_with_fallback) {
+      // Convert the key and binary to string form.
+      std::string_view key_string(reinterpret_cast<const char*>(key.data()),
+                                  key.size());
+      std::string_view value_string(reinterpret_cast<const char*>(value.data()),
+                                    value.size());
+      std::string key_string_64 = base::Base64Encode(key_string);
+      std::string value_string_64 = base::Base64Encode(value_string);
+      callback_with_fallback.Run(key_string_64, value_string_64);
+    }
 
     if (value_added_hook_) {
       value_added_hook_->OnValueAddedToCache(key, value);
@@ -239,13 +241,8 @@ void PassthroughProgramCache::BlobCacheSetImpl(const void* key,
   PassthroughProgramCache::Value entry_value(value_begin,
                                              value_begin + value_size);
 
-  CacheProgramCallback callback;
-  {
-    base::AutoLock auto_lock(lock_);
-    callback = cache_program_callback_;
-  }
-
-  Set(std::move(entry_key), std::move(entry_value), callback);
+  // Pass a null callback to use the default cache_program_callback_
+  Set(std::move(entry_key), std::move(entry_value), CacheProgramCallback());
 }
 
 void PassthroughProgramCache::BlobCacheSet(const void* key,
