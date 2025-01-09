@@ -389,13 +389,18 @@ void EnableSyncFromMultiAccountPromo(Profile* profile,
   // confirmation dialog.
   // Cancelling the sync confirmation should revert to the initial state,
   // signing out the account from the profile and keeping it on the web only,
-  // unless the source is the Profile menu, for which we would still want the
-  // user to be signed in, having sync as optional.
+  // unless the source is the Profile menu or the settings, for which we would
+  // still want the user to be signed in, having sync as optional.
   // Aborting the sync confirmation for a secondary account reverts the original
   // primary account as primary, and keeps the secondary account.
   bool is_sync_promo = access_point ==
                        signin_metrics::AccessPoint::
                            ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO;
+  if (switches::IsImprovedSettingsUIOnDesktopEnabled()) {
+    is_sync_promo =
+        is_sync_promo ||
+        access_point == signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS;
+  }
   TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode =
       switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
               account.account_id !=

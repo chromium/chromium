@@ -861,6 +861,31 @@ TEST_F(SigninUiUtilWithUnoDesktopTest, EnableSyncWithExistingWebOnlyAccount) {
   }
 }
 
+// Checks that sync is treated as a promo for ACCESS_POINT_SETTINGS.
+TEST_F(SigninUiUtilWithUnoDesktopTest,
+       EnableSyncPromoWithExistingWebOnlyAccount) {
+  base::test::ScopedFeatureList feature_list{
+      switches::kImprovedSettingsUIOnDesktop};
+  access_point_ = signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS;
+
+  CoreAccountId account_id =
+      GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
+          kMainGaiaID, kMainEmail, "refresh_token", false,
+          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
+          signin_metrics::SourceForRefreshTokenOperation::kUnknown);
+
+  ExpectTurnSyncOn(signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
+                   signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
+                   account_id,
+                   // The account should be kept when cancelling.
+                   TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
+                   // The button should be "No, thanks", and not "Cancel".
+                   /*is_sync_promo=*/true);
+  EnableSync(
+      GetIdentityManager()->FindExtendedAccountInfoByAccountId(account_id),
+      /*is_default_promo_account=*/true);
+}
+
 TEST_F(SigninUiUtilWithUnoDesktopTest, SignInWithExistingWebOnlyAccount) {
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
