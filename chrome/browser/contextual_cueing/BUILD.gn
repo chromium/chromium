@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-component("contextual_cueing") {
-  defines = [ "IS_CONTEXTUAL_CUEING_IMPL" ]
-
+source_set("contextual_cueing") {
   sources = [
     "contextual_cueing_features.cc",
     "contextual_cueing_features.h",
@@ -15,5 +13,11 @@ component("contextual_cueing") {
     "//base",
     "//content/public/browser",
   ]
-  deps = [ "//url" ]
+  deps = [
+    "//chrome/browser/optimization_guide",
+    "//chrome/browser/profiles:profile",
+    "//components/optimization_guide/core:core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//url",
+  ]
 }
