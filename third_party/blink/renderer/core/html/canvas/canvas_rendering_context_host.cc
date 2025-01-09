@@ -234,8 +234,8 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
   }
   if (!provider) {
     provider = CanvasResourceProvider::CreateBitmapProvider(
-        Size(), sk_color_type, alpha_type, sk_color_space, kShouldInitialize,
-        this);
+        Size(), sk_color_type, alpha_type,
+        SkColorSpaceToGfxColorSpace(sk_color_space), kShouldInitialize, this);
   }
 
   ReplaceResourceProvider(std::move(provider));
@@ -328,8 +328,8 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
   }
   if (!provider) {
     provider = CanvasResourceProvider::CreateBitmapProvider(
-        Size(), sk_color_type, alpha_type, sk_color_space, kShouldInitialize,
-        this);
+        Size(), sk_color_type, alpha_type,
+        SkColorSpaceToGfxColorSpace(sk_color_space), kShouldInitialize, this);
   }
 
   ReplaceResourceProvider(std::move(provider));

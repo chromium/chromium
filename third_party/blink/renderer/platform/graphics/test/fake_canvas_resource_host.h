@@ -66,7 +66,7 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
     if (!provider) {
       provider = CanvasResourceProvider::CreateBitmapProvider(
           Size(), kN32_SkColorType, kPremul_SkAlphaType,
-          SkColorSpace::MakeSRGB(), kShouldInitialize, this);
+          gfx::ColorSpace::CreateSRGB(), kShouldInitialize, this);
     }
 
     ReplaceResourceProvider(std::move(provider));

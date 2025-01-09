@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
+#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -343,7 +344,8 @@ std::unique_ptr<CanvasResourceProvider> CreateResourceProviderForVideoFrame(
   if (!ShouldCreateAcceleratedImages(raster_context_provider)) {
     return CanvasResourceProvider::CreateBitmapProvider(
         gfx::Size(info.width(), info.height()), info.colorType(),
-        info.alphaType(), info.refColorSpace(), kShouldInitialize);
+        info.alphaType(), SkColorSpaceToGfxColorSpace(info.refColorSpace()),
+        kShouldInitialize);
   }
   return CanvasResourceProvider::CreateSharedImageProvider(
       gfx::Size(info.width(), info.height()), info.colorType(),

@@ -1064,12 +1064,11 @@ CanvasResourceProvider::CreateBitmapProvider(
     gfx::Size size,
     SkColorType sk_color_type,
     SkAlphaType alpha_type,
-    sk_sp<SkColorSpace> sk_color_space,
+    const gfx::ColorSpace& color_space,
     ShouldInitialize should_initialize,
     CanvasResourceHost* resource_host) {
   auto provider = std::make_unique<CanvasResourceProviderBitmap>(
-      size, sk_color_type, alpha_type,
-      SkColorSpaceToGfxColorSpace(std::move(sk_color_space)), resource_host);
+      size, sk_color_type, alpha_type, color_space, resource_host);
   if (provider->IsValid()) {
     if (should_initialize ==
         CanvasResourceProvider::ShouldInitialize::kCallClear)

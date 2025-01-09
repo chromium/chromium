@@ -581,7 +581,8 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
     // another type of resource prover above is a sign that the graphics
     // pipeline is in a bad state (e.g. gpu process crashed, out of memory)
     provider = CanvasResourceProvider::CreateBitmapProvider(
-        Size(), sk_color_type, alpha_type, sk_color_space,
+        Size(), sk_color_type, alpha_type,
+        SkColorSpaceToGfxColorSpace(sk_color_space),
         CanvasResourceProvider::ShouldInitialize::kCallClear, this);
   }
 

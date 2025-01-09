@@ -207,7 +207,7 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
   std::unique_ptr<CanvasResourceProvider> resource_provider(
       CanvasResourceProvider::CreateBitmapProvider(
           scaled_image_size, kN32_SkColorType, kPremul_SkAlphaType,
-          SkColorSpace::MakeSRGB(),
+          gfx::ColorSpace::CreateSRGB(),
           CanvasResourceProvider::ShouldInitialize::kNo));
   if (!resource_provider)
     return nullptr;

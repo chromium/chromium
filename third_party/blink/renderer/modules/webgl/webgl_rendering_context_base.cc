@@ -126,6 +126,7 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/skia/sk_image_info_hash.h"
+#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image_transform.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
@@ -831,7 +832,8 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage(
           RasterMode::kGPU, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
   if (!resource_provider || !resource_provider->IsValid()) {
     resource_provider = CanvasResourceProvider::CreateBitmapProvider(
-        size, GetSkColorType(), GetAlphaType(), GetSkColorSpace(),
+        size, GetSkColorType(), GetAlphaType(),
+        PredefinedColorSpaceToGfxColorSpace(drawing_buffer_color_space_),
         CanvasResourceProvider::ShouldInitialize::kNo);
   }
 
@@ -8623,7 +8625,7 @@ CanvasResourceProvider* WebGLRenderingContextBase::
     // TODO(fserb): why is this a BITMAP?
     temp = CanvasResourceProvider::CreateBitmapProvider(
         gfx::Size(info.width(), info.height()), info.colorType(),
-        info.alphaType(), info.refColorSpace(),
+        info.alphaType(), SkColorSpaceToGfxColorSpace(info.refColorSpace()),
         CanvasResourceProvider::ShouldInitialize::kNo);  // TODO: should this
                                                          // use the canvas's
   }

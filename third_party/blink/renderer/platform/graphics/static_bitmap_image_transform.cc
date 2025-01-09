@@ -17,6 +17,7 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
+#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -261,7 +262,9 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
     if (!resource_provider) {
       resource_provider = CanvasResourceProvider::CreateBitmapProvider(
           gfx::Size(dest_size.width(), dest_size.height()), dest_color_type,
-          dest_alpha_type, std::move(dest_color_space), kShouldInitialize);
+          dest_alpha_type,
+          SkColorSpaceToGfxColorSpace(std::move(dest_color_space)),
+          kShouldInitialize);
     }
   }
 
