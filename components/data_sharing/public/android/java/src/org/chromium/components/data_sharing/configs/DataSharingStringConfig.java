@@ -76,6 +76,7 @@ public class DataSharingStringConfig {
             JOIN_TITLE_SINGLE,
             TABS_COUNT_TITLE,
             LEARN_ABOUT_SHARED_TAB_GROUPS,
+            LEARN_ABOUT_BLOCKED_ACCOUNTS,
         })
         public @interface Key {}
 
@@ -98,5 +99,6 @@ public class DataSharingStringConfig {
         public static final int JOIN_TITLE_SINGLE = 16;
         public static final int TABS_COUNT_TITLE = 17;
         public static final int LEARN_ABOUT_SHARED_TAB_GROUPS = 18;
+        public static final int LEARN_ABOUT_BLOCKED_ACCOUNTS = 19;
     }
 }
