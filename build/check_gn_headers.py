@@ -23,20 +23,33 @@ SRC_DIR = os.path.abspath(
     os.path.join(os.path.abspath(os.path.dirname(__file__)), os.path.pardir))
 DEPOT_TOOLS_DIR = os.path.join(SRC_DIR, 'third_party', 'depot_tools')
 
+SISO_PATH = os.path.join(SRC_DIR, 'third_party', 'siso', 'cipd', 'siso')
+NINJA_PATH = os.path.join(SRC_DIR, 'third_party', 'ninja', 'ninja')
+
+
+def IsSisoUsed(out_dir):
+  return os.path.exists(os.path.join(out_dir, ".siso_deps"))
+
 
 def GetHeadersFromNinja(out_dir, skip_obj, q):
   """Return all the header files from ninja_deps"""
 
   def NinjaSource():
-    cmd = [
-        os.path.join(SRC_DIR, 'third_party', 'ninja', 'ninja'), '-C', out_dir,
-        '-t', 'deps'
-    ]
+    if IsSisoUsed(out_dir):
+      cmd = [
+          SISO_PATH,
+          'query',
+          'deps',
+          '-C',
+          out_dir,
+      ]
+    else:
+      cmd = [NINJA_PATH, '-C', out_dir, '-t', 'deps']
     # A negative bufsize means to use the system default, which usually
     # means fully buffered.
     popen = subprocess.Popen(cmd, stdout=subprocess.PIPE, bufsize=-1)
-    for line in iter(popen.stdout.readline, ''):
-      yield line.rstrip()
+    for line in iter(popen.stdout.readline, b''):
+      yield line.rstrip().decode('utf-8')
 
     popen.stdout.close()
     return_code = popen.wait()
@@ -136,10 +149,11 @@ def GetDepsPrefixes(q):
   try:
     gclient_exe = 'gclient.bat' if sys.platform == 'win32' else 'gclient'
     gclient_out = subprocess.check_output([
-        os.path.join(DEPOT_TOOLS_DIR, gclient_exe),
-        'recurse', '--no-progress', '-j1',
-        'python', '-c', 'import os;print os.environ["GCLIENT_DEP_PATH"]'],
-        universal_newlines=True)
+        os.path.join(DEPOT_TOOLS_DIR,
+                     gclient_exe), 'recurse', '--no-progress', '-j1', 'python3',
+        '-c', 'import os;print(os.environ["GCLIENT_DEP_PATH"])'
+    ],
+                                          universal_newlines=True)
     for i in gclient_out.split('\n'):
       if i.startswith('src/'):
         i = i[4:]
@@ -150,10 +164,13 @@ def GetDepsPrefixes(q):
 
 
 def IsBuildClean(out_dir):
-  cmd = [os.path.join(DEPOT_TOOLS_DIR, 'ninja'), '-C', out_dir, '-n']
+  if IsSisoUsed(out_dir):
+    cmd = [SISO_PATH, 'ninja', '-C', out_dir, '-n']
+  else:
+    cmd = [NINJA_PATH, '-C', out_dir, '-n']
   try:
     out = subprocess.check_output(cmd)
-    return 'no work to do.' in out
+    return b'no work to do.' in out
   except Exception as e:
     print(e)
     return False
