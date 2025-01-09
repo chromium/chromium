@@ -27,6 +27,8 @@ bool LibraryLoaded(JNIEnv* env,
     base::CurrentProcess::GetInstance().SetProcessType(
         base::CurrentProcessType::PROCESS_BROWSER);
   }
+  base::trace_event::TraceLog::GetInstance()->SetProcessSortIndex(
+      kTraceEventBrowserProcessSortIndex);
 
   // Tracing itself can only be enabled after mojo is initialized, we do so in
   // ContentMainRunnerImpl::Initialize.

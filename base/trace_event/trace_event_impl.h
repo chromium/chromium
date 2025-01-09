@@ -42,7 +42,12 @@ typedef base::RepeatingCallback<bool(const std::string& metadata_name)>
     MetadataFilterPredicate;
 
 struct TraceEventHandle {
-  uint64_t dummy;
+  uint32_t chunk_seq;
+  // These numbers of bits must be kept consistent with
+  // TraceBufferChunk::kMaxTrunkIndex and
+  // TraceBufferChunk::kTraceBufferChunkSize (in trace_buffer.h).
+  unsigned chunk_index : 26;
+  unsigned event_index : 6;
 };
 
 class BASE_EXPORT TraceEvent {

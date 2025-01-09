@@ -172,6 +172,53 @@ class BASE_EXPORT TraceLog : public perfetto::TrackEventSessionObserver {
   static const char* GetCategoryGroupName(
       const unsigned char* category_group_enabled);
 
+  // Called by TRACE_EVENT* macros, don't call this directly.
+  // If |copy| is set, |name|, |arg_name1| and |arg_name2| will be deep copied
+  // into the event; see "Memory scoping note" and TRACE_EVENT_COPY_XXX above.
+  TraceEventHandle AddTraceEvent(char phase,
+                                 const unsigned char* category_group_enabled,
+                                 const char* name,
+                                 const char* scope,
+                                 uint64_t id,
+                                 TraceArguments* args,
+                                 unsigned int flags);
+  TraceEventHandle AddTraceEventWithProcessId(
+      char phase,
+      const unsigned char* category_group_enabled,
+      const char* name,
+      const char* scope,
+      uint64_t id,
+      ProcessId process_id,
+      TraceArguments* args,
+      unsigned int flags);
+  TraceEventHandle AddTraceEventWithThreadIdAndTimestamp(
+      char phase,
+      const unsigned char* category_group_enabled,
+      const char* name,
+      const char* scope,
+      uint64_t id,
+      uint64_t bind_id,
+      PlatformThreadId thread_id,
+      const TimeTicks& timestamp,
+      TraceArguments* args,
+      unsigned int flags);
+  TraceEventHandle AddTraceEventWithThreadIdAndTimestamps(
+      char phase,
+      const unsigned char* category_group_enabled,
+      const char* name,
+      const char* scope,
+      uint64_t id,
+      uint64_t bind_id,
+      PlatformThreadId thread_id,
+      const TimeTicks& timestamp,
+      const ThreadTicks& thread_timestamp,
+      TraceArguments* args,
+      unsigned int flags);
+
+  void UpdateTraceEventDuration(const unsigned char* category_group_enabled,
+                                const char* name,
+                                TraceEventHandle handle);
+
   ProcessId process_id() const { return process_id_; }
 
   std::unordered_map<int, std::string> process_labels() const {
@@ -185,11 +232,24 @@ class BASE_EXPORT TraceLog : public perfetto::TrackEventSessionObserver {
 
   void SetProcessID(ProcessId process_id);
 
+  // Process sort indices, if set, override the order of a process will appear
+  // relative to other processes in the trace viewer. Processes are sorted first
+  // on their sort index, ascending, then by their name, and then tid.
+  void SetProcessSortIndex(int sort_index);
+
+  // Helper function to set process_name in base::CurrentProcess.
+  void OnSetProcessName(const std::string& process_name);
+
   // Processes can have labels in addition to their names. Use labels, for
   // instance, to list out the web page titles that a process is handling.
   int GetNewProcessLabelId();
   void UpdateProcessLabel(int label_id, const std::string& current_label);
   void RemoveProcessLabel(int label_id);
+
+  // Thread sort indices, if set, override the order of a thread will appear
+  // within its process in the trace viewer. Threads are sorted first on their
+  // sort index, ascending, then by their name, and then tid.
+  void SetThreadSortIndex(PlatformThreadId thread_id, int sort_index);
 
   size_t GetObserverCountForTest() const;
 
@@ -223,6 +283,13 @@ class BASE_EXPORT TraceLog : public perfetto::TrackEventSessionObserver {
 
   explicit TraceLog(int generation);
   ~TraceLog() override;
+  void AddMetadataEventsWhileLocked() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  template <typename T>
+  void AddMetadataEventWhileLocked(PlatformThreadId thread_id,
+                                   const char* metadata_name,
+                                   const char* arg_name,
+                                   const T& value)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   void SetDisabledWhileLocked() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
@@ -250,6 +317,8 @@ class BASE_EXPORT TraceLog : public perfetto::TrackEventSessionObserver {
 
   int next_process_label_id_ GUARDED_BY(lock_) = 0;
   std::unordered_map<int, std::string> process_labels_;
+  int process_sort_index_;
+  std::unordered_map<PlatformThreadId, int> thread_sort_indices_;
 
   ProcessId process_id_;
 
