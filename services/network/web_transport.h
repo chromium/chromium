@@ -87,6 +87,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebTransport final
 
   bool torn_down() const { return torn_down_; }
 
+  void CloseIfNonceMatches(base::UnguessableToken nonce);
+
  private:
   void TearDown();
   void Dispose();

@@ -134,6 +134,7 @@
 #include "services/network/public/mojom/reporting_service.mojom.h"
 #include "services/network/public/mojom/trust_tokens.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "services/network/public/mojom/web_transport.mojom.h"
 #include "services/network/resolve_host_request.h"
 #include "services/network/resource_scheduler/resource_scheduler_client.h"
 #include "services/network/restricted_cookie_manager.h"
@@ -1929,6 +1930,14 @@ void NetworkContext::CreateWebTransport(
     std::vector<mojom::WebTransportCertificateFingerprintPtr> fingerprints,
     mojo::PendingRemote<mojom::WebTransportHandshakeClient>
         pending_handshake_client) {
+  if (!IsNetworkForNonceAndUrlAllowed(
+          key.GetNonce().value_or(base::UnguessableToken::Null()), url)) {
+    mojo::Remote<mojom::WebTransportHandshakeClient> remote_handshake_client(
+        std::move(pending_handshake_client));
+    remote_handshake_client->OnHandshakeFailed(
+        net::WebTransportError(net::ERR_NETWORK_ACCESS_REVOKED));
+    return;
+  }
   web_transports_.insert(
       std::make_unique<WebTransport>(url, origin, key, fingerprints, this,
                                      std::move(pending_handshake_client)));
@@ -3335,6 +3344,9 @@ void NetworkContext::RevokeNetworkForNonces(
       websocket_factory_->RemoveIfNonceMatches(nonce);
     }
 #endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
+    for (const auto& transport : web_transports_) {
+      transport->CloseIfNonceMatches(nonce);
+    }
   }
 
   if (callback) {

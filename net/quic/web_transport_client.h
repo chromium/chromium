@@ -128,6 +128,8 @@ class NET_EXPORT WebTransportClient {
   virtual void Close(
       const std::optional<WebTransportCloseInfo>& close_info) = 0;
 
+  virtual void CloseIfNonceMatches(base::UnguessableToken nonce) = 0;
+
   // session() can be nullptr in states other than CONNECTED.
   virtual quic::WebTransportSession* session() = 0;
 };
