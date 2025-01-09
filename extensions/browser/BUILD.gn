@@ -250,6 +250,7 @@ source_set("browser_sources") {
     "crx_file_info.cc",
     "crx_file_info.h",
     "deferred_start_render_host.h",
+    "disable_reason.cc",
     "disable_reason.h",
     "embedder_user_script_loader.cc",
     "embedder_user_script_loader.h",

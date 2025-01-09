@@ -737,13 +737,6 @@ class ExtensionPrefs : public KeyedService {
   friend class
       ExtensionPrefsBitMapPrefValueClearedIfEqualsDefaultValue;  // Unit test.
 
-  enum class DisableReasonsPrefOperation {
-    kAdd,
-    kRemove,
-    kReplace,
-    kClear,
-  };
-
   // Updates ExtensionPrefs for a specific extension.
   void UpdateExtensionPrefInternal(const ExtensionId& id,
                                    const PrefMap& pref,
@@ -798,17 +791,16 @@ class ExtensionPrefs : public KeyedService {
   const base::Value* GetPrefAsValue(const ExtensionId& extension_id,
                                     std::string_view pref_key) const;
 
-  // Modifies the extensions disable reasons to add a new reason, remove an
-  // existing reason, or clear all reasons. Notifies observers if the set of
-  // DisableReasons has changed.
-  // If `operation` is DisableReasonsPrefOperation::kClear, then `reasons` are
-  // ignored.
-  void ModifyDisableReasons(const ExtensionId& extension_id,
-                            int reasons,
-                            DisableReasonsPrefOperation operation);
-  void ModifyDisableReasonsPref(const ExtensionId& extension_id,
-                                int incoming_reasons,
-                                DisableReasonsPrefOperation operation);
+  // Helper function to notify observers that the disable reasons for an
+  // extension have changed.
+  void NotifyDisableReasonsChanged(const ExtensionId& extension_id);
+
+  // Helper methods to read and write disable reasons to prefs.
+  base::flat_set<int> ReadDisableReasonsFromPrefs(
+      const ExtensionId& extension_id) const;
+
+  void WriteDisableReasonsToPrefs(const ExtensionId& extension_id,
+                                  const base::flat_set<int>& disable_reasons);
 
   // Installs the persistent extension preferences into |prefs_|'s extension
   // pref store. Does nothing if extensions_disabled_ is true.

@@ -71,6 +71,11 @@ static_assert(DISABLE_REASON_LAST - 1 <= std::numeric_limits<int>::max(),
               "The DisableReason bitmask cannot be stored in an int.");
 
 }  // namespace disable_reason
+
+// Validates that `reason` is a valid `DisableReason` (i.e. we have an enum
+// value for it).
+bool IsValidDisableReason(int reason);
+
 }  // namespace extensions
 
 #endif  // EXTENSIONS_BROWSER_DISABLE_REASON_H_
