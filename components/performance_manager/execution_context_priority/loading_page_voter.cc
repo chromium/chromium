@@ -31,19 +31,23 @@ bool IsLoading(PageNode::LoadingState loading_state) {
 // static
 const char LoadingPageVoter::kPageIsLoadingReason[] = "Page is loading.";
 
-LoadingPageVoter::LoadingPageVoter(VotingChannel voting_channel)
-    : voting_channel_(std::move(voting_channel)) {}
+LoadingPageVoter::LoadingPageVoter() = default;
 
 LoadingPageVoter::~LoadingPageVoter() = default;
 
-void LoadingPageVoter::InitializeOnGraph(Graph* graph) {
+void LoadingPageVoter::InitializeOnGraph(Graph* graph,
+                                         VotingChannel voting_channel) {
+  voting_channel_ = std::move(voting_channel);
+
   graph->AddPageNodeObserver(this);
   graph->AddFrameNodeObserver(this);
 }
 
 void LoadingPageVoter::TearDownOnGraph(Graph* graph) {
-  graph->RemovePageNodeObserver(this);
   graph->RemoveFrameNodeObserver(this);
+  graph->RemovePageNodeObserver(this);
+
+  voting_channel_.Reset();
 }
 
 void LoadingPageVoter::OnPageNodeAdded(const PageNode* page_node) {

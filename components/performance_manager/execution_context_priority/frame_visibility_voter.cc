@@ -48,17 +48,21 @@ Vote GetVote(FrameNode::Visibility visibility, bool is_important) {
 // static
 const char FrameVisibilityVoter::kFrameVisibilityReason[] = "Frame visibility.";
 
-FrameVisibilityVoter::FrameVisibilityVoter(VotingChannel voting_channel)
-    : voting_channel_(std::move(voting_channel)) {}
+FrameVisibilityVoter::FrameVisibilityVoter() = default;
 
 FrameVisibilityVoter::~FrameVisibilityVoter() = default;
 
-void FrameVisibilityVoter::InitializeOnGraph(Graph* graph) {
+void FrameVisibilityVoter::InitializeOnGraph(Graph* graph,
+                                             VotingChannel voting_channel) {
+  voting_channel_ = std::move(voting_channel);
+
   graph->AddFrameNodeObserver(this);
 }
 
 void FrameVisibilityVoter::TearDownOnGraph(Graph* graph) {
   graph->RemoveFrameNodeObserver(this);
+
+  voting_channel_.Reset();
 }
 
 void FrameVisibilityVoter::OnBeforeFrameNodeAdded(

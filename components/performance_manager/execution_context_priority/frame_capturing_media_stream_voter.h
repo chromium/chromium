@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_FRAME_CAPTURING_MEDIA_STREAM_VOTER_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_FRAME_CAPTURING_MEDIA_STREAM_VOTER_H_
 
-#include "components/performance_manager/execution_context_priority/voter_base.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
+#include "components/performance_manager/public/execution_context_priority/priority_voting_system.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 
 namespace performance_manager::execution_context_priority {
@@ -16,12 +16,12 @@ namespace performance_manager::execution_context_priority {
 // otherwise.
 // Note: This FrameNodeObserver can affect the initial priority of a frame and
 // thus uses `OnBeforeFrameNodeAdded`.
-class FrameCapturingMediaStreamVoter : public VoterBase,
+class FrameCapturingMediaStreamVoter : public PriorityVoter,
                                        public FrameNodeObserver {
  public:
   static const char kFrameCapturingMediaStreamReason[];
 
-  explicit FrameCapturingMediaStreamVoter(VotingChannel voting_channel);
+  FrameCapturingMediaStreamVoter();
   ~FrameCapturingMediaStreamVoter() override;
 
   FrameCapturingMediaStreamVoter(const FrameCapturingMediaStreamVoter&) =
@@ -29,8 +29,8 @@ class FrameCapturingMediaStreamVoter : public VoterBase,
   FrameCapturingMediaStreamVoter& operator=(
       const FrameCapturingMediaStreamVoter&) = delete;
 
-  // VoterBase:
-  void InitializeOnGraph(Graph* graph) override;
+  // PriorityVoter:
+  void InitializeOnGraph(Graph* graph, VotingChannel voting_channel) override;
   void TearDownOnGraph(Graph* graph) override;
 
   // FrameNodeObserver:

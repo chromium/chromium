@@ -34,17 +34,21 @@ Vote GetVote(bool is_audible) {
 // static
 const char FrameAudibleVoter::kFrameAudibleReason[] = "Frame audible.";
 
-FrameAudibleVoter::FrameAudibleVoter(VotingChannel voting_channel)
-    : voting_channel_(std::move(voting_channel)) {}
+FrameAudibleVoter::FrameAudibleVoter() = default;
 
 FrameAudibleVoter::~FrameAudibleVoter() = default;
 
-void FrameAudibleVoter::InitializeOnGraph(Graph* graph) {
+void FrameAudibleVoter::InitializeOnGraph(Graph* graph,
+                                          VotingChannel voting_channel) {
+  voting_channel_ = std::move(voting_channel);
+
   graph->AddFrameNodeObserver(this);
 }
 
 void FrameAudibleVoter::TearDownOnGraph(Graph* graph) {
   graph->RemoveFrameNodeObserver(this);
+
+  voting_channel_.Reset();
 }
 
 void FrameAudibleVoter::OnBeforeFrameNodeAdded(
