@@ -503,7 +503,6 @@ void SetFlags(IsolateHolder::ScriptMode mode,
                          "--no-js-duplicate-named-groups");
   SetV8FlagsIfOverridden(features::kJavaScriptPromiseTry, "--js-promise-try",
                          "--no-js-promise-try");
-  SetV8Flags("--js-explicit-resource-management");
 
   if (IsolateHolder::kStrictMode == mode) {
     SetV8Flags("--use_strict");
