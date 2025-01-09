@@ -912,8 +912,7 @@ void LoginAuthUserView::ApplyAnimationPostLayout(bool animate) {
   if (current_state.has_password != previous_state_->has_password) {
     AnimateOpacity<LoginPasswordView>(
         password_view_, /*towards_visible=*/current_state.has_password,
-        /*observe_completion=*/previous_state_->has_password &&
-            !current_state.has_password);
+        /*observe_completion=*/previous_state_->has_password);
   }
 
   ////////
@@ -922,8 +921,7 @@ void LoginAuthUserView::ApplyAnimationPostLayout(bool animate) {
   if (current_state.has_pin_input != previous_state_->has_pin_input) {
     AnimateOpacity<LoginPinInputView>(
         pin_input_view_, /*towards_visible=*/current_state.has_pin_input,
-        /*observe_completion=*/previous_state_->has_pin_input &&
-            !current_state.has_pin_input);
+        /*observe_completion=*/previous_state_->has_pin_input);
   }
 
   ////////
