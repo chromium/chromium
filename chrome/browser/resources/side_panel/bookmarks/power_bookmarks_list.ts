@@ -482,10 +482,6 @@ export class PowerBookmarksListElement extends PolymerElement {
     return this.availableProductInfos_;
   }
 
-  getSelectedBookmarks(): {[key: string]: boolean} {
-    return this.selectedBookmarks_;
-  }
-
   getProductImageUrl(bookmark: chrome.bookmarks.BookmarkTreeNode): string {
     const bookmarkProductInfo = this.availableProductInfos_.get(bookmark.id);
     if (bookmarkProductInfo) {
@@ -848,7 +844,10 @@ export class PowerBookmarksListElement extends PolymerElement {
     event.preventDefault();
     event.stopPropagation();
     const isSelected =
-        !!this.bookmarksService_?.bookmarkIsSelected(event.detail.bookmark);
+        Object.entries(this.selectedBookmarks_)
+            .find(([key, _val]) => key === event.detail.bookmark.id)
+            ?.[1] ??
+        false;
     if (event.detail.checked && !isSelected) {
       this.set(
           `selectedBookmarks_.${event.detail.bookmark.id.toString()}`, true);

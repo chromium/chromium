@@ -61,6 +61,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
+      selectedBookmarks: {type: Array},
       renamingId: {type: String},
       imageUrls: {type: Object},
       isPriceTracked: {type: Boolean},
@@ -84,6 +85,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
   depth: number = 0;
   forceHover: boolean = false;
   hasCheckbox: boolean = false;
+  selectedBookmarks: chrome.bookmarks.BookmarkTreeNode[];
   renamingId: string = '';
   searchQuery: string|undefined;
   shoppingCollectionFolderId: string = '';
@@ -234,7 +236,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
   }
 
   protected isCheckboxChecked_(): boolean {
-    return !!this.bookmarksService?.bookmarkIsSelected(this.bookmark);
+    return this.selectedBookmarks.includes(this.bookmark);
   }
 
   protected isBookmarksBar_(): boolean {
