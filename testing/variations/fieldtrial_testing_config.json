@@ -17603,21 +17603,6 @@
             ]
         }
     ],
-    "PrivacyHubV2-3": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CrosBlockWarnings"
-                    ]
-                }
-            ]
-        }
-    ],
     "PrivacyIndicators": [
         {
             "platforms": [
