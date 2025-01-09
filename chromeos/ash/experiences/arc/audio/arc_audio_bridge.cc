@@ -74,7 +74,6 @@ void ArcAudioBridge::OnConnectionReady() {
   // TODO(hidehiko): Replace with ConnectionHolder::IsConnected().
   available_ = true;
 
-  SendAudioNodesState();
   SendSpatialAudioState();
 }
 
