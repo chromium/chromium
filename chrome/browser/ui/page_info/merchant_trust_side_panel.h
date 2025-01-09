@@ -11,8 +11,8 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-static const char kMerchantTrustContextParameterName[] = "ctx";
-static const char kMerchantTrustContextParameterValue[] = "chrome";
+static const char kMerchantTrustContextParameterName[] = "s";
+static const char kMerchantTrustContextParameterValue[] = "CHROME_SIDE_PANEL";
 
 // Implemented by merchant_trust_side_panel_coordinator.cc in ui/views.
 void ShowMerchantTrustSidePanel(content::WebContents* web_contents,
