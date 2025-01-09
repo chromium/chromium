@@ -192,6 +192,13 @@ void DevToolsHost::sendMessageToEmbedder(base::Value::Dict message) {
     client_->SendMessageToEmbedder(std::move(message));
 }
 
+static std::u16string GetLabel(const Member<ShowContextMenuItem> item) {
+  // '&' does not show up in context menus unless replaced by '&&'.
+  String label = item->getLabelOr(String()).Replace('&', "&&");
+  label.Ensure16Bit();
+  return std::u16string(label.Characters16(), label.length());
+}
+
 static std::vector<MenuItemInfo> PopulateContextMenuItems(
     const HeapVector<Member<ShowContextMenuItem>>& item_array) {
   std::vector<MenuItemInfo> items;
@@ -207,9 +214,7 @@ static std::vector<MenuItemInfo> PopulateContextMenuItems(
       item_info.enabled = true;
       item_info.action = DevToolsHost::kMaxContextMenuAction;
       item_info.sub_menu_items = PopulateContextMenuItems(item->subItems());
-      String label = item->getLabelOr(String());
-      label.Ensure16Bit();
-      item_info.label = std::u16string(label.Characters16(), label.length());
+      item_info.label = GetLabel(item);
     } else {
       if (!item->hasId() || item->id() >= DevToolsHost::kMaxContextMenuAction) {
         return std::vector<MenuItemInfo>();
@@ -220,9 +225,7 @@ static std::vector<MenuItemInfo> PopulateContextMenuItems(
       } else {
         item_info.type = MenuItemInfo::kOption;
       }
-      String label = item->getLabelOr(String());
-      label.Ensure16Bit();
-      item_info.label = std::u16string(label.Characters16(), label.length());
+      item_info.label = GetLabel(item);
       if (item->hasAccelerator()) {
         AcceleratorContainer accelerator;
         accelerator.key_code = item->accelerator()->keyCode();
