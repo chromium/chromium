@@ -140,7 +140,7 @@ std::string GetHtmlTagForPDF(ui::AXNode* ax_node, const std::string& html_tag) {
           l10n_util::GetStringUTF8(IDS_PDF_OCR_RESULT_END)) {
         return "br";
       }
-      ABSL_FALLTHROUGH_INTENDED;
+      [[fallthrough]];
     default:
       return html_tag.empty() ? "span" : html_tag;
   }

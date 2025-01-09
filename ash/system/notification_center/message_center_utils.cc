@@ -56,7 +56,7 @@ std::string GenerateGroupParentNotificationIdSuffix(
       if (notifier_id.id == ash::kPrivacyIndicatorsNotifierId) {
         return base::SHA1HashString(notifier_id.id);
       }
-      ABSL_FALLTHROUGH_INTENDED;
+      [[fallthrough]];
     case message_center::NotifierType::APPLICATION:
     case message_center::NotifierType::CROSTINI_APPLICATION:
     case message_center::NotifierType::PHONE_HUB:

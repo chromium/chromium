@@ -160,7 +160,7 @@ void MutateTextRangeProvider(ComPtr<ITextRangeProvider>& text_range,
                                         GenerateEndpoint(fuzz_data.NextByte()));
         return;
       }
-      ABSL_FALLTHROUGH_INTENDED;
+      [[fallthrough]];
     case TextRangeMutation::kExpandToEnclosingUnit:
       text_range->ExpandToEnclosingUnit(unit);
       return;

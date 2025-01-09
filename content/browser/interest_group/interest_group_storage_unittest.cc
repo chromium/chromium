@@ -207,11 +207,11 @@ class InterestGroupStorageTest : public testing::Test {
         ABSL_FALLTHROUGH_INTENDED;
       case 30:
         // Compressed AdsProto, but introduced no new fields.
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 29:
         result.ads.value()[0].selectable_buyer_and_seller_reporting_ids = {
             "selectable_id1", "selectable_id2"};
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 28:
         // NOTE: As this is the oldest version supported by ProduceAllFields(),
         // it also initializes fields from before version 28.

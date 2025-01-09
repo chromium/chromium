@@ -592,7 +592,7 @@ void CreditCardAccessManager::Authenticate(
     case UnmaskAuthFlowType::kCvcThenFido:
       autofill_metrics::LogCardUnmaskTypeDecision(
           autofill_metrics::CardUnmaskTypeDecisionMetric::kCvcThenFido);
-      ABSL_FALLTHROUGH_INTENDED;
+      [[fallthrough]];
     case UnmaskAuthFlowType::kCvc:
     case UnmaskAuthFlowType::kCvcFallbackFromFido: {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -1484,7 +1484,7 @@ void CreditCardAccessManager::OnVirtualCardUnmaskCancelled() {
     case UnmaskAuthFlowType::kCvcThenFido:
     case UnmaskAuthFlowType::kCvcFallbackFromFido:
       DUMP_WILL_BE_NOTREACHED();
-      ABSL_FALLTHROUGH_INTENDED;
+      [[fallthrough]];
     case UnmaskAuthFlowType::kThreeDomainSecure:
       // TODO(crbug.com/40240970): Add a flow type for the kThreeDomainSecure
       // flow for metrics.

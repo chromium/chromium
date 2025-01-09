@@ -74,7 +74,7 @@ std::unique_ptr<DbusType> CreateDynamicDbusType(dbus::MessageReader* reader) {
       if (reader->GetDataSignature() == "a{sv}") {
         return CreateDbusType<DbusDictionary>(reader);
       }
-      ABSL_FALLTHROUGH_INTENDED;
+      [[fallthrough]];
     case dbus::Message::DataType::STRUCT:
     case dbus::Message::DataType::DICT_ENTRY:
       // For templated types (array, struct dict entry), an untyped container is

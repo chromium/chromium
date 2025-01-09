@@ -137,7 +137,7 @@ AddSinkResultCode AccessCodeCastDiscoveryInterface::GetErrorFromResponse(
   switch (*http_code) {
     // 401
     case net::HTTP_UNAUTHORIZED:
-      ABSL_FALLTHROUGH_INTENDED;
+      [[fallthrough]];
     // 403
     case net::HTTP_FORBIDDEN:
       return AddSinkResultCode::AUTH_ERROR;
@@ -148,14 +148,14 @@ AddSinkResultCode AccessCodeCastDiscoveryInterface::GetErrorFromResponse(
 
     // 408
     case net::HTTP_REQUEST_TIMEOUT:
-      ABSL_FALLTHROUGH_INTENDED;
+      [[fallthrough]];
     // 502
     case net::HTTP_GATEWAY_TIMEOUT:
       return AddSinkResultCode::SERVER_ERROR;
 
     // 412
     case net::HTTP_PRECONDITION_FAILED:
-      ABSL_FALLTHROUGH_INTENDED;
+      [[fallthrough]];
     // 417
     case net::HTTP_EXPECTATION_FAILED:
       return AddSinkResultCode::INVALID_ACCESS_CODE;

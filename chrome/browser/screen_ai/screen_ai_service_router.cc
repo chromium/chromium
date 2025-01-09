@@ -224,8 +224,6 @@ ScreenAIServiceRouter::GetAllPendingStatusServices() {
 void ScreenAIServiceRouter::StateChanged(ScreenAIInstallState::State state) {
   switch (state) {
     case ScreenAIInstallState::State::kNotDownloaded:
-      ABSL_FALLTHROUGH_INTENDED;
-
     case ScreenAIInstallState::State::kDownloading:
       return;
 

@@ -1677,7 +1677,7 @@ void CompositorFrameReporter::ReportScrollJankMetrics() const {
     switch (event->type()) {
       case EventMetrics::EventType::kFirstGestureScrollUpdate:
         is_scroll_start = true;
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case EventMetrics::EventType::kGestureScrollUpdate:
         normal_input_count += scroll_update->coalesced_event_count();
         break;

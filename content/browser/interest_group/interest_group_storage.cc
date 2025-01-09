@@ -2930,118 +2930,118 @@ bool UpgradeDB(sql::Database& db,
         if (!UpgradeV6SchemaToV7(db, meta_table)) {
           return false;
         }
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 7:
         if (!UpgradeV7SchemaToV8(db, meta_table)) {
           return false;
         }
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 8:
         if (!UpgradeV8SchemaToV9(db, meta_table)) {
           return false;
         }
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 9:
         if (!UpgradeV9SchemaToV10(db, meta_table)) {
           return false;
         }
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 10:
         if (!UpgradeV10SchemaToV11(db, meta_table)) {
           return false;
         }
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 11:
         if (!UpgradeV11SchemaToV12(db, meta_table)) {
           return false;
         }
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 12:
         if (!UpgradeV12SchemaToV13(db, meta_table)) {
           return false;
         }
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 13:
         if (!UpgradeV13SchemaToV14(db, meta_table)) {
           return false;
         }
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 14:
         if (!UpgradeV14SchemaToV15(db, meta_table)) {
           return false;
         }
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 15:
         if (!UpgradeV15SchemaToV16(db, meta_table, pass_key)) {
           return false;
         }
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 16:
         if (!UpgradeV16SchemaToV17(db, meta_table, pass_key)) {
           return false;
         }
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 17:
         if (!UpgradeV17SchemaToV18(db, meta_table)) {
           return false;
         }
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 18:
         if (!UpgradeV18SchemaToV19(db, meta_table)) {
           return false;
         }
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 19:
         if (!UpgradeV19SchemaToV20(db, meta_table)) {
           return false;
         }
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 20:
         if (!UpgradeV20SchemaToV21(db, meta_table)) {
           return false;
         }
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 21:
         if (!UpgradeV21SchemaToV22(db, meta_table)) {
           return false;
         }
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 22:
         if (!UpgradeV22SchemaToV23(db, meta_table)) {
           return false;
         }
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 23:
         if (!UpgradeV23SchemaToV24(db, meta_table)) {
           return false;
         }
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 24:
         if (!UpgradeV24SchemaToV25(db, meta_table)) {
           return false;
         }
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 25:
         vacuum_db_post_upgrade = true;
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 26:
         vacuum_db_post_upgrade = true;
         if (!UpgradeV26SchemaToV27(db, meta_table)) {
           return false;
         }
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 27:
         if (!UpgradeV27SchemaToV28(db, meta_table)) {
           return false;
         }
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 28:
         // v29 adds a new field in the IG.ads structure, and so doesn't require
         // any changes to the InterestGroup table. Existing data is
         // forwards-compatible because `FromInterestGroupAdValue` correctly
         // handles the lack of a value for
         // `selectable_buyer_and_seller_reporting_ids`.
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 29:
         vacuum_db_post_upgrade = true;
         if (!UpgradeV29SchemaToV30(db, meta_table)) {

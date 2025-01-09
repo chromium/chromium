@@ -233,7 +233,7 @@ void DriveUploadObserver::OnIOTaskStatus(
                       "been cancelled.";
     case file_manager::io_task::State::kError:
       LOG(ERROR) << "Deleting the file from the local cache failed.";
-      ABSL_FALLTHROUGH_INTENDED;
+      [[fallthrough]];
     case file_manager::io_task::State::kSuccess:
       std::move(upload_callback_).Run(false);
       return;

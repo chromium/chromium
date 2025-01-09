@@ -214,7 +214,7 @@ void HostIndexedContentSettings::Iterator::SetStage(Stage stage) {
         break;
       }
       // Fall through to the next index structure if the requested one is empty.
-      ABSL_FALLTHROUGH_INTENDED;
+      [[fallthrough]];
     case Stage::kSecondaryHost:
       if (!index_->secondary_host_indexed_.empty()) {
         stage_ = Stage::kSecondaryHost;
@@ -222,7 +222,7 @@ void HostIndexedContentSettings::Iterator::SetStage(Stage stage) {
         break;
       }
       // Fall through to the next index structure if the requested one is empty.
-      ABSL_FALLTHROUGH_INTENDED;
+      [[fallthrough]];
     case Stage::kWildcard:
       stage_ = Stage::kWildcard;
       next_map_iterator_ = {};

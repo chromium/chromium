@@ -445,7 +445,7 @@ void QuickStartController::OnStatusChanged(
           ->GetWizardContext()
           ->quick_start_wifi_credentials =
           absl::get<mojom::WifiCredentials>(status.payload);
-      ABSL_FALLTHROUGH_INTENDED;
+      [[fallthrough]];
     case Step::EMPTY_WIFI_CREDENTIALS_RECEIVED:
       CHECK(did_request_wifi_credentials_) << "Unrequested WiFi credentials!";
       UpdateUiState(UiState::WIFI_CREDENTIALS_RECEIVED);

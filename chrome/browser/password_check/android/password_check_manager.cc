@@ -318,7 +318,6 @@ bool PasswordCheckManager::CanUseAccountCheck() const {
       SyncServiceFactory::GetForProfile(profile_));
   switch (sync_state) {
     case SyncState::kNotActive:
-      ABSL_FALLTHROUGH_INTENDED;
     case SyncState::kActiveWithCustomPassphrase:
       return false;
 

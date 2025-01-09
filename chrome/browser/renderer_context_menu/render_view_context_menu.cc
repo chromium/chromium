@@ -3411,7 +3411,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
     case IDC_CONTENT_CONTEXT_SEARCHWEBFOR: {
       RecordAmbientSearchQuery(
           lens::AmbientSearchEntryPoint::CONTEXT_MENU_SEARCH_WEB_FOR);
-      ABSL_FALLTHROUGH_INTENDED;
+      [[fallthrough]];
     }
     case IDC_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB:
     case IDC_CONTENT_CONTEXT_GOTOURL: {

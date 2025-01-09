@@ -158,9 +158,7 @@ ui::ColorId GetLabelColorId(SearchResultView::LabelType label_type,
 
   switch (color_tag) {
     case SearchResult::Tag::NONE:
-      ABSL_FALLTHROUGH_INTENDED;
     case SearchResult::Tag::DIM:
-      ABSL_FALLTHROUGH_INTENDED;
     case SearchResult::Tag::MATCH:
       switch (label_type) {
         case SearchResultView::LabelType::kBigTitle:
@@ -206,7 +204,7 @@ std::optional<TypographyToken> GetTypographyToken(
       if (is_inline_detail) {
         return TypographyToken::kCrosBody1;
       }
-      ABSL_FALLTHROUGH_INTENDED;
+      [[fallthrough]];
     case SearchResultView::LabelType::kKeyboardShortcut:
       return TypographyToken::kCrosAnnotation1;
   }
