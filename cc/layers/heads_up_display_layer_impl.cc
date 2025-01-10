@@ -42,7 +42,6 @@
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
-#include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/resources/platform_color.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/GLES2/gl2extchromium.h"
@@ -174,14 +173,8 @@ class HudGpuBacking : public ResourcePool::GpuBacking {
 class HudSoftwareBacking : public ResourcePool::SoftwareBacking {
  public:
   ~HudSoftwareBacking() override {
-    if (shared_image) {
-      auto sii = layer_tree_frame_sink->shared_image_interface();
-      if (sii) {
-        sii->DestroySharedImage(mailbox_sync_token, std::move(shared_image));
-      }
-    } else {
-      layer_tree_frame_sink->DidDeleteSharedBitmap(shared_bitmap_id);
-    }
+    DCHECK(shared_image);
+    shared_image->UpdateDestructionSyncToken(mailbox_sync_token);
   }
 
   void OnMemoryDump(
@@ -338,39 +331,20 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
     DCHECK_EQ(draw_mode, DRAW_MODE_SOFTWARE);
 
     auto sii = layer_tree_frame_sink->shared_image_interface();
-    if (sii) {
-      pool_resource = pool_->AcquireResource(internal_content_bounds_,
-                                             viz::SinglePlaneFormat::kBGRA_8888,
-                                             gfx::ColorSpace());
+    DCHECK(sii);
+    pool_resource = pool_->AcquireResource(internal_content_bounds_,
+                                           viz::SinglePlaneFormat::kBGRA_8888,
+                                           gfx::ColorSpace());
 
-      if (!pool_resource.software_backing()) {
-        auto backing = std::make_unique<HudSoftwareBacking>();
-        backing->layer_tree_frame_sink = layer_tree_frame_sink;
-        backing->shared_image = sii->CreateSharedImageForSoftwareCompositor(
-            {pool_resource.format(), pool_resource.size(),
-             pool_resource.color_space(),
-             gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, "HeadsUpDisplayLayer"});
-        CHECK(backing->shared_image);
-        pool_resource.set_software_backing(std::move(backing));
-      }
-
-    } else {
-      pool_resource = pool_->AcquireResource(internal_content_bounds_,
-                                             viz::SinglePlaneFormat::kRGBA_8888,
-                                             gfx::ColorSpace());
-      if (!pool_resource.software_backing()) {
-        auto backing = std::make_unique<HudSoftwareBacking>();
-        backing->layer_tree_frame_sink = layer_tree_frame_sink;
-        backing->shared_bitmap_id = viz::SharedBitmap::GenerateId();
-        base::MappedReadOnlyRegion shm =
-            viz::bitmap_allocation::AllocateSharedBitmap(
-                pool_resource.size(), pool_resource.format());
-        backing->shared_mapping = std::move(shm.mapping);
-
-        layer_tree_frame_sink->DidAllocateSharedBitmap(
-            std::move(shm.region), backing->shared_bitmap_id);
-        pool_resource.set_software_backing(std::move(backing));
-      }
+    if (!pool_resource.software_backing()) {
+      auto backing = std::make_unique<HudSoftwareBacking>();
+      backing->layer_tree_frame_sink = layer_tree_frame_sink;
+      backing->shared_image = sii->CreateSharedImageForSoftwareCompositor(
+          {pool_resource.format(), pool_resource.size(),
+           pool_resource.color_space(), gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
+           "HeadsUpDisplayLayer"});
+      CHECK(backing->shared_image);
+      pool_resource.set_software_backing(std::move(backing));
     }
   }
 
@@ -462,9 +436,7 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
     DrawHudContents(&canvas);
 
     auto sii = layer_tree_frame_sink->shared_image_interface();
-    if (backing->shared_image && sii) {
-      backing->mailbox_sync_token = sii->GenVerifiedSyncToken();
-    }
+    backing->mailbox_sync_token = sii->GenVerifiedSyncToken();
   }
 
   // Exports the backing to the ResourceProvider, giving it a ResourceId that
