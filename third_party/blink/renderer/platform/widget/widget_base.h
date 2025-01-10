@@ -403,6 +403,8 @@ class PLATFORM_EXPORT WidgetBase
 
   bool WillBeDestroyed() const { return will_be_destroyed_; }
 
+  void OnDevToolsSessionConnectionChanged(bool attached);
+
  private:
   static void AssertAreCompatible(const WidgetBase& a, const WidgetBase& b);
 

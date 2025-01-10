@@ -1564,6 +1564,10 @@ void WebFrameWidgetImpl::RequestNewLocalSurfaceId() {
   LayerTreeHost()->RequestNewLocalSurfaceId();
 }
 
+void WebFrameWidgetImpl::OnDevToolsSessionConnectionChanged(bool attached) {
+  widget_base_->OnDevToolsSessionConnectionChanged(attached);
+}
+
 WebInputMethodController*
 WebFrameWidgetImpl::GetActiveWebInputMethodController() const {
   WebLocalFrameImpl* local_frame =

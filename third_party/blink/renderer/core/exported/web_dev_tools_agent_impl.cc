@@ -306,8 +306,11 @@ ClientMessageLoopAdapter* ClientMessageLoopAdapter::instance_ = nullptr;
 
 void WebDevToolsAgentImpl::AttachSession(DevToolsSession* session,
                                          bool restore) {
-  if (!network_agents_.size())
+  if (!network_agents_.size()) {
     Thread::Current()->AddTaskObserver(this);
+    web_local_frame_impl_->OnDevToolsSessionConnectionChanged(
+        /*attached=*/true);
+  }
 
   InspectedFrames* inspected_frames = inspected_frames_.Get();
   v8::Isolate* isolate =
@@ -460,8 +463,11 @@ void WebDevToolsAgentImpl::DetachSession(DevToolsSession* session) {
   network_agents_.erase(session);
   page_agents_.erase(session);
   overlay_agents_.erase(session);
-  if (!network_agents_.size())
+  if (!network_agents_.size()) {
     Thread::Current()->RemoveTaskObserver(this);
+    web_local_frame_impl_->OnDevToolsSessionConnectionChanged(
+        /*attached=*/false);
+  }
 }
 
 void WebDevToolsAgentImpl::InspectElement(

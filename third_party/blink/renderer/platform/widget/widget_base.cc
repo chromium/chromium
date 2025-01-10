@@ -1431,6 +1431,10 @@ void WidgetBase::SetHidden(bool hidden) {
     FlushInputProcessedCallback();
 
   SetCompositorVisible(!is_hidden_);
+
+  if (widget_input_handler_manager_) {
+    widget_input_handler_manager_->SetHidden(is_hidden_);
+  }
 }
 
 ui::TextInputType WidgetBase::GetTextInputType() {
@@ -1886,6 +1890,12 @@ std::optional<int> WidgetBase::GetMaxRenderBufferBounds() const {
   return Platform::Current()->IsGpuCompositingDisabled()
              ? max_render_buffer_bounds_sw_
              : max_render_buffer_bounds_gpu_;
+}
+
+void WidgetBase::OnDevToolsSessionConnectionChanged(bool attached) {
+  if (widget_input_handler_manager_) {
+    widget_input_handler_manager_->OnDevToolsSessionConnectionChanged(attached);
+  }
 }
 
 }  // namespace blink

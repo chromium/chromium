@@ -3204,6 +3204,12 @@ WebDevToolsAgentImpl* WebLocalFrameImpl::DevToolsAgentImpl(
   return dev_tools_agent_.Get();
 }
 
+void WebLocalFrameImpl::OnDevToolsSessionConnectionChanged(bool attached) {
+  if (frame_widget_) {
+    frame_widget_->OnDevToolsSessionConnectionChanged(attached);
+  }
+}
+
 void WebLocalFrameImpl::WasHidden() {
   if (frame_)
     frame_->WasHidden();

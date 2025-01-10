@@ -740,6 +740,8 @@ class CORE_EXPORT WebFrameWidgetImpl
   // Request a new `viz::LocalSurfaceId` on the compositor thread.
   void RequestNewLocalSurfaceId();
 
+  void OnDevToolsSessionConnectionChanged(bool attached);
+
  protected:
   // WidgetBaseClient overrides:
   void ScheduleAnimation() override;

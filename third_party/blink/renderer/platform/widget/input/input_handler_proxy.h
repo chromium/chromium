@@ -154,7 +154,8 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
       std::unique_ptr<DidOverscrollParams>,
       const blink::WebInputEventAttribution&,
       std::unique_ptr<cc::EventMetrics> metrics)>;
-  void HandleInputEventWithLatencyInfo(
+  // Virtual for mocking in tests.
+  virtual void HandleInputEventWithLatencyInfo(
       std::unique_ptr<blink::WebCoalescedInputEvent> event,
       std::unique_ptr<cc::EventMetrics> metrics,
       EventDispositionCallback callback);

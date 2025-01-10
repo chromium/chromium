@@ -2026,6 +2026,7 @@ static_library("test_support") {
     "testing/video_frame_utils.cc",
     "testing/video_frame_utils.h",
     "webrtc/testing/mock_webrtc_video_frame_adapter_shared_resources.h",
+    "widget/compositing/test/stub_widget_base_client.h",
   ]
 
   # fuzzed_data_provider may not work with a custom toolchain.
@@ -2364,8 +2365,11 @@ source_set("blink_platform_unittests_sources") {
     "widget/input/input_event_prediction_unittest.cc",
     "widget/input/input_handler_proxy_unittest.cc",
     "widget/input/main_thread_event_queue_unittest.cc",
+    "widget/input/mock_input_handler_proxy.h",
+    "widget/input/mock_input_handler_proxy_client.h",
     "widget/input/prediction/filter_factory_unittests.cc",
     "widget/input/scroll_predictor_unittest.cc",
+    "widget/input/widget_input_handler_manager_unittest.cc",
   ]
 
   if (rtc_use_h265) {

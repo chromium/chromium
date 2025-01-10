@@ -66,6 +66,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
     kMaxValue = kAfterFirstPaint
   };
 
+ public:
   // For use in bitfields to keep track of why we should keep suppressing input
   // events. Maybe the rendering pipeline is currently deferring something, or
   // we are still waiting for the user to see some non empty paint. And we use
@@ -78,9 +79,10 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
     kDeferCommits = 1 << 1,
     // if set, we have not painted a main frame from the current navigation yet
     kHasNotPainted = 1 << 2,
+    // if set, we are not visible, and should not accept any input
+    kHidden = 1 << 3,
   };
 
- public:
   // The `widget` and `frame_widget_input_handler` should be invalidated
   // at the same time.
   static scoped_refptr<WidgetInputHandlerManager> Create(
@@ -124,6 +126,8 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   bool RequestedMainFramePending() override;
 
   void DidFirstVisuallyNonEmptyPaint(const base::TimeTicks& first_paint_time);
+  void SetHidden(bool hidden);
+  void OnDevToolsSessionConnectionChanged(bool attached);
 
   // InputHandlerProxyClient overrides.
   void WillShutdown() override;
@@ -211,8 +215,15 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
       std::unique_ptr<blink::WebCoalescedInputEvent> event,
       mojom::blink::WidgetInputHandler::DispatchEventCallback callback);
 
+  void SetInputHandlerProxyForTesting(
+      std::unique_ptr<InputHandlerProxy> input_handler_proxy);
+
   base::WeakPtr<WidgetInputHandlerManager> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  uint16_t suppressing_input_events_state() const {
+    return suppressing_input_events_state_;
   }
 
  private:
@@ -437,6 +448,9 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   // Whether to use ScrollPredictor to resample scroll events. This is false for
   // web_tests to ensure that scroll deltas are not timing-dependent.
   const bool allow_scroll_resampling_ = true;
+
+  std::atomic<bool> dev_tools_session_attached_ = false;
+  const bool ignore_hidden_input_;
 
   base::WeakPtrFactory<WidgetInputHandlerManager> weak_ptr_factory_{this};
 };
