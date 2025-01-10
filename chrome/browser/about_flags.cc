@@ -2065,28 +2065,15 @@ const FeatureEntry::FeatureVariation
          std::size(kContextualSearchSuppressShortViewWith600Dp), nullptr},
 };
 
-const FeatureEntry::FeatureParam kRichAutocompletionFullUrlThreeMinChar[] = {
-    {"rich_autocomplete_full_url", "true"},
-    {"rich_autocomplete_minimum_characters", "3"}};
-const FeatureEntry::FeatureParam kRichAutocompletionNoFullUrlThreeMinChar[] = {
-    {"rich_autocomplete_full_url", "false"},
-    {"rich_autocomplete_minimum_characters", "3"}};
-const FeatureEntry::FeatureParam kRichAutocompletionFullUrlFourMinChar[] = {
-    {"rich_autocomplete_full_url", "true"},
-    {"rich_autocomplete_minimum_characters", "4"}};
-const FeatureEntry::FeatureParam kRichAutocompletionNoFullUrlFourMinChar[] = {
-    {"rich_autocomplete_full_url", "false"},
-    {"rich_autocomplete_minimum_characters", "4"}};
+const FeatureEntry::FeatureParam kRichAutocompletionFullUrl[] = {
+    {"rich_autocomplete_full_url", "true"}};
+const FeatureEntry::FeatureParam kRichAutocompletionNoFullUrl[] = {
+    {"rich_autocomplete_full_url", "false"}};
 const FeatureEntry::FeatureVariation kRichAutocompletionAndroidVariations[] = {
-    {"(full url, 3 chars at least)", kRichAutocompletionFullUrlThreeMinChar,
-     std::size(kRichAutocompletionFullUrlThreeMinChar), nullptr},
-    {"(no full url, 3 chars at least)",
-     kRichAutocompletionNoFullUrlThreeMinChar,
-     std::size(kRichAutocompletionNoFullUrlThreeMinChar), nullptr},
-    {"(full url, 4 chars at least)", kRichAutocompletionFullUrlFourMinChar,
-     std::size(kRichAutocompletionFullUrlFourMinChar), nullptr},
-    {"(no full url, 4 chars at least)", kRichAutocompletionNoFullUrlFourMinChar,
-     std::size(kRichAutocompletionNoFullUrlFourMinChar), nullptr},
+    {"(full url)", kRichAutocompletionFullUrl,
+     std::size(kRichAutocompletionFullUrl), nullptr},
+    {"(no full url)", kRichAutocompletionNoFullUrl,
+     std::size(kRichAutocompletionNoFullUrl), nullptr},
 };
 
 const FeatureEntry::FeatureParam kJumpStartOmnibox1Minute[] = {
