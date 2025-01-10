@@ -513,9 +513,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   CheckForDestructionResult CheckForDestructionAndChangeAndResolveIfNeeded(
       DiscardBehavior discardBehavior);
 
-  // Helper functions to be called when exporting the backbuffer's contents to
-  // other APIs/use cases.
-  //
   // Exports a SharedImage holding the backbuffer's contents for external
   // usage:
   // * Ensures that the backbuffer's contents are up-to-date.
@@ -533,12 +530,9 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   scoped_refptr<gpu::ClientSharedImage> ExportSharedImageFromBackBuffer(
       gpu::SyncToken& sync_token,
       viz::ReleaseCallback* out_release_callback);
-  bool FinishPrepareTransferableResourceSoftware(
-      viz::TransferableResource* out_resource,
-      viz::ReleaseCallback* out_release_callback);
 
-  // Callbacks for mailboxes given to the compositor from
-  // FinishPrepareTransferableResource{Gpu,Software}.
+  // Callbacks for SharedImages exported for external usage (e.g., by canvas/
+  // compositor/static bitmap image).
   static void NotifyMailboxReleasedGpu(scoped_refptr<ColorBuffer>,
                                        const gpu::SyncToken&,
                                        bool lost_resource);
