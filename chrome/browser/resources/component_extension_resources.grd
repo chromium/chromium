@@ -26,6 +26,8 @@
         <!-- Compiled TS -->
         <include name="IDR_BRAILLE_IME_JS" file="${root_gen_dir}/chrome/browser/resources/chromeos/accessibility/braille_ime/tsc/braille_ime.js" use_base_dir="false" resource_path="chromeos/accessibility/braille_ime/braille_ime.js" type="BINDATA" />
          <include name="IDR_BRAILLE_IME_MAIN_JS" file="${root_gen_dir}/chrome/browser/resources/chromeos/accessibility/braille_ime/tsc/main.js" use_base_dir="false" resource_path="chromeos/accessibility/braille_ime/main.js" type="BINDATA" />
+        <include name="IDR_BRAILLE_IME_MV3_JS" file="${root_gen_dir}/chrome/browser/resources/chromeos/accessibility/braille_ime/tsc/braille_ime.js" use_base_dir="false" resource_path="chromeos/accessibility/braille_ime/mv3/braille_ime.js" type="BINDATA" />
+         <include name="IDR_BRAILLE_IME_MV3_MAIN_JS" file="${root_gen_dir}/chrome/browser/resources/chromeos/accessibility/braille_ime/tsc/main.js" use_base_dir="false" resource_path="chromeos/accessibility/braille_ime/mv3/main.js" type="BINDATA" />
       </if>
 
       <!-- Hangout Services extension, included in Google Chrome builds only. -->

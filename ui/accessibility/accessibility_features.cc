@@ -250,6 +250,14 @@ bool IsAccessibilityShakeToLocateEnabled() {
   return base::FeatureList::IsEnabled(::features::kAccessibilityShakeToLocate);
 }
 
+BASE_FEATURE(kAccessibilityManifestV3BrailleIme,
+             "AccessibilityManifestV3BrailleIme",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsAccessibilityManifestV3EnabledForBrailleIme() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilityManifestV3BrailleIme);
+}
+
 BASE_FEATURE(kAccessibilityManifestV3EnhancedNetworkTts,
              "AccessibilityManifestV3EnhancedNetworkTts",
              base::FEATURE_DISABLED_BY_DEFAULT);

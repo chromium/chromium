@@ -39,6 +39,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
 #include "net/base/url_util.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -417,6 +418,13 @@ void ComponentExtensionIMEManagerDelegateImpl::ReadComponentExtensionsInfo(
     std::vector<ComponentExtensionIME>* out_imes) {
   DCHECK(out_imes);
   for (auto& extension : allowlisted_component_extensions) {
+    // TODO(crbug.com/384675323): Remove this check and update
+    // `allowlisted_component_extensions` when flag is removed.
+    if (extension.manifest_resource_id == IDR_BRAILLE_MANIFEST &&
+        ::features::IsAccessibilityManifestV3EnabledForBrailleIme()) {
+      extension.manifest_resource_id = IDR_BRAILLE_MANIFEST_MV3;
+    }
+
     ComponentExtensionIME component_ime;
     component_ime.manifest =
         ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(

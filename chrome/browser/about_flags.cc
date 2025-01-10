@@ -7856,6 +7856,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAccessibilityMagnifierFollowsChromeVox)},
 
+    {"enable-accessibility-manifest-v3-braille-ime",
+     flag_descriptions::kAccessibilityManifestV3BrailleImeName,
+     flag_descriptions::kAccessibilityManifestV3BrailleImeDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kAccessibilityManifestV3BrailleIme)},
+
     {"enable-accessibility-manifest-v3-enhanced-network-tts",
      flag_descriptions::kAccessibilityManifestV3EnhancedNetworkTtsName,
      flag_descriptions::kAccessibilityManifestV3EnhancedNetworkTtsDescription,

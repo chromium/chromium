@@ -17637,6 +17637,7 @@ from previous Chrome versions.
   <int value="-1134420065" label="CriticalPersistedTabData:disabled"/>
   <int value="-1134412904" label="PrivacySandboxSettings:disabled"/>
   <int value="-1134307340" label="stop-loading-in-background:enabled"/>
+  <int value="-1133983181" label="AccessibilityManifestV3BrailleIme:disabled"/>
   <int value="-1133285806" label="MacLoopbackAudioForScreenShare:disabled"/>
   <int value="-1132704128" label="AndroidPaymentAppsFilter:disabled"/>
   <int value="-1132486267" label="ProductSpecificationsMultiSpecifics:enabled"/>
@@ -24692,6 +24693,7 @@ from previous Chrome versions.
   <int value="1670161209" label="ClickToOpenPDFPlaceholder:enabled"/>
   <int value="1670799163" label="ChromeHomeShowGoogleGWhenUrlCleared:enabled"/>
   <int value="1671021713" label="AutofillImportDynamicForms:disabled"/>
+  <int value="1671604455" label="AccessibilityManifestV3BrailleIme:enabled"/>
   <int value="1671985641" label="WebViewVulkan:enabled"/>
   <int value="1672062546" label="PasswordStrengthIndicator:disabled"/>
   <int value="1672637465" label="OsIntegrationSubManagers:disabled"/>
