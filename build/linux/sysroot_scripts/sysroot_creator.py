@@ -743,11 +743,35 @@ def generate_package_list_dist_repo(arch: str, dist: str,
 
 
 def generate_package_list(arch: str) -> dict[str, str]:
+    # Workaround for some misconfigured package dependencies.
+    BROKEN_DEPS = {
+        "libgcc1",
+        "qt6-base-abi",
+    }
+
     package_meta = {}
     for dist, repos in APT_SOURCES_LIST:
         for repo_name in repos:
             for meta in generate_package_list_dist_repo(arch, dist, repo_name):
                 package_meta[meta["Package"]] = meta
+                if "Provides" not in meta:
+                    continue
+                for provides in meta["Provides"].split(", "):
+                    if provides in package_meta:
+                        continue
+                    package_meta[provides] = meta
+
+    def add_package_dependencies(package: str) -> None:
+        if package in BROKEN_DEPS:
+            return
+        meta = package_meta[package]
+        url = ARCHIVE_URL + meta["Filename"]
+        if url in package_dict:
+            return
+        package_dict[url] = meta["SHA256"]
+        if "Depends" in meta:
+            for dep in meta["Depends"].split(", "):
+                add_package_dependencies(dep.split()[0].split(":")[0])
 
     # Read the input file and create a dictionary mapping package names to URLs
     # and checksums.
@@ -757,8 +781,7 @@ def generate_package_list(arch: str) -> dict[str, str]:
         package = meta["Package"]
         if package in missing:
             missing.remove(package)
-            url = ARCHIVE_URL + meta["Filename"]
-            package_dict[url] = meta["SHA256"]
+            add_package_dependencies(package)
     if missing:
         raise Exception(f"Missing packages: {', '.join(missing)}")
 
@@ -862,15 +885,17 @@ def install_into_sysroot(build_dir: str, install_root: str,
                 raise Exception(
                     f"{message} {package_path}: {err.decode('utf-8')}")
 
-    # Prune /usr/share, leaving only pkgconfig, wayland, and wayland-protocols
+    # Prune /usr/share, leaving only allowlisted directories.
+    USR_SHARE_ALLOWLIST = {
+        "fontconfig",
+        "pkgconfig",
+        "wayland",
+        "wayland-protocols",
+    }
     usr_share = os.path.join(install_root, "usr", "share")
     for item in os.listdir(usr_share):
         full_path = os.path.join(usr_share, item)
-        if os.path.isdir(full_path) and item not in [
-                "pkgconfig",
-                "wayland",
-                "wayland-protocols",
-        ]:
+        if os.path.isdir(full_path) and item not in USR_SHARE_ALLOWLIST:
             shutil.rmtree(full_path)
 
 
@@ -897,9 +922,21 @@ def cleanup_jail_symlinks(install_root: str) -> None:
             full_path = os.path.join(root, name)
             if os.path.islink(full_path):
                 target_path = os.readlink(full_path)
+                if target_path == "/dev/null":
+                    # Don't relativize this link.
+                    continue
 
-                # Check if the symlink is absolute and points inside the
-                # install_root.
+                # If the link's target does not exist, remove this broken link.
+                if os.path.isabs(target_path):
+                    absolute_target = os.path.join(install_root,
+                                                   target_path.strip("/"))
+                else:
+                    absolute_target = os.path.join(os.path.dirname(full_path),
+                                                   target_path)
+                if not os.path.exists(absolute_target):
+                    os.remove(full_path)
+                    continue
+
                 if os.path.isabs(target_path):
                     # Compute the relative path from the symlink to the target.
                     relative_path = os.path.relpath(
