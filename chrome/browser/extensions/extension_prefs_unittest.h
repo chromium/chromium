@@ -7,6 +7,8 @@
 
 #include <stddef.h>
 
+#include <array>
+
 #include "chrome/browser/extensions/test_extension_prefs.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -73,7 +75,7 @@ class PrefsPrepopulatedTestBase : public ExtensionPrefsTest {
   Extension* internal_extension() { return internal_extension_.get(); }
 
  protected:
-  bool installed_[kNumInstalledExtensions];
+  std::array<bool, kNumInstalledExtensions> installed_ = {};
 
   // The following extensions all have mojom::ManifestLocation set to
   // mojom::ManifestLocation::kExternalPref.

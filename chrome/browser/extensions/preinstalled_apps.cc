@@ -41,10 +41,9 @@ bool IsLocaleSupported() {
   // an API. See http://crbug.com/101357
   std::string locale =
       extensions::ExtensionsBrowserClient::Get()->GetApplicationLocale();
-  constexpr static const auto unsupported_locales =
-      std::to_array<const char*>({"CN", "TR", "IR"});
-  for (size_t i = 0; i < std::size(unsupported_locales); ++i) {
-    if (base::EndsWith(locale, unsupported_locales[i],
+  static constexpr const char* unsupported_locales[] = {"CN", "TR", "IR"};
+  for (const char* unsupported : unsupported_locales) {
+    if (base::EndsWith(locale, unsupported,
                        base::CompareCase::INSENSITIVE_ASCII)) {
       return false;
     }

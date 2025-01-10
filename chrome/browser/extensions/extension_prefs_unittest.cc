@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/extensions/extension_prefs_unittest.h"
 
 #include <memory>
@@ -902,9 +897,6 @@ PrefsPrepopulatedTestBase::PrefsPrepopulatedTestBase() {
   internal_extension_ = Extension::Create(
       prefs_.temp_dir().AppendASCII("internal extension"),
       ManifestLocation::kInternal, simple_dict, Extension::NO_FLAGS, &error);
-
-  for (size_t i = 0; i < kNumInstalledExtensions; ++i)
-    installed_[i] = false;
 }
 
 PrefsPrepopulatedTestBase::~PrefsPrepopulatedTestBase() = default;

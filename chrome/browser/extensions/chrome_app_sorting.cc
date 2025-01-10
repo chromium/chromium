@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/extensions/chrome_app_sorting.h"
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -723,12 +719,10 @@ void ChromeAppSorting::CreateDefaultOrdinals() {
   std::vector<std::string> app_ids;
   chromeos::default_app_order::Get(&app_ids);
 #else
-  const char* const kDefaultAppOrder[] = {
+  static constexpr std::array app_ids = {
       app_constants::kChromeAppId,
       kWebStoreAppId,
   };
-  const std::vector<const char*> app_ids(
-      kDefaultAppOrder, kDefaultAppOrder + std::size(kDefaultAppOrder));
 #endif
 
   syncer::StringOrdinal page_ordinal = CreateFirstAppPageOrdinal();

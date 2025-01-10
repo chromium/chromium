@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // This is a simple Native Message Host application. It echoes any messages
 // it receives.
 #include <windows.h>
 
+#include <stdint.h>
 #include <string.h>
 
 #include "base/containers/span.h"
@@ -25,8 +21,9 @@ int main(int argc, char* argv[]) {
   // Read and echo messages in a loop.
   while (true) {
     // Read the message's length prefix.
-    size_t bytes_read = read_stream.ReadAtCurrentPos(
-        reinterpret_cast<char*>(&message_len), sizeof(message_len));
+    size_t bytes_read =
+        read_stream.ReadAtCurrentPos(base::byte_span_from_ref(message_len))
+            .value_or(0);
 
     // If stdin was closed, the host should exit.
     if (bytes_read != sizeof(message_len)) {
@@ -34,9 +31,8 @@ int main(int argc, char* argv[]) {
     }
 
     // Read the message body.
-    std::string message_body(message_len, '\0');
-    bytes_read =
-        read_stream.ReadAtCurrentPos(std::data(message_body), message_len);
+    std::vector<uint8_t> message_body(message_len, '\0');
+    bytes_read = read_stream.ReadAtCurrentPos(message_body).value_or(0);
 
     // Bail if we failed to read the entire message.
     if (bytes_read != message_len) {
@@ -45,6 +41,6 @@ int main(int argc, char* argv[]) {
 
     // Reply by echoing the message length and body.
     write_stream.WriteAtCurrentPos(base::byte_span_from_ref(message_len));
-    write_stream.WriteAtCurrentPos(base::as_byte_span(message_body));
+    write_stream.WriteAtCurrentPos(message_body);
   }
 }

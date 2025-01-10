@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/extensions/chrome_component_extension_resource_manager.h"
 
 #include <map>
@@ -14,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/values.h"
@@ -76,8 +72,8 @@ class ChromeComponentExtensionResourceManager::Data {
   }
 
  private:
-  void AddComponentResourceEntries(const webui::ResourcePath* entries,
-                                   size_t size);
+  void AddComponentResourceEntries(
+      base::span<const webui::ResourcePath> entries);
 
   // A map from a resource path to the resource ID. Used by
   // ChromeComponentExtensionResourceManager::IsComponentExtensionResource().
@@ -111,28 +107,24 @@ ChromeComponentExtensionResourceManager::Data::Data() {
 #endif  // BUILDFLAG(IS_CHROMEOS)
   };
 
-  AddComponentResourceEntries(kComponentExtensionResources,
-                              kComponentExtensionResourcesSize);
-  AddComponentResourceEntries(kExtraComponentExtensionResources,
-                              std::size(kExtraComponentExtensionResources));
+  AddComponentResourceEntries(kComponentExtensionResources);
+  AddComponentResourceEntries(kExtraComponentExtensionResources);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Add Files app JS modules resources.
-  AddComponentResourceEntries(kFileManagerResources, kFileManagerResourcesSize);
-  AddComponentResourceEntries(kFileManagerGenResources,
-                              kFileManagerGenResourcesSize);
+  AddComponentResourceEntries(kFileManagerResources);
+  AddComponentResourceEntries(kFileManagerGenResources);
 
   // Add Files app resources to display untrusted content in <webview> frames.
   // Files app extension's resource paths need to be prefixed by
   // "file_manager/".
-  for (size_t i = 0; i < kFileManagerUntrustedResourcesSize; ++i) {
+  for (const auto& resource : kFileManagerUntrustedResources) {
     base::FilePath resource_path =
-        base::FilePath("file_manager")
-            .AppendASCII(kFileManagerUntrustedResources[i].path);
+        base::FilePath("file_manager").AppendASCII(resource.path);
     resource_path = resource_path.NormalizePathSeparators();
 
     DCHECK(!base::Contains(path_to_resource_id_, resource_path));
-    path_to_resource_id_[resource_path] = kFileManagerUntrustedResources[i].id;
+    path_to_resource_id_[resource_path] = resource.id;
   }
 
   // ResourceBundle and g_browser_process are not always initialized in unit
@@ -145,14 +137,11 @@ ChromeComponentExtensionResourceManager::Data::Data() {
         std::move(file_manager_replacements);
   }
 
-  size_t keyboard_resource_size;
-  const webui::ResourcePath* keyboard_resources =
-      keyboard::GetKeyboardExtensionResources(&keyboard_resource_size);
-  AddComponentResourceEntries(keyboard_resources, keyboard_resource_size);
+  AddComponentResourceEntries(keyboard::GetKeyboardExtensionResources());
 #endif
 
 #if BUILDFLAG(ENABLE_PDF)
-  AddComponentResourceEntries(kPdfResources, kPdfResourcesSize);
+  AddComponentResourceEntries(kPdfResources);
 
   // ResourceBundle is not always initialized in unit tests.
   if (ui::ResourceBundle::HasSharedInstance()) {
@@ -168,20 +157,18 @@ ChromeComponentExtensionResourceManager::Data::Data() {
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-  AddComponentResourceEntries(kTtsEngineResources, kTtsEngineResourcesSize);
+  AddComponentResourceEntries(kTtsEngineResources);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 }
 
 void ChromeComponentExtensionResourceManager::Data::AddComponentResourceEntries(
-    const webui::ResourcePath* entries,
-    size_t size) {
-  for (size_t i = 0; i < size; ++i) {
-    base::FilePath resource_path =
-        base::FilePath().AppendASCII(entries[i].path);
+    base::span<const webui::ResourcePath> entries) {
+  for (const auto& entry : entries) {
+    base::FilePath resource_path = base::FilePath().AppendASCII(entry.path);
     resource_path = resource_path.NormalizePathSeparators();
 
     DCHECK(!base::Contains(path_to_resource_id_, resource_path));
-    path_to_resource_id_[resource_path] = entries[i].id;
+    path_to_resource_id_[resource_path] = entry.id;
   }
 }
 
