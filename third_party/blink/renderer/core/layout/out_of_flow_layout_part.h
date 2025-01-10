@@ -444,9 +444,9 @@ class CORE_EXPORT OutOfFlowLayoutPart {
   const BlockBreakToken* PreviousFragmentainerBreakToken(wtf_size_t) const;
 
   BoxFragmentBuilder* container_builder_;
-  // The builder for the outer block fragmentation context when this is an inner
-  // layout of nested block fragmentation.
-  BoxFragmentBuilder* outer_container_builder_ = nullptr;
+  // The OutOfFlowLayoutPart for the outer block fragmentation context when this
+  // is an inner layout of nested block fragmentation.
+  OutOfFlowLayoutPart* outer_oof_layout_part_ = nullptr;
   ContainingBlockInfo default_containing_block_info_for_absolute_;
   ContainingBlockInfo default_containing_block_info_for_fixed_;
   HeapHashMap<Member<const LayoutObject>, ContainingBlockInfo>

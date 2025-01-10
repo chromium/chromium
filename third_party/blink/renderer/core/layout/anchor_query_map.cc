@@ -8,11 +8,32 @@
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/logical_fragment_link.h"
+#include "third_party/blink/renderer/core/layout/pagination_utils.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 
 namespace blink {
 
 namespace {
+
+LogicalFragmentLink GetFragmentainerLink(
+    const LogicalFragmentLink& fragmentation_context_root_child) {
+  // Multicol:
+  if (fragmentation_context_root_child->IsColumnBox()) {
+    return fragmentation_context_root_child;
+  }
+  // Pagination:
+  if (fragmentation_context_root_child->GetBoxType() ==
+      PhysicalFragment::kPageContainer) {
+    // The fragmentainer is the page area, which is wrapped inside a page border
+    // box fragment inside a page container fragment. Offsets don't matter here,
+    // as each page establishes its own coordinate system.
+    const PhysicalBoxFragment& page_area = GetPageArea(GetPageBorderBox(
+        *To<PhysicalBoxFragment>(fragmentation_context_root_child.get())));
+    return LogicalFragmentLink(page_area, LogicalOffset());
+  }
+
+  return LogicalFragmentLink();
+}
 
 // Represents a fragmentainer. This is in the logical coordinate system
 // for convenience reasons.
@@ -173,8 +194,9 @@ struct StitchedAnchorQueryCollector {
   void AddFragmentainerChildren(base::span<const LogicalFragmentLink> children,
                                 WritingDirectionMode writing_direction) {
     LayoutUnit fragmentainer_stitched_offset;
-    for (const LogicalFragmentLink& child : children) {
-      if (!child->IsFragmentainerBox()) {
+    for (const LogicalFragmentLink& candidate : children) {
+      LogicalFragmentLink child = GetFragmentainerLink(candidate);
+      if (!child) {
         // Skip the child if it isn't a fragmentainer. This may for instance be
         // a column spanner or a list item marker. They are are direct child
         // fragments of a multicol container fragment, but do not participate in
@@ -224,6 +246,12 @@ struct StitchedAnchorQueryCollector {
         EnsureStitchedAnchorQuery(*layout_object)
             .AddAnchorQuery(fragment, offset_from_fragmentainer, fragmentainer);
       }
+    } else if (fragment.GetBoxType() == PhysicalFragment::kPageArea) {
+      // The initial containing block (LayoutView) is on the outside of the
+      // fragmentation context, so special attention is required when processing
+      // page area fragmentainers.
+      EnsureStitchedAnchorQuery(*fragment.OwnerLayoutBox())
+          .AddAnchorQuery(fragment, offset_from_fragmentainer, fragmentainer);
     }
 
     if (fragment.IsFragmentationContextRoot()) {
@@ -362,7 +390,8 @@ void StitchedAnchorQueries::SetChildren(
   // To allow early returns, check if any child has anchor queries.
   has_anchor_queries_ = false;
   for (const LogicalFragmentLink& child : children) {
-    if (child->HasAnchorQuery()) {
+    LogicalFragmentLink fragmentainer = GetFragmentainerLink(child);
+    if (fragmentainer && fragmentainer->HasAnchorQuery()) {
       has_anchor_queries_ = true;
       break;
     }

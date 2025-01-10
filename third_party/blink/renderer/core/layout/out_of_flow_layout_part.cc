@@ -1354,8 +1354,8 @@ void OutOfFlowLayoutPart::LayoutOOFsInMulticol(
 
   // Layout the OOF positioned elements inside the inner multicol.
   OutOfFlowLayoutPart inner_part(&limited_multicol_container_builder);
-  inner_part.outer_container_builder_ =
-      outer_container_builder_ ? outer_container_builder_ : container_builder_;
+  inner_part.outer_oof_layout_part_ =
+      outer_oof_layout_part_ ? outer_oof_layout_part_ : this;
   inner_part.LayoutFragmentainerDescendants(
       &oof_nodes_to_layout, fragmentainer_progression,
       multicol_info->fixedpos_containing_block.Fragment(), &multicol_children);
@@ -1448,8 +1448,8 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
   outer_context_has_fixedpos_container_ = outer_context_has_fixedpos_container;
   DCHECK(multicol_children_ || !outer_context_has_fixedpos_container_);
 
-  BoxFragmentBuilder* builder_for_anchor_query = container_builder_;
-  if (outer_container_builder_) {
+  OutOfFlowLayoutPart* layout_part_for_anchor_query = this;
+  if (outer_oof_layout_part_) {
     // If this is an inner layout of the nested block fragmentation, and if this
     // block fragmentation context is block fragmented, |multicol_children|
     // doesn't have correct block offsets of fragmentainers anchor query needs.
@@ -1457,15 +1457,18 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
     // instead in order to get the correct offsets.
     for (const MulticolChildInfo& multicol_child : *multicol_children) {
       if (multicol_child.parent_break_token) {
-        builder_for_anchor_query = outer_container_builder_;
+        layout_part_for_anchor_query = outer_oof_layout_part_;
         break;
       }
     }
   }
+
+  BoxFragmentBuilder* builder_for_anchor_query =
+      layout_part_for_anchor_query->container_builder_;
   StitchedAnchorQueries stitched_anchor_queries(
       *builder_for_anchor_query->Node().GetLayoutBox(),
       builder_for_anchor_query->SizeForAnchorQueries(),
-      builder_for_anchor_query->Children(),
+      layout_part_for_anchor_query->FragmentationContextChildren(),
       builder_for_anchor_query->GetWritingDirection());
 
   const bool may_have_anchors_on_oof =
@@ -1690,7 +1693,7 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
       // them out, if OOFs have anchors, update the anchor queries.
       if (may_have_anchors_on_oof) {
         stitched_anchor_queries.SetChildren(
-            builder_for_anchor_query->Children());
+            layout_part_for_anchor_query->FragmentationContextChildren());
       }
     }
 
