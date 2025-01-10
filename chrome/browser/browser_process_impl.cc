@@ -471,6 +471,7 @@ void BrowserProcessImpl::StartTearDown() {
   tearing_down_ = true;
   DCHECK(IsShuttingDown());
 
+// TODO(https://crbug.com/388906971): fix dead code below.
 #if BUILDFLAG(IS_ANDROID)
   accessibility_prefs_controller_.reset();
 #endif
@@ -480,7 +481,7 @@ void BrowserProcessImpl::StartTearDown() {
     safe_browsing_service()->ShutDown();
   network_time_tracker_.reset();
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Initial cleanup for ChromeBrowserCloudManagement, shutdown components that
   // depend on profile and notification system. For example, ProfileManager
   // observer and KeyServices observer need to be removed before profiles.
@@ -488,15 +489,13 @@ void BrowserProcessImpl::StartTearDown() {
       browser_policy_connector_->chrome_browser_cloud_management_controller();
   if (cloud_management_controller)
     cloud_management_controller->ShutDown();
-#endif
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
-#if !BUILDFLAG(IS_ANDROID)
   // |hid_system_tray_icon_| and |usb_system_tray_icon_| must be destroyed
   // before |system_notification_helper_| for ChromeOS and |status_tray_| for
   // non-ChromeOS.
   hid_system_tray_icon_.reset();
   usb_system_tray_icon_.reset();
-#endif
 
   system_notification_helper_.reset();
 
@@ -505,7 +504,7 @@ void BrowserProcessImpl::StartTearDown() {
   // before the profiles, since if there are any still showing we will access
   // those things during teardown.
   notification_ui_manager_.reset();
-#endif
+#endif  // BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
 
   // Debugger must be cleaned up before ProfileManager.
   remote_debugging_server_.reset();
@@ -517,7 +516,7 @@ void BrowserProcessImpl::StartTearDown() {
   // The Extensions Browser Client needs to teardown some members while the
   // profile manager is still alive.
   extensions_browser_client_->StartTearDown();
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   // Need to clear profiles (download managers) before the IO thread.
   {
@@ -535,12 +534,10 @@ void BrowserProcessImpl::StartTearDown() {
     profile_manager_.reset();
   }
 
-#if !BUILDFLAG(IS_ANDROID)
   if (media_router::DualMediaSinkService::HasInstance()) {
     media_router::DualMediaSinkService::GetInstance()
         ->StopObservingPrefChanges();
   }
-#endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // The `media_file_system_registry_` cannot be reset until the
@@ -551,12 +548,12 @@ void BrowserProcessImpl::StartTearDown() {
   // Valgrind would report a leak on almost every single browser_test.
   // TODO(gbillock): Make this unnecessary.
   storage_monitor::StorageMonitor::Destroy();
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
   if (message_center::MessageCenter::Get())
     message_center::MessageCenter::Shutdown();
-#endif
+#endif  // BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
 
   // The policy providers managed by |browser_policy_connector_| need to shut
   // down while the IO and FILE threads are still alive. The monitoring
@@ -590,7 +587,9 @@ void BrowserProcessImpl::StartTearDown() {
   // down.
   application_breadcrumbs_logger_.reset();
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
 void BrowserProcessImpl::PostDestroyThreads() {
   // With the file_thread_ flushed, we can release any icon resources.
   icon_manager_.reset();
