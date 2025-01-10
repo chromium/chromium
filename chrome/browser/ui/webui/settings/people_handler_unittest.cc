@@ -453,8 +453,9 @@ TEST_F(PeopleHandlerTest,
       syncer::SyncService::TransportState::ACTIVE);
   sync_service_->FireStateChanged();
 
-  // Updates for the sync status, sync prefs and trusted vault opt-in are sent.
-  EXPECT_EQ(3U, web_ui_.call_data().size());
+  // Updates for the sync status, sync prefs, trusted vault opt-in and stored
+  // accounts are sent.
+  EXPECT_EQ(4U, web_ui_.call_data().size());
 
   base::Value::Dict dictionary = ExpectSyncPrefsChanged();
   ExpectHasBoolKey(dictionary, "syncAllDataTypes", true);

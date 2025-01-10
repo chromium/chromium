@@ -411,7 +411,9 @@ export class SettingsSyncAccountControlElement extends
         !loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled')) {
       return true;
     }
-    return this.syncStatus.signedInState !== SignedInState.SIGNED_IN;
+
+    return this.syncStatus.signedInState !== SignedInState.SIGNED_IN ||
+        this.syncStatus.statusAction !== StatusAction.NO_ACTION;
   }
 
   /**
@@ -471,6 +473,12 @@ export class SettingsSyncAccountControlElement extends
       return true;
     }
 
+    if (loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled') &&
+        this.syncStatus.statusAction !== StatusAction.NO_ACTION) {
+      return true;
+    }
+
+
     return this.hideButtons ||
         (!!this.syncStatus &&
          (this.isSyncing_() ||
@@ -478,6 +486,11 @@ export class SettingsSyncAccountControlElement extends
   }
 
   private shouldShowTurnOffButton_(): boolean {
+    if (loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled') &&
+        this.syncStatus.statusAction !== StatusAction.NO_ACTION) {
+      return true;
+    }
+
     return !this.hideButtons && !this.showSetupButtons_ && this.isSyncing_();
   }
 
@@ -488,6 +501,10 @@ export class SettingsSyncAccountControlElement extends
       return this.syncStatus.secondaryButtonActionText;
     }
 
+    if (this.syncStatus.statusAction !== StatusAction.NO_ACTION &&
+        this.syncStatus.secondaryButtonActionText) {
+      return this.syncStatus.secondaryButtonActionText;
+    }
     return turnOffSync;
   }
 
@@ -497,6 +514,12 @@ export class SettingsSyncAccountControlElement extends
       // In a subpage the passphrase button is not required.
       return false;
     }
+
+    if (loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled') &&
+        this.syncStatus.statusAction !== StatusAction.NO_ACTION) {
+      return true;
+    }
+
     return !this.hideButtons && !this.showSetupButtons_ && this.isSyncing_() &&
         !!this.syncStatus.hasError &&
         this.syncStatus.statusAction !== StatusAction.NO_ACTION;
@@ -573,6 +596,12 @@ export class SettingsSyncAccountControlElement extends
         this.syncBrowserProxy_.startKeyRetrieval();
         break;
       case StatusAction.ENTER_PASSPHRASE:
+        if (loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled')) {
+          this.syncBrowserProxy_.showSyncPassphraseDialog();
+        } else {
+          router.navigateTo(routes.SYNC);
+        }
+        break;
       case StatusAction.CONFIRM_SYNC_SETTINGS:
       default:
         router.navigateTo(routes.SYNC);

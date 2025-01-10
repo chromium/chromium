@@ -222,7 +222,7 @@
         </cr-button>
         <cr-button id="sync-error-button" class="action-button cr-button-gap"
             hidden="[[!shouldShowErrorActionButton_(syncStatus,
-            showSetupButtons_)]]"
+            showSetupButtons_, syncStatus.statusAction)]]"
             on-click="onErrorButtonClick_"
             disabled="[[syncStatus.firstSetupInProgress]]">
           [[syncStatus.statusActionText]]

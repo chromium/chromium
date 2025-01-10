@@ -163,6 +163,8 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
 
   startKeyRetrieval() {}
 
+  showSyncPassphraseDialog() {}
+
   // <if expr="chromeos_ash">
   attemptUserExit() {}
 

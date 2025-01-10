@@ -148,4 +148,6 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
   openActivityControlsUrl(): void {}
 
   startKeyRetrieval(): void {}
+
+  showSyncPassphraseDialog(): void {}
 }
