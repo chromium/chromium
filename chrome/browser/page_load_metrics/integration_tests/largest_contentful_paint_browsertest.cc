@@ -102,7 +102,8 @@ bool compare_candidate_index(const TraceEvent* lhs, const TraceEvent* rhs) {
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, LargestContentfulPaint) {
+// TODO(crbug.com/385580803): Flaky on all platforms
+IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, DISABLED_LargestContentfulPaint) {
   auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
       web_contents());
   Start();
@@ -229,6 +230,7 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, LargestContentfulPaint) {
 }
 
 // TODO(crbug.com/40936591): This test is flaky on ChromeOS and Linux.
+// TODO(crbug.com/382573509): and flaky on Windows.
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_LargestContentfulPaint_SubframeInput \
   DISABLED_LargestContentfulPaint_SubframeInput
@@ -368,7 +370,8 @@ class PageViewportInLCPTest : public MetricIntegrationTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(PageViewportInLCPTest, FullSizeImageInIframe) {
+// TODO(crbug.com/385580803): flaky on all platforms
+IN_PROC_BROWSER_TEST_F(PageViewportInLCPTest, DISABLED_FullSizeImageInIframe) {
   auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
       web_contents());
   waiter->AddSubFrameExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
@@ -1020,7 +1023,8 @@ class LcpBreakdownTimingsTest : public MetricIntegrationTest {
   double epsilon_ = 8;
 };
 
-IN_PROC_BROWSER_TEST_F(LcpBreakdownTimingsTest, Subframe) {
+// TODO(crbug.com/385392162): flaky on all platforms
+IN_PROC_BROWSER_TEST_F(LcpBreakdownTimingsTest, DISABLED_Subframe) {
   std::string url = "/lcp_breakdown_timings_with_subframe.html";
   auto* resource_name = "lcp-256x256.png";
   RunTest(url, resource_name, 0, "addSameSiteSubframe()");
