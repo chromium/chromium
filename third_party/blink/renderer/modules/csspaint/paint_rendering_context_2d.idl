@@ -17,11 +17,11 @@
     void reset();
 
     // transformations (default transform is the identity matrix)
-    [HighEntropy] void scale(unrestricted double x, unrestricted double y);
+    [HighEntropy, NoAllocDirectCall] void scale(unrestricted double x, unrestricted double y);
     [HighEntropy, NoAllocDirectCall] void rotate(unrestricted double angle);
-    [HighEntropy] void translate(unrestricted double x, unrestricted double y);
-    [HighEntropy] void transform(unrestricted double a, unrestricted double b, unrestricted double c, unrestricted double d, unrestricted double e, unrestricted double f);
-    [HighEntropy] void setTransform(unrestricted double a, unrestricted double b, unrestricted double c, unrestricted double d, unrestricted double e, unrestricted double f);
+    [HighEntropy, NoAllocDirectCall] void translate(unrestricted double x, unrestricted double y);
+    [HighEntropy, NoAllocDirectCall] void transform(unrestricted double a, unrestricted double b, unrestricted double c, unrestricted double d, unrestricted double e, unrestricted double f);
+    [HighEntropy, NoAllocDirectCall] void setTransform(unrestricted double a, unrestricted double b, unrestricted double c, unrestricted double d, unrestricted double e, unrestricted double f);
     [NoAllocDirectCall] void resetTransform();
     [RaisesException] void setTransform(optional DOMMatrixInit transform = {});
     DOMMatrix getTransform();
