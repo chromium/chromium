@@ -138,9 +138,8 @@ void ChromeClientSideDetectionServiceDelegate::OnDeviceModelAvailabilityChanged(
   }
 
   if (reason == optimization_guide::OnDeviceModelEligibilityReason::kSuccess) {
-    base::UmaHistogramMediumTimes(
-        "SBClientPhishing.OnDeviceModelFetchTime",
-        base::TimeTicks::Now() - on_device_fetch_time_);
+    base::UmaHistogramLongTimes("SBClientPhishing.OnDeviceModelFetchTime",
+                                base::TimeTicks::Now() - on_device_fetch_time_);
     NotifyServiceOnDeviceModelAvailable();
   } else {
     LogOnDeviceModelDownloadSuccess(false);
