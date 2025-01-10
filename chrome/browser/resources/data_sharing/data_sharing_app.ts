@@ -244,6 +244,8 @@ export class DataSharingApp extends CustomElement {
 
   constructor() {
     super();
+    this.dataSharingSdk_.updateClearcut(
+        {enabled: loadTimeData.getBoolean('metricsReportingEnabled')});
     this.browserProxy_.callbackRouter.onAccessTokenFetched.addListener(
         (accessToken: string) => {
           this.dataSharingSdk_.setOauthAccessToken({accessToken});

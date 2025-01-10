@@ -11,6 +11,7 @@ import {PageCallbackRouter} from 'chrome-untrusted://data-sharing/data_sharing.m
 import {DataSharingApp} from 'chrome-untrusted://data-sharing/data_sharing_app.js';
 import {Code} from 'chrome-untrusted://data-sharing/data_sharing_sdk_types.js';
 import {DataSharingSdkImpl} from 'chrome-untrusted://data-sharing/dummy_data_sharing_sdk.js';
+import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome-untrusted://webui-test/test_browser_proxy.js';
 import {TestMock} from 'chrome-untrusted://webui-test/test_mock.js';
@@ -100,5 +101,20 @@ suite('Start flows', () => {
     assertEquals('fake_token', arg.tokenSecret);
     assertEquals(1, testBrowserProxy.getCallCount('closeUi'));
     assertEquals(Code.OK, testBrowserProxy.getArgs('closeUi')[0]);
+  });
+
+  test('Metrics reporting', async () => {
+    loadTimeData.overrideValues({
+      metricsReportingEnabled: true,
+    });
+    DataSharingApp.setUrlForTesting(
+        'chrome-untrusted://data-sharing?flow=share&tab_group_id=fake_id');
+    dataSharingApp = document.createElement('data-sharing-app');
+    testBrowserProxy.callbackRouterRemote.onAccessTokenFetched('fake_token');
+    document.body.appendChild(dataSharingApp);
+    await microtasksFinished();
+    assertEquals(1, testDataSharingSdk.getCallCount('updateClearcut'));
+    const arg = testDataSharingSdk.getArgs('updateClearcut')[0];
+    assertEquals(true, arg.enabled);
   });
 });

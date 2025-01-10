@@ -7,8 +7,11 @@ import './data_sharing_sdk.js';
 // </if>
 // <if expr="not _google_chrome">
 import './dummy_data_sharing_sdk.js';
-
 // </if>
+
+import '/strings.m.js';
+
+import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 
 import type {BrowserProxy} from './browser_proxy.js';
 import {BrowserProxyImpl} from './browser_proxy.js';
@@ -22,6 +25,8 @@ const dataSharingSdk: DataSharingSdk =
 
 const browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
 
+dataSharingSdk.updateClearcut(
+    {enabled: loadTimeData.getBoolean('metricsReportingEnabled')});
 browserProxy.callbackRouter.onAccessTokenFetched.addListener(
     (accessToken: string) => {
       dataSharingSdk.setOauthAccessToken({accessToken});

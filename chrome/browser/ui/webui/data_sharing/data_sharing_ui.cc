@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/data_sharing/data_sharing_ui.h"
 
+#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/data_sharing/data_sharing_page_handler.h"
 #include "chrome/common/webui_url_constants.h"
@@ -159,6 +160,9 @@ DataSharingUI::DataSharingUI(content::WebUI* web_ui)
       {"ownerCannotShare", IDS_DATA_SHARING_OWNER_CANNOT_SHARE},
   };
   source->AddLocalizedStrings(kStrings);
+  source->AddBoolean(
+      "metricsReportingEnabled",
+      ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled());
 }
 
 DataSharingUI::~DataSharingUI() = default;

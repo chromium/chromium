@@ -180,6 +180,7 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class feed::WebFeedSubscriptionCoordinator;
   friend class HttpsFirstModeService;
   friend class ash::DemoSession;
+  friend class DataSharingUI;
   // Used to register synthetic trials for ongoing growth experiments.
   friend class CampaignsManagerClientImpl;
   friend class tpcd::experiment::ExperimentManagerImpl;
