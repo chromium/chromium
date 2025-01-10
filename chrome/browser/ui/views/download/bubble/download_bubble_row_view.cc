@@ -345,14 +345,7 @@ DownloadBubbleRowView::DownloadBubbleRowView(
       fixed_width_(fixed_width) {
   CHECK(info_->model());
   info_->AddObserver(this);
-  gfx::Insets insets = GetLayoutInsets(DOWNLOAD_ROW);
-  // The DeepScanNotice has a background that extends into the insets on the
-  // left and right. To support this, we include vertical insets here, and the
-  // left and right inset are manually handled as columns in the table
-  // layout. This is temporary until the DeepScanNotice is removed. (Targeting
-  // 2024-10)
-  SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::TLBR(insets.top(), 0, insets.bottom(), 0)));
+  SetBorder(views::CreateEmptyBorder(GetLayoutInsets(DOWNLOAD_ROW)));
 
   views::InkDrop::Install(this, std::make_unique<views::InkDropHost>(this));
   views::InstallRectHighlightPathGenerator(this);
@@ -367,15 +360,11 @@ DownloadBubbleRowView::DownloadBubbleRowView(
       views::DISTANCE_RELATED_LABEL_HORIZONTAL);
 
   SetLayoutManager(std::make_unique<views::TableLayout>())
-      // Left inset
-      ->AddColumn(
-          views::LayoutAlignment::kStart, views::LayoutAlignment::kStart,
-          views::TableLayout::kFixedSize,
-          views::TableLayout::ColumnSize::kFixed, insets.left(), insets.left())
       // Download Icon
-      .AddColumn(views::LayoutAlignment::kCenter,
-                 views::LayoutAlignment::kStart, views::TableLayout::kFixedSize,
-                 views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      ->AddColumn(views::LayoutAlignment::kCenter,
+                  views::LayoutAlignment::kStart,
+                  views::TableLayout::kFixedSize,
+                  views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
       // Download name label (primary_label_)
       .AddPaddingColumn(views::TableLayout::kFixedSize, icon_label_spacing)
       .AddColumn(views::LayoutAlignment::kStart,
@@ -390,11 +379,6 @@ DownloadBubbleRowView::DownloadBubbleRowView(
       .AddColumn(views::LayoutAlignment::kCenter,
                  views::LayoutAlignment::kStart, views::TableLayout::kFixedSize,
                  views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
-      // Right inset
-      .AddColumn(views::LayoutAlignment::kStart, views::LayoutAlignment::kStart,
-                 views::TableLayout::kFixedSize,
-                 views::TableLayout::ColumnSize::kFixed, insets.right(),
-                 insets.right())
       // Three rows, one for name, one for status, one for the progress bar.
       .AddRows(3, 1.0f);
 
@@ -408,9 +392,6 @@ DownloadBubbleRowView::DownloadBubbleRowView(
   transparent_button_->set_context_menu_controller(this);
   transparent_button_->SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON);
   transparent_button_->SetProperty(views::kViewIgnoredByLayoutKey, true);
-
-  // Left inset, first row.
-  AddChildView(std::make_unique<views::View>());
 
   icon_ = AddChildView(std::make_unique<views::ImageView>());
   icon_->SetCanProcessEventsWithinSubtree(false);
@@ -482,12 +463,6 @@ DownloadBubbleRowView::DownloadBubbleRowView(
       kChevronRightChromeRefreshIcon, ui::kColorIcon,
       GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
 
-  // Right inset, first row.
-  AddChildView(std::make_unique<views::View>());
-
-  // Left inset, second row.
-  AddChildView(std::make_unique<views::View>());
-
   // The content of the label will be populated in the `UpdateRow` function.
   secondary_label_ = AddChildView(std::make_unique<views::Label>(
       u"", views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY));
@@ -499,12 +474,6 @@ DownloadBubbleRowView::DownloadBubbleRowView(
   secondary_label_->SetMultiLine(true);
   secondary_label_->SetAllowCharacterBreak(true);
   secondary_label_->SetTextStyle(views::style::STYLE_BODY_5);
-
-  // Right inset, second row.
-  AddChildView(std::make_unique<views::View>());
-
-  // Left inset, third row.
-  AddChildView(std::make_unique<views::View>());
 
   // TODO(crbug.com/40875578): Remove the progress bar holder view here.
   // Currently the animation does not show up on deep scanning without
@@ -530,9 +499,6 @@ DownloadBubbleRowView::DownloadBubbleRowView(
                                /*adjust_height_for_width=*/false));
   // Expect to start not visible, will be updated later.
   progress_bar_->SetVisible(false);
-
-  // Right inset, third row.
-  AddChildView(std::make_unique<views::View>());
 
   SetNotifyEnterExitOnChild(true);
 
