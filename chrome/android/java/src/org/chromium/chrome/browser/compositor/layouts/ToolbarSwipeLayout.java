@@ -17,8 +17,8 @@ import org.chromium.base.CallbackUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
@@ -122,7 +122,7 @@ public class ToolbarSwipeLayout extends Layout {
             BrowserControlsStateProvider browserControlsStateProvider,
             LayoutManager layoutManager,
             TopUiThemeColorProvider topUiColorProvider,
-            Supplier<Integer> bottomControlsOffsetSupplier,
+            ObservableSupplier<Integer> bottomControlsOffsetSupplier,
             ViewGroup contentContainer) {
         super(context, updateHost, renderHost);
         mBlackHoleEventFilter = new BlackHoleEventFilter(context);
@@ -282,8 +282,9 @@ public class ToolbarSwipeLayout extends Layout {
     }
 
     /**
-     * Prepare the tabs sliding animations. This method need to be called before
-     * {@link #doTabSwitchAnimation(int, float, float, long)}.
+     * Prepare the tabs sliding animations. This method need to be called before {@link
+     * #doTabSwitchAnimation(int, float, float, long)}.
+     *
      * @param direction The direction of the slide.
      * @param fromIndex The index of the tab which will be switched from.
      * @param toIndex The index of the tab which will be switched to.
@@ -604,6 +605,7 @@ public class ToolbarSwipeLayout extends Layout {
     /**
      * Perform the tabs sliding animations. If the new tab's index is smaller than the old one, new
      * tab slide in from left, and old one slide out to right, and vice versa.
+     *
      * @param toTabId The id of the next tab which will be switched to.
      * @param fromTabId The id of the previous tab which will be switched out.
      */

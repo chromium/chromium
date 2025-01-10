@@ -2262,7 +2262,7 @@ public class ToolbarManager
     }
 
     /** See {@link mBottomToolbarControlsOffsetSupplier} */
-    public Supplier<Integer> getBottomToolbarOffsetSupplier() {
+    public ObservableSupplier<Integer> getBottomToolbarOffsetSupplier() {
         return mBottomToolbarControlsOffsetSupplier;
     }
 

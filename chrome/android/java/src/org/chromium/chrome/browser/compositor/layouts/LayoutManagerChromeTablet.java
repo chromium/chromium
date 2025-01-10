@@ -171,7 +171,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             ControlContainer controlContainer,
             DynamicResourceLoader dynamicResourceLoader,
             TopUiThemeColorProvider topUiColorProvider,
-            Supplier<Integer> bottomControlsOffsetSupplier) {
+            ObservableSupplier<Integer> bottomControlsOffsetSupplier) {
         super.init(
                 selector,
                 creator,

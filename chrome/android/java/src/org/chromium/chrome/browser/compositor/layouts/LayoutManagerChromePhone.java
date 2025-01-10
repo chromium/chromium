@@ -76,7 +76,7 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
             ControlContainer controlContainer,
             DynamicResourceLoader dynamicResourceLoader,
             TopUiThemeColorProvider topUiColorProvider,
-            Supplier<Integer> bottomControlsOffsetSupplier) {
+            ObservableSupplier<Integer> bottomControlsOffsetSupplier) {
         Context context = mHost.getContext();
         LayoutRenderHost renderHost = mHost.getLayoutRenderHost();
 

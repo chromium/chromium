@@ -732,7 +732,12 @@ public class SensitiveContentTest {
         tabContentManagerSupplier.set(tabContentManager);
         CompositorAnimationHandler.setTestingMode(true);
         mLayoutManagerChromePhone.init(
-                mTabModelSelector, null, null, null, mTopUiThemeColorProvider, () -> 0);
+                mTabModelSelector,
+                null,
+                null,
+                null,
+                mTopUiThemeColorProvider,
+                new ObservableSupplierImpl<>(0));
     }
 
     /**

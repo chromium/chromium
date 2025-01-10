@@ -51,7 +51,7 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
             BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<ResourceManager> resourceManagerSupplier,
             TopUiThemeColorProvider topUiThemeColorProvider,
-            Supplier<Integer> bottomToolbarControlsOffsetSupplier,
+            ObservableSupplier<Integer> bottomToolbarControlsOffsetSupplier,
             int layoutsToShowOn,
             boolean isVisibilityManuallyControlled) {
         // If BCIV is enabled, we always show the hairline on the composited
