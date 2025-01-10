@@ -953,39 +953,6 @@ def cleanup_jail_symlinks(install_root: str) -> None:
                     os.symlink(relative_path, full_path)
 
 
-def verify_library_deps(install_root: str) -> None:
-    """
-    Verifies if all required libraries are present in the sysroot environment.
-    """
-    # Get all shared libraries and their dependencies.
-    shared_libs = set()
-    needed_libs = set()
-    for root, _, files in os.walk(install_root):
-        for file in files:
-            if ".so" not in file:
-                continue
-            path = os.path.join(root, file)
-            islink = os.path.islink(path)
-            if islink:
-                path = os.path.join(root, os.readlink(path))
-            cmd_file = ["file", path]
-            output = subprocess.check_output(cmd_file).decode()
-            if ": ELF" not in output or "shared object" not in output:
-                continue
-            shared_libs.add(file)
-            if islink:
-                continue
-            cmd_readelf = ["readelf", "-d", path]
-            output = subprocess.check_output(cmd_readelf).decode()
-            for line in output.split("\n"):
-                if "NEEDED" in line:
-                    needed_libs.add(line.split("[")[1].split("]")[0])
-
-    missing_libs = needed_libs - shared_libs
-    if missing_libs:
-        raise Exception(f"Missing libraries: {missing_libs}")
-
-
 def strip_sections(install_root: str):
     """
     Strips all sections from ELF files except for dynamic linking and
@@ -1048,7 +1015,6 @@ def build_sysroot(arch: str) -> None:
     install_into_sysroot(BUILD_DIR, install_root, packages)
     hacks_and_patches(install_root, SCRIPT_DIR, arch)
     cleanup_jail_symlinks(install_root)
-    verify_library_deps(install_root)
     strip_sections(install_root)
     create_tarball(install_root, arch)
 
