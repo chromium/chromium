@@ -339,6 +339,7 @@ crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/canvas
 crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/texture-corner-case-videos.html [ Skip ]
 crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/video/tex-2d-alpha-alpha-unsigned_byte.html [ Skip ]
 crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 passthrough ] WebglExtension_EXT_texture_mirror_clamp_to_edge [ Skip ]
+crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/extensions/oes-texture-float-linear.html [ Skip ]
 
 # Linux Intel
 # Can occasionally kill machines. Appears to be tied to kernel version, so can
@@ -361,8 +362,25 @@ crbug.com/1043953 [ chromeos chromeos-board-amd64-generic ] conformance/textures
 crbug.com/1321312 [ mac nvidia-0xfe9 no-passthrough ] conformance/glsl/bugs/gl-fragcoord-multisampling-bug.html [ Skip ]
 crbug.com/1321312 [ mac nvidia-0xfe9 no-passthrough ] conformance/ogles/GL/array/array_001_to_006.html [ Skip ]
 
-# Crashes fuchsia on qemu
-crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/extensions/oes-texture-float-linear.html [ Skip ]
+# Timeout on fuchsia on astro, likely due to the OOM.
+crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-00.html [ Skip ]
+crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-01.html [ Skip ]
+crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-02.html [ Skip ]
+crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-03.html [ Skip ]
+crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-04.html [ Skip ]
+crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-05.html [ Skip ]
+crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-06.html [ Skip ]
+crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-07.html [ Skip ]
+crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-08.html [ Skip ]
+crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-09.html [ Skip ]
+crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-10.html [ Skip ]
+crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-11.html [ Skip ]
+crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-12.html [ Skip ]
+crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-13.html [ Skip ]
+crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-14.html [ Skip ]
+crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-15.html [ Skip ]
+crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-16.html [ Skip ]
+crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-17.html [ Skip ]
 
 ###############################
 # Permanent Slow Expectations #
@@ -451,14 +469,6 @@ crbug.com/1490427 [ fuchsia fuchsia-board-sherlock ] conformance/textures/misc/t
 
 
 crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/state/gl-object-get-calls.html [ RetryOnFailure ]
-crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-01.html [ RetryOnFailure ]
-crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-04.html [ RetryOnFailure ]
-crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-07.html [ RetryOnFailure ]
-crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-09.html [ RetryOnFailure ]
-crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-10.html [ RetryOnFailure ]
-crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-12.html [ RetryOnFailure ]
-crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-13.html [ RetryOnFailure ]
-crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-16.html [ RetryOnFailure ]
 
 ####################
 # Win failures     #
