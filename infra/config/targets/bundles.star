@@ -74,30 +74,6 @@ targets.bundle(
     ],
 )
 
-# For Android large form factor.
-targets.bundle(
-    name = "android_lff_emulator_gtests",
-    targets = [
-        "android_emulator_specific_chrome_public_tests",
-        "android_trichrome_smoke_tests",
-        "android_smoke_tests",
-        "android_specific_chromium_gtests",  # Already includes gl_gtests.
-        "chromium_gtests",
-        "chromium_gtests_for_devices_with_graphical_output",
-        "linux_flavor_specific_chromium_gtests",
-        "system_webview_shell_instrumentation_tests",  # Not an experimental test
-        "webview_ui_instrumentation_tests",
-    ],
-)
-
-# For Android large form factor in landscape mode.
-targets.bundle(
-    name = "android_lff_landscape_emulator_gtests",
-    targets = [
-        "android_emulator_specific_chrome_public_tests",
-    ],
-)
-
 targets.bundle(
     name = "android_12l_rel_cq_gtests",
     targets = [
@@ -484,6 +460,30 @@ targets.bundle(
     },
 )
 
+# For Android large form factor.
+targets.bundle(
+    name = "android_lff_emulator_gtests",
+    targets = [
+        "android_emulator_specific_chrome_public_tests",
+        "android_trichrome_smoke_tests",
+        "android_smoke_tests",
+        "android_specific_chromium_gtests",  # Already includes gl_gtests.
+        "chromium_gtests",
+        "chromium_gtests_for_devices_with_graphical_output",
+        "linux_flavor_specific_chromium_gtests",
+        "system_webview_shell_instrumentation_tests",  # Not an experimental test
+        "webview_ui_instrumentation_tests",
+    ],
+)
+
+# For Android large form factor in landscape mode.
+targets.bundle(
+    name = "android_lff_landscape_emulator_gtests",
+    targets = [
+        "android_emulator_specific_chrome_public_tests",
+    ],
+)
+
 # Used when the device capacity is limited, e.g. for CQ.
 # TODO(crbug.com/352811552): Revisit after Android 14 on device promoted to CQ.
 targets.bundle(
@@ -595,6 +595,25 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "android_pie_emulator_gtests",
+    targets = [
+        "android_emulator_specific_chrome_public_tests",
+        "android_emulator_specific_network_enabled_content_browsertests",
+        "android_monochrome_smoke_tests",
+        "android_smoke_tests",
+        "android_specific_chromium_gtests",
+        "android_wpr_record_replay_tests",
+        "chromium_gtests",
+        "chromium_gtests_for_devices_with_graphical_output",
+        "linux_flavor_specific_chromium_gtests",
+        "system_webview_shell_instrumentation_tests",
+        "webview_cts_tests_gtest",
+        "webview_instrumentation_test_apk_single_process_mode_gtests",
+        "webview_ui_instrumentation_tests",
+    ],
+)
+
+targets.bundle(
     name = "android_pie_gtests",
     targets = [
         "android_ar_gtests",
@@ -606,27 +625,6 @@ targets.bundle(
         # No standard tests due to capacity, no Vega tests since it's currently
         # O only.
     ],
-)
-
-targets.bundle(
-    name = "android_pie_standard_gtests",
-    targets = [
-        "chrome_public_test_apk",
-        "chrome_public_unit_test_apk",
-        "webview_instrumentation_test_apk",
-    ],
-    per_test_modifications = {
-        "chrome_public_test_apk": targets.mixin(
-            swarming = targets.swarming(
-                shards = 20,
-            ),
-        ),
-        "webview_instrumentation_test_apk": targets.mixin(
-            swarming = targets.swarming(
-                shards = 6,
-            ),
-        ),
-    },
 )
 
 # Keep in sync with android_pie_rel_gtests, except for
@@ -646,25 +644,6 @@ targets.bundle(
         "webview_cts_tests_gtest",
         "webview_ui_instrumentation_tests",
         "webview_instrumentation_test_apk_single_process_mode_gtests",
-    ],
-)
-
-targets.bundle(
-    name = "android_pie_emulator_gtests",
-    targets = [
-        "android_emulator_specific_chrome_public_tests",
-        "android_emulator_specific_network_enabled_content_browsertests",
-        "android_monochrome_smoke_tests",
-        "android_smoke_tests",
-        "android_specific_chromium_gtests",
-        "android_wpr_record_replay_tests",
-        "chromium_gtests",
-        "chromium_gtests_for_devices_with_graphical_output",
-        "linux_flavor_specific_chromium_gtests",
-        "system_webview_shell_instrumentation_tests",
-        "webview_cts_tests_gtest",
-        "webview_instrumentation_test_apk_single_process_mode_gtests",
-        "webview_ui_instrumentation_tests",
     ],
 )
 
@@ -711,6 +690,27 @@ targets.bundle(
         "webview_instrumentation_test_apk_multiple_process_mode": targets.mixin(
             swarming = targets.swarming(
                 shards = 5,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
+    name = "android_pie_standard_gtests",
+    targets = [
+        "chrome_public_test_apk",
+        "chrome_public_unit_test_apk",
+        "webview_instrumentation_test_apk",
+    ],
+    per_test_modifications = {
+        "chrome_public_test_apk": targets.mixin(
+            swarming = targets.swarming(
+                shards = 20,
+            ),
+        ),
+        "webview_instrumentation_test_apk": targets.mixin(
+            swarming = targets.swarming(
+                shards = 6,
             ),
         ),
     },
@@ -3104,6 +3104,20 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "gpu_dawn_gtests_no_dxc_use_tint_ir",
+    targets = [
+        "dawn_end2end_no_dxc_use_tint_ir_tests",
+    ],
+    per_test_modifications = {
+        "dawn_end2end_no_dxc_use_tint_ir_tests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 1,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
     name = "gpu_dawn_gtests_no_dxc_with_validation",
     targets = [
         "dawn_end2end_no_dxc_validation_layers_tests",
@@ -3124,20 +3138,6 @@ targets.bundle(
     ],
     per_test_modifications = {
         "dawn_end2end_use_tint_ir_tests": targets.mixin(
-            swarming = targets.swarming(
-                shards = 1,
-            ),
-        ),
-    },
-)
-
-targets.bundle(
-    name = "gpu_dawn_gtests_no_dxc_use_tint_ir",
-    targets = [
-        "dawn_end2end_no_dxc_use_tint_ir_tests",
-    ],
-    per_test_modifications = {
-        "dawn_end2end_no_dxc_use_tint_ir_tests": targets.mixin(
             swarming = targets.swarming(
                 shards = 1,
             ),
@@ -5453,18 +5453,6 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "pie_isolated_scripts",
-    targets = [
-        "android_isolated_scripts",
-        "chromium_junit_tests_scripts",
-        "components_perftests_isolated_scripts",
-        "monochrome_public_apk_checker_isolated_script",
-        "telemetry_android_minidump_unittests_isolated_scripts",
-        "telemetry_perf_unittests_isolated_scripts_android",
-    ],
-)
-
-targets.bundle(
     name = "perfetto_gtests",
     targets = [
         "base_unittests",
@@ -5536,6 +5524,18 @@ targets.bundle(
             ),
         ),
     },
+)
+
+targets.bundle(
+    name = "pie_isolated_scripts",
+    targets = [
+        "android_isolated_scripts",
+        "chromium_junit_tests_scripts",
+        "components_perftests_isolated_scripts",
+        "monochrome_public_apk_checker_isolated_script",
+        "telemetry_android_minidump_unittests_isolated_scripts",
+        "telemetry_perf_unittests_isolated_scripts_android",
+    ],
 )
 
 targets.bundle(
@@ -5917,18 +5917,6 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "updater_user_gtests_mac",
-    targets = [
-        "updater_tests",
-    ],
-    per_test_modifications = {
-        "updater_tests": [
-            "updater-default-pool",
-        ],
-    },
-)
-
-targets.bundle(
     name = "updater_gtests_win",
     targets = [
         "updater_tests",
@@ -5971,6 +5959,18 @@ targets.bundle(
         ],
         "updater_tests_win_uac": [
             "updater-win-uac-pool",
+        ],
+    },
+)
+
+targets.bundle(
+    name = "updater_user_gtests_mac",
+    targets = [
+        "updater_tests",
+    ],
+    per_test_modifications = {
+        "updater_tests": [
+            "updater-default-pool",
         ],
     },
 )
