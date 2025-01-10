@@ -184,6 +184,10 @@ class KeyboardCapability : public InputDeviceEventObserver {
 
   struct KeyboardInfo {
     KeyboardInfo();
+    KeyboardInfo(DeviceType device_type,
+                 KeyboardTopRowLayout top_row_layout,
+                 std::vector<uint32_t> top_row_scan_codes,
+                 std::vector<TopRowActionKey> top_row_action_keys);
     KeyboardInfo(KeyboardInfo&&);
     KeyboardInfo& operator=(KeyboardInfo&&);
     KeyboardInfo(const KeyboardInfo&) = delete;
@@ -289,6 +293,7 @@ class KeyboardCapability : public InputDeviceEventObserver {
   // Check if a given `action_key` exists on the given keyboard.
   bool HasTopRowActionKey(const KeyboardDevice& keyboard,
                           TopRowActionKey action_key) const;
+  bool HasTopRowActionKey(int device_id, TopRowActionKey action_key) const;
   bool HasTopRowActionKeyOnAnyKeyboard(TopRowActionKey action_key) const;
 
   // Check if the globe key exists on the given keyboard.

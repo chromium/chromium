@@ -533,6 +533,16 @@ KeyboardCapability::~KeyboardCapability() {
 }
 
 KeyboardCapability::KeyboardInfo::KeyboardInfo() = default;
+KeyboardCapability::KeyboardInfo::KeyboardInfo(
+    DeviceType device_type,
+    KeyboardTopRowLayout top_row_layout,
+    std::vector<uint32_t> top_row_scan_codes,
+    std::vector<TopRowActionKey> top_row_action_keys)
+    : device_type(device_type),
+      top_row_layout(top_row_layout),
+      top_row_scan_codes(std::move(top_row_scan_codes)),
+      top_row_action_keys(std::move(top_row_action_keys)) {}
+
 KeyboardCapability::KeyboardInfo::KeyboardInfo(KeyboardInfo&&) = default;
 KeyboardCapability::KeyboardInfo& KeyboardCapability::KeyboardInfo::operator=(
     KeyboardInfo&&) = default;
@@ -1306,6 +1316,16 @@ bool KeyboardCapability::HasTopRowActionKey(const KeyboardDevice& keyboard,
   }
 
   return base::Contains(keyboard_info->top_row_action_keys, action_key);
+}
+
+bool KeyboardCapability::HasTopRowActionKey(int device_id,
+                                            TopRowActionKey action_key) const {
+  auto keyboard = FindKeyboardWithId(device_id);
+  if (!keyboard) {
+    return false;
+  }
+
+  return HasTopRowActionKey(*keyboard, action_key);
 }
 
 bool KeyboardCapability::HasTopRowActionKeyOnAnyKeyboard(

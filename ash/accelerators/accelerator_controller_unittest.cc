@@ -105,7 +105,9 @@
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
+#include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
+#include "ui/events/devices/input_device.h"
 #include "ui/events/devices/keyboard_device.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
@@ -2644,6 +2646,77 @@ TEST_F(AcceleratorControllerTest, ToggleDoNotDisturbKey) {
   // Toggle do not disturb off.
   accelerators::ToggleDoNotDisturb();
   ASSERT_FALSE(message_center()->IsQuietMode());
+}
+
+TEST_F(AcceleratorControllerTest, OverviewBasedScreenshotMetric) {
+  const ui::KeyboardDevice kChromeOSKeyboardWithScreenshot(
+      5, ui::INPUT_DEVICE_INTERNAL, "ChromeOSKeyboardWithScreenshot");
+  const ui::KeyboardDevice kChromeOSKeyboardWithoutScreenshot(
+      10, ui::INPUT_DEVICE_BLUETOOTH, "ChromeOSKeyboardWithoutScreenshot");
+  const ui::KeyboardDevice kNonChromeOSKeyboard(15, ui::INPUT_DEVICE_USB,
+                                                "NonChromeOSKeyboard");
+
+  ui::DeviceDataManagerTestApi().SetKeyboardDevices(
+      {kChromeOSKeyboardWithoutScreenshot, kChromeOSKeyboardWithScreenshot,
+       kNonChromeOSKeyboard});
+
+  Shell::Get()->keyboard_capability()->SetKeyboardInfoForTesting(
+      kChromeOSKeyboardWithScreenshot,
+      {ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard,
+       ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom,
+       /*top_row_scan_codes=*/{555},
+       /*top_row_action_keys=*/{ui::TopRowActionKey::kScreenshot}});
+  Shell::Get()->keyboard_capability()->SetKeyboardInfoForTesting(
+      kChromeOSKeyboardWithoutScreenshot,
+      {ui::KeyboardCapability::DeviceType::kDeviceExternalChromeOsKeyboard,
+       ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom,
+       /*top_row_scan_codes=*/{555},
+       /*top_row_action_keys=*/{ui::TopRowActionKey::kOverview}});
+  Shell::Get()->keyboard_capability()->SetKeyboardInfoForTesting(
+      kNonChromeOSKeyboard,
+      {ui::KeyboardCapability::DeviceType::kDeviceExternalGenericKeyboard,
+       ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayout1,
+       /*top_row_scan_codes=*/{},
+       /*top_row_action_keys=*/{ui::TopRowActionKey::kOverview}});
+
+  ui::KeyEvent partial_screenshot_event(
+      ui::EventType::kKeyPressed, ui::VKEY_MEDIA_LAUNCH_APP1,
+      ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+
+  {
+    base::HistogramTester histogram_tester;
+    partial_screenshot_event.set_source_device_id(
+        kChromeOSKeyboardWithScreenshot.id);
+    controller_->Process(ui::Accelerator(partial_screenshot_event));
+    histogram_tester.ExpectUniqueSample(
+        "Ash.Accelerators.OverviewBasedScreenshot.TakePartialScreenshot",
+        AcceleratorControllerImpl::OverviewBasedScreenshotKeyboardType::
+            kChromeOSKeyboardWithScreenshot,
+        1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    partial_screenshot_event.set_source_device_id(
+        kChromeOSKeyboardWithoutScreenshot.id);
+    controller_->Process(ui::Accelerator(partial_screenshot_event));
+    histogram_tester.ExpectUniqueSample(
+        "Ash.Accelerators.OverviewBasedScreenshot.TakePartialScreenshot",
+        AcceleratorControllerImpl::OverviewBasedScreenshotKeyboardType::
+            kChromeOSKeyboardWithoutScreenshot,
+        1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    partial_screenshot_event.set_source_device_id(kNonChromeOSKeyboard.id);
+    controller_->Process(ui::Accelerator(partial_screenshot_event));
+    histogram_tester.ExpectUniqueSample(
+        "Ash.Accelerators.OverviewBasedScreenshot.TakePartialScreenshot",
+        AcceleratorControllerImpl::OverviewBasedScreenshotKeyboardType::
+            kNonChromeOSKeyboard,
+        1);
+  }
 }
 
 class SystemShortcutBehaviorTest : public AcceleratorControllerTest {

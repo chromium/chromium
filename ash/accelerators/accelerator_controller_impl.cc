@@ -27,6 +27,7 @@
 #include "ash/public/cpp/accelerator_actions.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/debug_delegate.h"
+#include "ash/public/mojom/input_device_settings.mojom-shared.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_settings_notification_controller.h"
@@ -70,6 +71,8 @@ namespace {
 using ::base::UserMetricsAction;
 using ::chromeos::WindowStateType;
 using input_method::InputMethodManager;
+using OverviewBasedScreenshotKeyboardType =
+    AcceleratorControllerImpl::OverviewBasedScreenshotKeyboardType;
 
 static_assert(AcceleratorAction::kDesksActivate0 ==
                       AcceleratorAction::kDesksActivate1 - 1 &&
@@ -137,6 +140,49 @@ void RecordActionUmaHistogram(AcceleratorAction action,
       base::StrCat(
           {"Ash.Accelerators.Actions.", GetAcceleratorActionName(action)}),
       GetEncodedShortcut(accelerator.modifiers(), accelerator.key_code()));
+}
+
+void RecordOverviewBasedScreenshotUmaHistogram(
+    AcceleratorAction action,
+    const ui::Accelerator& accelerator) {
+  // Only interested in tracking screenshot related actions.
+  switch (action) {
+    case ash::AcceleratorAction::kTakeScreenshot:
+    case ash::AcceleratorAction::kTakePartialScreenshot:
+    case ash::AcceleratorAction::kTakeWindowScreenshot:
+      break;
+    default:
+      return;
+  }
+
+  // Only interested in triggers via the overview key.
+  if (accelerator.key_code() != ui::VKEY_MEDIA_LAUNCH_APP1) {
+    return;
+  }
+
+  const OverviewBasedScreenshotKeyboardType keyboard_type = [&]() {
+    auto* keyboard_capability = Shell::Get()->keyboard_capability();
+    CHECK(keyboard_capability);
+
+    if (!keyboard_capability->IsChromeOSKeyboard(
+            accelerator.source_device_id())) {
+      return OverviewBasedScreenshotKeyboardType::kNonChromeOSKeyboard;
+    }
+
+    if (keyboard_capability->HasTopRowActionKey(
+            accelerator.source_device_id(), ui::TopRowActionKey::kScreenshot)) {
+      return OverviewBasedScreenshotKeyboardType::
+          kChromeOSKeyboardWithScreenshot;
+    } else {
+      return OverviewBasedScreenshotKeyboardType::
+          kChromeOSKeyboardWithoutScreenshot;
+    }
+  }();
+
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Ash.Accelerators.OverviewBasedScreenshot.",
+                    GetAcceleratorActionName(action)}),
+      keyboard_type);
 }
 
 void RecordImeSwitchByAccelerator() {
@@ -1707,6 +1753,7 @@ void AcceleratorControllerImpl::PerformAction(
   }
 
   RecordActionUmaHistogram(action, accelerator);
+  RecordOverviewBasedScreenshotUmaHistogram(action, accelerator);
   NotifyActionPerformed(action);
 
   // Reset any in progress composition.

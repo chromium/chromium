@@ -56,6 +56,16 @@ class ASH_EXPORT AcceleratorControllerImpl
       public AshAcceleratorConfiguration::Observer,
       public AcceleratorPrefs::Observer {
  public:
+  // Used to record the keyboard type which triggers a screenshot action via the
+  // overview key. Do not reorder values of this enum.
+  enum class OverviewBasedScreenshotKeyboardType {
+    kNonChromeOSKeyboard,
+    kChromeOSKeyboardWithScreenshot,
+    kChromeOSKeyboardWithoutScreenshot,
+    kMinValue = kNonChromeOSKeyboard,
+    kMaxValue = kChromeOSKeyboardWithoutScreenshot,
+  };
+
   // TestApi is used for tests to get internal implementation details.
   class TestApi {
    public:

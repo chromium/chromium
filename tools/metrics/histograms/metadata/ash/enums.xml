@@ -1610,6 +1610,12 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="8" label="Unexpected click"/>
 </enum>
 
+<enum name="OverviewBasedScreenshotKeyboardType">
+  <int value="0" label="Non-ChromeOS Keyboard"/>
+  <int value="1" label="ChromeOS Keyboard WITH Screenshot key"/>
+  <int value="2" label="ChromeOS Keyboard WITHOUT Screenshot key"/>
+</enum>
+
 <enum name="OverviewDragAction">
   <summary>
     The words clamshell and tablet here refer to the mode at the end of the drag
