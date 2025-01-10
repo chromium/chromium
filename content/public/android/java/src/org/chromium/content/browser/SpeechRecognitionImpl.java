@@ -182,8 +182,7 @@ public class SpeechRecognitionImpl {
                     assumeNonNull(bundle.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION));
             String[] results = list.toArray(new String[list.size()]);
 
-            float[] scores =
-                    assumeNonNull(bundle.getFloatArray(SpeechRecognizer.CONFIDENCE_SCORES));
+            float @Nullable [] scores = bundle.getFloatArray(SpeechRecognizer.CONFIDENCE_SCORES);
 
             SpeechRecognitionImplJni.get()
                     .onRecognitionResults(
@@ -356,7 +355,7 @@ public class SpeechRecognitionImpl {
                 long nativeSpeechRecognizerImplAndroid,
                 SpeechRecognitionImpl caller,
                 String[] results,
-                float[] scores,
+                float @Nullable [] scores,
                 boolean provisional);
 
         void onRecognitionError(
