@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/interruptible_chrome_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -163,10 +164,13 @@
   _navigationController = nil;
 
   if (result != SigninCoordinatorResultSuccess && _signOutIfDeclined) {
-    _authenticationService->SignOut(
+    signin::MultiProfileSignOut(
+        self.browser,
         signin_metrics::ProfileSignout::
             kUserDeclinedHistorySyncAfterDedicatedSignIn,
-        /*force_clear_browsing_data=*/false, nil);
+        /*force_clear_data=*/false, /*force_snackbar_over_toolbar=*/false,
+        /*snackbar_message=*/nil,
+        /*signout_completion=*/nil);
   }
   [self.delegate historySyncPopupCoordinator:self didFinishWithResult:result];
 }
