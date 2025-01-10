@@ -980,6 +980,10 @@ bool IsDefaultBrowserBannerPromoEnabled();
 // Feature to enable different text for the secondary action on FRE sign-in
 // promo.
 BASE_DECLARE_FEATURE(kFRESignInSecondaryActionLabelUpdate);
+extern const base::FeatureParam<std::string>
+    kFRESignInSecondaryActionLabelUpdateParam;
+extern const std::string_view
+    kFRESignInSecondaryActionLabelUpdateParamStaySignedOut;
 
 // Returns whether 'kFRESignInSecondaryActionLabelUpdate' is enabled
 bool FRESignInSecondaryActionLabelUpdate();

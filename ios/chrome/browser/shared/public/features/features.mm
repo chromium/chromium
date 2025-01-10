@@ -1188,6 +1188,14 @@ bool IsDefaultBrowserBannerPromoEnabled() {
   return base::FeatureList::IsEnabled(kDefaultBrowserBannerPromo);
 }
 
+constexpr base::FeatureParam<std::string>
+    kFRESignInSecondaryActionLabelUpdateParam{
+        &kFRESignInSecondaryActionLabelUpdate,
+        "FRESignInSecondaryActionLabelUpdateParam", "StaySignedOut"};
+
+const std::string_view kFRESignInSecondaryActionLabelUpdateParamStaySignedOut =
+    "StaySignedOut";
+
 BASE_FEATURE(kFRESignInSecondaryActionLabelUpdate,
              "FRESignInSecondaryActionLabelUpdate",
              base::FEATURE_DISABLED_BY_DEFAULT);
