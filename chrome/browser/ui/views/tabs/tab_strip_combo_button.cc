@@ -93,10 +93,15 @@ TabStripComboButton::TabStripComboButton(BrowserWindowInterface* browser,
       std::make_unique<views::Separator>();
   const int color_id = features::HasTabstripComboButtonWithBackground()
                            ? kColorTabStripComboButtonSeparator
-                           : kColorTabStripComboButtonSeparatorOnHeader;
+                           : kColorTabDividerFrameActive;
   separator->SetColorId(color_id);
   separator->SetBorderRadius(kSeparatorBorderRadius);
   separator->SetPreferredSize(gfx::Size(kSeparatorWidth, kSeparatorHeight));
+  subscriptions_.push_back(browser->RegisterDidBecomeActive(base::BindRepeating(
+      &TabStripComboButton::DidBecomeActive, base::Unretained(this))));
+  subscriptions_.push_back(
+      browser->RegisterDidBecomeInactive(base::BindRepeating(
+          &TabStripComboButton::DidBecomeInactive, base::Unretained(this))));
 
   Edge tab_search_button_flat_edge = Edge::kNone;
   if (features::HasTabstripComboButtonWithBackground()) {
@@ -164,6 +169,18 @@ void TabStripComboButton::OnTabSearchButtonStateChanged() {
   }
 
   UpdateSeparatorVisibility();
+}
+
+void TabStripComboButton::DidBecomeActive(BrowserWindowInterface* browser) {
+  if (features::HasTabstripComboButtonWithBackground()) {
+    separator_->SetColorId(kColorTabStripComboButtonSeparator);
+  } else {
+    separator_->SetColorId(kColorTabDividerFrameActive);
+  }
+}
+
+void TabStripComboButton::DidBecomeInactive(BrowserWindowInterface* browser) {
+  separator_->SetColorId(kColorTabDividerFrameInactive);
 }
 
 void TabStripComboButton::UpdateSeparatorVisibility() {

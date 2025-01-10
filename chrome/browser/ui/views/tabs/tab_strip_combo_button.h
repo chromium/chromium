@@ -27,6 +27,8 @@ class TabStripComboButton : public views::View {
 
   void OnNewTabButtonStateChanged();
   void OnTabSearchButtonStateChanged();
+  void DidBecomeActive(BrowserWindowInterface* browser);
+  void DidBecomeInactive(BrowserWindowInterface* browser);
   void UpdateSeparatorVisibility();
 
   views::Button* new_tab_button() { return new_tab_button_; }
