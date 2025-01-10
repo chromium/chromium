@@ -32,6 +32,8 @@ inline constexpr char kTabGroupsDeletionSkipDialogOnRemoveTab[] =
     "tab_groups.deletion.skip_dialog_on_remove_tab";
 inline constexpr char kTabGroupsDeletionSkipDialogOnCloseTab[] =
     "tab_groups.deletion.skip_dialog_on_close_tab";
+inline constexpr char kTabGroupsDeletionSkipDialogOnLeaveGroup[] =
+    "tab_groups.deletion.skip_dialog_on_leave_group";
 
 // Integer that keep track of how many times the learn more footer in the
 // TabGroupEditorBubbleView has been seen by the user. Once this value reaches
