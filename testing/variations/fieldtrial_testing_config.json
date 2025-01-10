@@ -6205,7 +6205,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Teamfood",
+                    "name": "Enabled",
                     "params": {
                         "file-upload-limit-bytes": "200000000",
                         "send-page-url-for-contextualization": "true",
