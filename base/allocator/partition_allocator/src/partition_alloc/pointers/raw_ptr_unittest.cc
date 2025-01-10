@@ -914,11 +914,14 @@ TEST_F(RawPtrTest, UpcastPerformance) {
 
   {
     Derived derived_val(42, 84, 1024);
-    CountingRawPtr<Derived> checked_derived_ptr = &derived_val;
-    CountingRawPtr<Base1> checked_base1_ptr(std::move(checked_derived_ptr));
-    CountingRawPtr<Base2> checked_base2_ptr(std::move(checked_derived_ptr));
-    checked_base1_ptr = std::move(checked_derived_ptr);
-    checked_base2_ptr = std::move(checked_derived_ptr);
+    CountingRawPtr<Derived> checked_derived_ptr1 = &derived_val;
+    CountingRawPtr<Derived> checked_derived_ptr2 = &derived_val;
+    CountingRawPtr<Derived> checked_derived_ptr3 = &derived_val;
+    CountingRawPtr<Derived> checked_derived_ptr4 = &derived_val;
+    CountingRawPtr<Base1> checked_base1_ptr(std::move(checked_derived_ptr1));
+    CountingRawPtr<Base2> checked_base2_ptr(std::move(checked_derived_ptr2));
+    checked_base1_ptr = std::move(checked_derived_ptr3);
+    checked_base2_ptr = std::move(checked_derived_ptr4);
   }
 
   EXPECT_THAT((CountingRawPtrExpectations{

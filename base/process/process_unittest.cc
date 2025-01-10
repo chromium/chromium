@@ -141,14 +141,14 @@ TEST_F(ProcessTest, Move) {
 
   process2 = std::move(process1);
   EXPECT_TRUE(process2.IsValid());
-  EXPECT_FALSE(process1.IsValid());
+  EXPECT_FALSE(process1.IsValid());  // NOLINT(bugprone-use-after-move)
   EXPECT_FALSE(process2.is_current());
 
   Process process3 = Process::Current();
   process2 = std::move(process3);
   EXPECT_TRUE(process2.is_current());
   EXPECT_TRUE(process2.IsValid());
-  EXPECT_FALSE(process3.IsValid());
+  EXPECT_FALSE(process3.IsValid());  // NOLINT(bugprone-use-after-move)
 }
 
 TEST_F(ProcessTest, Duplicate) {

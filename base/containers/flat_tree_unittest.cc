@@ -996,7 +996,7 @@ TYPED_TEST_P(FlatTreeTest, Extract) {
   cont.emplace(4);
 
   TypeParam body = std::move(cont).extract();
-  EXPECT_THAT(cont, IsEmpty());
+  EXPECT_THAT(cont, IsEmpty());  // NOLINT(bugprone-use-after-move)
   EXPECT_THAT(body, ElementsAre(1, 2, 3, 4));
 }
 

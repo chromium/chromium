@@ -346,7 +346,7 @@ TEST(TraceArguments, MoveConstruction) {
       EXPECT_FALSE(destroy_flag);
 
       // |args1| is now empty.
-      EXPECT_EQ(0U, args1.size());
+      EXPECT_EQ(0U, args1.size());  // NOLINT(bugprone-use-after-move)
 
       // Check that everything was transferred to |args2|.
       EXPECT_EQ(2U, args2.size());
@@ -387,7 +387,7 @@ TEST(TraceArguments, MoveAssignment) {
       EXPECT_FALSE(destroy_flag);
 
       // |args1| is now empty.
-      EXPECT_EQ(0U, args1.size());
+      EXPECT_EQ(0U, args1.size());  // NOLINT(bugprone-use-after-move)
 
       // Check that everything was transferred to |args2|.
       EXPECT_EQ(2U, args2.size());

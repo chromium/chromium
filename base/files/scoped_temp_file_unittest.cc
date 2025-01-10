@@ -29,7 +29,7 @@ TEST(ScopedTempFile, MoveConstruct) {
   EXPECT_TRUE(PathExists(file1));
 
   ScopedTempFile temp2(std::move(temp1));
-  EXPECT_TRUE(temp1.path().empty());
+  EXPECT_TRUE(temp1.path().empty());  // NOLINT(bugprone-use-after-move)
   EXPECT_EQ(file1, temp2.path());
   EXPECT_TRUE(PathExists(file1));
 }
@@ -46,7 +46,7 @@ TEST(ScopedTempFile, MoveAssign) {
   EXPECT_TRUE(PathExists(file2));
 
   temp2 = std::move(temp1);
-  EXPECT_TRUE(temp1.path().empty());
+  EXPECT_TRUE(temp1.path().empty());  // NOLINT(bugprone-use-after-move)
   EXPECT_EQ(temp2.path(), file1);
   EXPECT_TRUE(PathExists(file1));
   EXPECT_FALSE(PathExists(file2));

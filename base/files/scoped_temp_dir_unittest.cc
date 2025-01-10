@@ -119,7 +119,7 @@ TEST(ScopedTempDir, Move) {
     ScopedTempDir other_dir(std::move(dir));
     EXPECT_EQ(dir_path, other_dir.GetPath());
     EXPECT_TRUE(DirectoryExists(dir_path));
-    EXPECT_FALSE(dir.IsValid());
+    EXPECT_FALSE(dir.IsValid());  // NOLINT(bugprone-use-after-move)
   }
   EXPECT_FALSE(DirectoryExists(dir_path));
 }

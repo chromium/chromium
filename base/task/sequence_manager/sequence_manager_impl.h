@@ -137,13 +137,13 @@ class BASE_EXPORT SequenceManagerImpl
   // SequencedTaskSource implementation:
   void SetRunTaskSynchronouslyAllowed(
       bool can_run_tasks_synchronously) override;
-  std::optional<SelectedTask> SelectNextTask(
-      LazyNow& lazy_now,
-      SelectTaskOption option = SelectTaskOption::kDefault) override;
+  using internal::SequencedTaskSource::SelectNextTask;
+  std::optional<SelectedTask> SelectNextTask(LazyNow& lazy_now,
+                                             SelectTaskOption option) override;
   void DidRunTask(LazyNow& lazy_now) override;
-  std::optional<WakeUp> GetPendingWakeUp(
-      LazyNow* lazy_now,
-      SelectTaskOption option = SelectTaskOption::kDefault) override;
+  using internal::SequencedTaskSource::GetPendingWakeUp;
+  std::optional<WakeUp> GetPendingWakeUp(LazyNow* lazy_now,
+                                         SelectTaskOption option) override;
   bool HasPendingHighResolutionTasks() override;
   void OnBeginWork() override;
   bool OnIdle() override;

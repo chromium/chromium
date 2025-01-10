@@ -476,10 +476,10 @@ TEST_P(SparseHistogramTest, HistogramNameHash) {
 TEST_P(SparseHistogramTest, CheckGetCountAndBucketData) {
   std::unique_ptr<SparseHistogram> histogram(NewSparseHistogram("Sparse"));
   // Add samples in reverse order and make sure the output is in correct order.
-  histogram->AddCount(/*sample=*/200, /*count=*/15);
-  histogram->AddCount(/*sample=*/100, /*count=*/5);
+  histogram->AddCount(/*value=*/200, /*count=*/15);
+  histogram->AddCount(/*value=*/100, /*count=*/5);
   // Add samples to the same bucket and make sure they'll be aggregated.
-  histogram->AddCount(/*sample=*/100, /*count=*/5);
+  histogram->AddCount(/*value=*/100, /*count=*/5);
 
   const CountAndBucketData count_and_data_bucket =
       GetCountAndBucketData(histogram.get());
@@ -507,8 +507,8 @@ TEST_P(SparseHistogramTest, CheckGetCountAndBucketData) {
 TEST_P(SparseHistogramTest, WriteAscii) {
   HistogramBase* histogram =
       SparseHistogram::FactoryGet("AsciiOut", HistogramBase::kNoFlags);
-  histogram->AddCount(/*sample=*/4, /*count=*/5);
-  histogram->AddCount(/*sample=*/10, /*count=*/15);
+  histogram->AddCount(/*value=*/4, /*count=*/5);
+  histogram->AddCount(/*value=*/10, /*count=*/15);
 
   std::string output;
   histogram->WriteAscii(&output);
@@ -524,8 +524,8 @@ TEST_P(SparseHistogramTest, WriteAscii) {
 TEST_P(SparseHistogramTest, ToGraphDict) {
   HistogramBase* histogram =
       SparseHistogram::FactoryGet("HTMLOut", HistogramBase::kNoFlags);
-  histogram->AddCount(/*sample=*/4, /*count=*/5);
-  histogram->AddCount(/*sample=*/10, /*count=*/15);
+  histogram->AddCount(/*value=*/4, /*count=*/5);
+  histogram->AddCount(/*value=*/10, /*count=*/15);
 
   base::Value::Dict output = histogram->ToGraphDict();
   std::string* header = output.FindString("header");

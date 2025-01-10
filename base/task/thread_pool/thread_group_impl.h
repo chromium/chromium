@@ -64,9 +64,19 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
              scoped_refptr<SingleThreadTaskRunner> service_thread_task_runner,
              WorkerThreadObserver* worker_thread_observer,
              WorkerEnvironment worker_environment,
-             bool synchronous_thread_start_for_testing = false,
-             std::optional<TimeDelta> may_block_threshold =
-                 std::optional<TimeDelta>()) override;
+             bool synchronous_thread_start_for_testing,
+             std::optional<TimeDelta> may_block_threshold) override;
+  void Start(size_t max_tasks,
+             size_t max_best_effort_tasks,
+             TimeDelta suggested_reclaim_time,
+             scoped_refptr<SingleThreadTaskRunner> service_thread_task_runner,
+             WorkerThreadObserver* worker_thread_observer,
+             WorkerEnvironment worker_environment,
+             bool synchronous_thread_start_for_testing = false) {
+    Start(max_tasks, max_best_effort_tasks, suggested_reclaim_time,
+          service_thread_task_runner, worker_thread_observer,
+          worker_environment, synchronous_thread_start_for_testing, {});
+  }
   void JoinForTesting() override;
   void DidUpdateCanRunPolicy() override;
   void OnShutdownStarted() override;

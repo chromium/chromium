@@ -2221,13 +2221,14 @@ TEST(SpanTest, CopyFrom) {
   EXPECT_THAT(vec, ElementsAre(9, 9, 6));
 
   struct NonTrivial {
-    NonTrivial(int o) : i(o) {}
+    explicit NonTrivial(int o) : i(o) {}
     NonTrivial(const NonTrivial& o) : i(o) {}
     NonTrivial& operator=(const NonTrivial& o) {
-      i = o;
+      i = int{o};
       return *this;
     }
-    operator int() const { return i; }
+    explicit operator int() const { return i; }
+    bool operator==(int j) const { return i == j; }
     int i;
   };
 
@@ -2253,21 +2254,27 @@ TEST(SpanTest, CopyFrom) {
     EXPECT_THAT(long_arr_is_long, ElementsAre(1, 2, 3, 4, 5, 6, 7));
   }
   {
-    NonTrivial long_arr_is_long[] = {1, 2, 3, 4, 5, 6, 7};
+    NonTrivial long_arr_is_long[] = {
+        NonTrivial(1), NonTrivial(2), NonTrivial(3), NonTrivial(4),
+        NonTrivial(5), NonTrivial(6), NonTrivial(7)};
     auto left = span(long_arr_is_long).first<5>();
     auto right = span(long_arr_is_long).last<5>();
     left.copy_from(right);
     EXPECT_THAT(long_arr_is_long, ElementsAre(3, 4, 5, 6, 7, 6, 7));
   }
   {
-    NonTrivial long_arr_is_long[] = {1, 2, 3, 4, 5, 6, 7};
+    NonTrivial long_arr_is_long[] = {
+        NonTrivial(1), NonTrivial(2), NonTrivial(3), NonTrivial(4),
+        NonTrivial(5), NonTrivial(6), NonTrivial(7)};
     auto left = span(long_arr_is_long).first<5>();
     auto right = span(long_arr_is_long).last<5>();
     right.copy_from(left);
     EXPECT_THAT(long_arr_is_long, ElementsAre(1, 2, 1, 2, 3, 4, 5));
   }
   {
-    NonTrivial long_arr_is_long[] = {1, 2, 3, 4, 5, 6, 7};
+    NonTrivial long_arr_is_long[] = {
+        NonTrivial(1), NonTrivial(2), NonTrivial(3), NonTrivial(4),
+        NonTrivial(5), NonTrivial(6), NonTrivial(7)};
     auto left = span(long_arr_is_long).first<5>();
     left.copy_from(left);
     EXPECT_THAT(long_arr_is_long, ElementsAre(1, 2, 3, 4, 5, 6, 7));
@@ -2295,21 +2302,27 @@ TEST(SpanTest, CopyFrom) {
     EXPECT_THAT(long_arr_is_long, ElementsAre(1, 2, 3, 4, 5, 6, 7));
   }
   {
-    NonTrivial long_arr_is_long[] = {1, 2, 3, 4, 5, 6, 7};
+    NonTrivial long_arr_is_long[] = {
+        NonTrivial(1), NonTrivial(2), NonTrivial(3), NonTrivial(4),
+        NonTrivial(5), NonTrivial(6), NonTrivial(7)};
     auto left = span<NonTrivial>(long_arr_is_long).first(5u);
     auto right = span<NonTrivial>(long_arr_is_long).last(5u);
     left.copy_from(right);
     EXPECT_THAT(long_arr_is_long, ElementsAre(3, 4, 5, 6, 7, 6, 7));
   }
   {
-    NonTrivial long_arr_is_long[] = {1, 2, 3, 4, 5, 6, 7};
+    NonTrivial long_arr_is_long[] = {
+        NonTrivial(1), NonTrivial(2), NonTrivial(3), NonTrivial(4),
+        NonTrivial(5), NonTrivial(6), NonTrivial(7)};
     auto left = span<NonTrivial>(long_arr_is_long).first(5u);
     auto right = span<NonTrivial>(long_arr_is_long).last(5u);
     right.copy_from(left);
     EXPECT_THAT(long_arr_is_long, ElementsAre(1, 2, 1, 2, 3, 4, 5));
   }
   {
-    NonTrivial long_arr_is_long[] = {1, 2, 3, 4, 5, 6, 7};
+    NonTrivial long_arr_is_long[] = {
+        NonTrivial(1), NonTrivial(2), NonTrivial(3), NonTrivial(4),
+        NonTrivial(5), NonTrivial(6), NonTrivial(7)};
     auto left = span<NonTrivial>(long_arr_is_long).first(5u);
     left.copy_from(left);
     EXPECT_THAT(long_arr_is_long, ElementsAre(1, 2, 3, 4, 5, 6, 7));

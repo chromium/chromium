@@ -410,7 +410,7 @@ TEST_F(PersistentMemoryAllocatorTest, MakeIterableSameRefsTest) {
 
   // Fill up the allocator until it is full.
   Reference ref;
-  while ((ref = allocator_->Allocate(/*size=*/1, /*type=*/0)) != 0) {
+  while ((ref = allocator_->Allocate(/*size=*/1, /*type_id=*/0)) != 0) {
     refs.push_back(ref);
   }
 

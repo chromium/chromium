@@ -229,7 +229,7 @@ uintptr_t GetTestInstructionPointer() {
 class FakeTestUnwinder : public Unwinder {
  public:
   struct Result {
-    Result(bool can_unwind)
+    explicit Result(bool can_unwind)
         : can_unwind(can_unwind), result(UnwindResult::kUnrecognizedFrame) {}
 
     Result(UnwindResult result, std::vector<uintptr_t> instruction_pointers)
@@ -548,8 +548,9 @@ TEST_F(StackSamplerTest, WalkStack_AuxThenNative) {
   // Inject a fake native module for the second frame.
   module_cache_.AddCustomNativeModule(std::make_unique<TestModule>(1u, 1u));
 
-  auto aux_unwinder = WrapUnique(
-      new FakeTestUnwinder({{UnwindResult::kUnrecognizedFrame, {1u}}, false}));
+  auto aux_unwinder =
+      WrapUnique(new FakeTestUnwinder({{UnwindResult::kUnrecognizedFrame, {1u}},
+                                       FakeTestUnwinder::Result(false)}));
   aux_unwinder->Initialize(&module_cache_);
   auto native_unwinder =
       WrapUnique(new FakeTestUnwinder({{UnwindResult::kCompleted, {2u}}}));
@@ -578,8 +579,10 @@ TEST_F(StackSamplerTest, WalkStack_NativeThenAux) {
   module_cache_.UpdateNonNativeModules(
       {}, ToModuleVector(std::make_unique<TestModule>(1u, 1u, false)));
 
-  auto aux_unwinder = WrapUnique(new FakeTestUnwinder(
-      {{false}, {UnwindResult::kUnrecognizedFrame, {2u}}, {false}}));
+  auto aux_unwinder =
+      WrapUnique(new FakeTestUnwinder({FakeTestUnwinder::Result(false),
+                                       {UnwindResult::kUnrecognizedFrame, {2u}},
+                                       FakeTestUnwinder::Result(false)}));
   aux_unwinder->Initialize(&module_cache_);
   auto native_unwinder =
       WrapUnique(new FakeTestUnwinder({{UnwindResult::kUnrecognizedFrame, {1u}},

@@ -1026,10 +1026,10 @@ TEST_P(HistogramTest, CheckGetCountAndBucketData) {
   Histogram* histogram = static_cast<Histogram*>(Histogram::FactoryGet(
       "AddCountHistogram", 10, 100, kBucketCount, HistogramBase::kNoFlags));
   // Add samples in reverse order and make sure the output is in correct order.
-  histogram->AddCount(/*sample=*/30, /*value=*/14);
-  histogram->AddCount(/*sample=*/20, /*value=*/15);
-  histogram->AddCount(/*sample=*/20, /*value=*/15);
-  histogram->AddCount(/*sample=*/30, /*value=*/14);
+  histogram->AddCount(/*value=*/30, /*count=*/14);
+  histogram->AddCount(/*value=*/20, /*count=*/15);
+  histogram->AddCount(/*value=*/20, /*count=*/15);
+  histogram->AddCount(/*value=*/30, /*count=*/14);
 
   const CountAndBucketData count_and_data_bucket =
       GetCountAndBucketData(histogram);
@@ -1058,7 +1058,7 @@ TEST_P(HistogramTest, WriteAscii) {
   HistogramBase* histogram =
       LinearHistogram::FactoryGet("AsciiOut", /*minimum=*/1, /*maximum=*/10,
                                   /*bucket_count=*/5, HistogramBase::kNoFlags);
-  histogram->AddCount(/*sample=*/4, /*value=*/5);
+  histogram->AddCount(/*value=*/4, /*count=*/5);
 
   std::string output;
   histogram->WriteAscii(&output);
@@ -1076,7 +1076,7 @@ TEST_P(HistogramTest, ToGraphDict) {
   HistogramBase* histogram =
       LinearHistogram::FactoryGet("HTMLOut", /*minimum=*/1, /*maximum=*/10,
                                   /*bucket_count=*/5, HistogramBase::kNoFlags);
-  histogram->AddCount(/*sample=*/4, /*value=*/5);
+  histogram->AddCount(/*value=*/4, /*count=*/5);
 
   base::Value::Dict output = histogram->ToGraphDict();
   const std::string* header = output.FindString("header");

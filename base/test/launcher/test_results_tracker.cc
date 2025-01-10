@@ -54,7 +54,7 @@ std::string FormatTimeAsIso8601(Time time) {
 }
 
 struct TestSuiteResultsAggregator {
-  TestSuiteResultsAggregator() {}
+  TestSuiteResultsAggregator() = default;
 
   void Add(const TestResult& result) {
     tests++;

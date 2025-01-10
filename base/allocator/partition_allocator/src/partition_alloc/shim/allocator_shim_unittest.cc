@@ -63,7 +63,7 @@ constexpr size_t kTestSizeEstimate = 1234;
 
 class AllocatorShimTest : public testing::Test {
  public:
-  AllocatorShimTest() {}
+  AllocatorShimTest() = default;
 
   static size_t Hash(const void* ptr) {
     return reinterpret_cast<uintptr_t>(ptr) % MaxSizeTracked();

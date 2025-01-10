@@ -116,7 +116,7 @@ TEST(CircularDeque, MoveConstructor) {
   circular_deque<MoveOnlyInt> first(base::from_range, values);
 
   circular_deque<MoveOnlyInt> second(std::move(first));
-  EXPECT_TRUE(first.empty());
+  EXPECT_TRUE(first.empty());  // NOLINT(bugprone-use-after-move)
   EXPECT_EQ(6u, second.size());
   for (int i = 0; i < 6; i++) {
     EXPECT_EQ(i + 1, second[i].data());
@@ -192,7 +192,7 @@ TEST(CircularDeque, EqualsMove) {
   circular_deque<int> move;
   EXPECT_TRUE(move.empty());
   move = std::move(first);
-  EXPECT_TRUE(first.empty());
+  EXPECT_TRUE(first.empty());  // NOLINT(bugprone-use-after-move)
   EXPECT_EQ(6u, move.size());
   for (int i = 0; i < 6; i++) {
     EXPECT_EQ(i + 1, move[i]);

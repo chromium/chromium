@@ -384,7 +384,7 @@ TEST(FileTest, Append) {
 
   // Test passing the file around.
   file = std::move(file2);
-  EXPECT_FALSE(file2.IsValid());
+  EXPECT_FALSE(file2.IsValid());  // NOLINT(bugprone-use-after-move)
   ASSERT_TRUE(file.IsValid());
 
   char append_data_to_write[] = "78";

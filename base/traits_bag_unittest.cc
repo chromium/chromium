@@ -22,9 +22,9 @@ enum class EnumTraitB { ONE, TWO };
 struct TestTraits {
   // List of traits that are valid inputs for the constructor below.
   struct ValidTrait {
-    ValidTrait(ExampleTrait);
-    ValidTrait(EnumTraitA);
-    ValidTrait(EnumTraitB);
+    explicit ValidTrait(ExampleTrait);
+    explicit ValidTrait(EnumTraitA);
+    explicit ValidTrait(EnumTraitB);
   };
 
   template <class... ArgTypes>
@@ -52,7 +52,7 @@ struct FilteredTestTraits : public TestTraits {
 struct RequiredEnumTestTraits {
   // List of traits that are required inputs for the constructor below.
   struct ValidTrait {
-    ValidTrait(EnumTraitA);
+    explicit ValidTrait(EnumTraitA);
   };
 
   // We require EnumTraitA to be specified.
@@ -67,7 +67,7 @@ struct RequiredEnumTestTraits {
 struct OptionalEnumTestTraits {
   // List of traits that are optional inputs for the constructor below.
   struct ValidTrait {
-    ValidTrait(EnumTraitA);
+    explicit ValidTrait(EnumTraitA);
   };
 
   // EnumTraitA can optionally be specified.
@@ -162,12 +162,14 @@ TEST(TraitsBagTest, OptionalEnum) {
 
 TEST(TraitsBagTest, ValidTraitInheritance) {
   struct ValidTraitsA {
-    ValidTraitsA(EnumTraitA);
+    // For inheritance to work transparently, all constructors but the last in
+    // the chain must be implicit.
+    ValidTraitsA(EnumTraitA);  // NOLINT(google-explicit-constructor)
   };
 
   struct ValidTraitsB {
-    ValidTraitsB(ValidTraitsA);
-    ValidTraitsB(EnumTraitB);
+    explicit ValidTraitsB(ValidTraitsA);
+    explicit ValidTraitsB(EnumTraitB);
   };
 
   static_assert(AreValidTraits<ValidTraitsA, EnumTraitA>, "");

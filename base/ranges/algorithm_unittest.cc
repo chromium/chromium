@@ -47,7 +47,8 @@ namespace {
 
 struct Int {
   constexpr Int() = default;
-  constexpr Int(int value) : value(value) {}
+  constexpr Int(int value)  // NOLINT(google-explicit-constructor)
+      : value(value) {}
 
   int value = 0;
 };
@@ -56,25 +57,14 @@ constexpr bool operator==(Int lhs, Int rhs) {
   return lhs.value == rhs.value;
 }
 
-constexpr bool operator<(Int lhs, Int rhs) {
-  return lhs.value < rhs.value;
-}
-
-constexpr bool operator>(Int lhs, Int rhs) {
-  return lhs.value > rhs.value;
-}
-
-constexpr bool operator<=(Int lhs, Int rhs) {
-  return lhs.value <= rhs.value;
-}
-
-constexpr bool operator>=(Int lhs, Int rhs) {
-  return lhs.value >= rhs.value;
+constexpr auto operator<=>(Int lhs, Int rhs) {
+  return lhs.value <=> rhs.value;
 }
 
 // Move-only int that clears `value` when moving out.
 struct MoveOnlyInt {
-  MoveOnlyInt(int value) : value(value) {}
+  MoveOnlyInt(int value)  // NOLINT(google-explicit-constructor)
+      : value(value) {}
   MoveOnlyInt(MoveOnlyInt&& other) : value(std::exchange(other.value, 0)) {}
 
   MoveOnlyInt& operator=(MoveOnlyInt&& other) {
@@ -386,8 +376,8 @@ TEST(RangesTest, IsPermutation) {
   EXPECT_TRUE(ranges::is_permutation(
       ints1, ints2, [](Int lhs, Int rhs) { return lhs.value == rhs.value; }));
 
-  EXPECT_TRUE(
-      ranges::is_permutation(ints1, ints2, ranges::equal_to{}, &Int::value));
+  EXPECT_TRUE(ranges::is_permutation(ints1, ints2, ranges::equal_to{},
+                                     &Int::value, &Int::value));
 
   EXPECT_FALSE(ranges::is_permutation(array1, ints2, ranges::equal_to{}, {},
                                       &Int::value));

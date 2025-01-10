@@ -100,7 +100,7 @@ TEST(OperationsControllerTest, ScopedOperationsControllerIsMoveConstructible) {
   auto operation_token_1 = controller.TryBeginOperation();
   auto operation_token_2 = std::move(operation_token_1);
 
-  EXPECT_FALSE(operation_token_1);
+  EXPECT_FALSE(operation_token_1);  // NOLINT(bugprone-use-after-move)
   EXPECT_TRUE(operation_token_2);
 }
 

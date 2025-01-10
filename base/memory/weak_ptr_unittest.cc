@@ -265,7 +265,7 @@ TEST(WeakPtrFactoryTest, Move) {
   WeakPtr<int> ptr = factory.GetWeakPtr();
   WeakPtr<int> ptr2 = factory.GetWeakPtr();
   WeakPtr<int> ptr3 = std::move(ptr2);
-  EXPECT_NE(ptr.get(), ptr2.get());
+  EXPECT_NE(ptr.get(), ptr2.get());  // NOLINT(bugprone-use-after-move)
   EXPECT_EQ(ptr.get(), ptr3.get());
 }
 

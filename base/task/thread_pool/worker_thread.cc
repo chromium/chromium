@@ -490,7 +490,7 @@ void WorkerThread::RunWorker() {
       // Check that task_source is always cleared, to help investigation of
       // memory corruption where task_source is non-null after being moved.
       // crbug.com/1218384
-      CHECK(!task_source);
+      CHECK(!task_source);  // NOLINT(bugprone-use-after-move)
       task_source = std::move(new_task_source);
     }
   }

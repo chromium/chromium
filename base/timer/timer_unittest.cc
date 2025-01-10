@@ -41,7 +41,7 @@ const test::TaskEnvironment::MainThreadType testing_main_threads[] = {
 
 class Receiver {
  public:
-  Receiver() {}
+  Receiver() = default;
   void OnCalled() { count_++; }
   bool WasCalled() { return count_ > 0; }
   int TimesCalled() { return count_; }

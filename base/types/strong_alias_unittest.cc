@@ -149,7 +149,7 @@ TYPED_TEST(StrongAliasTest, MutableOperatorStar) {
   { Ptr ignore(*std::move(a)); }
   { Ptr ignore(std::move(*b)); }
 
-  EXPECT_FALSE(a.value());
+  EXPECT_FALSE(a.value());  // NOLINT(bugprone-use-after-move)
   EXPECT_FALSE(b.value());
 }
 
@@ -168,7 +168,7 @@ TYPED_TEST(StrongAliasTest, MutableValue) {
   { Ptr ignore(std::move(a).value()); }
   { Ptr ignore(std::move(b.value())); }
 
-  EXPECT_FALSE(a.value());
+  EXPECT_FALSE(a.value());  // NOLINT(bugprone-use-after-move)
   EXPECT_FALSE(b.value());
 }
 

@@ -71,7 +71,7 @@ TEST(ExtendTest, ExtendWithMove) {
 
   Extend(dst, std::move(src));
   EXPECT_EQ(dst, expected);
-  EXPECT_TRUE(src.empty());
+  EXPECT_TRUE(src.empty());  // NOLINT(bugprone-use-after-move)
 }
 
 TEST(ExtendTest, ExtendCopyableWithMove) {
@@ -90,7 +90,7 @@ TEST(ExtendTest, ExtendCopyableWithMove) {
 
   Extend(dst, std::move(src));
   EXPECT_EQ(dst, expected);
-  EXPECT_TRUE(src.empty());
+  EXPECT_TRUE(src.empty());  // NOLINT(bugprone-use-after-move)
 }
 
 TEST(ExtendTest, ExtendWithCopy) {

@@ -444,7 +444,7 @@ namespace {
 // Helper class that lets us run the GLib message loop.
 class GLibLoopRunner : public RefCounted<GLibLoopRunner> {
  public:
-  GLibLoopRunner() {}
+  GLibLoopRunner() = default;
 
   void RunGLib() {
     while (!quit_) {

@@ -309,16 +309,21 @@ static void ThreadSafeObserverHarness(int num_threads,
   using TestThread = AddRemoveThread<RemovePolicy>;
   std::vector<std::unique_ptr<TestThread>> threaded_observers;
   threaded_observers.reserve(num_threads);
-  scoped_refptr<SingleThreadTaskRunner> removal_task_runner;
-  for (int index = 0; index < num_threads; index++) {
-    auto add_remove_thread =
-        std::make_unique<TestThread>(observer_list.get(), cross_thread_notifies,
-                                     std::move(removal_task_runner));
-    if (cross_thread_removes) {
+  if (cross_thread_removes) {
+    scoped_refptr<SingleThreadTaskRunner> removal_task_runner;
+    for (int index = 0; index < num_threads; ++index) {
+      auto add_remove_thread = std::make_unique<TestThread>(
+          observer_list.get(), cross_thread_notifies,
+          std::move(removal_task_runner));
       // Save the task runner to pass to the next thread.
       removal_task_runner = add_remove_thread->task_runner();
+      threaded_observers.push_back(std::move(add_remove_thread));
     }
-    threaded_observers.push_back(std::move(add_remove_thread));
+  } else {
+    for (int index = 0; index < num_threads; ++index) {
+      threaded_observers.push_back(std::make_unique<TestThread>(
+          observer_list.get(), cross_thread_notifies, nullptr));
+    }
   }
   ASSERT_EQ(static_cast<size_t>(num_threads), threaded_observers.size());
 

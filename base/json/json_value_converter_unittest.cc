@@ -30,7 +30,7 @@ struct SimpleMessage {
   SimpleEnum simple_enum = FOO;
   std::vector<std::unique_ptr<int>> ints;
   std::vector<std::unique_ptr<std::string>> string_values;
-  SimpleMessage() {}
+  SimpleMessage() = default;
 
   static bool ParseSimpleEnum(std::string_view value, SimpleEnum* field) {
     if (value == "foo") {
@@ -85,7 +85,7 @@ struct NestedMessage {
   SimpleMessage child;
   std::vector<std::unique_ptr<SimpleMessage>> children;
 
-  NestedMessage() {}
+  NestedMessage() = default;
 
   static void RegisterJSONConverter(
       base::JSONValueConverter<NestedMessage>* converter) {

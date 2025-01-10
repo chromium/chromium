@@ -39,7 +39,7 @@ namespace {
 // place.
 class AssertReporter : public base::AsserterBase {
  public:
-  AssertReporter() {}
+  AssertReporter() = default;
 
   void warn() override { failed_ = true; }
 

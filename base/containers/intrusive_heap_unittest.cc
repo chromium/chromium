@@ -314,16 +314,16 @@ void MoveStressTest() {
   EXPECT_EQ(4u, heap2.size());
   EXPECT_FALSE(heap2.empty());
   ExpectHeap(heap2);
-  EXPECT_EQ(0u, heap.size());
-  EXPECT_TRUE(heap.empty());
+  EXPECT_EQ(0u, heap.size());  // NOLINT(bugprone-use-after-move)
+  EXPECT_TRUE(heap.empty());   // NOLINT(bugprone-use-after-move)
   ExpectHeap(heap);
 
   heap = std::move(heap2);
   EXPECT_EQ(4u, heap.size());
   EXPECT_FALSE(heap.empty());
   ExpectHeap(heap);
-  EXPECT_EQ(0u, heap2.size());
-  EXPECT_TRUE(heap2.empty());
+  EXPECT_EQ(0u, heap2.size());  // NOLINT(bugprone-use-after-move)
+  EXPECT_TRUE(heap2.empty());   // NOLINT(bugprone-use-after-move)
   ExpectHeap(heap2);
 }
 
@@ -464,9 +464,9 @@ class Value : public InternalHeapHandleStorage {
  public:
   explicit Value(int value) : value_(value) {}
   Value() : value_(-1) {}
-  Value(Value&& other) noexcept
-      : InternalHeapHandleStorage(std::move(other)),
-        value_(std::exchange(other.value_, -1)) {}
+  Value(Value&& other) noexcept : value_(std::exchange(other.value_, -1)) {
+    InternalHeapHandleStorage::operator=(std::move(other));
+  }
   Value(const Value& other) : value_(other.value_) {
     HeapHandle h = other.GetHeapHandle();
     if (h.IsValid()) {
@@ -476,8 +476,8 @@ class Value : public InternalHeapHandleStorage {
   ~Value() override = default;
 
   Value& operator=(Value&& other) noexcept {
-    InternalHeapHandleStorage::operator=(std::move(other));
     value_ = std::exchange(other.value_, -1);
+    InternalHeapHandleStorage::operator=(std::move(other));
     return *this;
   }
   Value& operator=(const Value& other) {
@@ -581,7 +581,7 @@ TEST(IntrusiveHeapTest, Constructors) {
 
     // Move constructor.
     IntrusiveHeapInt heap2(std::move(heap));
-    EXPECT_TRUE(heap.empty());
+    EXPECT_TRUE(heap.empty());  // NOLINT(bugprone-use-after-move)
     ExpectCanonical(heap2);
   }
 
@@ -606,7 +606,7 @@ TEST(IntrusiveHeapTest, Assignment) {
   // Move assignment.
   IntrusiveHeapInt heap2;
   heap2 = std::move(heap);
-  EXPECT_TRUE(heap.empty());
+  EXPECT_TRUE(heap.empty());  // NOLINT(bugprone-use-after-move)
   ExpectCanonical(heap2);
 }
 

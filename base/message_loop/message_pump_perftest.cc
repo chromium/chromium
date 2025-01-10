@@ -62,7 +62,7 @@ class JavaHandlerThreadForTest : public android::JavaHandlerThread {
 
 class ScheduleWorkTest : public testing::Test {
  public:
-  ScheduleWorkTest() {}
+  ScheduleWorkTest() = default;
 
   void SetUp() override {
     if (base::ThreadTicks::IsSupported()) {

@@ -19,7 +19,10 @@ class PA_SCOPED_LOCKABLE
  public:
   PA_ALWAYS_INLINE explicit CompileTimeConditionalScopedGuard(Lock& lock)
       PA_EXCLUSIVE_LOCK_FUNCTION(lock) {}
-  PA_ALWAYS_INLINE ~CompileTimeConditionalScopedGuard() PA_UNLOCK_FUNCTION() {}
+  // For some reason, defaulting this causes a thread safety annotation failure.
+  PA_ALWAYS_INLINE
+  ~CompileTimeConditionalScopedGuard()  // NOLINT(modernize-use-equals-default)
+      PA_UNLOCK_FUNCTION() {}
 };
 
 template <>

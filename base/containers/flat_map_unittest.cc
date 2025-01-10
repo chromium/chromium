@@ -261,8 +261,8 @@ TEST(FlatMap, InsertOrAssignMoveOnlyKey) {
   EXPECT_EQ(22, result.first->second.data());
   EXPECT_TRUE(result.second);
   EXPECT_EQ(1u, m.size());
-  EXPECT_EQ(0, key.data());  // moved from
-  EXPECT_EQ(0, val.data());  // moved from
+  EXPECT_EQ(0, key.data());  // NOLINT(bugprone-use-after-move)
+  EXPECT_EQ(0, val.data());  // NOLINT(bugprone-use-after-move)
 
   // Second call with same key should result in an assignment, overwriting the
   // old value. Assignment should be indicated by setting the second pair member
@@ -275,8 +275,8 @@ TEST(FlatMap, InsertOrAssignMoveOnlyKey) {
   EXPECT_EQ(44, result.first->second.data());
   EXPECT_FALSE(result.second);
   EXPECT_EQ(1u, m.size());
-  EXPECT_EQ(1, key.data());  // not moved from
-  EXPECT_EQ(0, val.data());  // moved from
+  EXPECT_EQ(1, key.data());  // NOLINT(bugprone-use-after-move)
+  EXPECT_EQ(0, val.data());  // NOLINT(bugprone-use-after-move)
 
   // Check that random insertion results in sorted range.
   base::flat_map<MoveOnlyInt, int> map;
@@ -298,8 +298,8 @@ TEST(FlatMap, InsertOrAssignMoveOnlyKeyWithHint) {
   EXPECT_EQ(1, result->first.data());
   EXPECT_EQ(22, result->second.data());
   EXPECT_EQ(1u, m.size());
-  EXPECT_EQ(0, key.data());  // moved from
-  EXPECT_EQ(0, val.data());  // moved from
+  EXPECT_EQ(0, key.data());  // NOLINT(bugprone-use-after-move)
+  EXPECT_EQ(0, val.data());  // NOLINT(bugprone-use-after-move)
 
   // Second call with same key should result in an assignment, overwriting the
   // old value. Only the inserted value should be moved from, the key should be
@@ -310,8 +310,8 @@ TEST(FlatMap, InsertOrAssignMoveOnlyKeyWithHint) {
   EXPECT_EQ(1, result->first.data());
   EXPECT_EQ(44, result->second.data());
   EXPECT_EQ(1u, m.size());
-  EXPECT_EQ(1, key.data());  // not moved from
-  EXPECT_EQ(0, val.data());  // moved from
+  EXPECT_EQ(1, key.data());  // NOLINT(bugprone-use-after-move)
+  EXPECT_EQ(0, val.data());  // NOLINT(bugprone-use-after-move)
 
   // Check that random insertion results in sorted range.
   base::flat_map<MoveOnlyInt, int> map;
@@ -338,9 +338,9 @@ TEST(FlatMap, TryEmplaceMoveOnlyKey) {
   EXPECT_EQ(44, result.first->second.second.data());
   EXPECT_TRUE(result.second);
   EXPECT_EQ(1u, m.size());
-  EXPECT_EQ(0, key.data());   // moved from
-  EXPECT_EQ(0, val1.data());  // moved from
-  EXPECT_EQ(0, val2.data());  // moved from
+  EXPECT_EQ(0, key.data());   // NOLINT(bugprone-use-after-move)
+  EXPECT_EQ(0, val1.data());  // NOLINT(bugprone-use-after-move)
+  EXPECT_EQ(0, val2.data());  // NOLINT(bugprone-use-after-move)
 
   // Second call with same key should result in a no-op, returning an iterator
   // to the existing element and returning false as the second pair member.
@@ -383,9 +383,9 @@ TEST(FlatMap, TryEmplaceMoveOnlyKeyWithHint) {
   EXPECT_EQ(22, result->second.first.data());
   EXPECT_EQ(44, result->second.second.data());
   EXPECT_EQ(1u, m.size());
-  EXPECT_EQ(0, key.data());   // moved from
-  EXPECT_EQ(0, val1.data());  // moved from
-  EXPECT_EQ(0, val2.data());  // moved from
+  EXPECT_EQ(0, key.data());   // NOLINT(bugprone-use-after-move)
+  EXPECT_EQ(0, val1.data());  // NOLINT(bugprone-use-after-move)
+  EXPECT_EQ(0, val2.data());  // NOLINT(bugprone-use-after-move)
 
   // Second call with same key should result in a no-op, returning an iterator
   // to the existing element. Key and values that were attempted to be inserted

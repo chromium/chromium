@@ -69,7 +69,7 @@ namespace {
 
 class Foo : public RefCounted<Foo> {
  public:
-  Foo() {}
+  Foo() = default;
 
   Foo(const Foo&) = delete;
   Foo& operator=(const Foo&) = delete;

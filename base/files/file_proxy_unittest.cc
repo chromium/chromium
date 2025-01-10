@@ -254,7 +254,7 @@ TEST_F(FileProxyTest, SetAndTake) {
   EXPECT_FALSE(proxy.IsValid());
   proxy.SetFile(std::move(file));
   EXPECT_TRUE(proxy.IsValid());
-  EXPECT_FALSE(file.IsValid());
+  EXPECT_FALSE(file.IsValid());  // NOLINT(bugprone-use-after-move)
 
   file = proxy.TakeFile();
   EXPECT_FALSE(proxy.IsValid());

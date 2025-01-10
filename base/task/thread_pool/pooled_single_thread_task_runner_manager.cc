@@ -884,18 +884,23 @@ void PooledSingleThreadTaskRunnerManager::ReleaseSharedWorkerThreads() {
     }
   }
 
-  for (size_t i = 0; i < std::size(local_shared_worker_threads); ++i) {
-    for (size_t j = 0; j < std::size(local_shared_worker_threads[i]); ++j) {
-      if (local_shared_worker_threads[i][j]) {
-        UnregisterWorkerThread(local_shared_worker_threads[i][j]);
+  for (auto& threads : local_shared_worker_threads) {
+    for (auto* thread : threads) {
+      if (thread) {
+        UnregisterWorkerThread(thread);
       }
-#if BUILDFLAG(IS_WIN)
-      if (local_shared_com_worker_threads[i][j]) {
-        UnregisterWorkerThread(local_shared_com_worker_threads[i][j]);
-      }
-#endif
     }
   }
+
+#if BUILDFLAG(IS_WIN)
+  for (auto& com_threads : local_shared_com_worker_threads) {
+    for (auto* com_thread : com_threads) {
+      if (com_thread) {
+        UnregisterWorkerThread(com_thread);
+      }
+    }
+  }
+#endif
 }
 
 }  // namespace base::internal
