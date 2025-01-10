@@ -960,18 +960,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserFullscreenPromo"
-    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2025-02-05">
+    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2025-08-05">
   <owner>sebsg@chromium.org</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
   <summary>
     The action taken by the user in response to the default browser promo.
   </summary>
 </histogram>
 
 <histogram name="IOS.DefaultBrowserFullscreenTailoredPromoAllTabs"
-    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2025-06-08">
+    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2025-08-05">
   <owner>sebsg@chromium.org</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
   <summary>
     The action taken by the user in response to the &quot;All tabs&quot; default
     browser tailored promo.
@@ -979,9 +979,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserFullscreenTailoredPromoMadeForIOS"
-    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2025-06-08">
+    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2025-08-05">
   <owner>sebsg@chromium.org</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
   <summary>
     The action taken by the user in response to the &quot;Made for iOS&quot;
     default browser tailored promo.
@@ -989,9 +989,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserFullscreenTailoredPromoStaySafe"
-    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2025-06-08">
+    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2025-08-05">
   <owner>sebsg@chromium.org</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
   <summary>
     The action taken by the user in response to the &quot;Stay Safe&quot;
     default browser tailored promo.
@@ -999,9 +999,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserPromo.DaysSinceLastPromoInteraction"
-    units="count" expires_after="2025-06-08">
+    units="count" expires_after="2025-08-05">
   <owner>gayane@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
   <summary>
     Represents number of days since last default browser promo was displayed.
     This includes full screen and non-modal promo and default browser promo in
@@ -1020,9 +1020,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserPromo.GenericPromoDisplayCount"
-    units="count" expires_after="2025-06-08">
+    units="count" expires_after="2025-08-05">
   <owner>gayane@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
   <summary>
     Represents number of generic default browser promos displayed to the user.
     This includes all video promo options. Recorded before every full screen
@@ -1040,10 +1040,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserPromo.NonModal.{Impression}"
-    enum="IOSDefaultBrowserPromoNonModalAction" expires_after="2025-06-08">
+    enum="IOSDefaultBrowserPromoNonModalAction" expires_after="2025-08-05">
   <owner>sebsg@chromium.org</owner>
-  <owner>nicolasmacbeth@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
   <summary>
     Logged when an action happens on the {Impression} impression of a non modal
     promo. Records the action of the promo. iOS only.
@@ -1063,9 +1062,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserPromo.NonModal.{PromoType}"
-    enum="IOSDefaultBrowserPromoNonModalAction" expires_after="2025-06-08">
+    enum="IOSDefaultBrowserPromoNonModalAction" expires_after="2025-08-05">
   <owner>sebsg@chromium.org</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
   <summary>
     Logged when an action happens on a non modal promo triggered by {PromoType}.
     Records the action of the promo. iOS only.
@@ -1078,10 +1077,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserPromo.SetUpList.Action"
-    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2025-06-22">
+    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2025-08-05">
   <owner>sebsg@chromium.org</owner>
   <owner>scottyoder@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
   <summary>
     The action taken by the user in response to the Set Up List default browser
     promo.
@@ -1089,16 +1089,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserPromo.Shown"
-    enum="IOSDefaultBrowserPromoType" expires_after="2025-06-08">
+    enum="IOSDefaultBrowserPromoType" expires_after="2025-08-05">
   <owner>gayane@chromium.org</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
   <summary>The default browser promo type shown to the user.</summary>
 </histogram>
 
 <histogram name="IOS.DefaultBrowserPromo.TailoredPromoDisplayCount"
-    units="count" expires_after="2025-06-08">
+    units="count" expires_after="2025-08-05">
   <owner>gayane@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
   <summary>
     Represents number of tailored default browser promos displayed to the user.
     Recorded before every full screen promo displayed.
@@ -1106,9 +1106,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserPromo.{PromoAction}.{PromoStat}"
-    units="count" expires_after="2025-05-18">
+    units="count" expires_after="2025-08-05">
   <owner>gayane@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
   <summary>
     Logs all {PromoStat} metrics when the {PromoAction} action happens in a
     default browser promo.
@@ -1153,8 +1153,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserSettingsPageUsage{Source}"
-    enum="IOSDefaultBrowserSettingsPageUsage" expires_after="2025-06-22">
-  <owner>nicolasmacbeth@google.com</owner>
+    enum="IOSDefaultBrowserSettingsPageUsage" expires_after="2025-08-05">
   <owner>gayane@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -1178,10 +1177,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserVideoPromo.Fullscreen"
-    enum="IOSDefaultBrowserVideoPromoAction" expires_after="2025-06-08">
+    enum="IOSDefaultBrowserVideoPromoAction" expires_after="2025-08-05">
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
   <summary>
     The action taken by the user in response to the full screen default browser
     video promo.
@@ -1189,8 +1188,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Desktop.{PromoType}.Shown"
-    enum="DesktopIOSPromoImpression" expires_after="2025-06-22">
-  <owner>aliaaborhamy@google.com</owner>
+    enum="DesktopIOSPromoImpression" expires_after="2025-08-05">
   <owner>nicolasmacbeth@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -1207,8 +1205,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Desktop.{PromoType}.{Impression}.Action"
-    enum="DesktopIOSPromoAction" expires_after="2025-06-22">
-  <owner>aliaaborhamy@google.com</owner>
+    enum="DesktopIOSPromoAction" expires_after="2025-08-05">
   <owner>nicolasmacbeth@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -1231,9 +1228,9 @@ chromium-metrics-reviews@google.com.
 the generic promo launch. -->
 
 <histogram name="IOS.DesktopPasswordPromo.Shown"
-    enum="DesktopIOSPasswordPromoImpression" expires_after="2025-06-22">
+    enum="DesktopIOSPasswordPromoImpression" expires_after="2025-08-05">
   <owner>nicolasmacbeth@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
   <summary>
     The impression of the iOS Password Promo shown to the user on Desktop.
     Desktop only. This is only recorded for contextual promo appearances, not
@@ -1245,9 +1242,9 @@ the generic promo launch. -->
 the generic promo launch. -->
 
 <histogram name="IOS.DesktopPasswordPromo.{Impression}.Action"
-    enum="DesktopIOSPasswordPromoAction" expires_after="2025-04-15">
+    enum="DesktopIOSPasswordPromoAction" expires_after="2025-08-05">
   <owner>nicolasmacbeth@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
   <summary>
     The action taken by the user when shown the iOS Password Promo on Desktop
     for the {Impression} impression. Desktop only.
