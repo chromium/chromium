@@ -97,7 +97,7 @@ class TabStripActionContainer : public views::View,
     return tab_organization_service_;
   }
 
-  glic::GlicButton *GetGlicButton() { return glic_button_; }
+  glic::GlicButton* GetGlicButton() { return glic_button_; }
 
   ProductSpecificationsButton* GetProductSpecificationsButton() {
     return product_specifications_button_;
@@ -183,8 +183,8 @@ class TabStripActionContainer : public views::View,
   raw_ptr<const Browser> browser_;
 
   // The TabStripController is removed as part of the TabStripRegionView's
-  // destructor before this class gets cleanup up. THis Pointer is avlid except
-  // during destruciotn.
+  // destructor before this class gets cleanup up. This pointer is valid except
+  // during destruction.
   const raw_ptr<TabStripController> tab_strip_controller_ = nullptr;
 
   // Timer for hiding tab_strip_nudge_button_ after show.
