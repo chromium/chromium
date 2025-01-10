@@ -79,8 +79,6 @@ crbug.com/1214884 [ Linux ] external/wpt/html/webappapis/scripting/events/event-
 # Sheriff 2021-06-02
 crbug.com/1215390 [ Linux ] external/wpt/pointerevents/pointerevent_pointerId_scope.html [ Pass Failure Timeout ]
 
-# Sheriff 2022-08-29
-
 # Flaking on WebKit Linux MSAN
 crbug.com/1126305 [ Linux ] external/wpt/speculation-rules/prerender/fetch-blob.html [ Skip ]
 crbug.com/1126305 [ Linux ] external/wpt/speculation-rules/prerender/cache-storage.https.html [ Skip ]
@@ -136,3 +134,8 @@ crbug.com/378566920 [ Linux ] external/wpt/speculation-rules/prefetch/no-vary-se
 # Failing on WebKit Linux MSAN
 crbug.com/40667709 [ Linux ] external/wpt/html/canvas/element/manual/fill-and-stroke-styles/canvas_colorsandstyles_createlineargradient_001.htm [ Failure Pass Timeout ]
 crbug.com/40667709 [ Linux ] external/wpt/html/canvas/offscreen/manual/filter/offscreencanvas.filter.w.html [ Failure Pass Timeout ]
+
+# Gardener 2025-01-08
+crbug.com/388428511 [ Linux ] external/wpt/webrtc/protocol/crypto-suite.https.html [ Failure Pass ]
+crbug.com/388428511 [ Linux ] external/wpt/wasm/core/simd/simd_f32x4_pmin_pmax.wast.js.html [ Failure Pass ]
+crbug.com/388428511 [ Linux ] external/wpt/wasm/core/simd/simd_f64x2_pmin_pmax.wast.js.html [ Failure Pass ]
