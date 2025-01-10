@@ -467,10 +467,24 @@ viz_component("service") {
       "display_embedder/software_output_device_win.h",
       "display_embedder/software_output_device_win_base.cc",
       "display_embedder/software_output_device_win_base.h",
+      "display_embedder/software_output_device_win_swapchain.cc",
+      "display_embedder/software_output_device_win_swapchain.h",
       "frame_sinks/external_begin_frame_source_win.cc",
       "frame_sinks/external_begin_frame_source_win.h",
       "gl/info_collection_gpu_service_impl.cc",
       "gl/info_collection_gpu_service_impl.h",
+    ]
+
+    libs = [
+      "d3d11.lib",
+      "dxgi.lib",
+      "dcomp.lib",
+    ]
+
+    ldflags = [
+      "/DELAYLOAD:d3d11.dll",
+      "/DELAYLOAD:dxgi.dll",
+      "/DELAYLOAD:dcomp.dll",
     ]
 
     # SkiaOutputDeviceBufferQueue doesn't support Windows.

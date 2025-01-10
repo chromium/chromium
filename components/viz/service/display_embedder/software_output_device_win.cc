@@ -11,7 +11,9 @@
 #include "base/trace_event/trace_event.h"
 #include "base/win/windows_version.h"
 #include "components/viz/common/display/use_layered_window.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/resources/resource_sizes.h"
+#include "components/viz/service/display_embedder/software_output_device_win_swapchain.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "services/viz/privileged/mojom/compositing/layered_window_updater.mojom.h"
@@ -170,7 +172,16 @@ void SoftwareOutputDeviceWinProxy::DrawAck() {
 std::unique_ptr<SoftwareOutputDevice> CreateSoftwareOutputDeviceWin(
     HWND hwnd,
     OutputDeviceBacking* backing,
-    mojom::DisplayClient* display_client) {
+    mojom::DisplayClient* display_client,
+    HWND& child_hwnd) {
+  child_hwnd = NULL;
+
+  if (base::FeatureList::IsEnabled(
+          features::kUseSwapChainForSoftwareRendering)) {
+    return std::make_unique<SoftwareOutputDeviceWinSwapChain>(hwnd, child_hwnd,
+                                                              backing);
+  }
+
   if (NeedsToUseLayerWindow(hwnd)) {
     DCHECK(display_client);
 
@@ -182,9 +193,9 @@ std::unique_ptr<SoftwareOutputDevice> CreateSoftwareOutputDeviceWin(
 
     return std::make_unique<SoftwareOutputDeviceWinProxy>(
         hwnd, std::move(layered_window_updater));
-  } else {
-    return std::make_unique<SoftwareOutputDeviceWinDirect>(hwnd, backing);
   }
+
+  return std::make_unique<SoftwareOutputDeviceWinDirect>(hwnd, backing);
 }
 
 }  // namespace viz

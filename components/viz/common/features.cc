@@ -126,6 +126,13 @@ const base::FeatureParam<DelegatedCompositingMode>
 BASE_FEATURE(kDCompSurfacesForDelegatedInk,
              "DCompSurfacesForDelegatedInk",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// If enabled, Chromium will utilize DXGI SwapChains and DComp visuals as the
+// software output device rather than GDI bit block transfer to the redirection
+// surface.
+BASE_FEATURE(kUseSwapChainForSoftwareRendering,
+             "UseSwapChainForSoftwareRendering",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Note: This feature is actively being finched (Oct, 2024).

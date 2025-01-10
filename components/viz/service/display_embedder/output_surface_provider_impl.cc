@@ -146,8 +146,13 @@ OutputSurfaceProviderImpl::CreateSoftwareOutputDeviceForPlatform(
     return std::make_unique<SoftwareOutputDevice>();
 
 #if BUILDFLAG(IS_WIN)
-  return CreateSoftwareOutputDeviceWin(surface_handle, &output_device_backing_,
-                                       display_client);
+  HWND child_hwnd;
+  auto device = CreateSoftwareOutputDeviceWin(
+      surface_handle, &output_device_backing_, display_client, child_hwnd);
+  if (child_hwnd) {
+    display_client->AddChildWindowToBrowser(child_hwnd);
+  }
+  return device;
 #elif BUILDFLAG(IS_APPLE)
   return std::make_unique<SoftwareOutputDeviceMac>(task_runner_);
 #elif BUILDFLAG(IS_ANDROID)

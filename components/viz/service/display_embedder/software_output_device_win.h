@@ -83,7 +83,8 @@ class VIZ_SERVICE_EXPORT SoftwareOutputDeviceWinProxy
 VIZ_SERVICE_EXPORT std::unique_ptr<SoftwareOutputDevice>
 CreateSoftwareOutputDeviceWin(HWND hwnd,
                               OutputDeviceBacking* backing,
-                              mojom::DisplayClient* display_client);
+                              mojom::DisplayClient* display_client,
+                              HWND& child_hwnd);
 
 }  // namespace viz
 

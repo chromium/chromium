@@ -50,6 +50,7 @@ extern const VIZ_COMMON_EXPORT base::FeatureParam<DelegatedCompositingMode>
 
 #if BUILDFLAG(IS_WIN)
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDCompSurfacesForDelegatedInk);
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseSwapChainForSoftwareRendering);
 #endif
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kRenderPassDrawnRect);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kRecordSkPicture);
