@@ -32,8 +32,12 @@ class MockRemoteHandler extends PageHandlerRemote {
     });
   }
   override listCourses(): Promise<{courses: Course[]}> {
-    return Promise.resolve(
-        {courses: [{id: '1', name: 'course1'}, {id: '2', name: 'course2'}]});
+    return Promise.resolve({
+      courses: [
+        {id: '1', name: 'course1', section: 'period1'},
+        {id: '2', name: 'course2', section: ''}
+      ]
+    });
   }
   override listStudents(id: string): Promise<{students: Identity[]}> {
     // Dummy action get around with unused variable check.
@@ -279,7 +283,7 @@ suite('ClientDelegateTest', function() {
         const result = await clientDelegateImpl.getInstance().getCourseList();
         assertDeepEquals(
             [
-              {id: '1', name: 'course1', section: ''},
+              {id: '1', name: 'course1', section: 'period1'},
               {id: '2', name: 'course2', section: ''},
             ],
             result);

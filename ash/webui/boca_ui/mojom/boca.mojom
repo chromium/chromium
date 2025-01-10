@@ -41,6 +41,8 @@ struct Course {
   string id;
   // Course name.
   string name;
+  // Course section.
+  string section;
 };
 
 // Represents a browser window.

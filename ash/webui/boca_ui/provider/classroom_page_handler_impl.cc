@@ -103,7 +103,8 @@ void ClassroomPageHandlerImpl::OnListCoursesFetched(
   }
 
   for (const auto& item : result.value()->items()) {
-    mojom::CoursePtr course = mojom::Course::New(item->id(), item->name());
+    mojom::CoursePtr course =
+        mojom::Course::New(item->id(), item->name(), item->section());
     fetched_courses->push_back(std::move(course));
     valid_course_ids_.insert(item->id());
   }
