@@ -97,9 +97,9 @@ class AutofillPlusAddressDelegate {
       const url::Origin& origin,
       bool is_off_the_record,
       const FormData& focused_form,
+      const FormFieldData& focused_field,
       const base::flat_map<FieldGlobalId, FieldTypeGroup>& form_field_types,
       const PasswordFormClassification& focused_form_classification,
-      const FieldGlobalId& focused_field_id,
       AutofillSuggestionTriggerSource trigger_source) = 0;
 
   // Returns the "Manage plus addresses..." suggestion which redirects the user

@@ -311,10 +311,10 @@ std::vector<Suggestion> PlusAddressServiceImpl::GetSuggestionsFromPlusAddresses(
     const url::Origin& origin,
     bool is_off_the_record,
     const autofill::FormData& focused_form,
+    const autofill::FormFieldData& focused_field,
     const base::flat_map<autofill::FieldGlobalId, autofill::FieldTypeGroup>&
         form_field_type_groups,
     const autofill::PasswordFormClassification& focused_form_classification,
-    const autofill::FieldGlobalId& focused_field_id,
     AutofillSuggestionTriggerSource trigger_source) {
   if (!IsPlusAddressFillingEnabled(origin)) {
     return {};
@@ -327,8 +327,8 @@ std::vector<Suggestion> PlusAddressServiceImpl::GetSuggestionsFromPlusAddresses(
                                      plus_address_allocator_.get(),
                                      std::move(origin))
           .GetSuggestions(plus_addresses, is_creation_enabled, focused_form,
-                          form_field_type_groups, focused_form_classification,
-                          focused_field_id, trigger_source);
+                          focused_field, form_field_type_groups,
+                          focused_form_classification, trigger_source);
   const autofill::DenseSet<SuggestionType> suggestion_types(suggestions,
                                                             &Suggestion::type);
 

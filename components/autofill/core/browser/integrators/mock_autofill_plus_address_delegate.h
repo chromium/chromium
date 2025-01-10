@@ -39,9 +39,9 @@ class MockAutofillPlusAddressDelegate : public AutofillPlusAddressDelegate {
                const url::Origin&,
                bool,
                const FormData&,
+               const FormFieldData&,
                (const base::flat_map<FieldGlobalId, FieldTypeGroup>&),
                const PasswordFormClassification&,
-               const FieldGlobalId&,
                AutofillSuggestionTriggerSource),
               (override));
   MOCK_METHOD(Suggestion, GetManagePlusAddressSuggestion, (), (const override));

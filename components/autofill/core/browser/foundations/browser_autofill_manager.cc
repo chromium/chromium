@@ -1378,9 +1378,9 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
     std::vector<Suggestion> plus_address_suggestions =
         client().GetPlusAddressDelegate()->GetSuggestionsFromPlusAddresses(
             plus_addresses, client().GetLastCommittedPrimaryMainFrameOrigin(),
-            client().IsOffTheRecord(), form,
+            client().IsOffTheRecord(), form, field,
             GetFieldTypeGroupsFromFormStructure(form_structure),
-            password_form_classification, field.global_id(), trigger_source);
+            password_form_classification, trigger_source);
 
     MixPlusAddressAndAddressSuggestions(
         std::move(plus_address_suggestions), std::move(suggestions),
@@ -1464,9 +1464,9 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
     std::vector<Suggestion> plus_address_suggestions =
         client().GetPlusAddressDelegate()->GetSuggestionsFromPlusAddresses(
             plus_addresses, client().GetLastCommittedPrimaryMainFrameOrigin(),
-            client().IsOffTheRecord(), form,
+            client().IsOffTheRecord(), form, field,
             GetFieldTypeGroupsFromFormStructure(form_structure),
-            password_form_classification, field.global_id(), trigger_source);
+            password_form_classification, trigger_source);
     barrier_callback.Run(std::move(plus_address_suggestions));
   }
 

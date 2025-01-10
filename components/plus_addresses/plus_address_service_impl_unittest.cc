@@ -182,8 +182,9 @@ class PlusAddressServiceTest : public ::testing::Test {
     form.set_fields({focused_field});
     return service().GetSuggestionsFromPlusAddresses(
         affiliated_plus_addresses, origin, is_off_the_record, form,
+        focused_field,
         /*form_field_type_groups=*/{}, focused_form_classification,
-        focused_field.global_id(), trigger_source);
+        trigger_source);
   }
 
  protected:

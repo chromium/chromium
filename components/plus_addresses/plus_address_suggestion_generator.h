@@ -46,10 +46,10 @@ class PlusAddressSuggestionGenerator final {
       const std::vector<std::string>& affiliated_plus_addresses,
       bool is_creation_enabled,
       const autofill::FormData& focused_form,
+      const autofill::FormFieldData& focused_field,
       const base::flat_map<autofill::FieldGlobalId, autofill::FieldTypeGroup>&
           form_field_type_groups,
       const autofill::PasswordFormClassification& focused_form_classification,
-      const autofill::FieldGlobalId& focused_field_id,
       autofill::AutofillSuggestionTriggerSource trigger_source);
 
   // Updates `suggestion` with a refreshed plus address by setting a new

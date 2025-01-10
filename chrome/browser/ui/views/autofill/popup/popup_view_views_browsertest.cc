@@ -532,8 +532,8 @@ class PopupViewViewsPlusAddressSuggestionBrowsertest
     FormData form = autofill::test::CreateTestSignupFormData();
     return generator.GetSuggestions(
         affiliated_plus_addresses,
-        /*is_creation_enabled=*/true, form, /*form_field_type_groups=*/{},
-        PasswordFormClassification(), form.fields()[0].global_id(),
+        /*is_creation_enabled=*/true, form, form.fields()[0],
+        /*form_field_type_groups=*/{}, PasswordFormClassification(),
         AutofillSuggestionTriggerSource::kFormControlElementClicked);
   }
 
