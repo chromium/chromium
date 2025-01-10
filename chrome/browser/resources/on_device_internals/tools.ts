@@ -422,7 +422,7 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
   }
 
   private canUploadFile_(): boolean {
-    return this.canExecute_() && this.imageFile_ === null;
+    return this.canEnterInput_() && this.imageFile_ === null;
   }
 
   private isLoading_(): boolean {
