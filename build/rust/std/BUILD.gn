@@ -89,7 +89,7 @@ if (toolchain_has_rust) {
     # These are no longer present in the Windows toolchain.
     stdlib_files += [
       "addr2line",
-      "adler",
+      "adler2",
       "gimli",
       "libc",
       "memchr",
