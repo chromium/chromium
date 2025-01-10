@@ -1336,10 +1336,6 @@ class AutofillAgentTestUsingPlatformAutofill : public AutofillAgentTest {
         render_frame, std::move(password_autofill_agent),
         std::move(password_generation_agent), associated_interfaces);
   }
-
-  MockAutofillAgent& autofill_agent() {
-    return static_cast<MockAutofillAgent&>(AutofillAgentTest::autofill_agent());
-  }
 };
 
 // Tests that the agent in 3P mode doesn't fill insecure forms.
