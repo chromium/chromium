@@ -145,13 +145,15 @@ export class SessionProcessor {
   async subscribe(
     params: Session.SubscriptionRequest,
     channel: BidiPlusChannel = null,
-  ): Promise<EmptyResult> {
-    await this.#eventManager.subscribe(
+  ): Promise<Session.SubscribeResult> {
+    const subscription = await this.#eventManager.subscribe(
       params.events as ChromiumBidi.EventNames[],
-      params.contexts ?? [null],
+      params.contexts ?? [],
       channel,
     );
-    return {};
+    return {
+      subscription,
+    };
   }
 
   async unsubscribe(
@@ -160,7 +162,7 @@ export class SessionProcessor {
   ): Promise<EmptyResult> {
     await this.#eventManager.unsubscribe(
       params.events as ChromiumBidi.EventNames[],
-      params.contexts ?? [null],
+      params.contexts ?? [],
       channel,
     );
     return {};

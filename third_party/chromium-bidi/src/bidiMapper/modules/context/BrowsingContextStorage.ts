@@ -110,7 +110,10 @@ export class BrowsingContextStorage {
       return null;
     }
     const maybeContext = this.findContext(id);
-    const parentId = maybeContext?.parentId ?? null;
+    if (!maybeContext) {
+      return null;
+    }
+    const parentId = maybeContext.parentId ?? null;
     if (parentId === null) {
       return id;
     }

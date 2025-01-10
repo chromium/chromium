@@ -18,11 +18,11 @@
 import type {BidiPlusChannel} from '../../../protocol/chromium-bidi.js';
 import {
   ChromiumBidi,
+  InvalidArgumentException,
   type BrowsingContext,
 } from '../../../protocol/protocol.js';
 import {Buffer} from '../../../utils/Buffer.js';
 import {DefaultMap} from '../../../utils/DefaultMap.js';
-import {distinctValues} from '../../../utils/DistinctValues.js';
 import {EventEmitter} from '../../../utils/EventEmitter.js';
 import {IdWrapper} from '../../../utils/IdWrapper.js';
 import type {Result} from '../../../utils/result.js';
@@ -30,7 +30,11 @@ import {OutgoingMessage} from '../../OutgoingMessage.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
 import {assertSupportedEvent} from './events.js';
-import {SubscriptionManager} from './SubscriptionManager.js';
+import {
+  difference,
+  SubscriptionManager,
+  unrollEvents,
+} from './SubscriptionManager.js';
 
 class EventWrapper {
   readonly #idWrapper = new IdWrapper();
@@ -144,7 +148,7 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
 
   registerEvent(
     event: ChromiumBidi.Event,
-    contextId: BrowsingContext.BrowsingContext | null,
+    contextId: BrowsingContext.BrowsingContext,
   ): void {
     this.registerPromiseEvent(
       Promise.resolve({
@@ -156,9 +160,19 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
     );
   }
 
+  registerGlobalEvent(event: ChromiumBidi.Event): void {
+    this.registerGlobalPromiseEvent(
+      Promise.resolve({
+        kind: 'success',
+        value: event,
+      }),
+      event.method,
+    );
+  }
+
   registerPromiseEvent(
     event: Promise<Result<ChromiumBidi.Event>>,
-    contextId: BrowsingContext.BrowsingContext | null,
+    contextId: BrowsingContext.BrowsingContext,
     eventName: ChromiumBidi.EventNames,
   ): void {
     const eventWrapper = new EventWrapper(event, contextId);
@@ -178,11 +192,29 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
     }
   }
 
+  registerGlobalPromiseEvent(
+    event: Promise<Result<ChromiumBidi.Event>>,
+    eventName: ChromiumBidi.EventNames,
+  ): void {
+    const eventWrapper = new EventWrapper(event, null);
+    const sortedChannels =
+      this.#subscriptionManager.getChannelsSubscribedToEventGlobally(eventName);
+    this.#bufferEvent(eventWrapper, eventName);
+    // Send events to channels in the subscription priority.
+    for (const channel of sortedChannels) {
+      this.emit(EventManagerEvents.Event, {
+        message: OutgoingMessage.createFromPromise(event, channel),
+        event: eventName,
+      });
+      this.#markEventSent(eventWrapper, channel, eventName);
+    }
+  }
+
   async subscribe(
     eventNames: ChromiumBidi.EventNames[],
-    contextIds: (BrowsingContext.BrowsingContext | null)[],
+    contextIds: BrowsingContext.BrowsingContext[],
     channel: BidiPlusChannel,
-  ): Promise<void> {
+  ): Promise<string> {
     for (const name of eventNames) {
       assertSupportedEvent(name);
     }
@@ -195,17 +227,44 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
       }
     }
 
-    // List of the subscription items that were actually added. Each contains a specific
-    // event and context. No module event (like "network") or global context subscription
-    // (like null) are included.
-    const addedSubscriptionItems: SubscriptionItem[] = [];
+    const unrolledEventNames = new Set(unrollEvents(eventNames));
+    const subscribeStepEvents = new Map<ChromiumBidi.EventNames, Set<string>>();
+    const subscriptionNavigableIds = new Set(
+      contextIds.length
+        ? contextIds.map((contextId) => {
+            const id =
+              this.#browsingContextStorage.findTopLevelContextId(contextId);
+            if (!id) {
+              throw new InvalidArgumentException('Invalid context id');
+            }
+            return id;
+          })
+        : this.#browsingContextStorage.getTopLevelContexts().map((c) => c.id),
+    );
 
-    for (const eventName of eventNames) {
-      for (const contextId of contextIds) {
-        addedSubscriptionItems.push(
-          ...this.#subscriptionManager.subscribe(eventName, contextId, channel),
-        );
+    for (const eventName of unrolledEventNames) {
+      const subscribedNavigableIds = new Set(
+        this.#browsingContextStorage
+          .getTopLevelContexts()
+          .map((c) => c.id)
+          .filter((id) => {
+            return this.#subscriptionManager.isSubscribedTo(eventName, id);
+          }),
+      );
+      subscribeStepEvents.set(
+        eventName,
+        difference(subscriptionNavigableIds, subscribedNavigableIds),
+      );
+    }
 
+    const subscription = this.#subscriptionManager.subscribe(
+      eventNames,
+      contextIds,
+      channel,
+    );
+
+    for (const eventName of subscription.eventNames) {
+      for (const contextId of subscriptionNavigableIds) {
         for (const eventWrapper of this.#getBufferedEvents(
           eventName,
           contextId,
@@ -224,26 +283,26 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
       }
     }
 
-    // Iterate over all new subscription items and call hooks if any. There can be
-    // duplicates, e.g. when subscribing to the whole module and some specific event in
-    // the same time ("network", "network.responseCompleted"). `distinctValues` guarantees
-    // that hooks are called only once per pair event + context.
-    distinctValues(addedSubscriptionItems).forEach(({contextId, event}) => {
-      this.#subscribeHooks.get(event).forEach((hook) => hook(contextId));
-    });
+    for (const [eventName, contextIds] of subscribeStepEvents) {
+      for (const contextId of contextIds) {
+        this.#subscribeHooks.get(eventName).forEach((hook) => hook(contextId));
+      }
+    }
 
     await this.toggleModulesIfNeeded();
+
+    return subscription.id;
   }
 
   async unsubscribe(
     eventNames: ChromiumBidi.EventNames[],
-    contextIds: (BrowsingContext.BrowsingContext | null)[],
+    contextIds: BrowsingContext.BrowsingContext[],
     channel: BidiPlusChannel,
   ): Promise<void> {
     for (const name of eventNames) {
       assertSupportedEvent(name);
     }
-    this.#subscriptionManager.unsubscribeAll(eventNames, contextIds, channel);
+    this.#subscriptionManager.unsubscribe(eventNames, contextIds, channel);
     await this.toggleModulesIfNeeded();
   }
 

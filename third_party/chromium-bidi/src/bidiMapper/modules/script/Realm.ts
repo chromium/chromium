@@ -237,7 +237,7 @@ export abstract class Realm {
 
   #registerEvent(event: ChromiumBidi.Event) {
     if (this.associatedBrowsingContexts.length === 0) {
-      this.#eventManager.registerEvent(event, null);
+      this.#eventManager.registerGlobalEvent(event);
     } else {
       for (const browsingContext of this.associatedBrowsingContexts) {
         this.#eventManager.registerEvent(event, browsingContext.id);

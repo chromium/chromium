@@ -808,12 +808,20 @@ export class NetworkRequest {
     this.#phaseChanged();
 
     this.#emittedEvents[event.method] = true;
-    this.#eventManager.registerEvent(
-      Object.assign(event, {
-        type: 'event' as const,
-      }),
-      this.#context,
-    );
+    if (this.#context) {
+      this.#eventManager.registerEvent(
+        Object.assign(event, {
+          type: 'event' as const,
+        }),
+        this.#context,
+      );
+    } else {
+      this.#eventManager.registerGlobalEvent(
+        Object.assign(event, {
+          type: 'event' as const,
+        }),
+      );
+    }
   }
 
   #getBaseEventParams(phase?: Network.InterceptPhase): Network.BaseParameters {

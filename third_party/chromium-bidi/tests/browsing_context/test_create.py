@@ -14,9 +14,9 @@
 # limitations under the License.
 import pytest
 from anys import ANY_STR
-from test_helpers import (ANY_TIMESTAMP, AnyExtending, execute_command,
-                          get_tree, goto_url, read_JSON_message,
-                          send_JSON_command, subscribe)
+from test_helpers import (ANY_TIMESTAMP, ANY_UUID, AnyExtending,
+                          execute_command, get_tree, goto_url,
+                          read_JSON_message, send_JSON_command, subscribe)
 
 
 @pytest.mark.asyncio
@@ -418,7 +418,9 @@ async def test_browsingContext_subscribe_to_contextCreated_emits_for_existing(
     assert resp == {
         'id': subscribe_command_id,
         'type': 'success',
-        'result': {}
+        'result': {
+            'subscription': ANY_UUID,
+        }
     }
 
 

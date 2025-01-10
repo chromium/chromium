@@ -89,10 +89,10 @@ describe('NetworkStorage', () => {
     );
     // Subscribe to the `network` module globally
     eventManager.subscriptionManager.subscribe(
-      ChromiumBidi.BiDiModule.Network,
+      [ChromiumBidi.BiDiModule.Network],
       // Verify that the Request send the message
       // To the correct context
-      MockCdpNetworkEvents.defaultFrameId,
+      [MockCdpNetworkEvents.defaultFrameId],
       null,
     );
     eventManager.on(EventManagerEvents.Event, ({message, event}) => {

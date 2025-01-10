@@ -18,7 +18,7 @@
 import type {Protocol} from 'devtools-protocol';
 
 import type {CdpClient} from '../../../cdp/CdpClient.js';
-import {BiDiModule} from '../../../protocol/chromium-bidi.js';
+import {Bluetooth} from '../../../protocol/chromium-bidi.js';
 import type {ChromiumBidi, Session} from '../../../protocol/protocol.js';
 import {Deferred} from '../../../utils/Deferred.js';
 import {EventEmitter} from '../../../utils/EventEmitter.js';
@@ -364,7 +364,9 @@ export class CdpTarget extends EventEmitter<TargetEventMap> {
   }
 
   async toggleDeviceAccessIfNeeded(): Promise<void> {
-    const enabled = this.isSubscribedTo(BiDiModule.Bluetooth);
+    const enabled = this.isSubscribedTo(
+      Bluetooth.EventNames.RequestDevicePromptUpdated,
+    );
     if (this.#deviceAccessEnabled === enabled) {
       return;
     }

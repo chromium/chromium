@@ -174,6 +174,12 @@ Refer to the documentation at [.pre-commit-config.yaml](.pre-commit-config.yaml)
 pre-commit install --hook-type pre-push
 ```
 
+Re-installing pre-commit locally:
+
+```
+pre-commit clean && pip install pre-commit
+```
+
 ### Starting WebDriver BiDi Server
 
 This will run the server on port `8080`:

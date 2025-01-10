@@ -20,11 +20,10 @@ import {
   type BrowsingContext,
   ChromiumBidi,
   InvalidArgumentException,
+  NoSuchFrameException,
 } from '../../../protocol/protocol.js';
+import {uuidv4} from '../../../utils/uuid.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
-
-import type {SubscriptionItem} from './EventManager.js';
-import {isCdpEvent, isDeprecatedCdpEvent} from './events.js';
 
 /**
  * Returns the cartesian product of the given arrays.
@@ -75,18 +74,17 @@ export function unrollEvents(
   return [...allEvents.values()];
 }
 
+export type Subscription = {
+  id: string;
+  // Empty set means a global subscription.
+  topLevelTraversableIds: Set<BrowsingContext.BrowsingContext>;
+  // Never empty.
+  eventNames: Set<ChromiumBidi.EventNames>;
+  channel: BidiPlusChannel;
+};
+
 export class SubscriptionManager {
-  #subscriptionPriority = 0;
-  // BrowsingContext `null` means the event has subscription across all the
-  // browsing contexts.
-  // Channel `null` means no `channel` should be added.
-  #channelToContextToEventMap = new Map<
-    BidiPlusChannel,
-    Map<
-      BrowsingContext.BrowsingContext | null,
-      Map<ChromiumBidi.EventNames, number>
-    >
-  >();
+  #subscriptions: Subscription[] = [];
   #browsingContextStorage: BrowsingContextStorage;
 
   constructor(browsingContextStorage: BrowsingContextStorage) {
@@ -94,127 +92,86 @@ export class SubscriptionManager {
   }
 
   getChannelsSubscribedToEvent(
-    eventMethod: ChromiumBidi.EventNames,
-    contextId: BrowsingContext.BrowsingContext | null,
+    eventName: ChromiumBidi.EventNames,
+    contextId: BrowsingContext.BrowsingContext,
   ): BidiPlusChannel[] {
-    const prioritiesAndChannels = Array.from(
-      this.#channelToContextToEventMap.keys(),
-    )
-      .map((channel) => ({
-        priority: this.#getEventSubscriptionPriorityForChannel(
-          eventMethod,
-          contextId,
-          channel,
-        ),
-        channel,
-      }))
-      .filter(({priority}) => priority !== null) as {
-      priority: number;
-      channel: BidiPlusChannel;
-    }[];
+    const channels = new Set<BidiPlusChannel>();
 
-    // Sort channels by priority.
-    return prioritiesAndChannels
-      .sort((a, b) => a.priority - b.priority)
-      .map(({channel}) => channel);
-  }
-
-  #getEventSubscriptionPriorityForChannel(
-    eventMethod: ChromiumBidi.EventNames,
-    contextId: BrowsingContext.BrowsingContext | null,
-    channel: BidiPlusChannel,
-  ): null | number {
-    const contextToEventMap = this.#channelToContextToEventMap.get(channel);
-    if (contextToEventMap === undefined) {
-      return null;
+    for (const subscription of this.#subscriptions) {
+      if (this.#isSubscribedTo(subscription, eventName, contextId)) {
+        channels.add(subscription.channel);
+      }
     }
 
-    const maybeTopLevelContextId =
-      this.#browsingContextStorage.findTopLevelContextId(contextId);
-
-    // `null` covers global subscription.
-    const relevantContexts = [...new Set([null, maybeTopLevelContextId])];
-
-    // Get all the subscription priorities.
-    const priorities: number[] = relevantContexts
-      .map((context) => {
-        // Get the priority for exact event name
-        const priority = contextToEventMap.get(context)?.get(eventMethod);
-        // For CDP we can't provide specific event name when subscribing
-        // to the module directly.
-        // Because of that we need to see event `cdp` exists in the map.
-        if (isCdpEvent(eventMethod)) {
-          const cdpPriority = contextToEventMap
-            .get(context)
-            ?.get(ChromiumBidi.BiDiModule.Cdp);
-          // If we subscribe to the event directly and `cdp` module as well
-          // priority will be different we take minimal priority
-          return priority && cdpPriority
-            ? Math.min(priority, cdpPriority)
-            : // At this point we know that we have subscribed
-              // to only one of the two
-              (priority ?? cdpPriority);
-        }
-        // https://github.com/GoogleChromeLabs/chromium-bidi/issues/2844.
-        if (isDeprecatedCdpEvent(eventMethod)) {
-          const cdpPriority = contextToEventMap
-            .get(context)
-            ?.get(ChromiumBidi.BiDiModule.DeprecatedCdp);
-          // If we subscribe to the event directly and `cdp` module as well
-          // priority will be different we take minimal priority
-          return priority && cdpPriority
-            ? Math.min(priority, cdpPriority)
-            : // At this point we know that we have subscribed
-              // to only one of the two
-              (priority ?? cdpPriority);
-        }
-        return priority;
-      })
-      .filter((p) => p !== undefined);
-
-    if (priorities.length === 0) {
-      // Not subscribed, return null.
-      return null;
-    }
-
-    // Return minimal priority.
-    return Math.min(...priorities);
+    return Array.from(channels);
   }
 
-  /**
-   * @param module BiDi+ module
-   * @param contextId `null` == globally subscribed
-   *
-   * @returns
-   */
+  getChannelsSubscribedToEventGlobally(
+    eventName: ChromiumBidi.EventNames,
+  ): BidiPlusChannel[] {
+    const channels = new Set<BidiPlusChannel>();
+
+    for (const subscription of this.#subscriptions) {
+      if (this.#isSubscribedTo(subscription, eventName)) {
+        channels.add(subscription.channel);
+      }
+    }
+
+    return Array.from(channels);
+  }
+
+  #isSubscribedTo(
+    subscription: Subscription,
+    moduleOrEvent: ChromiumBidi.EventNames,
+    contextId?: BrowsingContext.BrowsingContext,
+  ): boolean {
+    let includesEvent = false;
+    for (const eventName of subscription.eventNames) {
+      // This also covers the `cdp` case where
+      // we don't unroll the event names
+      if (
+        // Event explicitly subscribed
+        eventName === moduleOrEvent ||
+        // Event subscribed via module
+        eventName === moduleOrEvent.split('.').at(0) ||
+        // Event explicitly subscribed compared to module
+        eventName.split('.').at(0) === moduleOrEvent
+      ) {
+        includesEvent = true;
+        break;
+      }
+    }
+
+    if (!includesEvent) {
+      return false;
+    }
+
+    // global subscription.
+    if (subscription.topLevelTraversableIds.size === 0) {
+      return true;
+    }
+
+    const topLevelContext = contextId
+      ? this.#browsingContextStorage.findTopLevelContextId(contextId)
+      : null;
+
+    if (
+      topLevelContext !== null &&
+      subscription.topLevelTraversableIds.has(topLevelContext)
+    ) {
+      return true;
+    }
+
+    return false;
+  }
+
   isSubscribedTo(
     moduleOrEvent: ChromiumBidi.EventNames,
-    contextId: BrowsingContext.BrowsingContext | null = null,
+    contextId: BrowsingContext.BrowsingContext,
   ): boolean {
-    const topLevelContext =
-      this.#browsingContextStorage.findTopLevelContextId(contextId);
-
-    for (const browserContextToEventMap of this.#channelToContextToEventMap.values()) {
-      for (const [id, eventMap] of browserContextToEventMap.entries()) {
-        // Not subscribed to this context or globally
-        if (topLevelContext !== id && id !== null) {
-          continue;
-        }
-
-        for (const event of eventMap.keys()) {
-          // This also covers the `cdp` case where
-          // we don't unroll the event names
-          if (
-            // Event explicitly subscribed
-            event === moduleOrEvent ||
-            // Event subscribed via module
-            event === moduleOrEvent.split('.').at(0) ||
-            // Event explicitly subscribed compared to module
-            event.split('.').at(0) === moduleOrEvent
-          ) {
-            return true;
-          }
-        }
+    for (const subscription of this.#subscriptions) {
+      if (this.#isSubscribedTo(subscription, moduleOrEvent, contextId)) {
+        return true;
       }
     }
 
@@ -232,164 +189,194 @@ export class SubscriptionManager {
    * not subscribed before the command.
    */
   subscribe(
-    event: ChromiumBidi.EventNames,
-    contextId: BrowsingContext.BrowsingContext | null,
+    eventNames: ChromiumBidi.EventNames[],
+    contextIds: BrowsingContext.BrowsingContext[],
     channel: BidiPlusChannel,
-  ): SubscriptionItem[] {
+  ): Subscription {
     // All the subscriptions are handled on the top-level contexts.
-    contextId = this.#browsingContextStorage.findTopLevelContextId(contextId);
-
-    // Check if subscribed event is a whole module
-    switch (event) {
-      case ChromiumBidi.BiDiModule.BrowsingContext:
-        return Object.values(ChromiumBidi.BrowsingContext.EventNames)
-          .map((specificEvent) =>
-            this.subscribe(specificEvent, contextId, channel),
-          )
-          .flat();
-      case ChromiumBidi.BiDiModule.Log:
-        return Object.values(ChromiumBidi.Log.EventNames)
-          .map((specificEvent) =>
-            this.subscribe(specificEvent, contextId, channel),
-          )
-          .flat();
-      case ChromiumBidi.BiDiModule.Network:
-        return Object.values(ChromiumBidi.Network.EventNames)
-          .map((specificEvent) =>
-            this.subscribe(specificEvent, contextId, channel),
-          )
-          .flat();
-      case ChromiumBidi.BiDiModule.Script:
-        return Object.values(ChromiumBidi.Script.EventNames)
-          .map((specificEvent) =>
-            this.subscribe(specificEvent, contextId, channel),
-          )
-          .flat();
-      case ChromiumBidi.BiDiModule.Bluetooth:
-        return Object.values(ChromiumBidi.Bluetooth.EventNames)
-          .map((specificEvent) =>
-            this.subscribe(specificEvent, contextId, channel),
-          )
-          .flat();
-      default:
-      // Intentionally left empty.
-    }
-
-    if (!this.#channelToContextToEventMap.has(channel)) {
-      this.#channelToContextToEventMap.set(channel, new Map());
-    }
-    const contextToEventMap = this.#channelToContextToEventMap.get(channel)!;
-
-    if (!contextToEventMap.has(contextId)) {
-      contextToEventMap.set(contextId, new Map());
-    }
-    const eventMap = contextToEventMap.get(contextId)!;
-
-    const affectedContextIds = (
-      contextId === null
-        ? this.#browsingContextStorage.getTopLevelContexts().map((c) => c.id)
-        : [contextId]
-    )
-      // There can be contexts that are already subscribed to the event. Do not include
-      // them to the output.
-      .filter((contextId) => !this.isSubscribedTo(event, contextId));
-
-    if (!eventMap.has(event)) {
-      // Add subscription only if it's not already subscribed.
-      eventMap.set(event, this.#subscriptionPriority++);
-    }
-
-    return affectedContextIds.map((contextId) => ({
-      event,
-      contextId,
-    }));
+    const subscription: Subscription = {
+      id: uuidv4(),
+      eventNames: new Set(unrollEvents(eventNames)),
+      topLevelTraversableIds: new Set(
+        contextIds.map((contextId) => {
+          const topLevelContext =
+            this.#browsingContextStorage.findTopLevelContextId(contextId);
+          if (!topLevelContext) {
+            throw new NoSuchFrameException(
+              `Top-level navigable not found for context id ${contextId}`,
+            );
+          }
+          return topLevelContext;
+        }),
+      ),
+      channel,
+    };
+    this.#subscriptions.push(subscription);
+    return subscription;
   }
 
   /**
    * Unsubscribes atomically from all events in the given contexts and channel.
+   *
+   * This is a legacy spec branch to unsubscribe by attributes.
    */
-  unsubscribeAll(
-    events: ChromiumBidi.EventNames[],
-    contextIds: (BrowsingContext.BrowsingContext | null)[],
+  unsubscribe(
+    inputEventNames: ChromiumBidi.EventNames[],
+    inputContextIds: BrowsingContext.BrowsingContext[],
     channel: BidiPlusChannel,
   ) {
-    // Assert all contexts are known.
-    for (const contextId of contextIds) {
-      if (contextId !== null) {
-        this.#browsingContextStorage.getContext(contextId);
+    const eventNames = new Set(unrollEvents(inputEventNames));
+
+    for (const contextId of inputContextIds) {
+      // Validation that contexts exist.
+      this.#browsingContextStorage.getContext(contextId);
+    }
+    const topLevelTraversables = new Set(
+      inputContextIds.map((contextId) => {
+        const topLevelContext =
+          this.#browsingContextStorage.findTopLevelContextId(contextId);
+        if (!topLevelContext) {
+          throw new NoSuchFrameException(
+            `Top-level navigable not found for context id ${contextId}`,
+          );
+        }
+        return topLevelContext;
+      }),
+    );
+
+    const isGlobalUnsubscribe = topLevelTraversables.size === 0;
+    const newSubscriptions: Subscription[] = [];
+    const eventsMatched = new Set<ChromiumBidi.EventNames>();
+    const contextsMatched = new Set<BrowsingContext.BrowsingContext>();
+    for (const subscription of this.#subscriptions) {
+      if (subscription.channel !== channel) {
+        newSubscriptions.push(subscription);
+        continue;
+      }
+      // Skip subscriptions when none of the event names match.
+      if (intersection(subscription.eventNames, eventNames).size === 0) {
+        newSubscriptions.push(subscription);
+        continue;
+      }
+      if (isGlobalUnsubscribe) {
+        // Skip non-global subscriptions.
+        if (subscription.topLevelTraversableIds.size !== 0) {
+          newSubscriptions.push(subscription);
+          continue;
+        }
+        const subscriptionEventNames = new Set(subscription.eventNames);
+        for (const eventName of eventNames) {
+          if (subscriptionEventNames.has(eventName)) {
+            eventsMatched.add(eventName);
+            subscriptionEventNames.delete(eventName);
+          }
+        }
+        // If some events remain in the subscription, we keep it.
+        if (subscriptionEventNames.size !== 0) {
+          newSubscriptions.push({
+            ...subscription,
+            eventNames: subscriptionEventNames,
+          });
+        }
+      } else {
+        // Skip global subscriptions.
+        if (subscription.topLevelTraversableIds.size === 0) {
+          newSubscriptions.push(subscription);
+          continue;
+        }
+
+        // Splitting context subscriptions.
+        const eventMap = new Map<
+          ChromiumBidi.EventNames,
+          Set<BrowsingContext.BrowsingContext>
+        >();
+        for (const eventName of subscription.eventNames) {
+          eventMap.set(eventName, new Set(subscription.topLevelTraversableIds));
+        }
+        for (const eventName of eventNames) {
+          const eventContextSet = eventMap.get(eventName);
+          if (!eventContextSet) {
+            continue;
+          }
+          for (const toRemoveId of topLevelTraversables) {
+            if (eventContextSet.has(toRemoveId)) {
+              contextsMatched.add(toRemoveId);
+              eventsMatched.add(eventName);
+              eventContextSet.delete(toRemoveId);
+            }
+          }
+          if (eventContextSet.size === 0) {
+            eventMap.delete(eventName);
+          }
+        }
+        for (const [eventName, remainingContextIds] of eventMap) {
+          const partialSubscription: Subscription = {
+            id: subscription.id,
+            channel: subscription.channel,
+            eventNames: new Set([eventName]),
+            topLevelTraversableIds: remainingContextIds,
+          };
+          newSubscriptions.push(partialSubscription);
+        }
       }
     }
 
-    const eventContextPairs: [
-      eventName: ChromiumBidi.EventNames,
-      contextId: BrowsingContext.BrowsingContext | null,
-    ][] = cartesianProduct(unrollEvents(events), contextIds);
+    // If some events did not match, it is an invalid request.
+    if (!equal(eventsMatched, eventNames)) {
+      throw new InvalidArgumentException('No subscription found');
+    }
 
-    // Assert all unsubscriptions are valid.
-    // If any of the unsubscriptions are invalid, do not unsubscribe from anything.
-    eventContextPairs
-      .map(([event, contextId]) =>
-        this.#checkUnsubscribe(event, contextId, channel),
-      )
-      .forEach((unsubscribe) => unsubscribe());
+    // If some contexts did not match, it is an invalid request.
+    if (!isGlobalUnsubscribe && !equal(contextsMatched, topLevelTraversables)) {
+      throw new InvalidArgumentException('No subscription found');
+    }
+
+    // Committing the new subscriptions.
+    this.#subscriptions = newSubscriptions;
   }
 
   /**
-   * Unsubscribes from the event in the given context and channel.
-   * Syntactic sugar for "unsubscribeAll".
+   * Unsubscribes by subscriptionId.
    */
-  unsubscribe(
-    eventName: ChromiumBidi.EventNames,
-    contextId: BrowsingContext.BrowsingContext | null,
-    channel: BidiPlusChannel,
-  ) {
-    this.unsubscribeAll([eventName], [contextId], channel);
+  unsubscribeById(_subscription: string) {
+    // TODO: implement.
   }
+}
 
-  #checkUnsubscribe(
-    event: ChromiumBidi.EventNames,
-    contextId: BrowsingContext.BrowsingContext | null,
-    channel: BidiPlusChannel,
-  ): () => void {
-    // All the subscriptions are handled on the top-level contexts.
-    contextId = this.#browsingContextStorage.findTopLevelContextId(contextId);
-
-    if (!this.#channelToContextToEventMap.has(channel)) {
-      throw new InvalidArgumentException(
-        `Cannot unsubscribe from ${event}, ${
-          contextId === null ? 'null' : contextId
-        }. No subscription found.`,
-      );
+/**
+ * Replace with Set.prototype.intersection once Node 20 is dropped.
+ */
+function intersection<T>(setA: Set<T>, setB: Set<T>): Set<T> {
+  const result = new Set<T>();
+  for (const a of setA) {
+    if (setB.has(a)) {
+      result.add(a);
     }
-    const contextToEventMap = this.#channelToContextToEventMap.get(channel)!;
-
-    if (!contextToEventMap.has(contextId)) {
-      throw new InvalidArgumentException(
-        `Cannot unsubscribe from ${event}, ${
-          contextId === null ? 'null' : contextId
-        }. No subscription found.`,
-      );
-    }
-    const eventMap = contextToEventMap.get(contextId)!;
-
-    if (!eventMap.has(event)) {
-      throw new InvalidArgumentException(
-        `Cannot unsubscribe from ${event}, ${
-          contextId === null ? 'null' : contextId
-        }. No subscription found.`,
-      );
-    }
-
-    return () => {
-      eventMap.delete(event);
-
-      // Clean up maps if empty.
-      if (eventMap.size === 0) {
-        contextToEventMap.delete(event);
-      }
-      if (contextToEventMap.size === 0) {
-        this.#channelToContextToEventMap.delete(channel);
-      }
-    };
   }
+  return result;
+}
+
+/**
+ * Replace with Set.prototype.difference once Node 20 is dropped.
+ */
+export function difference<T>(setA: Set<T>, setB: Set<T>): Set<T> {
+  const result = new Set<T>();
+  for (const a of setA) {
+    if (!setB.has(a)) {
+      result.add(a);
+    }
+  }
+  return result;
+}
+
+function equal<T>(setA: Set<T>, setB: Set<T>): boolean {
+  if (setA.size !== setB.size) {
+    return false;
+  }
+  for (const a of setA) {
+    if (!setB.has(a)) {
+      return false;
+    }
+  }
+  return true;
 }
