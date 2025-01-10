@@ -1184,6 +1184,12 @@ inline constexpr char kPageContentCollectionEnabled[] =
 // Deprecated 01/2025.
 inline constexpr char kCompactModeEnabled[] = "compact_mode";
 
+// Deprecated 01/2025.
+inline constexpr char kSafeBrowsingAutomaticDeepScanningIPHSeen[] =
+    "safebrowsing.automatic_deep_scanning_iph_seen";
+inline constexpr char kSafeBrowsingAutomaticDeepScanPerformed[] =
+    "safe_browsing.automatic_deep_scan_performed";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1689,6 +1695,11 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 01/2025.
   registry->RegisterBooleanPref(kCompactModeEnabled, false);
+
+  // Deprecated 01/2025.
+  registry->RegisterBooleanPref(kSafeBrowsingAutomaticDeepScanningIPHSeen,
+                                false);
+  registry->RegisterBooleanPref(kSafeBrowsingAutomaticDeepScanPerformed, false);
 }
 
 }  // namespace
@@ -3031,6 +3042,10 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Added 01/2025.
   profile_prefs->ClearPref(kCompactModeEnabled);
+
+  // Added 01/2025.
+  profile_prefs->ClearPref(kSafeBrowsingAutomaticDeepScanPerformed);
+  profile_prefs->ClearPref(kSafeBrowsingAutomaticDeepScanningIPHSeen);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
