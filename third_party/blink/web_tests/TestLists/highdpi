@@ -849,7 +849,7 @@ external/wpt/html/semantics/forms/the-option-element/option-text-backslash.html
 external/wpt/html/semantics/forms/the-output-element/output-setcustomvalidity.html
 external/wpt/html/semantics/forms/the-progress-element/progress.html
 external/wpt/html/semantics/forms/the-select-element/select-add.html
-external/wpt/html/semantics/forms/the-select-element/select-events.tentative.html
+external/wpt/html/semantics/forms/the-select-element/customizable-select/select-events-2.tentative.html
 external/wpt/html/semantics/forms/the-textarea-element/wrap-enumerated-ascii-case-insensitive.html
 external/wpt/html/semantics/grouping-content/the-dd-element/grouping-dd.html
 external/wpt/html/semantics/grouping-content/the-div-element/grouping-div.html
