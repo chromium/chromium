@@ -76,6 +76,7 @@
 <translation id="427987768447457592">പുതിയ ടാബ് ഗ്രൂപ്പ്</translation>
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> ടാബ് മാറ്റി, <ph name="ANY_CLOSED" /> എണ്ണം അടച്ചു}other{<ph name="MANY_CHANGED" /> ടാബുകൾ മാറ്റി, <ph name="ANY_CLOSED" /> എണ്ണം അടച്ചു}}</translation>
 <translation id="4371591986692297148">നിഷ്‌ക്രിയം</translation>
+<translation id="4431937619879060901">നിങ്ങൾക്ക് ഉടൻ തന്നെ "<ph name="GROUP_NAME" />" ടാബ് ഗ്രൂപ്പിലേക്ക് ആക്‌സസ് നഷ്ടപ്പെടും, അത് നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിൽ നിന്നും ഇല്ലാതാക്കുകയും ചെയ്യും</translation>
 <translation id="4460014764210899310">ഗ്രൂപ്പ് അല്ലാതാക്കി മാറ്റുക</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{സജീവമല്ലാത്ത ഒരു ടാബ് അടയ്ക്കണോ?}other{സജീവമല്ലാത്ത <ph name="TAB_COUNT_MANY" /> ടാബുകൾ അടയ്ക്കണോ?}}</translation>
 <translation id="4686942373615810936">ഇപ്പോൾ സൃഷ്‌ടിച്ചത്</translation>
@@ -106,6 +107,7 @@
 <translation id="5556417849629758491">സ്റ്റോർ വിവരങ്ങൾ കാണുക, സ്ക്രീനിന്റെ മുകൾ ഭാഗത്തിന് സമീപം ഓപ്ഷൻ ലഭ്യമാണ്</translation>
 <translation id="5627941783489838464">ടാബ് അപ്‌ഡേറ്റുകളൊന്നുമില്ല</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{ടാബ് പുനഃസ്ഥാപിക്കുക}other{ടാബുകൾ പുനഃസ്ഥാപിക്കുക}}</translation>
+<translation id="5647702255748985085">ഗ്രൂപ്പ് വിടണോ?</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome-ൽ നിന്നുള്ള <ph name="TABS_COUNT_ONE" /> ലിങ്ക്}other{Chrome-ൽ നിന്നുള്ള <ph name="TABS_COUNT_MANY" /> ലിങ്ക്}}</translation>
 <translation id="58326064309361797">ടാബുകൾ ഗ്രൂപ്പ് ചെയ്യാൻ അവ വലിച്ചിടുക</translation>
 <translation id="5901630391730855834">മഞ്ഞ</translation>
@@ -141,6 +143,7 @@
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> തിരഞ്ഞെടുത്തു</translation>
 <translation id="7326879924029668159">മടക്കി നൽകൽ നയവും മറ്റും കാണുക</translation>
 <translation id="7352298686197644113">തുറന്നിരിക്കുന്ന ടാബുകളിൽ ഏത് ഇനത്തിനാണ് കുറഞ്ഞ വിലയുള്ളതെന്ന് കാണുക</translation>
+<translation id="742664698522525515">ഗ്രൂപ്പ് നിലനിർത്തണോ?</translation>
 <translation id="7452985128687107478">ടാബ് ഗ്രൂപ്പുകൾ നിങ്ങളുടെ ഉപകരണങ്ങളിലുടനീളം സ്വയമേവ സംരക്ഷിച്ച് അപ്‌ഡേറ്റ് ചെയ്യുന്നു</translation>
 <translation id="747459581954555080">എല്ലാം പുനഃസ്ഥാപിക്കുക</translation>
 <translation id="750886945254958667">പിന്നീട് ടാബുകൾ ചേർക്കാൻ ഈ ഗ്രൂപ്പ് നിലനിർത്തുക, അല്ലെങ്കിൽ നിങ്ങൾക്ക് അതിലേക്ക് ആക്‌സസ് വേണ്ടെങ്കിൽ അതിൽ നിന്ന് പുറത്തുകടക്കുക</translation>
@@ -185,8 +188,10 @@
 <translation id="8915916167043355778">എല്ലാം അടയ്ക്കുക</translation>
 <translation id="9090098097337832354">ഈ സ്റ്റോറിനെ കുറിച്ചുള്ള വിവരങ്ങൾ അടച്ചു</translation>
 <translation id="9114502155681725011"><ph name="TITLE_OF_GROUP" /> എന്ന ടാബ് ഗ്രൂപ്പിനുള്ള, ടാബ് ഗ്രൂപ്പ് പ്രവർത്തന മെനു തുറക്കുക, <ph name="COLOR_NAME" /> നിറം.</translation>
+<translation id="9169141410816678175">എല്ലാവർക്കും ഉടൻ തന്നെ "<ph name="GROUP_NAME" />" ടാബ് ഗ്രൂപ്പിലേക്കുള്ള ആക്‌സസ് നഷ്‌ടമാകും, അത് എല്ലാ ഉപകരണങ്ങളിൽ നിന്നും ഇല്ലാതാക്കുകയും ചെയ്യും</translation>
 <translation id="9169594135889675189">ഗ്രൂപ്പിലേക്ക് പുതിയ ടാബ് ചേർക്കുക</translation>
 <translation id="9216898458513705996">ഈ ഉപകരണത്തിൽ ടാബുകൾ തുറന്നിരിക്കും, എന്നാൽ <ph name="USER_EMAIL" /> എന്നതിലേക്ക് സൈൻ ചെയ്‌തിരിക്കുന്ന എല്ലാ ഉപകരണങ്ങളിൽ നിന്നും ഗ്രൂപ്പ് ഇല്ലാതാക്കും</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> നിറത്തിലുള്ള <ph name="TABS_COUNT_ONE" /> ടാബ് ഉൾപ്പെടുത്തി ടാബ് ഗ്രൂപ്പ് വികസിപ്പിക്കുക.}other{<ph name="COLOR_NAME" /> നിറത്തിലുള്ള <ph name="TABS_COUNT_MANY" /> ടാബുകൾ ഉൾപ്പെടുത്തി ടാബ് ഗ്രൂപ്പ് വികസിപ്പിക്കുക.}}</translation>
+<translation id="94870150074703282">ഗ്രൂപ്പ് ഇല്ലാതാക്കണോ?</translation>
 <translation id="992256792861109788">പിങ്ക്</translation>
 </translationbundle>

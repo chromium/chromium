@@ -1427,7 +1427,6 @@
 <translation id="1980168597243156">ಸ್ಪೇಸ್ ಸ್ಟೇಶನ್</translation>
 <translation id="1981434377190976112">ಎಲ್ಲಾ ವೆಬ್‌ಸೈಟ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ಎಲ್ಲಾ ಡೇಟಾವನ್ನು ಓದಿ</translation>
 <translation id="1982851102516626421">ನೀವು ಸೈನ್ ಔಟ್ ಆಗಿದ್ದೀರಿ</translation>
-<translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} ಮತ್ತು {field_2}}one{{field_1}, {field_2} ಮತ್ತು {field_3}}other{{field_1}, {field_2} ಮತ್ತು {field_3}}}</translation>
 <translation id="1984417487208496350">ಸುರಕ್ಷತೆ ಇಲ್ಲ (ಇದನ್ನು ನಾವು ಶಿಫಾರಸು ಮಾಡುವುದಿಲ್ಲ)</translation>
 <translation id="198507684520034826">ಸಹಾಯ</translation>
 <translation id="1986836014090708999">ಸುಧಾರಿತ ಸ್ಥಳ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
@@ -4934,7 +4933,6 @@
 <translation id="4462159676511157176">ಕಸ್ಟಮ್ ಹೆಸರು ಸರ್ವರ್‌ಗಳು</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" /> ಆ್ಯಪ್‌ಗಾಗಿ <ph name="TIME" /> ಸಮಯದ ಮಿತಿಯನ್ನು ಹೊಂದಿಸಲಾಗಿದೆ</translation>
 <translation id="4467373268340082204">ಪಿನ್‌ ತಪ್ಪಾಗಿದೆ</translation>
-<translation id="4467561276409486506">ಕಾಂಪ್ಯಾಕ್ಟ್ ಮೋಡ್ ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ</translation>
 <translation id="4469324811108161144">ಟಿಪ್ಪಣಿಗಳು ಗರಿಷ್ಠ <ph name="CHARACTER_LIMIT" /> ಅಕ್ಷರಗಳನ್ನು ಉಳಿಸಬಲ್ಲವು.</translation>
 <translation id="4469762931504673593"><ph name="FOLDERNAME" /> ನಲ್ಲಿ <ph name="ORIGIN" /> ಫೈಲ್‌ಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಬಹುದು</translation>
 <translation id="4470957202018033307">ಬಾಹ್ಯ ಸಂಗ್ರಹಣೆ ಆದ್ಯತೆಗಳು</translation>

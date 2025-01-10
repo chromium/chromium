@@ -1425,7 +1425,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1980168597243156">Stazione spaziale</translation>
 <translation id="1981434377190976112">Leggere tutti i tuoi dati su tutti i siti web</translation>
 <translation id="1982851102516626421">Accesso non eseguito</translation>
-<translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} e {field_2}}other{{field_1}, {field_2} e {field_3}}}</translation>
 <translation id="1984417487208496350">Nessuna protezione (sconsigliata)</translation>
 <translation id="198507684520034826">Aiuto</translation>
 <translation id="1986836014090708999">Impostazioni di geolocalizzazione avanzate</translation>
@@ -4932,7 +4931,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4462159676511157176">Assegna nomi personalizzati a server</translation>
 <translation id="4465236939126352372">Limite di tempo di <ph name="TIME" /> impostato per <ph name="APP_NAME" /></translation>
 <translation id="4467373268340082204">PIN errato</translation>
-<translation id="4467561276409486506">&amp;Attiva/Disattiva modalità compatta</translation>
 <translation id="4469324811108161144">Le note possono contenere massimo <ph name="CHARACTER_LIMIT" /> caratteri.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> può modificare i file nella cartella <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Preferenze dello spazio di archiviazione esterno</translation>

@@ -1028,6 +1028,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4485506555414638855">Menolak penyediaan pemaparan foto, media, pemberitahuan dan apl terbaharu telefon anda</translation>
 <translation id="4491109536499578614">Imej</translation>
 <translation id="450584155212756404">Saluran Pembangunan</translation>
+<translation id="4513044611477939680">Quick Share</translation>
 <translation id="4513946894732546136">Maklum balas</translation>
 <translation id="4518404433291145981">Untuk membuka kunci Chromebook anda, buka kunci telefon anda dahulu</translation>
 <translation id="4527045527269911712">Peranti Bluetooth "<ph name="DEVICE_NAME" />" ingin kebenaran untuk berpasangan.</translation>
@@ -1079,6 +1080,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4672539464599646374">Penjimat Bateri dihidupkan</translation>
 <translation id="4673427585974421255">Biar hidup</translation>
 <translation id="4677040906536311086">Helaian Google</translation>
+<translation id="468019262817532242">Tiada sesiapa boleh berkongsi dengan anda</translation>
 <translation id="468293128311738995">Apl daripada telefon anda</translation>
 <translation id="4690510401873698237">Rak di bahagian bawah</translation>
 <translation id="4696813013609194136">Buka kunci peranti menggunakan kod ibu bapa</translation>
@@ -1110,6 +1112,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4776917500594043016">Kata laluan untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Gedung Play</translation>
 <translation id="4778095205580009397">Google Assistant tidak tersedia dalam sesi tunjuk cara.</translation>
+<translation id="4785412405516449976">Hanya kenalan anda yang mempunyai Google Account</translation>
 <translation id="4789348252524569426">Tidak boleh memasang fail pertuturan. Peranti anda perlu dikemas kini. Mulakan semula peranti anda dan cuba lagi.</translation>
 <translation id="478959186716341421">Menghantar</translation>
 <translation id="4798403412327076414">Anda akan melihat tetingkap dan apl yang dibuka sebelumnya pada log masuk yang seterusnya</translation>
@@ -1239,6 +1242,7 @@ Anda juga boleh menggunakan pintasan papan kekunci. Mula-mula, serlahkan teks, k
 <translation id="5176318573511391780">Rakam skrin separa</translation>
 <translation id="5187627942836026988">Tunjukkan butiran tempat liputan. Tempat liputan disekat oleh pentadbir anda.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5198039720391525849">GIF yang ditampilkan</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> acara</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> digabungkan dengan <ph name="IN_PLACE_APP" /> untuk membuat folder baharu.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1560,6 +1564,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="6199775032047436064">Muatkan semula halaman semasa</translation>
 <translation id="6200515304866777730">Tidak disokong oleh apl</translation>
 <translation id="6210042900243040400">Sambungkan <ph name="NAME" /> yang disimpan sebelum ini di <ph name="EMAIL" /></translation>
+<translation id="6212580734499190393">Selama 10 min</translation>
 <translation id="6213808132343683860">Ambil tangkapan skrin separa atau rakaman skrin</translation>
 <translation id="621606890568890214">Kembangkan Google Classroom</translation>
 <translation id="6216759484154215561">Pautan ketahui lebih lanjut yang dibuka dalam penyemak imbas</translation>
@@ -1953,6 +1958,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="7599378375976398913">Menyisipkan hasil carian yang dipilih</translation>
 <translation id="7600875258240007829">Lihat semua pemberitahuan</translation>
 <translation id="7601417191446344542">Hidupkan pemberitahuan redam?</translation>
+<translation id="7602187221150705972">Cari emoji, GIF dan pelbagai lagi</translation>
 <translation id="7607002721634913082">Dijeda</translation>
 <translation id="7609951632080598826">Paparan kalendar, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kamera disambung semula.</translation>
@@ -2049,6 +2055,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="7899977217122813285">Pemberitahuan diredam hingga <ph name="TIME" /> semasa memberikan tumpuan</translation>
+<translation id="7901010467630324625">Hanya peranti yang log masuk ke <ph name="EMAIL" /></translation>
 <translation id="7901190436359881020">Tukar tetingkap</translation>
 <translation id="7901405293566323524">Hab Telefon</translation>
 <translation id="7902625623987030061">Sentuh penderia cap jari</translation>

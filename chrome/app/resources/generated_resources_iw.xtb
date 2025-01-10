@@ -1434,7 +1434,6 @@
 <translation id="1980168597243156">תחנת חלל</translation>
 <translation id="1981434377190976112">קריאת כל הנתונים שלך בכל האתרים</translation>
 <translation id="1982851102516626421">לא נכנסת לחשבון</translation>
-<translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{‫{field_1} וגם {field_2}}one{‫{field_1}, {field_2} וגם {field_3}}other{‫{field_1}, {field_2} וגם {field_3}}}</translation>
 <translation id="1984417487208496350">ללא הגנה (לא מומלץ)</translation>
 <translation id="198507684520034826">עזרה</translation>
 <translation id="1986836014090708999">הגדרות מיקום מתקדמות</translation>
@@ -4945,7 +4944,6 @@
 <translation id="4462159676511157176">שרתי שמות מותאמים אישית</translation>
 <translation id="4465236939126352372">מגבלת זמן של <ph name="TIME" /> הוגדרה לאפליקציה <ph name="APP_NAME" /></translation>
 <translation id="4467373268340082204">קוד האימות שגוי</translation>
-<translation id="4467561276409486506">&amp;החלפה למצב קומפקטי</translation>
 <translation id="4469324811108161144">אפשר לשמור בהערות עד <ph name="CHARACTER_LIMIT" /> תווים.</translation>
 <translation id="4469762931504673593">ל-<ph name="ORIGIN" /> יש הרשאה לערוך קבצים בתיקייה <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">העדפות אחסון חיצוני</translation>

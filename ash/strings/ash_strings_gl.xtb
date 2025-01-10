@@ -1029,6 +1029,7 @@ Hai 1 dispositivo conectado.</translation>
 <translation id="4485506555414638855">Pechar a configuración de visualización do contido multimedia, das notificacións, das aplicacións e das fotos recentes do teu teléfono</translation>
 <translation id="4491109536499578614">Imaxe</translation>
 <translation id="450584155212756404">Canle Dev</translation>
+<translation id="4513044611477939680">Quick Share</translation>
 <translation id="4513946894732546136">Dános a túa opinión</translation>
 <translation id="4518404433291145981">Para desbloquear o Chromebook, primeiro desbloquea o teléfono</translation>
 <translation id="4527045527269911712">O dispositivo Bluetooth "<ph name="DEVICE_NAME" />" quere obter permiso para sincronizarse.</translation>
@@ -1080,6 +1081,7 @@ Hai 1 dispositivo conectado.</translation>
 <translation id="4672539464599646374">Activouse a función Aforro de batería</translation>
 <translation id="4673427585974421255">Manter activado</translation>
 <translation id="4677040906536311086">Folla de cálculo de Google</translation>
+<translation id="468019262817532242">Ninguén pode compartir contido contigo</translation>
 <translation id="468293128311738995">Aplicacións do teu teléfono</translation>
 <translation id="4690510401873698237">O estante está na parte inferior</translation>
 <translation id="4696813013609194136">Desbloquea o dispositivo co código parental</translation>
@@ -1111,6 +1113,7 @@ Hai 1 dispositivo conectado.</translation>
 <translation id="4776917500594043016">Contrasinal de <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">O Asistente de Google non está dispoñible cando se utiliza unha sesión de demostración.</translation>
+<translation id="4785412405516449976">Só os contactos que teñan unha Conta de Google</translation>
 <translation id="4789348252524569426">Non se puideron instalar os ficheiros de voz. Cómpre actualizar o teu dispositivo. Reinicia o dispositivo e téntao de novo.</translation>
 <translation id="478959186716341421">Emitindo</translation>
 <translation id="4798403412327076414">A próxima vez que inicies sesión verás as ventás e as aplicacións abertas anteriormente</translation>
@@ -1240,6 +1243,7 @@ Tamén podes usar o atallo de teclado. Primeiro, destaca o texto e, a continuaci
 <translation id="5176318573511391780">Gravar pantalla parcial</translation>
 <translation id="5187627942836026988">Mostrar os detalles da zona wifi. A persoa administradora bloqueou a zona wifi.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5198039720391525849">GIF destacados</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> eventos</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> combinouse con <ph name="IN_PLACE_APP" /> para crear un cartafol novo.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1561,6 +1565,7 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="6199775032047436064">Recargar páxina actual</translation>
 <translation id="6200515304866777730">Función non admitida pola aplicación</translation>
 <translation id="6210042900243040400">Conecta o dispositivo (<ph name="NAME" />), que xa está gardado en <ph name="EMAIL" /></translation>
+<translation id="6212580734499190393">Durante 10 min</translation>
 <translation id="6213808132343683860">Fai unha captura de pantalla parcial ou grava a pantalla</translation>
 <translation id="621606890568890214">Despregar Google Classroom</translation>
 <translation id="6216759484154215561">Abriuse no navegador a ligazón para obter máis información</translation>
@@ -1954,6 +1959,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="7599378375976398913">Inserindo resultado seleccionado</translation>
 <translation id="7600875258240007829">Ver todas as notificacións</translation>
 <translation id="7601417191446344542">Queres activar o aviso de micrófono silenciado?</translation>
+<translation id="7602187221150705972">Busca emojis, GIF e moito máis</translation>
 <translation id="7607002721634913082">En pausa</translation>
 <translation id="7609951632080598826">Vista de calendario, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Reconectouse a cámara.</translation>
@@ -2050,6 +2056,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="7899977217122813285">Cando está activado o modo Sen distraccións, as notificacións están silenciadas ata a/s <ph name="TIME" /></translation>
+<translation id="7901010467630324625">Só os dispositivos que teñan a sesión iniciada en <ph name="EMAIL" /></translation>
 <translation id="7901190436359881020">Cambiar as ventás</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Toca o sensor de impresión dixital</translation>

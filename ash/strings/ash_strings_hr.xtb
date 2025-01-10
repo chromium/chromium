@@ -1028,6 +1028,7 @@ Jedan uređaj je povezan.</translation>
 <translation id="4485506555414638855">Odbacite postavljanje prikaza nedavnih fotografija, medijskih sadržaja, obavijesti i aplikacija na telefonu</translation>
 <translation id="4491109536499578614">Slika</translation>
 <translation id="450584155212756404">Razvojni kanal</translation>
+<translation id="4513044611477939680">Brzo dijeljenje</translation>
 <translation id="4513946894732546136">Povratne informacije</translation>
 <translation id="4518404433291145981">Da biste otključali Chromebook, najprije otključajte telefon</translation>
 <translation id="4527045527269911712">Bluetooth uređaj "<ph name="DEVICE_NAME" />" traži dopuštenje za uparivanje.</translation>
@@ -1079,6 +1080,7 @@ Jedan uređaj je povezan.</translation>
 <translation id="4672539464599646374">Uključena je štednja baterije</translation>
 <translation id="4673427585974421255">Ostavi uključeno</translation>
 <translation id="4677040906536311086">Google tablica</translation>
+<translation id="468019262817532242">Nitko ne može dijeliti s vama</translation>
 <translation id="468293128311738995">Aplikacije s telefona</translation>
 <translation id="4690510401873698237">Polica pri dnu</translation>
 <translation id="4696813013609194136">Otključajte uređaj roditeljskim kodom</translation>
@@ -1110,6 +1112,7 @@ Jedan uređaj je povezan.</translation>
 <translation id="4776917500594043016">Zaporka za adresu <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Trgovina Play</translation>
 <translation id="4778095205580009397">Google asistent nije dostupan u demosesiji.</translation>
+<translation id="4785412405516449976">Samo vaši kontakti s Google računom</translation>
 <translation id="4789348252524569426">Nije moguće instalirati govorne datoteke. Uređaj se treba ažurirati. Ponovno pokrenite uređaj i pokušajte opet.</translation>
 <translation id="478959186716341421">Emitiranje</translation>
 <translation id="4798403412327076414">Prilikom sljedeće prijave vidjet ćete prethodno otvorene prozore i aplikacije</translation>
@@ -1239,6 +1242,7 @@ Možete upotrijebiti i tipkovni prečac. Najprije istaknite tekst, a zatim priti
 <translation id="5176318573511391780">Snimanje dijela zaslona</translation>
 <translation id="5187627942836026988">Prikažite pojedinosti žarišne točke. Žarišnu točku blokirao je vaš administrator.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5198039720391525849">Istaknuti GIF-ovi</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> događaj/događaja</translation>
 <translation id="5198715732953550718">Aplikacija <ph name="MOVED_APP_NAME" /> povezana je s aplikacijom <ph name="IN_PLACE_APP" /> u novu mapu.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1560,6 +1564,7 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="6199775032047436064">Ponovno učitaj trenutačnu stranicu</translation>
 <translation id="6200515304866777730">Nije podržano u aplikaciji</translation>
 <translation id="6210042900243040400">Povežite uređaj <ph name="NAME" /> koji je prethodno spremljen na e-adresu <ph name="EMAIL" /></translation>
+<translation id="6212580734499190393">10 min</translation>
 <translation id="6213808132343683860">Izrada djelomične snimke zaslona ili snimanje zaslona</translation>
 <translation id="621606890568890214">Proširi Google učionicu</translation>
 <translation id="6216759484154215561">Otvorena veza sa savjetima u pregledniku</translation>
@@ -1953,6 +1958,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="7599378375976398913">Umetanje odabranog rezultata</translation>
 <translation id="7600875258240007829">Pogledajte sve obavijesti</translation>
 <translation id="7601417191446344542">Želite li uključiti podsjećanje na isključeni mikrofon?</translation>
+<translation id="7602187221150705972">Pretražite emojije, GIF-ove i drugo</translation>
 <translation id="7607002721634913082">Pauzirano</translation>
 <translation id="7609951632080598826">Prikaz kalendara, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kamera je ponovo povezana.</translation>
@@ -2049,6 +2055,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="7899977217122813285">Tijekom fokusiranja obavijesti su isključene do <ph name="TIME" /></translation>
+<translation id="7901010467630324625">Samo uređaji prijavljeni na račun <ph name="EMAIL" /></translation>
 <translation id="7901190436359881020">Zamijeni prozore</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Dodirnite senzor otiska prsta</translation>

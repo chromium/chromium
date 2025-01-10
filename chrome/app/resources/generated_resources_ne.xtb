@@ -1421,7 +1421,6 @@
 <translation id="1980168597243156">स्पेस स्टेसन</translation>
 <translation id="1981434377190976112">सबै वेबसाइटमा भएका तपाईंका सबै डेटा पढ्न</translation>
 <translation id="1982851102516626421">तपाईं साइन आउट अवस्थामा हुनुहुन्छ</translation>
-<translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} र {field_2}}other{{field_1}, {field_2} र {field_3}}}</translation>
 <translation id="1984417487208496350">सुरक्षारहित मोड (सिफारिस गरिँदैन)</translation>
 <translation id="198507684520034826">मद्दत</translation>
 <translation id="1986836014090708999">उन्नत लोकेसन सेटिङ</translation>
@@ -4924,7 +4923,6 @@
 <translation id="4462159676511157176">अनुकुल नाम सर्भरहरू</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" /> का हकमा <ph name="TIME" /> समय सीमा सेट गरिएको छ</translation>
 <translation id="4467373268340082204">गलत PIN</translation>
-<translation id="4467561276409486506">कम्प्याक्ट मोड टगल गर्नुहोस्</translation>
 <translation id="4469324811108161144">टिपोटहरूमा बढीमा <ph name="CHARACTER_LIMIT" /> वटा वर्ण समावेश गर्न सकिन्छ।</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> ले <ph name="FOLDERNAME" /> मा फाइल सम्पादन गर्न सक्ने छ</translation>
 <translation id="4470957202018033307">बाह्य भण्डारणसम्बन्धी प्राथमिकताहरू</translation>

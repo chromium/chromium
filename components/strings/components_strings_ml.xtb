@@ -386,6 +386,7 @@
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1652862280638399816">macOS Keychain-ന് ഒപ്പം Password Manager ഉപയോഗിക്കുന്നതിന്, Chromium വീണ്ടും ആരംഭിച്ച് Keychain ആക്‌സസ് അനുവദിക്കുക. വീണ്ടും ആരംഭിച്ചുകഴിഞ്ഞാൽ നിങ്ങളുടെ ടാബുകൾ വീണ്ടും തുറക്കും.</translation>
 <translation id="1652887625750064647">AI നിർദ്ദേശിക്കുന്ന മികച്ച പൊരുത്തം</translation>
+<translation id="1653465303147789530">ആപ്പുകൾ മാറാതെ തന്നെ <ph name="PAYMENT_METHOD" /> ഉപയോഗിച്ച് പേ ചെയ്യുക</translation>
 <translation id="1656024727720460136">വായന എളുപ്പമാക്കുന്നതിന് Chrome ഈ പേജ് ലളിതമാക്കി. സുരക്ഷിത കണക്ഷനിലൂടെ Chrome ഒറിജിനൽ പേജ് വീണ്ടെടുത്തു.</translation>
 <translation id="1656489000284462475">പിക്കപ്പ്</translation>
 <translation id="1658111267661135323">ടിവിയും വീഡിയോയും</translation>
@@ -556,6 +557,7 @@
 <translation id="1959001866257244765">നിങ്ങൾ സന്ദർശിക്കുന്ന ചില പേജുകളുടെ <ph name="BEGIN_WHITEPAPER_LINK" />URL, പരിമിത സിസ്‌റ്റം വിവരങ്ങൾ, ചില പേജുകളുടെ ഉള്ളടക്കം<ph name="END_WHITEPAPER_LINK" /> എന്നിവ Google-ലേക്ക് അയച്ച് എല്ലാവർക്കുമായി വെബിലെ സുരക്ഷ മെച്ചപ്പെടുത്താൻ സഹായിക്കുക. <ph name="BEGIN_PRIVACY_PAGE_LINK" />സ്വകാര്യതാ നയം<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">നിങ്ങളുടെ ടെക്‌സ്റ്റും പേജ് ഉള്ളടക്കവും Google-ന് അയയ്‌ക്കുന്നു, ഈ ഫീച്ചർ മെച്ചപ്പെടുത്താൻ അവ ഉപയോഗിച്ചേക്കാം.
   <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
+<translation id="196146181975453736">കൂടുതൽ വേഗത്തിൽ പേ ചെയ്യാൻ ഒറ്റത്തവണ സുരക്ഷാ പരിശോധന പൂർത്തിയാക്കുക</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> ബുക്ക്‌മാർക്കുകൾ</translation>
 <translation id="1973335181906896915">സീരിയലൈസേഷൻ പിശക്</translation>
 <translation id="1973785048533660168">ക്ലെറിക്കൽ, അഡ്മിനിസ്ട്രേറ്റീവ് ജോലികൾ</translation>
@@ -1584,6 +1586,7 @@
 <translation id="378611282717571199">"<ph name="SEARCH_QUERY" />" എന്നതിനുള്ള മികച്ച പൊരുത്തങ്ങൾ</translation>
 <translation id="3789155188480882154">വലുപ്പം 16</translation>
 <translation id="3789841737615482174">ഇന്‍സ്റ്റാൾ ചെയ്യുക</translation>
+<translation id="3791118028061680614">ആപ്പുകൾ മാറാതെ തന്നെ പേ ചെയ്യുക</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> ഇഞ്ച്)</translation>
 <translation id="3792826587784915501">കൾട്ട്, ഇൻഡി സിനിമകൾ</translation>
 <translation id="3793574014653384240">അടുത്തിടെയുണ്ടായ ക്രാഷുകളുടെ എണ്ണവും കാരണങ്ങളും</translation>
@@ -3390,6 +3393,7 @@
 <translation id="70705239631109039">നിങ്ങളുടെ കണക്ഷൻ പൂർണ്ണമായും സുരക്ഷിതമല്ല</translation>
 <translation id="7075452647191940183">അഭ്യർത്ഥന വളരെ വലുതാണ്</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079699498125013497">\u0020\u2022\u0020</translation>
 <translation id="7081311540357715807">ഭക്ഷണ, പലചരക്ക് ചില്ലറവ്യാപാരികൾ</translation>
 <translation id="7083258188081898530">ട്രേ 9</translation>
 <translation id="7086090958708083563">ഉപയോക്താവ് അഭ്യർത്ഥിച്ച അപ്‌ലോഡ്</translation>
@@ -4112,6 +4116,7 @@
 <translation id="833262891116910667">ഹൈലൈറ്റ് ചെയ്യുക</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> ഭാഷയിലുള്ള പേജുകൾ വിവർത്തനം ചെയ്യില്ല</translation>
 <translation id="8339275256517065202">ടച്ച് ഐഡി ഉപയോഗിച്ച് വാങ്ങൽ പൂർത്തിയാക്കുക</translation>
+<translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">വെർച്വൽ കാർഡ് എൻറോൾമെന്റ് മുഴുവൻ ഉയരത്തിൽ തുറന്നു</translation>
 <translation id="8349305172487531364">ബുക്മാര്‍ക്ക് ബാര്‍</translation>

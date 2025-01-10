@@ -124,6 +124,7 @@
 <translation id="1076766328672150609">Puwedeng gumamit ng PIN ang iyong anak para i-unlock ang device.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Hindi ma-download ang diksyunaryo ng pang-check ng pagbabaybay para sa <ph name="LANGUAGE" />. Subukan ulit.</translation>
+<translation id="1078029726086090536">I-verify ang iyong password</translation>
 <translation id="1078037449555275327">Mga setting ng ChromeVox</translation>
 <translation id="1079242569060319448">Nakalimutan ang PIN?</translation>
 <translation id="1079285777677001938">Posibleng hindi gumana ang mga feature sa ilang site.</translation>
@@ -1435,7 +1436,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1980168597243156">Space station</translation>
 <translation id="1981434377190976112">Basahin ang lahat ng iyong data sa lahat ng website</translation>
 <translation id="1982851102516626421">Naka-sign out ka</translation>
-<translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} at {field_2}}one{{field_1}, {field_2}, at {field_3}}other{{field_1}, {field_2}, at {field_3}}}</translation>
 <translation id="1984417487208496350">Walang proteksyon (hindi inirerekomenda)</translation>
 <translation id="198507684520034826">Tulong</translation>
 <translation id="1986836014090708999">Mga advanced na setting ng lokasyon</translation>
@@ -4095,6 +4095,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="3848547754896969219">Buksan lahat sa &amp;Incognito window</translation>
 <translation id="3850172593216628215">Natapos na ang mga update sa seguridad. Makatipid ng $50 o higit pa sa bagong Chromebook.</translation>
 <translation id="385051799172605136">Bumalik</translation>
+<translation id="3850989673553106152">Binago ang password</translation>
 <translation id="3851428669031642514">I-load ang mga hindi ligtas na script</translation>
 <translation id="3852215160863921508">Tulong sa Pag-input</translation>
 <translation id="3853549894831560772">Na-on ang <ph name="DEVICE_NAME" /></translation>
@@ -4597,6 +4598,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="421182450098841253">&amp;Ipakita ang Bookmarks Bar</translation>
 <translation id="4211904048067111541">Huwag nang gamitin sa mga Android app</translation>
 <translation id="42126664696688958">I-export</translation>
+<translation id="4213540068152645535">Nagkakaproblema sa pagpapalit ng iyong password</translation>
 <translation id="42137655013211669">Ipinagbabawal ng server ang access sa mapagkukunang ito.</translation>
 <translation id="4213918571089943508">Google Account ng Anak</translation>
 <translation id="4214192212360095377">I-off Ngayon</translation>
@@ -4943,7 +4945,6 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4462159676511157176">Custom na mga server ng pangalan</translation>
 <translation id="4465236939126352372"><ph name="TIME" /> ang limitasyon sa oras na itinakda para sa <ph name="APP_NAME" /></translation>
 <translation id="4467373268340082204">Maling PIN</translation>
-<translation id="4467561276409486506">&amp;I-toggle ang Compact Mode</translation>
 <translation id="4469324811108161144">Puwedeng mag-save ng hanggang <ph name="CHARACTER_LIMIT" /> character ang mga tala.</translation>
 <translation id="4469762931504673593">Puwedeng i-edit ng <ph name="ORIGIN" /> ang mga file sa <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Mga kagustuhan sa external na storage</translation>
@@ -8321,6 +8322,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6913051485529944333">Hindi mo na ulit makikita ang Google Calendar sa page na ito</translation>
 <translation id="6914812290245989348">Walang makikitang anumang babala bago pumunta sa mga hindi secure na site</translation>
 <translation id="6916590542764765824">Pamahalaan ang Mga Extension</translation>
+<translation id="6916676294509106572">Naka-hide ang Outlook Calendar</translation>
 <translation id="6917873303492266709">Para mag-share ng, sumali sa, at mag-collaborate sa mga grupo ng tab, buksan ang mga setting at i-on ang Payagan ang pag-sign in sa Chrome</translation>
 <translation id="6918677045355889289">Kailangan ng pag-update sa ChromeOS</translation>
 <translation id="6918733588290914545">Mabilis na pag-set up gamit ang Android phone</translation>
@@ -10702,6 +10704,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8625124982056504555">Basahin ang mga serial number ng ChromeOS device at bahagi</translation>
 <translation id="862542460444371744">&amp;Mga Extension</translation>
 <translation id="8625663000550647058">Hindi pinapayagang gamitin ang iyong mikropono</translation>
+<translation id="8625679025395572221">Posibleng nasa panganib pa rin ang iyong account.</translation>
 <translation id="8625916342247441948">Huwag payagan ang mga site na kumonekta sa mga HID device</translation>
 <translation id="862727964348362408">Sinuspinde</translation>
 <translation id="862750493060684461">CSS cache</translation>

@@ -1028,6 +1028,7 @@
 <translation id="4485506555414638855">તમારા ફોનના તાજેતરના ફોટા, મીડિયા, નોટિફિકેશન અને ઍપ જોવાની સુવિધાનું સેટઅપ કરવાની પ્રક્રિયા છોડી દો</translation>
 <translation id="4491109536499578614">છબી</translation>
 <translation id="450584155212756404">Dev ચૅનલ</translation>
+<translation id="4513044611477939680">ક્વિક શેર</translation>
 <translation id="4513946894732546136">પ્રતિસાદ</translation>
 <translation id="4518404433291145981">તમારી Chromebook અનલૉક કરવા માટે, પહેલાં તમારો ફોન અનલૉક કરો</translation>
 <translation id="4527045527269911712">Bluetooth ડિવાઇસ "<ph name="DEVICE_NAME" />" ને જોડી બનાવવા માટે પરવાનગી જોઈએ છે.</translation>
@@ -1079,6 +1080,7 @@
 <translation id="4672539464599646374">બૅટરી સેવર ચાલુ કર્યું</translation>
 <translation id="4673427585974421255">ચાલુ રાખો</translation>
 <translation id="4677040906536311086">Google Sheetsમાં બનાવેલી શીટ</translation>
+<translation id="468019262817532242">કોઈ તમારી સાથે શેર કરી શકશે નહીં</translation>
 <translation id="468293128311738995">તમારા ફોન પરની ઍપ</translation>
 <translation id="4690510401873698237">શેલ્ફ સૌથી નીચે છે</translation>
 <translation id="4696813013609194136">માતાપિતાના કોડ વડે ડિવાઇસને અનલૉક કરો</translation>
@@ -1110,6 +1112,7 @@
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> માટેનો પાસવર્ડ </translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">ડેમો સત્રમાં Google Assistant ઉપલબ્ધ નથી.</translation>
+<translation id="4785412405516449976">માત્ર Google એકાઉન્ટમાંના તમારા સંપર્કો</translation>
 <translation id="4789348252524569426">સ્પીચ માટેની ફાઇલો ઇન્સ્ટૉલ કરી શકતા નથી. તમારા ડિવાઇસને અપડેટ કરવાની જરૂર છે. તમારું ડિવાઇસ ફરી શરૂ કરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="478959186716341421">કાસ્ટ કરી રહ્યાં છે</translation>
 <translation id="4798403412327076414">આગલી વખતે તમે સાઇન ઇન કરશો ત્યારે અગાઉ ખોલવામાં આવેલી વિન્ડો અને ઍપ તમને જોવા મળશે</translation>
@@ -1239,6 +1242,7 @@
 <translation id="5176318573511391780">આંશિક સ્ક્રીન રેકોર્ડ કરો</translation>
 <translation id="5187627942836026988">હૉટસ્પૉટની વિગતો બતાવો. તમારા ઍડમિનિસ્ટ્રેટર દ્વારા હૉટસ્પૉટ બ્લૉક કરવામાં આવ્યું છે.</translation>
 <translation id="5197255632782567636">ઇન્ટરનેટ</translation>
+<translation id="5198039720391525849">વૈશિષ્ટિકૃત GIFs</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> ઇવેન્ટ</translation>
 <translation id="5198715732953550718">નવું ફોલ્ડર બનાવવા માટે <ph name="MOVED_APP_NAME" />ને <ph name="IN_PLACE_APP" /> સાથે જોડી.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1560,6 +1564,7 @@
 <translation id="6199775032047436064">ચાલુ પૃષ્ઠ ફરીથી લોડ કરો </translation>
 <translation id="6200515304866777730">ઍપ દ્વારા સપોર્ટ કરવામાં આવતી નથી</translation>
 <translation id="6210042900243040400">અગાઉ <ph name="EMAIL" /> પર સાચવેલા <ph name="NAME" />ને કનેક્ટ કરો</translation>
+<translation id="6212580734499190393">10 મિનિટ માટે</translation>
 <translation id="6213808132343683860">આંશિક સ્ક્રીનશૉટ અથવા આંશિક સ્ક્રીન રેકોર્ડિંગ લો</translation>
 <translation id="621606890568890214">Google Classroomને મોટું કરો</translation>
 <translation id="6216759484154215561">બ્રાઉઝરમાં 'વધુ જાણો' લિંક ખોલી</translation>
@@ -1953,6 +1958,7 @@
 <translation id="7599378375976398913">પસંદગીના પરિણામો શામેલ કરી રહ્યાં છીએ</translation>
 <translation id="7600875258240007829">બધા નોટિફિકેશન જુઓ</translation>
 <translation id="7601417191446344542">મ્યૂટ સંકેતની સુવિધા ચાલુ કરવી છે?</translation>
+<translation id="7602187221150705972">ઇમોજી, GIFs અને બીજું ઘણું શોધો</translation>
 <translation id="7607002721634913082">થોભાવેલું</translation>
 <translation id="7609951632080598826">કૅલેન્ડરનો વ્યૂ, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">કૅમેરા ફરી કનેક્ટ કર્યો.</translation>
@@ -2049,6 +2055,7 @@
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="7899977217122813285">ફોકસ કરતી વખતે <ph name="TIME" /> વાગ્યા સુધી નોટિફિકેશન મ્યૂટ કર્યા છે</translation>
+<translation id="7901010467630324625">માત્ર <ph name="EMAIL" />માં સાઇન ઇન થયેલા ડિવાઇસ</translation>
 <translation id="7901190436359881020">વિન્ડો સ્વૉપ કરો</translation>
 <translation id="7901405293566323524">ફોન હબ</translation>
 <translation id="7902625623987030061">ફિંગરપ્રિન્ટ સેન્સરને ટચ કરો</translation>

@@ -124,6 +124,7 @@
 <translation id="1076766328672150609">Dit barn kan bruge en pinkode til at låse enheden op.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Ordbogen til stavekontrollen for <ph name="LANGUAGE" /> kunne ikke downloades. Prøv igen.</translation>
+<translation id="1078029726086090536">Verificer din adgangskode</translation>
 <translation id="1078037449555275327">Indstillinger for ChromeVox</translation>
 <translation id="1079242569060319448">Har du glemt pinkoden?</translation>
 <translation id="1079285777677001938">Funktionerne på visse websites virker muligvis ikke.</translation>
@@ -1435,7 +1436,6 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1980168597243156">Rumstation</translation>
 <translation id="1981434377190976112">Læse alle dine data på alle websites</translation>
 <translation id="1982851102516626421">Du er logget ud</translation>
-<translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} og {field_2}}one{{field_1}, {field_2} og {field_3}}other{{field_1}, {field_2} og {field_3}}}</translation>
 <translation id="1984417487208496350">Ingen beskyttelse (anbefales ikke)</translation>
 <translation id="198507684520034826">Hjælp</translation>
 <translation id="1986836014090708999">Avancerede lokationsindstillinger</translation>
@@ -4095,6 +4095,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="3848547754896969219">Åbn i &amp;inkognitovindue</translation>
 <translation id="3850172593216628215">Du modtager ikke længere sikkerhedsopdateringer. Spar 50 USD eller mere på en ny Chromebook.</translation>
 <translation id="385051799172605136">Tilbage</translation>
+<translation id="3850989673553106152">Adgangskoden er ændret</translation>
 <translation id="3851428669031642514">Indlæs usikre scripts</translation>
 <translation id="3852215160863921508">Hjælp til indtastning</translation>
 <translation id="3853549894831560772"><ph name="DEVICE_NAME" /> er slået til</translation>
@@ -4597,6 +4598,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="421182450098841253">&amp;Vis bogmærkelinjen</translation>
 <translation id="4211904048067111541">Brug ikke med Android-apps</translation>
 <translation id="42126664696688958">Eksportér</translation>
+<translation id="4213540068152645535">Der opstod et problem med at ændre din adgangskode</translation>
 <translation id="42137655013211669">Serveren har forbudt dig adgang til denne ressource.</translation>
 <translation id="4213918571089943508">Barnets Google-konto</translation>
 <translation id="4214192212360095377">Deaktiver nu</translation>
@@ -4943,7 +4945,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4462159676511157176">Tilpassede navneservere</translation>
 <translation id="4465236939126352372">En tidsgrænse på <ph name="TIME" /> blev indstillet for <ph name="APP_NAME" /></translation>
 <translation id="4467373268340082204">Forkert pinkode</translation>
-<translation id="4467561276409486506">&amp;Slå kompakt tilstand til/fra</translation>
 <translation id="4469324811108161144">Noter kan indeholde op til <ph name="CHARACTER_LIMIT" /> tegn</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> kan redigere filer i <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Præferencer for ekstern lagerplads</translation>
@@ -8321,6 +8322,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6913051485529944333">Du får ikke længere vist Google Kalender på denne side</translation>
 <translation id="6914812290245989348">Få ikke advarsler, inden du går til usikre websites</translation>
 <translation id="6916590542764765824">Administrer udvidelser</translation>
+<translation id="6916676294509106572">Outlook-kalenderen er skjult</translation>
 <translation id="6917873303492266709">Åbn indstillingerne, og aktivér Tillad login via Chrome for at dele, deltage i og samarbejde i fanegrupper</translation>
 <translation id="6918677045355889289">ChromeOS skal opdateres</translation>
 <translation id="6918733588290914545">Hurtig konfiguration med Android-telefon</translation>
@@ -10700,6 +10702,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8625124982056504555">Læs serienumre for ChromeOS-enheder og komponenter</translation>
 <translation id="862542460444371744">&amp;Udvidelser</translation>
 <translation id="8625663000550647058">Har ikke tilladelse til at bruge din mikrofon</translation>
+<translation id="8625679025395572221">Din konto er muligvis stadig i fare.</translation>
 <translation id="8625916342247441948">Tillad ikke, at websites opretter forbindelse til HID-enheder</translation>
 <translation id="862727964348362408">På pause</translation>
 <translation id="862750493060684461">CSS-cache</translation>

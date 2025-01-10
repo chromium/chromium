@@ -1435,7 +1435,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1980168597243156">Estação espacial</translation>
 <translation id="1981434377190976112">Ler seus dados em qualquer site</translation>
 <translation id="1982851102516626421">Sua conta está desconectada</translation>
-<translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} e {field_2}}one{{field_1}, {field_2} e {field_3}}other{{field_1}, {field_2} e {field_3}}}</translation>
 <translation id="1984417487208496350">Sem proteção (não recomendado)</translation>
 <translation id="198507684520034826">Ajuda</translation>
 <translation id="1986836014090708999">Configurações avançadas de localização</translation>
@@ -4943,7 +4942,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4462159676511157176">Servidores de nome personalizados</translation>
 <translation id="4465236939126352372">Tempo limite de <ph name="TIME" /> definido para <ph name="APP_NAME" /></translation>
 <translation id="4467373268340082204">PIN incorreto</translation>
-<translation id="4467561276409486506">&amp;Ativar/desativar o modo compacto</translation>
 <translation id="4469324811108161144">Observações podem ter até <ph name="CHARACTER_LIMIT" /> caracteres.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> pode editar arquivos em <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Preferências de armazenamento externo</translation>

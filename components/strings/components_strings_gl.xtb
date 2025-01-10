@@ -1693,6 +1693,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3990532701115075684">Facer un seguimento das mans</translation>
 <translation id="3992684624889376114">Acerca desta páxina</translation>
 <translation id="3995639283717357522">Aplicar políticas</translation>
+<translation id="3996683183117168945">Cita <ph name="CURRENT_CITATION" /> de <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" />. <ph name="PAGE_TITLE" />. <ph name="PAGE_PREVIEW" />.</translation>
 <translation id="399754345297554962">Probas estandarizadas e de admisión</translation>
 <translation id="3999173941208168054">Películas de terror</translation>
 <translation id="4000598935132966791">Máis información sobre as restricións de acceso a sitios nos navegadores xestionados</translation>
@@ -3390,6 +3391,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="70705239631109039">A túa conexión non é completamente segura</translation>
 <translation id="7075452647191940183">A solicitude é demasiado grande</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079699498125013497">\u0020\u2022\u0020</translation>
 <translation id="7081311540357715807">Tendas de alimentación</translation>
 <translation id="7083258188081898530">Bandexa 9</translation>
 <translation id="7086090958708083563">O usuario solicitou a carga</translation>
@@ -4113,6 +4115,7 @@ Detalles adicionais:
 <translation id="833262891116910667">Destacar</translation>
 <translation id="8339163506404995330">Non se traducirán as páxinas en <ph name="LANGUAGE" /></translation>
 <translation id="8339275256517065202">Completa a compra con Touch ID</translation>
+<translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Rexistro de tarxeta virtual aberto a altura completa</translation>
 <translation id="8349305172487531364">Barra de marcadores</translation>

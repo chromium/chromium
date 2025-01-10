@@ -386,6 +386,7 @@
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1652862280638399816">MacOS Keychain-এর মাধ্যমে Password Manager ব্যবহার করতে, Chromium আবার লঞ্চ করুন ও Keychain অ্যাক্সেস করার অনুমতি দিন। আবার চালু করার পরে আপনার ট্যাব আবার খোলা হবে।</translation>
 <translation id="1652887625750064647">AI-এর মাধ্যমে সেরা ম্যাচ</translation>
+<translation id="1653465303147789530">অ্যাপ পরিবর্তন না করেই <ph name="PAYMENT_METHOD" />-এর সাহায্যে পেমেন্ট করুন</translation>
 <translation id="1656024727720460136">পৃষ্ঠাটি যাতে সহজপাঠ্য হয়, তার জন্য Chrome এটিকে সহজ করে তুলেছে। একটি সুরক্ষিত কানেকশন ব্যবহার করে Chrome আবার মূল পৃষ্ঠায় ফিরে এসেছে।</translation>
 <translation id="1656489000284462475">তুলে নিন</translation>
 <translation id="1658111267661135323">টিভি এবং ভিডিও</translation>
@@ -557,6 +558,7 @@
 <translation id="1959001866257244765">Google-এ <ph name="BEGIN_WHITEPAPER_LINK" />আপনার দেখা পৃষ্ঠাগুলির ইউআরএল, সিস্টেমের কিছু সীমিত তথ্য এবং পৃষ্ঠার কিছু কন্টেন্ট<ph name="END_WHITEPAPER_LINK" /> পাঠিয়ে ওয়েবে সকলের জন্য নিরাপত্তা উন্নত করতে সাহায্য করুন। <ph name="BEGIN_PRIVACY_PAGE_LINK" />গোপনীয়তা নীতি<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">আপনার টেক্সট ও পৃষ্ঠার কন্টেন্ট Google-এ পাঠানো হয় এবং এই ফিচার উন্নত করার জন্য তা ব্যবহার করা হতে পারে।
   <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
+<translation id="196146181975453736">আরও ঝটপট পেমেন্ট করতে, নিরাপত্তা সংক্রান্ত এককালীন চেক প্রসেস সম্পূর্ণ করুন</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> বুকমার্ক</translation>
 <translation id="1973335181906896915">ধারাবাহিকতাতে ত্রুটি</translation>
 <translation id="1973785048533660168">ক্লারিক্যাল ও অ্যাডমিনিস্ট্রেটিভ চাকরি</translation>
@@ -1586,6 +1588,7 @@
 <translation id="378611282717571199">"<ph name="SEARCH_QUERY" />"-এর জন্য মিলে যাওয়া সেরা ফলাফল</translation>
 <translation id="3789155188480882154">সাইজ ১৬</translation>
 <translation id="3789841737615482174">ইনস্টল করুন</translation>
+<translation id="3791118028061680614">অ্যাপ পরিবর্তন না করেই পেমেন্ট করুন</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> ইঞ্চি)</translation>
 <translation id="3792826587784915501">কাল্ট এবং ইন্ডি সিনেমা</translation>
 <translation id="3793574014653384240">সম্প্রতি হওয়া ক্র্যাশের সংখ্যা এবং কারণ</translation>
@@ -3391,6 +3394,7 @@
 <translation id="70705239631109039">এই কানেকশন সম্পূর্ণরূপে নিরাপদ নয়</translation>
 <translation id="7075452647191940183">অনুরোধ অত্যন্ত বড়</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079699498125013497">\u0020\u2022\u0020</translation>
 <translation id="7081311540357715807">খাদ্য এবং মুদিখানা সংক্রান্ত খুচরো বিক্রেতা</translation>
 <translation id="7083258188081898530">ট্রে ৯</translation>
 <translation id="7086090958708083563">ব্যবহারকারী আপলোড করার অনুরোধ জানিয়েছেন</translation>
@@ -4115,6 +4119,7 @@
 <translation id="833262891116910667">হাইলাইট</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> ভাষার পৃষ্ঠার অনুবাদ করা হবে না</translation>
 <translation id="8339275256517065202">Touch ID ব্যবহার করে আপনার কেনাকাটা সম্পূর্ণ করুন</translation>
+<translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">ভার্চুয়াল কার্ড এনরোলমেন্ট সম্পূর্ণ স্ক্রিন জুড়ে খোলা হয়েছে</translation>
 <translation id="8349305172487531364">বুকমার্কস বার</translation>

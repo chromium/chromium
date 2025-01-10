@@ -124,6 +124,7 @@
 <translation id="1076766328672150609">আপনার সন্তান ডিভাইস আনলক করতে পিন ব্যবহার করতে পারে।</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216"><ph name="LANGUAGE" /> ভাষার বানান পরীক্ষা করার অভিধান ডাউনলোড করা যায়নি। আবার চেষ্টা করুন।</translation>
+<translation id="1078029726086090536">আপনার পাসওয়ার্ড যাচাই করুন</translation>
 <translation id="1078037449555275327">ChromeVox সেটিংস</translation>
 <translation id="1079242569060319448">পিন ভুলে গেছেন?</translation>
 <translation id="1079285777677001938">কিছু সাইটের ফিচার কাজ নাও করতে পারে।</translation>
@@ -1435,7 +1436,6 @@
 <translation id="1980168597243156">স্পেস স্টেশন</translation>
 <translation id="1981434377190976112">সমস্ত ওয়েবসাইটে আপনার ডেটা পড়তে পারে</translation>
 <translation id="1982851102516626421">আপনি সাইন-আউট করেছেন</translation>
-<translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} ও {field_2}}one{{field_1}, {field_2} ও {field_3}}other{{field_1}, {field_2} ও {field_3}}}</translation>
 <translation id="1984417487208496350">সুরক্ষিত নয় (সাজেস্ট করা হচ্ছে না)</translation>
 <translation id="198507684520034826">সহায়তা</translation>
 <translation id="1986836014090708999">উন্নত লোকেশন সেটিংস</translation>
@@ -4095,6 +4095,7 @@
 <translation id="3848547754896969219">ছদ্মবেশী উইন্ডোতে খুলুন</translation>
 <translation id="3850172593216628215">নিরাপত্তা আপডেট শেষ হয়েছে। একটি নতুন Chromebook-এ $৫০ বা তার বেশি সেভ করুন।</translation>
 <translation id="385051799172605136">ফিরুন</translation>
+<translation id="3850989673553106152">পাসওয়ার্ড পরিবর্তন করা হয়েছে</translation>
 <translation id="3851428669031642514">অনিরাপদ স্ক্রিপ্টগুলি লোড করুন</translation>
 <translation id="3852215160863921508">ইনপুট সংক্রান্ত সহায়তা</translation>
 <translation id="3853549894831560772"><ph name="DEVICE_NAME" /> চালু আছে</translation>
@@ -4597,6 +4598,7 @@
 <translation id="421182450098841253">ও বুকমার্ক বার দেখান</translation>
 <translation id="4211904048067111541">Android অ্যাপের সাথে ব্যবহার করা বন্ধ করুন</translation>
 <translation id="42126664696688958">রপ্তানি</translation>
+<translation id="4213540068152645535">আপনার পাসওয়ার্ড পরিবর্তন করতে সমস্যা হচ্ছে</translation>
 <translation id="42137655013211669">এই সম্পদে অ্যাক্সেস করা সার্ভার দ্বারা নিষিদ্ধ ছিল।</translation>
 <translation id="4213918571089943508">বাচ্চার Google অ্যাকাউন্ট</translation>
 <translation id="4214192212360095377">এখনই বন্ধ করুন</translation>
@@ -4943,7 +4945,6 @@
 <translation id="4462159676511157176">কাস্টম নাম সার্ভার</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" />-এর জন্য <ph name="TIME" /> টাইম লিমিট সেট করা হয়েছে</translation>
 <translation id="4467373268340082204">ভুল পিন লেখা হয়েছে</translation>
-<translation id="4467561276409486506">&amp;কম্প্যাক্ট মোড টগল করুন</translation>
 <translation id="4469324811108161144">নোট সর্বাধিক <ph name="CHARACTER_LIMIT" />টি অক্ষর সেভ করতে পারে।</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" />-এর কাছে <ph name="FOLDERNAME" /> ফোল্ডারের ফাইল এডিট করার অনুমতি আছে</translation>
 <translation id="4470957202018033307">এক্সটারনাল স্টোরেজের ব্যাপারে অভিরুচি</translation>
@@ -8322,6 +8323,7 @@
 <translation id="6913051485529944333">এই পৃষ্ঠায় আপনি আর Google Calendar দেখতে পাবেন না</translation>
 <translation id="6914812290245989348">অসুরক্ষিত সাইটে যাওয়ার আগে কোনও সতর্কতা দেখতে পাওয়া যাবে না</translation>
 <translation id="6916590542764765824">এক্সটেনশানগুলি পরিচালনা করুন</translation>
+<translation id="6916676294509106572">Outlook Calendar লুকানো আছে</translation>
 <translation id="6917873303492266709">ট্যাব গ্রুপে শেয়ার করতে, যোগ দিতে এবং কোল্যাবরেট করতে, সেটিংস খুলে 'Chrome-এ সাইন-ইনের অনুমতি দিন' বিকল্প চালু করুন</translation>
 <translation id="6918677045355889289">ChromeOS আপডেট করতে হবে</translation>
 <translation id="6918733588290914545">Android ফোনের সাহায্যে দ্রুত সেটআপ করুন</translation>
@@ -10701,6 +10703,7 @@
 <translation id="8625124982056504555">ChromeOS ডিভাইস ও কম্পোনেন্ট সিরিয়াল নম্বর পড়ুন</translation>
 <translation id="862542460444371744">&amp;এক্সটেনশনস</translation>
 <translation id="8625663000550647058">আপনার মাইক্রোফোন ব্যবহার করার অনুমতি দেওয়া হয়নি</translation>
+<translation id="8625679025395572221">আপনার অ্যাকাউন্টে এখনও নিরাপত্তার ঝুঁকি থাকতে পারে।</translation>
 <translation id="8625916342247441948">সাইটগুলিকে HID ডিভাইস কানেক্ট করতে দেয় না</translation>
 <translation id="862727964348362408">সাসপেন্ড</translation>
 <translation id="862750493060684461">CSS ক্যাশে</translation>

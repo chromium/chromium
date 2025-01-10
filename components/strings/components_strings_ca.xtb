@@ -1693,6 +1693,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3990532701115075684">Fes un seguiment de mans</translation>
 <translation id="3992684624889376114">Sobre aquesta pàgina</translation>
 <translation id="3995639283717357522">Aplica polítiques</translation>
+<translation id="3996683183117168945">Citació <ph name="CURRENT_CITATION" /> de <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" />. <ph name="PAGE_TITLE" />. <ph name="PAGE_PREVIEW" />.</translation>
 <translation id="399754345297554962">Proves d'admissió i estandarditzades</translation>
 <translation id="3999173941208168054">Pel·lícules de terror</translation>
 <translation id="4000598935132966791">Més informació sobre les restriccions aplicades als llocs web en navegadors gestionats</translation>
@@ -3390,6 +3391,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="70705239631109039">La connexió no és del tot segura</translation>
 <translation id="7075452647191940183">La sol·licitud és massa llarga</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079699498125013497">\u0020\u2022\u0020</translation>
 <translation id="7081311540357715807">Botigues d'alimentació i comestibles</translation>
 <translation id="7083258188081898530">Safata 9</translation>
 <translation id="7086090958708083563">Pujada sol·licitada per l'usuari</translation>
@@ -4114,6 +4116,7 @@ Detalls addicionals:
 <translation id="833262891116910667">Destacat</translation>
 <translation id="8339163506404995330">Les pàgines en <ph name="LANGUAGE" /> no es traduiran</translation>
 <translation id="8339275256517065202">Completa la compra amb Touch ID</translation>
+<translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">S'ha obert la inscripció de targetes virtuals a alçada completa</translation>
 <translation id="8349305172487531364">Barra d'adreces d'interès</translation>

@@ -124,6 +124,7 @@
 <translation id="1076766328672150609">သင့်ကလေးသည် ဤစက်ကိုဖွင့်ရန် ပင်နံပါတ် သုံးနိုင်သည်။</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216"><ph name="LANGUAGE" /> အတွက် စာလုံးပေါင်းစစ်ဆေးသော အဘိဓာန်ကို ဒေါင်းလုဒ်လုပ်၍မရပါ။ ထပ်စမ်းကြည့်ပါ။</translation>
+<translation id="1078029726086090536">စကားဝှက်ကို အတည်ပြုရန်</translation>
 <translation id="1078037449555275327">ChromeVox ဆက်တင်များ</translation>
 <translation id="1079242569060319448">ပင်နံပါတ် မေ့နေသလား။</translation>
 <translation id="1079285777677001938">ဝဘ်ဆိုက်အချို့ရှိ အင်္ဂါရပ်များ အလုပ်မလုပ်နိုင်ပါ။</translation>
@@ -1432,7 +1433,6 @@
 <translation id="1980168597243156">အာကာသစခန်း</translation>
 <translation id="1981434377190976112">ဝဘ်ဆိုက်အားလုံးပေါ်ရှိ သင့်ဒေတာအားလုံးကို ဖတ်ရှုခြင်း</translation>
 <translation id="1982851102516626421">ထွက်ထားသည်</translation>
-<translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} နှင့် {field_2}}other{{field_1}၊ {field_2} နှင့် {field_3}}}</translation>
 <translation id="1984417487208496350">ကာကွယ်မှုမရှိပါ (အကြံပြုမထားပါ)</translation>
 <translation id="198507684520034826">အကူအညီ</translation>
 <translation id="1986836014090708999">တည်နေရာပြ အဆင့်မြင့်ဆက်တင်များ</translation>
@@ -4093,6 +4093,7 @@
 <translation id="3848547754896969219">&amp;ရုပ်ဖျက် ဝင်းဒိုးတွင် ဖွင့်ရန်</translation>
 <translation id="3850172593216628215">လုံခြုံရေးအပ်ဒိတ်များ သက်တမ်းကုန်သွားပြီ။ Chromebook အသစ်တွင် $50 နှင့်အထက် ချွေတာပါ။</translation>
 <translation id="385051799172605136">နောက်သို့</translation>
+<translation id="3850989673553106152">စကားဝှက်ကို ပြောင်းလိုက်ပါပြီ</translation>
 <translation id="3851428669031642514">စိတ်မချရသည့် စကရစ်များ ရယူရန်</translation>
 <translation id="3852215160863921508">လက်ကွက် အထောက်အကူ</translation>
 <translation id="3853549894831560772"><ph name="DEVICE_NAME" /> ဖွင့်ထားသည်</translation>
@@ -4594,6 +4595,7 @@
 <translation id="421182450098841253">&amp;စာညှပ် ဘားကို ပြရန်</translation>
 <translation id="4211904048067111541">Android အက်ပ်များနှင့် သုံးခြင်းကို ရပ်ရန်</translation>
 <translation id="42126664696688958">တင်ပို့ရန်</translation>
+<translation id="4213540068152645535">စကားဝှက် ပြောင်းရာတွင် ပြဿနာရှိနေသည်</translation>
 <translation id="42137655013211669">ဤရင်းမြစ်သို့ ဝင်ရောက်သုံးခြင်းအား ဆာဗာမှ တားမြစ်ထား၏</translation>
 <translation id="4213918571089943508">ကလေး၏ Google Account</translation>
 <translation id="4214192212360095377">ယခုပိတ်ရန်</translation>
@@ -4940,7 +4942,6 @@
 <translation id="4462159676511157176">စိတ်ကြိုက်အမည် ဆာဗာများ</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" /> အတွက် အချိန် <ph name="TIME" /> ကန့်သတ်ထားသည်</translation>
 <translation id="4467373268340082204">ပင်နံပါတ် မှားနေသည်</translation>
-<translation id="4467561276409486506">ကျစ်ကျစ်လျစ်လျစ်မုဒ် ဖွင့်ရန်</translation>
 <translation id="4469324811108161144">မှတ်ချက်များကို စာလုံးရေ <ph name="CHARACTER_LIMIT" /> လုံးအထိ သိမ်းနိုင်သည်။</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> က <ph name="FOLDERNAME" /> ထဲရှိ ဖိုင်များကို တည်းဖြတ်နိုင်သည်</translation>
 <translation id="4470957202018033307">ပြင်ပ သိုလှောင်ခန်း သတ်မှတ်ချက်များ</translation>
@@ -8314,6 +8315,7 @@
 <translation id="6913051485529944333">ဤစာမျက်နှာတွင် Google Calendar ကို ထပ်တွေ့ရမည် မဟုတ်ပါ</translation>
 <translation id="6914812290245989348">လုံခြုံမှုမရှိသော ဝဘ်ဆိုက်များသို့မသွားမီ သတိပေးချက် မမြင်ရရန်</translation>
 <translation id="6916590542764765824">Manage Extensions</translation>
+<translation id="6916676294509106572">Outlook Calendar ဖျောက်ထားသည်</translation>
 <translation id="6917873303492266709">တဘ်အုပ်စုများကို မျှဝေရန်၊ ၎င်းတို့တွင် ပါဝင်ရန်နှင့် ပူးတွဲလုပ်ကိုင်ရန် ဆက်တင်များကိုဖွင့်ပြီး ‘Chrome သို့ လက်မှတ်ထိုးဝင်ခွင့်ပြုရန်’ ကိုဖွင့်ပါ</translation>
 <translation id="6918677045355889289">ChromeOS အပ်ဒိတ် လိုအပ်သည်</translation>
 <translation id="6918733588290914545">Android ဖုန်းဖြင့် စနစ်အမြန်ထည့်သွင်းရန်</translation>
@@ -10692,6 +10694,7 @@
 <translation id="8625124982056504555">ChromeOS စက်ပစ္စည်းနှင့် အစိတ်အပိုင်း နံပါတ်စဉ်များကို ဖတ်နိုင်သည်</translation>
 <translation id="862542460444371744">&amp;တိုးချဲ့မှုများ</translation>
 <translation id="8625663000550647058">သင့်မိုက်ကရိုဖုန်းကို သုံးရန် ခွင့်ပြုမထားပါ</translation>
+<translation id="8625679025395572221">သင့်အကောင့်သည် အန္တရာယ်ရှိနေနိုင်ပါသည်။</translation>
 <translation id="8625916342247441948">HID ကိရိယာများနှင့် ချိတ်ဆက်ရန် ဝဘ်ဆိုက်များကို ခွင့်မပြုပါနှင့်</translation>
 <translation id="862727964348362408">ဆိုင်းငံ့ထား</translation>
 <translation id="862750493060684461">CSS ကက်ရှ</translation>

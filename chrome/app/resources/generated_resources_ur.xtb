@@ -1424,7 +1424,6 @@
 <translation id="1980168597243156">اسپیس اسٹیشن</translation>
 <translation id="1981434377190976112">سبھی ویب سائٹس پر اپنا سبھی ڈیٹا پڑھیں</translation>
 <translation id="1982851102516626421">آپ سائن آؤٹ ہیں</translation>
-<translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} اور {field_2}}other{{field_1}، {field_2} اور {field_3}}}</translation>
 <translation id="1984417487208496350">کوئی تحفظ نہیں (تجویز نہیں کی جاتی ہے)</translation>
 <translation id="198507684520034826">مدد</translation>
 <translation id="1986836014090708999">جدید ترین مقام کی ترتیبات</translation>
@@ -4929,7 +4928,6 @@
 <translation id="4462159676511157176">حسب  ضرورت نام سرورز</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" /> کیلئے <ph name="TIME" /> وقت کی حد سیٹ ہے</translation>
 <translation id="4467373268340082204">‏غلط PIN</translation>
-<translation id="4467561276409486506">مختصر وضع کو ٹوگل کریں</translation>
 <translation id="4469324811108161144">نوٹس میں <ph name="CHARACTER_LIMIT" /> حروف تک محفوظ ہو سکتے ہیں۔</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> <ph name="FOLDERNAME" /> میں فائلز میں ترمیم کر سکتا ہے</translation>
 <translation id="4470957202018033307">خارجی اسٹوریج کی ترجیحات</translation>

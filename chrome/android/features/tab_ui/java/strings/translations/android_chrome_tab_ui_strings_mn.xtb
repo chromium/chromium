@@ -76,6 +76,7 @@
 <translation id="427987768447457592">Шинэ табын бүлэг</translation>
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> табыг өөрчилсөн, <ph name="ANY_CLOSED" />-г хаасан}other{<ph name="MANY_CHANGED" /> табыг өөрчилсөн, <ph name="ANY_CLOSED" />-г хаасан}}</translation>
 <translation id="4371591986692297148">Идэвхгүй</translation>
+<translation id="4431937619879060901">Та "<ph name="GROUP_NAME" />" табын бүлэгт хандах эрхээ тэр даруй алдах ба уг бүлгийг таны бүх төхөөрөмжөөс устгана</translation>
 <translation id="4460014764210899310">Бүлгийг болих</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Идэвхгүй 1 табыг хаах уу?}other{Идэвхгүй <ph name="TAB_COUNT_MANY" /> табыг хаах уу?}}</translation>
 <translation id="4686942373615810936">Дөнгөж сая үүсгэсэн</translation>
@@ -106,6 +107,7 @@
 <translation id="5556417849629758491">Дэлгэцийн дээд хэсгийн ойролцоо боломжтой дэлгүүрийн мэдээллийг үзэх сонголт</translation>
 <translation id="5627941783489838464">Табын ямар ч шинэчлэлт байхгүй</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Табыг сэргээх}other{Табуудыг сэргээх}}</translation>
+<translation id="5647702255748985085">Бүлгээс гарах уу?</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome-н <ph name="TABS_COUNT_ONE" /> холбоос}other{Chrome-н <ph name="TABS_COUNT_MANY" /> холбоос}}</translation>
 <translation id="58326064309361797">Бүлэглэхийн тулд табыг чирж зөөнө үү</translation>
 <translation id="5901630391730855834">Шар</translation>
@@ -141,6 +143,7 @@
 <translation id="731648547091221002"><ph name="COLOR_NAME" />-г сонгосон</translation>
 <translation id="7326879924029668159">Буцаалтын бодлого болон илүү ихийг хараарай</translation>
 <translation id="7352298686197644113">Таны нээлттэй табд аль зүйл илүү хямд үнэтэй байгааг хараарай</translation>
+<translation id="742664698522525515">Бүлгийг үлдээх үү?</translation>
 <translation id="7452985128687107478">Табын бүлгийг таны бүх төхөөрөмж дээр автоматаар хадгалж, шинэчилдэг</translation>
 <translation id="747459581954555080">Бүгдийг сэргээх</translation>
 <translation id="750886945254958667">Дараа таб нэмэхийн тулд энэ бүлгийг үлдээх эсвэл та цаашид уг бүлэгт хандахыг хүсэхгүй байвал гарна уу</translation>
@@ -185,8 +188,10 @@
 <translation id="8915916167043355778">Бүгдийг хаах</translation>
 <translation id="9090098097337832354">Энэ дэлгүүрийн талаарх мэдээллийг хаасан</translation>
 <translation id="9114502155681725011">Табын бүлгийн үйлдлийн цэсийг <ph name="COLOR_NAME" /> өнгөтэй, <ph name="TITLE_OF_GROUP" /> табын бүлэгт зориулж нээнэ үү.</translation>
+<translation id="9169141410816678175">Хүн бүр "<ph name="GROUP_NAME" />" табын бүлэгт хандах эрхээ тэр даруй алдах бөгөөд үүнийг бүх төхөөрөмжөөс устгана</translation>
 <translation id="9169594135889675189">Бүлэгт шинэ таб нэмэх</translation>
 <translation id="9216898458513705996">Таб энэ төхөөрөмж дээр нээлттэй үлдэх хэдий ч бүлгийг <ph name="USER_EMAIL" />-д нэвтэрсэн бүх төхөөрөмжөөс устгана</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> таб, <ph name="COLOR_NAME" /> өнгөтэй табын бүлгийг дэлгэнэ үү.}other{<ph name="TABS_COUNT_MANY" /> таб, <ph name="COLOR_NAME" /> өнгөтэй табын бүлгийг дэлгэнэ үү.}}</translation>
+<translation id="94870150074703282">Бүлгийг устгах уу?</translation>
 <translation id="992256792861109788">Ягаан</translation>
 </translationbundle>

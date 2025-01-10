@@ -3386,6 +3386,7 @@
 <translation id="70705239631109039">మీ కనెక్షన్ పూర్తిగా సురక్షితమైనది కాదు</translation>
 <translation id="7075452647191940183">రిక్వెస్ట్‌ చాలా పెద్దదిగా ఉంది</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079699498125013497">\u0020\u2022\u0020</translation>
 <translation id="7081311540357715807">ఆహారం &amp; కిరాణా రిటైలర్‌లు</translation>
 <translation id="7083258188081898530">ట్రే 9</translation>
 <translation id="7086090958708083563">అప్‌లోడ్‌ను యూజర్ రిక్వెస్ట్ చేశారు</translation>
@@ -4110,6 +4111,7 @@
 <translation id="833262891116910667">హైలైట్ చేస్తుంది</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" />లో ఉన్న పేజీలు అనువదించబడవు</translation>
 <translation id="8339275256517065202">Touch IDని ఉపయోగించి మీ కొనుగోలును పూర్తి చేయండి</translation>
+<translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">వర్చువల్ కార్డ్ ఎన్‌రోల్‌మెంట్ పూర్తి ఎత్తులో తెరవబడింది</translation>
 <translation id="8349305172487531364">బుక్‌మార్క్‌ల బార్‌</translation>

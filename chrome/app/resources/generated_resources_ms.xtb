@@ -124,6 +124,7 @@
 <translation id="1076766328672150609">Anak anda boleh menggunakan PIN untuk membuka kunci peranti.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Tidak dapat memuat turun kamus semak ejaan untuk <ph name="LANGUAGE" />. Cuba lagi.</translation>
+<translation id="1078029726086090536">Sahkan kata laluan anda</translation>
 <translation id="1078037449555275327">Tetapan ChromeVox</translation>
 <translation id="1079242569060319448">Terlupa PIN?</translation>
 <translation id="1079285777677001938">Ciri pada sesetengah laman mungkin tidak berfungsi.</translation>
@@ -1434,7 +1435,6 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1980168597243156">Stesen angkasa</translation>
 <translation id="1981434377190976112">Baca semua data anda pada semua laman web</translation>
 <translation id="1982851102516626421">Anda dilog keluar</translation>
-<translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} dan {field_2}}other{{field_1}, {field_2} dan {field_3}}}</translation>
 <translation id="1984417487208496350">Tiada perlindungan (tidak disyorkan)</translation>
 <translation id="198507684520034826">Bantuan</translation>
 <translation id="1986836014090708999">Tetapan lokasi lanjutan</translation>
@@ -4094,6 +4094,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="3848547754896969219">Buka dalam tetingkap &amp;Inkognito</translation>
 <translation id="3850172593216628215">Kemaskinian keselamatan telah ditamatkan. Jimat $50 atau lebih untuk Chromebook baharu.</translation>
 <translation id="385051799172605136">Kembali</translation>
+<translation id="3850989673553106152">Kata laluan ditukar</translation>
 <translation id="3851428669031642514">Muatkan skrip yang tidak selamat</translation>
 <translation id="3852215160863921508">Bantuan Input</translation>
 <translation id="3853549894831560772"><ph name="DEVICE_NAME" /> dihidupkan</translation>
@@ -4596,6 +4597,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="421182450098841253">&amp;Tunjukkan Bar Penanda Halaman</translation>
 <translation id="4211904048067111541">Berhenti menggunakan dengan apl Android</translation>
 <translation id="42126664696688958">Eksport</translation>
+<translation id="4213540068152645535">Masalah semasa menukar kata laluan anda</translation>
 <translation id="42137655013211669">Akses kepada sumber ini dilarang oleh pelayan.</translation>
 <translation id="4213918571089943508">Google Account Anak</translation>
 <translation id="4214192212360095377">Matikan Sekarang</translation>
@@ -4942,7 +4944,6 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4462159676511157176">Nama pelayan tersuai</translation>
 <translation id="4465236939126352372">Had masa <ph name="TIME" /> ditetapkan untuk <ph name="APP_NAME" /></translation>
 <translation id="4467373268340082204">PIN salah</translation>
-<translation id="4467561276409486506">&amp;Togol Mod Sarat</translation>
 <translation id="4469324811108161144">Nota boleh menyimpan hingga <ph name="CHARACTER_LIMIT" /> aksara.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> boleh mengedit fail dalam <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Pilihan storan luar</translation>
@@ -8318,6 +8319,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6913051485529944333">Anda tidak akan melihat Google Calendar pada halaman ini lagi</translation>
 <translation id="6914812290245989348">Tidak memberikan sebarang amaran sebelum mengakses laman yang tidak selamat</translation>
 <translation id="6916590542764765824">Urus Sambungan</translation>
+<translation id="6916676294509106572">Kalendar Outlook disembunyikan</translation>
 <translation id="6917873303492266709">Untuk berkongsi, menyertai dan bekerjasama dalam kumpulan tab, buka tetapan dan hidupkan Benarkan log masuk Chrome</translation>
 <translation id="6918677045355889289">Kemaskinian Chrome OS diperlukan</translation>
 <translation id="6918733588290914545">Persediaan pantas dengan telefon Android</translation>
@@ -10699,6 +10701,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8625124982056504555">Baca nombor siri peranti dan komponen ChromeOS</translation>
 <translation id="862542460444371744">&amp;Sambungan</translation>
 <translation id="8625663000550647058">Tidak dibenarkan untuk menggunakan mikrofon anda</translation>
+<translation id="8625679025395572221">Akaun anda mungkin masih berisiko.</translation>
 <translation id="8625916342247441948">Jangan benarkan laman menyambung kepada peranti HID</translation>
 <translation id="862727964348362408">Digantung</translation>
 <translation id="862750493060684461">Cache CSS</translation>

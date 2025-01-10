@@ -424,6 +424,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{നിങ്ങളുടെ {EMAIL} എന്ന Google Account-ൽ സംരക്ഷിച്ച പാസ്‌വേഡ്}other{നിങ്ങളുടെ {EMAIL} എന്ന Google Account-ൽ സംരക്ഷിച്ച പാസ്‌വേഡുകൾ}}</translation>
 <translation id="2791174088547598693">പാസ്‌വേഡ് ചേർക്കുക…</translation>
 <translation id="2797302972324086597">രാജ്യ കോഡ്</translation>
+<translation id="2802403747691280910"><ph name="NUMBER_OF_TABS_REMOVED" /> എണ്ണം അടച്ചു</translation>
 <translation id="2816489851009559785">മെനു → ക്രമീകരണം → ഡിഫോൾട്ട് ബ്രൗസർ</translation>
 <translation id="2818821771744632548">iPhone റീസെറ്റ് ചെയ്യുന്നതിന്റെ ഭാഗമായി <ph name="USER_NAME" /> എന്ന അക്കൗണ്ടിൽ നിന്ന് നിങ്ങൾ സൈൻ ഔട്ട് ചെയ്തു. തിരികെ സൈൻ ഇൻ ചെയ്യാൻ, ചുവടെയുള്ള "തുടരുക" ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="2819667972867209401">ഓണായിരിക്കുമ്പോൾ, ഡാറ്റ നിങ്ങളുടെ Google Account-ൽ സംരക്ഷിക്കും. ഓഫായിരിക്കുമ്പോൾ, ഈ ഉപകരണത്തിൽ മാത്രമേ ഡാറ്റ സംരക്ഷിക്കൂ, സൈൻ ഔട്ട് ചെയ്താൽ ഇല്ലാതാക്കുകയും ചെയ്യും.</translation>
@@ -1149,6 +1150,7 @@
 <translation id="6160780110287872296">ഫയൽ ഡൗൺലോഡ് ചെയ്യണോ?</translation>
 <translation id="6165508094623778733">കൂടുതലറിയുക</translation>
 <translation id="6168647875670665004">ലേഖന നിർദ്ദേശങ്ങൾ</translation>
+<translation id="6169031022444660352">സംരക്ഷിച്ച ക്രെഡൻഷ്യലുകൾ മുഴുവൻ ഇല്ലാതാക്കാൻ, നിങ്ങളുടെ ഉപകരണത്തിൽ ആദ്യം ഒരു പാസ്‌കോഡ് സജ്ജീകരിക്കേണ്ടതുണ്ട്.</translation>
 <translation id="6173499589275053515">നിങ്ങളുടെ <ph name="EMAIL" /> എന്ന Google അക്കൗണ്ടിൽ സംരക്ഷിച്ച പാസ്‌വേഡ്</translation>
 <translation id="6187302354554850004">അവസാനം സമന്വയിപ്പിച്ചത്: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319"><ph name="DATE" />-ന് സൃഷ്‌ടിച്ചത്</translation>
@@ -1200,6 +1202,7 @@
 <translation id="6355820205320395730">ദുർബലമായ പാസ്‌വേഡുകൾ ഊഹിക്കാൻ എളുപ്പമാണ്. നിങ്ങൾ സൃഷ്‌ടിക്കുന്നത് ശക്തമായ പാസ്‌വേഡുകളാണെന്ന് ഉറപ്പാക്കുക. <ph name="BEGIN_LINK" />കൂടുതൽ സുരക്ഷാ നുറുങ്ങുകൾ കാണുക.<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243"><ph name="DOMAIN_NAME" /> ഫോളോ ചെയ്യുക</translation>
 <translation id="6368038301482806847">ലിസ്റ്റിൽ നിന്ന് ഒരു തിരയൽ എഞ്ചിൻ തിരഞ്ഞെടുക്കുക.</translation>
+<translation id="6368102751067608420">Password Manager ഡാറ്റ മുഴുവൻ ഇല്ലാതാക്കാൻ</translation>
 <translation id="6374469231428023295">വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="6387994324662817823">നിങ്ങളുടെ ഈ ഉപകരണത്തിലെ Google പാസ്‌വേഡ് മാനേജറിൽ മാത്രമേ പാസ്‌വേഡുകൾ സംരക്ഷിക്കൂ.</translation>
 <translation id="6404422529625928907">Google Drive-ൽ തുറക്കുക</translation>
@@ -1574,6 +1577,7 @@
 <translation id="7975036700432177008">പരീക്ഷിച്ച് നോക്കുക</translation>
 <translation id="797588153137233716">മെനു → ചരിത്രം → ബ്രൗസിംഗ് ഡാറ്റ ഇല്ലാതാക്കുക</translation>
 <translation id="7977451675950311423">ഡാറ്റാ ലംഘനത്തിൽ അപഹരിക്കപ്പെട്ട ഒരു പാസ്‌വേഡ് നിങ്ങൾ ഉപയോഗിക്കുകയാണെങ്കിൽ മുന്നറിയിപ്പ് നൽകുന്നു.</translation>
+<translation id="7977482887663636093">പുതിയ <ph name="NUMBER_OF_TABS_ADDED" /> ടാബുകൾ, <ph name="NUMBER_OF_TABS_REMOVED" /> എണ്ണം അടച്ചു</translation>
 <translation id="797824194429476746">ഈ ഉപകരണത്തിൽ ടാബുകൾ തുറന്നിരിക്കും, എന്നാൽ ഗ്രൂപ്പ് ശാശ്വതമായി ഇല്ലാതാക്കും.</translation>
 <translation id="7982789257301363584">നെറ്റ്‌വർക്ക്</translation>
 <translation id="7987685713885608670">അധിക സുരക്ഷയ്ക്ക്, Google പാസ്‌വേഡ് മാനേജറിലേക്ക് സംരക്ഷിക്കുന്നതിന് മുമ്പ് നിങ്ങളുടെ ഉപകരണത്തിൽ പാസ്‌വേഡുകൾ എൻക്രിപ്റ്റ് ചെയ്യുക.</translation>
@@ -1757,6 +1761,7 @@
 <translation id="8728922029615312208">എല്ലാം അടയ്‌ക്കുക</translation>
 <translation id="8730621377337864115">പൂർത്തിയാക്കി</translation>
 <translation id="87371078663613140">മെനു ബാറിലെ ഓപ്ഷനുകൾ അടുത്തറിയുക</translation>
+<translation id="8739706427581741437">പുതിയ <ph name="NUMBER_OF_TABS_ADDED" /> ടാബുകൾ</translation>
 <translation id="8741627442233023406">{count,plural, =1{ടാബ് അവലോകനം ചെയ്യുക…}other{എല്ലാ ടാബുകളും അവലോകനം ചെയ്യുക…}}</translation>
 <translation id="8741995161408053644">നിങ്ങളുടെ Google അക്കൗണ്ടിന് <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> എന്നതിൽ മറ്റ് തരത്തിലുള്ള ബ്രൗസിംഗ് ചരിത്രമുണ്ടായിരിക്കാം.</translation>
 <translation id="874599634440689554">ലിങ്ക് സൃഷ്‌ടിക്കുക</translation>

@@ -1690,6 +1690,7 @@
 <translation id="3990532701115075684">ଆପଣଙ୍କ ହାତକୁ ଟ୍ରାକ କରନ୍ତୁ</translation>
 <translation id="3992684624889376114">ଏହି ପୃଷ୍ଠା ବିଷୟରେ</translation>
 <translation id="3995639283717357522">ନୀତିଗୁଡ଼ିକ ଲାଗୁ କରନ୍ତୁ</translation>
+<translation id="3996683183117168945"><ph name="CURRENT_CITATION" />ରୁ <ph name="MAX_CITATIONS" /> ନମ୍ବର ସାଇଟେସନ, <ph name="PRODUCT_NAME" />, <ph name="URL" />। <ph name="PAGE_TITLE" />। <ph name="PAGE_PREVIEW" />।</translation>
 <translation id="399754345297554962">ଷ୍ଟାଣ୍ଡାର୍ଡାଇଜ୍ଡ ଏବଂ ଆଡମିସନ ଟେଷ୍ଟଗୁଡ଼ିକ</translation>
 <translation id="3999173941208168054">ହରର ମୁଭିଗୁଡ଼ିକ</translation>
 <translation id="4000598935132966791">ପରିଚାଳିତ ବ୍ରାଉଜରଗୁଡ଼ିକରେ ସାଇଟ ପ୍ରତିବନ୍ଧକଗୁଡ଼ିକ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
@@ -3386,6 +3387,7 @@
 <translation id="70705239631109039">ଆପଣଙ୍କର ସଂଯୋଗ ସମ୍ପୂର୍ଣ୍ଣରୂପେ ସୁରକ୍ଷିତ ନୁହେଁ</translation>
 <translation id="7075452647191940183">ଅନୁରୋଧଟି ବହୁତ ଲମ୍ବା ଅଟେ</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079699498125013497">\u0020\u2022\u0020</translation>
 <translation id="7081311540357715807">ଖାଦ୍ୟ ଏବଂ ଗ୍ରୋସରୀ ରିଟେଲରଗୁଡ଼ିକ</translation>
 <translation id="7083258188081898530">ଟ୍ରେ 9</translation>
 <translation id="7086090958708083563">ୟୁଜରଙ୍କ ଦ୍ୱାରା ଅପଲୋଡ ପାଇଁ ଅନୁରୋଧ କରାଯାଇଛି</translation>
@@ -4109,6 +4111,7 @@
 <translation id="833262891116910667">ହାଇଲାଇଟ୍</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> ରେ ପୃଷ୍ଠାଗୁଡ଼ିକ ଅନୁବାଦ କରାଯିବନାହିଁ</translation>
 <translation id="8339275256517065202">Touch ID ବ୍ୟବହାର କରି ଆପଣଙ୍କ କ୍ରୟକୁ ସମ୍ପୂର୍ଣ୍ଣ କରନ୍ତୁ</translation>
+<translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">ଭର୍ଚୁଆଲ କାର୍ଡ ପଞ୍ଜିକରଣ ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରେ ଖୋଲାଯାଇଛି</translation>
 <translation id="8349305172487531364">ବୁକମାର୍କସ୍ ଦଣ୍ଡିକା</translation>

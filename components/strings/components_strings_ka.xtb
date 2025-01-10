@@ -386,6 +386,7 @@
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1652862280638399816">პაროლების მმართველი macOS Keychain-თან რომ გამოიყენოთ, ხელახლა გაუშვით Chromium და დაუშვით წვდომა Keychain-ზე. ხელახლა გაშვების შემდეგ თქვენი ჩანართები თავიდან გაიხსნება.</translation>
 <translation id="1652887625750064647">ხელოვნური ინტელექტით საუკეთესო შესატყვისობა</translation>
+<translation id="1653465303147789530">გადაიხადეთ <ph name="PAYMENT_METHOD" />-ის მეშვეობით აპების გადართვის გარეშე</translation>
 <translation id="1656024727720460136">Chrome-მა გაამარტივა ეს გვერდი მისი წაკითხვის გასაიოლებლად. Chrome-მა თავდაპირველი გვერდი ჩატვირთა დაცული კავშირის მეშვეობით.</translation>
 <translation id="1656489000284462475">წაღება</translation>
 <translation id="1658111267661135323">ტელევიზია და ვიდეო</translation>
@@ -556,6 +557,7 @@
 <translation id="1959001866257244765">შეუწყვეთ ხელი ვების უსაფრთხოების ყველასთვის გაუმჯობესებას <ph name="BEGIN_WHITEPAPER_LINK" />თქვენ მიერ მონახულებული ზოგიერთი გვერდის URL-ების, სისტემის შეზღუდული ინფორმაციისა და გვერდების გარკვეული კონტენტის<ph name="END_WHITEPAPER_LINK" /> Google-ისთვის გაგზავნით. <ph name="BEGIN_PRIVACY_PAGE_LINK" />კონფიდენციალურობის დებულება<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">თქვენი ტექსტი და გვერდზე არსებული კონტენტი გაეგზავნება Google-ს და, შესაძლოა, გამოყენებულ იქნას ამ ფუნქციის გასაუმჯობესებლად.
   <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
+<translation id="196146181975453736">დაასრულეთ უსაფრთხოების ერთჯერადი შემოწმება, რომ უფრო სწრაფად გადაიხადოთ</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> სანიშნეები</translation>
 <translation id="1973335181906896915">სრიალიზაციის შეცდომა</translation>
 <translation id="1973785048533660168">ვაკანსიები საკანცელარიო და ადმინისტრაციულ სფეროში</translation>
@@ -1585,6 +1587,7 @@
 <translation id="378611282717571199">საუკეთესო შესატყვისები მოთხოვნისთვის „<ph name="SEARCH_QUERY" />“</translation>
 <translation id="3789155188480882154">ზომა 16</translation>
 <translation id="3789841737615482174">ინსტალაცია</translation>
+<translation id="3791118028061680614">გადახდა აპების გადართვის გარეშე</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> დუიმი)</translation>
 <translation id="3792826587784915501">საკულტო და ინდი ფილმები</translation>
 <translation id="3793574014653384240">ახლახან დაფიქსირებული ავარიული გათიშვების ნომრები და გამომწვევი მიზეზები</translation>

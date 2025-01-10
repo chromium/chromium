@@ -124,6 +124,7 @@
 <translation id="1076766328672150609">നിങ്ങളുടെ കുട്ടിക്ക് ഒരു പിൻ ഉപയോഗിച്ച് ഈ ഉപകരണം അൺലോക്ക് ചെയ്യാനാകും.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216"><ph name="LANGUAGE" /> ഭാഷയ്‌ക്ക് സ്പെൽ ചെക്ക് നിഘണ്ടു ഡൗൺലോഡ് ചെയ്യാനായില്ല. വീണ്ടും ശ്രമിക്കുക.</translation>
+<translation id="1078029726086090536">നിങ്ങളുടെ പാസ്‌വേഡ് പരിശോധിച്ചുറപ്പിക്കുക</translation>
 <translation id="1078037449555275327">ChromeVox ക്രമീകരണം</translation>
 <translation id="1079242569060319448">പിൻ മറന്നോ?</translation>
 <translation id="1079285777677001938">ചില സൈറ്റുകളിലെ ഫീച്ചറുകൾ പ്രവർത്തിച്ചേക്കില്ല.</translation>
@@ -1421,7 +1422,6 @@
 <translation id="1980168597243156">ബഹിരാകാശ നിലയം</translation>
 <translation id="1981434377190976112">എല്ലാ വെബ്സൈറ്റുകളിലെയും നിങ്ങളുടെ എല്ലാ ഡാറ്റയും വായിക്കുക</translation>
 <translation id="1982851102516626421">നിങ്ങൾ സൈൻ ഔട്ട് ചെയ്‌തു</translation>
-<translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1}, {field_2} എന്നിവ}other{{field_1}, {field_2}, {field_3} എന്നിവ}}</translation>
 <translation id="1984417487208496350">പരിരക്ഷയില്ല (ശുപാർശ ചെയ്യുന്നില്ല)</translation>
 <translation id="198507684520034826">സഹായം</translation>
 <translation id="1986836014090708999">വിപുലമായ ലൊക്കേഷൻ ക്രമീകരണം</translation>
@@ -4078,6 +4078,7 @@
 <translation id="3848547754896969219">&amp;അദൃശ്യ വിൻഡോയിൽ തുറക്കുക</translation>
 <translation id="3850172593216628215">സുരക്ഷാ അപ്‌ഡേറ്റുകൾ അവസാനിച്ചു. പുതിയ Chromebook-ൽ $50 അല്ലെങ്കിൽ അതിൽ കൂടുതൽ ലാഭിക്കൂ.</translation>
 <translation id="385051799172605136">പിന്നോട്ട്</translation>
+<translation id="3850989673553106152">പാസ്‌വേഡ് മാറ്റി</translation>
 <translation id="3851428669031642514">സുരക്ഷിതമല്ലാത്ത സ്‌ക്രിപ്‌റ്റുകൾ ലോഡ് ചെയ്യുക</translation>
 <translation id="3852215160863921508">ഇൻപുട്ട് സഹായം</translation>
 <translation id="3853549894831560772"><ph name="DEVICE_NAME" /> ഓണാക്കി</translation>
@@ -4579,6 +4580,7 @@
 <translation id="421182450098841253">ബുക്ക്മാർക്കുകൾ ബാർ &amp;കാണിക്കുക</translation>
 <translation id="4211904048067111541">Android ആപ്പുകളിൽ ഉപയോഗിക്കുന്നത് നിർത്തുക</translation>
 <translation id="42126664696688958">എക്‌സ്‌പോർട്ടുചെയ്യുക</translation>
+<translation id="4213540068152645535">നിങ്ങളുടെ പാസ്‌വേഡ് മാറ്റുന്നതിൽ പ്രശ്‌നമുണ്ട്</translation>
 <translation id="42137655013211669">ഈ ഉറവിടത്തിലേക്കുള്ള ആക്‌സസ് സെർവർ തടഞ്ഞു.</translation>
 <translation id="4213918571089943508">കുട്ടിയുടെ Google Account</translation>
 <translation id="4214192212360095377">ഇപ്പോൾ ഓഫാക്കുക</translation>
@@ -4925,7 +4927,6 @@
 <translation id="4462159676511157176">ഇഷ്‌ടാനുസൃത നാമ സെർവറുകൾ</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" />-നായി <ph name="TIME" /> സമയ പരിധി സജ്ജീകരിച്ചു</translation>
 <translation id="4467373268340082204">പിൻ തെറ്റാണ്</translation>
-<translation id="4467561276409486506">കോംപാക്റ്റ് മോഡ് ടോഗിൾ ചെയ്യുക</translation>
 <translation id="4469324811108161144">കുറിപ്പുകളിൽ <ph name="CHARACTER_LIMIT" /> പ്രതീകങ്ങൾ വരെ ഉണ്ടാകാം.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> എന്നതിന് <ph name="FOLDERNAME" /> എന്ന ഫോൾഡറിലെ ഫയലുകൾ എഡിറ്റ് ചെയ്യാനാവും</translation>
 <translation id="4470957202018033307">ബാഹ്യ സ്‌റ്റോറേജ് മുൻഗണനകൾ</translation>
@@ -8301,6 +8302,7 @@
 <translation id="6913051485529944333">ഈ പേജിൽ നിങ്ങൾ Google Calendar വീണ്ടും കാണില്ല</translation>
 <translation id="6914812290245989348">സുരക്ഷിതമല്ലാത്ത സൈറ്റുകളിലേക്ക് പോകുന്നതിന് മുമ്പ് മുന്നറിയിപ്പുകളൊന്നും കാണരുത്</translation>
 <translation id="6916590542764765824">വിപുലീകരണങ്ങൾ നിയന്ത്രിക്കുക</translation>
+<translation id="6916676294509106572">Outlook കലണ്ടർ മറച്ചിരിക്കുന്നു</translation>
 <translation id="6917873303492266709">ടാബ് ഗ്രൂപ്പുകൾ പങ്കിടാനോ അവയിൽ ചേരാനോ സഹകരിക്കാനോ, ക്രമീകരണം തുറന്ന് Chrome സൈൻ ഇൻ അനുവദിക്കുക ഓണാക്കുക</translation>
 <translation id="6918677045355889289">ChromeOS അപ്ഡേറ്റ് ചെയ്യേണ്ടതുണ്ട്</translation>
 <translation id="6918733588290914545">Android ഫോൺ ഉപയോഗിച്ചുള്ള ദ്രുത്ര സജ്ജീകരണം</translation>
@@ -10680,6 +10682,7 @@
 <translation id="8625124982056504555">ChromeOS ഉപകരണവും കമ്പോണന്റ് സീരിയൽ നമ്പറുകളും റീഡ് ചെയ്യുക</translation>
 <translation id="862542460444371744">&amp;വിപുലീകരണങ്ങള്‍</translation>
 <translation id="8625663000550647058">നിങ്ങളുടെ മൈക്രോഫോൺ ഉപയോഗിക്കാൻ അനുവാദമില്ല</translation>
+<translation id="8625679025395572221">നിങ്ങളുടെ അക്കൗണ്ട് ഇപ്പോഴും അപകടത്തിലായിരിക്കാം.</translation>
 <translation id="8625916342247441948">HID ഉപകരണങ്ങളിലേക്ക് കണക്റ്റ് ചെയ്യാൻ സൈറ്റുകളെ അനുവദിക്കരുത്</translation>
 <translation id="862727964348362408">താൽക്കാലികമായി നിർത്തി</translation>
 <translation id="862750493060684461">CSS കാഷേ</translation>

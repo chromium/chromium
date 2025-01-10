@@ -1693,6 +1693,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3990532701115075684">Olrhain eich dwylo</translation>
 <translation id="3992684624889376114">Ynghylch y dudalen hon</translation>
 <translation id="3995639283717357522">Cymhwyso polisïau</translation>
+<translation id="3996683183117168945">Dyfyniad <ph name="CURRENT_CITATION" /> o <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" />. <ph name="PAGE_TITLE" />. <ph name="PAGE_PREVIEW" />.</translation>
 <translation id="399754345297554962">Profion Safonol a Mynediad</translation>
 <translation id="3999173941208168054">Ffilmiau Arswyd</translation>
 <translation id="4000598935132966791">Dysgu rhagor am gyfyngiadau gwefan mewn porwyr a reolir</translation>
@@ -3390,6 +3391,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="70705239631109039">Nid yw'ch cysylltiad yn gwbl ddiogel</translation>
 <translation id="7075452647191940183">Mae'r cais yn rhy fawr</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079699498125013497">\u0020\u2022\u0020</translation>
 <translation id="7081311540357715807">Manwerthwyr Bwyd a Groser</translation>
 <translation id="7083258188081898530">Hambwrdd 9</translation>
 <translation id="7086090958708083563">Mae defnyddiwr wedi gofyn i uwchlwytho</translation>
@@ -4113,6 +4115,7 @@ Manylion ychwanegol:
 <translation id="833262891116910667">Amlygu</translation>
 <translation id="8339163506404995330">Ni fydd tudalennau yn <ph name="LANGUAGE" /> yn cael eu cyfieithu</translation>
 <translation id="8339275256517065202">Cwblhewch eich pryniant gan ddefnyddio Touch ID</translation>
+<translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Agorwyd cofrestriad cerdyn rhithwir ar uchder llawn</translation>
 <translation id="8349305172487531364">Bar nodau tudalen</translation>

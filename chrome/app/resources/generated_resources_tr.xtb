@@ -1424,7 +1424,6 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1980168597243156">Uzay istasyonu</translation>
 <translation id="1981434377190976112">Web sitelerindeki tüm verilerinizi okuma</translation>
 <translation id="1982851102516626421">Oturumunuz kapalı</translation>
-<translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} ve {field_2}}other{{field_1}, {field_2} ve {field_3}}}</translation>
 <translation id="1984417487208496350">Koruma yok (önerilmez)</translation>
 <translation id="198507684520034826">Yardım</translation>
 <translation id="1986836014090708999">Gelişmiş konum ayarları</translation>
@@ -4925,7 +4924,6 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="4462159676511157176">Özel ad sunucuları</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" /> için <ph name="TIME" /> süreli zaman sınırı ayarla</translation>
 <translation id="4467373268340082204">Yanlış PIN</translation>
-<translation id="4467561276409486506">&amp;En Yüksek Modu'nu aç/kapat</translation>
 <translation id="4469324811108161144">En fazla <ph name="CHARACTER_LIMIT" /> karakterden oluşan notlar kaydedilebilir.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> sitesi <ph name="FOLDERNAME" /> klasöründeki dosyaları düzenleyebilir</translation>
 <translation id="4470957202018033307">Harici depolama tercihleri</translation>
@@ -7431,6 +7429,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6278776436938569440">Konumu değiştir</translation>
 <translation id="6280215091796946657">Farklı bir hesapla oturum aç</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281218688313242284">&amp;Google Hesabınızı Yönetin</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{1 kağıt sınırını aşıyor}other{{COUNT} kağıt sınırını aşıyor}}</translation>
 <translation id="6282490239556659745"><ph name="EMBEDDED_SITE" /> sitesini, <ph name="SITE" /> sitesinden kaldır</translation>
 <translation id="6283438600881103103">Oturumunuz şimdi otomatik olarak kapatılacak.
@@ -8042,6 +8041,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="6745592621698551453">Şimdi güncelle</translation>
 <translation id="6746124502594467657">Aşağı taşı</translation>
 <translation id="67465227497040338"><ph name="DOMAIN" /> şifresini göster</translation>
+<translation id="6746834324024491643">Şifrelerinizi ve diğer öğelerinizi tüm cihazlarınızda almak için <ph name="EMAIL" /> olarak oturum açın</translation>
 <translation id="6748980958975836188"><ph name="BEGIN_LINK1" />Google Hizmet Şartları<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome ve ChromeOS Ek Hizmet Şartları<ph name="END_LINK2" />'nı okudum ve kabul ediyorum.</translation>
 <translation id="6749077623962119521">İzinler sıfırlansın mı?</translation>
 <translation id="6749473226660745022">Fotoğraflar</translation>

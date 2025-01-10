@@ -1424,7 +1424,6 @@
 <translation id="1980168597243156">Свемирска станица</translation>
 <translation id="1981434377190976112">да чита све ваше податке на свим веб-сајтовима</translation>
 <translation id="1982851102516626421">Одјављени сте</translation>
-<translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} и {field_2}}one{{field_1}, {field_2} и {field_3}}few{{field_1}, {field_2} и {field_3}}other{{field_1}, {field_2} и {field_3}}}</translation>
 <translation id="1984417487208496350">Без заштите (не препоручује се)</translation>
 <translation id="198507684520034826">Помоћ</translation>
 <translation id="1986836014090708999">Напредна подешавања локације</translation>
@@ -4930,7 +4929,6 @@
 <translation id="4462159676511157176">Прилагођени сервери назива</translation>
 <translation id="4465236939126352372">Временско ограничење од <ph name="TIME" /> је подешено за апликацију <ph name="APP_NAME" /></translation>
 <translation id="4467373268340082204">Погрешан PIN</translation>
-<translation id="4467561276409486506">&amp;Укључи/искључи компактни режим</translation>
 <translation id="4469324811108161144">Белешке могу да сачувају највише <ph name="CHARACTER_LIMIT" /> знакова.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> може да мења датотеке у директоријуму <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Подешавања спољне меморије</translation>

@@ -1430,7 +1430,6 @@
 <translation id="1980168597243156">محطة فضائية</translation>
 <translation id="1981434377190976112">الاطّلاع على جميع بياناتك على جميع المواقع الإلكترونية</translation>
 <translation id="1982851102516626421">لقد سجّلت الخروج من حسابك</translation>
-<translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} و{field_2}}zero{{field_1} و{field_2} و{field_3}}few{{field_1} و{field_2} و{field_3}}many{{field_1} و{field_2} و{field_3}}other{{field_1} و{field_2} و{field_3}}}</translation>
 <translation id="1984417487208496350">بلا حماية (غير مُستحسَن)</translation>
 <translation id="198507684520034826">مساعدة</translation>
 <translation id="1986836014090708999">الإعدادات المتقدمة للموقع الجغرافي</translation>
@@ -4935,7 +4934,6 @@
 <translation id="4462159676511157176">خوادم أسماء مخصصة</translation>
 <translation id="4465236939126352372">تم ضبط الحد الأقصى المسموح به لاستخدام تطبيق <ph name="APP_NAME" /> على <ph name="TIME" />.</translation>
 <translation id="4467373268340082204">رقم التعريف الشخصي غير صحيح</translation>
-<translation id="4467561276409486506">&amp;تفعيل "الوضع المكثف" أو إيقافه</translation>
 <translation id="4469324811108161144">الحد الأقصى لعدد الأحرف في الملاحظات هو <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="4469762931504673593">بإمكان <ph name="ORIGIN" /> تعديل الملفات في <ph name="FOLDERNAME" />.</translation>
 <translation id="4470957202018033307">الإعدادات المفضلة لمساحة التخزين الخارجية</translation>

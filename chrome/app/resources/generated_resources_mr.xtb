@@ -1434,7 +1434,6 @@
 <translation id="1980168597243156">अंतराळ केंद्र</translation>
 <translation id="1981434377190976112">सर्व वेबसाइटवरील तुमचा सर्व डेटा वाचू शकते</translation>
 <translation id="1982851102516626421">तुम्ही साइन आउट केले आहे</translation>
-<translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} आणि {field_2}}other{{field_1}, {field_2} आणि {field_3}}}</translation>
 <translation id="1984417487208496350">संरक्षण नाही (शिफारस केली जात नाही)</translation>
 <translation id="198507684520034826">मदत</translation>
 <translation id="1986836014090708999">प्रगत स्थान सेटिंग्ज</translation>
@@ -4942,7 +4941,6 @@
 <translation id="4462159676511157176">कस्टम नाव सर्व्हर</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" /> साठी सेट केलेली <ph name="TIME" /> ची वेळ मर्यादा</translation>
 <translation id="4467373268340082204">चुकीचा पिन</translation>
-<translation id="4467561276409486506">संक्षिप्त मोड टॉगल करा</translation>
 <translation id="4469324811108161144"><ph name="CHARACTER_LIMIT" /> वर्णांपर्यंतच्या टिपा सेव्ह केल्या जाऊ शकतात.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> <ph name="FOLDERNAME" /> मधील फाइल संपादित करू शकते</translation>
 <translation id="4470957202018033307">बाह्य स्टोरेज प्राधान्ये</translation>

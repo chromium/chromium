@@ -124,6 +124,7 @@
 <translation id="1076766328672150609">Je kind kan een pincode gebruiken om het apparaat te ontgrendelen.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Kan het woordenboek voor de spellingcontrole van <ph name="LANGUAGE" /> niet downloaden. Probeer het opnieuw.</translation>
+<translation id="1078029726086090536">Je wachtwoord laten verifiëren</translation>
 <translation id="1078037449555275327">ChromeVox-instellingen</translation>
 <translation id="1079242569060319448">Pincode vergeten?</translation>
 <translation id="1079285777677001938">Functies op bepaalde sites werken misschien niet.</translation>
@@ -1424,7 +1425,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1980168597243156">Ruimtestation</translation>
 <translation id="1981434377190976112">Al je gegevens op alle websites lezen</translation>
 <translation id="1982851102516626421">Je bent uitgelogd</translation>
-<translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} en {field_2}}other{{field_1}, {field_2} en {field_3}}}</translation>
 <translation id="1984417487208496350">Geen beveiliging (niet aanbevolen)</translation>
 <translation id="198507684520034826">Help</translation>
 <translation id="1986836014090708999">Geavanceerde locatie-instellingen</translation>
@@ -4079,6 +4079,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser 
 <translation id="3848547754896969219">Openen in &amp;incognitovenster</translation>
 <translation id="3850172593216628215">Beveiligingsupdates zijn beëindigd. Bespaar $ 50 of meer op een nieuwe Chromebook.</translation>
 <translation id="385051799172605136">Terug</translation>
+<translation id="3850989673553106152">Wachtwoord gewijzigd</translation>
 <translation id="3851428669031642514">Onveilige scripts laden</translation>
 <translation id="3852215160863921508">Invoerondersteuning</translation>
 <translation id="3853549894831560772"><ph name="DEVICE_NAME" /> is aangezet</translation>
@@ -4580,6 +4581,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="421182450098841253">&amp;Bookmarkbalk bekijken</translation>
 <translation id="4211904048067111541">Niet meer gebruiken met Android-apps</translation>
 <translation id="42126664696688958">Exporteren</translation>
+<translation id="4213540068152645535">Problemen met het wijzigen van je wachtwoord</translation>
 <translation id="42137655013211669">De toegang tot deze bron is verboden door de server.</translation>
 <translation id="4213918571089943508">Google-account van kind</translation>
 <translation id="4214192212360095377">Nu uitzetten</translation>
@@ -4926,7 +4928,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4462159676511157176">Aangepaste naamservers</translation>
 <translation id="4465236939126352372">Tijdslimiet van <ph name="TIME" /> ingesteld voor <ph name="APP_NAME" /></translation>
 <translation id="4467373268340082204">Onjuiste pincode</translation>
-<translation id="4467561276409486506">&amp;Compacte modus aan-/uitzetten</translation>
 <translation id="4469324811108161144">Notities mogen maximaal <ph name="CHARACTER_LIMIT" /> tekens bevatten.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> kan bestanden bewerken in <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Voorkeuren voor externe opslag</translation>
@@ -8297,6 +8298,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6913051485529944333">Je ziet Google Agenda niet meer op deze pagina</translation>
 <translation id="6914812290245989348">Geen waarschuwingen tonen voordat je naar niet-beveiligde sites gaat</translation>
 <translation id="6916590542764765824">Extensies beheren</translation>
+<translation id="6916676294509106572">Outlook-agenda verborgen</translation>
 <translation id="6917873303492266709">Als je tabbladgroepen wilt delen, eraan deelnemen en eraan wilt samenwerken in tabbladgroepen, open je de instellingen en zet je Inloggen bij Chrome toestaan aan</translation>
 <translation id="6918677045355889289">Chrome OS-update vereist</translation>
 <translation id="6918733588290914545">Snel instellen met Android-telefoon</translation>
@@ -10675,6 +10677,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8625124982056504555">Serienummers van ChromeOS-apparaat en component lezen</translation>
 <translation id="862542460444371744">&amp;Extensies</translation>
 <translation id="8625663000550647058">Geen toestemming om je microfoon te gebruiken</translation>
+<translation id="8625679025395572221">Je account loopt mogelijk nog steeds gevaar.</translation>
 <translation id="8625916342247441948">Niet toestaan dat sites verbinding maken met HID-apparaten</translation>
 <translation id="862727964348362408">Opgeschort</translation>
 <translation id="862750493060684461">CSS-cachegeheugen</translation>

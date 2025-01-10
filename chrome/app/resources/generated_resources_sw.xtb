@@ -124,6 +124,7 @@
 <translation id="1076766328672150609">Mtoto wako anaweza kutumia PIN kufungua kifaa.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Imeshindwa kupakua kamusi ya kukagua maendelezo ya <ph name="LANGUAGE" />. Jaribu tena.</translation>
+<translation id="1078029726086090536">Thibitisha nenosiri lako</translation>
 <translation id="1078037449555275327">Mipangilio ya ChromeVox</translation>
 <translation id="1079242569060319448">Je, umesahau PIN?</translation>
 <translation id="1079285777677001938">Huenda vipengele visifanye kazi kwenye baadhi ya tovuti.</translation>
@@ -1430,7 +1431,6 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="1980168597243156">Kituo cha angani</translation>
 <translation id="1981434377190976112">Kusoma data yako yote kwenye tovuti zote</translation>
 <translation id="1982851102516626421">Umeondoka kwenye akaunti</translation>
-<translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} na {field_2}}other{{field_1}, {field_2} na {field_3}}}</translation>
 <translation id="1984417487208496350">Hamna ulinzi (haipendekezwi)</translation>
 <translation id="198507684520034826">Usaidizi</translation>
 <translation id="1986836014090708999">Mipangilio ya kina ya mahali</translation>
@@ -4091,6 +4091,7 @@ Hii inaweza kujumuisha maelezo kuhusu programu zilizosakinishwa, faili, kivinjar
 <translation id="3848547754896969219">Fungua katika &amp;dirisha fiche</translation>
 <translation id="3850172593216628215">Muda wa masasisho ya usalama umeisha. Okoa $50 au zaidi kwenye Chromebook mpya.</translation>
 <translation id="385051799172605136">Rudi nyuma</translation>
+<translation id="3850989673553106152">Nenosiri limebadilishwa</translation>
 <translation id="3851428669031642514">Pakia hati zisizo salama</translation>
 <translation id="3852215160863921508">Usaidizi wa Kuingiza Data</translation>
 <translation id="3853549894831560772"><ph name="DEVICE_NAME" /> imewashwa</translation>
@@ -4591,6 +4592,7 @@ Hii inaweza kujumuisha maelezo kuhusu programu zilizosakinishwa, faili, kivinjar
 <translation id="421182450098841253">&amp;Onyesha Upau wa Alamisho</translation>
 <translation id="4211904048067111541">Acha kutumia kwenye programu za Android</translation>
 <translation id="42126664696688958">Hamisha</translation>
+<translation id="4213540068152645535">Tatizo limetokea wakati wa kubadilisha nenosiri lako</translation>
 <translation id="42137655013211669">Idhini ya kufikia rasilimali hii ilizuiwa na seva.</translation>
 <translation id="4213918571089943508">Akaunti ya Google ya Mtoto</translation>
 <translation id="4214192212360095377">Zima Sasa</translation>
@@ -4937,7 +4939,6 @@ Hii inaweza kujumuisha maelezo kuhusu programu zilizosakinishwa, faili, kivinjar
 <translation id="4462159676511157176">Seva za jina maalum</translation>
 <translation id="4465236939126352372">Umeweka kikomo cha <ph name="TIME" /> cha kutumia <ph name="APP_NAME" /></translation>
 <translation id="4467373268340082204">PIN si sahihi</translation>
-<translation id="4467561276409486506">Geuza Hali ya Kushikamana</translation>
 <translation id="4469324811108161144">Vidokezo vinaweza kuhifadhi hadi herufi <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> inaweza kubadilisha faili katika <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Mapendeleo ya hifadhi ya nje</translation>
@@ -8313,6 +8314,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="6913051485529944333">Hutaona Kalenda ya Google kwenye ukurasa huu tena</translation>
 <translation id="6914812290245989348">Usione tahadhari zozote kabla ya kwenda kwenye tovuti zisizo salama</translation>
 <translation id="6916590542764765824">Simamia Viendelezi</translation>
+<translation id="6916676294509106572">Kalenda ya Outlook imefichwa</translation>
 <translation id="6917873303492266709">Fungua mipangilio na uwashe ‘Ruhusu kuingia katika akaunti ukitumia Chrome’ ili uruhusu ufikiaji, ujiunge na ushirikiane katika vikundi vya vichupo</translation>
 <translation id="6918677045355889289">Unahitaji kusasisha Mfumo wa Uendeshaji wa Chrome</translation>
 <translation id="6918733588290914545">Weka mipangilio ya haraka ukitumia simu ya Android</translation>
@@ -10694,6 +10696,7 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8625124982056504555">Kusoma namba za ufuatiliaji za kifaa na vipengele vinavyotumia Mfumo wa Uendeshaji wa Chrome</translation>
 <translation id="862542460444371744">Vi&amp;endelezi</translation>
 <translation id="8625663000550647058">Zisizoruhusiwa kutumia maikrofoni yako</translation>
+<translation id="8625679025395572221">Huenda akaunti yako bado iko hatarini.</translation>
 <translation id="8625916342247441948">Usiruhusu tovuti ziunganishe kwenye vifaa vya HID</translation>
 <translation id="862727964348362408">Imesitishwa</translation>
 <translation id="862750493060684461">Akiba ya CSS</translation>

@@ -1692,6 +1692,7 @@
 <translation id="3990532701115075684">Колдоруңузга көз салуу</translation>
 <translation id="3992684624889376114">Бул бет жөнүндө</translation>
 <translation id="3995639283717357522">Эрежелерди колдонуу</translation>
+<translation id="3996683183117168945"><ph name="MAX_CITATIONS" /> ичинен <ph name="CURRENT_CITATION" />-цитата, <ph name="PRODUCT_NAME" />, <ph name="URL" />. <ph name="PAGE_TITLE" />. <ph name="PAGE_PREVIEW" />.</translation>
 <translation id="399754345297554962">Стандартташтырылган жана кабыл алуу сынактары</translation>
 <translation id="3999173941208168054">Үрөй учурган тасмалар</translation>
 <translation id="4000598935132966791">Башкарылган серепчилердеги сайт чектөөлөрү тууралуу кеңири маалымат</translation>
@@ -3389,6 +3390,7 @@
 <translation id="70705239631109039">Туташуу толугу менен коопсуз эмес</translation>
 <translation id="7075452647191940183">Сурамдын көлөмү өтө чоң</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079699498125013497">\u0020\u2022\u0020</translation>
 <translation id="7081311540357715807">Тамак-аш жана азык-түлүк сатуучулар</translation>
 <translation id="7083258188081898530">9-түпкүч</translation>
 <translation id="7086090958708083563">Колдонуучу тарабынан жүктөп берүү суралды</translation>
@@ -4112,6 +4114,7 @@
 <translation id="833262891116910667">Бөлүп көрсөтүү</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> тилиндеги барактар которулбайт</translation>
 <translation id="8339275256517065202">Бул нерсени Touch ID аркылуу сатып алыңыз</translation>
+<translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Виртуалдык картаны каттоо диалогу толук экранда ачылды</translation>
 <translation id="8349305172487531364">Кыстармалар тилкеси</translation>

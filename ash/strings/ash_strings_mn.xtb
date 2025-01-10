@@ -1029,6 +1029,7 @@
 <translation id="4485506555414638855">Утасныхаа саяхны зураг, медиа, мэдэгдэл болон аппуудыг харахыг тохируулахыг үл хэрэгсэх</translation>
 <translation id="4491109536499578614">Зураг</translation>
 <translation id="450584155212756404">Dev суваг</translation>
+<translation id="4513044611477939680">Түргэн хуваалцах</translation>
 <translation id="4513946894732546136">Санал дүгнэлт</translation>
 <translation id="4518404433291145981">Chromebook-нхээ түгжээг тайлахын тулд эхлээд утасныхаа түгжээг тайлна уу</translation>
 <translation id="4527045527269911712">"<ph name="DEVICE_NAME" />" Bluetooth төхөөрөмж хослох зөвшөөрөл хүсч байна.</translation>
@@ -1080,6 +1081,7 @@
 <translation id="4672539464599646374">Батарей хэмнэгчийг асаасан</translation>
 <translation id="4673427585974421255">Асаалттай үлдээх</translation>
 <translation id="4677040906536311086">Google Хүснэгт</translation>
+<translation id="468019262817532242">Хэн ч тантай хуваалцах боломжгүй</translation>
 <translation id="468293128311738995">Таны утасны аппууд</translation>
 <translation id="4690510401873698237">Доор байгаа shelf</translation>
 <translation id="4696813013609194136">Төхөөрөмжийн түгжээг эцэг эхийн кодоор тайлна уу</translation>
@@ -1111,6 +1113,7 @@
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" />-ийн нууц үг</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">Google Туслах туршилтын харилцан үйлдэлд боломжгүй байна.</translation>
+<translation id="4785412405516449976">Зөвхөн таны Google Бүртгэлтэй харилцагчид</translation>
 <translation id="4789348252524569426">Ярианы файлуудыг суулгах боломжгүй. Та төхөөрөмжөө шинэчлэх шаардлагатай. Төхөөрөмжөө дахин эхлүүлээд, дахин оролдоно уу.</translation>
 <translation id="478959186716341421">Каст хийх</translation>
 <translation id="4798403412327076414">Та дараагийн удаа нэвтрэхдээ өмнө нь нээгдсэн цонх, аппуудыг харах болно</translation>
@@ -1240,6 +1243,7 @@
 <translation id="5176318573511391780">Хэсэгчилсэн дэлгэцийг бичих</translation>
 <translation id="5187627942836026988">Сүлжээний цэгийн дэлгэрэнгүйг харуулна уу. Сүлжээний цэгийг танай администратор блоклосон.</translation>
 <translation id="5197255632782567636">Интернэт</translation>
+<translation id="5198039720391525849">Онцолсон GIF-үүд</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> үйл явдал</translation>
 <translation id="5198715732953550718">Шинэ фолдер үүсгэхийн тулд <ph name="MOVED_APP_NAME" />-г <ph name="IN_PLACE_APP" />-тай цуг нийлүүлсэн.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1561,6 +1565,7 @@
 <translation id="6199775032047436064">Одоогийн хуудсыг дахин ачаалах</translation>
 <translation id="6200515304866777730">Аппаас дэмждэггүй</translation>
 <translation id="6210042900243040400">Өмнө нь <ph name="EMAIL" />-д хадгалсан <ph name="NAME" />-г холбоно уу</translation>
+<translation id="6212580734499190393">10 минутын турш</translation>
 <translation id="6213808132343683860">Дэлгэцийн хэсэгчилсэн агшин авах эсвэл дэлгэцийн үйлдэл бичих</translation>
 <translation id="621606890568890214">Google Classroom-г дэлгэх</translation>
 <translation id="6216759484154215561">Хөтчид нэмэлт мэдээлэл авах холбоосыг нээсэн</translation>
@@ -1954,6 +1959,7 @@
 <translation id="7599378375976398913">Сонгосон илэрцийг оруулж байна</translation>
 <translation id="7600875258240007829">Бүх мэдэгдлийг харах</translation>
 <translation id="7601417191446344542">Дуу хаалттай тухай мэдэгдлийг асаах уу?</translation>
+<translation id="7602187221150705972">Эможи, GIF болон бусад зүйлийг хайх</translation>
 <translation id="7607002721634913082">зогссон</translation>
 <translation id="7609951632080598826">Календарийн харагдах байдал, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Камер дахин холбогдсон.</translation>
@@ -2050,6 +2056,7 @@
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="7899977217122813285">Төвлөрч байхад мэдэгдлийн дууг <ph name="TIME" /> хүртэл хаасан</translation>
+<translation id="7901010467630324625">Зөвхөн <ph name="EMAIL" />-д нэвтэрсэн төхөөрөмжүүд</translation>
 <translation id="7901190436359881020">Цонхнуудыг солих</translation>
 <translation id="7901405293566323524">Утасны Hub</translation>
 <translation id="7902625623987030061">Хурууны хээ мэдрэгчид хүрнэ үү</translation>

@@ -424,6 +424,7 @@ Vous utilisez <ph name="DSE_NAME" /> comme moteur de recherche. Consultez les in
 <translation id="2789552044937754463">{COUNT,plural, =1{Mot de passe enregistré dans votre compte Google, {EMAIL}}one{Mot de passe enregistré dans votre compte Google, {EMAIL}}other{Mots de passe enregistrés dans votre compte Google, {EMAIL}}}</translation>
 <translation id="2791174088547598693">Ajouter un mot de passe…</translation>
 <translation id="2797302972324086597">Code de pays</translation>
+<translation id="2802403747691280910"><ph name="NUMBER_OF_TABS_REMOVED" /> fermé</translation>
 <translation id="2816489851009559785">Menu → Paramètres → Navigateur par défaut</translation>
 <translation id="2818821771744632548">Vous avez été déconnecté de votre compte <ph name="USER_NAME" /> lors de la réinitialisation de votre iPhone. Pour vous reconnecter, touchez « Continuer » ci-dessous.</translation>
 <translation id="2819667972867209401">Activé : les données sont enregistrées dans votre compte Google. Désactivé : les données sont uniquement enregistrées sur cet appareil et sont supprimées lorsque vous vous déconnectez.</translation>
@@ -1574,6 +1575,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="7975036700432177008">Essayer</translation>
 <translation id="797588153137233716">Menu → Historique → Supprimer les données de navigation</translation>
 <translation id="7977451675950311423">Vous avertit si vous utilisez un mot de passe qui a été compromis à la suite d'une violation de données.</translation>
+<translation id="7977482887663636093"><ph name="NUMBER_OF_TABS_ADDED" /> nouveaux onglets, <ph name="NUMBER_OF_TABS_REMOVED" /> fermé</translation>
 <translation id="797824194429476746">Les onglets resteront ouverts sur cet appareil, mais le groupe sera définitivement supprimé.</translation>
 <translation id="7982789257301363584">Réseau</translation>
 <translation id="7987685713885608670">Pour renforcer la sécurité, chiffrez les mots de passe sur votre appareil avant qu'ils soient enregistrés dans le gestionnaire de mots de passe Google.</translation>
@@ -1757,6 +1759,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8728922029615312208">Tout fermer</translation>
 <translation id="8730621377337864115">Terminé</translation>
 <translation id="87371078663613140">Explorer les options dans la barre de menu</translation>
+<translation id="8739706427581741437"><ph name="NUMBER_OF_TABS_ADDED" /> nouveaux onglets</translation>
 <translation id="8741627442233023406">{count,plural, =1{Vérifier l'onglet…}one{Vérifier tous les onglets...}other{Vérifier tous les onglets…}}</translation>
 <translation id="8741995161408053644">D'autres formes d'historique de navigation peuvent exister sur votre compte Google : <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Créer un lien</translation>

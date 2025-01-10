@@ -1427,7 +1427,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1980168597243156">Kosmosa stacija</translation>
 <translation id="1981434377190976112">Lasīt visus jūsu datus visās vietnēs</translation>
 <translation id="1982851102516626421">Jūs esat izrakstījies</translation>
-<translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} un {field_2}}zero{{field_1}, {field_2} un {field_3}}one{{field_1}, {field_2} un {field_3}}other{{field_1}, {field_2} un {field_3}}}</translation>
 <translation id="1984417487208496350">Bez aizsardzības (nav ieteicams)</translation>
 <translation id="198507684520034826">Palīdzība</translation>
 <translation id="1986836014090708999">Atrašanās vietas papildu iestatījumi</translation>
@@ -4932,7 +4931,6 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="4462159676511157176">Pielāgoti nosaukumu serveri</translation>
 <translation id="4465236939126352372">Lietotnei <ph name="APP_NAME" /> ir iestatīts laika ierobežojums: <ph name="TIME" />.</translation>
 <translation id="4467373268340082204">Nepareizs PIN kods</translation>
-<translation id="4467561276409486506">&amp;Pārslēgt kompakto režīmu</translation>
 <translation id="4469324811108161144">Piezīmju garums nedrīkst pārsniegt <ph name="CHARACTER_LIMIT" /> rakstzīmes.</translation>
 <translation id="4469762931504673593">Vietne <ph name="ORIGIN" /> var rediģēt direktorijā <ph name="FOLDERNAME" /> glabātos failus</translation>
 <translation id="4470957202018033307">Ārējās atmiņas preferences</translation>

@@ -76,6 +76,7 @@
 <translation id="427987768447457592">گروه برگه جدید</translation>
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{‫<ph name="ONE_CHANGED" /> برگه تغییر کرد، <ph name="ANY_CLOSED" /> برگه بسته شد}one{‫<ph name="MANY_CHANGED" /> برگه تغییر کرد، <ph name="ANY_CLOSED" /> برگه بسته شد}other{‫<ph name="MANY_CHANGED" /> برگه تغییر کرد، <ph name="ANY_CLOSED" /> برگه بسته شد}}</translation>
 <translation id="4371591986692297148">غیرفعال</translation>
+<translation id="4431937619879060901">دسترسی به گروه برگه «<ph name="GROUP_NAME" />» را فوراً ازدست می‌دهید و این گروه از همه دستگاه‌هایتان حذف می‌شود</translation>
 <translation id="4460014764210899310">لغو گروه‌بندی</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{‫۱ برگه غیرفعال بسته شود؟}one{‫<ph name="TAB_COUNT_MANY" /> برگه غیرفعال بسته شود؟}other{‫<ph name="TAB_COUNT_MANY" /> برگه غیرفعال بسته شود؟}}</translation>
 <translation id="4686942373615810936">همین الآن ایجاد شد</translation>
@@ -106,6 +107,7 @@
 <translation id="5556417849629758491">مشاهده اطلاعات فروشگاه، گزینه مربوطه در نزدیکی بالای صفحه قرار دارد</translation>
 <translation id="5627941783489838464">برگه هیچ به‌روزرسانی‌ای ندارد</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{بازیابی برگه}one{بازیابی برگه}other{بازیابی برگه‌ها}}</translation>
+<translation id="5647702255748985085">گروه را ترک می‌کنید؟</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{‏<ph name="TABS_COUNT_ONE" /> پیوند از Chrome}one{‏<ph name="TABS_COUNT_MANY" /> پیوند از Chrome}other{‏<ph name="TABS_COUNT_MANY" /> پیوند از Chrome}}</translation>
 <translation id="58326064309361797">برای گروه‌بندی برگه‌ها، آن‌ها را بکشید</translation>
 <translation id="5901630391730855834">زرد</translation>
@@ -141,6 +143,7 @@
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> انتخاب شده است</translation>
 <translation id="7326879924029668159">دیدن خط‌مشی برگرداندن و موارد دیگر</translation>
 <translation id="7352298686197644113">ببینید کدام مورد در برگه‌های باز قیمت کمتری دارد</translation>
+<translation id="742664698522525515">گروه نگه داشته شود؟</translation>
 <translation id="7452985128687107478">گروه‌های برگه به‌طور خودکار در همه دستگاه‌ها ذخیره و به‌روز می‌شود</translation>
 <translation id="747459581954555080">بازیابی همه</translation>
 <translation id="750886945254958667">این گروه را نگه دارید تا بعداً به آن برگه اضافه کنید یا اگر دیگر نمی‌خواهید به آن دسترسی داشته باشید، آن را ترک کنید</translation>
@@ -185,8 +188,10 @@
 <translation id="8915916167043355778">بستن همه</translation>
 <translation id="9090098097337832354">اطلاعات مربوط به این فروشگاه بسته شد</translation>
 <translation id="9114502155681725011">باز کردن منوِ کنش‌های گروه برگه برای گروه برگه <ph name="TITLE_OF_GROUP" />، به‌رنگ <ph name="COLOR_NAME" />.</translation>
+<translation id="9169141410816678175">همه افراد دسترسی به گروه برگه «<ph name="GROUP_NAME" />» را فوراً ازدست می‌دهند و این گروه از همه دستگاه‌ها حذف می‌شود</translation>
 <translation id="9169594135889675189">افزودن برگه جدید به گروه</translation>
 <translation id="9216898458513705996">برگه‌ها در این دستگاه باز می‌ماند اما گروه از همه دستگاه‌های واردشده به حساب <ph name="USER_EMAIL" /> حذف خواهد شد</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{ازهم باز کردن گروه برگه با <ph name="TABS_COUNT_ONE" /> برگه، رنگ <ph name="COLOR_NAME" />.}one{ازهم باز کردن گروه برگه با <ph name="TABS_COUNT_MANY" /> برگه، رنگ <ph name="COLOR_NAME" />.}other{ازهم باز کردن گروه برگه با <ph name="TABS_COUNT_MANY" /> برگه، رنگ <ph name="COLOR_NAME" />.}}</translation>
+<translation id="94870150074703282">گروه حذف شود؟</translation>
 <translation id="992256792861109788">صورتی</translation>
 </translationbundle>

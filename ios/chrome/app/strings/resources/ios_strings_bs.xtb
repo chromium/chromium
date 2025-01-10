@@ -386,7 +386,7 @@ Web lokacije ne mogu koristiti kolačiće da vide vašu aktivnost pregledanja na
 <translation id="2640733327287333451">Nema korisničkog imena ••••••</translation>
 <translation id="264215785133931186">Upravo je provjereno</translation>
 <translation id="2647434099613338025">Dodavanje jezika</translation>
-<translation id="2649592894792404568">Spremate se izbrisati podatke Google upravitelja zaporki</translation>
+<translation id="2649592894792404568">Izbrisat ćete podatke iz Google upravitelja lozinki</translation>
 <translation id="2652129567809778422">Odaberite lozinku</translation>
 <translation id="2658056020748144467">Nije moguće otvoriti fajl</translation>
 <translation id="2661809266906115479"><ph name="TITLE" />, <ph name="STATE" />, samo na ovom uređaju, <ph name="URL" /></translation>
@@ -424,6 +424,7 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Ako je primjenjivo, pogledajte upu
 <translation id="2789552044937754463">{COUNT,plural, =1{Lozinka je sačuvana na Google računu {EMAIL}}one{Lozinka je sačuvana na Google računu {EMAIL}}few{Lozinke su sačuvane na Google računu {EMAIL}}other{Lozinke su sačuvane na Google računu {EMAIL}}}</translation>
 <translation id="2791174088547598693">Dodavanje lozinke…</translation>
 <translation id="2797302972324086597">Pozivni broj zemlje</translation>
+<translation id="2802403747691280910">Zatvoreno: <ph name="NUMBER_OF_TABS_REMOVED" /></translation>
 <translation id="2816489851009559785">Meni → Postavke → Zadani preglednik</translation>
 <translation id="2818821771744632548">Bili ste odjavljeni s računa <ph name="USER_NAME" /> tokom vraćanja iPhonea na zadano. Da se prijavite ponovo, dodirnite "Nastavi" u nastavku.</translation>
 <translation id="2819667972867209401">Kada je uključeno, podaci se pohranjuju na Google računu. Kada je isključeno, podaci se pohranjuju samo na ovom uređaju i brišu ako se odjavite.</translation>
@@ -1574,6 +1575,7 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="7975036700432177008">Isprobajte</translation>
 <translation id="797588153137233716">Meni → Historija → Izbriši podatke pregledanja</translation>
 <translation id="7977451675950311423">Upozorava vas ako koristite lozinku ugroženu narušavanjem podataka.</translation>
+<translation id="7977482887663636093">Nove kartice: <ph name="NUMBER_OF_TABS_ADDED" />; zatvoreno: <ph name="NUMBER_OF_TABS_REMOVED" /></translation>
 <translation id="797824194429476746">Kartice će ostati otvorene na uređaju, ali će se grupa trajno izbrisati.</translation>
 <translation id="7982789257301363584">Mreža</translation>
 <translation id="7987685713885608670">Da imate dodatnu sigurnost, šifrirajte lozinke na uređaju prije nego što se pohrane u Googleov Upravitelj lozinki.</translation>
@@ -1757,6 +1759,7 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="8728922029615312208">Zatvori sve</translation>
 <translation id="8730621377337864115">Gotovo</translation>
 <translation id="87371078663613140">Istražite opcije u traci menija</translation>
+<translation id="8739706427581741437">Nove kartice: <ph name="NUMBER_OF_TABS_ADDED" /></translation>
 <translation id="8741627442233023406">{count,plural, =1{Pregled kartice…}one{Pregled svih kartica…}few{Pregled svih kartica…}other{Pregled svih kartica…}}</translation>
 <translation id="8741995161408053644">Vaš Google račun može imati druge oblike historije pregledanja na <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Kreiraj link</translation>

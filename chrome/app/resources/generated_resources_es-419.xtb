@@ -1421,7 +1421,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1980168597243156">Estación espacial</translation>
 <translation id="1981434377190976112">Leer todos tus datos en todos los sitios web</translation>
 <translation id="1982851102516626421">No accediste</translation>
-<translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} y {field_2}}other{{field_1}, {field_2} y {field_3}}}</translation>
 <translation id="1984417487208496350">Sin protección (opción no recomendada)</translation>
 <translation id="198507684520034826">Ayuda</translation>
 <translation id="1986836014090708999">Configuración avanzada de ubicación</translation>
@@ -4926,7 +4925,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4462159676511157176">Servidores de nombres personalizados</translation>
 <translation id="4465236939126352372">Límite de tiempo establecido para <ph name="APP_NAME" />: <ph name="TIME" /></translation>
 <translation id="4467373268340082204">PIN incorrecto</translation>
-<translation id="4467561276409486506">&amp;Activar o desactivar el modo compacto</translation>
 <translation id="4469324811108161144">Las notas pueden ahorrar hasta <ph name="CHARACTER_LIMIT" /> caracteres.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> puede editar archivos en <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Preferencias de almacenamiento externo</translation>
@@ -7432,6 +7430,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6278776436938569440">Cambiar ubicación</translation>
 <translation id="6280215091796946657">Acceder con otra cuenta</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281218688313242284">Administrar tu Cuenta de &amp;Google</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Se superó el límite de 1 hoja de papel}other{Se superó el límite de {COUNT} hojas de papel}}</translation>
 <translation id="6282490239556659745">Quitar <ph name="EMBEDDED_SITE" /> de <ph name="SITE" /></translation>
 <translation id="6283438600881103103">Saldrás automáticamente.
@@ -8043,6 +8042,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6745592621698551453">Actualizar ahora</translation>
 <translation id="6746124502594467657">Mover hacia abajo</translation>
 <translation id="67465227497040338">Mostrar contraseña de <ph name="DOMAIN" /></translation>
+<translation id="6746834324024491643">Para ver tus contraseñas y más en todos tus dispositivos, accede como <ph name="EMAIL" /></translation>
 <translation id="6748980958975836188">Leí y acepté las <ph name="BEGIN_LINK1" />Condiciones del Servicio de Google<ph name="END_LINK1" /> y las <ph name="BEGIN_LINK2" />Condiciones del Servicio Adicionales de Chrome y ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="6749077623962119521">¿Deseas restablecer los permisos?</translation>
 <translation id="6749473226660745022">Fotos</translation>

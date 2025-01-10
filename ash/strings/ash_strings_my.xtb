@@ -1028,6 +1028,7 @@
 <translation id="4485506555414638855">သင့်ဖုန်းရှိ မကြာသေးမီက ဓာတ်ပုံ၊ မီဒီယာ၊ အကြောင်းကြားချက်နှင့် အက်ပ်များ ကြည့်ရှုမှုအတွက် စနစ်ထည့်သွင်းခြင်းကို ပယ်ရန်</translation>
 <translation id="4491109536499578614">ပုံ</translation>
 <translation id="450584155212756404">တိုးတက်မှုချန်နယ်</translation>
+<translation id="4513044611477939680">အမြန်မျှဝေပါ</translation>
 <translation id="4513946894732546136">အကြံပြုချက်</translation>
 <translation id="4518404433291145981">သင့် Chromebook ကို လော့ခ်ဖွင့်ရန် သင့်ဖုန်းကို ဦးစွာ လော့ခ်ဖွင့်ပါ</translation>
 <translation id="4527045527269911712">ဘလူးတုသ် ကိရိယာ "<ph name="DEVICE_NAME" />" က ချိတ်တွဲရန် ခွင့်ပြုချက် ရယူလိုသည်။</translation>
@@ -1079,6 +1080,7 @@
 <translation id="4672539464599646374">‘ဘက်ထရီ အားထိန်း’ ဖွင့်ထားသည်</translation>
 <translation id="4673427585974421255">ဖွင့်ထားရန်</translation>
 <translation id="4677040906536311086">Google Sheet</translation>
+<translation id="468019262817532242">မည်သူမျှ သင်နှင့်မျှဝေ၍မရပါ</translation>
 <translation id="468293128311738995">သင့်ဖုန်းမှအက်ပ်များ</translation>
 <translation id="4690510401873698237">စင်ကို အောက်ခြေသို့ ရွှေ့လိုက်ပါပြီ</translation>
 <translation id="4696813013609194136">စက်ပစ္စည်းကို မိဘသုံးကုဒ်ဖြင့် ဖွင့်ပါ</translation>
@@ -1110,6 +1112,7 @@
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" />အတွက် စကားဝှက်</translation>
 <translation id="4777825441726637019">Play စတိုး</translation>
 <translation id="4778095205580009397">သရုပ်ပြစက်ရှင်တွင် Google Assistant မရနိုင်ပါ။</translation>
+<translation id="4785412405516449976">Google Account ရှိသော သင့်အဆက်အသွယ်များသာ</translation>
 <translation id="4789348252524569426">စကားပြောဖိုင်များ ထည့်သွင်း၍မရပါ။ သင့်စက်ကို အပ်ဒိတ်လုပ်ရမည်။ သင့်စက်ကို ပြန်စပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="478959186716341421">ကာစ်တ်လုပ်ခြင်း</translation>
 <translation id="4798403412327076414">နောက်တစ်ခေါက် လက်မှတ်ထိုးဝင်သောအခါ ယခင်ဖွင့်ထားသော ဝင်းဒိုးနှင့် အက်ပ်များကို မြင်ရမည်</translation>
@@ -1239,6 +1242,7 @@
 <translation id="5176318573511391780">ဖန်သားပြင်တစ်စိတ်တစ်ပိုင်းကို ရိုက်ကူးရန်</translation>
 <translation id="5187627942836026988">ဟော့စပေါ့အသေးစိတ် ပြသည်။ ဟော့စပေါ့ကို သင့်စီမံခန့်ခွဲသူက ပိတ်ထားသည်။</translation>
 <translation id="5197255632782567636">အင်တာနက်</translation>
+<translation id="5198039720391525849">အထူးဖော်ပြထားသော GIF များ</translation>
 <translation id="5198413532174090167"><ph name="DATE" />၊ အစီအစဉ် <ph name="NUMBER" /> ခု</translation>
 <translation id="5198715732953550718">ဖိုင်တွဲအသစ်ပြုလုပ်ရန် <ph name="MOVED_APP_NAME" /> သည် <ph name="IN_PLACE_APP" /> နှင့် ပေါင်းစည်းထားသည်။</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />၊ <ph name="NOTIFICATION_TITLE" />- <ph name="MESSAGE" />၊ <ph name="PHONE_NAME" /></translation>
@@ -1560,6 +1564,7 @@
 <translation id="6199775032047436064">လက်ရှိ စာမျက်နှာကို ပြန်ဖွင့်ရန်</translation>
 <translation id="6200515304866777730">အက်ပ်က ပံ့ပိုးမထားပါ</translation>
 <translation id="6210042900243040400">ယခင်က <ph name="EMAIL" /> သို့ သိမ်းထားသော <ph name="NAME" /> သို့ ချိတ်ဆက်ပါ</translation>
+<translation id="6212580734499190393">၁၀ မိနစ်ကြာ</translation>
 <translation id="6213808132343683860">ဖန်သားပြင်ဓာတ်ပုံ (သို့) ဖန်သားပြင်ရိုက်ကူးမှု တစ်စိတ်တစ်ပိုင်း ရယူရန်</translation>
 <translation id="621606890568890214">Google Classroom ကို ပိုပြပါ</translation>
 <translation id="6216759484154215561">ဘရောင်ဇာတွင် ပိုမိုလေ့လာရန်လင့်ခ် ဖွင့်လိုက်ပါပြီ</translation>
@@ -1953,6 +1958,7 @@
 <translation id="7599378375976398913">ရွေးထားသော ရလဒ်ကို ထည့်ခြင်း</translation>
 <translation id="7600875258240007829">အကြောင်းကြားချက်အားလုံးကို ကြည့်ရန်</translation>
 <translation id="7601417191446344542">အသံပိတ်နေကြောင်း အသိပေးချက်ကို ဖွင့်မလား။</translation>
+<translation id="7602187221150705972">အီမိုဂျီ၊ GIF စသည်တို့ကို ရှာပါ</translation>
 <translation id="7607002721634913082">ဆိုင်းငံ့ထား</translation>
 <translation id="7609951632080598826">ပြက္ခဒိန်ပြသခြင်း၊ <ph name="DATE" />၊ <ph name="TIME" /></translation>
 <translation id="7611213136657090146">ကင်မရာကို ပြန်လည်ချိတ်ဆက်ထားသည်။</translation>
@@ -2049,6 +2055,7 @@
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="7899977217122813285">အာရုံပြုနေစဉ် <ph name="TIME" /> အထိ အကြောင်းကြားချက်များကို အသံပိတ်သည်</translation>
+<translation id="7901010467630324625"><ph name="EMAIL" /> သို့ လက်မှတ်ထိုးဝင်ထားသော စက်များသာ</translation>
 <translation id="7901190436359881020">ဝင်းဒိုးများ ပြောင်းရန်</translation>
 <translation id="7901405293566323524">ဖုန်းပင်မ</translation>
 <translation id="7902625623987030061">လက်ဗွေအာရုံခံကိရိယာကို ထိပါ</translation>

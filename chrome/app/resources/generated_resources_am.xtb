@@ -1432,7 +1432,6 @@
 <translation id="1980168597243156">የጠፈር ጣቢያ</translation>
 <translation id="1981434377190976112">ሁሉንም መረጃዎችዎን በሁሉም ድር ጣቢያዎች ላይ ያንብቡ</translation>
 <translation id="1982851102516626421">ዘግተው ወጥተዋል</translation>
-<translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} እና {field_2}}one{{field_1}፣ {field_2}፣ እና {field_3}}other{{field_1}፣ {field_2}፣ እና {field_3}}}</translation>
 <translation id="1984417487208496350">ምንም ጥበቃ የለም (አይመከርም)</translation>
 <translation id="198507684520034826">እገዛ</translation>
 <translation id="1986836014090708999">የላቀ የአካባቢ ቅንብሮች</translation>
@@ -4936,7 +4935,6 @@
 <translation id="4462159676511157176">የብጁ ስም አገልጋዮች</translation>
 <translation id="4465236939126352372">ለ<ph name="APP_NAME" /> የ<ph name="TIME" /> የጊዜ ገደብ ተቀናብሯል</translation>
 <translation id="4467373268340082204">የተሳሳተ ፒን</translation>
-<translation id="4467561276409486506">እና የመቀያየሪያ ውሱን ሁነታ</translation>
 <translation id="4469324811108161144">ማስታወሻዎች እስከ <ph name="CHARACTER_LIMIT" /> ቁምፊዎች ድረስ ማስቀመጥ ይችላሉ።</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> በ<ph name="FOLDERNAME" /> ውስጥ ፋይሎችን ማርትዕ ይችላል</translation>
 <translation id="4470957202018033307">የውጫዊ ማከማቻ ምርጫዎች</translation>

@@ -1438,7 +1438,6 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1980168597243156">Kosminė stotis</translation>
 <translation id="1981434377190976112">Skaityti visus jūsų duomenis visose svetainėse</translation>
 <translation id="1982851102516626421">Esate atsijungę</translation>
-<translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} ir {field_2}}one{{field_1}, {field_2} ir {field_3}}few{{field_1}, {field_2} ir {field_3}}many{{field_1}, {field_2} ir {field_3}}other{{field_1}, {field_2} ir {field_3}}}</translation>
 <translation id="1984417487208496350">Apsaugos nėra (nerekomenduojama)</translation>
 <translation id="198507684520034826">Pagalba</translation>
 <translation id="1986836014090708999">Išplėstiniai vietovės nustatymai</translation>
@@ -4948,7 +4947,6 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="4462159676511157176">Tinkintų pavadinimų serveriai</translation>
 <translation id="4465236939126352372">Programai „<ph name="APP_NAME" />“ nustatytas <ph name="TIME" /> laiko apribojimas</translation>
 <translation id="4467373268340082204">Netinkamas PIN kodas</translation>
-<translation id="4467561276409486506">&amp;Perjungti į kompaktišką režimą</translation>
 <translation id="4469324811108161144">Didžiausias simbolių skaičius, kurį galite išsaugoti pastabose: <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> gali redaguoti aplanko „<ph name="FOLDERNAME" />“ failus</translation>
 <translation id="4470957202018033307">Išorinės saugyklos nuostatos</translation>

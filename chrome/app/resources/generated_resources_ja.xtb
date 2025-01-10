@@ -1422,7 +1422,6 @@
 <translation id="1980168597243156">宇宙ステーション</translation>
 <translation id="1981434377190976112">すべてのウェブサイト上にある自分の全データの読み取り</translation>
 <translation id="1982851102516626421">ログアウトしています</translation>
-<translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1}、{field_2}}other{{field_1}、{field_2}、{field_3}}}</translation>
 <translation id="1984417487208496350">保護なし（非推奨）</translation>
 <translation id="198507684520034826">ヘルプ</translation>
 <translation id="1986836014090708999">位置情報の詳細設定</translation>
@@ -4921,7 +4920,6 @@
 <translation id="4462159676511157176">カスタム ネーム サーバー</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" /> の使用時間制限が <ph name="TIME" /> に設定されました</translation>
 <translation id="4467373268340082204">PIN が正しくありません</translation>
-<translation id="4467561276409486506">コンパクト モードに切り替え(&amp;T)</translation>
 <translation id="4469324811108161144">メモは <ph name="CHARACTER_LIMIT" /> 文字以下で入力してください。</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> は「<ph name="FOLDERNAME" />」のファイルを編集できます</translation>
 <translation id="4470957202018033307">外部ストレージの設定</translation>

@@ -1437,7 +1437,6 @@
 <translation id="1980168597243156">Космічна станція</translation>
 <translation id="1981434377190976112">Читати всі ваші дані на всіх веб-сайтах</translation>
 <translation id="1982851102516626421">Ви вийшли з облікового запису</translation>
-<translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} і {field_2}}one{{field_1}, {field_2} і {field_3}}few{{field_1}, {field_2} і {field_3}}many{{field_1}, {field_2} і {field_3}}other{{field_1}, {field_2} і {field_3}}}</translation>
 <translation id="1984417487208496350">Захист вимкнено (не рекомендовано)</translation>
 <translation id="198507684520034826">Довідка</translation>
 <translation id="1986836014090708999">Додаткові налаштування місцеположення</translation>
@@ -4945,7 +4944,6 @@
 <translation id="4462159676511157176">Сторонні сервери імен</translation>
 <translation id="4465236939126352372">Для додатка <ph name="APP_NAME" /> налаштовано ліміт часу (<ph name="TIME" />)</translation>
 <translation id="4467373268340082204">Неправильний PIN-код</translation>
-<translation id="4467561276409486506">&amp;Увімкнути або вимкнути компактний режим</translation>
 <translation id="4469324811108161144">Нотатки можуть містити щонайбільше стільки символів: <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="4469762931504673593">Сайт <ph name="ORIGIN" /> може змінювати файли в папці "<ph name="FOLDERNAME" />"</translation>
 <translation id="4470957202018033307">Параметри зовнішньої пам'яті</translation>

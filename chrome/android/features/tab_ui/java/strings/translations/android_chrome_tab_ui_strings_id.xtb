@@ -76,6 +76,7 @@ Jika Anda menghapusnya, semua orang akan segera kehilangan akses ke grup tab "<p
 <translation id="427987768447457592">Grup tab baru</translation>
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> tab diubah, <ph name="ANY_CLOSED" /> ditutup}other{<ph name="MANY_CHANGED" /> tab diubah, <ph name="ANY_CLOSED" /> ditutup}}</translation>
 <translation id="4371591986692297148">Tidak aktif</translation>
+<translation id="4431937619879060901">Anda akan langsung kehilangan akses ke grup tab “<ph name="GROUP_NAME" />”, dan grup tersebut akan dihapus dari semua perangkat Anda</translation>
 <translation id="4460014764210899310">Pisahkan</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Tutup 1 tab tidak aktif?}other{Tutup <ph name="TAB_COUNT_MANY" /> tab tidak aktif?}}</translation>
 <translation id="4686942373615810936">Baru saja dibuat</translation>
@@ -106,6 +107,7 @@ Jika Anda menghapusnya, semua orang akan segera kehilangan akses ke grup tab "<p
 <translation id="5556417849629758491">Lihat info toko, opsi tersedia di dekat bagian atas layar</translation>
 <translation id="5627941783489838464">Tidak ada pembaruan tab</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Pulihkan tab}other{Pulihkan tab}}</translation>
+<translation id="5647702255748985085">Keluar dari grup?</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link dari Chrome}other{<ph name="TABS_COUNT_MANY" /> link dari Chrome}}</translation>
 <translation id="58326064309361797">Tarik tab untuk mengelompokkannya</translation>
 <translation id="5901630391730855834">Kuning</translation>
@@ -141,6 +143,7 @@ Jika Anda menghapusnya, semua orang akan segera kehilangan akses ke grup tab "<p
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> Dipilih</translation>
 <translation id="7326879924029668159">Lihat kebijakan pengembalian dan lainnya</translation>
 <translation id="7352298686197644113">Lihat item mana di tab terbuka yang memiliki harga lebih rendah</translation>
+<translation id="742664698522525515">Simpan grup?</translation>
 <translation id="7452985128687107478">Grup tab disimpan dan diperbarui otomatis di semua perangkat Anda</translation>
 <translation id="747459581954555080">Pulihkan semua</translation>
 <translation id="750886945254958667">Simpan grup ini untuk menambahkan tab nanti, atau keluar dari grup jika Anda tidak ingin lagi mengaksesnya</translation>
@@ -185,8 +188,10 @@ Jika Anda menghapusnya, semua orang akan segera kehilangan akses ke grup tab "<p
 <translation id="8915916167043355778">Tutup semua</translation>
 <translation id="9090098097337832354">Informasi tentang toko ini ditutup</translation>
 <translation id="9114502155681725011">Buka menu tindakan grup tab untuk grup tab <ph name="TITLE_OF_GROUP" />, warna <ph name="COLOR_NAME" />.</translation>
+<translation id="9169141410816678175">Semua orang akan langsung kehilangan akses ke grup tab "<ph name="GROUP_NAME" />", dan grup tersebut akan dihapus dari semua perangkat</translation>
 <translation id="9169594135889675189">Tambahkan tab baru ke grup</translation>
 <translation id="9216898458513705996">Tab akan tetap terbuka di perangkat ini, tetapi grup akan dihapus dari semua perangkat yang digunakan untuk login ke <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Luaskan grup tab yang berisi <ph name="TABS_COUNT_ONE" /> tab, warna <ph name="COLOR_NAME" />.}other{Luaskan grup tab yang berisi <ph name="TABS_COUNT_MANY" /> tab, warna <ph name="COLOR_NAME" />.}}</translation>
+<translation id="94870150074703282">Hapus grup?</translation>
 <translation id="992256792861109788">Pink</translation>
 </translationbundle>

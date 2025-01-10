@@ -124,6 +124,7 @@
 <translation id="1076766328672150609">您的孩子可以使用 PIN 码解锁此设备。</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">无法下载<ph name="LANGUAGE" />拼写检查字典。请重试。</translation>
+<translation id="1078029726086090536">验证密码</translation>
 <translation id="1078037449555275327">ChromeVox 设置</translation>
 <translation id="1079242569060319448">忘记了 PIN 码？</translation>
 <translation id="1079285777677001938">某些网站上的功能可能会无法正常运行。</translation>
@@ -1417,7 +1418,6 @@
 <translation id="1980168597243156">空间站</translation>
 <translation id="1981434377190976112">读取您在所有网站上的数据</translation>
 <translation id="1982851102516626421">您已退出账号</translation>
-<translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1}和{field_2}}other{{field_1}、{field_2}和{field_3}}}</translation>
 <translation id="1984417487208496350">不保护（不建议）</translation>
 <translation id="198507684520034826">帮助</translation>
 <translation id="1986836014090708999">高级位置信息设置</translation>
@@ -4071,6 +4071,7 @@
 <translation id="3848547754896969219">在无痕式窗口中打开(&amp;I)</translation>
 <translation id="3850172593216628215">安全更新已终止。升级为新款 Chromebook 至少可节省 50 美元。</translation>
 <translation id="385051799172605136">返回</translation>
+<translation id="3850989673553106152">密码已更改</translation>
 <translation id="3851428669031642514">加载不安全的脚本</translation>
 <translation id="3852215160863921508">输入帮助</translation>
 <translation id="3853549894831560772"><ph name="DEVICE_NAME" />已开启</translation>
@@ -4572,6 +4573,7 @@
 <translation id="421182450098841253">显示书签栏(&amp;S)</translation>
 <translation id="4211904048067111541">停止使用此账号登录 Android 应用</translation>
 <translation id="42126664696688958">导出</translation>
+<translation id="4213540068152645535">更改密码时遇到问题</translation>
 <translation id="42137655013211669">服务器禁止访问此资源。</translation>
 <translation id="4213918571089943508">孩子的 Google 账号</translation>
 <translation id="4214192212360095377">立即关闭</translation>
@@ -4918,7 +4920,6 @@
 <translation id="4462159676511157176">自定义域名服务器</translation>
 <translation id="4465236939126352372">为“<ph name="APP_NAME" />”设置了 <ph name="TIME" />的使用时限</translation>
 <translation id="4467373268340082204">PIN 码错误</translation>
-<translation id="4467561276409486506">开启/关闭紧凑模式(&amp;T)</translation>
 <translation id="4469324811108161144">备注最多可以包含 <ph name="CHARACTER_LIMIT" /> 个字符。</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> 可修改“<ph name="FOLDERNAME" />”内的文件</translation>
 <translation id="4470957202018033307">外部存储偏好设置</translation>
@@ -8289,6 +8290,7 @@
 <translation id="6913051485529944333">此页面不会再显示 Google 日历</translation>
 <translation id="6914812290245989348">在您访问不安全的网站前不发出任何警告</translation>
 <translation id="6916590542764765824">管理扩展程序</translation>
+<translation id="6916676294509106572">Outlook 日历已隐藏</translation>
 <translation id="6917873303492266709">如需分享、加入标签页分组并在其中协作，请打开“设置”并开启“允许登录 Chrome”</translation>
 <translation id="6918677045355889289">需要更新 Chrome 操作系统</translation>
 <translation id="6918733588290914545">使用 Android 手机快速设置</translation>
@@ -10669,6 +10671,7 @@
 <translation id="8625124982056504555">读取 ChromeOS 设备序列号和组件序列号</translation>
 <translation id="862542460444371744">扩展程序(&amp;E)</translation>
 <translation id="8625663000550647058">不允许使用您的麦克风</translation>
+<translation id="8625679025395572221">您的账号可能仍处于危险状态。</translation>
 <translation id="8625916342247441948">不允许网站连接到 HID 设备</translation>
 <translation id="862727964348362408">已暂停</translation>
 <translation id="862750493060684461">CSS 缓存</translation>

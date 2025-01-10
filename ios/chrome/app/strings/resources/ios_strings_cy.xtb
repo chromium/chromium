@@ -386,6 +386,7 @@ Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahano
 <translation id="2640733327287333451">Dim Enw Defnyddiwr ••••••</translation>
 <translation id="264215785133931186">Newydd ei wirio</translation>
 <translation id="2647434099613338025">Ychwanegu iaith</translation>
+<translation id="2649592894792404568">Rydych ar fin dileu eich data Rheolwr Cyfrineiriau Google</translation>
 <translation id="2652129567809778422">Dewiswch gyfrinair</translation>
 <translation id="2658056020748144467">Methu ag agor y ffeil</translation>
 <translation id="2661809266906115479"><ph name="TITLE" />, <ph name="STATE" />, ar y ddyfais hon yn unig, <ph name="URL" /></translation>
@@ -423,6 +424,7 @@ Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahano
 <translation id="2789552044937754463">{COUNT,plural, =1{Cyfrinair wedi'i gadw yn eich Cyfrif Google, {EMAIL}}zero{Cyfrineiriau wedi'u cadw yn eich Cyfrif Google, {EMAIL}}two{Cyfrineiriau wedi'u cadw yn eich Cyfrif Google, {EMAIL}}few{Cyfrineiriau wedi'u cadw yn eich Cyfrif Google, {EMAIL}}many{Cyfrineiriau wedi'u cadw yn eich Cyfrif Google, {EMAIL}}other{Cyfrineiriau wedi'u cadw yn eich Cyfrif Google, {EMAIL}}}</translation>
 <translation id="2791174088547598693">Ychwanegu cyfrinair…</translation>
 <translation id="2797302972324086597">Cod gwlad</translation>
+<translation id="2802403747691280910">Cafodd <ph name="NUMBER_OF_TABS_REMOVED" /> eu cau</translation>
 <translation id="2816489851009559785">Dewislen → Gosodiadau → Porwr Diofyn</translation>
 <translation id="2818821771744632548">Cawsoch eich allgofnodi o'ch cyfrif, <ph name="USER_NAME" />, fel rhan o'ch ailosodiad iPhone. I fewngofnodi eto, tapiwch "Parhau" isod.</translation>
 <translation id="2819667972867209401">Pan fydd ymlaen, mae data'n cael eu cadw yn eich Cyfrif Google. Pan fydd wedi'i ddiffodd, dim ond i'r ddyfais hon y caiff data eu cadw a chânt eu dileu os byddwch yn allgofnodi.</translation>
@@ -1573,6 +1575,7 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="7975036700432177008">Rhoi cynnig arni</translation>
 <translation id="797588153137233716">Dewislen → Hanes → Dileu Data Pori</translation>
 <translation id="7977451675950311423">Yn eich rhybuddio os ydych yn defnyddio cyfrinair sydd wedi'i beryglu mewn achos o dor data.</translation>
+<translation id="7977482887663636093"><ph name="NUMBER_OF_TABS_ADDED" /> o dabiau newydd, <ph name="NUMBER_OF_TABS_REMOVED" /> wedi cau</translation>
 <translation id="797824194429476746">Bydd y tabiau yn aros ar agor ar y ddyfais hon ond bydd y grŵp yn cael ei ddileu yn barhaol.</translation>
 <translation id="7982789257301363584">Rhwydwaith</translation>
 <translation id="7987685713885608670">Am ddiogelwch ychwanegol, amgryptiwch gyfrineiriau ar eich dyfais cyn iddynt gael eu cadw i Reolwr Cyfrineiriau Google.</translation>
@@ -1756,6 +1759,7 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="8728922029615312208">Cau'r cyfan</translation>
 <translation id="8730621377337864115">Wedi gorffen</translation>
 <translation id="87371078663613140">Archwiliwch yr opsiynau yn y bar dewislen</translation>
+<translation id="8739706427581741437"><ph name="NUMBER_OF_TABS_ADDED" /> o dabiau newydd</translation>
 <translation id="8741627442233023406">{count,plural, =1{Adolygu'r tab…}zero{Adolygu'r holl dabiau…}two{Adolygu'r holl dabiau…}few{Adolygu'r holl dabiau…}many{Adolygu'r holl dabiau…}other{Adolygu'r holl dabiau…}}</translation>
 <translation id="8741995161408053644">Mae'n bosib y bydd gan eich Cyfrif Google fathau eraill o hanes pori yn <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Creu dolen</translation>

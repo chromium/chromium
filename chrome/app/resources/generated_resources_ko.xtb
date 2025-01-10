@@ -124,6 +124,7 @@
 <translation id="1076766328672150609">자녀가 PIN을 사용해 기기를 잠금 해제할 수 있습니다</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216"><ph name="LANGUAGE" /> 맞춤법 검사 사전을 다운로드할 수 없습니다. 다시 시도해 보세요.</translation>
+<translation id="1078029726086090536">비밀번호 확인</translation>
 <translation id="1078037449555275327">ChromeVox 설정</translation>
 <translation id="1079242569060319448">PIN 찾기</translation>
 <translation id="1079285777677001938">일부 사이트에서는 기능이 작동하지 않을 수 있습니다.</translation>
@@ -1435,7 +1436,6 @@
 <translation id="1980168597243156">우주 정거장</translation>
 <translation id="1981434377190976112">모든 웹사이트의 전체 데이터 읽기</translation>
 <translation id="1982851102516626421">로그아웃 상태임</translation>
-<translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} 및 {field_2}}other{{field_1}, {field_2}, {field_3}}}</translation>
 <translation id="1984417487208496350">보호되지 않음(권장되지 않음)</translation>
 <translation id="198507684520034826">도움말</translation>
 <translation id="1986836014090708999">고급 위치 설정</translation>
@@ -4096,6 +4096,7 @@
 <translation id="3848547754896969219">시크릿 창에서 열기(&amp;I)</translation>
 <translation id="3850172593216628215">보안 업데이트가 종료되었습니다. 새 Chromebook을 50달러 이상 할인된 가격에 구매하세요.</translation>
 <translation id="385051799172605136">뒤로</translation>
+<translation id="3850989673553106152">비밀번호 변경됨</translation>
 <translation id="3851428669031642514">안전하지 않은 스크립트 로드</translation>
 <translation id="3852215160863921508">입력 지원</translation>
 <translation id="3853549894831560772"><ph name="DEVICE_NAME" /> 사용 설정됨</translation>
@@ -4596,6 +4597,7 @@
 <translation id="421182450098841253">북마크바 표시(&amp;S)</translation>
 <translation id="4211904048067111541">Android 앱에서 사용 중지</translation>
 <translation id="42126664696688958">내보내기</translation>
+<translation id="4213540068152645535">비밀번호를 변경하는 중에 문제 발생</translation>
 <translation id="42137655013211669">서버에서 이 리소스에 대한 액세스를 금지했습니다.</translation>
 <translation id="4213918571089943508">자녀의 Google 계정</translation>
 <translation id="4214192212360095377">지금 끄기</translation>
@@ -4942,7 +4944,6 @@
 <translation id="4462159676511157176">사용자 지정 네임서버</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" />에 <ph name="TIME" /> 시간 제한이 설정됨</translation>
 <translation id="4467373268340082204">잘못된 PIN</translation>
-<translation id="4467561276409486506">컴팩트 모드로 전환(&amp;T)</translation>
 <translation id="4469324811108161144">메모에는 <ph name="CHARACTER_LIMIT" />자(영문 기준)까지만 저장할 수 있습니다.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" />에서 <ph name="FOLDERNAME" />의 파일을 수정할 수 있습니다.</translation>
 <translation id="4470957202018033307">외부 저장소 환경설정</translation>
@@ -8319,6 +8320,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6913051485529944333">이 페이지에 Google Calendar가 더 이상 표시되지 않습니다</translation>
 <translation id="6914812290245989348">안전하지 않은 사이트로 이동하기 전에 경고를 표시하지 않습니다.</translation>
 <translation id="6916590542764765824">확장 프로그램 관리</translation>
+<translation id="6916676294509106572">Outlook Calendar 숨김</translation>
 <translation id="6917873303492266709">탭 그룹을 공유하고, 탭 그룹에 참여하며, 탭 그룹에서 공동작업하려면 설정을 열고 Chrome 로그인 허용을 사용 설정하세요.</translation>
 <translation id="6918677045355889289">ChromeOS 업데이트 필요</translation>
 <translation id="6918733588290914545">Android 휴대전화를 사용한 빠른 설정</translation>
@@ -10699,6 +10701,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8625124982056504555">ChromeOS 기기와 구성요소 일련번호를 읽을 수 있습니다.</translation>
 <translation id="862542460444371744">확장 프로그램(&amp;E)</translation>
 <translation id="8625663000550647058">마이크 사용이 허용되지 않음</translation>
+<translation id="8625679025395572221">계정에 여전히 보안 위험이 있을 수 있습니다.</translation>
 <translation id="8625916342247441948">사이트에서 HID 기기에 연결하도록 허용하지 않음</translation>
 <translation id="862727964348362408">일시중지됨</translation>
 <translation id="862750493060684461">CSS 캐시</translation>

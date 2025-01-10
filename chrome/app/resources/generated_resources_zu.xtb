@@ -1433,7 +1433,6 @@ Izimvume ozinikezile ama-app kakade zingase zisebenze kule akhawunti. Ungakwazi 
 <translation id="1980168597243156">Isiteshi sasemkhathini</translation>
 <translation id="1981434377190976112">Funda yonke idatha yakho kuwo wonke amawebhusayithi</translation>
 <translation id="1982851102516626421">Uphume ngemvume</translation>
-<translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{I-{field_1} ne-{field_2}}one{I-{field_1}, i-{field_2}, ne-{field_3}}other{I-{field_1}, i-{field_2}, ne-{field_3}}}</translation>
 <translation id="1984417487208496350">Asikho Isivikelo (akunconywa)</translation>
 <translation id="198507684520034826">Usizo</translation>
 <translation id="1986836014090708999">Amasethingi endawo athuthukisiwe</translation>
@@ -4942,7 +4941,6 @@ Lokhu kungafaka ulwazi mayelana nesofthiwe efakiwe, amafayela, ibhrawuza yakho, 
 <translation id="4462159676511157176">Amaseva wegama langokwezifiso</translation>
 <translation id="4465236939126352372"><ph name="TIME" /> umkhawulo wesikhathi esisethelwe i-<ph name="APP_NAME" /></translation>
 <translation id="4467373268340082204">Iphinikhodi okungeyona</translation>
-<translation id="4467561276409486506">Guqula Imodi Ecinene</translation>
 <translation id="4469324811108161144">Amanothi angalondoloza kuze kufike ezinhlamvini ezingu-<ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="4469762931504673593">I-<ph name="ORIGIN" /> ingahlela amafayela ku-<ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Okuncanyelwayo kwesitoreji sangaphandle</translation>

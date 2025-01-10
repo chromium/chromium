@@ -1423,7 +1423,6 @@
 <translation id="1980168597243156">අභ්‍යවකාශ මධ්‍යස්ථානය</translation>
 <translation id="1981434377190976112">සියලු වෙබ් අඩවිවල ඔබගේ සියලු දත්ත කියවන්න</translation>
 <translation id="1982851102516626421">ඔබ වරනය වී ඇත</translation>
-<translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} සහ {field_2}}one{{field_1}, {field_2}, සහ {field_3}}other{{field_1}, {field_2}, සහ {field_3}}}</translation>
 <translation id="1984417487208496350">ආරක්‍ෂාවක් නැත (නිර්දේශ නොකෙරේ)</translation>
 <translation id="198507684520034826">උදවු</translation>
 <translation id="1986836014090708999">උසස් ස්ථාන සැකසීම්</translation>
@@ -4930,7 +4929,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4462159676511157176">රුචි නාම සේවාදායක</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" /> සඳහා සකසන ලද වේලා සීමාව <ph name="TIME" /></translation>
 <translation id="4467373268340082204">PIN එක වැරදියි</translation>
-<translation id="4467561276409486506">&amp;සංයුක්ත ප්‍රකාරය ටොගල් කරන්න</translation>
 <translation id="4469324811108161144">සටහන්වලට අනුලකුණු <ph name="CHARACTER_LIMIT" />ක් දක්වා සුරැකිය හැකිය.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> හට <ph name="FOLDERNAME" /> තුළ ඇති ගොනු සංස්කරණ කළ හැක</translation>
 <translation id="4470957202018033307">බාහිර ආචයන මනාප</translation>
@@ -7436,6 +7434,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6278776436938569440">ස්ථානය මාරු කරන්න</translation>
 <translation id="6280215091796946657">වෙනස් ගිණුමක් සමඟ පුරන්න</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281218688313242284">ඔබේ &amp;Google ගිණුම කළමනාකරණය කරන්න</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{1 කඩදාසි කොළයක් යන සීමාව ඉක්මවයි}one{කඩදාසි කොළ {COUNT} ක් යන සීමාව ඉක්මවයි}other{කඩදාසි කොළ {COUNT} ක් යන සීමාව ඉක්මවයි}}</translation>
 <translation id="6282490239556659745"><ph name="SITE" /> වෙතින් <ph name="EMBEDDED_SITE" /> ඉවත් කරන්න</translation>
 <translation id="6283438600881103103">ඔබ දැන් ස්වයංක්‍රියව වරනු ඇත.
@@ -8047,6 +8046,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6745592621698551453">දැන් යාවත් කරන්න</translation>
 <translation id="6746124502594467657">පහළට ගෙන යන්න</translation>
 <translation id="67465227497040338"><ph name="DOMAIN" /> සඳහා මුරපදය පෙන්වන්න</translation>
+<translation id="6746834324024491643">ඔබේ සියලු ම උපාංගවල මුරපද සහ තවත් දේ ලබා ගැනීමට, <ph name="EMAIL" /> ලෙස පුරනය වන්න</translation>
 <translation id="6748980958975836188">මම <ph name="BEGIN_LINK1" />Google සේවා නියම<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome සහ ChromeOS අතිරේක සේවා නියම<ph name="END_LINK2" /> කියවා එකඟ වෙමි.</translation>
 <translation id="6749077623962119521">අවසර යළි සකසන්නද?</translation>
 <translation id="6749473226660745022">ඡායාරූප</translation>

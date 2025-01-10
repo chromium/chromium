@@ -1427,7 +1427,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1980168597243156">Stacja kosmiczna</translation>
 <translation id="1981434377190976112">Odczytywanie wszystkich Twoich danych we wszystkich witrynach</translation>
 <translation id="1982851102516626421">Nie korzystasz teraz z konta</translation>
-<translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} i {field_2}}few{{field_1}, {field_2} i {field_3}}many{{field_1}, {field_2} i {field_3}}other{{field_1}, {field_2} i {field_3}}}</translation>
 <translation id="1984417487208496350">Brak ochrony (niezalecane)</translation>
 <translation id="198507684520034826">Pomoc</translation>
 <translation id="1986836014090708999">Zaawansowane ustawienia lokalizacji</translation>
@@ -4916,7 +4915,6 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="4462159676511157176">Własne serwery nazw</translation>
 <translation id="4465236939126352372">Ustawiono limit czasu <ph name="TIME" /> dla aplikacji <ph name="APP_NAME" /></translation>
 <translation id="4467373268340082204">Nieprawidłowy kod PIN</translation>
-<translation id="4467561276409486506">&amp;Przełącz tryb kompaktowy</translation>
 <translation id="4469324811108161144">Limit znaków w notatce wynosi <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="4469762931504673593">Strona <ph name="ORIGIN" /> może edytować pliki w folderze <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Ustawienia pamięci zewnętrznej</translation>

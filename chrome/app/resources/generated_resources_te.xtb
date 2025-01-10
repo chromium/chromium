@@ -1432,7 +1432,6 @@
 <translation id="1980168597243156">స్పేస్ స్టేషన్</translation>
 <translation id="1981434377190976112">అన్ని వెబ్‌సైట్‌లలో మీ మొత్తం డేటాను చదవడం</translation>
 <translation id="1982851102516626421">మీరు సైన్ అవుట్ చేశారు</translation>
-<translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1}, {field_2}}other{{field_1}, {field_2}, {field_3}}}</translation>
 <translation id="1984417487208496350">రక్షణ లేదు (సిఫార్సు చేయడం లేదు)</translation>
 <translation id="198507684520034826">సహాయం</translation>
 <translation id="1986836014090708999">అధునాతన లొకేషన్ సెట్టింగ్‌లు</translation>
@@ -4940,7 +4939,6 @@
 <translation id="4462159676511157176">అనుకూల పేరు సర్వర్‌లు</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" />కు <ph name="TIME" /> సమయ పరిమితి సెట్ చేయబడింది</translation>
 <translation id="4467373268340082204">PIN తప్పు</translation>
-<translation id="4467561276409486506">&amp;కంపాక్ట్ మోడ్‌ను టోగుల్ చేయండి</translation>
 <translation id="4469324811108161144">గమనికలు <ph name="CHARACTER_LIMIT" /> వరకు అక్షరాలను సేవ్ చేయగలవు.</translation>
 <translation id="4469762931504673593"><ph name="FOLDERNAME" />లోని ఫైళ్లను <ph name="ORIGIN" /> సవరించగలదు</translation>
 <translation id="4470957202018033307">బాహ్య స్టోరేజ్‌ ప్రాధాన్యతలు</translation>
@@ -6893,7 +6891,7 @@
 <translation id="5885314688092915589">మీ సంస్థ ఈ ప్రొఫైల్‌ని మేనేజ్ చేస్తుంది</translation>
 <translation id="5885470467814103868">స్కాన్‌ను ప్రారంభించండి</translation>
 <translation id="5885631909150054232">టోకెన్‌ను కాపీ చేయండి</translation>
-<translation id="5886009770935151472">1వ వేలు</translation>
+<translation id="5886009770935151472">వేలు (ఫింగర్) 1</translation>
 <translation id="5886112770923972514">సమీపంలోని ఉన్న ఫాస్ట్ పెయిర్ పరికరాలకు త్వరితంగా కనెక్ట్ అయి, వాటిని సెటప్ చేయండి</translation>
 <translation id="5886384907280980632">ఇప్పుడే ఆఫ్ చేయండి</translation>
 <translation id="5888889603768021126">దీనితో సైన్ ఇన్ చేశారు</translation>

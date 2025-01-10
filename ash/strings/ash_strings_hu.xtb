@@ -1029,6 +1029,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="4485506555414638855">A telefonján lévő legutóbbi fotók, médiatartalmak, értesítések és alkalmazások megtekintésére vonatkozó beállítás elvetése</translation>
 <translation id="4491109536499578614">Kép</translation>
 <translation id="450584155212756404">Fejlesztői csatorna</translation>
+<translation id="4513044611477939680">Quick Share</translation>
 <translation id="4513946894732546136">Visszajelzés</translation>
 <translation id="4518404433291145981">A Chromebook zárolásának feloldásához először oldja fel a telefonja zárolását.</translation>
 <translation id="4527045527269911712">A(z) „<ph name="DEVICE_NAME" />” Bluetooth-eszköz engedélyt kér a párosításra.</translation>
@@ -1080,6 +1081,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="4672539464599646374">Akkumulátorkímélő mód bekapcsolva</translation>
 <translation id="4673427585974421255">Bekapcsolva hagyom</translation>
 <translation id="4677040906536311086">Google-táblázat</translation>
+<translation id="468019262817532242">Senki sem oszthat meg Önnel tartalmakat</translation>
 <translation id="468293128311738995">Alkalmazások a telefonjáról</translation>
 <translation id="4690510401873698237">A polc alul található</translation>
 <translation id="4696813013609194136">Zárolás feloldása szülői kóddal</translation>
@@ -1111,6 +1113,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="4776917500594043016">A(z) <ph name="USER_EMAIL_ADDRESS" /> fiókhoz tartozó jelszó</translation>
 <translation id="4777825441726637019">Play Áruház</translation>
 <translation id="4778095205580009397">A Google Segéd nem áll rendelkezésre bemutató munkamenetben.</translation>
+<translation id="4785412405516449976">Csak az Ön Google-fiókkal rendelkező ismerősei</translation>
 <translation id="4789348252524569426">Nem sikerült telepíteni a beszédfájlokat. Szükség van az eszköz frissítésére. Indítsa újra az eszközt, és próbálkozzon újra.</translation>
 <translation id="478959186716341421">Átküldés folyamatban</translation>
 <translation id="4798403412327076414">A következő bejelentkezéskor látni fogja az előzőleg megnyitott ablakokat és alkalmazásokat</translation>
@@ -1240,6 +1243,7 @@ Használhatja a billentyűparancsot is. Először jelölje ki a szöveget, majd 
 <translation id="5176318573511391780">Részleges képernyő rögzítése</translation>
 <translation id="5187627942836026988">Hotspotadatok megjelenítése. A rendszergazda letiltotta a hotspotot.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5198039720391525849">Kiemelt GIF-ek</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> esemény</translation>
 <translation id="5198715732953550718">A következő alkalmazások össze lettek vonva egy új mappába: <ph name="MOVED_APP_NAME" /> és <ph name="IN_PLACE_APP" />.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1561,6 +1565,7 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="6199775032047436064">A jelenlegi oldal újratöltése</translation>
 <translation id="6200515304866777730">Nem támogatja az alkalmazás</translation>
 <translation id="6210042900243040400">A(z) <ph name="EMAIL" /> fiókhoz korábban mentett <ph name="NAME" /> csatlakoztatása</translation>
+<translation id="6212580734499190393">10 percig</translation>
 <translation id="6213808132343683860">Részleges képernyőkép vagy képernyőfelvétel készítése</translation>
 <translation id="621606890568890214">A Google Tanterem kibontása</translation>
 <translation id="6216759484154215561">További információk linkje megnyitva a böngészőben</translation>
@@ -1954,6 +1959,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="7599378375976398913">A kijelölt találat beszúrása</translation>
 <translation id="7600875258240007829">Összes értesítés megtekintése</translation>
 <translation id="7601417191446344542">Bekapcsolja a némításra emlékeztetést?</translation>
+<translation id="7602187221150705972">Emojik, GIF-ek és egyebek keresése</translation>
 <translation id="7607002721634913082">Szünet</translation>
 <translation id="7609951632080598826">Naptárnézet, <ph name="DATE" /> <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Helyreállt a kapcsolat a kamerával.</translation>
@@ -2050,6 +2056,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="7899977217122813285">Összpontosítás közben az értesítések el vannak némítva eddig: <ph name="TIME" /></translation>
+<translation id="7901010467630324625">Csak a(z) <ph name="EMAIL" /> fiókba bejelentkezett eszközök</translation>
 <translation id="7901190436359881020">Az ablakok felcserélése</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Érintse meg az ujjlenyomat-érzékelőt</translation>

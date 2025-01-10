@@ -124,6 +124,7 @@
 <translation id="1076766328672150609">O teu fillo ou filla pode usar un PIN para desbloquear o dispositivo.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Non se puido descargar o dicionario de <ph name="LANGUAGE" /> do corrector ortográfico. Téntao de novo.</translation>
+<translation id="1078029726086090536">Verificar o teu contrasinal</translation>
 <translation id="1078037449555275327">Configuración de ChromeVox</translation>
 <translation id="1079242569060319448">Esqueciches o PIN?</translation>
 <translation id="1079285777677001938">É posible que non se poidan usar as funcións dalgúns sitios.</translation>
@@ -1423,7 +1424,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1980168597243156">Estación espacial</translation>
 <translation id="1981434377190976112">Ler todos os teus datos en todos os sitios web</translation>
 <translation id="1982851102516626421">Non tes a sesión iniciada</translation>
-<translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} e {field_2}}other{{field_1}, {field_2} e {field_3}}}</translation>
 <translation id="1984417487208496350">Sen protección (non recomendado)</translation>
 <translation id="198507684520034826">Axuda</translation>
 <translation id="1986836014090708999">Configuración de localización avanzada</translation>
@@ -4083,6 +4083,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o explor
 <translation id="3848547754896969219">Abrir nunha ventá do modo de &amp;incógnito</translation>
 <translation id="3850172593216628215">Deixaron de recibirse as actualizacións de seguranza. Aforra 50 $ ou máis ao comprar un Chromebook novo.</translation>
 <translation id="385051799172605136">Atrás</translation>
+<translation id="3850989673553106152">Cambiouse o contrasinal</translation>
 <translation id="3851428669031642514">Cargar scripts non seguros</translation>
 <translation id="3852215160863921508">Asistente de introdución de texto</translation>
 <translation id="3853549894831560772">Activouse o dispositivo <ph name="DEVICE_NAME" /></translation>
@@ -4585,6 +4586,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="421182450098841253">&amp;Mostrar a barra de marcadores</translation>
 <translation id="4211904048067111541">Deixar de usar con aplicacións para Android</translation>
 <translation id="42126664696688958">Exportar</translation>
+<translation id="4213540068152645535">Produciuse un erro ao cambiar o teu contrasinal</translation>
 <translation id="42137655013211669">O servidor non permitiu acceder a este recurso.</translation>
 <translation id="4213918571089943508">Conta de Google do teu fillo ou filla</translation>
 <translation id="4214192212360095377">Desactivar agora</translation>
@@ -4931,7 +4933,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4462159676511157176">Servidores de nome personalizado</translation>
 <translation id="4465236939126352372">Aplicouse un límite de tempo de <ph name="TIME" /> a <ph name="APP_NAME" /></translation>
 <translation id="4467373268340082204">O PIN é incorrecto</translation>
-<translation id="4467561276409486506">&amp;Activar ou desactivar o modo Compacto</translation>
 <translation id="4469324811108161144">As notas poden conter <ph name="CHARACTER_LIMIT" /> caracteres como máximo.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> pode editar os ficheiros de <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Preferencias para o almacenamento externo</translation>
@@ -7434,6 +7435,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="6278776436938569440">Cambiar localización</translation>
 <translation id="6280215091796946657">Iniciar sesión cunha conta diferente</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281218688313242284">Xestionar a túa &amp;Conta de Google</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Supera o límite de 1 folla}other{Supera o límite de {COUNT} follas}}</translation>
 <translation id="6282490239556659745">Quitar <ph name="EMBEDDED_SITE" /> de <ph name="SITE" /></translation>
 <translation id="6283438600881103103">Pecharase a túa sesión automaticamente agora.
@@ -8045,6 +8047,7 @@ Se <ph name="SUPERVISED_USER_NAME" /> precisa axuda para ler, dille que repita o
 <translation id="6745592621698551453">Actualizar agora</translation>
 <translation id="6746124502594467657">Mover cara abaixo</translation>
 <translation id="67465227497040338">Mostrar o contrasinal para <ph name="DOMAIN" /></translation>
+<translation id="6746834324024491643">Para poder acceder aos teus contrasinais e a outros datos en todos os teus dispositivos, inicia sesión como <ph name="EMAIL" /></translation>
 <translation id="6748980958975836188">Lin e acepto as <ph name="BEGIN_LINK1" />Condicións de servizo de Google<ph name="END_LINK1" /> e as <ph name="BEGIN_LINK2" />Condicións de servizo adicionais de Chrome e ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="6749077623962119521">Queres restablecer os permisos?</translation>
 <translation id="6749473226660745022">Fotos</translation>
@@ -8302,6 +8305,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="6913051485529944333">Deixarás de ver Google Calendar nesta páxina</translation>
 <translation id="6914812290245989348">Non mostrar ningunha advertencia antes de acceder a un sitio pouco seguro</translation>
 <translation id="6916590542764765824">Xestionar extensións</translation>
+<translation id="6916676294509106572">Calendario de Outlook oculto</translation>
 <translation id="6917873303492266709">Para compartir grupos de pestanas, unirte a eles e colaborar, abre a configuración e activa Permitir inicio de sesión en Chrome</translation>
 <translation id="6918677045355889289">É necesario actualizar Chrome OS</translation>
 <translation id="6918733588290914545">Configuración rápida cun teléfono Android</translation>
@@ -10680,6 +10684,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8625124982056504555">Ler números de serie dos compoñentes e dispositivos ChromeOS</translation>
 <translation id="862542460444371744">&amp;Extensións</translation>
 <translation id="8625663000550647058">Permiso denegado para usar o micrófono</translation>
+<translation id="8625679025395572221">A túa conta pode estar en perigo.</translation>
 <translation id="8625916342247441948">Non permitir que os sitios se conecten a dispositivos de interface humana</translation>
 <translation id="862727964348362408">Suspendido</translation>
 <translation id="862750493060684461">Caché de CSS</translation>

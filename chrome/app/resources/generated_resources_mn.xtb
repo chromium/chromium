@@ -124,6 +124,7 @@
 <translation id="1076766328672150609">Таны хүүхэд төхөөрөмжийн түгжээг тайлахын тулд ПИН ашиглах боломжтой.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216"><ph name="LANGUAGE" />-н зөв бичгийн алдаа шалгах толь бичгийг татаж чадсангүй. Дахин оролдоно уу.</translation>
+<translation id="1078029726086090536">Нууц үгээ баталгаажуулах</translation>
 <translation id="1078037449555275327">ChromeVox-н тохиргоо</translation>
 <translation id="1079242569060319448">ПИН-ээ мартсан уу?</translation>
 <translation id="1079285777677001938">Зарим сайтын онцлогууд ажиллахгүй байж магадгүй.</translation>
@@ -1430,7 +1431,6 @@
 <translation id="1980168597243156">Сансрын станц</translation>
 <translation id="1981434377190976112">Таны бүх вебсайт дээрх бүх өгөгдлийг унших</translation>
 <translation id="1982851102516626421">Та гарсан байна</translation>
-<translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} болон {field_2}}other{{field_1}, {field_2}, {field_3}}}</translation>
 <translation id="1984417487208496350">Хамгаалалт байхгүй (зөвлөдөггүй)</translation>
 <translation id="198507684520034826">Тусламж</translation>
 <translation id="1986836014090708999">Байршлын нарийвчилсан тохиргоо</translation>
@@ -4090,6 +4090,7 @@
 <translation id="3848547754896969219">&amp;Нууцлалтай цонхонд нээх</translation>
 <translation id="3850172593216628215">Аюулгүй байдлын шинэчлэлтүүд дууслаа. Шинэ Chromebook-д $50 эсвэл үүнээс ихийг хэмнээрэй.</translation>
 <translation id="385051799172605136">Буцах</translation>
+<translation id="3850989673553106152">Нууц үгийг өөрчилсөн</translation>
 <translation id="3851428669031642514">Аюултай скриптүүдийг ачаалла</translation>
 <translation id="3852215160863921508">Оролтын дэмжлэг</translation>
 <translation id="3853549894831560772"><ph name="DEVICE_NAME" />-г асаасан</translation>
@@ -4591,6 +4592,7 @@
 <translation id="421182450098841253">&amp;Хадгалагдсан хуудсуудын цонхыг харуулах</translation>
 <translation id="4211904048067111541">Android аппуудтай ашиглахаа зогсоох</translation>
 <translation id="42126664696688958">Экспортлох</translation>
+<translation id="4213540068152645535">Нууц үгээ өөрчлөхөд асуудал гарсан уу?</translation>
 <translation id="42137655013211669">Энэ нөөцөд хандалт хийхийг серверээс хориглосон байна.</translation>
 <translation id="4213918571089943508">Хүүхдийн Google Бүртгэл</translation>
 <translation id="4214192212360095377">Одоо унтраах</translation>
@@ -4937,7 +4939,6 @@
 <translation id="4462159676511157176">Стандарт нэртэй серверүүд</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" />-д <ph name="TIME" />-н цагийн хязгаар тохируулсан</translation>
 <translation id="4467373268340082204">ПИН буруу байна</translation>
-<translation id="4467561276409486506">&amp;Товч тодорхой горимыг асаах/унтраах</translation>
 <translation id="4469324811108161144">Тэмдэглэл нь <ph name="CHARACTER_LIMIT" /> хүртэлх тэмдэгт хадгалах боломжтой.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> нь <ph name="FOLDERNAME" />-н файлыг засах боломжтой</translation>
 <translation id="4470957202018033307">Гадаад санах ойн сонголт</translation>
@@ -8313,6 +8314,7 @@
 <translation id="6913051485529944333">Та энэ хуудсан дээр Google Календарийг дахин харахгүй</translation>
 <translation id="6914812290245989348">Аюултай сайтууд руу очихоос өмнө ямар нэг сануулга харахгүй</translation>
 <translation id="6916590542764765824">Удирдлаганд байдаг өргөтгөлүүд</translation>
+<translation id="6916676294509106572">Outlook Календарийг нуусан</translation>
 <translation id="6917873303492266709">Табын бүлэг хуваалцах, нэгдэх, хамтран ажиллахын тулд тохиргоог нээж, Chrome-д нэвтрэхийг зөвшөөрөхийг асаана уу</translation>
 <translation id="6918677045355889289">ChromeOS-н шинэчлэлт шаардлагатай</translation>
 <translation id="6918733588290914545">Android утсаар шуурхай тохируулах</translation>
@@ -10689,6 +10691,7 @@
 <translation id="8625124982056504555">ChromeOS төхөөрөмж болон бүрэлдэхүүн хэсгийн серийн дугаарыг унших</translation>
 <translation id="862542460444371744">&amp; Өргөтгөлүүд</translation>
 <translation id="8625663000550647058">Таны микрофоныг ашиглахыг зөвшөөрөөгүй</translation>
+<translation id="8625679025395572221">Таны бүртгэл эрсдэлд байсаар байж болзошгүй.</translation>
 <translation id="8625916342247441948">Сайтуудад HID төхөөрөмжүүдэд холбогдохыг бүү зөвшөөр</translation>
 <translation id="862727964348362408">Түр саатуулсан</translation>
 <translation id="862750493060684461">CSS-ийн кэш</translation>

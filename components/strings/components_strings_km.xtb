@@ -3395,6 +3395,7 @@
 <translation id="70705239631109039">ការតភ្ជាប់របស់អ្នក​មិនមានសុវត្ថិភាពពេញលេញទេ</translation>
 <translation id="7075452647191940183">សំណើមាន​ទំហំធំពេក</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079699498125013497">\u0020\u2022\u0020</translation>
 <translation id="7081311540357715807">អ្នកលក់អាហារ និង​គ្រឿងទេស</translation>
 <translation id="7083258188081898530">ទម្រទី 9</translation>
 <translation id="7086090958708083563">ការបង្ហោះដែលបានស្នើសុំដោយអ្នកប្រើប្រាស់</translation>
@@ -4120,6 +4121,7 @@
 <translation id="833262891116910667">រំលេច</translation>
 <translation id="8339163506404995330">ទំព័រជាភាសា <ph name="LANGUAGE" /> នឹងមិនត្រូវបានបកប្រែទេ</translation>
 <translation id="8339275256517065202">បញ្ចប់ការទិញរបស់អ្នកដោយប្រើ Touch ID</translation>
+<translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">បានបើកការចុះឈ្មោះកាតនិម្មិត​ពេញ​អេក្រង់</translation>
 <translation id="8349305172487531364">របាចំណាំ</translation>

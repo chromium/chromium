@@ -1426,7 +1426,6 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1980168597243156">Stație spațială</translation>
 <translation id="1981434377190976112">să citească toate datele de pe toate site-urile</translation>
 <translation id="1982851102516626421">Te-ai deconectat</translation>
-<translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} și {field_2}}few{{field_1}, {field_2} și {field_3}}other{{field_1}, {field_2} și {field_3}}}</translation>
 <translation id="1984417487208496350">Fără protecție (nu este recomandat)</translation>
 <translation id="198507684520034826">Ajutor</translation>
 <translation id="1986836014090708999">Setări avansate privind locația</translation>
@@ -4932,7 +4931,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4462159676511157176">Servere de nume personalizate</translation>
 <translation id="4465236939126352372">A fost setată o limită de timp de <ph name="TIME" /> pentru <ph name="APP_NAME" /></translation>
 <translation id="4467373268340082204">PIN greșit</translation>
-<translation id="4467561276409486506">&amp;Schimbă modul compact</translation>
 <translation id="4469324811108161144">Notele pot conține până la <ph name="CHARACTER_LIMIT" /> caractere.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> poate să modifice fișiere din <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Preferințe pentru stocarea externă</translation>

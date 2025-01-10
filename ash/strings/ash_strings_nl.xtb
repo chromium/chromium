@@ -1028,6 +1028,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4485506555414638855">Instellen van de weergave van recente foto's, media, meldingen en apps van je telefoon sluiten</translation>
 <translation id="4491109536499578614">Afbeelding</translation>
 <translation id="450584155212756404">Dev-kanaal</translation>
+<translation id="4513044611477939680">Quick Share</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4518404433291145981">Ontgrendel eerst je telefoon om je Chromebook te ontgrendelen</translation>
 <translation id="4527045527269911712">Bluetooth-apparaat '<ph name="DEVICE_NAME" />' wil rechten om te koppelen.</translation>
@@ -1079,6 +1080,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4672539464599646374">Batterijbesparing staat aan</translation>
 <translation id="4673427585974421255">Aan laten</translation>
 <translation id="4677040906536311086">Google-spreadsheet</translation>
+<translation id="468019262817532242">Niemand kan met jou delen</translation>
 <translation id="468293128311738995">Apps op je telefoon</translation>
 <translation id="4690510401873698237">Plank aan onderkant</translation>
 <translation id="4696813013609194136">Apparaat ontgrendelen met oudercode</translation>
@@ -1110,6 +1112,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4776917500594043016">Wachtwoord voor <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">De Google Assistent is niet beschikbaar in een demosessie.</translation>
+<translation id="4785412405516449976">Alleen je contacten met een Google-account</translation>
 <translation id="4789348252524569426">Kan spraakbestanden niet installeren. Je apparaat moet worden geüpdatet. Start het apparaat opnieuw op en probeer het nogmaals.</translation>
 <translation id="478959186716341421">Casten</translation>
 <translation id="4798403412327076414">Je ziet eerder geopende vensters en apps als je de volgende keer inlogt</translation>
@@ -1239,6 +1242,7 @@ Je kunt ook de sneltoets gebruiken. Markeer eerst de tekst en druk dan op <ph na
 <translation id="5176318573511391780">Opname van gedeeltelijk scherm maken</translation>
 <translation id="5187627942836026988">Toon de hotspotdetails. Hotspot wordt geblokkeerd door je beheerder.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5198039720391525849">Aanbevolen gifjes</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> afspraken</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> is gecombineerd met <ph name="IN_PLACE_APP" /> om een nieuwe map te maken.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1560,6 +1564,7 @@ Geen apparaten verbonden.</translation>
 <translation id="6199775032047436064">De huidige pagina opnieuw laden</translation>
 <translation id="6200515304866777730">Niet ondersteund door app</translation>
 <translation id="6210042900243040400">Verbinding maken met <ph name="NAME" /> (eerder opgeslagen in <ph name="EMAIL" />)</translation>
+<translation id="6212580734499190393">10 min</translation>
 <translation id="6213808132343683860">Gedeeltelijk screenshot of schermopname maken</translation>
 <translation id="621606890568890214">Google Classroom uitvouwen</translation>
 <translation id="6216759484154215561">Link Meer informatie geopend in de browser</translation>
@@ -1953,6 +1958,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7599378375976398913">Geselecteerd resultaat invoegen</translation>
 <translation id="7600875258240007829">Alle meldingen bekijken</translation>
 <translation id="7601417191446344542">Melding dat microfoon is gedempt aanzetten?</translation>
+<translation id="7602187221150705972">Zoek naar emoji's, gifjes en meer</translation>
 <translation id="7607002721634913082">Onderbroken</translation>
 <translation id="7609951632080598826">Agendaweergave, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Camera opnieuw verbonden.</translation>
@@ -2049,6 +2055,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <ph name="IME" />
 <ph name="LOCALE" /></translation>
 <translation id="7899977217122813285">Meldingen worden verborgen tot <ph name="TIME" /> terwijl je je focust</translation>
+<translation id="7901010467630324625">Alleen apparaten die zijn ingelogd bij <ph name="EMAIL" /></translation>
 <translation id="7901190436359881020">De vensters omwisselen</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Raak de vingerafdruksensor aan</translation>

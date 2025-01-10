@@ -386,6 +386,7 @@ Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf ander
 <translation id="2640733327287333451">Kein Nutzername ••••••</translation>
 <translation id="264215785133931186">Zuletzt geprüft: gerade eben</translation>
 <translation id="2647434099613338025">Sprache hinzufügen</translation>
+<translation id="2649592894792404568">Du bist dabei, deine Daten im Google Passwortmanager zu löschen</translation>
 <translation id="2652129567809778422">Passwort auswählen</translation>
 <translation id="2658056020748144467">Fehler beim Öffnen der Datei</translation>
 <translation id="2661809266906115479"><ph name="TITLE" />, <ph name="STATE" />, nur auf diesem Gerät, <ph name="URL" /></translation>
@@ -423,6 +424,7 @@ Du hast <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum L�
 <translation id="2789552044937754463">{COUNT,plural, =1{Passwort in deinem Google-Konto ({EMAIL}) gespeichert}other{Passwörter in deinem Google-Konto ({EMAIL}) gespeichert}}</translation>
 <translation id="2791174088547598693">Passwort hinzufügen…</translation>
 <translation id="2797302972324086597">Ländercode</translation>
+<translation id="2802403747691280910"><ph name="NUMBER_OF_TABS_REMOVED" /> geschlossen</translation>
 <translation id="2816489851009559785">„Menü“ → Einstellungen → „Standardbrowser“</translation>
 <translation id="2818821771744632548">Du wurdest beim Zurücksetzen deines iPhones von deinem Konto <ph name="USER_NAME" /> abgemeldet. Tippe unten auf „Weiter“, um dich wieder anzumelden.</translation>
 <translation id="2819667972867209401">Wenn diese Option aktiviert ist, werden Daten in deinem Google-Konto gespeichert. Ist sie deaktiviert, werden die Daten nur auf diesem Gerät gespeichert und gelöscht, wenn du dich abmeldest.</translation>
@@ -1573,6 +1575,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="7975036700432177008">Testen</translation>
 <translation id="797588153137233716">„Menü“ → „Verlauf“ → „Browserdaten löschen“</translation>
 <translation id="7977451675950311423">Warnt dich, wenn du ein Passwort verwendest, das bei einer Datenpanne gehackt wurde.</translation>
+<translation id="7977482887663636093"><ph name="NUMBER_OF_TABS_ADDED" /> neue(r) Tab(s), <ph name="NUMBER_OF_TABS_REMOVED" /> geschlossen</translation>
 <translation id="797824194429476746">Die Tabs bleiben auf diesem Gerät geöffnet, aber die Gruppe wird endgültig gelöscht.</translation>
 <translation id="7982789257301363584">Netzwerk</translation>
 <translation id="7987685713885608670">Für zusätzliche Sicherheit kannst du Passwörter auf deinem Gerät verschlüsseln lassen, bevor sie im Google Passwortmanager gespeichert werden.</translation>
@@ -1756,6 +1759,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8728922029615312208">Alle schließen</translation>
 <translation id="8730621377337864115">Fertig</translation>
 <translation id="87371078663613140">Optionen in der Menüleiste ansehen</translation>
+<translation id="8739706427581741437"><ph name="NUMBER_OF_TABS_ADDED" /> neue(r) Tab(s)</translation>
 <translation id="8741627442233023406">{count,plural, =1{Tab ansehen…}other{Alle Tabs ansehen…}}</translation>
 <translation id="8741995161408053644">Möglicherweise sind in deinem Google-Konto noch andere Formen des Browserverlaufs unter <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> vorhanden.</translation>
 <translation id="874599634440689554">Link erstellen</translation>

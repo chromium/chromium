@@ -1145,7 +1145,7 @@
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />: скидка <ph name="PRICE_DROP" /></translation>
 <translation id="3061707000357573562">Исправление сервиса</translation>
 <translation id="306198082577913404">Включить улучшенные подсказки.</translation>
-<translation id="3062655045399308513">Удалить данные о работе в браузере…</translation>
+<translation id="3062655045399308513">Удалить данные браузера…</translation>
 <translation id="3063453392496098461">Не удалось установить фоновые службы VPN.</translation>
 <translation id="306573536155379004">Игра началась.</translation>
 <translation id="3067505415088964188">Низкие цены</translation>
@@ -3390,6 +3390,7 @@
 <translation id="70705239631109039">Подключение к сайту небезопасно</translation>
 <translation id="7075452647191940183">Запрос слишком велик.</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079699498125013497">\u0020\u2022\u0020</translation>
 <translation id="7081311540357715807">Продуктовые магазины</translation>
 <translation id="7083258188081898530">Лоток 9</translation>
 <translation id="7086090958708083563">Загрузка запрошена пользователем</translation>
@@ -4114,6 +4115,7 @@
 <translation id="833262891116910667">Выделить</translation>
 <translation id="8339163506404995330">Страницы на этом языке (<ph name="LANGUAGE" />) не будут переводиться автоматически</translation>
 <translation id="8339275256517065202">Завершите покупку с помощью Touch ID.</translation>
+<translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Диалоговое окно создания виртуальной карты открыто на весь экран</translation>
 <translation id="8349305172487531364">Панель закладок</translation>

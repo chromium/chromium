@@ -124,6 +124,7 @@
 <translation id="1076766328672150609">ລູກຂອງທ່ານສາມາດໃຊ້ PIN ເພື່ອປົດລັອກອຸປະກອນໄດ້.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">ບໍ່ສາມາດດາວໂຫຼດວັດຈະນານຸກົມສຳລັບກວດຄຳຜິດສຳລັບ <ph name="LANGUAGE" /> ໄດ້. ກະລຸນາລອງໃໝ່ອີກ.</translation>
+<translation id="1078029726086090536">ຢັ້ງຢືນລະຫັດຜ່ານຂອງທ່ານ</translation>
 <translation id="1078037449555275327">ການຕັ້ງຄ່າ ChromeVox</translation>
 <translation id="1079242569060319448">ລືມ PIN ບໍ?</translation>
 <translation id="1079285777677001938">ຄຸນສົມບັດຢູ່ບາງເວັບໄຊອາດບໍ່ເຮັດວຽກ.</translation>
@@ -1431,7 +1432,6 @@
 <translation id="1980168597243156">ສະຖານີອະວະກາດ</translation>
 <translation id="1981434377190976112">ອ່ານຂໍ້ມູນທັງໝົດຂອງທ່ານຢູ່ທຸກເວັບໄຊ</translation>
 <translation id="1982851102516626421">ທ່ານອອກຈາກລະບົບແລ້ວ</translation>
-<translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} ແລະ {field_2}}other{{field_1}, {field_2} ແລະ {field_3}}}</translation>
 <translation id="1984417487208496350">ບໍ່ມີການປົກປ້ອງ (ບໍ່ແນະນຳ)</translation>
 <translation id="198507684520034826">ຊ່ວຍເຫຼືອ</translation>
 <translation id="1986836014090708999">ການຕັ້ງຄ່າສະຖານທີ່ຂັ້ນສູງ</translation>
@@ -4093,6 +4093,7 @@
 <translation id="3848547754896969219">ເປີດໃນ&amp;ໜ້າ​ຈໍ​ທີ່ບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="3850172593216628215">ການອັບເດດຄວາມປອດໄພໄດ້ສິ້ນສຸດລົງແລ້ວ. ປະຢັດຢ່າງໜ້ອຍ $50 ເມື່ອຊື້ Chromebook ເຄື່ອງໃໝ່.</translation>
 <translation id="385051799172605136">ກັບ​ຄືນ​</translation>
+<translation id="3850989673553106152">ປ່ຽນລະຫັດຜ່ານແລ້ວ</translation>
 <translation id="3851428669031642514">ໂຫຼດ​ໜັງ​ສື​ຂຽນ​ທີ່​ບໍ່​ປອດ​ໄພ</translation>
 <translation id="3852215160863921508">ຜູ້ຊ່ວຍປ້ອນຂໍ້ມູນ</translation>
 <translation id="3853549894831560772">ເປີດ <ph name="DEVICE_NAME" /> ແລ້ວ</translation>
@@ -4595,6 +4596,7 @@
 <translation id="421182450098841253">ສະແດງແຖບບຸກມາກສ໌</translation>
 <translation id="4211904048067111541">ຢຸດການໃຊ້ກັບແອັບ Android</translation>
 <translation id="42126664696688958">​ສົ່ງ​ອອກ</translation>
+<translation id="4213540068152645535">ບັນຫາໃນການປ່ຽນລະຫັດຜ່ານຂອງທ່ານ</translation>
 <translation id="42137655013211669">ເຊີບເວີຫ້າມການເຂົ້າເຖິງຊັບພະຍາກອນນີ້.</translation>
 <translation id="4213918571089943508">ບັນຊີ Google ຂອງລູກ</translation>
 <translation id="4214192212360095377">ປິດດຽວນີ້</translation>
@@ -4941,7 +4943,6 @@
 <translation id="4462159676511157176">ເຊີບເວີຊື່ກໍານົດເອງ</translation>
 <translation id="4465236939126352372">ຕັ້ງຄ່າຂີດຈຳກັດເວລາ <ph name="TIME" /> ສຳລັບ <ph name="APP_NAME" /> ແລ້ວ</translation>
 <translation id="4467373268340082204">PIN ບໍ່ຖືກຕ້ອງ</translation>
-<translation id="4467561276409486506">ເປີດ/ປິດໂໝດກະທັດຮັດ</translation>
 <translation id="4469324811108161144">ບັນທຶກສາມາດຈັດເກັບໄດ້ສູງສຸດ <ph name="CHARACTER_LIMIT" /> ຕົວອັກສອນ.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> ສາມາດແກ້ໄຂໄຟລ໌ໃນ <ph name="FOLDERNAME" /> ໄດ້</translation>
 <translation id="4470957202018033307">ການຕັ້ງຄ່າບ່ອນຈັດເກັບຂໍ້ມູນພາຍນອກ</translation>
@@ -8316,6 +8317,7 @@
 <translation id="6913051485529944333">ທ່ານຈະບໍ່ເຫັນ Google ປະຕິທິນໃນໜ້ານີ້ອີກ</translation>
 <translation id="6914812290245989348">ບໍ່ເຫັນຄຳເຕືອນໃດໆກ່ອນການເຂົ້າໄປຫາເວັບໄຊທີ່ບໍ່ປອດໄພ</translation>
 <translation id="6916590542764765824">ຈັດ​ການ​ສ່ວນ​ຂະ​ຫຍາຍ</translation>
+<translation id="6916676294509106572">ປະຕິທິນ Outlook ເຊື່ອງຢູ່</translation>
 <translation id="6917873303492266709">ເພື່ອແບ່ງປັນ, ເຂົ້າຮ່ວມ ແລະ ຮ່ວມມືໃນກຸ່ມແຖບ, ໃຫ້ເປີດການຕັ້ງຄ່າ ແລະ ເປີດ ອະນຸຍາດໃຫ້ເຂົ້າສູ່ລະບົບ Chrome</translation>
 <translation id="6918677045355889289">ຕ້ອງອັບເດດ ChromeOS</translation>
 <translation id="6918733588290914545">ການຕັ້ງຄ່າດ່ວນດ້ວຍໂທລະສັບ Android</translation>
@@ -10692,6 +10694,7 @@
 <translation id="8625124982056504555">ອ່ານອຸປະກອນ ChromeOS ແລະ ໝາຍເລກຊີຣຽວສ່ວນປະກອບ</translation>
 <translation id="862542460444371744">ສ່ວນຂະຫຍາຍ</translation>
 <translation id="8625663000550647058">ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ໃຊ້ໄມໂຄຣໂຟນຂອງທ່ານ</translation>
+<translation id="8625679025395572221">ບັນຊີຂອງທ່ານອາດຍັງຄົງມີຄວາມສ່ຽງ.</translation>
 <translation id="8625916342247441948">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊເຊື່ອມຕໍ່ຫາອຸປະກອນ HID</translation>
 <translation id="862727964348362408">ໂຈະແລ້ວ</translation>
 <translation id="862750493060684461">ແຄຊ໌ CSS</translation>

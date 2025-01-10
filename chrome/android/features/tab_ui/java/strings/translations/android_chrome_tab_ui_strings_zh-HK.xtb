@@ -76,6 +76,7 @@
 <translation id="427987768447457592">新分頁群組</translation>
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> 個分頁有變，<ph name="ANY_CLOSED" /> 個已關閉}other{<ph name="MANY_CHANGED" /> 個分頁有變，<ph name="ANY_CLOSED" /> 個已關閉}}</translation>
 <translation id="4371591986692297148">未啟用</translation>
+<translation id="4431937619879060901">你將立即無法再存取「<ph name="GROUP_NAME" />」分頁群組，此分頁群組亦會從你的所有裝置刪除</translation>
 <translation id="4460014764210899310">未分組</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{要關閉 1 個閒置分頁嗎？}other{要關閉 <ph name="TAB_COUNT_MANY" /> 個閒置分頁嗎？}}</translation>
 <translation id="4686942373615810936">剛才建立</translation>
@@ -106,6 +107,7 @@
 <translation id="5556417849629758491">商店資料同可用選項喺螢幕最頂嘅附近</translation>
 <translation id="5627941783489838464">沒有分頁更新</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{還原分頁}other{還原分頁}}</translation>
+<translation id="5647702255748985085">要離開群組嗎？</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個來自 Chrome 的連結}other{<ph name="TABS_COUNT_MANY" /> 個來自 Chrome 的連結}}</translation>
 <translation id="58326064309361797">拖曳分頁來分組</translation>
 <translation id="5901630391730855834">黃色</translation>
@@ -141,6 +143,7 @@
 <translation id="731648547091221002">揀咗<ph name="COLOR_NAME" /></translation>
 <translation id="7326879924029668159">查看退貨政策等資料</translation>
 <translation id="7352298686197644113">查看已開啟分頁中有哪項產品降價</translation>
+<translation id="742664698522525515">要保留群組嗎？</translation>
 <translation id="7452985128687107478">分頁群組會自動儲存並同步至所有裝置</translation>
 <translation id="747459581954555080">全部還原</translation>
 <translation id="750886945254958667">如果保留群組，你之後可新增分頁；如果不再使用，亦可離開群組</translation>
@@ -185,8 +188,10 @@
 <translation id="8915916167043355778">全部關閉</translation>
 <translation id="9090098097337832354">閂咗關於呢間商店嘅資料</translation>
 <translation id="9114502155681725011">開啟分頁群組「<ph name="TITLE_OF_GROUP" />」的操作選單，顏色為「<ph name="COLOR_NAME" />」。</translation>
+<translation id="9169141410816678175">所有人將立即無法再存取「<ph name="GROUP_NAME" />」分頁群組，此分頁群組亦會從所有裝置刪除</translation>
 <translation id="9169594135889675189">喺群組入面加新嘅分頁</translation>
 <translation id="9216898458513705996">分頁會在此裝置上保持開啟，但該群組會從所有已登入 <ph name="USER_EMAIL" /> 的裝置刪除</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{展開有 <ph name="TABS_COUNT_ONE" /> 個分頁嘅分頁群組，顏色係<ph name="COLOR_NAME" />。}other{展開有 <ph name="TABS_COUNT_MANY" /> 個分頁嘅分頁群組，顏色係<ph name="COLOR_NAME" />。}}</translation>
+<translation id="94870150074703282">要刪除群組嗎？</translation>
 <translation id="992256792861109788">粉紅色</translation>
 </translationbundle>

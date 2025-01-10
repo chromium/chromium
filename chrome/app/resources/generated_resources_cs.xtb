@@ -1426,7 +1426,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1980168597243156">Vesmírná stanice</translation>
 <translation id="1981434377190976112">Číst veškerá vaše data na všech webech</translation>
 <translation id="1982851102516626421">Jste odhlášení</translation>
-<translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} a {field_2}}few{{field_1}, {field_2} a {field_3}}many{{field_1}, {field_2} a {field_3}}other{{field_1}, {field_2} a {field_3}}}</translation>
 <translation id="1984417487208496350">Bez ochrany (nedoporučujeme)</translation>
 <translation id="198507684520034826">Nápověda</translation>
 <translation id="1986836014090708999">Pokročilé geografické nastavení</translation>
@@ -4928,7 +4927,6 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4462159676511157176">Vlastní názvové servery</translation>
 <translation id="4465236939126352372">Pro aplikaci <ph name="APP_NAME" /> byl nastaven časový limit <ph name="TIME" /></translation>
 <translation id="4467373268340082204">Nesprávný PIN</translation>
-<translation id="4467561276409486506">&amp;Přepnout kompaktní režim</translation>
 <translation id="4469324811108161144">Poznámky mohou uložit max. <ph name="CHARACTER_LIMIT" /> znaků.</translation>
 <translation id="4469762931504673593">Web <ph name="ORIGIN" /> může upravovat soubory ve složce <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Předvolby externího úložiště</translation>

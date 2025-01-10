@@ -124,6 +124,7 @@
 <translation id="1076766328672150609">Otrok lahko s kodo PIN odklene napravo.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Slovarja za preverjanje črkovanja za jezik <ph name="LANGUAGE" /> ni bilo mogoče prenesti. Poskusite znova.</translation>
+<translation id="1078029726086090536">Preverite geslo</translation>
 <translation id="1078037449555275327">Nastavitve ChromeVoxa</translation>
 <translation id="1079242569060319448">Ste pozabili kodo PIN?</translation>
 <translation id="1079285777677001938">Funkcije na nekaterih spletnih mestih morda ne bodo delovale.</translation>
@@ -1437,7 +1438,6 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1980168597243156">Vesoljska postaja</translation>
 <translation id="1981434377190976112">Branje vseh vaših podatkov na vseh spletnih mestih</translation>
 <translation id="1982851102516626421">Odjavljeni ste</translation>
-<translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} in {field_2}}one{{field_1}, {field_2} in {field_3}}two{{field_1}, {field_2} in {field_3}}few{{field_1}, {field_2} in {field_3}}other{{field_1}, {field_2} in {field_3}}}</translation>
 <translation id="1984417487208496350">Brez zaščite (ni priporočljivo)</translation>
 <translation id="198507684520034826">Pomoč</translation>
 <translation id="1986836014090708999">Dodatne nastavitve lokacije</translation>
@@ -4097,6 +4097,7 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="3848547754896969219">Odpiranje v &amp;anonimnem oknu</translation>
 <translation id="3850172593216628215">Varnostne posodobitve so končane. Prihranite 50 USD ali več pri novem Chromebooku.</translation>
 <translation id="385051799172605136">Nazaj</translation>
+<translation id="3850989673553106152">Geslo je spremenjeno</translation>
 <translation id="3851428669031642514">Naloži skripte, ki niso varni</translation>
 <translation id="3852215160863921508">Pomoč pri vnosu</translation>
 <translation id="3853549894831560772">Naprava <ph name="DEVICE_NAME" /> je vklopljena</translation>
@@ -4599,6 +4600,7 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="421182450098841253">&amp;Pokaži vrstico z zaznamki</translation>
 <translation id="4211904048067111541">Prenehaj uporabljati z aplikacijami za Android</translation>
 <translation id="42126664696688958">Izvozi</translation>
+<translation id="4213540068152645535">Težave pri spreminjanju gesla</translation>
 <translation id="42137655013211669">Strežnik je onemogočil dostop do tega vira.</translation>
 <translation id="4213918571089943508">Otrokov račun Google</translation>
 <translation id="4214192212360095377">Izklopi</translation>
@@ -4945,7 +4947,6 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="4462159676511157176">Imenski strežniki po meri</translation>
 <translation id="4465236939126352372">Za aplikacijo <ph name="APP_NAME" /> je nastavljena omejitev <ph name="TIME" /></translation>
 <translation id="4467373268340082204">Napačna koda PIN</translation>
-<translation id="4467561276409486506">Preklopi v strnjeni način</translation>
 <translation id="4469324811108161144">Zapiski lahko shranijo do toliko znakov: <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="4469762931504673593">Spletno mesto <ph name="ORIGIN" /> lahko ureja datoteke v mapi <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Nastavitve zunanjih naprav za shranjevanje</translation>
@@ -8329,6 +8330,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="6913051485529944333">Google Koledar na tej strani ne bo več prikazan</translation>
 <translation id="6914812290245989348">Brez prikaza opozoril pred odpiranjem spletnih mest, ki niso varna</translation>
 <translation id="6916590542764765824">Upravljanje razširitev</translation>
+<translation id="6916676294509106572">Koledar v Outlooku je skrit</translation>
 <translation id="6917873303492266709">Če želite deliti, se pridružiti in sodelovati v skupinah zavihkov, odprite nastavitve in vklopite »Omogoči prijavo v Chrome«</translation>
 <translation id="6918677045355889289">Potrebna je posodobitev sistema Chrome OS</translation>
 <translation id="6918733588290914545">Hitra nastavitev s telefonom Android</translation>
@@ -10709,6 +10711,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8625124982056504555">Branje serijskih številk naprav in komponent s sistemom ChromeOS.</translation>
 <translation id="862542460444371744">&amp;Razširitve</translation>
 <translation id="8625663000550647058">Ni dovoljena uporaba mikrofona</translation>
+<translation id="8625679025395572221">Vaš račun je morda še vedno ogrožen.</translation>
 <translation id="8625916342247441948">Spletnim mestom ni dovoljeno povezovanje z napravami HID.</translation>
 <translation id="862727964348362408">Onemogočeno</translation>
 <translation id="862750493060684461">Predpomnilnik CSS</translation>

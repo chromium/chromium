@@ -714,7 +714,7 @@
 <translation id="1494349716233667318">Сайттар құрылғыңызда орнатылған қаріптерді пайдалануға рұқсат сұрай алады</translation>
 <translation id="1494429729245089920">"<ph name="VM_NAME" />" виртуалдық компьютері бар, бірақ жарамды <ph name="APP_NAME" /> виртуалдық компьютері болып көрінбейді. Әкімшіге хабарласыңыз.</translation>
 <translation id="1495677929897281669">Қойындыға оралу</translation>
-<translation id="1498498210836053409">Мәтінге өзгерістер енгізу кезінде пернелерді жабыстыру режимін өшіру (Смарт пернелерді жабыстыру режимі)</translation>
+<translation id="1498498210836053409">Мәтінге өзгерістер енгізу кезінде пернелерді жабыстыру режимін өшіру (пернелерді жабыстыру смарт режимі)</translation>
 <translation id="1499041187027566160">дыбыс деңгейін арттыру</translation>
 <translation id="1500297251995790841">Белгісіз құрылғы [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500720779546450982">Сайтқа (<ph name="SITE_URL" />) сенемін</translation>
@@ -1421,7 +1421,6 @@
 <translation id="1980168597243156">Ғарыш станциясы</translation>
 <translation id="1981434377190976112">Барлық веб-сайттағы деректі оқу</translation>
 <translation id="1982851102516626421">Аккаунттан шығып кеткенсіз</translation>
-<translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} және {field_2}}other{{field_1}, {field_2} және {field_3}}}</translation>
 <translation id="1984417487208496350">Қорғау режимін өшіру (ұсынылмайды)</translation>
 <translation id="198507684520034826">Анықтама</translation>
 <translation id="1986836014090708999">Қосымша локация параметрлері</translation>
@@ -2176,7 +2175,7 @@
 <translation id="2501173422421700905">Сертификат тоқтатылды</translation>
 <translation id="2501278716633472235">Артқа қайту</translation>
 <translation id="2501797496290880632">Пернелер тіркесімін теріңіз</translation>
-<translation id="2501920221385095727">Жабысқақ пернелер</translation>
+<translation id="2501920221385095727">Жабысқан пернелер</translation>
 <translation id="2502267564852819530"><ph name="TAB_TITLE" /> қойындысын (<ph name="LAST_ACTIVE" />) тізімнен өшіру</translation>
 <translation id="2502441965851148920">Автоматты жаңартулар қосылған. Әкімшіңіз қолмен жаңарту мүмкіндігін сөндірген.</translation>
 <translation id="2502719318159902502">Барлық рұқсаты бар</translation>
@@ -3526,7 +3525,7 @@
 <translation id="3488199663160411179">аты</translation>
 <translation id="3490695139702884919">Жүктеп алынуда… <ph name="PERCENT" />%</translation>
 <translation id="3491171603443463516">PIN кодыңызды немесе құпия сөзіңізді ұмытып қалсаңыз, жергілікті деректерді қалпына келтіруге болады.</translation>
-<translation id="3491616972057195633">Пернелердің байқаусызда басылуын елемеу</translation>
+<translation id="3491616972057195633">Пернелердің қайта басылуын елемеу</translation>
 <translation id="3491669675709357988">Балаңыздың аккаунты Family Link ата-ана бақылауы үшін реттелмеген. Реттеуді аяқтағаннан кейін, ата-ана бақылауын қоса аласыз. Ата-ана бақылауы туралы ақпаратты Explore қолданбасынан таба аласыз.</translation>
 <translation id="3491678231052507920">VR сеанстарына кіре алуыңыз үшін, сайттар әдетте виртуалдық шындық құрылғыларын және деректерді қолданады.</translation>
 <translation id="3493043608231401654">Қойындылар тобынан <ph name="TAB_TITLE" /> қойындысын өшіру</translation>
@@ -4263,7 +4262,7 @@
 <translation id="397703832102027365">Аяқталуда…</translation>
 <translation id="3977145907578671392">Инкогнито режимінде кейбір сайттардағы функциялар істемеуі мүмкін.</translation>
 <translation id="3977886311744775419">Автоматты жаңартулар мұндай желіде жүктеп алынбайды, бірақ жаңартулардың бар-жоғын қолмен тексеруге болады.</translation>
-<translation id="3978325380690188371">ChromeVox қосулы кезде, бекітілген пернелер қолжетімді емес</translation>
+<translation id="3978325380690188371">ChromeVox қосулы кезде, жабысқан пернелер қолжетімді емес.</translation>
 <translation id="3978732922947854545">Chrome браузері PDF файлдарын жақсартады</translation>
 <translation id="3979395879372752341">Жаңа кеңейтім қосылды (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326"><ph name="NETWORKDEVICE" /> қосу</translation>
@@ -4924,7 +4923,6 @@
 <translation id="4462159676511157176">Реттелетін атау серверлері</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" /> қолданбасы үшін шектелген уақыт: <ph name="TIME" /></translation>
 <translation id="4467373268340082204">PIN коды дұрыс емес.</translation>
-<translation id="4467561276409486506">&amp;Жинақы режимді қосу/өшіру</translation>
 <translation id="4469324811108161144">Ескертпелерде <ph name="CHARACTER_LIMIT" /> таңбаға дейін болуы мүмкін.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> <ph name="FOLDERNAME" /> қалтасындағы файлдарды өңдей алады.</translation>
 <translation id="4470957202018033307">Сыртқы жад параметрлері</translation>

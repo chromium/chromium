@@ -1434,7 +1434,6 @@
 <translation id="1980168597243156">விண்வெளி நிலையம்</translation>
 <translation id="1981434377190976112">எல்லா இணையதளங்களிலும் உள்ள உங்கள் தரவைப் படிக்கலாம்</translation>
 <translation id="1982851102516626421">வெளியேறிவிட்டீர்கள்</translation>
-<translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} மற்றும் {field_2}}other{{field_1}, {field_2} மற்றும் {field_3}}}</translation>
 <translation id="1984417487208496350">பாதுகாப்பற்ற பயன்முறை (பரிந்துரைக்கப்படவில்லை)</translation>
 <translation id="198507684520034826">உதவி</translation>
 <translation id="1986836014090708999">மேம்பட்ட இருப்பிட அமைப்புகள்</translation>
@@ -4942,7 +4941,6 @@
 <translation id="4462159676511157176">பிரத்தியேகப் பெயர் சேவையகங்கள்</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" />க்கு அமைக்கப்பட்ட நேர வரம்பு: <ph name="TIME" /></translation>
 <translation id="4467373268340082204">தவறான பின்</translation>
-<translation id="4467561276409486506">சுருக்கப் பயன்முறையை இயக்கு/முடக்கு</translation>
 <translation id="4469324811108161144">குறிப்புகளில் அதிகபட்சம் <ph name="CHARACTER_LIMIT" /> எழுத்துகள் இருக்கலாம்.</translation>
 <translation id="4469762931504673593"><ph name="FOLDERNAME" /> ஃபோல்டரில் உள்ள கோப்புகளை <ph name="ORIGIN" /> தளத்தால் திருத்த முடியும்</translation>
 <translation id="4470957202018033307">வெளிப்புறச் சேமிப்பக விருப்பங்கள்</translation>

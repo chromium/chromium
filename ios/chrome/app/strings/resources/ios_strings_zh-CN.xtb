@@ -424,6 +424,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{密码已保存到您的 Google 账号 {EMAIL}}other{密码已保存到您的 Google 账号 {EMAIL}}}</translation>
 <translation id="2791174088547598693">添加密码…</translation>
 <translation id="2797302972324086597">国家/地区代码</translation>
+<translation id="2802403747691280910"><ph name="NUMBER_OF_TABS_REMOVED" /> 个已关闭</translation>
 <translation id="2816489851009559785">菜单 → 设置 → 默认浏览器</translation>
 <translation id="2818821771744632548">您在 iPhone 重置过程中退出了账号 <ph name="USER_NAME" />。如需重新登录，请点按下方的“继续”。</translation>
 <translation id="2819667972867209401">当此设置处于开启状态时，数据会保存在您的 Google 账号中。当此设置处于关闭状态时，数据只会保存到此设备上，并且会在您退出账号后被删除。</translation>
@@ -1574,6 +1575,7 @@
 <translation id="7975036700432177008">试用</translation>
 <translation id="797588153137233716">菜单 → 历史记录 → 删除浏览数据</translation>
 <translation id="7977451675950311423">若您使用的密码遭遇了数据泄露，向您发出警告。</translation>
+<translation id="7977482887663636093"><ph name="NUMBER_OF_TABS_ADDED" /> 个新标签页，<ph name="NUMBER_OF_TABS_REMOVED" /> 个已关闭</translation>
 <translation id="797824194429476746">相应标签页将在此设备上保持打开状态，但分组将被永久删除。</translation>
 <translation id="7982789257301363584">网络</translation>
 <translation id="7987685713885608670">为了提高安全性，请先在设备上对密码进行加密，然后再将其保存到 Google 密码管理工具中。</translation>
@@ -1757,6 +1759,7 @@
 <translation id="8728922029615312208">全部关闭</translation>
 <translation id="8730621377337864115">完成</translation>
 <translation id="87371078663613140">浏览菜单栏中的选项</translation>
+<translation id="8739706427581741437"><ph name="NUMBER_OF_TABS_ADDED" /> 个新标签页</translation>
 <translation id="8741627442233023406">{count,plural, =1{查看标签页…}other{查看所有标签页…}}</translation>
 <translation id="8741995161408053644">您的 Google 账号在 <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> 上可能有其他形式的浏览记录。</translation>
 <translation id="874599634440689554">创建链接</translation>

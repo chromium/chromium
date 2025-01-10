@@ -124,6 +124,7 @@
 <translation id="1076766328672150609">Ditt barn kan låsa upp enheten med en pinkod.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Det gick inte att ladda ned ordlistan för stavningskontroll på <ph name="LANGUAGE" />. Försök igen.</translation>
+<translation id="1078029726086090536">Verifiera ditt lösenord</translation>
 <translation id="1078037449555275327">Inställningar för ChromeVox</translation>
 <translation id="1079242569060319448">Har du glömt pinkoden?</translation>
 <translation id="1079285777677001938">Vissa webbplatsers funktioner kanske inte fungerar.</translation>
@@ -1434,7 +1435,6 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1980168597243156">Rymdstation</translation>
 <translation id="1981434377190976112">Läsa all din data på alla webbplatser</translation>
 <translation id="1982851102516626421">Du är utloggad</translation>
-<translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} och {field_2}}other{{field_1}, {field_2} och {field_3}}}</translation>
 <translation id="1984417487208496350">Inget skydd (rekommenderas inte)</translation>
 <translation id="198507684520034826">Hjälp</translation>
 <translation id="1986836014090708999">Avancerade platsinställningar</translation>
@@ -4094,6 +4094,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="3848547754896969219">Öppna i ett &amp;inkognitofönster</translation>
 <translation id="3850172593216628215">Säkerhetsuppdateringar har upphört. Spara minst 50 USD på en ny Chromebook.</translation>
 <translation id="385051799172605136">Föregående</translation>
+<translation id="3850989673553106152">Lösenordet har ändrats</translation>
 <translation id="3851428669031642514">Läs in osäkra skript</translation>
 <translation id="3852215160863921508">Inmatningshjälp</translation>
 <translation id="3853549894831560772"><ph name="DEVICE_NAME" /> är aktiverad</translation>
@@ -4596,6 +4597,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="421182450098841253">&amp;Visa bokmärkesfältet</translation>
 <translation id="4211904048067111541">Sluta använda kontot i Android-appar</translation>
 <translation id="42126664696688958">Exportera</translation>
+<translation id="4213540068152645535">Problem med att ändra lösenordet</translation>
 <translation id="42137655013211669">Åtkomsten till den här resursen blockerades av servern.</translation>
 <translation id="4213918571089943508">Barnets Google-konto</translation>
 <translation id="4214192212360095377">Inaktivera nu</translation>
@@ -4942,7 +4944,6 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="4462159676511157176">Anpassade namnservrar</translation>
 <translation id="4465236939126352372">En tidsgräns på <ph name="TIME" /> har ställts in för <ph name="APP_NAME" /></translation>
 <translation id="4467373268340082204">Fel pinkod</translation>
-<translation id="4467561276409486506">Aktivera/inaktivera kompakt läge</translation>
 <translation id="4469324811108161144">Ledtrådar kan innehålla upp till <ph name="CHARACTER_LIMIT" /> tecken.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> har redigeringsbehörighet för <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Inställningar för extern lagring</translation>
@@ -8318,6 +8319,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6913051485529944333">Du kommer inte att se Google Kalender på den här sidan igen</translation>
 <translation id="6914812290245989348">Visa inga varningar innan du besöker osäkra webbplatser</translation>
 <translation id="6916590542764765824">Hantera tillägg</translation>
+<translation id="6916676294509106572">Kalendern i Outlook har dolts</translation>
 <translation id="6917873303492266709">Om du vill dela, gå med i och samarbeta i flikgrupper öppnar du inställningarna och aktiverar Tillåt inloggning i Chrome</translation>
 <translation id="6918677045355889289">Uppdatering av ChromeOS krävs</translation>
 <translation id="6918733588290914545">Snabb konfigurering med Android-telefon</translation>
@@ -10698,6 +10700,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8625124982056504555">Läsa serienummer för ChromeOS-enheter och komponenter</translation>
 <translation id="862542460444371744">&amp;Tillägg</translation>
 <translation id="8625663000550647058">Får inte använda mikrofonen</translation>
+<translation id="8625679025395572221">Ditt konto kanske inte är säkert.</translation>
 <translation id="8625916342247441948">Tillåt inte att webbplatser ansluter till HID-enheter</translation>
 <translation id="862727964348362408">Tillfälligt avstängd</translation>
 <translation id="862750493060684461">CSS-cacheminne</translation>

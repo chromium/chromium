@@ -218,6 +218,7 @@
 <translation id="391789666908693569">내 계정은 <ph name="MANAGER_NAME" />에서 관리합니다. 관리자가 이 Chromium 브라우저 프로필과 북마크, 방문 기록, 비밀번호 등의 데이터를 보고 수정할 수 있습니다.</translation>
 <translation id="3941890832296813527">설치 오류: 설치 프로그램 파일 이름이 잘못되었거나 지원되지 않습니다.</translation>
 <translation id="3945058413678539331">Chromium에서 비밀번호를 복사하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
+<translation id="3954172517175569325">Google 계정에 저장된 비밀번호, 결제 수단, 주소가 이 기기에서 삭제됩니다. Chromium에서 다시 사용하려면 다시 로그인하세요</translation>
 <translation id="3962647064319009959">Chromium이 사용자를 안전하게 보호하는 방법 알아보기</translation>
 <translation id="3975724895399328945">&amp;Google Chrome for Testing 정보</translation>
 <translation id="3997429360543082038">ChromiumOS 정보</translation>

@@ -124,6 +124,7 @@
 <translation id="1076766328672150609">Votre enfant peut l'utiliser pour déverrouiller l'appareil.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Impossible de télécharger le dictionnaire du correcteur orthographique pour la langue suivante : <ph name="LANGUAGE" />. Veuillez réessayer.</translation>
+<translation id="1078029726086090536">Valider votre mot de passe</translation>
 <translation id="1078037449555275327">Paramètres ChromeVox</translation>
 <translation id="1079242569060319448">Code oublié ?</translation>
 <translation id="1079285777677001938">Il est possible que les fonctionnalités de certains sites ne fonctionnent pas.</translation>
@@ -1425,7 +1426,6 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1980168597243156">Station spatiale</translation>
 <translation id="1981434377190976112">Lire toutes vos données sur tous les sites Web</translation>
 <translation id="1982851102516626421">Vous êtes déconnecté</translation>
-<translation id="1983074053702805575">{count,plural, =1{votre {field_1}}=2{vos {field_1} et {field_2}}one{vos {field_1}, {field_2} et {field_3}}other{vos {field_1}, {field_2} et {field_3}}}</translation>
 <translation id="1984417487208496350">Aucune protection (non recommandé)</translation>
 <translation id="198507684520034826">Aide</translation>
 <translation id="1986836014090708999">Paramètres de localisation avancés</translation>
@@ -4080,6 +4080,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="3848547754896969219">Ouvrir dans une fenêtre de navigation &amp;privée</translation>
 <translation id="3850172593216628215">Vous ne recevrez plus de mises à jour de sécurité. Économisez 50 $ ou plus sur un nouveau Chromebook.</translation>
 <translation id="385051799172605136">Retour</translation>
+<translation id="3850989673553106152">Mot de passe modifié</translation>
 <translation id="3851428669031642514">Charger les scripts à risque</translation>
 <translation id="3852215160863921508">Assistance à la saisie</translation>
 <translation id="3853549894831560772">La <ph name="DEVICE_NAME" /> est activée</translation>
@@ -4582,6 +4583,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="421182450098841253">&amp;Afficher la barre de favoris</translation>
 <translation id="4211904048067111541">Ne plus utiliser avec les applis Android</translation>
 <translation id="42126664696688958">Exporter</translation>
+<translation id="4213540068152645535">Problème lors de la modification de votre mot de passe</translation>
 <translation id="42137655013211669">L'accès à cette ressource est interdit sur ce serveur.</translation>
 <translation id="4213918571089943508">Compte Google de l'enfant</translation>
 <translation id="4214192212360095377">Désactiver maintenant</translation>
@@ -4928,7 +4930,6 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4462159676511157176">Serveurs de noms personnalisés</translation>
 <translation id="4465236939126352372">Limite de temps de <ph name="TIME" /> définie pour <ph name="APP_NAME" /></translation>
 <translation id="4467373268340082204">Code incorrect</translation>
-<translation id="4467561276409486506">&amp;Activer/Désactiver le mode compact</translation>
 <translation id="4469324811108161144">Les notes peuvent contenir jusqu'à <ph name="CHARACTER_LIMIT" /> caractères.</translation>
 <translation id="4469762931504673593">Le site <ph name="ORIGIN" /> peut modifier les fichiers du dossier <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Préférences de l'espace de stockage externe</translation>
@@ -8305,6 +8306,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6913051485529944333">Vous ne verrez plus Google Agenda sur cette page</translation>
 <translation id="6914812290245989348">Aucun avertissement avant d'accéder à des sites non sécurisés</translation>
 <translation id="6916590542764765824">Gérer les extensions</translation>
+<translation id="6916676294509106572">Agenda Outlook masqué</translation>
 <translation id="6917873303492266709">Pour rejoindre des groupes d'onglets, en partager et collaborer dessus, accédez aux paramètres et activez "Autoriser la connexion à Chrome"</translation>
 <translation id="6918677045355889289">Mise à jour de Chrome OS requise</translation>
 <translation id="6918733588290914545">Configuration rapide avec un téléphone Android</translation>
@@ -10685,6 +10687,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8625124982056504555">Lire les numéros de série des appareils Chrome OS et leurs composants</translation>
 <translation id="862542460444371744">&amp;Extensions</translation>
 <translation id="8625663000550647058">Non autorisé à utiliser votre micro</translation>
+<translation id="8625679025395572221">Il se peut que votre compte soit toujours menacé.</translation>
 <translation id="8625916342247441948">Ne pas autoriser les sites à se connecter à des périphériques HID</translation>
 <translation id="862727964348362408">Suspendu</translation>
 <translation id="862750493060684461">Cache CSS</translation>

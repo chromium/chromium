@@ -124,6 +124,7 @@
 <translation id="1076766328672150609">你的孩子可以使用 PIN 碼來解鎖裝置。</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">無法下載<ph name="LANGUAGE" />的拼字檢查字典，請再試一次。</translation>
+<translation id="1078029726086090536">驗證密碼</translation>
 <translation id="1078037449555275327">ChromeVox 設定</translation>
 <translation id="1079242569060319448">忘記 PIN 碼？</translation>
 <translation id="1079285777677001938">某些網站的功能可能無法運作。</translation>
@@ -1424,7 +1425,6 @@
 <translation id="1980168597243156">太空站</translation>
 <translation id="1981434377190976112">讀取你在所有網站上的所有資料</translation>
 <translation id="1982851102516626421">你已登出帳戶</translation>
-<translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1}和{field_2}}other{{field_1}、{field_2}和{field_3}}}</translation>
 <translation id="1984417487208496350">無防護 (不建議)</translation>
 <translation id="198507684520034826">輔助說明</translation>
 <translation id="1986836014090708999">進階位置資訊設定</translation>
@@ -4078,6 +4078,7 @@
 <translation id="3848547754896969219">在無痕視窗中開啟(&amp;I)</translation>
 <translation id="3850172593216628215">安全性更新已終止，購買新款 Chromebook 可省下 $50 美元以上</translation>
 <translation id="385051799172605136">返回</translation>
+<translation id="3850989673553106152">密碼已變更</translation>
 <translation id="3851428669031642514">載入不安全的指令碼</translation>
 <translation id="3852215160863921508">輸入輔助</translation>
 <translation id="3853549894831560772"><ph name="DEVICE_NAME" />已開啟</translation>
@@ -4579,6 +4580,7 @@
 <translation id="421182450098841253">顯示書籤列(&amp;S)</translation>
 <translation id="4211904048067111541">停止存取 Android 應用程式</translation>
 <translation id="42126664696688958">匯出</translation>
+<translation id="4213540068152645535">無法變更密碼</translation>
 <translation id="42137655013211669">伺服器禁止存取這個資源。</translation>
 <translation id="4213918571089943508">子女的 Google 帳戶</translation>
 <translation id="4214192212360095377">立即關閉</translation>
@@ -4925,7 +4927,6 @@
 <translation id="4462159676511157176">自訂名稱伺服器</translation>
 <translation id="4465236939126352372">已為「<ph name="APP_NAME" />」設定 <ph name="TIME" />的時間限制</translation>
 <translation id="4467373268340082204">PIN 碼錯誤</translation>
-<translation id="4467561276409486506">切換精簡模式(&amp;T)</translation>
 <translation id="4469324811108161144">附註最多可以儲存 <ph name="CHARACTER_LIMIT" /> 個半形字元。</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> 可以編輯「<ph name="FOLDERNAME" />」中的檔案</translation>
 <translation id="4470957202018033307">外部儲存空間偏好設定</translation>
@@ -8295,6 +8296,7 @@
 <translation id="6913051485529944333">這個頁面不會再顯示 Google 日曆</translation>
 <translation id="6914812290245989348">前往不安全的網站前不顯示任何警告</translation>
 <translation id="6916590542764765824">管理擴充功能</translation>
+<translation id="6916676294509106572">Outlook 行事曆已隱藏</translation>
 <translation id="6917873303492266709">如要分享、加入分頁群組並在其中協作，請前往設定頁面開啟「允許登入 Chrome」</translation>
 <translation id="6918677045355889289">需要更新 Chrome OS</translation>
 <translation id="6918733588290914545">使用 Android 手機快速設定</translation>
@@ -10674,6 +10676,7 @@
 <translation id="8625124982056504555">讀取 ChromeOS 裝置序號和元件序號</translation>
 <translation id="862542460444371744">擴充功能(&amp;E)</translation>
 <translation id="8625663000550647058">不得使用麥克風</translation>
+<translation id="8625679025395572221">你的帳戶可能仍面臨風險。</translation>
 <translation id="8625916342247441948">禁止網站連線至 HID 裝置</translation>
 <translation id="862727964348362408">已暫停</translation>
 <translation id="862750493060684461">CSS 快取</translation>

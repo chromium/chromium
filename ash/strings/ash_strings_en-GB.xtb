@@ -1028,6 +1028,7 @@ One device connected.</translation>
 <translation id="4485506555414638855">Dismiss setting up viewing your phone's recent photos, media, notifications and apps</translation>
 <translation id="4491109536499578614">Image</translation>
 <translation id="450584155212756404">Dev channel</translation>
+<translation id="4513044611477939680">Quick Share</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4518404433291145981">To unlock your Chromebook, first unlock your phone</translation>
 <translation id="4527045527269911712">Bluetooth device "<ph name="DEVICE_NAME" />" would like permission to pair.</translation>
@@ -1079,6 +1080,7 @@ One device connected.</translation>
 <translation id="4672539464599646374">Battery Saver turned on</translation>
 <translation id="4673427585974421255">Keep on</translation>
 <translation id="4677040906536311086">Google Sheet</translation>
+<translation id="468019262817532242">No one can share with you</translation>
 <translation id="468293128311738995">Apps from your phone</translation>
 <translation id="4690510401873698237">Shelf on bottom</translation>
 <translation id="4696813013609194136">Unlock device with parent code</translation>
@@ -1110,6 +1112,7 @@ One device connected.</translation>
 <translation id="4776917500594043016">Password for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">The Google Assistant is not available in a demo session.</translation>
+<translation id="4785412405516449976">Only your contacts with a Google Account</translation>
 <translation id="4789348252524569426">Can't install speech files. Your device needs to be updated. Restart your device and try again.</translation>
 <translation id="478959186716341421">Casting</translation>
 <translation id="4798403412327076414">You'll see previously opened windows and apps the next time that you sign in</translation>
@@ -1239,6 +1242,7 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
 <translation id="5176318573511391780">Record partial screen</translation>
 <translation id="5187627942836026988">Show hotspot details. Hotspot is blocked by your administrator.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5198039720391525849">Featured GIFs</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> events</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> combined with <ph name="IN_PLACE_APP" /> to create new folder.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1560,6 +1564,7 @@ No devices connected.</translation>
 <translation id="6199775032047436064">Reload current page</translation>
 <translation id="6200515304866777730">Not supported by app</translation>
 <translation id="6210042900243040400">Connect <ph name="NAME" /> previously saved to <ph name="EMAIL" /></translation>
+<translation id="6212580734499190393">For 10 min</translation>
 <translation id="6213808132343683860">Take partial screenshot or screen recording</translation>
 <translation id="621606890568890214">Expand Google Classroom</translation>
 <translation id="6216759484154215561">Opened learn more link in the browser</translation>
@@ -1953,6 +1958,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7599378375976398913">Inserting selected result</translation>
 <translation id="7600875258240007829">See all notifications</translation>
 <translation id="7601417191446344542">Turn on mute nudge?</translation>
+<translation id="7602187221150705972">Search emojis, GIFs and more</translation>
 <translation id="7607002721634913082">Paused</translation>
 <translation id="7609951632080598826">Calendar view, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Camera reconnected.</translation>
@@ -2049,6 +2055,7 @@ To shut down the device, press and hold the power button on the device again.</t
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="7899977217122813285">Notifications are muted until <ph name="TIME" /> while focusing</translation>
+<translation id="7901010467630324625">Only devices signed in to <ph name="EMAIL" /></translation>
 <translation id="7901190436359881020">Swap the windows</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Touch the fingerprint sensor</translation>

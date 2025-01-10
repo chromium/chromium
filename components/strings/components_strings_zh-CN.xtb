@@ -3386,6 +3386,7 @@
 <translation id="70705239631109039">您的连接存在安全隐患</translation>
 <translation id="7075452647191940183">请求过大</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079699498125013497">\u0020\u2022\u0020</translation>
 <translation id="7081311540357715807">食品与杂货零售商</translation>
 <translation id="7083258188081898530">纸匣 9</translation>
 <translation id="7086090958708083563">用户已请求上传</translation>
@@ -4110,6 +4111,7 @@
 <translation id="833262891116910667">突出显示</translation>
 <translation id="8339163506404995330">系统不会自动翻译源语言为<ph name="LANGUAGE" />的网页</translation>
 <translation id="8339275256517065202">请使用触控 ID 完成购买交易</translation>
+<translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">虚拟卡注册对话框已全屏打开</translation>
 <translation id="8349305172487531364">书签栏</translation>

@@ -124,6 +124,7 @@
 <translation id="1076766328672150609">فرزندتان می‌تواند برای باز کردن قفل دستگاه از پین استفاده کند.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">واژه‌نامه غلط‌گیر املای زبان <ph name="LANGUAGE" /> بارگیری نشد. دوباره امتحان کنید.</translation>
+<translation id="1078029726086090536">درستی‌سنجی کردن گذرواژه</translation>
 <translation id="1078037449555275327">‏تنظیمات ChromeVox</translation>
 <translation id="1079242569060319448">پین را فراموش کرده‌اید؟</translation>
 <translation id="1079285777677001938">ممکن است ویژگی‌های برخی‌از سایت‌ها کار نکند.</translation>
@@ -1431,7 +1432,6 @@
 <translation id="1980168597243156">ایستگاه فضایی</translation>
 <translation id="1981434377190976112">همه داده‌های شما را در همه وب‌سایت‌ها بخواند</translation>
 <translation id="1982851102516626421">از سیستم خارج شده‌اید</translation>
-<translation id="1983074053702805575">{count,plural, =1{‫{field_1}}=2{‫{field_1} و {field_2}}one{‫{field_1}، {field_2}، و {field_3}}other{‫{field_1}، {field_2}، و {field_3}}}</translation>
 <translation id="1984417487208496350">بدون محافظت (توصیه نمی‌شود)</translation>
 <translation id="198507684520034826">راهنما</translation>
 <translation id="1986836014090708999">تنظیمات پیشرفته مکان</translation>
@@ -4091,6 +4091,7 @@
 <translation id="3848547754896969219">باز کردن در «پنجره ناشناس»</translation>
 <translation id="3850172593216628215">‏به‌روزرسانی‌های امنیتی به‌اتمام رسیده است. هنگام خرید Chromebook جدید ۵۰ دلار یا بیشتر تخفیف بگیرید.</translation>
 <translation id="385051799172605136">برگشتن</translation>
+<translation id="3850989673553106152">گذرواژه تغییر کرد</translation>
 <translation id="3851428669031642514">بارگیری اسکریپت‌های ناامن</translation>
 <translation id="3852215160863921508">دستیار ورودی</translation>
 <translation id="3853549894831560772"><ph name="DEVICE_NAME" /> روشن است</translation>
@@ -4593,6 +4594,7 @@
 <translation id="421182450098841253">&amp;نمایش نوار نشانک‌ها</translation>
 <translation id="4211904048067111541">‏توقف استفاده در برنامه‌های Android</translation>
 <translation id="42126664696688958">صادر کردن</translation>
+<translation id="4213540068152645535">مشکلی در تغییر گذرواژه‌تان روی داد</translation>
 <translation id="42137655013211669">سرور، دسترسی به این منبع را ممنوع کرد.</translation>
 <translation id="4213918571089943508">‏«حساب Google» کودک</translation>
 <translation id="4214192212360095377">اکنون خاموش شود</translation>
@@ -4939,7 +4941,6 @@
 <translation id="4462159676511157176">سرورهای نام سفارشی</translation>
 <translation id="4465236939126352372"><ph name="TIME" /> محدودیت زمانی برای <ph name="APP_NAME" /> تنظیم شده است</translation>
 <translation id="4467373268340082204">پین اشتباه است</translation>
-<translation id="4467561276409486506">&amp;روشن/خاموش کردن «حالت فشرده»</translation>
 <translation id="4469324811108161144">یادداشت باید حداکثر <ph name="CHARACTER_LIMIT" /> نویسه داشته باشد.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> می‌تواند فایل‌های <ph name="FOLDERNAME" /> را ویرایش کند</translation>
 <translation id="4470957202018033307">اولویت‌های فضای ذخیره‌سازی خارجی</translation>
@@ -8317,6 +8318,7 @@
 <translation id="6913051485529944333">‏«تقویم Google» را دیگر در این صفحه نخواهید دید</translation>
 <translation id="6914812290245989348">عدم نمایش هشدار قبل‌از رفتن به سایت‌های ناامن</translation>
 <translation id="6916590542764765824">مدیریت افزونه‌ها</translation>
+<translation id="6916676294509106572">‏تقویم Outlook پنهان است</translation>
 <translation id="6917873303492266709">‏برای هم‌رسانی، پیوستن، و مشارکت در گروه‌های برگه، تنظیمات را باز کنید و «مجاز کردن ورود به سیستم Chrome» را روشن کنید</translation>
 <translation id="6918677045355889289">‏به‌روزرسانی ChromeOS الزامی است</translation>
 <translation id="6918733588290914545">‏راه‌اندازی سریع با تلفن Android</translation>
@@ -10696,6 +10698,7 @@
 <translation id="8625124982056504555">‏خواندن شماره‌های سریال عنصر و دستگاه ChromeOS</translation>
 <translation id="862542460444371744">&amp;برنامه های افزودنی</translation>
 <translation id="8625663000550647058">اجازه ندارد از میکروفون استفاده کند</translation>
+<translation id="8625679025395572221">ممکن است حسابتان هنوز درمعرض خطر باشد.</translation>
 <translation id="8625916342247441948">‏به سایت‌ها اجازه داده نشود به دستگاه‌های HID متصل شوند</translation>
 <translation id="862727964348362408">معلق شد</translation>
 <translation id="862750493060684461">‏حافظه نهان CSS</translation>

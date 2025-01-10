@@ -424,6 +424,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{Сырсөз Google аккаунтуңузга ({EMAIL}) сакталды}other{Сырсөздөр Google аккаунтуңузга ({EMAIL}) сакталды}}</translation>
 <translation id="2791174088547598693">Сырсөз кошуу…</translation>
 <translation id="2797302972324086597">Өлкөнүн коду</translation>
+<translation id="2802403747691280910"><ph name="NUMBER_OF_TABS_REMOVED" /> жабылды</translation>
 <translation id="2816489851009559785">Меню → Жөндөөлөр → Демейки серепчи</translation>
 <translation id="2818821771744632548">iPhone'ду баштапкы абалга келтирүүдө <ph name="USER_NAME" /> аккаунтунан чыктыңыз. Кайрадан кирүү үчүн төмөндөгү "Улантуу" баскычын басыңыз.</translation>
 <translation id="2819667972867209401">Параметр күйүп турганда, маалымат Google аккаунтуңузга сакталат. Ал эми өчүп турганда ушул түзмөккө гана сакталып, аккаунтуңуздан чыкканда өчүрүлөт.</translation>
@@ -1574,6 +1575,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7975036700432177008">Байкап көрүү</translation>
 <translation id="797588153137233716">Меню → Таржымал → Серептөө дайындарын өчүрүү</translation>
 <translation id="7977451675950311423">Колдонулган сызсөздү кимдир бирөө билип алган болсо, ал тууралуу эскертет.</translation>
+<translation id="7977482887663636093"><ph name="NUMBER_OF_TABS_ADDED" /> жаңы өтмөк, <ph name="NUMBER_OF_TABS_REMOVED" /> жабылды</translation>
 <translation id="797824194429476746">Өтмөктөр бул түзмөктө ачык бойдон калып, бирок топ биротоло өчүрүлөт.</translation>
 <translation id="7982789257301363584">Тармак</translation>
 <translation id="7987685713885608670">Кошумча коопсуздук үчүн Google Сырсөздөрдү башкаргычка сакталганга чейин сырсөздөрдү түзмөгүңүздө шифрлеңиз.</translation>
@@ -1757,6 +1759,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8728922029615312208">Баарын жабуу</translation>
 <translation id="8730621377337864115">Бүттү</translation>
 <translation id="87371078663613140">Меню тилкесиндеги параметрлерди карап чыгыңыз</translation>
+<translation id="8739706427581741437"><ph name="NUMBER_OF_TABS_ADDED" /> жаңы өтмөк</translation>
 <translation id="8741627442233023406">{count,plural, =1{Өтмөктү карап көрүү…}other{Бардык өтмөктөрдү карап көрүү…}}</translation>
 <translation id="8741995161408053644">Google аккаунтуңуздун серептөө таржымалынын башка түрлөрү <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> дарегинде болушу мүмкүн.</translation>
 <translation id="874599634440689554">Шилтеме түзүү</translation>

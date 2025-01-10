@@ -385,6 +385,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1652862280638399816">MacOS Keychain bilan Parol menejeridan foydalanish uchun Chromium brauzerini qayta ishga tushiring va Keychainʼdan foydalanish ruxsatini bering. Qayta ishga tushirilgandan keyin varaqlar qayta ochiladi.</translation>
 <translation id="1652887625750064647">AI tuzgan eng mosi</translation>
+<translation id="1653465303147789530">Ilovalarni almashtirmay <ph name="PAYMENT_METHOD" /> orqali toʻlang</translation>
 <translation id="1656024727720460136">Mutolaani osonlashtirish uchun bu sahifa Chrome tomonidan soddalashtirildi. Chrome asl sahifani xavfsiz ulanish orqali yuklab oldi.</translation>
 <translation id="1656489000284462475">Olib ketish</translation>
 <translation id="1658111267661135323">TV va video</translation>
@@ -555,6 +556,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />Ochilgan sahifalar manzillari, tizim va sahifalar<ph name="END_WHITEPAPER_LINK" /> haqidagi ayrim maʼlumotlarni Google serverlariga yuborish orqali internetdagi xavfsizlik tizimini hamma uchun yaxshilashga yordam berasiz. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Maxfiylik siyosati<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">Matn va sahifa kontenti Googlega yuboriladi va bu funksiyani yaxshilash maqsadida ishlatilishi mumkin.
   <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
+<translation id="196146181975453736">Tezroq toʻlash uchun bir martalik xavfsizlik tekshiruvini bajaring</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> xatcho‘plari</translation>
 <translation id="1973335181906896915">Seriyalashtirish amali bajarilmadi</translation>
 <translation id="1973785048533660168">Kanselyariya va administrativ vakansiyalar</translation>
@@ -1580,6 +1582,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="378611282717571199">"<ph name="SEARCH_QUERY" />" uchun eng mos natijalar</translation>
 <translation id="3789155188480882154">Hajmi: 16</translation>
 <translation id="3789841737615482174">O‘rnatish</translation>
+<translation id="3791118028061680614">Ilovalarni almashtirmasdan toʻlang</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" />)</translation>
 <translation id="3792826587784915501">Kult va indi filmlar</translation>
 <translation id="3793574014653384240">Oxirgi ishdan chiqishlar va ularning sabablari</translation>

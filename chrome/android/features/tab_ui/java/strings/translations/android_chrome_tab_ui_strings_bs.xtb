@@ -76,6 +76,7 @@ Ako je izbrišete, svi će odmah izgubiti pristup grupi kartica "<ph name="TITLE
 <translation id="427987768447457592">Nova grupa kartica</translation>
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{Promijenjena je <ph name="ONE_CHANGED" /> kartica. Zatvoreno: <ph name="ANY_CLOSED" />}one{Promijenjena je <ph name="MANY_CHANGED" /> kartica. Zatvoreno: <ph name="ANY_CLOSED" />}few{Promijenjene su <ph name="MANY_CHANGED" /> kartice. Zatvoreno: <ph name="ANY_CLOSED" />}other{Promijenjeno je <ph name="MANY_CHANGED" /> kartica. Zatvoreno: <ph name="ANY_CLOSED" />}}</translation>
 <translation id="4371591986692297148">Neaktivno</translation>
+<translation id="4431937619879060901">Odmah ćete izgubiti pristup grupi kartica "<ph name="GROUP_NAME" />", a ona će se izbrisati sa svih vaših uređaja</translation>
 <translation id="4460014764210899310">Razgrupiši</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Zatvoriti 1 neaktivnu karticu?}one{Zatvoriti <ph name="TAB_COUNT_MANY" /> neaktivnu karticu?}few{Zatvoriti <ph name="TAB_COUNT_MANY" /> neaktivne kartice?}other{Zatvoriti <ph name="TAB_COUNT_MANY" /> neaktivnih kartica?}}</translation>
 <translation id="4686942373615810936">Kreirano je upravo sada</translation>
@@ -106,6 +107,7 @@ Ako je izbrišete, svi će odmah izgubiti pristup grupi kartica "<ph name="TITLE
 <translation id="5556417849629758491">Prikaz informacija o trgovini. Opcija je dostupna pri vrhu ekrana</translation>
 <translation id="5627941783489838464">Nema ažuriranja kartica</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Vrati karticu}one{Vrati kartice}few{Vrati kartice}other{Vrati kartice}}</translation>
+<translation id="5647702255748985085">Napustiti grupu?</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link iz Chromea}one{<ph name="TABS_COUNT_MANY" /> link iz Chromea}few{<ph name="TABS_COUNT_MANY" /> linka iz Chromea}other{<ph name="TABS_COUNT_MANY" /> linkova iz Chromea}}</translation>
 <translation id="58326064309361797">Prevucite kartice da ih grupišete</translation>
 <translation id="5901630391730855834">Žuta</translation>
@@ -141,6 +143,7 @@ Ako je izbrišete, svi će odmah izgubiti pristup grupi kartica "<ph name="TITLE
 <translation id="731648547091221002">Odabrano: <ph name="COLOR_NAME" /></translation>
 <translation id="7326879924029668159">Pogledajte pravila povrata i drugo</translation>
 <translation id="7352298686197644113">Pogledajte koja stavka u otvorenim karticama ima nižu cijenu</translation>
+<translation id="742664698522525515">Zadržati grupu?</translation>
 <translation id="7452985128687107478">Grupe kartica se automatski pohranjuju i ažuriraju na svim uređajima</translation>
 <translation id="747459581954555080">Vrati sve</translation>
 <translation id="750886945254958667">Zadržite ovu grupu da kasnije dodate kartice ili je napustite ako joj više ne želite pristupati</translation>
@@ -185,8 +188,10 @@ Ako je izbrišete, svi će odmah izgubiti pristup grupi kartica "<ph name="TITLE
 <translation id="8915916167043355778">Zatvori sve</translation>
 <translation id="9090098097337832354">Informacije o ovoj trgovini su zatvorene</translation>
 <translation id="9114502155681725011">Otvaranje menija s radnjama grupe kartica za grupu kartica <ph name="TITLE_OF_GROUP" />, boje <ph name="COLOR_NAME" />.</translation>
+<translation id="9169141410816678175">Svako će odmah izgubiti pristup grupi kartica "<ph name="GROUP_NAME" />", a ona će se izbrisati sa svih uređaja</translation>
 <translation id="9169594135889675189">Dodaj novu karticu u grupu</translation>
 <translation id="9216898458513705996">Kartice će ostati otvorene na uređaju, ali će se grupa izbrisati sa svih uređaja na kojima ste prijavljeni na <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Proširivanje grupe kartica s <ph name="TABS_COUNT_ONE" /> karticom, boja <ph name="COLOR_NAME" />.}one{Proširivanje grupe kartica s <ph name="TABS_COUNT_MANY" /> karticom, boja <ph name="COLOR_NAME" />.}few{Proširivanje grupe kartica s <ph name="TABS_COUNT_MANY" /> kartice, boja <ph name="COLOR_NAME" />.}other{Proširivanje grupe kartica s <ph name="TABS_COUNT_MANY" /> kartica, boja <ph name="COLOR_NAME" />.}}</translation>
+<translation id="94870150074703282">Izbrisati grupu?</translation>
 <translation id="992256792861109788">Ružičasta</translation>
 </translationbundle>

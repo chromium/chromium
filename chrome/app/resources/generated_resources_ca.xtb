@@ -1424,7 +1424,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1980168597243156">Estació espacial</translation>
 <translation id="1981434377190976112">Llegir totes les dades en tots els llocs web</translation>
 <translation id="1982851102516626421">Tens la sessió tancada</translation>
-<translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} i {field_2}}other{{field_1}, {field_2} i {field_3}}}</translation>
 <translation id="1984417487208496350">Sense protecció (opció no recomanada)</translation>
 <translation id="198507684520034826">Ajuda</translation>
 <translation id="1986836014090708999">Configuració d'ubicació avançada</translation>
@@ -4926,7 +4925,6 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4462159676511157176">Servidors de noms personalitzats</translation>
 <translation id="4465236939126352372">S'ha establert <ph name="TIME" /> com a límit de temps per a <ph name="APP_NAME" /></translation>
 <translation id="4467373268340082204">El PIN no és correcte</translation>
-<translation id="4467561276409486506">&amp;Commuta el mode compacte</translation>
 <translation id="4469324811108161144">Les notes poden desar fins a <ph name="CHARACTER_LIMIT" /> caràcters.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> pot editar els fitxers que conté la carpeta <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Preferències de l'emmagatzematge extern</translation>
@@ -7429,6 +7427,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6278776436938569440">Canvia la ubicació</translation>
 <translation id="6280215091796946657">Inicia la sessió amb un altre compte</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281218688313242284">Gestiona el teu &amp;Compte de Google</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Supera el límit (1 full de paper)}other{Supera el límit ({COUNT} fulls de paper)}}</translation>
 <translation id="6282490239556659745">Suprimeix <ph name="EMBEDDED_SITE" /> de <ph name="SITE" /></translation>
 <translation id="6283438600881103103">Se't tancarà la sessió automàticament ara mateix.
@@ -8040,6 +8039,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6745592621698551453">Actualitza ara</translation>
 <translation id="6746124502594467657">Mou avall</translation>
 <translation id="67465227497040338">Mostra la contrasenya per a <ph name="DOMAIN" /></translation>
+<translation id="6746834324024491643">Per accedir a les teves contrasenyes i altres dades des de tots els teus dispositius, inicia la sessió com a <ph name="EMAIL" /></translation>
 <translation id="6748980958975836188">He llegit i accepto les <ph name="BEGIN_LINK1" />condicions del servei de Google<ph name="END_LINK1" /> i les <ph name="BEGIN_LINK2" />condicions del servei addicionals de Chrome i Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6749077623962119521">Vols restablir els permisos?</translation>
 <translation id="6749473226660745022">Fotos</translation>
