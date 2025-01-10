@@ -777,8 +777,16 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
   AssertAppInstalledAtVersion(GetIwa2WebBundleId(), base::Version("2.2.0"));
 }
 
+// TODO(crbug.com/389137516): Flaky on ChromeOS MSAN.
+#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#define MAYBE_StopsNonStartedUpdateDiscoveryTasksIfIwaIsUninstalled \
+  DISABLED_StopsNonStartedUpdateDiscoveryTasksIfIwaIsUninstalled
+#else
+#define MAYBE_StopsNonStartedUpdateDiscoveryTasksIfIwaIsUninstalled \
+  StopsNonStartedUpdateDiscoveryTasksIfIwaIsUninstalled
+#endif
 TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
-       StopsNonStartedUpdateDiscoveryTasksIfIwaIsUninstalled) {
+       MAYBE_StopsNonStartedUpdateDiscoveryTasksIfIwaIsUninstalled) {
   url_loader_factory().ClearResponses();
 
   InitialIwaBundleForceInstall(CreateIwa1Bundle("1.0.0"));
