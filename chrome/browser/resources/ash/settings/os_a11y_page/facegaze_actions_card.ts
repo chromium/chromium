@@ -8,11 +8,12 @@
  *  action settings.
  */
 
+import 'chrome://resources/cros_components/chip/chip.js';
 import '../controls/settings_dropdown_menu.js';
 import '../os_settings_page/settings_card.js';
 import '../settings_shared.css.js';
 import '../os_settings_page/os_settings_animated_pages.js';
-import 'chrome://resources/cros_components/chip/chip.js';
+import './facegaze_actions_add_dialog.js';
 import './facegaze_icons.html.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
