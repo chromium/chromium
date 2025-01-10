@@ -30,18 +30,6 @@ class WebAppNavigateBrowserTest : public WebAppBrowserTestBase {
   }
 };
 
-namespace {
-
-// Navigate and wait until the browse becomes active.
-// Returns the active browser.
-Browser* NavigateAndWaitUntilBrowserBecomeActive(NavigateParams* params) {
-  Navigate(params);
-  ui_test_utils::WaitUntilBrowserBecomeActive(params->browser);
-  return params->browser;
-}
-
-}  // namespace
-
 // This test verifies that navigating with "open_pwa_window_if_possible = true"
 // opens a new app window if there is an installed Web App for the URL.
 IN_PROC_BROWSER_TEST_F(WebAppNavigateBrowserTest,
@@ -101,7 +89,8 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigateBrowserTest, NewPopup) {
     NavigateParams params(MakeNavigateParams());
     params.disposition = WindowOpenDisposition::NEW_WINDOW;
     params.open_pwa_window_if_possible = true;
-    active_browser = NavigateAndWaitUntilBrowserBecomeActive(&params);
+    Navigate(&params);
+    active_browser = params.browser;
   }
   Browser* const app_browser = active_browser;
   const webapps::AppId app_id = app_browser->app_controller()->app_id();
@@ -110,7 +99,8 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigateBrowserTest, NewPopup) {
     NavigateParams params(MakeNavigateParams());
     params.disposition = WindowOpenDisposition::NEW_WINDOW;
     params.app_id = app_id;
-    active_browser = NavigateAndWaitUntilBrowserBecomeActive(&params);
+    Navigate(&params);
+    active_browser = params.browser;
   }
   content::WebContents* const web_contents =
       active_browser->tab_strip_model()->GetActiveWebContents();
@@ -120,7 +110,8 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigateBrowserTest, NewPopup) {
     NavigateParams params(MakeNavigateParams());
     params.disposition = WindowOpenDisposition::NEW_POPUP;
     params.source_contents = web_contents;
-    active_browser = NavigateAndWaitUntilBrowserBecomeActive(&params);
+    Navigate(&params);
+    active_browser = params.browser;
     EXPECT_FALSE(active_browser->app_controller());
   }
 
@@ -129,7 +120,8 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigateBrowserTest, NewPopup) {
     NavigateParams params(MakeNavigateParams());
     params.app_id = app_id;
     params.disposition = WindowOpenDisposition::NEW_POPUP;
-    active_browser = NavigateAndWaitUntilBrowserBecomeActive(&params);
+    Navigate(&params);
+    active_browser = params.browser;
     EXPECT_EQ(active_browser->app_controller()->app_id(), app_id);
   }
 
@@ -138,7 +130,8 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigateBrowserTest, NewPopup) {
     NavigateParams params(MakeNavigateParams());
     params.browser = app_browser;
     params.disposition = WindowOpenDisposition::NEW_POPUP;
-    active_browser = NavigateAndWaitUntilBrowserBecomeActive(&params);
+    Navigate(&params);
+    active_browser = params.browser;
     EXPECT_EQ(active_browser->app_controller()->app_id(), app_id);
   }
 }
