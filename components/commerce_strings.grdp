@@ -738,6 +738,12 @@
       <message name="IDS_COMPARE_SHOW_ALL_COMPARISON_TABLES" desc="The label for the menu option for showing all of a user's existing comparison tables.">
         Show All Comparison Tables
       </message>
+      <message name="IDS_COMPARE_ADD_TAB_TO_COMPARISON_TABLE" desc="The label for the menu option for adding the current tab to a comparison table.">
+        Add Tab to Comparison Table
+      </message>
+      <message name="IDS_COMPARE_NEW_COMPARISON_TABLE" desc="The label for the menu option for adding the current tab to a new comparison table.">
+        New Comparison Table
+      </message>
     </then>
     <else>
       <message name="IDS_COMPARE_MENU_LABEL" desc="The label for the comparison tables submenu item under the bookmarks and lists app menu.">
@@ -745,6 +751,12 @@
       </message>
       <message name="IDS_COMPARE_SHOW_ALL_COMPARISON_TABLES" desc="The label for the menu option for showing all of a user's existing comparison tables.">
         Show all comparison tables
+      </message>
+      <message name="IDS_COMPARE_ADD_TAB_TO_COMPARISON_TABLE" desc="The label for the menu option for adding the current tab to a comparison table.">
+        Add tab to comparison table
+      </message>
+      <message name="IDS_COMPARE_NEW_COMPARISON_TABLE" desc="The label for the menu option for adding the current tab to a new comparison table.">
+        New comparison table
       </message>
     </else>
   </if> <!-- use_titlecase -->

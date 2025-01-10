@@ -83,7 +83,7 @@ void BookmarkSubMenuModel::Build(Browser* browser) {
     AddSeparator(ui::NORMAL_SEPARATOR);
 
     compare_sub_menu_model_ =
-        std::make_unique<commerce::CompareSubMenuModel>(delegate());
+        std::make_unique<commerce::CompareSubMenuModel>(delegate(), browser);
     AddSubMenuWithStringIdAndIcon(
         IDC_COMPARE_MENU, IDS_COMPARE_MENU_LABEL, compare_sub_menu_model_.get(),
         ui::ImageModel::FromVectorIcon(kCompareIcon, ui::kColorMenuIcon, 16));

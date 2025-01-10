@@ -273,6 +273,8 @@
 #define IDC_TASK_MANAGER_MAIN_MENU      40288
 #define IDC_COMPARE_MENU                40289
 #define IDC_SHOW_ALL_COMPARISON_TABLES  40290
+#define IDC_ADD_TO_COMPARISON_TABLE_MENU 40291
+#define IDC_CREATE_NEW_COMPARISON_TABLE_WITH_TAB 40292
 
 // Spell-check
 // Insert any additional suggestions before _LAST; these have to be consecutive.

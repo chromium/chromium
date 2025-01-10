@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/mock_account_checker.h"
 #include "components/commerce/core/mock_cluster_manager.h"
 #include "components/commerce/core/mock_shopping_service.h"
@@ -521,6 +522,34 @@ TEST_P(ProductSpecificationsPageActionControllerUnittest, IconExecute) {
     controller_->OnIconClicked();
     ASSERT_FALSE(controller_->IsInRecommendedSet());
   }
+}
+
+TEST_F(ProductSpecificationsPageActionControllerUnittest,
+       OnProductSpecificationsSetUpdated_NoProductGroupOrProductInfo) {
+  // Page has no product group or product info.
+  mock_cluster_manager_->SetResponseForGetProductGroupForCandidateProduct(
+      std::nullopt);
+  shopping_service_->SetResponseForGetProductInfoForUrl(std::nullopt);
+
+  controller_->ResetForNewNavigation(GURL(kTestUrl1));
+  base::RunLoop().RunUntilIdle();
+
+  // Create a new set to add the page to.
+  const base::Uuid& uuid = base::Uuid::GenerateRandomV4();
+  ProductSpecificationsSet set1 = ProductSpecificationsSet(
+      uuid.AsLowercaseString(), 0, 0, {GURL(kTestUrl2)}, "Set 1");
+  ProductSpecificationsSet set2 =
+      ProductSpecificationsSet(uuid.AsLowercaseString(), 0, 0,
+                               {GURL(kTestUrl1), GURL(kTestUrl2)}, "Set 2");
+
+  // Notify the controller that the current page has been added to a set.
+  controller_->OnProductSpecificationsSetUpdate(set1, set2);
+  base::RunLoop().RunUntilIdle();
+
+  // Check that the comparison table URL is the one the page was added to, even
+  // though there is no recommended product group.
+  ASSERT_TRUE(controller_->GetComparisonTableURL() ==
+              GetProductSpecsTabUrlForID(uuid));
 }
 
 }  // namespace commerce

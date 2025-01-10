@@ -1472,6 +1472,9 @@ void BrowserCommandController::InitCommandState() {
   // Compare commands.
   command_updater_.UpdateCommandEnabled(IDC_COMPARE_MENU, true);
   command_updater_.UpdateCommandEnabled(IDC_SHOW_ALL_COMPARISON_TABLES, true);
+  command_updater_.UpdateCommandEnabled(IDC_ADD_TO_COMPARISON_TABLE_MENU, true);
+  command_updater_.UpdateCommandEnabled(
+      IDC_CREATE_NEW_COMPARISON_TABLE_WITH_TAB, true);
 
   // Initialize other commands whose state changes based on various conditions.
   UpdateCommandsForFullscreenMode();
@@ -1668,6 +1671,12 @@ void BrowserCommandController::UpdateCommandsForTabState() {
   // Update the zoom commands when an active tab is selected.
   UpdateCommandsForZoomState();
   UpdateCommandsForTabKeyboardFocus(GetKeyboardFocusedTabIndex(browser_));
+
+  // Disable the add to comparison table menu when the page is not a standard
+  // webpage.
+  const GURL& current_url = current_web_contents->GetLastCommittedURL();
+  command_updater_.UpdateCommandEnabled(IDC_ADD_TO_COMPARISON_TABLE_MENU,
+                                        current_url.SchemeIsHTTPOrHTTPS());
 }
 
 void BrowserCommandController::UpdateCommandsForZoomState() {

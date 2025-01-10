@@ -2310,11 +2310,6 @@ void ExecLensRegionSearch(Browser* browser) {
 void OpenCommerceProductSpecificationsTab(Browser* browser,
                                           const std::vector<GURL>& urls,
                                           const int position) {
-  if (static_cast<int>(urls.size()) <
-      commerce::kProductSpecificationsMinTabsCount) {
-    return;
-  }
-
   auto* prefs = browser->profile()->GetPrefs();
   // If user has not accepted the latest disclosure, show the disclosure dialog
   // first.
