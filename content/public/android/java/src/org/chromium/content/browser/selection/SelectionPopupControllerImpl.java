@@ -1503,6 +1503,13 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         }
     }
 
+    @CalledByNative
+    private void renderWidgetHostViewChanged() {
+        if (getMagnifierAnimator() != null) {
+            getMagnifierAnimator().handleDragStopped();
+        }
+    }
+
     // All coordinates are in DIP.
     @VisibleForTesting
     @CalledByNative
