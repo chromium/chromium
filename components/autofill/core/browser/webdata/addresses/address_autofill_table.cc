@@ -820,19 +820,19 @@ bool AddressAutofillTable::GetAutofillProfilesFromLegacyTable(
 }
 
 bool AddressAutofillTable::MigrateToVersion88AddNewNameColumns() {
-  for (std::string_view column :
-       std::vector<std::string_view>{"honorific_prefix", kFirstLastName,
-                                     kConjunctionLastName, kSecondLastName}) {
+  for (std::string_view column : std::to_array<std::string_view>(
+           {"honorific_prefix", kFirstLastName, kConjunctionLastName,
+            kSecondLastName})) {
     if (!AddColumnIfNotExists(db(), kAutofillProfileNamesTable, column,
                               "VARCHAR")) {
       return false;
     }
   }
 
-  for (std::string_view column : std::vector<std::string_view>{
-           "honorific_prefix_status", kFirstNameStatus, kMiddleNameStatus,
-           kLastNameStatus, kFirstLastNameStatus, kConjunctionLastNameStatus,
-           kSecondLastNameStatus, kFullNameStatus}) {
+  for (std::string_view column : std::to_array<std::string_view>(
+           {"honorific_prefix_status", kFirstNameStatus, kMiddleNameStatus,
+            kLastNameStatus, kFirstLastNameStatus, kConjunctionLastNameStatus,
+            kSecondLastNameStatus, kFullNameStatus})) {
     // The default value of 0 corresponds to the verification status
     // |kNoStatus|.
     if (!AddColumnIfNotExists(db(), kAutofillProfileNamesTable, column,
