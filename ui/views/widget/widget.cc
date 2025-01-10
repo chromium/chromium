@@ -32,6 +32,7 @@
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
@@ -1058,6 +1059,17 @@ int Widget::GetZOrderSublevel() const {
 
   return sublevel_manager_->GetSublevel();
 }
+
+#if BUILDFLAG(IS_MAC)
+void Widget::SetActivationIndependence(bool independence) {
+  CHECK(
+      (independence && GetZOrderLevel() == ui::ZOrderLevel::kFloatingWindow) ||
+      (!independence && GetZOrderLevel() == ui::ZOrderLevel::kNormal));
+  if (native_widget_) {
+    native_widget_->SetActivationIndependence(independence);
+  }
+}
+#endif
 
 void Widget::SetVisibleOnAllWorkspaces(bool always_visible) {
   if (native_widget_) {

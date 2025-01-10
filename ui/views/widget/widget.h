@@ -868,6 +868,24 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // and non top-level widgets.
   int GetZOrderSublevel() const;
 
+#if BUILDFLAG(IS_MAC)
+  // Sets the widget as being "activation independent". This sets two
+  // properties:
+  //
+  // - If Chromium is hidden (from the Dock menu or programmatically), the
+  //   widget is not forced to be hidden as well.
+  // - The widget can be interacted with without causing Chromium to be
+  //   activated.
+  //
+  // To accomplish this, the activation independence state of all ancestor
+  // widgets is set as well.
+  //
+  // The notion of "activation independence" only makes sense if the widget
+  // floats above all other apps, so this property must only be set on a widget
+  // that has a z-order of ui::ZOrderLevel::kFloatingWindow. This is enforced.
+  void SetActivationIndependence(bool independence);
+#endif
+
   // Sets the widget to be visible on all work spaces.
   void SetVisibleOnAllWorkspaces(bool always_visible);
 

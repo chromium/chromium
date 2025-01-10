@@ -189,7 +189,12 @@ void GlicWindowController::AttachToBrowser(Browser* browser,
                                       target_widget->GetNativeView());
     NotifyIfPanelStateChanged();
 
+    // When attached to a browser window, the glic widget mustn't float and when
+    // interacted with must behave like any other widget.
     glic_window_widget_->SetZOrderLevel(ui::ZOrderLevel::kNormal);
+#if BUILDFLAG(IS_MAC)
+    glic_window_widget_->SetActivationIndependence(false);
+#endif
     browser_close_subscription_ = browser->RegisterBrowserDidClose(
         base::BindRepeating(&GlicWindowController::AttachedBrowserDidClose,
                             base::Unretained(this)));
@@ -375,9 +380,13 @@ void GlicWindowController::MaybeCreateHolderWindowAndReparent() {
                                     holder_widget_->GetNativeView());
   NotifyIfPanelStateChanged();
 
-  // When the glic window is in a detached state, elevate it's z-order to be
-  // always on top.
+  // When the glic window is in a detached state, elevate its z-order to be
+  // always on top. On the Mac, mark it as "activation independent" so that
+  // interacting with it does not activate Chrome.
   glic_window_widget_->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
+#if BUILDFLAG(IS_MAC)
+  glic_window_widget_->SetActivationIndependence(true);
+#endif
 }
 
 void GlicWindowController::AddStateObserver(StateObserver* observer) {

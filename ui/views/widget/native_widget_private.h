@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "build/build_config.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
@@ -201,6 +202,9 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
   virtual void PaintAsActiveChanged();
   virtual void SetZOrderLevel(ui::ZOrderLevel order) = 0;
   virtual ui::ZOrderLevel GetZOrderLevel() const = 0;
+#if BUILDFLAG(IS_MAC)
+  virtual void SetActivationIndependence(bool independence) = 0;
+#endif
   virtual void SetVisibleOnAllWorkspaces(bool always_visible) = 0;
   virtual bool IsVisibleOnAllWorkspaces() const = 0;
   virtual void Maximize() = 0;

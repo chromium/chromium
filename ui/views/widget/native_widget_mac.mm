@@ -756,6 +756,13 @@ ui::ZOrderLevel NativeWidgetMac::GetZOrderLevel() const {
   return z_order_level_;
 }
 
+void NativeWidgetMac::SetActivationIndependence(bool independence) {
+  if (!GetNSWindowMojo()) {
+    return;
+  }
+  GetNSWindowMojo()->SetActivationIndependence(independence);
+}
+
 void NativeWidgetMac::SetVisibleOnAllWorkspaces(bool always_visible) {
   if (!GetNSWindowMojo()) {
     return;

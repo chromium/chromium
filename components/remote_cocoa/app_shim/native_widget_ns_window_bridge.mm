@@ -1636,6 +1636,16 @@ void NativeWidgetNSWindowBridge::SetWindowLevel(int32_t level) {
   [window_ setCollectionBehavior:behavior];
 }
 
+void NativeWidgetNSWindowBridge::SetActivationIndependence(bool independence) {
+  for (NSWindow* window = window_; window; window = window.parentWindow) {
+    // This cast may fail, and if so, the message send to the nil pointer will
+    // (intentionally) silently fail.
+    NativeWidgetMacNSWindow* nwm_window =
+        base::apple::ObjCCast<NativeWidgetMacNSWindow>(window);
+    [nwm_window setActivationIndependence:independence];
+  }
+}
+
 void NativeWidgetNSWindowBridge::SetAspectRatio(
     const gfx::SizeF& aspect_ratio,
     const gfx::Size& excluded_margin) {
