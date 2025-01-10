@@ -158,18 +158,6 @@ std::vector<uint8_t> BluetoothUUID::GetBytes() const {
   return bytes;
 }
 
-bool BluetoothUUID::operator<(const BluetoothUUID& uuid) const {
-  return canonical_value_ < uuid.canonical_value_;
-}
-
-bool BluetoothUUID::operator==(const BluetoothUUID& uuid) const {
-  return canonical_value_ == uuid.canonical_value_;
-}
-
-bool BluetoothUUID::operator!=(const BluetoothUUID& uuid) const {
-  return canonical_value_ != uuid.canonical_value_;
-}
-
 std::ostream& operator<<(std::ostream& os, BluetoothUUID uuid) {
   return os << uuid.canonical_value();
 }
