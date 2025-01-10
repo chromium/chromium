@@ -15,7 +15,6 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl_hash.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
@@ -170,11 +169,6 @@ void CookieJar::InvalidateCache() {
 }
 
 bool CookieJar::IPCNeeded() {
-  // Not under the experiment, always use IPCs.
-  if (!RuntimeEnabledFeatures::ReduceCookieIPCsEnabled()) {
-    return true;
-  }
-
   // |last_cookies_| can be null when converting the raw mojo payload failed.
   // (See ConvertUTF8ToUTF16() for details.) In that case use an IPC to request
   // another string to be safe.
