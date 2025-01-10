@@ -1457,20 +1457,60 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
     return false;
   }
   GrDirectContext* gr_context = raster_context_provider->GrContext();
-  if (!gr_context &&
-      !raster_context_provider->ContextCapabilities().gpu_rasterization) {
+  const bool gpu_rasterization =
+      raster_context_provider->ContextCapabilities().gpu_rasterization;
+  if (!gr_context && !gpu_rasterization) {
     return false;
   }
-
-  // Take the two-copy path.
-  if (!UpdateLastImage(video_frame, raster_context_provider)) {
-    return false;
-  }
-
-  DCHECK(cache_);
-  DCHECK(cache_->texture_backing);
   gpu::raster::RasterInterface* canvas_ri =
       raster_context_provider->RasterInterface();
+  DCHECK(canvas_ri);
+
+  // Take the two-copy path.
+  // Create the intermediate rgb shared image cache if not already present.
+  if (!yuv_cache_.rgb_shared_image_cache) {
+    yuv_cache_.rgb_shared_image_cache =
+        std::make_unique<VideoFrameSharedImageCache>();
+  }
+
+  // This SI is used to cache the VideoFrame. We will eventually read out
+  // its contents into a destination GL texture via the GLES2 interface.
+  gpu::SharedImageUsageSet src_usage =
+      gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
+  // We copy the contents of the source VideoFrame *into* the cached SI over the
+  // raster interface - the usage bits depend on whether OOP-Raster is enabled.
+  // TODO(crbug.com/40194377): Always use OOP_RASTERIZATION usage once OOP-C is
+  // fully launched.
+  if (gpu_rasterization) {
+    src_usage |= gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
+  } else {
+    src_usage |= gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
+  }
+  auto [rgb_shared_image, rgb_sync_token, status] =
+      yuv_cache_.rgb_shared_image_cache->GetOrCreateSharedImage(
+          video_frame.get(), raster_context_provider, src_usage,
+          SHARED_IMAGE_FORMAT, video_frame->CompatRGBColorSpace());
+  yuv_cache_.raster_context_provider = raster_context_provider;
+  CHECK(rgb_shared_image);
+
+  // Wait on the `rgb_sync_token` passed from the cache that may have been
+  // updated from the previous frame.
+  canvas_ri->WaitSyncTokenCHROMIUM(rgb_sync_token.GetConstData());
+
+  // If there's no cache hit, perform a copy.
+  if (status != VideoFrameSharedImageCache::Status::kMatchedVideoFrameId) {
+    // Copy into the shared image backing of the cached copy.
+    canvas_ri->WaitSyncTokenCHROMIUM(
+        video_frame->acquire_sync_token().GetConstData());
+    canvas_ri->CopySharedImage(
+        shared_image->mailbox(), rgb_shared_image->mailbox(), 0, 0, 0, 0,
+        video_frame->coded_size().width(), video_frame->coded_size().height());
+
+    // Ensure that |video_frame| not be deleted until the above copy is
+    // completed.
+    SynchronizeVideoFrameRead(video_frame, canvas_ri,
+                              raster_context_provider->ContextSupport());
+  }
 
   gpu::SyncToken sync_token;
   // Wait for mailbox creation on canvas context before consuming it and
@@ -1478,16 +1518,18 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
   canvas_ri->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
 
   gpu::SyncToken dest_sync_token = CopySharedImageToTexture(
-      destination_gl, cache_->coded_size, cache_->visible_rect,
-      cache_->texture_backing->GetSharedImage().get(), sync_token, target,
-      texture, internal_format, format, type, level, premultiply_alpha, flip_y);
+      destination_gl, video_frame->coded_size(), video_frame->visible_rect(),
+      rgb_shared_image.get(), sync_token, target, texture, internal_format,
+      format, type, level, premultiply_alpha, flip_y);
 
-  // Wait for destination context to consume mailbox before deleting it in
-  // canvas context.
-  canvas_ri->WaitSyncTokenCHROMIUM(dest_sync_token.GetConstData());
+  // Update the `rgb_sync_token` to be waited upon based on gles tasks performed
+  // earlier.
+  yuv_cache_.rgb_shared_image_cache->UpdateSyncToken(dest_sync_token);
 
   // We do not need to synchronize video frame read here since it's already
-  // taken care of in UpdateLastImage().
+  // taken care of earlier.
+  // Kick off a timer to release the cache.
+  cache_deleting_timer_.Reset();
   return true;
 }
 
