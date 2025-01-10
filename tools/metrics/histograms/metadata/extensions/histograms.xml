@@ -5245,17 +5245,6 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
-<histogram name="Extensions.WebRequest.KeepaliveRequestState"
-    enum="ExtensionInProgressRequestState" expires_after="2025-01-05">
-  <owner>bashi@chromium.org</owner>
-  <owner>blink-network-stack@google.com</owner>
-  <summary>
-    Whether and how keepalive requests are blocked. There is a similar histgoram
-    Net.KeepaliveRequest.BlockStatus. See there for the difference between the
-    two histograms.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.WebRequest.ProxyDecision"
     enum="WebRequest.ProxyDecision" expires_after="2025-03-01">
   <owner>toyoshima@chromium.org</owner>
