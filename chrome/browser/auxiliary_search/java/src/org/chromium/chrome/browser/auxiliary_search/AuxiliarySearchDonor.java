@@ -33,6 +33,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.task.AsyncTask;
@@ -72,13 +73,26 @@ public class AuxiliarySearchDonor {
     private boolean mIsSchemaSet;
     private List<WebPage> mPendingDocuments;
     private Callback<Boolean> mPendingCallback;
+    private boolean mSharedTabsWithOsState;
 
-    /**
-     * @param context The application context.
-     */
-    public AuxiliarySearchDonor(@NonNull Context context) {
-        mContext = context;
+    /** Static class that implements the initialization-on-demand holder idiom. */
+    private static class LazyHolder {
+        static AuxiliarySearchDonor sInstance = new AuxiliarySearchDonor();
+    }
+
+    /** Returns the singleton instance of AuxiliarySearchDonor. */
+    public static AuxiliarySearchDonor getInstance() {
+        return AuxiliarySearchDonor.LazyHolder.sInstance;
+    }
+
+    private AuxiliarySearchDonor() {
+        mContext = ContextUtils.getApplicationContext();
         mNamespace = mContext.getPackageName();
+
+        mSharedTabsWithOsState = AuxiliarySearchUtils.isShareTabsWithOsEnabled();
+        if (mSharedTabsWithOsState) {
+            createSessionAndInit();
+        }
     }
 
     /** Creates a session and initializes the schema type. */
@@ -292,15 +306,14 @@ public class AuxiliarySearchDonor {
 
     @SuppressLint("CheckResult")
     private void donateTabsImpl(@NonNull List<WebPage> docs, @Nullable Callback<Boolean> callback) {
+        if (mAppSearchSession == null) {
+            return;
+        }
+
         if (!mIsSchemaSet) {
             // If the schema hasn't been set yet, cache the donation list.
             mPendingDocuments = docs;
             mPendingCallback = callback;
-            return;
-        }
-
-        // This is only true for tests.
-        if (mAppSearchSession == null) {
             return;
         }
 
@@ -345,10 +358,17 @@ public class AuxiliarySearchDonor {
         }
     }
 
-    /** Removes all tabs for auxiliary search based on namespace. */
+    /**
+     * Removes all tabs for auxiliary search based on namespace.
+     *
+     * @param onDeleteCompleteCallback The callback to be called when the deletion is completed.
+     * @return whether it is possible to delete donated Tabs.
+     */
     @SuppressLint("CheckResult")
     @VisibleForTesting
-    public void deleteAllTabs(@NonNull Callback<Boolean> onDeleteCompleteCallback) {
+    public boolean deleteAllTabs(@NonNull Callback<Boolean> onDeleteCompleteCallback) {
+        if (mAppSearchSession == null) return false;
+
         SearchSpec spec = new SearchSpec.Builder().addFilterNamespaces(mNamespace).build();
 
         Futures.transformAsync(
@@ -372,12 +392,27 @@ public class AuxiliarySearchDonor {
                     return result;
                 },
                 AsyncTask.THREAD_POOL_EXECUTOR);
+        return true;
     }
 
-    /** Closes the session. */
+    void onConfigChanged(boolean enabled, @Nullable Callback<Boolean> onDeleteCompleteCallback) {
+        if (mSharedTabsWithOsState == enabled) return;
+
+        mSharedTabsWithOsState = enabled;
+        AuxiliarySearchUtils.setSharedTabsWithOs(enabled);
+        if (enabled) {
+            // Initializes the session now.
+            createSessionAndInit();
+        } else {
+            // When disabled, remove all shared Tabs and closes the session.
+            deleteAllTabs(onDeleteCompleteCallback);
+            closeSession();
+        }
+    }
+
+    /** Closes the session. This is called when Tab donations is disabled. */
     @SuppressLint("CheckResult")
-    @VisibleForTesting
-    public void destroy() {
+    private void closeSession() {
         if (mAppSearchSession != null) {
             Futures.transform(
                     mAppSearchSession,
@@ -435,6 +470,14 @@ public class AuxiliarySearchDonor {
                 executor);
     }
 
+    /**
+     * Returns whether the donor is able to donate Tabs. Returns true if the settings is enabled and
+     * the donor isn't destroyed.
+     */
+    boolean canDonate() {
+        return mSharedTabsWithOsState && mAppSearchSession != null;
+    }
+
     @SuppressLint("CheckResult")
     public void searchDonationResultsForTesting(Callback<List<SearchResult>> callback) {
         SearchSpec searchSpec = new SearchSpec.Builder().addFilterNamespaces(mNamespace).build();
@@ -478,5 +521,13 @@ public class AuxiliarySearchDonor {
     public static void setSkipInitializationForTesting(boolean skipInitializationForTesting) {
         sSkipInitializationForTesting = skipInitializationForTesting;
         ResettersForTesting.register(() -> sSkipInitializationForTesting = false);
+    }
+
+    public void resetSchemaSetForTesting() {
+        mIsSchemaSet = false;
+    }
+
+    public boolean getSharedTabsWithOsStateForTesting() {
+        return mSharedTabsWithOsState;
     }
 }

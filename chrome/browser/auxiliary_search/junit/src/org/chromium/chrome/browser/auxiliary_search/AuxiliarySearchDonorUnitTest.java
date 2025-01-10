@@ -12,7 +12,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 
@@ -26,9 +25,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Callback;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
@@ -46,17 +47,21 @@ import java.util.List;
 public class AuxiliarySearchDonorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    static final String PACKAGE_NAME = "PackageName";
-    @Mock private Context mContext;
     @Mock private MigrationFailure mMigrationFailure;
+    @Mock private AuxiliarySearchHooks mHooks;
 
     private AuxiliarySearchDonor mAuxiliarySearchDonor;
 
     @Before
     public void setUp() {
-        when(mContext.getPackageName()).thenReturn(PACKAGE_NAME);
+        when(mHooks.isEnabled()).thenReturn(true);
+        when(mHooks.isSettingDefaultEnabledByOs()).thenReturn(true);
+        AuxiliarySearchControllerFactory.getInstance().setHooksForTesting(mHooks);
+        assertTrue(AuxiliarySearchControllerFactory.getInstance().isSettingDefaultEnabledByOs());
+        assertTrue(AuxiliarySearchUtils.isShareTabsWithOsEnabled());
 
-        mAuxiliarySearchDonor = new AuxiliarySearchDonor(mContext);
+        AuxiliarySearchDonor.setSkipInitializationForTesting(true);
+        mAuxiliarySearchDonor = AuxiliarySearchDonor.getInstance();
     }
 
     @Test
@@ -115,6 +120,7 @@ public class AuxiliarySearchDonorUnitTest {
         WebPage webPage = new WebPage.Builder("namespace", "Id1").setUrl("Url1").build();
         pendingDocs.add(webPage);
         mAuxiliarySearchDonor.setPendingDocumentsForTesting(pendingDocs);
+        mAuxiliarySearchDonor.resetSchemaSetForTesting();
 
         // Verifies that the pending donation isn't executed if setSchema is failed.
         mAuxiliarySearchDonor.onSetSchemaResponseAvailable(setSchemaResponse);
@@ -157,6 +163,7 @@ public class AuxiliarySearchDonorUnitTest {
     @Test
     @SmallTest
     public void testDoNotSetSchemaAgain() {
+        mAuxiliarySearchDonor.resetSchemaSetForTesting();
         SharedPreferencesManager chromeSharedPreferences = ChromeSharedPreferences.getInstance();
         chromeSharedPreferences.writeBoolean(
                 ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET, true);
@@ -167,5 +174,21 @@ public class AuxiliarySearchDonorUnitTest {
         assertTrue(mAuxiliarySearchDonor.getIsSchemaSetForTesting());
 
         chromeSharedPreferences.removeKey(ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET);
+    }
+
+    @Test
+    @SmallTest
+    public void testOnConfigChanged() {
+        Callback<Boolean> callback = Mockito.mock(Callback.class);
+        assertTrue(mAuxiliarySearchDonor.getSharedTabsWithOsStateForTesting());
+        assertTrue(AuxiliarySearchUtils.isShareTabsWithOsEnabled());
+
+        mAuxiliarySearchDonor.onConfigChanged(false, callback);
+        assertFalse(mAuxiliarySearchDonor.getSharedTabsWithOsStateForTesting());
+        assertFalse(AuxiliarySearchUtils.isShareTabsWithOsEnabled());
+
+        mAuxiliarySearchDonor.onConfigChanged(true, callback);
+        assertTrue(mAuxiliarySearchDonor.getSharedTabsWithOsStateForTesting());
+        assertTrue(AuxiliarySearchUtils.isShareTabsWithOsEnabled());
     }
 }

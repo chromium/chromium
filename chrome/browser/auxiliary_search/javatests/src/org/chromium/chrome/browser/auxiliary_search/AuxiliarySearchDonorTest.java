@@ -60,7 +60,7 @@ public final class AuxiliarySearchDonorTest {
     @Before
     public void setUp() {
         mActivityTestRule.launchActivity(null);
-        mAuxiliarySearchDonor = new AuxiliarySearchDonor(mActivityTestRule.getActivity());
+        mAuxiliarySearchDonor = AuxiliarySearchDonor.getInstance();
 
         mIds = new int[] {1, 2};
         mUrls = new String[] {"Url1", "Url2"};
