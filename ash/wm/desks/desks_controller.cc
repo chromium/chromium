@@ -596,15 +596,16 @@ void DesksController::NewDesk(DesksCreationRemovalSource source,
   // should it trigger any UMA stats reports.
   const bool is_first_ever_desk = desks_.empty();
 
-  desks_.push_back(std::make_unique<Desk>(
-      available_container_ids_.front(),
-      source == DesksCreationRemovalSource::kDesksRestore));
+  Desk::Type type = Desk::Type::kNormal;
+  if (source == DesksCreationRemovalSource::kDesksRestore) {
+    type = Desk::Type::kRestored;
+  } else if (source == DesksCreationRemovalSource::kCoral) {
+    type = Desk::Type::kCoral;
+  }
+  desks_.push_back(
+      std::make_unique<Desk>(available_container_ids_.front(), type));
   available_container_ids_.pop();
   Desk* new_desk = desks_.back().get();
-
-  if (source == DesksCreationRemovalSource::kCoral) {
-    new_desk->set_modified_by_coral(true);
-  }
 
   // We should notify observers that the desk is added before possibly
   // notifying observers that the name is set.

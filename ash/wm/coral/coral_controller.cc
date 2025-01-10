@@ -119,9 +119,10 @@ void CoralController::GenerateContentGroups(
     const CoralRequest& request,
     mojo::PendingRemote<coral::mojom::TitleObserver> title_observer,
     CoralResponseCallback callback) {
-  // There couldn't be valid groups, skip generating and return a null response.
+  // There couldn't be valid groups, skip generating and return an empty
+  // response.
   if (request.content().size() < kMinItemsInGroup) {
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(std::make_unique<CoralResponse>());
     return;
   }
 

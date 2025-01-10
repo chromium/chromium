@@ -35,6 +35,12 @@ class DeskContainerObserver;
 // the desk is inactive, those containers are hidden.
 class ASH_EXPORT Desk {
  public:
+  enum class Type {
+    kRestored,  // A restored desk.
+    kCoral,     // A desk created from a coral group.
+    kNormal,    // Other normal type of desks.
+  };
+
   class Observer : public base::CheckedObserver {
    public:
     // Called when the desk's content change as a result of windows addition or
@@ -94,7 +100,7 @@ class ASH_EXPORT Desk {
     size_t order = 0;
   };
 
-  explicit Desk(int associated_container_id, bool desk_being_restored = false);
+  explicit Desk(int associated_container_id, Type type = Type::kNormal);
 
   Desk(const Desk&) = delete;
   Desk& operator=(const Desk&) = delete;
@@ -103,6 +109,8 @@ class ASH_EXPORT Desk {
 
   static void SetWeeklyActiveDesks(int weekly_active_desks);
   static int GetWeeklyActiveDesks();
+
+  Type type() const { return type_; }
 
   int container_id() const { return container_id_; }
 
@@ -152,11 +160,6 @@ class ASH_EXPORT Desk {
   // Returns the lacros profile ID that this desk is associated with. A value of
   // 0 means that the desk is associated with the primary user (the default).
   uint64_t lacros_profile_id() const { return lacros_profile_id_; }
-
-  void set_modified_by_coral(bool modified_by_coral) {
-    modified_by_coral_ = modified_by_coral;
-  }
-  bool modified_by_coral() const { return modified_by_coral_; }
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -333,6 +336,8 @@ class ASH_EXPORT Desk {
   // The associated container ID with this desk.
   const int container_id_;
 
+  const Type type_;
+
   // Windows tracked on this desk. Clients of the DesksController can use this
   // list when they're notified of desk change events.
   // TODO(afakhry): Change this to track MRU windows on this desk.
@@ -401,9 +406,6 @@ class ASH_EXPORT Desk {
   // The lacros profile ID that this desk has been associated with. Defaults to
   // 0 which means the desk is associated with the primary user.
   uint64_t lacros_profile_id_ = 0;
-
-  // True if the desk is created or restored from a coral group.
-  bool modified_by_coral_ = false;
 };
 
 }  // namespace ash

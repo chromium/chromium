@@ -125,14 +125,8 @@ void BirchCoralItem::LaunchGroup(BirchChipButtonBase* birch_chip_button) {
           birch_coral_provider->ExtractGroupById(group_id_);
       Shell::Get()->coral_delegate()->LaunchPostLoginGroup(std::move(group));
       BirchCoralProvider::Get()->OnPostLoginClusterRestored();
-
       base::UmaHistogramEnumeration("Ash.Birch.Coral.Action",
                                     ActionType::kRestore);
-
-      // Set the current active desk is modified by Coral.
-      auto* desks_controller = DesksController::Get();
-      desks_controller->GetDeskAtIndex(desks_controller->GetActiveDeskIndex())
-          ->set_modified_by_coral(true);
       // End the Overview after restore.
       // TODO(zxdan|sammie): Consider the restoring failed cases.
       OverviewController::Get()->EndOverview(OverviewEndAction::kCoral,
