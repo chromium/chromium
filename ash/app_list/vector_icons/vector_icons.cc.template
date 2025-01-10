@@ -9,7 +9,7 @@
 // a unique ID, so make sure there's a prefix that won't be reused elsewhere.
 #define VECTOR_ICON_ID_PREFIX "app_list::"
 
-#include "chrome/browser/ash/app_list/vector_icons/vector_icons.h"
+#include "ash/app_list/vector_icons/vector_icons.h"
 
 #include "components/vector_icons/cc_macros.h"
 #include "ui/gfx/vector_icon_types.h"

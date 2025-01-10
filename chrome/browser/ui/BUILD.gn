@@ -2183,7 +2183,6 @@ static_library("ui") {
       "//chrome/browser/ash/app_list/search/ranking",
       "//chrome/browser/ash/app_list/search/system_info",
       "//chrome/browser/ash/app_list/search/util",
-      "//chrome/browser/ash/app_list/vector_icons",
       "//chrome/browser/ash/app_mode",
       "//chrome/browser/ash/app_mode/web_app",
       "//chrome/browser/ash/app_restore",
