@@ -1450,6 +1450,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ads.InterestGroup.Auction.{Type}InterestGroupPreviouslyBid"
+    enum="Boolean" expires_after="2025-05-04">
+  <owner>abigailkatcoff@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    True if an interest group previously bid. Only recorded for interest groups
+    that are {Type}. Recorded after an interest group's new priority is
+    calculated after its bidding signals are received.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+  <token key="Type">
+    <variant name="Filtered"
+        summary="filtered (i.e. its priorityVector's sparse dot product with
+                 the browser generated prioritySignals was negative)"/>
+    <variant name="Unfiltered"
+        summary="unfiltered (i.e. its priorityVector's sparse dot product
+                 with the browser generated prioritySignals was non-negative)"/>
+  </token>
+</histogram>
+
 <histogram
     name="Ads.InterestGroup.Auction.{WorkletType}.RequestWorkletServiceOutcome"
     enum="RequestWorkletServiceOutcome" expires_after="2025-05-18">

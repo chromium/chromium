@@ -2393,6 +2393,13 @@ class InterestGroupAuction::BuyerHelper
     bool bid_filtered = new_priority.has_value() && *new_priority < 0;
     UMA_HISTOGRAM_BOOLEAN("Ads.InterestGroup.Auction.BidFiltered",
                           bid_filtered);
+    std::string previously_bid_uma_name =
+        bid_filtered
+            ? "Ads.InterestGroup.Auction.FilteredInterestGroupPreviouslyBid"
+            : "Ads.InterestGroup.Auction.UnfilteredInterestGroupPreviouslyBid";
+    bool previously_bid = state->bidder->bidding_browser_signals->bid_count > 0;
+    base::UmaHistogramBoolean(previously_bid_uma_name, previously_bid);
+
     if (bid_filtered) {
       if (state->trace_id) {
         TRACE_EVENT_NESTABLE_ASYNC_INSTANT0("fledge", "bid_filtered",
