@@ -5178,6 +5178,110 @@ TEST_P(AppsGridViewDragTest, RemoveDisplayWhileDraggingFolderItemOntoShelf) {
   MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/false);
 }
 
+TEST_P(AppsGridViewDragTest, DragPinnedItemToShelf) {
+  GetTestModel()->PopulateApps(3);
+  UpdateLayout();
+
+  auto* const shelf_model = ShelfModel::Get();
+  shelf_model->AddAndPinAppWithFactoryConstructedDelegate("Item 1");
+  shelf_model->AddAndPinAppWithFactoryConstructedDelegate("Item 2");
+  ASSERT_EQ(0, shelf_model->ItemIndexByAppID("Item 1"));
+
+  AppListItemView* const item_view =
+      GetItemViewInCurrentPageAt(0, 1, apps_grid_view_);
+  StartDragForViewAndFireTimer(AppsGridView::MOUSE, item_view);
+
+  std::list<base::OnceClosure> tasks;
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    CheckHaptickEventsCount(1);
+    // Verify that item drag has started.
+    ASSERT_TRUE(apps_grid_view_->drag_item());
+    ASSERT_TRUE(apps_grid_view_->IsDragging());
+    ASSERT_EQ(item_view->item(), apps_grid_view_->drag_item());
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    // Shelf should start handling the drag if it moves within its bounds.
+    auto* shelf_view = GetPrimaryShelf()->GetShelfViewForTesting();
+    UpdateDragInScreen(
+        AppsGridView::MOUSE,
+        shelf_view->GetBoundsInScreen().left_center() + gfx::Vector2d(5, 5),
+        /*steps=*/1);
+
+    EXPECT_EQ("Item 1", shelf_view->drag_and_drop_shelf_id().app_id);
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    // Move the item towards the end of the shelf, so it becomes the last shelf
+    // item.
+    auto* shelf_view = GetPrimaryShelf()->GetShelfViewForTesting();
+    const auto& shelf_bounds = shelf_view->GetBoundsInScreen();
+    UpdateDragInScreen(AppsGridView::MOUSE,
+                       is_rtl_
+                           ? shelf_bounds.left_center() + gfx::Vector2d(6, 6)
+                           : shelf_bounds.right_center() - gfx::Vector2d(5, 5),
+                       /*steps=*/2);
+
+    EXPECT_EQ("Item 1", shelf_view->drag_and_drop_shelf_id().app_id);
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() { EndDrag(); }));
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/false);
+
+  // Releasing drag over shelf should pin the dragged app.
+  EXPECT_TRUE(shelf_model->IsAppPinned("Item 1"));
+  EXPECT_EQ(1, shelf_model->ItemIndexByAppID("Item 1"));
+  EXPECT_EQ(0, shelf_model->ItemIndexByAppID("Item 2"));
+  CheckHaptickEventsCount(1);
+}
+
+TEST_P(AppsGridViewDragTest, UnpinDraggedItemDuringDragToShelf) {
+  GetTestModel()->PopulateApps(3);
+  UpdateLayout();
+
+  auto* const shelf_model = ShelfModel::Get();
+  shelf_model->AddAndPinAppWithFactoryConstructedDelegate("Item 1");
+  shelf_model->AddAndPinAppWithFactoryConstructedDelegate("Item 2");
+  ASSERT_EQ(0, shelf_model->ItemIndexByAppID("Item 1"));
+
+  AppListItemView* const item_view =
+      GetItemViewInCurrentPageAt(0, 1, apps_grid_view_);
+  StartDragForViewAndFireTimer(AppsGridView::MOUSE, item_view);
+
+  std::list<base::OnceClosure> tasks;
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    CheckHaptickEventsCount(1);
+    // Verify that item drag has started.
+    ASSERT_TRUE(apps_grid_view_->drag_item());
+    ASSERT_TRUE(apps_grid_view_->IsDragging());
+    ASSERT_EQ(item_view->item(), apps_grid_view_->drag_item());
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    // Shelf should start handling the drag if it moves within its bounds.
+    auto* shelf_view = GetPrimaryShelf()->GetShelfViewForTesting();
+    UpdateDragInScreen(
+        AppsGridView::MOUSE,
+        shelf_view->GetBoundsInScreen().left_center() + gfx::Vector2d(5, 5),
+        /*steps=*/1);
+
+    EXPECT_EQ("Item 1", shelf_view->drag_and_drop_shelf_id().app_id);
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    shelf_model->UnpinAppWithID("Item 1");
+    auto* shelf_view = GetPrimaryShelf()->GetShelfViewForTesting();
+    UpdateDragInScreen(
+        AppsGridView::MOUSE,
+        shelf_view->GetBoundsInScreen().left_center() + gfx::Vector2d(10, 5),
+        /*steps=*/2);
+
+    EXPECT_EQ("", shelf_view->drag_and_drop_shelf_id().app_id);
+    EXPECT_FALSE(shelf_model->IsAppPinned("Item 1"));
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() { EndDrag(); }));
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/false);
+
+  EXPECT_FALSE(shelf_model->IsAppPinned("Item 1"));
+  EXPECT_EQ(0, shelf_model->ItemIndexByAppID("Item 2"));
+  CheckHaptickEventsCount(1);
+}
+
 TEST_P(AppsGridViewDragTest, MousePointerIsGrabbingDuringDrag) {
   auto* cursor_manager = Shell::Get()->cursor_manager();
   auto previous_cursor_type = cursor_manager->GetCursor().type();

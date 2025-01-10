@@ -554,15 +554,17 @@ class ShelfViewTest : public AshTestBase {
 
   void CheckModelIDs(
       const std::vector<std::pair<ShelfID, views::View*>>& id_map) {
-    size_t map_index = 0;
-    for (size_t model_index = 0; model_index < model_->items().size();
-         ++model_index) {
-      ShelfItem item = model_->items()[model_index];
-      ShelfID id = item.id;
-      EXPECT_EQ(id_map[map_index].first, id);
-      ++map_index;
+    std::vector<ShelfID> expected;
+    for (const auto& item : id_map) {
+      expected.push_back(item.first);
     }
-    ASSERT_EQ(map_index, id_map.size());
+
+    std::vector<ShelfID> actual;
+    for (const auto& item : model_->items()) {
+      actual.push_back(item.id);
+    }
+
+    EXPECT_EQ(expected, actual);
   }
 
   void ExpectHelpBubbleAnchorBoundsChangedEvent(
@@ -933,30 +935,113 @@ TEST_P(LtrRtlShelfViewTest, ModelChangesWhileDragging) {
   ASSERT_NO_FATAL_FAILURE(CheckModelIDs(id_map));
 
   // Deleting an item keeps the remaining intact.
-  dragged_button = SimulateDrag(ShelfView::MOUSE, 0, 2, false);
+  dragged_button = SimulateDrag(ShelfView::MOUSE, 3, 2, false);
   EXPECT_EQ(3, GetHapticTickEventsCount());
 
   // The dragged view has been moved to index 2 during drag.
-  std::rotate(id_map.begin(), id_map.begin() + 1, id_map.begin() + 3);
+  std::rotate(id_map.begin() + 2, id_map.begin() + 3, id_map.begin() + 4);
   ASSERT_NO_FATAL_FAILURE(CheckModelIDs(id_map));
 
-  model_->RemoveItemAt(2);
-  id_map.erase(id_map.begin() + 2);
+  model_->RemoveItemAt(0);
+  id_map.erase(id_map.begin());
   ASSERT_NO_FATAL_FAILURE(CheckModelIDs(id_map));
-  shelf_view_->PointerReleasedOnButton(dragged_button, ShelfView::MOUSE, false);
+  // Cancel drag, and verify that the model state has been correctly reset.
+  shelf_view_->PointerReleasedOnButton(dragged_button, ShelfView::MOUSE, true);
+
+  std::rotate(id_map.begin() + 1, id_map.begin() + 2, id_map.begin() + 3);
+  ASSERT_NO_FATAL_FAILURE(CheckModelIDs(id_map));
 
   // Waits until app removal animation finishes.
   test_api_->RunMessageLoopUntilAnimationsDone();
 
-  // Adding a shelf item cancels the drag and respects the order.
   dragged_button = SimulateDrag(ShelfView::MOUSE, 0, 2, false);
   EXPECT_EQ(4, GetHapticTickEventsCount());
+  std::rotate(id_map.begin(), id_map.begin() + 1, id_map.begin() + 3);
   ShelfID new_id = AddAppShortcut();
   id_map.insert(id_map.begin() + 5,
                 std::make_pair(new_id, GetButtonByID(new_id)));
   ASSERT_NO_FATAL_FAILURE(CheckModelIDs(id_map));
   shelf_view_->PointerReleasedOnButton(dragged_button, ShelfView::MOUSE, false);
+  ASSERT_NO_FATAL_FAILURE(CheckModelIDs(id_map));
   EXPECT_EQ(4, GetHapticTickEventsCount());
+
+  test_api_->RunMessageLoopUntilAnimationsDone();
+
+  // Test removing dragged item mid drag.
+  dragged_button = SimulateDrag(ShelfView::MOUSE, 1, 2, false);
+  EXPECT_EQ(5, GetHapticTickEventsCount());
+  std::rotate(id_map.begin() + 1, id_map.begin() + 2, id_map.begin() + 3);
+  ASSERT_NO_FATAL_FAILURE(CheckModelIDs(id_map));
+
+  model_->RemoveItemAt(2);
+  id_map.erase(id_map.begin() + 2);
+  ASSERT_NO_FATAL_FAILURE(CheckModelIDs(id_map));
+
+  shelf_view_->PointerReleasedOnButton(dragged_button, ShelfView::MOUSE, false);
+  ASSERT_NO_FATAL_FAILURE(CheckModelIDs(id_map));
+  EXPECT_EQ(5, GetHapticTickEventsCount());
+
+  test_api_->RunMessageLoopUntilAnimationsDone();
+
+  // Test drag cancellation after adding an item before the dragged item.
+  dragged_button = SimulateDrag(ShelfView::MOUSE, 1, 2, false);
+  EXPECT_EQ(6, GetHapticTickEventsCount());
+  std::rotate(id_map.begin() + 1, id_map.begin() + 2, id_map.begin() + 3);
+  ASSERT_NO_FATAL_FAILURE(CheckModelIDs(id_map));
+
+  ShelfItem prepend_item;
+  new_id = ShelfID("-1");
+  prepend_item.id = new_id;
+  prepend_item.type = TYPE_PINNED_APP;
+  ShelfModel::Get()->AddAt(
+      0, prepend_item,
+      std::make_unique<TestShelfItemDelegate>(prepend_item.id));
+  id_map.insert(id_map.begin(), std::make_pair(new_id, GetButtonByID(new_id)));
+  ASSERT_NO_FATAL_FAILURE(CheckModelIDs(id_map));
+
+  shelf_view_->PointerReleasedOnButton(dragged_button, ShelfView::MOUSE, true);
+
+  std::rotate(id_map.begin() + 2, id_map.begin() + 3, id_map.begin() + 4);
+  ASSERT_NO_FATAL_FAILURE(CheckModelIDs(id_map));
+  EXPECT_EQ(6, GetHapticTickEventsCount());
+}
+
+// Check that model changes are handled correctly while a shelf icon is being
+// dragged.
+TEST_P(LtrRtlShelfViewTest, MovesInModelWhileDragging) {
+  std::vector<std::pair<ShelfID, views::View*>> id_map;
+  SetupForDragTest(&id_map);
+
+  views::View* dragged_button = SimulateDrag(ShelfView::MOUSE, 2, 4, false);
+  EXPECT_EQ(1, GetHapticTickEventsCount());
+  std::rotate(id_map.begin() + 2, id_map.begin() + 3, id_map.begin() + 5);
+  ASSERT_NO_FATAL_FAILURE(CheckModelIDs(id_map));
+
+  ShelfModel::Get()->Move(1, 3);
+  std::rotate(id_map.begin() + 1, id_map.begin() + 2, id_map.begin() + 4);
+  ASSERT_NO_FATAL_FAILURE(CheckModelIDs(id_map));
+
+  shelf_view_->PointerReleasedOnButton(dragged_button, ShelfView::MOUSE, true);
+  EXPECT_EQ(1, GetHapticTickEventsCount());
+
+  std::rotate(id_map.begin() + 1, id_map.begin() + 4, id_map.begin() + 5);
+  ASSERT_NO_FATAL_FAILURE(CheckModelIDs(id_map));
+  test_api_->RunMessageLoopUntilAnimationsDone();
+
+  dragged_button = SimulateDrag(ShelfView::MOUSE, 2, 4, false);
+  EXPECT_EQ(2, GetHapticTickEventsCount());
+  std::rotate(id_map.begin() + 2, id_map.begin() + 3, id_map.begin() + 5);
+  ASSERT_NO_FATAL_FAILURE(CheckModelIDs(id_map));
+
+  ShelfModel::Get()->Move(3, 1);
+  std::rotate(id_map.begin() + 1, id_map.begin() + 3, id_map.begin() + 4);
+  ASSERT_NO_FATAL_FAILURE(CheckModelIDs(id_map));
+
+  shelf_view_->PointerReleasedOnButton(dragged_button, ShelfView::MOUSE, true);
+  EXPECT_EQ(2, GetHapticTickEventsCount());
+
+  std::rotate(id_map.begin() + 3, id_map.begin() + 4, id_map.begin() + 5);
+  ASSERT_NO_FATAL_FAILURE(CheckModelIDs(id_map));
 }
 
 // Check that 2nd drag from the other pointer would be ignored.
