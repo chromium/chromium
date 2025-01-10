@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.data_sharing;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
@@ -39,12 +38,8 @@ public class DataSharingAvatarProvider implements RecentActivityListCoordinator.
     public void getAvatarBitmap(GroupMember member, Callback<Drawable> avatarDrawableCallback) {
         DataSharingAvatarCallback dataSharingAvatarCallback =
                 bitmap -> {
-                    Drawable drawable =
-                            new BitmapDrawable(
-                                    mContext.getResources(),
-                                    Bitmap.createScaledBitmap(
-                                            bitmap, mAvatarSizePx, mAvatarSizePx, true));
-                    avatarDrawableCallback.onResult(drawable);
+                    avatarDrawableCallback.onResult(
+                            new BitmapDrawable(mContext.getResources(), bitmap));
                 };
         DataSharingAvatarBitmapConfig config =
                 new DataSharingAvatarBitmapConfig.Builder()
