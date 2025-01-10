@@ -180,6 +180,8 @@ class GraphBuilderOrt {
       const mojom::LayerNormalization& layer_normalization);
   void AddLogicalNotOperation(const mojom::ElementWiseUnary& logical_not);
   void AddMatMulOperation(const mojom::Matmul& matmul);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddPadOperation(
+      const mojom::Pad& pad);
   void AddPool2dOperation(const mojom::Pool2d& pool2d);
   void AddReduceOperation(const mojom::Reduce& reduce);
   void AddReshapeOperation(const mojom::Reshape& reshape);

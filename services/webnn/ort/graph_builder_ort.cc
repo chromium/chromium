@@ -70,6 +70,7 @@ constexpr char kOpTypeGemm[] = "Gemm";
 constexpr char kOpTypeInstanceNormalization[] = "InstanceNormalization";
 constexpr char kOpTypeLayerNormalization[] = "LayerNormalization";
 constexpr char kOpTypeMatMul[] = "MatMul";
+constexpr char kOpTypePad[] = "Pad";
 
 // Pooling operations
 constexpr char kOpTypeAveragePool2d[] = "AveragePool";
@@ -1044,6 +1045,81 @@ void GraphBuilderOrt::AddMatMulOperation(const mojom::Matmul& matmul) {
   model_builder_.AddNode(kOpTypeMatMul, node_name, input_names, output_names);
 }
 
+[[nodiscard]] base::expected<void, mojom::ErrorPtr>
+GraphBuilderOrt::AddPadOperation(const mojom::Pad& pad) {
+  const std::string node_name = GetNodeName(pad.label);
+  const std::string input_name = GetOperandName(pad.input_operand_id);
+  const OperandDataType input_data_type =
+      GetOperand(pad.output_operand_id).descriptor.data_type();
+  std::vector<const char*> input_names = {input_name.c_str()};
+
+  CHECK_EQ(pad.beginning_padding.size(), pad.ending_padding.size());
+  auto padding_length =
+      pad.beginning_padding.size() + pad.ending_padding.size();
+
+  // paddings is an operand with data type int64, not an attribute.
+  std::vector<int64_t> paddings;
+  paddings.reserve(padding_length);
+  base::ranges::transform(
+      pad.beginning_padding, std::back_inserter(paddings),
+      [](uint32_t value) { return base::checked_cast<int64_t>(value); });
+  base::ranges::transform(
+      pad.ending_padding, std::back_inserter(paddings),
+      [](uint32_t value) { return base::checked_cast<int64_t>(value); });
+
+  std::vector<uint32_t> paddings_dims = {
+      base::checked_cast<uint32_t>(padding_length)};
+  const std::string paddings_name =
+      CreateInitializer<int64_t>(paddings_dims, paddings);
+  input_names.push_back(paddings_name.c_str());
+
+  std::string mode;
+  std::string constant_name;
+  switch (pad.mode->which()) {
+    case mojom::PaddingMode::Tag::kConstant: {
+      mode = "constant";
+      auto constant = pad.mode->get_constant()->value;
+      switch (input_data_type) {
+        case OperandDataType::kFloat32: {
+          constant_name = CreateScalarInitializer(constant);
+          break;
+        }
+        case OperandDataType::kFloat16: {
+          constant_name =
+              CreateScalarInitializer(fp16_ieee_from_fp32_value(constant));
+          break;
+        }
+        default:
+          NOTREACHED() << "[WebNN] Pad only supports float32 "
+                          "and float16 data type.";
+      }
+      input_names.push_back(constant_name.c_str());
+      break;
+    }
+    case mojom::PaddingMode::Tag::kSymmetric:
+      // TODO: Support Symmetric mode-
+      // https://github.com/shiyi9801/chromium/issues/80.
+      return NewNotSupportedError("Unsupported mode symmetric for pad.");
+    case mojom::PaddingMode::Tag::kEdge:
+      mode = "edge";
+      break;
+    case mojom::PaddingMode::Tag::kReflection:
+      mode = "reflect";
+      break;
+  }
+
+  std::array<OrtOpAttr*, 1> attributes = {
+      model_builder_.CreateAttribute(/*name=*/"mode", mode).Release()};
+
+  const std::string output_name = GetOperandName(pad.output_operand_id);
+  std::array<const char*, 1> output_names = {output_name.c_str()};
+
+  model_builder_.AddNode(kOpTypePad, node_name, input_names, output_names,
+                         attributes);
+
+  return base::ok();
+}
+
 void GraphBuilderOrt::AddPool2dOperation(const mojom::Pool2d& pool2d) {
   std::array<int64_t, 2> dilations = {
       base::checked_cast<int64_t>(pool2d.dilations->height),
@@ -1364,6 +1440,10 @@ GraphBuilderOrt::BuildModel() {
         AddMatMulOperation(*operation->get_matmul());
         break;
       }
+      case mojom::Operation::Tag::kPad: {
+        RETURN_IF_ERROR(AddPadOperation(*operation->get_pad()));
+        break;
+      }
       case mojom::Operation::Tag::kPool2d: {
         AddPool2dOperation(*operation->get_pool2d());
         break;
@@ -1416,7 +1496,6 @@ GraphBuilderOrt::BuildModel() {
       case mojom::Operation::Tag::kLinear:
       case mojom::Operation::Tag::kLstm:
       case mojom::Operation::Tag::kLstmCell:
-      case mojom::Operation::Tag::kPad:
       case mojom::Operation::Tag::kPrelu:
       case mojom::Operation::Tag::kQuantizeLinear:
       case mojom::Operation::Tag::kResample2d:
