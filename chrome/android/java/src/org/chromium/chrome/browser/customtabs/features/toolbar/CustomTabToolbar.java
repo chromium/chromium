@@ -1247,6 +1247,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             mUrlBar = container.findViewById(R.id.url_bar);
             mUrlBar.setHint("");
             mUrlBar.setEnabled(false);
+            mUrlBar.setPaddingRelative(0, 0, 0, 0);
+
             mTitleBar = container.findViewById(R.id.title_bar);
             mLocationBarFrameLayout = container.findViewById(R.id.location_bar_frame_layout);
             mTitleUrlContainer = container.findViewById(R.id.title_url_container);
@@ -1302,6 +1304,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                             new NoOpkeyboardVisibilityDelegate(),
                             isIncognitoBranded(),
                             /* onLongClickListener= */ null);
+            mUrlCoordinator.setIsInCct(true);
             mTabCreator = tabCreator;
             mTouchTargetSize = getResources().getDimensionPixelSize(R.dimen.min_touch_target_size);
             updateColors();

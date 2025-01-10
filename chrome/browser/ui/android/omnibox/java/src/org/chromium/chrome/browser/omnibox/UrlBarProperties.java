@@ -107,6 +107,9 @@ class UrlBarProperties {
     /** Whether focus should be allowed on the view. */
     public static final WritableBooleanPropertyKey ALLOW_FOCUS = new WritableBooleanPropertyKey();
 
+    /** Whether UrlBar is running in Cct. */
+    public static final WritableBooleanPropertyKey IS_IN_CCT = new WritableBooleanPropertyKey();
+
     /** Specified the autocomplete text to be shown to the user. */
     public static final WritableObjectPropertyKey<AutocompleteText> AUTOCOMPLETE_TEXT =
             new WritableObjectPropertyKey<>();
@@ -178,6 +181,7 @@ class UrlBarProperties {
             new PropertyKey[] {
                 ACTION_MODE_CALLBACK,
                 ALLOW_FOCUS,
+                IS_IN_CCT,
                 AUTOCOMPLETE_TEXT,
                 DELEGATE,
                 FOCUS_CHANGE_CALLBACK,
