@@ -29,6 +29,14 @@ declare_args() {
   # TODO(crbug.com/378918882): Prefix with apple_mobile_ instead of ios_.
   ios_app_bundle_id_prefix = "org.chromium.ost"
 
+  # Suffix for CFBundleIdentifier property of iOS Chrome signed bundles
+  # (main bundle and extensions). Code signing will fail if no mobile
+  # provisioning for the selected code signing identify support that suffix.
+  # For extension, the suffix will be added before the extension identifier.
+  # The suffix is not added to test applications.
+  # No dot is added before the suffix, so add one if needed.
+  apple_mobile_app_bundle_id_suffix = ".dev"
+
   # Paths to the mobileprovision files for the chosen code signing
   # identity description and app bundle id prefix.
   # TODO(crbug.com/378918882): Prefix with apple_mobile_ instead of ios_.

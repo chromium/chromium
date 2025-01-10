@@ -112,7 +112,8 @@ declare_args() {
   ios_enable_memory_debugging = !is_chrome_branded
 
   # The iOS app bundle id.
-  ios_chromium_bundle_id = "$ios_app_bundle_id_prefix.chrome.ios.dev"
+  ios_chromium_bundle_id =
+      "$ios_app_bundle_id_prefix.chrome.ios$apple_mobile_app_bundle_id_suffix"
 
   # Path to a PrivacyInfo.xcprivacy file to be included in app extensions.
   ios_app_extension_privacy_manifest = ""
