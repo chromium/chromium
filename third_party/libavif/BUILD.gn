@@ -103,6 +103,8 @@ component("libavif_enc") {
 source_set("avif_apps_shared") {
   sources = [
     "avif_apps_shared_stubs.c",
+    "src/apps/shared/avifexif.c",
+    "src/apps/shared/avifexif.h",
     "src/apps/shared/avifjpeg.h",
     "src/apps/shared/avifpng.h",
     "src/apps/shared/avifutil.c",
