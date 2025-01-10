@@ -16067,31 +16067,6 @@
             ]
         }
     ],
-    "PartitionAllocAdvancedMemorySafetyChecks": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "PartitionAllocSchedulerLoopQuarantineBranchCapacity": "262144"
-                    },
-                    "enable_features": [
-                        "PartitionAllocSchedulerLoopQuarantine",
-                        "PartitionAllocZappingByFreeFlags"
-                    ]
-                }
-            ]
-        }
-    ],
     "PartitionAllocBackupRefPtr": [
         {
             "platforms": [
@@ -16355,6 +16330,34 @@
                     },
                     "enable_features": [
                         "PartitionAllocUnretainedDanglingPtr"
+                    ]
+                }
+            ]
+        }
+    ],
+    "PartitionAllocWithAdvancedChecks": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "PartitionAllocSchedulerLoopQuarantineBranchCapacity": "0",
+                        "PartitionAllocSchedulerLoopQuarantineBrowserUICapacity": "262144",
+                        "enabled-processes": "browser-only"
+                    },
+                    "enable_features": [
+                        "PartitionAllocSchedulerLoopQuarantine",
+                        "PartitionAllocWithAdvancedChecks",
+                        "PartitionAllocZappingByFreeFlags"
                     ]
                 }
             ]
