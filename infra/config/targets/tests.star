@@ -333,7 +333,7 @@ targets.tests.isolated_script_test(
         "--flag-specific=background-resource-fetch",
         "--skipped=always",
         "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
-        "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter",
+        "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/content_shell.filter",
     ],
     binary = "headless_shell_wpt",
 )
@@ -605,7 +605,7 @@ targets.tests.isolated_script_test(
         "crashtest",
         "print-reftest",
         "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
-        "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter",
+        "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/content_shell.filter",
     ],
     binary = "headless_shell_wpt",
 )
@@ -1326,7 +1326,7 @@ targets.tests.isolated_script_test(
         # TODO(crbug.com/41490824): Remove this once we resolve the timeouts.
         "--timeout-multiplier=2",
         "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
-        "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter",
+        "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/content_shell.filter",
     ],
     binary = "headless_shell_wpt",
 )
@@ -1399,7 +1399,7 @@ targets.tests.isolated_script_test(
         "--flag-specific=highdpi",
         "--skipped=always",
         "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
-        "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter",
+        "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/content_shell.filter",
     ],
     binary = "headless_shell_wpt",
 )
@@ -1755,7 +1755,7 @@ targets.tests.isolated_script_test(
     args = [
         "--flag-specific=disable-site-isolation-trials",
         "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
-        "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter",
+        "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/content_shell.filter",
     ],
     binary = "headless_shell_wpt",
 )

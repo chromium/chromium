@@ -1948,7 +1948,7 @@
           "crashtest",
           "print-reftest",
           "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
-          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter"
+          "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/content_shell.filter"
         ],
         "merge": {
           "args": [
@@ -2082,7 +2082,7 @@
           "crashtest",
           "print-reftest",
           "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
-          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter"
+          "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/content_shell.filter"
         ],
         "merge": {
           "args": [
@@ -2218,7 +2218,7 @@
           "crashtest",
           "print-reftest",
           "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
-          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter"
+          "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/content_shell.filter"
         ],
         "merge": {
           "args": [
@@ -2356,7 +2356,7 @@
           "crashtest",
           "print-reftest",
           "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
-          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter"
+          "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/content_shell.filter"
         ],
         "merge": {
           "args": [
@@ -2475,7 +2475,7 @@
           "crashtest",
           "print-reftest",
           "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
-          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter"
+          "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/content_shell.filter"
         ],
         "merge": {
           "args": [

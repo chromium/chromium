@@ -32,7 +32,7 @@ file://third_party/blink/API_OWNERS
 # third_party/blink/web_tests/VirtualTestSuites needs special care.
 file://third_party/blink/web_tests/VIRTUAL_OWNERS
 
-# third_party/blink/web_tests/TestLists/headless_shell.filter needs special care.
+# third_party/blink/web_tests/TestLists/content_shell.filter needs special care.
 file://third_party/blink/web_tests/HEADLESS_OWNERS
 
 # Extension related files.

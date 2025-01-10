@@ -657,7 +657,7 @@
             '--flag-specific=highdpi',
             '--skipped=always',
             '--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter',
-            '--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter',
+            '--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/content_shell.filter',
           ],
           'merge': {
             'script': '//third_party/blink/tools/merge_web_test_results.py',
@@ -749,7 +749,7 @@
             'crashtest',
             'print-reftest',
             '--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter',
-            '--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter',
+            '--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/content_shell.filter',
           ],
           'merge': {
             'script': '//third_party/blink/tools/merge_web_test_results.py',
@@ -975,7 +975,7 @@
             'crashtest',
             'print-reftest',
             '--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter',
-            '--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter',
+            '--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/content_shell.filter',
           ],
           'merge': {
             'script': '//third_party/blink/tools/merge_web_test_results.py',
@@ -2394,7 +2394,7 @@
           'args': [
             '--flag-specific=disable-site-isolation-trials',
             '--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter',
-            '--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter',
+            '--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/content_shell.filter',
           ],
           'merge': {
             'script': '//third_party/blink/tools/merge_web_test_results.py',
@@ -2721,7 +2721,7 @@
             'crashtest',
             'print-reftest',
             '--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter',
-            '--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter',
+            '--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/content_shell.filter',
           ],
           'merge': {
             'script': '//third_party/blink/tools/merge_web_test_results.py',

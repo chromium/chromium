@@ -1,8 +1,8 @@
 # This file lists WPTs that should run against chrome via chromedriver. Tests
 # should run in this configuration if they depend on the `//chrome` layer.
-# Otherwise, the test should be listed in `TestLists/headless_shell.filter`,
-# since headless shell is generally faster. Chromedriver tests should not be
-# listed in either of the files as they are handled separately.
+# This is not preferred since running WPTs with headless shell is generally
+# faster. Chromedriver tests should not be listed in either of the files as
+# they are handled separately and always run with chrome new headless.
 #
 # Further documentation:
 # https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/run_web_platform_tests.md
