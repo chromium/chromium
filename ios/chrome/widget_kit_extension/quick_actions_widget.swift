@@ -10,11 +10,14 @@ struct ConfigureQuickActionsWidgetEntry: TimelineEntry {
   let date: Date
   let useLens: Bool
   let useColorLensAndVoiceIcons: Bool
+  let isPreview: Bool
+  let avatar: Image?
 }
 
 struct ConfigureQuickActionsWidgetEntryProvider: TimelineProvider {
   func placeholder(in context: Context) -> ConfigureQuickActionsWidgetEntry {
-    ConfigureQuickActionsWidgetEntry(date: Date(), useLens: false, useColorLensAndVoiceIcons: false)
+    ConfigureQuickActionsWidgetEntry(
+      date: Date(), useLens: false, useColorLensAndVoiceIcons: false, isPreview: true, avatar: nil)
   }
 
   func getSnapshot(
@@ -24,7 +27,9 @@ struct ConfigureQuickActionsWidgetEntryProvider: TimelineProvider {
     let entry = ConfigureQuickActionsWidgetEntry(
       date: Date(),
       useLens: shouldUseLens(),
-      useColorLensAndVoiceIcons: shouldUseColorLensAndVoiceIcons()
+      useColorLensAndVoiceIcons: shouldUseColorLensAndVoiceIcons(),
+      isPreview: context.isPreview,
+      avatar: nil
     )
     completion(entry)
   }
@@ -36,7 +41,9 @@ struct ConfigureQuickActionsWidgetEntryProvider: TimelineProvider {
     let entry = ConfigureQuickActionsWidgetEntry(
       date: Date(),
       useLens: shouldUseLens(),
-      useColorLensAndVoiceIcons: shouldUseColorLensAndVoiceIcons()
+      useColorLensAndVoiceIcons: shouldUseColorLensAndVoiceIcons(),
+      isPreview: context.isPreview,
+      avatar: nil
     )
     let entries: [ConfigureQuickActionsWidgetEntry] = [entry]
     let timeline: Timeline = Timeline(entries: entries, policy: .never)
@@ -99,16 +106,20 @@ struct QuickActionsWidget: Widget {
 
     func placeholder(in context: Context) -> ConfigureQuickActionsWidgetEntry {
       ConfigureQuickActionsWidgetEntry(
-        date: Date(), useLens: false, useColorLensAndVoiceIcons: false)
+        date: Date(), useLens: false, useColorLensAndVoiceIcons: false, isPreview: true, avatar: nil
+      )
     }
 
     func snapshot(for configuration: SelectProfileIntent, in context: Context) async
       -> ConfigureQuickActionsWidgetEntry
     {
+      let avatar: Image? = configuration.avatarForProfile(profile: configuration.profile)
       let entry = ConfigureQuickActionsWidgetEntry(
         date: Date(),
         useLens: shouldUseLens(),
-        useColorLensAndVoiceIcons: shouldUseColorLensAndVoiceIcons()
+        useColorLensAndVoiceIcons: shouldUseColorLensAndVoiceIcons(),
+        isPreview: context.isPreview,
+        avatar: avatar
       )
       return entry
     }
@@ -116,10 +127,13 @@ struct QuickActionsWidget: Widget {
     func timeline(for configuration: SelectProfileIntent, in context: Context) async -> Timeline<
       ConfigureQuickActionsWidgetEntry
     > {
+      let avatar: Image? = configuration.avatarForProfile(profile: configuration.profile)
       let entry = ConfigureQuickActionsWidgetEntry(
         date: Date(),
         useLens: shouldUseLens(),
-        useColorLensAndVoiceIcons: shouldUseColorLensAndVoiceIcons()
+        useColorLensAndVoiceIcons: shouldUseColorLensAndVoiceIcons(),
+        isPreview: context.isPreview,
+        avatar: avatar
       )
       let entries: [ConfigureQuickActionsWidgetEntry] = [entry]
       let timeline: Timeline = Timeline(entries: entries, policy: .never)
@@ -193,6 +207,9 @@ struct QuickActionsWidgetEntryView: View {
                   .font(.subheadline)
                   .foregroundColor(Color("widget_text_color"))
                 Spacer()
+                #if IOS_ENABLE_WIDGETS_FOR_MIM
+                  Avatar(entry: entry)
+                #endif
               }
             }
             .frame(minWidth: 0, maxWidth: .infinity)
@@ -285,5 +302,26 @@ struct ButtonPlaceholder: View {
         .foregroundColor(Color("widget_text_color"))
         .opacity(0.3)
     }.frame(minWidth: 0, maxWidth: .infinity)
+  }
+}
+
+struct Avatar: View {
+  var entry: ConfigureQuickActionsWidgetEntry
+  var body: some View {
+    if entry.isPreview {
+      Circle()
+        .foregroundColor(Color("widget_text_color"))
+        .opacity(0.2)
+        .frame(width: 35, height: 35)
+        .padding(.trailing, 8)
+    } else if let avatar = entry.avatar {
+      avatar
+        .resizable()
+        .clipShape(Circle())
+        .unredacted()
+        .scaledToFill()
+        .frame(width: 35, height: 35)
+        .padding(.trailing, 8)
+    }
   }
 }
