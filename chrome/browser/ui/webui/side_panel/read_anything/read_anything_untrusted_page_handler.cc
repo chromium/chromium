@@ -33,11 +33,11 @@
 #include "components/language/core/browser/language_model.h"
 #include "components/language/core/browser/language_model_manager.h"
 #include "components/language/core/common/locale_util.h"
+#include "components/language_detection/core/constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_driver.h"
-#include "components/translate/core/common/translate_constants.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/scoped_accessibility_mode.h"
@@ -880,7 +880,8 @@ void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
 void ReadAnythingUntrustedPageHandler::SetLanguageCode(
     const std::string& code) {
   const std::string& language_code =
-      (code.empty() || code == translate::kUnknownLanguageCode) ? "" : code;
+      (code.empty() || code == language_detection::kUnknownLanguageCode) ? ""
+                                                                         : code;
   // Only send the language code if it's a new language.
   if (language_code != current_language_code_) {
     current_language_code_ = language_code;
