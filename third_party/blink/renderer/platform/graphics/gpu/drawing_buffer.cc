@@ -430,29 +430,28 @@ bool DrawingBuffer::PrepareTransferableResource(
     return false;
   }
 
-  if (!IsUsingGpuCompositing()) {
-    return FinishPrepareTransferableResourceSoftware(out_resource,
-                                                     out_release_callback);
+  if (IsUsingGpuCompositing()) {
+    gpu::SyncToken sync_token;
+    auto shared_image =
+        ExportSharedImageFromBackBuffer(sync_token, out_release_callback);
+    if (!shared_image) {
+      return false;
+    }
+
+    // Populate the output TransferableResource from the SharedImage.
+    *out_resource = viz::TransferableResource::MakeGpu(
+        shared_image, shared_image->GetTextureTarget(), sync_token,
+        shared_image->size(), shared_image->format(),
+        shared_image->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT),
+        viz::TransferableResource::ResourceSource::kDrawingBuffer);
+    out_resource->color_space = shared_image->color_space();
+    out_resource->hdr_metadata = hdr_metadata_;
+    out_resource->origin = shared_image->surface_origin();
+    return true;
   }
 
-  gpu::SyncToken sync_token;
-  auto shared_image =
-      ExportSharedImageFromBackBuffer(sync_token, out_release_callback);
-  if (!shared_image) {
-    return false;
-  }
-
-  // Populate the output TransferableResource from the SharedImage.
-  *out_resource = viz::TransferableResource::MakeGpu(
-      shared_image, shared_image->GetTextureTarget(), sync_token,
-      shared_image->size(), shared_image->format(),
-      shared_image->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT),
-      viz::TransferableResource::ResourceSource::kDrawingBuffer);
-  out_resource->color_space = shared_image->color_space();
-  out_resource->hdr_metadata = hdr_metadata_;
-  out_resource->origin = shared_image->surface_origin();
-
-  return true;
+  return FinishPrepareTransferableResourceSoftware(out_resource,
+                                                   out_release_callback);
 }
 
 DrawingBuffer::CheckForDestructionResult
