@@ -237,7 +237,9 @@ class LayerTreeHostImplTestBase : public testing::Test,
   void SetNeedsOneBeginImplFrameOnImplThread() override {
     did_request_next_frame_ = true;
   }
-  void SetNeedsUpdateDisplayTreeOnImplThread() override {}
+  void SetNeedsUpdateDisplayTreeOnImplThread() override {
+    did_request_redraw_ = true;
+  }
   void SetNeedsPrepareTilesOnImplThread() override {
     did_request_prepare_tiles_ = true;
   }
