@@ -270,12 +270,6 @@ void PasswordStoreBuiltInBackend::GetAutofillableLoginsAsync(
           .Then(std::move(callback)));
 }
 
-void PasswordStoreBuiltInBackend::GetAllLoginsForAccountAsync(
-    std::string account,
-    LoginsOrErrorReply callback) {
-  NOTREACHED();
-}
-
 void PasswordStoreBuiltInBackend::FillMatchingLoginsAsync(
     LoginsOrErrorReply callback,
     bool include_psl,

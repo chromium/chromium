@@ -78,12 +78,6 @@ void PasswordStoreAndroidLocalBackend::GetAutofillableLoginsAsync(
   GetAutofillableLoginsInternal(std::string(), std::move(callback));
 }
 
-void PasswordStoreAndroidLocalBackend::GetAllLoginsForAccountAsync(
-    std::string account,
-    LoginsOrErrorReply callback) {
-  NOTREACHED();
-}
-
 void PasswordStoreAndroidLocalBackend::FillMatchingLoginsAsync(
     LoginsOrErrorReply callback,
     bool include_psl,

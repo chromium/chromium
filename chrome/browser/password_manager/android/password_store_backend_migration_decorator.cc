@@ -120,12 +120,6 @@ void PasswordStoreBackendMigrationDecorator::GetAutofillableLoginsAsync(
   active_backend()->GetAutofillableLoginsAsync(std::move(callback));
 }
 
-void PasswordStoreBackendMigrationDecorator::GetAllLoginsForAccountAsync(
-    std::string account,
-    LoginsOrErrorReply callback) {
-  NOTREACHED();
-}
-
 void PasswordStoreBackendMigrationDecorator::FillMatchingLoginsAsync(
     LoginsOrErrorReply callback,
     bool include_psl,

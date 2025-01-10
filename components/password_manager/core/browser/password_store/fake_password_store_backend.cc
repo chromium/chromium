@@ -132,13 +132,6 @@ void FakePasswordStoreBackend::GetAutofillableLoginsAsync(
       std::move(callback));
 }
 
-void FakePasswordStoreBackend::GetAllLoginsForAccountAsync(
-    std::string account,
-    LoginsOrErrorReply callback) {
-  CHECK(!account.empty());
-  GetAllLoginsAsync(std::move(callback));
-}
-
 void FakePasswordStoreBackend::FillMatchingLoginsAsync(
     LoginsOrErrorReply callback,
     bool include_psl,
