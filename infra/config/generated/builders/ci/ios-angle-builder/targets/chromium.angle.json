@@ -12,7 +12,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "16b40",
+          "16c5032a",
           "--xctest"
         ],
         "isolate_profile_data": true,
@@ -45,7 +45,7 @@
               "path": "Runtime-ios-17.5"
             },
             {
-              "name": "xcode_ios_16b40",
+              "name": "xcode_ios_16c5032a",
               "path": "Xcode.app"
             }
           ],
@@ -66,7 +66,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "16b40",
+          "16c5032a",
           "--xctest"
         ],
         "isolate_profile_data": true,
@@ -99,7 +99,7 @@
               "path": "Runtime-ios-18.0"
             },
             {
-              "name": "xcode_ios_16b40",
+              "name": "xcode_ios_16c5032a",
               "path": "Xcode.app"
             }
           ],
@@ -120,7 +120,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "16b40",
+          "16c5032a",
           "--xctest"
         ],
         "isolate_profile_data": true,
@@ -153,7 +153,7 @@
               "path": "Runtime-ios-17.5"
             },
             {
-              "name": "xcode_ios_16b40",
+              "name": "xcode_ios_16c5032a",
               "path": "Xcode.app"
             }
           ],
@@ -174,7 +174,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "16b40",
+          "16c5032a",
           "--xctest"
         ],
         "isolate_profile_data": true,
@@ -207,7 +207,7 @@
               "path": "Runtime-ios-18.0"
             },
             {
-              "name": "xcode_ios_16b40",
+              "name": "xcode_ios_16c5032a",
               "path": "Xcode.app"
             }
           ],

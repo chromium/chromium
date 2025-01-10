@@ -13,7 +13,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "16b40",
+          "16c5032a",
           "--xctest"
         ],
         "merge": {
@@ -42,7 +42,7 @@
               "path": "Runtime-ios-16.4"
             },
             {
-              "name": "xcode_ios_16b40",
+              "name": "xcode_ios_16c5032a",
               "path": "Xcode.app"
             }
           ],
@@ -61,7 +61,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "16b40",
+          "16c5032a",
           "--xctest"
         ],
         "merge": {
@@ -90,7 +90,7 @@
               "path": "Runtime-ios-16.4"
             },
             {
-              "name": "xcode_ios_16b40",
+              "name": "xcode_ios_16c5032a",
               "path": "Xcode.app"
             }
           ],
