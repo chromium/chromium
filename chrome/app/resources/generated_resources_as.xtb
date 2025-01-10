@@ -7452,6 +7452,7 @@
 <translation id="6278776436938569440">অৱস্থান সলনি কৰক</translation>
 <translation id="6280215091796946657">বেলেগ এটা একাউণ্টৰ দ্বাৰা ছাইন ইন কৰক</translation>
 <translation id="6280912520669706465">এআৰচি</translation>
+<translation id="6281218688313242284">আপোনাৰ &amp;Google একাউণ্টটো পৰিচালনা কৰক</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{১ খন কাগজৰ সীমা অতিক্ৰম কৰিছে}one{{COUNT} খন কাগজৰ সীমা অতিক্ৰম কৰিছে}other{{COUNT} খন কাগজৰ সীমা অতিক্ৰম কৰিছে}}</translation>
 <translation id="6282490239556659745"><ph name="SITE" />ৰ পৰা <ph name="EMBEDDED_SITE" /> আঁতৰাওক</translation>
 <translation id="6283438600881103103">এতিয়া আপোনাক স্বয়ংক্ৰিয়ভাৱে ছাইন আউট কৰা হ’ব।
@@ -8065,6 +8066,7 @@
 <translation id="6745592621698551453">এতিয়াই আপডে’ট কৰক</translation>
 <translation id="6746124502594467657">তললৈ নিয়ক</translation>
 <translation id="67465227497040338"><ph name="DOMAIN" />ৰ পাছৱৰ্ড দেখুৱাওক</translation>
+<translation id="6746834324024491643">আপোনাৰ আটাইবোৰ ডিভাইচত আপোনাৰ পাছৱৰ্ড আৰু অধিক পাবলৈ, <ph name="EMAIL" /> হিচাপে ছাইন ইন কৰক</translation>
 <translation id="6748980958975836188">মই <ph name="BEGIN_LINK1" />Googleৰ সেৱাৰ চৰ্তাৱলী<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome আৰু ChromeOSৰ অতিৰিক্ত সেৱাৰ চৰ্তাৱলী<ph name="END_LINK2" /> পঢ়িছোঁ আৰু তাত সন্মতি দিওঁ।</translation>
 <translation id="6749077623962119521">অনুমতি ৰিছেট কৰিবনে?</translation>
 <translation id="6749473226660745022">ফট’</translation>

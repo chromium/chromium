@@ -3072,6 +3072,14 @@ Nếu bạn không đặt chính sách này, thì thao tác mới sẽ được 
       Hãy dùng ký tự đại diện '*' để khớp với ký tự 0 hoặc các ký tự ngẫu nhiên khác. Ký tự thoát là '\', do vậy, để khớp với ký tự '*' hoặc '\' thực, hãy đặt '\' ở trước các ký tự đó.
 
       Nếu bạn không đặt chính sách này, thì tất cả các Tài khoản Google trên thiết bị sẽ hiển thị trong <ph name="PRODUCT_NAME" />.</translation>
+<translation id="3245558640643744331">Khi bạn đặt chính sách này thành Bật, chính sách đám mây sẽ được ưu tiên nếu có xung đột với chính sách nền tảng.
+
+Khi bạn đặt chính sách này thành Tắt hoặc không đặt, chính sách nền tảng sẽ được ưu tiên nếu có xung đột với chính sách đám mây.
+
+Chính sách bắt buộc này ảnh hưởng đến chính sách đám mây trong phạm vi thiết bị.
+
+Chính sách này chỉ áp dụng cho <ph name="PRODUCT_NAME" /> và không ảnh hưởng đến <ph name="GOOGLE_UPDATE_NAME" /> vì đó là các ứng dụng độc lập.
+<ph name="GOOGLE_UPDATE_NAME" /> có một chính sách riêng cùng tên.</translation>
 <translation id="3246606090306814894">Kiểm soát phím tắt dùng để kích hoạt phím F12</translation>
 <translation id="3248019773260441802">Cho phép trang hiện cửa sổ bật lên khi đang huỷ tải</translation>
 <translation id="3251500716404598358">Định cấu hình chính sách để chuyển đổi giữa các trình duyệt.
@@ -3954,6 +3962,13 @@ Trên <ph name="MAC_OS_NAME" />, chính sách này chỉ có trên các phiên b
 <translation id="3897860452756794695">Thao tác offsetParent mới sẽ được sử dụng.</translation>
 <translation id="3898345958122666461">Tắt NTLMv2</translation>
 <translation id="3898795800259311780">Cho phép hoặc từ chối chụp ảnh màn hình</translation>
+<translation id="3901722051566830469">Khi bạn đặt chính sách này thành Bật, các chính sách liên kết với một tài khoản được quản lý sẽ được ưu tiên nếu có xung đột với các chính sách trình duyệt <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Khi bạn đặt chính sách này thành Tắt hoặc không đặt, các chính sách đám mây ở cấp người dùng sẽ có mức độ ưu tiên theo mặc định.
+
+Chỉ những chính sách bắt nguồn từ người dùng an toàn mới có thể được ưu tiên áp dụng. Một người dùng an toàn được liên kết với tổ chức quản lý trình duyệt của họ bằng <ph name="CHROME_ENTERPRISE_CORE_NAME" />. Tất cả các chính sách khác ở cấp người dùng sẽ có mức độ ưu tiên theo mặc định.
+
+Bạn có thể kết hợp chính sách này với <ph name="POLICY_CLOUD_POLICY_OVERRIDES_PLATFORM_POLICY_POLICY_NAME" />. Nếu bạn bật cả hai chính sách, thì các chính sách đám mây ở cấp người dùng cũng sẽ được ưu tiên hơn các chính sách xung đột của nền tảng.</translation>
 <translation id="390296766888987595">Chỉ hiển thị bàn phím ảo nếu người dùng hoặc ứng dụng yêu cầu.</translation>
 <translation id="3903313632842363082">Tắt tính năng báo cáo người dùng thiết bị</translation>
 <translation id="3904304709151553598">Tắt tính năng báo cáo thông tin về quạt của thiết bị</translation>
@@ -9172,6 +9187,13 @@ Nếu bạn để trống chính sách này, <ph name="FLOATING_SSO_DOMAIN_BLOCK
       Khi bạn đặt chính sách này thành Tắt, bất cứ khi nào người dùng thực hiện thao tác làm kích hoạt hộp thoại chọn tệp (chẳng hạn như nhập dấu trang, tải tệp lên, lưu đường liên kết, v.v), một thông báo sẽ xuất hiện. Người dùng được xem là đã nhấp vào nút Hủy trên hộp thoại chọn tệp.</translation>
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">Cho phép sử dụng các thông báo hệ thống</translation>
+<translation id="7642740497103044368">Khi bạn đặt chính sách này thành Bật, các chính sách liên kết với một tài khoản được quản lý sẽ được phép hợp nhất với các chính sách ở cấp thiết bị.
+
+Khi bạn đặt chính sách này thành Tắt hoặc không đặt, các chính sách đám mây ở cấp người dùng sẽ không thể hợp nhất với các chính sách thuộc những nguồn khác.
+
+Chỉ những chính sách bắt nguồn từ người dùng an toàn mới có thể được ưu tiên áp dụng. Một người dùng an toàn được liên kết với tổ chức quản lý trình duyệt của họ bằng <ph name="CHROME_ENTERPRISE_CORE_NAME" />. Tất cả các chính sách khác ở cấp người dùng sẽ có mức độ ưu tiên theo mặc định.
+
+Bạn cũng phải đặt các chính sách cần hợp nhất trong <ph name="POLICY_LIST_MULTIPLE_SOURCE_MERGE_LIST_POLICY_NAME" /> hoặc <ph name="POLICY_DICTIONARY_MULTIPLE_SOURCE_MERGE_LIST_POLICY_NAME" />. Chính sách này sẽ bị bỏ qua nếu bạn không thiết lập chính sách nào trong số 2 chính sách nêu trên.</translation>
 <translation id="7643151458117317518">Chính sách kiểm soát việc có thể tắt chế độ cài đặt Đo lường quảng cáo của <ph name="PRIVACY_SANDBOX_NAME" /> cho người dùng của bạn hay không.
 
 Nếu bạn đặt chính sách này thành Tắt, thì chế độ cài đặt Đo lường quảng cáo sẽ tắt cho người dùng.
@@ -10916,6 +10938,9 @@ Chính sách này chỉ kiểm soát <ph name="ARC_VM" /> trên <ph name="PRODUC
       Chính sách này sẽ ảnh hưởng đến những người dùng xác thực bằng GAIA nhưng không sử dụng SAML.
 
       Bạn phải chỉ định giá trị của chính sách bằng ngày.</translation>
+<translation id="8931076230631115330">Nếu bạn đặt chính sách này, <ph name="PRODUCT_NAME" /> sẽ cố gắng tự đăng ký thông qua trình quản lý trình duyệt <ph name="CHROME_ENTERPRISE_CORE_NAME" />. Giá trị của chính sách này là mã đăng ký mà bạn có thể truy xuất từ <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+Vui lòng truy cập https://support.google.com/chrome/a/answer/9301891 để biết thông tin chi tiết.</translation>
 <translation id="8931555638815157255">Nếu bạn không đặt hoặc đặt chính sách này thành Bật, thì thiết bị đã đăng ký sẽ định kỳ báo cáo phiên bản hệ điều hành và chương trình cơ sở của thiết bị đó.
 
       Nếu bạn đặt chính sách này thành Tắt, thiết bị đã đăng ký sẽ không báo cáo thông tin phiên bản.</translation>
@@ -11351,6 +11376,11 @@ Giá trị mặc định là RollbackDisabled.</translation>
       Nếu bạn đặt chính sách này, người dùng sẽ không thể thay đổi chính sách này trong phần cài đặt của trình duyệt. Nếu bạn không đặt chính sách này, chế độ nền sẽ tắt ngay từ đầu, nhưng người dùng có thể thay đổi chế độ cài đặt này.</translation>
 <translation id="981245424658084931">Bật gói heartbeat về hoạt động của thiết bị</translation>
 <translation id="981346395360763138">Đã tắt dịch vụ vị trí của Google</translation>
+<translation id="982192230088110287">Nếu bạn đặt chính sách này thành Bật, việc đăng ký trình duyệt thông qua <ph name="CHROME_ENTERPRISE_CORE_NAME" /> sẽ là yêu cầu bắt buộc và trong trường hợp không đăng ký được thì quá trình khởi chạy <ph name="PRODUCT_NAME" /> sẽ bị chặn.
+
+Nếu bạn đặt chính sách này thành Tắt hoặc không đặt, việc đăng ký trình duyệt thông qua <ph name="CHROME_ENTERPRISE_CORE_NAME" /> sẽ là lựa chọn tuỳ ý và trong trường hợp không đăng ký được thì quá trình khởi chạy <ph name="PRODUCT_NAME" /> cũng không bị chặn.
+
+Chính sách này được sử dụng trong quá trình đăng ký chính sách đám mây trong phạm vi máy tính. Vui lòng truy cập https://support.google.com/chrome/a/answer/9301891 để biết thông tin chi tiết.</translation>
 <translation id="982195863867062122">Bật <ph name="DBSC_FEATURE_NAME" />.</translation>
 <translation id="982497069985795632">Bật tính năng kiểm tra chính tả</translation>
 <translation id="983256325512298435">Xác định danh sách các giao thức có thể chạy một ứng dụng bên ngoài từ các nguồn được liệt kê mà không cần nhắc người dùng</translation>

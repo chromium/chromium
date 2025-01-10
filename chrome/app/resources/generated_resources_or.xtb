@@ -799,7 +799,7 @@
 <translation id="1556127816860282890">ପୃଷ୍ଠପଟର କାର୍ଯ୍ୟକଳାପ ଏବଂ ସ୍ମୁଥ ସ୍କ୍ରୋଲିଂ ପରି କିଛି ଭିଜୁଆଲ ଇଫେକ୍ଟ ସୀମିତ ହୋଇପାରେ</translation>
 <translation id="1556537182262721003">ପ୍ରୋଫାଇଲ୍‌କୁ ଏକ୍ସଟେନ୍‌ସନ୍ ଡିରେକ୍ଟୋରୀ ପଠାଯାଇପାରିଲାନାହିଁ।</translation>
 <translation id="1557939148300698553">ପ୍ରୋଫାଇଲ ତିଆରି କରନ୍ତୁ</translation>
-<translation id="155803912725350982">ଶ୍ଲୋ କୀଗୁଡ଼ିକ</translation>
+<translation id="155803912725350982">ସ୍ଲୋ କୀ</translation>
 <translation id="155865706765934889">ଟଚ୍‌ପ୍ୟାଡ୍</translation>
 <translation id="1558671750917454373"><ph name="DEVICE_NAME" />ରେ କାଷ୍ଟ କରିବା ପୁଣି ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="1561331397460162942">ଏହା ଲୋକେସନ ଅନୁମତି ଥିବା ଆପ୍ସ, ୱେବସାଇଟ ଏବଂ ସିଷ୍ଟମ ସେବାଗୁଡ଼ିକ ପାଇଁ ଲୋକେସନ ଆକ୍ସେସକୁ ଅନୁମତି ଦିଏ</translation>
@@ -7435,6 +7435,7 @@
 <translation id="6278776436938569440">ଲୋକେସନ୍ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="6280215091796946657">ଏକ ଭିନ୍ନ ଆକାଉଣ୍ଟ ସାହାଯ୍ୟରେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281218688313242284">ଆପଣଙ୍କର &amp;Google ଆକାଉଣ୍ଟକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{କାଗଜର 1ଟି ସିଟର ସୀମା ଅତିକ୍ରମ ହୋଇଛି}other{କାଗଜର {COUNT}ଟି ସିଟର ସୀମା ଅତିକ୍ରମ ହୋଇଛି}}</translation>
 <translation id="6282490239556659745"><ph name="SITE" />ରୁ <ph name="EMBEDDED_SITE" />କୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="6283438600881103103">ବର୍ତ୍ତମାନ ଆପଣ ସ୍ୱଚାଳିତ ଭାବେ ସାଇନ୍ ଆଉଟ୍ ହୋଇଯିବେ।
@@ -7863,7 +7864,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="6607831829715835317">ଅଧିକ ଟୁ&amp;ଲ୍</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> ପୂର୍ବରୁ <ph name="DOMAIN" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି। ଏକ ଭିନ୍ନ Google ଆକାଉଣ୍ଟ ସହ ବାପାମାଙ୍କ ନିୟନ୍ତ୍ରଣ ବ୍ୟବହାର କରିବା ପାଇଁ, ସେଟଅପ୍ କରିବା ପରେ ସାଇନ୍ ଆଉଟ୍ କରନ୍ତୁ, ତା'ପରେ ସାଇନ୍-ଇନ୍ ସ୍କ୍ରିନରେ "ବ୍ୟକ୍ତିଙ୍କୁ ଯୋଗ କରନ୍ତୁ"କୁ ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="6608166463665411119">eSIMକୁ ରିସେଟ କରନ୍ତୁ</translation>
-<translation id="660846213831377756">ମାଉସ କୀଗୁଡ଼ିକ</translation>
+<translation id="660846213831377756">ମାଉସ କୀ</translation>
 <translation id="6608773371844092260">ଟିପଚିହ୍ନ ସେଟ ଅପ କରିବା ପାଇଁ ଆପଣଙ୍କ ପିଲାକୁ ଏହି <ph name="DEVICE_TYPE" />ର ଡାହାଣ ପାର୍ଶ୍ୱରେ ଥିବା ଟିପଚିହ୍ନ ସେନ୍ସରକୁ ସ୍ପର୍ଶ କରିବା ପାଇଁ ଦିଅନ୍ତୁ। ଆପଣଙ୍କ ପିଲାର ଟିପଚିହ୍ନ ଡାଟାକୁ ସୁରକ୍ଷିତ ଭାବେ ଷ୍ଟୋର କରାଯାଇଛି ଏବଂ ଏହାକୁ କେବେ ବି ଏହି <ph name="DEVICE_TYPE" />ରୁ କାଢ଼ି ଦିଆଯାଏ ନାହିଁ।</translation>
 <translation id="6609478180749378879">ଆପଣ ଇନକଗ୍ନିଟୋ ମୋଡରୁ ବାହାରି ଯିବା ପରେ ସାଇନ୍-ଇନ୍ ଡାଟା ଏହି ଡିଭାଇସରେ ଷ୍ଟୋର୍ କରାଯିବ। ଆପଣ ଆପଣଙ୍କ ଡିଭାଇସ୍ ମାଧ୍ୟମରେ ଏହି ୱେବସାଇଟରେ ପରେ ପୁଣି ସାଇନ୍ ଇନ୍ କରିବାକୁ ସକ୍ଷମ ହେବେ।</translation>
 <translation id="6610002944194042868">ଅନୁବାଦର ବିକଳ୍ପଗୁଡ଼ିକ</translation>
@@ -8048,6 +8049,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="6745592621698551453">ବର୍ତ୍ତମାନ ଅପ୍‌ଡେଟ୍‌ କରନ୍ତୁ</translation>
 <translation id="6746124502594467657">ତଳକୁ ଚାଳନ କରନ୍ତୁ</translation>
 <translation id="67465227497040338"><ph name="DOMAIN" /> ପାଇଁ ପାସୱାର୍ଡ ଦେଖାନ୍ତୁ</translation>
+<translation id="6746834324024491643">ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସରେ ଆପଣଙ୍କର ପାସୱାର୍ଡ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବାକୁ, <ph name="EMAIL" /> ଭାବେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="6748980958975836188">ମୁଁ <ph name="BEGIN_LINK1" />Google ସେବାର ସର୍ତ୍ତାବଳୀ<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome ଏବଂ ChromeOS ଅତିରିକ୍ତ ସେବାର ସର୍ତ୍ତାବଳୀ<ph name="END_LINK2" />କୁ ପଢ଼ିଛି ଓ ସେଥିରେ ସମ୍ମତ ହୋଇଛି।</translation>
 <translation id="6749077623962119521">ଅନୁମତିଗୁଡ଼ିକୁ ରିସେଟ୍ କରିବେ?</translation>
 <translation id="6749473226660745022">ଫଟୋଗୁଡ଼ିକ</translation>

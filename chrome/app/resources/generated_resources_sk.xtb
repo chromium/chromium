@@ -7442,6 +7442,7 @@ Na tento účet sa môžu vzťahovať povolenia, ktoré ste už udelili webom a�
 <translation id="6278776436938569440">Zmeniť umiestnenie</translation>
 <translation id="6280215091796946657">Prihlásiť sa pomocou iného účtu</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281218688313242284">Spravovať účet &amp;Google</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Prekračuje limit 1 hárka papiera}few{Prekračuje limit {COUNT} hárkov papiera}many{Prekračuje limit {COUNT} hárka papiera}other{Prekračuje limit {COUNT} hárkov papiera}}</translation>
 <translation id="6282490239556659745">Odstrániť <ph name="EMBEDDED_SITE" /> z webu <ph name="SITE" /></translation>
 <translation id="6283438600881103103">Systém vás teraz automaticky odhlási.
@@ -8057,6 +8058,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6745592621698551453">Aktualizovať</translation>
 <translation id="6746124502594467657">Presunúť nadol</translation>
 <translation id="67465227497040338">Zobraziť heslo domény <ph name="DOMAIN" /></translation>
+<translation id="6746834324024491643">Ak chcete mať heslá a ďalší obsah k dispozícii vo všetkých svojich zariadeniach, prihláste sa ako <ph name="EMAIL" /></translation>
 <translation id="6748980958975836188">Prečítal(a) som si <ph name="BEGIN_LINK1" />zmluvné podmienky spoločnosti Google<ph name="END_LINK1" /> aj <ph name="BEGIN_LINK2" />dodatočné zmluvné podmienky prehliadača Chrome a systému Chrome OS<ph name="END_LINK2" /> a súhlasím s nimi.</translation>
 <translation id="6749077623962119521">Chcete resetovať povolenia?</translation>
 <translation id="6749473226660745022">Fotky</translation>

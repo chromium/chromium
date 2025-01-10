@@ -219,6 +219,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="391789666908693569">Your account is managed by <ph name="MANAGER_NAME" />. Your administrator can see and edit this Chromium browser profile and its data like bookmarks, history and passwords.</translation>
 <translation id="3941890832296813527">Install error: The installer filename is invalid or unsupported.</translation>
 <translation id="3945058413678539331">Chromium is trying to copy passwords. Type your Windows password to allow this.</translation>
+<translation id="3954172517175569325">Your passwords, payment methods and addresses that you saved in your Google Account will be removed from this device. To use them again in Chromium, sign back in.</translation>
 <translation id="3962647064319009959">Learn how Chromium keeps you safe</translation>
 <translation id="3975724895399328945">About Google Chrome for testing</translation>
 <translation id="3997429360543082038">About Chromium OS</translation>

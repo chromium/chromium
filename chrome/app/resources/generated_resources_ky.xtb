@@ -7455,6 +7455,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6278776436938569440">Жайгашкан жерди өзгөртүү</translation>
 <translation id="6280215091796946657">Башка аккаунт менен кириңиз</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281218688313242284">&amp;Google аккаунтуңузду тескеңиз</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{1 кагаз чегинен ашып кетти}other{{COUNT} кагаз чегинен ашып кетти}}</translation>
 <translation id="6282490239556659745"><ph name="EMBEDDED_SITE" /> сайтын <ph name="SITE" /> сайтынан өчүрүү</translation>
 <translation id="6283438600881103103">Азыр автоматтык түрдө чыгасыз.
@@ -8066,6 +8067,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6745592621698551453">Азыр жаңыртуу</translation>
 <translation id="6746124502594467657">Төмөн жылдыруу</translation>
 <translation id="67465227497040338"><ph name="DOMAIN" /> сырсөзүн көрсөтүү</translation>
+<translation id="6746834324024491643">Бардык түзмөктөрүңүздө сырсөздөрдү жана башка нерселерди алуу үчүн <ph name="EMAIL" /> аккаунту менен кириңиз</translation>
 <translation id="6748980958975836188"><ph name="BEGIN_LINK1" />Google'дун Тейлөө шарттарын<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome жана ChromeOS кошумча Тейлөө шарттарын<ph name="END_LINK2" /> окудум жана аларга макулмун.</translation>
 <translation id="6749077623962119521">Уруксаттарды баштапкы абалга келтиресизби?</translation>
 <translation id="6749473226660745022">Сүрөттөр</translation>

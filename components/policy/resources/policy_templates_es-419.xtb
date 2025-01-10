@@ -3177,6 +3177,14 @@ Si no se establece, se usará el comportamiento nuevo al igual que en el resto d
       Usa el carácter comodín "*" para buscar coincidencias con cero o más caracteres arbitrarios. El carácter de escape es "\", de modo que para que coincida con los caracteres "*" o "\" reales, debes colocar una "\" delante de ellos.
 
       Si no se establece esta política, en <ph name="PRODUCT_NAME" /> estarán visibles todas las Cuentas de Google del dispositivo.</translation>
+<translation id="3245558640643744331">Si habilitas la política y hay conflicto con la política de la plataforma, tendrá prioridad la política de la nube.
+
+Si inhabilitas la política o no la estableces y hay conflicto con la política de la nube, tendrá prioridad la política de la plataforma.
+
+Esta política obligatoria afecta las políticas de la nube para esta máquina.
+
+Esta política es específica para <ph name="PRODUCT_NAME" /> y no afecta a <ph name="GOOGLE_UPDATE_NAME" /> porque son aplicaciones independientes.
+<ph name="GOOGLE_UPDATE_NAME" /> tiene una política independiente con el mismo nombre.</translation>
 <translation id="3246606090306814894">Controlar la combinación de teclas utilizada para activar F12</translation>
 <translation id="3248019773260441802">Permitir que una página muestre ventanas emergentes durante su descarga</translation>
 <translation id="3251500716404598358">Permite configurar políticas para cambiar de navegador.
@@ -4054,6 +4062,13 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
 <translation id="3897860452756794695">Usar el comportamiento nuevo de offsetParent</translation>
 <translation id="3898345958122666461">Desactivar NTLMv2</translation>
 <translation id="3898795800259311780">Permite o rechaza la captura de pantalla</translation>
+<translation id="3901722051566830469">Si habilitas la política, prevalecerán las políticas asociadas a una cuenta administrada si entran en conflicto con las políticas del navegador <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Si inhabilitas la política o no la estableces, las políticas de la nube destinadas a los usuarios tendrán la prioridad predeterminada.
+
+Solo pueden prevalecer políticas que hayan originado usuarios seguros. Un usuario seguro es aquél que está afiliado a la organización que administra su navegador a través de <ph name="CHROME_ENTERPRISE_CORE_NAME" />. Todas las demás políticas destinadas a los usuarios tendrán la prioridad predeterminada.
+
+La política puede combinarse con <ph name="POLICY_CLOUD_POLICY_OVERRIDES_PLATFORM_POLICY_POLICY_NAME" />. Si se habilitan ambas políticas, las políticas de nube destinadas a los usuarios también prevalecerán sobre las políticas de la plataforma que estén en conflicto.</translation>
 <translation id="390296766888987595">Mostrar el teclado en pantalla solo si el usuario o la aplicación lo solicita</translation>
 <translation id="3903313632842363082">Inhabilitar los informes de los usuarios del dispositivo</translation>
 <translation id="3904304709151553598">Inhabilitar los informes de los ventiladores del dispositivo</translation>
@@ -9376,6 +9391,13 @@ Si dejas la política vacía, no se permitirán excepciones a <ph name="FLOATING
       Si inhabilitas la política, cuando los usuarios realicen acciones que generen un diálogo de selección de archivos, como importar favoritos, subir archivos o guardar vínculos, se mostrará en su lugar un mensaje. Se considerará como si el usuario hubiera hecho clic en Cancelar en el diálogo de selección de archivos.</translation>
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">Permite el uso de notificaciones del sistema</translation>
+<translation id="7642740497103044368">Si habilitas la política, las políticas asociadas a una cuenta administrada podrán combinarse en políticas de la máquina.
+
+Si inhabilitas la política o no la estableces, las políticas de la nube destinadas a los usuarios no podrán combinarse con políticas de cualquier otro origen.
+
+Solo pueden prevalecer políticas que hayan originado usuarios seguros. Un usuario seguro es aquél que está afiliado a la organización que administra su navegador a través de <ph name="CHROME_ENTERPRISE_CORE_NAME" />. Todas las demás políticas destinadas a los usuarios tendrán la prioridad predeterminada.
+
+Las políticas que deban combinarse también deben establecerse en <ph name="POLICY_LIST_MULTIPLE_SOURCE_MERGE_LIST_POLICY_NAME" /> o <ph name="POLICY_DICTIONARY_MULTIPLE_SOURCE_MERGE_LIST_POLICY_NAME" />. Se ignorará esta política si no se configura ninguna de las dos políticas mencionadas anteriormente.</translation>
 <translation id="7643151458117317518">Una política para controlar si se puede inhabilitar la configuración de <ph name="PRIVACY_SANDBOX_NAME" /> de medición de anuncios para los usuarios.
 
 Si la inhabilitas, se desactivará la configuración de medición de anuncios para los usuarios.
@@ -11187,6 +11209,9 @@ Esta política solo controla <ph name="ARC_VM" /> en <ph name="PRODUCT_OS_FLEX_N
       Esta política afecta a los usuarios autenticados mediante GAIA sin SAML.
 
       El valor de la política deberá especificarse en días.</translation>
+<translation id="8931076230631115330">Si estableces la política, <ph name="PRODUCT_NAME" /> intentará registrarse con la administración del navegador <ph name="CHROME_ENTERPRISE_CORE_NAME" />. El valor de esta política es un token de inscripción que puedes recuperar de la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+Para obtener más información, consulta https://support.google.com/chrome/a/answer/9301891.</translation>
 <translation id="8931555638815157255">Si habilitas la política o no la estableces, los dispositivos inscritos informarán de forma periódica su versión de SO y firmware.
 
       Si inhabilitas la política, los dispositivos inscritos no informarán la versión.</translation>
@@ -11616,6 +11641,11 @@ El valor predeterminado es RollbackDisabled.</translation>
       Si estableces la política, los usuarios no podrán cambiarlo en la configuración del navegador. Si no la estableces, el modo en segundo plano estará desactivado, pero los usuarios podrán activarlo.</translation>
 <translation id="981245424658084931">Habilitar la señal de monitoreo de funcionamiento de la actividad del dispositivo</translation>
 <translation id="981346395360763138">Se inhabilitaron los servicios de ubicación de Google</translation>
+<translation id="982192230088110287">Si habilitas la política, la inscripción en el navegador <ph name="CHROME_ENTERPRISE_CORE_NAME" /> será obligatoria y se bloqueará el proceso de ejecución de <ph name="PRODUCT_NAME" /> si esta falla.
+
+Si la inhabilitas o no la estableces, la inscripción en el navegador <ph name="CHROME_ENTERPRISE_CORE_NAME" /> será opcional y no se bloqueará el proceso de ejecución de <ph name="PRODUCT_NAME" /> si esta falla.
+
+Esta política se usa en máquinas de escritorio con inscripción en las políticas de la nube. Para obtener más información, consulta https://support.google.com/chrome/a/answer/9301891.</translation>
 <translation id="982195863867062122">Habilitar <ph name="DBSC_FEATURE_NAME" />.</translation>
 <translation id="982497069985795632">Habilitar el corrector ortográfico</translation>
 <translation id="983256325512298435">Define una lista de protocolos que puede ejecutar una aplicación externa a partir los orígenes enumerados sin avisarle al usuario</translation>

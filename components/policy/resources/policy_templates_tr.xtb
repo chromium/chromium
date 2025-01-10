@@ -3096,6 +3096,14 @@ Bu politika ayarlanmazsa yeni davranış diğer Chromium kullanıcılarında old
       Sıfır veya daha fazla rastgele karakteri eşleştirmek için "*" joker karakterini kullanın. "\", çıkış karakteridir; gerçek "*" veya "\" karakterlerini eşleştirmek için bunların önlerine bir "\" karakteri ekleyin.
 
       Bu politika ayarlanmazsa cihazdaki tüm Google hesapları <ph name="PRODUCT_NAME" /> içinde görünür olur.</translation>
+<translation id="3245558640643744331">Politika, Etkin değerine ayarlandığında bulut politikası platform politikasıyla çakışıyorsa bulut politikası tercih edilir.
+
+Politika, Devre Dışı değerine ayarlandığında veya ayarlanmadan bırakıldığında bulut politikası platform politikasıyla çakışıyorsa platform politikası tercih edilir.
+
+Bu zorunlu politika, makine genelinde geçerli olan bulut politikalarını etkiler.
+
+Bu politika, <ph name="PRODUCT_NAME" /> için geçerlidir ve bağımsız uygulamalar olduklarından <ph name="GOOGLE_UPDATE_NAME" /> üzerinde etkili değildir.
+<ph name="GOOGLE_UPDATE_NAME" /> aynı adda ayrı bir politikaya sahiptir.</translation>
 <translation id="3246606090306814894">F12'yi tetiklemek için kullanılan kısayolu kontrol et</translation>
 <translation id="3248019773260441802">Sayfanın yüklemesi kaldırılırken pop-up göstermesine olanak tanır</translation>
 <translation id="3251500716404598358">Tarayıcılar arasında geçiş yapmak için politikaları yapılandırır.
@@ -3976,6 +3984,13 @@ Politika Devre Dışı değerine ayarlanırsa Chrome tehlikeli olabilecek komut 
 <translation id="3897860452756794695">Yeni offsetParent davranışı kullanılacak.</translation>
 <translation id="3898345958122666461">NTLMv2'yi kapat</translation>
 <translation id="3898795800259311780">Ekran görüntüsü almaya izin ver veya bunu reddet</translation>
+<translation id="3901722051566830469">Politika, Etkin değerine ayarlanırsa yönetilen bir hesaba ilişkin politikalar ile <ph name="CHROME_ENTERPRISE_CORE_NAME" /> tarayıcı politikaları arasında uyuşmazlık olması halinde ilki öncelikli olur.
+
+Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa kullanıcı düzeyindeki bulut politikaları varsayılan olarak öncelikli olur.
+
+Yalnızca güvenli kullanıcılardan gelen politikalar öncelikli olabilir. Güvenli kullanıcı, tarayıcısını <ph name="CHROME_ENTERPRISE_CORE_NAME" /> ile yöneten kuruluşa bağlıdır. Diğer tüm kullanıcı düzeyindeki politikalar varsayılan olarak öncelikli olur.
+
+Politika, <ph name="POLICY_CLOUD_POLICY_OVERRIDES_PLATFORM_POLICY_POLICY_NAME" /> ile birlikte kullanılabilir. İki politika da etkinleştirilirse kullanıcı bulut politikaları da uyuşmazlık içeren platform politikaları karşısında öncelikli olur.</translation>
 <translation id="390296766888987595">Dokunmatik klavyeyi yalnızca kullanıcı veya uygulama istekte bulunursa göster.</translation>
 <translation id="3903313632842363082">Cihaz kullanıcılarının raporlamasını devre dışı bırak</translation>
 <translation id="3904304709151553598">Cihazın fan bilgileri raporlamasını devre dışı bırak</translation>
@@ -9150,6 +9165,13 @@ Politika ayarlanmadan bırakılırsa <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_POL
       Politika, Devre Dışı değerine ayarlanırsa kullanıcılar yer işareti içe aktarma, dosya yükleme ve bağlantı kaydetme gibi dosya seçimi iletişim kutusunun açılmasını sağlayan işlemler yaptıklarında bir mesaj görüntülenir. Kullanıcının dosya seçimi iletişim kutusunda İptal'i tıklamış olduğu varsayılır.</translation>
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">Sistem bildirimlerinin kullanılmasına izin ver</translation>
+<translation id="7642740497103044368">Politika, Etkin değere ayarlandığında yönetilen bir hesapla ilişkilendirilmiş politikaların, makine düzeyinde politikalarla birleşmesine izin verilir.
+
+Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa kullanıcı düzeyindeki bulut politikalarının diğer kaynaklardaki politikalarla birleştirilmesine engel olur.
+
+Yalnızca güvenli kullanıcılardan gelen politikalar öncelikli olabilir. Güvenli kullanıcı, tarayıcısını <ph name="CHROME_ENTERPRISE_CORE_NAME" /> ile yöneten kuruluşa bağlıdır. Diğer tüm kullanıcı düzeyindeki politikalar varsayılan olarak öncelikli olur.
+
+Birleştirilmesi gereken politikaların aynı zamanda <ph name="POLICY_LIST_MULTIPLE_SOURCE_MERGE_LIST_POLICY_NAME" /> veya <ph name="POLICY_DICTIONARY_MULTIPLE_SOURCE_MERGE_LIST_POLICY_NAME" /> içerisinde de ayarlanması gerekir. Yukarıda bahsedilen iki politika da yapılandırılmamışsa bu politika yok sayılır.</translation>
 <translation id="7643151458117317518"><ph name="PRIVACY_SANDBOX_NAME" /> reklam ölçümü ayarının kullanıcılarınız için devre dışı bırakılıp bırakılamayacağını kontrol eden bir politika.
 
 Bu politikayı Devre Dışı değerine ayarlarsanız reklam ölçümü ayarı kullanıcılarınız için devre dışı bırakılır.
@@ -10903,6 +10925,9 @@ Bu politika yalnızca <ph name="ARC_VM" /> resmini <ph name="PRODUCT_OS_FLEX_NAM
       Bu politika; kimlik doğrulaması, SAML olmadan GAIA kullanılarak yapılan kullanıcıları etkiler.
 
       Politika değeri gün olarak belirtilmelidir.</translation>
+<translation id="8931076230631115330">Politika ayarlanırsa <ph name="PRODUCT_NAME" /> kendini <ph name="CHROME_ENTERPRISE_CORE_NAME" /> tarayıcı yönetimine kaydettirmeye çalışır. Bu politikanın değeri, <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> hizmetinden alabileceğiniz kayıt jetonudur.
+
+Ayrıntıları https://support.google.com/chrome/a/answer/9301891 adresinde bulabilirsiniz.</translation>
 <translation id="8931555638815157255">Politika Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa kayıtlı cihazlar düzenli olarak işletim sistemi ve donanım yazılımı sürümlerini bildirir.
 
       Politika Devre Dışı değerine ayarlanırsa kayıtlı cihazlar sürüm bilgisi vermez.</translation>
@@ -11337,6 +11362,11 @@ Bu politika, Devre Dışı değerine ayarlanırsa kullanıcılara ürün içi an
       Bu politikayı ayarlarsanız kullanıcılar tarayıcı ayarlarında değiştiremez. Politika ayarlanmazsa arka plan modu başta kapalı olur, ancak kullanıcılar bunu değiştirebilir.</translation>
 <translation id="981245424658084931">Cihaz etkinliği sinyalini etkinleştir</translation>
 <translation id="981346395360763138">Google konum hizmetleri devre dışı</translation>
+<translation id="982192230088110287">Politika, Etkin değerine ayarlanırsa <ph name="CHROME_ENTERPRISE_CORE_NAME" /> tarayıcısına kaydolmak zorunlu olur ve başarısız olması halinde <ph name="PRODUCT_NAME" /> ürününün işlemi başlatmasını engeller.
+
+Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa <ph name="CHROME_ENTERPRISE_CORE_NAME" /> tarayıcısına kaydolmak isteğe bağlı olur ve başarısız olması halinde <ph name="PRODUCT_NAME" /> ürününün işlemi başlatmasını engellemez.
+
+Masaüstünde makine kapsamı bulut politika kaydı bu politikayı kullanır. Ayrıntıları https://support.google.com/chrome/a/answer/9301891 adresinde bulabilirsiniz.</translation>
 <translation id="982195863867062122"><ph name="DBSC_FEATURE_NAME" /> özelliğini etkinleştir.</translation>
 <translation id="982497069985795632">Yazım denetimini etkinleştir</translation>
 <translation id="983256325512298435">Listelenen kaynaklardan kullanıcıya sormadan harici uygulama başlatabilecek protokollerin bir listesini tanımlayın</translation>
