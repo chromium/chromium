@@ -147,8 +147,8 @@ class FilesAppChip : public views::Button {
 
     // Icon.
     auto* icon = AddChildView(std::make_unique<views::ImageView>());
-    icon->SetImage(gfx::CreateVectorIcon(kFilesAppIcon, kFilesAppChipIconSize,
-                                         gfx::kPlaceholderColor));
+    icon->SetImage(ui::ImageModel::FromVectorIcon(
+        kFilesAppIcon, gfx::kPlaceholderColor, kFilesAppChipIconSize));
 
     // Label.
     auto* label =
