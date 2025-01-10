@@ -563,18 +563,18 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.AndroidGetAccountIdsTime" units="ms"
-    expires_after="2025-01-26">
-  <owner>alexilin@chromium.org</owner>
+    expires_after="2026-01-10">
   <owner>bsazonov@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <summary>
     The time it takes to retrieve Gaia ids for all accounts from GoogleAuthUtil.
   </summary>
 </histogram>
 
 <histogram base="true" name="Signin.AndroidGetAccountsTime" units="ms"
-    expires_after="2025-06-15">
-  <owner>alexilin@chromium.org</owner>
+    expires_after="2026-01-10">
   <owner>bsazonov@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <summary>
     The time it takes to retrieve the list of accounts from the system.
   </summary>
