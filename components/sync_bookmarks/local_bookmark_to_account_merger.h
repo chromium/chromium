@@ -5,11 +5,9 @@
 #ifndef COMPONENTS_SYNC_BOOKMARKS_LOCAL_BOOKMARK_TO_ACCOUNT_MERGER_H_
 #define COMPONENTS_SYNC_BOOKMARKS_LOCAL_BOOKMARK_TO_ACCOUNT_MERGER_H_
 
-#include <unordered_map>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/uuid.h"
 
 namespace base {
 class Location;
@@ -45,19 +43,6 @@ class LocalBookmarkToAccountMerger {
                                   const base::Location& location);
 
  private:
-  // Represents a pair of bookmarks, one in local storage one in account
-  // storage, that have been matched by UUID. They are guaranteed to have the
-  // same type and URL (if applicable).
-  struct GuidMatch {
-    raw_ptr<const bookmarks::BookmarkNode> local_node = nullptr;
-    raw_ptr<const bookmarks::BookmarkNode> account_node = nullptr;
-  };
-
-  // Computes bookmark pairs that should be matched by UUID. Note that matches
-  // may be incompatible, that is, if only one of the two is a folder.
-  static std::unordered_map<base::Uuid, GuidMatch, base::UuidHash>
-  FindGuidMatches(const bookmarks::BookmarkModel* model);
-
   // Removes an arbitrary set of nodes among siblings under `parent`, as
   // selected by `indices_to_remove`, which must be sorted in ascending order.
   // `location` is used for logging purposes and investigations.
@@ -102,7 +87,6 @@ class LocalBookmarkToAccountMerger {
       const bookmarks::BookmarkNode* local_node) const;
 
   const raw_ptr<bookmarks::BookmarkModel> model_;
-  std::unordered_map<base::Uuid, GuidMatch, base::UuidHash> uuid_to_match_map_;
 };
 
 }  // namespace sync_bookmarks
