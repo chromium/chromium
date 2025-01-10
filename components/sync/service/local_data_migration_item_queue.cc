@@ -143,7 +143,11 @@ void LocalDataMigrationItemQueue::OnStateChanged(SyncService* sync_service) {
   RemoveExpiredItemsAndItemsOfNonPreferredDataTypes(
       items_, sync_service->GetPreferredDataTypes(), clock_->Now());
 
-  if (items_.empty()) {
+  std::map<DataType, std::vector<LocalDataItemModel::DataId>> items_to_migrate =
+      MoveItemsOfActiveDataTypesToVector(items_,
+                                         sync_service->GetActiveDataTypes());
+
+  if (items_to_migrate.empty()) {
     return;
   }
 
@@ -152,9 +156,7 @@ void LocalDataMigrationItemQueue::OnStateChanged(SyncService* sync_service) {
   // single data item move operation from the sign in promo. This is different
   // from batch upload, so we shouldn't record the batch upload histogram in
   // that case.
-  data_type_manager_->TriggerLocalDataMigrationForItems(
-      MoveItemsOfActiveDataTypesToVector(items_,
-                                         sync_service->GetActiveDataTypes()));
+  data_type_manager_->TriggerLocalDataMigrationForItems(items_to_migrate);
 }
 
 void LocalDataMigrationItemQueue::OnSyncShutdown(SyncService* sync_service) {

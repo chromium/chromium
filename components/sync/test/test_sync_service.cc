@@ -289,7 +289,14 @@ DataTypeSet TestSyncService::GetActiveDataTypes() const {
     return DataTypeSet();
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  return Difference(GetPreferredDataTypes(), failed_data_types_);
+
+  DataTypeSet types_with_encryption_error =
+      (user_settings_.IsPassphraseRequired() ||
+       user_settings_.IsTrustedVaultKeyRequired())
+          ? user_settings_.GetAllEncryptedDataTypes()
+          : DataTypeSet();
+  return Difference(GetPreferredDataTypes(),
+                    Union(failed_data_types_, types_with_encryption_error));
 }
 
 DataTypeSet TestSyncService::GetTypesWithPendingDownloadForInitialSync() const {
