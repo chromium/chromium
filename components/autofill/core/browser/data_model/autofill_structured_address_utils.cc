@@ -25,10 +25,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_regex_provider.h"
-#include "components/autofill/core/browser/data_model/borrowed_transliterator.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "third_party/icu/source/common/unicode/ustring.h"
-#include "third_party/icu/source/i18n/unicode/translit.h"
 
 namespace autofill {
 
@@ -427,44 +424,6 @@ std::vector<AddressToken> TokenizeValue(const std::u16string value) {
   });
 
   return tokens;
-}
-
-std::u16string TransliterateAlternativeName(const std::u16string& value,
-                                  TransliterationId id) {
-  if (value.empty()) {
-    return value;
-  }
-
-  std::string transliteration_rule;
-  switch (id) {
-    case TransliterationId::kKatakanaToHiragana:
-      transliteration_rule = "Katakana-Hiragana";
-      break;
-    case TransliterationId::kHiraganaToKatakana:
-      transliteration_rule = "Hiragana-Katakana";
-      break;
-  }
-
-  UErrorCode err = U_ZERO_ERROR;
-  std::unique_ptr<icu::Transliterator> transliterator(
-      icu::Transliterator::createInstance(transliteration_rule.c_str(),
-                                          UTRANS_FORWARD, err));
-  if (U_FAILURE(err)) {
-    // TODO(crbug.com/359768803): Remove the metric recording once we confirm
-    // that transliteration initialization never fails.
-    // This metric records the status of the transliterator initialization. It
-    // is set to false if the initialization fails.
-    base::UmaHistogramBoolean(
-        "Autofill.Filling.AlternativeNameTransliteratorInitStatus", false);
-    return value;
-  }
-  icu::UnicodeString transliterated_value(value.c_str());
-  transliterator->transliterate(transliterated_value);
-  // The metric is set to true if the transliterator initialization was
-  // successful.
-  base::UmaHistogramBoolean(
-      "Autofill.Filling.AlternativeNameTransliteratorInitStatus", true);
-  return base::i18n::UnicodeStringToString16(transliterated_value);
 }
 
 }  // namespace autofill

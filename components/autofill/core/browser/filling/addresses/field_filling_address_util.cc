@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/data_model/data_model_utils.h"
+#include "components/autofill/core/browser/data_model/transliterator.h"
 #include "components/autofill/core/browser/data_quality/addresses/address_normalizer.h"
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #include "components/autofill/core/browser/field_type_utils.h"
@@ -358,10 +359,9 @@ std::u16string GetAlternativeNameForInput(
   base::UmaHistogramBoolean(
       "Autofill.Filling.DidAlternativeNameFieldRequireConversion",
       requires_conversion);
-  return requires_conversion
-             ? TransliterateAlternativeName(
-                   value, TransliterationId::kHiraganaToKatakana)
-             : value;
+  return requires_conversion ? TransliterateAlternativeName(
+                                   value, /*inverse_transliteration=*/true)
+                             : value;
 }
 
 // Finds the best suitable option in the `field` that corresponds to the

@@ -11,7 +11,7 @@
 #include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/data_model/borrowed_transliterator.h"
+#include "components/autofill/core/browser/data_model/transliterator.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/common/form_field_data.h"

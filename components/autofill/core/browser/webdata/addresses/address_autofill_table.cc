@@ -20,7 +20,7 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
+#include "components/autofill/core/browser/data_model/transliterator.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/webdata/autofill_table_utils.h"
@@ -395,8 +395,7 @@ bool AddProfileTypeTokensToTable(sql::Database* db,
     if (IsAlternativeNameType(type)) {
       if (base::FeatureList::IsEnabled(
               features::kAutofillSupportPhoneticNameForJP)) {
-        value = TransliterateAlternativeName(
-            value, TransliterationId::kKatakanaToHiragana);
+        value = TransliterateAlternativeName(value);
       } else {
         continue;
       }

@@ -19,8 +19,8 @@
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_name.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
-#include "components/autofill/core/browser/data_model/borrowed_transliterator.h"
 #include "components/autofill/core/browser/data_model/contact_info.h"
+#include "components/autofill/core/browser/data_model/transliterator.h"
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -248,10 +248,8 @@ bool AutofillProfileComparator::Compare(std::u16string_view text1,
   if (type.has_value() && IsAlternativeNameType(type.value()) &&
       base::FeatureList::IsEnabled(
           features::kAutofillSupportPhoneticNameForJP)) {
-    normalized_text1 = TransliterateAlternativeName(
-        normalized_text1, TransliterationId::kKatakanaToHiragana);
-    normalized_text2 = TransliterateAlternativeName(
-        normalized_text2, TransliterationId::kKatakanaToHiragana);
+    normalized_text1 = TransliterateAlternativeName(normalized_text1);
+    normalized_text2 = TransliterateAlternativeName(normalized_text2);
   }
 
   NormalizingIterator normalizing_iter1{normalized_text1, whitespace_spec};

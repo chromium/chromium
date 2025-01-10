@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/data_model/borrowed_transliterator.h"
+#include "components/autofill/core/browser/data_model/transliterator.h"
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gtest_util.h"
@@ -12,13 +12,13 @@
 
 namespace autofill {
 
-TEST(BorrowedTransliterator, RemoveDiacriticsAndConvertToLowerCase) {
+TEST(Transliterator, RemoveDiacriticsAndConvertToLowerCase) {
   EXPECT_EQ(RemoveDiacriticsAndConvertToLowerCase(
                 u"āēaa11.īūčģķļņšžKāäǟḑēīļņōȯȱõȭŗšțūžßł"),
             u"aeaa11.iucgklnszkaaadeilnooooorstuzssl");
 }
 
-TEST(BorrowedTransliterator, GermanTransliteration) {
+TEST(Transliterator, GermanTransliteration) {
   base::test::ScopedFeatureList features{
       features::kAutofillEnableGermanTransliteration};
   EXPECT_EQ(

@@ -19,10 +19,9 @@
 #include "components/autofill/core/browser/data_model/autofill_structured_address_format_provider.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_regex_provider.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
+#include "components/autofill/core/browser/data_model/transliterator.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "third_party/icu/source/common/unicode/ustring.h"
-#include "third_party/icu/source/i18n/unicode/translit.h"
 
 namespace autofill {
 
@@ -236,8 +235,7 @@ std::u16string AlternativeGivenName::GetValueForComparison(
     const std::u16string& value,
     const AddressComponent& other) const {
   return TransliterateAlternativeName(
-      AddressComponent::GetValueForComparison(GetValue(), other),
-      TransliterationId::kKatakanaToHiragana);
+      AddressComponent::GetValueForComparison(GetValue(), other));
 }
 
 AlternativeFamilyName::AlternativeFamilyName()
@@ -249,8 +247,7 @@ std::u16string AlternativeFamilyName::GetValueForComparison(
     const std::u16string& value,
     const AddressComponent& other) const {
   return TransliterateAlternativeName(
-      AddressComponent::GetValueForComparison(GetValue(), other),
-      TransliterationId::kKatakanaToHiragana);
+      AddressComponent::GetValueForComparison(GetValue(), other));
 }
 
 AlternativeFullName::AlternativeFullName()
@@ -297,8 +294,7 @@ std::u16string AlternativeFullName::GetValueForComparison(
     const std::u16string& value,
     const AddressComponent& other) const {
   return TransliterateAlternativeName(
-      AddressComponent::GetValueForComparison(GetValue(), other),
-      TransliterationId::kKatakanaToHiragana);
+      AddressComponent::GetValueForComparison(GetValue(), other));
 }
 
 }  // namespace autofill
