@@ -35,6 +35,10 @@ class CC_EXPORT LayerTreeSettings {
   // using tile resources prepared by this tree.
   bool UseLayerContextForDisplay() const;
 
+  // If true, the remote display tree handles its own composited animations.
+  // This can only be true when UseLayerContextForDisplay() is also true.
+  bool UseLayerContextForAnimations() const;
+
   // If true, this is a GPU-side display tree receiving updates from a remote
   // client via the LayerContext API. Such trees do no raster work of their own
   // and submit compositor frames directly within Viz using tiles rastered by

@@ -168,6 +168,9 @@ CC_BASE_EXPORT extern const char
 // Enables Viz service-side layer trees for content rendering.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kTreesInViz);
 
+// Enables Viz service-side layer tree animations for content rendering.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kTreeAnimationsInViz);
+
 // When enabled HTMLImageElement::decode() will initiate the decode task right
 // away rather than piggy-backing on the next BeginMainFrame.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSendExplicitDecodeRequestsImmediately);

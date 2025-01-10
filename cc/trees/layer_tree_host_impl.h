@@ -722,8 +722,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   bool visible() const { return visible_; }
 
   void SetNeedsOneBeginImplFrame();
-  void SetNeedsRedraw();
-  void SetNeedsUpdateDisplayTree();
+  void SetNeedsRedraw(bool animation_only = false);
 
   ManagedMemoryPolicy ActualManagedMemoryPolicy() const;
 
@@ -1087,10 +1086,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // Returns whether the LayerTreeHostImpl is running on a renderer process.
   bool RunningOnRendererProcess() const;
 
-  // Flags the tree as needing either a redraw or a display tree updating,
-  // depending on whether or not it has a display tree.
-  void SetNeedsRedrawOrUpdateDisplayTree();
-
   // Returns the most up to date display color spaces.
   gfx::DisplayColorSpaces GetDisplayColorSpaces() const;
 
@@ -1100,6 +1095,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   const LayerTreeSettings settings_;
   const bool use_layer_context_for_display_;
+  const bool use_layer_context_for_animations_;
 
   // This is set to true only if:
   //  . The compositor is running single-threaded (i.e. there is no separate

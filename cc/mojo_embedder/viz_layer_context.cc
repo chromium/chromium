@@ -727,7 +727,9 @@ void VizLayerContext::UpdateDisplayTreeFrom(
 
   last_committed_property_trees_ = property_trees;
 
-  SerializeAnimationUpdates(tree, *update);
+  if (base::FeatureList::IsEnabled(features::kTreeAnimationsInViz)) {
+    SerializeAnimationUpdates(tree, *update);
+  }
   service_->UpdateDisplayTree(std::move(update));
 }
 

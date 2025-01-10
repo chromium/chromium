@@ -327,12 +327,12 @@ void LayerTreeHostImpl::DidEndPinchZoom() {
   // so updating draw properties and drawing will ensure we are using the right
   // scales that we want when we're not inside a pinch.
   active_tree_->set_needs_update_draw_properties();
-  SetNeedsRedrawOrUpdateDisplayTree();
+  SetNeedsRedraw();
   frame_trackers_.StopSequence(FrameSequenceTrackerType::kPinchZoom);
 }
 
 void LayerTreeHostImpl::DidUpdatePinchZoom() {
-  SetNeedsRedrawOrUpdateDisplayTree();
+  SetNeedsRedraw();
   client_->RenewTreePriority();
 }
 
@@ -369,7 +369,7 @@ void LayerTreeHostImpl::SetNeedsFullViewportRedraw() {
   // TODO(bokan): Do these really need to be manually called? (Rather than
   // damage/redraw being set from scroll offset changes).
   SetFullViewportDamage();
-  SetNeedsRedrawOrUpdateDisplayTree();
+  SetNeedsRedraw();
 }
 
 void LayerTreeHostImpl::SetDeferBeginMainFrame(
@@ -449,6 +449,8 @@ LayerTreeHostImpl::LayerTreeHostImpl(
       current_begin_frame_tracker_(FROM_HERE),
       settings_(settings),
       use_layer_context_for_display_(settings_.UseLayerContextForDisplay()),
+      use_layer_context_for_animations_(
+          settings_.UseLayerContextForAnimations()),
       is_synchronous_single_threaded_(
           !task_runner_provider->HasImplThread() &&
           !settings_.single_thread_proxy_scheduler &&
@@ -1109,7 +1111,7 @@ void LayerTreeHostImpl::AnimateInternal() {
 
     // If the tree changed, then we want to draw at the end of the current
     // frame.
-    SetNeedsRedraw();
+    SetNeedsRedraw(/*animation_only*/ true);
   }
 }
 
@@ -2152,7 +2154,7 @@ void LayerTreeHostImpl::NotifyTileStateChanged(const Tile* tile) {
   if (!client_->IsInsideDraw() && tile->required_for_draw()) {
     // The LayerImpl::NotifyTileStateChanged() should damage the layer, so this
     // redraw will make those tiles be displayed.
-    SetNeedsRedrawOrUpdateDisplayTree();
+    SetNeedsRedraw();
   }
 }
 
@@ -2230,7 +2232,7 @@ void LayerTreeHostImpl::SetExternalTilePriorityConstraints(
     // Compositor, not LayerTreeFrameSink, is responsible for setting damage
     // and triggering redraw for constraint changes.
     SetFullViewportDamage();
-    SetNeedsRedrawOrUpdateDisplayTree();
+    SetNeedsRedraw();
   }
 }
 
@@ -3399,7 +3401,7 @@ bool LayerTreeHostImpl::WillBeginImplFrame(const viz::BeginFrameArgs& args) {
     // Optimistically schedule a draw. This will let us expect the tile manager
     // to complete its work so that we can draw new tiles within the impl frame
     // we are beginning now.
-    SetNeedsRedraw();
+    SetNeedsRedraw(/*animation_only*/ true);
   }
 
   if (input_delegate_)
@@ -3990,7 +3992,7 @@ void LayerTreeHostImpl::SetVisible(bool visible) {
     // draw anything even if this is not the first time we become visible.
     if (!active_tree_->LayerListIsEmpty()) {
       SetFullViewportDamage();
-      SetNeedsRedrawOrUpdateDisplayTree();
+      SetNeedsRedraw();
     }
   } else if (!settings_.is_display_tree) {
     EvictAllUIResources();
@@ -4009,14 +4011,17 @@ void LayerTreeHostImpl::SetNeedsOneBeginImplFrame() {
   client_->SetNeedsOneBeginImplFrameOnImplThread();
 }
 
-void LayerTreeHostImpl::SetNeedsRedraw() {
+void LayerTreeHostImpl::SetNeedsRedraw(bool animation_only) {
   NotifyLatencyInfoSwapPromiseMonitors();
   events_metrics_manager_.SaveActiveEventMetrics();
-  client_->SetNeedsRedrawOnImplThread();
-}
 
-void LayerTreeHostImpl::SetNeedsUpdateDisplayTree() {
-  client_->SetNeedsUpdateDisplayTreeOnImplThread();
+  if (use_layer_context_for_display_) {
+    if (!animation_only || !use_layer_context_for_animations_) {
+      client_->SetNeedsUpdateDisplayTreeOnImplThread();
+    }
+  } else {
+    client_->SetNeedsRedrawOnImplThread();
+  }
 }
 
 ManagedMemoryPolicy LayerTreeHostImpl::ActualManagedMemoryPolicy() const {
@@ -4426,7 +4431,7 @@ void LayerTreeHostImpl::DidChangeBrowserControlsPosition() {
   active_tree_->UpdateViewportContainerSizes();
   if (pending_tree_)
     pending_tree_->UpdateViewportContainerSizes();
-  SetNeedsRedrawOrUpdateDisplayTree();
+  SetNeedsRedraw();
   SetNeedsOneBeginImplFrame();
   SetFullViewportDamage();
 }
@@ -4970,7 +4975,7 @@ void LayerTreeHostImpl::SetNeedsAnimateForScrollbarAnimation() {
 // TODO(danakj): Make this a return value from the Animate() call instead of an
 // interface on LTHI. (Also, crbug.com/551138.)
 void LayerTreeHostImpl::SetNeedsRedrawForScrollbarAnimation() {
-  SetNeedsRedraw();
+  SetNeedsRedraw(/*animation_only*/ true);
 }
 
 ScrollbarSet LayerTreeHostImpl::ScrollbarsFor(ElementId id) const {
@@ -5814,12 +5819,5 @@ bool LayerTreeHostImpl::RunningOnRendererProcess() const {
   return !settings().single_thread_proxy_scheduler;
 }
 
-void LayerTreeHostImpl::SetNeedsRedrawOrUpdateDisplayTree() {
-  if (use_layer_context_for_display_) {
-    SetNeedsUpdateDisplayTree();
-  } else {
-    SetNeedsRedraw();
-  }
-}
 
 }  // namespace cc
