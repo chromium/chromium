@@ -569,10 +569,11 @@ void VideoCaptureHost::DeleteVideoCaptureController(
     return;
 
   const base::WeakPtr<VideoCaptureController> controller = it->second;
-  controllers_.erase(it);
+
   if (!controller)
     return;
 
+  controllers_.erase(it);
   media_stream_manager_->video_capture_manager()->DisconnectClient(
       controller.get(), controller_id, this, error);
 }
