@@ -274,6 +274,53 @@ TEST_F(HomeModulesCardRegistryTest, TestTabGroupSyncPromoCardDisabled) {
   EXPECT_THAT(signalKeys, Not(Contains("synced_tab_group_exists")));
   EXPECT_THAT(signalKeys, Not(Contains("tab_group_sync_shown_count")));
 }
+
+// Tests that the Registry registers the QuickDeletePromo card when its feature
+// is enabled.
+TEST_F(HomeModulesCardRegistryTest, TestQuickDeletePromoCardEnabled) {
+  feature_list_.InitWithFeatures({features::kEducationalTipModule}, {});
+  registry_ = std::make_unique<HomeModulesCardRegistry>(&pref_service_);
+
+  EXPECT_THAT(registry_->all_output_labels(), Contains(kQuickDeletePromo));
+  EXPECT_GE(registry_->all_cards_input_size(), 10u);
+  const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards =
+      registry_->get_all_cards_by_priority();
+  std::vector<std::string> card_names = ExtractCardNames(all_cards);
+  EXPECT_THAT(card_names, Contains(kQuickDeletePromo));
+
+  const CardSignalMap& signal_map = registry_->get_card_signal_map();
+  std::vector<std::string> signalKeys =
+      GetSignalKeys(signal_map, kQuickDeletePromo);
+  EXPECT_THAT(signalKeys, Contains("count_of_clearing_browsing_data"));
+  EXPECT_THAT(signalKeys,
+              Contains("count_of_clearing_browsing_data_through_quick_delete"));
+  EXPECT_THAT(signalKeys, Contains("quick_delete_shown_count"));
+}
+
+// Tests that the Registry won't register the QuickDeletePromo card when it is
+// disabled because of user's interaction history.
+TEST_F(HomeModulesCardRegistryTest, TestQuickDeletePromoCardDisabled) {
+  feature_list_.InitWithFeatures({features::kEducationalTipModule}, {});
+  pref_service_.SetUserPref(kQuickDeletePromoImpressionCounterPref,
+                            std::make_unique<base::Value>(11));
+  registry_ = std::make_unique<HomeModulesCardRegistry>(&pref_service_);
+
+  EXPECT_THAT(registry_->all_output_labels(), Not(Contains(kQuickDeletePromo)));
+  EXPECT_GE(registry_->all_cards_input_size(), 0u);
+  const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards =
+      registry_->get_all_cards_by_priority();
+  std::vector<std::string> card_names = ExtractCardNames(all_cards);
+  EXPECT_THAT(card_names, Not(Contains(kQuickDeletePromo)));
+
+  const CardSignalMap& signal_map = registry_->get_card_signal_map();
+  std::vector<std::string> signalKeys =
+      GetSignalKeys(signal_map, kQuickDeletePromo);
+  EXPECT_THAT(signalKeys, Not(Contains("count_of_clearing_browsing_data")));
+  EXPECT_THAT(
+      signalKeys,
+      Not(Contains("count_of_clearing_browsing_data_through_quick_delete")));
+  EXPECT_THAT(signalKeys, Not(Contains("quick_delete_shown_count")));
+}
 #endif
 
 }  // namespace segmentation_platform::home_modules

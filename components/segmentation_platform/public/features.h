@@ -159,6 +159,9 @@ extern const base::FeatureParam<int> kMaxTabGroupCardImpressions;
 // The maximum number of times the tab group sync promo card can be visible to
 // the user.
 extern const base::FeatureParam<int> kMaxTabGroupSyncCardImpressions;
+// The maximum number of times the quick delete promo card can be visible to the
+// user.
+extern const base::FeatureParam<int> kMaxQuickDeleteCardImpressions;
 
 // Feature flag for enabling FedCM user segment.
 BASE_DECLARE_FEATURE(kSegmentationPlatformFedCmUser);

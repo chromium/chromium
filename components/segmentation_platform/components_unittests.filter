@@ -53,6 +53,7 @@
 *PowerUserModelTest.*
 *PrefsMigratorTest.*
 *PriceTrackingNotificationPromoTest.*
+*QuickDeletePromoTest.*
 *RankFetcherHelperTest.*
 *RequestDispatcherTest.*
 *RequestHandlerTest.*

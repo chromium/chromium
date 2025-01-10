@@ -14,6 +14,7 @@
 #include "components/segmentation_platform/embedder/home_modules/default_browser_promo.h"
 #include "components/segmentation_platform/embedder/home_modules/ephemeral_module_utils.h"
 #include "components/segmentation_platform/embedder/home_modules/price_tracking_notification_promo.h"
+#include "components/segmentation_platform/embedder/home_modules/quick_delete_promo.h"
 #include "components/segmentation_platform/embedder/home_modules/send_tab_notification_promo.h"
 #include "components/segmentation_platform/embedder/home_modules/tab_group_promo.h"
 #include "components/segmentation_platform/embedder/home_modules/tab_group_sync_promo.h"
@@ -43,6 +44,10 @@ const char kTabGroupSyncPromoImpressionCounterPref[] =
     "ephemeral_pref_counter.tab_group_sync_promo_counter";
 const char kTabGroupSyncPromoInteractedPref[] =
     "ephemeral_pref_interacted.tab_group_sync_promo_interacted";
+const char kQuickDeletePromoImpressionCounterPref[] =
+    "ephemeral_pref_counter.quick_delete_promo_counter";
+const char kQuickDeletePromoInteractedPref[] =
+    "ephemeral_pref_interacted.quick_delete_promo_interacted";
 #endif
 
 namespace {
@@ -183,6 +188,8 @@ void HomeModulesCardRegistry::RegisterProfilePrefs(
   registry->RegisterBooleanPref(kTabGroupPromoInteractedPref, false);
   registry->RegisterIntegerPref(kTabGroupSyncPromoImpressionCounterPref, 0);
   registry->RegisterBooleanPref(kTabGroupSyncPromoInteractedPref, false);
+  registry->RegisterIntegerPref(kQuickDeletePromoImpressionCounterPref, 0);
+  registry->RegisterBooleanPref(kQuickDeletePromoInteractedPref, false);
 #endif
 }
 
@@ -267,8 +274,13 @@ void HomeModulesCardRegistry::NotifyCardShown(const char* card_name) {
           profile_prefs_->GetInteger(kTabGroupSyncPromoImpressionCounterPref);
       profile_prefs_->SetInteger(kTabGroupSyncPromoImpressionCounterPref,
                                  freshness_impression_count + 1);
+    } else if (strcmp(card_name, kQuickDeletePromo) == 0) {
+      int freshness_impression_count =
+          profile_prefs_->GetInteger(kQuickDeletePromoImpressionCounterPref);
+      profile_prefs_->SetInteger(kQuickDeletePromoImpressionCounterPref,
+                                 freshness_impression_count + 1);
     }
-    }
+  }
 #endif
 }
 
@@ -320,6 +332,8 @@ void HomeModulesCardRegistry::NotifyCardInteracted(const char* card_name) {
     profile_prefs_->SetBoolean(kTabGroupPromoInteractedPref, true);
   } else if (strcmp(card_name, kTabGroupSyncPromo) == 0) {
     profile_prefs_->SetBoolean(kTabGroupSyncPromoInteractedPref, true);
+  } else if (strcmp(card_name, kQuickDeletePromo) == 0) {
+    profile_prefs_->SetBoolean(kQuickDeletePromoInteractedPref, true);
   }
 #endif
 }
@@ -403,6 +417,13 @@ void HomeModulesCardRegistry::CreateAllCards() {
   if (TabGroupSyncPromo::IsEnabled(tab_group_sync_promo_count)) {
     all_cards_by_priority_.push_back(
         std::make_unique<TabGroupSyncPromo>(profile_prefs_));
+  }
+
+  int quick_delete_promo_count =
+      profile_prefs_->GetInteger(kQuickDeletePromoImpressionCounterPref);
+  if (QuickDeletePromo::IsEnabled(quick_delete_promo_count)) {
+    all_cards_by_priority_.push_back(
+        std::make_unique<QuickDeletePromo>(profile_prefs_));
   }
 #endif
   InitializeAfterAddingCards();

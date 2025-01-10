@@ -246,6 +246,9 @@ constexpr base::FeatureParam<int> kMaxTabGroupCardImpressions{
 constexpr base::FeatureParam<int> kMaxTabGroupSyncCardImpressions{
     &kEducationalTipModule, "max_tab_group_sync_card_impressions",
     /*default_value=*/10};
+constexpr base::FeatureParam<int> kMaxQuickDeleteCardImpressions{
+    &kEducationalTipModule, "max_quick_delete_card_impressions",
+    /*default_value=*/10};
 
 BASE_FEATURE(kSegmentationPlatformFedCmUser,
              "SegmentationPlatformFedCmUser",
