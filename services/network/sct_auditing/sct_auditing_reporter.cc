@@ -370,15 +370,15 @@ void SCTAuditingReporter::OnSendLookupQueryComplete(
     return;
   }
 
-  std::optional<base::Value> result = base::JSONReader::Read(*response_body);
-  if (!result || !result->is_dict()) {
+  std::optional<base::Value::Dict> result =
+      base::JSONReader::ReadDict(*response_body);
+  if (!result) {
     RecordLookupQueryResult(LookupQueryResult::kInvalidJson);
     MaybeRetryRequest();
     return;
   }
 
-  const base::Value::Dict& result_dict = result->GetDict();
-  const std::string* status = result_dict.FindString(kLookupStatusKey);
+  const std::string* status = result->FindString(kLookupStatusKey);
   if (!status) {
     RecordLookupQueryResult(LookupQueryResult::kInvalidJson);
     MaybeRetryRequest();
@@ -391,7 +391,7 @@ void SCTAuditingReporter::OnSendLookupQueryComplete(
   }
 
   const std::string* server_timestamp_string =
-      result_dict.FindString(kLookupTimestampKey);
+      result->FindString(kLookupTimestampKey);
   if (!server_timestamp_string) {
     RecordLookupQueryResult(LookupQueryResult::kInvalidJson);
     MaybeRetryRequest();
@@ -414,7 +414,7 @@ void SCTAuditingReporter::OnSendLookupQueryComplete(
   }
 
   // Find the corresponding log entry.
-  const base::Value::List* logs = result_dict.FindList(kLookupLogStatusKey);
+  const base::Value::List* logs = result->FindList(kLookupLogStatusKey);
   if (!logs) {
     RecordLookupQueryResult(LookupQueryResult::kInvalidJson);
     MaybeRetryRequest();
@@ -473,7 +473,7 @@ void SCTAuditingReporter::OnSendLookupQueryComplete(
   }
 
   const base::Value::List* suffix_value =
-      result_dict.FindList(kLookupHashSuffixKey);
+      result->FindList(kLookupHashSuffixKey);
   if (!suffix_value) {
     RecordLookupQueryResult(LookupQueryResult::kInvalidJson);
     MaybeRetryRequest();
