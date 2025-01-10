@@ -1426,7 +1426,23 @@ void RuleInvalidationDataVisitor<VisitorType>::
       combinator = CSSSelector::kIndirectAdjacent;
       break;
     default:
-      NOTREACHED();
+      // Implicit combinators for pseudo elements (kUAShadow, kShadowSlot,
+      // kShadowPart) cannot be inside :has() because pseudo elements are
+      // not allowed inside :has().
+      // Combinators for relative relations (kRelativeDescendant,
+      // kRelativeChild, kRelativeDirectAdjacent, kRelativeIndirectAdjacent)
+      // cannot be inside :has() because :has() is not allowed inside :has().
+      //
+      // In simple cases (e.g. ':has(::part(foo))', ':has(:has(foo))'),
+      // selector parser treats the :has() as invalid at parsing time.
+      //
+      // But nesting can bypass the parsing time validation:
+      // (e.g. '::part(foo) {:has(&) {}}' -> both '::part(foo)' and ':has(&)'
+      //  are valid selectors, but the :has() will not match any element)
+      //
+      // To avoid assertion for the nesting case, just return here instead
+      // of NOTREACHED().
+      return;
   }
 
   UpdateFeaturesFromCombinator(combinator, last_compound_in_adjacent_chain,

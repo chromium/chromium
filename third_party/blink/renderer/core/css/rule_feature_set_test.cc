@@ -2961,6 +2961,18 @@ TEST_F(RuleFeatureSetTest, NestingSelectorPointingToScopeInsideHas) {
   }
 }
 
+TEST_F(RuleFeatureSetTest, NestingSelectorInsideHasPointingToPart) {
+  Document* document =
+      Document::CreateForTest(execution_context_.GetExecutionContext());
+  auto* parent_rule = DynamicTo<StyleRule>(
+      css_test_helpers::ParseRule(*document, "::part(foo) {}"));
+  ASSERT_TRUE(parent_rule);
+
+  EXPECT_EQ(SelectorPreMatch::kMayMatch,
+            CollectFeatures(":has(&)", CSSNestingType::kNesting,
+                            /*parent_rule_for_nesting=*/parent_rule));
+}
+
 TEST_F(RuleFeatureSetTest, PseudoElementInParentPseudoPreMatch) {
   Document* document =
       Document::CreateForTest(execution_context_.GetExecutionContext());
