@@ -9373,7 +9373,8 @@ TEST_P(BidderWorkletMultiThreadingTest, CreatesCorrectNumberOfPremadeContexts) {
       features::kFledgePrepareBidderContextsInAdvance,
       {{"BidderContextsDivisor", "2"},
        {"BidderContextsMultiplier", "1"},
-       {"MaxBidderContextsPerThread", "4"}});
+       {"MaxBidderContextsPerThread", "4"},
+       {"MinBidderContextsPerThread", "1"}});
   interest_group_trusted_bidding_signals_url_ = GURL("https://signals.test/");
   const GURL kFullSignalsUrl(
       "https://signals.test/?hostname=top.window.test&interestGroupNames=Fred");

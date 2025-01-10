@@ -47,6 +47,11 @@ BASE_FEATURE_PARAM(int,
                    "MaxBidderContextsPerThread",
                    10);
 BASE_FEATURE_PARAM(int,
+                   kFledgeMinBidderContextsPerThreadInAdvance,
+                   &kFledgePrepareBidderContextsInAdvance,
+                   "MinBidderContextsPerThread",
+                   1);
+BASE_FEATURE_PARAM(int,
                    kFledgeBidderContextsDivisor,
                    &kFledgePrepareBidderContextsInAdvance,
                    "BidderContextsDivisor",

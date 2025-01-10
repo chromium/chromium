@@ -40,6 +40,9 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgePrepareBidderContextsInAdvance);
 CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(
     int,
     kFledgeMaxBidderContextsPerThreadInAdvance);
+CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kFledgeMinBidderContextsPerThreadInAdvance);
 CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kFledgeBidderContextsDivisor);
 CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kFledgeBidderContextsMultiplier);
 

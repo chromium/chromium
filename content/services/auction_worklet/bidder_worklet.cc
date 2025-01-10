@@ -291,9 +291,10 @@ size_t CalculateNumberOfContextsToPreparePerThread(
     size_t threads) {
   return fmin(
       features::kFledgeMaxBidderContextsPerThreadInAdvance.Get(),
-      fmax(1, (max_expected_required_contexts *
-               features::kFledgeBidderContextsMultiplier.Get()) /
-                  (threads * features::kFledgeBidderContextsDivisor.Get())));
+      fmax(features::kFledgeMinBidderContextsPerThreadInAdvance.Get(),
+           (max_expected_required_contexts *
+            features::kFledgeBidderContextsMultiplier.Get()) /
+               (threads * features::kFledgeBidderContextsDivisor.Get())));
 }
 
 // Check if trusted bidding signals, if any, are same-origin or cross-origin.
