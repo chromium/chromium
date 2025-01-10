@@ -92,6 +92,49 @@ AudioDecoderConfig* CopyConfig(const AudioDecoderConfig& config) {
   return copy;
 }
 
+std::optional<media::AudioCodec> TryGetPcmCodec(const String& codec) {
+  if (codec == "ulaw") {
+    return media::AudioCodec::kPCM_MULAW;
+  }
+
+  if (codec == "alaw") {
+    return media::AudioCodec::kPCM_ALAW;
+  }
+
+  if (codec == "pcm-u8" || codec == "pcm-s16" || codec == "pcm-s24" ||
+      codec == "pcm-s32" || codec == "pcm-f32") {
+    return media::AudioCodec::kPCM;
+  }
+
+  return std::nullopt;
+}
+
+media::SampleFormat PcmCodecToSampleFormat(const String& codec) {
+  CHECK(codec.StartsWith("pcm"));
+
+  if (codec == "pcm-u8") {
+    return media::SampleFormat::kSampleFormatU8;
+  }
+
+  if (codec == "pcm-s16") {
+    return media::SampleFormat::kSampleFormatS16;
+  }
+
+  if (codec == "pcm-s24") {
+    return media::SampleFormat::kSampleFormatS24;
+  }
+
+  if (codec == "pcm-s32") {
+    return media::SampleFormat::kSampleFormatS32;
+  }
+
+  if (codec == "pcm-f32") {
+    return media::SampleFormat::kSampleFormatF32;
+  }
+
+  return media::SampleFormat::kUnknownSampleFormat;
+}
+
 // static
 std::unique_ptr<AudioDecoderTraits::MediaDecoderType>
 AudioDecoderTraits::CreateDecoder(
@@ -171,8 +214,6 @@ ScriptPromise<AudioDecoderSupport> AudioDecoder::isConfigSupported(
 std::optional<media::AudioType> AudioDecoder::IsValidAudioDecoderConfig(
     const AudioDecoderConfig& config,
     String* js_error_message) {
-  media::AudioType audio_type;
-
   if (config.numberOfChannels() == 0) {
     *js_error_message = String::Format(
         "Invalid channel count; channel count must be non-zero, received %d.",
@@ -193,12 +234,9 @@ std::optional<media::AudioType> AudioDecoder::IsValidAudioDecoderConfig(
   }
   // Match codec strings from the codec registry:
   // https://www.w3.org/TR/webcodecs-codec-registry/#audio-codec-registry
-  if (config.codec() == "ulaw") {
-    audio_type = {media::AudioCodec::kPCM_MULAW};
-    return audio_type;
-  } else if (config.codec() == "alaw") {
-    audio_type = {media::AudioCodec::kPCM_ALAW};
-    return audio_type;
+  std::optional<media::AudioCodec> pcm_type = TryGetPcmCodec(config.codec());
+  if (pcm_type.has_value()) {
+    return media::AudioType{.codec = *pcm_type};
   }
 
   if (!VerifyDescription(config, js_error_message)) {
@@ -213,12 +251,10 @@ std::optional<media::AudioType> AudioDecoder::IsValidAudioDecoderConfig(
 
   if (!parse_succeeded || is_codec_ambiguous) {
     *js_error_message = "Unknown or ambiguous codec name.";
-    audio_type = {media::AudioCodec::kUnknown};
-    return audio_type;
+    return media::AudioType{.codec = media::AudioCodec::kUnknown};
   }
 
-  audio_type = {codec};
-  return audio_type;
+  return media::AudioType{.codec = codec};
 }
 
 // static
@@ -271,10 +307,16 @@ AudioDecoder::MakeMediaAudioDecoderConfig(const ConfigType& config,
 
   // TODO(chcunningham): Add sample format to IDL.
   media::AudioDecoderConfig media_config;
-  media_config.Initialize(
-      audio_type->codec, media::kSampleFormatPlanarF32, channel_layout,
-      config.sampleRate(), extra_data, encryption_scheme,
-      base::TimeDelta() /* seek preroll */, 0 /* codec delay */);
+
+  media::SampleFormat format = media::kSampleFormatPlanarF32;
+  if (audio_type->codec == media::AudioCodec::kPCM) {
+    format = PcmCodecToSampleFormat(config.codec());
+  }
+
+  media_config.Initialize(audio_type->codec, format, channel_layout,
+                          config.sampleRate(), extra_data, encryption_scheme,
+                          base::TimeDelta() /* seek preroll */,
+                          0 /* codec delay */);
   if (!media_config.IsValidConfig()) {
     *js_error_message = "Unsupported config.";
     return std::nullopt;
