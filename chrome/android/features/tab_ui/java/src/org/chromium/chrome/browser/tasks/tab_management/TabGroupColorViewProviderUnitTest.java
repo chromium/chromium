@@ -69,7 +69,6 @@ public class TabGroupColorViewProviderUnitTest {
 
     @Captor private ArgumentCaptor<DataSharingService.Observer> mSharingObserverCaptor;
 
-    private SharedGroupTestHelper mSharedGroupTestHelper;
     private Context mContext;
     private TabGroupColorViewProvider mRegularColorViewProvider;
     private TabGroupColorViewProvider mIncognitoColorViewProvider;
@@ -79,8 +78,6 @@ public class TabGroupColorViewProviderUnitTest {
         when(mServiceStatus.isAllowedToJoin()).thenReturn(true);
         when(mCollaborationService.getServiceStatus()).thenReturn(mServiceStatus);
         when(mDataSharingService.getUiDelegate()).thenReturn(mDataSharingUiDelegate);
-
-        mSharedGroupTestHelper = new SharedGroupTestHelper(mDataSharingService);
 
         mActivityScenarioRule.getScenario().onActivity(this::onActivityCreated);
     }

@@ -50,8 +50,6 @@ public class TransitiveSharedGroupObserverUnitTest {
     @Mock private Callback<String> mOnSharedGroupCollaborationIdChanged;
     @Mock private Callback<List<GroupMember>> mOnGroupMembersChanged;
 
-    private SharedGroupTestHelper mSharedGroupTestHelper;
-
     @Test
     public void testDestroy_NoTabGroupId() {
         TransitiveSharedGroupObserver observer =
