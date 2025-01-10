@@ -1324,7 +1324,8 @@ void RenderWidgetHostViewAndroid::SendStateOnTouchTransfer(
   CHECK(host());
   auto* remote = host()->delegate()->GetRenderInputRouterDelegateRemote();
   remote->StateOnTouchTransfer(input::mojom::TouchTransferState::New(
-      event.GetDownTime(), GetFrameSinkId(), event.GetRawOffsetY()));
+      event.GetDownTime(), GetFrameSinkId(), event.GetRawOffsetY(),
+      view_.GetDipScale()));
 }
 
 viz::FrameSinkId RenderWidgetHostViewAndroid::GetRootFrameSinkId() {

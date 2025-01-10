@@ -206,10 +206,9 @@ void AndroidStateTransferHandler::HandleTouchEvent(
     return;
   }
 
-  // TOOD(crbug.com/370506271): Use correct pix_to_dip for creating events.
   auto event = ui::MotionEventAndroidNative::Create(
       std::move(input_event),
-      /* pix_to_dip= */ 1,
+      1.f / state_for_curr_sequence_->transfer_state->dip_scale,
       state_for_curr_sequence_->transfer_state->raw_y_offset);
 
   state_for_curr_sequence_->rir_support->OnTouchEvent(
@@ -223,6 +222,8 @@ void AndroidStateTransferHandler::HandleTouchEvent(
 
 void AndroidStateTransferHandler::ValidateRootFrameSinkId(
     const FrameSinkId& root_frame_sink_id) {
+  // TODO(crbug.com/388478270): Relax this CHECK to handle activity restart mid
+  // sequence.
   CHECK(root_frame_sink_id.is_valid());
   if (active_root_frame_sink_id_ != root_frame_sink_id) {
     CHECK(!active_root_frame_sink_id_.is_valid());

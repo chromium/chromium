@@ -29,6 +29,10 @@ constexpr int kAndroidActionUp = AMOTION_EVENT_ACTION_UP;
 constexpr FrameSinkId kRootCompositorFrameSinkId = FrameSinkId(1, 1);
 constexpr FrameSinkId kRootWidgetFrameSinkId = FrameSinkId(2, 3);
 
+MATCHER_P(EqPixToDip, pix_to_dip, "Matches pix_to_dip value of MotionEvent") {
+  return pix_to_dip == (arg.GetX(0) / arg.GetXPix(0));
+}
+
 base::android::ScopedInputEvent GetInputEvent(jlong down_time_ms,
                                               jlong event_time_ms,
                                               int action,
@@ -416,6 +420,26 @@ TEST_F(AndroidStateTransferHandlerTest, RirNullOnLastInputInSequence) {
   state2->down_time_ms = event_stream_2.down_time_ms;
   handler_.StateOnTouchTransfer(std::move(state2),
                                 mock_rir_support_.GetWeakPtr());
+}
+
+TEST_F(AndroidStateTransferHandlerTest, UsesDeviceScaleFactorFromState) {
+  TestInputStream event_stream =
+      GenerateEventsForSequence(/*num_moves*/ 1,
+                                /*include_touch_up*/ true);
+
+  float dip_scale = 2.5f;
+
+  auto state = input::mojom::TouchTransferState::New();
+  state->down_time_ms = event_stream.down_time_ms;
+  state->dip_scale = dip_scale;
+  handler_.StateOnTouchTransfer(std::move(state),
+                                mock_rir_support_.GetWeakPtr());
+
+  EXPECT_CALL(mock_rir_support_, OnTouchEvent(EqPixToDip(1.f / dip_scale), _))
+      .Times(event_stream.events.size());
+  for (auto& event : event_stream.events) {
+    handler_.OnMotionEvent(std::move(event), kRootCompositorFrameSinkId);
+  }
 }
 
 }  // namespace viz

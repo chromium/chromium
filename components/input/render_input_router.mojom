@@ -39,6 +39,10 @@ struct TouchTransferState {
   // root widget. This will be used to account for top controls height when
   // creating MotionEventAndroid on Viz side.
   int32 raw_y_offset;
+
+  // Device scale factor being used to create MotionEventAndroid objects for
+  // converting device pixels to device independent pixels.
+  float dip_scale;
 };
 
 // Implemented by Viz, an interface between Browser and Viz. It defines methods
