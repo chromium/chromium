@@ -33,6 +33,8 @@ class TestClientSharedImageInterface : public gpu::ClientSharedImageInterface {
 
   gpu::SharedImageInterface::SharedImageMapping CreateSharedImage(
       const gpu::SharedImageInfo& si_info) override;
+  scoped_refptr<gpu::ClientSharedImage> CreateSharedImageForSoftwareCompositor(
+      const gpu::SharedImageInfo& si_info) override;
 
  protected:
   ~TestClientSharedImageInterface() override;

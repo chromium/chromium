@@ -189,11 +189,16 @@ class HudSoftwareBacking : public ResourcePool::SoftwareBacking {
       const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
       uint64_t tracing_process_id,
       int importance) const override {
-      pmd->CreateSharedMemoryOwnershipEdge(buffer_dump_guid,
-                                           shared_mapping.guid(), importance);
+    base::UnguessableToken resource_guid =
+        shared_image ? shared_image->Map()->GetSharedMemoryGuid()
+                     : shared_mapping.guid();
+    pmd->CreateSharedMemoryOwnershipEdge(buffer_dump_guid, resource_guid,
+                                         importance);
   }
 
   raw_ptr<LayerTreeFrameSink> layer_tree_frame_sink;
+
+  // Will be empty if `shared_image` is non-null.
   base::WritableSharedMemoryMapping shared_mapping;
 };
 
@@ -341,13 +346,10 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
       if (!pool_resource.software_backing()) {
         auto backing = std::make_unique<HudSoftwareBacking>();
         backing->layer_tree_frame_sink = layer_tree_frame_sink;
-        auto shared_image_mapping = sii->CreateSharedImage(
+        backing->shared_image = sii->CreateSharedImageForSoftwareCompositor(
             {pool_resource.format(), pool_resource.size(),
              pool_resource.color_space(),
              gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, "HeadsUpDisplayLayer"});
-
-        backing->shared_image = std::move(shared_image_mapping.shared_image);
-        backing->shared_mapping = std::move(shared_image_mapping.mapping);
         CHECK(backing->shared_image);
         pool_resource.set_software_backing(std::move(backing));
       }
@@ -448,7 +450,10 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
     const size_t row_bytes = info.minRowBytes();
     auto* backing =
         static_cast<HudSoftwareBacking*>(pool_resource.software_backing());
-    base::span<uint8_t> mem(backing->shared_mapping);
+    auto shared_image = backing->shared_image;
+    base::span<uint8_t> mem = shared_image
+                                  ? shared_image->Map()->GetMemoryForPlane(0)
+                                  : backing->shared_mapping;
     CHECK_GE(mem.size(), info.computeByteSize(row_bytes));
     sk_sp<SkSurface> surface =
         SkSurfaces::WrapPixels(info, mem.data(), row_bytes, &props);

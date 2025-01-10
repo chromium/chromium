@@ -41,4 +41,11 @@ TestClientSharedImageInterface::CreateSharedImage(
   return shared_image_interface_->CreateSharedImage(si_info);
 }
 
+scoped_refptr<gpu::ClientSharedImage>
+TestClientSharedImageInterface::CreateSharedImageForSoftwareCompositor(
+    const gpu::SharedImageInfo& si_info) {
+  return shared_image_interface_->CreateSharedImageForSoftwareCompositor(
+      si_info);
+}
+
 }  // namespace cc
