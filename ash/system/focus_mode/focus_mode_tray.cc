@@ -546,7 +546,8 @@ void FocusModeTray::UpdateTrayIcon() {
   SkColor color = GetColorProvider()->GetColor(
       is_active() ? cros_tokens::kCrosSysSystemOnPrimaryContainer
                   : cros_tokens::kCrosSysOnSurface);
-  image_view_->SetImage(CreateVectorIcon(kFocusModeLampIcon, color));
+  image_view_->SetImage(
+      ui::ImageModel::FromVectorIcon(kFocusModeLampIcon, color));
 }
 
 void FocusModeTray::FocusModeIconActivated(const ui::Event& event) {
