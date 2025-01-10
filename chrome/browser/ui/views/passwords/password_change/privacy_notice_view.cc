@@ -26,6 +26,7 @@
 
 using TableLayout = views::TableLayout;
 using LayoutAlignment = views::LayoutAlignment;
+using ClosedReason = views::Widget::ClosedReason;
 
 namespace {
 // The corner radius of the text area in the bubble.
@@ -130,6 +131,18 @@ PrivacyNoticeView::PrivacyNoticeView(content::WebContents* web_contents,
   SetAcceptCallback(
       base::BindOnce(&PrivacyNoticeBubbleViewController::AcceptNotice,
                      base::Unretained(&controller_)));
+  SetCancelCallback(base::BindOnce(&PrivacyNoticeBubbleViewController::Cancel,
+                                   base::Unretained(&controller_)));
+  SetCloseCallback(base::BindRepeating(
+      [](PrivacyNoticeView* view) {
+        ClosedReason reason = view->GetWidget()->closed_reason();
+        // Cancel the flow if the dialog is explicitly closed.
+        if (reason == ClosedReason::kCloseButtonClicked ||
+            reason == ClosedReason::kEscKeyPressed) {
+          view->controller_.Cancel();
+        }
+      },
+      this));
 }
 
 PrivacyNoticeView::~PrivacyNoticeView() = default;

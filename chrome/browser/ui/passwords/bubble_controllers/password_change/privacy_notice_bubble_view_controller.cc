@@ -6,6 +6,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
+#include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -33,4 +34,9 @@ void PrivacyNoticeBubbleViewController::ReportInteractions() {
 
 void PrivacyNoticeBubbleViewController::AcceptNotice() {
   password_change_delegate_->OnPrivacyNoticeAccepted();
+}
+
+void PrivacyNoticeBubbleViewController::Cancel() {
+  CHECK(password_change_delegate_);
+  password_change_delegate_->Stop();
 }

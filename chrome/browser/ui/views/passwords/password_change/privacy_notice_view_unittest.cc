@@ -65,3 +65,12 @@ TEST_F(PrivacyNoticeViewTest, AcceptClosesTheBubbleAndTriggersDelegate) {
   views::test::ButtonTestApi(view()->GetOkButton())
       .NotifyClick(ui::test::TestEvent());
 }
+
+TEST_F(PrivacyNoticeViewTest, CancelClosesTheBubbleAndCancelsTheFlow) {
+  CreateAndShowView();
+
+  EXPECT_CALL(*password_change_delegate(), Stop);
+  EXPECT_CALL(*model_delegate_mock(), OnBubbleHidden);
+  views::test::ButtonTestApi(view()->GetCancelButton())
+      .NotifyClick(ui::test::TestEvent());
+}

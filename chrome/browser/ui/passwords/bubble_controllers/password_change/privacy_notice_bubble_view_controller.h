@@ -23,6 +23,9 @@ class PrivacyNoticeBubbleViewController : public PasswordBubbleControllerBase {
 
   void AcceptNotice();
 
+  // Cancels the flow.
+  void Cancel();
+
  private:
   base::WeakPtr<PasswordChangeDelegate> password_change_delegate_;
 };
