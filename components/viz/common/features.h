@@ -94,7 +94,6 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kCVDisplayLinkBeginFrameSource);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kVSyncAlignedPresent);
 #endif
 
-VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDrawPredictedInkPoint);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kAllowUndamagedNonrootRenderPassToSkip);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kAllowForceMergeRenderPassWithRequireOverlayQuads);
@@ -161,7 +160,6 @@ VIZ_COMMON_EXPORT bool ShouldUseDCompSurfacesForDelegatedInk();
 VIZ_COMMON_EXPORT bool IsUsingVizFrameSubmissionForWebView();
 VIZ_COMMON_EXPORT bool IsUsingPreferredIntervalForVideo();
 VIZ_COMMON_EXPORT bool ShouldWebRtcLogCapturePipeline();
-VIZ_COMMON_EXPORT bool ShouldDrawPredictedInkPoints();
 VIZ_COMMON_EXPORT bool UseWebViewNewInvalidateHeuristic();
 VIZ_COMMON_EXPORT bool UseSurfaceLayerForVideo();
 VIZ_COMMON_EXPORT int MaxOverlaysConsidered();

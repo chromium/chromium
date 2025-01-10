@@ -220,10 +220,6 @@ BASE_FEATURE(kWebViewFrameRateHints,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kDrawPredictedInkPoint,
-             "DrawPredictedInkPoint",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_APPLE)
 // Increase the max CALayer number allowed for CoreAnimation.
 // * If this feature is disabled, then the default limit is 128 quads,
@@ -536,10 +532,6 @@ bool IsUsingVizFrameSubmissionForWebView() {
 
 bool ShouldWebRtcLogCapturePipeline() {
   return base::FeatureList::IsEnabled(kWebRtcLogCapturePipeline);
-}
-
-bool ShouldDrawPredictedInkPoints() {
-  return base::FeatureList::IsEnabled(kDrawPredictedInkPoint);
 }
 
 #if BUILDFLAG(IS_ANDROID)
