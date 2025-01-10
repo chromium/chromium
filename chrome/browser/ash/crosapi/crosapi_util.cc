@@ -78,7 +78,6 @@
 #include "chromeos/crosapi/mojom/device_attributes.mojom.h"
 #include "chromeos/crosapi/mojom/device_local_account_extension_service.mojom.h"
 #include "chromeos/crosapi/mojom/device_oauth2_token_service.mojom.h"
-#include "chromeos/crosapi/mojom/device_settings_service.mojom.h"
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
 #include "chromeos/crosapi/mojom/digital_goods.mojom.h"
 #include "chromeos/crosapi/mojom/document_scan.mojom.h"
@@ -186,8 +185,6 @@
 #include "services/media_session/public/mojom/media_controller.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/switches.h"
-
-using MojoOptionalBool = crosapi::mojom::DeviceSettings::OptionalBool;
 
 namespace crosapi {
 namespace browser_util {
@@ -314,7 +311,6 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<
         crosapi::mojom::DeviceLocalAccountExtensionService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::DeviceOAuth2TokenService>(),
-    MakeInterfaceVersionEntry<crosapi::mojom::DeviceSettingsService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::DiagnosticsService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::DigitalGoodsFactory>(),
     MakeInterfaceVersionEntry<crosapi::mojom::DocumentScan>(),
@@ -454,132 +450,6 @@ bool IsSigninProfileOrBelongsToAffiliatedUser(Profile* profile) {
     return false;
   }
   return user->IsAffiliated();
-}
-
-// Returns the device policy data needed for Lacros.
-mojom::DeviceSettingsPtr GetDeviceSettings() {
-  mojom::DeviceSettingsPtr result = mojom::DeviceSettings::New();
-
-  result->attestation_for_content_protection_enabled = MojoOptionalBool::kUnset;
-  result->device_restricted_managed_guest_session_enabled =
-      MojoOptionalBool::kUnset;
-  result->device_extensions_system_log_enabled = MojoOptionalBool::kUnset;
-  if (ash::CrosSettings::IsInitialized()) {
-    // It's expected that the CrosSettings values are trusted. The only
-    // theoretical exception is when device ownership is taken on consumer
-    // device. Then there's no settings to be passed to Lacros anyway.
-    auto trusted_result =
-        ash::CrosSettings::Get()->PrepareTrustedValues(base::DoNothing());
-    if (trusted_result == ash::CrosSettingsProvider::TRUSTED) {
-      const auto* cros_settings = ash::CrosSettings::Get();
-      bool attestation_enabled = false;
-      if (cros_settings->GetBoolean(
-              ash::kAttestationForContentProtectionEnabled,
-              &attestation_enabled)) {
-        result->attestation_for_content_protection_enabled =
-            attestation_enabled ? MojoOptionalBool::kTrue
-                                : MojoOptionalBool::kFalse;
-      }
-
-      const base::Value::List* usb_detachable_allow_list;
-      if (cros_settings->GetList(ash::kUsbDetachableAllowlist,
-                                 &usb_detachable_allow_list)) {
-        mojom::UsbDetachableAllowlistPtr allow_list =
-            mojom::UsbDetachableAllowlist::New();
-        for (const auto& entry : *usb_detachable_allow_list) {
-          mojom::UsbDeviceIdPtr usb_device_id = mojom::UsbDeviceId::New();
-          std::optional<int> vid =
-              entry.GetDict().FindInt(ash::kUsbDetachableAllowlistKeyVid);
-          if (vid) {
-            usb_device_id->has_vendor_id = true;
-            usb_device_id->vendor_id = vid.value();
-          }
-          std::optional<int> pid =
-              entry.GetDict().FindInt(ash::kUsbDetachableAllowlistKeyPid);
-          if (pid) {
-            usb_device_id->has_product_id = true;
-            usb_device_id->product_id = pid.value();
-          }
-          allow_list->usb_device_ids.push_back(std::move(usb_device_id));
-        }
-        result->usb_detachable_allow_list = std::move(allow_list);
-      }
-
-      bool device_restricted_managed_guest_session_enabled = false;
-      if (cros_settings->GetBoolean(
-              ash::kDeviceRestrictedManagedGuestSessionEnabled,
-              &device_restricted_managed_guest_session_enabled)) {
-        result->device_restricted_managed_guest_session_enabled =
-            device_restricted_managed_guest_session_enabled
-                ? MojoOptionalBool::kTrue
-                : MojoOptionalBool::kFalse;
-      }
-
-      bool report_device_network_status = true;
-      if (cros_settings->GetBoolean(ash::kReportDeviceNetworkStatus,
-                                    &report_device_network_status)) {
-        result->report_device_network_status = report_device_network_status
-                                                   ? MojoOptionalBool::kTrue
-                                                   : MojoOptionalBool::kFalse;
-      }
-
-      int report_upload_frequency;
-      if (cros_settings->GetInteger(ash::kReportUploadFrequency,
-                                    &report_upload_frequency)) {
-        result->report_upload_frequency =
-            crosapi::mojom::NullableInt64::New(report_upload_frequency);
-      }
-
-      int report_device_network_telemetry_collection_rate_ms;
-      if (cros_settings->GetInteger(
-              ash::kReportDeviceNetworkTelemetryCollectionRateMs,
-              &report_device_network_telemetry_collection_rate_ms)) {
-        result->report_device_network_telemetry_collection_rate_ms =
-            crosapi::mojom::NullableInt64::New(
-                report_device_network_telemetry_collection_rate_ms);
-      }
-
-      std::string device_variations_restrict_parameter;
-      if (cros_settings->GetString(ash::kVariationsRestrictParameter,
-                                   &device_variations_restrict_parameter)) {
-        result->device_variations_restrict_parameter =
-            device_variations_restrict_parameter;
-      }
-
-      bool device_guest_mode_enabled = false;
-      if (cros_settings->GetBoolean(ash::kAccountsPrefAllowGuest,
-                                    &device_guest_mode_enabled)) {
-        result->device_guest_mode_enabled = device_guest_mode_enabled
-                                                ? MojoOptionalBool::kTrue
-                                                : MojoOptionalBool::kFalse;
-      }
-
-      bool device_extensions_system_log_enabled = false;
-      if (cros_settings->GetBoolean(ash::kDeviceExtensionsSystemLogEnabled,
-                                    &device_extensions_system_log_enabled)) {
-        result->device_extensions_system_log_enabled =
-            device_extensions_system_log_enabled ? MojoOptionalBool::kTrue
-                                                 : MojoOptionalBool::kFalse;
-      }
-    } else {
-      LOG(WARNING) << "Unexpected crossettings trusted values status: "
-                   << trusted_result;
-    }
-  }
-
-  result->device_system_wide_tracing_enabled = MojoOptionalBool::kUnset;
-  auto* local_state = g_browser_process->local_state();
-  if (local_state) {
-    auto* pref = local_state->FindPreference(
-        ash::prefs::kDeviceSystemWideTracingEnabled);
-    if (pref && pref->IsManaged()) {
-      result->device_system_wide_tracing_enabled =
-          pref->GetValue()->GetBool() ? MojoOptionalBool::kTrue
-                                      : MojoOptionalBool::kFalse;
-    }
-  }
-
-  return result;
 }
 
 policy::CloudPolicyCore* GetCloudPolicyCoreForUser(

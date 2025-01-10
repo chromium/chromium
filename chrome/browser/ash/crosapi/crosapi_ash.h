@@ -71,7 +71,6 @@ class DeskTemplateAsh;
 class DeviceAttributesAsh;
 class DeviceLocalAccountExtensionServiceAsh;
 class DeviceOAuth2TokenServiceAsh;
-class DeviceSettingsAsh;
 class DocumentScanAsh;
 class DownloadControllerAsh;
 class DriveIntegrationServiceAsh;
@@ -188,8 +187,6 @@ class CrosapiAsh : public mojom::Crosapi {
       override;
   void BindDeviceOAuth2TokenService(
       mojo::PendingReceiver<mojom::DeviceOAuth2TokenService> receiver) override;
-  void BindDeviceSettingsService(
-      mojo::PendingReceiver<mojom::DeviceSettingsService> receiver) override;
   void BindDiagnosticsService(
       mojo::PendingReceiver<mojom::DiagnosticsService> receiver) override;
   void BindDigitalGoodsFactory(
@@ -576,7 +573,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<DeviceLocalAccountExtensionServiceAsh>
       device_local_account_extension_service_ash_;
   std::unique_ptr<DeviceOAuth2TokenServiceAsh> device_oauth2_token_service_ash_;
-  std::unique_ptr<DeviceSettingsAsh> device_settings_ash_;
   std::unique_ptr<ash::DiagnosticsServiceAsh> diagnostics_service_ash_;
   std::unique_ptr<apps::DigitalGoodsFactoryAsh> digital_goods_factory_ash_;
   std::unique_ptr<DocumentScanAsh> document_scan_ash_;

@@ -33,9 +33,6 @@ bool IsSigninProfileOrBelongsToAffiliatedUser(Profile* profile);
 // Returns the UUID and version for all tracked interfaces. Exposed for testing.
 const base::flat_map<base::Token, uint32_t>& GetInterfaceVersions();
 
-// Returns the device settings needed for Lacros.
-mojom::DeviceSettingsPtr GetDeviceSettings();
-
 // Returns the CloudPolicyCore for the given user.
 policy::CloudPolicyCore* GetCloudPolicyCoreForUser(
     const user_manager::User& user);

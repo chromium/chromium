@@ -35,7 +35,6 @@
 #include "chrome/browser/ash/crosapi/device_attributes_ash.h"
 #include "chrome/browser/ash/crosapi/device_local_account_extension_service_ash.h"
 #include "chrome/browser/ash/crosapi/device_oauth2_token_service_ash.h"
-#include "chrome/browser/ash/crosapi/device_settings_ash.h"
 #include "chrome/browser/ash/crosapi/document_scan_ash.h"
 #include "chrome/browser/ash/crosapi/download_controller_ash.h"
 #include "chrome/browser/ash/crosapi/drive_integration_service_ash.h"
@@ -195,7 +194,6 @@ CrosapiAsh::CrosapiAsh()
           std::make_unique<DeviceLocalAccountExtensionServiceAsh>()),
       device_oauth2_token_service_ash_(
           std::make_unique<DeviceOAuth2TokenServiceAsh>()),
-      device_settings_ash_(std::make_unique<DeviceSettingsAsh>()),
       diagnostics_service_ash_(std::make_unique<ash::DiagnosticsServiceAsh>()),
       digital_goods_factory_ash_(
           std::make_unique<apps::DigitalGoodsFactoryAsh>()),
@@ -414,11 +412,6 @@ void CrosapiAsh::BindDeviceLocalAccountExtensionService(
 void CrosapiAsh::BindDeviceOAuth2TokenService(
     mojo::PendingReceiver<mojom::DeviceOAuth2TokenService> receiver) {
   device_oauth2_token_service_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindDeviceSettingsService(
-    mojo::PendingReceiver<mojom::DeviceSettingsService> receiver) {
-  device_settings_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindDiagnosticsService(
