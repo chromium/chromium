@@ -16,7 +16,6 @@
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
-#include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -171,11 +170,6 @@ class PersonalDataManager : public KeyedService,
 
  private:
   base::ObserverList<PersonalDataManagerObserver>::Unchecked observers_;
-
-  // The HistoryService to be observed by the personal data manager. Must
-  // outlive this instance. This unowned pointer is retained so the PDM can
-  // remove itself from the history service's observer list on shutdown.
-  raw_ptr<history::HistoryService> history_service_ = nullptr;
 
   base::ScopedObservation<history::HistoryService, HistoryServiceObserver>
       history_service_observation_{this};

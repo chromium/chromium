@@ -32,8 +32,7 @@ PersonalDataManager::PersonalDataManager(
     std::unique_ptr<AutofillSharedStorageHandler> shared_storage_handler,
     std::string app_locale,
     std::string variations_country_code)
-    : pref_service_(pref_service),
-      history_service_(history_service) {
+    : pref_service_(pref_service) {
   address_data_manager_ = std::make_unique<AddressDataManager>(
       profile_database, pref_service, local_state, sync_service,
       identity_manager, strike_database,
@@ -47,8 +46,8 @@ PersonalDataManager::PersonalDataManager(
   payments_data_manager_observation_.Observe(payments_data_manager_.get());
 
   // Listen for URL deletions from browsing history.
-  if (history_service_) {
-    history_service_observation_.Observe(history_service_.get());
+  if (history_service) {
+    history_service_observation_.Observe(history_service);
   }
 
   // WebDataService may not be available in tests.
@@ -68,10 +67,7 @@ PersonalDataManager::PersonalDataManager(
 PersonalDataManager::~PersonalDataManager() = default;
 
 void PersonalDataManager::Shutdown() {
-  if (history_service_) {
-    history_service_observation_.Reset();
-  }
-  history_service_ = nullptr;
+  history_service_observation_.Reset();
   address_data_manager_->Shutdown();
   payments_data_manager_->Shutdown();
 }
