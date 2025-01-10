@@ -9,22 +9,15 @@ static_library("test_support") {
     "api_mock_setup_mixin.h",
     "embedded_test_server_setup_mixin.cc",
     "embedded_test_server_setup_mixin.h",
-    "family_live_test.cc",
-    "family_live_test.h",
-    "family_member.cc",
-    "family_member.h",
     "google_auth_state_waiter_mixin.cc",
     "google_auth_state_waiter_mixin.h",
     "supervision_mixin.cc",
     "supervision_mixin.h",
   ]
 
-  deps = [ "//chrome/browser/content_settings:content_settings_factory" ]
-
   public_deps = [
     ":child_accounts",
     "//base",
-    "//chrome/browser/signin/e2e_tests:test_support",
     "//chrome/test:sync_integration_test_support",
     "//chrome/test:test_support",
     "//components/signin/public/identity_manager:test_support",
@@ -43,5 +36,25 @@ static_library("child_accounts") {
     "//base",
     "//net:test_support",
     "//services/network/public/cpp:cpp",
-    ]
+  ]
+}
+
+# Defines sources and dependencies for the Desktop-oriented live tests.
+source_set("live_tests") {
+  testonly = true
+  sources = [
+    "browser_user.cc",
+    "browser_user.h",
+    "family_live_test.cc",
+    "family_live_test.h",
+  ]
+  public_deps = [
+    ":test_support",
+    "//base",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin/e2e_tests:test_support",
+    "//components/supervised_user/core/browser/proto",
+    "//components/supervised_user/test_support:account_repository",
+  ]
 }

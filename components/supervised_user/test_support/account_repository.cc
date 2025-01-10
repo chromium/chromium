@@ -22,35 +22,13 @@
 namespace supervised_user {
 
 namespace {
-
-// Account repositories in files are only defined for platforms that support
-// end-to-end tests.
-const base::FilePath::StringPieceType kAccountRepositoryDirectory =
-    FILE_PATH_LITERAL("chrome/browser/internal/resources/supervised_user");
-
-#if BUILDFLAG(IS_WIN)
-const base::FilePath::StringPieceType kAccountRepositoryFileName =
-    FILE_PATH_LITERAL("win_test_accounts.json");
-#elif BUILDFLAG(IS_LINUX)
-const base::FilePath::StringPieceType kAccountRepositoryFileName =
-    FILE_PATH_LITERAL("linux_test_accounts.json");
-#elif BUILDFLAG(IS_IOS)
-const base::FilePath::StringPieceType kAccountRepositoryFileName =
-    FILE_PATH_LITERAL("ios_test_accounts.json");
-#else
-#error Unsupported platform
-#endif
-
-base::FilePath GetAbsolutePath(
-    const base::FilePath& account_repository_filename) {
-  base::FilePath root_path;
-  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &root_path);
-  return base::MakeAbsoluteFilePath(
-      root_path.Append(kAccountRepositoryDirectory)
-          .Append(account_repository_filename));
-}
-
 test_accounts::Repository ParseFromTestResource(base::FilePath path) {
+  if (!path.IsAbsolute()) {
+    base::FilePath root_path;
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &root_path);
+    path = base::MakeAbsoluteFilePath(root_path.Append(path));
+  }
+
   int error_code = 0;
   std::string error_str;
   JSONFileValueDeserializer deserializer(path);
@@ -93,14 +71,25 @@ std::optional<test_accounts::FamilyMember> GetFirstFamilyMemberByRole(
   return std::nullopt;
 }
 
-TestAccountRepository::TestAccountRepository()
-    : TestAccountRepository(
-          GetAbsolutePath(base::FilePath(kAccountRepositoryFileName))) {}
 TestAccountRepository::TestAccountRepository(const base::FilePath& path)
     : repository_(ParseFromTestResource(path)) {}
 TestAccountRepository::~TestAccountRepository() = default;
 
 namespace test_accounts {
+
+std::optional<Feature> ParseFeature(std::string_view feature_name) {
+  static std::map<std::string_view, Feature> features{
+      {"REGULAR", Feature::REGULAR},
+      {"DMA_ELIGIBLE_WITH_CONSENT", Feature::DMA_ELIGIBLE_WITH_CONSENT},
+      {"DMA_ELIGIBLE_WITHOUT_CONSENT", Feature::DMA_ELIGIBLE_WITHOUT_CONSENT},
+      {"DMA_INELIGIBLE", Feature::DMA_INELIGIBLE},
+  };
+  if (features.count(feature_name) == 0) {
+    return std::nullopt;
+  }
+  return features.at(feature_name);
+}
+
 void Repository::RegisterJSONConverter(
     base::JSONValueConverter<Repository>* converter) {
   converter->RegisterRepeatedMessage<Family>("families", &Repository::families);
@@ -112,18 +101,16 @@ void Family::RegisterJSONConverter(
                                           &Family::ParseFeature);
 }
 bool Family::ParseFeature(std::string_view value, Feature* feature) {
-  static std::map<std::string_view, Feature> features{
-      {"REGULAR", Feature::REGULAR},
-      {"DMA_ELIGIBLE_WITH_CONSENT", Feature::DMA_ELIGIBLE_WITH_CONSENT},
-      {"DMA_ELIGIBLE_WITHOUT_CONSENT", Feature::DMA_ELIGIBLE_WITHOUT_CONSENT},
-      {"DMA_INELIGIBLE", Feature::DMA_INELIGIBLE},
-  };
-  if (features.count(value) == 0) {
+  std::optional<Feature> parsed =
+      ::supervised_user::test_accounts::ParseFeature(value);
+  if (!parsed.has_value()) {
     return false;
   }
-  *feature = features.at(value);
+
+  *feature = *parsed;
   return true;
 }
+
 void FamilyMember::RegisterJSONConverter(
     base::JSONValueConverter<FamilyMember>* converter) {
   converter->RegisterStringField("name", &FamilyMember::name);
@@ -186,12 +173,6 @@ Repository& Repository::operator=(const Repository& other) {
   return *this;
 }
 Repository::~Repository() = default;
-
-bool IsDefaultAccountRepositoryAvailable() {
-  return base::PathExists(
-      GetAbsolutePath(base::FilePath(kAccountRepositoryFileName)));
-}
-
 }  // namespace test_accounts
 
 }  // namespace supervised_user
