@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/compose/compose_enabling.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
@@ -312,6 +313,13 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean("signinAllowed", !profile->IsGuestSession() &&
                                                profile->GetPrefs()->GetBoolean(
                                                    prefs::kSigninAllowed));
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile->GetPath());
+
+  html_source->AddBoolean("isDasherlessProfile",
+                          entry && entry->IsDasherlessManagement());
 
   html_source->AddBoolean(
       "turnOffSyncAllowedForManagedProfiles",

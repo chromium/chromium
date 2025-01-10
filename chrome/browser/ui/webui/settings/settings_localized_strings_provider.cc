@@ -1714,6 +1714,8 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
       {"manageGoogleAccount", IDS_SETTINGS_MANAGE_GOOGLE_ACCOUNT},
       {"syncAndNonPersonalizedServices",
        IDS_SETTINGS_SYNC_SYNC_AND_NON_PERSONALIZED_SERVICES},
+      {"syncUnavailableForNonGoogleAccount",
+       IDS_SYNC_UNAVAILABLE_FOR_NON_GOOGLE_ACCOUNT},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       {"accountManagerSubMenuLabel",
        IDS_SETTINGS_ACCOUNT_MANAGER_SUBMENU_LABEL},

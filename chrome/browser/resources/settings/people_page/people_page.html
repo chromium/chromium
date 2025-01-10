@@ -16,6 +16,15 @@
         --cr-secondary-text-color: var(--settings-error-color);
       }
 
+      #sync-not-allowed {
+        border-top: var(--cr-separator-line);
+        background:  var(--google-grey-100);
+      }
+
+      #sync-not-allowed-text {
+        margin-left: 8px;
+      }
+
       cr-link-row {
         --cr-link-row-icon-width: 40px;
         border-top: var(--cr-separator-line);
@@ -48,6 +57,12 @@
       settings-sync-account-control[showing-promo]::part(title) {
         font-size: 1.1rem;
         line-height: 1.625rem;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        #sync-not-allowed {
+          background:  var(--google-grey-800);
+        }
       }
     </style>
     <settings-animated-pages id="pages" section="people"
@@ -131,6 +146,17 @@ shown on non-ChromeOS platforms -->
         <cr-link-row id="importDataDialogTrigger"
             label="$i18n{importTitle}"
             on-click="onImportDataClick_"></cr-link-row>
+</if>
+
+<if expr="not is_chromeos">
+        <template is="dom-if" if="[[isDasherlessProfile_]]">
+          <div id="sync-not-allowed" class="cr-row continuation">
+            <cr-icon id="info-icon" icon="cr:info-outline"></cr-icon>
+            <div id="sync-not-allowed-text" class="flex cr-padded-text">
+              $i18n{syncUnavailableForNonGoogleAccount}
+            </div>
+          </div>
+        </template>
 </if>
 
       </div>
