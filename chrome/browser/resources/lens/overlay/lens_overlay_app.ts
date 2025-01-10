@@ -142,8 +142,7 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
       },
       showGhostLoader: {
         type: Boolean,
-        computed:
-            `computeShowGhostLoader(autocompleteRequestStarted, showErrorState,
+        computed: `computeShowGhostLoader(isSearchboxFocused,
             suppressGhostLoader)`,
         reflectToAttribute: true,
       },
@@ -165,8 +164,6 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   suppressGhostLoader: boolean;
   // Whether the ghost loader should show its error state.
   showErrorState: boolean;
-  // Whether this is an in flight request to autocomplete.
-  private autocompleteRequestStarted: boolean = false;
   // Whether the translate button is enabled.
   private isTranslateButtonEnabled: boolean;
   // Whether the image has finished rendering.
@@ -281,9 +278,6 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
       }
     });
     this.eventTracker_.add(
-        document, 'query-autocomplete',
-        this.handleQueryAutocomplete.bind(this));
-    this.eventTracker_.add(
         document, 'pointermove', this.updateCursorPosition.bind(this));
     this.eventTracker_.add(this.$.searchbox, 'mousedown', () => {
       this.suppressGhostLoader = false;
@@ -345,11 +339,6 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
     this.searchboxBoundingClientRectObserver.observe(this.$.selectionOverlay);
   }
 
-  // Called when the searchbox requests autocomplete suggestions.
-  private handleQueryAutocomplete() {
-    this.autocompleteRequestStarted = true;
-  }
-
   private focusShimmerOnSearchbox() {
     const suggestionsContainer = this.$.searchbox.getSuggestionsElement();
     const areSuggestionsShowing =
@@ -386,7 +375,6 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
 
   private handleSearchboxBlurred() {
     this.isSearchboxFocused = false;
-    this.autocompleteRequestStarted = false;
     this.showErrorState = false;
     this.$.translateButtonContainer.classList.add('searchbox-unfocused');
 
@@ -444,13 +432,7 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   }
 
   private computeShowGhostLoader(): boolean {
-    if (this.suppressGhostLoader) {
-      return false;
-    }
-    // Show the ghost loader if there is focus on the searchbox, and there is
-    // autcomplete is loading or if autocomplete failed.
-    return this.isSearchboxFocused &&
-        (this.autocompleteRequestStarted || this.showErrorState);
+    return this.isSearchboxFocused && !this.suppressGhostLoader;
   }
 
   private suppressGhostLoader_() {
