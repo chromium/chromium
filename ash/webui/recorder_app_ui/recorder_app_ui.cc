@@ -49,6 +49,15 @@ namespace ash {
 
 namespace {
 
+// New ChromeOS feedback dialog (crbug.com/40941303) passes description template
+// as query parameters in GURL with character limit 2097152 (defined in
+// url.mojom.kMaxURLChars).
+//
+// Calculates characters as 1000-char (around 200-word) template with maximum
+// model input & output (12k tokens in total) we likely want to include in the
+// description.
+const uint32_t kFeedbackDescriptionTemplateMaxChars = 49000;  // 1000 + 4 * 12k
+
 std::string_view SodaInstallerErrorCodeToString(
     speech::SodaInstaller::ErrorCode error) {
   switch (error) {
@@ -695,6 +704,12 @@ void RecorderAppUI::LoadSpeechRecognizer(
 void RecorderAppUI::OpenAiFeedbackDialog(
     const std::string& description_template) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (description_template.length() > kFeedbackDescriptionTemplateMaxChars) {
+    LOG(ERROR)
+        << "Refusing to open feedback dialog as description template exceeds "
+        << kFeedbackDescriptionTemplateMaxChars << " characters";
+    return;
+  }
   delegate_->OpenAiFeedbackDialog(description_template);
 }
 
