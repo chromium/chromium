@@ -373,7 +373,12 @@ void EnrollmentScreenHandler::ShowEnrollmentStatus(
           break;
         case policy::DM_STATUS_SERVICE_INVALID_PACKAGED_DEVICE_FOR_KIOSK:
           ShowError(IDS_ENTERPRISE_ENROLLMENT_INVALID_PACKAGED_DEVICE_FOR_KIOSK,
-                    true);
+                    /*retry=*/true);
+          break;
+        case policy::DM_STATUS_SERVICE_ORG_UNIT_ENROLLMENT_LIMIT_EXCEEEDED:
+          ShowError(
+              IDS_ENTERPRISE_ENROLLMENT_ORG_UNIT_ENROLLMENT_LIMIT_EXCEEDED,
+              /*retry=*/true);
           break;
         default:
           ShowErrorMessage(

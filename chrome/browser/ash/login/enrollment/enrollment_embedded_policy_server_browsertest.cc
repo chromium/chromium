@@ -784,6 +784,23 @@ IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
   EXPECT_FALSE(InstallAttributes::Get()->IsEnterpriseManaged());
 }
 
+// Error during enrollment : Error 419: ORG_UNIT_ENROLLMENT_LIMIT_EXCEEDED.
+IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
+                       EnrollmentErrorOrgUnitEnrollmentLimitExceeded) {
+  policy_server_.SetDeviceEnrollmentError(
+      policy::DeviceManagementService::kOrgUnitEnrollmentLimitExceeded);
+
+  TriggerEnrollmentAndSignInSuccessfully();
+
+  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepError);
+  enrollment_ui_.ExpectErrorMessage(
+      IDS_ENTERPRISE_ENROLLMENT_ORG_UNIT_ENROLLMENT_LIMIT_EXCEEDED,
+      /*can_retry=*/true);
+  enrollment_ui_.RetryAndWaitForSigninStep();
+  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+  EXPECT_FALSE(InstallAttributes::Get()->IsEnterpriseManaged());
+}
+
 // Error during enrollment : Error fetching policy : 902 - policy not found.
 IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
                        EnrollmentErrorFetchingPolicyNotFound) {

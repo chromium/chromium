@@ -151,6 +151,8 @@ std::string ResponseCodeToString(int response_code) {
       return "IllegalAccountForPackagedEDULicense";
     case DeviceManagementService::kInvalidPackagedDeviceForKiosk:
       return "InvalidPackagedDeviceForKiosk";
+    case DeviceManagementService::kOrgUnitEnrollmentLimitExceeded:
+      return "OrgUnitEnrollmentLimitExceeded";
   }
 
   return base::NumberToString(response_code);
@@ -185,6 +187,7 @@ const int DeviceManagementService::kInvalidDomainlessCustomer;
 const int DeviceManagementService::kTosHasNotBeenAccepted;
 const int DeviceManagementService::kIllegalAccountForPackagedEDULicense;
 const int DeviceManagementService::kInvalidPackagedDeviceForKiosk;
+const int DeviceManagementService::kOrgUnitEnrollmentLimitExceeded;
 
 // static
 std::string DeviceManagementService::JobConfiguration::GetJobTypeAsString(

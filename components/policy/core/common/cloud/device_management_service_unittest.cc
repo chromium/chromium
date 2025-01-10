@@ -610,6 +610,11 @@ INSTANTIATE_TEST_SUITE_P(
                             net::OK,
                             418,
                             PROTO_STRING(kResponseEmpty)),
+        FailedRequestParams(
+            DM_STATUS_SERVICE_ORG_UNIT_ENROLLMENT_LIMIT_EXCEEEDED,
+            net::OK,
+            419,
+            PROTO_STRING(kResponseEmpty)),
         FailedRequestParams(DM_STATUS_SERVICE_TOO_MANY_REQUESTS,
                             net::OK,
                             429,
