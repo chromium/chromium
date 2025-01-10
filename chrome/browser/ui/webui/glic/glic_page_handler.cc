@@ -108,6 +108,12 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         include_inner_text, include_viewport_screenshot, std::move(callback));
   }
 
+  void SetAudioDucking(bool enabled,
+                       SetAudioDuckingCallback callback) override {
+    bool result = glic_service_->window_controller().SetAudioDucking(enabled);
+    std::move(callback).Run(result);
+  }
+
   void SetPanelDraggableAreas(
       const std::vector<gfx::Rect>& draggable_areas,
       SetPanelDraggableAreasCallback callback) override {

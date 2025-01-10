@@ -61,6 +61,9 @@ class GlicWindowController : public views::WidgetObserver {
   // Called to notify the controller that the window was requested to be closed.
   void Close();
 
+  // Sets the audio ducking status.  Returns true if the operation succeeded.
+  bool SetAudioDucking(bool enabled);
+
   // Drags the glic window following the current mouse location with the given
   // `mouse_offset` and checks if the glic window is at a position where it
   // could attach to a browser window when a drag ends.

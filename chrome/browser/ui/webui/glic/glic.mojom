@@ -93,6 +93,12 @@ interface WebClientHandler {
   // Set the bounds of the widget hosting the WebUI to the given size.
   ResizeWidget(gfx.mojom.Size size) => (gfx.mojom.Size? actual_size);
 
+  // Requests that audio ducking be enabled or disabled.
+  // If enabled, audio from other sources will be attenuated.
+  // If disabled, normal audio playout resumes.
+  // Returns `true` if the ducking state was actually changed.
+  SetAudioDucking(bool enable) => (bool result);
+
   // Set the areas of the Glic panel from which it should be draggable. If
   // `draggable_areas` is empty, the panel will use the top bar area by default.
   // Returns when the browser has updated the draggable area.

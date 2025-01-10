@@ -4,7 +4,9 @@
 
 #include "chrome/browser/glic/glic_window_controller.h"
 
+#include "base/check.h"
 #include "chrome/browser/glic/glic_view.h"
+#include "chrome/browser/media/audio_ducker.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -14,6 +16,7 @@
 #include "chrome/browser/ui/views/tabs/glic_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "chrome/browser/ui/webui/glic/glic.mojom.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_observer.h"
 #include "ui/views/controls/webview/webview.h"
@@ -225,6 +228,7 @@ void GlicWindowController::Close() {
   if (!glic_window_widget_) {
     return;
   }
+  SetAudioDucking(false);
   glic_window_widget_->CloseWithReason(
       views::Widget::ClosedReason::kCloseButtonClicked);
   glic_widget_observer_.reset();
@@ -232,6 +236,21 @@ void GlicWindowController::Close() {
   browser_close_subscription_.reset();
   glic_window_widget_.reset();
   NotifyIfPanelStateChanged();
+}
+
+bool GlicWindowController::SetAudioDucking(bool enabled) {
+  glic::GlicView* glic_view = GetGlicView();
+  if (!glic_view) {
+    return false;
+  }
+  content::WebContents* contents = glic_view->web_view()->GetWebContents();
+  AudioDucker* audio_ducker =
+      AudioDucker::GetOrCreateForPage(contents->GetPrimaryPage());
+  if (enabled) {
+    return audio_ducker->StartDuckingOtherAudio();
+  } else {
+    return audio_ducker->StopDuckingOtherAudio();
+  }
 }
 
 void GlicWindowController::HandleWindowDragWithOffset(
