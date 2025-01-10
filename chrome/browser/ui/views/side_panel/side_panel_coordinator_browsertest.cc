@@ -11,6 +11,7 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/run_until.h"
@@ -221,7 +222,7 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
                          : "";
     std::string args =
         base::StringPrintf(R"([{%s%s"enabled":%s}])", tab_id_arg.c_str(),
-                           path_arg.c_str(), enabled ? "true" : "false");
+                           path_arg.c_str(), base::ToString(enabled));
     EXPECT_TRUE(extensions::api_test_utils::RunFunction(function.get(), args,
                                                         browser()->profile()))
         << function->GetError();

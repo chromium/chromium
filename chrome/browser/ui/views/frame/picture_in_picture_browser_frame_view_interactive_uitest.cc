@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
+#include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
@@ -159,7 +160,7 @@ class PictureInPictureBrowserFrameViewTest : public WebRtcTestBase,
         GetOrCreateDocumentPictureInPictureController(active_web_contents);
     const std::string disallow_return_to_opener_js_string =
         (disallow_return_to_opener.has_value()
-             ? (*disallow_return_to_opener ? "true" : "false")
+             ? base::ToString(*disallow_return_to_opener)
              : "undefined");
     const std::string size_string =
         (sizing_mode == SizingMode::kSized ? "300" : "undefined");

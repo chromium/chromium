@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/to_string.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/devtools_window.h"
@@ -438,7 +439,7 @@ GURL HatsNextWebDialog::GetParameterizedHatsURL() const {
   // by the wrapper website and provided to the HaTS backend service.
   base::Value::Dict dict;
   for (const auto& field_value : product_specific_bits_data_) {
-    dict.Set(field_value.first, field_value.second ? "true" : "false");
+    dict.Set(field_value.first, base::ToString(field_value.second));
   }
   for (const auto& field_value : product_specific_string_data_) {
     dict.Set(field_value.first, field_value.second);

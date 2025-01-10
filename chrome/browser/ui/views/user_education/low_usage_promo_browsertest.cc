@@ -6,6 +6,7 @@
 
 #include <sstream>
 
+#include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/policy/policy_test_utils.h"
@@ -33,10 +34,9 @@ class LowUsagePromoBrowsertest
   bool GetUseAlternateSearchProvider() const { return std::get<1>(GetParam()); }
 
   void SetUp() override {
-    const std::string enabled = GetAiEnabled() ? "true" : "false";
     feature_list_.InitAndEnableFeatureWithParameters(
         feature_engagement::kIPHDesktopReEngagementFeature,
-        {{"include_ai", enabled}});
+        {{"include_ai", base::ToString(GetAiEnabled())}});
     PolicyTest::SetUp();
   }
 

@@ -164,7 +164,7 @@ class FeaturePromoLifecycleUiTest : public TestBase {
               return !testing::Test::HasNonfatalFailure();
             }))
             .SetDescription(base::StringPrintf("CheckSnoozePrefs( %s, %d, %d )",
-                                               is_dismissed ? "true" : "false",
+                                               base::ToString(is_dismissed),
                                                show_count, snooze_count)));
   }
 
@@ -211,7 +211,7 @@ class FeaturePromoLifecycleUiTest : public TestBase {
                      {*feature, key}) == dismissed;
         }))
             .SetDescription(
-                base::StrCat({"CheckDismissed( ", dismissed ? "true" : "false",
+                base::StrCat({"CheckDismissed( ", base::ToString(dismissed),
                               ", ", feature->name, " )"})));
   }
 

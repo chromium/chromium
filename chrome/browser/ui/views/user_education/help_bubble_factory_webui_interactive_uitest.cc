@@ -8,6 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/i18n/base_i18n_switches.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "chrome/browser/profiles/profile.h"
@@ -141,7 +142,7 @@ class HelpBubbleFactoryWebUIInteractiveUiTest : public InteractiveBrowserTest {
                       has_help_bubble)
                       .SetDescription(base::StringPrintf(
                           "CheckHandlerHasHelpBubble(%s)",
-                          has_help_bubble ? "true" : "false"))));
+                          base::ToString(has_help_bubble)))));
   }
 
   auto Cleanup() {

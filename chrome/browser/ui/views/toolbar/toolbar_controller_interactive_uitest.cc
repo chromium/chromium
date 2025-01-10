@@ -7,6 +7,7 @@
 
 #include "base/functional/overloaded.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -181,7 +182,7 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
     return CheckResult([this, id]() { return delegate()->IsOverflowed(id); },
                        overflowed,
                        base::StringPrintf("CheckActionItemOverflowed(%s)",
-                                          overflowed ? "true" : "false"));
+                                          base::ToString(overflowed)));
   }
 
   // Forces `id` to overflow by filling toolbar with dummy buttons.
