@@ -239,12 +239,12 @@ class ASH_EXPORT CaptureModeController
 
   // Returns true if we can show a user nudge animation and a toast message to
   // alert users any available new features.
-  bool CanShowUserNudge() const;
+  bool CanShowSunfishRegionNudge() const;
 
   // Disables showing the user nudge from now on. Calling the above
-  // CanShowUserNudge() will return false for the current active user going
-  // forward.
-  void DisableUserNudgeForever();
+  // CanShowSunfishRegionNudge() will return false for the current active user
+  // going forward.
+  void DisableSunfishRegionNudgeForever();
 
   // Sets whether the currently logged in user selected to use the default
   // "Downloads" folder as the current save location, even while they already

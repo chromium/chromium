@@ -34,14 +34,11 @@ constexpr base::TimeDelta kDelayToDismissToast = base::Seconds(6);
 
 std::u16string GetCaptureToastTextOnToastType(
     CaptureToastType capture_toast_type) {
-  const int nudge_message_id =
-      IDS_ASH_SCREEN_CAPTURE_SHOW_DEMO_TOOLS_USER_NUDGE;
-
-  const int message_id =
-      capture_toast_type == CaptureToastType::kCameraPreview
-          ? IDS_ASH_SCREEN_CAPTURE_SURFACE_TOO_SMALL_USER_NUDGE
-          : nudge_message_id;
-  return l10n_util::GetStringUTF16(message_id);
+  // TODO: crbug.com/388898754 - Upload string for translation.
+  return capture_toast_type == CaptureToastType::kCameraPreview
+             ? l10n_util::GetStringUTF16(
+                   IDS_ASH_SCREEN_CAPTURE_SURFACE_TOO_SMALL_USER_NUDGE)
+             : u"Select anything on your screen to search, copy text, and more";
 }
 
 // Returns the init params that will be used for the toast widget.

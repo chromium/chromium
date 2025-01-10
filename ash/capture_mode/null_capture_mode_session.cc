@@ -100,7 +100,7 @@ void NullCaptureModeSession::OnCameraPreviewBoundsOrVisibilityChanged(
 
 void NullCaptureModeSession::OnCameraPreviewDestroyed() {}
 
-void NullCaptureModeSession::MaybeDismissUserNudgeForever() {}
+void NullCaptureModeSession::MaybeDismissSunfishRegionNudgeForever() {}
 
 void NullCaptureModeSession::MaybeChangeRoot(aura::Window* new_root,
                                              bool root_window_will_shutdown) {

@@ -181,7 +181,7 @@ class ASH_EXPORT CaptureModeSession
       bool capture_surface_became_too_small,
       bool did_bounds_or_visibility_change) override;
   void OnCameraPreviewDestroyed() override;
-  void MaybeDismissUserNudgeForever() override;
+  void MaybeDismissSunfishRegionNudgeForever() override;
   void MaybeChangeRoot(aura::Window* new_root,
                        bool root_window_will_shutdown) override;
   std::set<aura::Window*> GetWindowsToIgnoreFromWidgets() override;
@@ -267,9 +267,10 @@ class ASH_EXPORT CaptureModeSession
   bool CanShowWidget(views::Widget* widget) const;
 
   // If possible, this recreates and shows the nudge that alerts the user about
-  // the new folder selection settings. The nudge will be created on top of the
-  // the settings button on the capture mode bar.
-  void MaybeCreateUserNudge();
+  // to sunfish or scanner features in a regular capture mode region screenshot
+  // session. The nudge will be created on top of the the region mode button on
+  // the capture mode bar.
+  void MaybeCreateSunfishRegionNudge();
 
   // Called to accept and trigger a capture operation. This happens e.g. when
   // the user hits enter, selects a window/display to capture, or presses on the

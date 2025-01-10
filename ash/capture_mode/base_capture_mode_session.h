@@ -146,7 +146,7 @@ class ASH_EXPORT BaseCaptureModeSession : public ui::LayerOwner,
 
   // If there's a user nudge currently showing, it will be dismissed forever,
   // and will no longer be shown to the user.
-  virtual void MaybeDismissUserNudgeForever() = 0;
+  virtual void MaybeDismissSunfishRegionNudgeForever() = 0;
 
   // Handles changing `root_window_`. For example, moving the mouse cursor to
   // another display, a display was removed or the game window of the

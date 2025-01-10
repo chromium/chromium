@@ -2154,6 +2154,42 @@ TEST_F(SunfishTest, CopyTextButtonShownForDetectedText) {
   EXPECT_TRUE(ToastManager::Get()->IsToastShown(kCaptureModeTextCopiedToastId));
 }
 
+// Tests that the Sunfish region nudge is dismissed forever when an action
+// button is shown to the user.
+TEST_F(SunfishTest, SunfishRegionNudgeDismissedForever) {
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  auto* capture_session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  ASSERT_EQ(capture_session->session_type(), SessionType::kReal);
+
+  // Starting a regular capture session should show the sunfish region nudge.
+  auto* capture_toast_controller = capture_session->capture_toast_controller();
+  auto* nudge_controller = GetUserNudgeController();
+  ASSERT_TRUE(nudge_controller);
+  EXPECT_TRUE(nudge_controller->is_visible());
+  EXPECT_TRUE(capture_toast_controller->capture_toast_widget());
+  ASSERT_TRUE(capture_toast_controller->current_toast_type());
+  EXPECT_EQ(*(capture_toast_controller->current_toast_type()),
+            CaptureToastType::kUserNudge);
+
+  // Select a valid region. There should be at least one action button, and the
+  // sunfish nudge should be dismissed.
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 100, 100),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  ASSERT_TRUE(capture_session->action_container_widget());
+  ASSERT_GE(CaptureModeSessionTestApi(controller->capture_mode_session())
+                .GetActionButtons()
+                .size(),
+            1u);
+  EXPECT_FALSE(GetUserNudgeController());
+
+  // Stop and restart the session. The nudge should not show again.
+  controller->Stop();
+  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  EXPECT_FALSE(GetUserNudgeController());
+}
+
 using SunfishMultiDisplayTest = SunfishTest;
 
 TEST_F(SunfishMultiDisplayTest, SelectNewRegionAndPanelRoot) {

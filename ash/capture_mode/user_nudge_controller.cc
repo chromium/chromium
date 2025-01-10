@@ -79,7 +79,7 @@ UserNudgeController::UserNudgeController(CaptureModeSession* session,
 
 UserNudgeController::~UserNudgeController() {
   if (should_dismiss_nudge_forever_)
-    CaptureModeController::Get()->DisableUserNudgeForever();
+    CaptureModeController::Get()->DisableSunfishRegionNudgeForever();
   capture_session_->capture_toast_controller()->MaybeDismissCaptureToast(
       CaptureToastType::kUserNudge,
       /*animate=*/false);

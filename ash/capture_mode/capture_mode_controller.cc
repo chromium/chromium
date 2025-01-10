@@ -132,12 +132,20 @@ constexpr char kUsesDefaultCapturePathPrefName[] =
 
 constexpr char kShareToYouTubeURL[] = "https://youtube.com/upload";
 
+// TODO: crbug.com/388287849 - Clear this pref.
 // The name of a boolean pref that determines whether we can show the demo tools
 // user nudge. When this pref is false, it means that we showed the nudge at
 // some point and the user interacted with the capture mode session UI in such a
 // way that the nudge no longer needs to be displayed again.
 constexpr char kCanShowDemoToolsNudge[] =
     "ash.capture_mode.can_show_demo_tools_nudge";
+
+// The name of a boolean pref that determines whether we can show the sunfish
+// region user nudge. When this pref is false, it means that we showed the nudge
+// at some point and the user interacted with the capture mode session UI in
+// such a way that the nudge no longer needs to be displayed again.
+constexpr char kCanShowSunfishRegionNudge[] =
+    "ash.capture_mode.can_show_sunfish_region_nudge";
 
 // The ID for the toast shown when text is copied to clipboard.
 constexpr char kCaptureModeTextCopiedToastId[] = "capture_mode_text_copied";
@@ -676,12 +684,15 @@ void CaptureModeController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                  /*default_value=*/base::FilePath());
   registry->RegisterBooleanPref(kUsesDefaultCapturePathPrefName,
                                 /*default_value=*/false);
+  // TODO: crbug.com/388287849 - Clear this pref.
   registry->RegisterBooleanPref(kCanShowDemoToolsNudge,
                                 /*default_value=*/true);
   registry->RegisterBooleanPref(prefs::kSunfishEnabled,
                                 /*default_value=*/true);
   registry->RegisterBooleanPref(capture_mode::kSunfishConsentDisclaimerAccepted,
                                 /*default_value=*/false);
+  registry->RegisterBooleanPref(kCanShowSunfishRegionNudge,
+                                /*default_value=*/true);
 }
 
 SearchResultsPanel* CaptureModeController::GetSearchResultsPanel() const {
@@ -961,7 +972,7 @@ void CaptureModeController::SetUserCaptureRegion(const gfx::Rect& region,
     camera_controller_->MaybeReparentPreviewWidget();
 }
 
-bool CaptureModeController::CanShowUserNudge() const {
+bool CaptureModeController::CanShowSunfishRegionNudge() const {
   auto* session_controller = Shell::Get()->session_controller();
   DCHECK(session_controller->IsActiveUserSessionStarted());
 
@@ -985,12 +996,12 @@ bool CaptureModeController::CanShowUserNudge() const {
 
   auto* pref_service = session_controller->GetActivePrefService();
   DCHECK(pref_service);
-  return pref_service->GetBoolean(kCanShowDemoToolsNudge);
+  return pref_service->GetBoolean(kCanShowSunfishRegionNudge);
 }
 
-void CaptureModeController::DisableUserNudgeForever() {
+void CaptureModeController::DisableSunfishRegionNudgeForever() {
   capture_mode_util::GetActiveUserPrefService()->SetBoolean(
-      kCanShowDemoToolsNudge, false);
+      kCanShowSunfishRegionNudge, false);
 }
 
 void CaptureModeController::SetUsesDefaultCaptureFolder(bool value) {
@@ -1106,9 +1117,6 @@ void CaptureModeController::PerformCapture(PerformCaptureType capture_type) {
   DCHECK(!pending_dlp_check_);
   pending_dlp_check_ = true;
   capture_mode_session_->OnWaitingForDlpConfirmationStarted();
-  if (capture_type != PerformCaptureType::kTextDetection) {
-    capture_mode_session_->MaybeDismissUserNudgeForever();
-  }
   delegate_->CheckCaptureOperationRestrictionByDlp(
       capture_params->window, capture_params->bounds,
       base::BindOnce(

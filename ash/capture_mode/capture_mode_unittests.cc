@@ -6518,100 +6518,6 @@ class CaptureModeSettingsTest : public CaptureModeTest {
   }
 };
 
-enum class NudgeDismissalCause {
-  kPressSettingsButton,
-  kCaptureViaEnterKey,
-  kCaptureViaClickOnScreen,
-  kCaptureViaLabelButton,
-};
-
-// Test fixture to test that various causes that lead to the dismissal of the
-// user nudge, they dismiss it forever.
-class CaptureModeNudgeDismissalTest
-    : public CaptureModeSettingsTest,
-      public ::testing::WithParamInterface<NudgeDismissalCause> {
- public:
-  // Starts a session appropriate for the test param.
-  CaptureModeController* StartSession() {
-    switch (GetParam()) {
-      case NudgeDismissalCause::kPressSettingsButton:
-      case NudgeDismissalCause::kCaptureViaEnterKey:
-      case NudgeDismissalCause::kCaptureViaClickOnScreen:
-        return StartCaptureSession(CaptureModeSource::kFullscreen,
-                                   CaptureModeType::kImage);
-      case NudgeDismissalCause::kCaptureViaLabelButton:
-        auto* controller = CaptureModeController::Get();
-        controller->SetUserCaptureRegion(gfx::Rect(200, 300), /*by_user=*/true);
-        StartCaptureSession(CaptureModeSource::kRegion,
-                            CaptureModeType::kImage);
-        return controller;
-    }
-  }
-
-  void DoDismissalAction() {
-    auto* controller = CaptureModeController::Get();
-    auto* event_generator = GetEventGenerator();
-    switch (GetParam()) {
-      case NudgeDismissalCause::kPressSettingsButton:
-        ClickOnView(GetSettingsButton(), event_generator);
-        break;
-      case NudgeDismissalCause::kCaptureViaEnterKey:
-        PressAndReleaseKey(ui::VKEY_RETURN);
-        EXPECT_FALSE(controller->IsActive());
-        break;
-      case NudgeDismissalCause::kCaptureViaClickOnScreen:
-        event_generator->MoveMouseToCenterOf(Shell::GetPrimaryRootWindow());
-        event_generator->ClickLeftButton();
-        EXPECT_FALSE(controller->IsActive());
-        break;
-      case NudgeDismissalCause::kCaptureViaLabelButton:
-        auto* label_button_widget =
-            CaptureModeSessionTestApi(controller->capture_mode_session())
-                .GetCaptureLabelWidget();
-        EXPECT_TRUE(label_button_widget);
-        ClickOnView(label_button_widget->GetContentsView(), event_generator);
-        break;
-    }
-  }
-};
-
-TEST_P(CaptureModeNudgeDismissalTest, NudgeDismissedForever) {
-  auto* controller = StartSession();
-  auto* capture_session =
-      static_cast<CaptureModeSession*>(controller->capture_mode_session());
-  ASSERT_EQ(capture_session->session_type(), SessionType::kReal);
-  auto* capture_toast_controller = capture_session->capture_toast_controller();
-  auto* nudge_controller = GetUserNudgeController();
-  ASSERT_TRUE(nudge_controller);
-  EXPECT_TRUE(nudge_controller->is_visible());
-  EXPECT_TRUE(capture_toast_controller->capture_toast_widget());
-  ASSERT_TRUE(capture_toast_controller->current_toast_type());
-  EXPECT_EQ(*(capture_toast_controller->current_toast_type()),
-            CaptureToastType::kUserNudge);
-
-  // Trigger the action that dismisses the nudge forever, it should be removed
-  // in this session (if the action doesn't stop the session) and any future
-  // sessions.
-  DoDismissalAction();
-  if (controller->IsActive()) {
-    EXPECT_FALSE(GetUserNudgeController());
-    // Close the session in preparation for opening a new one.
-    controller->Stop();
-  }
-
-  // Reopen a new session, the nudge should not show anymore.
-  StartImageRegionCapture();
-  EXPECT_FALSE(GetUserNudgeController());
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    CaptureModeNudgeDismissalTest,
-    testing::Values(NudgeDismissalCause::kPressSettingsButton,
-                    NudgeDismissalCause::kCaptureViaEnterKey,
-                    NudgeDismissalCause::kCaptureViaClickOnScreen,
-                    NudgeDismissalCause::kCaptureViaLabelButton));
-
 TEST_F(CaptureModeSettingsTest, NudgeChangesRootWithBar) {
   UpdateDisplay("800x700,801+0-800x700");
 
@@ -6657,7 +6563,9 @@ TEST_F(CaptureModeSettingsTest, NudgeBehaviorWhenSelectingRegion) {
   event_generator->MoveMouseTo(gfx::Point(1000, 500));
   event_generator->PressLeftButton();
   EXPECT_FALSE(nudge_controller->is_visible());
-  event_generator->MoveMouseBy(50, 60);
+
+  // If we release without selecting a valid region (i.e., an empty region), the
+  // nudge should be visible again.
   event_generator->ReleaseLeftButton();
   EXPECT_EQ(Shell::GetAllRootWindows()[1], session->current_root());
 
@@ -6690,7 +6598,7 @@ TEST_F(CaptureModeSettingsTest, NudgeDoesNotShowForAllUserTypes) {
     SimulateUserLogin("example@gmail.com", test_case.user_type);
 
     auto* controller = StartImageRegionCapture();
-    EXPECT_EQ(test_case.can_see_nudge, controller->CanShowUserNudge());
+    EXPECT_EQ(test_case.can_see_nudge, controller->CanShowSunfishRegionNudge());
 
     auto* nudge_controller = GetUserNudgeController();
     EXPECT_EQ(test_case.can_see_nudge, !!nudge_controller);

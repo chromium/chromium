@@ -663,7 +663,6 @@ void CaptureModeSession::SetSettingsMenuShown(bool shown, bool by_key_event) {
 
     auto* parent = GetParentContainer(current_root_);
     capture_mode_settings_widget_ = std::make_unique<views::Widget>();
-    MaybeDismissUserNudgeForever();
     capture_toast_controller_.DismissCurrentToastIfAny();
 
     capture_mode_settings_widget_->Init(CreateWidgetParams(
@@ -1264,11 +1263,7 @@ void CaptureModeSession::OnCameraPreviewBoundsOrVisibilityChanged(
       kShellWindowId_UnparentedContainer;
   if (capture_surface_became_too_small && !is_drag_in_progress_ &&
       !is_parented_to_unparented_container) {
-    // Since the user nudge toast has lower priority, if the toast for the
-    // camera preview needs to be shown, user nudge toast should be dismissed
-    // forever when applicable.
-    MaybeDismissUserNudgeForever();
-
+    user_nudge_controller_.reset();
     capture_toast_controller_.ShowCaptureToast(
         CaptureToastType::kCameraPreview);
   } else {
@@ -1286,7 +1281,7 @@ void CaptureModeSession::OnCameraPreviewDestroyed() {
       CaptureToastType::kCameraPreview);
 }
 
-void CaptureModeSession::MaybeDismissUserNudgeForever() {
+void CaptureModeSession::MaybeDismissSunfishRegionNudgeForever() {
   if (user_nudge_controller_) {
     user_nudge_controller_->set_should_dismiss_nudge_forever(true);
   }
@@ -1412,6 +1407,11 @@ ActionButtonView* CaptureModeSession::AddActionButton(
   }
 
   CHECK(action_container_view_);
+
+  // If the user is shown an action button, they have successfully selected a
+  // region and invoked a backend response, so there is no need to show the
+  // nudge anymore.
+  MaybeDismissSunfishRegionNudgeForever();
 
   // Collect the existing buttons and newly requested button, and sort them by
   // rank.
@@ -1985,21 +1985,22 @@ bool CaptureModeSession::CanShowWidget(views::Widget* widget) const {
                capture_label_widget_->GetWindowBoundsInScreen()));
 }
 
-void CaptureModeSession::MaybeCreateUserNudge() {
+void CaptureModeSession::MaybeCreateSunfishRegionNudge() {
   user_nudge_controller_.reset();
 
   if (!active_behavior_->ShouldShowUserNudge()) {
     return;
   }
 
-  if (!controller_->CanShowUserNudge()) {
+  if (!controller_->CanShowSunfishRegionNudge()) {
     return;
   }
 
-  auto* settings_button = capture_mode_bar_view_->settings_button();
-  CHECK(settings_button);
+  auto* region_button =
+      capture_mode_bar_view_->GetCaptureSourceView()->region_toggle_button();
+  CHECK(region_button);
   user_nudge_controller_ =
-      std::make_unique<UserNudgeController>(this, settings_button);
+      std::make_unique<UserNudgeController>(this, region_button);
   user_nudge_controller_->SetVisible(true);
 }
 
@@ -3197,7 +3198,6 @@ void CaptureModeSession::SetRecordingTypeMenuShown(bool shown,
 
     auto* parent = GetParentContainer(current_root_);
     recording_type_menu_widget_ = std::make_unique<views::Widget>();
-    MaybeDismissUserNudgeForever();
     capture_toast_controller_.DismissCurrentToastIfAny();
 
     recording_type_menu_widget_->Init(
@@ -3655,7 +3655,7 @@ void CaptureModeSession::InitInternal() {
   // the initialization of the capture session, the type change is not triggered
   // by the user.
   capture_mode_bar_view_->OnCaptureTypeChanged(controller_->type());
-  MaybeCreateUserNudge();
+  MaybeCreateSunfishRegionNudge();
 
   if (active_behavior_->ShouldRegionOverlayBeAllowed()) {
     capture_region_overlay_controller_ =
