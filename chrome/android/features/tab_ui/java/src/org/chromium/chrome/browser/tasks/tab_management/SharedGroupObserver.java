@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import android.text.TextUtils;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -18,13 +20,15 @@ import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_group_sync.TabGroupSyncService.Observer;
+import org.chromium.components.tab_group_sync.TriggerSource;
 
 import java.util.List;
 import java.util.Objects;
 
 /** Provides a simple interface to watch shared state for a single tab group. */
 public class SharedGroupObserver implements Destroyable {
-    private final DataSharingService.Observer mObserver =
+    private final DataSharingService.Observer mShareObserver =
             new DataSharingService.Observer() {
                 @Override
                 public void onGroupChanged(GroupData groupData) {
@@ -42,6 +46,14 @@ public class SharedGroupObserver implements Destroyable {
                 }
             };
 
+    private final TabGroupSyncService.Observer mSyncObserver =
+            new Observer() {
+                @Override
+                public void onTabGroupUpdated(SavedTabGroup group, @TriggerSource int source) {
+                    updateForSyncChange(group);
+                }
+            };
+
     private final ObservableSupplierImpl<Integer> mGroupSharedStateSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<List<GroupMember>> mGroupMembersSupplier =
@@ -53,6 +65,7 @@ public class SharedGroupObserver implements Destroyable {
     private final LocalTabGroupId mLocalTabGroupId;
     private final TabGroupSyncService mTabGroupSyncService;
     private final DataSharingService mDataSharingService;
+    private final CollaborationService mCollaborationService;
 
     /**
      * @param tabGroupId The id of the tab group.
@@ -67,6 +80,7 @@ public class SharedGroupObserver implements Destroyable {
             @NonNull CollaborationService collaborationService) {
         mTabGroupSyncService = tabGroupSyncService;
         mDataSharingService = dataSharingService;
+        mCollaborationService = collaborationService;
         mLocalTabGroupId = new LocalTabGroupId(tabGroupId);
 
         @Nullable SavedTabGroup group = mTabGroupSyncService.getGroup(mLocalTabGroupId);
@@ -80,12 +94,14 @@ public class SharedGroupObserver implements Destroyable {
             updateOurGroupData(groupData);
         }
 
-        dataSharingService.addObserver(mObserver);
+        tabGroupSyncService.addObserver(mSyncObserver);
+        dataSharingService.addObserver(mShareObserver);
     }
 
     @Override
     public void destroy() {
-        mDataSharingService.removeObserver(mObserver);
+        mTabGroupSyncService.removeObserver(mSyncObserver);
+        mDataSharingService.removeObserver(mShareObserver);
     }
 
     /**
@@ -153,5 +169,16 @@ public class SharedGroupObserver implements Destroyable {
             }
             return matches;
         }
+    }
+
+    private void updateForSyncChange(SavedTabGroup group) {
+        if (!Objects.equals(mLocalTabGroupId, group.localId)
+                || TextUtils.equals(group.collaborationId, mCurrentCollaborationIdSupplier.get())) {
+            return;
+        }
+        String newCollaborationId = group.collaborationId;
+        GroupData groupData = mCollaborationService.getGroupData(newCollaborationId);
+        mCurrentCollaborationIdSupplier.set(newCollaborationId);
+        updateOurGroupData(groupData);
     }
 }
