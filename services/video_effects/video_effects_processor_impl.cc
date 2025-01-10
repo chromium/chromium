@@ -60,8 +60,7 @@ void VideoEffectsProcessorImpl::SetBackgroundSegmentationModel(
     base::span<const uint8_t> model_blob) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  background_segmentation_model_blob_.resize(model_blob.size());
-  base::span(background_segmentation_model_blob_).copy_from(model_blob);
+  processor_webgpu_->SetBackgroundSegmentationModel(model_blob);
 }
 
 bool VideoEffectsProcessorImpl::InitializeGpuState() {

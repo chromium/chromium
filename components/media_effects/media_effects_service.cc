@@ -91,8 +91,16 @@ void MediaEffectsService::BindVideoEffectsProcessor(
 }
 
 void MediaEffectsService::OnBackgroundSegmentationModelUpdated(
-    const base::FilePath& path) {
+    base::optional_ref<const base::FilePath> path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!path.has_value()) {
+    // We have not received a valid path, so there is nothing to open.
+    // Just pass an invalid `base::File`, it will be handled by lower
+    // layers.
+    OnBackgroundSegmentationModelOpened(base::File());
+    return;
+  }
 
   // We have received new path to the model, let's open it and inform the Video
   // Effects Service about it. Opening a file is considered blocking, schedule
@@ -110,7 +118,7 @@ void MediaEffectsService::OnBackgroundSegmentationModelUpdated(
 
             return model;
           },
-          path),
+          *path),
       base::BindOnce(&MediaEffectsService::OnBackgroundSegmentationModelOpened,
                      weak_factory_.GetWeakPtr()));
 }
@@ -118,6 +126,9 @@ void MediaEffectsService::OnBackgroundSegmentationModelUpdated(
 void MediaEffectsService::OnBackgroundSegmentationModelOpened(
     base::File model_file) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  video_effects::GetVideoEffectsService()->SetBackgroundSegmentationModel(
+      model_file.Duplicate());
 
   // Swap newly opened file with the old one and then close the old one:
   std::swap(latest_segmentation_model_file_, model_file);
@@ -128,14 +139,6 @@ void MediaEffectsService::OnBackgroundSegmentationModelOpened(
         FROM_HERE, {base::MayBlock()},
         base::DoNothingWithBoundArgs(std::move(model_file)));
   }
-
-  // Propagate the new file to Video Effects Service if valid:
-  if (!latest_segmentation_model_file_.IsValid()) {
-    return;
-  }
-
-  video_effects::GetVideoEffectsService()->SetBackgroundSegmentationModel(
-      latest_segmentation_model_file_.Duplicate());
 }
 
 VideoEffectsManagerImpl& MediaEffectsService::GetOrCreateVideoEffectsManager(

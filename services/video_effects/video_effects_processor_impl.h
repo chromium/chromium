@@ -105,7 +105,6 @@ class VideoEffectsProcessorImpl
   scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface_;
 
   std::unique_ptr<VideoEffectsProcessorWebGpu> processor_webgpu_;
-  std::vector<uint8_t> background_segmentation_model_blob_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

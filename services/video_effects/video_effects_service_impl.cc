@@ -185,26 +185,38 @@ void VideoEffectsServiceImpl::FinishCreatingEffectsProcessor(
     return;
   }
 
-  auto [_, inserted] = processors_.insert(
+  auto [processor_it, inserted] = processors_.insert(
       std::make_pair(device_id, std::move(effects_processor)));
   CHECK(inserted);
+
+  // If we already have the model file, we need to inform the newly created
+  // processor about it so it could finish its initialization:
+  if (model_) {
+    processor_it->second->SetBackgroundSegmentationModel(model_->bytes());
+  }
 }
 
 void VideoEffectsServiceImpl::SetBackgroundSegmentationModel(
     base::File model_file) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(bialpio): make a copy of the model blob to serve it every time new
-  // processor gets created.
-  base::MemoryMappedFile memory_mapped_model_file;
-  if (!memory_mapped_model_file.Initialize(std::move(model_file))) {
-    return;
-  }
+  // If we have received an invalid model file, we should stop using the model
+  // we previously got as this is how the caller informs us that the old model
+  // is not supposed to be used anymore but there is no new model to use.
+
+  // Throw out old model and attempt to initialize the memory mapping with the
+  // new one:
+  model_ = std::make_unique<base::MemoryMappedFile>();
+  // It doesn't matter if the initialization of the memory mapping succeeded
+  // or not. In case of a failure, the memory mapping will return empty span
+  // in `bytes()`, which we then will propagate to the lower layer that should
+  // handle it appropriately.
+  std::ignore = model_->Initialize(std::move(model_file));
 
   // Propagate the model to all already existing processors:
   for (auto& device_id_and_processor : processors_) {
     device_id_and_processor.second->SetBackgroundSegmentationModel(
-        memory_mapped_model_file.bytes());
+        model_->bytes());
   }
 }
 

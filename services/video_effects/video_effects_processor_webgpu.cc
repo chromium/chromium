@@ -98,6 +98,14 @@ bool VideoEffectsProcessorWebGpu::Initialize() {
   return true;
 }
 
+void VideoEffectsProcessorWebGpu::SetBackgroundSegmentationModel(
+    base::span<const uint8_t> model_blob) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  background_segmentation_model_.resize(model_blob.size());
+  base::span(background_segmentation_model_).copy_from(model_blob);
+}
+
 // `VideoEffectsProcessorWebGpu::PostProcess()` runs the simple shader on top of
 // video frame provided to us from Video Capture Service. We use 3 different IPC
 // interfaces to talk to GPU service, hence we need to rely on sync tokens for

@@ -44,5 +44,8 @@ interface VideoEffectsService {
 
   // Passes a file containing the background segmentation model to be used by
   // all Video Effects Processors created by this service.
-  SetBackgroundSegmentationModel(mojo_base.mojom.ReadOnlyFile model_file);
+  // If the file is not set, it signifies that the model file is currently not
+  // available, and that the service should stop using previously passed in
+  // model file (if any).
+  SetBackgroundSegmentationModel(mojo_base.mojom.ReadOnlyFile? model_file);
 };

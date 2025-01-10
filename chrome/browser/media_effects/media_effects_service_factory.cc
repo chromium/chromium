@@ -97,15 +97,13 @@ class SegmentationModelObserver
              optimization_guide::proto::OptimizationTarget::
                  OPTIMIZATION_TARGET_CAMERA_BACKGROUND_SEGMENTATION);
 
-    if (!model_info.has_value()) {
-      return;
-    }
-
-    background_segmentation_model_path_ = model_info->GetModelFilePath();
+    background_segmentation_model_path_ =
+        model_info.has_value() ? std::optional(model_info->GetModelFilePath())
+                               : std::nullopt;
 
     for (auto& observer : observers_) {
       observer.OnBackgroundSegmentationModelUpdated(
-          *background_segmentation_model_path_);
+          background_segmentation_model_path_);
     }
   }
 

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/files/memory_mapped_file.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -82,6 +83,8 @@ class VideoEffectsServiceImpl : public mojom::VideoEffectsService,
 
   // Destroy all processors (pending and live).
   void Cleanup();
+
+  std::unique_ptr<base::MemoryMappedFile> model_;
 
   // Holder of wgpu::Device instance.
   std::unique_ptr<WebGpuDevice> webgpu_device_;
