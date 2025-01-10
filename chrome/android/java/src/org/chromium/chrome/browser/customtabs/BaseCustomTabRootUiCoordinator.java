@@ -67,7 +67,6 @@ import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.privacy_sandbox.ActivityTypeMapper;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogController;
-import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSurveyController;
 import org.chromium.chrome.browser.privacy_sandbox.SurfaceType;
 import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionSnackbarController;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -755,20 +754,12 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                                         "Startup.Android.PrivacySandbox.ShouldShowAdsNoticeCCT",
                                         shouldShowPrivacySandboxDialog);
                             }
-                            PrivacySandboxSurveyController surveyController =
-                                    PrivacySandboxSurveyController.initialize(
-                                            mTabModelSelectorSupplier.get(),
-                                            mActivityLifecycleDispatcher,
-                                            mActivity,
-                                            mMessageDispatcher,
-                                            mActivityTabProvider,
-                                            profile);
-                            String appId = mIntentDataProvider.get().getClientPackageName();
                             if (ChromeFeatureList.isEnabled(
                                             ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT)
                                     && shouldShowPrivacySandboxDialog
                                     && isCustomTab) {
                                 boolean shouldShowPrivacySandboxDialogAppIdCheck = true;
+                                String appId = mIntentDataProvider.get().getClientPackageName();
                                 String paramAdsNoticeAppId =
                                         ChromeFeatureList.getFieldTrialParamByFeature(
                                                 ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT,
@@ -789,17 +780,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                                                             SurfaceType.AGACCT,
                                                             mWindowAndroid);
                                 }
-                            } else if (surveyController != null
-                                    && !ChromeFeatureList.isEnabled(
-                                            ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT)
-                                    && shouldShowPrivacySandboxDialog
-                                    && isCustomTab) {
-                                surveyController.scheduleAdsCctControlSurveyLaunch(
-                                        appId,
-                                        new PrivacySandboxBridge(currentModelProfile)
-                                                .getRequiredPromptType(SurfaceType.AGACCT));
                             }
-
                             if (!didShowPrompt) {
                                 didShowPrompt =
                                         RequestDesktopUtils
