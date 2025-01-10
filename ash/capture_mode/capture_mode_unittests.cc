@@ -5388,9 +5388,7 @@ constexpr char kProjectorCreationFlowHistogramName[] =
 
 }  // namespace
 
-class ProjectorCaptureModeIntegrationTests
-    : public CaptureModeTest,
-      public ::testing::WithParamInterface<CaptureModeSource> {
+class ProjectorCaptureModeIntegrationTests : public CaptureModeTest {
  public:
   ProjectorCaptureModeIntegrationTests() = default;
   ~ProjectorCaptureModeIntegrationTests() override = default;
@@ -5445,6 +5443,10 @@ class ProjectorCaptureModeIntegrationTests
   base::HistogramTester histogram_tester_;
 };
 
+class ProjectorCaptureModeIntegrationTestsWithSource
+    : public ProjectorCaptureModeIntegrationTests,
+      public ::testing::WithParamInterface<CaptureModeSource> {};
+
 // static
 constexpr gfx::Rect ProjectorCaptureModeIntegrationTests::kUserRegion;
 
@@ -5477,7 +5479,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests, EntryPoint) {
 
 // Tests that a fullscreen screenshot can be taken via the keyboard shortcut
 // while a Projector-initiated session is active without ending the session.
-TEST_P(ProjectorCaptureModeIntegrationTests, FullscreenScreenshotKeyCombo) {
+TEST_F(ProjectorCaptureModeIntegrationTests, FullscreenScreenshotKeyCombo) {
   StartProjectorModeSession();
   PressAndReleaseKey(ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_CONTROL_DOWN);
   WaitForCaptureFileToBeSaved();
@@ -5907,7 +5909,8 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
   EXPECT_EQ(root_window_bounds, overlay_window->GetBoundsInRootWindow());
 }
 
-TEST_P(ProjectorCaptureModeIntegrationTests, AnnotationsOverlayWidgetBounds) {
+TEST_P(ProjectorCaptureModeIntegrationTestsWithSource,
+       AnnotationsOverlayWidgetBounds) {
   const auto capture_source = GetParam();
   StartRecordingForProjectorFromSource(capture_source);
   CaptureModeTestApi test_api;
@@ -5919,7 +5922,7 @@ TEST_P(ProjectorCaptureModeIntegrationTests, AnnotationsOverlayWidgetBounds) {
 }
 
 // Regression test for https://crbug.com/1322655.
-TEST_P(ProjectorCaptureModeIntegrationTests,
+TEST_P(ProjectorCaptureModeIntegrationTestsWithSource,
        AnnotationsOverlayWidgetBoundsSecondDisplay) {
   UpdateDisplay("800x700,801+0-800x700");
   const gfx::Point point_in_second_display = gfx::Point(1000, 500);
@@ -5945,7 +5948,7 @@ TEST_P(ProjectorCaptureModeIntegrationTests,
 
 // Tests the projector behavior in the projector-initiated capture mode session
 // and during video recording.
-TEST_P(ProjectorCaptureModeIntegrationTests, ProjectorBehavior) {
+TEST_P(ProjectorCaptureModeIntegrationTestsWithSource, ProjectorBehavior) {
   CaptureModeController* controller = CaptureModeController::Get();
   EXPECT_EQ(AudioRecordingMode::kOff,
             controller->GetEffectiveAudioRecordingMode());
@@ -6010,7 +6013,7 @@ TEST_P(ProjectorCaptureModeIntegrationTests, ProjectorBehavior) {
 
 // Tests that neither preview notification nor recording in tote is shown if in
 // projector mode.
-TEST_P(ProjectorCaptureModeIntegrationTests,
+TEST_P(ProjectorCaptureModeIntegrationTestsWithSource,
        NotShowRecordingInToteOrNotificationForProjectorMode) {
   const auto capture_source = GetParam();
   StartRecordingForProjectorFromSource(capture_source);
@@ -6023,7 +6026,7 @@ TEST_P(ProjectorCaptureModeIntegrationTests,
 
 // Tests that metrics are recorded correctly for capture configuration entering
 // from projector in both clamshell and tablet mode.
-TEST_P(ProjectorCaptureModeIntegrationTests,
+TEST_P(ProjectorCaptureModeIntegrationTestsWithSource,
        ProjectorCaptureConfigurationMetrics) {
   const auto capture_source = GetParam();
   constexpr char kProjectorCaptureConfigurationHistogramBase[] =
@@ -6067,7 +6070,7 @@ TEST_P(ProjectorCaptureModeIntegrationTests,
 
 // Tests that metrics are recorded correctly for screen recording length
 // entering from projector in both clamshell and tablet mode.
-TEST_P(ProjectorCaptureModeIntegrationTests,
+TEST_P(ProjectorCaptureModeIntegrationTestsWithSource,
        ProjectorScreenRecordingLengthMetrics) {
   const auto capture_source = GetParam();
   constexpr char kProjectorRecordTimeHistogramBase[] = "ScreenRecordingLength";
@@ -6166,7 +6169,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
 
 // Tests that if the user is in projector mode, then presses the shortcut to
 // start default capture mode, it is ignored.
-TEST_P(ProjectorCaptureModeIntegrationTests, SwitchToDefaultCaptureMode) {
+TEST_F(ProjectorCaptureModeIntegrationTests, SwitchToDefaultCaptureMode) {
   StartProjectorModeSession();
   VerifyActiveBehavior(BehaviorType::kProjector);
   PressAndReleaseKey(ui::VKEY_MEDIA_LAUNCH_APP1,
@@ -6175,7 +6178,7 @@ TEST_P(ProjectorCaptureModeIntegrationTests, SwitchToDefaultCaptureMode) {
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         ProjectorCaptureModeIntegrationTests,
+                         ProjectorCaptureModeIntegrationTestsWithSource,
                          testing::Values(CaptureModeSource::kFullscreen,
                                          CaptureModeSource::kRegion,
                                          CaptureModeSource::kWindow));
