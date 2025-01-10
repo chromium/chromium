@@ -13,13 +13,17 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/system_shadow.h"
 #include "ash/style/typography.h"
+#include "base/time/time.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animator.h"
+#include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
@@ -120,6 +124,20 @@ void ActionButtonView::CollapseToIconButton() {
   }
   label_->SetVisible(false);
   box_layout_->set_inside_border_insets(kCollapsedActionButtonInsets);
+}
+
+void ActionButtonView::PerformFadeInAnimation(
+    base::TimeDelta fade_in_duration) {
+  CHECK(layer());
+  layer()->SetOpacity(0.0f);
+  shadow_->GetLayer()->SetOpacity(0.0f);
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .Once()
+      .SetDuration(fade_in_duration)
+      .SetOpacity(layer(), 1.0f, gfx::Tween::LINEAR)
+      .SetOpacity(shadow_->GetLayer(), 1.0f, gfx::Tween::LINEAR);
 }
 
 BEGIN_METADATA(ActionButtonView)

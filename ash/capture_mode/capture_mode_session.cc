@@ -224,6 +224,10 @@ constexpr base::TimeDelta kSmartActionsButtonTransitionFadeInDuration =
 constexpr base::TimeDelta kSmartActionsButtonTransitionSlideInDuration =
     base::Milliseconds(250);
 
+// The animation duration for fading in Scanner action buttons.
+constexpr base::TimeDelta kScannerActionButtonFadeInDuration =
+    base::Milliseconds(100);
+
 // Mouse cursor warping is disabled when the capture source is a custom region.
 // Sets the mouse warp status to |enable| and return the original value.
 bool SetMouseWarpEnabled(bool enable) {
@@ -1489,9 +1493,12 @@ void CaptureModeSession::OnScannerActionsFetched(
         base::BindRepeating(&CaptureModeSession::OnScannerActionButtonPressed,
                             weak_ptr_factory_.GetWeakPtr(), std::move(action));
 
-    AddActionButton(std::move(pressed_callback), std::move(text), &icon,
-                    ActionButtonRank{ActionButtonType::kScanner, i},
-                    ActionButtonViewID::kScannerButton);
+    if (ActionButtonView* action_button =
+            AddActionButton(std::move(pressed_callback), std::move(text), &icon,
+                            ActionButtonRank{ActionButtonType::kScanner, i},
+                            ActionButtonViewID::kScannerButton)) {
+      action_button->PerformFadeInAnimation(kScannerActionButtonFadeInDuration);
+    }
   }
 }
 

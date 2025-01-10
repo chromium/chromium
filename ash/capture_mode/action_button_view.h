@@ -14,6 +14,10 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 
+namespace base {
+class TimeDelta;
+}  // namespace base
+
 namespace gfx {
 struct VectorIcon;
 }  // namespace gfx
@@ -51,6 +55,9 @@ class ASH_EXPORT ActionButtonView : public views::Button {
   // Collapses the action button, hiding its label so that only the icon
   // shows.
   void CollapseToIconButton();
+
+  // Fades in the action button from fully transparent to fully opaque.
+  void PerformFadeInAnimation(base::TimeDelta fade_in_duration);
 
   const views::ImageView* image_view_for_testing() const { return image_view_; }
   const views::Label* label_for_testing() const { return label_; }
