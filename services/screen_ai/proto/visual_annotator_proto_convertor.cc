@@ -586,14 +586,14 @@ ui::AXTreeUpdate VisualAnnotationToAXTreeUpdate(
 
   // Filter out invalid / unrecognized / unused nodes from the update.
   update.nodes.resize(nodes.size());
-  const auto end_node_iter = ranges::copy_if(
+  const auto end_nodes = std::ranges::copy_if(
       nodes, std::ranges::begin(update.nodes),
       [](const ui::AXNodeData& node_data) {
         return node_data.role != ax::mojom::Role::kUnknown &&
                node_data.id != ui::kInvalidAXNodeID;
       });
   update.nodes.resize(
-      std::distance(std::ranges::begin(update.nodes), end_node_iter));
+      std::distance(std::ranges::begin(update.nodes), end_nodes.out));
 
   return update;
 }
