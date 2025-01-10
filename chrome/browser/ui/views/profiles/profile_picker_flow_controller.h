@@ -23,7 +23,8 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
  public:
   ProfilePickerFlowController(ProfilePickerWebContentsHost* host,
                               ClearHostClosure clear_host_callback,
-                              ProfilePicker::EntryPoint entry_point);
+                              ProfilePicker::EntryPoint entry_point,
+                              const GURL& selected_profile_target_url);
   ~ProfilePickerFlowController() override;
 
   void Init() override;
@@ -82,6 +83,7 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
   void OnSwitchToProfileComplete(bool open_settings, Browser* browser);
 
   const ProfilePicker::EntryPoint entry_point_;
+  const GURL selected_profile_target_url_;
 
   // Color provided when a profile creation is initiated, that may be used to
   // tint screens of the profile creation flow (currently this only affects the

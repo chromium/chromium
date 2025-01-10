@@ -244,10 +244,6 @@ class ProfilePicker {
   // Returns the path of the default profile used for rendering the picker.
   static base::FilePath GetPickerProfilePath();
 
-  // Getter of the target page  url. If not empty and is valid, it opens on
-  // profile selection instead of the new tab page.
-  static GURL GetOnSelectProfileTargetUrl();
-
   // Getter of the path of profile which is displayed on the profile switch
   // screen.
   static base::FilePath GetSwitchProfilePath();

@@ -227,10 +227,6 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // on Windows).
   void ConfigureAccelerators();
 
-  // Getter of the target page url. If not empty and is valid, it opens on
-  // profile selection instead of the new tab page.
-  GURL GetOnSelectProfileTargetUrl() const;
-
   ProfilePickerFlowController* GetProfilePickerFlowController() const;
 
   // Returns a closure that can be executed to clear (see

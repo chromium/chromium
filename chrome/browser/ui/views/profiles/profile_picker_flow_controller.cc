@@ -444,12 +444,22 @@ void ShowLocalProfileCustomization(
       /*is_local_profile_creation=*/true);
 }
 
-void OpenOnSelectProfileTargetUrl(Browser* browser) {
-  GURL target_page_url = ProfilePicker::GetOnSelectProfileTargetUrl();
+void MaybeOpenPageInBrowser(Browser* browser,
+                            const GURL& target_page_url,
+                            bool open_settings) {
+  // User clicked 'Edit' from the profile card menu.
+  if (open_settings) {
+    chrome::ShowSettingsSubPage(browser, chrome::kManageProfileSubPage);
+    return;
+  }
+
+  // If no url is provided, proceed with the normal profile startup tabs
+  // behaviour.
   if (target_page_url.is_empty()) {
     return;
   }
 
+  // Opens the target url upon user selecting a pre-existing profile.
   if (target_page_url.spec() == chrome::kChromeUIHelpURL) {
     chrome::ShowAboutChrome(browser);
   } else if (target_page_url.spec() == chrome::kChromeUISettingsURL) {
@@ -466,9 +476,11 @@ void OpenOnSelectProfileTargetUrl(Browser* browser) {
 ProfilePickerFlowController::ProfilePickerFlowController(
     ProfilePickerWebContentsHost* host,
     ClearHostClosure clear_host_callback,
-    ProfilePicker::EntryPoint entry_point)
+    ProfilePicker::EntryPoint entry_point,
+    const GURL& selected_profile_target_url)
     : ProfileManagementFlowControllerImpl(host, std::move(clear_host_callback)),
-      entry_point_(entry_point) {}
+      entry_point_(entry_point),
+      selected_profile_target_url_(selected_profile_target_url) {}
 
 ProfilePickerFlowController::~ProfilePickerFlowController() = default;
 
@@ -702,7 +714,7 @@ void ProfilePickerFlowController::OnSwitchToProfileComplete(bool open_settings,
   int profile_count =
       base::ranges::count(entries, false, &ProfileAttributesEntry::IsOmitted);
   if (profile_count > 1 && !open_settings &&
-      ProfilePicker::GetOnSelectProfileTargetUrl().is_empty()) {
+      selected_profile_target_url_.is_empty()) {
     browser->window()->MaybeShowProfileSwitchIPH();
   }
 
@@ -715,14 +727,7 @@ void ProfilePickerFlowController::OnSwitchToProfileComplete(bool open_settings,
             : ProfilePickerAction::kLaunchExistingProfile);
   }
 
-  if (open_settings) {
-    // User clicked 'Edit' from the profile card menu.
-    chrome::ShowSettingsSubPage(browser, chrome::kManageProfileSubPage);
-  } else {
-    // Opens a target url upon user selecting a pre-existing profile.
-    OpenOnSelectProfileTargetUrl(browser);
-  }
-
+  MaybeOpenPageInBrowser(browser, selected_profile_target_url_, open_settings);
   // Closes the Profile Picker.
   ExitFlow();
 }

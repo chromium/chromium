@@ -184,14 +184,6 @@ void ProfilePicker::Show(Params&& params) {
 }
 
 // static
-GURL ProfilePicker::GetOnSelectProfileTargetUrl() {
-  if (g_profile_picker_view) {
-    return g_profile_picker_view->GetOnSelectProfileTargetUrl();
-  }
-  return GURL();
-}
-
-// static
 base::FilePath ProfilePicker::GetSwitchProfilePath() {
   if (g_profile_picker_view) {
     return g_profile_picker_view->GetProfilePickerFlowController()
@@ -709,7 +701,8 @@ ProfilePickerView::CreateFlowController(Profile* picker_profile,
 
   DCHECK(IsClassicProfilePickerFlow(params_));
   return std::make_unique<ProfilePickerFlowController>(
-      /*host=*/this, std::move(clear_host_callback), params_.entry_point());
+      /*host=*/this, std::move(clear_host_callback), params_.entry_point(),
+      params_.on_select_profile_target_url());
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -931,10 +924,6 @@ void ProfilePickerView::InitializeFeaturePromo(Profile* system_profile) {
 
   feature_promo_ = std::make_unique<ProfilePickerFeaturePromoController>(
       tracker_service, user_education_service, g_profile_picker_view);
-}
-
-GURL ProfilePickerView::GetOnSelectProfileTargetUrl() const {
-  return params_.on_select_profile_target_url();
 }
 
 ProfilePickerFlowController* ProfilePickerView::GetProfilePickerFlowController()
