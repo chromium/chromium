@@ -4,9 +4,27 @@
 
 #include "test_lens_overlay_query_controller.h"
 
+#include "base/containers/span.h"
+#include "base/strings/utf_string_conversions.h"
+#include "components/lens/lens_overlay_mime_type.h"
 #include "google_apis/common/api_error_codes.h"
 
 namespace lens {
+
+constexpr char kPdfMimeType[] = "application/pdf";
+constexpr char kPlainTextMimeType[] = "text/plain";
+constexpr char kHtmlMimeType[] = "text/html";
+
+lens::MimeType StringToContentType(const std::string& content_type) {
+  if (content_type == kPdfMimeType) {
+    return lens::MimeType::kPdf;
+  } else if (content_type == kHtmlMimeType) {
+    return lens::MimeType::kHtml;
+  } else if (content_type == kPlainTextMimeType) {
+    return lens::MimeType::kPlainText;
+  }
+  return lens::MimeType::kUnknown;
+}
 
 FakeEndpointFetcher::FakeEndpointFetcher(EndpointResponse response)
     : EndpointFetcher(
@@ -132,34 +150,15 @@ void TestLensOverlayQueryController::SendContextualTextQuery(
       query_text, lens_selection_type, additional_search_query_params);
 }
 
-void TestLensOverlayQueryController::SendPageContentUpdateRequest(
-    base::span<const uint8_t> new_content_bytes,
-    lens::MimeType new_content_type,
-    GURL new_page_url) {
-  // TODO(crbug.com/378918804): Update these variables in the endpoint
-  // fetcher creator.
-  last_sent_underlying_content_bytes_ = new_content_bytes;
-  last_sent_underlying_content_type_ = new_content_type;
-  last_sent_page_url_ = new_page_url;
-
-  LensOverlayQueryController::SendPageContentUpdateRequest(
-      new_content_bytes, new_content_type, new_page_url);
-}
-
-void TestLensOverlayQueryController::SendPartialPageContentRequest(
-    base::span<const std::u16string> partial_content) {
-  last_sent_partial_content_ = partial_content;
-  LensOverlayQueryController::SendPartialPageContentRequest(partial_content);
-}
-
 void TestLensOverlayQueryController::ResetTestingState() {
   last_lens_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
   last_queried_region_.reset();
   last_queried_text_.clear();
   last_queried_region_bytes_ = std::nullopt;
   last_sent_underlying_content_bytes_ = base::span<const uint8_t>();
-  last_sent_partial_content_ = base::span<const std::u16string>();
+  last_sent_partial_content_ = lens::LensOverlayDocument();
   last_sent_underlying_content_type_ = lens::MimeType::kUnknown;
+  last_sent_page_content_data_.clear();
   last_sent_page_url_ = GURL();
   num_interaction_requests_sent_ = 0;
 }
@@ -195,6 +194,8 @@ TestLensOverlayQueryController::CreateEndpointFetcher(
     // The server doesn't send a response to this request, so no need to set
     // the response string to something meaningful.
     fake_server_response_string = "";
+    last_sent_partial_content_.CopyFrom(
+        request->objects_request().payload().partial_pdf_document());
   } else if (request->has_objects_request() &&
              !request->objects_request().has_image_data() &&
              request->objects_request().has_payload()) {
@@ -206,6 +207,13 @@ TestLensOverlayQueryController::CreateEndpointFetcher(
     fake_server_response_string = "";
     sent_page_content_request_id_.CopyFrom(
         request->objects_request().request_context().request_id());
+    last_sent_page_content_data_ =
+        std::string(request->objects_request().payload().content_data());
+    last_sent_underlying_content_bytes_ =
+        base::as_byte_span(last_sent_page_content_data_);
+    last_sent_underlying_content_type_ = StringToContentType(
+        request->objects_request().payload().content_type());
+    last_sent_page_url_ = GURL(request->objects_request().payload().page_url());
   } else if (request->has_objects_request()) {
     // Full image request.
     sent_full_image_objects_request_.CopyFrom(request->objects_request());

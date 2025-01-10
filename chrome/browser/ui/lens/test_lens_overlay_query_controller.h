@@ -128,7 +128,7 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
     return last_sent_underlying_content_type_;
   }
 
-  base::span<const std::u16string> last_sent_partial_content() const {
+  const lens::LensOverlayDocument& last_sent_partial_content() const {
     return last_sent_partial_content_;
   }
 
@@ -201,13 +201,6 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
       lens::LensOverlaySelectionType lens_selection_type,
       std::map<std::string, std::string> additional_search_query_params)
       override;
-
-  void SendPageContentUpdateRequest(base::span<const uint8_t> new_content_bytes,
-                                    lens::MimeType new_content_type,
-                                    GURL new_page_url) override;
-
-  void SendPartialPageContentRequest(
-      base::span<const std::u16string> partial_content) override;
 
   // Resets the test state.
   void ResetTestingState();
@@ -285,6 +278,10 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
   // The last region bytes sent by the query controller.
   std::optional<SkBitmap> last_queried_region_bytes_;
 
+  // The last page content data sent by the query controller. Used to prevent
+  // dangling references by the underlying content bytes span.
+  std::string last_sent_page_content_data_;
+
   // The last underlying content bytes sent by the query controller.
   base::raw_span<const uint8_t> last_sent_underlying_content_bytes_;
 
@@ -292,7 +289,7 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
   lens::MimeType last_sent_underlying_content_type_;
 
   // The last partial content sent by the query controller.
-  base::raw_span<const std::u16string> last_sent_partial_content_;
+  lens::LensOverlayDocument last_sent_partial_content_;
 
   // The last page url sent by the query controller.
   GURL last_sent_page_url_;

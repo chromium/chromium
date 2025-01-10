@@ -597,6 +597,7 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
            {"use-dynamic-theme-min-chroma", "3.0"}}},
          {lens::features::kLensOverlayContextualSearchbox,
           {
+              {"send-page-url-for-contextualization", "true"},
               {"use-inner-text-as-context", "true"},
               {"use-inner-html-as-context", "true"},
           }},
@@ -4625,7 +4626,9 @@ class LensOverlayControllerBrowserPDFContextualizationTest
       const override {
     auto enabled = PDFExtensionTestBase::GetEnabledFeatures();
     enabled.push_back({lens::features::kLensOverlayContextualSearchbox,
-                       {{"use-pdfs-as-context", "true"},
+                       {{"send-page-url-for-contextualization", "true"},
+                        {"characters-per-page-heuristic", "1"},
+                        {"use-pdfs-as-context", "true"},
                         {"use-inner-html-as-context", "true"},
                         {"file-upload-limit-bytes",
                          base::NumberToString(kFileSizeLimitBytes)}}});
@@ -4697,10 +4700,12 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
       static_cast<lens::TestLensOverlayQueryController*>(
           controller->get_lens_overlay_query_controller_for_testing());
   ASSERT_TRUE(base::test::RunUntil([&] {
-    return fake_query_controller->last_sent_partial_content().size() == 1;
+    return fake_query_controller->last_sent_partial_content().pages_size() == 1;
   }));
-  ASSERT_EQ(u"this is some text\r\nsome more text",
-            fake_query_controller->last_sent_partial_content()[0]);
+  ASSERT_EQ(
+      "this is some text\r\nsome more text",
+      fake_query_controller->last_sent_partial_content().pages(0).text_segments(
+          0));
 }
 
 IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
@@ -5054,6 +5059,7 @@ class LensOverlayControllerBrowserPDFIncreaseLimitTest
     auto enabled = PDFExtensionTestBase::GetEnabledFeatures();
     enabled.push_back({lens::features::kLensOverlayContextualSearchbox,
                        {{"use-pdfs-as-context", "true"},
+                        {"characters-per-page-heuristic", "1"},
                         {"use-inner-html-as-context", "true"},
                         {"pdf-text-character-limit", "50"},
                         {"file-upload-limit-bytes",
@@ -5093,12 +5099,16 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFIncreaseLimitTest,
           controller->get_lens_overlay_query_controller_for_testing());
 
   ASSERT_TRUE(base::test::RunUntil([&] {
-    return 2u == fake_query_controller->last_sent_partial_content().size();
+    return 2 == fake_query_controller->last_sent_partial_content().pages_size();
   }));
-  ASSERT_EQ(u"1 First Section\r\nThis is the first section.\r\n1",
-            fake_query_controller->last_sent_partial_content()[0]);
-  ASSERT_EQ(u"1.1 First Subsection\r\nThis is the first subsection.\r\n2",
-            fake_query_controller->last_sent_partial_content()[1]);
+  ASSERT_EQ(
+      "1 First Section\r\nThis is the first section.\r\n1",
+      fake_query_controller->last_sent_partial_content().pages(0).text_segments(
+          0));
+  ASSERT_EQ(
+      "1.1 First Subsection\r\nThis is the first subsection.\r\n2",
+      fake_query_controller->last_sent_partial_content().pages(1).text_segments(
+          0));
 }
 
 // TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
@@ -6170,6 +6180,7 @@ class LensOverlayControllerInnerHtmlEnabledTest
     feature_list_.InitAndEnableFeatureWithParameters(
         lens::features::kLensOverlayContextualSearchbox,
         {
+            {"send-page-url-for-contextualization", "true"},
             {"use-inner-text-as-context", "false"},
             {"use-inner-html-as-context", "true"},
         });
