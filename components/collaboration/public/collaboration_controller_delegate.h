@@ -16,7 +16,7 @@
 namespace collaboration {
 
 // The class responsible for controlling actions on platform specific UI
-// elements. This delegate is required by the CollborationController.
+// elements. This delegate is required by the CollaborationController.
 class CollaborationControllerDelegate {
  public:
   struct ErrorInfo {

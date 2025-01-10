@@ -29,7 +29,7 @@ class TabGroupSyncService;
 namespace collaboration {
 class CollaborationController;
 
-// The internal implementation of the CollborationService.
+// The internal implementation of the CollaborationService.
 class CollaborationServiceImpl : public CollaborationService,
                                  public syncer::SyncServiceObserver,
                                  public signin::IdentityManager::Observer {

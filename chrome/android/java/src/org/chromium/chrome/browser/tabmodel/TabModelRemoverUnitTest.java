@@ -288,7 +288,8 @@ public class TabModelRemoverUnitTest {
     }
 
     @Test
-    public void testTabRemovalFlow_SingleCollaboration_WithDialog_NoCollborationData_UnknownRole() {
+    public void
+            testTabRemovalFlow_SingleCollaboration_WithDialog_NoCollaborationData_UnknownRole() {
         GroupsPendingDestroy groupsPendingDestroy = new GroupsPendingDestroy();
         groupsPendingDestroy.collaborationGroupsDestroyed.add(TAB_GROUP_1);
         when(mHandler.computeGroupsPendingDestroy()).thenReturn(groupsPendingDestroy);
