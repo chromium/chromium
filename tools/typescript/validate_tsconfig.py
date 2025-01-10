@@ -120,7 +120,6 @@ def validateJavaScriptAllowed(source_dir, out_dir, is_ios):
       'ash/webui/camera_app_ui/',
       'ash/webui/color_internals/',
       'ash/webui/common/resources/',
-      'ash/webui/diagnostics_ui/',
       'ash/webui/file_manager/resources/labs/',
       # TODO(b/314827247): Migrate media_app_ui to TypeScript and remove
       # exception.
@@ -128,9 +127,6 @@ def validateJavaScriptAllowed(source_dir, out_dir, is_ios):
       # TODO(b/313562946): Migrate help_app_ui mojo pipeline to TypeScript and
       # remove.
       'ash/webui/help_app_ui/',
-      # TODO(b/315002705): Migrate shimless_rma to TypeScript and remove
-      # exception.
-      'ash/webui/shimless_rma/',
       # TODO(b/267329383): Migrate A11y to TypeScript.
       'chrome/browser/resources/chromeos/accessibility',
       'chrome/browser/resources/chromeos/gaia_action_buttons',
@@ -157,18 +153,11 @@ def validateJavaScriptAllowed(source_dir, out_dir, is_ios):
       'chrome/test/data/webui/bluetooth_internals',
       'chrome/test/data/webui/chromeos',
       'chrome/test/data/webui/chromeos/ash_common',
-      # TODO(b/245336251): Migrate diagnostics app tests to Typescript and
-      # remove exception.
-      'chrome/test/data/webui/chromeos/diagnostics',
       'chrome/test/data/webui/chromeos/nearby_share',
-      # TODO(b/315002705): Migrate shimless rma app tests to Typescript and
-      # remove exception.
-      'chrome/test/data/webui/chromeos/shimless_rma',
       'chrome/test/data/webui/cr_components/chromeos',
       # TODO(crbug.com/373951324): Migrate offline dino game to TypeScript.
       'components/neterror/resources',
       'components/net_log/resources',
-      'components/policy/resources/webui',
       'components/safe_browsing/content/browser/web_ui/resources',
       'components/translate/translate_internals',
       'content/browser/webrtc/resources',
@@ -178,9 +167,6 @@ def validateJavaScriptAllowed(source_dir, out_dir, is_ios):
       # TODO(crbug.com/40280699) : Migrate to TypeScript.
       'chrome/test/data/webui/media_internals',
       'content/browser/resources/media',
-
-      # TODO(b/274059668): Migrate OOBE to TypeScript.
-      'chrome/browser/resources/chromeos/login',
   ]
   for directory in migrating_directories:
     if (source_dir.endswith(directory)
