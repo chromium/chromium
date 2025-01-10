@@ -78,7 +78,8 @@ void PositionCacheImpl::CachePosition(const WifiData& wifi_data,
 const mojom::Geoposition* PositionCacheImpl::FindPosition(
     const WifiData& wifi_data) {
   const Hash key = MakeKey(wifi_data);
-  auto it = base::ranges::find(data_, key);
+  auto it = std::ranges::find_if(
+      data_, [key](const CacheEntry& entry) { return entry == key; });
   if (it == data_.end()) {
     ++miss_count_;
     last_miss_ = base::Time::Now();

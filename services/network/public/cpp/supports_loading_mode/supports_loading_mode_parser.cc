@@ -67,7 +67,8 @@ mojom::SupportsLoadingModePtr ParseSupportsLoadingMode(
   // Order and repetition are not significant.
   // Canonicalize by making the vector sorted and unique.
   base::ranges::sort(modes);
-  modes.erase(base::ranges::unique(modes), modes.end());
+  auto repeated = std::ranges::unique(modes);
+  modes.erase(repeated.begin(), repeated.end());
   return mojom::SupportsLoadingMode::New(std::move(modes));
 }
 

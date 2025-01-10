@@ -166,14 +166,12 @@ void WebBundleManager::CleanUpWillBeDeletedURLLoader(
   // issue. As of now, this happens only in non-regular cases; the bundle is
   // blocked by, for example, Chrome Extensions APIs.
 
-  it->second.erase(base::ranges::remove_if(
-                       it->second,
-                       [will_be_deleted_url_loader](auto pending_loader) {
-                         return !pending_loader ||
-                                pending_loader.get() ==
-                                    will_be_deleted_url_loader;
-                       }),
-                   it->second.end());
+  auto to_remove = std::ranges::remove_if(
+      it->second, [will_be_deleted_url_loader](auto pending_loader) {
+        return !pending_loader ||
+               pending_loader.get() == will_be_deleted_url_loader;
+      });
+  it->second.erase(to_remove.begin(), to_remove.end());
 
   if (it->second.empty()) {
     pending_loaders_.erase(key);
