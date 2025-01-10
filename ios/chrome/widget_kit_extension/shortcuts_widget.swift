@@ -27,6 +27,9 @@ struct ConfigureShortcutsWidgetEntry: TimelineEntry {
   let isExpired: Bool
   // Expiration date of the widget if it hasn't expired.
   let expirationDate: Date?
+  // Profile avatar (to be used when multiprofile flag is enabled).
+  let avatar: Image?
+
 }
 
 // Advises WidgetKit when to update a widget’s display.
@@ -38,7 +41,8 @@ struct ConfigureShortcutsWidgetEntryProvider: TimelineProvider {
   // Provides a timeline entry representing a placeholder version of the widget.
   func placeholder(in context: TimelineProviderContext) -> Entry {
     return Entry(
-      date: Date(), mostVisitedSites: [:], isPreview: true, isExpired: false, expirationDate: nil)
+      date: Date(), mostVisitedSites: [:], isPreview: true, isExpired: false, expirationDate: nil,
+      avatar: nil)
   }
 
   // Provides a timeline entry that represents the current time and state of a widget.
@@ -132,12 +136,15 @@ struct ShortcutsWidget: Widget {
     // Provides a timeline entry representing a placeholder version of the widget.
     func placeholder(in context: TimelineProviderContext) -> Entry {
       return Entry(
-        date: Date(), mostVisitedSites: [:], isPreview: true, isExpired: false, expirationDate: nil)
+        date: Date(), mostVisitedSites: [:], isPreview: true, isExpired: false, expirationDate: nil,
+        avatar: nil)
     }
 
     // Provides a timeline entry that represents the current time and state of a widget.
     func snapshot(for configuration: SelectProfileIntent, in context: Context) async -> Entry {
-      let entry = loadMostVisitedSitesEntry(isPreview: context.isPreview)
+
+      let avatar: Image = configuration.avatarForProfile(profile: configuration.profile!)!
+      let entry = loadMostVisitedSitesEntry(isPreview: context.isPreview, avatar: avatar)
       return entry
     }
 
@@ -145,7 +152,8 @@ struct ShortcutsWidget: Widget {
     func timeline(for configuration: SelectProfileIntent, in context: Context) async -> Timeline<
       Entry
     > {
-      let entry = loadMostVisitedSitesEntry(isPreview: context.isPreview)
+      let avatar: Image = configuration.avatarForProfile(profile: configuration.profile!)!
+      let entry = loadMostVisitedSitesEntry(isPreview: context.isPreview, avatar: avatar)
       let entries = [entry]
       let timeline = Timeline(
         entries: entries, policy: entry.expirationDate.map { .after($0) } ?? .never)
@@ -155,7 +163,9 @@ struct ShortcutsWidget: Widget {
 #endif
 
 // Return ConfigureShortcutsWidgetEntry with the most visited sites
-func loadMostVisitedSitesEntry(isPreview: Bool) -> ConfigureShortcutsWidgetEntry {
+func loadMostVisitedSitesEntry(isPreview: Bool, avatar: Image? = nil)
+  -> ConfigureShortcutsWidgetEntry
+{
   // A type that specifies the entry of the configured timeline entry of the widget.
   typealias Entry = ConfigureShortcutsWidgetEntry
 
@@ -165,7 +175,8 @@ func loadMostVisitedSitesEntry(isPreview: Bool) -> ConfigureShortcutsWidgetEntry
     mostVisitedSites: [:],
     isPreview: isPreview,
     isExpired: false,
-    expirationDate: nil
+    expirationDate: nil,
+    avatar: avatar
   )
   // A constant of an expired entry.
   let expiredEntry = Entry(
@@ -173,7 +184,8 @@ func loadMostVisitedSitesEntry(isPreview: Bool) -> ConfigureShortcutsWidgetEntry
     mostVisitedSites: [:],
     isPreview: isPreview,
     isExpired: true,
-    expirationDate: nil
+    expirationDate: nil,
+    avatar: avatar
   )
   // Returns an empty entry if the Shortcuts Widget is in the Widgets Gallery.
   if isPreview {
@@ -227,7 +239,8 @@ func loadMostVisitedSitesEntry(isPreview: Bool) -> ConfigureShortcutsWidgetEntry
     mostVisitedSites: mostVisitedSites,
     isPreview: isPreview,
     isExpired: false,
-    expirationDate: expirationDate
+    expirationDate: expirationDate,
+    avatar: avatar
   )
 }
 
@@ -297,6 +310,18 @@ struct ShortcutsWidgetEntryView: View {
             .font(.subheadline)
             .foregroundColor(Colors.widgetTextColor)
           Spacer()
+          #if IOS_ENABLE_WIDGETS_FOR_MIM
+            // Only show the avatar if there is one.
+            if let avatar = entry.avatar {
+              avatar
+                .resizable()
+                .clipShape(Circle())
+                .unredacted()
+                .scaledToFill()
+                .frame(width: 35, height: 35)
+                .padding(.trailing, padding)
+            }
+          #endif
         }
       }
       .frame(minWidth: 0, maxWidth: .infinity)

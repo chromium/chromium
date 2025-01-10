@@ -91,7 +91,6 @@ NSString* const kOpenExtensionOutcomeFailureUnsupportedScheme =
 
 NSString* const kAccountsOnDevice = @"ios.registered_accounts_on_device";
 NSString* const kHostedDomain = @"hosted_domain";
-NSString* const kPictureUrl = @"picture_url";
 NSString* const kEmail = @"email";
 
 NSString* const kYoutubeBundleID = @"com.google.youtube";
@@ -162,6 +161,10 @@ NSURL* ExternalCommandsItemsFolder() {
 
 NSURL* ShortcutsWidgetFaviconsFolder() {
   return [AppGroupHelper widgetsFaviconsFolder];
+}
+
+NSURL* WidgetsAvatarFolder() {
+  return [AppGroupHelper widgetsAvatarFolder];
 }
 
 NSURL* SharedFaviconAttributesFolder() {

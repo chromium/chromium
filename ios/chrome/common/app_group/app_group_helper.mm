@@ -50,4 +50,26 @@
   return contentWidgetFaviconsURL;
 }
 
++ (NSURL*)widgetsAvatarFolder {
+  NSString* applicationGroup = [AppGroupHelper applicationGroup];
+  if (!applicationGroup) {
+    return nil;
+  }
+  NSURL* groupURL = [[NSFileManager defaultManager]
+      containerURLForSecurityApplicationGroupIdentifier:applicationGroup];
+  NSURL* chromeURL = [groupURL URLByAppendingPathComponent:@"Chrome"
+                                               isDirectory:YES];
+  NSURL* pictureDataURL = [chromeURL URLByAppendingPathComponent:@"AvatarData"
+                                                     isDirectory:YES];
+
+  // Create shared folder if it doesn't exist.
+  if (![[NSFileManager defaultManager] createDirectoryAtPath:pictureDataURL.path
+                                 withIntermediateDirectories:YES
+                                                  attributes:nil
+                                                       error:nil]) {
+    return nil;
+  }
+  return pictureDataURL;
+}
+
 @end

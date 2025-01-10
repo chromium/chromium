@@ -23,6 +23,7 @@ struct ProfileQuery: EntityQuery {
 
 struct ProfileDetail: AppEntity {
   let id: String
+  let gaia: String
 
   static var typeDisplayRepresentation: TypeDisplayRepresentation = "Profile"
   static var defaultQuery = ProfileQuery()
@@ -36,14 +37,14 @@ struct ProfileDetail: AppEntity {
     else { return [] }
     guard
       let profiles = sharedDefaults.object(forKey: "ios.registered_accounts_on_device")
-        as? [String: [String: String]]
+        as? [String: [String: Any]]
     else { return [] }
 
     var profilesDetail: [ProfileDetail] = []
 
-    for innerDict in profiles.values {
-      if let value = innerDict["email"] {
-        profilesDetail.append(ProfileDetail(id: value))
+    for (key, value) in profiles {
+      if let email = value["email"] as? String {
+        profilesDetail.append(ProfileDetail(id: email, gaia: key))
       }
     }
     return profilesDetail
@@ -63,5 +64,20 @@ struct SelectProfileIntent: WidgetConfigurationIntent {
   }
 
   init() {
+  }
+
+  // Returns the avatar linked to the profile.
+  func avatarForProfile(profile: ProfileDetail) -> Image? {
+    guard let sharedDefaults: UserDefaults = AppGroupHelper.groupUserDefaults()
+    else { return nil }
+
+    let avatarFileName = "\(profile.gaia).png"
+    let avatarFilePath =
+      AppGroupHelper.widgetsAvatarFolder().appendingPathComponent(avatarFileName)
+
+    guard let uiImage = UIImage(contentsOfFile: avatarFilePath.path) else {
+      return nil
+    }
+    return Image(uiImage: uiImage)
   }
 }

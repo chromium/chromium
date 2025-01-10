@@ -77,6 +77,7 @@ CoreAccountId SystemIdentityToAccountID(
 }
 
 // Updates list of loaded profiles used in widgets.
+// TODO(crbug.com/380847504): Move this logic out of this class.
 void UpdateLoadedAccounts(std::vector<AccountInfo> accounts_on_device) {
   NSMutableDictionary* accounts = [[NSMutableDictionary alloc] init];
   for (const AccountInfo& account_info : accounts_on_device) {
@@ -85,15 +86,12 @@ void UpdateLoadedAccounts(std::vector<AccountInfo> accounts_on_device) {
                 forKey:app_group::kHostedDomain];
     [account setObject:base::SysUTF8ToNSString(account_info.email)
                 forKey:app_group::kEmail];
-    // TODO(crbug.com/380847504): Find an alternative solution in case
-    // picture_url is empty.
-    [account setObject:base::SysUTF8ToNSString(account_info.picture_url)
-                forKey:app_group::kPictureUrl];
-
     // Add the account to the dictionary of accounts.
     [accounts setObject:account
                  forKey:base::SysUTF8ToNSString(account_info.gaia)];
+    // TODO(crbug.com/380847504): Save avatar info to disk.
   }
+
   NSUserDefaults* shared_defaults = app_group::GetGroupUserDefaults();
   [shared_defaults setObject:accounts forKey:app_group::kAccountsOnDevice];
 
@@ -802,7 +800,6 @@ void AuthenticationService::ReloadCredentialsFromIdentities() {
       ->ReloadAllAccountsFromSystemWithPrimaryAccount(
           identity_manager_->GetPrimaryAccountId(
               signin::ConsentLevel::kSignin));
-
   UpdateLoadedAccounts(identity_manager_->GetAccountsOnDevice());
 }
 
