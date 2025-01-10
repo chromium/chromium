@@ -9072,3 +9072,9 @@ crbug.com/388589515 http/tests/devtools/profiler/heap-snapshot-summary-show-rang
 
 # Gardener 2025-01-10
 crbug.com/389012014 [ Mac13 ] fast/peerconnection/RTCRtpSender-getParameters.html [ Pass Timeout ]
+
+# Flaky performance API tests
+crbug.com/387096438 virtual/scalefactor200/external/wpt/largest-contentful-paint/animated/observe-video.tentative.html [ Failure Pass ]
+crbug.com/385337582 external/wpt/paint-timing/fcp-only/fcp-document-opacity-image.html [ Failure Pass ]
+crbug.com/383627707 [ Mac ] external/wpt/element-timing/image-carousel.html [ Failure Pass ]
+crbug.com/379474211 external/wpt/paint-timing/fcp-only/fcp-document-opacity-text.html [ Failure Pass ]
