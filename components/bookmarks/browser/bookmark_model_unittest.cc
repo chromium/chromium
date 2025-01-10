@@ -15,6 +15,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <unordered_set>
 #include <utility>
 
@@ -72,6 +73,9 @@ using base::Time;
 using testing::ElementsAre;
 using testing::Invoke;
 using testing::WithArg;
+
+constexpr std::string_view kRemoveAccountPermanentFoldersDurationMetricName =
+    "Bookmarks.RemoveAccountPermanentFoldersDuration";
 
 // Test cases used to test the removal of extra whitespace when adding
 // a new folder/bookmark or updating a title of a folder/bookmark.
@@ -2739,6 +2743,9 @@ TEST_F(BookmarkModelTest, RemoveAccountPermanentFolders) {
   ASSERT_NE(nullptr, model_->account_other_node());
   ASSERT_NE(nullptr, model_->account_mobile_node());
 
+  histogram_tester()->ExpectTotalCount(
+      kRemoveAccountPermanentFoldersDurationMetricName, 0);
+
   ClearCounts();
   model_->RemoveAccountPermanentFolders();
 
@@ -2747,6 +2754,30 @@ TEST_F(BookmarkModelTest, RemoveAccountPermanentFolders) {
   EXPECT_EQ(nullptr, model_->account_mobile_node());
 
   AssertObserverCount(0, 0, 3, 0, 0, 3, 0, 0, 0);
+
+  histogram_tester()->ExpectTotalCount(
+      kRemoveAccountPermanentFoldersDurationMetricName, 1);
+}
+
+TEST_F(BookmarkModelTest, NoOpRemoveAccountPermanentFolders) {
+  ASSERT_EQ(nullptr, model_->account_bookmark_bar_node());
+  ASSERT_EQ(nullptr, model_->account_other_node());
+  ASSERT_EQ(nullptr, model_->account_mobile_node());
+
+  histogram_tester()->ExpectTotalCount(
+      kRemoveAccountPermanentFoldersDurationMetricName, 0);
+
+  ClearCounts();
+  model_->RemoveAccountPermanentFolders();
+
+  EXPECT_EQ(nullptr, model_->account_bookmark_bar_node());
+  EXPECT_EQ(nullptr, model_->account_other_node());
+  EXPECT_EQ(nullptr, model_->account_mobile_node());
+
+  AssertObserverCount(0, 0, 0, 0, 0, 0, 0, 0, 0);
+
+  histogram_tester()->ExpectTotalCount(
+      kRemoveAccountPermanentFoldersDurationMetricName, 0);
 }
 
 TEST_F(BookmarkModelTest, IsLocalOnlyNodeWithSyncFeatureOff) {

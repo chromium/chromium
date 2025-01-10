@@ -492,6 +492,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bookmarks.RemoveAccountPermanentFoldersDuration" units="ms"
+    expires_after="2025-07-09">
+  <owner>mastiz@chromium.org</owner>
+  <owner>rushans@google.com</owner>
+  <summary>
+    Records the time taken to remove all account bookmarks from the bookmark
+    model. This usually happens when a user signs out or disables bookmarks sync
+    specifically in settings.
+  </summary>
+</histogram>
+
 <histogram name="Bookmarks.RemovedLocation" enum="BookmarkLaunchLocation"
     expires_after="2025-03-09">
   <owner>dfried@chromium.org</owner>
