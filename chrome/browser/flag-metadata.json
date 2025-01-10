@@ -93,7 +93,7 @@
       "hsuregan@google.com",
       "cros-device-enablement@google.com"
     ],
-    "expiry_milestone": 134
+    "expiry_milestone": 138
   },
   {
     "name": "allow-cross-device-feature-suite",
@@ -252,12 +252,12 @@
   {
     "name": "apn-policies",
     "owners": [ "nikhilcn@google.com", "hsuregan@google.com", "cros-device-enablement@google.com" ],
-    "expiry_milestone": 134
+    "expiry_milestone": 138
   },
   {
     "name": "apn-revamp",
     "owners": [ "nikhilcn@google.com", "cros-device-enablement@google.com" ],
-    "expiry_milestone": 134
+    "expiry_milestone": 138
   },
   {
     "name": "app-background-refresh-ios",
