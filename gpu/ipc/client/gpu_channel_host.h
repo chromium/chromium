@@ -187,6 +187,9 @@ class GPU_EXPORT GpuChannelHost
   friend class base::RefCountedThreadSafe<GpuChannelHost>;
   virtual ~GpuChannelHost();
 
+  // Clears its SharedAssociatedRemote.
+  void ResetChannelRemoteForTesting();
+
  private:
   // Establishes shared memory communication with the GPU process. This memory
   // is used to keep track of flushed items and avoid unnecessary IPCs.

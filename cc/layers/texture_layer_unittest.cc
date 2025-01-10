@@ -1500,18 +1500,21 @@ class SoftwareTextureLayerTest : public LayerTreeTest {
       scoped_refptr<viz::RasterContextProvider> compositor_context_provider,
       scoped_refptr<viz::RasterContextProvider> worker_context_provider)
       override {
+    context_provider_sw_ = viz::TestContextProvider::CreateRaster();
+    gpu::SharedImageInterface* shared_image_interface_sw =
+        context_provider_sw_->SharedImageInterface();
+
     constexpr bool disable_display_vsync = false;
     bool synchronous_composite =
         !HasImplThread() &&
         !layer_tree_host()->GetSettings().single_thread_proxy_scheduler;
     auto sink = std::make_unique<TestLayerTreeFrameSink>(
-        nullptr, nullptr, /*shared_image_interface=*/nullptr,
+        nullptr, nullptr, shared_image_interface_sw,
         gpu_memory_buffer_manager(), renderer_settings, &debug_settings_,
         task_runner_provider(), synchronous_composite, disable_display_vsync,
         refresh_rate);
     frame_sink_ = sink.get();
     num_frame_sinks_created_++;
-    shared_image_interface_ = frame_sink_->GetSharedImageInterface();
     return sink;
   }
 
@@ -1523,7 +1526,7 @@ class SoftwareTextureLayerTest : public LayerTreeTest {
       nullptr;
   int num_frame_sinks_created_ = 0;
 
-  scoped_refptr<gpu::SharedImageInterface> shared_image_interface_;
+  scoped_refptr<viz::RasterContextProvider> context_provider_sw_;
 };
 
 class SoftwareTextureLayerSwitchTreesTest : public SoftwareTextureLayerTest {
@@ -1542,8 +1545,8 @@ class SoftwareTextureLayerSwitchTreesTest : public SoftwareTextureLayerTest {
         scoped_refptr<gpu::ClientSharedImage> shared_image_;
         gpu::SyncToken sync_token_;
         gfx::Size size(1, 1);
-        AllocateSharedImage(shared_image_interface_.get(), size, shared_image_,
-                            sync_token_);
+        AllocateSharedImage(frame_sink_->GetSharedImageInterface(), size,
+                            shared_image_, sync_token_);
         auto transferable_resource =
             viz::TransferableResource::MakeSoftwareSharedImage(
                 shared_image_, sync_token_, shared_image_->size(),
@@ -1612,8 +1615,8 @@ class SoftwareTextureLayerPurgeMemoryTest : public SoftwareTextureLayerTest {
         scoped_refptr<gpu::ClientSharedImage> shared_image_;
         gpu::SyncToken sync_token_;
         gfx::Size size(1, 1);
-        AllocateSharedImage(shared_image_interface_.get(), size, shared_image_,
-                            sync_token_);
+        AllocateSharedImage(frame_sink_->GetSharedImageInterface(), size,
+                            shared_image_, sync_token_);
         auto transferable_resource =
             viz::TransferableResource::MakeSoftwareSharedImage(
                 shared_image_, sync_token_, shared_image_->size(),
@@ -1688,10 +1691,10 @@ class SoftwareTextureLayerMultipleResourceTest
         scoped_refptr<gpu::ClientSharedImage> shared_image2_;
         gpu::SyncToken sync_token2_;
         gfx::Size size(1, 1);
-        AllocateSharedImage(shared_image_interface_.get(), size, shared_image1_,
-                            sync_token1_);
-        AllocateSharedImage(shared_image_interface_.get(), size, shared_image2_,
-                            sync_token2_);
+        AllocateSharedImage(frame_sink_->GetSharedImageInterface(), size,
+                            shared_image1_, sync_token1_);
+        AllocateSharedImage(frame_sink_->GetSharedImageInterface(), size,
+                            shared_image2_, sync_token2_);
         auto transferable_resource1 =
             viz::TransferableResource::MakeSoftwareSharedImage(
                 shared_image1_, sync_token1_, shared_image1_->size(),
@@ -1772,8 +1775,8 @@ class SoftwareTextureLayerLoseFrameSinkTest : public SoftwareTextureLayerTest {
         scoped_refptr<gpu::ClientSharedImage> shared_image_;
         gpu::SyncToken sync_token_;
         gfx::Size size(1, 1);
-        AllocateSharedImage(shared_image_interface_.get(), size, shared_image_,
-                            sync_token_);
+        AllocateSharedImage(frame_sink_->GetSharedImageInterface(), size,
+                            shared_image_, sync_token_);
         auto transferable_resource =
             viz::TransferableResource::MakeSoftwareSharedImage(
                 shared_image_, sync_token_, shared_image_->size(),

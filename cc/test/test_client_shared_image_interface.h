@@ -9,7 +9,6 @@
 #include "gpu/ipc/client/client_shared_image_interface.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
-#include "gpu/ipc/common/mock_gpu_channel.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
 namespace cc {
@@ -18,11 +17,8 @@ class TestGpuChannelHost : public gpu::GpuChannelHost {
  public:
   TestGpuChannelHost();
 
-  gpu::mojom::GpuChannel& GetGpuChannel() override;
-
  protected:
   ~TestGpuChannelHost() override;
-  gpu::MockGpuChannel gpu_channel_;
 };
 
 class TestClientSharedImageInterface : public gpu::ClientSharedImageInterface {

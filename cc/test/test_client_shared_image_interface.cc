@@ -14,13 +14,17 @@ TestGpuChannelHost::TestGpuChannelHost()
                      gpu::GpuFeatureInfo(),
                      gpu::SharedImageCapabilities(),
                      mojo::ScopedMessagePipeHandle(
-                         mojo::MessagePipeHandle(mojo::kInvalidHandleValue))) {}
+                         mojo::MessagePipeHandle(mojo::kInvalidHandleValue))) {
+  // There is a "LeakSanitizer: detected memory leaks" on
+  // mojo::SharedRemoteBase<mojo::AssociatedRemote<gpu::mojom::GpuChannel>> in
+  // the multithread ASAN test when TestGpuChannelHost is created on the Main
+  // thread and released on the Compositor thread. Because |remote_| is not
+  // actually used in the tests, so it's reset here to avoid the memory leak at
+  // the end.
+  ResetChannelRemoteForTesting();
+}
 
 TestGpuChannelHost::~TestGpuChannelHost() = default;
-
-gpu::mojom::GpuChannel& TestGpuChannelHost::GetGpuChannel() {
-  return gpu_channel_;
-}
 
 TestClientSharedImageInterface::TestClientSharedImageInterface(
     scoped_refptr<gpu::SharedImageInterface> shared_image_interface)
