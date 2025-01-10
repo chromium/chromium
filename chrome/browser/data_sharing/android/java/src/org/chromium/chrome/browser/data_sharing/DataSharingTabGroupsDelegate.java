@@ -28,6 +28,14 @@ public interface DataSharingTabGroupsDelegate {
     public void openLearnMoreSharedTabGroupsPage(Context context, GURL gurl);
 
     /**
+     * Open url in the Chrome Custom Tab.
+     *
+     * @param context The context of the current activity.
+     * @param gurl The GURL of the page to be opened in CCT.
+     */
+    public void openUrlInChromeCustomTab(Context context, GURL gurl);
+
+    /**
      * Create a preview image for the tab group to show in share sheet.
      *
      * @param collaborationId The collaboration ID of the tab group.

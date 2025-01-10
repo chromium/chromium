@@ -83,6 +83,8 @@ public class DataSharingTabManager {
     private static final String TAG = "DataSharing";
     private static final String LEARN_MORE_SHARED_TAB_GROUP_PAGE_URL =
             "https://support.google.com/chrome/?p=chrome_collaboration";
+    private static final String LEARN_ABOUT_BLOCKED_ACCOUNTS_URL =
+            "https://support.google.com/chrome/?p=chrome_collaboration";
 
     private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private final DataSharingTabGroupsDelegate mDataSharingTabGroupsDelegate;
@@ -283,6 +285,10 @@ public class DataSharingTabManager {
 
     private GURL getTabGroupHelpUrl() {
         return new GURL(LEARN_MORE_SHARED_TAB_GROUP_PAGE_URL);
+    }
+
+    private GURL getLearnAboutBlockedAccountsUrl() {
+        return new GURL(LEARN_ABOUT_BLOCKED_ACCOUNTS_URL);
     }
 
     private void initiateJoinFlowWithProfile(Activity activity, GURL dataSharingUrl) {
@@ -768,6 +774,24 @@ public class DataSharingTabManager {
                         .setResourceId(
                                 DataSharingStringConfig.StringKey.LEARN_ABOUT_SHARED_TAB_GROUPS,
                                 R.string.collaboration_learn_about_shared_groups)
+                        .setResourceId(
+                                DataSharingStringConfig.StringKey.BLOCK_MESSAGE,
+                                R.string.collaboration_owner_block_dialog_body)
+                        .setResourceId(
+                                DataSharingStringConfig.StringKey.BLOCK_AND_LEAVE_GROUP_MESSAGE,
+                                R.string.collaboration_block_leave_dialog_body)
+                        .setResourceId(
+                                DataSharingStringConfig.StringKey.LEARN_ABOUT_BLOCKED_ACCOUNTS,
+                                R.string.collaboration_block_leave_learn_more)
+                        .setResourceId(
+                                DataSharingStringConfig.StringKey.REMOVE_MESSAGE,
+                                R.string.collaboration_owner_remove_member_dialog_body)
+                        .setResourceId(
+                                DataSharingStringConfig.StringKey.LEAVE_GROUP_MESSAGE,
+                                R.string.collaboration_leave_dialog_body)
+                        .setResourceId(
+                                DataSharingStringConfig.StringKey.STOP_SHARING_MESSAGE,
+                                R.string.collaboration_owner_stop_sharing_dialog_body)
                         .build();
 
         DataSharingManageUiConfig.ManageCallback manageCallback =
@@ -811,7 +835,8 @@ public class DataSharingTabManager {
                 new DataSharingManageUiConfig.Builder()
                         .setGroupToken(new GroupToken(collaborationId, null))
                         .setManageCallback(manageCallback)
-                        .setCommonConfig(getCommonConfig(activity, null, stringConfig))
+                        .setLearnAboutBlockedAccounts(getLearnAboutBlockedAccountsUrl())
+                        .setCommonConfig(getCommonConfig(activity, tabGroupName, stringConfig))
                         .build();
         uiDelegate.showManageFlow(manageConfig);
     }
@@ -824,6 +849,11 @@ public class DataSharingTabManager {
                     public void onLearnMoreAboutSharedTabGroupsClicked(Context context, GURL url) {
                         mDataSharingTabGroupsDelegate.openLearnMoreSharedTabGroupsPage(
                                 context, url);
+                    }
+
+                    @Override
+                    public void onClickOpenChromeCustomTab(Context context, GURL url) {
+                        mDataSharingTabGroupsDelegate.openUrlInChromeCustomTab(context, url);
                     }
                 };
         DataSharingUiConfig.Builder commonConfig =

@@ -31,6 +31,8 @@ public class DataSharingUiConfig {
         default void onLearnMoreAboutSharedTabGroupsClicked(GURL url) {}
 
         default void onLearnMoreAboutSharedTabGroupsClicked(Context context, GURL url) {}
+
+        default void onClickOpenChromeCustomTab(Context context, GURL url) {}
     }
 
     private DataSharingUiConfig(Builder builder) {
