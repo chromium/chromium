@@ -52,11 +52,16 @@ class GlicWindowControllerTest : public InteractiveBrowserTest {
   }
 
  protected:
-  glic::GlicView* glic_view() {
-    auto* const service = glic::GlicKeyedServiceFactory::GetGlicKeyedService(
+  glic::GlicKeyedService* glic_service() {
+    return glic::GlicKeyedServiceFactory::GetGlicKeyedService(
         browser()->GetProfile());
-    return service->window_controller().GetGlicView();
   }
+
+  glic::GlicWindowController& window_controller() {
+    return glic_service()->window_controller();
+  }
+
+  glic::GlicView* glic_view() { return window_controller().GetGlicView(); }
 
   void WaitForGlicGuestToFinishLoading() {
     auto* const web_contents = glic_view()->web_view()->GetWebContents();
@@ -77,6 +82,29 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerTest, DoNotCrashOnBrowserClose) {
   WaitForGlicGuestToFinishLoading();
   chrome::CloseAllBrowsers();
   ui_test_utils::WaitForBrowserToClose();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerTest, DoNotCrashWhenReopening) {
+  base::RunLoop run_loop;
+  auto subscription =
+      glic_service()->AddWebClientCreatedCallback(run_loop.QuitClosure());
+  RunTestSequence(PressButton(kGlicButtonElementId));
+  RunTestSequence(
+      InContext(views::ElementTrackerViews::GetContextForView(glic_view()),
+                MoveMouseTo(kGlicViewElementId)),
+      InContext(views::ElementTrackerViews::GetContextForView(glic_view()),
+                ActivateSurface(kGlicViewElementId)));
+  // Wait until the web client has been create (which happens after the view
+  // is shown).
+  run_loop.Run();
+  window_controller().Close();
+  RunTestSequence(PressButton(kGlicButtonElementId));
+  RunTestSequence(
+      InContext(views::ElementTrackerViews::GetContextForView(glic_view()),
+                MoveMouseTo(kGlicViewElementId)),
+      InContext(views::ElementTrackerViews::GetContextForView(glic_view()),
+                ActivateSurface(kGlicViewElementId)));
+  WaitForGlicGuestToFinishLoading();
 }
 
 }  // namespace

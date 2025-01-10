@@ -96,6 +96,11 @@ class GlicKeyedService : public KeyedService {
   void SyncWebviewCookies(
       mojom::PageHandler::SyncWebviewCookiesCallback callback);
 
+  void WebClientCreated();
+
+  base::CallbackListSubscription AddWebClientCreatedCallback(
+      base::OnceCallback<void()> callback);
+
   base::WeakPtr<GlicKeyedService> GetWeakPtr();
 
  private:
@@ -116,6 +121,7 @@ class GlicKeyedService : public KeyedService {
   GlicCookieSynchronizer cookie_synchronizer_;
   // Unowned
   raw_ptr<GlicProfileManager> profile_manager_;
+  base::OnceCallbackList<void()> web_client_created_callbacks_;
 
   base::WeakPtrFactory<GlicKeyedService> weak_ptr_factory_{this};
 };

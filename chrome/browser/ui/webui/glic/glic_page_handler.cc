@@ -76,6 +76,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         glic_service_->window_controller().GetPanelState().Clone();
 
     std::move(callback).Run(std::move(state));
+    glic_service_->WebClientCreated();
   }
 
   void WebClientInitialized() override {}

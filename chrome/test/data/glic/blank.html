@@ -10,3 +10,14 @@ body, html {
   background: grey;
 }
 </style>
+<script>
+let onMessage = async function(e) {
+  window.removeEventListener("message", onMessage);
+  let s = document.createElement("script");
+  s.text = e.data.glicApiSource;
+  document.head.appendChild(s);
+  let r = await window.internalAutoGlicBoot(e.source);
+  await r.registerWebClient({ initialize: async (e) => {} });
+}
+window.onload = () => window.addEventListener("message", onMessage);
+</script>

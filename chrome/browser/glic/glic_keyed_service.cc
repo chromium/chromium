@@ -144,6 +144,15 @@ bool GlicKeyedService::IsContextAccessIndicatorShown(
   return is_context_access_indicator_enabled_ && GetFocusedTab() == contents;
 }
 
+void GlicKeyedService::WebClientCreated() {
+  web_client_created_callbacks_.Notify();
+}
+
+base::CallbackListSubscription GlicKeyedService::AddWebClientCreatedCallback(
+    base::OnceCallback<void()> callback) {
+  return web_client_created_callbacks_.Add(std::move(callback));
+}
+
 base::WeakPtr<GlicKeyedService> GlicKeyedService::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
