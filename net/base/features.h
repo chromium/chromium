@@ -210,6 +210,9 @@ NET_EXPORT BASE_DECLARE_FEATURE(kPostQuantumKyber);
 // stable without issues.
 NET_EXPORT BASE_DECLARE_FEATURE(kUseMLKEM);
 
+// Changes the interval between two search engine preconnect attempts.
+NET_EXPORT BASE_DECLARE_FEATURE(kSearchEnginePreconnectInterval);
+
 // When enabled, the time threshold for Lax-allow-unsafe cookies will be lowered
 // from 2 minutes to 10 seconds. This time threshold refers to the age cutoff
 // for which cookies that default into SameSite=Lax, which are newer than the
