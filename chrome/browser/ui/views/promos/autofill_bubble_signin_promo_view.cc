@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
@@ -62,7 +63,8 @@ AutofillBubbleSignInPromoView::AutofillBubbleSignInPromoView(
     content::WebContents* web_contents,
     signin_metrics::AccessPoint access_point,
     syncer::LocalDataItemModel::DataId data_id)
-    : controller_(*web_contents, access_point, std::move(data_id)) {
+    : controller_(*web_contents, access_point, std::move(data_id)),
+      access_point_(access_point) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   Profile* profile =
@@ -84,15 +86,22 @@ void AutofillBubbleSignInPromoView::AddedToWidget() {
 
 void AutofillBubbleSignInPromoView::OnWidgetDestroying(views::Widget* widget) {
   scoped_widget_observation_.Reset();
+  std::string dismiss_action;
 
-  // Don't record anything if the bubble was not actively dismissed by the user.
-  if (!(widget->closed_reason() ==
-            views::Widget::ClosedReason::kCloseButtonClicked ||
-        widget->closed_reason() ==
-            views::Widget::ClosedReason::kCancelButtonClicked ||
-        widget->closed_reason() ==
-            views::Widget::ClosedReason::kEscKeyPressed)) {
-    return;
+  switch (widget->closed_reason()) {
+    case views::Widget::ClosedReason::kCloseButtonClicked:
+      dismiss_action = "CloseButton";
+      break;
+    case views::Widget::ClosedReason::kEscKeyPressed:
+      dismiss_action = "EscapeKey";
+      break;
+    case views::Widget::ClosedReason::kUnspecified:
+    case views::Widget::ClosedReason::kLostFocus:
+    case views::Widget::ClosedReason::kCancelButtonClicked:
+    case views::Widget::ClosedReason::kAcceptButtonClicked:
+      // Don't record anything if the bubble was not actively dismissed by the
+      // user.
+      return;
   }
 
   Profile* profile = Profile::FromBrowserContext(
@@ -111,6 +120,10 @@ void AutofillBubbleSignInPromoView::OnWidgetDestroying(views::Widget* widget) {
     SigninPrefs(*profile->GetPrefs())
         .IncrementAutofillSigninPromoDismissCount(account.gaia);
   }
+
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Signin.SignInPromo.Dismissed", dismiss_action}),
+      access_point_, signin_metrics::AccessPoint::ACCESS_POINT_MAX);
 }
 
 AutofillBubbleSignInPromoView::~AutofillBubbleSignInPromoView() = default;

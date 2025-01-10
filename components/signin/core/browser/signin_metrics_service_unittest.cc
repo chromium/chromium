@@ -422,6 +422,8 @@ const AccessPointParam params[] = {
      "Signin.WebSignin.TimeToChromeSignin.ProfileMenu"},
     {signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE,
      "Signin.WebSignin.TimeToChromeSignin.PasswordSigninPromo"},
+    {signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE,
+     "Signin.WebSignin.TimeToChromeSignin.AddressSigninPromo"},
     {signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS, ""},
 };
 

@@ -113,6 +113,13 @@ class AutofillBubbleSignInPromoInteractiveUITest : public ManagePasswordsTest {
     ON_CALL(sync_service_mock(), HasSyncConsent()).WillByDefault(Return(true));
   }
 
+  auto SendKeyPress(ui::KeyboardCode key) {
+    return Check([this, key]() {
+      return ui_test_utils::SendKeyPressSync(browser(), key, false, false,
+                                             false, false);
+    });
+  }
+
   // Add additional account info for pixel tests.
   void ExtendAccountInfo(AccountInfo& info);
 
@@ -272,6 +279,10 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
       "Signin.SignIn.Completed",
       signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE, 1);
   histogram_tester.ExpectTotalCount("Signin.WebSignin.SourceToChromeSignin", 0);
+
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignInPromo.Accepted",
+      signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
@@ -346,6 +357,10 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
       "Signin.SignIn.Offered.NewAccountNoExistingAccount", 0);
   histogram_tester.ExpectBucketCount(
       "Signin.WebSignin.SourceToChromeSignin",
+      signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE, 1);
+
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignInPromo.Accepted",
       signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE, 1);
 }
 
@@ -422,6 +437,10 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
   histogram_tester.ExpectTotalCount(
       "Signin.SignIn.Offered.NewAccountNoExistingAccount", 0);
   histogram_tester.ExpectTotalCount("Signin.WebSignin.SourceToChromeSignin", 0);
+
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignInPromo.Accepted",
+      signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE, 1);
 }
 
 /////////////////////////////////////////////////////////////////
@@ -429,6 +448,8 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
 
 IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
                        AddressSignInPromoNoAccountPresent) {
+  base::HistogramTester histogram_tester;
+
   // Trigger the address save bubble.
   AutofillProfile address = autofill::test::GetFullProfile();
   TriggerSaveAddressBubble(address);
@@ -472,10 +493,33 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
 
   // Check that the sign in was successful.
   EXPECT_TRUE(IsSignedIn());
+
+  // Signin metrics - Offered/Started/Completed are recorded, but no values for
+  // WebSignin (WithDefault).
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Offered",
+      signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE, 1);
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Offered.NewAccountNoExistingAccount",
+      signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE, 1);
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Offered.WithDefault", 0);
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Started",
+      signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE, 1);
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Completed",
+      signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE, 1);
+  histogram_tester.ExpectTotalCount("Signin.WebSignin.SourceToChromeSignin", 0);
+
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignInPromo.Accepted",
+      signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
                        AddressSignInPromoWithWebSignedInAccount) {
+  base::HistogramTester histogram_tester;
+
   // Sign in with an account, but only on the web. The primary account is not
   // set.
   AccountInfo info = signin::MakeAccountAvailable(
@@ -524,6 +568,30 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
 
   // Check that the sign in was successful.
   EXPECT_TRUE(IsSignedIn());
+
+  // Signin metrics - WebSignin (WithDefault) metrics are also recorded.
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Offered",
+      signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE, 1);
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Started", 0);
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Completed",
+      signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE, 1);
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Offered",
+      signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE, 1);
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Offered.WithDefault",
+      signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE, 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SignIn.Offered.NewAccountNoExistingAccount", 0);
+  histogram_tester.ExpectBucketCount(
+      "Signin.WebSignin.SourceToChromeSignin",
+      signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE, 1);
+
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignInPromo.Accepted",
+      signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE, 1);
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -542,6 +610,9 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
       identity_manager(), "test@email.com", signin::ConsentLevel::kSignin);
   ExtendAccountInfo(info);
   signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager());
+
+  // Start recording metrics after signing in.
+  base::HistogramTester histogram_tester;
 
   // Trigger the address save bubble.
   AutofillProfile address = autofill::test::GetFullProfile();
@@ -593,4 +664,79 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
 
   // Check that the sign in was successful.
   EXPECT_TRUE(IsSignedIn());
+
+  // Signin metrics - nothing should be recorded for reauth.
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Offered", 0);
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Started", 0);
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Completed", 0);
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Offered.WithDefault", 0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SignIn.Offered.NewAccountNoExistingAccount", 0);
+  histogram_tester.ExpectTotalCount("Signin.WebSignin.SourceToChromeSignin", 0);
+
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignInPromo.Accepted",
+      signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
+                       AddressSignInPromoDismissedEscapeKey) {
+  base::HistogramTester histogram_tester;
+
+  // Sign in with an account, and put its refresh token into an error
+  // state. This simulates the "sign in pending" state.
+  AccountInfo info = signin::MakePrimaryAccountAvailable(
+      identity_manager(), "test@email.com", signin::ConsentLevel::kSignin);
+  ExtendAccountInfo(info);
+  signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager());
+
+  // Trigger the address save bubble.
+  AutofillProfile address = autofill::test::GetFullProfile();
+  TriggerSaveAddressBubble(address);
+
+  // Accept the save bubble, wait for the save bubble to be replaced with the
+  // sign in promo and dismiss it.
+  RunTestSequence(
+      PressButton(views::DialogClientView::kOkButtonElementId),
+      WaitForEvent(BubbleSignInPromoSignInButtonView::kPromoSignInButton,
+                   kBubbleSignInPromoSignInButtonHasCallback),
+      EnsureNotPresent(SaveAddressProfileView::kTopViewId),
+      EnsurePresent(AddressSignInPromoView::kBubbleFrameViewId),
+      SendKeyPress(ui::VKEY_ESCAPE),
+      WaitForHide(AddressSignInPromoView::kBubbleFrameViewId));
+
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignInPromo.DismissedEscapeKey",
+      signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
+                       AddressSignInPromoDismissedCloseButton) {
+  base::HistogramTester histogram_tester;
+
+  // Sign in with an account, and put its refresh token into an error
+  // state. This simulates the "sign in pending" state.
+  AccountInfo info = signin::MakePrimaryAccountAvailable(
+      identity_manager(), "test@email.com", signin::ConsentLevel::kSignin);
+  ExtendAccountInfo(info);
+  signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager());
+
+  // Trigger the address save bubble.
+  AutofillProfile address = autofill::test::GetFullProfile();
+  TriggerSaveAddressBubble(address);
+
+  // Accept the save bubble, wait for the save bubble to be replaced with the
+  // sign in promo and dismiss it.
+  RunTestSequence(
+      PressButton(views::DialogClientView::kOkButtonElementId),
+      WaitForEvent(BubbleSignInPromoSignInButtonView::kPromoSignInButton,
+                   kBubbleSignInPromoSignInButtonHasCallback),
+      EnsureNotPresent(SaveAddressProfileView::kTopViewId),
+      EnsurePresent(AddressSignInPromoView::kBubbleFrameViewId),
+      PressButton(views::BubbleFrameView::kCloseButtonElementId),
+      WaitForHide(AddressSignInPromoView::kBubbleFrameViewId));
+
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignInPromo.DismissedCloseButton",
+      signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE, 1);
 }
