@@ -286,7 +286,6 @@ export class SettingsSecurityPageElement extends
 
   private focusConfigChanged_(_newConfig: FocusConfig, oldConfig: FocusConfig) {
     assert(!oldConfig);
-    // TODO(crbug.com/40928765): fix this for new cert management UI.
     // <if expr="use_nss_certs">
     if (routes.CERTIFICATES) {
       this.focusConfig.set(routes.CERTIFICATES.path, () => {
