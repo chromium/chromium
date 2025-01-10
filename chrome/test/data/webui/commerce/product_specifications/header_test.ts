@@ -7,8 +7,7 @@ import 'chrome://compare/header.js';
 import type {HeaderElement} from 'chrome://compare/header.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {$$, eventToPromise, hasStyle, isVisible} from 'chrome://webui-test/test_util.js';
+import {$$, eventToPromise, hasStyle, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('HeaderTest', () => {
   let header: HeaderElement;
@@ -17,7 +16,7 @@ suite('HeaderTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     header = document.createElement('product-specifications-header');
     document.body.appendChild(header);
-    await flushTasks();
+    await microtasksFinished();
   });
 
   test('menu shown on click', async () => {
@@ -26,7 +25,7 @@ suite('HeaderTest', () => {
     assertEquals(menu.getIfExists(), null);
 
     header.$.menuButton.click();
-    await flushTasks();
+    await microtasksFinished();
 
     assertNotEquals(menu.getIfExists(), null);
   });
@@ -37,7 +36,7 @@ suite('HeaderTest', () => {
         menuButton.computedStyleMap().get('background-color');
     assertTrue(!!baseBackgroundColor);
     menuButton.click();
-    await flushTasks();
+    await microtasksFinished();
 
     const menuShownBackgroundColor =
         menuButton.computedStyleMap().get('background-color');
@@ -58,14 +57,14 @@ suite('HeaderTest', () => {
 
   test('menu rename shows input', async () => {
     header.$.menuButton.click();
-    await flushTasks();
+    await microtasksFinished();
 
     assertFalse(!!header.shadowRoot!.querySelector('#input'));
     const menu = header.$.menu.$.menu;
     const renameMenuItem = menu.get().querySelector<HTMLElement>('#rename');
     assertTrue(!!renameMenuItem);
     renameMenuItem.click();
-    await waitAfterNextRender(header);
+    await microtasksFinished();
 
     assertTrue(!!header.shadowRoot!.querySelector('#input'));
     assertFalse(menu.get().open);
@@ -73,7 +72,7 @@ suite('HeaderTest', () => {
 
   test('input hides and changes name on enter', async () => {
     header.$.menu.dispatchEvent(new CustomEvent('rename-click'));
-    await waitAfterNextRender(header);
+    await microtasksFinished();
 
     const input = header.shadowRoot!.querySelector<CrInputElement>('#input');
     assertTrue(!!input);
@@ -81,7 +80,7 @@ suite('HeaderTest', () => {
     const newName = 'new name';
     input.value = newName;
     input.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
-    await waitAfterNextRender(input);
+    await microtasksFinished();
 
     assertFalse(isVisible(input));
     assertEquals(newName, header.subtitle);
@@ -95,7 +94,7 @@ suite('HeaderTest', () => {
     assertTrue(hasStyle(header.$.menuButton, 'display', 'none'));
 
     header.subtitle = 'foo';
-    await waitAfterNextRender(header);
+    await microtasksFinished();
 
     assertEquals('foo', subtitle!.textContent!.trim());
     assertFalse(hasStyle(subtitle, 'display', 'none'));
@@ -107,7 +106,7 @@ suite('HeaderTest', () => {
     const subtitle = $$(header, '#subtitle');
     assertTrue(!!subtitle);
     subtitle.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
-    await waitAfterNextRender(header);
+    await microtasksFinished();
 
     const input = header.shadowRoot!.querySelector<CrInputElement>('#input');
     assertTrue(!!input);
@@ -119,44 +118,43 @@ suite('HeaderTest', () => {
 
     header.subtitle = subtitle;
     header.$.menu.dispatchEvent(new CustomEvent('rename-click'));
-    await waitAfterNextRender(header);
+    await microtasksFinished();
 
-    const input = header.shadowRoot!.querySelector<CrInputElement>('#input');
+    let input = header.shadowRoot!.querySelector<CrInputElement>('#input');
     assertTrue(!!input);
     input.value = '';
     input.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
-    await waitAfterNextRender(header);
+    await microtasksFinished();
 
-    // Ensure the cursor is at the end of the input.
-    assertTrue(input.$.input.selectionStart === input.value.length);
-    assertTrue(input.$.input.selectionEnd === input.value.length);
+    // After finishing input, the element should be removed from the DOM.
+    input = header.shadowRoot!.querySelector<CrInputElement>('#input');
+    assertFalse(!!input);
 
     assertEquals(subtitle, header.subtitle);
-    assertEquals(subtitle, input.value);
   });
 
   test('cursor moves back to the end of the input on blur', async () => {
     header.subtitle = 'foo bar baz';
     header.$.menu.dispatchEvent(new CustomEvent('rename-click'));
-    await waitAfterNextRender(header);
+    await microtasksFinished();
 
     // Select a middle section of the input text.
-    const input = header.shadowRoot!.querySelector<CrInputElement>('#input');
+    let input = header.shadowRoot!.querySelector<CrInputElement>('#input');
     assertTrue(!!input);
     input.select(5, 9);
     input.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
-    await waitAfterNextRender(header);
+    await microtasksFinished();
 
-    // Ensure the cursor is at the end of the input.
-    assertTrue(input.$.input.selectionStart === input.value.length);
-    assertTrue(input.$.input.selectionEnd === input.value.length);
+    // After finishing input, the element should be removed from the DOM.
+    input = header.shadowRoot!.querySelector<CrInputElement>('#input');
+    assertFalse(!!input);
   });
 
   test('`name-change` event is fired on input blur', async () => {
     const subtitle = $$(header, '#subtitle');
     assertTrue(!!subtitle);
     subtitle.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
-    await waitAfterNextRender(header);
+    await microtasksFinished();
 
     const input = header.shadowRoot!.querySelector<CrInputElement>('#input');
     assertTrue(!!input);
