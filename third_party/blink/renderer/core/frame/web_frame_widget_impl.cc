@@ -2373,9 +2373,12 @@ void WebFrameWidgetImpl::SetZoomInternal(double zoom_level,
 
   if (auto* local_frame = LocalRootImpl()->GetFrame()) {
     if (Document* document = local_frame->GetDocument()) {
-      double layout_zoom_factor = View()->ZoomFactorForViewportLayout() *
-                                  View()->ZoomLevelToZoomFactor(zoom_level) *
-                                  css_zoom_factor;
+      // Since `SetLayoutZoomFactor` receives a float, cast everything to floats
+      // to avoid precision loss from calculations using doubles.
+      float layout_zoom_factor =
+          View()->ZoomFactorForViewportLayout() *
+          static_cast<float>(View()->ZoomLevelToZoomFactor(zoom_level)) *
+          static_cast<float>(css_zoom_factor);
       if (zoom_changed) {
         // Set the layout shift exclusion window for the zoom level change.
         if (LocalFrameView* view = document->View()) {
