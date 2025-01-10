@@ -79,19 +79,8 @@ class GlobalShortcutListener {
       ui::GlobalAcceleratorListener* global_shortcut_listener);
 
  private:
-  // Removes an accelerator from the list of accelerators registered with this
-  // class.
-  void RemoveAccelerator(const ui::Accelerator& accelerator);
-
   // GlobalShortcutListener instance to which where most calls are delegated.
   raw_ptr<ui::GlobalAcceleratorListener> global_accelerator_listener_;
-
-  // Local tracking of accelerators that need to be registered or unregistered
-  // when shortcut handling is suspended.
-  std::vector<ui::Accelerator> accelerators_;
-
-  // Keeps track of whether shortcut handling is currently suspended.
-  bool shortcut_handling_suspended_ = false;
 };
 
 }  // namespace extensions

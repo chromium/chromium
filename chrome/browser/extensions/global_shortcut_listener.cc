@@ -48,12 +48,6 @@ bool GlobalShortcutListener::RegisterAccelerator(
     const ui::Accelerator& accelerator,
     Observer* observer) {
   CHECK(global_accelerator_listener_);
-
-  if (IsShortcutHandlingSuspended()) {
-    return false;
-  }
-
-  accelerators_.push_back(accelerator);
   return global_accelerator_listener_->RegisterAccelerator(accelerator,
                                                            observer);
 }
@@ -62,54 +56,23 @@ void GlobalShortcutListener::UnregisterAccelerator(
     const ui::Accelerator& accelerator,
     Observer* observer) {
   CHECK(global_accelerator_listener_);
-
-  if (IsShortcutHandlingSuspended()) {
-    return;
-  }
-
   global_accelerator_listener_->UnregisterAccelerator(accelerator, observer);
-  RemoveAccelerator(accelerator);
 }
 
 void GlobalShortcutListener::UnregisterAccelerators(Observer* observer) {
   CHECK(global_accelerator_listener_);
-
-  if (IsShortcutHandlingSuspended()) {
-    return;
-  }
-
-  std::vector<ui::Accelerator> removed =
-      global_accelerator_listener_->UnregisterAccelerators(observer);
-  for (const ui::Accelerator& accelerator : removed) {
-    RemoveAccelerator(accelerator);
-  }
+  global_accelerator_listener_->UnregisterAccelerators(observer);
 }
 
 void GlobalShortcutListener::SetShortcutHandlingSuspended(bool suspended) {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   CHECK(global_accelerator_listener_);
-
-  if (shortcut_handling_suspended_ == suspended) {
-    return;
-  }
-
-  shortcut_handling_suspended_ = suspended;
-  for (auto& accelerator : accelerators_) {
-    // On Linux, when shortcut handling is suspended we cannot simply early
-    // return in NotifyKeyPressed (similar to what we do for non-global
-    // shortcuts) because we'd eat the keyboard event thereby preventing the
-    // user from setting the shortcut. Therefore we must unregister while
-    // handling is suspended and register when handling resumes.
-    if (shortcut_handling_suspended_) {
-      global_accelerator_listener_->StopListeningForAccelerator(accelerator);
-    } else {
-      global_accelerator_listener_->StartListeningForAccelerator(accelerator);
-    }
-  }
+  global_accelerator_listener_->SetShortcutHandlingSuspended(suspended);
 }
 
 bool GlobalShortcutListener::IsShortcutHandlingSuspended() const {
-  return shortcut_handling_suspended_;
+  CHECK(global_accelerator_listener_);
+  return global_accelerator_listener_->IsShortcutHandlingSuspended();
 }
 
 bool GlobalShortcutListener::IsRegistrationHandledExternally() const {
@@ -123,11 +86,6 @@ void GlobalShortcutListener::OnCommandsChanged(
     Observer* observer) {
   global_accelerator_listener_->OnCommandsChanged(
       accelerator_group_id, profile_id, commands, observer);
-}
-
-void GlobalShortcutListener::RemoveAccelerator(
-    const ui::Accelerator& accelerator) {
-  std::erase(accelerators_, accelerator);
 }
 
 }  // namespace extensions

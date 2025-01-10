@@ -54,16 +54,15 @@ class GlobalAcceleratorListener {
 
   // Unregister and stop listening for all accelerators of the given `observer`.
   // Returns a vector of the accelerators that were unregistered.
-  std::vector<ui::Accelerator> UnregisterAccelerators(Observer* observer);
+  void UnregisterAccelerators(Observer* observer);
 
-  // Begin listening to an accelerator that has already been registered by
-  // calling `RegisterAccelerator`.
-  virtual bool StartListeningForAccelerator(
-      const ui::Accelerator& accelerator) = 0;
-  // Stop listening to an accelerator that has already been registered by
-  // calling `RegisterAccelerator`.
-  virtual void StopListeningForAccelerator(
-      const ui::Accelerator& accelerator) = 0;
+  // Suspend/Resume global shortcut handling. Note that when suspending,
+  // RegisterAccelerator/UnregisterAccelerator/UnregisterAccelerators are not
+  // allowed to be called until shortcut handling has been resumed.
+  void SetShortcutHandlingSuspended(bool suspended);
+
+  // Returns whether shortcut handling is currently suspended.
+  bool IsShortcutHandlingSuspended() const;
 
   // Called when a group of commands are registered.
   virtual void OnCommandsChanged(const std::string& accelerator_group_id,
@@ -94,11 +93,23 @@ class GlobalAcceleratorListener {
   virtual void StartListening() = 0;
   virtual void StopListening() = 0;
 
+  // Begin listening to an accelerator that has already been registered by
+  // calling `RegisterAccelerator`.
+  virtual bool StartListeningForAccelerator(
+      const ui::Accelerator& accelerator) = 0;
+  // Stop listening to an accelerator that has already been registered by
+  // calling `RegisterAccelerator`.
+  virtual void StopListeningForAccelerator(
+      const ui::Accelerator& accelerator) = 0;
+
   // The map of accelerators that have been successfully registered as global
   // accelerators and their observer.
   typedef std::map<ui::Accelerator, raw_ptr<Observer, CtnExperimental>>
       AcceleratorMap;
   AcceleratorMap accelerator_map_;
+
+  // Keeps track of whether shortcut handling is currently suspended.
+  bool shortcut_handling_suspended_ = false;
 };
 
 }  // namespace ui
