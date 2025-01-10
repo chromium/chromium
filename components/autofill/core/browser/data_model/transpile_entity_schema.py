@@ -39,7 +39,7 @@ def add_kMaxValue(constants):
 # An expression that creates a DenseSet of attribute type names.
 def attribute_dense_set(entity, attributes):
   names = (attribute_name(entity, attribute) for attribute in attributes)
-  return f'DenseSet{{{", ".join(names)}}}'
+  return f'DenseSet{{{", ".join((f"AttributeType({name})" for name in names))}}}'
 
 # Generates entity and attribute type name enum definitions.
 def generate_cpp_enums(schema):
@@ -82,7 +82,7 @@ def generate_cpp_functions(schema):
   yield '  NOTREACHED();'
   yield '}'
   yield ''
-  yield 'DenseSet<AttributeTypeName> EntityType::attributes() const {'
+  yield 'DenseSet<AttributeType> EntityType::attributes() const {'
   yield '  switch (name_) {'
   for entity in schema:
     yield f'    case {entity_name(entity["name"])}:'
@@ -91,7 +91,7 @@ def generate_cpp_functions(schema):
   yield '  NOTREACHED();'
   yield '}'
   yield ''
-  yield 'base::span<const DenseSet<AttributeTypeName>> EntityType::unique_keys() const {'
+  yield 'base::span<const DenseSet<AttributeType>> EntityType::unique_keys() const {'
   yield '  switch (name_) {'
   for entity in schema:
     yield f'    case {entity_name(entity["name"])}: {{'
@@ -102,7 +102,7 @@ def generate_cpp_functions(schema):
   yield '  NOTREACHED();'
   yield '}'
   yield ''
-  yield 'base::span<const DenseSet<AttributeTypeName>> EntityType::required_attributes() const {'
+  yield 'base::span<const DenseSet<AttributeType>> EntityType::required_attributes() const {'
   yield '  switch (name_) {'
   for entity in schema:
     yield f'    case {entity_name(entity["name"])}: {{'

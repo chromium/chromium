@@ -30,9 +30,12 @@ TEST(AutofillEntityTypeTest, Attributes) {
   using enum AttributeTypeName;
   EntityType e = EntityType(EntityTypeName::kPassport);
   EXPECT_THAT(e.attributes(),
-              UnorderedElementsAre(kPassportName, kPassportNumber,
-                                   kPassportCountry, kPassportExpiryDate,
-                                   kPassportIssueDate, kPassportPlaceOfBirth));
+              UnorderedElementsAre(AttributeType(kPassportName),
+                                   AttributeType(kPassportNumber),
+                                   AttributeType(kPassportCountry),
+                                   AttributeType(kPassportExpiryDate),
+                                   AttributeType(kPassportIssueDate),
+                                   AttributeType(kPassportPlaceOfBirth)));
   ASSERT_FALSE(e.attributes().empty());
 }
 
@@ -40,7 +43,8 @@ TEST(AutofillEntityTypeTest, UniqueKeys) {
   using enum AttributeTypeName;
   EntityType e = EntityType(EntityTypeName::kPassport);
   EXPECT_THAT(e.unique_keys(), ElementsAre(UnorderedElementsAre(
-                                   kPassportNumber, kPassportExpiryDate)));
+                                   AttributeType(kPassportNumber),
+                                   AttributeType(kPassportExpiryDate))));
 }
 
 TEST(AutofillEntityTypeTest, RequiredAttributes) {
@@ -48,14 +52,17 @@ TEST(AutofillEntityTypeTest, RequiredAttributes) {
   EntityType e = EntityType(EntityTypeName::kPassport);
   EXPECT_THAT(e.required_attributes(),
               UnorderedElementsAre(
-                  UnorderedElementsAre(kPassportNumber, kPassportName),
-                  UnorderedElementsAre(kPassportNumber, kPassportCountry),
-                  UnorderedElementsAre(kPassportNumber, kPassportExpiryDate)));
+                  UnorderedElementsAre(AttributeType(kPassportNumber),
+                                       AttributeType(kPassportName)),
+                  UnorderedElementsAre(AttributeType(kPassportNumber),
+                                       AttributeType(kPassportCountry)),
+                  UnorderedElementsAre(AttributeType(kPassportNumber),
+                                       AttributeType(kPassportExpiryDate))));
 }
 
 TEST(AutofillEntityTypeTest, NameAsString) {
   EntityType e = EntityType(EntityTypeName::kPassport);
-  AttributeType a = AttributeType(*e.attributes().begin());
+  AttributeType a = *e.attributes().begin();
   EXPECT_EQ(e.name_as_string(), "Passport");
   EXPECT_EQ(a.name_as_string(), "Name");
 }

@@ -508,11 +508,8 @@ enum class FieldTypeGroup {
 };
 
 template <>
-struct DenseSetTraits<FieldType> {
-  static constexpr FieldType kMinValue = NO_SERVER_DATA;
-  static constexpr FieldType kMaxValue = MAX_VALID_FIELD_TYPE;
-  static constexpr bool kPacked = false;
-};
+struct DenseSetTraits<FieldType>
+    : EnumDenseSetTraits<FieldType, NO_SERVER_DATA, MAX_VALID_FIELD_TYPE> {};
 
 using FieldTypeSet = DenseSet<FieldType>;
 

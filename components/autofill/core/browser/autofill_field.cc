@@ -30,13 +30,10 @@ using FieldPrediction =
     AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction;
 
 template <>
-struct DenseSetTraits<FieldPrediction::Source> {
-  static constexpr FieldPrediction::Source kMinValue =
-      FieldPrediction::Source(0);
-  static constexpr FieldPrediction::Source kMaxValue =
-      FieldPrediction::Source_MAX;
-  static constexpr bool kPacked = false;
-};
+struct DenseSetTraits<FieldPrediction::Source>
+    : EnumDenseSetTraits<FieldPrediction::Source,
+                         FieldPrediction::Source_MIN,
+                         FieldPrediction::Source_MAX> {};
 
 namespace {
 
