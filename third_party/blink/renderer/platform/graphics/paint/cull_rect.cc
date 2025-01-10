@@ -60,6 +60,10 @@ int LocalPixelDistanceToExpand(
 
   int local_pixel_distance_to_expand =
       pixel_distance_to_expand * expansion_ratio;
+  if (local_pixel_distance_to_expand == 0) {
+    // This can happen when the expansion_ratio is very small.
+    return min_expansion;
+  }
   float scale = GeometryMapper::SourceToDestinationApproximateMinimumScale(
       root_transform, local_transform);
   // A very big scale may be caused by non-invertable near non-invertable

@@ -235,6 +235,26 @@ TEST_F(CullRectTest,
   EXPECT_EQ(gfx::Rect(3020, 5010, 40, 50), cull_rect.Rect());
 }
 
+TEST_F(CullRectTest,
+       ApplyScrollTranslationPartialScrollingContentsWithTinyExpansionRatio) {
+  // Results should be the same as no expansion.
+  expansion_ratio_ = 0.00001;
+  auto state = CreateCompositedScrollTranslationState(
+      PropertyTreeState::Root(), -3000, -5000, gfx::Rect(20, 10, 40, 50),
+      gfx::Size(8000, 8000));
+  auto& scroll_translation = state.Transform();
+
+  CullRect cull_rect(gfx::Rect(0, 0, 50, 100));
+  EXPECT_EQ(std::make_pair(false, false),
+            ApplyScrollTranslation(cull_rect, scroll_translation));
+  EXPECT_EQ(gfx::Rect(3020, 5010, 30, 50), cull_rect.Rect());
+
+  cull_rect = CullRect::Infinite();
+  EXPECT_EQ(std::make_pair(false, false),
+            ApplyScrollTranslation(cull_rect, scroll_translation));
+  EXPECT_EQ(gfx::Rect(3020, 5010, 40, 50), cull_rect.Rect());
+}
+
 TEST_F(CullRectTest, ApplyScrollTranslationNoIntersectionWithContainerRect) {
   auto state = CreateCompositedScrollTranslationState(
       PropertyTreeState::Root(), -10, -15, gfx::Rect(200, 100, 40, 50),
