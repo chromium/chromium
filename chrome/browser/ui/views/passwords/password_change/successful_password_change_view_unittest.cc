@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_callback_support.h"
 #include "chrome/browser/password_manager/password_change_delegate.h"
 #include "chrome/browser/password_manager/password_change_delegate_mock.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_view_ids.h"
@@ -119,12 +120,25 @@ TEST_F(SuccessfulPasswordChangeViewTest, EyeButtonClick) {
 
   EXPECT_TRUE(GetLabelById(SuccessfulPasswordChangeView::kPasswordLabelId)
                   ->GetObscured());
+  views::Button* eye_icon = static_cast<views::Button*>(
+      view()->GetViewByID(SuccessfulPasswordChangeView::kEyeIconButtonId));
+  EXPECT_TRUE(eye_icon);
 
-  views::test::ButtonTestApi(
-      static_cast<views::Button*>(
-          view()->GetViewByID(SuccessfulPasswordChangeView::kEyeIconButtonId)))
-      .NotifyClick(ui::test::TestEvent());
+  // Verify that auth is invoked and act like it was successful.
+  EXPECT_CALL(*model_delegate_mock(), AuthenticateUserWithMessage)
+      .WillOnce(base::test::RunOnceCallback<1>(true));
 
+  views::test::ButtonTestApi(eye_icon).NotifyClick(ui::test::TestEvent());
+  // Verify password is revealed.
   EXPECT_FALSE(GetLabelById(SuccessfulPasswordChangeView::kPasswordLabelId)
                    ->GetObscured());
+
+  testing::Mock::VerifyAndClearExpectations(model_delegate_mock());
+  // Auth shouldn't be invoked when hiding the password.
+  EXPECT_CALL(*model_delegate_mock(), AuthenticateUserWithMessage).Times(0);
+  views::test::ButtonTestApi(eye_icon).NotifyClick(ui::test::TestEvent());
+
+  // Verify password is hidden.
+  EXPECT_TRUE(GetLabelById(SuccessfulPasswordChangeView::kPasswordLabelId)
+                  ->GetObscured());
 }

@@ -6,7 +6,9 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
 SuccessfulPasswordChangeBubbleController::
@@ -45,6 +47,20 @@ void SuccessfulPasswordChangeBubbleController::OpenPasswordManager() {
 
 void SuccessfulPasswordChangeBubbleController::FinishPasswordChange() {
   password_change_delegate_->Stop();
+}
+
+void SuccessfulPasswordChangeBubbleController::AuthenticateUser(
+    base::OnceCallback<void(bool)> auth_callback) {
+  std::u16string message;
+#if BUILDFLAG(IS_MAC)
+  message = l10n_util::GetStringUTF16(
+      IDS_PASSWORDS_PAGE_AUTHENTICATION_PROMPT_BIOMETRIC_SUFFIX);
+#elif BUILDFLAG(IS_WIN)
+  message = l10n_util::GetStringUTF16(IDS_PASSWORDS_PAGE_AUTHENTICATION_PROMPT);
+#endif
+  if (delegate_) {
+    delegate_->AuthenticateUserWithMessage(message, std::move(auth_callback));
+  }
 }
 
 std::u16string SuccessfulPasswordChangeBubbleController::GetDisplayOrigin()

@@ -24,6 +24,7 @@ class SuccessfulPasswordChangeBubbleController
 
   void OpenPasswordManager();
   void FinishPasswordChange();
+  void AuthenticateUser(base::OnceCallback<void(bool)> auth_callback);
 
   std::u16string GetDisplayOrigin() const;
   std::u16string GetUsername() const;

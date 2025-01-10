@@ -56,7 +56,7 @@ std::unique_ptr<views::View> CreateUsernameLabel(
   return username_label;
 }
 
-std::unique_ptr<views::View> CreatePasswordLabel(
+std::unique_ptr<views::Label> CreatePasswordLabel(
     const std::u16string& password) {
   std::unique_ptr<views::Label> label = std::make_unique<views::Label>(
       password, views::style::CONTEXT_DIALOG_BODY_TEXT);
@@ -82,8 +82,9 @@ std::unique_ptr<views::View> CreateVerticalStackView() {
 // |         | Password                          |          |
 // *--------------------------------------------------------*
 std::unique_ptr<views::View> CreateUsernamePasswordWithEyeIcon(
-    const std::u16string& username,
-    const std::u16string& password) {
+    SuccessfulPasswordChangeBubbleController* controller) {
+  CHECK(controller);
+
   auto parent_view = std::make_unique<views::BoxLayoutView>();
   parent_view->SetInsideBorderInsets(ComputeRowMargins());
 
@@ -106,9 +107,10 @@ std::unique_ptr<views::View> CreateUsernamePasswordWithEyeIcon(
       parent_view->AddChildView(CreateVerticalStackView());
   username_password_view->SetProperty(views::kBoxLayoutFlexKey,
                                       views::BoxLayoutFlexSpecification());
-  username_password_view->AddChildView(CreateUsernameLabel(username));
-  auto* password_label =
-      username_password_view->AddChildView(CreatePasswordLabel(password));
+  username_password_view->AddChildView(
+      CreateUsernameLabel(controller->GetUsername()));
+  views::Label* password_label = username_password_view->AddChildView(
+      CreatePasswordLabel(controller->GetNewPassword()));
 
   // Add eye icon which allows to reveal a password.
   auto* eye_icon = parent_view->AddChildView(
@@ -122,15 +124,34 @@ std::unique_ptr<views::View> CreateUsernamePasswordWithEyeIcon(
                                            ui::kColorIcon, ui::kColorIcon);
   views::SetToggledImageFromVectorIconWithColorId(
       eye_icon, views::kEyeCrossedIcon, ui::kColorIcon, ui::kColorIcon);
+
+  base::RepeatingCallback<void(bool)> auth_result_callback =
+      base::BindRepeating(
+          [](views::ToggleImageButton* toggle_button,
+             views::Label* password_label, bool auth_result) {
+            if (!auth_result) {
+              return;
+            }
+            password_label->SetObscured(!password_label->GetObscured());
+            toggle_button->SetToggled(!toggle_button->GetToggled());
+          },
+          eye_icon, password_label);
+
   eye_icon->SetCallback(base::BindRepeating(
-      [](views::ToggleImageButton* toggle_button,
-         views::Label* password_label) {
-        // TODO(crbug.com/381054978): Trigger auth before revealing the
-        // password.
-        password_label->SetObscured(!password_label->GetObscured());
-        toggle_button->SetToggled(!toggle_button->GetToggled());
+      [](base::WeakPtr<SuccessfulPasswordChangeBubbleController> controller,
+         views::Label* password_label,
+         base::RepeatingCallback<void(bool)> auth_callback) {
+        if (!password_label->GetObscured()) {
+          // Run callback to hide the password. No auth needed to do it.
+          auth_callback.Run(true);
+          return;
+        }
+        if (controller) {
+          controller->AuthenticateUser(auth_callback);
+        }
       },
-      eye_icon, static_cast<views::Label*>(password_label)));
+      controller->GetWeakPtr(), password_label,
+      std::move(auth_result_callback)));
   eye_icon->SetID(SuccessfulPasswordChangeView::kEyeIconButtonId);
 
   return parent_view;
@@ -197,8 +218,7 @@ SuccessfulPasswordChangeView::SuccessfulPasswordChangeView(
   set_margins(gfx::Insets());
 
   root_view->AddChildView(CreateBodyText(controller_->GetDisplayOrigin()));
-  root_view->AddChildView(CreateUsernamePasswordWithEyeIcon(
-      controller_->GetUsername(), controller_->GetNewPassword()));
+  root_view->AddChildView(CreateUsernamePasswordWithEyeIcon(controller_.get()));
   root_view->AddChildView(std::make_unique<views::Separator>());
   root_view->AddChildView(CreateManagePasswordsView(base::BindRepeating(
       &SuccessfulPasswordChangeBubbleController::OpenPasswordManager,
