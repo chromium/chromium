@@ -271,6 +271,11 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
                : blink::mojom::DisplayMode::kBrowser;
   }
 
+  void SetContentsBounds(content::WebContents* source,
+                         const gfx::Rect& bounds) override {
+    headless_web_contents_->SetBounds(bounds);
+  }
+
  private:
   HeadlessBrowserImpl* browser() { return headless_web_contents_->browser(); }
 

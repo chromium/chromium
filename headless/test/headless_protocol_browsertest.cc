@@ -356,9 +356,12 @@ HEADLESS_PROTOCOL_TEST(ShowDirectoryPickerNoCrash,
 HEADLESS_PROTOCOL_TEST(ShowFilePickerInterception,
                        "sanity/show-file-picker-interception.js")
 
+// The `change-window-*.js` tests cover DevTools methods, while `window-*.js`
+// cover `window.*` JS APIs.
 HEADLESS_PROTOCOL_TEST(ChangeWindowSize, "sanity/change-window-size.js")
 HEADLESS_PROTOCOL_TEST(ChangeWindowState, "sanity/change-window-state.js")
 HEADLESS_PROTOCOL_TEST(WindowOuterSize, "sanity/window-outer-size.js")
+HEADLESS_PROTOCOL_TEST(WindowResizeTo, "sanity/window-resize-to.js")
 
 // https://crbug.com/378531862
 #if BUILDFLAG(IS_MAC)
