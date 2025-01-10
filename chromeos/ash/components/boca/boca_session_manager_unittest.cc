@@ -20,6 +20,7 @@
 #include "chromeos/ash/components/boca/session_api/get_session_request.h"
 #include "chromeos/ash/components/boca/session_api/update_student_activities_request.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/user_manager/fake_user_manager.h"
@@ -114,12 +115,16 @@ class BocaSessionManagerTestBase : public testing::Test {
   BocaSessionManagerTestBase() = default;
   void SetUp() override {
     // Sign in test user.
+    user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
+    fake_user_manager_.Reset(
+        std::make_unique<user_manager::FakeUserManager>(&local_state_));
+
     auto account_id =
         AccountId::FromUserEmailGaiaId(kTestUserEmail, GaiaId(kTestGaiaId));
     const std::string username_hash =
         user_manager::FakeUserManager::GetFakeUsernameHash(account_id);
-    fake_user_manager_.Reset(std::make_unique<user_manager::FakeUserManager>());
-    fake_user_manager_->AddUser(account_id);
+    fake_user_manager_->AddGaiaUser(account_id,
+                                    user_manager::UserType::kRegular);
     fake_user_manager_->UserLoggedIn(account_id, username_hash,
                                      /*browser_restart=*/false,
                                      /*is_child=*/false);
@@ -181,6 +186,7 @@ class BocaSessionManagerTestBase : public testing::Test {
   base::test::ScopedFeatureList& scoped_feature_list() {
     return scoped_feature_list_;
   }
+  PrefService& local_state() { return local_state_; }
 
  private:
   content::BrowserTaskEnvironment task_environment_{
@@ -194,6 +200,7 @@ class BocaSessionManagerTestBase : public testing::Test {
   // Owned by BocaSessionManager, destructed before it.
   std::unique_ptr<StrictMock<MockSessionClientImpl>> session_client_impl_;
   std::unique_ptr<StrictMock<MockObserver>> observer_;
+  TestingPrefServiceSimple local_state_;
   user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
       fake_user_manager_;
   CoreAccountId core_account_id_;
@@ -761,8 +768,10 @@ TEST_F(BocaSessionManagerTest, DoNotPollSessionWhenUserNotActive) {
   auto account_id = AccountId::FromUserEmailGaiaId("another", GaiaId("user"));
   const std::string username_hash =
       user_manager::FakeUserManager::GetFakeUsernameHash(account_id);
-  fake_user_manager().Reset(std::make_unique<user_manager::FakeUserManager>());
-  fake_user_manager()->AddUser(account_id);
+  fake_user_manager().Reset(
+      std::make_unique<user_manager::FakeUserManager>(&local_state()));
+  fake_user_manager()->AddGaiaUser(account_id,
+                                   user_manager::UserType::kRegular);
   fake_user_manager()->UserLoggedIn(account_id, username_hash,
                                     /*browser_restart=*/false,
                                     /*is_child=*/false);
@@ -1091,20 +1100,22 @@ TEST_F(BocaSessionManagerTest, DoNotDispatchCaptionEventWhenAppNotOpened) {
 
 TEST_F(BocaSessionManagerTest, SwitchBetweenAccountShouldTriggerSessionReload) {
   // Add a second user.
-  auto account_id = AccountId::FromUserEmail("differentemail");
+  auto account_id = AccountId::FromUserEmailGaiaId("different@email",
+                                                   GaiaId("differentgaia"));
   const std::string username_hash =
       user_manager::FakeUserManager::GetFakeUsernameHash(account_id);
   // When login new user with existing active user, it would trigger an user
   // switch event for the existing user.
   EXPECT_CALL(*session_client_impl(), GetSession(_)).Times(1);
-  fake_user_manager()->AddUser(account_id);
+  fake_user_manager()->AddGaiaUser(account_id,
+                                   user_manager::UserType::kRegular);
   fake_user_manager()->UserLoggedIn(account_id, username_hash,
                                     /*browser_restart=*/false,
                                     /*is_child=*/false);
   // Account_id mismatch, should not load.
   EXPECT_CALL(*session_client_impl(), GetSession(_)).Times(0);
   fake_user_manager()->SwitchActiveUser(
-      AccountId::FromUserEmail("differentemail"));
+      AccountId::FromUserEmail("different@email"));
 
   // Switch back to active user, load again.
   EXPECT_CALL(*session_client_impl(), GetSession(_)).Times(1);

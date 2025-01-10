@@ -73,6 +73,7 @@ specific_include_rules = {
     "+components/sync_preferences/testing_pref_service_syncable.h",
     "+content/public/browser",
     "+content/public/test",
+    "+google_apis/gaia",
   ],
   "managed_network_configuration_handler_impl.cc": [
     "+ash/components/arc/arc_prefs.h"

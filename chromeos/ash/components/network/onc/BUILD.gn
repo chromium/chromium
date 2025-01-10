@@ -65,6 +65,7 @@ source_set("unit_tests") {
     "//chromeos/components/onc",
     "//chromeos/components/onc:test_support",
     "//components/onc",
+    "//components/prefs:test_support",
     "//components/user_manager:test_support",
     "//crypto:test_support",
     "//net:test_support",

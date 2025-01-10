@@ -12,6 +12,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -20,6 +21,7 @@ namespace ash::bluetooth_config {
 namespace {
 
 constexpr char kUser1Email[] = "user1@bluetooth";
+constexpr char kFakeGaia1[] = "fakegaia1";
 
 }  // namespace
 
@@ -39,11 +41,16 @@ class BluetoothPowerControllerImplTest : public testing::Test {
     BluetoothPowerControllerImpl::RegisterProfilePrefs(
         active_user_prefs()->registry());
 
-    auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
-    fake_user_manager_ = fake_user_manager.get();
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(fake_user_manager));
     session_manager_ = std::make_unique<session_manager::SessionManager>();
+
+    user_manager::UserManagerImpl::RegisterPrefs(local_state()->registry());
+    fake_user_manager_.Reset(
+        std::make_unique<user_manager::FakeUserManager>(local_state()));
+  }
+
+  void TearDown() override {
+    fake_user_manager_.Reset();
+    session_manager_.reset();
   }
 
   void Init() {
@@ -55,14 +62,17 @@ class BluetoothPowerControllerImplTest : public testing::Test {
   }
 
   void AddUserSession(const std::string& display_email,
+                      const GaiaId& gaia_id,
                       bool is_user_kiosk = false,
                       bool is_new_profile = false) {
-    const AccountId account_id = AccountId::FromUserEmail(display_email);
+    const AccountId account_id =
+        AccountId::FromUserEmailGaiaId(display_email, gaia_id);
     const user_manager::User* user;
     if (is_user_kiosk) {
       user = fake_user_manager_->AddKioskAppUser(account_id);
     } else {
-      user = fake_user_manager_->AddUser(account_id);
+      user = fake_user_manager_->AddGaiaUser(account_id,
+                                             user_manager::UserType::kRegular);
     }
     fake_user_manager_->SetIsCurrentUserNew(is_new_profile);
 
@@ -109,12 +119,12 @@ class BluetoothPowerControllerImplTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
+  sync_preferences::TestingPrefServiceSyncable local_state_;
   std::unique_ptr<session_manager::SessionManager> session_manager_;
-  raw_ptr<user_manager::FakeUserManager, DanglingUntriaged> fake_user_manager_;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
+      fake_user_manager_;
 
   sync_preferences::TestingPrefServiceSyncable active_user_prefs_;
-  sync_preferences::TestingPrefServiceSyncable local_state_;
 
   FakeAdapterStateController fake_adapter_state_controller_;
 
@@ -142,7 +152,7 @@ TEST_F(BluetoothPowerControllerImplTest, ToggleBluetoothEnabled) {
 
   // Toggling Bluetooth off/on when there is user session should affect
   // user prefs.
-  AddUserSession(kUser1Email);
+  AddUserSession(kUser1Email, GaiaId(kFakeGaia1));
   EXPECT_TRUE(
       active_user_prefs()->GetBoolean(prefs::kUserBluetoothAdapterEnabled));
 
@@ -241,7 +251,7 @@ TEST_F(BluetoothPowerControllerImplTest, ApplyBluetoothPrimaryUserPrefDefault) {
                   ->IsDefaultValue());
   EXPECT_EQ(GetAdapterState(), mojom::BluetoothSystemState::kEnabled);
 
-  AddUserSession(kUser1Email);
+  AddUserSession(kUser1Email, GaiaId(kFakeGaia1));
 
   // Pref should now contain the current Bluetooth adapter state (on).
   EXPECT_FALSE(active_user_prefs()
@@ -266,7 +276,8 @@ TEST_F(BluetoothPowerControllerImplTest,
                   ->IsDefaultValue());
   EXPECT_EQ(GetAdapterState(), mojom::BluetoothSystemState::kDisabled);
 
-  AddUserSession(kUser1Email, /*is_user_kiosk=*/false, /*is_new_profile=*/true);
+  AddUserSession(kUser1Email, GaiaId(kFakeGaia1),
+                 /*is_user_kiosk=*/false, /*is_new_profile=*/true);
 
   // Pref should be set to true for first-login users, and this will also
   // trigger the Bluetooth power on.
@@ -292,7 +303,8 @@ TEST_F(BluetoothPowerControllerImplTest, ApplyBluetoothKioskUserPrefDefault) {
                   ->IsDefaultValue());
   EXPECT_EQ(GetAdapterState(), mojom::BluetoothSystemState::kDisabled);
 
-  AddUserSession(kUser1Email, /*is_user_kiosk=*/true);
+  AddUserSession(kUser1Email, GaiaId(kFakeGaia1),
+                 /*is_user_kiosk=*/true);
 
   // For non-regular user, the Bluetooth setting should not be applied and pref
   // not set.
@@ -320,7 +332,7 @@ TEST_F(BluetoothPowerControllerImplTest, ApplyBluetoothPrimaryUserPrefOn) {
                    ->IsDefaultValue());
   EXPECT_EQ(GetAdapterState(), mojom::BluetoothSystemState::kDisabled);
 
-  AddUserSession(kUser1Email);
+  AddUserSession(kUser1Email, GaiaId(kFakeGaia1));
 
   // Pref should be applied to trigger the Bluetooth power on, and the pref
   // value should be unchanged.

@@ -85,6 +85,7 @@ source_set("test_support") {
     "//chromeos/ash/services/network_config:in_process_instance",
     "//chromeos/ash/services/network_config/public/cpp:test_support",
     "//components/onc",
+    "//components/prefs:test_support",
     "//components/proxy_config",
     "//components/sync:test_support",
     "//components/sync_preferences:test_support",

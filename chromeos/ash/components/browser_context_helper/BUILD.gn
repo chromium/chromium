@@ -51,6 +51,7 @@ source_set("unit_tests") {
     "//ash/constants",
     "//base/test:test_support",
     "//components/account_id",
+    "//components/prefs:test_support",
     "//components/user_manager",
     "//components/user_manager:test_support",
     "//content/test:test_support",

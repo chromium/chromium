@@ -41,6 +41,7 @@ source_set("unit_tests") {
     ":login_state",
     "//ash/constants",
     "//base",
+    "//components/prefs:test_support",
     "//components/user_manager:test_support",
     "//testing/gtest",
   ]

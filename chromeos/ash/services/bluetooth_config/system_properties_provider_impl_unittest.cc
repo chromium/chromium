@@ -15,9 +15,11 @@
 #include "chromeos/ash/services/bluetooth_config/fake_device_cache.h"
 #include "chromeos/ash/services/bluetooth_config/fake_fast_pair_delegate.h"
 #include "chromeos/ash/services/bluetooth_config/fake_system_properties_observer.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -71,17 +73,24 @@ class SystemPropertiesProviderImplTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     // Enable feature.
-    feature_list.InitAndEnableFeature(
+    feature_list_.InitAndEnableFeature(
         features::kFastPairDevicesBluetoothSettings);
-    auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
-    fake_user_manager_ = fake_user_manager.get();
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(fake_user_manager));
+
     session_manager_ = std::make_unique<session_manager::SessionManager>();
+
+    user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
+    fake_user_manager_.Reset(
+        std::make_unique<user_manager::FakeUserManager>(&local_state_));
 
     provider_ = std::make_unique<SystemPropertiesProviderImpl>(
         &fake_adapter_state_controller_, &fake_device_cache_,
         &fake_fast_pair_delegate_);
+  }
+
+  void TearDown() override {
+    provider_.reset();
+    fake_user_manager_.Reset();
+    session_manager_.reset();
   }
 
   void SetSystemState(mojom::BluetoothSystemState system_state) {
@@ -100,9 +109,11 @@ class SystemPropertiesProviderImplTest : public testing::Test {
     provider_->FlushForTesting();
   }
 
-  const user_manager::User* LogIn(const std::string email) {
-    const AccountId account_id = AccountId::FromUserEmail(email);
-    const user_manager::User* user = fake_user_manager_->AddUser(account_id);
+  const user_manager::User* LogIn(std::string_view email,
+                                  const GaiaId& gaia_id) {
+    const AccountId account_id = AccountId::FromUserEmailGaiaId(email, gaia_id);
+    const user_manager::User* user = fake_user_manager_->AddGaiaUser(
+        account_id, user_manager::UserType::kRegular);
 
     // Create a session in SessionManager. This will also login the user in
     // UserManager.
@@ -147,15 +158,16 @@ class SystemPropertiesProviderImplTest : public testing::Test {
   }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
+  TestingPrefServiceSimple local_state_;
+  std::unique_ptr<session_manager::SessionManager> session_manager_;
+  user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
+      fake_user_manager_;
+
   FakeAdapterStateController fake_adapter_state_controller_;
   FakeDeviceCache fake_device_cache_{&fake_adapter_state_controller_};
   FakeFastPairDelegate fake_fast_pair_delegate_;
-  std::unique_ptr<session_manager::SessionManager> session_manager_;
-  raw_ptr<user_manager::FakeUserManager, DanglingUntriaged> fake_user_manager_;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
-  base::test::ScopedFeatureList feature_list;
-
   std::unique_ptr<SystemPropertiesProviderImpl> provider_;
 };
 
@@ -246,7 +258,8 @@ TEST_F(SystemPropertiesProviderImplTest, ModificationStateChanges) {
             observer->received_properties_list()[0]->modification_state);
 
   // Log in as the first user. They should be able to modify Bluetooth.
-  const user_manager::User* user1 = LogIn("email1@example.com");
+  const user_manager::User* user1 =
+      LogIn("email1@example.com", GaiaId("fakegaia1"));
   ASSERT_EQ(2u, observer->received_properties_list().size());
   EXPECT_EQ(mojom::BluetoothModificationState::kCanModifyBluetooth,
             observer->received_properties_list()[1]->modification_state);
@@ -258,7 +271,7 @@ TEST_F(SystemPropertiesProviderImplTest, ModificationStateChanges) {
             observer->received_properties_list()[2]->modification_state);
 
   // Log in as a second user. They should not be able to modify Bluetooth.
-  LogIn("email2@example.com");
+  LogIn("email2@example.com", GaiaId("fakegaia2"));
   ASSERT_EQ(4u, observer->received_properties_list().size());
   EXPECT_EQ(mojom::BluetoothModificationState::kCannotModifyBluetooth,
             observer->received_properties_list()[3]->modification_state);
