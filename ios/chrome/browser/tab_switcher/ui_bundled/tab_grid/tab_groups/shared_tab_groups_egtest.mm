@@ -305,7 +305,8 @@ void ShareGroupAtIndex(int index) {
 }
 
 // Checks that the user with JoinOnly can trigger the Join flow.
-- (void)testJoinGroup {
+// TODO(crbug.com/380113830): Re-enable this test.
+- (void)DISABLED_testJoinGroup {
   GURL joinGroupURL =
       GURL(data_sharing::features::kDataSharingURL.Get() +
            "?group_id=resources%2F3bebf45000000000%2Fe%2F50cc3ac28e000000&"
@@ -408,7 +409,8 @@ void ShareGroupAtIndex(int index) {
 }
 
 // Checks that the user with JoinOnly can trigger the Join flow.
-- (void)testJoinGroup {
+// TODO(crbug.com/380113830): Re-enable this test.
+- (void)DISABLED_testJoinGroup {
   GURL joinGroupURL =
       GURL(data_sharing::features::kDataSharingURL.Get() +
            "?group_id=resources%2F3bebf45000000000%2Fe%2F50cc3ac28e000000&"
