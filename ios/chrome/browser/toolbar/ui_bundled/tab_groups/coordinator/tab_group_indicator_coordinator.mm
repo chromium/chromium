@@ -57,7 +57,7 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  CHECK(IsTabGroupIndicatorEnabled());
+  CHECK(IsTabGroupInGridEnabled());
   Browser* browser = self.browser;
   BOOL incognito = browser->GetProfile()->IsOffTheRecord();
   _view = [[TabGroupIndicatorView alloc] init];

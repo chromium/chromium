@@ -220,7 +220,7 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
                     safeAreaInsets:(UIEdgeInsets)safeAreaInsets
             animateScrollAnimation:(BOOL)animateScrollAnimation {
   if (self.isShowing) {
-    if (IsTabGroupIndicatorEnabled()) {
+    if (IsTabGroupInGridEnabled()) {
       [self.headerView updateTabGroupIndicatorAvailabilityWithOffset:offset];
     }
     CGFloat progress =

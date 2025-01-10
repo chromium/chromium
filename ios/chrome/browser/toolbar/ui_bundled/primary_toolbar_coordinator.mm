@@ -87,7 +87,7 @@
   [super start];
   self.started = YES;
 
-  if (IsTabGroupIndicatorEnabled()) {
+  if (IsTabGroupInGridEnabled()) {
     // The `_tabGroupIndicatorCoordinator` should be configured after the
     // `AdaptiveToolbarCoordinator` to gain access to the `PrimaryToolbarView`.
     _tabGroupIndicatorCoordinator = [[TabGroupIndicatorCoordinator alloc]
@@ -108,10 +108,8 @@
   }
   [super stop];
   [self.browser->GetCommandDispatcher() stopDispatchingToTarget:self];
-  if (IsTabGroupIndicatorEnabled()) {
-    [_tabGroupIndicatorCoordinator stop];
-    _tabGroupIndicatorCoordinator = nil;
-  }
+  [_tabGroupIndicatorCoordinator stop];
+  _tabGroupIndicatorCoordinator = nil;
 
   [_mediator disconnect];
 

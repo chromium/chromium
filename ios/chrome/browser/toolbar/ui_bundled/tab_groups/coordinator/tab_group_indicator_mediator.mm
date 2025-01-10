@@ -77,7 +77,6 @@ constexpr CGFloat kFacePileAvatarSize = 20;
     CHECK(consumer);
     CHECK(webStateList);
     CHECK(tracker);
-    CHECK(IsTabGroupIndicatorEnabled());
     _URLLoader = URLLoader;
     _shareKitService = shareKitService;
     _collaborationService = collaborationService;
@@ -134,7 +133,7 @@ constexpr CGFloat kFacePileAvatarSize = 20;
   web::WebState* webState = status.new_active_web_state;
   if ((status.active_web_state_change() || groupUpdate) && webState) {
     const TabGroup* tabGroup = [self currentTabGroup];
-    if (tabGroup) {
+    if (tabGroup && IsTabGroupIndicatorEnabled()) {
       [_consumer setTabGroupTitle:tabGroup->GetTitle()
                        groupColor:tabGroup->GetColor()];
       BOOL shared =
