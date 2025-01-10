@@ -136,42 +136,6 @@ void CheckBundleExists(Profile* profile, const base::FilePath& directory) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-class UpdateDiscoveryTaskResultWaiter
-    : public IsolatedWebAppUpdateManager::Observer {
-  using TaskResultCallback = base::OnceCallback<void(
-      IsolatedWebAppUpdateDiscoveryTask::CompletionStatus status)>;
-
- public:
-  UpdateDiscoveryTaskResultWaiter(WebAppProvider& provider,
-                                  const webapps::AppId expected_app_id,
-                                  TaskResultCallback callback)
-      : expected_app_id_(expected_app_id),
-        callback_(std::move(callback)),
-        provider_(provider) {
-    observation_.Observe(&provider.iwa_update_manager());
-  }
-
-  // IsolatedWebAppUpdateManager::Observer:
-  void OnUpdateDiscoveryTaskCompleted(
-      const webapps::AppId& app_id,
-      IsolatedWebAppUpdateDiscoveryTask::CompletionStatus status) override {
-    if (app_id != expected_app_id_) {
-      return;
-    }
-    std::move(callback_).Run(status);
-    observation_.Reset();
-  }
-
- private:
-  const webapps::AppId expected_app_id_;
-  TaskResultCallback callback_;
-  const raw_ref<WebAppProvider> provider_;
-
-  base::ScopedObservation<IsolatedWebAppUpdateManager,
-                          IsolatedWebAppUpdateManager::Observer>
-      observation_{this};
-};
-
 class ServiceWorkerVersionStartedRunningWaiter
     : public content::ServiceWorkerContextObserver {
  public:

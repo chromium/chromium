@@ -5,6 +5,9 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test.h"
 
 #include "base/test/gmock_expected_support.h"
+#include "base/test/test_timeouts.h"
+#include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
+#include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate_factory.h"
 #include "chrome/browser/component_updater/iwa_key_distribution_component_installer.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/key_distribution/test_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -57,15 +60,30 @@ void IsolatedWebAppTest::SetUp() {
 }
 
 void IsolatedWebAppTest::TearDown() {
-#if BUILDFLAG(ENABLE_NACL)
-  nacl::NaClBrowser::ClearAndDeleteDelegate();
-#endif  // BUILDFLAG(ENABLE_NACL)
-
+  task_environment().RunUntilIdle();
   // Manually shut down the provider and subsystems so that async tasks are
   // stopped.
   // Note: `DeleteAllTestingProfiles` doesn't actually destruct profiles and
   // therefore doesn't Shutdown keyed services like the provider.
   provider().Shutdown();
+
+  ChromeBrowsingDataRemoverDelegateFactory::GetForProfile(profile())
+      ->Shutdown();
+
+  if (task_environment().UsesMockTime()) {
+    // TODO(crbug.com/299074540): Without this line, subsequent tests are unable
+    // to use `test::UninstallWebApp`, which will hang forever. This has
+    // something to do with the combination of `MOCK_TIME` and NaCl, because
+    // the code ends up hanging forever in
+    // `PnaclTranslationCache::DoomEntriesBetween`. A simple `FastForwardBy`
+    // here seems to alleviate this issue.
+    task_environment().FastForwardBy(TestTimeouts::tiny_timeout());
+  }
+
+#if BUILDFLAG(ENABLE_NACL)
+  nacl::NaClBrowser::ClearAndDeleteDelegate();
+#endif  // BUILDFLAG(ENABLE_NACL)
+
   os_integration_test_override_.reset();
 
   profile_ = nullptr;

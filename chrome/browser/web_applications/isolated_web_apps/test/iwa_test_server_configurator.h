@@ -37,7 +37,13 @@ class IwaTestServerConfigurator {
   static base::Value::Dict CreateForceInstallPolicyEntry(
       const web_package::SignedWebBundleId& web_bundle_id,
       const std::optional<UpdateChannel>& update_channel = std::nullopt,
-      const std::optional<base::Version>& pinned_version = std::nullopt);
+      const std::optional<base::Version>& pinned_version = std::nullopt,
+      bool allow_downgrades = false);
+
+  GURL GetUpdateManifestUrlForIwa(
+      const web_package::SignedWebBundleId& web_bundle_id) {
+    return storage_.GetUpdateManifestUrl(web_bundle_id);
+  }
 
  private:
   void RegenerateServedUpdateManifest(

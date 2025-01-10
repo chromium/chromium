@@ -112,6 +112,29 @@ IsolatedWebAppBrowserTestHarness::NavigateToURLInNewTab(
       window, url, disposition, ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 }
 
+UpdateDiscoveryTaskResultWaiter::UpdateDiscoveryTaskResultWaiter(
+    WebAppProvider& provider,
+    const webapps::AppId expected_app_id,
+    TaskResultCallback callback)
+    : expected_app_id_(expected_app_id),
+      callback_(std::move(callback)),
+      provider_(provider) {
+  observation_.Observe(&provider.iwa_update_manager());
+}
+
+UpdateDiscoveryTaskResultWaiter::~UpdateDiscoveryTaskResultWaiter() = default;
+
+// IsolatedWebAppUpdateManager::Observer:
+void UpdateDiscoveryTaskResultWaiter::OnUpdateDiscoveryTaskCompleted(
+    const webapps::AppId& app_id,
+    IsolatedWebAppUpdateDiscoveryTask::CompletionStatus status) {
+  if (app_id != expected_app_id_) {
+    return;
+  }
+  std::move(callback_).Run(status);
+  observation_.Reset();
+}
+
 std::unique_ptr<net::EmbeddedTestServer> CreateAndStartDevServer(
     const base::FilePath::StringPieceType& chrome_test_data_relative_root) {
   base::FilePath server_root =

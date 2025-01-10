@@ -59,12 +59,13 @@ void IwaTestServerConfigurator::RegenerateServedUpdateManifest(
 base::Value::Dict IwaTestServerConfigurator::CreateForceInstallPolicyEntry(
     const web_package::SignedWebBundleId& web_bundle_id,
     const std::optional<UpdateChannel>& update_channel,
-    const std::optional<base::Version>& pinned_version) {
+    const std::optional<base::Version>& pinned_version,
+    bool allow_downgrades) {
   return test::CreateForceInstallIwaPolicyEntry(
       web_bundle_id,
       test::BundleVersionsStorage::GetUpdateManifestUrl(GURL(kServerBaseUrl),
                                                         web_bundle_id),
-      update_channel, pinned_version);
+      update_channel, pinned_version, allow_downgrades);
 }
 
 }  // namespace web_app
