@@ -15,6 +15,7 @@ import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.content_settings.PrefNames;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
 
@@ -57,5 +58,28 @@ class PrivacyGuideUtils {
 
     static @CookieControlsMode int getCookieControlsMode(Profile profile) {
         return UserPrefs.get(profile).getInteger(PrefNames.COOKIE_CONTROLS_MODE);
+    }
+
+    static boolean canUpdateHistorySyncValue(Profile profile) {
+        SyncService syncService = SyncServiceFactory.getForProfile(profile);
+        if (syncService == null) {
+            return false;
+        }
+
+        if (!isUserSignedIn(profile)) {
+            return false;
+        }
+        if (syncService.isSyncDisabledByEnterprisePolicy()) {
+            return false;
+        }
+        if (syncService.isTypeManagedByPolicy(UserSelectableType.HISTORY)
+                && syncService.isTypeManagedByPolicy(UserSelectableType.TABS)) {
+            return false;
+        }
+        if (syncService.isTypeManagedByCustodian(UserSelectableType.HISTORY)
+                && syncService.isTypeManagedByCustodian(UserSelectableType.TABS)) {
+            return false;
+        }
+        return true;
     }
 }
