@@ -101,6 +101,9 @@ export declare interface GlicBrowserHost {
       options: {openInBackground?: boolean, windowId?: string},
       ): Promise<TabData>;
 
+  // Opens a new tab to the glic settings page.
+  openGlicSettingsPage?(): void;
+
   // Requests the closing of the panel containing the web client.
   closePanel?(): Promise<void>;
 

@@ -145,6 +145,10 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     return {};
   }
 
+  glicBrowserOpenGlicSettingsPage() {
+    this.handler.openGlicSettingsPage();
+  }
+
   glicBrowserClosePanel() {
     return this.handler.closePanel();
   }

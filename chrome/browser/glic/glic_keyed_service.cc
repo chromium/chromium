@@ -79,6 +79,14 @@ void GlicKeyedService::CreateTab(
   std::move(callback).Run(glic::mojom::TabData::New());
 }
 
+void GlicKeyedService::OpenGlicSettingsPage() {
+  NavigateParams params(Profile::FromBrowserContext(browser_context_),
+                        GURL("chrome://settings/glic"),
+                        ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  Navigate(&params);
+}
+
 void GlicKeyedService::ClosePanel() {
   window_controller_.Close();
   SetContextAccessIndicator(false);

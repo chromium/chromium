@@ -89,6 +89,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
                              std::move(callback));
   }
 
+  void OpenGlicSettingsPage() override {
+    glic_service_->OpenGlicSettingsPage();
+  }
+
   void ClosePanel() override { glic_service_->ClosePanel(); }
 
   void ResizeWidget(const gfx::Size& size,

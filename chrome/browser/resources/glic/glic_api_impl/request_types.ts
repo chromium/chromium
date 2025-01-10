@@ -53,6 +53,10 @@ export declare interface HostRequestTypes {
       tabData?: TabDataPrivate,
     },
   };
+  glicBrowserOpenGlicSettingsPage: {
+    request: {},
+    response: void,
+  };
   glicBrowserClosePanel: {
     request: {},
     response: void,

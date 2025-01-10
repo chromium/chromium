@@ -50,6 +50,7 @@ class GlicKeyedService : public KeyedService {
                  bool open_in_background,
                  const std::optional<int32_t>& window_id,
                  glic::mojom::WebClientHandler::CreateTabCallback callback);
+  void OpenGlicSettingsPage();
   virtual void ClosePanel();
   std::optional<gfx::Size> ResizePanel(const gfx::Size& size);
   void SetPanelDraggableAreas(const std::vector<gfx::Rect>& draggable_areas);

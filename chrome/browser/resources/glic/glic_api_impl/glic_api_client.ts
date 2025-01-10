@@ -162,6 +162,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     return convertTabDataFromPrivate(result.tabData);
   }
 
+  openGlicSettingsPage(): void {
+    this.sender.requestNoResponse('glicBrowserOpenGlicSettingsPage', {});
+  }
+
   closePanel(): Promise<void> {
     return this.sender.requestWithResponse('glicBrowserClosePanel', {});
   }
