@@ -31,6 +31,7 @@ source_set("authentication_flow") {
     "//ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation",
     "//ios/chrome/browser/authentication/ui_bundled/history_sync:capabilities_fetcher",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
     "//ios/chrome/browser/flags",
     "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
     "//ios/chrome/browser/policy/model",

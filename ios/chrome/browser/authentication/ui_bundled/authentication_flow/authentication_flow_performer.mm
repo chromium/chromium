@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/managed_profile_creation_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service_factory.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_switch.h"
@@ -287,9 +288,11 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
         syncService->GetUserSettings()->SetSelectedType(
             syncer::UserSelectableType::kReadingList, false);
       }
-      authService->SignOut(
+      signin::MultiProfileSignOut(
+          browser,
           signin_metrics::ProfileSignout::kUserTappedUndoRightAfterSignIn,
-          /*force_clear_browsing_data=*/false, nil);
+          /*force_clear_data=*/false, /*force_snackbar_over_toolbar=*/false,
+          /*snackbar_message=*/nil, /*signout_completion=*/nil);
     }
   };
   action.title = l10n_util::GetNSString(IDS_IOS_SIGNIN_SNACKBAR_UNDO);
