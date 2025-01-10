@@ -62,6 +62,7 @@ import java.util.Collections;
         manifest = Config.NONE,
         shadows = {ShadowPostTask.class})
 @Features.EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SENTIMENT_SURVEY)
+@Features.DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY)
 public class PrivacySandboxSurveyControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -121,6 +122,23 @@ public class PrivacySandboxSurveyControllerTest {
                 SENTIMENT_SURVEY_TRIGGER,
                 /* psdBitFields= */ new String[0],
                 /* psdStringFields= */ new String[0]);
+        PrivacySandboxSurveyController controller =
+                PrivacySandboxSurveyController.initialize(
+                        mTabModelSelector,
+                        mActivityLifecycleDispatcher,
+                        mActivity,
+                        mMessageDispatcher,
+                        mActivityTabProvider,
+                        mProfile);
+        Assert.assertNotNull(controller);
+        controller.destroy();
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY)
+    @Features.DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SENTIMENT_SURVEY)
+    public void surveyControllerInitalizedWhenAdsCctNoticeFeatureEnabled() {
+        setSurveyConfigForceUsingTestingConfig(true);
         PrivacySandboxSurveyController controller =
                 PrivacySandboxSurveyController.initialize(
                         mTabModelSelector,

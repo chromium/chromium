@@ -382,6 +382,10 @@ public class PrivacySandboxSurveyController {
     }
 
     private static boolean shouldInitializeForActiveStudy() {
+        // Ads CCT notice survey.
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY)) {
+            return true;
+        }
         // Sentiment survey should be checked last as it should always be on.
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SENTIMENT_SURVEY)) {
             recordSentimentSurveyStatus(PrivacySandboxSentimentSurveyStatus.FEATURE_DISABLED);
