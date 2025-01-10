@@ -1095,17 +1095,19 @@ void SkiaRenderer::FinishDrawingFrame() {
     surface_candidate.damage_rect =
         use_partial_swap_ ? gfx::RectF(swap_buffer_rect_)
                           : gfx::RectF(surface_plane.resource_size);
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_OZONE)
+    // Ozone DRM needs the primary plane as the first overlay when overlay
+    // testing.
+    const auto insert_positon = current_frame()->overlay_list.begin();
+    current_frame()->overlay_list.insert(insert_positon, surface_candidate);
+#elif BUILDFLAG(IS_MAC)
     // Mac doesn't use the plane_z_order field and it needs to have primary
     // plane last in the list of overlays.
-    auto insert_positon = current_frame()->overlay_list.end();
+    current_frame()->overlay_list.push_back(surface_candidate);
 #else
-    // Most platforms respect plane_z_order so the list order doesn't matter
-    // but Ozone DRM needs the primary plane as the first overlay when overlay
-    // testing.
-    auto insert_positon = current_frame()->overlay_list.begin();
+    // Other platforms respect plane_z_order so the list order doesn't matter.
+    current_frame()->overlay_list.push_back(surface_candidate);
 #endif
-    current_frame()->overlay_list.insert(insert_positon, surface_candidate);
 
   } else {
     if (buffer_queue_) {
