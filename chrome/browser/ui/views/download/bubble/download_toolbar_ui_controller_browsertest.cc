@@ -5,11 +5,14 @@
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.h"
 
 #include "base/files/file_path.h"
+#include "base/test/run_until.h"
 #include "chrome/browser/download/download_browsertest_utils.h"
+#include "chrome/browser/download/offline_item_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/download/bubble/download_bubble_contents_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
@@ -17,6 +20,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
@@ -138,7 +142,6 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
   views::test::WaitForAnimatingLayoutManager(toolbar_container());
   EXPECT_NE(toolbar_button(), nullptr);
   EXPECT_TRUE(toolbar_button()->GetVisible());
-  //   ClickButton(toolbar_button());
   {
     content::LoadStopObserver observer(
         browser()->tab_strip_model()->GetActiveWebContents());
@@ -147,5 +150,90 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
   }
   EXPECT_EQ(GURL(chrome::kChromeUIDownloadsURL),
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+}
+
+IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
+                       ButtonPressWithRecentDownloads) {
+  ui_test_utils::DownloadURL(
+      browser(), ui_test_utils::GetTestUrl(
+                     base::FilePath().AppendASCII("downloads"),
+                     base::FilePath().AppendASCII("a_zip_file.zip")));
+  views::test::WaitForAnimatingLayoutManager(toolbar_container());
+  EXPECT_NE(toolbar_button(), nullptr);
+  EXPECT_TRUE(toolbar_button()->GetVisible());
+  ClickButton(toolbar_button());
+  EXPECT_EQ(controller()->bubble_contents_for_testing()->VisiblePage(),
+            DownloadBubbleContentsView::Page::kPrimary);
+}
+
+IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
+                       DialogAutoCloses) {
+  ui_test_utils::DownloadURL(
+      browser(), ui_test_utils::GetTestUrl(
+                     base::FilePath().AppendASCII("downloads"),
+                     base::FilePath().AppendASCII("a_zip_file.zip")));
+  views::test::WaitForAnimatingLayoutManager(toolbar_container());
+  controller()->ShowDetails();
+  controller()->OpenPrimaryDialog();
+  EXPECT_EQ(controller()->bubble_contents_for_testing()->VisiblePage(),
+            DownloadBubbleContentsView::Page::kPrimary);
+  controller()->auto_close_bubble_timer_for_testing()->user_task().Run();
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return controller()->bubble_contents_for_testing() == nullptr;
+  }));
+}
+
+IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
+                       OpenPrimaryDialog) {
+  ui_test_utils::DownloadURL(
+      browser(), ui_test_utils::GetTestUrl(
+                     base::FilePath().AppendASCII("downloads"),
+                     base::FilePath().AppendASCII("a_zip_file.zip")));
+  views::test::WaitForAnimatingLayoutManager(toolbar_container());
+  controller()->ShowDetails();
+  controller()->OpenPrimaryDialog();
+  EXPECT_EQ(controller()->bubble_contents_for_testing()->VisiblePage(),
+            DownloadBubbleContentsView::Page::kPrimary);
+}
+
+IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
+                       OpenSecurityDialog) {
+  // Disable SafeBrowsing and make a download dangerous so that showing the
+  // security view is valid.
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled,
+                                               false);
+  embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL download_url =
+      embedded_test_server()->GetURL(DownloadTestBase::kDangerousMockFilePath);
+
+  std::unique_ptr<content::DownloadTestObserver> dangerous_observer(
+      DangerousDownloadWaiter(
+          browser(), 1,
+          content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_QUIT));
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), download_url, WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
+  dangerous_observer->WaitForFinished();
+  std::vector<raw_ptr<download::DownloadItem, VectorExperimental>>
+      download_items;
+  GetDownloads(browser(), &download_items);
+  ASSERT_EQ(1UL, download_items.size());
+  views::test::WaitForAnimatingLayoutManager(toolbar_container());
+
+  offline_items_collection::ContentId content_id =
+      OfflineItemUtils::GetContentIdForDownload(download_items[0].get());
+  controller()->OpenSecuritySubpage(content_id);
+  EXPECT_EQ(controller()->bubble_contents_for_testing()->VisiblePage(),
+            DownloadBubbleContentsView::Page::kSecurity);
+  EXPECT_EQ(controller()
+                ->bubble_contents_for_testing()
+                ->security_view_for_testing()
+                ->content_id(),
+            content_id);
+  controller()
+      ->bubble_contents_for_testing()
+      ->ProcessSecuritySubpageButtonPress(content_id,
+                                          DownloadCommands::Command::DISCARD);
 }
 #endif
