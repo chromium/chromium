@@ -199,8 +199,7 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
     public void requestLayerUpdate(boolean animate) {
         assert isEnabled();
 
-        updateLayerVisibilities();
-        recalculateLayerSizes();
+        updateLayerVisibilitiesAndSizes();
         updateBrowserControlsHeight(animate);
         if (mBrowserControlsSizer.offsetOverridden() && isDispatchingYOffset()) {
             repositionLayers(
@@ -510,6 +509,19 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
                 dumpStatsForLayerForTesting(layer, yOffset);
             }
         }
+    }
+
+    /**
+     * Recalculates layer visibilities and sizes without mutating bottom controls height or actually
+     * repositioning layers. A call to this method must be followed by a call to
+     * requestLayerUpdate() in the same stack frame to avoid inconsistency between
+     * BottomControlsStacker's state and the state of individual layers. This is useful if you need
+     * to mutate browser controls height(s) *before* BottomControlsStacker, e.g. animating a
+     * simultaneous top and bottom height change.
+     */
+    public void updateLayerVisibilitiesAndSizes() {
+        updateLayerVisibilities();
+        recalculateLayerSizes();
     }
 
     /** Recalculate the browser controls height based on layer sizes. */
