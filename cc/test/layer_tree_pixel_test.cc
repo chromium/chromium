@@ -165,6 +165,13 @@ void LayerTreePixelTest::DrawLayersOnThread(LayerTreeHostImpl* host_impl) {
 
 void LayerTreePixelTest::InitializeSettings(LayerTreeSettings* settings) {
   LayerTreeTest::InitializeSettings(settings);
+
+  if (settings->UseLayerContextForDisplay()) {
+    SkipTest();
+    GTEST_SKIP() << "TODO(crbug.com/389148369) TreesInViz: Implement copy "
+                    "output requests";
+  }
+
   settings->gpu_rasterization_disabled = !use_accelerated_raster();
   settings->use_zero_copy = raster_type() == TestRasterType::kZeroCopy;
 }
