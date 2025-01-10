@@ -419,6 +419,7 @@ if (enable_openxr) {
         ldflags = [ "-Wl,--version-script=" +
                     rebase_path("//device/vr/openxr/test/openxr.lst",
                                 root_build_dir) ]
+        inputs = [ "//device/vr/openxr/test/openxr.lst" ]
       }
 
       deps = [
