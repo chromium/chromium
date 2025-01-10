@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <sstream>
 #include <string>
 #include <utility>
 
@@ -2332,9 +2333,95 @@ TEST_F(ProfileManagerTest, CannotCreateProfileOutsideUserDirAsync) {
   content::RunAllTasksUntilIdle();
 }
 
+struct ProfileKeepAliveParam {
+  ProfileKeepAliveOrigin origin;
+  bool should_clear_waiting_for_first_browser_window = false;
+};
+
+constexpr ProfileKeepAliveParam params[] = {
+    // Origins that clears
+    // `ProfileKeepAliveOrigin::kWaitingForFirstBrowserWindow`.
+    {.origin = ProfileKeepAliveOrigin::kBrowserWindow,
+     .should_clear_waiting_for_first_browser_window = true},
+    {.origin = ProfileKeepAliveOrigin::kProfileCreationFlow,
+     .should_clear_waiting_for_first_browser_window = true},
+    {.origin = ProfileKeepAliveOrigin::kProfileStatistics,
+     .should_clear_waiting_for_first_browser_window = true},
+    {.origin = ProfileKeepAliveOrigin::kProfilePickerView,
+     .should_clear_waiting_for_first_browser_window = true},
+    {.origin = ProfileKeepAliveOrigin::kWaitingForGlicView,
+     .should_clear_waiting_for_first_browser_window = true},
+
+    // Origins that do NOT clear
+    // `ProfileKeepAliveOrigin::kWaitingForFirstBrowserWindow`.
+    {.origin = ProfileKeepAliveOrigin::kBackgroundMode,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kOffTheRecordProfile,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kDownloadInProgress,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kClearingBrowsingData,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kAppWindow,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kBackgroundSync,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kNotification,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kPendingNotificationClickEvent,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kInFlightPushMessage,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kSessionRestore,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kChromeViewsDelegate,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kDevToolsWindow,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kWebAppPermissionDialogWindow,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kExtensionUpdater,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kPendingNotificationCloseEvent,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kFeedbackDialog,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kWebAppUpdate,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kGettingWebAppInfo,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kCrxInstaller,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kHistoryMenuBridge,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kProfileCreationSamlFlow,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kProfileDeletionProcess,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kIsolatedWebAppInstall,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kIsolatedWebAppUpdate,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kWebAppUninstall,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kOsIntegrationForceUnregistration,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kRemoteDebugging,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kHeadlessCommand,
+     .should_clear_waiting_for_first_browser_window = false},
+};
+
+std::string ParamsToTestSuffix(
+    const ::testing::TestParamInfo<ProfileKeepAliveParam>& info) {
+  std::stringstream stream;
+  stream << info.param.origin;
+  return stream.str();
+}
+
 class ProfileManagerTestWithParam
     : public ProfileManagerTest,
-      public testing::WithParamInterface<ProfileKeepAliveOrigin> {
+      public testing::WithParamInterface<ProfileKeepAliveParam> {
  public:
   ProfileManagerTestWithParam() {
     scoped_feature_list_.InitWithFeatures(
@@ -2359,35 +2446,41 @@ TEST_P(ProfileManagerTestWithParam, ScopedProfileKeepAlive) {
                   ProfileKeepAliveOrigin::kWaitingForFirstBrowserWindow, 1)));
 
   {
-    // Set |profile| refcount to 1. This will cause the profile to get deleted
-    // at the end of this block.
-    ScopedProfileKeepAlive keep_alive(profile, GetParam());
+    // Set |profile| refcount to 1. If this added keep alive has an origin that
+    // should remove the `kWaitingForFirstBrowserWindow` keep alive, it will
+    // cause the profile to get deleted at the end of this block.
+    ScopedProfileKeepAlive keep_alive(profile, GetParam().origin);
 
-    // We added a keep alive that should remove the
-    // `kWaitingForFirstBrowserWindow` ref.
+    // We added a keep alive that should be part of the list of keep alives.
+    // Whether `kWaitingForFirstBrowserWindow` ref is removed depends on
+    // `GetParam().should_clear_waiting_for_first_browser_window`.
     EXPECT_THAT(
         profile_manager->GetProfileInfoByPath(dest_path)->keep_alives,
         ::testing::UnorderedElementsAre(
             std::pair<ProfileKeepAliveOrigin, int>(
-                ProfileKeepAliveOrigin::kWaitingForFirstBrowserWindow, 0),
-            std::pair<ProfileKeepAliveOrigin, int>(GetParam(), 1)));
+                ProfileKeepAliveOrigin::kWaitingForFirstBrowserWindow,
+                GetParam().should_clear_waiting_for_first_browser_window ? 0
+                                                                         : 1),
+            std::pair<ProfileKeepAliveOrigin, int>(GetParam().origin, 1)));
   }
 
   base::RunLoop().RunUntilIdle();
+  if (GetParam().should_clear_waiting_for_first_browser_window) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-  // Profile* should've been destroyed by now.
-  EXPECT_EQ(nullptr, profile_manager->GetProfileByPath(dest_path));
+    // Profile* should've been destroyed by now.
+    EXPECT_EQ(nullptr, profile_manager->GetProfileByPath(dest_path));
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+  } else {
+    // `profile` is still valid since `kWaitingForFirstBrowserWindow` was not
+    // cleared.
+    EXPECT_EQ(profile, profile_manager->GetProfileByPath(dest_path));
+  }
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    ProfileManagerTestWithParam,
-    testing::Values(ProfileKeepAliveOrigin::kBrowserWindow,
-                    ProfileKeepAliveOrigin::kProfileCreationFlow,
-                    ProfileKeepAliveOrigin::kProfileStatistics,
-                    ProfileKeepAliveOrigin::kProfilePickerView,
-                    ProfileKeepAliveOrigin::kWaitingForGlicView));
+INSTANTIATE_TEST_SUITE_P(,
+                         ProfileManagerTestWithParam,
+                         testing::ValuesIn(params),
+                         &ParamsToTestSuffix);
 
 TEST_F(ProfileManagerTest, ProfileCountRecordedAtProfileInit) {
   using base::Bucket;
