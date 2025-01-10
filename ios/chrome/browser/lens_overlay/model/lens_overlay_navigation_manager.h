@@ -41,12 +41,6 @@ class LensOverlayNavigationManager : public web::WebStateObserver {
   void LoadUnimodalOmniboxNavigation(const GURL& destination_url,
                                      const std::u16string& omnibox_text);
 
-  /// Registers a navigation to a "related search", which is considered a
-  /// root-level navigation (as opposed to a subnavigation), but unlike a normal
-  /// "result" navigation it is associated with an empty image signal.
-  void RegisterRelatedSearchNavigation(const GURL& destination_url,
-                                       const std::u16string& query);
-
   /// Whether there is a previous navigation.
   bool CanGoBack() const;
   /// Go back to the previous navigation.
@@ -71,7 +65,6 @@ class LensOverlayNavigationManager : public web::WebStateObserver {
   class LensResultItem {
    public:
     explicit LensResultItem(id<ChromeLensOverlayResult> lens_result);
-
     LensResultItem(const LensResultItem& result_item) = delete;
     LensResultItem& operator=(const LensResultItem&) = delete;
     ~LensResultItem();

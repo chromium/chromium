@@ -78,33 +78,6 @@ BOOL URLHasLensRequestQueryParam(const GURL& URL) {
                                     &request_id);
 }
 
-// Related searches have the following properties:
-//  - It's a search URL (q=Foo+Bar)
-//  - It has lns_surface param
-//  - It has no vsrid param
-// This function identifies if it is a related search, and returns the query.
-// Otherwise returns std::nullopt.
-std::optional<std::string> ExtractQueryFromRelatedSearchURL(const GURL& URL) {
-  std::string search_term;
-  BOOL hasSearchTerms = net::GetValueForKeyInQuery(URL, "q", &search_term);
-
-  std::string lens_surface;
-  BOOL hasLensSurface = net::GetValueForKeyInQuery(
-      URL, lens::kLensSurfaceQueryParameter, &lens_surface);
-  LOG(WARNING) << lens_surface;
-
-  std::string request_id;
-  BOOL hasLensParam = net::GetValueForKeyInQuery(
-      URL, lens::kLensRequestQueryParameter, &request_id);
-
-  if (hasSearchTerms && hasLensSurface && !hasLensParam &&
-      lens_surface == "4") {
-    return search_term;
-  } else {
-    return std::nullopt;
-  }
-}
-
 /// Currently some websites don't render properly in the bottom sheet. Filter
 /// them out explicitly.
 GURL URLByRemovingLensSurfaceParamIfNecessary(const GURL& URL) {
@@ -327,15 +300,6 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
                requestInfo:(web::WebStatePolicyDecider::RequestInfo)requestInfo
            decisionHandler:(PolicyDecisionHandler)decisionHandler {
   GURL URL = net::GURLWithNSURL(request.URL);
-
-  if (auto relatedSearchQuery = ExtractQueryFromRelatedSearchURL(URL)) {
-    [self.delegate lensResultPageWillLoadNonLensSRP:base::SysUTF8ToNSString(
-                                                        *relatedSearchQuery)
-                                                url:URL];
-    decisionHandler(web::WebStatePolicyDecider::PolicyDecision::Allow());
-    return;
-  }
-
   std::pair<BOOL, std::optional<GURL>> allowURL =
       IsValidURLToOpenInResultsPage(URL);
   URL = allowURL.second.value_or(URL);

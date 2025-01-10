@@ -56,11 +56,6 @@
   _openInNewTabRequested = YES;
 }
 
-- (void)lensResultPageWillLoadNonLensSRP:(NSString*)queryText
-                                     url:(const GURL&)destinationURL {
-  // NO-OP
-}
-
 @end
 
 @interface LensResultPageMediator (Testing)

@@ -37,6 +37,7 @@ constexpr char kLensMetadataParameter[] = "lm";
 
 constexpr char kRenderingEnvironmentQueryParameter[] = "re";
 constexpr char kOneLensDesktopWebFullscreen[] = "df";
+constexpr char kLensSurfaceQueryParameter[] = "lns_surface";
 
 void AppendQueryParam(std::string* query_string,
                       const char name[],
