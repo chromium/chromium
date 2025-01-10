@@ -67,6 +67,8 @@ scoped_refptr<VideoFrame> CreateMappedVideoFrame(
     return nullptr;
   }
 
+  video_frame->set_color_space(src_video_frame->ColorSpace());
+
   // Pass org_video_frame so that it outlives video_frame.
   video_frame->AddDestructionObserver(
       base::BindOnce(MunmapBuffers, chunks, std::move(src_video_frame)));
