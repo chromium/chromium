@@ -4625,6 +4625,7 @@ enum WebFeature {
   kCanvasTextDirectionSetInherit = 5239,
   kTopicsAPIImg = 5240,
   kMediaSessionEnterPictureInPicture = 5241,
+  kV8AILanguageDetector_Detect_Method = 5242,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

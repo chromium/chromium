@@ -10978,6 +10978,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5239" label="CanvasTextDirectionSetInherit"/>
   <int value="5240" label="TopicsAPIImg"/>
   <int value="5241" label="MediaSessionEnterPictureInPicture"/>
+  <int value="5242" label="V8AILanguageDetector_Detect_Method"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
