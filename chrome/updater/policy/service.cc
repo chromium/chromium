@@ -24,6 +24,7 @@
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -175,7 +176,7 @@ void PolicyService::DoFetchPolicies(base::OnceCallback<void(int)> callback,
                                     bool is_cbcm_managed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   static crash_reporter::CrashKeyString<6> crash_key_cbcm("cbcm");
-  crash_key_cbcm.Set(is_cbcm_managed ? "true" : "false");
+  crash_key_cbcm.Set(base::ToString(is_cbcm_managed));
 
   if (fetch_policies_callback_) {
     // Combine with existing call.

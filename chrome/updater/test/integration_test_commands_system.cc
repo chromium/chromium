@@ -16,6 +16,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/test/test_switches.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -48,7 +49,7 @@ std::string StringFromValue(const base::Value& value) {
 }
 
 std::string BoolToString(const bool value) {
-  return value ? "true" : "false";
+  return base::ToString(value);
 }
 
 std::string RegistrationRequestToString(

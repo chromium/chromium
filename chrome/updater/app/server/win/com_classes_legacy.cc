@@ -25,6 +25,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
@@ -91,7 +92,7 @@ std::string GetStringFromValue(int value) {
 }
 
 std::string GetStringFromValue(bool value) {
-  return value ? "true" : "false";
+  return base::ToString(value);
 }
 
 std::string GetStringFromValue(const updater::UpdatesSuppressedTimes& value) {

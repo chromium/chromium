@@ -7,6 +7,7 @@
 #include <optional>
 #include <string_view>
 
+#include "base/strings/to_string.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
 #include "build/build_config.h"
@@ -251,7 +252,7 @@ TEST_F(AdditionalParametersTest, SetChannel) {
       SCOPED_TRACE(::testing::Message()
                    << "channel=" << static_cast<int>(channel.channel)
                    << " is_extended_stable_channel="
-                   << (channel.is_extended_stable_channel ? "true" : "false"));
+                   << base::ToString(channel.is_extended_stable_channel));
       AdditionalParameters ap;
       ap.SetChannel(channel.channel, channel.is_extended_stable_channel);
       if (channel.channel == version_info::Channel::STABLE &&
