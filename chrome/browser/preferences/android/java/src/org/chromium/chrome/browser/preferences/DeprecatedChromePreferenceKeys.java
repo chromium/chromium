@@ -168,6 +168,7 @@ public class DeprecatedChromePreferenceKeys {
                 "reached_code_sampling_interval",
                 "service_manager_for_background_prefetch",
                 "service_manager_for_download_resumption",
+                "settings_personalized_signin_promo_dismissed",
                 "signin_promo_impressions_count_bookmarks",
                 "signin_promo_impressions_count_settings",
                 "sole_integration_enabled",

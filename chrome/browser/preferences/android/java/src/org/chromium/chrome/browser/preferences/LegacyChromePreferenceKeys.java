@@ -108,7 +108,6 @@ public class LegacyChromePreferenceKeys {
                 ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED,
                 ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_SUPPRESSION_PERIOD_START,
                 ChromePreferenceKeys.SIGNIN_PROMO_BOOKMARKS_DECLINED,
-                ChromePreferenceKeys.SIGNIN_PROMO_SETTINGS_PERSONALIZED_DISMISSED,
                 ChromePreferenceKeys.SIGNIN_LEGACY_PRIMARY_ACCOUNT_EMAIL,
                 ChromePreferenceKeys.SNAPSHOT_DATABASE_REMOVED,
                 ChromePreferenceKeys.SYNC_ERROR_MESSAGE_SHOWN_AT_TIME,

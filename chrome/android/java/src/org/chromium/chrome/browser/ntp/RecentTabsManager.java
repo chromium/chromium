@@ -19,7 +19,6 @@ import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionTab;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
-import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -132,7 +131,6 @@ public class RecentTabsManager
                         mProfile,
                         bottomSheetStrings,
                         SigninAccessPoint.RECENT_TABS,
-                        SyncConsentActivityLauncherImpl.getForProfile(mProfile),
                         SigninAndHistorySyncActivityLauncherImpl.get());
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)) {
             mSigninPromoCoordinator =

@@ -48,7 +48,6 @@ import org.chromium.chrome.browser.preferences.PrefServiceUtil;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
-import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
@@ -937,7 +936,6 @@ public class FeedSurfaceMediator
                             mProfile,
                             bottomSheetStrings,
                             SigninAccessPoint.NTP_FEED_TOP_PROMO,
-                            SyncConsentActivityLauncherImpl.getForProfile(mProfile),
                             SigninAndHistorySyncActivityLauncherImpl.get());
             if (!shouldCreatePromo || !promoController.canShowSyncPromo()) {
                 return false;

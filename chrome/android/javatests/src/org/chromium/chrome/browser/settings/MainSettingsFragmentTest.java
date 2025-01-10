@@ -91,8 +91,6 @@ import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.password_manager.settings.PasswordSettings;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.privacy.settings.PrivacySettings;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
@@ -119,7 +117,6 @@ import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConf
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
-import org.chromium.chrome.browser.ui.signin.SyncPromoController;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
@@ -210,12 +207,6 @@ public class MainSettingsFragmentTest {
 
     @After
     public void tearDown() {
-        ChromeSharedPreferences.getInstance()
-                .removeKey(
-                        SyncPromoController.getPromoShowCountPreferenceName(
-                                SigninAccessPoint.SETTINGS));
-        ChromeSharedPreferences.getInstance()
-                .removeKey(ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT);
         Intents.release();
     }
 
@@ -636,14 +627,6 @@ public class MainSettingsFragmentTest {
         Assert.assertTrue(
                 "Search Engine preference should be disabled when service is not ready.",
                 TextUtils.isEmpty(searchEngineSettings.getSummary()));
-    }
-
-    @Test
-    @MediumTest
-    public void testSignInPromoHidden() {
-        startSettings();
-
-        onView(withText(R.string.sync_promo_title_settings)).check(doesNotExist());
     }
 
     @Test

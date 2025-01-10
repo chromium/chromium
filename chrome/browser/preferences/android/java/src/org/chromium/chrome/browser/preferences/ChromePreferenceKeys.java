@@ -764,13 +764,6 @@ public final class ChromePreferenceKeys {
     /** Personalized signin promo preference. */
     public static final String SIGNIN_PROMO_BOOKMARKS_DECLINED = "signin_promo_bookmarks_declined";
 
-    /**
-     * Whether the user dismissed the personalized sign in promo from the Settings. Default value is
-     * false.
-     */
-    public static final String SIGNIN_PROMO_SETTINGS_PERSONALIZED_DISMISSED =
-            "settings_personalized_signin_promo_dismissed";
-
     // TODO(crbug.com/40697988): Remove this after migrating the legacy code that uses
     //                                  the primary account before the native is loaded.
     public static final String SIGNIN_LEGACY_PRIMARY_ACCOUNT_EMAIL = "google.services.username";

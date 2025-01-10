@@ -16,7 +16,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.LegacySyncPromoView;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
-import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -74,7 +73,6 @@ public class BookmarkPromoHeader
                         mProfile,
                         bottomSheetStrings,
                         SigninAccessPoint.BOOKMARK_MANAGER,
-                        SyncConsentActivityLauncherImpl.getForProfile(mProfile),
                         SigninAndHistorySyncActivityLauncherImpl.get());
         if (syncPromoController.canShowSyncPromo()) {
             mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mContext);
