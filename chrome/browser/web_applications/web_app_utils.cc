@@ -60,8 +60,6 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "ash/constants/ash_features.h"
-#include "base/feature_list.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
@@ -287,14 +285,12 @@ bool AreWebAppsEnabled(Profile* profile) {
     return false;
   }
   auto* user_manager = user_manager::UserManager::Get();
-  // Don't enable if SWAs in Kiosk session are disabled for the next session
-  // types.
-  if (!base::FeatureList::IsEnabled(ash::features::kKioskEnableSystemWebApps)) {
-    // Don't enable for Chrome App Kiosk sessions.
-    if (user_manager && user_manager->IsLoggedInAsKioskApp()) {
-      return false;
-    }
+
+  // Don't enable for Chrome App Kiosk sessions.
+  if (user_manager && user_manager->IsLoggedInAsKioskApp()) {
+    return false;
   }
+
   // Guest session forces OTR to be turned on.
   if (profile->IsGuestSession()) {
     return profile->IsOffTheRecord();

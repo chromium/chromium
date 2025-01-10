@@ -9,7 +9,6 @@
 #include "ash/constants/web_app_id_constants.h"
 #include "base/containers/adapters.h"
 #include "base/files/file_path.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -238,16 +237,6 @@ TEST_F(WebAppUtilsTest, AreWebAppsEnabled) {
                                /*browser_restart=*/false, /*is_child=*/false);
     user_manager::ScopedUserManager enabler(std::move(user_manager));
     EXPECT_FALSE(AreWebAppsEnabled(regular_profile));
-  }
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(features::kKioskEnableSystemWebApps);
-    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
-    auto* user = user_manager->AddKioskAppUser(account_id);
-    user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
-                               /*browser_restart=*/false, /*is_child=*/false);
-    user_manager::ScopedUserManager enabler(std::move(user_manager));
-    EXPECT_TRUE(AreWebAppsEnabled(regular_profile));
   }
   {
     auto user_manager = std::make_unique<ash::FakeChromeUserManager>();

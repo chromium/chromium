@@ -258,7 +258,6 @@ source_set("browser_tests") {
     "kiosk_crash_restore_browsertest.cc",
     "kiosk_guest_view_browsertest.cc",
     "kiosk_network_state_observer_browsertest.cc",
-    "kiosk_system_web_app_browsertest.cc",
     "kiosk_troubleshooting_tools_browsertest.cc",
   ]
   deps = [

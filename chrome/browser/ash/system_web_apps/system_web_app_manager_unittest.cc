@@ -1557,12 +1557,4 @@ TEST_F(SystemWebAppManagerInKioskTest, ShouldNotCreateManagerByDefault) {
   EXPECT_FALSE(SystemWebAppManager::Get(profile()));
 }
 
-// Checks that SWA manager is created in Kiosk sessions if the feature is
-// enabled.
-TEST_F(SystemWebAppManagerInKioskTest, ShouldCreateManagerIfEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      ash::features::kKioskEnableSystemWebApps);
-  EXPECT_TRUE(SystemWebAppManager::Get(profile()));
-}
-
 }  // namespace ash

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "ash/wm/window_properties.h"
@@ -66,8 +65,7 @@ bool SettingsWindowManager::UseDeprecatedSettingsWindow(Profile* profile) {
   }
 
   // Use deprecated settings window in Kiosk session only if SWA is disabled.
-  if (IsRunningInForcedAppMode() &&
-      !base::FeatureList::IsEnabled(ash::features::kKioskEnableSystemWebApps)) {
+  if (IsRunningInForcedAppMode()) {
     return true;
   }
 

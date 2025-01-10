@@ -1636,10 +1636,10 @@ BASE_FEATURE(kKerberosRememberPasswordByDefault,
              "KerberosRememberPasswordByDefault",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables System Web Apps for the Kiosk session.
-BASE_FEATURE(kKioskEnableSystemWebApps,
-             "KioskEnableSystemWebApps",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+// Enables IME button in the floating accessibility menu for the Kiosk session.
+BASE_FEATURE(kKioskEnableImeButton,
+             "KioskEnableImeButton",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables automatic downloading and installing fonts via language packs, based
 // on the user's preferences.
