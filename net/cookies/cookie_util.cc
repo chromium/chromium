@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -344,16 +345,16 @@ std::string GetEffectiveDomain(const std::string& scheme,
   return CookieDomainAsHost(host);
 }
 
-bool GetCookieDomainWithString(const GURL& url,
-                               const std::string& domain_string,
-                               CookieInclusionStatus& status,
-                               std::string* result) {
+std::optional<std::string> GetCookieDomainWithString(
+    const GURL& url,
+    const std::string& domain_string,
+    CookieInclusionStatus& status) {
   // Disallow non-ASCII domain names.
   if (!base::IsStringASCII(domain_string)) {
     if (base::FeatureList::IsEnabled(features::kCookieDomainRejectNonASCII)) {
       status.AddExclusionReason(
           CookieInclusionStatus::EXCLUDE_DOMAIN_NON_ASCII);
-      return false;
+      return std::nullopt;
     }
     status.AddWarningReason(CookieInclusionStatus::WARN_DOMAIN_NON_ASCII);
   }
@@ -366,7 +367,7 @@ bool GetCookieDomainWithString(const GURL& url,
   // it is the last label in the name, but a name ending in `..` would have an
   // empty label in the penultimate position and is thus invalid.
   if (url_host.ends_with("..")) {
-    return false;
+    return std::nullopt;
   }
   // If no domain was specified in the domain string, default to a host cookie.
   // We match IE/Firefox in allowing a domain=IPADDR if it matches (case
@@ -376,34 +377,36 @@ bool GetCookieDomainWithString(const GURL& url,
       (url.HostIsIPAddress() &&
        (base::EqualsCaseInsensitiveASCII(url_host, domain_string) ||
         base::EqualsCaseInsensitiveASCII("." + url_host, domain_string)))) {
+    std::string result;
     if (url.SchemeIsHTTPOrHTTPS() || url.SchemeIsWSOrWSS()) {
-      *result = url_host;
+      result = url_host;
     } else {
       // If the URL uses an unknown scheme, we should ensure the host has been
       // canonicalized.
       url::CanonHostInfo ignored;
-      *result = CanonicalizeHost(url_host, &ignored);
+      result = CanonicalizeHost(url_host, &ignored);
     }
     // TODO(crbug.com/40271909): Once empty label support is implemented we can
     // CHECK our assumptions here. For now, we DCHECK as DUMP_WILL_BE_CHECK is
     // generating too many crash reports and already know why this is failing.
-    DCHECK(DomainIsHostOnly(*result));
-    return true;
+    DCHECK(DomainIsHostOnly(result));
+    return result;
   }
 
   // Disallow domain names with %-escaped characters.
-  for (char c : domain_string) {
-    if (c == '%')
-      return false;
+  if (base::Contains(domain_string, '%')) {
+    return std::nullopt;
   }
 
   url::CanonHostInfo ignored;
   std::string cookie_domain(CanonicalizeHost(domain_string, &ignored));
   // Get the normalized domain specified in cookie line.
-  if (cookie_domain.empty())
-    return false;
-  if (cookie_domain[0] != '.')
+  if (cookie_domain.empty()) {
+    return std::nullopt;
+  }
+  if (cookie_domain[0] != '.') {
     cookie_domain = "." + cookie_domain;
+  }
 
   // Ensure |url| and |cookie_domain| have the same domain+registry.
   const std::string url_scheme(url.scheme());
@@ -416,19 +419,20 @@ bool GetCookieDomainWithString(const GURL& url,
         domain_string[0] == '.' ? domain_string.substr(1) : domain_string);
 
     if (url_host == normalized_domain_string) {
-      *result = url_host;
-      DCHECK(DomainIsHostOnly(*result));
-      return true;
+      DCHECK(DomainIsHostOnly(normalized_domain_string));
+      return normalized_domain_string;
     }
 
     // Otherwise, IP addresses/intranet hosts/public suffixes can't set
     // domain cookies.
-    return false;
+    return std::nullopt;
   }
   const std::string cookie_domain_and_registry(
       GetEffectiveDomain(url_scheme, cookie_domain));
-  if (url_domain_and_registry != cookie_domain_and_registry)
-    return false;  // Can't set a cookie on a different domain + registry.
+  if (url_domain_and_registry != cookie_domain_and_registry) {
+    // Can't set a cookie on a different domain + registry.
+    return std::nullopt;
+  }
 
   // Ensure |url_host| is |cookie_domain| or one of its subdomains.  Given that
   // we know the domain+registry are the same from the above checks, this is
@@ -437,11 +441,11 @@ bool GetCookieDomainWithString(const GURL& url,
       (cookie_domain != ("." + url_host)) :
       (url_host.compare(url_host.length() - cookie_domain.length(),
                         cookie_domain.length(), cookie_domain) != 0);
-  if (is_suffix)
-    return false;
+  if (is_suffix) {
+    return std::nullopt;
+  }
 
-  *result = cookie_domain;
-  return true;
+  return cookie_domain;
 }
 
 // Parse a cookie expiration time.  We try to be lenient, but we need to

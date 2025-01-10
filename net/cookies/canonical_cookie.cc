@@ -84,15 +84,13 @@ static constexpr int kMinutesInTwelveHours = 12 * 60;
 static constexpr int kMinutesInTwentyFourHours = 24 * 60;
 
 // Determine the cookie domain to use for setting the specified cookie.
-bool GetCookieDomain(const GURL& url,
-                     const ParsedCookie& pc,
-                     CookieInclusionStatus& status,
-                     std::string* result) {
+std::optional<std::string> GetCookieDomain(const GURL& url,
+                                           const ParsedCookie& pc,
+                                           CookieInclusionStatus& status) {
   std::string domain_string;
   if (pc.HasDomain())
     domain_string = pc.Domain();
-  return cookie_util::GetCookieDomainWithString(url, domain_string, status,
-                                                result);
+  return cookie_util::GetCookieDomainWithString(url, domain_string, status);
 }
 
 // Compares cookies using name, domain and path, so that "equivalent" cookies
@@ -350,8 +348,9 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
                         parsed_cookie.HasDomain() &&
                             !base::IsStringASCII(parsed_cookie.Domain()));
 
-  std::string cookie_domain;
-  if (!GetCookieDomain(url, parsed_cookie, *status, &cookie_domain)) {
+  std::optional<std::string> cookie_domain =
+      GetCookieDomain(url, parsed_cookie, *status);
+  if (!cookie_domain) {
     DVLOG(net::cookie_util::kVlogSetCookies)
         << "Create() failed to get a valid cookie domain";
     status->AddExclusionReason(CookieInclusionStatus::EXCLUDE_INVALID_DOMAIN);
@@ -453,8 +452,8 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
 
   auto cc = std::make_unique<CanonicalCookie>(
       base::PassKey<CanonicalCookie>(), parsed_cookie.Name(),
-      parsed_cookie.Value(), std::move(cookie_domain), std::move(cookie_path),
-      creation_time, cookie_expires, creation_time,
+      parsed_cookie.Value(), std::move(cookie_domain).value_or(std::string()),
+      std::move(cookie_path), creation_time, cookie_expires, creation_time,
       /*last_update=*/base::Time::Now(), parsed_cookie.IsSecure(),
       parsed_cookie.IsHttpOnly(), samesite, parsed_cookie.Priority(),
       cookie_partition_key, source_scheme, source_port, source_type);
@@ -567,14 +566,15 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
   const std::string& domain_attribute =
       domain_is_valid ? domain : std::string();
 
-  std::string cookie_domain;
+  std::optional<std::string> cookie_domain;
   // This validation step must happen before GetCookieDomainWithString, so it
   // doesn't fail DCHECKs.
   if (!cookie_util::DomainIsHostOnly(url.host())) {
     status->AddExclusionReason(
         net::CookieInclusionStatus::EXCLUDE_INVALID_DOMAIN);
-  } else if (!cookie_util::GetCookieDomainWithString(url, domain_attribute,
-                                                     *status, &cookie_domain)) {
+  } else if (cookie_domain = cookie_util::GetCookieDomainWithString(
+                 url, domain_attribute, *status);
+             !cookie_domain) {
     status->AddExclusionReason(
         net::CookieInclusionStatus::EXCLUDE_INVALID_DOMAIN);
   }
@@ -683,7 +683,8 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
     return nullptr;
 
   auto cc = std::make_unique<CanonicalCookie>(
-      base::PassKey<CanonicalCookie>(), name, value, std::move(cookie_domain),
+      base::PassKey<CanonicalCookie>(), name, value,
+      std::move(cookie_domain).value_or(std::string()),
       std::move(encoded_cookie_path), creation_time, expiration_time,
       last_access_time,
       /*last_update=*/base::Time::Now(), secure, http_only, same_site, priority,
