@@ -22,6 +22,7 @@
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/layout/table_layout_view.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/vector_icons.h"
 
 using TableLayout = views::TableLayout;
 using LayoutAlignment = views::LayoutAlignment;
@@ -59,9 +60,9 @@ std::unique_ptr<views::View> CreateThingsToConsiderList() {
 
   auto table_root_view = std::make_unique<views::TableLayoutView>();
   table_root_view
-      ->AddColumn(LayoutAlignment::kStart, LayoutAlignment::kStretch,
-                  TableLayout::kFixedSize,
-                  TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      ->AddColumn(LayoutAlignment::kCenter, LayoutAlignment::kCenter,
+                  TableLayout::kFixedSize, TableLayout::ColumnSize::kFixed,
+                  kIconSize, kIconSize)
       .AddPaddingColumn(TableLayout::kFixedSize, label_padding)
       .AddColumn(LayoutAlignment::kStretch, LayoutAlignment::kStretch, 1.0f,
                  TableLayout::ColumnSize::kUsePreferred, 0, 0)
@@ -75,16 +76,16 @@ std::unique_ptr<views::View> CreateThingsToConsiderList() {
 
   // TODO (crbug.com/381053884): Add correct icons here.
   CreateRow(
-      *table_root_view, vector_icons::kGoogleColorIcon,
+      *table_root_view, views::kPsychiatryIcon,
       IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_PRIVACY_NOTICE_ITEM_EXPERIMENTAL);
   CreateRow(
       *table_root_view, vector_icons::kGoogleColorIcon,
       IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_PRIVACY_NOTICE_ITEM_SENT_TO_GOOGLE);
   CreateRow(
-      *table_root_view, vector_icons::kGoogleColorIcon,
+      *table_root_view, views::kAccountBoxIcon,
       IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_PRIVACY_NOTICE_ITEM_HUMAN_REVIEW);
   CreateRow(
-      *table_root_view, vector_icons::kGoogleColorIcon,
+      *table_root_view, vector_icons::kLockIcon,
       IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_PRIVACY_NOTICE_ITEM_ENCRYPTED);
   return table_root_view;
 }
