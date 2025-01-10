@@ -59,12 +59,6 @@ uint8_t QindexToQuantizer(uint8_t q_index) {
   return std::size(kQuantizerToQindex) - 1;
 }
 
-// TODO(crbug.com/40533712): remove this in favor of std::gcd if c++17 is
-// enabled to use.
-int GCD(int a, int b) {
-  return a == 0 ? b : GCD(b % a, a);
-}
-
 // The return value is expressed as a percentage of the average. For example,
 // to allocate no more than 4.5 frames worth of bitrate to a keyframe, the
 // return value is 450.
@@ -123,7 +117,7 @@ libvpx::VP9RateControlRtcConfig CreateRateControlConfig(
   }
   for (size_t sid = 0; sid < num_spatial_layers; ++sid) {
     int gcd =
-        GCD(encode_size.height(), spatial_layer_resolutions[sid].height());
+        std::gcd(encode_size.height(), spatial_layer_resolutions[sid].height());
     rc_cfg.scaling_factor_num[sid] =
         spatial_layer_resolutions[sid].height() / gcd;
     rc_cfg.scaling_factor_den[sid] = encode_size.height() / gcd;
