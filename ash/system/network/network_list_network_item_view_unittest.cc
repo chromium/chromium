@@ -797,7 +797,7 @@ TEST_F(NetworkListNetworkItemViewTest, NetworkIconAnimating) {
   // Override current icon with an empty icon, check it is updated when
   // animation starts.
   static_cast<views::ImageView*>(network_list_network_item_view()->left_view())
-      ->SetImage(gfx::ImageSkia());
+      ->SetImage(ui::ImageModel());
 
   EXPECT_TRUE(static_cast<views::ImageView*>(
                   network_list_network_item_view()->left_view())

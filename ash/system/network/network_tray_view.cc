@@ -85,7 +85,7 @@ void NetworkTrayView::NetworkListChanged() {
 
 void NetworkTrayView::UpdateIcon(bool tray_icon_visible,
                                  const gfx::ImageSkia& image) {
-  image_view()->SetImage(image);
+  image_view()->SetImage(ui::ImageModel::FromImageSkia(image));
   SetVisible(tray_icon_visible);
   SchedulePaint();
 }
