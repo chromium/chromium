@@ -506,6 +506,11 @@ void CorsURLLoader::FollowRedirect(
   // instead of being handled in `network::URLLoader`.
   //
   // See also: https://crbug.com/1293891
+  //
+  // Note that this is also needed to prevent a compromised renderer from using
+  // `new_url` to access arbitrary same-origin urls on a more private network,
+  // if it ever gets Private Network Access permissions to access a URL that is
+  // redirected.
   request_.target_ip_address_space = mojom::IPAddressSpace::kUnknown;
 
   // Similarly, when we follow a redirect, we may make a different decision as
