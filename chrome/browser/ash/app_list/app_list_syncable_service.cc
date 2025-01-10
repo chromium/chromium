@@ -23,6 +23,7 @@
 #include "base/one_shot_event.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -1822,10 +1823,10 @@ std::string AppListSyncableService::SyncItem::ToString() const {
     if (!parent_id.empty()) {
       res += " <" + parent_id.substr(0, 8) + ">";
     }
-    res += " [" + item_pin_ordinal.ToDebugString() + "(up=" +
-           (is_user_pinned.has_value() ? (*is_user_pinned ? "true" : "false")
-                                       : "?") +
-           ")]";
+    res +=
+        " [" + item_pin_ordinal.ToDebugString() + "(up=" +
+        (is_user_pinned.has_value() ? base::ToString(*is_user_pinned) : "?") +
+        ")]";
   }
 
   if (item_color.IsValid()) {

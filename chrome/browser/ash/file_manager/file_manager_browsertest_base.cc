@@ -71,6 +71,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -3100,7 +3101,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   if (name == "isDevtoolsCoverageActive") {
     bool devtools_coverage_active = !devtools_code_coverage_dir_.empty();
     LOG(INFO) << "isDevtoolsCoverageActive: " << devtools_coverage_active;
-    *output = devtools_coverage_active ? "true" : "false";
+    *output = base::ToString(devtools_coverage_active);
     return;
   }
 
@@ -3780,22 +3781,22 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   }
 
   if (name == "isConflictDialogEnabled") {
-    *output = options.enable_conflict_dialog ? "true" : "false";
+    *output = base::ToString(options.enable_conflict_dialog);
     return;
   }
 
   if (name == "isSmbEnabled") {
-    *output = options.native_smb ? "true" : "false";
+    *output = base::ToString(options.native_smb);
     return;
   }
 
   if (name == "isBannersFrameworkEnabled") {
-    *output = options.enable_banners_framework ? "true" : "false";
+    *output = base::ToString(options.enable_banners_framework);
     return;
   }
 
   if (name == "isMirrorSyncEnabled") {
-    *output = options.enable_mirrorsync ? "true" : "false";
+    *output = base::ToString(options.enable_mirrorsync);
     return;
   }
 
@@ -4007,7 +4008,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   }
 
   if (name == "isCrosComponents") {
-    *output = options.enable_cros_components ? "true" : "false";
+    *output = base::ToString(options.enable_cros_components);
     return;
   }
 

@@ -18,6 +18,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/process/launch.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -352,7 +353,7 @@ void PushFlag(const base::Feature& feature,
               std::vector<std::string>& out_command) {
   out_command.emplace_back(
       std::string(feature.name) + "=" +
-      (base::FeatureList::IsEnabled(feature) ? "true" : "false"));
+      base::ToString(base::FeatureList::IsEnabled(feature)));
 }
 
 // Helper for converting |feature| and |param| of enum type into

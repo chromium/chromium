@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/to_string.h"
 #include "base/test/bind.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
@@ -398,7 +399,7 @@ FakeProvidedFileSystemOneDrive::GetActions(
     actions.push_back(
         {ash::cloud_upload::kUserEmailActionId, kSampleUserEmail1});
     actions.push_back({ash::cloud_upload::kReauthenticationRequiredId,
-                       reauthentication_required_ ? "true" : "false"});
+                       base::ToString(reauthentication_required_)});
     actions.push_back(
         {ash::cloud_upload::kAccountStateId,
          reauthentication_required_ ? "REAUTHENTICATION_REQUIRED" : "NORMAL"});

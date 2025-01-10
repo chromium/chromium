@@ -18,6 +18,7 @@
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
@@ -322,7 +323,7 @@ bool ComponentExtensionIMEManagerDelegateImpl::ReadEngineComponent(
   url = net::AppendOrReplaceQueryParameter(url, "jelly", "true");
   url = net::AppendOrReplaceQueryParameter(
       url, "globalemojipreferences",
-      is_global_emoji_preferences_enabled ? "true" : "false");
+      base::ToString(is_global_emoji_preferences_enabled));
   // Information is managed on VK extension side so just use a default value
   // here.
   url = net::AppendOrReplaceRef(url, "id=default");

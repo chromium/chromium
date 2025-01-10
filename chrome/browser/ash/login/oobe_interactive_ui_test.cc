@@ -19,6 +19,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -583,11 +584,11 @@ class OobeEndToEndTestSetupMixin : public InProcessBrowserTestMixin {
     ArcState arc_state;
 
     std::string ToString() const {
-      return std::string("{is_tablet: ") + (is_tablet ? "true" : "false") +
+      return std::string("{is_tablet: ") + base::ToString(is_tablet) +
              ", is_quick_unlock_enabled: " +
-             (is_quick_unlock_enabled ? "true" : "false") +
+             base::ToString(is_quick_unlock_enabled) +
              ", hide_shelf_controls_in_tablet_mode: " +
-             (hide_shelf_controls_in_tablet_mode ? "true" : "false") +
+             base::ToString(hide_shelf_controls_in_tablet_mode) +
              ", arc_state: " + ArcStateToString(arc_state) + "}";
     }
   };

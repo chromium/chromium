@@ -12,6 +12,7 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/sync/protocol/cookie_specifics.pb.h"
@@ -190,7 +191,7 @@ std::optional<std::string> SerializedKey(const net::CanonicalCookie& cookie) {
   // We just concatenate all involved strings.
   std::string serialized_key = base::StrCat(
       {serialized_partition_key->TopLevelSite(),
-       (serialized_partition_key->has_cross_site_ancestor() ? "true" : "false"),
+       base::ToString(serialized_partition_key->has_cross_site_ancestor()),
        name, domain, path,
        base::NumberToString(static_cast<int>(source_scheme)),
        base::NumberToString(source_port)});

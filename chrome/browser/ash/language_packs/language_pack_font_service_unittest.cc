@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/language_packs/language_pack_font_service_factory.h"
@@ -70,7 +71,7 @@ class LanguagePackFontServiceTest : public testing::Test {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kLanguagePacksFonts,
         {{features::kLanguagePacksFontsLoadAfterDownloadDuringLogin.name,
-          load_after_download_during_login ? "true" : "false"}});
+          base::ToString(load_after_download_during_login)}});
   }
 
   void InitProfileWithServices() {

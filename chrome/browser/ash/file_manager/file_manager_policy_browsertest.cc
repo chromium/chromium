@@ -4,6 +4,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
+#include "base/strings/to_string.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
@@ -579,12 +580,11 @@ class FileTransferConnectorFilesAppBrowserTestBase {
       return true;
     }
     if (name == "isReportOnlyFileTransferConnector") {
-      *output = options.file_transfer_connector_report_only ? "true" : "false";
+      *output = base::ToString(options.file_transfer_connector_report_only);
       return true;
     }
     if (name == "usesNewFileTransferConnectorUI") {
-      *output =
-          options.enable_file_transfer_connector_new_ux ? "true" : "false";
+      *output = base::ToString(options.enable_file_transfer_connector_new_ux);
       return true;
     }
     if (name == "getExpectedNumberOfBlockedFilesByConnectors") {
@@ -596,7 +596,7 @@ class FileTransferConnectorFilesAppBrowserTestBase {
       return true;
     }
     if (name == "doesBypassRequireJustification") {
-      *output = options.bypass_requires_justification ? "true" : "false";
+      *output = base::ToString(options.bypass_requires_justification);
       return true;
     }
     if (name == "setupScanningRunLoop") {
