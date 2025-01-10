@@ -255,6 +255,9 @@ ProfileManagementStepTestView::CreateFlowController(
       run_loop_.QuitClosure());
 }
 
+MockProfilePickerWebContentsHost::MockProfilePickerWebContentsHost() = default;
+MockProfilePickerWebContentsHost::~MockProfilePickerWebContentsHost() = default;
+
 // -- Other utils --------------------------------------------------------------
 namespace profiles::testing {
 
