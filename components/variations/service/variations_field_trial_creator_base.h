@@ -282,7 +282,8 @@ class VariationsFieldTrialCreatorBase {
   bool CreateTrialsFromSeed(const EntropyProviders& entropy_providers,
                             base::FeatureList* feature_list,
                             SafeSeedManagerBase* safe_seed_manager,
-                            SyntheticTrialRegistry* synthetic_trial_registry);
+                            SyntheticTrialRegistry* synthetic_trial_registry,
+                            std::unique_ptr<ClientFilterableState> state);
 
   // Reads a seed's data and signature from the file at |json_seed_path| and
   // writes them to Local State. Exits Chrome if (A) the file's contents can't
