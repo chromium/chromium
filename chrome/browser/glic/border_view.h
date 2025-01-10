@@ -7,8 +7,8 @@
 
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/compositor_animation_observer.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
-#include "ui/views/view_observer.h"
 
 class Profile;
 
@@ -23,7 +23,6 @@ class Canvas;
 namespace glic {
 
 class BorderView : public views::View,
-                   public views::ViewObserver,
                    public ui::CompositorAnimationObserver {
   METADATA_HEADER(BorderView, views::View)
 
@@ -43,13 +42,6 @@ class BorderView : public views::View,
   // `views::View`:
   void OnPaint(gfx::Canvas* canvas) override;
 
-  // `views::ViewObserver`:
-  void OnChildViewAdded(views::View* observed_view,
-                        views::View* child) override;
-  void OnChildViewReordered(views::View* observed_view,
-                            views::View* child) override;
-  void OnViewBoundsChanged(views::View* observed_view) override;
-
   // `ui::CompositorAnimationObserver`:
   void OnAnimationStep(base::TimeTicks timestamp) override;
   void OnCompositingShuttingDown(ui::Compositor* compositor) override;
@@ -59,16 +51,6 @@ class BorderView : public views::View,
   void CancelAnimation();
 
  private:
-  // Reorder `this` to make sure `this` is the topmost child of `parent()`.
-  void MakeTopMostChild(views::View* observed_view, views::View* child);
-
-  // Tracks if we are during a `MakeTopMostChild()`. Used to prevent infinite
-  // re-entrance to `MakeTopMostChild()`,
-  //
-  // TODO(crbug.com/384923815): Revisit this when we know how to make the border
-  // coexist with the TabSharing border.
-  bool reorder_in_progress_ = false;
-
   raw_ptr<ui::Compositor> compositor_ = nullptr;
 
   // Records the animation progress, starting from 0 to 1.f.
@@ -79,6 +61,13 @@ class BorderView : public views::View,
   base::TimeTicks first_frame_time_;
 };
 
+BEGIN_VIEW_BUILDER(, BorderView, views::View)
+VIEW_BUILDER_PROPERTY(bool, Visible)
+VIEW_BUILDER_PROPERTY(bool, CanProcessEventsWithinSubtree)
+END_VIEW_BUILDER
+
 }  // namespace glic
+
+DEFINE_VIEW_BUILDER(, glic::BorderView)
 
 #endif  // CHROME_BROWSER_GLIC_BORDER_VIEW_H_

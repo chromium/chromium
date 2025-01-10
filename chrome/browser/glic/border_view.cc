@@ -43,9 +43,7 @@ BorderView* BorderView::FindBorderForWebContents(
     // We might not have a browser or browser window in unittests.
     return nullptr;
   }
-  // `contents_web_view_` is initiated in browser view's ctor.
-  CHECK(browser->GetBrowserView().contents_web_view());
-  return browser->GetBrowserView().contents_web_view()->glic_border();
+  return browser->GetBrowserView().glic_border();
 }
 
 // static.
@@ -56,10 +54,8 @@ void BorderView::CancelAllAnimationsForProfile(Profile* profile) {
       // Unittests, or the View tree is torn down.
       continue;
     }
-    CHECK(browser->GetBrowserView().contents_web_view());
     // Border is null if the feature is disabled for `profile`.
-    if (auto* border =
-            browser->GetBrowserView().contents_web_view()->glic_border()) {
+    if (auto* border = browser->GetBrowserView().glic_border()) {
       border->CancelAnimation();
     }
   }
@@ -84,23 +80,6 @@ void BorderView::OnPaint(gfx::Canvas* canvas) {
   flags.setStrokeWidth(border_width);
   flags.setAlphaf(progress_);
   canvas->DrawRect(gfx::RectF(bounds()), flags);
-}
-
-void BorderView::OnChildViewAdded(views::View* observed_view,
-                                  views::View* child) {
-  MakeTopMostChild(observed_view, child);
-}
-
-void BorderView::OnChildViewReordered(views::View* observed_view,
-                                      views::View* child) {
-  MakeTopMostChild(observed_view, child);
-}
-
-void BorderView::OnViewBoundsChanged(views::View* observed_view) {
-  if (observed_view != parent()) {
-    return;
-  }
-  SetBoundsRect(parent()->bounds());
 }
 
 void BorderView::OnAnimationStep(base::TimeTicks timestamp) {
@@ -137,7 +116,6 @@ void BorderView::StartAnimation() {
     return;
   }
 
-  SetBoundsRect(parent()->bounds());
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   SetVisible(true);
@@ -163,28 +141,6 @@ void BorderView::CancelAnimation() {
   // the destroyed layer.
   DestroyLayer();
   SetVisible(false);
-}
-
-void BorderView::MakeTopMostChild(views::View* parent_view,
-                                  views::View* child) {
-  CHECK(parent());
-  if (parent_view != parent()) {
-    return;
-  }
-  if (reorder_in_progress_) {
-    if (this != child) {
-      // While we are reordering `this`, another sibling is also reordering
-      // itself.
-      base::debug::DumpWithoutCrashing();
-    } else {
-      // An in-progress `this->MakeTopMostChild(parent, this)` is in progress,
-      // which dispatches a `ViewObserver::OnChildViewReordered`.
-    }
-    return;
-  }
-  base::AutoReset<bool> reset(&reorder_in_progress_, true);
-  size_t z_topmost = parent_view->children().size();
-  parent_view->ReorderChildView(this, z_topmost);
 }
 
 BEGIN_METADATA(BorderView)

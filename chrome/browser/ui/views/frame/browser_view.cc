@@ -347,6 +347,12 @@
 #include "chrome/browser/ui/views/frame/webui_tab_strip_container_view.h"
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/border_view.h"
+#include "chrome/browser/glic/glic_enabling.h"
+#include "ui/views/layout/box_layout_view.h"
+#endif
+
 using base::UserMetricsAction;
 using content::WebContents;
 using input::NativeWebKeyboardEvent;
@@ -1018,11 +1024,31 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   contents_web_view_ =
       contents_container->AddChildView(std::move(contents_web_view));
   contents_web_view_->set_is_primary_web_contents_for_window(true);
+#if BUILDFLAG(ENABLE_GLIC)
+  // `IsEnabledForProfile` returns true if the feature is explicitly enabled by
+  // flags.
+  if (GlicEnabling::IsEnabledForProfile(browser_->profile())) {
+    glic_border_ = contents_container->AddChildView(
+        views::Builder<glic::BorderView>()
+            // https://crbug.com/387458471: By default the border view is
+            // visible, meaning it will paint during the initial layout of the
+            // browser UI, causing a flash of the border.
+            .SetVisible(false)
+            // `glic_border_` should never receive input events.
+            .SetCanProcessEventsWithinSubtree(false)
+            .Build());
+  }
+#endif
   watermark_view_ = contents_container->AddChildView(
       std::make_unique<enterprise_watermark::WatermarkView>());
 
+#if BUILDFLAG(ENABLE_GLIC)
   contents_container->SetLayoutManager(std::make_unique<ContentsLayoutManager>(
-      devtools_web_view_, contents_web_view_, watermark_view_));
+      devtools_web_view_, contents_web_view_, glic_border_, watermark_view_));
+#else
+  contents_container->SetLayoutManager(std::make_unique<ContentsLayoutManager>(
+      devtools_web_view_, contents_web_view_, nullptr, watermark_view_));
+#endif
 
   toolbar_ = top_container_->AddChildView(
       std::make_unique<ToolbarView>(browser_.get(), this));
@@ -1142,6 +1168,7 @@ BrowserView::~BrowserView() {
   contents_web_view_ = nullptr;
   devtools_web_view_ = nullptr;
   watermark_view_ = nullptr;
+  glic_border_ = nullptr;
   contents_container_ = nullptr;
   unified_side_panel_ = nullptr;
   right_aligned_side_panel_separator_ = nullptr;

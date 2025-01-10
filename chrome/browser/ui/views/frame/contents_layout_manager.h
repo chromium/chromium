@@ -15,6 +15,7 @@ class ContentsLayoutManager : public views::LayoutManagerBase {
  public:
   ContentsLayoutManager(views::View* devtools_view,
                         views::View* contents_view,
+                        views::View* border_view = nullptr,
                         views::View* watermark_view = nullptr);
 
   ContentsLayoutManager(const ContentsLayoutManager&) = delete;
@@ -32,9 +33,10 @@ class ContentsLayoutManager : public views::LayoutManagerBase {
       const views::SizeBounds& size_bounds) const override;
 
  private:
-  raw_ptr<views::View> devtools_view_;
-  raw_ptr<views::View> contents_view_;
-  raw_ptr<views::View> watermark_view_;
+  const raw_ptr<views::View> devtools_view_;
+  const raw_ptr<views::View> contents_view_;
+  const raw_ptr<views::View> border_view_;
+  const raw_ptr<views::View> watermark_view_;
 
   DevToolsContentsResizingStrategy strategy_;
 };

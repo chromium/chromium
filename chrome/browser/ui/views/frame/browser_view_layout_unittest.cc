@@ -223,8 +223,9 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
     contents_web_view_ = contents_container_->AddChildView(
         CreateFixedSizeView(gfx::Size(800, 600)));
     contents_container_->SetLayoutManager(
-        std::make_unique<ContentsLayoutManager>(devtools_web_view_,
-                                                contents_web_view_));
+        std::make_unique<ContentsLayoutManager>(
+            devtools_web_view_, contents_web_view_,
+            /*contents_border_view=*/nullptr, /*watermark_view=*/nullptr));
 
     auto delegate = std::make_unique<MockBrowserViewLayoutDelegate>();
     delegate_ = delegate.get();

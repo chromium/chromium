@@ -119,6 +119,10 @@ namespace enterprise_watermark {
 class WatermarkView;
 }
 
+namespace glic {
+class BorderView;
+}  // namespace glic
+
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserView
 //
@@ -284,6 +288,10 @@ class BrowserView : public BrowserWindow,
   // Accessor for the contents and devtools WebViews.
   ContentsWebView* contents_web_view() { return contents_web_view_; }
   views::WebView* devtools_web_view() { return devtools_web_view_; }
+
+#if BUILDFLAG(ENABLE_GLIC)
+  glic::BorderView* glic_border() const { return glic_border_; }
+#endif
 
   base::WeakPtr<BrowserView> GetAsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -1207,6 +1215,11 @@ class BrowserView : public BrowserWindow,
 
   // The view that contains the selected WebContents.
   raw_ptr<ContentsWebView> contents_web_view_ = nullptr;
+
+  // It draws a border around the web contents area, on top of the
+  // `contents_web_view_`. Null if the feature isn't enabled, or the platform
+  // isn't supported.
+  raw_ptr<glic::BorderView> glic_border_ = nullptr;
 
   // The view that contains devtools window for the selected WebContents.
   raw_ptr<views::WebView> devtools_web_view_ = nullptr;
