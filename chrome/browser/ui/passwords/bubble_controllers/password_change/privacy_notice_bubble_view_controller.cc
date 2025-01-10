@@ -6,6 +6,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
+#include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
 
 PrivacyNoticeBubbleViewController::PrivacyNoticeBubbleViewController(
     base::WeakPtr<PasswordsModelDelegate> delegate)
@@ -21,8 +23,8 @@ PrivacyNoticeBubbleViewController::~PrivacyNoticeBubbleViewController() {
 }
 
 std::u16string PrivacyNoticeBubbleViewController::GetTitle() const {
-  // TODO(crbug.com/381053884): Add string.
-  return u"Lorem ipsum";
+  return l10n_util::GetStringUTF16(
+      IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_PRIVACY_NOTICE_TITLE);
 }
 
 void PrivacyNoticeBubbleViewController::ReportInteractions() {

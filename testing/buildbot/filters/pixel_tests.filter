@@ -84,6 +84,7 @@ ParentPermissionDialogViewTest.*
 *PasswordBubbleBrowserTest.*
 *PasswordAutomaticSaveBubbleBrowserTest.*
 *PasswordCrossDomainConfirmationPopupViewBrowsertest.*
+*PasswordChangeUiBrowserTest.*
 *PasswordGenerationPopupViewBrowsertest.*
 *PasswordGenerationPopupViewWithSoftNudgeBrowsertest.*
 *PasswordManagementRevampedBubbleInteractiveUiTest.*
