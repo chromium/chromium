@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.edge_to_edge;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.CAN_SHOW;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.COLOR;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.DIVIDER_COLOR;
+import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.HAS_CONSTRAINT;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.HEIGHT;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.OFFSET_TAG;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.Y_OFFSET;
@@ -198,6 +199,7 @@ class EdgeToEdgeBottomChinMediator
         // mHasSafeAreaConstraint impacts scroll behavior which changes the min height of browser
         // controls layers. Request an update to refresh the calculated height in the stacker.
         mHasSafeAreaConstraint = hasConstraint;
+        mModel.set(HAS_CONSTRAINT, mHasSafeAreaConstraint);
         mBottomControlsStacker.requestLayerUpdate(false);
     }
 

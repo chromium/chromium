@@ -38,6 +38,7 @@ class EdgeToEdgeBottomChinSceneLayer : public SceneLayer {
       jint color_argb,
       jint divider_color,
       jfloat y_offset,
+      jboolean hasConstraint,
       const base::android::JavaParamRef<jobject>& joffset_tag);
 
   void SetContentTree(

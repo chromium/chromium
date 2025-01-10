@@ -50,6 +50,9 @@ public class EdgeToEdgeBottomChinSceneLayer extends SceneOverlayLayer implements
     /** The tag indicating that this layer should be moved by viz. */
     private OffsetTag mOffsetTag;
 
+    /** Whether the bottom chin has constraint applied that changes its scrollability. */
+    private boolean mHasConstraint;
+
     // TODO(peilinwang) This can probably be removed, as updates to the property model will already
     // trigger a new renderer frame via the CompositorModelChangeProcessor.
     private final Runnable mRequestRenderRunnable;
@@ -106,6 +109,11 @@ public class EdgeToEdgeBottomChinSceneLayer extends SceneOverlayLayer implements
         mRequestRenderRunnable.run();
     }
 
+    /** Whether there are safe area constraint for the bottom chin. */
+    public void setHasConstraint(boolean hasConstraint) {
+        mHasConstraint = hasConstraint;
+    }
+
     /**
      * @param offsetTag The view's OffsetTag, indicating that this layer will be moved by viz.
      */
@@ -140,6 +148,7 @@ public class EdgeToEdgeBottomChinSceneLayer extends SceneOverlayLayer implements
                         mColor,
                         mDividerColor,
                         viewport.height() + mCurrentYOffsetPx,
+                        mHasConstraint,
                         mOffsetTag);
 
         return this;
@@ -198,6 +207,7 @@ public class EdgeToEdgeBottomChinSceneLayer extends SceneOverlayLayer implements
                 int colorARGB,
                 int dividerColor,
                 float yOffset,
+                boolean hasConstraint,
                 OffsetTag offsetTag);
     }
 }
