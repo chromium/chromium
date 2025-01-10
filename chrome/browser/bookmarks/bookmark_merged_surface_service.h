@@ -11,6 +11,8 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "chrome/browser/bookmarks/bookmark_parent_folder_children.h"
+#include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -18,7 +20,6 @@ class PermanentFolderOrderingTracker;
 
 namespace bookmarks {
 class BookmarkModel;
-class BookmarkNode;
 class ManagedBookmarkService;
 }  // namespace bookmarks
 
@@ -105,26 +106,25 @@ class BookmarkMergedSurfaceService : public KeyedService {
   std::vector<const bookmarks::BookmarkNode*> GetUnderlyingNodes(
       const BookmarkParentFolder& folder) const;
 
-  // Returns the index of node with respect to its parent.
+  // Returns the index of node with respect to its parent folder.
   // `node` must not be null.
-  // TODO(crbug.com/364594278): When account nodes are supported within this
-  // class, `this` will return the index within `BookmarkParentFolder`.
   size_t GetIndexOf(const bookmarks::BookmarkNode* node) const;
 
+  // `index` must be less than the folder's children count.
   const bookmarks::BookmarkNode* GetNodeAtIndex(
       const BookmarkParentFolder& folder,
       size_t index) const;
 
   bool loaded() const;
 
+  // Note: In case of managed folder, if `managed_permanent_node()` is null,
+  // this will return `0`.
   size_t GetChildrenCount(const BookmarkParentFolder& folder) const;
 
-  // TODO(crbug.com/364594278): This function will need to return a wrapper that
-  // provides access to children as in some cases, child nodes will be a
-  // combination of the two bookmark nodes's children that would be tracked in a
-  // vector of non-owning pointers to child bookmark nodes. The wrapper would
-  // hide the type difference vector of unique/raw pointers.
-  const std::vector<std::unique_ptr<bookmarks::BookmarkNode>>& GetChildren(
+  // `this` must outlive `BookmarkParentFolderChildren`.
+  // Note: In case of managed folder, if `managed_permanent_node()` is null,
+  // this will return empty children.
+  BookmarkParentFolderChildren GetChildren(
       const BookmarkParentFolder& folder) const;
 
   // Moves `node` to `new_parent` at position `index`.
@@ -166,6 +166,9 @@ class BookmarkMergedSurfaceService : public KeyedService {
   const base::flat_map<BookmarkParentFolder::PermanentFolderType,
                        std::unique_ptr<PermanentFolderOrderingTracker>>
       permanent_folder_to_tracker_;
+
+  // Used in `GetChildren()` to return empty when managed node is null.
+  const bookmarks::BookmarkNode dummy_empty_node_;
 };
 
 #endif  // CHROME_BROWSER_BOOKMARKS_BOOKMARK_MERGED_SURFACE_SERVICE_H_

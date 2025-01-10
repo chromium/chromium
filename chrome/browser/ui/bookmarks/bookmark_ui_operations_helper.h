@@ -86,8 +86,9 @@ class BookmarkUIOperationsHelper {
     virtual bool IsPermanentNode() const = 0;
     virtual bool IsDirectChild(const bookmarks::BookmarkNode* node) const = 0;
     virtual bookmarks::BookmarkNode::Type GetType() const = 0;
-    virtual const std::vector<std::unique_ptr<bookmarks::BookmarkNode>>&
-    children() const = 0;
+    virtual const bookmarks::BookmarkNode* GetNodeAtIndex(
+        size_t index) const = 0;
+    virtual size_t GetChildrenCount() const = 0;
   };
 
   virtual bookmarks::BookmarkModel* model() = 0;
@@ -106,6 +107,10 @@ class BookmarkUIOperationsHelper {
       bool remove_nodes,
       bookmarks::metrics::BookmarkEditSource source,
       bool is_off_the_record);
+
+  // Updates `title` such that `url` and `title` pair are unique among the
+  // children of `target_parent()`.
+  void MakeTitleUnique(const GURL& url, std::u16string* title) const;
 };
 
 }  // namespace internal
@@ -159,8 +164,8 @@ class BookmarkUIOperationsHelperNonMergedSurfaces
     bool IsPermanentNode() const override;
     bool IsDirectChild(const bookmarks::BookmarkNode* node) const override;
     bookmarks::BookmarkNode::Type GetType() const override;
-    const std::vector<std::unique_ptr<bookmarks::BookmarkNode>>& children()
-        const override;
+    const bookmarks::BookmarkNode* GetNodeAtIndex(size_t index) const override;
+    size_t GetChildrenCount() const override;
 
    private:
     const raw_ptr<const bookmarks::BookmarkNode> parent_;
@@ -226,8 +231,8 @@ class BookmarkUIOperationsHelperMergedSurfaces
     bool IsPermanentNode() const override;
     bool IsDirectChild(const bookmarks::BookmarkNode* node) const override;
     bookmarks::BookmarkNode::Type GetType() const override;
-    const std::vector<std::unique_ptr<bookmarks::BookmarkNode>>& children()
-        const override;
+    const bookmarks::BookmarkNode* GetNodeAtIndex(size_t index) const override;
+    size_t GetChildrenCount() const override;
 
    private:
     const raw_ptr<BookmarkMergedSurfaceService> merged_surface_service_;

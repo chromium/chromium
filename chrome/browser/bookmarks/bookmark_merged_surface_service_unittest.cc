@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/bookmarks/bookmark_parent_folder_children.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
@@ -120,6 +121,8 @@ class BookmarkMergedSurfaceServiceTest : public testing::Test {
                      []() -> std::string { return "managedDomain.com"; }));
   }
 
+  base::test::ScopedFeatureList features_{
+      syncer::kSyncEnableBookmarksInTransportMode};
   sync_preferences::TestingPrefServiceSyncable prefs_;
   std::unique_ptr<bookmarks::ManagedBookmarkService> managed_bookmark_service_;
   std::unique_ptr<bookmarks::BookmarkModel> model_;
@@ -161,6 +164,59 @@ TEST_F(BookmarkMergedSurfaceServiceTest, GetChildrenCount) {
   AddNodesFromModelString(&model(), model().mobile_node(), "4 5 6 ");
   EXPECT_EQ(service().GetChildrenCount(BookmarkParentFolder::MobileFolder()),
             3u);
+}
+
+TEST_F(BookmarkMergedSurfaceServiceTest, GetChildrenWithAccountNodes) {
+  LoadBookmarkModel();
+  model().CreateAccountPermanentFolders();
+  const BookmarkNode* local_bb_node = model().bookmark_bar_node();
+  const BookmarkNode* account_bb_node = model().account_bookmark_bar_node();
+  ASSERT_TRUE(account_bb_node);
+
+  AddNodesFromModelString(&model(), local_bb_node, "1 2 3 f1:[ 4 5 f2:[ 6 ] ]");
+  AddNodesFromModelString(&model(), account_bb_node,
+                          "7 8 9 f3:[ 10 11 f4:[ 12 ] ]");
+  ASSERT_FALSE(local_bb_node->children().empty());
+  ASSERT_FALSE(account_bb_node->children().empty());
+
+  BookmarkParentFolder bb_folder(BookmarkParentFolder::BookmarkBarFolder());
+  size_t expected_children_size =
+      local_bb_node->children().size() + account_bb_node->children().size();
+  EXPECT_EQ(service().GetChildrenCount(bb_folder), expected_children_size);
+
+  BookmarkParentFolderChildren children = service().GetChildren(bb_folder);
+  ASSERT_EQ(children.size(), expected_children_size);
+
+  size_t index = 0;
+  size_t account_bb_node_children_size = account_bb_node->children().size();
+  while (index < expected_children_size) {
+    const BookmarkNode* expected_bookmark_node =
+        index < account_bb_node_children_size
+            ? account_bb_node->children()[index].get()
+            : local_bb_node->children()[index - account_bb_node_children_size]
+                  .get();
+    EXPECT_EQ(children[index++], expected_bookmark_node);
+  }
+
+  // Tests `GetNodeAtIndex()`.
+  EXPECT_EQ(service().GetNodeAtIndex(bb_folder, 0u),
+            account_bb_node->children()[0].get());
+  EXPECT_EQ(
+      service().GetNodeAtIndex(bb_folder, account_bb_node_children_size - 1u),
+      account_bb_node->children().back().get());
+  EXPECT_EQ(service().GetNodeAtIndex(bb_folder, account_bb_node_children_size),
+            local_bb_node->children()[0].get());
+  EXPECT_EQ(service().GetNodeAtIndex(bb_folder, expected_children_size - 1u),
+            local_bb_node->children().back().get());
+
+  // Tests `GetIndexOf()`.
+  index = 0;
+  for (const auto& node : account_bb_node->children()) {
+    EXPECT_EQ(service().GetIndexOf(node.get()), index++);
+  }
+  for (const auto& node : local_bb_node->children()) {
+    EXPECT_EQ(service().GetIndexOf(node.get()), index++);
+  }
 }
 
 TEST_F(BookmarkMergedSurfaceServiceTest, ManagedNodeNull) {

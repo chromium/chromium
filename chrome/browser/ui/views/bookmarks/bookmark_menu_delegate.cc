@@ -19,6 +19,7 @@
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/bookmarks/bookmark_parent_folder_children.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -332,9 +333,9 @@ void BookmarkMenuDelegate::SetMenuStartIndex(const BookmarkParentFolder& folder,
   MenuItemView* parent_menu = node_to_menu->second;
 
   // Remove obsolete bookmark menus if the start index increased.
-  const auto& children = service->GetChildren(folder);
+  BookmarkParentFolderChildren children = service->GetChildren(folder);
   for (size_t idx = prev_start_idx; idx < start_index; ++idx) {
-    const BookmarkNode* child_node = children[idx].get();
+    const BookmarkNode* child_node = children[idx];
     if (auto child_node_to_menu =
             node_to_menu_map_.find(BookmarkFolderOrURL(child_node));
         child_node_to_menu != node_to_menu_map_.end()) {
@@ -344,7 +345,7 @@ void BookmarkMenuDelegate::SetMenuStartIndex(const BookmarkParentFolder& folder,
 
   // Add missing bookmark menus if the start index decreased.
   for (size_t idx = start_index; idx < prev_start_idx; ++idx) {
-    const BookmarkNode* child_node = children[idx].get();
+    const BookmarkNode* child_node = children[idx];
     AddBookmarkNode(child_node, parent_menu, idx);
   }
 
@@ -1053,10 +1054,11 @@ void BookmarkMenuDelegate::BuildMenu(const BookmarkParentFolder& folder,
   }
   const ui::ImageModel folder_icon = chrome::GetBookmarkFolderIcon(
       chrome::BookmarkFolderIconType::kNormal, ui::kColorMenuIcon);
-  const auto& children = GetBookmarkMergedSurfaceService()->GetChildren(folder);
-  for (auto i = children.cbegin() + start_child_index; i != children.cend();
+  BookmarkParentFolderChildren children =
+      GetBookmarkMergedSurfaceService()->GetChildren(folder);
+  for (auto i = children.begin() + start_child_index; i != children.end();
        ++i) {
-    BuildNodeMenuItem(i->get(), menu);
+    BuildNodeMenuItem(*i, menu);
   }
   AddMenuToMaps(menu, BookmarkFolderOrURL(folder));
   built_nodes_.insert(folder);

@@ -46,40 +46,6 @@ GURL GetUrlFromClipboard(bool notify_if_restricted) {
   return GURL(url_text);
 }
 
-// Updates `title` such that `url` and `title` pair are unique among the
-// children of `parent`.
-void MakeTitleUnique(
-    const BookmarkModel* model,
-    const std::vector<std::unique_ptr<bookmarks::BookmarkNode>>&
-        target_parent_children,
-    const GURL& url,
-    std::u16string* title) {
-  std::unordered_set<std::u16string> titles;
-  std::u16string original_title_lower = base::i18n::ToLower(*title);
-  for (const auto& node : target_parent_children) {
-    if (node->is_url() && (url == node->url()) &&
-        base::StartsWith(base::i18n::ToLower(node->GetTitle()),
-                         original_title_lower, base::CompareCase::SENSITIVE)) {
-      titles.insert(node->GetTitle());
-    }
-  }
-
-  if (titles.find(*title) == titles.end()) {
-    return;
-  }
-
-  for (size_t i = 0; i < titles.size(); i++) {
-    const std::u16string new_title(*title +
-                                   base::ASCIIToUTF16(base::StringPrintf(
-                                       " (%lu)", (unsigned long)(i + 1))));
-    if (titles.find(new_title) == titles.end()) {
-      *title = new_title;
-      return;
-    }
-  }
-  NOTREACHED();
-}
-
 // This traces node up to root, determines if it is a descendant of one of
 // selected nodes.
 bool HasAncestorInSelectedNodes(
@@ -241,15 +207,46 @@ void BookmarkUIOperationsHelper::PasteFromClipboard(size_t index) {
     node.SetTitle(base::ASCIIToUTF16(url.spec()));
     bookmark_data = BookmarkNodeData(&node);
   }
-  CHECK_LE(index, target_parent()->children().size());
+  CHECK_LE(index, target_parent()->GetChildrenCount());
   if (bookmark_data.size() == 1 &&
       model()->IsBookmarked(bookmark_data.elements[0].url)) {
-    MakeTitleUnique(model(), target_parent()->children(),
-                    bookmark_data.elements[0].url,
+    MakeTitleUnique(bookmark_data.elements[0].url,
                     &bookmark_data.elements[0].title);
   }
 
   CopyBookmarkNodeData(bookmark_data, index);
+}
+
+void BookmarkUIOperationsHelper::MakeTitleUnique(const GURL& url,
+                                                 std::u16string* title) const {
+  const TargetParent* parent = target_parent();
+  CHECK(parent);
+  std::unordered_set<std::u16string> titles;
+  std::u16string original_title_lower = base::i18n::ToLower(*title);
+  const size_t children_size = parent->GetChildrenCount();
+  for (size_t i = 0; i < children_size; i++) {
+    const BookmarkNode* node = parent->GetNodeAtIndex(i);
+    if (node->is_url() && (url == node->url()) &&
+        base::StartsWith(base::i18n::ToLower(node->GetTitle()),
+                         original_title_lower, base::CompareCase::SENSITIVE)) {
+      titles.insert(node->GetTitle());
+    }
+  }
+
+  if (titles.find(*title) == titles.end()) {
+    return;
+  }
+
+  for (size_t i = 0; i < titles.size(); i++) {
+    const std::u16string new_title(*title +
+                                   base::ASCIIToUTF16(base::StringPrintf(
+                                       " (%lu)", (unsigned long)(i + 1))));
+    if (titles.find(new_title) == titles.end()) {
+      *title = new_title;
+      return;
+    }
+  }
+  NOTREACHED();
 }
 
 }  // namespace internal
@@ -303,9 +300,17 @@ BookmarkUIOperationsHelperNonMergedSurfaces::TargetParent::GetType() const {
   return parent_->type();
 }
 
-const std::vector<std::unique_ptr<bookmarks::BookmarkNode>>&
-BookmarkUIOperationsHelperNonMergedSurfaces::TargetParent::children() const {
-  return parent_->children();
+const bookmarks::BookmarkNode*
+BookmarkUIOperationsHelperNonMergedSurfaces::TargetParent::GetNodeAtIndex(
+    size_t index) const {
+  CHECK_LE(index, GetChildrenCount());
+  return parent_->children()[index].get();
+}
+
+size_t
+BookmarkUIOperationsHelperNonMergedSurfaces::TargetParent::GetChildrenCount()
+    const {
+  return parent_->children().size();
 }
 
 // BookmarkUIOperationsHelperNonMergedSurfaces:
@@ -430,9 +435,19 @@ BookmarkUIOperationsHelperMergedSurfaces::TargetParent::GetType() const {
   NOTREACHED();
 }
 
-const std::vector<std::unique_ptr<bookmarks::BookmarkNode>>&
-BookmarkUIOperationsHelperMergedSurfaces::TargetParent::children() const {
-  return merged_surface_service_->GetChildren(*parent_);
+const bookmarks::BookmarkNode*
+BookmarkUIOperationsHelperMergedSurfaces::TargetParent::GetNodeAtIndex(
+    size_t index) const {
+  CHECK(parent_);
+  CHECK_LE(index, GetChildrenCount());
+  return merged_surface_service_->GetNodeAtIndex(*parent_, index);
+}
+
+size_t
+BookmarkUIOperationsHelperMergedSurfaces::TargetParent::GetChildrenCount()
+    const {
+  CHECK(parent_);
+  return merged_surface_service_->GetChildrenCount(*parent_);
 }
 
 // BookmarkUIOperationsHelperMergedSurfaces:
