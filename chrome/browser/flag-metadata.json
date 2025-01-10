@@ -2481,7 +2481,7 @@
   {
     "name": "enable-builtin-hls",
     "owners": ["tmathmeyer@chromium.org", "videostack-eng@google.com"],
-    "expiry_milestone": 134
+    "expiry_milestone": 136
   },
   {
     "name": "enable-cast-streaming-av1",
