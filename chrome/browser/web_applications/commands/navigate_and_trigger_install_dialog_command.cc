@@ -170,7 +170,7 @@ void NavigateAndTriggerInstallDialogCommand::OnAppLockGranted() {
   CHECK(!app_id_.empty());
 
   bool is_installable;
-  if (app_lock_->registrar().IsNotInRegistrar(app_id_)) {
+  if (!app_lock_->registrar().IsInRegistrar(app_id_)) {
     is_installable = true;
   } else {
     switch (app_lock_->registrar().GetInstallState(app_id_).value()) {

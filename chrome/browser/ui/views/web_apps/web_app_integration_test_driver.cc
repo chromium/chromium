@@ -977,7 +977,7 @@ void WebAppIntegrationTestDriver::TearDownOnMainThread() {
         UninstallPolicyAppById(profile, app_id);
       }
 
-      if (provider->registrar_unsafe().IsNotInRegistrar(app_id)) {
+      if (!provider->registrar_unsafe().IsInRegistrar(app_id)) {
         LOG(INFO) << "TearDownOnMainThread: Uninstall complete.";
         continue;
       }

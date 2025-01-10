@@ -127,10 +127,6 @@ class WebAppRegistrar {
       WebAppManagement::Type install_source,
       const GURL& install_url) const;
 
-  // DEPRECATED: Use IsInRegistrar instead.
-  // Returns true if the given app_id is not in the registrar.
-  bool IsNotInRegistrar(const webapps::AppId& app_id) const;
-
   // Returns true if the given `app_id` is in the registrar. Important: This
   // function should not be used to check whether an app is installed or not.
   // Please consider GetInstallState() instead of this function for that.

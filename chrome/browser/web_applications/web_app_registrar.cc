@@ -722,10 +722,6 @@ const WebApp* WebAppRegistrar::LookUpAppByInstallSourceInstallUrl(
   return nullptr;
 }
 
-bool WebAppRegistrar::IsNotInRegistrar(const webapps::AppId& app_id) const {
-  return !IsInRegistrar(app_id);
-}
-
 bool WebAppRegistrar::IsInRegistrar(const webapps::AppId& app_id) const {
   const WebApp* web_app = GetAppById(app_id);
   if (!web_app || web_app->is_uninstalling()) {
@@ -746,7 +742,7 @@ bool WebAppRegistrar::IsInRegistrar(const webapps::AppId& app_id) const {
 
 std::optional<proto::InstallState> WebAppRegistrar::GetInstallState(
     const webapps::AppId& app_id) const {
-  if (IsNotInRegistrar(app_id)) {
+  if (!IsInRegistrar(app_id)) {
     return std::nullopt;
   }
   const WebApp* web_app = GetAppById(app_id);
