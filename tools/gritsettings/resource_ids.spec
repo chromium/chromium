@@ -1047,6 +1047,10 @@
     "META": {"sizes": {"includes": [5]}},
     "includes": [7430],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/components/translate/translate_internals/resources.grd": {
+    "META": {"sizes": {"includes": [5]}},
+    "includes": [7435],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/components/ukm/debug/resources.grd": {
     "META": {"sizes": {"includes": [5]}},
     "includes": [7440],

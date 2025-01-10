@@ -13,9 +13,6 @@
       <include name="IDR_IOS_ON_DEVICE_LLM_INTERNALS_HTML" file="../../browser/optimization_guide/resources/on_device_llm_internals.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
       <include name="IDR_IOS_OMAHA_HTML" file="omaha/omaha.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
       <include name="IDR_IOS_OMAHA_JS" file="omaha/omaha.js" type="BINDATA" />
-      <include name="IDR_IOS_TRANSLATE_INTERNALS_CSS" file="../../../../components/translate/translate_internals/translate_internals.css" type="BINDATA" />
-      <include name="IDR_IOS_TRANSLATE_INTERNALS_HTML" file="../../../../components/translate/translate_internals/translate_internals.html" type="BINDATA" />
-      <include name="IDR_IOS_TRANSLATE_INTERNALS_JS" file="../../../../components/translate/translate_internals/translate_internals.js" preprocess="true" type="BINDATA" />
     </includes>
   </release>
 </grit>

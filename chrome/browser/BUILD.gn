@@ -1788,7 +1788,6 @@ static_library("browser") {
   deps = [
     ":active_use_util",
     ":browser_process",
-    ":dev_ui_browser_resources_grit",
     ":expired_flags_list",
     ":font_pref",
     ":global_features",
@@ -8729,18 +8728,6 @@ if (is_chrome_branded) {
   group("chrome_internal_resources_gen") {
     # Empty placeholder.
   }
-}
-
-grit("dev_ui_browser_resources") {
-  source = "dev_ui_browser_resources.grd"
-
-  defines = chrome_grit_defines
-
-  output_dir = "$root_gen_dir/chrome"
-  outputs = [
-    "grit/dev_ui_browser_resources.h",
-    "dev_ui_browser_resources.pak",
-  ]
 }
 
 action("expired_flags_list_gen") {

@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/webui/user_education_internals/user_education_internals_page_handler_impl.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/dev_ui_browser_resources.h"
 #include "chrome/grit/user_education_internals_resources.h"
 #include "chrome/grit/user_education_internals_resources_map.h"
 #include "content/public/browser/web_ui.h"

@@ -170,6 +170,7 @@ def validateJavaScriptAllowed(source_dir, out_dir, is_ios):
       'components/net_log/resources',
       'components/policy/resources/webui',
       'components/safe_browsing/content/browser/web_ui/resources',
+      'components/translate/translate_internals',
       'content/browser/webrtc/resources',
       'ui/webui/resources/js',
       'ui/webui/resources/mojo',
