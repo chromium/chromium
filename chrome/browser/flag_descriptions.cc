@@ -3293,10 +3293,6 @@ const char kRetainOmniboxOnFocusDescription[] =
     "exhibit a change in behavior.";
 #endif  // BUILDFLAG(IS_ANDROID)
 
-const char kRoundedDisplay[] = "Rounded display";
-const char kRoundedDisplayDescription[] =
-    "Enables rounded corners for the display";
-
 const char kRoundedWindows[] = "Use rounded windows";
 const char kRoundedWindowsDescription[] =
     "Specifies the radius of rounded windows in DIPs (Device Independent "

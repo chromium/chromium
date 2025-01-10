@@ -18,16 +18,6 @@ BASE_FEATURE(kSkipEmptyDisplayHotplugEvent,
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS)
-
-// Enables the rounded corners for the internal display.
-BASE_FEATURE(kRoundedDisplay,
-             "RoundedDisplay",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsRoundedDisplayEnabled() {
-  return base::FeatureList::IsEnabled(kRoundedDisplay);
-}
-
 // Enables using HDR transfer function if the monitor says it supports it.
 BASE_FEATURE(kUseHDRTransferFunction,
              "UseHDRTransferFunction",

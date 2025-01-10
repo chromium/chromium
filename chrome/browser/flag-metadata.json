@@ -7532,14 +7532,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "rounded-display",
-    "owners": [
-      "zoraiznaeem@chromium.org",
-      "chromeos-foundations@google.com"
-    ],
-    "expiry_milestone": 132
-  },
-  {
     "name": "rounded-windows",
     "owners": [
       "zoraiznaeem@chromium.org",
