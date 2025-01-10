@@ -11,6 +11,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -333,7 +334,7 @@ void NTPResourceCache::CreateNewTabIncognitoHTML(
       ThemeService::GetThemeProviderForProfile(incognito_profile);
 
   replacements["hasCustomBackground"] =
-      tp.HasCustomImage(IDR_THEME_NTP_BACKGROUND) ? "true" : "false";
+      base::ToString(tp.HasCustomImage(IDR_THEME_NTP_BACKGROUND));
 
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
   webui::SetLoadTimeDataDefaults(app_locale, &replacements);
