@@ -450,18 +450,6 @@ void ViewAccessibility::SetName(std::u16string name,
   if (name.empty()) {
     data_.RemoveStringAttribute(ax::mojom::StringAttribute::kName);
   } else {
-    // |AXNodeData::SetName| expects a valid role. Some Views call |SetRole|
-    // prior to setting the name. For those that don't, see if we can get the
-    // default role from the View.
-    // TODO(crbug.com/325137417): This is a temporary workaround to avoid a
-    // DCHECK, once we have migrated all Views to use the new setters and we
-    // always set a role in the constructors for views, we can remove this.
-    if (data_.role == ax::mojom::Role::kUnknown) {
-      ui::AXNodeData data;
-      view_->GetAccessibleNodeData(&data);
-      data_.role = data.role;
-    }
-
     data_.SetNameChecked(name);
   }
 
