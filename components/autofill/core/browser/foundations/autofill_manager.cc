@@ -28,9 +28,9 @@
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
+#include "components/language_detection/core/constants.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/translate/core/common/language_detection_details.h"
-#include "components/translate/core/common/translate_constants.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -188,7 +188,7 @@ void AutofillManager::OnLanguageDetermined(
       !base::FeatureList::IsEnabled(features::kAutofillFixValueSemantics)) {
     return;
   }
-  if (details.adopted_language == translate::kUnknownLanguageCode ||
+  if (details.adopted_language == language_detection::kUnknownLanguageCode ||
       !driver_->IsActive()) {
     return;
   }
