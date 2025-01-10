@@ -53,7 +53,6 @@ class WebViewSidePanelView final
 
   // WebViewSidePanelWebContentsUserData::Delegate
   void OpenUrlInBrowser(const content::OpenURLParams& params) override;
-  bool IsNavigationAllowed(const GURL& new_url, const GURL& old_url) override;
 
   // content::WebContentsObserver:
   void LoadProgressChanged(double progress) override;

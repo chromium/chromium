@@ -28,8 +28,6 @@ class WebViewSidePanelWebContentsUserData : public base::SupportsUserData::Data 
   class Delegate {
    public:
     virtual void OpenUrlInBrowser(const content::OpenURLParams& params) = 0;
-    virtual bool IsNavigationAllowed(const GURL& new_url,
-                                     const GURL& old_url) = 0;
   };
 
   explicit WebViewSidePanelWebContentsUserData(base::WeakPtr<Delegate> delegate);

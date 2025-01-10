@@ -181,13 +181,6 @@ void WebViewSidePanelView::OpenUrlInBrowser(
   }
 }
 
-bool WebViewSidePanelView::IsNavigationAllowed(const GURL& new_url,
-                                               const GURL& old_url) {
-  // Only allow the initial navigation of the SidePanel to stay in the
-  // SidePanel. Other navigations will be moved to the main browser.
-  return new_url == last_url_;
-}
-
 GURL WebViewSidePanelView::CleanUpQueryParams(const GURL& url) {
   // Override eventual parameter for navigations to a real tab.
   if (url::IsSameOriginWith(url, last_url_) &&
