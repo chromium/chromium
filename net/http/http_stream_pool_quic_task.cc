@@ -99,6 +99,9 @@ void HttpStreamPool::QuicTask::MaybeAttempt() {
   net_log_.AddEvent(NetLogEventType::HTTP_STREAM_POOL_QUIC_ATTEMPT_START,
                     [&] { return quic_endpoint->ToValue(); });
 
+  CHECK(attempt_start_time_.is_null());
+  attempt_start_time_ = base::TimeTicks::Now();
+
   session_attempt_ = quic_session_pool()->CreateSessionAttempt(
       this, GetKey().session_key(), std::move(*quic_endpoint),
       cert_verify_flags, dns_resolution_start_time, dns_resolution_end_time,

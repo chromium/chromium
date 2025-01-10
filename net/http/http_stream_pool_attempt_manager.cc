@@ -750,6 +750,15 @@ void HttpStreamPool::AttemptManager::OnQuicTaskComplete(
   CHECK(!quic_task_result_.has_value());
   quic_task_result_ = rv;
   net_error_details_ = std::move(details);
+
+  // Record completion time only when QuicTask actually attempted QUIC.
+  if (rv != ERR_DNS_NO_MATCHING_SUPPORTED_ALPN) {
+    base::UmaHistogramTimes(
+        base::StrCat({"Net.HttpStreamPool.QuicTaskTime.",
+                      rv == OK ? "Success" : "Failure"}),
+        base::TimeTicks::Now() - quic_task_->attempt_start_time());
+  }
+
   quic_task_.reset();
 
   net_log().AddEvent(

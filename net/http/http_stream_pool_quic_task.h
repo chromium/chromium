@@ -51,6 +51,10 @@ class HttpStreamPool::QuicTask : public QuicSessionAttempt::Delegate {
   // any. Never returns ERR_IO_PENDING.
   std::optional<int> start_result() const { return start_result_; }
 
+  // Returns the start time of a session attempt. Maybe null when no attempt is
+  // made.
+  base::TimeTicks attempt_start_time() const { return attempt_start_time_; }
+
  private:
   const HttpStreamKey& stream_key() const;
 
@@ -78,6 +82,7 @@ class HttpStreamPool::QuicTask : public QuicSessionAttempt::Delegate {
 
   // TODO(crbug.com/346835898): Support multiple attempts.
   std::unique_ptr<QuicSessionAttempt> session_attempt_;
+  base::TimeTicks attempt_start_time_;
 
   base::WeakPtrFactory<QuicTask> weak_ptr_factory_{this};
 };
