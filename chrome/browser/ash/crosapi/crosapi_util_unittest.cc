@@ -125,20 +125,6 @@ class CrosapiUtilTest : public testing::Test {
   raw_ptr<policy::MockCloudPolicyStore> cloud_policy_store_ = nullptr;
 };
 
-TEST_F(CrosapiUtilTest, GetInterfaceVersions) {
-  base::flat_map<base::Token, uint32_t> versions =
-      browser_util::GetInterfaceVersions();
-
-  // Check that a known interface with version > 0 is present and has non-zero
-  // version.
-  EXPECT_GT(versions[mojom::KeystoreService::Uuid_], 0u);
-
-  // Check that the empty token is not present.
-  base::Token token;
-  auto it = versions.find(token);
-  EXPECT_EQ(it, versions.end());
-}
-
 TEST_F(CrosapiUtilTest, IsSigninProfileOrBelongsToAffiliatedUserSigninProfile) {
   TestingProfile::Builder builder;
   builder.SetPath(base::FilePath(ash::kSigninBrowserContextBaseName));
