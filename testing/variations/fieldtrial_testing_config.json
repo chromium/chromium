@@ -5063,6 +5063,7 @@
                     "enable_features": [
                         "EnableLensOverlay",
                         "IPH_iOSLensOverlayEntrypointTip",
+                        "LensClearcutLoggerFastQosEnabled",
                         "LensOverlayEnableLocationBarEntrypoint"
                     ]
                 }
