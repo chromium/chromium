@@ -43,6 +43,9 @@ export declare interface HostRequestTypes {
     request: {},
     response: void,
   };
+
+  // The messages that fullfill the GlicBrowserHost public API follow below.
+
   glicBrowserCreateTab: {
     request: {
       url: string,
@@ -129,6 +132,14 @@ export declare interface HostRequestTypes {
     response: {
       success: boolean,
     },
+  };
+  glicBrowserAttachPanel: {
+    request: {},
+    response: void,
+  };
+  glicBrowserDetachPanel: {
+    request: {},
+    response: void,
   };
 }
 

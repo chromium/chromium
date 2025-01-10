@@ -85,6 +85,14 @@ interface WebClientHandler {
   // Closes the Glic panel.
   ClosePanel();
 
+  // Requests that the web client's panel be attached/docked to a browser
+  // window.
+  AttachPanel();
+
+  // Requests that the web client's panel be detached/undocked from a browser
+  // window (floats free).
+  DetachPanel();
+
   // Returns the context from the currently active tab.
   // `tab_context_result` is null if tab content could not be captured.
   // This may fail if the tab is navigated while collecting data, or closed

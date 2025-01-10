@@ -97,6 +97,14 @@ void GlicKeyedService::ClosePanel() {
   SetContextAccessIndicator(false);
 }
 
+void GlicKeyedService::AttachPanel() {
+  window_controller_.Attach();
+}
+
+void GlicKeyedService::DetachPanel() {
+  window_controller_.Detach();
+}
+
 std::optional<gfx::Size> GlicKeyedService::ResizePanel(const gfx::Size& size) {
   if (!window_controller_.Resize(size)) {
     return std::nullopt;

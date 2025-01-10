@@ -55,6 +55,8 @@ class GlicKeyedService : public KeyedService {
                  glic::mojom::WebClientHandler::CreateTabCallback callback);
   void OpenGlicSettingsPage();
   virtual void ClosePanel();
+  void AttachPanel();
+  void DetachPanel();
   std::optional<gfx::Size> ResizePanel(const gfx::Size& size);
   void SetPanelDraggableAreas(const std::vector<gfx::Rect>& draggable_areas);
   void SetContextAccessIndicator(bool show);

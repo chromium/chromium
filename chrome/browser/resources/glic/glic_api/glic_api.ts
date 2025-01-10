@@ -107,6 +107,14 @@ export declare interface GlicBrowserHost {
   // Requests the closing of the panel containing the web client.
   closePanel?(): Promise<void>;
 
+  // Requests that the web client's panel be attached/docked to a browser
+  // window.
+  attachPanel?(): void;
+
+  // Requests that the web client's panel be detached/undocked from a browser
+  // window (floats free).
+  detachPanel?(): void;
+
   // Triggers the change profile flow, which allows the user to switch which
   // profile is used. If a new profile is chosen, this web client will be
   // closed in favor of a new one.

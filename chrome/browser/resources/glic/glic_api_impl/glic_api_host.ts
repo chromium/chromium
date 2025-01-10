@@ -153,6 +153,14 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     return this.handler.closePanel();
   }
 
+  glicBrowserAttachPanel(): void {
+    this.handler.attachPanel();
+  }
+
+  glicBrowserDetachPanel(): void {
+    this.handler.detachPanel();
+  }
+
   async glicBrowserGetContextFromFocusedTab(
       request: {
         options: {innerText?: boolean, viewportScreenshot?: boolean},

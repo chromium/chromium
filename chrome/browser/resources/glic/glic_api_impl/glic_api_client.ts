@@ -170,6 +170,14 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     return this.sender.requestWithResponse('glicBrowserClosePanel', {});
   }
 
+  attachPanel(): void {
+    return this.sender.requestNoResponse('glicBrowserAttachPanel', {});
+  }
+
+  detachPanel(): void {
+    return this.sender.requestNoResponse('glicBrowserDetachPanel', {});
+  }
+
   async getContextFromFocusedTab(options: {
     innerText?: boolean|undefined,
     viewportScreenshot?: boolean|undefined,
