@@ -6728,13 +6728,6 @@ const FeatureEntry kFeatureEntries[] = {
      commerce::flag_descriptions::kProductSpecificationsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(commerce::kProductSpecifications)},
 
-    {"product-specifications-multi-specifics",
-     commerce::flag_descriptions::kProductSpecificationsMultiSpecificsName,
-     commerce::flag_descriptions::
-         kProductSpecificationsMultiSpecificsDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(commerce::kProductSpecificationsMultiSpecifics)},
-
     {"compare-confirmation-toast",
      commerce::flag_descriptions::kCompareConfirmationToastName,
      commerce::flag_descriptions::kCompareConfirmationToastDescription,

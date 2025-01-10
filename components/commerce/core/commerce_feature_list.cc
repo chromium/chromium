@@ -184,11 +184,6 @@ const base::FeatureParam<bool> kPriceInsightsShowFeedback{
 const char kPriceInsightsUseCacheParam[] = "price-insights-use-cache";
 const base::FeatureParam<bool> kPriceInsightsUseCache{
     &commerce::kPriceInsights, kPriceInsightsUseCacheParam, true};
-const char kProductSpecsMigrateToMultiSpecificsParam[] =
-    "migrate-legacy-to-multi-specifics";
-const base::FeatureParam<bool> kProductSpecsMigrateToMultiSpecifics{
-    &commerce::kProductSpecificationsMultiSpecifics,
-    kProductSpecsMigrateToMultiSpecificsParam, false};
 
 // Promotion in Magic Stack for Price Tracking users from other platforms.
 BASE_FEATURE(kPriceTrackingPromo,
@@ -203,11 +198,6 @@ BASE_FEATURE(kProductSpecifications,
 // browser upgrade.
 BASE_FEATURE(kProductSpecificationsClearMetadataOnNewlySupportedFields,
              "ProductSpecificationsClearMetadataOnNewlySupportedFields",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Stores Product Specifications across multiple specifics instead of one.
-BASE_FEATURE(kProductSpecificationsMultiSpecifics,
-             "ProductSpecificationsMultiSpecifics",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCompareConfirmationToast,

@@ -111,10 +111,7 @@ MATCHER_P2(HasUnknownFields, uuid, unknown_fields, "") {
 class SingleClientProductSpecificationsSyncTest : public SyncTest {
  public:
   SingleClientProductSpecificationsSyncTest() : SyncTest(SINGLE_CLIENT) {
-    features_override_.InitWithFeatures(
-        {commerce::kProductSpecifications,
-         commerce::kProductSpecificationsMultiSpecifics},
-        {});
+    features_override_.InitWithFeatures({commerce::kProductSpecifications}, {});
   }
 
   SingleClientProductSpecificationsSyncTest(
