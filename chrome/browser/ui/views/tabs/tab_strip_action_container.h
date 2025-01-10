@@ -19,6 +19,9 @@
 #include "ui/views/mouse_watcher.h"
 #include "ui/views/view.h"
 
+namespace gfx {
+class Insets;
+}
 namespace glic {
 class GlicButton;
 }
@@ -113,6 +116,8 @@ class TabStripActionContainer : public views::View,
 
   // GlicNudgeObserver
   void OnTriggerGlicNudgeUI(std::string label) override;
+
+  void UpdateButtonBorders(gfx::Insets button_insets);
 
  private:
   friend class TabStripActionContainerBrowserTest;

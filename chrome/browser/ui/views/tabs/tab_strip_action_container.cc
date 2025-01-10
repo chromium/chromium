@@ -610,5 +610,21 @@ void TabStripActionContainer::AnimationProgressed(
   animation_session_->ApplyAnimationValue(animation);
 }
 
+void TabStripActionContainer::UpdateButtonBorders(
+    const gfx::Insets border_insets) {
+  if (auto_tab_group_button_) {
+    auto_tab_group_button_->SetBorder(views::CreateEmptyBorder(border_insets));
+  }
+  if (tab_declutter_button_) {
+    tab_declutter_button_->SetBorder(views::CreateEmptyBorder(border_insets));
+  }
+  if (product_specifications_button_) {
+    product_specifications_button_->SetBorder(
+        views::CreateEmptyBorder(border_insets));
+  }
+  if (glic_nudge_button_) {
+    glic_nudge_button_->SetBorder(views::CreateEmptyBorder(border_insets));
+  }
+}
 BEGIN_METADATA(TabStripActionContainer)
 END_METADATA

@@ -577,6 +577,9 @@ void TabStripRegionView::UpdateButtonBorders() {
   // account.
   const auto border_insets = gfx::Insets::TLBR(top_inset, 0, bottom_inset, 0);
   if (tab_strip_combo_button_) {
+    if (tab_strip_action_container_) {
+      tab_strip_action_container_->UpdateButtonBorders(border_insets);
+    }
     tab_strip_combo_button_->new_tab_button()->SetBorder(
         views::CreateEmptyBorder(border_insets));
     tab_strip_combo_button_->tab_search_button()->SetBorder(
