@@ -47,10 +47,11 @@ void LensOverlayTabHelper::SetLensOverlayUIAttachedAndAlive(
   }
 }
 
-bool LensOverlayTabHelper::IsLensOverlayInvokedOnItem(
-    web::NavigationItem* navigation_item) {
-  return is_ui_attached_and_alive_ &&
-         invokation_navigation_id_ == navigation_item->GetUniqueID();
+bool LensOverlayTabHelper::IsLensOverlayInvokedOnMostRecentBackItem() {
+  std::vector<web::NavigationItem*> backItems =
+      web_state_->GetNavigationManager()->GetBackwardItems();
+  return is_ui_attached_and_alive_ && backItems.size() > 0 &&
+         invokation_navigation_id_ == backItems[0]->GetUniqueID();
 }
 
 #pragma mark - WebStateObserver
@@ -90,9 +91,14 @@ void LensOverlayTabHelper::WasShown(web::WebState* web_state) {
   CHECK_EQ(web_state, web_state_, kLensOverlayNotFatalUntil);
 
   if (IsLensOverlaySameTabNavigationEnabled()) {
-    if (IsLensOverlayInvokedOnItem(
-            web_state->GetNavigationManager()->GetVisibleItem())) {
-      [commands_handler_ showLensUI:YES];
+    if (web_state_->GetNavigationManager()) {
+      web::NavigationItem* visibleItem =
+          web_state_->GetNavigationManager()->GetVisibleItem();
+
+      if (is_ui_attached_and_alive_ && visibleItem &&
+          invokation_navigation_id_ == visibleItem->GetUniqueID()) {
+        [commands_handler_ showLensUI:YES];
+      }
     }
   } else if (is_ui_attached_and_alive_) {
     [commands_handler_ showLensUI:YES];

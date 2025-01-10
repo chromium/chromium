@@ -51,8 +51,9 @@ class LensOverlayTabHelper : public LensOverlaySnapshotControllerDelegate,
     return is_updating_tab_switcher_snapshot_;
   }
 
-  // Returns YES if the lens overlay is invoked on a given navigation item.
-  bool IsLensOverlayInvokedOnItem(web::NavigationItem* navigation_item);
+  // Returns true if the most recent back navigation item has lens overlay
+  // invoked.
+  bool IsLensOverlayInvokedOnMostRecentBackItem();
 
   // Get the recorded bottom sheet detent state associate with this tab helper.
   SheetDimensionState GetRecordedSheetDimensionState() {

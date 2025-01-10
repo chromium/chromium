@@ -30,8 +30,20 @@ enum class SwipeType { NONE, CHANGE_TAB, CHANGE_PAGE };
 @required
 // Called when the horizontal stack view is done and should be removed.
 - (void)sideSwipeViewDismissAnimationDidEnd:(UIView*)sideSwipeView;
-// Returns the main content view.
+
+// View that will be animated alongside the swipe by setting its frame.
+//
+// If the animation is contained within the browser's content area,
+// use sideSwipeContentView for the swipe animation.
+//
+// If the animation includes browser chrome elements (e.g., toolbars),
+// use sideSwipeFullscreenView for the swipe animation.
+//
+// Example: Swiping between the Lens overlay UI and a normal web page
+// requires sideSwipeFullscreenView because the toolbars are involved.
 - (UIView*)sideSwipeContentView;
+- (UIView*)sideSwipeFullscreenView;
+
 // Makes `tab` the currently visible tab, displaying its view.
 - (void)sideSwipeRedisplayTabView;
 // Controls the visibility of views such as the findbar, infobar and voice

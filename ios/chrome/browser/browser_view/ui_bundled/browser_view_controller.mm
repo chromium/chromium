@@ -2514,6 +2514,10 @@ enum HeaderBehaviour {
 // helper
 #pragma mark - SideSwipeMediatorDelegate
 
+- (UIView*)sideSwipeFullscreenView {
+  return self.view;
+}
+
 - (void)sideSwipeViewDismissAnimationDidEnd:(UIView*)sideSwipeView {
   DCHECK(!IsRegularXRegularSizeClass(self));
   // TODO(crbug.com/40842406): Signal to the toolbar coordinator to perform this
