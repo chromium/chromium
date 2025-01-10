@@ -1136,7 +1136,7 @@ TEST_F(AggregationServiceStorageSqlTest,
   // second time when it detects that it was poisoned during the first attempt.
   histograms_.ExpectUniqueSample(
       "PrivacySandbox.AggregationService.Storage.Sql.Error",
-      base::checked_cast<base::HistogramBase::Sample>(
+      base::checked_cast<base::HistogramBase::Sample32>(
           sql::SqliteLoggedResultCode::kCorrupt),
       /*expected_bucket_count=*/2);
 

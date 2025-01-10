@@ -282,7 +282,7 @@ IN_PROC_BROWSER_TEST_P(CompositedScrollingMetricTest,
 
   content::FetchHistogramsFromChildProcesses();
 
-  base::HistogramBase::Sample expected_bucket =
+  base::HistogramBase::Sample32 expected_bucket =
       CompositedScrollEnabled()       ? kScrollingOnCompositor
       : RasterInducingScrollEnabled() ? kRasterInducingScroll
                                       : kScrollingOnMain;
@@ -330,7 +330,7 @@ IN_PROC_BROWSER_TEST_P(CompositedScrollingMetricTest, BlockingEventHandlers) {
 
   content::FetchHistogramsFromChildProcesses();
 
-  base::HistogramBase::Sample expected_bucket =
+  base::HistogramBase::Sample32 expected_bucket =
       CompositedScrollEnabled() ? kScrollingOnCompositorBlockedOnMain
                                 : kScrollingOnMain;
 
@@ -386,7 +386,7 @@ IN_PROC_BROWSER_TEST_P(CompositedScrollingMetricTest,
 
   content::FetchHistogramsFromChildProcesses();
 
-  base::HistogramBase::Sample expected_bucket =
+  base::HistogramBase::Sample32 expected_bucket =
       CompositedScrollEnabled()       ? kScrollingOnCompositor
       : RasterInducingScrollEnabled() ? kRasterInducingScroll
                                       : kScrollingOnMain;

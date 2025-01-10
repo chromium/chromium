@@ -1636,7 +1636,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // requests (kOutstandingNetworkRequestOthers). This causes flakiness if we
   // check against all blocklisted features. As a result, we only check for the
   // blocklist we care about.
-  base::HistogramBase::Sample sample = base::HistogramBase::Sample(
+  base::HistogramBase::Sample32 sample = base::HistogramBase::Sample32(
       blink::scheduler::WebSchedulerTrackedFeature::kPaymentManager);
   std::vector<base::Bucket> blocklist_values = histogram_tester().GetAllSamples(
       "BackForwardCache.HistoryNavigationOutcome."

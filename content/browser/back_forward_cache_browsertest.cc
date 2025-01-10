@@ -183,10 +183,10 @@ BackForwardCacheBrowserTest::~BackForwardCacheBrowserTest() {
     // As above but `LocalMainFrameHost::DidFirstVisuallyNonEmptyPaint()`.
     std::erase_if(samples, [](base::Bucket bucket) {
       return bucket.min ==
-                 static_cast<base::HistogramBase::Sample>(base::HashMetricName(
+                 static_cast<base::HistogramBase::Sample32>(base::HashMetricName(
                      blink::mojom::LocalFrameHost::Name_)) ||
              bucket.min ==
-                 static_cast<base::HistogramBase::Sample>(base::HashMetricName(
+                 static_cast<base::HistogramBase::Sample32>(base::HashMetricName(
                      blink::mojom::LocalMainFrameHost::Name_));
     });
 
@@ -319,7 +319,7 @@ std::string BackForwardCacheBrowserTest::DepictFrameTree(FrameTreeNode* node) {
 }
 
 bool BackForwardCacheBrowserTest::HistogramContainsIntValue(
-    base::HistogramBase::Sample sample,
+    base::HistogramBase::Sample32 sample,
     std::vector<base::Bucket> histogram_values) {
   return base::Contains(histogram_values, static_cast<int>(sample),
                         &base::Bucket::min);

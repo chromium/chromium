@@ -2654,7 +2654,7 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
   if (destination_url_info.is_prefetch_with_cross_site_contamination) {
     UMA_HISTOGRAM_EXACT_LINEAR(
         "Preloading.PrefetchBCGSwap.RelatedActiveContents",
-        base::saturated_cast<base::HistogramBase::Sample>(
+        base::saturated_cast<base::HistogramBase::Sample32>(
             current_instance->GetRelatedActiveContentsCount()),
         51);
     if (base::FeatureList::IsEnabled(

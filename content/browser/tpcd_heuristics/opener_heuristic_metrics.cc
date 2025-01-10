@@ -25,7 +25,7 @@ int32_t Bucketize3PCDHeuristicSample(int64_t sample, int64_t maximum) {
   // This bucketing implementation is based heavily on
   // base::Histogram::InitializeBucketRanges, but without allocating extra
   // memory.
-  base::Histogram::Sample current = 1;
+  base::Histogram::Sample32 current = 1;
   double log_current = 0;
   double log_max = log(static_cast<double>(maximum));
   // Iterate over buckets and return the one closest to the sample.
@@ -36,7 +36,7 @@ int32_t Bucketize3PCDHeuristicSample(int64_t sample, int64_t maximum) {
     // number of remaining buckets.
     double log_next =
         log_current + (log_max - log_current) / (kCutoffCount - cutoff_index);
-    base::Histogram::Sample next = static_cast<int>(std::round(exp(log_next)));
+    base::Histogram::Sample32 next = static_cast<int>(std::round(exp(log_next)));
 
     // If the difference between the buckets is too close, just add 1 to the
     // previous bucket.

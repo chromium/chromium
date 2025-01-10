@@ -943,7 +943,7 @@ TEST_F(DIPSBounceDetectorTest, Histograms_UMA) {
   // Verify the time-to-bounce metric was recorded for the client bounce.
   histograms.ExpectBucketCount(
       "Privacy.DIPS.TimeFromNavigationCommitToClientBounce",
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           base::Seconds(3).InMilliseconds()),
       /*expected_count=*/1);
 }

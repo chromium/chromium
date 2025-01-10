@@ -265,11 +265,11 @@ class HistogramRule : public BackgroundTracingRule,
         tracing::mojom::BackgroundTracingRule::New(rule_name()));
   }
 
-  void OnHistogramChangedCallback(base::Histogram::Sample reference_lower_value,
-                                  base::Histogram::Sample reference_upper_value,
+  void OnHistogramChangedCallback(base::Histogram::Sample32 reference_lower_value,
+                                  base::Histogram::Sample32 reference_upper_value,
                                   const char* histogram_name,
                                   uint64_t name_hash,
-                                  base::Histogram::Sample actual_value) {
+                                  base::Histogram::Sample32 actual_value) {
     DCHECK_EQ(histogram_name, histogram_name_);
     if (reference_lower_value > actual_value ||
         reference_upper_value < actual_value) {

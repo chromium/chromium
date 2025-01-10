@@ -584,13 +584,13 @@ bool SignedExchangeHandler::CheckOCSPStatus(
   // result here.
   UMA_HISTOGRAM_ENUMERATION(kHistogramOCSPResponseStatus,
                             ocsp_result.response_status,
-                            static_cast<base::HistogramBase::Sample>(
+                            static_cast<base::HistogramBase::Sample32>(
                                 bssl::OCSPVerifyResult::RESPONSE_STATUS_MAX) +
                                 1);
   if (ocsp_result.response_status == bssl::OCSPVerifyResult::PROVIDED) {
     UMA_HISTOGRAM_ENUMERATION(kHistogramOCSPRevocationStatus,
                               ocsp_result.revocation_status,
-                              static_cast<base::HistogramBase::Sample>(
+                              static_cast<base::HistogramBase::Sample32>(
                                   bssl::OCSPRevocationStatus::MAX_VALUE) +
                                   1);
     if (ocsp_result.revocation_status == bssl::OCSPRevocationStatus::GOOD) {
