@@ -541,7 +541,7 @@ using HostedAppTest = HostedOrWebAppTest;
 // Tests that hosted apps are not web apps.
 IN_PROC_BROWSER_TEST_P(HostedAppTest, NotWebApp) {
   SetupApp("app");
-  EXPECT_TRUE(registrar().IsNotInRegistrar(app_id_));
+  EXPECT_FALSE(registrar().IsInRegistrar(app_id_));
   const Extension* app =
       ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(app_id_);
   EXPECT_TRUE(app->is_hosted_app());
@@ -1478,7 +1478,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest, MAYBE_FromOutsideHostedApp) {
 IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest,
                        AppRegistrarExcludesPackaged) {
   SetupApp("https_app");
-  EXPECT_TRUE(registrar().IsNotInRegistrar(app_id_));
+  EXPECT_FALSE(registrar().IsInRegistrar(app_id_));
 }
 
 // Check that we can successfully complete a navigation to an app URL with a
