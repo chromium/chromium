@@ -70,11 +70,7 @@ class ProfileManagementFlowController {
   virtual ~ProfileManagementFlowController();
 
   // Starts the flow by registering and switching to the first step.
-  // If `step_switch_finished_callback` is provided, it will be called with
-  // `true` when the navigation to the initial step succeeded, or with `false`
-  // otherwise.
-  virtual void Init(StepSwitchFinishedCallback step_switch_finished_callback =
-                        StepSwitchFinishedCallback()) = 0;
+  virtual void Init() = 0;
 
   // Instructs a step registered as `step` to be shown.
   // If `step_switch_finished_callback` is provided, it will be called

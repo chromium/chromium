@@ -39,13 +39,11 @@ ProfilePickerGlicFlowController::~ProfilePickerGlicFlowController() {
   }
 }
 
-void ProfilePickerGlicFlowController::Init(
-    StepSwitchFinishedCallback step_switch_finished_callback) {
+void ProfilePickerGlicFlowController::Init() {
   RegisterStep(Step::kProfilePicker,
                ProfileManagementStepController::CreateForProfilePickerApp(
                    host(), GetProfilePickerGlicURL()));
-  SwitchToStep(Step::kProfilePicker, /*reset_state=*/true,
-               std::move(step_switch_finished_callback));
+  SwitchToStep(Step::kProfilePicker, /*reset_state=*/true);
 }
 
 void ProfilePickerGlicFlowController::PickProfile(

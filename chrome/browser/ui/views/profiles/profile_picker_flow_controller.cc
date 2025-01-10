@@ -472,13 +472,11 @@ ProfilePickerFlowController::ProfilePickerFlowController(
 
 ProfilePickerFlowController::~ProfilePickerFlowController() = default;
 
-void ProfilePickerFlowController::Init(
-    StepSwitchFinishedCallback step_switch_finished_callback) {
+void ProfilePickerFlowController::Init() {
   RegisterStep(Step::kProfilePicker,
                ProfileManagementStepController::CreateForProfilePickerApp(
                    host(), GetInitialURL(entry_point_)));
-  SwitchToStep(Step::kProfilePicker, /*reset_state=*/true,
-               std::move(step_switch_finished_callback));
+  SwitchToStep(Step::kProfilePicker, /*reset_state=*/true);
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

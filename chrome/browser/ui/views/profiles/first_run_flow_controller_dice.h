@@ -40,7 +40,7 @@ class FirstRunFlowControllerDice : public ProfileManagementFlowControllerImpl {
   ~FirstRunFlowControllerDice() override;
 
   // ProfileManagementFlowControllerImpl:
-  void Init(StepSwitchFinishedCallback step_switch_finished_callback) override;
+  void Init() override;
   void CancelPostSignInFlow() override;
   void PickProfile(const base::FilePath& profile_path,
                    ProfilePicker::ProfilePickingArgs args) override;

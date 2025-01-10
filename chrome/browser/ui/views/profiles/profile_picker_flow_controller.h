@@ -26,7 +26,7 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
                               ProfilePicker::EntryPoint entry_point);
   ~ProfilePickerFlowController() override;
 
-  void Init(StepSwitchFinishedCallback step_switch_finished_callback) override;
+  void Init() override;
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   void SwitchToDiceSignIn(ProfilePicker::ProfileInfo profile_info,

@@ -55,23 +55,17 @@ class TestProfileManagementFlowController
         initial_step_load_finished_closure_(
             std::move(initial_step_load_finished_closure)) {}
 
-  void Init(StepSwitchFinishedCallback step_switch_finished_callback) override {
+  void Init() override {
     RegisterStep(step_, step_controller_factory_.Run(host()));
     SwitchToStep(
         step_, /*reset_state=*/true,
         /*step_switch_finished_callback=*/
         base::BindOnce(
             &TestProfileManagementFlowController::OnInitialStepSwitchFinished,
-            weak_ptr_factory_.GetWeakPtr(),
-            std::move(step_switch_finished_callback)));
+            weak_ptr_factory_.GetWeakPtr()));
   }
 
-  void OnInitialStepSwitchFinished(StepSwitchFinishedCallback original_callback,
-                                   bool success) {
-    if (original_callback) {
-      std::move(original_callback).Run(success);
-    }
-
+  void OnInitialStepSwitchFinished(bool success) {
     if (host()->GetPickerContents()->IsLoading()) {
       Observe(host()->GetPickerContents());
     } else {

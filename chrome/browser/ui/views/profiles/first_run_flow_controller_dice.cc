@@ -468,8 +468,7 @@ FirstRunFlowControllerDice::~FirstRunFlowControllerDice() {
   }
 }
 
-void FirstRunFlowControllerDice::Init(
-    StepSwitchFinishedCallback step_switch_finished_callback) {
+void FirstRunFlowControllerDice::Init() {
   RegisterStep(
       Step::kIntro,
       CreateIntroStep(host(),
@@ -477,8 +476,7 @@ void FirstRunFlowControllerDice::Init(
                           &FirstRunFlowControllerDice::HandleIntroSigninChoice,
                           weak_ptr_factory_.GetWeakPtr()),
                       /*enable_animations=*/true));
-  SwitchToStep(Step::kIntro, /*reset_state=*/true,
-               std::move(step_switch_finished_callback));
+  SwitchToStep(Step::kIntro, /*reset_state=*/true);
 
   signin_metrics::LogSignInOffered(
       kAccessPoint, signin_metrics::PromoAction::

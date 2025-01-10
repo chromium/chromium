@@ -28,8 +28,7 @@ class ProfilePickerGlicFlowController : public ProfileManagementFlowController {
   ~ProfilePickerGlicFlowController() override;
 
   // ProfileManagementFlowController:
-  void Init(StepSwitchFinishedCallback step_switch_finished_callback =
-                StepSwitchFinishedCallback()) override;
+  void Init() override;
   // Loads the profile with `profile_path` asynchronously then attempts to run
   // the `picked_profile_callback_` callback with the loaded profile.
   // `args` are actually not used in this implementation.
