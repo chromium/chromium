@@ -139,3 +139,14 @@ crbug.com/40667709 [ Linux ] external/wpt/html/canvas/offscreen/manual/filter/of
 crbug.com/388428511 [ Linux ] external/wpt/webrtc/protocol/crypto-suite.https.html [ Failure Pass ]
 crbug.com/388428511 [ Linux ] external/wpt/wasm/core/simd/simd_f32x4_pmin_pmax.wast.js.html [ Failure Pass ]
 crbug.com/388428511 [ Linux ] external/wpt/wasm/core/simd/simd_f64x2_pmin_pmax.wast.js.html [ Failure Pass ]
+
+# Gardener 2025-01-10
+# Very slow under MSAN. Similar to crbug.com/40948871.
+crbug.com/389039349 [ Linux ] external/wpt/IndexedDB/nested-cloning-large-multiple.any.html [ Skip ]
+crbug.com/389039349 [ Linux ] external/wpt/IndexedDB/nested-cloning-large-multiple.any.serviceworker.html [ Skip ]
+crbug.com/389039349 [ Linux ] external/wpt/IndexedDB/nested-cloning-large-multiple.any.sharedworker.html [ Skip ]
+crbug.com/389039349 [ Linux ] external/wpt/IndexedDB/nested-cloning-large-multiple.any.worker.html [ Skip ]
+crbug.com/389039349 [ Linux ] external/wpt/IndexedDB/nested-cloning-large.any.html [ Skip ]
+crbug.com/389039349 [ Linux ] external/wpt/IndexedDB/nested-cloning-large.any.serviceworker.html [ Skip ]
+crbug.com/389039349 [ Linux ] external/wpt/IndexedDB/nested-cloning-large.any.sharedworker.html [ Skip ]
+crbug.com/389039349 [ Linux ] external/wpt/IndexedDB/nested-cloning-large.any.worker.html [ Skip ]
