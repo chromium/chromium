@@ -196,6 +196,9 @@ std::vector<Prediction> LanguageDetectionModel::PredictWithScan(
   for (const auto& it : score_by_language) {
     predictions.emplace_back(it.first, it.second / count);
   }
+  if (predictions.empty()) {
+    return {Prediction(kUnknownLanguageCode, 0.0)};
+  }
   return predictions;
 }
 

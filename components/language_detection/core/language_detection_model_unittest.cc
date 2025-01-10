@@ -241,6 +241,13 @@ TEST_F(LanguageDetectionValidTest, DetectWithSampling) {
   }
 }
 
+TEST_F(LanguageDetectionValidTest, PredictWithScanEmptyInput) {
+  std::u16string empty_string;
+  std::vector<Prediction> results_empty =
+      language_detection_model_->PredictWithScan(empty_string);
+  ASSERT_EQ(TopPrediction(results_empty).language, kUnknownLanguageCode);
+}
+
 TEST_F(LanguageDetectionValidTest, PredictWithScan) {
   std::string predicted_language;
   std::u16string en_sample = u"This is a page apparently written in English.";
