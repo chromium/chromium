@@ -8626,10 +8626,6 @@ crbug.com/324441376 [ Linux ] virtual/threaded-prefer-compositing/fast/scrolling
 crbug.com/324441376 [ Linux ] virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/mouse-scrolling-on-root-scrollbar.html [ Failure Pass ]
 
 # Temporarily disabled to unblock https://crrev.com/c/6157257
-crbug.com/388445687 http/tests/devtools/a11y-axe-core/elements/event-listeners-a11y-test.js [ Failure Pass ]
-crbug.com/388445687 http/tests/devtools/a11y-axe-core/performance/panel-right-toolbar-a11y-test.js [ Failure Pass ]
-crbug.com/388445687 http/tests/devtools/a11y-axe-core/performance/panel-toolbar-a11y-test.js [ Failure Pass ]
-crbug.com/388445687 http/tests/devtools/elements/styles-4/style-update-during-selector-edit.js [ Failure Pass ]
 crbug.com/388445687 http/tests/devtools/console/console-copy-treeoutline.js [ Failure Pass ]
 crbug.com/388445687 http/tests/devtools/console/console-viewport-selection.js [ Failure Pass ]
 

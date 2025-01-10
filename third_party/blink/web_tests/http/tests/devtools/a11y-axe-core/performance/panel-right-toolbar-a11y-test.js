@@ -13,7 +13,7 @@ import {PerformanceTestRunner} from 'performance_test_runner';
 
   await PerformanceTestRunner.runPerfTraceWithReload();
   const widget = await PerformanceTestRunner.getTimelineWidget();
-  await AxeCoreTestRunner.runValidation(widget.panelRightToolbar.element);
+  await AxeCoreTestRunner.runValidation(widget.panelRightToolbar);
 
   TestRunner.completeTest();
 })();
