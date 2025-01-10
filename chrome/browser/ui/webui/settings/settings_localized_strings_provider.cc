@@ -1442,11 +1442,6 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
               ? IDS_AUTOFILL_ADDRESSES_SETTINGS_WITH_PLUS_ADDRESS_SUBLABEL
               : IDS_AUTOFILL_ADDRESSES_SETTINGS_SUBLABEL));
 
-  html_source->AddBoolean(
-      "syncEnableContactInfoDataTypeInTransportMode",
-      base::FeatureList::IsEnabled(
-          syncer::kSyncEnableContactInfoDataTypeInTransportMode));
-
   plus_addresses::PlusAddressService* plus_address_service =
       PlusAddressServiceFactory::GetInstance()->GetForBrowserContext(profile);
   html_source->AddBoolean(

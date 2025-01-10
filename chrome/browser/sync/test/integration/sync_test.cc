@@ -1098,17 +1098,13 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
   syncer::DataTypeSet allowed_types = {syncer::AUTOFILL_WALLET_CREDENTIAL,
                                        syncer::AUTOFILL_WALLET_DATA,
                                        syncer::AUTOFILL_WALLET_USAGE,
+                                       syncer::CONTACT_INFO,
                                        syncer::DEVICE_INFO,
                                        syncer::SECURITY_EVENTS,
                                        syncer::SEND_TAB_TO_SELF,
                                        syncer::SHARING_MESSAGE,
                                        syncer::USER_CONSENTS};
   allowed_types.PutAll(syncer::ControlTypes());
-
-  if (base::FeatureList::IsEnabled(
-          syncer::kSyncEnableContactInfoDataTypeInTransportMode)) {
-    allowed_types.Put(syncer::CONTACT_INFO);
-  }
 
   allowed_types.Put(syncer::PLUS_ADDRESS);
   if (base::FeatureList::IsEnabled(syncer::kSyncPlusAddressSetting)) {

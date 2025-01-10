@@ -1031,16 +1031,10 @@ class SaveCardBubbleViewsSyncTransportFullFormBrowserTest
     : public SaveCardBubbleViewsFullFormBrowserTest {
  protected:
   SaveCardBubbleViewsSyncTransportFullFormBrowserTest() {
-    // Add wallet data type to the list of enabled types.
-    std::vector<base::test::FeatureRef> enabled_features = {
-        features::kAutofillUpstream};
-    std::vector<base::test::FeatureRef> disabled_features = {};
-    // Since server card saves upload address information, they are only offered
-    // when addresses are being synced. Enable CONTACT_INFO in transport mode.
-    enabled_features.push_back(switches::kExplicitBrowserSigninUIOnDesktop);
-    enabled_features.push_back(
-        syncer::kSyncEnableContactInfoDataTypeInTransportMode);
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kAutofillUpstream,
+                              switches::kExplicitBrowserSigninUIOnDesktop},
+        /*disabled_features=*/{});
   }
 
  public:

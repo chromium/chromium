@@ -252,11 +252,8 @@ public class ManageSyncSettingsTest {
                                 ManageSyncSettings.PREF_ACCOUNT_SECTION_PASSWORDS_TOGGLE,
                                 ManageSyncSettings.PREF_ACCOUNT_SECTION_SETTINGS_TOGGLE,
                                 ManageSyncSettings.PREF_ACCOUNT_SECTION_BOOKMARKS_TOGGLE,
-                                ManageSyncSettings.PREF_ACCOUNT_SECTION_READING_LIST_TOGGLE));
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.SYNC_ENABLE_CONTACT_INFO_DATA_TYPE_IN_TRANSPORT_MODE)) {
-            expectedEnabledTypes.add(ManageSyncSettings.PREF_ACCOUNT_SECTION_ADDRESSES_TOGGLE);
-        }
+                                ManageSyncSettings.PREF_ACCOUNT_SECTION_READING_LIST_TOGGLE,
+                                ManageSyncSettings.PREF_ACCOUNT_SECTION_ADDRESSES_TOGGLE));
 
         mSyncTestRule.setUpAccountAndSignInForTesting();
         ManageSyncSettings fragment = startManageSyncPreferences();

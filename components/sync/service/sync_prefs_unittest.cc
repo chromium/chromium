@@ -463,7 +463,6 @@ TEST_F(SyncPrefsTest,
 #if !BUILDFLAG(IS_IOS)
                             kReadingListEnableSyncTransportModeUponSignIn,
 #endif  // !BUILDFLAG(IS_IOS)
-                            kSyncEnableContactInfoDataTypeInTransportMode,
                             kEnablePreferencesAccountStorage,
                             kSyncEnableExtensionsInTransportMode},
       /*disabled_features=*/{kReplaceSyncPromosWithSignInPromos});
@@ -497,7 +496,6 @@ TEST_F(SyncPrefsTest,
 #if !BUILDFLAG(IS_IOS)
                             kReadingListEnableSyncTransportModeUponSignIn,
 #endif  // !BUILDFLAG(IS_IOS)
-                            kSyncEnableContactInfoDataTypeInTransportMode,
                             kEnablePreferencesAccountStorage,
                             kSyncEnableExtensionsInTransportMode},
       /*disabled_features=*/{});
@@ -530,9 +528,7 @@ class SyncPrefsExplicitBrowserSigninTest : public SyncPrefsTest {
  public:
   SyncPrefsExplicitBrowserSigninTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{syncer::
-                                  kSyncEnableContactInfoDataTypeInTransportMode,
-                              kSyncEnableExtensionsInTransportMode,
+        /*enabled_features=*/{kSyncEnableExtensionsInTransportMode,
                               switches::kExplicitBrowserSigninUIOnDesktop},
         /*disabled_features=*/{});
   }
@@ -866,7 +862,6 @@ class SyncPrefsMigrationTest : public testing::Test {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
                               switches::kExplicitBrowserSigninUIOnDesktop,
 #endif
-                              kSyncEnableContactInfoDataTypeInTransportMode,
                               kEnablePreferencesAccountStorage},
         /*disabled_features=*/{});
 

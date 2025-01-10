@@ -727,8 +727,7 @@ bool SyncPrefs::IsTypeSupportedInTransportMode(UserSelectableType type) {
     case UserSelectableType::kPasswords:
       return true;
     case UserSelectableType::kAutofill:
-      return base::FeatureList::IsEnabled(
-          kSyncEnableContactInfoDataTypeInTransportMode);
+      return true;
     case UserSelectableType::kPayments:
       // Always supported, since AUTOFILL_WALLET_DATA is supported in
       // transport mode everywhere.

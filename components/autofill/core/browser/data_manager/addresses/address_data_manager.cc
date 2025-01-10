@@ -603,10 +603,7 @@ bool AddressDataManager::IsAutofillUserSelectableTypeEnabled() const {
 }
 
 bool AddressDataManager::IsAutofillSyncToggleAvailable() const {
-  // These checks should be removed once the feature is fully launched.
-  if (!base::FeatureList::IsEnabled(
-          syncer::kSyncEnableContactInfoDataTypeInTransportMode) ||
-      !pref_service_->GetBoolean(::prefs::kExplicitBrowserSignin)) {
+  if (!pref_service_->GetBoolean(::prefs::kExplicitBrowserSignin)) {
     return false;
   }
 

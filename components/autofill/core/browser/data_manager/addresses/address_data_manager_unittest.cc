@@ -1167,12 +1167,8 @@ TEST_F(AddressDataManagerTest,
 TEST_F(AddressDataManagerTest, AutofillSyncToggleAvailableInTransportMode) {
   ResetAddressDataManager(
       /*use_sync_transport_mode=*/true);
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{syncer::
-                                kSyncEnableContactInfoDataTypeInTransportMode,
-                            ::switches::kExplicitBrowserSigninUIOnDesktop},
-      /*disabled_features=*/{});
+  base::test::ScopedFeatureList feature_list{
+      ::switches::kExplicitBrowserSigninUIOnDesktop};
   const CoreAccountInfo& account = sync_service_.GetAccountInfo();
   identity_test_env_.SimulateSuccessfulFetchOfAccountInfo(
       account.account_id, account.email, account.gaia,

@@ -408,7 +408,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &sync_sessions::kOptimizeAssociateWindowsAndroid,
     &syncer::kEnableBatchUploadFromSettings,
     &syncer::kReplaceSyncPromosWithSignInPromos,
-    &syncer::kSyncEnableContactInfoDataTypeInTransportMode,
     &syncer::kWebApkBackupAndRestoreBackend,
     &syncer::kUnoPhase2FollowUp,
     &tab_groups::kTabGroupSyncAndroid,

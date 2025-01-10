@@ -39,7 +39,6 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.editors.EditorDialogView;
@@ -67,10 +66,7 @@ import java.util.concurrent.TimeoutException;
 
 /** Unit test suite for AutofillProfilesFragment. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@EnableFeatures({
-    ChromeFeatureList.SYNC_ENABLE_CONTACT_INFO_DATA_TYPE_IN_TRANSPORT_MODE,
-    ChromeFeatureList.PLUS_ADDRESSES_ENABLED
-})
+@EnableFeatures({ChromeFeatureList.PLUS_ADDRESSES_ENABLED})
 // TODO(crbug.com/344657376): Failing when batched, batch this again.
 public class AutofillProfilesFragmentTest {
     private static final AutofillProfile sLocalOrSyncProfile =
@@ -672,22 +668,6 @@ public class AutofillProfilesFragmentTest {
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mIdentityManagerMock);
         when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(false);
-        setUpMockSyncService(false, new HashSet());
-
-        // Trigger address profile list rebuild.
-        mHelper.setProfile(sAccountProfile);
-        assertEquals(0, findPreference(sAccountProfile.getFullName()).getWidgetLayoutResource());
-        assertEquals(
-                0, findPreference(sLocalOrSyncProfile.getFullName()).getWidgetLayoutResource());
-    }
-
-    /** Cloud off icons are shown conditionally depending on the 2 feature flags being turned on. */
-    @Test
-    @MediumTest
-    @Feature({"Preferences"})
-    @DisableFeatures({ChromeFeatureList.SYNC_ENABLE_CONTACT_INFO_DATA_TYPE_IN_TRANSPORT_MODE})
-    public void testLocalProfiles_NoRequiredFeatureFlags() throws Exception {
-        setUpMockPrimaryAccount("test@account.com");
         setUpMockSyncService(false, new HashSet());
 
         // Trigger address profile list rebuild.

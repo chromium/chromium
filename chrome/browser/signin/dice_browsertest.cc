@@ -1317,7 +1317,6 @@ class DiceExplicitSigninRollbackBrowserTest : public InProcessBrowserTest {
 
   DiceExplicitSigninRollbackBrowserTest() {
     std::vector<base::test::FeatureRef> features = {
-        syncer::kSyncEnableContactInfoDataTypeInTransportMode,
         switches::kExplicitBrowserSigninUIOnDesktop};
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
@@ -1503,10 +1502,8 @@ class DiceExplicitSigninBrowserTest : public InProcessBrowserTest {
   };
 
   DiceExplicitSigninBrowserTest() {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        syncer::kSyncEnableContactInfoDataTypeInTransportMode,
-    };
-    std::vector<base::test::FeatureRef> disabled_features = {};
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
 
     if (content::IsPreTest()) {
       disabled_features.push_back(switches::kExplicitBrowserSigninUIOnDesktop);

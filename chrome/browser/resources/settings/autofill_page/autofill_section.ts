@@ -260,11 +260,6 @@ export class SettingsAutofillSectionElement extends
       return false;
     }
 
-    if (!loadTimeData.getBoolean(
-            'syncEnableContactInfoDataTypeInTransportMode')) {
-      return false;
-    }
-
     // Local profile of a logged-in user with disabled address sync and
     // enabled feature.
     return true;

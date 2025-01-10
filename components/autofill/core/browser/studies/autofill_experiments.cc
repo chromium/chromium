@@ -166,22 +166,19 @@ bool IsCreditCardUploadEnabled(
     return false;
   }
 
-  // With `AutofillDecoupleAddressPaymentSyncSettings`, the address and payment
-  // sync settings become independent. However, since address information is
-  // uploaded during the server card saving flow, credit card upload is not
-  // available when address sync is disabled.
-  // Before address sync is available in transport mode, server card save is
+  // In sync settings, address and payment toggles are independent. However,
+  // since address information is uploaded during the server card saving flow,
+  // credit card upload is not available when address sync is disabled.
+  // Before address sync was available in transport mode, server card save was
   // offered in transport mode regardless of the setting. (The sync API exposes
   // the kAutofill type as disabled in this case.)
   // TODO(crbug.com/40066949): Simplify once IsSyncFeatureActive() is deleted
   // from the codebase.
-  bool addresses_in_transport_mode = base::FeatureList::IsEnabled(
-      syncer::kSyncEnableContactInfoDataTypeInTransportMode);
+  bool addresses_in_transport_mode = true;
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Dice users don't have addresses in transport mode until they went through
   // the explicit signin flow.
   addresses_in_transport_mode =
-      addresses_in_transport_mode &&
       pref_service.GetBoolean(::prefs::kExplicitBrowserSignin);
 #endif
   bool syncing_or_addresses_in_transport_mode =

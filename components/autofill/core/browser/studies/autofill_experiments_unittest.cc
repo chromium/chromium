@@ -235,8 +235,6 @@ TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_Syncing_AutofillDisabled) {
 // is among the UserSelectableTypes.
 TEST_F(AutofillExperimentsTest,
        IsCardUploadEnabled_TransportWithAddresses_AutofillSelected) {
-  base::test::ScopedFeatureList feature{
-      syncer::kSyncEnableContactInfoDataTypeInTransportMode};
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Migrate Dice users.
   pref_service_.SetBoolean(::prefs::kExplicitBrowserSignin, true);
@@ -252,8 +250,6 @@ TEST_F(AutofillExperimentsTest,
 }
 TEST_F(AutofillExperimentsTest,
        IsCardUploadEnabled_TransportWithAddresses_AutofillDisabled) {
-  base::test::ScopedFeatureList features{
-      syncer::kSyncEnableContactInfoDataTypeInTransportMode};
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Migrate Dice users.
   pref_service_.SetBoolean(::prefs::kExplicitBrowserSignin, true);
@@ -275,8 +271,6 @@ TEST_F(AutofillExperimentsTest,
 TEST_F(
     AutofillExperimentsTest,
     IsCardUploadEnabled_TransportWithAddresses_AutofillDisabled_DiceMigration) {
-  base::test::ScopedFeatureList feature{
-      syncer::kSyncEnableContactInfoDataTypeInTransportMode};
   // Dice user not migrated to explicit signin.
   ASSERT_FALSE(pref_service_.GetBoolean(::prefs::kExplicitBrowserSignin));
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
@@ -289,37 +283,6 @@ TEST_F(
 }
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
-// Tests that for transport mode users, when CONTACT_INFO is unavailable, credit
-// card upload is offered independently of the kAutofill (address autofill +
-// autocomplete) UserSelectableType.
-TEST_F(AutofillExperimentsTest,
-       IsCardUploadEnabled_TransportWithoutAddresses_AutofillSelected) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndDisableFeature(
-      syncer::kSyncEnableContactInfoDataTypeInTransportMode);
-  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
-  sync_service_.GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/{syncer::UserSelectableType::kAutofill,
-                 syncer::UserSelectableType::kPayments});
-  EXPECT_TRUE(
-      IsCreditCardUploadEnabled(AutofillMetrics::PaymentsSigninState::
-                                    kSignedInAndWalletSyncTransportEnabled));
-}
-TEST_F(AutofillExperimentsTest,
-       IsCardUploadEnabled_TransportWithoutAddresses_AutofillDisabled) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(
-      syncer::kSyncEnableContactInfoDataTypeInTransportMode);
-  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
-  sync_service_.GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/{syncer::UserSelectableType::kPayments});
-  EXPECT_TRUE(
-      IsCreditCardUploadEnabled(AutofillMetrics::PaymentsSigninState::
-                                    kSignedInAndWalletSyncTransportEnabled));
-}
 
 TEST_F(AutofillExperimentsTest,
        IsCardUploadEnabled_SyncServiceUsingExplicitPassphrase) {

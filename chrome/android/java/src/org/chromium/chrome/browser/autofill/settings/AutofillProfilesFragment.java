@@ -308,10 +308,6 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
         if (profile.getRecordType() == RecordType.ACCOUNT) {
             return false;
         }
-        if (!ChromeFeatureList.isEnabled(
-                ChromeFeatureList.SYNC_ENABLE_CONTACT_INFO_DATA_TYPE_IN_TRANSPORT_MODE)) {
-            return false;
-        }
         SyncService syncService = SyncServiceFactory.getForProfile(getProfile());
         return syncService == null
                 || !syncService.getSelectedTypes().contains(UserSelectableType.AUTOFILL);

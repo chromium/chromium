@@ -275,10 +275,6 @@ suite('AutofillSectionAddressTests', function() {
   });
 
   test('verifyAddressLocalIndication', async () => {
-    loadTimeData.overrideValues({
-      syncEnableContactInfoDataTypeInTransportMode: false,
-    });
-
     const autofillManager = new TestAutofillManager();
     autofillManager.data.addresses = [createAddressEntry()];
     autofillManager.data.accountInfo = {
@@ -302,21 +298,12 @@ suite('AutofillSectionAddressTests', function() {
     const changeListener =
         autofillManager.lastCallback.setPersonalDataManagerListener!;
 
-    changeListener(autofillManager.data.addresses, [], [], STUB_USER_ACCOUNT_INFO);
-    assertFalse(
-        isVisible(addressList.children[0]!.querySelector('[icon*=cloud-off]')),
-        'Sync is disabled but the feature is off, the icon should be hidden.');
-
     changeListener(autofillManager.data.addresses, [], [], undefined);
     assertFalse(
         isVisible(section.$.addressList.children[0]!.querySelector(
             '[icon*=cloud-off]')),
         'The local indicator should not be shown to logged-out users');
 
-
-    loadTimeData.overrideValues({
-      syncEnableContactInfoDataTypeInTransportMode: true,
-    });
     changeListener(
         autofillManager.data.addresses, [], [], STUB_USER_ACCOUNT_INFO);
     assertTrue(

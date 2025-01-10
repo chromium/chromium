@@ -653,8 +653,7 @@ TEST_F(
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/
       {syncer::kReplaceSyncPromosWithSignInPromos,
-       syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers,
-       syncer::kSyncEnableContactInfoDataTypeInTransportMode},
+       syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers},
       /*disabled_features=*/{});
 
   // Sign-in.
@@ -711,8 +710,7 @@ TEST_F(
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/
       {syncer::kReplaceSyncPromosWithSignInPromos,
-       syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers,
-       syncer::kSyncEnableContactInfoDataTypeInTransportMode},
+       syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers},
       /*disabled_features=*/{});
 
   // Sign-in.
@@ -777,11 +775,10 @@ TEST_F(
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/
       {syncer::kReplaceSyncPromosWithSignInPromos,
-       syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers,
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
        switches::kExplicitBrowserSigninUIOnDesktop,
 #endif
-       syncer::kSyncEnableContactInfoDataTypeInTransportMode},
+       syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers},
       /*disabled_features=*/{});
 
   // Sign-in.
