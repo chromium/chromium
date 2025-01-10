@@ -16,10 +16,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/media_app_ash.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/hats/hats_config.h"
@@ -197,17 +193,9 @@ void ChromeMediaAppUIDelegate::EditInPhotosImpl(
 void ChromeMediaAppUIDelegate::SubmitForm(const GURL& url,
                                           const std::vector<int8_t>& payload,
                                           const std::string& header) {
-  if (crosapi::browser_util::IsLacrosEnabled()) {
-    crosapi::CrosapiManager::Get()->crosapi_ash()->media_app_ash()->SubmitForm(
-        url, payload, header, base::DoNothing());
-    return;
-  }
-  // Keep this impl in sync with chrome/browser/lacros/media_app_lacros.cc
   Profile* profile = Profile::FromWebUI(web_ui_);
   NavigateParams navigate_params(
       profile, url,
-      // The page transition is chosen to satisfy one of the conditions in
-      // lacros_url_handling::IsNavigationInterceptable.
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                 ui::PAGE_TRANSITION_FROM_API |
                                 ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
