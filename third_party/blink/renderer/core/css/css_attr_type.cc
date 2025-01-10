@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/css/css_string_value.h"
 #include "third_party/blink/renderer/core/css/css_syntax_definition.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_save_point.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 
@@ -19,7 +20,12 @@ namespace {
 
 std::optional<CSSPrimitiveValue::UnitType> ConsumeDimensionUnitType(
     CSSParserTokenStream& stream) {
-  if (stream.Peek().GetType() != kIdentToken) {
+  CSSParserTokenType type = stream.Peek().GetType();
+  if (type == kDelimiterToken && stream.Peek().Delimiter() == '%') {
+    stream.Consume();
+    return CSSPrimitiveValue::UnitType::kPercentage;
+  }
+  if (type != kIdentToken) {
     return std::nullopt;
   }
   CSSPrimitiveValue::UnitType unit =
