@@ -2202,7 +2202,7 @@
   },
   {
     "name": "eche-swa-check-android-network-info",
-    "owners": [ "dhnishi@chromium.org", "corakwue@google.com", "ftsui@google.com" ],
+    "owners": [ "corakwue@google.com", "ftsui@google.com" ],
     "expiry_milestone": 125
   },
   {
