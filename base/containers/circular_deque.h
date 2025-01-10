@@ -1262,18 +1262,18 @@ class circular_deque {
 // Implementations of base::Erase[If] (see base/stl_util.h).
 template <class T, class Value>
 size_t Erase(circular_deque<T>& container, const Value& value) {
-  auto it = ranges::remove(container, value);
-  size_t removed = std::distance(it, container.end());
-  container.erase(it, container.end());
-  return removed;
+  auto removed = std::ranges::remove(container, value);
+  size_t num_removed = removed.size();
+  container.erase(removed.begin(), removed.end());
+  return num_removed;
 }
 
 template <class T, class Predicate>
 size_t EraseIf(circular_deque<T>& container, Predicate pred) {
-  auto it = ranges::remove_if(container, pred);
-  size_t removed = std::distance(it, container.end());
-  container.erase(it, container.end());
-  return removed;
+  auto removed = std::ranges::remove_if(container, pred);
+  size_t num_removed = removed.size();
+  container.erase(removed.begin(), removed.end());
+  return num_removed;
 }
 
 }  // namespace base
