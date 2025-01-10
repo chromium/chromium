@@ -641,11 +641,31 @@ M117.
 ------------ | ------- | ----------- |
 | uuid | string | UUID of the routine that entered this state  |
 
+### Enum NetworkBandwidthRoutineRunningType
+| Property Name |
+------------ |
+| download |
+| upload |
+
+### NetworkBandwidthRoutineRunningInfo
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| type | NetworkBandwidthRoutineRunningType | The type of test that routine is running |
+| speedKbps | number | The current network speed in Kbit/s |
+
+### RoutineRunningInfoUnion
+This is a [union type](#Dictionary_based-union-types). Exactly one field is set.
+
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| networkBandwidth | NetworkBandwidthRoutineRunningInfo | Extra detail for a running network bandwidth routine |
+
 ### RoutineRunningInfo
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
 | uuid | string | UUID of the routine that entered this state  |
 | percentage | number | Current percentage of the routine status (0-100) |
+| info | RoutineRunningInfoUnion | Extra details about a running routine |
 
 ### CheckLedLitUpStateInquiry
 Details regarding the inquiry to check the LED lit up state. Clients should
@@ -708,6 +728,7 @@ This is a [union type](#Dictionary_based-union-types). Exactly one field is set.
 ------------ | ------- | ----------- |
 | memory | MemoryRoutineFinishedDetail | Extra detail for a finished memory routine  |
 | fan | FanRoutineFinishedDetail | Extra detail for a finished fan routine |
+| networkBandwidth | NetworkBandwidthRoutineFinishedDetail | Extra detail for a finished network bandwidth routine |
 | cameraFrameAnalysis | CameraFrameAnalysisRoutineFinishedDetail | Extra detail for a finished camera frame analysis routine |
 
 ### MemtesterResult
@@ -802,6 +823,12 @@ unrecognized devices.
 
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
+
+### NetworkBandwidthRoutineFinishedDetail
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| downloadSpeedKbps | number | Average download speed in Kbit/s |
+| uploadSpeedKbps | number | Average upload speed in Kbit/s |
 
 ### Enum LedName
 | Property Name |
