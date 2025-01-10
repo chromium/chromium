@@ -121,7 +121,7 @@ public class MerchantTrustBottomSheetMediator {
                         if (navigation.hasCommitted()) {
                             mToolbarModel.set(
                                     BottomSheetToolbarProperties.URL,
-                                    mWebContents.get().getVisibleUrl());
+                                    getWebContents().getVisibleUrl());
                         }
                     }
                 };

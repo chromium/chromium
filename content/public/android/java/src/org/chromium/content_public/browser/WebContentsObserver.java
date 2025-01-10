@@ -16,7 +16,6 @@ import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.lang.ref.WeakReference;
 
 /**
  * This class receives callbacks that act as hooks for various a native web contents events related
@@ -24,14 +23,17 @@ import java.lang.ref.WeakReference;
  */
 @NullMarked
 public abstract class WebContentsObserver {
-    // TODO(jdduke): Remove the destroy method and hold observer embedders
-    // responsible for explicit observer detachment.
-    // Using a weak reference avoids cycles that might prevent GC of WebView's WebContents.
-    protected @Nullable WeakReference<WebContents> mWebContents;
+    private @Nullable WebContents mWebContents;
 
     public WebContentsObserver(WebContents webContents) {
-        mWebContents = new WeakReference<WebContents>(webContents);
+        mWebContents = webContents;
         webContents.addObserver(this);
+    }
+
+    /** Return the web contents associated with the observer. */
+    @Nullable
+    public WebContents getWebContents() {
+        return mWebContents;
     }
 
     /**
@@ -244,9 +246,8 @@ public abstract class WebContentsObserver {
     /** Stop observing the web contents and clean up associated references. */
     public void destroy() {
         if (mWebContents == null) return;
-        final WebContents webContents = mWebContents.get();
+        final WebContents webContents = mWebContents;
         mWebContents = null;
-        if (webContents == null) return;
         webContents.removeObserver(this);
     }
 

@@ -126,7 +126,7 @@ public class CreatorTabMediator {
                     public void didFinishNavigationInPrimaryMainFrame(NavigationHandle navigation) {
                         if (navigation.hasCommitted()) {
                             mIsOnErrorPage = navigation.isErrorPage();
-                            mSheetContent.updateURL(mWebContents.get().getVisibleUrl());
+                            mSheetContent.updateURL(getWebContents().getVisibleUrl());
                         } else {
                             // Not viewable contents such as download. Show a toast and close the
                             // tab.

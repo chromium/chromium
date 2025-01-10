@@ -59,10 +59,8 @@ public class PaymentRequestWebContentsData extends WebContentsObserver implement
      * @return Whether there has been an activationless PaymentRequest.show() for this WebContents.
      */
     public boolean hadActivationlessShow() {
-        if (mWebContents == null) return false;
-        WebContents webContents = mWebContents.get();
+        WebContents webContents = getWebContents();
         if (webContents == null || webContents.isDestroyed()) return false;
-
         return PaymentRequestWebContentsDataJni.get().hadActivationlessShow(webContents);
     }
 
@@ -71,10 +69,8 @@ public class PaymentRequestWebContentsData extends WebContentsObserver implement
      * tracked on the native side in PaymentRequestWebContentsManager.
      */
     public void recordActivationlessShow() {
-        if (mWebContents == null) return;
-        WebContents webContents = mWebContents.get();
+        WebContents webContents = getWebContents();
         if (webContents == null || webContents.isDestroyed()) return;
-
         PaymentRequestWebContentsDataJni.get().recordActivationlessShow(webContents);
     }
 

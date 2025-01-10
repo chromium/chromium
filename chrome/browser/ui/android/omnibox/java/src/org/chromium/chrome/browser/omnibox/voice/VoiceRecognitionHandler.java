@@ -239,7 +239,7 @@ public class VoiceRecognitionHandler {
          *     navigating to is actually a SRP.
          */
         private void setReceivedUserGesture(GURL url) {
-            WebContents webContents = mWebContents.get();
+            WebContents webContents = getWebContents();
             if (webContents == null) return;
 
             RenderFrameHost renderFrameHost = webContents.getMainFrame();

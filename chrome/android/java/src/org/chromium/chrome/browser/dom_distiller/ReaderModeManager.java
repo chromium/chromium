@@ -367,7 +367,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
 
                 // Reader Mode should not pollute the navigation stack. To avoid this, watch for
                 // navigations and prepare to remove any that are "chrome-distiller" urls.
-                NavigationController controller = mWebContents.get().getNavigationController();
+                NavigationController controller = getWebContents().getNavigationController();
                 int index = controller.getLastCommittedEntryIndex();
                 NavigationEntry entry = controller.getEntryAtIndex(index);
 
@@ -395,7 +395,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
 
                 if (mShouldRemovePreviousNavigation) {
                     mShouldRemovePreviousNavigation = false;
-                    NavigationController controller = mWebContents.get().getNavigationController();
+                    NavigationController controller = getWebContents().getNavigationController();
                     if (controller.getEntryAtIndex(mLastDistillerPageIndex) != null) {
                         controller.removeEntryAtIndex(mLastDistillerPageIndex);
                     }
