@@ -74,13 +74,7 @@ public class HistoryActivity extends SnackbarActivity {
         ScrimCoordinator scrim =
                 new ScrimCoordinator(
                         this,
-                        new ScrimCoordinator.SystemUiScrimDelegate() {
-                            @Override
-                            public void setStatusBarScrimFraction(float scrimFraction) {}
-
-                            @Override
-                            public void setNavigationBarScrimFraction(float scrimFraction) {}
-                        },
+                        /* systemUiScrimDelegate= */ null,
                         contentView,
                         getColor(R.color.default_scrim_color));
         mBottomSheetController =

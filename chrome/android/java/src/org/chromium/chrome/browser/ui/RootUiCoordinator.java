@@ -1705,9 +1705,6 @@ public class RootUiCoordinator
                     public void setStatusBarScrimFraction(float scrimFraction) {
                         RootUiCoordinator.this.setStatusBarScrimFraction(scrimFraction);
                     }
-
-                    @Override
-                    public void setNavigationBarScrimFraction(float scrimFraction) {}
                 };
         return new ScrimCoordinator(
                 mActivity,

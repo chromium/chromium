@@ -81,15 +81,7 @@ public class AutofillSaveCardBottomSheetRenderTest {
                     ScrimCoordinator scrimCoordinator =
                             new ScrimCoordinator(
                                     mActivity,
-                                    new ScrimCoordinator.SystemUiScrimDelegate() {
-                                        @Override
-                                        public void setStatusBarScrimFraction(
-                                                float scrimFraction) {}
-
-                                        @Override
-                                        public void setNavigationBarScrimFraction(
-                                                float scrimFraction) {}
-                                    },
+                                    /* systemUiScrimDelegate= */ null,
                                     activityContentView,
                                     Color.WHITE);
                     mBottomSheetController =

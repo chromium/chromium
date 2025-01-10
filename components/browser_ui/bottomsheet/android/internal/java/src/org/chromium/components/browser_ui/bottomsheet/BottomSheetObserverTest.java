@@ -129,19 +129,7 @@ public class BottomSheetObserverTest {
                             mScrimCoordinator =
                                     new ScrimCoordinator(
                                             sTestRule.getActivity(),
-                                            new ScrimCoordinator.SystemUiScrimDelegate() {
-                                                @Override
-                                                public void setStatusBarScrimFraction(
-                                                        float scrimFraction) {
-                                                    // Intentional noop
-                                                }
-
-                                                @Override
-                                                public void setNavigationBarScrimFraction(
-                                                        float scrimFraction) {
-                                                    // Intentional noop
-                                                }
-                                            },
+                                            /* systemUiScrimDelegate= */ null,
                                             rootView,
                                             Color.WHITE);
                             Supplier<ScrimCoordinator> scrimSupplier = () -> mScrimCoordinator;

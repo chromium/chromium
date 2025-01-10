@@ -397,13 +397,7 @@ public class CreatorCoordinator
         mScrim =
                 new ScrimCoordinator(
                         mActivity,
-                        new ScrimCoordinator.SystemUiScrimDelegate() {
-                            @Override
-                            public void setStatusBarScrimFraction(float scrimFraction) {}
-
-                            @Override
-                            public void setNavigationBarScrimFraction(float scrimFraction) {}
-                        },
+                        /* systemUiScrimDelegate= */ null,
                         mCreatorViewGroup,
                         mActivity.getColor(R.color.default_scrim_color));
 

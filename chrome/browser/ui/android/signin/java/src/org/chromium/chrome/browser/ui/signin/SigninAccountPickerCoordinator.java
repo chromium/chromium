@@ -142,9 +142,6 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
                             public void setScrimColor(@ColorInt int scrimColor) {
                                 mDelegate.setScrimColor(scrimColor);
                             }
-
-                            @Override
-                            public void setNavigationBarScrimFraction(float scrimFraction) {}
                         },
                         (ViewGroup) sheetContainer.getParent(),
                         scrimColor);

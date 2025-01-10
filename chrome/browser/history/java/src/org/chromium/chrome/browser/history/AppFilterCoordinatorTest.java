@@ -99,13 +99,7 @@ public class AppFilterCoordinatorTest {
         ScrimCoordinator scrimCoordinator =
                 new ScrimCoordinator(
                         getActivity(),
-                        new ScrimCoordinator.SystemUiScrimDelegate() {
-                            @Override
-                            public void setStatusBarScrimFraction(float scrimFraction) {}
-
-                            @Override
-                            public void setNavigationBarScrimFraction(float scrimFraction) {}
-                        },
+                        /* systemUiScrimDelegate= */ null,
                         activityContentView,
                         Color.WHITE);
         return BottomSheetControllerFactory.createBottomSheetController(
