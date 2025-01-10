@@ -10,11 +10,13 @@
 #import <vector>
 
 #import "base/check.h"
+#import "base/functional/callback_helpers.h"
 #import "base/ios/ios_util.h"
 #import "base/memory/ptr_util.h"
 #import "base/notreached.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/uuid.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "ios/web/common/features.h"
 #import "ios/web/js_features/window_error/catch_gcrweb_script_errors_java_script_feature.h"
@@ -58,6 +60,19 @@ WKWebViewConfigurationProvider::FromBrowserState(BrowserState* browser_state) {
   }
   return *(static_cast<WKWebViewConfigurationProvider*>(
       browser_state->GetUserData(kWKWebViewConfigProviderKeyName)));
+}
+
+// static
+void WKWebViewConfigurationProvider::DeleteDataStorageForIdentifier(
+    const base::Uuid& uuid,
+    base::OnceCallback<void(NSError*)> callback) {
+  if (@available(iOS 17.0, *)) {
+    [WKWebsiteDataStore removeDataStoreForIdentifier:ToNSUUID(uuid)
+                                   completionHandler:base::CallbackToBlock(
+                                                         std::move(callback))];
+  } else {
+    NOTREACHED();
+  }
 }
 
 base::WeakPtr<WKWebViewConfigurationProvider>
