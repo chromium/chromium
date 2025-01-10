@@ -394,6 +394,10 @@ export class RecordPage extends ReactiveLitElement {
     () => this.platformHandler.isSodaAvailable(),
   );
 
+  private readonly selectedLanguage = computed(
+    () => this.platformHandler.getSelectedLanguage(),
+  );
+
   private transcriptionEnableDispose: Dispose|null = null;
 
   private readonly menu = createRef<CraMenu>();
@@ -435,14 +439,12 @@ export class RecordPage extends ReactiveLitElement {
         this.platformHandler.canCaptureSystemAudioWithLoopback.value,
     });
 
-    const selectedLanguage = this.platformHandler.getSelectedLanguage();
-
     try {
       // Don't enable SODA if it's unavailable. All UI to enable transcription
       // are gated behind transcriptionAvailable.
       await session.start(
         this.transcriptionEnabled.value && this.transcriptionAvailable.value,
-        selectedLanguage,
+        this.selectedLanguage.value,
       );
     } catch (e) {
       if (e instanceof DOMException &&
@@ -467,8 +469,12 @@ export class RecordPage extends ReactiveLitElement {
       // or add untrack() to specify region that dependencies shouldn't be
       // tracked.
       if (this.transcriptionEnabled.value &&
-          this.transcriptionAvailable.value && selectedLanguage !== null) {
-        session.startNewSodaSession(selectedLanguage);
+          this.transcriptionAvailable.value &&
+          this.selectedLanguage.value !== null) {
+        // TODO(hsuanling): `startNewSodaSession` internally won't start new
+        // SODA session if there's already one running. Change implementation to
+        // start new SODA session when the language is changed.
+        session.startNewSodaSession(this.selectedLanguage.value);
       } else {
         session.stopSodaSession();
       }
@@ -513,9 +519,8 @@ export class RecordPage extends ReactiveLitElement {
     }
 
     const transcription = session.progress.value.transcription;
-    const locale = this.transcriptionEnabled.value ?
-      this.platformHandler.getSelectedLanguage() :
-      null;
+    const locale =
+      this.transcriptionEnabled.value ? this.selectedLanguage.value : null;
 
     this.platformHandler.eventsSender.sendRecordEvent({
       audioDuration: Math.round(session.progress.value.length * 1000),
