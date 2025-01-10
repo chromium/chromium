@@ -21,6 +21,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
@@ -298,7 +299,10 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
               (override));
   MOCK_METHOD(void,
               OnDidFillAddressOnTypingSuggestion,
-              (const FieldGlobalId&, const std::u16string&, FieldType),
+              (const FieldGlobalId&,
+               const std::u16string&,
+               FieldType,
+               const std::string&),
               (override));
 
  private:
@@ -2418,7 +2422,7 @@ TEST_F(AutofillExternalDelegateTest,
       OnDidFillAddressOnTypingSuggestion(
           IsQueriedFieldId(),
           profile.GetRawInfo(*suggestion.field_by_field_filling_type_used),
-          NAME_FULL));
+          NAME_FULL, profile.guid()));
 
   external_delegate().DidAcceptSuggestion(suggestion,
                                           SuggestionPosition{.row = 0});

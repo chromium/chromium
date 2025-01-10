@@ -248,11 +248,14 @@ class AutofillAddressOnTypingMetricsTest : public AutofillMetricsBaseTest,
   // `Suggestion::field_by_field_filling_type_used` property for each output
   // suggestion.
   std::vector<Suggestion> BuildAutofillOnTypingSuggestions(
-      FieldTypeSet field_types_used) {
+      FieldTypeSet field_types_used,
+      std::string profile_guid) {
     std::vector<Suggestion> suggestions;
     for (FieldType field_type : field_types_used) {
       suggestions.emplace_back(SuggestionType::kAddressEntryOnTyping);
       suggestions.back().field_by_field_filling_type_used = field_type;
+      suggestions.back().payload =
+          Suggestion::AutofillProfilePayload(Suggestion::Guid(profile_guid));
     }
     return suggestions;
   }
@@ -261,6 +264,12 @@ class AutofillAddressOnTypingMetricsTest : public AutofillMetricsBaseTest,
 TEST_F(AutofillAddressOnTypingMetricsTest, EmitMetrics) {
   base::HistogramTester histogram_tester_;
   FormData form = test::GetFormData({.fields = {{}, {}, {}}});
+  AutofillProfile profile = test::GetFullProfile();
+  const base::Time now = base::Time::Now();
+  constexpr size_t kProfileLastUsedInDays = 2u;
+  profile.set_use_date(now - base::Days(kProfileLastUsedInDays));
+  personal_data().address_data_manager().AddProfile(profile);
+
   // Simulate that the autofill manager has seen this form on page load.
   SeeForm(form);
   static constexpr DenseSet<SuggestionType> kShownSuggestionTypes = {
@@ -268,13 +277,13 @@ TEST_F(AutofillAddressOnTypingMetricsTest, EmitMetrics) {
       SuggestionType::kManageAddress};
 
   // See, accept and do not correct the first suggestion.
-  autofill_client().SetAutofillSuggestions(
-      BuildAutofillOnTypingSuggestions({NAME_FULL}));
+  autofill_client().SetAutofillSuggestions(BuildAutofillOnTypingSuggestions(
+      {NAME_FULL}, /*profile_guid=*/profile.guid()));
   autofill_manager().DidShowSuggestions(kShownSuggestionTypes, form,
                                         form.fields()[0].global_id());
   const std::u16string filled_value = u"Jon snow";
   autofill_manager().OnDidFillAddressOnTypingSuggestion(
-      form.fields()[0].global_id(), filled_value, NAME_FULL);
+      form.fields()[0].global_id(), filled_value, NAME_FULL, profile.guid());
   std::vector<FormFieldData> form_fields = form.ExtractFields();
   // Note that the first field value has the same as the one from the first
   // suggestion.
@@ -283,17 +292,17 @@ TEST_F(AutofillAddressOnTypingMetricsTest, EmitMetrics) {
 
   // Only see second suggestion.
   autofill_client().SetAutofillSuggestions(
-      BuildAutofillOnTypingSuggestions({NAME_FIRST}));
+      BuildAutofillOnTypingSuggestions({NAME_FIRST}, profile.guid()));
   autofill_manager().DidShowSuggestions(kShownSuggestionTypes, form,
                                         form.fields()[1].global_id());
 
   // See, accept and edit the third suggestion.
   autofill_client().SetAutofillSuggestions(
-      BuildAutofillOnTypingSuggestions({NAME_FULL}));
+      BuildAutofillOnTypingSuggestions({NAME_FULL}, profile.guid()));
   autofill_manager().DidShowSuggestions(kShownSuggestionTypes, form,
                                         form.fields()[2].global_id());
   autofill_manager().OnDidFillAddressOnTypingSuggestion(
-      form.fields()[2].global_id(), filled_value, NAME_FULL);
+      form.fields()[2].global_id(), filled_value, NAME_FULL, profile.guid());
   form_fields = form.ExtractFields();
   // Set the third field value as something different from what was autofilled,
   // simulating a correction.
@@ -317,6 +326,12 @@ TEST_F(AutofillAddressOnTypingMetricsTest, EmitMetrics) {
   EXPECT_THAT(histogram_tester_.GetAllSamples(
                   "Autofill.EditedAutofilledFieldAtSubmission.AddressOnTyping"),
               BucketsAre(base::Bucket(false, 1), base::Bucket(true, 1)));
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.AddressSuggestionOnTypingShown.DaysSinceLastUse.Profile",
+      kProfileLastUsedInDays, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.AddressSuggestionOnTypingAccepted.DaysSinceLastUse.Profile",
+      kProfileLastUsedInDays, 1);
 }
 
 }  // namespace autofill::autofill_metrics

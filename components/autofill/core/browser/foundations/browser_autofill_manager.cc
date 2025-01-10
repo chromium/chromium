@@ -96,6 +96,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/autofill_settings_metrics.h"
 #include "components/autofill/core/browser/metrics/field_filling_stats_and_score_metrics.h"
+#include "components/autofill/core/browser/metrics/form_events/address_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/form_events/form_event_logger_base.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
@@ -1705,9 +1706,10 @@ void BrowserAutofillManager::OnDidFillAddressFormFillingSuggestion(
 void BrowserAutofillManager::OnDidFillAddressOnTypingSuggestion(
     const FieldGlobalId& field_id,
     const std::u16string& value,
-    FieldType field_type_used_to_build_suggestion) {
+    FieldType field_type_used_to_build_suggestion,
+    const std::string& profile_used_guid) {
   metrics_->address_form_event_logger.OnDidAcceptAutofillOnTyping(
-      field_id, value, field_type_used_to_build_suggestion);
+      field_id, value, field_type_used_to_build_suggestion, profile_used_guid);
 }
 
 void BrowserAutofillManager::UndoAutofill(
@@ -1958,14 +1960,26 @@ void BrowserAutofillManager::DidShowSuggestions(
                                     SuggestionType::kManageAddress})
               .contains_all(shown_suggestion_types));
     FieldTypeSet field_types_used;
+    std::map<std::string, base::TimeDelta> profile_last_used_time_per_guid;
+    const base::Time now = base::Time::Now();
     for (const Suggestion& suggestion : client().GetAutofillSuggestions()) {
       if (suggestion.type != SuggestionType::kAddressEntryOnTyping) {
         continue;
       }
+      const Suggestion::AutofillProfilePayload& profile_used_payload =
+          absl::get<Suggestion::AutofillProfilePayload>(suggestion.payload);
+      const AutofillProfile* profile_used =
+          client()
+              .GetPersonalDataManager()
+              .address_data_manager()
+              .GetProfileByGUID(profile_used_payload.guid.value());
+
+      profile_last_used_time_per_guid[profile_used_payload.guid.value()] =
+          now - profile_used->use_date();
       field_types_used.insert(*suggestion.field_by_field_filling_type_used);
     }
     metrics_->address_form_event_logger.OnDidShownAutofillOnTyping(
-        field_id, field_types_used);
+        field_id, field_types_used, profile_last_used_time_per_guid);
     return;
   }
 

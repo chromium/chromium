@@ -1003,6 +1003,31 @@ AutofillSaveCreditCardPromptDestination.
 </histogram>
 
 <histogram
+    name="Autofill.AddressSuggestionOnTypingAccepted.DaysSinceLastUse.Profile"
+    units="days" expires_after="2025-06-22">
+  <owner>brunobraga@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Logged at submission/navigation time, specifies the last time in days a
+    profile that was used to build Autofill on typing suggestions (and later
+    accepted) was accepted before by a previous suggestion (such as a regular
+    address suggestion).
+  </summary>
+</histogram>
+
+<histogram
+    name="Autofill.AddressSuggestionOnTypingShown.DaysSinceLastUse.Profile"
+    units="days" expires_after="2025-06-22">
+  <owner>brunobraga@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Logged at submission/navigation time, specifies the last time in days a
+    profile that was used to build Autofill on typing suggestions was accepted
+    before by a previous suggestion (such as a regular address suggestion).
+  </summary>
+</histogram>
+
+<histogram
     name="Autofill.AddressTokenVerificationStatusAtProfileUsage.{AddressType}"
     enum="AufofillStructuredTokenVerificationStatus" expires_after="2025-06-22">
   <owner>koerber@google.com</owner>

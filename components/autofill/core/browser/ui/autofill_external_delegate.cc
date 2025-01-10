@@ -1137,7 +1137,8 @@ void AutofillExternalDelegate::FillAddressFieldByFieldFillingSuggestion(
     } else if (suggestion.type == SuggestionType::kAddressEntryOnTyping) {
       manager_->OnDidFillAddressOnTypingSuggestion(
           query_field_.global_id(), filling_value,
-          *suggestion.field_by_field_filling_type_used);
+          *suggestion.field_by_field_filling_type_used,
+          /*profile_last_time_used*/ profile.guid());
     }
   }
 }

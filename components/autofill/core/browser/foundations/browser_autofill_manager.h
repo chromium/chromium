@@ -169,7 +169,8 @@ class BrowserAutofillManager : public AutofillManager {
   virtual void OnDidFillAddressOnTypingSuggestion(
       const FieldGlobalId& field_id,
       const std::u16string& value,
-      FieldType field_type_used_to_build_suggestion);
+      FieldType field_type_used_to_build_suggestion,
+      const std::string& profile_used_guid);
 
   // Calls UndoAutofillImpl and logs metrics. Virtual for testing.
   virtual void UndoAutofill(mojom::ActionPersistence action_persistence,
