@@ -741,43 +741,20 @@ TYPED_TEST(ClipboardTest, MultiplePickleTest) {
   {
     ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
     clipboard_writer.WritePickledData(write_pickle1, kFormat1);
-    // overwrite the previous pickle for fun
     clipboard_writer.WritePickledData(write_pickle2, kFormat2);
-  }
-
-  ASSERT_FALSE(this->clipboard().IsFormatAvailable(
-      kFormat1, ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr));
-  ASSERT_TRUE(this->clipboard().IsFormatAvailable(
-      kFormat2, ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr));
-
-  // Check string 2.
-  std::string output2;
-  this->clipboard().ReadData(kFormat2, /* data_dst = */ nullptr, &output2);
-  ASSERT_FALSE(output2.empty());
-
-  base::Pickle read_pickle2 =
-      base::Pickle::WithData(base::as_byte_span(output2));
-  base::PickleIterator iter2(read_pickle2);
-  std::string unpickled_string2;
-  ASSERT_TRUE(iter2.ReadString(&unpickled_string2));
-  EXPECT_EQ(payload2, unpickled_string2);
-
-  {
-    ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
-    clipboard_writer.WritePickledData(write_pickle2, kFormat2);
-    // overwrite the previous pickle for fun
-    clipboard_writer.WritePickledData(write_pickle1, kFormat1);
   }
 
   ASSERT_TRUE(this->clipboard().IsFormatAvailable(
       kFormat1, ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr));
-  ASSERT_FALSE(this->clipboard().IsFormatAvailable(
+  ASSERT_TRUE(this->clipboard().IsFormatAvailable(
       kFormat2, ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr));
 
-  // Check string 1.
   std::string output1;
   this->clipboard().ReadData(kFormat1, /* data_dst = */ nullptr, &output1);
   ASSERT_FALSE(output1.empty());
+  std::string output2;
+  this->clipboard().ReadData(kFormat2, /* data_dst = */ nullptr, &output2);
+  ASSERT_FALSE(output2.empty());
 
   base::Pickle read_pickle1 =
       base::Pickle::WithData(base::as_byte_span(output1));
@@ -785,6 +762,13 @@ TYPED_TEST(ClipboardTest, MultiplePickleTest) {
   std::string unpickled_string1;
   ASSERT_TRUE(iter1.ReadString(&unpickled_string1));
   EXPECT_EQ(payload1, unpickled_string1);
+
+  base::Pickle read_pickle2 =
+      base::Pickle::WithData(base::as_byte_span(output2));
+  base::PickleIterator iter2(read_pickle2);
+  std::string unpickled_string2;
+  ASSERT_TRUE(iter2.ReadString(&unpickled_string2));
+  EXPECT_EQ(payload2, unpickled_string2);
 }
 
 #if !(BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))

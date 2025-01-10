@@ -105,6 +105,10 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ScopedClipboardWriter {
   // object destruction.
   Clipboard::ObjectMap objects_;
 
+  // Same as `objects_`, but holds every type passed to `WritePickledData` to
+  // allow writing more than one to the clipboard at once.
+  std::vector<Clipboard::RawData> raw_objects_;
+
   std::vector<Clipboard::PlatformRepresentation> platform_representations_;
   // Keeps track of the unique custom formats registered in the clipboard.
   base::flat_map<std::string, std::string> registered_formats_;

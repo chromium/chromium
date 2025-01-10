@@ -690,6 +690,7 @@ void ClipboardWin::ReadData(const ClipboardFormatType& format,
 void ClipboardWin::WritePortableAndPlatformRepresentations(
     ClipboardBuffer buffer,
     const ObjectMap& objects,
+    const std::vector<RawData>& raw_objects,
     std::vector<Clipboard::PlatformRepresentation> platform_representations,
     std::unique_ptr<DataTransferEndpoint> data_src,
     uint32_t privacy_types) {
@@ -703,6 +704,9 @@ void ClipboardWin::WritePortableAndPlatformRepresentations(
     DispatchPlatformRepresentations(std::move(platform_representations));
     for (const auto& object : objects) {
       DispatchPortableRepresentation(object.second);
+    }
+    for (const auto& raw_object : raw_objects) {
+      DispatchPortableRepresentation(raw_object);
     }
 
     if (data_src && data_src->IsUrlType()) {

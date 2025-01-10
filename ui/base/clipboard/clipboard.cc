@@ -267,13 +267,6 @@ void Clipboard::DispatchPortableRepresentation(const ObjectMapParams& params) {
             WriteText(data.data);
           },
           [&](const WebkitData& data) { WriteWebSmartPaste(); },
-          [&](const RawData& data) {
-            if (data.data.empty()) {
-              return;
-            }
-
-            WriteData(data.format, base::as_byte_span(data.data));
-          },
           [&](const SvgData& data) {
             if (data.markup.empty()) {
               return;
@@ -298,6 +291,14 @@ void Clipboard::DispatchPortableRepresentation(const ObjectMapParams& params) {
           },
       },
       params.data);
+}
+
+void Clipboard::DispatchPortableRepresentation(const RawData& data) {
+  if (data.data.empty()) {
+    return;
+  }
+
+  WriteData(data.format, base::as_byte_span(data.data));
 }
 
 Clipboard::ObjectMapParams::ObjectMapParams() = default;
