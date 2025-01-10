@@ -11570,6 +11570,38 @@ TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
 }
 
 TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
+       SharedStorageWithLockOptionReservedLockName) {
+  std::vector<std::pair<std::string, std::string>> methods_and_errors = {
+      {"sharedStorage.set('key0', 'value0', {withLock: '-abc'})",
+       "https://url.test/:5 Uncaught TypeError: sharedStorage.set(): Lock name "
+       "cannot start with '-'."},
+      {"sharedStorage.append('key0', 'value0', {withLock: '-abc'})",
+       "https://url.test/:5 Uncaught TypeError: sharedStorage.append(): Lock "
+       "name cannot start with '-'."},
+      {"sharedStorage.delete('key0', {withLock: '-abc'})",
+       "https://url.test/:5 Uncaught TypeError: sharedStorage.delete(): Lock "
+       "name cannot start with '-'."},
+      {"sharedStorage.clear({withLock: '-abc'})",
+       "https://url.test/:5 Uncaught TypeError: sharedStorage.clear(): Lock "
+       "name cannot start with '-'."}};
+
+  for (const auto& method_and_error : methods_and_errors) {
+    auction_worklet::TestAuctionSharedStorageHost test_shared_storage_host;
+    mojo::Receiver<auction_worklet::mojom::AuctionSharedStorageHost> receiver(
+        &test_shared_storage_host);
+    shared_storage_hosts_[0] = receiver.BindNewPipeAndPassRemote();
+
+    RunGenerateBidWithJavascriptExpectingResult(
+        CreateGenerateBidScript(
+            R"({ad: "ad", bid:1, render:"https://response.test/" })",
+            /*extra_code=*/method_and_error.first),
+        /*expected_bids=*/nullptr,
+        /*expected_data_version=*/std::nullopt,
+        /*expected_errors=*/{method_and_error.second});
+  }
+}
+
+TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
        SharedStorageWithLockOptionParsingFailure) {
   auction_worklet::TestAuctionSharedStorageHost test_shared_storage_host;
   mojo::Receiver<auction_worklet::mojom::AuctionSharedStorageHost> receiver(

@@ -243,6 +243,10 @@ mojom("mojom_shared_storage") {
           mojom = "network.mojom.SharedStorageValueArgument"
           cpp = "::std::u16string"
         },
+        {
+          mojom = "network.mojom.LockName"
+          cpp = "::std::string"
+        },
       ]
       traits_headers =
           [ "//services/network/public/cpp/shared_storage_mojom_traits.h" ]
@@ -258,6 +262,10 @@ mojom("mojom_shared_storage") {
         },
         {
           mojom = "network.mojom.SharedStorageValueArgument"
+          cpp = "::WTF::String"
+        },
+        {
+          mojom = "network.mojom.LockName"
           cpp = "::WTF::String"
         },
       ]

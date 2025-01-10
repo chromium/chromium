@@ -74,14 +74,22 @@ SharedStorageAppendMethod::SharedStorageAppendMethod(
   }
 
   String with_lock = options->getWithLockOr(/*fallback_value=*/String());
+  if (IsReservedLockName(with_lock)) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      network::kReservedLockNameErrorMessage);
+    return;
+  }
 
   auto method =
       network::mojom::blink::SharedStorageModifierMethod::NewAppendMethod(
           network::mojom::blink::SharedStorageAppendMethod::New(key, value));
 
+  std::optional<String> optional_with_lock =
+      with_lock ? std::optional(with_lock) : std::nullopt;
+
   method_with_options_ =
       network::mojom::blink::SharedStorageModifierMethodWithOptions::New(
-          std::move(method), std::move(with_lock));
+          std::move(method), optional_with_lock);
 }
 
 void SharedStorageAppendMethod::Trace(Visitor* visitor) const {

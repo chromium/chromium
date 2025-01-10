@@ -86,11 +86,6 @@ void AuctionSharedStorageHost::SharedStorageBatchUpdate(
     const std::optional<std::string>& with_lock,
     auction_worklet::mojom::AuctionWorkletFunction
         source_auction_worklet_function) {
-  if (with_lock && with_lock->starts_with('-')) {
-    receiver_set_.ReportBadMessage("Reserved lock name");
-    return;
-  }
-
   FrameTreeNodeId main_frame_id =
       receiver_set_.current_context()
           .auction_runner_rfh->GetOutermostMainFrame()

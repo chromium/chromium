@@ -28,4 +28,14 @@ bool StructTraits<
   NOTREACHED();
 }
 
+// static
+bool StructTraits<network::mojom::LockNameDataView, WTF::String>::Read(
+    network::mojom::LockNameDataView data,
+    WTF::String* out_value) {
+  // There is no need to convert `LockNameDataView` back to `WTF::String`. If we
+  // do need to implement deserialization later, we need to validate its
+  // content.
+  NOTREACHED();
+}
+
 }  // namespace mojo

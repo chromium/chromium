@@ -65,14 +65,22 @@ SharedStorageDeleteMethod::SharedStorageDeleteMethod(
   }
 
   String with_lock = options->getWithLockOr(/*fallback_value=*/String());
+  if (IsReservedLockName(with_lock)) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      network::kReservedLockNameErrorMessage);
+    return;
+  }
 
   auto method =
       network::mojom::blink::SharedStorageModifierMethod::NewDeleteMethod(
           network::mojom::blink::SharedStorageDeleteMethod::New(key));
 
+  std::optional<String> optional_with_lock =
+      with_lock ? std::optional(with_lock) : std::nullopt;
+
   method_with_options_ =
       network::mojom::blink::SharedStorageModifierMethodWithOptions::New(
-          std::move(method), std::move(with_lock));
+          std::move(method), optional_with_lock);
 }
 
 void SharedStorageDeleteMethod::Trace(Visitor* visitor) const {

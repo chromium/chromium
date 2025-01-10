@@ -6,13 +6,23 @@
 #define SERVICES_NETWORK_PUBLIC_CPP_SHARED_STORAGE_UTILS_H_
 
 #include <cstdlib>
+#include <string>
 
 #include "base/component_export.h"
+#include "base/types/optional_ref.h"
 
 namespace network {
 
 // We use a max of 5 MB = 5 * 1024 * 1024 B = 5242880 B.
 static constexpr size_t kMaxSharedStorageBytesPerOrigin = 5242880;
+
+COMPONENT_EXPORT(NETWORK_CPP_SHARED_STORAGE)
+extern const char kReservedLockNameErrorMessage[];
+
+// Whether `lock_name` is a reserved lock resource name.
+// See https://w3c.github.io/web-locks/#resource-name
+COMPONENT_EXPORT(NETWORK_CPP_SHARED_STORAGE)
+bool IsReservedLockName(base::optional_ref<const std::string> lock_name);
 
 // Whether the length of a shared storage's key is valid.
 COMPONENT_EXPORT(NETWORK_CPP_SHARED_STORAGE)

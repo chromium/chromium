@@ -7,6 +7,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom-blink-forward.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "v8/include/v8-isolate.h"
 
 namespace WTF {
@@ -48,6 +49,10 @@ enum class SharedStorageDataOrigin {
 bool StringFromV8(v8::Isolate* isolate,
                   v8::Local<v8::Value> val,
                   WTF::String* out);
+
+// Whether `lock_name` is a reserved lock resource name.
+// See https://w3c.github.io/web-locks/#resource-name
+bool IsReservedLockName(const String& lock_name);
 
 // Return if there is a valid browsing context associated with `script_state`.
 // Throw an error via `exception_state` if invalid.

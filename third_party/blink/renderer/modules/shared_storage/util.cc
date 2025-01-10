@@ -35,6 +35,10 @@ bool StringFromV8(v8::Isolate* isolate, v8::Local<v8::Value> val, String* out) {
   return true;
 }
 
+bool IsReservedLockName(const String& lock_name) {
+  return lock_name.StartsWith('-');
+}
+
 bool CheckBrowsingContextIsValid(ScriptState& script_state,
                                  ExceptionState& exception_state) {
   if (!script_state.ContextIsValid()) {

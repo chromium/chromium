@@ -98,6 +98,13 @@ CreateMojomSetMethodFromParameters(
     return nullptr;
   }
 
+  if (network::IsReservedLockName(with_lock)) {
+    isolate->ThrowException(v8::Exception::TypeError(gin::StringToV8(
+        isolate, base::StrCat({function_name, "(): ",
+                               network::kReservedLockNameErrorMessage}))));
+    return nullptr;
+  }
+
   auto method = network::mojom::SharedStorageModifierMethod::NewSetMethod(
       network::mojom::SharedStorageSetMethod::New(
           arg0_key, arg1_value, ignore_if_present.value_or(false)));
@@ -159,6 +166,13 @@ CreateMojomAppendMethodFromParameters(
     return nullptr;
   }
 
+  if (network::IsReservedLockName(with_lock)) {
+    isolate->ThrowException(v8::Exception::TypeError(gin::StringToV8(
+        isolate, base::StrCat({function_name, "(): ",
+                               network::kReservedLockNameErrorMessage}))));
+    return nullptr;
+  }
+
   auto method = network::mojom::SharedStorageModifierMethod::NewAppendMethod(
       network::mojom::SharedStorageAppendMethod::New(arg0_key, arg1_value));
 
@@ -210,6 +224,13 @@ CreateMojomDeleteMethodFromParameters(
     return nullptr;
   }
 
+  if (network::IsReservedLockName(with_lock)) {
+    isolate->ThrowException(v8::Exception::TypeError(gin::StringToV8(
+        isolate, base::StrCat({function_name, "(): ",
+                               network::kReservedLockNameErrorMessage}))));
+    return nullptr;
+  }
+
   auto method = network::mojom::SharedStorageModifierMethod::NewDeleteMethod(
       network::mojom::SharedStorageDeleteMethod::New(arg0_key));
 
@@ -247,6 +268,13 @@ CreateMojomClearMethodFromParameters(
   if (!shared_storage_permissions_policy_allowed) {
     isolate->ThrowException(v8::Exception::TypeError(
         gin::StringToV8(isolate, kPermissionsPolicyError)));
+    return nullptr;
+  }
+
+  if (network::IsReservedLockName(with_lock)) {
+    isolate->ThrowException(v8::Exception::TypeError(gin::StringToV8(
+        isolate, base::StrCat({function_name, "(): ",
+                               network::kReservedLockNameErrorMessage}))));
     return nullptr;
   }
 
@@ -626,12 +654,10 @@ void SharedStorageBindings::BatchUpdate(
     return;
   }
 
-  // Fail for reserved lock name.
-  // https://w3c.github.io/web-locks/#resource-name
-  if (with_lock && with_lock->starts_with('-')) {
+  if (network::IsReservedLockName(with_lock)) {
     isolate->ThrowException(v8::Exception::TypeError(gin::StringToV8(
         isolate,
-        base::StrCat({kErrorPrefix, "Lock name cannot start with '-'"}))));
+        base::StrCat({kErrorPrefix, network::kReservedLockNameErrorMessage}))));
     return;
   }
 

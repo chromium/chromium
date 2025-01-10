@@ -565,6 +565,30 @@ TEST_F(SharedStorageRequestHelperProcessHeaderTest, IndividualMethodWithLock) {
   EXPECT_EQ(observer_->headers_received().front().with_lock, std::nullopt);
 }
 
+TEST_F(SharedStorageRequestHelperProcessHeaderTest, ReservedLockNameSkipped) {
+  const std::string kHeader =
+      "set;key=k;value=v;with_lock=\"-lock1\", "
+      "append;key=k;value=v;with_lock=\"lock2\"";
+
+  RegisterSharedStorageHandlerAndStartServer(kHeader);
+
+  auto r = CreateSharedStorageRequest();
+  StartRequestAndProcessHeader(r.get(), kHeader);
+  WaitForHeadersReceived(1);
+
+  EXPECT_EQ(observer_->headers_received().size(), 1u);
+  EXPECT_EQ(observer_->headers_received().front().request_origin,
+            request_origin_);
+
+  EXPECT_THAT(
+      observer_->headers_received().front().methods,
+      ElementsAre(SharedStorageMethodWrapper(MojomSetMethod(
+                      /*key=*/u"k", /*value=*/u"v",
+                      /*ignore_if_present=*/false, /*with_lock=*/std::nullopt)),
+                  SharedStorageMethodWrapper(MojomAppendMethod(
+                      /*key=*/u"k", /*value=*/u"v", /*with_lock=*/"lock2"))));
+}
+
 TEST_F(SharedStorageRequestHelperProcessHeaderTest, BatchOptionsWithLock) {
   const std::string kHeader =
       "set;key=k;value=v;with_lock=lock1, append;key=k;value=v, "
@@ -589,6 +613,34 @@ TEST_F(SharedStorageRequestHelperProcessHeaderTest, BatchOptionsWithLock) {
                       /*key=*/u"k", /*value=*/u"v"))));
 
   EXPECT_EQ(observer_->headers_received().front().with_lock, "lock2");
+}
+
+TEST_F(SharedStorageRequestHelperProcessHeaderTest,
+       BatchOptionsWithLock_ReservedName) {
+  const std::string kHeader =
+      "set;key=k;value=v;with_lock=lock1, append;key=k;value=v, "
+      "options;with_lock=\"-lock2\"";
+
+  RegisterSharedStorageHandlerAndStartServer(kHeader);
+
+  auto r = CreateSharedStorageRequest();
+  StartRequestAndProcessHeader(r.get(), kHeader);
+  WaitForHeadersReceived(1);
+
+  EXPECT_EQ(observer_->headers_received().size(), 1u);
+  EXPECT_EQ(observer_->headers_received().front().request_origin,
+            request_origin_);
+
+  EXPECT_THAT(
+      observer_->headers_received().front().methods,
+      ElementsAre(SharedStorageMethodWrapper(MojomSetMethod(
+                      /*key=*/u"k", /*value=*/u"v",
+                      /*ignore_if_present=*/false, /*with_lock=*/"lock1")),
+                  SharedStorageMethodWrapper(MojomAppendMethod(
+                      /*key=*/u"k", /*value=*/u"v"))));
+
+  // Expect no with_lock option for the batch.
+  EXPECT_EQ(observer_->headers_received().front().with_lock, std::nullopt);
 }
 
 TEST_F(SharedStorageRequestHelperProcessHeaderTest,
