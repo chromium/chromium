@@ -24,6 +24,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "net/base/io_buffer.h"
+#include "net/base/net_errors.h"
 #include "partition_alloc/partition_alloc_constants.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"

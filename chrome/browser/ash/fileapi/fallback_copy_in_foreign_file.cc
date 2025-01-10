@@ -18,6 +18,7 @@
 #include "base/strings/strcat.h"
 #include "base/unguessable_token.h"
 #include "net/base/io_buffer.h"
+#include "net/base/net_errors.h"
 #include "storage/browser/file_system/file_stream_writer.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"

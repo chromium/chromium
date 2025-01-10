@@ -10,6 +10,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "net/base/hash_value.h"
 #include "net/base/io_buffer.h"
+#include "net/base/net_errors.h"
 
 namespace net {
 namespace {

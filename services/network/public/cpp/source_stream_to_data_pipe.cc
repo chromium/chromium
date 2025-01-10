@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/numerics/checked_math.h"
 #include "base/task/sequenced_task_runner.h"
+#include "net/base/net_errors.h"
 #include "net/filter/source_stream.h"
 
 namespace network {

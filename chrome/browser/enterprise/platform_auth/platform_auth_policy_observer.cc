@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/logging.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_provider_manager.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
