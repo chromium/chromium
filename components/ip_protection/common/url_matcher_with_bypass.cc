@@ -9,10 +9,12 @@
 #include <string_view>
 #include <unordered_set>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/trace_event/memory_usage_estimator.h"
@@ -107,29 +109,6 @@ std::set<std::string> ExcludeDomainsFromMDL(
 }  // namespace
 
 // static
-std::unique_ptr<net::SchemeHostPortMatcher>
-UrlMatcherWithBypass::BuildBypassMatcher(
-    const masked_domain_list::ResourceOwner& resource_owner) {
-  auto bypass_matcher = std::make_unique<net::SchemeHostPortMatcher>();
-
-  // De-dupe domains that are in owned_properties and owned_resources.
-  std::set<std::string_view> domains;
-  for (std::string_view property : resource_owner.owned_properties()) {
-    domains.insert(property);
-  }
-  for (const masked_domain_list::Resource& resource :
-       resource_owner.owned_resources()) {
-    domains.insert(resource.domain());
-  }
-
-  for (std::string_view domain : domains) {
-    AddRulesToMatcher(domain, !HasSubdomainCoverage(domain), *bypass_matcher);
-  }
-
-  return bypass_matcher;
-}
-
-// static
 std::string UrlMatcherWithBypass::PartitionMapKey(std::string_view domain) {
   auto last_dot = domain.rfind(".");
   if (last_dot != std::string::npos) {
@@ -169,8 +148,6 @@ void UrlMatcherWithBypass::AddRules(
     const masked_domain_list::ResourceOwner& resource_owner,
     const std::unordered_set<std::string>& excluded_domains,
     bool create_bypass_matcher) {
-  net::SchemeHostPortMatcher* bypass_matcher = nullptr;
-
   // Extract eligble domains from resource_owner --> if 0 domains, exit early.
   std::set<std::string> eligible_domains =
       GetEligibleDomains(resource_owner, excluded_domains);
@@ -178,38 +155,64 @@ void UrlMatcherWithBypass::AddRules(
     return;
   }
 
-  // Build the bypass matcher if requested by the caller.
+  std::map<std::string, std::unique_ptr<net::SchemeHostPortMatcher>>
+      matchers_map;
+
+  unsigned int bypass_matcher_key_to_use = 0;
   if (create_bypass_matcher) {
-    bypass_matchers_.emplace_back(BuildBypassMatcher(resource_owner));
-    bypass_matcher = bypass_matchers_.back().get();
-  } else {
-    bypass_matcher = &empty_bypass_matcher_;
+    bypass_matcher_key_++;
+    bypass_matcher_key_to_use = bypass_matcher_key_;
   }
 
-  // Add the eligible domains to the match_list_with_bypass_map_.
+  for (const auto& resource : resource_owner.owned_resources()) {
+    std::string domain = resource.domain();
+    auto matcher = std::make_unique<net::SchemeHostPortMatcher>();
+    AddRulesToMatcher(domain, !HasSubdomainCoverage(domain), *matcher);
+    matchers_map[domain] = std::move(matcher);
+  }
+
+  if (create_bypass_matcher) {
+    for (const auto& property : resource_owner.owned_properties()) {
+      // If the property is already in the matchers map, then it is a domain
+      // that is already in the owned_resources.
+      if (base::Contains(matchers_map, property)) {
+        continue;
+      }
+
+      auto matcher = std::make_unique<net::SchemeHostPortMatcher>();
+      AddRulesToMatcher(property, !HasSubdomainCoverage(property), *matcher);
+      matchers_map[property] = std::move(matcher);
+    }
+  }
+
   for (const auto& [partition_key, partitioned_domains] :
        PartitionDomains(eligible_domains)) {
-    net::SchemeHostPortMatcher matcher;
+    std::vector<raw_ptr<net::SchemeHostPortMatcher>> matcher_ptrs;
     for (const auto& domain : partitioned_domains) {
       DCHECK(domain.ends_with(partition_key));
-      AddRulesToMatcher(domain, !HasSubdomainCoverage(domain), matcher);
+      matcher_ptrs.emplace_back(matchers_map[domain].get());
     }
 
-    if (!matcher.rules().empty()) {
-      match_list_with_bypass_map_[partition_key].emplace_back(PartitionMatcher{
-          .matcher = std::move(matcher), .bypass_matcher = bypass_matcher});
-    }
+    matcher_ptrs.shrink_to_fit();
+    match_list_with_bypass_map_[partition_key].emplace_back(
+        std::move(matcher_ptrs), bypass_matcher_key_to_use);
+  }
+
+  for (auto& [_, matcher] : matchers_map) {
+    bypass_matchers_map_[bypass_matcher_key_to_use].emplace_back(
+        std::move(matcher));
   }
 }
 
 void UrlMatcherWithBypass::Clear() {
   match_list_with_bypass_map_.clear();
-  bypass_matchers_.clear();
+  bypass_matchers_map_.clear();
+  bypass_matcher_key_ = 0;
 }
 
 size_t UrlMatcherWithBypass::EstimateMemoryUsage() const {
-  return base::trace_event::EstimateMemoryUsage(match_list_with_bypass_map_) +
-         base::trace_event::EstimateMemoryUsage(bypass_matchers_);
+  return base::trace_event::EstimateMemoryUsage(bypass_matchers_map_) +
+         base::trace_event::EstimateMemoryUsage(match_list_with_bypass_map_);
 }
 
 bool UrlMatcherWithBypass::IsPopulated() const {
@@ -245,23 +248,51 @@ UrlMatcherWithBypassResult UrlMatcherWithBypass::Matches(
   }
 
   for (const PartitionMatcher& partition_matcher : it->second) {
-    auto rule_result = partition_matcher.matcher.Evaluate(request_url);
-    if (rule_result == net::SchemeHostPortMatcherResult::kInclude) {
-      if (skip_bypass_check) {
-        vlog("matched with skipped bypass check", true);
+    for (const auto& matcher : partition_matcher.matchers) {
+      auto rule_result = matcher->Evaluate(request_url);
+      if (rule_result == net::SchemeHostPortMatcherResult::kInclude) {
+        if (skip_bypass_check) {
+          vlog("matched with skipped bypass check", true);
+          return UrlMatcherWithBypassResult::kMatchAndNoBypass;
+        }
+
+        // Check bypass matchers.
+        if (partition_matcher.bypass_matcher_key != 0) {
+          for (const auto& bypass_matcher :
+               bypass_matchers_map_.at(partition_matcher.bypass_matcher_key)) {
+            if (bypass_matcher->Evaluate(top_frame_site->GetURL()) !=
+                net::SchemeHostPortMatcherResult::kNoMatch) {
+              vlog("bypass_matcher.NoMatch", false);
+              return UrlMatcherWithBypassResult::kMatchAndBypass;
+            }
+          }
+        }
+        vlog("matched with no bypass", true);
         return UrlMatcherWithBypassResult::kMatchAndNoBypass;
       }
-      const bool no_match = partition_matcher.bypass_matcher->Evaluate(
-                                top_frame_site->GetURL()) ==
-                            net::SchemeHostPortMatcherResult::kNoMatch;
-      vlog("bypass_matcher.NoMatch", no_match);
-      return no_match ? UrlMatcherWithBypassResult::kMatchAndNoBypass
-                      : UrlMatcherWithBypassResult::kMatchAndBypass;
     }
   }
 
   vlog("no request match", false);
   return UrlMatcherWithBypassResult::kNoMatch;
+}
+
+// Define PartitionMatcher.
+UrlMatcherWithBypass::PartitionMatcher::PartitionMatcher(
+    std::vector<raw_ptr<net::SchemeHostPortMatcher>> matcher_ptrs,
+    unsigned int bypass_matcher_key)
+    : matchers(std::move(matcher_ptrs)),
+      bypass_matcher_key(bypass_matcher_key) {}
+
+UrlMatcherWithBypass::PartitionMatcher::~PartitionMatcher() = default;
+
+UrlMatcherWithBypass::PartitionMatcher::PartitionMatcher(
+    const PartitionMatcher& other) = default;
+
+size_t UrlMatcherWithBypass::PartitionMatcher::EstimateMemoryUsage() const {
+  return sizeof(matchers) +
+         +(matchers.capacity() * sizeof(raw_ptr<net::SchemeHostPortMatcher>)) +
+         sizeof(bypass_matcher_key);
 }
 
 }  // namespace ip_protection

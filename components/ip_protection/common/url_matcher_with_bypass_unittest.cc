@@ -43,19 +43,6 @@ TEST_F(UrlMatcherWithBypassTest, PartitionMapKey) {
   EXPECT_EQ(PartitionMapKey("foo.co.uk"), "co.uk");
 }
 
-TEST_F(UrlMatcherWithBypassTest, BuildBypassMatcher_Dedupes) {
-  auto resource_owner = masked_domain_list::ResourceOwner();
-  resource_owner.add_owned_properties("example.com");
-  resource_owner.add_owned_properties("example2.com");
-  auto* resource = resource_owner.add_owned_resources();
-  resource->set_domain("example.com");
-  auto bypass_matcher =
-      UrlMatcherWithBypass::BuildBypassMatcher(resource_owner);
-
-  // 2 distinct domains become 4 rules because of subdomain matching rules.
-  EXPECT_EQ(bypass_matcher->rules().size(), 4u);
-}
-
 TEST_F(UrlMatcherWithBypassTest,
        GetEligibleDomains_DoesNotRemoveDomainsIfExclusionSetIsEmpty) {
   auto resource_owner = masked_domain_list::ResourceOwner();
