@@ -24,7 +24,7 @@ export class ActionManager {
    * The node on which actions are currently being performed.
    * Null if the menu is closed.
    */
-  private actionNode_?: SAChildNode | null;
+  private actionNode_?: SAChildNode|null;
   private menuManager_: MenuManager;
   private menuStack_: MenuType[] = [];
 
@@ -236,7 +236,7 @@ export class ActionManager {
     return actions;
   }
 
-  private getLocationForCurrentMenuAndNode_(): Rect | undefined {
+  private getLocationForCurrentMenuAndNode_(): Rect|undefined {
     if (this.currentMenuType_ === MenuType.POINT_SCAN_MENU) {
       return {
         left: Math.floor(Navigator.byPoint.currentPoint.x),

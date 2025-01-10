@@ -27,7 +27,7 @@ type RoleType = chrome.automation.RoleType;
 
 interface Creator {
   predicate: AutomationPredicate.Unary;
-  creator: (node: AutomationNode, parent: SARootNode | null) => BasicNode;
+  creator: (node: AutomationNode, parent: SARootNode|null) => BasicNode;
 }
 
 interface RootBuilder {
@@ -41,12 +41,12 @@ interface RootBuilder {
  */
 export class BasicNode extends SAChildNode {
   private baseNode_: AutomationNode;
-  private parent_: SARootNode | null;
+  private parent_: SARootNode|null;
   private locationChangedHandler_?: RepeatedEventHandler;
   private isActionable_: boolean;
   private static creators_: Creator[] = [];
 
-  protected constructor(baseNode: AutomationNode, parent: SARootNode | null) {
+  protected constructor(baseNode: AutomationNode, parent: SARootNode|null) {
     super();
     this.baseNode_ = baseNode;
     this.parent_ = parent;
@@ -83,8 +83,8 @@ export class BasicNode extends SAChildNode {
     }
     // Coerce enums to string arrays for comparison.
     const menuActions: string[] = Object.values(MenuAction);
-    const standardActions: string[] = this.baseNode_.standardActions!
-      .filter((action: string) => menuActions.includes(action));
+    const standardActions: string[] = this.baseNode_.standardActions!.filter(
+        (action: string) => menuActions.includes(action));
     return actions.concat(standardActions as MenuAction[]);
   }
 
@@ -92,7 +92,7 @@ export class BasicNode extends SAChildNode {
     return this.baseNode_;
   }
 
-  override get location(): Rect | undefined {
+  override get location(): Rect|undefined {
     return this.baseNode_.location;
   }
 
@@ -103,14 +103,14 @@ export class BasicNode extends SAChildNode {
 
   // ================= General methods =================
 
-  override asRootNode(): SARootNode | undefined {
+  override asRootNode(): SARootNode|undefined {
     if (!this.isGroup()) {
       return undefined;
     }
     return BasicRootNode.buildTree(this.baseNode_);
   }
 
-  override equals(rhs: SAChildNode | null | undefined): boolean {
+  override equals(rhs: SAChildNode|null|undefined): boolean {
     if (!rhs || !(rhs instanceof BasicNode)) {
       return false;
     }
@@ -119,8 +119,8 @@ export class BasicNode extends SAChildNode {
     return other.baseNode_ === this.baseNode_;
   }
 
-  override isEquivalentTo(
-      node: AutomationNode | SAChildNode | SARootNode | null): boolean {
+  override isEquivalentTo(node: AutomationNode|SAChildNode|SARootNode|
+                          null): boolean {
     if (node instanceof BasicNode) {
       return this.baseNode_ === node.baseNode_;
     }
@@ -227,11 +227,9 @@ export class BasicNode extends SAChildNode {
 
   // ================= Static methods =================
 
-  static create(
-      baseNode: AutomationNode, parent: SARootNode | null): BasicNode {
-    const item =
-        BasicNode.creators.find(
-            (creator: Creator) => creator.predicate(baseNode));
+  static create(baseNode: AutomationNode, parent: SARootNode|null): BasicNode {
+    const item = BasicNode.creators.find(
+        (creator: Creator) => creator.predicate(baseNode));
     if (item) {
       return item.creator(baseNode, parent);
     }
@@ -269,15 +267,15 @@ export class BasicRootNode extends SARootNode {
 
   // ================= General methods =================
 
-  override equals(other: SARootNode | null | undefined): boolean {
+  override equals(other: SARootNode|null|undefined): boolean {
     if (!(other instanceof BasicRootNode)) {
       return false;
     }
     return super.equals(other) && this.automationNode === other.automationNode;
   }
 
-  override isEquivalentTo(
-      node: AutomationNode | SAChildNode | SARootNode | null): boolean {
+  override isEquivalentTo(node: AutomationNode|SAChildNode|SARootNode|
+                          null): boolean {
     if (node instanceof BasicRootNode || node instanceof BasicNode) {
       return this.automationNode === node.automationNode;
     }
@@ -301,8 +299,7 @@ export class BasicRootNode extends SARootNode {
   override onFocus(): void {
     super.onFocus();
     this.childrenChangedHandler_ = new RepeatedEventHandler(
-        this.automationNode, EventType.CHILDREN_CHANGED,
-        event => {
+        this.automationNode, EventType.CHILDREN_CHANGED, event => {
           const cache = new SACache();
           if (SwitchAccessPredicate.isInterestingSubtree(event.target, cache)) {
             this.refresh();
@@ -318,8 +315,8 @@ export class BasicRootNode extends SARootNode {
   }
 
   override refreshChildren(): void {
-    const childConstructor =
-        (node: AutomationNode): BasicNode => BasicNode.create(node, this);
+    const childConstructor = (node: AutomationNode): BasicNode =>
+        BasicNode.create(node, this);
     try {
       BasicRootNode.findAndSetChildren(this, childConstructor);
     } catch (e) {
@@ -329,7 +326,7 @@ export class BasicRootNode extends SARootNode {
 
   override refresh(): void {
     // Find the currently focused child.
-    let focusedChild: SAChildNode | null = null;
+    let focusedChild: SAChildNode|null = null;
     for (const child of this.children) {
       if (child.isFocused()) {
         focusedChild = child;
@@ -369,8 +366,8 @@ export class BasicRootNode extends SARootNode {
     }
 
     const root = new BasicRootNode(rootNode);
-    const childConstructor =
-        (node: AutomationNode): BasicNode => BasicNode.create(node, root);
+    const childConstructor = (node: AutomationNode): BasicNode =>
+        BasicNode.create(node, root);
 
     BasicRootNode.findAndSetChildren(root, childConstructor);
     return root;
@@ -398,8 +395,8 @@ export class BasicRootNode extends SARootNode {
     root.children = children;
   }
 
-  static getInterestingChildren(
-      root: BasicRootNode | AutomationNode): AutomationNode[] {
+  static getInterestingChildren(root: BasicRootNode|
+                                AutomationNode): AutomationNode[] {
     if (root instanceof BasicRootNode) {
       root = root.automationNode;
     }

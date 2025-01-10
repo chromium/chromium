@@ -19,10 +19,10 @@ import StateType = chrome.automation.StateType;
 import SwitchAccessBubble = chrome.accessibilityPrivate.SwitchAccessBubble;
 
 interface EventHandlerOptions {
-  capture: boolean | undefined;
-  exactMatch: boolean | undefined;
-  listenOnce: boolean | undefined;
-  predicate: ((arg: any) => boolean) | undefined;
+  capture: boolean|undefined;
+  exactMatch: boolean|undefined;
+  listenOnce: boolean|undefined;
+  predicate: ((arg: any) => boolean)|undefined;
 }
 
 /**
@@ -31,10 +31,10 @@ interface EventHandlerOptions {
  * displayed.
  */
 export class MenuManager {
-  private displayedActions_: MenuAction[] | null = null;
+  private displayedActions_: MenuAction[]|null = null;
   private displayedLocation_?: ScreenRect;
   private isMenuOpen_ = false;
-  private menuAutomationNode_?: AutomationNode | null;
+  private menuAutomationNode_?: AutomationNode|null;
   private clickHandler_: EventHandler;
 
   static instance?: MenuManager;
@@ -60,7 +60,7 @@ export class MenuManager {
     return Boolean(MenuManager.instance) && MenuManager.instance!.isMenuOpen_;
   }
 
-  static get menuAutomationNode(): AutomationNode | null | undefined {
+  static get menuAutomationNode(): AutomationNode|null|undefined {
     if (MenuManager.instance) {
       return MenuManager.instance.menuAutomationNode_;
     }
@@ -82,7 +82,7 @@ export class MenuManager {
     }
 
     if (ArrayUtil.contentsAreEqual(
-        actions, this.displayedActions_ ?? undefined)) {
+            actions, this.displayedActions_ ?? undefined)) {
       return;
     }
     this.displayMenuWithActions_(actions);
@@ -104,7 +104,7 @@ export class MenuManager {
 
   // ================= Private Methods ==================
 
-  private asAction_(actionString: string | undefined): MenuAction | null {
+  private asAction_(actionString: string|undefined): MenuAction|null {
     if (Object.values(MenuAction).includes(actionString as MenuAction)) {
       return actionString as MenuAction;
     }
@@ -145,8 +145,8 @@ export class MenuManager {
 
   private hasMenuNode_(): boolean {
     // TODO(b/314203187): Not null asserted, check that this is correct.
-    return Boolean(this.menuAutomationNode_ &&
-        this.menuAutomationNode_.role &&
+    return Boolean(
+        this.menuAutomationNode_ && this.menuAutomationNode_.role &&
         !this.menuAutomationNode_.state![StateType.OFFSCREEN]);
   }
 

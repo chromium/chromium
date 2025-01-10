@@ -17,7 +17,7 @@
 
 namespace {
 constexpr char kTestSupportPath[] =
-    "chrome/browser/resources/chromeos/accessibility/switch_access/"
+    "chrome/browser/resources/chromeos/accessibility/switch_access/mv2/"
     "test_support.js";
 }  // namespace
 

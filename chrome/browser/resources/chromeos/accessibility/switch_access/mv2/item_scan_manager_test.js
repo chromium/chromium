@@ -327,7 +327,7 @@ AX_TEST_F(
 
 // TODO(crbug.com/336827654): Investigate failures.
 AX_TEST_F(
-  'SwitchAccessItemScanManagerTest', 'DISABLED_ScanAndTypeVirtualKeyboard',
+    'SwitchAccessItemScanManagerTest', 'DISABLED_ScanAndTypeVirtualKeyboard',
     async function() {
       const website = `<input type="text" id="testinput"></input>`;
       const rootWebArea = await this.runWithLoadedTree(website);

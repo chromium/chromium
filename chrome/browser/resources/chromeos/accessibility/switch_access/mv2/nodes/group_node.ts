@@ -86,8 +86,8 @@ export class GroupNode extends SAChildNode {
     return true;
   }
 
-  override isEquivalentTo(node: AutomationNode | SAChildNode | SARootNode):
-      boolean {
+  override isEquivalentTo(node: AutomationNode|SAChildNode|
+                          SARootNode): boolean {
     if (node instanceof GroupNode) {
       return this.equals(node);
     }

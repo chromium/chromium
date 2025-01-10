@@ -31,7 +31,7 @@ export class DesktopNode extends BasicRootNode {
 
   override refresh(): void {
     // Find the currently focused child.
-    let focusedChild: SAChildNode | null = null;
+    let focusedChild: SAChildNode|null = null;
     for (const child of this.children) {
       if (child.isFocused()) {
         focusedChild = child;

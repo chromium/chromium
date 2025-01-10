@@ -220,7 +220,7 @@ export class TextNavigationManager {
    */
   static saveSelectStart(): void {
     const manager = TextNavigationManager.instance;
-    chrome.automation.getFocus((focusedNode: AutomationNode | undefined) => {
+    chrome.automation.getFocus((focusedNode: AutomationNode|undefined) => {
       manager.selectionStartObject_ = focusedNode;
       manager.selectionStartIndex_ = manager.getSelectionIndexFromNode_(
           // TODO(b/314203187): Not null asserted, check that this is correct.
@@ -238,8 +238,8 @@ export class TextNavigationManager {
    * @return selection start if getStart is true otherwise selection
    * end
    */
-  private getSelectionIndexFromNode_(
-      node: AutomationNode, getStart: boolean): number {
+  private getSelectionIndexFromNode_(node: AutomationNode, getStart: boolean):
+      number {
     let indexFromNode = TextNavigationManager.NO_SELECT_INDEX;
     // TODO(b/314203187): Not null asserted, check that this is correct.
     if (getStart) {

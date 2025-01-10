@@ -22,9 +22,9 @@ import MenuAction = chrome.accessibilityPrivate.SwitchAccessMenuAction;
  * TODO(anastasi): Add a test for this class.
  */
 class ComboBoxNode extends BasicNode {
-  private expandedChangedHandler_?: RepeatedEventHandler | null;
+  private expandedChangedHandler_?: RepeatedEventHandler|null;
 
-  constructor(baseNode: AutomationNode, parent: SARootNode | null) {
+  constructor(baseNode: AutomationNode, parent: SARootNode|null) {
     super(baseNode, parent);
   }
 
@@ -41,8 +41,8 @@ class ComboBoxNode extends BasicNode {
     super.onFocus();
 
     this.expandedChangedHandler_ = new RepeatedEventHandler(
-        this.automationNode, EventType.EXPANDED,
-        () => this.onExpandedChanged(), {exactMatch: true});
+        this.automationNode, EventType.EXPANDED, () => this.onExpandedChanged(),
+        {exactMatch: true});
   }
 
   override onUnfocus(): void {

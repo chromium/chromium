@@ -36,8 +36,8 @@ export namespace SwitchAccessPredicate {
    * Returns true if |node| is actionable, meaning that a user can interact with
    * it in some way.
    */
-  export function isActionable(
-      node: AutomationNode | undefined, cache: SACache): boolean {
+  export function isActionable(node: AutomationNode|undefined, cache: SACache):
+      boolean {
     // TODO(b/314203187): Not null asserted, check that this is correct.
     if (cache.isActionable.has(node!)) {
       return cache.isActionable.get(node!)!;
@@ -118,9 +118,8 @@ export namespace SwitchAccessPredicate {
    * Additionally, for |node| to be a group, it cannot have the same bounding
    * box as its scope.
    */
-  export function isGroup (
-      node: AutomationNode | undefined,
-      scope: AutomationNode | SARootNode | null,
+  export function isGroup(
+      node: AutomationNode|undefined, scope: AutomationNode|SARootNode|null,
       cache: SACache): boolean {
     // If node is invalid (undefined or an undefined role), return false.
     if (!node || !node.role) {
@@ -173,7 +172,7 @@ export namespace SwitchAccessPredicate {
    * is either actionable or a group.
    */
   export function isInteresting(
-      node: AutomationNode | undefined, scope: AutomationNode | SARootNode,
+      node: AutomationNode|undefined, scope: AutomationNode|SARootNode,
       cache?: SACache): boolean {
     cache = cache || new SACache();
     return SwitchAccessPredicate.isActionable(node, cache) ||
@@ -184,9 +183,9 @@ export namespace SwitchAccessPredicate {
   export function isVisible(node: AutomationNode): boolean {
     // TODO(b/314203187): Not null asserted, check that this is correct.
     return Boolean(
-      !node.state![StateType.OFFSCREEN] && node.location &&
-      node.location.top >= 0 && node.location.left >= 0 &&
-      !node.state![StateType.INVISIBLE]);
+        !node.state![StateType.OFFSCREEN] && node.location &&
+        node.location.top >= 0 && node.location.left >= 0 &&
+        !node.state![StateType.INVISIBLE]);
   }
 
   /**
@@ -197,8 +196,8 @@ export namespace SwitchAccessPredicate {
    * cause a loop (isInteresting calls isGroup, and isGroup calls
    * isInterestingSubtree).
    */
-  export function isInterestingSubtree(
-      node: AutomationNode, cache?: SACache): boolean {
+  export function isInterestingSubtree(node: AutomationNode, cache?: SACache):
+      boolean {
     cache = cache || new SACache();
     if (cache.isInterestingSubtree.has(node)) {
       // TODO(b/314203187): Not null asserted, check that this is correct.
@@ -220,17 +219,17 @@ export namespace SwitchAccessPredicate {
   /** Returns true if |node| should be considered a window. */
   export function isWindow(node?: AutomationNode): boolean {
     return Boolean(
-      node &&
-      (node.role === RoleType.WINDOW ||
-       (node.role === RoleType.CLIENT && node.parent &&
-       node.parent.role === RoleType.WINDOW)));
+        node &&
+        (node.role === RoleType.WINDOW ||
+         (node.role === RoleType.CLIENT && node.parent &&
+          node.parent.role === RoleType.WINDOW)));
   }
 
   /**
    * Returns a Restrictions object ready to be passed to AutomationTreeWalker.
    */
-  export function restrictions(
-      scope: AutomationNode): AutomationTreeWalkerRestriction {
+  export function restrictions(scope: AutomationNode):
+      AutomationTreeWalkerRestriction {
     const cache = new SACache();
     return {
       leaf: SwitchAccessPredicate.leaf(scope, cache),
@@ -243,10 +242,10 @@ export namespace SwitchAccessPredicate {
    * Creates a function that confirms if |node| is a terminal leaf node of a
    * SwitchAccess scope tree when |scope| is the root.
    */
-  export function leaf(
-      scope: AutomationNode, cache: SACache): AutomationPredicate.Unary {
+  export function leaf(scope: AutomationNode, cache: SACache):
+      AutomationPredicate.Unary {
     return (node: AutomationNode) =>
-        !SwitchAccessPredicate.isInterestingSubtree(node, cache) ||
+               !SwitchAccessPredicate.isInterestingSubtree(node, cache) ||
         (scope !== node &&
          SwitchAccessPredicate.isInteresting(node, scope, cache));
   }
@@ -263,12 +262,12 @@ export namespace SwitchAccessPredicate {
    * Creates a function that determines whether |node| is to be visited in the
    * SwitchAccess scope tree with |scope| as the root.
    */
-  export function visit(
-      scope: AutomationNode, cache: SACache): AutomationPredicate.Unary {
+  export function visit(scope: AutomationNode, cache: SACache):
+      AutomationPredicate.Unary {
     return (node: AutomationNode) => node.role !== RoleType.DESKTOP &&
         SwitchAccessPredicate.isInteresting(node, scope, cache);
   }
 }
 
 TestImportManager.exportForTesting(
-  ['SwitchAccessPredicate', SwitchAccessPredicate]);
+    ['SwitchAccessPredicate', SwitchAccessPredicate]);

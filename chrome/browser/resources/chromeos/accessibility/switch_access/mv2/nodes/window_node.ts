@@ -26,8 +26,8 @@ export class WindowRootNode extends BasicRootNode {
   /** Creates the tree structure for a window node. */
   static override buildTree(windowNode: AutomationNode): WindowRootNode {
     const root = new WindowRootNode(windowNode);
-    const childConstructor =
-        (node: AutomationNode): BasicNode => BasicNode.create(node, root);
+    const childConstructor = (node: AutomationNode): BasicNode =>
+        BasicNode.create(node, root);
 
     BasicRootNode.findAndSetChildren(root, childConstructor);
     return root;

@@ -102,8 +102,7 @@ export class SwitchAccess {
 
   /** Creates and records the specified error. */
   static error(
-      errorType: ErrorType, errorString: string,
-      shouldRecover = false): Error {
+      errorType: ErrorType, errorString: string, shouldRecover = false): Error {
     if (shouldRecover) {
       setTimeout(Navigator.byItem.moveToValidNode.bind(Navigator.byItem), 0);
     }
@@ -116,7 +115,7 @@ export class SwitchAccess {
 
   private async waitForFocus_(
       desktop: AutomationNode,
-      currentFocus: AutomationNode | undefined): Promise<void> {
+      currentFocus: AutomationNode|undefined): Promise<void> {
     return new Promise(resolve => {
       // Focus is available. Finish init without waiting for further events.
       // Disallow web view nodes, which indicate a root web area is still
@@ -130,7 +129,7 @@ export class SwitchAccess {
       // guaranteed. Otherwise, also set a timed callback to ensure we do
       // eventually init.
       let callbackId = 0;
-      const listener = (maybeEvent: AutomationEvent | undefined): void => {
+      const listener = (maybeEvent: AutomationEvent|undefined): void => {
         if (maybeEvent && maybeEvent.target.role === RoleType.WEB_VIEW) {
           return;
         }

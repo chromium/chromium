@@ -43,7 +43,7 @@ export class KeyboardNode extends BasicNode {
 
   // ================= General methods =================
 
-  override asRootNode(): SARootNode | undefined {
+  override asRootNode(): SARootNode|undefined {
     return undefined;
   }
 
@@ -204,8 +204,8 @@ export class KeyboardRootNode extends BasicRootNode {
 
   /** Helper function to connect tree elements, given the root node. */
   private static findAndSetChildren_(root: KeyboardRootNode): void {
-    const childConstructor =
-        (node: AutomationNode): KeyboardNode => new KeyboardNode(node, root);
+    const childConstructor = (node: AutomationNode): KeyboardNode =>
+        new KeyboardNode(node, root);
     const interestingChildren =
         root.automationNode.findAll({role: RoleType.BUTTON});
     const children: SAChildNode[] = GroupNode.separateByRow(
@@ -217,8 +217,8 @@ export class KeyboardRootNode extends BasicRootNode {
 
   private static getKeyboardObject(): AutomationNode {
     if (!this.object_ || !this.object_.role) {
-      this.object_ = Navigator.byItem.desktopNode.find(
-          {role: RoleType.KEYBOARD});
+      this.object_ =
+          Navigator.byItem.desktopNode.find({role: RoleType.KEYBOARD});
     }
     return this.object_;
   }

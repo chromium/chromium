@@ -91,8 +91,8 @@ export class FocusHistory {
     return true;
   }
 
-  containsDataMatchingPredicate(
-    predicate: (data: FocusData) => boolean): boolean {
+  containsDataMatchingPredicate(predicate: (data: FocusData) => boolean):
+      boolean {
     for (const data of this.dataStack) {
       if (predicate(data)) {
         return true;
@@ -105,7 +105,7 @@ export class FocusHistory {
    * Returns the most proximal restore data, but does not remove it from the
    * history.
    */
-  peek(): FocusData | null {
+  peek(): FocusData|null {
     return this.dataStack[this.dataStack.length - 1] || null;
   }
 

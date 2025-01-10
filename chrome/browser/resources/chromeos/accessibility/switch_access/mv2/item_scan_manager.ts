@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './nodes/editable_text_node.js';
+import './nodes/slider_node.js';
+import './nodes/tab_node.js';
+
 import {AsyncUtil} from '/common/async_util.js';
 import {AutomationUtil} from '/common/automation_util.js';
 import {EventHandler} from '/common/event_handler.js';
@@ -20,12 +24,9 @@ import {ItemNavigatorInterface} from './navigator_interfaces.js';
 import {BackButtonNode} from './nodes/back_button_node.js';
 import {BasicNode, BasicRootNode} from './nodes/basic_node.js';
 import {DesktopNode} from './nodes/desktop_node.js';
-import './nodes/editable_text_node.js';
 import {KeyboardRootNode} from './nodes/keyboard_node.js';
 import {ModalDialogRootNode} from './nodes/modal_dialog_node.js';
-import './nodes/slider_node.js';
 import {SAChildNode, SANode, SARootNode} from './nodes/switch_access_node.js';
-import './nodes/tab_node.js';
 import {SwitchAccess} from './switch_access.js';
 import {Mode} from './switch_access_constants.js';
 import {SwitchAccessPredicate} from './switch_access_predicate.js';
@@ -44,7 +45,7 @@ export class ItemScanManager extends ItemNavigatorInterface {
   private group_: SARootNode;
   private node_: SAChildNode;
   private history_: FocusHistory;
-  private suspendedGroup_: FocusData | null = null;
+  private suspendedGroup_: FocusData|null = null;
   private ignoreFocusInKeyboard_ = false;
 
   constructor(desktop: AutomationNode) {
@@ -91,7 +92,7 @@ export class ItemScanManager extends ItemNavigatorInterface {
     this.exitGroup_();
   }
 
-  override exitIfInGroup(node: SANode | AutomationNode | null): void {
+  override exitIfInGroup(node: SANode|AutomationNode|null): void {
     if (this.group_.isEquivalentTo(node)) {
       this.exitGroup_();
     }
@@ -99,8 +100,8 @@ export class ItemScanManager extends ItemNavigatorInterface {
 
   override async exitKeyboard(): Promise<void> {
     this.ignoreFocusInKeyboard_ = false;
-    const isKeyboard =
-        (data: FocusData): boolean => data.group instanceof KeyboardRootNode;
+    const isKeyboard = (data: FocusData): boolean =>
+        data.group instanceof KeyboardRootNode;
     // If we are not in the keyboard, do nothing.
     if (!(this.group_ instanceof KeyboardRootNode) &&
         !this.history_.containsDataMatchingPredicate(isKeyboard)) {
@@ -170,8 +171,7 @@ export class ItemScanManager extends ItemNavigatorInterface {
   }
 
   override async tryMoving(
-      node: SAChildNode,
-      getNext: (node: SAChildNode) => SAChildNode,
+      node: SAChildNode, getNext: (node: SAChildNode) => SAChildNode,
       startingNode: SAChildNode): Promise<void> {
     if (node === startingNode) {
       // This should only happen if the desktop contains exactly one interesting
@@ -345,8 +345,7 @@ export class ItemScanManager extends ItemNavigatorInterface {
     if (treeChange.type === TreeChangeType.NODE_REMOVED) {
       this.group_.refresh();
       this.moveToValidNode();
-    } else if (
-        treeChange.type === TreeChangeType.SUBTREE_UPDATE_END) {
+    } else if (treeChange.type === TreeChangeType.SUBTREE_UPDATE_END) {
       this.group_.refresh();
     }
   }
@@ -442,7 +441,7 @@ export class ItemScanManager extends ItemNavigatorInterface {
     // |data.group| updates when retrieving the history record. So |data.focus|
     // should not be used as the preferred focus node. Instead, we should find
     // the equivalent node in the group's children.
-    let focusTarget: SAChildNode | null = null;
+    let focusTarget: SAChildNode|null = null;
     for (const child of data.group.children) {
       if (child.isEquivalentTo(data.focus)) {
         focusTarget = child;
@@ -494,9 +493,10 @@ export class ItemScanManager extends ItemNavigatorInterface {
       // The current focus and new node do not have one another in their
       // ancestry; try to focus an ancestor window of the new node. In
       // particular, the parenting aura::Window of the views::Widget.
-      let widget: AutomationNode | undefined = newAutomationNode;
-      while (widget && (widget.role !== RoleType.WINDOW ||
-              widget.className !== 'Widget')) {
+      let widget: AutomationNode|undefined = newAutomationNode;
+      while (
+          widget &&
+          (widget.role !== RoleType.WINDOW || widget.className !== 'Widget')) {
         widget = widget.parent;
       }
 

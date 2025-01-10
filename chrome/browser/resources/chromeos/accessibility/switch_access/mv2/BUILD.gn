@@ -69,7 +69,7 @@ ts_library("ts_build") {
 
   composite = true
 
-  deps = [ "../common:ts_build" ]
+  deps = [ "../../common:ts_build" ]
 
   extra_deps = [ ":stage_ts_build" ]
 
@@ -77,23 +77,23 @@ ts_library("ts_build") {
       [ "/common/*|" + rebase_path("$common_tsc_dir/*", target_gen_dir) ]
 
   definitions = [
-    "../definitions/accessibility_private_mv2.d.ts",
-    "../definitions/automation.d.ts",
-    "../definitions/clipboard_mv2.d.ts",
-    "../definitions/command_line_private.d.ts",
-    "../definitions/extension_types.d.ts",
-    "../definitions/extensions.d.ts",
-    "../definitions/runtime.d.ts",
-    "../definitions/settings_private_mv2.d.ts",
-    "../definitions/tabs.d.ts",
-    "../definitions/windows.d.ts",
+    "../../definitions/accessibility_private_mv2.d.ts",
+    "../../definitions/automation.d.ts",
+    "../../definitions/clipboard_mv2.d.ts",
+    "../../definitions/command_line_private.d.ts",
+    "../../definitions/extension_types.d.ts",
+    "../../definitions/extensions.d.ts",
+    "../../definitions/runtime.d.ts",
+    "../../definitions/settings_private_mv2.d.ts",
+    "../../definitions/tabs.d.ts",
+    "../../definitions/windows.d.ts",
     "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
   ]
 
   in_files = ts_modules
 
-  tsconfig_base = "../tsconfig.base.json"
+  tsconfig_base = "../../tsconfig.base.json"
 }
 
 # Instead of setting up one copy target for each subdirectory, use a script
@@ -104,7 +104,7 @@ run_jsbundler("copied_files") {
   clear_dest_dirs = [ "." ]
   deps = [
     ":ts_build",
-    "../common:copied_files",
+    "../../common:copied_files",
   ]
   sources = [
     "background.html",
@@ -169,10 +169,10 @@ source_set("browser_tests") {
 }
 
 test_includes = [
-  "../common/testing/accessibility_test_base.js",
-  "../common/testing/assert_additions.js",
-  "../common/testing/callback_helper.js",
-  "../common/testing/e2e_test_base.js",
+  "../../common/testing/accessibility_test_base.js",
+  "../../common/testing/assert_additions.js",
+  "../../common/testing/callback_helper.js",
+  "../../common/testing/e2e_test_base.js",
   "switch_access_e2e_test_base.js",
   "test_utility.js",
 ]

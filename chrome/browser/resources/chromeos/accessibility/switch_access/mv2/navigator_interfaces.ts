@@ -90,7 +90,7 @@ export abstract class ItemNavigatorInterface {
    * Called when everything has been initialized to add the listeners and find
    * the initial focus.
    */
-   abstract start(): void;
+  abstract start(): void;
 
   // =============== Getter Methods ==============
 
