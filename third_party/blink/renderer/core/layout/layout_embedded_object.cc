@@ -97,18 +97,22 @@ void LayoutEmbeddedObject::UpdateAfterLayout() {
     GetFrameView()->AddPartToUpdate(*this);
 }
 
-void LayoutEmbeddedObject::ComputeIntrinsicSizingInfo(
-    IntrinsicSizingInfo& intrinsic_sizing_info) const {
+IntrinsicSizingInfo LayoutEmbeddedObject::GetNaturalDimensions() const {
+  NOT_DESTROYED();
+  IntrinsicSizingInfo sizing_info;
+  FrameView* frame_view = ChildFrameView();
+  if (frame_view && frame_view->GetIntrinsicSizingInfo(sizing_info)) {
+    // Scale based on our zoom as the embedded document doesn't have that info.
+    sizing_info.size.Scale(StyleRef().EffectiveZoom());
+    return sizing_info;
+  }
+  return LayoutEmbeddedContent::GetNaturalDimensions();
+}
+
+IntrinsicSizingInfo LayoutEmbeddedObject::ComputeIntrinsicSizingInfo() const {
   NOT_DESTROYED();
   DCHECK(!ShouldApplySizeContainment());
-  FrameView* frame_view = ChildFrameView();
-  if (frame_view && frame_view->GetIntrinsicSizingInfo(intrinsic_sizing_info)) {
-    // Scale based on our zoom as the embedded document doesn't have that info.
-    intrinsic_sizing_info.size.Scale(StyleRef().EffectiveZoom());
-    return;
-  }
-
-  LayoutEmbeddedContent::ComputeIntrinsicSizingInfo(intrinsic_sizing_info);
+  return GetNaturalDimensions();
 }
 
 }  // namespace blink

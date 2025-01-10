@@ -17,6 +17,9 @@ struct IntrinsicSizingInfo {
   static IntrinsicSizingInfo None() {
     return {gfx::SizeF(), gfx::SizeF(), false, false};
   }
+  static IntrinsicSizingInfo MakeFixed(const gfx::SizeF& natural_size) {
+    return {natural_size, natural_size, true, true};
+  }
 
   bool IsNone() const {
     return !has_width && !has_height && aspect_ratio.IsEmpty();

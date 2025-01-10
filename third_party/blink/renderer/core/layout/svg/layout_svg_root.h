@@ -141,7 +141,8 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
     return true;
   }
 
-  void ComputeIntrinsicSizingInfo(IntrinsicSizingInfo&) const override;
+  IntrinsicSizingInfo GetNaturalDimensions() const override;
+  IntrinsicSizingInfo ComputeIntrinsicSizingInfo() const override;
   void PaintReplaced(const PaintInfo&,
                      const PhysicalOffset& paint_offset) const override;
 

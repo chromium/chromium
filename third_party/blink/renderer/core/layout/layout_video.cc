@@ -32,14 +32,8 @@
 
 namespace blink {
 
-namespace {
-
-const float kInitEffectZoom = 1.0f;
-
-}  // namespace
-
 LayoutVideo::LayoutVideo(HTMLVideoElement* video) : LayoutMedia(video) {
-  SetIntrinsicSize(CalculateIntrinsicSize(kInitEffectZoom));
+  SetIntrinsicSize(DefaultSize());
 }
 
 LayoutVideo::~LayoutVideo() = default;
@@ -58,12 +52,13 @@ void LayoutVideo::IntrinsicSizeChanged() {
 void LayoutVideo::UpdateIntrinsicSize() {
   NOT_DESTROYED();
 
-  PhysicalSize size = CalculateIntrinsicSize(StyleRef().EffectiveZoom());
+  const IntrinsicSizingInfo sizing_info = GetNaturalDimensions();
+  PhysicalSize size = PhysicalSize::FromSizeFRound(sizing_info.size);
 
   // Never set the element size to zero when in a media document.
-  if (size.IsEmpty() && GetNode()->ownerDocument() &&
-      GetNode()->ownerDocument()->IsMediaDocument())
+  if (size.IsEmpty() && GetDocument().IsMediaDocument()) {
     return;
+  }
 
   if (size == IntrinsicSize())
     return;
@@ -74,47 +69,46 @@ void LayoutVideo::UpdateIntrinsicSize() {
       layout_invalidation_reason::kSizeChanged);
 }
 
-PhysicalSize LayoutVideo::CalculateIntrinsicSize(float scale) {
+IntrinsicSizingInfo LayoutVideo::GetNaturalDimensions() const {
   NOT_DESTROYED();
-  HTMLVideoElement* video = VideoElement();
-  DCHECK(video);
 
   auto display_mode = GetDisplayMode();
+  const auto* video = VideoElement();
 
   // Special case: If the poster image is the "default poster image", we should
-  // NOT use that for calculating intrinsic size.
-  // TODO(1190335): Remove this once default poster image is removed
+  // NOT use that for calculating natural dimensions.
+  // TODO: crbug.com/40174114 - Remove this once default poster image is
+  // removed.
   if (display_mode == kPoster && video->IsDefaultPosterImageURL()) {
     display_mode = kVideo;
   }
 
+  // This implements the intrinsic width/height calculation from:
+  // https://html.spec.whatwg.org/#the-video-element:dimension-attributes:~:text=The%20intrinsic%20width%20of%20a%20video%20element's%20playback%20area
   switch (display_mode) {
-    // This implements the intrinsic width/height calculation from:
-    // https://html.spec.whatwg.org/#the-video-element:dimension-attributes:~:text=The%20intrinsic%20width%20of%20a%20video%20element's%20playback%20area
-    // If the video playback area is currently represented by the poster image,
-    // the intrinsic width and height are that of the poster image.
     case kPoster:
+      // If the video playback area is currently represented by the poster
+      // image, the natural dimensions are that of the poster image.
       if (!cached_image_size_.IsEmpty() && !ImageResource()->ErrorOccurred()) {
-        return cached_image_size_;
+        return IntrinsicSizingInfo::MakeFixed(gfx::SizeF(cached_image_size_));
       }
       break;
 
-    // Otherwise, the intrinsic width is that of the video.
     case kVideo:
-      if (const auto* player = MediaElement()->GetWebMediaPlayer()) {
-        gfx::Size size = player->NaturalSize();
-        if (!size.IsEmpty()) {
-          PhysicalSize layout_size = PhysicalSize(size);
-          layout_size.Scale(scale);
-          return layout_size;
+      // Otherwise, the natural dimensions are that of the video.
+      if (const auto* player = video->GetWebMediaPlayer()) {
+        gfx::Size video_size = player->NaturalSize();
+        if (!video_size.IsEmpty()) {
+          return IntrinsicSizingInfo::MakeFixed(gfx::ScaleSize(
+              gfx::SizeF(video_size), StyleRef().EffectiveZoom()));
         }
       }
       break;
   }
 
-  PhysicalSize size = DefaultSize();
-  size.Scale(scale);
-  return size;
+  // Natural dimensions are missing.
+  return IntrinsicSizingInfo::MakeFixed(
+      gfx::ScaleSize(gfx::SizeF(DefaultSize()), StyleRef().EffectiveZoom()));
 }
 
 void LayoutVideo::ImageChanged(WrappedImagePtr new_image,

@@ -343,6 +343,21 @@ PhysicalRect LayoutReplaced::ComputeObjectFitAndPositionRect(
   return final_rect;
 }
 
+void LayoutReplaced::ApplyObjectViewBox(
+    IntrinsicSizingInfo& sizing_info) const {
+  if (!sizing_info.has_width || !sizing_info.has_height) {
+    return;
+  }
+  const PhysicalSize natural_size =
+      PhysicalSize::FromSizeFRound(sizing_info.size);
+  if (auto view_box = ComputeObjectViewBoxRect(&natural_size)) {
+    sizing_info.size = gfx::SizeF(view_box->size);
+    if (!sizing_info.aspect_ratio.IsEmpty()) {
+      sizing_info.aspect_ratio = sizing_info.size;
+    }
+  }
+}
+
 PhysicalRect LayoutReplaced::ReplacedContentRect() const {
   NOT_DESTROYED();
   // This function should compute the result with old geometry even if a
@@ -361,23 +376,24 @@ PhysicalRect LayoutReplaced::PreSnappedRectForPersistentSizing(
   return PhysicalRect(rect.offset, PhysicalSize(ToRoundedSize(rect.size)));
 }
 
-void LayoutReplaced::ComputeIntrinsicSizingInfo(
-    IntrinsicSizingInfo& intrinsic_sizing_info) const {
+IntrinsicSizingInfo LayoutReplaced::GetNaturalDimensions() const {
+  NOT_DESTROYED();
+  IntrinsicSizingInfo sizing_info;
+  sizing_info.size = gfx::SizeF(IntrinsicSize());
+
+  // Set a natural aspect ratio if the object should have one.
+  if (LayoutObjectHasIntrinsicAspectRatio(this)) {
+    sizing_info.aspect_ratio = sizing_info.size;
+  }
+  return sizing_info;
+}
+
+IntrinsicSizingInfo LayoutReplaced::ComputeIntrinsicSizingInfo() const {
   NOT_DESTROYED();
   DCHECK(!ShouldApplySizeContainment());
-
-  if (auto view_box = ComputeObjectViewBoxRect()) {
-    intrinsic_sizing_info.size = gfx::SizeF(view_box->size);
-  } else {
-    intrinsic_sizing_info.size = gfx::SizeF(IntrinsicSize());
-  }
-
-  // Figure out if we need to compute an intrinsic ratio.
-  if (!LayoutObjectHasIntrinsicAspectRatio(this))
-    return;
-
-  if (!intrinsic_sizing_info.size.IsEmpty())
-    intrinsic_sizing_info.aspect_ratio = intrinsic_sizing_info.size;
+  IntrinsicSizingInfo sizing_info = GetNaturalDimensions();
+  ApplyObjectViewBox(sizing_info);
+  return sizing_info;
 }
 
 static std::pair<LayoutUnit, LayoutUnit> SelectionTopAndBottom(

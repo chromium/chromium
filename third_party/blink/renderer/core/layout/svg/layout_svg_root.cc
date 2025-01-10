@@ -95,13 +95,19 @@ void LayoutSVGRoot::UnscaledIntrinsicSizingInfo(
   }
 }
 
-void LayoutSVGRoot::ComputeIntrinsicSizingInfo(
-    IntrinsicSizingInfo& intrinsic_sizing_info) const {
+IntrinsicSizingInfo LayoutSVGRoot::GetNaturalDimensions() const {
+  NOT_DESTROYED();
+  IntrinsicSizingInfo sizing_info;
+  UnscaledIntrinsicSizingInfo(sizing_info);
+
+  sizing_info.size.Scale(StyleRef().EffectiveZoom());
+  return sizing_info;
+}
+
+IntrinsicSizingInfo LayoutSVGRoot::ComputeIntrinsicSizingInfo() const {
   NOT_DESTROYED();
   DCHECK(!ShouldApplySizeContainment());
-  UnscaledIntrinsicSizingInfo(intrinsic_sizing_info);
-
-  intrinsic_sizing_info.size.Scale(StyleRef().EffectiveZoom());
+  return GetNaturalDimensions();
 }
 
 bool LayoutSVGRoot::IsEmbeddedThroughSVGImage() const {

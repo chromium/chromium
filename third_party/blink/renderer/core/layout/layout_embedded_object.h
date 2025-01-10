@@ -63,7 +63,8 @@ class LayoutEmbeddedObject final : public LayoutEmbeddedContent {
     NOT_DESTROYED();
     return true;
   }
-  void ComputeIntrinsicSizingInfo(IntrinsicSizingInfo&) const override;
+  IntrinsicSizingInfo GetNaturalDimensions() const override;
+  IntrinsicSizingInfo ComputeIntrinsicSizingInfo() const override;
 
   PluginAvailability plugin_availability_ = kPluginAvailable;
   String unavailable_plugin_replacement_text_;

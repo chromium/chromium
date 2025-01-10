@@ -157,9 +157,8 @@ void LayoutInputNode::IntrinsicSize(
   if (*computed_inline_size && *computed_block_size)
     return;
 
-  IntrinsicSizingInfo legacy_sizing_info;
-  To<LayoutReplaced>(box_.Get())
-      ->ComputeIntrinsicSizingInfo(legacy_sizing_info);
+  const IntrinsicSizingInfo legacy_sizing_info =
+      To<LayoutReplaced>(*box_).ComputeIntrinsicSizingInfo();
 
   std::optional<LayoutUnit> intrinsic_inline_size =
       legacy_sizing_info.has_width

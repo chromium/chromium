@@ -29,8 +29,7 @@ class CORE_EXPORT LayoutListMarkerImage final : public LayoutImage {
     return true;
   }
 
-  void ComputeIntrinsicSizingInfoByDefaultSize(IntrinsicSizingInfo&) const;
-  void ComputeIntrinsicSizingInfo(IntrinsicSizingInfo&) const final;
+  IntrinsicSizingInfo GetNaturalDimensions() const override;
 };
 
 template <>

@@ -1537,9 +1537,8 @@ LogicalSize BlockNode::GetAspectRatio() const {
   }
 
   if (!ShouldApplySizeContainment()) {
-    IntrinsicSizingInfo legacy_sizing_info;
-    To<LayoutReplaced>(box_.Get())
-        ->ComputeIntrinsicSizingInfo(legacy_sizing_info);
+    const IntrinsicSizingInfo legacy_sizing_info =
+        To<LayoutReplaced>(*box_).ComputeIntrinsicSizingInfo();
     if (!legacy_sizing_info.aspect_ratio.IsEmpty()) {
       return StyleAspectRatio::LayoutRatioFromSizeF(
                  legacy_sizing_info.aspect_ratio)

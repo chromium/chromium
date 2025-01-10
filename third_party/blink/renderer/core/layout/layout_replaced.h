@@ -102,9 +102,13 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
 
   void Paint(const PaintInfo&) const override;
 
+  // Compute the natural dimensions of the replaced content. Should not apply
+  // any additional transformations (like 'object-view-box').
+  virtual IntrinsicSizingInfo GetNaturalDimensions() const;
+
   // This function is public only so we can call it when computing
   // intrinsic size in LayoutNG.
-  virtual void ComputeIntrinsicSizingInfo(IntrinsicSizingInfo&) const;
+  virtual IntrinsicSizingInfo ComputeIntrinsicSizingInfo() const;
 
   // This callback must be invoked whenever the underlying intrinsic size has
   // changed.
@@ -125,6 +129,9 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
     NOT_DESTROYED();
     return true;
   }
+  // Applies a 'object-view-box' (if present) to the provided natural
+  // dimensions.
+  void ApplyObjectViewBox(IntrinsicSizingInfo&) const;
 
   bool IsInSelfHitTestingPhase(HitTestPhase phase) const override {
     NOT_DESTROYED();

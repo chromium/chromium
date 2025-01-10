@@ -345,40 +345,33 @@ bool LayoutImage::CanApplyObjectViewBox() const {
   return info.has_width && info.has_height;
 }
 
-void LayoutImage::ComputeIntrinsicSizingInfo(
-    IntrinsicSizingInfo& intrinsic_sizing_info) const {
+IntrinsicSizingInfo LayoutImage::GetNaturalDimensions() const {
   NOT_DESTROYED();
-  DCHECK(!ShouldApplySizeContainment());
+  IntrinsicSizingInfo sizing_info;
   if (EmbeddedSVGImage()) {
-    intrinsic_sizing_info =
+    sizing_info =
         image_resource_->GetNaturalDimensions(StyleRef().EffectiveZoom());
-
-    if (auto view_box = ComputeObjectViewBoxRect()) {
-      DCHECK(intrinsic_sizing_info.has_width);
-      DCHECK(intrinsic_sizing_info.has_height);
-      intrinsic_sizing_info.size = gfx::SizeF(view_box->size);
-    }
 
     // The value returned by LayoutImageResource will be in zoomed CSS
     // pixels, but for the 'scale-down' object-fit value we want "zoomed
     // device pixels", so undo the DPR part here.
     if (StyleRef().GetObjectFit() == EObjectFit::kScaleDown) {
-      intrinsic_sizing_info.size.InvScale(ImageDevicePixelRatio());
+      sizing_info.size.InvScale(ImageDevicePixelRatio());
     }
-    return;
-  }
+  } else {
+    sizing_info = LayoutReplaced::GetNaturalDimensions();
 
-  LayoutReplaced::ComputeIntrinsicSizingInfo(intrinsic_sizing_info);
-
-  // Don't compute an intrinsic ratio to preserve historical WebKit behavior if
-  // we're painting alt text and/or a broken image.
-  // Video is excluded from this behavior because video elements have a default
-  // aspect ratio that a failed poster image load should not override.
-  if (image_resource_ && image_resource_->ErrorOccurred() &&
-      !IsA<LayoutVideo>(this)) {
-    intrinsic_sizing_info.aspect_ratio = gfx::SizeF(1, 1);
-    return;
+    // Don't compute an intrinsic ratio to preserve historical WebKit behavior
+    // if we're painting alt text and/or a broken image.
+    // Video is excluded from this behavior because video elements have a
+    // default aspect ratio that a failed poster image load should not
+    // override.
+    if (image_resource_ && image_resource_->ErrorOccurred() &&
+        !IsA<LayoutVideo>(this)) {
+      sizing_info.aspect_ratio = gfx::SizeF(1, 1);
+    }
   }
+  return sizing_info;
 }
 
 SVGImage* LayoutImage::EmbeddedSVGImage() const {
