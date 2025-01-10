@@ -47,7 +47,7 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
   // without signing in.
   void SwitchToSignedOutPostIdentityFlow(
       Profile* profile,
-      PostHostClearedCallback post_host_cleared_callback,
+      base::TimeTicks profile_picked_time_on_startup,
       StepSwitchFinishedCallback step_switch_finished_callback);
 
  protected:

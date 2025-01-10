@@ -42,7 +42,6 @@
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_feature_promo_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_flow_controller.h"
-#include "chrome/browser/ui/webui/signin/profile_picker_handler.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
@@ -486,35 +485,8 @@ void ProfilePickerView::OnLocalProfileInitialized(
   // Skip the FRE for this profile as sign-in was offered as part of the flow.
   profile->GetPrefs()->SetBoolean(prefs::kHasSeenWelcomePage, true);
   GetProfilePickerFlowController()->SwitchToSignedOutPostIdentityFlow(
-      profile,
-      PostHostClearedCallback(base::BindOnce(
-          &ProfilePickerView::ShowLocalProfileCustomization,
-          weak_ptr_factory_.GetWeakPtr(), profile_picked_time_on_startup)),
+      profile, profile_picked_time_on_startup,
       std::move(switch_finished_callback));
-}
-
-void ProfilePickerView::ShowLocalProfileCustomization(
-    base::TimeTicks profile_picked_time_on_startup,
-    Browser* browser) {
-  if (!browser) {
-    // TODO(crbug.com/40242414): Make sure we do something or log an error if
-    // opening a browser window was not possible.
-    return;
-  }
-
-  DCHECK(browser->window());
-  Profile* profile = browser->profile();
-
-  TRACE_EVENT1("browser", "ProfilePickerView::ShowLocalProfileCustomization",
-               "profile_path", profile->GetPath().AsUTF8Unsafe());
-
-  if (!profile_picked_time_on_startup.is_null()) {
-    ProfilePickerHandler::BeginFirstWebContentsProfiling(
-        browser, profile_picked_time_on_startup);
-  }
-
-  browser->signin_view_controller()->ShowModalProfileCustomizationDialog(
-      /*is_local_profile_creation=*/true);
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

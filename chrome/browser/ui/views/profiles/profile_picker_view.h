@@ -32,7 +32,6 @@ class Profile;
 class ScopedProfileKeepAlive;
 class ProfileManagementFlowController;
 class ProfilePickerFlowController;
-class Browser;
 class ProfilePickerFeaturePromoController;
 class ForceSigninUIError;
 
@@ -199,12 +198,6 @@ class ProfilePickerView : public views::WidgetDelegateView,
       base::TimeTicks profile_picked_time_on_startup,
       base::OnceCallback<void(bool)> switch_finished_callback,
       Profile* profile);
-
-  // Callback used when the browser is launched after finishing the signed out
-  // flow.
-  void ShowLocalProfileCustomization(
-      base::TimeTicks profile_picked_time_on_startup,
-      Browser* browser);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Switches the layout to the sign-in screen (and creates a new profile or

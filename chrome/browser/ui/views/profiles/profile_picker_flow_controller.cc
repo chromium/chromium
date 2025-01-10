@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_dice_reauth_provider.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_signed_in_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
+#include "chrome/browser/ui/webui/signin/profile_picker_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -321,6 +322,30 @@ std::unique_ptr<ProfileManagementStepController> CreateReauthtep(
 }
 #endif
 
+void ShowLocalProfileCustomization(
+    base::TimeTicks profile_picked_time_on_startup,
+    Browser* browser) {
+  if (!browser) {
+    // TODO(crbug.com/40242414): Make sure we do something or log an error if
+    // opening a browser window was not possible.
+    return;
+  }
+
+  DCHECK(browser->window());
+  Profile* profile = browser->profile();
+
+  TRACE_EVENT1("browser", "ShowLocalProfileCustomization", "profile_path",
+               profile->GetPath().AsUTF8Unsafe());
+
+  if (!profile_picked_time_on_startup.is_null()) {
+    ProfilePickerHandler::BeginFirstWebContentsProfiling(
+        browser, profile_picked_time_on_startup);
+  }
+
+  browser->signin_view_controller()->ShowModalProfileCustomizationDialog(
+      /*is_local_profile_creation=*/true);
+}
+
 }  // namespace
 
 ProfilePickerFlowController::ProfilePickerFlowController(
@@ -507,14 +532,16 @@ ProfilePickerFlowController::CreateSignedInFlowController(
 
 void ProfilePickerFlowController::SwitchToSignedOutPostIdentityFlow(
     Profile* profile,
-    PostHostClearedCallback post_host_cleared_callback,
+    base::TimeTicks profile_picked_time_on_startup,
     StepSwitchFinishedCallback step_switch_finished_callback) {
   CHECK(profile);
   created_profile_ = profile->GetWeakPtr();
   CreateSignedOutFlowWebContents(created_profile_.get());
 
   HandleIdentityStepsCompleted(
-      created_profile_.get(), std::move(post_host_cleared_callback),
+      created_profile_.get(),
+      PostHostClearedCallback(base::BindOnce(&ShowLocalProfileCustomization,
+                                             profile_picked_time_on_startup)),
       /*is_continue_callback=*/false, std::move(step_switch_finished_callback));
 }
 
