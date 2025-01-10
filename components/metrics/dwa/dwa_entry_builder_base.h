@@ -1,4 +1,4 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,6 +35,11 @@ class DwaEntryBuilderBase {
 
   // Return a pointer to internal DwaEntryPtr for testing.
   metrics::dwa::mojom::DwaEntryPtr* GetEntryForTesting();
+
+  // Sanitizes `content` and returns the sanitized content as a string. For
+  // contents which are URLs, the eTLD+1 domain is returned. All content URLs
+  // logged by DWA are required to be eTLD+1.
+  static std::string SanitizeContent(std::string_view content);
 
  protected:
   explicit DwaEntryBuilderBase(uint64_t event_hash);

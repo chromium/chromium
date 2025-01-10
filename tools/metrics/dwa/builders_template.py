@@ -89,7 +89,7 @@ const uint64_t {event.name}::kEntryNameHash;
 {event.name}::~{event.name}() = default;
 
 {event.name}& {event.name}::SetContent(std::string_view content) {{
-  SetContentInternal(base::HashMetricName(content));
+  SetContentInternal(base::HashMetricName(SanitizeContent(content)));
   return *this;
 }}
 

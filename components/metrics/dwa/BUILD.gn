@@ -34,6 +34,7 @@ static_library("dwa") {
     "//components/prefs:prefs",
     "//components/version_info:version_info",
     "//mojo/public/cpp/bindings",
+    "//net:net",
   ]
 }
 

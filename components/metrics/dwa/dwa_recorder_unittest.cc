@@ -118,7 +118,7 @@ class DwaRecorderDisabledTest : public DwaRecorderTestBase {
 
 TEST_F(DwaRecorderEnabledTest, ValidateHasEntriesWhenEntryIsAdded) {
   ::dwa::DwaEntryBuilder builder("Kangaroo.Jumped");
-  builder.SetContent("adtech.com");
+  builder.SetContent("https://adtech.com");
   builder.SetMetric("Length", 5);
   builder.Record(GetRecorder());
 
@@ -129,7 +129,7 @@ TEST_F(DwaRecorderEnabledTest, ValidateEntriesWhenRecordingIsDisabled) {
   GetRecorder()->DisableRecording();
 
   ::dwa::DwaEntryBuilder builder("Kangaroo.Jumped");
-  builder.SetContent("adtech.com");
+  builder.SetContent("https://adtech.com");
   builder.SetMetric("Length", 5);
   builder.Record(GetRecorder());
 
@@ -139,13 +139,13 @@ TEST_F(DwaRecorderEnabledTest, ValidateEntriesWhenRecordingIsDisabled) {
 TEST_F(DwaRecorderEnabledTest,
        ValidateOnPageLoadCreatesPageLoadEventsWithVaryingMetrics) {
   ::dwa::DwaEntryBuilder builder_1("Kangaroo.Jumped");
-  builder_1.SetContent("adtech.com");
+  builder_1.SetContent("https://adtech.com");
   builder_1.SetMetric("Length", 5);
   builder_1.SetMetric("Width", 10);
   builder_1.Record(GetRecorder());
 
   ::dwa::DwaEntryBuilder builder_2("Kangaroo.Jumped");
-  builder_2.SetContent("adtech.com");
+  builder_2.SetContent("https://adtech.com");
   builder_2.SetMetric("Length", 3);
   builder_2.SetMetric("Width", 12);
   builder_2.Record(GetRecorder());
@@ -204,17 +204,17 @@ TEST_F(DwaRecorderEnabledTest,
 TEST_F(DwaRecorderEnabledTest,
        ValidateOnPageLoadCreatesPageLoadEventsWithVaryingContent) {
   ::dwa::DwaEntryBuilder builder_1("Kangaroo.Jumped");
-  builder_1.SetContent("adtech.com");
+  builder_1.SetContent("https://adtech.com");
   builder_1.SetMetric("Latency", 10);
   builder_1.Record(GetRecorder());
 
   ::dwa::DwaEntryBuilder builder_2("Kangaroo.Jumped");
-  builder_2.SetContent("adtech.com");
+  builder_2.SetContent("https://adtech.com");
   builder_2.SetMetric("Latency", 12);
   builder_2.Record(GetRecorder());
 
   ::dwa::DwaEntryBuilder builder_3("Kangaroo.Jumped");
-  builder_3.SetContent("adtech2.com");
+  builder_3.SetContent("https://adtech2.com");
   builder_3.SetMetric("Latency", 14);
   builder_3.Record(GetRecorder());
 
@@ -247,17 +247,17 @@ TEST_F(DwaRecorderEnabledTest,
 TEST_F(DwaRecorderEnabledTest,
        ValidateOnPageLoadCreatesPageLoadEventsWithVaryingEvents) {
   ::dwa::DwaEntryBuilder builder_1("Kangaroo.Jumped");
-  builder_1.SetContent("adtech.com");
+  builder_1.SetContent("https://adtech.com");
   builder_1.SetMetric("Latency", 10);
   builder_1.Record(GetRecorder());
 
   ::dwa::DwaEntryBuilder builder_2("Kangaroo.Jumped");
-  builder_2.SetContent("adtech.com");
+  builder_2.SetContent("https://adtech.com");
   builder_2.SetMetric("Latency", 12);
   builder_2.Record(GetRecorder());
 
   ::dwa::DwaEntryBuilder builder_3("Frog.Leaped");
-  builder_3.SetContent("adtech.com");
+  builder_3.SetContent("https://adtech.com");
   builder_3.SetMetric("Latency", 14);
   builder_3.Record(GetRecorder());
 
@@ -289,7 +289,7 @@ TEST_F(DwaRecorderEnabledTest,
       ->Activate();
 
   ::dwa::DwaEntryBuilder builder_1("Kangaroo.Jumped");
-  builder_1.SetContent("adtech.com");
+  builder_1.SetContent("https://adtech.com");
   builder_1.AddToStudiesOfInterest("test_trial_1");
   builder_1.AddToStudiesOfInterest("test_trial_2");
   builder_1.SetMetric("Latency", 10);
@@ -299,7 +299,7 @@ TEST_F(DwaRecorderEnabledTest,
 
   ::dwa::DwaEntryBuilder builder_2("Frog.Leaped");
   builder_2.AddToStudiesOfInterest("test_trial_3");
-  builder_2.SetContent("adtech.com");
+  builder_2.SetContent("https://adtech.com");
   builder_2.SetMetric("Latency", 12);
   builder_2.Record(GetRecorder());
 
@@ -336,7 +336,7 @@ TEST_F(DwaRecorderEnabledTest,
 
 TEST_F(DwaRecorderDisabledTest, FeatureDisabled) {
   ::dwa::DwaEntryBuilder builder("Kangaroo.Jumped");
-  builder.SetContent("adtech.com");
+  builder.SetContent("https://adtech.com");
   builder.SetMetric("Length", 5);
   builder.Record(GetRecorder());
 
