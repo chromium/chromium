@@ -22,10 +22,25 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
-class Browser;
 class ScopedProfileKeepAlive;
 
 class ForceSigninUIError;
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(ProfilePickerAction)
+enum class ProfilePickerAction {
+  kLaunchExistingProfile = 0,
+  kLaunchExistingProfileCustomizeSettings = 1,
+  kLaunchGuestProfile = 2,
+  kLaunchNewProfile = 3,
+  kDeleteProfile = 4,
+  kMaxValue = kDeleteProfile,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/profile/enums.xml:ProfilePickerAction)
+
+void RecordProfilePickerAction(ProfilePickerAction action);
 
 // The handler for Javascript messages related to the profile picker main view.
 class ProfilePickerHandler : public content::WebUIMessageHandler,
@@ -54,12 +69,6 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   void RegisterMessages() override;
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;
-
-  // Measure startup time to display first web contents if the profile picker
-  // was displayed on startup and if the initiating action is instrumented. For
-  // example we don't record pick time for profile creations.
-  static void BeginFirstWebContentsProfiling(Browser* browser,
-                                             base::TimeTicks pick_time);
 
  private:
   friend class ProfilePickerHandlerTest;
@@ -111,9 +120,6 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   void GatherProfileStatistics(Profile* profile);
   void OnProfileStatisticsReceived(const base::FilePath& profile_path,
                                    profiles::ProfileCategoryStats result);
-  void OnSwitchToProfileComplete(bool new_profile,
-                                 bool open_settings,
-                                 Browser* browser);
 
   void OnProfileCreationFinished(bool finished_successfully);
   void PushProfilesList();
@@ -168,10 +174,6 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   // Creation time of the handler, to measure performance on startup. Only set
   // when the picker is shown on startup.
   base::TimeTicks creation_time_on_startup_;
-
-  // Time when the user picked a profile to open, to measure browser startup
-  // performance. Only set when the picker is shown on startup.
-  base::TimeTicks profile_picked_time_on_startup_;
 
   bool main_view_initialized_ = false;
 

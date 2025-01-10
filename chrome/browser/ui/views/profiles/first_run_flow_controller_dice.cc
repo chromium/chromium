@@ -499,6 +499,12 @@ void FirstRunFlowControllerDice::CancelPostSignInFlow() {
                                StepSwitchFinishedCallback());
 }
 
+void FirstRunFlowControllerDice::PickProfile(
+    const base::FilePath& profile_path,
+    ProfilePicker::ProfilePickingArgs args) {
+  NOTREACHED() << "FRE is not expected to handle this flow";
+}
+
 bool FirstRunFlowControllerDice::PreFinishWithBrowser() {
   DCHECK(first_run_exited_callback_);
   std::move(first_run_exited_callback_)

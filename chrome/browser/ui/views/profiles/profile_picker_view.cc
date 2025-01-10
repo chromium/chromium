@@ -225,12 +225,18 @@ void ProfilePicker::SwitchToReauth(
 // static
 void ProfilePicker::SwitchToSignedOutPostIdentityFlow(
     std::optional<SkColor> profile_color,
-    base::TimeTicks profile_picked_time_on_startup,
     base::OnceCallback<void(bool)> switch_finished_callback) {
   if (g_profile_picker_view) {
     g_profile_picker_view->SwitchToSignedOutPostIdentityFlow(
-        profile_color, profile_picked_time_on_startup,
-        std::move(switch_finished_callback));
+        profile_color, std::move(switch_finished_callback));
+  }
+}
+
+// static
+void ProfilePicker::PickProfile(const base::FilePath& profile_path,
+                                ProfilePickingArgs args) {
+  if (g_profile_picker_view) {
+    g_profile_picker_view->flow_controller_->PickProfile(profile_path, args);
   }
 }
 
@@ -445,7 +451,6 @@ void ProfilePickerView::Reset(StepSwitchFinishedCallback callback) {
 
 void ProfilePickerView::SwitchToSignedOutPostIdentityFlow(
     std::optional<SkColor> profile_color,
-    base::TimeTicks profile_picked_time_on_startup,
     base::OnceCallback<void(bool)> switch_finished_callback) {
   size_t icon_index = profiles::GetPlaceholderAvatarIndex();
 
@@ -456,13 +461,11 @@ void ProfilePickerView::SwitchToSignedOutPostIdentityFlow(
       icon_index, /*is_hidden=*/true,
       base::BindOnce(&ProfilePickerView::OnLocalProfileInitialized,
                      weak_ptr_factory_.GetWeakPtr(), profile_color,
-                     profile_picked_time_on_startup,
                      std::move(switch_finished_callback)));
 }
 
 void ProfilePickerView::OnLocalProfileInitialized(
     std::optional<SkColor> profile_color,
-    base::TimeTicks profile_picked_time_on_startup,
     base::OnceCallback<void(bool)> switch_finished_callback,
     Profile* profile) {
   if (!profile) {
@@ -485,8 +488,7 @@ void ProfilePickerView::OnLocalProfileInitialized(
   // Skip the FRE for this profile as sign-in was offered as part of the flow.
   profile->GetPrefs()->SetBoolean(prefs::kHasSeenWelcomePage, true);
   GetProfilePickerFlowController()->SwitchToSignedOutPostIdentityFlow(
-      profile, profile_picked_time_on_startup,
-      std::move(switch_finished_callback));
+      profile, std::move(switch_finished_callback));
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

@@ -189,13 +189,11 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // when the picker is shown on startup.
   void SwitchToSignedOutPostIdentityFlow(
       std::optional<SkColor> profile_color,
-      base::TimeTicks profile_picked_time_on_startup,
       base::OnceCallback<void(bool)> switch_finished_callback);
 
   // Callback used when the profile is created in the signed out flow.
   void OnLocalProfileInitialized(
       std::optional<SkColor> profile_color,
-      base::TimeTicks profile_picked_time_on_startup,
       base::OnceCallback<void(bool)> switch_finished_callback,
       Profile* profile);
 

@@ -430,6 +430,8 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Deleted a profile"/>
 </enum>
 
+<!-- LINT.IfChange(ProfilePickerAction) -->
+
 <enum name="ProfilePickerAction">
   <int value="0" label="Launch existing profile"/>
   <int value="1" label="Launch existing profile on customize settings page"/>
@@ -437,6 +439,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Launch new profile"/>
   <int value="4" label="Delete profile"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/webui/signin/profile_picker_handler.h:ProfilePickerAction) -->
 
 <enum name="ProfilePickerEntryPoint">
   <int value="0" label="On startup"/>

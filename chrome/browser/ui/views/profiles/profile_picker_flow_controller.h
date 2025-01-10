@@ -47,8 +47,11 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
   // without signing in.
   void SwitchToSignedOutPostIdentityFlow(
       Profile* profile,
-      base::TimeTicks profile_picked_time_on_startup,
       StepSwitchFinishedCallback step_switch_finished_callback);
+
+  // ProfileManagementFlowControllerImpl:
+  void PickProfile(const base::FilePath& profile_path,
+                   ProfilePicker::ProfilePickingArgs args) override;
 
  protected:
   // ProfileManagementFlowControllerImpl
@@ -75,6 +78,9 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
       const CoreAccountInfo& account_info,
       std::unique_ptr<content::WebContents> contents) override;
 
+  // Callback after loading a profile and opening a browser.
+  void OnSwitchToProfileComplete(bool open_settings, Browser* browser);
+
   const ProfilePicker::EntryPoint entry_point_;
 
   // Color provided when a profile creation is initiated, that may be used to
@@ -92,6 +98,12 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
       weak_signed_in_flow_controller_;
 
   base::WeakPtr<Profile> created_profile_;
+
+  // Time when the user picked a profile to open, to measure browser startup
+  // performance. Only set when the picker is shown on startup.
+  base::TimeTicks profile_picked_time_on_startup_;
+
+  base::WeakPtrFactory<ProfilePickerFlowController> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_FLOW_CONTROLLER_H_

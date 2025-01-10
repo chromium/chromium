@@ -219,13 +219,21 @@ class ProfilePicker {
   // without signing in.
   // `profile_color` is the profile's color. It is undefined for the default
   // theme.
-  // `profile_picked_time_on_startup` is the time when the user picked a
-  // profile to open, to measure browser startup performance. It is only set
-  // when the picker is shown on startup.
   static void SwitchToSignedOutPostIdentityFlow(
       std::optional<SkColor> profile_color,
-      base::TimeTicks profile_picked_time_on_startup,
       base::OnceCallback<void(bool)> switch_finished_callback);
+
+  struct ProfilePickingArgs {
+    // Opens the settings page of the profile once it is first picked.
+    bool open_settings = false;
+    // Whether we are recording timing metrics about loading the profile and
+    // opening the first web content.
+    bool should_record_startup_metrics = false;
+  };
+
+  // Picks the profile with `profile_path`.
+  static void PickProfile(const base::FilePath& profile_path,
+                          ProfilePickingArgs args);
 
   // Cancel the signed-in flow and returns back to the main picker screen (if
   // the original EntryPoint was to open the picker). Must only be called from

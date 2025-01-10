@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -86,6 +87,11 @@ class TestProfileManagementFlowController
   }
 
   void CancelPostSignInFlow() override { NOTREACHED(); }
+
+  void PickProfile(const base::FilePath& profile_path,
+                   ProfilePicker::ProfilePickingArgs args) override {
+    NOTREACHED();
+  }
 
   Step step_;
   ProfileManagementStepTestView::StepControllerFactory step_controller_factory_;
