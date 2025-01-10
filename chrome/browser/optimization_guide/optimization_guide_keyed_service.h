@@ -47,7 +47,6 @@ class ModelExecutionManager;
 class ModelInfo;
 class ModelQualityLogsUploaderService;
 class ModelValidatorKeyedService;
-class OnDeviceAssetManager;
 class OnDeviceModelAvailabilityObserver;
 class OnDeviceModelComponentStateManager;
 class OptimizationGuideStore;
@@ -358,9 +357,6 @@ class OptimizationGuideKeyedService
   // Manages the storing, loading, and evaluating of optimization target
   // prediction models.
   std::unique_ptr<optimization_guide::PredictionManager> prediction_manager_;
-
-  std::unique_ptr<optimization_guide::OnDeviceAssetManager>
-      on_device_asset_manager_;
 
   // Manages the model execution. Not created for off the record profiles.
   std::unique_ptr<optimization_guide::ModelExecutionManager>
