@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
@@ -133,7 +134,7 @@ class ConditionalFocusBrowserTest : public WebRtcTestBase {
                   capturing_tab_->GetPrimaryMainFrame(),
                   base::StringPrintf("captureOtherTab(%d, '%s', %s);",
                                      busy_wait_ms, ToString(focus_enum_value),
-                                     on_correct_microtask ? "true" : "false")),
+                                     base::ToString(on_correct_microtask))),
               expected_result);
   }
 

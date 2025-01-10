@@ -12,6 +12,7 @@
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
@@ -114,7 +115,7 @@ struct TabInfo {
                   web_contents->GetPrimaryMainFrame(),
                   base::StringPrintf(
                       "callSetCaptureHandleConfig(%s, \"%s\", %s);",
-                      expose_origin ? "true" : "false", handle.c_str(),
+                      base::ToString(expose_origin), handle.c_str(),
                       StringifyPermittedOrigins(permitted_origins).c_str())),
               "capture-handle-set");
 
