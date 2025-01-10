@@ -16,14 +16,35 @@
 
 namespace glic {
 
+GlicProfileConfiguration::GlicProfileConfiguration(Profile* profile)
+    : profile_(*profile) {
+  pref_registrar_.Init(profile_->GetPrefs());
+  pref_registrar_.Add(
+      prefs::kGlicEnabledByPolicy,
+      base::BindRepeating(&GlicProfileConfiguration::OnEnabledByPolicyChanged,
+                          base::Unretained(this)));
+}
+
 GlicProfileConfiguration::~GlicProfileConfiguration() = default;
 
 // static
 void GlicProfileConfiguration::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(prefs::kGlicEnabledByPolicy, true);
   registry->RegisterBooleanPref(prefs::kGlicMicrophoneEnabled, false);
   registry->RegisterBooleanPref(prefs::kGlicGeolocationEnabled, false);
   registry->RegisterBooleanPref(prefs::kGlicTabContextEnabled, false);
+}
+
+bool GlicProfileConfiguration::IsEnabledByPolicy() const {
+  return profile_->GetPrefs()->GetBoolean(prefs::kGlicEnabledByPolicy);
+}
+
+void GlicProfileConfiguration::OnEnabledByPolicyChanged() {
+  // TODO(crbug.com/382722218): Update UI in each window to remove/add Glic
+  // button.
+  // TODO(crbug.com/382722218): Update background mode in response to changed
+  // policy.
 }
 
 }  // namespace glic

@@ -20,6 +20,10 @@ inline constexpr char kGlicLauncherGlobalHotkey[] =
 // ************* PROFILE PREFS ***************
 // Prefs below are tied to a user profile
 
+// Boolean pref that determines whether Glic is enabled for this user profile.
+// This is controlled from enterprise policy.
+inline constexpr char kGlicEnabledByPolicy[] = "glic.enabled_by_policy";
+
 // Boolean pref that enables or disables geolocation access for Glic.
 inline constexpr char kGlicGeolocationEnabled[] = "glic.geolocation_enabled";
 // Boolean pref that enables or disables microphone access for Glic.

@@ -25,6 +25,7 @@ GlicKeyedService::GlicKeyedService(content::BrowserContext* browser_context,
                                    signin::IdentityManager* identity_manager,
                                    GlicProfileManager* profile_manager)
     : browser_context_(browser_context),
+      configuration_(Profile::FromBrowserContext(browser_context)),
       window_controller_(Profile::FromBrowserContext(browser_context)),
       focused_tab_manager_(Profile::FromBrowserContext(browser_context),
                            window_controller_),

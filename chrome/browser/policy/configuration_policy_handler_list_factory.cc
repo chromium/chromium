@@ -259,6 +259,10 @@
 #include "components/device_signals/core/browser/pref_names.h"  // nogncheck due to crbug.com/1125897
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_pref_names.h"
+#endif  // BUILDFLAG(ENABLE_GLIC)
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_ANDROID)
 #include "components/enterprise/idle/idle_timeout_policy_handler.h"
@@ -2338,6 +2342,12 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kWebAudioOutputBufferingEnabled,
     prefs::kWebAudioOutputBufferingEnabled,
     base::Value::Type::BOOLEAN },
+
+#if BUILDFLAG(ENABLE_GLIC)
+  { key::kGlicEnabled,
+    glic::prefs::kGlicEnabledByPolicy,
+    base::Value::Type::BOOLEAN },
+#endif  // BUILDFLAG(ENABLE_GLIC)
 };
 // clang-format on
 

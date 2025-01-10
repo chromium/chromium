@@ -5,12 +5,14 @@
 #ifndef CHROME_BROWSER_GLIC_GLIC_PROFILE_CONFIGURATION_H_
 #define CHROME_BROWSER_GLIC_GLIC_PROFILE_CONFIGURATION_H_
 
+#include "base/memory/raw_ref.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/base/accelerators/accelerator.h"
 
 class PrefRegistrySimple;
+class Profile;
 
 namespace glic {
 
@@ -19,10 +21,21 @@ namespace glic {
 // GlicLauncherConfiguration.
 class GlicProfileConfiguration {
  public:
-  GlicProfileConfiguration() = default;
+  explicit GlicProfileConfiguration(Profile* profile);
   ~GlicProfileConfiguration();
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
+  bool IsEnabledByPolicy() const;
+
+ private:
+  void OnEnabledByPolicyChanged();
+
+  // raw_ref since this class is owned by a keyed service tied to the Profile it
+  // will be outlived by it.
+  const raw_ref<Profile> profile_;
+
+  PrefChangeRegistrar pref_registrar_;
 };
 }  // namespace glic
 

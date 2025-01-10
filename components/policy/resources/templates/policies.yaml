@@ -1325,6 +1325,8 @@ policies:
   1324: WebRtcIPHandlingUrl
   1325: GenAIPhotoEditingSettings
   1326: PartitionedBlobUrlUsage
+  1327: GlicEnabled
+
 
 atomic_groups:
   1: Homepage
