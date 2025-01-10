@@ -161,6 +161,9 @@ class MOJO_SYSTEM_IMPL_EXPORT Transport : public Object<Transport>,
   void OnChannelError(Channel::Error error) override;
   void OnChannelDestroyed() override;
 
+  // Allow tests to nerf serialized handles to validate recipient behavior.
+  static size_t FirstHandleOffsetForTesting();
+
  private:
   struct PendingTransmission {
     PendingTransmission();

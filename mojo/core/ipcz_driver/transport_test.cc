@@ -496,5 +496,59 @@ TEST_F(MojoIpczTransportTest, TransmitMemory) {
   });
 }
 
+#if BUILDFLAG(IS_WIN)
+constexpr std::string_view kGotInvalid = "got an invalid handle as expected";
+DEFINE_TEST_CLIENT_TEST_WITH_PIPE(InvalidHandleClient,
+                                  MojoIpczTransportTest,
+                                  h) {
+  scoped_refptr<Transport> transport = ReceiveTransport(h);
+
+  TransportListener listener(*transport);
+  TestMessage message = listener.WaitForNextMessage();
+  scoped_refptr<ObjectBase> object;
+  // We nerfed the handle between serialization and sending so this fails.
+  const IpczResult result = transport->DeserializeObject(
+      base::span(message.bytes), base::span(message.handles), object);
+  EXPECT_EQ(result, IPCZ_RESULT_INVALID_ARGUMENT);
+  TestMessage(kGotInvalid).Transmit(*transport);
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
+}
+
+TEST_F(MojoIpczTransportTest, InvalidHandle) {
+  RunTestClientWithController("InvalidHandleClient", [&](ClientController& c) {
+    scoped_refptr<Transport> transport =
+        CreateAndSendTransport(c.pipe(), c.process());
+
+    TransportListener listener(*transport);
+    auto region = base::UnsafeSharedMemoryRegion::Create(kGotInvalid.size());
+    auto fake_buffer = SharedBuffer::MakeForRegion(std::move(region));
+    size_t num_bytes = 0;
+    size_t num_handles = 0;
+    TestMessage message;
+    message.handles.resize(num_handles);
+    EXPECT_EQ(IPCZ_RESULT_RESOURCE_EXHAUSTED,
+              transport->SerializeObject(*fake_buffer, message.bytes.data(),
+                                         &num_bytes, message.handles.data(),
+                                         &num_handles));
+    message.bytes.resize(num_bytes);
+    EXPECT_EQ(IPCZ_RESULT_OK,
+              transport->SerializeObject(*fake_buffer, message.bytes.data(),
+                                         &num_bytes, message.handles.data(),
+                                         &num_handles));
+    // Nerf the handle.
+    uint8_t* handle_ptr =
+        base::span(message.bytes)
+            .subspan(Transport::FirstHandleOffsetForTesting(), sizeof(uint32_t))
+            .data();
+    *reinterpret_cast<uint32_t*>(handle_ptr) = 0x12345678u;
+    // Also close the region in the parent.
+    ::CloseHandle(fake_buffer->region().GetPlatformHandle());
+    message.Transmit(*transport);
+    EXPECT_EQ(kGotInvalid, listener.WaitForNextMessage().as_string());
+    listener.WaitForDisconnect();
+  });
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 }  // namespace
 }  // namespace mojo::core::ipcz_driver

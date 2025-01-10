@@ -186,6 +186,12 @@ PlatformHandle DecodeHandle(HandleData data,
       // is connected to a known elevated process.)
       return PlatformHandle();
     }
+    // Verify that this is a handle to a valid object. We do not yet know the
+    // expected type of the handle (region, file, etc.) so cannot validate that.
+    DWORD dummy;
+    if (!::GetHandleInformation(handle, &dummy)) {
+      return PlatformHandle();
+    }
     return PlatformHandle(base::win::ScopedHandle(handle));
   }
 
@@ -207,6 +213,11 @@ scoped_refptr<base::SingleThreadTaskRunner>& GetIOTaskRunnerStorage() {
 }
 
 }  // namespace
+
+// static
+size_t Transport::FirstHandleOffsetForTesting() {
+  return sizeof(ObjectHeader);
+}
 
 Transport::Transport(EndpointTypes endpoint_types,
                      PlatformChannelEndpoint endpoint,
