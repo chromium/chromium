@@ -2221,30 +2221,42 @@ inline constexpr char kOfficeFilesAlwaysMoveToOneDriveSyncable[] =
 // Whether the move confirmation dialog has been shown before for Google Drive.
 inline constexpr char kOfficeMoveConfirmationShownForDrive[] =
     "filebrowser.office.move_confirmation_shown_for_drive";
+inline constexpr char kOfficeMoveConfirmationShownForDriveSyncable[] =
+    "filebrowser.office.move_confirmation_shown_for_drive_syncable";
 
 // Whether the move confirmation dialog has been shown before for OneDrive.
 inline constexpr char kOfficeMoveConfirmationShownForOneDrive[] =
     "filebrowser.office.move_confirmation_shown_for_onedrive";
+inline constexpr char kOfficeMoveConfirmationShownForOneDriveSyncable[] =
+    "filebrowser.office.move_confirmation_shown_for_onedrive_syncable";
 
 // Whether the move confirmation dialog has been shown before for uploading
 // local files to Drive.
 inline constexpr char kOfficeMoveConfirmationShownForLocalToDrive[] =
     "filebrowser.office.move_confirmation_shown_for_local_to_drive";
+inline constexpr char kOfficeMoveConfirmationShownForLocalToDriveSyncable[] =
+    "filebrowser.office.move_confirmation_shown_for_local_to_drive_syncable";
 
 // Whether the move confirmation dialog has been shown before for uploading
 // local files to OneDrive.
 inline constexpr char kOfficeMoveConfirmationShownForLocalToOneDrive[] =
     "filebrowser.office.move_confirmation_shown_for_local_to_onedrive";
+inline constexpr char kOfficeMoveConfirmationShownForLocalToOneDriveSyncable[] =
+    "filebrowser.office.move_confirmation_shown_for_local_to_onedrive_syncable";
 
 // Whether the move confirmation dialog has been shown before for uploading
 // cloud files to Drive.
 inline constexpr char kOfficeMoveConfirmationShownForCloudToDrive[] =
     "filebrowser.office.move_confirmation_shown_for_cloud_to_drive";
+inline constexpr char kOfficeMoveConfirmationShownForCloudToDriveSyncable[] =
+    "filebrowser.office.move_confirmation_shown_for_cloud_to_drive_syncable";
 
 // Whether the move confirmation dialog has been shown before for uploading
 // cloud files to OneDrive.
 inline constexpr char kOfficeMoveConfirmationShownForCloudToOneDrive[] =
     "filebrowser.office.move_confirmation_shown_for_cloud_to_onedrive";
+inline constexpr char kOfficeMoveConfirmationShownForCloudToOneDriveSyncable[] =
+    "filebrowser.office.move_confirmation_shown_for_cloud_to_onedrive_syncable";
 
 // The timestamp of the latest office file automatically moved to OneDrive.
 inline constexpr char kOfficeFileMovedToOneDrive[] =

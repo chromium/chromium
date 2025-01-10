@@ -692,6 +692,16 @@ chromium-metrics-reviews@google.com.
   <int value="100314" label="AccessibilityFaceGazePrecisionClickSpeedFactor"/>
   <int value="100315" label="OfficeFilesAlwaysMoveToDriveSyncable"/>
   <int value="100316" label="OfficeFilesAlwaysMoveToOneDriveSyncable"/>
+  <int value="100317" label="OfficeMoveConfirmationShownForDriveSyncable"/>
+  <int value="100318" label="OfficeMoveConfirmationShownForOneDriveSyncable"/>
+  <int value="100319"
+      label="OfficeMoveConfirmationShownForLocalToDriveSyncable"/>
+  <int value="100320"
+      label="OfficeMoveConfirmationShownForLocalToOneDriveSyncable"/>
+  <int value="100321"
+      label="OfficeMoveConfirmationShownForCloudToDriveSyncable"/>
+  <int value="100322"
+      label="OfficeMoveConfirmationShownForCloudToOneDriveSyncable"/>
 <!-- LINT.ThenChange(/chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc:ChromeSyncablePref)-->
 
 <!-- LINT.IfChange(IosSyncablePref) -->

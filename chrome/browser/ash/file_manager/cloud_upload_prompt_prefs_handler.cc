@@ -6,12 +6,14 @@
 
 #include <memory>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -25,6 +27,31 @@
 namespace chromeos::cloud_upload {
 
 namespace {
+
+// Maps the names of local "move confirmation shown" prefs to the corresponding
+// syncable prefs.
+const base::flat_map<const char*,
+                     std::pair<const char*, ash::cloud_upload::CloudProvider>>
+    kMoveConfirmationShownPrefMap = {
+        {prefs::kOfficeMoveConfirmationShownForDrive,
+         {prefs::kOfficeMoveConfirmationShownForDriveSyncable,
+          ash::cloud_upload::CloudProvider::kGoogleDrive}},
+        {prefs::kOfficeMoveConfirmationShownForLocalToDrive,
+         {prefs::kOfficeMoveConfirmationShownForLocalToDriveSyncable,
+          ash::cloud_upload::CloudProvider::kGoogleDrive}},
+        {prefs::kOfficeMoveConfirmationShownForCloudToDrive,
+         {prefs::kOfficeMoveConfirmationShownForCloudToDriveSyncable,
+          ash::cloud_upload::CloudProvider::kGoogleDrive}},
+        {prefs::kOfficeMoveConfirmationShownForOneDrive,
+         {prefs::kOfficeMoveConfirmationShownForOneDriveSyncable,
+          ash::cloud_upload::CloudProvider::kOneDrive}},
+        {prefs::kOfficeMoveConfirmationShownForLocalToOneDrive,
+         {prefs::kOfficeMoveConfirmationShownForLocalToOneDriveSyncable,
+          ash::cloud_upload::CloudProvider::kOneDrive}},
+        {prefs::kOfficeMoveConfirmationShownForCloudToOneDrive,
+         {prefs::kOfficeMoveConfirmationShownForCloudToOneDriveSyncable,
+          ash::cloud_upload::CloudProvider::kOneDrive}},
+};
 
 bool IsProfileEnterpriseManaged(Profile* profile) {
   return profile->GetProfilePolicyConnector()->IsManaged() &&
@@ -68,6 +95,8 @@ class CloudUploadPromptPrefsHandler : public KeyedService {
   void OnOfficeFilesAlwaysMoveToDriveSyncableChanged();
   void OnOfficeFilesAlwaysMoveToOneDriveChanged();
   void OnOfficeFilesAlwaysMoveToOneDriveSyncableChanged();
+  void OnOfficeMoveConfirmationShownChanged();
+  void OnOfficeMoveConfirmationShownSyncableChanged();
   void OnCloudUploadPrefChanged();
 
   raw_ptr<Profile> profile_ = nullptr;
@@ -91,6 +120,24 @@ void CloudUploadPromptPrefsHandler::RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterBooleanPref(
       prefs::kOfficeFilesAlwaysMoveToOneDriveSyncable, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kOfficeMoveConfirmationShownForDriveSyncable, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kOfficeMoveConfirmationShownForOneDriveSyncable, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kOfficeMoveConfirmationShownForLocalToDriveSyncable, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kOfficeMoveConfirmationShownForLocalToOneDriveSyncable, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kOfficeMoveConfirmationShownForCloudToDriveSyncable, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kOfficeMoveConfirmationShownForCloudToOneDriveSyncable, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
@@ -124,6 +171,20 @@ CloudUploadPromptPrefsHandler::CloudUploadPromptPrefsHandler(Profile* profile)
       base::BindRepeating(&CloudUploadPromptPrefsHandler::
                               OnOfficeFilesAlwaysMoveToOneDriveSyncableChanged,
                           base::Unretained(this)));
+
+  for (const auto& [local_pref, syncable_pref] :
+       kMoveConfirmationShownPrefMap) {
+    pref_change_registrar_->Add(
+        local_pref,
+        base::BindRepeating(&CloudUploadPromptPrefsHandler::
+                                OnOfficeMoveConfirmationShownChanged,
+                            base::Unretained(this)));
+    pref_change_registrar_->Add(
+        syncable_pref.first,
+        base::BindRepeating(&CloudUploadPromptPrefsHandler::
+                                OnOfficeMoveConfirmationShownSyncableChanged,
+                            base::Unretained(this)));
+  }
   // TODO(387268733): Initial sync to syncable prefs if needed.
 
   pref_change_registrar_->Add(
@@ -190,6 +251,43 @@ void CloudUploadPromptPrefsHandler::
                                    always_move_syncable);
 }
 
+void CloudUploadPromptPrefsHandler::OnOfficeMoveConfirmationShownChanged() {
+  if (!IsProfileEnterpriseManaged(profile_)) {
+    return;
+  }
+
+  for (const auto& [local_pref, syncable_pref] :
+       kMoveConfirmationShownPrefMap) {
+    bool move_confirmation_shown = profile_->GetPrefs()->GetBoolean(local_pref);
+    profile_->GetPrefs()->SetBoolean(syncable_pref.first,
+                                     move_confirmation_shown);
+  }
+}
+
+void CloudUploadPromptPrefsHandler::
+    OnOfficeMoveConfirmationShownSyncableChanged() {
+  if (!IsProfileEnterpriseManaged(profile_)) {
+    return;
+  }
+
+  for (const auto& [local_pref, syncable_pref] :
+       kMoveConfirmationShownPrefMap) {
+    if (syncable_pref.second ==
+            ash::cloud_upload::CloudProvider::kGoogleDrive &&
+        !cloud_upload::IsGoogleWorkspaceCloudUploadAutomated(profile_)) {
+      continue;
+    }
+    if (syncable_pref.second == ash::cloud_upload::CloudProvider::kOneDrive &&
+        !cloud_upload::IsMicrosoftOfficeCloudUploadAutomated(profile_)) {
+      continue;
+    }
+    bool move_confirmation_shown_syncable =
+        profile_->GetPrefs()->GetBoolean(syncable_pref.first);
+    profile_->GetPrefs()->SetBoolean(local_pref,
+                                     move_confirmation_shown_syncable);
+  }
+}
+
 void CloudUploadPromptPrefsHandler::OnCloudUploadPrefChanged() {
   DCHECK(IsProfileEnterpriseManaged(profile_));
 
@@ -209,8 +307,10 @@ void CloudUploadPromptPrefsHandler::OnCloudUploadPrefChanged() {
 
   if (google_workspace_automated) {
     OnOfficeFilesAlwaysMoveToDriveSyncableChanged();
+    OnOfficeMoveConfirmationShownSyncableChanged();
   } else if (microsoft_office_automated) {
     OnOfficeFilesAlwaysMoveToOneDriveSyncableChanged();
+    OnOfficeMoveConfirmationShownSyncableChanged();
   }
 }
 
