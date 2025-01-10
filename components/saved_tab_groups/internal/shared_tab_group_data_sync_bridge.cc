@@ -889,6 +889,9 @@ void SharedTabGroupDataSyncBridge::SavedTabGroupAddedLocally(
         SharedTabGroupTabToSpecifics(tab, std::move(unique_position));
     StoreSharedGroup(*ongoing_write_batch_, tab_specifics,
                      GroupToLocalOnlyData(*group));
+
+    // Pending NTP should never be created for locally added groups.
+    CHECK(!tab.is_pending_ntp());
     SendToSync(tab_specifics,
                syncer::CollaborationMetadata::ForLocalChange(
                    tab.shared_attribution().updated_by,
@@ -1239,6 +1242,10 @@ void SharedTabGroupDataSyncBridge::ProcessTabLocalChange(
   sync_pb::SharedTabGroupDataSpecifics specifics = SharedTabGroupTabToSpecifics(
       tab, CalculateUniquePosition(group, tab_index.value()));
   StoreSharedTab(write_batch, specifics);
+  // Pending NTP should never be synced, only be stored locally.
+  if (tab.is_pending_ntp()) {
+    return;
+  }
   SendToSync(specifics,
              syncer::CollaborationMetadata::ForLocalChange(
                  tab.shared_attribution().updated_by,

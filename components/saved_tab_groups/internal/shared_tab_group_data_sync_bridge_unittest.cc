@@ -1636,6 +1636,55 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
                           HasTabMetadata("tab 1", "https://google.com/1")));
 }
 
+TEST_F(SharedTabGroupDataSyncBridgeTest,
+       ShouldCreatePendingNtpOnLastTabRemoval) {
+  const CollaborationId kCollaborationId("collaboration");
+  ASSERT_TRUE(InitializeBridgeAndModel());
+
+  // Create a shared tab group locally with one tab.
+  SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
+                      /*urls=*/{}, /*position=*/std::nullopt);
+  group.SetCollaborationId(kCollaborationId);
+  group.AddTabLocally(test::CreateSavedTabGroupTab(
+      "https://google.com/0", u"tab 0", group.saved_guid(), /*position=*/0));
+
+  GenerateUniquePositionsForTabsInGroup(group);
+  model()->AddedLocally(group);
+
+  ASSERT_THAT(model()->saved_tab_groups().front().saved_tabs(),
+              ElementsAre(HasTabMetadata("tab 0", "https://google.com/0")));
+
+  // Delete the tab from sync. It should result in creating a pending NTP which
+  // is never synced.
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+
+  syncer::EntityChangeList change_list;
+  change_list.push_back(
+      CreateDeleteEntityChange(StorageKeyForTab(group.saved_tabs()[0])));
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        std::move(change_list));
+
+  // Verify that the only tab in the group is a pending NTP.
+  ASSERT_THAT(model()->saved_tab_groups(), Not(testing::IsEmpty()));
+  EXPECT_THAT(model()->saved_tab_groups().front().saved_tabs(),
+              ElementsAre(HasTabMetadata("New tab", "chrome://newtab/")));
+
+  // Simulate browser restart to verify that the pending NTP is persisted.
+  SavedTabGroupTab pending_ntp =
+      model()->saved_tab_groups().front().saved_tabs()[0];
+
+  StoreMetadataAndReset();
+  ASSERT_THAT(model(), IsNull());
+  ASSERT_TRUE(InitializeBridgeAndModel());
+  ASSERT_THAT(model()->Get(group.saved_guid()), NotNull());
+
+  ASSERT_EQ(1u, model()->Get(group.saved_guid())->saved_tabs().size());
+  EXPECT_EQ(model()->Get(group.saved_guid())->saved_tabs()[0].saved_tab_guid(),
+            pending_ntp.saved_tab_guid());
+  EXPECT_EQ(model()->Get(group.saved_guid())->saved_tabs()[0].url(),
+            pending_ntp.url());
+}
+
 TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldAssignLocalGroupId) {
   const CollaborationId kCollaborationId("collaboration");
   ASSERT_TRUE(InitializeBridgeAndModel());
