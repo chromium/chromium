@@ -7,7 +7,6 @@ import("//build/buildflag_header.gni")
 import("//build/config/buildflags_paint_preview.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/chromebox_for_meetings/buildflags.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/pgo/pgo.gni")
 import("//build/config/features.gni")
 import("//build/config/python.gni")
@@ -4441,7 +4440,7 @@ static_library("browser") {
         ]
       }
     }
-    if (!is_chromeos_ash) {
+    if (!is_chromeos) {
       sources += [
         "accessibility/soda_installer_impl.cc",
         "accessibility/soda_installer_impl.h",
@@ -4486,7 +4485,7 @@ static_library("browser") {
         "//chrome/browser/ui/webui/signin:profile_impl",
       ]
 
-      #!is_android && !is_chromeos_ash
+      #!is_android && !is_chromeos
       # Any circular includes must depend on the target
       # "browser_public_dependencies".
       allow_circular_includes_from +=
@@ -4535,7 +4534,7 @@ static_library("browser") {
     }
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "accessibility/media_app/ax_media_app.h",
       "accessibility/media_app/ax_media_app_service_factory.cc",
@@ -5759,221 +5758,7 @@ static_library("browser") {
     ]
   }
 
-  if (is_chromeos_lacros) {
-    sources += [
-      "apps/digital_goods/digital_goods_factory_stub.cc",
-      "apps/digital_goods/digital_goods_factory_stub.h",
-      "apps/digital_goods/digital_goods_lacros.cc",
-      "apps/digital_goods/digital_goods_lacros.h",
-      "chrome_browser_main_parts_lacros.cc",
-      "chrome_browser_main_parts_lacros.h",
-      "lacros/app_mode/chrome_kiosk_launch_controller_lacros.cc",
-      "lacros/app_mode/chrome_kiosk_launch_controller_lacros.h",
-      "lacros/app_mode/device_local_account_extension_installer_lacros.cc",
-      "lacros/app_mode/device_local_account_extension_installer_lacros.h",
-      "lacros/app_mode/kiosk_session_service_lacros.cc",
-      "lacros/app_mode/kiosk_session_service_lacros.h",
-      "lacros/app_mode/web_kiosk_installer_lacros.cc",
-      "lacros/app_mode/web_kiosk_installer_lacros.h",
-      "lacros/arc/arc_icon_cache.cc",
-      "lacros/arc/arc_icon_cache.h",
-      "lacros/arc/arc_intent_helper_mojo_lacros.cc",
-      "lacros/arc/arc_intent_helper_mojo_lacros.h",
-      "lacros/automation_manager_lacros.cc",
-      "lacros/automation_manager_lacros.h",
-      "lacros/browser_launcher.cc",
-      "lacros/browser_launcher.h",
-      "lacros/browser_service_lacros.cc",
-      "lacros/browser_service_lacros.h",
-      "lacros/cert/cert_db_initializer.h",
-      "lacros/cert/cert_db_initializer_factory.cc",
-      "lacros/cert/cert_db_initializer_factory.h",
-      "lacros/cert/cert_db_initializer_impl.cc",
-      "lacros/cert/cert_db_initializer_impl.h",
-      "lacros/cert/cert_db_initializer_io_impl.cc",
-      "lacros/cert/cert_db_initializer_io_impl.h",
-      "lacros/cert/client_cert_store_lacros.cc",
-      "lacros/cert/client_cert_store_lacros.h",
-      "lacros/chrome_browser_main_extra_parts_lacros.cc",
-      "lacros/chrome_browser_main_extra_parts_lacros.h",
-      "lacros/clipboard_history_lacros.cc",
-      "lacros/clipboard_history_lacros.h",
-      "lacros/cloud_file_system_path_cache.cc",
-      "lacros/cloud_file_system_path_cache.h",
-      "lacros/debug_interface_lacros.cc",
-      "lacros/debug_interface_lacros.h",
-      "lacros/desk_profiles_lacros.cc",
-      "lacros/desk_profiles_lacros.h",
-      "lacros/desk_template_client_lacros.cc",
-      "lacros/desk_template_client_lacros.h",
-      "lacros/device_oauth2_token_service_lacros.cc",
-      "lacros/device_oauth2_token_service_lacros.h",
-      "lacros/device_settings_lacros.cc",
-      "lacros/device_settings_lacros.h",
-      "lacros/download_controller_client_lacros.cc",
-      "lacros/download_controller_client_lacros.h",
-      "lacros/external_protocol_dialog.cc",
-      "lacros/feedback_util.cc",
-      "lacros/feedback_util.h",
-      "lacros/field_trial_observer.cc",
-      "lacros/field_trial_observer.h",
-      "lacros/file_change_service_bridge.cc",
-      "lacros/file_change_service_bridge.h",
-      "lacros/file_change_service_bridge_factory.cc",
-      "lacros/file_change_service_bridge_factory.h",
-      "lacros/for_which_extension_type.cc",
-      "lacros/for_which_extension_type.h",
-      "lacros/force_installed_tracker_lacros.cc",
-      "lacros/force_installed_tracker_lacros.h",
-      "lacros/full_restore_client_lacros.cc",
-      "lacros/full_restore_client_lacros.h",
-      "lacros/fullscreen_controller_client_lacros.cc",
-      "lacros/fullscreen_controller_client_lacros.h",
-      "lacros/geolocation/system_geolocation_source_lacros.cc",
-      "lacros/geolocation/system_geolocation_source_lacros.h",
-      "lacros/guest_os/vm_sk_forwarding_native_message_host.cc",
-      "lacros/guest_os/vm_sk_forwarding_native_message_host.h",
-      "lacros/guest_os/vm_sk_forwarding_service.cc",
-      "lacros/guest_os/vm_sk_forwarding_service.h",
-      "lacros/identity_manager_lacros.cc",
-      "lacros/identity_manager_lacros.h",
-      "lacros/lacros_apps_publisher.cc",
-      "lacros/lacros_apps_publisher.h",
-      "lacros/lacros_extension_apps_controller.cc",
-      "lacros/lacros_extension_apps_controller.h",
-      "lacros/lacros_extension_apps_publisher.cc",
-      "lacros/lacros_extension_apps_publisher.h",
-      "lacros/lacros_extensions_util.cc",
-      "lacros/lacros_extensions_util.h",
-      "lacros/lacros_file_system_provider.cc",
-      "lacros/lacros_file_system_provider.h",
-      "lacros/lacros_memory_pressure_evaluator.cc",
-      "lacros/lacros_memory_pressure_evaluator.h",
-      "lacros/lacros_prefs.cc",
-      "lacros/lacros_prefs.h",
-      "lacros/lacros_url_handling.cc",
-      "lacros/lacros_url_handling.h",
-      "lacros/launcher_search/search_controller_factory_lacros.cc",
-      "lacros/launcher_search/search_controller_factory_lacros.h",
-      "lacros/launcher_search/search_controller_lacros.cc",
-      "lacros/launcher_search/search_controller_lacros.h",
-      "lacros/magic_boost_state_lacros.cc",
-      "lacros/magic_boost_state_lacros.h",
-      "lacros/media_app_lacros.cc",
-      "lacros/media_app_lacros.h",
-      "lacros/multitask_menu_nudge_delegate_lacros.cc",
-      "lacros/multitask_menu_nudge_delegate_lacros.h",
-      "lacros/net/lacros_extension_proxy_tracker.cc",
-      "lacros/net/lacros_extension_proxy_tracker.h",
-      "lacros/net/network_settings_observer.cc",
-      "lacros/net/network_settings_observer.h",
-      "lacros/net/network_settings_translation.h",
-      "lacros/net/network_settings_translation_crosapi.cc",
-      "lacros/net/network_settings_translation_net_proxy.cc",
-      "lacros/net/proxy_config_service_lacros.cc",
-      "lacros/net/proxy_config_service_lacros.h",
-      "lacros/prefs_ash_observer.cc",
-      "lacros/prefs_ash_observer.h",
-      "lacros/profile_loader.cc",
-      "lacros/profile_loader.h",
-      "lacros/profile_util.cc",
-      "lacros/profile_util.h",
-      "lacros/remote_apps/remote_apps_proxy_lacros.cc",
-      "lacros/remote_apps/remote_apps_proxy_lacros.h",
-      "lacros/remote_apps/remote_apps_proxy_lacros_factory.cc",
-      "lacros/remote_apps/remote_apps_proxy_lacros_factory.h",
-      "lacros/screen_orientation_delegate_lacros.cc",
-      "lacros/screen_orientation_delegate_lacros.h",
-      "lacros/suggestion_service_lacros.cc",
-      "lacros/suggestion_service_lacros.h",
-      "lacros/system_logs/lacros_system_log_fetcher.cc",
-      "lacros/system_logs/lacros_system_log_fetcher.h",
-      "lacros/task_manager_lacros.cc",
-      "lacros/task_manager_lacros.h",
-      "lacros/views_text_services_context_menu_lacros.cc",
-      "lacros/views_text_services_context_menu_lacros.h",
-      "lacros/web_app_provider_bridge_lacros.cc",
-      "lacros/web_app_provider_bridge_lacros.h",
-      "lacros/web_contents_can_go_back_observer.cc",
-      "lacros/web_contents_can_go_back_observer.h",
-      "lacros/webauthn_request_registrar_lacros.cc",
-      "lacros/webauthn_request_registrar_lacros.h",
-      "metrics/enrollment_status.h",
-      "metrics/lacros_metrics_provider.cc",
-      "metrics/lacros_metrics_provider.h",
-      "metrics/structured/lacros_structured_metrics_delegate.cc",
-      "metrics/structured/lacros_structured_metrics_delegate.h",
-      "notifications/notification_platform_bridge_chromeos.cc",
-      "notifications/notification_platform_bridge_chromeos.h",
-      "notifications/notification_platform_bridge_delegate.h",
-      "policy/status_provider/ash_lacros_policy_stack_bridge.cc",
-      "policy/status_provider/ash_lacros_policy_stack_bridge.h",
-      "policy/status_provider/user_policy_status_provider_lacros.cc",
-      "policy/status_provider/user_policy_status_provider_lacros.h",
-      "signin/signin_ui_delegate_impl_lacros.cc",
-      "signin/signin_ui_delegate_impl_lacros.h",
-      "ui/lacros/float_controller_lacros.cc",
-      "ui/lacros/float_controller_lacros.h",
-      "ui/lacros/immersive_context_lacros.cc",
-      "ui/lacros/immersive_context_lacros.h",
-      "ui/lacros/snap_controller_lacros.cc",
-      "ui/lacros/snap_controller_lacros.h",
-      "ui/lacros/window_properties.cc",
-      "ui/lacros/window_properties.h",
-      "ui/lacros/window_utility.cc",
-      "ui/lacros/window_utility.h",
-    ]
-    deps += [
-      "//chrome/browser/apps:icon_standardizer",
-      "//chrome/browser/apps/app_service/app_icon",
-      "//chrome/browser/chromeos/drivefs",
-      "//chrome/browser/chromeos/extensions/accessibility_service_private",
-      "//chrome/browser/chromeos/extensions/vpn_provider",
-      "//chrome/browser/chromeos/extensions/web_file_handlers",
-      "//chrome/browser/chromeos/extensions/wm",
-      "//chrome/browser/chromeos/full_restore",
-      "//chrome/browser/chromeos/office_web_app",
-      "//chrome/browser/chromeos/smart_reader",
-      "//chrome/browser/chromeos/tablet_mode",
-      "//chrome/browser/chromeos/tast_support",
-      "//chrome/browser/lacros/cros_apps/api/diagnostics",
-      "//chrome/browser/ui/aura/accessibility",
-      "//chrome/common/chromeos/extensions",
-      "//chromeos/ash/experiences/arc/intent_helper",
-      "//chromeos/crosapi/cpp",
-      "//chromeos/crosapi/cpp:crosapi_constants",
-      "//chromeos/crosapi/mojom",
-      "//chromeos/dbus/dlp:dlp",
-      "//chromeos/lacros",
-      "//chromeos/lacros:lacros_paths",
-      "//chromeos/lacros/dbus",
-      "//chromeos/startup",
-      "//chromeos/startup:constants",
-      "//chromeos/startup:startup",
-      "//chromeos/ui/base",
-      "//chromeos/ui/clipboard_history",
-      "//chromeos/ui/frame",
-      "//chromeos/ui/wm",
-      "//components/memory_pressure",
-      "//components/policy/content:content",
-      "//components/reporting/metrics:metrics_data_collection",
-      "//extensions/browser/updater",
-      "//ui/chromeos/strings:strings_grit",
-      "//ui/chromeos/styles:cros_styles_views",
-      "//ui/platform_window",
-      "//ui/strings:ui_strings_grit",
-    ]
-
-    allow_circular_includes_from += [
-      "//chrome/browser/chromeos/tablet_mode",
-      "//chrome/browser/chromeos/extensions/accessibility_service_private",
-    ]
-
-    # component builds are not compatible on device.
-    assert(!is_chromeos_device || !is_component_build)
-  } else {  #!is_chromeos_lacros
-    deps += [ "//chrome/browser/ui/webui/bluetooth_internals" ]
-  }
+  deps += [ "//chrome/browser/ui/webui/bluetooth_internals" ]
 
   if (is_chromeos) {
     sources += [
@@ -6668,7 +6453,7 @@ static_library("browser") {
     ]
   }
 
-  if (is_linux || is_win || is_mac || is_chromeos_ash) {
+  if (is_linux || is_win || is_mac || is_chromeos) {
     sources += [
       "enterprise/connectors/device_trust/device_trust_connector_service.cc",
       "enterprise/connectors/device_trust/device_trust_connector_service.h",
@@ -6693,7 +6478,7 @@ static_library("browser") {
       "enterprise/signals/user_permission_service_factory.cc",
       "enterprise/signals/user_permission_service_factory.h",
 
-      # These policies are only supported on non-lacros desktop
+      # These policies are only supported on desktop
       "performance_manager/public/user_tuning/memory_saver_policy_handler.h",
       "performance_manager/user_tuning/memory_saver_policy_handler.cc",
       "policy/battery_saver_policy_handler.cc",
@@ -7066,7 +6851,7 @@ static_library("browser") {
     ]
   }
 
-  if (is_win || is_mac || (is_chromeos_ash && use_dbus)) {
+  if (is_win || is_mac || (is_chromeos && use_dbus)) {
     sources += [
       "media_galleries/fileapi/device_media_async_file_util.cc",
       "media_galleries/fileapi/device_media_async_file_util.h",
@@ -7169,10 +6954,10 @@ static_library("browser") {
     if (is_mac) {
       sources += [ "background/background_mode_manager_mac.cc" ]
     }
-    if (is_chromeos_ash) {
+    if (is_chromeos) {
       sources += [ "background/background_mode_manager_chromeos.cc" ]
     }
-    if (use_aura && !is_win && !is_chromeos_ash) {
+    if (use_aura && !is_win && !is_chromeos) {
       sources += [ "background/background_mode_manager_aura.cc" ]
     }
   }
@@ -7723,7 +7508,7 @@ static_library("browser") {
       "//google_apis/common",
       "//google_apis/drive",
     ]
-    if (is_chromeos_ash) {
+    if (is_chromeos) {
       sources += [
         "accessibility/accessibility_extension_api_ash.cc",
         "accessibility/accessibility_extension_api_ash.h",
@@ -8055,7 +7840,7 @@ static_library("browser") {
       "//ppapi/host",
       "//ppapi/proxy:ipc",
     ]
-    if (is_chromeos_ash) {
+    if (is_chromeos) {
       deps += [ "//chromeos/ash/components/cryptohome" ]
     }
   }
@@ -8112,7 +7897,7 @@ static_library("browser") {
       ]
     }
 
-    if (is_chromeos_ash) {
+    if (is_chromeos) {
       sources += [
         "local_discovery/endpoint_resolver.cc",
         "local_discovery/endpoint_resolver.h",
@@ -8214,7 +7999,7 @@ static_library("browser") {
     }
   }
 
-  if (!is_chromeos_ash) {
+  if (!is_chromeos) {
     sources += [
       "metrics/family_link_user_metrics_provider.cc",
       "metrics/family_link_user_metrics_provider.h",
@@ -8397,7 +8182,7 @@ static_library("browser") {
       "//components/metrics/structured:structured_metrics_validator",
     ]
 
-    if (is_chromeos_ash) {
+    if (is_chromeos) {
       sources += [
         "metrics/structured/arena_event_buffer.cc",
         "metrics/structured/arena_event_buffer.h",
@@ -8535,7 +8320,7 @@ static_library("browser_public_dependencies") {
       "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
     ]
   }
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     public_deps += [
       "//ash/components/arc/mojom",
       "//ash/webui/os_feedback_ui/mojom",
@@ -8685,7 +8470,7 @@ static_library("browser_generated_files") {
     }
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     public_deps += [
       "//chrome/browser/apps/app_preload_service/proto",
       "//chrome/browser/ash/app_list/search/ranking:proto",
@@ -8752,7 +8537,7 @@ static_library("browser_generated_files") {
       "//chrome/browser/ui/webui/whats_new:mojo_bindings",
     ]
   }
-  if (is_win || is_mac || is_linux || is_chromeos_ash) {
+  if (is_win || is_mac || is_linux || is_chromeos) {
     public_deps +=
         [ "//chrome/browser/ui/webui/connectors_internals:mojo_bindings" ]
   }
@@ -8770,7 +8555,7 @@ static_library("browser_generated_files") {
     public_deps += [ "//chrome/browser:compose_optimization_guide_proto" ]
   }
 
-  if (is_win || is_mac || is_linux || is_chromeos_lacros) {
+  if (is_win || is_mac || is_linux) {
     public_deps +=
         [ "//chrome/browser/new_tab_page/chrome_colors:generate_colors_info" ]
   }
@@ -8943,7 +8728,7 @@ grit("resources") {
     deps += [ "//services/resource_coordinator/public/mojom:mojom_js" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [
       "//chrome/browser/resources/chromeos/account_manager:css_wrapper_files",
       "//chrome/browser/resources/chromeos/account_manager:html_wrapper_files",
@@ -9225,7 +9010,7 @@ static_library("test_support") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "sharesheet/sharesheet_test_util.cc",
       "sharesheet/sharesheet_test_util.h",
@@ -9392,7 +9177,7 @@ if (is_android) {
   }
 }
 
-if (is_chromeos_ash) {
+if (is_chromeos) {
   fuzzer_test("nearby_sharing_instantmessaging_stream_parser_fuzzer") {
     sources = [ "nearby_sharing/instantmessaging/stream_parser_fuzzer.cc" ]
     deps = [
