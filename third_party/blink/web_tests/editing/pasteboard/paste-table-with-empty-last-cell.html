@@ -1,0 +1,33 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+  selection_test(
+    [
+      '<div contenteditable>',
+      '<table><tr><td>^1</td><td>2</td></tr>',
+      '<tr><td>3</td><td>|</td></tr></table>',
+      '<div id="target">replaceme</div>',
+      '</div>'
+    ].join(''),
+    selection => {
+      const target = selection.document.getElementById("target");
+      selection.document.execCommand('Copy');
+      selection.collapse(target, 0);
+      selection.extend(target, 1);
+      selection.document.execCommand('Paste');
+    },
+    [
+      '<div contenteditable>',
+      '<table><tbody><tr><td>1</td><td>2</td></tr>',
+      '<tr><td>3</td><td></td></tr></tbody></table>',
+      '<div id="target">',
+      '<table><tbody><tr><td>1</td><td>2</td></tr>',
+      '<tr><td>3</td><td>|</td></tr></tbody></table>',
+      '</div>',
+      '</div>'
+    ].join(''),
+    'Copy and paste a table with an empty last cell. The empty last cell should',
+    'be preserved.');
+</script>

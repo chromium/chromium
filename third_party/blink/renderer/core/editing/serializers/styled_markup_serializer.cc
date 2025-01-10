@@ -400,9 +400,12 @@ Node* StyledMarkupTraverser<Strategy>::Traverse(Node* start_node,
     } else {
       next = Strategy::Next(*n);
       if (IsEnclosingBlock(n) && CanHaveChildrenForEditing(n) &&
-          next == past_end && !ContainsOnlyBRElement(To<Element>(*n))) {
+          next == past_end && !ContainsOnlyBRElement(To<Element>(*n)) &&
+          !(RuntimeEnabledFeatures::AllowCopyingEmptyLastTableCellEnabled() &&
+            IsTablePartElement(n))) {
         // Don't write out empty block containers that aren't fully selected
-        // unless the block container only contains br element.
+        // unless the block container only contains br element or is a part of
+        // table.
         continue;
       }
 
