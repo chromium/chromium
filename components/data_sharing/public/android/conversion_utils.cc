@@ -31,9 +31,11 @@ namespace data_sharing::conversion {
 
 ScopedJavaLocalRef<jobject> CreateJavaGroupMember(JNIEnv* env,
                                                   const GroupMember& member) {
+  auto gaia_id = member.gaia_id.empty()
+                     ? ScopedJavaLocalRef<jobject>()
+                     : ConvertToJavaGaiaId(env, member.gaia_id);
   return Java_GroupMember_createGroupMember(
-      env, ConvertToJavaGaiaId(env, member.gaia_id),
-      ConvertUTF8ToJavaString(env, member.display_name),
+      env, gaia_id, ConvertUTF8ToJavaString(env, member.display_name),
       ConvertUTF8ToJavaString(env, member.email), static_cast<int>(member.role),
       url::GURLAndroid::FromNativeGURL(env, member.avatar_url),
       ConvertUTF8ToJavaString(env, member.given_name));
