@@ -141,7 +141,7 @@ void V8CrowdsourcedCompileHintsProducer::ScheduleDataDeletionTask(
   constexpr int kDeletionDelaySeconds = 30;
   auto delay = base::Seconds(kDeletionDelaySeconds);
 
-  execution_context->GetTaskRunner(TaskType::kIdleTask)
+  execution_context->GetTaskRunner(TaskType::kInternalDefault)
       ->PostDelayedTask(FROM_HERE,
                         WTF::BindOnce(&ClearDataTask, WrapWeakPersistent(this)),
                         delay);
