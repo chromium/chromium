@@ -11,11 +11,21 @@ use read_fonts::{
 
 use super::PHANTOM_POINT_COUNT;
 
+#[derive(Copy, Clone, Debug)]
+pub(super) enum AvailableVarMetrics {
+    /// Full variable metrics with advances and side-bearings.
+    All,
+    /// Variable advances but not side-bearings.
+    Advances,
+    /// No variable metrics table.
+    None,
+}
+
 /// Compute a set of deltas for the component offsets of a composite glyph.
 ///
 /// Interpolation is meaningless for component offsets so this is a
 /// specialized function that skips the expensive bits.
-pub fn composite_glyph<D: PointCoord>(
+pub(super) fn composite_glyph<D: PointCoord>(
     gvar: &Gvar,
     glyph_id: GlyphId,
     coords: &[F2Dot14],
@@ -33,7 +43,7 @@ pub fn composite_glyph<D: PointCoord>(
     Ok(())
 }
 
-pub struct SimpleGlyph<'a, C: PointCoord> {
+pub(super) struct SimpleGlyph<'a, C: PointCoord> {
     pub points: &'a [Point<C>],
     pub flags: &'a mut [PointFlags],
     pub contours: &'a [u16],
@@ -44,11 +54,11 @@ pub struct SimpleGlyph<'a, C: PointCoord> {
 /// This function will use interpolation to infer missing deltas for tuples
 /// that contain sparse sets. The `iup_buffer` buffer is temporary storage
 /// used for this and the length must be >= glyph.points.len().
-pub fn simple_glyph<C, D>(
+pub(super) fn simple_glyph<C, D>(
     gvar: &Gvar,
     glyph_id: GlyphId,
     coords: &[F2Dot14],
-    has_var_lsb: bool,
+    var_metrics: AvailableVarMetrics,
     glyph: SimpleGlyph<C>,
     iup_buffer: &mut [Point<D>],
     deltas: &mut [Point<D>],
@@ -73,13 +83,15 @@ where
         flags,
         contours,
     } = glyph;
-    // Include the first phantom point if the font is missing variable metrics
-    // for left side bearings. The adjustment made here may affect the final
-    // shift of the outline.
-    let actual_len = if has_var_lsb {
-        points.len() - 4
-    } else {
-        points.len() - 3
+    // Determine which phantom points to modify based on the presence and
+    // content of the HVAR table.
+    let actual_len = match var_metrics {
+        // Modify LSB and advance
+        AvailableVarMetrics::None => points.len() - 2,
+        // Modify only LSB
+        AvailableVarMetrics::Advances => points.len() - 3,
+        // Modify nothing
+        AvailableVarMetrics::All => points.len() - PHANTOM_POINT_COUNT,
     };
     let deltas = &mut deltas[..actual_len];
     compute_deltas_for_glyph(gvar, glyph_id, coords, deltas, |scalar, tuple, deltas| {

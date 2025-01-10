@@ -9,6 +9,7 @@ mod outline;
 #[allow(unused_imports)]
 use core_maths::CoreFloat;
 
+use deltas::AvailableVarMetrics;
 pub use hint::{HintError, HintInstance, HintOutline};
 pub use outline::{Outline, ScaledOutline};
 use raw::FontRef;
@@ -53,7 +54,7 @@ pub struct Outlines<'a> {
     glyph_count: u16,
     units_per_em: u16,
     os2_vmetrics: [i16; 2],
-    has_var_lsb: bool,
+    var_metrics: AvailableVarMetrics,
     prefer_interpreter: bool,
 }
 
@@ -62,11 +63,16 @@ impl<'a> Outlines<'a> {
         let loca = font.loca(None).ok()?;
         let glyf = font.glyf().ok()?;
         let glyph_metrics = GlyphHMetrics::new(font)?;
-        let has_var_lsb = glyph_metrics
-            .hvar
-            .as_ref()
-            .map(|hvar| hvar.lsb_mapping().is_some())
-            .unwrap_or_default();
+        let var_metrics = match glyph_metrics.hvar.as_ref() {
+            Some(hvar) => {
+                if hvar.lsb_mapping().is_some() {
+                    AvailableVarMetrics::All
+                } else {
+                    AvailableVarMetrics::Advances
+                }
+            }
+            None => AvailableVarMetrics::None,
+        };
         let (
             glyph_count,
             max_function_defs,
@@ -131,7 +137,7 @@ impl<'a> Outlines<'a> {
             glyph_count,
             units_per_em: font.head().ok()?.units_per_em(),
             os2_vmetrics,
-            has_var_lsb,
+            var_metrics,
             prefer_interpreter,
         })
     }
@@ -597,7 +603,7 @@ impl Scaler for FreeTypeScaler<'_> {
                 gvar,
                 glyph_id,
                 self.coords,
-                self.outlines.has_var_lsb,
+                self.outlines.var_metrics,
                 glyph,
                 iup_buffer,
                 deltas,
@@ -742,11 +748,14 @@ impl Scaler for FreeTypeScaler<'_> {
                 .get_mut(delta_base..delta_base + count)
                 .ok_or(InsufficientMemory)?;
             if deltas::composite_glyph(gvar, glyph_id, self.coords, &mut deltas[..]).is_ok() {
-                // If the font is missing variation data for LSBs in HVAR then we
-                // apply the delta to the first phantom point.
-                if !self.outlines.has_var_lsb {
-                    self.phantom[0].x += F26Dot6::from_bits(deltas[count - 4].x.to_i32());
-                }
+                // Apply selective deltas to phantom points.
+                self.outlines.var_metrics.phantom_deltas(
+                    &mut self.phantom,
+                    deltas,
+                    |phantom, delta| {
+                        phantom.x += F26Dot6::from_bits(delta.x.to_i32());
+                    },
+                );
                 have_deltas = true;
             }
             self.component_delta_count += count;
@@ -1107,7 +1116,7 @@ impl Scaler for HarfBuzzScaler<'_> {
                 gvar,
                 glyph_id,
                 self.coords,
-                self.outlines.has_var_lsb,
+                self.outlines.var_metrics,
                 glyph,
                 iup_buffer,
                 deltas,
@@ -1159,11 +1168,14 @@ impl Scaler for HarfBuzzScaler<'_> {
                 .get_mut(delta_base..delta_base + count)
                 .ok_or(InsufficientMemory)?;
             if deltas::composite_glyph(gvar, glyph_id, self.coords, &mut deltas[..]).is_ok() {
-                // If the font is missing variation data for LSBs in HVAR then we
-                // apply the delta to the first phantom point.
-                if !self.outlines.has_var_lsb {
-                    self.phantom[0].x += deltas[count - 4].x;
-                }
+                // Apply selective deltas to phantom points.
+                self.outlines.var_metrics.phantom_deltas(
+                    &mut self.phantom,
+                    deltas,
+                    |phantom, delta| {
+                        phantom.x += delta.x;
+                    },
+                );
                 have_deltas = true;
             }
             self.component_delta_count += count;
@@ -1277,6 +1289,28 @@ fn map_point(transform: [f32; 6], p: Point<f32>) -> Point<f32> {
     }
 }
 
+impl AvailableVarMetrics {
+    /// Calls `f` for each combination of phantom point and its associated
+    /// delta based on the available metrics present in `self`.
+    fn phantom_deltas<P, D>(
+        self,
+        phantom: &mut [Point<P>; 4],
+        deltas: &[Point<D>],
+        f: impl Fn(&mut Point<P>, &Point<D>),
+    ) {
+        match self {
+            Self::None => {
+                f(&mut phantom[0], &deltas[deltas.len() - 4]);
+                f(&mut phantom[1], &deltas[deltas.len() - 3]);
+            }
+            Self::Advances => {
+                f(&mut phantom[0], &deltas[deltas.len() - 4]);
+            }
+            Self::All => {}
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1328,8 +1362,9 @@ mod tests {
             FreeTypeScaler::unhinted(&outlines, &outline, &mut buf, ppem, &coords).unwrap();
         let scaled = scaler.scale(&outline.glyph, gid).unwrap();
         let advance_hvar = scaled.adjusted_advance_width();
-        // Set HVAR table to None to force loading metrics from gvar
+        // Set HVAR to None and mark var metrics as missing so we pull deltas from gvar
         outlines.glyph_metrics.hvar = None;
+        outlines.var_metrics = AvailableVarMetrics::None;
         let scaler =
             FreeTypeScaler::unhinted(&outlines, &outline, &mut buf, ppem, &coords).unwrap();
         let scaled = scaler.scale(&outline.glyph, gid).unwrap();
@@ -1347,5 +1382,32 @@ mod tests {
         let outline = outlines.outline(gid).unwrap();
         assert!(outline.glyph.is_none());
         assert_eq!(outline.points, PHANTOM_POINT_COUNT);
+    }
+
+    // Pull metric deltas from gvar when hvar is not present
+    // <https://github.com/googlefonts/fontations/issues/1311>
+    #[test]
+    fn missing_hvar_advance() {
+        let font = FontRef::new(font_test_data::HVAR_WITH_TRUNCATED_ADVANCE_INDEX_MAP).unwrap();
+        let mut outlines = Outlines::new(&font).unwrap();
+        let coords = [F2Dot14::from_f32(0.5)];
+        let ppem = Some(24.0);
+        let gid = font.charmap().map('A').unwrap();
+        let outline = outlines.outline(gid).unwrap();
+        let mut buf = [0u8; 1024];
+        let scaler =
+            FreeTypeScaler::unhinted(&outlines, &outline, &mut buf, ppem, &coords).unwrap();
+        let scaled = scaler.scale(&outline.glyph, gid).unwrap();
+        let advance_hvar = scaled.adjusted_advance_width();
+        // Set HVAR to None and mark var metrics as missing so we pull deltas from gvar
+        outlines.glyph_metrics.hvar = None;
+        outlines.var_metrics = AvailableVarMetrics::None;
+        let scaler =
+            FreeTypeScaler::unhinted(&outlines, &outline, &mut buf, ppem, &coords).unwrap();
+        let scaled = scaler.scale(&outline.glyph, gid).unwrap();
+        let advance_gvar = scaled.adjusted_advance_width();
+        // Make sure we have an advance and that the two are the same
+        assert!(advance_hvar != F26Dot6::ZERO);
+        assert_eq!(advance_hvar, advance_gvar);
     }
 }
