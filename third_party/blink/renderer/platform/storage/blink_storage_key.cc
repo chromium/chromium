@@ -203,20 +203,6 @@ bool BlinkStorageKey::ExactMatchForTesting(const BlinkStorageKey& other) const {
              other.top_level_site_if_third_party_enabled_;
 }
 
-bool operator==(const BlinkStorageKey& lhs, const BlinkStorageKey& rhs) {
-  DCHECK(lhs.origin_);
-  DCHECK(rhs.origin_);
-
-  return lhs.origin_->IsSameOriginWith(rhs.origin_.get()) &&
-         lhs.nonce_ == rhs.nonce_ &&
-         lhs.top_level_site_ == rhs.top_level_site_ &&
-         lhs.ancestor_chain_bit_ == rhs.ancestor_chain_bit_;
-}
-
-bool operator!=(const BlinkStorageKey& lhs, const BlinkStorageKey& rhs) {
-  return !(lhs == rhs);
-}
-
 std::ostream& operator<<(std::ostream& ostream, const BlinkStorageKey& key) {
   return ostream << key.ToDebugString();
 }

@@ -8,7 +8,6 @@
 #include <ostream>
 #include <string>
 #include <string_view>
-#include <tuple>
 
 #include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
@@ -850,24 +849,6 @@ bool StorageKey::ExactMatchForTesting(const StorageKey& other) const {
              other.ancestor_chain_bit_if_third_party_enabled_ &&
          this->top_level_site_if_third_party_enabled_ ==
              other.top_level_site_if_third_party_enabled_;
-}
-
-bool operator==(const StorageKey& lhs, const StorageKey& rhs) {
-  return std::tie(lhs.origin_, lhs.top_level_site_, lhs.nonce_,
-                  lhs.ancestor_chain_bit_) ==
-         std::tie(rhs.origin_, rhs.top_level_site_, rhs.nonce_,
-                  rhs.ancestor_chain_bit_);
-}
-
-bool operator!=(const StorageKey& lhs, const StorageKey& rhs) {
-  return !(lhs == rhs);
-}
-
-bool operator<(const StorageKey& lhs, const StorageKey& rhs) {
-  return std::tie(lhs.origin_, lhs.top_level_site_, lhs.nonce_,
-                  lhs.ancestor_chain_bit_) <
-         std::tie(rhs.origin_, rhs.top_level_site_, rhs.nonce_,
-                  rhs.ancestor_chain_bit_);
 }
 
 std::ostream& operator<<(std::ostream& ostream, const StorageKey& sk) {
