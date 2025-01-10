@@ -80,9 +80,15 @@ const char* kValidDigestHeader512 =
 const char* kValidSignatureInputHeader =
     "signature=(\"identity-digest\";sf);keyid=\"JrQLj5P/89iXES9+vFgrIy29clF9CC/"
     "oPPsw3c5D0bs=\";tag=\"sri\"";
+const char* kUnusedSignatureInputHeader =
+    "unused-signature=(\"identity-digest\";sf);keyid=\"JrQLj5P/89iXES9+vFgrIy29"
+    "clF9CC/oPPsw3c5D0bs=\";tag=\"sri\"";
 const char* kValidSignatureHeader =
     "signature=:eTKYITprfJYJmsOZlRTmu0szHbt0yLxHYBU0oXDdkx8najLl59IPO0zUofe5T23"
     "RGuquHLdZx177tBX45CUcAg==:";
+const char* kUnusedSignatureHeader =
+    "unused-input=:eTKYITprfJYJmsOZlRTmu0szHbt0yLxHYBU0oXDdkx8najLl59IPO0zUofe5"
+    "T23RGuquHLdZx177tBX45CUcAg==:";
 
 // The following signature was generated using test-key-ed25519 from RFC 9421
 // (https://datatracker.ietf.org/doc/html/rfc9421#appendix-B.1.4),
@@ -186,9 +192,9 @@ TEST_F(SRIMessageSignatureParserTest, UnmatchedLabelsInAdditionToValidHeaders) {
   // We're currently ignoring this mismatched signature, and therefore treating
   // the header as valid.
   std::string two_signatures =
-      base::StrCat({"unused=:badbeef:,", kValidSignatureHeader});
+      base::StrCat({kUnusedSignatureHeader, ",", kValidSignatureHeader});
   std::string two_inputs = base::StrCat(
-      {"also-unused=(\"arbitrary\" \"data\"),", kValidSignatureInputHeader});
+      {kUnusedSignatureInputHeader, ",", kValidSignatureInputHeader});
 
   // Too many signatures:
   {
@@ -197,6 +203,10 @@ TEST_F(SRIMessageSignatureParserTest, UnmatchedLabelsInAdditionToValidHeaders) {
     mojom::SRIMessageSignaturesPtr result =
         ParseSRIMessageSignaturesFromHeaders(*headers);
     EXPECT_EQ(1u, result->signatures.size());
+    EXPECT_EQ(1u, result->parsing_errors.size());
+    EXPECT_EQ(
+        mojom::SRIMessageSignatureError::kSignatureInputHeaderMissingLabel,
+        result->parsing_errors[0]);
     ValidateBasicTestHeader(result->signatures[0]);
   }
 
@@ -206,6 +216,8 @@ TEST_F(SRIMessageSignatureParserTest, UnmatchedLabelsInAdditionToValidHeaders) {
     mojom::SRIMessageSignaturesPtr result =
         ParseSRIMessageSignaturesFromHeaders(*headers);
     EXPECT_EQ(1u, result->signatures.size());
+    // TODO(crbug.com/381044049): We should probably have a parsing error here.
+    EXPECT_EQ(0u, result->parsing_errors.size());
     ValidateBasicTestHeader(result->signatures[0]);
   }
 
@@ -215,6 +227,10 @@ TEST_F(SRIMessageSignatureParserTest, UnmatchedLabelsInAdditionToValidHeaders) {
     mojom::SRIMessageSignaturesPtr result =
         ParseSRIMessageSignaturesFromHeaders(*headers);
     EXPECT_EQ(1u, result->signatures.size());
+    EXPECT_EQ(1u, result->parsing_errors.size());
+    EXPECT_EQ(
+        mojom::SRIMessageSignatureError::kSignatureInputHeaderMissingLabel,
+        result->parsing_errors[0]);
     ValidateBasicTestHeader(result->signatures[0]);
   }
 }
@@ -266,93 +282,181 @@ TEST_F(SRIMessageSignatureParserTest, MalformedSignatureHeader) {
 }
 
 TEST_F(SRIMessageSignatureParserTest, MalformedSignatureInputComponents) {
-  const char* cases[] = {
+  struct {
+    const char* value;
+    mojom::SRIMessageSignatureError error;
+  } cases[] = {
       // Non-dictionaries:
-      "",
-      "1",
-      "1.1",
-      "\"string\"",
-      "token",
-      ":lS/LFS0xbMKoQ0JWBZySc9ChRIZMbAuWO69kAVCb12k=:",
-      "?0",
-      "@12345",
-      "%\"display\"",
-      "A, list, of, tokens",
-      "(inner list)",
+      {"", mojom::SRIMessageSignatureError::kInvalidSignatureInputHeader},
+      {"1", mojom::SRIMessageSignatureError::kInvalidSignatureInputHeader},
+      {"1.1", mojom::SRIMessageSignatureError::kInvalidSignatureInputHeader},
+      {"\"string\"",
+       mojom::SRIMessageSignatureError::kInvalidSignatureInputHeader},
+      {":lS/LFS0xbMKoQ0JWBZySc9ChRIZMbAuWO69kAVCb12k=:",
+       mojom::SRIMessageSignatureError::kInvalidSignatureInputHeader},
+      {"?0", mojom::SRIMessageSignatureError::kInvalidSignatureInputHeader},
+      {"A, list, of, tokens",
+       mojom::SRIMessageSignatureError::kInvalidSignatureInputHeader},
+      {"(inner list)",
+       mojom::SRIMessageSignatureError::kInvalidSignatureInputHeader},
+      {"@12345", mojom::SRIMessageSignatureError::kInvalidSignatureInputHeader},
+      {"%\"display\"",
+       mojom::SRIMessageSignatureError::kInvalidSignatureInputHeader},
 
       // Dictionaries with non-inner-list values:
-      "signature=",
-      "signature=1",
-      "signature=1.1",
-      "signature=\"string\"",
-      "signature=token",
-      "signature=?0",
-      "signature=@12345",
-      "signature=%\"display\"",
-      "signature=:badbeef:",
+      {"signature",
+       mojom::SRIMessageSignatureError::kSignatureInputHeaderValueNotInnerList},
+      {"signature=",
+       mojom::SRIMessageSignatureError::kInvalidSignatureInputHeader},
+      {"signature=1",
+       mojom::SRIMessageSignatureError::kSignatureInputHeaderValueNotInnerList},
+      {"signature=1.1",
+       mojom::SRIMessageSignatureError::kSignatureInputHeaderValueNotInnerList},
+      {"signature=\"string\"",
+       mojom::SRIMessageSignatureError::kSignatureInputHeaderValueNotInnerList},
+      {"signature=token",
+       mojom::SRIMessageSignatureError::kSignatureInputHeaderValueNotInnerList},
+      {"signature=?0",
+       mojom::SRIMessageSignatureError::kSignatureInputHeaderValueNotInnerList},
+      {"signature=:badbeef:",
+       mojom::SRIMessageSignatureError::kSignatureInputHeaderValueNotInnerList},
+      // We don't yet support dates or display strings, so these are invalid
+      // headers, not invalid types.
+      {"signature=@12345",
+       mojom::SRIMessageSignatureError::kInvalidSignatureInputHeader},
+      {"signature=%\"display\"",
+       mojom::SRIMessageSignatureError::kInvalidSignatureInputHeader},
 
       // Dictionaries with inner-list values that contain non-strings:
-      "signature=()",
-      "signature=(1)",
-      "signature=(1.1)",
-      "signature=(token)",
-      "signature=(:lS/LFS0xbMKoQ0JWBZySc9ChRIZMbAuWO69kAVCb12k=:)",
-      "signature=(?0)",
-      "signature=(@12345)",
-      "signature=(%\"display\")",
-      "signature=(A, list, of, tokens)",
-      "signature=(\"invalid header names\")",
-      "signature=(\"@unknown-derived-components\")",
+      {"signature=()", mojom::SRIMessageSignatureError::
+                           kSignatureInputHeaderValueMissingComponents},
+      {"signature=(1)", mojom::SRIMessageSignatureError::
+                            kSignatureInputHeaderInvalidComponentType},
+      {"signature=(1.1)", mojom::SRIMessageSignatureError::
+                              kSignatureInputHeaderInvalidComponentType},
+      {"signature=(token)", mojom::SRIMessageSignatureError::
+                                kSignatureInputHeaderInvalidComponentType},
+      {"signature=(:lS/LFS0xbMKoQ0JWBZySc9ChRIZMbAuWO69kAVCb12k=:)",
+       mojom::SRIMessageSignatureError::
+           kSignatureInputHeaderInvalidComponentType},
+      {"signature=(?0)", mojom::SRIMessageSignatureError::
+                             kSignatureInputHeaderInvalidComponentType},
+      {"signature=(A list of tokens)",
+       mojom::SRIMessageSignatureError::
+           kSignatureInputHeaderInvalidComponentType},
+      // We don't yet support dates or display strings, so these are invalid
+      // headers, not invalid types.
+      {"signature=(@12345)",
+       mojom::SRIMessageSignatureError::kInvalidSignatureInputHeader},
+      {"signature=(%\"display\")",
+       mojom::SRIMessageSignatureError::kInvalidSignatureInputHeader},
 
       // Components that are valid per-spec, but aren't quite constrained enough
       // for SRI's initial implementation. We'll eventually treat these as valid
       // headers, but they're parse errors for now.
-      "signature=(\"not-identity-digest\")",
-      "signature=(\"Identity-Digest\")",
-      "signature=(\"IDENTITY-DIGEST\")",
-      "signature=(\"identity-digest\" \"and-something-else\")",
-      "signature=(\"something-else\" \"identity-digest\")",
+      {"signature=(\"invalid header names\")",
+       mojom::SRIMessageSignatureError::
+           kSignatureInputHeaderInvalidComponentName},
+      {"signature=(\"@unknown-derived-components\")",
+       mojom::SRIMessageSignatureError::
+           kSignatureInputHeaderInvalidComponentName},
+      {"signature=(\"not-identity-digest\")",
+       mojom::SRIMessageSignatureError::
+           kSignatureInputHeaderInvalidComponentName},
+      {"signature=(\"Identity-Digest\")",
+       mojom::SRIMessageSignatureError::
+           kSignatureInputHeaderInvalidComponentName},
+      {"signature=(\"IDENTITY-DIGEST\")",
+       mojom::SRIMessageSignatureError::
+           kSignatureInputHeaderInvalidComponentName},
+      {"signature=(\"identity-digest\" \"and-something-else\")",
+       mojom::SRIMessageSignatureError::
+           kSignatureInputHeaderInvalidHeaderComponentParameter},
+      {"signature=(\"something-else\" \"identity-digest\")",
+       mojom::SRIMessageSignatureError::
+           kSignatureInputHeaderInvalidComponentName},
 
       // Invalid component params:
-      "signature=(\"identity-digest\")",
-      "signature=(\"identity-digest\";sf=)",
-      "signature=(\"identity-digest\";sf=1)",
-      "signature=(\"identity-digest\";sf=1.1)",
-      "signature=(\"identity-digest\";sf=\"string\")",
-      "signature=(\"identity-digest\";sf=token)",
-      "signature=(\"identity-digest\";sf=?0)",
-      "signature=(\"identity-digest\";sf=@12345)",
-      "signature=(\"identity-digest\";sf=%\"display\")",
-      "signature=(\"identity-digest\";sf=:badbeef:)",
-      "signature=(\"identity-digest\";sf;not-sf)",
+      {"signature=(\"identity-digest\")",
+       mojom::SRIMessageSignatureError::
+           kSignatureInputHeaderInvalidHeaderComponentParameter},
+      {"signature=(\"identity-digest\";sf=)",
+       mojom::SRIMessageSignatureError::kInvalidSignatureInputHeader},
+      {"signature=(\"identity-digest\";sf=1)",
+       mojom::SRIMessageSignatureError::
+           kSignatureInputHeaderInvalidHeaderComponentParameter},
+      {"signature=(\"identity-digest\";sf=1.1)",
+       mojom::SRIMessageSignatureError::
+           kSignatureInputHeaderInvalidHeaderComponentParameter},
+      {"signature=(\"identity-digest\";sf=\"string\")",
+       mojom::SRIMessageSignatureError::
+           kSignatureInputHeaderInvalidHeaderComponentParameter},
+      {"signature=(\"identity-digest\";sf=token)",
+       mojom::SRIMessageSignatureError::
+           kSignatureInputHeaderInvalidHeaderComponentParameter},
+      {"signature=(\"identity-digest\";sf=?0)",
+       mojom::SRIMessageSignatureError::
+           kSignatureInputHeaderInvalidHeaderComponentParameter},
+      {"signature=(\"identity-digest\";sf=:badbeef:)",
+       mojom::SRIMessageSignatureError::
+           kSignatureInputHeaderInvalidHeaderComponentParameter},
+      {"signature=(\"identity-digest\";sf;not-sf)",
+       mojom::SRIMessageSignatureError::
+           kSignatureInputHeaderInvalidHeaderComponentParameter},
+      // We don't yet support dates or display strings, so these are invalid
+      // headers, not invalid types.
+      {"signature=(\"identity-digest\";sf=@12345)",
+       mojom::SRIMessageSignatureError::kInvalidSignatureInputHeader},
+      {"signature=(\"identity-digest\";sf=%\"display\")",
+       mojom::SRIMessageSignatureError::kInvalidSignatureInputHeader},
 
       // One valid, one invalid component:
-      "signature=(\"identity-digest\";sf \"unknown\")",
-      "signature=(\"unknown\" \"identity-digest\";sf)",
-      "signature=(\"identity-digest\";sf \"@path\")",  // No `;req` on `@path`
-      "signature=(\"@path\" \"identity-digest\";sf)",
-      "signature=(\"identity-digest\";sf @path;req)",  // `@path` isn't a string
-      "signature=(@path;req \"identity-digest\";sf)",
+      {"signature=(\"identity-digest\";sf \"unknown\")",
+       mojom::SRIMessageSignatureError::
+           kSignatureInputHeaderInvalidComponentName},
+      {"signature=(\"unknown\" \"identity-digest\";sf)",
+       mojom::SRIMessageSignatureError::
+           kSignatureInputHeaderInvalidComponentName},
+      {"signature=(\"identity-digest\";sf \"@path\")",
+       mojom::SRIMessageSignatureError::
+           kSignatureInputHeaderInvalidDerivedComponentParameter},
+      {"signature=(\"@path\" \"identity-digest\";sf)",
+       mojom::SRIMessageSignatureError::
+           kSignatureInputHeaderInvalidDerivedComponentParameter},
+      {"signature=(\"identity-digest\";sf token;req)",
+       mojom::SRIMessageSignatureError::
+           kSignatureInputHeaderInvalidComponentType},
+      {"signature=(token;req \"identity-digest\";sf)",
+       mojom::SRIMessageSignatureError::
+           kSignatureInputHeaderInvalidComponentType},
 
-      // Valid component, without valid `identity-digest`:
-      "signature=(\"identity-digest\" @path;req)",  // No `;sf`
-      "signature=(@path;req \"identity-digest\")",
-      "signature=(@path;req \"not-identity-digest\";sf)",
+      // Valid component without valid `identity-digest`:
+      {"signature=(\"identity-digest\" \"@path\";req)",
+       mojom::SRIMessageSignatureError::
+           kSignatureInputHeaderInvalidHeaderComponentParameter},
+      {"signature=(\"@path\";req \"identity-digest\")",
+       mojom::SRIMessageSignatureError::
+           kSignatureInputHeaderInvalidHeaderComponentParameter},
+      {"signature=(\"@path\";req \"not-identity-digest\";sf)",
+       mojom::SRIMessageSignatureError::
+           kSignatureInputHeaderInvalidComponentName},
   };
 
-  for (const char* test : cases) {
-    SCOPED_TRACE(testing::Message() << "Header value: `" << test << "`");
+  for (const auto test : cases) {
+    SCOPED_TRACE(testing::Message() << "Header value: `" << test.value << "`");
 
     // Tack valid parameters onto the test string so that we're actually
     // just testing the component parsing.
     std::string test_with_params =
-        base::StrCat({test, ";keyid=\"", kPublicKey, "\";tag=\"sri\""});
+        base::StrCat({test.value, ";keyid=\"", kPublicKey, "\";tag=\"sri\""});
     auto headers = GetHeaders(kValidSignatureHeader, test_with_params.c_str());
     mojom::SRIMessageSignaturesPtr result =
         ParseSRIMessageSignaturesFromHeaders(*headers);
 
     // As these are all malformed, we expect parsing to return no headers.
     EXPECT_EQ(0u, result->signatures.size());
+    ASSERT_GT(result->parsing_errors.size(), 0u);
+    EXPECT_THAT(result->parsing_errors, testing::Contains(test.error));
   }
 }
 
