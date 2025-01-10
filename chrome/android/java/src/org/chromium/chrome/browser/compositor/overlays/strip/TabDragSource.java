@@ -466,7 +466,7 @@ public class TabDragSource implements View.OnDragListener {
         int sourceInstanceId =
                 DragDropGlobalState.getState(sDragTrackerToken).getDragSourceInstance();
 
-        mStripLayoutHelperSupplier.get().clearTabDragState();
+        mStripLayoutHelperSupplier.get().stopReorderMode();
         mHandler.removeCallbacks(mOnDragExitRunnable);
         if (mShadowView != null) {
             mShadowView.clear();

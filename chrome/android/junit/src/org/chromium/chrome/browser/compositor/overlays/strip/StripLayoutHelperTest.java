@@ -1868,7 +1868,7 @@ public class StripLayoutHelperTest {
     })
     public void testOnLongPress_OnTab() {
         onLongPress_OnTab();
-        // Verify we directly enter reorder mode.SS
+        // Verify we directly enter reorder mode.
         assertTrue(
                 "Should be in reorder mode after long press on tab.",
                 mStripLayoutHelper.getInReorderModeForTesting());
@@ -3007,7 +3007,7 @@ public class StripLayoutHelperTest {
 
         // Assume the drop is unsuccessful; the tab and the tab group will be restored to its
         // original position.
-        mStripLayoutHelper.clearTabDragState();
+        mStripLayoutHelper.stopReorderMode();
     }
 
     @Test
@@ -3028,7 +3028,7 @@ public class StripLayoutHelperTest {
 
         // Assume the drop is unsuccessful; the tab and the tab group will be restored to its
         // original position.
-        mStripLayoutHelper.clearTabDragState();
+        mStripLayoutHelper.stopReorderMode();
     }
 
     @Test
@@ -4359,26 +4359,29 @@ public class StripLayoutHelperTest {
         StripLayoutTab theClickedTab = tabs[5];
 
         // Clean active tab environment and ensure.
-        mStripLayoutHelper.clearTabDragState();
-        assertTrue(
-                "Dragged Tab should be empty before drag action.",
-                mStripLayoutHelper.getActiveClickedTabForTesting() == null);
+        mStripLayoutHelper.stopReorderMode();
+        assertFalse(
+                "Reorder should not be in progress.",
+                mStripLayoutHelper.getInReorderModeForTesting());
 
         // Act and verify.
         mStripLayoutHelper.startDragAndDropTabForTesting(theClickedTab, DRAG_START_POINT);
 
         verify(mTabDragSource, times(1))
                 .startTabDragAction(any(), any(), any(), anyFloat(), anyFloat());
-        assertTrue(
-                "Tab being dragged should exist during drag action.",
-                mStripLayoutHelper.getActiveClickedTabForTesting() != null);
+        // TODO(crbug.com/381285152): Reenable check once SourceViewDragDropReorderStrategy
+        // implementation is complete.
+        // assertTrue(
+        //      "Drag action should initiate reorder.",
+        //    mStripLayoutHelper.getInReorderModeForTesting());
         assertTrue(
                 "Dragged Tab should match selected tab during drag action.",
-                mStripLayoutHelper.getActiveClickedTabForTesting() == theClickedTab);
-        mStripLayoutHelper.clearTabDragState();
-        assertTrue(
-                "Dragged Tab should be cleared at the end of drag action.",
-                mStripLayoutHelper.getActiveClickedTabForTesting() == null);
+                mStripLayoutHelper.getReorderDelegateForTesting().getInteractingTab()
+                        == theClickedTab);
+        mStripLayoutHelper.stopReorderMode();
+        assertFalse(
+                "Reorder should not be in progress.",
+                mStripLayoutHelper.getInReorderModeForTesting());
     }
 
     @Test
@@ -4401,7 +4404,7 @@ public class StripLayoutHelperTest {
         assertNull("Should not be animating.", mStripLayoutHelper.getRunningAnimatorForTesting());
 
         // Act and verify.
-        mStripLayoutHelper.clearTabDragState();
+        mStripLayoutHelper.stopReorderMode();
         assertNotNull("Should be animating.", mStripLayoutHelper.getRunningAnimatorForTesting());
     }
 

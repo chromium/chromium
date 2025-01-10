@@ -4202,7 +4202,7 @@ public class StripLayoutHelper
     }
 
     protected float getLastReorderXForTesting() {
-        return mReorderDelegate.getLastReorderX();
+        return mReorderDelegate.getLastReorderXForTesting();
     }
 
     protected void setInReorderModeForTesting(boolean inReorderMode) {
@@ -4267,30 +4267,6 @@ public class StripLayoutHelper
         stripTab.setAccessibilityDescription(builder.toString(), title, resId);
     }
 
-    protected void clearTabDragState() {
-        // If the dragged tab was re-parented, it will have triggered a #rebuildStripTabs call and
-        // will no longer be present in the list of tabs. If this is not the case, attempt to return
-        // the dragged tab to its original position.
-        StripLayoutTab selectedTab = getSelectedStripTab();
-        if (selectedTab != null
-                && findTabById(selectedTab.getTabId()) != null
-                && selectedTab.isDraggedOffStrip()) {
-
-            // Rebuild tab groups to unhide the interacting tab group as tab is restored back on tab
-            // strip.
-            if (StripLayoutUtils.isLastTabInGroup(mTabGroupModelFilter, selectedTab.getTabId())
-                    && mActionConfirmationManager.willSkipUngroupTabAttempt()) {
-                mGroupIdToHideSupplier.set(Tab.INVALID_TAB_ID);
-            }
-            dragActiveClickedTabOntoStrip();
-        }
-        stopReorderMode();
-    }
-
-    StripLayoutTab getActiveClickedTabForTesting() {
-        return (StripLayoutTab) mReorderDelegate.getViewBeingDragged();
-    }
-
     void setLastOffsetXForTesting(float lastOffsetX) {
         mReorderDelegate.setDragLastOffsetXForTesting(lastOffsetX); // IN-TEST
     }
@@ -4349,18 +4325,6 @@ public class StripLayoutHelper
         } else if (mIncognito == draggedTabIncognito) {
             stopReorderMode();
         }
-    }
-
-    private void dragActiveClickedTabOntoStrip() {
-        StripLayoutTab draggedTab = (StripLayoutTab) mReorderDelegate.getViewBeingDragged();
-        assert draggedTab != null;
-
-        finishAnimationsAndPushTabUpdates();
-        draggedTab.setIsDraggedOffStrip(false);
-
-        // Animate the tab translating back up onto the tab strip.
-        draggedTab.setWidth(0.f);
-        resizeTabStrip(/* animate= */ true, draggedTab, /* tabAddedAnimation= */ true);
     }
 
     void sendMoveWindowBroadcast(View view, float startXInView, float startYInView) {

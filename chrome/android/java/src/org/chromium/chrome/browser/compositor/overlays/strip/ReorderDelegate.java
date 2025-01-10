@@ -154,10 +154,6 @@ public class ReorderDelegate {
         return getInReorderMode() && mActiveStrategy == mExternalViewDragDropReorderStrategy;
     }
 
-    float getLastReorderX() {
-        return mLastReorderX;
-    }
-
     StripLayoutTab getInteractingTab() {
         return (StripLayoutTab) mActiveStrategy.getInteractingView();
     }
@@ -281,7 +277,7 @@ public class ReorderDelegate {
         // Return if accumulated delta is too small. This isn't the accumulated delta since the
         // beginning of the drag. It accumulates the delta X until a threshold is crossed and then
         // the event gets processed.
-        float accumulatedDeltaX = endX - getLastReorderX();
+        float accumulatedDeltaX = endX - mLastReorderX;
         if (reorderType == ReorderType.DRAG_WITHIN_STRIP) {
             if (Math.abs(accumulatedDeltaX) < 1.f) {
                 return;
@@ -330,7 +326,7 @@ public class ReorderDelegate {
                         stripViews,
                         groupTitles,
                         stripTabs,
-                        getLastReorderX(),
+                        mLastReorderX,
                         deltaX,
                         ReorderType.DRAG_WITHIN_STRIP);
             }
@@ -367,7 +363,7 @@ public class ReorderDelegate {
         // than the interacting view's drawX.
         final float x =
                 getReorderingForTabDrop()
-                        ? adjustXForTabDrop(getLastReorderX())
+                        ? adjustXForTabDrop(mLastReorderX)
                         : mActiveStrategy.getInteractingView().getDrawX();
 
         // 2. Calculate the gutters for accelerating the scroll speed.
@@ -1174,7 +1170,24 @@ public class ReorderDelegate {
         @Override
         public void stopReorderMode(
                 StripLayoutGroupTitle[] groupTitles, StripLayoutTab[] stripTabs) {
-            // TODO(crbug.com/381285152): Implement.
+            // If the dragged view was re-parented, it will no longer be present in model.
+            // If this is not the case, attempt to restore view to its original position.
+            StripLayoutTab draggedTab = (StripLayoutTab) mViewBeingDragged;
+            if (draggedTab != null
+                    && mModel.getTabById(draggedTab.getTabId()) != null
+                    && draggedTab.isDraggedOffStrip()) {
+                // If tab was ungrouped during drag, restore group indicator.
+                if (StripLayoutUtils.isLastTabInGroup(mTabGroupModelFilter, draggedTab.getTabId())
+                        && mActionConfirmationManager.willSkipUngroupTabAttempt()) {
+                    mGroupIdToHideSupplier.set(Tab.INVALID_TAB_ID);
+                }
+                mAnimationHost.finishAnimationsAndPushTabUpdates();
+                draggedTab.setIsDraggedOffStrip(false);
+                // Animate the tab translating back up onto the tab strip.
+                draggedTab.setWidth(0.f);
+                mStripUpdateDelegate.resizeTabStrip(
+                        /* animate= */ true, draggedTab, /* animateTabAdded= */ true);
+            }
             if (mTabStrategyInProgress) {
                 mTabStrategy.stopReorderMode(groupTitles, stripTabs);
             }
@@ -1502,6 +1515,10 @@ public class ReorderDelegate {
     float getDragLastOffsetXForTesting() {
         if (mSourceViewDragDropReorderStrategy == null) return 0f;
         return mSourceViewDragDropReorderStrategy.mLastOffsetX;
+    }
+
+    float getLastReorderXForTesting() {
+        return mLastReorderX;
     }
 
     void setDragLastOffsetXForTesting(float offsetX) {

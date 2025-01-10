@@ -541,13 +541,11 @@ public class TabDragSourceTest {
         // Strip prepares for drop on drag enter.
         verify(mSourceStripLayoutHelper, times(1))
                 .prepareForTabDrop(anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
-        // Stop reorder on drop.
-        verify(mSourceStripLayoutHelper, times(1)).stopReorderMode();
+        // Stop reorder on drop and drag end.
+        verify(mSourceStripLayoutHelper, times(2)).stopReorderMode();
         // Verify tab is not moved.
         verify(mSourceMultiInstanceManager, times(0)).moveTabToNewWindow(mTabBeingDragged);
         verify(mSourceMultiInstanceManager, times(0)).moveTabToWindow(any(), any(), anyInt());
-        // Verify clear.
-        verify(mSourceStripLayoutHelper, times(1)).clearTabDragState();
         // Verify destination strip not invoked.
         verifyNoInteractions(mDestStripLayoutHelper);
         histogramExpectation.assertExpected();
@@ -585,7 +583,7 @@ public class TabDragSourceTest {
         verify(mSourceMultiInstanceManager, times(0)).moveTabToNewWindow(mTabBeingDragged);
         verify(mSourceMultiInstanceManager, times(0)).moveTabToWindow(any(), any(), anyInt());
         // Verify tab cleared.
-        verify(mSourceStripLayoutHelper, times(1)).clearTabDragState();
+        verify(mSourceStripLayoutHelper, times(1)).stopReorderMode();
         // Verify destination strip not invoked.
         verifyNoInteractions(mDestStripLayoutHelper);
         histogramExpectation.assertExpected();
@@ -615,7 +613,7 @@ public class TabDragSourceTest {
         verify(mSourceMultiInstanceManager, times(0)).moveTabToNewWindow(mTabBeingDragged);
         verify(mSourceMultiInstanceManager, times(0)).moveTabToWindow(any(), any(), anyInt());
         // Verify tab cleared.
-        verify(mSourceStripLayoutHelper, times(1)).clearTabDragState();
+        verify(mSourceStripLayoutHelper, times(1)).stopReorderMode();
         // Verify destination strip not invoked.
         verifyNoInteractions(mDestStripLayoutHelper);
         histogramExpectation.assertExpected();
@@ -665,7 +663,7 @@ public class TabDragSourceTest {
         // Chrome Window.
         verify(mSourceMultiInstanceManager, times(1)).moveTabToNewWindow(mTabBeingDragged);
         // Verify tab cleared.
-        verify(mSourceStripLayoutHelper, times(1)).clearTabDragState();
+        verify(mSourceStripLayoutHelper, times(1)).stopReorderMode();
         // Verify destination strip not invoked.
         verifyNoInteractions(mDestStripLayoutHelper);
     }
@@ -809,7 +807,7 @@ public class TabDragSourceTest {
         verify(mDestMultiInstanceManager, times(1))
                 .moveTabToWindow(any(), eq(mTabBeingDragged), eq(TAB_INDEX));
         // Verify tab cleared.
-        verify(mSourceStripLayoutHelper, times(1)).clearTabDragState();
+        verify(mSourceStripLayoutHelper, times(1)).stopReorderMode();
         // Verify destination strip calls.
         verify(mDestStripLayoutHelper)
                 .prepareForTabDrop(anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
@@ -910,7 +908,7 @@ public class TabDragSourceTest {
         verify(mSourceMultiInstanceManager, times(0)).moveTabToNewWindow(mTabBeingDragged);
         verify(mSourceMultiInstanceManager, times(0)).moveTabToWindow(any(), any(), anyInt());
         // Verify tab cleared.
-        verify(mSourceStripLayoutHelper, times(1)).clearTabDragState();
+        verify(mSourceStripLayoutHelper, times(1)).stopReorderMode();
         histogramExpectation.assertExpected();
     }
 
@@ -939,13 +937,11 @@ public class TabDragSourceTest {
         // Strip prepares for drop on drag enter. Entered twice.
         verify(mSourceStripLayoutHelper, times(2))
                 .prepareForTabDrop(anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
-        // Stop reorder on drop.
-        verify(mSourceStripLayoutHelper, times(1)).stopReorderMode();
+        // Stop reorder on drop and drag end.
+        verify(mSourceStripLayoutHelper, times(2)).stopReorderMode();
         // Verify tab is not moved.
         verify(mSourceMultiInstanceManager, times(0)).moveTabToNewWindow(mTabBeingDragged);
         verify(mSourceMultiInstanceManager, times(0)).moveTabToWindow(any(), any(), anyInt());
-        // Verify clear.
-        verify(mSourceStripLayoutHelper, times(1)).clearTabDragState();
         // Verify destination strip not invoked.
         verifyNoInteractions(mDestStripLayoutHelper);
         histogramExpectation.assertExpected();
