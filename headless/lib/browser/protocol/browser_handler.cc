@@ -110,7 +110,7 @@ Response BrowserHandler::SetWindowBounds(
         "state first.");
   }
 
-  web_contents->set_window_state(window_state);
+  web_contents->SetWindowState(window_state);
   web_contents->SetBounds(bounds);
   return Response::Success();
 }

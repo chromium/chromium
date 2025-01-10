@@ -52,7 +52,6 @@ external/wpt/background-fetch/fetch.https.window.html
 external/wpt/background-fetch/fetch-uploads.https.window.html
 external/wpt/background-fetch/match.https.window.html
 external/wpt/background-fetch/update-ui.https.window.html
-external/wpt/battery-status/page-visibility.https.html
 external/wpt/bluetooth/*
 external/wpt/client-hints/viewport-size/viewport-size-subresource.https.html
 external/wpt/client-hints/viewport-size/viewport-size-window-different-dimensions.https.html
@@ -609,7 +608,6 @@ external/wpt/editing/other/typing-around-link-element-at-non-collapsed-selection
 external/wpt/editing/plaintext-only/paste.https.html*
 external/wpt/element-timing/observe-multiple-images.html
 external/wpt/encoding/unsupported-labels.window.html
-external/wpt/event-timing/event-click-visibilitychange.html
 external/wpt/event-timing/keyup.html
 external/wpt/event-timing/modal-dialog-interrupt-paint.html
 external/wpt/event-timing/selection-autoscroll.html
@@ -829,7 +827,6 @@ external/wpt/html/webappapis/scripting/events/event-handler-onmove-02.tentative.
 external/wpt/html/webappapis/scripting/processing-model-2/runtime-error-in-setInterval.html
 external/wpt/html/webappapis/scripting/processing-model-2/runtime-error-in-setTimeout.html
 external/wpt/idle-detection/idle-detection-allowed-by-permissions-policy.https.sub.html
-external/wpt/idle-detection/page-visibility.https.html
 external/wpt/import-maps/data-driven/resolving.html?scopes.json
 external/wpt/import-maps/multiple-import-maps/resolution-consistency-in-module-tree.html
 external/wpt/IndexedDB/idbindex_getAll.any.*
@@ -846,7 +843,6 @@ external/wpt/largest-contentful-paint/multiple-image-same-src.html
 external/wpt/largest-contentful-paint/video-data-uri.html
 external/wpt/layout-instability/video.html
 external/wpt/long-animation-frame/tentative/loaf-iframe-self.html
-external/wpt/long-animation-frame/tentative/loaf-visibility.html
 external/wpt/mathml/presentation-markup/fractions/frac-parameters-gap-*
 external/wpt/mathml/presentation-markup/operators/mo-form-dynamic.html
 external/wpt/mathml/presentation-markup/operators/mo-form-minus-plus.html
@@ -879,8 +875,6 @@ external/wpt/orientation-sensor/AbsoluteOrientationSensor.https.html
 external/wpt/orientation-sensor/AbsoluteOrientationSensor-iframe-access.https.html
 external/wpt/orientation-sensor/RelativeOrientationSensor.https.html
 external/wpt/orientation-sensor/RelativeOrientationSensor-iframe-access.https.html
-external/wpt/page-visibility/minimize.html
-external/wpt/page-visibility/visibility-state-entry.tentative.html
 external/wpt/paint-timing/fcp-only/fcp-document-opacity-image.html
 external/wpt/paint-timing/fcp-only/fcp-document-opacity-text.html
 external/wpt/paint-timing/with-first-paint/first-contentful-canvas-webgl2.html

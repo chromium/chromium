@@ -398,6 +398,17 @@ void HeadlessWebContentsImpl::InitializeWindow(
   SetBounds(initial_bounds);
 }
 
+void HeadlessWebContentsImpl::SetWindowState(const std::string& state) {
+  if (state == "normal" || state == "maximized" || state == "fullscreen") {
+    web_contents_->WasShown();
+  } else if (state == "minimized") {
+    web_contents_->WasHidden();
+  } else {
+    NOTREACHED();
+  }
+  window_state_ = state;
+}
+
 void HeadlessWebContentsImpl::SetBounds(const gfx::Rect& bounds) {
   browser()->PlatformSetWebContentsBounds(this, bounds);
 }

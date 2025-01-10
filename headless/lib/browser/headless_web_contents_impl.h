@@ -65,12 +65,10 @@ class HEADLESS_EXPORT HeadlessWebContentsImpl : public HeadlessWebContents {
     return window_tree_host_.get();
   }
   int window_id() const { return window_id_; }
-  void set_window_state(const std::string& state) {
-    DCHECK(state == "normal" || state == "minimized" || state == "maximized" ||
-           state == "fullscreen");
-    window_state_ = state;
-  }
   const std::string& window_state() const { return window_state_; }
+
+  // Set the WebContent's platform window state and visibility.
+  void SetWindowState(const std::string& state);
 
   // Set bounds of WebContent's platform window.
   void SetBounds(const gfx::Rect& bounds);
