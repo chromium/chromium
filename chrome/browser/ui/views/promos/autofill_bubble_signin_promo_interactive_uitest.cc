@@ -89,9 +89,19 @@ class AutofillBubbleSignInPromoInteractiveUITest : public ManagePasswordsTest {
         context, base::BindRepeating(&BuildMockSyncService));
   }
 
+  void SetUpOnMainThread() override {
+    ManagePasswordsTest::SetUpOnMainThread();
+    ON_CALL(sync_service_mock(), GetDataTypesForTransportOnlyMode())
+        .WillByDefault(Return(syncer::DataTypeSet::All()));
+  }
+
   // Trigger the password save by simulating an "Accept" in the password bubble,
   // and wait for it to appear in the profile store.
   void SavePassword();
+
+  // Address save callback for `TriggerSaveAddressBubble`.
+  void SaveAddress(autofill::AutofillClient::AddressPromptUserDecision decision,
+                   base::optional_ref<const AutofillProfile> profile);
 
   // Trigger the address save bubble. This does not save the address yet.
   void TriggerSaveAddressBubble(const AutofillProfile& address);
@@ -145,9 +155,6 @@ class AutofillBubbleSignInPromoInteractiveUITest : public ManagePasswordsTest {
     return IdentityManagerFactory::GetForProfile(browser()->profile());
   }
 
-  void SaveAddress(autofill::AutofillClient::AddressPromptUserDecision decision,
-                   base::optional_ref<const AutofillProfile> profile);
-
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -165,6 +172,12 @@ void AutofillBubbleSignInPromoInteractiveUITest::SavePassword() {
   bubble->AcceptDialog();
 
   store_waiter.WaitOrReturn();
+}
+
+void AutofillBubbleSignInPromoInteractiveUITest::SaveAddress(
+    autofill::AutofillClient::AddressPromptUserDecision decision,
+    base::optional_ref<const AutofillProfile> profile) {
+  address_data_manager().AddProfile(*profile);
 }
 
 void AutofillBubbleSignInPromoInteractiveUITest::TriggerSaveAddressBubble(
@@ -203,12 +216,6 @@ void AutofillBubbleSignInPromoInteractiveUITest::ExtendAccountInfo(
   info.given_name = "FirstName";
   info.full_name = "FirstName LastName";
   signin::UpdateAccountInfoForAccount(identity_manager(), info);
-}
-
-void AutofillBubbleSignInPromoInteractiveUITest::SaveAddress(
-    autofill::AutofillClient::AddressPromptUserDecision decision,
-    base::optional_ref<const AutofillProfile> profile) {
-  address_data_manager().AddProfile(*profile);
 }
 
 /////////////////////////////////////////////////////////////////

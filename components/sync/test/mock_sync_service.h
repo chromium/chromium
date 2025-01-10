@@ -66,6 +66,10 @@ class MockSyncService : public SyncService {
               (override));
   MOCK_METHOD(bool, IsSetupInProgress, (), (const override));
   MOCK_METHOD(DataTypeSet, GetPreferredDataTypes, (), (const override));
+  MOCK_METHOD(DataTypeSet,
+              GetDataTypesForTransportOnlyMode,
+              (),
+              (const override));
   MOCK_METHOD(DataTypeSet, GetActiveDataTypes, (), (const override));
   MOCK_METHOD(DataTypeSet,
               GetTypesWithPendingDownloadForInitialSync,

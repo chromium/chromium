@@ -411,6 +411,10 @@ class SyncService : public KeyedService {
   // `GetUserSettings()->GetSelectedTypes()` instead.
   virtual DataTypeSet GetPreferredDataTypes() const = 0;
 
+  // Returns the DataTypes allowed in transport-only mode (i.e. those that are
+  // not tied to sync-the-feature).
+  virtual DataTypeSet GetDataTypesForTransportOnlyMode() const = 0;
+
   // Returns the set of currently active data types (those chosen or configured
   // by the user which have not also encountered a runtime error).
   // Note that if the Sync engine is in the middle of a configuration, this will
