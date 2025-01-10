@@ -200,17 +200,16 @@ class CanvasResourceProviderSharedBitmap : public CanvasResourceProvider,
       gfx::Size size,
       SkColorType sk_color_type,
       SkAlphaType alpha_type,
-      sk_sp<SkColorSpace> sk_color_space,
+      const gfx::ColorSpace& color_space,
       WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
       CanvasResourceHost* resource_host)
-      : CanvasResourceProvider(
-            kSharedBitmap,
-            size,
-            sk_color_type,
-            alpha_type,
-            SkColorSpaceToGfxColorSpace(std::move(sk_color_space)),
-            /*context_provider_wrapper=*/nullptr,
-            resource_host),
+      : CanvasResourceProvider(kSharedBitmap,
+                               size,
+                               sk_color_type,
+                               alpha_type,
+                               color_space,
+                               /*context_provider_wrapper=*/nullptr,
+                               resource_host),
         shared_image_interface_provider_(
             shared_image_interface_provider
                 ? shared_image_interface_provider->GetWeakPtr()
@@ -1098,7 +1097,8 @@ CanvasResourceProvider::CreateSharedBitmapProvider(
   }
 
   auto provider = std::make_unique<CanvasResourceProviderSharedBitmap>(
-      size, sk_color_type, alpha_type, std::move(sk_color_space),
+      size, sk_color_type, alpha_type,
+      SkColorSpaceToGfxColorSpace(std::move(sk_color_space)),
       shared_image_interface_provider, resource_host);
   if (provider->IsValid()) {
     if (should_initialize ==
