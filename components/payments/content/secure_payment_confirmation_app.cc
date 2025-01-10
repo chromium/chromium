@@ -131,6 +131,8 @@ void SecurePaymentConfirmationApp::InvokePaymentApp(
     if (!browser_bound_key_store_) {
       browser_bound_key_store_ = GetBrowserBoundKeyStoreInstance();
     }
+    // TODO(crbug.com/377278827): Provide the browser bound public key
+    // credential parameters from the payment extensions to the key store.
     browser_bound_key_ =
         browser_bound_key_store_->GetOrCreateBrowserBoundKeyForCredentialId(
             *browser_bound_key_id_);

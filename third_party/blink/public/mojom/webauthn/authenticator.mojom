@@ -452,6 +452,10 @@ struct AuthenticationExtensionsClientInputs {
   // If present, reflects the contents of the "supplementalPubKeys" extension.
   // https://github.com/w3c/webauthn/pull/1663
   SupplementalPubKeysRequest? supplemental_pub_keys;
+
+  // Parameters defining the type of browser bound keys that the relying party
+  // would accept.
+  array<PublicKeyCredentialParameters>? payment_browser_bound_key_parameters;
 };
 
 // https://w3c.github.io/webauthn/#enum-residentKeyRequirement

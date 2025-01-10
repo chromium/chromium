@@ -106,6 +106,8 @@ void PaymentCredential::MakePaymentCredential(
     if (browser_bound_key_store_) {
       // TODO(crbug.com/384940850): Regenerate the browser bound key identifier
       // if a browser bound key with the same identifier already exists.
+      // TODO(crbug.com/377278827): Provide the browser bound public key
+      // credential parameters from the payment extensions to the key store.
       browser_bound_key =
           browser_bound_key_store_->GetOrCreateBrowserBoundKeyForCredentialId(
               *browser_bound_key_id);

@@ -113,6 +113,16 @@ struct TypeConverter<
 };
 
 template <>
+struct TypeConverter<
+    WTF::Vector<blink::mojom::blink::PublicKeyCredentialParametersPtr>,
+    blink::HeapVector<blink::Member<blink::PublicKeyCredentialParameters>>> {
+  static WTF::Vector<blink::mojom::blink::PublicKeyCredentialParametersPtr>
+  Convert(const blink::HeapVector<
+          blink::Member<blink::PublicKeyCredentialParameters>>&
+              input_pub_key_cred_params);
+};
+
+template <>
 struct TypeConverter<std::optional<blink::mojom::blink::AuthenticatorTransport>,
                      String> {
   static std::optional<blink::mojom::blink::AuthenticatorTransport> Convert(

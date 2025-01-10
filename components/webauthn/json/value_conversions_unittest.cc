@@ -198,7 +198,8 @@ TEST(WebAuthenticationJSONConversionTest,
               /*device_scope_requested=*/true,
               /*provider_scope_requested=*/true,
               device::AttestationConveyancePreference::kDirect,
-              std::vector<std::string>({"a", "b", "c"}))));
+              std::vector<std::string>({"a", "b", "c"})),
+          std::vector<device::PublicKeyCredentialParams::CredentialInfo>()));
 
   base::Value value = ToValue(options);
   std::string json;

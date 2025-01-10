@@ -610,6 +610,30 @@ TypeConverter<PublicKeyCredentialParametersPtr,
 }
 
 // static
+Vector<PublicKeyCredentialParametersPtr> TypeConverter<
+    WTF::Vector<PublicKeyCredentialParametersPtr>,
+    blink::HeapVector<blink::Member<blink::PublicKeyCredentialParameters>>>::
+    Convert(const blink::HeapVector<
+            blink::Member<blink::PublicKeyCredentialParameters>>&
+                input_pub_key_cred_params) {
+  // Steps 9 and 10 of https://w3c.github.io/webauthn/#sctn-createCredential
+  Vector<PublicKeyCredentialParametersPtr> parameters;
+  if (input_pub_key_cred_params.size() == 0) {
+    parameters.push_back(CreatePublicKeyCredentialParameter(kCoseEs256));
+    parameters.push_back(CreatePublicKeyCredentialParameter(kCoseRs256));
+  } else {
+    for (auto& parameter : input_pub_key_cred_params) {
+      PublicKeyCredentialParametersPtr normalized_parameter =
+          PublicKeyCredentialParameters::From(*parameter);
+      if (normalized_parameter) {
+        parameters.push_back(std::move(normalized_parameter));
+      }
+    }
+  }
+  return parameters;
+}
+
+// static
 PublicKeyCredentialCreationOptionsPtr
 TypeConverter<PublicKeyCredentialCreationOptionsPtr,
               blink::PublicKeyCredentialCreationOptions>::
@@ -624,24 +648,12 @@ TypeConverter<PublicKeyCredentialCreationOptionsPtr,
   }
   mojo_options->challenge = ConvertTo<Vector<uint8_t>>(options.challenge());
 
-  // Steps 7 and 8 of https://w3c.github.io/webauthn/#sctn-createCredential
-  Vector<PublicKeyCredentialParametersPtr> parameters;
-  if (options.pubKeyCredParams().size() == 0) {
-    parameters.push_back(CreatePublicKeyCredentialParameter(kCoseEs256));
-    parameters.push_back(CreatePublicKeyCredentialParameter(kCoseRs256));
-  } else {
-    for (auto& parameter : options.pubKeyCredParams()) {
-      PublicKeyCredentialParametersPtr normalized_parameter =
-          PublicKeyCredentialParameters::From(*parameter);
-      if (normalized_parameter) {
-        parameters.push_back(std::move(normalized_parameter));
-      }
-    }
-    if (parameters.empty()) {
-      return nullptr;
-    }
+  mojo_options->public_key_parameters =
+      ConvertTo<WTF::Vector<PublicKeyCredentialParametersPtr>>(
+          options.pubKeyCredParams());
+  if (mojo_options->public_key_parameters.empty()) {
+    return nullptr;
   }
-  mojo_options->public_key_parameters = std::move(parameters);
 
   if (options.hasTimeout()) {
     mojo_options->timeout = base::Milliseconds(options.timeout());
@@ -907,6 +919,12 @@ TypeConverter<AuthenticationExtensionsClientInputsPtr,
     if (supplemental_pub_keys) {
       mojo_inputs->supplemental_pub_keys = std::move(*supplemental_pub_keys);
     }
+  }
+  if (inputs.hasPayment() &&
+      inputs.payment()->hasBrowserBoundPubKeyCredParams()) {
+    mojo_inputs->payment_browser_bound_key_parameters =
+        ConvertTo<WTF::Vector<PublicKeyCredentialParametersPtr>>(
+            inputs.payment()->browserBoundPubKeyCredParams());
   }
   if (inputs.hasPrf()) {
     mojo_inputs->prf = true;
