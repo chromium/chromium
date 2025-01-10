@@ -41,11 +41,11 @@ def main():
         shutil.rmtree(allowlist_dir)
 
     script_name = ':make_real_time_url_allowlist_protobuf_for_gcs'
-    gn_command = ['ninja', '-C', opts.dir, RESOURCE_SUBDIR + script_name]
+    gn_command = ['autoninja', '-C', opts.dir, RESOURCE_SUBDIR + script_name]
     print("Running the following")
     print("   " + (' '.join(gn_command)))
     if subprocess.call(gn_command):
-        print("Ninja failed.")
+        print("Autoninja failed.")
         return 1
 
     os.chdir(allowlist_dir)
