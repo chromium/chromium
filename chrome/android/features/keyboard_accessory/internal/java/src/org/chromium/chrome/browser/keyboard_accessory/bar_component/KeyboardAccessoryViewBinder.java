@@ -148,9 +148,13 @@ class KeyboardAccessoryViewBinder {
                                         item.getSuggestion().getItemTag());
                     }
                 } else if (item.getFeatureForIph()
-                        .equals(
-                                FeatureConstants
-                                        .KEYBOARD_ACCESSORY_PLUS_ADDRESS_CREATE_SUGGESTION)) {
+                                .equals(
+                                        FeatureConstants
+                                                .KEYBOARD_ACCESSORY_PLUS_ADDRESS_CREATE_SUGGESTION)
+                        || item.getFeatureForIph()
+                                .equals(
+                                        FeatureConstants
+                                                .KEYBOARD_ACCESSORY_PAYMENT_CARD_INFO_RETRIEVAL_FEATURE)) {
                     isIphShown =
                             showHelpBubble(
                                     mKeyboardAccessory.getFeatureEngagementTracker(),

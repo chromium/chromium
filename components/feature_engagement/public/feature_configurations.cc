@@ -1641,6 +1641,31 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
 
     return config;
   }
+  if (kIPHAutofillCardInfoRetrievalSuggestionFeature.name == feature->name) {
+    // A config that allows the card info retrieval suggestion IPH to be shown
+    // when it has been shown less than three times in last 90 days and only
+    // once per session. IPH will not be shown once user has selected the
+    // suggestion.
+    std::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(LESS_THAN, 1);
+    config->trigger = EventConfig("autofill_card_info_retrieval_iph_trigger",
+                                  Comparator(LESS_THAN, 3), 90, 360);
+    config->used =
+        EventConfig("autofill_card_info_retrieval_suggestion_accepted",
+                    Comparator(ANY, 0), 90, 360);
+
+    // This promo blocks specific promos in the same session.
+    config->session_rate_impact.type = SessionRateImpact::Type::EXPLICIT;
+    config->session_rate_impact.affected_features.emplace();
+    config->session_rate_impact.affected_features->push_back(
+        "IPH_KeyboardAccessoryBarSwiping");
+    config->session_rate_impact.affected_features->push_back(
+        "IPH_AutofillVirtualCardSuggestion");
+
+    return config;
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \

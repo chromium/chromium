@@ -68,6 +68,10 @@ public final class EventConstants {
     public static final String KEYBOARD_ACCESSORY_PAYMENT_AUTOFILLED =
             "autofill_virtual_card_suggestion_accepted";
 
+    /** The keyboard accessory was used to fill card info retrieval data into a form. */
+    public static final String KEYBOARD_ACCESSORY_PAYMENT_CARD_INFO_RETRIEVAL_AUTOFILLED =
+            "autofill_card_info_retrieval_suggestion_accepted";
+
     /** The keyboard accessory was swiped to reveal more suggestions. */
     public static final String KEYBOARD_ACCESSORY_BAR_SWIPED = "keyboard_accessory_bar_swiped";
 

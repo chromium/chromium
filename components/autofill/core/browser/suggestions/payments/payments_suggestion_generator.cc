@@ -688,6 +688,24 @@ std::u16string GetDisplayNameForIssuerId(const std::string& issuer_id) {
   return u"";
 }
 
+#if BUILDFLAG(IS_ANDROID)
+std::u16string CreateCardInfoRetrievalIphDescriptionText(
+    Suggestion suggestion) {
+  std::u16string description_text;
+  if (!suggestion.iph_metadata.iph_params.empty() &&
+      !suggestion.iph_metadata.iph_params.front().empty()) {
+    description_text = l10n_util::GetStringFUTF16(
+        IDS_AUTOFILL_CARD_INFO_RETRIEVAL_SUGGESTION_IPH_BUBBLE_LABEL,
+        suggestion.iph_metadata.iph_params.front());
+  } else {
+    description_text = l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_CARD_INFO_RETRIEVAL_SUGGESTION_IPH_BUBBLE_FALLBACK_LABEL);
+  }
+
+  return description_text;
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Helper function to decide whether to show the virtual card option for
 // `candidate_card`.
 // TODO(crbug.com/326950201): Pass the argument by reference.
@@ -826,6 +844,10 @@ Suggestion CreateCreditCardSuggestion(
         &feature_engagement::kIPHAutofillCardInfoRetrievalSuggestionFeature);
     suggestion.iph_metadata.iph_params = {
         GetDisplayNameForIssuerId(credit_card.issuer_id())};
+#if BUILDFLAG(IS_ANDROID)
+    suggestion.iph_description_text =
+        CreateCardInfoRetrievalIphDescriptionText(suggestion);
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   // For virtual cards, make some adjustments for the suggestion contents.

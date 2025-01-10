@@ -482,6 +482,47 @@ public class KeyboardAccessoryViewTest {
 
     @Test
     @MediumTest
+    public void testDismissesCardInfoRetrievalBubbleOnFilling() throws InterruptedException {
+        String descriptionText =
+                "You can autofill this card because your PayPay account is linked to Google";
+        AutofillBarItem itemWithIph =
+                new AutofillBarItem(
+                        new AutofillSuggestion.Builder()
+                                .setLabel("Card Info Retrieval")
+                                .setSubLabel("")
+                                .setItemTag("")
+                                .setSuggestionType(SuggestionType.CREDIT_CARD_ENTRY)
+                                .setIphDescriptionText(descriptionText)
+                                .setApplyDeactivatedStyle(false)
+                                .build(),
+                        new Action(AUTOFILL_SUGGESTION, unused -> {}));
+        itemWithIph.setFeatureForIph(
+                FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_CARD_INFO_RETRIEVAL_FEATURE);
+
+        TestTracker tracker = new TestTracker();
+        TrackerFactory.setTrackerForTests(tracker);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(VISIBLE, true);
+                    mModel.get(BAR_ITEMS).set(new BarItem[] {itemWithIph, createSheetOpener()});
+                });
+
+        onViewWaiting(withText("Card Info Retrieval"));
+        waitForHelpBubble(withText(descriptionText));
+        assertThat(mKeyboardAccessoryView.take().areClicksAllowedWhenObscured(), is(true));
+        onView(withChild(withText("Card Info Retrieval"))).check(matches(isSelected()));
+        onView(withText("Card Info Retrieval")).perform(click());
+
+        assertThat(tracker.wasDismissed(), is(true));
+        assertThat(
+                tracker.getLastEmittedEvent(),
+                is(EventConstants.KEYBOARD_ACCESSORY_PAYMENT_CARD_INFO_RETRIEVAL_AUTOFILLED));
+        onView(withChild(withText("Card Info Retrieval"))).check(matches(not(isSelected())));
+    }
+
+    @Test
+    @MediumTest
     public void testDismissesPasswordEducationBubbleOnFilling() throws InterruptedException {
         AutofillBarItem itemWithIph =
                 new AutofillBarItem(

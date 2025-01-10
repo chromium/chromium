@@ -2807,8 +2807,9 @@ INSTANTIATE_TEST_SUITE_P(
         CreditCard::CardInfoRetrievalEnrollmentState::
             kRetrievalUnenrolledAndEligible));
 
-// Verify that the card info retrieval enrolled suggestion `feature` and
-// `iph_params` are set when card info retrieval enrollment state is enrolled.
+// Verify that the card info retrieval enrolled suggestion `feature`,
+// `iph_params` and `iph_description text` are set when card info retrieval
+// enrollment state is enrolled.
 TEST_P(SuggestionIphBubbleTest,
        CreateCreditCardSuggestion_CardInfoRetrievalSuggestion) {
   CreditCard server_card = CreateServerCard();
@@ -2832,6 +2833,49 @@ TEST_P(SuggestionIphBubbleTest,
       card_info_retrieval_enrollment_state() ==
           CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled,
       card_number_field_suggestion.iph_metadata.iph_params == kDiplayName);
+
+#if BUILDFLAG(IS_ANDROID)
+  std::u16string expected_description =
+      u"You can autofill this card because your PayPay account is linked to "
+      u"Google Pay.";
+  EXPECT_EQ(
+      card_info_retrieval_enrollment_state() ==
+          CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled,
+      expected_description ==
+          card_number_field_suggestion.iph_description_text);
+#endif
+}
+
+// Verify that the card info retrieval enrolled suggestion `feature` and
+// `iph_description text` are set when card info retrieval enrollment state is
+// enrolled but issuer_id is not set.
+TEST_P(SuggestionIphBubbleTest,
+       CreateCreditCardSuggestion_CardInfoRetrievalSuggestion_WithoutIssuerId) {
+  CreditCard server_card = CreateServerCard();
+  server_card.set_card_info_retrieval_enrollment_state(
+      card_info_retrieval_enrollment_state());
+
+  Suggestion card_number_field_suggestion = CreateCreditCardSuggestionForTest(
+      server_card, *autofill_client(), CREDIT_CARD_NUMBER,
+      /*virtual_card_option=*/false,
+      /*card_linked_offer_available=*/false);
+
+  EXPECT_EQ(
+      card_info_retrieval_enrollment_state() ==
+          CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled,
+      card_number_field_suggestion.iph_metadata.feature ==
+          &feature_engagement::kIPHAutofillCardInfoRetrievalSuggestionFeature);
+
+#if BUILDFLAG(IS_ANDROID)
+  std::u16string expected_description =
+      u"You can autofill this card because your account is linked to "
+      u"Google Pay.";
+  EXPECT_EQ(
+      card_info_retrieval_enrollment_state() ==
+          CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled,
+      expected_description ==
+          card_number_field_suggestion.iph_description_text);
+#endif
 }
 
 // Params of GetFilteredCardsToSuggestTest:
