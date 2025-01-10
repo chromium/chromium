@@ -156,10 +156,10 @@ void MediaCastListView::CreateCastingHeader() {
   // Set casting icon on left side.
   auto image_view = base::WrapUnique(
       TrayPopupUtils::CreateMainImageView(/*use_wide_layout=*/false));
-  image_view->SetImage(gfx::CreateVectorIcon(
+  image_view->SetImage(ui::ImageModel::FromVectorIcon(
       on_stop_casting_callback_.is_null() ? kQuickSettingsCastIcon
                                           : kQuickSettingsCastConnectedIcon,
-      GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurface)));
+      cros_tokens::kCrosSysOnSurface));
   image_view->SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
   casting_header->AddView(TriView::Container::START, image_view.release());
 
