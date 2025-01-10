@@ -635,6 +635,7 @@ cc_test_static_library("test_support") {
     "test/test_client_shared_image_interface.h",
     "test/test_hooks.cc",
     "test/test_hooks.h",
+    "test/test_layer_context.h",
     "test/test_layer_tree_frame_sink.cc",
     "test/test_layer_tree_frame_sink.h",
     "test/test_layer_tree_host_base.cc",

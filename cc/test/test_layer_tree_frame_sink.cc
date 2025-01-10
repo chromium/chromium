@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "cc/test/test_client_shared_image_interface.h"
+#include "cc/test/test_layer_context.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
 #include "cc/trees/single_thread_proxy.h"
 #include "cc/trees/task_runner_provider.h"
@@ -213,6 +214,11 @@ void TestLayerTreeFrameSink::SetLocalSurfaceId(
     const viz::LocalSurfaceId& local_surface_id) {
   DebugScopedSetImplThread impl(task_runner_provider_);
   test_client_->DisplayReceivedLocalSurfaceId(local_surface_id);
+}
+
+std::unique_ptr<LayerContext> TestLayerTreeFrameSink::CreateLayerContext(
+    LayerTreeHostImpl& host_impl) {
+  return std::make_unique<TestLayerContext>();
 }
 
 void TestLayerTreeFrameSink::SubmitCompositorFrame(viz::CompositorFrame frame,
