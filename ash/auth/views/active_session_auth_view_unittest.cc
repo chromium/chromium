@@ -18,8 +18,10 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "components/account_id/account_id.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/view.h"
@@ -31,6 +33,7 @@ namespace ash {
 namespace {
 
 const char kTestAccount[] = "user@test.com";
+const char kFakeGaia[] = "fake_gaia";
 const std::u16string title = u"title";
 const std::u16string description = u"description";
 
@@ -50,9 +53,14 @@ class ActiveSessionAuthViewUnitTest : public AshTestBase {
     widget_->SetFullscreen(true);
     widget_->Show();
 
-    AccountId account_id = AccountId::FromUserEmail(kTestAccount);
-    auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
-    fake_user_manager->AddUser(account_id);
+    user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
+    auto fake_user_manager =
+        std::make_unique<user_manager::FakeUserManager>(&local_state_);
+
+    AccountId account_id =
+        AccountId::FromUserEmailGaiaId(kTestAccount, GaiaId(kFakeGaia));
+    fake_user_manager->AddGaiaUser(account_id,
+                                   user_manager::UserType::kRegular);
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(fake_user_manager));
 
@@ -109,6 +117,7 @@ class ActiveSessionAuthViewUnitTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
+  TestingPrefServiceSimple local_state_;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<MockActiveSessionAuthViewObserver> mock_observer_;
   std::unique_ptr<AuthInputRowView::TestApi> test_api_pin_input_;

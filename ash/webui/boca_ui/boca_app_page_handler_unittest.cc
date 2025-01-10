@@ -35,6 +35,7 @@
 #include "chromeos/ash/components/browser_context_helper/fake_browser_context_helper_delegate.h"
 #include "chromeos/ash/components/test/ash_test_suite.h"
 #include "components/account_id/account_id.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -233,9 +234,12 @@ class BocaAppPageHandlerTest : public testing::Test {
     scoped_feature_list_.InitWithFeatures({ash::features::kBoca},
                                           /*disabled_features=*/{});
     // Set up UserManager related modules.
+    user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
+    fake_user_manager_.Reset(
+        std::make_unique<user_manager::FakeUserManager>(&local_state_));
+
     auto account_id =
         AccountId::FromUserEmailGaiaId(kUserEmail, GaiaId(kGaiaId));
-    fake_user_manager_.Reset(std::make_unique<user_manager::FakeUserManager>());
     auto browser_context_helper_delegate =
         std::make_unique<ash::FakeBrowserContextHelperDelegate>();
     auto* browser_context_helper_delegate_ptr =
@@ -250,7 +254,8 @@ class BocaAppPageHandlerTest : public testing::Test {
         .WillByDefault(Return(nullptr));
 
     // Sign in a test user.
-    fake_user_manager_->AddUser(account_id);
+    fake_user_manager_->AddGaiaUser(account_id,
+                                    user_manager::UserType::kRegular);
     fake_user_manager_->UserLoggedIn(
         account_id,
         user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
@@ -311,8 +316,9 @@ class BocaAppPageHandlerTest : public testing::Test {
   MockSpotlightService* spotlight_service() { return &spotlight_service_; }
 
  private:
-  content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  content::BrowserTaskEnvironment task_environment_;
+  TestingPrefServiceSimple local_state_;
 
   user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
       fake_user_manager_;

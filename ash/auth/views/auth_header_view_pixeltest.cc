@@ -12,8 +12,10 @@
 #include "ash/test/ash_test_util.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -22,11 +24,11 @@ namespace ash {
 
 namespace {
 
-const std::string kUserEmail("user1@gmail.com");
+constexpr char kUserEmail[] = "user1@gmail.com";
+constexpr char kFakeGaia[] = "fake_gaia";
 
 const std::u16string kTitle(u"Auth header view pixeltest title");
 const std::u16string kErrorTitle(u"Auth header view pixeltest error");
-
 const std::u16string kDescription(u"Auth header view pixeltest description");
 
 class AuthHeaderPixelTest : public AshTestBase {
@@ -47,13 +49,17 @@ class AuthHeaderPixelTest : public AshTestBase {
     AshTestBase::SetUp();
     UpdateDisplay("600x800");
 
-    widget_ = CreateFramelessTestWidget();
-
-    AccountId account_id = AccountId::FromUserEmail(kUserEmail);
-    auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
-    fake_user_manager->AddUser(account_id);
+    user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
+    auto fake_user_manager =
+        std::make_unique<user_manager::FakeUserManager>(&local_state_);
+    AccountId account_id =
+        AccountId::FromUserEmailGaiaId(kUserEmail, GaiaId(kFakeGaia));
+    fake_user_manager->AddGaiaUser(account_id,
+                                   user_manager::UserType::kRegular);
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(fake_user_manager));
+
+    widget_ = CreateFramelessTestWidget();
 
     std::unique_ptr<AuthHeaderView> header_view =
         std::make_unique<AuthHeaderView>(account_id, kTitle, kDescription);
@@ -75,9 +81,11 @@ class AuthHeaderPixelTest : public AshTestBase {
   void TearDown() override {
     header_view_ = nullptr;
     widget_.reset();
+    scoped_user_manager_.reset();
     AshTestBase::TearDown();
   }
 
+  TestingPrefServiceSimple local_state_;
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<AuthHeaderView> header_view_ = nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;

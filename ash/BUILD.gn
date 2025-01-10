@@ -4964,6 +4964,7 @@ test("ash_pixeltests") {
     "//components/feature_engagement/public",
     "//components/history/core/browser",
     "//components/history/core/test",
+    "//components/prefs:test_support",
     "//components/sync_preferences:test_support",
     "//components/user_education/common",
     "//components/user_education/views",

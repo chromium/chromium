@@ -37,10 +37,12 @@
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/ash/components/login/auth/public/key.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -54,9 +56,10 @@ namespace {
 
 using ::cryptohome::KeyLabel;
 
-const char kTestAccount[] = "user@test.com";
-const char kExpectedPassword[] = "qwerty";
-const char kExpectedPin[] = "150504";
+constexpr char kTestAccount[] = "user@test.com";
+constexpr char kFakeGaia[] = "fake_gaia";
+constexpr char kExpectedPassword[] = "qwerty";
+constexpr char kExpectedPin[] = "150504";
 
 class LocalAuthenticationRequestControllerImplTest : public LoginTestBase {
  public:
@@ -83,11 +86,16 @@ class LocalAuthenticationRequestControllerImplTest : public LoginTestBase {
         FakeCryptohomeMiscClient::GetStubSystemSalt());
     UserDataAuthClient::InitializeFake();
     SystemSaltGetter::Initialize();
-    test_account_id_ = AccountId::FromUserEmail(kTestAccount);
+    test_account_id_ =
+        AccountId::FromUserEmailGaiaId(kTestAccount, GaiaId(kFakeGaia));
 
     SetExpectedCredentialsWithDbusClient(test_account_id_, kExpectedPassword);
-    auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
-    fake_user_manager->AddUser(test_account_id_);
+
+    user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
+    auto fake_user_manager =
+        std::make_unique<user_manager::FakeUserManager>(&local_state_);
+    fake_user_manager->AddGaiaUser(test_account_id_,
+                                   user_manager::UserType::kRegular);
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(fake_user_manager));
   }
@@ -193,6 +201,9 @@ class LocalAuthenticationRequestControllerImplTest : public LoginTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
+  base::test::ScopedFeatureList scoped_features_;
+  TestingPrefServiceSimple local_state_;
+
   // Number of times the view was dismissed with close button.
   int close_action_ = 0;
 
@@ -207,8 +218,6 @@ class LocalAuthenticationRequestControllerImplTest : public LoginTestBase {
 
   // Container object for the fake user manager for tests.
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
-
-  base::test::ScopedFeatureList scoped_features_;
 };
 
 // Tests local authentication dialog showing/hiding and focus behavior for
