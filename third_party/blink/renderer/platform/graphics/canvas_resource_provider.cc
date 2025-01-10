@@ -302,20 +302,19 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
       gfx::Size size,
       SkColorType sk_color_type,
       SkAlphaType alpha_type,
-      sk_sp<SkColorSpace> sk_color_space,
+      const gfx::ColorSpace& color_space,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>
           context_provider_wrapper,
       bool is_accelerated,
       gpu::SharedImageUsageSet shared_image_usage_flags,
       CanvasResourceHost* resource_host)
-      : CanvasResourceProvider(
-            kSharedImage,
-            size,
-            sk_color_type,
-            alpha_type,
-            SkColorSpaceToGfxColorSpace(std::move(sk_color_space)),
-            std::move(context_provider_wrapper),
-            resource_host),
+      : CanvasResourceProvider(kSharedImage,
+                               size,
+                               sk_color_type,
+                               alpha_type,
+                               color_space,
+                               std::move(context_provider_wrapper),
+                               resource_host),
         is_accelerated_(is_accelerated),
         shared_image_usage_flags_(shared_image_usage_flags),
         use_oop_rasterization_(is_accelerated && ContextProviderWrapper()
@@ -1189,7 +1188,8 @@ CanvasResourceProvider::CreateSharedImageProvider(
 #endif
 
   auto provider = std::make_unique<CanvasResourceProviderSharedImage>(
-      size, adjusted_color_type, alpha_type, std::move(sk_color_space),
+      size, adjusted_color_type, alpha_type,
+      SkColorSpaceToGfxColorSpace(std::move(sk_color_space)),
       context_provider_wrapper, is_accelerated, shared_image_usage_flags,
       resource_host);
   if (provider->IsValid()) {
