@@ -464,7 +464,7 @@
   {
     "name": "ash-picker-gifs",
     "owners": [ "shend@chromium.org", "e14s-eng@google.com" ],
-    "expiry_milestone": 133
+    "expiry_milestone": 135
   },
   {
     "name": "ash-snap-groups",
