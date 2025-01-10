@@ -219,6 +219,7 @@
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_coordinator.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/page_animation_util.h"
+#import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/top_view_controller.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
@@ -2219,6 +2220,26 @@ enum class ToolbarKind {
 - (void)dismissEnhancedSafeBrowsingPromo {
   [_enhancedSafeBrowsingPromoCoordinator stop];
   _enhancedSafeBrowsingPromoCoordinator = nil;
+}
+
+- (BOOL)navigateBackWithAnimationIfNeeded {
+  if (!IsLensOverlaySameTabNavigationEnabled()) {
+    return NO;
+  }
+
+  LensOverlayTabHelper* lensOverlayTabHelper =
+      LensOverlayTabHelper::FromWebState(self.activeWebState);
+
+  if (lensOverlayTabHelper &&
+      lensOverlayTabHelper->IsLensOverlayInvokedOnMostRecentBackItem()) {
+    [_sideSwipeMediator
+        animateSwipe:SwipeType::CHANGE_PAGE
+         inDirection:UseRTLLayout() ? UISwipeGestureRecognizerDirectionLeft
+                                    : UISwipeGestureRecognizerDirectionRight];
+    return YES;
+  }
+
+  return NO;
 }
 
 #pragma mark - BrowserViewVisibilityConsumer

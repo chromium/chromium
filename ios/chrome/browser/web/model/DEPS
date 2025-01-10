@@ -43,6 +43,7 @@ include_rules = [
   "+ios/chrome/browser/translate/model",
   "+ios/chrome/browser/url_loading/model",
   "+ios/chrome/browser/web_selection/model",
+  "+ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h",
 ]
 
 specific_include_rules = {

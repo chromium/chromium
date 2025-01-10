@@ -8,8 +8,10 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/lens/model/lens_browser_agent.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/web/model/web_navigation_ntp_delegate.h"
@@ -72,6 +74,14 @@ void WebNavigationBrowserAgent::GoBack() {
   if (!active_web_state ||
       !active_web_state->GetNavigationManager()->CanGoBack()) {
     return;
+  }
+
+  if (IsLensOverlaySameTabNavigationEnabled()) {
+    CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+    if ([HandlerForProtocol(dispatcher, BrowserCoordinatorCommands)
+            navigateBackWithAnimationIfNeeded]) {
+      return;
+    }
   }
 
   web_navigation_util::GoBack(active_web_state);

@@ -110,6 +110,10 @@ class GURL;
 - (void)showEnhancedSafeBrowsingPromo;
 - (void)dismissEnhancedSafeBrowsingPromo;
 
+// If an animation for navigating back is necessary, animates, navigate
+// back and return YES. Otherwise, do nothing and return NO.
+- (BOOL)navigateBackWithAnimationIfNeeded;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_BROWSER_COORDINATOR_COMMANDS_H_
