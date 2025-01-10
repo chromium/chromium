@@ -231,6 +231,9 @@
 
     <comparison-table-list id="comparisonTableList"
         tables="[[comparisonTableDetails_]]"
+        on-item-click="onComparisonTableListItemClick_"
+        on-rename-table="onComparisonTableListItemRename_"
+        on-delete-table="onComparisonTableListItemDelete_"
         hidden$="[[!showComparisonTableList_]]">
     </comparison-table-list>
   </div>

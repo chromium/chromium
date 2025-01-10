@@ -4,23 +4,43 @@
 
 import '/strings.m.js';
 import 'chrome://resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
+import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
+import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import type {CrLazyRenderLitElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import type {CrUrlListItemElement} from '//resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
-import {type PluralStringProxy, PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
+import {assert} from '//resources/js/assert.js';
+import type {PluralStringProxy} from '//resources/js/plural_string_proxy.js';
+import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
 import type {Uuid} from '//resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
-import {type ProductSpecificationsBrowserProxy, ProductSpecificationsBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/product_specifications_browser_proxy.js';
+import type {ProductSpecificationsBrowserProxy} from 'chrome://resources/cr_components/commerce/product_specifications_browser_proxy.js';
+import {ProductSpecificationsBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/product_specifications_browser_proxy.js';
+import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {CrLitElement, type PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {getCss} from './comparison_table_list_item.css.js';
 import {getHtml} from './comparison_table_list_item.html.js';
+import {$$} from './utils.js';
 
 export type ComparisonTableListItemClickEvent = CustomEvent<{uuid: Uuid}>;
+export type ComparisonTableListItemRenameEvent = CustomEvent<{
+  uuid: Uuid,
+  name: string,
+}>;
+export type ComparisonTableListItemDeleteEvent = CustomEvent<{uuid: Uuid}>;
 
 export interface ComparisonTableListItemElement {
   $: {
     item: CrUrlListItemElement,
+    menu: CrLazyRenderLitElement<CrActionMenuElement>,
     numItems: HTMLDivElement,
   };
 }
@@ -46,6 +66,8 @@ export class ComparisonTableListItemElement extends CrLitElement {
       imageUrl: {type: Object},
       tableUrl_: {type: Object},
       numItemsString_: {type: String},
+      isMenuOpen_: {type: Boolean},
+      isRenaming_: {type: Boolean},
     };
   }
 
@@ -56,6 +78,8 @@ export class ComparisonTableListItemElement extends CrLitElement {
 
   protected tableUrl_: Url = {url: ''};
   protected numItemsString_: string = '';
+  protected isMenuOpen_: boolean = false;
+  protected isRenaming_: boolean = false;
   private productSpecificationsProxy_: ProductSpecificationsBrowserProxy =
       ProductSpecificationsBrowserProxyImpl.getInstance();
   private pluralStringProxy_: PluralStringProxy =
@@ -63,6 +87,10 @@ export class ComparisonTableListItemElement extends CrLitElement {
 
   override async connectedCallback() {
     super.connectedCallback();
+
+    this.addEventListener('close', () => {
+      this.isMenuOpen_ = false;
+    });
 
     const {url} =
         await this.productSpecificationsProxy_.getComparisonTableUrlForUuid(
@@ -87,6 +115,86 @@ export class ComparisonTableListItemElement extends CrLitElement {
   protected async updateNumItemsString_() {
     this.numItemsString_ =
         await this.pluralStringProxy_.getPluralString('numItems', this.numUrls);
+  }
+
+  protected onClick_() {
+    if (!this.isRenaming_) {
+      this.fire('item-click', {
+        uuid: this.uuid,
+      });
+    }
+  }
+
+  protected onContextMenu_(event: MouseEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    this.isMenuOpen_ = true;
+    this.$.menu.get().showAtPosition({
+      top: event.clientY,
+      left: event.clientX,
+    });
+  }
+
+  protected onShowContextMenuClick_(event: MouseEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    this.isMenuOpen_ = true;
+    this.$.menu.get().showAt(this.trailingIconButton_);
+  }
+
+  protected onOpenInNewTabClick_() {
+    this.$.menu.get().close();
+    this.productSpecificationsProxy_.showProductSpecificationsSetForUuid(
+        this.uuid, true);
+  }
+
+  protected async onRenameClick_() {
+    this.$.menu.get().close();
+    this.isRenaming_ = true;
+
+    // Focus the input once it is rendered.
+    await this.updateComplete;
+    this.input_.focus();
+  }
+
+  protected onDeleteClick_() {
+    this.$.menu.get().close();
+    this.fire('delete-table', {
+      uuid: this.uuid,
+    });
+  }
+
+  protected onRenameInputBlur_() {
+    if (this.input_.value.length !== 0) {
+      this.fire('rename-table', {
+        uuid: this.uuid,
+        name: this.input_.value,
+      });
+    }
+
+    this.isRenaming_ = false;
+  }
+
+  protected onRenameInputKeyDown_(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      event.stopPropagation();
+      this.input_.blur();
+    }
+  }
+
+  private get trailingIconButton_() {
+    const trailingIconButton =
+        $$<CrIconButtonElement>(this, '#trailingIconButton');
+    assert(trailingIconButton);
+    return trailingIconButton;
+  }
+
+  private get input_() {
+    const input = $$<CrInputElement>(this, '#renameInput');
+    assert(input);
+    return input;
   }
 }
 

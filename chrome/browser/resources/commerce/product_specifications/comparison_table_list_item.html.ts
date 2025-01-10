@@ -8,7 +8,7 @@ import type {ComparisonTableListItemElement} from './comparison_table_list_item.
 
 export function getHtml(this: ComparisonTableListItemElement) {
   // clang-format off
-  return html`
+  return html`<!--_html_template_start_-->
   <div id="itemContainer">
     <cr-url-list-item
         id="item"
@@ -17,11 +17,42 @@ export function getHtml(this: ComparisonTableListItemElement) {
         url="${this.tableUrl_.url}"
         description="${this.tableUrl_.url}"
         .imageUrls="${this.imageUrl ? [this.imageUrl?.url] : []}"
-        @click="${() => this.fire('comparison-table-list-item-click', {
-          uuid: this.uuid,
-        })}">
-      <div id="numItems" slot="badges">${this.numItemsString_}</div>
+        .forceHover="${this.isMenuOpen_}"
+        @click="${this.onClick_}"
+        @contextmenu="${this.onContextMenu_}"
+        always-show-suffix>
+
+      ${this.isRenaming_ ? html`
+        <cr-input slot="content" id="renameInput" value="${this.name}"
+            class="stroked" @blur="${this.onRenameInputBlur_}"
+            @keydown="${this.onRenameInputKeyDown_}">
+        </cr-input>`
+      : html`
+        <div id="numItems" slot="badges">${this.numItemsString_}</div>
+        <cr-icon-button id="trailingIconButton" slot="suffix"
+            iron-icon="cr:more-vert" @click="${this.onShowContextMenuClick_}">
+        </cr-icon-button>`}
     </cr-url-list-item>
-  </div>`;
+  </div>
+
+  <cr-lazy-render-lit id="menu"
+      .template="${() => html`
+        <cr-action-menu>
+          <button id="openInNewTab" class="dropdown-item" role="menuitem"
+              @click="${this.onOpenInNewTabClick_}">
+            $i18n{menuOpenInNewTab}
+          </button>
+          <hr>
+          <button id="rename" class="dropdown-item" role="menuitem"
+              @click="${this.onRenameClick_}">
+            $i18n{menuRename}
+          </button>
+          <button id="delete" class="dropdown-item" role="menuitem"
+              @click="${this.onDeleteClick_}">
+            $i18n{menuDelete}
+          </button>
+        </cr-action-menu>`}">
+  </cr-lazy-render-lit>
+  <!--_html_template_end_-->`;
   // clang-format on
 }

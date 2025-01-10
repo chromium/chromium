@@ -37,7 +37,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {getTemplate} from './app.html.js';
 import type {BuyingOptions} from './buying_options_section.js';
 import type {ComparisonTableDetails, ComparisonTableListElement} from './comparison_table_list.js';
-import type {ComparisonTableListItemClickEvent} from './comparison_table_list_item.js';
+import type {ComparisonTableListItemClickEvent, ComparisonTableListItemDeleteEvent, ComparisonTableListItemRenameEvent} from './comparison_table_list_item.js';
 import type {ProductDescription} from './description_section.js';
 import type {HeaderElement} from './header.js';
 import type {NewColumnSelectorElement} from './new_column_selector.js';
@@ -290,10 +290,6 @@ export class ProductSpecificationsElement extends PolymerElement {
             (uuid: Uuid) => this.onSetRemoved_(uuid)),
         this.callbackRouter_.onProductSpecificationsSetUpdated.addListener(
             (set: ProductSpecificationsSet) => this.onSetUpdated_(set)));
-
-    this.addEventListener(
-        'comparison-table-list-item-click',
-        this.onComparisonTableListItemClickEvent_);
 
     // TODO: b/358131415 - use listeners to update. Temporary workaround uses
     // window focus to update the feature state, to check signin.
@@ -622,14 +618,14 @@ export class ProductSpecificationsElement extends PolymerElement {
     return aggregatedDatas;
   }
 
-  private deleteSet_() {
+  private deleteSet_(uuid: Uuid|null = this.id_) {
     if (this.isOffline_) {
       this.showOfflineToast_();
       return;
     }
 
-    if (this.id_) {
-      this.shoppingApi_.deleteProductSpecificationsSet(this.id_);
+    if (uuid) {
+      this.shoppingApi_.deleteProductSpecificationsSet(uuid);
     }
   }
 
@@ -1003,11 +999,22 @@ export class ProductSpecificationsElement extends PolymerElement {
     }
   }
 
-  private onComparisonTableListItemClickEvent_(
+  private onComparisonTableListItemClick_(
       event: ComparisonTableListItemClickEvent) {
     window.history.replaceState(
         undefined, '', `?id=${event.detail.uuid.value}`);
     this.loadSet_(event.detail.uuid);
+  }
+
+  private onComparisonTableListItemRename_(
+      event: ComparisonTableListItemRenameEvent) {
+    this.shoppingApi_.setNameForProductSpecificationsSet(
+        event.detail.uuid, event.detail.name);
+  }
+
+  private onComparisonTableListItemDelete_(
+      event: ComparisonTableListItemDeleteEvent) {
+    this.deleteSet_(event.detail.uuid);
   }
 
   private async loadSet_(uuid: Uuid): Promise<boolean> {
@@ -1032,12 +1039,6 @@ export class ProductSpecificationsElement extends PolymerElement {
     this.updateEmptyState_(true);
     this.id_ = null;
     return false;
-  }
-}
-
-declare global {
-  interface HTMLElementEventMap {
-    'comparison-table-list-item-click': ComparisonTableListItemClickEvent;
   }
 }
 

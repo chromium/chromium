@@ -2427,7 +2427,7 @@ suite('AppTest', () => {
 
       productSpecificationsProxy.setResultMapperFor(
           'getComparisonTableUrlForUuid', (uuid: Uuid) => {
-            return Promise.resolve(`chrome://compare/?id=${uuid.value}`);
+            return Promise.resolve({url: `chrome://compare/?id=${uuid.value}`});
           });
     });
 
@@ -2564,5 +2564,72 @@ suite('AppTest', () => {
           ],
           listElement.tables);
     });
+
+    test('table is populated when an item is clicked', async () => {
+      const specsSetUrls = [{url: 'https://example.com/'}];
+      const specsSet =
+          createSpecsSet({urls: specsSetUrls, uuid: {value: '123'}});
+      shoppingServiceApi.setResultFor(
+          'getProductSpecificationsSetByUuid',
+          Promise.resolve({set: specsSet}));
+      const appElement = await createAppElement();
+
+      // Click an item in the list.
+      appElement.$.comparisonTableList.fire('item-click', {
+        uuid: {value: '123'},
+      });
+      await flushTasks();
+
+      assertEquals(
+          1,
+          shoppingServiceApi.getCallCount('getProductSpecificationsSetByUuid'));
+      assertEquals(
+          '123',
+          shoppingServiceApi.getArgs('getProductSpecificationsSetByUuid')[0]
+              .value);
+    });
+
+    test(
+        'table is deleted when the delete context menu item is clicked',
+        async () => {
+          const appElement = await createAppElement();
+          await flushTasks();
+
+          appElement.$.comparisonTableList.fire('delete-table', {
+            uuid: {value: '123'},
+          });
+          await flushTasks();
+
+          assertEquals(
+              1,
+              shoppingServiceApi.getCallCount(
+                  'deleteProductSpecificationsSet'));
+          assertEquals(
+              '123',
+              shoppingServiceApi.getArgs('deleteProductSpecificationsSet')[0]
+                  .value);
+        });
+
+    test(
+        'table is deleted when the delete context menu item is clicked',
+        async () => {
+          const appElement = await createAppElement();
+          await flushTasks();
+
+          appElement.$.comparisonTableList.fire('rename-table', {
+            uuid: {value: '123'},
+            name: 'xyz',
+          });
+          await flushTasks();
+
+          assertEquals(
+              1,
+              shoppingServiceApi.getCallCount(
+                  'setNameForProductSpecificationsSet'));
+          const args = shoppingServiceApi.getArgs(
+              'setNameForProductSpecificationsSet')[0];
+          assertEquals('123', args[0].value);
+          assertEquals('xyz', args[1]);
+        });
   });
 });

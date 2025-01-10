@@ -685,6 +685,15 @@
   <message name="IDS_COMPARE_YOUR_COMPARISON_TABLES" desc="The header above the list of a user's existing comparison tables in the compare UI">
     Your comparison tables
   </message>
+  <message name="IDS_COMPARE_CONTEXT_MENU_OPEN_IN_NEW_TAB" desc="The label for the comparison table list dropdown menu item for opening a comparison table in a new tab.">
+    Open in new tab
+  </message>
+  <message name="IDS_COMPARE_CONTEXT_MENU_RENAME" desc="The label for the comparison table list dropdown menu item for renaming a comparison table.">
+    Rename
+  </message>
+  <message name="IDS_COMPARE_CONTEXT_MENU_DELETE" desc="The label for the comparison table list dropdown menu item for deleting a comparison table.">
+    Delete
+  </message>
   <!-- For Compare Disclosure -->
   <message name="IDS_COMPARE_DISCLOSURE_TITLE" desc="The text for the title of the Compare first-run experience disclosure bubble.">
     Compare similar products side-by-side
