@@ -59,6 +59,20 @@ action("regex_patterns_inl_h") {
          rebase_path(outputs, root_build_dir)
 }
 
+action("entity_schema_enums_and_functions") {
+  visibility = [ ":*" ]
+
+  sources = [ "data_model/entity_schema.json" ]
+
+  script = "data_model/transpile_entity_schema.py"
+  outputs = [
+    "$target_gen_dir/data_model/entity_type_names.h",
+    "$target_gen_dir/data_model/entity_type_funcs.cc",
+  ]
+  args = [ "--input" ] + rebase_path(sources, root_build_dir) + [ "--output" ] +
+         rebase_path(outputs, root_build_dir)
+}
+
 proto_library("amount_extraction_heuristic_regexes_proto") {
   sources = [ "payments/amount_extraction_heuristic_regexes.proto" ]
 }
@@ -152,6 +166,10 @@ static_library("browser") {
     "data_model/credit_card_cloud_token_data.h",
     "data_model/data_model_utils.cc",
     "data_model/data_model_utils.h",
+    "data_model/entity_instance.cc",
+    "data_model/entity_instance.h",
+    "data_model/entity_type.cc",
+    "data_model/entity_type.h",
     "data_model/ewallet.cc",
     "data_model/ewallet.h",
     "data_model/form_group.cc",
@@ -650,6 +668,7 @@ static_library("browser") {
   ]
 
   sources += get_target_outputs(":regex_patterns_inl_h")
+  sources += get_target_outputs(":entity_schema_enums_and_functions")
 
   if (is_ios) {
     sources += [
@@ -757,6 +776,7 @@ static_library("browser") {
   deps = [
     ":autofill_address_rewriter_resources",
     ":buildflags",
+    ":entity_schema_enums_and_functions",
     ":regex_patterns_inl_h",
     "//base",
     "//base:i18n",
@@ -1164,6 +1184,8 @@ source_set("unit_tests") {
     "data_model/contact_info_unittest.cc",
     "data_model/credit_card_benefit_unittest.cc",
     "data_model/credit_card_unittest.cc",
+    "data_model/entity_instance_unittest.cc",
+    "data_model/entity_type_unittest.cc",
     "data_model/ewallet_unittest.cc",
     "data_model/iban_unittest.cc",
     "data_model/payment_instrument_unittest.cc",
@@ -1398,6 +1420,7 @@ source_set("unit_tests") {
     ":autofill_address_rewriter_resources",
     ":browser",
     ":buildflags",
+    ":entity_schema_enums_and_functions",
     ":regex_patterns_inl_h",
     ":test_support",
     ":unit_tests_bundle_data",

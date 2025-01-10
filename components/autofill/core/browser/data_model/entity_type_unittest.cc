@@ -1,0 +1,83 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/autofill/core/browser/data_model/entity_type.h"
+
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+namespace autofill {
+namespace {
+
+using ::testing::ElementsAre;
+using ::testing::UnorderedElementsAre;
+
+TEST(AutofillAttributeTypeTest, Relationships) {
+  {
+    AttributeType a = AttributeType(AttributeTypeName::kPassportName);
+    EXPECT_EQ(a.entity_type(), EntityType(EntityTypeName::kPassport));
+    EXPECT_EQ(a.field_type(), NAME_FULL);
+  }
+  {
+    AttributeType a = AttributeType(AttributeTypeName::kPassportNumber);
+    EXPECT_EQ(a.entity_type(), EntityType(EntityTypeName::kPassport));
+    EXPECT_EQ(a.field_type(), NO_SERVER_DATA);
+  }
+}
+
+TEST(AutofillEntityTypeTest, Attributes) {
+  using enum AttributeTypeName;
+  EntityType e = EntityType(EntityTypeName::kPassport);
+  EXPECT_THAT(e.attributes(),
+              UnorderedElementsAre(kPassportName, kPassportNumber,
+                                   kPassportCountry, kPassportExpiryDate,
+                                   kPassportIssueDate, kPassportPlaceOfBirth));
+  ASSERT_FALSE(e.attributes().empty());
+}
+
+TEST(AutofillEntityTypeTest, UniqueKeys) {
+  using enum AttributeTypeName;
+  EntityType e = EntityType(EntityTypeName::kPassport);
+  EXPECT_THAT(e.unique_keys(), ElementsAre(UnorderedElementsAre(
+                                   kPassportNumber, kPassportExpiryDate)));
+}
+
+TEST(AutofillEntityTypeTest, RequiredAttributes) {
+  using enum AttributeTypeName;
+  EntityType e = EntityType(EntityTypeName::kPassport);
+  EXPECT_THAT(e.required_attributes(),
+              UnorderedElementsAre(
+                  UnorderedElementsAre(kPassportNumber, kPassportName),
+                  UnorderedElementsAre(kPassportNumber, kPassportCountry),
+                  UnorderedElementsAre(kPassportNumber, kPassportExpiryDate)));
+}
+
+TEST(AutofillEntityTypeTest, NameAsString) {
+  EntityType e = EntityType(EntityTypeName::kPassport);
+  AttributeType a = AttributeType(*e.attributes().begin());
+  EXPECT_EQ(e.name_as_string(), "Passport");
+  EXPECT_EQ(a.name_as_string(), "Name");
+}
+
+TEST(AutofillEntityTypeTest, DisambiguationOrder) {
+  using enum AttributeTypeName;
+  auto lt = [](AttributeTypeName lhs, AttributeTypeName rhs) {
+    AttributeType::DisambiguationComparator lt;
+    return lt(AttributeType(lhs), AttributeType(rhs));
+  };
+  EXPECT_TRUE(lt(kPassportName, kPassportCountry));
+  EXPECT_TRUE(lt(kPassportCountry, kPassportExpiryDate));
+  EXPECT_TRUE(lt(kPassportCountry, kPassportIssueDate));
+  EXPECT_TRUE(lt(kPassportCountry, kPassportNumber));
+  EXPECT_FALSE(lt(kPassportNumber, kPassportIssueDate));
+}
+
+TEST(AutofillEntityTypeTest, Syncable) {
+  using enum EntityTypeName;
+  EXPECT_FALSE(EntityType(kPassport).syncable());
+  EXPECT_TRUE(EntityType(kLoyaltyCard).syncable());
+}
+
+}  // namespace
+}  // namespace autofill

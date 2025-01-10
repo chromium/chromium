@@ -1,0 +1,27 @@
+[
+  {
+    "name": "Passport",
+    "attributes": [ "Name", "Number", "Country", "Expiry date", "Issue date", "Place of birth" ],
+    "unique keys": [
+      [ "Number", "Expiry date" ]
+    ],
+    "required attributes": [
+      [ "Number", "Name" ],
+      [ "Number", "Country" ],
+      [ "Number", "Expiry date" ]
+    ],
+    "disambiguation order": [ "Name", "Country", "Expiry date" ],
+    "syncable": false
+  },
+  {
+    "name": "Loyalty Card",
+    "attributes": [ "Program", "Provider", "Member ID" ],
+    "unique keys": [
+      [ "Program", "Member ID" ]
+    ],
+    "required attributes": [
+      [ "Program", "Member ID" ]
+    ],
+    "syncable": true
+  }
+]
