@@ -22,7 +22,7 @@ they link against or support data. An isolate can be thought of like a tarball,
 but held by the CAS server and identified by a digest of its contents. The
 isolate also includes the command(s) to run, which is why the command is
 specified when building the isolate, not when executing it. See the
-[infra glossay](../infra/glossary.md) for the definitions of these terms and
+[infra glossary](../infra/glossary.md) for the definitions of these terms and
 more.
 
 Normally, when you do a CQ dry run, something like this happens:
