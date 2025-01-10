@@ -34,10 +34,12 @@ public class RecordHistogram {
      *
      * @param name name of the histogram
      * @param sample sample to be recorded, at least 0 and at most {@code max-1}
-     * @param max upper bound for legal sample values - all sample values have to be strictly
-     *            lower than {@code max}
+     * @param max upper bound for legal sample values - all sample values have to be
+     *            lower than or equal to {@code max}. This value should be 1000 or less.
      */
     public static void recordEnumeratedHistogram(String name, int sample, int max) {
+        // While recordExactLinearHistogram’s documentation states that the third argument
+        // should be 100 or less, a value up to 1000 is actually accepted.
         recordExactLinearHistogram(name, sample, max);
     }
 
