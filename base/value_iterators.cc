@@ -25,11 +25,11 @@ dict_iterator& dict_iterator::operator=(const dict_iterator& dict_iter) =
 
 dict_iterator::~dict_iterator() = default;
 
-dict_iterator::reference dict_iterator::operator*() {
+dict_iterator::reference dict_iterator::operator*() const {
   return {dict_iter_->first, *dict_iter_->second};
 }
 
-dict_iterator::pointer dict_iterator::operator->() {
+dict_iterator::pointer dict_iterator::operator->() const {
   return pointer(operator*());
 }
 
