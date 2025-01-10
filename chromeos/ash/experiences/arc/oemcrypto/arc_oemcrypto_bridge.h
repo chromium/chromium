@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_ARC_OEMCRYPTO_ARC_OEMCRYPTO_BRIDGE_H_
-#define CHROME_BROWSER_ASH_ARC_OEMCRYPTO_ARC_OEMCRYPTO_BRIDGE_H_
+#ifndef CHROMEOS_ASH_EXPERIENCES_ARC_OEMCRYPTO_ARC_OEMCRYPTO_BRIDGE_H_
+#define CHROMEOS_ASH_EXPERIENCES_ARC_OEMCRYPTO_ARC_OEMCRYPTO_BRIDGE_H_
 
 #include <stdint.h>
 
@@ -22,8 +22,7 @@ namespace arc {
 
 class ArcBridgeService;
 
-class ArcOemCryptoBridge : public KeyedService,
-                           public mojom::OemCryptoHost {
+class ArcOemCryptoBridge : public KeyedService, public mojom::OemCryptoHost {
  public:
   // Returns singleton instance for the given BrowserContext,
   // or nullptr if the browser |context| is not allowed to use ARC.
@@ -54,4 +53,4 @@ class ArcOemCryptoBridge : public KeyedService,
 
 }  // namespace arc
 
-#endif  // CHROME_BROWSER_ASH_ARC_OEMCRYPTO_ARC_OEMCRYPTO_BRIDGE_H_
+#endif  // CHROMEOS_ASH_EXPERIENCES_ARC_OEMCRYPTO_ARC_OEMCRYPTO_BRIDGE_H_

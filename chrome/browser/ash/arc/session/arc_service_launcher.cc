@@ -65,7 +65,6 @@
 #include "chrome/browser/ash/arc/notification/arc_boot_error_notification.h"
 #include "chrome/browser/ash/arc/notification/arc_provision_notification_service.h"
 #include "chrome/browser/ash/arc/notification/arc_vm_data_migration_notifier.h"
-#include "chrome/browser/ash/arc/oemcrypto/arc_oemcrypto_bridge.h"
 #include "chrome/browser/ash/arc/pip/arc_pip_bridge.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
 #include "chrome/browser/ash/arc/print_spooler/arc_print_spooler_bridge.h"
@@ -107,6 +106,7 @@
 #include "chromeos/ash/experiences/arc/memory/arc_memory_bridge.h"
 #include "chromeos/ash/experiences/arc/metrics/arc_metrics_service.h"
 #include "chromeos/ash/experiences/arc/midis/arc_midis_bridge.h"
+#include "chromeos/ash/experiences/arc/oemcrypto/arc_oemcrypto_bridge.h"
 #include "components/prefs/pref_member.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 

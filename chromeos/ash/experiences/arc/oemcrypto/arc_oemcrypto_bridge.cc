@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/arc/oemcrypto/arc_oemcrypto_bridge.h"
+#include "chromeos/ash/experiences/arc/oemcrypto/arc_oemcrypto_bridge.h"
 
 #include <utility>
 
