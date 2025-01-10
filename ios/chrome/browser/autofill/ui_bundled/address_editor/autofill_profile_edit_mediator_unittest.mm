@@ -129,7 +129,7 @@ class AutofillProfileEditMediatorTest : public PlatformTest {
 
   const autofill::CountryComboboxModel::CountryVector& CountriesList() {
     country_model_.SetCountries(
-        *personal_data_manager(),
+        personal_data_manager()->address_data_manager(),
         base::RepeatingCallback<bool(const std::string&)>(),
         GetApplicationContext()->GetApplicationLocale());
     return country_model_.countries();

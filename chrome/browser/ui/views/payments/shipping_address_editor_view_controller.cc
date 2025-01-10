@@ -138,9 +138,10 @@ ShippingAddressEditorViewController::GetComboboxModelForType(
   switch (type) {
     case autofill::ADDRESS_HOME_COUNTRY: {
       auto model = std::make_unique<autofill::CountryComboboxModel>();
-      model->SetCountries(*state()->GetPersonalDataManager(),
-                          base::RepeatingCallback<bool(const std::string&)>(),
-                          state()->GetApplicationLocale());
+      model->SetCountries(
+          state()->GetPersonalDataManager()->address_data_manager(),
+          base::RepeatingCallback<bool(const std::string&)>(),
+          state()->GetApplicationLocale());
       if (model->countries().size() != countries_.size()) {
         UpdateCountries(model.get());
       }
@@ -392,7 +393,7 @@ void ShippingAddressEditorViewController::UpdateCountries(
   autofill::CountryComboboxModel local_model;
   if (!model) {
     local_model.SetCountries(
-        *state()->GetPersonalDataManager(),
+        state()->GetPersonalDataManager()->address_data_manager(),
         base::RepeatingCallback<bool(const std::string&)>(),
         state()->GetApplicationLocale());
     model = &local_model;

@@ -341,7 +341,7 @@ constexpr std::array<autofill::FieldType, 5> kStaticFieldsTypes = {
 // Loads the country codes and names and sets the default selected country code.
 - (void)loadCountries {
   autofill::CountryComboboxModel countryModel;
-  countryModel.SetCountries(*_personalDataManager,
+  countryModel.SetCountries(_personalDataManager->address_data_manager(),
                             base::RepeatingCallback<bool(const std::string&)>(),
                             GetApplicationContext()->GetApplicationLocale());
   const autofill::CountryComboboxModel::CountryVector& countriesVector =

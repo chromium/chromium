@@ -26,15 +26,14 @@ CountryComboboxModel::CountryComboboxModel() = default;
 CountryComboboxModel::~CountryComboboxModel() = default;
 
 void CountryComboboxModel::SetCountries(
-    const PersonalDataManager& manager,
+    const AddressDataManager& adm,
     const base::RepeatingCallback<bool(const std::string&)>& filter,
     const std::string& app_locale) {
   countries_.clear();
 
   // Insert the default country at the top as well as in the ordered list.
-  std::string default_country_code = manager.address_data_manager()
-                                         .GetDefaultCountryCodeForNewAddress()
-                                         .value();
+  std::string default_country_code =
+      adm.GetDefaultCountryCodeForNewAddress().value();
   DCHECK(!default_country_code.empty());
 
   if (filter.is_null() || filter.Run(default_country_code)) {

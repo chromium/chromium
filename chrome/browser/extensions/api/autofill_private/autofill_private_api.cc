@@ -156,15 +156,14 @@ autofill::BrowserAutofillManager* GetBrowserAutofillManager(
 }
 
 autofill::AutofillProfile CreateNewAutofillProfile(
-    autofill::PersonalDataManager& personal_data,
+    const autofill::AddressDataManager& adm,
     std::optional<std::string_view> country_code) {
   autofill::AutofillProfile::RecordType record_type =
-      personal_data.address_data_manager().IsEligibleForAddressAccountStorage()
+      adm.IsEligibleForAddressAccountStorage()
           ? autofill::AutofillProfile::RecordType::kAccount
           : autofill::AutofillProfile::RecordType::kLocalOrSyncable;
   if (country_code &&
-      !personal_data.address_data_manager().IsCountryEligibleForAccountStorage(
-          country_code.value())) {
+      !adm.IsCountryEligibleForAccountStorage(country_code.value())) {
     // Note: addresses from unsupported countries can't be saved in account.
     // TODO(crbug.com/40263955): remove temporary unsupported countries
     // filtering.
@@ -199,7 +198,7 @@ ExtensionFunction::ResponseAction AutofillPrivateGetAccountInfoFunction::Run() {
   }
 
   std::optional<api::autofill_private::AccountInfo> account_info =
-      autofill_util::GetAccountInfo(personal_data);
+      autofill_util::GetAccountInfo(personal_data.address_data_manager());
   if (account_info.has_value()) {
     return RespondNow(
         ArgumentList(api::autofill_private::GetAccountInfo::Results::Create(
@@ -253,8 +252,10 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveAddressFunction::Run() {
     country_code = it->value;
   }
   autofill::AutofillProfile profile =
-      existing_profile ? *existing_profile
-                       : CreateNewAutofillProfile(personal_data, country_code);
+      existing_profile
+          ? *existing_profile
+          : CreateNewAutofillProfile(personal_data.address_data_manager(),
+                                     country_code);
 
   for (const api::autofill_private::AddressField& field : address->fields) {
     std::u16string trimmed_value;
@@ -311,7 +312,8 @@ ExtensionFunction::ResponseAction AutofillPrivateGetCountryListFunction::Run() {
 
   autofill_util::CountryEntryList country_list =
       autofill_util::GenerateCountryList(
-          personal_data, parameters->for_account_address_profile);
+          personal_data.address_data_manager(),
+          parameters->for_account_address_profile);
 
   return RespondNow(ArgumentList(
       api::autofill_private::GetCountryList::Results::Create(country_list)));
@@ -372,7 +374,7 @@ ExtensionFunction::ResponseAction AutofillPrivateGetAddressListFunction::Run() {
   }
 
   autofill_util::AddressEntryList address_list =
-      autofill_util::GenerateAddressList(personal_data);
+      autofill_util::GenerateAddressList(personal_data.address_data_manager());
   return RespondNow(ArgumentList(
       api::autofill_private::GetAddressList::Results::Create(address_list)));
 }
@@ -565,7 +567,8 @@ AutofillPrivateGetCreditCardListFunction::Run() {
   }
 
   autofill_util::CreditCardEntryList credit_card_list =
-      autofill_util::GenerateCreditCardList(personal_data);
+      autofill_util::GenerateCreditCardList(
+          personal_data.payments_data_manager());
   return RespondNow(
       ArgumentList(api::autofill_private::GetCreditCardList::Results::Create(
           credit_card_list)));
@@ -752,7 +755,7 @@ ExtensionFunction::ResponseAction AutofillPrivateGetIbanListFunction::Run() {
   }
 
   autofill_util::IbanEntryList iban_list =
-      autofill_util::GenerateIbanList(personal_data);
+      autofill_util::GenerateIbanList(personal_data.payments_data_manager());
   return RespondNow(ArgumentList(
       api::autofill_private::GetIbanList::Results::Create(iban_list)));
 }
@@ -1016,7 +1019,7 @@ void AutofillPrivateGetLocalCardFunction::ReturnCreditCard() {
               parameters->guid)) {
     return Respond(ArgumentList(autofill_private::GetLocalCard::Results::Create(
         autofill_util::CreditCardToCreditCardEntry(
-            *card_from_guid, personal_data_manager,
+            *card_from_guid, personal_data_manager.payments_data_manager(),
             /*mask_local_cards=*/false))));
   }
   return Respond(Error(kErrorCardDataUnavailable));
