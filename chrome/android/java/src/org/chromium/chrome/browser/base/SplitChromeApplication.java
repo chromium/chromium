@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.base;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Handler;
@@ -23,6 +24,7 @@ import org.chromium.base.JavaUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.IdentifierNameString;
+import org.chromium.chrome.browser.language.GlobalAppLocaleController;
 
 /**
  * Application class for Chrome that knows how to deal with isolated splits. This class will perform
@@ -120,16 +122,8 @@ public class SplitChromeApplication extends SplitCompatApplication
     }
 
     @Override
-    protected void performBrowserProcessPreloading(Context context) {
-        // The chrome split has a large amount of code, which can slow down startup. Loading
-        // this in the background allows us to do this in parallel with startup tasks which do
-        // not depend on code in the chrome split.
-        sSplitPreloader = new SplitPreloader(context);
-        // If the chrome module is not enabled or isolated splits are not supported (e.g. in Android
-        // N), the onComplete function will run immediately so it must handle the case where the
-        // base context of the application has not been set yet.
-        sSplitPreloader.preload(
-                CHROME_SPLIT_NAME,
+    protected void performBrowserProcessPreloading(Context context, boolean blockingLoad) {
+        SplitPreloader.PreloadHooks hooks =
                 new SplitPreloader.PreloadHooks() {
                     @Override
                     public void runImmediatelyInBackgroundThread(Context chromeContext) {
@@ -173,6 +167,13 @@ public class SplitChromeApplication extends SplitCompatApplication
                             BundleUtils.replaceClassLoader(
                                     SplitChromeApplication.this, chromeContext.getClassLoader());
                             JNIUtils.setClassLoader(chromeContext.getClassLoader());
+
+                            if (GlobalAppLocaleController.getInstance().isOverridden()) {
+                                Configuration config =
+                                        GlobalAppLocaleController.getInstance()
+                                                .getOverrideConfig(chromeContext);
+                                chromeContext = chromeContext.createConfigurationContext(config);
+                            }
                             // Resources holds a reference to a ClassLoader. Make our Application's
                             // getResources() return a reference to the Chrome split's resources
                             // since there are a spots where ContextUtils.getApplicationContext()
@@ -185,7 +186,26 @@ public class SplitChromeApplication extends SplitCompatApplication
                     public Context createIsolatedSplitContext(String name) {
                         return createContextForSplitNoWait(name);
                     }
-                });
+                };
+
+        if (blockingLoad) {
+            Context chromeContext = hooks.createIsolatedSplitContext(CHROME_SPLIT_NAME);
+            hooks.runInUiThread(chromeContext);
+        } else {
+            // The chrome split has a large amount of code, which can slow down startup. Loading
+            // this in the background allows us to do this in parallel with startup tasks which do
+            // not depend on code in the chrome split.
+            sSplitPreloader = new SplitPreloader(context);
+            // If the chrome module is not enabled or isolated splits are not supported (e.g. in
+            // Android N), the onComplete function will run immediately so it must handle the case
+            // where the base context of the application has not been set yet.
+            sSplitPreloader.preload(CHROME_SPLIT_NAME, hooks);
+        }
+    }
+
+    @Override
+    protected void performBrowserProcessPreloading(Context context) {
+        performBrowserProcessPreloading(context, false);
     }
 
     @Override

@@ -192,7 +192,7 @@ public class SplitCompatApplication extends Application {
 
         maybeInitProcessType();
 
-        if (isBrowserProcess) {
+        if (isBrowserProcess && !ChromeFeatureList.sSkipIsolatedSplitPreload.isEnabled()) {
             performBrowserProcessPreloading(context);
         }
 
@@ -266,6 +266,14 @@ public class SplitCompatApplication extends Application {
             CustomAssertionHandler.installPreNativeHandler(factory);
         }
 
+        // Skipping tests since some use "--disable-native-initialization", and some tests manually
+        // test loading the native library themselves.
+        if (isBrowserProcess
+                && ChromeFeatureList.sSkipIsolatedSplitPreload.isEnabled()
+                && !BuildConfig.IS_FOR_TEST) {
+            new Thread(() -> LibraryLoader.getInstance().loadNow()).start();
+            performBrowserProcessPreloading(context, true);
+        }
         TraceEvent.end(ATTACH_BASE_CONTEXT_EVENT);
     }
 
@@ -320,6 +328,8 @@ public class SplitCompatApplication extends Application {
      * as early as possible to maximize preload time.
      */
     protected void performBrowserProcessPreloading(Context context) {}
+
+    protected void performBrowserProcessPreloading(Context context, boolean blockingLoad) {}
 
     public boolean isWebViewProcess() {
         return false;

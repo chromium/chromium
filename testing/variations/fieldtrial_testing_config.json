@@ -22179,6 +22179,21 @@
             ]
         }
     ],
+    "SkipIsolatedSplitPreload": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SkipIsolatedSplitPreload"
+                    ]
+                }
+            ]
+        }
+    ],
     "SkipPagehideInCommitForDSENavigation": [
         {
             "platforms": [

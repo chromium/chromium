@@ -319,6 +319,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kSearchResumptionModuleAndroid,
     &kSettingsSingleActivity,
     &kShareCustomActionsInCCT,
+    &kSkipIsolatedSplitPreload,
     &kSmallerTabStripTitleLimit,
     &kSuppressToolbarCaptures,
     &kSuppressToolbarCapturesAtGestureEnd,
@@ -997,6 +998,10 @@ BASE_FEATURE(kSettingsSingleActivity,
 
 BASE_FEATURE(kShareCustomActionsInCCT,
              "ShareCustomActionsInCCT",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSkipIsolatedSplitPreload,
+             "SkipIsolatedSplitPreload",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSmallerTabStripTitleLimit,

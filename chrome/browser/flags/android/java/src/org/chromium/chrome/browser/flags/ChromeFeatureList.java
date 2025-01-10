@@ -508,6 +508,7 @@ public abstract class ChromeFeatureList {
             "SensitiveContentWhileSwitchingTabs";
     public static final String SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS =
             "ShowWarningsForSuspiciousNotifications";
+    public static final String SKIP_ISOLATED_SPLIT_PRELOAD = "SkipIsolatedSplitPreload";
     public static final String SMALLER_TAB_STRIP_TITLE_LIMIT = "SmallerTabStripTitleLimit";
     public static final String SMART_SUGGESTION_FOR_LARGE_DOWNLOADS =
             "SmartSuggestionForLargeDownloads";
@@ -752,6 +753,11 @@ public abstract class ChromeFeatureList {
             newCachedFlag(SEARCH_IN_CCT_ALTERNATE_TAP_HANDLING, false);
     public static final CachedFlag sSettingsSingleActivity =
             newCachedFlag(SETTINGS_SINGLE_ACTIVITY, false);
+    public static final CachedFlag sSkipIsolatedSplitPreload =
+            newCachedFlag(
+                    SKIP_ISOLATED_SPLIT_PRELOAD,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sSmallerTabStripTitleLimit =
             newCachedFlag(SMALLER_TAB_STRIP_TITLE_LIMIT, true);
     public static final CachedFlag sStartSurfaceReturnTime =
@@ -882,6 +888,7 @@ public abstract class ChromeFeatureList {
                     sSearchInCCT,
                     sSearchInCCTAlternateTapHandling,
                     sSettingsSingleActivity,
+                    sSkipIsolatedSplitPreload,
                     sSmallerTabStripTitleLimit,
                     sStartSurfaceReturnTime,
                     sTabDragDropAsWindowAndroid,
