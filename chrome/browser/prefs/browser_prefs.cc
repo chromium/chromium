@@ -557,66 +557,6 @@ namespace {
 // Please keep the list of deprecated prefs in chronological order. i.e. Add to
 // the bottom of the list, not here at the top.
 
-// Deprecated 01/2024.
-const char kPrivacySandboxPageViewed[] = "privacy_sandbox.page_viewed";
-
-// Deprecated 01/2024.
-const char kPrivacySandboxApisEnabledV2[] = "privacy_sandbox.apis_enabled_v2";
-const char kPrivacySandboxManuallyControlledV2[] =
-    "privacy_sandbox.manually_controlled_v2";
-
-// Deprecated 01/2024.
-#if BUILDFLAG(ENABLE_COMPOSE)
-constexpr char kPrefHasAcceptedComposeConsent[] =
-    "compose_has_accepted_consent";
-constexpr char kAutofillAssistanceEnabled[] = "autofill_assistance.enabled";
-#endif
-
-// Deprecated 01/2024.
-const char kSyncedLastTimePasswordCheckCompleted[] =
-    "profile.credentials_last_password_checkup_time";
-
-// Deprecated 01/2024.
-const char kDownloadBubbleIphSuppression[] = "suppress_download_bubble_iph";
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Deprecated 01/2024.
-const char kPersistedSystemExtensions[] = "system_extensions.persisted";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-// Deprecated 01/2024.
-const char kPPAPISharedImagesForVideoDecoderAllowed[] =
-    "policy.ppapi_shared_images_for_video_decoder_allowed";
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Deprecated 01/2024.
-const char kBorealisVmTokenHash[] = "borealis.vm_token_hash";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-// Deprecated 01/2024.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-constexpr char kExtendedFkeysModifier[] =
-    "ash.settings.extended_fkeys_modifier";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-// Deprecated 01/2024.
-constexpr char kNtpShownPage[] = "ntp.shown_page";
-constexpr char kNtpAppPageNames[] = "ntp.app_page_names";
-
-// Deprecated 01/2024.
-#if BUILDFLAG(IS_WIN)
-const char kSearchResultsPagePrimaryFontsPref[] =
-    "cached_fonts.search_results_page.primary";
-const char kSearchResultsPageFallbackFontsPref[] =
-    "cached_fonts.search_results_page.fallback";
-#endif  // BUILDFLAG(IS_WIN)
-
-// Deprecated 01/2024.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-constexpr char kUpdateNotificationLastShownMilestone[] =
-    "update_notification_last_shown_milestone";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 // Deprecated 02/2024.
 #if BUILDFLAG(IS_ANDROID)
 constexpr char kSavePasswordsSuspendedByError[] =
@@ -1193,14 +1133,6 @@ inline constexpr char kSafeBrowsingAutomaticDeepScanPerformed[] =
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
-  // Deprecated 01/2024.
-  registry->RegisterBooleanPref(kPPAPISharedImagesForVideoDecoderAllowed, true);
-
-  // Deprecated 01/2024.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  registry->RegisterIntegerPref(kExtendedFkeysModifier, 0);
-#endif
-
   // Deprecated 02/2024
 #if BUILDFLAG(IS_MAC)
   registry->RegisterBooleanPref(kScreenTimeEnabled, true);
@@ -1311,47 +1243,6 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 void RegisterProfilePrefsForMigration(
     user_prefs::PrefRegistrySyncable* registry) {
   chrome_browser_net::secure_dns::RegisterProbesSettingBackupPref(registry);
-
-  // Deprecated 01/2024.
-  registry->RegisterBooleanPref(kPrivacySandboxPageViewed, false);
-
-  // Deprecated 01/2024.
-  registry->RegisterBooleanPref(kPrivacySandboxApisEnabledV2, false);
-  registry->RegisterBooleanPref(kPrivacySandboxManuallyControlledV2, false);
-
-// Deprecated 01/2024.
-#if BUILDFLAG(ENABLE_COMPOSE)
-  registry->RegisterBooleanPref(kPrefHasAcceptedComposeConsent, false);
-  registry->RegisterBooleanPref(kAutofillAssistanceEnabled, false);
-#endif
-
-  // Deprecated 01/2024.
-  registry->RegisterTimePref(kSyncedLastTimePasswordCheckCompleted,
-                             base::Time());
-
-  // Deprecated 01/2024.
-  registry->RegisterBooleanPref(kDownloadBubbleIphSuppression, false);
-
-// Deprecated 01/2024.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  registry->RegisterDictionaryPref(kPersistedSystemExtensions);
-  registry->RegisterStringPref(kBorealisVmTokenHash, "");
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  // Deprecated 01/2024.
-  registry->RegisterIntegerPref(kNtpShownPage, 0);
-  registry->RegisterListPref(kNtpAppPageNames);
-
-  // Deprecated 01/2024.
-#if BUILDFLAG(IS_WIN)
-  registry->RegisterListPref(kSearchResultsPagePrimaryFontsPref);
-  registry->RegisterListPref(kSearchResultsPageFallbackFontsPref);
-#endif
-
-  // Deprecated 01/2024.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  registry->RegisterIntegerPref(kUpdateNotificationLastShownMilestone, -10);
-#endif
 
   // Deprecated 02/2024.
 #if BUILDFLAG(IS_ANDROID)
@@ -2511,14 +2402,6 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // BEGIN_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
   // Please don't delete the preceding line. It is used by PRESUBMIT.py.
 
-  // Added 01/2024.
-  local_state->ClearPref(kPPAPISharedImagesForVideoDecoderAllowed);
-
-// Added 01/2024.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  local_state->ClearPref(kExtendedFkeysModifier);
-#endif
-
 // Added 02/2024
 #if BUILDFLAG(IS_MAC)
   local_state->ClearPref(kScreenTimeEnabled);
@@ -2674,51 +2557,6 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // be removed entirely, depending how the outdated GmsCore case is handled.
   password_manager_android_util::SetUsesSplitStoresAndUPMForLocal(profile_prefs,
                                                                   profile_path);
-#endif
-
-  // Added 01/2024.
-  profile_prefs->ClearPref(kPrivacySandboxPageViewed);
-
-  // Added 01/2024.
-  profile_prefs->ClearPref(kPrivacySandboxApisEnabledV2);
-  profile_prefs->ClearPref(kPrivacySandboxManuallyControlledV2);
-
-  // Added 01/2024.
-#if BUILDFLAG(ENABLE_COMPOSE)
-  profile_prefs->ClearPref(kPrefHasAcceptedComposeConsent);
-  profile_prefs->ClearPref(kAutofillAssistanceEnabled);
-#endif
-
-  // Added 01/2024.
-  profile_prefs->ClearPref(kSyncedLastTimePasswordCheckCompleted);
-
-  // Added 01/2024.
-  profile_prefs->ClearPref(kDownloadBubbleIphSuppression);
-
-  // Added 01/2024.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  profile_prefs->ClearPref(kPersistedSystemExtensions);
-  profile_prefs->ClearPref(kBorealisVmTokenHash);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  // Added 01/2024.
-  profile_prefs->ClearPref(kNtpShownPage);
-  profile_prefs->ClearPref(kNtpAppPageNames);
-
-  // Added 01/2024.
-#if BUILDFLAG(IS_WIN)
-  profile_prefs->ClearPref(kSearchResultsPagePrimaryFontsPref);
-  profile_prefs->ClearPref(kSearchResultsPageFallbackFontsPref);
-#endif
-
-  // Added 01/2024.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  profile_prefs->ClearPref(kUpdateNotificationLastShownMilestone);
-#endif
-
-  // Added 01/2024.
-#if BUILDFLAG(IS_ANDROID)
-  profile_prefs->ClearPref(kSavePasswordsSuspendedByError);
 #endif
 
   // Added 02/2024
