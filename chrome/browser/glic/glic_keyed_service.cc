@@ -34,6 +34,10 @@ GlicKeyedService::GlicKeyedService(content::BrowserContext* browser_context,
 
 GlicKeyedService::~GlicKeyedService() = default;
 
+void GlicKeyedService::Shutdown() {
+  window_controller_.Shutdown();
+}
+
 void GlicKeyedService::LaunchUI(views::View* glic_button_view) {
   // Glic may be disabled for certain user profiles (the user is browsing in
   // incognito or guest mode, policy, etc). In those cases, the entry points to

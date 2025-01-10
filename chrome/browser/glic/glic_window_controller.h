@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/glic/glic.mojom.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
 class Browser;
@@ -20,12 +21,13 @@ class Size;
 class Point;
 }  // namespace gfx
 
+namespace glic {
 namespace {
+class ContentsAndProfileKeepAlive;
 class GlicWidgetObserver;
 class WindowEventObserver;
 }  // namespace
 
-namespace glic {
 class GlicView;
 
 // Class for Glic window controller. Owned by the Glic profile keyed-service.
@@ -55,6 +57,9 @@ class GlicWindowController : public views::WidgetObserver {
   // display.
   void Detach();
 
+  // Destroy the glic panel and its web contents.
+  void Shutdown();
+
   // Sets the size of the glic window to the specified dimensions. Returns true
   // if the operation succeeded.
   bool Resize(const gfx::Size& size);
@@ -65,7 +70,7 @@ class GlicWindowController : public views::WidgetObserver {
   // Sets the areas of the view from which it should be draggable.
   void SetDraggableAreas(const std::vector<gfx::Rect>& draggable_areas);
 
-  // Called to notify the controller that the window was requested to be closed.
+  // Close the panel but keep the glic WebContents alive in the background.
   void Close();
 
   // Sets the audio ducking status.  Returns true if the operation succeeded.
@@ -191,6 +196,10 @@ class GlicWindowController : public views::WidgetObserver {
   std::unique_ptr<views::Widget> holder_widget_;
 
   const raw_ptr<Profile> profile_;
+  // Keep profile alive as long as the glic web contents. This object should be
+  // destroyed when the profile needs to be destroyed.
+  std::unique_ptr<ContentsAndProfileKeepAlive> contents_;
+
   std::unique_ptr<views::Widget> glic_window_widget_;
   bool glic_window_widget_visible_ = false;
 

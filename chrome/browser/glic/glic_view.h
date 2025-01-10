@@ -5,9 +5,7 @@
 #ifndef CHROME_BROWSER_GLIC_GLIC_VIEW_H_
 #define CHROME_BROWSER_GLIC_GLIC_VIEW_H_
 
-#include "content/public/browser/web_contents_delegate.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
@@ -21,11 +19,10 @@ class WebView;
 
 class BrowserFrameBoundsChangeAnimation;
 class Profile;
-class ScopedProfileKeepAlive;
 
 namespace glic {
 
-class GlicView : public views::View, public content::WebContentsDelegate {
+class GlicView : public views::View {
  public:
   GlicView(Profile* profile, const gfx::Size& initial_size);
   GlicView(const GlicView&) = delete;
@@ -51,16 +48,7 @@ class GlicView : public views::View, public content::WebContentsDelegate {
   void AnimateFrameBounds(const gfx::Rect& bounds);
 
  private:
-  // content::WebContentsDelegate:
-  bool HandleKeyboardEvent(content::WebContents* source,
-                           const input::NativeWebKeyboardEvent& event) override;
-  void RequestMediaAccessPermission(
-      content::WebContents* web_contents,
-      const content::MediaStreamRequest& request,
-      content::MediaResponseCallback callback) override;
-
   raw_ptr<views::WebView> web_view_;
-  views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 
   // Defines the areas of the view from which it can be dragged. These areas can
   // be updated by the glic web client.
@@ -69,10 +57,6 @@ class GlicView : public views::View, public content::WebContentsDelegate {
   // Animates programmatic changes to bounds (e.g. via `resizeTo()`
   // `resizeBy()` and `setContentsSize()` calls).
   std::unique_ptr<BrowserFrameBoundsChangeAnimation> bounds_change_animation_;
-
-  // Ensures that the profile associated with this view isn't destroyed while
-  // it is visible.
-  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
 };
 
 }  // namespace glic

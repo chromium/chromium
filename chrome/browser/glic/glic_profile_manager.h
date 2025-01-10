@@ -39,7 +39,6 @@ class GlicProfileManager {
 
  private:
   base::WeakPtr<GlicKeyedService> active_glic_;
-  base::CallbackListSubscription termination_subscription_;
 };
 }  // namespace glic
 
