@@ -341,6 +341,12 @@ BASE_DECLARE_FEATURE(kLensOverlayEnableSameTabNavigation);
 // Feature to enable force showing the lens overlay onboarding screen.
 BASE_DECLARE_FEATURE(kLensOverlayForceShowOnboardingScreen);
 
+// Types of lens overlay onboarding.
+extern const char kLensOverlayAlternativeOnboardingType[];
+
+// Feature flag to switch between the lens overlay onboarding types.
+BASE_DECLARE_FEATURE(kLensOverlayAlternativeOnboarding);
+
 // Feature flag to enable UITraitCollection workaround for fixing incorrect
 // trait propagation.
 BASE_DECLARE_FEATURE(kEnableTraitCollectionWorkAround);

@@ -279,6 +279,13 @@ BASE_FEATURE(kLensOverlayForceShowOnboardingScreen,
              "EnableLensOverlayForceShowOnboardingScreen",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const char kLensOverlayAlternativeOnboardingType[] =
+    "kLensOverlayAlternativeOnboardingType";
+
+BASE_FEATURE(kLensOverlayAlternativeOnboarding,
+             "LensOverlayAlternativeOnboarding",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEnableTraitCollectionWorkAround,
              "EnableTraitCollectionWorkAround",
              base::FEATURE_ENABLED_BY_DEFAULT);
