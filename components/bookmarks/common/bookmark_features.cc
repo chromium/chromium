@@ -15,4 +15,11 @@ BASE_FEATURE(kAllBookmarksBaselineFolderVisibility,
              "AllBookmarksBaselineFolderVisibility",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Determines which container is used internally in `TitledUrlIndex`,
+// leading to slightly different performance characteristics. If enabled,
+// a std::set is used per indexed term instead of base::flat_set.
+BASE_FEATURE(kBookmarksUseBinaryTreeInTitledUrlIndex,
+             "BookmarksUseBinaryTreeInTitledUrlIndex",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace bookmarks

@@ -13,10 +13,10 @@
 #include <set>
 #include <string>
 #include <string_view>
+#include <variant>
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "components/bookmarks/browser/titled_url_node_sorter.h"
 #include "components/query_parser/query_parser.h"
@@ -34,20 +34,17 @@ struct TitledUrlMatch;
 // TitledUrlNodes that contain that string in their title or URL.
 class TitledUrlIndex {
  public:
-  using TitledUrlNodeSet =
-      base::flat_set<raw_ptr<const TitledUrlNode, CtnExperimental>>;
-
-  // Constructs a TitledUrlIndex. `sorter` is used to construct a sorted list
-  // of matches when matches are returned from the index. If null, matches are
-  // returned unsorted.
-  explicit TitledUrlIndex(
-      std::unique_ptr<TitledUrlNodeSorter> sorter = nullptr);
+  TitledUrlIndex();
 
   TitledUrlIndex(const TitledUrlIndex&) = delete;
   TitledUrlIndex& operator=(const TitledUrlIndex&) = delete;
 
   ~TitledUrlIndex();
 
+  // Sets a node sorter as provided by `sorter`, which is used to construct a
+  // sorted list of matches when matches are returned from the index. If null
+  // (which is also the default before this function is called), matches are
+  // returned unsorted.
   void SetNodeSorter(std::unique_ptr<TitledUrlNodeSorter> sorter);
 
   // Invoked when a title/URL pair has been added to the model.
@@ -75,22 +72,51 @@ class TitledUrlIndex {
   // normalize the string, returns `text` itself as a best-effort.
   static std::u16string Normalize(std::u16string_view text);
 
+  // The type of container used internally by the index, determined via feature
+  // flags.
+  enum class NodeSetType {
+    kFlat,
+    kBinaryTree,
+  };
+
  private:
   friend class TitledUrlIndexFake;
 
-  using TitledUrlNodes =
-      std::vector<raw_ptr<const TitledUrlNode, CtnExperimental>>;
-  using Index = std::map<std::u16string, TitledUrlNodeSet>;
+  using NodeVector = std::vector<raw_ptr<const TitledUrlNode, CtnExperimental>>;
+  using FlatNodeSet =
+      base::flat_set<raw_ptr<const TitledUrlNode, CtnExperimental>>;
+
+  class NodeSet {
+   public:
+    explicit NodeSet(NodeSetType type);
+    NodeSet(const NodeSet&) = delete;
+    NodeSet& operator=(const NodeSet&) = delete;
+    ~NodeSet();
+
+    bool empty() const;
+    void InsertSingleNode(const TitledUrlNode* node);
+    void EraseSingleNode(const TitledUrlNode* node);
+
+    NodeVector DeepCopyToVector() const;
+    void AppendNodesToVector(NodeVector& output) const;
+
+   private:
+    using BinaryTreeNodeSet =
+        std::set<raw_ptr<const TitledUrlNode, CtnExperimental>>;
+
+    std::variant<FlatNodeSet, BinaryTreeNodeSet> variant_;
+  };
+
+  using Index = std::map<std::u16string, NodeSet>;
 
   // Constructs `sorted_nodes` by copying the matches in `matches` and sorting
   // them.
-  void SortMatches(const TitledUrlNodeSet& matches,
-                   TitledUrlNodes* sorted_nodes) const;
+  void SortMatches(const FlatNodeSet& matches, NodeVector* sorted_nodes) const;
 
   // For each node, calls `MatchTitledUrlNodeWithQuery()` and returns the
   // aggregated `TitledUrlMatch`s.
   std::vector<TitledUrlMatch> MatchTitledUrlNodesWithQuery(
-      const TitledUrlNodes& nodes,
+      const NodeVector& nodes,
       const query_parser::QueryNodeVector& query_nodes,
       const std::vector<std::u16string>& query_terms,
       size_t max_count);
@@ -104,7 +130,7 @@ class TitledUrlIndex {
 
   // Return matches for the specified `terms`. This is an intersection of each
   // term's matches.
-  TitledUrlNodeSet RetrieveNodesMatchingAllTerms(
+  FlatNodeSet RetrieveNodesMatchingAllTerms(
       const std::vector<std::u16string>& terms,
       query_parser::MatchingAlgorithm matching_algorithm) const;
 
@@ -114,13 +140,13 @@ class TitledUrlIndex {
   // `max_nodes_per_term` nodes won't have their nodes accumulated by union; and
   // accumulation is capped to `max_nodes`. Guaranteed to include any node
   // `RetrieveNodesMatchingAllTerms()` includes.
-  TitledUrlNodeSet RetrieveNodesMatchingAnyTerms(
+  FlatNodeSet RetrieveNodesMatchingAnyTerms(
       const std::vector<std::u16string>& terms,
       query_parser::MatchingAlgorithm matching_algorithm,
       size_t max_nodes) const;
 
   // Return matches for the specified `term`. May return duplicates.
-  TitledUrlNodes RetrieveNodesMatchingTerm(
+  NodeVector RetrieveNodesMatchingTerm(
       const std::u16string& term,
       query_parser::MatchingAlgorithm matching_algorithm) const;
 
@@ -142,6 +168,10 @@ class TitledUrlIndex {
 
   // Removes `node` from `index_`.
   void UnregisterNode(const std::u16string& term, const TitledUrlNode* node);
+
+  // A cached result of evaluating feature flags, to avoid repeated evaluation
+  // via base::FeatureList.
+  const NodeSetType indexed_node_set_type_;
 
   // A map of terms and the nodes containing those terms in their titles or
   // URLs. E.g., given 2 bookmarks titled 'x y x' and 'x z', `index` would
