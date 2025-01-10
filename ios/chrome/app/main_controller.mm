@@ -276,41 +276,6 @@ void MarkSessionsAsDiscardedForAllProfiles(NSSet<UISceneSession*>* sessions) {
   sessions_storage_util::ResetDiscardedSessions();
 }
 
-// Runs the continuation at `index` with SceneState.
-void RunContinuationAtIndex(
-    NSArray<id<ChangeProfileContinuation>>* continuations,
-    NSUInteger index,
-    __weak SceneState* scene) {
-  CHECK(continuations);
-  CHECK_LT(index, continuations.count);
-
-  // If the SceneState is nil, then do not run the continuations. This
-  // can happen for multiple reasons such as the app terminating, the
-  // user closing one of the windows, another profile change, ...
-  SceneState* strong_scene = scene;
-  if (!strong_scene) {
-    return;
-  }
-
-  // If there are other continuations after this one, create a closure
-  // that will invoke the next one, and pass it to the continuation to
-  // run. It needs to bind the weak pointer to the SceneState, not the
-  // strong pointer. Use BindPostTask(...) since the implementation of
-  // -executeWithSceneState:completion: may not call the completion
-  // asynchronously.
-  base::OnceClosure closure = base::DoNothing();
-  if (index + 1 < continuations.count) {
-    closure =
-        base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                           base::BindOnce(&RunContinuationAtIndex,
-                                          continuations, index + 1, scene));
-  }
-
-  id<ChangeProfileContinuation> continuation = continuations[index];
-  [continuation executeWithSceneState:strong_scene
-                           completion:std::move(closure)];
-}
-
 }  // namespace
 
 @interface MainController () <AppStateObserver,
@@ -1542,21 +1507,7 @@ void RunContinuationAtIndex(
 
 - (void)changeProfile:(std::string_view)profileName
              forScene:(SceneState*)sceneState
-        continuations:(NSArray<id<ChangeProfileContinuation>>*)continuations {
-  ChangeProfileCompletion completion = base::DoNothing();
-  if (continuations.count != 0) {
-    completion = base::BindOnce(&RunContinuationAtIndex, continuations, 0);
-  }
-  [self changeProfile:profileName
-             forScene:sceneState
-           completion:std::move(completion)];
-}
-
-#pragma mark - Private
-
-- (void)changeProfile:(std::string_view)profileName
-             forScene:(SceneState*)sceneState
-           completion:(ChangeProfileCompletion)completion {
+         continuation:(ChangeProfileContinuation)continuation {
   CHECK(AreSeparateProfilesForManagedAccountsEnabled());
   CHECK_EQ(self.appState.initStage, AppInitStage::kFinal);
 
@@ -1634,7 +1585,7 @@ void RunContinuationAtIndex(
   // Wait for the profile to complete its initialisation.
   [animator waitForSceneState:sceneState
              toInitReachStage:ProfileInitStage::kUIReady
-                   completion:std::move(completion)];
+                 continuation:std::move(continuation)];
 }
 
 // Attach a Profile to all connected scenes.

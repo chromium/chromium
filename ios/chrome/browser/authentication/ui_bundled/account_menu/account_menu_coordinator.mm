@@ -66,46 +66,25 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
+namespace {
+
 // First part of a switch-account-after-switching-profile continuation: Sign out
 // the current account if it's different from the desired one.
-@interface ChangeProfileSignOutIfMismatchContinuation
-    : NSObject <ChangeProfileContinuation>
-
-- (instancetype)initWithDesiredIdentity:(id<SystemIdentity>)identity;
-
-@end
-
-@implementation ChangeProfileSignOutIfMismatchContinuation {
-  id<SystemIdentity> _identity;
-}
-
-- (instancetype)initWithDesiredIdentity:(id<SystemIdentity>)identity {
-  self = [super init];
-  if (self) {
-    _identity = identity;
-  }
-  return self;
-}
-
-#pragma mark - ChangeProfileContinuation
-
-- (void)executeWithSceneState:(SceneState*)sceneState
-                   completion:(base::OnceClosure)completion {
+void ChangeProfileSignOutIfMismatchContinuation(
+    id<SystemIdentity> expected_identity,
+    SceneState* scene_state,
+    base::OnceClosure closure) {
   Browser* browser =
-      sceneState.browserProviderInterface.mainBrowserProvider.browser;
-  AuthenticationService* authenticationService =
+      scene_state.browserProviderInterface.mainBrowserProvider.browser;
+  AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForProfile(browser->GetProfile());
 
-  if (!authenticationService->HasPrimaryIdentity(
-          signin::ConsentLevel::kSignin)) {
-    std::move(completion).Run();
-    return;
-  }
-  id<SystemIdentity> existingIdentity =
-      authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-  if (existingIdentity == _identity) {
-    // The correct account is already signed in in the new profile.
-    std::move(completion).Run();
+  id<SystemIdentity> existing_identity =
+      authentication_service->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  if (!existing_identity || existing_identity == expected_identity) {
+    // No need to sign-out as either the correct identity is signed-in or
+    // no identity is signed-in.
+    std::move(closure).Run();
     return;
   }
 
@@ -117,53 +96,32 @@
            GetApplicationContext()
                ->GetAccountProfileMapper()
                ->GetPersonalProfileName());
-  authenticationService->SignOut(
+
+  authentication_service->SignOut(
       signin_metrics::ProfileSignout::kChangeAccountInAccountMenu,
       /*force_clear_browsing_data=*/false,
-      base::CallbackToBlock(std::move(completion)));
+      base::CallbackToBlock(std::move(closure)));
 }
-
-@end
 
 // Second part of a switch-account-after-switching-profile continuation: Sign in
 // the desired account if it's not already signed in.
-@interface ChangeProfileSignInContinuation
-    : NSObject <ChangeProfileContinuation>
-
-- (instancetype)initWithDesiredIdentity:(id<SystemIdentity>)identity;
-
-@end
-
-@implementation ChangeProfileSignInContinuation {
-  id<SystemIdentity> _identity;
-}
-
-- (instancetype)initWithDesiredIdentity:(id<SystemIdentity>)identity {
-  self = [super init];
-  if (self) {
-    _identity = identity;
-  }
-  return self;
-}
-
-#pragma mark - ChangeProfileContinuation
-
-- (void)executeWithSceneState:(SceneState*)sceneState
-                   completion:(base::OnceClosure)completion {
+void ChangeProfileSignInContinuation(id<SystemIdentity> identity,
+                                     SceneState* scene_state,
+                                     base::OnceClosure closure) {
   Browser* browser =
-      sceneState.browserProviderInterface.mainBrowserProvider.browser;
+      scene_state.browserProviderInterface.mainBrowserProvider.browser;
   // TODO(crbug.com/375604649): This should probably go through
   // AuthenticationFlow rather than using AuthenticationService directly, so
   // that the snackbar gets shown, and also the enterprise onboarding screen if
   // necessary.
-  AuthenticationService* authenticationService =
+  AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForProfile(browser->GetProfile());
-  authenticationService->SignIn(
-      _identity, signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU);
-  std::move(completion).Run();
+  authentication_service->SignIn(
+      identity, signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU);
+  std::move(closure).Run();
 }
 
-@end
+}  // anonymous namespace
 
 @interface AccountMenuCoordinator () <AccountMenuMediatorDelegate,
                                       ManageAccountsCoordinatorDelegate,
@@ -376,17 +334,13 @@
   CHECK(AreSeparateProfilesForManagedAccountsEnabled());
   SceneState* sceneState = self.browser->GetSceneState();
 
-  ChangeProfileSignOutIfMismatchContinuation* signOutContinuation =
-      [[ChangeProfileSignOutIfMismatchContinuation alloc]
-          initWithDesiredIdentity:identity];
-  ChangeProfileSignInContinuation* signInContinuation =
-      [[ChangeProfileSignInContinuation alloc]
-          initWithDesiredIdentity:identity];
+  ChangeProfileContinuation continuation = ChainChangeProfileContinuations(
+      base::BindOnce(&ChangeProfileSignOutIfMismatchContinuation, identity),
+      base::BindOnce(&ChangeProfileSignInContinuation, identity));
 
-  [_changeProfileHandler
-      changeProfile:profileName
-           forScene:sceneState
-      continuations:@[ signOutContinuation, signInContinuation ]];
+  [_changeProfileHandler changeProfile:profileName
+                              forScene:sceneState
+                          continuation:std::move(continuation)];
 }
 
 - (void)didTapAddAccountWithCompletion:

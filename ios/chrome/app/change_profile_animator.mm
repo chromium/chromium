@@ -13,6 +13,18 @@
 #import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 
+namespace {
+
+// Invokes `continuation` if `weak_scene_state` is not nil.
+void InvokeChangeProfileContinuation(ChangeProfileContinuation continuation,
+                                     __weak SceneState* weak_scene_state) {
+  if (SceneState* strong_scene_state = weak_scene_state) {
+    std::move(continuation).Run(strong_scene_state, base::DoNothing());
+  }
+}
+
+}  // namespace
+
 @interface ChangeProfileAnimator () <ProfileStateObserver>
 @end
 
@@ -20,7 +32,7 @@
   __weak UIViewController* _viewController;
   __weak SceneState* _sceneState;
   ProfileInitStage _minimumInitStage;
-  ChangeProfileCompletion _completion;
+  ChangeProfileContinuation _continuation;
 }
 
 - (instancetype)initWithViewController:(UIViewController*)viewController {
@@ -38,12 +50,12 @@
 
 - (void)waitForSceneState:(SceneState*)sceneState
          toInitReachStage:(ProfileInitStage)initStage
-               completion:(ChangeProfileCompletion)completion {
-  DCHECK(completion);
+             continuation:(ChangeProfileContinuation)continuation {
+  DCHECK(continuation);
   DCHECK(sceneState.profileState);
 
   _sceneState = sceneState;
-  _completion = std::move(completion);
+  _continuation = std::move(continuation);
   _minimumInitStage = initStage;
 
   ProfileState* profileState = sceneState.profileState;
@@ -93,7 +105,8 @@
   // the profile was already in the expected stage. This does not strongly
   // captures SceneState since _sceneDelete is a weak pointer.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(_completion), _sceneState));
+      FROM_HERE, base::BindOnce(&InvokeChangeProfileContinuation,
+                                std::move(_continuation), _sceneState));
 }
 
 // Returns a unique pointer that can be used to attach the current instance

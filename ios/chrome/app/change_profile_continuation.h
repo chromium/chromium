@@ -5,15 +5,9 @@
 #ifndef IOS_CHROME_APP_CHANGE_PROFILE_CONTINUATION_H_
 #define IOS_CHROME_APP_CHANGE_PROFILE_CONTINUATION_H_
 
-#import <Foundation/Foundation.h>
-
 #import "base/functional/callback_forward.h"
 
 @class SceneState;
-
-// Represents an action to execute after the profile for a SceneState
-// has been changed.
-@protocol ChangeProfileContinuation <NSObject>
 
 // Invoked when the SceneState has transitioned to the new Profile and
 // the profile has reached the ProfileInitStage::kUIReady (or higher)
@@ -25,9 +19,13 @@
 // The completion may be called synchronously or asynchronously if the
 // operation needs to block (e.g. needs to wait for some other external
 // condition before it can resume).
-- (void)executeWithSceneState:(SceneState*)sceneState
-                   completion:(base::OnceClosure)completion;
+using ChangeProfileContinuation =
+    base::OnceCallback<void(SceneState*, base::OnceClosure)>;
 
-@end
+// Returns a new ChangeProfileContinuation that first invoke `contination1`
+// and then invoke `continuation2`.
+ChangeProfileContinuation ChainChangeProfileContinuations(
+    ChangeProfileContinuation continuation1,
+    ChangeProfileContinuation continuation2);
 
 #endif  // IOS_CHROME_APP_CHANGE_PROFILE_CONTINUATION_H_

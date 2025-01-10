@@ -37,62 +37,48 @@ void SignoutDone(base::WeakPtr<Browser> weak_browser,
   }
 }
 
-}  // namespace
-
-@implementation ChangeProfileSignoutContinuation {
-  signin_metrics::ProfileSignout _signoutSourceMetric;
-  BOOL _forceClearData;
-  BOOL _forceSnackbarOverToolbar;
-  MDCSnackbarMessage* _snackbarMessage;
-  ProceduralBlock _signoutCompletion;
-}
-
-- (instancetype)initWithSignoutSourceMetric:
-                    (signin_metrics::ProfileSignout)signoutSourceMetric
-                             forceClearData:(BOOL)forceClearData
-                   forceSnackbarOverToolbar:(BOOL)forceSnackbarOverToolbar
-                            snackbarMessage:(MDCSnackbarMessage*)snackbarMessage
-                          signoutCompletion:(ProceduralBlock)signoutCompletion {
-  self = [super init];
-  if (self) {
-    _signoutSourceMetric = signoutSourceMetric;
-    _forceClearData = forceClearData;
-    _forceSnackbarOverToolbar = forceSnackbarOverToolbar;
-    _snackbarMessage = snackbarMessage;
-    _signoutCompletion = signoutCompletion;
-  }
-  return self;
-}
-
-#pragma mark - ChangeProfileContinuation
-
-- (void)executeWithSceneState:(SceneState*)sceneState
-                   completion:(base::OnceClosure)completion {
+// Implementation of the continuation that sign-out the profile.
+void ChangeProfileSignoutContinuation(
+    signin_metrics::ProfileSignout signout_source_metric,
+    BOOL force_clear_data,
+    BOOL force_snackbar_over_toolbar,
+    MDCSnackbarMessage* snackbar_message,
+    base::OnceClosure signout_completion,
+    SceneState* scene_state,
+    base::OnceClosure closure) {
   Browser* browser =
-      sceneState.browserProviderInterface.currentBrowserProvider.browser;
+      scene_state.browserProviderInterface.currentBrowserProvider.browser;
   CHECK(browser);
 
   // Create the closure corresponding to the action to perform once the signout
-  // action completes, chaining `_signoutCompletion` and `completion` if needed.
-  base::OnceClosure closure =
+  // action completes, chaining `signout_completion` and `closure`.
+  base::OnceClosure completion =
       base::BindOnce(&SignoutDone, browser->AsWeakPtr(),
-                     _forceSnackbarOverToolbar, _snackbarMessage);
+                     force_snackbar_over_toolbar, snackbar_message)
+          .Then(std::move(signout_completion))
+          .Then(std::move(closure));
 
-  if (_signoutCompletion) {
-    closure = std::move(closure).Then(base::BindOnce(_signoutCompletion));
-  }
-  if (completion) {
-    closure = std::move(closure).Then(std::move(completion));
-  }
-
-  AuthenticationService* authenticationService =
+  AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForProfile(browser->GetProfile());
 
-  authenticationService->SignOut(_signoutSourceMetric, _forceClearData,
-                                 base::CallbackToBlock(std::move(closure)));
+  authentication_service->SignOut(signout_source_metric, force_clear_data,
+                                  base::CallbackToBlock(std::move(completion)));
 
-  signin_metrics::RecordSignoutForceClearDataChoice(_forceClearData);
-  signin_metrics::RecordSignoutUserAction(_forceClearData);
+  signin_metrics::RecordSignoutForceClearDataChoice(force_clear_data);
+  signin_metrics::RecordSignoutUserAction(force_clear_data);
 }
 
-@end
+}  // namespace
+
+ChangeProfileContinuation CreateChangeProfileSignoutContinuation(
+    signin_metrics::ProfileSignout signout_source_metric,
+    BOOL force_clear_data,
+    BOOL force_snackbar_over_toolbar,
+    MDCSnackbarMessage* snackbar_message,
+    ProceduralBlock signout_completion) {
+  return base::BindOnce(&ChangeProfileSignoutContinuation,
+                        signout_source_metric, force_clear_data,
+                        force_snackbar_over_toolbar, snackbar_message,
+                        signout_completion ? base::BindOnce(signout_completion)
+                                           : base::DoNothing());
+}

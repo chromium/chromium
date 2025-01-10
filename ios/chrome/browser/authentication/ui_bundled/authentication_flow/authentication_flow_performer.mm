@@ -66,39 +66,18 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
 NSString* const kAuthenticationSnackbarCategory =
     @"AuthenticationSnackbarCategory";
 
+void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
+                                    SceneState* scene_state,
+                                    base::OnceClosure closure) {
+  UIViewController* view_controller = scene_state.rootViewController;
+  Browser* new_browser =
+      scene_state.browserProviderInterface.currentBrowserProvider.browser;
+
+  std::move(completion).Run(/*success=*/true, new_browser, view_controller);
+  std::move(closure).Run();
+}
+
 }  // namespace
-
-@interface AuthenticationFlowContinuation : NSObject <ChangeProfileContinuation>
-
-- (instancetype)initWithCompletion:(OnProfileSwitchCompletion)completion
-    NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)init NS_UNAVAILABLE;
-
-@end
-
-@implementation AuthenticationFlowContinuation {
-  OnProfileSwitchCompletion _completion;
-}
-
-- (instancetype)initWithCompletion:(OnProfileSwitchCompletion)completion {
-  if ((self = [super init])) {
-    _completion = std::move(completion);
-  }
-  return self;
-}
-
-- (void)executeWithSceneState:(SceneState*)sceneState
-                   completion:(base::OnceClosure)completion {
-  UIViewController* viewController = sceneState.rootViewController;
-  Browser* newBrowser =
-      sceneState.browserProviderInterface.currentBrowserProvider.browser;
-
-  std::move(_completion).Run(/*success=*/true, newBrowser, viewController);
-  std::move(completion).Run();
-}
-
-@end
 
 @interface AuthenticationFlowPerformer () <
     ManagedProfileCreationCoordinatorDelegate>
@@ -186,13 +165,11 @@ NSString* const kAuthenticationSnackbarCategory =
     return;
   }
 
-  AuthenticationFlowContinuation* continuation =
-      [[AuthenticationFlowContinuation alloc]
-          initWithCompletion:std::move(completion)];
-
-  [_changeProfileHandler changeProfile:*profileName
-                              forScene:sceneState
-                         continuations:@[ continuation ]];
+  [_changeProfileHandler
+      changeProfile:*profileName
+           forScene:sceneState
+       continuation:base::BindOnce(&AuthenticationFlowContinuation,
+                                   std::move(completion))];
 }
 
 - (void)makePersonalProfileManagedWithIdentity:(id<SystemIdentity>)identity {

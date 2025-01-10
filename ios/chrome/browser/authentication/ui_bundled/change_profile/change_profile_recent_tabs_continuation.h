@@ -5,13 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_CHANGE_PROFILE_CHANGE_PROFILE_RECENT_TABS_CONTINUATION_H_
 #define IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_CHANGE_PROFILE_CHANGE_PROFILE_RECENT_TABS_CONTINUATION_H_
 
-#import <UIKit/UIKit.h>
-
 #import "ios/chrome/app/change_profile_continuation.h"
 
-@interface ChangeProfileRecentTabsContinuation
-    : NSObject <ChangeProfileContinuation>
-
-@end
+// Returns a ChangeProfileContinuation that opens the recent tabs view.
+ChangeProfileContinuation CreateChangeProfileRecentTabsContinuation();
 
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_CHANGE_PROFILE_CHANGE_PROFILE_RECENT_TABS_CONTINUATION_H_

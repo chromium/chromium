@@ -9,12 +9,10 @@
 
 #import "base/functional/callback_forward.h"
 #import "ios/chrome/app/change_profile_commands.h"
+#import "ios/chrome/app/change_profile_continuation.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
 
 @class SceneState;
-
-// Callback invoked when the profile has reached the requested init stage.
-using ChangeProfileCompletion = base::OnceCallback<void(SceneState*)>;
 
 // Object responsible for animating the transition between profile for a
 // given scene for MainController.
@@ -39,7 +37,7 @@ using ChangeProfileCompletion = base::OnceCallback<void(SceneState*)>;
 // ProfileState reach the stage or is deallocated.
 - (void)waitForSceneState:(SceneState*)sceneState
          toInitReachStage:(ProfileInitStage)initStage
-               completion:(ChangeProfileCompletion)completion;
+             continuation:(ChangeProfileContinuation)continuation;
 
 @end
 

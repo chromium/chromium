@@ -372,14 +372,6 @@ void MultiProfileSignOut(Browser* browser,
   AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForProfile(browser->GetProfile());
 
-  ChangeProfileSignoutContinuation* signout_continuation =
-      [[ChangeProfileSignoutContinuation alloc]
-          initWithSignoutSourceMetric:signout_source
-                       forceClearData:force_clear_data
-             forceSnackbarOverToolbar:force_snackbar_over_toolbar
-                      snackbarMessage:snackbar_message
-                    signoutCompletion:signout_completion];
-
   BOOL should_switch_profile_at_signout =
       AreSeparateProfilesForManagedAccountsEnabled() &&
       authentication_service->HasPrimaryIdentityManaged(
@@ -387,9 +379,13 @@ void MultiProfileSignOut(Browser* browser,
 
   SceneState* scene_state = browser->GetSceneState();
 
+  ChangeProfileContinuation continuation =
+      CreateChangeProfileSignoutContinuation(
+          signout_source, force_clear_data, force_snackbar_over_toolbar,
+          snackbar_message, signout_completion);
+
   if (!should_switch_profile_at_signout) {
-    [signout_continuation executeWithSceneState:scene_state
-                                     completion:base::DoNothing()];
+    std::move(continuation).Run(scene_state, base::DoNothing());
     return;
   }
 
@@ -407,7 +403,7 @@ void MultiProfileSignOut(Browser* browser,
 
   [change_profile_handler changeProfile:default_profile_name
                                forScene:scene_state
-                          continuations:@[ signout_continuation ]];
+                           continuation:std::move(continuation)];
 }
 
 }  // namespace signin

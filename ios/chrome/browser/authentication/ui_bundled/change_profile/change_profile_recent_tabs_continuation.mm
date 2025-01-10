@@ -12,21 +12,24 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 
-@implementation ChangeProfileRecentTabsContinuation
+namespace {
 
-#pragma mark - ChangeProfileContinuation
-
-- (void)executeWithSceneState:(SceneState*)sceneState
-                   completion:(base::OnceClosure)completion {
+// Implementation of the continuation opening the recent tabs view.
+void ChangeProfileRecentTabsContinuation(SceneState* scene_state,
+                                         base::OnceClosure closure) {
   Browser* browser =
-      sceneState.browserProviderInterface.mainBrowserProvider.browser;
+      scene_state.browserProviderInterface.mainBrowserProvider.browser;
   CHECK(browser);
 
   id<BrowserCoordinatorCommands> browserCoordinatorHandler = HandlerForProtocol(
       browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
   [browserCoordinatorHandler showRecentTabs];
 
-  std::move(completion).Run();
+  std::move(closure).Run();
 }
 
-@end
+}  // namespace
+
+ChangeProfileContinuation CreateChangeProfileRecentTabsContinuation() {
+  return base::BindOnce(&ChangeProfileRecentTabsContinuation);
+}

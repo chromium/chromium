@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import <string_view>
+#import <vector>
 
 #import "ios/chrome/app/change_profile_continuation.h"
 
@@ -28,11 +29,11 @@
 // is disabled or not available (on iOS < 17), if creating the profile is
 // impossible or fails, or if no scene named `sceneIdentifier` exists.
 //
-// The continuations will be called asynchronously, in sequence, when the
-// profile has been switched for the SceneState.
+// The continuation will be called asynchronously, when the profile has
+// been switched for the SceneState.
 - (void)changeProfile:(std::string_view)profileName
              forScene:(SceneState*)sceneState
-        continuations:(NSArray<id<ChangeProfileContinuation>>*)continuations;
+         continuation:(ChangeProfileContinuation)continuation;
 
 @end
 
