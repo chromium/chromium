@@ -887,6 +887,15 @@ EVENT_TYPE(TRANSPORT_CONNECT_JOB_IPV6_FALLBACK)
 //   }
 EVENT_TYPE(TRANSPORT_CONNECT_JOB_CONNECT_ATTEMPT)
 
+// This event is logged whenever the SSLConnectJob attempts a
+// SSLClientSocket::Connect().
+//
+//   {
+//     "ech_enabled": <True when ECH is enabled>,
+//     "ech_config_list": <The binary representation of ECH config list>,
+//   }
+EVENT_TYPE(SSL_CONNECT_JOB_SSL_CONNECT)
+
 // ------------------------------------------------------------------------
 // ClientSocketPoolBaseHelper
 // ------------------------------------------------------------------------
