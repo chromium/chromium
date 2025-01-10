@@ -218,6 +218,9 @@ class CheckingFlowRequirementsState : public ControllerState {
 
         // If user is not part of the group, do a readgroup to ensure version
         // match.
+        // TODO(haileywang): We should either remove this read group request and
+        // do the version check in the preview data or do the network requests
+        // in parallel instead of one by one.
         controller->data_sharing_service()->ReadNewGroup(
             controller->flow().join_token(),
             base::BindOnce(&CheckingFlowRequirementsState::
@@ -270,12 +273,11 @@ class AddingUserToGroupState : public ControllerState {
       : ControllerState(id, controller) {}
 
   void OnEnter(const ErrorInfo& error) override {
-    // TODO(crbug.com/380113830): Add preview data here.
-    data_sharing::SharedDataPreview preview_data;
-    controller->delegate()->ShowJoinDialog(
-        controller->flow().join_token(), preview_data,
-        base::BindOnce(&AddingUserToGroupState::ProcessOutcome,
-                       weak_ptr_factory_.GetWeakPtr()));
+    controller->data_sharing_service()->GetSharedEntitiesPreview(
+        controller->flow().join_token(),
+        base::BindOnce(
+            &AddingUserToGroupState::ProcessSharedDataPreviewOrFailureOutcome,
+            local_weak_ptr_factory_.GetWeakPtr()));
   }
 
   void OnProcessingFinishedWithSuccess() override {
@@ -287,6 +289,23 @@ class AddingUserToGroupState : public ControllerState {
     }
     controller->TransitionTo(StateId::kWaitingForSyncAndDataSharingGroup);
   }
+
+ private:
+  void ProcessSharedDataPreviewOrFailureOutcome(
+      const data_sharing::DataSharingService::SharedDataPreviewOrFailureOutcome&
+          preview_outcome) {
+    if (!preview_outcome.has_value()) {
+      HandleError();
+      return;
+    }
+
+    controller->delegate()->ShowJoinDialog(
+        controller->flow().join_token(), preview_outcome.value(),
+        base::BindOnce(&AddingUserToGroupState::ProcessOutcome,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  base::WeakPtrFactory<AddingUserToGroupState> local_weak_ptr_factory_{this};
 };
 
 class WaitingForSyncAndDataSharingGroup
