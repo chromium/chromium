@@ -178,10 +178,15 @@ EntrypointInfo::EntrypointInfo(
           client_redirector_info.WasNavigationToPageClientRedirect()) {}
 
 InFlowSuccessorInteractionState::InFlowSuccessorInteractionState(
-    dips::EntrypointInfo&& flow_entrypoint)
+    dips::EntrypointInfo flow_entrypoint)
     : flow_entrypoint_(flow_entrypoint) {}
 
 InFlowSuccessorInteractionState::~InFlowSuccessorInteractionState() = default;
+
+void InFlowSuccessorInteractionState::
+    RecordTriggeringStorageAccessByEntrypoint() {
+  flow_entrypoint_.had_triggering_storage_access = true;
+}
 
 void InFlowSuccessorInteractionState::IncrementFlowIndex(size_t increment) {
   flow_index_ += increment;
@@ -440,15 +445,14 @@ void DipsNavigationFlowDetector::MaybeEmitInFlowSuccessorInteraction() {
     return;
   }
 
-  const dips::EntrypointInfo& flow_entrypoint =
-      successor_interaction_tracking_state_->flow_entrypoint();
   for (size_t index :
        successor_interaction_tracking_state_->successor_interaction_indices()) {
     ukm::builders::DIPS_TrustIndicator_InFlowSuccessorInteraction(
-        flow_entrypoint.source_id)
+        successor_interaction_tracking_state_->flow_entrypoint().source_id)
         .SetSuccessorRedirectIndex(index)
         .SetDidEntrypointAccessStorage(
-            flow_entrypoint.had_triggering_storage_access)
+            successor_interaction_tracking_state_->flow_entrypoint()
+                .had_triggering_storage_access)
         .Record(ukm::UkmRecorder::Get());
   }
 }
@@ -566,6 +570,11 @@ void DipsNavigationFlowDetector::OnCookiesAccessed(
   }
 
   current_page_visit_info_->did_page_access_cookies = true;
+  if (flow_status_ == dips::kFlowOngoing &&
+      !successor_interaction_tracking_state_->IsAtSuccessor()) {
+    successor_interaction_tracking_state_
+        ->RecordTriggeringStorageAccessByEntrypoint();
+  }
 }
 
 void DipsNavigationFlowDetector::OnCookiesAccessed(
@@ -593,6 +602,11 @@ void DipsNavigationFlowDetector::OnCookiesAccessed(
     }
 
     current_page_visit_info_->did_page_access_cookies = true;
+    if (flow_status_ == dips::kFlowOngoing &&
+        !successor_interaction_tracking_state_->IsAtSuccessor()) {
+      successor_interaction_tracking_state_
+          ->RecordTriggeringStorageAccessByEntrypoint();
+    }
     return;
   }
 
@@ -605,6 +619,11 @@ void DipsNavigationFlowDetector::OnCookiesAccessed(
 
   if (details.url == current_page_visit_info_->url) {
     current_page_visit_info_->did_page_access_cookies = true;
+    if (flow_status_ == dips::kFlowOngoing &&
+        !successor_interaction_tracking_state_->IsAtSuccessor()) {
+      successor_interaction_tracking_state_
+          ->RecordTriggeringStorageAccessByEntrypoint();
+    }
   } else {
     // This notification might be for an in-progress navigation, so we should
     // remember this notification until the next navigation finishes.
@@ -620,6 +639,11 @@ void DipsNavigationFlowDetector::NotifyStorageAccessed(
     return;
   }
   current_page_visit_info_->did_page_access_storage = true;
+  if (flow_status_ == dips::kFlowOngoing &&
+      !successor_interaction_tracking_state_->IsAtSuccessor()) {
+    successor_interaction_tracking_state_
+        ->RecordTriggeringStorageAccessByEntrypoint();
+  }
 }
 
 void DipsNavigationFlowDetector::FrameReceivedUserActivation(

@@ -16,6 +16,7 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "content/browser/dips/dips_bounce_detector.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -78,9 +79,10 @@ enum FlowStatus {
 class InFlowSuccessorInteractionState {
  public:
   explicit InFlowSuccessorInteractionState(
-      dips::EntrypointInfo&& flow_entrypoint);
+      dips::EntrypointInfo flow_entrypoint);
   ~InFlowSuccessorInteractionState();
 
+  void RecordTriggeringStorageAccessByEntrypoint();
   void IncrementFlowIndex(size_t increment);
   void RecordSuccessorInteractionAtCurrentFlowIndex();
   bool IsAtSuccessor() const;
@@ -105,7 +107,7 @@ class InFlowSuccessorInteractionState {
 // distinguish user-interest navigation flows from navigational tracking.
 // Currently only reports UKM to inform how we might identify possible
 // navigational tracking by sites that also perform user-interest activity.
-class DipsNavigationFlowDetector
+class CONTENT_EXPORT DipsNavigationFlowDetector
     : public RedirectChainDetector::Observer,
       public content::WebContentsObserver,
       public content::WebContentsUserData<DipsNavigationFlowDetector> {

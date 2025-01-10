@@ -1437,6 +1437,7 @@ test("content_browsertests") {
     "../browser/devtools/site_per_process_devtools_browsertest.cc",
     "../browser/dips/dips_bounce_detector_browsertest.cc",
     "../browser/dips/dips_helper_browsertest.cc",
+    "../browser/dips/dips_navigation_flow_detector_browsertest.cc",
     "../browser/direct_sockets/direct_sockets_test_utils.cc",
     "../browser/direct_sockets/direct_sockets_test_utils.h",
     "../browser/display_cutout/display_cutout_browsertest.cc",

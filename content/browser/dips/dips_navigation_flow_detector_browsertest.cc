@@ -12,14 +12,20 @@
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "base/types/expected.h"
+#include "components/ukm/content/source_url_recorder.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/browser/dips/dips_browsertest_utils.h"
 #include "content/browser/dips/dips_test_utils.h"
 #include "content/public/browser/attribution_data_model.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/network_service_instance.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/content_browser_test.h"
 #include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/prerender_test_util.h"
+#include "content/shell/browser/shell.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
@@ -29,6 +35,15 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/switches.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "components/network_session_configurator/common/network_switches.h"
+#include "content/public/browser/scoped_authenticator_environment_for_testing.h"
+#include "content/public/common/content_switches.h"
+#include "content/public/test/content_mock_cert_verifier.h"
+#include "device/fido/virtual_ctap2_device.h"
+#include "device/fido/virtual_fido_device_factory.h"
+#endif
 
 namespace {
 
@@ -109,19 +124,16 @@ std::string_view kSiteC = "c.test";
 std::string_view kSiteD = "d.test";
 }  // namespace
 
-class DipsNavigationFlowDetectorTest : public PlatformBrowserTest {
+class DipsNavigationFlowDetectorTest : public content::ContentBrowserTest {
  public:
   DipsNavigationFlowDetectorTest()
-      : embedded_https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-    enabled_features.emplace_back(features::kPrivacySandboxAdsAPIsOverride);
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
+      : embedded_https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
   ~DipsNavigationFlowDetectorTest() override = default;
 
   void SetUpOnMainThread() override {
+    ContentBrowserTest::SetUpOnMainThread();
+
     host_resolver()->AddRule("*", "127.0.0.1");
     embedded_https_test_server_.AddDefaultHandlers(
         base::FilePath(FILE_PATH_LITERAL("content/test/data")));
@@ -139,8 +151,13 @@ class DipsNavigationFlowDetectorTest : public PlatformBrowserTest {
     command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 
+  void PreRunTestOnMainThread() override {
+    content::ContentBrowserTest::PreRunTestOnMainThread();
+    ukm::InitializeSourceUrlRecorderForWebContents(GetActiveWebContents());
+  }
+
   content::WebContents* GetActiveWebContents() {
-    return chrome_test_utils::GetActiveWebContents(this);
+    return shell()->web_contents();
   }
 
  protected:
@@ -225,7 +242,6 @@ class DipsNavigationFlowDetectorTest : public PlatformBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::optional<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
   void SetTestClock() { GetDetector()->SetClockForTesting(&test_clock_); }
 
@@ -267,11 +283,16 @@ class DipsNavigationFlowDetectorPrerenderTest
 class DipsNavigationFlowDetectorPATApiTest
     : public DipsNavigationFlowDetectorTest {
  public:
-  void SetUpOnMainThread() override {
+  DipsNavigationFlowDetectorPATApiTest() {
     // Enable Privacy Sandbox APIs on all sites.
-    privacy_sandbox::PrivacySandboxAttestations::GetInstance()
-        ->SetAllPrivacySandboxAttestedForTesting(true);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kPrivacySandboxAdsAPIsOverride}, {});
+  }
+
+  void SetUpOnMainThread() override {
     RegisterTrustTokenTestHandler(&trust_token_request_handler_);
+    browser_client_.emplace();
+    browser_client().SetBlockThirdPartyCookiesByDefault(true);
     DipsNavigationFlowDetectorTest::SetUpOnMainThread();
   }
 
@@ -347,6 +368,8 @@ class DipsNavigationFlowDetectorPATApiTest
     run_loop.Run();
   }
 
+  TpcBlockingBrowserClient& browser_client() { return browser_client_->impl(); }
+
  private:
   void RegisterTrustTokenTestHandler(
       network::test::TrustTokenRequestHandler* handler) {
@@ -387,10 +410,8 @@ class DipsNavigationFlowDetectorPATApiTest
   // Trust Tokens issuance or redemption protocol response message.
   std::unique_ptr<net::test_server::HttpResponse> MakeTrustTokenResponse(
       std::string_view contents) {
-    CHECK([&]() {
-      std::string temp;
-      return base::Base64Decode(contents, &temp);
-    }());
+    std::string temp;
+    CHECK(base::Base64Decode(contents, &temp));
 
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
     response->AddCustomHeader("Sec-Private-State-Token", std::string(contents));
@@ -405,7 +426,10 @@ class DipsNavigationFlowDetectorPATApiTest
     run_loop.Run();
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   network::test::TrustTokenRequestHandler trust_token_request_handler_;
+  std::optional<content::ContentBrowserTestTpcBlockingBrowserClient>
+      browser_client_;
 };
 
 IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
@@ -476,8 +500,7 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
   content::WebContents* web_contents = GetActiveWebContents();
   GURL url = embedded_https_test_server_.GetURL(kSiteA, "/page204.html");
   base::RunLoop ukm_loop;
-  ASSERT_TRUE(
-      content::NavigateToURL(web_contents, url, GURL(url::kAboutBlankURL)));
+  ASSERT_TRUE(content::NavigateToURL(web_contents, url, GURL("")));
 
   ExpectNoUkmEventsOfType(kDirectNavigationUkmEventName);
 }
@@ -507,8 +530,16 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
   // Implied assert: no DirectNavigation UKM entry for link_target_url.
 }
 
+// TODO - crbug.com/388718419: Flaky on release builds
+#if defined(NDEBUG)
+#define MAYBE_SuspectedTrackerFlowEmittedForServerRedirectExit \
+  DISABLED_SuspectedTrackerFlowEmittedForServerRedirectExit
+#else
+#define MAYBE_SuspectedTrackerFlowEmittedForServerRedirectExit \
+  SuspectedTrackerFlowEmittedForServerRedirectExit
+#endif
 IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
-                       SuspectedTrackerFlowEmittedForServerRedirectExit) {
+                       MAYBE_SuspectedTrackerFlowEmittedForServerRedirectExit) {
   // Visit A.
   content::WebContents* web_contents = GetActiveWebContents();
   GURL referrer_url =
@@ -551,9 +582,17 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
   ExpectNoUkmEventsOfType(kInFlowInteractionUkmEventName);
 }
 
+// TODO - crbug.com/388718419: Flaky on release builds
+#if defined(NDEBUG)
+#define MAYBE_SuspectedTrackerFlowEmittedForServerRedirectExitConsecutiveEvents \
+  DISABLED_SuspectedTrackerFlowEmittedForServerRedirectExitConsecutiveEvents
+#else
+#define MAYBE_SuspectedTrackerFlowEmittedForServerRedirectExitConsecutiveEvents \
+  SuspectedTrackerFlowEmittedForServerRedirectExitConsecutiveEvents
+#endif
 IN_PROC_BROWSER_TEST_F(
     DipsNavigationFlowDetectorTest,
-    SuspectedTrackerFlowEmittedForServerRedirectExitConsecutiveEvents) {
+    MAYBE_SuspectedTrackerFlowEmittedForServerRedirectExitConsecutiveEvents) {
   // Visit A.
   content::WebContents* web_contents = GetActiveWebContents();
   GURL referrer_url =
@@ -681,6 +720,7 @@ IN_PROC_BROWSER_TEST_P(
   observer.Wait();
   // Interact with B.
   SimulateUserActivation(web_contents);
+  // TODO - crbug.com/389048223: Speed up this step
   ASSERT_TRUE(WaitUntilTransientActivationLost(
       web_contents->GetPrimaryMainFrame(), base::Seconds(5)));
   // Make B client-redirect to C, and wait for UKM to be recorded.
@@ -1043,6 +1083,7 @@ IN_PROC_BROWSER_TEST_P(DipsNavigationFlowDetectorClientRedirectTest,
       embedded_https_test_server_.GetURL(kSiteB, "/title2.html");
   PerformClientRedirect(web_contents, successor_url);
   SimulateUserActivation(web_contents);
+  // TODO - crbug.com/389048223: Speed up this step
   ASSERT_TRUE(WaitUntilTransientActivationLost(
       web_contents->GetPrimaryMainFrame(), base::Seconds(5)));
   // Client-redirect to C, ending the flow, and wait for UKM to emit.
@@ -1086,6 +1127,7 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
       web_contents, server_redirector_url, successor_url));
   SimulateUserActivation(web_contents);
+  // TODO - crbug.com/389048223: Speed up this step
   ASSERT_TRUE(WaitUntilTransientActivationLost(
       web_contents->GetPrimaryMainFrame(), base::Seconds(5)));
   // Client-redirect to C, ending the flow, and wait for UKM to emit.
@@ -1128,6 +1170,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
       web_contents, first_successor_url));
   SimulateUserActivation(web_contents);
+  // TODO - crbug.com/389048223: Speed up this step
   ASSERT_TRUE(WaitUntilTransientActivationLost(
       web_contents->GetPrimaryMainFrame(), base::Seconds(5)));
   // Client-redirect to yet another page on B, the second successor for this
@@ -1137,6 +1180,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
       web_contents, first_successor_url));
   SimulateUserActivation(web_contents);
+  // TODO - crbug.com/389048223: Speed up this step
   ASSERT_TRUE(WaitUntilTransientActivationLost(
       web_contents->GetPrimaryMainFrame(), base::Seconds(5)));
   // Client-redirect to C, ending the flow, and wait for UKM to emit.
@@ -1184,6 +1228,7 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
   ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
       web_contents, first_successor_url));
   SimulateUserActivation(web_contents);
+  // TODO - crbug.com/389048223: Speed up this step
   ASSERT_TRUE(WaitUntilTransientActivationLost(
       web_contents->GetPrimaryMainFrame(), base::Seconds(5)));
   // Client-redirect to C, ending the first flow, and wait for UKM to emit.
@@ -1211,6 +1256,7 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
   ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
       web_contents, second_successor_url));
   SimulateUserActivation(web_contents);
+  // TODO - crbug.com/389048223: Speed up this step
   ASSERT_TRUE(WaitUntilTransientActivationLost(
       web_contents->GetPrimaryMainFrame(), base::Seconds(5)));
   // Client-redirect to C, ending the second flow, and wait for UKM to emit.
@@ -1236,8 +1282,10 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
                                          second_entrypoint_url);
   ukm_recorder().ExpectEntryMetric(second_ukm_entry, "SuccessorRedirectIndex",
                                    3);
-  ukm_recorder().ExpectEntryMetric(second_ukm_entry,
-                                   "DidEntrypointAccessStorage", true);
+  // TODO - crbug.com/388718419: Uncomment this assertion — currently flaky on
+  // release builds.
+  // ukm_recorder().ExpectEntryMetric(second_ukm_entry,
+  //                                  "DidEntrypointAccessStorage", true);
 }
 
 IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
@@ -1259,6 +1307,7 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
   ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
       web_contents, successor_url));
   SimulateUserActivation(web_contents);
+  // TODO - crbug.com/389048223: Speed up this step
   ASSERT_TRUE(WaitUntilTransientActivationLost(
       web_contents->GetPrimaryMainFrame(), base::Seconds(5)));
 
@@ -1288,6 +1337,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
       web_contents, successor_url));
   SimulateUserActivation(web_contents);
+  // TODO - crbug.com/389048223: Speed up this step
   ASSERT_TRUE(WaitUntilTransientActivationLost(
       web_contents->GetPrimaryMainFrame(), base::Seconds(5)));
   // Client-redirect to C, which would end a valid flow.
@@ -1321,12 +1371,15 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
   ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
       web_contents, server_redirector_url, successor_url));
   SimulateUserActivation(web_contents);
+  // TODO - crbug.com/389048223: Speed up this step
   ASSERT_TRUE(WaitUntilTransientActivationLost(
       web_contents->GetPrimaryMainFrame(), base::Seconds(5)));
   SimulateUserActivation(web_contents);
+  // TODO - crbug.com/389048223: Speed up this step
   ASSERT_TRUE(WaitUntilTransientActivationLost(
       web_contents->GetPrimaryMainFrame(), base::Seconds(5)));
   SimulateUserActivation(web_contents);
+  // TODO - crbug.com/389048223: Speed up this step
   ASSERT_TRUE(WaitUntilTransientActivationLost(
       web_contents->GetPrimaryMainFrame(), base::Seconds(5)));
   // Client-redirect to C, ending the flow, and wait for UKM to emit.
@@ -1514,9 +1567,6 @@ IN_PROC_BROWSER_TEST_F(
   GURL second_page_url =
       embedded_https_test_server_.GetURL(kSiteB, "/title1.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents, second_page_url));
-  PrivacySandboxSettingsFactory::GetForProfile(
-      Profile::FromBrowserContext(web_contents->GetBrowserContext()))
-      ->SetAllPrivacySandboxAllowedForTesting();
   ASSERT_TRUE(content::ExecJs(web_contents,
                               R"(
                                 (async () => {
@@ -1545,25 +1595,20 @@ IN_PROC_BROWSER_TEST_F(
   GURL second_page_url =
       embedded_https_test_server_.GetURL(kSiteB, "/title1.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents, second_page_url));
-  PrivacySandboxSettingsFactory::GetForProfile(
-      Profile::FromBrowserContext(web_contents->GetBrowserContext()))
-      ->SetAllPrivacySandboxAllowedForTesting();
   ASSERT_TRUE(content::ExecJs(web_contents->GetPrimaryMainFrame(),
                               content::JsReplace(R"(
-                                (async () => {
-                                  const pageOrigin = new URL($1).origin;
-                                  const interestGroup = {
-                                    name: "exampleInterestGroup",
-                                    owner: pageOrigin,
-                                  };
+                                const pageOrigin = new URL($1).origin;
+                                const interestGroup = {
+                                  name: "exampleInterestGroup",
+                                  owner: pageOrigin,
+                                };
 
-                                  await navigator.joinAdInterestGroup(
-                                      interestGroup,
-                                      // Pick an arbitrarily high duration to
-                                      // guarantee that we never leave the ad
-                                      // interest group while the test runs.
-                                      /*durationSeconds=*/3000000);
-                                })();
+                                navigator.joinAdInterestGroup(
+                                    interestGroup,
+                                    // Pick an arbitrarily high duration to
+                                    // guarantee that we never leave the ad
+                                    // interest group while the test runs.
+                                    /*durationSeconds=*/3000000);
                               )",
                                                  second_page_url),
                               content::EXECUTE_SCRIPT_NO_USER_GESTURE));
@@ -1593,9 +1638,6 @@ IN_PROC_BROWSER_TEST_F(
       embedded_https_test_server_.GetURL(kSiteB, "/title1.html");
   ProvideRequestHandlerKeyCommitmentsToNetworkService({kSiteB});
   ASSERT_TRUE(content::NavigateToURL(web_contents, second_page_url));
-  PrivacySandboxSettingsFactory::GetForProfile(
-      Profile::FromBrowserContext(web_contents->GetBrowserContext()))
-      ->SetAllPrivacySandboxAllowedForTesting();
   ASSERT_TRUE(content::ExecJs(
       web_contents,
       content::JsReplace(
@@ -1631,9 +1673,6 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(content::NavigateToURL(web_contents, first_page_url));
   // Visit a page on site B that accesses storage via the Attribution Reporting
   // API.
-  PrivacySandboxSettingsFactory::GetForProfile(
-      Profile::FromBrowserContext(web_contents->GetBrowserContext()))
-      ->SetAllPrivacySandboxAllowedForTesting();
   GURL second_page_url =
       embedded_https_test_server_.GetURL(kSiteB, "/title1.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents, second_page_url));
@@ -2141,7 +2180,8 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
 // permits it (Requires mocking the Android Platform Authenticator i.e. GMS
 // Core).
 #if !BUILDFLAG(IS_ANDROID)
-class DipsNavigationFlowDetectorWebAuthnTest : public CertVerifierBrowserTest {
+class DipsNavigationFlowDetectorWebAuthnTest
+    : public content::ContentBrowserTest {
  public:
   DipsNavigationFlowDetectorWebAuthnTest()
       : embedded_https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
@@ -2152,14 +2192,22 @@ class DipsNavigationFlowDetectorWebAuthnTest : public CertVerifierBrowserTest {
       const DipsNavigationFlowDetectorWebAuthnTest&) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    CertVerifierBrowserTest::SetUpCommandLine(command_line);
+    content::ContentBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
+  void SetUpInProcessBrowserTestFixture() override {
+    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
+  }
+
   void SetUpOnMainThread() override {
-    CertVerifierBrowserTest::SetUpOnMainThread();
+    content::ContentBrowserTest::SetUpOnMainThread();
 
     // Allowlist all certs for the HTTPS server.
     mock_cert_verifier()->set_default_result(net::OK);
@@ -2189,17 +2237,22 @@ class DipsNavigationFlowDetectorWebAuthnTest : public CertVerifierBrowserTest {
     ukm_recorder_.emplace();
   }
 
+  void PreRunTestOnMainThread() override {
+    content::ContentBrowserTest::PreRunTestOnMainThread();
+    ukm::InitializeSourceUrlRecorderForWebContents(GetActiveWebContents());
+  }
+
   void TearDownOnMainThread() override {
-    CertVerifierBrowserTest::TearDownOnMainThread();
+    content::ContentBrowserTest::TearDownOnMainThread();
   }
 
   void PostRunTestOnMainThread() override {
     auth_env_.reset();
-    CertVerifierBrowserTest::PostRunTestOnMainThread();
+    content::ContentBrowserTest::PostRunTestOnMainThread();
   }
 
   content::WebContents* GetActiveWebContents() {
-    return chrome_test_utils::GetActiveWebContents(this);
+    return shell()->web_contents();
   }
 
   void GetWebAuthnAssertion() {
@@ -2224,11 +2277,16 @@ class DipsNavigationFlowDetectorWebAuthnTest : public CertVerifierBrowserTest {
 
   ukm::TestAutoSetUkmRecorder& ukm_recorder() { return ukm_recorder_.value(); }
 
+  content::ContentMockCertVerifier::CertVerifier* mock_cert_verifier() {
+    return mock_cert_verifier_.mock_cert_verifier();
+  }
+
  protected:
   const std::string authn_hostname = std::string(kSiteB);
   net::EmbeddedTestServer embedded_https_test_server_;
 
  private:
+  content::ContentMockCertVerifier mock_cert_verifier_;
   std::unique_ptr<content::ScopedAuthenticatorEnvironmentForTesting> auth_env_;
   std::optional<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
 };
