@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_install_result.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -165,8 +166,14 @@ void NavigatorWebInstall::OnConnectionError() {
 bool NavigatorWebInstall::CheckPreconditionsMaybeThrow(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  // TODO(crbug.com/333795265): Verify that site has been granted web install
-  // permission once implemented.
+  if (!ExecutionContext::From(script_state)
+           ->IsFeatureEnabled(
+               mojom::blink::PermissionsPolicyFeature::kWebAppInstallation)) {
+    exception_state.ThrowSecurityError(
+        "Access to the feature \"web-app-installation\" is disallowed by "
+        "Permissions Policy.");
+    return false;
+  }
 
   Navigator* const navigator = GetSupplementable();
 

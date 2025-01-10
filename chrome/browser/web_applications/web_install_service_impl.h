@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/document_service.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "third_party/blink/public/mojom/web_install/web_install.mojom.h"
 #include "url/gurl.h"
 
@@ -36,13 +37,22 @@ class WebInstallServiceImpl
       mojo::PendingReceiver<blink::mojom::WebInstallService> receiver);
   ~WebInstallServiceImpl() override;
 
+  void RequestWebInstallPermission(
+      base::OnceCallback<
+          void(const std::vector<blink::mojom::PermissionStatus>&)> callback);
+
+  void OnPermissionDecided(
+      const GURL& manifest_id,
+      const GURL& install_target,
+      InstallCallback callback,
+      const std::vector<blink::mojom::PermissionStatus>& permission_status);
+
   void OnAppInstalled(InstallCallback callback,
                       const GURL& manifest_id,
                       webapps::InstallResultCode code);
 
   const content::GlobalRenderFrameHostId frame_routing_id_;
-
-  base::WeakPtrFactory<WebInstallServiceImpl> weak_ptr_factory_{this};
+  base::WeakPtrFactory<web_app::WebInstallServiceImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace web_app
