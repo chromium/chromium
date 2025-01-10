@@ -44,29 +44,29 @@ class PassageEmbeddingsServiceController {
   EmbedderMetadata GetEmbedderMetadata();
 
  protected:
-  // Launches the passage embeddings service, and bind `cpu_logger_` to the
-  // service process.
-  virtual void LaunchService() = 0;
+  // Launches the passage embeddings service and binds `cpu_logger_` to the
+  // service process. Does nothing if the service is already launched.
+  virtual void MaybeLaunchService() = 0;
 
-  // Reset both service_remote_ and embedder_remote_.
-  virtual void ResetRemotes();
+  // Resets `service_remote_` and `cpu_logger_`. Called when the service remote
+  // is idle or disconnects.
+  virtual void ResetServiceRemote() = 0;
+
+  // Resets `embedder_remote_`. Called when the model info is updated, when
+  // models fail to load, or when the embedder remote is idle or disconnects.
+  void ResetEmbedderRemote();
 
   mojo::Remote<mojom::PassageEmbeddingsService> service_remote_;
-  mojo::Remote<mojom::PassageEmbedder> embedder_remote_;
 
  private:
   // Called when the model files on disks are opened and ready to be sent to
   // the service.
   void LoadModelsToService(
-      mojo::PendingReceiver<passage_embeddings::mojom::PassageEmbedder>
-          receiver,
-      passage_embeddings::mojom::PassageEmbeddingsLoadModelsParamsPtr params);
+      mojo::PendingReceiver<mojom::PassageEmbedder> receiver,
+      mojom::PassageEmbeddingsLoadModelsParamsPtr params);
 
   // Called when an attempt to load models to service finishes.
   void OnLoadModelsResult(bool success);
-
-  // Called when the embedder_remote_ disconnects.
-  void OnDisconnected();
 
   // Version of the embeddings model.
   int64_t model_version_;
@@ -77,6 +77,8 @@ class PassageEmbeddingsServiceController {
 
   base::FilePath embeddings_model_path_;
   base::FilePath sp_model_path_;
+
+  mojo::Remote<mojom::PassageEmbedder> embedder_remote_;
 
   // Used to generate weak pointers to self.
   base::WeakPtrFactory<PassageEmbeddingsServiceController> weak_ptr_factory_{

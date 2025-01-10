@@ -11,9 +11,7 @@
 #include "components/passage_embeddings/passage_embeddings_service_controller.h"
 
 namespace base {
-
 class Process;
-
 }  // namespace base
 
 namespace passage_embeddings {
@@ -33,11 +31,9 @@ class ChromePassageEmbeddingsServiceController
   ChromePassageEmbeddingsServiceController();
   ~ChromePassageEmbeddingsServiceController() override;
 
-  static ChromePassageEmbeddingsServiceController** GetInstanceStorage();
-
   // PassageEmbeddingsServiceController implementation:
-  void LaunchService() override;
-  void ResetRemotes() override;
+  void MaybeLaunchService() override;
+  void ResetServiceRemote() override;
 
   // Initializes `cpu_logger_`; can only be called when the service process is
   // launched and connected.

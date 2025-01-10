@@ -27,8 +27,8 @@ mojom::PassageEmbeddingsLoadModelsParamsPtr MakeModelParams(
 }
 
 // Makes the parameters used to run the passage embedder.
-passage_embeddings::mojom::PassageEmbedderParamsPtr MakeEmbedderParams() {
-  auto params = passage_embeddings::mojom::PassageEmbedderParams::New();
+mojom::PassageEmbedderParamsPtr MakeEmbedderParams() {
+  auto params = mojom::PassageEmbedderParams::New();
   params->user_initiated_priority_num_threads =
       kUserInitiatedPriorityNumThreads.Get();
   params->passive_priority_num_threads = kPassivePriorityNumThreads.Get();
@@ -64,7 +64,7 @@ bool PassageEmbeddingsServiceController::MaybeUpdateModelInfo(
   embeddings_model_path_.clear();
   sp_model_path_.clear();
   model_metadata_ = std::nullopt;
-  ResetRemotes();
+  ResetEmbedderRemote();
 
   ScopedEmbeddingsModelInfoStatusLogger logger;
   if (!model_info.has_value()) {
@@ -123,7 +123,7 @@ void PassageEmbeddingsServiceController::LoadModelsToService(
 
 void PassageEmbeddingsServiceController::OnLoadModelsResult(bool success) {
   if (!success) {
-    ResetRemotes();
+    ResetEmbedderRemote();
   }
 }
 
@@ -147,16 +147,20 @@ void PassageEmbeddingsServiceController::GetEmbeddings(
     return;
   }
 
-  if (!service_remote_) {
-    LaunchService();
+  if (!embedder_remote_) {
+    MaybeLaunchService();
+
     auto receiver = embedder_remote_.BindNewPipeAndPassReceiver();
+    // Unretained is safe because `this` owns `embedder_remote_`, which
+    // synchronously calls the disconnect and idle handlers.
     embedder_remote_.set_disconnect_handler(
-        base::BindOnce(&PassageEmbeddingsServiceController::OnDisconnected,
-                       weak_ptr_factory_.GetWeakPtr()));
+        base::BindOnce(&PassageEmbeddingsServiceController::ResetEmbedderRemote,
+                       base::Unretained(this)));
     embedder_remote_.set_idle_handler(
         kEmbedderTimeout.Get(),
-        base::BindRepeating(&PassageEmbeddingsServiceController::ResetRemotes,
-                            weak_ptr_factory_.GetWeakPtr()));
+        base::BindRepeating(
+            &PassageEmbeddingsServiceController::ResetEmbedderRemote,
+            base::Unretained(this)));
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock()},
         base::BindOnce(&MakeModelParams, embeddings_model_path_, sp_model_path_,
@@ -182,12 +186,7 @@ bool PassageEmbeddingsServiceController::EmbedderReady() {
   return !sp_model_path_.empty() && !embeddings_model_path_.empty();
 }
 
-void PassageEmbeddingsServiceController::ResetRemotes() {
-  service_remote_.reset();
-  embedder_remote_.reset();
-}
-
-void PassageEmbeddingsServiceController::OnDisconnected() {
+void PassageEmbeddingsServiceController::ResetEmbedderRemote() {
   embedder_remote_.reset();
 }
 

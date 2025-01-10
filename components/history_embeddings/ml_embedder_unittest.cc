@@ -135,16 +135,22 @@ class FakePassageEmbeddingsServiceController
   FakePassageEmbeddingsServiceController() = default;
   ~FakePassageEmbeddingsServiceController() override = default;
 
-  void LaunchService() override {
-    did_launch_service_ = true;
+  void MaybeLaunchService() override {
     service_remote_.reset();
     service_ = std::make_unique<FakePassageEmbeddingsService>(
         service_remote_.BindNewPipeAndPassReceiver());
   }
 
+  using passage_embeddings::PassageEmbeddingsServiceController::
+      ResetEmbedderRemote;
+
+  void ResetServiceRemote() override {
+    ResetEmbedderRemote();
+    service_remote_.reset();
+  }
+
  private:
   std::unique_ptr<FakePassageEmbeddingsService> service_;
-  bool did_launch_service_ = false;
 };
 
 class TestOptimizationGuideModelProvider
@@ -322,18 +328,54 @@ TEST_F(MlEmbedderTest, GeneratesEmbeddings) {
   histogram_tester_.ExpectUniqueSample(kModelInfoMetricName,
                                        EmbeddingsModelInfoStatus::kValid, 1);
 
-  base::test::TestFuture<std::vector<std::string>, std::vector<Embedding>,
-                         ComputeEmbeddingsStatus>
-      future;
-  ml_embedder->ComputePassagesEmbeddings(PassageKind::PAGE_VISIT_PASSAGE,
-                                         {"foo", "bar"}, future.GetCallback());
-  auto [passages, embeddings, status] = future.Get();
+  {
+    base::test::TestFuture<std::vector<std::string>, std::vector<Embedding>,
+                           ComputeEmbeddingsStatus>
+        future;
+    ml_embedder->ComputePassagesEmbeddings(
+        PassageKind::PAGE_VISIT_PASSAGE, {"foo", "bar"}, future.GetCallback());
+    auto [passages, embeddings, status] = future.Get();
 
-  EXPECT_EQ(status, ComputeEmbeddingsStatus::KSuccess);
-  EXPECT_EQ(passages[0], "foo");
-  EXPECT_EQ(passages[1], "bar");
-  EXPECT_EQ(embeddings[0].Dimensions(), kEmbeddingsModelOutputSize);
-  EXPECT_EQ(embeddings[1].Dimensions(), kEmbeddingsModelOutputSize);
+    EXPECT_EQ(status, ComputeEmbeddingsStatus::KSuccess);
+    EXPECT_EQ(passages[0], "foo");
+    EXPECT_EQ(passages[1], "bar");
+    EXPECT_EQ(embeddings[0].Dimensions(), kEmbeddingsModelOutputSize);
+    EXPECT_EQ(embeddings[1].Dimensions(), kEmbeddingsModelOutputSize);
+  }
+
+  service_controller_->ResetEmbedderRemote();
+
+  {
+    base::test::TestFuture<std::vector<std::string>, std::vector<Embedding>,
+                           ComputeEmbeddingsStatus>
+        future;
+    ml_embedder->ComputePassagesEmbeddings(
+        PassageKind::PAGE_VISIT_PASSAGE, {"foo", "bar"}, future.GetCallback());
+    auto [passages, embeddings, status] = future.Get();
+
+    EXPECT_EQ(status, ComputeEmbeddingsStatus::KSuccess);
+    EXPECT_EQ(passages[0], "foo");
+    EXPECT_EQ(passages[1], "bar");
+    EXPECT_EQ(embeddings[0].Dimensions(), kEmbeddingsModelOutputSize);
+    EXPECT_EQ(embeddings[1].Dimensions(), kEmbeddingsModelOutputSize);
+  }
+
+  service_controller_->ResetServiceRemote();
+
+  {
+    base::test::TestFuture<std::vector<std::string>, std::vector<Embedding>,
+                           ComputeEmbeddingsStatus>
+        future;
+    ml_embedder->ComputePassagesEmbeddings(
+        PassageKind::PAGE_VISIT_PASSAGE, {"foo", "bar"}, future.GetCallback());
+    auto [passages, embeddings, status] = future.Get();
+
+    EXPECT_EQ(status, ComputeEmbeddingsStatus::KSuccess);
+    EXPECT_EQ(passages[0], "foo");
+    EXPECT_EQ(passages[1], "bar");
+    EXPECT_EQ(embeddings[0].Dimensions(), kEmbeddingsModelOutputSize);
+    EXPECT_EQ(embeddings[1].Dimensions(), kEmbeddingsModelOutputSize);
+  }
 }
 
 TEST_F(MlEmbedderTest, ReturnsModelUnavailableErrorIfModelInfoNotValid) {
