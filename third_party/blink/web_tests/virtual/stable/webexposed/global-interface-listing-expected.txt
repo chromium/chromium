@@ -2592,6 +2592,11 @@ interface FileSystemHandle
     method queryPermission
     method remove
     method requestPermission
+interface FileSystemObserver
+    attribute @@toStringTag
+    method constructor
+    method disconnect
+    method observe
 interface FileSystemWritableFileStream : WritableStream
     attribute @@toStringTag
     getter mode
