@@ -474,7 +474,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     }
 
     /** Returns a {@link Supplier} that provides dialog visibility information. */
-    public @Nullable Supplier<Boolean> getTabGridDialogVisibilitySupplier() {
+    public @NonNull Supplier<Boolean> getTabGridDialogVisibilitySupplier() {
         return mTabGridDialogVisibilitySupplier;
     }
 

@@ -372,8 +372,18 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
             @Nullable
             SavedTabGroup savedTabGroup =
                     mTabGroupSyncService.getGroup(new LocalTabGroupId(tabGroupId));
-            if (savedTabGroup == null) return;
-            if (!mTabGroupSyncService.isRemoteDevice(savedTabGroup.creatorCacheGuid)) return;
+            // Don't try to show the IPH if the group is:
+            // 1) Not in TabGroupSyncService for some reason.
+            // 2) A shared tab group.
+            // 3) Created locally.
+            // 4) The tab grid dialog is visible.
+            if (savedTabGroup == null
+                    || TabShareUtils.isCollaborationIdValid(savedTabGroup.collaborationId)
+                    || !mTabGroupSyncService.isRemoteDevice(savedTabGroup.creatorCacheGuid)
+                    || Boolean.TRUE.equals(
+                            coordinator.getTabGridDialogVisibilitySupplier().get())) {
+                return;
+            }
 
             @Nullable View anchorView = coordinator.getViewByIndex(viewIndex);
             if (anchorView == null) continue;

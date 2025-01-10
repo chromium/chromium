@@ -1116,6 +1116,43 @@ public class TabSwitcherPaneUnitTest {
     }
 
     @Test
+    public void testRemoteGroupIph_collaboration() {
+        mTabSwitcherPane.setPaneHubController(mPaneHubController);
+        when(mTabSwitcherPaneCoordinator.getVisibleRange()).thenReturn(new Pair<>(0, 0));
+        when(mTabGroupModelFilter.getTabAt(anyInt())).thenReturn(mTab);
+        when(mTabGroupModelFilter.isTabInTabGroup(mTab)).thenReturn(true);
+        when(mTab.getTabGroupId()).thenReturn(mToken);
+        when(mTabGroupSyncService.getGroup(any(LocalTabGroupId.class))).thenReturn(mSavedTabGroup);
+        when(mTabGroupSyncService.isRemoteDevice(any())).thenReturn(true);
+        when(mTabSwitcherPaneCoordinator.getViewByIndex(anyInt())).thenReturn(mAnchorView);
+        mSavedTabGroup.collaborationId = "Collab ID";
+
+        mTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(mUserEducationHelper, never()).requestShowIph(any());
+    }
+
+    @Test
+    public void testRemoteGroupIph_tabGridDialogVisible() {
+        mTabSwitcherPane.setPaneHubController(mPaneHubController);
+        when(mTabSwitcherPaneCoordinator.getVisibleRange()).thenReturn(new Pair<>(0, 0));
+        when(mTabGroupModelFilter.getTabAt(anyInt())).thenReturn(mTab);
+        when(mTabGroupModelFilter.isTabInTabGroup(mTab)).thenReturn(true);
+        when(mTab.getTabGroupId()).thenReturn(mToken);
+        when(mTabGroupSyncService.getGroup(any(LocalTabGroupId.class))).thenReturn(mSavedTabGroup);
+        when(mTabGroupSyncService.isRemoteDevice(any())).thenReturn(true);
+        when(mTabSwitcherPaneCoordinator.getViewByIndex(anyInt())).thenReturn(mAnchorView);
+        when(mTabSwitcherPaneCoordinator.getTabGridDialogVisibilitySupplier())
+                .thenReturn(() -> true);
+
+        mTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(mUserEducationHelper, never()).requestShowIph(any());
+    }
+
+    @Test
     public void testRemoteGroupIph_nullView() {
         mTabSwitcherPane.setPaneHubController(mPaneHubController);
         when(mTabSwitcherPaneCoordinator.getVisibleRange()).thenReturn(new Pair<>(0, 0));
