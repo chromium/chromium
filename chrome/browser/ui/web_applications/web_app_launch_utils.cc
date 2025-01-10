@@ -179,10 +179,8 @@ std::unique_ptr<AppBrowserController> CreateWebKioskBrowserController(
     Browser* browser,
     WebAppProvider* provider,
     const webapps::AppId& app_id) {
-  const ash::SystemWebAppDelegate* system_app =
-      GetSystemWebAppDelegate(browser, app_id);
-  return std::make_unique<ash::WebKioskBrowserControllerAsh>(
-      *provider, browser, app_id, system_app);
+  return std::make_unique<ash::WebKioskBrowserControllerAsh>(*provider, browser,
+                                                             app_id);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
