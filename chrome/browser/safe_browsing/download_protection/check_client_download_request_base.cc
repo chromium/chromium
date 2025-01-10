@@ -464,6 +464,8 @@ void CheckClientDownloadRequestBase::SendRequest() {
   resource_request->url = PPAPIDownloadRequest::GetDownloadRequestUrl();
   resource_request->method = "POST";
   resource_request->load_flags = net::LOAD_DISABLE_CACHE;
+  resource_request->site_for_cookies =
+      net::SiteForCookies::FromUrl(resource_request->url);
 
   if (!access_token_.empty()) {
     LogAuthenticatedCookieResets(
