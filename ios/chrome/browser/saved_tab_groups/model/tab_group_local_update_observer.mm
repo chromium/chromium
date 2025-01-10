@@ -177,11 +177,11 @@ void TabGroupLocalUpdateObserver::WebStateListDidChange(
   if (status.active_web_state_change() && web_state) {
     const TabGroup* tab_group =
         web_state_list->GetGroupOfWebStateAt(web_state_list->active_index());
-    if (tab_group) {
-      sync_service_->OnTabSelected(
-          tab_group->tab_group_id(),
-          web_state->GetUniqueIdentifier().identifier());
-    }
+    std::optional<LocalTabGroupID> local_tab_group_id =
+        tab_group ? std::make_optional<>(tab_group->tab_group_id())
+                  : std::nullopt;
+    sync_service_->OnTabSelected(local_tab_group_id,
+                                 web_state->GetUniqueIdentifier().identifier());
   }
 }
 
