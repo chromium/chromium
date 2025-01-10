@@ -59,7 +59,7 @@ std::vector<uint8_t> ConcatBytes(
   std::vector<uint8_t> result(total_size);
   auto output_it = result.begin();
   for (const base::span<const uint8_t>& span : bytes_spans) {
-    output_it = base::ranges::copy(span, output_it);
+    output_it = std::ranges::copy(span, output_it).out;
   }
   return result;
 }

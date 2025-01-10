@@ -602,9 +602,9 @@ void StandaloneTrustedVaultBackend::UpdateAccountsInCookieJarInfo(
         return !gaia_ids_in_cookie_jar.contains(gaia_id);
       };
 
-  data_.mutable_user()->erase(
-      base::ranges::remove_if(*data_.mutable_user(), should_remove_user_data),
-      data_.mutable_user()->end());
+  auto removed =
+      std::ranges::remove_if(*data_.mutable_user(), should_remove_user_data);
+  data_.mutable_user()->erase(removed.begin(), removed.end());
   WriteDataToDisk();
 }
 
@@ -1162,9 +1162,9 @@ void StandaloneTrustedVaultBackend::
                 primary_account->gaia != GaiaId(per_user_data.gaia_id()));
       };
 
-  data_.mutable_user()->erase(
-      base::ranges::remove_if(*data_.mutable_user(), should_remove_user_data),
-      data_.mutable_user()->end());
+  auto removed =
+      std::ranges::remove_if(*data_.mutable_user(), should_remove_user_data);
+  data_.mutable_user()->erase(removed.begin(), removed.end());
   WriteDataToDisk();
 }
 
