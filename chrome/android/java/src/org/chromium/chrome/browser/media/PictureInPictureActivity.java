@@ -690,6 +690,12 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
                 /* trackOcclusion= */ true);
     }
 
+    @Override
+    protected void onDestroy() {
+        onExitPictureInPicture(/* closeByNative= */ false);
+        super.onDestroy();
+    }
+
     @CalledByNative
     public void close() {
         onExitPictureInPicture(/* closeByNative= */ true);
