@@ -408,8 +408,28 @@ void WidgetBase::ForceRedraw(
 void WidgetBase::GetWidgetInputHandler(
     mojo::PendingReceiver<mojom::blink::WidgetInputHandler> request,
     mojo::PendingRemote<mojom::blink::WidgetInputHandlerHost> host) {
-  widget_input_handler_manager_->AddInterface(std::move(request),
-                                              std::move(host));
+  widget_input_handler_manager_->SetHost(std::move(host));
+  widget_input_handler_manager_->AddInterface(std::move(request));
+
+  // Bind the Viz side receiver that might have come before Browser side
+  // GetWidgetInputHandler request.
+  if (pending_widget_input_handler_.has_value()) {
+    widget_input_handler_manager_->AddInterface(
+        std::move(*pending_widget_input_handler_));
+    pending_widget_input_handler_.reset();
+  }
+}
+
+void WidgetBase::GetWidgetInputHandlerForInputOnViz(
+    mojo::PendingReceiver<mojom::blink::WidgetInputHandler> request) {
+  // Hold back binding Viz side receiver until we have processed Browser side
+  // `GetWidgetInputHandler` request.
+  if (!widget_input_handler_manager_->GetWidgetInputHandlerHost()) {
+    pending_widget_input_handler_.emplace(std::move(request));
+    return;
+  }
+
+  widget_input_handler_manager_->AddInterface(std::move(request));
 }
 
 void WidgetBase::ShowContextMenu(ui::mojom::blink::MenuSourceType source_type,

@@ -159,17 +159,28 @@ void RenderInputRouter::BindRenderInputRouterInterfaces(
   client_remote_.Bind(std::move(remote), task_runner_);
 }
 
-void RenderInputRouter::RendererWidgetCreated(bool for_frame_widget) {
+void RenderInputRouter::RendererWidgetCreated(bool for_frame_widget,
+                                              bool is_in_viz) {
   TRACE_EVENT("input", "RenderInputRouter::RendererWidgetCreated");
 
-  client_remote_->GetWidgetInputHandler(
-      widget_input_handler_.BindNewPipeAndPassReceiver(task_runner_),
-      input_router_->BindNewHost(task_runner_));
+  if (is_in_viz) {
+    client_remote_->GetWidgetInputHandlerForInputOnViz(
+        widget_input_handler_.BindNewPipeAndPassReceiver(task_runner_));
+  } else {
+    client_remote_->GetWidgetInputHandler(
+        widget_input_handler_.BindNewPipeAndPassReceiver(task_runner_),
+        input_router_->BindNewHost(task_runner_));
+  }
 
   if (for_frame_widget) {
-    widget_input_handler_->GetFrameWidgetInputHandler(
-        frame_widget_input_handler_.BindNewEndpointAndPassReceiver(
-            task_runner_));
+    // `for_frame_widget` is always true for RenderInputRouters created on Viz,
+    // but Viz side RIR do no need to establish FrameWidgetInputHandler
+    // connection.
+    if (!is_in_viz) {
+      widget_input_handler_->GetFrameWidgetInputHandler(
+          frame_widget_input_handler_.BindNewEndpointAndPassReceiver(
+              task_runner_));
+    }
     client_remote_->BindInputTargetClient(
         input_target_client_.BindNewPipeAndPassReceiver(task_runner_));
   }

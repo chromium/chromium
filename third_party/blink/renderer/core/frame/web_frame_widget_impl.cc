@@ -394,6 +394,7 @@ WebFrameWidgetImpl::WebFrameWidgetImpl(
           /*is_embedded=*/is_for_child_local_root || is_for_nested_main_frame,
           is_for_scalable_page)),
       frame_sink_id_(frame_sink_id),
+      input_target_receivers_(this, nullptr),
       is_for_child_local_root_(is_for_child_local_root),
       is_for_scalable_page_(is_for_scalable_page) {
   DCHECK(task_runner);
@@ -460,7 +461,7 @@ void WebFrameWidgetImpl::Close(DetachReason detach_reason) {
   // same time as the WidgetBase is.
   input_handler_weak_ptr_factory_.InvalidateWeakPtrs();
   receiver_.reset();
-  input_target_receiver_.reset();
+  input_target_receivers_.Clear();
 }
 
 WebLocalFrame* WebFrameWidgetImpl::LocalRoot() const {
@@ -832,8 +833,11 @@ void WebFrameWidgetImpl::BindWidgetCompositor(
 
 void WebFrameWidgetImpl::BindInputTargetClient(
     mojo::PendingReceiver<viz::mojom::blink::InputTargetClient> receiver) {
-  DCHECK(!input_target_receiver_.is_bound());
-  input_target_receiver_.Bind(
+  // Both Browser and Viz attempts to bind this interface. There can be at max
+  // two remotes one for each Browser and Viz, so this check ensures we are not
+  // going past the 2 limit.
+  CHECK_LT(input_target_receivers_.size(), 2u);
+  input_target_receivers_.Add(
       std::move(receiver),
       local_root_->GetTaskRunner(TaskType::kInternalInputBlocking));
 }
@@ -1600,7 +1604,7 @@ void WebFrameWidgetImpl::Trace(Visitor* visitor) const {
   visitor->Trace(current_drag_data_);
   visitor->Trace(frame_widget_host_);
   visitor->Trace(receiver_);
-  visitor->Trace(input_target_receiver_);
+  visitor->Trace(input_target_receivers_);
 #if BUILDFLAG(IS_ANDROID)
   visitor->Trace(ime_render_widget_host_);
 #endif

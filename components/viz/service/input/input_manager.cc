@@ -120,13 +120,17 @@ std::unique_ptr<input::FlingSchedulerBase> InputManager::MakeFlingScheduler(
 
 void InputManager::SetupRenderInputRouter(
     input::RenderInputRouter* render_input_router,
-    const FrameSinkId& frame_sink_id) {
+    const FrameSinkId& frame_sink_id,
+    mojo::PendingRemote<blink::mojom::RenderInputRouterClient> rir_client) {
   // TODO(382291983): Setup RenderInputRouter's mojo connections to renderer.
   render_input_router->SetFlingScheduler(
       MakeFlingScheduler(render_input_router, frame_sink_id));
 
   render_input_router->SetupInputRouter(
       GetDeviceScaleFactorForId(frame_sink_id));
+  render_input_router->BindRenderInputRouterInterfaces(std::move(rir_client));
+  render_input_router->RendererWidgetCreated(/*for_frame_widget=*/true,
+                                             /*is_in_viz=*/true);
 }
 
 void InputManager::OnCreateCompositorFrameSink(
@@ -182,7 +186,8 @@ void InputManager::OnCreateCompositorFrameSink(
       /* fling_scheduler */ nullptr,
       /* delegate */ rir_delegate.get(),
       base::SingleThreadTaskRunner::GetCurrentDefault());
-  SetupRenderInputRouter(render_input_router.get(), frame_sink_id);
+  SetupRenderInputRouter(render_input_router.get(), frame_sink_id,
+                         std::move(render_input_router_config->rir_client));
 
   frame_sink_metadata_map_.emplace(std::make_pair(
       frame_sink_id,

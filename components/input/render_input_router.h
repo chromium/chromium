@@ -64,7 +64,7 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouter
   void BindRenderInputRouterInterfaces(
       mojo::PendingRemote<blink::mojom::RenderInputRouterClient> remote);
 
-  void RendererWidgetCreated(bool for_frame_widget);
+  void RendererWidgetCreated(bool for_frame_widget, bool is_in_viz);
 
   InputRouter* input_router() { return input_router_.get(); }
   RenderInputRouterDelegate* delegate() { return delegate_; }

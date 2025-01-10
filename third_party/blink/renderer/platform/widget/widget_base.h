@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_WIDGET_BASE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_WIDGET_BASE_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -141,6 +143,8 @@ class PLATFORM_EXPORT WidgetBase
   void GetWidgetInputHandler(
       mojo::PendingReceiver<mojom::blink::WidgetInputHandler> request,
       mojo::PendingRemote<mojom::blink::WidgetInputHandlerHost> host) override;
+  void GetWidgetInputHandlerForInputOnViz(
+      mojo::PendingReceiver<mojom::blink::WidgetInputHandler> request) override;
   void ShowContextMenu(ui::mojom::blink::MenuSourceType source_type,
                        const gfx::Point& location) override;
   void BindInputTargetClient(
@@ -599,6 +603,13 @@ class PLATFORM_EXPORT WidgetBase
   // Tracks when the compositing setup for this widget has been torn down or
   // disconnected in preparation to destroy this widget.
   bool will_be_destroyed_ = false;
+
+  // To store Viz side `WidgetInputHandler` receiver in case it arrives before
+  // Browser side. We do not want to start processing messages on this interface
+  // until a WidgetInputHandlerHost is bound which only happens after Browser
+  // side `WidgetInputHandler` call is received.
+  std::optional<mojo::PendingReceiver<mojom::blink::WidgetInputHandler>>
+      pending_widget_input_handler_ = std::nullopt;
 
   base::WeakPtrFactory<WidgetBase> weak_ptr_factory_{this};
 };

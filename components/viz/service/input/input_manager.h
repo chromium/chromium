@@ -149,8 +149,10 @@ class VIZ_SERVICE_EXPORT InputManager
   void OnRIRDelegateClientDisconnected(
       const base::UnguessableToken& grouping_id);
 
-  void SetupRenderInputRouter(input::RenderInputRouter* render_input_router,
-                              const FrameSinkId& frame_sink_id);
+  void SetupRenderInputRouter(
+      input::RenderInputRouter* render_input_router,
+      const FrameSinkId& frame_sink_id,
+      mojo::PendingRemote<blink::mojom::RenderInputRouterClient> rir_client);
 
   std::unique_ptr<input::FlingSchedulerBase> MakeFlingScheduler(
       input::RenderInputRouter* rir,

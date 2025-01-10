@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/platform/widget/input/input_handler_proxy.h"
 #include "third_party/blink/renderer/platform/widget/input/input_handler_proxy_client.h"
 #include "third_party/blink/renderer/platform/widget/input/main_thread_event_queue.h"
+#include "third_party/blink/renderer/platform/widget/input/widget_input_handler_impl.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
 namespace cc {
@@ -109,9 +110,10 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   WidgetInputHandlerManager& operator=(const WidgetInputHandlerManager&) =
       delete;
 
+  void SetHost(mojo::PendingRemote<mojom::blink::WidgetInputHandlerHost> host);
+
   void AddInterface(
-      mojo::PendingReceiver<mojom::blink::WidgetInputHandler> receiver,
-      mojo::PendingRemote<mojom::blink::WidgetInputHandlerHost> host);
+      mojo::PendingReceiver<mojom::blink::WidgetInputHandler> receiver);
 
   // MainThreadEventQueueClient overrides.
   bool HandleInputEvent(const WebCoalescedInputEvent& event,

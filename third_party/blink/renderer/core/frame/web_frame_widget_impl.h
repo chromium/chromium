@@ -75,6 +75,7 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver_set.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
@@ -1134,8 +1135,8 @@ class CORE_EXPORT WebFrameWidgetImpl
   // WebFrameWidgetImpl is not tied to ExecutionContext
   HeapMojoAssociatedReceiver<mojom::blink::FrameWidget, WebFrameWidgetImpl>
       receiver_{this, nullptr};
-  HeapMojoReceiver<viz::mojom::blink::InputTargetClient, WebFrameWidgetImpl>
-      input_target_receiver_{this, nullptr};
+  HeapMojoReceiverSet<viz::mojom::blink::InputTargetClient, WebFrameWidgetImpl>
+      input_target_receivers_;
 
 #if BUILDFLAG(IS_ANDROID)
   // WebFrameWidgetImpl is not tied to ExecutionContext

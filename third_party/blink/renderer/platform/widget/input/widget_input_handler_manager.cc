@@ -283,6 +283,18 @@ void WidgetInputHandlerManager::DidFirstVisuallyNonEmptyPaint(
   RecordEventMetricsForPaintTiming(first_paint_time);
 }
 
+void WidgetInputHandlerManager::SetHost(
+    mojo::PendingRemote<mojom::blink::WidgetInputHandlerHost> host) {
+  CHECK(host && !host_);
+  if (compositor_thread_default_task_runner_) {
+    host_ = mojo::SharedRemote<mojom::blink::WidgetInputHandlerHost>(
+        std::move(host), compositor_thread_default_task_runner_);
+  } else {
+    host_ = mojo::SharedRemote<mojom::blink::WidgetInputHandlerHost>(
+        std::move(host));
+  }
+}
+
 void WidgetInputHandlerManager::InitInputHandler() {
   bool sync_compositing = false;
 #if BUILDFLAG(IS_ANDROID)
@@ -300,18 +312,14 @@ void WidgetInputHandlerManager::InitInputHandler() {
 WidgetInputHandlerManager::~WidgetInputHandlerManager() = default;
 
 void WidgetInputHandlerManager::AddInterface(
-    mojo::PendingReceiver<mojom::blink::WidgetInputHandler> receiver,
-    mojo::PendingRemote<mojom::blink::WidgetInputHandlerHost> host) {
+    mojo::PendingReceiver<mojom::blink::WidgetInputHandler> receiver) {
+  CHECK(host_);
   if (compositor_thread_default_task_runner_) {
-    host_ = mojo::SharedRemote<mojom::blink::WidgetInputHandlerHost>(
-        std::move(host), compositor_thread_default_task_runner_);
     // Mojo channel bound on compositor thread.
     compositor_thread_default_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&WidgetInputHandlerManager::BindChannel, this,
                                   std::move(receiver)));
   } else {
-    host_ = mojo::SharedRemote<mojom::blink::WidgetInputHandlerHost>(
-        std::move(host));
     // Mojo channel bound on main thread.
     BindChannel(std::move(receiver));
   }
@@ -900,6 +908,9 @@ void WidgetInputHandlerManager::BindChannel(
   // Passing null for |input_event_queue_| tells the handler that we don't have
   // a compositor thread. (Single threaded-mode shouldn't use the queue, or else
   // events might get out of order - see crrev.com/519829).
+  //
+  // Deliberately leaked here because WidgetInputHandlerImpl calls
+  // "delete this;" when it receives mojo disconnect notification.
   WidgetInputHandlerImpl* handler = new WidgetInputHandlerImpl(
       this,
       compositor_thread_default_task_runner_ ? input_event_queue_ : nullptr,

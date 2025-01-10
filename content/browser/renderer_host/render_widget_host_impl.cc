@@ -743,7 +743,8 @@ void RenderWidgetHostImpl::RendererWidgetCreated(bool for_frame_widget) {
 
   GetRenderInputRouter()->BindRenderInputRouterInterfaces(
       std::move(browser_remote));
-  GetRenderInputRouter()->RendererWidgetCreated(for_frame_widget);
+  GetRenderInputRouter()->RendererWidgetCreated(for_frame_widget,
+                                                /*is_in_viz=*/false);
 
   // TODO(crbug.com/40162510): The `view_` can be null. :( Speculative
   // RenderViews along with the main frame and its widget before the
