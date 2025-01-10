@@ -20,6 +20,7 @@ static_library("web_ui") {
     "//components/resources:components_scaled_resources_grit",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/content/browser:safe_browsing_service",
+    "//components/safe_browsing/content/browser/web_ui/resources:resources_grit",
     "//components/safe_browsing/core/browser",
     "//components/safe_browsing/core/browser:download_check_result",
     "//components/safe_browsing/core/browser:referrer_chain_provider",

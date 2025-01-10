@@ -29,8 +29,9 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "components/grit/components_resources.h"
 #include "components/grit/components_scaled_resources.h"
+#include "components/grit/safe_browsing_resources.h"
+#include "components/grit/safe_browsing_resources_map.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
@@ -2344,9 +2345,8 @@ SafeBrowsingUI::SafeBrowsingUI(
       browser_context, std::move(delegate)));
 
   // Add required resources.
-  html_source->AddResourcePath("safe_browsing.css", IDR_SAFE_BROWSING_CSS);
-  html_source->AddResourcePath("safe_browsing.js", IDR_SAFE_BROWSING_JS);
-  html_source->SetDefaultResource(IDR_SAFE_BROWSING_HTML);
+  html_source->AddResourcePaths(kSafeBrowsingResources);
+  html_source->AddResourcePath("", IDR_SAFE_BROWSING_SAFE_BROWSING_HTML);
 
   // Static types
   html_source->OverrideContentSecurityPolicy(
