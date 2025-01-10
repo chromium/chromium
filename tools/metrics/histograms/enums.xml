@@ -17683,6 +17683,7 @@ from previous Chrome versions.
   <int value="-1117104514" label="smbfs-file-shares"/>
   <int value="-1116278039" label="ShelfAppScaling:disabled"/>
   <int value="-1115681358" label="FeedBackToTop:enabled"/>
+  <int value="-1114996018" label="PermissionElement:disabled"/>
   <int value="-1114715252" label="WebAuthenticationNewPasskeyUI:disabled"/>
   <int value="-1114080030" label="ResourceLoadingHints:enabled"/>
   <int value="-1113746031" label="AppDeduplicationService:enabled"/>
@@ -23707,6 +23708,7 @@ from previous Chrome versions.
   <int value="1290904214" label="DiagnosticsAppNavigation:enabled"/>
   <int value="1291257442" label="TabsInCBD:disabled"/>
   <int value="1291453047" label="UseMultiPlaneFormatForSoftwareVideo:enabled"/>
+  <int value="1291546955" label="PermissionElement:enabled"/>
   <int value="1291761696" label="CCTModuleDexLoading:disabled"/>
   <int value="1291790140" label="FastPairSubsequentPairingUX:enabled"/>
   <int value="1291966558" label="ScrollAnchoring:disabled"/>

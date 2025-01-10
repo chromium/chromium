@@ -1634,6 +1634,9 @@ extern const char kOverscrollHistoryNavigationDescription[];
 extern const char kPageContentAnnotationsName[];
 extern const char kPageContentAnnotationsDescription[];
 
+extern const char kPageEmbeddedPermissionControlName[];
+extern const char kPageEmbeddedPermissionControlDescription[];
+
 extern const char kPageContentAnnotationsPersistSalientImageMetadataName[];
 extern const char
     kPageContentAnnotationsPersistSalientImageMetadataDescription[];

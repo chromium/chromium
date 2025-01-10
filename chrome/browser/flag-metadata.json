@@ -6810,6 +6810,15 @@
     "expiry_milestone": 135
   },
   {
+    "name": "permission-element",
+    "owners": [
+      "andy@chromium.org",
+      "tungnh@chromium.org",
+      "//components/permissions/PERMISSIONS_OWNERS"
+    ],
+    "expiry_milestone": 144
+  },
+  {
     "name": "permission-predictions-v3",
     "owners": [
       "elklm@chromium.org",

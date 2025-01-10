@@ -2860,6 +2860,12 @@ const char kPageContentAnnotationsRemotePageMetadataName[] =
 const char kPageContentAnnotationsRemotePageMetadataDescription[] =
     "Enables fetching of page load metadata to be persisted on-device.";
 
+const char kPageEmbeddedPermissionControlName[] =
+    "Page embedded permission control (permission element)";
+const char kPageEmbeddedPermissionControlDescription[] =
+    "Enables the Page Embedded Permission Control feature, which allows the "
+    "use of the HTML 'permission' element.";
+
 const char kPageImageServiceOptimizationGuideSalientImagesName[] =
     "Page Image Service - Optimization Guide Salient Images";
 const char kPageImageServiceOptimizationGuideSalientImagesDescription[] =

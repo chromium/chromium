@@ -8290,6 +8290,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOneTimePermissionDescription, kOsAll,
      FEATURE_VALUE_TYPE(permissions::features::kOneTimePermission)},
 
+    {"permission-element",
+     flag_descriptions::kPageEmbeddedPermissionControlName,
+     flag_descriptions::kPageEmbeddedPermissionControlDescription,
+     kOsMac | kOsWin | kOsCrOS | kOsAndroid | kOsLinux,
+     FEATURE_VALUE_TYPE(blink::features::kPermissionElement)},
+
     {"left-hand-side-activity-indicators",
      flag_descriptions::kLeftHandSideActivityIndicatorsName,
      flag_descriptions::kLeftHandSideActivityIndicatorsDescription, kOsDesktop,
