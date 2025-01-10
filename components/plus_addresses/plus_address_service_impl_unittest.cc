@@ -36,7 +36,6 @@
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
-#include "components/feature_engagement/public/feature_constants.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/plus_addresses/blocked_facets.pb.h"
 #include "components/plus_addresses/features.h"
@@ -89,6 +88,8 @@ using base::Bucket;
 using base::BucketsAre;
 using base::test::RunOnceCallback;
 using test::CreatePreallocatedPlusAddress;
+using test::IsSingleCreatePlusAddressSuggestion;
+using test::IsSingleFillPlusAddressSuggestion;
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
@@ -105,44 +106,6 @@ constexpr std::string_view kPlusAddressSuggestionMetric =
     "PlusAddresses.Suggestion.Events";
 
 constexpr char kPlusAddress[] = "plus+remote@plus.plus";
-
-auto IsSingleCreatePlusAddressSuggestion() {
-  std::vector<std::vector<Suggestion::Text>> labels;
-  if constexpr (!BUILDFLAG(IS_ANDROID)) {
-    labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
-        IDS_PLUS_ADDRESS_CREATE_SUGGESTION_SECONDARY_TEXT))}};
-  }
-  return ElementsAre(AllOf(
-      EqualsSuggestion(SuggestionType::kCreateNewPlusAddress,
-                       /*main_text=*/l10n_util::GetStringUTF16(
-                           IDS_PLUS_ADDRESS_CREATE_SUGGESTION_MAIN_TEXT)),
-      Field(&Suggestion::icon, Suggestion::Icon::kPlusAddress),
-      Field(&Suggestion::iph_metadata,
-            Suggestion::IPHMetadata(
-                &feature_engagement::kIPHPlusAddressCreateSuggestionFeature)),
-#if BUILDFLAG(IS_ANDROID)
-      Field(&Suggestion::iph_description_text,
-            l10n_util::GetStringUTF16(
-                IDS_PLUS_ADDRESS_CREATE_SUGGESTION_IPH_ANDROID)),
-#endif  // BUILDFLAG(IS_ANDROID)
-      Field(&Suggestion::labels, labels)));
-}
-
-auto EqualsFillPlusAddressSuggestion(std::string_view address) {
-  std::vector<std::vector<Suggestion::Text>> labels;
-  if constexpr (!BUILDFLAG(IS_ANDROID)) {
-    labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
-        IDS_PLUS_ADDRESS_FILL_SUGGESTION_SECONDARY_TEXT))}};
-  }
-  return AllOf(EqualsSuggestion(SuggestionType::kFillExistingPlusAddress,
-                                /*main_text=*/base::UTF8ToUTF16(address)),
-               Field(&Suggestion::icon, Suggestion::Icon::kPlusAddress),
-               Field(&Suggestion::labels, labels));
-}
-
-auto IsSingleFillPlusAddressSuggestion(std::string_view address) {
-  return ElementsAre(EqualsFillPlusAddressSuggestion(address));
-}
 
 MATCHER_P(IsPreallocatedPlusAddress, address, "") {
   if (!arg.is_dict()) {
