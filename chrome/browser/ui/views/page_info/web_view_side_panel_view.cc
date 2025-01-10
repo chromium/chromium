@@ -24,6 +24,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace {
@@ -97,6 +98,10 @@ void WebViewSidePanelView::OpenUrl(const content::OpenURLParams& params) {
   last_url_ = params.url;
   web_view_->GetWebContents()->GetController().LoadURLWithParams(
       content::NavigationController::LoadURLParams(params));
+}
+
+GURL WebViewSidePanelView::GetLastUrlForTesting() {
+ return last_url_;
 }
 
 // This method is called when the WebContents wants to open a link in a new

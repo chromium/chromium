@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/page_info/merchant_trust_side_panel.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/page_info/web_view_side_panel_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
@@ -319,4 +320,21 @@ IN_PROC_BROWSER_TEST_F(MerchantTrustSidePanelCoordinatorBrowserTest,
       browser(), CreateUrl(kUrlWithoutMerchantTrustData)));
   EXPECT_FALSE(side_panel_coordinator()->IsSidePanelShowing());
   ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
+}
+
+IN_PROC_BROWSER_TEST_F(MerchantTrustSidePanelCoordinatorBrowserTest,
+                       SidePanelEntryUrlHasQueryParams) {
+  ShowMerchantTrustSidePanel(web_contents(), CreateUrl(kMerchantReviewsUrl));
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kMerchantTrust);
+
+  auto view = side_panel_coordinator()
+                  ->GetCurrentSidePanelEntryForTesting()
+                  ->GetContent();
+  auto* side_panel_view = static_cast<WebViewSidePanelView*>(view.get());
+
+  EXPECT_EQ(side_panel_view->GetLastUrlForTesting(),
+            CreateUrl(kMerchantReviewsUrl).spec() +
+                "?s=CHROME_SIDE_PANEL#reviews");
 }
