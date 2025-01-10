@@ -680,55 +680,6 @@ public class AwContents implements SmartClipProvider {
     private CleanupReference mCleanupReference;
 
     // --------------------------------------------------------------------------------------------
-    private class IoThreadClientImpl extends AwContentsIoThreadClient {
-        // All methods are called on the IO thread.
-
-        @Override
-        public int getCacheMode() {
-            return mSettings.getCacheMode();
-        }
-
-        @Override
-        public AwContentsBackgroundThreadClient getBackgroundThreadClient() {
-            return mBackgroundThreadClient;
-        }
-
-        @Override
-        public boolean shouldBlockContentUrls() {
-            return !mSettings.getAllowContentAccess();
-        }
-
-        @Override
-        public boolean shouldBlockFileUrls() {
-            return !mSettings.getAllowFileAccess();
-        }
-
-        @Override
-        public boolean shouldBlockSpecialFileUrls() {
-            return mSettings.getBlockSpecialFileUrls();
-        }
-
-        @Override
-        public boolean shouldBlockNetworkLoads() {
-            return mSettings.getBlockNetworkLoads();
-        }
-
-        @Override
-        public boolean shouldAcceptCookies() {
-            return mBrowserContext.getCookieManager().acceptCookie();
-        }
-
-        @Override
-        public boolean shouldAcceptThirdPartyCookies() {
-            return mSettings.getAcceptThirdPartyCookies();
-        }
-
-        @Override
-        public boolean getSafeBrowsingEnabled() {
-            return mSettings.getSafeBrowsingEnabled();
-        }
-    }
-
     private class BackgroundThreadClientImpl extends AwContentsBackgroundThreadClient {
         // All methods are called on the background thread.
 
@@ -1123,7 +1074,11 @@ public class AwContents implements SmartClipProvider {
                             mContext, contentsClient, AwContentsStatics.getClientCertLookupTable());
             mZoomControls = new AwZoomControls(this);
             mBackgroundThreadClient = new BackgroundThreadClientImpl();
-            mIoThreadClient = new IoThreadClientImpl();
+            mIoThreadClient =
+                    new AwContentsIoThreadClientImpl(
+                            mSettings,
+                            mBackgroundThreadClient,
+                            () -> mBrowserContext.getCookieManager().acceptCookie());
             mInterceptNavigationDelegate = new InterceptNavigationDelegateImpl();
             mDisplayObserver = new AwDisplayAndroidObserver();
             mUpdateVisibilityRunnable = () -> updateWebContentsVisibility();
