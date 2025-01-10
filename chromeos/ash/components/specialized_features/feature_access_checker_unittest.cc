@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/hash/sha1.h"
 #include "base/test/task_environment.h"
+#include "chromeos/components/kiosk/kiosk_test_utils.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -25,6 +26,8 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "components/variations/service/test_variations_service.h"
 #include "components/variations/variations_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -459,6 +462,32 @@ TEST_F(FeatureAccessCheckerTest, CountryCodeCheckFailNoVariationsService) {
                                           /*variations_service=*/nullptr)
                          .Check()),
       ElementsAre(kCountryCheckFailed));
+}
+
+TEST_F(FeatureAccessCheckerTest, KioskModeCheckPassIfNotInKioskMode) {
+  FeatureAccessConfig config;
+  config.disabled_in_kiosk_mode = true;
+
+  EXPECT_THAT(
+      base::ToVector(FeatureAccessChecker(config, &pref_, GetIdentityManager(),
+                                          variations_service_.get())
+                         .Check()),
+      IsEmpty());
+}
+
+TEST_F(FeatureAccessCheckerTest, KioskModeCheckFailIfInKioskMode) {
+  FeatureAccessConfig config;
+  config.disabled_in_kiosk_mode = true;
+  user_manager::ScopedUserManager scoped_user_manager(
+      std::make_unique<user_manager::FakeUserManager>());
+
+  chromeos::SetUpFakeKioskSession();
+
+  EXPECT_THAT(
+      base::ToVector(FeatureAccessChecker(config, &pref_, GetIdentityManager(),
+                                          variations_service_.get())
+                         .Check()),
+      ElementsAre(kDisabledInKioskModeCheckFailed));
 }
 
 }  // namespace

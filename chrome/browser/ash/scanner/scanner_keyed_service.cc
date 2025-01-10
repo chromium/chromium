@@ -78,6 +78,7 @@ constexpr auto kTrafficAnnotation =
 specialized_features::FeatureAccessConfig CreateFeatureAccessConfig() {
   specialized_features::FeatureAccessConfig config;
   config.settings_toggle_pref = ash::prefs::kSunfishEnabled;
+  config.disabled_in_kiosk_mode = true;
   if (!base::FeatureList::IsEnabled(ash::features::kScannerDogfood)) {
     config.feature_management_flag = &ash::features::kFeatureManagementScanner;
     config.capability_callback =

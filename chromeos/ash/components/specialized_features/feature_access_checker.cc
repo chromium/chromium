@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/hash/sha1.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/variations/service/variations_service.h"
@@ -36,6 +37,9 @@ FeatureAccessChecker::FeatureAccessChecker(
 
 FeatureAccessFailureSet FeatureAccessChecker::Check() const {
   FeatureAccessFailureSet failures;
+  if (config_.disabled_in_kiosk_mode && chromeos::IsKioskSession()) {
+    failures.Put(kDisabledInKioskModeCheckFailed);
+  }
 
   if (config_.settings_toggle_pref.has_value()) {
     // if prefs service is not set, we should assume that the feature is not

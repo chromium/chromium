@@ -35,7 +35,8 @@ enum class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SPECIALIZED_FEATURES)
                                         // user inferred not to be a minor.
       kCountryCheckFailed,              // Device's country is not authorised
                                         // to use this feature.
-      kMaxValue = kCountryCheckFailed,
+      kDisabledInKioskModeCheckFailed,  // In Kiosk mode.
+      kMaxValue = kDisabledInKioskModeCheckFailed,
     };
 
 // EnumSet containing FeatureAccessFailures.
@@ -61,6 +62,9 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SPECIALIZED_FEATURES)
   FeatureAccessConfig(const FeatureAccessConfig&);
   FeatureAccessConfig& operator=(const FeatureAccessConfig&);
   FeatureAccessConfig& operator=(FeatureAccessConfig&&);
+
+  // Disable for kiosk mode.
+  bool disabled_in_kiosk_mode = false;
 
   // The preference that determines whether the feature is enabled via settings.
   // The FeatureAccessChecker::Check() verifies if its value is true in the
