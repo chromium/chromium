@@ -18,6 +18,7 @@ States for div:
 --indeterminate-applied='false'
 --placeholder-shown-applied='false'
 --autofill-applied='false'
+--open-applied='false'
 
 States for editableDiv:
 --read-only-applied='false'
@@ -41,6 +42,7 @@ States for div:
 --indeterminate-applied='true'
 --placeholder-shown-applied='true'
 --autofill-applied='true'
+--open-applied='true'
 
 States for editableDiv:
 --read-only-applied='true'

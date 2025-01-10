@@ -15,6 +15,7 @@
   --indeterminate-applied: 'false';
   --placeholder-shown-applied: 'false';
   --autofill-applied: 'false';
+  --open-applied: 'false';
 }
 .testcase:enabled {
   --enabled-applied: 'true';
@@ -63,4 +64,7 @@
 }
 .testcase:autofill {
   --autofill-applied: 'true';
+}
+.testcase:open {
+  --open-applied: 'true';
 }

@@ -284,6 +284,7 @@ enum ForcePseudoClassFlags {
   kPseudoPlaceholderShown = 1 << 21,
   kPseudoAutofill = 1 << 22,
   kPseudoLink = 1 << 23,
+  kPseudoOpen = 1 << 24,
 };
 
 static unsigned ComputePseudoClassMask(
@@ -313,6 +314,7 @@ static unsigned ComputePseudoClassMask(
   DEFINE_STATIC_LOCAL(String, placeholderShown, ("placeholder-shown"));
   DEFINE_STATIC_LOCAL(String, autofill, ("autofill"));
   DEFINE_STATIC_LOCAL(String, link, ("link"));
+  DEFINE_STATIC_LOCAL(String, open, ("open"));
 
   if (!pseudo_class_array || pseudo_class_array->empty())
     return kPseudoNone;
@@ -367,6 +369,8 @@ static unsigned ComputePseudoClassMask(
       result |= kPseudoAutofill;
     } else if (pseudo_class == link) {
       result |= kPseudoLink;
+    } else if (pseudo_class == open) {
+      result |= kPseudoOpen;
     }
   }
   return result;
@@ -1079,6 +1083,9 @@ void InspectorCSSAgent::ForcePseudoState(Element* element,
       break;
     case CSSSelector::kPseudoAutofill:
       force = forced_pseudo_state & kPseudoAutofill;
+      break;
+    case CSSSelector::kPseudoOpen:
+      force = forced_pseudo_state & kPseudoOpen;
       break;
     default:
       break;
