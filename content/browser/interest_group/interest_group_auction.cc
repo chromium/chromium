@@ -3517,6 +3517,9 @@ InterestGroupAuction::CreateReporter(
   InterestGroupAuctionReporter::WinningBidInfo winning_bid_info(
       winner->bid->bid_state->bidder);
   winning_bid_info.render_url = winner->bid->ad_descriptor.url;
+  // `bid_ad` is a raw pointer owned by the InterestGroup, which is wrapped in a
+  // refptr that `winning_bid_info` now points to, so this is safe.
+  winning_bid_info.bid_ad = winner->bid->bid_ad;
   winning_bid_info.allowed_reporting_origins =
       winner->bid->bid_ad->allowed_reporting_origins;
   // Need the bid from the bidder itself. If the bid was from a component

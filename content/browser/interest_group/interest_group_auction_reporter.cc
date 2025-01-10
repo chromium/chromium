@@ -68,16 +68,6 @@ bool IsEventLevelReportingUrlValid(const GURL& url) {
   return url.is_valid() && url.SchemeIs(url::kHttpsScheme);
 }
 
-const blink::InterestGroup::Ad& ChosenAd(
-    const SingleStorageInterestGroup& storage_interest_group,
-    const GURL& winning_ad_url) {
-  auto chosen_ad = base::ranges::find(
-      *storage_interest_group->interest_group.ads, winning_ad_url,
-      [](const blink::InterestGroup::Ad& ad) { return ad.render_url(); });
-  CHECK(chosen_ad != storage_interest_group->interest_group.ads->end());
-  return *chosen_ad;
-}
-
 bool IsKAnonForReporting(
     const SingleStorageInterestGroup& storage_interest_group,
     const blink::InterestGroup::Ad& chosen_ad,
@@ -192,7 +182,7 @@ InterestGroupAuctionReporter::SellerWinningBidInfo::operator=(
 
 InterestGroupAuctionReporter::WinningBidInfo::WinningBidInfo(
     const SingleStorageInterestGroup& storage_interest_group)
-    : storage_interest_group(std::move(storage_interest_group)) {}
+    : storage_interest_group(storage_interest_group) {}
 InterestGroupAuctionReporter::WinningBidInfo::WinningBidInfo(WinningBidInfo&&) =
     default;
 InterestGroupAuctionReporter::WinningBidInfo::~WinningBidInfo() = default;
@@ -583,17 +573,14 @@ void InterestGroupAuctionReporter::OnSellerWorkletReceived(
   std::optional<std::string>
       browser_signal_selected_buyer_and_seller_reporting_id;
 
-  auto chosen_ad = ChosenAd(winning_bid_info_.storage_interest_group,
-                            winning_bid_info_.render_url);
-
   // For B&A server components, we already checked k-anonymity on the server.
   if ((top_level_with_components &&
        component_seller_winning_bid_info_->saved_response.has_value()) ||
       IsKAnonForReporting(
-          winning_bid_info_.storage_interest_group, chosen_ad,
+          winning_bid_info_.storage_interest_group, *winning_bid_info_.bid_ad,
           winning_bid_info_.selected_buyer_and_seller_reporting_id)) {
     browser_signal_buyer_and_seller_reporting_id =
-        chosen_ad.buyer_and_seller_reporting_id;
+        winning_bid_info_.bid_ad->buyer_and_seller_reporting_id;
     browser_signal_selected_buyer_and_seller_reporting_id =
         winning_bid_info_.selected_buyer_and_seller_reporting_id;
   }
@@ -826,9 +813,6 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
   std::optional<std::string> buyer_and_seller_reporting_id;
   std::optional<std::string> selected_buyer_and_seller_reporting_id;
 
-  const blink::InterestGroup::Ad& chosen_ad = ChosenAd(
-      winning_bid_info_.storage_interest_group, winning_bid_info_.render_url);
-
   // If k-anonymity enforcement is on we can only reveal the winning reporting
   // id in reportWin if the winning ad's reporting_ads_kanon entry is
   // k-anonymous.
@@ -837,14 +821,14 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
   // information anyway.
   if (winning_bid_info_.provided_as_additional_bid ||
       IsKAnonForReporting(
-          winning_bid_info_.storage_interest_group, chosen_ad,
+          winning_bid_info_.storage_interest_group, *winning_bid_info_.bid_ad,
           winning_bid_info_.selected_buyer_and_seller_reporting_id)) {
     SetReportWinReportingIds(
         winning_bid_info_.storage_interest_group->interest_group.name,
-        winning_bid_info_.selected_buyer_and_seller_reporting_id, chosen_ad,
-        reporting_id_field, interest_group_name_reporting_id,
-        buyer_reporting_id, buyer_and_seller_reporting_id,
-        selected_buyer_and_seller_reporting_id);
+        winning_bid_info_.selected_buyer_and_seller_reporting_id,
+        *winning_bid_info_.bid_ad, reporting_id_field,
+        interest_group_name_reporting_id, buyer_reporting_id,
+        buyer_and_seller_reporting_id, selected_buyer_and_seller_reporting_id);
   }
   base::UmaHistogramEnumeration(
       top_level_seller_winning_bid_info_.saved_response.has_value()

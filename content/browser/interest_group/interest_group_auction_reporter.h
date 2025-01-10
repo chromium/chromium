@@ -168,6 +168,11 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
     const SingleStorageInterestGroup storage_interest_group;
 
     GURL render_url;
+
+    // Points to the InterestGroupAd within the `interest_group` owned by
+    // `storage_interest_group`.
+    raw_ptr<const blink::InterestGroup::Ad> bid_ad;
+
     std::optional<std::vector<url::Origin>> allowed_reporting_origins;
 
     // Bid returned by the bidder.

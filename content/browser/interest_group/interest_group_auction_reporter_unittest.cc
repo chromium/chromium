@@ -180,6 +180,7 @@ class InterestGroupAuctionReporterTest
 
     winning_bid_info_.render_url = GURL((*interest_group.ads)[0].render_url());
     winning_bid_info_.ad_metadata = kWinningAdMetadata;
+    winning_bid_info_.bid_ad = &(*interest_group.ads)[0];
 
     // The actual value doesn't matter for tests, but need to set some value as
     // it doesn't have a default one.
