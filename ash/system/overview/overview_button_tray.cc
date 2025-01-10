@@ -141,7 +141,7 @@ void OverviewButtonTray::OnOverviewModeEnded() {
 void OverviewButtonTray::ClickedOutsideBubble(const ui::LocatedEvent& event) {}
 
 void OverviewButtonTray::UpdateTrayItemColor(bool is_active) {
-  icon_->SetImage(GetIconImage());
+  icon_->SetImage(ui::ImageModel::FromImageSkia(GetIconImage()));
 }
 
 void OverviewButtonTray::HandleLocaleChange() {}
@@ -152,7 +152,7 @@ void OverviewButtonTray::HideBubbleWithView(const TrayBubbleView* bubble_view) {
 
 void OverviewButtonTray::OnThemeChanged() {
   TrayBackgroundView::OnThemeChanged();
-  icon_->SetImage(GetIconImage());
+  icon_->SetImage(ui::ImageModel::FromImageSkia(GetIconImage()));
 }
 
 void OverviewButtonTray::HideBubble(const TrayBubbleView* bubble_view) {

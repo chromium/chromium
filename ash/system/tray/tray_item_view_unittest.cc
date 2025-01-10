@@ -239,8 +239,8 @@ TEST_F(TrayItemViewTest, LargeImageIcon) {
 
   // Set the image to a large image.
   gfx::Size kLargeImageSize(kLargeSize, kLargeSize);
-  tray_item()->image_view()->SetImage(
-      CreateSolidColorTestImage(kLargeImageSize, SK_ColorRED));
+  tray_item()->image_view()->SetImage(ui::ImageModel::FromImageSkia(
+      CreateSolidColorTestImage(kLargeImageSize, SK_ColorRED)));
 
   // The preferred size is the size of the larger image (which is not the
   // default tray icon size, see static_assert above).

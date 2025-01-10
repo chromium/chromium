@@ -100,11 +100,11 @@ class StackedNotificationBar::StackedNotificationBarIcon
         accent_color);
 
     if (masked_small_icon.IsEmpty()) {
-      SetImage(gfx::CreateVectorIcon(message_center::kProductIcon,
-                                     kStackedNotificationIconSize,
-                                     accent_color));
+      SetImage(ui::ImageModel::FromVectorIcon(message_center::kProductIcon,
+                                              accent_color,
+                                              kStackedNotificationIconSize));
     } else {
-      SetImage(masked_small_icon.AsImageSkia());
+      SetImage(ui::ImageModel::FromImage(masked_small_icon));
     }
   }
 

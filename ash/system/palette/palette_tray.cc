@@ -614,10 +614,10 @@ void PaletteTray::UpdateTrayIcon() {
   color = GetColorProvider()->GetColor(
       is_active() ? cros_tokens::kCrosSysSystemOnPrimaryContainer
                   : cros_tokens::kCrosSysOnSurface);
-  icon_->SetImage(CreateVectorIcon(
+  icon_->SetImage(ui::ImageModel::FromVectorIcon(
       palette_tool_manager_->GetActiveTrayIcon(
           palette_tool_manager_->GetActiveTool(PaletteGroup::MODE)),
-      kTrayIconSize, color));
+      color, kTrayIconSize));
 }
 
 void PaletteTray::OnPaletteEnabledPrefChanged() {

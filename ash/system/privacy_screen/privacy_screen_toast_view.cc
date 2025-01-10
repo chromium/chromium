@@ -66,7 +66,8 @@ class PrivacyScreenToastManagedView : public views::View {
 
     const SkColor icon_color = color_provider->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kTextColorSecondary);
-    icon->SetImage(gfx::CreateVectorIcon(kSystemTrayManagedIcon, icon_color));
+    icon->SetImage(
+        ui::ImageModel::FromVectorIcon(kSystemTrayManagedIcon, icon_color));
 
     AddChildView(label);
     AddChildView(icon);
