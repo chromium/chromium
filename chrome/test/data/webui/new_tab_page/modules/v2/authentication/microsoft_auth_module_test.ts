@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 import type {DisableModuleEvent, DismissModuleInstanceEvent, MicrosoftAuthModuleElement} from 'chrome://new-tab-page/lazy_load.js';
-import {microsoftAuthModuleDescriptor, MicrosoftAuthProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
+import {microsoftAuthModuleDescriptor, MicrosoftAuthProxyImpl, ParentTrustedDocumentProxy} from 'chrome://new-tab-page/lazy_load.js';
 import {MicrosoftAuthPageHandlerRemote} from 'chrome://new-tab-page/microsoft_auth.mojom-webui.js';
+import {MicrosoftAuthUntrustedDocumentRemote} from 'chrome://new-tab-page/ntp_microsoft_auth_shared_ui.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -14,6 +16,7 @@ import {installMock} from '../../../test_support.js';
 
 suite('MicrosoftAuthModule', () => {
   let handler: TestMock<MicrosoftAuthPageHandlerRemote>;
+  let childDocument: TestMock<MicrosoftAuthUntrustedDocumentRemote>;
   let microsoftAuthModule: MicrosoftAuthModuleElement;
   const modulesMicrosoftAuthName = 'Microsoft Authentication';
 
@@ -21,10 +24,20 @@ suite('MicrosoftAuthModule', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues(
         {modulesMicrosoftAuthName: modulesMicrosoftAuthName});
+
     handler = installMock(
         MicrosoftAuthPageHandlerRemote,
         mock => MicrosoftAuthProxyImpl.setInstance(
             new MicrosoftAuthProxyImpl(mock)));
+
+    childDocument = installMock(
+        MicrosoftAuthUntrustedDocumentRemote,
+        mock => ParentTrustedDocumentProxy.setInstance(mock));
+
+    // Set fake metrics. Otherwise, tests fail when creating descriptor
+    // because of the mock |WindowProxy|.
+    fakeMetricsPrivate();
+
     microsoftAuthModule = await microsoftAuthModuleDescriptor.initialize(0) as
         MicrosoftAuthModuleElement;
     assertTrue(!!microsoftAuthModule);
@@ -66,5 +79,13 @@ suite('MicrosoftAuthModule', () => {
 
     // Assert.
     assertEquals(1, handler.getCallCount('restoreModule'));
+  });
+
+  test('clicking sign in sends message to child document', async () => {
+    // Act.
+    microsoftAuthModule.$.signInButton.click();
+
+    // Assert.
+    assertEquals(1, childDocument.getCallCount('acquireTokenPopup'));
   });
 });

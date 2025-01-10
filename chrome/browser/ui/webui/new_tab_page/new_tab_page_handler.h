@@ -111,6 +111,12 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   // This method should be called before the tab is deleted.
   void TabWillDelete();
 
+  // Called when a child page wants to bind its interface in `page_`, so they
+  // can communicate via Mojo.
+  void ConnectToParentDocument(
+      mojo::PendingRemote<new_tab_page::mojom::MicrosoftAuthUntrustedDocument>
+          child_untrusted_document_remote);
+
   // new_tab_page::mojom::PageHandler:
   void SetMostVisitedSettings(bool custom_links_enabled, bool visible) override;
   void GetMostVisitedSettings(GetMostVisitedSettingsCallback callback) override;

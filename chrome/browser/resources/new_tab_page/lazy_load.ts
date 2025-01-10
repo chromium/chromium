@@ -21,6 +21,7 @@ export {LensUploadDialogAction, LensUploadDialogElement, LensUploadDialogError} 
 export {MiddleSlotPromoElement, PromoDismissAction} from './middle_slot_promo.js';
 export {MobilePromoElement} from './mobile_promo.js';
 export {InfoDialogElement} from './modules/info_dialog.js';
+export {ParentTrustedDocumentProxy} from './modules/microsoft_auth_frame_connector.js';
 export {InitializeModuleCallback, Module, ModuleDescriptor} from './modules/module_descriptor.js';
 export {counterfactualLoad} from './modules/module_descriptors.js';
 export {ModuleHeaderElement} from './modules/module_header.js';

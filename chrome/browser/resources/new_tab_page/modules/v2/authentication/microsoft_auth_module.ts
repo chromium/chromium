@@ -8,6 +8,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {I18nMixinLit, loadTimeData} from '../../../i18n_setup.js';
 import type {MicrosoftAuthPageHandlerRemote} from '../../../microsoft_auth.mojom-webui.js';
+import {ParentTrustedDocumentProxy} from '../../microsoft_auth_frame_connector.js';
 import {ModuleDescriptor} from '../../module_descriptor.js';
 import type {MenuItem, ModuleHeaderElement} from '../module_header.js';
 
@@ -19,6 +20,7 @@ import {MicrosoftAuthProxyImpl} from './microsoft_auth_module_proxy.js';
 export interface MicrosoftAuthModuleElement {
   $: {
     moduleHeaderElementV2: ModuleHeaderElement,
+    signInButton: HTMLButtonElement,
   };
 }
 
@@ -99,8 +101,12 @@ export class MicrosoftAuthModuleElement extends MicrosoftAuthModuleElementBase {
     }));
   }
 
+  // Cause Login flow to begin within auth iframe.
   protected onSignInClick_() {
-    // TODO(crbug.com/377379069): Handle button click.
+    const proxyInstance = ParentTrustedDocumentProxy.getInstance();
+    if (proxyInstance) {
+      proxyInstance.getChildDocument().acquireTokenPopup();
+    }
   }
 }
 

@@ -1,0 +1,16 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module new_tab_page.mojom;
+
+import "chrome/browser/ui/webui/ntp_microsoft_auth/ntp_microsoft_auth_shared_ui.mojom";
+
+// Factory interface to create parent/child communication interfaces.
+interface MicrosoftAuthUntrustedDocumentInterfacesFactory {
+  // Passes the chrome-untrusted:// frame's remote to the embedding
+  // chrome:// parent frame to establish communication.
+  ConnectToParentDocument(
+    pending_remote<MicrosoftAuthUntrustedDocument> child_document
+  );
+};

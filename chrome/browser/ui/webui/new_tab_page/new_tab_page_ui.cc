@@ -749,6 +749,12 @@ void NewTabPageUI::CreatePageHandler(
       navigation_start_time_, &module_id_details_);
 }
 
+void NewTabPageUI::ConnectToParentDocument(
+    mojo::PendingRemote<new_tab_page::mojom::MicrosoftAuthUntrustedDocument>
+        child_page) {
+  page_handler_->ConnectToParentDocument(std::move(child_page));
+}
+
 void NewTabPageUI::CreateBrowserCommandHandler(
     mojo::PendingReceiver<browser_command::mojom::CommandHandler>
         pending_handler) {

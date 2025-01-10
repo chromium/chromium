@@ -180,6 +180,7 @@
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party_ui.h"
+#include "chrome/browser/ui/webui/ntp_microsoft_auth/ntp_microsoft_auth_untrusted_ui.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/password_manager/password_manager_ui.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/private_state_tokens/private_state_tokens.mojom.h"
@@ -1836,6 +1837,10 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
         .Add<data_sharing::mojom::PageHandlerFactory>()
         .Add<color_change_listener::mojom::PageHandler>();
   }
+
+  registry.ForWebUI<NtpMicrosoftAuthUntrustedUI>()
+      .Add<new_tab_page::mojom::
+               MicrosoftAuthUntrustedDocumentInterfacesFactory>();
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 }

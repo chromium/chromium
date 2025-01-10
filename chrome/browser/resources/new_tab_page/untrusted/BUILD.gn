@@ -18,6 +18,8 @@ build_webui("build") {
 
   non_web_component_files = [
     "background_image.ts",
+    "microsoft_auth.ts",
+    "microsoft_auth_proxy.ts",
     "msal_browser.ts",
     "one_google_bar.ts",
   ]
@@ -25,7 +27,17 @@ build_webui("build") {
   extra_grdp_files = [ "$target_gen_dir/msal_browser_resources.grdp" ]
   extra_grdp_deps = [ ":build_msal_grdp" ]
 
+  mojo_files_deps = [
+    "//chrome/browser/ui/webui/ntp_microsoft_auth:shared_ts__generator",
+    "//chrome/browser/ui/webui/ntp_microsoft_auth:untrusted_ts__generator",
+  ]
+  mojo_files = [
+    "$root_gen_dir/chrome/browser/ui/webui/ntp_microsoft_auth/ntp_microsoft_auth_shared_ui.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/ui/webui/ntp_microsoft_auth/ntp_microsoft_auth_untrusted_ui.mojom-webui.ts",
+  ]
+
   ts_definitions = [ "msal_browser_fixed.d.ts" ]
+  ts_deps = [ "//ui/webui/resources/mojo:build_ts" ]
   ts_path_mappings = [
     "/msal_browser/msal-browser.min.js|" +
         rebase_path("msal_browser_fixed.d.ts", target_gen_dir),
@@ -34,6 +46,9 @@ build_webui("build") {
             target_gen_dir),
     "@azure/msal-common/browser|" + rebase_path(
             "//third_party/node/node_modules/@azure/msal-common/lib/types/index-browser.d.ts",
+            target_gen_dir),
+    "@azure/msal-common/lib/*|" + rebase_path(
+            "//third_party/node/node_modules/@azure/msal-common/lib/types/*",
             target_gen_dir),
   ]
 }

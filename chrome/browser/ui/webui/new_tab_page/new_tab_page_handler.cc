@@ -1669,3 +1669,9 @@ void NewTabPageHandler::SetCustomizeChromeSidePanelController(
     page_->SetCustomizeChromeSidePanelVisibility(false);
   }
 }
+
+void NewTabPageHandler::ConnectToParentDocument(
+    mojo::PendingRemote<new_tab_page::mojom::MicrosoftAuthUntrustedDocument>
+        child_untrusted_document_remote) {
+  page_->ConnectToParentDocument(std::move(child_untrusted_document_remote));
+}

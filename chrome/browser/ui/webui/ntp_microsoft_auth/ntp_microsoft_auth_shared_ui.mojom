@@ -1,0 +1,15 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module new_tab_page.mojom;
+
+// Interfaces for inter-frame communication between chrome:// and its embedded
+// chrome-untrusted:// child document.
+
+// Implemented in JavaScript by the ntp-microsoft-auth document, represents the
+// embedded chrome-untrusted:// document.
+interface MicrosoftAuthUntrustedDocument {
+  // Called to tell the Microsoft Auth child page to acquire a token via popup.
+  AcquireTokenPopup();
+};
