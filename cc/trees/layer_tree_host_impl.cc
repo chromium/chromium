@@ -1331,6 +1331,13 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
   DCHECK(CanDraw());
   DCHECK(!active_tree_->LayerListIsEmpty());
 
+  if (use_layer_context_for_display_) {
+    TRACE_EVENT0(
+        "cc",
+        "LayerTreeHostImpl::CalculateRenderPasses::SkippedForLayerContext");
+    return DrawResult::kSuccess;
+  }
+
   // For now, we use damage tracking to compute a global scissor. To do this, we
   // must compute all damage tracking before drawing anything, so that we know
   // the root damage rect. The root damage rect is then used to scissor each
@@ -1645,8 +1652,6 @@ void LayerTreeHostImpl::InvalidateLayerTreeFrameSink(bool needs_redraw) {
 }
 
 DrawResult LayerTreeHostImpl::PrepareToDraw(FrameData* frame) {
-  DCHECK(!use_layer_context_for_display_);
-
   TRACE_EVENT1("cc", "LayerTreeHostImpl::PrepareToDraw", "SourceFrameNumber",
                active_tree_->source_frame_number());
   if (input_delegate_)
@@ -2771,9 +2776,12 @@ RenderFrameMetadata LayerTreeHostImpl::MakeRenderFrameMetadata(
 }
 
 std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
-  DCHECK(!use_layer_context_for_display_);
   DCHECK(CanDraw());
-  DCHECK_EQ(frame->has_no_damage, frame->render_passes.empty());
+  if (!use_layer_context_for_display_) {
+    DCHECK_EQ(frame->has_no_damage, frame->render_passes.empty());
+  } else {
+    DCHECK(frame->render_passes.empty());
+  }
   ResetRequiresHighResToDraw();
 
   if (frame->has_no_damage) {
@@ -2849,7 +2857,8 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
                        compositor_frame.render_pass_list);
 
   base::TimeTicks submit_time = base::TimeTicks::Now();
-  {
+
+  if (!use_layer_context_for_display_) {
     TRACE_EVENT(
         "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
         perfetto::Flow::Global(CurrentBeginFrameArgs().trace_id),
