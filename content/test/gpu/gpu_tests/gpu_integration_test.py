@@ -863,6 +863,17 @@ class GpuIntegrationTest(
     finally:
       self.additionalTags[TEST_WAS_SLOW] = json.dumps(self._TestWasSlow())
       self._ReportAboutGpu(test_name)
+      self._OnAfterTest(args)
+
+  def _OnAfterTest(self, args: ct.TestArgs) -> None:
+    """Called at the end of _RunGpuTest.
+
+    Meant to be overridden by subclasses to perform actions that cannot be done
+    during the actual test for whatever reason.
+
+    Args:
+      args: The same arguments that the test was run with.
+    """
 
   def _ReportAboutGpu(self, test_name: str) -> None:
     """Report the cached about:gpu content as an artifact.
@@ -982,7 +993,7 @@ class GpuIntegrationTest(
     number_of_crashes = -1
     system_info = self.browser.GetSystemInfo()
     number_of_crashes = \
-        system_info.gpu.aux_attributes[u'process_crash_count']
+        system_info.gpu.aux_attributes['process_crash_count']
 
     retval = True
     if number_of_crashes != total_expected_crashes:
