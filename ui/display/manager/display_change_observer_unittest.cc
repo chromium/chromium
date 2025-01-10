@@ -126,7 +126,6 @@ class DisplayChangeObserverPanelRadiiTest
   void SetUp() override {
     display_manager_ = std::make_unique<DisplayManager>(/*screen=*/nullptr);
     default_display_mode_ = MakeDisplayMode(1920, 1080, true, 60);
-    scoped_feature_list_.InitAndEnableFeature(features::kRoundedDisplay);
 
     ui::DeviceDataManager::CreateInstance();
     DisplayChangeObserverTestBase::SetUp();

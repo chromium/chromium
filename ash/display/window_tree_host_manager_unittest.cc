@@ -27,7 +27,6 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/aura/client/cursor_shape_client.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/client/focus_client.h"
@@ -38,7 +37,6 @@
 #include "ui/base/cursor/cursor.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
-#include "ui/display/display_features.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/display_layout_builder.h"
 #include "ui/display/display_observer.h"
@@ -405,7 +403,6 @@ class WindowTreeHostManagerRoundedDisplayTest : public AshTestBase {
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kHostWindowBounds,
         "1920x1080~" + ToDisplaySpecRadiiString(kTestRoundedPanelRadii));
-    scoped_features_.InitAndEnableFeature(display::features::kRoundedDisplay);
     AshTestBase::SetUp();
 
     display::Display primary_display =
@@ -415,10 +412,6 @@ class WindowTreeHostManagerRoundedDisplayTest : public AshTestBase {
   }
 
  protected:
-  // Currently `display::features::kRoundedDisplay` feature is used during the
-  // `ash::Shell` shutdown as we call `AshTestBase::TearDown()`, therefore
-  // `scoped_features_` needs to outlive the call.
-  base::test::ScopedFeatureList scoped_features_;
 
   // ManagedDisplayInfo of the display initialized on the
   // `AshTestBase::SetUp()`.
