@@ -502,7 +502,7 @@ struct PasswordGenerationUIData {
   bool is_generation_element_password_type;
   mojo_base.mojom.TextDirection text_direction;
   FormData form_data;
-  bool input_field_empty;
+  bool generation_rejected;
 };
 
 // autofill::PasswordSuggestionRequest

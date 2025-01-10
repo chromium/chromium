@@ -20,7 +20,7 @@ PasswordGenerationUIData::PasswordGenerationUIData(
     bool is_generation_element_password_type,
     base::i18n::TextDirection text_direction,
     const FormData& form_data,
-    bool input_field_empty)
+    bool generation_rejected)
     : bounds(bounds),
       max_length(max_length),
       generation_element(generation_element),
@@ -28,7 +28,7 @@ PasswordGenerationUIData::PasswordGenerationUIData(
       is_generation_element_password_type(is_generation_element_password_type),
       text_direction(text_direction),
       form_data(form_data),
-      input_field_empty(input_field_empty) {}
+      generation_rejected(generation_rejected) {}
 
 PasswordGenerationUIData::PasswordGenerationUIData() = default;
 PasswordGenerationUIData::PasswordGenerationUIData(

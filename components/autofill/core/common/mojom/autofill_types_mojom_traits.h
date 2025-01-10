@@ -693,9 +693,9 @@ struct StructTraits<autofill::mojom::PasswordGenerationUIDataDataView,
     return r.form_data;
   }
 
-  static bool input_field_empty(
+  static bool generation_rejected(
       const autofill::password_generation::PasswordGenerationUIData& r) {
-    return r.input_field_empty;
+    return r.generation_rejected;
   }
 
   static bool Read(

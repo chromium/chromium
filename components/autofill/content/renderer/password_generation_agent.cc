@@ -470,7 +470,7 @@ void PasswordGenerationAgent::TriggeredGeneratePassword(
         GetTextDirectionForElement(
             current_generation_item_->generation_element_),
         current_generation_item_->form_data_,
-        current_generation_item_->generation_element_.Value().Utf16().empty());
+        current_generation_item_->generation_rejected_);
     std::move(callback).Run(std::move(password_generation_ui_data));
     current_generation_item_->generation_popup_shown_ = true;
   } else {
@@ -697,10 +697,6 @@ void PasswordGenerationAgent::AutomaticGenerationAvailable() {
   DCHECK(current_generation_item_);
   DCHECK(current_generation_item_->generation_element_);
 
-  if (current_generation_item_->generation_rejected_) {
-    return;
-  }
-
   LogMessage(Logger::STRING_GENERATION_RENDERER_AUTOMATIC_GENERATION_AVAILABLE);
   // If the field is not |type=password|, the list of suggestions
   // should not be populated with passwordS to avoid filling them in a
@@ -720,7 +716,7 @@ void PasswordGenerationAgent::AutomaticGenerationAvailable() {
       is_generation_element_password_type,
       GetTextDirectionForElement(current_generation_item_->generation_element_),
       current_generation_item_->form_data_,
-      current_generation_item_->generation_element_.Value().Utf16().empty());
+      current_generation_item_->generation_rejected_);
   current_generation_item_->generation_popup_shown_ = true;
   GetPasswordGenerationDriver().AutomaticGenerationAvailable(
       password_generation_ui_data);

@@ -1471,25 +1471,10 @@ void ChromePasswordManagerClient::AutomaticGenerationAvailable(
     return;
   }
 
-  // With `kPasswordGenerationSoftNudge` enabled generated password is previewed
-  // when the popup is visible and any character typed by the user is treated as
-  // rejection.
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordGenerationSoftNudge)) {
-    // TODO(crbug.com/366198626): Rewrite the AutomaticGenerationAvailable
-    // triggering instead of checking a boolean when the feature is launched.
-    if (ui_data.input_field_empty) {
-      ShowPasswordGenerationPopup(PasswordGenerationType::kAutomatic, driver,
-                                  ui_data);
-    } else if (popup_controller_) {
-      popup_controller_->GeneratedPasswordRejected();
-    }
-
-    return;
+  if (!ui_data.generation_rejected) {
+    ShowPasswordGenerationPopup(PasswordGenerationType::kAutomatic, driver,
+                                ui_data);
   }
-
-  ShowPasswordGenerationPopup(PasswordGenerationType::kAutomatic, driver,
-                              ui_data);
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
