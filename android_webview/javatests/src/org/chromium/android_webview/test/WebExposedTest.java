@@ -16,7 +16,6 @@ import difflib.DiffUtils;
 import difflib.Patch;
 
 import org.junit.Assert;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -32,8 +31,8 @@ import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
-import org.chromium.build.BuildConfig;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -80,14 +79,6 @@ public class WebExposedTest extends AwParameterizedTest {
     private final SettableFuture<String> mResultFuture = SettableFuture.create();
 
     public WebExposedTest(AwSettingsMutation param) {
-        // This assumption check is in the constructor as it needs to run before any native code.
-        //
-        // TODO(crbug.com/381090604): This assumption check can't tell whether we're going to run a
-        // stable or unstable test. We should ideally still run the stable tests for branded builds.
-        Assume.assumeFalse(
-                "Chrome branded builds do not support field trial configs",
-                BuildConfig.IS_CHROME_BRANDED);
-
         mRule = new AwActivityTestRule(param.getMutation());
         boolean rebaseline;
         try {
@@ -170,6 +161,8 @@ public class WebExposedTest extends AwParameterizedTest {
         "enable-experimental-web-platform-features",
         "enable-blink-test-features",
     })
+    // Chrome branded builds don't contain fieldtrial configs.
+    @Restriction(Restriction.RESTRICTION_TYPE_NON_CHROME_BRANDED)
     public void testGlobalInterfaceListingUnstable() throws Exception {
         doTestGlobalInterfaceListing("");
     }

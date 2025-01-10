@@ -32,6 +32,9 @@ public @interface Restriction {
     /** Specifies the test is only valid on a device that has a camera. */
     String RESTRICTION_TYPE_HAS_CAMERA = "Has_Camera";
 
+    /** Specifies the test is only valid for non-Chrome branded builds. */
+    String RESTRICTION_TYPE_NON_CHROME_BRANDED = "Non_Chrome_Branded";
+
     /**
      * @return A list of restrictions.
      */
