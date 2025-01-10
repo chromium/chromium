@@ -1,9 +1,11 @@
 set noparent
+fergal@chromium.org
+horo@chromium.org
+mych@chromium.org
+rakina@chromium.org
 
-# Primary
+# Emeritus
+asully@chromium.org
 ayui@chromium.org
-
-# Secondary
-asully@chromium.org  #{LAST_RESORT_SUGGESTION}
 estade@chromium.org
 jsbell@chromium.org

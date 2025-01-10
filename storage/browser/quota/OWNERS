@@ -1,12 +1,8 @@
-# Primary
-ayui@chromium.org
+file://storage/OWNERS
 
-# Secondary
-christinesm@chromium.org
-dslee@chromium.org
+# Emeritus
+ayui@chromium.org
 estade@chromium.org
-jsbell@chromium.org
-memmott@chromium.org
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
