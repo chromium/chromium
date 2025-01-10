@@ -70,8 +70,10 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerGlicFlowControllerBrowserTest,
       .WillOnce([&new_profile_path, &profile_manager](Profile* profile) {
         ASSERT_TRUE(profile);
         EXPECT_EQ(profile->GetPath(), new_profile_path);
-        EXPECT_TRUE(profile_manager->HasKeepAliveForTesting(
+        EXPECT_FALSE(profile_manager->HasKeepAliveForTesting(
             profile, ProfileKeepAliveOrigin::kWaitingForFirstBrowserWindow));
+        EXPECT_TRUE(profile_manager->HasKeepAliveForTesting(
+            profile, ProfileKeepAliveOrigin::kWaitingForGlicView));
       });
 
   ProfilePickerGlicFlowController controller(

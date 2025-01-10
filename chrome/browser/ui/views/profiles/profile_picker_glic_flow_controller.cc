@@ -7,6 +7,8 @@
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/common/webui_url_constants.h"
@@ -61,9 +63,11 @@ void ProfilePickerGlicFlowController::OnPickedProfileLoaded(Profile* profile) {
     return;
   }
 
-  // TODO(crbug.com/388211126): Add a new specific keep alive in order not to
-  // rely on `kWaitingForFirstBrowserWindow` that is not accurate and has
-  // special conditions.
+  // Effectively removes `ProfileKeepAliveOrigin::kWaitingForFirstBrowserWindow`
+  // and expects the call in `picked_profile_callback_` to set a new keep alive
+  // if the profile should not be destroyed.
+  ScopedProfileKeepAlive keep_alive(
+      profile, ProfileKeepAliveOrigin::kWaitingForGlicView);
 
   // Return the loaded `profile` to the caller.
   std::move(picked_profile_callback_).Run(profile);

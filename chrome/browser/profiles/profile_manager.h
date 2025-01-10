@@ -377,7 +377,7 @@ class ProfileManager : public Profile::Delegate {
   friend class TestingProfileManager;
   FRIEND_TEST_ALL_PREFIXES(ProfileManagerBrowserTest, DeleteAllProfiles);
   FRIEND_TEST_ALL_PREFIXES(ProfileManagerBrowserTest, SwitchToProfile);
-  FRIEND_TEST_ALL_PREFIXES(ProfileManagerTest, ScopedProfileKeepAlive);
+  FRIEND_TEST_ALL_PREFIXES(ProfileManagerTestWithParam, ScopedProfileKeepAlive);
 
   // For AddKeepAlive() and RemoveKeepAlive().
   friend class ScopedProfileKeepAlive;

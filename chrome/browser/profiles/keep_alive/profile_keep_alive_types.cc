@@ -81,6 +81,8 @@ std::ostream& operator<<(std::ostream& out,
       return out << "kHeadlessCommand";
     case ProfileKeepAliveOrigin::kGlicView:
       return out << "kGlicView";
+    case ProfileKeepAliveOrigin::kWaitingForGlicView:
+      return out << "kWaitingForGlicView";
   }
   NOTREACHED();
 }

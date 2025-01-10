@@ -2332,10 +2332,22 @@ TEST_F(ProfileManagerTest, CannotCreateProfileOutsideUserDirAsync) {
   content::RunAllTasksUntilIdle();
 }
 
-TEST_F(ProfileManagerTest, ScopedProfileKeepAlive) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(features::kDestroyProfileOnBrowserClose);
+class ProfileManagerTestWithParam
+    : public ProfileManagerTest,
+      public testing::WithParamInterface<ProfileKeepAliveOrigin> {
+ public:
+  ProfileManagerTestWithParam() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kDestroySystemProfiles,
+         features::kDestroyProfileOnBrowserClose},
+        {});
+  }
 
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(ProfileManagerTestWithParam, ScopedProfileKeepAlive) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
 
   base::FilePath dest_path = temp_dir_.GetPath().AppendASCII("New Profile");
@@ -2349,18 +2361,16 @@ TEST_F(ProfileManagerTest, ScopedProfileKeepAlive) {
   {
     // Set |profile| refcount to 1. This will cause the profile to get deleted
     // at the end of this block.
-    ScopedProfileKeepAlive keep_alive(profile,
-                                      ProfileKeepAliveOrigin::kBrowserWindow);
+    ScopedProfileKeepAlive keep_alive(profile, GetParam());
 
-    // We added the first browser window. There should be no more
-    // kWaitingForFirstBrowserWindow ref.
+    // We added a keep alive that should remove the
+    // `kWaitingForFirstBrowserWindow` ref.
     EXPECT_THAT(
         profile_manager->GetProfileInfoByPath(dest_path)->keep_alives,
         ::testing::UnorderedElementsAre(
             std::pair<ProfileKeepAliveOrigin, int>(
                 ProfileKeepAliveOrigin::kWaitingForFirstBrowserWindow, 0),
-            std::pair<ProfileKeepAliveOrigin, int>(
-                ProfileKeepAliveOrigin::kBrowserWindow, 1)));
+            std::pair<ProfileKeepAliveOrigin, int>(GetParam(), 1)));
   }
 
   base::RunLoop().RunUntilIdle();
@@ -2369,6 +2379,15 @@ TEST_F(ProfileManagerTest, ScopedProfileKeepAlive) {
   EXPECT_EQ(nullptr, profile_manager->GetProfileByPath(dest_path));
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ProfileManagerTestWithParam,
+    testing::Values(ProfileKeepAliveOrigin::kBrowserWindow,
+                    ProfileKeepAliveOrigin::kProfileCreationFlow,
+                    ProfileKeepAliveOrigin::kProfileStatistics,
+                    ProfileKeepAliveOrigin::kProfilePickerView,
+                    ProfileKeepAliveOrigin::kWaitingForGlicView));
 
 TEST_F(ProfileManagerTest, ProfileCountRecordedAtProfileInit) {
   using base::Bucket;

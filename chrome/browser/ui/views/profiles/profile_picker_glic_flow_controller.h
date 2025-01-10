@@ -17,6 +17,10 @@ class ProfilePickerGlicFlowController : public ProfileManagementFlowController {
   // `picked_profile_callback` will always be called, and may be called with
   // a nullptr profile in case the profile failed to load or the `host` was
   // closed without any selection.
+  // If the returned `profile` is not null, the controller will ensure that the
+  // profile is not destroyed by keeping a `ScopedProfileKeepAlive` during the
+  // execution of `picked_profile_callback`, the callback is then expected to
+  // set its own if the Profile should not be destroyed.
   ProfilePickerGlicFlowController(
       ProfilePickerWebContentsHost* host,
       ClearHostClosure clear_host_callback,
