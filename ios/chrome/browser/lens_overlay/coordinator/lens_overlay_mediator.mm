@@ -248,6 +248,13 @@
   [self.toolbarConsumer setCanGoBack:canGoBack];
 }
 
+- (void)onRelatedSearchLoaded:(NSString*)omniboxText {
+  [self.omniboxCoordinator setThumbnailImage:nil];
+  _thumbnailRemoved = YES;
+  [self.lensHandler hideUserSelection];
+  [self updateOmniboxText:omniboxText];
+}
+
 #pragma mark - LensResultPageMediatorDelegate
 
 - (void)lensResultPageWebStateDestroyed {

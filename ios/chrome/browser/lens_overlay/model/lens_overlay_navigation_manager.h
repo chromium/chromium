@@ -103,6 +103,11 @@ class LensOverlayNavigationManager : public web::WebStateObserver {
   /// Go back to the previous lens navigation.
   void GoToPreviousLensNavigation();
 
+  /// Whether the navigation from `current_url` to `destination_url` is a
+  /// related search navigation. Dependent of the latest
+  /// ChromeLensOverlayResult.
+  BOOL IsNavigationRelatedSearch(GURL current_url, GURL destination_url);
+
   /// Adds the sub navigation to the current `LensResultItem` if it's not a
   /// reload.
   void RegisterSubNavigation(GURL url, const std::u16string& omnibox_text);

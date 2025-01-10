@@ -6,12 +6,39 @@
 
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/lens/lens_url_utils.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_navigation_mutator.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/public/provider/chrome/browser/lens/lens_overlay_result.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
 #import "net/base/url_util.h"
+
+namespace {
+
+/// Extracts the search query from the SRP `url`.
+std::string ExtractQueryFromSRP(const GURL& url) {
+  std::string search_term = "";
+  net::GetValueForKeyInQuery(url, "q", &search_term);
+  return search_term;
+}
+
+/// Returns whether the `url` is a lens overlay SRP.
+BOOL IsLensOverlaySRP(GURL url) {
+  std::string search_term;
+  BOOL hasSearchTerms = net::GetValueForKeyInQuery(url, "q", &search_term);
+  std::string lens_surface;
+  BOOL hasLensSurface = net::GetValueForKeyInQuery(
+      url, lens::kLensSurfaceQueryParameter, &lens_surface);
+  std::string request_id;
+  BOOL hasLensParam = net::GetValueForKeyInQuery(
+      url, lens::kLensRequestQueryParameter, &request_id);
+
+  return hasSearchTerms && hasLensSurface && !hasLensParam &&
+         lens_surface == "4";
+}
+
+}  // namespace
 
 #pragma mark - LensResultItem
 
@@ -119,7 +146,17 @@ void LensOverlayNavigationManager::DidStartNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
   if (navigation_context && !navigation_context->IsSameDocument()) {
-    RegisterSubNavigation(navigation_context->GetUrl(), PreviousOmniboxText());
+    GURL navigation_url = navigation_context->GetUrl();
+
+    if (IsNavigationRelatedSearch(web_state->GetVisibleURL(), navigation_url)) {
+      NSString* omnibox_text =
+          base::SysUTF8ToNSString(ExtractQueryFromSRP(navigation_url));
+      [mutator_ onRelatedSearchLoaded:omnibox_text];
+      RegisterSubNavigation(navigation_url,
+                            base::SysNSStringToUTF16(omnibox_text));
+    } else {
+      RegisterSubNavigation(navigation_url, PreviousOmniboxText());
+    }
   }
 }
 
@@ -128,6 +165,19 @@ void LensOverlayNavigationManager::WebStateDestroyed(web::WebState* web_state) {
 }
 
 #pragma mark - Private
+
+BOOL LensOverlayNavigationManager::IsNavigationRelatedSearch(
+    GURL current_url,
+    GURL destination_url) {
+  if (lens_navigation_items_.empty()) {
+    return NO;
+  }
+  id<ChromeLensOverlayResult> result =
+      lens_navigation_items_.back()->lens_result();
+
+  return !result.isTextSelection && !IsLensOverlaySRP(current_url) &&
+         IsLensOverlaySRP(destination_url);
+}
 
 void LensOverlayNavigationManager::RegisterSubNavigation(
     GURL url,
