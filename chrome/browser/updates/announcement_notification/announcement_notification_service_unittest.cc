@@ -10,6 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
@@ -354,7 +355,7 @@ TEST_P(AnnouncementNotificationServiceVersionTest, VersionTest) {
   const auto& param = GetParam();
   auto now = SetNow("10 Feb 2020 13:00:00");
   std::map<std::string, std::string> parameters = {
-      {kSkipFirstRun, param.skip_first_run ? "true" : "false"},
+      {kSkipFirstRun, base::ToString(param.skip_first_run)},
       {kVersion, base::NumberToString(param.version)}};
   Init(parameters, param.enable_feature, false /*sign_in*/,
        param.current_version, false);

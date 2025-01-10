@@ -15,6 +15,7 @@
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_dimensions.h"
@@ -237,9 +238,9 @@ DemoAppInstallerPolicy::GetInstallerAttributes() const {
   demo_app_installer_attributes["store_id"] = ash::demo_mode::StoreNumber();
   demo_app_installer_attributes["demo_country"] = ash::demo_mode::Country();
   demo_app_installer_attributes["is_cloud_gaming_device"] =
-      ash::demo_mode::IsCloudGamingDevice() ? "true" : "false";
+      base::ToString(ash::demo_mode::IsCloudGamingDevice());
   demo_app_installer_attributes["is_feature_aware_device"] =
-      ash::demo_mode::IsFeatureAwareDevice() ? "true" : "false";
+      base::ToString(ash::demo_mode::IsFeatureAwareDevice());
 
   auto* const cmdline = base::CommandLine::ForCurrentProcess();
   if (cmdline->HasSwitch(switches::kDemoModeTestTag)) {

@@ -9,6 +9,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "components/feedback/feedback_report.h"
@@ -24,7 +25,7 @@ using performance_manager::user_tuning::prefs::kBatterySaverModeState;
 
 namespace {
 std::string BoolToString(bool value) {
-  return value ? "true" : "false";
+  return base::ToString(value);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

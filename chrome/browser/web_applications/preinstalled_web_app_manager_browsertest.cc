@@ -14,6 +14,7 @@
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -1612,8 +1613,7 @@ IN_PROC_BROWSER_TEST_P(
         "launch_container": "window",
         "user_type": ["unmanaged"]
       })",
-      {GetAppUrl().spec(),
-       IsPreferredAppForSupportedLinks() ? "true" : "false"},
+      {GetAppUrl().spec(), base::ToString(IsPreferredAppForSupportedLinks())},
       nullptr);
   webapps::AppId app_id =
       GenerateAppId(/*manifest_id=*/std::nullopt, GetAppUrl());

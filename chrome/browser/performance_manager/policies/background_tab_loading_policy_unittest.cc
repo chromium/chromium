@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/performance_manager/mechanisms/page_loader.h"
 #include "components/performance_manager/graph/graph_impl.h"
@@ -675,7 +676,7 @@ class BackgroundTabLoadingPolicyScheduleLoadTest
         {
             {"min_site_engagement", base::NumberToString(kMinSiteEngagement)},
             {"restore_main_frame_state",
-             restore_main_frame_state_ ? "true" : "false"},
+             base::ToString(restore_main_frame_state_)},
         });
   }
 

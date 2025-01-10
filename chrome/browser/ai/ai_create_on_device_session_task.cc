@@ -5,6 +5,7 @@
 #include "chrome/browser/ai/ai_create_on_device_session_task.h"
 
 #include "base/containers/fixed_flat_set.h"
+#include "base/strings/to_string.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/ai/ai_manager.h"
 #include "chrome/browser/ai/built_in_ai_logger.h"
@@ -90,7 +91,7 @@ void CreateOnDeviceSessionTask::OnDeviceModelAvailabilityChanged(
   bool waitable = kWaitableReasons.contains(reason);
   BUILT_IN_AI_LOGGER() << "Feature '" << feature << "' "
                        << "availability changed due to '" << reason << "'. "
-                       << "Waitable: " << (waitable ? "true" : "false");
+                       << "Waitable: " << base::ToString(waitable);
   CHECK(state_ == State::kPending);
   if (waitable) {
     return;

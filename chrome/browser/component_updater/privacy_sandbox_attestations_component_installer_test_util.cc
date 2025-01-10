@@ -12,6 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/version.h"
 #include "components/component_updater/component_updater_paths.h"
@@ -70,7 +71,7 @@ bool InstallPrivacySandboxAttestationsComponentForTesting(
                "pre_installed": $2
               })",
           /*subst=*/
-          {version.GetString(), is_pre_installed ? "true" : "false"},
+          {version.GetString(), base::ToString(is_pre_installed)},
           /*offsets=*/nullptr));
 }
 
