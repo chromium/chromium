@@ -316,6 +316,7 @@ class BottomSheet extends FrameLayout
 
         mToolbarHolder =
                 (TouchRestrictingFrameLayout) findViewById(R.id.bottom_sheet_toolbar_container);
+        mToolbarHolder.setBottomSheet(this);
 
         mBottomSheetContentContainer =
                 (TouchRestrictingFrameLayout) findViewById(R.id.bottom_sheet_content);

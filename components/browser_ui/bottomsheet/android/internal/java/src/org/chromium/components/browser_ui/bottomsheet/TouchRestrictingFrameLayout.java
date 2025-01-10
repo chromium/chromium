@@ -34,13 +34,13 @@ class TouchRestrictingFrameLayout extends FrameLayout {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
-        if (isTouchDisabled()) return false;
+        if (isTouchDisabled()) return true;
         return super.onInterceptTouchEvent(event);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (isTouchDisabled()) return false;
+        if (isTouchDisabled()) return true;
         return super.onTouchEvent(event);
     }
 }
