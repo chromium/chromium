@@ -137,6 +137,7 @@ source_set("browser_tests") {
     "//ui/display",
     "//ui/display/types",
     "//ui/events:events_base",
+    "//ui/events:test_support",
     "//ui/gfx:color_utils",
     "//ui/gfx/geometry",
     "//ui/views",
