@@ -734,8 +734,12 @@ void SVGSVGElement::SetViewSpec(const SVGViewSpec* view_spec) {
   if (!view_spec_ && !view_spec)
     return;
   view_spec_ = view_spec;
-  if (LayoutObject* layout_object = GetLayoutObject())
+  if (LayoutObject* layout_object = GetLayoutObject()) {
+    if (auto* svg_root = DynamicTo<LayoutSVGRoot>(*layout_object)) {
+      svg_root->IntrinsicSizingInfoChanged();
+    }
     MarkForLayoutAndParentResourceInvalidation(*layout_object);
+  }
 }
 
 const SVGViewSpec* SVGSVGElement::ParseViewSpec(
