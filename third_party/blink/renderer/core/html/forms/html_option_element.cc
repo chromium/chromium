@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_data_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -154,8 +155,9 @@ bool HTMLOptionElement::MatchesEnabledPseudoClass() const {
 String HTMLOptionElement::DisplayLabel() const {
   String label_attr = String(FastGetAttribute(html_names::kLabelAttr))
     .StripWhiteSpace(IsHTMLSpace<UChar>).SimplifyWhiteSpace(IsHTMLSpace<UChar>);
-  String inner_text = CollectOptionInnerText()
-    .StripWhiteSpace(IsHTMLSpace<UChar>).SimplifyWhiteSpace(IsHTMLSpace<UChar>);
+  String inner_text = CollectOptionInnerText(IncludeAltText::kIncludeAltText)
+                          .StripWhiteSpace(IsHTMLSpace<UChar>)
+                          .SimplifyWhiteSpace(IsHTMLSpace<UChar>);
   // FIXME: The following treats an element with the label attribute set to
   // the empty string the same as an element with no label attribute at all.
   // Is that correct? If it is, then should the label function work the same
@@ -164,7 +166,7 @@ String HTMLOptionElement::DisplayLabel() const {
 }
 
 String HTMLOptionElement::text() const {
-  return CollectOptionInnerText()
+  return CollectOptionInnerText(IncludeAltText::kIncludeAltText)
       .StripWhiteSpace(IsHTMLSpace<UChar>)
       .SimplifyWhiteSpace(IsHTMLSpace<UChar>);
 }
@@ -246,7 +248,7 @@ String HTMLOptionElement::value() const {
   const AtomicString& value = FastGetAttribute(html_names::kValueAttr);
   if (!value.IsNull())
     return value;
-  return CollectOptionInnerText()
+  return CollectOptionInnerText(IncludeAltText::kDontIncludeAltText)
       .StripWhiteSpace(IsHTMLSpace<UChar>)
       .SimplifyWhiteSpace(IsHTMLSpace<UChar>);
 }
@@ -391,7 +393,7 @@ String HTMLOptionElement::label() const {
   const AtomicString& label = FastGetAttribute(html_names::kLabelAttr);
   if (!label.IsNull())
     return label;
-  return CollectOptionInnerText()
+  return CollectOptionInnerText(IncludeAltText::kIncludeAltText)
       .StripWhiteSpace(IsHTMLSpace<UChar>)
       .SimplifyWhiteSpace(IsHTMLSpace<UChar>);
 }
@@ -425,17 +427,34 @@ String HTMLOptionElement::DefaultToolTip() const {
   return String();
 }
 
-String HTMLOptionElement::CollectOptionInnerText() const {
+String HTMLOptionElement::CollectOptionInnerText(
+    IncludeAltText include_alt_text) const {
   StringBuilder text;
   for (Node* node = firstChild(); node;) {
-    if (node->IsTextNode())
-      text.Append(node->nodeValue());
-    // Text nodes inside script elements are not part of the option text.
+    bool skip_children = false;
     auto* element = DynamicTo<Element>(node);
-    if (element && element->IsScriptElement())
+    if (node->IsTextNode()) {
+      text.Append(node->nodeValue());
+    } else if (element && element->IsScriptElement()) {
+      // Text nodes inside script elements are not part of the option text.
+      skip_children = true;
+    } else if (auto* img = DynamicTo<HTMLImageElement>(element)) {
+      if (RuntimeEnabledFeatures::SelectParserRelaxationEnabled() &&
+          include_alt_text == IncludeAltText::kIncludeAltText) {
+        skip_children = true;
+        String img_alt = img->AltText();
+        if (!img_alt.empty()) {
+          text.Append(" ");
+          text.Append(img_alt);
+          text.Append(" ");
+        }
+      }
+    }
+    if (skip_children) {
       node = NodeTraversal::NextSkippingChildren(*node, this);
-    else
+    } else {
       node = NodeTraversal::Next(*node, this);
+    }
   }
   return text.ToString();
 }
