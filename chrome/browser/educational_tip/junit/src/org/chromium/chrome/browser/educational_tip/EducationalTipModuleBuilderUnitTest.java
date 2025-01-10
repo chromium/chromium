@@ -125,6 +125,36 @@ public class EducationalTipModuleBuilderUnitTest {
         ChromeFeatureList.EDUCATIONAL_TIP_MODULE,
         ChromeFeatureList.SEGMENTATION_PLATFORM_EPHEMERAL_CARD_RANKER
     })
+    @DisableFeatures({ChromeFeatureList.TAB_GROUP_PANE_ANDROID})
+    public void testBuildEducationalTipTabGroupSyncModule_NotEligible() {
+        EducationalTipModuleBuilder moduleBuilderForTabGroupSync =
+                new EducationalTipModuleBuilder(ModuleType.TAB_GROUP_SYNC, mActionDelegate);
+
+        assertFalse(moduleBuilderForTabGroupSync.build(mModuleDelegate, mBuildCallback));
+        verify(mBuildCallback, never()).onResult(any(ModuleProvider.class));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.EDUCATIONAL_TIP_MODULE,
+        ChromeFeatureList.SEGMENTATION_PLATFORM_EPHEMERAL_CARD_RANKER,
+        ChromeFeatureList.TAB_GROUP_PANE_ANDROID
+    })
+    public void testBuildEducationalTipTabGroupSyncModule_Eligible() {
+        EducationalTipModuleBuilder moduleBuilderForTabGroupSync =
+                new EducationalTipModuleBuilder(ModuleType.TAB_GROUP_SYNC, mActionDelegate);
+
+        assertTrue(moduleBuilderForTabGroupSync.build(mModuleDelegate, mBuildCallback));
+        verify(mBuildCallback).onResult(any(ModuleProvider.class));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.EDUCATIONAL_TIP_MODULE,
+        ChromeFeatureList.SEGMENTATION_PLATFORM_EPHEMERAL_CARD_RANKER
+    })
     public void testCreateInputContext() {
         InputContext inputContextForTest = mModuleBuilder.createInputContext();
         assertNotNull(

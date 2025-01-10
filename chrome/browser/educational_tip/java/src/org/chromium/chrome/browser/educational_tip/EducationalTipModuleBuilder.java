@@ -48,6 +48,11 @@ public class EducationalTipModuleBuilder implements ModuleProviderBuilder, Modul
             return false;
         }
 
+        if (mModuleType == ModuleType.TAB_GROUP_SYNC
+                && !ChromeFeatureList.sTabGroupPaneAndroid.isEnabled()) {
+            return false;
+        }
+
         EducationalTipModuleCoordinator coordinator =
                 new EducationalTipModuleCoordinator(
                         mModuleType,
