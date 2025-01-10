@@ -286,9 +286,7 @@ struct AuthenticatorRequestDialogModel
     // Changing GPM PIN.
     kGPMReauthForPinReset,
     kGPMLockedPin,
-    // ChallengeUrl failure.
-    kErrorFetchingChallenge,
-    kMaxValue = kErrorFetchingChallenge,
+    kMaxValue = kGPMLockedPin,
   };
 
   // Views and controllers implement this interface to receive events, which

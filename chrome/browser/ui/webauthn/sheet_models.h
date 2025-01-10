@@ -190,19 +190,6 @@ class AuthenticatorInternalUnrecognizedErrorSheetModel
   void OnAccept() override;
 };
 
-class AuthenticatorChallengeFetchErrorModel
-    : public AuthenticatorSheetModelBase {
- public:
-  explicit AuthenticatorChallengeFetchErrorModel(
-      AuthenticatorRequestDialogModel* dialog_model);
-
- private:
-  // AuthenticatorSheetModelBase:
-  std::u16string GetCancelButtonLabel() const override;
-  std::u16string GetStepTitle() const override;
-  std::u16string GetStepDescription() const override;
-};
-
 class AuthenticatorBlePowerOnManualSheetModel
     : public AuthenticatorSheetModelBase {
  public:

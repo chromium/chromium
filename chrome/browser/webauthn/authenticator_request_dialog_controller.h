@@ -23,9 +23,7 @@
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/global_routing_id.h"
 #include "third_party/blink/public/mojom/credentialmanagement/credential_type_flags.mojom.h"
-#include "url/gurl.h"
 
-class ChallengeUrlFetcher;
 class Profile;
 
 namespace content {
@@ -228,9 +226,6 @@ class AuthenticatorRequestDialogController
   // request should never have been sent to iCloud Keychain in the first place.
   bool OnNoPasskeys();
 
-  // To be called when fetching a challenge from a provided URL failed.
-  void OnChallengeUrlFailure();
-
   // To be called when the Bluetooth adapter status changes.
   void BluetoothAdapterStatusChanged(
       device::FidoRequestHandlerBase::BleStatus ble_status);
@@ -356,11 +351,6 @@ class AuthenticatorRequestDialogController
   void set_ui_presentation(
       content::AuthenticatorRequestClientDelegate::UIPresentation modality);
 
-  void ProvideChallengeUrl(
-      const GURL& url,
-      base::OnceCallback<void(std::optional<base::span<const uint8_t>>)>
-          callback);
-
   base::WeakPtr<AuthenticatorRequestDialogController> GetWeakPtr();
 
  private:
@@ -470,12 +460,6 @@ class AuthenticatorRequestDialogController
   // Returns the render frame host associated with this request. The render
   // frame host indirectly owns the controller, and so it should outlive it.
   content::RenderFrameHost* GetRenderFrameHost() const;
-
-  // Lazy creation accessor.
-  ChallengeUrlFetcher* GetChallengeUrlFetcher();
-
-  void MaybeStartChallengeFetch();
-  void OnChallengeFetched();
 
   raw_ptr<AuthenticatorRequestDialogModel> model_;
 
@@ -609,14 +593,6 @@ class AuthenticatorRequestDialogController
   // request.
   int ambient_credential_types_ =
       static_cast<int>(blink::mojom::CredentialTypeFlags::kNone);
-
-  // ChallengeUrl support. The URL is the destination to fetch the challenge
-  // and the callback is invoked when the challenge is received.
-  GURL challenge_url_;
-  base::OnceCallback<void(std::optional<base::span<const uint8_t>>)>
-      challenge_callback_;
-
-  std::unique_ptr<ChallengeUrlFetcher> challenge_url_fetcher_;
 
   const content::GlobalRenderFrameHostId frame_host_id_;
 

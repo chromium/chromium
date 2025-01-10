@@ -14,7 +14,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/types/strong_alias.h"
-#include "content/browser/webauth/client_data_json.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/authenticator_common.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
@@ -22,7 +21,6 @@
 #include "content/public/browser/web_authentication_request_proxy.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/authenticator_make_credential_response.h"
-#include "device/fido/fido_request_handler_base.h"
 #include "device/fido/make_credential_request_handler.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 
@@ -361,14 +359,6 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
       WebAuthenticationRequestProxy::RequestId request_id,
       blink::mojom::WebAuthnDOMExceptionDetailsPtr error,
       blink::mojom::GetAssertionAuthenticatorResponsePtr response);
-
-  void UpdateChallengeFromUrl(
-      ClientDataJsonParams params,
-      std::optional<base::span<const uint8_t>> challenge);
-
-  void WaitForChallengeBeforeStartingRequest(
-      device::FidoRequestHandlerBase::RequestCallback callback,
-      const std::string& authenticator_id);
 
   // Get an identifier for the current request. Callbacks that might span a
   // cancelation must hold one of these values to check whether they're still

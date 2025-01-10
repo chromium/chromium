@@ -217,11 +217,6 @@ AuthenticatorRequestClientDelegate::CreatePlatformDiscoveries() {
   return {};
 }
 
-void AuthenticatorRequestClientDelegate::ProvideChallengeUrl(
-    const GURL& url,
-    base::OnceCallback<void(std::optional<base::span<const uint8_t>>)>
-        callback) {}
-
 void AuthenticatorRequestClientDelegate::OnTransportAvailabilityEnumerated(
     device::FidoRequestHandlerBase::TransportAvailabilityInfo data) {}
 

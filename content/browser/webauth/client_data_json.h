@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <optional>
 #include <string>
 
 #include "base/containers/span.h"
@@ -32,7 +31,7 @@ struct CONTENT_EXPORT ClientDataJsonParams {
   ClientDataJsonParams(ClientDataRequestType type,
                        url::Origin origin,
                        url::Origin top_origin,
-                       std::optional<std::vector<uint8_t>> challenge,
+                       std::vector<uint8_t> challenge,
                        bool is_cross_origin_iframe = false);
   ClientDataJsonParams(ClientDataJsonParams&&);
   ClientDataJsonParams& operator=(ClientDataJsonParams&&);
@@ -41,7 +40,7 @@ struct CONTENT_EXPORT ClientDataJsonParams {
   ClientDataRequestType type;
   url::Origin origin;
   url::Origin top_origin;
-  std::optional<std::vector<uint8_t>> challenge;
+  std::vector<uint8_t> challenge;
   bool is_cross_origin_iframe = false;
 
   // The following fields are only set if `type` is `kPaymentGet`.
@@ -51,7 +50,6 @@ struct CONTENT_EXPORT ClientDataJsonParams {
 
 // Builds the CollectedClientData[1] dictionary with the given values,
 // serializes it to JSON, and returns the resulting string.
-// This CHECKs if `challenge` has not been provided with a value.
 // [1] https://w3c.github.io/webauthn/#dictdef-collectedclientdata
 CONTENT_EXPORT std::string BuildClientDataJson(ClientDataJsonParams params);
 

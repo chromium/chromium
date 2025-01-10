@@ -1288,10 +1288,6 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
           "'PublicKeyCredentialRequestOptions'");
       return promise;
     }
-    // Relative URLs have to be turned to absolute URLs before the type
-    // converter builds the mojo struct.
-    options->publicKey()->setChallengeUrl(
-        context->CompleteURL(options->publicKey()->challengeUrl()));
   }
 
   auto required_origin_type = RequiredOriginType::kSecureAndSameWithAncestors;
@@ -1370,8 +1366,7 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
     }
 #endif
 
-    if (options->publicKey()->hasChallenge() &&
-        !IsArrayBufferOrViewBelowSizeLimit(options->publicKey()->challenge())) {
+    if (!IsArrayBufferOrViewBelowSizeLimit(options->publicKey()->challenge())) {
       resolver->Reject(DOMException::Create(
           "The `challenge` attribute exceeds the maximum allowed size.",
           "RangeError"));
