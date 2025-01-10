@@ -14,6 +14,14 @@ namespace autofill::features {
 BASE_FEATURE(kAutofillAcrossIframesIos,
              "AutofillAcrossIframesIos",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Throttles child frame extraction to a maximum number of child frames that
+// can be extracted by applying the following rules: (1) remove the child frames
+// from an individual form that busts the limit and (2) stop extracting child
+// frames on other forms once the limit is reached across forms.
+BASE_FEATURE(kAutofillAcrossIframesIosThrottling,
+             "AutofillAcrossIframesIosThrottling",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 // LINT.ThenChange(//components/autofill/ios/form_util/resources/autofill_form_features.ts:autofill_across_iframes_ios)
 
 // Controls whether to trigger form extraction when detecting a form activity on
