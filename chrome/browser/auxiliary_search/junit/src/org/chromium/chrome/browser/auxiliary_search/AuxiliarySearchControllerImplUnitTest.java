@@ -310,6 +310,38 @@ public class AuxiliarySearchControllerImplUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_APP_INTEGRATION_WITH_FAVICON)
+    public void testOnNonSensitiveTabsAvailable_AfterDestroy() {
+        long now = TimeUtils.uptimeMillis();
+        int timeDelta = 50;
+
+        when(mTab1.getId()).thenReturn(TAB_ID_1);
+        when(mTab1.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
+        when(mTab1.getTitle()).thenReturn("Title1");
+        when(mTab1.getTimestampMillis()).thenReturn(now - 2);
+
+        when(mTab2.getId()).thenReturn(TAB_ID_2);
+        when(mTab2.getUrl()).thenReturn(JUnitTestGURLs.URL_2);
+        when(mTab2.getTitle()).thenReturn("Title2");
+        when(mTab2.getTimestampMillis()).thenReturn(now - 1);
+
+        List<Tab> tabs = new ArrayList<>();
+        tabs.add(mTab1);
+        tabs.add(mTab2);
+
+        when(mAuxiliarySearchDonor.canDonate()).thenReturn(true);
+        mAuxiliarySearchControllerImpl.onPauseWithNative();
+
+        verify(mAuxiliarySearchProvider).getTabsSearchableDataProtoAsync(mCallbackCaptor.capture());
+
+        mAuxiliarySearchControllerImpl.destroy();
+        mFakeTime.advanceMillis(timeDelta);
+        mCallbackCaptor.getAllValues().get(0).onResult(tabs);
+
+        verify(mAuxiliarySearchDonor, never()).donateTabs(any(List.class), any(Callback.class));
+    }
+
+    @Test
     public void testOnConfigChanged() {
         mAuxiliarySearchControllerImpl.onConfigChanged(false);
         verify(mAuxiliarySearchDonor).onConfigChanged(eq(false), any(Callback.class));
