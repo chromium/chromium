@@ -120,7 +120,7 @@ public class TabModelImpl extends TabModelJniBridge {
                 // Reset the index first so the event is raised properly as a index change and not
                 // re-using the current index.
                 mIndex = INVALID_TAB_INDEX;
-                TabModelUtils.setIndex(TabModelImpl.this, insertIndex, TabSelectionType.FROM_UNDO);
+                setIndex(insertIndex, TabSelectionType.FROM_UNDO);
             } else if (wasInvalidIndex && !isActiveModel()) {
                 mCurrentTabSupplier.set(TabModelUtils.getCurrentTab(TabModelImpl.this));
             }
