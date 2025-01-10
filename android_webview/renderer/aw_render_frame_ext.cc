@@ -159,12 +159,8 @@ AwRenderFrameExt::AwRenderFrameExt(content::RenderFrame* render_frame)
   auto password_autofill_agent =
       std::make_unique<autofill::PasswordAutofillAgent>(render_frame,
                                                         &registry_);
-  new AutofillAgent(
-      render_frame,
-      {ExtractAllDatalists(true), FocusRequiresScroll(false),
-       QueryPasswordSuggestions(true), SecureContextRequired(true),
-       UserGestureRequired(false), UsesKeyboardAccessoryForSuggestions(false)},
-      std::move(password_autofill_agent), nullptr, &registry_);
+  new AutofillAgent(render_frame, std::move(password_autofill_agent), nullptr,
+                    &registry_);
   if (content_capture::features::IsContentCaptureEnabled())
     new content_capture::ContentCaptureSender(render_frame, &registry_);
 

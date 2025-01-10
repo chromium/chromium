@@ -359,6 +359,11 @@ void AwSettings::UpdateRendererPreferencesLocked(
     update_prefs = true;
   }
 
+  if (!prefs->uses_platform_autofill) {
+    prefs->uses_platform_autofill = true;
+    update_prefs = true;
+  }
+
   if (update_prefs)
     web_contents()->SyncRendererPrefs();
 

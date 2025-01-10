@@ -15,7 +15,6 @@
 #include "base/android/jni_android.h"
 #include "chrome/browser/autofill/android/android_autofill_availability_status.h"
 #include "chrome/browser/autofill/android/jni_headers/AutofillClientProviderUtils_jni.h"
-#include "chrome/browser/keyboard_accessory/android/manual_filling_controller_impl.h"
 #include "components/android_autofill/browser/android_autofill_client.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 

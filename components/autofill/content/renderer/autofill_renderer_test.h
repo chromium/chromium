@@ -111,7 +111,6 @@ class AutofillRendererTest : public content::RenderViewTest {
 
   virtual std::unique_ptr<AutofillAgent> CreateAutofillAgent(
       content::RenderFrame* render_frame,
-      const AutofillAgent::Config& config,
       std::unique_ptr<PasswordAutofillAgent> password_autofill_agent,
       std::unique_ptr<PasswordGenerationAgent> password_generation_agent,
       blink::AssociatedInterfaceRegistry* associated_interfaces);

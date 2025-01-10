@@ -69,6 +69,7 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_node.h"
 #include "third_party/blink/public/web/web_range.h"
+#include "third_party/blink/public/web/web_view.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
@@ -382,6 +383,27 @@ gfx::Rect GetCaretBounds(content::RenderFrame& frame) {
   return gfx::Rect();
 }
 
+AutofillAgent::Config CreateConfig(bool uses_platform_autofill) {
+  if (uses_platform_autofill) {
+    return {
+        AutofillAgent::ExtractAllDatalists(true),
+        AutofillAgent::FocusRequiresScroll(false),
+        AutofillAgent::QueryPasswordSuggestions(true),
+        AutofillAgent::SecureContextRequired(true),
+        AutofillAgent::UserGestureRequired(false),
+        AutofillAgent::UsesKeyboardAccessoryForSuggestions(false),
+    };
+  }
+  return {
+      AutofillAgent::ExtractAllDatalists(false),
+      AutofillAgent::FocusRequiresScroll(true),
+      AutofillAgent::QueryPasswordSuggestions(false),
+      AutofillAgent::SecureContextRequired(false),
+      AutofillAgent::UserGestureRequired(true),
+      AutofillAgent::UsesKeyboardAccessoryForSuggestions(BUILDFLAG(IS_ANDROID)),
+  };
+}
+
 }  // namespace
 
 // During prerendering, we do not want the renderer to send messages to the
@@ -487,15 +509,16 @@ class AutofillAgent::DeferringAutofillDriver : public mojom::AutofillDriver {
 
 AutofillAgent::AutofillAgent(
     content::RenderFrame* render_frame,
-    Config config,
     std::unique_ptr<PasswordAutofillAgent> password_autofill_agent,
     std::unique_ptr<PasswordGenerationAgent> password_generation_agent,
     blink::AssociatedInterfaceRegistry* registry)
     : content::RenderFrameObserver(render_frame),
-      config_(config),
+      config_(CreateConfig(render_frame->GetWebView()
+                               ->GetRendererPreferences()
+                               .uses_platform_autofill)),
       password_autofill_agent_(std::move(password_autofill_agent)),
       password_generation_agent_(std::move(password_generation_agent)) {
-  form_tracker_->SetUserGestureRequired(config.user_gesture_required);
+  form_tracker_->SetUserGestureRequired(config_.user_gesture_required);
   render_frame->GetWebFrame()->SetAutofillClient(this);
   password_autofill_agent_->Init(this);
   registry->AddInterface<mojom::AutofillAgent>(base::BindRepeating(

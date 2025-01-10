@@ -263,6 +263,13 @@ struct BLINK_COMMON_EXPORT
     return data.caret_browsing_enabled;
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  static const bool& uses_platform_autofill(
+      const ::blink::RendererPreferences& data) {
+    return data.uses_platform_autofill;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   static const std::vector<uint16_t>& explicitly_allowed_network_ports(
       const ::blink::RendererPreferences& data) {
     return data.explicitly_allowed_network_ports;

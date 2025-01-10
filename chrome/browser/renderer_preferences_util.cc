@@ -22,6 +22,7 @@
 #endif
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/language/core/browser/language_prefs.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -117,7 +118,11 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
           ->IsDoNotTrackEnabled();
   prefs->enable_encrypted_media =
       pref_service->GetBoolean(prefs::kEnableEncryptedMedia);
-#if !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+  prefs->uses_platform_autofill = pref_service->GetBoolean(
+      autofill::prefs::kAutofillUsingVirtualViewStructure);
+#else  // if !BUILDFLAG(IS_ANDROID)
   prefs->caret_browsing_enabled =
       pref_service->GetBoolean(prefs::kCaretBrowsingEnabled);
   ui::AXPlatform::GetInstance().SetCaretBrowsingState(

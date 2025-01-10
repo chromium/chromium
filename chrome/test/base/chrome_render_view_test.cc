@@ -85,7 +85,7 @@ void ChromeRenderViewTest::SetUp() {
           &associated_interfaces_);
   password_generation_ = unique_password_generation.get();
   autofill_agent_ = new AutofillAgent(
-      GetMainRenderFrame(), {}, std::move(unique_password_autofill_agent),
+      GetMainRenderFrame(), std::move(unique_password_autofill_agent),
       std::move(unique_password_generation), &associated_interfaces_);
 }
 

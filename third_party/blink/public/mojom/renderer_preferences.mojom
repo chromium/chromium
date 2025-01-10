@@ -193,5 +193,12 @@ struct RendererPreferences {
   [EnableIf=is_selection_clipboard_buffer_possible]
   bool selection_clipboard_buffer_available = false;
 
+  // Set to true if the renderer should assume that the embedder delegates all
+  // Autofill activity and requests to the platform instead of providing its
+  // own implementation.
+  // Currently only true on Android.
+  [EnableIf=is_android]
+  bool uses_platform_autofill = false;
+
   array<uint16> explicitly_allowed_network_ports;
 };

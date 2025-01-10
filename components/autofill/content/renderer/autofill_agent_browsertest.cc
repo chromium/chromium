@@ -44,6 +44,7 @@
 #include "third_party/blink/public/web/web_autofill_state.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
+#include "third_party/blink/public/web/web_view.h"
 
 namespace autofill {
 
@@ -151,6 +152,13 @@ auto HasSingleElementWhich(auto... element_matchers) {
 
 auto HasType(FormControlType type) {
   return Property(&FormFieldData::form_control_type, type);
+}
+
+void EnablePlatformAutofillForFrame(content::RenderFrame* render_frame) {
+  blink::RendererPreferences preferences =
+      render_frame->GetWebView()->GetRendererPreferences();
+  preferences.uses_platform_autofill = true;
+  render_frame->GetWebView()->SetRendererPreferences(preferences);
 }
 
 // TODO(crbug.com/41268731): Add many more test cases.
@@ -1169,12 +1177,11 @@ class AutofillAgentTestNavigationReset : public AutofillAgentTest {
  public:
   std::unique_ptr<AutofillAgent> CreateAutofillAgent(
       content::RenderFrame* render_frame,
-      const AutofillAgent::Config& config,
       std::unique_ptr<PasswordAutofillAgent> password_autofill_agent,
       std::unique_ptr<PasswordGenerationAgent> password_generation_agent,
       blink::AssociatedInterfaceRegistry* associated_interfaces) override {
     return std::make_unique<MockAutofillAgent>(
-        render_frame, config, std::move(password_autofill_agent),
+        render_frame, std::move(password_autofill_agent),
         std::move(password_generation_agent), associated_interfaces);
   }
 
@@ -1311,6 +1318,57 @@ TEST_F(AutofillAgentTestFocus, FireFocusEventsForNullElement) {
   FocusedElementChanged("contenteditable");
   checkpoint.Call("null");
   FocusedElementChanged(blink::WebElement());
+}
+
+// This test fixture initializes the agent to use platform autofill. The agent
+// expects the client counterpart to forward requests to the platform instead of
+// using an embedder-specific implementation. This behavior matches Android
+// Autofill in WebViews and 3P Mode in Chrome.
+class AutofillAgentTestUsingPlatformAutofill : public AutofillAgentTest {
+ public:
+  std::unique_ptr<AutofillAgent> CreateAutofillAgent(
+      content::RenderFrame* render_frame,
+      std::unique_ptr<PasswordAutofillAgent> password_autofill_agent,
+      std::unique_ptr<PasswordGenerationAgent> password_generation_agent,
+      blink::AssociatedInterfaceRegistry* associated_interfaces) override {
+    EnablePlatformAutofillForFrame(render_frame);
+    return std::make_unique<AutofillAgent>(
+        render_frame, std::move(password_autofill_agent),
+        std::move(password_generation_agent), associated_interfaces);
+  }
+
+  MockAutofillAgent& autofill_agent() {
+    return static_cast<MockAutofillAgent&>(AutofillAgentTest::autofill_agent());
+  }
+};
+
+// Tests that the agent in 3P mode doesn't fill insecure forms.
+TEST_F(AutofillAgentTestUsingPlatformAutofill, InactiveWithoutSecureContext) {
+  EXPECT_CALL(autofill_driver(), FormsSeen);
+  LoadHTMLWithUrlOverride("<body><form><input id=ff></form></body>",
+                          "http://example.com");  // Insecure context!
+  WaitForFormsSeen();
+
+  EXPECT_CALL(autofill_driver(), AskForValuesToFill).Times(0);
+  autofill_agent().TriggerSuggestions(
+      GetFieldRendererIdById("ff"),
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
+  task_environment_.RunUntilIdle();
+}
+
+// Tests that the agent in 3P mode does fill secure forms.
+TEST_F(AutofillAgentTestUsingPlatformAutofill,
+       AskForValuesToFillWithSecureContext) {
+  EXPECT_CALL(autofill_driver(), FormsSeen);
+  LoadHTMLWithUrlOverride("<body><form><input id=ff></form></body>",
+                          "https://example.com");  // Needs secure context!
+  WaitForFormsSeen();
+
+  EXPECT_CALL(autofill_driver(), AskForValuesToFill);
+  autofill_agent().TriggerSuggestions(
+      GetFieldRendererIdById("ff"),
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
+  task_environment_.RunUntilIdle();
 }
 
 // Test fixture for caret position extraction and movement detection.

@@ -704,14 +704,9 @@ void ChromeContentRendererClient::RenderFrameCreated(
         render_frame, associated_interfaces);
     auto password_generation_agent = std::make_unique<PasswordGenerationAgent>(
         render_frame, password_autofill_agent.get(), associated_interfaces);
-    new AutofillAgent(
-        render_frame,
-        {ExtractAllDatalists(false), FocusRequiresScroll(true),
-         QueryPasswordSuggestions(false), SecureContextRequired(false),
-         UserGestureRequired(true),
-         UsesKeyboardAccessoryForSuggestions(BUILDFLAG(IS_ANDROID))},
-        std::move(password_autofill_agent),
-        std::move(password_generation_agent), associated_interfaces);
+    new AutofillAgent(render_frame, std::move(password_autofill_agent),
+                      std::move(password_generation_agent),
+                      associated_interfaces);
   }
 
   if (content_capture::features::IsContentCaptureEnabled()) {

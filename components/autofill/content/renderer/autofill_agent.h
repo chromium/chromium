@@ -136,7 +136,6 @@ class AutofillAgent : public content::RenderFrameObserver,
   // are not, then they are also guaranteed to outlive AutofillAgent.
   AutofillAgent(
       content::RenderFrame* render_frame,
-      Config config,
       std::unique_ptr<PasswordAutofillAgent> password_autofill_agent,
       std::unique_ptr<PasswordGenerationAgent> password_generation_agent,
       blink::AssociatedInterfaceRegistry* registry);
@@ -460,7 +459,7 @@ class AutofillAgent : public content::RenderFrameObserver,
   }
 
   // Stores immutable configuration this agent was created with. It contains
-  // features and settings that are available for the lifetime of this class.
+  // features and settings that are specific to the client using this agent.
   const Config config_;
 
   // Return the next web node of `current_node` in the DOM. `next` determines
