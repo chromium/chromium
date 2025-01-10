@@ -154,19 +154,12 @@ TEST_F(CollaborationControllerTest, FullFlowAllStates) {
   GroupData group_data = GroupData(group_id, /*display_name=*/"",
                                    /*members=*/{}, kAccessToken);
   base::OnceCallback<void(Outcome)> join_ui_callback;
-  base::OnceCallback<void(const data_sharing::DataSharingService::
-                              SharedDataPreviewOrFailureOutcome&)>
-      preview_callback;
-  EXPECT_CALL(*data_sharing_service_,
-              GetSharedEntitiesPreview(token, IsNotNullCallback()))
-      .WillOnce(MoveArg<1>(&preview_callback));
   EXPECT_CALL(*delegate_, ShowJoinDialog(_, _, IsNotNullCallback()))
       .WillOnce(MoveArg<2>(&join_ui_callback));
 
   // 4. CheckingFlowRequirements -> AddingUserToGroup state.
   std::move(group_data_callback).Run(group_data);
   EXPECT_EQ(controller_->GetStateForTesting(), StateId::kAddingUserToGroup);
-  std::move(preview_callback).Run(data_sharing::SharedDataPreview());
 
   // Simulate the user accepts the join invitation. Wait for tab group to be
   // added in sync.
@@ -261,30 +254,6 @@ TEST_F(CollaborationControllerTest, DelegateOutcomeError) {
   EXPECT_CALL(*delegate_, OnFlowFinished());
   std::move(error_ui_callback).Run(Outcome::kSuccess);
   run_loop.Run();
-}
-
-TEST_F(CollaborationControllerTest, PreviewDataFailures) {
-  // Start Join flow.
-  InitializeJoinController(base::DoNothing());
-
-  base::OnceCallback<void(const data_sharing::DataSharingService::
-                              SharedDataPreviewOrFailureOutcome&)>
-      preview_callback;
-  EXPECT_CALL(*data_sharing_service_,
-              GetSharedEntitiesPreview(
-                  GroupToken(data_sharing::GroupId(kGroupId), kAccessToken),
-                  IsNotNullCallback()))
-      .WillOnce(MoveArg<1>(&preview_callback));
-  controller_->SetStateForTesting(StateId::kAddingUserToGroup);
-  base::OnceCallback<void(Outcome)> error_ui_callback;
-  EXPECT_CALL(*delegate_, ShowError(ErrorInfo(ErrorInfo::Type::kGenericError),
-                                    IsNotNullCallback()))
-      .WillOnce(MoveArg<1>(&error_ui_callback));
-
-  std::move(preview_callback)
-      .Run(base::unexpected(data_sharing::DataSharingService::
-                                PeopleGroupActionFailure::kUnknown));
-  EXPECT_EQ(controller_->GetStateForTesting(), StateId::kError);
 }
 
 TEST_F(CollaborationControllerTest, AuthenticationError) {
