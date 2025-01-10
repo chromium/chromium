@@ -22,6 +22,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.TransitAsserts;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
@@ -124,6 +125,7 @@ public class EdgeToEdgePTTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE})
+    @DisabledTest(message = "crbug.com/388863303")
     public void fromNtpToTabSwitcher() {
         // Start the page on NTP, chin is not visible.
         var newTabPage = mInitialStateRule.startOnNtp();
