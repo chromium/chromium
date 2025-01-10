@@ -428,13 +428,15 @@ PaymentMethodAccessoryControllerImpl::GetUnmaskedCreditCards() const {
   }
   std::vector<const CachedServerCardInfo*> unmasked_cards =
       autofill_manager->GetCreditCardAccessManager().GetCachedUnmaskedCards();
-  // Show unmasked virtual cards in the manual filling view if they exist. All
-  // other cards are dropped.
-  auto not_virtual_card = [](const CachedServerCardInfo* card_info) {
+  // Show unmasked virtual cards and card info retrieval enrolled server cards
+  // in the manual filling view if they exist. All other cards are dropped.
+  auto non_runtime_retrieval_card = [](const CachedServerCardInfo* card_info) {
     return card_info->card.record_type() !=
-           CreditCard::RecordType::kVirtualCard;
+               CreditCard::RecordType::kVirtualCard &&
+           card_info->card.card_info_retrieval_enrollment_state() !=
+               CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled;
   };
-  std::erase_if(unmasked_cards, not_virtual_card);
+  std::erase_if(unmasked_cards, non_runtime_retrieval_card);
   return unmasked_cards;
 }
 

@@ -435,6 +435,53 @@ TEST_F(
           .Build());
 }
 
+// Test to ensure that cards enrolled in card info retrieval are unmasked
+// in the manual fallback bubble.
+TEST_F(PaymentMethodAccessoryControllerTest,
+       RefreshSuggestion_CardInfoRetrievalCardsRemainUnmasked) {
+  // Add a masked card to PersonalDataManager.
+  CreditCard unmasked_card = test::GetCreditCard();
+  unmasked_card.set_card_info_retrieval_enrollment_state(
+      CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled);
+  data_manager_.payments_data_manager().AddCreditCard(unmasked_card);
+  // Update the record type and add it to the unmasked cards cache.
+  unmasked_card.set_record_type(CreditCard::RecordType::kFullServerCard);
+  std::u16string cvc = u"123";
+  autofill_manager().GetCreditCardAccessManager().CacheUnmaskedCardInfo(
+      unmasked_card, cvc);
+
+  EXPECT_CALL(filling_source_observer_,
+              Run(controller(), IsFillingSourceAvailable(true)));
+  ASSERT_TRUE(controller());
+  controller()->RefreshSuggestions();
+
+  std::u16string card_number_for_display = unmasked_card.FullDigitsForDisplay();
+  std::u16string card_number_for_fill =
+      unmasked_card.GetRawInfo(CREDIT_CARD_NUMBER);
+
+  EXPECT_EQ(
+      controller()->GetSheetData(),
+      PaymentMethodAccessorySheetDataBuilder()
+          .AddUserInfo(kVisaCard)
+          .AppendField(
+              /*suggestion_type=*/AccessorySuggestionType::kCreditCardNumber,
+              /*display_text=*/card_number_for_display,
+              /*text_to_fill=*/card_number_for_fill,
+              /*a11y_description=*/card_number_for_fill,
+              /*id=*/std::string(),
+              /*is_obfuscated=*/false,
+              /*selectable=*/true)
+          .AppendSimpleField(
+              AccessorySuggestionType::kCreditCardExpirationMonth,
+              unmasked_card.Expiration2DigitMonthAsString())
+          .AppendSimpleField(AccessorySuggestionType::kCreditCardExpirationYear,
+                             unmasked_card.Expiration4DigitYearAsString())
+          .AppendSimpleField(AccessorySuggestionType::kCreditCardNameFull,
+                             unmasked_card.GetRawInfo(CREDIT_CARD_NAME_FULL))
+          .AppendSimpleField(AccessorySuggestionType::kCreditCardCvc, cvc)
+          .Build());
+}
+
 TEST_F(PaymentMethodAccessoryControllerTest,
        CardArtIsNotShownEvenWhenMetadataIsAvailable) {
   // Add a masked card to PersonalDataManager.

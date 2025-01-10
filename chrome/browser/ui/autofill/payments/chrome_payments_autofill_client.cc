@@ -479,8 +479,12 @@ void ChromePaymentsAutofillClient::VirtualCardEnrollCompleted(
 void ChromePaymentsAutofillClient::OnCardDataAvailable(
     const FilledCardInformationBubbleOptions& options) {
 #if BUILDFLAG(IS_ANDROID)
+  // Note that currently the snackbar is displayed only for virtual cards or
+  // cards enrolled in card info retrieval.
   client_->GetAutofillSnackbarController()->Show(
-      AutofillSnackbarType::kVirtualCard,
+      options.filled_card.record_type() == CreditCard::RecordType::kVirtualCard
+          ? AutofillSnackbarType::kVirtualCard
+          : AutofillSnackbarType::kCardInfoRetrieval,
       base::BindOnce(
           [](base::WeakPtr<content::WebContents> contents) {
             if (!contents) {

@@ -894,6 +894,9 @@
     <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLED_TEXT" desc="Text to be displayed in the Settings page as label for cards that are enrolled into virtual card number." formatter_data="android_java">
       Virtual card turned on
     </message>
+    <message name="IDS_AUTOFILL_CARD_INFO_RETRIEVAL_SNACKBAR_MESSAGE_TEXT" desc="Text to be displayed in the snackbar shown after a runtime retrieval card is autofilled.">
+      Card number not filled in?
+    </message>
   </if>
   <if expr="is_ios">
     <message name="IDS_AUTOFILL_PAYMENTS_MANUAL_FALLBACK_VIRTUAL_CARD_INSTRUCTION_TEXT" desc="Text displayed in the manual fallback instructing users on how to add their virtual card details to checkout.">
