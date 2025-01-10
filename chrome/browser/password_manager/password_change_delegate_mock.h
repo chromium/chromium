@@ -33,10 +33,15 @@ class PasswordChangeDelegateMock final : public PasswordChangeDelegate {
               SuccessfulSubmissionDetected,
               (content::WebContents*),
               (override));
+  MOCK_METHOD(void, OnPrivacyNoticeAccepted, (), (override));
   MOCK_METHOD(void, AddObserver, (Observer*), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
-  MOCK_METHOD(const GURL&, GetChangePasswordUrl, (), (const override));
-  MOCK_METHOD(void, OnPrivacyNoticeAccepted, (), (override));
+  MOCK_METHOD(std::u16string, GetDisplayOrigin, (), (const override));
+  MOCK_METHOD(const std::u16string&, GetUsername, (), (const override));
+  MOCK_METHOD(const std::u16string&,
+              GetGeneratedPassword,
+              (),
+              (const override));
 
   base::WeakPtr<PasswordChangeDelegate> AsWeakPtr() override;
 

@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/url_formatter/elide_url.h"
 #include "ui/base/l10n/l10n_util.h"
 
 PasswordChangeInfoBubbleController::PasswordChangeInfoBubbleController(
@@ -79,9 +78,7 @@ void PasswordChangeInfoBubbleController::CancelPasswordChange() {
 }
 
 std::u16string PasswordChangeInfoBubbleController::GetDisplayOrigin() {
-  return url_formatter::FormatUrlForSecurityDisplay(
-      password_change_delegate_->GetChangePasswordUrl(),
-      url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
+  return password_change_delegate_->GetDisplayOrigin();
 }
 
 void PasswordChangeInfoBubbleController::OnGooglePasswordManagerLinkClicked() {

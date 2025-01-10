@@ -22,8 +22,6 @@ class PrivacyNoticeViewTest : public PasswordBubbleViewTestBase {
   void SetUp() override {
     PasswordBubbleViewTestBase::SetUp();
     password_change_delegate_ = std::make_unique<PasswordChangeDelegateMock>();
-    ON_CALL(*password_change_delegate_, GetChangePasswordUrl())
-        .WillByDefault(ReturnRef(password_change_url_));
     ON_CALL(*model_delegate_mock(), GetPasswordChangeDelegate())
         .WillByDefault(Return(password_change_delegate_.get()));
   }
@@ -53,7 +51,6 @@ class PrivacyNoticeViewTest : public PasswordBubbleViewTestBase {
 
  private:
   std::unique_ptr<PasswordChangeDelegateMock> password_change_delegate_;
-  GURL password_change_url_ = GURL("https://example.com/password");
   raw_ptr<PrivacyNoticeView> view_;
 };
 

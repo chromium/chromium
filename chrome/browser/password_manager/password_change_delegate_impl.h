@@ -55,10 +55,12 @@ class PasswordChangeDelegateImpl
   void Stop() override;
   void SuccessfulSubmissionDetected(
       content::WebContents* web_contents) override;
+  void OnPrivacyNoticeAccepted() override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-  const GURL& GetChangePasswordUrl() const override;
-  void OnPrivacyNoticeAccepted() override;
+  std::u16string GetDisplayOrigin() const override;
+  const std::u16string& GetUsername() const override;
+  const std::u16string& GetGeneratedPassword() const override;
 
   // content::WebContentsObserver Impl
   void WebContentsDestroyed() override;

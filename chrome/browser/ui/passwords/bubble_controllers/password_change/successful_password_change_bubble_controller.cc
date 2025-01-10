@@ -65,19 +65,16 @@ void SuccessfulPasswordChangeBubbleController::AuthenticateUser(
 
 std::u16string SuccessfulPasswordChangeBubbleController::GetDisplayOrigin()
     const {
-  // TODO(crbug.com/381054978): Return correct domain.
-  return u"demo.com";
+  return password_change_delegate_->GetDisplayOrigin();
 }
 
 std::u16string SuccessfulPasswordChangeBubbleController::GetUsername() const {
-  // TODO(crbug.com/381054978): Return correct username.
-  return u"elisa.buckett@gmail.com";
+  return password_change_delegate_->GetUsername();
 }
 
 std::u16string SuccessfulPasswordChangeBubbleController::GetNewPassword()
     const {
-  // TODO(crbug.com/381054978): Return correct password.
-  return u"cE1L45Vgxyzlu8";
+  return password_change_delegate_->GetGeneratedPassword();
 }
 
 base::WeakPtr<SuccessfulPasswordChangeBubbleController>

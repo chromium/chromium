@@ -12,6 +12,7 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
@@ -164,8 +165,18 @@ void PasswordChangeDelegateImpl::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-const GURL& PasswordChangeDelegateImpl::GetChangePasswordUrl() const {
-  return change_password_url_;
+std::u16string PasswordChangeDelegateImpl::GetDisplayOrigin() const {
+  GURL url = form_manager_ ? form_manager_->GetURL() : change_password_url_;
+  return url_formatter::FormatUrlForSecurityDisplay(
+      url, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
+}
+
+const std::u16string& PasswordChangeDelegateImpl::GetUsername() const {
+  return username_;
+}
+
+const std::u16string& PasswordChangeDelegateImpl::GetGeneratedPassword() const {
+  return generated_password_;
 }
 
 void PasswordChangeDelegateImpl::OnPrivacyNoticeAccepted() {

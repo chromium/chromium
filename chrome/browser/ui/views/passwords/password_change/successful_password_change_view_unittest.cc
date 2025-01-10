@@ -43,6 +43,12 @@ class SuccessfulPasswordChangeViewTest : public PasswordBubbleViewTestBase {
     password_change_delegate_ = std::make_unique<PasswordChangeDelegateMock>();
     ON_CALL(*model_delegate_mock(), GetPasswordChangeDelegate())
         .WillByDefault(Return(password_change_delegate_.get()));
+    ON_CALL(*password_change_delegate_, GetDisplayOrigin())
+        .WillByDefault(Return(kDomain));
+    ON_CALL(*password_change_delegate_, GetUsername())
+        .WillByDefault(ReturnRef(kTestEmail));
+    ON_CALL(*password_change_delegate_, GetGeneratedPassword())
+        .WillByDefault(ReturnRef(kPassword));
   }
 
   void TearDown() override {

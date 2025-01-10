@@ -65,14 +65,17 @@ class PasswordChangeDelegate {
   virtual void SuccessfulSubmissionDetected(
       content::WebContents* web_contents) = 0;
 
+  virtual void OnPrivacyNoticeAccepted() = 0;
+
   // Adds/removes an observer.
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
 
-  // Returns the change password url.
-  virtual const GURL& GetChangePasswordUrl() const = 0;
-
-  virtual void OnPrivacyNoticeAccepted() = 0;
+  // Getters for current domain where password change is ongoing, username and a
+  // newly generated password. Password exists only after it was generated.
+  virtual std::u16string GetDisplayOrigin() const = 0;
+  virtual const std::u16string& GetUsername() const = 0;
+  virtual const std::u16string& GetGeneratedPassword() const = 0;
 
   virtual base::WeakPtr<PasswordChangeDelegate> AsWeakPtr() = 0;
 };

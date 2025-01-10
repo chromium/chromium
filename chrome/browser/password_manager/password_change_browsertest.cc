@@ -271,8 +271,13 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
 
   // Verify generated password is pre-saved.
   WaitForPasswordStore();
+  auto generated_password = password_change_service()
+                                ->GetPasswordChangeDelegate(WebContents())
+                                ->GetGeneratedPassword();
+  EXPECT_EQ(base::UTF16ToUTF8(generated_password),
+            GetElementValue(/*iframe_id=*/"null", "new_password_1"));
   CheckThatCredentialsStored(
-      /*username=*/"", GetElementValue(/*iframe_id=*/"null", "new_password_1"));
+      /*username=*/"", base::UTF16ToUTF8(generated_password));
 }
 
 // Verify that after password change is stopped, password change delegate is not
@@ -316,8 +321,13 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, NewPasswordIsSaved) {
   EXPECT_TRUE(password_change_page_observer.Wait());
 
   WaitForElementValue("password", "pa$$word");
-  std::string new_password =
-      GetElementValue(/*iframe_id=*/"null", "new_password_1");
+
+  PasswordChangeDelegate* delegate =
+      password_change_service()->GetPasswordChangeDelegate(
+          browser()->tab_strip_model()->GetWebContentsAt(0));
+  auto generated_password = base::UTF16ToUTF8(delegate->GetGeneratedPassword());
+  EXPECT_EQ(generated_password,
+            GetElementValue(/*iframe_id=*/"null", "new_password_1"));
 
   // Emulate a navigation as an indication of successful submission.
   PasswordsNavigationObserver new_page_observer(WebContents());
@@ -328,11 +338,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, NewPasswordIsSaved) {
 
   // Verify generated password is saved.
   WaitForPasswordStore();
-  CheckThatCredentialsStored("test", new_password);
+  CheckThatCredentialsStored("test", generated_password);
   // Verify the success state.
-  PasswordChangeDelegate* delegate =
-      password_change_service()->GetPasswordChangeDelegate(
-          browser()->tab_strip_model()->GetWebContentsAt(0));
   ASSERT_EQ(delegate->GetCurrentState(),
             PasswordChangeDelegate::State::kPasswordSuccessfullyChanged);
 }
@@ -396,8 +403,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
                                                  WebContents());
   // Verify the delegate is created and it's currently waiting for change
   // password form.
-  auto* delegate = password_change_service()->GetPasswordChangeDelegate(
-      browser()->tab_strip_model()->GetWebContentsAt(0));
+  auto* delegate =
+      password_change_service()->GetPasswordChangeDelegate(WebContents());
   ASSERT_TRUE(delegate);
 
   PasswordBubbleViewBase::ShowBubble(
@@ -407,8 +414,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
   ASSERT_EQ(
       bubble_controller->GetTitle(),
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_UI_SIGN_IN_CHECK_TITLE));
-  ASSERT_EQ(bubble_controller->GetDisplayOrigin(),
-            url_formatter::FormatUrlForSecurityDisplay(change_password_url));
+  ASSERT_EQ(url_formatter::FormatUrlForSecurityDisplay(change_password_url),
+            bubble_controller->GetDisplayOrigin());
 
   // Wait until the state is changed from `kWaitingForChangePasswordForm` to any
   // other state. The bubble should disappear then.
