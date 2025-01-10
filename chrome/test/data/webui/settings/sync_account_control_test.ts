@@ -762,14 +762,14 @@ suite('SyncAccountControl', function() {
 
   test(
       'signed out with account awareness, kImprovedSettingsUIOnDesktop enabled',
-      function() {
+      async function() {
         loadTimeData.overrideValues(
             {isImprovedSettingsUIOnDesktopEnabled: true});
 
         testElement.syncStatus = {
           firstSetupInProgress: false,
           signedInState: SignedInState.WEB_ONLY_SIGNED_IN,
-          signedInUsername: 'bar@bar.com',
+          signedInUsername: 'foo@foo.com',
           hasError: false,
           hasUnrecoverableError: false,
           statusAction: StatusAction.REAUTHENTICATE,
@@ -777,6 +777,17 @@ suite('SyncAccountControl', function() {
         };
 
         assertTrue(isChildVisible(testElement, '#dropdown-arrow'));
-        assertTrue(isChildVisible(testElement, '#account-aware'));
+
+        const continueAsButton =
+            testElement.shadowRoot!.querySelector<HTMLElement>(
+                '#account-aware')!;
+        assertFalse(continueAsButton.hidden);
+        continueAsButton.click();
+
+        const [email, isDefaultPromoAccount] =
+            await browserProxy.whenCalled('startSyncingWithEmail');
+
+        assertEquals(email, 'foo@foo.com');
+        assertEquals(isDefaultPromoAccount, true);
       });
 });

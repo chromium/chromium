@@ -227,9 +227,10 @@
             disabled="[[syncStatus.firstSetupInProgress]]">
           [[syncStatus.statusActionText]]
         </cr-button>
-        <cr-button class="action-button cr-button-gap" on-click="onSigninClick_"
-        id="account-aware"
-        hidden="[[!shouldShowAccountAwareSigninButton_(syncStatus.signedInState)]]">
+        <cr-button class="action-button cr-button-gap"
+            on-click="onSyncButtonClick_" id="account-aware"
+            hidden="[[!shouldShowAccountAwareSigninButton_(
+                syncStatus.signedInState)]]">
         <img class="account-icon small" alt=""
         src="[[getAccountImageSrc_(shownAccount_.avatarImage)]]"
         slot="prefix-icon">
