@@ -3303,6 +3303,7 @@ test("base_unittests") {
     "lazy_instance_unittest.cc",
     "logging/rust_log_integration_unittest.cc",
     "logging_unittest.cc",
+    "macros/is_empty_unittest.cc",
     "memory/aligned_memory_unittest.cc",
     "memory/discardable_memory_backing_field_trial_unittest.cc",
     "memory/discardable_shared_memory_unittest.cc",
