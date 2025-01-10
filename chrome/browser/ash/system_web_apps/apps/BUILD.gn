@@ -271,6 +271,7 @@ source_set("browser_tests") {
     "//ui/base:types",
     "//ui/display",
     "//ui/display:display_manager_test_api",
+    "//ui/events:test_support",
     "//ui/gfx/geometry",
     "//ui/views",
     "//url",
