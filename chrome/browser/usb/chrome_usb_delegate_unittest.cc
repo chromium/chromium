@@ -33,7 +33,6 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "base/command_line.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "extensions/browser/extension_registry.h"
