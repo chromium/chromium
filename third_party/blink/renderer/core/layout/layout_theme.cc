@@ -441,8 +441,7 @@ bool LayoutTheme::IsControlStyled(AppearanceValue appearance,
       return builder.HasAuthorBackground() || builder.HasAuthorBorder();
 
     case AppearanceValue::kMeter:
-      return RuntimeEnabledFeatures::MeterDevolveAppearanceEnabled() &&
-             (builder.HasAuthorBackground() || builder.HasAuthorBorder());
+      return builder.HasAuthorBackground() || builder.HasAuthorBorder();
 
     case AppearanceValue::kMenulist:
     case AppearanceValue::kSearchField:
