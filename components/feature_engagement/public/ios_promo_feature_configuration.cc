@@ -330,6 +330,26 @@ std::optional<FeatureConfig> GetCustomConfig(const base::Feature* feature) {
     return config;
   }
 
+  if (kIPHiOSDefaultBrowserBannerPromoFeature.name == feature->name) {
+    // Promo should show only once, and also require time since other promos.
+    std::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 0);
+    config->used = EventConfig("default_browser_banner_promo_used",
+                               Comparator(ANY, 0), 365, 365);
+    config->trigger =
+        EventConfig("default_browser_banner_promo_trigger",
+                    Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+    // This promo counts as a default browser promo despite not being a
+    // fullscreen promo from the promos manager because it's still a
+    // non-contextual default browser promo. Thus, it should share cooldown
+    // rules.
+    config->groups.push_back(kiOSDefaultBrowserPromosGroup.name);
+    return config;
+  }
+
   return std::nullopt;
 }
 }  // namespace
