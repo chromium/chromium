@@ -322,6 +322,26 @@ inline StringView::StringView(const AtomicString& string LIFETIME_BOUND)
 
 }  // namespace WTF
 
+// Mark `AtomicString` and `const char*` as having a common reference type (the
+// type to which both can be converted or bound) of `String`. This makes them
+// satisfy `std::equality_comparable`, which allows usage like:
+// ```
+//   std::vector<AtomicString<T>> v;
+//   const char* e;
+//   auto it = std::ranges::find(v, e);
+// ```
+// Without this, the `find()` call above would fail to compile with a cryptic
+// error about being unable to invoke `std::ranges::equal_to()`.
+template <template <typename> typename TQ, template <typename> typename UQ>
+struct std::basic_common_reference<WTF::AtomicString, const char*, TQ, UQ> {
+  using type = WTF::String;
+};
+
+template <template <typename> typename TQ, template <typename> typename UQ>
+struct std::basic_common_reference<const char*, WTF::AtomicString, TQ, UQ> {
+  using type = WTF::String;
+};
+
 WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(AtomicString)
 
 using WTF::AtomicString;
