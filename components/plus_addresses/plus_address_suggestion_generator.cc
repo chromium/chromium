@@ -212,9 +212,8 @@ PlusAddressSuggestionGenerator::GetSuggestions(
 
   std::vector<Suggestion> suggestions;
   suggestions.reserve(affiliated_plus_addresses.size());
-  for (const std::string& affiliated_plus_addresse :
-       affiliated_plus_addresses) {
-    std::u16string plus_address = base::UTF8ToUTF16(affiliated_plus_addresse);
+  for (const std::string& affiliated_plus_address : affiliated_plus_addresses) {
+    std::u16string plus_address = base::UTF8ToUTF16(affiliated_plus_address);
     // Only suggest filling a plus address whose prefix matches the field's
     // value.
     if (trigger_source == kManualFallbackPlusAddresses ||
