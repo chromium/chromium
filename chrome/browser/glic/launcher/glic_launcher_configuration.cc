@@ -5,8 +5,10 @@
 #include "chrome/browser/glic/launcher/glic_launcher_configuration.h"
 
 #include "base/values.h"
+#include "base/version_info/channel.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/common/channel_info.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -36,12 +38,16 @@ GlicLauncherConfiguration::~GlicLauncherConfiguration() = default;
 // static
 void GlicLauncherConfiguration::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(prefs::kGlicLauncherEnabled, false);
+  // TODO(crbug.com/379166397): Set the default value to false when FRE is
+  // implemented.
+  registry->RegisterBooleanPref(
+      prefs::kGlicLauncherEnabled,
+      chrome::GetChannel() == version_info::Channel::CANARY);
   registry->RegisterDictionaryPref(
       prefs::kGlicLauncherGlobalHotkey,
       base::Value::Dict()
-          .Set(kHotkeyKeyCode, ui::KeyboardCode::VKEY_UNKNOWN)
-          .Set(kHotkeyModifiers, ui::EF_NONE));
+          .Set(kHotkeyKeyCode, ui::KeyboardCode::VKEY_G)
+          .Set(kHotkeyModifiers, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN));
 }
 
 bool GlicLauncherConfiguration::IsEnabled() {

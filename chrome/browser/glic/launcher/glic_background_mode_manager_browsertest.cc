@@ -103,7 +103,8 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerBrowserTest,
                                                true);
   GlicBackgroundModeManager* const manager =
       g_browser_process->GetFeatures()->glic_background_mode_manager();
-  EXPECT_EQ(ui::Accelerator(), manager->RegisteredHotkeyForTesting());
+  EXPECT_EQ(ui::Accelerator(ui::VKEY_G, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN),
+            manager->RegisteredHotkeyForTesting());
 
   ui::Accelerator updated_hotkey(ui::VKEY_A, ui::EF_SHIFT_DOWN);
   RegisterHotkey(updated_hotkey);
