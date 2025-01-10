@@ -8139,8 +8139,6 @@ test("unit_tests") {
 
     if (include_js2gtest_tests && is_chromeos_ash) {
       data += js2gtest_js_libraries
-      deps +=
-          [ "//chrome/browser/resources/chromeos/accessibility:unit_tests_js" ]
     }
   }
 

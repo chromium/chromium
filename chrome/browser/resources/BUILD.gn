@@ -185,6 +185,7 @@ if (!is_android) {
     # build time so we include them as explicit dependencies here
     if (is_chromeos) {
       deps = [
+        "chromeos/accessibility/braille_ime:ts_build",
         "chromeos/contact_center_insights:generate_ccaas_deps",
         "chromeos/desk_api:generate_desk_api_bundle",
       ]
