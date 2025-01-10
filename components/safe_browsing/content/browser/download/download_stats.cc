@@ -112,23 +112,6 @@ void RecordDangerousDownloadWarningBypassed(
       base::UserMetricsAction("SafeBrowsing.Download.WarningBypassed"));
 }
 
-void RecordDownloadOpenedLatency(download::DownloadDangerType danger_type,
-                                 download::DownloadContent download_content,
-                                 base::Time download_opened_time,
-                                 base::Time download_end_time,
-                                 bool show_download_in_folder) {
-  if (danger_type != download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS) {
-    return;
-  }
-  std::string metric_suffix =
-      show_download_in_folder ? ".ShowInFolder" : ".OpenDirectly";
-  base::UmaHistogramCustomTimes(
-      "SBClientDownload.SafeDownloadOpenedLatency2" + metric_suffix,
-      /* sample */ download_opened_time - download_end_time,
-      /* min */ base::Seconds(1),
-      /* max */ base::Days(1), /* buckets */ 50);
-}
-
 void RecordDownloadFileTypeAttributes(
     DownloadFileType::DangerLevel danger_level,
     bool has_user_gesture,

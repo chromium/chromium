@@ -263,23 +263,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="SBClientDownload.SafeDownloadOpenedLatency2.{ShowAction}"
-    units="ms" expires_after="2025-02-10">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the latency between when a safe download is completed and when the
-    user {ShowAction}. Users can open the download either from the download
-    shelf or from the downloads page. Note that if the user opens the same
-    download for several times, this metric is recorded each time. Excludes
-    downloads that were auto opened.
-  </summary>
-  <token key="ShowAction">
-    <variant name="OpenDirectly" summary="opens the download directly"/>
-    <variant name="ShowInFolder" summary="clicks show in folder"/>
-  </token>
-</histogram>
-
 <histogram name="SBClientDownload.SavePackageFileCount" units="files"
     expires_after="2023-03-19">
   <owner>domfc@chromium.org</owner>
@@ -352,7 +335,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram name="SBClientDownload.UserGestureFileType.Attributes"
     enum="SBClientDownloadUserGestureFileTypeAttributes"
-    expires_after="2025-01-22">
+    expires_after="2026-01-10">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

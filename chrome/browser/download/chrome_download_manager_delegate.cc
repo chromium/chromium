@@ -1936,13 +1936,6 @@ void ChromeDownloadManagerDelegate::MaybeSendDangerousDownloadOpenedReport(
                                                     show_download_in_folder);
   }
 #endif
-  if (!download->GetAutoOpened()) {
-    download::DownloadContent download_content =
-        download::DownloadContentFromMimeType(download->GetMimeType(), false);
-    safe_browsing::RecordDownloadOpenedLatency(
-        download->GetDangerType(), download_content, base::Time::Now(),
-        download->GetEndTime(), show_download_in_folder);
-  }
 }
 
 void ChromeDownloadManagerDelegate::MaybeSendDangerousDownloadCanceledReport(

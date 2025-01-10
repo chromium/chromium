@@ -1439,7 +1439,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.GmsSafeBrowsingApi.ThreatAttribute{Protocol}"
-    enum="SafeBrowsingApiThreatAttribute" expires_after="2025-01-22">
+    enum="SafeBrowsingApiThreatAttribute" expires_after="2026-01-10">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1600,7 +1600,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.HPRT.CanGetReputationOfUrl"
-    enum="BooleanCanCheckUrl" expires_after="2025-01-26">
+    enum="BooleanCanCheckUrl" expires_after="2026-01-10">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2131,7 +2131,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.PageLoadToken.ClearReason"
-    enum="SafeBrowsingPageLoadTokenClearReason" expires_after="2025-01-22">
+    enum="SafeBrowsingPageLoadTokenClearReason" expires_after="2026-01-10">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -3347,7 +3347,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.V4LocalDatabaseManager.ThreatInfoSize"
-    units="verdicts" expires_after="2025-01-22">
+    units="verdicts" expires_after="2026-01-10">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -3423,7 +3423,7 @@ and applied correctly. -->
 </histogram>
 
 <histogram name="SafeBrowsing.V4ProcessFullUpdate.RemovalsHashesCount"
-    units="entries" expires_after="2025-01-22">
+    units="entries" expires_after="2026-01-10">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
