@@ -174,24 +174,23 @@ struct StitchedAnchorQueryCollector {
                                 WritingDirectionMode writing_direction) {
     LayoutUnit fragmentainer_stitched_offset;
     for (const LogicalFragmentLink& child : children) {
-      if (child->IsFragmentainerBox()) {
-        const FragmentainerContext fragmentainer{
-            child.offset,
-            fragmentainer_stitched_offset,
-            {writing_direction, child->Size()}};
-        AddChild(*child, /* offset_from_fragmentainer */ {}, fragmentainer);
-        fragmentainer_stitched_offset +=
-            child->Size()
-                .ConvertToLogical(writing_direction.GetWritingMode())
-                .block_size;
+      if (!child->IsFragmentainerBox()) {
+        // Skip the child if it isn't a fragmentainer. This may for instance be
+        // a column spanner or a list item marker. They are are direct child
+        // fragments of a multicol container fragment, but do not participate in
+        // fragmentation.
         continue;
       }
 
-      // The containing block of the spanner is the multicol container itself.
-      // https://drafts.csswg.org/css-multicol/#column-span
-      // So anchor queries in column spanners should not be added to any
-      // containing blocks in the multicol.
-      DCHECK(child->IsColumnSpanAll());
+      const FragmentainerContext fragmentainer{
+          child.offset,
+          fragmentainer_stitched_offset,
+          {writing_direction, child->Size()}};
+      AddChild(*child, /* offset_from_fragmentainer */ {}, fragmentainer);
+      fragmentainer_stitched_offset +=
+          child->Size()
+              .ConvertToLogical(writing_direction.GetWritingMode())
+              .block_size;
     }
   }
 
