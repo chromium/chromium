@@ -1123,14 +1123,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "calendar-jelly",
-    "owners": [
-      "newcomer@chromium.org",
-      "cros-status-area-eng@google.com"
-    ],
-    "expiry_milestone": 119
-  },
-  {
     "name": "camera-angle-backend",
     "owners": [
       "rjodin@chromium.org",
