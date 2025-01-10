@@ -7,6 +7,7 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "media/audio/audio_device_description.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/web_string.h"
 
@@ -41,7 +42,10 @@ class WebAudioSinkDescriptor {
   const LocalFrameToken& Token() const { return token_; }
   AudioSinkType Type() const { return type_; }
   WebString SinkId() const { return sink_id_; }
-
+  bool IsDefaultSinkId() const {
+    return SinkId().IsEmpty() ||
+           (SinkId() == media::AudioDeviceDescription::kDefaultDeviceId);
+  }
   bool operator==(const WebAudioSinkDescriptor& rhs) const {
     return this->Type() == rhs.Type() && this->SinkId() == rhs.SinkId();
   }

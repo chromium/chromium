@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
+#include "media/audio/audio_device_description.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -345,7 +346,7 @@ AudioContext::AudioContext(LocalDOMWindow& window,
   // device identifier that is not the default sink or a silent sink.
   if (sink_descriptor_.Type() ==
           WebAudioSinkDescriptor::AudioSinkType::kAudible &&
-      !sink_descriptor_.SinkId().IsEmpty()) {
+      !sink_descriptor_.IsDefaultSinkId()) {
     InitializeMediaDeviceService();
   }
 
@@ -1214,9 +1215,11 @@ void AudioContext::OnDevicesChanged(mojom::blink::MediaDeviceType device_type,
   if (device_type == mojom::blink::MediaDeviceType::kMediaAudioOutput) {
     output_device_ids_.clear();
     for (auto device : devices) {
-      if (device.device_id == "default") {
+      if (device.device_id == media::AudioDeviceDescription::kDefaultDeviceId) {
         // Use the empty string to represent the default audio sink.
         output_device_ids_.insert(g_empty_string);
+        output_device_ids_.insert(
+            String(media::AudioDeviceDescription::kDefaultDeviceId));
       } else {
         output_device_ids_.insert(String::FromUTF8(device.device_id));
       }

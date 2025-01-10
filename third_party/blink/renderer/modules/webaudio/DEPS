@@ -1,4 +1,5 @@
 include_rules = [
+    "+media/audio/audio_device_description.h",
     "+media/base",
     "+media/mojo",
     "+services/metrics/public/cpp/ukm_builders.h",
