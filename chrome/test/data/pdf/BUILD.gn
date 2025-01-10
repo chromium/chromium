@@ -43,6 +43,7 @@ build_webui_tests("build") {
     "viewer_password_dialog_test.ts",
     "viewer_pdf_sidenav_test.ts",
     "viewer_properties_dialog_test.ts",
+    "viewer_searchify_test.ts",
     "viewer_thumbnail_bar_test.ts",
     "viewer_thumbnail_test.ts",
     "viewer_toolbar_test.ts",

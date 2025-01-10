@@ -232,6 +232,10 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerPasswordDialog) {
   RunTestsInJsModule("viewer_password_dialog_test.js", "encrypted.pdf");
 }
 
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerSearchify) {
+  RunTestsInJsModule("viewer_searchify_test.js", "test.pdf");
+}
+
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ArrayBufferAllocator) {
   // Run several times to see if there are issues with unloading.
   RunTestsInJsModule("beep_test.js", "array_buffer.pdf");

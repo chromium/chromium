@@ -927,11 +927,9 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         this.hasEdits_ = true;
         return;
       case 'setHasSearchifyText':
-        // TODO(crbug.com/360803943): Add test for metrics.
         this.hasSearchifyText_ = true;
         return;
       case 'showSearchifyInProgress':
-        // TODO(crbug.com/360803943): Add test.
         if ((data as unknown as {
               show: boolean,
             }).show) {
