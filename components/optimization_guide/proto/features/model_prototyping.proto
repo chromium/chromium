@@ -291,6 +291,9 @@ message PageContextSpecifier {
 
   // Whether to collect the forms data.
   bool forms_data = 7;
+
+  // Whether to collect the annotated page content.
+  bool annotated_page_content = 8;
 }
 
 // Used to specify the context to collect for a set of tabs.
