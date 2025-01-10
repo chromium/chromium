@@ -8,13 +8,24 @@
 
 #include "base/check.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/launcher/glic_controller.h"
 #include "chrome/browser/glic/launcher/glic_launcher_configuration.h"
 #include "chrome/browser/glic/launcher/glic_status_icon.h"
+#include "chrome/browser/global_features.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
+
+namespace {
+bool IsEnabledInAnyLoadedProfile() {
+  return base::ranges::any_of(
+      g_browser_process->profile_manager()->GetLoadedProfiles(),
+      GlicEnabling::IsEnabledForProfile);
+}
+}  // namespace
 
 namespace glic {
 
@@ -22,21 +33,26 @@ GlicBackgroundModeManager::GlicBackgroundModeManager(StatusTray* status_tray)
     : configuration_(std::make_unique<GlicLauncherConfiguration>(this)),
       controller_(std::make_unique<GlicController>()),
       status_tray_(status_tray),
-      enabled_(configuration_->IsEnabled()),
+      enabled_pref_(configuration_->IsEnabled()),
       expected_registered_hotkey_(configuration_->GetGlobalHotkey()) {
   UpdateState();
+  g_browser_process->profile_manager()->AddObserver(this);
 }
 
 GlicBackgroundModeManager::~GlicBackgroundModeManager() = default;
 
+GlicBackgroundModeManager* GlicBackgroundModeManager::GetInstance() {
+  return g_browser_process->GetFeatures()->glic_background_mode_manager();
+}
+
 void GlicBackgroundModeManager::OnEnabledChanged(bool enabled) {
-  if (enabled_ == enabled) {
+  if (enabled_pref_ == enabled) {
     return;
   }
 
-  enabled_ = enabled;
+  enabled_pref_ = enabled;
   UpdateState();
-  EnableLaunchOnStartup(enabled_);
+  EnableLaunchOnStartup(enabled_pref_);
 }
 
 void GlicBackgroundModeManager::OnGlobalHotkeyChanged(ui::Accelerator hotkey) {
@@ -59,6 +75,26 @@ void GlicBackgroundModeManager::ExecuteCommand(
     const std::string& accelerator_group_id,
     const std::string& command_id) {
   // TODO(crbug.com/385194502): Handle Linux.
+}
+
+void GlicBackgroundModeManager::OnProfileAdded(Profile* profile) {
+  // If a profile is added when not in background mode, check if it can now be
+  // entered.
+  if (!status_icon_) {
+    CHECK(!keep_alive_);
+    UpdateState();
+  }
+}
+
+void GlicBackgroundModeManager::OnPolicyChanged() {
+  // Recompute whether the background launcher should change state based on the
+  // updated policy.
+  UpdateState();
+}
+
+void GlicBackgroundModeManager::Shutdown() {
+  CHECK(g_browser_process->profile_manager());
+  g_browser_process->profile_manager()->RemoveObserver(this);
 }
 
 void GlicBackgroundModeManager::EnterBackgroundMode() {
@@ -104,7 +140,9 @@ void GlicBackgroundModeManager::UnregisterHotkey() {
 
 void GlicBackgroundModeManager::UpdateState() {
   UnregisterHotkey();
-  if (enabled_) {
+
+  bool background_mode_enabled = enabled_pref_ && IsEnabledInAnyLoadedProfile();
+  if (background_mode_enabled) {
     EnterBackgroundMode();
     if (!expected_registered_hotkey_.IsEmpty()) {
       RegisterHotkey(expected_registered_hotkey_);

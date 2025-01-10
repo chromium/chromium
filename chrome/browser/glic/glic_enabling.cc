@@ -4,8 +4,10 @@
 
 #include "chrome/browser/glic/glic_enabling.h"
 
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
+#include "components/prefs/pref_service.h"
 
 bool GlicEnabling::IsEnabledByFlags() {
   return CheckEnabling() == glic::GlicEnabledStatus::kEnabled;
@@ -18,14 +20,13 @@ bool GlicEnabling::IsEnabledForProfile(const Profile* profile) {
     return false;
   }
 
-  // Glic is not supported from incognito or guest mode.
-  if (profile->IsOffTheRecord()) {
+  // Glic is supported only in regular profiles, i.e. disable in incognito,
+  // guest, system profile, etc.
+  if (!profile->IsRegularProfile()) {
     return false;
   }
 
-  // TODO(crbug.com/382722218): Enterprise policy may disable Glic for certain
-  // user profiles.
-  return true;
+  return profile->GetPrefs()->GetBoolean(glic::prefs::kGlicEnabledByPolicy);
 }
 
 glic::GlicEnabledStatus GlicEnabling::CheckEnabling() {

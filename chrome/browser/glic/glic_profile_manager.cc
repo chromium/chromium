@@ -40,6 +40,8 @@ void GlicProfileManager::CloseGlicWindow() {
 
 Profile* GlicProfileManager::GetProfileForLaunch() {
   // TODO(https://crbug.com/379165457): Implement profile choice logic.
+  // TODO(crbug.com/382722218): This needs to avoid using a profile that's been
+  // disabled via enterprise policy.
   return ProfileManager::GetLastUsedProfileAllowedByPolicy();
 }
 

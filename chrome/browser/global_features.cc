@@ -74,6 +74,14 @@ void GlobalFeatures::Init() {
 #endif
 }
 
+void GlobalFeatures::Shutdown() {
+#if BUILDFLAG(ENABLE_GLIC)
+  if (glic_background_mode_manager_) {
+    glic_background_mode_manager_->Shutdown();
+  }
+#endif
+}
+
 std::unique_ptr<system_permission_settings::PlatformHandle>
 GlobalFeatures::CreateSystemPermissionsPlatformHandle() {
   return system_permission_settings::PlatformHandle::Create();

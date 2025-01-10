@@ -7,6 +7,7 @@
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/launcher/glic_background_mode_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -43,8 +44,7 @@ bool GlicProfileConfiguration::IsEnabledByPolicy() const {
 void GlicProfileConfiguration::OnEnabledByPolicyChanged() {
   // TODO(crbug.com/382722218): Update UI in each window to remove/add Glic
   // button.
-  // TODO(crbug.com/382722218): Update background mode in response to changed
-  // policy.
+  GlicBackgroundModeManager::GetInstance()->OnPolicyChanged();
 }
 
 }  // namespace glic

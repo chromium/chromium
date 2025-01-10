@@ -57,6 +57,7 @@ source_set("impl") {
     ":glic",
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
+    "//chrome/browser/glic/launcher",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:browser_list",
@@ -79,7 +80,11 @@ source_set("enabling") {
     "glic_enabling.cc",
     "glic_enabling.h",
   ]
-  deps = [ "//chrome/browser/profiles:profile" ]
+  deps = [
+    ":glic",
+    "//chrome/browser/profiles:profile",
+    "//components/prefs",
+  ]
   public_deps = [
     "//base",
     "//chrome/common:chrome_features",
@@ -118,7 +123,9 @@ source_set("browser_tests") {
     ":glic",
     "//chrome/browser",
     "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
     "//chrome/browser/extensions:extensions",
+    "//chrome/browser/glic/launcher",
     "//chrome/browser/policy:test_support",
     "//chrome/browser/ui",
     "//chrome/common:constants",

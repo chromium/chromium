@@ -471,6 +471,8 @@ void BrowserProcessImpl::StartTearDown() {
   tearing_down_ = true;
   DCHECK(IsShuttingDown());
 
+  features_->Shutdown();
+
 // TODO(https://crbug.com/388906971): fix dead code below.
 #if BUILDFLAG(IS_ANDROID)
   accessibility_prefs_controller_.reset();

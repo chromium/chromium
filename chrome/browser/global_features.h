@@ -45,6 +45,9 @@ class GlobalFeatures {
   // Called exactly once to initialize features.
   void Init();
 
+  // Called exactly once when the browser starts to shutdown.
+  void Shutdown();
+
   // Public accessors for features, e.g.
   // FooFeature* foo_feature() { return foo_feature_.get(); }
 

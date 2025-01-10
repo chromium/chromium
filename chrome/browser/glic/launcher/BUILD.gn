@@ -11,6 +11,7 @@ source_set("launcher") {
 
   deps = [
     "//base",
+    "//chrome/browser/profiles:profile",
     "//components/prefs",
     "//ui/base",
     "//ui/base/accelerators/global_accelerator_listener",
@@ -34,7 +35,10 @@ source_set("impl") {
     "//chrome/app:generated_resources",
     "//chrome/app/vector_icons",
     "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
     "//chrome/browser/glic",
+    "//chrome/browser/glic:enabling",
+    "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_element_identifiers",
     "//components/keep_alive_registry",

@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/glic/launcher/glic_launcher_configuration.h"
+#include "chrome/browser/profiles/profile_manager_observer.h"
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
 
 class GlicController;
@@ -28,10 +29,13 @@ namespace glic {
 // listen to a global hotkey, and provide a status icon for triggering the UI.
 class GlicBackgroundModeManager
     : public GlicLauncherConfiguration::Observer,
-      public ui::GlobalAcceleratorListener::Observer {
+      public ui::GlobalAcceleratorListener::Observer,
+      public ProfileManagerObserver {
  public:
   explicit GlicBackgroundModeManager(StatusTray* status_tray);
   ~GlicBackgroundModeManager() override;
+
+  static GlicBackgroundModeManager* GetInstance();
 
   // GlicConfiguration::Observer
   void OnEnabledChanged(bool enabled) override;
@@ -42,9 +46,26 @@ class GlicBackgroundModeManager
   void ExecuteCommand(const std::string& accelerator_group_id,
                       const std::string& command_id) override;
 
+  // ProfileManagerObserver:
+  void OnProfileAdded(Profile* profile) override;
+
+  // Called when the enterprise policy-linked pref has changed for any profile.
+  void OnPolicyChanged();
+
+  void Shutdown();
+
   ui::Accelerator RegisteredHotkeyForTesting() {
     return actual_registered_hotkey_;
   }
+
+  bool IsInBackgroundModeForTesting() {
+    CHECK_EQ(static_cast<bool>(keep_alive_), static_cast<bool>(status_icon_));
+    return keep_alive_ != nullptr;
+  }
+
+  // Tests need a way to manually exit background mode so that the test can
+  // complete.
+  void TerminateForTesting() { ExitBackgroundMode(); }
 
  private:
   void EnterBackgroundMode();
@@ -69,7 +90,12 @@ class GlicBackgroundModeManager
   // mode is enabled.
   std::unique_ptr<GlicStatusIcon> status_icon_;
 
-  bool enabled_ = false;
+  // The current state of the launcher_enabled pref. Note that the pref is a
+  // local state and is thus per-installation. Each profile also has an
+  // "enabled_by_policy". Background mode is entered only if `enabled_pref` is
+  // true AND at least one loaded profile is enabled by policy.
+  bool enabled_pref_ = false;
+
   // The actual registered hotkey may be different from the expected hotkey
   // because the Glic launcher may be disabled or registration fails which
   // results in no hotkey being registered and is represented with an empty
