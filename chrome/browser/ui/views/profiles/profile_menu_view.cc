@@ -140,17 +140,16 @@ std::u16string GetSyncErrorButtonText(AvatarSyncErrorType error) {
   }
 }
 
-std::u16string GetProfileIdentifier(
-    std::u16string local_profile_name,
-    const std::string& primary_account_info_name) {
-  if (primary_account_info_name.empty()) {
-    return local_profile_name;
+std::u16string GetProfileIdentifier(const ProfileAttributesEntry& entry) {
+  switch (entry.GetNameForm()) {
+    case NameForm::kGaiaName:
+    case NameForm::kLocalName:
+      return entry.GetName();
+    case NameForm::kGaiaAndLocalName:
+      return l10n_util::GetStringFUTF16(
+          IDS_PROFILE_MENU_PROFILE_IDENTIFIER_WITH_SEPARATOR,
+          entry.GetGAIANameToDisplay(), entry.GetLocalProfileName());
   }
-
-  return l10n_util::GetStringFUTF16(
-      IDS_PROFILE_MENU_PROFILE_IDENTIFIER_WITH_SEPARATOR,
-      base::UTF8ToUTF16(primary_account_info_name),
-      std::move(local_profile_name));
 }
 
 }  // namespace
@@ -843,8 +842,7 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
   CoreAccountInfo account_info_for_signin_action = primary_account_info;
 
   IdentitySectionParams params;
-  params.title = GetProfileIdentifier(entry.GetLocalProfileName(),
-                                      primary_extended_account_info.given_name);
+  params.title = GetProfileIdentifier(entry);
   profiles::PlaceholderAvatarIconParams icon_params = {.has_padding = true,
                                                        .has_background = false};
   params.profile_image = ui::ImageModel::FromImage(
