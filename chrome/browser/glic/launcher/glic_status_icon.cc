@@ -31,17 +31,16 @@ GlicStatusIcon::GlicStatusIcon(GlicController* controller,
     : controller_(controller), status_tray_(status_tray) {
   // TODO(crbug.com/382287104): Use correct icon.
   // TODO(crbug.com/386839488): Chose color based on system theme.
-  gfx::ImageSkia status_tray_icon = gfx::CreateVectorIcon(kGlicButtonIcon,
-#if BUILDFLAG(IS_LINUX)
-                                                          SK_ColorWHITE
-#else
-                                                          SK_ColorBLACK
-#endif
-  );
+  gfx::ImageSkia status_tray_icon =
+      gfx::CreateVectorIcon(kGlicButtonIcon, SK_ColorBLACK);
 
   status_icon_ = status_tray_->CreateStatusIcon(
       StatusTray::GLIC_ICON, status_tray_icon,
       l10n_util::GetStringUTF16(IDS_GLIC_STATUS_ICON_TOOLTIP));
+#if BUILDFLAG(IS_LINUX)
+  //  Set a vector icon for proper themeing on Linux.
+  status_icon_->SetIcon(kGlicButtonIcon);
+#endif
 #if BUILDFLAG(IS_MAC)
   if (features::kGlicStatusIconOpenMenuWithSecondaryClick.Get()) {
     status_icon_->SetOpenMenuWithSecondaryClick(true);
