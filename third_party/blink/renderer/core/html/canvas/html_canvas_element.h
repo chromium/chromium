@@ -135,9 +135,10 @@ class CORE_EXPORT HTMLCanvasElement final
                                  ExceptionState&);
 
   bool IsPresentationAttribute(const QualifiedName&) const final;
-  void CollectStyleForPresentationAttribute(const QualifiedName&,
-                                            const AtomicString&,
-                                            MutableCSSPropertyValueSet*) final;
+  void CollectStyleForPresentationAttribute(
+      const QualifiedName&,
+      const AtomicString&,
+      HeapVector<CSSPropertyValue, 8>&) final;
 
   // Used for canvas capture.
   void AddListener(CanvasDrawListener*);

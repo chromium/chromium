@@ -202,6 +202,19 @@ MutableCSSPropertyValueSet::SetResult CSSParserImpl::ParseValue(
   return declaration->AddParsedProperties(parser.parsed_properties_);
 }
 
+unsigned CSSParserImpl::ParseValue(HeapVector<CSSPropertyValue, 8>& result,
+                                   CSSPropertyID unresolved_property,
+                                   StringView string,
+                                   const CSSParserContext* context) {
+  STACK_UNINITIALIZED CSSParserImpl parser(context);
+  CSSParserTokenStream stream(string);
+  parser.ConsumeDeclarationValue(stream, unresolved_property,
+                                 /*is_in_declaration_list=*/false,
+                                 StyleRule::kStyle);
+  result.AppendVector(parser.parsed_properties_);
+  return parser.parsed_properties_.size();
+}
+
 MutableCSSPropertyValueSet::SetResult CSSParserImpl::ParseVariableValue(
     MutableCSSPropertyValueSet* declaration,
     const AtomicString& property_name,

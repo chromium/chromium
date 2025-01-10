@@ -3586,13 +3586,13 @@ InspectorCSSAgent::BuildObjectForAttributesStyle(Element* element) {
     return nullptr;
 
   // FIXME: Ugliness below.
-  auto* mutable_attribute_style = DynamicTo<MutableCSSPropertyValueSet>(
-      const_cast<CSSPropertyValueSet*>(element->PresentationAttributeStyle()));
-  if (!mutable_attribute_style)
+  const CSSPropertyValueSet* attribute_style =
+      element->PresentationAttributeStyle();
+  if (!attribute_style)
     return nullptr;
 
   InspectorStyle* inspector_style = MakeGarbageCollected<InspectorStyle>(
-      mutable_attribute_style->EnsureCSSStyleDeclaration(
+      attribute_style->MutableCopy()->EnsureCSSStyleDeclaration(
           element->GetExecutionContext()),
       nullptr, nullptr);
   return inspector_style->BuildObjectForStyle();

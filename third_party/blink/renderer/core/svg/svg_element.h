@@ -236,17 +236,17 @@ class CORE_EXPORT SVGElement : public Element {
   void CollectStyleForPresentationAttribute(
       const QualifiedName&,
       const AtomicString&,
-      MutableCSSPropertyValueSet*) override;
+      HeapVector<CSSPropertyValue, 8>&) override;
   void AddPropertyToPresentationAttributeStyleWithCache(
-      MutableCSSPropertyValueSet*,
+      HeapVector<CSSPropertyValue, 8>&,
       CSSPropertyID,
       const AtomicString& value);
   void AddAnimatedPropertyToPresentationAttributeStyle(
       const SVGAnimatedPropertyBase& property,
-      MutableCSSPropertyValueSet* style);
+      HeapVector<CSSPropertyValue, 8>&);
   void AddAnimatedPropertiesToPresentationAttributeStyle(
       const base::span<const SVGAnimatedPropertyBase*> properties,
-      MutableCSSPropertyValueSet* style);
+      HeapVector<CSSPropertyValue, 8>&);
 
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;

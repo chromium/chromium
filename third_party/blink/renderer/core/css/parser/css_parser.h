@@ -95,6 +95,18 @@ class CORE_EXPORT CSSParser {
       StyleSheetContents*,
       const ExecutionContext* execution_context = nullptr);
 
+  // Appends to a vector instead of to a property value set (so no deduplication
+  // etc.). Also note that this takes in the resolved property; there's no
+  // reason for internal code to ever use an alias here. Returns the number of
+  // properties that were added (0 for parse error).
+  static unsigned ParseForPresentationStyle(
+      HeapVector<CSSPropertyValue, 8>& result,
+      CSSPropertyID resolved_property,
+      StringView value,
+      CSSParserMode parser_mode,
+      StyleSheetContents* context_sheet,  // Used for URL references.
+      const ExecutionContext* execution_context);
+
   static MutableCSSPropertyValueSet::SetResult ParseValueForCustomProperty(
       MutableCSSPropertyValueSet*,
       const AtomicString& property_name,

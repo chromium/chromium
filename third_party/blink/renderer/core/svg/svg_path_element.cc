@@ -156,7 +156,7 @@ void SVGPathElement::SynchronizeAllSVGAttributes() const {
 }
 
 void SVGPathElement::CollectExtraStyleForPresentationAttribute(
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   AddAnimatedPropertyToPresentationAttributeStyle(*path_, style);
   SVGGeometryElement::CollectExtraStyleForPresentationAttribute(style);
 }

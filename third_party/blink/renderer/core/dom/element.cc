@@ -9933,58 +9933,62 @@ void Element::UpdatePresentationAttributeStyle() {
 }
 
 CSSPropertyValueSet* Element::CreatePresentationAttributeStyle() {
-  auto* style = MakeGarbageCollected<MutableCSSPropertyValueSet>(
-      IsSVGElement() ? kSVGAttributeMode : kHTMLStandardMode);
+  HeapVector<CSSPropertyValue, 8> values;
   AttributeCollection attributes = AttributesWithoutUpdate();
   for (const Attribute& attr : attributes) {
-    CollectStyleForPresentationAttribute(attr.GetName(), attr.Value(), style);
+    CollectStyleForPresentationAttribute(attr.GetName(), attr.Value(), values);
   }
-  CollectExtraStyleForPresentationAttribute(style);
-  return style;
+  CollectExtraStyleForPresentationAttribute(values);
+  return ImmutableCSSPropertyValueSet::Create(
+      values, IsSVGElement() ? kSVGAttributeMode : kHTMLStandardMode);
 }
 
 void Element::AddPropertyToPresentationAttributeStyle(
-    MutableCSSPropertyValueSet* style,
+    HeapVector<CSSPropertyValue, 8>& values,
     CSSPropertyID property_id,
     CSSValueID identifier) {
   DCHECK(IsStyledElement());
   DCHECK_NE(property_id, CSSPropertyID::kWhiteSpace);
-  style->SetLonghandProperty(property_id,
-                             *CSSIdentifierValue::Create(identifier));
+  DCHECK(!CSSProperty::Get(property_id).IsShorthand());
+  values.emplace_back(CSSPropertyName(property_id),
+                      *CSSIdentifierValue::Create(identifier));
 }
 
 void Element::AddPropertyToPresentationAttributeStyle(
-    MutableCSSPropertyValueSet* style,
+    HeapVector<CSSPropertyValue, 8>& values,
     CSSPropertyID property_id,
     double value,
     CSSPrimitiveValue::UnitType unit) {
   DCHECK(IsStyledElement());
-  style->SetLonghandProperty(property_id,
-                             *CSSNumericLiteralValue::Create(value, unit));
+  DCHECK(!CSSProperty::Get(property_id).IsShorthand());
+  values.emplace_back(CSSPropertyName(property_id),
+                      *CSSNumericLiteralValue::Create(value, unit));
 }
 
 void Element::AddPropertyToPresentationAttributeStyle(
-    MutableCSSPropertyValueSet* style,
+    HeapVector<CSSPropertyValue, 8>& values,
     CSSPropertyID property_id,
     const String& value) {
   DCHECK(IsStyledElement());
-  style->ParseAndSetProperty(property_id, value, false,
-                             GetExecutionContext()
-                                 ? GetExecutionContext()->GetSecureContextMode()
-                                 : SecureContextMode::kInsecureContext,
-                             GetDocument().ElementSheet().Contents());
+  CSSParser::ParseForPresentationStyle(
+      values, property_id, value,
+      IsSVGElement() ? kSVGAttributeMode : kHTMLStandardMode,
+      GetDocument().ElementSheet().Contents(),
+      /*execution_context=*/nullptr);
 }
 
 void Element::AddPropertyToPresentationAttributeStyle(
-    MutableCSSPropertyValueSet* style,
+    HeapVector<CSSPropertyValue, 8>& values,
     CSSPropertyID property_id,
     const CSSValue& value) {
   DCHECK(IsStyledElement());
-  style->SetLonghandProperty(property_id, value);
+  DCHECK(!CSSProperty::Get(property_id).IsShorthand());
+  values.emplace_back(CSSPropertyName(property_id), value);
 }
 
-void Element::MapLanguageAttributeToLocale(const AtomicString& value,
-                                           MutableCSSPropertyValueSet* style) {
+void Element::MapLanguageAttributeToLocale(
+    const AtomicString& value,
+    HeapVector<CSSPropertyValue, 8>& style) {
   if (!value.empty()) {
     // Have to quote so the locale id is treated as a string instead of as a CSS
     // keyword.

@@ -180,13 +180,11 @@ UniqueElementData::UniqueElementData(const UniqueElementData& other)
 UniqueElementData::UniqueElementData(const ShareableElementData& other)
     : ElementData(other, true) {
   // An ShareableElementData should never have a mutable inline
-  // CSSPropertyValueSet attached.
-  //
-  // NOTE: The presentation attribute style should probably also have been
-  // immutable, but it currently isn't, since we use its mutability
-  // during building.
+  // CSSPropertyValueSet attached. Same for presentation attribute style.
   DCHECK(!other.inline_style_ || !other.inline_style_->IsMutable());
   inline_style_ = other.inline_style_;
+  DCHECK(!other.presentation_attribute_style_ ||
+         !other.presentation_attribute_style_->IsMutable());
   presentation_attribute_style_ = other.presentation_attribute_style_;
 
   unsigned length = other.Attributes().size();

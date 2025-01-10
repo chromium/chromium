@@ -212,7 +212,7 @@ bool SVGSVGElement::IsPresentationAttribute(const QualifiedName& name) const {
 void SVGSVGElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   // We shouldn't collect style for 'width' and 'height' on inner <svg>, so
   // bail here in that case to avoid having the generic logic in SVGElement
   // picking it up.
@@ -821,7 +821,7 @@ void SVGSVGElement::SynchronizeAllSVGAttributes() const {
 }
 
 void SVGSVGElement::CollectExtraStyleForPresentationAttribute(
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   auto pres_attrs = std::to_array<const SVGAnimatedPropertyBase*>(
       {x_.Get(), y_.Get(), width_.Get(), height_.Get()});
   AddAnimatedPropertiesToPresentationAttributeStyle(pres_attrs, style);

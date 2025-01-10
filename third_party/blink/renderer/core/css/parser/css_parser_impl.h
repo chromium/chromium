@@ -106,6 +106,16 @@ class CORE_EXPORT CSSParserImpl {
       StringView,
       bool important,
       const CSSParserContext*);
+  // Same as above, but always in a style rule, never !important,
+  // and ends in a vector instead of a MutableCSSPropertyValueSet
+  // (which means we don't do e.g. any deduplication). Returns
+  // the number of properties that were added (always 0 or 1
+  // if the property is a longhand). This is used for parsing
+  // presentation style.
+  static unsigned ParseValue(HeapVector<CSSPropertyValue, 8>&,
+                             CSSPropertyID,
+                             StringView,
+                             const CSSParserContext*);
   static MutableCSSPropertyValueSet::SetResult ParseVariableValue(
       MutableCSSPropertyValueSet*,
       const AtomicString& property_name,

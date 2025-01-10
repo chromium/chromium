@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/animation/animatable.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
+#include "third_party/blink/renderer/core/css/css_property_value.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/resolver/cascade_filter.h"
 #include "third_party/blink/renderer/core/css/style_recalc_change.h"
@@ -654,12 +655,12 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   virtual void CollectStyleForPresentationAttribute(
       const QualifiedName&,
       const AtomicString&,
-      MutableCSSPropertyValueSet*) {}
+      HeapVector<CSSPropertyValue, 8>&) {}
   // Subclasses can override these functions if there is extra style that needs
   // to be mapped like attributes.
   virtual bool HasExtraStyleForPresentationAttribute() const { return false; }
   virtual void CollectExtraStyleForPresentationAttribute(
-      MutableCSSPropertyValueSet*) {}
+      HeapVector<CSSPropertyValue, 8>&) {}
 
   // For exposing to DOM only.
   NamedNodeMap* attributesForBindings() const;
@@ -1561,21 +1562,21 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
                                    bool is_width,
                                    bool is_offset);
 
-  void AddPropertyToPresentationAttributeStyle(MutableCSSPropertyValueSet*,
+  void AddPropertyToPresentationAttributeStyle(HeapVector<CSSPropertyValue, 8>&,
                                                CSSPropertyID,
                                                CSSValueID identifier);
-  void AddPropertyToPresentationAttributeStyle(MutableCSSPropertyValueSet*,
+  void AddPropertyToPresentationAttributeStyle(HeapVector<CSSPropertyValue, 8>&,
                                                CSSPropertyID,
                                                double value,
                                                CSSPrimitiveValue::UnitType);
-  void AddPropertyToPresentationAttributeStyle(MutableCSSPropertyValueSet*,
+  void AddPropertyToPresentationAttributeStyle(HeapVector<CSSPropertyValue, 8>&,
                                                CSSPropertyID,
                                                const String& value);
-  void AddPropertyToPresentationAttributeStyle(MutableCSSPropertyValueSet*,
+  void AddPropertyToPresentationAttributeStyle(HeapVector<CSSPropertyValue, 8>&,
                                                CSSPropertyID,
                                                const CSSValue&);
   void MapLanguageAttributeToLocale(const AtomicString&,
-                                    MutableCSSPropertyValueSet*);
+                                    HeapVector<CSSPropertyValue, 8>&);
 
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
@@ -2118,7 +2119,8 @@ inline const SpaceSplitString& Element::ClassNames() const {
 }
 
 inline bool Element::HasClassName(const AtomicString& class_name) const {
-  return HasElementData() && GetElementData()->ClassNames().Contains(class_name);
+  return HasElementData() &&
+         GetElementData()->ClassNames().Contains(class_name);
 }
 
 inline bool Element::HasID() const {

@@ -200,7 +200,7 @@ class CORE_EXPORT HTMLVideoElement final
   void CollectStyleForPresentationAttribute(
       const QualifiedName&,
       const AtomicString&,
-      MutableCSSPropertyValueSet*) override;
+      HeapVector<CSSPropertyValue, 8>&) override;
   bool IsURLAttribute(const Attribute&) const override;
   const AtomicString ImageSourceURL() const override;
 

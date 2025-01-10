@@ -782,7 +782,7 @@ bool UseCSSURIValueCacheForProperty(CSSPropertyID property_id) {
 }  // namespace
 
 void SVGElement::AddPropertyToPresentationAttributeStyleWithCache(
-    MutableCSSPropertyValueSet* style,
+    HeapVector<CSSPropertyValue, 8>& style,
     CSSPropertyID property_id,
     const AtomicString& value) {
   if (UseCSSURIValueCacheForProperty(property_id) &&
@@ -799,9 +799,9 @@ void SVGElement::AddPropertyToPresentationAttributeStyleWithCache(
                                               *cached_value);
     } else {
       AddPropertyToPresentationAttributeStyle(style, property_id, value);
-      if (unsigned count = style->PropertyCount()) {
+      if (unsigned count = style.size()) {
         // Cache the value if it was added.
-        const CSSPropertyValue& last_decl = style->PropertyAt(--count);
+        const CSSPropertyValue& last_decl = style[--count];
         if (last_decl.PropertyID() == property_id) {
           engine.AddCachedFillOrClipPathURIValue(value, last_decl.Value());
         }
@@ -815,7 +815,7 @@ void SVGElement::AddPropertyToPresentationAttributeStyleWithCache(
 void SVGElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   CSSPropertyID property_id =
       CssPropertyIdForSVGAttributeName(GetExecutionContext(), name);
   if (property_id > CSSPropertyID::kInvalid) {
@@ -1075,6 +1075,11 @@ SVGElement::GetPresentationAttributeStyleForDirectUpdate() {
   if (!element_data->PresentationAttributeStyle()) {
     return nullptr;
   }
+  if (!element_data->presentation_attribute_style_->IsMutable()) {
+    element_data = &EnsureUniqueElementData();
+    element_data->presentation_attribute_style_ =
+        element_data->presentation_attribute_style_->MutableCopy();
+  }
   return To<MutableCSSPropertyValueSet>(
       element_data->presentation_attribute_style_.Get());
 }
@@ -1131,7 +1136,7 @@ void SVGElement::UpdatePresentationAttributeStyle(
 
 void SVGElement::AddAnimatedPropertyToPresentationAttributeStyle(
     const SVGAnimatedPropertyBase& property,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   DCHECK(property.HasPresentationAttributeMapping());
   // Apply values from animating attributes that are also presentation
   // attributes, but do not have a corresponding content attribute.
@@ -1444,7 +1449,7 @@ void SVGElement::SynchronizeListOfSVGAttributes(
 
 void SVGElement::AddAnimatedPropertiesToPresentationAttributeStyle(
     const base::span<const SVGAnimatedPropertyBase*> properties,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   for (const SVGAnimatedPropertyBase* property : properties) {
     AddAnimatedPropertyToPresentationAttributeStyle(*property, style);
   }

@@ -1393,7 +1393,7 @@ bool HTMLCanvasElement::IsPresentationAttribute(
 void HTMLCanvasElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   if (name == html_names::kWidthAttr) {
     const AtomicString& height = FastGetAttribute(html_names::kHeightAttr);
     if (!height.IsNull())

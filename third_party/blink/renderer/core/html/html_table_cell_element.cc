@@ -87,7 +87,7 @@ bool HTMLTableCellElement::IsPresentationAttribute(
 void HTMLTableCellElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   if (name == html_names::kNowrapAttr) {
     // Longhands of `white-space: nowrap`.
     AddPropertyToPresentationAttributeStyle(

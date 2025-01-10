@@ -108,7 +108,7 @@ class CORE_EXPORT HTMLPlugInElement
   void CollectStyleForPresentationAttribute(
       const QualifiedName&,
       const AtomicString&,
-      MutableCSSPropertyValueSet*) override;
+      HeapVector<CSSPropertyValue, 8>&) override;
   // HTMLFrameOwnerElement overrides:
   void DisconnectContentFrame() override;
   void IntrinsicSizingInfoChanged() final;

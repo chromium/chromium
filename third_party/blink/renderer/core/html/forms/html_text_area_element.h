@@ -131,7 +131,7 @@ class CORE_EXPORT HTMLTextAreaElement final : public TextControlElement {
   void CollectStyleForPresentationAttribute(
       const QualifiedName&,
       const AtomicString&,
-      MutableCSSPropertyValueSet*) override;
+      HeapVector<CSSPropertyValue, 8>&) override;
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
   void AppendToFormData(FormData&) override;
   void ResetImpl() override;

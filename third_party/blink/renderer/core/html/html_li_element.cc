@@ -69,7 +69,7 @@ AtomicString ListTypeAttributeToStyleName(const AtomicString& value) {
 void HTMLLIElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   if (name == html_names::kTypeAttr) {
     if (EqualIgnoringASCIICase(value, "none")) {
       AddPropertyToPresentationAttributeStyle(

@@ -328,7 +328,7 @@ void SVGPatternElement::SynchronizeAllSVGAttributes() const {
 }
 
 void SVGPatternElement::CollectExtraStyleForPresentationAttribute(
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   AddAnimatedPropertyToPresentationAttributeStyle(*pattern_transform_, style);
   SVGElement::CollectExtraStyleForPresentationAttribute(style);
 }

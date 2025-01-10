@@ -294,7 +294,7 @@ unsigned HTMLElement::ParseBorderWidthAttribute(
 
 void HTMLElement::ApplyBorderAttributeToStyle(
     const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   unsigned width = ParseBorderWidthAttribute(value);
   for (CSSPropertyID property_id :
        {CSSPropertyID::kBorderTopWidth, CSSPropertyID::kBorderBottomWidth,
@@ -330,7 +330,7 @@ bool HTMLElement::IsValidDirAttribute(const AtomicString& value) {
 void HTMLElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   if (name == html_names::kAlignAttr) {
     if (EqualIgnoringASCIICase(value, "middle")) {
       AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kTextAlign,
@@ -995,9 +995,10 @@ void HTMLElement::setOuterText(const String& text,
     MergeWithNextTextNode(prev_text_node, exception_state);
 }
 
-void HTMLElement::ApplyAspectRatioToStyle(const AtomicString& width,
-                                          const AtomicString& height,
-                                          MutableCSSPropertyValueSet* style) {
+void HTMLElement::ApplyAspectRatioToStyle(
+    const AtomicString& width,
+    const AtomicString& height,
+    HeapVector<CSSPropertyValue, 8>& style) {
   HTMLDimension width_dim;
   if (!ParseDimensionValue(width, width_dim) || !width_dim.IsAbsolute())
     return;
@@ -1010,7 +1011,7 @@ void HTMLElement::ApplyAspectRatioToStyle(const AtomicString& width,
 void HTMLElement::ApplyIntegerAspectRatioToStyle(
     const AtomicString& width,
     const AtomicString& height,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   unsigned width_val = 0;
   if (!ParseHTMLNonNegativeInteger(width, width_val))
     return;
@@ -1020,9 +1021,10 @@ void HTMLElement::ApplyIntegerAspectRatioToStyle(
   ApplyAspectRatioToStyle(width_val, height_val, style);
 }
 
-void HTMLElement::ApplyAspectRatioToStyle(double width,
-                                          double height,
-                                          MutableCSSPropertyValueSet* style) {
+void HTMLElement::ApplyAspectRatioToStyle(
+    double width,
+    double height,
+    HeapVector<CSSPropertyValue, 8>& style) {
   auto* width_val = CSSNumericLiteralValue::Create(
       width, CSSPrimitiveValue::UnitType::kNumber);
   auto* height_val = CSSNumericLiteralValue::Create(
@@ -1034,12 +1036,12 @@ void HTMLElement::ApplyAspectRatioToStyle(double width,
   list->Append(*CSSIdentifierValue::Create(CSSValueID::kAuto));
   list->Append(*ratio_value);
 
-  style->SetProperty(CSSPropertyID::kAspectRatio, *list);
+  style.emplace_back(CSSPropertyName(CSSPropertyID::kAspectRatio), *list);
 }
 
 void HTMLElement::ApplyAlignmentAttributeToStyle(
     const AtomicString& alignment,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   // Vertical alignment with respect to the current baseline of the text
   // right or left means floating images.
   CSSValueID float_value = CSSValueID::kInvalid;
@@ -1458,7 +1460,8 @@ void HTMLElement::showPopover(ShowPopoverOptions* options,
 void HTMLElement::ShowPopoverInternal(Element* invoker,
                                       ExceptionState* exception_state) {
   if (!IsPopoverReady(PopoverTriggerAction::kShow, exception_state,
-                      /*include_event_handler_text=*/false, /*document=*/nullptr)) {
+                      /*include_event_handler_text=*/false,
+                      /*document=*/nullptr)) {
     CHECK(exception_state)
         << " Callers which aren't supposed to throw exceptions should not call "
            "ShowPopoverInternal when the Popover isn't in a valid state to be "
@@ -1789,7 +1792,8 @@ void HTMLElement::HidePopoverInternal(
     HidePopoverTransitionBehavior transition_behavior,
     ExceptionState* exception_state) {
   if (!IsPopoverReady(PopoverTriggerAction::kHide, exception_state,
-                      /*include_event_handler_text=*/true, /*document=*/nullptr)) {
+                      /*include_event_handler_text=*/true,
+                      /*document=*/nullptr)) {
     return;
   }
   auto& document = GetDocument();
@@ -2747,7 +2751,7 @@ void HTMLElement::DidMoveToNewDocument(Document& old_document) {
   Element::DidMoveToNewDocument(old_document);
 }
 
-void HTMLElement::AddHTMLLengthToStyle(MutableCSSPropertyValueSet* style,
+void HTMLElement::AddHTMLLengthToStyle(HeapVector<CSSPropertyValue, 8>& style,
                                        CSSPropertyID property_id,
                                        const String& value,
                                        AllowPercentage allow_percentage,
@@ -2876,18 +2880,20 @@ bool HTMLElement::ParseColorWithLegacyRules(const String& attribute_value,
   return success;
 }
 
-void HTMLElement::AddHTMLColorToStyle(MutableCSSPropertyValueSet* style,
+void HTMLElement::AddHTMLColorToStyle(HeapVector<CSSPropertyValue, 8>& style,
                                       CSSPropertyID property_id,
                                       const String& attribute_value) {
   Color parsed_color;
   if (!ParseColorWithLegacyRules(attribute_value, parsed_color))
     return;
 
-  style->SetProperty(property_id, *cssvalue::CSSColor::Create(parsed_color));
+  DCHECK(!CSSProperty::Get(property_id).IsShorthand());
+  style.emplace_back(CSSPropertyName(property_id),
+                     *cssvalue::CSSColor::Create(parsed_color));
 }
 
 void HTMLElement::AddHTMLBackgroundImageToStyle(
-    MutableCSSPropertyValueSet* style,
+    HeapVector<CSSPropertyValue, 8>& style,
     const String& url_value,
     const AtomicString& initiator_name) {
   String url = StripLeadingAndTrailingHTMLSpaces(url_value);
@@ -2902,7 +2908,7 @@ void HTMLElement::AddHTMLBackgroundImageToStyle(
   if (initiator_name) {
     image_value->SetInitiator(initiator_name);
   }
-  style->SetLonghandProperty(CSSPropertyValue(
+  style.emplace_back(CSSPropertyValue(
       CSSPropertyName(CSSPropertyID::kBackgroundImage), *image_value));
 }
 
