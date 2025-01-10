@@ -159,4 +159,7 @@ public class Profile {
     public void cancelPrefetch(String url) {
         // TODO(334016945): do the actual implementation
     }
+
+    @UiThread
+    public void setSpeculativeLoadingConfig(SpeculativeLoadingConfig speculativeLoadingConfig) {}
 }

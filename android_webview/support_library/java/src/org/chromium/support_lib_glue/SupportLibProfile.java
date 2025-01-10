@@ -19,6 +19,7 @@ import com.android.webview.chromium.PrefetchException;
 import com.android.webview.chromium.PrefetchNetworkException;
 import com.android.webview.chromium.PrefetchOperationCallback;
 import com.android.webview.chromium.Profile;
+import com.android.webview.chromium.SpeculativeLoadingConfig;
 
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.support_lib_boundary.PrefetchOperationCallbackBoundaryInterface;
@@ -126,6 +127,16 @@ public class SupportLibProfile implements ProfileBoundaryInterface {
             /* PrefetchOperationCallback */ InvocationHandler callback) {
         recordApiCall(ApiCall.CLEAR_PREFETCH);
         mProfileImpl.clearPrefetch(url, createOperationCallback(callback));
+    }
+
+    @Override
+    public void setSpeculativeLoadingConfig(
+            /* SpeculativeLoadingConfig */ InvocationHandler config) {
+        recordApiCall(ApiCall.SET_SPECULATIVE_LOADING_CONFIG);
+        SpeculativeLoadingConfig speculativeLoadingConfig =
+                BoundaryInterfaceReflectionUtil.castToSuppLibClass(
+                        SpeculativeLoadingConfig.class, config);
+        mProfileImpl.setSpeculativeLoadingConfig(speculativeLoadingConfig);
     }
 
     private PrefetchOperationCallback createOperationCallback(

@@ -42,4 +42,6 @@ public interface ProfileBoundaryInterface {
             String url,
             Executor callbackExecutor,
             /* PrefetchOperationCallback */ InvocationHandler callback);
+
+    void setSpeculativeLoadingConfig(/* SpeculativeLoadingConfig */ InvocationHandler config);
 }

@@ -24,6 +24,7 @@ android_library("boundary_interface_java") {
     "src/org/chromium/support_lib_boundary/ServiceWorkerClientBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/ServiceWorkerControllerBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/ServiceWorkerWebSettingsBoundaryInterface.java",
+    "src/org/chromium/support_lib_boundary/SpeculativeLoadingConfigBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/SpeculativeLoadingParametersBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/StaticsBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/TracingControllerBoundaryInterface.java",

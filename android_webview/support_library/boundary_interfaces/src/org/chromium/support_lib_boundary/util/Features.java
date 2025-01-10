@@ -287,6 +287,7 @@ public class Features {
 
     // Profile.prefetchUrlAsync
     // Profile.clearPrefetchAsync
+    // Profile.setSpeculativeLoadingConfig
     public static final String PREFETCH_WITH_URL = "PREFETCH_URL_V3";
 
     // WebviewCompat.setDefaultTrafficStatsTag
