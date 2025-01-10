@@ -423,7 +423,8 @@ enum class ScopedHistogramTiming {
     constant_histogram_name, index, constant_maximum,                       \
     histogram_add_method_invocation, histogram_factory_get_invocation)      \
   do {                                                                      \
-    static std::atomic_uintptr_t atomic_histograms[constant_maximum];       \
+    static std::array<std::atomic_uintptr_t, constant_maximum>              \
+        atomic_histograms;                                                  \
     DCHECK_LE(0, index);                                                    \
     DCHECK_LT(index, constant_maximum);                                     \
     HISTOGRAM_POINTER_USE(                                                  \

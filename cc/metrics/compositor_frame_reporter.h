@@ -5,6 +5,7 @@
 #ifndef CC_METRICS_COMPOSITOR_FRAME_REPORTER_H_
 #define CC_METRICS_COMPOSITOR_FRAME_REPORTER_H_
 
+#include <array>
 #include <bitset>
 #include <deque>
 #include <memory>
@@ -231,7 +232,9 @@ class CC_EXPORT CompositorFrameReporter {
     Iterator CreateIterator() const;
 
    private:
-    base::TimeDelta list_[static_cast<int>(BlinkBreakdown::kBreakdownCount)];
+    std::array<base::TimeDelta,
+               static_cast<size_t>(BlinkBreakdown::kBreakdownCount)>
+        list_;
   };
 
   // Holds a processed list of Viz breakdowns with an `Iterator` class to easily
@@ -279,8 +282,9 @@ class CC_EXPORT CompositorFrameReporter {
     base::TimeTicks swap_start() const { return swap_start_; }
 
    private:
-    std::optional<std::pair<base::TimeTicks, base::TimeTicks>>
-        list_[static_cast<int>(VizBreakdown::kBreakdownCount)];
+    std::array<std::optional<std::pair<base::TimeTicks, base::TimeTicks>>,
+               static_cast<size_t>(VizBreakdown::kBreakdownCount)>
+        list_;
 
     bool buffer_ready_available_ = false;
     base::TimeTicks swap_start_;
