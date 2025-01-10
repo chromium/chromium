@@ -486,9 +486,6 @@ found in the LICENSE file.
     </style>
 
      <!-- Bookmark styles -->
-    <style name="TextAppearance.ShoppingPriceDropText" parent="TextAppearance.TextMedium.Secondary">
-        <item name="android:textColor">@color/price_drop_annotation_text_green</item>
-    </style>
     <style name="TextAppearance.SpecialFolderChildCount" parent="TextAppearance.TextLarge.Primary.OnAccent1Container" tools:ignore="SpUsage">
         <!-- The same as the regular style, but using dp instead of sp. -->
         <item name="android:textSize">16dp</item>
