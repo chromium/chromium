@@ -288,6 +288,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Windows.Win11HardwareRequirements.{Type}Check"
+    enum="BooleanEnabled" expires_after="2025-06-01">
+  <owner>estalin@chromium.org</owner>
+  <owner>davidbienvenu@chromium.org</owner>
+  <summary>
+    Records only on Win10 if the current hardware {Type} passes requirements for
+    Win11. This is recorded once per browser session, on startup.
+  </summary>
+  <token key="Type">
+    <variant name="CPU" summary="Checks supported processor type"/>
+    <variant name="Disk" summary="Checks total installed disk space"/>
+    <variant name="Firmware" summary="Checks if secure boot capable"/>
+    <variant name="Memory" summary="Checks total installed memory"/>
+    <variant name="TPM" summary="Checks if TPM version is 2 or higher"/>
+  </token>
+</histogram>
+
 <histogram name="Windows.Win11UpgradeEligible" enum="BooleanEnabled"
     expires_after="2025-06-01">
   <owner>estalin@chromium.org</owner>
