@@ -6,6 +6,7 @@
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_POINTER_H_
 
 #include <cstdint>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "ui/events/event_constants.h"
