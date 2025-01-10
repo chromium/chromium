@@ -17,10 +17,12 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -40,6 +42,7 @@ public final class AutofillVcnEnrollBottomSheetLifecycleTest {
 
     @Mock private LayoutStateProvider mLayoutStateProvider;
     @Mock private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    @Mock private ObservableSupplier<TabModel> mCurrentTabModelSupplier;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModel mTabModel;
     @Mock private TabModel mNewTabModel;
@@ -110,10 +113,17 @@ public final class AutofillVcnEnrollBottomSheetLifecycleTest {
         mLifecycle.begin(this::notifyObserverAboutLifecycleEnd);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
         when(mTabModel.index()).thenReturn(0);
+        when(mTabModelSelector.getCurrentTabModelSupplier()).thenReturn(mCurrentTabModelSupplier);
         mLifecycle.onResult(mTabModelSelector);
 
-        mLifecycle.onTabModelSelected(/* newModel= */ mNewTabModel, /* oldModel= */ mTabModel);
+        ArgumentCaptor<Callback<TabModel>> currentTabModelObserverCaptor =
+                ArgumentCaptor.forClass(Callback.class);
+        verify(mCurrentTabModelSupplier).addObserver(currentTabModelObserverCaptor.capture());
 
+        currentTabModelObserverCaptor.getValue().onResult(mTabModel);
+        assertFalse(mObserverWasNotifiedAboutLifecycleEnd);
+
+        currentTabModelObserverCaptor.getValue().onResult(mNewTabModel);
         assertTrue(mObserverWasNotifiedAboutLifecycleEnd);
         verifyNoInteractions(mNewTabModel);
     }
@@ -123,12 +133,19 @@ public final class AutofillVcnEnrollBottomSheetLifecycleTest {
         mLifecycle.begin(this::notifyObserverAboutLifecycleEnd);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
         when(mTabModel.index()).thenReturn(-1);
+        when(mTabModelSelector.getCurrentTabModelSupplier()).thenReturn(mCurrentTabModelSupplier);
         mLifecycle.onResult(mTabModelSelector);
 
-        mLifecycle.onTabModelSelected(/* newModel= */ mNewTabModel, /* oldModel= */ mTabModel);
+        ArgumentCaptor<Callback<TabModel>> currentTabModelObserverCaptor =
+                ArgumentCaptor.forClass(Callback.class);
+        verify(mCurrentTabModelSupplier).addObserver(currentTabModelObserverCaptor.capture());
 
+        currentTabModelObserverCaptor.getValue().onResult(mTabModel);
         assertFalse(mObserverWasNotifiedAboutLifecycleEnd);
-        verify(mNewTabModel).addObserver(eq(mLifecycle));
+
+        currentTabModelObserverCaptor.getValue().onResult(mNewTabModel);
+        assertTrue(mObserverWasNotifiedAboutLifecycleEnd);
+        verifyNoInteractions(mNewTabModel);
     }
 
     @Test

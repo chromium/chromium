@@ -168,10 +168,6 @@ public abstract class TabModelSelectorBase
         previousModel.setActive(false);
         newModel.setActive(true);
         mTabModelSupplier.set(newModel);
-
-        for (TabModelSelectorObserver listener : mObservers) {
-            listener.onTabModelSelected(newModel, previousModel);
-        }
     }
 
     @Override
