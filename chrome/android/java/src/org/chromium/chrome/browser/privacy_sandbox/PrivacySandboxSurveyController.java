@@ -128,7 +128,10 @@ public class PrivacySandboxSurveyController {
     private boolean mHasSeenNtp;
     private boolean mOverrideChannelForTesting;
     private int mChannelForTesting;
+    private static long sAdsCctDelayOverrideMilliseconds;
+    private static boolean sOverrideAdsCctDelay;
     private static boolean sEnableForTesting;
+    private static final long DEFAULT_ADS_CCT_DELAY_MS = 20_000L;
 
     PrivacySandboxSurveyController(
             TabModelSelector tabModelSelector,
@@ -195,6 +198,10 @@ public class PrivacySandboxSurveyController {
         return true;
     }
 
+    private long getAdsCctDelayMilliseconds() {
+        return sOverrideAdsCctDelay ? sAdsCctDelayOverrideMilliseconds : DEFAULT_ADS_CCT_DELAY_MS;
+    }
+
     // Schedules the launch of an Ads CCT Treatment survey.
     // Should only be invoked after the closure of either the EEA or ROW notice.
     public void scheduleAdsCctTreatmentSurveyLaunch(String appId) {
@@ -204,7 +211,7 @@ public class PrivacySandboxSurveyController {
         PostTask.postDelayedTask(
                 TaskTraits.UI_DEFAULT,
                 () -> maybeLaunchAdsCctTreatmentSurvey(),
-                /*20 seconds*/ 20000);
+                getAdsCctDelayMilliseconds());
     }
 
     // Determines the appropriate survey to launch based on the user interaction with either the EEA
@@ -240,7 +247,7 @@ public class PrivacySandboxSurveyController {
         PostTask.postDelayedTask(
                 TaskTraits.UI_DEFAULT,
                 () -> maybeLaunchAdsCctControlSurvey(promptType),
-                /*20 seconds*/ 20000);
+                getAdsCctDelayMilliseconds());
     }
 
     // Determines the appropriate survey to launch based on the prompt type.
@@ -457,5 +464,12 @@ public class PrivacySandboxSurveyController {
     public void setChannelForTesting(int channel) {
         mChannelForTesting = channel;
         ResettersForTesting.register(() -> mChannelForTesting = Channel.DEFAULT);
+    }
+
+    // Overrides the survey delay
+    public static void overrideAdsCctSurveyDelayForTesting(long delayMilliseconds) {
+        sAdsCctDelayOverrideMilliseconds = delayMilliseconds;
+        sOverrideAdsCctDelay = true;
+        ResettersForTesting.register(() -> sOverrideAdsCctDelay = false);
     }
 }
