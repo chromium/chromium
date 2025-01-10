@@ -166,6 +166,22 @@ CoreAccountId ConvertFromJavaCoreAccountId(
 // Constructs a C++ GaiaId from the provided Java GaiaId.
 GaiaId ConvertFromJavaGaiaId(JNIEnv* env,
                              const base::android::JavaRef<jobject>& j_gaia_id);
+
+namespace jni_zero {
+template <>
+inline CoreAccountInfo FromJniType<CoreAccountInfo>(
+    JNIEnv* env,
+    const JavaRef<jobject>& j_core_account_info) {
+  return ConvertFromJavaCoreAccountInfo(env, j_core_account_info);
+}
+
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType(
+    JNIEnv* env,
+    const CoreAccountInfo& core_account_info) {
+  return ConvertToJavaCoreAccountInfo(env, core_account_info);
+}
+}  // namespace jni_zero
 #endif
 
 #endif  // COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_ACCOUNT_INFO_H_

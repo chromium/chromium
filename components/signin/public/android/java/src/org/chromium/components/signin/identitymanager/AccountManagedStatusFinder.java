@@ -104,7 +104,7 @@ public class AccountManagedStatusFinder {
     public interface Natives {
         long createNativeObject(
                 @JniType("IdentityManager*") IdentityManager identityManager,
-                CoreAccountInfo account,
+                @JniType("CoreAccountInfo") CoreAccountInfo account,
                 @JniType("base::RepeatingClosure") Runnable asyncCallback,
                 long timeout);
 

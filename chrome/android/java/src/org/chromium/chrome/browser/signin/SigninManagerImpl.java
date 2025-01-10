@@ -937,7 +937,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
 
         void fetchAndApplyCloudPolicy(
                 long nativeSigninManagerAndroid,
-                CoreAccountInfo account,
+                @JniType("CoreAccountInfo") CoreAccountInfo account,
                 @JniType("base::RepeatingClosure") Runnable callback);
 
         void stopApplyingCloudPolicy(long nativeSigninManagerAndroid);

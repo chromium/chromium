@@ -253,9 +253,8 @@ void SigninManagerAndroid::RegisterPolicyWithAccount(
 
 void SigninManagerAndroid::FetchAndApplyCloudPolicy(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_account_info,
+    const CoreAccountInfo& account,
     const base::RepeatingClosure& callback) {
-  CoreAccountInfo account = ConvertFromJavaCoreAccountInfo(env, j_account_info);
   RegisterPolicyWithAccount(
       account,
       base::BindOnce(&SigninManagerAndroid::OnPolicyRegisterDone,

@@ -75,10 +75,9 @@ class TestSupportAndroid {
   }
 
   void AddAccount(const CoreAccountInfo& account_info) {
-    JNIEnv* env = base::android::AttachCurrentThread();
     signin::Java_AccountCapabilitiesFetcherTestUtil_expectAccount(
-        env, java_test_util_ref_,
-        ConvertToJavaCoreAccountInfo(env, account_info));
+        base::android::AttachCurrentThread(), java_test_util_ref_,
+        account_info);
   }
 
   std::unique_ptr<AccountCapabilitiesFetcher> CreateFetcher(
@@ -114,8 +113,7 @@ class TestSupportAndroid {
                           const AccountCapabilities& capabilities) {
     JNIEnv* env = base::android::AttachCurrentThread();
     signin::Java_AccountCapabilitiesFetcherTestUtil_returnCapabilities(
-        env, java_test_util_ref_,
-        ConvertToJavaCoreAccountInfo(env, account_info),
+        env, java_test_util_ref_, account_info,
         capabilities.ConvertToJavaAccountCapabilities(env));
   }
 

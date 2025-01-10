@@ -80,7 +80,7 @@ void FacilitatedPaymentsApiClientAndroid::InvokePurchaseAction(
   purchase_action_callback_ = std::move(callback);
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_FacilitatedPaymentsApiClientBridge_invokePurchaseAction(
-      env, java_bridge_, ConvertToJavaCoreAccountInfo(env, primary_account),
+      env, java_bridge_, primary_account,
       base::android::ToJavaByteArray(env, action_token));
 }
 

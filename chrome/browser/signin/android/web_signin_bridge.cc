@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_reconcilor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -91,7 +92,7 @@ void WebSigninBridge::OnSigninCompleted(const GoogleServiceAuthError& error) {
 static jlong JNI_WebSigninBridge_Create(
     JNIEnv* env,
     Profile* profile,
-    const JavaParamRef<jobject>& j_account,
+    CoreAccountInfo& account,
     const JavaParamRef<jobject>& j_listener) {
   DCHECK(j_listener) << "Listener should be non-null";
 
@@ -99,14 +100,12 @@ static jlong JNI_WebSigninBridge_Create(
       IdentityManagerFactory::GetForProfile(profile);
   AccountReconcilor* account_reconcilor =
       AccountReconcilorFactory::GetForProfile(profile);
-  CoreAccountInfo signin_account =
-      ConvertFromJavaCoreAccountInfo(env, j_account);
   base::RepeatingCallback<void(const GoogleServiceAuthError&)>
       on_signin_completed = base::BindRepeating(
           &ForwardOnSigninCompletedToJava,
           base::android::ScopedJavaGlobalRef<jobject>(j_listener));
   return reinterpret_cast<intptr_t>(
-      new WebSigninBridge(identity_manager, account_reconcilor, signin_account,
+      new WebSigninBridge(identity_manager, account_reconcilor, account,
                           std::move(on_signin_completed)));
 }
 

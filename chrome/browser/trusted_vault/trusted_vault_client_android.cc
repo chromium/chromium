@@ -158,14 +158,11 @@ void TrustedVaultClientAndroid::FetchKeys(
   const RequestId request_id =
       RegisterNewOngoingRequest(OngoingFetchKeys(account_info, std::move(cb)));
 
-  JNIEnv* const env = base::android::AttachCurrentThread();
-  const base::android::ScopedJavaLocalRef<jobject> java_account_info =
-      ConvertToJavaCoreAccountInfo(env, account_info);
-
   // Trigger the fetching keys from the implementation in Java, which will
   // eventually call FetchKeysCompleted().
-  Java_TrustedVaultClient_fetchKeys(env, reinterpret_cast<intptr_t>(this),
-                                    request_id, java_account_info);
+  Java_TrustedVaultClient_fetchKeys(base::android::AttachCurrentThread(),
+                                    reinterpret_cast<intptr_t>(this),
+                                    request_id, account_info);
 }
 
 void TrustedVaultClientAndroid::StoreKeys(
@@ -187,14 +184,11 @@ void TrustedVaultClientAndroid::MarkLocalKeysAsStale(
   const RequestId request_id =
       RegisterNewOngoingRequest(OngoingMarkLocalKeysAsStale(std::move(cb)));
 
-  JNIEnv* const env = base::android::AttachCurrentThread();
-  const base::android::ScopedJavaLocalRef<jobject> java_account_info =
-      ConvertToJavaCoreAccountInfo(env, account_info);
-
   // The Java implementation will eventually call
   // MarkLocalKeysAsStaleCompleted().
   Java_TrustedVaultClient_markLocalKeysAsStale(
-      env, reinterpret_cast<intptr_t>(this), request_id, java_account_info);
+      base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
+      request_id, account_info);
 }
 
 void TrustedVaultClientAndroid::GetIsRecoverabilityDegraded(
@@ -208,14 +202,11 @@ void TrustedVaultClientAndroid::GetIsRecoverabilityDegraded(
   const RequestId request_id = RegisterNewOngoingRequest(
       OngoingGetIsRecoverabilityDegraded(std::move(cb)));
 
-  JNIEnv* const env = base::android::AttachCurrentThread();
-  const base::android::ScopedJavaLocalRef<jobject> java_account_info =
-      ConvertToJavaCoreAccountInfo(env, account_info);
-
   // The Java implementation will eventually call
   // MarkLocalKeysAsStaleCompleted().
   Java_TrustedVaultClient_getIsRecoverabilityDegraded(
-      env, reinterpret_cast<intptr_t>(this), request_id, java_account_info);
+      base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
+      request_id, account_info);
 }
 
 void TrustedVaultClientAndroid::AddTrustedRecoveryMethod(
@@ -244,16 +235,13 @@ void TrustedVaultClientAndroid::AddTrustedRecoveryMethod(
       RegisterNewOngoingRequest(OngoingAddTrustedRecoveryMethod(std::move(cb)));
 
   JNIEnv* const env = base::android::AttachCurrentThread();
-  const base::android::ScopedJavaLocalRef<jobject> java_account_info =
-      ConvertToJavaCoreAccountInfo(env, account_info);
-
   const base::android::ScopedJavaLocalRef<jbyteArray> java_public_key =
       base::android::ToJavaByteArray(env, public_key);
 
   // The Java implementation will eventually call
   // AddTrustedRecoveryMethodCompleted().
   Java_TrustedVaultClient_addTrustedRecoveryMethod(
-      env, reinterpret_cast<intptr_t>(this), request_id, java_account_info,
+      env, reinterpret_cast<intptr_t>(this), request_id, account_info,
       java_public_key, method_type_hint);
 }
 

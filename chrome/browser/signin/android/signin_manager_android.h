@@ -58,10 +58,9 @@ class SigninManagerAndroid : public KeyedService {
 
   // Registers a CloudPolicyClient for fetching policy for a user and fetches
   // the policy if necessary.
-  void FetchAndApplyCloudPolicy(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_account_info,
-      const base::RepeatingClosure& j_callback);
+  void FetchAndApplyCloudPolicy(JNIEnv* env,
+                                const CoreAccountInfo& account,
+                                const base::RepeatingClosure& callback);
 
   void StopApplyingCloudPolicy(JNIEnv* env);
 

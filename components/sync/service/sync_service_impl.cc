@@ -2075,8 +2075,7 @@ void SyncServiceImpl::SendExplicitPassphraseToPlatformClient() {
   proto.SerializeToArray(bytes.data(), byte_size);
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_ExplicitPassphrasePlatformClient_setExplicitDecryptionPassphrase(
-      env, ConvertToJavaCoreAccountInfo(env, GetAccountInfo()),
-      base::android::ToJavaByteArray(env, bytes));
+      env, GetAccountInfo(), base::android::ToJavaByteArray(env, bytes));
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 

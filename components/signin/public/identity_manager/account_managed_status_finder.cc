@@ -11,6 +11,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/time/time.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
@@ -684,16 +685,14 @@ void AccountManagedStatusFinder::OutcomeDeterminedAsync(Outcome type) {
 static jlong JNI_AccountManagedStatusFinder_CreateNativeObject(
     JNIEnv* env,
     IdentityManager* identity_manager,
-    const base::android::JavaParamRef<jobject>& j_core_account_info,
+    CoreAccountInfo& account,
     base::RepeatingClosure& callback,
     jlong timeout_in_millis) {
-  CoreAccountInfo account_info =
-      ConvertFromJavaCoreAccountInfo(env, j_core_account_info);
   base::TimeDelta timeout = timeout_in_millis < 0
                                 ? base::TimeDelta::Max()
                                 : base::Milliseconds(timeout_in_millis);
   auto result = std::make_unique<AccountManagedStatusFinder>(
-      identity_manager, std::move(account_info), callback, timeout);
+      identity_manager, account, std::move(callback), timeout);
   return reinterpret_cast<intptr_t>(result.release());
 }
 

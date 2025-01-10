@@ -273,7 +273,9 @@ public class TrustedVaultClient {
      */
     @CalledByNative
     private static void fetchKeys(
-            long nativeTrustedVaultClientAndroid, int requestId, CoreAccountInfo accountInfo) {
+            long nativeTrustedVaultClientAndroid,
+            int requestId,
+            @JniType("CoreAccountInfo") CoreAccountInfo accountInfo) {
         assert isNativeRegistered(nativeTrustedVaultClientAndroid);
 
         Consumer<List<byte[]>> responseCb =
@@ -300,7 +302,9 @@ public class TrustedVaultClient {
      */
     @CalledByNative
     private static void markLocalKeysAsStale(
-            long nativeTrustedVaultClientAndroid, int requestId, CoreAccountInfo accountInfo) {
+            long nativeTrustedVaultClientAndroid,
+            int requestId,
+            @JniType("CoreAccountInfo") CoreAccountInfo accountInfo) {
         assert isNativeRegistered(nativeTrustedVaultClientAndroid);
 
         Consumer<Boolean> responseCallback =
@@ -326,7 +330,9 @@ public class TrustedVaultClient {
      */
     @CalledByNative
     private static void getIsRecoverabilityDegraded(
-            long nativeTrustedVaultClientAndroid, int requestId, CoreAccountInfo accountInfo) {
+            long nativeTrustedVaultClientAndroid,
+            int requestId,
+            @JniType("CoreAccountInfo") CoreAccountInfo accountInfo) {
         assert isNativeRegistered(nativeTrustedVaultClientAndroid);
 
         Consumer<Boolean> responseCallback =
@@ -355,7 +361,7 @@ public class TrustedVaultClient {
     private static void addTrustedRecoveryMethod(
             long nativeTrustedVaultClientAndroid,
             int requestId,
-            CoreAccountInfo accountInfo,
+            @JniType("CoreAccountInfo") CoreAccountInfo accountInfo,
             byte[] publicKey,
             int methodTypeHint) {
         assert isNativeRegistered(nativeTrustedVaultClientAndroid);
