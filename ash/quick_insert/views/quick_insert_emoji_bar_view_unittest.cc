@@ -285,6 +285,27 @@ TEST_F(QuickInsertEmojiBarViewTest, ClickingGifsToggleTogglesCheckedState) {
   LeftClickOn(*emoji_bar->gifs_button_for_testing());
 }
 
+TEST_F(QuickInsertEmojiBarViewTest,
+       ClickingGifsToggleDoesNotChangeToggleHeight) {
+  base::test::ScopedFeatureList feature_list(features::kPickerGifs);
+  MockEmojiBarViewDelegate mock_delegate;
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->SetFullscreen(true);
+  auto* emoji_bar =
+      widget->SetContentsView(std::make_unique<QuickInsertEmojiBarView>(
+          &mock_delegate, kQuickInsertWidth, /*is_gifs_enabled=*/true));
+  widget->Show();
+  ViewDrawnWaiter().Wait(emoji_bar->gifs_button_for_testing());
+  const int untoggled_height = emoji_bar->gifs_button_for_testing()->height();
+  ASSERT_GT(untoggled_height, 0);
+
+  LeftClickOn(*emoji_bar->gifs_button_for_testing());
+  widget->LayoutRootViewIfNecessary();
+
+  EXPECT_EQ(emoji_bar->gifs_button_for_testing()->height(), untoggled_height);
+}
+
 TEST_F(QuickInsertEmojiBarViewTest, GifsButtonNotVisibleWhenDisabled) {
   MockEmojiBarViewDelegate mock_delegate;
   std::unique_ptr<views::Widget> widget =

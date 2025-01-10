@@ -77,6 +77,9 @@ constexpr int kGifsButtonIconLabelSpacing = 2;
 // Size of the GIFs button icon.
 constexpr int kGifsButtonIconSize = 16;
 
+// Height of the GIFs button.
+constexpr int kGifsButtonHeight = 24;
+
 std::unique_ptr<views::View> CreateEmptyCell() {
   auto cell_view = std::make_unique<views::View>();
   cell_view->SetUseDefaultFillLayout(true);
@@ -175,6 +178,8 @@ class GifsButton : public views::LabelButton {
     SetProperty(views::kElementIdentifierKey, kQuickInsertGifElementId);
 
     if (base::FeatureList::IsEnabled(features::kPickerGifs)) {
+      SetMinSize(gfx::Size(0, kGifsButtonHeight));
+      SetMaxSize(gfx::Size(0, kGifsButtonHeight));
       GetViewAccessibility().SetRole(ax::mojom::Role::kToggleButton);
       GetViewAccessibility().SetCheckedState(ax::mojom::CheckedState::kFalse);
     }
