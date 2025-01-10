@@ -187,10 +187,9 @@ struct StitchedAnchorQueryCollector {
           fragmentainer_stitched_offset,
           {writing_direction, child->Size()}};
       AddChild(*child, /* offset_from_fragmentainer */ {}, fragmentainer);
-      fragmentainer_stitched_offset +=
-          child->Size()
-              .ConvertToLogical(writing_direction.GetWritingMode())
-              .block_size;
+      if (const auto* token = To<BlockBreakToken>(child->GetBreakToken())) {
+        fragmentainer_stitched_offset = token->ConsumedBlockSize();
+      }
     }
   }
 
