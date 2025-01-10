@@ -730,7 +730,7 @@ void HTMLSelectElement::ParseAttribute(
     // FIXME: ignore for the moment.
     //
   } else if (params.name == html_names::kSelectedcontentelementAttr) {
-    if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
+    if (RuntimeEnabledFeatures::SelectedcontentelementAttributeEnabled()) {
       HTMLSelectedContentElement* old_selectedcontent =
           DynamicTo<HTMLSelectedContentElement>(
               getElementByIdIncludingDisconnected(*this, params.old_value));
