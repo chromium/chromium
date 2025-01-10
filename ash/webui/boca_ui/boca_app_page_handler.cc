@@ -154,11 +154,13 @@ BocaAppHandler::BocaAppHandler(
     mojo::PendingReceiver<boca::mojom::PageHandler> receiver,
     mojo::PendingRemote<boca::mojom::Page> remote,
     content::WebUI* web_ui,
+    std::unique_ptr<WebviewAuthHandler> auth_handler,
     std::unique_ptr<ClassroomPageHandlerImpl> classroom_client_impl,
     SessionClientImpl* session_client_impl,
     bool is_producer)
     : is_producer_(is_producer),
       tab_info_collector_(web_ui, is_producer),
+      auth_handler_(std::move(auth_handler)),
       class_room_page_handler_(std::move(classroom_client_impl)),
       receiver_(this, std::move(receiver)),
       remote_(std::move(remote)),
@@ -183,6 +185,10 @@ BocaAppHandler::~BocaAppHandler() {
   BocaAppClient::Get()->GetSessionManager()->RemoveObserver(this);
   BocaAppClient::Get()->GetSessionManager()->ToggleAppStatus(
       /*is_app_opened=*/false);
+}
+
+void BocaAppHandler::AuthenticateWebview(AuthenticateWebviewCallback callback) {
+  auth_handler_->AuthenticateWebview(std::move(callback));
 }
 
 void BocaAppHandler::GetWindowsTabsList(GetWindowsTabsListCallback callback) {

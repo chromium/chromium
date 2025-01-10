@@ -13,6 +13,7 @@
 #include "ash/webui/boca_ui/provider/classroom_page_handler_impl.h"
 #include "ash/webui/boca_ui/provider/network_info_provider.h"
 #include "ash/webui/boca_ui/provider/tab_info_collector.h"
+#include "ash/webui/boca_ui/webview_auth_handler.h"
 #include "base/functional/callback_forward.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
@@ -38,6 +39,7 @@ class BocaAppHandler : public mojom::PageHandler,
       mojo::PendingReceiver<mojom::PageHandler> receiver,
       mojo::PendingRemote<mojom::Page> remote,
       content::WebUI* webui,
+      std::unique_ptr<WebviewAuthHandler> auth_handler,
       std::unique_ptr<ClassroomPageHandlerImpl> classroom_client_impl,
       SessionClientImpl* session_client_impl,
       bool is_producer);
@@ -52,6 +54,7 @@ class BocaAppHandler : public mojom::PageHandler,
                                              SetFloatModeCallback callback);
 
   // mojom::PageHandler:
+  void AuthenticateWebview(AuthenticateWebviewCallback callback) override;
   void GetWindowsTabsList(GetWindowsTabsListCallback callback) override;
   void ListCourses(ListCoursesCallback callback) override;
   void ListStudents(const std::string& course_id,
@@ -106,6 +109,9 @@ class BocaAppHandler : public mojom::PageHandler,
   void SetSessionConfigInterceptorCallbackForTesting(
       SessionConfigInterceptorCallback callback);
   void SetSpotlightServiceForTesting(std::unique_ptr<SpotlightService> service);
+  WebviewAuthHandler* GetWebviewAuthHandlerForTesting() {
+    return auth_handler_.get();
+  }
 
  private:
   void UpdateSessionConfig();
@@ -127,6 +133,7 @@ class BocaAppHandler : public mojom::PageHandler,
   SEQUENCE_CHECKER(sequence_checker_);
   const bool is_producer_;
   TabInfoCollector tab_info_collector_;
+  std::unique_ptr<WebviewAuthHandler> auth_handler_;
   std::unique_ptr<ClassroomPageHandlerImpl> class_room_page_handler_;
   raw_ptr<SpotlightService> spotlight_service_;
   // Latest config is not always the same as the instance maintained in

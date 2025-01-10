@@ -25,6 +25,10 @@ static_library("boca_ui") {
     "provider/tab_info_collector.cc",
     "provider/tab_info_collector.h",
     "url_constants.h",
+    "webview_auth_delegate.cc",
+    "webview_auth_delegate.h",
+    "webview_auth_handler.cc",
+    "webview_auth_handler.h",
   ]
 
   deps = [
@@ -47,6 +51,7 @@ static_library("boca_ui") {
     "//components/account_id",
     "//components/app_constants",
     "//components/app_restore",
+    "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/user_manager",
     "//content/public/browser",
@@ -74,6 +79,7 @@ source_set("unit_tests") {
     "boca_app_page_handler_unittest.cc",
     "provider/classroom_page_handler_impl_unittest.cc",
     "provider/network_info_provider_unittest.cc",
+    "webview_auth_handler_unittest.cc",
   ]
 
   deps = [

@@ -174,6 +174,11 @@ export declare interface NetworkInfo {
  */
 export declare interface ClientApiDelegate {
   /**
+   * Request authentication for the webview.
+   */
+  authenticateWebview(): Promise<boolean>;
+
+  /**
    * Get a list of Window tabs opened on device.
    */
   getWindowsTabsList(): Promise<DeviceWindow[]>;

@@ -240,6 +240,9 @@ class MockRemoteHandler extends PageHandlerRemote {
     id;
     return Promise.resolve({error: null});
   }
+  override authenticateWebview() {
+    return Promise.resolve({success: true});
+  }
 }
 
 suite('ClientDelegateTest', function() {
@@ -610,4 +613,11 @@ suite('ClientDelegateTest', function() {
         assertTrue(result);
       });
 
+  test(
+      'client delegate should respond correctly for authenticateWebview',
+      async () => {
+        const result =
+            await clientDelegateImpl.getInstance().authenticateWebview();
+        assertTrue(result);
+      });
 });
