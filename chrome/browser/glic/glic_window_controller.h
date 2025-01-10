@@ -48,6 +48,13 @@ class GlicWindowController : public views::WidgetObserver {
   // Shows the glic window.
   void Show(views::View* glic_button_view);
 
+  // Attaches glic to the last focused Chrome window.
+  void Attach();
+
+  // Detaches glic if attached and moves it to the top right of the current
+  // display.
+  void Detach();
+
   // Sets the size of the glic window to the specified dimensions. Returns true
   // if the operation succeeded.
   bool Resize(const gfx::Size& size);
@@ -106,8 +113,8 @@ class GlicWindowController : public views::WidgetObserver {
   // detached state.
   gfx::Point GetTopRightPositionForDetachedGlicWindow();
 
-  // Reparents the glic widget under `target_widget`.
-  void AttachToBrowser(Browser* browser, views::Widget* target_widget);
+  // Reparents the glic widget under 'browser'.
+  void AttachToBrowser(Browser* browser);
 
   // Observes changes in the widget that the glic window is currently attached
   // to in order to update its position.
@@ -158,6 +165,9 @@ class GlicWindowController : public views::WidgetObserver {
   // Updates the position of the glic window to that of the glic button of
   // `browser`'s window. This position change is animated if `animate` is true.
   void MovePositionToBrowserGlicButton(Browser* browser, bool animate);
+
+  // Checks if 'browser' is compatible with glic.
+  bool IsBrowserGlicCompatible(Browser* browser);
 
   void NotifyIfPanelStateChanged();
   mojom::PanelState ComputePanelState() const;

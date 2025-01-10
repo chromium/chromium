@@ -133,9 +133,7 @@ void GlicWindowController::Show(views::View* glic_button_view) {
     views::Widget* glic_button_widget = glic_button_view->GetWidget();
     Browser* browser =
         chrome::FindBrowserWithWindow(glic_button_widget->GetNativeWindow());
-    // TODO(cuianthony): we should be using the browser's native view as the
-    // target to attach to.
-    AttachToBrowser(browser, glic_button_widget);
+    AttachToBrowser(browser);
   } else {
     MaybeCreateHolderWindowAndReparent();
   }
@@ -178,15 +176,45 @@ void GlicWindowController::AttachedBrowserDidClose(
   Close();
 }
 
-void GlicWindowController::AttachToBrowser(Browser* browser,
-                                           views::Widget* target_widget) {
+void GlicWindowController::Attach() {
+  // TODO (crbug.com/388917542) Determine which browser to attach to. Currently
+  // attaches to the last focused glic-compatible browser.
+  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
+    if (!IsBrowserGlicCompatible(browser)) {
+      continue;
+    }
+    AttachToBrowser(browser);
+    return;
+  }
+}
+
+void GlicWindowController::Detach() {
+  MaybeCreateHolderWindowAndReparent();
+  // TODO (crbug.com/388922182) Determine where to move the window to. Currently
+  // moves to the top right of the display.
+  gfx::Size screen_size =
+      display::Screen::GetScreen()->GetPrimaryDisplay().GetSizeInPixel();
+  gfx::Rect bounds = glic_window_widget_->GetWindowBoundsInScreen();
+  bounds.set_origin(gfx::Point(screen_size.width() - bounds.width(), 0));
+  GetGlicView()->AnimateFrameBounds(bounds);
+}
+
+void GlicWindowController::AttachToBrowser(Browser* browser) {
+  MovePositionToBrowserGlicButton(browser, true);
+  // Close holder window if existing.
+  if (holder_widget_) {
+    holder_widget_->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
+    holder_widget_.reset();
+  }
+  views::Widget* browser_widget =
+      browser->window()->AsBrowserView()->GetWidget();
   // Makes the glic widget a child view of the given widget's browser.
-  if (target_widget && glic_window_widget_ && browser) {
+  if (browser_widget && glic_window_widget_ && browser) {
     // Add observer to new parent.
-    attached_target_widget_observer_.SetAttachedTargetWidget(target_widget);
+    attached_target_widget_observer_.SetAttachedTargetWidget(browser_widget);
     attached_browser_ = browser->AsWeakPtr();
     views::Widget::ReparentNativeView(glic_window_widget_->GetNativeView(),
-                                      target_widget->GetNativeView());
+                                      browser_widget->GetNativeView());
     NotifyIfPanelStateChanged();
 
     // When attached to a browser window, the glic widget mustn't float and when
@@ -270,7 +298,8 @@ void GlicWindowController::HandleWindowDragWithOffset(
         mouse_offset, move_loop_source,
         views::Widget::MoveLoopEscapeBehavior::kDontHide);
     in_move_loop_ = false;
-    // Check whether `widget_` is in a position to attach to a browser window.
+    // Check whether `glic_window_widget_` is in a position to attach to a
+    // browser window.
     HandleAttachmentToBrowserWindows(glic_window_widget_.get());
   }
 }
@@ -282,24 +311,11 @@ void GlicWindowController::HandleAttachmentToBrowserWindows(
   for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
     views::Widget* window_widget =
         browser->window()->AsBrowserView()->GetWidget();
-    // Skips if:
-    // - incognito
-    // - not visible
-    // - is a glic-owned widget
-    // - is a different profile (uses browser context to check)
-    if (browser->profile()->IsOffTheRecord() ||
-        !browser->window()->IsVisible() ||
-        window_widget == glic_window_widget_.get() ||
-        window_widget == holder_widget_.get() ||
-        browser->GetWebView()->GetBrowserContext() !=
-            GetGlicView()->web_view()->GetBrowserContext()) {
+    if (!IsBrowserGlicCompatible(browser)) {
       continue;
     }
     auto* tab_strip_region_view =
         browser->window()->AsBrowserView()->tab_strip_region_view();
-    if (!tab_strip_region_view || !tab_strip_region_view->GetGlicButton()) {
-      continue;
-    }
     gfx::Rect glic_button_rect =
         tab_strip_region_view->GetGlicButton()->GetBoundsInScreen();
 
@@ -311,15 +327,7 @@ void GlicWindowController::HandleAttachmentToBrowserWindows(
     // from the browser window.
     if (!in_move_loop_) {
       if (corner_distance < kAttachmentDistanceThreshold) {
-        MovePositionToBrowserGlicButton(browser, true);
-        // Close any existing holder widget in anticipation of reparenting under
-        // the browser.
-        if (holder_widget_) {
-          holder_widget_->CloseWithReason(
-              views::Widget::ClosedReason::kLostFocus);
-          holder_widget_.reset();
-        }
-        AttachToBrowser(browser, window_widget);
+        AttachToBrowser(browser);
       } else if (glic_window_widget_->parent() == window_widget) {
         // If farther than the attachment threshold from the current parent
         // widget, reparent under an empty holder widget.
@@ -389,6 +397,28 @@ void GlicWindowController::MaybeCreateHolderWindowAndReparent() {
 #endif
 }
 
+bool GlicWindowController::IsBrowserGlicCompatible(Browser* browser) {
+  views::Widget* window_widget =
+      browser->window()->AsBrowserView()->GetWidget();
+  auto* tab_strip_region_view =
+      browser->window()->AsBrowserView()->tab_strip_region_view();
+  // A browser is not compatible if it:
+  // - is incognito
+  // - is not visible
+  // - is a glic-owned widget
+  // - uses a different BrowserContext from glic
+  // - does not have a Glic Button
+  if (browser->profile()->IsOffTheRecord() || !browser->window()->IsVisible() ||
+      window_widget == glic_window_widget_.get() ||
+      window_widget == holder_widget_.get() ||
+      browser->GetWebView()->GetBrowserContext() !=
+          GetGlicView()->web_view()->GetBrowserContext() ||
+      !tab_strip_region_view || !tab_strip_region_view->GetGlicButton()) {
+    return false;
+  }
+  return true;
+}
+
 void GlicWindowController::AddStateObserver(StateObserver* observer) {
   state_observers_.AddObserver(observer);
 }
@@ -420,8 +450,8 @@ mojom::PanelState GlicWindowController::ComputePanelState() const {
 
 void GlicWindowController::OnWidgetVisibilityChanged(views::Widget* widget,
                                                      bool visible) {
-  // Store visibility locally because calling widget_->IsVisible() at this point
-  // returns the old value.
+  // Store visibility locally because calling glic_window_widget_->IsVisible()
+  // at this point returns the old value.
   glic_window_widget_visible_ = visible;
   NotifyIfPanelStateChanged();
 }
