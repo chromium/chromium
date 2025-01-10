@@ -50,7 +50,7 @@ ServerCertificateDatabase::ServerCertificateDatabase(
     : db_(/*tag=*/"ServerCertificate") {
   auto status = InitInternal(storage_dir);
 
-  CHECK(status == sql::InitStatus::INIT_OK);
+  db_initialized_ = (status == sql::InitStatus::INIT_OK);
 }
 
 ServerCertificateDatabase::~ServerCertificateDatabase() = default;
@@ -104,6 +104,10 @@ sql::InitStatus ServerCertificateDatabase::InitInternal(
 bool ServerCertificateDatabase::InsertOrUpdateCerts(
     const std::vector<CertInformation>& cert_infos) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Don't crash browser if DB isn't initialized.
+  if (!db_initialized_) {
+    return false;
+  }
 
   std::vector<std::string> proto_bytes_vec;
 
@@ -143,6 +147,10 @@ bool ServerCertificateDatabase::InsertOrUpdateCerts(
 std::vector<ServerCertificateDatabase::CertInformation>
 ServerCertificateDatabase::RetrieveAllCertificates() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Don't crash browser if DB isn't initialized.
+  if (!db_initialized_) {
+    return {};
+  }
 
   std::vector<ServerCertificateDatabase::CertInformation> certs;
   static constexpr char kSqlSelectAllCerts[] =
@@ -168,6 +176,11 @@ ServerCertificateDatabase::RetrieveAllCertificates() {
 
 uint32_t ServerCertificateDatabase::RetrieveCertificatesCount() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Don't crash browser if DB isn't initialized.
+  if (!db_initialized_) {
+    return 0;
+  }
+
   static constexpr char kSqlSelectCertsCount[] =
       "SELECT COUNT(*) FROM certificates";
   sql::Statement statement(
@@ -182,6 +195,11 @@ uint32_t ServerCertificateDatabase::RetrieveCertificatesCount() {
 bool ServerCertificateDatabase::DeleteCertificate(
     const std::string& sha256hash_hex) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Don't crash browser if DB isn't initialized.
+  if (!db_initialized_) {
+    return false;
+  }
+
   sql::Statement delete_statement(db_.GetCachedStatement(
       SQL_FROM_HERE, "DELETE FROM certificates WHERE sha256hash_hex=?"));
   DCHECK(delete_statement.is_valid());
