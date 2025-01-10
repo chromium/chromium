@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -1701,6 +1702,7 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
                                     bool needs_full_damage,
                                     std::optional<float> device_scale_factor,
                                     viz::CompositorFrame* frame) {
+  UMA_HISTOGRAM_BOOLEAN("Graphics.Exo.Surface.AppendContentsToFrame", true);
   const std::unique_ptr<viz::CompositorRenderPass>& render_pass =
       frame->render_pass_list.back();
   gfx::PointF parent_to_root_dp = gfx::ScalePoint(
@@ -1827,6 +1829,7 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
     if (current_resource_.id) {
       frame->resource_list.push_back(current_resource_);
     }
+    UMA_HISTOGRAM_BOOLEAN("Graphics.Exo.Surface.Occluded", true);
     return;
   }
 
@@ -1871,6 +1874,7 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
       // Draw quad is only needed if buffer is not fully transparent.
 
       if (requires_texture_draw_quad) {
+        UMA_HISTOGRAM_BOOLEAN("Graphics.Exo.Surface.TextureDrawQuad", true);
         viz::TextureDrawQuad* texture_quad =
             render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
         texture_quad->SetNew(quad_state, quad_rect, quad_rect,
@@ -1923,6 +1927,7 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
           damage_rect_px = gfx::RectF();
         }
       } else {
+        UMA_HISTOGRAM_BOOLEAN("Graphics.Exo.Surface.TileDrawQuad", true);
         viz::TileDrawQuad* tile_quad =
             render_pass->CreateAndAppendDrawQuad<viz::TileDrawQuad>();
         // TODO(crbug.com/40229946): Support AA quads coming from exo.
@@ -1939,6 +1944,7 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
     }
     frame->resource_list.push_back(current_resource_);
   } else if (state_.basic_state.alpha != 0.0f) {
+    UMA_HISTOGRAM_BOOLEAN("Graphics.Exo.Surface.SolidColorDrawQuad", true);
     const viz::SharedQuadState* quad_state = AppendOrCreateSharedQuadState(
         viz::DrawQuad::Material::kSolidColor, state_.basic_state.alpha,
         render_pass, quad_to_target_transform, quad_rect, msk, quad_clip_rect,

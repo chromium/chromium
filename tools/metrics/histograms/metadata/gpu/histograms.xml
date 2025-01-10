@@ -27,6 +27,14 @@ chromium-metrics-reviews@google.com.
   <variant name="PassthroughProgramCache"/>
 </variants>
 
+<variants name="ExoSurfaceCodePaths">
+  <variant name="AppendContentsToFrame"/>
+  <variant name="Occluded"/>
+  <variant name="SolidColorDrawQuad"/>
+  <variant name="TextureDrawQuad"/>
+  <variant name="TileDrawQuad"/>
+</variants>
+
 <variants name="GPUProtectedVideoType">
   <variant name="Clear" summary="Clear"/>
   <variant name="HardwareProtected" summary="HardwareProtected"/>
@@ -1779,6 +1787,19 @@ chromium-metrics-reviews@google.com.
                  task run and the actual run of the task. Ideally this should
                  always be as close to 0 as possible"/>
   </token>
+</histogram>
+
+<histogram name="Graphics.Exo.Surface.{ExoSurfaceCodePaths}" enum="Boolean"
+    expires_after="2025-06-01">
+  <owner>harthuang@google.com</owner>
+  <owner>fangzhoug@chromium.org</owner>
+  <owner>petermcneeley@chromium.org</owner>
+  <owner>chromeos-gfx-display@google.com</owner>
+  <summary>
+    Track usage of different code paths in Exo surface code. We should monitor
+    and remove all deprecated code path if they have never been executed.
+  </summary>
+  <token key="ExoSurfaceCodePaths" variants="ExoSurfaceCodePaths"/>
 </histogram>
 
 <histogram name="Skia.Graphite.PipelineCreationRace"
