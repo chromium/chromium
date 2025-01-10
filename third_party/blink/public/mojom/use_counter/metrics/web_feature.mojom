@@ -3936,7 +3936,7 @@ enum WebFeature {
   kFedCmRpContext = 4580,
   kEventTimingArtificialPointerupOrClick = 4581,
   kAbortSignalAny = 4582,
-  kFedCmIdpSigninStatusApi = 4583,
+  kOBSOLETE_FedCmIdpSigninStatusApi = 4583,
   kFedCmIdpSigninStatusJsApi = 4584,
   kExecCommand = 4585,
   kWebGPUQueueSubmit = 4586,

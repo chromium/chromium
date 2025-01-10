@@ -27,7 +27,7 @@ dictionary IdentityProviderToken {
     [CallWith=ScriptState, RaisesException, MeasureAs=FedCmUserInfo]
     static Promise<sequence<IdentityUserInfo>> getUserInfo(IdentityProviderConfig config);
 
-    [RuntimeEnabled=FedCmIdpSigninStatus, CallWith=ScriptState]
+    [RuntimeEnabled=FedCm, CallWith=ScriptState]
     static void close();
 
     [RuntimeEnabled=FedCmIdPRegistration, CallWith=ScriptState, ImplementedAs=registerIdentityProvider]

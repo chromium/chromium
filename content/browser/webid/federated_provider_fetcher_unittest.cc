@@ -515,8 +515,6 @@ TEST_F(FederatedProviderFetcherTest, InvalidCrossOriginTokenEndpoint) {
 }
 
 TEST_F(FederatedProviderFetcherTest, InvalidCrossOriginSigninUrl) {
-  feature_list_.InitAndEnableFeature(features::kFedCmIdpSigninStatusEnabled);
-
   FederatedProviderFetcher::FetchResult result;
   result.endpoints.accounts = GURL("https://idp.example/accounts");
   result.endpoints.token = GURL("https://idp.example/token");

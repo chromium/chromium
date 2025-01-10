@@ -424,8 +424,6 @@ class WebIdBrowserTest : public ContentBrowserTest {
 class WebIdIdpSigninStatusBrowserTest : public WebIdBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kFedCmIdpSigninStatusEnabled);
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
@@ -441,9 +439,7 @@ class WebIdIdpSigninStatusForFetchKeepAliveBrowserTest
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     scoped_feature_list_.InitWithFeatures(
-        {features::kFedCmIdpSigninStatusEnabled,
-         blink::features::kKeepAliveInBrowserMigration},
-        {});
+        {blink::features::kKeepAliveInBrowserMigration}, {});
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
