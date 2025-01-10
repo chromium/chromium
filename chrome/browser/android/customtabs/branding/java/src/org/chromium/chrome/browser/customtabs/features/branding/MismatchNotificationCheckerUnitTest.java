@@ -96,6 +96,15 @@ public class MismatchNotificationCheckerUnitTest {
                 .assertOtherPromptsSuppressed(false);
     }
 
+    @Test
+    public void maybeShowWhileSignedOut() {
+        new MismatchNotificationCheckerTester()
+                .newChecker()
+                .signOut()
+                .callMaybeShowUi(/* shown= */ true, new MismatchNotificationData())
+                .assertIphLocked(true);
+    }
+
     private static class MismatchNotificationCheckerTester {
         // Mocks
         private MismatchNotificationChecker.Delegate mDelegate;
@@ -144,6 +153,11 @@ public class MismatchNotificationCheckerUnitTest {
             mChecker.maybeShow("app-id", /* lastShowTime= */ 12345, mimData, mOnClose);
             verify(mDelegate).maybeShow(any(), anyLong(), any(), captor.capture());
             mCallback = captor.getValue();
+            return this;
+        }
+
+        public MismatchNotificationCheckerTester signOut() {
+            when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(null);
             return this;
         }
 
