@@ -110,9 +110,6 @@ import './os_languages_page/input_page.js';
 import './os_languages_page/os_edit_dictionary_page.js';
 import './os_languages_page/os_japanese_manage_user_dictionary_page.js';
 import './os_languages_page/os_languages_page_v2.js';
-import './os_reset_page/os_powerwash_dialog.js';
-import './os_reset_page/os_powerwash_dialog_esim_item.js';
-import './os_reset_page/os_sanitize_dialog.js';
 
 export {ScreenAiInstallStatus} from '/shared/settings/a11y_page/ax_annotations_browser_proxy.js';
 export {CaptionsBrowserProxy, CaptionsBrowserProxyImpl, LiveCaptionLanguage, LiveCaptionLanguageList} from '/shared/settings/a11y_page/captions_browser_proxy.js';
