@@ -5,15 +5,16 @@
     sub-label="$i18n{glicOsWidgetToggleSublabel}">
 </settings-toggle-button>
 
-<div class="cr-row">
-  <div class="flex cr-padded-text">
-    <div id="keyboardShortcut" aria-hidden>$i18n{glicKeyboardShortcut}</div>
-    <div class="secondary">$i18n{glicKeyboardShortcutSublabel}</div>
+<cr-collapse opened="[[prefs.glic.launcher_enabled.value]]">
+  <div class="cr-row" id="keyboardShortcutSetting">
+    <div class="flex cr-padded-text">
+      <div id="keyboardShortcut" aria-hidden>$i18n{glicKeyboardShortcut}</div>
+      <div class="secondary">$i18n{glicKeyboardShortcutSublabel}</div>
+    </div>
+    <!-- TODO(crbug.com/379166610): This is a placeholder until keyboard
+        shortcut is implemented. -->
+    <cr-input disabled aria-labelledby="keyboardShortcut"></cr-input>
+    <cr-icon-button id="editIconButton" class="icon-edit" title="$i18n{edit}">
+    </cr-icon-button>
   </div>
-  <!-- TODO(crbug.com/379166610): This is a placeholder until keyboard shortcut
-       is implemented. -->
-  <cr-input disabled aria-labelledby="keyboardShortcut"></cr-input>
-  <cr-icon-button id="editIconButton" class="icon-edit" title="$i18n{edit}"
-    aria-label="[[getEditButtonAriaLabel_(engine)]]"
-    disabled$="[[!engine.canBeEdited]]"></cr-icon-button>
-</div>
+</cr-collapse>
