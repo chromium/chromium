@@ -61,7 +61,6 @@ import "chromeos/crosapi/mojom/login_state.mojom";
 import "chromeos/crosapi/mojom/policy_service.mojom";
 import "chromeos/crosapi/mojom/magic_boost.mojom";
 import "chromeos/crosapi/mojom/mahi.mojom";
-import "chromeos/crosapi/mojom/media_app.mojom";
 import "chromeos/crosapi/mojom/multi_capture_service.mojom";
 import "chromeos/crosapi/mojom/native_theme.mojom";
 import "chromeos/crosapi/mojom/network_change.mojom";
@@ -572,15 +571,9 @@ interface Crosapi {
   BindHidManager@4(pending_receiver<device.mojom.HidManager> receiver);
 
   // BindEyeDropper@122 was removed.
-
   // BindFeedback@5 was removed.
-
   // BindFieldTrialService@51 was removed.
-
-  // Binds the Media App interface for special functions of Media App
-  // Added in M128.
-  [MinVersion=144] BindMediaApp@146(
-      pending_remote<MediaApp> receiver);
+  // BindMediaApp@146 was removed.
 
   // Binds the Media Session service (controller) for enabling media playback
   // control.

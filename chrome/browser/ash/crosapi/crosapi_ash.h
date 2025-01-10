@@ -96,7 +96,6 @@ class LocalPrinterAsh;
 class LoginAsh;
 class LoginScreenStorageAsh;
 class LoginStateAsh;
-class MediaAppAsh;
 class MediaUIAsh;
 class MultiCaptureServiceAsh;
 class NativeThemeServiceAsh;
@@ -259,7 +258,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::MagicBoostController> receiver) override;
   void BindMahiBrowserDelegate(
       mojo::PendingReceiver<mojom::MahiBrowserDelegate> receiver) override;
-  void BindMediaApp(mojo::PendingRemote<mojom::MediaApp> remote) override;
   void BindMediaUI(mojo::PendingReceiver<mojom::MediaUI> receiver) override;
   void BindMediaSessionAudioFocus(
       mojo::PendingReceiver<media_session::mojom::AudioFocusManager> receiver)
@@ -478,8 +476,6 @@ class CrosapiAsh : public mojom::Crosapi {
     return magic_boost_controller_ash_.get();
   }
 
-  MediaAppAsh* media_app_ash() { return media_app_ash_.get(); }
-
   MediaUIAsh* media_ui_ash() { return media_ui_ash_.get(); }
 
   MultiCaptureServiceAsh* multi_capture_service_ash() {
@@ -604,7 +600,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<LoginScreenStorageAsh> login_screen_storage_ash_;
   std::unique_ptr<LoginStateAsh> login_state_ash_;
   std::unique_ptr<ash::MagicBoostControllerAsh> magic_boost_controller_ash_;
-  std::unique_ptr<MediaAppAsh> media_app_ash_;
   std::unique_ptr<MediaUIAsh> media_ui_ash_;
   std::unique_ptr<MultiCaptureServiceAsh> multi_capture_service_ash_;
   std::unique_ptr<NativeThemeServiceAsh> native_theme_service_ash_;

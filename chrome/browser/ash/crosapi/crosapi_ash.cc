@@ -60,7 +60,6 @@
 #include "chrome/browser/ash/crosapi/login_ash.h"
 #include "chrome/browser/ash/crosapi/login_screen_storage_ash.h"
 #include "chrome/browser/ash/crosapi/login_state_ash.h"
-#include "chrome/browser/ash/crosapi/media_app_ash.h"
 #include "chrome/browser/ash/crosapi/media_ui_ash.h"
 #include "chrome/browser/ash/crosapi/multi_capture_service_ash.h"
 #include "chrome/browser/ash/crosapi/native_theme_service_ash.h"
@@ -228,7 +227,6 @@ CrosapiAsh::CrosapiAsh()
       login_state_ash_(std::make_unique<LoginStateAsh>()),
       magic_boost_controller_ash_(
           std::make_unique<ash::MagicBoostControllerAsh>()),
-      media_app_ash_(std::make_unique<MediaAppAsh>()),
       media_ui_ash_(std::make_unique<MediaUIAsh>()),
       multi_capture_service_ash_(std::make_unique<MultiCaptureServiceAsh>()),
       native_theme_service_ash_(std::make_unique<NativeThemeServiceAsh>()),
@@ -597,10 +595,6 @@ void CrosapiAsh::BindMahiBrowserDelegate(
 void CrosapiAsh::BindMagicBoostController(
     mojo::PendingReceiver<mojom::MagicBoostController> receiver) {
   magic_boost_controller_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindMediaApp(mojo::PendingRemote<mojom::MediaApp> remote) {
-  media_app_ash_->BindRemote(std::move(remote));
 }
 
 void CrosapiAsh::BindMediaUI(mojo::PendingReceiver<mojom::MediaUI> receiver) {
