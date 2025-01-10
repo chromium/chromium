@@ -408,6 +408,7 @@ public final class PrivacySandboxDialogTest {
     @SmallTest
     @Feature({"RenderTest"})
     @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_EQUALIZED_PROMPT_BUTTONS)
     public void testRenderEeaNoticeV2AdMeasurementDropdown() throws IOException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -457,6 +458,7 @@ public final class PrivacySandboxDialogTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_EQUALIZED_PROMPT_BUTTONS)
     public void testEeaNoticeV2AckButton() throws IOException {
         mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_NOTICE_EEA);
         launchDialog();
@@ -881,7 +883,10 @@ public final class PrivacySandboxDialogTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
+    @DisableFeatures({
+        ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS,
+        ChromeFeatureList.PRIVACY_SANDBOX_EQUALIZED_PROMPT_BUTTONS
+    })
     public void testControllerShowsEEANotice() throws IOException {
         mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_NOTICE_EEA);
         launchDialog();
