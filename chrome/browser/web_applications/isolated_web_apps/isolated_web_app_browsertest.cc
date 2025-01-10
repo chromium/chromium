@@ -414,6 +414,36 @@ IN_PROC_BROWSER_TEST_F(
             app_frame->GetWebExposedIsolationLevel());
 }
 
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest,
+                       OpeningNonexistentPathShowsError) {
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+      IsolatedWebAppBuilder(ManifestBuilder()).BuildBundle();
+  ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo url_info,
+                       app->TrustBundleAndInstall(profile()));
+
+  const GURL app_url =
+      url_info.origin().GetURL().Resolve("/does_not_exist.html");
+  auto* app_frame =
+      NavigateToURLInNewTab(browser(), app_url, WindowOpenDisposition::UNKNOWN);
+
+  // The browser shouldn't have opened the app's page.
+  EXPECT_EQ(GetPrimaryMainFrame(browser())->GetLastCommittedURL(), GURL());
+
+  Browser* app_browser = GetBrowserFromFrame(app_frame);
+  EXPECT_NE(app_browser, browser());
+  EXPECT_TRUE(
+      AppBrowserController::IsForWebApp(app_browser, url_info.app_id()));
+
+  // Because we accessed a nonexistent path, we should get a
+  // window with error message instead of the actual IWA
+  EXPECT_NE(content::WebExposedIsolationLevel::kIsolatedApplication,
+            app_frame->GetWebExposedIsolationLevel());
+  EXPECT_TRUE(EvalJs(app_frame,
+                     "document.body.textContent.includes("
+                     "'No webpage was found for the web address')")
+                  .ExtractBool());
+}
+
 // Tests that the app menu doesn't have an 'Open in Chrome' option.
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, NoOpenInChrome) {
   std::unique_ptr<ScopedBundledIsolatedWebApp> app =
