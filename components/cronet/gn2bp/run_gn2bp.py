@@ -184,10 +184,7 @@ def _run_copybara_to_aosp(config: str = _COPYBARA_CONFIG_PATH,
 
 def main():
   parser = argparse.ArgumentParser()
-  parser.add_argument('--stamp',
-                      type=str,
-                      help='Path to touch on success',
-                      required=True)
+  parser.add_argument('--stamp', type=str, help='Path to touch on success')
   parser.add_argument('--config',
                       type=str,
                       help='Copy.bara.sky file path to run Copybara on',
@@ -272,7 +269,8 @@ def main():
     print('Failed to execute copybara!')
     sys.exit(-1)
   else:
-    build_utils.Touch(args.stamp)
+    if args.stamp is not None:
+      build_utils.Touch(args.stamp)
     print('Success!')
   return 0
 
