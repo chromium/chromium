@@ -49,6 +49,10 @@ class FakePdfListener : public pdf::mojom::PdfListener {
               GetPageText,
               (int32_t, GetPageTextCallback callback),
               (override));
+  MOCK_METHOD(void,
+              GetMostVisiblePageIndex,
+              (GetMostVisiblePageIndexCallback callback),
+              (override));
 };
 
 class TestPDFDocumentHelperClient : public PDFDocumentHelperClient {

@@ -38,6 +38,10 @@ interface PdfListener {
   // Get the text contained on the given page of the PDF. `page_index` should be
   // the range [0, # of pages).
   GetPageText(int32 page_index) => (mojo_base.mojom.String16 text);
+
+  // Returns the index of the most visible page. If no page is visible,
+  // returns nullopt.
+  GetMostVisiblePageIndex() => (uint32? page_index);
 };
 
 // Browser-side interface used by PDF renderers.

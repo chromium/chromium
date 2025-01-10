@@ -1528,6 +1528,16 @@ void PdfViewWebPlugin::GetPdfBytes(uint32_t size_limit,
                           page_count);
 }
 
+void PdfViewWebPlugin::GetMostVisiblePageIndex(
+    GetMostVisiblePageIndexCallback callback) {
+  auto page_index = engine_->GetMostVisiblePage();
+  if (page_index < 0) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  std::move(callback).Run(page_index);
+}
+
 void PdfViewWebPlugin::GetPageText(int32_t page_index,
                                    GetPageTextCallback callback) {
   if (page_index < 0 || page_index >= engine_->GetNumberOfPages()) {

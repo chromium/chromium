@@ -1614,7 +1614,22 @@ void LensOverlayController::OnPdfBytesReceived(
   std::move(callback).Run(bytes, lens::MimeType::kPdf, page_count);
 }
 
-void LensOverlayController::GetPartialPdfText(uint32_t page_count) {
+void LensOverlayController::FetchVisiblePageIndexAndGetPartialPdfText(
+    uint32_t page_count) {
+  pdf::PDFDocumentHelper* pdf_helper =
+      pdf::PDFDocumentHelper::MaybeGetForWebContents(tab_->GetContents());
+  if (!pdf_helper) {
+    return;
+  }
+
+  pdf_helper->GetMostVisiblePageIndex(
+      base::BindOnce(&LensOverlayController::GetPartialPdfText,
+                     weak_factory_.GetWeakPtr(), page_count));
+}
+
+void LensOverlayController::GetPartialPdfText(
+    uint32_t page_count,
+    std::optional<uint32_t> visible_page_index) {
   pdf::PDFDocumentHelper* pdf_helper =
       pdf::PDFDocumentHelper::MaybeGetForWebContents(tab_->GetContents());
   if (!pdf_helper ||
@@ -1622,6 +1637,8 @@ void LensOverlayController::GetPartialPdfText(uint32_t page_count) {
       page_count == 0) {
     return;
   }
+
+  // TODO(387306854): Add logic to grab page text form the visible page index.
 
   // Fetch the first page of text which will be then recursively fetch following
   // pages.
@@ -1788,7 +1805,7 @@ void LensOverlayController::UpdatePageContextualization(
   // If the new page is a PDF, fetch the text from the page to be used as early
   // suggest signals.
   if (content_type == lens::MimeType::kPdf) {
-    GetPartialPdfText(page_count.value_or(0));
+    FetchVisiblePageIndexAndGetPartialPdfText(page_count.value_or(0));
   }
 
   lens_overlay_query_controller_->SendPageContentUpdateRequest(
@@ -2025,9 +2042,11 @@ void LensOverlayController::InitializeOverlay(
 
   // If PDF content was extracted from the page, fetch the text from the PDF to
   // be used as early suggest signals.
-  if (initialization_data_->page_content_type_ == lens::MimeType::kPdf) {
+  if (initialization_data_->page_content_type_ == lens::MimeType::kPdf &&
+      !initialization_data_->page_content_bytes_.empty()) {
     CHECK(initialization_data_->pdf_page_count_.has_value());
-    GetPartialPdfText(initialization_data_->pdf_page_count_.value());
+    FetchVisiblePageIndexAndGetPartialPdfText(
+        initialization_data_->pdf_page_count_.value());
   }
 
   // If the StartQueryFlow optimization is enabled, the page contents will not

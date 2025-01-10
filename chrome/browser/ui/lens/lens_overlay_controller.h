@@ -709,15 +709,21 @@ class LensOverlayController : public LensSearchboxClient,
 
 #if BUILDFLAG(ENABLE_PDF)
   // Receives the PDF bytes from the IPC call to the PDF renderer and stores
-  // them in initialization data.
+  // them in initialization data. `pdf_page_count` is passed to the partial PDF
+  // text fetch to be used to determine when to stop fetching.
   void OnPdfBytesReceived(PageContentRetrievedCallback callback,
                           pdf::mojom::PdfListener::GetPdfBytesStatus status,
                           const std::vector<uint8_t>& bytes,
                           uint32_t pdf_page_count);
 
+  // Fetches the visible page index from the PDF renderer and then starts the
+  // process of fetching the text from the PDF to be used for suggest signals.
+  void FetchVisiblePageIndexAndGetPartialPdfText(uint32_t page_count);
+
   // Starts the process of fetching the text from the PDF to be used for suggest
   // signals.
-  void GetPartialPdfText(uint32_t total_page_count);
+  void GetPartialPdfText(uint32_t page_count,
+                         std::optional<uint32_t> visible_page_index);
 
   // Gets the partial text from the PDF to be used for suggest. Schedules for
   // the next page of text to be fetched, from the PDF in page order until

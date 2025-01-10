@@ -253,6 +253,15 @@ void PDFDocumentHelper::GetPageText(
   remote_pdf_client_->GetPageText(page_index, std::move(callback));
 }
 
+void PDFDocumentHelper::GetMostVisiblePageIndex(
+    pdf::mojom::PdfListener::GetMostVisiblePageIndexCallback callback) {
+  if (!remote_pdf_client_) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  remote_pdf_client_->GetMostVisiblePageIndex(std::move(callback));
+}
+
 void PDFDocumentHelper::OnSelectionEvent(ui::SelectionEventType event) {
   // Should be handled by `TouchSelectionControllerClientAura`.
   NOTREACHED();
