@@ -645,6 +645,7 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
       // Other improvements.
       features::kAutofillEnableCacheForRegexMatching,
       features::kAutofillEnableSupportForParsingWithSharedLabels,
+      features::kAutofillUseNegativePatternForAllAttributes,
   };
   std::vector<base::test::FeatureRef> disabled_features = {
       // TODO(crbug.com/320965828): Understand the changes to the expectations

@@ -468,10 +468,20 @@ FormFieldParser::FieldMatchesMatchPatternRef(
       // For each attribute that is active for the current pattern, test if it
       // matches the negative pattern. If so, remove it from the attributes that
       // are considered for positive matching.
+      // TODO(crbug.com/386916943): Remove this code path once
+      // kAutofillUseNegativePatternForAllAttributes is launched.
+      // If kAutofillUseNegativePatternForAllAttributes is enabled, negative
+      // pattern matched on a single attribute will clear all attributes.
       for (MatchAttribute attribute : match_params.attributes) {
         if (Match(context, field, pattern.negative_pattern, {attribute},
                   regex_name, /*is_negative_pattern=*/true)) {
-          reduced_attributes.erase(attribute);
+          if (base::FeatureList::IsEnabled(
+                  features::kAutofillUseNegativePatternForAllAttributes)) {
+            reduced_attributes.clear();
+            break;
+          } else {
+            reduced_attributes.erase(attribute);
+          }
         }
       }
       if (reduced_attributes.empty()) {

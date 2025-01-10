@@ -144,12 +144,15 @@ class ProfileMatchingTypesTest
       public ::testing::WithParamInterface<ProfileMatchingTypesTestCase> {
  public:
   ProfileMatchingTypesTest() {
-    features_.InitWithFeatures({features::kAutofillUseCAAddressModel,
-                                features::kAutofillUseFRAddressModel,
-                                features::kAutofillUseITAddressModel,
-                                features::kAutofillUseNLAddressModel
-                               },
-                               {});
+    features_.InitWithFeatures(
+        {
+            features::kAutofillUseCAAddressModel,
+            features::kAutofillUseFRAddressModel,
+            features::kAutofillUseITAddressModel,
+            features::kAutofillUseNLAddressModel,
+            features::kAutofillUseNegativePatternForAllAttributes,
+        },
+        {});
   }
 
  protected:

@@ -40,6 +40,10 @@ class NameFieldParserTest : public FormFieldParserTestBase,
                                          AutofillScanner* scanner) override {
     return NameFieldParser::Parse(context, scanner);
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_features{
+      features::kAutofillUseNegativePatternForAllAttributes};
 };
 
 TEST_F(NameFieldParserTest, FirstMiddleLast) {
@@ -222,6 +226,18 @@ TEST_F(NameFieldParserTest, ContactNameFull) {
   AddTextFormFieldData("contact", "Контактное лицо", NAME_FULL);
 
   ClassifyAndVerify(ParseResult::kParsed);
+}
+
+// Tests that a field for a surname is not parsed as a name field if it has a
+// negative pattern match with only one attribute.
+// "surname5" is a negative pattern for surname, while "surname" is a positive
+// pattern for surname. We expect the field to be not parsed even if negative
+// pattern is matched on a different attribute.
+TEST_F(NameFieldParserTest, NameSurnameNegativePatternDifferentAttributes) {
+  AddTextFormFieldData("firstname", "firstname", UNKNOWN_TYPE);
+  AddTextFormFieldData("surname5", "surname", UNKNOWN_TYPE);
+
+  ClassifyAndVerify(ParseResult::kNotParsed);
 }
 
 }  // namespace

@@ -425,6 +425,12 @@ BASE_FEATURE(kAutofillUsePLAddressModel,
              "AutofillUsePLAddressModel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, the form field parser won't try to match other attributes if
+// any of the negative patterns matched.
+BASE_FEATURE(kAutofillUseNegativePatternForAllAttributes,
+             "AutofillUseNegativePatternForAllAttributes",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, all behaviours related to the on-device machine learning
 // model for field type predictions will be guarded.
 // TODO(crbug.com/40276177): Remove when launched.

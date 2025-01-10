@@ -301,6 +301,10 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_SUPPORT_LAST_NAME_PREFIX,
                 "When enabled, Autofill uses a custom name hierarchy for parsing last names."),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_USE_NEGATIVE_PATTERN_FOR_ALL_ATTRIBUTES,
+                "When enabled, parser won't try to match other attributes if any of the negative"
+                    + " patterns matched."),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_USE_SUBMITTED_FORM_IN_HTML_SUBMISSION,
                 "When enabled, Autofill will start falling back to the saved form when HTML"
                         + " submission happens and form extraction fails."),
