@@ -155,10 +155,11 @@ def CheckoutGitRepo(name, git_url, commit, dir):
   # Try updating the current repo if it exists and has no local diff.
   if os.path.isdir(dir):
     os.chdir(dir)
-    # git diff-index --exit-code returns 0 when there is no diff.
+    # Undo local changes with `git restore .`.
+    # `git diff-index --exit-code` returns 0 when there is no diff.
     # Also check that the first commit is reachable.
-    if (RunCommand(['git', 'diff-index', '--exit-code', 'HEAD'],
-                   fail_hard=False)
+    if (RunCommand(['git', 'restore', '.'], fail_hard=False) and RunCommand(
+        ['git', 'diff-index', '--exit-code', 'HEAD'], fail_hard=False)
         and RunCommand(['git', 'fetch'], fail_hard=False)
         and RunCommand(['git', 'checkout', commit], fail_hard=False)
         and RunCommand(['git', 'clean', '-f'], fail_hard=False)):
