@@ -171,7 +171,7 @@ bool IsResourceWebAccessibleImpl(
     const GURL& target_url) {
   std::string relative_path = target_url.path();
 
-  // Set the intiator_url.
+  // Set the initiator_url.
   GURL initiator_url;
   if (initiator_origin) {
     if (initiator_origin->opaque()) {
@@ -219,7 +219,7 @@ bool IsResourceWebAccessibleImpl(
         }
       }
 
-      // Determine if the `intiator_url` is allowed to access this resource.
+      // Determine if the `initiator_url` is allowed to access this resource.
       if (entry.matches.MatchesURL(initiator_url)) {
         return result;
       }
