@@ -208,7 +208,14 @@ def main():
                       type=bool,
                       help=('Skips building the build_scripts output, '
                             'this should be only used for testing.'))
+  parser.add_argument('--skip-copybara',
+                      action='store_true',
+                      help=("Only generate the build files - do not run "
+                            "copybara afterwards. This is useful if you only "
+                            "want to take a look at the generated files "
+                            "without doing an actual import."))
   args = parser.parse_args()
+  run_copybara = not args.skip_copybara
 
   try:
     # Create empty temp file for each architecture.
@@ -240,7 +247,7 @@ def main():
     res_boringssl = _gen_boringssl()
 
     res_copybara = 1
-    if res_gn2bp == 0 and res_boringssl == 0 and res_license_generation == 0:
+    if run_copybara and res_gn2bp == 0 and res_boringssl == 0 and res_license_generation == 0:
       # Only run Copybara if all build files generated successfully.
       res_copybara = _run_copybara_to_aosp(
           config=args.config,
@@ -261,12 +268,12 @@ def main():
   elif res_license_generation != 0:
     print('Failed to generate license data!')
     sys.exit(-1)
-  elif res_copybara != 0:
+  elif run_copybara and res_copybara != 0:
     print('Failed to execute copybara!')
     sys.exit(-1)
   else:
     build_utils.Touch(args.stamp)
-    print('Successfully run copybara!')
+    print('Success!')
   return 0
 
 
