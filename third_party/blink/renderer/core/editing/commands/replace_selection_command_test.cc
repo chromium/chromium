@@ -264,7 +264,7 @@ TEST_F(ReplaceSelectionCommandTest, InsertImageInNonEditableBlock1) {
   EXPECT_TRUE(command.Apply());
   EXPECT_EQ(
       "<div contenteditable=\"false\"><span contenteditable>"
-      "a<img>|<br>b</span></div>",
+      "a<img>|b</span></div>",
       GetSelectionTextFromBody());
 }
 

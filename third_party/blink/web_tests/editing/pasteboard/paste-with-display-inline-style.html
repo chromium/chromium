@@ -1,0 +1,75 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+    function copyAndPaste(selection) {
+        if (!window.testRunner)
+            throw 'This test requires window.testRunner.';
+        selection.document.execCommand('Copy');
+        const target = selection.document.getElementById('target');
+        selection.collapse(target.firstChild, 3);
+        selection.document.execCommand('Paste');
+    }
+
+    selection_test(
+        [
+            '<p>^def|</p>',
+            '<div contenteditable id="target"style="display:inline;">',
+            'abcghi',
+            '</div>',
+        ],
+        copyAndPaste,
+        [
+            '<p>def</p>',
+            '<div contenteditable id="target" style="display:inline;">',
+            'abcdef|ghi',
+            '</div>',
+        ], 'Pasting in div with style display:inline should not insert a new line');
+
+    selection_test(
+        [
+            '<p>^def|</p>',
+            '<span contenteditable id="target"style="display:inline;">',
+            'abcghi',
+            '</span>',
+        ],
+        copyAndPaste,
+        [
+            '<p>def</p>',
+            '<span contenteditable id="target" style="display:inline;">',
+            'abcdef|ghi',
+            '</span>',
+        ], 'Pasting in span with style display:inline should not insert a new line');
+
+    selection_test(
+        [
+            '<p>^def|</p>',
+            '<div contenteditable id="target"style="display:inline-block;">',
+            'abcghi',
+            '</div>',
+        ],
+        copyAndPaste,
+        [
+            '<p>def</p>',
+            '<div contenteditable id="target" style="display:inline-block;">',
+            'abcdef|ghi',
+            '</div>',
+        ], 'Pasting in div with style display:inline-block should not insert a new line');
+
+    selection_test(
+        [
+            '<p>^def|</p>',
+            '<span contenteditable id="target"style="display:inline-block;">',
+            'abcghi',
+            '</span>',
+        ],
+        copyAndPaste,
+        [
+            '<p>def</p>',
+            '<span contenteditable id="target" style="display:inline-block;">',
+            'abcdef|ghi',
+            '</span>',
+        ], 'Pasting in span with style display:inline-block should not insert a new line');
+
+</script>

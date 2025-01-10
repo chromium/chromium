@@ -3558,6 +3558,11 @@
       status: "stable",
     },
     {
+      // crbug.com/41047725
+      name: "RemovePlaceholderBRForDisplayInline",
+      status: "stable",
+    },
+    {
       // See https://issues.chromium.org/issues/41311101
       name: "RemoveVisibleSelectionInDOMSelection",
       status: "test",
