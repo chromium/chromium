@@ -39,27 +39,25 @@
 
 using Step = AuthenticatorRequestDialogModel::Step;
 
-// static
-void ShowAuthenticatorRequestDialog(
+AuthenticatorRequestDialogView::AuthenticatorRequestDialogView(
     content::WebContents* web_contents,
-    scoped_refptr<AuthenticatorRequestDialogModel> model) {
-  // The authenticator request dialog will only be shown for common user-facing
-  // WebContents, which have a |manager|. Most other sources without managers,
-  // like service workers and extension background pages, do not allow WebAuthn
-  // requests to be issued in the first place.
-  // TODO(crbug.com/41392632): There are some niche WebContents where the
-  // WebAuthn API is available, but there is no |manager| available. Currently,
-  // we will not be able to show a dialog, so the |model| will be immediately
-  // destroyed. The request may be able to still run to completion if it does
-  // not require any user input, otherise it will be blocked and time out. We
-  // should audit this.
-  auto* manager = web_modal::WebContentsModalDialogManager::FromWebContents(
-      constrained_window::GetTopLevelWebContents(web_contents));
-  if (!manager) {
-    return;
-  }
+    scoped_refptr<AuthenticatorRequestDialogModel> model)
+    : content::WebContentsObserver(web_contents),
+      model_(model),
+      web_contents_hidden_(web_contents->GetVisibility() ==
+                           content::Visibility::HIDDEN) {
+  SetShowTitle(false);
+  DCHECK(!model_->should_dialog_be_closed());
+  model_->observers.AddObserver(this);
 
-  new AuthenticatorRequestDialogView(web_contents, std::move(model));
+  SetModalType(ui::mojom::ModalType::kChild);
+  SetShowCloseButton(false);
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
+
+  // Currently, all sheets have a label on top and controls at the bottom.
+  // Consider moving this to AuthenticatorRequestSheetView if this changes.
+  SetLayoutManager(std::make_unique<views::FillLayout>());
 }
 
 AuthenticatorRequestDialogView::~AuthenticatorRequestDialogView() {
@@ -314,27 +312,6 @@ void AuthenticatorRequestDialogView::OnVisibilityChanged(
       !GetWidget()->IsVisible()) {
     GetWidget()->Show();
   }
-}
-
-AuthenticatorRequestDialogView::AuthenticatorRequestDialogView(
-    content::WebContents* web_contents,
-    scoped_refptr<AuthenticatorRequestDialogModel> model)
-    : content::WebContentsObserver(web_contents),
-      model_(model),
-      web_contents_hidden_(web_contents->GetVisibility() ==
-                           content::Visibility::HIDDEN) {
-  SetShowTitle(false);
-  DCHECK(!model_->should_dialog_be_closed());
-  model_->observers.AddObserver(this);
-
-  SetModalType(ui::mojom::ModalType::kChild);
-  SetShowCloseButton(false);
-  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
-
-  // Currently, all sheets have a label on top and controls at the bottom.
-  // Consider moving this to AuthenticatorRequestSheetView if this changes.
-  SetLayoutManager(std::make_unique<views::FillLayout>());
 }
 
 void AuthenticatorRequestDialogView::Show() {

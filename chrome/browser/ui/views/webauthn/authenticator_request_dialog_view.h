@@ -44,6 +44,10 @@ class AuthenticatorRequestDialogView
   METADATA_HEADER(AuthenticatorRequestDialogView, views::DialogDelegateView)
 
  public:
+  // Show by calling AuthenticatorRequestDialogViewController::Show().
+  AuthenticatorRequestDialogView(
+      content::WebContents* web_contents,
+      scoped_refptr<AuthenticatorRequestDialogModel> model);
   AuthenticatorRequestDialogView(const AuthenticatorRequestDialogView&) =
       delete;
   AuthenticatorRequestDialogView& operator=(
@@ -92,14 +96,6 @@ class AuthenticatorRequestDialogView
 
  private:
   friend class test::AuthenticatorRequestDialogViewTestApi;
-  friend void ShowAuthenticatorRequestDialog(
-      content::WebContents* web_contents,
-      scoped_refptr<AuthenticatorRequestDialogModel> model);
-
-  // Show by calling ShowAuthenticatorRequestDialog().
-  AuthenticatorRequestDialogView(
-      content::WebContents* web_contents,
-      scoped_refptr<AuthenticatorRequestDialogModel> model);
 
   // Shows the dialog after creation or after being hidden.
   void Show();

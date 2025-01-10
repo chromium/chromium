@@ -17,7 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/webauthn/authenticator_request_dialog.h"
+#include "chrome/browser/ui/webauthn/authenticator_request_dialog_view_controller.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_window.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
@@ -166,7 +166,7 @@ void AuthenticatorRequestDialogModel::SetStep(Step step) {
         break;
 
       case StepUIType::DIALOG:
-        ShowAuthenticatorRequestDialog(web_contents, this);
+        AuthenticatorRequestDialogViewController::Show(web_contents, this);
         break;
 
       case StepUIType::WINDOW:
