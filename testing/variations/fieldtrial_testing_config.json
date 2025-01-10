@@ -18691,30 +18691,6 @@
             ]
         }
     ],
-    "ReactivePrefetchDesktop": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithPreconnect_20240916",
-                    "params": {
-                        "use_predictions": "true"
-                    },
-                    "enable_features": [
-                        "LoadingPredictorUseOptimizationGuide"
-                    ],
-                    "disable_features": [
-                        "LoadingPredictorPrefetch"
-                    ]
-                }
-            ]
-        }
-    ],
     "ReadAloudAppMenuIPH": [
         {
             "platforms": [
