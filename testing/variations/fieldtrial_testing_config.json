@@ -22668,6 +22668,23 @@
             ]
         }
     ],
+    "SyncMinimizeDeletionsDuringBookmarkBatchUpload": [
+        {
+            "platforms": [
+                "android",
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_WithFastDeletions",
+                    "enable_features": [
+                        "SyncFastDeletionsDuringBookmarkBatchUpload",
+                        "SyncMinimizeDeletionsDuringBookmarkBatchUpload"
+                    ]
+                }
+            ]
+        }
+    ],
     "SysUiHoldbackStudy": [
         {
             "platforms": [
