@@ -561,7 +561,7 @@ void HttpStreamPool::AttemptManager::CancelInFlightAttempts(
   slow_attempt_count_ = 0;
 
   base::UmaHistogramCounts100(
-      base::StrCat({"Net.HttpStreamPool.AttemptCancelCount.",
+      base::StrCat({"Net.HttpStreamPool.StreamAttemptCancelCount.",
                     StreamSocketCloseReasonToString(reason)}),
       num_cancel_attempts);
 
