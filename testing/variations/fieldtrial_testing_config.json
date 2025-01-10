@@ -392,6 +392,21 @@
             ]
         }
     ],
+    "AndroidDumpOnScrollWithoutResource": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidDumpOnScrollWithoutResource"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidFallbackToNextSlot": [
         {
             "platforms": [

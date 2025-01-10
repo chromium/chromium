@@ -187,6 +187,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidAppIntegrationWithFavicon,
     &kAndroidBookmarkBar,
     &kAndroidBottomToolbar,
+    &kAndroidDumpOnScrollWithoutResource,
     &kAndroidElegantTextHeight,
     &kAndroidNoVisibleHintForDifferentTLD,
     &kAndroidOpenPdfInlineBackport,
@@ -482,6 +483,10 @@ BASE_FEATURE(kAndroidBookmarkBar,
 
 BASE_FEATURE(kAndroidBottomToolbar,
              "AndroidBottomToolbar",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidDumpOnScrollWithoutResource,
+             "AndroidDumpOnScrollWithoutResource",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidElegantTextHeight,

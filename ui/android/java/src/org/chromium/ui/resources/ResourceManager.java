@@ -205,6 +205,11 @@ public class ResourceManager implements ResourceLoaderCallback {
         mResourceLoaders.put(loader.getResourceType(), loader);
     }
 
+    public void dumpIfNoResource(int resType, int resId) {
+        ResourceManagerJni.get()
+                .dumpIfNoResource(mNativeResourceManagerPtr, ResourceManager.this, resType, resId);
+    }
+
     @NativeMethods
     interface Natives {
         void onResourceReady(
@@ -221,5 +226,8 @@ public class ResourceManager implements ResourceLoaderCallback {
                 long nativeResourceManagerImpl, ResourceManager caller, int resType, int resId);
 
         void clearTintedResourceCache(long nativeResourceManagerImpl, ResourceManager caller);
+
+        void dumpIfNoResource(
+                long nativeResourceManagerImpl, ResourceManager caller, int resType, int resId);
     }
 }

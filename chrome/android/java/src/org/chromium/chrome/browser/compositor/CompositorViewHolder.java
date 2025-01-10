@@ -89,6 +89,7 @@ import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.ViewportInsets;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
+import org.chromium.ui.resources.AndroidResourceType;
 import org.chromium.ui.resources.ResourceManager;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 import org.chromium.url.GURL;
@@ -1008,6 +1009,13 @@ public class CompositorViewHolder extends FrameLayout
             boolean bottomControlsMinHeightChanged,
             boolean requestNewFrame,
             boolean isVisibilityForced) {
+        if (ChromeFeatureList.sAndroidDumpOnScrollWithoutResource.isEnabled()
+                && !isVisibilityForced
+                && getResourceManager() != null) {
+            getResourceManager()
+                    .dumpIfNoResource(AndroidResourceType.DYNAMIC, R.id.control_container);
+        }
+
         onViewportChanged();
 
         // When scrolling browser controls in viz, don't produce new browser frames unless it's
