@@ -33,11 +33,12 @@ static void VerifyBusWithOffset(AudioBus* bus,
                                 ValueType type = ValueType::kNormal) {
   for (int ch = 0; ch < bus->channels(); ++ch) {
     const float v = start_offset + start + ch * bus->frames() * increment;
+    auto channel_data = bus->channel_span(ch);
     for (int i = offset; i < offset + frames; ++i) {
       float expected_value = v + i * increment;
       if (type == ValueType::kFloat)
         expected_value /= std::numeric_limits<uint16_t>::max();
-      ASSERT_FLOAT_EQ(expected_value, bus->channel(ch)[i])
+      ASSERT_FLOAT_EQ(expected_value, channel_data[i])
           << "i=" << i << ", ch=" << ch;
     }
   }
@@ -56,8 +57,9 @@ class TestExternalMemory : public media::AudioBuffer::ExternalMemory {
 
 static std::vector<float*> WrapChannelsAsVector(AudioBus* bus) {
   std::vector<float*> channels(bus->channels());
-  for (size_t ch = 0; ch < channels.size(); ++ch)
-    channels[ch] = bus->channel(ch);
+  for (size_t ch = 0; ch < channels.size(); ++ch) {
+    channels[ch] = bus->channel_span(ch).data();
+  }
 
   return channels;
 }
@@ -220,7 +222,7 @@ TEST(AudioBufferTest, CopyFromAudioBus) {
   EXPECT_FALSE(audio_buffer_from_bus->end_of_stream());
 
   for (int ch = 0; ch < kChannelCount; ++ch) {
-    const float* bus_data = audio_bus->channel(ch);
+    auto bus_data = audio_bus->channel_span(ch);
     const float* buffer_data = reinterpret_cast<const float*>(
         audio_buffer_from_bus->channel_data()[ch]);
 
@@ -632,7 +634,7 @@ TEST(AudioBufferTest, WrapOrCopyToAudioBus) {
   // directly wrap |buffer|'s data.
   std::unique_ptr<AudioBus> bus = AudioBuffer::WrapOrCopyToAudioBus(buffer);
   for (int ch = 0; ch < channels; ++ch) {
-    EXPECT_EQ(bus->channel(ch),
+    EXPECT_EQ(bus->channel_span(ch).data(),
               reinterpret_cast<float*>(buffer->channel_data()[ch]));
   }
 

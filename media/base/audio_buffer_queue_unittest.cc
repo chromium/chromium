@@ -35,12 +35,13 @@ static void VerifyBus(AudioBus* bus,
                       ValueType type = ValueType::kNormal) {
   for (int ch = 0; ch < bus->channels(); ++ch) {
     const float v = start + ch * buffer_size * increment;
+    auto channel_data = bus->channel_span(ch);
     for (int i = offset; i < offset + frames; ++i) {
       float expected_value = v + (i - offset) * increment;
       if (type == ValueType::kFloat)
         expected_value /= std::numeric_limits<uint16_t>::max();
 
-      ASSERT_FLOAT_EQ(expected_value, bus->channel(ch)[i])
+      ASSERT_FLOAT_EQ(expected_value, channel_data[i])
           << "i=" << i << ", ch=" << ch;
     }
   }
