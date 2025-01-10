@@ -428,8 +428,8 @@ component("cpp") {
 
   assert_no_deps = [
     "//ash/components/arc",
-    "//ash/components/arc/intent_helper",
     "//ash/public/cpp/external_arc",
+    "//chromeos/ash/experiences/arc/intent_helper",
     "//components/exo",
     "//components/soda",
   ]

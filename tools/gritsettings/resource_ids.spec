@@ -1227,7 +1227,7 @@
   },
   # TODO(b/207518736): Input overlay resources will be changed to proto soon,
   # thus not rushing to update it for now.
-  "ash/components/arc/input_overlay/resources/input_overlay_resources.grd": {
+  "chromeos/ash/experiences/arc/input_overlay/resources/input_overlay_resources.grd": {
     # Big alignment at start of section.
     "includes": [9010],
   },

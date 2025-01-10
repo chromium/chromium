@@ -11,8 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/intent_helper/intent_constants.h"
-#include "ash/components/arc/intent_helper/intent_filter.h"
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
@@ -23,6 +21,8 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chromeos/ash/experiences/arc/intent_helper/intent_constants.h"
+#include "chromeos/ash/experiences/arc/intent_helper/intent_filter.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"

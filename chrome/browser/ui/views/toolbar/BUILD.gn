@@ -174,7 +174,7 @@ source_set("toolbar") {
     deps += [ "//ui/aura" ]
   }
   if (is_chromeos) {
-    public_deps += [ "//ash/components/arc/intent_helper" ]
+    public_deps += [ "//chromeos/ash/experiences/arc/intent_helper" ]
     deps += [
       "//ash/constants",
       "//chrome/browser/ash/ownership",

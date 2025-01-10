@@ -1,6 +1,0 @@
-include_rules = [
-  "+components/metrics",
-  "+ui/aura",
-  "+ui/events/ozone/gamepad",
-  "+ui/wm/public",
-]

@@ -1,0 +1,15 @@
+include_rules = [
+  "+ash/root_window_controller.h",
+  "+ash/screen_util.h",
+  "+ash/shell.h",
+  "+ash/shell_observer.h",
+  "+ash/wm",
+  "+ash/rotator",
+  "+components/metrics",
+]
+
+specific_include_rules = {
+  ".*test\.cc": [
+    "+ash/test",
+  ]
+}

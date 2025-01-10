@@ -6,8 +6,6 @@
 
 #include <memory>
 
-#include "ash/components/arc/intent_helper/arc_intent_helper_bridge.h"
-#include "ash/components/arc/intent_helper/intent_constants.h"
 #include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/components/arc/test/fake_intent_helper_instance.h"
 #include "base/test/test_future.h"
@@ -22,6 +20,8 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
+#include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "chromeos/ash/experiences/arc/intent_helper/intent_constants.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"

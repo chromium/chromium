@@ -43,8 +43,6 @@ static_library("session") {
   deps = [
     "//ash/components/arc",
     "//ash/components/arc:arc_app_constants",
-    "//ash/components/arc/intent_helper",
-    "//ash/components/arc/media_session",
     "//ash/public/cpp",
     "//base",
     "//chrome/app/vector_icons",
@@ -118,6 +116,8 @@ static_library("session") {
     "//chromeos/ash/components/demo_mode",
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/memory",
+    "//chromeos/ash/experiences/arc/intent_helper",
+    "//chromeos/ash/experiences/arc/media_session",
     "//chromeos/ash/services/cros_healthd/public/cpp",
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//chromeos/dbus/tpm_manager",

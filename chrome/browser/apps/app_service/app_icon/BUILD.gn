@@ -67,7 +67,7 @@ source_set("app_icon") {
       "//chrome/browser/image_decoder",
       "//chrome/browser/resources:component_extension_resources",
     ]
-    public_deps += [ "//ash/components/arc/intent_helper" ]
+    public_deps += [ "//chromeos/ash/experiences/arc/intent_helper" ]
   }
 }
 

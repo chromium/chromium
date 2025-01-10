@@ -8,8 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "ash/components/arc/intent_helper/control_camera_app_delegate.h"
 #include "ash/public/cpp/new_window_delegate.h"
+#include "chromeos/ash/experiences/arc/intent_helper/control_camera_app_delegate.h"
 #include "url/gurl.h"
 
 // Handles opening new tabs and windows on behalf of ash (over mojo) and the

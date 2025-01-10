@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "ash/components/arc/intent_helper/arc_intent_helper_mojo_delegate.h"
+#include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_mojo_delegate.h"
 #include "ui/base/resource/resource_scale_factor.h"
 
 namespace arc {

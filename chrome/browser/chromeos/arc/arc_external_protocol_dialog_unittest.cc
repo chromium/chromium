@@ -4,8 +4,6 @@
 
 #include "chrome/browser/chromeos/arc/arc_external_protocol_dialog.h"
 
-#include "ash/components/arc/intent_helper/arc_intent_helper_mojo_delegate.h"
-#include "ash/components/arc/intent_helper/arc_intent_helper_package.h"
 #include "ash/components/arc/test/fake_arc_icon_cache.h"
 #include "ash/components/arc/test/fake_arc_intent_helper_mojo.h"
 #include "base/memory/raw_ptr.h"
@@ -14,6 +12,8 @@
 #include "chrome/browser/sharing/click_to_call/click_to_call_ui_controller.h"
 #include "chrome/browser/sharing/sharing_service_factory.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_mojo_delegate.h"
+#include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_package.h"
 #include "components/sharing_message/features.h"
 #include "components/sharing_message/mock_sharing_service.h"
 #include "components/sharing_message/proto/click_to_call_message.pb.h"

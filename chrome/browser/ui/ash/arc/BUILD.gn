@@ -22,7 +22,6 @@ static_library("arc") {
     "//ash",
     "//ash/components/arc:arc_base_utils",
     "//ash/components/arc:prefs",
-    "//ash/components/arc/intent_helper",
     "//ash/components/arc/mojom",
     "//ash/components/arc/vector_icons",
     "//ash/constants",
@@ -48,6 +47,7 @@ static_library("arc") {
     "//chrome/browser/web_applications",
     "//chrome/browser/webshare:storage",
     "//chrome/common",
+    "//chromeos/ash/experiences/arc/intent_helper",
     "//components/user_manager",
     "//components/web_modal",
     "//content/public/browser",
@@ -91,7 +91,6 @@ source_set("browser_tests") {
 
   deps = [
     ":arc",
-    "//ash/components/arc/intent_helper",
     "//base",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/system_web_apps",
@@ -101,6 +100,7 @@ source_set("browser_tests") {
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//chromeos/ash/experiences/arc/intent_helper",
     "//content/public/browser",
     "//content/test:test_support",
     "//testing/gtest",

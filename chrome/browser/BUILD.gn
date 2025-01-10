@@ -4842,8 +4842,6 @@ static_library("browser") {
       "//ash/components/arc",
       "//ash/components/arc:arc_base",
       "//ash/components/arc:arc_base_utils",
-      "//ash/components/arc/intent_helper",
-      "//ash/components/arc/intent_helper:arc_intent_helper_constants",
       "//ash/components/arc/mojom",
       "//ash/constants",
       "//ash/public/cpp/external_arc",
@@ -5307,6 +5305,8 @@ static_library("browser") {
       "//chromeos/ash/components/system",
       "//chromeos/ash/components/timezone",
       "//chromeos/ash/components/tpm",
+      "//chromeos/ash/experiences/arc/intent_helper",
+      "//chromeos/ash/experiences/arc/intent_helper:arc_intent_helper_constants",
       "//chromeos/ash/services/assistant/public/cpp",
       "//chromeos/ash/services/auth_factor_config",
       "//chromeos/ash/services/bluetooth_config",
@@ -5924,7 +5924,6 @@ static_library("browser") {
       "ui/lacros/window_utility.h",
     ]
     deps += [
-      "//ash/components/arc/intent_helper",
       "//chrome/browser/apps:icon_standardizer",
       "//chrome/browser/apps/app_service/app_icon",
       "//chrome/browser/chromeos/drivefs",
@@ -5940,6 +5939,7 @@ static_library("browser") {
       "//chrome/browser/lacros/cros_apps/api/diagnostics",
       "//chrome/browser/ui/aura/accessibility",
       "//chrome/common/chromeos/extensions",
+      "//chromeos/ash/experiences/arc/intent_helper",
       "//chromeos/crosapi/cpp",
       "//chromeos/crosapi/cpp:crosapi_constants",
       "//chromeos/crosapi/mojom",
@@ -6055,8 +6055,6 @@ static_library("browser") {
     ]
 
     deps += [
-      "//ash/components/arc/intent_helper",
-      "//ash/components/arc/intent_helper:arc_intent_helper_constants",
       "//ash/webui/projector_app/public/cpp",
       "//ash/webui/settings/public/constants",
       "//chrome/browser/apps/app_service/app_install:implementation",
@@ -6094,6 +6092,8 @@ static_library("browser") {
       "//chrome/browser/ui/ash/read_write_cards:read_write_cards_manager",
       "//chrome/browser/webshare:storage",
       "//chrome/common/chromeos/extensions",
+      "//chromeos/ash/experiences/arc/intent_helper",
+      "//chromeos/ash/experiences/arc/intent_helper:arc_intent_helper_constants",
       "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_browser",
       "//chromeos/components/certificate_provider:certificate_provider",
       "//chromeos/components/disks:prefs",
