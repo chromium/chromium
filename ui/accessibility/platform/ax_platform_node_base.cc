@@ -2026,7 +2026,8 @@ int AXPlatformNodeBase::GetHypertextOffsetFromEndpoint(
 AXPlatformNodeBase::AXPosition AXPlatformNodeBase::HypertextOffsetToEndpoint(
     int hypertext_offset) const {
   DCHECK_GE(hypertext_offset, 0);
-  DCHECK_LT(hypertext_offset, static_cast<int>(GetHypertext().size()));
+  // The offset can be equal to the length when it is past the end.
+  DCHECK_LE(hypertext_offset, static_cast<int>(GetHypertext().size()));
 
   if (IsLeaf()) {
     if (IsText()) {
@@ -2045,7 +2046,7 @@ AXPlatformNodeBase::AXPosition AXPlatformNodeBase::HypertextOffsetToEndpoint(
       child_text_len =
           base::checked_cast<int>(child_iter->GetHypertext().size());
 
-    if (current_hypertext_offset < child_text_len) {
+    if (current_hypertext_offset <= child_text_len) {
       int endpoint_offset = current_hypertext_offset;
       if (child_iter->IsText())
         return child_iter->GetDelegate()->CreateTextPositionAt(endpoint_offset);
