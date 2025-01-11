@@ -78,6 +78,12 @@ BASE_FEATURE(kCertVerificationNetworkTime,
 BASE_FEATURE(kDbusSecretPortal,
              "DbusSecretPortal",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables usage of os_crypt_async::FreedesktopSecretKeyProvider, which is
+// compatible with the synchronous backend.
+BASE_FEATURE(kUseFreedesktopSecretKeyProvider,
+             "UseFreedesktopSecretKeyProvider",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_LINUX)
 
 // Destroy profiles when their last browser window is closed, instead of when
@@ -233,6 +239,12 @@ BASE_FEATURE(kSandboxExternalProtocolBlockedWarning,
 // Otherwise, it will only decrypt existing data.
 BASE_FEATURE(kSecretPortalKeyProviderUseForEncryption,
              "SecretPortalKeyProviderUseForEncryption",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If true, encrypt new data with the key provided by
+// FreedesktopSecretKeyProvider. Otherwise, it will only decrypt existing data.
+BASE_FEATURE(kUseFreedesktopSecretKeyProviderForEncryption,
+             "UseFreedesktopSecretKeyProviderForEncryption",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_LINUX)
 

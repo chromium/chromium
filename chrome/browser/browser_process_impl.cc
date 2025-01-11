@@ -256,6 +256,8 @@
 
 #if BUILDFLAG(IS_LINUX)
 #include "chrome/browser/browser_features.h"
+#include "components/os_crypt/async/browser/fallback_linux_key_provider.h"
+#include "components/os_crypt/async/browser/freedesktop_secret_key_provider.h"
 #include "components/os_crypt/async/browser/secret_portal_key_provider.h"
 #endif
 
@@ -1396,6 +1398,21 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
             local_state(),
             base::FeatureList::IsEnabled(
                 features::kSecretPortalKeyProviderUseForEncryption)));
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kUseFreedesktopSecretKeyProvider)) {
+    // Use a higher priority than the SecretPortalKeyProvider.
+    providers.emplace_back(
+        /*precedence=*/15u,
+        std::make_unique<os_crypt_async::FreedesktopSecretKeyProvider>(
+            base::FeatureList::IsEnabled(
+                features::kUseFreedesktopSecretKeyProviderForEncryption),
+            l10n_util::GetStringUTF8(IDS_PRODUCT_NAME), nullptr));
+    providers.emplace_back(
+        /*precedence=*/15u,
+        std::make_unique<os_crypt_async::FallbackLinuxKeyProvider>(
+            base::FeatureList::IsEnabled(
+                features::kUseFreedesktopSecretKeyProviderForEncryption)));
   }
 #endif  // BUILDFLAG(IS_LINUX)
 
