@@ -17,6 +17,13 @@ MouseKeysBubbleController::~MouseKeysBubbleController() {
   if (widget_ && !widget_->IsClosed()) {
     widget_->CloseNow();
   }
+  StopTimer();
+}
+
+void MouseKeysBubbleController::StopTimer() {
+  if (timer_.IsRunning()) {
+    timer_.Stop();
+  }
 }
 
 void MouseKeysBubbleController::UpdateBubble(
@@ -36,7 +43,20 @@ void MouseKeysBubbleController::UpdateBubble(
 
   Update(icon, text);
   widget_->SetVisible(visible);
-  Update(icon, text);
+  if (timer_.IsRunning()) {
+    timer_.Reset();
+  } else {
+    timer_.Start(
+        FROM_HERE, base::Seconds(2),
+        base::BindRepeating(&MouseKeysBubbleController::HideWidgetAfterDelay,
+                            GetWeakPtr()));
+  }
+}
+
+void MouseKeysBubbleController::HideWidgetAfterDelay() {
+  if (widget_) {
+    widget_->Hide();
+  }
 }
 
 void MouseKeysBubbleController::OnViewIsDeleting(views::View* observed_view) {
@@ -44,9 +64,9 @@ void MouseKeysBubbleController::OnViewIsDeleting(views::View* observed_view) {
     return;
   }
 
+  StopTimer();
   mouse_keys_bubble_view_->views::View::RemoveObserver(this);
   mouse_keys_bubble_view_ = nullptr;
-  // TODO(crbug.com/380053616) implement logic to show or hide widget.
   widget_ = nullptr;
 }
 

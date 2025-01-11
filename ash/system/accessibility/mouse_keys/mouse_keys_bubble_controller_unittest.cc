@@ -17,7 +17,8 @@ namespace ash {
 
 class MouseKeysBubbleControllerTest : public AshTestBase {
  public:
-  MouseKeysBubbleControllerTest() = default;
+  MouseKeysBubbleControllerTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~MouseKeysBubbleControllerTest() override = default;
   MouseKeysBubbleControllerTest(const MouseKeysBubbleControllerTest&) = delete;
   MouseKeysBubbleControllerTest& operator=(
@@ -49,6 +50,14 @@ class MouseKeysBubbleControllerTest : public AshTestBase {
     return GetView()->GetTextForTesting();
   }
 
+  bool IsBubbleVisible() {
+    // Add a null check for widget_.
+    if (GetController()->widget_ == nullptr) {
+      return false;
+    }
+    return GetController()->widget_->IsVisible();
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -69,6 +78,14 @@ TEST_F(MouseKeysBubbleControllerTest, AccessibleProperties) {
   ui::AXNodeData data;
   GetView()->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kGenericContainer);
+}
+
+TEST_F(MouseKeysBubbleControllerTest, BubbleAutoHides) {
+  EXPECT_FALSE(IsBubbleVisible());
+  Update(MouseKeysBubbleIconType::kHidden, u"Testing");
+  EXPECT_TRUE(IsBubbleVisible());
+  task_environment()->FastForwardBy(base::Seconds(2));
+  EXPECT_FALSE(IsBubbleVisible());
 }
 
 }  // namespace ash

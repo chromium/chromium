@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
+#include "base/timer/timer.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
@@ -39,6 +40,9 @@ class ASH_EXPORT MouseKeysBubbleController : public views::ViewObserver {
 
   // views::ViewObserver:
   void OnViewIsDeleting(views::View* observed_view) override;
+  base::WeakPtr<MouseKeysBubbleController> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
  private:
   friend class MouseKeysBubbleControllerTest;
@@ -46,7 +50,9 @@ class ASH_EXPORT MouseKeysBubbleController : public views::ViewObserver {
 
   // Performs initialization if necessary.
   void EnsureInitialize();
-
+  // Hides widget after specified time.
+  void HideWidgetAfterDelay();
+  void StopTimer();
   // Updates the view and widget.
   void Update(MouseKeysBubbleIconType icon,
               const std::optional<std::u16string>& text);
@@ -54,6 +60,8 @@ class ASH_EXPORT MouseKeysBubbleController : public views::ViewObserver {
   // Owned by views hierarchy.
   raw_ptr<MouseKeysBubbleView> mouse_keys_bubble_view_ = nullptr;
   raw_ptr<views::Widget> widget_ = nullptr;
+  base::RetainingOneShotTimer timer_;
+  base::WeakPtrFactory<MouseKeysBubbleController> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
