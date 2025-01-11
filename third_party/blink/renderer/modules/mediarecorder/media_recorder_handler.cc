@@ -408,6 +408,61 @@ bool MediaRecorderHandler::CanSupportMimeType(const String& type,
                  parsed_result->codec == media::VideoCodec::kAV1);
       }
 
+      if (codec_string.StartsWith("h264", kTextCaseASCIIInsensitive) ||
+          codec_string.StartsWith("avc1", kTextCaseASCIIInsensitive) ||
+          codec_string.StartsWith("avc3", kTextCaseASCIIInsensitive)) {
+        // In the case of the `video/mp4` mimetype, when the profile can be
+        // parsed, make use of the parsed profile.
+        const media::VideoCodecProfile profile =
+            (mp4_mime_type && parsed_result)
+                ? parsed_result->profile
+                : media::VideoCodecProfile::H264PROFILE_BASELINE;
+
+        // If the profile is not any of the H.264 baseline, main, extended, and
+        // high profiles, reject it.
+        if (profile != media::VideoCodecProfile::H264PROFILE_BASELINE &&
+            profile != media::VideoCodecProfile::H264PROFILE_MAIN &&
+            profile != media::VideoCodecProfile::H264PROFILE_EXTENDED &&
+            profile != media::VideoCodecProfile::H264PROFILE_HIGH) {
+          match = false;
+        }
+
+        // If the profile is not supported by either the HW or the SW encoder,
+        // reject it.
+        if (!media::IsEncoderSupportedVideoType(
+                {media::VideoCodec::kH264, profile})) {
+          match = false;
+        }
+      }
+
+      if (codec_string.StartsWith("av1", kTextCaseASCIIInsensitive) ||
+          codec_string.StartsWith("av01", kTextCaseASCIIInsensitive)) {
+        // In the case of the `video/mp4` mimetype, when the profile can be
+        // parsed, make use of the parsed profile.
+        const media::VideoCodecProfile profile =
+            (mp4_mime_type && parsed_result)
+                ? parsed_result->profile
+                : media::VideoCodecProfile::AV1PROFILE_PROFILE_MAIN;
+
+        // If the profile does not match the AV1 main profile, reject it.
+        if (profile != media::VideoCodecProfile::AV1PROFILE_PROFILE_MAIN) {
+          match = false;
+        }
+
+        if (match) {
+          base::UmaHistogramBoolean(
+              "Media.MediaRecorder.HasCorrectAV1CodecString",
+              codec_string.StartsWith("av01", kTextCaseASCIIInsensitive));
+        }
+
+        // If the profile is not supported by either the HW or the SW encoder,
+        // reject it.
+        if (!media::IsEncoderSupportedVideoType(
+                {media::VideoCodec::kAV1, profile})) {
+          match = false;
+        }
+      }
+
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
       // Support `hev1` tag as it allow parameter sets write into the bitstream,
       // which is the only option if the MediaStream has dynamically changing
@@ -441,28 +496,6 @@ bool MediaRecorderHandler::CanSupportMimeType(const String& type,
     if (codec_string == "mp4a.40.2" &&
         !media::MojoAudioEncoder::IsSupported(media::AudioCodec::kAAC)) {
       return false;
-    }
-
-    if (codec_string == "av01" || codec_string == "av1") {
-      base::UmaHistogramBoolean("Media.MediaRecorder.HasCorrectAV1CodecString",
-                                codec_string == "av01");
-#if !BUILDFLAG(ENABLE_LIBAOM)
-      // The software encoder is unable to process the kAV1 codec if
-      // ENABLE_LIBAOM is not defined. It verifies hardware encoding supports is
-      // doable.
-      VideoTrackRecorder::CodecProfile codec_profile =
-          VideoStringToCodecProfile(codec_string);
-      if (!VideoTrackRecorderImpl::CanUseAcceleratedEncoder(
-              // The CanUseAcceleratedEncoder function requires a frame size for
-              // validation. However, at this point, we don’t have the frame
-              // size available. We’re making an assumption that it exceeds the
-              // minimum size.
-              codec_profile,
-              video_track_recorder::kVEAEncoderMinResolutionWidth,
-              video_track_recorder::kVEAEncoderMinResolutionHeight)) {
-        return false;
-      }
-#endif
     }
   }
   return true;
