@@ -12,9 +12,13 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/common/extensions/api/developer_private.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "extensions/browser/blocklist_state.h"
+#include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_prefs_observer.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/url_pattern.h"
 #include "extensions/common/url_pattern_set.h"
@@ -38,7 +42,7 @@ class WarningService;
 
 // Generates the developerPrivate api's specification for ExtensionInfo.
 // This class is designed to only have one generation running at a time!
-class ExtensionInfoGenerator {
+class ExtensionInfoGenerator : public ProfileObserver {
  public:
   using ExtensionInfoList = std::vector<api::developer_private::ExtensionInfo>;
 
@@ -49,7 +53,13 @@ class ExtensionInfoGenerator {
   ExtensionInfoGenerator(const ExtensionInfoGenerator&) = delete;
   ExtensionInfoGenerator& operator=(const ExtensionInfoGenerator&) = delete;
 
-  ~ExtensionInfoGenerator();
+  ~ExtensionInfoGenerator() override;
+
+  // ProfileObserver implementation.
+  // There's a chance that an instance of this class is owned by a task, which
+  // means it could outlive some of the systems cached that would be destroyed
+  // when the profile associated with the `browser_context_` is destroyed.
+  void OnProfileWillBeDestroyed(Profile* profile) override;
 
   // Creates and asynchronously returns an ExtensionInfo for the given
   // |extension_id|, if the extension can be found.
@@ -111,6 +121,8 @@ class ExtensionInfoGenerator {
 
   // The callback to run once all infos have been created.
   ExtensionInfosCallback callback_;
+
+  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 
   base::WeakPtrFactory<ExtensionInfoGenerator> weak_factory_{this};
 

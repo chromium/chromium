@@ -195,6 +195,8 @@ ExtensionSyncService::MergeDataAndStartSyncing(
     }
   }
 
+  AccountExtensionTracker::Get(profile_)->OnInitialExtensionsSyncDataReceived();
+
   // Now push the local state to sync.
   // Note: We'd like to only send out changes for extensions which have
   // NeedsSync set. However, we can't tell if our changes ever made it to the

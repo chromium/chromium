@@ -509,6 +509,7 @@ void BrowserContextKeyedAPIFactory<
   DependsOn(ExtensionSystemFactory::GetInstance());
   DependsOn(PermissionsManager::GetFactory());
   DependsOn(ToolbarActionsModelFactory::GetInstance());
+  DependsOn(AccountExtensionTracker::GetFactory());
 }
 
 // static
@@ -537,6 +538,12 @@ DeveloperPrivateEventRouter::DeveloperPrivateEventRouter(Profile* profile)
       ExtensionSystem::Get(profile)->extension_service()->allowlist());
   permissions_manager_observation_.Observe(PermissionsManager::Get(profile));
   toolbar_actions_model_observation_.Observe(ToolbarActionsModel::Get(profile));
+
+  if (sync_util::IsExtensionsExplicitSigninEnabled()) {
+    account_extension_tracker_observation_.Observe(
+        AccountExtensionTracker::Get(profile));
+  }
+
   pref_change_registrar_.Init(profile->GetPrefs());
   // The unretained is safe, since the PrefChangeRegistrar unregisters the
   // callback on destruction.
@@ -745,6 +752,22 @@ void DeveloperPrivateEventRouter::OnToolbarPinnedActionsChanged() {
   for (const auto& extension : extensions) {
     if (ui_util::ShouldDisplayInExtensionSettings(*extension)) {
       BroadcastItemStateChanged(developer::EventType::kPinnedActionsChanged,
+                                extension->id());
+    }
+  }
+}
+
+void DeveloperPrivateEventRouter::OnExtensionUploadabilityChanged(
+    const ExtensionId& id) {
+  BroadcastItemStateChanged(developer::EventType::kPrefsChanged, id);
+}
+
+void DeveloperPrivateEventRouter::OnExtensionsUploadabilityChanged() {
+  const ExtensionSet extensions =
+      ExtensionRegistry::Get(profile_)->GenerateInstalledExtensionsSet();
+  for (const auto& extension : extensions) {
+    if (sync_util::ShouldSync(profile_, extension.get())) {
+      BroadcastItemStateChanged(developer::EventType::kPrefsChanged,
                                 extension->id());
     }
   }

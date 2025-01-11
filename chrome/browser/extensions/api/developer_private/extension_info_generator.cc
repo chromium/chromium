@@ -414,9 +414,32 @@ ExtensionInfoGenerator::ExtensionInfoGenerator(
       error_console_(ErrorConsole::Get(browser_context)),
       image_loader_(ImageLoader::Get(browser_context)),
       pending_image_loads_(0u) {
+  profile_observation_.Observe(Profile::FromBrowserContext(browser_context));
 }
 
 ExtensionInfoGenerator::~ExtensionInfoGenerator() = default;
+
+void ExtensionInfoGenerator::OnProfileWillBeDestroyed(Profile* profile) {
+  // Reset all references for keyed services in case this object outlives the
+  // profile or browser context.
+  profile_observation_.Reset();
+  browser_context_ = nullptr;
+  command_service_ = nullptr;
+  extension_system_ = nullptr;
+  extension_prefs_ = nullptr;
+  warning_service_ = nullptr;
+  error_console_ = nullptr;
+  image_loader_ = nullptr;
+
+  // Remove any WeakPtr to terminate any async tasks.
+  weak_factory_.InvalidateWeakPtrs();
+
+  // Flush the callback if there is one.
+  if (!callback_.is_null()) {
+    std::move(callback_).Run({});
+  }
+  // WARNING: `this` is possibly deleted after this line!
+}
 
 void ExtensionInfoGenerator::CreateExtensionInfo(
     const ExtensionId& id,

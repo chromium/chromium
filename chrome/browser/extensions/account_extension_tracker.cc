@@ -127,6 +127,9 @@ void AccountExtensionTracker::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
   ExtensionRegistry* extension_registry = ExtensionRegistry::Get(profile_);
 
+  bool observers_notified = false;
+
+  // First look for whether or not the user has signed in or signed out.
   auto signin_event_type =
       event_details.GetEventTypeFor(signin::ConsentLevel::kSignin);
   switch (signin_event_type) {
@@ -149,6 +152,10 @@ void AccountExtensionTracker::OnPrimaryAccountChanged(
       }
 
       extensions_installed_with_signin_promo_.clear();
+
+      // Don't notify observers that extensions uploadability has changed here,
+      // since initial sync data has not been received yet. Notifying here now
+      // may cause UI flickers from events fired in rapid succession.
       break;
     }
     case signin::PrimaryAccountChangeEvent::Type::kCleared: {
@@ -161,8 +168,30 @@ void AccountExtensionTracker::OnPrimaryAccountChanged(
       for (const auto& extension : extensions) {
         SetAccountExtensionType(extension->id(), AccountExtensionType::kLocal);
       }
+
+      NotifyOnExtensionsUploadabilityChanged();
+      observers_notified = true;
       break;
     }
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      break;
+  }
+
+  // Now see if there is any change on whether the user has enabled or disabled
+  // full sync. If there is, notify observers that the eligibility for uploading
+  // extensions may have changed. If observers have already been notified, just
+  // return early.
+  if (observers_notified) {
+    return;
+  }
+
+  auto sync_event_type =
+      event_details.GetEventTypeFor(signin::ConsentLevel::kSync);
+  switch (sync_event_type) {
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+      NotifyOnExtensionsUploadabilityChanged();
+      break;
     case signin::PrimaryAccountChangeEvent::Type::kNone:
       break;
   }
@@ -179,7 +208,14 @@ void AccountExtensionTracker::OnExtensionSyncDataReceived(
   if (type == AccountExtensionType::kLocal) {
     SetAccountExtensionType(extension_id,
                             AccountExtensionType::kAccountInstalledLocally);
+    for (auto& observer : observers_) {
+      observer.OnExtensionUploadabilityChanged(extension_id);
+    }
   }
+}
+
+void AccountExtensionTracker::OnInitialExtensionsSyncDataReceived() {
+  NotifyOnExtensionsUploadabilityChanged();
 }
 
 AccountExtensionTracker::AccountExtensionType
@@ -221,6 +257,9 @@ bool AccountExtensionTracker::CanUploadAsAccountExtension(
   // Uploading extensions as "account extensions" aka extensions syncing to the
   // current signed in user, is only enabled if the user is signed in and
   // syncing extensions in transport mode.
+  // If the user is not signed in, then nothing syncs.
+  // If the user is signed into full sync, then any syncable extensions
+  // automatically get uploaded so user uploading is disabled.
   if (!sync_util::IsSyncingExtensionsInTransportMode(profile_)) {
     return false;
   }
@@ -238,6 +277,14 @@ void AccountExtensionTracker::SetAccountExtensionTypeForTesting(
   SetAccountExtensionType(extension_id, type);
 }
 
+void AccountExtensionTracker::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void AccountExtensionTracker::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void AccountExtensionTracker::SetAccountExtensionType(
     const ExtensionId& extension_id,
     AccountExtensionTracker::AccountExtensionType type) {
@@ -250,6 +297,12 @@ void AccountExtensionTracker::RemoveExpiredExtension(
   std::erase_if(
       extensions_installed_with_signin_promo_,
       [&extension_id](const ExtensionId& id) { return extension_id == id; });
+}
+
+void AccountExtensionTracker::NotifyOnExtensionsUploadabilityChanged() {
+  for (auto& observer : observers_) {
+    observer.OnExtensionsUploadabilityChanged();
+  }
 }
 
 }  // namespace extensions

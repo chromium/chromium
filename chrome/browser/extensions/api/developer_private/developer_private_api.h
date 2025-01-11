@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/extensions/account_extension_tracker.h"
 #include "chrome/browser/extensions/commands/command_service.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
 #include "chrome/browser/extensions/extension_allowlist.h"
@@ -78,7 +79,8 @@ class DeveloperPrivateEventRouter : public ExtensionRegistryObserver,
                                     public ExtensionManagement::Observer,
                                     public WarningService::Observer,
                                     public PermissionsManager::Observer,
-                                    public ToolbarActionsModel::Observer {
+                                    public ToolbarActionsModel::Observer,
+                                    public AccountExtensionTracker::Observer {
  public:
   explicit DeveloperPrivateEventRouter(Profile* profile);
 
@@ -170,6 +172,10 @@ class DeveloperPrivateEventRouter : public ExtensionRegistryObserver,
   void OnToolbarModelInitialized() override {}
   void OnToolbarPinnedActionsChanged() override;
 
+  // AccountExtensionTracker::Observer:
+  void OnExtensionUploadabilityChanged(const ExtensionId& id) override;
+  void OnExtensionsUploadabilityChanged() override;
+
   // Handles a profile preference change.
   void OnProfilePrefChanged();
 
@@ -204,6 +210,9 @@ class DeveloperPrivateEventRouter : public ExtensionRegistryObserver,
       permissions_manager_observation_{this};
   base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>
       toolbar_actions_model_observation_{this};
+  base::ScopedObservation<AccountExtensionTracker,
+                          AccountExtensionTracker::Observer>
+      account_extension_tracker_observation_{this};
 
   raw_ptr<Profile> profile_;
 
