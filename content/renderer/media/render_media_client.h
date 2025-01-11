@@ -81,10 +81,8 @@ class RenderMediaClient : public media::MediaClient {
   [[maybe_unused]] base::WaitableEvent did_audio_decoder_update_;
 
   // Used to indicate if optional video profile support information has been
-  // retrieved from the |video_encoder_for_supported_profiles_|. May be waited
-  // upon by any thread but the RenderThread since it's always signaled from the
-  // RenderThread.
-  [[maybe_unused]] base::WaitableEvent did_video_encoder_update_;
+  // retrieved from the |video_encoder_for_supported_profiles_|.
+  [[maybe_unused]] bool did_video_encoder_update_ = false;
 
   [[maybe_unused]] mojo::Remote<media::mojom::InterfaceFactory>
       interface_factory_for_supported_profiles_

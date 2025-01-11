@@ -399,6 +399,44 @@ TEST(SupportedTypesTest, IsEncoderSupportedVideoType_AV1Profiles) {
       IsEncoderSupportedVideoType({VideoCodec::kAV1, AV1PROFILE_PROFILE_PRO}));
 }
 
+TEST(SupportedTypesTest, IsEncoderBuiltInVideoType) {
+  // Note that we don't test all the profile since
+  // `IsEncoderSupportedVideoType_${*}` tests should already cover this.
+  EXPECT_EQ(
+      IsEncoderBuiltInVideoType({VideoCodec::kH264, H264PROFILE_BASELINE}),
+      BUILDFLAG(ENABLE_OPENH264) && BUILDFLAG(USE_PROPRIETARY_CODECS));
+  EXPECT_EQ(
+      IsEncoderBuiltInVideoType({VideoCodec::kAV1, AV1PROFILE_PROFILE_MAIN}),
+      BUILDFLAG(ENABLE_LIBAOM));
+  EXPECT_EQ(IsEncoderBuiltInVideoType({VideoCodec::kVP9, VP9PROFILE_PROFILE0}),
+            BUILDFLAG(ENABLE_LIBVPX));
+  EXPECT_EQ(IsEncoderBuiltInVideoType({VideoCodec::kVP8, VP8PROFILE_ANY}),
+            BUILDFLAG(ENABLE_LIBVPX));
+
+  EXPECT_FALSE(
+      IsEncoderBuiltInVideoType({VideoCodec::kHEVC, HEVCPROFILE_MAIN}));
+  EXPECT_FALSE(
+      IsEncoderBuiltInVideoType({VideoCodec::kAV1, AV1PROFILE_PROFILE_PRO}));
+}
+
+TEST(SupportedTypesTest, IsEncoderOptionalVideoType) {
+  EXPECT_EQ(
+      IsEncoderOptionalVideoType({VideoCodec::kH264, H264PROFILE_BASELINE}),
+      BUILDFLAG(USE_PROPRIETARY_CODECS) && !BUILDFLAG(ENABLE_OPENH264));
+
+  EXPECT_EQ(
+      IsEncoderOptionalVideoType({VideoCodec::kAV1, AV1PROFILE_PROFILE_MAIN}),
+      !BUILDFLAG(ENABLE_LIBAOM));
+
+  EXPECT_EQ(IsEncoderOptionalVideoType({VideoCodec::kHEVC, HEVCPROFILE_MAIN}),
+            BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_ENCODE_SUPPORT));
+
+  EXPECT_EQ(IsEncoderOptionalVideoType({VideoCodec::kVP9, VP9PROFILE_PROFILE0}),
+            !BUILDFLAG(ENABLE_LIBVPX));
+  EXPECT_EQ(IsEncoderOptionalVideoType({VideoCodec::kVP8, VP8PROFILE_ANY}),
+            !BUILDFLAG(ENABLE_LIBVPX));
+}
+
 TEST(SupportedTypesTest, IsDecoderBuiltInVideoCodec) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
   EXPECT_TRUE(IsDecoderBuiltInVideoCodec(VideoCodec::kH264));
@@ -433,25 +471,6 @@ TEST(SupportedTypesTest, IsDecoderBuiltInVideoCodec) {
   EXPECT_FALSE(IsDecoderBuiltInVideoCodec(VideoCodec::kMPEG2));
   EXPECT_FALSE(IsDecoderBuiltInVideoCodec(VideoCodec::kHEVC));
   EXPECT_FALSE(IsDecoderBuiltInVideoCodec(VideoCodec::kDolbyVision));
-}
-
-TEST(SupportedTypesTest, IsEncoderBuiltInVideoCodec) {
-  EXPECT_EQ(IsEncoderBuiltInVideoCodec(VideoCodec::kH264),
-            BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_OPENH264));
-  EXPECT_EQ(IsEncoderBuiltInVideoCodec(VideoCodec::kVP8),
-            BUILDFLAG(ENABLE_LIBVPX));
-  EXPECT_EQ(IsEncoderBuiltInVideoCodec(VideoCodec::kVP9),
-            BUILDFLAG(ENABLE_LIBVPX));
-  EXPECT_EQ(IsEncoderBuiltInVideoCodec(VideoCodec::kAV1),
-            BUILDFLAG(ENABLE_LIBAOM));
-
-  EXPECT_FALSE(IsEncoderBuiltInVideoCodec(VideoCodec::kTheora));
-  EXPECT_FALSE(IsEncoderBuiltInVideoCodec(VideoCodec::kUnknown));
-  EXPECT_FALSE(IsEncoderBuiltInVideoCodec(VideoCodec::kMPEG4));
-  EXPECT_FALSE(IsEncoderBuiltInVideoCodec(VideoCodec::kVC1));
-  EXPECT_FALSE(IsEncoderBuiltInVideoCodec(VideoCodec::kMPEG2));
-  EXPECT_FALSE(IsEncoderBuiltInVideoCodec(VideoCodec::kHEVC));
-  EXPECT_FALSE(IsEncoderBuiltInVideoCodec(VideoCodec::kDolbyVision));
 }
 
 TEST(SupportedTypesTest, MayHaveAndAllowSelectOSSoftwareEncoder) {
