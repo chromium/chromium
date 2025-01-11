@@ -56,10 +56,10 @@ struct PolicySectionEvents
   virtual ~PolicySectionEvents() = default;
 };
 
-base::Value::Dict LoadGroupPolicies(bool should_take_policy_critical_section) {
+base::Value::Dict LoadGroupPolicies() {
   base::ScopedClosureRunner leave_policy_section_closure;
 
-  if (should_take_policy_critical_section && base::IsManagedDevice()) {
+  if (base::IsManagedDevice()) {
     // Only for managed machines, a best effort is made to take the Group Policy
     // critical section. Lock acquisition can take a long time in the worst case
     // scenarios, hence a short timed wait is used.
@@ -122,9 +122,8 @@ base::Value::Dict LoadGroupPolicies(bool should_take_policy_critical_section) {
 }  // namespace
 
 GroupPolicyManager::GroupPolicyManager(
-    bool should_take_policy_critical_section,
     std::optional<bool> override_is_managed_device)
-    : PolicyManager(LoadGroupPolicies(should_take_policy_critical_section)),
+    : PolicyManager(LoadGroupPolicies()),
       is_managed_device_(override_is_managed_device.value_or(
           base::IsManagedOrEnterpriseDevice())) {}
 

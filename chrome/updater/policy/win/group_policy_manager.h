@@ -15,9 +15,8 @@ namespace updater {
 // The GroupPolicyManager returns policies for domain-joined machines.
 class GroupPolicyManager : public PolicyManager {
  public:
-  GroupPolicyManager(
-      bool should_take_policy_critical_section,
-      std::optional<bool> override_is_managed_device = std::nullopt);
+  explicit GroupPolicyManager(
+      std::optional<bool> override_is_managed_device = {});
   GroupPolicyManager(const GroupPolicyManager&) = delete;
   GroupPolicyManager& operator=(const GroupPolicyManager&) = delete;
 

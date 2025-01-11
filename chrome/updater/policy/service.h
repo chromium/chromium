@@ -240,9 +240,9 @@ struct PolicyServiceProxyConfiguration {
 };
 
 std::vector<scoped_refptr<PolicyManagerInterface>> CreateManagers(
-    bool should_take_policy_critical_section,
     scoped_refptr<ExternalConstants> external_constants,
-    scoped_refptr<PolicyManagerInterface> dm_policy_manager);
+    scoped_refptr<PolicyManagerInterface> dm_policy_manager,
+    scoped_refptr<PolicyManagerInterface> group_policy_manager = {});
 
 }  // namespace updater
 

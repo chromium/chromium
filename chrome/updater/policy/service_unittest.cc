@@ -15,6 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/enterprise_companion/global_constants.h"
@@ -771,6 +772,7 @@ TEST_P(PolicyServiceAreUpdatesSuppressedNowTest, TestCases) {
 
 #if BUILDFLAG(IS_WIN)
 TEST(PolicyService, CreateManagers) {
+  base::test::TaskEnvironment environment;
   registry_util::RegistryOverrideManager registry_overrides;
   ASSERT_NO_FATAL_FAILURE(
       registry_overrides.OverrideRegistry(HKEY_LOCAL_MACHINE));
@@ -780,7 +782,7 @@ TEST(PolicyService, CreateManagers) {
                            OmahaSettingsClientProto>();
   auto dm_policy = base::MakeRefCounted<DMPolicyManager>(*omaha_settings, true);
   PolicyManagers managers =
-      CreateManagers(false, CreateExternalConstants(), dm_policy);
+      CreateManagers(CreateExternalConstants(), dm_policy);
   EXPECT_EQ(managers.size(), size_t{4});
   EXPECT_EQ(managers[0]->source(), "DictValuePolicy");
   EXPECT_EQ(managers[1]->source(), "Group Policy");
@@ -791,7 +793,7 @@ TEST(PolicyService, CreateManagers) {
                         Wow6432(KEY_WRITE));
   EXPECT_EQ(ERROR_SUCCESS,
             key.WriteValue(L"CloudPolicyOverridesPlatformPolicy", 1));
-  managers = CreateManagers(false, CreateExternalConstants(), dm_policy);
+  managers = CreateManagers(CreateExternalConstants(), dm_policy);
   EXPECT_EQ(managers.size(), size_t{4});
   EXPECT_EQ(managers[0]->source(), "DictValuePolicy");
   EXPECT_EQ(managers[1]->source(), "Device Management");
@@ -805,7 +807,7 @@ TEST(PolicyService, CreateManagers) {
                            OmahaSettingsClientProto>();
   auto dm_policy = base::MakeRefCounted<DMPolicyManager>(*omaha_settings, true);
   PolicyManagers managers =
-      CreateManagers(false, CreateExternalConstants(), dm_policy);
+      CreateManagers(CreateExternalConstants(), dm_policy);
   EXPECT_EQ(managers.size(), size_t{4});
   EXPECT_EQ(managers[0]->source(), "DictValuePolicy");
   EXPECT_EQ(managers[1]->source(), "Device Management");
@@ -819,7 +821,7 @@ TEST(PolicyService, CreateManagers) {
                            OmahaSettingsClientProto>();
   auto dm_policy = base::MakeRefCounted<DMPolicyManager>(*omaha_settings, true);
   PolicyManagers managers =
-      CreateManagers(false, CreateExternalConstants(), dm_policy);
+      CreateManagers(CreateExternalConstants(), dm_policy);
   EXPECT_EQ(managers.size(), size_t{3});
   EXPECT_EQ(managers[0]->source(), "DictValuePolicy");
   EXPECT_EQ(managers[1]->source(), "Device Management");

@@ -53,7 +53,7 @@ void GroupPolicyManagerTests::DeletePolicyKey() {
 }
 
 TEST_F(GroupPolicyManagerTests, NoPolicySet) {
-  auto policy_manager = base::MakeRefCounted<GroupPolicyManager>(true);
+  auto policy_manager = base::MakeRefCounted<GroupPolicyManager>();
   EXPECT_FALSE(policy_manager->HasActiveDevicePolicies());
 
   EXPECT_EQ(policy_manager->source(), "Group Policy");
@@ -125,7 +125,7 @@ TEST_F(GroupPolicyManagerTests, PolicyRead) {
   EXPECT_EQ(ERROR_SUCCESS,
             key.WriteValue(L"RollbackToTargetVersion" TEST_APP_ID, 1));
 
-  auto policy_manager = base::MakeRefCounted<GroupPolicyManager>(true);
+  auto policy_manager = base::MakeRefCounted<GroupPolicyManager>();
   EXPECT_EQ(policy_manager->HasActiveDevicePolicies(),
             base::win::IsEnrolledToDomain());
 
@@ -199,7 +199,8 @@ TEST_F(GroupPolicyManagerTests, WrongPolicyValueType) {
   EXPECT_EQ(ERROR_SUCCESS,
             key.WriteValue(L"RollbackToTargetVersion" TEST_APP_ID, L"1"));
 
-  auto policy_manager = base::MakeRefCounted<GroupPolicyManager>(true, true);
+  auto policy_manager = base::MakeRefCounted<GroupPolicyManager>(
+      /*override_is_managed_device=*/true);
   EXPECT_TRUE(policy_manager->HasActiveDevicePolicies());
 
   EXPECT_FALSE(policy_manager->CloudPolicyOverridesPlatformPolicy());

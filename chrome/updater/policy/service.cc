@@ -87,9 +87,9 @@ bool CloudPolicyOverridesPlatformPolicy(
 }  // namespace
 
 std::vector<scoped_refptr<PolicyManagerInterface>> CreateManagers(
-    bool should_take_policy_critical_section,
     scoped_refptr<ExternalConstants> external_constants,
-    scoped_refptr<PolicyManagerInterface> dm_policy_manager) {
+    scoped_refptr<PolicyManagerInterface> dm_policy_manager,
+    scoped_refptr<PolicyManagerInterface> group_policy) {
   // The order of the policy managers:
   //   1) External constants policy manager (if present).
   //   2) Group policy manager (Windows only). **
@@ -107,9 +107,10 @@ std::vector<scoped_refptr<PolicyManagerInterface>> CreateManagers(
                                external_constants->GroupPolicies())
                          : nullptr;
 #if BUILDFLAG(IS_WIN)
-  auto group_policy_manager = base::MakeRefCounted<GroupPolicyManager>(
-      should_take_policy_critical_section,
-      external_constants->IsMachineManaged());
+  auto group_policy_manager = group_policy
+                                  ? group_policy
+                                  : base::MakeRefCounted<GroupPolicyManager>(
+                                        external_constants->IsMachineManaged());
   if (CloudPolicyOverridesPlatformPolicy({dm_policy_manager,
                                           group_policy_manager,
                                           external_constants_policy_manager})) {
@@ -144,16 +145,11 @@ PolicyService::PolicyService(
       persisted_data_(persisted_data),
       is_ceca_experiment_enabled_(false) {}
 
-// The policy managers are initialized without taking the Group Policy critical
-// section here, by passing `false` for `should_take_policy_critical_section`,
-// to avoid blocking the main sequence. Later in `FetchPoliciesDone`, the
-// policies are reloaded with the critical section lock.
 PolicyService::PolicyService(
     scoped_refptr<ExternalConstants> external_constants,
     scoped_refptr<PersistedData> persisted_data,
     bool is_ceca_experiment_enabled)
     : policy_managers_(SortManagers(CreateManagers(
-          /*should_take_policy_critical_section=*/false,
           external_constants,
           CreateDMPolicyManager(external_constants->IsMachineManaged())))),
       external_constants_(external_constants),
@@ -224,15 +220,18 @@ void PolicyService::FetchPoliciesDone(
       FROM_HERE, {base::MayBlock(), base::WithBaseSyncPrimitives()},
       base::BindOnce(
           [](scoped_refptr<ExternalConstants> external_constants,
-             scoped_refptr<PolicyManagerInterface> dm_policy_manager) {
-            return CreateManagers(
-                /*should_take_policy_critical_section=*/true,
-                external_constants, dm_policy_manager);
+             scoped_refptr<PolicyManagerInterface> dm_policy_manager,
+             scoped_refptr<PolicyManagerInterface> group_policy_manager) {
+            return CreateManagers(external_constants, dm_policy_manager,
+                                  group_policy_manager);
           },
           external_constants_,
           dm_policy_manager ? dm_policy_manager
           : policy_managers_.manager_names.contains(kSourceDMPolicyManager)
               ? policy_managers_.manager_names[kSourceDMPolicyManager]
+              : nullptr,
+          policy_managers_.manager_names.contains(kSourceGroupPolicyManager)
+              ? policy_managers_.manager_names[kSourceGroupPolicyManager]
               : nullptr),
       base::BindOnce(&PolicyService::PolicyManagerLoaded,
                      base::WrapRefCounted(this), result));
