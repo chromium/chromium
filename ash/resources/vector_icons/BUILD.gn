@@ -273,6 +273,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "modifier_split_lock_screen_caps_lock.icon",
     "modifier_split_notification_capslock.icon",
     "more_than_nine_files.icon",
+    "mouse_keys_drag.icon",
     "music_note.icon",
     "muted_microphone.icon",
     "network_badge_off.icon",

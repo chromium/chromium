@@ -74,8 +74,7 @@ MouseKeysBubbleView::MouseKeysBubbleView() {
   // Add icons.
   AddChildView(
       CreateImageView(kSystemMenuMouseIcon, &mouse_button_change_icon_));
-  // TODO(crbug.com/380053616): Change to the correct drag icon.
-  AddChildView(CreateImageView(kWmModeGestureResizeIcon, &mouse_drag_icon_));
+  AddChildView(CreateImageView(kMouseKeysDragIcon, &mouse_drag_icon_));
 
   // Add label.
   AddChildView(
