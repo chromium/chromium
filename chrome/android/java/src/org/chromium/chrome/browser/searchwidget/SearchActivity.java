@@ -889,6 +889,14 @@ public class SearchActivity extends AsyncInitializationActivity
     public void onTopResumedActivityChanged(boolean isTopResumedActivity) {
         super_onTopResumedActivityChanged(isTopResumedActivity);
 
+        // For hub search use in split screen and multi window mode, search activity should be
+        // dismissed when focus is lost to prevent focus from causing the suggestion list to flicker
+        // on window toggling.
+        if (!isTopResumedActivity && mIntentOrigin == IntentOrigin.HUB) {
+            finish(TerminationReason.ACTIVITY_FOCUS_LOST, null);
+            return;
+        }
+
         // TODO(crbug.com/329702834): Ensure showing Suggestions when activity resumes.
         // This may only happen when user enters tab switcher, and immediately returns to the
         // SearchActivity.
