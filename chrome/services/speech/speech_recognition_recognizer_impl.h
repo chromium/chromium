@@ -102,6 +102,9 @@ class SpeechRecognitionRecognizerImpl
 
   void MarkDone() override;
 
+  void UpdateRecognitionContext(
+      media::mojom::SpeechRecognitionRecognitionContextPtr recognition_context);
+
   // AudioSourceConsumer:
   void AddAudio(media::mojom::AudioDataS16Ptr buffer) override;
   void OnAudioCaptureEnd() override;

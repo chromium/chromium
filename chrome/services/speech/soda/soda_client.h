@@ -43,6 +43,9 @@ class SodaClient {
                      int sample_rate,
                      int channel_count) = 0;
 
+  // Updates the recognition context for the current SODA instance.
+  virtual void UpdateRecognitionContext(const RecognitionContext context) = 0;
+
   // Returns a flag indicating whether the client has been initialized.
   virtual bool IsInitialized() = 0;
 
