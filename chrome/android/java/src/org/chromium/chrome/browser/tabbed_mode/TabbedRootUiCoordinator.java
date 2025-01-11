@@ -1324,6 +1324,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             }
 
             @Override
+            public void openLearnMoreSharedTabGroupsPage(Context context, GURL gurl) {
+                CustomTabActivity.showInfoPage(context, gurl.getSpec());
+            }
+
+            @Override
             public void openUrlInChromeCustomTab(Context context, GURL gurl) {
                 CustomTabActivity.showInfoPage(context, gurl.getSpec());
             }
