@@ -227,7 +227,6 @@ src/webgpu/api/operation/shader_module/compilation_info.spec.ts
 src/webgpu/api/operation/storage_texture/read_only.spec.ts
 src/webgpu/api/operation/storage_texture/read_write.spec.ts
 src/webgpu/api/operation/texture_view/format_reinterpretation.spec.ts
-src/webgpu/api/operation/texture_view/read.spec.ts
 src/webgpu/api/operation/texture_view/write.spec.ts
 src/webgpu/api/operation/vertex_state/correctness.spec.ts
 src/webgpu/api/operation/vertex_state/index_format.spec.ts
@@ -275,7 +274,11 @@ src/webgpu/api/validation/capability_checks/limits/maxInterStageShaderVariables.
 src/webgpu/api/validation/capability_checks/limits/maxSampledTexturesPerShaderStage.spec.ts
 src/webgpu/api/validation/capability_checks/limits/maxSamplersPerShaderStage.spec.ts
 src/webgpu/api/validation/capability_checks/limits/maxStorageBufferBindingSize.spec.ts
+src/webgpu/api/validation/capability_checks/limits/maxStorageBuffersInFragmentStage.spec.ts
+src/webgpu/api/validation/capability_checks/limits/maxStorageBuffersInVertexStage.spec.ts
 src/webgpu/api/validation/capability_checks/limits/maxStorageBuffersPerShaderStage.spec.ts
+src/webgpu/api/validation/capability_checks/limits/maxStorageTexturesInFragmentStage.spec.ts
+src/webgpu/api/validation/capability_checks/limits/maxStorageTexturesInVertexStage.spec.ts
 src/webgpu/api/validation/capability_checks/limits/maxStorageTexturesPerShaderStage.spec.ts
 src/webgpu/api/validation/capability_checks/limits/maxTextureArrayLayers.spec.ts
 src/webgpu/api/validation/capability_checks/limits/maxTextureDimension1D.spec.ts
