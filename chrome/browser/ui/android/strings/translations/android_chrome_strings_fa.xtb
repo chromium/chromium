@@ -798,7 +798,7 @@
 <translation id="469286762610133730">محتوای بهتری دریافت کنید</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> گزینه دیگر}one{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> گزینه دیگر}other{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> گزینه دیگر}}</translation>
 <translation id="4698061626562952596">برگه‌های غیرفعال را اینجا بررسی کنید</translation>
-<translation id="4699172675775169585">تصاویر و فایل‌های قرار گرفته در حافظه نهان</translation>
+<translation id="4699172675775169585">تصاویر و فایل‌های ذخیره‌شده در حافظه نهان</translation>
 <translation id="4710167854527459075">ترتیب براساس جدیدترین</translation>
 <translation id="4719927025381752090">پیشنهاد برای ترجمه</translation>
 <translation id="4720556299488643018">لغو اشتراک</translation>

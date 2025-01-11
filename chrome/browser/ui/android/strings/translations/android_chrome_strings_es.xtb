@@ -701,7 +701,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="4248098802131000011">Mantén tus contraseñas protegidas frente a quiebras de seguridad de datos y otros problemas de seguridad.</translation>
 <translation id="424864128008805179">¿Quieres cerrar sesión en Chrome?</translation>
 <translation id="4249955472157341256">Ordenar por más recientes</translation>
-<translation id="4255841059940367080">Protección basada en IA en tiempo real contra descargas, extensiones y sitios peligrosos, que se basa en el envío de tus datos de navegación a Google.</translation>
+<translation id="4255841059940367080">Protección en tiempo real y basada en IA contra descargas, extensiones y sitios peligrosos, que requiere el envío de tus datos de navegación a Google.</translation>
 <translation id="4256782883801055595">Licencias de software libre</translation>
 <translation id="4257230861809842349">¿Eliminar contraseñas del Gestor de contraseñas de Google?</translation>
 <translation id="426652736638196239">Este IBAN solo se guardará en este dispositivo</translation>
@@ -1704,7 +1704,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="8540136935098276800">Introduce una URL con el formato correcto</translation>
 <translation id="854522910157234410">Abrir esta página</translation>
 <translation id="8547025137714087639">{ARCHIVED_TAB_COUNT,plural, =1{Pestaña inactiva (1)}other{Pestañas inactivas (#)}}</translation>
-<translation id="8551513938758868521">Bloquear las pestañas de Incógnito al cerrar Chrome</translation>
+<translation id="8551513938758868521">Ocultar las pestañas de Incógnito al cerrar Chrome</translation>
 <translation id="8551524210492420949">Ofensivo o peligroso</translation>
 <translation id="8559961053328923750">Chrome limita la cantidad total de datos que los sitios pueden compartir a través del navegador para medir el rendimiento de los anuncios.</translation>
 <translation id="8559990750235505898">Ofrecer la traducción de páginas en otros idiomas</translation>
