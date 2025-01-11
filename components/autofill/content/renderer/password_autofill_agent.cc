@@ -2180,12 +2180,14 @@ void PasswordAutofillAgent::LogPrefilledUsernameFillOutcome(
 
 void PasswordAutofillAgent::FireHostSubmitEvent(
     FormRendererId form_id,
+    base::optional_ref<const FormData> submitted_form,
     mojom::SubmissionSource source) {
   switch (source) {
     case mojom::SubmissionSource::NONE:
       NOTREACHED();
     case mojom::SubmissionSource::FORM_SUBMISSION:
-      OnFormSubmitted(GetFormByRendererId(form_id));
+      CHECK(submitted_form.has_value());
+      OnFormSubmitted(*submitted_form);
       return;
     case mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED:
       return;
@@ -2202,12 +2204,15 @@ void PasswordAutofillAgent::FireHostSubmitEvent(
   NOTREACHED();
 }
 
-void PasswordAutofillAgent::OnFormSubmitted(const WebFormElement& form) {
+void PasswordAutofillAgent::OnFormSubmitted(FormData submitted_form) {
+  WebFormElement form_element =
+      GetFormByRendererId(submitted_form.renderer_id());
   std::unique_ptr<RendererSavePasswordProgressLogger> logger;
   if (logging_state_active_) {
     logger = std::make_unique<RendererSavePasswordProgressLogger>(
         &GetPasswordManagerDriver());
-    LogHTMLForm(logger.get(), Logger::STRING_HTML_FORM_FOR_SUBMIT, form);
+    LogHTMLForm(logger.get(), Logger::STRING_HTML_FORM_FOR_SUBMIT,
+                form_element);
   }
 
   if (!FrameCanAccessPasswordManager()) {
@@ -2215,20 +2220,23 @@ void PasswordAutofillAgent::OnFormSubmitted(const WebFormElement& form) {
     return;
   }
 
-  std::optional<FormData> submitted_form_data =
-      GetFormDataFromWebForm(form, /*form_cache=*/{});
+  // TODO(crbug.com/40947729): Replace with `GetFormDataFromWebForm` with
+  // `SynchronousFormCache` when `AutofillOptimizeFormExtraction` launches.
+  ProcessFormDataAfterCreation(submitted_form, form_element,
+                               &username_detector_cache_,
+                               &button_titles_cache_);
 
-  if (!submitted_form_data || !HasTextInputs(*submitted_form_data)) {
+  if (!HasTextInputs(submitted_form)) {
     return;
   }
 
-  submitted_form_data->set_submission_event(
+  submitted_form.set_submission_event(
       SubmissionIndicatorEvent::HTML_FORM_SUBMISSION);
 
-  submitted_form_data->set_fields(FillNonTypedOrFilledPropertiesMasks(
-      submitted_form_data->ExtractFields(), field_data_manager()));
+  submitted_form.set_fields(FillNonTypedOrFilledPropertiesMasks(
+      submitted_form.ExtractFields(), field_data_manager()));
 
-  GetPasswordManagerDriver().PasswordFormSubmitted(*submitted_form_data);
+  GetPasswordManagerDriver().PasswordFormSubmitted(submitted_form);
 }
 
 void PasswordAutofillAgent::HidePopup() {
