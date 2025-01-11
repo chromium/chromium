@@ -200,16 +200,6 @@ chromium-metrics-reviews@google.com.
   <variant name="SmsOtp" summary="The OTP authentication with a SMS OTP."/>
 </variants>
 
-<!--
-TODO(crbug.com/335030020): Prefer variants without empty tokens or leading
-spaces. This should be deprecated in favor of FirstShowOrReshow.
--->
-
-<variants name="Autofill.PaymentBubble.Show">
-  <variant name=".FirstShow" summary="first-show"/>
-  <variant name=".Reshows" summary="re-show"/>
-</variants>
-
 <variants name="Autofill.PaymentsRequestType">
   <variant name="UnmaskCardRequest" summary="credit card unmask"/>
   <variant name="UpdateVirtualCardEnrollment_Enroll" summary="VCN enrollment"/>
@@ -652,17 +642,6 @@ tools/metrics/histograms/update_autofill_enums.py -->
   <variant name="Upload" summary="to server"/>
 </variants>
 
-<!--
-TODO(crbug.com/335030020): Prefer variants without empty tokens or leading
-spaces. This should be deprecated in favor of
-AutofillSaveCreditCardPromptDestination.
--->
-
-<variants name="AutofillSaveCreditCardPromptDestinationWithLeadingPeriod">
-  <variant name=".Local" summary="locally"/>
-  <variant name=".Upload" summary="to server"/>
-</variants>
-
 <variants name="AutofillSeamlessnessFillability">
   <variant name="Fillable"
       summary="Recorded under the assumption of a complete profile (i.e., the
@@ -730,8 +709,8 @@ AutofillSaveCreditCardPromptDestination.
 </variants>
 
 <variants name="IbanTypeToBeSaved">
-  <variant name=".Local" summary="Local IBAN save"/>
-  <variant name=".Upload" summary="Server IBAN save"/>
+  <variant name="Local" summary="Local IBAN save"/>
+  <variant name="Upload" summary="Server IBAN save"/>
 </variants>
 
 <variants name="Vcn3ds.ConsentAlreadyGiven">
@@ -2051,7 +2030,7 @@ AutofillSaveCreditCardPromptDestination.
   <token key="CardType" variants="Autofill.PaymentsRpcCardType"/>
 </histogram>
 
-<histogram name="Autofill.CvcInfoBar{AutofillSaveCreditCardPromptDestination}"
+<histogram name="Autofill.CvcInfoBar.{AutofillSaveCreditCardPromptDestination}"
     enum="AutofillCreditCardInfoBar" expires_after="2025-07-01">
   <owner>yishuil@google.com</owner>
   <owner>vishwasuppoor@google.com</owner>
@@ -2062,7 +2041,7 @@ AutofillSaveCreditCardPromptDestination.
     {AutofillSaveCreditCardPromptDestination}.
   </summary>
   <token key="AutofillSaveCreditCardPromptDestination"
-      variants="AutofillSaveCreditCardPromptDestinationWithLeadingPeriod"/>
+      variants="AutofillSaveCreditCardPromptDestination"/>
 </histogram>
 
 <histogram name="Autofill.CvcStorage.CvcFilling.{CardType}"
@@ -2924,7 +2903,7 @@ AutofillSaveCreditCardPromptDestination.
   </summary>
 </histogram>
 
-<histogram name="Autofill.FilledCardInformationBubble.Result{ShowType}"
+<histogram name="Autofill.FilledCardInformationBubble.Result.{ShowType}"
     enum="AutofillFilledCardInformationBubbleResult" expires_after="2025-07-01">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
@@ -2933,7 +2912,7 @@ AutofillSaveCreditCardPromptDestination.
     Records the reason for closing the filled card information bubble. Recorded
     when the bubble is closed.
   </summary>
-  <token key="ShowType" variants="Autofill.PaymentBubble.Show"/>
+  <token key="ShowType" variants="FirstShowOrReshow"/>
 </histogram>
 
 <histogram name="Autofill.FilledCardInformationBubble.Shown"
@@ -3820,7 +3799,7 @@ AutofillSaveCreditCardPromptDestination.
   </summary>
 </histogram>
 
-<histogram name="Autofill.LocalCardMigrationBubbleOffer{ShowType}"
+<histogram name="Autofill.LocalCardMigrationBubbleOffer.{ShowType}"
     enum="AutofillLocalCardMigrationBubbleOffer" expires_after="2025-07-01">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
@@ -3828,10 +3807,10 @@ AutofillSaveCreditCardPromptDestination.
     Record events related to bubble showing. Logged when bubble is requested or
     is actually shown to users.
   </summary>
-  <token key="ShowType" variants="Autofill.PaymentBubble.Show"/>
+  <token key="ShowType" variants="FirstShowOrReshow"/>
 </histogram>
 
-<histogram name="Autofill.LocalCardMigrationBubbleResult{ShowType}"
+<histogram name="Autofill.LocalCardMigrationBubbleResult.{ShowType}"
     enum="AutofillLocalCardMigrationBubbleResult" expires_after="2025-07-01">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
@@ -3839,7 +3818,7 @@ AutofillSaveCreditCardPromptDestination.
     Records whether and how the local card migration bubble was accepted or
     closed.
   </summary>
-  <token key="ShowType" variants="Autofill.PaymentBubble.Show"/>
+  <token key="ShowType" variants="FirstShowOrReshow"/>
 </histogram>
 
 <histogram name="Autofill.LocalCardMigrationBubbleUserInteraction"
@@ -4262,7 +4241,8 @@ AutofillSaveCreditCardPromptDestination.
   <token key="BubbleType" variants="Autofill.OfferNotification.Type"/>
 </histogram>
 
-<histogram name="Autofill.OfferNotificationBubbleResult.{BubbleType}{ShowType}"
+<histogram
+    name="Autofill.OfferNotificationBubbleResult.{BubbleType}.{ShowType}"
     enum="AutofillOfferNotificationBubbleResult" expires_after="2025-07-01">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
@@ -4272,7 +4252,7 @@ AutofillSaveCreditCardPromptDestination.
     the bubble is closed.
   </summary>
   <token key="BubbleType" variants="Autofill.OfferNotification.Type"/>
-  <token key="ShowType" variants="Autofill.PaymentBubble.Show"/>
+  <token key="ShowType" variants="FirstShowOrReshow"/>
 </histogram>
 
 <histogram name="Autofill.OfferNotificationBubbleSuppressed.{BubbleType}"
@@ -4502,7 +4482,7 @@ AutofillSaveCreditCardPromptDestination.
 </histogram>
 
 <histogram
-    name="Autofill.PaymentMethods.MandatoryReauth.OptInBubbleOffer{ShowType}"
+    name="Autofill.PaymentMethods.MandatoryReauth.OptInBubbleOffer.{ShowType}"
     enum="MandatoryReauthOptInBubbleOffer" expires_after="2025-07-01">
   <owner>vinnypersky@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -4513,11 +4493,11 @@ AutofillSaveCreditCardPromptDestination.
     reauth requires the user to unlock their device or pass a biometric auth
     when autofilling payment method information.
   </summary>
-  <token key="ShowType" variants="Autofill.PaymentBubble.Show"/>
+  <token key="ShowType" variants="FirstShowOrReshow"/>
 </histogram>
 
 <histogram
-    name="Autofill.PaymentMethods.MandatoryReauth.OptInBubbleResult{ShowType}"
+    name="Autofill.PaymentMethods.MandatoryReauth.OptInBubbleResult.{ShowType}"
     enum="MandatoryReauthOptInBubbleResult" expires_after="2025-07-01">
   <owner>vinnypersky@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -4527,7 +4507,7 @@ AutofillSaveCreditCardPromptDestination.
     Mandatory reauth requires the user to unlock their device or pass a
     biometric auth when autofilling payment method information.
   </summary>
-  <token key="ShowType" variants="Autofill.PaymentBubble.Show"/>
+  <token key="ShowType" variants="FirstShowOrReshow"/>
 </histogram>
 
 <histogram
@@ -5442,7 +5422,7 @@ AutofillSaveCreditCardPromptDestination.
 </histogram>
 
 <histogram
-    name="Autofill.SaveCreditCardPromptResult{SaveDestination}.{UserGroup}"
+    name="Autofill.SaveCreditCardPromptResult.{SaveDestination}.{UserGroup}"
     enum="AutofillSavePaymentMethodPromptResultEnum" expires_after="2025-07-01">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
@@ -5453,7 +5433,7 @@ AutofillSaveCreditCardPromptDestination.
     are recorded. Logged when the prompt closes.
   </summary>
   <token key="SaveDestination"
-      variants="AutofillSaveCreditCardPromptDestinationWithLeadingPeriod"/>
+      variants="AutofillSaveCreditCardPromptDestination"/>
   <token key="UserGroup">
     <variant name="Aggregate" summary="Aggregated data of all users."/>
     <variant name="UserHasNoCards"
@@ -5466,7 +5446,7 @@ AutofillSaveCreditCardPromptDestination.
 </histogram>
 
 <histogram
-    name="Autofill.SaveCvcPromptOffer{AutofillSaveCreditCardPromptDestination}{ShowType}"
+    name="Autofill.SaveCvcPromptOffer.{AutofillSaveCreditCardPromptDestination}.{ShowType}"
     enum="AutofillSavePaymentMethodPromptOfferEnum" expires_after="2025-07-01">
   <owner>vishwasuppoor@google.com</owner>
   <owner>siyua@chromium.org</owner>
@@ -5477,12 +5457,12 @@ AutofillSaveCreditCardPromptDestination.
     flow is triggered and the prompt should be shown. It was a {ShowType}.
   </summary>
   <token key="AutofillSaveCreditCardPromptDestination"
-      variants="AutofillSaveCreditCardPromptDestinationWithLeadingPeriod"/>
-  <token key="ShowType" variants="Autofill.PaymentBubble.Show"/>
+      variants="AutofillSaveCreditCardPromptDestination"/>
+  <token key="ShowType" variants="FirstShowOrReshow"/>
 </histogram>
 
 <histogram
-    name="Autofill.SaveCvcPromptResult{AutofillSaveCreditCardPromptDestination}{ShowType}"
+    name="Autofill.SaveCvcPromptResult.{AutofillSaveCreditCardPromptDestination}.{ShowType}"
     enum="AutofillSavePaymentMethodPromptResultEnum" expires_after="2025-07-01">
   <owner>vishwasuppoor@google.com</owner>
   <owner>siyua@chromium.org</owner>
@@ -5493,11 +5473,11 @@ AutofillSaveCreditCardPromptDestination.
     the prompt closes. It was a {ShowType}.
   </summary>
   <token key="AutofillSaveCreditCardPromptDestination"
-      variants="AutofillSaveCreditCardPromptDestinationWithLeadingPeriod"/>
-  <token key="ShowType" variants="Autofill.PaymentBubble.Show"/>
+      variants="AutofillSaveCreditCardPromptDestination"/>
+  <token key="ShowType" variants="FirstShowOrReshow"/>
 </histogram>
 
-<histogram name="Autofill.SaveIbanPromptOffer{IbanTypeToBeSaved}{ShowType}"
+<histogram name="Autofill.SaveIbanPromptOffer.{IbanTypeToBeSaved}.{ShowType}"
     enum="AutofillSavePaymentMethodPromptOfferEnum" expires_after="2025-07-01">
   <owner>jsaul@google.com</owner>
   <owner>qihuizhao@google.com</owner>
@@ -5509,11 +5489,11 @@ AutofillSaveCreditCardPromptDestination.
     is no option to retrigger the prompt or reshow it once dismissed.
   </summary>
   <token key="IbanTypeToBeSaved" variants="IbanTypeToBeSaved"/>
-  <token key="ShowType" variants="Autofill.PaymentBubble.Show"/>
+  <token key="ShowType" variants="FirstShowOrReshow"/>
 </histogram>
 
 <histogram
-    name="Autofill.SaveIbanPromptResult{IbanTypeToBeSaved}.SavedWithNickname"
+    name="Autofill.SaveIbanPromptResult.{IbanTypeToBeSaved}.SavedWithNickname"
     enum="Boolean" expires_after="2025-07-01">
   <owner>jsaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -5524,7 +5504,7 @@ AutofillSaveCreditCardPromptDestination.
   <token key="IbanTypeToBeSaved" variants="IbanTypeToBeSaved"/>
 </histogram>
 
-<histogram name="Autofill.SaveIbanPromptResult{IbanTypeToBeSaved}{ShowType}"
+<histogram name="Autofill.SaveIbanPromptResult.{IbanTypeToBeSaved}.{ShowType}"
     enum="AutofillSavePaymentMethodPromptResultEnum" expires_after="2025-07-01">
   <owner>jsaul@google.com</owner>
   <owner>qihuizhao@google.com</owner>
@@ -5536,7 +5516,7 @@ AutofillSaveCreditCardPromptDestination.
     reshow it once dismissed.
   </summary>
   <token key="IbanTypeToBeSaved" variants="IbanTypeToBeSaved"/>
-  <token key="ShowType" variants="Autofill.PaymentBubble.Show"/>
+  <token key="ShowType" variants="FirstShowOrReshow"/>
 </histogram>
 
 <histogram name="Autofill.ScanCreditCard.Completed" enum="BooleanCompleted"
@@ -6010,7 +5990,7 @@ AutofillSaveCreditCardPromptDestination.
 </histogram>
 
 <histogram
-    name="Autofill.StrikeDatabase.StrikesPresentWhenIbanSaved{IbanTypeToBeSaved}"
+    name="Autofill.StrikeDatabase.StrikesPresentWhenIbanSaved.{IbanTypeToBeSaved}"
     units="strikes" expires_after="2025-07-01">
   <owner>qihuizhao@google.com</owner>
   <owner>jsaul@google.com</owner>
@@ -7151,7 +7131,7 @@ AutofillSaveCreditCardPromptDestination.
 </histogram>
 
 <histogram
-    name="Autofill.VirtualCardEnrollBubble.Result.{EnrollmentSource}{ShowType}{PreviousStrikes}"
+    name="Autofill.VirtualCardEnrollBubble.Result.{EnrollmentSource}.{ShowType}{PreviousStrikes}"
     enum="AutofillVirtualCardEnrollBubbleResult" expires_after="2025-07-01">
   <owner>alexandertekle@google.com</owner>
   <owner>siyua@chromium.org</owner>
@@ -7165,7 +7145,7 @@ AutofillSaveCreditCardPromptDestination.
   </summary>
   <token key="EnrollmentSource"
       variants="Autofill.VirtualCardEnrollmentSource"/>
-  <token key="ShowType" variants="Autofill.PaymentBubble.Show"/>
+  <token key="ShowType" variants="FirstShowOrReshow"/>
   <token key="PreviousStrikes" variants="Autofill.FeaturePreviousStrikes"/>
 </histogram>
 
