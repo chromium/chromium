@@ -151,7 +151,7 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValue* ValueForFontPalette(const ComputedStyle&);
   static CSSValue* SpecifiedValueForGridTrackSize(const GridTrackSize&,
                                                   const ComputedStyle&);
-  static CSSValue* ValueForGridAutoTrackList(GridTrackSizingDirection,
+  static CSSValue* ValueForGridAutoTrackList(const NGGridTrackList&,
                                              const LayoutObject*,
                                              const ComputedStyle&);
   static CSSValue* ValueForGridTrackList(GridTrackSizingDirection,

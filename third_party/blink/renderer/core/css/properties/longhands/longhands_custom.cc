@@ -4342,7 +4342,7 @@ const CSSValue* GridAutoColumns::CSSValueFromComputedStyleInternal(
     const LayoutObject* layout_object,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValueForGridAutoTrackList(kForColumns,
+  return ComputedStyleUtils::ValueForGridAutoTrackList(style.GridAutoColumns(),
                                                        layout_object, style);
 }
 
@@ -4430,8 +4430,8 @@ const CSSValue* GridAutoRows::CSSValueFromComputedStyleInternal(
     const LayoutObject* layout_object,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValueForGridAutoTrackList(kForRows, layout_object,
-                                                       style);
+  return ComputedStyleUtils::ValueForGridAutoTrackList(style.GridAutoRows(),
+                                                       layout_object, style);
 }
 
 const CSSValue* GridAutoRows::InitialValue() const {
@@ -6098,6 +6098,23 @@ const CSSValue* MaskType::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   return CSSIdentifierValue::Create(style.MaskType());
+}
+
+const CSSValue* MasonryAutoTracks::ParseSingleValue(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  return css_parsing_utils::ConsumeGridTrackList(
+      stream, context, css_parsing_utils::TrackListType::kGridAuto);
+}
+
+const CSSValue* MasonryAutoTracks::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return ComputedStyleUtils::ValueForGridAutoTrackList(
+      style.MasonryAutoTracks(), layout_object, style);
 }
 
 const CSSValue* MasonryDirection::CSSValueFromComputedStyleInternal(
