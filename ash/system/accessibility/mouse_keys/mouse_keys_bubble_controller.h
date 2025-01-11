@@ -20,6 +20,7 @@ class Widget;
 
 namespace ash {
 
+enum class MouseKeysBubbleIconType;
 class MouseKeysBubbleView;
 
 // Manages the MouseKeysBubbleView.
@@ -32,7 +33,9 @@ class ASH_EXPORT MouseKeysBubbleController : public views::ViewObserver {
   ~MouseKeysBubbleController() override;
 
   // Updates the bubble's visibility and text content.
-  void UpdateBubble(bool visible, const std::optional<std::u16string>& text);
+  void UpdateBubble(bool visible,
+                    MouseKeysBubbleIconType icon,
+                    const std::optional<std::u16string>& text);
 
   // views::ViewObserver:
   void OnViewIsDeleting(views::View* observed_view) override;
@@ -44,7 +47,8 @@ class ASH_EXPORT MouseKeysBubbleController : public views::ViewObserver {
   void EnsureInitialize();
 
   // Updates the view and widget.
-  void Update(const std::optional<std::u16string>& text);
+  void Update(MouseKeysBubbleIconType icon,
+              const std::optional<std::u16string>& text);
 
   // Owned by views hierarchy.
   raw_ptr<MouseKeysBubbleView> mouse_keys_bubble_view_ = nullptr;

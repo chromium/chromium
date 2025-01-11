@@ -21,11 +21,13 @@ MouseKeysBubbleController::~MouseKeysBubbleController() {
 
 void MouseKeysBubbleController::UpdateBubble(
     bool visible,
+    MouseKeysBubbleIconType icon,
     const std::optional<std::u16string>& text) {
   EnsureInitialize();
-  Update(text);
+  Update(icon, text);
   // TODO(crbug.com/380053616) implement logic to make bubble follow cursor.
   widget_->SetVisible(visible);
+  Update(icon, text);
 }
 
 void MouseKeysBubbleController::OnViewIsDeleting(views::View* observed_view) {
@@ -56,12 +58,13 @@ void MouseKeysBubbleController::EnsureInitialize() {
 }
 
 void MouseKeysBubbleController::Update(
+    MouseKeysBubbleIconType icon,
     const std::optional<std::u16string>& text) {
   DCHECK(mouse_keys_bubble_view_);
   DCHECK(widget_);
 
   // Update `mouse_keys_bubble_view_`.
-  mouse_keys_bubble_view_->Update(text);
+  mouse_keys_bubble_view_->Update(icon, text);
 
   // Update the bounds to fit entirely within the screen.
   gfx::Rect new_bounds = widget_->GetWindowBoundsInScreen();

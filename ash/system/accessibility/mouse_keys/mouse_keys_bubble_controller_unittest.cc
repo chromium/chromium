@@ -37,8 +37,8 @@ class MouseKeysBubbleControllerTest : public AshTestBase {
         ->GetMouseKeysBubbleControllerForTest();
   }
 
-  void Update(const std::u16string& text) {
-    GetController()->UpdateBubble(/*visible=*/true, text);
+  void Update(MouseKeysBubbleIconType icon, const std::u16string& text) {
+    GetController()->UpdateBubble(/*visible=*/true, icon, text);
   }
 
   MouseKeysBubbleView* GetView() const {
@@ -55,17 +55,17 @@ class MouseKeysBubbleControllerTest : public AshTestBase {
 
 TEST_F(MouseKeysBubbleControllerTest, LabelText) {
   EXPECT_FALSE(GetView());
-  Update(u"Testing");
+  Update(MouseKeysBubbleIconType::kHidden, u"Testing");
   EXPECT_TRUE(GetView());
   EXPECT_EQ(u"Testing", GetBubbleText());
 
-  Update(u"");
+  Update(MouseKeysBubbleIconType::kHidden, u"");
   EXPECT_TRUE(GetView());
   EXPECT_EQ(u"", GetBubbleText());
 }
 
 TEST_F(MouseKeysBubbleControllerTest, AccessibleProperties) {
-  Update(u"");
+  Update(MouseKeysBubbleIconType::kHidden, u"");
   ui::AXNodeData data;
   GetView()->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kGenericContainer);

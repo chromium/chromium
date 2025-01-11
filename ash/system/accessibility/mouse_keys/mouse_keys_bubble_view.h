@@ -18,6 +18,8 @@
 
 namespace ash {
 
+enum class MouseKeysBubbleIconType;
+
 // View for the MouseKeys bubble.
 class ASH_EXPORT MouseKeysBubbleView : public views::BubbleDialogDelegateView {
   METADATA_HEADER(MouseKeysBubbleView, views::BubbleDialogDelegateView)
@@ -31,7 +33,8 @@ class ASH_EXPORT MouseKeysBubbleView : public views::BubbleDialogDelegateView {
   // Updates the visibility of all child views. Also updates the text content
   // of `label_` and updates the size of this view.
   // TODO(crbug.com/380053616) Add icons to the bubble view.
-  void Update(const std::optional<std::u16string>& text);
+  void Update(MouseKeysBubbleIconType icon,
+              const std::optional<std::u16string>& text);
 
   // views::BubbleDialogDelegateView:
   void OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
@@ -41,6 +44,8 @@ class ASH_EXPORT MouseKeysBubbleView : public views::BubbleDialogDelegateView {
 
  private:
   raw_ptr<views::Label> label_ = nullptr;
+  raw_ptr<views::ImageView> mouse_button_change_icon_ = nullptr;
+  raw_ptr<views::ImageView> mouse_drag_icon_ = nullptr;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,

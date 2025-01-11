@@ -7,7 +7,9 @@
 #include <memory>
 #include <vector>
 
+#include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -16,7 +18,18 @@
 namespace ash {
 
 namespace {
+constexpr int kIconSizeDip = 16;
 constexpr int kSpaceBetweenIconAndTextDip = 4;
+
+std::unique_ptr<views::ImageView> CreateImageView(
+    const gfx::VectorIcon& icon,
+    raw_ptr<views::ImageView>* destination_view) {
+  return views::Builder<views::ImageView>()
+      .SetImage(ui::ImageModel::FromVectorIcon(icon, kColorAshTextColorPrimary,
+                                               kIconSizeDip))
+      .CopyAddressTo(destination_view)
+      .Build();
+}
 
 std::unique_ptr<views::Label> CreateLabelView(
     const std::u16string& text,
@@ -61,6 +74,11 @@ MouseKeysBubbleView::MouseKeysBubbleView() {
   AddChildView(
       CreateLabelView(std::u16string(), kColorAshTextColorPrimary, &label_));
 
+  AddChildView(
+      CreateImageView(kSystemMenuMouseIcon, &mouse_button_change_icon_));
+  // TODO(crbug.com/380053616): Change to the correct drag icon.
+  AddChildView(CreateImageView(kWmModeGestureResizeIcon, &mouse_drag_icon_));
+
   GetViewAccessibility().SetRole(ax::mojom::Role::kGenericContainer);
   // Note: this static variable is used so that this view can be identified
   // from tests. Do not change this, as it will cause test failures.
@@ -69,7 +87,12 @@ MouseKeysBubbleView::MouseKeysBubbleView() {
 
 MouseKeysBubbleView::~MouseKeysBubbleView() = default;
 
-void MouseKeysBubbleView::Update(const std::optional<std::u16string>& text) {
+void MouseKeysBubbleView::Update(MouseKeysBubbleIconType icon,
+                                 const std::optional<std::u16string>& text) {
+  // Update icon visibility.
+  mouse_button_change_icon_->SetVisible(
+      icon == MouseKeysBubbleIconType::kButtonChanged);
+  mouse_drag_icon_->SetVisible(icon == MouseKeysBubbleIconType::kMouseDrag);
   // Update label.
   label_->SetVisible(text.has_value());
   label_->SetText(text.has_value() ? text.value() : std::u16string());
