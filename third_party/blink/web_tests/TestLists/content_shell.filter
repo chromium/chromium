@@ -422,7 +422,6 @@ external/wpt/css/css-scroll-snap-2/scrollsnapchanging/scrollsnapchanging-on-*
 external/wpt/css/css-scroll-snap-2/scroll-start/scroll-start-fieldset.tentative.html
 external/wpt/css/css-scroll-snap-2/scroll-initial-target/scroll-initial-target-rtl.tentative.html
 external/wpt/css/css-scroll-snap/input/snap-area-overflow-boundary-viewport-covering.tentative.html
-external/wpt/css/css-scroll-snap/selection-target.html
 external/wpt/css/css-scroll-snap/snap-after-relayout/changing-scroll-snap-align-nested.tentative.html
 external/wpt/css/css-scroll-snap/snap-after-relayout/multiple-aligned-targets/common-to-both-axes-supercedes-first-in-tree-order.html
 external/wpt/css/css-scroll-snap/snap-after-relayout/multiple-aligned-targets/prefer-common-to-both-axes.html
@@ -630,7 +629,6 @@ external/wpt/fetch/stale-while-revalidate/stale-*
 external/wpt/fledge/tentative/component-ads.https.window.html?11-15
 external/wpt/fledge/tentative/reporting-arguments.https.window.html?16-last
 external/wpt/fs/FileSystemObserver-sync-access-handle.https.tentative.*
-external/wpt/gyroscope/Gyroscope.https.html
 external/wpt/gyroscope/Gyroscope-iframe-access.https.html
 external/wpt/html-aam/names.html
 external/wpt/html-aam/roles.html
@@ -882,7 +880,6 @@ external/wpt/partitioned-popins/partitioned-popins.cookies-allowed.tentative.sub
 external/wpt/partitioned-popins/partitioned-popins.cookies-blocked.tentative.sub.https.window.html
 external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html
 external/wpt/payment-request/onpaymentmethodchange-attribute.https.html
-external/wpt/payment-request/payment-request-disallowed-when-hidden.https.html
 external/wpt/payment-request/show-consume-activation.https.html
 external/wpt/performance-timeline/navigation-id-reset.tentative.html
 external/wpt/performance-timeline/not-restored-reasons/abort-block-bfcache.window.html
@@ -891,13 +888,11 @@ external/wpt/permissions-policy/reporting/*
 external/wpt/pointerevents/capturing_boundary_event_handler_at_ua_shadowdom.html*
 external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html*
 external/wpt/pointerevents/compat/pointerevent_mouse-pointer-on-scrollbar.html
-external/wpt/pointerevents/compat/pointerevent_mouseevent_key_pressed.html
 external/wpt/pointerevents/compat/pointerevent_touch_target_after_pointerdown_target_removed.tentative.html
 external/wpt/pointerevents/pointerevent_capture_mouse_and_release_and_capture_again.html
 external/wpt/pointerevents/pointerevent_contextmenu_is_a_pointerevent.html?touch
 external/wpt/pointerevents/pointerevent_pointer_boundary_events_after_removing_last_over_element.html
 external/wpt/pointerevents/pointerevent_pointercapture_in_frame.html?pen
-external/wpt/pointerevents/pointerevent_pointermove_after_pointerup_target_removed.html
 external/wpt/pointerevents/pointerevent_sequence_at_implicit_release_on_drag.html
 external/wpt/pointerevents/pointerevent_to_slotted_target.html?pen
 external/wpt/pointerevents/pointerevent_touch-action-modified_touch.html
@@ -908,11 +903,6 @@ external/wpt/resize-observer/callback-cross-realm-report-exception.html
 external/wpt/resize-observer/notify.html
 external/wpt/resize-observer/scrollbars.html
 external/wpt/resize-observer/svg.html
-external/wpt/screen-orientation/event-before-promise.html
-external/wpt/screen-orientation/lock-basic.html
-external/wpt/screen-orientation/onchange-event.html
-external/wpt/screen-wake-lock/chrome-bug-1348019.https.html
-external/wpt/screen-wake-lock/wakelock-document-hidden.https.html
 external/wpt/screen-wake-lock/wakelock-enabled-by-permissions-policy-attribute.https.html
 external/wpt/screen-wake-lock/wakelock-enabled-by-permissions-policy.https.html
 external/wpt/scroll-animations/css/animation-fill-outside-range-test.html
@@ -1011,7 +1001,6 @@ external/wpt/websockets/Close-1005.any.html?wpt_flags=h2
 external/wpt/websockets/Close-1005.any.worker.html?wpt_flags=h2
 external/wpt/websockets/Close-3000-reason.any.worker.html?wpt_flags=h2
 external/wpt/websockets/Close-3000-verify-code.any.worker.html?wpt_flags=h2
-external/wpt/websockets/cookies/006.html?wss&wpt_flags=https
 external/wpt/websockets/Create-extensions-empty.any.html?wpt_flags=h2
 external/wpt/websockets/Create-valid-url.any.worker.html?wpt_flags=h2
 external/wpt/websockets/Create-valid-url-array-protocols.any.html?wpt_flags=h2
@@ -1090,9 +1079,7 @@ virtual/fractional-scroll-offsets/external/wpt/css/css-position/sticky/position-
 virtual/fractional-scroll-offsets/external/wpt/css/css-position/sticky/position-sticky-inline.html
 virtual/fractional-scroll-offsets/external/wpt/css/css-position/sticky/position-sticky-large-top*
 virtual/fractional-scroll-offsets/external/wpt/css/css-position/sticky/position-sticky-nested-inline.html
-virtual/generic-sensor-extra-classes/external/wpt/ambient-light/AmbientLightSensor.https.html
 virtual/generic-sensor-extra-classes/external/wpt/ambient-light/AmbientLightSensor-iframe-access.https.html
-virtual/generic-sensor-extra-classes/external/wpt/magnetometer/Magnetometer.https.html
 virtual/generic-sensor-extra-classes/external/wpt/magnetometer/Magnetometer-iframe-access.https.html
 virtual/gpu-rasterization/external/wpt/css/css-images/cross-fade-premultiplied-alpha.html
 virtual/gpu-rasterization/external/wpt/css/css-images/object-fit-*
@@ -1206,7 +1193,6 @@ virtual/threaded/external/wpt/css/css-backgrounds/css3-border-image-repeat-repea
 virtual/threaded/external/wpt/css/css-backgrounds/table-cell-background-local-003.html
 virtual/threaded/external/wpt/css/css-view-transitions/*
 virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-iframe-self.html
-virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-visibility.html
 virtual/threaded-composited-iframes/external/wpt/is-input-pending/tentative/*
 virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/getBoundingClientRect-shy.html
 virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/range-bounding-client-rect-with-display-contents.html
