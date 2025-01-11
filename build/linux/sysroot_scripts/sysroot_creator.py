@@ -7,6 +7,7 @@ This script is used to build Debian sysroot images for building Chromium.
 """
 
 import argparse
+import collections
 import hashlib
 import lzma
 import os
@@ -498,6 +499,42 @@ def cleanup_jail_symlinks(install_root: str) -> None:
                     os.symlink(relative_path, full_path)
 
 
+def removing_unnecessary_files(install_root, arch):
+    """
+    Minimizes the sysroot by removing unnecessary files.
+    """
+    # Preserve these files.
+    ALLOWLIST = {
+        "usr/bin/cups-config",
+        f"usr/lib/gcc/{TRIPLES[arch]}/10/libgcc.a",
+        f"usr/lib/{TRIPLES[arch]}/libc_nonshared.a",
+        f"usr/lib/{TRIPLES[arch]}/libffi_pic.a",
+    }
+
+    # Remove all executables and static libraries, and any symlinks that
+    # were pointing to them.
+    reverse_links = collections.defaultdict(list)
+    remove = []
+    for root, _, files in os.walk(install_root):
+        for filename in files:
+            filepath = os.path.join(root, filename)
+            if os.path.relpath(filepath, install_root) in ALLOWLIST:
+                continue
+            if os.path.islink(filepath):
+                target_path = os.readlink(filepath)
+                if not os.path.isabs(target_path):
+                    target_path = os.path.join(root, target_path)
+                reverse_links[os.path.realpath(target_path)].append(filepath)
+            elif "so" in filepath.split(".")[-3:]:
+                continue
+            elif os.access(filepath, os.X_OK) or filepath.endswith(".a"):
+                remove.append(filepath)
+    for filepath in remove:
+        os.remove(filepath)
+        for link in reverse_links[filepath]:
+            os.remove(link)
+
+
 def strip_sections(install_root: str):
     """
     Strips all sections from ELF files except for dynamic linking and
@@ -560,6 +597,7 @@ def build_sysroot(arch: str) -> None:
     install_into_sysroot(BUILD_DIR, install_root, packages)
     hacks_and_patches(install_root, SCRIPT_DIR, arch)
     cleanup_jail_symlinks(install_root)
+    removing_unnecessary_files(install_root, arch)
     strip_sections(install_root)
     create_tarball(install_root, arch)
 
