@@ -832,8 +832,6 @@ void AppListFolderView::ScheduleShowHideAnimation(bool show,
   shown_ = show;
   UpdateExpandedCollapsedAccessibleState();
   if (show) {
-    // TODO(crbug.com/325137417): Investigate whether this line is necessary. It
-    // probably isn't.
     GetViewAccessibility().SetName(
         folder_item_view_->GetViewAccessibility().GetCachedName(),
         ax::mojom::NameFrom::kAttribute);
