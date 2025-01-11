@@ -345,6 +345,12 @@ CtapGetAssertionRequest& CtapGetAssertionRequest::operator=(
 
 CtapGetAssertionRequest::~CtapGetAssertionRequest() = default;
 
+void CtapGetAssertionRequest::SetClientDataJson(
+    std::string in_client_data_json) {
+  client_data_hash = fido_parsing_utils::CreateSHA256Hash(in_client_data_json);
+  client_data_json = std::move(in_client_data_json);
+}
+
 std::pair<CtapRequestCommand, std::optional<cbor::Value>>
 AsCTAPRequestValuePair(const CtapGetAssertionRequest& request) {
   cbor::Value::MapValue cbor_map;

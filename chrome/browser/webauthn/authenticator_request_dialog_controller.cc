@@ -47,6 +47,7 @@
 #include "chrome/browser/webauthn/authenticator_reference.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
+#include "chrome/browser/webauthn/challenge_url_fetcher.h"
 #include "chrome/browser/webauthn/change_pin_controller_impl.h"
 #include "chrome/browser/webauthn/gpm_user_verification_policy.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
@@ -61,6 +62,7 @@
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "components/webauthn/core/browser/passkey_model_change.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/cable/cable_discovery_data.h"
@@ -630,6 +632,7 @@ bool AuthenticatorRequestDialogController::is_request_complete() const {
          model_->step() == Step::kKeyAlreadyRegistered ||
          model_->step() == Step::kMissingCapability ||
          model_->step() == Step::kErrorWindowsHelloNotEnabled ||
+         model_->step() == Step::kErrorFetchingChallenge ||
          model_->step() == Step::kClosed;
 }
 
@@ -701,6 +704,8 @@ void AuthenticatorRequestDialogController::
       transport_availability_.user_verification_requirement,
       transport_availability_.platform_has_biometrics);
   constexpr bool kIsMac = BUILDFLAG(IS_MAC);
+
+  MaybeStartChallengeFetch();
 
   if (pending_step_) {
     SetCurrentStep(*pending_step_);
@@ -1309,6 +1314,12 @@ bool AuthenticatorRequestDialogController::OnNoPasskeys() {
   return true;
 }
 
+void AuthenticatorRequestDialogController::OnChallengeUrlFailure() {
+  if (!is_request_complete()) {
+    SetCurrentStep(Step::kErrorFetchingChallenge);
+  }
+}
+
 void AuthenticatorRequestDialogController::BluetoothAdapterStatusChanged(
     BleStatus ble_status) {
   transport_availability_.ble_status = ble_status;
@@ -1405,6 +1416,8 @@ AuthenticatorType AuthenticatorRequestDialogController::OnAccountPreselected(
   DCHECK(account_preselected_callback_);
   account_preselected_callback_.Run(*cred);
   model_->preselected_cred = *cred;
+
+  MaybeStartChallengeFetch();
 
   if (source != AuthenticatorType::kPhone &&
       source != AuthenticatorType::kEnclave) {
@@ -1696,6 +1709,65 @@ AuthenticatorRequestDialogController::ui_presentation() const {
 void AuthenticatorRequestDialogController::set_ui_presentation(
     UIPresentation modality) {
   ui_presentation_ = modality;
+}
+
+void AuthenticatorRequestDialogController::ProvideChallengeUrl(
+    const GURL& url,
+    base::OnceCallback<void(std::optional<base::span<const uint8_t>>)>
+        callback) {
+  CHECK(url.is_valid());
+  challenge_url_ = url;
+  challenge_callback_ = std::move(callback);
+
+  // Conditional requests don't initiate a challenge fetch unless and until the
+  // user triggers it, but modal requests always perform the fetch so it can
+  // be started immediately.
+  if (ui_presentation_ == UIPresentation::kModal) {
+    MaybeStartChallengeFetch();
+  }
+}
+
+void AuthenticatorRequestDialogController::MaybeStartChallengeFetch() {
+  if (!challenge_callback_) {
+    return;
+  }
+
+  auto challenge_or_error = GetChallengeUrlFetcher()->GetChallenge();
+  if (!challenge_or_error.has_value() &&
+      challenge_or_error.error() ==
+          ChallengeUrlFetcher::ChallengeNotAvailableReason::kNotRequested) {
+    GetChallengeUrlFetcher()->FetchUrl(
+        challenge_url_,
+        base::BindOnce(
+            &AuthenticatorRequestDialogController::OnChallengeFetched,
+            weak_factory_.GetWeakPtr()));
+  }
+}
+
+void AuthenticatorRequestDialogController::OnChallengeFetched() {
+  auto challenge_or_error = GetChallengeUrlFetcher()->GetChallenge();
+
+  if (challenge_or_error.has_value()) {
+    std::move(challenge_callback_).Run(challenge_or_error.value());
+    return;
+  }
+
+  CHECK_EQ(challenge_or_error.error(),
+           ChallengeUrlFetcher::ChallengeNotAvailableReason::
+               kErrorFetchingChallenge);
+
+  std::move(challenge_callback_).Run(std::nullopt);
+}
+
+ChallengeUrlFetcher*
+AuthenticatorRequestDialogController::GetChallengeUrlFetcher() {
+  if (!challenge_url_fetcher_) {
+    challenge_url_fetcher_ = std::make_unique<ChallengeUrlFetcher>(
+        Profile::FromBrowserContext(GetRenderFrameHost()->GetBrowserContext())
+            ->GetDefaultStoragePartition()
+            ->GetURLLoaderFactoryForBrowserProcess());
+  }
+  return challenge_url_fetcher_.get();
 }
 
 base::WeakPtr<AuthenticatorRequestDialogController>

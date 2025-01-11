@@ -315,8 +315,9 @@ std::ostream& operator<<(std::ostream& os,
       {Step::kTrustThisComputerCreation, "kTrustThisComputerCreation"},
       {Step::kGPMReauthForPinReset, "kGPMReauthForPinReset"},
       {Step::kGPMLockedPin, "kGPMLockedPin"},
+      {Step::kErrorFetchingChallenge, "kErrorFetchingChallenge"},
   });
-  static_assert(Step::kMaxValue == Step::kGPMLockedPin &&
+  static_assert(Step::kMaxValue == Step::kErrorFetchingChallenge &&
                     kStepNames.size() - 1 == static_cast<int>(Step::kMaxValue),
                 "implement operator<< overload when adding new Step values");
   return os << kStepNames.at(step);
