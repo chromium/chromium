@@ -1029,6 +1029,7 @@
 <translation id="4485506555414638855">మీ ఫోన్‌లోని తాజా ఫోటోలను, మీడియాను, నోటిఫికేషన్‌లను, యాప్‌లను చూసే సదుపాయాన్ని సెటప్ చేయడాన్ని విస్మరించండి</translation>
 <translation id="4491109536499578614">చిత్రం</translation>
 <translation id="450584155212756404">డెవలపర్ ఛానెల్</translation>
+<translation id="4513044611477939680">క్విక్ షేర్</translation>
 <translation id="4513946894732546136">ఫీడ్‌బ్యాక్</translation>
 <translation id="4518404433291145981">మీ Chromebookను అన్‌లాక్ చేయడానికి, ముందుగా మీ ఫోన్‌ను అన్‌లాక్ చేయండి</translation>
 <translation id="4527045527269911712">బ్లూటూత్ పరికరం "<ph name="DEVICE_NAME" />" జత కావడానికి అనుమతి కోరుతోంది.</translation>
@@ -1080,6 +1081,7 @@
 <translation id="4672539464599646374">బ్యాటరీ సేవర్ ఆన్ చేయబడింది</translation>
 <translation id="4673427585974421255">ఆన్‌లోనే ఉంచండి</translation>
 <translation id="4677040906536311086">Google షీట్</translation>
+<translation id="468019262817532242">మీతో ఎవ్వరు షేర్ చేయలేరు</translation>
 <translation id="468293128311738995">మీ ఫోన్‌లోని యాప్‌లు</translation>
 <translation id="4690510401873698237">అర కింది భాగంలో ఉంది</translation>
 <translation id="4696813013609194136">తల్లి/తండ్రి కోడ్‌తో పరికరాన్ని అన్‌లాక్ చేయండి</translation>
@@ -1111,6 +1113,7 @@
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> కోసం పాస్‌వర్డ్</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">Google Assistant డెమో సెషన్‌లో అందుబాటులో లేదు.</translation>
+<translation id="4785412405516449976">Google ఖాతాతో ఉన్న మీ కాంటాక్ట్‌లు మాత్రమే కనెక్ట్ అవుతాయి</translation>
 <translation id="4789348252524569426">స్పీచ్ ఫైల్స్‌ను ఇన్‌స్టాల్ చేయడం సాధ్యం కాదు. మీ పరికరాన్ని అప్‌డేట్ చేయాలి. మీ పరికరాన్ని రీస్టార్ట్ చేసి, ఆపై మళ్లీ ట్రై చేయండి.</translation>
 <translation id="478959186716341421">ప్రసారం చేస్తున్నాము</translation>
 <translation id="4798403412327076414">మీరు తదుపరిసారి సైన్ ఇన్ చేసినప్పుడు గతంలో తెరిచిన విండోలు, యాప్‌లు మీకు కనిపిస్తాయి</translation>
@@ -1240,6 +1243,7 @@
 <translation id="5176318573511391780">పాక్షిక స్క్రీన్‌ను రికార్డ్ చేయండి</translation>
 <translation id="5187627942836026988">హాట్‌స్పాట్ వివరాలను చూడండి. హాట్‌స్పాట్‌ను మీ అడ్మినిస్ట్రేటర్ బ్లాక్ చేశారు.</translation>
 <translation id="5197255632782567636">ఇంటర్నెట్</translation>
+<translation id="5198039720391525849">ఫీచర్ చేసిన GIFలు</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> ఈవెంట్‌లు</translation>
 <translation id="5198715732953550718">కొత్త ఫోల్డర్‌ను క్రియేట్ చేయడం కోసం <ph name="MOVED_APP_NAME" /> అనేది <ph name="IN_PLACE_APP" />తో కలపబడింది.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1561,6 +1565,7 @@
 <translation id="6199775032047436064">ప్రస్తుత పేజీని మళ్ళీ లోడ్ చేయి</translation>
 <translation id="6200515304866777730">యాప్ సపోర్ట్ చేయనివి</translation>
 <translation id="6210042900243040400"><ph name="EMAIL" /> ఈమెయిల్‌కు మునుపు సేవ్ చేయబడిన <ph name="NAME" />‌కు కనెక్ట్ చేయండి</translation>
+<translation id="6212580734499190393">10 నిమిషాలకు</translation>
 <translation id="6213808132343683860">పాక్షిక స్క్రీన్‌షాట్ తీయండి లేదా స్క్రీన్ రికార్డింగ్ చేయండి</translation>
 <translation id="621606890568890214">Google Classroomను విస్తరించండి</translation>
 <translation id="6216759484154215561">మరింత తెలుసుకోండి అనే లింక్ బ్రౌజర్‌లో తెరుచుకుంది</translation>
@@ -1954,6 +1959,7 @@
 <translation id="7599378375976398913">ఎంచుకున్న ఫలితాన్ని ఇన్సర్ట్ చేస్తోంది</translation>
 <translation id="7600875258240007829">అన్ని నోటిఫికేషన్‌లను చూడండి</translation>
 <translation id="7601417191446344542">మైక్ మ్యూట్ అలర్ట్‌ను ఆన్ చేయాలా?</translation>
+<translation id="7602187221150705972">ఎమోజీలను, GIFలను, ఇంకా మరిన్నింటిని సెర్చ్ చేయండి</translation>
 <translation id="7607002721634913082">పాజ్ చేయబడింది</translation>
 <translation id="7609951632080598826">క్యాలెండర్ వీక్షణ, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">కెమెరా తిరిగి కనెక్ట్ చేయబడింది.</translation>
@@ -2050,6 +2056,7 @@
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="7899977217122813285">ఫోకస్ చేస్తున్నప్పుడు <ph name="TIME" /> వరకు నోటిఫికేషన్‌లు మ్యూట్ చేయబడతాయి</translation>
+<translation id="7901010467630324625"><ph name="EMAIL" />‌తో సైన్ ఇన్ చేసిన పరికరాలు మాత్రమే కనెక్ట్ అవుతాయి</translation>
 <translation id="7901190436359881020">విండోలను స్వాప్ చేయండి</translation>
 <translation id="7901405293566323524">ఫోన్ హబ్</translation>
 <translation id="7902625623987030061">వేలిముద్ర సెన్సార్‌ను తాకండి</translation>

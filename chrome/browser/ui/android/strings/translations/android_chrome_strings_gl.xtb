@@ -128,7 +128,6 @@ Se queres ver máis opcións de configuración que usen datos para mellorar a t�
 <translation id="1502010315804028179">Para xestionar os teus contrasinais, actualiza os servizos de Google Play</translation>
 <translation id="1506061864768559482">Motor de busca</translation>
 <translation id="1513352483775369820">Marcadores e historial web</translation>
-<translation id="1513814250881909472">Sincroniza os datos para obter as pestanas dos teus outros dispositivos</translation>
 <translation id="1513858653616922153">Eliminar contrasinal</translation>
 <translation id="1521774566618522728">Dispositivo activo hoxe</translation>
 <translation id="153446405401665083">Hai unha versión de Chrome máis recente</translation>
@@ -278,7 +277,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="228704530595896923">Lista de opcións para compartir.</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Ver <ph name="TABS_COUNT_ONE" /> pestana}other{Ver <ph name="TABS_COUNT_MANY" /> pestanas}}</translation>
 <translation id="2297822946037605517">Compartir esta páxina</translation>
-<translation id="22981027763501686">Sincroniza os datos para obter os marcadores, o historial e outra información dos teus outros dispositivos</translation>
 <translation id="230115972905494466">Non se atoparon dispositivos compatibles</translation>
 <translation id="2318045970523081853">Toca para chamar</translation>
 <translation id="2321086116217818302">Preparando contrasinais…</translation>
@@ -1062,7 +1060,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="5865733239029070421">Envía estatísticas de uso e informes de erros automaticamente a Google</translation>
 <translation id="5869522115854928033">Contrasinais gardados</translation>
 <translation id="587735546353481577">Para seguir un sitio, entra nel, abre o menú de Chrome e toca Seguir.</translation>
-<translation id="5879072387416556377">Recibe mellores suxestións</translation>
 <translation id="5883855034004058011">Producíronse demasiados erros ao usar o método biométrico. Bloquea e desbloquea o dispositivo para tentalo de novo.</translation>
 <translation id="5885378508678660271">Notificacións <ph name="SEPARATOR" /> Chrome quitou estes permisos porque este sitio é perigoso</translation>
 <translation id="5895834791314695851">Os contrasinais poden deixar de funcionar en breve neste dispositivo. Para poder seguir usándoos, actualiza os servizos de Google Play. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
@@ -1407,7 +1404,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7313188324932846546">Toca para configurar a sincronización</translation>
 <translation id="7324354302972299151">Enviar unha solicitude Do Not Track</translation>
 <translation id="7333041109965360609">Cancelaches a subscrición ás notificacións</translation>
-<translation id="7333232495927792353">Sincroniza os datos para desfrutar do contido máis relevante de Google</translation>
 <translation id="7336259382292148213">Todo en orde coas notificacións</translation>
 <translation id="7339898014177206373">Nova ventá</translation>
 <translation id="7340958967809483333">Opcións de Discover</translation>
@@ -1504,7 +1500,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7698359219371678927">Crea un correo electrónico en <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Panel inferior de actividade recente aberto a altura completa</translation>
 <translation id="7707922173985738739">Utilizaranse datos móbiles</translation>
-<translation id="7709918231054955894">Accede a todas as túas pestanas</translation>
 <translation id="7733878270780732638">Non hai suficiente espazo no dispositivo.</translation>
 <translation id="7746817319925672889">O xestor de contrasinais de Google deixará de funcionar pronto neste dispositivo</translation>
 <translation id="774876555279732384">Os servizos de autocompletar tamén se xestionan na <ph name="BEGIN_LINK" />configuración de Android<ph name="END_LINK" />.</translation>
@@ -1725,7 +1720,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8635399646025169806">Queres manter o grupo de pestanas?</translation>
 <translation id="8636825310635137004">Activa a sincronización para sincronizar as pestanas dos demais dispositivos.</translation>
 <translation id="864544049772947936">Xestionar ventás (<ph name="INSTANCE_COUNTS" />)</translation>
-<translation id="8664215986015753476">Utiliza Chrome ao teu xeito</translation>
 <translation id="8664979001105139458">Xa existe un ficheiro con este nome</translation>
 <translation id="8672883760227492369">Algúns contrasinais deste dispositivo deixarán de funcionar en breve. Podes movelos ao xestor de contrasinais de Google.</translation>
 <translation id="8676276370198826499">Rexístrate en <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

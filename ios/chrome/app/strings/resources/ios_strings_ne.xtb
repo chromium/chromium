@@ -424,6 +424,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{यो पासवर्ड तपाईंको Google खाता {EMAIL} मा सेभ गरिएको छ}other{यी पासवर्ड तपाईंको Google खाता {EMAIL} मा सेभ गरिएका छन्}}</translation>
 <translation id="2791174088547598693">पासवर्ड हाल्नुहोस्…</translation>
 <translation id="2797302972324086597">देशको कोड</translation>
+<translation id="2802403747691280910"><ph name="NUMBER_OF_TABS_REMOVED" /> वटा ट्याब बन्द गरिए</translation>
 <translation id="2816489851009559785">मेनु → सेटिङहरू → डिफल्ट ब्राउजर</translation>
 <translation id="2818821771744632548">तपाईंको iPhone रिसेट गर्ने क्रममा तपाईंलाई तपाईंको <ph name="USER_NAME" /> खाताबाट साइन आउट गरिएको थियो। फेरि साइन इन गर्न तलको "जारी राख्नुहोस्" मा ट्याप गर्नुहोस्।</translation>
 <translation id="2819667972867209401">यो सुविधा अन हुँदा यो डेटा तपाईंको Google खातामा सेभ गरिन्छ। यो सुविधा अफ भएका बेला उक्त डेटा यो डिभाइसमा मात्र सेभ गरिन्छ र तपाईंले साइन आउट गरेका खण्डमा मेटाइन्छ।</translation>
@@ -1574,6 +1575,7 @@
 <translation id="7975036700432177008">प्रयास गर्नुहोस्</translation>
 <translation id="797588153137233716">मेनु → हिस्ट्री → ब्राउजिङ डेटा मेटाउनुहोस्</translation>
 <translation id="7977451675950311423">तपाईंले डेटा चोरीको घटनामा अरूले देखेका पासवर्ड प्रयोग गर्नुभयो भने यसले तपाईंलाई चेतावनी दिन्छ।</translation>
+<translation id="7977482887663636093"><ph name="NUMBER_OF_TABS_ADDED" /> वटा नयाँ ट्याब, <ph name="NUMBER_OF_TABS_REMOVED" /> वटा ट्याब बन्द गरिए</translation>
 <translation id="797824194429476746">यी ट्याबहरू यो डिभाइसमा खुलै रहने छन् तर यो समूह भने सदाका लागि मेटाइने छ।</translation>
 <translation id="7982789257301363584">सञ्जाल</translation>
 <translation id="7987685713885608670">आफ्ना पासवर्डहरू अझ सुरक्षित राख्नका निम्ति ती पासवर्डहरू आफ्नो डिभाइसमा इन्क्रिप्ट गरेपछि मात्र Google पासवर्ड म्यानेजरमा सेभ गर्नुहोस्।</translation>
@@ -1757,6 +1759,7 @@
 <translation id="8728922029615312208">सबै बन्द गर्नुहोस्</translation>
 <translation id="8730621377337864115">गरियो</translation>
 <translation id="87371078663613140">मेनु बारमा भएका विकल्पहरूका बारेमा जान्नुहोस्</translation>
+<translation id="8739706427581741437"><ph name="NUMBER_OF_TABS_ADDED" /> वटा नयाँ ट्याब</translation>
 <translation id="8741627442233023406">{count,plural, =1{यो ट्याबको समीक्षा गर्नुहोस्…}other{सबै ट्याबहरू हेर्नुहोस्…}}</translation>
 <translation id="8741995161408053644"><ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> मा तपाईँको Google खातामा अझै पनि ब्राउजिङको इतिहासका अन्य ढाँचाहरू उपलब्ध हुन सक्छन्।</translation>
 <translation id="874599634440689554">लिंक बनाउनुहोस्</translation>

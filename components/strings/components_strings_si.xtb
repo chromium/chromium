@@ -3391,6 +3391,7 @@
 <translation id="70705239631109039">ඔබේ සම්බන්ධතාව සම්පූර්ණයෙන් සුරක්‍ෂිත නොවේ</translation>
 <translation id="7075452647191940183">ඉල්ලීම විශාල වැඩියි</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079699498125013497">\u0020\u2022\u0020</translation>
 <translation id="7081311540357715807">ආහාර සහ සිල්ලර වෙළෙන්දන්</translation>
 <translation id="7083258188081898530">බඳුන 9</translation>
 <translation id="7086090958708083563">පරිශීලකයා විසින් ඉල්ලනු ලැබූ උඩුගත කිරීම</translation>
@@ -4114,6 +4115,7 @@
 <translation id="833262891116910667">උද්දීපන කරන්න</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> හි පිටු පරිවර්තනය නොවනු ඇත</translation>
 <translation id="8339275256517065202">ස්පර්ශ හැඳුනුම භාවිත කර ඔබේ මිලදී ගැනීම සම්පූර්ණ කරන්න</translation>
+<translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">අතථ්‍ය කාඩ්පත් ලියාපදිංචි කිරීම පුර්ණ උසක දී විවෘත විය</translation>
 <translation id="8349305172487531364">පිටු සලකුණු බාර් එක</translation>

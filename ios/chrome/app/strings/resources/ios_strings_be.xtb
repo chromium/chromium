@@ -424,6 +424,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{Пароль захаваны ў вашым Уліковым запісе Google {EMAIL}}one{Паролі захаваны ў вашым Уліковым запісе Google {EMAIL}}few{Паролі захаваны ў вашым Уліковым запісе Google {EMAIL}}many{Паролі захаваны ў вашым Уліковым запісе Google {EMAIL}}other{Паролі захаваны ў вашым Уліковым запісе Google {EMAIL}}}</translation>
 <translation id="2791174088547598693">Дадаць пароль…</translation>
 <translation id="2797302972324086597">Код краіны</translation>
+<translation id="2802403747691280910">Закрыта: <ph name="NUMBER_OF_TABS_REMOVED" /></translation>
 <translation id="2816489851009559785">Меню → Налады → Стандартны браўзер</translation>
 <translation id="2818821771744632548">У выніку скіду налад iPhone адбыўся выхад з уліковага запісу <ph name="USER_NAME" />. Каб увайсці зноў, націсніце "Працягнуць" ніжэй.</translation>
 <translation id="2819667972867209401">Калі гэта функцыя ўключана, даныя захоўваюцца ва Уліковым запісе Google. Калі выключана – даныя захоўваюцца толькі на гэтай прыладзе і выдаляюцца пры выхадзе з уліковага запісу.</translation>
@@ -1574,6 +1575,7 @@
 <translation id="7975036700432177008">Паспрабаваць</translation>
 <translation id="797588153137233716">Меню → Гісторыя → Выдаліць даныя пра работу ў браўзеры</translation>
 <translation id="7977451675950311423">Папярэджвае, калі вы выкарыстоўваеце пароль, які быў раскрыты ў выніку ўцечкі даных.</translation>
+<translation id="7977482887663636093">Новых укладак: <ph name="NUMBER_OF_TABS_ADDED" />; закрыта: <ph name="NUMBER_OF_TABS_REMOVED" /></translation>
 <translation id="797824194429476746">Укладкі застануцца адкрытымі на гэтай прыладзе, але група будзе выдалена назаўсёды.</translation>
 <translation id="7982789257301363584">Сетка</translation>
 <translation id="7987685713885608670">Дзеля дадатковай бяспекі зашыфроўвайце паролі на прыладзе, перш чым захоўваць іх у Менеджары пароляў Google.</translation>
@@ -1757,6 +1759,7 @@
 <translation id="8728922029615312208">Закрыць усе</translation>
 <translation id="8730621377337864115">Гатова</translation>
 <translation id="87371078663613140">Азнаёмцеся з даступнымі варыянтамі ў панэлі меню</translation>
+<translation id="8739706427581741437">Новых укладак: <ph name="NUMBER_OF_TABS_ADDED" /></translation>
 <translation id="8741627442233023406">{count,plural, =1{Паглядзець укладку…}one{Паглядзець усе ўкладкі…}few{Паглядзець усе ўкладкі…}many{Паглядзець усе ўкладкі…}other{Паглядзець усе ўкладкі…}}</translation>
 <translation id="8741995161408053644">На сайце <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> размешчаны іншыя формы запісу гісторыі прагляду сайтаў для вашага Уліковага запісу Google.</translation>
 <translation id="874599634440689554">Стварыць спасылку</translation>

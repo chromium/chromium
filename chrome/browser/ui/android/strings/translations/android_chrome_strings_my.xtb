@@ -128,7 +128,6 @@
 <translation id="1502010315804028179">စကားဝှက်များစီမံရန် Google Play ဝန်ဆောင်မှုများကို အပ်ဒိတ်လုပ်ပါ</translation>
 <translation id="1506061864768559482">ရှာဖွေရေး အင်ဂျင်</translation>
 <translation id="1513352483775369820">စာညှပ်များ နှင့် ဝဘ် မှတ်တမ်း</translation>
-<translation id="1513814250881909472">သင်၏အခြားစက်ပစ္စည်းများမှ တဘ်များရယူရန် စင့်ခ်လုပ်ပါ</translation>
 <translation id="1513858653616922153">စကားဝှက်ကို ဖျက်ရန်</translation>
 <translation id="1521774566618522728">ယနေ့ အသုံးပြုထားသည်</translation>
 <translation id="153446405401665083">Chrome ဗားရှင်းအသစ် ရနိုင်ပါပြီ</translation>
@@ -278,7 +277,6 @@
 <translation id="228704530595896923">မျှဝေရန် ရွေးချယ်စရာစာရင်း။</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{တဘ် <ph name="TABS_COUNT_ONE" /> ခုကို ကြည့်ရန်}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခုကို ကြည့်ရန်}}</translation>
 <translation id="2297822946037605517">ဤစာမျက်နှာကို မျှဝေရန်</translation>
-<translation id="22981027763501686">သင့်အခြားစက်များတွင် သင်၏ လိပ်စာများ၊ မှတ်တမ်း စသည်တို့ကို ရယူရန် စင့်ခ်လုပ်ပါ</translation>
 <translation id="230115972905494466">ကိုက်ညီမှုရှိသည့် စက်ပစ္စည်းများ မတွေ့ပါ</translation>
 <translation id="2318045970523081853">ခေါ်ဆိုရန် တို့ပါ</translation>
 <translation id="2321086116217818302">စကားဝှက်များကို ပြင်ဆင်နေသည်…</translation>
@@ -1062,7 +1060,6 @@
 <translation id="5865733239029070421">သုံးစွဲမှုဆိုင်ရာ အချက်အလက် ကိန်းဂဏန်းများနှင့် ပျက်စီးမှု အစီရင်ခံစာများကို Google သို့ အလိုအလျောက် ပို့သည်</translation>
 <translation id="5869522115854928033">သိမ်းဆည်းထားသည့် စကားဝှက်များ</translation>
 <translation id="587735546353481577">ဝဘ်ဆိုက်တစ်ခုကို လိုက်ကြည့်ရန် ၎င်းသို့သွားပြီး Chrome မီနူးဖွင့်ကာ ‘လိုက်ကြည့်ရန်’ ကို တို့ပါ။</translation>
-<translation id="5879072387416556377">ပိုကောင်းသည့်အကြံပြုချက်များ ရယူခြင်း</translation>
 <translation id="5883855034004058011">မအောင်မြင်သည့် ဇီဝမက်ထရစ် ကြိုးပမ်းမှုများ များပြားလွန်းသည်။ ထပ်စမ်းရန် သင့်စက်ကို လော့ခ်ချပြီး ပြန်ဖွင့်ပါ။</translation>
 <translation id="5885378508678660271">အကြောင်းကြားချက်များ <ph name="SEPARATOR" /> ဤဝဘ်ဆိုက်သည် အန္တရာယ်ရှိသဖြင့် Chrome က ဤခွင့်ပြုချက်များကို ဖယ်ရှားလိုက်သည်</translation>
 <translation id="5895834791314695851">ဤစက်တွင် စကားဝှက်များကို မကြာမီ သုံးနိုင်တော့မည် မဟုတ်ပါ။ သင့်စကားဝှက်များ ဆက်သုံးရန် Google Play ဝန်ဆောင်မှုများကို အပ်ဒိတ်လုပ်ပါ။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
@@ -1406,7 +1403,6 @@
 <translation id="7313188324932846546">စင့်ခ်လုပ်ခြင်းကို စနစ်ထည့်သွင်းရန် တို့ပါ</translation>
 <translation id="7324354302972299151">“Do Not Track” တောင်းဆိုမှု ပို့ရန်</translation>
 <translation id="7333041109965360609">အကြောင်းကြားချက်များ မှာယူမှု ရပ်ဆိုင်းထားသည်</translation>
-<translation id="7333232495927792353">Google မှ သက်ဆိုင်မှုအရှိဆုံး အကြောင်းအရာများရယူရန် စင့်ခ်လုပ်နိုင်သည်</translation>
 <translation id="7336259382292148213">အကြောင်းကြားချက်များ အဆင်ပြေပုံပေါ်သည်</translation>
 <translation id="7339898014177206373">ဝင်ဒိုး အသစ်</translation>
 <translation id="7340958967809483333">Discover အတွက် ရွေးစရာများ</translation>
@@ -1503,7 +1499,6 @@
 <translation id="7698359219371678927"><ph name="APP_NAME" />  တွင် အီးမေးလ်ရေးပါ</translation>
 <translation id="7702420606070050505">မကြာသေးမီက လုပ်ဆောင်ချက် အောက်ခြေအပိုဆောင်း စာမျက်နှာကို မြင်ကွင်းအပြည့် ဖွင့်လိုက်သည်</translation>
 <translation id="7707922173985738739">မိုဘိုင်းဒေတာကို သုံးရန်</translation>
-<translation id="7709918231054955894">သင့်တဘ်အားလုံး ရယူခြင်း</translation>
 <translation id="7733878270780732638">စက်တွင် နေရာမလောက်ပါ။</translation>
 <translation id="7746817319925672889">Google Password Manager သည် ဤစက်တွင် မကြာမီ အလုပ်လုပ်တော့မည် မဟုတ်ပါ</translation>
 <translation id="774876555279732384">အော်တိုဖြည့် ဝန်ဆောင်မှုများကို <ph name="BEGIN_LINK" />Android ဆက်တင်များ<ph name="END_LINK" /> တွင်လည်း စီမံနိုင်သည်။</translation>
@@ -1724,7 +1719,6 @@
 <translation id="8635399646025169806">တဘ်အုပ်စု ဆက်ထားမလား။</translation>
 <translation id="8636825310635137004">သင်၏ အခြားစက်ပစ္စည်းများမှ တဘ်များကိုအသုံးပြုရန် စင့်ခ်ကို ဖွင့်ပါ။</translation>
 <translation id="864544049772947936">ဝင်းဒိုး (<ph name="INSTANCE_COUNTS" />) ခုကို စီမံရန်</translation>
-<translation id="8664215986015753476">Chrome ကို သင့်အလိုကျသုံးခြင်း</translation>
 <translation id="8664979001105139458">ဖိုင်အမည် ရှိပြီးသားဖြစ်သည်</translation>
 <translation id="8672883760227492369">ဤစက်တွင် စကားဝှက်အချို့ကို မကြာမီ သုံးနိုင်တော့မည် မဟုတ်ပါ။ ဤစကားဝှက်များကို Google Password Manager သို့ ရွှေ့နိုင်သည်။</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ဖြင့် <ph name="SITE_ETLD_PLUS_ONE" /> သို့ စာရင်းသွင်းပါ</translation>

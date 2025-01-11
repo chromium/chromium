@@ -124,6 +124,7 @@
 <translation id="1076766328672150609">Ձեր երեխան կարող է ապակողպել սարքը PIN կոդի միջոցով։</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Չհաջողվեց ներբեռնել ուղղագրիչի բառարանը <ph name="LANGUAGE" /> լեզվի համար։ Նորից փորձեք։</translation>
+<translation id="1078029726086090536">Հաստատել գաղտնաբառը</translation>
 <translation id="1078037449555275327">ChromeVox-ի կարգավորումներ</translation>
 <translation id="1079242569060319448">Մոռացե՞լ եք PIN կոդը</translation>
 <translation id="1079285777677001938">Որոշ կայքերում գործառույթները կարող են չաշխատել։</translation>
@@ -4078,6 +4079,7 @@
 <translation id="3848547754896969219">Բացել &amp;ինկոգնիտո պատուհանում</translation>
 <translation id="3850172593216628215">Անվտանգության թարմացումներ այլևս չեն լինի։ Տնտեսեք 50 $ կամ ավելին նոր Chromebook սարք գնելիս։</translation>
 <translation id="385051799172605136">Հետ</translation>
+<translation id="3850989673553106152">Գաղտնաբառը փոխվեց</translation>
 <translation id="3851428669031642514">Բեռնել վտանգավոր սկրիպտները</translation>
 <translation id="3852215160863921508">Ներածման աջակցում</translation>
 <translation id="3853549894831560772"><ph name="DEVICE_NAME" />ը միացված է</translation>
@@ -4580,6 +4582,7 @@
 <translation id="421182450098841253">&amp;Ցուցադրել էջանիշների գոտին</translation>
 <translation id="4211904048067111541">Այլևս չօգտագործել Android-ի համար նախատեսված հավելվածների հետ</translation>
 <translation id="42126664696688958">Արտահանում</translation>
+<translation id="4213540068152645535">Չհաջողվեց փոխել գաղտնաբառը</translation>
 <translation id="42137655013211669">Այս ռեսուրսի մուտքն արգելափակվել է սերվերի կողմից:</translation>
 <translation id="4213918571089943508">Երեխայի Google հաշիվ</translation>
 <translation id="4214192212360095377">Անջատել</translation>
@@ -8299,6 +8302,7 @@
 <translation id="6913051485529944333">Դուք այլևս չեք տեսնի Google Օրացույցը այս էջում</translation>
 <translation id="6914812290245989348">Չտեսնել նախազգուշացումներ նախքան ոչ ապահով կայքեր մտնելը</translation>
 <translation id="6916590542764765824">Կառավարել ընդլայնումները</translation>
+<translation id="6916676294509106572">Outlook Calendar-ը թաքցվեց</translation>
 <translation id="6917873303492266709">Ներդիրների խմբերով կիսվելու, դրանց միանալու կամ դրանցում համատեղ աշխատելու համար բացեք կարգավորումները և միացրեք «Թույլատրել մուտքը Chrome-ում» կարգավորումը։</translation>
 <translation id="6918677045355889289">Թարմացրեք ChromeOS-ը</translation>
 <translation id="6918733588290914545">Արագ կարգավորում Android հեռախոսի միջոցով</translation>
@@ -10676,6 +10680,7 @@
 <translation id="8625124982056504555">Կարդալ ChromeOS սարքի և բաղադրիչների սերիական համարները</translation>
 <translation id="862542460444371744">&amp;Ընդլայնումներ</translation>
 <translation id="8625663000550647058">Չի թույլատրվում օգտագործել ձեր խոսափողը</translation>
+<translation id="8625679025395572221">Ձեր հաշիվը կարող է դեռ վտանգված լինել</translation>
 <translation id="8625916342247441948">Թույլ չտալ կայքերին միանալ HID սարքերին</translation>
 <translation id="862727964348362408">Ընդհատված է</translation>
 <translation id="862750493060684461">CSS-ի քեշ</translation>

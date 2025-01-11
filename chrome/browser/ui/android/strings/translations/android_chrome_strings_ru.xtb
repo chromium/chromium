@@ -128,7 +128,6 @@
 <translation id="1502010315804028179">Чтобы управлять паролями, обновите сервисы Google Play.</translation>
 <translation id="1506061864768559482">Поисковая система</translation>
 <translation id="1513352483775369820">Закладки и история поиска</translation>
-<translation id="1513814250881909472">Чтобы стали доступны вкладки с других устройств, выполните синхронизацию.</translation>
 <translation id="1513858653616922153">Удалить пароль</translation>
 <translation id="1521774566618522728">Последние действия: сегодня</translation>
 <translation id="153446405401665083">Доступна новая версия Chrome</translation>
@@ -278,7 +277,6 @@
 <translation id="228704530595896923">Список способов отправки.</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Посмотреть <ph name="TABS_COUNT_ONE" /> вкладку}one{Посмотреть <ph name="TABS_COUNT_MANY" /> вкладку}few{Посмотреть <ph name="TABS_COUNT_MANY" /> вкладки}many{Посмотреть <ph name="TABS_COUNT_MANY" /> вкладок}other{Посмотреть <ph name="TABS_COUNT_MANY" /> вкладки}}</translation>
 <translation id="2297822946037605517">Поделиться этой страницей</translation>
-<translation id="22981027763501686">Включите синхронизацию, чтобы закладки, история и прочие данные стали доступны на других устройствах.</translation>
 <translation id="230115972905494466">Совместимые устройства не найдены.</translation>
 <translation id="2318045970523081853">Нажмите, чтобы позвонить.</translation>
 <translation id="2321086116217818302">Подготовка паролей…</translation>
@@ -1062,7 +1060,6 @@
 <translation id="5865733239029070421">Автоматически отправлять в Google статистику использования и отчеты о сбоях</translation>
 <translation id="5869522115854928033">Сохраненные пароли</translation>
 <translation id="587735546353481577">Чтобы подписаться на сайт, откройте его, перейдите в меню Google Chrome и нажмите "Подписаться".</translation>
-<translation id="5879072387416556377">Получайте более точные подсказки</translation>
 <translation id="5883855034004058011">Слишком много неудачных попыток подтвердить биометрические данные. Чтобы продолжить, заблокируйте и разблокируйте устройство.</translation>
 <translation id="5885378508678660271">Уведомления <ph name="SEPARATOR" /> Chrome отозвал разрешения у этого опасного сайта</translation>
 <translation id="5895834791314695851">Возможно, пароли скоро перестанут работать на этом устройстве. Чтобы сохранить доступ к ним, обновите сервисы Google Play. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
@@ -1407,7 +1404,6 @@
 <translation id="7313188324932846546">Нажмите, чтобы настроить синхронизацию.</translation>
 <translation id="7324354302972299151">Отправлять запрос Do Not Track</translation>
 <translation id="7333041109965360609">Подписка на уведомления отменена</translation>
-<translation id="7333232495927792353">Чтобы получать все самое актуальное от Google, выполните синхронизацию.</translation>
 <translation id="7336259382292148213">С уведомлениями все в порядке</translation>
 <translation id="7339898014177206373">Новое окно</translation>
 <translation id="7340958967809483333">Параметры рекомендаций</translation>
@@ -1504,7 +1500,6 @@
 <translation id="7698359219371678927">Написать письмо в приложении "<ph name="APP_NAME" />"</translation>
 <translation id="7702420606070050505">Нижний экран недавних действий открыт полностью</translation>
 <translation id="7707922173985738739">Использовать мобильный Интернет</translation>
-<translation id="7709918231054955894">Просматривайте все свои вкладки</translation>
 <translation id="7733878270780732638">Недостаточно места на устройстве.</translation>
 <translation id="7746817319925672889">Google Менеджер паролей скоро перестанет работать на этом устройстве</translation>
 <translation id="774876555279732384">Сервисами автозаполнения также можно управлять в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
@@ -1725,7 +1720,6 @@
 <translation id="8635399646025169806">Оставить группу вкладок?</translation>
 <translation id="8636825310635137004">Чтобы получить доступ к вкладкам на всех ваших устройствах, включите синхронизацию.</translation>
 <translation id="864544049772947936">Управлять окнами (<ph name="INSTANCE_COUNTS" />)</translation>
-<translation id="8664215986015753476">Настройте Chrome так, как вам удобно</translation>
 <translation id="8664979001105139458">Файл с таким именем уже существует.</translation>
 <translation id="8672883760227492369">Некоторые пароли на этом устройстве скоро перестанут работать. Перенесите их в Google Менеджер паролей.</translation>
 <translation id="8676276370198826499">Зарегистрируйтесь на <ph name="SITE_ETLD_PLUS_ONE" /> через <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

@@ -128,7 +128,6 @@ Para sa higit pang setting na gumagamit ng data para pahusayin ang iyong experie
 <translation id="1502010315804028179">Para pamahalaan ang iyong mga password, i-update ang mga serbisyo ng Google Play</translation>
 <translation id="1506061864768559482">Search engine</translation>
 <translation id="1513352483775369820">Bookmark at history ng web</translation>
-<translation id="1513814250881909472">Mag-sync para makuha ang iyong mga tab mula sa iba pang device mo</translation>
 <translation id="1513858653616922153">I-delete ang password</translation>
 <translation id="1521774566618522728">Aktibo ngayong araw</translation>
 <translation id="153446405401665083">May available na bagong bersyon ng Chrome</translation>
@@ -278,7 +277,6 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="228704530595896923">Listahan ng mga opsyon sa pagbabahagi</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Tingnan ang <ph name="TABS_COUNT_ONE" /> tab}one{Tingnan ang <ph name="TABS_COUNT_MANY" /> tab}other{Tingnan ang <ph name="TABS_COUNT_MANY" /> na tab}}</translation>
 <translation id="2297822946037605517">Ibahagi ang pahinang ito</translation>
-<translation id="22981027763501686">I-sync para makuha ang iyong mga bookmark, history, at higit pa sa iba pang device mo</translation>
 <translation id="230115972905494466">Walang nahanap na tugmang device</translation>
 <translation id="2318045970523081853">I-tap para tumawag</translation>
 <translation id="2321086116217818302">Inihahanda ang mga password…</translation>
@@ -1062,7 +1060,6 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="5865733239029070421">Awtomatikong nagpapadala sa Google ng mga istatistika ng paggamit at ulat ng pag-crash</translation>
 <translation id="5869522115854928033">Mga naka-save na password</translation>
 <translation id="587735546353481577">Para subaybayan ang isang site, pumunta sa site, buksan ang menu ng Chrome, at i-tap ang Subaybayan.</translation>
-<translation id="5879072387416556377">Makakuha ng mas magagandang suhestyon</translation>
 <translation id="5883855034004058011">Masyadong maraming beses nang pumalya ang biometrics. I-lock at i-unlock ang iyong device para subukan ulit.</translation>
 <translation id="5885378508678660271">Mga Notification <ph name="SEPARATOR" /> Inalis ng Chrome ang mga pahintulot na ito dahil mapanganib ang site na ito</translation>
 <translation id="5895834791314695851">Malapit nang posibleng hindi gumana ang mga password sa device na ito. Para patuloy na magamit ang iyong mga password, i-update ang mga serbisyo ng Google Play. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
@@ -1407,7 +1404,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="7313188324932846546">Mag-tap para i-set up ang pag-sync</translation>
 <translation id="7324354302972299151">Magpadala ng request na “Do Not Track”</translation>
 <translation id="7333041109965360609">Na-unsubscribe sa mga notification</translation>
-<translation id="7333232495927792353">Mag-sync para makuha ang pinakanauugnay na content mula sa Google</translation>
 <translation id="7336259382292148213">Mukhang maayos ang mga notification</translation>
 <translation id="7339898014177206373">Bagong window</translation>
 <translation id="7340958967809483333">Mga opsyon para sa Discover</translation>
@@ -1504,7 +1500,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="7698359219371678927">Gumawa ng email sa <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Binuksan nang buo ang bottom sheet ng kamakailang aktibidad</translation>
 <translation id="7707922173985738739">Gumamit ng mobile data</translation>
-<translation id="7709918231054955894">Kunin ang lahat ng iyong tab</translation>
 <translation id="7733878270780732638">Walang sapat na espasyo sa device.</translation>
 <translation id="7746817319925672889">Malapit nang hindi gumana ang Google Password Manager sa device na ito</translation>
 <translation id="774876555279732384">Pinapamahalaan din ang mga serbisyo ng autofill sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" />.</translation>
@@ -1725,7 +1720,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8635399646025169806">Panatilihin ang grupo ng tab?</translation>
 <translation id="8636825310635137004">Upang makuha ang iyong mga tab mula sa iba mo pang mga device, i-on ang pag-sync.</translation>
 <translation id="864544049772947936">Pamahalaan ang mga window (<ph name="INSTANCE_COUNTS" />)</translation>
-<translation id="8664215986015753476">Gamitin ang Chrome sa paraang gusto mo</translation>
 <translation id="8664979001105139458">May ganito nang pangalan ng file</translation>
 <translation id="8672883760227492369">Malapit nang hindi gumana ang ilang password sa device na ito. Puwede mong ilipat sa Google Password Manager ang mga password na ito.</translation>
 <translation id="8676276370198826499">Mag-sign up sa <ph name="SITE_ETLD_PLUS_ONE" /> gamit ang <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

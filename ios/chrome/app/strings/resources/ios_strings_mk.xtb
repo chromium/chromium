@@ -424,6 +424,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{Лозинката е зачувана на вашата сметка на Google, {EMAIL}}one{Лозинките се зачувани во вашата сметка на Google, {EMAIL}}other{Лозинките се зачувани во вашата сметка на Google, {EMAIL}}}</translation>
 <translation id="2791174088547598693">Додајте лозинка…</translation>
 <translation id="2797302972324086597">Код на земја</translation>
+<translation id="2802403747691280910">Затворени: <ph name="NUMBER_OF_TABS_REMOVED" /></translation>
 <translation id="2816489851009559785">Мени → Поставки → Стандарден прелистувач</translation>
 <translation id="2818821771744632548">Одјавени сте од сметката, <ph name="USER_NAME" />, како дел од ресетирањето на вашиот iPhone. За да се најавите повторно, допрете „Продолжи“ подолу.</translation>
 <translation id="2819667972867209401">Кога е вклучено, податоците се зачувуваат во вашата сметка на Google. Кога е исклучено, податоците се зачувуваат само на овој уред и се бришат ако се одјавите.</translation>
@@ -1574,6 +1575,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7975036700432177008">Испробај</translation>
 <translation id="797588153137233716">Мени → Историја → Избришете ги податоците од прелистување</translation>
 <translation id="7977451675950311423">Ве предупредува ако користите лозинка компромитирана во упад во податоци.</translation>
+<translation id="7977482887663636093">Нови картички: <ph name="NUMBER_OF_TABS_ADDED" />, затворени: <ph name="NUMBER_OF_TABS_REMOVED" /></translation>
 <translation id="797824194429476746">Картичките ќе останат отворени на овој уред, но групата ќе се избрише трајно.</translation>
 <translation id="7982789257301363584">Мрежа</translation>
 <translation id="7987685713885608670">За дополнителна безбедност, шифрирајте ги лозинките на уредот пред да се зачуваат во „Управникот со лозинки на Google“.</translation>
@@ -1757,6 +1759,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8728922029615312208">Затвори ги сите</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="87371078663613140">Истражете ги опциите во лентата со мени</translation>
+<translation id="8739706427581741437">Нови картички: <ph name="NUMBER_OF_TABS_ADDED" /></translation>
 <translation id="8741627442233023406">{count,plural, =1{Прегледајте ја картичката…}one{Прегледајте ги сите картички…}other{Прегледајте ги сите картички…}}</translation>
 <translation id="8741995161408053644">Вашата сметка на Google можеби има други форми од историјата на прелистување на <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Создајте линк</translation>

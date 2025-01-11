@@ -128,7 +128,6 @@
 <translation id="1502010315804028179">আপনার পাসওয়ার্ড ম্যানেজ করার জন্য, Google Play পরিষেবা আপডেট করুন</translation>
 <translation id="1506061864768559482">সার্চ ইঞ্জিন</translation>
 <translation id="1513352483775369820">বুকমার্কগুলি এবং ওয়েব ইতিহাস</translation>
-<translation id="1513814250881909472">আপনার অন্যান্য ডিভাইস থেকে ট্যাব পেতে সিঙ্ক করুন</translation>
 <translation id="1513858653616922153">পাসওয়ার্ড মুছুন</translation>
 <translation id="1521774566618522728">আজ ব্যবহার করা হয়েছে</translation>
 <translation id="153446405401665083">Chrome-এর নতুন ভার্সন উপলভ্য আছে</translation>
@@ -278,7 +277,6 @@
 <translation id="228704530595896923">শেয়ার করার বিকল্পের তালিকা।</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" />টি ট্যাব দেখুন}one{<ph name="TABS_COUNT_MANY" />টি ট্যাব দেখুন}other{<ph name="TABS_COUNT_MANY" />টি ট্যাব দেখুন}}</translation>
 <translation id="2297822946037605517">এই পৃষ্ঠাটি শেয়ার করুন</translation>
-<translation id="22981027763501686">আপনার বুকমার্ক, ইতিহাস এবং অন্যান্য তথ্য অন্য ডিভাইসে পেতে সিঙ্ক করুন</translation>
 <translation id="230115972905494466">উপযুক্ত ডিভাইস খুঁজে পাওয়া যায়নি</translation>
 <translation id="2318045970523081853">কল করতে ট্যাপ করুন</translation>
 <translation id="2321086116217818302">পাসওয়ার্ড তৈরি করা হচ্ছে…</translation>
@@ -1062,7 +1060,6 @@
 <translation id="5865733239029070421">ব্যবহারের পরিসংখ্যান এবং ক্র্যাশ রিপোর্ট নিজে থেকেই Google-কে পাঠায়</translation>
 <translation id="5869522115854928033">সংরক্ষিত পাসওয়ার্ড</translation>
 <translation id="587735546353481577">কোনও সাইট ফলো করতে, সাইটে যান, 'Chrome' মেনু খুলুন এবং 'ফলো করুন' বিকল্পে ট্যাপ করুন।</translation>
-<translation id="5879072387416556377">আরও ভাল সাজেশন পান</translation>
 <translation id="5883855034004058011">অনেকবার চেষ্টার পরেও বায়োমেট্রিক্স কাজ করেনি। আবার চেষ্টা করতে, আপনার ডিভাইস লক করে আবার আনলক করুন।</translation>
 <translation id="5885378508678660271">বিজ্ঞপ্তি <ph name="SEPARATOR" /> Chrome এইসব অনুমতি সরিয়ে দিয়েছে কারণ এই সাইটটি বিপজ্জনক</translation>
 <translation id="5895834791314695851">এই ডিভাইসে পাসওয়ার্ড শীঘ্রই কাজ করা বন্ধ করে দিতে পারে। আপনার পাসওয়ার্ড ব্যবহার করা চালিয়ে যেতে, Google Play পরিষেবা আপডেট করুন। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
@@ -1407,7 +1404,6 @@
 <translation id="7313188324932846546">সিঙ্ক সেট আপ করতে ট্যাপ করুন</translation>
 <translation id="7324354302972299151">“Do Not Track” অনুরোধ পাঠান</translation>
 <translation id="7333041109965360609">বিজ্ঞপ্তি থেকে আনসাবস্ক্রাইব করুন</translation>
-<translation id="7333232495927792353">Google থেকে সবচেয়ে প্রাসঙ্গিক কন্টেন্ট পেতে সিঙ্ক করুন</translation>
 <translation id="7336259382292148213">বিজ্ঞপ্তি সঠিক বলে মনে হচ্ছে</translation>
 <translation id="7339898014177206373">নতুন উইন্ডো</translation>
 <translation id="7340958967809483333">Discover-এর বিকল্প</translation>
@@ -1504,7 +1500,6 @@
 <translation id="7698359219371678927"><ph name="APP_NAME" />-এ ইমেল আইডি তৈরি করুন</translation>
 <translation id="7702420606070050505">সাম্প্রতিক কার্যকলাপের স্ক্রিনের নিচে অ্যাটাচ করা শিট সম্পূর্ণ স্ক্রিন জুড়ে খোলা হয়েছে</translation>
 <translation id="7707922173985738739">মোবাইল ডেটা ব্যবহার করুন</translation>
-<translation id="7709918231054955894">আপনার সব ট্যাব পান</translation>
 <translation id="7733878270780732638">ডিভাইসে পর্যাপ্ত জায়গা নেই।</translation>
 <translation id="7746817319925672889">এই ডিভাইসে Google Password Manager শীঘ্রই কাজ করা বন্ধ করে দেবে</translation>
 <translation id="774876555279732384">এছাড়াও, অটোফিল পরিষেবা <ph name="BEGIN_LINK" />Android সেটিংস<ph name="END_LINK" /> থেকে ম্যানেজ করা হয়।</translation>
@@ -1725,7 +1720,6 @@
 <translation id="8635399646025169806">ট্যাব গ্রুপ রেখে দেবেন?</translation>
 <translation id="8636825310635137004">আপনার অন্য ডিভাইসগুলি থেকে আপনার ট্যাবগুলি পেতে, সিঙ্ক চালু করুন।</translation>
 <translation id="864544049772947936">উইন্ডো ম্যানেজ করুন (<ph name="INSTANCE_COUNTS" />)</translation>
-<translation id="8664215986015753476">আপনি যেমনভাবে চান ঠিক তেমনভাবেই Chrome ব্যবহার করুন</translation>
 <translation id="8664979001105139458">ফাইলের নামটি আগে থেকেই আছে</translation>
 <translation id="8672883760227492369">এই ডিভাইসে কিছু পাসওয়ার্ড খুব শীঘ্রই কাজ করা বন্ধ করে দেবে আপনি Google Password Manager-এ এইসব পাসওয়ার্ড সরাতে পারবেন।</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-এর সাথে <ph name="SITE_ETLD_PLUS_ONE" />-এ সাইন-আপ করুন</translation>

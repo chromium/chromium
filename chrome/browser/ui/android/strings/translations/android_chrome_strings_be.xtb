@@ -128,7 +128,6 @@
 <translation id="1502010315804028179">Каб кіраваць паролямі, абнавіце сэрвісы Google Play</translation>
 <translation id="1506061864768559482">Пошукавая сістэма</translation>
 <translation id="1513352483775369820">Закладкі і гісторыя вэб-пошуку</translation>
-<translation id="1513814250881909472">Каб укладкі з іншых прылад сталі даступнымі, уключыце сінхранізацыю</translation>
 <translation id="1513858653616922153">Выдаліць пароль</translation>
 <translation id="1521774566618522728">Апошнія дзеянні адбываліся сёння</translation>
 <translation id="153446405401665083">Выйшла новая версія Chrome</translation>
@@ -278,7 +277,6 @@
 <translation id="228704530595896923">Спіс варыянтаў абагульвання.</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Праглядзець <ph name="TABS_COUNT_ONE" /> укладку}one{Праглядзець <ph name="TABS_COUNT_MANY" /> укладку}few{Праглядзець <ph name="TABS_COUNT_MANY" /> укладкі}many{Праглядзець <ph name="TABS_COUNT_MANY" /> укладак}other{Праглядзець <ph name="TABS_COUNT_MANY" /> укладкі}}</translation>
 <translation id="2297822946037605517">Абагуліць гэту старонку</translation>
-<translation id="22981027763501686">Каб закладкі, гісторыя і іншыя даныя былі даступныя на іншых вашых прыладах, уключыце сінхранізацыю</translation>
 <translation id="230115972905494466">Сумяшчальныя прылады не знойдзены</translation>
 <translation id="2318045970523081853">Націсніце, каб зрабіць выклік</translation>
 <translation id="2321086116217818302">Ідзе падрыхтоўка пароляў…</translation>
@@ -1062,7 +1060,6 @@
 <translation id="5865733239029070421">Аўтаматычна адпраўляе ў Google статыстыку выкарыстання і справаздачы аб збоях</translation>
 <translation id="5869522115854928033">Захаваныя паролі</translation>
 <translation id="587735546353481577">Каб падпісацца на сайт, перайдзіце на яго, адкрыйце меню Chrome і націсніце "Падпісацца".</translation>
-<translation id="5879072387416556377">Атрымлівайце лепшыя прапановы</translation>
 <translation id="5883855034004058011">Занадта многа няўдалых праверак біяметрычных даных. Каб паўтарыць спробу, заблакіруйце і разблакіруйце прыладу.</translation>
 <translation id="5885378508678660271">Апавяшчэнні <ph name="SEPARATOR" /> Браўзер Chrome адклікаў гэтыя дазволы, бо гэты сайт небяспечны</translation>
 <translation id="5895834791314695851">Паролі на гэтай прыладзе неўзабаве могуць перастаць працаваць. Каб і далей карыстацца паролямі, абнавіце сэрвісы Google Play. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
@@ -1407,7 +1404,6 @@
 <translation id="7313188324932846546">Дакраніцеся, каб наладзіць сінхранізацыю</translation>
 <translation id="7324354302972299151">Адправіць запыт “Do Not Track”</translation>
 <translation id="7333041109965360609">Вы адпісаліся ад апавяшчэнняў</translation>
-<translation id="7333232495927792353">Каб атрымліваць найбольш адпаведнае змесціва ад Google, уключыце сінхранізацыю</translation>
 <translation id="7336259382292148213">З апавяшчэннямі ўсё ў парадку</translation>
 <translation id="7339898014177206373">Новае акно</translation>
 <translation id="7340958967809483333">Параметры рэкамендацый</translation>
@@ -1504,7 +1500,6 @@
 <translation id="7698359219371678927">Напісаць электронны ліст у праграме "<ph name="APP_NAME" />"</translation>
 <translation id="7702420606070050505">Ніжні аркуш з нядаўнімі дзеяннямі адкрыты на ўсю вышыню</translation>
 <translation id="7707922173985738739">Выкарыстоўваць мабільную перадачу даных</translation>
-<translation id="7709918231054955894">Праглядайце ўсе свае ўкладкі</translation>
 <translation id="7733878270780732638">Недастаткова месца на прыладзе.</translation>
 <translation id="7746817319925672889">Неўзабаве праца Менеджара пароляў Google будзе спынена на гэтай прыладзе</translation>
 <translation id="774876555279732384">Кіраваць службамі аўтазапаўнення таксама можна ў <ph name="BEGIN_LINK" />Наладах Android<ph name="END_LINK" />.</translation>
@@ -1725,7 +1720,6 @@
 <translation id="8635399646025169806">Захаваць групу ўкладак?</translation>
 <translation id="8636825310635137004">Каб глядзець укладкі са сваіх іншых прылад, уключыце сінхранізацыю.</translation>
 <translation id="864544049772947936">Кіраваць вокнамі (<ph name="INSTANCE_COUNTS" />)</translation>
-<translation id="8664215986015753476">Персаналізуйце выкарыстанне Chrome</translation>
 <translation id="8664979001105139458">Файл з такой назвай ужо існуе</translation>
 <translation id="8672883760227492369">Некаторыя паролі на гэтай прыладзе неўзабаве перастануць працаваць. Вы можаце перамясціць іх у Менеджар пароляў Google.</translation>
 <translation id="8676276370198826499">Зарэгіструйцеся на вэб-сайце <ph name="SITE_ETLD_PLUS_ONE" /> праз сэрвіс "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />"</translation>

@@ -76,6 +76,7 @@
 <translation id="427987768447457592">ନୂଆ ଟାବ ଗ୍ରୁପ</translation>
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> ଟାବକୁ ପରିବର୍ତ୍ତନ କରାଯାଇଛି, <ph name="ANY_CLOSED" /> ବନ୍ଦ କରାଯାଇଛି}other{<ph name="MANY_CHANGED" /> ଟାବକୁ ପରିବର୍ତ୍ତନ କରାଯାଇଛି, <ph name="ANY_CLOSED" /> ବନ୍ଦ କରାଯାଇଛି}}</translation>
 <translation id="4371591986692297148">ନିଷ୍କ୍ରିୟ</translation>
+<translation id="4431937619879060901">ଆପଣ ତୁରନ୍ତ "<ph name="GROUP_NAME" />" ଟାବ ଗ୍ରୁପର ଆକ୍ସେସ ହରାଇବେ ଏବଂ ଏହା ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସରୁ ଡିଲିଟ ହୋଇଯିବ</translation>
 <translation id="4460014764210899310">ଅଣଗୋଷ୍ଠୀ କରନ୍ତୁ</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{1 ନିଷ୍କ୍ରିୟ ଟାବକୁ ବନ୍ଦ କରିବେ?}other{<ph name="TAB_COUNT_MANY" /> ନିଷ୍କ୍ରିୟ ଟାବକୁ ବନ୍ଦ କରିବେ?}}</translation>
 <translation id="4686942373615810936">ଏବେ ତିଆରି ହୋଇଛି</translation>
@@ -106,6 +107,7 @@
 <translation id="5556417849629758491">ଷ୍ଟୋରର ସୂଚନା ଦେଖନ୍ତୁ, ସ୍କ୍ରିନର ଶୀର୍ଷଭାଗର ନିକଟରେ ବିକଳ୍ପ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="5627941783489838464">କୌଣସି ଟାବ ଅପଡେଟ ନାହିଁ</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{ଟାବକୁ ରିଷ୍ଟୋର କରନ୍ତୁ}other{ଟାବଗୁଡ଼ିକୁ ରିଷ୍ଟୋର କରନ୍ତୁ}}</translation>
+<translation id="5647702255748985085">ଗ୍ରୁପରୁ ବାହାରି ଯିବେ?</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chromeରୁ <ph name="TABS_COUNT_ONE" />ଟି ଲିଙ୍କ}other{Chromeରୁ <ph name="TABS_COUNT_MANY" />ଟି ଲିଙ୍କ}}</translation>
 <translation id="58326064309361797">ସେଗୁଡ଼ିକର ଗୋଷ୍ଠୀ କରିବାକୁ ଟାବ୍‌ଗୁଡ଼ିକୁ ଟାଣନ୍ତୁ</translation>
 <translation id="5901630391730855834">ହଳଦିଆ</translation>
@@ -141,6 +143,7 @@
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> ଚୟନ କରାଯାଇଛି</translation>
 <translation id="7326879924029668159">ରିଟର୍ଣ୍ଣ ନୀତି ଏବଂ ଆହୁରି ଅନେକ କିଛି ଦେଖନ୍ତୁ</translation>
 <translation id="7352298686197644113">ଆପଣଙ୍କ ଖୋଲା ଥିବା ଟାବଗୁଡ଼ିକରେ କେଉଁ ଆଇଟମର ମୂଲ୍ୟ କମ୍ ତାହା ଦେଖନ୍ତୁ</translation>
+<translation id="742664698522525515">ଗ୍ରୁପକୁ ରଖିବେ?</translation>
 <translation id="7452985128687107478">ଟାବ ଗ୍ରୁପ ଆପଣଙ୍କ ସମସ୍ତ ଡିଭାଇସରେ ସ୍ୱତଃ ସେଭ ଏବଂ ଅପଡେଟ ହୁଏ</translation>
 <translation id="747459581954555080">ସବୁ ରିଷ୍ଟୋର୍ କରନ୍ତୁ</translation>
 <translation id="750886945254958667">ପରେ ଟାବଗୁଡ଼ିକ ଯୋଗ କରିବାକୁ ଏହି ଗ୍ରୁପକୁ ରଖନ୍ତୁ କିମ୍ୱା ଆପଣ ଯଦି ଆଉ ଏହାକୁ ଆକ୍ସେସ କରିବାକୁ ଚାହୁଁନାହାଁନ୍ତି, ତେବେ ଏଥିରୁ ବାହାରି ଯାଆନ୍ତୁ</translation>
@@ -185,8 +188,10 @@
 <translation id="8915916167043355778">ସବୁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="9090098097337832354">ଏହି ଷ୍ଟୋର ବିଷୟରେ ସୂଚନା ବନ୍ଦ ହୋଇଯାଇଛି</translation>
 <translation id="9114502155681725011"><ph name="TITLE_OF_GROUP" /> ଟାବ ଗ୍ରୁପ, <ph name="COLOR_NAME" /> ରଙ୍ଗ ପାଇଁ ଟାବ ଗ୍ରୁପ ଆକ୍ସନ ମେନୁ ଖୋଲନ୍ତୁ।</translation>
+<translation id="9169141410816678175">ସମସ୍ତେ ତୁରନ୍ତ "<ph name="GROUP_NAME" />" ଟାବ ଗ୍ରୁପର ଆକ୍ସେସ ହରାଇବେ ଏବଂ ଏହା ସମସ୍ତ ଡିଭାଇସରୁ ଡିଲିଟ ହୋଇଯିବ</translation>
 <translation id="9169594135889675189">ଗୋଷ୍ଠୀରେ ନୂଆ ଟାବ୍‍ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="9216898458513705996">ଏହି ଡିଭାଇସରେ ଥିବା ଟାବ ଖୋଲା ରହିବ, କିନ୍ତୁ <ph name="USER_EMAIL" />ରେ ସାଇନ ଇନ କରାଯାଇଥିବା ସମସ୍ତ ଡିଭାଇସରୁ ଗ୍ରୁପକୁ ଡିଲିଟ କରାଯିବ</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> ରଙ୍ଗର <ph name="TABS_COUNT_ONE" /> ଟାବ ଥିବା ଟାବ ଗ୍ରୁପକୁ ବିସ୍ତାର କରନ୍ତୁ।}other{<ph name="COLOR_NAME" /> ରଙ୍ଗର <ph name="TABS_COUNT_MANY" /> ଟାବ ଥିବା ଟାବ ଗ୍ରୁପକୁ ବିସ୍ତାର କରନ୍ତୁ।}}</translation>
+<translation id="94870150074703282">ଗ୍ରୁପକୁ ଡିଲିଟ କରିବେ?</translation>
 <translation id="992256792861109788">ଗୋଲାପି</translation>
 </translationbundle>

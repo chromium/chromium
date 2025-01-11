@@ -124,6 +124,7 @@
 <translation id="1076766328672150609">ಸಾಧನವನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಲು ನಿಮ್ಮ ಮಗುವು ಪಿನ್ ಬಳಸಬಹುದು.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216"><ph name="LANGUAGE" /> ಗಾಗಿ ಕಾಗುಣಿತ ಪರೀಕ್ಷೆ ನಿಘಂಟನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
+<translation id="1078029726086090536">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="1078037449555275327">ChromeVox ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="1079242569060319448">ಪಿನ್ ಮರೆತಿದ್ದೀರಾ?</translation>
 <translation id="1079285777677001938">ಕೆಲವು ಸೈಟ್‌ಗಳಲ್ಲಿ ಫೀಚರ್‌ಗಳು ಕಾರ್ಯನಿರ್ವಹಿಸದೇ ಇರಬಹುದು.</translation>
@@ -4085,6 +4086,7 @@
 <translation id="3848547754896969219">&amp;ಅಜ್ಞಾತ ವಿಂಡೋದಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="3850172593216628215">ಭದ್ರತಾ ಅಪ್‌ಡೇಟ್‌ಗಳು ಕೊನೆಗೊಂಡಿವೆ. ಹೊಸ Chromebook ನಲ್ಲಿ $50 ಅಥವಾ ಅದಕ್ಕಿಂತ ಹೆಚ್ಚಿನದನ್ನು ಉಳಿಸಿ.</translation>
 <translation id="385051799172605136">ಹಿಂದೆ</translation>
+<translation id="3850989673553106152">ಪಾಸ್‌ವರ್ಡ್ ಬದಲಾವಣೆಯಾಗಿದೆ</translation>
 <translation id="3851428669031642514">ಅಸುರಕ್ಷಿತ ಸ್ಕ್ರಿಪ್ಟ್‌ಗಳನ್ನು ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="3852215160863921508">ಇನ್‌ಪುಟ್ ನೆರವು</translation>
 <translation id="3853549894831560772"><ph name="DEVICE_NAME" /> ಅನ್ನು ಆನ್ ಮಾಡಲಾಗಿದೆ</translation>
@@ -4587,6 +4589,7 @@
 <translation id="421182450098841253">&amp;ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳ ಪಟ್ಟಿಯನ್ನು ತೋರಿಸಿ</translation>
 <translation id="4211904048067111541">Android ಆ್ಯಪ್‌ಗಳ ಜೊತೆ ಬಳಸುವುದನ್ನು ನಿಲ್ಲಿಸಿ</translation>
 <translation id="42126664696688958">ರಫ್ತು</translation>
+<translation id="4213540068152645535">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬದಲಾಯಿಸುವಲ್ಲಿ ಸಮಸ್ಯೆ ಉಂಟಾಗಿದೆ</translation>
 <translation id="42137655013211669">ಈ ಸಂಪನ್ಮೂಲಕ್ಕೆ ಪ್ರವೇಶವನ್ನು ಸರ್ವರ್‌ ಮೂಲಕ ನಿಷೇಧಿಸಲಾಗಿದೆ.</translation>
 <translation id="4213918571089943508">ಮಗುವಿನ Google ಖಾತೆ</translation>
 <translation id="4214192212360095377">ಈಗ ಆಫ್ ಮಾಡಿ</translation>
@@ -8310,6 +8313,7 @@
 <translation id="6913051485529944333">ಈ ಪುಟದಲ್ಲಿ ನೀವು Google Calendar ಅನ್ನು ಮತ್ತೆ ನೋಡುವುದಿಲ್ಲ</translation>
 <translation id="6914812290245989348">ಅಸುರಕ್ಷಿತ ಸೈಟ್‌ಗಳಿಗೆ ಭೇಟಿ ನೀಡುವ ಮೊದಲು ಯಾವುದೇ ಎಚ್ಚರಿಕೆಗಳನ್ನು ನೋಡಬೇಡಿ</translation>
 <translation id="6916590542764765824">ವಿಸ್ತರಣೆಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
+<translation id="6916676294509106572">Outlook Calendar ಅನ್ನು ಮರೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="6917873303492266709">ಟ್ಯಾಬ್ ಗುಂಪುಗಳಲ್ಲಿ ಹಂಚಿಕೊಳ್ಳಲು, ಸೇರಿಕೊಳ್ಳಲು ಮತ್ತು ಕೊಲಾಬೊರೇಟ್ ಮಾಡಲು, ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ ಮತ್ತು Chrome ಸೈನ್-ಇನ್ ಅನ್ನು ಅನುಮತಿಸಿ ಎಂಬುದನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="6918677045355889289">ChromeOS ಅಪ್‌ಡೇಟ್ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="6918733588290914545">Android ಫೋನ್‌ನೊಂದಿಗೆ ತ್ವರಿತ ಸೆಟಪ್</translation>
@@ -10686,6 +10690,7 @@
 <translation id="8625124982056504555">ChromeOS ಸಾಧನ ಮತ್ತು ಕಾಂಪೊನೆಂಟ್ ಕ್ರಮ ಸಂಖ್ಯೆಗಳನ್ನು ಓದಿ</translation>
 <translation id="862542460444371744">&amp;ವಿಸ್ತರಣೆಗಳು</translation>
 <translation id="8625663000550647058">ನಿಮ್ಮ ಮೈಕ್ರೊಫೋನ್ ಬಳಸಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
+<translation id="8625679025395572221">ನಿಮ್ಮ ಖಾತೆಯು ಇನ್ನೂ ಅಪಾಯದಲ್ಲಿದೆ.</translation>
 <translation id="8625916342247441948">HID ಸಾಧನಗಳಿಗೆ ಸೈಟ್‌ಗಳು ಕನೆಕ್ಟ್ ಆಗುವುದಕ್ಕೆ ಅನುಮತಿಸಬೇಡಿ</translation>
 <translation id="862727964348362408">ತಡೆಹಿಡಿಯಲಾಗಿದೆ</translation>
 <translation id="862750493060684461">CSS ಕ್ಯಾಷ್</translation>

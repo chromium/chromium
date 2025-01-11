@@ -128,7 +128,6 @@
 <translation id="1502010315804028179">如需管理您的密码，请更新 Google Play 服务</translation>
 <translation id="1506061864768559482">搜索引擎</translation>
 <translation id="1513352483775369820">书签和网络历史记录</translation>
-<translation id="1513814250881909472">同步即可查看您在其他设备上打开的标签页</translation>
 <translation id="1513858653616922153">删除密码</translation>
 <translation id="1521774566618522728">今天曾有活动</translation>
 <translation id="153446405401665083">有新版 Chrome 可用</translation>
@@ -278,7 +277,6 @@
 <translation id="228704530595896923">分享选项列表。</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{查看 <ph name="TABS_COUNT_ONE" /> 个标签页}other{查看 <ph name="TABS_COUNT_MANY" /> 个标签页}}</translation>
 <translation id="2297822946037605517">分享此页</translation>
-<translation id="22981027763501686">同步即可获取您在其他设备上保存的书签、历史记录等信息</translation>
 <translation id="230115972905494466">未找到任何兼容设备</translation>
 <translation id="2318045970523081853">点按即可拨打电话</translation>
 <translation id="2321086116217818302">正在准备密码…</translation>
@@ -1062,7 +1060,6 @@
 <translation id="5865733239029070421">自动将使用情况统计信息和崩溃报告发送至 Google</translation>
 <translation id="5869522115854928033">已保存的密码</translation>
 <translation id="587735546353481577">若要关注某个网站，请转到该网站，打开 Chrome 菜单，然后点按“关注”。</translation>
-<translation id="5879072387416556377">获得更好的建议</translation>
 <translation id="5883855034004058011">生物识别失败次数过多。请锁定设备并解锁，然后重试。</translation>
 <translation id="5885378508678660271">通知 <ph name="SEPARATOR" /> Chrome 撤消了这些权限，因为此网站具有危险性</translation>
 <translation id="5895834791314695851">此设备上的密码可能即将失效。如需继续使用这些密码，请更新 Google Play 服务。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
@@ -1405,7 +1402,6 @@
 <translation id="7313188324932846546">点按即可设置同步</translation>
 <translation id="7324354302972299151">发送“Do Not Track”请求</translation>
 <translation id="7333041109965360609">已退订通知</translation>
-<translation id="7333232495927792353">同步即可获取 Google 提供的与您最相关的内容</translation>
 <translation id="7336259382292148213">通知权限正常</translation>
 <translation id="7339898014177206373">打开新的窗口</translation>
 <translation id="7340958967809483333">“探索”功能的选项</translation>
@@ -1502,7 +1498,6 @@
 <translation id="7698359219371678927">在 <ph name="APP_NAME" /> 中创建电子邮件</translation>
 <translation id="7702420606070050505">显示近期活动的底部动作条已全屏打开</translation>
 <translation id="7707922173985738739">使用移动数据</translation>
-<translation id="7709918231054955894">同步显示您的所有标签页</translation>
 <translation id="7733878270780732638">设备上的存储空间不足。</translation>
 <translation id="7746817319925672889">Google 密码管理工具即将停止在此设备上运行</translation>
 <translation id="774876555279732384">您也可以在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中管理自动填充服务。</translation>
@@ -1723,7 +1718,6 @@
 <translation id="8635399646025169806">要保留标签页分组吗？</translation>
 <translation id="8636825310635137004">要访问您在其他设备上的标签页，请开启同步功能。</translation>
 <translation id="864544049772947936">管理窗口（<ph name="INSTANCE_COUNTS" /> 个）</translation>
-<translation id="8664215986015753476">按您自己的方式使用 Chrome</translation>
 <translation id="8664979001105139458">文件名已存在</translation>
 <translation id="8672883760227492369">此设备上的一些密码即将失效。您可以将这些密码移至 Google 密码管理工具。</translation>
 <translation id="8676276370198826499">通过 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 注册 <ph name="SITE_ETLD_PLUS_ONE" /></translation>

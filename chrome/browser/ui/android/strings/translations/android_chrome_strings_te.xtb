@@ -128,7 +128,6 @@
 <translation id="1502010315804028179">మీ పాస్‌వర్డ్‌లను మేనేజ్ చేయడానికి, Google Play సర్వీసులను అప్‌డేట్ చేయండి</translation>
 <translation id="1506061864768559482">సెర్చ్ ఇంజిన్</translation>
 <translation id="1513352483775369820">బుక్‌మార్క్‌లు మరియు వెబ్ హిస్టరీ</translation>
-<translation id="1513814250881909472">మీ ఇతర పరికరాల నుండి మీ ట్యాబ్‌లను పొందడానికి సింక్ చేయండి</translation>
 <translation id="1513858653616922153">పాస్‌వర్డ్‌ను తొలగించండి</translation>
 <translation id="1521774566618522728">ఈ రోజు యాక్టివ్‌గా ఉంది</translation>
 <translation id="153446405401665083">Chromeకు సంబంధించిన కొత్త వెర్షన్ అందుబాటులో ఉంది</translation>
@@ -278,7 +277,6 @@
 <translation id="228704530595896923">షేరింగ్ ఆప్షన్‌ల లిస్ట్.</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ట్యాబ్‌ను చూడండి}other{<ph name="TABS_COUNT_MANY" /> ట్యాబ్‌లను చూడండి}}</translation>
 <translation id="2297822946037605517">ఈ పేజీని షేర్ చేయండి</translation>
-<translation id="22981027763501686">మీ ఇతర పరికరాలలో మీ బుక్‌మార్క్‌లు, హిస్టరీ అలాగే మరిన్నింటిని పొందడానికి సింక్ చేయండి</translation>
 <translation id="230115972905494466">అనుకూల పరికరాలు ఏవీ కనుగొనబడలేదు</translation>
 <translation id="2318045970523081853">కాల్ చేయడానికి నొక్కండి</translation>
 <translation id="2321086116217818302">పాస్‌వర్డ్‌లను సిద్ధం చేస్తోంది…</translation>
@@ -1062,7 +1060,6 @@
 <translation id="5865733239029070421">వినియోగ గణాంకాలను, క్రాష్ రిపోర్ట్‌లను ఆటోమేటిక్‌గా Googleకు పంపుతుంది</translation>
 <translation id="5869522115854928033">సేవ్  చేసిన పాస్‌వర్డ్‌లు</translation>
 <translation id="587735546353481577">సైట్‌ను ఫాలో చేయడానికి, సైట్‌కు వెళ్లి, Chrome మెనూను తెరిచి, 'ఫాలో చేయండి'ని ట్యాప్ చేయండి.</translation>
-<translation id="5879072387416556377">ఉత్తమ సూచనలను పొందండి</translation>
 <translation id="5883855034004058011">బయోమెట్రిక్ డేటా చాలా సార్లు విఫలమైంది. మళ్లీ ట్రై చేయడానికి మీ పరికరాన్ని లాక్ చేసి, అన్‌లాక్ చేయండి.</translation>
 <translation id="5885378508678660271">నోటిఫికేషన్‌లు <ph name="SEPARATOR" /> ఈ సైట్ ప్రమాదకరమైనది కాబట్టి Chrome ఈ అనుమతులను తీసివేసింది</translation>
 <translation id="5895834791314695851">ఈ పరికరంలో పాస్‌వర్డ్‌లు త్వరలో పని చేయడం ఆగిపోవచ్చు. మీ పాస్‌వర్డ్‌లను ఉపయోగించడం కొనసాగించడానికి, Google Play సర్వీసులను అప్‌డేట్ చేయండి. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
@@ -1405,7 +1402,6 @@
 <translation id="7313188324932846546">సింక్‌ను సెటప్ చేయడానికి ట్యాప్ చేయండి</translation>
 <translation id="7324354302972299151">“Do Not Track” రిక్వెస్ట్‌ను పంపండి</translation>
 <translation id="7333041109965360609">నోటిఫికేషన్‌ల సబ్‌స్క్రిప్షన్ తీసివేయబడింది</translation>
-<translation id="7333232495927792353">Google నుండి అత్యంత సందర్భోచితంగా ఉండే కంటెంట్‌ను పొందడానికి సింక్ చేయండి</translation>
 <translation id="7336259382292148213">రివ్యూ చేయడానికి నోటిఫికేషన్‌లు ఏవీ లేవు</translation>
 <translation id="7339898014177206373">కొత్త విండో</translation>
 <translation id="7340958967809483333">Discover కోసం ఆప్షన్‌లు</translation>
@@ -1502,7 +1498,6 @@
 <translation id="7698359219371678927"><ph name="APP_NAME" />లో ఈమెయిల్‌ను క్రియేట్ చేయండి</translation>
 <translation id="7702420606070050505">ఇటీవలి యాక్టివిటీ దిగువున ఉన్న షీట్ పూర్తి ఎత్తులో తెరవబడింది</translation>
 <translation id="7707922173985738739">మొబైల్ డేటాను ఉపయోగిస్తుంది</translation>
-<translation id="7709918231054955894">మీ అన్ని ట్యాబ్‌లనూ పొందండి</translation>
 <translation id="7733878270780732638">పరికరంలో తగినంత స్పేస్ లేదు.</translation>
 <translation id="7746817319925672889">త్వరలో Google Password Manager ఈ పరికరంలో ఇక పని చేయదు</translation>
 <translation id="774876555279732384">ఆటోఫిల్ సర్వీసులు <ph name="BEGIN_LINK" />Android సెట్టింగ్‌ల<ph name="END_LINK" />‌లో కూడా మేనేజ్ చేయబడతాయి.</translation>
@@ -1723,7 +1718,6 @@
 <translation id="8635399646025169806">ట్యాబ్ గ్రూప్‌ను ఉంచాలా?</translation>
 <translation id="8636825310635137004">మీ ఇతర పరికరాల నుండి మీ ట్యాబ్‌లను పొందడానికి, సింక్‌ను ఆన్ చేయండి</translation>
 <translation id="864544049772947936">విండోలను మేనేజ్ చేయండి (<ph name="INSTANCE_COUNTS" />)</translation>
-<translation id="8664215986015753476">మీకు నచ్చినట్లు Chromeను ఉపయోగించండి</translation>
 <translation id="8664979001105139458">ఫైల్ పేరు ఇప్పటికే ఉంది</translation>
 <translation id="8672883760227492369">ఈ పరికరంలో కొన్ని పాస్‌వర్డ్‌లు త్వరలో పని చేయడం ఆగిపోతాయి. మీరు ఈ పాస్‌వర్డ్‌లను Google Password Managerకు తరలించవచ్చు.</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />‌తో <ph name="SITE_ETLD_PLUS_ONE" />‌కు సైన్ అప్ చేయండి</translation>

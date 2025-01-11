@@ -128,7 +128,6 @@
 <translation id="1502010315804028179">Để quản lý mật khẩu, hãy cập nhật Dịch vụ Google Play</translation>
 <translation id="1506061864768559482">Công cụ tìm kiếm</translation>
 <translation id="1513352483775369820">Dấu trang và lịch sử web</translation>
-<translation id="1513814250881909472">Đồng bộ hoá để lấy thẻ từ thiết bị khác</translation>
 <translation id="1513858653616922153">Xóa mật khẩu</translation>
 <translation id="1521774566618522728">Hoạt động hôm nay</translation>
 <translation id="153446405401665083">Đã có phiên bản Chrome mới</translation>
@@ -278,7 +277,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="228704530595896923">Danh sách các lựa chọn chia sẻ.</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Xem <ph name="TABS_COUNT_ONE" /> thẻ}other{Xem <ph name="TABS_COUNT_MANY" /> thẻ}}</translation>
 <translation id="2297822946037605517">Chia sẻ trang này</translation>
-<translation id="22981027763501686">Đồng bộ hoá để dùng dấu trang, nhật ký và nhiều nội dung khác trên các thiết bị khác của bạn</translation>
 <translation id="230115972905494466">Không tìm thấy thiết bị tương thích</translation>
 <translation id="2318045970523081853">Nhấn để gọi điện</translation>
 <translation id="2321086116217818302">Đang chuẩn bị mật khẩu…</translation>
@@ -1062,7 +1060,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5865733239029070421">Tự động gửi số liệu thống kê sử dụng và báo cáo sự cố cho Google</translation>
 <translation id="5869522115854928033">Mật khẩu đã lưu</translation>
 <translation id="587735546353481577">Để theo dõi một trang web, hãy truy cập vào trang web đó, mở trình đơn Chrome rồi nhấn vào Theo dõi.</translation>
-<translation id="5879072387416556377">Nhận đề xuất tốt hơn</translation>
 <translation id="5883855034004058011">Hệ thống nhận dạng sinh trắc học xác minh không thành công quá nhiều lần. Hãy khoá rồi mở khoá thiết bị của bạn để thử lại.</translation>
 <translation id="5885378508678660271">Thông báo <ph name="SEPARATOR" /> Chrome đã loại bỏ các quyền này vì trang web này nguy hiểm</translation>
 <translation id="5895834791314695851">Các mật khẩu có thể sắp ngừng hoạt động trên thiết bị này. Hãy cập nhật Dịch vụ Google Play để tiếp tục sử dụng mật khẩu. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
@@ -1407,7 +1404,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7313188324932846546">Nhấn để thiết lập quá trình đồng bộ hóa</translation>
 <translation id="7324354302972299151">Gửi yêu cầu "Không theo dõi"</translation>
 <translation id="7333041109965360609">Đã huỷ đăng ký nhận thông báo</translation>
-<translation id="7333232495927792353">Đồng bộ hoá để xem nội dung phù hợp nhất trên Google</translation>
 <translation id="7336259382292148213">Không có vấn đề gì với thông báo</translation>
 <translation id="7339898014177206373">Cửa sổ mới</translation>
 <translation id="7340958967809483333">Các tùy chọn của tính năng Khám phá</translation>
@@ -1504,7 +1500,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7698359219371678927">Tạo email trong <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Bảng hoạt động gần đây ở dưới cùng đã mở trên toàn màn hình</translation>
 <translation id="7707922173985738739">Sử dụng dữ liệu di động</translation>
-<translation id="7709918231054955894">Xem tất cả thẻ của bạn</translation>
 <translation id="7733878270780732638">Không đủ dung lượng trên thiết bị.</translation>
 <translation id="7746817319925672889">Trình quản lý mật khẩu của Google sắp ngừng hoạt động trên thiết bị này</translation>
 <translation id="774876555279732384">Bạn cũng có thể quản lý các dịch vụ tự động điền trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
@@ -1725,7 +1720,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8635399646025169806">Giữ lại nhóm thẻ?</translation>
 <translation id="8636825310635137004">Để có các thẻ từ các thiết bị khác của bạn, hãy bật đồng bộ hóa.</translation>
 <translation id="864544049772947936">Quản lý cửa sổ (<ph name="INSTANCE_COUNTS" />)</translation>
-<translation id="8664215986015753476">Sử dụng Chrome theo cách của bạn</translation>
 <translation id="8664979001105139458">Tên tệp đã tồn tại</translation>
 <translation id="8672883760227492369">Một số mật khẩu trên thiết bị này sắp ngừng hoạt động. Bạn có thể di chuyển các mật khẩu này sang Trình quản lý mật khẩu của Google.</translation>
 <translation id="8676276370198826499">Đăng ký trên <ph name="SITE_ETLD_PLUS_ONE" /> bằng tài khoản <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

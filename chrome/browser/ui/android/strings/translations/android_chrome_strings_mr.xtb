@@ -128,7 +128,6 @@
 <translation id="1502010315804028179">तुमचे पासवर्ड संपादित करण्यासाठी, Google Play सेवा अपडेट करा</translation>
 <translation id="1506061864768559482">शोध इंजीन</translation>
 <translation id="1513352483775369820">बुकमार्क आणि वेब इतिहास</translation>
-<translation id="1513814250881909472">तुमच्या इतर डिव्हाइसवरून तुमचे टॅब मिळवण्यासाठी सिंक करा</translation>
 <translation id="1513858653616922153">पासवर्ड हटवा</translation>
 <translation id="1521774566618522728">आज ॲक्टिव्ह होते</translation>
 <translation id="153446405401665083">Chrome ची नवीन आवृत्ती उपलब्ध आहे</translation>
@@ -278,7 +277,6 @@
 <translation id="228704530595896923">शेअरिंग पर्यायांची सूची.</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब पहा}other{<ph name="TABS_COUNT_MANY" /> टॅब पहा}}</translation>
 <translation id="2297822946037605517">हे पेज शेअर करा</translation>
-<translation id="22981027763501686">तुमचे बुकमार्क, इतिहास आणि आणखी बऱ्याच गोष्टी तुमच्या इतर डिव्हाइसवर मिळवण्यासाठी सिंक करा</translation>
 <translation id="230115972905494466">कोणतीही कंपॅटिबल डिव्हाइस आढळली नाहीत</translation>
 <translation id="2318045970523081853">कॉल करण्यासाठी टॅप करा</translation>
 <translation id="2321086116217818302">पासवर्ड तयार करत आहे…</translation>
@@ -1062,7 +1060,6 @@
 <translation id="5865733239029070421">Google ला वापरविषयक आकडेवारी आणि क्रॅश अहवाल आपोआप पाठवते</translation>
 <translation id="5869522115854928033">सेव्ह केलेले पासवर्ड</translation>
 <translation id="587735546353481577">साइटला फॉलो करण्यासाठी, साइटवर जा, Chrome मेनू उघडा आणि फॉलो करा वर टॅप करा.</translation>
-<translation id="5879072387416556377">आणखी चांगल्या सूचना मिळवा</translation>
 <translation id="5883855034004058011">बायोमेट्रिक खूप वेळा यशस्वी झाले नाही. पुन्हा प्रयत्न करण्यासाठी तुमचे डिव्हाइस लॉक करा आणि अनलॉक करा.</translation>
 <translation id="5885378508678660271">नोटिफिकेशन <ph name="SEPARATOR" /> ही साइट धोकादायक असल्यामुळे Chrome ने या परवानग्या काढून टाकल्या आहेत</translation>
 <translation id="5895834791314695851">या डिव्हाइसवर लवकरच पासवर्ड काम करणे थांबवू शकतात. तुमचे पासवर्ड वापरणे सुरू ठेवण्यासाठी, Google Play सेवा अपडेट करा. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
@@ -1407,7 +1404,6 @@
 <translation id="7313188324932846546">सिंक सेट करण्यासाठी टॅप करा</translation>
 <translation id="7324354302972299151">“Do Not Track” विनंती पाठवा</translation>
 <translation id="7333041109965360609">सूचनांचे सदस्यत्व रद्द करा</translation>
-<translation id="7333232495927792353">Google वरून सर्वात उपयुक्त आशय मिळवण्यासाठी सिंक करा</translation>
 <translation id="7336259382292148213">नोटिफिकेशनशी संबंधित कोणतीही समस्या नाही</translation>
 <translation id="7339898014177206373">नवीन विंडो</translation>
 <translation id="7340958967809483333">Discover चे पर्याय</translation>
@@ -1504,7 +1500,6 @@
 <translation id="7698359219371678927"><ph name="APP_NAME" /> मध्ये ईमेल तयार करा</translation>
 <translation id="7702420606070050505">अलीकडील अ‍ॅक्टिव्हिटीची तळाशी असलेली शीट पूर्णपणे उघडली आहे</translation>
 <translation id="7707922173985738739">मोबाइल डेटा वापरा</translation>
-<translation id="7709918231054955894">तुमचे सर्व टॅब मिळवा</translation>
 <translation id="7733878270780732638">डिव्हाइसवर पुरेशी रिकामी जागा नाही.</translation>
 <translation id="7746817319925672889">Google Password Manager या डिव्हाइसवर काम करणे लवकरच थांबवेल</translation>
 <translation id="774876555279732384">ऑटोफिल सेवा <ph name="BEGIN_LINK" />Android सेटिंग्ज<ph name="END_LINK" /> मध्येदेखील व्यवस्थापित केल्या जातात.</translation>
@@ -1725,7 +1720,6 @@
 <translation id="8635399646025169806">टॅब गट कायम ठेवायचा आहे का?</translation>
 <translation id="8636825310635137004">आपल्या इतर डिव्हाइसेस मधून तुमचे टॅब प्राप्त करण्यासाठी, सिंक सुरू करा</translation>
 <translation id="864544049772947936">विंडो व्यवस्थापित करा (<ph name="INSTANCE_COUNTS" />)</translation>
-<translation id="8664215986015753476">तुमच्या पद्धतीने Chrome वापरा</translation>
 <translation id="8664979001105139458">फाइलचे नाव आधीपासून अस्तित्वात आहे</translation>
 <translation id="8672883760227492369">या डिव्हाइसवरील काही पासवर्ड लवकरच काम करणे थांबवतील. हे पासवर्ड तुम्ही Google Password Manager वर हलवू शकता.</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> सह <ph name="SITE_ETLD_PLUS_ONE" /> वर साइन अप करा</translation>

@@ -128,7 +128,6 @@
 <translation id="1502010315804028179">‏כדי לנהל את הסיסמאות, צריך לעדכן את Google Play Services</translation>
 <translation id="1506061864768559482">מנוע חיפוש</translation>
 <translation id="1513352483775369820">סימניות והיסטוריית אתרים</translation>
-<translation id="1513814250881909472">אפשר לבצע סנכרון כדי להציג את הכרטיסיות מהמכשירים האחרים שלך</translation>
 <translation id="1513858653616922153">מחיקת סיסמה</translation>
 <translation id="1521774566618522728">סנכרון אחרון: היום</translation>
 <translation id="153446405401665083">‏יש גרסה חדשה של Chrome</translation>
@@ -278,7 +277,6 @@
 <translation id="228704530595896923">רשימת אפשרויות השיתוף.</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{הצגת כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />)}one{הצגת <ph name="TABS_COUNT_MANY" /> כרטיסיות}two{הצגת <ph name="TABS_COUNT_MANY" /> כרטיסיות}other{הצגת <ph name="TABS_COUNT_MANY" /> כרטיסיות}}</translation>
 <translation id="2297822946037605517">שתף דף זה</translation>
-<translation id="22981027763501686">אפשר לבצע סנכרון כדי להוסיף את הסימניות, ההיסטוריה ועוד מהמכשירים האחרים שלך</translation>
 <translation id="230115972905494466">לא נמצאו מכשירים תואמים</translation>
 <translation id="2318045970523081853">יש להקיש כדי להתקשר</translation>
 <translation id="2321086116217818302">המערכת מכינה את הסיסמאות…</translation>
@@ -1062,7 +1060,6 @@
 <translation id="5865733239029070421">‏שליחת דוחות קריסה וסטטיסטיקת שימוש אל Google באופן אוטומטי</translation>
 <translation id="5869522115854928033">סיסמאות שמורות</translation>
 <translation id="587735546353481577">‏כדי לעקוב אחר אתר כלשהו, עוברים אליו, פותחים את תפריט Chrome ומקישים על 'מעקב'.</translation>
-<translation id="5879072387416556377">קבלת הצעות טובות יותר</translation>
 <translation id="5883855034004058011">האימות הביומטרי נכשל יותר מדי פעמים. צריך לנעול את המכשיר ולבטל את הנעילה שלו כדי לנסות שוב.</translation>
 <translation id="5885378508678660271">‏התראות <ph name="SEPARATOR" /> Chrome הסיר את ההרשאות האלה כי האתר הזה מסוכן</translation>
 <translation id="5895834791314695851">‏יכול להיות שהסיסמאות יפסיקו לפעול במכשיר הזה בקרוב. כדי להמשיך להשתמש בסיסמאות, צריך לעדכן את Google Play Services. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
@@ -1407,7 +1404,6 @@
 <translation id="7313188324932846546">יש להקיש כדי להגדיר סנכרון</translation>
 <translation id="7324354302972299151">‏שליחה של בקשת Do Not Track</translation>
 <translation id="7333041109965360609">ביטלת את ההרשמה לקבלת התראות</translation>
-<translation id="7333232495927792353">‏אפשר לבצע סנכרון כדי לקבל את התוכן הכי רלוונטי מ-Google</translation>
 <translation id="7336259382292148213">נראה שהכול בסדר בהתראות</translation>
 <translation id="7339898014177206373">חלון חדש</translation>
 <translation id="7340958967809483333">‏אפשרויות של Discover</translation>
@@ -1504,7 +1500,6 @@
 <translation id="7698359219371678927">יצירת הודעת אימייל ב-<ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">הגיליון התחתון של הפעילות האחרונה נפתח בגובה מלא</translation>
 <translation id="7707922173985738739">שימוש בחבילת הגלישה</translation>
-<translation id="7709918231054955894">הצגת כל הכרטיסיות</translation>
 <translation id="7733878270780732638">אין מספיק נפח אחסון פנוי במכשיר.</translation>
 <translation id="7746817319925672889">‏מנהל הסיסמאות של Google יפסיק לפעול במכשיר הזה בקרוב</translation>
 <translation id="774876555279732384">‏אפשר לנהל את שירותי המילוי האוטומטי גם ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
@@ -1725,7 +1720,6 @@
 <translation id="8635399646025169806">לשמור את קבוצת הכרטיסיות?</translation>
 <translation id="8636825310635137004">כדי לקבל את הכרטיסיות מהמכשירים האחרים שלך, יש להפעיל את הסנכרון.</translation>
 <translation id="864544049772947936">ניהול החלונות (<ph name="INSTANCE_COUNTS" />)</translation>
-<translation id="8664215986015753476">‏שימוש מותאם אישית ב-Chrome</translation>
 <translation id="8664979001105139458">שם הקובץ כבר קיים</translation>
 <translation id="8672883760227492369">‏חלק מהסיסמאות במכשיר הזה יפסיקו לפעול בקרוב. אפשר להעביר את הסיסמאות האלה למנהל הסיסמאות של Google.</translation>
 <translation id="8676276370198826499">יש לך אפשרות להירשם לאתר <ph name="SITE_ETLD_PLUS_ONE" /> עם החשבון <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

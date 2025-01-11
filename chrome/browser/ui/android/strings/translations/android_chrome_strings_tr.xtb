@@ -128,7 +128,6 @@ Veri kullanarak Chrome deneyiminizi iyileştiren daha fazla ayar görmek için <
 <translation id="1502010315804028179">Şifrelerinizi yönetmek için Google Play Hizmetlerini güncelleyin</translation>
 <translation id="1506061864768559482">Arama motoru</translation>
 <translation id="1513352483775369820">Yer işaretleri ve web geçmişi</translation>
-<translation id="1513814250881909472">Diğer cihazlarınızdaki sekmelerinize ulaşmak için senkronize edin</translation>
 <translation id="1513858653616922153">Şifreyi sil</translation>
 <translation id="1521774566618522728">Bugün etkindi</translation>
 <translation id="153446405401665083">Chrome'un yeni sürümü kullanıma sunuldu</translation>
@@ -278,7 +277,6 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="228704530595896923">Paylaşım seçenekleri listesi.</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> sekmeyi göster}other{<ph name="TABS_COUNT_MANY" /> sekmeyi göster}}</translation>
 <translation id="2297822946037605517">Bu sayfayı paylaş</translation>
-<translation id="22981027763501686">Yer işaretlerinize, geçmişinize ve daha fazlasına diğer cihazlarınızdan ulaşmak için senkronize edin</translation>
 <translation id="230115972905494466">Uyumlu cihaz bulunamadı</translation>
 <translation id="2318045970523081853">Aramak için dokunun</translation>
 <translation id="2321086116217818302">Şifreler hazırlanıyor…</translation>
@@ -1062,7 +1060,6 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="5865733239029070421">Kullanım istatistiklerini ve kilitlenme raporlarını Google'a otomatik olarak gönderir</translation>
 <translation id="5869522115854928033">Kayıtlı şifreler</translation>
 <translation id="587735546353481577">Bir siteyi takip etmek için siteye gidin, Chrome menüsünü açıp Takip et'e dokunun.</translation>
-<translation id="5879072387416556377">Daha iyi öneriler alın</translation>
 <translation id="5883855034004058011">Biyometrik doğrulama çok fazla kez yapılamadı. Yeniden denemek için cihazınızı kilitleyip kilidini açın.</translation>
 <translation id="5885378508678660271">Bildirimler <ph name="SEPARATOR" /> Bu site tehlikeli olduğu için Chrome bu izinleri kaldırdı</translation>
 <translation id="5895834791314695851">Şifreler yakında bu cihazda çalışmayı durduracak. Şifrelerinizi kullanmaya devam etmek için Google Play Hizmetleri'ni güncelleyin. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
@@ -1407,7 +1404,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="7313188324932846546">Senkronizasyonu ayarlamak için dokunun</translation>
 <translation id="7324354302972299151">"Do Not Track" isteği gönder</translation>
 <translation id="7333041109965360609">Bildirimlerin aboneliğinden çıkıldı</translation>
-<translation id="7333232495927792353">Google'daki en alakalı içerilere ulaşmak için senkronize edin</translation>
 <translation id="7336259382292148213">Bildirimlerde bir sorun görünmüyor</translation>
 <translation id="7339898014177206373">Yeni pencere</translation>
 <translation id="7340958967809483333">Keşfet seçenekleri</translation>
@@ -1504,7 +1500,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="7698359219371678927"><ph name="APP_NAME" /> adlı uygulamada e-posta oluşturun</translation>
 <translation id="7702420606070050505">Son etkinlik alt sayfası tam ekranda açıldı</translation>
 <translation id="7707922173985738739">Mobil veri kullanın</translation>
-<translation id="7709918231054955894">Tüm sekmelerinize ulaşın</translation>
 <translation id="7733878270780732638">Cihazda yeterli alan yok.</translation>
 <translation id="7746817319925672889">Google Şifre Yöneticisi yakında bu cihazda çalışmayı durduracak</translation>
 <translation id="774876555279732384">Otomatik doldurma hizmetleri, <ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'nda da yönetilir.</translation>
@@ -1725,7 +1720,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="8635399646025169806">Sekme grubu tutulsun mu?</translation>
 <translation id="8636825310635137004">Diğer cihazlarınızdaki sekmelerinize ulaşmak için senkronizasyonu etkinleştirin.</translation>
 <translation id="864544049772947936">Pencereleri yönetin (<ph name="INSTANCE_COUNTS" />)</translation>
-<translation id="8664215986015753476">Chrome'u istediğiniz şekilde kullanın</translation>
 <translation id="8664979001105139458">Dosya adı zaten mevcut</translation>
 <translation id="8672883760227492369">Bu cihazdaki bazı şifreler yakında çalışmayı durduracak. Bu şifreleri Google Şifre Yöneticisi'ne taşıyabilirsiniz.</translation>
 <translation id="8676276370198826499"><ph name="SITE_ETLD_PLUS_ONE" /> sitesine <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> kimliğinizle kaydolun</translation>

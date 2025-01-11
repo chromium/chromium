@@ -3391,6 +3391,7 @@
 <translation id="70705239631109039">သင့်ချိတ်ဆက်မှုသည် လုံခြုံမှုအပြည့်အဝမရှိပါ</translation>
 <translation id="7075452647191940183">တောင်းဆိုချက် အလွန်ကြီးနေသည်</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079699498125013497">\u0020\u2022\u0020</translation>
 <translation id="7081311540357715807">အစားအသောက်၊ ကုန်စုံ လက်လီရောင်းသူ</translation>
 <translation id="7083258188081898530">ဗန်း ၉</translation>
 <translation id="7086090958708083563">အသုံးပြုသူက အပ်လုဒ်လုပ်ရန် တောင်းဆိုထားသည်</translation>
@@ -4116,6 +4117,7 @@
 <translation id="833262891116910667">အထူးအသားပေး ဖော်ပြချက်</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> ဘာသာဖြင့် စာမျက်နှာများကို ဘာသာပြန်သွားပါမည်</translation>
 <translation id="8339275256517065202">Touch ID ဖြင့် ဝယ်ယူမှုကို အပြီးသတ်ပါ</translation>
+<translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">ပကတိအသွင်ကတ် စာရင်းသွင်းခြင်းကို မြင်ကွင်းအပြည့် ဖွင့်လိုက်သည်</translation>
 <translation id="8349305172487531364">စာညှပ် ဘား</translation>

@@ -1028,6 +1028,7 @@
 <translation id="4485506555414638855">आफ्नो फोनमा भएका हालसालैका फोटो, मिडिया, एप तथा सूचनाहरू हेर्ने सुविधा सेटअप गर्ने प्रक्रिया खारेज गर्नुहोस्</translation>
 <translation id="4491109536499578614">फोटो</translation>
 <translation id="450584155212756404">डेभ च्यानल</translation>
+<translation id="4513044611477939680">क्विक सेयर</translation>
 <translation id="4513946894732546136">पृष्ठपोषण</translation>
 <translation id="4518404433291145981">तपाईं आफ्नो Chromebook अनलक गर्न चाहनुहुन्छ भने सर्वप्रथम आफ्नो फोन अनलक गर्नुहोस्</translation>
 <translation id="4527045527269911712">ब्लुटूथ यन्त्र "<ph name="DEVICE_NAME" />" जोडिनको लागि अनुमति चाहन्छ।</translation>
@@ -1079,6 +1080,7 @@
 <translation id="4672539464599646374">ब्याट्री सेभर अन गरिएको छ</translation>
 <translation id="4673427585974421255">अन नै छाड्नुहोस्</translation>
 <translation id="4677040906536311086">Google पाना</translation>
+<translation id="468019262817532242">तपाईंसँग कसैले पनि सामग्री सेयर गर्न सक्दैनन्</translation>
 <translation id="468293128311738995">तपाईंको फोनमा भएका एपहरू</translation>
 <translation id="4690510401873698237">सेल्फ पुछारमा छ</translation>
 <translation id="4696813013609194136">अभिभावकको कोडमार्फत डिभाइस अनलक गर्नुहोस्</translation>
@@ -1110,6 +1112,7 @@
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> को लागि लागि पासवर्ड</translation>
 <translation id="4777825441726637019">Play स्टोर</translation>
 <translation id="4778095205580009397">Google सहायक डेमो सत्रमा उपलब्ध छैन।</translation>
+<translation id="4785412405516449976">Google खाता भएका तपाईंका कन्ट्याक्टहरू मात्र</translation>
 <translation id="4789348252524569426">वाक् पहिचानसम्बन्धी फाइलहरू इन्स्टल गर्न सकिएन। तपाईंको डिभाइस अपडेट गर्नु पर्ने हुन्छ। आफ्नो डिभाइस रिस्टार्ट गर्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="478959186716341421">Cast गर्दै</translation>
 <translation id="4798403412327076414">तपाईंले अर्को पटक साइन इन गर्दा तपाईं यसअघि खोलिएका विन्डो तथा एपहरू देख्नु हुने छ</translation>
@@ -1239,6 +1242,7 @@
 <translation id="5176318573511391780">स्क्रिनको केही भागको भिडियो रेकर्ड गर्नुहोस्</translation>
 <translation id="5187627942836026988">हटस्पटसम्बन्धी विवरणहरू देखाउनुहोस्। तपाईंको एड्मिनले हटस्पट ब्लक गर्नुभएको छ।</translation>
 <translation id="5197255632782567636">इन्टरनेट</translation>
+<translation id="5198039720391525849">विशेष GIF हरू</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> वटा कार्यक्रम</translation>
 <translation id="5198715732953550718">नयाँ फोल्डर सिर्जना गर्न <ph name="MOVED_APP_NAME" /> <ph name="IN_PLACE_APP" /> सँग समायोजन गरियो</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1560,6 +1564,7 @@
 <translation id="6199775032047436064">हालको पृष्ठ फेरि लोड गर्नुहोस्</translation>
 <translation id="6200515304866777730">यो एपमा काम गर्दैन</translation>
 <translation id="6210042900243040400">यसअघि <ph name="EMAIL" /> मा सेभ गरिएको <ph name="NAME" /> कनेक्ट गर्नुहोस्</translation>
+<translation id="6212580734499190393">१० मिनेटका लागि</translation>
 <translation id="6213808132343683860">आंशिक स्क्रिनसट लिनुहोस् वा स्क्रिन रेकर्डिङ गर्नुहोस्</translation>
 <translation id="621606890568890214">Google Classroom एक्स्पान्ड गर्नुहोस्</translation>
 <translation id="6216759484154215561">ब्राउजरमा "थप जान्नुहोस्" लिंक खोलियो</translation>
@@ -1953,6 +1958,7 @@
 <translation id="7599378375976398913">चयन गरिएको परिणाम हालिँदै छ</translation>
 <translation id="7600875258240007829">सबै सूचनाहरू हेर्नुहोस्</translation>
 <translation id="7601417191446344542">म्युट नज अन गर्ने हो?</translation>
+<translation id="7602187221150705972">इमोजी, GIF र अन्य कुराहरू खोज्नुहोस्</translation>
 <translation id="7607002721634913082">रोकिएको छ</translation>
 <translation id="7609951632080598826">पात्रोको भ्यू, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">क्यामेरा पुनः कनेक्ट गरियो।</translation>
@@ -2049,6 +2055,7 @@
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="7899977217122813285">फोकस गरिरहेका बेला <ph name="TIME" /> सम्म सूचनाहरू म्युट गरिन्छन्</translation>
+<translation id="7901010467630324625"><ph name="EMAIL" /> मा साइन इन गरिएका डिभाइसहरू मात्र</translation>
 <translation id="7901190436359881020">विन्डोहरू अदलबदल गर्नुहोस्</translation>
 <translation id="7901405293566323524">फोन हब</translation>
 <translation id="7902625623987030061">फिंगरप्रिन्ट सेन्सरमा छुनुहोस्</translation>

@@ -128,7 +128,6 @@ Siirry <ph name="BEGIN_LINK2" />Googlen palveluihin<ph name="END_LINK2" />, jos 
 <translation id="1502010315804028179">Päivitä Google Play Palvelut, jotta voit ylläpitää salasanoja</translation>
 <translation id="1506061864768559482">Hakukone</translation>
 <translation id="1513352483775369820">Kirjanmerkit ja verkkohistoria</translation>
-<translation id="1513814250881909472">Synkronoi välilehdet muilta laitteilta</translation>
 <translation id="1513858653616922153">Poista salasana</translation>
 <translation id="1521774566618522728">Aktiivinen tänään</translation>
 <translation id="153446405401665083">Chromen uusi versio on saatavilla</translation>
@@ -278,7 +277,6 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="228704530595896923">Jakamisvaihtoehtojen lista.</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Näytä <ph name="TABS_COUNT_ONE" /> välilehti}other{Näytä <ph name="TABS_COUNT_MANY" /> välilehteä}}</translation>
 <translation id="2297822946037605517">Jaa tämä sivu</translation>
-<translation id="22981027763501686">Laita synkronointi päälle, niin voit käyttää esimerkiksi kirjanmerkkejä ja historiaa muilta laitteilta.</translation>
 <translation id="230115972905494466">Yhteensopivia laitteita ei löytynyt.</translation>
 <translation id="2318045970523081853">Soita napauttamalla</translation>
 <translation id="2321086116217818302">Valmistellaan salasanoja…</translation>
@@ -1062,7 +1060,6 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="5865733239029070421">Lähettää automaattisesti käyttötilastoja ja virheraportteja Googlelle</translation>
 <translation id="5869522115854928033">Tallennetut salasanat</translation>
 <translation id="587735546353481577">Jos haluat seurata sivustoa, siirry sille, avaa Chrome-valikko ja valitse Seuraa.</translation>
-<translation id="5879072387416556377">Parempia ehdotuksia</translation>
 <translation id="5883855034004058011">Biometriikka epäonnistui liian monta kertaa. Yritä uudelleen lukitsemalla ja avaamalla laite.</translation>
 <translation id="5885378508678660271">Ilmoitukset <ph name="SEPARATOR" /> Chrome on poistanut nämä luvat, koska tämä sivusto on vaarallinen</translation>
 <translation id="5895834791314695851">Salasanat lakkaavat ehkä pian toimimasta tällä laitteella. Päivitä Google Play Palvelut, jotta voit jatkaa salasanojen käyttöä. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
@@ -1407,7 +1404,6 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="7313188324932846546">Ota synkronointi käyttöön napauttamalla</translation>
 <translation id="7324354302972299151">Lähetä Do Not Track ‐pyyntö</translation>
 <translation id="7333041109965360609">Ilmoitusten tilaus peruttu</translation>
-<translation id="7333232495927792353">Synkronoi saadaksesi osuvinta sisältöä Googlelta</translation>
 <translation id="7336259382292148213">Ilmoitukset näyttävät hyviltä</translation>
 <translation id="7339898014177206373">Uusi ikkuna</translation>
 <translation id="7340958967809483333">Discover-asetukset</translation>
@@ -1504,7 +1500,6 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="7698359219371678927">Luo sähköposti sovelluksessa <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Viimeaikaiset tapahtumat ‑alapaneeli avattu koko näytön kokoisena</translation>
 <translation id="7707922173985738739">Käytä mobiilidataa</translation>
-<translation id="7709918231054955894">Hae kaikki välilehtesi</translation>
 <translation id="7733878270780732638">Laitteella ei ole riittävästi tilaa.</translation>
 <translation id="7746817319925672889">Google Salasanat lakkaa pian toimimasta tällä laitteella</translation>
 <translation id="774876555279732384">Automaattisen täytön palveluja ylläpidetään myös <ph name="BEGIN_LINK" />Android-asetuksista<ph name="END_LINK" />.</translation>
@@ -1725,7 +1720,6 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="8635399646025169806">Säilytetäänkö välilehtiryhmä?</translation>
 <translation id="8636825310635137004">Ota synkronointi käyttöön, niin voit käyttää välilehtiäsi kaikilla laitteilla.</translation>
 <translation id="864544049772947936">Ylläpidä ikkunoita (<ph name="INSTANCE_COUNTS" />)</translation>
-<translation id="8664215986015753476">Käytä Chromea omalla tavallasi</translation>
 <translation id="8664979001105139458">Tiedoston nimi on jo käytössä</translation>
 <translation id="8672883760227492369">Jotkin tämän laitteen salasanat lakkaavat pian toimimasta. Voit siirtää ne Google Salasanoihin.</translation>
 <translation id="8676276370198826499">Rekisteröidy palveluun <ph name="SITE_ETLD_PLUS_ONE" /> kumppanin <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> kanssa</translation>

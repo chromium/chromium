@@ -128,7 +128,6 @@
 <translation id="1502010315804028179">Թարմացրեք Google Play ծառայությունները՝ ձեր գաղտնաբառերը կառավարելու համար</translation>
 <translation id="1506061864768559482">Որոնողական համակարգ</translation>
 <translation id="1513352483775369820">Էջանիշներ և վեբ պատմություն</translation>
-<translation id="1513814250881909472">Կատարեք համաժամացում, որպեսզի ձեր մյուս սարքերի ներդիրները հասանելի դառնան։</translation>
 <translation id="1513858653616922153">Ջնջել գաղտնաբառը</translation>
 <translation id="1521774566618522728">Այսօր ակտիվ է եղել</translation>
 <translation id="153446405401665083">Chrome-ի նոր տարբերակը հասանելի է</translation>
@@ -278,7 +277,6 @@
 <translation id="228704530595896923">Կիսվելու տարբերակների ցանկը։</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Տեսնել <ph name="TABS_COUNT_ONE" /> ներդիր}one{Տեսնել <ph name="TABS_COUNT_MANY" /> ներդիր}other{Տեսնել <ph name="TABS_COUNT_MANY" /> ներդիր}}</translation>
 <translation id="2297822946037605517">Կիսվել այս էջով</translation>
-<translation id="22981027763501686">Համաժամացրեք, որպեսզի ձեր էջանիշները, պատմությունը և մյուս կարգավորումները հասանելի լինեն ձեր մյուս սարքերում</translation>
 <translation id="230115972905494466">Համատեղելի սարքեր չեն գտնվել</translation>
 <translation id="2318045970523081853">Հպեք՝ զանգելու համար</translation>
 <translation id="2321086116217818302">Արտահանման նախապատրաստում…</translation>
@@ -1062,7 +1060,6 @@
 <translation id="5865733239029070421">Ավտոմատ Google-ին է ուղարկում օգտագործման վիճակագրությունը և խափանումների մասին հաշվետվությունները</translation>
 <translation id="5869522115854928033">Պահված գաղտնաբառեր</translation>
 <translation id="587735546353481577">Կայքին հետևելու համար անցեք այդ կայք, բացեք Chrome-ի ընտրացանկն ու հպեք «Հետևել»։</translation>
-<translation id="5879072387416556377">Ստացեք ավելի լավ առաջարկներ</translation>
 <translation id="5883855034004058011">Կենսաչափական տվյալները հաստատելու չափազանց շատ անհաջող փորձեր են արվել։ Նորից փորձելու համար կողպեք և ապակողպեք ձեր սարքը։</translation>
 <translation id="5885378508678660271">Ծանուցումներ <ph name="SEPARATOR" /> Chrome-ը հեռացրել է այս թույլտվությունները, քանի որ այս կայքը վտանգավոր է</translation>
 <translation id="5895834791314695851">Գաղտնաբառերը շուտով հնարավոր է, որ այլևս չաշխատեն այս սարքում։ Թարմացրեք Google Play ծառայությունները՝ ձեր գաղտնաբառերն օգտագործելու համար։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
@@ -1407,7 +1404,6 @@
 <translation id="7313188324932846546">Հպեք՝ համաժամացումը կարգավորելու համար</translation>
 <translation id="7324354302972299151">Ուղարկել «Do Not Track» հարցում</translation>
 <translation id="7333041109965360609">Ծանուցումների բաժանորդագրությունը չեղարկվել է</translation>
-<translation id="7333232495927792353">Կատարեք համաժամացում, որպեսզի առավել համապատասխան բովանդակություն ստանաք Google-ից։</translation>
 <translation id="7336259382292148213">Ծանուցումների հետ կապված խնդիր չկա</translation>
 <translation id="7339898014177206373">Նոր պատուհան</translation>
 <translation id="7340958967809483333">Discover-ի կարգավորումներ</translation>
@@ -1504,7 +1500,6 @@
 <translation id="7698359219371678927">Ստեղծեք նամակ <ph name="APP_NAME" /> հավելվածում</translation>
 <translation id="7702420606070050505">Վերջին գործողությունների ներքևի էկրանը բացվել է ամբողջությամբ</translation>
 <translation id="7707922173985738739">Օգտագործել բջջային ինտերնետ</translation>
-<translation id="7709918231054955894">Դիտեք ձեր բոլոր ներդիրները</translation>
 <translation id="7733878270780732638">Սարքում բավականաչափ տարածք չկա։</translation>
 <translation id="7746817319925672889">Google գաղտնաբառերի կառավարիչը շուտով այլևս չի աշխատի այս սարքում</translation>
 <translation id="774876555279732384">Ինքնալրացման ծառայությունները նաև կարելի է կառավարել <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />։</translation>
@@ -1725,7 +1720,6 @@
 <translation id="8635399646025169806">Պահպանե՞լ ներդիրների խումբը</translation>
 <translation id="8636825310635137004">Ձեր մյուս սարքերում եղած ներդիրներն օգտագործելու համար միացրեք համաժամացումը:</translation>
 <translation id="864544049772947936">Կառավարել պատուհանները (<ph name="INSTANCE_COUNTS" />)</translation>
-<translation id="8664215986015753476">Կարգավորեք Chrome-ն ըստ ձեր ճաշակի</translation>
 <translation id="8664979001105139458">Այս անունով ֆայլ արդեն գոյություն ունի</translation>
 <translation id="8672883760227492369">Այս սարքում պահված որոշ գաղտնաբառեր շուտով այլևս չեն աշխատի։ Դուք կարող եք տեղափոխել այս գաղտնաբառերը Google գաղտնաբառերի կառավարիչ։</translation>
 <translation id="8676276370198826499">Գրանցվեք <ph name="SITE_ETLD_PLUS_ONE" /> կայքում <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> հաշվով</translation>

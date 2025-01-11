@@ -76,6 +76,7 @@
 <translation id="427987768447457592">ಹೊಸ ಟ್ಯಾಬ್ ಗುಂಪು</translation>
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> ಟ್ಯಾಬ್ ಅನ್ನು ಬದಲಾಯಿಸಲಾಗಿದೆ, <ph name="ANY_CLOSED" /> ಮುಚ್ಚಲಾಗಿದೆ}one{<ph name="MANY_CHANGED" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಬದಲಾಯಿಸಲಾಗಿದೆ, <ph name="ANY_CLOSED" /> ಮುಚ್ಚಲಾಗಿದೆ}other{<ph name="MANY_CHANGED" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಬದಲಾಯಿಸಲಾಗಿದೆ, <ph name="ANY_CLOSED" /> ಮುಚ್ಚಲಾಗಿದೆ}}</translation>
 <translation id="4371591986692297148">ನಿಷ್ಕ್ರಿಯವಾಗಿದೆ</translation>
+<translation id="4431937619879060901">ನೀವು ತಕ್ಷಣವೇ "<ph name="GROUP_NAME" />" ಟ್ಯಾಬ್ ಗುಂಪಿಗೆ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಕಳೆದುಕೊಳ್ಳುತ್ತೀರಿ ಮತ್ತು ಅದನ್ನು ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಿಂದ ಅಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="4460014764210899310">ಗುಂಪು ವಿಂಗಡಿಸಿ</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{1 ನಿಷ್ಕ್ರಿಯ ಟ್ಯಾಬ್ ಅನ್ನು ಮುಚ್ಚಬೇಕೇ?}one{<ph name="TAB_COUNT_MANY" /> ನಿಷ್ಕ್ರಿಯ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಬೇಕೇ?}other{<ph name="TAB_COUNT_MANY" /> ನಿಷ್ಕ್ರಿಯ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಬೇಕೇ?}}</translation>
 <translation id="4686942373615810936">ಇದೀಗ ತಾನೇ ರಚಿಸಲಾಗಿದೆ</translation>
@@ -106,6 +107,7 @@
 <translation id="5556417849629758491">ಸ್ಟೋರ್ ಮಾಹಿತಿ ವೀಕ್ಷಿಸಿ, ಆಯ್ಕೆಯು ಸ್ಕ್ರೀನ್ ಮೇಲ್ಭಾಗದಲ್ಲಿ ಲಭ್ಯವಿದೆ</translation>
 <translation id="5627941783489838464">ಯಾವುದೇ ಟ್ಯಾಬ್ ಅಪ್‌ಡೇಟ್‌ಗಳಿಲ್ಲ</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{ಟ್ಯಾಬ್ ಅನ್ನು ಮರುಸ್ಥಾಪಿಸಿ}one{ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಿ}other{ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಿ}}</translation>
+<translation id="5647702255748985085">ಗುಂಪನ್ನು ತೊರೆಯಬೇಕೇ?</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome ನಿಂದ <ph name="TABS_COUNT_ONE" /> ಲಿಂಕ್}one{Chrome ನಿಂದ <ph name="TABS_COUNT_MANY" /> ಲಿಂಕ್‌ಗಳು}other{Chrome ನಿಂದ <ph name="TABS_COUNT_MANY" /> ಲಿಂಕ್‌ಗಳು}}</translation>
 <translation id="58326064309361797">ಟ್ಯಾಬ್‍‍ಗಳನ್ನು ಗುಂಪುಗೂಡಿಸಲು ಅವುಗಳನ್ನು ಡ್ರ್ಯಾಗ್ ಮಾಡಿ</translation>
 <translation id="5901630391730855834">ಹಳದಿ</translation>
@@ -141,6 +143,7 @@
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> ಅನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="7326879924029668159">ಹಿಂತಿರುಗಿಸುವಿಕೆ ನೀತಿ ಹಾಗೂ ಮುಂತಾದವುಗಳನ್ನು ನೋಡಿ</translation>
 <translation id="7352298686197644113">ನೀವು ತೆರೆದಿರುವ ಟ್ಯಾಬ್‌ಗಳಲ್ಲಿ ಯಾವ ಐಟಂ ಕಡಿಮೆ ಬೆಲೆಯನ್ನು ಹೊಂದಿದೆ ಎಂಬುದನ್ನು ನೋಡಿ</translation>
+<translation id="742664698522525515">ಗುಂಪನ್ನು ಇರಿಸಿಕೊಳ್ಳಬೇಕೇ?</translation>
 <translation id="7452985128687107478">ಟ್ಯಾಬ್ ಗುಂಪುಗಳು ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸೇವ್‌ ಆಗುತ್ತವೆ ಮತ್ತು ಅಪ್‌ಡೇಟ್‌ ಆಗುತ್ತವೆ</translation>
 <translation id="747459581954555080">ಎಲ್ಲವನ್ನು ಮರುಸಂಗ್ರಹಿಸಿ</translation>
 <translation id="750886945254958667">ಟ್ಯಾಬ್‌ಗಳನ್ನು ನಂತರ ಸೇರಿಸಲು ಈ ಗುಂಪನ್ನು ಇರಿಸಿಕೊಳ್ಳಿ ಅಥವಾ ನಿಮಗೆ ಇನ್ನು ಮುಂದೆ ಇದಕ್ಕೆ ಆ್ಯಕ್ಸೆಸ್ ಬೇಕಿಲ್ಲದಿದ್ದರೆ ಇದನ್ನು ತೊರೆಯಿರಿ</translation>
@@ -185,8 +188,10 @@
 <translation id="8915916167043355778">ಎಲ್ಲವನ್ನೂ ಮುಚ್ಚಿರಿ</translation>
 <translation id="9090098097337832354">ಈ ಸ್ಟೋರ್‌ನ ಕುರಿತಾದ ಮಾಹಿತಿ ಮುಚ್ಚಲ್ಪಟ್ಟಿದೆ</translation>
 <translation id="9114502155681725011">ಟ್ಯಾಬ್ ಗುಂಪು <ph name="TITLE_OF_GROUP" />, ಬಣ್ಣ <ph name="COLOR_NAME" /> ಗಾಗಿ ಟ್ಯಾಬ್ ಗುಂಪಿನ ಕ್ರಿಯೆಯ ಮೆನುವನ್ನು ತೆರೆಯಿರಿ.</translation>
+<translation id="9169141410816678175">ಪ್ರತಿಯೊಬ್ಬರೂ ತಕ್ಷಣವೇ "<ph name="GROUP_NAME" />" ಟ್ಯಾಬ್ ಗುಂಪಿಗೆ ಪ್ರವೇಶವನ್ನು ಕಳೆದುಕೊಳ್ಳುತ್ತಾರೆ ಮತ್ತು ಅದನ್ನು ಎಲ್ಲಾ ಸಾಧನಗಳಿಂದ ಅಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="9169594135889675189">ಗುಂಪಿಗೆ ಹೊಸ ಟ್ಯಾಬ್‌ ಸೇರಿಸಿ</translation>
 <translation id="9216898458513705996">ಈ ಸಾಧನದಲ್ಲಿ ಟ್ಯಾಬ್‌ಗಳು ತೆರೆದಿರುತ್ತವೆ ಆದರೆ <ph name="USER_EMAIL" /> ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿರುವ ಎಲ್ಲಾ ಸಾಧನಗಳಿಂದ ಗುಂಪನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್, <ph name="COLOR_NAME" /> ಬಣ್ಣದ ಜೊತೆಗೆ ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ವಿಸ್ತರಿಸಿ.}one{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು, <ph name="COLOR_NAME" /> ಬಣ್ಣದ ಜೊತೆಗೆ ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ವಿಸ್ತರಿಸಿ.}other{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು, <ph name="COLOR_NAME" /> ಬಣ್ಣದ ಜೊತೆಗೆ ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ವಿಸ್ತರಿಸಿ.}}</translation>
+<translation id="94870150074703282">ಗುಂಪನ್ನು ಅಳಿಸಬೇಕೇ?</translation>
 <translation id="992256792861109788">ಗುಲಾಬಿ ಬಣ್ಣ</translation>
 </translationbundle>

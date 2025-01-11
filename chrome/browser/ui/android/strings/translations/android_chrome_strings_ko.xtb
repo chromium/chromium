@@ -128,7 +128,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="1502010315804028179">비밀번호를 관리하려면 Google Play 서비스를 업데이트하세요.</translation>
 <translation id="1506061864768559482">검색엔진</translation>
 <translation id="1513352483775369820">북마크 및 방문 기록</translation>
-<translation id="1513814250881909472">동기화하여 다른 기기에서 탭을 가져오세요.</translation>
 <translation id="1513858653616922153">비밀번호 삭제</translation>
 <translation id="1521774566618522728">오늘 사용</translation>
 <translation id="153446405401665083">Chrome의 새 버전을 사용할 수 있습니다.</translation>
@@ -278,7 +277,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="228704530595896923">공유 옵션 목록입니다.</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" />개 탭 보기}other{<ph name="TABS_COUNT_MANY" />개 탭 보기}}</translation>
 <translation id="2297822946037605517">이 페이지 공유</translation>
-<translation id="22981027763501686">동기화하여 다른 기기에서 북마크, 방문 기록 등을 가져오세요.</translation>
 <translation id="230115972905494466">호환되는 기기 없음</translation>
 <translation id="2318045970523081853">탭하여 전화 걸기</translation>
 <translation id="2321086116217818302">비밀번호 준비 중…</translation>
@@ -352,7 +350,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="260403163289591229">팔로우 중</translation>
 <translation id="2604446170045642109">설정에서 사이트의 어두운 테마를 사용 중지할 수 있습니다.</translation>
 <translation id="2607441479295509868">로그아웃했습니다. 내 계정에서 북마크, 비밀번호 등을 사용하려면 다시 로그인하세요.</translation>
-<translation id="2612676031748830579">카드번호</translation>
+<translation id="2612676031748830579">카드 번호</translation>
 <translation id="2620314865574742210"><ph name="NAME" />님이 공유 항목에 액세스하도록 나를 초대했습니다</translation>
 <translation id="2625189173221582860">비밀번호 복사됨</translation>
 <translation id="2630630219780173487">사이트에서 향후 알림을 보내지 못하도록 할 수 있습니다.</translation>
@@ -1062,7 +1060,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5865733239029070421">사용 통계 및 비정상 종료 보고서를 Google로 자동 전송</translation>
 <translation id="5869522115854928033">저장된 비밀번호</translation>
 <translation id="587735546353481577">사이트를 팔로우하려면 사이트로 이동해서 Chrome 메뉴를 연 다음 팔로우를 탭합니다.</translation>
-<translation id="5879072387416556377">추천 기능 개선</translation>
 <translation id="5883855034004058011">생체 인식 실패 횟수가 너무 많습니다. 기기를 잠갔다가 잠금 해제한 후 다시 시도하세요.</translation>
 <translation id="5885378508678660271">알림 <ph name="SEPARATOR" /> 위험한 사이트이므로 Chrome에서 이러한 권한을 삭제했습니다.</translation>
 <translation id="5895834791314695851">이 기기에서 비밀번호가 곧 작동하지 않을 수 있습니다. 비밀번호를 계속 사용하려면 Google Play 서비스를 업데이트하세요. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
@@ -1407,7 +1404,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7313188324932846546">동기화를 설정하려면 탭하세요.</translation>
 <translation id="7324354302972299151">'Do Not Track' 요청 전송</translation>
 <translation id="7333041109965360609">알림을 수신 거부했습니다</translation>
-<translation id="7333232495927792353">동기화하여 Google에서 가장 관련 있는 콘텐츠를 확인하세요.</translation>
 <translation id="7336259382292148213">알림 문제 없음</translation>
 <translation id="7339898014177206373">새 창</translation>
 <translation id="7340958967809483333">디스커버용 옵션</translation>
@@ -1504,7 +1500,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7698359219371678927"><ph name="APP_NAME" />에서 이메일 만들기</translation>
 <translation id="7702420606070050505">최근 활동 하단 시트가 전체 높이로 열림</translation>
 <translation id="7707922173985738739">모바일 데이터 사용</translation>
-<translation id="7709918231054955894">탭 모두 가져오기</translation>
 <translation id="7733878270780732638">기기에 공간이 부족합니다.</translation>
 <translation id="7746817319925672889">이 기기에서 Google 비밀번호 관리자 작동이 곧 중지됩니다</translation>
 <translation id="774876555279732384">자동 완성 서비스는 <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서도 관리할 수 있습니다.</translation>
@@ -1725,7 +1720,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8635399646025169806">탭 그룹을 유지하시겠습니까?</translation>
 <translation id="8636825310635137004">다른 기기에서 탭을 가져오려면 동기화를 사용 설정하세요.</translation>
 <translation id="864544049772947936">창 관리(<ph name="INSTANCE_COUNTS" />개)</translation>
-<translation id="8664215986015753476">원하는 방식으로 Chrome 사용</translation>
 <translation id="8664979001105139458">이미 존재하는 이름입니다.</translation>
 <translation id="8672883760227492369">이 기기의 일부 비밀번호가 곧 작동하지 않게 됩니다. 이러한 비밀번호를 Google 비밀번호 관리자로 이동할 수 있습니다.</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />(으)로 <ph name="SITE_ETLD_PLUS_ONE" />에 가입하기</translation>

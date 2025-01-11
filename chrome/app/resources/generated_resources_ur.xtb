@@ -124,6 +124,7 @@
 <translation id="1076766328672150609">‏آپ کا بچہ آلے کو مقفل کرنے کے لیے ایک PIN کا استعمال کر سکتا ہے۔</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216"><ph name="LANGUAGE" /> کے لیے املا کی جانچ کرنے والی لغت ڈاؤن لوڈ نہیں ہو سکی۔ دوبارہ کوشش کریں۔</translation>
+<translation id="1078029726086090536">اپنے پاس ورڈ کی توثیق کریں</translation>
 <translation id="1078037449555275327">‏ChromeVox کی ترتیبات</translation>
 <translation id="1079242569060319448">‏‫PIN بھول گئے؟</translation>
 <translation id="1079285777677001938">ہو سکتا ہے کہ کچھ سائٹس پر خصوصیات کام نہ کریں۔</translation>
@@ -4080,6 +4081,7 @@
 <translation id="3848547754896969219">&amp;پوشیدگی ونڈو میں کھولیں</translation>
 <translation id="3850172593216628215">‏سیکیورٹی اپ ڈیٹس ختم ہو گئی ہیں۔ کسی نئے Chromebook پر ‎$50 یا اس سے زیادہ محفوظ کریں۔</translation>
 <translation id="385051799172605136">پیچھے</translation>
+<translation id="3850989673553106152">پاس ورڈ تبدیل ہو گیا</translation>
 <translation id="3851428669031642514">غیر محفوظ اسکرپٹس لوڈ کریں</translation>
 <translation id="3852215160863921508">ان پٹ معاونت</translation>
 <translation id="3853549894831560772"><ph name="DEVICE_NAME" /> آن ہے</translation>
@@ -4582,6 +4584,7 @@
 <translation id="421182450098841253">بُک مارکس بار &amp;دکھائیں</translation>
 <translation id="4211904048067111541">‏Android ایپس کے ساتھ استعمال کرنا بند کریں</translation>
 <translation id="42126664696688958">برآمد کریں</translation>
+<translation id="4213540068152645535">آپ کا پاس ورڈ تبدیل کرنے میں دشواری</translation>
 <translation id="42137655013211669">سرور نے اس ماخذ تک رسائی کو ممنوع کر دیا۔</translation>
 <translation id="4213918571089943508">‏بچے کا Google اکاؤنٹ</translation>
 <translation id="4214192212360095377">ابھی آف کریں</translation>
@@ -8300,6 +8303,7 @@
 <translation id="6913051485529944333">‏آپ کو اس صفحے پر Google کیلنڈر دوبارہ نہیں دکھائی دے گا</translation>
 <translation id="6914812290245989348">غیر محفوظ سائٹس پر جانے سے پہلے کوئی وارننگ نہ دیکھیں</translation>
 <translation id="6916590542764765824">ایکسٹینشنز کا نظم کریں</translation>
+<translation id="6916676294509106572">‏‫Outlook کیلنڈر پوشیدہ ہے</translation>
 <translation id="6917873303492266709">‏ٹیب گروپس کا اشتراک کرنے، اس میں شامل ہونے اور تعاون کرنے کے لیے، ترتیبات کھولیں اور Chrome کو سائن ان کرنے کی اجازت دیں کو آن کریں</translation>
 <translation id="6918677045355889289">‏ChromeOS کو اپ ڈیٹ کرنے کی ضرورت ہے</translation>
 <translation id="6918733588290914545">‏Android فون کے ساتھ فوری سیٹ اپ</translation>
@@ -10678,6 +10682,7 @@
 <translation id="8625124982056504555">‏ChromeOS آلہ اور جزو کے نمبر شمار پڑھیں</translation>
 <translation id="862542460444371744">&amp;ایکسٹینشنز</translation>
 <translation id="8625663000550647058">آپ کے مائیکروفون کو استعمال کرنے کی اجازت نہیں ہے</translation>
+<translation id="8625679025395572221">آپ کا اکاؤنٹ اب بھی خطرے میں ہو سکتا ہے۔</translation>
 <translation id="8625916342247441948">‏سائٹس کو HID آلات سے منسلک ہونے کی اجازت نہ دیں</translation>
 <translation id="862727964348362408">معطل</translation>
 <translation id="862750493060684461">‏CSS کیش</translation>

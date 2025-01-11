@@ -23,7 +23,7 @@ Se questo criterio viene disattivato, <ph name="PRODUCT_NAME" /> userà rigorosa
 Questo criterio verrà rimosso in futuro, una volta completata l'implementazione della funzionalità del visualizzatore PDF OOPIF.</translation>
 <translation id="1007149936182752368">Disabilita la modifica dei preferiti</translation>
 <translation id="1009336698423963085">Consenti schermo intero automatico su questi siti</translation>
-<translation id="1010151305531217567">Imposta il pulsante destro come pulsante principale del mouse</translation>
+<translation id="1010151305531217567">Imposta il tasto destro come tasto principale del mouse</translation>
 <translation id="1011266755572744012">Specifica il numero massimo di fogli che l'utente può utilizzare per un singolo processo di stampa.
 
       Se non viene impostato, non saranno applicate limitazioni e l'utente potrà stampare qualsiasi documento.</translation>
@@ -3274,15 +3274,15 @@ Se il criterio non viene impostato, non è possibile navigare nel browser se è 
 <translation id="3426434797050451264">Questo criterio può essere utilizzato anche per specificare le app Android come gestori di file predefiniti.</translation>
 <translation id="3428247105888806363">Attiva previsione di rete</translation>
 <translation id="3432863169147125747">Consente di gestire le impostazioni di stampa.</translation>
-<translation id="3434053014926283175">Imposta il pulsante destro come pulsante principale del mouse.
+<translation id="3434053014926283175">Imposta il tasto destro come tasto principale del mouse.
 
-          Se questo criterio viene attivato, il pulsante destro del mouse sarà sempre il pulsante principale nella schermata di accesso.
+          Se questo criterio viene attivato, il tasto destro del mouse sarà sempre il tasto principale nella schermata di accesso.
 
-          Se questo criterio viene disattivato, il pulsante sinistro del mouse sarà sempre il pulsante principale nella schermata di accesso.
+          Se questo criterio viene disattivato, il tasto sinistro del mouse sarà sempre il tasto principale nella schermata di accesso.
 
           Se imposti questo criterio, gli utenti non potranno modificarlo o ignorarlo.
 
-          Se questo criterio non viene impostato, inizialmente il pulsante principale sulla pagina di accesso sarà il pulsante sinistro del mouse, ma l'utente può cambiarlo in qualsiasi momento.</translation>
+          Se questo criterio non viene impostato, inizialmente il tasto principale sulla pagina di accesso sarà il tasto sinistro del mouse, ma l'utente può cambiarlo in qualsiasi momento.</translation>
 <translation id="3434932177006334880">Il nome di questa impostazione era EnableWebBasedSignin nelle versioni di Chrome precedenti alla versione 42 e a partire dalla versione 43 di Chrome tale impostazione non verrà più supportata.
 
       Questa impostazione è utile per i clienti aziendali che utilizzano soluzioni SSO non ancora compatibili con il nuovo flusso di accesso incorporato.
@@ -8446,15 +8446,15 @@ Se il criterio viene disattivato, le password non vengono mai memorizzate e tutt
 
       Se imposti il criterio, gli utenti non possono modificarlo. Se non è impostato, gli utenti possono continuare a usare il contenitore Crostini predefinito nella sua configurazione corrente, se l'uso di Crostini è consentito dai criteri.</translation>
 <translation id="7132877481099023201">URL a cui verrà concesso l'accesso ai dispositivi di acquisizione video senza richieste</translation>
-<translation id="7134420220355750019">Consente di impostare il pulsante destro come pulsante principale del mouse.
+<translation id="7134420220355750019">Consente di impostare il tasto destro come tasto principale del mouse.
 
-          Se questo criterio viene attivato, il pulsante destro del mouse sarà sempre il pulsante principale.
+          Se questo criterio viene attivato, il tasto destro del mouse sarà sempre il tasto principale.
 
-          Se questo criterio viene disattivato, il pulsante sinistro del mouse sarà sempre il pulsante principale.
+          Se questo criterio viene disattivato, il tasto sinistro del mouse sarà sempre il tasto principale.
 
           Se imposti questo criterio, gli utenti non potranno modificarlo o ignorarlo.
 
-          Se questo criterio non viene impostato, inizialmente il pulsante principale sarà il pulsante sinistro del mouse, ma l'utente può cambiarlo in qualsiasi momento.</translation>
+          Se questo criterio non viene impostato, inizialmente il tasto principale sarà il tasto sinistro del mouse, ma l'utente può cambiarlo in qualsiasi momento.</translation>
 <translation id="7136237405361383549">Utilizza il renderer predefinito in base alla configurazione della prova sul campo.</translation>
 <translation id="7138762292550697459">Controlla il timeout minimo della funzione JavaScript setTimeout().</translation>
 <translation id="7138792262152376158">Segue le normali tempistiche di ritiro dell'API PrefixedVideoFullscreen</translation>
@@ -9697,7 +9697,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy viene inizial
 <translation id="8169452762291746260">Disattiva il monitoraggio dello stato di integrità del dispositivo</translation>
 <translation id="8170359860920320269">Filtra i siti di contenuti per adulti</translation>
 <translation id="8171262216089271568">Attiva il puntatore grande nella schermata di accesso</translation>
-<translation id="8171924760436219650">Imposta il pulsante destro come pulsante principale del mouse nella schermata di accesso</translation>
+<translation id="8171924760436219650">Imposta il tasto destro come tasto principale del mouse nella schermata di accesso</translation>
 <translation id="81724933026241365">Consenti agli utenti di spegnere il dispositivo con l'icona di arresto o il tasto di accensione fisico</translation>
 <translation id="8173864651667424191">L'opzione Stampa come immagine è impostata per impostazione predefinita per le anteprime di stampa dei documenti PDF quando è disponibile.</translation>
 <translation id="8175922758834816585">Attiva la funzione di lettura vocale nella schermata di accesso e consenti all'utente di disattivarla temporaneamente</translation>

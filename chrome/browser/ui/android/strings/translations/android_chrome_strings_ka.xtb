@@ -128,7 +128,6 @@
 <translation id="1502010315804028179">თქვენი პაროლები რომ მართოთ, განაახლეთ Google Play services</translation>
 <translation id="1506061864768559482">საძიებო სისტემა</translation>
 <translation id="1513352483775369820">სანიშნეები და ვებ-ისტორია</translation>
-<translation id="1513814250881909472">შეასრულეთ სინქრონიზაცია, თქვენი სხვა მოწყობილობებიდან ჩანართები რომ მიიღოთ</translation>
 <translation id="1513858653616922153">პაროლის წაშლა</translation>
 <translation id="1521774566618522728">აქტიური იყო დღეს</translation>
 <translation id="153446405401665083">ხელმისაწვდომია Chrome-ის ახალი ვერსია.</translation>
@@ -278,7 +277,6 @@
 <translation id="228704530595896923">გაზიარების ვარიანტების სია.</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ჩანართის ნახვა}other{<ph name="TABS_COUNT_MANY" /> ჩანართის ნახვა}}</translation>
 <translation id="2297822946037605517">ამ გვერდის გაზიარება</translation>
-<translation id="22981027763501686">დაასინქრონეთ, რომ თქვენი სანიშნეებით, ისტორიითა და სხვა კონტენტით ისარგებლოთ თქვენს სხვა მოწყობილობებზე</translation>
 <translation id="230115972905494466">თავსებადი მოწყობილობები ვერ მოიძებნა</translation>
 <translation id="2318045970523081853">შეეხეთ ზარის განსახორციელებლად</translation>
 <translation id="2321086116217818302">მიმდინარეობს პაროლების მომზადება…</translation>
@@ -1062,7 +1060,6 @@
 <translation id="5865733239029070421">ავტომატური აგზავნის Google-ში გამოყენების სტატისტიკასა და შეცდომების ანგარიშებს</translation>
 <translation id="5869522115854928033">შენახული პაროლები</translation>
 <translation id="587735546353481577">საიტისთვის თვალის მისადევნებლად გადადით საიტზე, გახსენით Chrome-ის მენიუ და შეეხეთ „თვალის მიდევნებას“.</translation>
-<translation id="5879072387416556377">მიიღეთ უკეთესი შემოთავაზებები</translation>
 <translation id="5883855034004058011">ბიომეტრიული მონაცემების დადასტურება მეტისმეტად ბევრჯერ დასრულდა წარუმატებლად. ხელახლა საცდელად ჩაკეტეთ და განბლოკეთ თქვენი მოწყობილობა.</translation>
 <translation id="5885378508678660271">შეტყობინებები <ph name="SEPARATOR" /> Chrome-მა ამოშალა ეს ნებართვები, რადგან ეს საიტი სახიფათოა</translation>
 <translation id="5895834791314695851">პაროლებმა შეიძლება მალე შეწყვიტოს ამ მოწყობილობაზე მუშაობა. პაროლების გამოყენების გასაგრძელებლად განაახლეთ Google Play services. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
@@ -1407,7 +1404,6 @@
 <translation id="7313188324932846546">შეეხეთ სინქრონიზაციის დასაყენებლად</translation>
 <translation id="7324354302972299151">გაგზავნეთ „Do Not Track“ მოთხოვნა</translation>
 <translation id="7333041109965360609">შეტყობინებების გამოწერა გაუქმდა</translation>
-<translation id="7333232495927792353">შეასრულეთ სინქრონიზაცია, Google-ისგან ყველაზე სათანადო კონტენტი რომ მიიღოთ</translation>
 <translation id="7336259382292148213">შეტყობინებები წესრიგშია</translation>
 <translation id="7339898014177206373">ახალი ფანჯარა</translation>
 <translation id="7340958967809483333">Discover-ის ვარიანტები</translation>
@@ -1504,7 +1500,6 @@
 <translation id="7698359219371678927">ელფოსტის <ph name="APP_NAME" />-ში შექმნა</translation>
 <translation id="7702420606070050505">ბოლო აქტივობების ქვედა ფურცელი გაიხსნა სრულ სიმაღლეზე</translation>
 <translation id="7707922173985738739">მობილური ინტერნეტის გამოყენება</translation>
-<translation id="7709918231054955894">მიიღეთ თქვენი ყველა ჩანართი</translation>
 <translation id="7733878270780732638">მოწყობილობაზე არ არის საკმარისი სივრცე</translation>
 <translation id="7746817319925672889">Google პაროლების მმართველი მალე შეწყვეტს ამ მოწყობილობაზე მუშაობას</translation>
 <translation id="774876555279732384">ავტომატური შევსების სერვისები იმართება <ph name="BEGIN_LINK" />Android-ის პარამეტრებიდანაც<ph name="END_LINK" />.</translation>
@@ -1725,7 +1720,6 @@
 <translation id="8635399646025169806">გსურთ ჩანართების ჯგუფის შენარჩუნება?</translation>
 <translation id="8636825310635137004">თქვენს სხვა მოწყობილობებზე არსებულ ჩანართებზე წვდომის მისაღებად, ჩართეთ სინქრონიზაცია.</translation>
 <translation id="864544049772947936">ფანჯრების მართვა (<ph name="INSTANCE_COUNTS" />)</translation>
-<translation id="8664215986015753476">გამოიყენეთ Chrome თქვენებურად</translation>
 <translation id="8664979001105139458">ამ სახელის მქონე ფაილი უკვე არსებობს</translation>
 <translation id="8672883760227492369">ამ მოწყობილობაში შენახული რამდენიმე პაროლი მალე შეწყვეტს მოქმედებას. ამ პაროლების გადატანა შეგიძლიათ Google პაროლების მმართველში.</translation>
 <translation id="8676276370198826499">დარეგისტრირდით <ph name="SITE_ETLD_PLUS_ONE" />-ში <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ით</translation>

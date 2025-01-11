@@ -128,7 +128,6 @@
 <translation id="1502010315804028179">За да управувате со вашите лозинки, ажурирајте ги услугите на Google Play</translation>
 <translation id="1506061864768559482">Пребарувач</translation>
 <translation id="1513352483775369820">Обележувачи и веб-историја</translation>
-<translation id="1513814250881909472">Синхронизирајте за да ги преземете картичките од другите уреди</translation>
 <translation id="1513858653616922153">Избриши ја лозинката</translation>
 <translation id="1521774566618522728">Активен денес</translation>
 <translation id="153446405401665083">Достапна е нова верзија на Chrome</translation>
@@ -278,7 +277,6 @@
 <translation id="228704530595896923">Список со опции за споделување.</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Погледнете <ph name="TABS_COUNT_ONE" /> картичка}one{Погледнете <ph name="TABS_COUNT_MANY" /> картичка}other{Погледнете <ph name="TABS_COUNT_MANY" /> картички}}</translation>
 <translation id="2297822946037605517">Споделете ја страницава</translation>
-<translation id="22981027763501686">Синхронизирајте за да ги добиете обележувачите, историјата и друго на другите ваши уреди</translation>
 <translation id="230115972905494466">Не се најдени компатибилни уреди</translation>
 <translation id="2318045970523081853">Допрете за да остварите повик</translation>
 <translation id="2321086116217818302">Се подготвуваат лозинките…</translation>
@@ -1062,7 +1060,6 @@
 <translation id="5865733239029070421">Автоматски испраќа статистика на користењето и извештаи за падовите до Google.</translation>
 <translation id="5869522115854928033">Зачувани лозинки</translation>
 <translation id="587735546353481577">За да следите сајт, одете на сајтот, отворете го менито на Chrome и допрете „Следи“.</translation>
-<translation id="5879072387416556377">Добијте подобри предлози</translation>
 <translation id="5883855034004058011">Добивањето биометрика не успеа премногу пати. Заклучете го, па отклучете го уредот за да се обидете повторно.</translation>
 <translation id="5885378508678660271">Известувања <ph name="SEPARATOR" /> Chrome ги отстрани дозволиве бидејќи сајтов е опасен</translation>
 <translation id="5895834791314695851">Лозинките можеби ќе престанат да функционираат на уредов наскоро. За да продолжите да ги користите лозинките, ажурирајте ја „Услуги на Google Play“. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
@@ -1407,7 +1404,6 @@
 <translation id="7313188324932846546">Допрете за да поставите синхронизација</translation>
 <translation id="7324354302972299151">Испраќање барање „Do Not Track“</translation>
 <translation id="7333041109965360609">Се отпишавте од добивањето известувања</translation>
-<translation id="7333232495927792353">Синхронизирајте за да ги добиете најрелевантните содржини од Google</translation>
 <translation id="7336259382292148213">Нема дозволи за известувања што треба да се прегледаат</translation>
 <translation id="7339898014177206373">Нов прозорец</translation>
 <translation id="7340958967809483333">Опции за Discover</translation>
@@ -1504,7 +1500,6 @@
 <translation id="7698359219371678927">Создајте е-пошта во <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Долниот лист на неодамнешната активност е отворен на цел екран</translation>
 <translation id="7707922173985738739">Ќе користи мобилен интернет</translation>
-<translation id="7709918231054955894">Преземете ги сите картички</translation>
 <translation id="7733878270780732638">Нема доволно простор на уредот.</translation>
 <translation id="7746817319925672889">Google Password Manager ќе престане да функционира на уредов наскоро</translation>
 <translation id="774876555279732384">Со услугите за автоматско пополнување се управува и во <ph name="BEGIN_LINK" />Поставките за Android<ph name="END_LINK" />.</translation>
@@ -1725,7 +1720,6 @@
 <translation id="8635399646025169806">Да се задржи групата картички?</translation>
 <translation id="8636825310635137004">За да ги добиете картичките од другите уреди, вклучете ја синхронизацијата.</translation>
 <translation id="864544049772947936">Управувајте со прозорци (<ph name="INSTANCE_COUNTS" />)</translation>
-<translation id="8664215986015753476">Користете го Chrome на ваш начин</translation>
 <translation id="8664979001105139458">Името на датотеката веќе постои</translation>
 <translation id="8672883760227492369">Некои лозинки на уредов ќе престанат да функционираат наскоро. Овие лозинки може да ги префрлите во Google Password Manager.</translation>
 <translation id="8676276370198826499">Регистрирајте се на <ph name="SITE_ETLD_PLUS_ONE" /> со <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

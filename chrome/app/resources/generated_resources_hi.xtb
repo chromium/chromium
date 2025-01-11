@@ -124,6 +124,7 @@
 <translation id="1076766328672150609">इस डिवाइस को अनलॉक करने के लिए, आपका बच्चा पिन का इस्तेमाल कर सकता है.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216"><ph name="LANGUAGE" /> के लिए, स्पेलिंग जांच से जुड़े शब्दकोश को डाउनलोड नहीं किया जा सका. फिर से कोशिश करें.</translation>
+<translation id="1078029726086090536">अपने पासवर्ड की पुष्टि करें</translation>
 <translation id="1078037449555275327">ChromeVox की सेटिंग</translation>
 <translation id="1079242569060319448">क्या आपको पिन याद नहीं है?</translation>
 <translation id="1079285777677001938">यह मुमकिन है कि कुछ साइटों पर सुविधाएं काम न करें.</translation>
@@ -4094,6 +4095,7 @@
 <translation id="3848547754896969219">यूआरएल को &amp;गुप्त विंडो में खोलें</translation>
 <translation id="3850172593216628215">सुरक्षा से जुड़े अपडेट मिलने बंद हो गए हैं. नए Chromebook पर, 50 डॉलर या उससे ज़्यादा की बचत करें.</translation>
 <translation id="385051799172605136">वापस जाएं</translation>
+<translation id="3850989673553106152">पासवर्ड बदल गया</translation>
 <translation id="3851428669031642514">असुरक्षित स्‍क्रिप्‍ट लोड करें</translation>
 <translation id="3852215160863921508">इनपुट से जुड़ी सहायता</translation>
 <translation id="3853549894831560772"><ph name="DEVICE_NAME" /> चालू हो गया है</translation>
@@ -4595,6 +4597,7 @@
 <translation id="421182450098841253">बुकमार्क बार &amp;दिखाएं</translation>
 <translation id="4211904048067111541">Android ऐप्लिकेशन के साथ इस्तेमाल करना बंद करें</translation>
 <translation id="42126664696688958">निर्यात करें</translation>
+<translation id="4213540068152645535">पासवर्ड बदलने में समस्या हुई</translation>
 <translation id="42137655013211669">इस संसाधन के लिए सर्वर ने ऐक्सेस नहीं दिया था.</translation>
 <translation id="4213918571089943508">बच्चे का Google खाता</translation>
 <translation id="4214192212360095377">अभी बंद करें</translation>
@@ -8316,6 +8319,7 @@
 <translation id="6913051485529944333">आपको इस पेज पर Google Calendar दोबारा नहीं दिखेगा</translation>
 <translation id="6914812290245989348">असुरक्षित साइटों पर जाने से पहले कोई चेतावनी नहीं दिखेगी</translation>
 <translation id="6916590542764765824">एक्‍सटेंशन मैनेज करें</translation>
+<translation id="6916676294509106572">Outlook Calendar को छिपाया गया</translation>
 <translation id="6917873303492266709">टैब ग्रुप को शेयर करने, उनमें शामिल होने, और उनमें साथ मिलकर काम करने के लिए, सेटिंग पर जाकर, 'Chrome में साइन इन करने की अनुमति दें' को चालू करें</translation>
 <translation id="6918677045355889289">ChromeOS को अपडेट करना ज़रूरी है</translation>
 <translation id="6918733588290914545">Android फ़ोन की मदद से तुरंत सेटअप करें</translation>
@@ -10694,6 +10698,7 @@
 <translation id="8625124982056504555">ChromeOS वाले डिवाइस और उसके कॉम्पोनेंट के सीरियल नंबर पढ़ता है</translation>
 <translation id="862542460444371744">&amp;एक्‍सटेंशन</translation>
 <translation id="8625663000550647058">आपका माइक्रोफ़ोन इस्तेमाल करने की अनुमति नहीं है</translation>
+<translation id="8625679025395572221">आपके खाते की सुरक्षा अब भी खतरे में हो सकती है.</translation>
 <translation id="8625916342247441948">साइटों को एचआईडी डिवाइसों से कनेक्ट करने की अनुमति न दें</translation>
 <translation id="862727964348362408">निलंबित</translation>
 <translation id="862750493060684461">CSS कैश मेमोरी</translation>

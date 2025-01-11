@@ -128,7 +128,6 @@
 <translation id="1502010315804028179">கடவுச்சொற்களை நிர்வகிக்க Google Play சேவைகளைப் புதுப்பிக்க வேண்டும்</translation>
 <translation id="1506061864768559482">தேடல் இன்ஜின்</translation>
 <translation id="1513352483775369820">புத்தகக்குறிகளும் இணைய வரலாறும்</translation>
-<translation id="1513814250881909472">உங்கள் பிற சாதனங்களின் உலாவிப் பக்கங்களில் உள்ளவற்றைப் பெற ஒத்திசையுங்கள்</translation>
 <translation id="1513858653616922153">கடவுச்சொல்லை நீக்கு</translation>
 <translation id="1521774566618522728">இன்று பயன்படுத்தியுள்ளார்</translation>
 <translation id="153446405401665083">Chromeமின் புதிய பதிப்பு கிடைக்கிறது</translation>
@@ -278,7 +277,6 @@
 <translation id="228704530595896923">பகிர்தல் விருப்பங்களுக்கான பட்டியல்.</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> பக்கத்தைக் காட்டும்}other{<ph name="TABS_COUNT_MANY" /> பக்கங்களைக் காட்டும்}}</translation>
 <translation id="2297822946037605517">இந்த பக்கத்தைப் பகிர்</translation>
-<translation id="22981027763501686">புக்மார்க்குகள், பதிவுகள், மேலும் பலவற்றை உங்களின் பிற சாதனங்களிலும் அணுக, தரவை ஒத்திசையுங்கள்</translation>
 <translation id="230115972905494466">இணக்கமான சாதனங்கள் இல்லை</translation>
 <translation id="2318045970523081853">அழைக்க தட்டவும்</translation>
 <translation id="2321086116217818302">கடவுச்சொற்கள் தயாராகின்றன…</translation>
@@ -1062,7 +1060,6 @@
 <translation id="5865733239029070421">பயன்பாட்டுப் புள்ளிவிவரங்களையும் சிதைவு அறிக்கைகளையும் தானாகவே Googleளுக்கு அனுப்பும்</translation>
 <translation id="5869522115854928033">சேமிக்கப்பட்ட கடவுச்சொற்கள்</translation>
 <translation id="587735546353481577">ஒரு தளத்தைப் பின்தொடர, அதற்குச் சென்று Chrome மெனுவைத் திறந்து ‘பின்தொடர்’ என்பதைத் தட்டவும்.</translation>
-<translation id="5879072387416556377">சிறந்த பரிந்துரைகளைப் பெறுங்கள்</translation>
 <translation id="5883855034004058011">பயோமெட்ரிக்ஸ் சரிபார்ப்பு பலமுறை தோல்வியடைந்தது. மீண்டும் முயல, உங்கள் சாதனத்தை லாக் செய்து அன்லாக் செய்யவும்.</translation>
 <translation id="5885378508678660271">அறிவிப்புகள் <ph name="SEPARATOR" /> நீங்கள் சமீபத்தில் இந்தத் தளத்தைப் பார்வையிடாததால் Chrome இந்த அனுமதிகளை அகற்றியது</translation>
 <translation id="5895834791314695851">விரைவில் இந்தச் சாதனத்தில் கடவுச்சொற்களைப் பயன்படுத்த முடியாமல் போகலாம். அவற்றைத் தொடர்ந்து பயன்படுத்த Google Play சேவைகளைப் புதுப்பிக்கவும். <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
@@ -1407,7 +1404,6 @@
 <translation id="7313188324932846546">ஒத்திசைவை அமைக்க தட்டவும்</translation>
 <translation id="7324354302972299151">“Do Not Track” கோரிக்கையை அனுப்பு</translation>
 <translation id="7333041109965360609">அறிவிப்புகளில் இருந்து குழுவிலகிவிட்டீர்கள்</translation>
-<translation id="7333232495927792353">Googleளில் இருந்து மிகவும் தொடர்புடைய உள்ளடக்கத்தைப் பெற ஒத்திசையுங்கள்</translation>
 <translation id="7336259382292148213">அறிவிப்புகள் சரியாக உள்ளன</translation>
 <translation id="7339898014177206373">புதிய சாளரம்</translation>
 <translation id="7340958967809483333">Discoverருக்கான விருப்பங்கள்</translation>
@@ -1504,7 +1500,6 @@
 <translation id="7698359219371678927"><ph name="APP_NAME" /> இல் மின்னஞ்சலை உருவாக்கவும்</translation>
 <translation id="7702420606070050505">சமீபத்திய செயல்பாடுகளைக் காட்டும் கீழ்ப்புறச் சீட்டு முழு உயரத்தில் திறக்கப்பட்டுள்ளது</translation>
 <translation id="7707922173985738739">மொபைல் டேட்டாவைப் பயன்படுத்து</translation>
-<translation id="7709918231054955894">உங்கள் உலாவிப் பக்கங்கள் அனைத்தையும் பெறுங்கள்</translation>
 <translation id="7733878270780732638">சாதனத்தில் போதிய இடமில்லை.</translation>
 <translation id="7746817319925672889">இந்தச் சாதனத்தில் Google Password Manager விரைவில் செயல்படாமல் போகும்</translation>
 <translation id="774876555279732384">தன்னிரப்பிச் சேவைகள் <ph name="BEGIN_LINK" />Android அமைப்புகளிலும்<ph name="END_LINK" /> நிர்வகிக்கப்படுகின்றன.</translation>
@@ -1725,7 +1720,6 @@
 <translation id="8635399646025169806">பக்கக் குழுவை வைத்திருக்கவா?</translation>
 <translation id="8636825310635137004">உங்கள் பிற சாதனங்களிலிருந்து தாவல்களைப் பெற, ஒத்திசைவை இயக்கவும்.</translation>
 <translation id="864544049772947936">சாளரங்களை (<ph name="INSTANCE_COUNTS" />) நிர்வகி</translation>
-<translation id="8664215986015753476">உங்கள் தரவுகள் அனைத்தையும் Chromeமில் பெறுங்கள்</translation>
 <translation id="8664979001105139458">ஃபைல் பெயர் ஏற்கனவே உள்ளது</translation>
 <translation id="8672883760227492369">விரைவில் இந்தச் சாதனத்தில் உள்ள சில கடவுச்சொற்களைப் பயன்படுத்த முடியாது. அவற்றை Google Password Managerருக்கு நகர்த்தலாம்.</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> மூலம் <ph name="SITE_ETLD_PLUS_ONE" /> இணையதளத்தில் பதிவு செய்யுங்கள்</translation>

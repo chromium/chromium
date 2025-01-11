@@ -128,7 +128,6 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="1502010315804028179">Сырсөздөрдү тескөө үчүн Google Play кызматтарын жаңыртыңыз</translation>
 <translation id="1506061864768559482">Издөө каражаты</translation>
 <translation id="1513352483775369820">Кыстармалар жана издөө таржымалы</translation>
-<translation id="1513814250881909472">Башка түзмөктөрдөгү өтмөктөрдү колдонуу үчүн шайкештирүүнү иштетиңиз</translation>
 <translation id="1513858653616922153">Сырсөздү жок кылуу</translation>
 <translation id="1521774566618522728">Соңку аракеттер: бүгүн</translation>
 <translation id="153446405401665083">Chrome'дун жаңы версиясы жеткиликтүү</translation>
@@ -278,7 +277,6 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="228704530595896923">Бөлүшүү параметрлеринин тизмеси.</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> өтмөктү көрүү}other{<ph name="TABS_COUNT_MANY" /> өтмөктү көрүү}}</translation>
 <translation id="2297822946037605517">Бул баракты бөлүшүү</translation>
-<translation id="22981027763501686">Башка түзмөктөрүңүздө кыстармаларды, таржымалды жана башкаларды алуу үчүн шайкештириңиз</translation>
 <translation id="230115972905494466">Шайкеш түзмөктөр табылган жок</translation>
 <translation id="2318045970523081853">Чалуу үчүн басыңыз</translation>
 <translation id="2321086116217818302">Сырсөздөр даярдалууда…</translation>
@@ -1062,7 +1060,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5865733239029070421">Колдонуу статистикасын жана каталар жөнүндө кабарларды Google'га автоматтык түрдө жөнөтүп турат</translation>
 <translation id="5869522115854928033">Сакталган сырсөздөр</translation>
 <translation id="587735546353481577">Сайтка жазылуу үчүн ага өтүп, Google Chrome менюсун ачып, "Жазылууну" таптаңыз.</translation>
-<translation id="5879072387416556377">Жакшыраак сунуштарды алыңыз</translation>
 <translation id="5883855034004058011">Биометрикалык маалымат бөгөттөлгөн. Кайра аракет кылуу үчүн түзмөгүңүздү кулпулап жана кулпусун ачыңыз.</translation>
 <translation id="5885378508678660271">Билдирмелер <ph name="SEPARATOR" /> Бул сайт кооптуу болгондуктан, Chrome бул уруксаттарды өчүрдү</translation>
 <translation id="5895834791314695851">Жакында сырсөздөр бул түзмөктө иштебей калышы мүмкүн. Сырсөздөрдү колдоно берүү үчүн Google Play кызматтарын жаңыртыңыз. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
@@ -1407,7 +1404,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7313188324932846546">Шайкештирүүнү жөндөө үчүн басыңыз</translation>
 <translation id="7324354302972299151">"Do Not Track" сурамын жөнөтүңүз</translation>
 <translation id="7333041109965360609">Билдирмелерге жазылуу токтотулду</translation>
-<translation id="7333232495927792353">Google'дан эң ылайыктуу контентти көрүү үчүн шайкештирүүнү иштетиңиз</translation>
 <translation id="7336259382292148213">Билдирмелер жайында</translation>
 <translation id="7339898014177206373">Жаңы терезе</translation>
 <translation id="7340958967809483333">Сунуштардын параметрлери</translation>
@@ -1504,7 +1500,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7698359219371678927"><ph name="APP_NAME" /> колдонмосунан электрондук почта түзүңүз</translation>
 <translation id="7702420606070050505">Акыркы аракеттердин ылдыйкы экраны толук ачылды</translation>
 <translation id="7707922173985738739">Мобилдик Интернетти колдонуу</translation>
-<translation id="7709918231054955894">Бардык өтмөктөрүңүздү көрүңүз</translation>
 <translation id="7733878270780732638">Түзмөктө орун жетишсиз.</translation>
 <translation id="7746817319925672889">Жакында Сырсөздөрдү башкаргыч бул түзмөктө иштебей калат</translation>
 <translation id="774876555279732384">Автотолтуруу кызматтары да <ph name="BEGIN_LINK" />Android параметрлеринде<ph name="END_LINK" /> тескелет.</translation>
@@ -1725,7 +1720,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8635399646025169806">Өтмөктөр тобун калтырасызбы?</translation>
 <translation id="8636825310635137004">Өтмөктөрүңүздү башка түзмөктөрүңүздөн алуу үчүн шайкештирүүнү күйгүзүңүз.</translation>
 <translation id="864544049772947936">Терезелерди башкаруу (<ph name="INSTANCE_COUNTS" />)</translation>
-<translation id="8664215986015753476">Chrome'ду каалагандай пайдаланыңыз</translation>
 <translation id="8664979001105139458">Мындай аталыштагы файл бар</translation>
 <translation id="8672883760227492369">Бул түзмөктө айрым сырсөздөр жакында иштебей калат. Аларды Сырсөздөрдү башкаргычка өткөрө аласыз.</translation>
 <translation id="8676276370198826499"><ph name="SITE_ETLD_PLUS_ONE" /> сайтында <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> аккаунту менен катталыңыз</translation>

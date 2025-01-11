@@ -76,6 +76,7 @@
 <translation id="427987768447457592">Нова група картички</translation>
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{Променети картички: <ph name="ONE_CHANGED" />, затворени: <ph name="ANY_CLOSED" />}one{Променети картички: <ph name="MANY_CHANGED" />, затворени: <ph name="ANY_CLOSED" />}other{Променети картички: <ph name="MANY_CHANGED" />, затворени: <ph name="ANY_CLOSED" />}}</translation>
 <translation id="4371591986692297148">Неактивно</translation>
+<translation id="4431937619879060901">Веднаш ќе го изгубите пристапот до групата картички „<ph name="GROUP_NAME" />“, а групата картички ќе се избрише од сите ваши уреди</translation>
 <translation id="4460014764210899310">Одгрупирајте</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Да се затвори 1 неактивна картичка?}one{Да се затворат <ph name="TAB_COUNT_MANY" /> неактивна картичка?}other{Да се затворат <ph name="TAB_COUNT_MANY" /> неактивни картички?}}</translation>
 <translation id="4686942373615810936">Создадено пред малку</translation>
@@ -106,6 +107,7 @@
 <translation id="5556417849629758491">Прикажи информации за продавница, опција достапна во горниот дел од екранот</translation>
 <translation id="5627941783489838464">Нема новости во картичките</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Врати ја картичката}one{Врати ги картичките}other{Врати ги картичките}}</translation>
+<translation id="5647702255748985085">Да се напушти групата?</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> линк од Chrome}one{<ph name="TABS_COUNT_MANY" /> линк од Chrome}other{<ph name="TABS_COUNT_MANY" /> линка од Chrome}}</translation>
 <translation id="58326064309361797">Повлечете ги картичките за ги групирате</translation>
 <translation id="5901630391730855834">Жолта боја</translation>
@@ -141,6 +143,7 @@
 <translation id="731648547091221002">Избрано: <ph name="COLOR_NAME" /></translation>
 <translation id="7326879924029668159">Погледнете ја политиката за враќање производи и друго</translation>
 <translation id="7352298686197644113">Видете која ставка на отворените картички има пониска цена</translation>
+<translation id="742664698522525515">Да се задржи групата?</translation>
 <translation id="7452985128687107478">Групите картички автоматски се зачувуваат и ажурираат на сите ваши уреди</translation>
 <translation id="747459581954555080">Поврати ги сите</translation>
 <translation id="750886945254958667">Задржете ја групава за да додавате картички подоцна или напуштете ја ако веќе не сакате да пристапувате до неа</translation>
@@ -185,8 +188,10 @@
 <translation id="8915916167043355778">Затвори ги сите</translation>
 <translation id="9090098097337832354">Информациите за продавницава се затворени</translation>
 <translation id="9114502155681725011">Отворете го менито со дејства на група картички за групата картички „<ph name="TITLE_OF_GROUP" />“, боја: <ph name="COLOR_NAME" />.</translation>
+<translation id="9169141410816678175">Сите веднаш ќе го изгубат пристапот до групата картички „<ph name="GROUP_NAME" />“, а групата картички ќе се избрише од сите уреди</translation>
 <translation id="9169594135889675189">Додај нова картичка во групата</translation>
 <translation id="9216898458513705996">Картичките ќе останат отворени на овој уред, но групата ќе се избрише од сите уреди најавени на <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Прошири ја групата картички со <ph name="TABS_COUNT_ONE" /> картичка, во <ph name="COLOR_NAME" /> боја.}one{Прошири ја групата картички со <ph name="TABS_COUNT_MANY" /> картичка, во <ph name="COLOR_NAME" /> боја.}other{Прошири ја групата картички со <ph name="TABS_COUNT_MANY" /> картички, во <ph name="COLOR_NAME" /> боја.}}</translation>
+<translation id="94870150074703282">Да се избрише групата?</translation>
 <translation id="992256792861109788">Розова</translation>
 </translationbundle>

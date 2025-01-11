@@ -128,7 +128,6 @@ Pour voir d'autres paramètres qui utilisent les données pour améliorer votre 
 <translation id="1502010315804028179">Pour gérer vos mots de passe, mettez à jour les services Google Play</translation>
 <translation id="1506061864768559482">Moteur de recherche</translation>
 <translation id="1513352483775369820">Favoris et historique Web</translation>
-<translation id="1513814250881909472">Activez la synchronisation pour récupérer vos onglets depuis d'autres appareils</translation>
 <translation id="1513858653616922153">Supprimer le mot de passe</translation>
 <translation id="1521774566618522728">Actif aujourd'hui</translation>
 <translation id="153446405401665083">Une nouvelle version de Chrome est disponible</translation>
@@ -278,7 +277,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="228704530595896923">Liste des options de partage.</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Voir <ph name="TABS_COUNT_ONE" /> onglet}one{Voir <ph name="TABS_COUNT_MANY" /> onglet}other{Voir <ph name="TABS_COUNT_MANY" /> onglets}}</translation>
 <translation id="2297822946037605517">Partager cette page</translation>
-<translation id="22981027763501686">Activez la synchronisation pour récupérer vos favoris, votre historique et plus sur vos autres appareils</translation>
 <translation id="230115972905494466">Aucun appareil compatible détecté</translation>
 <translation id="2318045970523081853">Appuyer pour passer un appel</translation>
 <translation id="2321086116217818302">Préparation des mots de passe…</translation>
@@ -1062,7 +1060,6 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="5865733239029070421">Envoie automatiquement des statistiques d'utilisation et des rapports d'erreur à Google</translation>
 <translation id="5869522115854928033">Mots de passe enregistrés</translation>
 <translation id="587735546353481577">Pour suivre un site, accédez-y, ouvrez le menu Chrome et appuyez sur "Suivre".</translation>
-<translation id="5879072387416556377">Obtenez de meilleures suggestions</translation>
 <translation id="5883855034004058011">La reconnaissance biométrique a échoué de trop nombreuses fois. Verrouillez et déverrouillez votre appareil pour réessayer.</translation>
 <translation id="5885378508678660271">Notifications <ph name="SEPARATOR" /> Chrome a supprimé ces autorisations, car ce site est dangereux</translation>
 <translation id="5895834791314695851">Il est possible que les mots de passe ne fonctionnent bientôt plus sur cet appareil. Pour continuer à utiliser vos mots de passe, mettez à jour les services Google Play. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
@@ -1407,7 +1404,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7313188324932846546">Appuyez ici pour configurer la synchronisation</translation>
 <translation id="7324354302972299151">Envoyer une requête "Do Not Track"</translation>
 <translation id="7333041109965360609">Désabonné des notifications</translation>
-<translation id="7333232495927792353">Activez la synchronisation pour que Google vous présente les contenus les plus pertinents</translation>
 <translation id="7336259382292148213">Les notifications semblent sûres</translation>
 <translation id="7339898014177206373">Nouvelle fenêtre</translation>
 <translation id="7340958967809483333">Options pour Discover</translation>
@@ -1504,7 +1500,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7698359219371678927">Créer un e-mail dans <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Bottom sheet d'activité récente ouverte à pleine hauteur</translation>
 <translation id="7707922173985738739">Utilisera les données mobiles</translation>
-<translation id="7709918231054955894">Accédez à tous vos onglets</translation>
 <translation id="7733878270780732638">Espace insuffisant sur l'appareil.</translation>
 <translation id="7746817319925672889">Le Gestionnaire de mots de passe de Google ne fonctionnera bientôt plus sur cet appareil</translation>
 <translation id="774876555279732384">Les services de saisie automatique sont également gérés dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
@@ -1725,7 +1720,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8635399646025169806">Conserver le groupe d'onglets ?</translation>
 <translation id="8636825310635137004">Activez la synchronisation pour accéder à vos onglets sur vos autres appareils.</translation>
 <translation id="864544049772947936">Gérer les fenêtres (<ph name="INSTANCE_COUNTS" />)</translation>
-<translation id="8664215986015753476">Utilisez Chrome comme vous le souhaitez</translation>
 <translation id="8664979001105139458">Nom de fichier déjà attribué</translation>
 <translation id="8672883760227492369">Certains mots de passe sur cet appareil ne fonctionneront bientôt plus. Vous pouvez les déplacer vers le Gestionnaire de mots de passe de Google.</translation>
 <translation id="8676276370198826499">Inscrivez-vous à <ph name="SITE_ETLD_PLUS_ONE" /> avec <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

@@ -128,7 +128,6 @@
 <translation id="1502010315804028179">За да управлявате паролите си, актуализирайте услугите за Google Play</translation>
 <translation id="1506061864768559482">Търсеща машина</translation>
 <translation id="1513352483775369820">Отметки и посетени сайтове</translation>
-<translation id="1513814250881909472">Включете синхронизирането, за да получите разделите от другите си устройства</translation>
 <translation id="1513858653616922153">Изтриване на паролата</translation>
 <translation id="1521774566618522728">Активно днес</translation>
 <translation id="153446405401665083">Налице е нова версия на Chrome</translation>
@@ -278,7 +277,6 @@
 <translation id="228704530595896923">Списък с опции за споделяне.</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Вижте <ph name="TABS_COUNT_ONE" /> раздел}other{Вижте <ph name="TABS_COUNT_MANY" /> раздела}}</translation>
 <translation id="2297822946037605517">Споделяне на тази страница</translation>
-<translation id="22981027763501686">Синхронизирайте, за да получите своите отметки, история и др. на другите си устройства</translation>
 <translation id="230115972905494466">Няма намерени съвместими устройства</translation>
 <translation id="2318045970523081853">Докоснете за извършване на обаждане</translation>
 <translation id="2321086116217818302">Паролите се подготвят…</translation>
@@ -1062,7 +1060,6 @@
 <translation id="5865733239029070421">Автоматично изпраща до Google статистически данни за използването на Chrome и сигнали за сривове</translation>
 <translation id="5869522115854928033">Запазени пароли</translation>
 <translation id="587735546353481577">За да последвате даден сайт, посетете го, отворете менюто на Chrome и докоснете съответната опция.</translation>
-<translation id="5879072387416556377">Получавайте по-добри предложения</translation>
 <translation id="5883855034004058011">Твърде много неуспешни опити за биометрично удостоверяване. За да опитате отново, заключете устройството си и го отключете.</translation>
 <translation id="5885378508678660271">Известия <ph name="SEPARATOR" /> Chrome премахна тези разрешения, защото сайтът е опасен</translation>
 <translation id="5895834791314695851">Паролите скоро може да спрат да работят на това устройство. За да продължите да ги използвате, актуализирайте услугите за Google Play. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
@@ -1407,7 +1404,6 @@
 <translation id="7313188324932846546">Докоснете за настройване на синхронизацията</translation>
 <translation id="7324354302972299151">Изпращане на заявка Do Not Track</translation>
 <translation id="7333041109965360609">Отписахте се от известията</translation>
-<translation id="7333232495927792353">Включете синхронизирането, за да получавате най-подходящото съдържание от Google</translation>
 <translation id="7336259382292148213">Всичко е наред с известията</translation>
 <translation id="7339898014177206373">Нов прозорец</translation>
 <translation id="7340958967809483333">Опции за Discover</translation>
@@ -1504,7 +1500,6 @@
 <translation id="7698359219371678927">Създайте имейл в <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Долният лист със скорошна активност е отворен на пълната височина</translation>
 <translation id="7707922173985738739">Използване на мобилни данни</translation>
-<translation id="7709918231054955894">Преглед на всичките ви раздели</translation>
 <translation id="7733878270780732638">Няма достатъчно място на устройството.</translation>
 <translation id="7746817319925672889">Google Мениджър на пароли скоро ще спре да работи на това устройство</translation>
 <translation id="774876555279732384">Услугите за автоматично попълване се управляват и от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
@@ -1725,7 +1720,6 @@
 <translation id="8635399646025169806">Искате ли да запазите групата раздели?</translation>
 <translation id="8636825310635137004">Включете синхронизирането, за да получите разделите си от другите си устройства.</translation>
 <translation id="864544049772947936">Управление на прозорците (<ph name="INSTANCE_COUNTS" />)</translation>
-<translation id="8664215986015753476">Използвайте Chrome по предпочитания от вас начин</translation>
 <translation id="8664979001105139458">Името на файла вече съществува</translation>
 <translation id="8672883760227492369">Някои пароли на това устройство скоро ще спрат да работят. Можете да преместите тези пароли в Google Мениджър на пароли.</translation>
 <translation id="8676276370198826499">Регистрирайте се за <ph name="SITE_ETLD_PLUS_ONE" /> чрез <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

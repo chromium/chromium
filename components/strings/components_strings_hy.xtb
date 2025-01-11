@@ -3400,6 +3400,7 @@
 <translation id="70705239631109039">Ձեր կապը լիարժեք պաշտպանված չէ</translation>
 <translation id="7075452647191940183">Հարցումը չափազանց մեծ է</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079699498125013497">\u0020\u2022\u0020</translation>
 <translation id="7081311540357715807">Մթերային խանութներ</translation>
 <translation id="7083258188081898530">Դարակ 9</translation>
 <translation id="7086090958708083563">Օգտատերը վերբեռնման հայտ է ուղարկել</translation>
@@ -4123,6 +4124,7 @@
 <translation id="833262891116910667">Նշել</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> էջերը չեն թարգմանվի</translation>
 <translation id="8339275256517065202">Ավարտեք գնումը Touch ID-ի միջոցով</translation>
+<translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Վիրտուալ քարտի գրանցման պատուհանը բացված է ամբողջությամբ</translation>
 <translation id="8349305172487531364">Էջանիշների գոտի</translation>

@@ -128,7 +128,6 @@ Du hittar fler inställningar som använder data för att förbättra Chrome-upp
 <translation id="1502010315804028179">Uppdatera Google Play-tjänsterna för att hantera dina lösenord</translation>
 <translation id="1506061864768559482">Sökmotor</translation>
 <translation id="1513352483775369820">Bokmärken och webbhistorik</translation>
-<translation id="1513814250881909472">Synkronisera om du få tillgång till flikar från dina andra enheter</translation>
 <translation id="1513858653616922153">Radera lösenord</translation>
 <translation id="1521774566618522728">Aktiv idag</translation>
 <translation id="153446405401665083">En ny version av Chrome är tillgänglig</translation>
@@ -278,7 +277,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="228704530595896923">Lista över delningsalternativ.</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Se <ph name="TABS_COUNT_ONE" /> flik}other{Se <ph name="TABS_COUNT_MANY" /> flikar}}</translation>
 <translation id="2297822946037605517">Dela den här sidan</translation>
-<translation id="22981027763501686">Synkronisera för att få dina bokmärken, din historik och mer på dina andra enheter</translation>
 <translation id="230115972905494466">Inga kompatibla enheter hittades</translation>
 <translation id="2318045970523081853">Tryck för att ringa</translation>
 <translation id="2321086116217818302">Lösenorden förbereds …</translation>
@@ -1063,7 +1061,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5865733239029070421">Skickar användningsstatistik och felrapporter till Google automatiskt</translation>
 <translation id="5869522115854928033">Sparade lösenord</translation>
 <translation id="587735546353481577">Om du vill följa en webbplats besöker du den, öppnar Chrome-menyn och trycker på Följ.</translation>
-<translation id="5879072387416556377">Få bättre förslag</translation>
 <translation id="5883855034004058011">Biometri misslyckades för många gånger. Lås och lås upp enheten för att försöka igen.</translation>
 <translation id="5885378508678660271">Aviseringar <ph name="SEPARATOR" /> Chrome har tagit bort dessa behörigheter eftersom den här webbplatsen är farlig</translation>
 <translation id="5895834791314695851">Lösenorden kan snart sluta att fungera på den här enheten. Uppdatera Google Play-tjänsterna om du vill fortsätta att använda dina lösenord. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
@@ -1408,7 +1405,6 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7313188324932846546">Tryck för att konfigurera synkronisering</translation>
 <translation id="7324354302972299151">Skicka en Do Not Track-begäran</translation>
 <translation id="7333041109965360609">Du har slutat prenumerera på aviseringar</translation>
-<translation id="7333232495927792353">Synkronisera om du vill få det mest relevanta innehållet från Google</translation>
 <translation id="7336259382292148213">Aviseringar ser bra ut</translation>
 <translation id="7339898014177206373">Nytt fönster</translation>
 <translation id="7340958967809483333">Alternativ för Förslag</translation>
@@ -1505,7 +1501,6 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7698359219371678927">Skapa ett e-postmeddelande i <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Ark för senaste aktiviteten på nedre delen av skärmen har öppnats över hela skärmen</translation>
 <translation id="7707922173985738739">Mobildata används</translation>
-<translation id="7709918231054955894">Få alla dina flikar</translation>
 <translation id="7733878270780732638">Det finns inte tillräckligt med utrymme på enheten.</translation>
 <translation id="7746817319925672889">Google Lösenordshantering slutar snart att fungera på den här enheten</translation>
 <translation id="774876555279732384">Autofylltjänster hanteras även i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
@@ -1726,7 +1721,6 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8635399646025169806">Vill du behålla flikgruppen?</translation>
 <translation id="8636825310635137004">Aktivera synkronisering om du vill ha samma flikar tillgängliga på alla enheter.</translation>
 <translation id="864544049772947936">Hantera fönster (<ph name="INSTANCE_COUNTS" />)</translation>
-<translation id="8664215986015753476">Använd Chrome på ditt sätt</translation>
 <translation id="8664979001105139458">Filnamnet finns redan</translation>
 <translation id="8672883760227492369">Vissa lösenord på den här enheten slutar snart att fungera. Du kan flytta lösenorden till Google Lösenordshantering.</translation>
 <translation id="8676276370198826499">Registrera dig för <ph name="SITE_ETLD_PLUS_ONE" /> med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

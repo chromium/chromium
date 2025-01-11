@@ -128,7 +128,6 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
 <translation id="1502010315804028179">To manage your passwords, update Google Play services</translation>
 <translation id="1506061864768559482">Search engine</translation>
 <translation id="1513352483775369820">Bookmarks and web history</translation>
-<translation id="1513814250881909472">Sync to get your tabs from your other devices</translation>
 <translation id="1513858653616922153">Delete password</translation>
 <translation id="1521774566618522728">Active today</translation>
 <translation id="153446405401665083">New version of Chrome is available</translation>
@@ -278,7 +277,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="228704530595896923">List of sharing options.</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{See <ph name="TABS_COUNT_ONE" /> tab}other{See <ph name="TABS_COUNT_MANY" /> tabs}}</translation>
 <translation id="2297822946037605517">Share this page</translation>
-<translation id="22981027763501686">Sync to get your bookmarks, history and more on your other devices</translation>
 <translation id="230115972905494466">No compatible devices found</translation>
 <translation id="2318045970523081853">Tap to make call</translation>
 <translation id="2321086116217818302">Preparing passwords…</translation>
@@ -1062,7 +1060,6 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5865733239029070421">Automatically sends usage statistics and crash reports to Google</translation>
 <translation id="5869522115854928033">Saved passwords</translation>
 <translation id="587735546353481577">To follow a site, go to the site, open the Chrome menu and tap Follow.</translation>
-<translation id="5879072387416556377">Get better suggestions</translation>
 <translation id="5883855034004058011">Biometrics failed too many times. Lock and unlock your device to retry.</translation>
 <translation id="5885378508678660271">Notifications <ph name="SEPARATOR" /> Chrome removed these permissions because this site is dangerous</translation>
 <translation id="5895834791314695851">Passwords may stop working soon on this device. To keep using your passwords, update Google Play services. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
@@ -1407,7 +1404,6 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7313188324932846546">Tap to set up sync</translation>
 <translation id="7324354302972299151">Send a 'Do Not Track' request</translation>
 <translation id="7333041109965360609">Unsubscribed from notifications</translation>
-<translation id="7333232495927792353">Sync to get the most relevant content from Google</translation>
 <translation id="7336259382292148213">Notifications look good</translation>
 <translation id="7339898014177206373">New window</translation>
 <translation id="7340958967809483333">Options for Discover</translation>
@@ -1504,7 +1500,6 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7698359219371678927">Create email in <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Recent activity bottom sheet opened at full height</translation>
 <translation id="7707922173985738739">Use mobile data</translation>
-<translation id="7709918231054955894">Get all your tabs</translation>
 <translation id="7733878270780732638">Not enough space on device.</translation>
 <translation id="7746817319925672889">Google Password Manager will stop working soon on this device</translation>
 <translation id="774876555279732384">Autofill services are also managed in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
@@ -1725,7 +1720,6 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8635399646025169806">Keep tab group?</translation>
 <translation id="8636825310635137004">To get your tabs from your other devices, turn on sync.</translation>
 <translation id="864544049772947936">Manage windows (<ph name="INSTANCE_COUNTS" />)</translation>
-<translation id="8664215986015753476">Use Chrome your way</translation>
 <translation id="8664979001105139458">File name already exists</translation>
 <translation id="8672883760227492369">Some passwords on this device will stop working soon. You can move these passwords to Google Password Manager.</translation>
 <translation id="8676276370198826499">Sign up to <ph name="SITE_ETLD_PLUS_ONE" /> with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

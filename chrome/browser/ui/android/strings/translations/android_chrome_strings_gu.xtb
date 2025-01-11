@@ -128,7 +128,6 @@
 <translation id="1502010315804028179">તમારા પાસવર્ડ મેનેજ કરવા માટે, Google Play સેવાઓ અપડેટ કરો</translation>
 <translation id="1506061864768559482">શોધ એન્જિન</translation>
 <translation id="1513352483775369820">બુકમાર્ક અને વેબ ઇતિહાસ</translation>
-<translation id="1513814250881909472">તમારા અન્ય ડિવાઇસમાંની તમારી બધી ટૅબ મેળવવા માટે, સિંક કરો</translation>
 <translation id="1513858653616922153">પાસવર્ડ ડિલીટ કરો</translation>
 <translation id="1521774566618522728">આજે સક્રિય છે</translation>
 <translation id="153446405401665083">Chromeનું નવું વર્ઝન ઉપલબ્ધ છે</translation>
@@ -278,7 +277,6 @@
 <translation id="228704530595896923">શેરિંગના વિકલ્પોની સૂચિ.</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ જુઓ}one{<ph name="TABS_COUNT_MANY" /> ટૅબ જુઓ}other{<ph name="TABS_COUNT_MANY" /> ટૅબ જુઓ}}</translation>
 <translation id="2297822946037605517">આ પેજ શેર કરો</translation>
-<translation id="22981027763501686">તમારા અન્ય ડિવાઇસ પર તમારા બુકમાર્ક, ઇતિહાસ અને વધુ મેળવવા માટે સિંક કરો</translation>
 <translation id="230115972905494466">કોઈ સુસંગત ઉપકરણો મળ્યા નથી</translation>
 <translation id="2318045970523081853">કૉલ કરવા માટે ટૅપ કરો</translation>
 <translation id="2321086116217818302">પાસવર્ડ તૈયાર કરી રહ્યાં છીએ…</translation>
@@ -1062,7 +1060,6 @@
 <translation id="5865733239029070421">Googleને વપરાશના આંકડા અને ક્રૅશ રિપોર્ટ ઑટોમૅટિક રીતે મોકલે છે</translation>
 <translation id="5869522115854928033">સાચવેલા પાસવર્ડ્સ</translation>
 <translation id="587735546353481577">કોઈ સાઇટને ફૉલો કરવા માટે, તે સાઇટ પર જાઓ, Chrome મેનૂ ખોલો અને ફૉલો કરો પર ટૅપ કરો.</translation>
-<translation id="5879072387416556377">વધુ સારા સૂચનો મેળવો</translation>
 <translation id="5883855034004058011">બાયોમેટ્રિક્સ ઘણી વાર નિષ્ફ્ળ થયા. ફરી પ્રયાસ કરવા માટે તમારું ડિવાઇસ લૉક કરીને અનલૉક કરો.</translation>
 <translation id="5885378508678660271">નોટિફિકેશન <ph name="SEPARATOR" /> Chrome દ્વારા આ પરવાનગીઓ કાઢી નાખવામાં આવી કારણ કે આ સાઇટ જોખમી છે</translation>
 <translation id="5895834791314695851">આ ડિવાઇસ પર પાસવર્ડ ટૂંક સમયમાં કામ કરવાનું બંધ કરી શકે છે. તમારા પાસવર્ડનો ઉપયોગ કરવાનું ચાલુ રાખવા માટે, Google Play સેવાઓ અપડેટ કરો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
@@ -1407,7 +1404,6 @@
 <translation id="7313188324932846546">સિંકની સુવિધા સેટઅપ કરવાનો પ્રયાસ કરો</translation>
 <translation id="7324354302972299151">“Do Not Track"ની વિનંતી મોકલો</translation>
 <translation id="7333041109965360609">નોટિફિકેશનમાંથી અનસબ્સ્ક્રાઇબ કર્યું</translation>
-<translation id="7333232495927792353">Googleનું સૌથી વધુ સંબંધિત કન્ટેન્ટ મેળવવા માટે સિંક કરો</translation>
 <translation id="7336259382292148213">બરાબર લાગે છે</translation>
 <translation id="7339898014177206373">નવી વિન્ડો</translation>
 <translation id="7340958967809483333">Discover માટેના વિકલ્પો</translation>
@@ -1504,7 +1500,6 @@
 <translation id="7698359219371678927"><ph name="APP_NAME" /> માં ઇમેઇલ બનાવો</translation>
 <translation id="7702420606070050505">તાજેતરની ઍક્ટિવિટી બોટમ શીટ સંપૂર્ણ ઊંચાઈએ ખોલી</translation>
 <translation id="7707922173985738739">મોબાઇલ ડેટાનો ઉપયોગ કરો</translation>
-<translation id="7709918231054955894">તમારી બધી ટૅબ મેળવો</translation>
 <translation id="7733878270780732638">ડિવાઇસ પર પર્યાપ્ત સ્પેસ નથી.</translation>
 <translation id="7746817319925672889">Google Password Manager આ ડિવાઇસ પર ટૂંક સમયમાં કામ કરવાનું બંધ કરશે</translation>
 <translation id="774876555279732384"><ph name="BEGIN_LINK" />Android સેટિંગ<ph name="END_LINK" />માં ઑટોમૅટિક રીતે ભરવાની સુવિધાઓ પણ મેનેજ કરવામાં આવે છે.</translation>
@@ -1725,7 +1720,6 @@
 <translation id="8635399646025169806">ટૅબનું ગ્રૂપ રાખીએ?</translation>
 <translation id="8636825310635137004">તમારા અન્ય ઉપકરણો પરથી તમારા ટૅબ્સ મેળવવા માટે, સમન્વયન ચાલુ કરો.</translation>
 <translation id="864544049772947936">વિન્ડો મેનેજ કરો (<ph name="INSTANCE_COUNTS" />)</translation>
-<translation id="8664215986015753476">Chromeનો તમારી રીતે ઉપયોગ કરો</translation>
 <translation id="8664979001105139458">ફાઇલનું નામ પહેલેથી અસ્તિત્વમાં છે</translation>
 <translation id="8672883760227492369">આ ડિવાઇસ પરના કેટલાક પાસવર્ડ ટૂંક સમયમાં કામ કરવાનું બંધ કરશે. તમે આ પાસવર્ડને Google Password Managerમાં ખસેડી શકો છો.</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> વડે <ph name="SITE_ETLD_PLUS_ONE" /> માટે સાઇન અપ કરો</translation>

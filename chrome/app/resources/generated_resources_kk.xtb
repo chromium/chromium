@@ -124,6 +124,7 @@
 <translation id="1076766328672150609">Құрылғының құлпын ашу үшін балаңыз PIN кодын пайдалана алады.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216"><ph name="LANGUAGE" /> тілі үшін емлені тексеретін сөздік жүктеп алынбады. Қайталап көріңіз.</translation>
+<translation id="1078029726086090536">Құпия сөзді растау</translation>
 <translation id="1078037449555275327">ChromeVox параметрлері</translation>
 <translation id="1079242569060319448">PIN кодын ұмытып қалдыңыз ба?</translation>
 <translation id="1079285777677001938">Кейбір сайттың функциялары жұмыс істемеуі мүмкін.</translation>
@@ -4075,6 +4076,7 @@
 <translation id="3848547754896969219">Инкогнито терезесінде ашу</translation>
 <translation id="3850172593216628215">Қауіпсіздік жаңартулары аяқталды. Жаңа Chromebook сатып алу кезінде $50 немесе одан көп үнемдеңіз.</translation>
 <translation id="385051799172605136">Артқа</translation>
+<translation id="3850989673553106152">Құпия сөз өзгертілді</translation>
 <translation id="3851428669031642514">Қауіпті сценарийлерді жүктеу</translation>
 <translation id="3852215160863921508">Мәтін енгізуге көмектесетін құралдар</translation>
 <translation id="3853549894831560772"><ph name="DEVICE_NAME" /> қосулы</translation>
@@ -4577,6 +4579,7 @@
 <translation id="421182450098841253">&amp;Бетбелгілер жолағын көрсету</translation>
 <translation id="4211904048067111541">Android қолданбаларымен пайдаланбау</translation>
 <translation id="42126664696688958">Экспорттау</translation>
+<translation id="4213540068152645535">Құпия сөз өзгертілмеді</translation>
 <translation id="42137655013211669">Бұл ресурсқа кіруге сервер тыйым салған.</translation>
 <translation id="4213918571089943508">Баланың Google аккаунты</translation>
 <translation id="4214192212360095377">Қазір өшіру</translation>
@@ -8293,6 +8296,7 @@
 <translation id="6913051485529944333">Бұл бетте енді Google Calendar көрсетілмейді.</translation>
 <translation id="6914812290245989348">Қауіпті сайттарға кіру алдында ескертулер көрсетілмесін</translation>
 <translation id="6916590542764765824">Кеңейтімдерді басқару</translation>
+<translation id="6916676294509106572">Outlook Calendar жасырылды.</translation>
 <translation id="6917873303492266709">Қойындылар топтарын бөлісу, қосылу және бірлесіп жұмыс істеу үшін параметрлерді ашып, "Chrome-ға кіруге рұқсат ету" параметрін қосыңыз.</translation>
 <translation id="6918677045355889289">ChromeOS-ті жаңарту қажет</translation>
 <translation id="6918733588290914545">Android телефонымен параметрлерді жылдам реттеу</translation>
@@ -10670,6 +10674,7 @@
 <translation id="8625124982056504555">ChromeOS құрылғысы мен құрамдастың сериялық нөмірлерін оқу</translation>
 <translation id="862542460444371744">&amp;Кеңейтімдер</translation>
 <translation id="8625663000550647058">Микрофоныңызды қолдануға рұқсаты жоқтар</translation>
+<translation id="8625679025395572221">Аккаунтыңызға әлі де қауіп төніп тұруы мүмкін.</translation>
 <translation id="8625916342247441948">Сайттардың HID құрылғыларына қосылуына рұқсат бермеу</translation>
 <translation id="862727964348362408">Тоқтатылған</translation>
 <translation id="862750493060684461">CSS кэші</translation>

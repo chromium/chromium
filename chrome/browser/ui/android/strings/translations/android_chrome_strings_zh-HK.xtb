@@ -128,7 +128,6 @@
 <translation id="1502010315804028179">如要管理密碼，請更新 Google Play 服務</translation>
 <translation id="1506061864768559482">搜尋引擎</translation>
 <translation id="1513352483775369820">書籤和網頁記錄</translation>
-<translation id="1513814250881909472">進行同步處理，取得您在其他裝置上的分頁</translation>
 <translation id="1513858653616922153">刪除密碼</translation>
 <translation id="1521774566618522728">今天已使用</translation>
 <translation id="153446405401665083">有新版 Chrome 可用</translation>
@@ -278,7 +277,6 @@
 <translation id="228704530595896923">分享選項清單。</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{查看 <ph name="TABS_COUNT_ONE" /> 個分頁}other{查看 <ph name="TABS_COUNT_MANY" /> 個分頁}}</translation>
 <translation id="2297822946037605517">分享此頁面</translation>
-<translation id="22981027763501686">開啟同步功能即可取得你在其他裝置上的書籤、記錄等資料</translation>
 <translation id="230115972905494466">找不到兼容的裝置</translation>
 <translation id="2318045970523081853">輕按即可撥打電話</translation>
 <translation id="2321086116217818302">正在準備密碼…</translation>
@@ -1062,7 +1060,6 @@
 <translation id="5865733239029070421">自動將使用情況統計和當機報告傳送給 Google</translation>
 <translation id="5869522115854928033">已儲存的密碼</translation>
 <translation id="587735546353481577">如要追蹤網站，只要前往該網站並開啟 Chrome 選單，然後輕按 [追蹤] 即可。</translation>
-<translation id="5879072387416556377">取得更切題的建議</translation>
 <translation id="5883855034004058011">生物識別資料驗證失敗次數過多。請先鎖定裝置，然後解鎖以重試。</translation>
 <translation id="5885378508678660271">通知 <ph name="SEPARATOR" /> 此網站不安全，因此 Chrome 已移除有關權限</translation>
 <translation id="5895834791314695851">此裝置上的密碼即將無法存取。如要繼續使用密碼，請更新 Google Play 服務。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -1407,7 +1404,6 @@
 <translation id="7313188324932846546">輕按即可設定同步</translation>
 <translation id="7324354302972299151">傳送「Do Not Track」要求</translation>
 <translation id="7333041109965360609">已取消訂閱通知</translation>
-<translation id="7333232495927792353">進行同步處理，取得 Google 提供的最相關內容</translation>
 <translation id="7336259382292148213">通知權限沒有問題</translation>
 <translation id="7339898014177206373">新視窗</translation>
 <translation id="7340958967809483333">「探索」的選項</translation>
@@ -1504,7 +1500,6 @@
 <translation id="7698359219371678927">在 <ph name="APP_NAME" /> 中建立電郵</translation>
 <translation id="7702420606070050505">近期活動頁底面板宜家顯示喺成個畫面</translation>
 <translation id="7707922173985738739">使用流動數據</translation>
-<translation id="7709918231054955894">取得您所有的分頁</translation>
 <translation id="7733878270780732638">裝置空間不足。</translation>
 <translation id="7746817319925672889">「Google 密碼管理工具」即將停止在此裝置上運作</translation>
 <translation id="774876555279732384">自動填入服務也可以在「<ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />」中管理。</translation>
@@ -1725,7 +1720,6 @@
 <translation id="8635399646025169806">要保留分頁群組嗎？</translation>
 <translation id="8636825310635137004">如要取得其他裝置上的分頁，請開啟同步處理功能。</translation>
 <translation id="864544049772947936">管理視窗 (<ph name="INSTANCE_COUNTS" /> 個)</translation>
-<translation id="8664215986015753476">自行決定 Chrome 的使用方式</translation>
 <translation id="8664979001105139458">檔案名稱已存在</translation>
 <translation id="8672883760227492369">此裝置上的部分密碼即將無法存取，你可將這些密碼移至「Google 密碼管理工具」。</translation>
 <translation id="8676276370198826499">使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 註冊 <ph name="SITE_ETLD_PLUS_ONE" /></translation>

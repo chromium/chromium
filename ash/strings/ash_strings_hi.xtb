@@ -1029,6 +1029,7 @@
 <translation id="4485506555414638855">अपने फ़ोन में मौजूद हाल ही की फ़ोटो, कॉन्टेंट, सूचनाओं, और ऐप्लिकेशन को देखने की सुविधा सेट अप करने की प्रक्रिया रद्द करें</translation>
 <translation id="4491109536499578614">इमेज</translation>
 <translation id="450584155212756404">डेव चैनल</translation>
+<translation id="4513044611477939680">क्विक शेयर</translation>
 <translation id="4513946894732546136">सुझाव/राय दें</translation>
 <translation id="4518404433291145981">Chromebook अनलॉक करने के लिए, पहले अपना फ़ोन अनलॉक करें</translation>
 <translation id="4527045527269911712">ब्लूटूथ डिवाइस "<ph name="DEVICE_NAME" />" युग्मित करने की अनुमति चाहता है.</translation>
@@ -1080,6 +1081,7 @@
 <translation id="4672539464599646374">बैटरी सेवर चालू है</translation>
 <translation id="4673427585974421255">चालू रखें</translation>
 <translation id="4677040906536311086">Google शीट</translation>
+<translation id="468019262817532242">कोई भी व्यक्ति, आपके साथ फ़ाइलें शेयर नहीं कर सकता</translation>
 <translation id="468293128311738995">आपके फ़ोन में इंस्टॉल किए गए ऐप्लिकेशन</translation>
 <translation id="4690510401873698237">शेल्फ़, स्क्रीन पर सबसे नीचे है</translation>
 <translation id="4696813013609194136">माता-पिता के कोड से डिवाइस अनलॉक करें</translation>
@@ -1111,6 +1113,7 @@
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> के लिए पासवर्ड</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">डेमो सत्र में Google Assistant मौजूद नहीं है.</translation>
+<translation id="4785412405516449976">सिर्फ़ Google खाते में सेव किए गए संपर्क</translation>
 <translation id="4789348252524569426">बोली पहचानने वाली फ़ाइलों को इंस्टॉल नहीं किया जा सका. इसके लिए, आपको अपने डिवाइस को अपडेट करना होगा. डिवाइस को रीस्टार्ट करके, फिर से कोशिश करें.</translation>
 <translation id="478959186716341421">कास्ट किया जा रहा है</translation>
 <translation id="4798403412327076414">अगली बार साइन इन करने पर, आपको पहले से खुली हुई विंडो और ऐप्लिकेशन दिखेंगे</translation>
@@ -1240,6 +1243,7 @@
 <translation id="5176318573511391780">स्क्रीन के कुछ हिस्से को रिकॉर्ड करें</translation>
 <translation id="5187627942836026988">हॉटस्पॉट की जानकारी दिखाएं. आपके एडमिन ने हॉटस्पॉट को ब्लॉक किया है.</translation>
 <translation id="5197255632782567636">इंटरनेट</translation>
+<translation id="5198039720391525849">हाइलाइट किए गए GIF</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> इवेंट</translation>
 <translation id="5198715732953550718">नया फ़ोल्डर बनाने के लिए <ph name="MOVED_APP_NAME" /> को <ph name="IN_PLACE_APP" /> में जोड़ा गया.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1561,6 +1565,7 @@
 <translation id="6199775032047436064">वर्तमान पेज फिर से लोड करें</translation>
 <translation id="6200515304866777730">यह ऐप्लिकेशन पर काम नहीं करता</translation>
 <translation id="6210042900243040400"><ph name="EMAIL" /> में पहले से सेव किए गए <ph name="NAME" /> को कनेक्ट करें</translation>
+<translation id="6212580734499190393">10 मिनट के लिए</translation>
 <translation id="6213808132343683860">स्क्रीन के कुछ हिस्से का स्क्रीनशॉट लेने या स्क्रीन रिकॉर्डिंग करने के लिए</translation>
 <translation id="621606890568890214">Google Classroom को बड़ा करें</translation>
 <translation id="6216759484154215561">ब्राउज़र में ज़्यादा जानकारी पाने वाला लिंक खोला गया</translation>
@@ -1954,6 +1959,7 @@
 <translation id="7599378375976398913">चुना गया नतीजा जोड़ा जा रहा है</translation>
 <translation id="7600875258240007829">सभी सूचनाएं देखें</translation>
 <translation id="7601417191446344542">क्या आपको म्यूट नज सुविधा चालू करनी है?</translation>
+<translation id="7602187221150705972">इमोजी, GIF वगैरह खोजें</translation>
 <translation id="7607002721634913082">रोका गया</translation>
 <translation id="7609951632080598826">कैलेंडर व्यू, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">कैमरा फिर से कनेक्ट हो गया है.</translation>
@@ -2050,6 +2056,7 @@
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="7899977217122813285">फ़ोकस मोड चालू होने की वजह से, सूचनाएं <ph name="TIME" /> तक म्यूट हैं</translation>
+<translation id="7901010467630324625">सिर्फ़ <ph name="EMAIL" /> से साइन इन किए गए डिवाइस</translation>
 <translation id="7901190436359881020">विंडो स्वैप करें</translation>
 <translation id="7901405293566323524">फ़ोन हब</translation>
 <translation id="7902625623987030061">फ़िंगरप्रिंट सेंसर को छुएं</translation>

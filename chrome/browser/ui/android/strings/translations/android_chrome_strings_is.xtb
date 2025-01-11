@@ -128,7 +128,6 @@ Til að skoða fleiri stillingar sem nota gögn til að bæta Chrome-upplifunina
 <translation id="1502010315804028179">Uppfærðu þjónustu Google Play til að stjórna aðgangsorðunum þínum</translation>
 <translation id="1506061864768559482">Leitarvél</translation>
 <translation id="1513352483775369820">Bókamerki og vefferill</translation>
-<translation id="1513814250881909472">Samstilltu til að sækja flipana þína úr öðrum tækjum</translation>
 <translation id="1513858653616922153">Eyða aðgangsorði</translation>
 <translation id="1521774566618522728">Virkt í dag</translation>
 <translation id="153446405401665083">Ný útgáfa af Chrome er í boði</translation>
@@ -278,7 +277,6 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="228704530595896923">Listi yfir deilingarvalkosti.</translation>
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Sjá <ph name="TABS_COUNT_ONE" /> flipa}one{sjá <ph name="TABS_COUNT_MANY" /> flipa}other{sjá <ph name="TABS_COUNT_MANY" /> flipa}}</translation>
 <translation id="2297822946037605517">Deila þessari síðu</translation>
-<translation id="22981027763501686">Samstilltu til að sækja bókamerkin þín, ferilinn og annað frá hinum tækjunum þínum.</translation>
 <translation id="230115972905494466">Engin samhæf tæki fundust</translation>
 <translation id="2318045970523081853">Ýttu til að hringja</translation>
 <translation id="2321086116217818302">Undirbýr aðgangsorð…</translation>
@@ -1062,7 +1060,6 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="5865733239029070421">Sendir sjálfkrafa talnagögn um notkun og tilkynningar um hrun til Google</translation>
 <translation id="5869522115854928033">Vistuð aðgangsorð</translation>
 <translation id="587735546353481577">Til að fylgja vefsvæði skaltu opna vefsvæðið, opna Chrome valmyndina og smella á „Fylgja“.</translation>
-<translation id="5879072387416556377">Fáðu betri tillögur</translation>
 <translation id="5883855034004058011">Of margar tilraunir til að lesa lífkenni. Læstu tækinu og taktu það síðan úr lás til að reyna aftur.</translation>
 <translation id="5885378508678660271">Tilkynningar <ph name="SEPARATOR" /> Chrome fjarlægði þessar heimildir því að þetta vefsvæði er hættulegt</translation>
 <translation id="5895834791314695851">Fljótlega munu aðgangsorð hætta að virka í þessu tæki. Uppfærðu þjónustu Google Play til að halda áfram að nota aðgangsorðin þín. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
@@ -1407,7 +1404,6 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-g�
 <translation id="7313188324932846546">Ýttu til að setja upp samstillingu</translation>
 <translation id="7324354302972299151">Senda „Do Not Track“ beiðni</translation>
 <translation id="7333041109965360609">Hætt áskrift að tilkynningum</translation>
-<translation id="7333232495927792353">Samstilltu til að fá meira viðeigandi efni frá Google</translation>
 <translation id="7336259382292148213">Tilkynningar eru í góðu lagi</translation>
 <translation id="7339898014177206373">Nýr gluggi</translation>
 <translation id="7340958967809483333">Valkostir fyrir Tillögur</translation>
@@ -1504,7 +1500,6 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-g�
 <translation id="7698359219371678927">Skrifa tölvupóst í <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Blað neðst sem sýnir nýlega virkni, opið til fulls</translation>
 <translation id="7707922173985738739">Nota farsímagögn</translation>
-<translation id="7709918231054955894">Skoðaðu alla flipana þína</translation>
 <translation id="7733878270780732638">Ekki nóg pláss í tæki.</translation>
 <translation id="7746817319925672889">Google-aðgangsorðastjórnun mun brátt hætta að virka í þessu tæki</translation>
 <translation id="774876555279732384">Sjálfvirkri útfyllingarþjónustu er einnig stjórnað í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
@@ -1725,7 +1720,6 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-g�
 <translation id="8635399646025169806">Halda flipahóp?</translation>
 <translation id="8636825310635137004">Kveiktu á samstillingu til að fá aðgang að flipunum þínum í öðrum tækjum.</translation>
 <translation id="864544049772947936">Stjórna gluggum (<ph name="INSTANCE_COUNTS" />)</translation>
-<translation id="8664215986015753476">Notaðu Chrome eins og þér hentar best</translation>
 <translation id="8664979001105139458">Skráarheiti er þegar til</translation>
 <translation id="8672883760227492369">Fljótlega munu einhver aðgangsorð í þessu tæki hætta að virka Þú getur flutt þessi aðgangsorð yfir í Google-aðgangsorðastjórnun.</translation>
 <translation id="8676276370198826499">Skráðu þig á <ph name="SITE_ETLD_PLUS_ONE" /> með <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

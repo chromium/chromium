@@ -1935,6 +1935,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Microsoft OneDrive omboriga fayl yuklash pauza qilindi</translation>
 <translation id="4390472908992056574">Maydonchalar</translation>
+<translation id="4395550503472021297">Bu siyosat quyidagi siyosatlarning birlamchi xatti-harakatini nazorat qiladi: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">Tasdiqlash uchun qalqib chiquvchi oynada bank sayti ochiladi</translation>
 <translation id="4406883609789734330">Jonli izoh</translation>
 <translation id="4406896451731180161">qidiruv natijalari</translation>
@@ -3991,6 +3992,7 @@ Batafsil axborot:
 <translation id="8116925261070264013">Ovozsiz</translation>
 <translation id="8118489163946903409">To‘lov usuli</translation>
 <translation id="8118506371121007279">Fikr-mulohaza</translation>
+<translation id="8120720167840853945">Bu siyosat har qanday boshqa siyosatning birlamchi xatti-harakatini nazorat qilmaydi.</translation>
 <translation id="8127301229239896662">Kompyuter yoki tarmog‘ingizda “<ph name="SOFTWARE_NAME" />” dasturi noto‘g‘ri o‘rnatilgan. Muammo yechimini administratordan so‘rang.</translation>
 <translation id="8131740175452115882">Tasdiqlash</translation>
 <translation id="8133495915926741232">Reklamani moslashtirishda ishlatilishi mumkin mavzularning kengroq turkumlarini tanlang. Kengroq turkum faolsizlantirilsa, aloqador mavzular ham bloklanadi. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
