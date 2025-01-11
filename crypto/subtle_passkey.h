@@ -23,6 +23,10 @@ namespace chromeos::onc {
 crypto::SubtlePassKey MakeCryptoPassKey();
 }
 
+namespace os_crypt_async {
+class FreedesktopSecretKeyProvider;
+}
+
 class OSCryptImpl;
 
 namespace crypto {
@@ -57,9 +61,10 @@ class CRYPTO_EXPORT SubtlePassKey final {
   // arbitrary (possibly attacker-supplied) PBKDF2 parameters.
   friend SubtlePassKey chromeos::onc::MakeCryptoPassKey();
 
-  // This class uses custom PBKDF2 parameters and has to keep doing so for
+  // These classes use custom PBKDF2 parameters and have to keep doing so for
   // compatibility with existing persisted data.
   friend class ::OSCryptImpl;
+  friend class os_crypt_async::FreedesktopSecretKeyProvider;
 };
 
 }  // namespace crypto

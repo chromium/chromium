@@ -1,0 +1,132 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_OS_CRYPT_ASYNC_BROWSER_FREEDESKTOP_SECRET_KEY_PROVIDER_H_
+#define COMPONENTS_OS_CRYPT_ASYNC_BROWSER_FREEDESKTOP_SECRET_KEY_PROVIDER_H_
+
+#include <map>
+#include <memory>
+#include <optional>
+#include <string>
+#include <vector>
+
+#include "base/files/scoped_file.h"
+#include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
+#include "build/branding_buildflags.h"
+#include "components/dbus/properties/types.h"
+#include "components/dbus/utils/check_for_service_and_start.h"
+#include "components/dbus/utils/name_has_owner.h"
+#include "components/os_crypt/async/browser/key_provider.h"
+#include "crypto/encryptor.h"
+#include "dbus/bus.h"
+#include "dbus/object_path.h"
+#include "dbus/object_proxy.h"
+
+namespace os_crypt_async {
+
+// FreedesktopSecretKeyProvider uses the org.freedesktop.secrets interface
+// to retrieve a secret from backend (GNOME Keyring, KWallet, KeePassXC),
+// which can then be used to encrypt confidential data.
+class FreedesktopSecretKeyProvider : public KeyProvider {
+ public:
+  FreedesktopSecretKeyProvider(bool use_for_encryption,
+                               const std::string& product_name,
+                               scoped_refptr<dbus::Bus> bus);
+  ~FreedesktopSecretKeyProvider() override;
+
+  // KeyProvider:
+  void GetKey(KeyCallback callback) override;
+  bool UseForEncryption() override;
+  bool IsCompatibleWithOsCryptSync() override;
+
+ private:
+  FRIEND_TEST_ALL_PREFIXES(FreedesktopSecretKeyProviderTest, BasicHappyPath);
+  friend class FreedesktopSecretKeyProviderCompatTest;
+
+  using DbusSecret = DbusStruct</*session=*/DbusObjectPath,
+                                /*parameters=*/DbusByteArray,
+                                /*value=*/DbusByteArray,
+                                /*content_type=*/DbusString>;
+
+  static constexpr char kSecretServiceName[] = "org.freedesktop.secrets";
+  static constexpr char kSecretServicePath[] = "/org/freedesktop/secrets";
+  static constexpr char kSecretServiceInterface[] =
+      "org.freedesktop.Secret.Service";
+  static constexpr char kSecretCollectionInterface[] =
+      "org.freedesktop.Secret.Collection";
+  static constexpr char kSecretItemInterface[] = "org.freedesktop.Secret.Item";
+  static constexpr char kSecretSessionInterface[] =
+      "org.freedesktop.Secret.Session";
+
+  static constexpr char kMethodReadAlias[] = "ReadAlias";
+  static constexpr char kMethodGetSecret[] = "GetSecret";
+  static constexpr char kMethodOpenSession[] = "OpenSession";
+  static constexpr char kMethodClose[] = "Close";
+  static constexpr char kMethodSearchItems[] = "SearchItems";
+  static constexpr char kPropertiesInterface[] =
+      "org.freedesktop.DBus.Properties";
+  static constexpr char kMethodGet[] = "Get";
+
+  static constexpr char kDefaultAlias[] = "default";
+
+  // These constants are duplicated from the sync backend.
+  static constexpr char kApplicationAttributeKey[] = "application";
+  static constexpr char kSchemaAttributeKey[] = "xdg:schema";
+  static constexpr char kSchemaAttributeValue[] =
+      "chrome_libsecret_os_crypt_password_v2";
+
+  static constexpr char kAlgorithmPlain[] = "plain";
+  static constexpr char kInputPlain[] = "";
+  static constexpr char kMimePlain[] = "text/plain";
+
+  static constexpr char kSecretCollectionLabelProperty[] =
+      "org.freedesktop.Secret.Collection.Label";
+  static constexpr char kSecretItemAttributesProperty[] =
+      "org.freedesktop.Secret.Item.Attributes";
+  static constexpr char kSecretItemLabelProperty[] =
+      "org.freedesktop.Secret.Item.Label";
+  static constexpr char kDefaultCollectionLabel[] = "Default Keyring";
+  static constexpr char kLabelProperty[] = "Label";
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  static constexpr char kAppName[] = "chrome";
+#else
+  static constexpr char kAppName[] = "chromium";
+#endif
+
+  void OnServiceStarted(std::optional<bool> service_started);
+  void OnReadAliasDefault(std::optional<DbusObjectPath> collection_path);
+  void OnOpenSession(
+      std::optional<DbusParameters<DbusVariant, DbusObjectPath>> session_reply);
+  void OnSearchItems(std::optional<DbusArray<DbusObjectPath>> results);
+  void OnGetSecret(std::optional<DbusSecret> secret_reply);
+
+  void OpenSession();
+  void DeriveKeyFromSecret(base::span<const uint8_t> secret);
+  void FinalizeSuccess(Encryptor::Key key);
+  void FinalizeFailure();
+  void CloseSession();
+
+  raw_ptr<dbus::ObjectProxy> default_collection_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> session_proxy_ = nullptr;
+  bool session_opened_ = false;
+
+  const bool use_for_encryption_;
+  const std::string product_name_;
+  scoped_refptr<dbus::Bus> bus_;
+  KeyCallback key_callback_;
+
+  std::string secret_for_testing_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<FreedesktopSecretKeyProvider> weak_ptr_factory_{this};
+};
+
+}  // namespace os_crypt_async
+
+#endif  // COMPONENTS_OS_CRYPT_ASYNC_BROWSER_FREEDESKTOP_SECRET_KEY_PROVIDER_H_

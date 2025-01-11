@@ -51,6 +51,7 @@ class COMPONENT_EXPORT(OS_CRYPT_ASYNC) Encryptor {
     ~Key();
 
     static constexpr size_t kAES256GCMKeySize = 256u / 8u;
+    static constexpr size_t kAES128CBCKeySize = 128u / 8u;
 
     // Mojo uses this public constructor for serialization.
     explicit Key(mojo::DefaultConstruct::Tag);
