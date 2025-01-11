@@ -772,15 +772,15 @@ class GSL_POINTER span {
     requires(std::is_const_v<element_type> &&
              std::equality_comparable<const element_type>)
   {
-    return std::ranges::equal(span<const element_type>(lhs),
-                              span<const element_type>(rhs));
+    return std::ranges::equal(span<const element_type, extent>(lhs),
+                              span<const element_type, extent>(rhs));
   }
   friend constexpr bool operator==(span lhs,
                                    span<const element_type, extent> rhs)
     requires(!std::is_const_v<element_type> &&
              std::equality_comparable<const element_type>)
   {
-    return std::ranges::equal(span<const element_type>(lhs), rhs);
+    return std::ranges::equal(span<const element_type, extent>(lhs), rhs);
   }
   template <typename OtherElementType,
             size_t OtherExtent,
@@ -791,7 +791,7 @@ class GSL_POINTER span {
   friend constexpr bool operator==(
       span lhs,
       span<OtherElementType, OtherExtent, OtherInternalPtrType> rhs) {
-    return std::ranges::equal(span<const element_type>(lhs),
+    return std::ranges::equal(span<const element_type, extent>(lhs),
                               span<const OtherElementType, OtherExtent>(rhs));
   }
 
