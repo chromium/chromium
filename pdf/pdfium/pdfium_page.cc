@@ -79,6 +79,21 @@ enum class Rotation {
   kRotate270 = 3,
 };
 
+std::optional<Rotation> GetRotationFromRawValue(int rotation) {
+  switch (rotation) {
+    case 0:
+      return Rotation::kRotate0;
+    case 1:
+      return Rotation::kRotate90;
+    case 2:
+      return Rotation::kRotate180;
+    case 3:
+      return Rotation::kRotate270;
+    default:
+      return std::nullopt;
+  }
+}
+
 gfx::RectF FloatPageRectToPixelRect(FPDF_PAGE page, const gfx::RectF& input) {
   int output_width = FPDF_GetPageWidthF(page);
   int output_height = FPDF_GetPageHeightF(page);
@@ -746,9 +761,14 @@ gfx::RectF PDFiumPage::GetBoundingBox() {
     return gfx::RectF();
   }
 
+  std::optional<Rotation> rotation =
+      GetRotationFromRawValue(FPDFPage_GetRotation(page));
+  if (!rotation.has_value()) {
+    return gfx::RectF();
+  }
+
   // Page width and height are already swapped based on page rotation.
   gfx::SizeF page_size(FPDF_GetPageWidthF(page), FPDF_GetPageHeightF(page));
-  Rotation rotation = static_cast<Rotation>(FPDFPage_GetRotation(page));
 
   // Start with bounds with the left and bottom values at the max possible
   // bounds and the right and top values at the min possible bounds. Bounds are
@@ -779,10 +799,10 @@ gfx::RectF PDFiumPage::GetBoundingBox() {
   }
 
   gfx::RectF bounding_box =
-      GetRotatedRectF(rotation, page_size, largest_bounds);
+      GetRotatedRectF(rotation.value(), page_size, largest_bounds);
 
   gfx::RectF effective_crop_box =
-      GetEffectiveCropBox(page, rotation, page_size);
+      GetEffectiveCropBox(page, rotation.value(), page_size);
 
   // If the bounding box is empty, default to the effective crop box.
   if (bounding_box.IsEmpty()) {
