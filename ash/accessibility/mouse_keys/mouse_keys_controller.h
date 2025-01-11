@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/accessibility_controller_enums.h"
 #include "base/timer/timer.h"
 #include "ui/events/event.h"
 #include "ui/events/event_handler.h"
@@ -71,6 +72,10 @@ class ASH_EXPORT MouseKeysController : public ui::EventHandler {
     max_speed_ = factor * kBaseSpeedDIPPerSecond * kUpdateFrequencyInSeconds;
   }
 
+  gfx::Point GetLastMousePositionDips() const {
+    return last_mouse_position_dips_;
+  }
+
   enum MouseKey {
     kKeyUpLeft = 0,
     kKeyUp,
@@ -114,11 +119,15 @@ class ASH_EXPORT MouseKeysController : public ui::EventHandler {
                                    ui::DomCode input,
                                    MouseKey output);
   void PressKey(MouseKey key);
-  void ReleaseKey(MouseKey key);
-  void SelectNextButton();
   void RefreshVelocity();
-  void UpdateState();
+  void ReleaseKey(MouseKey key);
   void ResetMovement();
+  void SelectNextButton();
+  void UpdateCurrentMouseButton(MouseButton mouse_button);
+  void UpdateMouseKeysBubble(bool visible,
+                             MouseKeysBubbleIconType icon,
+                             const int name_resource_id);
+  void UpdateState();
 
   bool enabled_ = false;
   bool paused_ = false;

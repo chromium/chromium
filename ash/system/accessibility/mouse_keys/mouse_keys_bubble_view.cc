@@ -71,13 +71,15 @@ MouseKeysBubbleView::MouseKeysBubbleView() {
   SetLayoutManager(std::move(layout));
   UseCompactMargins();
 
-  AddChildView(
-      CreateLabelView(std::u16string(), kColorAshTextColorPrimary, &label_));
-
+  // Add icons.
   AddChildView(
       CreateImageView(kSystemMenuMouseIcon, &mouse_button_change_icon_));
   // TODO(crbug.com/380053616): Change to the correct drag icon.
   AddChildView(CreateImageView(kWmModeGestureResizeIcon, &mouse_drag_icon_));
+
+  // Add label.
+  AddChildView(
+      CreateLabelView(std::u16string(), kColorAshTextColorPrimary, &label_));
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kGenericContainer);
   // Note: this static variable is used so that this view can be identified
@@ -112,6 +114,15 @@ void MouseKeysBubbleView::OnBeforeBubbleWidgetInit(
 
 std::u16string MouseKeysBubbleView::GetTextForTesting() const {
   return label_->GetText();
+}
+
+views::ImageView* MouseKeysBubbleView::GetMouseButtonChangeIconForTesting()
+    const {
+  return mouse_button_change_icon_;
+}
+
+views::ImageView* MouseKeysBubbleView::GetMouseDragIconForTesting() const {
+  return mouse_drag_icon_;
 }
 
 BEGIN_METADATA(MouseKeysBubbleView)

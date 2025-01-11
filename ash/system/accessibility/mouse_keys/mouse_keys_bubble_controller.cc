@@ -24,8 +24,17 @@ void MouseKeysBubbleController::UpdateBubble(
     MouseKeysBubbleIconType icon,
     const std::optional<std::u16string>& text) {
   EnsureInitialize();
+
+  gfx::Point cursor_position =
+      Shell::Get()->mouse_keys_controller()->GetLastMousePositionDips();
+  cursor_position.Offset(16, 16);
+
+  if (mouse_keys_bubble_view_) {
+    mouse_keys_bubble_view_->SetAnchorRect(
+        gfx::Rect(cursor_position, gfx::Size()));
+  }
+
   Update(icon, text);
-  // TODO(crbug.com/380053616) implement logic to make bubble follow cursor.
   widget_->SetVisible(visible);
   Update(icon, text);
 }

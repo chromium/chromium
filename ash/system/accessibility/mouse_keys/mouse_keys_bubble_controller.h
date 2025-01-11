@@ -42,6 +42,7 @@ class ASH_EXPORT MouseKeysBubbleController : public views::ViewObserver {
 
  private:
   friend class MouseKeysBubbleControllerTest;
+  friend class MouseKeysTest;
 
   // Performs initialization if necessary.
   void EnsureInitialize();

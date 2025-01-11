@@ -41,6 +41,8 @@ class ASH_EXPORT MouseKeysBubbleView : public views::BubbleDialogDelegateView {
                                 views::Widget* widget) const override;
 
   std::u16string GetTextForTesting() const;
+  views::ImageView* GetMouseButtonChangeIconForTesting() const;
+  views::ImageView* GetMouseDragIconForTesting() const;
 
  private:
   raw_ptr<views::Label> label_ = nullptr;

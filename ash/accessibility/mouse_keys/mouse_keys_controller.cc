@@ -9,9 +9,11 @@
 
 #include "ash/accessibility/mouse_keys/mouse_keys_controller.h"
 
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/window_tree_host_lookup.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/accessibility/mouse_keys/mouse_keys_bubble_controller.h"
 #include "ash/wm/window_util.h"
 #include "base/containers/flat_map.h"
@@ -20,6 +22,7 @@
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event_sink.h"
 #include "ui/events/event_utils.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -99,9 +102,14 @@ MouseKeysController::~MouseKeysController() {
 void MouseKeysController::Toggle() {
   paused_ = !paused_;
   if (paused_) {
+    UpdateMouseKeysBubble(true, MouseKeysBubbleIconType::kHidden,
+                          IDS_ASH_MOUSE_KEYS_PAUSED);
     // Reset everything when pausing.
     ResetMovement();
     dragging_ = false;
+  } else {
+    UpdateMouseKeysBubble(true, MouseKeysBubbleIconType::kHidden,
+                          IDS_ASH_MOUSE_KEYS_RESUMED);
   }
 }
 
@@ -265,10 +273,15 @@ void MouseKeysController::PressKey(MouseKey key) {
       break;
     case kKeyClick:
     case kKeyDragStart:
-      if (!dragging_) {
-        SendMouseEventToLocation(ui::EventType::kMousePressed,
-                                 last_mouse_position_dips_);
-        dragging_ = true;
+      if (dragging_) {
+        break;
+      }
+      SendMouseEventToLocation(ui::EventType::kMousePressed,
+                               last_mouse_position_dips_);
+      dragging_ = true;
+      if (key == kKeyDragStart) {
+        UpdateMouseKeysBubble(true, MouseKeysBubbleIconType::kMouseDrag,
+                              IDS_ASH_MOUSE_KEYS_PERIOD_RELEASE);
       }
       break;
     case kKeyDragStop:
@@ -276,6 +289,8 @@ void MouseKeysController::PressKey(MouseKey key) {
         SendMouseEventToLocation(ui::EventType::kMouseReleased,
                                  last_mouse_position_dips_);
         dragging_ = false;
+        UpdateMouseKeysBubble(false, MouseKeysBubbleIconType::kMouseDrag,
+                              IDS_ASH_MOUSE_KEYS_PERIOD_RELEASE);
       }
       break;
     case kKeyDoubleClick:
@@ -293,13 +308,13 @@ void MouseKeysController::PressKey(MouseKey key) {
       }
       break;
     case kKeySelectLeftButton:
-      current_mouse_button_ = kLeft;
+      UpdateCurrentMouseButton(kLeft);
       break;
     case kKeySelectRightButton:
-      current_mouse_button_ = kRight;
+      UpdateCurrentMouseButton(kRight);
       break;
     case kKeySelectBothButtons:
-      current_mouse_button_ = kBoth;
+      UpdateCurrentMouseButton(kBoth);
       break;
     case kKeySelectNextButton:
       SelectNextButton();
@@ -345,13 +360,33 @@ void MouseKeysController::ReleaseKey(MouseKey key) {
 void MouseKeysController::SelectNextButton() {
   switch (current_mouse_button_) {
     case kLeft:
-      current_mouse_button_ = kRight;
+      UpdateCurrentMouseButton(kRight);
       break;
     case kRight:
-      current_mouse_button_ = kBoth;
+      UpdateCurrentMouseButton(kBoth);
       break;
     case kBoth:
+      UpdateCurrentMouseButton(kLeft);
+      break;
+  }
+}
+
+void MouseKeysController::UpdateCurrentMouseButton(MouseButton mouse_button) {
+  switch (mouse_button) {
+    case kLeft:
       current_mouse_button_ = kLeft;
+      UpdateMouseKeysBubble(true, MouseKeysBubbleIconType::kButtonChanged,
+                            IDS_ASH_MOUSE_KEYS_LEFT_MOUSE_BUTTON);
+      break;
+    case kRight:
+      current_mouse_button_ = kRight;
+      UpdateMouseKeysBubble(true, MouseKeysBubbleIconType::kButtonChanged,
+                            IDS_ASH_MOUSE_KEYS_RIGHT_MOUSE_BUTTON);
+      break;
+    case kBoth:
+      current_mouse_button_ = kBoth;
+      UpdateMouseKeysBubble(true, MouseKeysBubbleIconType::kButtonChanged,
+                            IDS_ASH_MOUSE_KEYS_BOTH_MOUSE_BUTTONS);
       break;
   }
 }
@@ -408,6 +443,13 @@ void MouseKeysController::UpdateState() {
   double acceleration = acceleration_ * kBaseAccelerationDIPPerSecondSquared *
                         kUpdateFrequencyInSeconds;
   speed_ = std::clamp(speed_ + acceleration, 0.0, max_speed_);
+}
+
+void MouseKeysController::UpdateMouseKeysBubble(bool visible,
+                                                MouseKeysBubbleIconType icon,
+                                                const int name_resource_id) {
+  mouse_keys_bubble_controller_->UpdateBubble(
+      visible, icon, l10n_util::GetStringUTF16(name_resource_id));
 }
 
 void MouseKeysController::ResetMovement() {
