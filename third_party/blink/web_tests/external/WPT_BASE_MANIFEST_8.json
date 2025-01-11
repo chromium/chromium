@@ -302206,6 +302206,73 @@
        {}
       ]
      ],
+     "reftests": {
+      "discard-check-remove.svg": [
+       "a63eee29c93f2f295e26ad6e5ecf96b59dc519fa",
+       [
+        null,
+        [
+         [
+          "/svg/animations/reftests/reference/green-100x100.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "discard-rect-as-child.svg": [
+       "93e14c0d73e6ea14d910507047a3ba00c637cf74",
+       [
+        null,
+        [
+         [
+          "/svg/animations/reftests/reference/green-100x100.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "discard-rect-as-href.svg": [
+       "e9cf560991e86f9751b20ac7cd1a6227ad3d5861",
+       [
+        null,
+        [
+         [
+          "/svg/animations/reftests/reference/green-100x100.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "discard-rect-with-anim-child-a.svg": [
+       "57e6cb2d442a67284d8eed3690d47228bf8de28b",
+       [
+        null,
+        [
+         [
+          "/svg/animations/reftests/reference/green-100x100.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "discard-rect-with-anim-child-b.svg": [
+       "5b1fc113c4fac8f28357e1c2fced67786fd91138",
+       [
+        null,
+        [
+         [
+          "/svg/animations/reftests/reference/green-100x100.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ]
+     },
      "scripted": {
       "animateMotion-animated-line.svg": [
        "5e853dab03a547f2e963e0ecc51048a9ea3ea307",
@@ -352090,10 +352157,6 @@
       "28b00184c2ef5f33f6a2e8927233f6f7f42b1973",
       []
      ],
-     "selection-target-expected.txt": [
-      "15f9d06c0d854aec4b7d102bf9724cd2d59a9e6f",
-      []
-     ],
      "snap-after-initial-layout": {
       "scroll-snap-initial-layout-000-ref.html": [
        "a2281dc47c6948a346a5c3e9e836e9e5ff53740f",
@@ -372417,7 +372480,7 @@
     ],
     "include": {
      "editor-test-utils.js": [
-      "b2e53515e0f794fab0900cd7ec3b26a953bcf640",
+      "0bf2d4b2fae5264154216718366ff3f630535514",
       []
      ],
      "implementation.js": [
@@ -407543,12 +407606,6 @@
      "0cc01909796fcce22401ef0ed2ffda3582f56634",
      []
     ],
-    "compat": {
-     "pointerevent_mouseevent_key_pressed-expected.txt": [
-      "74c68e81063fac572955ab5f9cf7ecb6af61247f",
-      []
-     ]
-    },
     "pointerevent_after_target_removed_from_slot_mouse-expected.txt": [
      "629baaba8c5990e4d847014619a9d1d6f5e98d1c",
      []
@@ -407571,10 +407628,6 @@
     ],
     "pointerevent_pointercapture_in_frame_touch-expected.txt": [
      "a9b817ec4e51ba4b29149ab81d112c8dec732f87",
-     []
-    ],
-    "pointerevent_pointermove_after_pointerup_target_removed-expected.txt": [
-     "8d5fc176e25f1df475f5460d1b906f120916e253",
      []
     ],
     "pointerevent_pointerout_no_pointer_movement-expected.txt": [
@@ -410739,24 +410792,12 @@
      "f2fd5cd11426a1d98aada66b39d34f21f1d97a28",
      []
     ],
-    "event-before-promise-expected.txt": [
-     "fe1fb6732e860527bb2f2d732c41ced6451b6f35",
-     []
-    ],
     "fullscreen-interactions-expected.txt": [
      "0ac1e88666762cb57441bfd0a9bbc7daaff4cce7",
      []
     ],
-    "lock-basic-expected.txt": [
-     "da1b5878004486005d7117c7cb4ef2f574dc753e",
-     []
-    ],
     "nested-documents-expected.txt": [
      "e5b009f4e6c6403d314e431210f579935df57685",
-     []
-    ],
-    "onchange-event-expected.txt": [
-     "052fa4e06208e44455da67612c0b9338d3da6301",
      []
     ],
     "resources": {
@@ -416486,6 +416527,18 @@
       "d56c7b8cb737d21aa2df4a803fa333ad5ebd56ae",
       []
      ],
+     "discard-check-removal-order-expected.txt": [
+      "5345a9cfb5c6c9d7c8fb285ad94fabf8efda394c",
+      []
+     ],
+     "reftests": {
+      "reference": {
+       "green-100x100.svg": [
+        "120941444a4898197d6b6001f9908a6cd48b62ba",
+        []
+       ]
+      }
+     },
      "support": {
       "animated-path-helpers.js": [
        "8fd4492265c2eb8aa00fb173bd8d625f119adaac",
@@ -424558,10 +424611,6 @@
      []
     ],
     "cookies": {
-     "006_wss_wpt_flags=https-expected.txt": [
-      "07c0600881310a25b8369bd2ae2b7dd769bd1dbc",
-      []
-     ],
      "007_default-expected.txt": [
       "2c576976391c1c0d58b3d9283364e043f5c5ae60",
       []
@@ -490380,6 +490429,27 @@
     "css-masonry": {
      "tentative": {
       "parsing": {
+       "masonry-auto-tracks-computed.html": [
+        "2581a35292f65cba7bd4d74cecad454ce349ce54",
+        [
+         null,
+         {}
+        ]
+       ],
+       "masonry-auto-tracks-invalid.html": [
+        "e23933ecd295866a9335511b2c85880164ceceda",
+        [
+         null,
+         {}
+        ]
+       ],
+       "masonry-auto-tracks-valid.html": [
+        "b0c1424fa726818763db3bde4a62993db3a5418b",
+        [
+         null,
+         {}
+        ]
+       ],
        "masonry-direction-computed.html": [
         "d94476540f59d254ba58c3c0513420a1e9afd608",
         [
@@ -525397,6 +525467,27 @@
       [
        null,
        {}
+      ]
+     ],
+     "paste-multiline-text-as-plaintext.tentative.https.html": [
+      "7380e1840688e63f929832641e4e4f9d16e65ab5",
+      [
+       "editing/other/paste-multiline-text-as-plaintext.tentative.https.html?white-space=pre",
+       {
+        "testdriver": true
+       }
+      ],
+      [
+       "editing/other/paste-multiline-text-as-plaintext.tentative.https.html?white-space=pre-line",
+       {
+        "testdriver": true
+       }
+      ],
+      [
+       "editing/other/paste-multiline-text-as-plaintext.tentative.https.html?white-space=pre-wrap",
+       {
+        "testdriver": true
+       }
       ]
      ],
      "paste_text_with_text_transform.html": [
@@ -624895,6 +624986,15 @@
           }
          ]
         ],
+        "select-events-2.tentative.html": [
+         "bc706414a28f02474fd077e96f3cc660abed5e01",
+         [
+          null,
+          {
+           "testdriver": true
+          }
+         ]
+        ],
         "select-events.tentative.html": [
          "a1f98bc05301f69e6d5029f21fdd27e0aef18dfc",
          [
@@ -625003,6 +625103,15 @@
           {}
          ]
         ],
+        "select-pseudo-open.tentative.html": [
+         "21dd0aef2aa3afb5b07ebff6ddf7e71366f49c31",
+         [
+          null,
+          {
+           "testdriver": true
+          }
+         ]
+        ],
         "select-size-change.html": [
          "3ca164a13078630f108f06278a5c8d4e31363b37",
          [
@@ -625029,6 +625138,13 @@
            "testdriver": true,
            "timeout": "long"
           }
+         ]
+        ],
+        "select-value-selectedOption.tentative.html": [
+         "8240f6bf7f79f80dc2e404b174af1ad9bb2c675b",
+         [
+          null,
+          {}
          ]
         ],
         "selectedcontent-restore.tentative.html": [
@@ -625094,15 +625210,6 @@
          {}
         ]
        ],
-       "select-events.tentative.html": [
-        "bc706414a28f02474fd077e96f3cc660abed5e01",
-        [
-         null,
-         {
-          "testdriver": true
-         }
-        ]
-       ],
        "select-many-options.tentative.html": [
         "2aef5b138afd9863b954af9544909f2d4c2bb977",
         [
@@ -625146,15 +625253,6 @@
        ],
        "select-pseudo-light-dismiss-invalidation.tentative.html": [
         "749fd8cf27580b98174e87f2a4cb5835cc74e995",
-        [
-         null,
-         {
-          "testdriver": true
-         }
-        ]
-       ],
-       "select-pseudo-open-closed.tentative.html": [
-        "21dd0aef2aa3afb5b07ebff6ddf7e71366f49c31",
         [
          null,
          {
@@ -625224,13 +625322,6 @@
        ],
        "select-value-option.tentative.html": [
         "28f9b7413e0fab542d227d65e81a8d51206b4987",
-        [
-         null,
-         {}
-        ]
-       ],
-       "select-value-selectedOption.tentative.html": [
-        "8240f6bf7f79f80dc2e404b174af1ad9bb2c675b",
         [
          null,
          {}
@@ -702428,6 +702519,13 @@
        {}
       ]
      ],
+     "discard-check-removal-order.html": [
+      "2935a69addaabdeee2eb381de847cd7f77688ce3",
+      [
+       null,
+       {}
+      ]
+     ],
      "end-attribute-change-end-time.html": [
       "9f05d7d405d364a1eadfa104c1c4bd90a2bf3b8c",
       [
@@ -703605,7 +703703,7 @@
      ]
     ],
     "idlharness.window.js": [
-     "a26fa2bef6d71efea2981f1122b3455ffbac25cd",
+     "b363128c25a9068df93b26966b82b50cdd9b87f7",
      [
       "svg/idlharness.window.html",
       {
