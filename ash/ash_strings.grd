@@ -1284,8 +1284,11 @@ Style notes:
     system tray to toggle on/off spoken feedback feature.">
         ChromeVox (spoken feedback)
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MOUSE_KEYS" desc="The label used in the accessibility menu of the system tray to pause/resume the mouse keys feature.">
-        Mouse keys
+      <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MOUSE_KEYS_RESUME" desc="The label used in the accessibility menu of the system tray to pause/resume the mouse keys feature.">
+        Resume mouse keys
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MOUSE_KEYS_PAUSE" desc="The label used in the accessibility menu of the system tray to pause/resume the mouse keys feature.">
+        Pause mouse keys
       </message>
       <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SELECT_TO_SPEAK" desc="The label used in the accessibility menu of the system tray to toggle on/off the select-to-speak feature.">
         Select-to-speak
@@ -4516,7 +4519,7 @@ No devices connected.
         Mirror monitors
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_MOUSE_KEYS" desc="Label for accelerator action - Pause and resume mouse keys.">
-        Pause/resume mouse keys when it's on
+        When turned on, pause and resume mouse keys
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_OVERVIEW" desc="Label for accelerator action - Overview mode.">
         Overview mode
