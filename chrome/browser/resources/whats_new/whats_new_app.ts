@@ -11,7 +11,7 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isChromeOS} from 'chrome://resources/js/platform.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-import type {JSTime, TimeDelta} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
+import type {TimeDelta} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {ModulePosition, ScrollDepth} from './whats_new.mojom-webui.js';
@@ -204,7 +204,7 @@ function handleBrowserCommand(messageData: BrowserCommand) {
 
 function handlePageLoadMetric(data: PageLoadedMetric, isAutoOpen: boolean) {
   const {handler} = WhatsNewProxyImpl.getInstance();
-  const now: JSTime = {msec: Date.now()};
+  const now = new Date();
   handler.recordTimeToLoadContent(now);
 
   // Record initial scroll depth as 0%.

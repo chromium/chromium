@@ -48,6 +48,7 @@
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/mojom/base/time.mojom.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 
 namespace content {
@@ -111,6 +112,10 @@ class WebUITsMojoTestCacheImpl : public mojom::WebUITsMojoTestCache {
         optional_bools, optional_ints, optional_enums, bool_map, int_map,
         enum_map, simple_mapped->Clone(), nested_mapped->Clone(),
         dict_ptr ? dict_ptr->Clone() : nullptr);
+  }
+
+  void EchoTypemaps(base::Time time, EchoTypemapsCallback cb) override {
+    std::move(cb).Run(time);
   }
 
  private:

@@ -6,6 +6,7 @@ module content.mojom;
 
 import "content/test/data/web_ui_ts_test_types.test-mojom";
 import "content/test/data/web_ui_ts_test_other_types.test-mojom";
+import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/url.mojom";
 
 enum TestEnum {
@@ -63,4 +64,8 @@ interface WebUITsMojoTestCache {
     SimpleMappedType simple_mapped_type,
     NestedMappedType nested_mapped_type,
     StringDict? other_mapped_type);
+
+  EchoTypemaps(
+    mojo_base.mojom.JSTime time
+  ) => (mojo_base.mojom.JSTime time);
 };

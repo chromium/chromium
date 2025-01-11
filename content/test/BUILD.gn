@@ -1150,7 +1150,10 @@ mojom("web_ui_ts_test_mojo_bindings") {
     "data/web_ui_ts_test.test-mojom",
     "data/web_ui_ts_test_types.test-mojom",
   ]
-  public_deps = [ "//url/mojom:url_mojom_gurl" ]
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_gurl",
+  ]
   webui_module_path = "/content/test/data"
 
   deps = [ ":web_ui_ts_test_other_mojo_bindings" ]

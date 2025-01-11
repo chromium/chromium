@@ -40,9 +40,7 @@ export function getSessionConfigMojomToUI(session: Config|
   return {
   sessionDurationInMinutes:
     Number(session.sessionDuration.microseconds / MICRO_SECS_IN_MINUTES),
-        sessionStartTime: session.sessionStartTime?.msec ?
-        new Date(session.sessionStartTime.msec) :
-        undefined,
+        sessionStartTime: session.sessionStartTime || undefined,
         teacher: session.teacher ? {
           id: session.teacher.id,
           name: session.teacher.name,

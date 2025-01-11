@@ -94,7 +94,7 @@ export class RecentlyUsedStore {
     const mergedHistory: EmojiHistoryItem[] =
         prefsHistory.history.map((item) => ({
                                    base: {string: item.emoji},
-                                   timestamp: item.timestamp.msec,
+                                   timestamp: item.timestamp.getTime(),
                                    alternates: [],
                                  }));
     for (const item of this.store.data.history) {
@@ -244,9 +244,7 @@ export class RecentlyUsedStore {
               .map((x) => ({
                      // Explicit cast here is safe due to filter above.
                      emoji: x.base.string!,
-                     timestamp: {
-                       msec: x.timestamp || 0,
-                     },
+                     timestamp: new Date(x.timestamp || 0),
                    })));
     }
   }

@@ -647,6 +647,19 @@ mojom_component("base") {
       ]
     },
   ]
+
+  ts_typemaps = [
+    {
+      types = [
+        {
+          mojom = "mojo_base.mojom.JSTime"
+          ts = "Date"
+          converter = "JsTimeConverter"
+          import = "time_converters.js"
+        },
+      ]
+    },
+  ]
 }
 
 mojom_component("protobuf_support") {

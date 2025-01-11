@@ -100,15 +100,13 @@ function onReceiveNewPlaybackStatus(newPlaybackStatus: PlaybackStatus) {
       state: getPlaybackState(newPlaybackStatus.state),
       title: currentTrack.title,
       url: currentTrack.mediaUrl,
-      clientCurrentTime: {msec: clientCurrentTime.getTime()},
+      clientCurrentTime: clientCurrentTime,
       playbackStartOffset: playbackStartOffset,
       mediaTimeCurrent: newPlaybackStatus.position,
       mediaStart: start,
       mediaEnd: end,
-      clientStartTime: {
-        msec: (initial ? newPlaybackStatus.loadTime : clientTimeLastReport)
-                  .getTime(),
-      },
+      clientStartTime: initial ? newPlaybackStatus.loadTime :
+                                 clientTimeLastReport,
       initialPlayback: initial,
     });
     playbackStatus = newPlaybackStatus;
