@@ -342,6 +342,11 @@ def generate_package_list(arch: str) -> dict[str, str]:
 def hacks_and_patches(install_root: str, script_dir: str, arch: str) -> None:
     banner("Misc Hacks & Patches")
 
+    debian_dir = os.path.join(install_root, "debian")
+    control_file = os.path.join(debian_dir, "control")
+    # Create an empty control file
+    open(control_file, "a").close()
+
     # Remove an unnecessary dependency on qtchooser.
     qtchooser_conf = os.path.join(install_root, "usr", "lib", TRIPLES[arch],
                                   "qt-default/qtchooser/default.conf")
@@ -398,10 +403,6 @@ def install_into_sysroot(build_dir: str, install_root: str,
 
     debian_dir = os.path.join(install_root, "debian")
     os.makedirs(debian_dir, exist_ok=True)
-    control_file = os.path.join(debian_dir, "control")
-    # Create an empty control file
-    open(control_file, "a").close()
-
     for package, sha256sum in packages.items():
         package_name = os.path.basename(package)
         package_path = os.path.join(debian_packages_dir, package_name)
@@ -590,15 +591,63 @@ def strip_sections(install_root: str):
                 subprocess.run(objcopy_cmd, check=True, stderr=subprocess.PIPE)
 
 
+def record_metadata(install_root: str) -> dict[str, tuple[float, float]]:
+    """
+    Recursively walk the install_root directory and record the metadata of all
+    files. Symlinks are not followed. Returns a dictionary mapping each path
+    (relative to install_root) to its original metadata.
+    """
+    metadata = {}
+    for root, dirs, files in os.walk(install_root):
+        for name in dirs + files:
+            full_path = os.path.join(root, name)
+            rel_path = os.path.relpath(full_path, install_root)
+            st = os.lstat(full_path)
+            metadata[rel_path] = (st.st_atime, st.st_mtime)
+    return metadata
+
+
+def restore_metadata(install_root: str,
+                     old_meta: dict[str, tuple[float, float]]) -> None:
+    """
+    1. Restore the metadata of any file that exists in old_meta.
+    2. For all other files, set their timestamp to ARCHIVE_TIMESTAMP.
+    3. For all directories (including install_root), set the timestamp
+       to ARCHIVE_TIMESTAMP.
+    """
+    # Convert the timestamp to a UNIX epoch time.
+    archive_time = time.mktime(
+        time.strptime(ARCHIVE_TIMESTAMP, "%Y%m%dT%H%M%SZ"))
+
+    # Walk through the install_root, applying old_meta where available;
+    # otherwise set times to archive_time.
+    for root, dirs, files in os.walk(install_root):
+        # Directories get archive_time.
+        os.utime(root, (archive_time, archive_time))
+
+        # Files: old_meta if available, else archive_time.
+        for file_name in files:
+            file_path = os.path.join(root, file_name)
+            if os.path.lexists(file_path):
+                rel_path = os.path.relpath(file_path, install_root)
+                if rel_path in old_meta:
+                    restore_time = old_meta[rel_path]
+                else:
+                    restore_time = (archive_time, archive_time)
+                os.utime(file_path, restore_time, follow_symlinks=False)
+
+
 def build_sysroot(arch: str) -> None:
     install_root = os.path.join(BUILD_DIR, f"{RELEASE}_{arch}_staging")
     clear_install_dir(install_root)
     packages = generate_package_list(arch)
     install_into_sysroot(BUILD_DIR, install_root, packages)
+    old_metadata = record_metadata(install_root)
     hacks_and_patches(install_root, SCRIPT_DIR, arch)
     cleanup_jail_symlinks(install_root)
     removing_unnecessary_files(install_root, arch)
     strip_sections(install_root)
+    restore_metadata(install_root, old_metadata)
     create_tarball(install_root, arch)
 
 
