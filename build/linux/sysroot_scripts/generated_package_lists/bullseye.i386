@@ -5,7 +5,6 @@ https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/a/alsa-lib
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/a/alsa-lib/libasound2-dev_1.2.4-1.1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/a/alsa-lib/libasound2_1.2.4-1.1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/a/aom/libaom0_1.0.0.errata1-3_i386.deb
-https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/a/aom/libaom3_3.6.0-1~bpo11+1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/a/apparmor/libapparmor1_2.13.6-10_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/a/argon2/libargon2-1_0~20171227-0.2_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/a/at-spi2-atk/libatk-bridge2.0-0_2.38.0-4~bpo11+1_i386.deb
@@ -17,7 +16,6 @@ https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/a/atk1.0/g
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/a/atk1.0/libatk1.0-0_2.38.0-1~bpo11+1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/a/atk1.0/libatk1.0-data_2.38.0-1~bpo11+1_all.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/a/atk1.0/libatk1.0-dev_2.38.0-1~bpo11+1_i386.deb
-https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/a/attr/libattr1_2.4.48-6_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/a/audit/libaudit-common_3.0-2_all.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/a/audit/libaudit1_3.0-2_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/a/avahi/libavahi-client3_0.8-5+deb11u2_i386.deb
@@ -41,9 +39,7 @@ https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/c/cairo/li
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/c/cairo/libcairo2-dev_1.16.0-5_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/c/cairo/libcairo2_1.16.0-5_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/c/chromaprint/libchromaprint1_1.5.0-2_i386.deb
-https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/c/cjson/libcjson1_1.7.14-1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/c/codec2/libcodec2-0.9_0.9.2-4_i386.deb
-https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/c/codec2/libcodec2-1.0_1.0.5-1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/c/colord/libcolord2_1.4.5-3_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/c/coreutils/coreutils_8.32-4_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/c/cryptsetup/libcryptsetup12_2.3.7-1+deb11u1_i386.deb
@@ -56,9 +52,7 @@ https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/c/curl/lib
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/c/cyrus-sasl2/libsasl2-2_2.1.27+dfsg-2.1+deb11u1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/c/cyrus-sasl2/libsasl2-modules-db_2.1.27+dfsg-2.1+deb11u1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/d/dav1d/libdav1d4_0.7.1-3_i386.deb
-https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/d/dav1d/libdav1d6_1.0.0-2_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/d/db5.3/libdb5.3_5.3.28+dfsg1-0.8_i386.deb
-https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/d/dbus-glib/libdbus-glib-1-2_0.110-6_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/d/dbus/dbus-bin_1.14.6-1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/d/dbus/dbus-daemon_1.14.6-1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/d/dbus/dbus-session-bus-common_1.14.6-1_all.deb
@@ -83,16 +77,12 @@ https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/e/expat/li
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/e/expat/libexpat1_2.2.10-2+deb11u5_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/f/ffmpeg/libavcodec-dev_4.3.5-0+deb11u1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/f/ffmpeg/libavcodec58_4.3.5-0+deb11u1_i386.deb
-https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/f/ffmpeg/libavcodec59_5.1.3-1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/f/ffmpeg/libavformat-dev_4.3.5-0+deb11u1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/f/ffmpeg/libavformat58_4.3.5-0+deb11u1_i386.deb
-https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/f/ffmpeg/libavformat59_5.1.3-1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/f/ffmpeg/libavutil-dev_4.3.5-0+deb11u1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/f/ffmpeg/libavutil56_4.3.5-0+deb11u1_i386.deb
-https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/f/ffmpeg/libavutil57_5.1.3-1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/f/ffmpeg/libswresample-dev_4.3.5-0+deb11u1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/f/ffmpeg/libswresample3_4.3.5-0+deb11u1_i386.deb
-https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/f/ffmpeg/libswresample4_5.1.3-1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/f/flac/libflac-dev_1.3.3-2+deb11u1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/f/flac/libflac8_1.3.3-2+deb11u1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/f/fontconfig/fontconfig-config_2.13.1-4.2_all.deb
@@ -127,8 +117,6 @@ https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/g/gcc-defa
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/g/gcc-defaults/gcc_10.2.1-1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/g/gdbm/libgdbm-compat4_1.19-2_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/g/gdbm/libgdbm6_1.19-2_i386.deb
-https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/g/gdk-pixbuf-xlib/libgdk-pixbuf-xlib-2.0-0_2.40.2-2_i386.deb
-https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/g/gdk-pixbuf-xlib/libgdk-pixbuf2.0-0_2.40.2-2_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/g/gdk-pixbuf/gir1.2-gdkpixbuf-2.0_2.42.2+dfsg-1+deb11u1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/g/gdk-pixbuf/libgdk-pixbuf-2.0-0_2.42.2+dfsg-1+deb11u1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/g/gdk-pixbuf/libgdk-pixbuf-2.0-dev_2.42.2+dfsg-1+deb11u1_i386.deb
@@ -185,8 +173,6 @@ https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/h/harfbuzz
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/h/harfbuzz/libharfbuzz-icu0_2.7.4-1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/h/harfbuzz/libharfbuzz0b_2.7.4-1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/h/hicolor-icon-theme/hicolor-icon-theme_0.17-2_all.deb
-https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/h/highway/libhwy1_1.0.3-3_i386.deb
-https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/i/icu-le-hb/libicu-le-hb0_1.0.3+git180724-3+b2_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/i/icu/icu-devtools_67.1-7_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/i/icu/libicu-dev_67.1-7_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/i/icu/libicu67_67.1-7_i386.deb
@@ -194,7 +180,6 @@ https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/i/iptables
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/i/isl/libisl23_0.23-1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/j/jbigkit/libjbig-dev_2.1-3.1+b2_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/j/jbigkit/libjbig0_2.1-3.1+b2_i386.deb
-https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/j/jpeg-xl/libjxl0.7_0.7.0-10_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/j/json-c/libjson-c5_0.15-2_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/j/json-glib/libjson-glib-1.0-0_1.6.2-1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/j/json-glib/libjson-glib-1.0-common_1.6.2-1_all.deb
@@ -235,8 +220,6 @@ https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libd/libda
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libd/libdbusmenu/gir1.2-dbusmenu-glib-0.4_18.10.20180917~bzr492+repack1-2_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libd/libdbusmenu/libdbusmenu-glib-dev_18.10.20180917~bzr492+repack1-2_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libd/libdbusmenu/libdbusmenu-glib4_18.10.20180917~bzr492+repack1-2_i386.deb
-https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libd/libdbusmenu/libdbusmenu-gtk3-4_18.10.20180917~bzr492+repack1-2_i386.deb
-https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libd/libdbusmenu/libdbusmenu-gtk4_18.10.20180917~bzr492+repack1-2_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libd/libdeflate/libdeflate-dev_1.10-2~bpo11+1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libd/libdeflate/libdeflate0_1.10-2~bpo11+1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libd/libdrm/libdrm-amdgpu1_2.4.104-1_i386.deb
@@ -279,8 +262,6 @@ https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libg/libgu
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libg/libgudev/libgudev-1.0-dev_234-1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libi/libice/libice-dev_1.0.10-1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libi/libice/libice6_1.0.10-1_i386.deb
-https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libi/libidl/libidl-2-0_0.8.14-4+b12_i386.deb
-https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libi/libidn/libidn11_1.33-3_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libi/libidn2/libidn2-0_2.3.0-5_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libi/libidn2/libidn2-dev_2.3.0-5_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libi/libinput/libinput-bin_1.16.4-3_i386.deb
@@ -294,7 +275,6 @@ https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libj/libjs
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libm/libmd/libmd0_1.0.3-3_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libn/libnsl/libnsl-dev_1.3.0-2_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libn/libnsl/libnsl2_1.3.0-2_i386.deb
-https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libn/libnss-db/libnss-db_2.2.3pre1-6+b10_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libo/libogg/libogg-dev_1.3.4-0.1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libo/libogg/libogg0_1.3.4-0.1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libo/libopenmpt/libopenmpt0_0.4.11-1_i386.deb
@@ -307,7 +287,6 @@ https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libp/libps
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libp/libpthread-stubs/libpthread-stubs0-dev_0.4-1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libr/librabbitmq/librabbitmq4_0.10.0-1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libr/librest/librest-0.7-0_0.8.1-1.1_i386.deb
-https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libr/librist/librist4_0.2.7+dfsg-1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libr/librsvg/librsvg2-2_2.50.3+dfsg-1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libs/libseccomp/libseccomp2_2.5.1-1+deb11u1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libs/libselinux/libselinux1-dev_3.1-3_i386.deb
@@ -335,7 +314,6 @@ https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libt/libth
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libt/libtirpc/libtirpc-common_1.3.1-1+deb11u1_all.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libt/libtirpc/libtirpc-dev_1.3.1-1+deb11u1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libt/libtirpc/libtirpc3_1.3.1-1+deb11u1_i386.deb
-https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libt/libtool/libltdl7_2.4.6-15_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libu/libudfread/libudfread0_1.1.1-1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libu/libunistring/libunistring2_0.9.10-4_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libu/libutempter/libutempter-dev_1.2.1-2_i386.deb
@@ -352,7 +330,6 @@ https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libv/libvo
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libv/libvorbis/libvorbisfile3_1.3.7-1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libv/libvpx/libvpx-dev_1.9.0-1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libv/libvpx/libvpx6_1.9.0-1_i386.deb
-https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libv/libvpx/libvpx7_1.12.0-1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libw/libwacom/libwacom-common_1.8-2_all.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libw/libwacom/libwacom-dev_1.8-2_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libw/libwacom/libwacom2_1.8-2_i386.deb
@@ -437,20 +414,16 @@ https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libz/libzs
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/m/make-dfsg/make_4.3-4.1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/m/mako/python3-mako_1.1.3+ds1-2_all.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/m/markupsafe/python3-markupsafe_2.0.1-2~bpo11+1_i386.deb
-https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/m/mbedtls/libmbedcrypto7_2.28.3-1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/m/md4c/libmd4c0_0.4.7-2_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/m/media-types/media-types_4.0.0_all.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/m/mesa/libegl-mesa0_20.3.5-1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/m/mesa/libegl1-mesa-dev_20.3.5-1_i386.deb
-https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/m/mesa/libegl1-mesa_20.3.5-1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/m/mesa/libgbm-dev_20.3.5-1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/m/mesa/libgbm1_20.3.5-1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/m/mesa/libgl1-mesa-dev_20.3.5-1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/m/mesa/libgl1-mesa-dri_20.3.5-1_i386.deb
-https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/m/mesa/libgl1-mesa-glx_20.3.5-1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/m/mesa/libglapi-mesa_20.3.5-1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/m/mesa/libglx-mesa0_20.3.5-1_i386.deb
-https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/m/mesa/libwayland-egl1-mesa_20.3.5-1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/m/mesa/mesa-common-dev_20.3.5-1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/m/minizip/libminizip-dev_1.1-8+b1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/m/minizip/libminizip1_1.1-8+b1_i386.deb
@@ -495,7 +468,6 @@ https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/p/pango1.0
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/p/pango1.0/libpangoft2-1.0-0_1.46.2-3_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/p/pango1.0/libpangoxft-1.0-0_1.46.2-3_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/p/pango1.0/pango1.0-tools_1.46.2-3_i386.deb
-https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/p/pangox-compat/libpangox-1.0-0_0.0.2-5.1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/p/patch/patch_2.7.6-7_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/p/pci.ids/pci.ids_0.0~2021.02.08-1_all.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/p/pciutils/libpci-dev_3.7.0-5_i386.deb
@@ -570,7 +542,6 @@ https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/r/re2/libr
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/r/readline/libreadline8_8.1-1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/r/readline/readline-common_8.1-1_all.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/r/rtmpdump/librtmp1_2.4+20151223.gitfa8646d.1-2+b2_i386.deb
-https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/r/rust-rav1e/librav1e0_0.5.1-6_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/s/sensible-utils/sensible-utils_0.0.14_all.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/s/setuptools/python3-pkg-resources_66.1.1-1~bpo11+1_all.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/s/shadow/login_4.8.1-1_i386.deb
@@ -584,8 +555,6 @@ https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/s/speech-d
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/s/speex/libspeex1_1.2~rc1.2-1.1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/s/sqlite3/libsqlite3-0_3.34.1-3_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/s/srt/libsrt1.4-gnutls_1.4.2-1.3_i386.deb
-https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/s/srt/libsrt1.5-gnutls_1.5.1-1_i386.deb
-https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/s/svt-av1/libsvtav1enc1_1.4.1+dfsg-1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/s/systemd/libpam-systemd_252.5-2~bpo11+1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/s/systemd/libsystemd-dev_252.5-2~bpo11+1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/s/systemd/libsystemd-shared_252.5-2~bpo11+1_i386.deb
@@ -628,9 +597,7 @@ https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/w/wayland/
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/w/wayland/libwayland-server0_1.18.0-2~exp1.1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/w/webrtc-audio-processing/libwebrtc-audio-processing1_0.3-1+b1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/x/x264/libx264-160_0.160.3011+gitcde9a93-2.1_i386.deb
-https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/x/x264/libx264-164_0.164.3095+gitbaee400-3_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/x/x265/libx265-192_3.4-2_i386.deb
-https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/x/x265/libx265-199_3.5-2+b1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/x/xcb-util-image/libxcb-image0-dev_0.4.0-1+b3_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/x/xcb-util-image/libxcb-image0_0.4.0-1+b3_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/x/xcb-util-keysyms/libxcb-keysyms1_0.4.0-1+b2_i386.deb
