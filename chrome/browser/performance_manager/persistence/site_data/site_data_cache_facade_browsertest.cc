@@ -126,10 +126,8 @@ class SiteDataCacheFacadeBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     Super::SetUpOnMainThread();
 
-    RunInGraph([] {
-      SiteDataRecorder::SetHeuristicsImplementationForTesting(
-          std::make_unique<TestSiteDataRecorderHeuristics>());
-    });
+    SiteDataRecorder::SetHeuristicsImplementationForTesting(
+        std::make_unique<TestSiteDataRecorderHeuristics>());
 
     // Serve test HTML from any domain.
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -137,9 +135,7 @@ class SiteDataCacheFacadeBrowserTest : public InProcessBrowserTest {
   }
 
   void TearDownOnMainThread() override {
-    RunInGraph([] {
-      SiteDataRecorder::SetHeuristicsImplementationForTesting(nullptr);
-    });
+    SiteDataRecorder::SetHeuristicsImplementationForTesting(nullptr);
     Super::TearDownOnMainThread();
   }
 
@@ -181,15 +177,13 @@ class SiteDataCacheFacadeBrowserTest : public InProcessBrowserTest {
       reader->RegisterDataLoadedCallback(quit_on_exit.Release());
     });
 
-    RunInGraph([&] {
-      EXPECT_EQ(reader->UpdatesTitleInBackground(),
-                expected_updates_title_in_background);
-      EXPECT_EQ(writer->impl_for_testing()->is_dirty(), expected_is_dirty);
+    EXPECT_EQ(reader->UpdatesTitleInBackground(),
+              expected_updates_title_in_background);
+    EXPECT_EQ(writer->impl_for_testing()->is_dirty(), expected_is_dirty);
 
-      // The reader and writer must be destroyed on the graph sequence.
-      reader.reset();
-      writer.reset();
-    });
+    // The reader and writer must be destroyed on the graph sequence.
+    reader.reset();
+    writer.reset();
   }
 
   // Adapted from InProcessBrowserTest::AddTabAtIndex() to open a background

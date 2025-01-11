@@ -124,20 +124,19 @@ class ActionabilityWaiter
 class CpuHealthTrackerTestHelper {
  public:
   void SetUpGraphObjects() {
-    performance_manager::RunInGraph([](Graph* graph) {
-      ASSERT_TRUE(!CpuHealthTracker::NothingRegistered(graph));
-      // Stop the timer to prevent the cpu probe from recording real CPU
-      // data which makes the health status non-deterministic when we
-      // fast forward time.
-      CpuHealthTracker* health_tracker = CpuHealthTracker::GetFromGraph(graph);
-      health_tracker->cpu_probe_timer_.Stop();
+    Graph* graph = PerformanceManager::GetGraph();
+    ASSERT_TRUE(!CpuHealthTracker::NothingRegistered(graph));
+    // Stop the timer to prevent the cpu probe from recording real CPU
+    // data which makes the health status non-deterministic when we
+    // fast forward time.
+    CpuHealthTracker* health_tracker = CpuHealthTracker::GetFromGraph(graph);
+    health_tracker->cpu_probe_timer_.Stop();
 
-      auto page_discarding_helper =
-          std::make_unique<policies::PageDiscardingHelper>();
-      page_discarding_helper->SetMockDiscarderForTesting(
-          std::make_unique<testing::MockPageDiscarder>());
-      graph->PassToGraph(std::move(page_discarding_helper));
-    });
+    auto page_discarding_helper =
+        std::make_unique<policies::PageDiscardingHelper>();
+    page_discarding_helper->SetMockDiscarderForTesting(
+        std::make_unique<testing::MockPageDiscarder>());
+    graph->PassToGraph(std::move(page_discarding_helper));
   }
 
   resource_attribution::CPUTimeResult CreateFakeCpuResult(
@@ -329,14 +328,13 @@ TEST_F(CpuHealthTrackerTest, HealthyCpuUsageFromProbe) {
 
   EXPECT_EQ(CpuHealthTracker::HealthLevel::kDegraded, GetFutureHealthLevel());
 
-  performance_manager::RunInGraph([](Graph* graph) {
-    CpuHealthTracker* const health_tracker =
-        CpuHealthTracker::GetFromGraph(graph);
-    CHECK(health_tracker);
-    for (int i = 0; i < kNumHealthStatusForChange; i++) {
-      health_tracker->ProcessCpuProbeResult(system_cpu::CpuSample{0});
-    }
-  });
+  Graph* graph = PerformanceManager::GetGraph();
+  CpuHealthTracker* const health_tracker =
+      CpuHealthTracker::GetFromGraph(graph);
+  CHECK(health_tracker);
+  for (int i = 0; i < kNumHealthStatusForChange; i++) {
+    health_tracker->ProcessCpuProbeResult(system_cpu::CpuSample{0});
+  }
 
   EXPECT_EQ(CpuHealthTracker::HealthLevel::kHealthy, GetFutureHealthLevel());
 }
