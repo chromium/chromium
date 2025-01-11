@@ -96,7 +96,7 @@ TEST_F(CSPInfoUnitTest, SandboxedPages) {
   EXPECT_EQ(kDefaultSandboxedPageCSP, CSPInfo::GetResourceContentSecurityPolicy(
                                           extension7.get(), "/test"));
 
-  Testcase testcases[] = {
+  const Testcase testcases[] = {
       Testcase("sandboxed_pages_invalid_1.json",
                errors::kInvalidSandboxedPagesList),
       Testcase("sandboxed_pages_invalid_2.json", errors::kInvalidSandboxedPage),
@@ -106,7 +106,7 @@ TEST_F(CSPInfoUnitTest, SandboxedPages) {
                GetInvalidManifestKeyError(keys::kSandboxedPagesCSP)),
       Testcase("sandboxed_pages_invalid_5.json",
                GetInvalidManifestKeyError(keys::kSandboxedPagesCSP))};
-  RunTestcases(testcases, std::size(testcases), EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, EXPECT_TYPE_ERROR);
 }
 
 TEST_F(CSPInfoUnitTest, CSPStringKey) {
@@ -128,7 +128,7 @@ TEST_F(CSPInfoUnitTest, CSPStringKey) {
 }
 
 TEST_F(CSPInfoUnitTest, CSPDictionary_ExtensionPages) {
-  struct {
+  static constexpr struct {
     const char* file_name;
     const char* csp;
   } cases[] = {{"csp_dictionary_valid_1.json", "default-src 'none'"},
@@ -144,7 +144,7 @@ TEST_F(CSPInfoUnitTest, CSPDictionary_ExtensionPages) {
     EXPECT_EQ(test_case.csp, CSPInfo::GetExtensionPagesCSP(extension.get()));
   }
 
-  Testcase testcases[] = {
+  const Testcase testcases[] = {
       Testcase("csp_invalid_2.json",
                GetInvalidManifestKeyError(
                    keys::kContentSecurityPolicy_ExtensionPagesPath)),
@@ -162,7 +162,7 @@ TEST_F(CSPInfoUnitTest, CSPDictionary_ExtensionPages) {
                    keys::kContentSecurityPolicy_ExtensionPagesPath,
                    "'unsafe-eval'", "worker-src")),
   };
-  RunTestcases(testcases, std::size(testcases), EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, EXPECT_TYPE_ERROR);
 }
 
 // Tests the requirements for object-src specifications.
@@ -345,7 +345,7 @@ TEST_F(CSPInfoUnitTest, CSPDictionary_Sandbox) {
                   extension.get(), test_case.resource_path));
   }
 
-  Testcase testcases[] = {
+  const Testcase testcases[] = {
       {"sandbox_both_keys.json", errors::kSandboxPagesCSPKeyNotAllowed},
       {"sandbox_csp_with_dictionary.json",
        errors::kSandboxPagesCSPKeyNotAllowed},
@@ -355,7 +355,7 @@ TEST_F(CSPInfoUnitTest, CSPDictionary_Sandbox) {
       {"unsandboxed_csp.json",
        GetInvalidManifestKeyError(
            keys::kContentSecurityPolicy_SandboxedPagesPath)}};
-  RunTestcases(testcases, std::size(testcases), EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, EXPECT_TYPE_ERROR);
 }
 
 // Ensures that using a dictionary for the keys::kContentSecurityPolicy manifest

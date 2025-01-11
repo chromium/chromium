@@ -26,7 +26,7 @@ class ContentScriptsManifestTest : public ChromeManifestTest {
 };
 
 TEST_F(ContentScriptsManifestTest, MatchPattern) {
-  Testcase testcases[] = {
+  const Testcase testcases[] = {
       // chrome:// urls are not allowed.
       Testcase("content_script_invalid_match_chrome_url.json",
                ErrorUtils::FormatErrorMessage(
@@ -56,7 +56,7 @@ TEST_F(ContentScriptsManifestTest, MatchPattern) {
                "Error at key 'content_scripts'. Parsing array failed at index "
                "0: Error at key 'matches': Parsing array failed at index 0: "
                "expected string, got integer")};
-  RunTestcases(testcases, std::size(testcases), EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, EXPECT_TYPE_ERROR);
 
   LoadAndExpectSuccess("ports_in_content_scripts.json");
 }

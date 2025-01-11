@@ -15,7 +15,7 @@ using extensions::Extension;
 namespace errors = extensions::manifest_errors;
 
 TEST_F(ChromeManifestTest, AppWebUrls) {
-  Testcase testcases[] = {
+  const Testcase testcases[] = {
       Testcase("web_urls_wrong_type.json", errors::kInvalidWebURLs),
       Testcase("web_urls_invalid_1.json",
                ErrorUtils::FormatErrorMessage(errors::kInvalidWebURL,
@@ -38,7 +38,7 @@ TEST_F(ChromeManifestTest, AppWebUrls) {
                ErrorUtils::FormatErrorMessage(
                    errors::kInvalidWebURL, base::NumberToString(1),
                    errors::kCannotClaimAllHostsInExtent))};
-  RunTestcases(testcases, std::size(testcases), EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, EXPECT_TYPE_ERROR);
 
   LoadAndExpectSuccess("web_urls_has_port.json");
 
