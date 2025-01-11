@@ -376,12 +376,6 @@ void PNGImageDecoder::SetColorSpace() {
   }
   png_structp png = reader_->PngPtr();
   png_infop info = reader_->InfoPtr();
-  const int color_type = png_get_color_type(png, info);
-  if (!(color_type & PNG_COLOR_MASK_COLOR)) {
-    return;
-  }
-  // We only support color profiles for color PALETTE and RGB[A] PNG.
-  // TODO(msarett): Add GRAY profile support, block CYMK?
   if (auto profile = ReadColorProfile(png, info)) {
     SetEmbeddedColorProfile(std::move(profile));
   }
