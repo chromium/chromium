@@ -143,7 +143,7 @@ class OnDeviceModelServiceController
   }
 
  private:
-  class OnDeviceModelClient final : public SessionImpl::OnDeviceModelClient {
+  class OnDeviceModelClient final : public OnDeviceOptions::Client {
    public:
     OnDeviceModelClient(
         ModelBasedCapabilityKey feature,
@@ -152,7 +152,7 @@ class OnDeviceModelServiceController
         base::optional_ref<const on_device_model::AdaptationAssetPaths>
             adaptation_assets);
     ~OnDeviceModelClient() override;
-    std::unique_ptr<SessionImpl::OnDeviceModelClient> Clone() const override;
+    std::unique_ptr<OnDeviceOptions::Client> Clone() const override;
     bool ShouldUse() override;
     mojo::Remote<on_device_model::mojom::OnDeviceModel>& GetModelRemote()
         override;

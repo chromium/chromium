@@ -177,7 +177,7 @@ OnDeviceModelServiceController::CreateSession(
   auto* adaptation_metadata = GetFeatureMetadata(feature);
   CHECK(adaptation_metadata);
 
-  SessionImpl::OnDeviceOptions opts;
+  OnDeviceOptions opts;
   opts.model_client = std::make_unique<OnDeviceModelClient>(
       feature, weak_ptr_factory_.GetWeakPtr(), model_paths,
       base::OptionalFromPtr(adaptation_metadata->asset_paths()));
@@ -445,7 +445,7 @@ OnDeviceModelServiceController::OnDeviceModelClient::OnDeviceModelClient(
 OnDeviceModelServiceController::OnDeviceModelClient::~OnDeviceModelClient() =
     default;
 
-std::unique_ptr<SessionImpl::OnDeviceModelClient>
+std::unique_ptr<OnDeviceOptions::Client>
 OnDeviceModelServiceController::OnDeviceModelClient::Clone() const {
   return std::make_unique<OnDeviceModelServiceController::OnDeviceModelClient>(
       feature_, controller_, model_paths_, adaptation_assets_);

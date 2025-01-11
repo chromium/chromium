@@ -26,6 +26,7 @@
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/optimization_guide/core/model_execution/on_device_execution.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_value_utils.h"
@@ -65,7 +66,7 @@ namespace optimization_guide {
 namespace {
 
 using ::on_device_model::mojom::LoadModelResult;
-using ExecuteModelResult = SessionImpl::ExecuteModelResult;
+using ExecuteModelResult = ::optimization_guide::OnDeviceExecution::Result;
 
 using ::testing::AllOf;
 using ::testing::ElementsAre;
@@ -353,7 +354,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
   OptimizationGuideLogger logger_;
 };
 
-TEST_F(OnDeviceModelServiceControllerTest, ScoreNullBeforeContext) {
+TEST_F(OnDeviceModelServiceControllerTest, ScoreBeforeContext) {
   Initialize(standard_assets_);
 
   base::HistogramTester histogram_tester;
@@ -361,7 +362,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ScoreNullBeforeContext) {
   EXPECT_TRUE(session);
   base::test::TestFuture<std::optional<float>> score_future;
   session->Score("token", score_future.GetCallback());
-  EXPECT_EQ(score_future.Get(), std::nullopt);
+  EXPECT_NE(score_future.Get(), std::nullopt);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ScorePresentAfterContext) {
@@ -378,7 +379,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ScorePresentAfterContext) {
   EXPECT_EQ(score_future.Get(), 0.5);
 }
 
-TEST_F(OnDeviceModelServiceControllerTest, ScoreNullAfterExecute) {
+TEST_F(OnDeviceModelServiceControllerTest, ScoreAfterExecute) {
   Initialize(standard_assets_);
 
   base::HistogramTester histogram_tester;
@@ -391,7 +392,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ScoreNullAfterExecute) {
 
   base::test::TestFuture<std::optional<float>> score_future;
   session->Score("token", score_future.GetCallback());
-  EXPECT_EQ(score_future.Get(), std::nullopt);
+  EXPECT_NE(score_future.Get(), std::nullopt);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, BaseModelExecutionSuccess) {
@@ -2071,9 +2072,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ExecuteInvalidConfig) {
       "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
       ExecuteModelResult::kFailedConstructingMessage, 1);
   EXPECT_TRUE(remote_execute_called_);
-  // We never actually executed the request on-device so it is expected to not
-  // have created a log entry.
-  EXPECT_FALSE(log_ai_data_request_passed_to_remote_);
+  EXPECT_FALSE(log_ai_data_request_passed_to_remote_->compose().has_response());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest,
