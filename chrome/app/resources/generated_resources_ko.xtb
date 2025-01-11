@@ -2365,7 +2365,7 @@
 <translation id="2610780100389066815">Microsoft Trust List Signing</translation>
 <translation id="261114180663074524">Microsoft 계정에 로그인한 후 다시 시도해 보세요</translation>
 <translation id="2611776654555141051">직사각형 도구</translation>
-<translation id="2612676031748830579">카드번호</translation>
+<translation id="2612676031748830579">카드 번호</translation>
 <translation id="261305050785128654">사용하는 언어를 웹사이트에 알려주세요. 가능한 경우 해당 언어로 콘텐츠가 표시됩니다.</translation>
 <translation id="2613210758071148851"><ph name="RESTRICTED_SITE" />에서 모든 확장 프로그램을 허용하지 않음</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" />에서 <ph name="FILENAME" /> 파일을 수정할 수 있습니다.</translation>
@@ -9748,7 +9748,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7923564237306226146">Linux 업그레이드 완료</translation>
 <translation id="7924075559900107275">장기적 지원 후보</translation>
 <translation id="7924358170328001543">포트 전달 중 오류 발생</translation>
-<translation id="7925108652071887026">자동완성 데이터</translation>
+<translation id="7925108652071887026">자동 완성 데이터</translation>
 <translation id="792514962475806987">고정 돋보기 확대/축소 수준:</translation>
 <translation id="7925285046818567682"><ph name="HOST_NAME" />의 응답을 기다리는 중...</translation>
 <translation id="7926423016278357561">본인이 아닙니다.</translation>

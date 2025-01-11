@@ -82,7 +82,7 @@ Prueba a esperar unos minutos antes de cerrar sesión. Si cierras sesión ahora,
 <translation id="2788811701191021538">Abre la página de configuración de métodos de pago en Chrome.</translation>
 <translation id="2876628302275096482">Más información sobre <ph name="BEGIN_LINK" />cómo protege Chrome la privacidad de tus datos<ph name="END_LINK" /></translation>
 <translation id="292371311537977079">Configuración de Chrome</translation>
-<translation id="2923827943290349720">Bloquear las pestañas de Incógnito al cerrar Chrome</translation>
+<translation id="2923827943290349720">Ocultar las pestañas de Incógnito al cerrar Chrome</translation>
 <translation id="2940565985148833945">Consejo de Chrome: busca con Lens</translation>
 <translation id="2957447865124070833">Selecciona <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="2986402782150919988">Añadir marcadores a Chrome</translation>
@@ -214,7 +214,7 @@ Tus datos se han cifrado con tu frase de contraseña. Introdúcela para usar y g
 <translation id="6820553595690137150">El cifrado con frase de contraseña no incluye los métodos de pago ni las direcciones.
 
 Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
-<translation id="6838525730752203626">Usa Chrome de forma predeterminada</translation>
+<translation id="6838525730752203626">Usar Chrome por defecto</translation>
 <translation id="686691656039982452">Puedes <ph name="BEGIN_LINK" />gestionar qué datos de Chrome se guardan<ph name="END_LINK" /> en tu cuenta de Google.
 
 Si quieres ver más ajustes que usan datos para mejorar tu experiencia con Chrome, ve a los <ph name="BEGIN_LINK" />servicios de Google<ph name="END_LINK" />.</translation>
