@@ -17,6 +17,7 @@
 #include "media/cast/cast_config.h"
 #include "media/cast/common/rtp_time.h"
 #include "media/cast/sender/frame_sender.h"
+#include "media/cast/sender/video_bitrate_suggester.h"
 
 namespace openscreen::cast {
 class Sender;
@@ -32,7 +33,6 @@ namespace media::cast {
 
 class VideoEncoder;
 
-using PlayoutDelayChangeCB = base::RepeatingCallback<void(base::TimeDelta)>;
 
 // Not thread safe. Only called from the main cast thread.
 // This class owns all objects related to sending video, objects that create RTP
@@ -42,19 +42,22 @@ using PlayoutDelayChangeCB = base::RepeatingCallback<void(base::TimeDelta)>;
 // timeouts.
 class VideoSender : public FrameSender::Client {
  public:
+  using PlayoutDelayChangeCB = base::RepeatingCallback<void(base::TimeDelta)>;
+
   // NOTE: Since the `Sender` instance is destroyed when renegotiation is
   // complete, `this` is also invalid and should be immediately torn down.
-  VideoSender(scoped_refptr<CastEnvironment> cast_environment,
-              const FrameSenderConfig& video_config,
-              StatusChangeCallback status_change_cb,
-              const CreateVideoEncodeAcceleratorCallback& create_vea_cb,
-              std::unique_ptr<openscreen::cast::Sender> sender,
-              std::unique_ptr<media::VideoEncoderMetricsProvider>
-                  encoder_metrics_provider,
-              PlayoutDelayChangeCB playout_delay_change_cb,
-              media::VideoCaptureFeedbackCB feedback_cb,
-              FrameSender::GetSuggestedVideoBitrateCB get_bitrate_cb,
-              media::GpuVideoAcceleratorFactories* gpu_factories);
+  VideoSender(
+      scoped_refptr<CastEnvironment> cast_environment,
+      const FrameSenderConfig& video_config,
+      StatusChangeCallback status_change_cb,
+      const CreateVideoEncodeAcceleratorCallback& create_vea_cb,
+      std::unique_ptr<openscreen::cast::Sender> sender,
+      std::unique_ptr<media::VideoEncoderMetricsProvider>
+          encoder_metrics_provider,
+      PlayoutDelayChangeCB playout_delay_change_cb,
+      media::VideoCaptureFeedbackCB feedback_cb,
+      VideoBitrateSuggester::GetVideoNetworkBandwidthCB get_bandwidth_cb,
+      media::GpuVideoAcceleratorFactories* gpu_factories);
 
   VideoSender(const VideoSender&) = delete;
   VideoSender& operator=(const VideoSender&) = delete;
@@ -107,6 +110,9 @@ class VideoSender : public FrameSender::Client {
   // Remember what we set the bitrate to before, no need to set it again if
   // we get the same value.
   int last_bitrate_ = 0;
+
+  // Keeps track of frame drops and uses that to drive the video bitrate.
+  std::unique_ptr<VideoBitrateSuggester> bitrate_suggester_;
 
   // The total amount of time between a frame's capture/recording on the sender
   // and its playback on the receiver (i.e., shown to a user).

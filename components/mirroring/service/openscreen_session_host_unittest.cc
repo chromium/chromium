@@ -871,30 +871,25 @@ TEST_F(OpenscreenSessionHostTest, UpdateBandwidthEstimate) {
   constexpr int kMinVideoBitrate = 393216;
   constexpr int kMaxVideoBitrate = 1250000;
   // Default bitrate should be twice the minimum.
-  EXPECT_EQ(786432, session_host().GetSuggestedVideoBitrate(kMinVideoBitrate,
-                                                            kMaxVideoBitrate));
+  EXPECT_EQ(786432, session_host().GetVideoNetworkBandwidth());
 
   // If the estimate is below the minimum, it should stay at the minimum.
   session_host().forced_bandwidth_estimate_for_testing_ = 1000;
   session_host().UpdateBandwidthEstimate();
-  EXPECT_EQ(kMinVideoBitrate, session_host().GetSuggestedVideoBitrate(
-                                  kMinVideoBitrate, kMaxVideoBitrate));
+  EXPECT_EQ(kMinVideoBitrate, session_host().GetVideoNetworkBandwidth());
 
   // It should gradually reach the max bandwidth estimate when raised.
   session_host().forced_bandwidth_estimate_for_testing_ = 1000000;
   session_host().UpdateBandwidthEstimate();
-  EXPECT_EQ(432537, session_host().GetSuggestedVideoBitrate(kMinVideoBitrate,
-                                                            kMaxVideoBitrate));
+  EXPECT_EQ(432537, session_host().GetVideoNetworkBandwidth());
 
   session_host().UpdateBandwidthEstimate();
-  EXPECT_EQ(475790, session_host().GetSuggestedVideoBitrate(kMinVideoBitrate,
-                                                            kMaxVideoBitrate));
+  EXPECT_EQ(475790, session_host().GetVideoNetworkBandwidth());
   for (int i = 0; i < 20; ++i) {
     session_host().UpdateBandwidthEstimate();
   }
   // The max should be 80% of `forced_bandwidth_estimate_for_testing_`.
-  EXPECT_EQ(800000, session_host().GetSuggestedVideoBitrate(kMinVideoBitrate,
-                                                            kMaxVideoBitrate));
+  EXPECT_EQ(800000, session_host().GetVideoNetworkBandwidth());
 
   // The video bitrate should stay saturated at the cap when reached.
   session_host().forced_bandwidth_estimate_for_testing_ = kMaxVideoBitrate + 1;
@@ -902,8 +897,7 @@ TEST_F(OpenscreenSessionHostTest, UpdateBandwidthEstimate) {
     session_host().UpdateBandwidthEstimate();
   }
   // The max should be 80% of `kMaxVideoBitrate`.
-  EXPECT_EQ(1000000, session_host().GetSuggestedVideoBitrate(kMinVideoBitrate,
-                                                             kMaxVideoBitrate));
+  EXPECT_EQ(1000000, session_host().GetVideoNetworkBandwidth());
 
   StopSession();
 }

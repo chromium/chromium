@@ -546,9 +546,8 @@ void OpenscreenSessionHost::OnNegotiated(
                             weak_factory_.GetWeakPtr()),
         // This is safe since it is only called synchronously and we own
         // the video sender instance.
-        base::BindRepeating(&OpenscreenSessionHost::GetSuggestedVideoBitrate,
-                            base::Unretained(this), video_config->min_bitrate,
-                            video_config->max_bitrate),
+        base::BindRepeating(&OpenscreenSessionHost::GetVideoNetworkBandwidth,
+                            base::Unretained(this)),
         gpu_factories);
     video_stream_ = std::make_unique<VideoRtpStream>(
         std::move(video_sender), weak_factory_.GetWeakPtr(),
@@ -1015,19 +1014,9 @@ void OpenscreenSessionHost::ProcessFeedback(
   }
 }
 
-int OpenscreenSessionHost::GetSuggestedVideoBitrate(int min_bitrate,
-                                                    int max_bitrate) const {
-  // First take the suggested bitrate based on the current bandwidth
-  // utilization.
-  int suggested = usable_bandwidth_;
-  if (audio_stream_) {
-    suggested -= audio_stream_->GetEncoderBitrate();
-  }
-
-  // Then limit it based on the frame sender configuration.
-  // TODO(crbug.com/40260069): we should also factor in device
-  // capability when determining which bitrate to use.
-  return std::clamp(suggested, min_bitrate, max_bitrate);
+int OpenscreenSessionHost::GetVideoNetworkBandwidth() const {
+  return audio_stream_ ? usable_bandwidth_ - audio_stream_->GetEncoderBitrate()
+                       : usable_bandwidth_;
 }
 
 void OpenscreenSessionHost::UpdateBandwidthEstimate() {

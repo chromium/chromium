@@ -184,8 +184,8 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
   // Callback by media::cast::VideoSender to report resource utilization.
   void ProcessFeedback(const media::VideoCaptureFeedback& feedback);
 
-  // Called by OpenscreenFrameSender to determine bitrate.
-  int GetSuggestedVideoBitrate(int min_bitrate, int max_bitrate) const;
+  // Called by media::cast::VideoSender to help determine the video bitrate.
+  int GetVideoNetworkBandwidth() const;
 
   // Called periodically to update the `bandwidth_estimate_`.
   void UpdateBandwidthEstimate();

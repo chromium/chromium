@@ -82,8 +82,6 @@ class OpenscreenFrameSenderTest : public ::testing::Test,
   base::TimeDelta GetEncoderBacklogDuration() const override { return {}; }
   void OnFrameCanceled(FrameId frame_id) override {}
 
-  int get_suggested_bitrate() { return suggested_bitrate_; }
-
  protected:
   OpenscreenFrameSenderTest()
       : task_runner_(
@@ -108,23 +106,11 @@ class OpenscreenFrameSenderTest : public ::testing::Test,
 
     audio_sender_ = std::make_unique<OpenscreenFrameSender>(
         cast_environment_, kAudioConfig, std::move(openscreen_audio_sender),
-        *this,
-        base::BindRepeating(&OpenscreenFrameSenderTest::get_suggested_bitrate,
-                            // Safe because we destroy the audio sender before
-                            // destroying `this`.
-                            base::Unretained(this)));
+        *this);
 
     video_sender_ = std::make_unique<OpenscreenFrameSender>(
         cast_environment_, kVideoConfig, std::move(openscreen_video_sender),
-        *this,
-        base::BindRepeating(&OpenscreenFrameSenderTest::get_suggested_bitrate,
-                            // Safe because we destroy the audio sender before
-                            // destroying `this`.
-                            base::Unretained(this)));
-  }
-
-  void RecordShouldDropNextFrame(bool should_drop) {
-    video_sender_->RecordShouldDropNextFrame(should_drop);
+        *this);
   }
 
   void set_suggested_bitrate(int bitrate) { suggested_bitrate_ = bitrate; }
@@ -273,20 +259,6 @@ TEST_F(OpenscreenFrameSenderTest, HandlesReferencingUnknownFrameIds) {
   video_frame_two->data = base::HeapArray<uint8_t>::WithSize(10);
   EXPECT_EQ(CastStreamingFrameDropReason::kInvalidReferencedFrameId,
             video_sender().EnqueueFrame(std::move(video_frame_two)));
-}
-
-TEST_F(OpenscreenFrameSenderTest, HandlesSuggestedBitratesCorrectly) {
-  // NOTE: the VideoBitrateSuggester tests this workflow more thoroughly.
-
-  // We should start with the maximum video bitrate.
-  set_suggested_bitrate(5000001);
-  EXPECT_EQ(5000000, video_sender().GetSuggestedBitrate(base::TimeTicks{},
-                                                        base::TimeDelta{}));
-
-  // It should cap at the bitrate suggested by Open Screen.
-  set_suggested_bitrate(4998374);
-  EXPECT_EQ(4998374, video_sender().GetSuggestedBitrate(base::TimeTicks{},
-                                                        base::TimeDelta{}));
 }
 
 }  // namespace media::cast

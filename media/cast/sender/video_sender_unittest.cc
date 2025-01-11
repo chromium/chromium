@@ -81,7 +81,7 @@ void SaveOperationalStatus(OperationalStatus* out_status,
 
 void IgnorePlayoutDelayChanges(base::TimeDelta unused_playout_delay) {}
 
-int GetSuggestedVideoBitrate() {
+int GetVideoNetworkBandwidth() {
   return openscreen::cast::kDefaultVideoMinBitRate;
 }
 
@@ -203,7 +203,7 @@ class VideoSenderTest : public ::testing::TestWithParam<bool> {
         base::BindRepeating(&IgnorePlayoutDelayChanges),
         base::BindRepeating(&VideoSenderTest::HandleVideoCaptureFeedback,
                             base::Unretained(this)),
-        base::BindRepeating(&GetSuggestedVideoBitrate),
+        base::BindRepeating(&GetVideoNetworkBandwidth),
         mock_gpu_factories_.get());
 
     RunTasksAndAdvanceClock();
