@@ -91,6 +91,8 @@ class GPUAdapter final : public ScriptWrappable, DawnObject<wgpu::Adapter> {
   String architecture_;
   String device_;
   String description_;
+  uint32_t subgroup_min_size_;
+  uint32_t subgroup_max_size_;
   String driver_;
   HeapVector<Member<GPUMemoryHeapInfo>> memory_heaps_;
   std::optional<uint32_t> d3d_shader_model_;

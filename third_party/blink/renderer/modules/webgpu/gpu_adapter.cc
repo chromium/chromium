@@ -123,6 +123,9 @@ GPUAdapter::GPUAdapter(
     : DawnObject(dawn_control_client, std::move(handle), String()), gpu_(gpu) {
   wgpu::AdapterInfo info = {};
   wgpu::ChainedStructOut** propertiesChain = &info.nextInChain;
+  wgpu::AdapterPropertiesSubgroups subgroupsProperties = {};
+  *propertiesChain = &subgroupsProperties;
+  propertiesChain = &(*propertiesChain)->nextInChain;
   wgpu::AdapterPropertiesMemoryHeaps memoryHeapProperties = {};
   if (GetHandle().HasFeature(wgpu::FeatureName::AdapterPropertiesMemoryHeaps)) {
     *propertiesChain = &memoryHeapProperties;
@@ -172,6 +175,8 @@ GPUAdapter::GPUAdapter(
   if (supportsPropertiesVk) {
     vk_driver_version_ = vkProperties.driverVersion;
   }
+  subgroup_min_size_ = subgroupsProperties.subgroupMinSize;
+  subgroup_max_size_ = subgroupsProperties.subgroupMaxSize;
 
   features_ = MakeFeatureNameSet(GetHandle(), gpu_->GetExecutionContext());
 
@@ -194,14 +199,15 @@ GPUAdapterInfo* GPUAdapter::CreateAdapterInfoForAdapter() {
     // If WebGPU developer features have been enabled then provide all available
     // adapter info values.
     info = MakeGarbageCollected<GPUAdapterInfo>(
-        vendor_, architecture_, device_, description_, driver_,
-        FromDawnEnum(backend_type_), FromDawnEnum(adapter_type_),
-        d3d_shader_model_, vk_driver_version_);
+        vendor_, architecture_, subgroup_min_size_, subgroup_max_size_, device_,
+        description_, driver_, FromDawnEnum(backend_type_),
+        FromDawnEnum(adapter_type_), d3d_shader_model_, vk_driver_version_);
     for (GPUMemoryHeapInfo* memory_heap : memory_heaps_) {
       info->AppendMemoryHeapInfo(memory_heap);
     }
   } else {
-    info = MakeGarbageCollected<GPUAdapterInfo>(vendor_, architecture_);
+    info = MakeGarbageCollected<GPUAdapterInfo>(
+        vendor_, architecture_, subgroup_min_size_, subgroup_max_size_);
   }
   return info;
 }

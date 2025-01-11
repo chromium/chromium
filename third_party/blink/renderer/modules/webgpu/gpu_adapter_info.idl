@@ -12,6 +12,9 @@
   [HighEntropy] readonly attribute DOMString architecture;
   [HighEntropy] readonly attribute DOMString device;
   [HighEntropy] readonly attribute DOMString description;
+  // Note that WebGPUSubgroupsFeatures is implied by WebGPUExperimentalFeatures.
+  [RuntimeEnabled=WebGPUSubgroupsFeatures] readonly attribute unsigned long subgroupMinSize;
+  [RuntimeEnabled=WebGPUSubgroupsFeatures] readonly attribute unsigned long subgroupMaxSize;
   [RuntimeEnabled=WebGPUDeveloperFeatures] readonly attribute DOMString driver;
   [RuntimeEnabled=WebGPUDeveloperFeatures] readonly attribute DOMString backend;
   [RuntimeEnabled=WebGPUDeveloperFeatures] readonly attribute DOMString type;
