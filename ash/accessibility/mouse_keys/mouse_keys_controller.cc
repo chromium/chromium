@@ -12,6 +12,7 @@
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/window_tree_host_lookup.h"
 #include "ash/shell.h"
+#include "ash/system/accessibility/mouse_keys/mouse_keys_bubble_controller.h"
 #include "ash/wm/window_util.h"
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
@@ -87,6 +88,7 @@ MouseKeysController::MouseKeysController() {
   }
   Shell::Get()->AddAccessibilityEventHandler(
       this, AccessibilityEventHandlerManager::HandlerType::kMouseKeys);
+  mouse_keys_bubble_controller_ = std::make_unique<MouseKeysBubbleController>();
 }
 
 MouseKeysController::~MouseKeysController() {
@@ -413,6 +415,11 @@ void MouseKeysController::ResetMovement() {
   if (update_timer_.IsRunning()) {
     update_timer_.Stop();
   }
+}
+
+MouseKeysBubbleController*
+MouseKeysController::GetMouseKeysBubbleControllerForTest() {
+  return mouse_keys_bubble_controller_.get();
 }
 
 }  // namespace ash

@@ -5,6 +5,8 @@
 #ifndef ASH_ACCESSIBILITY_MOUSE_KEYS_MOUSE_KEYS_CONTROLLER_H_
 #define ASH_ACCESSIBILITY_MOUSE_KEYS_MOUSE_KEYS_CONTROLLER_H_
 
+#include <memory>
+
 #include "ash/ash_export.h"
 #include "base/timer/timer.h"
 #include "ui/events/event.h"
@@ -13,6 +15,8 @@
 #include "ui/gfx/geometry/point.h"
 
 namespace ash {
+
+class MouseKeysBubbleController;
 
 // Mouse keys is an accessibility feature that allows you to control your mouse
 // cursor with the keyboard.  To do this, MouseKeysController ingests key events
@@ -93,6 +97,8 @@ class ASH_EXPORT MouseKeysController : public ui::EventHandler {
     kBoth,
   };
 
+  MouseKeysBubbleController* GetMouseKeysBubbleControllerForTest();
+
  private:
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;
@@ -129,6 +135,9 @@ class ASH_EXPORT MouseKeysController : public ui::EventHandler {
   gfx::Point last_mouse_position_dips_ = gfx::Point(-1, -1);
   int event_flags_ = 0;
   base::RepeatingTimer update_timer_;
+
+  // Used to control the MouseKeys bubble UI.
+  std::unique_ptr<MouseKeysBubbleController> mouse_keys_bubble_controller_;
 };
 
 }  // namespace ash
