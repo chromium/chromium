@@ -84,7 +84,7 @@ public class DataSharingTabManager {
     private static final String LEARN_MORE_SHARED_TAB_GROUP_PAGE_URL =
             "https://support.google.com/chrome/?p=chrome_collaboration";
     private static final String LEARN_ABOUT_BLOCKED_ACCOUNTS_URL =
-            "https://support.google.com/chrome/?p=chrome_collaboration";
+            "https://support.google.com/accounts/answer/6388749";
 
     private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private final DataSharingTabGroupsDelegate mDataSharingTabGroupsDelegate;
@@ -845,12 +845,6 @@ public class DataSharingTabManager {
             Activity activity, String tabGroupName, DataSharingStringConfig stringConfig) {
         DataSharingUiConfig.DataSharingCallback dataSharingCallback =
                 new DataSharingUiConfig.DataSharingCallback() {
-                    @Override
-                    public void onLearnMoreAboutSharedTabGroupsClicked(Context context, GURL url) {
-                        mDataSharingTabGroupsDelegate.openLearnMoreSharedTabGroupsPage(
-                                context, url);
-                    }
-
                     @Override
                     public void onClickOpenChromeCustomTab(Context context, GURL url) {
                         mDataSharingTabGroupsDelegate.openUrlInChromeCustomTab(context, url);
