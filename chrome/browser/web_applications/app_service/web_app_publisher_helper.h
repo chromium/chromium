@@ -1,4 +1,4 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -93,10 +93,10 @@ enum class WebappUninstallSource;
 
 namespace web_app {
 
-class ComputedAppSizeWithOrigin;
 class WebApp;
 class WebAppProvider;
 enum class RunOnOsLoginMode;
+struct ComputedAppSize;
 
 namespace mojom {
 enum class UserDisplayMode : int32_t;
@@ -410,7 +410,7 @@ class WebAppPublisherHelper : public WebAppRegistrarObserver,
       apps::LaunchContainer container);
 
   void OnGetWebAppSize(webapps::AppId app_id,
-                       std::optional<ComputedAppSizeWithOrigin> size);
+                       std::optional<ComputedAppSize> size);
 
   const raw_ptr<Profile, DanglingUntriaged> profile_;
 

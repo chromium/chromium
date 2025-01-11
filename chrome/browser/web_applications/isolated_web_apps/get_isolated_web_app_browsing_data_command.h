@@ -1,4 +1,4 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,7 +25,8 @@ class Origin;
 namespace web_app {
 
 class GetIsolatedWebAppSizeJob;
-class ComputedAppSizeWithOrigin;
+
+struct GetIsolatedWebAppSizeJobResult;
 
 // Computes the total browsing data usage in bytes of every installed Isolated
 // Web App.
@@ -44,7 +45,8 @@ class GetIsolatedWebAppBrowsingDataCommand
 
  private:
   void CompleteCommand(
-      std::vector<std::optional<ComputedAppSizeWithOrigin>> app_size_results);
+      std::vector<std::optional<GetIsolatedWebAppSizeJobResult>>
+          app_size_results);
 
   const raw_ref<Profile> profile_;
   std::unique_ptr<AllAppsLock> lock_;

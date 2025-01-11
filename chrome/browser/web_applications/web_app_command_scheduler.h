@@ -1,4 +1,4 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,14 @@
 #include <type_traits>
 #include <utility>
 
+#include "base/containers/flat_map.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
+#include "base/location.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/version.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
@@ -19,8 +27,10 @@
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
+#include "components/webapps/common/web_app_id.h"
 
 class GURL;
 class Profile;
@@ -40,7 +50,6 @@ class ScopedProfileKeepAlive;
 
 namespace web_app {
 
-class ComputedAppSizeWithOrigin;
 class IsolatedWebAppInstallSource;
 class IsolatedWebAppUrlInfo;
 class IsolatedWebAppUpdatePrepareAndStoreCommandUpdateInfo;
@@ -59,6 +68,7 @@ enum class ManifestUpdateResult;
 enum class NavigateAndTriggerInstallDialogCommandResult;
 struct CleanupOrphanedIsolatedWebAppsCommandError;
 struct CleanupOrphanedIsolatedWebAppsCommandSuccess;
+struct ComputedAppSize;
 struct ExternalInstallOptions;
 struct ExternallyManagedAppManagerInstallResult;
 struct InstallIsolatedWebAppCommandError;
@@ -394,8 +404,7 @@ class WebAppCommandScheduler {
   // Schedules a command that calculates the app and data size of a web app.
   void ComputeAppSize(
       const webapps::AppId& app_id,
-      base::OnceCallback<void(std::optional<ComputedAppSizeWithOrigin>)>
-          callback);
+      base::OnceCallback<void(std::optional<ComputedAppSize>)> callback);
 
   // The command callback type for `ScheduleCallback*`.
   // - `lock`: This provides access to read & write parts of the WebAppProvider

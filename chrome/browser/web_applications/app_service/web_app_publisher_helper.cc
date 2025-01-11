@@ -1,4 +1,4 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -59,7 +59,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/app_service/publisher_helper.h"
 #include "chrome/browser/web_applications/commands/compute_app_size_command.h"
-#include "chrome/browser/web_applications/commands/computed_app_size.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -1984,13 +1983,13 @@ void WebAppPublisherHelper::OnLaunchCompleted(
 
 void WebAppPublisherHelper::OnGetWebAppSize(
     webapps::AppId app_id,
-    std::optional<ComputedAppSizeWithOrigin> size) {
+    std::optional<ComputedAppSize> size) {
   auto app = std::make_unique<apps::App>(apps::AppType::kWeb, app_id);
   if (!size.has_value()) {
     return;
   }
-  app->app_size_in_bytes = size->app_size_in_bytes();
-  app->data_size_in_bytes = size->data_size_in_bytes();
+  app->app_size_in_bytes = size->app_size_in_bytes;
+  app->data_size_in_bytes = size->data_size_in_bytes;
   delegate_->PublishWebApp(std::move(app));
 }
 
