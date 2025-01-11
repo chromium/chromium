@@ -2682,11 +2682,11 @@ crbug.com/383880384 [ Mac ] external/wpt/css/css-properties-values-api/registere
 crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registered-property-change-style-002.html [ Failure Pass ]
 
 # ====== New tests from wpt-importer added here ======
-external/wpt/svg/animations/reftests/discard-check-remove.svg [ Failure ]
-external/wpt/svg/animations/reftests/discard-rect-as-child.svg [ Failure ]
-external/wpt/svg/animations/reftests/discard-rect-as-href.svg [ Failure ]
-external/wpt/svg/animations/reftests/discard-rect-with-anim-child-a.svg [ Failure ]
-external/wpt/svg/animations/reftests/discard-rect-with-anim-child-b.svg [ Failure ]
+crbug.com/388922812 external/wpt/svg/animations/reftests/discard-check-remove.svg [ Failure ]
+crbug.com/388922812 external/wpt/svg/animations/reftests/discard-rect-as-child.svg [ Failure ]
+crbug.com/388922812 external/wpt/svg/animations/reftests/discard-rect-as-href.svg [ Failure ]
+crbug.com/388922812 external/wpt/svg/animations/reftests/discard-rect-with-anim-child-a.svg [ Failure ]
+crbug.com/388922812 external/wpt/svg/animations/reftests/discard-rect-with-anim-child-b.svg [ Failure ]
 crbug.com/388934352 external/wpt/trusted-types/block-eval-function-constructor.html [ Failure ]
 crbug.com/388934352 external/wpt/trusted-types/WorkerGlobalScope-importScripts.html [ Failure ]
 crbug.com/388592307 external/wpt/css/selectors/invalidation/has-nested-pseudo-002-crash.html [ Crash ]
