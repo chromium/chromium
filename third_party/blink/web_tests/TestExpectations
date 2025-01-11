@@ -2710,7 +2710,6 @@ crbug.com/388326073 [ Win ] virtual/fedcm-authz/external/wpt/fedcm/fedcm-authz/f
 [ Win ] virtual/fenced-frame-mparch-internal/wpt_internal/fenced_frame/revoke-manual-report-event-beacons.https.html [ Crash ]
 [ Mac14 ] virtual/keepalive-in-browser-migration/external/wpt/background-fetch/abort.https.window.html [ Crash Timeout ]
 [ Win ] virtual/keepalive-in-browser-migration/external/wpt/background-fetch/abort.https.window.html [ Crash Timeout ]
-crbug.com/388309399 [ Win ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/semantics/embedded-content/the-iframe-element/iframe-loading-lazy-nav-meta-refresh.optional.html [ Crash ]
 crbug.com/388376334 [ Mac12 ] virtual/permission-element/external/wpt/html/semantics/permission-element/display-css-property-reftest.tentative.html [ Crash ]
 crbug.com/388376334 [ Win ] virtual/permission-element/external/wpt/html/semantics/permission-element/display-css-property-reftest.tentative.html [ Crash ]
 crbug.com/388312948 [ Mac14 ] virtual/scalefactor200/external/wpt/css/printing/input-file-print.html [ Crash ]
