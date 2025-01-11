@@ -528,12 +528,7 @@ void VideoEncodeAcceleratorAdapter::InitializeInternalOnAcceleratorThread() {
   // Other platforms will happily mix GpuMemoryBuffer storage with regular
   // storage, so we don't care about mismatches on other platforms.
   if (input_buffer_preference_ == InputBufferKind::Any) {
-    if (vea_config.storage_type ==
-        VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer) {
-      input_buffer_preference_ = InputBufferKind::GpuMemBuf;
-    } else {
-      input_buffer_preference_ = InputBufferKind::CpuMemBuf;
-    }
+    input_buffer_preference_ = InputBufferKind::GpuMemBuf;
   }
 #endif
   if (!accelerator_->Initialize(vea_config, this, media_log_->Clone())) {
