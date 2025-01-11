@@ -556,8 +556,10 @@ class GpuIntegrationTest(
     if not cls._args_changed_this_browser_start:
       return
 
-    # chrome://gpu does not exist for Webview.
-    if cls.browser.browser_type == 'android-webview-instrumentation':
+    # chrome://gpu does not exist for Webview or the Fuchsia cast streaming
+    # shell.
+    if cls.browser.browser_type in ('android-webview-instrumentation',
+                                    'cast-streaming-shell'):
       return
 
     # TODO(crbug.com/376498163): Remove this early return once Telemetry's
