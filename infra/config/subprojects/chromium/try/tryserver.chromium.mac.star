@@ -257,6 +257,15 @@ try_.builder(
 )
 
 try_.builder(
+    name = "mac-vm",
+    mirrors = ["ci/mac-vm"],
+    gn_args = "ci/mac-vm",
+    builderless = True,
+    cpu = cpu.ARM64,
+    contact_team_email = "bling-engprod@google.com",
+)
+
+try_.builder(
     name = "mac12-arm64-rel",
     branch_selector = branches.selector.MAC_BRANCHES,
     mirrors = [

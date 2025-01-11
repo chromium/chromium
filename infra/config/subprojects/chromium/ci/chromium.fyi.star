@@ -869,6 +869,53 @@ fyi_mac_builder(
     ),
 )
 
+fyi_ios_builder(
+    name = "mac-vm",
+    description_html = "Mac builder for running testing targets on Mac Virtual Machines",
+    # every 4 hours beginning at 2am, deliberately offsetting from ios-vm
+    schedule = "0 2-23/4 * * *",
+    triggered_by = [],
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
+        ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "debug_builder",
+            "remoteexec",
+            "mac",
+            "arm64",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "mac_vm_tests",
+        ],
+        additional_compile_targets = [
+            "all",
+        ],
+        mixins = [
+            "mac_vm",
+        ],
+    ),
+    builderless = True,
+    os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
+    console_view_entry = consoles.console_view_entry(
+        category = "macvm",
+        short_name = "mac",
+    ),
+    contact_team_email = "bling-engprod@google.com",
+)
+
 fyi_mac_builder(
     name = "mac13-wpt-chromium-rel",
     description_html = "Runs {} against Chrome.".format(
@@ -2017,8 +2064,8 @@ fyi_ios_builder(
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
-        category = "iOS",
-        short_name = "vm",
+        category = "macvm",
+        short_name = "ios",
     ),
     contact_team_email = "bling-engprod@google.com",
     xcode = xcode.xcode_default,

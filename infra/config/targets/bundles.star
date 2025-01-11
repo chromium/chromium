@@ -5327,6 +5327,21 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "mac_vm_tests",
+    targets = [
+        "base_unittests",
+        "interactive_ui_tests",
+    ],
+    per_test_modifications = {
+        "interactive_ui_tests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 6,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
     name = "monochrome_public_apk_checker_isolated_script",
     targets = [
         "monochrome_public_apk_checker",
