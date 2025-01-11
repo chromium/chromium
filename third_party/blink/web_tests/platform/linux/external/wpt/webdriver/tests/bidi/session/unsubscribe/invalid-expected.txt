@@ -1,0 +1,17 @@
+This is a wdspec test.
+[FAIL] test_params_subscriptions_invalid_type[None]
+  TypeError: unsubscribe() got an unexpected keyword argument 'subscriptions'
+[FAIL] test_params_subscriptions_invalid_type[True]
+  TypeError: unsubscribe() got an unexpected keyword argument 'subscriptions'
+[FAIL] test_params_subscriptions_invalid_type[42]
+  TypeError: unsubscribe() got an unexpected keyword argument 'subscriptions'
+[FAIL] test_params_subscriptions_invalid_type[subscriptions3]
+  TypeError: unsubscribe() got an unexpected keyword argument 'subscriptions'
+[FAIL] test_params_subscriptions_invalid_type[foo]
+  TypeError: unsubscribe() got an unexpected keyword argument 'subscriptions'
+[FAIL] test_params_subscriptions_invalid_value[subscriptions0]
+  TypeError: unsubscribe() got an unexpected keyword argument 'subscriptions'
+[FAIL] test_params_subscriptions_invalid_value[subscriptions1]
+  TypeError: unsubscribe() got an unexpected keyword argument 'subscriptions'
+Harness: the test ran to completion.
+

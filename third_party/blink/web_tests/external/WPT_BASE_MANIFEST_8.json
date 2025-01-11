@@ -3895,6 +3895,13 @@
        {}
       ]
      ],
+     "multicol-loads-indefinitely-001-crash.html": [
+      "c00891c14c16485ce88a3bfe56d0432658eb8e61",
+      [
+       null,
+       {}
+      ]
+     ],
      "nested-balanced-monolithic-multicol-crash.html": [
       "082bf70691c955e1ba7fac9e2c077c71a7d52f84",
       [
@@ -20405,6 +20412,21 @@
   },
   "print-reftest": {
    "css": {
+    "css-anchor-position": {
+     "anchor-position-005-print.html": [
+      "eeae841405a774cfa77012b7f01b304ea8c89632",
+      [
+       null,
+       [
+        [
+         "/css/css-anchor-position/anchor-position-005-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ]
+    },
     "css-break": {
      "abspos-in-clipped-overflow-print.html": [
       "4510dd3cbc87aa549c0b81fdcfd5ccdafc4fa6b0",
@@ -62360,6 +62382,58 @@
         {}
        ]
       ],
+      "collapsing-border-model-011.html": [
+       "9c03ddeda9051c6e823ca1f31729eed0d8a8ac7b",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "collapsing-border-model-012.html": [
+       "39b176ce375994ece4ca6c05b7484ef59fcd1c79",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "collapsing-border-model-013.html": [
+       "5e5f57694c9015c5a74082a9525bb2ce44d39bfc",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "collapsing-border-model-014.html": [
+       "18177526b824cfebbc95467031c30d04b7b3ff79",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "column-visibility-004.xht": [
        "60d233fa9402f0b57a45f299405dacca5abc8ee6",
        [
@@ -73506,6 +73580,19 @@
      ],
      "anchor-position-multicol-008.html": [
       "f652b6ac2b05d28850f1d732d017cdff9c02e848",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "anchor-position-multicol-011.html": [
+      "eab57bfdb841bc488708ad001f2534cdae2a5188",
       [
        null,
        [
@@ -312992,6 +313079,20 @@
      "34edb7b82b9657e0beaf9b1669d0854d365770ed",
      []
     ],
+    "permissions-policy": {
+     "ch-ua-high-entropy-values-disabled-by-permissions-policy.https.sub.html.headers": [
+      "fcf474880843e220faff943f8946f83b514208a4",
+      []
+     ],
+     "ch-ua-high-entropy-values-enabled-by-permissions-policy.https.sub.html.headers": [
+      "ac74cfd647f07a2e276b5913a139b7728189d7c9",
+      []
+     ],
+     "ch-ua-high-entropy-values-enabled-on-self-origin-by-permissions-policy.https.sub.html.headers": [
+      "9c876c03f3cf59614059e818acab6e39210a5122",
+      []
+     ]
+    },
     "resources": {
      "2x3-svg-scaled-by-sec-ch-width.py": [
       "d53574c361213ddf0949f906a08ebe388f9aa2d0",
@@ -323687,6 +323788,10 @@
      ],
      "anchor-parse-valid-expected.txt": [
       "5f741b46bb7c2ea65709b61212b0931a9574c7f8",
+      []
+     ],
+     "anchor-position-005-print-ref.html": [
+      "94a1f8e55d30e2de6607ca741142d4bdbdf87098",
       []
      ],
      "anchor-position-multicol-003-expected.txt": [
@@ -385708,6 +385813,12 @@
          "8557441f7e2a9f788475f63c8cb936daaa2afb6d",
          []
         ]
+       },
+       "the-offscreen-canvas": {
+        "offscreencanvas.transferrable.sw.js": [
+         "fc7265a48c393566ad8c9fe7b73281e4f5137b21",
+         []
+        ]
        }
       },
       "path-objects": {
@@ -400751,7 +400862,7 @@
      []
     ],
     "WebCryptoAPI.idl": [
-     "ae85c1cfe4684fe778038f579223ee7a5606150c",
+     "ff7a89cd0d51be01760b9bfdb709393f4db5fd31",
      []
     ],
     "accelerometer.idl": [
@@ -401031,7 +401142,7 @@
      []
     ],
     "digital-credentials.idl": [
-     "2207b25dd57a0b4d47552faaf0de5cc3cd892021",
+     "e20079efa14f9a894181d1cafb66129a1634c627",
      []
     ],
     "digital-goods.idl": [
@@ -401055,7 +401166,7 @@
      []
     ],
     "element-timing.idl": [
-     "586b5084bb00e902dd3b1a80d09847423bbdc509",
+     "ef73ca6c0f610ff8cdb14a8bd0859efb8eca743b",
      []
     ],
     "encoding.idl": [
@@ -401551,7 +401662,7 @@
      []
     ],
     "speech-api.idl": [
-     "74085481525c943296f023e94a6532e5bc9f5b15",
+     "f3967b873ffc597380585a0718c4f43406b2f281",
      []
     ],
     "storage-access.idl": [
@@ -401595,7 +401706,7 @@
      []
     ],
     "turtledove.idl": [
-     "c416760d5956c4d2b818d8fda9da1384604919b0",
+     "05072974ec94e3a386aa74e7c0cd6ef98e2b4f04",
      []
     ],
     "ua-client-hints.idl": [
@@ -401635,7 +401746,7 @@
      []
     ],
     "wai-aria.idl": [
-     "78083f03f91fd987b6e19da391e640bf9816d701",
+     "deebc5626e2a925c4b7c7bad92c8492ebb4dcb08",
      []
     ],
     "wasm-js-api.idl": [
@@ -401687,7 +401798,7 @@
      []
     ],
     "webauthn.idl": [
-     "46e2418281e4355bd60e493f9b6af20b7ec4b19b",
+     "a33c85e7bad86753211fa7aa9270abac18b1e54e",
      []
     ],
     "webcodecs-aac-codec-registration.idl": [
@@ -406975,6 +407086,10 @@
       "2265bd01d2bd66cfa079e22a749e03e836e45785",
       []
      ],
+     "permissions-policy-ch-ua-high-entropy-values.html": [
+      "842cf590293dade359df1243b3f3f8b1d804091b",
+      []
+     ],
      "permissions-policy-clipboard-read.html": [
       "10fc45fd933ef0f77e5d53d4fac9ec70d372ce48",
       []
@@ -407454,12 +407569,8 @@
      "98e4d4ad6702f8c847f92fddaa16cdd1b9940632",
      []
     ],
-    "pointerevent_pointercapture_in_frame_mouse-expected.txt": [
-     "be6da2668f5106e74c5e86b211b944e125d71cd7",
-     []
-    ],
     "pointerevent_pointercapture_in_frame_touch-expected.txt": [
-     "e94d02d6b0677b91bbfa65b3204e1ad0277a1bb4",
+     "a9b817ec4e51ba4b29149ab81d112c8dec732f87",
      []
     ],
     "pointerevent_pointermove_after_pointerup_target_removed-expected.txt": [
@@ -417784,7 +417895,7 @@
     ],
     "support": {
      "touch.js": [
-      "f4bc0467db8a215fa85fb7e1c483b3d99a458ef7",
+      "af0fefb67002a02910aee82ea7f02839c967d321",
       []
      ]
     }
@@ -417828,6 +417939,10 @@
     ],
     "WEB_FEATURES.yml": [
      "6ea31f1ef8d3838b3b9d84f6dac839b22083ee20",
+     []
+    ],
+    "WorkerGlobalScope-worker-constructor-expected.txt": [
+     "17ab3eb534a2de51218cd16da334bbf79b47e8e2",
      []
     ],
     "block-string-assignment-to-DOMWindowTimers-setTimeout-setInterval-expected.txt": [
@@ -417929,6 +418044,14 @@
       "7d574a6a1387a9e7bdaaf596f46e9d616ca94988",
       []
      ],
+     "ServiceWorkerContainer-register.https.js": [
+      "150da428779516deb10176e908772d16a1a27f3b",
+      []
+     ],
+     "ServiceWorkerContainer-register.https.js.headers": [
+      "604e765da46d85fe8ab85d3097fe7c2cbe00a930",
+      []
+     ],
      "WorkerGlobalScope-eval.https.js": [
       "95ac1ff844b3e4e6f01a4abb3cf4846df514bf70",
       []
@@ -417938,7 +418061,7 @@
       []
      ],
      "WorkerGlobalScope-importScripts.https.js": [
-      "c40e8550dd659e2656564f5b3b61a0e5cb591710",
+      "a3ecfc481923b5e92e0eca287498086b4448458c",
       []
      ],
      "WorkerGlobalScope-importScripts.https.js.headers": [
@@ -417946,11 +418069,19 @@
       []
      ],
      "WorkerGlobalScope-worker-constructor.js": [
-      "7306b186d61904a60c082d168dc8cd843bcfbf30",
+      "e45a92d4817c1c81c2b1e893cb4ecd20cc238de1",
       []
      ],
      "WorkerGlobalScope-worker-constructor.js.headers": [
       "af6596b29a8080e5cd8d688d0d6933caf49a2090",
+      []
+     ],
+     "block-eval-function-constructor-worker.js": [
+      "0a74a1cdef31c93cd854f6abe0220319002d0303",
+      []
+     ],
+     "block-eval-function-constructor.js": [
+      "83bb606388305d9c9e20cb11623f379ef005316f",
       []
      ],
      "block-string-assignment-to-DOMWindowTimers-setTimeout-setInterval-worker.js": [
@@ -418003,6 +418134,10 @@
      ],
      "set-inner-html.js": [
       "45053d43e362e223e0ce5e6dffb4da09c0ce3f34",
+      []
+     ],
+     "worker.https.js": [
+      "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
       []
      ],
      "worker.js": [
@@ -421716,26 +421851,6 @@
      "ede50f41555a2b4543d2b8d98207855f22cc0371",
      []
     ],
-    "audioDecoder-codec-specific.https.any_pcm_f32-expected.txt": [
-     "0aa83d1b0ca5fbe42c10ff1148f1eb8988b428c7",
-     []
-    ],
-    "audioDecoder-codec-specific.https.any_pcm_s16-expected.txt": [
-     "2380e74abe8af7bc308723aa43ca3289477478cd",
-     []
-    ],
-    "audioDecoder-codec-specific.https.any_pcm_s24-expected.txt": [
-     "7fe6747c3ee21f2bc6085f47200b0e838a94b7fa",
-     []
-    ],
-    "audioDecoder-codec-specific.https.any_pcm_s32-expected.txt": [
-     "fe4e5430ce379b8f9a265b05fd4d8244828966ce",
-     []
-    ],
-    "audioDecoder-codec-specific.https.any_pcm_u8-expected.txt": [
-     "141d485febff01c84079bb0dd59df850898a5579",
-     []
-    ],
     "audioDecoder-codec-specific.https.any_vorbis-expected.txt": [
      "02d1bda8b892d4fd7e0889ba9af8362a3ac523b3",
      []
@@ -423099,7 +423214,7 @@
        []
       ],
       "fixtures_bidi.py": [
-       "241ba528ddfaae95c4474dba578417813a189bcb",
+       "ec36eb953ff391610d23930dc558d10d11c4b242",
        []
       ],
       "fixtures_http.py": [
@@ -424911,6 +425026,10 @@
      ],
      "server-read-then-close.py": [
       "7f992e0dcca3ae62277cac0fa39355fce3e57be0",
+      []
+     ],
+     "token-count.py": [
+      "8cdfd802b1edb23bf038a2dab82e9913c3654a74",
       []
      ]
     },
@@ -436372,38 +436491,462 @@
       {}
      ]
     ],
-    "nested-cloning-basic.html": [
-     "df4848b69374c89bc7dc372c1adc5365bccc096e",
+    "nested-cloning-basic.any.js": [
+     "91e6630d8545ec5d9b34900dfaa121aff15dfb8c",
      [
-      null,
+      "IndexedDB/nested-cloning-basic.any.html",
       {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: basic objects are cloned correctly"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "script",
+         "resources/nested-cloning-common.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "IndexedDB/nested-cloning-basic.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: basic objects are cloned correctly"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "script",
+         "resources/nested-cloning-common.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "IndexedDB/nested-cloning-basic.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: basic objects are cloned correctly"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "script",
+         "resources/nested-cloning-common.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "IndexedDB/nested-cloning-basic.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: basic objects are cloned correctly"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "script",
+         "resources/nested-cloning-common.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
        "timeout": "long"
       }
      ]
     ],
-    "nested-cloning-large-multiple.html": [
-     "97bcaddfb2d64bfe89aaf0e7df574a654e009153",
+    "nested-cloning-large-multiple.any.js": [
+     "7473d33068da24d2da1e3b439528aca872e482b5",
      [
-      null,
+      "IndexedDB/nested-cloning-large-multiple.any.html",
       {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: large nested objects are cloned correctly"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "script",
+         "resources/nested-cloning-common.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "IndexedDB/nested-cloning-large-multiple.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: large nested objects are cloned correctly"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "script",
+         "resources/nested-cloning-common.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "IndexedDB/nested-cloning-large-multiple.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: large nested objects are cloned correctly"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "script",
+         "resources/nested-cloning-common.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "IndexedDB/nested-cloning-large-multiple.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: large nested objects are cloned correctly"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "script",
+         "resources/nested-cloning-common.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
        "timeout": "long"
       }
      ]
     ],
-    "nested-cloning-large.html": [
-     "0cd8cb48ceec704ef70ea70dae8da76d8928ef12",
+    "nested-cloning-large.any.js": [
+     "07a9e2711390f9ad1f3ddf1e65e3852ad6ddc7a5",
      [
-      null,
+      "IndexedDB/nested-cloning-large.any.html",
       {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: large nested objects are cloned correctly"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "script",
+         "resources/nested-cloning-common.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "IndexedDB/nested-cloning-large.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: large nested objects are cloned correctly"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "script",
+         "resources/nested-cloning-common.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "IndexedDB/nested-cloning-large.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: large nested objects are cloned correctly"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "script",
+         "resources/nested-cloning-common.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "IndexedDB/nested-cloning-large.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: large nested objects are cloned correctly"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "script",
+         "resources/nested-cloning-common.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
        "timeout": "long"
       }
      ]
     ],
-    "nested-cloning-small.html": [
-     "e5105a999f57e6bc49828ce886ab138117c9c8f6",
+    "nested-cloning-small.any.js": [
+     "7cef76275e52512121ebc05ede382cff39b7ae23",
      [
-      null,
+      "IndexedDB/nested-cloning-small.any.html",
       {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: small nested objects are cloned correctly"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "script",
+         "resources/nested-cloning-common.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "IndexedDB/nested-cloning-small.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: small nested objects are cloned correctly"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "script",
+         "resources/nested-cloning-common.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "IndexedDB/nested-cloning-small.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: small nested objects are cloned correctly"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "script",
+         "resources/nested-cloning-common.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "IndexedDB/nested-cloning-small.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: small nested objects are cloned correctly"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "script",
+         "resources/nested-cloning-common.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
        "timeout": "long"
       }
      ]
@@ -437559,25 +438102,162 @@
       {}
      ]
     ],
-    "transaction-lifetime-blocked.htm": [
-     "760b6b9bdbe91b987b02495a2cd7af4328520c90",
+    "transaction-lifetime-empty.any.js": [
+     "9ef27d2812dd144e14727b7e122fa22a373b3ea0",
      [
-      null,
-      {}
+      "IndexedDB/transaction-lifetime-empty.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: Commit ordering of empty transactions"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/transaction-lifetime-empty.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: Commit ordering of empty transactions"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/transaction-lifetime-empty.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: Commit ordering of empty transactions"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/transaction-lifetime-empty.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: Commit ordering of empty transactions"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
-    "transaction-lifetime-empty.html": [
-     "ba299fdcd041802b49e41cb87cf4d52a577bab81",
+    "transaction-lifetime.any.js": [
+     "969960c4aecbe9cbe1248e5dfee756420b273ebb",
      [
-      null,
-      {}
-     ]
-    ],
-    "transaction-lifetime.htm": [
-     "996f62937f76fa2b97fd3b66ead3993d234773f5",
+      "IndexedDB/transaction-lifetime.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Event order when opening a second database when one connection is open already"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
      [
-      null,
-      {}
+      "IndexedDB/transaction-lifetime.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Event order when opening a second database when one connection is open already"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/transaction-lifetime.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Event order when opening a second database when one connection is open already"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/transaction-lifetime.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Event order when opening a second database when one connection is open already"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
     "transaction-relaxed-durability.any.js": [
@@ -447019,7 +447699,7 @@
    "ai": {
     "language_detection": {
      "capabilities.tentative.https.any.js": [
-      "2a0698695d00ce2f8a50ade3adbcd34212051b8f",
+      "3eca5119a378741fc48adb44f4bd83ba7a7e06bd",
       [
        "ai/language_detection/capabilities.tentative.https.any.html",
        {
@@ -447027,6 +447707,40 @@
          [
           "title",
           "capabilities test"
+         ],
+         [
+          "global",
+          "window,worker"
+         ]
+        ]
+       }
+      ],
+      [
+       "ai/language_detection/capabilities.tentative.https.any.serviceworker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "capabilities test"
+         ],
+         [
+          "global",
+          "window,worker"
+         ]
+        ]
+       }
+      ],
+      [
+       "ai/language_detection/capabilities.tentative.https.any.sharedworker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "capabilities test"
+         ],
+         [
+          "global",
+          "window,worker"
          ]
         ]
        }
@@ -447038,13 +447752,17 @@
          [
           "title",
           "capabilities test"
+         ],
+         [
+          "global",
+          "window,worker"
          ]
         ]
        }
       ]
      ],
      "detector.https.tentative.any.js": [
-      "4f962de8339de0a8eb1b0444dfcf668c05f76b88",
+      "6bd3a41b8cd8396d9bb890fe17bd753adc4f232e",
       [
        "ai/language_detection/detector.https.tentative.any.html",
        {
@@ -447052,6 +447770,40 @@
          [
           "title",
           "Detect english"
+         ],
+         [
+          "global",
+          "window,worker"
+         ]
+        ]
+       }
+      ],
+      [
+       "ai/language_detection/detector.https.tentative.any.serviceworker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Detect english"
+         ],
+         [
+          "global",
+          "window,worker"
+         ]
+        ]
+       }
+      ],
+      [
+       "ai/language_detection/detector.https.tentative.any.sharedworker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Detect english"
+         ],
+         [
+          "global",
+          "window,worker"
          ]
         ]
        }
@@ -447063,6 +447815,10 @@
          [
           "title",
           "Detect english"
+         ],
+         [
+          "global",
+          "window,worker"
          ]
         ]
        }
@@ -456184,6 +456940,50 @@
       {}
      ]
     ],
+    "permissions-policy": {
+     "ch-ua-high-entropy-values-allowed-by-permissions-policy-attribute-redirect-on-load.https.sub.html": [
+      "da66bd0feb9ea8960aef6e076366b974751ecfbb",
+      [
+       null,
+       {}
+      ]
+     ],
+     "ch-ua-high-entropy-values-default-permissions-policy.https.sub.html": [
+      "d73d61d5ac31e2cb7b4deefb78beb7168599d45a",
+      [
+       null,
+       {}
+      ]
+     ],
+     "ch-ua-high-entropy-values-disabled-by-permissions-policy.https.sub.html": [
+      "c86d3829d5c9fb2613fa16d1757c039aa2d3ce1e",
+      [
+       null,
+       {}
+      ]
+     ],
+     "ch-ua-high-entropy-values-enabled-by-permissions-policy.https.sub.html": [
+      "7e05749816173a90a8e710698993b5df071daf34",
+      [
+       null,
+       {}
+      ]
+     ],
+     "ch-ua-high-entropy-values-enabled-on-self-origin-by-permissions-policy.https.sub.html": [
+      "24161b3cc02540c7c74a3883e11958542d59b3cc",
+      [
+       null,
+       {}
+      ]
+     ],
+     "ch-ua-high-entropy-values-permissions-policy-attribute.https.sub.html": [
+      "a6f9bbf73ee6e0ee511bea827e6ff51591df9d00",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
     "sandbox": {
      "iframe-csp-same-origin.https.html": [
       "a5f094af9d4354527ed4ac2401d0b4ef5075e340",
@@ -524396,6 +525196,15 @@
        }
       ]
      ],
+     "keep-collapsible-white-space-after-web-app-delete-padding-br.html": [
+      "7f38f6514ac685b29e0964044196cc32559779e3",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
      "keep-typed-collapsible-white-space-visible-after-muation.html": [
       "9bc02223db5ff5c1b04d93d7cf13562d401bfbf8",
       [
@@ -588300,7 +589109,7 @@
          ]
         ],
         "getContextAttributes.html": [
-         "47b3d96233acf6b879959f48450be36beff99830",
+         "9c98863896573541590351b25b716c2c02aa4497",
          [
           null,
           {}
@@ -599558,6 +600367,28 @@
          [
           null,
           {}
+         ]
+        ],
+        "offscreencanvas.transferrable.sw.https.window.js": [
+         "caa79bafaec50f060e5c4bfa2cc7ba05c9c1436f",
+         [
+          "html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.transferrable.sw.https.window.html",
+          {
+           "script_metadata": [
+            [
+             "script",
+             "/resources/testdriver.js"
+            ],
+            [
+             "script",
+             "/resources/testdriver-vendor.js"
+            ],
+            [
+             "script",
+             "/service-workers/service-worker/resources/test-helpers.sub.js"
+            ]
+           ]
+          }
          ]
         ],
         "offscreencanvas.transferrable.w.html": [
@@ -623999,6 +624830,13 @@
         ],
         "option-computed-style.tentative.html": [
          "ba2861a5c6181b72c3b8abc3e077a9f414f2cd99",
+         [
+          null,
+          {}
+         ]
+        ],
+        "option-img-alt-text.tentative.html": [
+         "0d47b7fe4826cff7d6598d53df1971091f8dd009",
          [
           null,
           {}
@@ -654154,6 +654992,17 @@
       {}
      ]
     ],
+    "buffered-flag-with-entryTypes-observer.tentative.any.js": [
+     "493d1dc7a2d4805e56d5f82800eeef84892ed24c",
+     [
+      "performance-timeline/buffered-flag-with-entryTypes-observer.tentative.any.html",
+      {}
+     ],
+     [
+      "performance-timeline/buffered-flag-with-entryTypes-observer.tentative.any.worker.html",
+      {}
+     ]
+    ],
     "case-sensitivity.any.js": [
      "3a98505ae67f7df6f617d6b9fde4af367503278e",
      [
@@ -657722,7 +658571,7 @@
      ]
     ],
     "pointerevent_pointercapture_in_frame.html": [
-     "9c26c4d5a3869bde8e201653f185a6cb023cb779",
+     "2d20a055904ec2be238e7b037522867156813772",
      [
       "pointerevents/pointerevent_pointercapture_in_frame.html?mouse",
       {
@@ -677346,7 +678195,7 @@
      ]
     ],
     "fire-selectionchange-event-on-pressing-backspace.html": [
-     "98d2cc6f365512b18a3fdd977d550bec1901e7c8",
+     "a6b8fd0c9cecbeb082fd796ee72bae64086d9367",
      [
       null,
       {
@@ -704765,7 +705614,7 @@
      ]
     ],
     "single-touch.html": [
-     "57c5cdda7ce3e2f44e4bf5e278a73a04dc6f64a0",
+     "9e8dc0d7bb6a6ee457274ed648e765c10e1b1e89",
      [
       null,
       {
@@ -704968,6 +705817,13 @@
       {}
      ]
     ],
+    "ServiceWorkerContainer-register-from-Worker.https.html": [
+     "a808c0c12b50b1c2d06f74ea45310e8c2a5558df",
+     [
+      null,
+      {}
+     ]
+    ],
     "TrustedType-AttributeNodes.html": [
      "f4269a5d40d02d372c57dd09486f3ff8b3b499a9",
      [
@@ -705148,7 +706004,7 @@
      ]
     ],
     "WorkerGlobalScope-worker-constructor.html": [
-     "86612b9d1d1c3098041963a9b5a66a9c7d415616",
+     "8964c72780b8fb2a575c73a90dd8230f733da8c6",
      [
       null,
       {}
@@ -705156,6 +706012,13 @@
     ],
     "block-Document-execCommand.html": [
      "7a26bff3ea967812ed4ec97161c173c861ad498f",
+     [
+      null,
+      {}
+     ]
+    ],
+    "block-eval-function-constructor.html": [
+     "a7d61c86dc0e736ef9a7754b80500714bbee93a4",
      [
       null,
       {}
@@ -705226,6 +706089,13 @@
     ],
     "block-string-assignment-to-HTMLElement-generic.html": [
      "a9764c02584c16eb8119b8bddded2dc8a47a4be9",
+     [
+      null,
+      {}
+     ]
+    ],
+    "block-string-assignment-to-HTMLIFrameElement-srcdoc.html": [
+     "b71d838b8512384ec09b73e74ae0de310e85ba1a",
      [
       null,
       {}
@@ -705460,7 +706330,7 @@
      ]
     ],
     "trusted-types-createHTMLDocument.html": [
-     "cf209cca80060d709bf975dc69ac158eb3e92835",
+     "38223dac7016eb766d4c3369a4d1c912290bd14b",
      [
       null,
       {}
@@ -705637,7 +706507,7 @@
      ]
     ],
     "useragentdata.https.any.js": [
-     "fa588355181a18f9413f1d13129d1f991837e316",
+     "73059152bd37dfec6a7d31fce605dd6b460982af",
      [
       "ua-client-hints/useragentdata.https.any.html",
       {
@@ -809758,7 +810628,7 @@
        },
        "fetch_error": {
         "fetch_error.py": [
-         "872b4877a8e8e229f5c5e049426dd7370a59b721",
+         "6beb33f7d69a189cd92d9e9ca371002e2b68369c",
          [
           null,
           {}
@@ -810325,6 +811195,13 @@
           null,
           {}
          ]
+        ],
+        "subscription_id.py": [
+         "36a57111f6d503aad3467162c2db102a5608a89d",
+         [
+          null,
+          {}
+         ]
         ]
        },
        "unsubscribe": {
@@ -810343,7 +811220,7 @@
          ]
         ],
         "invalid.py": [
-         "c286bc09ee04d72aa4048e67078084d985bdcdc3",
+         "0b13e949673c198f89aba72388b4230cd8bc0a5b",
          [
           null,
           {}
