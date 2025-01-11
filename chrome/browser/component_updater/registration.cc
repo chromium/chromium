@@ -110,6 +110,10 @@
 #include "ui/aura/env.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/component_updater/lacros_component_remover.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace component_updater {
 
 void RegisterComponentsForUpdate() {
@@ -166,6 +170,13 @@ void RegisterComponentsForUpdate() {
     if (!history_embeddings::IsHistoryEmbeddingsFeatureEnabled()) {
       DeleteHistorySearchStringsComponent(path);
     }
+
+#if BUILDFLAG(IS_CHROMEOS)
+    // Lacros is sunsetted. While rootfs Lacros was already taken care of,
+    // stateful Lacros needs to be cleaned up just like a regular component.
+    // TODO(crbug.com/380780352): Remove this after the stepping stone.
+    component_updater::DeleteStatefulLacros(path);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     if (base::SysInfo::IsRunningOnChromeOS()) {

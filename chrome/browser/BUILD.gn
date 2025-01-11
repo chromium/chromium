@@ -1672,6 +1672,13 @@ static_library("browser") {
     "webid/identity_provider_permission_request.h",
   ]
 
+  if (is_chromeos) {
+    sources += [
+      "component_updater/lacros_component_remover.cc",
+      "component_updater/lacros_component_remover.h",
+    ]
+  }
+
   configs += [
     "//build/config/compiler:wexit_time_destructors",
     "//build/config:precompiled_headers",
