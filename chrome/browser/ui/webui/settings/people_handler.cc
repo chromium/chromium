@@ -454,8 +454,10 @@ void PeopleHandler::DisplayGaiaLoginInNewTabOrWindow(
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     // When the user has an unrecoverable error, they first have to sign out and
     // then sign in again.
+    // Note: this sets the consent level to `signin::ConsentLevel::kSignin`.
     identity_manager->GetPrimaryAccountMutator()->RevokeSyncConsent(
         signin_metrics::ProfileSignout::kRevokeSyncFromSettings);
+    DCHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   }
 
   // If the identity manager already has a primary account, this is a
@@ -468,10 +470,13 @@ void PeopleHandler::DisplayGaiaLoginInNewTabOrWindow(
     DCHECK(error_controller->HasError());
     signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(profile_,
                                                              access_point);
-  } else {
-    signin_ui_util::EnableSyncFromSingleAccountPromo(
-        profile_, CoreAccountInfo(), access_point);
+    return;
   }
+
+  DCHECK(IsChangePrimaryAccountAllowed(profile_, /*email=*/std::string()))
+      << "Primary account already set and change is not allowed";
+  signin_ui_util::EnableSyncFromSingleAccountPromo(profile_, CoreAccountInfo(),
+                                                   access_point);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -785,9 +790,6 @@ void PeopleHandler::HandleStartSignin(const base::Value::List& args) {
   syncer::SyncService* service = GetSyncService();
   DCHECK(IsProfileAuthNeededOrHasErrors() ||
          (service && service->HasUnrecoverableError()));
-  DCHECK(IsChangePrimaryAccountAllowed(profile_, /*email=*/std::string()))
-      << "Primary account already set and change is not allowed";
-
   DisplayGaiaLogin(signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

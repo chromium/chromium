@@ -224,8 +224,7 @@ class PeopleHandler : public SettingsPageUIHandler,
   void DisplayGaiaLogin(signin_metrics::AccessPoint access_point);
 
   // When web-flow is enabled, displays the Gaia login form in a new tab.
-  // This function is virtual so that tests can override.
-  virtual void DisplayGaiaLoginInNewTabOrWindow(
+  void DisplayGaiaLoginInNewTabOrWindow(
       signin_metrics::AccessPoint access_point);
 #endif
 
