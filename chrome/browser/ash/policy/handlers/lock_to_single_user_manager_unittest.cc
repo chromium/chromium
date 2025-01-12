@@ -134,7 +134,7 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
   // TODO(b/40286020): Consider migrating into BrowserWithTestWindowTest
   // in better way. Current test implementation is different from
   // what we're seeing in production.
-  void LogIn(const std::string& email) override {}
+  void LogIn(std::string_view email, const GaiaId& gaia_id) override {}
   void OnUserProfileCreated(const std::string& email,
                             Profile* profile) override {}
   void SwitchActiveUser(const std::string& email) override {}

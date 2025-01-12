@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/remote_commands/device_command_reboot_job.h"
-
 #include <memory>
 #include <utility>
 
@@ -14,6 +12,7 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/policy/remote_commands/device_command_reboot_job.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_reboot_job_test_util.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/device_scheduled_reboot_handler.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/scoped_wake_lock.h"
@@ -23,8 +22,10 @@
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/account_id/account_id.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/device/public/cpp/test/test_wake_lock_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -39,12 +40,16 @@ constexpr base::TimeDelta kScheduledRebootDialogDelay = base::Minutes(5);
 
 constexpr char kRebootTaskTimeFieldName[] = "reboot_time";
 
+// Returns UserManager containing a logged in regular user.
+// Given `local_state`'s lifetime must outlive the returned instance.
 std::unique_ptr<user_manager::FakeUserManager>
-CreateFakeUserManagerForRegularSession() {
-  auto manager = std::make_unique<user_manager::FakeUserManager>();
+CreateFakeUserManagerForRegularSession(TestingPrefServiceSimple& local_state) {
+  user_manager::UserManagerImpl::RegisterPrefs(local_state.registry());
+  auto manager = std::make_unique<user_manager::FakeUserManager>(&local_state);
 
-  const AccountId id = AccountId::FromUserEmail("user@user.net");
-  manager->AddUser(id);
+  const AccountId id =
+      AccountId::FromUserEmailGaiaId("user@user.net", GaiaId("fakegaia"));
+  manager->AddGaiaUser(id, user_manager::UserType::kRegular);
   manager->UserLoggedIn(id, /*username_hash=*/id.GetUserEmail(),
                         /*browser_restart=*/false, /*is_child=*/false);
 
@@ -109,8 +114,9 @@ class DeviceCommandRebootJobWithScheduledRebootPolicyTest
   base::test::ScopedCommandLine scoped_command_line_;
 
  private:
+  TestingPrefServiceSimple local_state_;
   user_manager::ScopedUserManager scoped_user_manager_{
-      CreateFakeUserManagerForRegularSession()};
+      CreateFakeUserManagerForRegularSession(local_state_)};
   ScopedLoginState scoped_login_state_{ScopedLoginState::CreateRegularUser()};
   ScopedTestWakeLockProvider scoped_test_wake_lock_provider_;
 };

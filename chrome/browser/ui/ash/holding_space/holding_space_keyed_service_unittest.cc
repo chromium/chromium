@@ -69,6 +69,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/test/fake_download_item.h"
 #include "content/public/test/mock_download_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/test/async_file_test_helper.h"
@@ -604,7 +605,8 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
   TestingProfile* CreateSecondaryProfile(
       std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs = nullptr) {
     constexpr char kSecondaryProfileName[] = "secondary_profile";
-    LogIn(kSecondaryProfileName);
+    constexpr char kFakeGaia2[] = "fakegaia2";
+    LogIn(kSecondaryProfileName, GaiaId(kFakeGaia2));
     auto* profile = profile_manager()->CreateTestingProfile(
         kSecondaryProfileName, std::move(prefs), /*user_name=*/std::u16string(),
         /*avatar_id=*/0, GetTestingFactories());
@@ -774,7 +776,7 @@ class HoldingSpaceKeyedServiceWithExperimentalFeatureForGuestTest
     return user_manager::kGuestUserName;
   }
 
-  void LogIn(const std::string& email) override {
+  void LogIn(std::string_view email, const GaiaId& gaia_id) override {
     CHECK_EQ(email, user_manager::kGuestUserName);
     auto* user = user_manager()->AddGuestUser();
     user_manager()->UserLoggedIn(

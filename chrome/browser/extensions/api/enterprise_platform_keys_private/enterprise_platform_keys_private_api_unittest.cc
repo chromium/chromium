@@ -50,8 +50,8 @@ class EPKPChallengeKeyTestBase : public BrowserWithTestWindowTest {
   }
 
   // This will be called by BrowserWithTestWindowTest::SetUp();
-  void LogIn(const std::string& email) override {
-    const AccountId account_id = AccountId::FromUserEmail(email);
+  void LogIn(std::string_view email, const GaiaId& gaia_id) override {
+    const AccountId account_id = AccountId::FromUserEmailGaiaId(email, gaia_id);
     user_manager()->AddUserWithAffiliation(account_id,
                                            /*is_affiliated=*/true);
     user_manager()->UserLoggedIn(

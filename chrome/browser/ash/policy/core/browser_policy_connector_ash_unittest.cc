@@ -43,8 +43,10 @@ TEST(BrowserPolicyConnectorAshTest, UserManager) {
   ash::UserImageManagerRegistry user_image_manager_registry(
       fake_user_manager.Get());
 
-  fake_user_manager->AddUser(AccountId::FromUserEmail("owner@example/com"));
-  fake_user_manager->AddUser(kAccountId);
+  fake_user_manager->AddGaiaUser(
+      AccountId::FromUserEmailGaiaId("owner@example/com", GaiaId("ownergaia")),
+      user_manager::UserType::kRegular);
+  fake_user_manager->AddGaiaUser(kAccountId, user_manager::UserType::kRegular);
 
   browser_policy_connector.OnUserManagerCreated(fake_user_manager.Get());
 

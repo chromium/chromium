@@ -48,6 +48,7 @@
 #endif
 
 class GURL;
+class GaiaId;
 
 namespace chromeos {
 class ScopedLacrosServiceTestHelper;
@@ -251,7 +252,7 @@ class BrowserWithTestWindowTest : public testing::Test, public ProfileObserver {
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Logs in an User as `email`.
-  virtual void LogIn(const std::string& email);
+  virtual void LogIn(std::string_view email, const GaiaId& gaia_id);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

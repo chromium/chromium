@@ -150,17 +150,12 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
     fake_vm_plugin_dispatcher_client_ =
         static_cast<FakeVmPluginDispatcherClient*>(
             VmPluginDispatcherClient::Get());
-
-    mock_disk_mount_manager_ =
-        new testing::NiceMock<disks::MockDiskMountManager>;
-    disks::DiskMountManager::InitializeForTesting(mock_disk_mount_manager_);
   }
 
   CrosUsbDetectorTest(const CrosUsbDetectorTest&) = delete;
   CrosUsbDetectorTest& operator=(const CrosUsbDetectorTest&) = delete;
 
   ~CrosUsbDetectorTest() override {
-    disks::DiskMountManager::Shutdown();
     VmPluginDispatcherClient::Shutdown();
     SeneschalClient::Shutdown();
     ConciergeClient::Shutdown();
@@ -169,8 +164,14 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
   }
 
   void SetUp() override {
-    cros_usb_detector_ = std::make_unique<CrosUsbDetector>();
+    // Inject DiskMountManager. BrowserWithTestWindowTest by default creates
+    // DiskMountManager as it needs. Injected instance is destroyed by
+    // by BrowserWithTestWindowTest::TearDown().
+    mock_disk_mount_manager_ =
+        new testing::NiceMock<disks::MockDiskMountManager>;
+    disks::DiskMountManager::InitializeForTesting(mock_disk_mount_manager_);
     BrowserWithTestWindowTest::SetUp();
+    cros_usb_detector_ = std::make_unique<CrosUsbDetector>();
     crostini_test_helper_ =
         std::make_unique<crostini::CrostiniTestHelper>(profile());
 
@@ -192,8 +193,9 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
 
   void TearDown() override {
     crostini_test_helper_.reset();
-    BrowserWithTestWindowTest::TearDown();
     cros_usb_detector_.reset();
+    mock_disk_mount_manager_ = nullptr;
+    BrowserWithTestWindowTest::TearDown();
   }
 
   void ConnectToDeviceManager() {
@@ -300,8 +302,7 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
 
   device::FakeUsbDeviceManager device_manager_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
-  raw_ptr<disks::MockDiskMountManager, DanglingUntriaged>
-      mock_disk_mount_manager_;
+  raw_ptr<disks::MockDiskMountManager> mock_disk_mount_manager_;
   disks::DiskMountManager::Disks disks_;
 
   raw_ptr<ash::FakeCiceroneClient, DanglingUntriaged> fake_cicerone_client_;

@@ -29,10 +29,12 @@
 #include "chromeos/services/network_config/public/cpp/fake_cros_network_config.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "components/onc/onc_constants.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -95,16 +97,18 @@ class ApnMigratorTest : public testing::Test {
     // TODO(b/278643115) Remove LoginState dependency.
     LoginState::Initialize();
 
-    const AccountId account_id = AccountId::FromUserEmail("test@test");
-    auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
-    fake_user_manager->AddUser(account_id);
-    fake_user_manager->UserLoggedIn(
+    user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
+    fake_user_manager_.Reset(
+        std::make_unique<user_manager::FakeUserManager>(&local_state_));
+    const AccountId account_id =
+        AccountId::FromUserEmailGaiaId("test@test", GaiaId("fakegaia"));
+    fake_user_manager_->AddGaiaUser(account_id,
+                                    user_manager::UserType::kRegular);
+    fake_user_manager_->UserLoggedIn(
         account_id,
         user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
         /*browser_restart=*/false,
         /*is_child=*/false);
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(fake_user_manager));
 
     managed_cellular_pref_handler_ =
         base::WrapUnique(new testing::NiceMock<MockManagedCellularPrefHandler>);
@@ -134,7 +138,7 @@ class ApnMigratorTest : public testing::Test {
     apn_migrator_.reset();
     managed_network_configuration_handler_.reset();
     managed_cellular_pref_handler_.reset();
-    scoped_user_manager_.reset();
+    fake_user_manager_.Reset();
     LoginState::Shutdown();
   }
 
@@ -195,12 +199,15 @@ class ApnMigratorTest : public testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
+  TestingPrefServiceSimple local_state_;
+  user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
+      fake_user_manager_;
+
   NetworkStateTestHelper network_state_helper_{
       /*use_default_devices_and_services=*/true};
   NetworkHandlerTestHelper handler_test_helper_;
   FakeStubCellularNetworksProvider stub_cellular_networks_provider_;
 
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 
   std::unique_ptr<MockManagedCellularPrefHandler>
       managed_cellular_pref_handler_;

@@ -174,20 +174,6 @@ class QuickInsertClientImplTest : public BrowserWithTestWindowTest {
  public:
   QuickInsertClientImplTest() = default;
 
-  void SetUp() override {
-    ash::CrosDisksClient::InitializeFake();
-    ash::disks::DiskMountManager::InitializeForTesting(
-        new ash::disks::FakeDiskMountManager());
-
-    BrowserWithTestWindowTest::SetUp();
-  }
-  void TearDown() override {
-    BrowserWithTestWindowTest::TearDown();
-
-    ash::disks::DiskMountManager::Shutdown();
-    ash::CrosDisksClient::Shutdown();
-  }
-
   scoped_refptr<network::SharedURLLoaderFactory> GetSharedURLLoaderFactory() {
     return test_shared_url_loader_factory_;
   }
@@ -198,8 +184,9 @@ class QuickInsertClientImplTest : public BrowserWithTestWindowTest {
 
   // Creates a user and profile for a given `email`. Note that this class will
   // keep the ownership of the created object.
-  TestingProfile* CreateMultiUserProfile(const std::string& email) {
-    LogIn(email);
+  TestingProfile* CreateMultiUserProfile(const std::string& email,
+                                         const GaiaId& gaia_id) {
+    LogIn(email, gaia_id);
     return CreateProfile(email);
   }
 
@@ -236,12 +223,12 @@ class QuickInsertClientImplTest : public BrowserWithTestWindowTest {
                 &ash::input_method::EditorMediatorFactory::BuildInstanceFor)}};
   }
 
-  void LogIn(const std::string& email) override {
+  void LogIn(std::string_view email, const GaiaId& gaia_id) override {
     // DriveFS needs the account to have an ID.
-    const AccountId account_id =
-        AccountId::FromUserEmailGaiaId(email, GaiaId(email));
-    user_manager()->AddUser(account_id);
-    ash_test_helper()->test_session_controller_client()->AddUserSession(email);
+    const AccountId account_id = AccountId::FromUserEmailGaiaId(email, gaia_id);
+    user_manager()->AddGaiaUser(account_id, user_manager::UserType::kRegular);
+    ash_test_helper()->test_session_controller_client()->AddUserSession(
+        std::string(email));
     user_manager()->UserLoggedIn(
         account_id,
         user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
@@ -532,7 +519,8 @@ TEST_F(QuickInsertClientImplTest,
        SearchAfterSwitchingActiveUserReturnsResultsFromNewUser) {
   ash::QuickInsertController controller;
   QuickInsertClientImpl client(&controller, user_manager());
-  TestingProfile* secondary_profile = CreateMultiUserProfile("secondary@test");
+  TestingProfile* secondary_profile =
+      CreateMultiUserProfile("secondary@test", GaiaId("fakegaia2"));
   AddSearchToHistory(profile(), GURL("https://foo.com/primary"));
   AddSearchToHistory(secondary_profile, GURL("https://foo.com/secondary"));
   client.StartCrosSearch(u"foo", /*category=*/std::nullopt, base::DoNothing());
@@ -565,7 +553,8 @@ TEST_F(QuickInsertClientImplTest,
        SearchCategoryAfterSwitchingActiveUserReturnsResultsFromNewUser) {
   ash::QuickInsertController controller;
   QuickInsertClientImpl client(&controller, user_manager());
-  TestingProfile* secondary_profile = CreateMultiUserProfile("secondary@test");
+  TestingProfile* secondary_profile =
+      CreateMultiUserProfile("secondary@test", GaiaId("fakegaia2"));
   AddSearchToHistory(profile(), GURL("https://foo.com/primary"));
   AddSearchToHistory(secondary_profile, GURL("https://foo.com/secondary"));
   client.StartCrosSearch(u"foo", ash::QuickInsertCategory::kLinks,

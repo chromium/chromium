@@ -20,10 +20,12 @@
 #include "chromeos/ash/components/nearby/common/scheduling/fake_nearby_scheduler.h"
 #include "chromeos/ash/components/nearby/common/scheduling/fake_nearby_scheduler_factory.h"
 #include "chromeos/ash/components/nearby/common/scheduling/nearby_scheduler_factory.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "third_party/nearby/sharing/proto/device_rpc.pb.h"
@@ -33,6 +35,7 @@
 namespace {
 
 constexpr char kFakeEmail[] = "test@test";
+constexpr char kFakeGaia[] = "fakegaia";
 constexpr char kFakeDeviceName[] = "My Cool Chromebook";
 constexpr char kFakeEmptyDeviceName[] = "";
 constexpr char kFakeFullName[] = "Barack Obama";
@@ -110,8 +113,12 @@ class NearbyShareLocalDeviceDataManagerImplTest
   ~NearbyShareLocalDeviceDataManagerImplTest() override = default;
 
   void SetUp() override {
-    fake_user_manager_.Reset(std::make_unique<user_manager::FakeUserManager>());
-    user_ = fake_user_manager_->AddUser(AccountId::FromUserEmail(kFakeEmail));
+    user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
+    fake_user_manager_.Reset(
+        std::make_unique<user_manager::FakeUserManager>(&local_state_));
+    user_ = fake_user_manager_->AddGaiaUser(
+        AccountId::FromUserEmailGaiaId(kFakeEmail, GaiaId(kFakeGaia)),
+        user_manager::UserType::kRegular);
     fake_user_manager_->UserLoggedIn(
         user_->GetAccountId(),
         user_manager::FakeUserManager::GetFakeUsernameHash(
@@ -278,6 +285,7 @@ class NearbyShareLocalDeviceDataManagerImplTest
     EXPECT_EQ(&pref_service_, device_data_scheduler_instance.pref_service);
   }
 
+  TestingPrefServiceSimple local_state_;
   user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
       fake_user_manager_;
   raw_ptr<user_manager::User> user_ = nullptr;

@@ -468,12 +468,12 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::TearDown();
   }
 
-  void LogIn(const std::string& email) override {
+  void LogIn(std::string_view email, const GaiaId& gaia_id) override {
     // TODO(crbug.com/40286020): merge into BrowserWithTestWindowTest.
-    const AccountId account_id(AccountId::FromUserEmail(email));
+    const AccountId account_id(AccountId::FromUserEmailGaiaId(email, gaia_id));
     fake_user_manager_->AddUser(account_id);
     fake_user_manager_->LoginUser(account_id);
-    GetSessionControllerClient()->AddUserSession(email);
+    GetSessionControllerClient()->AddUserSession(std::string(email));
     GetSessionControllerClient()->SwitchActiveUser(account_id);
   }
 

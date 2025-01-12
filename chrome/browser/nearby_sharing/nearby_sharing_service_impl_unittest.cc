@@ -52,6 +52,7 @@
 #include "chrome/browser/ui/ash/session/test_session_controller.h"
 #include "chrome/services/sharing/nearby/decoder/advertisement_decoder.h"
 #include "chrome/services/sharing/public/cpp/advertisement.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -74,6 +75,7 @@
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_low_energy_scan_session.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/base/mock_network_change_notifier.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -304,17 +306,19 @@ namespace NearbySharingServiceUnitTests {
 
 constexpr base::TimeDelta kDelta = base::Milliseconds(100);
 
-const char kProfileName[] = "profile_name@test";
-const char kServiceId[] = "NearbySharing";
-const char kDeviceName[] = "test_device_name";
-const nearby_share::mojom::ShareTargetType kDeviceType =
+constexpr char kProfileName[] = "profile_name@test";
+constexpr char kFakeGaia[] = "fakegaia";
+constexpr char kServiceId[] = "NearbySharing";
+constexpr char kDeviceName[] = "test_device_name";
+constexpr nearby_share::mojom::ShareTargetType kDeviceType =
     nearby_share::mojom::ShareTargetType::kPhone;
-const char kEndpointId[] = "test_endpoint_id";
-const char kTextPayload[] = "Test text payload";
-const char kSsid[] = "Test_SSID";
-const char kWifiPassword[] = "test_password";
-const sharing::mojom::WifiCredentialsMetadata::SecurityType kWifiSecurityType =
-    sharing::mojom::WifiCredentialsMetadata::SecurityType::kWpaPsk;
+constexpr char kEndpointId[] = "test_endpoint_id";
+constexpr char kTextPayload[] = "Test text payload";
+constexpr char kSsid[] = "Test_SSID";
+constexpr char kWifiPassword[] = "test_password";
+constexpr sharing::mojom::WifiCredentialsMetadata::SecurityType
+    kWifiSecurityType =
+        sharing::mojom::WifiCredentialsMetadata::SecurityType::kWpaPsk;
 
 constexpr int64_t kFreeDiskSpace = 10000;
 
@@ -513,9 +517,10 @@ class NearbySharingServiceImplTestBase : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
-    fake_user_manager_.Reset(std::make_unique<user_manager::FakeUserManager>());
+    fake_user_manager_.Reset(
+        std::make_unique<user_manager::FakeUserManager>(local_state_.Get()));
     profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
+        TestingBrowserProcess::GetGlobal(), &local_state_);
     ASSERT_TRUE(profile_manager_->SetUp());
     network_notifier_ = net::test::MockNetworkChangeNotifier::Create();
 
@@ -615,8 +620,9 @@ class NearbySharingServiceImplTestBase : public testing::Test {
         SetIsNearbyShareSupportedForBrowserContextForTesting(true);
 
     // Simulate user log-in.
-    auto* user =
-        fake_user_manager_->AddUser(AccountId::FromUserEmail(kProfileName));
+    auto* user = fake_user_manager_->AddGaiaUser(
+        AccountId::FromUserEmailGaiaId(kProfileName, GaiaId(kFakeGaia)),
+        user_manager::UserType::kRegular);
     fake_user_manager_->UserLoggedIn(
         user->GetAccountId(),
         user_manager::FakeUserManager::GetFakeUsernameHash(
@@ -1571,6 +1577,7 @@ class NearbySharingServiceImplTestBase : public testing::Test {
   // ChromeDownloadManagerDelegate.
   std::unique_ptr<net::test::MockNetworkChangeNotifier> network_notifier_;
   content::BrowserTaskEnvironment task_environment_;
+  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
   user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
       fake_user_manager_;
   raw_ptr<user_manager::User> user_ = nullptr;

@@ -489,7 +489,8 @@ class ManagementUIHandlerTests :
 
     const AccountId account_id(
         AccountId::FromUserEmailGaiaId(kUser, GaiaId(kGaiaId)));
-    fake_user_manager_->AddUser(account_id);
+    fake_user_manager_->AddGaiaUser(account_id,
+                                    user_manager::UserType::kRegular);
     user_ = fake_user_manager_->FindUserAndModify(account_id);
 
     install_attributes_ = std::make_unique<ash::ScopedStubInstallAttributes>(

@@ -75,7 +75,9 @@ constexpr char kLocalSessionName[] = "local_session";
 constexpr char kRemoteSessionOneName[] = "remote_session_1";
 constexpr char kRemoteSession2Name[] = "remote_session_2";
 constexpr char kTestAccount[] = "usertest@gmail.com";
+constexpr char kFakeGaia[] = "fakegaia";
 constexpr char kTestAccount2[] = "usertest2@gmail.com";
+constexpr char kFakeGaia2[] = "fakegaia2";
 const base::Time most_recent_time = base::Time::FromSecondsSinceUnixEpoch(15);
 const base::Time more_recent_time = base::Time::FromSecondsSinceUnixEpoch(10);
 const base::Time least_recent_time = base::Time::FromSecondsSinceUnixEpoch(5);
@@ -412,13 +414,15 @@ class FloatingWorkspaceServiceTest : public testing::Test {
     ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
     fake_user_manager_.Reset(std::make_unique<user_manager::FakeUserManager>(
         TestingBrowserProcess::GetGlobal()->local_state()));
-    account_id_ = AccountId::FromUserEmail(kTestAccount);
-    const std::string username_hash =
-        user_manager::FakeUserManager::GetFakeUsernameHash(account_id_);
-    fake_user_manager()->AddUser(account_id_);
-    fake_user_manager()->UserLoggedIn(account_id_, username_hash,
-                                      /*browser_restart=*/false,
-                                      /*is_child=*/false);
+    account_id_ =
+        AccountId::FromUserEmailGaiaId(kTestAccount, GaiaId(kFakeGaia));
+    fake_user_manager()->AddGaiaUser(account_id_,
+                                     user_manager::UserType::kRegular);
+    fake_user_manager()->UserLoggedIn(
+        account_id_,
+        user_manager::FakeUserManager::GetFakeUsernameHash(account_id_),
+        /*browser_restart=*/false,
+        /*is_child=*/false);
     CoreAccountInfo account_info;
     account_info.email = kTestAccount;
     account_info.gaia = GaiaId("gaia");
@@ -2295,13 +2299,15 @@ class FloatingWorkspaceServiceMultiUserTest
         kTestAccount2, std::move(prefs), std::u16string(),
         /*avatar_id=*/0, TestingProfile::TestingFactories());
 
-    account_id2_ = AccountId::FromUserEmail(kTestAccount2);
-    const std::string username_hash2 =
-        user_manager::FakeUserManager::GetFakeUsernameHash(account_id2_);
-    fake_user_manager()->AddUser(account_id2_);
-    fake_user_manager()->UserLoggedIn(account_id2_, username_hash2,
-                                      /*browser_restart=*/false,
-                                      /*is_child=*/false);
+    account_id2_ =
+        AccountId::FromUserEmailGaiaId(kTestAccount2, GaiaId(kFakeGaia2));
+    fake_user_manager()->AddGaiaUser(account_id2_,
+                                     user_manager::UserType::kRegular);
+    fake_user_manager()->UserLoggedIn(
+        account_id2_,
+        user_manager::FakeUserManager::GetFakeUsernameHash(account_id2_),
+        /*browser_restart=*/false,
+        /*is_child=*/false);
     CoreAccountInfo account_info;
     account_info.email = kTestAccount2;
     account_info.gaia = GaiaId("gaia2");

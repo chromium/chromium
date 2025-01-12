@@ -99,6 +99,7 @@ auto& kProdKeepExtensionId = NoteTakingHelper::kProdKeepExtensionId;
 // Name of default profile.
 const char kTestProfileName[] = "test-profile";
 const char kSecondProfileName[] = "second-profile";
+const char kFakeGaia2[] = "fakegaia2";
 
 // Names for keep apps used in tests.
 const char kProdKeepAppName[] = "Google Keep [prod]";
@@ -372,9 +373,9 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
   }
 
   // TODO(crbug.com/40286020): merge into BrowserWithTestWindowTest.
-  void LogIn(const std::string& email) override {
-    AccountId account_id = AccountId::FromUserEmail(email);
-    user_manager()->AddUser(account_id);
+  void LogIn(std::string_view email, const GaiaId& gaia_id) override {
+    AccountId account_id = AccountId::FromUserEmailGaiaId(email, gaia_id);
+    user_manager()->AddGaiaUser(account_id, user_manager::UserType::kRegular);
     user_manager()->UserLoggedIn(
         account_id,
         user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
@@ -398,8 +399,9 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
     auto prefs =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     RegisterUserProfilePrefs(prefs->registry());
-    const AccountId account_id(AccountId::FromUserEmail(kSecondProfileName));
-    user_manager()->AddUser(account_id);
+    const AccountId account_id(
+        AccountId::FromUserEmailGaiaId(kSecondProfileName, GaiaId(kFakeGaia2)));
+    user_manager()->AddGaiaUser(account_id, user_manager::UserType::kRegular);
     TestingProfile* profile = profile_manager()->CreateTestingProfile(
         kSecondProfileName, std::move(prefs), u"second-profile-username",
         /*avatar_id=*/1, TestingProfile::TestingFactories());

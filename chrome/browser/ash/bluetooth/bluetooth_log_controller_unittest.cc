@@ -8,7 +8,9 @@
 #include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
 #include "components/account_id/account_id.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -18,7 +20,10 @@ class BluetoothLogControllerTest : public testing::Test {
   BluetoothLogControllerTest() = default;
   ~BluetoothLogControllerTest() override = default;
 
-  void SetUp() override { UpstartClient::InitializeFake(); }
+  void SetUp() override {
+    UpstartClient::InitializeFake();
+    user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
+  }
 
   void TearDown() override { UpstartClient::Shutdown(); }
 
@@ -27,7 +32,8 @@ class BluetoothLogControllerTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  user_manager::FakeUserManager user_manager_;
+  TestingPrefServiceSimple local_state_;
+  user_manager::FakeUserManager user_manager_{&local_state_};
   BluetoothLogController controller_{&user_manager_};
 };
 
@@ -35,8 +41,9 @@ TEST_F(BluetoothLogControllerTest, GoogleInternalUser) {
   auto* upstart_client = FakeUpstartClient::Get();
   upstart_client->StartRecordingUpstartOperations();
 
-  auto* user =
-      user_manager().AddUser(AccountId::FromUserEmail("test@google.com"));
+  auto* user = user_manager().AddGaiaUser(
+      AccountId::FromUserEmailGaiaId("test@google.com", GaiaId("fakegaia")),
+      user_manager::UserType::kRegular);
   // TODO(b/278643115): use UserManager::UserLoggedIn() to notify observer.
   controller().OnUserLoggedIn(*user);
 
@@ -51,8 +58,9 @@ TEST_F(BluetoothLogControllerTest, NonGoolgeInternalUser) {
   auto* upstart_client = FakeUpstartClient::Get();
   upstart_client->StartRecordingUpstartOperations();
 
-  auto* user =
-      user_manager().AddUser(AccountId::FromUserEmail("test@test.org"));
+  auto* user = user_manager().AddGaiaUser(
+      AccountId::FromUserEmailGaiaId("test@test.org", GaiaId("fakegaia")),
+      user_manager::UserType::kRegular);
   // TODO(b/278643115): use UserManager::UserLoggedIn() to notify observer.
   controller().OnUserLoggedIn(*user);
 

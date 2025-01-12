@@ -419,9 +419,9 @@ class ApiGuardDelegateAffiliatedUserTest : public ApiGuardDelegateTest {
 
  protected:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  void LogIn(const std::string& email) override {
+  void LogIn(std::string_view email, const GaiaId& gaia_id) override {
     // Make sure the current user is affiliated.
-    const AccountId account_id = AccountId::FromUserEmail(email);
+    const AccountId account_id = AccountId::FromUserEmailGaiaId(email, gaia_id);
     user_manager()->AddUserWithAffiliation(account_id, /*is_affiliated=*/true);
     user_manager()->UserLoggedIn(
         account_id,
@@ -634,7 +634,7 @@ class ApiGuardDelegateShimlessRMAAppTest : public ApiGuardDelegateTest {
   }
 
   // Do nothing for special profile for shimless RMA App.
-  void LogIn(const std::string& email) override {}
+  void LogIn(std::string_view email, const GaiaId& gaia_id) override {}
   void SwitchActiveUser(const std::string& email) override {}
   void OnUserProfileCreated(const std::string& email,
                             Profile* profile) override {}

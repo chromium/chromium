@@ -47,9 +47,13 @@
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
+#include "chromeos/ash/components/disks/disk_mount_manager.h"
+#include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -67,12 +71,16 @@ void BrowserWithTestWindowTest::SetUp() {
   testing::Test::SetUp();
 
   base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kNoFirstRun);
-
   if (!profile_manager_) {
     SetUpProfileManager();
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::CrosDisksClient::InitializeFake();
+  if (!ash::disks::DiskMountManager::GetInstance()) {
+    ash::disks::DiskMountManager::InitializeForTesting(
+        new ash::disks::FakeDiskMountManager());
+  }
   if (!user_manager::UserManager::IsInitialized()) {
     user_manager_.Reset(std::make_unique<user_manager::FakeUserManager>(
         g_browser_process->local_state()));
@@ -118,7 +126,7 @@ void BrowserWithTestWindowTest::SetUp() {
   std::optional<std::string> profile_name = GetDefaultProfileName();
   if (profile_name) {
 #if BUILDFLAG(IS_CHROMEOS)
-    LogIn(*profile_name);
+    LogIn(*profile_name, GaiaId("fakegaia"));
 #endif
     profile_ = CreateProfile(*profile_name);
 #if BUILDFLAG(IS_CHROMEOS)
@@ -176,6 +184,8 @@ void BrowserWithTestWindowTest::TearDown() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   test_views_delegate_.reset();
   user_manager_.Reset();
+  ash::disks::DiskMountManager::Shutdown();
+  ash::CrosDisksClient::Shutdown();
 #elif defined(TOOLKIT_VIEWS)
   views_test_helper_.reset();
 #endif
@@ -312,10 +322,12 @@ std::unique_ptr<Browser> BrowserWithTestWindowTest::CreateBrowser(
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-void BrowserWithTestWindowTest::LogIn(const std::string& email) {
-  const AccountId account_id = AccountId::FromUserEmail(email);
-  user_manager_->AddUser(account_id);
-  ash_test_helper()->test_session_controller_client()->AddUserSession(email);
+void BrowserWithTestWindowTest::LogIn(std::string_view email,
+                                      const GaiaId& gaia_id) {
+  const AccountId account_id = AccountId::FromUserEmailGaiaId(email, gaia_id);
+  user_manager_->AddGaiaUser(account_id, user_manager::UserType::kRegular);
+  ash_test_helper()->test_session_controller_client()->AddUserSession(
+      std::string(email));
   user_manager_->UserLoggedIn(
       account_id,
       user_manager::FakeUserManager::GetFakeUsernameHash(account_id),

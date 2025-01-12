@@ -98,10 +98,11 @@ class PageInfoCookiesContentViewBaseTestClass : public TestWithBrowserView {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  void LogIn(const std::string& email) override {
-    const AccountId account_id = AccountId::FromUserEmail(email);
+  void LogIn(std::string_view email, const GaiaId& gaia_id) override {
+    const AccountId account_id = AccountId::FromUserEmailGaiaId(email, gaia_id);
     user_manager()->AddUserWithAffiliation(account_id, /*is_affiliated=*/true);
-    ash_test_helper()->test_session_controller_client()->AddUserSession(email);
+    ash_test_helper()->test_session_controller_client()->AddUserSession(
+        std::string(email));
     user_manager()->UserLoggedIn(
         account_id,
         user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
