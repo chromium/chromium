@@ -534,7 +534,7 @@ class Generator(generator.Generator):
     if field.kind in mojom.PRIMITIVES:
       return _kind_to_javascript_default_value[field.kind]
     if mojom.IsEnumKind(field.kind):
-      return "0"
+      return "0" if field.kind.min_value is None else str(field.kind.min_value)
     return "null"
 
   def _TypeScriptSanitizeIdentifier(self, identifier):

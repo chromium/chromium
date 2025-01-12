@@ -160,6 +160,20 @@ mojo.internal.getUint64 = function(dataView, byteOffset) {
 mojo.internal.MessageDimensions;
 
 /**
+ * Gets the field in mojo type for a given value. Note that this method
+ * could be relatively expensive if the value is typemapped and its field
+ * needs to be converted to mojo types.
+ *
+ * @param {!*} value
+ * @param {!mojo.internal.StructFieldSpec} fieldSpec
+ * @returns
+ */
+mojo.internal.getMojoFieldValue = function(value, fieldSpec) {
+  return fieldSpec.fieldGetter ? fieldSpec.fieldGetter(value) :
+                                 value[fieldSpec.name];
+};
+
+/**
  * This computes the total amount of buffer space required to hold a struct
  * value and all its fields, including indirect objects like arrays, structs,
  * and nullable unions.
@@ -172,7 +186,7 @@ mojo.internal.computeStructDimensions = function(structSpec, value) {
   let size = structSpec.packedSize;
   let numInterfaceIds = 0;
   for (const field of structSpec.fields) {
-    let fieldValue = value[field.name];
+    let fieldValue = mojo.internal.getMojoFieldValue(value, field);
     if (mojo.internal.isNullOrUndefined(fieldValue)) {
       fieldValue = field.defaultValue;
     }
@@ -627,7 +641,7 @@ mojo.internal.Encoder = class {
 
   /**
    * @param {!mojo.internal.StructSpec} structSpec
-   * @param {!Object} value
+   * @param {!*} value
    */
   encodeStructInline(structSpec, value) {
     const versions = structSpec.versions;
@@ -643,6 +657,8 @@ mojo.internal.Encoder = class {
 
       // Encode a single optional numeric field into a flag field
       // or a value field.
+      // We do not need to worry about typemaps here because optional
+      // primitives cannot be typemapped.
       if (value && mojo.internal.isNullableValueKindField(field)) {
         const props = field.nullableValueKindProperties;
         const hasValue =
@@ -658,8 +674,14 @@ mojo.internal.Encoder = class {
         continue;
       }
 
-      if (value && !mojo.internal.isNullOrUndefined(value[field.name])) {
-        encodeStructField(value[field.name]);
+      // Pre-emptively read the field value because typemapping might require
+      // us to convert the entire field to the mojo type.
+      const fieldValue = mojo.internal.isNullOrUndefined(value) ?
+          undefined :
+          mojo.internal.getMojoFieldValue(value, field);
+      if (!mojo.internal.isNullOrUndefined(value) &&
+          !mojo.internal.isNullOrUndefined(fieldValue)) {
+        encodeStructField(fieldValue);
         continue;
       }
 
@@ -674,8 +696,8 @@ mojo.internal.Encoder = class {
       }
 
       throw new Error(
-        structSpec.name + ' missing value for non-nullable ' +
-        'field "' + field.name + '"');
+          structSpec.name + ' missing value for non-nullable ' +
+          'field "' + field.name + `", got: "${fieldValue}"...`);
     }
   }
 
@@ -1233,6 +1255,11 @@ mojo.internal.NullableValueKindProperties = class {
 };
 
 /**
+ * Getter is a function that returns the value of the field in mojo format. Its
+ * only provided parameter should be a non-nullable struct instance. If a getter
+ * method is not provided, the field will be retrieved through the. field name
+ * on the struct instance.
+ *
  * @typedef {{
  *   name: string,
  *   packedOffset: number,
@@ -1243,7 +1270,7 @@ mojo.internal.NullableValueKindProperties = class {
  *   minVersion: number,
  *   nullableValueKindProperties:
  *      (mojo.internal.NullableValueKindProperties|undefined),
- * }}
+ *   getter: ((function(!*): *)|undefined)}}
  */
 mojo.internal.StructFieldSpec;
 
@@ -1682,12 +1709,14 @@ mojo.internal.Enum = function() {
  * @param {number=} minVersion
  * @param {mojo.internal.NullableValueKindProperties=}
      nullableValueKindProperties
+ * @param {(function(*): *)=} fieldGetter
  * @return {!mojo.internal.StructFieldSpec}
  * @export
  */
 mojo.internal.StructField = function(
-  name, packedOffset, packedBitOffset, type, defaultValue, nullable,
-  minVersion = 0, nullableValueKindProperties = undefined) {
+    name, packedOffset, packedBitOffset, type, defaultValue, nullable,
+    minVersion = 0, nullableValueKindProperties = undefined,
+    fieldGetter = undefined) {
   return {
     name: name,
     packedOffset: packedOffset,
@@ -1697,6 +1726,7 @@ mojo.internal.StructField = function(
     nullable: nullable,
     minVersion: minVersion,
     nullableValueKindProperties: nullableValueKindProperties,
+    fieldGetter: fieldGetter,
   };
 };
 
@@ -1735,13 +1765,13 @@ mojo.internal.Struct = function(
  * @export
  */
 mojo.internal.TypemapAdapter = class {
-  constructor(toMojoTypeFn, toMappedTypeFn) {
-    this.toMojoTypeFn = toMojoTypeFn;
+  constructor(toMappedTypeFn) {
     this.toMappedTypeFn = toMappedTypeFn;
   }
 }
 
 /**
+ * Represents a struct that has been typemapped.
  * @param {!Object} objectToBlessAsType
  * @param {string} name
  * @param {!mojo.internal.TypemapAdapter} typemapAdapter
@@ -1757,8 +1787,7 @@ mojo.internal.TypemappedStruct = function(
   objectToBlessAsType.$ = {
     structSpec: structSpec,
     encode: function(value, encoder, byteOffset, bitOffset, nullable) {
-      const mojoType = typemapAdapter.toMojoTypeFn(value);
-      encoder.encodeStruct(structSpec, byteOffset, mojoType);
+      encoder.encodeStruct(structSpec, byteOffset, value);
     },
     encodeNull: function(encoder, byteOffset) {},
     decode: function(decoder, byteOffset, bitOffset, nullable) {
@@ -1769,8 +1798,7 @@ mojo.internal.TypemappedStruct = function(
       return typemapAdapter.toMappedTypeFn(mojoType);
     },
     computeDimensions: function(value, nullable) {
-      const mojoType = typemapAdapter.toMojoTypeFn(value);
-      return mojo.internal.computeStructDimensions(structSpec, mojoType);
+      return mojo.internal.computeStructDimensions(structSpec, value);
     },
     arrayElementSize: nullable => 8,
     isValidObjectKeyType: false,
