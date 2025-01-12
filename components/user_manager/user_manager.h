@@ -16,6 +16,7 @@
 #include "components/user_manager/user_type.h"
 
 class AccountId;
+class PrefRegistrySimple;
 class PrefService;
 
 namespace user_manager {
@@ -163,6 +164,10 @@ class USER_MANAGER_EXPORT UserManager {
     // Display name. Can be set only if the type is kPublicAccount.
     std::optional<std::u16string> display_name;
   };
+
+  // Registers UserManager preferences.
+  static void RegisterPrefs(PrefRegistrySimple* registry);
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Initializes UserManager instance to this. Normally should be called right
   // after creation so that user_manager::UserManager::Get() doesn't fail.

@@ -37,8 +37,6 @@
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/crash/core/common/crash_key.h"
-#include "components/pref_registry/pref_registry_syncable.h"
-#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/known_user.h"
@@ -123,41 +121,6 @@ const char UserManagerImpl::kDeprecatedArcKioskUsersHistogramName[] =
 BASE_FEATURE(kRemoveDeprecatedArcKioskUsersOnStartup,
              "RemoveDeprecatedArcKioskUsersOnStartup",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// static
-void UserManagerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterListPref(prefs::kRegularUsersPref);
-  registry->RegisterStringPref(prefs::kLastLoggedInGaiaUser, std::string());
-  registry->RegisterDictionaryPref(prefs::kUserDisplayName);
-  registry->RegisterDictionaryPref(prefs::kUserGivenName);
-  registry->RegisterDictionaryPref(prefs::kUserDisplayEmail);
-  registry->RegisterDictionaryPref(prefs::kUserOAuthTokenStatus);
-  registry->RegisterDictionaryPref(prefs::kUserForceOnlineSignin);
-  registry->RegisterDictionaryPref(prefs::kUserType);
-  registry->RegisterStringPref(prefs::kLastActiveUser, std::string());
-  registry->RegisterDictionaryPref(prefs::kOwnerAccount);
-
-  registry->RegisterListPref(prefs::kDeviceLocalAccountsWithSavedData);
-  registry->RegisterStringPref(prefs::kDeviceLocalAccountPendingDataRemoval,
-                               std::string());
-
-  UserDirectoryIntegrityManager::RegisterLocalStatePrefs(registry);
-  KnownUser::RegisterPrefs(registry);
-  MultiUserSignInPolicyController::RegisterPrefs(registry);
-}
-
-// static
-void UserManagerImpl::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterStringPref(prefs::kMultiProfileUserBehaviorPref,
-                               std::string(MultiUserSignInPolicyToPrefValue(
-                                   MultiUserSignInPolicy::kUnrestricted)));
-  registry->RegisterBooleanPref(
-      prefs::kMultiProfileNeverShowIntro, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-  registry->RegisterBooleanPref(
-      prefs::kMultiProfileWarningShowDismissed, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-}
 
 UserManagerImpl::UserManagerImpl(std::unique_ptr<Delegate> delegate,
                                  PrefService* local_state,

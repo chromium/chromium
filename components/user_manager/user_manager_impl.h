@@ -28,8 +28,6 @@
 #include "components/user_manager/user_manager_export.h"
 #include "components/user_manager/user_type.h"
 
-class PrefRegistrySimple;
-
 namespace ash {
 class CrosSettings;
 class FakeChromeUserManager;
@@ -141,10 +139,6 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
   // cryptohomes remaining in the wild.
   // TODO(b/355590943): clean up once there is no ARC kiosk records.
   static const char kDeprecatedArcKioskUsersHistogramName[];
-
-  // Registers UserManagerImpl preferences.
-  static void RegisterPrefs(PrefRegistrySimple* registry);
-  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // UserManager implementation:
   void Shutdown() override;
