@@ -280,7 +280,10 @@ class TemplatesUriResolverImplTest : public testing::Test {
   const user_manager::User* SetUpAffiliatedUser() {
     const AccountId account_id(AccountId::FromUserEmailGaiaId(
         "test-user@testdomain.com", GaiaId("1234567890")));
-    return fake_user_manager_->AddUserWithAffiliation(account_id, true);
+    auto* user = fake_user_manager_->AddGaiaUser(
+        account_id, user_manager::UserType::kRegular);
+    fake_user_manager_->SetUserAffiliated(account_id, true);
+    return user;
   }
 
   const user_manager::User* SetUpUnaffiliatedUser() {

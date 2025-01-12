@@ -111,14 +111,9 @@ class EPKChallengeKeyTestBase : public BrowserWithTestWindowTest {
   }
 
   void LogIn(std::string_view email, const GaiaId& gaia_id) override {
-    const AccountId account_id = AccountId::FromUserEmailGaiaId(email, gaia_id);
-    user_manager()->AddUserWithAffiliation(account_id,
-                                           /*is_affiliated=*/true);
-    user_manager()->UserLoggedIn(
-        account_id,
-        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
-        /*browser_restart=*/false,
-        /*is_child=*/false);
+    BrowserWithTestWindowTest::LogIn(email, gaia_id);
+    user_manager()->SetUserAffiliated(
+        AccountId::FromUserEmailGaiaId(email, gaia_id), true);
   }
 
   std::unique_ptr<KeyedService> CreateKeyPermissionsManagerService(

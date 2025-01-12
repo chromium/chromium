@@ -86,10 +86,6 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerImpl {
   bool IsUserCryptohomeDataEphemeral(
       const AccountId& account_id) const override;
 
-  // UserManagerImpl overrides:
-  void SetUserAffiliated(const AccountId& account_id,
-                         bool is_affiliated) override {}
-
   // Just make it public for tests.
   using UserManagerImpl::AddEphemeralUser;
   using UserManagerImpl::AddGaiaUser;
