@@ -81,23 +81,12 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerImpl {
                              bool force_online_signin) override {}
   void SaveUserDisplayEmail(const AccountId& account_id,
                             const std::string& display_email) override {}
-  bool IsCurrentUserNonCryptohomeDataEphemeral() const override;
-  bool IsUserLoggedIn() const override;
-  bool IsLoggedInAsUserWithGaiaAccount() const override;
-  bool IsLoggedInAsStub() const override;
   bool IsUserNonCryptohomeDataEphemeral(
       const AccountId& account_id) const override;
   bool IsUserCryptohomeDataEphemeral(
       const AccountId& account_id) const override;
-  bool IsGuestSessionAllowed() const override;
-  bool IsGaiaUserAllowed(const User& user) const override;
-  bool IsUserAllowed(const User& user) const override;
-  bool IsDeprecatedSupervisedAccountId(
-      const AccountId& account_id) const override;
 
   // UserManagerImpl overrides:
-  bool IsDeviceLocalAccountMarkedForRemoval(
-      const AccountId& account_id) const override;
   void SetUserAffiliated(const AccountId& account_id,
                          bool is_affiliated) override {}
 

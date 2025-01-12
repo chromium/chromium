@@ -176,22 +176,6 @@ bool FakeUserManager::IsKnownUser(const AccountId& account_id) const {
   return true;
 }
 
-bool FakeUserManager::IsCurrentUserNonCryptohomeDataEphemeral() const {
-  return false;
-}
-
-bool FakeUserManager::IsUserLoggedIn() const {
-  return logged_in_users_.size() > 0;
-}
-
-bool FakeUserManager::IsLoggedInAsUserWithGaiaAccount() const {
-  return true;
-}
-
-bool FakeUserManager::IsLoggedInAsStub() const {
-  return false;
-}
-
 bool FakeUserManager::IsUserNonCryptohomeDataEphemeral(
     const AccountId& account_id) const {
   return base::Contains(accounts_with_ephemeral_non_cryptohome_data_,
@@ -209,28 +193,6 @@ bool FakeUserManager::IsUserCryptohomeDataEphemeral(
   }
 
   return accounts_with_ephemeral_cryptohome_data_.at(account_id);
-}
-
-bool FakeUserManager::IsGuestSessionAllowed() const {
-  return true;
-}
-
-bool FakeUserManager::IsGaiaUserAllowed(const User& user) const {
-  return true;
-}
-
-bool FakeUserManager::IsUserAllowed(const User& user) const {
-  return true;
-}
-
-bool FakeUserManager::IsDeviceLocalAccountMarkedForRemoval(
-    const AccountId& account_id) const {
-  return false;
-}
-
-bool FakeUserManager::IsDeprecatedSupervisedAccountId(
-    const AccountId& account_id) const {
-  return false;
 }
 
 }  // namespace user_manager
