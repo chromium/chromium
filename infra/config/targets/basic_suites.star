@@ -82,23 +82,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "chromedriver_py_tests_isolated_scripts",
-    tests = {
-        "chromedriver_py_tests": targets.legacy_test_config(
-            args = [
-                "--test-type=integration",
-            ],
-        ),
-        "chromedriver_py_tests_headless_shell": targets.legacy_test_config(
-            args = [
-                "--test-type=integration",
-            ],
-        ),
-        "chromedriver_replay_unittests": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "chromeos_chrome_all_tast_tests",
     tests = {
         "chrome_all_tast_tests": targets.legacy_test_config(
@@ -639,72 +622,6 @@ targets.legacy_basic_suite(
             resultdb = targets.resultdb(
                 enable = True,
             ),
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "components_perftests_isolated_scripts",
-    tests = {
-        "components_perftests": targets.legacy_test_config(
-            args = [
-                "--gtest-benchmark-name=components_perftests",
-            ],
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "desktop_chromium_isolated_scripts",
-    tests = {
-        "blink_python_tests": targets.legacy_test_config(),
-        "blink_web_tests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 5,
-            ),
-        ),
-        "blink_wpt_tests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 7,
-            ),
-        ),
-        "chrome_wpt_tests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 1,
-            ),
-        ),
-        "headless_shell_wpt_tests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 18,
-            ),
-        ),
-        "content_shell_crash_test": targets.legacy_test_config(),
-        "flatbuffers_unittests": targets.legacy_test_config(),
-        "grit_python_unittests": targets.legacy_test_config(),
-        "telemetry_gpu_unittests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                idempotent = False,  # https://crbug.com/549140
-            ),
-        ),
-        "telemetry_unittests": targets.legacy_test_config(
-            args = [
-                "--jobs=1",
-                # Disable GPU compositing, telemetry_unittests runs on VMs.
-                # https://crbug.com/871955
-                "--extra-browser-args=--disable-gpu",
-            ],
-            swarming = targets.swarming(
-                shards = 8,
-                idempotent = False,  # https://crbug.com/549140
-            ),
-            resultdb = targets.resultdb(
-                enable = True,
-            ),
-        ),
-        "views_perftests": targets.legacy_test_config(
-            args = [
-                "--gtest-benchmark-name=views_perftests",
-            ],
         ),
     },
 )
@@ -1724,13 +1641,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "mac_specific_isolated_scripts",
-    tests = {
-        "mac_signing_tests": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "model_validation_tests_light_suite",
     tests = {
         "model_validation_tests_light": targets.legacy_test_config(
@@ -1777,13 +1687,6 @@ targets.legacy_basic_suite(
                 "Chrome.exe",
             ],
         ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "mojo_python_unittests_isolated_scripts",
-    tests = {
-        "mojo_python_unittests": targets.legacy_test_config(),
     },
 )
 
@@ -1971,25 +1874,6 @@ targets.legacy_basic_suite(
             linux_args = [
                 "-use-xvfb",
             ],
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "telemetry_perf_unittests_isolated_scripts",
-    tests = {
-        "telemetry_perf_unittests": targets.legacy_test_config(
-            args = [
-                # TODO(crbug.com/40129085): Remove this once Crashpad is the default.
-                "--extra-browser-args=--enable-crashpad",
-            ],
-            swarming = targets.swarming(
-                shards = 12,
-                idempotent = False,  # https://crbug.com/549140
-            ),
-            resultdb = targets.resultdb(
-                enable = True,
-            ),
         ),
     },
 )

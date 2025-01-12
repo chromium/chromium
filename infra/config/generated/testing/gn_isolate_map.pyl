@@ -201,6 +201,7 @@
   "blink_python_tests": {
     "label": "//:blink_python_tests",
     "type": "generated_script",
+    "skip_usage_check": True,
   },
   "blink_pytype": {
     "label": "//third_party/blink/tools:blink_pytype",
@@ -560,6 +561,7 @@
     "label": "//chrome/test/chromedriver:chromedriver_py_tests",
     "type": "script",
     "script": "//testing/xvfb.py",
+    "skip_usage_check": True,
     "args": [
       "../../testing/scripts/run_chromedriver_tests.py",
       "../../chrome/test/chromedriver/test/run_py_tests.py",
@@ -572,6 +574,7 @@
     "label": "//chrome/test/chromedriver:chromedriver_py_tests_headless_shell",
     "type": "script",
     "script": "//testing/scripts/run_chromedriver_tests.py",
+    "skip_usage_check": True,
     "args": [
       "../../chrome/test/chromedriver/test/run_py_tests.py",
       "--chromedriver=chromedriver",
@@ -583,6 +586,7 @@
     "label": "//chrome/test/chromedriver:chromedriver_replay_unittests",
     "type": "script",
     "script": "//chrome/test/chromedriver/log_replay/client_replay_unittest.py",
+    "skip_usage_check": True,
   },
   "chromedriver_unittests": {
     "label": "//chrome/test/chromedriver:chromedriver_unittests",
@@ -673,6 +677,7 @@
     "label": "//components:components_perftests",
     "type": "script",
     "script": "//testing/scripts/run_performance_tests.py",
+    "skip_usage_check": True,
     "args": [
       "--xvfb",
       "--non-telemetry=true",
@@ -925,6 +930,7 @@
     "label": "//third_party/flatbuffers:flatbuffers_unittests",
     "type": "script",
     "script": "//testing/scripts/run_flatbuffers_unittests.py",
+    "skip_usage_check": True,
   },
   "fuchsia_pytype": {
     "label": "//testing:fuchsia_pytype",
@@ -1013,6 +1019,7 @@
     "label": "//tools/grit:grit_python_unittests",
     "type": "script",
     "script": "//testing/scripts/run_isolated_script_test.py",
+    "skip_usage_check": True,
     "args": [
       "../../tools/grit/grit/test_suite_all.py",
     ],
@@ -1224,6 +1231,7 @@
   "mac_signing_tests": {
     "label": "//chrome/installer/mac:mac_signing_tests",
     "type": "generated_script",
+    "skip_usage_check": True,
   },
   "media_base_junit_tests": {
     "label": "//media/base/android:media_base_junit_tests",
@@ -1299,6 +1307,7 @@
     "label": "//mojo/public/tools:mojo_python_unittests",
     "type": "script",
     "script": "//testing/scripts/run_isolated_script_test.py",
+    "skip_usage_check": True,
     "args": [
       "../../mojo/public/tools/run_all_python_unittests.py",
     ],
@@ -1979,6 +1988,7 @@
     "label": "//ui/views:views_perftests",
     "type": "script",
     "script": "//testing/scripts/run_performance_tests.py",
+    "skip_usage_check": True,
     "args": [
       "--xvfb",
       "--non-telemetry=true",

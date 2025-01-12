@@ -575,7 +575,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'clang_tot_gtests',
-          'isolated_scripts': 'chromium_mac_rel_isolated_scripts_and_sizes',
+          'isolated_scripts': 'chrome_sizes_suite',
         },
         'additional_compile_targets': [
           'all',

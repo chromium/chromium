@@ -1905,7 +1905,7 @@ clang_mac_builder(
     targets = targets.bundle(
         targets = [
             "clang_tot_gtests",
-            "chromium_mac_rel_isolated_scripts_and_sizes",
+            "chrome_sizes_suite",
         ],
         additional_compile_targets = [
             "all",

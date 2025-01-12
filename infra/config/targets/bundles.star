@@ -1051,6 +1051,27 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "chromedriver_py_tests_isolated_scripts",
+    targets = [
+        "chromedriver_py_tests",
+        "chromedriver_py_tests_headless_shell",
+        "chromedriver_replay_unittests",
+    ],
+    per_test_modifications = {
+        "chromedriver_py_tests": targets.mixin(
+            args = [
+                "--test-type=integration",
+            ],
+        ),
+        "chromedriver_py_tests_headless_shell": targets.mixin(
+            args = [
+                "--test-type=integration",
+            ],
+        ),
+    },
+)
+
+targets.bundle(
     name = "chromeos_annotation_scripts",
     targets = [
         "check_network_annotations",
@@ -2113,6 +2134,20 @@ targets.bundle(
     ],
 )
 
+targets.bundle(
+    name = "components_perftests_isolated_scripts",
+    targets = [
+        "components_perftests",
+    ],
+    per_test_modifications = {
+        "components_perftests": targets.mixin(
+            args = [
+                "--gtest-benchmark-name=components_perftests",
+            ],
+        ),
+    },
+)
+
 # Compilable unit tests of cronet dependencies in:
 # //components/cronet/android/dependencies.txt
 # TODO(crbug.com/333888734): Add component_unittests or a subset of it.
@@ -2228,6 +2263,68 @@ targets.bundle(
                 "chromium_pixel_2_pie",
                 "marshmallow",
                 "oreo_mr1_fleet",
+            ],
+        ),
+    },
+)
+
+targets.bundle(
+    name = "desktop_chromium_isolated_scripts",
+    targets = [
+        "blink_python_tests",
+        "blink_web_tests",
+        "blink_wpt_tests",
+        "chrome_wpt_tests",
+        "content_shell_crash_test",
+        "flatbuffers_unittests",
+        "grit_python_unittests",
+        "headless_shell_wpt_tests",
+        "telemetry_gpu_unittests",
+        "telemetry_unittests",
+        "views_perftests",
+    ],
+    per_test_modifications = {
+        "blink_web_tests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 5,
+            ),
+        ),
+        "blink_wpt_tests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 7,
+            ),
+        ),
+        "chrome_wpt_tests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 1,
+            ),
+        ),
+        "headless_shell_wpt_tests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 18,
+            ),
+        ),
+        "telemetry_gpu_unittests": targets.mixin(
+            swarming = targets.swarming(
+                idempotent = False,
+            ),
+        ),
+        "telemetry_unittests": targets.mixin(
+            args = [
+                "--jobs=1",
+                "--extra-browser-args=--disable-gpu",
+            ],
+            swarming = targets.swarming(
+                shards = 8,
+                idempotent = False,
+            ),
+            resultdb = targets.resultdb(
+                enable = True,
+            ),
+        ),
+        "views_perftests": targets.mixin(
+            args = [
+                "--gtest-benchmark-name=views_perftests",
             ],
         ),
     },
@@ -5327,6 +5424,13 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "mac_specific_isolated_scripts",
+    targets = [
+        "mac_signing_tests",
+    ],
+)
+
+targets.bundle(
     name = "mac_vm_tests",
     targets = [
         "base_unittests",
@@ -5339,6 +5443,13 @@ targets.bundle(
             ),
         ),
     },
+)
+
+targets.bundle(
+    name = "mojo_python_unittests_isolated_scripts",
+    targets = [
+        "mojo_python_unittests",
+    ],
 )
 
 targets.bundle(
@@ -5844,6 +5955,27 @@ targets.bundle(
     ],
     per_test_modifications = {
         "telemetry_desktop_minidump_unittests": targets.mixin(
+            resultdb = targets.resultdb(
+                enable = True,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
+    name = "telemetry_perf_unittests_isolated_scripts",
+    targets = [
+        "telemetry_perf_unittests",
+    ],
+    per_test_modifications = {
+        "telemetry_perf_unittests": targets.mixin(
+            args = [
+                "--extra-browser-args=--enable-crashpad",
+            ],
+            swarming = targets.swarming(
+                shards = 12,
+                idempotent = False,
+            ),
             resultdb = targets.resultdb(
                 enable = True,
             ),
