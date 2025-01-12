@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ash/arc/instance_throttle/arc_boot_phase_throttle_observer.h"
 
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_service_manager.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -13,6 +11,8 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_restore.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 
 namespace arc {
 namespace {
@@ -50,8 +50,8 @@ void ArcBootPhaseThrottleObserver::StartObserving(
   // If app() and/or intent_helper() are already connected to the instance in
   // the guest, the OnConnectionReady() function is synchronously called before
   // returning from AddObserver. For more details, see
-  // ash/components/arc/session/connection_holder.h especially its AddObserver()
-  // function.
+  // chromeos/ash/experiences/arc/session/connection_holder.h especially its
+  // AddObserver() function.
   auto* arc_service_manager = arc::ArcServiceManager::Get();
   // ArcServiceManager and objects owned by the manager are created very early
   // in `ChromeBrowserMainPartsAsh::PreMainMessageLoopRun()` too.

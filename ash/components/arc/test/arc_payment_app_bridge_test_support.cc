@@ -4,7 +4,7 @@
 
 #include "ash/components/arc/test/arc_payment_app_bridge_test_support.h"
 
-#include "ash/components/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 
 namespace arc {
 

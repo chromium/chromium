@@ -15,7 +15,6 @@
 
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/session/arc_vm_data_migration_status.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/date_helper.h"
@@ -33,6 +32,7 @@
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
+#include "chromeos/ash/experiences/arc/session/arc_vm_data_migration_status.h"
 #include "chromeos/version/version_loader.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/prefs/pref_service.h"

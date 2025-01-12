@@ -6,8 +6,8 @@
 
 #include <vector>
 
-#include "ash/components/arc/session/arc_service_manager.h"
 #include "base/memory/raw_ptr.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/strings/grit/components_strings.h"
 #include "google_apis/gaia/gaia_id.h"

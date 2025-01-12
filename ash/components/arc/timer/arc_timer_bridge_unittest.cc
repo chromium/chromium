@@ -11,9 +11,6 @@
 #include <vector>
 
 #include "ash/components/arc/mojom/timer.mojom.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_service_manager.h"
-#include "ash/components/arc/session/connection_holder.h"
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_timer_instance.h"
 #include "ash/components/arc/timer/arc_timer_mojom_traits.h"
@@ -29,6 +26,9 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
+#include "chromeos/ash/experiences/arc/session/connection_holder.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/user_prefs/test/test_browser_context_with_prefs.h"

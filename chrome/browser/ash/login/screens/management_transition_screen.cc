@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/login/screens/management_transition_screen.h"
 
 #include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/session/arc_management_transition.h"
 #include "ash/public/cpp/login_screen.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -20,6 +19,7 @@
 #include "chrome/browser/ui/ash/system/system_tray_client_impl.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/webui/ash/login/management_transition_screen_handler.h"
+#include "chromeos/ash/experiences/arc/session/arc_management_transition.h"
 
 namespace ash {
 

@@ -6,15 +6,15 @@
 
 #include <utility>
 
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/components/arc/touch_selection_menu/touch_selection_menu_chromeos.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/utf_string_conversions.h"
-#include "ash/components/arc/touch_selection_menu/touch_selection_menu_chromeos.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/aura/window.h"
 #include "ui/display/display.h"

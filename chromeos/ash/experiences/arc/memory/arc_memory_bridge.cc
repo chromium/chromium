@@ -8,10 +8,10 @@
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/components/arc/mojom/memory.mojom-forward.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/connection_observer.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/session/connection_observer.h"
 #include "content/public/browser/browser_context.h"
 
 namespace arc {

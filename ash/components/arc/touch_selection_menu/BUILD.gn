@@ -23,8 +23,8 @@ static_library("touch_selection_menu") {
 
   deps = [
     "//ash",
-    "//ash/components/arc/session",
     "//ash/public/cpp",
+    "//chromeos/ash/experiences/arc/session",
     "//ui/base",
     "//ui/display",
     "//ui/gfx",

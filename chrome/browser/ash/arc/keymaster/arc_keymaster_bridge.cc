@@ -8,12 +8,12 @@
 #include <utility>
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/process/process_handle.h"
 #include "chromeos/ash/components/dbus/arc/arc_keymaster_client.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "mojo/core/configuration.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

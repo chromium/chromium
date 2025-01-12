@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/arc/session/arc_service_manager.h"
+#include "chrome/browser/ash/arc/vmm/arc_vmm_manager.h"
 
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/components/arc/arc_features.h"
@@ -18,9 +18,9 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/vmm/arc_system_state_observation.h"
-#include "chrome/browser/ash/arc/vmm/arc_vmm_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"

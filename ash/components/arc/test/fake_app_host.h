@@ -6,8 +6,8 @@
 #define ASH_COMPONENTS_ARC_TEST_FAKE_APP_HOST_H_
 
 #include "ash/components/arc/mojom/app.mojom.h"
-#include "ash/components/arc/session/connection_holder.h"
 #include "base/memory/raw_ptr.h"
+#include "chromeos/ash/experiences/arc/session/connection_holder.h"
 
 namespace arc {
 

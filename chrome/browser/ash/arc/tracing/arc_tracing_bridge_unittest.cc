@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_tracing_instance.h"
 #include "base/functional/bind.h"
@@ -15,6 +14,7 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

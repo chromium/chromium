@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/arc/net/cert_manager.h"
+#include "chromeos/ash/experiences/arc/net/cert_manager.h"
 
 #ifndef ASH_COMPONENTS_ARC_TEST_FAKE_CERT_MANAGER_H_
 #define ASH_COMPONENTS_ARC_TEST_FAKE_CERT_MANAGER_H_

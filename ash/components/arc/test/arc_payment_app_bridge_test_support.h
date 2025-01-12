@@ -8,9 +8,9 @@
 #include <memory>
 #include <string>
 
-#include "ash/components/arc/pay/arc_payment_app_bridge.h"
-#include "ash/components/arc/session/arc_service_manager.h"
 #include "base/memory/raw_ptr.h"
+#include "chromeos/ash/experiences/arc/pay/arc_payment_app_bridge.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/components/payments/mock_payment_app_instance.h"
 #include "chromeos/components/payments/mojom/payment_app.mojom.h"
 #include "chromeos/components/payments/mojom/payment_app_types.mojom.h"

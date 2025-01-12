@@ -155,8 +155,6 @@ source_set("unit_tests") {
 
   deps = [
     "//ash/components/arc:arc_test_support",
-    "//ash/components/arc/session",
-    "//ash/components/arc/session:connection_holder",
     "//ash/constants",
     "//base",
     "//base/test:test_support",
@@ -193,6 +191,8 @@ source_set("unit_tests") {
     "//chromeos/ash/components/network:test_support",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/arc/session",
+    "//chromeos/ash/experiences/arc/session:connection_holder",
     "//chromeos/ash/services/cros_healthd/public/cpp:fakes",
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//chromeos/ash/services/network_config:in_process_instance",

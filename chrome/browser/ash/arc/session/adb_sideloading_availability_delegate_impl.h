@@ -5,10 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_ARC_SESSION_ADB_SIDELOADING_AVAILABILITY_DELEGATE_IMPL_H_
 #define CHROME_BROWSER_ASH_ARC_SESSION_ADB_SIDELOADING_AVAILABILITY_DELEGATE_IMPL_H_
 
-#include "ash/components/arc/session/adb_sideloading_availability_delegate.h"
 #include "base/memory/raw_ptr.h"
-
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/experiences/arc/session/adb_sideloading_availability_delegate.h"
 
 namespace arc {
 

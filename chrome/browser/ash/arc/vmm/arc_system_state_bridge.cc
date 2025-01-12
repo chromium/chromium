@@ -5,9 +5,9 @@
 #include "chrome/browser/ash/arc/vmm/arc_system_state_bridge.h"
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 
 namespace arc {
 

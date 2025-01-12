@@ -4,9 +4,9 @@
 
 #include "chromeos/ash/experiences/arc/audio/arc_audio_bridge.h"
 
-#include "ash/components/arc/session/arc_service_manager.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "components/user_prefs/test/test_browser_context_with_prefs.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"

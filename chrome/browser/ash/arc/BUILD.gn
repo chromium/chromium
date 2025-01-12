@@ -244,8 +244,8 @@ source_set("arc_util") {
   sources = [ "arc_util.h" ]
 
   public_deps = [
-    "//ash/components/arc/session:arc_base_enums",
     "//base",
+    "//chromeos/ash/experiences/arc/session:arc_base_enums",
     "//storage/browser",
   ]
 }

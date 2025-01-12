@@ -98,7 +98,7 @@ interface SomeArcHost {
 ### Version guard in code
 
 For Chromium C++ code, `ARC_GET_INSTANCE_FOR_METHOD` macro is provided in
-[connection_holder.h](https://source.chromium.org/chromium/chromium/src/+/main:ash/components/arc/session/connection_holder.h;l=24;drc=eeb36b2554f18c2239fd8fc1daeb8c020c358a55).
+[connection_holder.h](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/experiences/arc/session/connection_holder.h;l=24;drc=eeb36b2554f18c2239fd8fc1daeb8c020c358a55).
 It returns `nullptr` when the remote side doesn't support the given method.
 The common pattern to call a remote method in Chromium C++ is like the
 following:

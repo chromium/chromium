@@ -8,12 +8,12 @@
 #include <optional>
 #include <string>
 
-#include "ash/components/arc/net/cert_manager.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/experiences/arc/net/cert_manager.h"
 #include "net/cert/nss_cert_database.h"
 
 namespace arc {

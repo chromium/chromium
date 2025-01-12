@@ -8,8 +8,6 @@
 #include <utility>
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/system/power/power_button_controller_base.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
@@ -25,6 +23,8 @@
 #include "chromeos/ash/experiences/arc/intent_helper/control_camera_app_delegate.h"
 #include "chromeos/ash/experiences/arc/intent_helper/intent_constants.h"
 #include "chromeos/ash/experiences/arc/intent_helper/open_url_delegate.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "components/url_formatter/url_fixer.h"
 #include "net/base/url_util.h"
 #include "url/url_constants.h"

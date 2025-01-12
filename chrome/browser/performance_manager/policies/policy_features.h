@@ -9,8 +9,8 @@
 #include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/arc/session/arc_session.h"
 #include "base/allocator/buildflags.h"
+#include "chromeos/ash/experiences/arc/session/arc_session.h"
 #endif
 
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_POLICY_FEATURES_H_

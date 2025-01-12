@@ -29,7 +29,6 @@ static_library("assistant") {
   deps = [
     "//ash/components/arc:arc_base_utils",
     "//ash/components/arc/mojom",
-    "//ash/components/arc/session",
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
@@ -49,6 +48,7 @@ static_library("assistant") {
     "//chrome/common",
     "//chromeos/ash/components/assistant:buildflags",
     "//chromeos/ash/components/network",
+    "//chromeos/ash/experiences/arc/session",
     "//chromeos/ash/services/assistant:lib",
     "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/ash/services/assistant/public/proto",

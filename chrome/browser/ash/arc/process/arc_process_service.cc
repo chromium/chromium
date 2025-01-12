@@ -20,7 +20,6 @@
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/mojom/process.mojom.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
@@ -34,6 +33,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "chromeos/ash/components/process_snapshot/process_snapshot_server.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace arc {

@@ -10,10 +10,10 @@
 #include <vector>
 
 #include "ash/components/arc/mojom/usb_host.mojom.h"
-#include "ash/components/arc/session/connection_observer.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
+#include "chromeos/ash/experiences/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
