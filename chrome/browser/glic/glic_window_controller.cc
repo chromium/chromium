@@ -142,6 +142,20 @@ class WindowEventObserver : public ui::EventObserver {
   bool mouse_down_in_draggable_area_;
 };
 
+mojom::PanelState CreatePanelState(bool widget_visible,
+                                   Browser* pinned_browser) {
+  mojom::PanelState panel_state;
+  if (!widget_visible) {
+    panel_state.kind = mojom::PanelState_Kind::kHidden;
+  } else if (pinned_browser) {
+    panel_state.kind = mojom::PanelState_Kind::kDocked;
+    panel_state.window_id = pinned_browser->session_id().id();
+  } else {
+    panel_state.kind = mojom::PanelState_Kind::kFloating;
+  }
+  return panel_state;
+}
+
 }  // namespace
 
 GlicWindowController::GlicWindowController(Profile* profile)
@@ -149,17 +163,50 @@ GlicWindowController::GlicWindowController(Profile* profile)
 
 GlicWindowController::~GlicWindowController() = default;
 
+void GlicWindowController::WebClientInitializeFailed() {
+  if (will_show_) {
+    // TODO(crbug.com/388328847): The web client failed to initialize. Decide
+    // what the fallback behavior is. Additionally, we probably need some kind
+    // of timeout and/or loading indicator if loading takes too much time. For
+    // now, show the UI anyway, which should be helpful in development.
+    LOG(ERROR)
+        << "Glic web client failed to initialize, it won't work properly.";
+    ShowFinish();
+  }
+}
+
+void GlicWindowController::LoginPageCommitted() {
+  if (will_show_ && !web_client_) {
+    // TODO(crbug.com/388328847): Temporarily allow showing the UI when a login
+    // page is reached.
+    ShowFinish();
+  }
+}
+
+void GlicWindowController::SetWebClient(GlicWebClientAccess* web_client) {
+  web_client_ = web_client;
+  if (will_show_) {
+    if (web_client_) {
+      ShowPhase2();
+    } else {
+      // TODO(crbug.com/388328847): The web client could disconnect without a
+      // WebClientInitializeFailed() call, for example, if the renderer crashes.
+      // Determine the correct behavior in this case.
+      LOG(ERROR) << "Glic web client disconnected before showing the window.";
+      ShowFinish();
+    }
+  }
+}
+
 void GlicWindowController::Show(views::View* glic_button_view) {
   // TODO(crbug.com/379943498): If a glic window already exists, handle showing
   // by bringing to front or activating.
-  if (glic_window_widget_) {
+  if (glic_window_widget_ || will_show_) {
     return;
   }
-
   int padding;
   gfx::Point top_right_point;
-  bool should_attach_to_browser = false;
-
+  will_show_ = true;
   if (!glic_button_view) {
     // Right now this only detects whether the glic widget is summoned from the
     // OS entrypoint and positions itself detached from the browser.
@@ -167,6 +214,7 @@ void GlicWindowController::Show(views::View* glic_button_view) {
     // show up in a detached state.
     top_right_point = GetTopRightPositionForDetachedGlicWindow();
     padding = 50;
+    button_widget_for_browser_attachment_ = nullptr;
   } else {
     // If summoned from the tab strip button. This will always show up attached
     // because it is tied to a views::View object within the current browser
@@ -174,7 +222,8 @@ void GlicWindowController::Show(views::View* glic_button_view) {
     top_right_point =
         GetTopRightPositionForAttachedGlicWindow(glic_button_view);
     padding = GetLayoutConstant(TAB_STRIP_PADDING);
-    should_attach_to_browser = true;
+    button_widget_for_browser_attachment_ =
+        glic_button_view->GetWidget()->GetWeakPtr();
   }
 
   glic_window_widget_ = glic::GlicView::CreateWidget(
@@ -190,12 +239,42 @@ void GlicWindowController::Show(views::View* glic_button_view) {
   glic_window_widget_->AddObserver(this);
   glic_widget_observer_ =
       std::make_unique<GlicWidgetObserver>(this, glic_window_widget_.get());
+
+  // If the web client is already initialized, go to phase 2. Otherwise, wait
+  // for the web client to initialize.
+  if (web_client_) {
+    ShowPhase2();
+  }
+}
+
+// Phase 2 of showing the widget. This happens after the web client is
+// initialized. It signals the web client that it will be shown, and waits for
+// the response before actually showing the widget.
+void GlicWindowController::ShowPhase2() {
+  DCHECK(web_client_);
+  // Notify the web client that the panel will open, and wait for the response
+  // to actually show the window.
+  web_client_->PanelWillOpen(
+      CreatePanelState(
+          true,
+          button_widget_for_browser_attachment_
+              ? chrome::FindBrowserWithWindow(
+                    button_widget_for_browser_attachment_->GetNativeWindow())
+              : nullptr),
+      base::BindOnce(&GlicWindowController::ShowFinish, GetWeakPtr()));
+}
+
+void GlicWindowController::ShowFinish() {
+  will_show_ = false;
+  if (!glic_window_widget_ || glic_window_widget_->IsVisible()) {
+    return;
+  }
+
   glic_window_widget_->Show();
 
-  if (should_attach_to_browser) {
-    views::Widget* glic_button_widget = glic_button_view->GetWidget();
-    Browser* browser =
-        chrome::FindBrowserWithWindow(glic_button_widget->GetNativeWindow());
+  if (button_widget_for_browser_attachment_) {
+    Browser* browser = chrome::FindBrowserWithWindow(
+        button_widget_for_browser_attachment_->GetNativeWindow());
     AttachToBrowser(browser);
   } else {
     MaybeCreateHolderWindowAndReparent();
@@ -324,14 +403,20 @@ void GlicWindowController::Close() {
   if (!glic_window_widget_) {
     return;
   }
-  SetAudioDucking(false);
   glic_window_widget_->CloseWithReason(
       views::Widget::ClosedReason::kCloseButtonClicked);
   glic_widget_observer_.reset();
   window_event_observer_.reset();
   browser_close_subscription_.reset();
+  glic_window_widget_->RemoveObserver(this);
   glic_window_widget_.reset();
+  will_show_ = false;
   NotifyIfPanelStateChanged();
+
+  if (web_client_) {
+    // The webview is kept alive by default, no need to use this callback.
+    web_client_->PanelWasClosed(base::DoNothing());
+  }
 }
 
 bool GlicWindowController::SetAudioDucking(bool enabled) {

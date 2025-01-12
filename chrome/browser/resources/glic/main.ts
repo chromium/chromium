@@ -55,6 +55,7 @@ class GlicAppHostManager {
       this.host = new GlicApiHost(
           browserProxy, webview.contentWindow, new URL(url).origin);
     }
+    browserProxy.handler.webviewCommitted({url});
   }
 
   contentLoaded() {

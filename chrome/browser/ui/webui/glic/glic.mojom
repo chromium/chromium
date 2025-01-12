@@ -24,6 +24,9 @@ interface PageHandler {
   // Sync Google account sign-in cookies to the webview, so that it can sign-in
   // automatically.
   SyncWebviewCookies() => (bool success);
+
+  // Called whenever the webview mainframe commits.
+  WebviewCommitted(url.mojom.Url url);
 };
 
 // Reason why getting tab context failed.
@@ -72,6 +75,9 @@ interface WebClientHandler {
   // initialize(), indicating that it will support Chrome. `web_client` may
   // be used to communicate with the client.
   WebClientInitialized();
+
+  // Called when the web client loads, but throws an exception in initialize().
+  WebClientInitializeFailed();
 
   // Creates a new tab. `url` must have a http or https protocol.
   // `tab_data` is null if the tab could not be created, which may happen if the
@@ -165,14 +171,24 @@ struct PanelState {
 
 // Access from the browser to the Glic web client by proxy of the WebUI page.
 interface WebClient {
+  // Informs the web client that the panel will open. Chrome will wait to open
+  // the panel until after this returns.
+  NotifyPanelWillOpen(PanelState panel_state) => ();
+
+  // Informs the web client that the panel was closed. Chrome will try to keep
+  // the web client alive until this function returns.
+  NotifyPanelWasClosed() => ();
+
   // The user has requested activation of the web client.
   // `docked_to_window_id` identifies the browser window to which the
   // panel is docked to. It is undefined if it is floating free.
+  // DEPRECATED: will be removed soon.
   NotifyPanelOpened(int32? docked_to_window_id);
 
   // The user has closed the web client window. The window may be activated
   // again later. Returns when the web client has stored any needed
   // information and stopped accepting the user's input.
+  // DEPRECATED: will be removed soon.
   NotifyPanelClosed() => ();
 
   // Informs the client that the state of the glic panel has changed.

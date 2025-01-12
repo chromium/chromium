@@ -6,9 +6,11 @@
 #define CHROME_BROWSER_GLIC_GLIC_WINDOW_CONTROLLER_H_
 
 #include "base/callback_list.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "chrome/browser/glic/glic_web_client_access.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/glic/glic.mojom.h"
@@ -47,7 +49,8 @@ class GlicWindowController : public views::WidgetObserver {
   explicit GlicWindowController(Profile* profile);
   ~GlicWindowController() override;
 
-  // Shows the glic window.
+  // Creates the glic view, waits for the web client to initialize, and then
+  // shows the glic window.
   void Show(views::View* glic_button_view);
 
   // Attaches glic to the last focused Chrome window.
@@ -103,12 +106,20 @@ class GlicWindowController : public views::WidgetObserver {
   // profile is deleted or if the browser shuts down.
   base::WeakPtr<GlicWindowController> GetWeakPtr();
 
+  void WebClientInitializeFailed();
+  // The webview reached a login page.
+  void LoginPageCommitted();
+  void SetWebClient(GlicWebClientAccess* web_client);
+  GlicWebClientAccess* web_client() const { return web_client_; }
+
   // views::WidgetObserver implementation, monitoring the GlicView.
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
 
   GlicView* GetGlicView();
-
  private:
+  void ShowPhase2();
+  void ShowFinish();
+
   // Determines the correct position for the glic window when attached to a
   // browser window.
   gfx::Point GetTopRightPositionForAttachedGlicWindow(
@@ -203,6 +214,13 @@ class GlicWindowController : public views::WidgetObserver {
   std::unique_ptr<views::Widget> glic_window_widget_;
   bool glic_window_widget_visible_ = false;
 
+  // Indicates `Show()` has been called, but not `FinishShow()`.
+  bool will_show_ = false;
+  // While `will_show_` is true, this is the button widget on the browser window
+  // where the glic window will be shown. This is null if the glic window should
+  // be shown floating rather than attached.
+  base::WeakPtr<views::Widget> button_widget_for_browser_attachment_;
+
   // Used to monitor key and mouse events from native window.
   std::unique_ptr<WindowEventObserver> window_event_observer_;
 
@@ -215,6 +233,8 @@ class GlicWindowController : public views::WidgetObserver {
   // This is the last panel state sent to observers. It should only be updated
   // in `NotifyIfPanelStateChanged`.
   mojom::PanelState panel_state_;
+
+  raw_ptr<GlicWebClientAccess> web_client_;
 
   base::ObserverList<StateObserver> state_observers_;
 

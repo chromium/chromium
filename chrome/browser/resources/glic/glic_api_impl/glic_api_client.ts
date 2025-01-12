@@ -19,8 +19,14 @@ export class GlicHostRegistryImpl implements GlicHostRegistry {
   async registerWebClient(webClient: GlicWebClient): Promise<void> {
     const host = new GlicBrowserHostImpl(webClient, this.windowProxy);
     await host.webClientCreated();
-    await webClient.initialize(host);
-    host.webClientInitialized();
+    let success = false;
+    try {
+      await webClient.initialize(host);
+      success = true;
+    } catch (e) {
+      console.error(e);
+    }
+    host.webClientInitialized(success);
   }
 }
 
@@ -50,9 +56,26 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
     }
   }
 
+  async glicWebClientNotifyPanelWillOpen(payload: {panelState: PanelState}):
+      Promise<void> {
+    try {
+      await this.webClient.notifyPanelWillOpen?.(payload.panelState);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
   glicWebClientNotifyPanelClosed(): void {
     if (this.webClient.notifyPanelClosed) {
       this.webClient.notifyPanelClosed();
+    }
+  }
+
+  async glicWebClientNotifyPanelWasClosed(): Promise<void> {
+    try {
+      await this.webClient.notifyPanelWasClosed?.();
+    } catch (e) {
+      console.error(e);
     }
   }
 
@@ -122,8 +145,8 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     this.chromeVersion = state.chromeVersion;
   }
 
-  webClientInitialized() {
-    this.sender.requestNoResponse('glicBrowserWebClientInitialized', {});
+  webClientInitialized(success: boolean) {
+    this.sender.requestNoResponse('glicBrowserWebClientInitialized', {success});
   }
 
   async handleRawRequest(type: string, payload: any):

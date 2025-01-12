@@ -55,6 +55,17 @@ class WebClientImpl implements WebClientInterface {
     await this.sender.requestWithResponse('glicWebClientNotifyPanelClosed', {});
   }
 
+  notifyPanelWillOpen(panelState: PanelStateMojo): Promise<void> {
+    return this.sender.requestWithResponse(
+        'glicWebClientNotifyPanelWillOpen',
+        {panelState: panelStateToClient(panelState)});
+  }
+
+  notifyPanelWasClosed(): Promise<void> {
+    return this.sender.requestWithResponse(
+        'glicWebClientNotifyPanelWasClosed', {});
+  }
+
   notifyPanelStateChange(panelState: PanelStateMojo) {
     this.sender.requestNoResponse('glicWebClientPanelStateChanged', {
       panelState: panelStateToClient(panelState),
@@ -117,8 +128,12 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     };
   }
 
-  glicBrowserWebClientInitialized() {
-    this.handler.webClientInitialized();
+  glicBrowserWebClientInitialized(request: {success: boolean}) {
+    if (request.success) {
+      this.handler.webClientInitialized();
+    } else {
+      this.handler.webClientInitializeFailed();
+    }
   }
 
   async glicBrowserCreateTab(request: {

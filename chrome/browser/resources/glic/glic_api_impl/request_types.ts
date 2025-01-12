@@ -40,7 +40,7 @@ export declare interface HostRequestTypes {
   // This message is sent after the client returns successfully from
   // initialize(). It is not part of the GlicBrowserHost public API.
   glicBrowserWebClientInitialized: {
-    request: {},
+    request: {success: boolean},
     response: void,
   };
 
@@ -145,6 +145,16 @@ export declare interface HostRequestTypes {
 
 // Types of requests to the GlicWebClient.
 export declare interface WebClientRequestTypes {
+  glicWebClientNotifyPanelWillOpen: {
+    request: {
+      panelState: PanelState,
+    },
+    response: void,
+  };
+  glicWebClientNotifyPanelWasClosed: {
+    request: {},
+    response: void,
+  };
   glicWebClientNotifyPanelOpened: {
     request: {
       dockedToWindowId: string|undefined,

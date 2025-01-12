@@ -46,16 +46,34 @@ export declare interface GlicWebClient {
   // retryable errors.
   initialize(glicBrowserHost: GlicBrowserHost): Promise<void>;
 
+  // Called right before the panel is made visible to the user.
+  // Important: the returned promise must be fulfilled for the panel
+  // to be made visible to the user.
+  // This event is always called no matter how the panel opening is
+  // initiated.
+  notifyPanelWillOpen?(panelState: PanelState): Promise<void>;
+
+  // Called right after the panel was hidden away and is not visible to
+  // the user anymore.
+  // Important: the returned promise must be fulfilled to allow the browser
+  // to free any needed resources. The browser will keep the web client
+  // alive until the promise is resolved.
+  // This event is always called no matter how the panel closing is
+  // initiated.
+  notifyPanelWasClosed?(): Promise<void>;
+
   // The user has requested activation of the web client.
   // The dockedToWindowId identifies the browser window to which the
   // panel is docked to. It is undefined if it is floating free.
   // Note: The returned promise is currently not used in the browser.
+  // @deprecated: Not supported anymore and will eventually be removed.
   notifyPanelOpened?(dockedToWindowId: string|undefined): Promise<void>;
 
   // The user has closed the web client window. The window may be activated
   // again later.
   // The promise being resolved indicates the web client has stored any needed
   // information and stopped accepting the user's input.
+  // @deprecated: Not supported anymore and will eventually be removed.
   notifyPanelClosed?(): Promise<void>;
 }
 

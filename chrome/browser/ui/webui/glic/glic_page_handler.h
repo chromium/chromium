@@ -35,6 +35,9 @@ class GlicPageHandler : public glic::mojom::PageHandler {
 
   void SyncWebviewCookies(SyncWebviewCookiesCallback callback) override;
 
+  // Called whenever the webview mainframe commits.
+  void WebviewCommitted(const GURL& origin) override;
+
  private:
   // There should at most one WebClientHandler at a time. A new one is created
   // each time the webview loads a page.

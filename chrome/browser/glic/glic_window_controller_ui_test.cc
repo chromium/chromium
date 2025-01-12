@@ -26,6 +26,7 @@
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/button_test_api.h"
 
+namespace glic {
 namespace {
 
 class GlicWindowControllerTest : public InteractiveBrowserTest {
@@ -63,48 +64,39 @@ class GlicWindowControllerTest : public InteractiveBrowserTest {
 
   glic::GlicView* glic_view() { return window_controller().GetGlicView(); }
 
-  void WaitForGlicGuestToFinishLoading() {
-    auto* const web_contents = glic_view()->web_view()->GetWebContents();
-    ASSERT_TRUE(content::WaitForLoadStop(web_contents));
-  }
-
  private:
   base::test::ScopedFeatureList features_;
 };
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerTest, DoNotCrashOnBrowserClose) {
   RunTestSequence(PressButton(kGlicButtonElementId));
+
   RunTestSequence(
       InContext(views::ElementTrackerViews::GetContextForView(glic_view()),
                 MoveMouseTo(kGlicViewElementId)),
       InContext(views::ElementTrackerViews::GetContextForView(glic_view()),
                 ActivateSurface(kGlicViewElementId)));
-  WaitForGlicGuestToFinishLoading();
   chrome::CloseAllBrowsers();
   ui_test_utils::WaitForBrowserToClose();
 }
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerTest, DoNotCrashWhenReopening) {
-  base::RunLoop run_loop;
-  auto subscription =
-      glic_service()->AddWebClientCreatedCallback(run_loop.QuitClosure());
   RunTestSequence(PressButton(kGlicButtonElementId));
   RunTestSequence(
       InContext(views::ElementTrackerViews::GetContextForView(glic_view()),
                 MoveMouseTo(kGlicViewElementId)),
       InContext(views::ElementTrackerViews::GetContextForView(glic_view()),
                 ActivateSurface(kGlicViewElementId)));
-  // Wait until the web client has been create (which happens after the view
-  // is shown).
-  run_loop.Run();
+
   window_controller().Close();
+
   RunTestSequence(PressButton(kGlicButtonElementId));
   RunTestSequence(
       InContext(views::ElementTrackerViews::GetContextForView(glic_view()),
                 MoveMouseTo(kGlicViewElementId)),
       InContext(views::ElementTrackerViews::GetContextForView(glic_view()),
                 ActivateSurface(kGlicViewElementId)));
-  WaitForGlicGuestToFinishLoading();
 }
 
 }  // namespace
+}  // namespace glic

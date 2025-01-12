@@ -10,6 +10,7 @@
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/glic_web_client_access.h"
 #include "chrome/browser/glic/glic_window_controller.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -17,12 +18,14 @@
 #include "chrome/browser/ui/webui/glic/glic.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "ui/gfx/geometry/mojom/geometry.mojom.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace glic {
 class GlicWebClientHandler : public glic::mojom::WebClientHandler,
-                             public GlicWindowController::StateObserver {
+                             public GlicWindowController::StateObserver,
+                             public GlicWebClientAccess {
  public:
   explicit GlicWebClientHandler(
       content::BrowserContext* browser_context,
@@ -79,7 +82,13 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     glic_service_->WebClientCreated();
   }
 
-  void WebClientInitialized() override {}
+  void WebClientInitializeFailed() override {
+    glic_service_->window_controller().WebClientInitializeFailed();
+  }
+
+  void WebClientInitialized() override {
+    glic_service_->window_controller().SetWebClient(this);
+  }
 
   void CreateTab(const ::GURL& url,
                  bool open_in_background,
@@ -184,21 +193,36 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     std::move(callback).Run(std::move(result));
   }
 
+  void SyncCookies(SyncCookiesCallback callback) override {
+    glic_service_->SyncWebviewCookies(std::move(callback));
+  }
+
   // GlicWindowController::StateObserver implementation.
   void PanelStateChanged(const mojom::PanelState& panel_state) override {
     web_client_->NotifyPanelStateChange(panel_state.Clone());
   }
 
+  // GlicWebClientAccess implementation.
+
+  void PanelWillOpen(const mojom::PanelState& panel_state,
+                     base::OnceClosure done) override {
+    web_client_->NotifyPanelWillOpen(panel_state.Clone(), std::move(done));
+  }
+
+  void PanelWasClosed(base::OnceClosure done) override {
+    web_client_->NotifyPanelWasClosed(
+        mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(done)));
+  }
+
+ private:
   void Uninstall() {
+    if (glic_service_->window_controller().web_client() == this) {
+      glic_service_->window_controller().SetWebClient(nullptr);
+    }
     pref_change_registrar_.Reset();
     glic_service_->window_controller().RemoveStateObserver(this);
   }
 
-  void SyncCookies(SyncCookiesCallback callback) override {
-    glic_service_->SyncWebviewCookies(std::move(callback));
-  }
-
- private:
   void WebClientDisconnected() { Uninstall(); }
 
   void OnPrefChanged(const std::string& pref_name) {
@@ -238,6 +262,16 @@ void GlicPageHandler::CreateWebClient(
 void GlicPageHandler::SyncWebviewCookies(SyncWebviewCookiesCallback callback) {
   GlicKeyedServiceFactory::GetGlicKeyedService(browser_context_)
       ->SyncWebviewCookies(std::move(callback));
+}
+
+void GlicPageHandler::WebviewCommitted(const GURL& url) {
+  // TODO(crbug.com/388328847): Remove this code once launch issues are ironed
+  // out.
+  if (url.DomainIs("login.corp.google.com")) {
+    GlicKeyedServiceFactory::GetGlicKeyedService(browser_context_)
+        ->window_controller()
+        .LoginPageCommitted();
+  }
 }
 
 }  // namespace glic
