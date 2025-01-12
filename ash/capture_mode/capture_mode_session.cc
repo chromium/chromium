@@ -11,6 +11,7 @@
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/magnifier/magnifier_glass.h"
+#include "ash/capture_mode/action_button_container_view.h"
 #include "ash/capture_mode/action_button_view.h"
 #include "ash/capture_mode/capture_label_view.h"
 #include "ash/capture_mode/capture_mode_behavior.h"
@@ -96,7 +97,6 @@
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -202,9 +202,6 @@ constexpr float kLabelScaleDownOnPhaseChange = 0.8;
 // phase, they can create default region which is centered and sized to this
 // value times the root window's width and height.
 constexpr float kRegionDefaultRatio = 0.24f;
-
-// The horizontal distance between action buttons in a row.
-constexpr int kActionButtonSpacing = 10;
 
 // The spacing between the feedback button and the work area.
 constexpr int kFeedbackButtonSpacing = 10;
@@ -3281,15 +3278,8 @@ void CaptureModeSession::UpdateActionContainerWidget() {
     action_container_widget_->Init(
         CreateWidgetParams(parent, gfx::Rect(), "ActionButtonsContainer"));
 
-    action_container_widget_->SetContentsView(
-        views::Builder<views::BoxLayoutView>()
-            .CopyAddressTo(&action_container_view_)
-            .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
-            .SetBetweenChildSpacing(kActionButtonSpacing)
-            .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter)
-            .SetCrossAxisAlignment(
-                views::BoxLayout::CrossAxisAlignment::kStretch)
-            .Build());
+    action_container_view_ = action_container_widget_->SetContentsView(
+        std::make_unique<ActionButtonContainerView>());
   }
 
   action_container_widget_->Show();

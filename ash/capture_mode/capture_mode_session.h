@@ -39,12 +39,9 @@ namespace gfx {
 class Canvas;
 }  // namespace gfx
 
-namespace views {
-class BoxLayoutView;
-}  // namespace views
-
 namespace ash {
 
+class ActionButtonContainerView;
 class ActionButtonView;
 class CaptureModeBarView;
 class CaptureModeController;
@@ -541,7 +538,7 @@ class ASH_EXPORT CaptureModeSession
 
   // TODO(hewer): Check if we can migrate these widgets to `SunfishBehavior`.
   views::UniqueWidgetPtr action_container_widget_;
-  raw_ptr<views::BoxLayoutView> action_container_view_ = nullptr;
+  raw_ptr<ActionButtonContainerView> action_container_view_ = nullptr;
 
   // Widget that hosts the recording type menu, from which the user can pick the
   // desired recording format type.
