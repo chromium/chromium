@@ -8,6 +8,7 @@
 #include "components/saved_tab_groups/delegate/tab_group_sync_delegate.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace tab_groups {
