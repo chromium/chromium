@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_view.h"
+#include "chrome/browser/glic/glic_window_resize_animation.h"
 #include "chrome/browser/media/audio_ducker.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
@@ -318,6 +319,10 @@ void GlicWindowController::AttachedBrowserDidClose(
   Close();
 }
 
+void GlicWindowController::ResizeFinished() {
+  window_resize_animation_.reset();
+}
+
 void GlicWindowController::Attach() {
   // TODO (crbug.com/388917542) Determine which browser to attach to. Currently
   // attaches to the last focused glic-compatible browser.
@@ -376,8 +381,11 @@ bool GlicWindowController::Resize(const gfx::Size& size) {
     return false;
   }
 
-  glic_window_widget_->SetSize(size);
-  GetGlicView()->web_view()->SetSize(size);
+  window_resize_animation_.reset();
+  window_resize_animation_ = std::make_unique<GlicWindowResizeAnimation>(
+      glic_window_widget_.get(), GetGlicView(), size,
+      /*duration=*/base::Milliseconds(0),
+      base::BindOnce(&GlicWindowController::ResizeFinished, GetWeakPtr()));
   return true;
 }
 
@@ -403,6 +411,7 @@ void GlicWindowController::Close() {
   if (!glic_window_widget_) {
     return;
   }
+  window_resize_animation_.reset();
   glic_window_widget_->CloseWithReason(
       views::Widget::ClosedReason::kCloseButtonClicked);
   glic_widget_observer_.reset();

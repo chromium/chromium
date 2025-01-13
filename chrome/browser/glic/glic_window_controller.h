@@ -31,6 +31,7 @@ class WindowEventObserver;
 }  // namespace
 
 class GlicView;
+class GlicWindowResizeAnimation;
 
 // Class for Glic window controller. Owned by the Glic profile keyed-service.
 // This gets created when the Glic window needs to be shown and it owns the Glic
@@ -191,6 +192,9 @@ class GlicWindowController : public views::WidgetObserver {
   // When the attached browser is closed, this is invoked so we can clean up.
   void AttachedBrowserDidClose(BrowserWindowInterface* browser);
 
+  // Called when the programmatic resize has finished.
+  void ResizeFinished();
+
   AttachedTargetWidgetObserver attached_target_widget_observer_{this};
   base::WeakPtr<Browser> attached_browser_;
 
@@ -212,6 +216,7 @@ class GlicWindowController : public views::WidgetObserver {
   std::unique_ptr<ContentsAndProfileKeepAlive> contents_;
 
   std::unique_ptr<views::Widget> glic_window_widget_;
+  std::unique_ptr<GlicWindowResizeAnimation> window_resize_animation_;
   bool glic_window_widget_visible_ = false;
 
   // Indicates `Show()` has been called, but not `FinishShow()`.

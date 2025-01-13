@@ -60,6 +60,8 @@ source_set("impl") {
     "glic_ui.cc",
     "glic_view.cc",
     "glic_window_controller.cc",
+    "glic_window_resize_animation.cc",
+    "glic_window_resize_animation.h",
     "guest_util.cc",
   ]
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
