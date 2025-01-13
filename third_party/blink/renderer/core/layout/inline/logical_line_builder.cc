@@ -74,6 +74,29 @@ void LogicalLineBuilder::CreateLine(LineInfo* line_info,
 
   box_states_->OnEndPlaceItems(constraint_space_, line_box, baseline_type_);
 
+  if (main_line_helper) {
+    if (auto& ellipsis_data = main_line_helper->GetLineClampEllipsis()) {
+      DCHECK(RuntimeEnabledFeatures::CSSLineClampLineBreakingEllipsisEnabled());
+      const ShapeResultView* shape_result_view =
+          ShapeResultView::Create(ellipsis_data->shape_result);
+      FontHeight text_metrics = ellipsis_data->text_metrics;
+
+      line_box->AddChild(*node_.GetLayoutBlockFlow(),
+                         StyleVariant::kStandardEllipsis, shape_result_view,
+                         ellipsis_data->text,
+                         LogicalRect(LayoutUnit(), -text_metrics.ascent,
+                                     shape_result_view->SnappedWidth(),
+                                     text_metrics.LineHeight()),
+                         // TODO(abotella): The ellipsis' bidi level is pending
+                         // discussion at
+                         // https://github.com/w3c/csswg-drafts/issues/10844.
+                         // Meanwhile we use the paragraph's embedding level for
+                         // compatibility with the previous behavior of
+                         // -webkit-line-clamp.
+                         static_cast<UBiDiLevel>(line_info->BaseDirection()));
+    }
+  }
+
   if (node_.IsBidiEnabled()) [[unlikely]] {
     box_states_->PrepareForReorder(line_box);
     BidiReorder(line_info->BaseDirection(), line_box,

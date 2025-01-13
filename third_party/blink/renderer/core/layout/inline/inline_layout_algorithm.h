@@ -68,6 +68,18 @@ class CORE_EXPORT InlineLayoutAlgorithm final
                           InlineItemResult*,
                           LogicalLineItems* line_box);
 
+  struct LineClampEllipsis {
+    STACK_ALLOCATED();
+
+   public:
+    String text;
+    const ShapeResult* shape_result;
+    FontHeight text_metrics;
+  };
+  const std::optional<LineClampEllipsis>& GetLineClampEllipsis() {
+    return line_clamp_ellipsis_;
+  }
+
  private:
   friend class LineWidthsTest;
 
@@ -103,9 +115,12 @@ class CORE_EXPORT InlineLayoutAlgorithm final
       const FontHeight& line_box_metrics,
       std::optional<FontHeight> annotation_font_height);
 
+  LayoutUnit SetupLineClampEllipsis();
+
   enum class LineClampState {
     kShow,
-    kEllipsize,
+    kLineClampEllipsis,
+    kTextOverflowEllipsis,
     kHide,
   };
   LineClampState GetLineClampState(const LineInfo*,
@@ -118,6 +133,8 @@ class CORE_EXPORT InlineLayoutAlgorithm final
 
   MarginStrut end_margin_strut_;
   std::optional<int> lines_until_clamp_;
+
+  std::optional<LineClampEllipsis> line_clamp_ellipsis_;
 
   FontBaseline baseline_type_ = FontBaseline::kAlphabeticBaseline;
 

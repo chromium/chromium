@@ -109,6 +109,12 @@ void FragmentItems::FinalizeAfterLayout(
         DCHECK_EQ(item.DeltaToNextForSameLayoutObject(), 0u);
         item.SetFragmentId(line_fragment_id++);
         continue;
+      } else if (item.IsEllipsis() &&
+                 item.GetLayoutObject() == fragment.GetLayoutObject()) {
+        DCHECK(
+            RuntimeEnabledFeatures::CSSLineClampLineBreakingEllipsisEnabled());
+        // Line-clamp ellipsis
+        continue;
       } else if (!found_inflow_content) {
         // Resumed floats may take up all the space in the containing block
         // fragment, leaving no room for actual content inside the inline
