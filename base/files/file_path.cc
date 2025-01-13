@@ -213,14 +213,6 @@ bool FilePath::operator==(const FilePath& that) const {
 #endif  // defined(FILE_PATH_USES_DRIVE_LETTERS)
 }
 
-bool FilePath::operator!=(const FilePath& that) const {
-#if defined(FILE_PATH_USES_DRIVE_LETTERS)
-  return !EqualDriveLetterCaseInsensitive(this->path_, that.path_);
-#else   // defined(FILE_PATH_USES_DRIVE_LETTERS)
-  return path_ != that.path_;
-#endif  // defined(FILE_PATH_USES_DRIVE_LETTERS)
-}
-
 std::ostream& operator<<(std::ostream& out, const FilePath& file_path) {
   return out << file_path.value();
 }

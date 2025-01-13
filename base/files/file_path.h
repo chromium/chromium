@@ -209,12 +209,12 @@ class BASE_EXPORT FilePath {
   // unspecified state.
   FilePath& operator=(FilePath&& that) noexcept;
 
+  // On systems which use drive letters, the drive letters are compared
+  // case-insensitively.
   bool operator==(const FilePath& that) const;
 
-  bool operator!=(const FilePath& that) const;
-
   // Required for some STL containers and operations
-  bool operator<(const FilePath& that) const { return path_ < that.path_; }
+  auto operator<=>(const FilePath& that) const = default;
 
   const StringType& value() const LIFETIME_BOUND { return path_; }
 
