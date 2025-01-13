@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "components/performance_manager/execution_context_priority/max_vote_aggregator.h"
-#include "components/performance_manager/execution_context_priority/override_vote_aggregator.h"
 #include "components/performance_manager/execution_context_priority/root_vote_observer.h"
 #include "components/performance_manager/execution_context_priority/voter_base.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -44,10 +43,6 @@ class ExecutionContextPriorityDecorator final : public GraphOwned {
   // Takes in the aggregated votes and applies them to the execution contexts in
   // the graph.
   RootVoteObserver root_vote_observer_;
-
-  // Used to cast a negative vote that overrides the vote from
-  // |max_vote_aggregator_|.
-  OverrideVoteAggregator override_vote_aggregator_;
 
   // Aggregates all the votes from the voters.
   MaxVoteAggregator max_vote_aggregator_;

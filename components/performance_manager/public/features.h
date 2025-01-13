@@ -134,8 +134,6 @@ BASE_DECLARE_FEATURE(kPMProcessPriorityPolicy);
 
 extern const base::FeatureParam<bool> kInheritParentPriority;
 
-extern const base::FeatureParam<bool> kDownvoteAdFrames;
-
 BASE_DECLARE_FEATURE(kPMLoadingPageVoter);
 
 // Policy that evicts the BFCache of pages that become non visible or the

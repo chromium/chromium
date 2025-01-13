@@ -5,7 +5,6 @@
 #include "components/performance_manager/execution_context_priority/execution_context_priority_decorator.h"
 
 #include "base/feature_list.h"
-#include "components/performance_manager/execution_context_priority/ad_frame_voter.h"
 #include "components/performance_manager/execution_context_priority/frame_audible_voter.h"
 #include "components/performance_manager/execution_context_priority/frame_capturing_media_stream_voter.h"
 #include "components/performance_manager/execution_context_priority/frame_visibility_voter.h"
@@ -24,46 +23,20 @@ ExecutionContextPriorityDecorator::ExecutionContextPriorityDecorator() {
   // The following schema describes the structure of the voting tree. Arrows are
   // voting channels.
   //
-  // Note: |ad_frame_voter_| is currently the only downvoter but there could
-  // possibly be more should the need arise. Their votes would be aggregated
-  // using some sort of MinVoteAggregator.
-  //
-  //            |root_vote_observer_|
-  //                     ^
-  //                     |
-  //         |override_vote_aggregator_| (optional, if no downvoter)
-  //            ^                  ^
-  //            | (override)       | (default)
-  //            |                  |
-  //        Downvoter        |max_vote_aggregator_|
-  //                            ^    ^        ^
-  //                           /     |         \
-  //                          /      |          \
-  //                      Voter1, Voter2, ..., VoterN
+  //      |root_vote_observer_|
+  //               ^
+  //               |
+  //     |max_vote_aggregator_|
+  //        ^    ^        ^
+  //       /     |         \
+  //      /      |          \
+  //  Voter1, Voter2, ..., VoterN
   //
 
-  // --- Set up the voting tree from top to bottom. ---
+  // --- Set up the MaxVoteAggregator. ---
 
-  if (features::kDownvoteAdFrames.Get()) {
-    // Set up the OverrideVoteAggregator, which is needed by AdFrameVoter.
-    override_vote_aggregator_.SetUpstreamVotingChannel(
-        root_vote_observer_.GetVotingChannel());
-    max_vote_aggregator_.SetUpstreamVotingChannel(
-        override_vote_aggregator_.GetDefaultVotingChannel());
-  } else {
-    // There is no downvoter without AdFrameVoter. The OverrideVoteAggregator is
-    // skipped.
-    max_vote_aggregator_.SetUpstreamVotingChannel(
-        root_vote_observer_.GetVotingChannel());
-  }
-
-  // --- Set up downvoters. ---
-
-  // Casts a downvote for ad frames.
-  if (features::kDownvoteAdFrames.Get()) {
-    AddVoter<AdFrameVoter>(
-        override_vote_aggregator_.GetOverrideVotingChannel());
-  }
+  max_vote_aggregator_.SetUpstreamVotingChannel(
+      root_vote_observer_.GetVotingChannel());
 
   // --- Set up voters. ---
 
