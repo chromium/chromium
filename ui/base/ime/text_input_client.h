@@ -197,26 +197,28 @@ class COMPONENT_EXPORT(UI_BASE_IME) TextInputClient {
 
   // For StylusHandwritingWin gesture support, this method mirrors the
   // expectations of ITextStoreACP::GetACPFromPoint. Depending on which `flags`
-  // are provided, returns an appropriate character offset relative to `point`.
-  // See comments around IndexFromPointFlags and its values for details.
+  // are provided, returns an appropriate character offset relative to
+  // `screen_point_in_dips`. See comments around IndexFromPointFlags and its
+  // values for details.
   //
   // For renderer content, "ProximateCharacterBounds" uses a cached subset of
-  // the actual character bounding boxes, so requests for a `point` that's
+  // the actual character bounding boxes, so requests for `screen_point_in_dips`
   // contained by a character bounding box may not be considered "hit" by this
   // method if that character falls outside the cached range, or what's
   // considered "nearest" may be technically incorrect based on this fact. If
-  // no `flags` are provided and `point` isn't contained by any cached character
-  // bounds, regardless of whether the point is technically valid for the
-  // content, std::nullopt is returned. If either or both `flags` are provided,
-  // this is guaranteed to return *some* character offset, even if it's not the
-  // most appropriate offset based on the actual content.
+  // no `flags` are provided and `screen_point_in_dips` isn't contained by any
+  // cached character bounds, regardless of whether `screen_point_in_dips` is
+  // technically valid for the content, std::nullopt is returned. If either or
+  // both `flags` are provided, this is guaranteed to return *some* character
+  // offset, even if it's not the most appropriate offset based on the actual
+  // content.
   //
   // For views content, it's possible to retrieve accurate results for
   // "ProximateCharacterBounds" since the data is readily available. The caching
   // mechanism is to mitigate performance costs (CPU and memory) when processing
   // very large documents.
   virtual std::optional<size_t> GetProximateCharacterIndexFromPoint(
-      const gfx::Point& point,
+      const gfx::Point& screen_point_in_dips,
       IndexFromPointFlags flags) const = 0;
 #endif  // BUILDFLAG(IS_WIN)
 

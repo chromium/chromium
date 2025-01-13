@@ -677,7 +677,7 @@ gfx::Rect WebFrameWidgetImpl::GetAbsoluteCaretBounds() {
 
 void WebFrameWidgetImpl::OnStartStylusWriting(
 #if BUILDFLAG(IS_WIN)
-    const gfx::Rect& focus_rect_in_widget,
+    const gfx::Rect& focus_widget_rect_in_dips,
 #endif  // BUILDFLAG(IS_WIN)
     OnStartStylusWritingCallback callback) {
   mojom::blink::StylusWritingFocusResultPtr focus_result;
@@ -692,14 +692,13 @@ void WebFrameWidgetImpl::OnStartStylusWriting(
   Element* stylus_writable_container = nullptr;
 #if BUILDFLAG(IS_WIN)
   PositionWithAffinity proximate_pivot_position;
-  if (!focus_rect_in_widget.IsEmpty()) {
-    // TODO(crbug.com/355578906): Hit test using `focus_rect_in_widget` rather
-    // than its CenterPoint(). The size of the rect will include the
+  if (!focus_widget_rect_in_dips.IsEmpty()) {
+    // TODO(crbug.com/355578906): Hit test using `focus_widget_rect_in_dips`
+    // rather than its CenterPoint(). The size of the rect will include the
     // "target screen area" inflated with "distance threshold" from
     // ITfFocusHandwritingTargetArgs::GetPointerTargetInfo.
-    gfx::PointF frame_point =
-        frame->GetPage()->GetVisualViewport().ViewportToRootFrame(
-            gfx::PointF(focus_rect_in_widget.CenterPoint()));
+    const gfx::PointF frame_point = ViewportToRootFrame(
+        DIPsToBlinkSpace(gfx::PointF(focus_widget_rect_in_dips.CenterPoint())));
     proximate_pivot_position =
         frame->PositionForPoint(PhysicalOffset::FromPointFFloor(frame_point));
     stylus_writable_container = GetStylusHandwritingControlFromNode(

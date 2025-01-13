@@ -443,7 +443,7 @@ class VIEWS_EXPORT Textfield : public View,
   std::optional<gfx::Rect> GetProximateCharacterBounds(
       const gfx::Range& range) const override;
   std::optional<size_t> GetProximateCharacterIndexFromPoint(
-      const gfx::Point& point,
+      const gfx::Point& screen_point_in_dips,
       ui::IndexFromPointFlags flags) const override;
 #endif  // BUILDFLAG(IS_WIN)
   bool GetCompositionCharacterBounds(size_t index,

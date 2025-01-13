@@ -3026,7 +3026,7 @@ void RenderWidgetHostImpl::OnStartStylusWriting() {
 
 void RenderWidgetHostImpl::UpdateElementFocusForStylusWriting(
 #if BUILDFLAG(IS_WIN)
-    const gfx::Rect& focus_rect_in_widget
+    const gfx::Rect& focus_widget_rect_in_dips
 #endif  // BUILDFLAG(IS_WIN)
 ) {
   if (blink_frame_widget_) {
@@ -3035,7 +3035,7 @@ void RenderWidgetHostImpl::UpdateElementFocusForStylusWriting(
         weak_factory_.GetWeakPtr());
     blink_frame_widget_->OnStartStylusWriting(
 #if BUILDFLAG(IS_WIN)
-        focus_rect_in_widget,
+        focus_widget_rect_in_dips,
 #endif  // BUILDFLAG(IS_WIN)
         std::move(callback));
   }
@@ -3049,7 +3049,7 @@ void RenderWidgetHostImpl::OnUpdateElementFocusForStylusWritingHandled(
 #if BUILDFLAG(IS_WIN)
   if (focus_result && focus_result->proximate_bounds) {
     if (focus_result->proximate_bounds->range.length() !=
-        focus_result->proximate_bounds->bounds.size()) {
+        focus_result->proximate_bounds->widget_bounds_in_dips.size()) {
       mojo::ReportBadMessage("mismatched range and bounds length received");
       return;
     }

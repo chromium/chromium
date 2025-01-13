@@ -61,7 +61,7 @@ class FakeFrameWidget : public blink::mojom::FrameWidget {
   void DragSourceSystemDragEnded() override {}
   void OnStartStylusWriting(
 #if BUILDFLAG(IS_WIN)
-      const gfx::Rect& focus_rect_in_widget,
+      const gfx::Rect& focus_widget_rect_in_dips,
 #endif  // BUILDFLAG(IS_WIN)
       OnStartStylusWritingCallback callback) override {
   }

@@ -321,7 +321,7 @@ class WebFrameWidgetImplSimTest : public SimTest {
   void OnStartStylusWriting() {
     MockMainFrameWidget()->OnStartStylusWriting(
 #if BUILDFLAG(IS_WIN)
-        /*focus_rect_in_widget=*/gfx::Rect(),
+        /*focus_widget_rect_in_dips=*/gfx::Rect(),
 #endif  // BUILDFLAG(IS_WIN)
         base::DoNothing());
   }
@@ -692,7 +692,8 @@ TEST_F(WebFrameWidgetImplSimTest, SpeculativeDecodeWithExtrinsicSize) {
 
 #if BUILDFLAG(IS_WIN)
 struct ProximateBoundsCollectionArgs final {
-  base::RepeatingCallback<gfx::Rect(const Document&)> get_focus_rect_in_widget;
+  base::RepeatingCallback<gfx::Rect(const Document&)>
+      get_focus_widget_rect_in_dips;
   std::string expected_focus_id;
   bool expect_null_proximate_bounds;
   gfx::Range expected_range;
@@ -731,8 +732,8 @@ struct WebFrameWidgetProximateBoundsCollectionSimTestParam {
     return proximate_bounds_collection_args_.expected_focus_id;
   }
 
-  gfx::Rect GetFocusRectInWidget(const Document& document) const {
-    return proximate_bounds_collection_args_.get_focus_rect_in_widget.Run(
+  gfx::Rect GetFocusWidgetRectInDips(const Document& document) const {
+    return proximate_bounds_collection_args_.get_focus_widget_rect_in_dips.Run(
         document);
   }
 
@@ -828,9 +829,9 @@ class WebFrameWidgetProximateBoundsCollectionSimTestBase
     EXPECT_EQ(GetDocument().FocusedElement(), nullptr);
   }
 
-  void OnStartStylusWriting(const gfx::Rect& focus_rect_in_widget) {
+  void OnStartStylusWriting(const gfx::Rect& focus_widget_rect_in_dips) {
     MockMainFrameWidget()->OnStartStylusWriting(
-        focus_rect_in_widget,
+        focus_widget_rect_in_dips,
         base::BindOnce(&WebFrameWidgetProximateBoundsCollectionSimTestBase::
                            OnStartStylusWritingComplete,
                        weak_factory_.GetWeakPtr()));
@@ -898,10 +899,10 @@ class WebFrameWidgetProximateBoundsCollectionSimTestF
             /*enable_stylus_handwriting_win=*/true) {}
 
   void StartStylusWritingOnElementCenter(const Element& element) {
-    gfx::Rect focus_rect_in_widget(element.BoundsInWidget().CenterPoint(),
-                                   gfx::Size());
-    focus_rect_in_widget.Outset(gfx::Outsets(25));
-    OnStartStylusWriting(focus_rect_in_widget);
+    gfx::Rect focus_widget_rect_in_dips(element.BoundsInWidget().CenterPoint(),
+                                        gfx::Size());
+    focus_widget_rect_in_dips.Outset(gfx::Outsets(25));
+    OnStartStylusWriting(focus_widget_rect_in_dips);
   }
 };
 
@@ -1031,15 +1032,15 @@ INSTANTIATE_TEST_SUITE_P(
                 // directions relative to the pivot position up-to
                 // the `ProximateBoundsCollectionHalfLimit()`.
                 ProximateBoundsCollectionArgs{
-                    /*get_focus_rect_in_widget=*/base::BindRepeating(
+                    /*get_focus_widget_rect_in_dips=*/base::BindRepeating(
                         [](const Document& document) -> gfx::Rect {
                           const Element* target = document.getElementById(
                               AtomicString("target_editable"));
-                          gfx::Rect focus_rect_in_widget(
+                          gfx::Rect focus_widget_rect_in_dips(
                               target->BoundsInWidget().top_center(),
                               gfx::Size());
-                          focus_rect_in_widget.Outset(gfx::Outsets(25));
-                          return focus_rect_in_widget;
+                          focus_widget_rect_in_dips.Outset(gfx::Outsets(25));
+                          return focus_widget_rect_in_dips;
                         }),
                     /*expected_focus_id=*/"target_editable",
                     /*expect_null_proximate_bounds=*/false,
@@ -1051,14 +1052,14 @@ INSTANTIATE_TEST_SUITE_P(
                 // range only expands in one direction up-to the
                 // `ProximateBoundsCollectionHalfLimit()`.
                 ProximateBoundsCollectionArgs{
-                    /*get_focus_rect_in_widget=*/base::BindRepeating(
+                    /*get_focus_widget_rect_in_dips=*/base::BindRepeating(
                         [](const Document& document) -> gfx::Rect {
                           const Element* target = document.getElementById(
                               AtomicString("target_editable"));
-                          gfx::Rect focus_rect_in_widget(
+                          gfx::Rect focus_widget_rect_in_dips(
                               target->BoundsInWidget().origin(), gfx::Size());
-                          focus_rect_in_widget.Outset(gfx::Outsets(25));
-                          return focus_rect_in_widget;
+                          focus_widget_rect_in_dips.Outset(gfx::Outsets(25));
+                          return focus_widget_rect_in_dips;
                         }),
                     /*expected_focus_id=*/"target_editable",
                     /*expect_null_proximate_bounds=*/false,
@@ -1069,16 +1070,16 @@ INSTANTIATE_TEST_SUITE_P(
                 // range only expands in one direction up-to the
                 // `ProximateBoundsCollectionHalfLimit()`.
                 ProximateBoundsCollectionArgs{
-                    /*get_focus_rect_in_widget=*/base::BindRepeating(
+                    /*get_focus_widget_rect_in_dips=*/base::BindRepeating(
                         [](const Document& document) -> gfx::Rect {
                           const Element* target = document.getElementById(
                               AtomicString("target_editable"));
-                          gfx::Rect focus_rect_in_widget(
+                          gfx::Rect focus_widget_rect_in_dips(
                               target->BoundsInWidget().top_right() -
                                   gfx::Vector2d(1, 0),
                               gfx::Size());
-                          focus_rect_in_widget.Outset(gfx::Outsets(25));
-                          return focus_rect_in_widget;
+                          focus_widget_rect_in_dips.Outset(gfx::Outsets(25));
+                          return focus_widget_rect_in_dips;
                         }),
                     /*expected_focus_id=*/"target_editable",
                     /*expect_null_proximate_bounds=*/false,
@@ -1086,38 +1087,38 @@ INSTANTIATE_TEST_SUITE_P(
                     /*expected_bounds=*/
                     {gfx::Rect(240, 0, 10, 10), gfx::Rect(250, 0, 9, 10)}},
                 // Test that `touch_fallback` is focused when
-                // `focus_rect_in_widget` misses, but it shouldn't collect
+                // `focus_widget_rect_in_dips` misses, but it shouldn't collect
                 // bounds because the pivot offset cannot be determined.
                 ProximateBoundsCollectionArgs{
-                    /*get_focus_rect_in_widget=*/base::BindRepeating(
+                    /*get_focus_widget_rect_in_dips=*/base::BindRepeating(
                         [](const Document& document) -> gfx::Rect {
                           const Element* target = document.getElementById(
                               AtomicString("target_editable"));
-                          gfx::Rect focus_rect_in_widget(
+                          gfx::Rect focus_widget_rect_in_dips(
                               target->BoundsInWidget().right_center() +
                                   gfx::Vector2d(100, 0),
                               gfx::Size());
-                          focus_rect_in_widget.Outset(gfx::Outsets(25));
-                          return focus_rect_in_widget;
+                          focus_widget_rect_in_dips.Outset(gfx::Outsets(25));
+                          return focus_widget_rect_in_dips;
                         }),
                     /*expected_focus_id=*/"touch_fallback",
                     /*expect_null_proximate_bounds=*/true,
                     /*expected_range=*/gfx::Range(),
                     /*expected_bounds=*/{}},
                 // Test that `touch_fallback` is focused when
-                // `focus_rect_in_widget` hits non-editable content, but it
+                // `focus_widget_rect_in_dips` hits non-editable content, but it
                 // shouldn't collect bounds because the pivot offset cannot be
                 // determined.
                 ProximateBoundsCollectionArgs{
-                    /*get_focus_rect_in_widget=*/base::BindRepeating(
+                    /*get_focus_widget_rect_in_dips=*/base::BindRepeating(
                         [](const Document& document) -> gfx::Rect {
                           const Element* target = document.getElementById(
                               AtomicString("target_readonly"));
-                          gfx::Rect focus_rect_in_widget(
+                          gfx::Rect focus_widget_rect_in_dips(
                               target->BoundsInWidget().CenterPoint(),
                               gfx::Size());
-                          focus_rect_in_widget.Outset(gfx::Outsets(25));
-                          return focus_rect_in_widget;
+                          focus_widget_rect_in_dips.Outset(gfx::Outsets(25));
+                          return focus_widget_rect_in_dips;
                         }),
                     /*expected_focus_id=*/"touch_fallback",
                     /*expect_null_proximate_bounds=*/true,
@@ -1128,7 +1129,7 @@ TEST_P(WebFrameWidgetProximateBoundsCollectionSimTestP,
        TestProximateBoundsCollection) {
   LoadDocument(String(GetParam().GetHTMLDocument()));
   HandlePointerDownEventOverTouchFallback();
-  OnStartStylusWriting(GetParam().GetFocusRectInWidget(GetDocument()));
+  OnStartStylusWriting(GetParam().GetFocusWidgetRectInDips(GetDocument()));
   if (!GetParam().IsStylusHandwritingWinEnabled()) {
     EXPECT_EQ(GetDocument().FocusedElement(), nullptr);
     EXPECT_EQ(GetLastProximateBounds(), nullptr);
@@ -1146,10 +1147,11 @@ TEST_P(WebFrameWidgetProximateBoundsCollectionSimTestP,
   EXPECT_EQ(!GetLastProximateBounds(), GetParam().ExpectNullProximateBounds());
   if (!GetParam().ExpectNullProximateBounds()) {
     EXPECT_EQ(GetLastProximateBounds()->range, GetParam().GetExpectedRange());
-    EXPECT_TRUE(std::equal(GetLastProximateBounds()->bounds.begin(),
-                           GetLastProximateBounds()->bounds.end(),
-                           GetParam().GetExpectedBounds().begin(),
-                           GetParam().GetExpectedBounds().end()));
+    EXPECT_TRUE(
+        std::equal(GetLastProximateBounds()->widget_bounds_in_dips.begin(),
+                   GetLastProximateBounds()->widget_bounds_in_dips.end(),
+                   GetParam().GetExpectedBounds().begin(),
+                   GetParam().GetExpectedBounds().end()));
   }
 }
 #endif  // BUILDFLAG(IS_WIN)
