@@ -6881,6 +6881,21 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_WIDGET_PROMO_INSTRUCTIONS_TITLE" desc="Title of the instruction screen for the Password Manager widget's installation.">
         Get to passwords from the home screen
       </message>
+      <message name="IDS_IOS_YOUTUBE_INCOGNITO_ENTERPRISE_PRIMARY_BUTTON_TITLE" desc="Title of the Youtube Incognito enterprise primary button">
+        Open Site Anyway
+      </message>
+      <message name="IDS_IOS_YOUTUBE_INCOGNITO_ENTERPRISE_SECONDARY_BUTTON_TITLE" desc="Title of the Youtube Incognito enterprise secondary button">
+        Cancel
+      </message>
+      <message name="IDS_IOS_YOUTUBE_INCOGNITO_ENTERPRISE_SUBTITLE" desc="Subtitle of the Youtube Incognito enterprise sheet">
+        Your organization turned off private browsing.
+      </message>
+      <message name="IDS_IOS_YOUTUBE_INCOGNITO_ENTERPRISE_TITLE" desc="Title of the Youtube Incognito enterprise sheet">
+        Incognito Mode is Unavailable
+      </message>
+      <message name="IDS_IOS_YOUTUBE_INCOGNITO_SHEET_PRIMARY_BUTTON_TITLE" desc="Title of the Youtube Incognito Sheet primary button">
+        Got it
+      </message>
       <message name="IDS_SAVE_PASSWORD_FOOTER" desc="The footer text of the infobar that offers user to save/update a password to Chrome.">
         Passwords are saved in your Google Account so you can use them on any device.
       </message>

@@ -10,7 +10,8 @@
 #import "ios/chrome/browser/youtube_incognito/ui/youtube_incognito_sheet_delegate.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
-#import "ios/chrome/grit/ios_branded_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 
@@ -35,13 +36,15 @@ CGFloat const kIconSize = 32;
   self.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
   self.aboveTitleView = [self enterpriseTitleView];
 
-  // TODO(crbug.com/374935670): Add a11y strings.
-  self.titleString = @"TODO Incognito Mode Is Unavailable";
+  self.titleString =
+      l10n_util::GetNSString(IDS_IOS_YOUTUBE_INCOGNITO_ENTERPRISE_TITLE);
   self.secondaryTitleString =
-      @"TODO Your organization turned off private browsing.";
+      l10n_util::GetNSString(IDS_IOS_YOUTUBE_INCOGNITO_ENTERPRISE_SUBTITLE);
   self.subtitleString = self.URLText;
-  self.primaryActionString = @"TODO Open Site Anyway";
-  self.secondaryActionString = @"TODO cancel";
+  self.primaryActionString = l10n_util::GetNSString(
+      IDS_IOS_YOUTUBE_INCOGNITO_ENTERPRISE_PRIMARY_BUTTON_TITLE);
+  self.secondaryActionString = l10n_util::GetNSString(
+      IDS_IOS_YOUTUBE_INCOGNITO_ENTERPRISE_SECONDARY_BUTTON_TITLE);
   self.customSpacing = kVerticalSpacing;
   self.titleTextStyle = UIFontTextStyleTitle3;
   self.scrollEnabled = YES;
