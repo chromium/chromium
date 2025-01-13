@@ -83,16 +83,6 @@ namespace {
 static constexpr int kMinutesInTwelveHours = 12 * 60;
 static constexpr int kMinutesInTwentyFourHours = 24 * 60;
 
-// Determine the cookie domain to use for setting the specified cookie.
-std::optional<std::string> GetCookieDomain(const GURL& url,
-                                           const ParsedCookie& pc,
-                                           CookieInclusionStatus& status) {
-  std::string domain_string;
-  if (pc.HasDomain())
-    domain_string = pc.Domain();
-  return cookie_util::GetCookieDomainWithString(url, domain_string, status);
-}
-
 // Compares cookies using name, domain and path, so that "equivalent" cookies
 // (per RFC 2965) are equal to each other.
 int PartialCookieOrdering(const CanonicalCookie& a, const CanonicalCookie& b) {
@@ -349,7 +339,9 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
                             !base::IsStringASCII(parsed_cookie.Domain()));
 
   std::optional<std::string> cookie_domain =
-      GetCookieDomain(url, parsed_cookie, *status);
+      cookie_util::GetCookieDomainWithString(
+          url, parsed_cookie.HasDomain() ? parsed_cookie.Domain() : "",
+          *status);
   if (!cookie_domain) {
     DVLOG(net::cookie_util::kVlogSetCookies)
         << "Create() failed to get a valid cookie domain";
