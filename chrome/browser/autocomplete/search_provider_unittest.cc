@@ -141,8 +141,8 @@ std::unique_ptr<KeyedService> BuildRemoteSuggestionsServiceWithURLLoader(
     network::TestURLLoaderFactory* test_url_loader_factory,
     content::BrowserContext* context) {
   return std::make_unique<RemoteSuggestionsService>(
-      DocumentSuggestionsServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(context), /*create_if_necessary=*/true),
+      /*document_suggestions_service=*/nullptr,
+      /*search_aggregator_suggestions_service=*/nullptr,
       test_url_loader_factory->GetSafeWeakWrapper());
 }
 

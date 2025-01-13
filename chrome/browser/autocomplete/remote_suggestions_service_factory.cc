@@ -6,6 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/autocomplete/document_suggestions_service_factory.h"
+#include "chrome/browser/autocomplete/enterprise_search_aggregator_suggestions_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "content/public/browser/storage_partition.h"
@@ -32,6 +33,8 @@ RemoteSuggestionsServiceFactory::BuildServiceInstanceForBrowserContext(
   return std::make_unique<RemoteSuggestionsService>(
       DocumentSuggestionsServiceFactory::GetForProfile(
           profile, /*create_if_necessary=*/true),
+      EnterpriseSearchAggregatorSuggestionsServiceFactory::GetForProfile(
+          profile, /*create_if_necessary=*/true),
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess());
 }
@@ -48,6 +51,7 @@ RemoteSuggestionsServiceFactory::RemoteSuggestionsServiceFactory()
               .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
   DependsOn(DocumentSuggestionsServiceFactory::GetInstance());
+  DependsOn(EnterpriseSearchAggregatorSuggestionsServiceFactory::GetInstance());
 }
 
 RemoteSuggestionsServiceFactory::~RemoteSuggestionsServiceFactory() = default;

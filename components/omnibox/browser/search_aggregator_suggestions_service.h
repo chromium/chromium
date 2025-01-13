@@ -8,14 +8,19 @@
 #include <memory>
 #include <string>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
+
+namespace network {
+struct ResourceRequest;
+class SharedURLLoaderFactory;
+class SimpleURLLoader;
+}  // namespace network
 
 // A service to fetch suggestions from the search aggregator endpoint URL.
 class SearchAggregatorSuggestionsService : public KeyedService {

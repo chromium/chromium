@@ -134,8 +134,10 @@ TEST_F(RemoteSuggestionsServiceTest, AttachCookies_ZeroPrefixSuggest) {
         resource_request = request;
       }));
 
-  RemoteSuggestionsService service(/*document_suggestions_service_=*/nullptr,
-                                   GetUrlLoaderFactory());
+  RemoteSuggestionsService service(
+      /*document_suggestions_service_=*/nullptr,
+      /*search_aggregator_suggestions_service_*/ nullptr,
+      GetUrlLoaderFactory());
 
   TemplateURLRef::SearchTermsArgs search_terms_args;
   search_terms_args.current_page_url = "https://www.google.com/";
@@ -162,8 +164,10 @@ TEST_F(RemoteSuggestionsServiceTest, AttachCookies_Suggest) {
         resource_request = request;
       }));
 
-  RemoteSuggestionsService service(/*document_suggestions_service_=*/nullptr,
-                                   GetUrlLoaderFactory());
+  RemoteSuggestionsService service(
+      /*document_suggestions_service_=*/nullptr,
+      /*search_aggregator_suggestions_service_*/ nullptr,
+      GetUrlLoaderFactory());
 
   TemplateURLRef::SearchTermsArgs search_terms_args;
   search_terms_args.current_page_url = "https://www.google.com/";
@@ -189,8 +193,10 @@ TEST_F(RemoteSuggestionsServiceTest, AttachCookies_DeleteSuggest) {
         resource_request = request;
       }));
 
-  RemoteSuggestionsService service(/*document_suggestions_service_=*/nullptr,
-                                   GetUrlLoaderFactory());
+  RemoteSuggestionsService service(
+      /*document_suggestions_service_=*/nullptr,
+      /*search_aggregator_suggestions_service_*/ nullptr,
+      GetUrlLoaderFactory());
   auto loader = service.StartDeletionRequest(
       "https://google.com/complete/delete",
       /*is_off_the_record=*/false, base::DoNothing());
@@ -209,8 +215,10 @@ TEST_F(RemoteSuggestionsServiceTest, BypassCache) {
         resource_request = request;
       }));
 
-  RemoteSuggestionsService service(/*document_suggestions_service_=*/nullptr,
-                                   GetUrlLoaderFactory());
+  RemoteSuggestionsService service(
+      /*document_suggestions_service_=*/nullptr,
+      /*search_aggregator_suggestions_service_*/ nullptr,
+      GetUrlLoaderFactory());
 
   TemplateURLRef::SearchTermsArgs search_terms_args;
   search_terms_args.current_page_url = "https://www.google.com/";
@@ -241,8 +249,10 @@ TEST_F(RemoteSuggestionsServiceTest, Observer) {
       template_url_service().Add(
           std::make_unique<TemplateURL>(template_url_data)));
 
-  RemoteSuggestionsService service(/*document_suggestions_service_=*/nullptr,
-                                   GetUrlLoaderFactory());
+  RemoteSuggestionsService service(
+      /*document_suggestions_service_=*/nullptr,
+      /*search_aggregator_suggestions_service_*/ nullptr,
+      GetUrlLoaderFactory());
   TestObserver observer(&service);
   auto loader = service.StartZeroPrefixSuggestionsRequest(
       RemoteRequestType::kZeroSuggest, /*is_off_the_record=*/false,
@@ -288,8 +298,10 @@ TEST_F(RemoteSuggestionsServiceTest, Delegate) {
       template_url_service().Add(
           std::make_unique<TemplateURL>(template_url_data)));
 
-  RemoteSuggestionsService service(/*document_suggestions_service_=*/nullptr,
-                                   GetUrlLoaderFactory());
+  RemoteSuggestionsService service(
+      /*document_suggestions_service_=*/nullptr,
+      /*search_aggregator_suggestions_service_*/ nullptr,
+      GetUrlLoaderFactory());
 
   // Set up a delegate that will be replaced.
   MockDelegate delegate1(&service);

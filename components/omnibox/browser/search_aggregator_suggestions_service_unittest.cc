@@ -76,7 +76,6 @@ class SearchAggregatorSuggestionsServiceTest : public testing::Test {
         shared_url_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)),
-        identity_test_env_(&test_url_loader_factory_, &prefs_),
         search_aggregator_suggestions_service_(
             new SearchAggregatorSuggestionsService(
                 shared_url_loader_factory_)) {

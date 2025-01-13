@@ -30,6 +30,7 @@ RemoteSuggestionsServiceFactory::BuildServiceInstanceFor(
   ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<RemoteSuggestionsService>(
       /*document_suggestions_service=*/nullptr,
+      /*search_aggregator_suggestions_service=*/nullptr,
       profile->GetSharedURLLoaderFactory());
 }
 

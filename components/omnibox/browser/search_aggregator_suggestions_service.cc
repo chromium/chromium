@@ -5,21 +5,18 @@
 #include "components/omnibox/browser/search_aggregator_suggestions_service.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/i18n/rtl.h"
-#include "base/json/json_writer.h"
-#include "base/metrics/field_trial_params.h"
-#include "base/strings/stringprintf.h"
-#include "base/values.h"
-#include "components/omnibox/browser/document_provider.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "net/base/load_flags.h"
+#include "net/cookies/site_for_cookies.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "url/gurl.h"
 
 SearchAggregatorSuggestionsService::SearchAggregatorSuggestionsService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
