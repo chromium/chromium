@@ -34,12 +34,6 @@
 
 namespace cc {
 
-void AnimationUpdateOnMissingPropertyNodeUMALog(bool missing_property_node) {
-  UMA_HISTOGRAM_BOOLEAN(
-      "Compositing.Renderer.AnimationUpdateOnMissingPropertyNode",
-      missing_property_node);
-}
-
 AnchorPositionScrollData::AnchorPositionScrollData() = default;
 AnchorPositionScrollData::~AnchorPositionScrollData() = default;
 AnchorPositionScrollData::AnchorPositionScrollData(
@@ -189,10 +183,8 @@ bool TransformTree::OnTransformAnimated(ElementId element_id,
   // TODO(crbug.com/40828469): Remove this when we no longer animate
   // non-existent nodes.
   if (!node) {
-    AnimationUpdateOnMissingPropertyNodeUMALog(true);
     return false;
   }
-  AnimationUpdateOnMissingPropertyNodeUMALog(false);
   if (node->local == transform)
     return false;
   node->local = transform;
@@ -1090,10 +1082,8 @@ bool EffectTree::OnOpacityAnimated(ElementId id, float opacity) {
   // TODO(crbug.com/40828469): Remove this when we no longer animate
   // non-existent nodes.
   if (!node) {
-    AnimationUpdateOnMissingPropertyNodeUMALog(true);
     return false;
   }
-  AnimationUpdateOnMissingPropertyNodeUMALog(false);
   if (node->opacity == opacity)
     return false;
   node->opacity = opacity;
@@ -1109,10 +1099,8 @@ bool EffectTree::OnFilterAnimated(ElementId id,
   // TODO(crbug.com/40828469): Remove this when we no longer animate
   // non-existent nodes.
   if (!node) {
-    AnimationUpdateOnMissingPropertyNodeUMALog(true);
     return false;
   }
-  AnimationUpdateOnMissingPropertyNodeUMALog(false);
   if (node->filters == filters)
     return false;
   node->filters = filters;
@@ -1129,10 +1117,8 @@ bool EffectTree::OnBackdropFilterAnimated(
   // TODO(crbug.com/40828469): Remove this when we no longer animate
   // non-existent nodes.
   if (!node) {
-    AnimationUpdateOnMissingPropertyNodeUMALog(true);
     return false;
   }
-  AnimationUpdateOnMissingPropertyNodeUMALog(false);
   if (node->backdrop_filters == backdrop_filters)
     return false;
   node->backdrop_filters = backdrop_filters;
