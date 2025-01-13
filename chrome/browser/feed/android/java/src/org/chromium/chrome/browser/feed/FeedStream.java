@@ -341,12 +341,7 @@ public class FeedStream implements Stream {
 
         @Override
         public void showSyncConsentPrompt() {
-            if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-                startSigninFlow();
-            } else {
-                mActionDelegate.showSyncConsentActivity(SigninAccessPoint.NTP_FEED_BOTTOM_PROMO);
-            }
+            startSigninFlow();
         }
 
         @Override
@@ -357,9 +352,7 @@ public class FeedStream implements Stream {
         @Override
         public void showSignInInterstitial() {
             mActionDelegate.showSignInInterstitial(
-                    SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO,
-                    mBottomSheetController,
-                    mWindowAndroid);
+                    SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO, mBottomSheetController);
         }
 
         @Override
