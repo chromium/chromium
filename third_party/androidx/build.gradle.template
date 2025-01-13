@@ -12,42 +12,6 @@ repositories {
     mavenCentral()
 }
 
-// Do not fail if environment != android
-class TargetJvmEnvironmentCompatibilityRules implements AttributeCompatibilityRule<TargetJvmEnvironment> {
-
-    // public constructor to make reflective initialization happy.
-    public TargetJvmEnvironmentCompatibilityRules() {}
-
-    @Override
-    public void execute(CompatibilityCheckDetails<TargetJvmEnvironment> details) {
-        // This means regardless of the actual value of the attribute, it is
-        // considered a match. Gradle still picks the closest though if multiple
-        // options are available (which is what we want).
-        details.compatible();
-    }
-}
-
-dependencies.attributesSchema {
-    attribute(TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE) {
-        getCompatibilityRules().add(TargetJvmEnvironmentCompatibilityRules.class)
-    }
-}
-
-configurations.androidTestCompile {
-    attributes {
-        attribute(Attribute.of("org.gradle.category", String), "library")
-        attribute(Attribute.of("org.gradle.usage", String), "java-runtime")
-        attribute(TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE, objects.named(TargetJvmEnvironment, TargetJvmEnvironment.ANDROID))
-    }
-}
-configurations.compile {
-    attributes {
-        attribute(Attribute.of("org.gradle.category", String), "library")
-        attribute(Attribute.of("org.gradle.usage", String), "java-runtime")
-        attribute(TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE, objects.named(TargetJvmEnvironment, TargetJvmEnvironment.ANDROID))
-    }
-}
-
 dependencies {
     // Note about the configuration names: they are defined in buildSrc/ChromiumPlugin
 

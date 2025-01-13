@@ -390,7 +390,7 @@ class ChromiumDepGraph {
         // think in practice the only things getting annotated here will be a single level of
         // synthetic groups which depend on testOnly targets.
         dependencies.each { _, dep ->
-            dep.testOnly = dep.children.any { id ->
+            dep.testOnly |= dep.children.any { id ->
                 dependencies.get(id).testOnly
             }
         }

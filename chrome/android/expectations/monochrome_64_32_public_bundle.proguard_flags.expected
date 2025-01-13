@@ -921,7 +921,7 @@
 -dontwarn javax.annotation.**
 -dontwarn org.checkerframework.**
 -dontwarn com.google.errorprone.annotations.**
--dontwarn org.jspecify.nullness.NullMarked
+-dontwarn org.jspecify.annotations.NullMarked
 
 # Annotations no longer exist. Suppression prevents ProGuard failures in
 # SDKs which depend on earlier versions of play-services-basement.

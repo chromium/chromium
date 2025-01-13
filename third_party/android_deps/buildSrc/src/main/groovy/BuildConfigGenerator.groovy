@@ -873,6 +873,9 @@ class BuildConfigGenerator extends DefaultTask {
                 sb.append('  # Because of dep on byte_buddy_android_java.\n')
                 sb.append('  bypass_platform_checks = true\n')
                 break
+            case 'com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework':
+                sb.append('  proguard_configs = [ "local_modifications/accessibility_test_framework.pcfg" ]')
+                break
         }
     }
 
