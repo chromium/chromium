@@ -65,7 +65,7 @@ void PageActionModel::SetText(const std::u16string& text) {
   NotifyChange();
 }
 const std::u16string PageActionModel::GetText() const {
-  return text_;
+  return override_text_.value_or(text_);
 }
 
 void PageActionModel::SetTooltipText(const std::u16string& tooltip) {
@@ -77,6 +77,16 @@ void PageActionModel::SetTooltipText(const std::u16string& tooltip) {
 }
 const std::u16string PageActionModel::GetTooltipText() const {
   return tooltip_;
+}
+
+void PageActionModel::SetOverrideText(
+    base::PassKey<PageActionController>,
+    const std::optional<std::u16string>& override_text) {
+  if (override_text_ == override_text) {
+    return;
+  }
+  override_text_ = override_text;
+  NotifyChange();
 }
 
 void PageActionModel::AddObserver(PageActionModelObserver* observer) {

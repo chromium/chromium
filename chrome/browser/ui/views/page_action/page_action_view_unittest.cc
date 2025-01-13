@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 
 #include <memory>
+#include <string>
 
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
@@ -243,6 +244,34 @@ TEST_F(PageActionViewTest, UpdateBorderAdjustsInsets) {
 
   // Verify that true and false cases result in different insets.
   EXPECT_NE(updated_insets_true, updated_insets_false);
+}
+
+// Test that once a PageActionController is active, overriding the text updates
+// the view, and that the override persists until the controller is removed.
+TEST_F(PageActionViewTest, OverrideText) {
+  const std::u16string kInitialText = u"Initial Text";
+  actions::ActionItem* item = action_item();
+  item->SetEnabled(true);
+  item->SetVisible(true);
+  item->SetText(kInitialText);
+
+  PageActionView* view = page_action_view();
+  EXPECT_FALSE(view->GetVisible());
+  EXPECT_EQ(u"", view->GetText());
+
+  auto controller = NewPageActionController();
+  view->OnNewActiveController(controller.get());
+  EXPECT_EQ(kInitialText, view->GetText());
+
+  const std::u16string kOverrideText = u"Override Text";
+  controller->Show(0);
+  controller->OverrideText(0, kOverrideText);
+  EXPECT_TRUE(view->GetVisible());
+  EXPECT_EQ(kOverrideText, view->GetText());
+
+  view->OnNewActiveController(nullptr);
+  EXPECT_FALSE(view->GetVisible());
+  EXPECT_EQ(kOverrideText, view->GetText());
 }
 
 }  // namespace

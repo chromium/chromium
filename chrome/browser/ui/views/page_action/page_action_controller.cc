@@ -63,6 +63,17 @@ void PageActionController::ActionItemChanged(
   model.SetImage(action_item->GetImage());
 }
 
+void PageActionController::OverrideText(actions::ActionId action_id,
+                                        const std::u16string& override_text) {
+  FindPageActionModel(action_id).SetOverrideText(
+      base::PassKey<PageActionController>(), override_text);
+}
+
+void PageActionController::ClearOverrideText(actions::ActionId action_id) {
+  FindPageActionModel(action_id).SetOverrideText(
+      base::PassKey<PageActionController>(), /*override_text=*/std::nullopt);
+}
+
 void PageActionController::AddObserver(
     actions::ActionId action_id,
     base::ScopedObservation<PageActionModel, PageActionModelObserver>&

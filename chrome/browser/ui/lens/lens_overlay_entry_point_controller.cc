@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party_ui.h"
 #include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
+#include "chrome/grit/branded_strings.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_permission_utils.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
@@ -264,6 +265,11 @@ void LensOverlayEntryPointController::UpdatePageActionState() {
     page_action_controller->Hide(page_action_id);
     return;
   }
+
+  // No-ops if the overriding string is the same.
+  page_action_controller->OverrideText(
+      page_action_id,
+      l10n_util::GetStringUTF16(IDS_CONTENT_LENS_OVERLAY_ENTRYPOINT_LABEL));
 
   // TODO(crbug.com/376283383): We should always use the chip state once that's
   // implemented.

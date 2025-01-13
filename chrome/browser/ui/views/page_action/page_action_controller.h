@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -47,6 +48,14 @@ class PageActionController {
   // Only attempts to show the page action if it's not already pinned.
   // Returns true if the page action will be shown and false otherwise.
   bool ShowIfNotPinned(actions::ActionId action_id);
+
+  // By default, in suggestion chip mode, the ActionItem text will be used as
+  // the control label. However, features can provide a custom text to use
+  // as the label. In that case, the custom text will take precedence over
+  // the ActionItem text.
+  void OverrideText(actions::ActionId action_id,
+                    const std::u16string& override_text);
+  void ClearOverrideText(actions::ActionId action_id);
 
   // Manages observers for the page action's underlying `PageActionModel`.
   void AddObserver(

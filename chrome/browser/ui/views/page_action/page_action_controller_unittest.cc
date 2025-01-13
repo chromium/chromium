@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 
 #include <memory>
+#include <string>
 
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
@@ -17,6 +18,15 @@
 
 namespace page_actions {
 namespace {
+
+const std::u16string kText = u"Text";
+const std::u16string kOverrideText = u"Override Text";
+const std::u16string kOverrideOne = u"Override One";
+const std::u16string kOverrideTwo = u"Override Two";
+const std::u16string kOverrideThree = u"Override Three";
+const std::u16string kAnotherNewText = u"Another New Text";
+
+const std::u16string kTooltip = u"Tooltip";
 
 using ::actions::ActionItem;
 
@@ -177,11 +187,11 @@ TEST_F(PageActionControllerTest, ActionItemPropertiesUpdateModel) {
       controller()->CreateActionItemSubscription(action_item.get());
   controller()->AddObserver(0, observation);
 
-  action_item->SetText(u"Text");
-  action_item->SetTooltipText(u"Tooltip");
+  action_item->SetText(kText);
+  action_item->SetTooltipText(kTooltip);
 
-  EXPECT_EQ(observer.text(), u"Text");
-  EXPECT_EQ(observer.tooltip_text(), u"Tooltip");
+  EXPECT_EQ(kText, observer.text());
+  EXPECT_EQ(kTooltip, observer.tooltip_text());
 }
 
 TEST_F(PageActionControllerTest, ShowIfNotPinned) {
@@ -209,6 +219,81 @@ TEST_F(PageActionControllerTest, ShowIfNotPinned) {
   EXPECT_TRUE(observer.visible());
 
   actions::ActionManager::Get().ResetForTesting();
+}
+
+TEST_F(PageActionControllerTest, OverrideText) {
+  auto observer = PageActionTestObserver();
+  TestPageActionModelObservation observation(&observer);
+  controller()->Register(0);
+  auto action_item = BuildActionItem(0);
+  base::CallbackListSubscription subscription =
+      controller()->CreateActionItemSubscription(action_item.get());
+  controller()->AddObserver(0, observation);
+
+  action_item->SetText(kText);
+
+  controller()->OverrideText(0, kOverrideText);
+  EXPECT_EQ(kOverrideText, observer.text());
+}
+
+TEST_F(PageActionControllerTest, UpdateActionItemTextWithOverrideText) {
+  auto observer = PageActionTestObserver();
+  TestPageActionModelObservation observation(&observer);
+  controller()->Register(0);
+  auto action_item = BuildActionItem(0);
+  base::CallbackListSubscription subscription =
+      controller()->CreateActionItemSubscription(action_item.get());
+  controller()->AddObserver(0, observation);
+
+  action_item->SetText(kText);
+
+  controller()->OverrideText(0, kOverrideText);
+  EXPECT_EQ(kOverrideText, observer.text());
+
+  action_item->SetText(kAnotherNewText);
+  // The override text should still take precedence.
+  EXPECT_EQ(kOverrideText, observer.text());
+}
+
+TEST_F(PageActionControllerTest, ClearOverrideText) {
+  auto observer = PageActionTestObserver();
+  TestPageActionModelObservation observation(&observer);
+  controller()->Register(0);
+  auto action_item = BuildActionItem(0);
+  base::CallbackListSubscription subscription =
+      controller()->CreateActionItemSubscription(action_item.get());
+  controller()->AddObserver(0, observation);
+
+  action_item->SetText(kText);
+  controller()->OverrideText(0, kOverrideText);
+  controller()->ClearOverrideText(0);
+
+  // We should revert to the ActionItem text.
+  EXPECT_EQ(kText, observer.text());
+}
+
+TEST_F(PageActionControllerTest, MultipleTextOverrides) {
+  auto observer = PageActionTestObserver();
+  TestPageActionModelObservation observation(&observer);
+  controller()->Register(0);
+  auto action_item = BuildActionItem(0);
+  auto subscription =
+      controller()->CreateActionItemSubscription(action_item.get());
+  controller()->AddObserver(0, observation);
+
+  action_item->SetText(kText);
+
+  controller()->OverrideText(0, kOverrideOne);
+  EXPECT_EQ(kOverrideOne, observer.text());
+
+  controller()->OverrideText(0, kOverrideTwo);
+  EXPECT_EQ(kOverrideTwo, observer.text());
+
+  controller()->OverrideText(0, kOverrideThree);
+  EXPECT_EQ(kOverrideThree, observer.text());
+
+  controller()->ClearOverrideText(0);
+  EXPECT_EQ(kText, observer.text());
 }
 
 }  // namespace

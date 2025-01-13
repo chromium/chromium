@@ -30,6 +30,8 @@ class PageActionModel {
   void SetShowRequested(base::PassKey<PageActionController>, bool requested);
   void SetActionItemEnabled(base::PassKey<PageActionController>, bool enabled);
   void SetActionItemVisible(base::PassKey<PageActionController>, bool visible);
+  void SetOverrideText(base::PassKey<PageActionController>,
+                       const std::optional<std::u16string>& override_text);
   // The model distills all visibility properties into a single result.
   bool GetVisible() const;
 
@@ -53,6 +55,8 @@ class PageActionModel {
   bool action_item_enabled_ = false;
   bool action_item_visible_ = false;
   std::u16string text_;
+  // When set, it will always take precedence over `text_`.
+  std::optional<std::u16string> override_text_;
   std::u16string tooltip_;
   ui::ImageModel action_item_image_;
 
