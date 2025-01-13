@@ -13,7 +13,6 @@
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
-#include "third_party/perfetto/include/perfetto/tracing/event_context.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_latency_info.pbzero.h"
 
 #if BUILDFLAG(USE_BLINK)
