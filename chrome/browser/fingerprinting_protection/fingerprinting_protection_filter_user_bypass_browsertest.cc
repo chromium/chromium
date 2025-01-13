@@ -98,6 +98,13 @@ IN_PROC_BROWSER_TEST_F(
       SetRulesetToDisallowURLsWithPathSuffix("included_script.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
+  histogram_tester.ExpectBucketCount(
+      ActivationDecisionHistogramName,
+      subresource_filter::ActivationDecision::ACTIVATED, 1);
+  histogram_tester.ExpectBucketCount(
+      ActivationLevelHistogramName,
+      subresource_filter::mojom::ActivationLevel::kEnabled, 1);
+
   const std::vector<const char*> kSubframeNames{"one", "two"};
   const std::vector<bool> kExpectOnlySecondSubframe{false, true};
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
@@ -118,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(
       subresource_filter::ActivationDecision::URL_ALLOWLISTED, 1);
   histogram_tester.ExpectBucketCount(
       ActivationLevelHistogramName,
-      subresource_filter::mojom::ActivationLevel::kEnabled, 1);
+      subresource_filter::mojom::ActivationLevel::kDisabled, 1);
 
   const std::vector<bool> kExpectAllSubframes{true, true};
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
