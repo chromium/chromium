@@ -17,6 +17,7 @@
 #include "base/json/json_writer.h"
 #include "base/json/string_escape.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/test/test_switches.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
@@ -596,7 +597,7 @@ InteractiveAshTest::WaitForElementWithManagedPropertyBoolean(
              el.managedProperties_.%s.activeValue === %s;
     }
   )",
-                         property.c_str(), expected_value ? "true" : "false");
+                         property.c_str(), base::ToString(expected_value));
   return WaitForStateChange(element_id, managed_boolean_change);
 }
 

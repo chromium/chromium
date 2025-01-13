@@ -20,6 +20,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/pattern.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
@@ -1809,7 +1810,7 @@ std::string JavaScriptDialogClosedEvent(bool result,
       "\"result\": %s,"
       "\"userInput\": \"%s\""
       "}}",
-      (result ? "true" : "false"), user_input.c_str());
+      base::ToString(result), user_input.c_str());
 }
 
 }  // namespace

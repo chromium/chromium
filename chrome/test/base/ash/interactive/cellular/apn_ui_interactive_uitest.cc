@@ -5,6 +5,7 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/ash/interactive/cellular/cellular_util.h"
 #include "chrome/test/base/ash/interactive/cellular/esim_interactive_uitest_base.h"
@@ -144,8 +145,8 @@ class ApnUiInteractiveUiTest : public EsimInteractiveUiTestBase {
                                 settings::cellular::ApnDialogAttachCheckbox()),
 
         Log(base::StringPrintf("Select APN type: Default: %s, Attach: %s",
-                               is_default ? "true" : "false",
-                               is_attach ? "true" : "false")),
+                               base::ToString(is_default),
+                               base::ToString(is_attach))),
 
         SelectApnTypeInDialog(is_default, is_attach),
 

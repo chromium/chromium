@@ -27,6 +27,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
@@ -1033,7 +1034,7 @@ Status WebViewImpl::CallFunctionWithTimeoutInternal(
 
   std::string json;
   base::JSONWriter::Write(args, &json);
-  std::string w3c = w3c_compliant_ ? "true" : "false";
+  std::string w3c = base::ToString(w3c_compliant_);
   // TODO(zachconrad): Second null should be array of shadow host ids.
   std::string wrapper_function = base::StringPrintf(
       "function(){ return (%s).apply(null, [%s, %s, %s, arguments]); }",

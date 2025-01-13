@@ -229,7 +229,7 @@ InteractiveFeaturePromoTestApi::CheckPromoIsActive(
           })
           .SetDescription(base::StringPrintf("CheckPromoIsActive(%s, %s)",
                                              iph_feature.name,
-                                             active ? "true" : "false")));
+                                             base::ToString(active))));
 }
 
 InteractiveFeaturePromoTestApi::MultiStep

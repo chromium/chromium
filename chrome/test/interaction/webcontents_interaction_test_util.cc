@@ -24,6 +24,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/values.h"
@@ -1168,7 +1169,7 @@ void PrintTo(const WebContentsInteractionTestUtil::StateChange& state_change,
   *os << ", test_function: \"" << state_change.test_function << "\""
       << ", where: " << state_change.where << ", event: " << state_change.event
       << ", continue_across_navigation: "
-      << (state_change.continue_across_navigation ? "true" : "false")
+      << base::ToString(state_change.continue_across_navigation)
       << ", timeout: " << state_change.timeout.value_or(base::TimeDelta())
       << ", timeout_event: " << state_change.timeout_event << " }";
 }

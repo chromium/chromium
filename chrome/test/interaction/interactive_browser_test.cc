@@ -567,7 +567,7 @@ InteractiveBrowserTestApi::WaitForStateChange(
                     .SetMustBeVisibleAtStart(fail_on_close)));
   AddDescriptionPrefix(
       steps, base::StrCat({"WaitForStateChange( ", base::ToString(state_change),
-                           ", ", (expect_timeout ? "true" : "false"), " )"}));
+                           ", ", base::ToString(expect_timeout), " )"}));
   return steps;
 }
 
@@ -777,7 +777,7 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::ClickElement(
   const bool ctrl = modifiers & ui_controls::kControl;
   const bool meta = modifiers & ui_controls::kCommand;
 
-  auto b2s = [](bool b) { return b ? "true" : "false"; };
+  auto b2s = [](bool b) { return base::ToString(b); };
 
   const std::string command = base::StringPrintf(
       R"(
