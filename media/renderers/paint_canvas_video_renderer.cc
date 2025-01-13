@@ -1819,7 +1819,6 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
                               raster_context_provider->ContextSupport());
 
     cache_->coded_size = video_frame->coded_size();
-    cache_->visible_rect = video_frame->visible_rect();
 
     // In OOPR mode, we can keep the entire TextureBacking. In non-OOPR,
     // we can recycle the mailbox/texture, but have to replace the SkImage.

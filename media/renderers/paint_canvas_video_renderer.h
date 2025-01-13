@@ -251,11 +251,6 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
     // This is only set if the VideoFrame was texture-backed.
     gfx::Size coded_size;
 
-    // The visible subrect of |coded_size| that represents the logical contents
-    // of the frame after cropping.
-    // This is only set if the VideoFrame was texture-backed.
-    gfx::Rect visible_rect;
-
     // Used to allow recycling of the previous shared image. This requires that
     // no external users have access to this resource via SkImage. Returns true
     // if the existing resource can be recycled.
