@@ -1409,14 +1409,15 @@ void PasswordAutofillAgent::UserGestureObserved() {
 }
 
 void PasswordAutofillAgent::AnnotateFormsAndFieldsWithSignatures(
-    WebVector<WebFormElement>& forms) {
+    WebVector<WebFormElement>& forms,
+    const SynchronousFormCache& form_cache) {
   if (!render_frame()) {
     return;
   }
   WebDocument document = render_frame()->GetWebFrame()->GetDocument();
   for (const WebFormElement& form : forms) {
     std::optional<FormData> form_data =
-        GetFormDataFromWebForm(form, /*form_cache=*/{});
+        GetFormDataFromWebForm(form, form_cache);
     std::string form_signature;
     std::string alternative_form_signature;
     if (form_data) {
@@ -1435,7 +1436,7 @@ void PasswordAutofillAgent::AnnotateFormsAndFieldsWithSignatures(
   }
 
   std::optional<FormData> form_data =
-      GetFormDataFromUnownedInputElements(/*form_cache=*/{});
+      GetFormDataFromUnownedInputElements(form_cache);
   std::string form_signature;
   std::string alternative_form_signature;
   if (form_data) {
@@ -1484,7 +1485,7 @@ void PasswordAutofillAgent::SendPasswordForms(
   WebVector<WebFormElement> forms = doc.GetTopLevelForms();
 
   if (IsShowAutofillSignaturesEnabled())
-    AnnotateFormsAndFieldsWithSignatures(forms);
+    AnnotateFormsAndFieldsWithSignatures(forms, form_cache);
   if (logger)
     logger->LogNumber(Logger::STRING_NUMBER_OF_ALL_FORMS, forms.size());
 
