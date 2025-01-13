@@ -208,7 +208,6 @@ class WelcomeTourScrim::Scrim : public aura::WindowObserver,
   // Invoked once to initialize `this` scrim.
   void Init() {
     // Configure static scrim layer properties.
-    layer_owner_.layer()->SetFillsBoundsOpaquely(false);
     layer_owner_.layer()->SetMaskLayer(mask_layer_owner_.layer());
     layer_owner_.layer()->SetName(WelcomeTourScrim::kLayerName);
 

@@ -298,7 +298,6 @@ TrayBackgroundView::TrayBackgroundView(
   // Use layer color to provide background color. Note that children views
   // need to have their own layers to be visible.
   SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-  layer()->SetFillsBoundsOpaquely(!chromeos::features::IsSystemBlurEnabled());
 
   // Start the tray items not visible, because visibility changes are animated.
   views::View::SetVisible(false);
