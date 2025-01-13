@@ -372,6 +372,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/sync/ui/bookmark_batch_upload_card/BookmarkBatchUploadCardMediatorTest.java",
   "junit/src/org/chromium/chrome/browser/tab/RequestDesktopUtilsUnitTest.java",
   "junit/src/org/chromium/chrome/browser/tab/TabArchiveSettingsTest.java",
+  "junit/src/org/chromium/chrome/browser/tab/TabArchiverUnitTest.java",
   "junit/src/org/chromium/chrome/browser/tab/TabAttributesTest.java",
   "junit/src/org/chromium/chrome/browser/tab/TabBrowserControlsConstraintsHelperTest.java",
   "junit/src/org/chromium/chrome/browser/tab/TabBrowserControlsOffsetHelperTest.java",

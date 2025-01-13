@@ -296,7 +296,21 @@ public class TabArchiver implements TabWindowManager.Observer {
                                         tabUrlToLastActiveTimestampMap, model);
                             }
 
+                            int maxSimultaneousArchives =
+                                    ChromeFeatureList.sAndroidTabDeclutterMaxSimultaneousArchives
+                                            .getValue();
                             for (int i = 0; i < model.getCount(); i++) {
+                                // Limit the amount of simultaneous archives to prevent overloading
+                                // delayed tasks (crbug.com/369845089).
+                                // TODO(crbug.com/369845089): Investigate a more graceful fix to
+                                // batch these so all relevant tabs still get archived in the same
+                                // session.
+                                if (tabsToArchive.size() >= maxSimultaneousArchives) {
+                                    RecordHistogram.recordCount100000Histogram(
+                                            "Tabs.ArchivedTabs.MaxLimitReachedAt",
+                                            maxSimultaneousArchives);
+                                    break;
+                                }
                                 Tab tab = model.getTabAt(i);
                                 // If there's an existing archived tab for the tab id, then we've
                                 // run into a case where the tab metadata file wasn't updated after
