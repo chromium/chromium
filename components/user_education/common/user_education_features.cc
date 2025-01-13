@@ -68,6 +68,10 @@ inline constexpr base::TimeDelta kDefaultMediumPriorityTimeout =
 inline constexpr char kLowPriorityTimeout[] = "low_priority_timeout";
 inline constexpr base::TimeDelta kDefaultLowPriorityTimeout = base::Seconds(30);
 
+inline constexpr char kIdleTimeBeforeHeavyweight[] = "idle_before_heavyweight";
+inline constexpr base::TimeDelta kDefaultIdleTimeBeforeHeavyweight =
+    base::Seconds(5);
+
 inline constexpr char kPollingInterval[] = "polling_interval";
 inline constexpr base::TimeDelta kDefaultPollingInterval =
     base::Milliseconds(500);
@@ -197,6 +201,12 @@ base::TimeDelta GetLowPriorityTimeout() {
   return base::GetFieldTrialParamByFeatureAsTimeDelta(
       kUserEducationExperienceVersion2Point5, kLowPriorityTimeout,
       kDefaultLowPriorityTimeout);
+}
+
+base::TimeDelta GetIdleTimeBeforeHeavyweightPromo() {
+  return base::GetFieldTrialParamByFeatureAsTimeDelta(
+      kUserEducationExperienceVersion2Point5, kIdleTimeBeforeHeavyweight,
+      kDefaultIdleTimeBeforeHeavyweight);
 }
 
 base::TimeDelta GetPromoControllerPollingInterval() {

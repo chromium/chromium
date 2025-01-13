@@ -4,10 +4,12 @@
 
 #include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_preconditions.h"
 
+#include "base/time/default_clock.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -20,9 +22,11 @@
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/feature_promo/impl/common_preconditions.h"
 #include "components/user_education/common/feature_promo/impl/precondition_data.h"
+#include "components/user_education/common/user_education_features.h"
 #include "components/user_education/webui/help_bubble_handler.h"
 #include "components/user_education/webui/tracked_element_webui.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/events/types/event_type.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/widget/widget.h"
 
@@ -34,6 +38,7 @@ DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
     kBrowserNotClosingPrecondition);
 DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
     kNoCriticalNoticeShowingPrecondition);
+DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kUserNotActivePrecondition);
 
 WindowActivePrecondition::WindowActivePrecondition()
     : FeaturePromoPreconditionBase(kWindowActivePrecondition,
@@ -142,4 +147,56 @@ NoCriticalNoticeShowingPrecondition::CheckPrecondition(ComputedData&) const {
   }
 
   return user_education::FeaturePromoResult::Success();
+}
+
+UserNotActivePrecondition::UserNotActivePrecondition(
+    BrowserView& browser_view,
+    const user_education::UserEducationTimeProvider& time_provider)
+    : FeaturePromoPreconditionBase(
+          kUserNotActivePrecondition,
+          "The user is not actively trying sending input"),
+      browser_view_(browser_view),
+      time_provider_(time_provider),
+      last_active_time_(time_provider_->GetCurrentTime()) {
+  // Note that null is a valid value for the second parameter here; if for
+  // some reason there is no native window it simply falls back to
+  // application-wide event-sniffing, which for this case is better than not
+  // watching events at all.
+  event_monitor_ = views::EventMonitor::CreateWindowMonitor(
+      this, browser_view_->GetWidget()->GetTopLevelWidget()->GetNativeWindow(),
+      {ui::EventType::kKeyPressed, ui::EventType::kKeyReleased,
+       ui::EventType::kMousePressed, ui::EventType::kMouseReleased,
+       ui::EventType::kTouchPressed, ui::EventType::kTouchReleased,
+       ui::EventType::kGestureBegin, ui::EventType::kGestureEnd,
+       ui::EventType::kMouseMoved});
+}
+
+UserNotActivePrecondition::~UserNotActivePrecondition() = default;
+
+void UserNotActivePrecondition::OnEvent(const ui::Event& event) {
+  if (event.type() == ui::EventType::kMouseMoved) {
+    // For mouse moves, do not set the delay timer unless the mouse is being
+    // moved in the top container (toolbar, tabstrip, etc.). Other mouse moves
+    // are not significant enough to warrant delaying an IPH.
+    bool in_top_container = false;
+    if (auto* const top_container =
+            views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+                kTopContainerElementId, browser_view_->GetElementContext())) {
+      in_top_container = top_container->GetBoundsInScreen().Contains(
+          event.AsMouseEvent()->root_location());
+    }
+    if (!in_top_container) {
+      return;
+    }
+  }
+  // Delay heavyweight IPH for the prescribed amount of time.
+  last_active_time_ = time_provider_->GetCurrentTime();
+}
+
+user_education::FeaturePromoResult UserNotActivePrecondition::CheckPrecondition(
+    ComputedData&) const {
+  const auto elapsed = time_provider_->GetCurrentTime() - last_active_time_;
+  return elapsed < user_education::features::GetIdleTimeBeforeHeavyweightPromo()
+             ? user_education::FeaturePromoResult::kBlockedByUi
+             : user_education::FeaturePromoResult::Success();
 }

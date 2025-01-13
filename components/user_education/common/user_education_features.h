@@ -86,6 +86,10 @@ extern base::TimeDelta GetHighPriorityTimeout();
 extern base::TimeDelta GetMediumPriorityTimeout();
 extern base::TimeDelta GetLowPriorityTimeout();
 
+// Returns how long the user must stop sending input before a heavyweight promo
+// can be shown.
+extern base::TimeDelta GetIdleTimeBeforeHeavyweightPromo();
+
 // Returns the polling interval for the promo controller for User Education 2.5.
 extern base::TimeDelta GetPromoControllerPollingInterval();
 
