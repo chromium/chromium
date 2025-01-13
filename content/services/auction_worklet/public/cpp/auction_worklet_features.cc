@@ -19,7 +19,7 @@ BASE_FEATURE(kFledgeAlwaysReuseSellerContext,
 
 BASE_FEATURE(kFledgeAuctionDownloaderStaleWhileRevalidate,
              "FledgeAuctionDownloaderStaleWhileRevalidate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFledgeEagerJSCompilation,
              "FledgeEagerJSCompilation",
