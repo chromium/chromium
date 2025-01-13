@@ -642,6 +642,11 @@ scoped_refptr<MainThreadTaskQueue> MainThreadSchedulerImpl::NewTaskQueue(
         TaskQueue::InsertFencePosition::kNow);
   }
 
+  // The intensive throttling policy should affect all task queues, epecially
+  // anything web visible.
+  CHECK(!task_queue->CanBeIntensivelyThrottled() ||
+        IsIntensiveWakeUpThrottlingEnabled());
+
   return task_queue;
 }
 

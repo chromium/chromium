@@ -478,6 +478,18 @@ QueueTraits FrameSchedulerImpl::CreateQueueTraitsForTaskType(TaskType type) {
       return DeferrableTaskQueueTraits().SetPrioritisationType(
           QueueTraits::PrioritisationType::kJavaScriptTimer);
     }
+    case TaskType::kIdleTask:
+      // This type is used for timed-out idle tasks, which essentially become
+      // timers in the background after we stop running idle tasks or if the
+      // timeout is less than the idle period duration. These tasks should be
+      // throttled similar to other timers to prevent creating non-throttleable
+      // timers.
+      return DeferrableTaskQueueTraits()
+          .SetCanBeThrottled(
+              base::FeatureList::IsEnabled(kThrottleTimedOutIdleTasks))
+          .SetCanBeIntensivelyThrottled(
+              base::FeatureList::IsEnabled(kThrottleTimedOutIdleTasks) &&
+              IsIntensiveWakeUpThrottlingEnabled());
     case TaskType::kInternalLoading:
     case TaskType::kNetworking:
       return LoadingTaskQueueTraits();
@@ -517,7 +529,6 @@ QueueTraits FrameSchedulerImpl::CreateQueueTraitsForTaskType(TaskType type) {
     case TaskType::kPerformanceTimeline:
     case TaskType::kWebGL:
     case TaskType::kWebGPU:
-    case TaskType::kIdleTask:
     case TaskType::kInternalDefault:
     case TaskType::kMiscPlatformAPI:
     case TaskType::kFontLoading:
@@ -1358,7 +1369,8 @@ FrameSchedulerImpl::CreateWebSchedulingTaskQueue(
       frame_task_queue_controller_->NewWebSchedulingTaskQueue(
           DeferrableTaskQueueTraits()
               .SetCanBeThrottled(true)
-              .SetCanBeIntensivelyThrottled(true)
+              .SetCanBeIntensivelyThrottled(
+                  IsIntensiveWakeUpThrottlingEnabled())
               .SetCanBeDeferredForRendering(can_be_deferred_for_rendering),
           queue_type, priority);
   return std::make_unique<MainThreadWebSchedulingTaskQueueImpl>(

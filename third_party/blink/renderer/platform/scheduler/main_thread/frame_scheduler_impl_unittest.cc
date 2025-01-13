@@ -1532,10 +1532,11 @@ TEST_F(FrameSchedulerImplTest, ThrottledTaskTypes) {
                  << "TaskType is "
                  << TaskTypeNames::TaskTypeToString(task_type));
     switch (task_type) {
+      case TaskType::kIdleTask:
       case TaskType::kInternalContentCapture:
+      case TaskType::kInternalTranslation:
       case TaskType::kJavascriptTimerDelayedLowNesting:
       case TaskType::kJavascriptTimerDelayedHighNesting:
-      case TaskType::kInternalTranslation:
         EXPECT_TRUE(IsTaskTypeThrottled(task_type));
         break;
       default:
@@ -2894,6 +2895,9 @@ INSTANTIATE_TEST_SUITE_P(
             /* is_intensive_throttling_expected=*/false},
         IntensiveWakeUpThrottlingTestParam{
             /* task_type=*/TaskType::kJavascriptTimerDelayedHighNesting,
+            /* is_intensive_throttling_expected=*/true},
+        IntensiveWakeUpThrottlingTestParam{
+            /* task_type=*/TaskType::kIdleTask,
             /* is_intensive_throttling_expected=*/true},
         IntensiveWakeUpThrottlingTestParam{
             /* task_type=*/TaskType::kWebSchedulingPostedTask,

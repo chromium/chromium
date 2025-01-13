@@ -121,6 +121,9 @@ BASE_FEATURE(kPrioritizeCompositingAfterDelayTrials,
              "PrioritizeCompositingAfterDelayTrials",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kThrottleTimedOutIdleTasks,
+             "ThrottleTimedOutIdleTasks",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace scheduler
 }  // namespace blink
