@@ -330,7 +330,6 @@ build_webui("build") {
     "os_privacy_page/privacy_hub_subpage.ts",
     "os_privacy_page/privacy_hub_system_service_row.ts",
     "os_privacy_page/secure_dns.ts",
-    "os_privacy_page/secure_dns_dialog.ts",
     "os_privacy_page/secure_dns_input.ts",
     "os_privacy_page/smart_privacy_subpage.ts",
     "os_reset_page/os_powerwash_dialog.ts",

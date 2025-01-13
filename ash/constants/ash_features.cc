@@ -2218,12 +2218,6 @@ BASE_FEATURE(kOsFeedbackDialog,
              "OsFeedbackDialog",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Whether the DNS dialog in should be deprecated in Security and Privacy
-// Settings page when the user toggles off the DNS button.
-BASE_FEATURE(kOsSettingsDeprecateDnsDialog,
-             "OsSettingsDeprecateDnsDialog",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables Jelly colors and components to appear in the Parent Access Widget
 // if jelly-colors is also enabled.
 BASE_FEATURE(kParentAccessJelly,
@@ -4163,10 +4157,6 @@ bool IsOobeSplitModifierKeyboardInfoEnabled() {
 
 bool IsOsFeedbackDialogEnabled() {
   return base::FeatureList::IsEnabled(kOsFeedbackDialog);
-}
-
-bool IsOsSettingsDeprecateDnsDialogEnabled() {
-  return base::FeatureList::IsEnabled(kOsSettingsDeprecateDnsDialog);
 }
 
 bool IsOsSyncConsentRevampEnabled() {

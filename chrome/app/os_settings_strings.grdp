@@ -7104,18 +7104,6 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_OS_SETTINGS_SECURE_DNS_DESCRIPTION" desc="Description of secure DNS in Privacy options">
     Make it harder for people with access to your internet traffic to see which sites you visit. <ph name="PRODUCT_NAME">$1<ex>ChromeOS</ex></ph> uses a secure connection to look up a site's IP address in the DNS (Domain Name System).
   </message>
-  <message name="IDS_OS_SETTINGS_SECURE_DNS_DIALOG_TITLE" desc="Text for secure DNS dialog title in Privacy options for ChromeOS">
-    Turn off URL encryption?
-  </message>
-  <message name="IDS_OS_SETTINGS_SECURE_DNS_DIALOG_BODY" desc="Text for secure DNS dialog body in Privacy options for ChromeOS">
-    Those with access to your internet traffic can see what websites you visit
-  </message>
-  <message name="IDS_OS_SETTINGS_SECURE_DNS_DIALOG_CANCEL" desc="Text for secure DNS dialog to cancel action in Privacy options for ChromeOS">
-    Cancel
-  </message>
-  <message name="IDS_OS_SETTINGS_SECURE_DNS_DIALOG_TURN_OFF" desc="Text for secure DNS dialog to turn off DNS in Privacy options for ChromeOS">
-    Turn off
-  </message>
   <message name="IDS_OS_SETTINGS_SECURE_DNS_AUTOMATIC_MODE_DESCRIPTION" desc="Text of the select option that puts secure DNS in Network Default mode">
     Network default
   </message>

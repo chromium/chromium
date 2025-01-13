@@ -307,10 +307,6 @@ void AddChromeOsSecureDnsStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_SECURE_DNS_WITH_IDENTIFIERS_DESCRIPTION},
       {"secureDnsWithIdentifiersAndDomainConfigDescription",
        IDS_OS_SETTINGS_SECURE_DNS_WITH_IDENTIFIERS_AND_DOMAIN_CONFIG_DESCRIPTION},
-      {"secureDnsDialogTitle", IDS_OS_SETTINGS_SECURE_DNS_DIALOG_TITLE},
-      {"secureDnsDialogBody", IDS_OS_SETTINGS_SECURE_DNS_DIALOG_BODY},
-      {"secureDnsDialogCancel", IDS_OS_SETTINGS_SECURE_DNS_DIALOG_CANCEL},
-      {"secureDnsDialogTurnOff", IDS_OS_SETTINGS_SECURE_DNS_DIALOG_TURN_OFF},
       {"secureDnsAutomaticModeDescription",
        IDS_OS_SETTINGS_SECURE_DNS_AUTOMATIC_MODE_DESCRIPTION},
       {"secureDnsSecureDropdownModeNetworkDefaultDescription",
@@ -665,9 +661,6 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddBoolean("showSecureDnsSetting", true);
   html_source->AddBoolean("showSecureDnsOsSettingLink", false);
-  html_source->AddBoolean(
-      "isDeprecateDnsDialogEnabled",
-      ash::features::IsOsSettingsDeprecateDnsDialogEnabled());
 
   ::settings::AddSecureDnsStrings(html_source);
   AddChromeOsSecureDnsStrings(html_source);

@@ -327,7 +327,6 @@ export {SettingsPrivacyHubGeolocationSubpage} from './os_privacy_page/privacy_hu
 export {SettingsPrivacyHubMicrophoneSubpage} from './os_privacy_page/privacy_hub_microphone_subpage.js';
 export {SettingsPrivacyHubSubpage} from './os_privacy_page/privacy_hub_subpage.js';
 export {SecureDnsResolverType, SettingsSecureDnsElement} from './os_privacy_page/secure_dns.js';
-export {SettingsSecureDnsDialogElement} from './os_privacy_page/secure_dns_dialog.js';
 export {SecureDnsInputElement} from './os_privacy_page/secure_dns_input.js';
 export {SettingsSmartPrivacySubpage} from './os_privacy_page/smart_privacy_subpage.js';
 export {OsSettingsPowerwashDialogElement} from './os_reset_page/os_powerwash_dialog.js';
