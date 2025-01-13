@@ -15,35 +15,23 @@ This is a testharness.js-based test.
   assert_true: 'shape(from 20px 40px, smooth by 20px 20px)' is a supported value for clip-path. expected true got false
 [FAIL] Property clip-path value 'shape(from 20px 40px, smooth by 20px 20px with 12px 32px)'
   assert_true: 'shape(from 20px 40px, smooth by 20px 20px with 12px 32px)' is a supported value for clip-path. expected true got false
-[FAIL] Property clip-path value 'shape(from 20px 40px, arc by 20px 20px of 10%)'
-  assert_true: 'shape(from 20px 40px, arc by 20px 20px of 10%)' is a supported value for clip-path. expected true got false
-[FAIL] Property clip-path value 'shape(from 20px 40px, arc by 20px 20px of 0)'
-  assert_true: 'shape(from 20px 40px, arc by 20px 20px of 0)' is a supported value for clip-path. expected true got false
-[FAIL] Property clip-path value 'shape(from 20px 40px, arc by 20px 20px of 10% 0)'
-  assert_true: 'shape(from 20px 40px, arc by 20px 20px of 10% 0)' is a supported value for clip-path. expected true got false
-[FAIL] Property clip-path value 'shape(from 20px 40px, arc by 20px 20px of 10% rotate 0deg)'
-  assert_true: 'shape(from 20px 40px, arc by 20px 20px of 10% rotate 0deg)' is a supported value for clip-path. expected true got false
-[FAIL] Property clip-path value 'shape(from 20px 40px, arc by 20px 20px of 10% 20%)'
-  assert_true: 'shape(from 20px 40px, arc by 20px 20px of 10% 20%)' is a supported value for clip-path. expected true got false
 [FAIL] Property clip-path value 'shape(from 20px 40px, arc by 20px 20px of 10% 20% cw)'
-  assert_true: 'shape(from 20px 40px, arc by 20px 20px of 10% 20% cw)' is a supported value for clip-path. expected true got false
+  assert_equals: expected "shape(from 20px 40px, arc by 20px 20px of 10% 20% cw)" but got "shape(from 20px 40px, arc by 20px 20px of 10% 20%)"
 [FAIL] Property clip-path value 'shape(from 20px 40px, arc by 20px 20px of 10% 20% large)'
-  assert_true: 'shape(from 20px 40px, arc by 20px 20px of 10% 20% large)' is a supported value for clip-path. expected true got false
+  assert_equals: expected "shape(from 20px 40px, arc by 20px 20px of 10% 20% large)" but got "shape(from 20px 40px, arc by 20px 20px of 10% 20%)"
 [FAIL] Property clip-path value 'shape(from 20px 40px, arc by 20px 20px of -10% -20% large)'
-  assert_true: 'shape(from 20px 40px, arc by 20px 20px of -10% -20% large)' is a supported value for clip-path. expected true got false
-[FAIL] Property clip-path value 'shape(from 20px 40px, arc by 20px 20px of 10% rotate 1deg)'
-  assert_true: 'shape(from 20px 40px, arc by 20px 20px of 10% rotate 1deg)' is a supported value for clip-path. expected true got false
+  assert_equals: expected "shape(from 20px 40px, arc by 20px 20px of -10% -20% large)" but got "shape(from 20px 40px, arc by 20px 20px of -10% -20%)"
 [FAIL] Property clip-path value 'shape(from 20px 40px, arc by 20px 20px of 10% 20% cw rotate 12deg)'
-  assert_true: 'shape(from 20px 40px, arc by 20px 20px of 10% 20% cw rotate 12deg)' is a supported value for clip-path. expected true got false
+  assert_equals: expected "shape(from 20px 40px, arc by 20px 20px of 10% 20% cw rotate 12deg)" but got "shape(from 20px 40px, arc by 20px 20px of 10% 20% rotate 12deg)"
 [FAIL] Property clip-path value 'shape(from 20px 40px, arc by 20px 20px of 10% 20% cw rotate 3.14159265rad)'
-  assert_true: 'shape(from 20px 40px, arc by 20px 20px of 10% 20% cw rotate 3.14159265rad)' is a supported value for clip-path. expected true got false
+  assert_equals: expected "shape(from 20px 40px, arc by 20px 20px of 10% 20% cw rotate 180deg)" but got "shape(from 20px 40px, arc by 20px 20px of 10% 20% rotate 180deg)"
 [FAIL] Property clip-path value 'shape(from 20px 40px, arc by 20px 20px of 10% 20% large rotate 12deg)'
-  assert_true: 'shape(from 20px 40px, arc by 20px 20px of 10% 20% large rotate 12deg)' is a supported value for clip-path. expected true got false
+  assert_equals: expected "shape(from 20px 40px, arc by 20px 20px of 10% 20% large rotate 12deg)" but got "shape(from 20px 40px, arc by 20px 20px of 10% 20% rotate 12deg)"
 [FAIL] Property clip-path value 'shape(from 20px 40px, arc by 20px 20px of 10% 20% cw large)'
-  assert_true: 'shape(from 20px 40px, arc by 20px 20px of 10% 20% cw large)' is a supported value for clip-path. expected true got false
+  assert_equals: expected "shape(from 20px 40px, arc by 20px 20px of 10% 20% cw large)" but got "shape(from 20px 40px, arc by 20px 20px of 10% 20%)"
 [FAIL] Property clip-path value 'shape(from 20px 40px, arc by 20px 20px of 10% 20% large cw)'
-  assert_true: 'shape(from 20px 40px, arc by 20px 20px of 10% 20% large cw)' is a supported value for clip-path. expected true got false
+  assert_equals: expected "shape(from 20px 40px, arc by 20px 20px of 10% 20% cw large)" but got "shape(from 20px 40px, arc by 20px 20px of 10% 20%)"
 [FAIL] Property clip-path value 'shape(from 20px 40px, arc by 20px 20px of 10% 20% rotate 12deg large)'
-  assert_true: 'shape(from 20px 40px, arc by 20px 20px of 10% 20% rotate 12deg large)' is a supported value for clip-path. expected true got false
+  assert_equals: expected "shape(from 20px 40px, arc by 20px 20px of 10% 20% large rotate 12deg)" but got "shape(from 20px 40px, arc by 20px 20px of 10% 20% rotate 12deg)"
 Harness: the test ran to completion.
 

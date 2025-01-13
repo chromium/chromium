@@ -6773,7 +6773,7 @@ cssvalue::CSSShapeValue* ConsumeBasicShapeShape(
   // <shape-command>#
   HeapVector<Member<const CSSShapeCommand>> commands;
   while (!args.AtEnd()) {
-    CSSValueID end_point_origin;
+    CSSValueID end_point_origin = CSSValueID::kInvalid;
     CSSValueID command_type = args.ConsumeIncludingWhitespace().Id();
     switch (command_type) {
       // https://drafts.csswg.org/css-shapes-2/#typedef-shape-move-command
@@ -6828,6 +6828,111 @@ cssvalue::CSSShapeValue* ConsumeBasicShapeShape(
         }
         break;
       }
+
+      // https://drafts.csswg.org/css-shapes-2/#typedef-shape-arc-command
+      // arc [[<by-to> <coordinate-pair>] || [of <length-percentage>{1,2}] ||
+      // <arc-sweep>? || <arc-size>?|| rotate <angle>? ]
+      case CSSValueID::kArc: {
+        CSSValueID sweep = CSSValueID::kInvalid;
+        CSSValueID size = CSSValueID::kInvalid;
+
+        const CSSValuePair* end_point = nullptr;
+        const CSSValuePair* radius = nullptr;
+        const CSSPrimitiveValue* angle = nullptr;
+        while (!args.AtEnd() && args.Peek().GetType() != kCommaToken) {
+          CSSValueID next_id = args.Peek().Id();
+          switch (next_id) {
+            case CSSValueID::kTo:
+            case CSSValueID::kBy: {
+              if (end_point) {
+                return nullptr;
+              }
+              end_point =
+                  ConsumeShapeCommandEndPoint(args, context, end_point_origin);
+              if (!end_point) {
+                return nullptr;
+              }
+              break;
+            }
+            case CSSValueID::kOf: {
+              if (radius) {
+                return nullptr;
+              }
+              args.ConsumeIncludingWhitespace();
+              const CSSValue* radius_x = ConsumeLengthOrPercent(
+                  args, context, CSSPrimitiveValue::ValueRange::kAll);
+              if (!radius_x) {
+                return nullptr;
+              }
+
+              const CSSValue* radius_y = ConsumeLengthOrPercent(
+                  args, context, CSSPrimitiveValue::ValueRange::kAll);
+
+              if (!radius_y) {
+                radius_y = radius_x;
+              }
+
+              radius = MakeGarbageCollected<CSSValuePair>(
+                  radius_x, radius_y, CSSValuePair::kDropIdenticalValues);
+              break;
+            }
+            // https://drafts.csswg.org/css-shapes-2/#typedef-shape-arc-sweep
+            case CSSValueID::kCw:
+            case CSSValueID::kCcw: {
+              if (sweep != CSSValueID::kInvalid) {
+                return nullptr;
+              }
+              args.ConsumeIncludingWhitespace();
+              sweep = next_id;
+              break;
+            }
+
+            // https://drafts.csswg.org/css-shapes-2/#typedef-shape-arc-size
+            case CSSValueID::kLarge:
+            case CSSValueID::kSmall: {
+              if (size != CSSValueID::kInvalid) {
+                return nullptr;
+              }
+              args.ConsumeIncludingWhitespace();
+              size = next_id;
+              break;
+            }
+            case CSSValueID::kRotate: {
+              if (angle) {
+                return nullptr;
+              }
+              args.ConsumeIncludingWhitespace();
+              angle = ConsumeAngle(args, context, std::nullopt);
+              if (!angle) {
+                return nullptr;
+              }
+              break;
+            }
+            default:
+              return nullptr;
+          }
+        }
+
+        if (!end_point || !radius) {
+          return nullptr;
+        }
+
+        if (!angle) {
+          angle = CSSNumericLiteralValue::Create(
+              0, CSSPrimitiveValue::UnitType::kDegrees);
+        }
+        if (size == CSSValueID::kInvalid) {
+          size = CSSValueID::kSmall;
+        }
+        if (sweep == CSSValueID::kInvalid) {
+          sweep = CSSValueID::kCw;
+        }
+
+        commands.push_back(MakeGarbageCollected<cssvalue::CSSShapeArcCommand>(
+            end_point_origin, *end_point, *angle, *radius, size, sweep));
+        break;
+      }
+
       // https://drafts.csswg.org/css-shapes-2/#typedef-shape-close
       case CSSValueID::kClose:
         commands.push_back(CSSShapeCommand::Close());

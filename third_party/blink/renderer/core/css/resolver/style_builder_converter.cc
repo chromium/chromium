@@ -2237,7 +2237,7 @@ scoped_refptr<QuotesData> StyleBuilderConverter::ConvertQuotes(
   return nullptr;
 }
 
-LengthSize StyleBuilderConverter::ConvertRadius(StyleResolverState& state,
+LengthSize StyleBuilderConverter::ConvertRadius(const StyleResolverState& state,
                                                 const CSSValue& value) {
   const auto& pair = To<CSSValuePair>(value);
   Length radius_width = To<CSSPrimitiveValue>(pair.First())

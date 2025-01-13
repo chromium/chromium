@@ -9,11 +9,7 @@ This is a testharness.js-based test.
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['clip-path'] = "shape(from 10px 10px, smooth to 50px 1pt)" should set the property value
   assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['clip-path'] = "shape(from 10px 10px, arc to 50px 1pt of 10px 10px)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['clip-path'] = "shape(from 10px 10px, arc to 50px 1pt of 10px 10px small rotate 0deg)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['clip-path'] = "shape(from 10% 1rem, arc to 50px 1pt of 20% cw large rotate 25deg)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
+  assert_equals: serialization should be canonical expected "shape(from 10% 1rem, arc to 50px 1pt of 20% cw large rotate 25deg)" but got "shape(from 10% 1rem, arc to 50px 1pt of 20% rotate 25deg)"
 Harness: the test ran to completion.
 

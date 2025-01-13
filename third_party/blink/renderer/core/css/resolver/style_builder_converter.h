@@ -266,7 +266,7 @@ class StyleBuilderConverter {
   static Length ConvertQuirkyLength(StyleResolverState&, const CSSValue&);
   static scoped_refptr<QuotesData> ConvertQuotes(StyleResolverState&,
                                                  const CSSValue&);
-  static LengthSize ConvertRadius(StyleResolverState&, const CSSValue&);
+  static LengthSize ConvertRadius(const StyleResolverState&, const CSSValue&);
   static EPaintOrder ConvertPaintOrder(StyleResolverState&, const CSSValue&);
   static GapDataList<StyleColor> ConvertGapDecorationColorDataList(
       StyleResolverState&,

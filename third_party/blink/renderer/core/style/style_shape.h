@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_SHAPE_H_
 
 #include <optional>
+#include <variant>
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/style/basic_shapes.h"
@@ -21,16 +22,50 @@ namespace blink {
 // values.
 class StyleShape final : public BasicShape {
  public:
-  struct Segment {
-    enum Type { kMove, kLine, kHorizontalLine, kVerticalLine, kClose };
-    enum PointOrigin { kReferenceBox, kPreviousSegment };
-
-    bool operator==(const Segment& other) const = default;
-
-    Type type;
-    PointOrigin end_point_origin;
-    LengthPoint end_point;
+  enum class TargetPointOrigin { kReferenceBox, kPreviousSegment };
+  using CloseSegment = std::monostate;
+  struct SegmentWithTargetPoint {
+    LengthPoint target_point;
+    bool operator==(const SegmentWithTargetPoint& other) const = default;
   };
+  struct MoveToSegment : public SegmentWithTargetPoint {};
+  struct MoveBySegment : public SegmentWithTargetPoint {};
+  struct LineToSegment : public SegmentWithTargetPoint {};
+  struct LineBySegment : public SegmentWithTargetPoint {};
+  struct HLineSegment {
+    Length x;
+    bool operator==(const HLineSegment& other) const = default;
+  };
+  struct HLineBySegment : public HLineSegment {};
+  struct HLineToSegment : public HLineSegment {};
+
+  struct VLineSegment {
+    Length y;
+    bool operator==(const VLineSegment& other) const = default;
+  };
+  struct VLineBySegment : public VLineSegment {};
+  struct VLineToSegment : public VLineSegment {};
+  struct ArcSegment : public SegmentWithTargetPoint {
+    double angle;
+    LengthSize radius;
+    bool large;
+    bool sweep;
+    bool operator==(const ArcSegment& other) const = default;
+  };
+  struct ArcToSegment : public ArcSegment {};
+  struct ArcBySegment : public ArcSegment {};
+
+  using Segment = std::variant<MoveToSegment,
+                               MoveBySegment,
+                               LineToSegment,
+                               LineBySegment,
+                               HLineToSegment,
+                               HLineBySegment,
+                               VLineToSegment,
+                               VLineBySegment,
+                               ArcToSegment,
+                               ArcBySegment,
+                               CloseSegment>;
 
   static scoped_refptr<StyleShape> Create(WindRule wind_rule,
                                           const LengthPoint& origin,
@@ -56,7 +91,6 @@ class StyleShape final : public BasicShape {
              const LengthPoint& origin,
              Vector<Segment> segments);
 
-  void ResolvePath(Path&, const gfx::SizeF&) const;
   WindRule wind_rule_;
   LengthPoint origin_;
   Vector<Segment> segments_;

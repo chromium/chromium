@@ -6,7 +6,9 @@
 
 #include <memory>
 
+#include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
+#include "third_party/blink/renderer/core/css/cssom/css_numeric_value.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -27,6 +29,23 @@ String CSSShapeCommand::CSSText() const {
   builder.Append(' ');
   builder.Append(end_point_->CssText());
 
+  if (type_ == CSSValueID::kArc) {
+    const CSSShapeArcCommand& arc =
+        static_cast<const CSSShapeArcCommand&>(*this);
+    builder.Append(" of ");
+    builder.Append(arc.Radius().CssText());
+    if (arc.Size() == CSSValueID::kCw) {
+      builder.Append(" cw");
+    }
+    if (arc.Sweep() == CSSValueID::kLarge) {
+      builder.Append(" large");
+    }
+    auto* numeric_angle = DynamicTo<CSSNumericLiteralValue>(arc.Angle());
+    if (!numeric_angle || numeric_angle->ComputeDegrees() != 0) {
+      builder.Append(" rotate ");
+      builder.Append(arc.Angle().CssText());
+    }
+  }
   return builder.ReleaseString();
 }
 

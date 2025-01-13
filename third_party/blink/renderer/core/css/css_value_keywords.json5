@@ -1394,6 +1394,13 @@
     "close",
     "hline",
     "vline",
+    "arc",
+    // "rotate",
+    "cw",
+    "ccw",
+    // "large",
+    // "small",
+    // "of",
 
     // @font-face src
     "format",

@@ -92,95 +92,139 @@ const CSSValuePair& LengthPointToCSSValue(const LengthPoint& point,
       CSSValuePair::IdenticalValuesPolicy::kKeepIdenticalValues);
 }
 
-constexpr CSSValueID ShapeSegmentOriginToCSSValueID(
-    StyleShape::Segment::PointOrigin origin) {
-  return origin == StyleShape::Segment::PointOrigin::kPreviousSegment
-             ? CSSValueID::kBy
-             : CSSValueID::kTo;
-}
-
-constexpr StyleShape::Segment::PointOrigin CSSValueIDToShapeSegmentOrigin(
-    CSSValueID id) {
-  return id == CSSValueID::kBy
-             ? StyleShape::Segment::PointOrigin::kPreviousSegment
-             : StyleShape::Segment::PointOrigin::kReferenceBox;
-}
-
 StyleShape::Segment ShapeCommandToShapeSegment(
     const cssvalue::CSSShapeCommand& command,
     const StyleResolverState& state) {
   // TODO(crbug.com/384870259): support other segment types.
+  bool is_relative = command.GetEndPointOrigin() == CSSValueID::kBy;
+  using Segment = StyleShape::Segment;
+
   switch (command.GetType()) {
-    case CSSValueID::kMove:
-      return StyleShape::Segment{
-          .type = StyleShape::Segment::kMove,
-          .end_point_origin =
-              CSSValueIDToShapeSegmentOrigin(command.GetEndPointOrigin()),
-          .end_point = StyleBuilderConverter::ConvertPosition(
-              state, command.GetEndPoint())};
-    case CSSValueID::kLine:
-      return StyleShape::Segment{
-          .type = StyleShape::Segment::kLine,
-          .end_point_origin =
-              CSSValueIDToShapeSegmentOrigin(command.GetEndPointOrigin()),
-          .end_point = StyleBuilderConverter::ConvertPosition(
-              state, command.GetEndPoint())};
-    case CSSValueID::kHline:
-      return StyleShape::Segment{
-          .type = StyleShape::Segment::kHorizontalLine,
-          .end_point_origin =
-              CSSValueIDToShapeSegmentOrigin(command.GetEndPointOrigin()),
-          .end_point = LengthPoint(
-              StyleBuilderConverter::ConvertPositionLength<CSSValueID::kLeft,
-                                                           CSSValueID::kRight>(
-                  state, command.GetEndPoint()),
-              Length::Fixed(0))};
-    case CSSValueID::kVline:
-      return StyleShape::Segment{
-          .type = StyleShape::Segment::kVerticalLine,
-          .end_point_origin =
-              CSSValueIDToShapeSegmentOrigin(command.GetEndPointOrigin()),
-          .end_point = LengthPoint(
-              Length::Fixed(0),
-              StyleBuilderConverter::ConvertPositionLength<CSSValueID::kTop,
-                                                           CSSValueID::kBottom>(
-                  state, command.GetEndPoint()))};
+    case CSSValueID::kMove: {
+      LengthPoint target_point =
+          StyleBuilderConverter::ConvertPosition(state, command.GetEndPoint());
+      return is_relative ? Segment(StyleShape::MoveBySegment{target_point})
+                         : Segment(StyleShape::MoveToSegment{target_point});
+    }
+    case CSSValueID::kLine: {
+      LengthPoint target_point =
+          StyleBuilderConverter::ConvertPosition(state, command.GetEndPoint());
+      return is_relative ? Segment(StyleShape::LineBySegment{target_point})
+                         : Segment(StyleShape::LineToSegment{target_point});
+    }
+    case CSSValueID::kHline: {
+      Length x =
+          StyleBuilderConverter::ConvertPositionLength<CSSValueID::kLeft,
+                                                       CSSValueID::kRight>(
+              state, command.GetEndPoint());
+      return is_relative ? Segment(StyleShape::HLineBySegment{x})
+                         : Segment(StyleShape::HLineToSegment{x});
+    }
+    case CSSValueID::kVline: {
+      Length y =
+          StyleBuilderConverter::ConvertPositionLength<CSSValueID::kTop,
+                                                       CSSValueID::kBottom>(
+              state, command.GetEndPoint());
+      return is_relative ? Segment(StyleShape::VLineBySegment{y})
+                         : Segment(StyleShape::VLineToSegment{y});
+    }
+    case CSSValueID::kArc: {
+      const cssvalue::CSSShapeArcCommand& arc =
+          static_cast<const cssvalue::CSSShapeArcCommand&>(command);
+
+      LengthPoint target_point =
+          StyleBuilderConverter::ConvertPosition(state, command.GetEndPoint());
+
+      float angle =
+          arc.Angle().ComputeDegrees(state.CssToLengthConversionData());
+      LengthSize radius =
+          StyleBuilderConverter::ConvertRadius(state, arc.Radius());
+      bool large = arc.Size() == CSSValueID::kLarge;
+      bool sweep = arc.Sweep() == CSSValueID::kCw;
+      return is_relative ? Segment(StyleShape::ArcBySegment{
+                               {{target_point}, angle, radius, large, sweep}})
+                         : Segment(StyleShape::ArcToSegment{
+                               {{target_point}, angle, radius, large, sweep}});
+    }
     case CSSValueID::kClose:
-      return StyleShape::Segment{.type = StyleShape::Segment::kClose};
+      return StyleShape::CloseSegment{};
     default:
       NOTREACHED();
   }
 }
 
-const cssvalue::CSSShapeCommand* ShapeSegmentToShapeCommand(
-    const StyleShape::Segment& segment,
-    float zoom) {
-  // TODO(crbug.com/384870259): support other segment types.
-  switch (segment.type) {
-    case blink::StyleShape::Segment::Type::kMove:
-      return MakeGarbageCollected<const cssvalue::CSSShapeCommand>(
-          CSSValueID::kMove,
-          ShapeSegmentOriginToCSSValueID(segment.end_point_origin),
-          LengthPointToCSSValue(segment.end_point, zoom));
-    case blink::StyleShape::Segment::Type::kLine:
-      return MakeGarbageCollected<const cssvalue::CSSShapeCommand>(
-          CSSValueID::kLine,
-          ShapeSegmentOriginToCSSValueID(segment.end_point_origin),
-          LengthPointToCSSValue(segment.end_point, zoom));
-    case blink::StyleShape::Segment::Type::kHorizontalLine:
-      return MakeGarbageCollected<const cssvalue::CSSShapeCommand>(
-          CSSValueID::kHline,
-          ShapeSegmentOriginToCSSValueID(segment.end_point_origin),
-          *CSSPrimitiveValue::CreateFromLength(segment.end_point.X(), zoom));
-    case blink::StyleShape::Segment::Type::kVerticalLine:
-      return MakeGarbageCollected<const cssvalue::CSSShapeCommand>(
-          CSSValueID::kVline,
-          ShapeSegmentOriginToCSSValueID(segment.end_point_origin),
-          *CSSPrimitiveValue::CreateFromLength(segment.end_point.Y(), zoom));
-    case blink::StyleShape::Segment::Type::kClose:
-      return cssvalue::CSSShapeCommand::Close();
+struct ShapeSegmentToShapeCommandVisitor {
+  // TODO(crbug.com/384870259): support curve/smooth.
+
+  using CSSShapeCommand = cssvalue::CSSShapeCommand;
+
+  const CSSShapeCommand* operator()(const StyleShape::MoveToSegment& segment) {
+    return MakeGarbageCollected<const CSSShapeCommand>(
+        CSSValueID::kMove, CSSValueID::kTo,
+        LengthPointToCSSValue(segment.target_point, zoom));
   }
-}
+  const CSSShapeCommand* operator()(const StyleShape::MoveBySegment& segment) {
+    return MakeGarbageCollected<const CSSShapeCommand>(
+        CSSValueID::kMove, CSSValueID::kBy,
+        LengthPointToCSSValue(segment.target_point, zoom));
+  }
+  const CSSShapeCommand* operator()(const StyleShape::LineToSegment& segment) {
+    return MakeGarbageCollected<const CSSShapeCommand>(
+        CSSValueID::kLine, CSSValueID::kTo,
+        LengthPointToCSSValue(segment.target_point, zoom));
+  }
+  const CSSShapeCommand* operator()(const StyleShape::LineBySegment& segment) {
+    return MakeGarbageCollected<const CSSShapeCommand>(
+        CSSValueID::kLine, CSSValueID::kBy,
+        LengthPointToCSSValue(segment.target_point, zoom));
+  }
+  const CSSShapeCommand* operator()(const StyleShape::HLineToSegment& segment) {
+    return MakeGarbageCollected<const CSSShapeCommand>(
+        CSSValueID::kHline, CSSValueID::kTo,
+        *CSSPrimitiveValue::CreateFromLength(segment.x, zoom));
+  }
+  const CSSShapeCommand* operator()(const StyleShape::HLineBySegment& segment) {
+    return MakeGarbageCollected<const CSSShapeCommand>(
+        CSSValueID::kHline, CSSValueID::kBy,
+        *CSSPrimitiveValue::CreateFromLength(segment.x, zoom));
+  }
+  const CSSShapeCommand* operator()(const StyleShape::VLineToSegment& segment) {
+    return MakeGarbageCollected<const CSSShapeCommand>(
+        CSSValueID::kVline, CSSValueID::kTo,
+        *CSSPrimitiveValue::CreateFromLength(segment.y, zoom));
+  }
+  const CSSShapeCommand* operator()(const StyleShape::VLineBySegment& segment) {
+    return MakeGarbageCollected<const CSSShapeCommand>(
+        CSSValueID::kVline, CSSValueID::kBy,
+        *CSSPrimitiveValue::CreateFromLength(segment.y, zoom));
+  }
+  const CSSShapeCommand* Arc(CSSValueID origin,
+                             const StyleShape::ArcSegment& segment) {
+    return MakeGarbageCollected<const cssvalue::CSSShapeArcCommand>(
+        origin, LengthPointToCSSValue(segment.target_point, zoom),
+        *CSSNumericLiteralValue::Create(segment.angle,
+                                        CSSPrimitiveValue::UnitType::kDegrees),
+        *MakeGarbageCollected<CSSValuePair>(
+            CSSPrimitiveValue::CreateFromLength(segment.radius.Width(), zoom),
+            CSSPrimitiveValue::CreateFromLength(segment.radius.Height(), zoom),
+            CSSValuePair::IdenticalValuesPolicy::kDropIdenticalValues),
+        segment.large ? CSSValueID::kLarge : CSSValueID::kSmall,
+        segment.sweep ? CSSValueID::kCw : CSSValueID::kCcw);
+  }
+
+  const CSSShapeCommand* operator()(const StyleShape::ArcToSegment& segment) {
+    return Arc(CSSValueID::kTo, segment);
+  }
+  const CSSShapeCommand* operator()(const StyleShape::ArcBySegment& segment) {
+    return Arc(CSSValueID::kBy, segment);
+  }
+
+  const CSSShapeCommand* operator()(const StyleShape::CloseSegment&) {
+    return CSSShapeCommand::Close();
+  }
+
+  float zoom;
+};
 
 static CSSValue* ValueForCenterCoordinate(
     const ComputedStyle& style,
@@ -280,9 +324,9 @@ CSSValue* ValueForBasicShape(const ComputedStyle& style,
       const StyleShape* shape = To<StyleShape>(basic_shape);
       HeapVector<Member<const cssvalue::CSSShapeCommand>> commands;
       commands.reserve(shape->Segments().size());
+      ShapeSegmentToShapeCommandVisitor visitor{style.EffectiveZoom()};
       for (const auto& segment : shape->Segments()) {
-        commands.push_back(
-            ShapeSegmentToShapeCommand(segment, style.EffectiveZoom()));
+        commands.push_back(std::visit(visitor, segment));
       }
       return MakeGarbageCollected<cssvalue::CSSShapeValue>(
           shape->GetWindRule(),

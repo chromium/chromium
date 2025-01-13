@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 41 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 34 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] e.style['clip-path'] = "shape(from 20px 40px, move to 20px 30px, hline to x-start, hline to y-start)" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['clip-path'] = "shape(from 20px 40px, move to 20px 30px, vline to y-start, vline to y-end)" should set the property value
@@ -50,37 +50,23 @@ Found 41 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['clip-path'] = "shape(from center, smooth by 20px 20px with 12px 32px from origin)" should set the property value
   assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['clip-path'] = "shape(from 20px 40px, arc to top right of 10%)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['clip-path'] = "shape(from 20px 40px, arc by 20px 20px of 10%)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['clip-path'] = "shape(from 20px 40px, arc by 20px 20px of 0)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['clip-path'] = "shape(from 20px 40px, arc by 20px 20px of 10% 0)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['clip-path'] = "shape(from 20px 40px, arc by 20% 20pt of 10% rotate 0deg)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['clip-path'] = "shape(from 20px 40px, arc by 20px 20px of 10% 20%)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['clip-path'] = "shape(from 20px 40px, arc by 20px 20px of 10% 20% cw)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
+  assert_equals: serialization should be canonical expected "shape(from 20px 40px, arc by 20px 20px of 10% 20% cw)" but got "shape(from 20px 40px, arc by 20px 20px of 10% 20%)"
 [FAIL] e.style['clip-path'] = "shape(from 20px 40px, arc by 20px 20px of 10% 20% large)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
+  assert_equals: serialization should be canonical expected "shape(from 20px 40px, arc by 20px 20px of 10% 20% large)" but got "shape(from 20px 40px, arc by 20px 20px of 10% 20%)"
 [FAIL] e.style['clip-path'] = "shape(from 20px 40px, arc by 20px 20px of -10% -20% large)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['clip-path'] = "shape(from 20px 40px, arc by 20px 20px of 10% rotate 1deg)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
+  assert_equals: serialization should be canonical expected "shape(from 20px 40px, arc by 20px 20px of -10% -20% large)" but got "shape(from 20px 40px, arc by 20px 20px of -10% -20%)"
 [FAIL] e.style['clip-path'] = "shape(from 20px 40px, arc by 20px 20px of 10% 20% cw rotate 12deg)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
+  assert_equals: serialization should be canonical expected "shape(from 20px 40px, arc by 20px 20px of 10% 20% cw rotate 12deg)" but got "shape(from 20px 40px, arc by 20px 20px of 10% 20% rotate 12deg)"
 [FAIL] e.style['clip-path'] = "shape(from 20px 40px, arc by 20px 20px of 10px 20px cw rotate 0.52rad)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
+  assert_equals: serialization should be canonical expected "shape(from 20px 40px, arc by 20px 20px of 10px 20px cw rotate 0.52rad)" but got "shape(from 20px 40px, arc by 20px 20px of 10px 20px rotate 0.52rad)"
 [FAIL] e.style['clip-path'] = "shape(from 20px 40px, arc by 20px 20px of 10% 20% large rotate 12deg)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
+  assert_equals: serialization should be canonical expected "shape(from 20px 40px, arc by 20px 20px of 10% 20% large rotate 12deg)" but got "shape(from 20px 40px, arc by 20px 20px of 10% 20% rotate 12deg)"
 [FAIL] e.style['clip-path'] = "shape(from 20px 40px, arc by 20px 20px of 10% 20% cw large)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
+  assert_equals: serialization should be canonical expected "shape(from 20px 40px, arc by 20px 20px of 10% 20% cw large)" but got "shape(from 20px 40px, arc by 20px 20px of 10% 20%)"
 [FAIL] e.style['clip-path'] = "shape(from 20px 40px, arc by 20px 20px of 10% 20% large cw)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
+  assert_equals: serialization should be canonical expected "shape(from 20px 40px, arc by 20px 20px of 10% 20% cw large)" but got "shape(from 20px 40px, arc by 20px 20px of 10% 20%)"
 [FAIL] e.style['clip-path'] = "shape(from 20px 40px, arc by 20px 20px of 10% 20% rotate 12deg large)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
+  assert_equals: serialization should be canonical expected "shape(from 20px 40px, arc by 20px 20px of 10% 20% large rotate 12deg)" but got "shape(from 20px 40px, arc by 20px 20px of 10% 20% rotate 12deg)"
 Harness: the test ran to completion.
 

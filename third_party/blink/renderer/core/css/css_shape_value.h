@@ -6,7 +6,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_SHAPE_VALUE_H_
 #include <initializer_list>
 
+#include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
+#include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
@@ -29,13 +31,13 @@ class CSSShapeCommand : public GarbageCollected<CSSShapeCommand> {
 
   String CSSText() const;
   bool operator==(const CSSShapeCommand& other) const;
-  void Trace(Visitor* visitor) const { visitor->Trace(end_point_); }
+  virtual void Trace(Visitor* visitor) const { visitor->Trace(end_point_); }
 
   CSSShapeCommand(CSSValueID type, CSSValueID origin, const CSSValue& end_point)
       : type_(type), end_point_origin_(origin), end_point_(end_point) {
     CHECK(type == CSSValueID::kMove || type == CSSValueID::kLine ||
           type == CSSValueID::kHline || type == CSSValueID::kVline ||
-          type == CSSValueID::kClose);
+          type == CSSValueID::kArc);
     CHECK(origin == CSSValueID::kTo || origin == CSSValueID::kBy);
   }
 
@@ -57,6 +59,44 @@ class CSSShapeCommand : public GarbageCollected<CSSShapeCommand> {
   // relative to the end of the previous command.
   CSSValueID end_point_origin_;
   Member<const CSSValue> end_point_;
+};
+
+class CSSShapeArcCommand : public CSSShapeCommand {
+ public:
+  CSSShapeArcCommand(CSSValueID origin,
+                     const CSSValue& end_point,
+                     const CSSPrimitiveValue& angle,
+                     const CSSValuePair& radius,
+                     CSSValueID size,
+                     CSSValueID sweep)
+      : CSSShapeCommand(CSSValueID::kArc, origin, end_point),
+        angle_(angle),
+        radius_(radius),
+        size_(size),
+        sweep_(sweep) {
+    CHECK(sweep == CSSValueID::kCw || sweep == CSSValueID::kCcw);
+    CHECK(size == CSSValueID::kLarge || size == CSSValueID::kSmall);
+  }
+  const CSSPrimitiveValue& Angle() const { return *angle_; }
+  const CSSValuePair& Radius() const { return *radius_; }
+  CSSValueID Size() const { return size_; }
+  CSSValueID Sweep() const { return sweep_; }
+  bool operator==(const CSSShapeArcCommand& other) const {
+    return CSSShapeCommand::operator==(other) && sweep_ == other.sweep_ &&
+           size_ == other.size_ && radius_ == other.radius_ &&
+           angle_ == other.angle_;
+  }
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(angle_);
+    visitor->Trace(radius_);
+    CSSShapeCommand::Trace(visitor);
+  }
+
+ private:
+  Member<const CSSPrimitiveValue> angle_;
+  Member<const CSSValuePair> radius_;
+  CSSValueID size_;
+  CSSValueID sweep_;
 };
 
 class CSSShapeValue : public CSSValue {
