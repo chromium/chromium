@@ -99,8 +99,13 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
       },
       showGhostLoader: {
         type: Boolean,
-        computed: `computeShowGhostLoader(isSearchboxFocused,
-              suppressGhostLoader, isContextualSearchbox)`,
+        computed:
+            `computeShowGhostLoader(
+                isSearchboxFocused,
+                autocompleteRequestStarted,
+                showErrorState,
+                suppressGhostLoader,
+                isContextualSearchbox)`,
         reflectToAttribute: true,
       },
       showErrorState: {
@@ -128,6 +133,8 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
   suppressGhostLoader: boolean;
   // Whether the ghost loader should show its error state.
   showErrorState: boolean;
+  // Whether this is an in flight request to autocomplete.
+  private autocompleteRequestStarted: boolean = false;
   private isErrorPageVisible: boolean;
   // Whether the results iframe is currently loading. This needs to be done via
   // browser because the iframe is cross-origin. Default true since the side
@@ -197,6 +204,9 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
         onSearchboxKeydown(this, this.$.searchbox);
       }
     });
+    this.eventTracker_.add(
+        document, 'query-autocomplete',
+        this.handleQueryAutocomplete.bind(this));
   }
 
   override disconnectedCallback() {
@@ -247,6 +257,11 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
     this.wasBackArrowAvailable = visible;
   }
 
+  // Called when the searchbox requests autocomplete suggestions.
+  private handleQueryAutocomplete() {
+    this.autocompleteRequestStarted = true;
+  }
+
   private setShowErrorPage(shouldShowErrorPage: boolean) {
     this.isErrorPageVisible =
         shouldShowErrorPage && loadTimeData.getBoolean('enableErrorPage');
@@ -264,12 +279,18 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
   private onSearchboxFocusOut_() {
     this.isBackArrowVisible = this.wasBackArrowAvailable;
     this.isSearchboxFocused = false;
+    this.autocompleteRequestStarted = false;
     this.showErrorState = false;
   }
 
   private computeShowGhostLoader(): boolean {
-    return this.isSearchboxFocused && !this.suppressGhostLoader &&
-        this.isContextualSearchbox;
+    if (!this.isContextualSearchbox || this.suppressGhostLoader) {
+      return false;
+    }
+    // Show the ghost loader if there is focus on the searchbox, and there is
+    // autcomplete is loading or if autocomplete failed.
+    return this.isSearchboxFocused &&
+        (this.autocompleteRequestStarted || this.showErrorState);
   }
 
   private computePlaceholderText(): string {
@@ -293,6 +314,7 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
     this.isContextualSearchbox = true;
     this.suppressGhostLoader = false;
     this.isSearchboxFocused = true;
+    this.autocompleteRequestStarted = true;
   }
 }
 
