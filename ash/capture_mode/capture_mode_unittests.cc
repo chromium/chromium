@@ -6183,9 +6183,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                                          CaptureModeSource::kRegion,
                                          CaptureModeSource::kWindow));
 
-class AnnotatorCaptureModeIntegrationTests
-    : public CaptureModeTest,
-      public ::testing::WithParamInterface<CaptureModeSource> {
+class AnnotatorCaptureModeIntegrationTests : public CaptureModeTest {
  public:
   AnnotatorCaptureModeIntegrationTests() = default;
   ~AnnotatorCaptureModeIntegrationTests() override = default;
@@ -6234,6 +6232,10 @@ class AnnotatorCaptureModeIntegrationTests
   std::unique_ptr<aura::Window> window_;
   base::HistogramTester histogram_tester_;
 };
+
+class AnnotatorCaptureModeIntegrationTestsWithSource
+    : public AnnotatorCaptureModeIntegrationTests,
+      public ::testing::WithParamInterface<CaptureModeSource> {};
 
 TEST_F(AnnotatorCaptureModeIntegrationTests, AnnotationsOverlayWidget) {
   StartRecordingFromSource(CaptureModeSource::kFullscreen);
@@ -6443,7 +6445,8 @@ TEST_F(AnnotatorCaptureModeIntegrationTests,
   }
 }
 
-TEST_P(AnnotatorCaptureModeIntegrationTests, AnnotationsOverlayWidgetBounds) {
+TEST_P(AnnotatorCaptureModeIntegrationTestsWithSource,
+       AnnotationsOverlayWidgetBounds) {
   const auto capture_source = GetParam();
   StartRecordingFromSource(capture_source);
   CaptureModeTestApi test_api;
@@ -6454,7 +6457,7 @@ TEST_P(AnnotatorCaptureModeIntegrationTests, AnnotationsOverlayWidgetBounds) {
   VerifyOverlayWindow(overlay_window, capture_source, kUserRegion);
 }
 
-TEST_P(AnnotatorCaptureModeIntegrationTests,
+TEST_P(AnnotatorCaptureModeIntegrationTestsWithSource,
        AnnotationsOverlayWidgetBoundsSecondDisplay) {
   UpdateDisplay("800x700,801+0-800x700");
   const gfx::Point point_in_second_display = gfx::Point(1000, 500);
@@ -6479,7 +6482,7 @@ TEST_P(AnnotatorCaptureModeIntegrationTests,
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         AnnotatorCaptureModeIntegrationTests,
+                         AnnotatorCaptureModeIntegrationTestsWithSource,
                          testing::Values(CaptureModeSource::kFullscreen,
                                          CaptureModeSource::kRegion,
                                          CaptureModeSource::kWindow));
