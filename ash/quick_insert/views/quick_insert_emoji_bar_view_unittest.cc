@@ -249,6 +249,8 @@ TEST_F(QuickInsertEmojiBarViewTest,
 
 TEST_F(QuickInsertEmojiBarViewTest,
        ClickingGifsButtonDoesNotToggleCheckedState) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kPickerGifs);
   MockEmojiBarViewDelegate mock_delegate;
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);

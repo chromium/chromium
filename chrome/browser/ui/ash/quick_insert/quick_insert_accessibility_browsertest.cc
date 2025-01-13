@@ -389,7 +389,18 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
+class QuickInsertAccessibilityWithGifsFlagDisabledBrowserTest
+    : public QuickInsertAccessibilityBrowserTest {
+ public:
+  QuickInsertAccessibilityWithGifsFlagDisabledBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(ash::features::kPickerGifs);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityWithGifsFlagDisabledBrowserTest,
                        FocusingGifsButtonAnnouncesLabel) {
   std::unique_ptr<views::Widget> widget =
       ash::TestWidgetBuilder()

@@ -2824,6 +2824,8 @@ TEST_P(QuickInsertViewEmojiTest,
 }
 
 TEST_F(QuickInsertViewTest, ClickingGifsButtonOpensGifPickerWithQuerySearch) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kPickerGifs);
   FakeQuickInsertViewDelegate delegate(
       {.available_categories = {QuickInsertCategory::kEmojisGifs}});
   auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
