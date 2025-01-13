@@ -87,8 +87,8 @@ void PolicyDialogBase::SetupUpperPanel() {
   // TODO(crbug.com/40202228) Enable dynamic UI color & theme in lacros
   auto color = SK_ColorGRAY;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  managed_icon->SetImage(gfx::CreateVectorIcon(vector_icons::kBusinessIcon,
-                                               kManagedIconSize, color));
+  managed_icon->SetImage(ui::ImageModel::FromVectorIcon(
+      vector_icons::kBusinessIcon, color, kManagedIconSize));
 }
 
 views::Label* PolicyDialogBase::AddTitle(const std::u16string& title) {

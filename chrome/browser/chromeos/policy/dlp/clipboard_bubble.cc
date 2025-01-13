@@ -131,8 +131,8 @@ ClipboardBubbleView::ClipboardBubbleView(const std::u16string& text) {
   managed_icon_->layer()->SetFillsBoundsOpaquely(false);
   managed_icon_->SetBounds(kBubblePadding, kBubblePadding, kManagedIconSize,
                            kManagedIconSize);
-  managed_icon_->SetImage(gfx::CreateVectorIcon(vector_icons::kBusinessIcon,
-                                                kManagedIconSize, icon_color));
+  managed_icon_->SetImage(ui::ImageModel::FromVectorIcon(
+      vector_icons::kBusinessIcon, icon_color, kManagedIconSize));
 
   // Add the bubble text.
   label_ = AddChildView(std::make_unique<views::StyledLabel>());
