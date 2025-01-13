@@ -1653,7 +1653,7 @@
     ],
     "args": ["--enable-features=PrivacySandboxAdsAPIsOverride,Fledge,AdInterestGroupAPI,FencedFramesEnforceFocus,FencedFramesLocalUnpartitionedDataAccess,ExemptUrlFromNetworkRevocationForTesting,FencedFramesCrossOriginEventReportingAllTraffic,FencedFramesReportEventHeaderChanges,FencedFramesSrcPermissionsPolicy,FencedFramesCrossOriginAutomaticBeaconData",
              "--enable-blink-features=FencedFramesDefaultMode"],
-    "expires": "May 1, 2025"
+    "expires": "Jan 9, 2026"
   },
   "This is the same as the 'fenced-frame-mparch' test suite, but this suite",
   "exposes debug behavior that isn't implemented in WebDriver yet.",
@@ -1672,7 +1672,7 @@
       "wpt_internal/fenced_frame"
     ],
     "args": ["--enable-features=PrivacySandboxAdsAPIsOverride,Fledge,AdInterestGroupAPI,FencedFramesEnforceFocus,FencedFramesLocalUnpartitionedDataAccess,ExemptUrlFromNetworkRevocationForTesting,FencedFramesCrossOriginEventReportingAllTraffic,FencedFramesReportEventHeaderChanges,FencedFramesDefaultMode"],
-    "expires": "Jan 9, 2025"
+    "expires": "Jan 9, 2026"
   },
   {
     "prefix": "cors-non-wildcard-request-headers",
