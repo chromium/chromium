@@ -157,6 +157,9 @@ class ASH_EXPORT BirchCoralProvider : public BirchDataProvider,
   // current in-session `response_`.
   void RemoveEntity(std::string_view entity_identifier);
 
+  // Resets raw pointers and window observations when exiting Overview mode.
+  void Reset();
+
   // The request sent to the coral backend.
   CoralRequest request_;
 
