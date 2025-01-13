@@ -674,22 +674,21 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
                : true)) {
         auto delay =
             base::Milliseconds(features::kCacheCodeOnIdleDelayParam.Get());
-        // Workers don't have a concept of idle tasks, so use a default task for
-        // these.
-        TaskType task_type =
-            frame ? TaskType::kIdleTask : TaskType::kInternalDefault;
-        execution_context->GetTaskRunner(task_type)->PostDelayedTask(
-            FROM_HERE,
-            WTF::BindOnce(&DelayedProduceCodeCacheTask,
-                          // TODO(leszeks): Consider passing the
-                          // script state as a weak persistent.
-                          WrapPersistent(script_state),
-                          v8::Global<v8::Script>(isolate, script),
-                          WrapPersistent(cache_handler),
-                          classic_script->SourceText().length(),
-                          classic_script->SourceUrl(),
-                          classic_script->StartPosition()),
-            delay);
+        // TODO(crbug.com/40202028): Consider scheduling idle tasks via
+        // ThreadScheduler::PostDelayedIdleTask().
+        execution_context->GetTaskRunner(TaskType::kInternalDefault)
+            ->PostDelayedTask(
+                FROM_HERE,
+                WTF::BindOnce(&DelayedProduceCodeCacheTask,
+                              // TODO(leszeks): Consider passing the
+                              // script state as a weak persistent.
+                              WrapPersistent(script_state),
+                              v8::Global<v8::Script>(isolate, script),
+                              WrapPersistent(cache_handler),
+                              classic_script->SourceText().length(),
+                              classic_script->SourceUrl(),
+                              classic_script->StartPosition()),
+                delay);
       } else {
         V8CodeCache::ProduceCache(
             isolate,
