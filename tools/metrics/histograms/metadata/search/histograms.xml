@@ -54,7 +54,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.AuxiliarySearch.DeleteTime{AuxiliarySearchDataType}"
-    units="ms" expires_after="M140">
+    units="ms" expires_after="2026-02-10">
   <owner>gangwu@chromium.org</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>Time taken for deleting contents from the auxiliary search.</summary>
@@ -63,7 +63,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Search.AuxiliarySearch.DeletionFailure{AuxiliarySearchDataType}"
-    units="count" expires_after="M140">
+    units="count" expires_after="2026-02-10">
   <owner>gangwu@chromium.org</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
@@ -74,7 +74,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Search.AuxiliarySearch.DeletionRequestStatus{AuxiliarySearchDataType}"
-    enum="AuxiliarySearchRequestStatus" expires_after="M140">
+    enum="AuxiliarySearchRequestStatus" expires_after="2026-02-10">
   <owner>gangwu@chromium.org</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
@@ -94,7 +94,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Search.AuxiliarySearch.DonationFailure{AuxiliarySearchDataType}"
-    units="count" expires_after="M140">
+    units="count" expires_after="2026-02-10">
   <owner>gangwu@chromium.org</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
