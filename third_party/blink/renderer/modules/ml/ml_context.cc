@@ -14,6 +14,7 @@
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
 #include "services/webnn/public/cpp/webnn_errors.h"
+#include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/mojom/features.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_graph_builder.mojom-blink.h"
@@ -51,7 +52,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_where_support_limits.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
-#include "third_party/blink/renderer/modules/ml/ml_trace.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_error.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
@@ -966,7 +966,7 @@ ScriptPromise<MLTensor> MLContext::createTensor(
     ScriptState* script_state,
     const MLTensorDescriptor* descriptor,
     ExceptionState& exception_state) {
-  ScopedMLTrace scoped_trace("MLContext::createTensor");
+  webnn::ScopedTrace scoped_trace("MLContext::createTensor");
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid script state");
@@ -1038,7 +1038,7 @@ void MLContext::writeTensor(ScriptState* script_state,
                             MLTensor* dst_tensor,
                             AllowSharedBufferSource* src_data,
                             ExceptionState& exception_state) {
-  ScopedMLTrace scoped_trace("MLContext::writeTensor");
+  webnn::ScopedTrace scoped_trace("MLContext::writeTensor");
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid script state");
@@ -1074,7 +1074,7 @@ ScriptPromise<DOMArrayBuffer> MLContext::readTensor(
     ScriptState* script_state,
     MLTensor* src_tensor,
     ExceptionState& exception_state) {
-  ScopedMLTrace scoped_trace("MLContext::readTensor");
+  webnn::ScopedTrace scoped_trace("MLContext::readTensor");
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid script state");
@@ -1102,7 +1102,7 @@ ScriptPromise<IDLUndefined> MLContext::readTensor(
     MLTensor* src_tensor,
     AllowSharedBufferSource* dst_data,
     ExceptionState& exception_state) {
-  ScopedMLTrace scoped_trace("MLContext::readTensor");
+  webnn::ScopedTrace scoped_trace("MLContext::readTensor");
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid script state");
@@ -1127,7 +1127,7 @@ void MLContext::dispatch(ScriptState* script_state,
                          const MLNamedTensors& inputs,
                          const MLNamedTensors& outputs,
                          ExceptionState& exception_state) {
-  ScopedMLTrace scoped_trace("MLContext::dispatch");
+  webnn::ScopedTrace scoped_trace("MLContext::dispatch");
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid script state");
@@ -1145,7 +1145,7 @@ void MLContext::dispatch(ScriptState* script_state,
 }
 
 void MLContext::DidCreateWebNNTensor(
-    ScopedMLTrace scoped_trace,
+    webnn::ScopedTrace scoped_trace,
     ScriptPromiseResolver<blink::MLTensor>* resolver,
     webnn::OperandDescriptor validated_descriptor,
     webnn::MLTensorUsage usage,

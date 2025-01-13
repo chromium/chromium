@@ -18,6 +18,8 @@ component("cpp") {
     "supported_tensors.h",
     "webnn_errors.cc",
     "webnn_errors.h",
+    "webnn_trace.cc",
+    "webnn_trace.h",
   ]
 
   deps = [
@@ -26,4 +28,16 @@ component("cpp") {
   ]
 
   defines = [ "IS_WEBNN_PUBLIC_CPP_IMPL" ]
+}
+
+source_set("tests") {
+  testonly = true
+
+  sources = [ "webnn_trace_unittest.cc" ]
+
+  deps = [
+    ":cpp",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
 }

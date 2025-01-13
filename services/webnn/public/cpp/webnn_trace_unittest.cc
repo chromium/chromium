@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/ml/ml_trace.h"
+#include "services/webnn/public/cpp/webnn_trace.h"
 
 #include <map>
 #include <string>
@@ -14,22 +14,20 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/trace_event/trace_buffer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_log.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
-#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
-namespace blink {
+namespace webnn {
 
-class ScopedMLTraceTest : public testing::Test {
+class ScopedTraceTest : public testing::Test {
  public:
-  ScopedMLTraceTest() = default;
+  ScopedTraceTest() = default;
 
-  ~ScopedMLTraceTest() override = default;
+  ~ScopedTraceTest() override = default;
 
   void SetUp() override {
     test_task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
@@ -67,7 +65,7 @@ class ScopedMLTraceTest : public testing::Test {
     base::trace_event::TraceLog::GetInstance()->SetDisabled();
     base::RunLoop run_loop;
     base::trace_event::TraceLog::GetInstance()->Flush(base::BindRepeating(
-        &ScopedMLTraceTest::TraceDataCb, run_loop.QuitClosure(), &json_data));
+        &ScopedTraceTest::TraceDataCb, run_loop.QuitClosure(), &json_data));
     run_loop.Run();
 
     auto parsed_json =
@@ -98,15 +96,15 @@ class ScopedMLTraceTest : public testing::Test {
   }
 
   // The task runner we use for posting tasks.
-  test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
 };
 
-TEST_F(ScopedMLTraceTest, SingleScopeWithoutStep) {
+TEST_F(ScopedTraceTest, SingleScopeWithoutStep) {
   {
     // Check the behavior without move. Both begin/end event should be seen.
     StartTracing("webnn");
-    { ScopedMLTrace scoped_trace1("Method1"); }
+    { ScopedTrace scoped_trace1("Method1"); }
     auto event_counts = EndTracing();
 
     auto [method_begins, method_ends] = event_counts.at("Method1");
@@ -118,8 +116,8 @@ TEST_F(ScopedMLTraceTest, SingleScopeWithoutStep) {
     // Check the behavior with move assign. Both begin/end event should be seen.
     StartTracing("webnn");
     {
-      ScopedMLTrace scoped_trace1("Method1");
-      ScopedMLTrace scoped_trace2 = std::move(scoped_trace1);
+      ScopedTrace scoped_trace1("Method1");
+      ScopedTrace scoped_trace2 = std::move(scoped_trace1);
     }
     auto event_counts = EndTracing();
 
@@ -132,8 +130,8 @@ TEST_F(ScopedMLTraceTest, SingleScopeWithoutStep) {
     // Check the behavior with move ctor, similar as move assign.
     StartTracing("webnn");
     {
-      ScopedMLTrace scoped_trace1("Method1");
-      ScopedMLTrace scoped_trace2(std::move(scoped_trace1));
+      ScopedTrace scoped_trace1("Method1");
+      ScopedTrace scoped_trace2(std::move(scoped_trace1));
     }
     auto event_counts = EndTracing();
 
@@ -146,8 +144,8 @@ TEST_F(ScopedMLTraceTest, SingleScopeWithoutStep) {
     // Move should not trigger an immediate end event.
     StartTracing("webnn");
     {
-      ScopedMLTrace scoped_trace1("Method1");
-      ScopedMLTrace scoped_trace2 = std::move(scoped_trace1);
+      ScopedTrace scoped_trace1("Method1");
+      ScopedTrace scoped_trace2 = std::move(scoped_trace1);
       auto event_counts = EndTracing();
       auto [method_begins, method_ends] = event_counts.at("Method1");
       EXPECT_EQ(1, method_begins);
@@ -157,12 +155,12 @@ TEST_F(ScopedMLTraceTest, SingleScopeWithoutStep) {
 }
 
 // Both main trace and sub-trace should have pairing begin/end.
-TEST_F(ScopedMLTraceTest, SingleScopeWithStep) {
+TEST_F(ScopedTraceTest, SingleScopeWithStep) {
   StartTracing("webnn");
   {
-    ScopedMLTrace scoped_trace1("Method1");
+    ScopedTrace scoped_trace1("Method1");
     scoped_trace1.AddStep("Step1");
-    ScopedMLTrace scoped_trace2 = std::move(scoped_trace1);
+    ScopedTrace scoped_trace2 = std::move(scoped_trace1);
   }
   auto event_counts = EndTracing();
 
@@ -175,13 +173,13 @@ TEST_F(ScopedMLTraceTest, SingleScopeWithStep) {
 }
 
 // Multiple steps should results in multiple begin/end pairs.
-TEST_F(ScopedMLTraceTest, MultipleAddSteps) {
+TEST_F(ScopedTraceTest, MultipleAddSteps) {
   StartTracing("webnn");
   {
-    ScopedMLTrace scoped_trace1("Method1");
+    ScopedTrace scoped_trace1("Method1");
     scoped_trace1.AddStep("Step1");
     scoped_trace1.AddStep("Step2");
-    ScopedMLTrace scoped_trace2(std::move(scoped_trace1));
+    ScopedTrace scoped_trace2(std::move(scoped_trace1));
     scoped_trace2.AddStep("Step3");
   }
   auto event_counts = EndTracing();
@@ -201,11 +199,11 @@ TEST_F(ScopedMLTraceTest, MultipleAddSteps) {
 }
 
 // Nesting top-level traces should have pairing begin/end.
-TEST_F(ScopedMLTraceTest, MultipleNestedTraces) {
+TEST_F(ScopedTraceTest, MultipleNestedTraces) {
   StartTracing("webnn");
   {
-    ScopedMLTrace scoped_trace1("Method1");
-    { ScopedMLTrace scoped_trace2("Method2"); }
+    ScopedTrace scoped_trace1("Method1");
+    { ScopedTrace scoped_trace2("Method2"); }
   }
   auto event_counts = EndTracing();
 
@@ -218,12 +216,12 @@ TEST_F(ScopedMLTraceTest, MultipleNestedTraces) {
 }
 
 // Trace handle should be passed correct across function boundaries.
-TEST_F(ScopedMLTraceTest, PassScopedTraceToFunc) {
+TEST_F(ScopedTraceTest, PassScopedTraceToFunc) {
   {
     // Pass to another function that does not add extra step.
     StartTracing("webnn");
-    ScopedMLTrace scoped_trace1("Method1");
-    ([](ScopedMLTrace trace) {})(std::move(scoped_trace1));
+    ScopedTrace scoped_trace1("Method1");
+    ([](ScopedTrace trace) {})(std::move(scoped_trace1));
     auto event_counts = EndTracing();
 
     auto [method_begins, method_ends] = event_counts.at("Method1");
@@ -235,8 +233,8 @@ TEST_F(ScopedMLTraceTest, PassScopedTraceToFunc) {
   {
     // Pass to another function call that adds extra step.
     StartTracing("webnn");
-    ScopedMLTrace scoped_trace2("Method1");
-    ([](ScopedMLTrace trace) { trace.AddStep("Step1"); })(
+    ScopedTrace scoped_trace2("Method1");
+    ([](ScopedTrace trace) { trace.AddStep("Step1"); })(
         std::move(scoped_trace2));
     auto event_counts = EndTracing();
 
@@ -249,96 +247,14 @@ TEST_F(ScopedMLTraceTest, PassScopedTraceToFunc) {
   }
 }
 
-// Trace handle should be passed correctly by posting tasks.
-TEST_F(ScopedMLTraceTest, WorksWithPostCrossThreadTask) {
-  {
-    // Post to another thread that does not add extra step.
-    StartTracing("webnn");
-    ScopedMLTrace scoped_trace1("Method1");
-    PostCrossThreadTask(*test_task_runner_, FROM_HERE,
-                        CrossThreadBindOnce([](ScopedMLTrace trace) {},
-                                            std::move(scoped_trace1)));
-    test_task_runner_->RunUntilIdle();
-    auto event_counts = EndTracing();
-
-    auto [method_begins, method_ends] = event_counts.at("Method1");
-    EXPECT_EQ(1, method_begins);
-    EXPECT_EQ(1, method_ends);
-  }
-
-  {
-    // Post to another thread that adds extra step.
-    base::trace_event::TraceLog::ResetForTesting();
-    StartTracing("webnn");
-    ScopedMLTrace scoped_trace2("Method1");
-    PostCrossThreadTask(
-        *test_task_runner_, FROM_HERE,
-        CrossThreadBindOnce([](ScopedMLTrace trace) { trace.AddStep("Step1"); },
-                            std::move(scoped_trace2)));
-    test_task_runner_->RunUntilIdle();
-    auto event_counts = EndTracing();
-
-    auto [method_begins, method_ends] = event_counts.at("Method1");
-    auto [step_begins, step_ends] = event_counts.at("Step1");
-    EXPECT_EQ(1, method_begins);
-    EXPECT_EQ(1, method_ends);
-    EXPECT_EQ(1, step_begins);
-    EXPECT_EQ(1, step_ends);
-  }
-
-  {
-    // Add step first, and post to another thread without adding step.
-    base::trace_event::TraceLog::ResetForTesting();
-    StartTracing("webnn");
-    ScopedMLTrace scoped_trace3("Method1");
-    scoped_trace3.AddStep("Step1");
-    PostCrossThreadTask(*test_task_runner_, FROM_HERE,
-                        CrossThreadBindOnce([](ScopedMLTrace trace) {},
-                                            std::move(scoped_trace3)));
-    test_task_runner_->RunUntilIdle();
-    auto event_counts = EndTracing();
-
-    auto [method_begins, method_ends] = event_counts.at("Method1");
-    auto [step_begins, step_ends] = event_counts.at("Step1");
-    EXPECT_EQ(1, method_begins);
-    EXPECT_EQ(1, method_ends);
-    EXPECT_EQ(1, step_begins);
-    EXPECT_EQ(1, step_ends);
-  }
-
-  {
-    // Add step first, and post to another thread that adds step.
-    base::trace_event::TraceLog::ResetForTesting();
-    StartTracing("webnn");
-    ScopedMLTrace scoped_trace4("Method1");
-    scoped_trace4.AddStep("Step1");
-    PostCrossThreadTask(
-        *test_task_runner_, FROM_HERE,
-        CrossThreadBindOnce([](ScopedMLTrace trace) { trace.AddStep("Step2"); },
-                            std::move(scoped_trace4)));
-    test_task_runner_->RunUntilIdle();
-    auto event_counts = EndTracing();
-
-    auto [method_begins, method_ends] = event_counts.at("Method1");
-    auto [step_begins, step_ends] = event_counts.at("Step1");
-    auto [step_in_task_begins, step_in_task_ends] = event_counts["Step2"];
-    EXPECT_EQ(1, method_begins);
-    EXPECT_EQ(1, method_ends);
-    EXPECT_EQ(1, step_begins);
-    EXPECT_EQ(1, step_ends);
-    EXPECT_EQ(1, step_in_task_begins);
-    EXPECT_EQ(1, step_in_task_ends);
-  }
-}
-
-TEST_F(ScopedMLTraceTest, WorksWithBindOnce) {
+TEST_F(ScopedTraceTest, WorksWithBindOnce) {
   {
     // Invoke BindOnce without adding extra step.
     StartTracing("webnn");
-    ScopedMLTrace scoped_trace1("Method1");
+    ScopedTrace scoped_trace1("Method1");
     test_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce([](ScopedMLTrace trace) {}, std::move(scoped_trace1)));
+        base::BindOnce([](ScopedTrace trace) {}, std::move(scoped_trace1)));
     test_task_runner_->RunUntilIdle();
     auto event_counts = EndTracing();
 
@@ -350,10 +266,10 @@ TEST_F(ScopedMLTraceTest, WorksWithBindOnce) {
   {
     // Invoke BindOnce and add extra step.
     StartTracing("webnn");
-    ScopedMLTrace scoped_trace2("Method1");
+    ScopedTrace scoped_trace2("Method1");
     test_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce([](ScopedMLTrace trace) { trace.AddStep("Step1"); },
+        base::BindOnce([](ScopedTrace trace) { trace.AddStep("Step1"); },
                        std::move(scoped_trace2)));
     test_task_runner_->RunUntilIdle();
     auto event_counts = EndTracing();
@@ -367,4 +283,4 @@ TEST_F(ScopedMLTraceTest, WorksWithBindOnce) {
   }
 }
 
-}  // namespace blink
+}  // namespace webnn

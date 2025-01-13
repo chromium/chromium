@@ -104,7 +104,7 @@ uint64_t MLTensor::PackedByteLength() const {
 }
 
 ScriptPromise<DOMArrayBuffer> MLTensor::ReadTensorImpl(
-    ScopedMLTrace scoped_trace,
+    webnn::ScopedTrace scoped_trace,
     ScriptState* script_state,
     ExceptionState& exception_state) {
   // Remote context gets automatically unbound when the execution context
@@ -129,7 +129,7 @@ ScriptPromise<DOMArrayBuffer> MLTensor::ReadTensorImpl(
 }
 
 ScriptPromise<IDLUndefined> MLTensor::ReadTensorImpl(
-    ScopedMLTrace scoped_trace,
+    webnn::ScopedTrace scoped_trace,
     ScriptState* script_state,
     AllowSharedBufferSource* dst_data,
     ExceptionState& exception_state) {
@@ -160,7 +160,7 @@ ScriptPromise<IDLUndefined> MLTensor::ReadTensorImpl(
 }
 
 void MLTensor::OnDidReadTensor(
-    ScopedMLTrace scoped_trace,
+    webnn::ScopedTrace scoped_trace,
     ScriptPromiseResolver<DOMArrayBuffer>* resolver,
     base::ElapsedTimer read_tensor_timer,
     webnn::mojom::blink::ReadTensorResultPtr result) {
@@ -182,7 +182,7 @@ void MLTensor::OnDidReadTensor(
 }
 
 void MLTensor::OnDidReadTensorByob(
-    ScopedMLTrace scoped_trace,
+    webnn::ScopedTrace scoped_trace,
     ScriptPromiseResolver<IDLUndefined>* resolver,
     AllowSharedBufferSource* dst_data,
     base::ElapsedTimer read_tensor_timer,

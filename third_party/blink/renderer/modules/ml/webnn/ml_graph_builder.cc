@@ -18,6 +18,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/webnn_errors.h"
+#include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/mojom/features.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
@@ -1672,7 +1673,7 @@ MLOperand* MLGraphBuilder::constant(ScriptState* script_state,
                                     const MLOperandDescriptor* desc,
                                     AllowSharedBufferSource* buffer,
                                     ExceptionState& exception_state) {
-  ScopedMLTrace scoped_trace("MLGraphBuilder::constant");
+  webnn::ScopedTrace scoped_trace("MLGraphBuilder::constant");
   CHECK(buffer);
 
   THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
@@ -3248,7 +3249,7 @@ ScriptPromise<MLGraph> MLGraphBuilder::build(
     ScriptState* script_state,
     const MLNamedOperands& named_outputs,
     ExceptionState& exception_state) {
-  ScopedMLTrace scoped_trace("MLGraphBuilder::build");
+  webnn::ScopedTrace scoped_trace("MLGraphBuilder::build");
   base::expected<void, String> validation_result = ValidateGraphBuilderState();
   if (!validation_result.has_value()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,

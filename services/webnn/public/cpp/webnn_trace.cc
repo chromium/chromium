@@ -2,32 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/ml/ml_trace.h"
+#include "services/webnn/public/cpp/webnn_trace.h"
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
 
-namespace blink {
+namespace webnn {
 
 constexpr char kWebNNTraceCategory[] = "webnn";
 
-// Reset the |id_| so the moved `ScopedMLTrace` object won't end the trace
+// Reset the |id_| so the moved `ScopedTrace` object won't end the trace
 // prematurely on destruction.
-ScopedMLTrace::ScopedMLTrace(ScopedMLTrace&& other)
+ScopedTrace::ScopedTrace(ScopedTrace&& other)
     : name_(other.name_),
       id_(std::exchange(other.id_, std::nullopt)),
       step_(std::move(other.step_)) {}
 
-ScopedMLTrace::~ScopedMLTrace() {
+ScopedTrace::~ScopedTrace() {
   if (id_.has_value()) {
     TRACE_EVENT_NESTABLE_ASYNC_END0(kWebNNTraceCategory, name_,
                                     TRACE_ID_LOCAL(id_.value()));
   }
 }
 
-ScopedMLTrace& ScopedMLTrace::operator=(ScopedMLTrace&& other) {
+ScopedTrace& ScopedTrace::operator=(ScopedTrace&& other) {
   if (this != &other) {
     name_ = other.name_;
     id_ = std::exchange(other.id_, std::nullopt);
@@ -36,20 +36,19 @@ ScopedMLTrace& ScopedMLTrace::operator=(ScopedMLTrace&& other) {
   return *this;
 }
 
-void ScopedMLTrace::AddStep(const char* step_name) {
+void ScopedTrace::AddStep(const char* step_name) {
   // Calling AddStep() after move is not allowed.
   CHECK(id_.has_value());
   step_.reset();
-  step_ = base::WrapUnique(new ScopedMLTrace(step_name, id_.value()));
+  step_ = base::WrapUnique(new ScopedTrace(step_name, id_.value()));
 }
 
-ScopedMLTrace::ScopedMLTrace(const char* name)
-    : ScopedMLTrace(name, base::trace_event::GetNextGlobalTraceId()) {}
+ScopedTrace::ScopedTrace(const char* name)
+    : ScopedTrace(name, base::trace_event::GetNextGlobalTraceId()) {}
 
-ScopedMLTrace::ScopedMLTrace(const char* name, uint64_t id)
-    : name_(name), id_(id) {
+ScopedTrace::ScopedTrace(const char* name, uint64_t id) : name_(name), id_(id) {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(kWebNNTraceCategory, name_,
                                     TRACE_ID_LOCAL(id_.value()));
 }
 
-}  // namespace blink
+}  // namespace webnn
