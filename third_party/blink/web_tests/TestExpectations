@@ -9112,3 +9112,6 @@ crbug.com/387096438 virtual/scalefactor200/external/wpt/largest-contentful-paint
 crbug.com/385337582 external/wpt/paint-timing/fcp-only/fcp-document-opacity-image.html [ Failure Pass ]
 crbug.com/383627707 [ Mac ] external/wpt/element-timing/image-carousel.html [ Failure Pass ]
 crbug.com/379474211 external/wpt/paint-timing/fcp-only/fcp-document-opacity-text.html [ Failure Pass ]
+
+crbug.com/389559091 [ Linux ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-home-end-pagedown-pageup.tentative.html [ Pass Timeout ]
+crbug.com/389559091 [ Mac ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-home-end-pagedown-pageup.tentative.html [ Pass Timeout ]
