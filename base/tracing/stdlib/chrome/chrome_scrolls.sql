@@ -218,6 +218,16 @@ processed_timestamps_and_metadata AS (
     -- Timestamps
     generation_ts,
     touch_move_received_ts,
+    -- TODO(b:385160424): this is a workaround for cases when
+    -- generation time is later than the input time.
+    MAX(
+      IIF(
+        is_inertial AND touch_move_received_ts IS NULL,
+        scroll_update_created_ts,
+        touch_move_received_ts
+      ),
+      generation_ts)
+    AS browser_main_received_ts,
     -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
     -- Ids
     scroll_update_created_slice_id,
@@ -254,16 +264,12 @@ SELECT
   generation_ts,
   -- Flings don't have a touch move event so make GenerationToBrowserMain span
   -- all the way to the creation of the gesture scroll update.
-  IIF(
-    is_inertial AND touch_move_received_ts IS NULL,
-    scroll_update_created_ts,
-    touch_move_received_ts
-  ) - generation_ts AS generation_to_browser_main_dur,
+  browser_main_received_ts - generation_ts AS generation_to_browser_main_dur,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   browser_utid,
   touch_move_received_slice_id,
   touch_move_received_ts,
-  scroll_update_created_ts - touch_move_received_ts
+  scroll_update_created_ts - MAX(touch_move_received_ts, generation_ts)
     AS touch_move_processing_dur,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   -- On `browser_utid`.
@@ -275,8 +281,11 @@ SELECT
   -- No applicable utid (duration between two threads).
   -- No applicable slice id (duration between two threads).
   scroll_update_created_end_ts,
-  -- TODO(b:380868337): This is sometimes negative; check/fix this.
-  compositor_dispatch_ts - scroll_update_created_end_ts
+  -- TODO(b:385161677): use the start
+  -- of the STEP_SEND_DISPATCH_EVENT_MOJO_MESSAGE step
+  -- instead of scroll_update_created_end_ts.
+  MAX(compositor_dispatch_ts, scroll_update_created_end_ts)
+    - scroll_update_created_end_ts
     AS browser_to_compositor_delay_dur,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   compositor_utid,
@@ -317,6 +326,13 @@ SELECT
     AS compositor_resample_task_ts,
   compositor_resample_step.ts AS compositor_resample_ts,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+  compositor_receive_begin_frame_step.id
+    AS compositor_receive_begin_frame_slice_id,
+  compositor_receive_begin_frame_step.task_start_time_ts
+    AS compositor_receive_begin_frame_task_ts,
+  compositor_receive_begin_frame_step.ts
+    AS compositor_receive_begin_frame_ts,
+  --
   compositor_generate_compositor_frame_step.id
     AS compositor_generate_compositor_frame_slice_id,
   compositor_generate_compositor_frame_step.task_start_time_ts
@@ -372,6 +388,15 @@ LEFT JOIN chrome_input_pipeline_steps compositor_resample_step
     AND compositor_resample_step.step = 'STEP_RESAMPLE_SCROLL_EVENTS'
     AND compositor_resample_step.input_type
       = 'GESTURE_SCROLL_UPDATE_EVENT'
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+LEFT JOIN
+  chrome_graphics_pipeline_surface_frame_steps
+    compositor_receive_begin_frame_step
+  ON
+    compositor_receive_begin_frame_step.surface_frame_trace_id
+      = refs.surface_frame_id
+    AND compositor_receive_begin_frame_step.step
+      = 'STEP_RECEIVE_BEGIN_FRAME'
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 LEFT JOIN
   chrome_graphics_pipeline_surface_frame_steps
@@ -431,6 +456,9 @@ CREATE PERFETTO TABLE chrome_scroll_update_frame_info(
   compositor_resample_slice_id LONG,
   -- Timestamp for the `STEP_RESAMPLE_SCROLL_EVENTS` slice.
   compositor_resample_ts TIMESTAMP,
+  -- Timestamp for the `STEP_RECEIVE_BEGIN_FRAME` slice or the
+  -- containing task (if available).
+  compositor_receive_begin_frame_ts TIMESTAMP,
   -- Slice id for the `STEP_GENERATE_COMPOSITOR_FRAME` slice.
   compositor_generate_compositor_frame_slice_id LONG,
   -- Timestamp for the `STEP_GENERATE_COMPOSITOR_FRAME` slice or the
@@ -510,6 +538,14 @@ processed_timestamps_and_metadata AS (
       compositor_resample_ts) AS compositor_resample_ts,
     -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
     -- Ids
+    compositor_receive_begin_frame_slice_id,
+    -- Timestamps
+    COALESCE(
+      compositor_receive_begin_frame_task_ts,
+      compositor_receive_begin_frame_ts)
+      AS compositor_receive_begin_frame_ts,
+    -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+    -- Ids
     compositor_generate_compositor_frame_slice_id,
     -- Timestamps
     COALESCE(
@@ -564,6 +600,9 @@ SELECT
   -- On `compositor_utid`.
   compositor_resample_slice_id,
   compositor_resample_ts,
+  -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+  -- On `compositor_utid`.
+  compositor_receive_begin_frame_ts,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   -- On `compositor_utid`.
   compositor_generate_compositor_frame_slice_id,
@@ -887,6 +926,8 @@ SELECT
   -- No applicable slice id (duration between two slices).
   input.compositor_dispatch_end_ts,
   -- TODO(b:380868337): This is sometimes negative; check/fix this.
+  -- TODO(b:381273884): use frame.compositor_receive_begin_frame_ts instead of
+  -- input.compositor_dispatch_end_ts.
   COALESCE(
     frame.compositor_resample_ts,
     input.compositor_coalesced_input_handled_ts
