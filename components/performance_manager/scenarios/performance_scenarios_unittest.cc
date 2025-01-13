@@ -14,7 +14,6 @@
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
-#include "components/performance_manager/test_support/run_in_graph.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
@@ -78,15 +77,11 @@ class PerformanceScenariosTest : public PerformanceManagerTestHarness {
     }
     base::WeakPtr<ProcessNode> process_node =
         PerformanceManager::GetProcessNodeForRenderProcessHost(process());
-    base::ReadOnlySharedMemoryRegion process_region;
-    RunInGraph([&] {
-      ASSERT_TRUE(process_node);
-      // GetPerformanceScenarioRegionForProcess() creates writable shared memory
-      // for that process' state if it doesn't already exist.
-      process_region =
-          GetSharedScenarioRegionForProcessNode(process_node.get());
-    });
-    return process_region;
+    EXPECT_TRUE(process_node);
+
+    // GetPerformanceScenarioRegionForProcess() creates writable shared memory
+    // for that process' state if it doesn't already exist.
+    return GetSharedScenarioRegionForProcessNode(process_node.get());
   }
 };
 
@@ -140,77 +135,9 @@ TEST_F(PerformanceScenariosTest, SetWithSharedMemory) {
   EXPECT_TRUE(process_region.IsValid());
   SetLoadingScenarioForProcess(LoadingScenario::kVisiblePageLoading, process());
 
-  // SetLoadingScenarioForProcess posts to the PM thread. Wait until the message
-  // is received before reading.
-  RunInGraph([] {
-    EXPECT_EQ(GetLoadingScenario(ScenarioScope::kCurrentProcess)
-                  ->load(std::memory_order_relaxed),
-              LoadingScenario::kNoPageLoading);
-  });
-
-  // Map in the read-only view of `process_region`. Normally this would be done
-  // in the renderer process as the "current process" state. The state should
-  // now become visible.
-  blink::performance_scenarios::ScopedReadOnlyScenarioMemory
-      process_shared_memory(ScenarioScope::kCurrentProcess,
-                            std::move(process_region));
-  EXPECT_EQ(GetLoadingScenario(ScenarioScope::kCurrentProcess)
-                ->load(std::memory_order_relaxed),
-            LoadingScenario::kVisiblePageLoading);
-
-  observer_list->RemoveObserver(&mock_observer);
-}
-
-// TODO(crbug.com/382551028): Test is flaky on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_SetFromPMSequence DISABLED_SetFromPMSequence
-#else
-#define MAYBE_SetFromPMSequence SetFromPMSequence
-#endif
-TEST_F(PerformanceScenariosTest, MAYBE_SetFromPMSequence) {
-  base::WeakPtr<ProcessNode> process_node =
-      PerformanceManager::GetProcessNodeForRenderProcessHost(process());
-
-  StrictMockPerformanceScenarioObserver mock_observer;
-  EXPECT_CALL(mock_observer,
-              OnLoadingScenarioChanged(ScenarioScope::kGlobal,
-                                       LoadingScenario::kNoPageLoading,
-                                       LoadingScenario::kFocusedPageLoading))
-      .WillOnce(base::test::RunOnceClosure(task_environment()->QuitClosure()));
-
-  // Create writable shared memory for the global state. This maps a read-only
-  // view of the memory in as well.
-  ScopedGlobalScenarioMemory global_shared_memory;
-  auto observer_list =
-      PerformanceScenarioObserverList::GetForScope(ScenarioScope::kGlobal);
-  ASSERT_TRUE(observer_list);
-  observer_list->AddObserver(&mock_observer);
-
-  // Create writable shared memory for a render process state. Since this is
-  // called in the browser process and the state is for a different process, it
-  // doesn't map in a read-only view.
-  base::ReadOnlySharedMemoryRegion process_region = main_process_region();
-  EXPECT_TRUE(process_region.IsValid());
-
-  // Set the loading scenario from the PM sequence.
-  RunInGraph([&] {
-    ASSERT_TRUE(process_node);
-    SetLoadingScenarioForProcessNode(LoadingScenario::kVisiblePageLoading,
-                                     process_node.get());
-    SetGlobalLoadingScenario(LoadingScenario::kFocusedPageLoading);
-  });
-
   EXPECT_EQ(GetLoadingScenario(ScenarioScope::kCurrentProcess)
                 ->load(std::memory_order_relaxed),
             LoadingScenario::kNoPageLoading);
-  EXPECT_EQ(GetLoadingScenario(ScenarioScope::kGlobal)
-                ->load(std::memory_order_relaxed),
-            LoadingScenario::kFocusedPageLoading);
-
-  // PerformanceScenarioObserverList is an ObserverListThreadSafe that posts
-  // a message to notify. Need to wait for the message.
-  task_environment()->RunUntilQuit();
-  ::testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
   // Map in the read-only view of `process_region`. Normally this would be done
   // in the renderer process as the "current process" state. The state should
