@@ -366,12 +366,13 @@ int CompareResourcePriorities(const ResourcePriority& a,
   return a.intra_priority_value - b.intra_priority_value;
 }
 
-Resource* PopHighestPriorityVisibleResource(
+Resource* PopHighestPriorityDecodableResource(
     HeapHashSet<WeakMember<Resource>>& resources) {
   Resource* result = nullptr;
   for (Resource* resource : resources) {
     const ResourcePriority& priority = resource->PriorityFromObservers().first;
-    if (priority.visibility != ResourcePriority::kVisible) {
+    if (priority.visibility != ResourcePriority::kVisible ||
+        !resource->HasNonDegenerateSizeForDecode()) {
       continue;
     }
     if (!result || CompareResourcePriorities(
@@ -3186,8 +3187,8 @@ void ResourceFetcher::MaybeStartSpeculativeImageDecode() {
   }
   // Find the highest priority image to decode.
   while (true) {
-    Resource* image_to_decode =
-        PopHighestPriorityVisibleResource(speculative_decode_candidate_images_);
+    Resource* image_to_decode = PopHighestPriorityDecodableResource(
+        speculative_decode_candidate_images_);
     if (!image_to_decode) {
       break;
     }

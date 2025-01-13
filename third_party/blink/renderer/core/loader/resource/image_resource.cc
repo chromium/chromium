@@ -609,6 +609,10 @@ ImageResource::PriorityFromObservers() const {
   return GetContent()->PriorityFromObservers();
 }
 
+bool ImageResource::HasNonDegenerateSizeForDecode() const {
+  return GetContent()->HasNonDegenerateSizeForDecode();
+}
+
 void ImageResource::OnePartInMultipartReceived(
     const ResourceResponse& response) {
   DCHECK(multipart_parser_);

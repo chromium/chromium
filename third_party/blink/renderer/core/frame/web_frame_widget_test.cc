@@ -623,6 +623,73 @@ TEST_F(WebFrameWidgetImplSimTest, SpeculativeDecodeIgnoresBackgroundImage) {
   url_test_helpers::ServeAsynchronousRequests();
 }
 
+// Without extrinsic sizing (e.g., css width & height), an image's final decode
+// size can depend on both the image's intrinsic size and layout. Using only the
+// image's intrinsic size can result in a speculative decode that is too small
+// (will not be used), or too big (can cause small rendering differences as the
+// larger decode will be re-used and scaled). To avoid these issues, we should
+// wait for layout if the decoded size depends on it.
+TEST_F(WebFrameWidgetImplSimTest, SpeculativeDecodeNoSizeWaitsForLayout) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kSpeculativeImageDecodes,
+       ::features::kSendExplicitDecodeRequestsImmediately},
+      /*disabled_features=*/{});
+  SimRequest image_request("https://example.com/image.png", "image/png");
+  auto* widget = WebView().MainFrameViewWidget();
+  widget->Resize(gfx::Size(800, 600));
+  SimRequest doc_request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+
+  {
+    EXPECT_CALL(*MockMainFrameWidget(), RequestDecode(_, _)).Times(0);
+    doc_request.Complete(
+        R"HTML(<!DOCTYPE html>
+        <img id="i1" src="image.png">
+        <img id="i2" style="height: auto; max-height: 50px;" src="image.png">
+      )HTML");
+    Compositor().BeginFrame();
+    test::RunPendingTasks();
+    image_request.Complete(
+        *test::ReadFromFile(test::CoreTestDataPath("background_image.png")));
+  }
+
+  {
+    EXPECT_CALL(*MockMainFrameWidget(), RequestDecode(_, _)).Times(1);
+    widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  }
+}
+
+// A speculative decode of an image with extrinsic sizes does not need to wait
+// for layout.
+TEST_F(WebFrameWidgetImplSimTest, SpeculativeDecodeWithExtrinsicSize) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kSpeculativeImageDecodes,
+       ::features::kSendExplicitDecodeRequestsImmediately},
+      /*disabled_features=*/{});
+  SimRequest image_request("https://example.com/image.png", "image/png");
+  auto* widget = WebView().MainFrameViewWidget();
+  widget->Resize(gfx::Size(800, 600));
+  SimRequest doc_request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+
+  {
+    EXPECT_CALL(*MockMainFrameWidget(), RequestDecode(_, _)).Times(1);
+    doc_request.Complete(
+        R"HTML(<!DOCTYPE html>
+        <img style="width: 100px" src="image.png">
+      )HTML");
+    Compositor().BeginFrame();
+    test::RunPendingTasks();
+    image_request.Complete(
+        *test::ReadFromFile(test::CoreTestDataPath("background_image.png")));
+    test::RunPendingTasks();
+  }
+}
+
 #if BUILDFLAG(IS_WIN)
 struct ProximateBoundsCollectionArgs final {
   base::RepeatingCallback<gfx::Rect(const Document&)> get_focus_rect_in_widget;

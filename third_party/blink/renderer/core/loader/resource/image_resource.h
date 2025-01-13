@@ -101,6 +101,7 @@ class CORE_EXPORT ImageResource final
   void UpdateResourceInfoFromObservers() override;
   std::pair<ResourcePriority, ResourcePriority> PriorityFromObservers()
       const override;
+  bool HasNonDegenerateSizeForDecode() const override;
 
   // MultipartImageResourceParser::Client
   void OnePartInMultipartReceived(const ResourceResponse&) final;
