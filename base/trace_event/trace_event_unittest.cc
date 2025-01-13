@@ -1331,7 +1331,13 @@ class MyData : public ConvertableToTraceFormat {
   }
 };
 
-TEST_F(TraceEventTestFixture, ConvertableTypes) {
+// crbug.com/325641473: Flaky on Mac due to missing last event.
+#if BUILDFLAG(IS_APPLE)
+#define MAYBE_ConvertableTypes DISABLED_ConvertableTypes
+#else
+#define MAYBE_ConvertableTypes ConvertableTypes
+#endif
+TEST_F(TraceEventTestFixture, MAYBE_ConvertableTypes) {
   TraceLog::GetInstance()->SetEnabled(
       TraceConfig(kRecordAllCategoryFilter, ""));
 
@@ -1424,7 +1430,13 @@ TEST_F(TraceEventTestFixture, ConvertableTypes) {
   ASSERT_TRUE(convertable_dict);
 }
 
-TEST_F(TraceEventTestFixture, PrimitiveArgs) {
+// crbug.com/325641473: Flaky on Mac due to missing last event.
+#if BUILDFLAG(IS_APPLE)
+#define MAYBE_PrimitiveArgs DISABLED_PrimitiveArgs
+#else
+#define MAYBE_PrimitiveArgs PrimitiveArgs
+#endif
+TEST_F(TraceEventTestFixture, MAYBE_PrimitiveArgs) {
   TraceLog::GetInstance()->SetEnabled(
       TraceConfig(kRecordAllCategoryFilter, ""));
 
