@@ -484,11 +484,6 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
           [self.consumer removeItemWithIdentifier:tabIdentifierToAddToGroup
                            selectedItemIdentifier:[self activeIdentifier]];
           [self removeObservationForWebState:currentWebState];
-
-          // Remove a moved WebState from `_dirtyTabs`, otherwise `_dirtyTabs`
-          // keeps holding old tabs when the tab is moved locally.
-          _dirtyTabs.erase(currentWebState->GetUniqueIdentifier().identifier());
-          [self updateActivitySummaryCell];
         }
 
         if (newGroup == _tabGroup.get()) {
@@ -544,11 +539,6 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
           [self.consumer removeItemWithIdentifier:item
                            selectedItemIdentifier:[self activeIdentifier]];
           [self removeObservationForWebState:webState];
-
-          // Remove a moved WebState from `_dirtyTabs`, otherwise `_dirtyTabs`
-          // keeps holding old tabs when the tab is moved locally.
-          _dirtyTabs.erase(webState->GetUniqueIdentifier().identifier());
-          [self updateActivitySummaryCell];
         } else if (moveChange.new_group() == _tabGroup.get()) {
           // The tab joined the group.
           [self insertInConsumerWebState:webState
@@ -569,18 +559,6 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
                              atIndex:insertChange.index()];
 
       [self addObservationForWebState:insertChange.inserted_web_state()];
-      break;
-    }
-    case WebStateListChange::Type::kDetach: {
-      const WebStateListChangeDetach& detachChange =
-          change.As<WebStateListChangeDetach>();
-
-      // Remove a detached WebState from `_dirtyTabs`, otherwise `_dirtyTabs`
-      // keeps holding old tabs when the tab is removed locally.
-      _dirtyTabs.erase(detachChange.detached_web_state()
-                           ->GetUniqueIdentifier()
-                           .identifier());
-      [self updateActivitySummaryCell];
       break;
     }
     default:
