@@ -9,6 +9,8 @@ import static android.net.NetworkCapabilities.TRANSPORT_CELLULAR;
 import static android.net.NetworkCapabilities.TRANSPORT_VPN;
 import static android.net.NetworkCapabilities.TRANSPORT_WIFI;
 
+import static org.mockito.Mockito.when;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -36,6 +38,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationState;
@@ -53,7 +56,6 @@ import org.chromium.net.NetworkChangeNotifierAutoDetect.NetworkState;
 import org.chromium.net.NetworkChangeNotifierAutoDetect.WifiManagerDelegate;
 import org.chromium.net.test.util.NetworkChangeNotifierTestUtil;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
@@ -101,18 +103,6 @@ public class NetworkChangeNotifierTest {
     }
 
     private static class Helper {
-        private static final Constructor<Network> sNetworkConstructor;
-
-        static {
-            try {
-                sNetworkConstructor =
-                        (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                                ? Network.class.getConstructor(Integer.TYPE)
-                                : null;
-            } catch (NoSuchMethodException | SecurityException e) {
-                throw new RuntimeException("Unable to get Network constructor", e);
-            }
-        }
 
         static NetworkCapabilities getCapabilities(int transport) {
             // Create a NetworkRequest with corresponding capabilities
@@ -130,15 +120,32 @@ public class NetworkChangeNotifierTest {
             }
         }
 
-        // Create Network object given a NetID.
+        // Create Network object given a NetID. The implementation is based on the code in
+        // android.net.Network#getNetworkHandle.
         static Network netIdToNetwork(int netId) {
-            try {
-                return sNetworkConstructor.newInstance(netId);
-            } catch (InstantiationException
-                    | InvocationTargetException
-                    | IllegalAccessException e) {
-                throw new IllegalStateException("Trying to create Network when not allowed");
+            // Use the constructor on Android versions which can access it (R and below).
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.R) {
+                try {
+                    return Network.class.getConstructor(Integer.TYPE).newInstance(netId);
+                } catch (InstantiationException
+                        | InvocationTargetException
+                        | IllegalAccessException
+                        | NoSuchMethodException e) {
+                    throw new IllegalStateException("Trying to create Network when not allowed");
+                }
             }
+            // We can't use fromNetworkHandle to create a network with netId 0 as it causes an
+            // IllegalArgumentException so mock it instead.
+            if (netId == 0) {
+                Network mock = Mockito.mock(Network.class);
+                when(mock.getNetworkHandle()).thenReturn(0L);
+                return mock;
+            }
+            // If these tests start failing suddenly with IllegalArgumentException. Check whether
+            // this magic value has been updated in android.net.Network.java.
+            long magic = 0xcafed00dL;
+            long networkHandle = ((long) netId << 32) | magic;
+            return Network.fromNetworkHandle(networkHandle);
         }
     }
 
@@ -845,7 +852,6 @@ public class NetworkChangeNotifierTest {
     @UiThreadTest
     @MediumTest
     @Feature({"Android-AppBase"})
-    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R, message = "crbug.com/385118415")
     public void testConnectivityManagerDelegateDoesNotCrash() {
         ConnectivityManagerDelegate delegate =
                 new ConnectivityManagerDelegate(InstrumentationRegistry.getTargetContext());
@@ -1143,7 +1149,6 @@ public class NetworkChangeNotifierTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O) // detectUntaggedSockets added in Oreo.
-    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R, message = "crbug.com/385118415")
     public void testVpnAccessibleDoesNotCreateUntaggedSockets() {
         ConnectivityManagerDelegate connectivityManagerDelegate =
                 new ConnectivityManagerDelegate(
