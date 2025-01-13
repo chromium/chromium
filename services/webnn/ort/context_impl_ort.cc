@@ -137,7 +137,7 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*reduce_sum_input=*/DataTypeConstraint::kFloat16To32Ints32To64,
        /*reduce_sum_square_input=*/DataTypeConstraint::kFloat16To32Ints32To64,
        /*relu_input=*/DataTypeConstraint::kFloat16To32Int8To32,
-       /*resample2d_input=*/{},
+       /*resample2d_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
        /*reshape_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
        /*reverse_input=*/{},
        /*scatter_elements_input=*/{},

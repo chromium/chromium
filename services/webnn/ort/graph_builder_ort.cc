@@ -92,6 +92,7 @@ constexpr char kOpTypeReduceSum[] = "ReduceSum";
 constexpr char kOpTypeReduceSumSquare[] = "ReduceSumSquare";
 
 constexpr char kOpTypeRelu[] = "Relu";
+constexpr char kOpTypeResample2d[] = "Resize";
 constexpr char kOpTypeReshape[] = "Reshape";
 constexpr char kOpTypeSigmoid[] = "Sigmoid";
 constexpr char kOpTypeSlice[] = "Slice";
@@ -1302,6 +1303,70 @@ void GraphBuilderOrt::AddReduceOperation(const mojom::Reduce& reduce) {
                          attributes);
 }
 
+void GraphBuilderOrt::AddResample2dOperation(
+    const mojom::Resample2d& resample2d) {
+  const std::string node_name = GetNodeName(resample2d.label);
+  const std::string input_name = GetOperandName(resample2d.input_operand_id);
+  const std::string output_name = GetOperandName(resample2d.output_operand_id);
+  const std::vector<uint32_t>& output_shape =
+      GetOperand(resample2d.output_operand_id).descriptor.shape();
+  std::vector<const char*> input_names = {input_name.c_str()};
+
+  // ROI only takes effect when ONNX Resize op's attribute
+  // coordinate_transformation_mode is “tf_crop_and_resize” and the default
+  // value of coordinate_transformation_mode is "half_pixel". Currently, WebNN
+  // only supports "half_pixel".
+  const std::string roi_name = "";
+  input_names.push_back(roi_name.c_str());
+
+  CHECK_EQ(resample2d.axes.size(), 2u);
+  std::string scales_name;
+  std::string sizes_name;
+  if (resample2d.scales) {
+    // The number of elements of scales should be the same as the rank of axes
+    // if provided.
+    std::array<float, 2> scales_data = {resample2d.scales->at(0),
+                                        resample2d.scales->at(1)};
+    scales_name = CreateInitializer<float>({2}, scales_data);
+    sizes_name = "";
+  } else {
+    // The number of elements of sizes should be the same as the length of axes
+    // if provided.
+    std::array<int64_t, 2> sizes_data = {
+        base::checked_cast<int64_t>(output_shape[resample2d.axes[0]]),
+        base::checked_cast<int64_t>(output_shape[resample2d.axes[1]])};
+    sizes_name = CreateInitializer<int64_t>({2}, sizes_data);
+    scales_name = "";
+  }
+  input_names.push_back(scales_name.c_str());
+  input_names.push_back(sizes_name.c_str());
+
+  std::array<int64_t, 2> axes = {
+      base::checked_cast<int64_t>(resample2d.axes[0]),
+      base::checked_cast<int64_t>(resample2d.axes[1])};
+  ScopedOrtOpAttrPtr attr_axes =
+      model_builder_.CreateAttribute(/*name=*/"axes", axes);
+
+  std::string mode;
+  switch (resample2d.mode) {
+    case mojom::Resample2d::InterpolationMode::kLinear:
+      mode = "linear";
+      break;
+    case mojom::Resample2d::InterpolationMode::kNearestNeighbor:
+      mode = "nearest";
+      break;
+  }
+  ScopedOrtOpAttrPtr attr_mode =
+      model_builder_.CreateAttribute(/*name=*/"mode", mode);
+  std::array<OrtOpAttr*, 2> attributes = {attr_axes.Release(),
+                                          attr_mode.Release()};
+
+  std::array<const char*, 1> output_names = {output_name.c_str()};
+
+  model_builder_.AddNode(kOpTypeResample2d, node_name, input_names,
+                         output_names, attributes);
+}
+
 void GraphBuilderOrt::AddReshapeOperation(const mojom::Reshape& reshape) {
   const std::string node_name = GetNodeName(reshape.label);
   const std::string input_name = GetOperandName(reshape.input_operand_id);
@@ -1524,6 +1589,10 @@ GraphBuilderOrt::BuildModel() {
         AddUnaryOperation(*operation->get_relu(), kOpTypeRelu);
         break;
       }
+      case mojom::Operation::Tag::kResample2d: {
+        AddResample2dOperation(*operation->get_resample2d());
+        break;
+      }
       case mojom::Operation::Tag::kReshape: {
         AddReshapeOperation(*operation->get_reshape());
         break;
@@ -1565,7 +1634,6 @@ GraphBuilderOrt::BuildModel() {
       case mojom::Operation::Tag::kLstmCell:
       case mojom::Operation::Tag::kPrelu:
       case mojom::Operation::Tag::kQuantizeLinear:
-      case mojom::Operation::Tag::kResample2d:
       case mojom::Operation::Tag::kReverse:
       case mojom::Operation::Tag::kScatterElements:
       case mojom::Operation::Tag::kScatterNd:
