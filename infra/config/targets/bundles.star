@@ -18,6 +18,28 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "android_10_emulator_fyi_gtests",
+    targets = [
+        "android_emulator_specific_chrome_public_tests",
+        "android_trichrome_smoke_tests",
+        "android_smoke_tests",
+        "android_specific_chromium_gtests",  # Already includes gl_gtests.
+        "chromium_gtests",
+        "chromium_gtests_for_devices_with_graphical_output",
+        "linux_flavor_specific_chromium_gtests",
+        "system_webview_shell_instrumentation_tests",  # Not an experimental test
+        targets.bundle(
+            targets = "webview_trichrome_cts_tests_suite",
+            variants = [
+                "WEBVIEW_TRICHROME_FULL_CTS_TESTS",
+                "WEBVIEW_TRICHROME_INSTANT_CTS_TESTS",
+            ],
+        ),
+        "webview_ui_instrumentation_tests",
+    ],
+)
+
+targets.bundle(
     name = "android_11_emulator_gtests",
     targets = [
         "android_emulator_specific_chrome_public_tests",
@@ -5654,6 +5676,18 @@ targets.bundle(
 
 targets.bundle(
     name = "pie_isolated_scripts",
+    targets = [
+        "android_isolated_scripts",
+        "chromium_junit_tests_scripts",
+        "components_perftests_isolated_scripts",
+        "monochrome_public_apk_checker_isolated_script",
+        "telemetry_android_minidump_unittests_isolated_scripts",
+        "telemetry_perf_unittests_isolated_scripts_android",
+    ],
+)
+
+targets.bundle(
+    name = "q_isolated_scripts",
     targets = [
         "android_isolated_scripts",
         "chromium_junit_tests_scripts",
