@@ -12,8 +12,8 @@
     each branch
 *   Ensure your change is [safe to merge](#verifying-eligibility-and-safety)
     before initiating the merge review process unless it's time-sensitive
-*   Use Chromium Issue Tracker's [project queries](#monitoring-merge-requests) to
-    track your approved merges as well as your pending requests
+*   Use Chromium Issue Tracker's [project queries](#monitoring-merge-requests)
+    to track your approved merges as well as your pending requests
 *   Use Gerrit or git to land your merge only after it's been approved
 
 ## Introduction
@@ -82,23 +82,25 @@ following information present and accurate:
 *   Title and description clearly describing the bug being fixed
 *   Priority (*Priority*), OS (*OS*) and target milestone(s) (*Milestone*)
     fields are set
+
     *   Consider all available data when setting the priority, such as existing
         metrics for usage of a broken feature, to ensure important merges are
         not missed. Consider collecting new data, such as by landing new metrics
         and estimating severity with pre-stable data. For Web Platform changes,
-        [compat
-        tools](https://www.chromium.org/blink/platform-predictability/compat-tools/)
+        [compat tools](https://www.chromium.org/blink/platform-predictability/compat-tools/)
         such as
         [UseCounters](https://www.chromium.org/blink/platform-predictability/compat-tools/#usecounter)
-        , [Cluster
-        Telemetry](https://www.chromium.org/blink/platform-predictability/compat-tools/#on-demand-crawl)
+        ,
+        [Cluster Telemetry](https://www.chromium.org/blink/platform-predictability/compat-tools/#on-demand-crawl)
         , and
         [HTTPArchive](https://www.chromium.org/blink/platform-predictability/compat-tools/#the-http-archive)
         may be useful.
 
 *   Owner, generally the person requesting / performing the merge
+
 *   [Release block label](./release_blockers.md) if applicable (*ReleaseBlock*
     field*)
+
 *   Issue status:
 
     *   Fixed: You're confident the issue is fixed on main, e.g. you've locally
@@ -126,21 +128,20 @@ At this point, following along via bug comments sent by email will always keep
 you in the loop, but you can also use the following queries in the Issue Tracker
 to track your merges:
 
-*   [Approved and TBD merges](https://issues.chromium.org/issues?q=assignee:me%20customfield1223087:(Approved%20%7C%20TBD)):
+*   [Approved and TBD merges](https://issues.chromium.org/issues?q=assignee:me%20customfield1223087:\(Approved%20%7C%20TBD\)):
     Merges that require your follow-up, either by landing the relevant merge (if
     approved) or determining whether or not a merge is actually required and if
     so, requesting it (if TBD)
-*   [Requested
-    merges](https://issues.chromium.org/issues?q=assignee:me%20(-customfield1223134:none%20%7C%20customfield1223087:Review)):
+*   [Requested merges](https://issues.chromium.org/issues?q=assignee:me%20\(-customfield1223134:none%20%7C%20customfield1223087:Review\)):
     Merges that are waiting for input from release managers or automation; feel
     free to ping bugs that sit in this queue for two business days (assuming you
     verified that the change was already deployed to canary ahead of requesting
     a merge)
-*   [Rejected and NA merges](https://issues.chromium.org/issues?q=assignee:me%20customfield1223087:(Rejected%20%7C%20NA)):
+*   [Rejected and NA merges](https://issues.chromium.org/issues?q=assignee:me%20customfield1223087:\(Rejected%20%7C%20NA\)):
     Merges that were either rejected by release managers, or not applicable to
     be merged; generally, no action is needed for these items unless you
     disagree with a merge's rejection and wish to escalate
-*   [All merges](https://issues.chromium.org/issues?q=assignee:me%20(-customfield1223087:none%20%7C%20-customfield1223134:none)):
+*   [All merges](https://issues.chromium.org/issues?q=assignee:me%20\(-customfield1223087:none%20%7C%20-customfield1223134:none\)):
     Includes every possible merge state, useful when wanting to find an item you
     considered for merging but can't recall the state it was last in.
 
@@ -163,7 +164,7 @@ ASAP so that it can be included in the next release built from the branch; if
 you don't merge your cherry-pick soon after approval, it will eventually be
 rejected for merge.
 
-**NOTE:**  Ensure you link to the bug that has merge approval for the relevant
+**NOTE:** Ensure you link to the bug that has merge approval for the relevant
 milestone (Using `Bug=<bug id>` in your commit description). Not linking to a
 bug that has approval can cause delay to your CL landing.
 
@@ -242,8 +243,8 @@ To reduce release manager toil, Sheriffbot performs the first pass review of all
 merge requests; it may auto-approve the issue if it can detect the issue meets
 the right criteria for the current merge phase (e.g. a ReleaseBlock-Dev issue
 requesting a merge before beta promotion), and it may auto-reject the issue
-similarly (e.g. a P3 issue requesting a merge post-stable). If it cannot
-decide, it will pass the issue to a release manager for manual review.
+similarly (e.g. a P3 issue requesting a merge post-stable). If it cannot decide,
+it will pass the issue to a release manager for manual review.
 
 Generally, Sheriffbot takes action on merge requests only after one of the two
 conditions below are met:
@@ -259,10 +260,10 @@ regression onto our release branch.
 
 ### Preventing missed merges
 
-To avoid the situation where a critical issue is present on a release branch
-but the fix isn't merged, Sheriffbot evaluates all release-blocking issues
-targeting a milestone that has already branched and updates the *Merge* field
-with *TBD-##* if the issue was marked as fixed after branch day but hasn't been
+To avoid the situation where a critical issue is present on a release branch but
+the fix isn't merged, Sheriffbot evaluates all release-blocking issues targeting
+a milestone that has already branched and updates the *Merge* field with
+*TBD-##* if the issue was marked as fixed after branch day but hasn't been
 merged. When this occurs, developers should evaluate the issue and either
 request a merge if required (e.g. the fix did miss the release branch point) by
 updating the *Merge-Request* field, or update the *Merge* field with *NA-###*
@@ -278,11 +279,31 @@ through during its release cycle; this data is available via the Chromium Dash
 [front-end](https://chromiumdash.appspot.com/branches) and
 [API](https://chromiumdash.appspot.com/fetch_milestones).
 
-| Branch Phase | Period Begins | Period Ends | Acceptable Merges Include Fixes For: |
-| --- | --- | --- | --- |
-| beta | M(X) Branch | M(X) Stable Cut | Non-functional issues for Finch-gated features (e.g. add metrics, fix crash), noticeable new regressions, any release blockers, any security issues, emergency string issues (.GRD changes) |
-| stable | M(X) Stable Cut | M(X+1) Stable | Urgent new regressions (especially user reports), urgent release blockers, important security issues (medium severity or higher) requested by the security team |
-| extended (if applicable) | M(X+1) Stable | M(X+2) Stable | Important security issues (medium severity or higher) applicable to any platform supported by Chrome Browser requested by the security team |
+| Branch Phase | Period Begins   | Period Ends     | Acceptable Merges Include |
+:              :                 :                 : Fixes For\:               :
+| ------------ | --------------- | --------------- | ------------------------- |
+| beta         | M(X) Branch     | M(X) Stable Cut | Non-functional issues for |
+:              :                 :                 : Finch-gated features      :
+:              :                 :                 : (e.g. add metrics, fix    :
+:              :                 :                 : crash), noticeable new    :
+:              :                 :                 : regressions, any release  :
+:              :                 :                 : blockers, any security    :
+:              :                 :                 : issues, emergency string  :
+:              :                 :                 : issues (.GRD changes)     :
+| stable       | M(X) Stable Cut | M(X+1) Stable   | Urgent new regressions    |
+:              :                 :                 : (especially user          :
+:              :                 :                 : reports), urgent release  :
+:              :                 :                 : blockers, important       :
+:              :                 :                 : security issues (medium   :
+:              :                 :                 : severity or higher)       :
+:              :                 :                 : requested by the security :
+:              :                 :                 : team                      :
+| extended (if | M(X+1) Stable   | M(X+2) Stable   | Important security issues |
+: applicable)  :                 :                 : (medium severity or       :
+:              :                 :                 : higher) applicable to any :
+:              :                 :                 : platform supported by     :
+:              :                 :                 : Chrome Browser requested  :
+:              :                 :                 : by the security team      :
 
 ### Merge states and labels
 
@@ -293,12 +314,40 @@ labels may appear multiple times on the same bug in different states (e.g. a
 merge request could have both *Approved-102* and *Rejected-103* at the same
 time).
 
-| Field | Value | Step Owner | Next Steps |
-| --- | --- | --- | --- |
-| Merge-Request | ### | Release manager | Automation will review and either approve / reject directly, or pass the review to a release manager for manual evaluation |
-| Merge | Review-### | Release manager | Release manager will evaluate and either approve, reject, or request additional information within two business days |
-| Merge | Approved-### | Issue owner | Issue owner should cherry-pick the fix to the appropriate release branch ASAP |
-| Merge | Merged-### | None | N/A; merge has already been landed, no further work required for given milestone |
-| Merge | Rejected-### | Issue owner | Issue owner should re-request a merge to escalate if they feel the merge was erroneously rejected and should be re-evaluated |
-| Merge | TBD-### | Issue owner | Issue owner should evaluate if a merge is required, then remove *TBD-##* and replace it with *NA-##* (if no merge needed) or re-request a merge (if needed) |
-| Merge | NA-### | None | N/A; merge is not required to the relevant milestone, no further work required for given milestone |
+| Field         | Value        | Step Owner      | Next Steps                  |
+| ------------- | ------------ | --------------- | --------------------------- |
+| Merge-Request | ###          | Release manager | Automation will review and  |
+:               :              :                 : either approve / reject     :
+:               :              :                 : directly, or pass the       :
+:               :              :                 : review to a release manager :
+:               :              :                 : for manual evaluation       :
+| Merge         | Review-###   | Release manager | Release manager will        |
+:               :              :                 : evaluate and either         :
+:               :              :                 : approve, reject, or request :
+:               :              :                 : additional information      :
+:               :              :                 : within two business days    :
+| Merge         | Approved-### | Issue owner     | Issue owner should          |
+:               :              :                 : cherry-pick the fix to the  :
+:               :              :                 : appropriate release branch  :
+:               :              :                 : ASAP                        :
+| Merge         | Merged-###   | None            | N/A; merge has already been |
+:               :              :                 : landed, no further work     :
+:               :              :                 : required for given          :
+:               :              :                 : milestone                   :
+| Merge         | Rejected-### | Issue owner     | Issue owner should          |
+:               :              :                 : re-request a merge to       :
+:               :              :                 : escalate if they feel the   :
+:               :              :                 : merge was erroneously       :
+:               :              :                 : rejected and should be      :
+:               :              :                 : re-evaluated                :
+| Merge         | TBD-###      | Issue owner     | Issue owner should evaluate |
+:               :              :                 : if a merge is required,     :
+:               :              :                 : then remove *TBD-##* and    :
+:               :              :                 : replace it with *NA-##* (if :
+:               :              :                 : no merge needed) or         :
+:               :              :                 : re-request a merge (if      :
+:               :              :                 : needed)                     :
+| Merge         | NA-###       | None            | N/A; merge is not required  |
+:               :              :                 : to the relevant milestone,  :
+:               :              :                 : no further work required    :
+:               :              :                 : for given milestone         :
