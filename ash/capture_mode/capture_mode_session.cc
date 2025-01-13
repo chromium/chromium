@@ -206,21 +206,6 @@ constexpr float kRegionDefaultRatio = 0.24f;
 // The spacing between the feedback button and the work area.
 constexpr int kFeedbackButtonSpacing = 10;
 
-// The animation duration for fading out old action buttons after the smart
-// actions button is pressed.
-constexpr base::TimeDelta kSmartActionsButtonTransitionFadeOutDuration =
-    base::Milliseconds(100);
-
-// The animation duration for fading in new icon buttons after the smart actions
-// button is pressed.
-constexpr base::TimeDelta kSmartActionsButtonTransitionFadeInDuration =
-    base::Milliseconds(50);
-
-// The animation duration for sliding in new icon buttons after the smart
-// actions button is pressed.
-constexpr base::TimeDelta kSmartActionsButtonTransitionSlideInDuration =
-    base::Milliseconds(250);
-
 // The animation duration for fading in Scanner action buttons.
 constexpr base::TimeDelta kScannerActionButtonFadeInDuration =
     base::Milliseconds(100);
@@ -1507,7 +1492,8 @@ void CaptureModeSession::OnSmartActionsButtonPressed() {
 }
 
 void CaptureModeSession::OnSmartActionsButtonDisclaimerCheckSuccess() {
-  StartSmartActionsButtonTransition();
+  CHECK(action_container_view_);
+  action_container_view_->StartSmartActionsButtonTransition();
 
   // Fetch Scanner actions.
   auto* scanner_controller = Shell::Get()->scanner_controller();
@@ -3425,86 +3411,6 @@ void CaptureModeSession::RefreshGlowRegion() {
   gfx::Rect glow_bounds(controller_->user_capture_region());
   glow_bounds.Outset(kDamageWithGlowOutsetDp);
   layer()->SchedulePaint(glow_bounds);
-}
-
-void CaptureModeSession::StartSmartActionsButtonTransition() {
-  SetActionContainerEventsEnabled(false);
-  views::AnimationBuilder()
-      .SetPreemptionStrategy(
-          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
-      .OnEnded(base::BindOnce(&CaptureModeSession::OnSmartActionsButtonFadedOut,
-                              weak_ptr_factory_.GetWeakPtr()))
-      .Once()
-      .SetDuration(kSmartActionsButtonTransitionFadeOutDuration)
-      .SetOpacity(action_container_widget_->GetLayer(), 0.0f,
-                  gfx::Tween::LINEAR);
-}
-
-void CaptureModeSession::OnSmartActionsButtonFadedOut() {
-  // Remove Scanner action buttons and keep other buttons. We need to copy
-  // `children()` since we will be removing buttons from the original vector.
-  std::vector<std::unique_ptr<ActionButtonView>> action_buttons_to_keep;
-  views::View::Views children = action_container_view_->children();
-  for (views::View* child : children) {
-    auto action_button = action_container_view_->RemoveChildViewT(
-        AsViewClass<ActionButtonView>(child));
-    if (action_button->rank().type != ActionButtonType::kScanner) {
-      action_buttons_to_keep.push_back(std::move(action_button));
-    }
-  }
-  CHECK(action_container_view_->children().empty());
-
-  // Add the buttons to keep back into the action button container and
-  // collapse them into icon buttons.
-  for (std::unique_ptr<ActionButtonView>& action_button :
-       action_buttons_to_keep) {
-    action_button->CollapseToIconButton();
-    action_container_view_->AddChildView(std::move(action_button));
-  }
-
-  // Compute bounds required to slide in the new icon buttons from the left edge
-  // of the old action container bounds to the right edge.
-  const gfx::Rect old_action_container_bounds =
-      action_container_widget_->GetWindowBoundsInScreen();
-  const gfx::Size new_preferred_size =
-      action_container_view_->GetPreferredSize();
-  const gfx::Vector2d slide_offset(
-      old_action_container_bounds.width() - new_preferred_size.width(), 0);
-
-  // Set the target bounds at the right edge.
-  action_container_widget_->SetBounds(gfx::Rect(
-      old_action_container_bounds.origin() + slide_offset, new_preferred_size));
-
-  // Set an initial translation so that the new icon buttons start sliding from
-  // the left edge.
-  gfx::Transform initial_translation;
-  initial_translation.Translate(-slide_offset);
-  ui::Layer* layer = action_container_widget_->GetLayer();
-  layer->SetTransform(initial_translation);
-
-  views::AnimationBuilder()
-      .SetPreemptionStrategy(
-          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
-      .OnEnded(
-          base::BindOnce(&CaptureModeSession::SetActionContainerEventsEnabled,
-                         weak_ptr_factory_.GetWeakPtr(), true))
-      .Once()
-      .SetDuration(kSmartActionsButtonTransitionFadeInDuration)
-      .SetOpacity(layer, 1.0f, gfx::Tween::LINEAR)
-      .At(base::TimeDelta())
-      .SetDuration(kSmartActionsButtonTransitionSlideInDuration)
-      .SetTransform(layer, gfx::Transform(), gfx::Tween::ACCEL_LIN_DECEL_100);
-}
-
-void CaptureModeSession::SetActionContainerEventsEnabled(bool enabled) {
-  if (!action_container_widget_) {
-    return;
-  }
-  action_container_widget_->GetContentsView()->SetCanProcessEventsWithinSubtree(
-      enabled);
-  action_container_widget_->GetNativeWindow()->SetEventTargetingPolicy(
-      enabled ? aura::EventTargetingPolicy::kTargetAndDescendants
-              : aura::EventTargetingPolicy::kNone);
 }
 
 void CaptureModeSession::InvalidateImageSearch() {

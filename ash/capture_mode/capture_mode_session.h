@@ -486,19 +486,6 @@ class ASH_EXPORT CaptureModeSession
   // Schedules a repaint of the glow area surrounding the capture region.
   void RefreshGlowRegion();
 
-  // Starts performing the button transition triggered after pressing the smart
-  // actions button. This will fade out existing action buttons, remove the
-  // smart actions button, then animate in new icon buttons to replace the old
-  // copy text and search buttons.
-  void StartSmartActionsButtonTransition();
-
-  // Called when the smart actions button has faded out, to start the transition
-  // to new buttons. See `StartSmartActionsButtonTransition()`.
-  void OnSmartActionsButtonFadedOut();
-
-  // Enables or disables events on the action container widget.
-  void SetActionContainerEventsEnabled(bool enabled);
-
   // Invalidates the current image search, so that results from any ongoing
   // search will be discarded. This will invalidate all pointers previously
   // returned from `GetImageSearchToken()` and remove related loading

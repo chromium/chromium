@@ -15,6 +15,7 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/label.h"
@@ -26,6 +27,12 @@ namespace ash {
 namespace {
 
 using ::testing::ElementsAre;
+
+// Returns true if `action_button` is collapsed (i.e. label hidden, only icon
+// visible).
+bool IsActionButtonCollapsed(const ActionButtonView* action_button) {
+  return !action_button->label_for_testing()->GetVisible();
+}
 
 using ActionButtonContainerViewTest = views::ViewsTestBase;
 
@@ -75,6 +82,45 @@ TEST_F(ActionButtonContainerViewTest, ActionButtonsOrderedByRank) {
 
   EXPECT_THAT(action_button_container.children(),
               ElementsAre(scanner_button, copy_text_button, search_button));
+}
+
+TEST_F(ActionButtonContainerViewTest, SmartActionsButtonTransition) {
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->SetBounds(gfx::Rect(50, 50, 300, 200));
+  widget->Show();
+  auto* action_button_container =
+      widget->SetContentsView(std::make_unique<ActionButtonContainerView>());
+  // Set up action buttons.
+  ActionButtonView* copy_text_button = action_button_container->AddActionButton(
+      views::Button::PressedCallback(), u"Copy Text", &kCaptureModeImageIcon,
+      ActionButtonRank(ActionButtonType::kCopyText, 0),
+      ActionButtonViewID::kCopyTextButton);
+  ActionButtonView* search_button = action_button_container->AddActionButton(
+      views::Button::PressedCallback(), u"Search", &kCaptureModeImageIcon,
+      ActionButtonRank(ActionButtonType::kSunfish, 0),
+      ActionButtonViewID::kSearchButton);
+  ActionButtonView* smart_actions_button =
+      action_button_container->AddActionButton(
+          views::Button::PressedCallback(), u"Smart Actions",
+          &kCaptureModeImageIcon,
+          ActionButtonRank(ActionButtonType::kScanner, 0),
+          ActionButtonViewID::kSmartActionsButton);
+  EXPECT_THAT(
+      action_button_container->children(),
+      ElementsAre(smart_actions_button, copy_text_button, search_button));
+
+  action_button_container->StartSmartActionsButtonTransition();
+
+  // The smart actions button should be removed and other buttons should be
+  // collapsed.
+  EXPECT_THAT(action_button_container->children(),
+              ElementsAre(copy_text_button, search_button));
+  EXPECT_TRUE(IsActionButtonCollapsed(copy_text_button));
+  EXPECT_TRUE(IsActionButtonCollapsed(search_button));
 }
 
 }  // namespace

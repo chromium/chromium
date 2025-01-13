@@ -12,12 +12,24 @@
 #include "ash/capture_mode/action_button_view.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
+#include "base/time/time.h"
+#include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animator.h"
+#include "ui/gfx/animation/tween.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/vector2d.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -25,6 +37,21 @@ namespace {
 
 // The horizontal distance between action buttons in a row.
 constexpr int kActionButtonSpacing = 10;
+
+// The animation duration for fading out old action buttons after the smart
+// actions button is pressed.
+constexpr base::TimeDelta kSmartActionsButtonTransitionFadeOutDuration =
+    base::Milliseconds(100);
+
+// The animation duration for fading in new icon buttons after the smart actions
+// button is pressed.
+constexpr base::TimeDelta kSmartActionsButtonTransitionFadeInDuration =
+    base::Milliseconds(50);
+
+// The animation duration for sliding in new icon buttons after the smart
+// actions button is pressed.
+constexpr base::TimeDelta kSmartActionsButtonTransitionSlideInDuration =
+    base::Milliseconds(250);
 
 }  // namespace
 
@@ -84,6 +111,95 @@ ActionButtonView* ActionButtonContainerView::AddActionButton(
   }
 
   return new_action_button_ptr;
+}
+
+void ActionButtonContainerView::StartSmartActionsButtonTransition() {
+  views::Widget* widget = GetWidget();
+  if (!widget) {
+    return;
+  }
+
+  SetWidgetEventsEnabled(false);
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnEnded(base::BindOnce(
+          &ActionButtonContainerView::OnSmartActionsButtonFadedOut,
+          weak_ptr_factory_.GetWeakPtr()))
+      .Once()
+      .SetDuration(kSmartActionsButtonTransitionFadeOutDuration)
+      .SetOpacity(widget->GetLayer(), 0.0f, gfx::Tween::LINEAR);
+}
+
+void ActionButtonContainerView::OnSmartActionsButtonFadedOut() {
+  views::Widget* widget = GetWidget();
+  if (!widget) {
+    return;
+  }
+
+  // Remove Scanner action buttons and keep other buttons. We need to copy
+  // `children()` since we will be removing buttons from the original vector.
+  std::vector<std::unique_ptr<ActionButtonView>> action_buttons_to_keep;
+  views::View::Views children_copy = children();
+  for (views::View* child : children_copy) {
+    auto action_button =
+        RemoveChildViewT(views::AsViewClass<ActionButtonView>(child));
+    if (action_button->rank().type != ActionButtonType::kScanner) {
+      action_buttons_to_keep.push_back(std::move(action_button));
+    }
+  }
+  CHECK(children().empty());
+
+  // Add the buttons to keep back into the action button container and
+  // collapse them into icon buttons.
+  for (std::unique_ptr<ActionButtonView>& action_button :
+       action_buttons_to_keep) {
+    action_button->CollapseToIconButton();
+    AddChildView(std::move(action_button));
+  }
+
+  // Compute bounds required to slide in the new icon buttons from the left edge
+  // of the old action container bounds to the right edge.
+  const gfx::Rect old_action_container_bounds =
+      widget->GetWindowBoundsInScreen();
+  const gfx::Size new_preferred_size = GetPreferredSize();
+  const gfx::Vector2d slide_offset(
+      old_action_container_bounds.width() - new_preferred_size.width(), 0);
+
+  // Set the target bounds at the right edge.
+  widget->SetBounds(gfx::Rect(
+      old_action_container_bounds.origin() + slide_offset, new_preferred_size));
+
+  // Set an initial translation so that the new icon buttons start sliding from
+  // the left edge.
+  gfx::Transform initial_translation;
+  initial_translation.Translate(-slide_offset);
+  ui::Layer* layer = widget->GetLayer();
+  layer->SetTransform(initial_translation);
+
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnEnded(
+          base::BindOnce(&ActionButtonContainerView::SetWidgetEventsEnabled,
+                         weak_ptr_factory_.GetWeakPtr(), true))
+      .Once()
+      .SetDuration(kSmartActionsButtonTransitionFadeInDuration)
+      .SetOpacity(layer, 1.0f, gfx::Tween::LINEAR)
+      .At(base::TimeDelta())
+      .SetDuration(kSmartActionsButtonTransitionSlideInDuration)
+      .SetTransform(layer, gfx::Transform(), gfx::Tween::ACCEL_LIN_DECEL_100);
+}
+
+void ActionButtonContainerView::SetWidgetEventsEnabled(bool enabled) {
+  views::Widget* widget = GetWidget();
+  if (!widget) {
+    return;
+  }
+  widget->GetContentsView()->SetCanProcessEventsWithinSubtree(enabled);
+  widget->GetNativeWindow()->SetEventTargetingPolicy(
+      enabled ? aura::EventTargetingPolicy::kTargetAndDescendants
+              : aura::EventTargetingPolicy::kNone);
 }
 
 BEGIN_METADATA(ActionButtonContainerView)
